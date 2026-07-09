@@ -54,6 +54,7 @@ It contains only ToonExpo documentation plus a small integration contract with B
 - [Sitemap](./02-ToonExpo-Ecosystem/03-UI-UX/02-Sitemap.md)
 - [Mobile UX](./02-ToonExpo-Ecosystem/03-UI-UX/03-Mobile-UX.md)
 - [Page / Card / Sheet Standard](./02-ToonExpo-Ecosystem/03-UI-UX/04-Page-Card-Sheet-Standard.md)
+- [Frontend Screens For Designer](./02-ToonExpo-Ecosystem/03-UI-UX/05-Frontend-Screens-For-Designer.md)
 - [Dependency Graph](./architecture/DEPENDENCY_GRAPH.md)
 
 ## Development Start Pack
