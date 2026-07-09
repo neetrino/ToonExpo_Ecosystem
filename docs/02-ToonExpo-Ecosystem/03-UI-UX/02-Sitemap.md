@@ -18,6 +18,7 @@ Service Provider Directory
 Map
 Favorites
 Profile / My QR
+Frontend Screens For Designer
 ```
 
 ## Buyer / Visitor Area
