@@ -1,9 +1,16 @@
 import type { PublicApartment, PublicBuilding, PublicFloor } from '@toonexpo/contracts';
+import type { PublicCanvas } from '@toonexpo/contracts';
 import type { ApartmentStatus } from '@toonexpo/domain';
 
 import { ApartmentRequestButton } from '@/components/public-request/public-request-sheet';
+import { PublicVisualCanvas } from '@/components/visual-map/public-visual-canvas';
 import { formatAreaSqm } from '@/lib/catalog/format-area';
 import { formatPriceAmd } from '@/lib/catalog/format-price';
+import {
+  buildApartmentAnchorId,
+  buildBuildingAnchorId,
+  buildFloorAnchorId,
+} from '@/lib/visual-map/public-hotspot-href';
 
 type RequestPrefill = {
   name?: string;
@@ -43,7 +50,7 @@ function ApartmentTableRow({
   prefill?: RequestPrefill;
 }) {
   return (
-    <tr>
+    <tr id={buildApartmentAnchorId(apartment.id)}>
       <td>{apartment.code}</td>
       <td>{apartment.rooms ?? tableLabels.noValue}</td>
       <td>
@@ -81,6 +88,8 @@ function FloorBlock({
   tableLabels,
   statusLabels,
   prefill,
+  floorCanvas,
+  floorPlanLabel,
 }: {
   floor: PublicFloor;
   locale: string;
@@ -89,10 +98,13 @@ function FloorBlock({
   tableLabels: TableLabels;
   statusLabels: Record<ApartmentStatus, string>;
   prefill?: RequestPrefill;
+  floorCanvas?: PublicCanvas;
+  floorPlanLabel?: string;
 }) {
   return (
-    <div className="catalog-floor">
+    <div className="catalog-floor" id={buildFloorAnchorId(floor.id)}>
       <h4 className="catalog-floor__title">{floor.name}</h4>
+      {floorCanvas ? <PublicVisualCanvas canvas={floorCanvas} title={floorPlanLabel} /> : null}
       <div className="catalog-table-wrap">
         <table className="catalog-table">
           <thead>
@@ -133,6 +145,8 @@ function BuildingBlock({
   tableLabels,
   statusLabels,
   prefill,
+  floorCanvases,
+  floorPlanLabel,
 }: {
   building: PublicBuilding;
   locale: string;
@@ -141,9 +155,11 @@ function BuildingBlock({
   tableLabels: TableLabels;
   statusLabels: Record<ApartmentStatus, string>;
   prefill?: RequestPrefill;
+  floorCanvases: Record<string, PublicCanvas>;
+  floorPlanLabel?: string;
 }) {
   return (
-    <section className="catalog-building">
+    <section className="catalog-building" id={buildBuildingAnchorId(building.id)}>
       <h3 className="catalog-building__title">{building.name}</h3>
       {building.floors.map((floor) => (
         <FloorBlock
@@ -155,6 +171,8 @@ function BuildingBlock({
           tableLabels={tableLabels}
           statusLabels={statusLabels}
           prefill={prefill}
+          floorCanvas={floorCanvases[floor.id]}
+          floorPlanLabel={floorPlanLabel}
         />
       ))}
     </section>
@@ -170,6 +188,8 @@ type ProjectBuildingsProps = {
   statusLabels: Record<ApartmentStatus, string>;
   buildingsLabel: string;
   prefill?: RequestPrefill;
+  floorCanvases: Record<string, PublicCanvas>;
+  floorPlanLabel?: string;
 };
 
 export function ProjectBuildings({
@@ -181,6 +201,8 @@ export function ProjectBuildings({
   statusLabels,
   buildingsLabel,
   prefill,
+  floorCanvases,
+  floorPlanLabel,
 }: ProjectBuildingsProps) {
   if (buildings.length === 0) {
     return null;
@@ -199,6 +221,8 @@ export function ProjectBuildings({
           tableLabels={tableLabels}
           statusLabels={statusLabels}
           prefill={prefill}
+          floorCanvases={floorCanvases}
+          floorPlanLabel={floorPlanLabel}
         />
       ))}
     </section>

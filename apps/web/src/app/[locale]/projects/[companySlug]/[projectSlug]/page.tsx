@@ -1,4 +1,4 @@
-import type { PublicProjectDetail } from '@toonexpo/contracts';
+import type { PublicCanvas, PublicProjectDetail } from '@toonexpo/contracts';
 import { slugSchema } from '@toonexpo/contracts';
 import type { ApartmentStatus } from '@toonexpo/domain';
 import { notFound } from 'next/navigation';
@@ -7,9 +7,11 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { auth } from '@/auth';
 import { ProjectRequestCta } from '@/components/public-request/public-request-sheet';
 import { getPublishedProjectBySlug } from '@/lib/catalog/queries';
+import { loadProjectVisualMaps } from '@/lib/visual-map/load-project-visual-maps';
 
 import { ProjectBuildings } from './project-buildings';
 import { ProjectGallery } from './project-gallery';
+import { PublicVisualCanvas } from '@/components/visual-map/public-visual-canvas';
 
 type ProjectDetailPageProps = {
   params: Promise<{ locale: string; companySlug: string; projectSlug: string }>;
@@ -22,7 +24,11 @@ function ProjectDetailView({
   statusLabels,
   galleryLabel,
   buildingsLabel,
+  visualMapLabel,
+  floorPlanLabel,
   prefill,
+  projectCanvas,
+  floorCanvases,
 }: {
   project: PublicProjectDetail;
   locale: string;
@@ -38,7 +44,11 @@ function ProjectDetailView({
   statusLabels: Record<ApartmentStatus, string>;
   galleryLabel: string;
   buildingsLabel: string;
+  visualMapLabel: string;
+  floorPlanLabel: string;
   prefill?: { name?: string; email?: string; phone?: string };
+  projectCanvas: PublicCanvas | null;
+  floorCanvases: Record<string, PublicCanvas>;
 }) {
   return (
     <article className="catalog-detail">
@@ -68,6 +78,7 @@ function ProjectDetailView({
         projectName={project.name}
         galleryLabel={galleryLabel}
       />
+      {projectCanvas ? <PublicVisualCanvas canvas={projectCanvas} title={visualMapLabel} /> : null}
       <ProjectBuildings
         buildings={project.buildings}
         locale={locale}
@@ -77,6 +88,8 @@ function ProjectDetailView({
         statusLabels={statusLabels}
         buildingsLabel={buildingsLabel}
         prefill={prefill}
+        floorCanvases={floorCanvases}
+        floorPlanLabel={floorPlanLabel}
       />
     </article>
   );
@@ -97,6 +110,11 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
   if (!project) {
     notFound();
   }
+
+  const { projectCanvas, floorCanvases } = await loadProjectVisualMaps(
+    project.id,
+    project.buildings,
+  );
 
   const session = await auth();
   const prefill = session?.user
@@ -130,7 +148,11 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
         statusLabels={statusLabels}
         galleryLabel={t('detail.gallery')}
         buildingsLabel={t('detail.buildings')}
+        visualMapLabel={t('visualMap.projectTitle')}
+        floorPlanLabel={t('visualMap.floorTitle')}
         prefill={prefill}
+        projectCanvas={projectCanvas}
+        floorCanvases={floorCanvases}
       />
     </section>
   );

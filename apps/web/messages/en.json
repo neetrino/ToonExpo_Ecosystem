@@ -200,6 +200,7 @@
       "unauthorized": "You are not authorized to perform this action.",
       "invalidInput": "Please check the fields and try again.",
       "notFound": "The requested item was not found.",
+      "targetMismatch": "The selected target does not belong to this visual map context.",
       "levelTaken": "This floor level is already in use for this building.",
       "codeTaken": "This apartment code is already in use on this floor.",
       "nameTaken": "A project with this name already exists."
@@ -412,6 +413,81 @@
           "actions": "Actions"
         }
       }
+    },
+    "visualMap": {
+      "section": {
+        "title": "Visual maps",
+        "newCanvas": "New canvas",
+        "empty": "No visual maps yet.",
+        "hotspotCount": "{count} hotspots",
+        "untitled": "Untitled canvas"
+      },
+      "context": {
+        "project": "Project",
+        "building": "Building",
+        "floor": "Floor"
+      },
+      "errors": {
+        "unauthorized": "You are not authorized to perform this action.",
+        "invalidInput": "Please check the fields and try again.",
+        "notFound": "The requested item was not found.",
+        "targetMismatch": "The selected target does not belong to this visual map context."
+      },
+      "canvasForm": {
+        "title": "New visual canvas",
+        "submit": "Create canvas",
+        "context": {
+          "project": "This project",
+          "building": "Building",
+          "floor": "Floor"
+        },
+        "fields": {
+          "context": "Context",
+          "building": "Building",
+          "floor": "Floor",
+          "title": "Title",
+          "imageUrl": "Image URL",
+          "imageUrlHint": "Paste a public image URL. File upload is planned for a later sprint.",
+          "imageAlt": "Image alt text"
+        }
+      },
+      "editor": {
+        "backToProject": "← Back to project",
+        "untitled": "Untitled canvas",
+        "clickHint": "Click the image to add a hotspot, or click an existing marker to edit.",
+        "pickingHint": "Click a new position on the image.",
+        "marker": "Hotspot"
+      },
+      "hotspotForm": {
+        "create": "New hotspot",
+        "edit": "Edit hotspot",
+        "submit": "Save hotspot",
+        "delete": "Delete hotspot",
+        "deleteConfirm": "Delete this hotspot? This cannot be undone.",
+        "pickPosition": "Pick new position on image",
+        "pickingActive": "Click the image…",
+        "noTargets": "No targets available for this context.",
+        "fields": {
+          "x": "X (%)",
+          "y": "Y (%)",
+          "target": "Target",
+          "label": "Label"
+        }
+      },
+      "publication": {
+        "actions": {
+          "publish": "Publish",
+          "archive": "Archive",
+          "draft": "Back to draft",
+          "delete": "Delete canvas"
+        },
+        "confirm": {
+          "publish": "Publish this visual map? It will appear on the public project page.",
+          "archive": "Archive this visual map? It will be hidden from the public site.",
+          "draft": "Move this visual map back to draft? It will be hidden from the public site.",
+          "delete": "Delete this draft canvas? All hotspots will be removed."
+        }
+      }
     }
   },
   "catalog": {
@@ -460,6 +536,10 @@
       "AVAILABLE": "Available",
       "RESERVED": "Reserved",
       "SOLD": "Sold"
+    },
+    "visualMap": {
+      "projectTitle": "Site plan",
+      "floorTitle": "Floor plan"
     }
   },
   "buyer": {

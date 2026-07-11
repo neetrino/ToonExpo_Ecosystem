@@ -8,6 +8,8 @@ import { loadCompanyProjectDetail } from '@/lib/builder/queries';
 
 import { BuildingsSection } from './buildings-section';
 import { ProjectHeader } from './project-header';
+import { VisualMapsSection } from './visual-maps-section';
+import { listCanvasesForProject } from '@/lib/visual-map/queries';
 
 type ProjectDetailPageProps = {
   params: Promise<{ locale: string; projectId: string }>;
@@ -27,11 +29,14 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
     notFound();
   }
 
-  const [t, tStatus, tApartmentStatus] = await Promise.all([
+  const [t, tStatus, tApartmentStatus, tVisualMap] = await Promise.all([
     getTranslations('portal.projectDetail'),
     getTranslations('portal.projects.status'),
     getTranslations('portal.apartmentStatus'),
+    getTranslations('portal.visualMap'),
   ]);
+
+  const canvases = await listCanvasesForProject(builderContext.companyId, projectId);
 
   const priceFormatter = new Intl.NumberFormat(locale, {
     style: 'currency',
@@ -42,6 +47,29 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
   return (
     <section>
       <ProjectHeader locale={locale} project={project} statusLabel={tStatus(project.status)} />
+
+      <VisualMapsSection
+        locale={locale}
+        project={project}
+        canvases={canvases}
+        labels={{
+          title: tVisualMap('section.title'),
+          newCanvas: tVisualMap('section.newCanvas'),
+          empty: tVisualMap('section.empty'),
+          hotspotCount: tVisualMap('section.hotspotCount'),
+          untitled: tVisualMap('section.untitled'),
+          context: {
+            project: tVisualMap('context.project'),
+            building: tVisualMap('context.building'),
+            floor: tVisualMap('context.floor'),
+          },
+        }}
+        statusLabels={{
+          DRAFT: tStatus('DRAFT'),
+          PUBLISHED: tStatus('PUBLISHED'),
+          ARCHIVED: tStatus('ARCHIVED'),
+        }}
+      />
 
       <BuildingsSection
         locale={locale}

@@ -77,14 +77,18 @@ export function PortalTextArea({
 export function PortalSelect({
   name,
   defaultValue,
+  value,
   required,
   disabled,
+  onChange,
   children,
 }: {
   name: string;
   defaultValue?: string;
+  value?: string;
   required?: boolean;
   disabled?: boolean;
+  onChange?: (event: React.ChangeEvent<HTMLSelectElement>) => void;
   children: ReactNode;
 }) {
   return (
@@ -93,8 +97,10 @@ export function PortalSelect({
       id={name}
       name={name}
       defaultValue={defaultValue}
+      value={value}
       required={required}
       disabled={disabled}
+      onChange={onChange}
     >
       {children}
     </select>
