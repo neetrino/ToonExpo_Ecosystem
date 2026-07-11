@@ -2,7 +2,22 @@
 
 ## Current Status
 
-Sprint 1 complete. Monorepo apps and packages exist; quality scripts pass (`lint`, `typecheck`, `test`, `build`).
+Sprint 2 complete. Public catalog (builder company, projects/buildings/floors/apartments, media metadata, publication status, public pages) is live; quality scripts pass.
+
+## Sprint 2 — COMPLETE
+
+- **Builder company model** — Company entity with slug; demo seed via `pnpm db:seed`.
+- **Projects / buildings / floors / apartments** — Prisma inventory hierarchy; public detail with nested tables.
+- **Media metadata** — Project and apartment media assets with sort order and alt text.
+- **Publication status** — Only `PUBLISHED` projects appear on public catalog routes.
+- **Public pages** — `/projects` list and `/projects/[companySlug]/[projectSlug]` detail with hy/ru/en i18n.
+
+### Deferred (Sprint 2 follow-ups)
+
+- Catalog pagination on project list.
+- `@@index([status, createdAt])` on Project for list queries.
+- MediaAsset XOR constraint (project vs apartment ownership).
+- Revalidation strategy when admin publish flow arrives.
 
 ## Sprint 1 — COMPLETE
 
@@ -39,12 +54,7 @@ Sprint 1 complete. Monorepo apps and packages exist; quality scripts pass (`lint
 
 ## Next
 
-**Sprint 2 — Public Real Estate Core**
-
-- Builder company model.
-- Projects / buildings / floors / apartments public pages.
-- Media metadata.
-- Publication status.
+**Sprint 3 — Builder Portal And Admin Setup**
 
 ## Open (non-blocking)
 
