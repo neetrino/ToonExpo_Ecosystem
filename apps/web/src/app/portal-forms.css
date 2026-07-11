@@ -1,0 +1,116 @@
+.portal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.portal-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.portal-form__label {
+  font-size: 0.875rem;
+}
+
+.portal-form__hint {
+  color: var(--te-muted);
+  font-size: 0.75rem;
+}
+
+.portal-form__input,
+.portal-form__textarea,
+.portal-form__select {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 0.5rem;
+  color: var(--te-fg);
+  font-size: 0.875rem;
+  outline: none;
+  padding: 0.5rem 0.75rem;
+}
+
+.portal-form__input:focus,
+.portal-form__textarea:focus,
+.portal-form__select:focus {
+  border-color: var(--te-accent);
+}
+
+.portal-form__textarea {
+  resize: vertical;
+}
+
+.portal-form__error {
+  color: #f87171;
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.portal-form__actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.portal-apartment-status {
+  border-radius: 9999px;
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.2rem 0.6rem;
+}
+
+.portal-apartment-status--AVAILABLE {
+  background: rgba(52, 211, 153, 0.15);
+  color: #6ee7b7;
+}
+
+.portal-apartment-status--RESERVED {
+  background: rgba(251, 191, 36, 0.15);
+  color: #fcd34d;
+}
+
+.portal-apartment-status--SOLD {
+  background: rgba(148, 163, 184, 0.15);
+  color: #cbd5e1;
+}
+
+.portal-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.portal-filter__link {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.5rem;
+  color: var(--te-muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  transition:
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.portal-filter__link:hover {
+  border-color: rgba(61, 139, 253, 0.5);
+  color: var(--te-fg);
+}
+
+.portal-filter__link--active {
+  border-color: var(--te-accent);
+  color: var(--te-fg);
+}
+
+.portal-code {
+  color: var(--te-muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8125rem;
+}
+
+.portal-counts {
+  color: var(--te-muted);
+  font-size: 0.8125rem;
+}

@@ -9,7 +9,7 @@ import { type BuilderMutationResult, UNIQUE_CONSTRAINT_ERROR } from './mutation-
 export async function createProject(
   companyId: string,
   input: ProjectUpsertInput,
-): Promise<BuilderMutationResult<{ projectId: string }>> {
+): Promise<BuilderMutationResult<{ projectId: string; projectSlug: string }>> {
   const baseSlug = slugifyCompanyName(input.name);
 
   try {
@@ -33,10 +33,10 @@ export async function createProject(
         address: input.address,
         description: input.description,
       },
-      select: { id: true },
+      select: { id: true, slug: true },
     });
 
-    return { ok: true, projectId: project.id };
+    return { ok: true, projectId: project.id, projectSlug: project.slug };
   } catch (error) {
     if (
       error instanceof Prisma.PrismaClientKnownRequestError &&

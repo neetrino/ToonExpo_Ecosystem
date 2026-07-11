@@ -1,21 +1,17 @@
 'use server';
 
 import { projectPublicationInputSchema } from '@toonexpo/contracts';
-import { revalidatePath } from 'next/cache';
 
 import { assertAdminSession } from '@/lib/admin/assert-admin-session';
 import type { AdminMutationErrorKey, AdminMutationResult } from '@/lib/admin/mutation-result';
 import { setProjectPublicationAsAdmin } from '@/lib/admin/project-mutations';
+import { resolveAdminCatalogPaths } from '@/lib/shared/resolve-catalog-paths';
+import { revalidateAdminCatalogPaths } from '@/lib/shared/revalidate-catalog-paths';
 
 export type AdminProjectActionResult<T extends Record<string, unknown> = Record<string, never>> =
   AdminMutationResult<T>;
 
 type AdminProjectActionFailure = { ok: false; errorKey: AdminMutationErrorKey };
-
-function revalidateAdminProjectPaths(locale: string): void {
-  revalidatePath(`/${locale}/admin/projects`);
-  revalidatePath(`/${locale}/projects`);
-}
 
 function unauthorized(): AdminProjectActionFailure {
   return { ok: false, errorKey: 'unauthorized' };
@@ -26,7 +22,7 @@ function invalidInput(): AdminProjectActionFailure {
 }
 
 export async function setProjectPublicationAsAdminAction(
-  locale: string,
+  _locale: string,
   raw: unknown,
 ): Promise<AdminProjectActionResult<{ projectId: string }>> {
   const session = await assertAdminSession();
@@ -41,7 +37,8 @@ export async function setProjectPublicationAsAdminAction(
 
   const result = await setProjectPublicationAsAdmin(parsed.data);
   if (result.ok) {
-    revalidateAdminProjectPaths(locale);
+    const paths = await resolveAdminCatalogPaths(result.projectId);
+    revalidateAdminCatalogPaths(paths ?? {});
   }
   return result;
 }

@@ -59,4 +59,13 @@ describe('builder-portal schemas', () => {
       expect(result.data.level).toBe(0);
     }
   });
+
+  it('rejects empty floor level before coercion', () => {
+    const result = floorCreateInputSchema.safeParse({
+      buildingId: 'building-1',
+      name: 'Ground',
+      level: '',
+    });
+    expect(result.success).toBe(false);
+  });
 });

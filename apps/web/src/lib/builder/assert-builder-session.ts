@@ -15,6 +15,9 @@ export type BuilderSessionContext = {
  * Returns builder session context when the caller is a BUILDER with company
  * membership; otherwise null. Server actions and portal routes must use this
  * instead of layout guards, which do not run for actions.
+ *
+ * v1 binds to the earliest company membership (deterministic). A company
+ * switcher is planned for a later release.
  */
 export async function assertBuilderSession(): Promise<BuilderSessionContext | null> {
   const session = await auth();
@@ -24,6 +27,7 @@ export async function assertBuilderSession(): Promise<BuilderSessionContext | nu
 
   const membership = await prisma.companyMember.findFirst({
     where: { userId: session.user.id },
+    orderBy: { createdAt: 'asc' },
     select: {
       company: {
         select: { id: true, slug: true, name: true },

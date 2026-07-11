@@ -74,14 +74,17 @@ describe('project-mutations ownership', () => {
 
   it('creates a project scoped to the caller company', async () => {
     vi.mocked(allocateUniqueSlug).mockResolvedValue('sunrise-towers');
-    vi.mocked(prisma.project.create).mockResolvedValue({ id: 'project-new' } as never);
+    vi.mocked(prisma.project.create).mockResolvedValue({
+      id: 'project-new',
+      slug: 'sunrise-towers',
+    } as never);
 
     const result = await createProject(OWN_COMPANY_ID, {
       name: 'Sunrise Towers',
       city: 'Yerevan',
     });
 
-    expect(result).toEqual({ ok: true, projectId: 'project-new' });
+    expect(result).toEqual({ ok: true, projectId: 'project-new', projectSlug: 'sunrise-towers' });
     expect(prisma.project.create).toHaveBeenCalledWith(
       expect.objectContaining({
         data: expect.objectContaining({

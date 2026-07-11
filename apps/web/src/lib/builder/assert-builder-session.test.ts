@@ -80,5 +80,35 @@ describe('assertBuilderSession', () => {
       companySlug: DEMO_COMPANY.slug,
       companyName: DEMO_COMPANY.name,
     });
+
+    expect(prisma.companyMember.findFirst).toHaveBeenCalledWith({
+      where: { userId: BUILDER_SESSION.user.id },
+      orderBy: { createdAt: 'asc' },
+      select: {
+        company: {
+          select: { id: true, slug: true, name: true },
+        },
+      },
+    });
+  });
+
+  it('resolves to the earliest membership when a builder belongs to multiple companies', async () => {
+    vi.mocked(auth).mockResolvedValue(BUILDER_SESSION as never);
+    vi.mocked(prisma.companyMember.findFirst).mockResolvedValue({
+      company: DEMO_COMPANY,
+    } as never);
+
+    await expect(assertBuilderSession()).resolves.toEqual({
+      session: BUILDER_SESSION,
+      companyId: DEMO_COMPANY.id,
+      companySlug: DEMO_COMPANY.slug,
+      companyName: DEMO_COMPANY.name,
+    });
+
+    expect(prisma.companyMember.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        orderBy: { createdAt: 'asc' },
+      }),
+    );
   });
 });

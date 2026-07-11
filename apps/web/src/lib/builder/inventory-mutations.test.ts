@@ -19,7 +19,9 @@ vi.mock('@toonexpo/db', () => ({
       create: vi.fn(),
       updateMany: vi.fn(),
     },
-    $transaction: vi.fn(),
+    $transaction: vi.fn(async (callback: (tx: typeof prisma) => Promise<unknown>) =>
+      callback(prisma),
+    ),
   },
   Prisma: {
     PrismaClientKnownRequestError: class PrismaClientKnownRequestError extends Error {
@@ -37,11 +39,14 @@ import { prisma } from '@toonexpo/db';
 import {
   createBuilding,
   createFloor,
+  updateApartment,
   updateBuilding,
+  updateFloor,
   upsertApartment,
 } from './inventory-mutations';
 
 const FOREIGN_COMPANY_ID = 'company-foreign';
+const OWN_COMPANY_ID = 'company-own';
 
 describe('inventory-mutations ownership', () => {
   beforeEach(() => {
@@ -92,6 +97,22 @@ describe('inventory-mutations ownership', () => {
     expect(prisma.floor.create).not.toHaveBeenCalled();
   });
 
+  it('returns notFound when updateFloor targets a foreign floor', async () => {
+    vi.mocked(prisma.floor.updateMany).mockResolvedValue({ count: 0 });
+
+    const result = await updateFloor(FOREIGN_COMPANY_ID, {
+      floorId: 'floor-foreign',
+      name: 'Renamed',
+      level: 2,
+    });
+
+    expect(result).toEqual({ ok: false, errorKey: 'notFound' });
+    expect(prisma.floor.updateMany).toHaveBeenCalledWith({
+      where: { id: 'floor-foreign', building: { project: { companyId: FOREIGN_COMPANY_ID } } },
+      data: { name: 'Renamed', level: 2 },
+    });
+  });
+
   it('returns notFound when upsertApartment targets a foreign floor', async () => {
     vi.mocked(prisma.floor.findFirst).mockResolvedValue(null);
 
@@ -110,5 +131,44 @@ describe('inventory-mutations ownership', () => {
       select: { id: true },
     });
     expect(prisma.apartment.create).not.toHaveBeenCalled();
+  });
+
+  it('returns notFound when updateApartment moves to a foreign floor', async () => {
+    vi.mocked(prisma.floor.findFirst).mockResolvedValue(null);
+
+    const result = await updateApartment(OWN_COMPANY_ID, {
+      apartmentId: 'apartment-1',
+      floorId: 'floor-foreign',
+      code: 'A-101',
+      status: 'AVAILABLE',
+    });
+
+    expect(result).toEqual({ ok: false, errorKey: 'notFound' });
+    expect(prisma.apartment.updateMany).not.toHaveBeenCalled();
+  });
+
+  it('returns notFound when updateApartment targets a foreign apartment on an owned floor', async () => {
+    vi.mocked(prisma.floor.findFirst).mockResolvedValue({ id: 'floor-own' } as never);
+    vi.mocked(prisma.apartment.updateMany).mockResolvedValue({ count: 0 });
+
+    const result = await updateApartment(OWN_COMPANY_ID, {
+      apartmentId: 'apartment-foreign',
+      floorId: 'floor-own',
+      code: 'A-101',
+      status: 'AVAILABLE',
+    });
+
+    expect(result).toEqual({ ok: false, errorKey: 'notFound' });
+    expect(prisma.apartment.updateMany).toHaveBeenCalledWith({
+      where: {
+        id: 'apartment-foreign',
+        floor: { building: { project: { companyId: OWN_COMPANY_ID } } },
+      },
+      data: expect.objectContaining({
+        floorId: 'floor-own',
+        code: 'A-101',
+        status: 'AVAILABLE',
+      }),
+    });
   });
 });

@@ -8,6 +8,14 @@ vi.mock('@/lib/admin/project-mutations', () => ({
   setProjectPublicationAsAdmin: vi.fn(),
 }));
 
+vi.mock('@/lib/shared/resolve-catalog-paths', () => ({
+  resolveAdminCatalogPaths: vi.fn(),
+}));
+
+vi.mock('@/lib/shared/revalidate-catalog-paths', () => ({
+  revalidateAdminCatalogPaths: vi.fn(),
+}));
+
 vi.mock('next/cache', () => ({
   revalidatePath: vi.fn(),
 }));

@@ -7,6 +7,8 @@ import type { BuilderProjectApartment } from '@/lib/builder/queries';
 
 import { ApartmentFormSheet } from '../sheets/apartment-form-sheet';
 
+import { ApartmentTableRow } from './apartment-table-row';
+
 type ApartmentTableLabels = {
   title: string;
   code: string;
@@ -28,6 +30,21 @@ type ApartmentTableProps = {
   statusLabels: Record<ApartmentStatus, string>;
   formatPrice: (value: number) => string;
 };
+
+function ApartmentTableHeader({ labels }: { labels: ApartmentTableLabels }) {
+  return (
+    <thead>
+      <tr>
+        <th>{labels.code}</th>
+        <th>{labels.rooms}</th>
+        <th>{labels.areaSqm}</th>
+        <th>{labels.priceAmd}</th>
+        <th>{labels.status}</th>
+        <th>{labels.actions}</th>
+      </tr>
+    </thead>
+  );
+}
 
 export function ApartmentTable({
   locale,
@@ -58,42 +75,17 @@ export function ApartmentTable({
       ) : (
         <div className="portal-table-wrap">
           <table className="portal-table">
-            <thead>
-              <tr>
-                <th>{labels.code}</th>
-                <th>{labels.rooms}</th>
-                <th>{labels.areaSqm}</th>
-                <th>{labels.priceAmd}</th>
-                <th>{labels.status}</th>
-                <th>{labels.actions}</th>
-              </tr>
-            </thead>
+            <ApartmentTableHeader labels={labels} />
             <tbody>
               {apartments.map((apartment) => (
-                <tr key={apartment.id}>
-                  <td>{apartment.code}</td>
-                  <td>{apartment.rooms ?? labels.noValue}</td>
-                  <td>{apartment.areaSqm ?? labels.noValue}</td>
-                  <td>
-                    {apartment.priceAmd != null ? formatPrice(apartment.priceAmd) : labels.noValue}
-                  </td>
-                  <td>
-                    <span
-                      className={`portal-apartment-status portal-apartment-status--${apartment.status}`}
-                    >
-                      {statusLabels[apartment.status]}
-                    </span>
-                  </td>
-                  <td>
-                    <button
-                      type="button"
-                      className="portal-btn portal-btn--ghost portal-btn--sm"
-                      onClick={() => setEditingApartment(apartment)}
-                    >
-                      {labels.edit}
-                    </button>
-                  </td>
-                </tr>
+                <ApartmentTableRow
+                  key={apartment.id}
+                  apartment={apartment}
+                  labels={labels}
+                  statusLabels={statusLabels}
+                  formatPrice={formatPrice}
+                  onEdit={setEditingApartment}
+                />
               ))}
             </tbody>
           </table>

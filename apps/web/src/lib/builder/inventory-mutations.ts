@@ -13,20 +13,22 @@ export async function createBuilding(
   companyId: string,
   input: BuildingCreateInput,
 ): Promise<BuilderMutationResult<{ buildingId: string }>> {
-  const project = await prisma.project.findFirst({
-    where: { id: input.projectId, companyId },
-    select: { id: true },
-  });
-  if (!project) {
-    return { ok: false, errorKey: 'notFound' };
-  }
+  return prisma.$transaction(async (tx) => {
+    const project = await tx.project.findFirst({
+      where: { id: input.projectId, companyId },
+      select: { id: true },
+    });
+    if (!project) {
+      return { ok: false, errorKey: 'notFound' };
+    }
 
-  const building = await prisma.building.create({
-    data: { projectId: project.id, name: input.name },
-    select: { id: true },
-  });
+    const building = await tx.building.create({
+      data: { projectId: project.id, name: input.name },
+      select: { id: true },
+    });
 
-  return { ok: true, buildingId: building.id };
+    return { ok: true, buildingId: building.id };
+  });
 }
 
 export async function updateBuilding(
@@ -49,24 +51,26 @@ export async function createFloor(
   companyId: string,
   input: FloorCreateInput,
 ): Promise<BuilderMutationResult<{ floorId: string }>> {
-  const building = await prisma.building.findFirst({
-    where: { id: input.buildingId, project: { companyId } },
-    select: { id: true },
-  });
-  if (!building) {
-    return { ok: false, errorKey: 'notFound' };
-  }
-
   try {
-    const floor = await prisma.floor.create({
-      data: {
-        buildingId: building.id,
-        name: input.name,
-        level: input.level,
-      },
-      select: { id: true },
+    return await prisma.$transaction(async (tx) => {
+      const building = await tx.building.findFirst({
+        where: { id: input.buildingId, project: { companyId } },
+        select: { id: true },
+      });
+      if (!building) {
+        return { ok: false, errorKey: 'notFound' };
+      }
+
+      const floor = await tx.floor.create({
+        data: {
+          buildingId: building.id,
+          name: input.name,
+          level: input.level,
+        },
+        select: { id: true },
+      });
+      return { ok: true, floorId: floor.id };
     });
-    return { ok: true, floorId: floor.id };
   } catch (error) {
     return mapFloorUniqueError(error);
   }
@@ -96,27 +100,29 @@ export async function createApartment(
   companyId: string,
   input: ApartmentUpsertInput,
 ): Promise<BuilderMutationResult<{ apartmentId: string }>> {
-  const floor = await prisma.floor.findFirst({
-    where: { id: input.floorId, building: { project: { companyId } } },
-    select: { id: true },
-  });
-  if (!floor) {
-    return { ok: false, errorKey: 'notFound' };
-  }
-
   try {
-    const apartment = await prisma.apartment.create({
-      data: {
-        floorId: floor.id,
-        code: input.code,
-        rooms: input.rooms,
-        areaSqm: input.areaSqm,
-        priceAmd: input.priceAmd,
-        status: input.status,
-      },
-      select: { id: true },
+    return await prisma.$transaction(async (tx) => {
+      const floor = await tx.floor.findFirst({
+        where: { id: input.floorId, building: { project: { companyId } } },
+        select: { id: true },
+      });
+      if (!floor) {
+        return { ok: false, errorKey: 'notFound' };
+      }
+
+      const apartment = await tx.apartment.create({
+        data: {
+          floorId: floor.id,
+          code: input.code,
+          rooms: input.rooms,
+          areaSqm: input.areaSqm,
+          priceAmd: input.priceAmd,
+          status: input.status,
+        },
+        select: { id: true },
+      });
+      return { ok: true, apartmentId: apartment.id };
     });
-    return { ok: true, apartmentId: apartment.id };
   } catch (error) {
     return mapApartmentUniqueError(error);
   }

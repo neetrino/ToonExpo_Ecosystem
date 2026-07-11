@@ -25,6 +25,25 @@ const optionalTrimmedString = (maxLength: number) =>
     return trimmed.length === 0 ? undefined : trimmed;
   }, z.string().max(maxLength).optional());
 
+const emptyToUndefined = (value: unknown): unknown => {
+  if (value === '' || value === null) {
+    return undefined;
+  }
+  return value;
+};
+
+const requiredCoercedInt = (min: number, max: number) =>
+  z.preprocess(emptyToUndefined, z.coerce.number().int().min(min).max(max));
+
+const optionalCoercedInt = (min: number, max: number) =>
+  z.preprocess(emptyToUndefined, z.coerce.number().int().min(min).max(max).optional());
+
+const optionalCoercedPositiveNumber = (max: number) =>
+  z.preprocess(emptyToUndefined, z.coerce.number().positive().max(max).optional());
+
+const optionalCoercedPositiveInt = (max: number) =>
+  z.preprocess(emptyToUndefined, z.coerce.number().int().positive().max(max).optional());
+
 export const projectUpsertInputSchema = z.object({
   projectId: z.string().trim().min(1).optional(),
   name: z.string().trim().min(1).max(PROJECT_NAME_MAX_LENGTH),
@@ -52,7 +71,7 @@ export type BuildingUpdateInput = z.infer<typeof buildingUpdateInputSchema>;
 export const floorCreateInputSchema = z.object({
   buildingId: z.string().trim().min(1),
   name: z.string().trim().min(1).max(FLOOR_NAME_MAX_LENGTH),
-  level: z.coerce.number().int().min(FLOOR_LEVEL_MIN).max(FLOOR_LEVEL_MAX),
+  level: requiredCoercedInt(FLOOR_LEVEL_MIN, FLOOR_LEVEL_MAX),
 });
 
 export type FloorCreateInput = z.infer<typeof floorCreateInputSchema>;
@@ -60,7 +79,7 @@ export type FloorCreateInput = z.infer<typeof floorCreateInputSchema>;
 export const floorUpdateInputSchema = z.object({
   floorId: z.string().trim().min(1),
   name: z.string().trim().min(1).max(FLOOR_NAME_MAX_LENGTH),
-  level: z.coerce.number().int().min(FLOOR_LEVEL_MIN).max(FLOOR_LEVEL_MAX),
+  level: requiredCoercedInt(FLOOR_LEVEL_MIN, FLOOR_LEVEL_MAX),
 });
 
 export type FloorUpdateInput = z.infer<typeof floorUpdateInputSchema>;
@@ -69,9 +88,9 @@ export const apartmentUpsertInputSchema = z.object({
   apartmentId: z.string().trim().min(1).optional(),
   floorId: z.string().trim().min(1),
   code: z.string().trim().min(1).max(APARTMENT_CODE_MAX_LENGTH),
-  rooms: z.coerce.number().int().min(0).max(APARTMENT_ROOMS_MAX).optional(),
-  areaSqm: z.coerce.number().positive().max(APARTMENT_AREA_SQM_MAX).optional(),
-  priceAmd: z.coerce.number().int().positive().max(APARTMENT_PRICE_AMD_MAX).optional(),
+  rooms: optionalCoercedInt(0, APARTMENT_ROOMS_MAX),
+  areaSqm: optionalCoercedPositiveNumber(APARTMENT_AREA_SQM_MAX),
+  priceAmd: optionalCoercedPositiveInt(APARTMENT_PRICE_AMD_MAX),
   status: z.enum(APARTMENT_STATUSES),
 });
 

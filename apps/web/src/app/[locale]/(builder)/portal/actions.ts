@@ -9,7 +9,6 @@ import {
   projectPublicationInputSchema,
   projectUpsertInputSchema,
 } from '@toonexpo/contracts';
-import { revalidatePath } from 'next/cache';
 
 import { assertBuilderSession } from '@/lib/builder/assert-builder-session';
 import type { BuilderMutationErrorKey, BuilderMutationResult } from '@/lib/builder/mutations';
@@ -23,17 +22,13 @@ import {
   updateProject,
   upsertApartment,
 } from '@/lib/builder/mutations';
+import { resolveCatalogPaths } from '@/lib/shared/resolve-catalog-paths';
+import { revalidateCatalogPaths } from '@/lib/shared/revalidate-catalog-paths';
 
 export type BuilderActionResult<T extends Record<string, unknown> = Record<string, never>> =
   BuilderMutationResult<T>;
 
 type BuilderActionFailure = { ok: false; errorKey: BuilderMutationErrorKey };
-
-function revalidateBuilderPaths(locale: string): void {
-  revalidatePath(`/${locale}/portal`);
-  revalidatePath(`/${locale}/portal/projects`);
-  revalidatePath(`/${locale}/projects`);
-}
 
 function unauthorized(): BuilderActionFailure {
   return { ok: false, errorKey: 'unauthorized' };
@@ -43,10 +38,36 @@ function invalidInput(): BuilderActionFailure {
   return { ok: false, errorKey: 'invalidInput' };
 }
 
+async function revalidateAfterProjectMutation(
+  companyId: string,
+  companySlug: string,
+  projectId: string,
+  projectSlug?: string,
+): Promise<void> {
+  const paths =
+    projectSlug != null
+      ? { projectId, projectSlug, companySlug }
+      : await resolveCatalogPaths(companyId, { projectId });
+
+  if (paths) {
+    revalidateCatalogPaths(paths);
+  } else {
+    revalidateCatalogPaths({});
+  }
+}
+
+async function revalidateAfterInventoryMutation(
+  companyId: string,
+  hint: { projectId?: string; buildingId?: string; floorId?: string },
+): Promise<void> {
+  const paths = await resolveCatalogPaths(companyId, hint);
+  revalidateCatalogPaths(paths ?? {});
+}
+
 export async function createProjectAction(
-  locale: string,
+  _locale: string,
   raw: unknown,
-): Promise<BuilderActionResult<{ projectId: string }>> {
+): Promise<BuilderActionResult<{ projectId: string; projectSlug: string }>> {
   const session = await assertBuilderSession();
   if (!session) {
     return unauthorized();
@@ -59,13 +80,18 @@ export async function createProjectAction(
 
   const result = await createProject(session.companyId, parsed.data);
   if (result.ok) {
-    revalidateBuilderPaths(locale);
+    await revalidateAfterProjectMutation(
+      session.companyId,
+      session.companySlug,
+      result.projectId,
+      result.projectSlug,
+    );
   }
   return result;
 }
 
 export async function updateProjectAction(
-  locale: string,
+  _locale: string,
   raw: unknown,
 ): Promise<BuilderActionResult<{ projectId: string }>> {
   const session = await assertBuilderSession();
@@ -83,13 +109,13 @@ export async function updateProjectAction(
     projectId: parsed.data.projectId,
   });
   if (result.ok) {
-    revalidateBuilderPaths(locale);
+    await revalidateAfterProjectMutation(session.companyId, session.companySlug, result.projectId);
   }
   return result;
 }
 
 export async function setProjectPublicationAction(
-  locale: string,
+  _locale: string,
   raw: unknown,
 ): Promise<BuilderActionResult<{ projectId: string }>> {
   const session = await assertBuilderSession();
@@ -104,13 +130,13 @@ export async function setProjectPublicationAction(
 
   const result = await setProjectPublication(session.companyId, parsed.data);
   if (result.ok) {
-    revalidateBuilderPaths(locale);
+    await revalidateAfterProjectMutation(session.companyId, session.companySlug, result.projectId);
   }
   return result;
 }
 
 export async function createBuildingAction(
-  locale: string,
+  _locale: string,
   raw: unknown,
 ): Promise<BuilderActionResult<{ buildingId: string }>> {
   const session = await assertBuilderSession();
@@ -125,13 +151,15 @@ export async function createBuildingAction(
 
   const result = await createBuilding(session.companyId, parsed.data);
   if (result.ok) {
-    revalidateBuilderPaths(locale);
+    await revalidateAfterInventoryMutation(session.companyId, {
+      projectId: parsed.data.projectId,
+    });
   }
   return result;
 }
 
 export async function updateBuildingAction(
-  locale: string,
+  _locale: string,
   raw: unknown,
 ): Promise<BuilderActionResult<{ buildingId: string }>> {
   const session = await assertBuilderSession();
@@ -146,13 +174,15 @@ export async function updateBuildingAction(
 
   const result = await updateBuilding(session.companyId, parsed.data);
   if (result.ok) {
-    revalidateBuilderPaths(locale);
+    await revalidateAfterInventoryMutation(session.companyId, {
+      buildingId: parsed.data.buildingId,
+    });
   }
   return result;
 }
 
 export async function createFloorAction(
-  locale: string,
+  _locale: string,
   raw: unknown,
 ): Promise<BuilderActionResult<{ floorId: string }>> {
   const session = await assertBuilderSession();
@@ -167,13 +197,15 @@ export async function createFloorAction(
 
   const result = await createFloor(session.companyId, parsed.data);
   if (result.ok) {
-    revalidateBuilderPaths(locale);
+    await revalidateAfterInventoryMutation(session.companyId, {
+      buildingId: parsed.data.buildingId,
+    });
   }
   return result;
 }
 
 export async function updateFloorAction(
-  locale: string,
+  _locale: string,
   raw: unknown,
 ): Promise<BuilderActionResult<{ floorId: string }>> {
   const session = await assertBuilderSession();
@@ -188,13 +220,15 @@ export async function updateFloorAction(
 
   const result = await updateFloor(session.companyId, parsed.data);
   if (result.ok) {
-    revalidateBuilderPaths(locale);
+    await revalidateAfterInventoryMutation(session.companyId, {
+      floorId: parsed.data.floorId,
+    });
   }
   return result;
 }
 
 export async function upsertApartmentAction(
-  locale: string,
+  _locale: string,
   raw: unknown,
 ): Promise<BuilderActionResult<{ apartmentId: string }>> {
   const session = await assertBuilderSession();
@@ -209,7 +243,9 @@ export async function upsertApartmentAction(
 
   const result = await upsertApartment(session.companyId, parsed.data);
   if (result.ok) {
-    revalidateBuilderPaths(locale);
+    await revalidateAfterInventoryMutation(session.companyId, {
+      floorId: parsed.data.floorId,
+    });
   }
   return result;
 }
