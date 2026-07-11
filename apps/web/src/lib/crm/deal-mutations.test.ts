@@ -16,6 +16,7 @@ const mockTx = {
   dealActivity: { create: vi.fn() },
   apartment: {
     findFirst: vi.fn(),
+    findMany: vi.fn(),
     updateMany: vi.fn(),
   },
   companyMember: { findFirst: vi.fn() },
@@ -50,7 +51,13 @@ const COMPANY_ID = 'company-own';
 const FOREIGN_COMPANY_ID = 'company-foreign';
 const DEAL_ID = 'deal-1';
 const APARTMENT_ID = 'apt-1';
+const APARTMENT_PROJECT_ID = 'project-from-apt';
 const ACTOR_ID = 'user-builder';
+
+const CLAIM_WHERE_RESERVED = expect.objectContaining({
+  id: { in: [APARTMENT_ID] },
+  OR: expect.any(Array),
+});
 
 function dealRow(
   overrides: Partial<{
@@ -62,9 +69,15 @@ function dealRow(
   return {
     id: DEAL_ID,
     stage: overrides.stage ?? 'CONTACTED',
-    projectId: overrides.projectId ?? 'project-1',
+    projectId: overrides.projectId === undefined ? 'project-1' : overrides.projectId,
     assignedUserId: null,
     _count: { apartments: overrides.apartmentCount ?? 0 },
+  };
+}
+
+function apartmentWithProject(projectId: string) {
+  return {
+    floor: { building: { projectId } },
   };
 }
 
@@ -76,11 +89,13 @@ describe('updateDealStage', () => {
     vi.mocked(mockTx.apartment.updateMany).mockResolvedValue({ count: 1 });
     vi.mocked(mockTx.dealApartment.findFirst).mockResolvedValue(null);
     vi.mocked(mockTx.apartment.findFirst).mockResolvedValue(null);
+    vi.mocked(mockTx.apartment.findMany).mockResolvedValue([apartmentWithProject('project-1')]);
   });
 
   it('returns apartmentRequired when moving to RESERVED without apartments', async () => {
     vi.mocked(mockTx.deal.findFirst).mockResolvedValue(dealRow({ apartmentCount: 0 }));
     vi.mocked(mockTx.dealApartment.findMany).mockResolvedValue([]);
+    vi.mocked(mockTx.apartment.findMany).mockResolvedValue([]);
 
     const result = await updateDealStage(COMPANY_ID, {
       dealId: DEAL_ID,
@@ -91,7 +106,7 @@ describe('updateDealStage', () => {
     expect(mockTx.deal.update).not.toHaveBeenCalled();
   });
 
-  it('sets apartments RESERVED and writes STATUS_CHANGE when moving to RESERVED', async () => {
+  it('sets apartments RESERVED via guarded claim when moving to RESERVED', async () => {
     vi.mocked(mockTx.deal.findFirst).mockResolvedValue(dealRow({ apartmentCount: 1 }));
     vi.mocked(mockTx.dealApartment.findMany).mockResolvedValue([{ apartmentId: APARTMENT_ID }]);
 
@@ -107,7 +122,7 @@ describe('updateDealStage', () => {
       affectedProjectIds: ['project-1'],
     });
     expect(mockTx.apartment.updateMany).toHaveBeenCalledWith({
-      where: { id: { in: [APARTMENT_ID] } },
+      where: CLAIM_WHERE_RESERVED,
       data: { status: 'RESERVED' },
     });
     expect(mockTx.dealActivity.create).toHaveBeenCalledWith({
@@ -119,7 +134,21 @@ describe('updateDealStage', () => {
     });
   });
 
-  it('sets apartments SOLD when moving to CONVERTED', async () => {
+  it('returns reservationConflict when guarded claim updates fewer rows than expected', async () => {
+    vi.mocked(mockTx.deal.findFirst).mockResolvedValue(dealRow({ apartmentCount: 1 }));
+    vi.mocked(mockTx.dealApartment.findMany).mockResolvedValue([{ apartmentId: APARTMENT_ID }]);
+    vi.mocked(mockTx.apartment.updateMany).mockResolvedValue({ count: 0 });
+
+    const result = await updateDealStage(COMPANY_ID, {
+      dealId: DEAL_ID,
+      stage: 'RESERVED',
+    });
+
+    expect(result).toEqual({ ok: false, errorKey: 'reservationConflict' });
+    expect(mockTx.deal.update).not.toHaveBeenCalled();
+  });
+
+  it('sets apartments SOLD via guarded claim when moving to CONVERTED with own hold', async () => {
     vi.mocked(mockTx.deal.findFirst).mockResolvedValue(
       dealRow({ stage: 'RESERVED', apartmentCount: 1 }),
     );
@@ -132,9 +161,25 @@ describe('updateDealStage', () => {
 
     expect(result.ok).toBe(true);
     expect(mockTx.apartment.updateMany).toHaveBeenCalledWith({
-      where: { id: { in: [APARTMENT_ID] } },
+      where: CLAIM_WHERE_RESERVED,
       data: { status: 'SOLD' },
     });
+  });
+
+  it('returns reservationConflict when CONVERTED claim is blocked by foreign hold', async () => {
+    vi.mocked(mockTx.deal.findFirst).mockResolvedValue(
+      dealRow({ stage: 'APARTMENT_SELECTED', apartmentCount: 1 }),
+    );
+    vi.mocked(mockTx.dealApartment.findMany).mockResolvedValue([{ apartmentId: APARTMENT_ID }]);
+    vi.mocked(mockTx.apartment.updateMany).mockResolvedValue({ count: 0 });
+
+    const result = await updateDealStage(COMPANY_ID, {
+      dealId: DEAL_ID,
+      stage: 'CONVERTED',
+    });
+
+    expect(result).toEqual({ ok: false, errorKey: 'reservationConflict' });
+    expect(mockTx.deal.update).not.toHaveBeenCalled();
   });
 
   it('releases reserved apartments to AVAILABLE when moving to LOST', async () => {
@@ -153,6 +198,27 @@ describe('updateDealStage', () => {
     expect(mockTx.apartment.updateMany).toHaveBeenCalledWith({
       where: { id: APARTMENT_ID, status: 'RESERVED' },
       data: { status: 'AVAILABLE' },
+    });
+  });
+
+  it('returns apartment-derived projectId when deal.projectId is null', async () => {
+    vi.mocked(mockTx.deal.findFirst).mockResolvedValue(
+      dealRow({ projectId: null, apartmentCount: 1 }),
+    );
+    vi.mocked(mockTx.dealApartment.findMany).mockResolvedValue([{ apartmentId: APARTMENT_ID }]);
+    vi.mocked(mockTx.apartment.findMany).mockResolvedValue([
+      apartmentWithProject(APARTMENT_PROJECT_ID),
+    ]);
+
+    const result = await updateDealStage(COMPANY_ID, {
+      dealId: DEAL_ID,
+      stage: 'RESERVED',
+    });
+
+    expect(result).toEqual({
+      ok: true,
+      dealId: DEAL_ID,
+      affectedProjectIds: [APARTMENT_PROJECT_ID],
     });
   });
 
@@ -207,6 +273,11 @@ describe('linkDealApartment / unlinkDealApartment', () => {
       dealRow({ stage: 'RESERVED', apartmentCount: 1 }),
     );
     vi.mocked(mockTx.dealApartment.findUnique).mockResolvedValue({ id: 'link-1' });
+    vi.mocked(mockTx.apartment.findFirst).mockResolvedValue({
+      id: APARTMENT_ID,
+      status: 'RESERVED',
+      floor: { building: { projectId: 'project-1' } },
+    });
     vi.mocked(mockTx.dealApartment.findMany).mockResolvedValue([{ apartmentId: APARTMENT_ID }]);
 
     const result = await unlinkDealApartment(COMPANY_ID, {
@@ -216,6 +287,83 @@ describe('linkDealApartment / unlinkDealApartment', () => {
 
     expect(result).toEqual({ ok: false, errorKey: 'apartmentRequired' });
     expect(mockTx.dealApartment.delete).not.toHaveBeenCalled();
+    expect(mockTx.apartment.updateMany).not.toHaveBeenCalled();
+  });
+
+  it('releases apartment on unlink when no other active holder', async () => {
+    vi.mocked(mockTx.deal.findFirst).mockResolvedValue(
+      dealRow({ stage: 'CONTACTED', apartmentCount: 2 }),
+    );
+    vi.mocked(mockTx.dealApartment.findUnique).mockResolvedValue({ id: 'link-1' });
+    vi.mocked(mockTx.apartment.findFirst).mockResolvedValue({
+      id: APARTMENT_ID,
+      status: 'RESERVED',
+      floor: { building: { projectId: APARTMENT_PROJECT_ID } },
+    });
+    vi.mocked(mockTx.dealApartment.findMany).mockResolvedValue([
+      { apartmentId: APARTMENT_ID },
+      { apartmentId: 'apt-2' },
+    ]);
+    vi.mocked(mockTx.dealApartment.delete).mockResolvedValue({ id: 'link-1' });
+    vi.mocked(mockTx.dealApartment.findFirst).mockResolvedValue(null);
+    vi.mocked(mockTx.apartment.updateMany).mockResolvedValue({ count: 1 });
+
+    const result = await unlinkDealApartment(COMPANY_ID, {
+      dealId: DEAL_ID,
+      apartmentId: APARTMENT_ID,
+    });
+
+    expect(result).toEqual({
+      ok: true,
+      dealId: DEAL_ID,
+      affectedProjectIds: expect.arrayContaining(['project-1', APARTMENT_PROJECT_ID]),
+    });
+    expect(mockTx.dealApartment.delete).toHaveBeenCalled();
+    expect(mockTx.dealApartment.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          apartmentId: APARTMENT_ID,
+          dealId: { not: DEAL_ID },
+        }),
+      }),
+    );
+    expect(mockTx.apartment.updateMany).toHaveBeenCalledWith({
+      where: { id: APARTMENT_ID, status: 'RESERVED' },
+      data: { status: 'AVAILABLE' },
+    });
+  });
+
+  it('does not release apartment on unlink when another active deal holds it', async () => {
+    vi.mocked(mockTx.deal.findFirst).mockResolvedValue(
+      dealRow({ stage: 'CONTACTED', apartmentCount: 2 }),
+    );
+    vi.mocked(mockTx.dealApartment.findUnique).mockResolvedValue({ id: 'link-1' });
+    vi.mocked(mockTx.apartment.findFirst).mockResolvedValue({
+      id: APARTMENT_ID,
+      status: 'RESERVED',
+      floor: { building: { projectId: APARTMENT_PROJECT_ID } },
+    });
+    vi.mocked(mockTx.dealApartment.findMany).mockResolvedValue([
+      { apartmentId: APARTMENT_ID },
+      { apartmentId: 'apt-2' },
+    ]);
+    vi.mocked(mockTx.dealApartment.delete).mockResolvedValue({ id: 'link-1' });
+    vi.mocked(mockTx.dealApartment.findFirst).mockResolvedValue({ id: 'other-link' });
+
+    const result = await unlinkDealApartment(COMPANY_ID, {
+      dealId: DEAL_ID,
+      apartmentId: APARTMENT_ID,
+    });
+
+    expect(result.ok).toBe(true);
+    expect(mockTx.dealApartment.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          dealId: { not: DEAL_ID },
+        }),
+      }),
+    );
+    expect(mockTx.apartment.updateMany).not.toHaveBeenCalled();
   });
 
   it('returns notFound for foreign company deal on unlink', async () => {

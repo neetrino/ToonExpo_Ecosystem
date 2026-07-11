@@ -67,6 +67,26 @@ export async function resolveCatalogPaths(
 }
 
 /**
+ * Resolves catalog path segments for every company-owned project ID (deduped).
+ */
+export async function resolveCatalogPathsForProjects(
+  companyId: string,
+  projectIds: string[],
+): Promise<CatalogPathParams[]> {
+  if (projectIds.length === 0) {
+    return [];
+  }
+
+  const uniqueIds = [...new Set(projectIds)];
+  const projects = await prisma.project.findMany({
+    where: { id: { in: uniqueIds }, companyId },
+    select: { id: true, slug: true, company: { select: { slug: true } } },
+  });
+
+  return projects.map(mapProjectToCatalogPaths);
+}
+
+/**
  * Resolves catalog path segments for admin publication actions (any company).
  */
 export async function resolveAdminCatalogPaths(

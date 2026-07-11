@@ -8,6 +8,7 @@ import {
   findCompanyApartment,
   findCompanyDeal,
   listDealApartmentIds,
+  releaseApartmentsIfUnheld,
 } from './deal-mutation-helpers';
 import type { CrmMutationResult } from './mutation-result';
 
@@ -57,6 +58,7 @@ export async function linkDealApartment(
 
 /**
  * Unlinks an apartment. Refuses when it would leave RESERVED/CONVERTED with zero links.
+ * Releases RESERVED inventory when no other active hold remains.
  */
 export async function unlinkDealApartment(
   companyId: string,
@@ -78,6 +80,11 @@ export async function unlinkDealApartment(
       return { ok: false, errorKey: 'notFound' };
     }
 
+    const apartment = await findCompanyApartment(tx, companyId, input.apartmentId);
+    if (!apartment) {
+      return { ok: false, errorKey: 'notFound' };
+    }
+
     const apartmentIds = await listDealApartmentIds(tx, deal.id);
     if (requiresApartment(deal.stage) && apartmentIds.length <= 1) {
       return { ok: false, errorKey: 'apartmentRequired' };
@@ -89,10 +96,18 @@ export async function unlinkDealApartment(
       },
     });
 
+    await releaseApartmentsIfUnheld(tx, [input.apartmentId], deal.id);
+
+    const projectIds = new Set<string>();
+    if (deal.projectId) {
+      projectIds.add(deal.projectId);
+    }
+    projectIds.add(apartment.projectId);
+
     return {
       ok: true,
       dealId: deal.id,
-      affectedProjectIds: deal.projectId ? [deal.projectId] : [],
+      affectedProjectIds: [...projectIds],
     };
   });
 }

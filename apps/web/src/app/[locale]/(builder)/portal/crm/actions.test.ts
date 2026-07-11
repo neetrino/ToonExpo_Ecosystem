@@ -15,6 +15,7 @@ vi.mock('@/lib/crm/deal-mutations', () => ({
 
 vi.mock('@/lib/shared/resolve-catalog-paths', () => ({
   resolveCatalogPaths: vi.fn(),
+  resolveCatalogPathsForProjects: vi.fn(),
 }));
 
 vi.mock('@/lib/shared/revalidate-catalog-paths', () => ({

@@ -4,11 +4,12 @@ import type { DealStage } from '@toonexpo/domain';
 
 import { STAGES_REQUIRING_APARTMENT } from './constants';
 import {
+  claimApartmentsForDeal,
+  collectAffectedProjectIds,
+  CrmInventoryAbortError,
   findCompanyDeal,
-  hasReservationConflict,
   listDealApartmentIds,
   releaseApartmentsIfUnheld,
-  setApartmentsStatus,
   statusChangeBody,
   type TransactionClient,
 } from './deal-mutation-helpers';
@@ -21,6 +22,10 @@ function requiresApartment(stage: DealStage): boolean {
 /**
  * Inventory sync (doc 04): reserved→RESERVED, converted→SOLD,
  * leave reserved (except to converted)→AVAILABLE if no other hold.
+ *
+ * Claim path uses conditional updateMany (not Serializable): race-safe under
+ * Read Committed; on partial match throws CrmInventoryAbortError to roll back
+ * (same abort-inside-tx pattern as ProvisionAbortError).
  */
 async function syncInventoryForStageChange(
   tx: TransactionClient,
@@ -28,26 +33,27 @@ async function syncInventoryForStageChange(
   from: DealStage,
   to: DealStage,
   apartmentIds: string[],
-): Promise<'ok' | 'reservationConflict'> {
+): Promise<void> {
   if (to === 'RESERVED' && from !== 'RESERVED') {
-    if (await hasReservationConflict(tx, apartmentIds, dealId)) {
-      return 'reservationConflict';
+    const claim = await claimApartmentsForDeal(tx, apartmentIds, 'RESERVED', dealId);
+    if (claim === 'reservationConflict') {
+      throw new CrmInventoryAbortError();
     }
-    await setApartmentsStatus(tx, apartmentIds, 'RESERVED');
-    return 'ok';
+    return;
   }
 
   if (to === 'CONVERTED') {
-    await setApartmentsStatus(tx, apartmentIds, 'SOLD');
-    return 'ok';
+    const claim = await claimApartmentsForDeal(tx, apartmentIds, 'SOLD', dealId);
+    if (claim === 'reservationConflict') {
+      throw new CrmInventoryAbortError();
+    }
+    return;
   }
 
   // Leaving RESERVED to any non-sale stage releases hold (doc 04).
   if (from === 'RESERVED') {
     await releaseApartmentsIfUnheld(tx, apartmentIds, dealId);
   }
-
-  return 'ok';
 }
 
 /**
@@ -58,54 +64,54 @@ export async function updateDealStage(
   input: DealStageUpdateInput,
   actorUserId?: string,
 ): Promise<CrmMutationResult<{ dealId: string; affectedProjectIds: string[] }>> {
-  return prisma.$transaction(async (tx) => {
-    const deal = await findCompanyDeal(tx, companyId, input.dealId);
-    if (!deal) {
-      return { ok: false, errorKey: 'notFound' };
-    }
+  try {
+    return await prisma.$transaction(async (tx) => {
+      const deal = await findCompanyDeal(tx, companyId, input.dealId);
+      if (!deal) {
+        return { ok: false, errorKey: 'notFound' };
+      }
 
-    if (deal.stage === input.stage) {
+      const apartmentIds = await listDealApartmentIds(tx, deal.id);
+      const affectedProjectIds = await collectAffectedProjectIds(tx, deal.projectId, apartmentIds);
+
+      if (deal.stage === input.stage) {
+        return {
+          ok: true,
+          dealId: deal.id,
+          affectedProjectIds,
+        };
+      }
+
+      if (requiresApartment(input.stage) && apartmentIds.length === 0) {
+        return { ok: false, errorKey: 'apartmentRequired' };
+      }
+
+      await syncInventoryForStageChange(tx, deal.id, deal.stage, input.stage, apartmentIds);
+
+      const now = new Date();
+      await tx.deal.update({
+        where: { id: deal.id },
+        data: { stage: input.stage, lastActivityAt: now },
+      });
+      await tx.dealActivity.create({
+        data: {
+          dealId: deal.id,
+          authorUserId: actorUserId,
+          type: 'STATUS_CHANGE',
+          body: statusChangeBody(deal.stage, input.stage),
+        },
+      });
+
       return {
         ok: true,
         dealId: deal.id,
-        affectedProjectIds: deal.projectId ? [deal.projectId] : [],
+        affectedProjectIds,
       };
-    }
-
-    const apartmentIds = await listDealApartmentIds(tx, deal.id);
-    if (requiresApartment(input.stage) && apartmentIds.length === 0) {
-      return { ok: false, errorKey: 'apartmentRequired' };
-    }
-
-    const sync = await syncInventoryForStageChange(
-      tx,
-      deal.id,
-      deal.stage,
-      input.stage,
-      apartmentIds,
-    );
-    if (sync === 'reservationConflict') {
+    });
+  } catch (error) {
+    if (error instanceof CrmInventoryAbortError) {
       return { ok: false, errorKey: 'reservationConflict' };
     }
-
-    const now = new Date();
-    await tx.deal.update({
-      where: { id: deal.id },
-      data: { stage: input.stage, lastActivityAt: now },
-    });
-    await tx.dealActivity.create({
-      data: {
-        dealId: deal.id,
-        authorUserId: actorUserId,
-        type: 'STATUS_CHANGE',
-        body: statusChangeBody(deal.stage, input.stage),
-      },
-    });
-
-    return {
-      ok: true,
-      dealId: deal.id,
-      affectedProjectIds: deal.projectId ? [deal.projectId] : [],
-    };
-  });
+    throw error;
+  }
 }

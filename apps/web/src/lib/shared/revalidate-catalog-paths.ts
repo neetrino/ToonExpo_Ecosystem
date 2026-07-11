@@ -7,21 +7,31 @@ export type CatalogPathParams = {
   projectId?: string;
 };
 
+function revalidateLocaleCatalogPaths(locale: string, params: CatalogPathParams): void {
+  revalidatePath(`/${locale}/portal`);
+  revalidatePath(`/${locale}/portal/projects`);
+  revalidatePath(`/${locale}/projects`);
+
+  if (params.projectId) {
+    revalidatePath(`/${locale}/portal/projects/${params.projectId}`);
+  }
+
+  if (params.companySlug && params.projectSlug) {
+    revalidatePath(`/${locale}/projects/${params.companySlug}/${params.projectSlug}`);
+  }
+}
+
 /**
  * Revalidates builder portal and public catalog paths for every supported locale.
+ * Pass multiple resolved path sets when several projects were touched.
  */
-export function revalidateCatalogPaths(params: CatalogPathParams): void {
+export function revalidateCatalogPaths(params: CatalogPathParams | CatalogPathParams[]): void {
+  const entries = Array.isArray(params) ? params : [params];
+  const pathSets = entries.length > 0 ? entries : [{}];
+
   for (const locale of SUPPORTED_LOCALES) {
-    revalidatePath(`/${locale}/portal`);
-    revalidatePath(`/${locale}/portal/projects`);
-    revalidatePath(`/${locale}/projects`);
-
-    if (params.projectId) {
-      revalidatePath(`/${locale}/portal/projects/${params.projectId}`);
-    }
-
-    if (params.companySlug && params.projectSlug) {
-      revalidatePath(`/${locale}/projects/${params.companySlug}/${params.projectSlug}`);
+    for (const entry of pathSets) {
+      revalidateLocaleCatalogPaths(locale, entry);
     }
   }
 }

@@ -20,7 +20,7 @@ import {
   updateDealStage,
 } from '@/lib/crm/deal-mutations';
 import type { CrmMutationErrorKey, CrmMutationResult } from '@/lib/crm/mutation-result';
-import { resolveCatalogPaths } from '@/lib/shared/resolve-catalog-paths';
+import { resolveCatalogPathsForProjects } from '@/lib/shared/resolve-catalog-paths';
 import { revalidateCatalogPaths } from '@/lib/shared/revalidate-catalog-paths';
 
 export type CrmActionResult<T extends Record<string, unknown> = { dealId: string }> =
@@ -53,10 +53,13 @@ async function revalidateAfterInventoryTouch(
     return;
   }
 
-  for (const projectId of projectIds) {
-    const paths = await resolveCatalogPaths(companyId, { projectId });
-    revalidateCatalogPaths(paths ?? { projectId });
+  const resolved = await resolveCatalogPathsForProjects(companyId, projectIds);
+  if (resolved.length === 0) {
+    revalidateCatalogPaths(projectIds.map((projectId) => ({ projectId })));
+    return;
   }
+
+  revalidateCatalogPaths(resolved);
 }
 
 export async function updateDealStageAction(
@@ -96,7 +99,7 @@ export async function linkDealApartmentAction(
 
   const result = await linkDealApartment(session.companyId, parsed.data);
   if (result.ok) {
-    revalidateCrmPortalPaths();
+    await revalidateAfterInventoryTouch(session.companyId, result.affectedProjectIds);
   }
   return result;
 }
@@ -117,7 +120,7 @@ export async function unlinkDealApartmentAction(
 
   const result = await unlinkDealApartment(session.companyId, parsed.data);
   if (result.ok) {
-    revalidateCrmPortalPaths();
+    await revalidateAfterInventoryTouch(session.companyId, result.affectedProjectIds);
   }
   return result;
 }

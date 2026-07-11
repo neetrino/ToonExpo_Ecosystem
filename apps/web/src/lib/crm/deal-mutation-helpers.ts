@@ -16,6 +16,16 @@ export type CompanyDealRow = {
   _count: { apartments: number };
 };
 
+/** Thrown inside a Prisma transaction to roll back after a partial inventory claim. */
+export class CrmInventoryAbortError extends Error {
+  readonly errorKey = 'reservationConflict' as const;
+
+  constructor() {
+    super('reservationConflict');
+    this.name = 'CrmInventoryAbortError';
+  }
+}
+
 export async function findCompanyDeal(
   tx: TransactionClient,
   companyId: string,
@@ -42,6 +52,34 @@ export async function listDealApartmentIds(
     select: { apartmentId: true },
   });
   return links.map((link) => link.apartmentId);
+}
+
+/**
+ * Union of deal.projectId and project IDs derived from linked apartments.
+ */
+export async function collectAffectedProjectIds(
+  tx: TransactionClient,
+  dealProjectId: string | null,
+  apartmentIds: string[],
+): Promise<string[]> {
+  const projectIds = new Set<string>();
+  if (dealProjectId) {
+    projectIds.add(dealProjectId);
+  }
+
+  if (apartmentIds.length === 0) {
+    return [...projectIds];
+  }
+
+  const apartments = await tx.apartment.findMany({
+    where: { id: { in: apartmentIds } },
+    select: { floor: { select: { building: { select: { projectId: true } } } } },
+  });
+  for (const apartment of apartments) {
+    projectIds.add(apartment.floor.building.projectId);
+  }
+
+  return [...projectIds];
 }
 
 export async function findCompanyApartment(
@@ -97,48 +135,50 @@ export async function isCompanyProject(
 }
 
 /**
- * Blocks when another deal already holds the apartment (doc 04 Reservation Conflict).
+ * Race-safe inventory claim under Read Committed (preferred over Serializable+retry).
+ * Conditional updateMany: only AVAILABLE rows, or rows held solely by this deal
+ * (linked to dealId with no other active RESERVED/CONVERTED holder).
+ * Partial matches must abort the surrounding transaction so changed rows roll back.
  */
-export async function hasReservationConflict(
+export async function claimApartmentsForDeal(
   tx: TransactionClient,
   apartmentIds: string[],
-  excludeDealId: string,
-): Promise<boolean> {
+  status: 'RESERVED' | 'SOLD',
+  dealId: string,
+): Promise<'ok' | 'reservationConflict'> {
   if (apartmentIds.length === 0) {
-    return false;
+    return 'ok';
   }
 
-  const conflictingLink = await tx.dealApartment.findFirst({
-    where: {
-      apartmentId: { in: apartmentIds },
-      dealId: { not: excludeDealId },
-      deal: { stage: { in: [...ACTIVE_INVENTORY_HOLD_STAGES] } },
-    },
-    select: { id: true },
-  });
-  if (conflictingLink) {
-    return true;
-  }
-
-  const soldOrForeignReserved = await tx.apartment.findFirst({
+  const result = await tx.apartment.updateMany({
     where: {
       id: { in: apartmentIds },
       OR: [
+        { status: 'AVAILABLE' },
         {
-          status: 'SOLD',
-          // Allow reclaim when this deal already links the apartment (e.g. CONVERTED→RESERVED).
-          dealLinks: { none: { dealId: excludeDealId } },
-        },
-        {
-          status: 'RESERVED',
-          dealLinks: { none: { dealId: excludeDealId } },
+          status: { in: ['RESERVED', 'SOLD'] },
+          AND: [
+            { dealLinks: { some: { dealId } } },
+            {
+              dealLinks: {
+                none: {
+                  dealId: { not: dealId },
+                  deal: { stage: { in: [...ACTIVE_INVENTORY_HOLD_STAGES] } },
+                },
+              },
+            },
+          ],
         },
       ],
     },
-    select: { id: true },
+    data: { status },
   });
 
-  return soldOrForeignReserved !== null;
+  if (result.count < apartmentIds.length) {
+    return 'reservationConflict';
+  }
+
+  return 'ok';
 }
 
 /**
@@ -167,20 +207,6 @@ export async function releaseApartmentsIfUnheld(
       data: { status: 'AVAILABLE' },
     });
   }
-}
-
-export async function setApartmentsStatus(
-  tx: TransactionClient,
-  apartmentIds: string[],
-  status: ApartmentStatus,
-): Promise<void> {
-  if (apartmentIds.length === 0) {
-    return;
-  }
-  await tx.apartment.updateMany({
-    where: { id: { in: apartmentIds } },
-    data: { status },
-  });
 }
 
 export function statusChangeBody(from: DealStage, to: DealStage): string {
