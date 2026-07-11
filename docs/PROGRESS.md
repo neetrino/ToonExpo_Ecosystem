@@ -2,7 +2,26 @@
 
 ## Current Status
 
-Sprint 2 complete. Public catalog (builder company, projects/buildings/floors/apartments, media metadata, publication status, public pages) is live; quality scripts pass.
+Sprint 3 complete. Builder portal shell, inventory CRUD with side sheets, admin companies/projects with publication moderation, and security audit fixes are live; quality scripts pass.
+
+## Sprint 3 — COMPLETE
+
+- **Portal shell** — Builder layout, nav, overview stats, session-bound company context.
+- **Builder inventory CRUD** — Projects, buildings, floors, apartments with side-sheet forms.
+- **Admin companies/projects** — Company provisioning, project list, publication moderation.
+- **Security audit + fixes** — Deterministic company resolution, catalog path revalidation, schema hardening, transactional creates, ownership tests.
+
+### Deferred (Sprint 3 follow-ups)
+
+- Admin acting-on-behalf inside portal with audit trail.
+- Company switcher UI (v1 binds to earliest membership).
+- Integration tests with two real companies.
+
+### Deferred (Sprint 2 follow-ups)
+
+- Catalog pagination on project list.
+- `@@index([status, createdAt])` on Project for list queries.
+- MediaAsset XOR constraint (project vs apartment ownership).
 
 ## Sprint 2 — COMPLETE
 
@@ -11,13 +30,6 @@ Sprint 2 complete. Public catalog (builder company, projects/buildings/floors/ap
 - **Media metadata** — Project and apartment media assets with sort order and alt text.
 - **Publication status** — Only `PUBLISHED` projects appear on public catalog routes.
 - **Public pages** — `/projects` list and `/projects/[companySlug]/[projectSlug]` detail with hy/ru/en i18n.
-
-### Deferred (Sprint 2 follow-ups)
-
-- Catalog pagination on project list.
-- `@@index([status, createdAt])` on Project for list queries.
-- MediaAsset XOR constraint (project vs apartment ownership).
-- Revalidation strategy when admin publish flow arrives.
 
 ## Sprint 1 — COMPLETE
 
@@ -54,7 +66,7 @@ Sprint 2 complete. Public catalog (builder company, projects/buildings/floors/ap
 
 ## Next
 
-**Sprint 3 — Builder Portal And Admin Setup**
+**Sprint 4 — QR Requests Constructor CRM**
 
 ## Open (non-blocking)
 
