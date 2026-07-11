@@ -499,7 +499,7 @@ Mobile priority:
 
 Security baseline:
 
-- Auth.js 5 or confirmed auth provider for sessions;
+- Auth.js 5 with database sessions;
 - httpOnly secure cookies;
 - buyer self-registration only for buyer/visitor accounts;
 - builder, partner, bank, admin and entrance accounts are provisioned by BigProjects Admin or BOS;
@@ -549,7 +549,7 @@ Scale path:
 
 1. Keep the modular monolith.
 2. Add database indexes based on real slow queries.
-3. Add Upstash Redis only when caching, queues, rate-limit storage or multi-instance coordination become necessary.
+3. Add Upstash Redis only when caching, queues, rate-limit storage or multi-instance coordination become necessary (prefer Upstash over self-hosted Redis).
 4. Move heavy background work into a worker only when a real workload appears.
 5. Keep QR, provisioning and request creation idempotent so retries are safe.
 6. Consider dedicated search only if PostgreSQL search becomes insufficient.

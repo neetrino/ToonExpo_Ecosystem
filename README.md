@@ -47,7 +47,7 @@ Start here:
 
 Size C — large monorepo (`apps/*`, `packages/*`).
 
-Production code should start only after `docs/TECH_CARD.md` stack choices are confirmed.
+`docs/TECH_CARD.md` stack choices are confirmed (2026-07-11). Next step: Sprint 0 monorepo scaffold.
 
 ## Rule
 

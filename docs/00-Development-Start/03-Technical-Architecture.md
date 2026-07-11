@@ -2,14 +2,19 @@
 
 ## Recommended Stack
 
-Pending confirmation:
+Confirmed 2026-07-11 (see `docs/TECH_CARD.md`):
 
 - Next.js App Router for `apps/web`;
 - NestJS REST API for `apps/api`;
 - Google Cloud Run hosts `apps/api`;
 - PostgreSQL + Prisma;
 - pnpm workspaces + Turborepo;
-- next-intl for Armenian, Russian and English;
+- next-intl for Armenian, Russian and English (locales as code constants);
+- Auth.js 5 + database sessions;
+- Zod validation shared via `packages/contracts`;
+- API-signed uploads to Cloudflare R2;
+- PWA out of scope;
+- Upstash Redis only when needed later;
 - shared packages for domain/contracts/db/ui/shared/config.
 
 ## Module Boundaries
