@@ -1,4 +1,4 @@
-import type { PublicationStatus } from '@toonexpo/domain';
+import type { ApartmentStatus, PublicationStatus } from '@toonexpo/domain';
 import { prisma } from '@toonexpo/db';
 
 export type ProjectStatusCounts = {
@@ -66,4 +66,79 @@ function mapProjectStatusCounts(
   }
 
   return counts;
+}
+
+export type BuilderProjectApartment = {
+  id: string;
+  code: string;
+  rooms: number | null;
+  areaSqm: number | null;
+  priceAmd: number | null;
+  status: ApartmentStatus;
+};
+
+export type BuilderProjectFloor = {
+  id: string;
+  name: string;
+  level: number;
+  apartments: BuilderProjectApartment[];
+};
+
+export type BuilderProjectBuilding = {
+  id: string;
+  name: string;
+  floors: BuilderProjectFloor[];
+};
+
+export type BuilderProjectDetail = {
+  id: string;
+  name: string;
+  description: string | null;
+  city: string | null;
+  address: string | null;
+  status: PublicationStatus;
+  buildings: BuilderProjectBuilding[];
+};
+
+export async function loadCompanyProjectDetail(
+  companyId: string,
+  projectId: string,
+): Promise<BuilderProjectDetail | null> {
+  return prisma.project.findFirst({
+    where: { id: projectId, companyId },
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      city: true,
+      address: true,
+      status: true,
+      buildings: {
+        select: {
+          id: true,
+          name: true,
+          floors: {
+            select: {
+              id: true,
+              name: true,
+              level: true,
+              apartments: {
+                select: {
+                  id: true,
+                  code: true,
+                  rooms: true,
+                  areaSqm: true,
+                  priceAmd: true,
+                  status: true,
+                },
+                orderBy: { code: 'asc' },
+              },
+            },
+            orderBy: { level: 'asc' },
+          },
+        },
+        orderBy: { name: 'asc' },
+      },
+    },
+  });
 }

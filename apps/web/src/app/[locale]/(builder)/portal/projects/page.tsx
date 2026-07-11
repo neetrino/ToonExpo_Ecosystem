@@ -1,17 +1,13 @@
-import type { PublicationStatus } from '@toonexpo/domain';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { assertBuilderSession } from '@/lib/builder/assert-builder-session';
 import { loadCompanyProjects } from '@/lib/builder/queries';
 
+import { NewProjectButton } from './new-project-button';
+import { ProjectsTable } from './projects-table';
+
 type PortalProjectsPageProps = {
   params: Promise<{ locale: string }>;
-};
-
-const STATUS_BADGE_CLASS: Record<PublicationStatus, string> = {
-  DRAFT: 'portal-badge portal-badge--draft',
-  PUBLISHED: 'portal-badge portal-badge--published',
-  ARCHIVED: 'portal-badge portal-badge--archived',
 };
 
 export default async function PortalProjectsPage({ params }: PortalProjectsPageProps) {
@@ -33,38 +29,37 @@ export default async function PortalProjectsPage({ params }: PortalProjectsPageP
 
   return (
     <section>
-      <h2 className="portal-page__title">{t('title')}</h2>
+      <div className="portal-page__header">
+        <h2 className="portal-page__title">{t('title')}</h2>
+        <div className="portal-toolbar">
+          <NewProjectButton locale={locale} label={t('newProject')} />
+        </div>
+      </div>
+
       {projects.length === 0 ? (
         <p className="portal-empty">{t('empty')}</p>
       ) : (
-        <div className="portal-table-wrap">
-          <table className="portal-table">
-            <thead>
-              <tr>
-                <th>{t('columns.name')}</th>
-                <th>{t('columns.city')}</th>
-                <th>{t('columns.status')}</th>
-                <th>{t('columns.buildings')}</th>
-                <th>{t('columns.updatedAt')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {projects.map((project) => (
-                <tr key={project.id}>
-                  <td>{project.name}</td>
-                  <td>{project.city ?? t('noCity')}</td>
-                  <td>
-                    <span className={STATUS_BADGE_CLASS[project.status]}>
-                      {tStatus(project.status)}
-                    </span>
-                  </td>
-                  <td>{project.buildingsCount}</td>
-                  <td>{dateFormatter.format(project.updatedAt)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <ProjectsTable
+          locale={locale}
+          projects={projects}
+          labels={{
+            noCity: t('noCity'),
+            columns: {
+              name: t('columns.name'),
+              city: t('columns.city'),
+              status: t('columns.status'),
+              buildings: t('columns.buildings'),
+              updatedAt: t('columns.updatedAt'),
+              actions: t('columns.actions'),
+            },
+          }}
+          statusLabels={{
+            DRAFT: tStatus('DRAFT'),
+            PUBLISHED: tStatus('PUBLISHED'),
+            ARCHIVED: tStatus('ARCHIVED'),
+          }}
+          formatDate={(date) => dateFormatter.format(date)}
+        />
       )}
     </section>
   );

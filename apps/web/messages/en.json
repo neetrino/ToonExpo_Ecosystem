@@ -118,21 +118,116 @@
         "archived": "Archived"
       }
     },
+    "errors": {
+      "unauthorized": "You are not authorized to perform this action.",
+      "invalidInput": "Please check the fields and try again.",
+      "notFound": "The requested item was not found.",
+      "levelTaken": "This floor level is already in use for this building.",
+      "codeTaken": "This apartment code is already in use on this floor.",
+      "nameTaken": "A project with this name already exists."
+    },
     "projects": {
       "title": "Projects",
       "empty": "No projects yet.",
+      "newProject": "New project",
       "noCity": "—",
       "columns": {
         "name": "Name",
         "city": "City",
         "status": "Status",
         "buildings": "Buildings",
-        "updatedAt": "Updated"
+        "updatedAt": "Updated",
+        "actions": "Actions"
       },
       "status": {
         "DRAFT": "Draft",
         "PUBLISHED": "Published",
         "ARCHIVED": "Archived"
+      }
+    },
+    "publication": {
+      "actions": {
+        "publish": "Publish",
+        "archive": "Archive",
+        "draft": "Back to draft"
+      },
+      "confirm": {
+        "publish": "Publish this project? It will become visible in the public catalog.",
+        "archive": "Archive this project? It will be hidden from the public catalog.",
+        "draft": "Move this project back to draft? It will be hidden from the public catalog."
+      }
+    },
+    "projectForm": {
+      "create": "New project",
+      "edit": "Edit project",
+      "submit": "Save",
+      "fields": {
+        "name": "Name",
+        "city": "City",
+        "address": "Address",
+        "description": "Description"
+      }
+    },
+    "buildingForm": {
+      "create": "Add building",
+      "edit": "Edit building",
+      "submit": "Save",
+      "fields": {
+        "name": "Name"
+      }
+    },
+    "floorForm": {
+      "create": "Add floor",
+      "edit": "Edit floor",
+      "submit": "Save",
+      "fields": {
+        "name": "Name",
+        "level": "Level",
+        "levelHint": "Integer from -5 to 100. Must be unique within the building."
+      }
+    },
+    "apartmentForm": {
+      "create": "Add apartment",
+      "edit": "Edit apartment",
+      "submit": "Save",
+      "fields": {
+        "code": "Unit code",
+        "rooms": "Rooms",
+        "areaSqm": "Area (m²)",
+        "priceAmd": "Price (AMD)",
+        "status": "Status"
+      }
+    },
+    "apartmentStatus": {
+      "AVAILABLE": "Available",
+      "RESERVED": "Reserved",
+      "SOLD": "Sold"
+    },
+    "projectDetail": {
+      "editProject": "Edit project",
+      "buildings": {
+        "title": "Buildings",
+        "addBuilding": "Add building",
+        "empty": "No buildings yet.",
+        "editBuilding": "Edit",
+        "addFloor": "Add floor",
+        "emptyFloors": "No floors yet.",
+        "level": "level",
+        "editFloor": "Edit floor"
+      },
+      "apartments": {
+        "title": "Apartments",
+        "addApartment": "Add apartment",
+        "edit": "Edit",
+        "noValue": "—",
+        "columns": {
+          "code": "Unit",
+          "rooms": "Rooms",
+          "areaSqm": "Area (m²)",
+          "priceAmd": "Price",
+          "status": "Status",
+          "actions": "Actions"
+        }
       }
     }
   },
