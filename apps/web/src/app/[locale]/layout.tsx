@@ -5,6 +5,7 @@ import { getMessages, setRequestLocale } from 'next-intl/server';
 import type { ReactNode } from 'react';
 
 import { AppShell } from '@/components/app-shell';
+import { AuthNav } from '@/components/auth/auth-nav';
 
 type LocaleLayoutProps = {
   children: ReactNode;
@@ -27,7 +28,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
     <html lang={locale}>
       <body>
         <NextIntlClientProvider messages={messages}>
-          <AppShell>{children}</AppShell>
+          <AppShell authSlot={<AuthNav locale={locale} />}>{children}</AppShell>
         </NextIntlClientProvider>
       </body>
     </html>

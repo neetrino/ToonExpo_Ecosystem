@@ -49,6 +49,18 @@ pnpm db:migrate        # requires DATABASE_URL
 pnpm dev               # web :3000, api :4000
 ```
 
+### Environment variables
+
+All secrets live in the **monorepo root `.env`** (single source of truth), not in
+per-app `.env` files. Both apps load it explicitly:
+
+- `apps/api` loads it in `src/main.ts` via `dotenv`.
+- `apps/web` loads it in `next.config.ts` via `dotenv` (Next.js otherwise only
+  reads env files from the app directory).
+
+Auth requires `DATABASE_URL`, `AUTH_SECRET` (≥32 chars), and `AUTH_URL` in the
+root `.env`.
+
 Useful commands:
 
 ```bash

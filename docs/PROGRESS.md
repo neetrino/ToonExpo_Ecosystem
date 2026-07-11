@@ -2,9 +2,13 @@
 
 ## Current Status
 
-Sprint 0 scaffold in progress / largely complete.
+Sprint 0 scaffold complete. Sprint 1 — Auth core done.
 
 Monorepo apps and packages exist; quality scripts pass (`lint`, `typecheck`, `test`, `build`).
+
+Auth.js 5 with database sessions and a Credentials provider is wired into `apps/web`:
+buyer self-registration, email+password login, logout, and role-aware route
+protection (middleware coarse check + server-side layout guards).
 
 ## Completed
 
@@ -21,6 +25,10 @@ Monorepo apps and packages exist; quality scripts pass (`lint`, `typecheck`, `te
 - API `/health` + Swagger `/docs`.
 - Side sheet UI primitive.
 - Env validation (Zod) for API; web env helper.
+- Sprint 1 auth core: Auth.js 5 + Prisma adapter, DB sessions (credentials
+  workaround via `jwt.encode` creating a Session row), buyer registration
+  (argon2id, User + BuyerProfile transaction), login/register pages (i18n
+  hy/ru/en), logout, and route protection (middleware + layout guards).
 
 ## Confirmed Stack (summary)
 
@@ -32,10 +40,11 @@ Monorepo apps and packages exist; quality scripts pass (`lint`, `typecheck`, `te
 
 ## Next
 
-1. Finish Prisma migrate against Neon (if not applied yet).
-2. Sprint 1: Auth.js sessions, roles, buyer registration, protected routes.
+1. Sprint 1 (task 2): polish auth UI/UX (styling, validation feedback, loading).
+2. Rate limiting on sign-in/registration (Upstash Redis) — TODO left in `auth.ts`.
 3. Wire API auth verification against DB sessions.
-4. Staging/prod domain plan when ready to deploy.
+4. Email/phone verification and password reset (deferred from v1).
+5. Staging/prod domain plan when ready to deploy.
 
 ## Open (non-blocking)
 

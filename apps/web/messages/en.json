@@ -27,5 +27,36 @@
       "title": "Admin",
       "description": "Protected shell placeholder for Sprint 0."
     }
+  },
+  "auth": {
+    "signInNav": "Sign in",
+    "fields": {
+      "name": "Full name",
+      "phone": "Phone",
+      "email": "Email",
+      "password": "Password"
+    },
+    "login": {
+      "title": "Sign in",
+      "subtitle": "Access your ToonExpo account.",
+      "submit": "Sign in",
+      "registerPrompt": "No account yet?",
+      "registerLink": "Create one"
+    },
+    "register": {
+      "title": "Create account",
+      "subtitle": "Register as a buyer to explore projects.",
+      "submit": "Create account",
+      "loginPrompt": "Already have an account?",
+      "loginLink": "Sign in"
+    },
+    "logout": {
+      "submit": "Sign out"
+    },
+    "errors": {
+      "invalidInput": "Please check the highlighted fields and try again.",
+      "emailTaken": "This email is already registered.",
+      "invalidCredentials": "Invalid email or password."
+    }
   }
 }

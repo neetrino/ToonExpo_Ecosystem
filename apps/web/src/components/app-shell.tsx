@@ -8,9 +8,10 @@ import { Link } from '@/i18n/navigation';
 
 type AppShellProps = {
   children: ReactNode;
+  authSlot?: ReactNode;
 };
 
-export function AppShell({ children }: AppShellProps) {
+export function AppShell({ children, authSlot }: AppShellProps) {
   const t = useTranslations();
   const locale = useLocale();
 
@@ -26,6 +27,7 @@ export function AppShell({ children }: AppShellProps) {
           <Link href="/portal">{t('nav.builder')}</Link>
           <Link href="/admin">{t('nav.admin')}</Link>
           <LocaleSwitcher currentLocale={locale} />
+          {authSlot}
         </nav>
       </header>
       <main>{children}</main>

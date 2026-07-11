@@ -27,5 +27,36 @@
       "title": "Админ",
       "description": "Защищённая заготовка раздела для Sprint 0."
     }
+  },
+  "auth": {
+    "signInNav": "Войти",
+    "fields": {
+      "name": "Имя и фамилия",
+      "phone": "Телефон",
+      "email": "Эл. почта",
+      "password": "Пароль"
+    },
+    "login": {
+      "title": "Вход",
+      "subtitle": "Войдите в свой аккаунт ToonExpo.",
+      "submit": "Войти",
+      "registerPrompt": "Ещё нет аккаунта?",
+      "registerLink": "Создать"
+    },
+    "register": {
+      "title": "Создать аккаунт",
+      "subtitle": "Зарегистрируйтесь как покупатель, чтобы смотреть проекты.",
+      "submit": "Создать аккаунт",
+      "loginPrompt": "Уже есть аккаунт?",
+      "loginLink": "Войти"
+    },
+    "logout": {
+      "submit": "Выйти"
+    },
+    "errors": {
+      "invalidInput": "Проверьте выделенные поля и попробуйте снова.",
+      "emailTaken": "Эта почта уже зарегистрирована.",
+      "invalidCredentials": "Неверная почта или пароль."
+    }
   }
 }

@@ -27,5 +27,36 @@
       "title": "Ադմին",
       "description": "Պաշտպանված բաժնի սկզբնական տարբերակ Sprint 0-ի համար։"
     }
+  },
+  "auth": {
+    "signInNav": "Մուտք",
+    "fields": {
+      "name": "Անուն Ազգանուն",
+      "phone": "Հեռախոս",
+      "email": "Էլ. փոստ",
+      "password": "Գաղտնաբառ"
+    },
+    "login": {
+      "title": "Մուտք",
+      "subtitle": "Մուտք գործեք ձեր ToonExpo հաշիվ։",
+      "submit": "Մուտք",
+      "registerPrompt": "Դեռ հաշիվ չունե՞ք",
+      "registerLink": "Ստեղծել"
+    },
+    "register": {
+      "title": "Ստեղծել հաշիվ",
+      "subtitle": "Գրանցվեք որպես գնորդ՝ նախագծերը դիտելու համար։",
+      "submit": "Ստեղծել հաշիվ",
+      "loginPrompt": "Արդեն ունե՞ք հաշիվ",
+      "loginLink": "Մուտք"
+    },
+    "logout": {
+      "submit": "Ելք"
+    },
+    "errors": {
+      "invalidInput": "Ստուգեք ընդգծված դաշտերը և կրկին փորձեք։",
+      "emailTaken": "Այս էլ. փոստն արդեն գրանցված է։",
+      "invalidCredentials": "Սխալ էլ. փոստ կամ գաղտնաբառ։"
+    }
   }
 }

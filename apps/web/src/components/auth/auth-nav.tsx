@@ -1,0 +1,21 @@
+import { getTranslations } from 'next-intl/server';
+
+import { auth } from '@/auth';
+import { LogoutButton } from '@/components/auth/logout-button';
+import { Link } from '@/i18n/navigation';
+import { signOutAction } from '@/lib/auth/session-actions';
+
+type AuthNavProps = {
+  locale: string;
+};
+
+export async function AuthNav({ locale }: AuthNavProps) {
+  const session = await auth();
+  const t = await getTranslations('auth');
+
+  if (!session?.user) {
+    return <Link href="/login">{t('signInNav')}</Link>;
+  }
+
+  return <LogoutButton action={signOutAction.bind(null, locale)} />;
+}
