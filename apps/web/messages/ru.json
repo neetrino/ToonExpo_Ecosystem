@@ -323,13 +323,71 @@
         "rooms": "Комнаты",
         "areaSqm": "Площадь (м²)",
         "priceAmd": "Цена",
-        "status": "Статус"
+        "status": "Статус",
+        "request": "Запрос"
+      }
+    },
+    "request": {
+      "ctaProject": "Заинтересован",
+      "ctaApartment": "Заинтересован",
+      "titleProject": "Запросить контакт",
+      "titleApartment": "Запрос по квартире {code}",
+      "contextProject": "Проект: {project}",
+      "contextApartment": "Проект: {project} · Квартира {code}",
+      "submit": "Отправить запрос",
+      "close": "Закрыть",
+      "successNew": "Ваш запрос отправлен. Застройщик свяжется с вами.",
+      "successDeduped": "У нас уже есть ваш запрос по этому проекту. Застройщик уведомлён об обновлении.",
+      "successHint": "Отслеживайте запросы в личном кабинете покупателя после входа.",
+      "fields": {
+        "name": "ФИО",
+        "phone": "Телефон",
+        "email": "Email",
+        "message": "Сообщение (необязательно)"
+      },
+      "errors": {
+        "invalidInput": "Проверьте поля и попробуйте снова.",
+        "notFound": "Этот проект недоступен для запросов."
       }
     },
     "apartmentStatus": {
       "AVAILABLE": "Свободна",
       "RESERVED": "Забронирована",
       "SOLD": "Продана"
+    }
+  },
+  "buyer": {
+    "account": {
+      "title": "Мои запросы",
+      "subtitle": "Отслеживайте запросы на контакт с застройщиками.",
+      "empty": "Вы ещё не отправляли запросов. Просмотрите проекты, чтобы начать.",
+      "noValue": "—",
+      "columns": {
+        "company": "Застройщик",
+        "project": "Проект",
+        "stage": "Статус",
+        "source": "Источник",
+        "createdAt": "Отправлен",
+        "lastActivityAt": "Обновлён"
+      },
+      "stages": {
+        "NEW_REQUEST": "Новый запрос",
+        "ASSIGNED": "Назначен",
+        "CONTACTED": "Связались",
+        "FOLLOW_UP_NEEDED": "Нужен повторный контакт",
+        "APARTMENT_SELECTED": "Квартира выбрана",
+        "RESERVED": "Забронировано",
+        "CONVERTED": "Конвертирован",
+        "CLOSED": "Закрыт",
+        "LOST": "Потерян"
+      },
+      "sources": {
+        "PROJECT_PAGE": "Страница проекта",
+        "APARTMENT_PAGE": "Страница квартиры",
+        "BUILDER_QR_SCAN": "QR-скан",
+        "MANUAL_BUILDER_ENTRY": "Ввод застройщиком",
+        "EVENT_INTERACTION": "Мероприятие"
+      }
     }
   }
 }

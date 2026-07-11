@@ -4,6 +4,8 @@ import type { ApartmentStatus } from '@toonexpo/domain';
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
+import { auth } from '@/auth';
+import { ProjectRequestCta } from '@/components/public-request/public-request-sheet';
 import { getPublishedProjectBySlug } from '@/lib/catalog/queries';
 
 import { ProjectBuildings } from './project-buildings';
@@ -20,6 +22,7 @@ function ProjectDetailView({
   statusLabels,
   galleryLabel,
   buildingsLabel,
+  prefill,
 }: {
   project: PublicProjectDetail;
   locale: string;
@@ -29,11 +32,13 @@ function ProjectDetailView({
     areaSqm: string;
     priceAmd: string;
     status: string;
+    request: string;
     noValue: string;
   };
   statusLabels: Record<ApartmentStatus, string>;
   galleryLabel: string;
   buildingsLabel: string;
+  prefill?: { name?: string; email?: string; phone?: string };
 }) {
   return (
     <article className="catalog-detail">
@@ -48,6 +53,14 @@ function ProjectDetailView({
         {project.description ? (
           <p className="catalog-detail__description">{project.description}</p>
         ) : null}
+        <div className="catalog-detail__actions">
+          <ProjectRequestCta
+            locale={locale}
+            projectId={project.id}
+            projectName={project.name}
+            prefill={prefill}
+          />
+        </div>
       </header>
 
       <ProjectGallery
@@ -58,9 +71,12 @@ function ProjectDetailView({
       <ProjectBuildings
         buildings={project.buildings}
         locale={locale}
+        projectId={project.id}
+        projectName={project.name}
         tableLabels={tableLabels}
         statusLabels={statusLabels}
         buildingsLabel={buildingsLabel}
+        prefill={prefill}
       />
     </article>
   );
@@ -82,12 +98,21 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
     notFound();
   }
 
+  const session = await auth();
+  const prefill = session?.user
+    ? {
+        name: session.user.name ?? undefined,
+        email: session.user.email ?? undefined,
+      }
+    : undefined;
+
   const tableLabels = {
     code: t('detail.table.code'),
     rooms: t('detail.table.rooms'),
     areaSqm: t('detail.table.areaSqm'),
     priceAmd: t('detail.table.priceAmd'),
     status: t('detail.table.status'),
+    request: t('detail.table.request'),
     noValue: t('detail.noValue'),
   };
   const statusLabels: Record<ApartmentStatus, string> = {
@@ -105,6 +130,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
         statusLabels={statusLabels}
         galleryLabel={t('detail.gallery')}
         buildingsLabel={t('detail.buildings')}
+        prefill={prefill}
       />
     </section>
   );

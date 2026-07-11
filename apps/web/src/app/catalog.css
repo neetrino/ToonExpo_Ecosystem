@@ -239,3 +239,126 @@
   background: rgba(148, 163, 184, 0.15);
   color: #cbd5e1;
 }
+
+.catalog-detail__actions {
+  margin-top: 1rem;
+}
+
+.catalog-request-btn {
+  background: transparent;
+  border: 1px solid rgba(61, 139, 253, 0.45);
+  border-radius: 0.375rem;
+  color: var(--te-accent);
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.25rem 0.5rem;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.catalog-request-btn:hover {
+  background: rgba(61, 139, 253, 0.12);
+  border-color: var(--te-accent);
+}
+
+.catalog-request-form__context {
+  color: var(--te-muted);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.catalog-request-form__honeypot {
+  height: 0;
+  overflow: hidden;
+  position: absolute;
+  width: 0;
+}
+
+.catalog-request-success {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.catalog-request-success__message {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.catalog-request-success__context {
+  color: var(--te-muted);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.catalog-request-success__hint {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.buyer-account {
+  margin: 0 auto;
+  max-width: 72rem;
+  padding: 3rem 1.5rem;
+}
+
+.buyer-account__header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.buyer-account__title {
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.buyer-account__subtitle {
+  color: var(--te-muted);
+  font-size: 1rem;
+  margin: 0;
+}
+
+.buyer-account__empty {
+  color: var(--te-muted);
+  font-size: 1rem;
+}
+
+.buyer-deals-table-wrap {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  overflow-x: auto;
+}
+
+.buyer-deals-table {
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  min-width: 48rem;
+  text-align: left;
+  width: 100%;
+}
+
+.buyer-deals-table thead {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--te-muted);
+}
+
+.buyer-deals-table th,
+.buyer-deals-table td {
+  padding: 0.75rem 1rem;
+}
+
+.buyer-deals-table tbody tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.buyer-deals-table tbody tr:last-child {
+  border-bottom: none;
+}

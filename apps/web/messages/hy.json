@@ -323,13 +323,71 @@
         "rooms": "Սենյակներ",
         "areaSqm": "Մակերես (մ²)",
         "priceAmd": "Գին",
-        "status": "Կարգավիճակ"
+        "status": "Կարգավիճակ",
+        "request": "Հարցում"
+      }
+    },
+    "request": {
+      "ctaProject": "Հետաքրքրված եմ",
+      "ctaApartment": "Հետաքրքրված եմ",
+      "titleProject": "Կապի հարցում",
+      "titleApartment": "Հարցում {code} բնակարանի համար",
+      "contextProject": "Նախագիծ՝ {project}",
+      "contextApartment": "Նախագիծ՝ {project} · Բնակարան {code}",
+      "submit": "Ուղարկել հարցում",
+      "close": "Փակել",
+      "successNew": "Ձեր հարցումը ուղարկված է։ Կառուցապատողը շուտով կկապվի ձեզ հետ։",
+      "successDeduped": "Այս նախագծի վերաբերյալ ձեր հարցումն արդեն ունենք։ Կառուցապատողը տեղեկացված է թարմացման մասին։",
+      "successHint": "Մուտք գործելուց հետո հարցումները կարող եք հետևել գնորդի հաշվում։",
+      "fields": {
+        "name": "Անուն",
+        "phone": "Հեռախոս",
+        "email": "Էլ․ փոստ",
+        "message": "Հաղորդագրություն (ընտրովի)"
+      },
+      "errors": {
+        "invalidInput": "Ստուգեք դաշտերը և կրկին փորձեք։",
+        "notFound": "Այս նախագիծը հասանելի չէ հարցումների համար։"
       }
     },
     "apartmentStatus": {
       "AVAILABLE": "Ազատ",
       "RESERVED": "Ամրագրված",
       "SOLD": "Վաճառված"
+    }
+  },
+  "buyer": {
+    "account": {
+      "title": "Իմ հարցումները",
+      "subtitle": "Հետևեք կառուցապատողներին ուղարկված կապի հարցումներին։",
+      "empty": "Դեռ հարցումներ չեք ուղարկել։ Սկսելու համար դիտեք նախագծերը։",
+      "noValue": "—",
+      "columns": {
+        "company": "Կառուցապատող",
+        "project": "Նախագիծ",
+        "stage": "Կարգավիճակ",
+        "source": "Աղբյուր",
+        "createdAt": "Ուղարկված",
+        "lastActivityAt": "Վերջին թարմացում"
+      },
+      "stages": {
+        "NEW_REQUEST": "Նոր հարցում",
+        "ASSIGNED": "Նշանակված",
+        "CONTACTED": "Կապվել են",
+        "FOLLOW_UP_NEEDED": "Պետք է կրկին կապ",
+        "APARTMENT_SELECTED": "Բնակարան ընտրված",
+        "RESERVED": "Ամրագրված",
+        "CONVERTED": "Փոխարկված",
+        "CLOSED": "Փակված",
+        "LOST": "Կորած"
+      },
+      "sources": {
+        "PROJECT_PAGE": "Նախագծի էջ",
+        "APARTMENT_PAGE": "Բնակարանի էջ",
+        "BUILDER_QR_SCAN": "QR սկան",
+        "MANUAL_BUILDER_ENTRY": "Կառուցապատողի մուտք",
+        "EVENT_INTERACTION": "Միջոցառում"
+      }
     }
   }
 }

@@ -1,8 +1,15 @@
 import type { PublicApartment, PublicBuilding, PublicFloor } from '@toonexpo/contracts';
 import type { ApartmentStatus } from '@toonexpo/domain';
 
+import { ApartmentRequestButton } from '@/components/public-request/public-request-sheet';
 import { formatAreaSqm } from '@/lib/catalog/format-area';
 import { formatPriceAmd } from '@/lib/catalog/format-price';
+
+type RequestPrefill = {
+  name?: string;
+  email?: string;
+  phone?: string;
+};
 
 type TableLabels = {
   code: string;
@@ -10,6 +17,7 @@ type TableLabels = {
   areaSqm: string;
   priceAmd: string;
   status: string;
+  request: string;
   noValue: string;
 };
 
@@ -20,13 +28,19 @@ function statusBadgeClass(status: ApartmentStatus): string {
 function ApartmentTableRow({
   apartment,
   locale,
+  projectId,
+  projectName,
   tableLabels,
   statusLabel,
+  prefill,
 }: {
   apartment: PublicApartment;
   locale: string;
+  projectId: string;
+  projectName: string;
   tableLabels: TableLabels;
   statusLabel: string;
+  prefill?: RequestPrefill;
 }) {
   return (
     <tr>
@@ -45,6 +59,16 @@ function ApartmentTableRow({
       <td>
         <span className={statusBadgeClass(apartment.status)}>{statusLabel}</span>
       </td>
+      <td>
+        <ApartmentRequestButton
+          locale={locale}
+          projectId={projectId}
+          projectName={projectName}
+          apartmentId={apartment.id}
+          apartmentCode={apartment.code}
+          prefill={prefill}
+        />
+      </td>
     </tr>
   );
 }
@@ -52,13 +76,19 @@ function ApartmentTableRow({
 function FloorBlock({
   floor,
   locale,
+  projectId,
+  projectName,
   tableLabels,
   statusLabels,
+  prefill,
 }: {
   floor: PublicFloor;
   locale: string;
+  projectId: string;
+  projectName: string;
   tableLabels: TableLabels;
   statusLabels: Record<ApartmentStatus, string>;
+  prefill?: RequestPrefill;
 }) {
   return (
     <div className="catalog-floor">
@@ -72,6 +102,7 @@ function FloorBlock({
               <th>{tableLabels.areaSqm}</th>
               <th>{tableLabels.priceAmd}</th>
               <th>{tableLabels.status}</th>
+              <th>{tableLabels.request}</th>
             </tr>
           </thead>
           <tbody>
@@ -80,8 +111,11 @@ function FloorBlock({
                 key={apartment.id}
                 apartment={apartment}
                 locale={locale}
+                projectId={projectId}
+                projectName={projectName}
                 tableLabels={tableLabels}
                 statusLabel={statusLabels[apartment.status]}
+                prefill={prefill}
               />
             ))}
           </tbody>
@@ -94,13 +128,19 @@ function FloorBlock({
 function BuildingBlock({
   building,
   locale,
+  projectId,
+  projectName,
   tableLabels,
   statusLabels,
+  prefill,
 }: {
   building: PublicBuilding;
   locale: string;
+  projectId: string;
+  projectName: string;
   tableLabels: TableLabels;
   statusLabels: Record<ApartmentStatus, string>;
+  prefill?: RequestPrefill;
 }) {
   return (
     <section className="catalog-building">
@@ -110,8 +150,11 @@ function BuildingBlock({
           key={floor.id}
           floor={floor}
           locale={locale}
+          projectId={projectId}
+          projectName={projectName}
           tableLabels={tableLabels}
           statusLabels={statusLabels}
+          prefill={prefill}
         />
       ))}
     </section>
@@ -121,17 +164,23 @@ function BuildingBlock({
 type ProjectBuildingsProps = {
   buildings: PublicBuilding[];
   locale: string;
+  projectId: string;
+  projectName: string;
   tableLabels: TableLabels;
   statusLabels: Record<ApartmentStatus, string>;
   buildingsLabel: string;
+  prefill?: RequestPrefill;
 };
 
 export function ProjectBuildings({
   buildings,
   locale,
+  projectId,
+  projectName,
   tableLabels,
   statusLabels,
   buildingsLabel,
+  prefill,
 }: ProjectBuildingsProps) {
   if (buildings.length === 0) {
     return null;
@@ -145,8 +194,11 @@ export function ProjectBuildings({
           key={building.id}
           building={building}
           locale={locale}
+          projectId={projectId}
+          projectName={projectName}
           tableLabels={tableLabels}
           statusLabels={statusLabels}
+          prefill={prefill}
         />
       ))}
     </section>

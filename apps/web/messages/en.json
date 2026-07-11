@@ -323,13 +323,71 @@
         "rooms": "Rooms",
         "areaSqm": "Area (m²)",
         "priceAmd": "Price",
-        "status": "Status"
+        "status": "Status",
+        "request": "Request"
+      }
+    },
+    "request": {
+      "ctaProject": "Request contact",
+      "ctaApartment": "Interested",
+      "titleProject": "Request contact",
+      "titleApartment": "Request unit {code}",
+      "contextProject": "Project: {project}",
+      "contextApartment": "Project: {project} · Unit {code}",
+      "submit": "Send request",
+      "close": "Close",
+      "successNew": "Your request was sent. The builder will contact you soon.",
+      "successDeduped": "We already have your request for this project. The builder was notified of your update.",
+      "successHint": "You can track your requests in your buyer account when signed in.",
+      "fields": {
+        "name": "Full name",
+        "phone": "Phone",
+        "email": "Email",
+        "message": "Message (optional)"
+      },
+      "errors": {
+        "invalidInput": "Please check the fields and try again.",
+        "notFound": "This project is not available for requests."
       }
     },
     "apartmentStatus": {
       "AVAILABLE": "Available",
       "RESERVED": "Reserved",
       "SOLD": "Sold"
+    }
+  },
+  "buyer": {
+    "account": {
+      "title": "My requests",
+      "subtitle": "Track your contact requests to builders.",
+      "empty": "You have not submitted any requests yet. Browse projects to get started.",
+      "noValue": "—",
+      "columns": {
+        "company": "Builder",
+        "project": "Project",
+        "stage": "Status",
+        "source": "Source",
+        "createdAt": "Submitted",
+        "lastActivityAt": "Last update"
+      },
+      "stages": {
+        "NEW_REQUEST": "New request",
+        "ASSIGNED": "Assigned",
+        "CONTACTED": "Contacted",
+        "FOLLOW_UP_NEEDED": "Follow-up needed",
+        "APARTMENT_SELECTED": "Apartment selected",
+        "RESERVED": "Reserved",
+        "CONVERTED": "Converted",
+        "CLOSED": "Closed",
+        "LOST": "Lost"
+      },
+      "sources": {
+        "PROJECT_PAGE": "Project page",
+        "APARTMENT_PAGE": "Apartment page",
+        "BUILDER_QR_SCAN": "QR scan",
+        "MANUAL_BUILDER_ENTRY": "Builder entry",
+        "EVENT_INTERACTION": "Event"
+      }
     }
   }
 }
