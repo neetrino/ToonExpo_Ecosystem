@@ -61,6 +61,7 @@ export {
   type ProjectUpsertInput,
 } from './builder-portal';
 export {
+  BUILDER_DEAL_ACTIVITY_TYPES,
   CONTACT_EMAIL_MAX_LENGTH,
   CONTACT_NAME_MAX_LENGTH,
   CONTACT_PHONE_MAX_LENGTH,
@@ -70,11 +71,15 @@ export {
   DEAL_TITLE_MAX_LENGTH,
   builderQrScanDealInputSchema,
   dealActivityInputSchema,
+  dealApartmentLinkInputSchema,
+  dealAssignInputSchema,
   dealStageUpdateInputSchema,
   manualDealInputSchema,
   publicRequestInputSchema,
   type BuilderQrScanDealInput,
   type DealActivityInput,
+  type DealApartmentLinkInput,
+  type DealAssignInput,
   type DealStageUpdateInput,
   type ManualDealInput,
   type PublicRequestInput,

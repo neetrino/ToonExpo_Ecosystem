@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 
 import {
   dealActivityInputSchema,
+  dealApartmentLinkInputSchema,
+  dealAssignInputSchema,
   dealStageUpdateInputSchema,
   manualDealInputSchema,
   publicRequestInputSchema,
@@ -83,6 +85,26 @@ describe('dealActivityInputSchema', () => {
     ).toBe(true);
   });
 
+  it('accepts optional nextFollowUpAt for FOLLOW_UP', () => {
+    const parsed = dealActivityInputSchema.safeParse({
+      dealId: 'deal_1',
+      type: 'FOLLOW_UP',
+      body: 'Call next week.',
+      nextFollowUpAt: '2026-07-20T10:00:00.000Z',
+    });
+    expect(parsed.success).toBe(true);
+  });
+
+  it('rejects STATUS_CHANGE (system-only)', () => {
+    expect(
+      dealActivityInputSchema.safeParse({
+        dealId: 'deal_1',
+        type: 'STATUS_CHANGE',
+        body: 'NEW_REQUEST→ASSIGNED',
+      }).success,
+    ).toBe(false);
+  });
+
   it('rejects an empty body', () => {
     expect(
       dealActivityInputSchema.safeParse({
@@ -91,6 +113,28 @@ describe('dealActivityInputSchema', () => {
         body: '   ',
       }).success,
     ).toBe(false);
+  });
+});
+
+describe('dealApartmentLinkInputSchema', () => {
+  it('accepts deal and apartment ids', () => {
+    expect(
+      dealApartmentLinkInputSchema.safeParse({
+        dealId: 'deal_1',
+        apartmentId: 'apt_1',
+      }).success,
+    ).toBe(true);
+  });
+});
+
+describe('dealAssignInputSchema', () => {
+  it('accepts null assignee', () => {
+    expect(
+      dealAssignInputSchema.safeParse({
+        dealId: 'deal_1',
+        assigneeUserId: null,
+      }).success,
+    ).toBe(true);
   });
 });
 

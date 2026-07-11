@@ -1,4 +1,4 @@
-import { DEAL_ACTIVITY_TYPES, DEAL_STAGES, REQUEST_SOURCES } from '@toonexpo/domain';
+import { DEAL_STAGES, REQUEST_SOURCES } from '@toonexpo/domain';
 import { z } from 'zod';
 
 export const CONTACT_NAME_MAX_LENGTH = 120;
@@ -49,13 +49,31 @@ export const dealStageUpdateInputSchema = z.object({
 
 export type DealStageUpdateInput = z.infer<typeof dealStageUpdateInputSchema>;
 
+/** Builder-authored activities only; STATUS_CHANGE is written by the system. */
+export const BUILDER_DEAL_ACTIVITY_TYPES = ['COMMENT', 'FOLLOW_UP'] as const;
+
 export const dealActivityInputSchema = z.object({
   dealId: z.string().trim().min(1),
-  type: z.enum(DEAL_ACTIVITY_TYPES),
+  type: z.enum(BUILDER_DEAL_ACTIVITY_TYPES),
   body: z.string().trim().min(1).max(DEAL_ACTIVITY_BODY_MAX_LENGTH),
+  nextFollowUpAt: z.coerce.date().optional(),
 });
 
 export type DealActivityInput = z.infer<typeof dealActivityInputSchema>;
+
+export const dealApartmentLinkInputSchema = z.object({
+  dealId: z.string().trim().min(1),
+  apartmentId: z.string().trim().min(1),
+});
+
+export type DealApartmentLinkInput = z.infer<typeof dealApartmentLinkInputSchema>;
+
+export const dealAssignInputSchema = z.object({
+  dealId: z.string().trim().min(1),
+  assigneeUserId: z.string().trim().min(1).nullable(),
+});
+
+export type DealAssignInput = z.infer<typeof dealAssignInputSchema>;
 
 const optionalContactEmailSchema = z.preprocess((value) => {
   if (typeof value !== 'string') {
