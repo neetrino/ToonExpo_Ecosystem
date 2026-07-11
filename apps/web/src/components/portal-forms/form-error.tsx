@@ -4,7 +4,12 @@ import { useTranslations } from 'next-intl';
 
 type PortalFormErrorProps = {
   errorKey?: string;
-  namespace?: 'portal.errors' | 'admin.catalog.errors' | 'catalog.request.errors';
+  namespace?:
+    | 'portal.errors'
+    | 'admin.catalog.errors'
+    | 'catalog.request.errors'
+    | 'qr.builder.errors'
+    | 'buyer.qr.errors';
 };
 
 export function PortalFormError({ errorKey, namespace = 'portal.errors' }: PortalFormErrorProps) {

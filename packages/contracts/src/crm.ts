@@ -81,3 +81,12 @@ export const manualDealInputSchema = z.object({
 });
 
 export type ManualDealInput = z.infer<typeof manualDealInputSchema>;
+
+/** Builder creates a CRM deal after scanning a buyer QR. */
+export const builderQrScanDealInputSchema = z.object({
+  qrToken: z.string().trim().min(1).max(128),
+  projectId: z.string().trim().min(1).optional(),
+  note: optionalTrimmedString(DEAL_MESSAGE_MAX_LENGTH),
+});
+
+export type BuilderQrScanDealInput = z.infer<typeof builderQrScanDealInputSchema>;

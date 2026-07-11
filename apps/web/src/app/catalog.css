@@ -362,3 +362,126 @@
 .buyer-deals-table tbody tr:last-child {
   border-bottom: none;
 }
+
+.buyer-account__section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 1rem;
+}
+
+.buyer-account__requests {
+  margin-top: 2.5rem;
+}
+
+.buyer-qr {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  margin-bottom: 0.5rem;
+  max-width: 28rem;
+  padding: 1.5rem;
+}
+
+.buyer-qr__header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.buyer-qr__title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.buyer-qr__subtitle,
+.buyer-qr__hint,
+.buyer-qr__url,
+.buyer-qr__revoked,
+.buyer-qr__success {
+  color: var(--te-muted);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.buyer-qr__display {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.buyer-qr__image {
+  background: #fff;
+  border-radius: 0.5rem;
+  line-height: 0;
+  padding: 0.75rem;
+  width: min(100%, 16rem);
+}
+
+.buyer-qr__image svg {
+  display: block;
+  height: auto;
+  width: 100%;
+}
+
+.buyer-qr__url {
+  word-break: break-all;
+}
+
+.buyer-qr__regenerate {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.qr-page {
+  margin: 0 auto;
+  max-width: 36rem;
+  padding: 3rem 1.5rem;
+}
+
+.qr-page__header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.qr-page__title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.qr-page__subtitle {
+  color: var(--te-muted);
+  font-size: 1rem;
+  margin: 0;
+}
+
+.qr-scan-buyer {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0 0 1rem;
+}
+
+.qr-scan-buyer dt {
+  color: var(--te-muted);
+  font-size: 0.75rem;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.qr-scan-buyer dd {
+  font-size: 1rem;
+  margin: 0.15rem 0 0;
+}
+
+.qr-scan-success__message {
+  font-size: 1rem;
+  margin: 0;
+}

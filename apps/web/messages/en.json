@@ -358,10 +358,11 @@
   },
   "buyer": {
     "account": {
-      "title": "My requests",
-      "subtitle": "Track your contact requests to builders.",
+      "title": "My account",
+      "subtitle": "Your visitor QR and contact requests to builders.",
       "empty": "You have not submitted any requests yet. Browse projects to get started.",
       "noValue": "—",
+      "requestsHeading": "My requests",
       "columns": {
         "company": "Builder",
         "project": "Project",
@@ -387,6 +388,55 @@
         "BUILDER_QR_SCAN": "QR scan",
         "MANUAL_BUILDER_ENTRY": "Builder entry",
         "EVENT_INTERACTION": "Event"
+      }
+    },
+    "qr": {
+      "title": "My QR",
+      "subtitle": "Show this code to a builder at the exhibition. They can save a follow-up request for you.",
+      "hint": "This code identifies your ToonExpo visitor account. It does not contain your name or contact details in the code itself.",
+      "ariaLabel": "Your ToonExpo visitor QR code",
+      "revoked": "Your QR is currently inactive. Regenerate a new code to continue.",
+      "regenerate": "Regenerate QR",
+      "regenerateConfirm": "Regenerate your QR? The old code will stop working immediately.",
+      "regenerateSuccess": "A new QR code was issued.",
+      "errors": {
+        "unauthorized": "Sign in to manage your QR.",
+        "invalidInput": "Could not regenerate the QR. Try again.",
+        "notFound": "Could not regenerate the QR. Try again.",
+        "revoked": "Could not regenerate the QR. Try again."
+      }
+    }
+  },
+  "qr": {
+    "invalid": {
+      "title": "QR not available",
+      "body": "This code is invalid or no longer active. Ask the visitor to open My QR in their ToonExpo account."
+    },
+    "limited": {
+      "title": "Valid ToonExpo visitor QR",
+      "body": "This is a registered visitor code. Sign in as a builder to create a follow-up request."
+    },
+    "builder": {
+      "title": "Visitor from QR scan",
+      "subtitle": "Create a CRM request for this registered buyer.",
+      "noPhone": "—",
+      "submit": "Create request",
+      "successNew": "Request created. The buyer will see it in their account history.",
+      "successDeduped": "An open request already exists. Your note was added to it.",
+      "fields": {
+        "name": "Name",
+        "email": "Email",
+        "phone": "Phone",
+        "project": "Project (optional)",
+        "projectHint": "Choose a project from your company, or leave empty.",
+        "projectNone": "No project",
+        "note": "Note (optional)"
+      },
+      "errors": {
+        "unauthorized": "Builder sign-in is required.",
+        "invalidInput": "Check the form and try again.",
+        "notFound": "This QR is no longer valid.",
+        "revoked": "This QR is no longer valid."
       }
     }
   }

@@ -134,6 +134,11 @@ model BuyerProfile {
 model QrCode {
   id             String       @id @default(cuid())
   buyerProfileId String       @unique
+  /// Opaque random token (no PII). Stored so the buyer can re-display their QR
+  /// without rotating on every view. tokenHash remains the lookup key.
+  /// Privacy: 05-Privacy-And-Security forbids encoding PII in the payload, not
+  /// storing the opaque secret server-side behind buyer auth.
+  token          String       @unique
   tokenHash      String       @unique
   createdAt      DateTime     @default(now())
   revokedAt      DateTime?
