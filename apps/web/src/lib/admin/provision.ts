@@ -1,14 +1,11 @@
-import { randomUUID } from 'node:crypto';
-
 import type { ProvisionAccountInput } from '@toonexpo/contracts';
 import { slugifyCompanyName } from '@toonexpo/contracts';
 import { prisma, Prisma } from '@toonexpo/db';
 
 import { hashPassword } from '@/lib/auth/password';
+import { allocateUniqueSlug, MAX_SLUG_ATTEMPTS } from '@/lib/shared/unique-slug';
 
 const UNIQUE_CONSTRAINT_ERROR = 'P2002';
-const MAX_SLUG_ATTEMPTS = 50;
-const UUID_SLUG_SUFFIX_LENGTH = 8;
 
 export type ProvisionErrorCode = 'emailTaken' | 'invalidInput';
 
@@ -22,36 +19,43 @@ function isEmailUniqueViolation(error: Prisma.PrismaClientKnownRequestError): bo
   return Array.isArray(target) && target.includes('email');
 }
 
+async function findReusableCompanyId(
+  tx: Prisma.TransactionClient,
+  companyName: string,
+  baseSlug: string,
+): Promise<string | null> {
+  for (let suffix = 0; suffix < MAX_SLUG_ATTEMPTS; suffix += 1) {
+    const slug = suffix === 0 ? baseSlug : `${baseSlug}-${suffix}`;
+    const existing = await tx.company.findUnique({ where: { slug } });
+    if (existing?.name === companyName) {
+      return existing.id;
+    }
+  }
+  return null;
+}
+
 async function resolveCompanyId(
   tx: Prisma.TransactionClient,
   companyName: string,
 ): Promise<ResolveCompanyResult> {
   const baseSlug = slugifyCompanyName(companyName);
-
-  for (let suffix = 0; suffix < MAX_SLUG_ATTEMPTS; suffix += 1) {
-    const slug = suffix === 0 ? baseSlug : `${baseSlug}-${suffix}`;
-    const existing = await tx.company.findUnique({ where: { slug } });
-    if (!existing) {
-      const created = await tx.company.create({
-        data: { name: companyName, slug },
-      });
-      return { ok: true, companyId: created.id };
-    }
-    if (existing.name === companyName) {
-      return { ok: true, companyId: existing.id };
-    }
+  const reusableId = await findReusableCompanyId(tx, companyName, baseSlug);
+  if (reusableId) {
+    return { ok: true, companyId: reusableId };
   }
 
-  const fallbackSlug = `${baseSlug}-${randomUUID().slice(0, UUID_SLUG_SUFFIX_LENGTH)}`;
-  const fallbackExisting = await tx.company.findUnique({ where: { slug: fallbackSlug } });
-  if (!fallbackExisting) {
-    const created = await tx.company.create({
-      data: { name: companyName, slug: fallbackSlug },
-    });
-    return { ok: true, companyId: created.id };
+  const slug = await allocateUniqueSlug(baseSlug, async (candidate) => {
+    const existing = await tx.company.findUnique({ where: { slug: candidate } });
+    return existing !== null;
+  });
+  if (!slug) {
+    return { ok: false, error: 'invalidInput' };
   }
 
-  return { ok: false, error: 'invalidInput' };
+  const created = await tx.company.create({
+    data: { name: companyName, slug },
+  });
+  return { ok: true, companyId: created.id };
 }
 
 /**
