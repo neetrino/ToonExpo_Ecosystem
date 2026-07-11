@@ -1,18 +1,43 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
-type BuilderPageProps = {
+import { assertBuilderSession } from '@/lib/builder/assert-builder-session';
+import { loadProjectStatusCounts } from '@/lib/builder/queries';
+
+type PortalOverviewPageProps = {
   params: Promise<{ locale: string }>;
 };
 
-export default async function BuilderPortalPage({ params }: BuilderPageProps) {
+export default async function PortalOverviewPage({ params }: PortalOverviewPageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const t = await getTranslations('placeholders.builder');
+
+  const builderContext = await assertBuilderSession();
+  if (!builderContext) {
+    return null;
+  }
+
+  const [t, counts] = await Promise.all([
+    getTranslations('portal.overview'),
+    loadProjectStatusCounts(builderContext.companyId),
+  ]);
+
+  const stats = [
+    { key: 'draft', value: counts.draft },
+    { key: 'published', value: counts.published },
+    { key: 'archived', value: counts.archived },
+  ] as const;
 
   return (
-    <section className="mx-auto max-w-3xl px-6 py-12">
-      <h1 className="text-2xl font-semibold">{t('title')}</h1>
-      <p className="mt-2 text-[var(--te-muted)]">{t('description')}</p>
+    <section>
+      <h2 className="portal-page__title">{t('title')}</h2>
+      <div className="portal-stats">
+        {stats.map((stat) => (
+          <article key={stat.key} className="portal-stat">
+            <p className="portal-stat__label">{t(`stats.${stat.key}`)}</p>
+            <p className="portal-stat__value">{stat.value}</p>
+          </article>
+        ))}
+      </div>
     </section>
   );
 }

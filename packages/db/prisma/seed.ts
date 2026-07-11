@@ -14,6 +14,7 @@ const HASH_OPTIONS = { type: argon2.argon2id } as const;
 
 const DEMO_COMPANY_SLUG = 'demo-development';
 const DEMO_COMPANY_NAME = 'Demo Development';
+const DEMO_BUILDER_EMAIL = 'builder@demo.toonexpo.local';
 const SUNRISE_SLUG = 'sunrise-residence';
 const HIDDEN_COURT_SLUG = 'hidden-court';
 const BUILDING_NAME = 'Tower A';
@@ -88,6 +89,54 @@ async function seedAdmin(): Promise<void> {
   });
 
   console.log(`Created seed BIGPROJECTS_ADMIN: ${email}`);
+}
+
+async function seedBuilder(): Promise<void> {
+  const password = process.env.SEED_DEMO_BUILDER_PASSWORD;
+
+  if (!password) {
+    console.log('Skipping builder seed: SEED_DEMO_BUILDER_PASSWORD must be set.');
+    return;
+  }
+
+  const existingBuilder = await prisma.user.findUnique({
+    where: { email: DEMO_BUILDER_EMAIL },
+  });
+
+  if (existingBuilder) {
+    console.log('Skipping builder seed: demo builder user already exists.');
+    return;
+  }
+
+  const company = await prisma.company.findUnique({
+    where: { slug: DEMO_COMPANY_SLUG },
+  });
+
+  if (!company) {
+    console.log('Skipping builder seed: demo company not found.');
+    return;
+  }
+
+  const passwordHash = await argon2.hash(password, HASH_OPTIONS);
+
+  const builder = await prisma.user.create({
+    data: {
+      email: DEMO_BUILDER_EMAIL,
+      name: 'Demo Builder',
+      passwordHash,
+      role: 'BUILDER',
+    },
+  });
+
+  await prisma.companyMember.create({
+    data: {
+      companyId: company.id,
+      userId: builder.id,
+      role: 'BUILDER',
+    },
+  });
+
+  console.log(`Created seed BUILDER: ${DEMO_BUILDER_EMAIL}`);
 }
 
 async function upsertProjectMedia(
@@ -280,6 +329,7 @@ async function seedDemoCatalog(): Promise<void> {
 async function main(): Promise<void> {
   await seedAdmin();
   await seedDemoCatalog();
+  await seedBuilder();
 }
 
 main()

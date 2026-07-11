@@ -104,6 +104,38 @@
       }
     }
   },
+  "portal": {
+    "nav": {
+      "ariaLabel": "Навигация портала застройщика",
+      "overview": "Обзор",
+      "projects": "Проекты"
+    },
+    "overview": {
+      "title": "Обзор",
+      "stats": {
+        "draft": "Черновик",
+        "published": "Опубликован",
+        "archived": "В архиве"
+      }
+    },
+    "projects": {
+      "title": "Проекты",
+      "empty": "Проектов пока нет.",
+      "noCity": "—",
+      "columns": {
+        "name": "Название",
+        "city": "Город",
+        "status": "Статус",
+        "buildings": "Корпуса",
+        "updatedAt": "Обновлён"
+      },
+      "status": {
+        "DRAFT": "Черновик",
+        "PUBLISHED": "Опубликован",
+        "ARCHIVED": "В архиве"
+      }
+    }
+  },
   "catalog": {
     "list": {
       "title": "Проекты",

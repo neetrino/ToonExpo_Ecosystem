@@ -8,7 +8,7 @@ export type ProtectedArea = 'buyer' | 'builder' | 'admin';
  * user, so it is not constrained to a specific role set.
  */
 const AREA_ROLE_ACCESS: Record<Exclude<ProtectedArea, 'buyer'>, readonly PlatformRole[]> = {
-  builder: ['BUILDER', 'BIGPROJECTS_ADMIN'],
+  builder: ['BUILDER'],
   admin: ['BIGPROJECTS_ADMIN'],
 };
 

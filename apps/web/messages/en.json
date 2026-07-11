@@ -104,6 +104,38 @@
       }
     }
   },
+  "portal": {
+    "nav": {
+      "ariaLabel": "Builder portal navigation",
+      "overview": "Overview",
+      "projects": "Projects"
+    },
+    "overview": {
+      "title": "Overview",
+      "stats": {
+        "draft": "Draft",
+        "published": "Published",
+        "archived": "Archived"
+      }
+    },
+    "projects": {
+      "title": "Projects",
+      "empty": "No projects yet.",
+      "noCity": "—",
+      "columns": {
+        "name": "Name",
+        "city": "City",
+        "status": "Status",
+        "buildings": "Buildings",
+        "updatedAt": "Updated"
+      },
+      "status": {
+        "DRAFT": "Draft",
+        "PUBLISHED": "Published",
+        "ARCHIVED": "Archived"
+      }
+    }
+  },
   "catalog": {
     "list": {
       "title": "Projects",

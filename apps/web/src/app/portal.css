@@ -1,0 +1,140 @@
+.portal-shell {
+  margin: 0 auto;
+  max-width: 72rem;
+  padding: 2rem 1.5rem 3rem;
+}
+
+.portal-shell__header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+}
+
+.portal-shell__company {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.portal-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.portal-nav__link {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.5rem;
+  color: var(--te-muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  transition:
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.portal-nav__link:hover {
+  border-color: rgba(61, 139, 253, 0.5);
+  color: var(--te-fg);
+}
+
+.portal-page__title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin: 0 0 1.5rem;
+}
+
+.portal-stats {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+}
+
+.portal-stat {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 1rem 1.25rem;
+}
+
+.portal-stat__label {
+  color: var(--te-muted);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.portal-stat__value {
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.portal-empty {
+  color: var(--te-muted);
+  font-size: 1rem;
+}
+
+.portal-table-wrap {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  overflow-x: auto;
+}
+
+.portal-table {
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  min-width: 40rem;
+  text-align: left;
+  width: 100%;
+}
+
+.portal-table thead {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--te-muted);
+}
+
+.portal-table th,
+.portal-table td {
+  padding: 0.75rem 1rem;
+}
+
+.portal-table tbody tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.portal-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.portal-badge {
+  border-radius: 9999px;
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.2rem 0.6rem;
+}
+
+.portal-badge--draft {
+  background: rgba(148, 163, 184, 0.15);
+  color: #cbd5e1;
+}
+
+.portal-badge--published {
+  background: rgba(52, 211, 153, 0.15);
+  color: #6ee7b7;
+}
+
+.portal-badge--archived {
+  background: rgba(251, 191, 36, 0.15);
+  color: #fcd34d;
+}

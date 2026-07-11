@@ -104,6 +104,38 @@
       }
     }
   },
+  "portal": {
+    "nav": {
+      "ariaLabel": "Կառուցապատողի պորտալի նավիգացիա",
+      "overview": "Ակնարկ",
+      "projects": "Նախագծեր"
+    },
+    "overview": {
+      "title": "Ակնարկ",
+      "stats": {
+        "draft": "Սևագիր",
+        "published": "Հրապարակված",
+        "archived": "Արխիվացված"
+      }
+    },
+    "projects": {
+      "title": "Նախագծեր",
+      "empty": "Դեռ նախագծեր չկան։",
+      "noCity": "—",
+      "columns": {
+        "name": "Անվանում",
+        "city": "Քաղաք",
+        "status": "Կարգավիճակ",
+        "buildings": "Շենքեր",
+        "updatedAt": "Թարմացված"
+      },
+      "status": {
+        "DRAFT": "Սևագիր",
+        "PUBLISHED": "Հրապարակված",
+        "ARCHIVED": "Արխիվացված"
+      }
+    }
+  },
   "catalog": {
     "list": {
       "title": "Նախագծեր",
