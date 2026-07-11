@@ -2,7 +2,14 @@
 
 ## Current Status
 
-Sprint 3 complete. Builder portal shell, inventory CRUD with side sheets, admin companies/projects with publication moderation, and security audit fixes are live; quality scripts pass.
+Sprint 4 data layer in progress: CRM deal / activity / QR scan log models, domain enums, contracts, and demo seed.
+
+## Sprint 4 — Data layer (in progress)
+
+- **Domain enums** — `DEAL_STAGES`, `REQUEST_SOURCES`, `DEAL_ACTIVITY_TYPES`, `QR_SCAN_PURPOSES`.
+- **Prisma** — `Deal`, `DealApartment`, `DealActivity`, `QrScanLog` (+ migration `sprint4_crm_qr`).
+- **Contracts** — `publicRequestInput`, `dealStageUpdateInput`, `dealActivityInput`, `manualDealInput`.
+- **Seed** — two idempotent demo deals for `demo-development` with activities.
 
 ## Sprint 3 — COMPLETE
 

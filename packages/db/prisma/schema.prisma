@@ -7,6 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
 enum PlatformRole {
   BIGPROJECTS_ADMIN
   BUILDER
@@ -27,22 +28,62 @@ enum ApartmentStatus {
   SOLD
 }
 
-model User {
-  id            String          @id @default(cuid())
-  email         String          @unique
-  emailVerified DateTime?
-  name          String?
-  image         String?
-  phone         String?
-  passwordHash  String?
-  role          PlatformRole    @default(BUYER)
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-  accounts      Account[]
-  sessions      Session[]
-  buyerProfile  BuyerProfile?
-  members       CompanyMember[]
+enum DealStage {
+  NEW_REQUEST
+  ASSIGNED
+  CONTACTED
+  FOLLOW_UP_NEEDED
+  APARTMENT_SELECTED
+  RESERVED
+  CONVERTED
+  CLOSED
+  LOST
 }
+
+enum RequestSource {
+  PROJECT_PAGE
+  APARTMENT_PAGE
+  BUILDER_QR_SCAN
+  MANUAL_BUILDER_ENTRY
+  EVENT_INTERACTION
+}
+
+enum DealActivityType {
+  COMMENT
+  FOLLOW_UP
+  STATUS_CHANGE
+}
+
+enum QrScanPurpose {
+  BUILDER_SCAN
+  ENTRANCE_CHECKIN
+  BUYER_SELF_VIEW
+  UNKNOWN
+}
+
+
+model User {
+  id                String          @id @default(cuid())
+  email             String          @unique
+  emailVerified     DateTime?
+  name              String?
+  image             String?
+  phone             String?
+  passwordHash      String?
+  role              PlatformRole    @default(BUYER)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  accounts          Account[]
+  sessions          Session[]
+  buyerProfile      BuyerProfile?
+  members           CompanyMember[]
+  dealsAsBuyer      Deal[]          @relation("DealBuyer")
+  dealsAssigned     Deal[]          @relation("DealAssignee")
+  dealsCreated      Deal[]          @relation("DealCreator")
+  dealActivities    DealActivity[]
+  qrScanLogs        QrScanLog[]
+}
+
 
 model Account {
   id                String  @id @default(cuid())
@@ -97,17 +138,21 @@ model QrCode {
   createdAt      DateTime     @default(now())
   revokedAt      DateTime?
   buyerProfile   BuyerProfile @relation(fields: [buyerProfileId], references: [id], onDelete: Cascade)
+  scanLogs       QrScanLog[]
 }
 
 model Company {
-  id        String      @id @default(cuid())
+  id        String          @id @default(cuid())
   name      String
-  slug      String      @unique
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  slug      String          @unique
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
   members   CompanyMember[]
   projects  Project[]
+  deals     Deal[]
+  qrScanLogs QrScanLog[]
 }
+
 
 model CompanyMember {
   id        String       @id @default(cuid())
@@ -136,10 +181,12 @@ model Project {
   company     Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
   buildings   Building[]
   media       MediaAsset[]
+  deals       Deal[]
 
   @@unique([companyId, slug])
   @@index([status])
 }
+
 
 model Building {
   id        String   @id @default(cuid())
@@ -178,6 +225,7 @@ model Apartment {
   updatedAt DateTime        @updatedAt
   floor     Floor           @relation(fields: [floorId], references: [id], onDelete: Cascade)
   media     MediaAsset[]
+  dealLinks DealApartment[]
 
   @@unique([floorId, code])
   @@index([status])
@@ -197,4 +245,80 @@ model MediaAsset {
 
   @@index([projectId])
   @@index([apartmentId])
+}
+
+// Company-scoped CRM work item. Sources: public request, QR scan, or manual builder entry.
+// App layer must require ≥1 DealApartment before stage RESERVED or CONVERTED.
+model Deal {
+  id               String        @id @default(cuid())
+  companyId        String
+  stage            DealStage     @default(NEW_REQUEST)
+  source           RequestSource
+  buyerUserId      String?
+  contactName      String?
+  contactPhone     String?
+  contactEmail     String?
+  title            String?
+  message          String?       @db.Text
+  assignedUserId   String?
+  createdByUserId  String?
+  projectId        String?
+  lastActivityAt   DateTime?
+  nextFollowUpAt   DateTime?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  company          Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  buyerUser        User?         @relation("DealBuyer", fields: [buyerUserId], references: [id], onDelete: SetNull)
+  assignedUser     User?         @relation("DealAssignee", fields: [assignedUserId], references: [id], onDelete: SetNull)
+  createdByUser    User?         @relation("DealCreator", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  project          Project?      @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  apartments       DealApartment[]
+  activities       DealActivity[]
+
+  @@index([companyId, stage])
+  @@index([buyerUserId])
+  @@index([createdAt])
+}
+
+model DealApartment {
+  id          String    @id @default(cuid())
+  dealId      String
+  apartmentId String
+  createdAt   DateTime  @default(now())
+  deal        Deal      @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  apartment   Apartment @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+
+  @@unique([dealId, apartmentId])
+  @@index([dealId])
+  @@index([apartmentId])
+}
+
+model DealActivity {
+  id           String           @id @default(cuid())
+  dealId       String
+  authorUserId String?
+  type         DealActivityType
+  body         String           @db.Text
+  createdAt    DateTime         @default(now())
+  deal         Deal             @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  authorUser   User?            @relation(fields: [authorUserId], references: [id], onDelete: SetNull)
+
+  @@index([dealId])
+}
+
+model QrScanLog {
+  id              String        @id @default(cuid())
+  qrCodeId        String
+  scannedByUserId String
+  companyId       String?
+  purpose         QrScanPurpose @default(UNKNOWN)
+  scannedAt       DateTime      @default(now())
+  qrCode          QrCode        @relation(fields: [qrCodeId], references: [id], onDelete: Cascade)
+  scannedByUser   User          @relation(fields: [scannedByUserId], references: [id], onDelete: Cascade)
+  company         Company?      @relation(fields: [companyId], references: [id], onDelete: SetNull)
+
+  @@index([qrCodeId])
+  @@index([scannedByUserId])
+  @@index([companyId])
+  @@index([scannedAt])
 }

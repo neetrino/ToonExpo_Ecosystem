@@ -313,7 +313,11 @@ async function upsertHiddenCourtProject(companyId: string): Promise<void> {
   });
 }
 
-async function seedDemoCatalog(): Promise<void> {
+async function seedDemoCatalog(): Promise<{
+  company: Company;
+  sunriseProject: Project;
+  apartments: Apartment[];
+}> {
   const company = await upsertDemoCompany();
   const sunriseProject = await upsertSunriseProject(company.id);
   const building = await upsertSunriseBuilding(sunriseProject.id);
@@ -324,12 +328,165 @@ async function seedDemoCatalog(): Promise<void> {
   await upsertHiddenCourtProject(company.id);
 
   console.log('Demo catalog seed complete.');
+  return { company, sunriseProject, apartments };
+}
+
+const DEMO_DEAL_PROJECT_TITLE = 'Demo project-page request';
+const DEMO_DEAL_RESERVED_TITLE = 'Demo reserved apartment deal';
+
+async function seedDemoCrmDeals(
+  company: Company,
+  sunriseProject: Project,
+  apartments: Apartment[],
+): Promise<void> {
+  const builder = await prisma.user.findUnique({
+    where: { email: DEMO_BUILDER_EMAIL },
+  });
+
+  const reservedApartment = apartments.find((apartment) => apartment.code === '102');
+  if (!reservedApartment) {
+    console.log('Skipping CRM deal seed: apartment 102 not found.');
+    return;
+  }
+
+  const existingProjectDeal = await prisma.deal.findFirst({
+    where: {
+      companyId: company.id,
+      title: DEMO_DEAL_PROJECT_TITLE,
+      source: 'PROJECT_PAGE',
+    },
+  });
+
+  let projectDealId = existingProjectDeal?.id;
+
+  if (existingProjectDeal) {
+    console.log('Skipping project-page deal seed: already exists.');
+  } else {
+    const projectDeal = await prisma.deal.create({
+      data: {
+        companyId: company.id,
+        projectId: sunriseProject.id,
+        stage: 'NEW_REQUEST',
+        source: 'PROJECT_PAGE',
+        title: DEMO_DEAL_PROJECT_TITLE,
+        contactName: 'Ani Petrosyan',
+        contactPhone: '+37491112233',
+        contactEmail: 'ani.petrosyan@example.com',
+        message: 'Interested in Sunrise Residence 2-bedroom units.',
+        createdByUserId: builder?.id,
+        lastActivityAt: new Date(),
+      },
+    });
+    projectDealId = projectDeal.id;
+    console.log('Created demo project-page CRM deal.');
+  }
+
+  if (projectDealId) {
+    const existingActivity = await prisma.dealActivity.findFirst({
+      where: {
+        dealId: projectDealId,
+        type: 'COMMENT',
+        body: 'Seed: inbound project-page request.',
+      },
+    });
+
+    if (existingActivity) {
+      console.log('Skipping project-page deal activity: already exists.');
+    } else {
+      await prisma.dealActivity.create({
+        data: {
+          dealId: projectDealId,
+          authorUserId: builder?.id,
+          type: 'COMMENT',
+          body: 'Seed: inbound project-page request.',
+        },
+      });
+      console.log('Created project-page deal activity.');
+    }
+  }
+
+  const existingReservedDeal = await prisma.deal.findFirst({
+    where: {
+      companyId: company.id,
+      title: DEMO_DEAL_RESERVED_TITLE,
+      source: 'MANUAL_BUILDER_ENTRY',
+    },
+  });
+
+  let reservedDealId = existingReservedDeal?.id;
+
+  if (existingReservedDeal) {
+    console.log('Skipping reserved deal seed: already exists.');
+  } else {
+    const reservedDeal = await prisma.deal.create({
+      data: {
+        companyId: company.id,
+        projectId: sunriseProject.id,
+        stage: 'RESERVED',
+        source: 'MANUAL_BUILDER_ENTRY',
+        title: DEMO_DEAL_RESERVED_TITLE,
+        contactName: 'Karen Sargsyan',
+        contactPhone: '+37499123456',
+        contactEmail: 'karen.sargsyan@example.com',
+        message: 'Builder reserved apartment 102 after site visit.',
+        assignedUserId: builder?.id,
+        createdByUserId: builder?.id,
+        lastActivityAt: new Date(),
+        apartments: {
+          create: { apartmentId: reservedApartment.id },
+        },
+      },
+    });
+    reservedDealId = reservedDeal.id;
+    console.log('Created demo reserved CRM deal with apartment link.');
+  }
+
+  if (reservedDealId) {
+    const existingLink = await prisma.dealApartment.findUnique({
+      where: {
+        dealId_apartmentId: {
+          dealId: reservedDealId,
+          apartmentId: reservedApartment.id,
+        },
+      },
+    });
+
+    if (!existingLink) {
+      await prisma.dealApartment.create({
+        data: { dealId: reservedDealId, apartmentId: reservedApartment.id },
+      });
+      console.log('Linked reserved deal to apartment 102.');
+    }
+
+    const existingActivity = await prisma.dealActivity.findFirst({
+      where: {
+        dealId: reservedDealId,
+        type: 'STATUS_CHANGE',
+        body: 'Seed: moved to reserved with apartment 102.',
+      },
+    });
+
+    if (existingActivity) {
+      console.log('Skipping reserved deal activity: already exists.');
+    } else {
+      await prisma.dealActivity.create({
+        data: {
+          dealId: reservedDealId,
+          authorUserId: builder?.id,
+          type: 'STATUS_CHANGE',
+          body: 'Seed: moved to reserved with apartment 102.',
+        },
+      });
+      console.log('Created reserved deal activity.');
+    }
+  }
 }
 
 async function main(): Promise<void> {
   await seedAdmin();
-  await seedDemoCatalog();
+  const catalog = await seedDemoCatalog();
   await seedBuilder();
+  await seedDemoCrmDeals(catalog.company, catalog.sunriseProject, catalog.apartments);
 }
 
 main()

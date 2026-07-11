@@ -1,8 +1,16 @@
 export {
   APARTMENT_STATUSES,
+  DEAL_ACTIVITY_TYPES,
+  DEAL_STAGES,
   PLATFORM_ROLES,
   PUBLICATION_STATUSES,
+  QR_SCAN_PURPOSES,
+  REQUEST_SOURCES,
   type ApartmentStatus,
+  type DealActivityType,
+  type DealStage,
   type PlatformRole,
   type PublicationStatus,
+  type QrScanPurpose,
+  type RequestSource,
 } from './enums';

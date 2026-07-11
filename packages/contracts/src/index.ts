@@ -60,3 +60,20 @@ export {
   type ProjectPublicationInput,
   type ProjectUpsertInput,
 } from './builder-portal';
+export {
+  CONTACT_EMAIL_MAX_LENGTH,
+  CONTACT_NAME_MAX_LENGTH,
+  CONTACT_PHONE_MAX_LENGTH,
+  CONTACT_PHONE_MIN_LENGTH,
+  DEAL_ACTIVITY_BODY_MAX_LENGTH,
+  DEAL_MESSAGE_MAX_LENGTH,
+  DEAL_TITLE_MAX_LENGTH,
+  dealActivityInputSchema,
+  dealStageUpdateInputSchema,
+  manualDealInputSchema,
+  publicRequestInputSchema,
+  type DealActivityInput,
+  type DealStageUpdateInput,
+  type ManualDealInput,
+  type PublicRequestInput,
+} from './crm';
