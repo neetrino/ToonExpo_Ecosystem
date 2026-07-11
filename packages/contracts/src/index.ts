@@ -29,6 +29,11 @@ export {
   type ProvisionableRole,
 } from './provisioning';
 export {
+  COMPANY_NAME_MAX_LENGTH,
+  companyUpsertInputSchema,
+  type CompanyUpsertInput,
+} from './admin-catalog';
+export {
   APARTMENT_AREA_SQM_MAX,
   APARTMENT_CODE_MAX_LENGTH,
   APARTMENT_PRICE_AMD_MAX,

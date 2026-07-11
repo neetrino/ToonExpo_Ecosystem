@@ -2,20 +2,18 @@
 
 import type { PublicationStatus } from '@toonexpo/domain';
 
-import { Link } from '@/i18n/navigation';
-import type { BuilderProjectRow } from '@/lib/builder/queries';
-
 import { STATUS_BADGE_CLASS, publicationActionsFor } from '@/lib/shared/publication';
-import { PublicationActionButton } from './publication-action-button';
+import type { AdminProjectRow } from '@/lib/admin/queries';
 
-type ProjectsTableProps = {
+import { AdminPublicationActionButton } from './admin-publication-action-button';
+
+type AdminProjectsTableProps = {
   locale: string;
-  projects: BuilderProjectRow[];
+  projects: AdminProjectRow[];
   labels: {
-    noCity: string;
     columns: {
+      company: string;
       name: string;
-      city: string;
       status: string;
       buildings: string;
       updatedAt: string;
@@ -26,20 +24,20 @@ type ProjectsTableProps = {
   formatDate: (date: Date) => string;
 };
 
-export function ProjectsTable({
+export function AdminProjectsTable({
   locale,
   projects,
   labels,
   statusLabels,
   formatDate,
-}: ProjectsTableProps) {
+}: AdminProjectsTableProps) {
   return (
     <div className="portal-table-wrap">
       <table className="portal-table">
         <thead>
           <tr>
+            <th>{labels.columns.company}</th>
             <th>{labels.columns.name}</th>
-            <th>{labels.columns.city}</th>
             <th>{labels.columns.status}</th>
             <th>{labels.columns.buildings}</th>
             <th>{labels.columns.updatedAt}</th>
@@ -52,7 +50,6 @@ export function ProjectsTable({
               key={project.id}
               locale={locale}
               project={project}
-              labels={labels}
               statusLabels={statusLabels}
               formatDate={formatDate}
             />
@@ -65,23 +62,18 @@ export function ProjectsTable({
 
 type ProjectRowProps = {
   locale: string;
-  project: BuilderProjectRow;
-  labels: ProjectsTableProps['labels'];
+  project: AdminProjectRow;
   statusLabels: Record<PublicationStatus, string>;
   formatDate: (date: Date) => string;
 };
 
-function ProjectRow({ locale, project, labels, statusLabels, formatDate }: ProjectRowProps) {
+function ProjectRow({ locale, project, statusLabels, formatDate }: ProjectRowProps) {
   const actions = publicationActionsFor(project.status);
 
   return (
     <tr>
-      <td>
-        <Link className="portal-link" href={`/portal/projects/${project.id}`}>
-          {project.name}
-        </Link>
-      </td>
-      <td>{project.city ?? labels.noCity}</td>
+      <td>{project.companyName}</td>
+      <td>{project.name}</td>
       <td>
         <span className={STATUS_BADGE_CLASS[project.status]}>{statusLabels[project.status]}</span>
       </td>
@@ -90,7 +82,7 @@ function ProjectRow({ locale, project, labels, statusLabels, formatDate }: Proje
       <td>
         <div className="portal-actions">
           {actions.map((action) => (
-            <PublicationActionButton
+            <AdminPublicationActionButton
               key={action.actionKey}
               locale={locale}
               projectId={project.id}

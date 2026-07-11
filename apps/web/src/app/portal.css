@@ -361,3 +361,43 @@
   background: rgba(148, 163, 184, 0.15);
   color: #cbd5e1;
 }
+
+.portal-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.portal-filter__link {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.5rem;
+  color: var(--te-muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  transition:
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.portal-filter__link:hover {
+  border-color: rgba(61, 139, 253, 0.5);
+  color: var(--te-fg);
+}
+
+.portal-filter__link--active {
+  border-color: var(--te-accent);
+  color: var(--te-fg);
+}
+
+.portal-code {
+  color: var(--te-muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.8125rem;
+}
+
+.portal-counts {
+  color: var(--te-muted);
+  font-size: 0.8125rem;
+}

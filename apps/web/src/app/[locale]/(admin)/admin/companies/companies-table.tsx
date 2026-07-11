@@ -1,0 +1,104 @@
+'use client';
+
+import { useState } from 'react';
+
+import type { AdminCompanyRow } from '@/lib/admin/queries';
+
+import { CompanyFormSheet } from './sheets/company-form-sheet';
+
+type CompaniesTableProps = {
+  locale: string;
+  companies: AdminCompanyRow[];
+  labels: {
+    columns: {
+      name: string;
+      slug: string;
+      members: string;
+      projects: string;
+      createdAt: string;
+      actions: string;
+    };
+    edit: string;
+    projectCounts: {
+      draft: string;
+      published: string;
+      archived: string;
+    };
+  };
+  formatDate: (date: Date) => string;
+};
+
+export function CompaniesTable({ locale, companies, labels, formatDate }: CompaniesTableProps) {
+  return (
+    <div className="portal-table-wrap">
+      <table className="portal-table">
+        <thead>
+          <tr>
+            <th>{labels.columns.name}</th>
+            <th>{labels.columns.slug}</th>
+            <th>{labels.columns.members}</th>
+            <th>{labels.columns.projects}</th>
+            <th>{labels.columns.createdAt}</th>
+            <th>{labels.columns.actions}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {companies.map((company) => (
+            <CompanyRow
+              key={company.id}
+              locale={locale}
+              company={company}
+              labels={labels}
+              formatDate={formatDate}
+            />
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+type CompanyRowProps = {
+  locale: string;
+  company: AdminCompanyRow;
+  labels: CompaniesTableProps['labels'];
+  formatDate: (date: Date) => string;
+};
+
+function CompanyRow({ locale, company, labels, formatDate }: CompanyRowProps) {
+  const [editOpen, setEditOpen] = useState(false);
+  const { projectsCount } = company;
+
+  return (
+    <tr>
+      <td>{company.name}</td>
+      <td>
+        <code className="portal-code">{company.slug}</code>
+      </td>
+      <td>{company.membersCount}</td>
+      <td>
+        <span className="portal-counts">
+          {labels.projectCounts.draft}: {projectsCount.draft} · {labels.projectCounts.published}:{' '}
+          {projectsCount.published} · {labels.projectCounts.archived}: {projectsCount.archived}
+        </span>
+      </td>
+      <td>{formatDate(company.createdAt)}</td>
+      <td>
+        <button
+          type="button"
+          className="portal-btn portal-btn--ghost portal-btn--sm"
+          onClick={() => setEditOpen(true)}
+        >
+          {labels.edit}
+        </button>
+        <CompanyFormSheet
+          locale={locale}
+          mode="edit"
+          open={editOpen}
+          onClose={() => setEditOpen(false)}
+          values={{ companyId: company.id, name: company.name, slug: company.slug }}
+        />
+      </td>
+    </tr>
+  );
+}

@@ -5,37 +5,35 @@ import { useTranslations } from 'next-intl';
 import { useActionState } from 'react';
 
 import { PortalFormError } from '@/components/portal-forms/form-error';
-
 import {
-  INITIAL_BUILDER_FORM_ACTION_STATE,
-  type BuilderFormActionState,
-} from '@/lib/builder/action-state';
-import { setProjectPublicationFormAction } from '@/lib/builder/form-actions';
+  INITIAL_ADMIN_CATALOG_ACTION_STATE,
+  type AdminCatalogActionState,
+} from '@/lib/admin/catalog-action-state';
+import { setProjectPublicationAsAdminFormAction } from '@/lib/admin/form-actions';
 
-type PublicationActionButtonProps = {
+type AdminPublicationActionButtonProps = {
   locale: string;
   projectId: string;
   targetStatus: PublicationStatus;
   actionKey: 'publish' | 'archive' | 'draft';
 };
 
-export function PublicationActionButton({
+export function AdminPublicationActionButton({
   locale,
   projectId,
   targetStatus,
   actionKey,
-}: PublicationActionButtonProps) {
-  const t = useTranslations('portal.publication');
+}: AdminPublicationActionButtonProps) {
+  const t = useTranslations('admin.publication');
   const [state, formAction, pending] = useActionState(
-    setProjectPublicationFormAction.bind(null, locale),
-    INITIAL_BUILDER_FORM_ACTION_STATE,
+    setProjectPublicationAsAdminFormAction.bind(null, locale),
+    INITIAL_ADMIN_CATALOG_ACTION_STATE,
   );
 
   return (
     <PublicationForm
       projectId={projectId}
       targetStatus={targetStatus}
-      actionKey={actionKey}
       state={state}
       formAction={formAction}
       pending={pending}
@@ -48,8 +46,7 @@ export function PublicationActionButton({
 type PublicationFormProps = {
   projectId: string;
   targetStatus: PublicationStatus;
-  actionKey: 'publish' | 'archive' | 'draft';
-  state: BuilderFormActionState;
+  state: AdminCatalogActionState;
   formAction: (formData: FormData) => void;
   pending: boolean;
   confirmMessage: string;
@@ -84,7 +81,7 @@ function PublicationForm({
       >
         {label}
       </button>
-      <PortalFormError errorKey={state.errorKey} />
+      <PortalFormError errorKey={state.errorKey} namespace="admin.catalog.errors" />
     </form>
   );
 }

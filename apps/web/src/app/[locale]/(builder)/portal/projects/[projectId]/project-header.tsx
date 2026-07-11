@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 import type { BuilderProjectDetail } from '@/lib/builder/queries';
 
-import { STATUS_BADGE_CLASS } from '../../_shared/publication';
+import { STATUS_BADGE_CLASS } from '@/lib/shared/publication';
 import { ProjectFormSheet } from '../sheets/project-form-sheet';
 
 type ProjectHeaderProps = {

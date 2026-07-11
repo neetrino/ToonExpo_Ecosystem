@@ -44,10 +44,10 @@ export default async function AdminPage({ params }: AdminPageProps) {
   const users = await loadProvisionedUsers();
 
   return (
-    <section className="mx-auto flex max-w-4xl flex-col gap-10 px-6 py-12">
+    <section className="flex flex-col gap-10">
       <header className="flex flex-col gap-2">
-        <h1 className="text-2xl font-semibold">{t('title')}</h1>
-        <p className="text-[var(--te-muted)]">{t('description')}</p>
+        <h2 className="portal-page__title">{t('provision.title')}</h2>
+        <p className="text-[var(--te-muted)]">{t('provision.description')}</p>
       </header>
 
       <ProvisionForm action={provisionAccountAction.bind(null, locale)} />

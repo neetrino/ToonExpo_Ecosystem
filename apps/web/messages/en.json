@@ -63,6 +63,83 @@
   "admin": {
     "title": "Admin",
     "description": "Provision and manage platform accounts.",
+    "nav": {
+      "title": "Admin",
+      "ariaLabel": "Admin navigation",
+      "provisioning": "Provisioning",
+      "companies": "Companies",
+      "projects": "Projects"
+    },
+    "catalog": {
+      "errors": {
+        "unauthorized": "You do not have permission to perform this action.",
+        "invalidInput": "Please check the fields and try again.",
+        "notFound": "The requested item was not found.",
+        "nameTaken": "A company with this name already exists."
+      }
+    },
+    "companies": {
+      "title": "Companies",
+      "empty": "No companies yet.",
+      "newCompany": "New company",
+      "edit": "Edit",
+      "columns": {
+        "name": "Name",
+        "slug": "Slug",
+        "members": "Members",
+        "projects": "Projects",
+        "createdAt": "Created",
+        "actions": "Actions"
+      },
+      "projectCounts": {
+        "draft": "Draft",
+        "published": "Published",
+        "archived": "Archived"
+      },
+      "form": {
+        "create": "New company",
+        "edit": "Edit company",
+        "submit": "Save",
+        "fields": {
+          "name": "Name",
+          "slug": "Slug",
+          "slugHint": "Slug is set at creation and cannot be changed."
+        }
+      }
+    },
+    "projects": {
+      "title": "Projects",
+      "empty": "No projects match this filter.",
+      "columns": {
+        "company": "Company",
+        "name": "Name",
+        "status": "Status",
+        "buildings": "Buildings",
+        "updatedAt": "Updated",
+        "actions": "Actions"
+      },
+      "status": {
+        "DRAFT": "Draft",
+        "PUBLISHED": "Published",
+        "ARCHIVED": "Archived"
+      },
+      "filter": {
+        "all": "All",
+        "ariaLabel": "Filter projects by status"
+      }
+    },
+    "publication": {
+      "actions": {
+        "publish": "Publish",
+        "archive": "Archive",
+        "draft": "Back to draft"
+      },
+      "confirm": {
+        "publish": "Publish this project? It will become visible in the public catalog.",
+        "archive": "Archive this project? It will be hidden from the public catalog.",
+        "draft": "Move this project back to draft? It will be hidden from the public catalog."
+      }
+    },
     "provision": {
       "title": "Provision account",
       "description": "Create builder, partner, admin, or entrance staff accounts. Buyers register themselves.",

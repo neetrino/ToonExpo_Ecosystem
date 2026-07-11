@@ -9,9 +9,13 @@ import { SideSheet } from '@toonexpo/ui';
 import { useTranslations } from 'next-intl';
 import { useActionState } from 'react';
 
-import { PortalFormError } from '../../_shared/form-error';
-import { PortalFormField, PortalTextArea, PortalTextInput } from '../../_shared/form-fields';
-import { useCloseOnFormSuccess } from '../../_shared/use-close-on-success';
+import { PortalFormError } from '@/components/portal-forms/form-error';
+import {
+  PortalFormField,
+  PortalTextArea,
+  PortalTextInput,
+} from '@/components/portal-forms/form-fields';
+import { useCloseOnFormSuccess } from '@/components/portal-forms/use-close-on-form-success';
 
 import {
   INITIAL_BUILDER_FORM_ACTION_STATE,

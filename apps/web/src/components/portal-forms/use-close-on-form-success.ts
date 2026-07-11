@@ -3,10 +3,12 @@
 import { useRouter } from '@/i18n/navigation';
 import { useEffect } from 'react';
 
-import type { BuilderFormActionState } from '@/lib/builder/action-state';
+type FormSuccessState = {
+  success?: true;
+};
 
 export function useCloseOnFormSuccess(
-  state: BuilderFormActionState,
+  state: FormSuccessState,
   open: boolean,
   onClose: () => void,
 ): void {

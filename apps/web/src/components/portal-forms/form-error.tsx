@@ -2,14 +2,13 @@
 
 import { useTranslations } from 'next-intl';
 
-import type { BuilderMutationErrorKey } from '@/lib/builder/mutations';
-
 type PortalFormErrorProps = {
-  errorKey?: BuilderMutationErrorKey;
+  errorKey?: string;
+  namespace?: 'portal.errors' | 'admin.catalog.errors';
 };
 
-export function PortalFormError({ errorKey }: PortalFormErrorProps) {
-  const t = useTranslations('portal.errors');
+export function PortalFormError({ errorKey, namespace = 'portal.errors' }: PortalFormErrorProps) {
+  const t = useTranslations(namespace);
 
   if (!errorKey) {
     return null;
