@@ -1,3 +1,5 @@
+import { randomUUID } from 'node:crypto';
+
 import type { ProvisionAccountInput } from '@toonexpo/contracts';
 import { slugifyCompanyName } from '@toonexpo/contracts';
 import { prisma, Prisma } from '@toonexpo/db';
@@ -5,34 +7,51 @@ import { prisma, Prisma } from '@toonexpo/db';
 import { hashPassword } from '@/lib/auth/password';
 
 const UNIQUE_CONSTRAINT_ERROR = 'P2002';
+const MAX_SLUG_ATTEMPTS = 50;
+const UUID_SLUG_SUFFIX_LENGTH = 8;
 
-export type ProvisionErrorCode = 'emailTaken';
+export type ProvisionErrorCode = 'emailTaken' | 'invalidInput';
 
 export type ProvisionAccountResult =
   { ok: true; userId: string; companyId?: string } | { ok: false; error: ProvisionErrorCode };
 
+type ResolveCompanyResult = { ok: true; companyId: string } | { ok: false; error: 'invalidInput' };
+
+function isEmailUniqueViolation(error: Prisma.PrismaClientKnownRequestError): boolean {
+  const target = error.meta?.target;
+  return Array.isArray(target) && target.includes('email');
+}
+
 async function resolveCompanyId(
   tx: Prisma.TransactionClient,
   companyName: string,
-): Promise<string> {
+): Promise<ResolveCompanyResult> {
   const baseSlug = slugifyCompanyName(companyName);
-  let slug = baseSlug;
-  let suffix = 0;
 
-  while (true) {
+  for (let suffix = 0; suffix < MAX_SLUG_ATTEMPTS; suffix += 1) {
+    const slug = suffix === 0 ? baseSlug : `${baseSlug}-${suffix}`;
     const existing = await tx.company.findUnique({ where: { slug } });
     if (!existing) {
       const created = await tx.company.create({
         data: { name: companyName, slug },
       });
-      return created.id;
+      return { ok: true, companyId: created.id };
     }
     if (existing.name === companyName) {
-      return existing.id;
+      return { ok: true, companyId: existing.id };
     }
-    suffix += 1;
-    slug = `${baseSlug}-${suffix}`;
   }
+
+  const fallbackSlug = `${baseSlug}-${randomUUID().slice(0, UUID_SLUG_SUFFIX_LENGTH)}`;
+  const fallbackExisting = await tx.company.findUnique({ where: { slug: fallbackSlug } });
+  if (!fallbackExisting) {
+    const created = await tx.company.create({
+      data: { name: companyName, slug: fallbackSlug },
+    });
+    return { ok: true, companyId: created.id };
+  }
+
+  return { ok: false, error: 'invalidInput' };
 }
 
 /**
@@ -58,7 +77,11 @@ export async function provisionAccount(
 
       let companyId: string | undefined;
       if (input.companyName) {
-        companyId = await resolveCompanyId(tx, input.companyName);
+        const companyResult = await resolveCompanyId(tx, input.companyName);
+        if (!companyResult.ok) {
+          throw new ProvisionAbortError(companyResult.error);
+        }
+        companyId = companyResult.companyId;
         await tx.companyMember.create({
           data: {
             companyId,
@@ -73,12 +96,27 @@ export async function provisionAccount(
 
     return { ok: true, ...result };
   } catch (error) {
+    if (error instanceof ProvisionAbortError) {
+      return { ok: false, error: error.code };
+    }
     if (
       error instanceof Prisma.PrismaClientKnownRequestError &&
       error.code === UNIQUE_CONSTRAINT_ERROR
     ) {
-      return { ok: false, error: 'emailTaken' };
+      return {
+        ok: false,
+        error: isEmailUniqueViolation(error) ? 'emailTaken' : 'invalidInput',
+      };
     }
     throw error;
+  }
+}
+
+class ProvisionAbortError extends Error {
+  readonly code: ProvisionErrorCode;
+
+  constructor(code: ProvisionErrorCode) {
+    super(code);
+    this.code = code;
   }
 }

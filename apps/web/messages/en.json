@@ -76,7 +76,8 @@
       },
       "errors": {
         "invalidInput": "Please check the fields and try again.",
-        "emailTaken": "This email is already in use."
+        "emailTaken": "This email is already in use.",
+        "unauthorized": "You do not have permission to provision accounts."
       },
       "success": {
         "provisioned": "Account created successfully."

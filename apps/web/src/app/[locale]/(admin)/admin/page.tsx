@@ -13,9 +13,14 @@ type AdminPageProps = {
 async function loadProvisionedUsers(): Promise<ProvisionedUserRow[]> {
   const users = await prisma.user.findMany({
     where: { role: { not: 'BUYER' } },
-    include: {
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      role: true,
+      createdAt: true,
       members: {
-        include: { company: { select: { name: true } } },
+        select: { company: { select: { name: true } } },
         take: 1,
       },
     },

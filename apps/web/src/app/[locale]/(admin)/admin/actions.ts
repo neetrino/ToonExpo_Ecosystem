@@ -4,6 +4,7 @@ import { provisionAccountSchema } from '@toonexpo/contracts';
 import { revalidatePath } from 'next/cache';
 
 import type { ProvisionActionState } from '@/lib/admin/action-state';
+import { assertAdminSession } from '@/lib/admin/assert-admin-session';
 import { provisionAccount } from '@/lib/admin/provision';
 
 function parseCompanyName(raw: FormDataEntryValue | null): string | undefined {
@@ -19,6 +20,11 @@ export async function provisionAccountAction(
   _prevState: ProvisionActionState,
   formData: FormData,
 ): Promise<ProvisionActionState> {
+  const session = await assertAdminSession();
+  if (!session) {
+    return { errorKey: 'unauthorized' };
+  }
+
   const parsed = provisionAccountSchema.safeParse({
     email: formData.get('email'),
     name: formData.get('name'),

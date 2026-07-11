@@ -1,4 +1,4 @@
-export type ProvisionErrorKey = 'invalidInput' | 'emailTaken';
+export type ProvisionErrorKey = 'invalidInput' | 'emailTaken' | 'unauthorized';
 
 export type ProvisionActionState = {
   errorKey?: ProvisionErrorKey;
