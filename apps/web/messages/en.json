@@ -10,6 +10,7 @@
   },
   "nav": {
     "public": "Public",
+    "projects": "Projects",
     "buyer": "Buyer",
     "builder": "Builder",
     "admin": "Admin"
@@ -101,6 +102,30 @@
         "PARTNER": "Partner",
         "ENTRANCE_STAFF": "Entrance staff"
       }
+    }
+  },
+  "catalog": {
+    "list": {
+      "title": "Projects",
+      "subtitle": "Browse published residential developments.",
+      "empty": "No published projects yet."
+    },
+    "detail": {
+      "gallery": "Gallery",
+      "buildings": "Buildings & apartments",
+      "noValue": "—",
+      "table": {
+        "code": "Unit",
+        "rooms": "Rooms",
+        "areaSqm": "Area (m²)",
+        "priceAmd": "Price",
+        "status": "Status"
+      }
+    },
+    "apartmentStatus": {
+      "AVAILABLE": "Available",
+      "RESERVED": "Reserved",
+      "SOLD": "Sold"
     }
   }
 }
