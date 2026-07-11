@@ -2,14 +2,26 @@
 
 ## Current Status
 
-Sprint 4 data layer in progress: CRM deal / activity / QR scan log models, domain enums, contracts, and demo seed.
+Sprint 4 **COMPLETE** — CRM/QR data layer, public request flow + dedup, buyer QR + builder scan, CRM pipeline mutations + race-safe inventory sync, CRM board/deal sheet UI, two audits + fixes.
 
-## Sprint 4 — Data layer (in progress)
+## Sprint 4 — COMPLETE
 
 - **Domain enums** — `DEAL_STAGES`, `REQUEST_SOURCES`, `DEAL_ACTIVITY_TYPES`, `QR_SCAN_PURPOSES`.
 - **Prisma** — `Deal`, `DealApartment`, `DealActivity`, `QrScanLog` (+ migration `sprint4_crm_qr`).
 - **Contracts** — `publicRequestInput`, `dealStageUpdateInput`, `dealActivityInput`, `manualDealInput`.
 - **Seed** — two idempotent demo deals for `demo-development` with activities.
+- **Public request flow** — project/apartment intake, dedup window, honeypot, buyer-only session linking.
+- **Buyer QR** — issue/regenerate, role-narrowed resolve, builder scan → CRM deal.
+- **Builder CRM** — board/list, deal sheet, stage/assign/activity/apartment mutations, inventory sync.
+- **Audits + fixes** — inventory race safety, QR PII narrowing, public intake hardening, buyer status mapping.
+
+### Deferred (Sprint 4 follow-ups)
+
+- IP rate limiting on public intake (needs Redis).
+- `ApartmentStatusHistory` audit trail.
+- Selective apartment reserve (partial inventory hold).
+- Scan-log analytics dashboard.
+- Entrance check-in flow (Sprint 5 exhibition module).
 
 ## Sprint 3 — COMPLETE
 
@@ -73,7 +85,7 @@ Sprint 4 data layer in progress: CRM deal / activity / QR scan log models, domai
 
 ## Next
 
-**Sprint 4 — QR Requests Constructor CRM**
+**Sprint 5 — Maps Readiness Partners**
 
 ## Open (non-blocking)
 
