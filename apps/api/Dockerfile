@@ -20,12 +20,12 @@ COPY . .
 RUN pnpm --filter @toonexpo/db generate
 RUN pnpm --filter @toonexpo/shared --filter @toonexpo/domain --filter @toonexpo/contracts --filter @toonexpo/db build
 RUN pnpm --filter @toonexpo/api build
+RUN pnpm --filter @toonexpo/api deploy --prod /prod/api
+RUN cd /prod/api/node_modules/@toonexpo/db && /app/packages/db/node_modules/.bin/prisma generate
 
 FROM node:22-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
-COPY --from=build /app/apps/api/dist ./dist
-COPY --from=build /app/apps/api/package.json ./package.json
-COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /prod/api ./
 EXPOSE 4000
 CMD ["node", "dist/main.js"]

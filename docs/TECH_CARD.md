@@ -18,7 +18,7 @@ Size C — large, layout: monorepo (`apps/*`, `packages/*`).
 |---|---|---:|---|
 | Package manager | pnpm | Confirmed | Matches project rules. |
 | Monorepo tooling | Turborepo | Confirmed | Size C default. |
-| Node.js | 24.x LTS | Confirmed | From template baseline. |
+| Node.js | 22.x LTS | Confirmed | Aligned with local/CI runtime; upgrade to 24 later as planned work. |
 | TypeScript | strict | Confirmed | Required by rules. |
 | Frontend | Next.js App Router | Confirmed | Public site + portals in one app. |
 | Backend | NestJS API | Confirmed | Clear module boundaries and integration contracts. |

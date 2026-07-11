@@ -10,6 +10,8 @@ import pino from 'pino';
 import { AppModule } from './app.module';
 import { loadApiEnv } from './common/env';
 
+const DEFAULT_API_PORT = 4000;
+
 loadDotenv({ path: resolve(process.cwd(), '../../.env') });
 
 async function bootstrap(): Promise<void> {
@@ -31,7 +33,7 @@ async function bootstrap(): Promise<void> {
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('docs', app, document);
 
-  const port = Number(new URL(env.API_URL).port || 4000);
+  const port = Number(new URL(env.API_URL).port || DEFAULT_API_PORT);
   await app.listen(port);
   logger.info({ port }, 'API listening');
 }

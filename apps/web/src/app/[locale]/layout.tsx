@@ -1,5 +1,6 @@
-import { SUPPORTED_LOCALES } from '@toonexpo/shared';
+import { isAppLocale, SUPPORTED_LOCALES } from '@toonexpo/shared';
 import { NextIntlClientProvider } from 'next-intl';
+import { notFound } from 'next/navigation';
 import { getMessages, setRequestLocale } from 'next-intl/server';
 import type { ReactNode } from 'react';
 
@@ -16,6 +17,9 @@ export function generateStaticParams() {
 
 export default async function LocaleLayout({ children, params }: LocaleLayoutProps) {
   const { locale } = await params;
+  if (!isAppLocale(locale)) {
+    notFound();
+  }
   setRequestLocale(locale);
   const messages = await getMessages();
 

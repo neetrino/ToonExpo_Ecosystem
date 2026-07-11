@@ -1,7 +1,5 @@
+import { emptyToUndefined } from '@toonexpo/shared';
 import { z } from 'zod';
-
-const emptyToUndefined = (value: unknown) =>
-  value === '' || value === undefined ? undefined : value;
 
 export const apiEnvSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),

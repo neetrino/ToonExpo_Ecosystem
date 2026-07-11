@@ -28,17 +28,20 @@ enum ApartmentStatus {
 }
 
 model User {
-  id           String        @id @default(cuid())
-  email        String        @unique
-  name         String?
-  phone        String?
-  passwordHash String?
-  role         PlatformRole  @default(BUYER)
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  accounts     Account[]
-  sessions     Session[]
-  buyerProfile BuyerProfile?
+  id            String          @id @default(cuid())
+  email         String          @unique
+  emailVerified DateTime?
+  name          String?
+  image         String?
+  phone         String?
+  passwordHash  String?
+  role          PlatformRole    @default(BUYER)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  accounts      Account[]
+  sessions      Session[]
+  buyerProfile  BuyerProfile?
+  members       CompanyMember[]
 }
 
 model Account {
@@ -113,6 +116,7 @@ model CompanyMember {
   role      PlatformRole
   createdAt DateTime     @default(now())
   company   Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([companyId, userId])
   @@index([userId])
@@ -141,6 +145,8 @@ model Building {
   updatedAt DateTime @updatedAt
   project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
   floors    Floor[]
+
+  @@index([projectId])
 }
 
 model Floor {
