@@ -1,4 +1,18 @@
 export {
+  publicApartmentSchema,
+  publicBuildingSchema,
+  publicFloorSchema,
+  publicMediaAssetSchema,
+  publicProjectDetailSchema,
+  publicProjectSummarySchema,
+  type PublicApartment,
+  type PublicBuilding,
+  type PublicFloor,
+  type PublicMediaAsset,
+  type PublicProjectDetail,
+  type PublicProjectSummary,
+} from './catalog';
+export {
   buyerRegisterSchema,
   loginSchema,
   platformRoleSchema,

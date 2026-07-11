@@ -123,15 +123,19 @@ model CompanyMember {
 }
 
 model Project {
-  id         String            @id @default(cuid())
-  companyId  String
-  name       String
-  slug       String
-  status     PublicationStatus @default(DRAFT)
-  createdAt  DateTime          @default(now())
-  updatedAt  DateTime          @updatedAt
-  company    Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  buildings  Building[]
+  id          String            @id @default(cuid())
+  companyId   String
+  name        String
+  slug        String
+  description String?           @db.Text
+  city        String?
+  address     String?
+  status      PublicationStatus @default(DRAFT)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  company     Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  buildings   Building[]
+  media       MediaAsset[]
 
   @@unique([companyId, slug])
   @@index([status])
@@ -169,10 +173,28 @@ model Apartment {
   status    ApartmentStatus @default(AVAILABLE)
   areaSqm   Float?
   rooms     Int?
+  priceAmd  Int?
   createdAt DateTime        @default(now())
   updatedAt DateTime        @updatedAt
   floor     Floor           @relation(fields: [floorId], references: [id], onDelete: Cascade)
+  media     MediaAsset[]
 
   @@unique([floorId, code])
   @@index([status])
+}
+
+// Exactly one of projectId or apartmentId must be set — enforced at application layer, not DB.
+model MediaAsset {
+  id          String     @id @default(cuid())
+  url         String
+  alt         String?
+  sortOrder   Int        @default(0)
+  projectId   String?
+  apartmentId String?
+  createdAt   DateTime   @default(now())
+  project     Project?   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  apartment   Apartment? @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([apartmentId])
 }
