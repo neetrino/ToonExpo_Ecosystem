@@ -1,0 +1,17 @@
+{
+  "brand": "ToonExpo",
+  "home": {
+    "title": "ToonExpo Ecosystem",
+    "subtitle": "Public platform shell for buyers, builders and partners.",
+    "ctaPublic": "Public area",
+    "ctaBuyer": "Buyer area",
+    "ctaBuilder": "Builder portal",
+    "ctaAdmin": "Admin"
+  },
+  "nav": {
+    "public": "Public",
+    "buyer": "Buyer",
+    "builder": "Builder",
+    "admin": "Admin"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "brand": "ToonExpo",
+  "home": {
+    "title": "ToonExpo Ecosystem",
+    "subtitle": "Հանրային հարթակ գնորդների, կառուցապատողների և գործընկերների համար։",
+    "ctaPublic": "Հանրային գոտի",
+    "ctaBuyer": "Գնորդի գոտի",
+    "ctaBuilder": "Կառուցապատողի պորտալ",
+    "ctaAdmin": "Ադմին"
+  },
+  "nav": {
+    "public": "Հանրային",
+    "buyer": "Գնորդ",
+    "builder": "Կառուցապատող",
+    "admin": "Ադմին"
+  }
+}

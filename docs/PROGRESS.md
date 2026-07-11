@@ -2,9 +2,9 @@
 
 ## Current Status
 
-TECH_CARD confirmed (2026-07-11). Ready for Sprint 0 monorepo scaffold.
+Sprint 0 scaffold in progress / largely complete.
 
-Production application code has not started yet.
+Monorepo apps and packages exist; quality scripts pass (`lint`, `typecheck`, `test`, `build`).
 
 ## Completed
 
@@ -13,27 +13,32 @@ Production application code has not started yet.
 - Project size set to Size C.
 - Development start pack created.
 - Technical architecture documented.
-- TECH_CARD stack choices confirmed.
-- `.env.example` cleaned (locales and pool knobs removed).
+- TECH_CARD stack choices confirmed (2026-07-11).
+- Monorepo scaffold: `apps/web`, `apps/api`, shared packages.
+- Turborepo + pnpm workspaces + CI workflow.
+- Prisma baseline schema (auth/session + inventory core).
+- next-intl hy/ru/en foundation.
+- API `/health` + Swagger `/docs`.
+- Side sheet UI primitive.
+- Env validation (Zod) for API; web env helper.
 
 ## Confirmed Stack (summary)
 
-- pnpm + Turborepo monorepo; Next.js web + NestJS API.
-- Auth.js 5 + database sessions; Zod validation; signed R2 uploads.
-- next-intl with `hy`/`ru`/`en` as code constants.
-- PWA out of scope.
-- Upstash Redis only when needed later.
+- pnpm + Turborepo; Next.js web + NestJS API.
+- Auth.js 5 + database sessions (implementation in Sprint 1).
+- Zod validation; signed R2 uploads (wiring later).
+- Locales as code constants.
+- PWA out of scope; Upstash Redis later when needed.
 
 ## Next
 
-1. Scaffold `apps/web`, `apps/api` and shared packages (Sprint 0).
-2. TypeScript / lint / format / test baseline.
-3. Prisma baseline schema + env validation.
-4. i18n foundation + app/API shells + health endpoint.
-5. Then Sprint 1: auth, roles, buyer registration, protected routes.
+1. Finish Prisma migrate against Neon (if not applied yet).
+2. Sprint 1: Auth.js sessions, roles, buyer registration, protected routes.
+3. Wire API auth verification against DB sessions.
+4. Staging/prod domain plan when ready to deploy.
 
-## Open (non-blocking for scaffold)
+## Open (non-blocking)
 
-- staging/prod domain/subdomain plan;
-- Sentry project setup;
-- exact deploy wiring for Vercel + Cloud Run.
+- staging/prod domains;
+- Sentry project keys;
+- Neon `DIRECT_URL` if pooler migrate issues appear.

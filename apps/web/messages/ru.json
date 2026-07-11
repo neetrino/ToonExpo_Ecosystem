@@ -1,0 +1,17 @@
+{
+  "brand": "ToonExpo",
+  "home": {
+    "title": "ToonExpo Ecosystem",
+    "subtitle": "Публичная платформа для покупателей, застройщиков и партнёров.",
+    "ctaPublic": "Публичная зона",
+    "ctaBuyer": "Кабинет покупателя",
+    "ctaBuilder": "Портал застройщика",
+    "ctaAdmin": "Админ"
+  },
+  "nav": {
+    "public": "Публичное",
+    "buyer": "Покупатель",
+    "builder": "Застройщик",
+    "admin": "Админ"
+  }
+}

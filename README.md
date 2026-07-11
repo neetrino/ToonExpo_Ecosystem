@@ -31,23 +31,46 @@ Out of scope:
 - BigProjects staff/team KPI;
 - BigProjects BOS implementation.
 
-## Documentation
+## Stack
 
-Start here:
+Size C monorepo (`apps/*`, `packages/*`). Confirmed in [`docs/TECH_CARD.md`](./docs/TECH_CARD.md).
+
+- `apps/web` — Next.js (Vercel)
+- `apps/api` — NestJS (Google Cloud Run)
+- `packages/*` — shared domain, contracts, db, ui, config
+
+## Local setup
+
+```bash
+pnpm install
+cp .env.example .env   # if needed; fill DATABASE_URL and AUTH_SECRET
+pnpm db:generate
+pnpm db:migrate        # requires DATABASE_URL
+pnpm dev               # web :3000, api :4000
+```
+
+Useful commands:
+
+```bash
+pnpm lint
+pnpm typecheck
+pnpm test
+pnpm build
+pnpm --filter @toonexpo/api dev
+pnpm --filter @toonexpo/web dev
+```
+
+API health: `GET http://localhost:4000/health`  
+API docs: `http://localhost:4000/docs`
+
+## Documentation
 
 - [Brief](./docs/BRIEF.md)
 - [Tech Card](./docs/TECH_CARD.md)
 - [Architecture](./docs/01-ARCHITECTURE.md)
 - [Development Start Pack](./docs/00-Development-Start/01-MVP-Scope-Freeze.md)
 - [Documentation Hub](./docs/00-Documentation-Hub.md)
-- [ToonExpo Ecosystem Overview](./docs/02-ToonExpo-Ecosystem/00-Ecosystem-Overview.md)
-- [BOS / ToonExpo Boundary](./docs/03-Integration-With-BOS/01-BOS-ToonExpo-Boundary.md)
-
-## Project Size
-
-Size C — large monorepo (`apps/*`, `packages/*`).
-
-`docs/TECH_CARD.md` stack choices are confirmed (2026-07-11). Next step: Sprint 0 monorepo scaffold.
+- [Progress](./docs/PROGRESS.md)
 
 ## Rule
 
