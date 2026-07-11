@@ -185,7 +185,8 @@
     "nav": {
       "ariaLabel": "Builder portal navigation",
       "overview": "Overview",
-      "projects": "Projects"
+      "projects": "Projects",
+      "crm": "CRM"
     },
     "overview": {
       "title": "Overview",
@@ -202,6 +203,111 @@
       "levelTaken": "This floor level is already in use for this building.",
       "codeTaken": "This apartment code is already in use on this floor.",
       "nameTaken": "A project with this name already exists."
+    },
+    "crm": {
+      "title": "CRM",
+      "empty": "No deals yet. Create a manual deal or wait for buyer requests.",
+      "newDeal": "New deal",
+      "view": {
+        "board": "Board",
+        "list": "List"
+      },
+      "card": {
+        "unnamedContact": "Unnamed contact",
+        "noProject": "No project",
+        "noAssignee": "Unassigned",
+        "noActivity": "No activity",
+        "apartmentCount": "{count} apartments"
+      },
+      "list": {
+        "columns": {
+          "contact": "Contact",
+          "project": "Project",
+          "stage": "Stage",
+          "source": "Source",
+          "assignee": "Assignee",
+          "apartments": "Apartments",
+          "lastActivity": "Last activity"
+        }
+      },
+      "stages": {
+        "NEW_REQUEST": "New request",
+        "ASSIGNED": "Assigned",
+        "CONTACTED": "Contacted",
+        "FOLLOW_UP_NEEDED": "Follow-up needed",
+        "APARTMENT_SELECTED": "Apartment selected",
+        "RESERVED": "Reserved",
+        "CONVERTED": "Converted",
+        "CLOSED": "Closed",
+        "LOST": "Lost"
+      },
+      "sources": {
+        "PROJECT_PAGE": "Project page",
+        "APARTMENT_PAGE": "Apartment page",
+        "BUILDER_QR_SCAN": "QR scan",
+        "MANUAL_BUILDER_ENTRY": "Manual entry",
+        "EVENT_INTERACTION": "Event"
+      },
+      "activityTypes": {
+        "COMMENT": "Comment",
+        "FOLLOW_UP": "Follow-up",
+        "STATUS_CHANGE": "Status change"
+      },
+      "errors": {
+        "unauthorized": "You are not authorized to perform this action.",
+        "invalidInput": "Please check the fields and try again.",
+        "notFound": "The requested deal was not found.",
+        "apartmentRequired": "Link an apartment before moving to this stage.",
+        "reservationConflict": "This apartment cannot be reserved due to an inventory conflict."
+      },
+      "manualDeal": {
+        "title": "New deal",
+        "submit": "Create deal",
+        "fields": {
+          "contactName": "Contact name",
+          "contactPhone": "Phone",
+          "contactEmail": "Email (optional)",
+          "message": "Message (optional)",
+          "project": "Project (optional)",
+          "noProject": "No project"
+        }
+      },
+      "dealSheet": {
+        "title": "Deal — {name}",
+        "source": "Source",
+        "createdAt": "Created",
+        "stage": "Stage",
+        "assignee": "Assignee",
+        "unassigned": "Unassigned",
+        "noValue": "—",
+        "contact": {
+          "title": "Contact",
+          "phone": "Phone",
+          "email": "Email",
+          "buyerLinked": "Registered buyer",
+          "message": "Request message"
+        },
+        "apartments": {
+          "title": "Apartments",
+          "empty": "No apartment selected yet.",
+          "emptyHint": "Link an apartment to move toward reservation or sale.",
+          "link": "Link apartment",
+          "unlink": "Unlink",
+          "project": "Project",
+          "apartment": "Apartment",
+          "price": "{value} AMD"
+        },
+        "activities": {
+          "title": "Activities",
+          "empty": "No follow-up activity yet.",
+          "comment": "Add comment",
+          "followUp": "Schedule follow-up",
+          "submitComment": "Add comment",
+          "submitFollowUp": "Add follow-up",
+          "nextFollowUpAt": "Next follow-up",
+          "noAuthor": "System"
+        }
+      }
     },
     "projects": {
       "title": "Projects",

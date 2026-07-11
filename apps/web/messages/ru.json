@@ -185,7 +185,8 @@
     "nav": {
       "ariaLabel": "Навигация портала застройщика",
       "overview": "Обзор",
-      "projects": "Проекты"
+      "projects": "Проекты",
+      "crm": "CRM"
     },
     "overview": {
       "title": "Обзор",
@@ -202,6 +203,111 @@
       "levelTaken": "Этот уровень этажа уже используется в этом корпусе.",
       "codeTaken": "Этот код квартиры уже используется на этом этаже.",
       "nameTaken": "Проект с таким названием уже существует."
+    },
+    "crm": {
+      "title": "CRM",
+      "empty": "Сделок пока нет. Создайте вручную или дождитесь заявок от покупателей.",
+      "newDeal": "Новая сделка",
+      "view": {
+        "board": "Доска",
+        "list": "Список"
+      },
+      "card": {
+        "unnamedContact": "Без имени",
+        "noProject": "Без проекта",
+        "noAssignee": "Не назначен",
+        "noActivity": "Нет активности",
+        "apartmentCount": "{count} кв."
+      },
+      "list": {
+        "columns": {
+          "contact": "Контакт",
+          "project": "Проект",
+          "stage": "Стадия",
+          "source": "Источник",
+          "assignee": "Ответственный",
+          "apartments": "Квартиры",
+          "lastActivity": "Последняя активность"
+        }
+      },
+      "stages": {
+        "NEW_REQUEST": "Новая заявка",
+        "ASSIGNED": "Назначена",
+        "CONTACTED": "Связались",
+        "FOLLOW_UP_NEEDED": "Нужен повторный контакт",
+        "APARTMENT_SELECTED": "Квартира выбрана",
+        "RESERVED": "Забронирована",
+        "CONVERTED": "Продажа",
+        "CLOSED": "Закрыта",
+        "LOST": "Потеряна"
+      },
+      "sources": {
+        "PROJECT_PAGE": "Страница проекта",
+        "APARTMENT_PAGE": "Страница квартиры",
+        "BUILDER_QR_SCAN": "QR-скан",
+        "MANUAL_BUILDER_ENTRY": "Ручной ввод",
+        "EVENT_INTERACTION": "Мероприятие"
+      },
+      "activityTypes": {
+        "COMMENT": "Комментарий",
+        "FOLLOW_UP": "Повторный контакт",
+        "STATUS_CHANGE": "Смена статуса"
+      },
+      "errors": {
+        "unauthorized": "У вас нет прав для выполнения этого действия.",
+        "invalidInput": "Проверьте поля и попробуйте снова.",
+        "notFound": "Запрошенная сделка не найдена.",
+        "apartmentRequired": "Привяжите квартиру перед переходом на эту стадию.",
+        "reservationConflict": "Квартиру нельзя забронировать из-за конфликта в наличии."
+      },
+      "manualDeal": {
+        "title": "Новая сделка",
+        "submit": "Создать сделку",
+        "fields": {
+          "contactName": "Имя контакта",
+          "contactPhone": "Телефон",
+          "contactEmail": "Email (необязательно)",
+          "message": "Сообщение (необязательно)",
+          "project": "Проект (необязательно)",
+          "noProject": "Без проекта"
+        }
+      },
+      "dealSheet": {
+        "title": "Сделка — {name}",
+        "source": "Источник",
+        "createdAt": "Создана",
+        "stage": "Стадия",
+        "assignee": "Ответственный",
+        "unassigned": "Не назначен",
+        "noValue": "—",
+        "contact": {
+          "title": "Контакт",
+          "phone": "Телефон",
+          "email": "Email",
+          "buyerLinked": "Зарегистрированный покупатель",
+          "message": "Текст заявки"
+        },
+        "apartments": {
+          "title": "Квартиры",
+          "empty": "Квартира ещё не выбрана.",
+          "emptyHint": "Привяжите квартиру для перехода к бронированию или продаже.",
+          "link": "Привязать квартиру",
+          "unlink": "Отвязать",
+          "project": "Проект",
+          "apartment": "Квартира",
+          "price": "{value} AMD"
+        },
+        "activities": {
+          "title": "Активности",
+          "empty": "Повторных контактов пока нет.",
+          "comment": "Добавить комментарий",
+          "followUp": "Запланировать контакт",
+          "submitComment": "Добавить комментарий",
+          "submitFollowUp": "Добавить контакт",
+          "nextFollowUpAt": "Следующий контакт",
+          "noAuthor": "Система"
+        }
+      }
     },
     "projects": {
       "title": "Проекты",

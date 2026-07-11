@@ -33,6 +33,9 @@ export default async function PortalLayout({ children, params }: PortalLayoutPro
           <Link className="portal-nav__link" href="/portal/projects">
             {t('projects')}
           </Link>
+          <Link className="portal-nav__link" href="/portal/crm">
+            {t('crm')}
+          </Link>
         </nav>
       </header>
       {children}

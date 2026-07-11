@@ -6,6 +6,7 @@ type PortalFormErrorProps = {
   errorKey?: string;
   namespace?:
     | 'portal.errors'
+    | 'portal.crm.errors'
     | 'admin.catalog.errors'
     | 'catalog.request.errors'
     | 'qr.builder.errors'

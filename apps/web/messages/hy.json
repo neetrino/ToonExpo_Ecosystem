@@ -185,7 +185,8 @@
     "nav": {
       "ariaLabel": "Կառուցապատողի պորտալի նավիգացիա",
       "overview": "Ակնարկ",
-      "projects": "Նախագծեր"
+      "projects": "Նախագծեր",
+      "crm": "CRM"
     },
     "overview": {
       "title": "Ակնարկ",
@@ -202,6 +203,111 @@
       "levelTaken": "Այս հարկի մակարդակն արդեն օգտագործվում է այս շենքում։",
       "codeTaken": "Այս բնակարանի կոդն արդեն օգտագործվում է այս հարկում։",
       "nameTaken": "Այս անվանումով նախագիծ արդեն գոյություն ունի։"
+    },
+    "crm": {
+      "title": "CRM",
+      "empty": "Գործարքներ դեռ չկան։ Ստեղծեք ձեռքով կամ սպասեք գնորդների հարցումներին։",
+      "newDeal": "Նոր գործարք",
+      "view": {
+        "board": "Տախտակ",
+        "list": "Ցանկ"
+      },
+      "card": {
+        "unnamedContact": "Անանուն կոնտակտ",
+        "noProject": "Առանց նախագծի",
+        "noAssignee": "Նշանակված չէ",
+        "noActivity": "Ակտիվություն չկա",
+        "apartmentCount": "{count} բնակարան"
+      },
+      "list": {
+        "columns": {
+          "contact": "Կոնտակտ",
+          "project": "Նախագիծ",
+          "stage": "Փուլ",
+          "source": "Աղբյուր",
+          "assignee": "Պատասխանատու",
+          "apartments": "Բնակարաններ",
+          "lastActivity": "Վերջին ակտիվություն"
+        }
+      },
+      "stages": {
+        "NEW_REQUEST": "Նոր հարցում",
+        "ASSIGNED": "Նշանակված",
+        "CONTACTED": "Կապ հաստատված",
+        "FOLLOW_UP_NEEDED": "Պետք է հետևել",
+        "APARTMENT_SELECTED": "Բնակարան ընտրված",
+        "RESERVED": "Ամրագրված",
+        "CONVERTED": "Վաճառք",
+        "CLOSED": "Փակված",
+        "LOST": "Կորած"
+      },
+      "sources": {
+        "PROJECT_PAGE": "Նախագծի էջ",
+        "APARTMENT_PAGE": "Բնակարանի էջ",
+        "BUILDER_QR_SCAN": "QR սկան",
+        "MANUAL_BUILDER_ENTRY": "Ձեռքով մուտք",
+        "EVENT_INTERACTION": "Միջոցառում"
+      },
+      "activityTypes": {
+        "COMMENT": "Մեկնաբանություն",
+        "FOLLOW_UP": "Հետևում",
+        "STATUS_CHANGE": "Կարգավիճակի փոփոխություն"
+      },
+      "errors": {
+        "unauthorized": "Դուք չունեք այս գործողությունը կատարելու իրավասություն։",
+        "invalidInput": "Ստուգեք դաշտերը և կրկին փորձեք։",
+        "notFound": "Հարցված գործարքը չի գտնվել։",
+        "apartmentRequired": "Այս փուլին անցնելուց առաջ կապեք բնակարան։",
+        "reservationConflict": "Բնակարանը հնարավոր չէ ամրագրել՝ պաշարների կոնֆլիկտի պատճառով։"
+      },
+      "manualDeal": {
+        "title": "Նոր գործարք",
+        "submit": "Ստեղծել գործարք",
+        "fields": {
+          "contactName": "Կոնտակտի անուն",
+          "contactPhone": "Հեռախոս",
+          "contactEmail": "Էլ. փոստ (ընտրովի)",
+          "message": "Հաղորդագրություն (ընտրովի)",
+          "project": "Նախագիծ (ընտրովի)",
+          "noProject": "Առանց նախագծի"
+        }
+      },
+      "dealSheet": {
+        "title": "Գործարք — {name}",
+        "source": "Աղբյուր",
+        "createdAt": "Ստեղծված",
+        "stage": "Փուլ",
+        "assignee": "Պատասխանատու",
+        "unassigned": "Նշանակված չէ",
+        "noValue": "—",
+        "contact": {
+          "title": "Կոնտակտ",
+          "phone": "Հեռախոս",
+          "email": "Էլ. փոստ",
+          "buyerLinked": "Գրանցված գնորդ",
+          "message": "Հարցման տեքստ"
+        },
+        "apartments": {
+          "title": "Բնակարաններ",
+          "empty": "Բնակարան դեռ չի ընտրվել։",
+          "emptyHint": "Կապեք բնակարան՝ ամրագրման կամ վաճառքի համար։",
+          "link": "Կապել բնակարան",
+          "unlink": "Անջատել",
+          "project": "Նախագիծ",
+          "apartment": "Բնակարան",
+          "price": "{value} AMD"
+        },
+        "activities": {
+          "title": "Ակտիվություն",
+          "empty": "Հետևման ակտիվություն դեռ չկա։",
+          "comment": "Ավելացնել մեկնաբանություն",
+          "followUp": "Պլանավորել հետևում",
+          "submitComment": "Ավելացնել մեկնաբանություն",
+          "submitFollowUp": "Ավելացնել հետևում",
+          "nextFollowUpAt": "Հաջորդ հետևում",
+          "noAuthor": "Համակարգ"
+        }
+      }
     },
     "projects": {
       "title": "Նախագծեր",

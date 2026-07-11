@@ -31,7 +31,7 @@ export function PortalTextInput({
   defaultValue?: string;
   required?: boolean;
   maxLength?: number;
-  type?: 'text' | 'number' | 'email';
+  type?: 'text' | 'number' | 'email' | 'datetime-local';
   readOnly?: boolean;
 }) {
   return (
@@ -53,11 +53,13 @@ export function PortalTextArea({
   defaultValue,
   maxLength,
   rows = 4,
+  required,
 }: {
   name: string;
   defaultValue?: string;
   maxLength?: number;
   rows?: number;
+  required?: boolean;
 }) {
   return (
     <textarea
@@ -67,6 +69,7 @@ export function PortalTextArea({
       defaultValue={defaultValue}
       maxLength={maxLength}
       rows={rows}
+      required={required}
     />
   );
 }
@@ -75,11 +78,13 @@ export function PortalSelect({
   name,
   defaultValue,
   required,
+  disabled,
   children,
 }: {
   name: string;
   defaultValue?: string;
   required?: boolean;
+  disabled?: boolean;
   children: ReactNode;
 }) {
   return (
@@ -89,6 +94,7 @@ export function PortalSelect({
       name={name}
       defaultValue={defaultValue}
       required={required}
+      disabled={disabled}
     >
       {children}
     </select>
