@@ -758,6 +758,246 @@ async function seedPartners(): Promise<void> {
   console.log('Upserted demo partners (Converse Bank, PixelRender Studio, Draft Partner).');
 }
 
+/** v1 category set from docs 03-Categories-Scoring examples. */
+const READINESS_CATEGORY_SEEDS = [
+  {
+    key: 'company_profile',
+    name: 'Company profile',
+    description: 'Company profile completeness, contacts, logo/brand.',
+    sortOrder: 10,
+    serviceCategoryKey: null as string | null,
+  },
+  {
+    key: 'project_information',
+    name: 'Project information',
+    description: 'Project description, location, public trust information.',
+    sortOrder: 20,
+    serviceCategoryKey: null,
+  },
+  {
+    key: 'media_materials',
+    name: 'Media materials',
+    description: 'Cover images, gallery, renders, video.',
+    sortOrder: 30,
+    serviceCategoryKey: 'render_studio',
+  },
+  {
+    key: 'apartment_inventory',
+    name: 'Apartment inventory',
+    description: 'Apartments, plans, availability completeness.',
+    sortOrder: 40,
+    serviceCategoryKey: null,
+  },
+  {
+    key: 'visual_map_readiness',
+    name: 'Visual map readiness',
+    description: 'Visual maps and hotspots for buyer navigation.',
+    sortOrder: 50,
+    serviceCategoryKey: 'render_studio',
+  },
+  {
+    key: 'pricing_status_clarity',
+    name: 'Pricing / status clarity',
+    description: 'Consistent prices and apartment statuses.',
+    sortOrder: 60,
+    serviceCategoryKey: null,
+  },
+  {
+    key: 'crm_request_readiness',
+    name: 'CRM / request readiness',
+    description: 'Buyer request and CRM follow-up readiness.',
+    sortOrder: 70,
+    serviceCategoryKey: null,
+  },
+  {
+    key: 'event_presentation_readiness',
+    name: 'Event presentation readiness',
+    description: 'Overall readiness for public/event exposure.',
+    sortOrder: 80,
+    serviceCategoryKey: null,
+  },
+] as const;
+
+async function seedReadinessCategories(): Promise<Map<string, string>> {
+  const idByKey = new Map<string, string>();
+
+  for (const category of READINESS_CATEGORY_SEEDS) {
+    const row = await prisma.readinessCategory.upsert({
+      where: { key: category.key },
+      create: {
+        key: category.key,
+        name: category.name,
+        description: category.description,
+        sortOrder: category.sortOrder,
+        serviceCategoryKey: category.serviceCategoryKey,
+        active: true,
+      },
+      update: {
+        name: category.name,
+        description: category.description,
+        sortOrder: category.sortOrder,
+        serviceCategoryKey: category.serviceCategoryKey,
+        active: true,
+      },
+      select: { id: true, key: true },
+    });
+    idByKey.set(row.key, row.id);
+  }
+
+  console.log(`Upserted ${READINESS_CATEGORY_SEEDS.length} readiness categories.`);
+  return idByKey;
+}
+
+async function seedDemoReadinessAssessment(
+  company: Company,
+  categoryIds: Map<string, string>,
+): Promise<void> {
+  const existing = await prisma.readinessAssessment.findFirst({
+    where: {
+      companyId: company.id,
+      targetType: 'BUILDER_COMPANY',
+      projectId: null,
+      archivedAt: null,
+    },
+    select: { id: true },
+  });
+
+  const scoreConfigs = [
+    {
+      key: 'company_profile',
+      score: 80,
+      status: 'READY' as const,
+      recommendation: 'Keep company contacts and logo up to date.',
+      requiredActions: null as string | null,
+      internalNote: 'Looks solid for demo.',
+    },
+    {
+      key: 'project_information',
+      score: 65,
+      status: 'IN_PROGRESS' as const,
+      recommendation: 'Expand project location and description detail.',
+      requiredActions: 'Review Sunrise Residence public text.',
+      internalNote: null,
+    },
+    {
+      key: 'media_materials',
+      score: 28,
+      status: 'NEEDS_IMPROVEMENT' as const,
+      recommendation: 'Upload higher-quality project renders and cover images.',
+      requiredActions: 'Replace weak cover image; add gallery renders.',
+      internalNote: 'Builder is slow with materials — follow up before event.',
+    },
+    {
+      key: 'apartment_inventory',
+      score: 72,
+      status: 'READY' as const,
+      recommendation: 'Apartment inventory is acceptable for v1.',
+      requiredActions: null,
+      internalNote: null,
+    },
+    {
+      key: 'visual_map_readiness',
+      score: 55,
+      status: 'IN_PROGRESS' as const,
+      recommendation: 'Finish hotspot coverage on floor canvases.',
+      requiredActions: 'Add remaining floor hotspots.',
+      internalNote: null,
+    },
+    {
+      key: 'pricing_status_clarity',
+      score: 70,
+      status: 'READY' as const,
+      recommendation: 'Keep apartment prices and statuses consistent.',
+      requiredActions: null,
+      internalNote: null,
+    },
+    {
+      key: 'crm_request_readiness',
+      score: 60,
+      status: 'IN_PROGRESS' as const,
+      recommendation: 'Confirm request routing and response SLAs.',
+      requiredActions: 'Assign a default CRM owner.',
+      internalNote: null,
+    },
+    {
+      key: 'event_presentation_readiness',
+      score: 45,
+      status: 'IN_PROGRESS' as const,
+      recommendation: 'Prepare booth materials and media for the event.',
+      requiredActions: 'Confirm event presentation checklist.',
+      internalNote: 'Event presentation concern — recheck week before.',
+    },
+  ];
+
+  const scored = scoreConfigs
+    .map((config) => ({ ...config, categoryId: categoryIds.get(config.key) }))
+    .filter((config): config is (typeof scoreConfigs)[number] & { categoryId: string } => {
+      return typeof config.categoryId === 'string';
+    });
+
+  const overallScore = Math.round(
+    scored.reduce((sum, entry) => sum + entry.score, 0) / scored.length,
+  );
+
+  const assessmentData = {
+    status: 'NEEDS_IMPROVEMENT' as const,
+    overallScore,
+    responsibleContact: 'BigProjects readiness desk',
+    recommendation:
+      'Focus on media materials first, then finish visual map and event presentation items.',
+    requiredActions:
+      'Upload better renders; complete floor hotspots; confirm event presentation checklist.',
+    internalNotes:
+      'INTERNAL: demo builder is slow with materials; data quality risk on media — do not share with builder.',
+    lastEvaluatedAt: new Date(),
+  };
+
+  if (existing) {
+    await prisma.readinessCategoryScore.deleteMany({ where: { assessmentId: existing.id } });
+    await prisma.readinessAssessment.update({
+      where: { id: existing.id },
+      data: {
+        ...assessmentData,
+        categoryScores: {
+          create: scored.map((entry) => ({
+            categoryId: entry.categoryId,
+            score: entry.score,
+            status: entry.status,
+            recommendation: entry.recommendation,
+            requiredActions: entry.requiredActions,
+            internalNote: entry.internalNote,
+            evaluatedAt: new Date(),
+          })),
+        },
+      },
+    });
+    console.log('Updated demo company readiness assessment for demo-development.');
+    return;
+  }
+
+  await prisma.readinessAssessment.create({
+    data: {
+      targetType: 'BUILDER_COMPANY',
+      companyId: company.id,
+      projectId: null,
+      ...assessmentData,
+      categoryScores: {
+        create: scored.map((entry) => ({
+          categoryId: entry.categoryId,
+          score: entry.score,
+          status: entry.status,
+          recommendation: entry.recommendation,
+          requiredActions: entry.requiredActions,
+          internalNote: entry.internalNote,
+          evaluatedAt: new Date(),
+        })),
+      },
+    },
+  });
+
+  console.log('Created demo company readiness assessment for demo-development.');
+}
+
 async function main(): Promise<void> {
   await seedAdmin();
   const catalog = await seedDemoCatalog();
@@ -770,6 +1010,8 @@ async function main(): Promise<void> {
     catalog.apartments,
   );
   await seedPartners();
+  const categoryIds = await seedReadinessCategories();
+  await seedDemoReadinessAssessment(catalog.company, categoryIds);
 }
 
 main()

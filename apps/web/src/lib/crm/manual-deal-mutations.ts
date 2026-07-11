@@ -1,6 +1,11 @@
 import type { ManualDealInput } from '@toonexpo/contracts';
 
-import { findCompanyApartment, isCompanyMember, isCompanyProject, type TransactionClient } from './deal-mutation-helpers';
+import {
+  findCompanyApartment,
+  isCompanyMember,
+  isCompanyProject,
+  type TransactionClient,
+} from './deal-mutation-helpers';
 import type { CrmMutationResult } from './mutation-result';
 
 const DEFAULT_MANUAL_NOTE = 'Manual builder entry.';

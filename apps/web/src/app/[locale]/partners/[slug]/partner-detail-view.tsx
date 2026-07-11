@@ -25,9 +25,7 @@ type PartnerDetailViewProps = {
 
 function PartnerLogo({ partner }: { partner: PublicPartnerDetail }) {
   if (partner.logoUrl) {
-    return (
-      <img src={partner.logoUrl} alt="" className="catalog-partner-detail__logo-image" />
-    );
+    return <img src={partner.logoUrl} alt="" className="catalog-partner-detail__logo-image" />;
   }
 
   const initial = partner.name.trim().charAt(0).toUpperCase() || '?';
@@ -53,9 +51,7 @@ function BankOfferCard({
   return (
     <article
       className={
-        offer.featured
-          ? 'catalog-bank-offer catalog-bank-offer--featured'
-          : 'catalog-bank-offer'
+        offer.featured ? 'catalog-bank-offer catalog-bank-offer--featured' : 'catalog-bank-offer'
       }
     >
       <div className="catalog-bank-offer__header">
@@ -76,13 +72,13 @@ function BankOfferCard({
         <div>
           <dt>{labels.maxAmount}</dt>
           <dd>
-            {offer.maxAmountAmd
-              ? formatPriceAmd(offer.maxAmountAmd, locale)
-              : labels.noValue}
+            {offer.maxAmountAmd ? formatPriceAmd(offer.maxAmountAmd, locale) : labels.noValue}
           </dd>
         </div>
       </dl>
-      {offer.description ? <p className="catalog-bank-offer__description">{offer.description}</p> : null}
+      {offer.description ? (
+        <p className="catalog-bank-offer__description">{offer.description}</p>
+      ) : null}
     </article>
   );
 }

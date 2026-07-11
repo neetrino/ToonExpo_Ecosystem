@@ -194,7 +194,9 @@ export function MortgageCalculator({ offers, locale, labels }: MortgageCalculato
                         <h3 className="catalog-mortgage-offer__title">{offer.title}</h3>
                       </div>
                       {offer.featured ? (
-                        <span className="catalog-badge catalog-badge--featured">{labels.featured}</span>
+                        <span className="catalog-badge catalog-badge--featured">
+                          {labels.featured}
+                        </span>
                       ) : null}
                     </div>
                     <p className="catalog-mortgage-offer__rate">

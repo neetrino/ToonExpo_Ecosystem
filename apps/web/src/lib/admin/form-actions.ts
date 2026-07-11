@@ -15,6 +15,7 @@ import {
   updatePartnerAction,
 } from '@/app/[locale]/(admin)/admin/partners/actions';
 import { setProjectPublicationAsAdminAction } from '@/app/[locale]/(admin)/admin/projects/actions';
+import { upsertAssessmentAction } from '@/app/[locale]/(admin)/admin/readiness/actions';
 
 function getFormString(formData: FormData, key: string): string | undefined {
   const value = formData.get(key);
@@ -147,6 +148,41 @@ export async function setBankOfferStatusFormAction(
   const result = await setBankOfferStatusAction(locale, partnerId, {
     bankOfferId: getFormString(formData, 'bankOfferId'),
     status: getFormString(formData, 'status'),
+  });
+  return toFormState(result);
+}
+
+function categoryScoresFromForm(formData: FormData) {
+  const categoryIds = formData.getAll('categoryId').filter((value): value is string => {
+    return typeof value === 'string' && value.length > 0;
+  });
+
+  return categoryIds.map((categoryId) => ({
+    categoryId,
+    score: getFormString(formData, `score_${categoryId}`),
+    status: getFormString(formData, `status_${categoryId}`),
+    recommendation: getFormString(formData, `recommendation_${categoryId}`),
+    requiredActions: getFormString(formData, `requiredActions_${categoryId}`),
+    internalNote: getFormString(formData, `internalNote_${categoryId}`),
+  }));
+}
+
+export async function upsertAssessmentFormAction(
+  locale: string,
+  _prevState: AdminCatalogActionState,
+  formData: FormData,
+): Promise<AdminCatalogActionState> {
+  const result = await upsertAssessmentAction(locale, {
+    assessmentId: getFormString(formData, 'assessmentId'),
+    targetType: getFormString(formData, 'targetType'),
+    companyId: getFormString(formData, 'companyId'),
+    projectId: getFormString(formData, 'projectId'),
+    status: getFormString(formData, 'status'),
+    responsibleContact: getFormString(formData, 'responsibleContact'),
+    recommendation: getFormString(formData, 'recommendation'),
+    requiredActions: getFormString(formData, 'requiredActions'),
+    internalNotes: getFormString(formData, 'internalNotes'),
+    categoryScores: categoryScoresFromForm(formData),
   });
   return toFormState(result);
 }

@@ -120,9 +120,7 @@ const publishedBankOfferSelect = {
 } as const;
 
 /** Returns published partners ordered by name; optional validated type filter. */
-export async function getPublishedPartners(
-  typeFilter?: string,
-): Promise<PublicPartnerSummary[]> {
+export async function getPublishedPartners(typeFilter?: string): Promise<PublicPartnerSummary[]> {
   const type = parsePartnerTypeFilter(typeFilter);
   const rows = await prisma.partner.findMany({
     where: {

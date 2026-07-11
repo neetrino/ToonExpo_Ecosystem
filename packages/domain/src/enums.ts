@@ -74,3 +74,22 @@ export const PARTNER_TYPES = [
 ] as const;
 
 export type PartnerType = (typeof PARTNER_TYPES)[number];
+
+/**
+ * Readiness assessment / category statuses (v1).
+ * Docs: 10-Builder-Readiness/02-Assessment-Model + 03-Categories-Scoring-And-Statuses.
+ */
+export const READINESS_STATUSES = [
+  'NOT_STARTED',
+  'IN_PROGRESS',
+  'NEEDS_IMPROVEMENT',
+  'READY',
+  'BLOCKED',
+] as const;
+
+export type ReadinessStatus = (typeof READINESS_STATUSES)[number];
+
+/** Assessment target types (v1). Docs: 10-Builder-Readiness/02-Assessment-Model. */
+export const READINESS_TARGET_TYPES = ['BUILDER_COMPANY', 'PROJECT'] as const;
+
+export type ReadinessTargetType = (typeof READINESS_TARGET_TYPES)[number];

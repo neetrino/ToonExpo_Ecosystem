@@ -71,7 +71,8 @@
       "provisioning": "Provisioning",
       "companies": "Companies",
       "partners": "Partners",
-      "projects": "Projects"
+      "projects": "Projects",
+      "readiness": "Readiness"
     },
     "catalog": {
       "errors": {
@@ -224,6 +225,70 @@
         "ariaLabel": "Filter projects by status"
       }
     },
+    "readiness": {
+      "title": "Builder readiness",
+      "empty": "No readiness assessments yet.",
+      "newAssessment": "New assessment",
+      "edit": "Edit",
+      "noEvaluator": "—",
+      "columns": {
+        "target": "Target",
+        "score": "Score",
+        "status": "Status",
+        "evaluator": "Evaluator",
+        "updatedAt": "Updated",
+        "actions": "Actions"
+      },
+      "filter": {
+        "all": "All",
+        "ariaLabel": "Filter assessments by target type"
+      },
+      "targets": {
+        "BUILDER_COMPANY": "Company",
+        "PROJECT": "Project"
+      },
+      "statuses": {
+        "NOT_STARTED": "Not started",
+        "IN_PROGRESS": "In progress",
+        "NEEDS_IMPROVEMENT": "Needs improvement",
+        "READY": "Ready",
+        "BLOCKED": "Blocked"
+      },
+      "categories": {
+        "company_profile": "Company profile",
+        "project_information": "Project information",
+        "media_materials": "Media materials",
+        "apartment_inventory": "Apartment inventory",
+        "visual_map_readiness": "Visual map readiness",
+        "pricing_status_clarity": "Pricing / status clarity",
+        "crm_request_readiness": "CRM / request readiness",
+        "event_presentation_readiness": "Event presentation readiness"
+      },
+      "form": {
+        "create": "New readiness assessment",
+        "edit": "Edit readiness assessment",
+        "submit": "Save assessment",
+        "categoriesTitle": "Category scores",
+        "fields": {
+          "targetType": "Target type",
+          "company": "Company",
+          "companyPlaceholder": "Select company",
+          "project": "Project",
+          "projectPlaceholder": "Select project",
+          "status": "Overall status",
+          "responsibleContact": "Responsible contact",
+          "recommendation": "Recommendation (builder-visible)",
+          "requiredActions": "Required actions (builder-visible)",
+          "internalNotes": "Internal notes",
+          "internalNotesHint": "Visible to BigProjects admins only — never shown to builders.",
+          "score": "Score (0–100)",
+          "categoryStatus": "Category status",
+          "categoryRecommendation": "Category recommendation",
+          "categoryRequiredActions": "Category required actions",
+          "categoryInternalNote": "Category internal note"
+        }
+      }
+    },
     "publication": {
       "actions": {
         "publish": "Publish",
@@ -285,7 +350,8 @@
       "ariaLabel": "Builder portal navigation",
       "overview": "Overview",
       "projects": "Projects",
-      "crm": "CRM"
+      "crm": "CRM",
+      "readiness": "Readiness"
     },
     "overview": {
       "title": "Overview",
@@ -293,6 +359,45 @@
         "draft": "Draft",
         "published": "Published",
         "archived": "Archived"
+      }
+    },
+    "readiness": {
+      "title": "Readiness",
+      "subtitle": "Scores, recommendations, and required actions for your company and projects.",
+      "empty": "No readiness assessment yet. BigProjects will publish guidance here after evaluation.",
+      "overallScore": "Overall score",
+      "status": "Status",
+      "recommendation": "Recommendations",
+      "requiredActions": "Required actions",
+      "lastUpdated": "Last updated",
+      "categoriesTitle": "Categories",
+      "helpProviders": "Help / Providers",
+      "targets": {
+        "BUILDER_COMPANY": "Company readiness",
+        "PROJECT": "Project readiness"
+      },
+      "statuses": {
+        "NOT_STARTED": "Not started",
+        "IN_PROGRESS": "In progress",
+        "NEEDS_IMPROVEMENT": "Needs improvement",
+        "READY": "Ready",
+        "BLOCKED": "Blocked"
+      },
+      "categories": {
+        "company_profile": "Company profile",
+        "project_information": "Project information",
+        "media_materials": "Media materials",
+        "apartment_inventory": "Apartment inventory",
+        "visual_map_readiness": "Visual map readiness",
+        "pricing_status_clarity": "Pricing / status clarity",
+        "crm_request_readiness": "CRM / request readiness",
+        "event_presentation_readiness": "Event presentation readiness"
+      },
+      "providers": {
+        "title": "Help / Providers",
+        "description": "Suggested service providers for weak or in-progress categories. Contact them directly — no booking in the app.",
+        "openProfile": "Open profile",
+        "contact": "Contact"
       }
     },
     "errors": {

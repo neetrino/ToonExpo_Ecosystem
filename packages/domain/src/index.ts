@@ -6,6 +6,8 @@ export {
   PLATFORM_ROLES,
   PUBLICATION_STATUSES,
   QR_SCAN_PURPOSES,
+  READINESS_STATUSES,
+  READINESS_TARGET_TYPES,
   REQUEST_SOURCES,
   type ApartmentStatus,
   type DealActivityType,
@@ -14,5 +16,7 @@ export {
   type PlatformRole,
   type PublicationStatus,
   type QrScanPurpose,
+  type ReadinessStatus,
+  type ReadinessTargetType,
   type RequestSource,
 } from './enums';

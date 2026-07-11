@@ -1,4 +1,7 @@
-import { BANK_OFFER_MAX_TERM_MONTHS_MAX, BANK_OFFER_MAX_TERM_MONTHS_MIN } from '@toonexpo/contracts';
+import {
+  BANK_OFFER_MAX_TERM_MONTHS_MAX,
+  BANK_OFFER_MAX_TERM_MONTHS_MIN,
+} from '@toonexpo/contracts';
 
 export const MONTHS_PER_YEAR = 12;
 export const PERCENT_DIVISOR = 100;

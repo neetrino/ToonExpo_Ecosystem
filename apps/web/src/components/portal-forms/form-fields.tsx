@@ -26,13 +26,17 @@ export function PortalTextInput({
   maxLength,
   type = 'text',
   readOnly,
+  min,
+  max,
 }: {
   name: string;
-  defaultValue?: string;
+  defaultValue?: string | number;
   required?: boolean;
   maxLength?: number;
   type?: 'text' | 'number' | 'email' | 'datetime-local';
   readOnly?: boolean;
+  min?: number;
+  max?: number;
 }) {
   return (
     <input
@@ -44,6 +48,8 @@ export function PortalTextInput({
       required={required}
       maxLength={maxLength}
       readOnly={readOnly}
+      min={min}
+      max={max}
     />
   );
 }

@@ -9,9 +9,7 @@ type PartnerCardProps = {
 
 function PartnerLogo({ partner }: { partner: PublicPartnerSummary }) {
   if (partner.logoUrl) {
-    return (
-      <img src={partner.logoUrl} alt="" className="catalog-partner-card__logo-image" />
-    );
+    return <img src={partner.logoUrl} alt="" className="catalog-partner-card__logo-image" />;
   }
 
   const initial = partner.name.trim().charAt(0).toUpperCase() || '?';

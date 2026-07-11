@@ -71,7 +71,8 @@
       "provisioning": "Հաշիվների ստեղծում",
       "companies": "Ընկերություններ",
       "partners": "Գործընկերներ",
-      "projects": "Նախագծեր"
+      "projects": "Նախագծեր",
+      "readiness": "Պատրաստվածություն"
     },
     "catalog": {
       "errors": {
@@ -224,6 +225,70 @@
         "ariaLabel": "Զտել նախագծերը ըստ կարգավիճակի"
       }
     },
+    "readiness": {
+      "title": "Կառուցապատողի պատրաստվածություն",
+      "empty": "Պատրաստվածության գնահատումներ դեռ չկան։",
+      "newAssessment": "Նոր գնահատում",
+      "edit": "Խմբագրել",
+      "noEvaluator": "—",
+      "columns": {
+        "target": "Թիրախ",
+        "score": "Միավոր",
+        "status": "Կարգավիճակ",
+        "evaluator": "Գնահատող",
+        "updatedAt": "Թարմացված",
+        "actions": "Գործողություններ"
+      },
+      "filter": {
+        "all": "Բոլորը",
+        "ariaLabel": "Զտել գնահատումները ըստ թիրախի տեսակի"
+      },
+      "targets": {
+        "BUILDER_COMPANY": "Ընկերություն",
+        "PROJECT": "Նախագիծ"
+      },
+      "statuses": {
+        "NOT_STARTED": "Չսկսված",
+        "IN_PROGRESS": "Ընթացքում",
+        "NEEDS_IMPROVEMENT": "Բարելավման կարիք",
+        "READY": "Պատրաստ",
+        "BLOCKED": "Արգելափակված"
+      },
+      "categories": {
+        "company_profile": "Ընկերության պրոֆիլ",
+        "project_information": "Նախագծի տեղեկություն",
+        "media_materials": "Մեդիա նյութեր",
+        "apartment_inventory": "Բնակարանների գույքացում",
+        "visual_map_readiness": "Վիզուալ քարտեզի պատրաստվածություն",
+        "pricing_status_clarity": "Գներ / կարգավիճակներ",
+        "crm_request_readiness": "CRM / հայտերի պատրաստվածություն",
+        "event_presentation_readiness": "Միջոցառման ներկայացման պատրաստվածություն"
+      },
+      "form": {
+        "create": "Նոր պատրաստվածության գնահատում",
+        "edit": "Խմբագրել պատրաստվածության գնահատումը",
+        "submit": "Պահպանել գնահատումը",
+        "categoriesTitle": "Կատեգորիաների միավորներ",
+        "fields": {
+          "targetType": "Թիրախի տեսակ",
+          "company": "Ընկերություն",
+          "companyPlaceholder": "Ընտրեք ընկերություն",
+          "project": "Նախագիծ",
+          "projectPlaceholder": "Ընտրեք նախագիծ",
+          "status": "Ընդհանուր կարգավիճակ",
+          "responsibleContact": "Պատասխանատու կոնտակտ",
+          "recommendation": "Առաջարկություններ (տեսանելի կառուցապատողին)",
+          "requiredActions": "Պարտադիր գործողություններ (տեսանելի կառուցապատողին)",
+          "internalNotes": "Ներքին նշումներ",
+          "internalNotesHint": "Միայն BigProjects ադմինների համար — կառուցապատողներին չի ցուցադրվում։",
+          "score": "Միավոր (0–100)",
+          "categoryStatus": "Կատեգորիայի կարգավիճակ",
+          "categoryRecommendation": "Կատեգորիայի առաջարկություն",
+          "categoryRequiredActions": "Կատեգորիայի գործողություններ",
+          "categoryInternalNote": "Կատեգորիայի ներքին նշում"
+        }
+      }
+    },
     "publication": {
       "actions": {
         "publish": "Հրապարակել",
@@ -285,7 +350,8 @@
       "ariaLabel": "Կառուցապատողի պորտալի նավիգացիա",
       "overview": "Ակնարկ",
       "projects": "Նախագծեր",
-      "crm": "CRM"
+      "crm": "CRM",
+      "readiness": "Պատրաստվածություն"
     },
     "overview": {
       "title": "Ակնարկ",
@@ -293,6 +359,45 @@
         "draft": "Սևագիր",
         "published": "Հրապարակված",
         "archived": "Արխիվացված"
+      }
+    },
+    "readiness": {
+      "title": "Պատրաստվածություն",
+      "subtitle": "Միավորներ, առաջարկություններ և պարտադիր գործողություններ ձեր ընկերության և նախագծերի համար։",
+      "empty": "Պատրաստվածության գնահատում դեռ չկա։ BigProjects-ը կհրապարակի ուղեցույցները գնահատումից հետո։",
+      "overallScore": "Ընդհանուր միավոր",
+      "status": "Կարգավիճակ",
+      "recommendation": "Առաջարկություններ",
+      "requiredActions": "Պարտադիր գործողություններ",
+      "lastUpdated": "Վերջին թարմացում",
+      "categoriesTitle": "Կատեգորիաներ",
+      "helpProviders": "Օգնություն / Մատակարարներ",
+      "targets": {
+        "BUILDER_COMPANY": "Ընկերության պատրաստվածություն",
+        "PROJECT": "Նախագծի պատրաստվածություն"
+      },
+      "statuses": {
+        "NOT_STARTED": "Չսկսված",
+        "IN_PROGRESS": "Ընթացքում",
+        "NEEDS_IMPROVEMENT": "Բարելավման կարիք",
+        "READY": "Պատրաստ",
+        "BLOCKED": "Արգելափակված"
+      },
+      "categories": {
+        "company_profile": "Ընկերության պրոֆիլ",
+        "project_information": "Նախագծի տեղեկություն",
+        "media_materials": "Մեդիա նյութեր",
+        "apartment_inventory": "Բնակարանների գույքացում",
+        "visual_map_readiness": "Վիզուալ քարտեզի պատրաստվածություն",
+        "pricing_status_clarity": "Գներ / կարգավիճակներ",
+        "crm_request_readiness": "CRM / հայտերի պատրաստվածություն",
+        "event_presentation_readiness": "Միջոցառման ներկայացման պատրաստվածություն"
+      },
+      "providers": {
+        "title": "Օգնություն / Մատակարարներ",
+        "description": "Առաջարկվող սերվիսային ընկերություններ թույլ կատեգորիաների համար։ Կապվեք ուղղակիորեն — հավելվածում ամրագրում չկա։",
+        "openProfile": "Բացել պրոֆիլը",
+        "contact": "Կապ"
       }
     },
     "errors": {

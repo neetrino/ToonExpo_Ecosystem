@@ -71,7 +71,8 @@
       "provisioning": "Создание аккаунтов",
       "companies": "Компании",
       "partners": "Партнёры",
-      "projects": "Проекты"
+      "projects": "Проекты",
+      "readiness": "Готовность"
     },
     "catalog": {
       "errors": {
@@ -224,6 +225,70 @@
         "ariaLabel": "Фильтр проектов по статусу"
       }
     },
+    "readiness": {
+      "title": "Готовность застройщика",
+      "empty": "Оценок готовности пока нет.",
+      "newAssessment": "Новая оценка",
+      "edit": "Изменить",
+      "noEvaluator": "—",
+      "columns": {
+        "target": "Цель",
+        "score": "Балл",
+        "status": "Статус",
+        "evaluator": "Оценщик",
+        "updatedAt": "Обновлено",
+        "actions": "Действия"
+      },
+      "filter": {
+        "all": "Все",
+        "ariaLabel": "Фильтр оценок по типу цели"
+      },
+      "targets": {
+        "BUILDER_COMPANY": "Компания",
+        "PROJECT": "Проект"
+      },
+      "statuses": {
+        "NOT_STARTED": "Не начато",
+        "IN_PROGRESS": "В работе",
+        "NEEDS_IMPROVEMENT": "Нужны улучшения",
+        "READY": "Готово",
+        "BLOCKED": "Заблокировано"
+      },
+      "categories": {
+        "company_profile": "Профиль компании",
+        "project_information": "Информация о проекте",
+        "media_materials": "Медиаматериалы",
+        "apartment_inventory": "Инвентарь квартир",
+        "visual_map_readiness": "Готовность визуальной карты",
+        "pricing_status_clarity": "Цены и статусы",
+        "crm_request_readiness": "Готовность CRM / заявок",
+        "event_presentation_readiness": "Готовность к событию"
+      },
+      "form": {
+        "create": "Новая оценка готовности",
+        "edit": "Редактировать оценку готовности",
+        "submit": "Сохранить оценку",
+        "categoriesTitle": "Баллы по категориям",
+        "fields": {
+          "targetType": "Тип цели",
+          "company": "Компания",
+          "companyPlaceholder": "Выберите компанию",
+          "project": "Проект",
+          "projectPlaceholder": "Выберите проект",
+          "status": "Общий статус",
+          "responsibleContact": "Ответственный контакт",
+          "recommendation": "Рекомендации (видны застройщику)",
+          "requiredActions": "Обязательные действия (видны застройщику)",
+          "internalNotes": "Внутренние заметки",
+          "internalNotesHint": "Только для админов BigProjects — застройщикам не показываются.",
+          "score": "Балл (0–100)",
+          "categoryStatus": "Статус категории",
+          "categoryRecommendation": "Рекомендация по категории",
+          "categoryRequiredActions": "Действия по категории",
+          "categoryInternalNote": "Внутренняя заметка по категории"
+        }
+      }
+    },
     "publication": {
       "actions": {
         "publish": "Опубликовать",
@@ -285,7 +350,8 @@
       "ariaLabel": "Навигация портала застройщика",
       "overview": "Обзор",
       "projects": "Проекты",
-      "crm": "CRM"
+      "crm": "CRM",
+      "readiness": "Готовность"
     },
     "overview": {
       "title": "Обзор",
@@ -293,6 +359,45 @@
         "draft": "Черновик",
         "published": "Опубликован",
         "archived": "В архиве"
+      }
+    },
+    "readiness": {
+      "title": "Готовность",
+      "subtitle": "Баллы, рекомендации и обязательные действия для вашей компании и проектов.",
+      "empty": "Оценки готовности пока нет. BigProjects опубликует рекомендации после проверки.",
+      "overallScore": "Общий балл",
+      "status": "Статус",
+      "recommendation": "Рекомендации",
+      "requiredActions": "Обязательные действия",
+      "lastUpdated": "Обновлено",
+      "categoriesTitle": "Категории",
+      "helpProviders": "Помощь / Провайдеры",
+      "targets": {
+        "BUILDER_COMPANY": "Готовность компании",
+        "PROJECT": "Готовность проекта"
+      },
+      "statuses": {
+        "NOT_STARTED": "Не начато",
+        "IN_PROGRESS": "В работе",
+        "NEEDS_IMPROVEMENT": "Нужны улучшения",
+        "READY": "Готово",
+        "BLOCKED": "Заблокировано"
+      },
+      "categories": {
+        "company_profile": "Профиль компании",
+        "project_information": "Информация о проекте",
+        "media_materials": "Медиаматериалы",
+        "apartment_inventory": "Инвентарь квартир",
+        "visual_map_readiness": "Готовность визуальной карты",
+        "pricing_status_clarity": "Цены и статусы",
+        "crm_request_readiness": "Готовность CRM / заявок",
+        "event_presentation_readiness": "Готовность к событию"
+      },
+      "providers": {
+        "title": "Помощь / Провайдеры",
+        "description": "Рекомендованные сервисные компании для слабых категорий. Свяжитесь напрямую — бронирования в приложении нет.",
+        "openProfile": "Открыть профиль",
+        "contact": "Контакты"
       }
     },
     "errors": {

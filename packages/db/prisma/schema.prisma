@@ -73,27 +73,42 @@ enum PartnerType {
   OTHER
 }
 
+enum ReadinessTargetType {
+  BUILDER_COMPANY
+  PROJECT
+}
+
+enum ReadinessStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  NEEDS_IMPROVEMENT
+  READY
+  BLOCKED
+}
+
 
 model User {
-  id                String          @id @default(cuid())
-  email             String          @unique
-  emailVerified     DateTime?
-  name              String?
-  image             String?
-  phone             String?
-  passwordHash      String?
-  role              PlatformRole    @default(BUYER)
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt
-  accounts          Account[]
-  sessions          Session[]
-  buyerProfile      BuyerProfile?
-  members           CompanyMember[]
-  dealsAsBuyer      Deal[]          @relation("DealBuyer")
-  dealsAssigned     Deal[]          @relation("DealAssignee")
-  dealsCreated      Deal[]          @relation("DealCreator")
-  dealActivities    DealActivity[]
-  qrScanLogs        QrScanLog[]
+  id                       String                 @id @default(cuid())
+  email                    String                 @unique
+  emailVerified            DateTime?
+  name                     String?
+  image                    String?
+  phone                    String?
+  passwordHash             String?
+  role                     PlatformRole           @default(BUYER)
+  createdAt                DateTime               @default(now())
+  updatedAt                DateTime               @updatedAt
+  accounts                 Account[]
+  sessions                 Session[]
+  buyerProfile             BuyerProfile?
+  members                  CompanyMember[]
+  dealsAsBuyer             Deal[]                 @relation("DealBuyer")
+  dealsAssigned            Deal[]                 @relation("DealAssignee")
+  dealsCreated             Deal[]                 @relation("DealCreator")
+  dealActivities           DealActivity[]
+  qrScanLogs               QrScanLog[]
+  readinessAssessments     ReadinessAssessment[]  @relation("ReadinessEvaluator")
+  readinessCategoryScores  ReadinessCategoryScore[] @relation("ReadinessScoreEvaluator")
 }
 
 
@@ -159,16 +174,17 @@ model QrCode {
 }
 
 model Company {
-  id         String          @id @default(cuid())
-  name       String
-  slug       String          @unique
-  createdAt  DateTime        @default(now())
-  updatedAt  DateTime        @updatedAt
-  members    CompanyMember[]
-  projects   Project[]
-  deals      Deal[]
-  qrScanLogs QrScanLog[]
-  partner    Partner?
+  id                   String                 @id @default(cuid())
+  name                 String
+  slug                 String                 @unique
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  members              CompanyMember[]
+  projects             Project[]
+  deals                Deal[]
+  qrScanLogs           QrScanLog[]
+  partner              Partner?
+  readinessAssessments ReadinessAssessment[]
 }
 
 
@@ -186,21 +202,22 @@ model CompanyMember {
 }
 
 model Project {
-  id          String            @id @default(cuid())
-  companyId   String
-  name        String
-  slug        String
-  description String?           @db.Text
-  city        String?
-  address     String?
-  status      PublicationStatus @default(DRAFT)
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
-  company     Company           @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  buildings   Building[]
-  media       MediaAsset[]
-  deals       Deal[]
-  canvases    VisualCanvas[]
+  id                   String                 @id @default(cuid())
+  companyId            String
+  name                 String
+  slug                 String
+  description          String?                @db.Text
+  city                 String?
+  address              String?
+  status               PublicationStatus      @default(DRAFT)
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  company              Company                @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  buildings            Building[]
+  media                MediaAsset[]
+  deals                Deal[]
+  canvases             VisualCanvas[]
+  readinessAssessments ReadinessAssessment[]
 
   @@unique([companyId, slug])
   @@index([status])
@@ -439,4 +456,80 @@ model BankOffer {
 
   @@index([partnerId])
   @@index([status])
+}
+
+// Configurable readiness categories (v1 seeded set). Docs: 10-Builder-Readiness/03 + 07.
+model ReadinessCategory {
+  id                  String                   @id @default(cuid())
+  /// Stable i18n / seed key (e.g. media_materials).
+  key                 String                   @unique
+  name                String
+  description         String?                  @db.Text
+  weight              Float?
+  sortOrder           Int
+  /// Maps to Partner.serviceCategories entry for provider suggestions.
+  serviceCategoryKey  String?
+  active              Boolean                  @default(true)
+  createdAt           DateTime                 @default(now())
+  updatedAt           DateTime                 @updatedAt
+  scores              ReadinessCategoryScore[]
+
+  @@index([active, sortOrder])
+}
+
+// One assessment per target; companyId always set for builder scoping.
+// Exactly one of: BUILDER_COMPANY (projectId null) | PROJECT (projectId set) — app XOR.
+model ReadinessAssessment {
+  id                   String                   @id @default(cuid())
+  targetType           ReadinessTargetType
+  companyId            String
+  projectId            String?
+  status               ReadinessStatus          @default(NOT_STARTED)
+  overallScore         Int?
+  evaluatedByUserId    String?
+  lastEvaluatedAt      DateTime?
+  responsibleContact   String?
+  /// Builder-visible assessment-level recommendation.
+  recommendation       String?                  @db.Text
+  /// Builder-visible assessment-level required actions.
+  requiredActions      String?                  @db.Text
+  /// Admin-only — never selected in builder queries.
+  internalNotes        String?                  @db.Text
+  archivedAt           DateTime?
+  createdAt            DateTime                 @default(now())
+  updatedAt            DateTime                 @updatedAt
+  company              Company                  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  project              Project?                 @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  evaluatedByUser      User?                    @relation("ReadinessEvaluator", fields: [evaluatedByUserId], references: [id], onDelete: SetNull)
+  categoryScores       ReadinessCategoryScore[]
+
+  @@index([companyId])
+  @@index([projectId])
+  @@index([targetType])
+  @@index([status])
+  @@index([archivedAt])
+}
+
+model ReadinessCategoryScore {
+  id                String              @id @default(cuid())
+  assessmentId      String
+  categoryId        String
+  score             Int?
+  status            ReadinessStatus     @default(NOT_STARTED)
+  /// Builder-visible category recommendation.
+  recommendation    String?             @db.Text
+  /// Builder-visible category required actions.
+  requiredActions   String?             @db.Text
+  /// Admin-only — never selected in builder queries.
+  internalNote      String?             @db.Text
+  evaluatedByUserId String?
+  evaluatedAt       DateTime?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  assessment        ReadinessAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  category          ReadinessCategory   @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  evaluatedByUser   User?               @relation("ReadinessScoreEvaluator", fields: [evaluatedByUserId], references: [id], onDelete: SetNull)
+
+  @@unique([assessmentId, categoryId])
+  @@index([categoryId])
 }
