@@ -2,19 +2,18 @@
 
 ## Current Status
 
-Sprint 0 scaffold complete. Sprint 1 — Auth core and provisioned accounts done.
+Sprint 1 complete. Monorepo apps and packages exist; quality scripts pass (`lint`, `typecheck`, `test`, `build`).
 
-Monorepo apps and packages exist; quality scripts pass (`lint`, `typecheck`, `test`, `build`).
+## Sprint 1 — COMPLETE
 
-Auth.js 5 with database sessions and a Credentials provider is wired into `apps/web`:
-buyer self-registration, email+password login, logout, and role-aware route
-protection (middleware coarse check + server-side layout guards).
+- **Auth.js 5 + DB sessions** — Credentials provider, Prisma adapter, JWT encode workaround for session rows.
+- **Buyer self-registration** — argon2id hashing, User + BuyerProfile transaction, login/register pages.
+- **Role guards** — middleware coarse check + server-side layout guards for protected areas.
+- **Admin provisioned accounts** — provision form, users table, company slug upsert, seed script (`pnpm db:seed`).
+- **Security fixes** — input validation, admin session assertions, hardened server actions.
+- **i18n (hy/ru/en)** — localePrefix always, default redirect to `/en`, unsupported locales 404, locale switcher, full message key parity across locales.
 
-BigProjects admins can provision builder/partner/admin/entrance accounts via
-the admin UI; company membership is created for builder/partner roles. Initial
-admin seed script is available via `pnpm db:seed`.
-
-## Completed
+## Completed (earlier)
 
 - Product/module documentation split by modules.
 - Consistency audit completed.
@@ -29,34 +28,30 @@ admin seed script is available via `pnpm db:seed`.
 - API `/health` + Swagger `/docs`.
 - Side sheet UI primitive.
 - Env validation (Zod) for API; web env helper.
-- Sprint 1 auth core: Auth.js 5 + Prisma adapter, DB sessions (credentials
-  workaround via `jwt.encode` creating a Session row), buyer registration
-  (argon2id, User + BuyerProfile transaction), login/register pages (i18n
-  hy/ru/en), logout, and route protection (middleware + layout guards).
-- Sprint 1 provisioned accounts: `provisionAccountSchema`, admin provision form
-  + users table, company slug upsert with collision suffix, Prisma seed for
-  initial BIGPROJECTS_ADMIN (`SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD`).
 
 ## Confirmed Stack (summary)
 
 - pnpm + Turborepo; Next.js web + NestJS API.
-- Auth.js 5 + database sessions (implementation in Sprint 1).
+- Auth.js 5 + database sessions.
 - Zod validation; signed R2 uploads (wiring later).
 - Locales as code constants.
 - PWA out of scope; Upstash Redis later when needed.
 
 ## Next
 
-1. Sprint 1 close: language fallback polish.
-2. Sprint 1 (task 2): polish auth UI/UX (styling, validation feedback, loading).
-3. Rate limiting on sign-in/registration (Upstash Redis) — TODO left in `auth.ts`.
-4. Wire API auth verification against DB sessions.
-5. Email invitations for provisioned accounts (deferred).
-6. Email/phone verification and password reset (deferred from v1).
-7. Staging/prod domain plan when ready to deploy.
+**Sprint 2 — Public Real Estate Core**
+
+- Builder company model.
+- Projects / buildings / floors / apartments public pages.
+- Media metadata.
+- Publication status.
 
 ## Open (non-blocking)
 
-- staging/prod domains;
-- Sentry project keys;
+- Rate limiting on sign-in/registration (Upstash Redis).
+- Wire API auth verification against DB sessions.
+- Email invitations for provisioned accounts (deferred).
+- Email/phone verification and password reset (deferred from v1).
+- Staging/prod domain plan when ready to deploy.
+- Sentry project keys.
 - Neon `DIRECT_URL` if pooler migrate issues appear.
