@@ -11,6 +11,8 @@
   "nav": {
     "public": "Public",
     "projects": "Projects",
+    "partners": "Partners",
+    "mortgage": "Mortgage",
     "buyer": "Buyer",
     "builder": "Builder",
     "admin": "Admin"
@@ -637,6 +639,68 @@
     "visualMap": {
       "projectTitle": "Site plan",
       "floorTitle": "Floor plan"
+    },
+    "partners": {
+      "list": {
+        "title": "Partners",
+        "subtitle": "Banks, service companies, and other ToonExpo participants.",
+        "empty": "No published partners match this filter."
+      },
+      "filter": {
+        "all": "All",
+        "ariaLabel": "Filter partners by type"
+      },
+      "types": {
+        "BANK": "Bank",
+        "IT_COMPANY": "IT company",
+        "SPONSOR": "Sponsor",
+        "SUPPLIER": "Supplier",
+        "INSURANCE": "Insurance",
+        "LEGAL": "Legal",
+        "DESIGN_FURNITURE": "Design / furniture",
+        "SERVICE_COMPANY": "Service company",
+        "OTHER": "Other"
+      },
+      "detail": {
+        "contacts": "Contact",
+        "phone": "Phone",
+        "email": "Email",
+        "website": "Website",
+        "serviceCategories": "Services",
+        "bankOffers": "Mortgage offers",
+        "featured": "Featured",
+        "interestRate": "Interest rate",
+        "maxTermYears": "Max term (years)",
+        "maxAmount": "Max loan amount",
+        "mortgageLink": "Mortgage calculator",
+        "noValue": "—"
+      }
+    },
+    "mortgage": {
+      "title": "Mortgage & bank offers",
+      "subtitle": "Compare published bank offers and estimate your monthly payment.",
+      "calculator": {
+        "title": "Payment calculator",
+        "propertyPrice": "Property price (AMD)",
+        "downPayment": "Down payment (AMD)",
+        "termYears": "Loan term (years)",
+        "interestRate": "Interest rate",
+        "manualRate": "Annual rate (%)",
+        "monthlyPayment": "Estimated monthly payment",
+        "loanAmount": "Loan amount",
+        "totalPayment": "Total payment",
+        "overpayment": "Total interest",
+        "disclaimer": "Figures are estimates for comparison only. Final terms depend on bank approval and are not a binding offer."
+      },
+      "offers": {
+        "title": "Bank offers",
+        "featured": "Featured",
+        "maxTerm": "Up to",
+        "viewBank": "View bank profile",
+        "empty": "No published bank offers yet.",
+        "selectManual": "Use manual rate instead",
+        "yearsUnit": "years"
+      }
     }
   },
   "buyer": {
