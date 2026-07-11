@@ -2,13 +2,17 @@
 
 ## Current Status
 
-Sprint 0 scaffold complete. Sprint 1 — Auth core done.
+Sprint 0 scaffold complete. Sprint 1 — Auth core and provisioned accounts done.
 
 Monorepo apps and packages exist; quality scripts pass (`lint`, `typecheck`, `test`, `build`).
 
 Auth.js 5 with database sessions and a Credentials provider is wired into `apps/web`:
 buyer self-registration, email+password login, logout, and role-aware route
 protection (middleware coarse check + server-side layout guards).
+
+BigProjects admins can provision builder/partner/admin/entrance accounts via
+the admin UI; company membership is created for builder/partner roles. Initial
+admin seed script is available via `pnpm db:seed`.
 
 ## Completed
 
@@ -29,6 +33,9 @@ protection (middleware coarse check + server-side layout guards).
   workaround via `jwt.encode` creating a Session row), buyer registration
   (argon2id, User + BuyerProfile transaction), login/register pages (i18n
   hy/ru/en), logout, and route protection (middleware + layout guards).
+- Sprint 1 provisioned accounts: `provisionAccountSchema`, admin provision form
+  + users table, company slug upsert with collision suffix, Prisma seed for
+  initial BIGPROJECTS_ADMIN (`SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD`).
 
 ## Confirmed Stack (summary)
 
@@ -40,11 +47,13 @@ protection (middleware coarse check + server-side layout guards).
 
 ## Next
 
-1. Sprint 1 (task 2): polish auth UI/UX (styling, validation feedback, loading).
-2. Rate limiting on sign-in/registration (Upstash Redis) — TODO left in `auth.ts`.
-3. Wire API auth verification against DB sessions.
-4. Email/phone verification and password reset (deferred from v1).
-5. Staging/prod domain plan when ready to deploy.
+1. Sprint 1 close: language fallback polish.
+2. Sprint 1 (task 2): polish auth UI/UX (styling, validation feedback, loading).
+3. Rate limiting on sign-in/registration (Upstash Redis) — TODO left in `auth.ts`.
+4. Wire API auth verification against DB sessions.
+5. Email invitations for provisioned accounts (deferred).
+6. Email/phone verification and password reset (deferred from v1).
+7. Staging/prod domain plan when ready to deploy.
 
 ## Open (non-blocking)
 

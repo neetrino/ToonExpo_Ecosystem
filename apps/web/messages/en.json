@@ -58,5 +58,48 @@
       "emailTaken": "This email is already registered.",
       "invalidCredentials": "Invalid email or password."
     }
+  },
+  "admin": {
+    "title": "Admin",
+    "description": "Provision and manage platform accounts.",
+    "provision": {
+      "title": "Provision account",
+      "description": "Create builder, partner, admin, or entrance staff accounts. Buyers register themselves.",
+      "submit": "Create account",
+      "fields": {
+        "email": "Email",
+        "name": "Full name",
+        "role": "Role",
+        "temporaryPassword": "Temporary password",
+        "companyName": "Company name",
+        "companyNameHint": "Required for builder and partner roles."
+      },
+      "errors": {
+        "invalidInput": "Please check the fields and try again.",
+        "emailTaken": "This email is already in use."
+      },
+      "success": {
+        "provisioned": "Account created successfully."
+      }
+    },
+    "users": {
+      "title": "Provisioned accounts",
+      "empty": "No provisioned accounts yet.",
+      "noName": "—",
+      "noCompany": "—",
+      "columns": {
+        "email": "Email",
+        "name": "Name",
+        "role": "Role",
+        "company": "Company",
+        "createdAt": "Created"
+      },
+      "roles": {
+        "BIGPROJECTS_ADMIN": "BigProjects admin",
+        "BUILDER": "Builder",
+        "PARTNER": "Partner",
+        "ENTRANCE_STAFF": "Entrance staff"
+      }
+    }
   }
 }
