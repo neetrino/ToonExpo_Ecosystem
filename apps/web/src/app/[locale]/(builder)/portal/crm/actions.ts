@@ -7,8 +7,6 @@ import {
   dealStageUpdateInputSchema,
   manualDealInputSchema,
 } from '@toonexpo/contracts';
-import { SUPPORTED_LOCALES } from '@toonexpo/shared';
-import { revalidatePath } from 'next/cache';
 
 import { assertBuilderSession } from '@/lib/builder/assert-builder-session';
 import {
@@ -22,6 +20,7 @@ import {
 import type { CrmMutationErrorKey, CrmMutationResult } from '@/lib/crm/mutation-result';
 import { resolveCatalogPathsForProjects } from '@/lib/shared/resolve-catalog-paths';
 import { revalidateCatalogPaths } from '@/lib/shared/revalidate-catalog-paths';
+import { revalidateCrmPortalPaths } from '@/lib/shared/revalidate-crm-paths';
 
 export type CrmActionResult<T extends Record<string, unknown> = { dealId: string }> =
   CrmMutationResult<T>;
@@ -34,13 +33,6 @@ function unauthorized(): CrmActionFailure {
 
 function invalidInput(): CrmActionFailure {
   return { ok: false, errorKey: 'invalidInput' };
-}
-
-function revalidateCrmPortalPaths(): void {
-  for (const locale of SUPPORTED_LOCALES) {
-    revalidatePath(`/${locale}/portal`);
-    revalidatePath(`/${locale}/portal/crm`);
-  }
 }
 
 async function revalidateAfterInventoryTouch(

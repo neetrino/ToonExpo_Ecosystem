@@ -472,21 +472,19 @@
       "columns": {
         "company": "Builder",
         "project": "Project",
-        "stage": "Status",
+        "status": "Status",
         "source": "Source",
         "createdAt": "Submitted",
         "lastActivityAt": "Last update"
       },
-      "stages": {
-        "NEW_REQUEST": "New request",
-        "ASSIGNED": "Assigned",
-        "CONTACTED": "Contacted",
-        "FOLLOW_UP_NEEDED": "Follow-up needed",
-        "APARTMENT_SELECTED": "Apartment selected",
-        "RESERVED": "Reserved",
-        "CONVERTED": "Converted",
-        "CLOSED": "Closed",
-        "LOST": "Lost"
+      "statuses": {
+        "request_sent": "Request sent",
+        "builder_received": "Builder received",
+        "in_contact": "In contact",
+        "offer_preparing": "Offer preparing",
+        "reserved": "Reserved",
+        "closed": "Closed",
+        "cancelled": "Cancelled"
       },
       "sources": {
         "PROJECT_PAGE": "Project page",
@@ -514,13 +512,9 @@
     }
   },
   "qr": {
-    "invalid": {
-      "title": "QR not available",
-      "body": "This code is invalid or no longer active. Ask the visitor to open My QR in their ToonExpo account."
-    },
-    "limited": {
-      "title": "Valid ToonExpo visitor QR",
-      "body": "This is a registered visitor code. Sign in as a builder to create a follow-up request."
+    "public": {
+      "title": "Visitor QR",
+      "body": "Sign in as a builder to follow up with a registered visitor, or ask them to open My QR in their ToonExpo account."
     },
     "builder": {
       "title": "Visitor from QR scan",

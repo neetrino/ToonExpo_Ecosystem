@@ -7,6 +7,9 @@ import type { QrScanDealMutationResult } from './mutation-result';
 import { hashQrToken } from './token';
 
 const MILLISECONDS_PER_HOUR = 60 * 60 * 1000;
+const MILLISECONDS_PER_MINUTE = 60 * 1000;
+const BUILDER_SCAN_LOG_DEBOUNCE_MINUTES = 5;
+const BUILDER_SCAN_LOG_DEBOUNCE_MS = BUILDER_SCAN_LOG_DEBOUNCE_MINUTES * MILLISECONDS_PER_MINUTE;
 const SCAN_SOURCE = 'BUILDER_QR_SCAN' as const;
 const DEFAULT_ACTIVITY_BODY = 'Lead created from builder QR scan.';
 const DEDUP_ACTIVITY_BODY = 'Repeated QR scan interest recorded.';
@@ -219,6 +222,20 @@ export async function logBuilderQrScan(params: {
   scannedByUserId: string;
   companyId: string;
 }): Promise<void> {
+  const since = new Date(Date.now() - BUILDER_SCAN_LOG_DEBOUNCE_MS);
+  const recent = await prisma.qrScanLog.findFirst({
+    where: {
+      qrCodeId: params.qrCodeId,
+      scannedByUserId: params.scannedByUserId,
+      purpose: 'BUILDER_SCAN',
+      scannedAt: { gte: since },
+    },
+    select: { id: true },
+  });
+  if (recent) {
+    return;
+  }
+
   await prisma.qrScanLog.create({
     data: {
       qrCodeId: params.qrCodeId,

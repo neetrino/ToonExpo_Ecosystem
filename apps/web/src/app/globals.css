@@ -1,6 +1,8 @@
 @import 'tailwindcss';
 @import './catalog.css';
 @import './portal.css';
+@import './portal-crm.css';
+@import './portal-crm-sheet.css';
 @import './portal-forms.css';
 
 :root {

@@ -65,6 +65,27 @@ describe('publicRequestFormAction', () => {
       }),
     );
   });
+
+  it('does not attach buyerUserId for authenticated non-buyer sessions', async () => {
+    vi.mocked(auth).mockResolvedValue({
+      user: { id: 'builder-1', role: 'BUILDER', email: 'builder@example.com' },
+    } as never);
+
+    const formData = buildFormData({
+      projectId: 'project-1',
+      name: 'Builder',
+      phone: '+37491112233',
+      email: 'builder@example.com',
+    });
+
+    await publicRequestFormAction('en', {}, formData);
+
+    expect(submitPublicRequest).toHaveBeenCalledWith(
+      expect.objectContaining({
+        buyerUserId: undefined,
+      }),
+    );
+  });
 });
 
 describe('submitPublicRequestAction', () => {
@@ -84,5 +105,18 @@ describe('submitPublicRequestAction', () => {
     await submitPublicRequestAction(input);
 
     expect(submitPublicRequest).toHaveBeenCalledWith(input);
+  });
+
+  it('returns success without calling submitPublicRequest when honeypot is filled', async () => {
+    const result = await submitPublicRequestAction({
+      projectId: 'project-1',
+      name: 'Bot',
+      phone: '+37490000000',
+      email: 'bot@spam.example',
+      website: 'https://spam.example',
+    });
+
+    expect(result).toEqual({ ok: true, dealId: 'honeypot-suppressed' });
+    expect(submitPublicRequest).not.toHaveBeenCalled();
   });
 });

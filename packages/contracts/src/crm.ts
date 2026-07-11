@@ -27,18 +27,14 @@ const contactPhoneSchema = z
 const contactEmailSchema = z.string().trim().email().max(CONTACT_EMAIL_MAX_LENGTH);
 
 /** Public project/apartment page request intake (anonymous or registered). */
-export const publicRequestInputSchema = z
-  .object({
-    projectId: z.string().trim().min(1).optional(),
-    apartmentId: z.string().trim().min(1).optional(),
-    name: contactNameSchema,
-    phone: contactPhoneSchema,
-    email: contactEmailSchema,
-    message: optionalTrimmedString(DEAL_MESSAGE_MAX_LENGTH),
-  })
-  .refine((value) => Boolean(value.projectId ?? value.apartmentId), {
-    message: 'Either projectId or apartmentId is required',
-  });
+export const publicRequestInputSchema = z.object({
+  projectId: z.string().trim().min(1),
+  apartmentId: z.string().trim().min(1).optional(),
+  name: contactNameSchema,
+  phone: contactPhoneSchema,
+  email: contactEmailSchema,
+  message: optionalTrimmedString(DEAL_MESSAGE_MAX_LENGTH),
+});
 
 export type PublicRequestInput = z.infer<typeof publicRequestInputSchema>;
 

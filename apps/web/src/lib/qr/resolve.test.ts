@@ -4,11 +4,13 @@ import { hashQrToken } from './token';
 
 const mockFindFirst = vi.fn();
 const mockProjectFindMany = vi.fn();
+const mockUserFindUnique = vi.fn();
 
 vi.mock('@toonexpo/db', () => ({
   prisma: {
     qrCode: { findFirst: (...args: unknown[]) => mockFindFirst(...args) },
     project: { findMany: (...args: unknown[]) => mockProjectFindMany(...args) },
+    user: { findUnique: (...args: unknown[]) => mockUserFindUnique(...args) },
   },
 }));
 
@@ -22,15 +24,14 @@ const COMPANY_ID = 'company-1';
 
 const ACTIVE_QR = {
   id: QR_ID,
-  buyerProfile: {
-    userId: BUYER_USER_ID,
-    user: {
-      id: BUYER_USER_ID,
-      name: 'Anna Buyer',
-      email: 'anna@example.com',
-      phone: '+37491111111',
-    },
-  },
+  buyerProfile: { userId: BUYER_USER_ID },
+};
+
+const BUYER_CONTACT = {
+  id: BUYER_USER_ID,
+  name: 'Anna Buyer',
+  email: 'anna@example.com',
+  phone: '+37491111111',
 };
 
 describe('resolveQrScan', () => {
@@ -38,6 +39,7 @@ describe('resolveQrScan', () => {
     vi.clearAllMocks();
     mockFindFirst.mockResolvedValue(ACTIVE_QR);
     mockProjectFindMany.mockResolvedValue([{ id: 'project-1', name: 'Demo' }]);
+    mockUserFindUnique.mockResolvedValue(BUYER_CONTACT);
   });
 
   it('returns invalid for revoked or missing tokens', async () => {
@@ -49,6 +51,10 @@ describe('resolveQrScan', () => {
     expect(mockFindFirst).toHaveBeenCalledWith(
       expect.objectContaining({
         where: { tokenHash: hashQrToken(TOKEN), revokedAt: null },
+        select: {
+          id: true,
+          buyerProfile: { select: { userId: true } },
+        },
       }),
     );
   });
@@ -61,6 +67,7 @@ describe('resolveQrScan', () => {
 
     expect(result).toEqual({ kind: 'owner', qrCodeId: QR_ID });
     expect(toPublicResolveShape(result).hasBuyerPii).toBe(false);
+    expect(mockUserFindUnique).not.toHaveBeenCalled();
   });
 
   it('returns builder action data with buyer contact when builder session is present', async () => {
@@ -75,6 +82,10 @@ describe('resolveQrScan', () => {
       expect(result.buyer.email).toBe('anna@example.com');
       expect(result.projects).toHaveLength(1);
     }
+    expect(mockUserFindUnique).toHaveBeenCalledWith({
+      where: { id: BUYER_USER_ID },
+      select: { id: true, name: true, email: true, phone: true },
+    });
     expect(toPublicResolveShape(result).hasBuyerPii).toBe(true);
   });
 
@@ -89,5 +100,14 @@ describe('resolveQrScan', () => {
     expect(partner).toEqual({ kind: 'limited', qrCodeId: QR_ID });
     expect(toPublicResolveShape(anonymous).hasBuyerPii).toBe(false);
     expect(toPublicResolveShape(partner).hasBuyerPii).toBe(false);
+    expect(mockUserFindUnique).not.toHaveBeenCalled();
+    expect(mockFindFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        select: {
+          id: true,
+          buyerProfile: { select: { userId: true } },
+        },
+      }),
+    );
   });
 });

@@ -9,14 +9,20 @@ const mockTx = {
   dealActivity: { create: vi.fn() },
 };
 
+const mockQrScanLogFindFirst = vi.fn();
+const mockQrScanLogCreate = vi.fn();
+
 vi.mock('@toonexpo/db', () => ({
   prisma: {
     $transaction: vi.fn((callback: (tx: typeof mockTx) => Promise<unknown>) => callback(mockTx)),
-    qrScanLog: { create: vi.fn() },
+    qrScanLog: {
+      findFirst: (...args: unknown[]) => mockQrScanLogFindFirst(...args),
+      create: (...args: unknown[]) => mockQrScanLogCreate(...args),
+    },
   },
 }));
 
-import { createDealFromQrScan } from './scan-deal-mutations';
+import { createDealFromQrScan, logBuilderQrScan } from './scan-deal-mutations';
 
 const TOKEN = 'builder-scan-token';
 const QR_ID = 'qr-scan-1';
@@ -109,6 +115,54 @@ describe('createDealFromQrScan', () => {
           createdByUserId: BUILDER_USER_ID,
           contactEmail: 'scan.buyer@example.com',
         }),
+      }),
+    );
+  });
+});
+
+describe('logBuilderQrScan', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('skips insert when an identical scan log exists within the debounce window', async () => {
+    mockQrScanLogFindFirst.mockResolvedValue({ id: 'log-existing' });
+
+    await logBuilderQrScan({
+      qrCodeId: QR_ID,
+      scannedByUserId: BUILDER_USER_ID,
+      companyId: COMPANY_ID,
+    });
+
+    expect(mockQrScanLogFindFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          qrCodeId: QR_ID,
+          scannedByUserId: BUILDER_USER_ID,
+          purpose: 'BUILDER_SCAN',
+        }),
+      }),
+    );
+    expect(mockQrScanLogCreate).not.toHaveBeenCalled();
+  });
+
+  it('inserts a scan log when no recent duplicate exists', async () => {
+    mockQrScanLogFindFirst.mockResolvedValue(null);
+
+    await logBuilderQrScan({
+      qrCodeId: QR_ID,
+      scannedByUserId: BUILDER_USER_ID,
+      companyId: COMPANY_ID,
+    });
+
+    expect(mockQrScanLogCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: {
+          qrCodeId: QR_ID,
+          scannedByUserId: BUILDER_USER_ID,
+          companyId: COMPANY_ID,
+          purpose: 'BUILDER_SCAN',
+        },
       }),
     );
   });

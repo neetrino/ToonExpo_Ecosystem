@@ -1,5 +1,4 @@
-import type { DealStage, RequestSource } from '@toonexpo/domain';
-
+import type { BuyerFacingStatus } from '@/lib/crm/buyer-facing-status';
 import type { BuyerDealRow } from '@/lib/crm/buyer-deals-queries';
 
 type BuyerDealsTableProps = {
@@ -8,14 +7,14 @@ type BuyerDealsTableProps = {
   labels: {
     company: string;
     project: string;
-    stage: string;
+    status: string;
     source: string;
     createdAt: string;
     lastActivityAt: string;
     noValue: string;
   };
-  stageLabels: Record<DealStage, string>;
-  sourceLabels: Record<RequestSource, string>;
+  statusLabels: Record<BuyerFacingStatus, string>;
+  sourceLabels: Record<BuyerDealRow['source'], string>;
 };
 
 function formatDate(value: Date, locale: string): string {
@@ -29,7 +28,7 @@ export function BuyerDealsTable({
   deals,
   locale,
   labels,
-  stageLabels,
+  statusLabels,
   sourceLabels,
 }: BuyerDealsTableProps) {
   return (
@@ -39,7 +38,7 @@ export function BuyerDealsTable({
           <tr>
             <th>{labels.company}</th>
             <th>{labels.project}</th>
-            <th>{labels.stage}</th>
+            <th>{labels.status}</th>
             <th>{labels.source}</th>
             <th>{labels.createdAt}</th>
             <th>{labels.lastActivityAt}</th>
@@ -50,7 +49,7 @@ export function BuyerDealsTable({
             <tr key={deal.id}>
               <td>{deal.companyName}</td>
               <td>{deal.projectName ?? labels.noValue}</td>
-              <td>{stageLabels[deal.stage]}</td>
+              <td>{statusLabels[deal.status]}</td>
               <td>{sourceLabels[deal.source]}</td>
               <td>{formatDate(deal.createdAt, locale)}</td>
               <td>

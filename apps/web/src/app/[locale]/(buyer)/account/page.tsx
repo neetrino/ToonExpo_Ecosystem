@@ -1,8 +1,9 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
-import type { DealStage, RequestSource } from '@toonexpo/domain';
+import type { RequestSource } from '@toonexpo/domain';
 
 import { auth } from '@/auth';
 import { BuyerQrSection } from '@/components/buyer/buyer-qr-section';
+import { BUYER_FACING_STATUSES, type BuyerFacingStatus } from '@/lib/crm/buyer-facing-status';
 import { getBuyerDeals, type BuyerDealRow } from '@/lib/crm/buyer-deals-queries';
 import { loadWebEnv } from '@/lib/env';
 import { buildQrPayloadUrl, renderQrSvg } from '@/lib/qr/image';
@@ -13,18 +14,6 @@ import { BuyerDealsTable } from './buyer-deals-table';
 type BuyerPageProps = {
   params: Promise<{ locale: string }>;
 };
-
-const DEAL_STAGES_ORDER = [
-  'NEW_REQUEST',
-  'ASSIGNED',
-  'CONTACTED',
-  'FOLLOW_UP_NEEDED',
-  'APARTMENT_SELECTED',
-  'RESERVED',
-  'CONVERTED',
-  'CLOSED',
-  'LOST',
-] as const satisfies readonly DealStage[];
 
 const REQUEST_SOURCES_ORDER = [
   'PROJECT_PAGE',
@@ -61,9 +50,9 @@ export default async function BuyerAccountPage({ params }: BuyerPageProps) {
     ? await loadBuyerQrDisplay(buyerUserId, locale)
     : { qrSvg: null, payloadUrl: null, revoked: false };
 
-  const stageLabels = Object.fromEntries(
-    DEAL_STAGES_ORDER.map((stage) => [stage, t(`stages.${stage}`)]),
-  ) as Record<DealStage, string>;
+  const statusLabels = Object.fromEntries(
+    BUYER_FACING_STATUSES.map((status) => [status, t(`statuses.${status}`)]),
+  ) as Record<BuyerFacingStatus, string>;
   const sourceLabels = Object.fromEntries(
     REQUEST_SOURCES_ORDER.map((source) => [source, t(`sources.${source}`)]),
   ) as Record<RequestSource, string>;
@@ -97,13 +86,13 @@ export default async function BuyerAccountPage({ params }: BuyerPageProps) {
             labels={{
               company: t('columns.company'),
               project: t('columns.project'),
-              stage: t('columns.stage'),
+              status: t('columns.status'),
               source: t('columns.source'),
               createdAt: t('columns.createdAt'),
               lastActivityAt: t('columns.lastActivityAt'),
               noValue: t('noValue'),
             }}
-            stageLabels={stageLabels}
+            statusLabels={statusLabels}
             sourceLabels={sourceLabels}
           />
         )}

@@ -46,12 +46,6 @@ type ActiveQrRow = {
   id: string;
   buyerProfile: {
     userId: string;
-    user: {
-      id: string;
-      name: string | null;
-      email: string;
-      phone: string | null;
-    };
   };
 };
 
@@ -61,15 +55,26 @@ async function findActiveQrByToken(token: string): Promise<ActiveQrRow | null> {
     where: { tokenHash, revokedAt: null },
     select: {
       id: true,
-      buyerProfile: {
-        select: {
-          userId: true,
-          user: { select: { id: true, name: true, email: true, phone: true } },
-        },
-      },
+      buyerProfile: { select: { userId: true } },
     },
   });
   return row;
+}
+
+async function loadBuyerContact(userId: string): Promise<BuyerContactSnapshot | null> {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true, name: true, email: true, phone: true },
+  });
+  if (!user) {
+    return null;
+  }
+  return {
+    userId: user.id,
+    name: user.name,
+    email: user.email,
+    phone: user.phone,
+  };
 }
 
 async function loadCompanyProjects(companyId: string): Promise<BuilderProjectOption[]> {
@@ -102,16 +107,17 @@ export async function resolveQrScan(
   }
 
   if (session.role === 'BUILDER' && session.companyId) {
-    const projects = await loadCompanyProjects(session.companyId);
+    const [buyer, projects] = await Promise.all([
+      loadBuyerContact(qr.buyerProfile.userId),
+      loadCompanyProjects(session.companyId),
+    ]);
+    if (!buyer) {
+      return { kind: 'invalid' };
+    }
     return {
       kind: 'builder',
       qrCodeId: qr.id,
-      buyer: {
-        userId: qr.buyerProfile.user.id,
-        name: qr.buyerProfile.user.name,
-        email: qr.buyerProfile.user.email,
-        phone: qr.buyerProfile.user.phone,
-      },
+      buyer,
       projects,
     };
   }

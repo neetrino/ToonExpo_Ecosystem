@@ -5,6 +5,7 @@ import type { QrScanDealMutationResult } from '@/lib/qr/mutation-result';
 import { regenerateBuyerQr } from '@/lib/qr/mutations';
 import { createDealFromQrScan } from '@/lib/qr/scan-deal-mutations';
 import { auth } from '@/auth';
+import { revalidateCrmPortalPaths } from '@/lib/shared/revalidate-crm-paths';
 import { revalidatePath } from 'next/cache';
 
 import type { BuilderScanFormState } from './scan-form-state';
@@ -48,6 +49,10 @@ export async function createScanDealAction(
     builderUserId: builder.session.user.id,
     companyId: builder.companyId,
   });
+
+  if (result.ok) {
+    revalidateCrmPortalPaths();
+  }
 
   return toScanFormState(result);
 }

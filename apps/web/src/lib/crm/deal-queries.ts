@@ -7,6 +7,7 @@ import {
 } from '@toonexpo/domain';
 
 import { DEAL_DETAIL_ACTIVITY_LIMIT } from './constants';
+import { mapDealDetailRow } from './deal-detail-mapper';
 
 export type DealBoardCard = {
   id: string;
@@ -167,37 +168,5 @@ export async function getCompanyDealDetail(
     return null;
   }
 
-  return {
-    id: deal.id,
-    stage: deal.stage,
-    source: deal.source,
-    title: deal.title,
-    message: deal.message,
-    contactName: deal.contactName,
-    contactPhone: deal.contactPhone,
-    contactEmail: deal.contactEmail,
-    hasBuyerLink: deal.buyerUserId !== null,
-    projectId: deal.projectId,
-    projectName: deal.project?.name ?? null,
-    assigneeUserId: deal.assignedUserId,
-    assigneeName: deal.assignedUser?.name ?? null,
-    lastActivityAt: deal.lastActivityAt,
-    nextFollowUpAt: deal.nextFollowUpAt,
-    createdAt: deal.createdAt,
-    apartments: deal.apartments.map((link) => ({
-      apartmentId: link.apartmentId,
-      code: link.apartment.code,
-      status: link.apartment.status,
-      priceAmd: link.apartment.priceAmd,
-      floorName: link.apartment.floor.name,
-      buildingName: link.apartment.floor.building.name,
-    })),
-    activities: deal.activities.map((activity) => ({
-      id: activity.id,
-      type: activity.type,
-      body: activity.body,
-      createdAt: activity.createdAt,
-      authorName: activity.authorUser?.name ?? null,
-    })),
-  };
+  return mapDealDetailRow(deal);
 }

@@ -1,11 +1,13 @@
 import { prisma } from '@toonexpo/db';
-import type { DealStage, RequestSource } from '@toonexpo/domain';
+import type { RequestSource } from '@toonexpo/domain';
+
+import { mapDealStageToBuyerStatus, type BuyerFacingStatus } from './buyer-facing-status';
 
 export type BuyerDealRow = {
   id: string;
   companyName: string;
   projectName: string | null;
-  stage: DealStage;
+  status: BuyerFacingStatus;
   source: RequestSource;
   createdAt: Date;
   lastActivityAt: Date | null;
@@ -31,7 +33,7 @@ export async function getBuyerDeals(buyerUserId: string): Promise<BuyerDealRow[]
     id: row.id,
     companyName: row.company.name,
     projectName: row.project?.name ?? null,
-    stage: row.stage,
+    status: mapDealStageToBuyerStatus(row.stage),
     source: row.source,
     createdAt: row.createdAt,
     lastActivityAt: row.lastActivityAt,

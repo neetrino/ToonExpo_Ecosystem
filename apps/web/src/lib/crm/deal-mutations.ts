@@ -1,20 +1,12 @@
 import type { DealActivityInput, DealAssignInput, ManualDealInput } from '@toonexpo/contracts';
 import { prisma } from '@toonexpo/db';
 
-import {
-  findCompanyApartment,
-  findCompanyDeal,
-  isCompanyMember,
-  isCompanyProject,
-  statusChangeBody,
-} from './deal-mutation-helpers';
+import { findCompanyDeal, isCompanyMember, statusChangeBody } from './deal-mutation-helpers';
 import type { CrmMutationResult } from './mutation-result';
+import { runCreateManualDealTransaction } from './manual-deal-mutations';
 
 export { updateDealStage } from './deal-stage-mutations';
 export { linkDealApartment, unlinkDealApartment } from './deal-apartment-mutations';
-
-const MANUAL_SOURCE = 'MANUAL_BUILDER_ENTRY' as const;
-const DEFAULT_MANUAL_NOTE = 'Manual builder entry.';
 
 /**
  * Adds a COMMENT or FOLLOW_UP activity. FOLLOW_UP may set nextFollowUpAt on the deal.
@@ -124,66 +116,7 @@ export async function createManualDeal(
   input: ManualDealInput,
   actorUserId?: string,
 ): Promise<CrmMutationResult<{ dealId: string; affectedProjectIds: string[] }>> {
-  return prisma.$transaction(async (tx) => {
-    if (input.projectId) {
-      const owned = await isCompanyProject(tx, companyId, input.projectId);
-      if (!owned) {
-        return { ok: false, errorKey: 'notFound' };
-      }
-    }
-
-    if (input.assignedUserId) {
-      const member = await isCompanyMember(tx, companyId, input.assignedUserId);
-      if (!member) {
-        return { ok: false, errorKey: 'notFound' };
-      }
-    }
-
-    let apartmentId: string | undefined;
-    const projectIds: string[] = [];
-    if (input.projectId) {
-      projectIds.push(input.projectId);
-    }
-
-    if (input.apartmentId) {
-      const apartment = await findCompanyApartment(tx, companyId, input.apartmentId);
-      if (!apartment) {
-        return { ok: false, errorKey: 'notFound' };
-      }
-      apartmentId = apartment.id;
-      if (!projectIds.includes(apartment.projectId)) {
-        projectIds.push(apartment.projectId);
-      }
-    }
-
-    const now = new Date();
-    const noteBody = input.message ?? DEFAULT_MANUAL_NOTE;
-    const deal = await tx.deal.create({
-      data: {
-        companyId,
-        projectId: input.projectId,
-        stage: 'NEW_REQUEST',
-        source: MANUAL_SOURCE,
-        contactName: input.contactName,
-        contactPhone: input.contactPhone,
-        contactEmail: input.contactEmail,
-        title: input.title,
-        message: input.message,
-        assignedUserId: input.assignedUserId,
-        createdByUserId: actorUserId,
-        lastActivityAt: now,
-        apartments: apartmentId ? { create: { apartmentId } } : undefined,
-        activities: {
-          create: {
-            authorUserId: actorUserId,
-            type: 'COMMENT',
-            body: noteBody,
-          },
-        },
-      },
-      select: { id: true },
-    });
-
-    return { ok: true, dealId: deal.id, affectedProjectIds: projectIds };
-  });
+  return prisma.$transaction((tx) =>
+    runCreateManualDealTransaction(tx, companyId, input, actorUserId),
+  );
 }

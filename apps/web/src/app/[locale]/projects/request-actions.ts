@@ -7,6 +7,11 @@ import { submitPublicRequest } from '@/lib/crm/public-request-mutations';
 import type { PublicRequestFormActionState } from './request-form-state';
 
 const HONEYPOT_FIELD_NAME = 'website';
+const HONEYPOT_SUPPRESSED_DEAL_ID = 'honeypot-suppressed';
+
+type PublicRequestSubmissionInput = Parameters<typeof submitPublicRequest>[0] & {
+  [HONEYPOT_FIELD_NAME]?: string;
+};
 
 function getFormString(formData: FormData, key: string): string | undefined {
   const value = formData.get(key);
@@ -22,8 +27,7 @@ function getOptionalFormString(formData: FormData, key: string): string | undefi
   return trimmed.length > 0 ? trimmed : undefined;
 }
 
-function isHoneypotTripped(formData: FormData): boolean {
-  const value = formData.get(HONEYPOT_FIELD_NAME);
+function isHoneypotTripped(value: string | undefined): boolean {
   return typeof value === 'string' && value.trim().length > 0;
 }
 
@@ -40,7 +44,7 @@ async function resolveBuyerContext(): Promise<{
   defaultEmail?: string;
 }> {
   const session = await auth();
-  if (!session?.user) {
+  if (!session?.user || session.user.role !== 'BUYER') {
     return {};
   }
 
@@ -51,12 +55,23 @@ async function resolveBuyerContext(): Promise<{
   };
 }
 
-/** Core mutation entry for tests and scripts (no honeypot). */
-export async function submitPublicRequestAction(
-  input: Parameters<typeof submitPublicRequest>[0],
+async function executePublicRequestSubmission(
+  raw: PublicRequestSubmissionInput,
 ): Promise<PublicRequestMutationResult> {
+  if (isHoneypotTripped(raw[HONEYPOT_FIELD_NAME])) {
+    return { ok: true, dealId: HONEYPOT_SUPPRESSED_DEAL_ID };
+  }
+
+  const { [HONEYPOT_FIELD_NAME]: _honeypot, ...input } = raw;
   // TODO(rate-limit): add Redis-backed rate limiting on public request intake.
   return submitPublicRequest(input);
+}
+
+/** Core mutation entry for tests and scripts; honeypot is enforced here. */
+export async function submitPublicRequestAction(
+  input: PublicRequestSubmissionInput,
+): Promise<PublicRequestMutationResult> {
+  return executePublicRequestSubmission(input);
 }
 
 export async function publicRequestFormAction(
@@ -64,22 +79,19 @@ export async function publicRequestFormAction(
   _prevState: PublicRequestFormActionState,
   formData: FormData,
 ): Promise<PublicRequestFormActionState> {
-  if (isHoneypotTripped(formData)) {
-    return { success: true };
-  }
-
   const buyer = await resolveBuyerContext();
   const name = getFormString(formData, 'name') ?? buyer.defaultName;
   const email = getFormString(formData, 'email') ?? buyer.defaultEmail;
 
-  const result = await submitPublicRequest({
-    projectId: getFormString(formData, 'projectId'),
+  const result = await executePublicRequestSubmission({
+    projectId: getFormString(formData, 'projectId') ?? '',
     apartmentId: getOptionalFormString(formData, 'apartmentId'),
     name: name ?? '',
     phone: getFormString(formData, 'phone') ?? '',
     email: email ?? '',
     message: getOptionalFormString(formData, 'message'),
     buyerUserId: buyer.buyerUserId,
+    [HONEYPOT_FIELD_NAME]: getFormString(formData, HONEYPOT_FIELD_NAME),
   });
 
   return toFormState(result);

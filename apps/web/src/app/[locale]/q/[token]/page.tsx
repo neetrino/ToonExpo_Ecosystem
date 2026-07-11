@@ -37,9 +37,6 @@ export default async function QrScanPage({ params }: QrScanPageProps) {
     companyId: builder?.companyId,
   });
 
-  if (resolved.kind === 'invalid') {
-    return <QrStatusView title={t('invalid.title')} body={t('invalid.body')} />;
-  }
   if (resolved.kind === 'owner') {
     redirect(`/${locale}/account#my-qr`);
   }
@@ -47,7 +44,7 @@ export default async function QrScanPage({ params }: QrScanPageProps) {
     return renderBuilderAction(locale, token, resolved, builder, t);
   }
 
-  return <QrStatusView title={t('limited.title')} body={t('limited.body')} />;
+  return <QrStatusView title={t('public.title')} body={t('public.body')} />;
 }
 
 async function renderBuilderAction(

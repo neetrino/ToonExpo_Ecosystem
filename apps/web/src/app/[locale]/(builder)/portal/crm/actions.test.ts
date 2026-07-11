@@ -22,6 +22,10 @@ vi.mock('@/lib/shared/revalidate-catalog-paths', () => ({
   revalidateCatalogPaths: vi.fn(),
 }));
 
+vi.mock('@/lib/shared/revalidate-crm-paths', () => ({
+  revalidateCrmPortalPaths: vi.fn(),
+}));
+
 vi.mock('next/cache', () => ({
   revalidatePath: vi.fn(),
 }));

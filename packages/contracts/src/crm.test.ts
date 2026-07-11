@@ -21,9 +21,10 @@ describe('publicRequestInputSchema', () => {
     expect(parsed.success).toBe(true);
   });
 
-  it('accepts an apartment-page request', () => {
+  it('accepts an apartment-page request with project context', () => {
     expect(
       publicRequestInputSchema.safeParse({
+        projectId: 'proj_1',
         apartmentId: 'apt_1',
         name: 'Ani',
         phone: '+37491112233',
@@ -32,7 +33,18 @@ describe('publicRequestInputSchema', () => {
     ).toBe(true);
   });
 
-  it('rejects when neither projectId nor apartmentId is set', () => {
+  it('rejects apartment-only payloads without projectId', () => {
+    expect(
+      publicRequestInputSchema.safeParse({
+        apartmentId: 'apt_1',
+        name: 'Ani',
+        phone: '+37491112233',
+        email: 'ani@example.com',
+      }).success,
+    ).toBe(false);
+  });
+
+  it('rejects when projectId is missing', () => {
     expect(
       publicRequestInputSchema.safeParse({
         name: 'Ani',
