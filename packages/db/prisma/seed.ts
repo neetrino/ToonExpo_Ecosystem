@@ -316,6 +316,8 @@ async function upsertHiddenCourtProject(companyId: string): Promise<void> {
 async function seedDemoCatalog(): Promise<{
   company: Company;
   sunriseProject: Project;
+  building: Building;
+  floors: Floor[];
   apartments: Apartment[];
 }> {
   const company = await upsertDemoCompany();
@@ -328,7 +330,7 @@ async function seedDemoCatalog(): Promise<{
   await upsertHiddenCourtProject(company.id);
 
   console.log('Demo catalog seed complete.');
-  return { company, sunriseProject, apartments };
+  return { company, sunriseProject, building, floors, apartments };
 }
 
 const DEMO_DEAL_PROJECT_TITLE = 'Demo project-page request';
@@ -482,11 +484,171 @@ async function seedDemoCrmDeals(
   }
 }
 
+const PROJECT_CANVAS_TITLE = 'Sunrise site plan';
+const FLOOR_CANVAS_TITLE = 'Sunrise Floor 1 plan';
+const PROJECT_CANVAS_IMAGE = 'https://picsum.photos/seed/sunrise-visual-project/1200/800';
+const FLOOR_CANVAS_IMAGE = 'https://picsum.photos/seed/sunrise-visual-floor1/1200/800';
+
+async function upsertProjectCanvas(projectId: string, buildingId: string): Promise<void> {
+  const existing = await prisma.visualCanvas.findFirst({
+    where: { projectId, title: PROJECT_CANVAS_TITLE },
+  });
+
+  let canvasId = existing?.id;
+
+  if (existing) {
+    await prisma.visualCanvas.update({
+      where: { id: existing.id },
+      data: {
+        imageUrl: PROJECT_CANVAS_IMAGE,
+        imageAlt: 'Sunrise Residence site plan',
+        status: 'PUBLISHED',
+      },
+    });
+    console.log('Updated sunrise project visual canvas.');
+  } else {
+    const canvas = await prisma.visualCanvas.create({
+      data: {
+        projectId,
+        title: PROJECT_CANVAS_TITLE,
+        imageUrl: PROJECT_CANVAS_IMAGE,
+        imageAlt: 'Sunrise Residence site plan',
+        status: 'PUBLISHED',
+      },
+    });
+    canvasId = canvas.id;
+    console.log('Created sunrise project visual canvas.');
+  }
+
+  if (!canvasId) {
+    return;
+  }
+
+  const existingHotspot = await prisma.hotspot.findFirst({
+    where: { canvasId, buildingId },
+  });
+
+  if (existingHotspot) {
+    await prisma.hotspot.update({
+      where: { id: existingHotspot.id },
+      data: { x: 42, y: 55, label: BUILDING_NAME, sortOrder: 0 },
+    });
+    console.log('Updated sunrise project building hotspot.');
+  } else {
+    await prisma.hotspot.create({
+      data: {
+        canvasId,
+        buildingId,
+        x: 42,
+        y: 55,
+        label: BUILDING_NAME,
+        sortOrder: 0,
+      },
+    });
+    console.log('Created sunrise project building hotspot.');
+  }
+}
+
+async function upsertFloorCanvas(floorId: string, apartments: Apartment[]): Promise<void> {
+  const apt101 = apartments.find((apartment) => apartment.code === '101');
+  const apt102 = apartments.find((apartment) => apartment.code === '102');
+  if (!apt101 || !apt102) {
+    console.log('Skipping floor canvas seed: apartments 101/102 not found.');
+    return;
+  }
+
+  const existing = await prisma.visualCanvas.findFirst({
+    where: { floorId, title: FLOOR_CANVAS_TITLE },
+  });
+
+  let canvasId = existing?.id;
+
+  if (existing) {
+    await prisma.visualCanvas.update({
+      where: { id: existing.id },
+      data: {
+        imageUrl: FLOOR_CANVAS_IMAGE,
+        imageAlt: 'Sunrise Residence Floor 1 floorplan',
+        status: 'PUBLISHED',
+      },
+    });
+    console.log('Updated sunrise floor visual canvas.');
+  } else {
+    const canvas = await prisma.visualCanvas.create({
+      data: {
+        floorId,
+        title: FLOOR_CANVAS_TITLE,
+        imageUrl: FLOOR_CANVAS_IMAGE,
+        imageAlt: 'Sunrise Residence Floor 1 floorplan',
+        status: 'PUBLISHED',
+      },
+    });
+    canvasId = canvas.id;
+    console.log('Created sunrise floor visual canvas.');
+  }
+
+  if (!canvasId) {
+    return;
+  }
+
+  for (const [apartment, x, y, sortOrder] of [
+    [apt101, 28, 40, 0],
+    [apt102, 68, 40, 1],
+  ] as const) {
+    const existingHotspot = await prisma.hotspot.findFirst({
+      where: { canvasId, apartmentId: apartment.id },
+    });
+
+    if (existingHotspot) {
+      await prisma.hotspot.update({
+        where: { id: existingHotspot.id },
+        data: { x, y, label: `Apt ${apartment.code}`, sortOrder },
+      });
+    } else {
+      await prisma.hotspot.create({
+        data: {
+          canvasId,
+          apartmentId: apartment.id,
+          x,
+          y,
+          label: `Apt ${apartment.code}`,
+          sortOrder,
+        },
+      });
+    }
+  }
+  console.log('Upserted sunrise floor apartment hotspots.');
+}
+
+async function seedSunriseVisualMaps(
+  sunriseProject: Project,
+  building: Building,
+  floors: Floor[],
+  apartments: Apartment[],
+): Promise<void> {
+  await upsertProjectCanvas(sunriseProject.id, building.id);
+
+  const floor1 = floors.find((floor) => floor.level === 1);
+  if (!floor1) {
+    console.log('Skipping floor canvas seed: Floor 1 not found.');
+    return;
+  }
+
+  const floor1Apartments = apartments.filter((apartment) => apartment.floorId === floor1.id);
+  await upsertFloorCanvas(floor1.id, floor1Apartments);
+}
+
 async function main(): Promise<void> {
   await seedAdmin();
   const catalog = await seedDemoCatalog();
   await seedBuilder();
   await seedDemoCrmDeals(catalog.company, catalog.sunriseProject, catalog.apartments);
+  await seedSunriseVisualMaps(
+    catalog.sunriseProject,
+    catalog.building,
+    catalog.floors,
+    catalog.apartments,
+  );
 }
 
 main()

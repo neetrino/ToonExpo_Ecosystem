@@ -2,7 +2,15 @@
 
 ## Current Status
 
-Sprint 4 **COMPLETE** — CRM/QR data layer, public request flow + dedup, buyer QR + builder scan, CRM pipeline mutations + race-safe inventory sync, CRM board/deal sheet UI, two audits + fixes.
+Sprint 5 in progress — Visual Map / Hotspots **server layer complete** (schema, contracts, mutations, queries, actions, seed; UI next).
+
+## Sprint 5 — Visual Map / Hotspots (server)
+
+- **Prisma** — `VisualCanvas` + `Hotspot` (migration `sprint5_visual_map`); context XOR (project|building|floor); target XOR (building|floor|apartment); Float % coords; `imageUrl`/`imageAlt` on canvas (v1, not MediaAsset).
+- **Contracts** — `packages/contracts/src/visual-map.ts` (upsert/status/move + public DTO).
+- **Mutations/queries** — company-scoped CRUD; target consistency matrix; public query requires canvas + project `PUBLISHED`.
+- **Actions** — `portal/visual-map-actions.ts` with catalog revalidation.
+- **Seed** — sunrise project canvas (1 building hotspot) + Floor 1 canvas (2 apartment hotspots).
 
 ## Sprint 4 — COMPLETE
 
