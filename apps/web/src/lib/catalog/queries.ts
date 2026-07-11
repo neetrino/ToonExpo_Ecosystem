@@ -47,7 +47,7 @@ type BuildingRow = {
 type ProjectDetailRow = ProjectSummaryRow & {
   description: string | null;
   address: string | null;
-  media: { url: string; alt: string | null }[];
+  media: { id: string; url: string; alt: string | null }[];
   buildings: BuildingRow[];
 };
 
@@ -79,8 +79,8 @@ function mapBuilding(row: BuildingRow): PublicBuilding {
   };
 }
 
-function mapMedia(row: { url: string; alt: string | null }): PublicMediaAsset {
-  return { url: row.url, alt: row.alt };
+function mapMedia(row: { id: string; url: string; alt: string | null }): PublicMediaAsset {
+  return { id: row.id, url: row.url, alt: row.alt };
 }
 
 function mapProjectSummary(row: ProjectSummaryRow): PublicProjectSummary {
@@ -150,9 +150,10 @@ export async function getPublishedProjectBySlug(
       company: { select: { slug: true, name: true } },
       media: {
         orderBy: { sortOrder: 'asc' },
-        select: { url: true, alt: true },
+        select: { id: true, url: true, alt: true },
       },
       buildings: {
+        orderBy: { name: 'asc' },
         select: {
           id: true,
           name: true,

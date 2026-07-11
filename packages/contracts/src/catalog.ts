@@ -2,6 +2,7 @@ import { APARTMENT_STATUSES } from '@toonexpo/domain';
 import { z } from 'zod';
 
 export const publicMediaAssetSchema = z.object({
+  id: z.string(),
   url: z.string().url(),
   alt: z.string().nullable(),
 });

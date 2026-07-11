@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { Link } from '@/i18n/navigation';
+import { CATALOG_IMAGE_HEIGHT, CATALOG_IMAGE_WIDTH } from '@/lib/catalog/image-dimensions';
 import { getPublishedProjects } from '@/lib/catalog/queries';
 
 type ProjectsPageProps = {
@@ -18,8 +19,8 @@ function ProjectCard({ project }: { project: PublicProjectSummary }) {
         <Image
           src={project.coverImageUrl}
           alt={project.name}
-          width={640}
-          height={400}
+          width={CATALOG_IMAGE_WIDTH}
+          height={CATALOG_IMAGE_HEIGHT}
           className="catalog-card__image"
         />
       ) : (

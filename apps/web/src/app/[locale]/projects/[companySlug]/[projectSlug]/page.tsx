@@ -1,130 +1,17 @@
-import type {
-  PublicApartment,
-  PublicBuilding,
-  PublicFloor,
-  PublicProjectDetail,
-} from '@toonexpo/contracts';
+import type { PublicProjectDetail } from '@toonexpo/contracts';
+import { slugSchema } from '@toonexpo/contracts';
 import type { ApartmentStatus } from '@toonexpo/domain';
-import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
-import { formatPriceAmd } from '@/lib/catalog/format-price';
 import { getPublishedProjectBySlug } from '@/lib/catalog/queries';
+
+import { ProjectBuildings } from './project-buildings';
+import { ProjectGallery } from './project-gallery';
 
 type ProjectDetailPageProps = {
   params: Promise<{ locale: string; companySlug: string; projectSlug: string }>;
 };
-
-type TableLabels = {
-  code: string;
-  rooms: string;
-  areaSqm: string;
-  priceAmd: string;
-  status: string;
-  noValue: string;
-};
-
-function statusBadgeClass(status: ApartmentStatus): string {
-  return `catalog-badge catalog-badge--${status.toLowerCase()}`;
-}
-
-function ApartmentTableRow({
-  apartment,
-  locale,
-  tableLabels,
-  statusLabel,
-}: {
-  apartment: PublicApartment;
-  locale: string;
-  tableLabels: TableLabels;
-  statusLabel: string;
-}) {
-  return (
-    <tr>
-      <td>{apartment.code}</td>
-      <td>{apartment.rooms ?? tableLabels.noValue}</td>
-      <td>{apartment.areaSqm ?? tableLabels.noValue}</td>
-      <td>
-        {apartment.priceAmd !== null
-          ? formatPriceAmd(apartment.priceAmd, locale)
-          : tableLabels.noValue}
-      </td>
-      <td>
-        <span className={statusBadgeClass(apartment.status)}>{statusLabel}</span>
-      </td>
-    </tr>
-  );
-}
-
-function FloorBlock({
-  floor,
-  locale,
-  tableLabels,
-  statusLabels,
-}: {
-  floor: PublicFloor;
-  locale: string;
-  tableLabels: TableLabels;
-  statusLabels: Record<ApartmentStatus, string>;
-}) {
-  return (
-    <div className="catalog-floor">
-      <h4 className="catalog-floor__title">{floor.name}</h4>
-      <div className="catalog-table-wrap">
-        <table className="catalog-table">
-          <thead>
-            <tr>
-              <th>{tableLabels.code}</th>
-              <th>{tableLabels.rooms}</th>
-              <th>{tableLabels.areaSqm}</th>
-              <th>{tableLabels.priceAmd}</th>
-              <th>{tableLabels.status}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {floor.apartments.map((apartment) => (
-              <ApartmentTableRow
-                key={apartment.id}
-                apartment={apartment}
-                locale={locale}
-                tableLabels={tableLabels}
-                statusLabel={statusLabels[apartment.status]}
-              />
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-}
-
-function BuildingBlock({
-  building,
-  locale,
-  tableLabels,
-  statusLabels,
-}: {
-  building: PublicBuilding;
-  locale: string;
-  tableLabels: TableLabels;
-  statusLabels: Record<ApartmentStatus, string>;
-}) {
-  return (
-    <section className="catalog-building">
-      <h3 className="catalog-building__title">{building.name}</h3>
-      {building.floors.map((floor) => (
-        <FloorBlock
-          key={floor.id}
-          floor={floor}
-          locale={locale}
-          tableLabels={tableLabels}
-          statusLabels={statusLabels}
-        />
-      ))}
-    </section>
-  );
-}
 
 function ProjectDetailView({
   project,
@@ -136,7 +23,14 @@ function ProjectDetailView({
 }: {
   project: PublicProjectDetail;
   locale: string;
-  tableLabels: TableLabels;
+  tableLabels: {
+    code: string;
+    rooms: string;
+    areaSqm: string;
+    priceAmd: string;
+    status: string;
+    noValue: string;
+  };
   statusLabels: Record<ApartmentStatus, string>;
   galleryLabel: string;
   buildingsLabel: string;
@@ -156,39 +50,18 @@ function ProjectDetailView({
         ) : null}
       </header>
 
-      {project.media.length > 0 ? (
-        <section className="catalog-gallery">
-          <h2 className="catalog-section-title">{galleryLabel}</h2>
-          <div className="catalog-gallery__grid">
-            {project.media.map((asset) => (
-              <figure key={asset.url} className="catalog-gallery__item">
-                <Image
-                  src={asset.url}
-                  alt={asset.alt ?? project.name}
-                  width={640}
-                  height={400}
-                  className="catalog-gallery__image"
-                />
-              </figure>
-            ))}
-          </div>
-        </section>
-      ) : null}
-
-      {project.buildings.length > 0 ? (
-        <section className="catalog-buildings">
-          <h2 className="catalog-section-title">{buildingsLabel}</h2>
-          {project.buildings.map((building) => (
-            <BuildingBlock
-              key={building.id}
-              building={building}
-              locale={locale}
-              tableLabels={tableLabels}
-              statusLabels={statusLabels}
-            />
-          ))}
-        </section>
-      ) : null}
+      <ProjectGallery
+        media={project.media}
+        projectName={project.name}
+        galleryLabel={galleryLabel}
+      />
+      <ProjectBuildings
+        buildings={project.buildings}
+        locale={locale}
+        tableLabels={tableLabels}
+        statusLabels={statusLabels}
+        buildingsLabel={buildingsLabel}
+      />
     </article>
   );
 }
@@ -198,12 +71,18 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
   setRequestLocale(locale);
   const t = await getTranslations('catalog');
 
-  const project = await getPublishedProjectBySlug(companySlug, projectSlug);
+  const parsedCompanySlug = slugSchema.safeParse(companySlug);
+  const parsedProjectSlug = slugSchema.safeParse(projectSlug);
+  if (!parsedCompanySlug.success || !parsedProjectSlug.success) {
+    notFound();
+  }
+
+  const project = await getPublishedProjectBySlug(parsedCompanySlug.data, parsedProjectSlug.data);
   if (!project) {
     notFound();
   }
 
-  const tableLabels: TableLabels = {
+  const tableLabels = {
     code: t('detail.table.code'),
     rooms: t('detail.table.rooms'),
     areaSqm: t('detail.table.areaSqm'),

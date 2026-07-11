@@ -20,6 +20,7 @@ export {
   type LoginInput,
 } from './auth';
 export { healthResponseSchema, type HealthResponse } from './health';
+export { SLUG_MAX_LENGTH, slugSchema } from './slug';
 export {
   PROVISIONABLE_ROLES,
   provisionAccountSchema,

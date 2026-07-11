@@ -1,4 +1,11 @@
-import { PrismaClient } from '@prisma/client';
+import {
+  PrismaClient,
+  type Apartment,
+  type Building,
+  type Company,
+  type Floor,
+  type Project,
+} from '@prisma/client';
 import argon2 from 'argon2';
 
 const prisma = new PrismaClient();
@@ -10,6 +17,46 @@ const DEMO_COMPANY_NAME = 'Demo Development';
 const SUNRISE_SLUG = 'sunrise-residence';
 const HIDDEN_COURT_SLUG = 'hidden-court';
 const BUILDING_NAME = 'Tower A';
+
+const FLOOR_CONFIGS = [
+  { level: 1, name: 'Floor 1' },
+  { level: 2, name: 'Floor 2' },
+] as const;
+
+const APARTMENT_CONFIGS = [
+  {
+    floorIndex: 0,
+    code: '101',
+    status: 'AVAILABLE' as const,
+    areaSqm: 72.5,
+    rooms: 2,
+    priceAmd: 85000000,
+  },
+  {
+    floorIndex: 0,
+    code: '102',
+    status: 'RESERVED' as const,
+    areaSqm: 95.0,
+    rooms: 3,
+    priceAmd: 112000000,
+  },
+  {
+    floorIndex: 1,
+    code: '201',
+    status: 'SOLD' as const,
+    areaSqm: 68.0,
+    rooms: 2,
+    priceAmd: 79000000,
+  },
+  {
+    floorIndex: 1,
+    code: '202',
+    status: 'AVAILABLE' as const,
+    areaSqm: 110.0,
+    rooms: 4,
+    priceAmd: 145000000,
+  },
+] as const;
 
 async function seedAdmin(): Promise<void> {
   const email = process.env.SEED_ADMIN_EMAIL?.trim();
@@ -90,15 +137,17 @@ async function upsertApartmentMedia(
   }
 }
 
-async function seedDemoCatalog(): Promise<void> {
-  const company = await prisma.company.upsert({
+async function upsertDemoCompany(): Promise<Company> {
+  return prisma.company.upsert({
     where: { slug: DEMO_COMPANY_SLUG },
     update: { name: DEMO_COMPANY_NAME },
     create: { name: DEMO_COMPANY_NAME, slug: DEMO_COMPANY_SLUG },
   });
+}
 
-  const sunriseProject = await prisma.project.upsert({
-    where: { companyId_slug: { companyId: company.id, slug: SUNRISE_SLUG } },
+async function upsertSunriseProject(companyId: string): Promise<Project> {
+  return prisma.project.upsert({
+    where: { companyId_slug: { companyId, slug: SUNRISE_SLUG } },
     update: {
       name: 'Sunrise Residence',
       description:
@@ -108,7 +157,7 @@ async function seedDemoCatalog(): Promise<void> {
       status: 'PUBLISHED',
     },
     create: {
-      companyId: company.id,
+      companyId,
       name: 'Sunrise Residence',
       slug: SUNRISE_SLUG,
       description:
@@ -118,29 +167,31 @@ async function seedDemoCatalog(): Promise<void> {
       status: 'PUBLISHED',
     },
   });
+}
 
-  let building = await prisma.building.findFirst({
-    where: { projectId: sunriseProject.id, name: BUILDING_NAME },
+async function upsertSunriseBuilding(projectId: string): Promise<Building> {
+  const existing = await prisma.building.findFirst({
+    where: { projectId, name: BUILDING_NAME },
   });
 
-  if (!building) {
-    building = await prisma.building.create({
-      data: { projectId: sunriseProject.id, name: BUILDING_NAME },
-    });
+  if (existing) {
+    return existing;
   }
 
-  const floorConfigs = [
-    { level: 1, name: 'Floor 1' },
-    { level: 2, name: 'Floor 2' },
-  ] as const;
+  return prisma.building.create({
+    data: { projectId, name: BUILDING_NAME },
+  });
+}
 
-  const floors = [];
-  for (const floorConfig of floorConfigs) {
+async function upsertSunriseFloors(buildingId: string): Promise<Floor[]> {
+  const floors: Floor[] = [];
+
+  for (const floorConfig of FLOOR_CONFIGS) {
     const floor = await prisma.floor.upsert({
-      where: { buildingId_level: { buildingId: building.id, level: floorConfig.level } },
+      where: { buildingId_level: { buildingId, level: floorConfig.level } },
       update: { name: floorConfig.name },
       create: {
-        buildingId: building.id,
+        buildingId,
         level: floorConfig.level,
         name: floorConfig.name,
       },
@@ -148,43 +199,13 @@ async function seedDemoCatalog(): Promise<void> {
     floors.push(floor);
   }
 
-  const apartmentConfigs = [
-    {
-      floorIndex: 0,
-      code: '101',
-      status: 'AVAILABLE' as const,
-      areaSqm: 72.5,
-      rooms: 2,
-      priceAmd: 85000000,
-    },
-    {
-      floorIndex: 0,
-      code: '102',
-      status: 'RESERVED' as const,
-      areaSqm: 95.0,
-      rooms: 3,
-      priceAmd: 112000000,
-    },
-    {
-      floorIndex: 1,
-      code: '201',
-      status: 'SOLD' as const,
-      areaSqm: 68.0,
-      rooms: 2,
-      priceAmd: 79000000,
-    },
-    {
-      floorIndex: 1,
-      code: '202',
-      status: 'AVAILABLE' as const,
-      areaSqm: 110.0,
-      rooms: 4,
-      priceAmd: 145000000,
-    },
-  ] as const;
+  return floors;
+}
 
-  const apartments = [];
-  for (const config of apartmentConfigs) {
+async function upsertSunriseApartments(floors: Floor[]): Promise<Apartment[]> {
+  const apartments: Apartment[] = [];
+
+  for (const config of APARTMENT_CONFIGS) {
     const floor = floors[config.floorIndex];
     const apartment = await prisma.apartment.upsert({
       where: { floorId_code: { floorId: floor.id, code: config.code } },
@@ -206,7 +227,11 @@ async function seedDemoCatalog(): Promise<void> {
     apartments.push(apartment);
   }
 
-  await upsertProjectMedia(sunriseProject.id, [
+  return apartments;
+}
+
+async function seedSunriseMedia(projectId: string, apartments: Apartment[]): Promise<void> {
+  await upsertProjectMedia(projectId, [
     {
       url: 'https://picsum.photos/seed/sunrise-residence-1/1200/800',
       alt: 'Sunrise Residence exterior view',
@@ -224,17 +249,30 @@ async function seedDemoCatalog(): Promise<void> {
     alt: 'Apartment 101 living room',
     sortOrder: 0,
   });
+}
 
+async function upsertHiddenCourtProject(companyId: string): Promise<void> {
   await prisma.project.upsert({
-    where: { companyId_slug: { companyId: company.id, slug: HIDDEN_COURT_SLUG } },
+    where: { companyId_slug: { companyId, slug: HIDDEN_COURT_SLUG } },
     update: { name: 'Hidden Court', status: 'DRAFT' },
     create: {
-      companyId: company.id,
+      companyId,
       name: 'Hidden Court',
       slug: HIDDEN_COURT_SLUG,
       status: 'DRAFT',
     },
   });
+}
+
+async function seedDemoCatalog(): Promise<void> {
+  const company = await upsertDemoCompany();
+  const sunriseProject = await upsertSunriseProject(company.id);
+  const building = await upsertSunriseBuilding(sunriseProject.id);
+  const floors = await upsertSunriseFloors(building.id);
+  const apartments = await upsertSunriseApartments(floors);
+
+  await seedSunriseMedia(sunriseProject.id, apartments);
+  await upsertHiddenCourtProject(company.id);
 
   console.log('Demo catalog seed complete.');
 }
