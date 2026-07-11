@@ -61,6 +61,18 @@ enum QrScanPurpose {
   UNKNOWN
 }
 
+enum PartnerType {
+  BANK
+  IT_COMPANY
+  SPONSOR
+  SUPPLIER
+  INSURANCE
+  LEGAL
+  DESIGN_FURNITURE
+  SERVICE_COMPANY
+  OTHER
+}
+
 
 model User {
   id                String          @id @default(cuid())
@@ -147,15 +159,16 @@ model QrCode {
 }
 
 model Company {
-  id        String          @id @default(cuid())
-  name      String
-  slug      String          @unique
-  createdAt DateTime        @default(now())
-  updatedAt DateTime        @updatedAt
-  members   CompanyMember[]
-  projects  Project[]
-  deals     Deal[]
+  id         String          @id @default(cuid())
+  name       String
+  slug       String          @unique
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+  members    CompanyMember[]
+  projects   Project[]
+  deals      Deal[]
   qrScanLogs QrScanLog[]
+  partner    Partner?
 }
 
 
@@ -382,4 +395,48 @@ model QrScanLog {
   @@index([scannedByUserId])
   @@index([companyId])
   @@index([scannedAt])
+}
+
+// Non-builder participant profile. Optional companyId links a provisioned PARTNER account
+// workspace (Company + CompanyMember). Docs: 11-Partners-Participants/03 + 06.
+model Partner {
+  id                String            @id @default(cuid())
+  companyId         String?           @unique
+  name              String
+  slug              String            @unique
+  type              PartnerType
+  logoUrl           String?
+  description       String?           @db.Text
+  phone             String?
+  email             String?
+  website           String?
+  /// Free-form category keys for SERVICE_COMPANY (readiness directory link later).
+  serviceCategories String[]          @default([])
+  status            PublicationStatus @default(DRAFT)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  company           Company?          @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  bankOffers        BankOffer[]
+
+  @@index([type])
+  @@index([status])
+}
+
+// Bank partners only — type=BANK enforced in app layer (errorKey: notBankPartner).
+model BankOffer {
+  id            String            @id @default(cuid())
+  partnerId     String
+  title         String
+  description   String?           @db.Text
+  interestRate  Float
+  maxTermMonths Int
+  maxAmountAmd  Int?
+  featured      Boolean           @default(false)
+  status        PublicationStatus @default(DRAFT)
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  partner       Partner           @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+
+  @@index([partnerId])
+  @@index([status])
 }

@@ -638,6 +638,126 @@ async function seedSunriseVisualMaps(
   await upsertFloorCanvas(floor1.id, floor1Apartments);
 }
 
+const CONVERSE_BANK_SLUG = 'converse-bank-demo';
+const PIXEL_RENDER_SLUG = 'pixelrender-studio';
+const DRAFT_PARTNER_SLUG = 'draft-partner-demo';
+
+async function upsertBankOffer(params: {
+  partnerId: string;
+  title: string;
+  interestRate: number;
+  maxTermMonths: number;
+  maxAmountAmd: number;
+  description: string;
+  featured: boolean;
+}): Promise<void> {
+  const existing = await prisma.bankOffer.findFirst({
+    where: { partnerId: params.partnerId, title: params.title },
+  });
+
+  const data = {
+    description: params.description,
+    interestRate: params.interestRate,
+    maxTermMonths: params.maxTermMonths,
+    maxAmountAmd: params.maxAmountAmd,
+    featured: params.featured,
+    status: 'PUBLISHED' as const,
+  };
+
+  if (existing) {
+    await prisma.bankOffer.update({ where: { id: existing.id }, data });
+    return;
+  }
+
+  await prisma.bankOffer.create({
+    data: {
+      partnerId: params.partnerId,
+      title: params.title,
+      ...data,
+    },
+  });
+}
+
+async function seedPartners(): Promise<void> {
+  const converse = await prisma.partner.upsert({
+    where: { slug: CONVERSE_BANK_SLUG },
+    create: {
+      name: 'Converse Bank Demo',
+      slug: CONVERSE_BANK_SLUG,
+      type: 'BANK',
+      description: 'Demo bank partner with sample mortgage offers.',
+      phone: '+37410000001',
+      email: 'mortgage@converse-demo.local',
+      website: 'https://example.com/converse-bank-demo',
+      status: 'PUBLISHED',
+    },
+    update: {
+      name: 'Converse Bank Demo',
+      type: 'BANK',
+      description: 'Demo bank partner with sample mortgage offers.',
+      status: 'PUBLISHED',
+    },
+  });
+
+  await upsertBankOffer({
+    partnerId: converse.id,
+    title: 'Preferential mortgage',
+    interestRate: 9.5,
+    maxTermMonths: 240,
+    maxAmountAmd: 80_000_000,
+    description: 'Preferential rate for primary-market apartments.',
+    featured: true,
+  });
+
+  await upsertBankOffer({
+    partnerId: converse.id,
+    title: 'Standard mortgage',
+    interestRate: 12.0,
+    maxTermMonths: 360,
+    maxAmountAmd: 120_000_000,
+    description: 'Standard long-term mortgage offer.',
+    featured: false,
+  });
+
+  await prisma.partner.upsert({
+    where: { slug: PIXEL_RENDER_SLUG },
+    create: {
+      name: 'PixelRender Studio',
+      slug: PIXEL_RENDER_SLUG,
+      type: 'SERVICE_COMPANY',
+      description: 'Render and media studio for builder readiness materials.',
+      website: 'https://example.com/pixelrender-studio',
+      serviceCategories: ['photography', 'render_studio', 'video_production'],
+      status: 'PUBLISHED',
+    },
+    update: {
+      name: 'PixelRender Studio',
+      type: 'SERVICE_COMPANY',
+      description: 'Render and media studio for builder readiness materials.',
+      serviceCategories: ['photography', 'render_studio', 'video_production'],
+      status: 'PUBLISHED',
+    },
+  });
+
+  await prisma.partner.upsert({
+    where: { slug: DRAFT_PARTNER_SLUG },
+    create: {
+      name: 'Draft Partner Demo',
+      slug: DRAFT_PARTNER_SLUG,
+      type: 'SPONSOR',
+      description: 'Unpublished sponsor profile for admin workflow demos.',
+      status: 'DRAFT',
+    },
+    update: {
+      name: 'Draft Partner Demo',
+      type: 'SPONSOR',
+      status: 'DRAFT',
+    },
+  });
+
+  console.log('Upserted demo partners (Converse Bank, PixelRender Studio, Draft Partner).');
+}
+
 async function main(): Promise<void> {
   await seedAdmin();
   const catalog = await seedDemoCatalog();
@@ -649,6 +769,7 @@ async function main(): Promise<void> {
     catalog.floors,
     catalog.apartments,
   );
+  await seedPartners();
 }
 
 main()

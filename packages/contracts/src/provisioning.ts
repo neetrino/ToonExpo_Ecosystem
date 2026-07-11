@@ -31,6 +31,8 @@ export const provisionAccountSchema = z
     role: z.enum(PROVISIONABLE_ROLES),
     temporaryPassword: z.string().min(8).max(128),
     companyName: z.string().trim().min(1).max(160).optional(),
+    /** Optional Partner profile to link when role is PARTNER (manual v1; BOS later). */
+    partnerId: z.string().trim().min(1).optional(),
   })
   .refine(
     (data) => {
@@ -40,6 +42,15 @@ export const provisionAccountSchema = z
       return true;
     },
     { path: ['companyName'] },
+  )
+  .refine(
+    (data) => {
+      if (data.partnerId) {
+        return data.role === 'PARTNER';
+      }
+      return true;
+    },
+    { path: ['partnerId'] },
   );
 
 export type ProvisionAccountInput = z.infer<typeof provisionAccountSchema>;

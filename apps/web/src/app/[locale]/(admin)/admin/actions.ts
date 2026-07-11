@@ -25,12 +25,19 @@ export async function provisionAccountAction(
     return { errorKey: 'unauthorized' };
   }
 
+  const partnerIdRaw = formData.get('partnerId');
+  const partnerId =
+    typeof partnerIdRaw === 'string' && partnerIdRaw.trim().length > 0
+      ? partnerIdRaw.trim()
+      : undefined;
+
   const parsed = provisionAccountSchema.safeParse({
     email: formData.get('email'),
     name: formData.get('name'),
     role: formData.get('role'),
     temporaryPassword: formData.get('temporaryPassword'),
     companyName: parseCompanyName(formData.get('companyName')),
+    partnerId,
   });
 
   if (!parsed.success) {

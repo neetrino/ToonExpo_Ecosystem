@@ -3,6 +3,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { ProvisionForm } from '@/components/admin/provision-form';
 import { UsersTable, type ProvisionedUserRow } from '@/components/admin/users-table';
+import { loadPartnerOptions } from '@/lib/admin/queries';
 
 import { provisionAccountAction } from './actions';
 
@@ -40,8 +41,11 @@ async function loadProvisionedUsers(): Promise<ProvisionedUserRow[]> {
 export default async function AdminPage({ params }: AdminPageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const t = await getTranslations('admin');
-  const users = await loadProvisionedUsers();
+  const [t, users, partners] = await Promise.all([
+    getTranslations('admin'),
+    loadProvisionedUsers(),
+    loadPartnerOptions(),
+  ]);
 
   return (
     <section className="flex flex-col gap-10">
@@ -50,7 +54,7 @@ export default async function AdminPage({ params }: AdminPageProps) {
         <p className="text-[var(--te-muted)]">{t('provision.description')}</p>
       </header>
 
-      <ProvisionForm action={provisionAccountAction.bind(null, locale)} />
+      <ProvisionForm action={provisionAccountAction.bind(null, locale)} partners={partners} />
       <UsersTable users={users} locale={locale} />
     </section>
   );

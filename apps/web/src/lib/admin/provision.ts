@@ -58,9 +58,38 @@ async function resolveCompanyId(
   return { ok: true, companyId: created.id };
 }
 
+async function linkPartnerCompany(
+  tx: Prisma.TransactionClient,
+  partnerId: string,
+  companyId: string,
+): Promise<ResolveCompanyResult> {
+  const partner = await tx.partner.findUnique({
+    where: { id: partnerId },
+    select: { id: true, companyId: true },
+  });
+
+  if (!partner) {
+    return { ok: false, error: 'invalidInput' };
+  }
+
+  if (partner.companyId && partner.companyId !== companyId) {
+    return { ok: false, error: 'invalidInput' };
+  }
+
+  if (!partner.companyId) {
+    await tx.partner.update({
+      where: { id: partnerId },
+      data: { companyId },
+    });
+  }
+
+  return { ok: true, companyId };
+}
+
 /**
  * Provisions a non-buyer account (and optional company membership) in a single
  * transaction. Duplicate emails return a typed error without leaking details.
+ * When role is PARTNER and partnerId is set, links Company → Partner.companyId.
  * TODO(email-invite): send invitation email with temporary password.
  */
 export async function provisionAccount(
@@ -93,6 +122,13 @@ export async function provisionAccount(
             role: input.role,
           },
         });
+
+        if (input.partnerId) {
+          const linkResult = await linkPartnerCompany(tx, input.partnerId, companyId);
+          if (!linkResult.ok) {
+            throw new ProvisionAbortError(linkResult.error);
+          }
+        }
       }
 
       return { userId: user.id, companyId };

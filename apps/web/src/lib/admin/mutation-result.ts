@@ -3,6 +3,7 @@ export const ADMIN_MUTATION_ERROR_KEYS = [
   'notFound',
   'invalidInput',
   'nameTaken',
+  'notBankPartner',
 ] as const;
 
 export type AdminMutationErrorKey = (typeof ADMIN_MUTATION_ERROR_KEYS)[number];

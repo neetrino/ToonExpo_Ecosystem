@@ -56,3 +56,21 @@ export const QR_SCAN_PURPOSES = [
 ] as const;
 
 export type QrScanPurpose = (typeof QR_SCAN_PURPOSES)[number];
+
+/**
+ * Partner / participant types (v1). Docs: 11-Partners-Participants/02-Partner-Types-And-Profiles.
+ * Prisma enum uses the same UPPER_SNAKE keys.
+ */
+export const PARTNER_TYPES = [
+  'BANK',
+  'IT_COMPANY',
+  'SPONSOR',
+  'SUPPLIER',
+  'INSURANCE',
+  'LEGAL',
+  'DESIGN_FURNITURE',
+  'SERVICE_COMPANY',
+  'OTHER',
+] as const;
+
+export type PartnerType = (typeof PARTNER_TYPES)[number];

@@ -68,6 +68,7 @@
       "ariaLabel": "Admin navigation",
       "provisioning": "Provisioning",
       "companies": "Companies",
+      "partners": "Partners",
       "projects": "Projects"
     },
     "catalog": {
@@ -75,7 +76,100 @@
         "unauthorized": "You do not have permission to perform this action.",
         "invalidInput": "Please check the fields and try again.",
         "notFound": "The requested item was not found.",
-        "nameTaken": "A company with this name already exists."
+        "nameTaken": "A company with this name already exists.",
+        "notBankPartner": "Bank offers can only be attached to bank partners."
+      }
+    },
+    "partners": {
+      "title": "Partners",
+      "empty": "No partners match this filter.",
+      "newPartner": "New partner",
+      "edit": "Edit",
+      "open": "Open",
+      "backToList": "← Partners",
+      "columns": {
+        "name": "Name",
+        "type": "Type",
+        "status": "Status",
+        "offers": "Offers",
+        "actions": "Actions"
+      },
+      "filter": {
+        "all": "All",
+        "ariaLabel": "Filter partners by type"
+      },
+      "status": {
+        "DRAFT": "Draft",
+        "PUBLISHED": "Published",
+        "ARCHIVED": "Archived"
+      },
+      "types": {
+        "BANK": "Bank",
+        "IT_COMPANY": "IT company",
+        "SPONSOR": "Sponsor",
+        "SUPPLIER": "Supplier",
+        "INSURANCE": "Insurance",
+        "LEGAL": "Legal",
+        "DESIGN_FURNITURE": "Design / furniture",
+        "SERVICE_COMPANY": "Service company",
+        "OTHER": "Other"
+      },
+      "form": {
+        "create": "New partner",
+        "edit": "Edit partner",
+        "submit": "Save",
+        "fields": {
+          "name": "Name",
+          "type": "Type",
+          "slug": "Slug",
+          "slugHint": "Slug is set at creation and cannot be changed.",
+          "logoUrl": "Logo URL",
+          "description": "Description",
+          "phone": "Phone",
+          "email": "Email",
+          "website": "Website",
+          "serviceCategories": "Service categories",
+          "serviceCategoriesHint": "Comma-separated keys (for service companies / readiness)."
+        }
+      },
+      "publication": {
+        "actions": {
+          "publish": "Publish",
+          "archive": "Archive",
+          "draft": "Back to draft"
+        },
+        "confirm": {
+          "publish": "Publish this item? It will become visible publicly when pages go live.",
+          "archive": "Archive this item? It will be hidden from public pages.",
+          "draft": "Move this item back to draft?"
+        }
+      },
+      "offers": {
+        "title": "Bank offers",
+        "empty": "No bank offers yet.",
+        "newOffer": "New offer",
+        "featured": "Featured",
+        "columns": {
+          "title": "Title",
+          "rate": "Rate",
+          "term": "Max term (months)",
+          "amount": "Max amount (AMD)",
+          "status": "Status",
+          "actions": "Actions"
+        },
+        "form": {
+          "create": "New bank offer",
+          "edit": "Edit bank offer",
+          "submit": "Save",
+          "fields": {
+            "title": "Title",
+            "interestRate": "Interest rate (%)",
+            "maxTermMonths": "Max term (months)",
+            "maxAmountAmd": "Max amount (AMD)",
+            "description": "Description",
+            "featured": "Featured"
+          }
+        }
       }
     },
     "companies": {
@@ -150,7 +244,10 @@
         "role": "Role",
         "temporaryPassword": "Temporary password",
         "companyName": "Company name",
-        "companyNameHint": "Required for builder and partner roles."
+        "companyNameHint": "Required for builder and partner roles.",
+        "partnerId": "Partner profile",
+        "partnerIdNone": "No partner link",
+        "partnerIdHint": "Optional. Links this account’s company to an existing partner profile."
       },
       "errors": {
         "invalidInput": "Please check the fields and try again.",

@@ -1,4 +1,4 @@
-import type { PublicationStatus } from '@toonexpo/domain';
+import type { PartnerType, PublicationStatus } from '@toonexpo/domain';
 import { prisma } from '@toonexpo/db';
 
 import type { ProjectStatusCounts } from '@/lib/builder/queries';
@@ -19,6 +19,50 @@ export type AdminProjectRow = {
   status: PublicationStatus;
   buildingsCount: number;
   updatedAt: Date;
+};
+
+export type AdminPartnerRow = {
+  id: string;
+  name: string;
+  slug: string;
+  type: PartnerType;
+  status: PublicationStatus;
+  offersCount: number;
+  updatedAt: Date;
+};
+
+export type AdminPartnerDetail = {
+  id: string;
+  name: string;
+  slug: string;
+  type: PartnerType;
+  logoUrl: string | null;
+  description: string | null;
+  phone: string | null;
+  email: string | null;
+  website: string | null;
+  serviceCategories: string[];
+  status: PublicationStatus;
+  companyId: string | null;
+  bankOffers: AdminBankOfferRow[];
+};
+
+export type AdminBankOfferRow = {
+  id: string;
+  title: string;
+  description: string | null;
+  interestRate: number;
+  maxTermMonths: number;
+  maxAmountAmd: number | null;
+  featured: boolean;
+  status: PublicationStatus;
+  updatedAt: Date;
+};
+
+export type AdminPartnerOption = {
+  id: string;
+  name: string;
+  type: PartnerType;
 };
 
 function emptyProjectStatusCounts(): ProjectStatusCounts {
@@ -99,4 +143,78 @@ export async function loadAllProjects(
     buildingsCount: project._count.buildings,
     updatedAt: project.updatedAt,
   }));
+}
+
+export async function loadAllPartners(typeFilter?: PartnerType): Promise<AdminPartnerRow[]> {
+  const partners = await prisma.partner.findMany({
+    where: typeFilter ? { type: typeFilter } : undefined,
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      type: true,
+      status: true,
+      updatedAt: true,
+      _count: { select: { bankOffers: true } },
+    },
+    orderBy: { name: 'asc' },
+  });
+
+  return partners.map((partner) => ({
+    id: partner.id,
+    name: partner.name,
+    slug: partner.slug,
+    type: partner.type,
+    status: partner.status,
+    offersCount: partner._count.bankOffers,
+    updatedAt: partner.updatedAt,
+  }));
+}
+
+export async function loadPartnerDetail(partnerId: string): Promise<AdminPartnerDetail | null> {
+  const partner = await prisma.partner.findUnique({
+    where: { id: partnerId },
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      type: true,
+      logoUrl: true,
+      description: true,
+      phone: true,
+      email: true,
+      website: true,
+      serviceCategories: true,
+      status: true,
+      companyId: true,
+      bankOffers: {
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          interestRate: true,
+          maxTermMonths: true,
+          maxAmountAmd: true,
+          featured: true,
+          status: true,
+          updatedAt: true,
+        },
+        orderBy: [{ featured: 'desc' }, { updatedAt: 'desc' }],
+      },
+    },
+  });
+
+  if (!partner) {
+    return null;
+  }
+
+  return partner;
+}
+
+export async function loadPartnerOptions(): Promise<AdminPartnerOption[]> {
+  const partners = await prisma.partner.findMany({
+    select: { id: true, name: true, type: true },
+    orderBy: { name: 'asc' },
+  });
+  return partners;
 }

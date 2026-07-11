@@ -6,6 +6,14 @@ import {
   createCompanyAction,
   updateCompanyAction,
 } from '@/app/[locale]/(admin)/admin/companies/actions';
+import {
+  createBankOfferAction,
+  createPartnerAction,
+  setBankOfferStatusAction,
+  setPartnerStatusAction,
+  updateBankOfferAction,
+  updatePartnerAction,
+} from '@/app/[locale]/(admin)/admin/partners/actions';
 import { setProjectPublicationAsAdminAction } from '@/app/[locale]/(admin)/admin/projects/actions';
 
 function getFormString(formData: FormData, key: string): string | undefined {
@@ -50,6 +58,94 @@ export async function setProjectPublicationAsAdminFormAction(
 ): Promise<AdminCatalogActionState> {
   const result = await setProjectPublicationAsAdminAction(locale, {
     projectId: getFormString(formData, 'projectId'),
+    status: getFormString(formData, 'status'),
+  });
+  return toFormState(result);
+}
+
+function partnerPayloadFromForm(formData: FormData) {
+  return {
+    partnerId: getFormString(formData, 'partnerId'),
+    name: getFormString(formData, 'name'),
+    type: getFormString(formData, 'type'),
+    logoUrl: getFormString(formData, 'logoUrl'),
+    description: getFormString(formData, 'description'),
+    phone: getFormString(formData, 'phone'),
+    email: getFormString(formData, 'email'),
+    website: getFormString(formData, 'website'),
+    serviceCategories: getFormString(formData, 'serviceCategories'),
+  };
+}
+
+export async function createPartnerFormAction(
+  locale: string,
+  _prevState: AdminCatalogActionState,
+  formData: FormData,
+): Promise<AdminCatalogActionState> {
+  const result = await createPartnerAction(locale, partnerPayloadFromForm(formData));
+  return toFormState(result);
+}
+
+export async function updatePartnerFormAction(
+  locale: string,
+  _prevState: AdminCatalogActionState,
+  formData: FormData,
+): Promise<AdminCatalogActionState> {
+  const result = await updatePartnerAction(locale, partnerPayloadFromForm(formData));
+  return toFormState(result);
+}
+
+export async function setPartnerStatusFormAction(
+  locale: string,
+  _prevState: AdminCatalogActionState,
+  formData: FormData,
+): Promise<AdminCatalogActionState> {
+  const result = await setPartnerStatusAction(locale, {
+    partnerId: getFormString(formData, 'partnerId'),
+    status: getFormString(formData, 'status'),
+  });
+  return toFormState(result);
+}
+
+function bankOfferPayloadFromForm(formData: FormData) {
+  return {
+    bankOfferId: getFormString(formData, 'bankOfferId'),
+    partnerId: getFormString(formData, 'partnerId'),
+    title: getFormString(formData, 'title'),
+    description: getFormString(formData, 'description'),
+    interestRate: getFormString(formData, 'interestRate'),
+    maxTermMonths: getFormString(formData, 'maxTermMonths'),
+    maxAmountAmd: getFormString(formData, 'maxAmountAmd'),
+    featured: formData.get('featured'),
+  };
+}
+
+export async function createBankOfferFormAction(
+  locale: string,
+  _prevState: AdminCatalogActionState,
+  formData: FormData,
+): Promise<AdminCatalogActionState> {
+  const result = await createBankOfferAction(locale, bankOfferPayloadFromForm(formData));
+  return toFormState(result);
+}
+
+export async function updateBankOfferFormAction(
+  locale: string,
+  _prevState: AdminCatalogActionState,
+  formData: FormData,
+): Promise<AdminCatalogActionState> {
+  const result = await updateBankOfferAction(locale, bankOfferPayloadFromForm(formData));
+  return toFormState(result);
+}
+
+export async function setBankOfferStatusFormAction(
+  locale: string,
+  partnerId: string,
+  _prevState: AdminCatalogActionState,
+  formData: FormData,
+): Promise<AdminCatalogActionState> {
+  const result = await setBankOfferStatusAction(locale, partnerId, {
+    bankOfferId: getFormString(formData, 'bankOfferId'),
     status: getFormString(formData, 'status'),
   });
   return toFormState(result);
