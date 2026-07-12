@@ -2,11 +2,11 @@
 
 ## Current Status
 
-**Recent:** Playwright critical-journey scaffolding (`pnpm test:e2e`) alongside existing fetch smoke.
+**Recent:** Venue route/path graph v1 (entrance + waypoints/edges, public Show route, admin graph editor).
 
 Sprint 7.7 **COMPLETE** — Tech hardening: apartment status history, Swagger prod gate, analytics sampling/bot filter.
 
-Sprint 7.6 **COMPLETE** — Exhibition venue map with booths.
+Sprint 7.6 **COMPLETE** — Exhibition venue map with booths (+ route path v1 follow-up).
 
 Sprint 7.5 **COMPLETE** — Admin acting-on-behalf of a builder company + company switcher.
 
@@ -20,7 +20,17 @@ Sprint 7.1 **COMPLETE** — Upstash Redis rate limiting on auth, public request,
 
 Sprint 6 **COMPLETE** — Analytics v1, BOS provisioning (atomic idempotency), audit logs + CSV reports, e2e smoke, hardening + final audit fixes.
 
-**MVP backlog complete** — planned sprints through 7.7 are done. Deferred follow-ups (not blockers): indoor route graph / pathfinding, `AnalyticsDailyAggregate` warehouse, general Redis caching/queues. Playwright critical journeys scaffolded (local/manual; CI follow-up).
+**MVP backlog complete** — planned sprints through 7.7 are done. Deferred follow-ups (not blockers): `AnalyticsDailyAggregate` warehouse, general Redis caching/queues. Playwright critical journeys scaffolded (local/manual; CI follow-up). Venue indoor route graph / pathfinding delivered as post-MVP v1.
+
+## Venue route path v1 (COMPLETE)
+
+- **Schema** — `VenueMap.entranceXPercent` / `entranceYPercent`; `VenuePathNode` (`ENTRANCE` | `WAYPOINT` | `BOOTH` + optional `boothId`); `VenuePathEdge` (stored one direction, routing bidirectional). Migration `20260712400000_venue_path_graph`.
+- **Routing** — Equal-weight BFS in `apps/web/src/lib/exhibition/route-path.ts`; prefers BOOTH node by `boothId`, else nearest node within epsilon.
+- **Public** — `/exhibition` booth detail: Show route / Clear route SVG polyline; “Route not available yet” when entrance/graph missing (no crash).
+- **Admin** — Venue editor path graph section: set entrance, add waypoints, link nodes, delete nodes/edges; saving a booth auto-creates/updates a BOOTH path node.
+- **Seed** — Demo map entrance + waypoints + edges to A12/B03/C01.
+- **i18n** — en/ru/hy for route actions + admin path editor.
+- **Out of scope** — GPS / live indoor positioning, multi-floor routing, weighted A* UI, Playwright expansion.
 
 ## Sprint 7.7 — Tech hardening pack (COMPLETE)
 
@@ -36,7 +46,7 @@ Sprint 6 **COMPLETE** — Analytics v1, BOS provisioning (atomic idempotency), a
 - **Public** — `/{locale}/exhibition`: map, booth markers, search/filter, side detail with builder/partner links.
 - **Portal** — Overview shows “Your booth: {code}” when the company has a booth on the ACTIVE event.
 - **Seed** — Demo pavilion image (picsum) + booths A12 (demo-development), B03 (Converse Bank), C01 (info) on `toonexpo-2026-demo`.
-- **Deferred** — Indoor route graph / pathfinding, GPS blue-dot, spreadsheet booth import, booth types dictionary.
+- **Deferred** — GPS blue-dot, spreadsheet booth import, booth types dictionary. Route graph / pathfinding → done in Venue route path v1.
 
 ## Sprint 7.5 — Admin acting-on-behalf + company switcher (COMPLETE)
 
@@ -110,7 +120,7 @@ Sprint 6 **COMPLETE** — Analytics v1, BOS provisioning (atomic idempotency), a
 
 ### Deferred (Sprint 5 follow-ups)
 
-- Venue map / booths — done in Sprint 7.6; route graph / pathfinding still deferred.
+- Venue map / booths — done in Sprint 7.6; route graph / pathfinding — done (Venue route path v1).
 - Company logo / visual-map / venue / partner image uploads — done (R2 purpose enum extension of Sprint 7.3).
 - Category CRUD UI for readiness.
 - Partner readiness module.
@@ -207,8 +217,9 @@ Audit fixes applied on branch `sipan` after the feature pack landed:
 
 ### Deferred (unchanged)
 
-- Indoor route graph / pathfinding, `AnalyticsDailyAggregate` warehouse, general Redis caching/queues.
+- `AnalyticsDailyAggregate` warehouse, general Redis caching/queues.
 - Playwright CI job (local `pnpm test:e2e` ready; see `e2e/playwright/README.md`).
+- GPS blue-dot / live indoor positioning; multi-floor routing.
 
 ## Open (non-blocking)
 
