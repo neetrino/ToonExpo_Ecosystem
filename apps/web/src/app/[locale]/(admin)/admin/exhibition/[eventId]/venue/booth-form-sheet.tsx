@@ -9,7 +9,7 @@ import {
 } from '@toonexpo/contracts';
 import { SideSheet } from '@toonexpo/ui';
 import { useTranslations } from 'next-intl';
-import { useState, useTransition } from 'react';
+import { useMemo, useState, useTransition } from 'react';
 
 import { PortalFormError } from '@/components/portal-forms/form-error';
 import {
@@ -20,6 +20,7 @@ import {
 import { useRouter } from '@/i18n/navigation';
 import type {
   AdminAssignmentOption,
+  AdminProjectOption,
   AdminVenueBoothRow,
 } from '@/lib/exhibition/admin-venue-queries';
 import type { AdminMutationErrorKey } from '@/lib/admin/mutation-result';
@@ -34,6 +35,7 @@ type BoothFormSheetProps = {
   venueMapId: string;
   companies: AdminAssignmentOption[];
   partners: AdminAssignmentOption[];
+  projects: AdminProjectOption[];
   mode: 'create' | 'edit';
   open: boolean;
   onClose: () => void;
@@ -47,6 +49,7 @@ export function BoothFormSheet({
   venueMapId,
   companies,
   partners,
+  projects,
   mode,
   open,
   onClose,
@@ -57,6 +60,26 @@ export function BoothFormSheet({
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [errorKey, setErrorKey] = useState<AdminMutationErrorKey | undefined>();
+  const [companyId, setCompanyId] = useState(booth?.companyId ?? '');
+  const [projectId, setProjectId] = useState(booth?.projectId ?? '');
+
+  const filteredProjects = useMemo(() => {
+    if (!companyId) {
+      return projects;
+    }
+    return projects.filter((project) => project.companyId === companyId);
+  }, [companyId, projects]);
+
+  function handleCompanyChange(value: string): void {
+    setCompanyId(value);
+    if (!value) {
+      return;
+    }
+    const selected = projects.find((project) => project.id === projectId);
+    if (selected && selected.companyId !== value) {
+      setProjectId('');
+    }
+  }
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>): void {
     event.preventDefault();
@@ -69,8 +92,9 @@ export function BoothFormSheet({
       label: String(formData.get('label') ?? ''),
       xPercent: Number(formData.get('xPercent')),
       yPercent: Number(formData.get('yPercent')),
-      companyId: String(formData.get('companyId') ?? ''),
+      companyId,
       partnerId: String(formData.get('partnerId') ?? ''),
+      projectId,
       note: String(formData.get('note') ?? ''),
     };
 
@@ -141,7 +165,11 @@ export function BoothFormSheet({
           />
         </PortalFormField>
         <PortalFormField label={t('fields.company')} name="companyId">
-          <PortalSelect name="companyId" defaultValue={booth?.companyId ?? ''}>
+          <PortalSelect
+            name="companyId"
+            value={companyId}
+            onChange={(event) => handleCompanyChange(event.target.value)}
+          >
             <option value="">{t('none')}</option>
             {companies.map((company) => (
               <option key={company.id} value={company.id}>
@@ -156,6 +184,20 @@ export function BoothFormSheet({
             {partners.map((partner) => (
               <option key={partner.id} value={partner.id}>
                 {partner.name}
+              </option>
+            ))}
+          </PortalSelect>
+        </PortalFormField>
+        <PortalFormField label={t('fields.project')} name="projectId">
+          <PortalSelect
+            name="projectId"
+            value={projectId}
+            onChange={(event) => setProjectId(event.target.value)}
+          >
+            <option value="">{t('none')}</option>
+            {filteredProjects.map((project) => (
+              <option key={project.id} value={project.id}>
+                {project.name}
               </option>
             ))}
           </PortalSelect>

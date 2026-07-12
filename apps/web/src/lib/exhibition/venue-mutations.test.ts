@@ -10,6 +10,7 @@ const mockBoothFindUnique = vi.fn();
 const mockBoothDelete = vi.fn();
 const mockCompanyFindUnique = vi.fn();
 const mockPartnerFindUnique = vi.fn();
+const mockProjectFindUnique = vi.fn();
 const mockPathNodeUpsert = vi.fn();
 const mockPathNodeFindFirst = vi.fn();
 const mockPathNodeCreate = vi.fn();
@@ -72,6 +73,7 @@ vi.mock('@toonexpo/db', () => ({
     },
     company: { findUnique: (...args: unknown[]) => mockCompanyFindUnique(...args) },
     partner: { findUnique: (...args: unknown[]) => mockPartnerFindUnique(...args) },
+    project: { findUnique: (...args: unknown[]) => mockProjectFindUnique(...args) },
   },
   Prisma: {
     PrismaClientKnownRequestError: MockPrismaKnownRequestError,
@@ -114,6 +116,7 @@ describe('upsertBooth', () => {
     mockVenueFindUnique.mockResolvedValue({ id: 'vm-1' });
     mockCompanyFindUnique.mockResolvedValue({ id: 'co-1' });
     mockPartnerFindUnique.mockResolvedValue({ id: 'pa-1' });
+    mockProjectFindUnique.mockResolvedValue({ id: 'proj-1', companyId: 'co-1' });
   });
 
   it('returns notFound when venue map is missing', async () => {
@@ -152,14 +155,30 @@ describe('upsertBooth', () => {
       xPercent: 10,
       yPercent: 20,
       companyId: 'co-1',
+      projectId: 'proj-1',
     });
     expect(result).toEqual({ ok: true, boothId: 'b-1', venueMapId: 'vm-1' });
     expect(mockBoothCreate).toHaveBeenCalledWith(
       expect.objectContaining({
-        data: expect.objectContaining({ code: 'A12', companyId: 'co-1' }),
+        data: expect.objectContaining({ code: 'A12', companyId: 'co-1', projectId: 'proj-1' }),
       }),
     );
     expect(mockPathNodeUpsert).toHaveBeenCalled();
+  });
+
+  it('returns notFound when project belongs to another company', async () => {
+    mockProjectFindUnique.mockResolvedValue({ id: 'proj-1', companyId: 'other' });
+    const result = await upsertBooth({
+      venueMapId: 'vm-1',
+      code: 'A12',
+      label: 'Demo',
+      xPercent: 10,
+      yPercent: 20,
+      companyId: 'co-1',
+      projectId: 'proj-1',
+    });
+    expect(result).toEqual({ ok: false, errorKey: 'notFound' });
+    expect(mockBoothCreate).not.toHaveBeenCalled();
   });
 });
 

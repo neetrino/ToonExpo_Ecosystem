@@ -50,6 +50,26 @@ export function AdminAnalyticsView({ t, data }: AdminAnalyticsViewProps) {
             label: t('stats.projectViewsRecent'),
             value: String(data.projectViewsLastPeriod),
           },
+          {
+            key: 'apartmentViewsTotal',
+            label: t('stats.apartmentViewsTotal'),
+            value: String(data.apartmentViewsTotal),
+          },
+          {
+            key: 'apartmentViewsRecent',
+            label: t('stats.apartmentViewsRecent'),
+            value: String(data.apartmentViewsLastPeriod),
+          },
+          {
+            key: 'boothSelected',
+            label: t('stats.boothSelectedTotal'),
+            value: String(data.boothSelectedTotal),
+          },
+          {
+            key: 'routeRequested',
+            label: t('stats.routeRequestedTotal'),
+            value: String(data.routeRequestedTotal),
+          },
         ]}
       />
 

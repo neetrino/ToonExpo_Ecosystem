@@ -46,6 +46,12 @@ describe('loadPublicVenueMap', () => {
           note: null,
           company: { id: 'co-1', name: 'Demo Development', slug: 'demo-development' },
           partner: null,
+          project: {
+            id: 'p-1',
+            name: 'Sunrise Residence',
+            slug: 'sunrise-residence',
+            company: { slug: 'demo-development' },
+          },
         },
       ],
       pathNodes: [],
@@ -55,6 +61,12 @@ describe('loadPublicVenueMap', () => {
     const result = await loadPublicVenueMap();
     expect(result?.event.status).toBe('ACTIVE');
     expect(result?.booths[0]?.code).toBe('A12');
+    expect(result?.booths[0]?.project).toEqual({
+      id: 'p-1',
+      name: 'Sunrise Residence',
+      slug: 'sunrise-residence',
+      companySlug: 'demo-development',
+    });
     expect(result?.entranceXPercent).toBe(50);
     expect(result?.pathNodes).toEqual([]);
     expect(mockVenueFindFirst).toHaveBeenCalledWith(

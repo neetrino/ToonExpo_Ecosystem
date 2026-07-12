@@ -12,6 +12,12 @@ export type PublicBooth = {
   note: string | null;
   company: { id: string; name: string; slug: string } | null;
   partner: { id: string; name: string; slug: string } | null;
+  project: {
+    id: string;
+    name: string;
+    slug: string;
+    companySlug: string;
+  } | null;
 };
 
 export type PublicPathNode = {
@@ -54,6 +60,14 @@ const boothSelect = {
   note: true,
   company: { select: { id: true, name: true, slug: true } },
   partner: { select: { id: true, name: true, slug: true } },
+  project: {
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      company: { select: { slug: true } },
+    },
+  },
 } as const;
 
 /** True when an ACTIVE event has a venue map (for public nav). */
@@ -112,7 +126,24 @@ export async function loadPublicVenueMap(): Promise<PublicVenueMap | null> {
     entranceXPercent: venueMap.entranceXPercent,
     entranceYPercent: venueMap.entranceYPercent,
     event: venueMap.event,
-    booths: venueMap.booths,
+    booths: venueMap.booths.map((booth) => ({
+      id: booth.id,
+      code: booth.code,
+      label: booth.label,
+      xPercent: booth.xPercent,
+      yPercent: booth.yPercent,
+      note: booth.note,
+      company: booth.company,
+      partner: booth.partner,
+      project: booth.project
+        ? {
+            id: booth.project.id,
+            name: booth.project.name,
+            slug: booth.project.slug,
+            companySlug: booth.project.company.slug,
+          }
+        : null,
+    })),
     pathNodes: venueMap.pathNodes,
     pathEdges: venueMap.pathEdges,
   };

@@ -487,7 +487,8 @@
             "yPercent": "Y %",
             "company": "Компания",
             "partner": "Партнёр",
-            "note": "Заметка"
+            "note": "Заметка",
+            "project": "Проект"
           }
         },
         "path": {
@@ -607,7 +608,11 @@
       },
       "stats": {
         "projectViewsTotal": "Просмотры проектов (всего)",
-        "projectViewsRecent": "Просмотры проектов (недавние)"
+        "projectViewsRecent": "Просмотры проектов (недавние)",
+        "apartmentViewsTotal": "Просмотры квартир (всего)",
+        "apartmentViewsRecent": "Просмотры квартир (недавние)",
+        "boothSelectedTotal": "Выборы стенда (всего)",
+        "routeRequestedTotal": "Запросы маршрута (всего)"
       },
       "sections": {
         "dealsByStage": "Сделки по стадиям",
@@ -1173,7 +1178,9 @@
       "readinessCompany": "Готовность компании",
       "stats": {
         "projectViewsRecent": "Просмотры проектов (недавние)",
-        "qrScanDeals": "Сделки из QR-сканов"
+        "qrScanDeals": "Сделки из QR-сканов",
+        "apartmentViewsRecent": "Просмотры квартир (недавние)",
+        "apartmentViewsTotal": "Просмотры квартир (всего)"
       },
       "sections": {
         "projectViews": "Просмотры проектов",
@@ -1383,7 +1390,7 @@
       "title": "Карта выставки",
       "subtitle": "Найдите застройщиков и партнёров на {event}.",
       "searchLabel": "Поиск стендов",
-      "searchPlaceholder": "Код стенда, компания или партнёр",
+      "searchPlaceholder": "Код стенда, компания, партнёр или проект",
       "boothCount": "{count, plural, one {# стенд} few {# стенда} many {# стендов} other {# стенда}}",
       "selectHint": "Выберите стенд на карте, чтобы увидеть детали.",
       "noMatches": "Нет стендов по вашему запросу.",
@@ -1397,7 +1404,9 @@
         "close": "Закрыть",
         "showRoute": "Показать маршрут",
         "clearRoute": "Сбросить маршрут",
-        "routeUnavailable": "Маршрут пока недоступен"
+        "routeUnavailable": "Маршрут пока недоступен",
+        "project": "Проект",
+        "viewProject": "Открыть проект"
       }
     }
   },

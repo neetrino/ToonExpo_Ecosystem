@@ -34,6 +34,16 @@ export function BuilderAnalyticsView({ t, data }: BuilderAnalyticsViewProps) {
             value: String(recentViews),
           },
           {
+            key: 'apartmentViewsRecent',
+            label: t('stats.apartmentViewsRecent'),
+            value: String(data.apartmentViewsLastPeriod),
+          },
+          {
+            key: 'apartmentViewsTotal',
+            label: t('stats.apartmentViewsTotal'),
+            value: String(data.apartmentViewsTotal),
+          },
+          {
             key: 'qrDeals',
             label: t('stats.qrScanDeals'),
             value: String(data.qrScanCreatedDealsCount),

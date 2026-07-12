@@ -6,23 +6,14 @@ import { useTranslations } from 'next-intl';
 
 import { Link } from '@/i18n/navigation';
 import { CATALOG_IMAGE_HEIGHT, CATALOG_IMAGE_WIDTH } from '@/lib/catalog/image-dimensions';
+import { boothMatchesQuery } from '@/lib/exhibition/booth-search';
 import { computeBoothRoute, type RouteGraph, type RoutePoint } from '@/lib/exhibition/route-path';
+import { recordVenueBoothEventAction } from '@/lib/exhibition/venue-analytics-actions';
 import type { PublicBooth, PublicVenueMap } from '@/lib/exhibition/venue-queries';
 
 type PublicVenueMapViewProps = {
   venueMap: PublicVenueMap;
 };
-
-function boothMatchesQuery(booth: PublicBooth, query: string): boolean {
-  if (!query) {
-    return true;
-  }
-  const haystack = [booth.code, booth.label, booth.company?.name, booth.partner?.name, booth.note]
-    .filter(Boolean)
-    .join(' ')
-    .toLowerCase();
-  return haystack.includes(query);
-}
 
 function toRouteGraph(venueMap: PublicVenueMap): RouteGraph {
   return {
@@ -64,6 +55,7 @@ export function PublicVenueMapView({ venueMap }: PublicVenueMapViewProps) {
   function handleSelectBooth(boothId: string): void {
     setSelectedId(boothId);
     setRoutePoints(null);
+    void recordVenueBoothEventAction(boothId, 'BOOTH_SELECTED');
   }
 
   function handleShowRoute(): void {
@@ -71,6 +63,7 @@ export function PublicVenueMapView({ venueMap }: PublicVenueMapViewProps) {
       return;
     }
     setRoutePoints(previewRoute);
+    void recordVenueBoothEventAction(selected.id, 'ROUTE_REQUESTED');
   }
 
   function handleClearRoute(): void {
@@ -157,9 +150,9 @@ export function PublicVenueMapView({ venueMap }: PublicVenueMapViewProps) {
                 code: t('detail.code'),
                 company: t('detail.company'),
                 partner: t('detail.partner'),
+                project: t('detail.project'),
                 note: t('detail.note'),
-                viewCompany: t('detail.viewCompany'),
-                viewPartner: t('detail.viewPartner'),
+                viewProject: t('detail.viewProject'),
                 close: t('detail.close'),
                 showRoute: t('detail.showRoute'),
                 clearRoute: t('detail.clearRoute'),
@@ -188,9 +181,9 @@ type BoothDetailProps = {
     code: string;
     company: string;
     partner: string;
+    project: string;
     note: string;
-    viewCompany: string;
-    viewPartner: string;
+    viewProject: string;
     close: string;
     showRoute: string;
     clearRoute: string;
@@ -236,6 +229,17 @@ function BoothDetail({
           {labels.partner}:{' '}
           <Link className="portal-link" href={`/partners/${booth.partner.slug}`}>
             {booth.partner.name}
+          </Link>
+        </p>
+      ) : null}
+      {booth.project ? (
+        <p>
+          {labels.project}:{' '}
+          <Link
+            className="portal-link"
+            href={`/projects/${booth.project.companySlug}/${booth.project.slug}`}
+          >
+            {booth.project.name}
           </Link>
         </p>
       ) : null}

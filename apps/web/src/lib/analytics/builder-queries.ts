@@ -21,6 +21,8 @@ export type BuilderReadinessSnapshotRow = {
 export type BuilderAnalyticsSnapshot = {
   lookbackDays: number;
   projectViews: ProjectViewRow[];
+  apartmentViewsTotal: number;
+  apartmentViewsLastPeriod: number;
   dealsByStage: NamedCount[];
   dealsBySource: NamedCount[];
   qrScanCreatedDealsCount: number;
@@ -97,6 +99,42 @@ async function loadProjectViewRows(companyId: string, since: Date): Promise<Proj
   }));
 }
 
+async function loadApartmentViewCounts(
+  companyId: string,
+  since: Date,
+): Promise<{ total: number; lastPeriod: number }> {
+  const apartmentIds = (
+    await prisma.apartment.findMany({
+      where: { floor: { building: { project: { companyId } } } },
+      select: { id: true },
+    })
+  ).map((row) => row.id);
+
+  if (apartmentIds.length === 0) {
+    return { total: 0, lastPeriod: 0 };
+  }
+
+  const [total, lastPeriod] = await Promise.all([
+    prisma.analyticsEvent.count({
+      where: {
+        companyId,
+        type: 'APARTMENT_VIEW',
+        apartmentId: { in: apartmentIds },
+      },
+    }),
+    prisma.analyticsEvent.count({
+      where: {
+        companyId,
+        type: 'APARTMENT_VIEW',
+        apartmentId: { in: apartmentIds },
+        createdAt: { gte: since },
+      },
+    }),
+  ]);
+
+  return { total, lastPeriod };
+}
+
 async function loadDealGroups(
   companyId: string,
 ): Promise<{ dealsByStage: NamedCount[]; dealsBySource: NamedCount[] }> {
@@ -152,16 +190,20 @@ async function loadReadinessSnapshot(companyId: string): Promise<BuilderReadines
  */
 export async function loadBuilderAnalytics(companyId: string): Promise<BuilderAnalyticsSnapshot> {
   const since = analyticsLookbackStart();
-  const [projectViews, dealGroups, qrScanCreatedDealsCount, readiness] = await Promise.all([
-    loadProjectViewRows(companyId, since),
-    loadDealGroups(companyId),
-    loadQrScanCreatedDealsCount(companyId),
-    loadReadinessSnapshot(companyId),
-  ]);
+  const [projectViews, apartmentViews, dealGroups, qrScanCreatedDealsCount, readiness] =
+    await Promise.all([
+      loadProjectViewRows(companyId, since),
+      loadApartmentViewCounts(companyId, since),
+      loadDealGroups(companyId),
+      loadQrScanCreatedDealsCount(companyId),
+      loadReadinessSnapshot(companyId),
+    ]);
 
   return {
     lookbackDays: ANALYTICS_LOOKBACK_DAYS,
     projectViews,
+    apartmentViewsTotal: apartmentViews.total,
+    apartmentViewsLastPeriod: apartmentViews.lastPeriod,
     dealsByStage: dealGroups.dealsByStage,
     dealsBySource: dealGroups.dealsBySource,
     qrScanCreatedDealsCount,

@@ -15,6 +15,7 @@ import { ImageUploadField } from '@/components/portal-forms/image-upload-field';
 import { useRouter } from '@/i18n/navigation';
 import type {
   AdminAssignmentOption,
+  AdminProjectOption,
   AdminVenueBoothRow,
   AdminVenueMapDetail,
 } from '@/lib/exhibition/admin-venue-queries';
@@ -30,6 +31,7 @@ type VenueEditorProps = {
   detail: AdminVenueMapDetail;
   companies: AdminAssignmentOption[];
   partners: AdminAssignmentOption[];
+  projects: AdminProjectOption[];
 };
 
 type EditorSheet =
@@ -37,7 +39,7 @@ type EditorSheet =
   | { kind: 'create'; xPercent: number; yPercent: number }
   | { kind: 'edit'; booth: AdminVenueBoothRow };
 
-export function VenueEditor({ locale, detail, companies, partners }: VenueEditorProps) {
+export function VenueEditor({ locale, detail, companies, partners, projects }: VenueEditorProps) {
   const t = useTranslations('admin.exhibition.venue');
   const router = useRouter();
   const imageRef = useRef<HTMLImageElement>(null);
@@ -137,11 +139,19 @@ export function VenueEditor({ locale, detail, companies, partners }: VenueEditor
             </div>
           </div>
           <BoothFormSheet
+            key={
+              sheet.kind === 'edit'
+                ? sheet.booth.id
+                : sheet.kind === 'create'
+                  ? `create-${sheet.xPercent}-${sheet.yPercent}`
+                  : 'closed'
+            }
             locale={locale}
             eventId={detail.event.id}
             venueMapId={detail.venueMap.id}
             companies={companies}
             partners={partners}
+            projects={projects}
             open={sheet.kind !== 'closed'}
             mode={sheet.kind === 'edit' ? 'edit' : 'create'}
             booth={sheet.kind === 'edit' ? sheet.booth : undefined}

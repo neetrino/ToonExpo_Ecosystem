@@ -28,6 +28,12 @@ export type AdminAnalyticsSnapshot = {
   lookbackDays: number;
   projectViewsTotal: number;
   projectViewsLastPeriod: number;
+  apartmentViewsTotal: number;
+  apartmentViewsLastPeriod: number;
+  boothSelectedTotal: number;
+  boothSelectedLastPeriod: number;
+  routeRequestedTotal: number;
+  routeRequestedLastPeriod: number;
   dealsBySource: NamedCount[];
   dealsBySourceLastPeriod: NamedCount[];
   dealsByStage: NamedCount[];
@@ -50,10 +56,13 @@ function countsFromGroups(
   );
 }
 
-async function countProjectViews(since?: Date): Promise<number> {
+async function countAnalyticsByType(
+  type: 'PROJECT_VIEW' | 'APARTMENT_VIEW' | 'BOOTH_SELECTED' | 'ROUTE_REQUESTED',
+  since?: Date,
+): Promise<number> {
   return prisma.analyticsEvent.count({
     where: {
-      type: 'PROJECT_VIEW',
+      type,
       ...(since ? { createdAt: { gte: since } } : {}),
     },
   });
@@ -181,6 +190,12 @@ export async function loadAdminAnalytics(): Promise<AdminAnalyticsSnapshot> {
   const [
     projectViewsTotal,
     projectViewsLastPeriod,
+    apartmentViewsTotal,
+    apartmentViewsLastPeriod,
+    boothSelectedTotal,
+    boothSelectedLastPeriod,
+    routeRequestedTotal,
+    routeRequestedLastPeriod,
     dealsBySource,
     dealsBySourceLastPeriod,
     dealsByStage,
@@ -192,8 +207,14 @@ export async function loadAdminAnalytics(): Promise<AdminAnalyticsSnapshot> {
     readinessAvgByCompany,
     partnersByType,
   ] = await Promise.all([
-    countProjectViews(),
-    countProjectViews(since),
+    countAnalyticsByType('PROJECT_VIEW'),
+    countAnalyticsByType('PROJECT_VIEW', since),
+    countAnalyticsByType('APARTMENT_VIEW'),
+    countAnalyticsByType('APARTMENT_VIEW', since),
+    countAnalyticsByType('BOOTH_SELECTED'),
+    countAnalyticsByType('BOOTH_SELECTED', since),
+    countAnalyticsByType('ROUTE_REQUESTED'),
+    countAnalyticsByType('ROUTE_REQUESTED', since),
     loadDealSourceCounts(),
     loadDealSourceCounts(since),
     loadDealStageCounts(),
@@ -210,6 +231,12 @@ export async function loadAdminAnalytics(): Promise<AdminAnalyticsSnapshot> {
     lookbackDays: ANALYTICS_LOOKBACK_DAYS,
     projectViewsTotal,
     projectViewsLastPeriod,
+    apartmentViewsTotal,
+    apartmentViewsLastPeriod,
+    boothSelectedTotal,
+    boothSelectedLastPeriod,
+    routeRequestedTotal,
+    routeRequestedLastPeriod,
     dealsBySource,
     dealsBySourceLastPeriod,
     dealsByStage,

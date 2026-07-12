@@ -44,6 +44,26 @@ async function assertPartnerExists(partnerId: string | undefined): Promise<boole
   return row != null;
 }
 
+async function assertProjectAssignment(
+  projectId: string | undefined,
+  companyId: string | undefined,
+): Promise<boolean> {
+  if (!projectId) {
+    return true;
+  }
+  const row = await prisma.project.findUnique({
+    where: { id: projectId },
+    select: { id: true, companyId: true },
+  });
+  if (!row) {
+    return false;
+  }
+  if (companyId && row.companyId !== companyId) {
+    return false;
+  }
+  return true;
+}
+
 /**
  * Upsert the single venue map for an exhibition event (admin-only caller).
  */
@@ -121,6 +141,9 @@ export async function upsertBooth(
   if (!(await assertPartnerExists(input.partnerId))) {
     return { ok: false, errorKey: 'notFound' };
   }
+  if (!(await assertProjectAssignment(input.projectId, input.companyId))) {
+    return { ok: false, errorKey: 'notFound' };
+  }
 
   try {
     if (input.boothId) {
@@ -151,6 +174,7 @@ async function createBoothRow(
       yPercent: input.yPercent,
       companyId: input.companyId,
       partnerId: input.partnerId,
+      projectId: input.projectId,
       note: input.note,
       sortOrder: input.sortOrder ?? 0,
     },
@@ -180,6 +204,7 @@ async function updateBoothRow(
       yPercent: input.yPercent,
       companyId: input.companyId ?? null,
       partnerId: input.partnerId ?? null,
+      projectId: input.projectId ?? null,
       note: input.note ?? null,
       sortOrder: input.sortOrder ?? 0,
     },

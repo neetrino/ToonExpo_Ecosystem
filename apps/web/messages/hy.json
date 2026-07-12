@@ -487,7 +487,8 @@
             "yPercent": "Y %",
             "company": "Ընկերություն",
             "partner": "Գործընկեր",
-            "note": "Նշում"
+            "note": "Նշում",
+            "project": "Նախագիծ"
           }
         },
         "path": {
@@ -607,7 +608,11 @@
       },
       "stats": {
         "projectViewsTotal": "Նախագծերի դիտումներ (ընդամենը)",
-        "projectViewsRecent": "Նախագծերի դիտումներ (վերջին)"
+        "projectViewsRecent": "Նախագծերի դիտումներ (վերջին)",
+        "apartmentViewsTotal": "Բնակարանների դիտումներ (ընդամենը)",
+        "apartmentViewsRecent": "Բնակարանների դիտումներ (վերջին)",
+        "boothSelectedTotal": "Տաղավարի ընտրություններ (ընդամենը)",
+        "routeRequestedTotal": "Երթուղու հարցումներ (ընդամենը)"
       },
       "sections": {
         "dealsByStage": "Գործարքներ ըստ փուլի",
@@ -1173,7 +1178,9 @@
       "readinessCompany": "Ընկերության readiness",
       "stats": {
         "projectViewsRecent": "Նախագծերի դիտումներ (վերջին)",
-        "qrScanDeals": "Գործարքներ QR սկանից"
+        "qrScanDeals": "Գործարքներ QR սկանից",
+        "apartmentViewsRecent": "Բնակարանների դիտումներ (վերջին)",
+        "apartmentViewsTotal": "Բնակարանների դիտումներ (ընդամենը)"
       },
       "sections": {
         "projectViews": "Նախագծերի դիտումներ",
@@ -1383,7 +1390,7 @@
       "title": "Ցուցահանդեսի քարտեզ",
       "subtitle": "Գտեք կառուցապատողներին և գործընկերներին՝ {event}։",
       "searchLabel": "Որոնել տաղավարներ",
-      "searchPlaceholder": "Տաղավարի կոդ, ընկերություն կամ գործընկեր",
+      "searchPlaceholder": "Տաղավարի կոդ, ընկերություն, գործընկեր կամ նախագիծ",
       "boothCount": "{count, plural, one {# տաղավար} other {# տաղավար}}",
       "selectHint": "Ընտրեք տաղավար քարտեզի վրա՝ մանրամասները տեսնելու համար։",
       "noMatches": "Որոնմանը համապատասխան տաղավար չկա։",
@@ -1397,7 +1404,9 @@
         "close": "Փակել",
         "showRoute": "Ցույց տալ երթուղին",
         "clearRoute": "Մաքրել երթուղին",
-        "routeUnavailable": "Երթուղին դեռ հասանելի չէ"
+        "routeUnavailable": "Երթուղին դեռ հասանելի չէ",
+        "project": "Նախագիծ",
+        "viewProject": "Դիտել նախագիծը"
       }
     }
   },

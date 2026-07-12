@@ -39,6 +39,7 @@ export default async function AdminVenuePage({ params }: AdminVenuePageProps) {
         detail={detail}
         companies={options.companies}
         partners={options.partners}
+        projects={options.projects}
       />
     </section>
   );

@@ -431,7 +431,8 @@
             "yPercent": "Y %",
             "company": "Company",
             "partner": "Partner",
-            "note": "Note"
+            "note": "Note",
+            "project": "Project"
           }
         },
         "path": {
@@ -607,7 +608,11 @@
       },
       "stats": {
         "projectViewsTotal": "Project views (all time)",
-        "projectViewsRecent": "Project views (recent)"
+        "projectViewsRecent": "Project views (recent)",
+        "apartmentViewsTotal": "Apartment views (all time)",
+        "apartmentViewsRecent": "Apartment views (recent)",
+        "boothSelectedTotal": "Booth selections (all time)",
+        "routeRequestedTotal": "Route requests (all time)"
       },
       "sections": {
         "dealsByStage": "Deals by stage",
@@ -1173,7 +1178,9 @@
       "readinessCompany": "Company readiness",
       "stats": {
         "projectViewsRecent": "Project views (recent)",
-        "qrScanDeals": "Deals from QR scans"
+        "qrScanDeals": "Deals from QR scans",
+        "apartmentViewsRecent": "Apartment views (recent)",
+        "apartmentViewsTotal": "Apartment views (all time)"
       },
       "sections": {
         "projectViews": "Project views",
@@ -1383,7 +1390,7 @@
       "title": "Exhibition map",
       "subtitle": "Find builders and partners at {event}.",
       "searchLabel": "Search booths",
-      "searchPlaceholder": "Booth code, company, or partner",
+      "searchPlaceholder": "Booth code, company, partner, or project",
       "boothCount": "{count, plural, one {# booth} other {# booths}}",
       "selectHint": "Select a booth on the map to see details.",
       "noMatches": "No booths match your search.",
@@ -1397,7 +1404,9 @@
         "close": "Close",
         "showRoute": "Show route",
         "clearRoute": "Clear route",
-        "routeUnavailable": "Route not available yet"
+        "routeUnavailable": "Route not available yet",
+        "project": "Project",
+        "viewProject": "View project"
       }
     }
   },

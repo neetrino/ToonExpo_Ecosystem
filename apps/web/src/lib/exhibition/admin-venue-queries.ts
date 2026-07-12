@@ -11,8 +11,10 @@ export type AdminVenueBoothRow = {
   sortOrder: number;
   companyId: string | null;
   partnerId: string | null;
+  projectId: string | null;
   companyName: string | null;
   partnerName: string | null;
+  projectName: string | null;
 };
 
 export type AdminPathNodeRow = {
@@ -53,6 +55,12 @@ export type AdminAssignmentOption = {
   name: string;
 };
 
+export type AdminProjectOption = {
+  id: string;
+  name: string;
+  companyId: string;
+};
+
 export async function loadAdminVenueMapDetail(
   eventId: string,
 ): Promise<AdminVenueMapDetail | null> {
@@ -82,8 +90,10 @@ export async function loadAdminVenueMapDetail(
               sortOrder: true,
               companyId: true,
               partnerId: true,
+              projectId: true,
               company: { select: { name: true } },
               partner: { select: { name: true } },
+              project: { select: { name: true } },
             },
           },
           pathNodes: {
@@ -138,8 +148,10 @@ export async function loadAdminVenueMapDetail(
       sortOrder: booth.sortOrder,
       companyId: booth.companyId,
       partnerId: booth.partnerId,
+      projectId: booth.projectId,
       companyName: booth.company?.name ?? null,
       partnerName: booth.partner?.name ?? null,
+      projectName: booth.project?.name ?? null,
     })),
     pathNodes: venueMap?.pathNodes ?? [],
     pathEdges: venueMap?.pathEdges ?? [],
@@ -149,8 +161,9 @@ export async function loadAdminVenueMapDetail(
 export async function loadAssignmentOptions(): Promise<{
   companies: AdminAssignmentOption[];
   partners: AdminAssignmentOption[];
+  projects: AdminProjectOption[];
 }> {
-  const [companies, partners] = await Promise.all([
+  const [companies, partners, projects] = await Promise.all([
     prisma.company.findMany({
       orderBy: { name: 'asc' },
       select: { id: true, name: true },
@@ -159,6 +172,11 @@ export async function loadAssignmentOptions(): Promise<{
       orderBy: { name: 'asc' },
       select: { id: true, name: true },
     }),
+    prisma.project.findMany({
+      where: { status: 'PUBLISHED' },
+      orderBy: { name: 'asc' },
+      select: { id: true, name: true, companyId: true },
+    }),
   ]);
-  return { companies, partners };
+  return { companies, partners, projects };
 }
