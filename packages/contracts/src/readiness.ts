@@ -6,6 +6,21 @@ export const READINESS_SCORE_MAX = 100;
 export const READINESS_TEXT_MAX_LENGTH = 4000;
 export const READINESS_CONTACT_MAX_LENGTH = 160;
 export const READINESS_CATEGORY_NAME_MAX_LENGTH = 120;
+export const READINESS_CATEGORY_KEY_MAX_LENGTH = 64;
+export const READINESS_CATEGORY_SERVICE_KEY_MAX_LENGTH = 64;
+export const READINESS_CATEGORY_DESCRIPTION_MAX_LENGTH = 1000;
+export const READINESS_CATEGORY_WEIGHT_MIN = 0;
+export const READINESS_CATEGORY_WEIGHT_MAX = 100;
+export const READINESS_CATEGORY_SORT_ORDER_MIN = 0;
+export const READINESS_CATEGORY_SORT_ORDER_MAX = 10_000;
+
+/** Stable category keys: snake_case alphanumeric (e.g. media_materials). */
+const readinessCategoryKeySchema = z
+  .string()
+  .trim()
+  .min(1)
+  .max(READINESS_CATEGORY_KEY_MAX_LENGTH)
+  .regex(/^[a-z][a-z0-9_]*$/);
 
 /** Docs: 03-Categories-Scoring — 0–39 → needs_improvement. */
 export const READINESS_NEEDS_IMPROVEMENT_MAX_SCORE = 39;
@@ -85,6 +100,59 @@ export const assessmentUpsertInputSchema = z
   });
 
 export type AssessmentUpsertInput = z.infer<typeof assessmentUpsertInputSchema>;
+
+const optionalCoercedWeight = z.preprocess(
+  emptyToUndefined,
+  z.coerce
+    .number()
+    .min(READINESS_CATEGORY_WEIGHT_MIN)
+    .max(READINESS_CATEGORY_WEIGHT_MAX)
+    .optional(),
+);
+
+const optionalServiceCategoryKey = z.preprocess((value) => {
+  if (typeof value !== 'string') {
+    return value;
+  }
+  const trimmed = value.trim();
+  return trimmed.length === 0 ? undefined : trimmed;
+}, z.string().max(READINESS_CATEGORY_SERVICE_KEY_MAX_LENGTH).optional());
+
+export const readinessCategoryUpsertInputSchema = z.object({
+  categoryId: z.string().trim().min(1).optional(),
+  key: readinessCategoryKeySchema.optional(),
+  name: z.string().trim().min(1).max(READINESS_CATEGORY_NAME_MAX_LENGTH),
+  description: optionalTrimmedString(READINESS_CATEGORY_DESCRIPTION_MAX_LENGTH),
+  weight: optionalCoercedWeight,
+  sortOrder: z.coerce
+    .number()
+    .int()
+    .min(READINESS_CATEGORY_SORT_ORDER_MIN)
+    .max(READINESS_CATEGORY_SORT_ORDER_MAX),
+  serviceCategoryKey: optionalServiceCategoryKey,
+  active: z.preprocess((value) => {
+    if (typeof value === 'boolean') {
+      return value;
+    }
+    if (value === 'true' || value === 'on' || value === '1') {
+      return true;
+    }
+    if (value === 'false' || value === 'off' || value === '0' || value === '' || value == null) {
+      return false;
+    }
+    return value;
+  }, z.boolean()),
+}).superRefine((value, ctx) => {
+  if (!value.categoryId && !value.key) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'keyRequired',
+      path: ['key'],
+    });
+  }
+});
+
+export type ReadinessCategoryUpsertInput = z.infer<typeof readinessCategoryUpsertInputSchema>;
 
 /** Builder-facing category score — no admin-only fields. */
 export const builderCategoryScoreSchema = z.object({

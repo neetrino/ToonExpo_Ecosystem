@@ -24,6 +24,12 @@ export type ReadinessCategoryOption = {
   serviceCategoryKey: string | null;
 };
 
+export type AdminReadinessCategoryRow = ReadinessCategoryOption & {
+  description: string | null;
+  active: boolean;
+  updatedAt: Date;
+};
+
 export type AdminTargetOption = {
   id: string;
   name: string;
@@ -60,6 +66,24 @@ export async function loadActiveReadinessCategories(): Promise<ReadinessCategory
       weight: true,
       sortOrder: true,
       serviceCategoryKey: true,
+    },
+  });
+}
+
+/** All categories (including inactive) for admin category CRUD. */
+export async function listAdminReadinessCategories(): Promise<AdminReadinessCategoryRow[]> {
+  return prisma.readinessCategory.findMany({
+    orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
+    select: {
+      id: true,
+      key: true,
+      name: true,
+      description: true,
+      weight: true,
+      sortOrder: true,
+      serviceCategoryKey: true,
+      active: true,
+      updatedAt: true,
     },
   });
 }

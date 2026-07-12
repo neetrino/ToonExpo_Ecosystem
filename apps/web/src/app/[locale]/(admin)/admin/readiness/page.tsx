@@ -5,12 +5,15 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import {
   getAdminAssessment,
   listAdminAssessments,
+  listAdminReadinessCategories,
   loadActiveReadinessCategories,
   loadAdminCompanyOptions,
   loadAdminProjectOptions,
 } from '@/lib/admin/readiness-queries';
 
+import { CategoriesTable } from './categories-table';
 import { NewAssessmentButton } from './new-assessment-button';
+import { NewCategoryButton } from './new-category-button';
 import { ReadinessTable } from './readiness-table';
 import { TargetTypeFilter } from './target-type-filter';
 
@@ -36,17 +39,27 @@ export default async function AdminReadinessPage({
 
   const targetFilter = parseTargetFilter(rawTarget);
 
-  const [t, tStatus, tTarget, assessments, categories, companies, projects, editAssessment] =
-    await Promise.all([
-      getTranslations('admin.readiness'),
-      getTranslations('admin.readiness.statuses'),
-      getTranslations('admin.readiness.targets'),
-      listAdminAssessments(targetFilter),
-      loadActiveReadinessCategories(),
-      loadAdminCompanyOptions(),
-      loadAdminProjectOptions(),
-      editId ? getAdminAssessment(editId) : Promise.resolve(null),
-    ]);
+  const [
+    t,
+    tStatus,
+    tTarget,
+    assessments,
+    activeCategories,
+    allCategories,
+    companies,
+    projects,
+    editAssessment,
+  ] = await Promise.all([
+    getTranslations('admin.readiness'),
+    getTranslations('admin.readiness.statuses'),
+    getTranslations('admin.readiness.targets'),
+    listAdminAssessments(targetFilter),
+    loadActiveReadinessCategories(),
+    listAdminReadinessCategories(),
+    loadAdminCompanyOptions(),
+    loadAdminProjectOptions(),
+    editId ? getAdminAssessment(editId) : Promise.resolve(null),
+  ]);
 
   const statusLabels = Object.fromEntries(
     READINESS_STATUSES.map((status) => [status, tStatus(status)]),
@@ -61,10 +74,11 @@ export default async function AdminReadinessPage({
       <div className="portal-page__header">
         <h2 className="portal-page__title">{t('title')}</h2>
         <div className="portal-toolbar">
+          <NewCategoryButton locale={locale} label={t('newCategory')} />
           <NewAssessmentButton
             locale={locale}
             label={t('newAssessment')}
-            categories={categories}
+            categories={activeCategories}
             companies={companies}
             projects={projects}
             editAssessment={editAssessment}
@@ -72,6 +86,33 @@ export default async function AdminReadinessPage({
         </div>
       </div>
 
+      <h3 className="portal-section__title">{t('categoriesTitle')}</h3>
+      {allCategories.length === 0 ? (
+        <p className="portal-empty">{t('categoriesEmpty')}</p>
+      ) : (
+        <CategoriesTable
+          locale={locale}
+          categories={allCategories}
+          labels={{
+            columns: {
+              name: t('categoryColumns.name'),
+              key: t('categoryColumns.key'),
+              weight: t('categoryColumns.weight'),
+              sortOrder: t('categoryColumns.sortOrder'),
+              serviceCategoryKey: t('categoryColumns.serviceCategoryKey'),
+              active: t('categoryColumns.active'),
+              updatedAt: t('categoryColumns.updatedAt'),
+              actions: t('categoryColumns.actions'),
+            },
+            edit: t('edit'),
+            activeYes: t('activeYes'),
+            activeNo: t('activeNo'),
+            emptyValue: t('noEvaluator'),
+          }}
+        />
+      )}
+
+      <h3 className="portal-section__title">{t('assessmentsTitle')}</h3>
       <TargetTypeFilter
         currentType={targetFilter}
         labels={{

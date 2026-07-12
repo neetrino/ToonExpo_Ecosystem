@@ -142,6 +142,7 @@
         "invalidInput": "Проверьте поля и попробуйте снова.",
         "notFound": "Запрошенный элемент не найден.",
         "nameTaken": "Компания с таким названием уже существует.",
+        "keyTaken": "Категория готовности с таким ключом уже существует.",
         "notBankPartner": "Банковские предложения можно добавлять только партнёрам-банкам."
       }
     },
@@ -300,8 +301,24 @@
       "title": "Готовность застройщика",
       "empty": "Оценок готовности пока нет.",
       "newAssessment": "Новая оценка",
+      "newCategory": "Новая категория",
+      "categoriesTitle": "Категории",
+      "categoriesEmpty": "Категорий готовности пока нет.",
+      "assessmentsTitle": "Оценки",
       "edit": "Изменить",
       "noEvaluator": "—",
+      "activeYes": "Активна",
+      "activeNo": "Неактивна",
+      "categoryColumns": {
+        "name": "Название",
+        "key": "Ключ",
+        "weight": "Вес",
+        "sortOrder": "Порядок",
+        "serviceCategoryKey": "Ключ услуги",
+        "active": "Активна",
+        "updatedAt": "Обновлено",
+        "actions": "Действия"
+      },
       "columns": {
         "target": "Цель",
         "score": "Балл",
@@ -334,6 +351,23 @@
         "pricing_status_clarity": "Цены и статусы",
         "crm_request_readiness": "Готовность CRM / заявок",
         "event_presentation_readiness": "Готовность к событию"
+      },
+      "categoryForm": {
+        "create": "Новая категория готовности",
+        "edit": "Редактировать категорию готовности",
+        "submit": "Сохранить категорию",
+        "fields": {
+          "key": "Ключ",
+          "keyHint": "Ключ задаётся при создании и не меняется.",
+          "keyCreateHint": "Стабильный snake_case ключ (напр. media_materials).",
+          "name": "Название",
+          "description": "Описание",
+          "weight": "Вес",
+          "sortOrder": "Порядок сортировки",
+          "serviceCategoryKey": "Ключ категории услуг",
+          "serviceCategoryKeyHint": "Соответствует serviceCategories партнёров для подсказок провайдеров.",
+          "active": "Активна"
+        }
       },
       "form": {
         "create": "Новая оценка готовности",
@@ -487,8 +521,8 @@
             "yPercent": "Y %",
             "company": "Компания",
             "partner": "Партнёр",
-            "note": "Заметка",
-            "project": "Проект"
+            "project": "Проект",
+            "note": "Заметка"
           }
         },
         "path": {
@@ -552,7 +586,8 @@
         "PROVISION_ACCOUNT": "Провижининг аккаунта",
         "SETTINGS_UPDATE": "Обновление настроек",
         "ACTING_ON_BEHALF_START": "Начало работы от имени компании",
-        "ACTING_ON_BEHALF_STOP": "Завершение работы от имени компании"
+        "ACTING_ON_BEHALF_STOP": "Завершение работы от имени компании",
+        "READINESS_ASSESSMENT_UPSERT": "Обновление оценки готовности"
       },
       "entityTypes": {
         "PROJECT": "Проект",
@@ -564,7 +599,8 @@
         "EXHIBITION_EVENT": "Выставочное событие",
         "USER": "Пользователь",
         "PLATFORM_SETTING": "Настройка платформы",
-        "COMPANY": "Компания"
+        "COMPANY": "Компания",
+        "READINESS_ASSESSMENT": "Оценка готовности"
       }
     },
     "settings": {
@@ -1178,9 +1214,9 @@
       "readinessCompany": "Готовность компании",
       "stats": {
         "projectViewsRecent": "Просмотры проектов (недавние)",
-        "qrScanDeals": "Сделки из QR-сканов",
         "apartmentViewsRecent": "Просмотры квартир (недавние)",
-        "apartmentViewsTotal": "Просмотры квартир (всего)"
+        "apartmentViewsTotal": "Просмотры квартир (всего)",
+        "qrScanDeals": "Сделки из QR-сканов"
       },
       "sections": {
         "projectViews": "Просмотры проектов",
@@ -1398,15 +1434,15 @@
         "code": "Стенд",
         "company": "Застройщик",
         "partner": "Партнёр",
+        "project": "Проект",
         "note": "Заметка",
         "viewCompany": "Открыть застройщика",
         "viewPartner": "Открыть партнёра",
+        "viewProject": "Открыть проект",
         "close": "Закрыть",
         "showRoute": "Показать маршрут",
         "clearRoute": "Сбросить маршрут",
-        "routeUnavailable": "Маршрут пока недоступен",
-        "project": "Проект",
-        "viewProject": "Открыть проект"
+        "routeUnavailable": "Маршрут пока недоступен"
       }
     }
   },

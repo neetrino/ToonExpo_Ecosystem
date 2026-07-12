@@ -3,6 +3,7 @@ export const ADMIN_MUTATION_ERROR_KEYS = [
   'notFound',
   'invalidInput',
   'nameTaken',
+  'keyTaken',
   'notBankPartner',
 ] as const;
 

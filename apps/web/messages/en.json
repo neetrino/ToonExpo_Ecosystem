@@ -142,6 +142,7 @@
         "invalidInput": "Please check the fields and try again.",
         "notFound": "The requested item was not found.",
         "nameTaken": "A company with this name already exists.",
+        "keyTaken": "A readiness category with this key already exists.",
         "notBankPartner": "Bank offers can only be attached to bank partners."
       }
     },
@@ -300,8 +301,24 @@
       "title": "Builder readiness",
       "empty": "No readiness assessments yet.",
       "newAssessment": "New assessment",
+      "newCategory": "New category",
+      "categoriesTitle": "Categories",
+      "categoriesEmpty": "No readiness categories yet.",
+      "assessmentsTitle": "Assessments",
       "edit": "Edit",
       "noEvaluator": "—",
+      "activeYes": "Active",
+      "activeNo": "Inactive",
+      "categoryColumns": {
+        "name": "Name",
+        "key": "Key",
+        "weight": "Weight",
+        "sortOrder": "Sort",
+        "serviceCategoryKey": "Service key",
+        "active": "Active",
+        "updatedAt": "Updated",
+        "actions": "Actions"
+      },
       "columns": {
         "target": "Target",
         "score": "Score",
@@ -334,6 +351,23 @@
         "pricing_status_clarity": "Pricing / status clarity",
         "crm_request_readiness": "CRM / request readiness",
         "event_presentation_readiness": "Event presentation readiness"
+      },
+      "categoryForm": {
+        "create": "New readiness category",
+        "edit": "Edit readiness category",
+        "submit": "Save category",
+        "fields": {
+          "key": "Key",
+          "keyHint": "Key is set at creation and cannot be changed.",
+          "keyCreateHint": "Stable snake_case key (e.g. media_materials).",
+          "name": "Name",
+          "description": "Description",
+          "weight": "Weight",
+          "sortOrder": "Sort order",
+          "serviceCategoryKey": "Service category key",
+          "serviceCategoryKeyHint": "Maps to partner serviceCategories for provider suggestions.",
+          "active": "Active"
+        }
       },
       "form": {
         "create": "New readiness assessment",
@@ -431,8 +465,8 @@
             "yPercent": "Y %",
             "company": "Company",
             "partner": "Partner",
-            "note": "Note",
-            "project": "Project"
+            "project": "Project",
+            "note": "Note"
           }
         },
         "path": {
@@ -552,7 +586,8 @@
         "PROVISION_ACCOUNT": "Provision account",
         "SETTINGS_UPDATE": "Settings update",
         "ACTING_ON_BEHALF_START": "Acting on behalf started",
-        "ACTING_ON_BEHALF_STOP": "Acting on behalf stopped"
+        "ACTING_ON_BEHALF_STOP": "Acting on behalf stopped",
+        "READINESS_ASSESSMENT_UPSERT": "Readiness assessment update"
       },
       "entityTypes": {
         "PROJECT": "Project",
@@ -564,7 +599,8 @@
         "EXHIBITION_EVENT": "Exhibition event",
         "USER": "User",
         "PLATFORM_SETTING": "Platform setting",
-        "COMPANY": "Company"
+        "COMPANY": "Company",
+        "READINESS_ASSESSMENT": "Readiness assessment"
       }
     },
     "settings": {
@@ -1178,9 +1214,9 @@
       "readinessCompany": "Company readiness",
       "stats": {
         "projectViewsRecent": "Project views (recent)",
-        "qrScanDeals": "Deals from QR scans",
         "apartmentViewsRecent": "Apartment views (recent)",
-        "apartmentViewsTotal": "Apartment views (all time)"
+        "apartmentViewsTotal": "Apartment views (all time)",
+        "qrScanDeals": "Deals from QR scans"
       },
       "sections": {
         "projectViews": "Project views",
@@ -1398,15 +1434,15 @@
         "code": "Booth",
         "company": "Builder",
         "partner": "Partner",
+        "project": "Project",
         "note": "Note",
         "viewCompany": "View builder",
         "viewPartner": "View partner",
+        "viewProject": "View project",
         "close": "Close",
         "showRoute": "Show route",
         "clearRoute": "Clear route",
-        "routeUnavailable": "Route not available yet",
-        "project": "Project",
-        "viewProject": "View project"
+        "routeUnavailable": "Route not available yet"
       }
     }
   },

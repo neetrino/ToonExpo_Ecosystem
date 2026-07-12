@@ -4,7 +4,49 @@ import {
   READINESS_SCORE_MAX,
   assessmentUpsertInputSchema,
   builderReadinessAssessmentSchema,
+  readinessCategoryUpsertInputSchema,
 } from './readiness';
+
+describe('readinessCategoryUpsertInputSchema', () => {
+  it('requires key when creating', () => {
+    const result = readinessCategoryUpsertInputSchema.safeParse({
+      name: 'Media',
+      sortOrder: 10,
+      active: true,
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('accepts create and update payloads', () => {
+    const create = readinessCategoryUpsertInputSchema.safeParse({
+      key: 'media_materials',
+      name: 'Media materials',
+      weight: 1.5,
+      sortOrder: 30,
+      serviceCategoryKey: 'render_studio',
+      active: true,
+    });
+    expect(create.success).toBe(true);
+
+    const update = readinessCategoryUpsertInputSchema.safeParse({
+      categoryId: 'cat-1',
+      name: 'Media materials',
+      sortOrder: 30,
+      active: false,
+    });
+    expect(update.success).toBe(true);
+  });
+
+  it('rejects invalid keys', () => {
+    const result = readinessCategoryUpsertInputSchema.safeParse({
+      key: 'Media-Materials',
+      name: 'Media',
+      sortOrder: 1,
+      active: true,
+    });
+    expect(result.success).toBe(false);
+  });
+});
 
 describe('assessmentUpsertInputSchema', () => {
   it('requires companyId for BUILDER_COMPANY and forbids projectId', () => {

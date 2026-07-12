@@ -1,13 +1,22 @@
 import type { AssessmentUpsertInput } from '@toonexpo/contracts';
 import { prisma } from '@toonexpo/db';
+import type { ReadinessStatus } from '@toonexpo/domain';
+
+import { type AuditActor, formatStatusTransition, recordAudit } from '@/lib/audit/record-audit';
+import { computeOverallScore } from '@/lib/readiness/score';
 
 import { loadActiveReadinessCategories, type ReadinessCategoryOption } from './readiness-queries';
 import { type AdminMutationResult } from './mutation-result';
-import { computeOverallScore } from '@/lib/readiness/score';
 
 type ResolvedTarget = {
   companyId: string;
   projectId: string | null;
+};
+
+type AssessmentSnapshot = {
+  id: string;
+  status: ReadinessStatus;
+  overallScore: number | null;
 };
 
 async function resolveAssessmentTarget(
@@ -55,9 +64,68 @@ function overallFromScores(
   );
 }
 
+function formatReadinessAuditDetail(
+  fromStatus: string | null,
+  toStatus: string,
+  fromScore: number | null,
+  toScore: number | null,
+): string {
+  const parts: string[] = [];
+  if (fromStatus === null) {
+    parts.push(`create:${toStatus}`);
+  } else if (fromStatus !== toStatus) {
+    parts.push(formatStatusTransition(fromStatus, toStatus));
+  }
+  if (fromScore !== toScore) {
+    parts.push(`score:${fromScore ?? 'null'}→${toScore ?? 'null'}`);
+  }
+  return parts.join('; ');
+}
+
+function assessmentWriteData(
+  input: AssessmentUpsertInput,
+  target: ResolvedTarget,
+  actor: AuditActor,
+  overallScore: number | null,
+  now: Date,
+) {
+  return {
+    targetType: input.targetType,
+    companyId: target.companyId,
+    projectId: target.projectId,
+    status: input.status,
+    overallScore,
+    evaluatedByUserId: actor.userId,
+    lastEvaluatedAt: now,
+    responsibleContact: input.responsibleContact ?? null,
+    recommendation: input.recommendation ?? null,
+    requiredActions: input.requiredActions ?? null,
+    internalNotes: input.internalNotes ?? null,
+  };
+}
+
+function categoryScoreRows(
+  assessmentId: string,
+  input: AssessmentUpsertInput,
+  actor: AuditActor,
+  now: Date,
+) {
+  return input.categoryScores.map((score) => ({
+    assessmentId,
+    categoryId: score.categoryId,
+    score: score.score ?? null,
+    status: score.status,
+    recommendation: score.recommendation ?? null,
+    requiredActions: score.requiredActions ?? null,
+    internalNote: score.internalNote ?? null,
+    evaluatedByUserId: actor.userId,
+    evaluatedAt: now,
+  }));
+}
+
 export async function upsertAssessment(
   input: AssessmentUpsertInput,
-  evaluatorUserId: string,
+  actor: AuditActor,
 ): Promise<AdminMutationResult<{ assessmentId: string }>> {
   const target = await resolveAssessmentTarget(input);
   if (!target.ok) {
@@ -74,89 +142,109 @@ export async function upsertAssessment(
   const now = new Date();
 
   if (input.assessmentId) {
-    return updateExistingAssessment(input, target, evaluatorUserId, overallScore, now);
+    return updateExistingAssessment(input, target, actor, overallScore, now);
   }
 
-  const created = await prisma.readinessAssessment.create({
-    data: {
-      targetType: input.targetType,
-      companyId: target.companyId,
-      projectId: target.projectId,
-      status: input.status,
-      overallScore,
-      evaluatedByUserId: evaluatorUserId,
-      lastEvaluatedAt: now,
-      responsibleContact: input.responsibleContact ?? null,
-      recommendation: input.recommendation ?? null,
-      requiredActions: input.requiredActions ?? null,
-      internalNotes: input.internalNotes ?? null,
-      categoryScores: {
-        create: input.categoryScores.map((score) => ({
-          categoryId: score.categoryId,
-          score: score.score ?? null,
-          status: score.status,
-          recommendation: score.recommendation ?? null,
-          requiredActions: score.requiredActions ?? null,
-          internalNote: score.internalNote ?? null,
-          evaluatedByUserId: evaluatorUserId,
-          evaluatedAt: now,
-        })),
-      },
-    },
-    select: { id: true },
-  });
+  return createAssessment(input, target, actor, overallScore, now);
+}
 
-  return { ok: true, assessmentId: created.id };
+async function createAssessment(
+  input: AssessmentUpsertInput,
+  target: ResolvedTarget,
+  actor: AuditActor,
+  overallScore: number | null,
+  now: Date,
+): Promise<AdminMutationResult<{ assessmentId: string }>> {
+  return prisma.$transaction(async (tx) => {
+    const created = await tx.readinessAssessment.create({
+      data: {
+        ...assessmentWriteData(input, target, actor, overallScore, now),
+        categoryScores: {
+          create: input.categoryScores.map((score) => ({
+            categoryId: score.categoryId,
+            score: score.score ?? null,
+            status: score.status,
+            recommendation: score.recommendation ?? null,
+            requiredActions: score.requiredActions ?? null,
+            internalNote: score.internalNote ?? null,
+            evaluatedByUserId: actor.userId,
+            evaluatedAt: now,
+          })),
+        },
+      },
+      select: { id: true },
+    });
+
+    await recordAudit(tx, {
+      actor,
+      action: 'READINESS_ASSESSMENT_UPSERT',
+      entityType: 'READINESS_ASSESSMENT',
+      entityId: created.id,
+      companyId: target.companyId,
+      detail: formatReadinessAuditDetail(null, input.status, null, overallScore),
+    });
+
+    return { ok: true, assessmentId: created.id };
+  });
+}
+
+async function maybeAuditAssessmentChange(
+  tx: Parameters<typeof recordAudit>[0],
+  existing: AssessmentSnapshot,
+  input: AssessmentUpsertInput,
+  target: ResolvedTarget,
+  actor: AuditActor,
+  overallScore: number | null,
+): Promise<void> {
+  const statusChanged = existing.status !== input.status;
+  const scoreChanged = existing.overallScore !== overallScore;
+  if (!statusChanged && !scoreChanged) {
+    return;
+  }
+
+  await recordAudit(tx, {
+    actor,
+    action: 'READINESS_ASSESSMENT_UPSERT',
+    entityType: 'READINESS_ASSESSMENT',
+    entityId: existing.id,
+    companyId: target.companyId,
+    detail: formatReadinessAuditDetail(
+      existing.status,
+      input.status,
+      existing.overallScore,
+      overallScore,
+    ),
+  });
 }
 
 async function updateExistingAssessment(
   input: AssessmentUpsertInput,
   target: ResolvedTarget,
-  evaluatorUserId: string,
+  actor: AuditActor,
   overallScore: number | null,
   now: Date,
 ): Promise<AdminMutationResult<{ assessmentId: string }>> {
   const assessmentId = input.assessmentId as string;
-  const existing = await prisma.readinessAssessment.findFirst({
-    where: { id: assessmentId, archivedAt: null },
-    select: { id: true },
-  });
-  if (!existing) {
-    return { ok: false, errorKey: 'notFound' };
-  }
 
-  await prisma.$transaction([
-    prisma.readinessAssessment.update({
+  return prisma.$transaction(async (tx) => {
+    const existing = await tx.readinessAssessment.findFirst({
+      where: { id: assessmentId, archivedAt: null },
+      select: { id: true, status: true, overallScore: true },
+    });
+    if (!existing) {
+      return { ok: false, errorKey: 'notFound' };
+    }
+
+    await tx.readinessAssessment.update({
       where: { id: assessmentId },
-      data: {
-        targetType: input.targetType,
-        companyId: target.companyId,
-        projectId: target.projectId,
-        status: input.status,
-        overallScore,
-        evaluatedByUserId: evaluatorUserId,
-        lastEvaluatedAt: now,
-        responsibleContact: input.responsibleContact ?? null,
-        recommendation: input.recommendation ?? null,
-        requiredActions: input.requiredActions ?? null,
-        internalNotes: input.internalNotes ?? null,
-      },
-    }),
-    prisma.readinessCategoryScore.deleteMany({ where: { assessmentId } }),
-    prisma.readinessCategoryScore.createMany({
-      data: input.categoryScores.map((score) => ({
-        assessmentId,
-        categoryId: score.categoryId,
-        score: score.score ?? null,
-        status: score.status,
-        recommendation: score.recommendation ?? null,
-        requiredActions: score.requiredActions ?? null,
-        internalNote: score.internalNote ?? null,
-        evaluatedByUserId: evaluatorUserId,
-        evaluatedAt: now,
-      })),
-    }),
-  ]);
+      data: assessmentWriteData(input, target, actor, overallScore, now),
+    });
+    await tx.readinessCategoryScore.deleteMany({ where: { assessmentId } });
+    await tx.readinessCategoryScore.createMany({
+      data: categoryScoreRows(assessmentId, input, actor, now),
+    });
+    await maybeAuditAssessmentChange(tx, existing, input, target, actor, overallScore);
 
-  return { ok: true, assessmentId };
+    return { ok: true, assessmentId };
+  });
 }

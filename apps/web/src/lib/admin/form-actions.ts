@@ -15,7 +15,7 @@ import {
   updatePartnerAction,
 } from '@/app/[locale]/(admin)/admin/partners/actions';
 import { setProjectPublicationAsAdminAction } from '@/app/[locale]/(admin)/admin/projects/actions';
-import { upsertAssessmentAction } from '@/app/[locale]/(admin)/admin/readiness/actions';
+import { upsertAssessmentAction, upsertReadinessCategoryAction } from '@/app/[locale]/(admin)/admin/readiness/actions';
 import { upsertExhibitionEventAction } from '@/app/[locale]/(admin)/admin/exhibition/actions';
 import { upsertSettingAction } from '@/app/[locale]/(admin)/admin/settings/actions';
 
@@ -201,6 +201,24 @@ export async function upsertAssessmentFormAction(
     requiredActions: getFormString(formData, 'requiredActions'),
     internalNotes: getFormString(formData, 'internalNotes'),
     categoryScores: categoryScoresFromForm(formData),
+  });
+  return toFormState(result);
+}
+
+export async function upsertReadinessCategoryFormAction(
+  locale: string,
+  _prevState: AdminCatalogActionState,
+  formData: FormData,
+): Promise<AdminCatalogActionState> {
+  const result = await upsertReadinessCategoryAction(locale, {
+    categoryId: getFormString(formData, 'categoryId'),
+    key: getFormString(formData, 'key'),
+    name: getFormString(formData, 'name'),
+    description: getFormString(formData, 'description'),
+    weight: getFormString(formData, 'weight'),
+    sortOrder: getFormString(formData, 'sortOrder'),
+    serviceCategoryKey: getFormString(formData, 'serviceCategoryKey'),
+    active: formData.get('active') === 'on' || formData.get('active') === 'true',
   });
   return toFormState(result);
 }

@@ -142,6 +142,7 @@
         "invalidInput": "Ստուգեք դաշտերը և կրկին փորձեք։",
         "notFound": "Հարցված տարրը չի գտնվել։",
         "nameTaken": "Այս անվանումով ընկերություն արդեն գոյություն ունի։",
+        "keyTaken": "Այս բանալիով պատրաստվածության կատեգորիա արդեն գոյություն ունի։",
         "notBankPartner": "Բանկային առաջարկները կարելի է կապել միայն բանկ գործընկերների հետ։"
       }
     },
@@ -300,8 +301,24 @@
       "title": "Կառուցապատողի պատրաստվածություն",
       "empty": "Պատրաստվածության գնահատումներ դեռ չկան։",
       "newAssessment": "Նոր գնահատում",
+      "newCategory": "Նոր կատեգորիա",
+      "categoriesTitle": "Կատեգորիաներ",
+      "categoriesEmpty": "Պատրաստվածության կատեգորիաներ դեռ չկան։",
+      "assessmentsTitle": "Գնահատումներ",
       "edit": "Խմբագրել",
       "noEvaluator": "—",
+      "activeYes": "Ակտիվ",
+      "activeNo": "Անակտիվ",
+      "categoryColumns": {
+        "name": "Անուն",
+        "key": "Բանալի",
+        "weight": "Քաշ",
+        "sortOrder": "Կարգ",
+        "serviceCategoryKey": "Ծառայության բանալի",
+        "active": "Ակտիվ",
+        "updatedAt": "Թարմացված",
+        "actions": "Գործողություններ"
+      },
       "columns": {
         "target": "Թիրախ",
         "score": "Միավոր",
@@ -334,6 +351,23 @@
         "pricing_status_clarity": "Գներ / կարգավիճակներ",
         "crm_request_readiness": "CRM / հայտերի պատրաստվածություն",
         "event_presentation_readiness": "Միջոցառման ներկայացման պատրաստվածություն"
+      },
+      "categoryForm": {
+        "create": "Նոր պատրաստվածության կատեգորիա",
+        "edit": "Խմբագրել պատրաստվածության կատեգորիան",
+        "submit": "Պահպանել կատեգորիան",
+        "fields": {
+          "key": "Բանալի",
+          "keyHint": "Բանալին սահմանվում է ստեղծման ժամանակ և չի փոխվում։",
+          "keyCreateHint": "Կայուն snake_case բանալի (օր. media_materials)։",
+          "name": "Անուն",
+          "description": "Նկարագրություն",
+          "weight": "Քաշ",
+          "sortOrder": "Տեսակավորման կարգ",
+          "serviceCategoryKey": "Ծառայության կատեգորիայի բանալի",
+          "serviceCategoryKeyHint": "Կապվում է գործընկերների serviceCategories-ին՝ առաջարկների համար։",
+          "active": "Ակտիվ"
+        }
       },
       "form": {
         "create": "Նոր պատրաստվածության գնահատում",
@@ -487,8 +521,7 @@
             "yPercent": "Y %",
             "company": "Ընկերություն",
             "partner": "Գործընկեր",
-            "note": "Նշում",
-            "project": "Նախագիծ"
+            "note": "Նշում"
           }
         },
         "path": {
@@ -552,7 +585,8 @@
         "PROVISION_ACCOUNT": "Հաշվի պրովիզիոնինգ",
         "SETTINGS_UPDATE": "Կարգավորումների թարմացում",
         "ACTING_ON_BEHALF_START": "Ընկերության անունից աշխատանքի սկիզբ",
-        "ACTING_ON_BEHALF_STOP": "Ընկերության անունից աշխատանքի ավարտ"
+        "ACTING_ON_BEHALF_STOP": "Ընկերության անունից աշխատանքի ավարտ",
+        "READINESS_ASSESSMENT_UPSERT": "Պատրաստվածության գնահատման թարմացում"
       },
       "entityTypes": {
         "PROJECT": "Նախագիծ",
@@ -564,7 +598,8 @@
         "EXHIBITION_EVENT": "Ցուցահանդեսային միջոցառում",
         "USER": "Օգտատեր",
         "PLATFORM_SETTING": "Հարթակի կարգավորում",
-        "COMPANY": "Ընկերություն"
+        "COMPANY": "Ընկերություն",
+        "READINESS_ASSESSMENT": "Պատրաստվածության գնահատում"
       }
     },
     "settings": {
@@ -1178,9 +1213,9 @@
       "readinessCompany": "Ընկերության readiness",
       "stats": {
         "projectViewsRecent": "Նախագծերի դիտումներ (վերջին)",
-        "qrScanDeals": "Գործարքներ QR սկանից",
         "apartmentViewsRecent": "Բնակարանների դիտումներ (վերջին)",
-        "apartmentViewsTotal": "Բնակարանների դիտումներ (ընդամենը)"
+        "apartmentViewsTotal": "Բնակարանների դիտումներ (ընդամենը)",
+        "qrScanDeals": "Գործարքներ QR սկանից"
       },
       "sections": {
         "projectViews": "Նախագծերի դիտումներ",
@@ -1398,15 +1433,15 @@
         "code": "Տաղավար",
         "company": "Կառուցապատող",
         "partner": "Գործընկեր",
+        "project": "Նախագիծ",
         "note": "Նշում",
         "viewCompany": "Դիտել կառուցապատողին",
         "viewPartner": "Դիտել գործընկերոջը",
+        "viewProject": "Դիտել նախագիծը",
         "close": "Փակել",
         "showRoute": "Ցույց տալ երթուղին",
         "clearRoute": "Մաքրել երթուղին",
-        "routeUnavailable": "Երթուղին դեռ հասանելի չէ",
-        "project": "Նախագիծ",
-        "viewProject": "Դիտել նախագիծը"
+        "routeUnavailable": "Երթուղին դեռ հասանելի չէ"
       }
     }
   },
