@@ -2,34 +2,27 @@
 
 ## Current Status
 
-Sprint 6 **IN PROGRESS** — Analytics v1 + BOS account provisioning + audit/reports + e2e smoke (final audit pending).
+Sprint 6 **COMPLETE** — Analytics v1, BOS provisioning (atomic idempotency), audit logs + CSV reports, e2e smoke, hardening + final audit fixes.
 
-## Sprint 6 — Analytics v1
+**MVP backlog complete** — all six planned sprints are done. Deferred follow-ups (not blockers): Redis rate limiting, media upload pipeline, venue map/booths, `ApartmentStatusHistory`, favorites, admin acting-on-behalf, company switcher, Playwright e2e, Swagger gating in prod, analytics aggregation/sampling.
+
+## Sprint 6 — COMPLETE
 
 - **Tracking** — `AnalyticsEvent` (`PROJECT_VIEW`, `APARTMENT_VIEW`); fire-and-forget via `after()`; no PII (no userId/IP).
 - **Aggregation** — admin global + builder company-scoped queries (`lib/analytics/*`).
 - **Dashboards** — `/admin/analytics`, `/portal/analytics` with i18n en/ru/hy.
-- **Deferred** — favorites, booth/route map events, mortgage offer selection instrumentation, dedicated apartment/building/floor/partner/builder profile view pages, AnalyticsDailyAggregate.
-
-## Sprint 6 — Publication audit + admin CSV reports
-
 - **AuditLog** — platform publication / provisioning trail; atomic writes inside mutation transactions; admin `/admin/audit`.
-- **CSV exports** — `GET /api/admin/reports/{deals|checkins|project-views|audit}` (assertAdminSession → 401 JSON); row cap 5000.
-- **PII** — deals export includes contact name/email (internal admin); check-ins include full buyer name/email.
+- **CSV exports** — `GET /api/admin/reports/{deals|checkins|project-views|audit}`; formula neutralization on string cells; row cap 5000.
+- **BOS** — `POST /integrations/bos/provisioning`; claim-first atomic idempotency (single tx); `linked_existing` for same-`bosCompanyId` re-provision; SHA-256 timing-safe API key compare; 503 when unset.
+- **E2E** — `pnpm e2e` / `pnpm e2e:local` under `scripts/e2e/` (native fetch; SKIPs ok without seed roles).
+- **Audit fixes** — concurrency-safe provisioning, CSV injection, `recordAudit` rollback semantics, guard warn logs.
 
-## Sprint 6 — BOS Integration (inbound provisioning)
+### Deferred (Sprint 6 follow-ups)
 
-- **API** — `POST /integrations/bos/provisioning` (NestJS); `X-BOS-API-KEY` / optional `BOS_API_KEY` (503 when unset).
-- **Idempotency** — `ProvisioningRequest.requestId` unique; replay returns original result.
-- **Audit** — `IntegrationAuditLog`; admin read-only `/admin/integrations`.
-- **Result to BOS** — HTTP response is the Account Creation Result (no outbound webhook in v1).
-- **Password** — random unusable hash; invitation email deferred.
-
-## Sprint 6 — E2E smoke
-
-- **Suite** — `pnpm e2e` / `pnpm e2e:local` under `scripts/e2e/` (native fetch + cookie jar; no Playwright).
-- **Coverage** — public catalog, buyer session/account, RBAC denials, BOS provisioning + idempotency, analytics `PROJECT_VIEW` increment.
-- **Limitations** — buyer registration + public request use Prisma helpers (Next.js server actions are not plain-HTTP); builder/admin/entrance checks SKIP unless seed env vars are set.
+- Favorites / deeper view instrumentation.
+- AnalyticsDailyAggregate / sampling / bot filter.
+- Swagger `/docs` gated in production.
+- Playwright e2e (current suite is fetch-based smoke).
 
 ## Sprint 5 — COMPLETE
 
@@ -126,7 +119,7 @@ Sprint 6 **IN PROGRESS** — Analytics v1 + BOS account provisioning + audit/rep
 
 ## Next
 
-**Sprint 6 — Analytics And BOS Integration**
+Post-MVP / deferred hardening (see Status). No further planned backlog sprints.
 
 ## Open (non-blocking)
 
