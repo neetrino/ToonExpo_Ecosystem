@@ -14,6 +14,7 @@
 }
 
 .portal-shell__company {
+  color: var(--te-fg);
   font-size: 1.5rem;
   font-weight: 600;
   letter-spacing: -0.02em;
@@ -30,7 +31,7 @@
 .portal-acting-banner {
   align-items: center;
   background: var(--te-accent-soft);
-  border: 1px solid var(--te-border);
+  border: 1px solid var(--te-accent);
   border-radius: var(--te-radius);
   display: flex;
   flex-wrap: wrap;
@@ -61,12 +62,18 @@
 .portal-company-switcher__select {
   background: var(--te-card);
   border: 1px solid var(--te-border);
-  border-radius: 0.5rem;
+  border-radius: var(--te-radius);
+  box-shadow: var(--te-shadow-soft);
   color: var(--te-fg);
   font-size: 1rem;
   font-weight: 600;
   max-width: 24rem;
   padding: 0.5rem 0.75rem;
+}
+
+.portal-company-switcher__select:focus {
+  border-color: var(--te-accent);
+  outline: none;
 }
 
 .portal-nav {
@@ -76,8 +83,9 @@
 }
 
 .portal-nav__link {
+  background: var(--te-card);
   border: 1px solid var(--te-border);
-  border-radius: 0.5rem;
+  border-radius: var(--te-radius);
   color: var(--te-muted);
   font-size: 0.875rem;
   font-weight: 500;
@@ -91,11 +99,12 @@
 
 .portal-nav__link:hover {
   border-color: var(--te-accent);
-  color: var(--te-fg);
-  background: var(--te-bg-soft);
+  color: var(--te-accent);
+  background: var(--te-accent-soft);
 }
 
 .portal-page__title {
+  color: var(--te-fg);
   font-size: 1.75rem;
   font-weight: 600;
   letter-spacing: -0.02em;

@@ -11,6 +11,7 @@
 }
 
 .crm-deal-sheet__title {
+  color: var(--te-fg);
   font-size: 1.125rem;
   font-weight: 600;
   margin: 0;
@@ -31,6 +32,7 @@
 }
 
 .crm-deal-sheet__meta dd {
+  color: var(--te-fg);
   margin: 0.15rem 0 0;
 }
 
@@ -48,7 +50,7 @@
 }
 
 .crm-deal-sheet__section {
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid var(--te-border);
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -56,6 +58,7 @@
 }
 
 .crm-deal-sheet__section-title {
+  color: var(--te-fg);
   font-size: 0.9375rem;
   font-weight: 600;
   margin: 0;
@@ -75,6 +78,7 @@
 }
 
 .crm-deal-sheet__details dd {
+  color: var(--te-fg);
   margin: 0.15rem 0 0;
 }
 
@@ -100,8 +104,9 @@
 
 .crm-deal-sheet__apartment {
   align-items: flex-start;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 0.5rem;
+  background: var(--te-bg-soft);
+  border: 1px solid var(--te-border);
+  border-radius: var(--te-radius);
   display: flex;
   gap: 0.75rem;
   justify-content: space-between;
@@ -109,6 +114,7 @@
 }
 
 .crm-deal-sheet__apartment-code {
+  color: var(--te-fg);
   font-weight: 600;
   margin: 0;
 }
@@ -150,8 +156,9 @@
 }
 
 .crm-deal-sheet__activity {
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 0.5rem;
+  background: var(--te-card);
+  border: 1px solid var(--te-border);
+  border-radius: var(--te-radius);
   padding: 0.75rem;
 }
 
@@ -160,7 +167,7 @@
 }
 
 .crm-deal-sheet__activity--overdue {
-  border-left: 3px solid var(--te-danger, #e5484d);
+  border-left: 3px solid #b91c1c;
 }
 
 .crm-deal-sheet__activity-header {
@@ -190,18 +197,18 @@
 }
 
 .crm-activity-status--planned {
-  background: rgba(59, 130, 246, 0.15);
-  color: #93c5fd;
+  background: #eff6ff;
+  color: #1d4ed8;
 }
 
 .crm-activity-status--done {
-  background: rgba(34, 197, 94, 0.15);
-  color: #86efac;
+  background: var(--te-accent-soft);
+  color: var(--te-accent);
 }
 
 .crm-activity-status--cancelled {
-  background: rgba(148, 163, 184, 0.15);
-  color: #cbd5e1;
+  background: var(--te-bg-soft);
+  color: var(--te-muted);
 }
 
 .crm-deal-sheet__activity-type {
@@ -212,6 +219,7 @@
 }
 
 .crm-deal-sheet__activity-body {
+  color: var(--te-fg);
   margin: 0.35rem 0 0;
 }
 
@@ -225,6 +233,6 @@
 }
 
 .crm-deal-sheet__activity-form {
-  border-top: 1px dashed rgba(255, 255, 255, 0.08);
+  border-top: 1px dashed var(--te-border);
   padding-top: 0.75rem;
 }

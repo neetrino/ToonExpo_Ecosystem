@@ -21,14 +21,16 @@
 }
 
 .crm-board__column-title {
+  color: var(--te-fg);
   font-size: 0.875rem;
   font-weight: 600;
   margin: 0;
 }
 
 .crm-board__count {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--te-bg-soft);
   border-radius: 9999px;
+  color: var(--te-muted);
   font-size: 0.75rem;
   font-weight: 500;
   padding: 0.15rem 0.5rem;
@@ -43,9 +45,10 @@
 }
 
 .crm-deal-card {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 0.75rem;
+  background: var(--te-card);
+  border: 1px solid var(--te-border);
+  border-radius: var(--te-radius);
+  box-shadow: var(--te-shadow-soft);
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
@@ -53,7 +56,7 @@
 }
 
 .crm-deal-card--overdue {
-  border-color: rgba(248, 113, 113, 0.55);
+  border-color: #fca5a5;
 }
 
 .crm-deal-card__open {
@@ -67,6 +70,7 @@
 }
 
 .crm-deal-card__name {
+  color: var(--te-fg);
   font-size: 0.9375rem;
   font-weight: 600;
   margin: 0;
@@ -105,7 +109,7 @@
 }
 
 .crm-list__row--overdue td:last-child {
-  color: #f87171;
+  color: #b91c1c;
 }
 
 .crm-stage-badge {
@@ -117,30 +121,30 @@
 }
 
 .crm-stage-badge--new {
-  background: rgba(96, 165, 250, 0.15);
-  color: #93c5fd;
+  background: #eff6ff;
+  color: #1d4ed8;
 }
 
 .crm-stage-badge--assigned,
 .crm-stage-badge--contacted,
 .crm-stage-badge--follow-up {
-  background: rgba(251, 191, 36, 0.15);
-  color: #fcd34d;
+  background: #fffbeb;
+  color: #b45309;
 }
 
 .crm-stage-badge--apartment,
 .crm-stage-badge--reserved {
-  background: rgba(52, 211, 153, 0.15);
-  color: #6ee7b7;
+  background: var(--te-accent-soft);
+  color: var(--te-accent);
 }
 
 .crm-stage-badge--converted,
 .crm-stage-badge--closed {
-  background: rgba(148, 163, 184, 0.15);
-  color: #cbd5e1;
+  background: var(--te-bg-soft);
+  color: var(--te-muted);
 }
 
 .crm-stage-badge--lost {
-  background: rgba(248, 113, 113, 0.15);
-  color: #fca5a5;
+  background: #fef2f2;
+  color: #b91c1c;
 }

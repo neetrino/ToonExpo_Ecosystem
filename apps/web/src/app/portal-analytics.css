@@ -16,9 +16,10 @@
 }
 
 .analytics-stat {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 0.75rem;
+  background: var(--te-card);
+  border: 1px solid var(--te-border);
+  border-radius: var(--te-radius);
+  box-shadow: var(--te-shadow-soft);
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
@@ -32,6 +33,7 @@
 }
 
 .analytics-stat__value {
+  color: var(--te-fg);
   font-size: 1.75rem;
   font-weight: 600;
   margin: 0;
@@ -44,6 +46,7 @@
 }
 
 .analytics-section__title {
+  color: var(--te-fg);
   font-size: 1.125rem;
   font-weight: 600;
   margin: 0;
@@ -61,7 +64,7 @@
 }
 
 .analytics-bar {
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--te-bg-soft);
   border-radius: 9999px;
   height: 0.5rem;
   overflow: hidden;

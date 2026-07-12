@@ -11,6 +11,7 @@
 }
 
 .portal-form__label {
+  color: var(--te-fg);
   font-size: 0.875rem;
 }
 
@@ -51,6 +52,12 @@
 
 .portal-form__error {
   color: #b91c1c;
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.portal-form__success {
+  color: #047857;
   font-size: 0.875rem;
   margin: 0;
 }
@@ -147,8 +154,9 @@
 }
 
 .portal-filter__link--active {
+  background: var(--te-accent-soft);
   border-color: var(--te-accent);
-  color: var(--te-fg);
+  color: var(--te-accent);
 }
 
 .portal-code {

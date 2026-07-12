@@ -5,19 +5,21 @@
 
 .portal-company-profile__logo,
 .portal-company-profile__logo-fallback {
-  border-radius: 0.75rem;
+  border-radius: var(--te-radius);
   flex-shrink: 0;
   height: 4.5rem;
   width: 4.5rem;
 }
 
 .portal-company-profile__logo {
+  border: 1px solid var(--te-border);
   object-fit: cover;
 }
 
 .portal-company-profile__logo-fallback {
   align-items: center;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--te-accent-soft);
+  color: var(--te-accent);
   display: flex;
   font-size: 1.5rem;
   font-weight: 600;
@@ -33,12 +35,14 @@
 }
 
 .portal-company-profile__name {
+  color: var(--te-fg);
   font-size: 1.125rem;
   font-weight: 600;
   margin: 0;
 }
 
 .portal-company-profile__slug {
+  color: var(--te-muted);
   margin: 0;
 }
 
@@ -56,6 +60,7 @@
 }
 
 .portal-company-profile__facts dd {
+  color: var(--te-fg);
   font-size: 0.875rem;
   margin: 0.2rem 0 0;
 }

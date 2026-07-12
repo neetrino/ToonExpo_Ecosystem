@@ -19,7 +19,7 @@ export function ActingOnBehalfBanner({ locale, message, exitLabel }: ActingOnBeh
       <p className="portal-acting-banner__text">{message}</p>
       <button
         type="button"
-        className="portal-btn portal-btn--ghost portal-btn--sm"
+        className="portal-btn portal-btn--primary portal-btn--sm"
         disabled={pending}
         onClick={() => {
           startTransition(() => {
