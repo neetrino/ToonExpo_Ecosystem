@@ -6,7 +6,17 @@ BigProjects Admin manages the directory.
 
 Providers do not self-register in v1.
 
-## Admin Flow
+## Admin Flow (v1)
+
+```text
+BigProjects Admin opens Partners
+-> creates/edits Partner (type = SERVICE_COMPANY)
+-> fills contact/services and serviceCategories
+-> marks active/published
+-> links readiness category via serviceCategories matching
+```
+
+## Admin Flow (post-v1 target)
 
 ```text
 BigProjects Admin opens Service Provider Directory

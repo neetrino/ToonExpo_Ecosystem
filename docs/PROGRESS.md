@@ -130,3 +130,8 @@ Post-MVP / deferred hardening (see Status). No further planned backlog sprints.
 - Staging/prod domain plan when ready to deploy.
 - Sentry project keys.
 - Neon `DIRECT_URL` if pooler migrate issues appear.
+
+## Product decisions (2026-07-12)
+
+- **Public requests (v1):** Anonymous-friendly — visitors submit name + phone/email from project/apartment pages without login. Logged-in buyers get prefilled forms; requests link to `buyerUserId` and appear in history. Anonymous requests are not retroactively linked. Login gate may be enabled later.
+- **Service Provider Directory (v1):** Implemented on Partners module — `Partner` records with `type = SERVICE_COMPANY` and `serviceCategories`; public directory at `/partners` filtered by type; readiness help uses `serviceCategories` matching. No dedicated `ServiceProvider` / `ServiceProviderCategory` models in v1.

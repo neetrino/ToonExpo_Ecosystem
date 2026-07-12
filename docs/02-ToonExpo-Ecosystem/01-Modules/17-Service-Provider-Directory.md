@@ -6,6 +6,16 @@ Service Provider Directory is a simple curated list of service providers that ca
 
 This is not a marketplace in v1. It has no ecommerce, booking or transaction logic.
 
+## v1 Implementation Note (2026-07-12)
+
+In v1, Service Provider Directory is implemented on the **Partners** module — not dedicated `ServiceProvider` / `ServiceProviderCategory` models.
+
+- Providers are `Partner` records with `type = SERVICE_COMPANY` and `serviceCategories`.
+- Public directory: `/partners` filtered by type.
+- Readiness help links match `serviceCategories` to weak readiness categories.
+
+The dedicated entity design documented in the deep docs remains the **post-v1 target** and may be revisited after MVP.
+
 ## 2. Users
 
 - BigProjects Admin;

@@ -6,18 +6,24 @@ Buyer can request contact/price/offer from public project or apartment pages.
 
 This creates a CRM request/deal for the related builder.
 
-## Login Rule
+## Auth Rule (v1)
 
-Buyer must be registered/logged in to create a persistent request.
+Visitors can submit a request **without logging in**, providing name + phone/email.
 
-If buyer starts request while logged out:
+Anonymous flow:
 
 ```text
 Click request
--> sign up / sign in
--> continue request with original context
+-> fill name + phone/email (+ optional message)
 -> create CRM request/deal
+-> show confirmation
 ```
+
+Logged-in buyers get prefilled contact fields. Their requests are linked to `buyerUserId` and appear in request history.
+
+Anonymous requests are **not** retroactively linked after registration.
+
+A login-before-request gate may be enabled later; v1 does not require it.
 
 ## Project Request Flow
 
@@ -26,7 +32,7 @@ Buyer opens project page
 -> clicks request/contact
 -> confirms message/contact data
 -> system creates CRM request/deal
--> buyer sees request in history
+-> if logged in: buyer sees request in history
 -> builder sees deal/request in CRM
 ```
 
@@ -38,7 +44,7 @@ Buyer opens apartment page
 -> confirms message/contact data
 -> system creates CRM request/deal with apartment link
 -> system stores price/status snapshot
--> buyer sees request in history
+-> if logged in: buyer sees request in history
 -> builder sees deal/request in CRM
 ```
 
@@ -46,9 +52,9 @@ Buyer opens apartment page
 
 Recommended v1:
 
-- buyer name from profile;
-- buyer phone from profile;
-- buyer email from profile;
+- buyer name (from profile if logged in, otherwise entered);
+- buyer phone (from profile if logged in, otherwise entered);
+- buyer email (from profile if logged in, otherwise entered);
 - optional message;
 - preferred contact method optional;
 - selected project/apartment context.
@@ -61,7 +67,7 @@ After request creation, buyer should see:
 
 - confirmation message;
 - builder/project/apartment context;
-- link to request history;
+- link to request history (logged-in buyers only);
 - optional next step text.
 
 ## Builder Notification

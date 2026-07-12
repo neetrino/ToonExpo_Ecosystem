@@ -9,18 +9,26 @@ Request/contact CTA can appear on:
 - apartment page;
 - builder page if useful.
 
-## Login Rule
+## Request Auth (v1)
 
-Buyer must be registered/logged in to create a persistent request.
+Visitors can submit a request from project or apartment pages **without logging in**, providing name + phone/email (+ optional message).
 
-If logged out:
+Anonymous flow:
 
 ```text
 Click request
--> sign up / sign in
--> preserve original context
--> continue request
+-> fill name + phone/email (+ optional message)
+-> system creates CRM request/deal
+-> show confirmation (no account history link)
 ```
+
+Logged-in buyers get prefilled contact fields from profile. Their requests are linked to `buyerUserId` and appear in request history.
+
+Anonymous requests are **not** retroactively linked if the visitor later registers.
+
+### Optional login gate (later)
+
+A stricter login-before-request gate may be enabled in a future release. v1 does not require it.
 
 ## Request Context
 
@@ -57,5 +65,5 @@ After request:
 
 - show confirmation;
 - show related builder/project/apartment;
-- link to Requests/Interest history.
+- if logged in: link to Requests/Interest history.
 

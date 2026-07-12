@@ -39,13 +39,14 @@ It connects those modules through public UI.
 
 Public browsing can be anonymous.
 
-Actions that create personal records require registration/login:
+Actions that require registration/login:
 
 - favorites;
 - saved apartments;
-- requests;
 - My QR;
 - request/interest history.
+
+Public requests (v1) do **not** require login. Visitors submit name + phone/email; logged-in buyers get prefilled forms and account-linked history.
 
 ## Domain
 

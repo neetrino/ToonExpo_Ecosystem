@@ -1,12 +1,12 @@
 # Entity Fields
 
+> **v1 mapping:** `ServiceProvider` → `Partner` (`type = SERVICE_COMPANY`); `ServiceProviderCategory` → `Partner.serviceCategories`. See [overview v1 Implementation Note](../17-Service-Provider-Directory.md#v1-implementation-note-2026-07-12). Fields below describe the **post-v1 target** model.
+
 ## Notes
 
 This is a product-level model, not final SQL.
 
-## ServiceProvider
-
-Fields:
+## ServiceProvider (post-v1 target)
 
 - id;
 - name;
@@ -37,7 +37,7 @@ team
 other
 ```
 
-## ServiceProviderCategory
+## ServiceProviderCategory (post-v1 target)
 
 Fields:
 
@@ -60,7 +60,9 @@ Implementation can use join table if provider has multiple categories.
 
 ## Source Of Truth
 
-Service Provider Directory owns ServiceProvider and ServiceProviderCategory.
+**v1:** Partners module owns service provider records (`Partner` with `type = SERVICE_COMPANY`).
+
+**Post-v1 target:** Service Provider Directory owns `ServiceProvider` and `ServiceProviderCategory`.
 
 Builder Readiness owns the readiness category/status that decides when providers are suggested.
 

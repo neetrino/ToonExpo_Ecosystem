@@ -12,6 +12,10 @@ This is a directory/help flow, not a marketplace.
 
 No payments, booking, reviews or transactions in v1.
 
+## v1 Implementation
+
+Service providers are `Partner` records (`type = SERVICE_COMPANY`, `serviceCategories`). Readiness help and public directory use Partners module — not dedicated `ServiceProvider` / `ServiceProviderCategory` models. See [Service Provider Directory v1 note](../17-Service-Provider-Directory.md#v1-implementation-note-2026-07-12).
+
 ## Flow
 
 ```text
@@ -24,7 +28,9 @@ Builder opens Readiness
 
 ## Category Mapping
 
-ReadinessCategory can link to ServiceProviderCategory.
+**v1:** `ReadinessCategory` matches `Partner.serviceCategories` for `SERVICE_COMPANY` partners.
+
+**Post-v1 target:** `ReadinessCategory` can link to `ServiceProviderCategory`.
 
 Examples:
 
@@ -47,6 +53,10 @@ Show:
 - short note/description.
 
 ## Admin Management
+
+BigProjects Admin manages SERVICE_COMPANY partners and `serviceCategories` via Partners module (v1).
+
+Post-v1: dedicated provider records and provider categories.
 
 BigProjects Admin manages:
 

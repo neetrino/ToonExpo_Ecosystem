@@ -29,13 +29,15 @@ Show:
 
 ## Public Directory Page
 
-Optional v1 page:
+**v1:** Public directory is `/partners` filtered by `type = SERVICE_COMPANY` (and optional `serviceCategories` filter).
+
+Optional post-v1 standalone page:
 
 ```text
 Service Provider Directory
 ```
 
-If enabled, public users can browse providers.
+If a dedicated page is added post-v1, public users can browse providers separately from the general partners list.
 
 If not enabled, directory can still be used inside readiness only.
 

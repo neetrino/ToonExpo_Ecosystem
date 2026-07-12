@@ -8,7 +8,9 @@ It helps builders improve readiness by finding relevant help.
 
 ## What This Module Owns
 
-This module owns:
+**v1:** Service provider directory behavior via Partners module (`Partner` with `type = SERVICE_COMPANY`, `serviceCategories`).
+
+**Post-v1 target:** This module owns:
 
 - service provider records;
 - service provider categories;
@@ -29,13 +31,13 @@ This module does not own:
 - service provider CRM;
 - marketplace transactions.
 
-## Provider Is Not Partner By Default
+## Provider Is Not Partner By Default (post-v1 target)
 
-Service provider records are not the same as partner accounts by default.
+Service provider records are not the same as partner accounts by default in the post-v1 dedicated-model design.
 
 A provider can be just a directory record with contact details.
 
-If a provider is also a ToonExpo partner, that can be linked later, but v1 does not require it.
+If a provider is also a ToonExpo partner, that can be linked later. In v1, providers **are** Partner records of type `SERVICE_COMPANY`.
 
 ## Main Use Case
 

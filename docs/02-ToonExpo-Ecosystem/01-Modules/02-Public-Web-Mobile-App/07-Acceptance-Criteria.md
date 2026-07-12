@@ -23,9 +23,11 @@
 
 - Visitor can browse anonymously.
 - Favorites require login.
-- Requests require login.
+- Visitor can submit request from project/apartment page without login (name + phone/email).
+- Logged-in buyer request is prefilled and linked to account (`buyerUserId`).
+- Logged-in buyer sees request in history.
+- Anonymous requests are not retroactively linked to a later account.
 - My QR requires registered buyer account.
-- Request context is preserved through login.
 
 ## Boundaries
 

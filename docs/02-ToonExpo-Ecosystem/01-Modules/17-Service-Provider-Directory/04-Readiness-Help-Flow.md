@@ -10,8 +10,8 @@ Builder can find help providers from weak readiness categories.
 Builder opens Readiness
 -> sees weak category
 -> clicks Help / Providers
--> system resolves linked ServiceProviderCategory
--> system shows active providers in that category
+-> system resolves matching serviceCategories (v1: on Partner records)
+-> system shows active SERVICE_COMPANY partners in that category
 -> builder contacts provider manually
 ```
 
