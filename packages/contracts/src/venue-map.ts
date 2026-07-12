@@ -129,6 +129,7 @@ export const boothUpsertInputSchema = z.object({
   yPercent: requiredCoord,
   companyId: optionalId,
   partnerId: optionalId,
+  projectId: optionalId,
   note: optionalTrimmedString(BOOTH_NOTE_MAX_LENGTH),
   sortOrder: z.preprocess(emptyToUndefined, z.coerce.number().int().min(0).max(9999).optional()),
 });

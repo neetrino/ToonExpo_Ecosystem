@@ -38,12 +38,14 @@ describe('boothUpsertInputSchema', () => {
       yPercent: 60,
       companyId: 'co-1',
       partnerId: '',
+      projectId: 'proj-1',
       note: 'Near entrance',
     });
     expect(parsed.success).toBe(true);
     if (parsed.success) {
       expect(parsed.data.partnerId).toBeUndefined();
       expect(parsed.data.companyId).toBe('co-1');
+      expect(parsed.data.projectId).toBe('proj-1');
     }
   });
 

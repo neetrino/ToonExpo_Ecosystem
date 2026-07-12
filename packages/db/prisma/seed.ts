@@ -1069,7 +1069,11 @@ const DEMO_EVENT_NAME = 'ToonExpo 2026 Demo';
 const DEMO_VENUE_IMAGE_URL = 'https://picsum.photos/seed/toonexpo-venue-2026/1200/800';
 const DEMO_VENUE_IMAGE_ALT = 'ToonExpo 2026 demo pavilion floor plan';
 
-async function seedExhibitionVenueMap(eventId: string, companyId: string): Promise<void> {
+async function seedExhibitionVenueMap(
+  eventId: string,
+  companyId: string,
+  projectId?: string,
+): Promise<void> {
   const partner = await prisma.partner.findUnique({
     where: { slug: CONVERSE_BANK_SLUG },
     select: { id: true },
@@ -1097,6 +1101,7 @@ async function seedExhibitionVenueMap(eventId: string, companyId: string): Promi
       yPercent: 42,
       companyId,
       partnerId: null as string | null,
+      projectId: projectId ?? null,
       note: 'Builder stand near the main aisle',
       sortOrder: 0,
     },
@@ -1107,6 +1112,7 @@ async function seedExhibitionVenueMap(eventId: string, companyId: string): Promi
       yPercent: 35,
       companyId: null as string | null,
       partnerId: partner?.id ?? null,
+      projectId: null as string | null,
       note: null as string | null,
       sortOrder: 1,
     },
@@ -1117,6 +1123,7 @@ async function seedExhibitionVenueMap(eventId: string, companyId: string): Promi
       yPercent: 78,
       companyId: null as string | null,
       partnerId: null as string | null,
+      projectId: null as string | null,
       note: 'Visitor information',
       sortOrder: 2,
     },
@@ -1135,6 +1142,7 @@ async function seedExhibitionVenueMap(eventId: string, companyId: string): Promi
         yPercent: booth.yPercent,
         companyId: booth.companyId,
         partnerId: booth.partnerId,
+        projectId: booth.projectId,
         note: booth.note,
         sortOrder: booth.sortOrder,
       },
@@ -1144,6 +1152,7 @@ async function seedExhibitionVenueMap(eventId: string, companyId: string): Promi
         yPercent: booth.yPercent,
         companyId: booth.companyId,
         partnerId: booth.partnerId,
+        projectId: booth.projectId,
         note: booth.note,
         sortOrder: booth.sortOrder,
       },
@@ -1252,7 +1261,7 @@ async function seedExhibitionVenuePathGraph(venueMapId: string): Promise<void> {
   console.log('Seeded venue path graph (entrance + waypoints + booth routes)');
 }
 
-async function seedExhibitionEvent(companyId: string): Promise<void> {
+async function seedExhibitionEvent(companyId: string, projectId: string): Promise<void> {
   const existing = await prisma.exhibitionEvent.findUnique({
     where: { code: DEMO_EVENT_CODE },
     select: { id: true },
@@ -1284,7 +1293,7 @@ async function seedExhibitionEvent(companyId: string): Promise<void> {
     eventId = created.id;
   }
 
-  await seedExhibitionVenueMap(eventId, companyId);
+  await seedExhibitionVenueMap(eventId, companyId, projectId);
 }
 
 async function main(): Promise<void> {
@@ -1303,7 +1312,7 @@ async function main(): Promise<void> {
   await seedPartners();
   const categoryIds = await seedReadinessCategories();
   await seedDemoReadinessAssessment(catalog.company, categoryIds);
-  await seedExhibitionEvent(catalog.company.id);
+  await seedExhibitionEvent(catalog.company.id, catalog.sunriseProject.id);
 }
 
 main()

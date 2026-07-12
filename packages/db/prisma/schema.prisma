@@ -129,13 +129,15 @@ enum VenuePathNodeKind {
   BOOTH
 }
 
-/// Persisted view events only (v1). Docs: 14-Analytics/06-Entity-Fields.
+/// Persisted analytics events (v1). Docs: 14-Analytics/06-Entity-Fields.
 /// Broader metric list lives on domain ANALYTICS_EVENT_TYPES comments (deferred types).
 enum AnalyticsEventType {
   PROJECT_VIEW
   APARTMENT_VIEW
   FAVORITE_ADDED
   FAVORITE_REMOVED
+  BOOTH_SELECTED
+  ROUTE_REQUESTED
 }
 
 /// Buyer favorite target discriminator (v1). Docs: 03-Buyer-Visitor-Area/04-Favorites.
@@ -164,6 +166,7 @@ enum AuditAction {
   SETTINGS_UPDATE
   ACTING_ON_BEHALF_START
   ACTING_ON_BEHALF_STOP
+  READINESS_ASSESSMENT_UPSERT
 }
 
 /// Platform audit entity kinds (v1).
@@ -178,6 +181,7 @@ enum AuditEntityType {
   USER
   PLATFORM_SETTING
   COMPANY
+  READINESS_ASSESSMENT
 }
 
 
@@ -331,6 +335,7 @@ model Project {
   canvases             VisualCanvas[]
   readinessAssessments ReadinessAssessment[]
   analyticsEvents      AnalyticsEvent[]
+  booths               Booth[]
 
   @@unique([companyId, slug])
   @@index([status])
@@ -724,7 +729,7 @@ model VenueMap {
   pathEdges         VenuePathEdge[]
 }
 
-/// Point marker on a venue map (booth / stand). Optional company and/or partner assignment.
+/// Point marker on a venue map (booth / stand). Optional company, partner, and/or project.
 model Booth {
   id         String          @id @default(cuid())
   venueMapId String
@@ -734,6 +739,7 @@ model Booth {
   yPercent   Float
   companyId  String?
   partnerId  String?
+  projectId  String?
   note       String?
   sortOrder  Int             @default(0)
   createdAt  DateTime        @default(now())
@@ -741,11 +747,13 @@ model Booth {
   venueMap   VenueMap        @relation(fields: [venueMapId], references: [id], onDelete: Cascade)
   company    Company?        @relation(fields: [companyId], references: [id], onDelete: SetNull)
   partner    Partner?        @relation(fields: [partnerId], references: [id], onDelete: SetNull)
+  project    Project?        @relation(fields: [projectId], references: [id], onDelete: SetNull)
   pathNodes  VenuePathNode[]
 
   @@unique([venueMapId, code])
   @@index([companyId])
   @@index([partnerId])
+  @@index([projectId])
   @@index([venueMapId, sortOrder])
 }
 

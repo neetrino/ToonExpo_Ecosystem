@@ -168,7 +168,6 @@ export type VenuePathNodeKind = (typeof VENUE_PATH_NODE_KINDS)[number];
  * - bank_offer_selected — mortgage offer pick not tracked yet
  * - request_created — Deal rows cover requests
  * - qr_scanned / check_in_recorded — QrScanLog / CheckIn tables
- * - booth_selected / route_requested — venue map route UI exists; analytics instrumentation later
  * - crm_status_changed / readiness_status_changed — CRM / readiness own tables
  *
  * Note: favorite_* are aggregate counters only (no userId on AnalyticsEvent).
@@ -179,6 +178,8 @@ export const ANALYTICS_EVENT_TYPES = [
   'APARTMENT_VIEW',
   'FAVORITE_ADDED',
   'FAVORITE_REMOVED',
+  'BOOTH_SELECTED',
+  'ROUTE_REQUESTED',
 ] as const;
 
 export type AnalyticsEventType = (typeof ANALYTICS_EVENT_TYPES)[number];
@@ -249,6 +250,7 @@ export const AUDIT_ACTIONS = [
   'SETTINGS_UPDATE',
   'ACTING_ON_BEHALF_START',
   'ACTING_ON_BEHALF_STOP',
+  'READINESS_ASSESSMENT_UPSERT',
 ] as const;
 
 export type AuditAction = (typeof AUDIT_ACTIONS)[number];
@@ -267,6 +269,7 @@ export const AUDIT_ENTITY_TYPES = [
   'USER',
   'PLATFORM_SETTING',
   'COMPANY',
+  'READINESS_ASSESSMENT',
 ] as const;
 
 export type AuditEntityType = (typeof AUDIT_ENTITY_TYPES)[number];
