@@ -39,6 +39,24 @@ Size C monorepo (`apps/*`, `packages/*`). Confirmed in [`docs/TECH_CARD.md`](./d
 - `apps/api` — NestJS (Google Cloud Run)
 - `packages/*` — shared domain, contracts, db, ui, config
 
+## Continue development
+
+Pick up backlog from **[Handoff — next work (BE / FE)](./docs/PROGRESS.md#handoff--next-work-be--fe)** in `docs/PROGRESS.md` (branch `sipan`). Read [`docs/TECH_CARD.md`](./docs/TECH_CARD.md) and [`docs/01-ARCHITECTURE.md`](./docs/01-ARCHITECTURE.md) for stack and layout.
+
+```bash
+pnpm install
+pnpm db:migrate        # requires DATABASE_URL in root .env
+pnpm db:seed           # demo catalog, roles, venue map, ~20 projects
+pnpm dev               # web :3000, api :4000
+
+# Fetch smoke (build + start servers automatically)
+pnpm e2e:local
+
+# Playwright UI journeys — web must already be running (e.g. pnpm dev)
+pnpm exec playwright install chromium   # once
+pnpm test:e2e
+```
+
 ## Local setup
 
 ```bash

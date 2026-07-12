@@ -1,5 +1,47 @@
 # ToonExpo Ecosystem Progress
 
+## Handoff — next work (BE / FE)
+
+Branch: `sipan`. MVP backlog through Sprint 7.7 is **done**. Use this section to pick up work; sprint history below is reference only.
+
+### Done (summary)
+
+- **MVP + Sprint 7** — auth, inventory, CRM/QR, visual map, partners/mortgage, exhibition check-in, analytics v1, BOS provisioning, audit/CSV, favorites, R2 uploads, rate limits, set-password invites, admin acting-on-behalf, venue map + route path, apartment status history, Swagger prod gate, analytics sampling.
+- **Redesign** — navy/teal public + portal UI via `--te-*` design tokens (`apps/web/src/app/globals.css`).
+- **R2 uploads** — signed presign for media, company logos, canvas images, venue/partner images (`POST /api/uploads/presign`).
+- **Playwright (local)** — `pnpm test:e2e` under `e2e/playwright/` (catalog, auth RBAC, favorites); fetch smoke kept (`pnpm e2e` / `e2e:local`).
+- **Venue map + route path** — booth markers, BFS path graph, admin graph editor, public Show route polyline.
+- **20-project seed** — `seedCatalogProjects` (~19 published catalog projects + demo Sunrise tree); run `pnpm db:seed`.
+
+### Backend next
+
+1. **`AnalyticsDailyAggregate` warehouse** — rollup table + nightly/job aggregation (deferred from analytics v1).
+2. **General Redis cache/queues** — beyond Upstash rate limiting (cache layers, background jobs).
+3. **Playwright in CI** — job alongside existing fetch smoke (`pnpm e2e:local`); see `e2e/playwright/README.md`.
+4. **Wire API auth against DB sessions** — Nest guards should verify Auth.js session rows, not JWT-only shortcuts.
+5. **Email/phone verification + password reset** — deferred from v1 (set-password invite flow exists).
+6. **Sentry project keys** — wire DSN for web + API when projects exist.
+7. **Staging/prod domain + env** — `AUTH_URL`, CORS, cookie `Secure`, deploy targets (Vercel web, Cloud Run API).
+8. **Neon `DIRECT_URL`** — add if pooler migrate issues appear.
+9. **BOS / integration** — provisioning v1 done; no Open blockers. Future sync/contracts: [`docs/03-Integration-With-BOS/`](./03-Integration-With-BOS/).
+
+### Frontend next
+
+1. **Playwright CI wiring** — same specs as local; document seed creds in CI secrets.
+2. **GPS blue-dot** — explicitly **out of scope** (no live indoor positioning in v1).
+3. **Multi-floor venue routing** — single-floor BFS v1 done; multi-floor graph + UI is follow-up.
+4. **UI polish nits** — booth spreadsheet import, booth types dictionary, readiness category CRUD, partner readiness module (all deferred, non-blocking).
+5. **Catalog / public polish** — builders directory filters, partners list UX, mobile pass on catalog cards/sheets under existing `--te-*` tokens (no new palette).
+6. **Keep `--te-*` tokens** — extend UI via tokens in `globals.css`, not ad-hoc hex/inline styles.
+
+### Setup (read first)
+
+- [`docs/TECH_CARD.md`](./TECH_CARD.md) — stack, env, deploy targets.
+- [`docs/01-ARCHITECTURE.md`](./01-ARCHITECTURE.md) — apps, packages, boundaries.
+- [`README.md`](../README.md) — install, migrate, seed, dev, e2e commands.
+
+---
+
 ## Current Status
 
 **Recent:** Venue route/path graph v1 (entrance + waypoints/edges, public Show route, admin graph editor).
