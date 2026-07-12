@@ -35,6 +35,22 @@ describe('getPublishedCanvasForContext', () => {
     );
   });
 
+  it('excludes archived hotspots from public fetch query', async () => {
+    vi.mocked(prisma.visualCanvas.findFirst).mockResolvedValue(null);
+
+    await getPublishedCanvasForContext({ projectId: 'project-1' });
+
+    expect(prisma.visualCanvas.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        select: expect.objectContaining({
+          hotspots: expect.objectContaining({
+            where: { archivedAt: null },
+          }),
+        }),
+      }),
+    );
+  });
+
   it('returns null when project is not PUBLISHED', async () => {
     vi.mocked(prisma.visualCanvas.findFirst).mockResolvedValue(null);
 

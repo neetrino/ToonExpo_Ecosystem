@@ -5,7 +5,7 @@ import { redirect } from '@/i18n/navigation';
 import { LOGIN_PATH } from '@/lib/auth/constants';
 import { assertBuilderSession } from '@/lib/builder/assert-builder-session';
 import { loadCompanyProjectDetail } from '@/lib/builder/queries';
-import { getCanvasForEdit } from '@/lib/visual-map/queries';
+import { getCanvasForEdit, listArchivedHotspotsForCanvas } from '@/lib/visual-map/queries';
 
 import { CanvasEditor } from './canvas-editor';
 
@@ -22,9 +22,10 @@ export default async function CanvasEditorPage({ params }: CanvasEditorPageProps
     return redirect({ href: LOGIN_PATH, locale });
   }
 
-  const [project, canvas] = await Promise.all([
+  const [project, canvas, archivedHotspots] = await Promise.all([
     loadCompanyProjectDetail(builderContext.companyId, projectId),
     getCanvasForEdit(builderContext.companyId, canvasId),
+    listArchivedHotspotsForCanvas(builderContext.companyId, canvasId),
   ]);
 
   if (!project || !canvas) {
@@ -42,6 +43,7 @@ export default async function CanvasEditorPage({ params }: CanvasEditorPageProps
         locale={locale}
         project={project}
         canvas={canvas}
+        archivedHotspots={archivedHotspots}
         statusLabel={tStatus(canvas.status)}
         contextLabels={{
           project: t('context.project'),

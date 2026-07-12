@@ -398,6 +398,7 @@ model Hotspot {
   buildingId  String?
   floorId     String?
   apartmentId String?
+  archivedAt  DateTime?
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   canvas      VisualCanvas @relation(fields: [canvasId], references: [id], onDelete: Cascade)

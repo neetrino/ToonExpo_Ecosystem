@@ -6,10 +6,11 @@ import { useRef, useState } from 'react';
 import { Link } from '@/i18n/navigation';
 import type { BuilderProjectDetail } from '@/lib/builder/queries';
 import { computeHotspotPercent } from '@/lib/visual-map/hotspot-geometry';
-import type { BuilderCanvasDetail } from '@/lib/visual-map/queries';
+import type { BuilderArchivedHotspot, BuilderCanvasDetail } from '@/lib/visual-map/queries';
 import { resolveCanvasContextLabel } from '@/lib/visual-map/editor-helpers';
 import { STATUS_BADGE_CLASS } from '@/lib/shared/publication';
 
+import { CanvasArchivedHotspots } from './canvas-archived-hotspots';
 import { CanvasPublicationActions } from './canvas-publication-actions';
 import { HotspotFormSheet } from './hotspot-form-sheet';
 
@@ -17,6 +18,7 @@ type CanvasEditorProps = {
   locale: string;
   project: BuilderProjectDetail;
   canvas: BuilderCanvasDetail;
+  archivedHotspots: BuilderArchivedHotspot[];
   statusLabel: string;
   contextLabels: { project: string; building: string; floor: string };
 };
@@ -30,6 +32,7 @@ export function CanvasEditor({
   locale,
   project,
   canvas,
+  archivedHotspots,
   statusLabel,
   contextLabels,
 }: CanvasEditorProps) {
@@ -122,6 +125,8 @@ export function CanvasEditor({
           ))}
         </div>
       </div>
+
+      <CanvasArchivedHotspots locale={locale} archivedHotspots={archivedHotspots} />
 
       <HotspotFormSheet
         key={

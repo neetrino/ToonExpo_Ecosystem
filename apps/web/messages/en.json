@@ -958,7 +958,10 @@
         "untitled": "Untitled canvas",
         "clickHint": "Click the image to add a hotspot, or click an existing marker to edit.",
         "pickingHint": "Click a new position on the image.",
-        "marker": "Hotspot"
+        "marker": "Hotspot",
+        "showArchived": "Show archived ({count})",
+        "hideArchived": "Hide archived",
+        "restoreHotspot": "Restore"
       },
       "hotspotForm": {
         "create": "New hotspot",

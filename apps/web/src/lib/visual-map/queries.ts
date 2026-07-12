@@ -54,7 +54,7 @@ export async function listCanvasesForProject(
       buildingId: true,
       floorId: true,
       updatedAt: true,
-      _count: { select: { hotspots: true } },
+      _count: { select: { hotspots: { where: { archivedAt: null } } } },
     },
     orderBy: { updatedAt: 'desc' },
   });
@@ -95,6 +95,7 @@ export async function getCanvasForEdit(
       floorId: true,
       updatedAt: true,
       hotspots: {
+        where: { archivedAt: null },
         select: {
           id: true,
           x: true,
@@ -126,6 +127,44 @@ export async function getCanvasForEdit(
     updatedAt: row.updatedAt,
     hotspots: row.hotspots,
   };
+}
+
+export type BuilderArchivedHotspot = {
+  id: string;
+  x: number;
+  y: number;
+  label: string | null;
+  archivedAt: Date;
+};
+
+export async function listArchivedHotspotsForCanvas(
+  companyId: string,
+  canvasId: string,
+): Promise<BuilderArchivedHotspot[]> {
+  const owned = await findOwnedCanvas(prisma, companyId, canvasId);
+  if (!owned) {
+    return [];
+  }
+
+  const rows = await prisma.hotspot.findMany({
+    where: { canvasId, archivedAt: { not: null } },
+    select: {
+      id: true,
+      x: true,
+      y: true,
+      label: true,
+      archivedAt: true,
+    },
+    orderBy: [{ archivedAt: 'desc' }],
+  });
+
+  return rows.map((row) => ({
+    id: row.id,
+    x: row.x,
+    y: row.y,
+    label: row.label,
+    archivedAt: row.archivedAt as Date,
+  }));
 }
 
 export { getPublishedCanvasForContext, type PublicCanvasContext } from './public-queries';

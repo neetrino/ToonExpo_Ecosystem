@@ -5,6 +5,8 @@ import { findOwnedCanvas } from './canvas-ownership';
 import { type VisualMapMutationResult } from './mutation-result';
 import { targetData, validateHotspotTarget } from './target-validation';
 
+const ACTIVE_HOTSPOT_FILTER = { archivedAt: null } as const;
+
 export async function createHotspot(
   companyId: string,
   input: HotspotUpsertInput,
@@ -69,7 +71,7 @@ export async function updateHotspot(
     }
 
     const existing = await tx.hotspot.findFirst({
-      where: { id: input.hotspotId, canvasId: owned.id },
+      where: { id: input.hotspotId, canvasId: owned.id, ...ACTIVE_HOTSPOT_FILTER },
       select: { id: true },
     });
     if (!existing) {
@@ -116,7 +118,7 @@ export async function moveHotspot(
 ): Promise<VisualMapMutationResult<{ hotspotId: string; projectId: string }>> {
   return prisma.$transaction(async (tx) => {
     const hotspot = await tx.hotspot.findFirst({
-      where: { id: input.hotspotId },
+      where: { id: input.hotspotId, ...ACTIVE_HOTSPOT_FILTER },
       select: { id: true, canvasId: true },
     });
     if (!hotspot) {
@@ -141,13 +143,16 @@ export async function moveHotspot(
   });
 }
 
-export async function deleteHotspot(
+/**
+ * Soft-archives a hotspot. Hard-delete is allowed only on DRAFT canvases (mirrors canvas delete policy).
+ */
+export async function archiveHotspot(
   companyId: string,
   hotspotId: string,
 ): Promise<VisualMapMutationResult<{ hotspotId: string; projectId: string }>> {
   return prisma.$transaction(async (tx) => {
     const hotspot = await tx.hotspot.findFirst({
-      where: { id: hotspotId },
+      where: { id: hotspotId, ...ACTIVE_HOTSPOT_FILTER },
       select: { id: true, canvasId: true },
     });
     if (!hotspot) {
@@ -159,7 +164,15 @@ export async function deleteHotspot(
       return { ok: false, errorKey: 'notFound' };
     }
 
-    await tx.hotspot.delete({ where: { id: hotspot.id } });
+    if (owned.status === 'DRAFT') {
+      await tx.hotspot.delete({ where: { id: hotspot.id } });
+    } else {
+      await tx.hotspot.update({
+        where: { id: hotspot.id },
+        data: { archivedAt: new Date() },
+      });
+    }
+
     return {
       ok: true,
       hotspotId: hotspot.id,
@@ -167,3 +180,38 @@ export async function deleteHotspot(
     };
   });
 }
+
+/** Restores a soft-archived hotspot on a company-owned canvas. */
+export async function restoreHotspot(
+  companyId: string,
+  hotspotId: string,
+): Promise<VisualMapMutationResult<{ hotspotId: string; projectId: string }>> {
+  return prisma.$transaction(async (tx) => {
+    const hotspot = await tx.hotspot.findFirst({
+      where: { id: hotspotId, archivedAt: { not: null } },
+      select: { id: true, canvasId: true },
+    });
+    if (!hotspot) {
+      return { ok: false, errorKey: 'notFound' };
+    }
+
+    const owned = await findOwnedCanvas(tx, companyId, hotspot.canvasId);
+    if (!owned) {
+      return { ok: false, errorKey: 'notFound' };
+    }
+
+    await tx.hotspot.update({
+      where: { id: hotspot.id },
+      data: { archivedAt: null },
+    });
+
+    return {
+      ok: true,
+      hotspotId: hotspot.id,
+      projectId: owned.owningProjectId,
+    };
+  });
+}
+
+/** @deprecated Use archiveHotspot — kept for existing action imports. */
+export const deleteHotspot = archiveHotspot;

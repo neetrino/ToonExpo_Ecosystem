@@ -190,6 +190,7 @@ export async function fetchPublishedProjectCanvas(projectId: string) {
       floorId: true,
       project: { select: PROJECT_META_SELECT },
       hotspots: {
+        where: { archivedAt: null },
         select: HOTSPOT_PUBLIC_SELECT,
         orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
       },
@@ -215,6 +216,7 @@ export async function fetchPublishedBuildingCanvas(buildingId: string) {
       floorId: true,
       building: { select: { project: { select: PROJECT_META_SELECT } } },
       hotspots: {
+        where: { archivedAt: null },
         select: HOTSPOT_PUBLIC_SELECT,
         orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
       },
@@ -244,6 +246,7 @@ export async function fetchPublishedFloorCanvas(floorId: string) {
         },
       },
       hotspots: {
+        where: { archivedAt: null },
         select: HOTSPOT_PUBLIC_SELECT,
         orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
       },

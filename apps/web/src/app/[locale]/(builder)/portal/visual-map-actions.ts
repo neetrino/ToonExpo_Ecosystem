@@ -16,6 +16,7 @@ import {
   deleteCanvas,
   deleteHotspot,
   moveHotspot,
+  restoreHotspot,
   setCanvasStatus,
   updateCanvas,
   updateHotspot,
@@ -208,6 +209,27 @@ export async function deleteHotspotAction(
   }
 
   const result = await deleteHotspot(session.companyId, parsed.data.hotspotId);
+  if (result.ok) {
+    await revalidateProject(session.companyId, result.projectId);
+  }
+  return result;
+}
+
+export async function restoreHotspotAction(
+  _locale: string,
+  raw: unknown,
+): Promise<VisualMapActionResult<{ hotspotId: string; projectId: string }>> {
+  const session = await assertBuilderSession();
+  if (!session) {
+    return unauthorized();
+  }
+
+  const parsed = hotspotIdInputSchema.safeParse(raw);
+  if (!parsed.success) {
+    return invalidInput();
+  }
+
+  const result = await restoreHotspot(session.companyId, parsed.data.hotspotId);
   if (result.ok) {
     await revalidateProject(session.companyId, result.projectId);
   }

@@ -142,3 +142,28 @@
   margin-top: 1rem;
   padding-top: 1rem;
 }
+
+.portal-visual-map-archived {
+  margin-top: 1rem;
+}
+
+.portal-visual-map-archived__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0.75rem 0 0;
+  padding: 0;
+}
+
+.portal-visual-map-archived__item {
+  align-items: center;
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  border-radius: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: space-between;
+  opacity: 0.75;
+  padding: 0.5rem 0.75rem;
+}
