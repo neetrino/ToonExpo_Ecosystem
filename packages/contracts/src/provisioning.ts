@@ -29,7 +29,6 @@ export const provisionAccountSchema = z
     email: z.string().trim().email().max(254),
     name: z.string().trim().min(1).max(120),
     role: z.enum(PROVISIONABLE_ROLES),
-    temporaryPassword: z.string().min(8).max(128),
     companyName: z.string().trim().min(1).max(160).optional(),
     /** Optional Partner profile to link when role is PARTNER (manual v1; BOS later). */
     partnerId: z.string().trim().min(1).optional(),

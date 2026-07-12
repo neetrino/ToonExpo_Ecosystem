@@ -18,3 +18,16 @@ export const loginSchema = z.object({
 });
 
 export type LoginInput = z.infer<typeof loginSchema>;
+
+/** Consumes a one-time account-invite token and sets the invitee's password. */
+export const setPasswordSchema = z
+  .object({
+    token: z.string().trim().min(1),
+    password: z.string().min(8).max(128),
+    confirmPassword: z.string().min(8).max(128),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    path: ['confirmPassword'],
+  });
+
+export type SetPasswordInput = z.infer<typeof setPasswordSchema>;

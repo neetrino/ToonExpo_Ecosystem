@@ -26,8 +26,10 @@ export {
   buyerRegisterSchema,
   loginSchema,
   platformRoleSchema,
+  setPasswordSchema,
   type BuyerRegisterInput,
   type LoginInput,
+  type SetPasswordInput,
 } from './auth';
 export {
   BUYER_PROFILE_NAME_MAX_LENGTH,

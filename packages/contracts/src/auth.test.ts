@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { buyerRegisterSchema, loginSchema } from './auth';
+import { buyerRegisterSchema, loginSchema, setPasswordSchema } from './auth';
 
 const VALID_REGISTER = {
   name: 'Ada Lovelace',
@@ -52,5 +52,29 @@ describe('loginSchema', () => {
 
   it('rejects a missing email', () => {
     expect(loginSchema.safeParse({ password: 'sup3rsecret' }).success).toBe(false);
+  });
+});
+
+describe('setPasswordSchema', () => {
+  const VALID = { token: 'raw-token', password: 'sup3rsecret', confirmPassword: 'sup3rsecret' };
+
+  it('accepts matching passwords with a token', () => {
+    expect(setPasswordSchema.safeParse(VALID).success).toBe(true);
+  });
+
+  it('rejects mismatched confirmation', () => {
+    const result = setPasswordSchema.safeParse({ ...VALID, confirmPassword: 'other-secret' });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects a short password', () => {
+    expect(
+      setPasswordSchema.safeParse({ ...VALID, password: 'short1', confirmPassword: 'short1' })
+        .success,
+    ).toBe(false);
+  });
+
+  it('rejects an empty token', () => {
+    expect(setPasswordSchema.safeParse({ ...VALID, token: '' }).success).toBe(false);
   });
 });

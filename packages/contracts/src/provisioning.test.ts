@@ -6,7 +6,6 @@ const BASE_INPUT = {
   email: 'builder@example.com',
   name: 'Jane Builder',
   role: 'BUILDER' as const,
-  temporaryPassword: 'temp-pass-1',
   companyName: 'Acme Development',
 };
 
@@ -20,7 +19,6 @@ describe('provisionAccountSchema', () => {
       email: 'admin@example.com',
       name: 'Admin User',
       role: 'BIGPROJECTS_ADMIN',
-      temporaryPassword: 'temp-pass-1',
     });
     expect(result.success).toBe(true);
   });
@@ -30,7 +28,6 @@ describe('provisionAccountSchema', () => {
       email: 'staff@example.com',
       name: 'Entrance Staff',
       role: 'ENTRANCE_STAFF',
-      temporaryPassword: 'temp-pass-1',
     });
     expect(result.success).toBe(true);
   });
@@ -53,7 +50,6 @@ describe('provisionAccountSchema', () => {
       email: 'partner@example.com',
       name: 'Partner User',
       role: 'PARTNER',
-      temporaryPassword: 'temp-pass-1',
     });
     expect(result.success).toBe(false);
   });
@@ -62,12 +58,6 @@ describe('provisionAccountSchema', () => {
     expect(provisionAccountSchema.safeParse({ ...BASE_INPUT, email: 'not-email' }).success).toBe(
       false,
     );
-  });
-
-  it('rejects a short temporary password', () => {
-    expect(
-      provisionAccountSchema.safeParse({ ...BASE_INPUT, temporaryPassword: 'short' }).success,
-    ).toBe(false);
   });
 });
 
