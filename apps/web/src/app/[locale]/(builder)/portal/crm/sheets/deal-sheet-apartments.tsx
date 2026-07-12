@@ -28,8 +28,8 @@ type DealSheetApartmentsProps = {
     apartment: string;
     noValue: string;
     status: Record<ApartmentStatus, string>;
-    price: (value: string) => string;
-    priceAtRequest: (value: string) => string;
+    price: string;
+    priceAtRequest: string;
   };
 };
 
@@ -95,13 +95,14 @@ function DealLinkedApartment({ locale, dealId, apartment, labels }: DealLinkedAp
 
   const priceLabel =
     apartment.priceAmd !== null
-      ? labels.price(new Intl.NumberFormat(locale).format(apartment.priceAmd))
+      ? labels.price.replace('{value}', new Intl.NumberFormat(locale).format(apartment.priceAmd))
       : labels.noValue;
 
   const showSnapshotHint =
     apartment.priceAmdSnapshot !== null && apartment.priceAmdSnapshot !== apartment.priceAmd;
   const snapshotPriceLabel = showSnapshotHint
-    ? labels.priceAtRequest(
+    ? labels.priceAtRequest.replace(
+        '{value}',
         new Intl.NumberFormat(locale).format(apartment.priceAmdSnapshot as number),
       )
     : null;

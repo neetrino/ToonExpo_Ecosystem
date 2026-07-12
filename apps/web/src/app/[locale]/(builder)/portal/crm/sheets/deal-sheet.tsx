@@ -66,7 +66,7 @@ type DealSheetProps = {
       noValue: string;
       status: Record<'AVAILABLE' | 'RESERVED' | 'SOLD', string>;
       price: string;
-      priceAtRequest: (value: string) => string;
+      priceAtRequest: string;
     };
     activities: {
       title: string;
@@ -125,11 +125,7 @@ export function DealSheet({
           projectId={deal.projectId}
           apartments={deal.apartments}
           apartmentGroups={apartmentGroups}
-          labels={{
-            ...labels.apartments,
-            price: (value) => labels.apartments.price.replace('{value}', value),
-            priceAtRequest: labels.apartments.priceAtRequest,
-          }}
+          labels={labels.apartments}
         />
         <DealSheetActivities
           locale={locale}

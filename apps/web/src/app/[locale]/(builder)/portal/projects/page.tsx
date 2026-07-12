@@ -25,8 +25,6 @@ export default async function PortalProjectsPage({ params }: PortalProjectsPageP
     loadCompanyProjects(builderContext.companyId),
   ]);
 
-  const dateFormatter = new Intl.DateTimeFormat(locale, { dateStyle: 'medium' });
-
   return (
     <section>
       <div className="portal-page__header">
@@ -58,7 +56,6 @@ export default async function PortalProjectsPage({ params }: PortalProjectsPageP
             PUBLISHED: tStatus('PUBLISHED'),
             ARCHIVED: tStatus('ARCHIVED'),
           }}
-          formatDate={(date) => dateFormatter.format(date)}
         />
       )}
     </section>

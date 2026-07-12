@@ -23,15 +23,17 @@ type ProjectsTableProps = {
     };
   };
   statusLabels: Record<PublicationStatus, string>;
-  formatDate: (date: Date) => string;
 };
+
+function formatProjectDate(date: Date, locale: string): string {
+  return new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(date);
+}
 
 export function ProjectsTable({
   locale,
   projects,
   labels,
   statusLabels,
-  formatDate,
 }: ProjectsTableProps) {
   return (
     <div className="portal-table-wrap">
@@ -54,7 +56,6 @@ export function ProjectsTable({
               project={project}
               labels={labels}
               statusLabels={statusLabels}
-              formatDate={formatDate}
             />
           ))}
         </tbody>
@@ -68,10 +69,9 @@ type ProjectRowProps = {
   project: BuilderProjectRow;
   labels: ProjectsTableProps['labels'];
   statusLabels: Record<PublicationStatus, string>;
-  formatDate: (date: Date) => string;
 };
 
-function ProjectRow({ locale, project, labels, statusLabels, formatDate }: ProjectRowProps) {
+function ProjectRow({ locale, project, labels, statusLabels }: ProjectRowProps) {
   const actions = publicationActionsFor(project.status);
 
   return (
@@ -86,7 +86,7 @@ function ProjectRow({ locale, project, labels, statusLabels, formatDate }: Proje
         <span className={STATUS_BADGE_CLASS[project.status]}>{statusLabels[project.status]}</span>
       </td>
       <td>{project.buildingsCount}</td>
-      <td>{formatDate(project.updatedAt)}</td>
+      <td>{formatProjectDate(project.updatedAt, locale)}</td>
       <td>
         <div className="portal-actions">
           {actions.map((action) => (
