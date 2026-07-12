@@ -1,7 +1,8 @@
 .catalog-builder-card {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 0.75rem;
+  background: var(--te-card);
+  border: 1px solid var(--te-border);
+  border-radius: var(--te-radius);
+  box-shadow: var(--te-shadow-soft);
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -14,13 +15,13 @@
 }
 
 .catalog-builder-card:hover {
-  border-color: rgba(61, 139, 253, 0.5);
+  border-color: var(--te-accent);
   transform: translateY(-2px);
 }
 
 .catalog-builder-card__logo {
   align-items: center;
-  background: rgba(255, 255, 255, 0.06);
+  background: var(--te-bg-soft);
   border-radius: 0.5rem;
   display: flex;
   height: 4rem;
@@ -36,7 +37,7 @@
 
 .catalog-builder-card__logo-fallback {
   align-items: center;
-  background: rgba(61, 139, 253, 0.2);
+  background: var(--te-accent-soft);
   border-radius: 0.375rem;
   color: var(--te-accent);
   display: flex;
@@ -96,8 +97,8 @@
 
 .catalog-builder-detail__logo {
   align-items: center;
-  background: rgba(255, 255, 255, 0.06);
-  border-radius: 0.75rem;
+  background: var(--te-bg-soft);
+  border-radius: var(--te-radius);
   display: flex;
   flex-shrink: 0;
   height: 6rem;
@@ -113,7 +114,7 @@
 
 .catalog-builder-detail__logo-fallback {
   align-items: center;
-  background: rgba(61, 139, 253, 0.2);
+  background: var(--te-accent-soft);
   border-radius: 0.5rem;
   color: var(--te-accent);
   display: flex;
@@ -175,10 +176,10 @@
 
 .catalog-filters__input,
 .catalog-filters__select {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--te-card);
+  border: 1px solid var(--te-border);
   border-radius: 0.5rem;
-  color: inherit;
+  color: var(--te-fg);
   font-size: 0.9375rem;
   padding: 0.5rem 0.75rem;
 }
@@ -200,14 +201,14 @@
 .catalog-filters__button--primary {
   background: var(--te-accent);
   border: none;
-  color: #0b1220;
+  color: #ffffff;
   cursor: pointer;
 }
 
 .catalog-filters__button--secondary {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: inherit;
+  background: var(--te-card);
+  border: 1px solid var(--te-border);
+  color: var(--te-fg);
 }
 
 .catalog-builder-block__profile-link {

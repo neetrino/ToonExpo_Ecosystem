@@ -14,7 +14,14 @@ export async function AuthNav({ locale }: AuthNavProps) {
   const t = await getTranslations('auth');
 
   if (!session?.user) {
-    return <Link href="/login">{t('signInNav')}</Link>;
+    return (
+      <Link
+        href="/login"
+        className="rounded-[var(--te-radius)] bg-[var(--te-accent)] px-3 py-1.5 text-sm font-semibold text-white"
+      >
+        {t('signInNav')}
+      </Link>
+    );
   }
 
   return <LogoutButton action={signOutAction.bind(null, locale)} />;

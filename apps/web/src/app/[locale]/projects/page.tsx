@@ -25,7 +25,7 @@ export default async function ProjectsPage({ params, searchParams }: ProjectsPag
   ]);
 
   return (
-    <section className="catalog-page">
+    <section className="catalog-page bg-[var(--te-bg)]">
       <header className="catalog-page__header">
         <h1 className="catalog-page__title">{t('list.title')}</h1>
         <p className="catalog-page__subtitle">{t('list.subtitle')}</p>

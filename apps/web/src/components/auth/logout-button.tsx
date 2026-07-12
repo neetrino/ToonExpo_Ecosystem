@@ -11,7 +11,10 @@ export function LogoutButton({ action }: LogoutButtonProps) {
 
   return (
     <form action={action}>
-      <button type="submit" className="text-[var(--te-muted)] hover:text-white">
+      <button
+        type="submit"
+        className="text-sm font-medium text-[var(--te-muted)] transition-colors hover:text-[var(--te-fg)]"
+      >
         {t('logout.submit')}
       </button>
     </form>

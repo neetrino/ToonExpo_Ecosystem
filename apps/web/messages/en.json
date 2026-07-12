@@ -1,12 +1,16 @@
 {
-  "brand": "ToonExpo",
+  "brand": "TOONEXPO",
   "home": {
-    "title": "ToonExpo Ecosystem",
-    "subtitle": "Public platform shell for buyers, builders and partners.",
-    "ctaPublic": "Public area",
-    "ctaBuyer": "Buyer area",
+    "title": "Find your next home",
+    "subtitle": "Browse residential projects from leading builders in one marketplace.",
+    "ctaPublic": "Browse projects",
+    "ctaBuyer": "Sign in",
     "ctaBuilder": "Builder portal",
-    "ctaAdmin": "Admin"
+    "ctaAdmin": "Admin",
+    "newestTitle": "Newest projects",
+    "newestSubtitle": "Recently published developments on TOONEXPO.",
+    "newestEmpty": "No published projects yet.",
+    "ctaViewAll": "View all projects"
   },
   "nav": {
     "public": "Public",
@@ -14,8 +18,8 @@
     "builders": "Builders",
     "partners": "Partners",
     "mortgage": "Mortgage",
-    "buyer": "Buyer",
-    "builder": "Builder",
+    "buyer": "Account",
+    "builder": "Portal",
     "admin": "Admin",
     "entrance": "Check-in",
     "exhibition": "Exhibition"
@@ -1162,6 +1166,9 @@
     }
   },
   "catalog": {
+    "card": {
+      "new": "New"
+    },
     "list": {
       "title": "Projects",
       "subtitle": "Browse published residential developments.",

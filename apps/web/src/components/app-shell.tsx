@@ -3,6 +3,7 @@
 import { useLocale, useTranslations } from 'next-intl';
 import type { ReactNode } from 'react';
 
+import { AppShellNav } from '@/components/app-shell-nav';
 import { LocaleSwitcher } from '@/components/locale-switcher';
 import { Link } from '@/i18n/navigation';
 import type { AppShellNavVisibility } from '@/lib/auth/nav-visibility';
@@ -32,42 +33,53 @@ export function AppShell({
   const locale = useLocale();
 
   return (
-    <div className="min-h-screen">
-      <header className="flex items-center justify-between gap-4 px-6 py-4 border-b border-white/10">
-        <Link href="/" className="text-lg font-semibold tracking-wide">
-          {t('brand')}
-        </Link>
-        <nav className="flex flex-wrap items-center gap-4 text-sm text-[var(--te-muted)]">
-          <Link href="/">{t('nav.public')}</Link>
-          <Link href="/projects">{t('nav.projects')}</Link>
-          <Link href="/builders">{t('nav.builders')}</Link>
-          <Link href="/partners">{t('nav.partners')}</Link>
-          {exhibitionMapEnabled ? <Link href="/exhibition">{t('nav.exhibition')}</Link> : null}
-          {mortgagePageEnabled ? <Link href="/mortgage">{t('nav.mortgage')}</Link> : null}
-          <Link href="/account">{t('nav.buyer')}</Link>
-          {navVisibility.portal ? <Link href="/portal">{t('nav.builder')}</Link> : null}
-          {navVisibility.checkin ? <Link href="/checkin">{t('nav.entrance')}</Link> : null}
-          {navVisibility.admin ? <Link href="/admin">{t('nav.admin')}</Link> : null}
-          <LocaleSwitcher currentLocale={locale} />
-          {authSlot}
-        </nav>
+    <div className="flex min-h-screen flex-col bg-[var(--te-bg)] text-[var(--te-fg)]">
+      <header className="sticky top-0 z-40 border-b border-[var(--te-border)] bg-[var(--te-card)]/95 backdrop-blur-sm">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-6 py-4">
+          <Link
+            href="/"
+            className="text-xl font-extrabold uppercase tracking-[0.14em] text-[var(--te-fg)]"
+          >
+            {t('brand')}
+          </Link>
+          <AppShellNav
+            navVisibility={navVisibility}
+            mortgagePageEnabled={mortgagePageEnabled}
+            exhibitionMapEnabled={exhibitionMapEnabled}
+          />
+          <div className="flex items-center gap-3 text-sm font-medium text-[var(--te-fg)]">
+            <LocaleSwitcher currentLocale={locale} />
+            {authSlot}
+          </div>
+        </div>
       </header>
-      <main>{children}</main>
-      <footer className="border-t border-white/10 px-6 py-4 text-sm text-[var(--te-muted)]">
-        <p className="flex flex-wrap gap-x-4 gap-y-1">
-          <span>
-            {t('footer.contact.emailLabel')}:{' '}
-            <a href={`mailto:${contactEmail}`} className="underline underline-offset-2">
-              {contactEmail}
-            </a>
-          </span>
-          <span>
-            {t('footer.contact.phoneLabel')}:{' '}
-            <a href={`tel:${contactPhone}`} className="underline underline-offset-2">
-              {contactPhone}
-            </a>
-          </span>
-        </p>
+      <main className="flex-1">{children}</main>
+      <footer className="border-t border-[var(--te-border)] bg-[var(--te-bg-soft)] px-6 py-6 text-sm text-[var(--te-muted)]">
+        <div className="mx-auto flex max-w-7xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="font-semibold uppercase tracking-[0.12em] text-[var(--te-fg)]">
+            {t('brand')}
+          </p>
+          <p className="flex flex-wrap gap-x-4 gap-y-1">
+            <span>
+              {t('footer.contact.emailLabel')}:{' '}
+              <a
+                href={`mailto:${contactEmail}`}
+                className="text-[var(--te-fg)] underline underline-offset-2"
+              >
+                {contactEmail}
+              </a>
+            </span>
+            <span>
+              {t('footer.contact.phoneLabel')}:{' '}
+              <a
+                href={`tel:${contactPhone}`}
+                className="text-[var(--te-fg)] underline underline-offset-2"
+              >
+                {contactPhone}
+              </a>
+            </span>
+          </p>
+        </div>
       </footer>
     </div>
   );

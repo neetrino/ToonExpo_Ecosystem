@@ -15,7 +15,7 @@ export function LocaleSwitcher({ currentLocale }: LocaleSwitcherProps) {
     <label className="inline-flex items-center gap-2">
       <span className="sr-only">Language</span>
       <select
-        className="rounded border border-white/15 bg-transparent px-2 py-1 text-[var(--te-fg)]"
+        className="rounded-md border border-[var(--te-border)] bg-[var(--te-card)] px-2 py-1 text-[var(--te-fg)]"
         value={currentLocale}
         onChange={(event) => {
           const nextLocale = event.target.value as AppLocale;

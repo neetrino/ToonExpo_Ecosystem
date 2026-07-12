@@ -12,7 +12,7 @@ type LoginFormProps = {
 };
 
 const FIELD_CLASS =
-  'w-full rounded border border-white/20 bg-transparent px-3 py-2 text-sm outline-none focus:border-[var(--te-accent)]';
+  'w-full rounded-md border border-[var(--te-border)] bg-[var(--te-card)] px-3 py-2 text-sm text-[var(--te-fg)] outline-none focus:border-[var(--te-accent)]';
 
 export function LoginForm({ action, registerHref = '/register' }: LoginFormProps) {
   const t = useTranslations('auth');
