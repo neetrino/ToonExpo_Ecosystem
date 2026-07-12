@@ -116,3 +116,21 @@ export type ExhibitionEventStatus = (typeof EXHIBITION_EVENT_STATUSES)[number];
 export const CHECK_IN_STATUSES = ['ALLOWED'] as const;
 
 export type CheckInStatus = (typeof CHECK_IN_STATUSES)[number];
+
+/**
+ * AnalyticsEvent.type values persisted in v1.
+ * Docs: 14-Analytics/02-Metrics-And-Events + 06-Entity-Fields.
+ *
+ * Deferred (no feature yet, or already stored on domain tables):
+ * - building_view / floor_view — no dedicated public pages
+ * - builder_profile_view / partner_profile_view / mortgage_page_view — not instrumented
+ * - bank_offer_selected — mortgage offer pick not tracked yet
+ * - favorite_added — favorites not implemented
+ * - request_created — Deal rows cover requests
+ * - qr_scanned / check_in_recorded — QrScanLog / CheckIn tables
+ * - booth_selected / route_requested — venue map deferred
+ * - crm_status_changed / readiness_status_changed — CRM / readiness own tables
+ */
+export const ANALYTICS_EVENT_TYPES = ['PROJECT_VIEW', 'APARTMENT_VIEW'] as const;
+
+export type AnalyticsEventType = (typeof ANALYTICS_EVENT_TYPES)[number];

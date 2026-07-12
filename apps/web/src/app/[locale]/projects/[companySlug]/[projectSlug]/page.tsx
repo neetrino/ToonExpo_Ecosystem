@@ -6,6 +6,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { auth } from '@/auth';
 import { ProjectRequestCta } from '@/components/public-request/public-request-sheet';
+import { scheduleAnalyticsEvent } from '@/lib/analytics/record-event';
 import { getPublishedProjectBySlug } from '@/lib/catalog/queries';
 import { loadProjectVisualMaps } from '@/lib/visual-map/load-project-visual-maps';
 
@@ -106,10 +107,17 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
     notFound();
   }
 
-  const project = await getPublishedProjectBySlug(parsedCompanySlug.data, parsedProjectSlug.data);
-  if (!project) {
+  const loaded = await getPublishedProjectBySlug(parsedCompanySlug.data, parsedProjectSlug.data);
+  if (!loaded) {
     notFound();
   }
+
+  const { project, companyId } = loaded;
+  scheduleAnalyticsEvent({
+    type: 'PROJECT_VIEW',
+    companyId,
+    projectId: project.id,
+  });
 
   const { projectCanvas, floorCanvases } = await loadProjectVisualMaps(
     project.id,

@@ -1,4 +1,5 @@
 export {
+  ANALYTICS_EVENT_TYPES,
   APARTMENT_STATUSES,
   CHECK_IN_STATUSES,
   DEAL_ACTIVITY_TYPES,
@@ -11,6 +12,7 @@ export {
   READINESS_STATUSES,
   READINESS_TARGET_TYPES,
   REQUEST_SOURCES,
+  type AnalyticsEventType,
   type ApartmentStatus,
   type CheckInStatus,
   type DealActivityType,

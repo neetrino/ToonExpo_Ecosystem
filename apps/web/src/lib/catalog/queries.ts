@@ -45,10 +45,16 @@ type BuildingRow = {
 };
 
 type ProjectDetailRow = ProjectSummaryRow & {
+  companyId: string;
   description: string | null;
   address: string | null;
   media: { id: string; url: string; alt: string | null }[];
   buildings: BuildingRow[];
+};
+
+export type PublishedProjectLoad = {
+  project: PublicProjectDetail;
+  companyId: string;
 };
 
 function mapApartment(row: ApartmentRow): PublicApartment {
@@ -133,7 +139,7 @@ export async function getPublishedProjects(): Promise<PublicProjectSummary[]> {
 export async function getPublishedProjectBySlug(
   companySlug: string,
   projectSlug: string,
-): Promise<PublicProjectDetail | null> {
+): Promise<PublishedProjectLoad | null> {
   const row = await prisma.project.findFirst({
     where: {
       slug: projectSlug,
@@ -142,6 +148,7 @@ export async function getPublishedProjectBySlug(
     },
     select: {
       id: true,
+      companyId: true,
       slug: true,
       name: true,
       city: true,
@@ -185,5 +192,8 @@ export async function getPublishedProjectBySlug(
     return null;
   }
 
-  return mapProjectDetail(row);
+  return {
+    project: mapProjectDetail(row),
+    companyId: row.companyId,
+  };
 }

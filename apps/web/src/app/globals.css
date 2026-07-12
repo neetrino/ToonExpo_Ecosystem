@@ -5,6 +5,7 @@
 @import './portal-crm-sheet.css';
 @import './portal-visual-map.css';
 @import './portal-forms.css';
+@import './portal-analytics.css';
 
 :root {
   --te-bg: #0f1c2e;

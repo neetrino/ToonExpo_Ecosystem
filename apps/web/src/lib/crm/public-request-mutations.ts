@@ -2,6 +2,8 @@ import { publicRequestInputSchema, type PublicRequestInput } from '@toonexpo/con
 import { prisma, type Prisma } from '@toonexpo/db';
 import type { RequestSource } from '@toonexpo/domain';
 
+import { scheduleAnalyticsEvent } from '@/lib/analytics/record-event';
+
 import { DEDUP_RECENCY_WINDOW_HOURS, OPEN_DEAL_STAGES } from './constants';
 import type { PublicRequestMutationResult } from './mutation-result';
 
@@ -186,16 +188,16 @@ export async function submitPublicRequest(
   const input = parsed.data;
   const source = resolveSource(input.apartmentId);
 
-  return prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx) => {
     const project = await resolvePublishedProject(tx, input);
     if (!project) {
-      return { ok: false, errorKey: 'notFound' };
+      return { ok: false as const, errorKey: 'notFound' as const };
     }
 
     if (input.apartmentId) {
       const valid = await verifyApartmentInProject(tx, input.apartmentId, project.id);
       if (!valid) {
-        return { ok: false, errorKey: 'invalidInput' };
+        return { ok: false as const, errorKey: 'invalidInput' as const };
       }
     }
 
@@ -208,7 +210,14 @@ export async function submitPublicRequest(
 
     if (existing) {
       await appendDedupActivity(tx, existing.id, input.message, source, raw.buyerUserId);
-      return { ok: true, deduped: true, dealId: existing.id };
+      return {
+        ok: true as const,
+        deduped: true as const,
+        dealId: existing.id,
+        companyId: project.companyId,
+        projectId: project.id,
+        apartmentId: input.apartmentId,
+      };
     }
 
     const dealId = await createDealWithActivity(tx, {
@@ -224,6 +233,33 @@ export async function submitPublicRequest(
       authorUserId: raw.buyerUserId,
     });
 
-    return { ok: true, dealId };
+    return {
+      ok: true as const,
+      dealId,
+      companyId: project.companyId,
+      projectId: project.id,
+      apartmentId: input.apartmentId,
+    };
   });
+
+  // Apartment interest signal: record when a request includes an apartmentId.
+  // No dedicated apartment pages exist; request submit is the server-side interaction.
+  if (result.ok && result.apartmentId) {
+    scheduleAnalyticsEvent({
+      type: 'APARTMENT_VIEW',
+      companyId: result.companyId,
+      projectId: result.projectId,
+      apartmentId: result.apartmentId,
+    });
+  }
+
+  if (!result.ok) {
+    return result;
+  }
+
+  if ('deduped' in result && result.deduped) {
+    return { ok: true, deduped: true, dealId: result.dealId };
+  }
+
+  return { ok: true, dealId: result.dealId };
 }

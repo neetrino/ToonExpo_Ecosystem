@@ -74,7 +74,8 @@
       "partners": "Գործընկերներ",
       "projects": "Նախագծեր",
       "readiness": "Պատրաստվածություն",
-      "exhibition": "Ցուցահանդես"
+      "exhibition": "Ցուցահանդես",
+      "analytics": "Վերլուծություն"
     },
     "catalog": {
       "errors": {
@@ -391,6 +392,75 @@
           "checkedInAt": "Ժամանակ"
         }
       }
+    },
+    "analytics": {
+      "title": "Վերլուծություն",
+      "subtitle": "Հարթակի ամփոփում և վերջին {days} օրը.",
+      "empty": "Դեռ տվյալներ չկան.",
+      "stats": {
+        "projectViewsTotal": "Նախագծերի դիտումներ (ընդամենը)",
+        "projectViewsRecent": "Նախագծերի դիտումներ (վերջին)"
+      },
+      "sections": {
+        "dealsByStage": "Գործարքներ ըստ փուլի",
+        "dealsBySource": "Հարցումներ ըստ աղբյուրի",
+        "dealsBySourceRecent": "Հարցումներ ըստ աղբյուրի (վերջին)",
+        "qrScans": "QR սկաներ ըստ նպատակի",
+        "checkIns": "Check-in-ներ ըստ միջոցառման",
+        "projectsByStatus": "Նախագծեր ըստ հրապարակման կարգավիճակի",
+        "apartmentsByStatus": "Բնակարաններ ըստ կարգավիճակի",
+        "readiness": "Readiness միջին գնահատական ըստ ընկերության",
+        "partnersByType": "Գործընկերներ ըստ տեսակի"
+      },
+      "columns": {
+        "label": "Պիտակ",
+        "count": "Քանակ"
+      },
+      "stages": {
+        "NEW_REQUEST": "Նոր հարցում",
+        "ASSIGNED": "Նշանակված",
+        "CONTACTED": "Կապ հաստատված",
+        "FOLLOW_UP_NEEDED": "Հետևում է պետք",
+        "APARTMENT_SELECTED": "Բնակարան ընտրված",
+        "RESERVED": "Ամրագրված",
+        "CONVERTED": "Փոխակերպված",
+        "CLOSED": "Փակված",
+        "LOST": "Կորած"
+      },
+      "sources": {
+        "PROJECT_PAGE": "Նախագծի էջ",
+        "APARTMENT_PAGE": "Բնակարանի էջ",
+        "BUILDER_QR_SCAN": "QR սկան",
+        "MANUAL_BUILDER_ENTRY": "Ձեռքով մուտք",
+        "EVENT_INTERACTION": "Միջոցառում"
+      },
+      "qrPurposes": {
+        "BUILDER_SCAN": "Կառուցապատողի սկան",
+        "ENTRANCE_CHECKIN": "Մուտքի check-in",
+        "BUYER_SELF_VIEW": "Գնորդի ինքնադիտում",
+        "UNKNOWN": "Անհայտ"
+      },
+      "publicationStatuses": {
+        "DRAFT": "Սևագիր",
+        "PUBLISHED": "Հրապարակված",
+        "ARCHIVED": "Արխիվ"
+      },
+      "apartmentStatuses": {
+        "AVAILABLE": "Հասանելի",
+        "RESERVED": "Ամրագրված",
+        "SOLD": "Վաճառված"
+      },
+      "partnerTypes": {
+        "BANK": "Բանկ",
+        "IT_COMPANY": "IT ընկերություն",
+        "SPONSOR": "Հովանավոր",
+        "SUPPLIER": "Մատակարար",
+        "INSURANCE": "Ապահովագրություն",
+        "LEGAL": "Իրավական",
+        "DESIGN_FURNITURE": "Դիզայն / կահույք",
+        "SERVICE_COMPANY": "Ծառայությունների ընկերություն",
+        "OTHER": "Այլ"
+      }
     }
   },
   "portal": {
@@ -399,7 +469,8 @@
       "overview": "Ակնարկ",
       "projects": "Նախագծեր",
       "crm": "CRM",
-      "readiness": "Պատրաստվածություն"
+      "readiness": "Պատրաստվածություն",
+      "analytics": "Վերլուծություն"
     },
     "overview": {
       "title": "Ակնարկ",
@@ -739,6 +810,44 @@
           "draft": "Վերադարձնե՞լ սևագրի։ Այն կթաքցվի հրապարակային կայքից։",
           "delete": "Ջնջե՞լ այս սևագրի քարտեզը։ Բոլոր նշումները կհեռացվեն։"
         }
+      }
+    },
+    "analytics": {
+      "title": "Վերլուծություն",
+      "subtitle": "Ձեր ընկերության ցուցանիշները · վերջին {days} օրը նշված է որտեղ կիրառելի է.",
+      "empty": "Դեռ տվյալներ չկան.",
+      "readinessCompany": "Ընկերության readiness",
+      "stats": {
+        "projectViewsRecent": "Նախագծերի դիտումներ (վերջին)",
+        "qrScanDeals": "Գործարքներ QR սկանից"
+      },
+      "sections": {
+        "projectViews": "Նախագծերի դիտումներ",
+        "dealsByStage": "CRM ըստ փուլի",
+        "dealsBySource": "Հարցումներ ըստ աղբյուրի",
+        "readiness": "Readiness ամփոփում"
+      },
+      "columns": {
+        "label": "Պիտակ",
+        "count": "Քանակ"
+      },
+      "stages": {
+        "NEW_REQUEST": "Նոր հարցում",
+        "ASSIGNED": "Նշանակված",
+        "CONTACTED": "Կապ հաստատված",
+        "FOLLOW_UP_NEEDED": "Հետևում է պետք",
+        "APARTMENT_SELECTED": "Բնակարան ընտրված",
+        "RESERVED": "Ամրագրված",
+        "CONVERTED": "Փոխակերպված",
+        "CLOSED": "Փակված",
+        "LOST": "Կորած"
+      },
+      "sources": {
+        "PROJECT_PAGE": "Նախագծի էջ",
+        "APARTMENT_PAGE": "Բնակարանի էջ",
+        "BUILDER_QR_SCAN": "QR սկան",
+        "MANUAL_BUILDER_ENTRY": "Ձեռքով մուտք",
+        "EVENT_INTERACTION": "Միջոցառում"
       }
     }
   },

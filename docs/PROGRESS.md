@@ -2,7 +2,14 @@
 
 ## Current Status
 
-Sprint 5 **COMPLETE** — visual map server+editor+public nav, partners+bank offers+admin, public partners+mortgage calculator, builder readiness, exhibition check-in, audit + fixes.
+Sprint 6 **IN PROGRESS** — Analytics v1 (event tracking + aggregation + dashboards).
+
+## Sprint 6 — Analytics v1
+
+- **Tracking** — `AnalyticsEvent` (`PROJECT_VIEW`, `APARTMENT_VIEW`); fire-and-forget via `after()`; no PII (no userId/IP).
+- **Aggregation** — admin global + builder company-scoped queries (`lib/analytics/*`).
+- **Dashboards** — `/admin/analytics`, `/portal/analytics` with i18n en/ru/hy.
+- **Deferred** — favorites, booth/route map events, mortgage offer selection instrumentation, dedicated apartment/building/floor/partner/builder profile view pages, AnalyticsDailyAggregate.
 
 ## Sprint 5 — COMPLETE
 

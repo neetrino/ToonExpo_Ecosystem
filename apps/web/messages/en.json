@@ -74,7 +74,8 @@
       "partners": "Partners",
       "projects": "Projects",
       "readiness": "Readiness",
-      "exhibition": "Exhibition"
+      "exhibition": "Exhibition",
+      "analytics": "Analytics"
     },
     "catalog": {
       "errors": {
@@ -391,6 +392,75 @@
         "PARTNER": "Partner",
         "ENTRANCE_STAFF": "Entrance staff"
       }
+    },
+    "analytics": {
+      "title": "Analytics",
+      "subtitle": "Platform totals and last {days} days.",
+      "empty": "No data yet.",
+      "stats": {
+        "projectViewsTotal": "Project views (all time)",
+        "projectViewsRecent": "Project views (recent)"
+      },
+      "sections": {
+        "dealsByStage": "Deals by stage",
+        "dealsBySource": "Requests by source",
+        "dealsBySourceRecent": "Requests by source (recent)",
+        "qrScans": "QR scans by purpose",
+        "checkIns": "Check-ins by event",
+        "projectsByStatus": "Projects by publication status",
+        "apartmentsByStatus": "Apartments by status",
+        "readiness": "Readiness average score by company",
+        "partnersByType": "Partners by type"
+      },
+      "columns": {
+        "label": "Label",
+        "count": "Count"
+      },
+      "stages": {
+        "NEW_REQUEST": "New request",
+        "ASSIGNED": "Assigned",
+        "CONTACTED": "Contacted",
+        "FOLLOW_UP_NEEDED": "Follow-up needed",
+        "APARTMENT_SELECTED": "Apartment selected",
+        "RESERVED": "Reserved",
+        "CONVERTED": "Converted",
+        "CLOSED": "Closed",
+        "LOST": "Lost"
+      },
+      "sources": {
+        "PROJECT_PAGE": "Project page",
+        "APARTMENT_PAGE": "Apartment page",
+        "BUILDER_QR_SCAN": "QR scan",
+        "MANUAL_BUILDER_ENTRY": "Manual entry",
+        "EVENT_INTERACTION": "Event"
+      },
+      "qrPurposes": {
+        "BUILDER_SCAN": "Builder scan",
+        "ENTRANCE_CHECKIN": "Entrance check-in",
+        "BUYER_SELF_VIEW": "Buyer self-view",
+        "UNKNOWN": "Unknown"
+      },
+      "publicationStatuses": {
+        "DRAFT": "Draft",
+        "PUBLISHED": "Published",
+        "ARCHIVED": "Archived"
+      },
+      "apartmentStatuses": {
+        "AVAILABLE": "Available",
+        "RESERVED": "Reserved",
+        "SOLD": "Sold"
+      },
+      "partnerTypes": {
+        "BANK": "Bank",
+        "IT_COMPANY": "IT company",
+        "SPONSOR": "Sponsor",
+        "SUPPLIER": "Supplier",
+        "INSURANCE": "Insurance",
+        "LEGAL": "Legal",
+        "DESIGN_FURNITURE": "Design / furniture",
+        "SERVICE_COMPANY": "Service company",
+        "OTHER": "Other"
+      }
     }
   },
   "portal": {
@@ -399,7 +469,8 @@
       "overview": "Overview",
       "projects": "Projects",
       "crm": "CRM",
-      "readiness": "Readiness"
+      "readiness": "Readiness",
+      "analytics": "Analytics"
     },
     "overview": {
       "title": "Overview",
@@ -739,6 +810,44 @@
           "draft": "Move this visual map back to draft? It will be hidden from the public site.",
           "delete": "Delete this draft canvas? All hotspots will be removed."
         }
+      }
+    },
+    "analytics": {
+      "title": "Analytics",
+      "subtitle": "Your company metrics · last {days} days highlighted where shown.",
+      "empty": "No data yet.",
+      "readinessCompany": "Company readiness",
+      "stats": {
+        "projectViewsRecent": "Project views (recent)",
+        "qrScanDeals": "Deals from QR scans"
+      },
+      "sections": {
+        "projectViews": "Project views",
+        "dealsByStage": "CRM by stage",
+        "dealsBySource": "Requests by source",
+        "readiness": "Readiness snapshot"
+      },
+      "columns": {
+        "label": "Label",
+        "count": "Count"
+      },
+      "stages": {
+        "NEW_REQUEST": "New request",
+        "ASSIGNED": "Assigned",
+        "CONTACTED": "Contacted",
+        "FOLLOW_UP_NEEDED": "Follow-up needed",
+        "APARTMENT_SELECTED": "Apartment selected",
+        "RESERVED": "Reserved",
+        "CONVERTED": "Converted",
+        "CLOSED": "Closed",
+        "LOST": "Lost"
+      },
+      "sources": {
+        "PROJECT_PAGE": "Project page",
+        "APARTMENT_PAGE": "Apartment page",
+        "BUILDER_QR_SCAN": "QR scan",
+        "MANUAL_BUILDER_ENTRY": "Manual entry",
+        "EVENT_INTERACTION": "Event"
       }
     }
   },

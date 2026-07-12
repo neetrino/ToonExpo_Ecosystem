@@ -98,6 +98,14 @@ enum CheckInStatus {
   ALLOWED
 }
 
+/// Persisted view events only (v1). Docs: 14-Analytics/06-Entity-Fields.
+/// Broader metric list lives on domain ANALYTICS_EVENT_TYPES comments (deferred types).
+enum AnalyticsEventType {
+  PROJECT_VIEW
+  APARTMENT_VIEW
+}
+
+
 
 model User {
   id                       String                 @id @default(cuid())
@@ -200,6 +208,7 @@ model Company {
   qrScanLogs           QrScanLog[]
   partner              Partner?
   readinessAssessments ReadinessAssessment[]
+  analyticsEvents      AnalyticsEvent[]
 }
 
 
@@ -233,6 +242,7 @@ model Project {
   deals                Deal[]
   canvases             VisualCanvas[]
   readinessAssessments ReadinessAssessment[]
+  analyticsEvents      AnalyticsEvent[]
 
   @@unique([companyId, slug])
   @@index([status])
@@ -278,10 +288,11 @@ model Apartment {
   priceAmd  Int?
   createdAt DateTime        @default(now())
   updatedAt DateTime        @updatedAt
-  floor     Floor           @relation(fields: [floorId], references: [id], onDelete: Cascade)
-  media     MediaAsset[]
-  dealLinks DealApartment[]
-  hotspots  Hotspot[]
+  floor           Floor            @relation(fields: [floorId], references: [id], onDelete: Cascade)
+  media           MediaAsset[]
+  dealLinks       DealApartment[]
+  hotspots        Hotspot[]
+  analyticsEvents AnalyticsEvent[]
 
   @@unique([floorId, code])
   @@index([status])
@@ -585,4 +596,24 @@ model CheckIn {
   @@index([buyerProfileId])
   @@index([qrCodeId])
   @@index([checkedInByUserId])
+}
+
+/// Public product activity events for dashboards (v1 minimal).
+/// Privacy: no userId / IP — aggregates only; bot noise acceptable without rate limits.
+/// Docs: 14-Analytics/06-Entity-Fields (subset) + 01-Definition-And-Boundaries privacy.
+model AnalyticsEvent {
+  id          String             @id @default(cuid())
+  type        AnalyticsEventType
+  projectId   String?
+  apartmentId String?
+  /// Denormalized builder company scope for fast portal queries.
+  companyId   String
+  createdAt   DateTime           @default(now())
+  project     Project?           @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  apartment   Apartment?         @relation(fields: [apartmentId], references: [id], onDelete: SetNull)
+  company     Company            @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, type, createdAt])
+  @@index([projectId])
+  @@index([createdAt])
 }

@@ -74,7 +74,8 @@
       "partners": "Партнёры",
       "projects": "Проекты",
       "readiness": "Готовность",
-      "exhibition": "Выставка"
+      "exhibition": "Выставка",
+      "analytics": "Аналитика"
     },
     "catalog": {
       "errors": {
@@ -391,6 +392,75 @@
           "checkedInAt": "Время"
         }
       }
+    },
+    "analytics": {
+      "title": "Аналитика",
+      "subtitle": "Итоги платформы и последние {days} дней.",
+      "empty": "Пока нет данных.",
+      "stats": {
+        "projectViewsTotal": "Просмотры проектов (всего)",
+        "projectViewsRecent": "Просмотры проектов (недавние)"
+      },
+      "sections": {
+        "dealsByStage": "Сделки по стадиям",
+        "dealsBySource": "Заявки по источникам",
+        "dealsBySourceRecent": "Заявки по источникам (недавние)",
+        "qrScans": "QR-сканы по назначению",
+        "checkIns": "Чек-ины по событиям",
+        "projectsByStatus": "Проекты по статусу публикации",
+        "apartmentsByStatus": "Квартиры по статусу",
+        "readiness": "Средний readiness-балл по компаниям",
+        "partnersByType": "Партнёры по типу"
+      },
+      "columns": {
+        "label": "Метка",
+        "count": "Кол-во"
+      },
+      "stages": {
+        "NEW_REQUEST": "Новая заявка",
+        "ASSIGNED": "Назначена",
+        "CONTACTED": "Связались",
+        "FOLLOW_UP_NEEDED": "Нужен follow-up",
+        "APARTMENT_SELECTED": "Квартира выбрана",
+        "RESERVED": "Резерв",
+        "CONVERTED": "Конверсия",
+        "CLOSED": "Закрыта",
+        "LOST": "Потеряна"
+      },
+      "sources": {
+        "PROJECT_PAGE": "Страница проекта",
+        "APARTMENT_PAGE": "Страница квартиры",
+        "BUILDER_QR_SCAN": "QR-скан",
+        "MANUAL_BUILDER_ENTRY": "Ручной ввод",
+        "EVENT_INTERACTION": "Событие"
+      },
+      "qrPurposes": {
+        "BUILDER_SCAN": "Скан застройщика",
+        "ENTRANCE_CHECKIN": "Входной чек-ин",
+        "BUYER_SELF_VIEW": "Просмотр покупателем",
+        "UNKNOWN": "Неизвестно"
+      },
+      "publicationStatuses": {
+        "DRAFT": "Черновик",
+        "PUBLISHED": "Опубликован",
+        "ARCHIVED": "Архив"
+      },
+      "apartmentStatuses": {
+        "AVAILABLE": "Доступна",
+        "RESERVED": "Резерв",
+        "SOLD": "Продана"
+      },
+      "partnerTypes": {
+        "BANK": "Банк",
+        "IT_COMPANY": "IT-компания",
+        "SPONSOR": "Спонсор",
+        "SUPPLIER": "Поставщик",
+        "INSURANCE": "Страхование",
+        "LEGAL": "Юридические услуги",
+        "DESIGN_FURNITURE": "Дизайн / мебель",
+        "SERVICE_COMPANY": "Сервисная компания",
+        "OTHER": "Другое"
+      }
     }
   },
   "portal": {
@@ -399,7 +469,8 @@
       "overview": "Обзор",
       "projects": "Проекты",
       "crm": "CRM",
-      "readiness": "Готовность"
+      "readiness": "Готовность",
+      "analytics": "Аналитика"
     },
     "overview": {
       "title": "Обзор",
@@ -739,6 +810,44 @@
           "draft": "Вернуть визуальную карту в черновик? Она будет скрыта с публичного сайта.",
           "delete": "Удалить этот черновик? Все метки будут удалены."
         }
+      }
+    },
+    "analytics": {
+      "title": "Аналитика",
+      "subtitle": "Метрики вашей компании · последние {days} дней выделены где показано.",
+      "empty": "Пока нет данных.",
+      "readinessCompany": "Готовность компании",
+      "stats": {
+        "projectViewsRecent": "Просмотры проектов (недавние)",
+        "qrScanDeals": "Сделки из QR-сканов"
+      },
+      "sections": {
+        "projectViews": "Просмотры проектов",
+        "dealsByStage": "CRM по стадиям",
+        "dealsBySource": "Заявки по источникам",
+        "readiness": "Снимок readiness"
+      },
+      "columns": {
+        "label": "Метка",
+        "count": "Кол-во"
+      },
+      "stages": {
+        "NEW_REQUEST": "Новая заявка",
+        "ASSIGNED": "Назначена",
+        "CONTACTED": "Связались",
+        "FOLLOW_UP_NEEDED": "Нужен follow-up",
+        "APARTMENT_SELECTED": "Квартира выбрана",
+        "RESERVED": "Резерв",
+        "CONVERTED": "Конверсия",
+        "CLOSED": "Закрыта",
+        "LOST": "Потеряна"
+      },
+      "sources": {
+        "PROJECT_PAGE": "Страница проекта",
+        "APARTMENT_PAGE": "Страница квартиры",
+        "BUILDER_QR_SCAN": "QR-скан",
+        "MANUAL_BUILDER_ENTRY": "Ручной ввод",
+        "EVENT_INTERACTION": "Событие"
       }
     }
   },
