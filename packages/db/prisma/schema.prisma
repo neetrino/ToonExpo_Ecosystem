@@ -119,6 +119,14 @@ enum CheckInStatus {
 enum AnalyticsEventType {
   PROJECT_VIEW
   APARTMENT_VIEW
+  FAVORITE_ADDED
+  FAVORITE_REMOVED
+}
+
+/// Buyer favorite target discriminator (v1). Docs: 03-Buyer-Visitor-Area/04-Favorites.
+enum FavoriteTargetType {
+  PROJECT
+  APARTMENT
 }
 
 /// Integration audit direction (v1). Docs: 15-Integrations/05-Errors-Idempotency-And-Audit.
@@ -181,6 +189,7 @@ model User {
   checkInsPerformed        CheckIn[]              @relation("CheckInStaff")
   auditLogs                AuditLog[]             @relation("AuditActor")
   platformSettingsUpdated  PlatformSetting[]      @relation("PlatformSettingUpdater")
+  favorites                Favorite[]
 }
 
 
@@ -671,6 +680,21 @@ model CheckIn {
   @@index([buyerProfileId])
   @@index([qrCodeId])
   @@index([checkedInByUserId])
+}
+
+/// Buyer-private saved project/apartment (v1).
+/// Exactly one logical target via targetType + targetId (validated at app layer).
+/// Docs: 03-Buyer-Visitor-Area/04-Favorites-And-Saved-Apartments.
+model Favorite {
+  id         String             @id @default(cuid())
+  userId     String
+  targetType FavoriteTargetType
+  targetId   String
+  createdAt  DateTime           @default(now())
+  user       User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, targetType, targetId])
+  @@index([userId, createdAt])
 }
 
 /// Public product activity events for dashboards (v1 minimal).

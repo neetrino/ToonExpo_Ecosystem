@@ -38,6 +38,14 @@ export {
   buyerProfileUpdateInputSchema,
   type BuyerProfileUpdateInput,
 } from './buyer';
+export {
+  favoriteListItemSchema,
+  favoriteTargetIdSchema,
+  favoriteTargetTypeSchema,
+  favoriteToggleInputSchema,
+  type FavoriteListItem,
+  type FavoriteToggleInput,
+} from './favorites';
 export { healthResponseSchema, type HealthResponse } from './health';
 export { SLUG_MAX_LENGTH, slugSchema } from './slug';
 export { httpUrlSchema, httpUrlSchemaWithMax, isHttpUrl, optionalHttpUrlSchema } from './url';
