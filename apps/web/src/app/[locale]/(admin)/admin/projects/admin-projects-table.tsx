@@ -2,11 +2,19 @@
 
 import type { PublicationStatus } from '@toonexpo/domain';
 
+import { ProjectCompletenessBadge } from '@/components/project-completeness-badge';
 import { formatShortDate } from '@/lib/crm/format-crm-dates';
-import { STATUS_BADGE_CLASS, publicationActionsFor } from '@/lib/shared/publication';
 import type { AdminProjectRow } from '@/lib/admin/queries';
+import type { ProjectCompletenessKey } from '@/lib/projects/project-completeness';
+import { STATUS_BADGE_CLASS, publicationActionsFor } from '@/lib/shared/publication';
 
 import { AdminPublicationActionButton } from './admin-publication-action-button';
+
+type CompletenessLabels = {
+  incomplete: string;
+  missingCount: (count: number) => string;
+  items: Record<ProjectCompletenessKey, string>;
+};
 
 type AdminProjectsTableProps = {
   locale: string;
@@ -22,6 +30,7 @@ type AdminProjectsTableProps = {
     };
   };
   statusLabels: Record<PublicationStatus, string>;
+  completenessLabels: CompletenessLabels;
 };
 
 export function AdminProjectsTable({
@@ -29,6 +38,7 @@ export function AdminProjectsTable({
   projects,
   labels,
   statusLabels,
+  completenessLabels,
 }: AdminProjectsTableProps) {
   return (
     <div className="portal-table-wrap">
@@ -50,6 +60,7 @@ export function AdminProjectsTable({
               locale={locale}
               project={project}
               statusLabels={statusLabels}
+              completenessLabels={completenessLabels}
             />
           ))}
         </tbody>
@@ -62,15 +73,24 @@ type ProjectRowProps = {
   locale: string;
   project: AdminProjectRow;
   statusLabels: Record<PublicationStatus, string>;
+  completenessLabels: CompletenessLabels;
 };
 
-function ProjectRow({ locale, project, statusLabels }: ProjectRowProps) {
+function ProjectRow({ locale, project, statusLabels, completenessLabels }: ProjectRowProps) {
   const actions = publicationActionsFor(project.status);
 
   return (
     <tr>
       <td>{project.companyName}</td>
-      <td>{project.name}</td>
+      <td>
+        <div className="portal-page__heading">
+          <span>{project.name}</span>
+          <ProjectCompletenessBadge
+            missingKeys={project.completenessMissingKeys}
+            labels={completenessLabels}
+          />
+        </div>
+      </td>
       <td>
         <span className={STATUS_BADGE_CLASS[project.status]}>{statusLabels[project.status]}</span>
       </td>

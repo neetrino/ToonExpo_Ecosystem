@@ -3,6 +3,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { loadAllProjects } from '@/lib/admin/queries';
 import { parseProjectStatusFilter } from '@/lib/admin/project-status-filter';
+import { PROJECT_COMPLETENESS_KEYS } from '@/lib/projects/project-completeness';
 
 import { AdminProjectsTable } from './admin-projects-table';
 import { ProjectStatusFilter } from './project-status-filter';
@@ -19,9 +20,10 @@ export default async function AdminProjectsPage({ params, searchParams }: AdminP
 
   const statusFilter = parseProjectStatusFilter(rawStatus);
 
-  const [t, tStatus, projects] = await Promise.all([
+  const [t, tStatus, tCompleteness, projects] = await Promise.all([
     getTranslations('admin.projects'),
     getTranslations('admin.projects.status'),
+    getTranslations('completeness'),
     loadAllProjects(statusFilter),
   ]);
 
@@ -29,6 +31,14 @@ export default async function AdminProjectsPage({ params, searchParams }: AdminP
     DRAFT: tStatus('DRAFT'),
     PUBLISHED: tStatus('PUBLISHED'),
     ARCHIVED: tStatus('ARCHIVED'),
+  };
+
+  const completenessLabels = {
+    incomplete: tCompleteness('incomplete'),
+    missingCount: (count: number) => tCompleteness('missingCount', { count }),
+    items: Object.fromEntries(
+      PROJECT_COMPLETENESS_KEYS.map((key) => [key, tCompleteness(`items.${key}`)]),
+    ) as Record<(typeof PROJECT_COMPLETENESS_KEYS)[number], string>,
   };
 
   return (
@@ -64,6 +74,7 @@ export default async function AdminProjectsPage({ params, searchParams }: AdminP
             },
           }}
           statusLabels={statusLabels}
+          completenessLabels={completenessLabels}
         />
       )}
     </section>

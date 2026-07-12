@@ -6,6 +6,11 @@ import type {
 } from '@toonexpo/domain';
 import { prisma } from '@toonexpo/db';
 
+import {
+  evaluateProjectCompleteness,
+  type ProjectCompletenessKey,
+} from '@/lib/projects/project-completeness';
+
 /** Max status-history rows shown in the apartment editor sheet. */
 const APARTMENT_STATUS_HISTORY_PREVIEW_LIMIT = 10;
 
@@ -22,6 +27,7 @@ export type BuilderProjectRow = {
   status: PublicationStatus;
   updatedAt: Date;
   buildingsCount: number;
+  completenessMissingKeys: ProjectCompletenessKey[];
 };
 
 export async function loadProjectStatusCounts(companyId: string): Promise<ProjectStatusCounts> {
@@ -43,19 +49,47 @@ export async function loadCompanyProjects(companyId: string): Promise<BuilderPro
       city: true,
       status: true,
       updatedAt: true,
-      _count: { select: { buildings: true } },
+      description: true,
+      _count: { select: { buildings: true, media: true, canvases: true } },
+      buildings: {
+        select: {
+          status: true,
+          floors: {
+            select: {
+              status: true,
+              _count: { select: { apartments: true } },
+            },
+          },
+        },
+      },
     },
     orderBy: { updatedAt: 'desc' },
   });
 
-  return projects.map((project) => ({
-    id: project.id,
-    name: project.name,
-    city: project.city,
-    status: project.status,
-    updatedAt: project.updatedAt,
-    buildingsCount: project._count.buildings,
-  }));
+  return projects.map((project) => {
+    const completeness = evaluateProjectCompleteness({
+      description: project.description,
+      hasCoverMedia: project._count.media > 0,
+      hasCanvas: project._count.canvases > 0,
+      buildings: project.buildings.map((building) => ({
+        status: building.status,
+        floors: building.floors.map((floor) => ({
+          status: floor.status,
+          apartmentCount: floor._count.apartments,
+        })),
+      })),
+    });
+
+    return {
+      id: project.id,
+      name: project.name,
+      city: project.city,
+      status: project.status,
+      updatedAt: project.updatedAt,
+      buildingsCount: project._count.buildings,
+      completenessMissingKeys: completeness.missingKeys,
+    };
+  });
 }
 
 function mapProjectStatusCounts(

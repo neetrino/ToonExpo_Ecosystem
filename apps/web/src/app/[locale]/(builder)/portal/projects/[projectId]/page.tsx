@@ -5,12 +5,13 @@ import { redirect } from '@/i18n/navigation';
 import { LOGIN_PATH } from '@/lib/auth/constants';
 import { assertBuilderSession } from '@/lib/builder/assert-builder-session';
 import { loadCompanyProjectDetail } from '@/lib/builder/queries';
+import { evaluateProjectCompleteness } from '@/lib/projects/project-completeness';
+import { listCanvasesForProject } from '@/lib/visual-map/queries';
 
 import { BuildingsSection } from './buildings-section';
 import { MediaSection } from './media-section';
 import { ProjectHeader } from './project-header';
 import { VisualMapsSection } from './visual-maps-section';
-import { listCanvasesForProject } from '@/lib/visual-map/queries';
 
 type ProjectDetailPageProps = {
   params: Promise<{ locale: string; projectId: string }>;
@@ -39,10 +40,27 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
   ]);
 
   const canvases = await listCanvasesForProject(builderContext.companyId, projectId);
+  const completeness = evaluateProjectCompleteness({
+    description: project.description,
+    hasCoverMedia: project.media.length > 0,
+    hasCanvas: canvases.length > 0,
+    buildings: project.buildings.map((building) => ({
+      status: building.status,
+      floors: building.floors.map((floor) => ({
+        status: floor.status,
+        apartmentCount: floor.apartments.length,
+      })),
+    })),
+  });
 
   return (
     <section>
-      <ProjectHeader locale={locale} project={project} statusLabel={tStatus(project.status)} />
+      <ProjectHeader
+        locale={locale}
+        project={project}
+        statusLabel={tStatus(project.status)}
+        completenessMissingKeys={completeness.missingKeys}
+      />
 
       <VisualMapsSection
         locale={locale}

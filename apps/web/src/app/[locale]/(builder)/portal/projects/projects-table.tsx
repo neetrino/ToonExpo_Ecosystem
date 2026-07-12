@@ -2,11 +2,19 @@
 
 import type { PublicationStatus } from '@toonexpo/domain';
 
+import { ProjectCompletenessBadge } from '@/components/project-completeness-badge';
 import { Link } from '@/i18n/navigation';
 import type { BuilderProjectRow } from '@/lib/builder/queries';
+import type { ProjectCompletenessKey } from '@/lib/projects/project-completeness';
 
 import { STATUS_BADGE_CLASS, publicationActionsFor } from '@/lib/shared/publication';
 import { PublicationActionButton } from './publication-action-button';
+
+type CompletenessLabels = {
+  incomplete: string;
+  missingCount: (count: number) => string;
+  items: Record<ProjectCompletenessKey, string>;
+};
 
 type ProjectsTableProps = {
   locale: string;
@@ -23,13 +31,20 @@ type ProjectsTableProps = {
     };
   };
   statusLabels: Record<PublicationStatus, string>;
+  completenessLabels: CompletenessLabels;
 };
 
 function formatProjectDate(date: Date, locale: string): string {
   return new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(date);
 }
 
-export function ProjectsTable({ locale, projects, labels, statusLabels }: ProjectsTableProps) {
+export function ProjectsTable({
+  locale,
+  projects,
+  labels,
+  statusLabels,
+  completenessLabels,
+}: ProjectsTableProps) {
   return (
     <div className="portal-table-wrap">
       <table className="portal-table">
@@ -51,6 +66,7 @@ export function ProjectsTable({ locale, projects, labels, statusLabels }: Projec
               project={project}
               labels={labels}
               statusLabels={statusLabels}
+              completenessLabels={completenessLabels}
             />
           ))}
         </tbody>
@@ -64,17 +80,30 @@ type ProjectRowProps = {
   project: BuilderProjectRow;
   labels: ProjectsTableProps['labels'];
   statusLabels: Record<PublicationStatus, string>;
+  completenessLabels: CompletenessLabels;
 };
 
-function ProjectRow({ locale, project, labels, statusLabels }: ProjectRowProps) {
+function ProjectRow({
+  locale,
+  project,
+  labels,
+  statusLabels,
+  completenessLabels,
+}: ProjectRowProps) {
   const actions = publicationActionsFor(project.status);
 
   return (
     <tr>
       <td>
-        <Link className="portal-link" href={`/portal/projects/${project.id}`}>
-          {project.name}
-        </Link>
+        <div className="portal-page__heading">
+          <Link className="portal-link" href={`/portal/projects/${project.id}`}>
+            {project.name}
+          </Link>
+          <ProjectCompletenessBadge
+            missingKeys={project.completenessMissingKeys}
+            labels={completenessLabels}
+          />
+        </div>
       </td>
       <td>{project.city ?? labels.noCity}</td>
       <td>

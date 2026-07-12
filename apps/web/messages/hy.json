@@ -1,5 +1,17 @@
 {
   "brand": "TOONEXPO",
+  "completeness": {
+    "incomplete": "Անավարտ",
+    "missingCount": "({count})",
+    "items": {
+      "MISSING_COVER_MEDIA": "Ծածկույթի մեդիա չկա",
+      "MISSING_DESCRIPTION": "Դատարկ նկարագրություն",
+      "MISSING_PUBLISHED_BUILDING": "Հրապարակված շենք չկա",
+      "MISSING_PUBLISHED_FLOOR": "Հրապարակված հարկ չկա",
+      "MISSING_APARTMENT": "Բնակարանների գույք չկա",
+      "MISSING_CANVAS": "Վիզուալ քարտեզ չկա"
+    }
+  },
   "home": {
     "title": "Գտեք ձեր հաջորդ տունը",
     "subtitle": "Դիտեք առաջատար կառուցապատողների բնակելի նախագծերը մեկ հարթակում։",
@@ -1126,7 +1138,8 @@
           "status": "Կարգավիճակ",
           "actions": "Գործողություններ"
         }
-      }
+      },
+      "completenessHint": "Ամբողջական ցանկի համար պակասում է՝ {items}։"
     },
     "visualMap": {
       "section": {

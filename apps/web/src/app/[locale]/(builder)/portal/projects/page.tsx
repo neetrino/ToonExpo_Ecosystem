@@ -1,3 +1,4 @@
+import { PROJECT_COMPLETENESS_KEYS } from '@/lib/projects/project-completeness';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { assertBuilderSession } from '@/lib/builder/assert-builder-session';
@@ -19,11 +20,20 @@ export default async function PortalProjectsPage({ params }: PortalProjectsPageP
     return null;
   }
 
-  const [t, tStatus, projects] = await Promise.all([
+  const [t, tStatus, tCompleteness, projects] = await Promise.all([
     getTranslations('portal.projects'),
     getTranslations('portal.projects.status'),
+    getTranslations('completeness'),
     loadCompanyProjects(builderContext.companyId),
   ]);
+
+  const completenessLabels = {
+    incomplete: tCompleteness('incomplete'),
+    missingCount: (count: number) => tCompleteness('missingCount', { count }),
+    items: Object.fromEntries(
+      PROJECT_COMPLETENESS_KEYS.map((key) => [key, tCompleteness(`items.${key}`)]),
+    ) as Record<(typeof PROJECT_COMPLETENESS_KEYS)[number], string>,
+  };
 
   return (
     <section>
@@ -56,6 +66,7 @@ export default async function PortalProjectsPage({ params }: PortalProjectsPageP
             PUBLISHED: tStatus('PUBLISHED'),
             ARCHIVED: tStatus('ARCHIVED'),
           }}
+          completenessLabels={completenessLabels}
         />
       )}
     </section>

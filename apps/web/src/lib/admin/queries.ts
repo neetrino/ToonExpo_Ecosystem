@@ -2,6 +2,10 @@ import type { PartnerType, PublicationStatus } from '@toonexpo/domain';
 import { prisma } from '@toonexpo/db';
 
 import type { ProjectStatusCounts } from '@/lib/builder/queries';
+import {
+  evaluateProjectCompleteness,
+  type ProjectCompletenessKey,
+} from '@/lib/projects/project-completeness';
 
 export type AdminCompanyRow = {
   id: string;
@@ -26,6 +30,7 @@ export type AdminProjectRow = {
   status: PublicationStatus;
   buildingsCount: number;
   updatedAt: Date;
+  completenessMissingKeys: ProjectCompletenessKey[];
 };
 
 export type AdminPartnerRow = {
@@ -151,20 +156,48 @@ export async function loadAllProjects(
       name: true,
       status: true,
       updatedAt: true,
+      description: true,
       company: { select: { name: true } },
-      _count: { select: { buildings: true } },
+      _count: { select: { buildings: true, media: true, canvases: true } },
+      buildings: {
+        select: {
+          status: true,
+          floors: {
+            select: {
+              status: true,
+              _count: { select: { apartments: true } },
+            },
+          },
+        },
+      },
     },
     orderBy: { updatedAt: 'desc' },
   });
 
-  return projects.map((project) => ({
-    id: project.id,
-    name: project.name,
-    companyName: project.company.name,
-    status: project.status,
-    buildingsCount: project._count.buildings,
-    updatedAt: project.updatedAt,
-  }));
+  return projects.map((project) => {
+    const completeness = evaluateProjectCompleteness({
+      description: project.description,
+      hasCoverMedia: project._count.media > 0,
+      hasCanvas: project._count.canvases > 0,
+      buildings: project.buildings.map((building) => ({
+        status: building.status,
+        floors: building.floors.map((floor) => ({
+          status: floor.status,
+          apartmentCount: floor._count.apartments,
+        })),
+      })),
+    });
+
+    return {
+      id: project.id,
+      name: project.name,
+      companyName: project.company.name,
+      status: project.status,
+      buildingsCount: project._count.buildings,
+      updatedAt: project.updatedAt,
+      completenessMissingKeys: completeness.missingKeys,
+    };
+  });
 }
 
 export async function loadAllPartners(typeFilter?: PartnerType): Promise<AdminPartnerRow[]> {

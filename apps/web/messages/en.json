@@ -1,5 +1,17 @@
 {
   "brand": "TOONEXPO",
+  "completeness": {
+    "incomplete": "Incomplete",
+    "missingCount": "({count})",
+    "items": {
+      "MISSING_COVER_MEDIA": "No cover media",
+      "MISSING_DESCRIPTION": "Empty description",
+      "MISSING_PUBLISHED_BUILDING": "No published building",
+      "MISSING_PUBLISHED_FLOOR": "No published floor",
+      "MISSING_APARTMENT": "No apartment inventory",
+      "MISSING_CANVAS": "No visual map"
+    }
+  },
   "home": {
     "title": "Find your next home",
     "subtitle": "Browse residential projects from leading builders in one marketplace.",
@@ -1127,7 +1139,8 @@
           "status": "Status",
           "actions": "Actions"
         }
-      }
+      },
+      "completenessHint": "Missing for a complete listing: {items}."
     },
     "visualMap": {
       "section": {

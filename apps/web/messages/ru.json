@@ -1,5 +1,17 @@
 {
   "brand": "TOONEXPO",
+  "completeness": {
+    "incomplete": "Неполное",
+    "missingCount": "({count})",
+    "items": {
+      "MISSING_COVER_MEDIA": "Нет обложки",
+      "MISSING_DESCRIPTION": "Пустое описание",
+      "MISSING_PUBLISHED_BUILDING": "Нет опубликованного корпуса",
+      "MISSING_PUBLISHED_FLOOR": "Нет опубликованного этажа",
+      "MISSING_APARTMENT": "Нет квартир",
+      "MISSING_CANVAS": "Нет визуальной карты"
+    }
+  },
   "home": {
     "title": "Найдите свой следующий дом",
     "subtitle": "Просматривайте жилые проекты ведущих застройщиков на одной площадке.",
@@ -1127,7 +1139,8 @@
           "status": "Статус",
           "actions": "Действия"
         }
-      }
+      },
+      "completenessHint": "Для полного листинга не хватает: {items}."
     },
     "visualMap": {
       "section": {
