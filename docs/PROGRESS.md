@@ -2,11 +2,21 @@
 
 ## Current Status
 
+Sprint 7.2 **COMPLETE** — Resend set-password invitation emails replace admin-typed temporary passwords for provisioned accounts (admin UI + BOS).
+
 Sprint 7.1 **COMPLETE** — Upstash Redis rate limiting on auth, public request, QR lookup, and BOS provisioning.
 
 Sprint 6 **COMPLETE** — Analytics v1, BOS provisioning (atomic idempotency), audit logs + CSV reports, e2e smoke, hardening + final audit fixes.
 
 **MVP backlog complete** — all six planned sprints are done. Deferred follow-ups (not blockers): media upload pipeline, venue map/booths, `ApartmentStatusHistory`, favorites, admin acting-on-behalf, company switcher, Playwright e2e, Swagger gating in prod, analytics aggregation/sampling, general Redis caching/queues.
+
+## Sprint 7.2 — Set-password invitation emails (COMPLETE)
+
+- **Flow** — Admin/BOS provisioning creates the user with `passwordHash: null` and a one-time set-password invite (`VerificationToken`, identifier `invite:{userId}`, SHA-256 token hash, 48h TTL); invalidates any previous unused invite for that user.
+- **Email** — `resend` (app-local `lib/email/` in `apps/web` and `apps/api`); plain text + simple HTML, English body for v1; best-effort — never fails the provisioning transaction.
+- **Public page** — `/[locale]/invite/[token]`: previews token validity, set-password form (rate limited 5/min/IP), consumes token + sets `passwordHash`, redirects to `/login?invited=1` with a success flash. i18n en/ru/hy.
+- **Admin UI** — Provision form no longer collects a temporary password; success state distinguishes `provisioned` vs `provisionedEmailFailed` (email not sent — account still created); non-production responses also include the raw invite URL for local testing.
+- **Contracts** — `provisionAccountSchema` no longer has `temporaryPassword`; added `setPasswordSchema`.
 
 ## Sprint 7.1 — Rate limiting (COMPLETE)
 
@@ -153,7 +163,6 @@ Audit fixes applied on branch `sipan` after the feature pack landed:
 ## Open (non-blocking)
 
 - Wire API auth verification against DB sessions.
-- Email invitations for provisioned accounts (deferred).
 - Email/phone verification and password reset (deferred from v1).
 - Staging/prod domain plan when ready to deploy.
 - Sentry project keys.
