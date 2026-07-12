@@ -280,6 +280,7 @@ model Company {
   readinessAssessments ReadinessAssessment[]
   analyticsEvents      AnalyticsEvent[]
   auditLogs            AuditLog[]
+  booths               Booth[]
 }
 
 
@@ -546,6 +547,7 @@ model Partner {
   updatedAt         DateTime          @updatedAt
   company           Company?          @relation(fields: [companyId], references: [id], onDelete: SetNull)
   bankOffers        BankOffer[]
+  booths            Booth[]
 
   @@index([type])
   @@index([status])
@@ -647,9 +649,10 @@ model ReadinessCategoryScore {
   @@index([categoryId])
 }
 
-// Exhibition event context for entrance check-in (v1).
-// Venue map / booths / route graph deferred — docs 02 + 03; this sprint is check-in only.
-// Docs: 12-Exhibition-Map-Checkin/07-Entity-Fields + 04-Entrance-Checkin-Scanner.
+// Exhibition event context for entrance check-in + venue map (v1).
+// Public venue map visibility: event.status === ACTIVE (no separate mapPublished flag).
+// Route graph / pathfinding deferred — docs 03-Search-And-Route-Path.
+// Docs: 12-Exhibition-Map-Checkin/07-Entity-Fields + 02-Venue-Map-And-Booths.
 model ExhibitionEvent {
   id        String                @id @default(cuid())
   name      String
@@ -660,8 +663,45 @@ model ExhibitionEvent {
   createdAt DateTime              @default(now())
   updatedAt DateTime              @updatedAt
   checkIns  CheckIn[]
+  venueMap  VenueMap?
 
   @@index([status])
+}
+
+/// One venue floor-plan image per exhibition event. Coordinates are percentages (0–100).
+model VenueMap {
+  id        String          @id @default(cuid())
+  eventId   String          @unique
+  imageUrl  String
+  imageAlt  String?
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  event     ExhibitionEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  booths    Booth[]
+}
+
+/// Point marker on a venue map (booth / stand). Optional company and/or partner assignment.
+model Booth {
+  id         String    @id @default(cuid())
+  venueMapId String
+  code       String
+  label      String
+  xPercent   Float
+  yPercent   Float
+  companyId  String?
+  partnerId  String?
+  note       String?
+  sortOrder  Int       @default(0)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  venueMap   VenueMap  @relation(fields: [venueMapId], references: [id], onDelete: Cascade)
+  company    Company?  @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  partner    Partner?  @relation(fields: [partnerId], references: [id], onDelete: SetNull)
+
+  @@unique([venueMapId, code])
+  @@index([companyId])
+  @@index([partnerId])
+  @@index([venueMapId, sortOrder])
 }
 
 model CheckIn {

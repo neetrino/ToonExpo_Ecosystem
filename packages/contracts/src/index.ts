@@ -252,6 +252,23 @@ export {
   type ExhibitionEventUpsertInput,
 } from './exhibition';
 export {
+  BOOTH_CODE_MAX_LENGTH,
+  BOOTH_COORD_MAX,
+  BOOTH_COORD_MIN,
+  BOOTH_LABEL_MAX_LENGTH,
+  BOOTH_NOTE_MAX_LENGTH,
+  VENUE_IMAGE_ALT_MAX_LENGTH,
+  VENUE_IMAGE_URL_MAX_LENGTH,
+  boothIdInputSchema,
+  boothMoveInputSchema,
+  boothUpsertInputSchema,
+  venueMapUpsertInputSchema,
+  type BoothIdInput,
+  type BoothMoveInput,
+  type BoothUpsertInput,
+  type VenueMapUpsertInput,
+} from './venue-map';
+export {
   BOS_COMPANY_ID_MAX_LENGTH,
   BOS_COMPANY_NAME_MAX_LENGTH,
   BOS_CONTACT_EMAIL_MAX_LENGTH,

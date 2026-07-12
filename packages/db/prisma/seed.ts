@@ -1065,12 +1065,100 @@ async function seedDemoReadinessAssessment(
 const DEMO_EVENT_CODE = 'toonexpo-2026-demo';
 const DEMO_EVENT_NAME = 'ToonExpo 2026 Demo';
 
-async function seedExhibitionEvent(): Promise<void> {
+const DEMO_VENUE_IMAGE_URL = 'https://picsum.photos/seed/toonexpo-venue-2026/1200/800';
+const DEMO_VENUE_IMAGE_ALT = 'ToonExpo 2026 demo pavilion floor plan';
+
+async function seedExhibitionVenueMap(eventId: string, companyId: string): Promise<void> {
+  const partner = await prisma.partner.findUnique({
+    where: { slug: CONVERSE_BANK_SLUG },
+    select: { id: true },
+  });
+
+  const venueMap = await prisma.venueMap.upsert({
+    where: { eventId },
+    create: {
+      eventId,
+      imageUrl: DEMO_VENUE_IMAGE_URL,
+      imageAlt: DEMO_VENUE_IMAGE_ALT,
+    },
+    update: {
+      imageUrl: DEMO_VENUE_IMAGE_URL,
+      imageAlt: DEMO_VENUE_IMAGE_ALT,
+    },
+    select: { id: true },
+  });
+
+  const booths = [
+    {
+      code: 'A12',
+      label: 'Demo Development',
+      xPercent: 28,
+      yPercent: 42,
+      companyId,
+      partnerId: null as string | null,
+      note: 'Builder stand near the main aisle',
+      sortOrder: 0,
+    },
+    {
+      code: 'B03',
+      label: 'Converse Bank',
+      xPercent: 55,
+      yPercent: 35,
+      companyId: null as string | null,
+      partnerId: partner?.id ?? null,
+      note: null as string | null,
+      sortOrder: 1,
+    },
+    {
+      code: 'C01',
+      label: 'Info Desk',
+      xPercent: 48,
+      yPercent: 78,
+      companyId: null as string | null,
+      partnerId: null as string | null,
+      note: 'Visitor information',
+      sortOrder: 2,
+    },
+  ];
+
+  for (const booth of booths) {
+    await prisma.booth.upsert({
+      where: {
+        venueMapId_code: { venueMapId: venueMap.id, code: booth.code },
+      },
+      create: {
+        venueMapId: venueMap.id,
+        code: booth.code,
+        label: booth.label,
+        xPercent: booth.xPercent,
+        yPercent: booth.yPercent,
+        companyId: booth.companyId,
+        partnerId: booth.partnerId,
+        note: booth.note,
+        sortOrder: booth.sortOrder,
+      },
+      update: {
+        label: booth.label,
+        xPercent: booth.xPercent,
+        yPercent: booth.yPercent,
+        companyId: booth.companyId,
+        partnerId: booth.partnerId,
+        note: booth.note,
+        sortOrder: booth.sortOrder,
+      },
+    });
+  }
+
+  console.log(`Seeded venue map + ${booths.length} booths for ${DEMO_EVENT_CODE}`);
+}
+
+async function seedExhibitionEvent(companyId: string): Promise<void> {
   const existing = await prisma.exhibitionEvent.findUnique({
     where: { code: DEMO_EVENT_CODE },
     select: { id: true },
   });
 
+  let eventId: string;
   if (existing) {
     await prisma.exhibitionEvent.update({
       where: { id: existing.id },
@@ -1080,19 +1168,23 @@ async function seedExhibitionEvent(): Promise<void> {
       },
     });
     console.log(`Updated demo exhibition event: ${DEMO_EVENT_CODE}`);
-    return;
+    eventId = existing.id;
+  } else {
+    const created = await prisma.exhibitionEvent.create({
+      data: {
+        name: DEMO_EVENT_NAME,
+        code: DEMO_EVENT_CODE,
+        status: 'ACTIVE',
+        startDate: new Date('2026-07-01T09:00:00.000Z'),
+        endDate: new Date('2026-07-31T18:00:00.000Z'),
+      },
+      select: { id: true },
+    });
+    console.log(`Created demo exhibition event: ${DEMO_EVENT_CODE}`);
+    eventId = created.id;
   }
 
-  await prisma.exhibitionEvent.create({
-    data: {
-      name: DEMO_EVENT_NAME,
-      code: DEMO_EVENT_CODE,
-      status: 'ACTIVE',
-      startDate: new Date('2026-07-01T09:00:00.000Z'),
-      endDate: new Date('2026-07-31T18:00:00.000Z'),
-    },
-  });
-  console.log(`Created demo exhibition event: ${DEMO_EVENT_CODE}`);
+  await seedExhibitionVenueMap(eventId, companyId);
 }
 
 async function main(): Promise<void> {
@@ -1110,7 +1202,7 @@ async function main(): Promise<void> {
   await seedPartners();
   const categoryIds = await seedReadinessCategories();
   await seedDemoReadinessAssessment(catalog.company, categoryIds);
-  await seedExhibitionEvent();
+  await seedExhibitionEvent(catalog.company.id);
 }
 
 main()
