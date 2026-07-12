@@ -1,5 +1,6 @@
 import { isAppLocale, SUPPORTED_LOCALES } from '@toonexpo/shared';
 import { NextIntlClientProvider } from 'next-intl';
+import { Plus_Jakarta_Sans } from 'next/font/google';
 import { notFound } from 'next/navigation';
 import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import type { ReactNode } from 'react';
@@ -14,6 +15,12 @@ import {
   resolveContactWithDefaults,
 } from '@/lib/shared/platform-settings';
 import { hasPublicVenueMap } from '@/lib/exhibition/venue-queries';
+
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ['latin', 'latin-ext'],
+  variable: '--font-te-sans',
+  display: 'swap',
+});
 
 type LocaleLayoutProps = {
   children: ReactNode;
@@ -44,8 +51,8 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
   ]);
 
   return (
-    <html lang={locale}>
-      <body>
+    <html lang={locale} className={plusJakartaSans.variable}>
+      <body className={plusJakartaSans.className}>
         <NextIntlClientProvider messages={messages}>
           <AppShell
             authSlot={<AuthNav locale={locale} />}

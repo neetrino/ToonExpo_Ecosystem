@@ -9,20 +9,28 @@
 @import './portal-analytics.css';
 
 :root {
-  --te-bg: #0f1c2e;
-  --te-fg: #f4f7fb;
-  --te-accent: #3d8bfd;
-  --te-muted: #9db0c7;
+  --te-bg: #ffffff;
+  --te-bg-soft: #f5f7fa;
+  --te-fg: #0b1f3a;
+  --te-accent: #0d9488;
+  --te-accent-soft: #e6f7f5;
+  --te-muted: #5b6b7c;
+  --te-border: #e5eaf0;
+  --te-card: #ffffff;
+  --te-radius: 1rem;
+  --te-shadow-soft: 0 8px 24px rgba(11, 31, 58, 0.06);
 }
 
 body {
   margin: 0;
   min-height: 100vh;
   color: var(--te-fg);
-  background:
-    radial-gradient(circle at top left, rgba(61, 139, 253, 0.25), transparent 40%),
-    linear-gradient(160deg, #0b1522 0%, #14233a 55%, #0f1c2e 100%);
-  font-family: 'Segoe UI', 'Noto Sans Armenian', sans-serif;
+  background: var(--te-bg);
+  font-family:
+    var(--font-te-sans),
+    'Noto Sans Armenian',
+    'Noto Sans',
+    sans-serif;
 }
 
 a {
@@ -38,7 +46,7 @@ a {
 .toonexpo-side-sheet__backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.45);
+  background: rgba(11, 31, 58, 0.35);
 }
 
 .toonexpo-side-sheet__panel {
@@ -47,10 +55,11 @@ a {
   right: 0;
   height: 100%;
   width: min(28rem, 100%);
-  background: #121f31;
-  border-left: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--te-card);
+  border-left: 1px solid var(--te-border);
   display: flex;
   flex-direction: column;
+  box-shadow: var(--te-shadow-soft);
 }
 
 .toonexpo-side-sheet__header {
@@ -58,7 +67,7 @@ a {
   align-items: center;
   justify-content: space-between;
   padding: 1rem 1.25rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--te-border);
 }
 
 .toonexpo-side-sheet__body {
