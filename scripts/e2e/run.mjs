@@ -34,6 +34,8 @@ async function main() {
 
   /** @type {import('./http.mjs').CookieJar | null} */
   let buyerJar = null;
+  /** @type {string | undefined} */
+  let buyerEmailForRbac;
 
   const track = (partial) => {
     for (const key of /** @type {const} */ ([
@@ -59,8 +61,11 @@ async function main() {
       setBuyerJar: (jar) => {
         buyerJar = jar;
       },
+      setBuyerEmail: (email) => {
+        buyerEmailForRbac = email;
+      },
     });
-    await runRbacFlow({ buyerJar });
+    await runRbacFlow({ buyerJar, buyerEmail: buyerEmailForRbac });
     await runBosApiFlow({ runId, track });
     await runAnalyticsFlow();
   } finally {

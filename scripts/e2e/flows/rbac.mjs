@@ -1,5 +1,10 @@
 import { DEMO_BUILDER_EMAIL, E2E_BASE_URL } from '../config.mjs';
-import { detectSeedCredentials } from '../db.mjs';
+import {
+  detectSeedCredentials,
+  getBuyerQrTokenByEmail,
+  getPrisma,
+  performEntranceCheckInViaPrisma,
+} from '../db.mjs';
 import { CookieJar, fetchWithJar, locationOf, loginWithCredentials } from '../http.mjs';
 import { assert, runCheck, skipCheck } from '../report.mjs';
 
@@ -18,8 +23,8 @@ function assertDenied(res, label) {
 }
 
 /**
- * RBAC matrix for buyer / anonymous / optional builder+admin.
- * @param {{ buyerJar: import('../http.mjs').CookieJar | null }} ctx
+ * RBAC matrix for buyer / anonymous / optional builder+admin+entrance.
+ * @param {{ buyerJar: import('../http.mjs').CookieJar | null; buyerEmail?: string }} ctx
  */
 export async function runRbacFlow(ctx) {
   console.log('\n[3] RBAC matrix');
@@ -104,5 +109,46 @@ export async function runRbacFlow(ctx) {
     });
   }
 
-  skipCheck('Entrance staff /checkin', 'No SEED_ENTRANCE_* vars; entrance user is not seeded');
+  if (!seeds.entrance) {
+    skipCheck('Entrance staff /checkin', 'SEED_ENTRANCE_EMAIL / SEED_ENTRANCE_PASSWORD not set in .env');
+  } else {
+    await runCheck('Entrance staff login → /en/checkin 200', async () => {
+      const jar = new CookieJar();
+      await loginWithCredentials(E2E_BASE_URL, jar, {
+        email: seeds.entrance.email,
+        password: seeds.entrance.password,
+      });
+      const res = await fetchWithJar(`${E2E_BASE_URL}/en/checkin`, { jar });
+      assert(res.status === 200, `status ${res.status}`);
+    });
+
+    if (!ctx.buyerEmail) {
+      skipCheck(
+        'Entrance staff QR check-in',
+        'No e2e buyer email in context (buyer journey did not run)',
+      );
+    } else {
+      const qrToken = await getBuyerQrTokenByEmail(ctx.buyerEmail);
+      if (!qrToken) {
+        skipCheck(
+          'Entrance staff QR check-in',
+          'No seeded buyer with active QR; e2e buyer QR not found after account visit',
+        );
+      } else {
+        await runCheck('Entrance staff check-in via e2e buyer QR', async () => {
+          const staff = await getPrisma().user.findUnique({
+            where: { email: seeds.entrance.email.toLowerCase() },
+            select: { id: true },
+          });
+          assert(staff?.id, 'entrance staff user not found — run db:seed');
+          const result = await performEntranceCheckInViaPrisma({
+            qrToken,
+            staffUserId: staff.id,
+          });
+          assert(result.ok, `check-in failed: ${result.ok ? '' : result.errorKey}`);
+          return 'PARTIAL: performCheckInAction is server-action-only; check-in via Prisma helper';
+        });
+      }
+    }
+  }
 }

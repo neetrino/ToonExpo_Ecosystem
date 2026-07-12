@@ -12,7 +12,7 @@ import { assert, runCheck } from '../report.mjs';
 
 /**
  * Buyer journey: seed register (server-action limitation) → login → account → request.
- * @param {{ runId: string; track: (partial: Record<string, unknown>) => void; setBuyerJar: (jar: CookieJar) => void }} ctx
+ * @param {{ runId: string; track: (partial: Record<string, unknown>) => void; setBuyerJar: (jar: CookieJar) => void; setBuyerEmail: (email: string) => void }} ctx
  */
 export async function runBuyerJourneyFlow(ctx) {
   console.log('\n[2] Buyer journey');
@@ -22,6 +22,7 @@ export async function runBuyerJourneyFlow(ctx) {
   let userId;
 
   ctx.track({ emails: [email] });
+  ctx.setBuyerEmail(email);
 
   await runCheck('Register buyer (Prisma seed — server actions not HTTP)', async () => {
     const user = await seedBuyer({

@@ -143,6 +143,38 @@ async function seedBuilder(): Promise<void> {
   console.log(`Created seed BUILDER: ${DEMO_BUILDER_EMAIL}`);
 }
 
+async function seedEntranceStaff(): Promise<void> {
+  const email = process.env.SEED_ENTRANCE_EMAIL?.trim();
+  const password = process.env.SEED_ENTRANCE_PASSWORD;
+
+  if (!email || !password) {
+    console.log('Skipping entrance staff seed: SEED_ENTRANCE_EMAIL and SEED_ENTRANCE_PASSWORD must be set.');
+    return;
+  }
+
+  const existingStaff = await prisma.user.findFirst({
+    where: { role: 'ENTRANCE_STAFF' },
+  });
+
+  if (existingStaff) {
+    console.log('Skipping entrance staff seed: an ENTRANCE_STAFF user already exists.');
+    return;
+  }
+
+  const passwordHash = await argon2.hash(password, HASH_OPTIONS);
+
+  await prisma.user.create({
+    data: {
+      email: email.toLowerCase(),
+      name: 'Seed Entrance Staff',
+      passwordHash,
+      role: 'ENTRANCE_STAFF',
+    },
+  });
+
+  console.log(`Created seed ENTRANCE_STAFF: ${email}`);
+}
+
 async function upsertProjectMedia(
   projectId: string,
   assets: ReadonlyArray<{ url: string; alt: string; sortOrder: number }>,
@@ -1065,6 +1097,7 @@ async function main(): Promise<void> {
   await seedAdmin();
   const catalog = await seedDemoCatalog();
   await seedBuilder();
+  await seedEntranceStaff();
   await seedDemoCrmDeals(catalog.company, catalog.sunriseProject, catalog.apartments);
   await seedSunriseVisualMaps(
     catalog.sunriseProject,

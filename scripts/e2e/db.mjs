@@ -238,10 +238,119 @@ export function detectSeedCredentials() {
   const builderPassword = process.env.SEED_DEMO_BUILDER_PASSWORD;
   const adminEmail = process.env.SEED_ADMIN_EMAIL?.trim();
   const adminPassword = process.env.SEED_ADMIN_PASSWORD;
+  const entranceEmail = process.env.SEED_ENTRANCE_EMAIL?.trim();
+  const entrancePassword = process.env.SEED_ENTRANCE_PASSWORD;
   return {
     builder: builderPassword
       ? { email: 'builder@demo.toonexpo.local', password: builderPassword }
       : null,
     admin: adminEmail && adminPassword ? { email: adminEmail, password: adminPassword } : null,
+    entrance:
+      entranceEmail && entrancePassword
+        ? { email: entranceEmail, password: entrancePassword }
+        : null,
+  };
+}
+
+/**
+ * Raw buyer QR token for e2e check-in (created when buyer visits /en/account).
+ *
+ * @param {string} email
+ */
+export async function getBuyerQrTokenByEmail(email) {
+  const prisma = getPrisma();
+  const user = await prisma.user.findUnique({
+    where: { email: email.toLowerCase() },
+    select: {
+      buyerProfile: {
+        select: {
+          qrCode: {
+            select: { token: true, revokedAt: true },
+          },
+        },
+      },
+    },
+  });
+  const qr = user?.buyerProfile?.qrCode;
+  return qr && !qr.revokedAt ? qr.token : null;
+}
+
+/**
+ * UI-less entrance check-in (server action is form-bound). Mirrors performEntranceCheckIn.
+ *
+ * @param {{ qrToken: string; staffUserId: string; eventId?: string }} input
+ */
+export async function performEntranceCheckInViaPrisma(input) {
+  const prisma = getPrisma();
+  const crypto = await import('node:crypto');
+
+  const staff = await prisma.user.findUnique({
+    where: { id: input.staffUserId },
+    select: { role: true },
+  });
+  if (!staff || staff.role !== 'ENTRANCE_STAFF') {
+    return { ok: false, errorKey: 'unauthorized' };
+  }
+
+  const tokenHash = crypto.createHash('sha256').update(input.qrToken).digest('hex');
+  const qr = await prisma.qrCode.findFirst({
+    where: { tokenHash, revokedAt: null },
+    select: { id: true, buyerProfileId: true },
+  });
+  if (!qr) {
+    return { ok: false, errorKey: 'notFound' };
+  }
+
+  let eventId = input.eventId;
+  if (eventId) {
+    const event = await prisma.exhibitionEvent.findFirst({
+      where: { id: eventId, status: 'ACTIVE' },
+      select: { id: true },
+    });
+    if (!event) {
+      return { ok: false, errorKey: 'noActiveEvent' };
+    }
+  } else {
+    const active = await prisma.exhibitionEvent.findFirst({
+      where: { status: 'ACTIVE' },
+      orderBy: [{ startDate: 'desc' }, { createdAt: 'desc' }],
+      select: { id: true },
+    });
+    if (!active) {
+      return { ok: false, errorKey: 'noActiveEvent' };
+    }
+    eventId = active.id;
+  }
+
+  const existing = await prisma.checkIn.findUnique({
+    where: {
+      eventId_buyerProfileId: { eventId, buyerProfileId: qr.buyerProfileId },
+    },
+    select: { id: true, checkedInAt: true },
+  });
+  if (existing) {
+    return {
+      ok: true,
+      checkInId: existing.id,
+      alreadyCheckedIn: true,
+      checkedInAt: existing.checkedInAt,
+    };
+  }
+
+  const created = await prisma.checkIn.create({
+    data: {
+      eventId,
+      buyerProfileId: qr.buyerProfileId,
+      qrCodeId: qr.id,
+      checkedInByUserId: input.staffUserId,
+      status: 'ALLOWED',
+    },
+    select: { id: true, checkedInAt: true },
+  });
+  return {
+    ok: true,
+    checkInId: created.id,
+    alreadyCheckedIn: false,
+    checkedInAt: created.checkedInAt,
   };
 }
