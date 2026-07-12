@@ -21,6 +21,7 @@ import {
   PortalTextArea,
   PortalTextInput,
 } from '@/components/portal-forms/form-fields';
+import { ImageUploadField } from '@/components/portal-forms/image-upload-field';
 import { useCloseOnFormSuccess } from '@/components/portal-forms/use-close-on-form-success';
 import { INITIAL_BUILDER_FORM_ACTION_STATE } from '@/lib/builder/action-state';
 import { updateCompanyProfileFormAction } from '@/lib/builder/form-actions';
@@ -64,13 +65,12 @@ export function CompanyProfileFormSheet({
           />
         </PortalFormField>
 
-        <PortalFormField label={t('fields.logoUrl')} name="logoUrl">
-          <PortalTextInput
-            name="logoUrl"
-            defaultValue={profile.logoUrl ?? undefined}
-            maxLength={COMPANY_LOGO_URL_MAX_LENGTH}
-          />
-        </PortalFormField>
+        <ImageUploadField
+          name="logoUrl"
+          purpose="COMPANY_LOGO"
+          initialUrl={profile.logoUrl ?? ''}
+          maxLength={COMPANY_LOGO_URL_MAX_LENGTH}
+        />
 
         <PortalFormField label={t('fields.phone')} name="phone">
           <PortalTextInput

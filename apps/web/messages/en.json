@@ -46,6 +46,31 @@
       "description": "Protected shell placeholder for Sprint 0."
     }
   },
+  "common": {
+    "imageUpload": {
+      "pasteUrlToggle": "Or paste an image URL",
+      "fields": {
+        "file": "Image file",
+        "fileHint": "JPEG, PNG, or WebP · up to 10 MB",
+        "url": "Image URL",
+        "urlPlaceholder": "https://…",
+        "urlHint": "Use this if file upload is unavailable or for an existing public URL."
+      },
+      "uploadStatus": {
+        "presigning": "Preparing upload…",
+        "uploading": "Uploading…",
+        "readyNamed": "Ready: {name}"
+      },
+      "uploadErrors": {
+        "storageNotConfigured": "File upload is not configured on this environment. Paste a public image URL instead.",
+        "rateLimited": "Too many upload requests. Please wait a minute and try again.",
+        "unauthorized": "You must be signed in to upload.",
+        "uploadFailed": "Upload failed. Please try again or paste a URL.",
+        "unsupportedType": "Only JPEG, PNG, and WebP images are allowed.",
+        "fileTooLarge": "File is too large. Maximum size is 10 MB."
+      }
+    }
+  },
   "auth": {
     "signInNav": "Sign in",
     "fields": {
@@ -1081,7 +1106,7 @@
           "floor": "Floor",
           "title": "Title",
           "imageUrl": "Image URL",
-          "imageUrlHint": "Paste a public image URL. File upload is planned for a later sprint.",
+          "imageUrlHint": "Upload a JPEG, PNG, or WebP image (max 10 MB), or paste a public URL.",
           "imageAlt": "Image alt text"
         }
       },

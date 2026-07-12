@@ -21,6 +21,7 @@ import {
   PortalTextArea,
   PortalTextInput,
 } from '@/components/portal-forms/form-fields';
+import { ImageUploadField } from '@/components/portal-forms/image-upload-field';
 import { useCloseOnFormSuccess } from '@/components/portal-forms/use-close-on-form-success';
 import {
   INITIAL_ADMIN_CATALOG_ACTION_STATE,
@@ -116,13 +117,12 @@ function PartnerFormBody({ mode, values, state, formAction, pending }: PartnerFo
         </PortalFormField>
       ) : null}
 
-      <PortalFormField label={t('fields.logoUrl')} name="logoUrl">
-        <PortalTextInput
-          name="logoUrl"
-          defaultValue={values?.logoUrl ?? undefined}
-          maxLength={PARTNER_LOGO_URL_MAX_LENGTH}
-        />
-      </PortalFormField>
+      <ImageUploadField
+        name="logoUrl"
+        purpose="COMPANY_LOGO"
+        initialUrl={values?.logoUrl ?? ''}
+        maxLength={PARTNER_LOGO_URL_MAX_LENGTH}
+      />
 
       <PortalFormField label={t('fields.description')} name="description">
         <PortalTextArea

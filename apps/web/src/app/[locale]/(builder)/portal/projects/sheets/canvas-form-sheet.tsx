@@ -15,6 +15,7 @@ import {
   PortalSelect,
   PortalTextInput,
 } from '@/components/portal-forms/form-fields';
+import { ImageUploadField } from '@/components/portal-forms/image-upload-field';
 import { VisualMapFormError } from '@/components/visual-map/visual-map-form-error';
 
 import type { BuilderProjectDetail } from '@/lib/builder/queries';
@@ -138,18 +139,14 @@ export function CanvasFormSheet({ locale, project, open, onClose }: CanvasFormSh
           <PortalTextInput name="title" maxLength={CANVAS_TITLE_MAX_LENGTH} />
         </PortalFormField>
 
-        <PortalFormField
-          label={t('fields.imageUrl')}
+        <p className="portal-form__hint">{t('fields.imageUrlHint')}</p>
+        <ImageUploadField
           name="imageUrl"
-          hint={t('fields.imageUrlHint')}
-        >
-          <PortalTextInput
-            name="imageUrl"
-            type="text"
-            required
-            maxLength={CANVAS_IMAGE_URL_MAX_LENGTH}
-          />
-        </PortalFormField>
+          purpose="CANVAS_IMAGE"
+          initialUrl=""
+          required
+          maxLength={CANVAS_IMAGE_URL_MAX_LENGTH}
+        />
 
         <PortalFormField label={t('fields.imageAlt')} name="imageAlt">
           <PortalTextInput name="imageAlt" maxLength={CANVAS_IMAGE_ALT_MAX_LENGTH} />

@@ -11,6 +11,7 @@ import { useRef, useState, useTransition } from 'react';
 
 import { PortalFormError } from '@/components/portal-forms/form-error';
 import { PortalFormField, PortalTextInput } from '@/components/portal-forms/form-fields';
+import { ImageUploadField } from '@/components/portal-forms/image-upload-field';
 import { useRouter } from '@/i18n/navigation';
 import type {
   AdminAssignmentOption,
@@ -84,14 +85,13 @@ export function VenueEditor({ locale, detail, companies, partners }: VenueEditor
       </header>
 
       <form className="portal-form" onSubmit={handleMapSubmit}>
-        <PortalFormField label={t('fields.imageUrl')} name="imageUrl">
-          <PortalTextInput
-            name="imageUrl"
-            defaultValue={detail.venueMap?.imageUrl}
-            required
-            maxLength={VENUE_IMAGE_URL_MAX_LENGTH}
-          />
-        </PortalFormField>
+        <ImageUploadField
+          name="imageUrl"
+          purpose="VENUE_IMAGE"
+          initialUrl={detail.venueMap?.imageUrl ?? ''}
+          required
+          maxLength={VENUE_IMAGE_URL_MAX_LENGTH}
+        />
         <PortalFormField label={t('fields.imageAlt')} name="imageAlt">
           <PortalTextInput
             name="imageAlt"
