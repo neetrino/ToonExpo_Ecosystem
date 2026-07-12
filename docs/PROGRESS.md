@@ -2,6 +2,8 @@
 
 ## Current Status
 
+Sprint 7.4 **COMPLETE** — Buyer favorites (save projects/apartments).
+
 Sprint 7.3 **COMPLETE** — Cloudflare R2 signed uploads for builder project/apartment media.
 
 Sprint 7.2 **COMPLETE** — Resend set-password invitation emails replace admin-typed temporary passwords for provisioned accounts (admin UI + BOS).
@@ -10,7 +12,17 @@ Sprint 7.1 **COMPLETE** — Upstash Redis rate limiting on auth, public request,
 
 Sprint 6 **COMPLETE** — Analytics v1, BOS provisioning (atomic idempotency), audit logs + CSV reports, e2e smoke, hardening + final audit fixes.
 
-**MVP backlog complete** — all six planned sprints are done. Deferred follow-ups (not blockers): venue map/booths, `ApartmentStatusHistory`, favorites, admin acting-on-behalf, company switcher, Playwright e2e, Swagger gating in prod, analytics aggregation/sampling, general Redis caching/queues, company logo / visual-map image uploads (still URL-based).
+**MVP backlog complete** — planned sprints through 7.4 are done. Deferred follow-ups (not blockers): venue map/booths, `ApartmentStatusHistory`, admin acting-on-behalf, company switcher, Playwright e2e, Swagger gating in prod, analytics aggregation/sampling, general Redis caching/queues, company logo / visual-map image uploads (still URL-based), builder/company favorites.
+
+## Sprint 7.4 — Buyer favorites (COMPLETE)
+
+- **Schema** — `Favorite` with `FavoriteTargetType` (`PROJECT` | `APARTMENT`) + `targetId`; `@@unique([userId, targetType, targetId])`. Migration `20260712270000_sprint7_4_favorites`.
+- **Rules** — BUYER-only mutations; validate published project / published apartment tree on add; duplicate add idempotent; lists stay private to buyer; RESERVED/SOLD apartments remain saved with live status.
+- **UI** — Save/unsave toggle on public project + apartment detail; logged-out CTA → `/login?callbackUrl=…` (safe same-locale path); account section lists favorites with remove.
+- **Rate limit** — 30/min/userId (`favoriteToggle`) via Upstash fail-open.
+- **Analytics** — `FAVORITE_ADDED` / `FAVORITE_REMOVED` fire-and-forget aggregate events (no userId); dashboards unchanged.
+- **i18n** — en/ru/hy for toggle + account favorites.
+- **Tests** — unit coverage for contracts, mutations (idempotent add, authz), actions, callback URL safety. E2E not extended (fetch smoke unchanged).
 
 ## Sprint 7.3 — R2 signed media uploads (COMPLETE)
 
@@ -48,7 +60,7 @@ Sprint 6 **COMPLETE** — Analytics v1, BOS provisioning (atomic idempotency), a
 
 ### Deferred (Sprint 6 follow-ups)
 
-- Favorites / deeper view instrumentation.
+- Deeper view instrumentation (beyond favorites aggregates).
 - AnalyticsDailyAggregate / sampling / bot filter.
 - Swagger `/docs` gated in production.
 - Playwright e2e (current suite is fetch-based smoke).
@@ -168,7 +180,7 @@ Audit fixes applied on branch `sipan` after the feature pack landed:
 
 ### Deferred (unchanged)
 
-- Venue map/booths, `ApartmentStatusHistory`, favorites, admin acting-on-behalf, company switcher, Playwright e2e, Swagger gating in prod, analytics aggregation/sampling, general Redis caching/queues; company logo / visual-map image uploads (URL-based).
+- Venue map/booths, `ApartmentStatusHistory`, admin acting-on-behalf, company switcher, Playwright e2e, Swagger gating in prod, analytics aggregation/sampling, general Redis caching/queues; company logo / visual-map image uploads (URL-based); builder/company favorites.
 
 ## Open (non-blocking)
 
