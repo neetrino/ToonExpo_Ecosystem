@@ -9,6 +9,7 @@ import pino from 'pino';
 
 import { AppModule } from './app.module';
 import { loadApiEnv } from './common/env';
+import { shouldEnableSwagger } from './common/swagger-gate';
 
 const DEFAULT_API_PORT = 4000;
 
@@ -25,22 +26,24 @@ async function bootstrap(): Promise<void> {
     credentials: true,
   });
 
-  const swaggerConfig = new DocumentBuilder()
-    .setTitle(APP_NAME)
-    .setDescription('ToonExpo Ecosystem API')
-    .setVersion('0.1.0')
-    .addApiKey(
-      {
-        type: 'apiKey',
-        in: 'header',
-        name: 'x-bos-api-key',
-        description: 'Shared secret for BOS inbound integration (BOS_API_KEY)',
-      },
-      'bos-api-key',
-    )
-    .build();
-  const document = SwaggerModule.createDocument(app, swaggerConfig);
-  SwaggerModule.setup('docs', app, document);
+  if (shouldEnableSwagger(env)) {
+    const swaggerConfig = new DocumentBuilder()
+      .setTitle(APP_NAME)
+      .setDescription('ToonExpo Ecosystem API')
+      .setVersion('0.1.0')
+      .addApiKey(
+        {
+          type: 'apiKey',
+          in: 'header',
+          name: 'x-bos-api-key',
+          description: 'Shared secret for BOS inbound integration (BOS_API_KEY)',
+        },
+        'bos-api-key',
+      )
+      .build();
+    const document = SwaggerModule.createDocument(app, swaggerConfig);
+    SwaggerModule.setup('docs', app, document);
+  }
 
   const port = Number(new URL(env.API_URL).port || DEFAULT_API_PORT);
   await app.listen(port);

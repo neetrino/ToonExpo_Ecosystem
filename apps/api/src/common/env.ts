@@ -19,6 +19,23 @@ export const apiEnvSchema = z.object({
   R2_PUBLIC_URL: z.preprocess(emptyToUndefined, z.string().url().optional()),
   UPSTASH_REDIS_REST_URL: z.preprocess(emptyToUndefined, z.string().url().optional()),
   UPSTASH_REDIS_REST_TOKEN: z.preprocess(emptyToUndefined, z.string().optional()),
+  /**
+   * Optional override to mount Swagger `/docs` even when NODE_ENV=production.
+   * Empty/unset → false. Accepts the string "true".
+   */
+  SWAGGER_ENABLED: z.preprocess((value) => {
+    const cleaned = emptyToUndefined(value);
+    if (cleaned === undefined) {
+      return undefined;
+    }
+    if (cleaned === 'true' || cleaned === true) {
+      return true;
+    }
+    if (cleaned === 'false' || cleaned === false) {
+      return false;
+    }
+    return cleaned;
+  }, z.boolean().optional()),
 });
 
 export type ApiEnv = z.infer<typeof apiEnvSchema>;
