@@ -36,6 +36,7 @@ Branch: `sipan`. MVP backlog through Sprint 7.7 is **done**. Use this section to
 
 ### Setup (read first)
 
+- [`docs/PROJECT-STATUS.md`](./PROJECT-STATUS.md) — module-by-module readiness (%).
 - [`docs/TECH_CARD.md`](./TECH_CARD.md) — stack, env, deploy targets.
 - [`docs/01-ARCHITECTURE.md`](./01-ARCHITECTURE.md) — apps, packages, boundaries.
 - [`README.md`](../README.md) — install, migrate, seed, dev, e2e commands.
