@@ -75,6 +75,26 @@ pnpm --filter @toonexpo/web dev
 API health: `GET http://localhost:4000/health`  
 API docs: `http://localhost:4000/docs`
 
+## E2E smoke
+
+HTTP smoke suite for critical flows (no Playwright). Assumes a **production build** is already listening:
+
+| Env               | Default                                    |
+| ----------------- | ------------------------------------------ |
+| `E2E_BASE_URL`    | `http://localhost:3010`                    |
+| `E2E_API_URL`     | `http://localhost:4010`                    |
+| `E2E_BOS_API_KEY` | `e2e-test-key` (API must use the same key) |
+
+```bash
+# Full local loop: build → start web:3010 + api:4010 → run → stop
+pnpm e2e:local
+
+# Or against already-running servers
+pnpm e2e
+```
+
+Flows cover public catalog, buyer login/account (registration + public request are Prisma helpers when server actions are not HTTP-invokable), RBAC guards, BOS provisioning, and analytics view increments. Optional builder/admin checks run only when `SEED_DEMO_BUILDER_PASSWORD` / `SEED_ADMIN_*` are set in `.env`.
+
 ## Documentation
 
 - [Brief](./docs/BRIEF.md)

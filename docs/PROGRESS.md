@@ -2,7 +2,7 @@
 
 ## Current Status
 
-Sprint 6 **IN PROGRESS** — Analytics v1 + BOS account provisioning + audit/reports.
+Sprint 6 **IN PROGRESS** — Analytics v1 + BOS account provisioning + audit/reports + e2e smoke (final audit pending).
 
 ## Sprint 6 — Analytics v1
 
@@ -24,6 +24,12 @@ Sprint 6 **IN PROGRESS** — Analytics v1 + BOS account provisioning + audit/rep
 - **Audit** — `IntegrationAuditLog`; admin read-only `/admin/integrations`.
 - **Result to BOS** — HTTP response is the Account Creation Result (no outbound webhook in v1).
 - **Password** — random unusable hash; invitation email deferred.
+
+## Sprint 6 — E2E smoke
+
+- **Suite** — `pnpm e2e` / `pnpm e2e:local` under `scripts/e2e/` (native fetch + cookie jar; no Playwright).
+- **Coverage** — public catalog, buyer session/account, RBAC denials, BOS provisioning + idempotency, analytics `PROJECT_VIEW` increment.
+- **Limitations** — buyer registration + public request use Prisma helpers (Next.js server actions are not plain-HTTP); builder/admin/entrance checks SKIP unless seed env vars are set.
 
 ## Sprint 5 — COMPLETE
 

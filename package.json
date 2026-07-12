@@ -17,7 +17,9 @@
     "db:generate": "pnpm --filter @toonexpo/db generate",
     "db:migrate": "pnpm --filter @toonexpo/db migrate:dev",
     "db:studio": "pnpm --filter @toonexpo/db studio",
-    "db:seed": "pnpm --filter @toonexpo/db exec prisma db seed"
+    "db:seed": "pnpm --filter @toonexpo/db exec prisma db seed",
+    "e2e": "node --env-file=.env scripts/e2e/run.mjs",
+    "e2e:local": "node --env-file=.env scripts/e2e/local.mjs"
   },
   "devDependencies": {
     "@toonexpo/config": "workspace:*",
