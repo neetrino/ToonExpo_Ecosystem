@@ -2,6 +2,10 @@ import type { ProvisionAccountInput } from '@toonexpo/contracts';
 import { slugifyCompanyName } from '@toonexpo/contracts';
 import { prisma, Prisma } from '@toonexpo/db';
 
+import {
+  type AuditActor,
+  recordAudit,
+} from '@/lib/audit/record-audit';
 import { hashPassword } from '@/lib/auth/password';
 import { allocateUniqueSlug, MAX_SLUG_ATTEMPTS } from '@/lib/shared/unique-slug';
 
@@ -90,10 +94,12 @@ async function linkPartnerCompany(
  * Provisions a non-buyer account (and optional company membership) in a single
  * transaction. Duplicate emails return a typed error without leaking details.
  * When role is PARTNER and partnerId is set, links Company → Partner.companyId.
+ * Audit (PROVISION_ACCOUNT) is written inside the same transaction (atomic).
  * TODO(email-invite): send invitation email with temporary password.
  */
 export async function provisionAccount(
   input: ProvisionAccountInput,
+  actor: AuditActor,
 ): Promise<ProvisionAccountResult> {
   const passwordHash = await hashPassword(input.temporaryPassword);
 
@@ -130,6 +136,15 @@ export async function provisionAccount(
           }
         }
       }
+
+      await recordAudit(tx, {
+        actor,
+        action: 'PROVISION_ACCOUNT',
+        entityType: 'USER',
+        entityId: user.id,
+        companyId: companyId ?? null,
+        detail: input.role,
+      });
 
       return { userId: user.id, companyId };
     });

@@ -76,6 +76,7 @@
       "readiness": "Readiness",
       "exhibition": "Exhibition",
       "analytics": "Analytics",
+      "audit": "Audit",
       "integrations": "Integrations"
     },
     "catalog": {
@@ -417,10 +418,47 @@
         "FAILED": "Failed"
       }
     },
+    "audit": {
+      "title": "Audit log",
+      "subtitle": "Publication and provisioning actions across the platform.",
+      "empty": "No audit events yet.",
+      "detailEmpty": "—",
+      "exportCsv": "Export CSV",
+      "filter": {
+        "ariaLabel": "Filter audit by entity type",
+        "all": "All"
+      },
+      "columns": {
+        "createdAt": "When",
+        "actor": "Actor",
+        "action": "Action",
+        "entity": "Entity",
+        "detail": "Detail"
+      },
+      "actions": {
+        "PUBLICATION_CHANGE": "Publication change",
+        "PROVISION_ACCOUNT": "Provision account"
+      },
+      "entityTypes": {
+        "PROJECT": "Project",
+        "PARTNER": "Partner",
+        "BANK_OFFER": "Bank offer",
+        "VISUAL_CANVAS": "Visual canvas",
+        "EXHIBITION_EVENT": "Exhibition event",
+        "USER": "User"
+      }
+    },
     "analytics": {
       "title": "Analytics",
       "subtitle": "Platform totals and last {days} days.",
       "empty": "No data yet.",
+      "exports": {
+        "ariaLabel": "CSV report exports",
+        "deals": "Export deals CSV",
+        "checkins": "Export check-ins CSV",
+        "projectViews": "Export project views CSV",
+        "audit": "Export audit CSV"
+      },
       "stats": {
         "projectViewsTotal": "Project views (all time)",
         "projectViewsRecent": "Project views (recent)"

@@ -118,6 +118,22 @@ enum IntegrationAuditStatus {
   FAILED
 }
 
+/// Platform audit actions (v1). Docs: 05-Projects §12 + publication audit.
+enum AuditAction {
+  PUBLICATION_CHANGE
+  PROVISION_ACCOUNT
+}
+
+/// Platform audit entity kinds (v1).
+enum AuditEntityType {
+  PROJECT
+  PARTNER
+  BANK_OFFER
+  VISUAL_CANVAS
+  EXHIBITION_EVENT
+  USER
+}
+
 
 
 model User {
@@ -143,6 +159,7 @@ model User {
   readinessAssessments     ReadinessAssessment[]  @relation("ReadinessEvaluator")
   readinessCategoryScores  ReadinessCategoryScore[] @relation("ReadinessScoreEvaluator")
   checkInsPerformed        CheckIn[]              @relation("CheckInStaff")
+  auditLogs                AuditLog[]             @relation("AuditActor")
 }
 
 
@@ -222,6 +239,7 @@ model Company {
   partner              Partner?
   readinessAssessments ReadinessAssessment[]
   analyticsEvents      AnalyticsEvent[]
+  auditLogs            AuditLog[]
 }
 
 
@@ -629,6 +647,27 @@ model AnalyticsEvent {
   @@index([companyId, type, createdAt])
   @@index([projectId])
   @@index([createdAt])
+}
+
+/// Append-only platform audit trail for publication / provisioning (v1).
+/// Detail is a short status transition string (e.g. DRAFT→PUBLISHED) — no secrets.
+/// Docs: 05-Projects §12 acceptance + 15-Integrations/05 audit conventions.
+model AuditLog {
+  id          String          @id @default(cuid())
+  actorUserId String
+  actorRole   PlatformRole
+  action      AuditAction
+  entityType  AuditEntityType
+  entityId    String
+  companyId   String?
+  detail      String?
+  createdAt   DateTime        @default(now())
+  actorUser   User            @relation("AuditActor", fields: [actorUserId], references: [id], onDelete: Cascade)
+  company     Company?        @relation(fields: [companyId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([entityType, entityId])
+  @@index([actorUserId])
 }
 
 /// Append-only integration audit trail (v1).

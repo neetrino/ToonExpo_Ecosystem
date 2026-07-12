@@ -91,7 +91,10 @@ export async function setPartnerStatusAction(
     return invalidInput();
   }
 
-  const result = await setPartnerStatus(parsed.data);
+  const result = await setPartnerStatus(parsed.data, {
+    userId: session.user.id,
+    role: session.user.role,
+  });
   if (result.ok) {
     revalidatePartnerPaths({ partnerId: result.partnerId, partnerSlug: result.partnerSlug });
   }
@@ -164,7 +167,10 @@ export async function setBankOfferStatusAction(
     return invalidInput();
   }
 
-  const result = await setBankOfferStatus(parsed.data);
+  const result = await setBankOfferStatus(parsed.data, {
+    userId: session.user.id,
+    role: session.user.role,
+  });
   if (result.ok) {
     revalidatePartnerPaths({ partnerId, partnerSlug: result.partnerSlug });
   }

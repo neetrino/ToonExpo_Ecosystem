@@ -28,7 +28,10 @@ export async function upsertExhibitionEventAction(
     return unauthorized();
   }
 
-  const result = await upsertExhibitionEvent(raw);
+  const result = await upsertExhibitionEvent(raw, {
+    userId: session.user.id,
+    role: session.user.role,
+  });
   if (result.ok) {
     revalidateExhibitionPaths(locale);
   }

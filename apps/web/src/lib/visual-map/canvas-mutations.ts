@@ -1,6 +1,12 @@
 import type { CanvasStatusInput, CanvasUpsertInput } from '@toonexpo/contracts';
 import { prisma } from '@toonexpo/db';
 
+import {
+  type AuditActor,
+  formatStatusTransition,
+  recordAudit,
+} from '@/lib/audit/record-audit';
+
 import { findOwnedCanvas, resolveContextOwnership } from './canvas-ownership';
 import { type VisualMapMutationResult } from './mutation-result';
 
@@ -69,9 +75,11 @@ export async function updateCanvas(
   });
 }
 
+/** Canvas publication change — audit written inside the same transaction (atomic). */
 export async function setCanvasStatus(
   companyId: string,
   input: CanvasStatusInput,
+  actor: AuditActor,
 ): Promise<VisualMapMutationResult<{ canvasId: string; projectId: string }>> {
   return prisma.$transaction(async (tx) => {
     const owned = await findOwnedCanvas(tx, companyId, input.canvasId);
@@ -82,6 +90,15 @@ export async function setCanvasStatus(
     await tx.visualCanvas.update({
       where: { id: owned.id },
       data: { status: input.status },
+    });
+
+    await recordAudit(tx, {
+      actor,
+      action: 'PUBLICATION_CHANGE',
+      entityType: 'VISUAL_CANVAS',
+      entityId: owned.id,
+      companyId,
+      detail: formatStatusTransition(owned.status, input.status),
     });
 
     return { ok: true, canvasId: owned.id, projectId: owned.owningProjectId };

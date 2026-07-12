@@ -128,7 +128,10 @@ export async function setProjectPublicationAction(
     return invalidInput();
   }
 
-  const result = await setProjectPublication(session.companyId, parsed.data);
+  const result = await setProjectPublication(session.companyId, parsed.data, {
+    userId: session.session.user.id,
+    role: session.session.user.role,
+  });
   if (result.ok) {
     await revalidateAfterProjectMutation(session.companyId, session.companySlug, result.projectId);
   }

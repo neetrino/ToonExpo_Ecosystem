@@ -76,6 +76,7 @@
       "readiness": "Готовность",
       "exhibition": "Выставка",
       "analytics": "Аналитика",
+      "audit": "Аудит",
       "integrations": "Интеграции"
     },
     "catalog": {
@@ -417,10 +418,47 @@
         "FAILED": "Ошибка"
       }
     },
+    "audit": {
+      "title": "Журнал аудита",
+      "subtitle": "Публикация и провижининг по платформе.",
+      "empty": "Событий аудита пока нет.",
+      "detailEmpty": "—",
+      "exportCsv": "Экспорт CSV",
+      "filter": {
+        "ariaLabel": "Фильтр аудита по типу сущности",
+        "all": "Все"
+      },
+      "columns": {
+        "createdAt": "Когда",
+        "actor": "Актор",
+        "action": "Действие",
+        "entity": "Сущность",
+        "detail": "Детали"
+      },
+      "actions": {
+        "PUBLICATION_CHANGE": "Смена публикации",
+        "PROVISION_ACCOUNT": "Провижининг аккаунта"
+      },
+      "entityTypes": {
+        "PROJECT": "Проект",
+        "PARTNER": "Партнёр",
+        "BANK_OFFER": "Банковское предложение",
+        "VISUAL_CANVAS": "Визуальная карта",
+        "EXHIBITION_EVENT": "Выставочное событие",
+        "USER": "Пользователь"
+      }
+    },
     "analytics": {
       "title": "Аналитика",
       "subtitle": "Итоги платформы и последние {days} дней.",
       "empty": "Пока нет данных.",
+      "exports": {
+        "ariaLabel": "Экспорт CSV-отчётов",
+        "deals": "Экспорт сделок CSV",
+        "checkins": "Экспорт чек-инов CSV",
+        "projectViews": "Экспорт просмотров проектов CSV",
+        "audit": "Экспорт аудита CSV"
+      },
       "stats": {
         "projectViewsTotal": "Просмотры проектов (всего)",
         "projectViewsRecent": "Просмотры проектов (недавние)"

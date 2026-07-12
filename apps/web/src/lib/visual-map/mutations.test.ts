@@ -1,5 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+const { recordAudit } = vi.hoisted(() => ({
+  recordAudit: vi.fn(),
+}));
+
+vi.mock('@/lib/audit/record-audit', () => ({
+  recordAudit,
+  formatStatusTransition: (from: string, to: string) => `${from}→${to}`,
+}));
+
 vi.mock('@toonexpo/db', () => ({
   prisma: {
     visualCanvas: {
@@ -39,13 +48,14 @@ import {
   createHotspot,
   deleteCanvas,
   moveHotspot,
+  setCanvasStatus,
   updateCanvas,
   updateHotspot,
 } from './mutations';
 
 const OWN_COMPANY_ID = 'company-own';
 const FOREIGN_COMPANY_ID = 'company-foreign';
-
+const ACTOR = { userId: 'builder-1', role: 'BUILDER' as const };
 function projectCanvasOwned() {
   return {
     id: 'canvas-1',
@@ -195,5 +205,29 @@ describe('visual-map mutations ownership', () => {
     const result = await deleteCanvas(OWN_COMPANY_ID, 'canvas-1');
     expect(result).toEqual({ ok: false, errorKey: 'invalidInput' });
     expect(prisma.visualCanvas.delete).not.toHaveBeenCalled();
+  });
+
+  it('writes an audit row when canvas status changes', async () => {
+    vi.mocked(prisma.visualCanvas.findFirst).mockResolvedValue(projectCanvasOwned() as never);
+    vi.mocked(prisma.visualCanvas.update).mockResolvedValue({ id: 'canvas-1' } as never);
+    recordAudit.mockResolvedValue(undefined);
+
+    const result = await setCanvasStatus(
+      OWN_COMPANY_ID,
+      { canvasId: 'canvas-1', status: 'PUBLISHED' },
+      ACTOR,
+    );
+
+    expect(result).toEqual({ ok: true, canvasId: 'canvas-1', projectId: 'project-1' });
+    expect(recordAudit).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        actor: ACTOR,
+        entityType: 'VISUAL_CANVAS',
+        entityId: 'canvas-1',
+        companyId: OWN_COMPANY_ID,
+        detail: 'DRAFT→PUBLISHED',
+      }),
+    );
   });
 });

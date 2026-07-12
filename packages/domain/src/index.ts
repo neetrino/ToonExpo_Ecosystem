@@ -1,6 +1,8 @@
 export {
   ANALYTICS_EVENT_TYPES,
   APARTMENT_STATUSES,
+  AUDIT_ACTIONS,
+  AUDIT_ENTITY_TYPES,
   BOS_COMPANY_TYPES,
   BOS_PROVISIONING_STATUSES,
   BOS_REQUESTED_MODULES,
@@ -19,6 +21,8 @@ export {
   REQUEST_SOURCES,
   type AnalyticsEventType,
   type ApartmentStatus,
+  type AuditAction,
+  type AuditEntityType,
   type BosCompanyType,
   type BosProvisioningStatus,
   type BosRequestedModule,

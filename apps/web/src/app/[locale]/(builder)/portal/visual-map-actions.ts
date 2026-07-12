@@ -99,7 +99,10 @@ export async function setCanvasStatusAction(
     return invalidInput();
   }
 
-  const result = await setCanvasStatus(session.companyId, parsed.data);
+  const result = await setCanvasStatus(session.companyId, parsed.data, {
+    userId: session.session.user.id,
+    role: session.session.user.role,
+  });
   if (result.ok) {
     await revalidateProject(session.companyId, result.projectId);
   }

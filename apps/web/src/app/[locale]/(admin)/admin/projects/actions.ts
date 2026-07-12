@@ -35,7 +35,10 @@ export async function setProjectPublicationAsAdminAction(
     return invalidInput();
   }
 
-  const result = await setProjectPublicationAsAdmin(parsed.data);
+  const result = await setProjectPublicationAsAdmin(parsed.data, {
+    userId: session.user.id,
+    role: session.user.role,
+  });
   if (result.ok) {
     const paths = await resolveAdminCatalogPaths(result.projectId);
     revalidateAdminCatalogPaths(paths ?? {});

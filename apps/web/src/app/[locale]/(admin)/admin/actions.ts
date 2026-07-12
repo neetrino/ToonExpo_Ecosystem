@@ -44,7 +44,10 @@ export async function provisionAccountAction(
     return { errorKey: 'invalidInput' };
   }
 
-  const result = await provisionAccount(parsed.data);
+  const result = await provisionAccount(parsed.data, {
+    userId: session.user.id,
+    role: session.user.role,
+  });
   if (!result.ok) {
     return { errorKey: result.error };
   }

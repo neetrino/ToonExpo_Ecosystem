@@ -76,6 +76,7 @@
       "readiness": "Պատրաստվածություն",
       "exhibition": "Ցուցահանդես",
       "analytics": "Վերլուծություն",
+      "audit": "Աուդիտ",
       "integrations": "Ինտեգրումներ"
     },
     "catalog": {
@@ -417,10 +418,47 @@
         "FAILED": "Ձախողված"
       }
     },
+    "audit": {
+      "title": "Աուդիտի մատյան",
+      "subtitle": "Հրապարակման և պրովիզիոնինգի գործողություններ հարթակում։",
+      "empty": "Աուդիտի իրադարձություններ դեռ չկան։",
+      "detailEmpty": "—",
+      "exportCsv": "Արտահանել CSV",
+      "filter": {
+        "ariaLabel": "Ֆիլտրել աուդիտը ըստ սուբյեկտի տեսակի",
+        "all": "Բոլորը"
+      },
+      "columns": {
+        "createdAt": "Երբ",
+        "actor": "Գործող",
+        "action": "Գործողություն",
+        "entity": "Սուբյեկտ",
+        "detail": "Մանրամասն"
+      },
+      "actions": {
+        "PUBLICATION_CHANGE": "Հրապարակման փոփոխություն",
+        "PROVISION_ACCOUNT": "Հաշվի պրովիզիոնինգ"
+      },
+      "entityTypes": {
+        "PROJECT": "Նախագիծ",
+        "PARTNER": "Գործընկեր",
+        "BANK_OFFER": "Բանկային առաջարկ",
+        "VISUAL_CANVAS": "Վիզուալ քարտեզ",
+        "EXHIBITION_EVENT": "Ցուցահանդեսային միջոցառում",
+        "USER": "Օգտատեր"
+      }
+    },
     "analytics": {
       "title": "Վերլուծություն",
       "subtitle": "Հարթակի ամփոփում և վերջին {days} օրը.",
       "empty": "Դեռ տվյալներ չկան.",
+      "exports": {
+        "ariaLabel": "CSV հաշվետվությունների արտահանում",
+        "deals": "Արտահանել գործարքներ CSV",
+        "checkins": "Արտահանել check-in-ներ CSV",
+        "projectViews": "Արտահանել նախագծերի դիտումներ CSV",
+        "audit": "Արտահանել աուդիտ CSV"
+      },
       "stats": {
         "projectViewsTotal": "Նախագծերի դիտումներ (ընդամենը)",
         "projectViewsRecent": "Նախագծերի դիտումներ (վերջին)"

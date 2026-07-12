@@ -2,7 +2,7 @@
 
 ## Current Status
 
-Sprint 6 **IN PROGRESS** — Analytics v1 + BOS account provisioning.
+Sprint 6 **IN PROGRESS** — Analytics v1 + BOS account provisioning + audit/reports.
 
 ## Sprint 6 — Analytics v1
 
@@ -10,6 +10,12 @@ Sprint 6 **IN PROGRESS** — Analytics v1 + BOS account provisioning.
 - **Aggregation** — admin global + builder company-scoped queries (`lib/analytics/*`).
 - **Dashboards** — `/admin/analytics`, `/portal/analytics` with i18n en/ru/hy.
 - **Deferred** — favorites, booth/route map events, mortgage offer selection instrumentation, dedicated apartment/building/floor/partner/builder profile view pages, AnalyticsDailyAggregate.
+
+## Sprint 6 — Publication audit + admin CSV reports
+
+- **AuditLog** — platform publication / provisioning trail; atomic writes inside mutation transactions; admin `/admin/audit`.
+- **CSV exports** — `GET /api/admin/reports/{deals|checkins|project-views|audit}` (assertAdminSession → 401 JSON); row cap 5000.
+- **PII** — deals export includes contact name/email (internal admin); check-ins include full buyer name/email.
 
 ## Sprint 6 — BOS Integration (inbound provisioning)
 

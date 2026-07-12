@@ -7,6 +7,11 @@ import type {
 import { slugifyCompanyName } from '@toonexpo/contracts';
 import { prisma, Prisma } from '@toonexpo/db';
 
+import {
+  type AuditActor,
+  formatStatusTransition,
+  recordAudit,
+} from '@/lib/audit/record-audit';
 import { allocateUniqueSlug } from '@/lib/shared/unique-slug';
 
 import { type AdminMutationResult, UNIQUE_CONSTRAINT_ERROR } from './mutation-result';
@@ -99,23 +104,36 @@ export async function updatePartner(
   }
 }
 
+/** Partner status change — audit written inside the same transaction (atomic). */
 export async function setPartnerStatus(
   input: PartnerStatusInput,
+  actor: AuditActor,
 ): Promise<AdminMutationResult<{ partnerId: string; partnerSlug: string }>> {
-  const existing = await prisma.partner.findUnique({
-    where: { id: input.partnerId },
-    select: { id: true, slug: true },
-  });
-  if (!existing) {
-    return { ok: false, errorKey: 'notFound' };
-  }
+  return prisma.$transaction(async (tx) => {
+    const existing = await tx.partner.findUnique({
+      where: { id: input.partnerId },
+      select: { id: true, slug: true, status: true, companyId: true },
+    });
+    if (!existing) {
+      return { ok: false, errorKey: 'notFound' };
+    }
 
-  await prisma.partner.update({
-    where: { id: input.partnerId },
-    data: { status: input.status },
-  });
+    await tx.partner.update({
+      where: { id: input.partnerId },
+      data: { status: input.status },
+    });
 
-  return { ok: true, partnerId: existing.id, partnerSlug: existing.slug };
+    await recordAudit(tx, {
+      actor,
+      action: 'PUBLICATION_CHANGE',
+      entityType: 'PARTNER',
+      entityId: existing.id,
+      companyId: existing.companyId,
+      detail: formatStatusTransition(existing.status, input.status),
+    });
+
+    return { ok: true, partnerId: existing.id, partnerSlug: existing.slug };
+  });
 }
 
 async function assertBankPartner(
@@ -212,25 +230,42 @@ export async function updateBankOffer(
   return { ok: true, bankOfferId: input.bankOfferId, partnerSlug };
 }
 
+/** Bank offer status change — audit written inside the same transaction (atomic). */
 export async function setBankOfferStatus(
   input: BankOfferStatusInput,
+  actor: AuditActor,
 ): Promise<AdminMutationResult<{ bankOfferId: string; partnerSlug: string }>> {
-  const existing = await prisma.bankOffer.findUnique({
-    where: { id: input.bankOfferId },
-    select: { id: true, partner: { select: { type: true, slug: true } } },
+  return prisma.$transaction(async (tx) => {
+    const existing = await tx.bankOffer.findUnique({
+      where: { id: input.bankOfferId },
+      select: {
+        id: true,
+        status: true,
+        partner: { select: { type: true, slug: true, companyId: true } },
+      },
+    });
+
+    if (!existing) {
+      return { ok: false, errorKey: 'notFound' };
+    }
+    if (existing.partner.type !== 'BANK') {
+      return { ok: false, errorKey: 'notBankPartner' };
+    }
+
+    await tx.bankOffer.update({
+      where: { id: input.bankOfferId },
+      data: { status: input.status },
+    });
+
+    await recordAudit(tx, {
+      actor,
+      action: 'PUBLICATION_CHANGE',
+      entityType: 'BANK_OFFER',
+      entityId: existing.id,
+      companyId: existing.partner.companyId,
+      detail: formatStatusTransition(existing.status, input.status),
+    });
+
+    return { ok: true, bankOfferId: input.bankOfferId, partnerSlug: existing.partner.slug };
   });
-
-  if (!existing) {
-    return { ok: false, errorKey: 'notFound' };
-  }
-  if (existing.partner.type !== 'BANK') {
-    return { ok: false, errorKey: 'notBankPartner' };
-  }
-
-  await prisma.bankOffer.update({
-    where: { id: input.bankOfferId },
-    data: { status: input.status },
-  });
-
-  return { ok: true, bankOfferId: input.bankOfferId, partnerSlug: existing.partner.slug };
 }
