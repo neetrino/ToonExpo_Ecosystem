@@ -2,6 +2,8 @@
 
 ## Current Status
 
+Sprint 7.5 **COMPLETE** — Admin acting-on-behalf of a builder company + company switcher.
+
 Sprint 7.4 **COMPLETE** — Buyer favorites (save projects/apartments).
 
 Sprint 7.3 **COMPLETE** — Cloudflare R2 signed uploads for builder project/apartment media.
@@ -12,7 +14,17 @@ Sprint 7.1 **COMPLETE** — Upstash Redis rate limiting on auth, public request,
 
 Sprint 6 **COMPLETE** — Analytics v1, BOS provisioning (atomic idempotency), audit logs + CSV reports, e2e smoke, hardening + final audit fixes.
 
-**MVP backlog complete** — planned sprints through 7.4 are done. Deferred follow-ups (not blockers): venue map/booths, `ApartmentStatusHistory`, admin acting-on-behalf, company switcher, Playwright e2e, Swagger gating in prod, analytics aggregation/sampling, general Redis caching/queues, company logo / visual-map image uploads (still URL-based), builder/company favorites.
+**MVP backlog complete** — planned sprints through 7.5 are done. Deferred follow-ups (not blockers): venue map/booths, `ApartmentStatusHistory`, Playwright e2e, Swagger gating in prod, analytics aggregation/sampling, general Redis caching/queues, company logo / visual-map image uploads (still URL-based), builder/company favorites.
+
+## Sprint 7.5 — Admin acting-on-behalf + company switcher (COMPLETE)
+
+- **Model** — No user impersonation. Admin keeps `BIGPROJECTS_ADMIN`. Active company is an httpOnly cookie (`toonexpo_active_company`, 8h, `SameSite=Lax`, `Secure` in production).
+- **Gate** — `assertBuilderSession` is the single portal company resolver: BUILDER uses memberships (cookie if member, else earliest; foreign cookie ignored); admin requires a valid existing company cookie and sets `actingOnBehalf: true`.
+- **Access** — `canAccessArea('builder')` allows `BIGPROJECTS_ADMIN` (portal nav visible). Builders still cannot access `/admin`. Portal without cookie redirects admins to `/admin/companies`.
+- **UI** — Admin companies “Open in portal”; portal banner “Exit to admin”; company switcher in portal header (hidden for single-membership builders; admin lists all companies).
+- **Audit** — `ACTING_ON_BEHALF_START` / `ACTING_ON_BEHALF_STOP` on company entity; actor remains the real admin userId. Portal mutations already use session user id + `assertBuilderSession().companyId`.
+- **Migration** — `20260712280000_sprint7_5_acting_on_behalf`.
+- **Tests** — unit for gate, access, set/clear/switch actions; e2e: admin + active-company cookie → `/en/portal` 200.
 
 ## Sprint 7.4 — Buyer favorites (COMPLETE)
 
@@ -107,15 +119,7 @@ Sprint 6 **COMPLETE** — Analytics v1, BOS provisioning (atomic idempotency), a
 
 ### Deferred (Sprint 3 follow-ups)
 
-- Admin acting-on-behalf inside portal with audit trail.
-- Company switcher UI (v1 binds to earliest membership).
 - Integration tests with two real companies.
-
-### Deferred (Sprint 2 follow-ups)
-
-- Catalog pagination on project list.
-- `@@index([status, createdAt])` on Project for list queries.
-- MediaAsset XOR constraint (project vs apartment ownership).
 
 ## Sprint 2 — COMPLETE
 
@@ -180,7 +184,7 @@ Audit fixes applied on branch `sipan` after the feature pack landed:
 
 ### Deferred (unchanged)
 
-- Venue map/booths, `ApartmentStatusHistory`, admin acting-on-behalf, company switcher, Playwright e2e, Swagger gating in prod, analytics aggregation/sampling, general Redis caching/queues; company logo / visual-map image uploads (URL-based); builder/company favorites.
+- Venue map/booths, `ApartmentStatusHistory`, Playwright e2e, Swagger gating in prod, analytics aggregation/sampling, general Redis caching/queues; company logo / visual-map image uploads (URL-based); builder/company favorites.
 
 ## Open (non-blocking)
 
