@@ -433,6 +433,21 @@
             "partner": "Partner",
             "note": "Note"
           }
+        },
+        "path": {
+          "title": "Route path graph",
+          "hint": "Set entrance, add waypoints, then link two nodes to build walkable routes. Saving a booth auto-creates a BOOTH node.",
+          "entranceStatus": "Entrance: {status}",
+          "entranceUnset": "not set (routes unavailable)",
+          "modesLabel": "Path edit mode",
+          "modes": {
+            "entrance": "Set entrance",
+            "waypoint": "Add waypoint",
+            "link": "Link nodes"
+          },
+          "linkPickSecond": "Click a second node to create an edge.",
+          "deleteNode": "Delete node",
+          "deleteEdge": "Delete edge"
         }
       }
     },
@@ -1379,7 +1394,10 @@
         "note": "Note",
         "viewCompany": "View builder",
         "viewPartner": "View partner",
-        "close": "Close"
+        "close": "Close",
+        "showRoute": "Show route",
+        "clearRoute": "Clear route",
+        "routeUnavailable": "Route not available yet"
       }
     }
   },

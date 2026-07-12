@@ -132,3 +132,34 @@
   top: 50%;
   transform: translate(-50%, -50%);
 }
+
+.catalog-venue-route {
+  height: 100%;
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: 1;
+}
+
+.catalog-venue-route__line {
+  stroke: var(--te-accent);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-opacity: 0.9;
+  stroke-width: 1.2;
+}
+
+.catalog-venue__route-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.catalog-venue__route-unavailable {
+  color: var(--te-muted);
+  font-size: 0.875rem;
+  margin: 0;
+}

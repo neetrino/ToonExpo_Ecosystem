@@ -23,6 +23,7 @@ import { computeHotspotPercent } from '@/lib/visual-map/hotspot-geometry';
 
 import { upsertVenueMapAction } from './actions';
 import { BoothFormSheet } from './booth-form-sheet';
+import { PathGraphEditor } from './path-graph-editor';
 
 type VenueEditorProps = {
   locale: string;
@@ -152,6 +153,17 @@ export function VenueEditor({ locale, detail, companies, partners }: VenueEditor
                   : { xPercent: BOOTH_COORD_MIN, yPercent: BOOTH_COORD_MIN }
             }
             onClose={() => setSheet({ kind: 'closed' })}
+          />
+          <PathGraphEditor
+            locale={locale}
+            eventId={detail.event.id}
+            venueMapId={detail.venueMap.id}
+            imageUrl={detail.venueMap.imageUrl}
+            imageAlt={detail.venueMap.imageAlt}
+            entranceXPercent={detail.venueMap.entranceXPercent}
+            entranceYPercent={detail.venueMap.entranceYPercent}
+            pathNodes={detail.pathNodes}
+            pathEdges={detail.pathEdges}
           />
         </>
       ) : (

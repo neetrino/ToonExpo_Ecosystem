@@ -14,6 +14,8 @@ import type { AdminMutationErrorKey, AdminMutationResult } from '@/lib/admin/mut
 import { UNIQUE_CONSTRAINT_ERROR } from '@/lib/admin/mutation-result';
 import { bestEffortDeleteReplacedR2Object } from '@/lib/storage';
 
+import { ensureBoothPathNode } from './venue-path-mutations';
+
 export type VenueMutationResult<T extends Record<string, unknown> = Record<string, never>> =
   AdminMutationResult<T>;
 
@@ -67,16 +69,26 @@ export async function upsertVenueMap(
     select: { imageUrl: true },
   });
 
+  const hasEntrance = input.entranceXPercent !== undefined && input.entranceYPercent !== undefined;
+
   const venueMap = await prisma.venueMap.upsert({
     where: { eventId: input.eventId },
     create: {
       eventId: input.eventId,
       imageUrl: input.imageUrl,
       imageAlt: input.imageAlt,
+      entranceXPercent: hasEntrance ? input.entranceXPercent : undefined,
+      entranceYPercent: hasEntrance ? input.entranceYPercent : undefined,
     },
     update: {
       imageUrl: input.imageUrl,
       imageAlt: input.imageAlt ?? null,
+      ...(hasEntrance
+        ? {
+            entranceXPercent: input.entranceXPercent,
+            entranceYPercent: input.entranceYPercent,
+          }
+        : {}),
     },
     select: { id: true, eventId: true },
   });
@@ -144,6 +156,7 @@ async function createBoothRow(
     },
     select: { id: true, venueMapId: true },
   });
+  await ensureBoothPathNode(booth.venueMapId, booth.id, input.xPercent, input.yPercent);
   return { ok: true, boothId: booth.id, venueMapId: booth.venueMapId };
 }
 
@@ -171,6 +184,7 @@ async function updateBoothRow(
       sortOrder: input.sortOrder ?? 0,
     },
   });
+  await ensureBoothPathNode(input.venueMapId, existing.id, input.xPercent, input.yPercent);
 
   return { ok: true, boothId: existing.id, venueMapId: input.venueMapId };
 }
@@ -196,6 +210,7 @@ export async function moveBooth(
     where: { id: existing.id },
     data: { xPercent: input.xPercent, yPercent: input.yPercent },
   });
+  await ensureBoothPathNode(existing.venueMapId, existing.id, input.xPercent, input.yPercent);
 
   return { ok: true, boothId: existing.id, venueMapId: existing.venueMapId };
 }

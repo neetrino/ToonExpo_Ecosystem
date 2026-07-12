@@ -11,6 +11,15 @@ vi.mock('@/lib/exhibition/venue-mutations', () => ({
   deleteBooth: vi.fn(),
 }));
 
+vi.mock('@/lib/exhibition/venue-path-mutations', () => ({
+  setVenueEntrance: vi.fn(),
+  upsertVenuePathNode: vi.fn(),
+  deleteVenuePathNode: vi.fn(),
+  upsertVenuePathEdge: vi.fn(),
+  deleteVenuePathEdge: vi.fn(),
+  ensureBoothPathNode: vi.fn(),
+}));
+
 vi.mock('next/cache', () => ({
   revalidatePath: vi.fn(),
 }));

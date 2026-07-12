@@ -1,4 +1,4 @@
-import type { ExhibitionEventStatus } from '@toonexpo/domain';
+import type { ExhibitionEventStatus, VenuePathNodeKind } from '@toonexpo/domain';
 import { prisma } from '@toonexpo/db';
 
 export type AdminVenueBoothRow = {
@@ -15,6 +15,20 @@ export type AdminVenueBoothRow = {
   partnerName: string | null;
 };
 
+export type AdminPathNodeRow = {
+  id: string;
+  xPercent: number;
+  yPercent: number;
+  kind: VenuePathNodeKind;
+  boothId: string | null;
+};
+
+export type AdminPathEdgeRow = {
+  id: string;
+  fromNodeId: string;
+  toNodeId: string;
+};
+
 export type AdminVenueMapDetail = {
   event: {
     id: string;
@@ -26,8 +40,12 @@ export type AdminVenueMapDetail = {
     id: string;
     imageUrl: string;
     imageAlt: string | null;
+    entranceXPercent: number | null;
+    entranceYPercent: number | null;
   } | null;
   booths: AdminVenueBoothRow[];
+  pathNodes: AdminPathNodeRow[];
+  pathEdges: AdminPathEdgeRow[];
 };
 
 export type AdminAssignmentOption = {
@@ -50,6 +68,8 @@ export async function loadAdminVenueMapDetail(
           id: true,
           imageUrl: true,
           imageAlt: true,
+          entranceXPercent: true,
+          entranceYPercent: true,
           booths: {
             orderBy: [{ sortOrder: 'asc' }, { code: 'asc' }],
             select: {
@@ -64,6 +84,22 @@ export async function loadAdminVenueMapDetail(
               partnerId: true,
               company: { select: { name: true } },
               partner: { select: { name: true } },
+            },
+          },
+          pathNodes: {
+            select: {
+              id: true,
+              xPercent: true,
+              yPercent: true,
+              kind: true,
+              boothId: true,
+            },
+          },
+          pathEdges: {
+            select: {
+              id: true,
+              fromNodeId: true,
+              toNodeId: true,
             },
           },
         },
@@ -84,7 +120,13 @@ export async function loadAdminVenueMapDetail(
       status: event.status,
     },
     venueMap: venueMap
-      ? { id: venueMap.id, imageUrl: venueMap.imageUrl, imageAlt: venueMap.imageAlt }
+      ? {
+          id: venueMap.id,
+          imageUrl: venueMap.imageUrl,
+          imageAlt: venueMap.imageAlt,
+          entranceXPercent: venueMap.entranceXPercent,
+          entranceYPercent: venueMap.entranceYPercent,
+        }
       : null,
     booths: (venueMap?.booths ?? []).map((booth) => ({
       id: booth.id,
@@ -99,6 +141,8 @@ export async function loadAdminVenueMapDetail(
       companyName: booth.company?.name ?? null,
       partnerName: booth.partner?.name ?? null,
     })),
+    pathNodes: venueMap?.pathNodes ?? [],
+    pathEdges: venueMap?.pathEdges ?? [],
   };
 }
 

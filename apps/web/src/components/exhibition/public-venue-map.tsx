@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 
 import { Link } from '@/i18n/navigation';
 import { CATALOG_IMAGE_HEIGHT, CATALOG_IMAGE_WIDTH } from '@/lib/catalog/image-dimensions';
+import { computeBoothRoute, type RouteGraph, type RoutePoint } from '@/lib/exhibition/route-path';
 import type { PublicBooth, PublicVenueMap } from '@/lib/exhibition/venue-queries';
 
 type PublicVenueMapViewProps = {
@@ -23,10 +24,27 @@ function boothMatchesQuery(booth: PublicBooth, query: string): boolean {
   return haystack.includes(query);
 }
 
+function toRouteGraph(venueMap: PublicVenueMap): RouteGraph {
+  return {
+    nodes: venueMap.pathNodes.map((node) => ({
+      id: node.id,
+      xPercent: node.xPercent,
+      yPercent: node.yPercent,
+      kind: node.kind,
+      boothId: node.boothId,
+    })),
+    edges: venueMap.pathEdges.map((edge) => ({
+      fromNodeId: edge.fromNodeId,
+      toNodeId: edge.toNodeId,
+    })),
+  };
+}
+
 export function PublicVenueMapView({ venueMap }: PublicVenueMapViewProps) {
   const t = useTranslations('catalog.exhibition');
   const [query, setQuery] = useState('');
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [routePoints, setRoutePoints] = useState<RoutePoint[] | null>(null);
 
   const normalizedQuery = query.trim().toLowerCase();
   const visibleBooths = useMemo(
@@ -35,6 +53,37 @@ export function PublicVenueMapView({ venueMap }: PublicVenueMapViewProps) {
   );
 
   const selected = venueMap.booths.find((booth) => booth.id === selectedId) ?? null;
+  const graph = useMemo(() => toRouteGraph(venueMap), [venueMap]);
+  const entrance =
+    venueMap.entranceXPercent != null && venueMap.entranceYPercent != null
+      ? { xPercent: venueMap.entranceXPercent, yPercent: venueMap.entranceYPercent }
+      : null;
+
+  const previewRoute = selected ? computeBoothRoute(graph, selected, entrance) : null;
+
+  function handleSelectBooth(boothId: string): void {
+    setSelectedId(boothId);
+    setRoutePoints(null);
+  }
+
+  function handleShowRoute(): void {
+    if (!selected || !previewRoute) {
+      return;
+    }
+    setRoutePoints(previewRoute);
+  }
+
+  function handleClearRoute(): void {
+    setRoutePoints(null);
+  }
+
+  function handleCloseDetail(): void {
+    setSelectedId(null);
+    setRoutePoints(null);
+  }
+
+  const polylinePoints =
+    routePoints?.map((point) => `${point.xPercent},${point.yPercent}`).join(' ') ?? '';
 
   return (
     <div className="catalog-venue">
@@ -65,6 +114,20 @@ export function PublicVenueMapView({ venueMap }: PublicVenueMapViewProps) {
             priority
           />
           <div className="catalog-visual-map-canvas__overlay">
+            {polylinePoints ? (
+              <svg
+                className="catalog-venue-route"
+                viewBox="0 0 100 100"
+                preserveAspectRatio="none"
+                aria-hidden
+              >
+                <polyline
+                  className="catalog-venue-route__line"
+                  points={polylinePoints}
+                  fill="none"
+                />
+              </svg>
+            ) : null}
             {visibleBooths.map((booth) => (
               <button
                 key={booth.id}
@@ -78,7 +141,7 @@ export function PublicVenueMapView({ venueMap }: PublicVenueMapViewProps) {
                 title={booth.code}
                 aria-label={booth.label}
                 aria-pressed={selectedId === booth.id}
-                onClick={() => setSelectedId(booth.id)}
+                onClick={() => handleSelectBooth(booth.id)}
               >
                 <span className="catalog-venue-marker__code">{booth.code}</span>
               </button>
@@ -98,8 +161,15 @@ export function PublicVenueMapView({ venueMap }: PublicVenueMapViewProps) {
                 viewCompany: t('detail.viewCompany'),
                 viewPartner: t('detail.viewPartner'),
                 close: t('detail.close'),
+                showRoute: t('detail.showRoute'),
+                clearRoute: t('detail.clearRoute'),
+                routeUnavailable: t('detail.routeUnavailable'),
               }}
-              onClose={() => setSelectedId(null)}
+              canShowRoute={previewRoute != null}
+              routeActive={routePoints != null}
+              onShowRoute={handleShowRoute}
+              onClearRoute={handleClearRoute}
+              onClose={handleCloseDetail}
             />
           ) : (
             <p className="catalog-venue__panel-empty">{t('selectHint')}</p>
@@ -122,11 +192,26 @@ type BoothDetailProps = {
     viewCompany: string;
     viewPartner: string;
     close: string;
+    showRoute: string;
+    clearRoute: string;
+    routeUnavailable: string;
   };
+  canShowRoute: boolean;
+  routeActive: boolean;
+  onShowRoute: () => void;
+  onClearRoute: () => void;
   onClose: () => void;
 };
 
-function BoothDetail({ booth, labels, onClose }: BoothDetailProps) {
+function BoothDetail({
+  booth,
+  labels,
+  canShowRoute,
+  routeActive,
+  onShowRoute,
+  onClearRoute,
+  onClose,
+}: BoothDetailProps) {
   return (
     <div className="catalog-venue__detail">
       <div className="catalog-venue__detail-header">
@@ -159,6 +244,21 @@ function BoothDetail({ booth, labels, onClose }: BoothDetailProps) {
           {labels.note}: {booth.note}
         </p>
       ) : null}
+      <div className="catalog-venue__route-actions">
+        {canShowRoute ? (
+          routeActive ? (
+            <button type="button" className="portal-btn portal-btn--ghost" onClick={onClearRoute}>
+              {labels.clearRoute}
+            </button>
+          ) : (
+            <button type="button" className="portal-btn" onClick={onShowRoute}>
+              {labels.showRoute}
+            </button>
+          )
+        ) : (
+          <p className="catalog-venue__route-unavailable">{labels.routeUnavailable}</p>
+        )}
+      </div>
     </div>
   );
 }

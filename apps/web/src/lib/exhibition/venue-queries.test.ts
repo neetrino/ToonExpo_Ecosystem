@@ -33,6 +33,8 @@ describe('loadPublicVenueMap', () => {
       id: 'vm-1',
       imageUrl: 'https://picsum.photos/seed/v/800/600',
       imageAlt: 'Plan',
+      entranceXPercent: 50,
+      entranceYPercent: 95,
       event: { id: 'evt-1', name: 'Demo', code: 'demo', status: 'ACTIVE' },
       booths: [
         {
@@ -46,11 +48,15 @@ describe('loadPublicVenueMap', () => {
           partner: null,
         },
       ],
+      pathNodes: [],
+      pathEdges: [],
     });
 
     const result = await loadPublicVenueMap();
     expect(result?.event.status).toBe('ACTIVE');
     expect(result?.booths[0]?.code).toBe('A12');
+    expect(result?.entranceXPercent).toBe(50);
+    expect(result?.pathNodes).toEqual([]);
     expect(mockVenueFindFirst).toHaveBeenCalledWith(
       expect.objectContaining({
         where: { event: { status: 'ACTIVE' } },

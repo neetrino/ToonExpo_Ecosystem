@@ -4,6 +4,8 @@ import {
   boothMoveInputSchema,
   boothUpsertInputSchema,
   venueMapUpsertInputSchema,
+  venuePathEdgeUpsertInputSchema,
+  venuePathNodeUpsertInputSchema,
 } from './venue-map';
 
 describe('venueMapUpsertInputSchema', () => {
@@ -75,5 +77,41 @@ describe('boothMoveInputSchema', () => {
     expect(
       boothMoveInputSchema.safeParse({ boothId: 'b1', xPercent: 0, yPercent: 100 }).success,
     ).toBe(true);
+  });
+});
+
+describe('venuePathNodeUpsertInputSchema', () => {
+  it('requires boothId for BOOTH kind', () => {
+    expect(
+      venuePathNodeUpsertInputSchema.safeParse({
+        venueMapId: 'vm-1',
+        xPercent: 10,
+        yPercent: 20,
+        kind: 'BOOTH',
+      }).success,
+    ).toBe(false);
+  });
+
+  it('accepts WAYPOINT without boothId', () => {
+    expect(
+      venuePathNodeUpsertInputSchema.safeParse({
+        venueMapId: 'vm-1',
+        xPercent: 10,
+        yPercent: 20,
+        kind: 'WAYPOINT',
+      }).success,
+    ).toBe(true);
+  });
+});
+
+describe('venuePathEdgeUpsertInputSchema', () => {
+  it('rejects self-edges', () => {
+    expect(
+      venuePathEdgeUpsertInputSchema.safeParse({
+        venueMapId: 'vm-1',
+        fromNodeId: 'n1',
+        toNodeId: 'n1',
+      }).success,
+    ).toBe(false);
   });
 });

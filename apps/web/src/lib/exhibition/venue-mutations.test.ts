@@ -10,6 +10,16 @@ const mockBoothFindUnique = vi.fn();
 const mockBoothDelete = vi.fn();
 const mockCompanyFindUnique = vi.fn();
 const mockPartnerFindUnique = vi.fn();
+const mockPathNodeUpsert = vi.fn();
+const mockPathNodeFindFirst = vi.fn();
+const mockPathNodeCreate = vi.fn();
+const mockPathNodeUpdate = vi.fn();
+const mockPathNodeDelete = vi.fn();
+const mockPathEdgeUpsert = vi.fn();
+const mockPathEdgeDelete = vi.fn();
+const mockPathEdgeFindUnique = vi.fn();
+const mockVenueUpdate = vi.fn();
+const mockPathNodeFindMany = vi.fn();
 
 const { MockPrismaKnownRequestError } = vi.hoisted(() => {
   class MockPrismaKnownRequestError extends Error {
@@ -38,6 +48,7 @@ vi.mock('@toonexpo/db', () => ({
     venueMap: {
       upsert: (...args: unknown[]) => mockVenueUpsert(...args),
       findUnique: (...args: unknown[]) => mockVenueFindUnique(...args),
+      update: (...args: unknown[]) => mockVenueUpdate(...args),
     },
     booth: {
       create: (...args: unknown[]) => mockBoothCreate(...args),
@@ -45,6 +56,19 @@ vi.mock('@toonexpo/db', () => ({
       findFirst: (...args: unknown[]) => mockBoothFindFirst(...args),
       findUnique: (...args: unknown[]) => mockBoothFindUnique(...args),
       delete: (...args: unknown[]) => mockBoothDelete(...args),
+    },
+    venuePathNode: {
+      upsert: (...args: unknown[]) => mockPathNodeUpsert(...args),
+      findFirst: (...args: unknown[]) => mockPathNodeFindFirst(...args),
+      findMany: (...args: unknown[]) => mockPathNodeFindMany(...args),
+      create: (...args: unknown[]) => mockPathNodeCreate(...args),
+      update: (...args: unknown[]) => mockPathNodeUpdate(...args),
+      delete: (...args: unknown[]) => mockPathNodeDelete(...args),
+    },
+    venuePathEdge: {
+      upsert: (...args: unknown[]) => mockPathEdgeUpsert(...args),
+      findUnique: (...args: unknown[]) => mockPathEdgeFindUnique(...args),
+      delete: (...args: unknown[]) => mockPathEdgeDelete(...args),
     },
     company: { findUnique: (...args: unknown[]) => mockCompanyFindUnique(...args) },
     partner: { findUnique: (...args: unknown[]) => mockPartnerFindUnique(...args) },
@@ -120,6 +144,7 @@ describe('upsertBooth', () => {
 
   it('creates a booth with uppercased code', async () => {
     mockBoothCreate.mockResolvedValue({ id: 'b-1', venueMapId: 'vm-1' });
+    mockPathNodeUpsert.mockResolvedValue({ id: 'n-1' });
     const result = await upsertBooth({
       venueMapId: 'vm-1',
       code: 'a12',
@@ -134,6 +159,7 @@ describe('upsertBooth', () => {
         data: expect.objectContaining({ code: 'A12', companyId: 'co-1' }),
       }),
     );
+    expect(mockPathNodeUpsert).toHaveBeenCalled();
   });
 });
 
