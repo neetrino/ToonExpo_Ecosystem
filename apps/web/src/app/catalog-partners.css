@@ -46,6 +46,7 @@
 
 .catalog-partner-card:hover {
   border-color: var(--te-accent);
+  box-shadow: 0 12px 28px rgba(11, 31, 58, 0.1);
   transform: translateY(-2px);
 }
 
@@ -104,8 +105,8 @@
 }
 
 .catalog-badge--partner-type {
-  background: rgba(148, 163, 184, 0.15);
-  color: #cbd5e1;
+  background: var(--te-bg-soft);
+  color: var(--te-muted);
 }
 
 .catalog-badge--featured {

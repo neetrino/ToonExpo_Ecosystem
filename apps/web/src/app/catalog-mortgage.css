@@ -10,9 +10,14 @@
 }
 
 .catalog-mortgage__form {
+  background: var(--te-card);
+  border: 1px solid var(--te-border);
+  border-radius: var(--te-radius);
+  box-shadow: var(--te-shadow-soft);
   display: grid;
   gap: 1rem;
   margin-bottom: 1.5rem;
+  padding: 1.25rem;
 }
 
 .catalog-mortgage__field {
@@ -23,12 +28,17 @@
 }
 
 .catalog-mortgage__field input {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 0.375rem;
-  color: inherit;
+  background: var(--te-card);
+  border: 1px solid var(--te-border);
+  border-radius: 0.5rem;
+  color: var(--te-fg);
   font: inherit;
   padding: 0.5rem 0.75rem;
+}
+
+.catalog-mortgage__field input:focus {
+  border-color: var(--te-accent);
+  outline: none;
 }
 
 .catalog-mortgage__selected-rate {
@@ -38,7 +48,7 @@
 }
 
 .catalog-mortgage__hint {
-  color: var(--te-warning, #e8a838);
+  color: #b45309;
   font-size: 0.8125rem;
   line-height: 1.4;
   margin: 0;
@@ -58,6 +68,7 @@
 }
 
 .catalog-mortgage__results dd {
+  color: var(--te-fg);
   font-size: 1rem;
   font-weight: 500;
   margin: 0.2rem 0 0;
@@ -86,9 +97,10 @@
 }
 
 .catalog-mortgage-offer {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 0.75rem;
+  background: var(--te-card);
+  border: 1px solid var(--te-border);
+  border-radius: var(--te-radius);
+  box-shadow: var(--te-shadow-soft);
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -97,17 +109,18 @@
   text-align: left;
   transition:
     border-color 0.15s ease,
-    background 0.15s ease;
+    background 0.15s ease,
+    box-shadow 0.15s ease;
   width: 100%;
 }
 
 .catalog-mortgage-offer:hover {
-  border-color: rgba(61, 139, 253, 0.45);
+  border-color: var(--te-accent);
 }
 
 .catalog-mortgage-offer--selected {
-  background: rgba(61, 139, 253, 0.1);
-  border-color: rgba(61, 139, 253, 0.55);
+  background: var(--te-accent-soft);
+  border-color: var(--te-accent);
 }
 
 .catalog-mortgage-offer__header {
@@ -124,6 +137,7 @@
 }
 
 .catalog-mortgage-offer__title {
+  color: var(--te-fg);
   font-size: 1rem;
   font-weight: 600;
   margin: 0;
@@ -156,9 +170,9 @@
 }
 
 .catalog-mortgage__manual-toggle {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 0.375rem;
+  background: var(--te-card);
+  border: 1px solid var(--te-border);
+  border-radius: 0.5rem;
   color: var(--te-muted);
   cursor: pointer;
   font-size: 0.8125rem;
@@ -167,6 +181,6 @@
 }
 
 .catalog-mortgage__manual-toggle:hover {
-  border-color: rgba(61, 139, 253, 0.45);
+  border-color: var(--te-accent);
   color: var(--te-fg);
 }

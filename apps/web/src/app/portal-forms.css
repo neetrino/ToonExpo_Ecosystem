@@ -30,8 +30,8 @@
 .portal-form__input,
 .portal-form__textarea,
 .portal-form__select {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: var(--te-card);
+  border: 1px solid var(--te-border);
   border-radius: 0.5rem;
   color: var(--te-fg);
   font-size: 0.875rem;
@@ -50,7 +50,7 @@
 }
 
 .portal-form__error {
-  color: #f87171;
+  color: #b91c1c;
   font-size: 0.875rem;
   margin: 0;
 }
@@ -72,7 +72,7 @@
 }
 
 .portal-form__details {
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  border-top: 1px solid var(--te-border);
   padding-top: 0.75rem;
 }
 
@@ -108,18 +108,18 @@
 }
 
 .portal-apartment-status--AVAILABLE {
-  background: rgba(52, 211, 153, 0.15);
-  color: #6ee7b7;
+  background: var(--te-accent-soft);
+  color: var(--te-accent);
 }
 
 .portal-apartment-status--RESERVED {
-  background: rgba(251, 191, 36, 0.15);
-  color: #fcd34d;
+  background: #fff7ed;
+  color: #c2410c;
 }
 
 .portal-apartment-status--SOLD {
-  background: rgba(148, 163, 184, 0.15);
-  color: #cbd5e1;
+  background: var(--te-bg-soft);
+  color: var(--te-muted);
 }
 
 .portal-filter {
@@ -129,7 +129,7 @@
 }
 
 .portal-filter__link {
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid var(--te-border);
   border-radius: 0.5rem;
   color: var(--te-muted);
   font-size: 0.875rem;
@@ -142,7 +142,7 @@
 }
 
 .portal-filter__link:hover {
-  border-color: rgba(61, 139, 253, 0.5);
+  border-color: var(--te-accent);
   color: var(--te-fg);
 }
 

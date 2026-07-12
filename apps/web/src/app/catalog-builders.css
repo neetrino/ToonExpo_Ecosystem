@@ -16,6 +16,7 @@
 
 .catalog-builder-card:hover {
   border-color: var(--te-accent);
+  box-shadow: 0 12px 28px rgba(11, 31, 58, 0.1);
   transform: translateY(-2px);
 }
 
