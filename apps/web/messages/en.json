@@ -69,7 +69,8 @@
     "errors": {
       "invalidInput": "Please check the highlighted fields and try again.",
       "emailTaken": "This email is already registered.",
-      "invalidCredentials": "Invalid email or password."
+      "invalidCredentials": "Invalid email or password.",
+      "rateLimited": "Too many attempts. Please wait a minute and try again."
     }
   },
   "admin": {
@@ -1138,7 +1139,8 @@
       },
       "errors": {
         "invalidInput": "Please check the fields and try again.",
-        "notFound": "This project is not available for requests."
+        "notFound": "This project is not available for requests.",
+        "rateLimited": "Too many requests. Please wait a minute and try again."
       }
     },
     "apartmentStatus": {
@@ -1306,6 +1308,10 @@
     "public": {
       "title": "Visitor QR",
       "body": "Sign in as a builder or entrance staff to continue, or ask the visitor to open My QR in their ToonExpo account."
+    },
+    "rateLimited": {
+      "title": "Too many scans",
+      "body": "Please wait a minute before scanning again."
     },
     "builder": {
       "title": "Visitor from QR scan",

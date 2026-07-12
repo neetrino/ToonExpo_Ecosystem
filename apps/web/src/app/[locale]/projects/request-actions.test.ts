@@ -8,8 +8,13 @@ vi.mock('@/lib/crm/public-request-mutations', () => ({
   submitPublicRequest: vi.fn(),
 }));
 
+vi.mock('@/lib/rate-limit', () => ({
+  assertIpNotRateLimited: vi.fn(),
+}));
+
 import { auth } from '@/auth';
 import { submitPublicRequest } from '@/lib/crm/public-request-mutations';
+import { assertIpNotRateLimited } from '@/lib/rate-limit';
 
 import { publicRequestFormAction, submitPublicRequestAction } from './request-actions';
 
@@ -28,6 +33,7 @@ describe('publicRequestFormAction', () => {
     vi.clearAllMocks();
     vi.mocked(auth).mockResolvedValue(null as never);
     vi.mocked(submitPublicRequest).mockResolvedValue({ ok: true, dealId: 'deal-1' });
+    vi.mocked(assertIpNotRateLimited).mockResolvedValue({ limited: false });
   });
 
   it('returns success without calling prisma when honeypot is filled', async () => {
@@ -42,6 +48,26 @@ describe('publicRequestFormAction', () => {
     const result = await publicRequestFormAction('en', {}, formData);
 
     expect(result).toEqual({ success: true });
+    expect(submitPublicRequest).not.toHaveBeenCalled();
+    expect(assertIpNotRateLimited).not.toHaveBeenCalled();
+  });
+
+  it('returns rateLimited when the limiter denies', async () => {
+    vi.mocked(assertIpNotRateLimited).mockResolvedValue({
+      limited: true,
+      errorKey: 'rateLimited',
+    });
+
+    const formData = buildFormData({
+      projectId: 'project-1',
+      name: 'Ani',
+      phone: '+37491112233',
+      email: 'ani@example.com',
+    });
+
+    const result = await publicRequestFormAction('en', {}, formData);
+
+    expect(result).toEqual({ errorKey: 'rateLimited' });
     expect(submitPublicRequest).not.toHaveBeenCalled();
   });
 
@@ -92,6 +118,7 @@ describe('submitPublicRequestAction', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(submitPublicRequest).mockResolvedValue({ ok: true, dealId: 'deal-1' });
+    vi.mocked(assertIpNotRateLimited).mockResolvedValue({ limited: false });
   });
 
   it('forwards input to submitPublicRequest', async () => {

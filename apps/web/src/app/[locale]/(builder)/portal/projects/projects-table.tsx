@@ -29,12 +29,7 @@ function formatProjectDate(date: Date, locale: string): string {
   return new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(date);
 }
 
-export function ProjectsTable({
-  locale,
-  projects,
-  labels,
-  statusLabels,
-}: ProjectsTableProps) {
+export function ProjectsTable({ locale, projects, labels, statusLabels }: ProjectsTableProps) {
   return (
     <div className="portal-table-wrap">
       <table className="portal-table">

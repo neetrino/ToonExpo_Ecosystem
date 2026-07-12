@@ -6,6 +6,7 @@ import { AuthError } from 'next-auth';
 import { signIn } from '@/auth';
 import type { AuthActionState } from '@/lib/auth/action-state';
 import { ACCOUNT_PATH } from '@/lib/auth/constants';
+import { authRateLimitGate } from '@/lib/auth/rate-limit-gate';
 import { registerBuyer } from '@/lib/auth/register';
 
 function accountRedirect(locale: string): string {
@@ -17,6 +18,11 @@ export async function loginAction(
   _prevState: AuthActionState,
   formData: FormData,
 ): Promise<AuthActionState> {
+  const limited = await authRateLimitGate('login');
+  if (limited) {
+    return limited;
+  }
+
   const parsed = loginSchema.safeParse({
     email: formData.get('email'),
     password: formData.get('password'),
@@ -47,6 +53,11 @@ export async function registerAction(
   _prevState: AuthActionState,
   formData: FormData,
 ): Promise<AuthActionState> {
+  const limited = await authRateLimitGate('register');
+  if (limited) {
+    return limited;
+  }
+
   const parsed = buyerRegisterSchema.safeParse({
     name: formData.get('name'),
     phone: formData.get('phone'),

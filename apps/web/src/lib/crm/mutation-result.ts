@@ -1,4 +1,4 @@
-export const PUBLIC_REQUEST_ERROR_KEYS = ['invalidInput', 'notFound'] as const;
+export const PUBLIC_REQUEST_ERROR_KEYS = ['invalidInput', 'notFound', 'rateLimited'] as const;
 
 export type PublicRequestErrorKey = (typeof PUBLIC_REQUEST_ERROR_KEYS)[number];
 

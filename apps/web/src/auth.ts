@@ -36,7 +36,8 @@ const adapter = PrismaAdapter(prisma);
  * Cookies rely on Auth.js defaults (httpOnly, sameSite=lax, secure over HTTPS);
  * lifetime is driven by `session.maxAge`.
  *
- * TODO(rate-limit): add rate limiting (Redis) around sign-in/registration.
+ * Rate limiting for credentials sign-in / registration lives in the server
+ * actions (`loginAction` / `registerAction`) so the UI can show `rateLimited`.
  */
 // Exports are explicitly annotated to avoid the pnpm portability error (TS2742)
 // where Auth.js's inferred `signIn`/`auth` types reference an internal

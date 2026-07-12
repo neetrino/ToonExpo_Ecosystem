@@ -19,6 +19,8 @@
     "@toonexpo/domain": "workspace:^",
     "@toonexpo/shared": "workspace:*",
     "@toonexpo/ui": "workspace:*",
+    "@upstash/ratelimit": "^2.0.8",
+    "@upstash/redis": "^1.38.0",
     "argon2": "^0.44.0",
     "dotenv": "^16.6.1",
     "next": "^15.3.4",

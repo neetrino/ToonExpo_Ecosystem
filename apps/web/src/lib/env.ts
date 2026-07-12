@@ -8,6 +8,9 @@ export const webEnvSchema = z.object({
   AUTH_SECRET: z.string().min(32),
   AUTH_URL: z.string().url().optional(),
   DATABASE_URL: z.string().url().optional(),
+  /** Optional — when unset, rate limiting fails open (local/CI). */
+  UPSTASH_REDIS_REST_URL: z.preprocess(emptyToUndefined, z.string().url().optional()),
+  UPSTASH_REDIS_REST_TOKEN: z.preprocess(emptyToUndefined, z.string().optional()),
 });
 
 export type WebEnv = z.infer<typeof webEnvSchema>;

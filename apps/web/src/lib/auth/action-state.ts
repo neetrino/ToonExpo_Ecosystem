@@ -1,4 +1,4 @@
-export type AuthErrorKey = 'invalidInput' | 'emailTaken' | 'invalidCredentials';
+export type AuthErrorKey = 'invalidInput' | 'emailTaken' | 'invalidCredentials' | 'rateLimited';
 
 export type AuthActionState = {
   errorKey?: AuthErrorKey;
