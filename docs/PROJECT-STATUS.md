@@ -51,7 +51,7 @@ Continue-dev backlog: [`PROGRESS.md` → Handoff](./PROGRESS.md#handoff--next-wo
 | E2E fetch smoke | Done | 95% | `pnpm e2e:local` |
 | Playwright | Partial | 70% | Local critical journeys; **CI not wired** |
 | Redis general cache/queues | Not started | 0% | Only rate-limit today |
-| Sentry | Not started | 0% | Confirmed in TECH_CARD; keys TBD |
+| Sentry | Partial | 20% | Env placeholders + no-op init; full SDK when DSN exists |
 | Staging / prod deploy | Partial | 40% | Docker/CI exist; domain/env cutover pending |
 
 ---

@@ -36,6 +36,8 @@ export const apiEnvSchema = z.object({
     }
     return cleaned;
   }, z.boolean().optional()),
+  /** Optional — when unset, Sentry stays disabled. Full SDK wizard is follow-up. */
+  SENTRY_DSN: z.preprocess(emptyToUndefined, z.string().url().optional()),
 });
 
 export type ApiEnv = z.infer<typeof apiEnvSchema>;

@@ -32,7 +32,7 @@ Size C — large, layout: monorepo (`apps/*`, `packages/*`).
 | QR | Server-generated signed token + QR rendering | Confirmed | Token stores no personal data. |
 | Maps | Custom image/hotspot editors first | Confirmed | Venue and real estate visual maps are image/coordinate based in v1. |
 | Cache/queues | Upstash Redis when needed | Confirmed | Rate limiting live (auth, public request, QR, BOS provisioning). General cache/queues still deferred. Prefer Upstash over self-hosted Redis. |
-| Error tracking | Sentry | Confirmed | Useful for public/admin flows. |
+| Error tracking | Sentry | Confirmed | Env placeholders ready (`SENTRY_DSN` / `NEXT_PUBLIC_SENTRY_DSN`). Full `@sentry/nextjs` wizard when DSN projects exist. |
 | Hosting | Vercel for web, Google Cloud Run for API | Confirmed | NestJS API deploys to Cloud Run. |
 | CI/CD | GitHub Actions + turbo affected tasks | Confirmed | Size C default. |
 | Tests | Vitest, API integration tests, Playwright critical journeys | Confirmed | Buyer registration, QR, CRM, admin setup. |
@@ -193,4 +193,4 @@ packages/
 
 - staging/prod domains and subdomain plan;
 - Cloud Run / Vercel project wiring;
-- Sentry project keys when observability is added.
+- Sentry project keys when observability is added — set `SENTRY_DSN` / `NEXT_PUBLIC_SENTRY_DSN`, then run the Next.js Sentry wizard (env placeholders + no-op `initSentry` already land).

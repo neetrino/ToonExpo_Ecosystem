@@ -63,4 +63,17 @@ describe('apiEnvSchema', () => {
     });
     expect(unset.SWAGGER_ENABLED).toBeUndefined();
   });
+
+  it('treats empty SENTRY_DSN as unset', () => {
+    const parsed = apiEnvSchema.parse({
+      NODE_ENV: 'development',
+      API_URL: 'http://localhost:4000',
+      APP_URL: 'http://localhost:3000',
+      DATABASE_URL: 'postgresql://user:pass@localhost:5432/toonexpo',
+      AUTH_SECRET: 'x'.repeat(32),
+      SENTRY_DSN: '',
+    });
+
+    expect(parsed.SENTRY_DSN).toBeUndefined();
+  });
 });

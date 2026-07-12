@@ -20,6 +20,9 @@ export const webEnvSchema = z.object({
   R2_SECRET_ACCESS_KEY: z.preprocess(emptyToUndefined, z.string().optional()),
   R2_BUCKET_NAME: z.preprocess(emptyToUndefined, z.string().optional()),
   R2_PUBLIC_URL: z.preprocess(emptyToUndefined, z.string().url().optional()),
+  /** Optional — when unset, Sentry stays disabled (no SDK wire-up required). */
+  SENTRY_DSN: z.preprocess(emptyToUndefined, z.string().url().optional()),
+  NEXT_PUBLIC_SENTRY_DSN: z.preprocess(emptyToUndefined, z.string().url().optional()),
 });
 
 export type WebEnv = z.infer<typeof webEnvSchema>;

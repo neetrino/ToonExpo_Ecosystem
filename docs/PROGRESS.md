@@ -20,19 +20,25 @@ Branch: `sipan`. MVP backlog through Sprint 7.7 is **done**. Use this section to
 3. **Playwright in CI** — job alongside existing fetch smoke (`pnpm e2e:local`); see `e2e/playwright/README.md`.
 4. **Wire API auth against DB sessions** — Nest guards should verify Auth.js session rows, not JWT-only shortcuts.
 5. **Email/phone verification + password reset** — deferred from v1 (set-password invite flow exists).
-6. **Sentry project keys** — wire DSN for web + API when projects exist.
+6. **Sentry project keys** — env placeholders exist; wire `@sentry/nextjs` when DSN projects exist.
 7. **Staging/prod domain + env** — `AUTH_URL`, CORS, cookie `Secure`, deploy targets (Vercel web, Cloud Run API).
 8. **Neon `DIRECT_URL`** — add if pooler migrate issues appear.
 9. **BOS / integration** — provisioning v1 done; no Open blockers. Future sync/contracts: [`docs/03-Integration-With-BOS/`](./03-Integration-With-BOS/).
 
 ### Frontend next
 
-1. **Playwright CI wiring** — same specs as local; document seed creds in CI secrets.
+1. **Playwright CI wiring** — same specs as local; document seed creds in CI secrets (local `pnpm test:e2e` already works).
 2. **GPS blue-dot** — explicitly **out of scope** (no live indoor positioning in v1).
 3. **Multi-floor venue routing** — single-floor BFS v1 done; multi-floor graph + UI is follow-up.
-4. **UI polish nits** — booth spreadsheet import, booth types dictionary, readiness category CRUD, partner readiness module (all deferred, non-blocking).
+4. **UI polish nits** — booth spreadsheet import, booth types dictionary, partner readiness module (deferred).
 5. **Catalog / public polish** — builders directory filters, partners list UX, mobile pass on catalog cards/sheets under existing `--te-*` tokens (no new palette).
 6. **Keep `--te-*` tokens** — extend UI via tokens in `globals.css`, not ad-hoc hex/inline styles.
+
+### P2 polish (partial)
+
+- **QR revoke** — buyer account can revoke (`revokedAt`); resolve/check-in already reject revoked tokens; regenerate clears block.
+- **Public SEO** — `generateMetadata` + JSON-LD on project / apartment / partner / builder detail pages (`apps/web/src/lib/seo/`).
+- **Sentry** — optional env placeholders + no-op `initSentry` (full SDK wizard when DSN exists).
 
 ### Setup (read first)
 
