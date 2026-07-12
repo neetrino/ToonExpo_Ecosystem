@@ -25,6 +25,12 @@ tmp/
 temp/
 .cache/
 
+# Playwright
+/playwright-report/
+/test-results/
+/blob-report/
+/playwright/.cache/
+
 # Prisma
 packages/db/prisma/*.db
 packages/db/prisma/*.db-journal

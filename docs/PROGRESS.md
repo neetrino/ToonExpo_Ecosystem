@@ -2,7 +2,7 @@
 
 ## Current Status
 
-**Recent:** DB seed adds ~20 PUBLISHED catalog projects (3 companies) for public browsing after UI redesign.
+**Recent:** Playwright critical-journey scaffolding (`pnpm test:e2e`) alongside existing fetch smoke.
 
 Sprint 7.7 **COMPLETE** — Tech hardening: apartment status history, Swagger prod gate, analytics sampling/bot filter.
 
@@ -20,7 +20,7 @@ Sprint 7.1 **COMPLETE** — Upstash Redis rate limiting on auth, public request,
 
 Sprint 6 **COMPLETE** — Analytics v1, BOS provisioning (atomic idempotency), audit logs + CSV reports, e2e smoke, hardening + final audit fixes.
 
-**MVP backlog complete** — planned sprints through 7.7 are done. Deferred follow-ups (not blockers): indoor route graph / pathfinding, Playwright e2e, `AnalyticsDailyAggregate` warehouse, general Redis caching/queues.
+**MVP backlog complete** — planned sprints through 7.7 are done. Deferred follow-ups (not blockers): indoor route graph / pathfinding, `AnalyticsDailyAggregate` warehouse, general Redis caching/queues. Playwright critical journeys scaffolded (local/manual; CI follow-up).
 
 ## Sprint 7.7 — Tech hardening pack (COMPLETE)
 
@@ -98,7 +98,7 @@ Sprint 6 **COMPLETE** — Analytics v1, BOS provisioning (atomic idempotency), a
 
 - Deeper view instrumentation (beyond favorites aggregates).
 - `AnalyticsDailyAggregate` warehouse / rollup tables.
-- Playwright e2e (current suite is fetch-based smoke).
+- Playwright critical journeys — **done (partial):** `pnpm test:e2e` under `e2e/playwright/` (catalog, auth RBAC, favorites login CTA). Fetch smoke (`pnpm e2e` / `e2e:local`) kept. Not blocking CI yet.
 
 ## Sprint 5 — COMPLETE
 
@@ -207,7 +207,8 @@ Audit fixes applied on branch `sipan` after the feature pack landed:
 
 ### Deferred (unchanged)
 
-- Indoor route graph / pathfinding, Playwright e2e, `AnalyticsDailyAggregate` warehouse, general Redis caching/queues.
+- Indoor route graph / pathfinding, `AnalyticsDailyAggregate` warehouse, general Redis caching/queues.
+- Playwright CI job (local `pnpm test:e2e` ready; see `e2e/playwright/README.md`).
 
 ## Open (non-blocking)
 

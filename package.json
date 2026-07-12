@@ -19,9 +19,12 @@
     "db:studio": "pnpm --filter @toonexpo/db studio",
     "db:seed": "pnpm --filter @toonexpo/db exec prisma db seed",
     "e2e": "node --env-file=.env scripts/e2e/run.mjs",
-    "e2e:local": "node --env-file=.env scripts/e2e/local.mjs"
+    "e2e:local": "node --env-file=.env scripts/e2e/local.mjs",
+    "test:e2e": "node --env-file=.env ./node_modules/@playwright/test/cli.js test",
+    "test:e2e:ui": "node --env-file=.env ./node_modules/@playwright/test/cli.js test --ui"
   },
   "devDependencies": {
+    "@playwright/test": "1.52.0",
     "@toonexpo/config": "workspace:*",
     "prettier": "^3.6.2",
     "turbo": "^2.5.4",
