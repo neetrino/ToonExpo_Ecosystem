@@ -3,9 +3,11 @@
 import type { ReadinessStatus, ReadinessTargetType } from '@toonexpo/domain';
 
 import { Link } from '@/i18n/navigation';
+import { formatDateTime } from '@/lib/crm/format-crm-dates';
 import type { AdminAssessmentListRow } from '@/lib/admin/readiness-queries';
 
 type ReadinessTableProps = {
+  locale: string;
   assessments: AdminAssessmentListRow[];
   labels: {
     columns: {
@@ -21,7 +23,6 @@ type ReadinessTableProps = {
   };
   statusLabels: Record<ReadinessStatus, string>;
   targetLabels: Record<ReadinessTargetType, string>;
-  formatDate: (date: Date) => string;
 };
 
 function targetLabel(
@@ -35,11 +36,11 @@ function targetLabel(
 }
 
 export function ReadinessTable({
+  locale,
   assessments,
   labels,
   statusLabels,
   targetLabels,
-  formatDate,
 }: ReadinessTableProps) {
   return (
     <div className="portal-table-wrap">
@@ -63,7 +64,7 @@ export function ReadinessTable({
                 <span className="portal-badge">{statusLabels[row.status]}</span>
               </td>
               <td>{row.evaluatorEmail ?? labels.noEvaluator}</td>
-              <td>{formatDate(row.updatedAt)}</td>
+              <td>{formatDateTime(row.updatedAt, locale)}</td>
               <td>
                 <Link
                   className="portal-btn portal-btn--ghost portal-btn--sm"

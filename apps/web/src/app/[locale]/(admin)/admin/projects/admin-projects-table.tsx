@@ -2,6 +2,7 @@
 
 import type { PublicationStatus } from '@toonexpo/domain';
 
+import { formatShortDate } from '@/lib/crm/format-crm-dates';
 import { STATUS_BADGE_CLASS, publicationActionsFor } from '@/lib/shared/publication';
 import type { AdminProjectRow } from '@/lib/admin/queries';
 
@@ -21,7 +22,6 @@ type AdminProjectsTableProps = {
     };
   };
   statusLabels: Record<PublicationStatus, string>;
-  formatDate: (date: Date) => string;
 };
 
 export function AdminProjectsTable({
@@ -29,7 +29,6 @@ export function AdminProjectsTable({
   projects,
   labels,
   statusLabels,
-  formatDate,
 }: AdminProjectsTableProps) {
   return (
     <div className="portal-table-wrap">
@@ -51,7 +50,6 @@ export function AdminProjectsTable({
               locale={locale}
               project={project}
               statusLabels={statusLabels}
-              formatDate={formatDate}
             />
           ))}
         </tbody>
@@ -64,10 +62,9 @@ type ProjectRowProps = {
   locale: string;
   project: AdminProjectRow;
   statusLabels: Record<PublicationStatus, string>;
-  formatDate: (date: Date) => string;
 };
 
-function ProjectRow({ locale, project, statusLabels, formatDate }: ProjectRowProps) {
+function ProjectRow({ locale, project, statusLabels }: ProjectRowProps) {
   const actions = publicationActionsFor(project.status);
 
   return (
@@ -78,7 +75,7 @@ function ProjectRow({ locale, project, statusLabels, formatDate }: ProjectRowPro
         <span className={STATUS_BADGE_CLASS[project.status]}>{statusLabels[project.status]}</span>
       </td>
       <td>{project.buildingsCount}</td>
-      <td>{formatDate(project.updatedAt)}</td>
+      <td>{formatShortDate(project.updatedAt, locale)}</td>
       <td>
         <div className="portal-actions">
           {actions.map((action) => (

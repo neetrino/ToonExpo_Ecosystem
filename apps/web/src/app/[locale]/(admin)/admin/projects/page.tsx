@@ -25,8 +25,6 @@ export default async function AdminProjectsPage({ params, searchParams }: AdminP
     loadAllProjects(statusFilter),
   ]);
 
-  const dateFormatter = new Intl.DateTimeFormat(locale, { dateStyle: 'medium' });
-
   const statusLabels: Record<PublicationStatus, string> = {
     DRAFT: tStatus('DRAFT'),
     PUBLISHED: tStatus('PUBLISHED'),
@@ -66,7 +64,6 @@ export default async function AdminProjectsPage({ params, searchParams }: AdminP
             },
           }}
           statusLabels={statusLabels}
-          formatDate={(date) => dateFormatter.format(date)}
         />
       )}
     </section>

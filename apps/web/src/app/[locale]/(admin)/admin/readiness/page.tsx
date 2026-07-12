@@ -56,11 +56,6 @@ export default async function AdminReadinessPage({
     READINESS_TARGET_TYPES.map((type) => [type, tTarget(type)]),
   ) as Record<ReadinessTargetType, string>;
 
-  const dateFormatter = new Intl.DateTimeFormat(locale, {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  });
-
   return (
     <section>
       <div className="portal-page__header">
@@ -90,6 +85,7 @@ export default async function AdminReadinessPage({
         <p className="portal-empty">{t('empty')}</p>
       ) : (
         <ReadinessTable
+          locale={locale}
           assessments={assessments}
           labels={{
             columns: {
@@ -105,7 +101,6 @@ export default async function AdminReadinessPage({
           }}
           statusLabels={statusLabels}
           targetLabels={targetLabels}
-          formatDate={(date) => dateFormatter.format(date)}
         />
       )}
     </section>
