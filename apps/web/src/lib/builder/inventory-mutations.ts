@@ -117,6 +117,8 @@ export async function createApartment(
           rooms: input.rooms,
           areaSqm: input.areaSqm,
           priceAmd: input.priceAmd,
+          priceVisibility: input.priceVisibility,
+          matterportUrl: input.matterportUrl ?? null,
           status: input.status,
         },
         select: { id: true },
@@ -153,6 +155,8 @@ export async function updateApartment(
           rooms: input.rooms,
           areaSqm: input.areaSqm,
           priceAmd: input.priceAmd,
+          priceVisibility: input.priceVisibility,
+          matterportUrl: input.matterportUrl ?? null,
           status: input.status,
         },
       });

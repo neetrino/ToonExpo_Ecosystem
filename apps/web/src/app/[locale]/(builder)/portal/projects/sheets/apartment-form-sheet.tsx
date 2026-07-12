@@ -1,7 +1,12 @@
 'use client';
 
 import { APARTMENT_CODE_MAX_LENGTH } from '@toonexpo/contracts';
-import { APARTMENT_STATUSES, type ApartmentStatus } from '@toonexpo/domain';
+import {
+  APARTMENT_STATUSES,
+  PRICE_VISIBILITIES,
+  type ApartmentStatus,
+  type PriceVisibility,
+} from '@toonexpo/domain';
 import { SideSheet } from '@toonexpo/ui';
 import { useTranslations } from 'next-intl';
 import { useActionState } from 'react';
@@ -27,6 +32,8 @@ type ApartmentFormValues = {
   rooms?: number | null;
   areaSqm?: number | null;
   priceAmd?: number | null;
+  priceVisibility?: PriceVisibility;
+  matterportUrl?: string | null;
   status: ApartmentStatus;
 };
 
@@ -77,6 +84,7 @@ type ApartmentFormBodyProps = {
 function ApartmentFormBody({ mode, values, state, formAction, pending }: ApartmentFormBodyProps) {
   const t = useTranslations('portal.apartmentForm');
   const tStatus = useTranslations('portal.apartmentStatus');
+  const tVisibility = useTranslations('portal.priceVisibility');
 
   return (
     <form action={formAction} className="portal-form">
@@ -115,6 +123,28 @@ function ApartmentFormBody({ mode, values, state, formAction, pending }: Apartme
           name="priceAmd"
           type="number"
           defaultValue={values.priceAmd != null ? String(values.priceAmd) : undefined}
+        />
+      </PortalFormField>
+
+      <PortalFormField label={t('fields.priceVisibility')} name="priceVisibility">
+        <PortalSelect
+          name="priceVisibility"
+          defaultValue={values.priceVisibility ?? 'PUBLIC'}
+          required
+        >
+          {PRICE_VISIBILITIES.map((visibility) => (
+            <option key={visibility} value={visibility}>
+              {tVisibility(visibility)}
+            </option>
+          ))}
+        </PortalSelect>
+      </PortalFormField>
+
+      <PortalFormField label={t('fields.matterportUrl')} name="matterportUrl">
+        <PortalTextInput
+          name="matterportUrl"
+          type="text"
+          defaultValue={values.matterportUrl ?? undefined}
         />
       </PortalFormField>
 

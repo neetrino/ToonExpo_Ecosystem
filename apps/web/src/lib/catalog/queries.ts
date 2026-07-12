@@ -1,7 +1,9 @@
 import {
+  publicApartmentDetailSchema,
   publicProjectDetailSchema,
   publicProjectSummarySchema,
   type PublicApartment,
+  type PublicApartmentDetail,
   type PublicBuilding,
   type PublicFloor,
   type PublicMediaAsset,
@@ -9,9 +11,14 @@ import {
   type PublicProjectSummary,
 } from '@toonexpo/contracts';
 import { prisma } from '@toonexpo/db';
-import type { ApartmentStatus } from '@toonexpo/domain';
+import type { ApartmentStatus, PriceVisibility } from '@toonexpo/domain';
+
+import { resolvePriceDisplay } from './resolve-price-display';
 
 const IS_DEV = process.env.NODE_ENV === 'development';
+
+/** Prisma cuid-ish ids (c + base36 body). Rejects path traversal / junk. */
+const APARTMENT_ID_PATTERN = /^c[a-z0-9]{20,32}$/i;
 
 type ProjectSummaryRow = {
   id: string;
@@ -29,6 +36,7 @@ type ApartmentRow = {
   areaSqm: number | null;
   rooms: number | null;
   priceAmd: number | null;
+  priceVisibility: PriceVisibility;
 };
 
 type FloorRow = {
@@ -57,31 +65,34 @@ export type PublishedProjectLoad = {
   companyId: string;
 };
 
-function mapApartment(row: ApartmentRow): PublicApartment {
+function mapApartment(row: ApartmentRow, isAuthenticated: boolean): PublicApartment {
+  const price = resolvePriceDisplay(row.priceVisibility, row.priceAmd, isAuthenticated);
   return {
     id: row.id,
     code: row.code,
     status: row.status,
     areaSqm: row.areaSqm,
     rooms: row.rooms,
-    priceAmd: row.priceAmd,
+    priceVisibility: row.priceVisibility,
+    priceDisplay: price.priceDisplay,
+    priceAmd: price.priceAmd,
   };
 }
 
-function mapFloor(row: FloorRow): PublicFloor {
+function mapFloor(row: FloorRow, isAuthenticated: boolean): PublicFloor {
   return {
     id: row.id,
     name: row.name,
     level: row.level,
-    apartments: row.apartments.map(mapApartment),
+    apartments: row.apartments.map((apartment) => mapApartment(apartment, isAuthenticated)),
   };
 }
 
-function mapBuilding(row: BuildingRow): PublicBuilding {
+function mapBuilding(row: BuildingRow, isAuthenticated: boolean): PublicBuilding {
   return {
     id: row.id,
     name: row.name,
-    floors: row.floors.map(mapFloor),
+    floors: row.floors.map((floor) => mapFloor(floor, isAuthenticated)),
   };
 }
 
@@ -102,13 +113,13 @@ function mapProjectSummary(row: ProjectSummaryRow): PublicProjectSummary {
   return IS_DEV ? publicProjectSummarySchema.parse(summary) : summary;
 }
 
-function mapProjectDetail(row: ProjectDetailRow): PublicProjectDetail {
+function mapProjectDetail(row: ProjectDetailRow, isAuthenticated: boolean): PublicProjectDetail {
   const detail: PublicProjectDetail = {
     ...mapProjectSummary(row),
     description: row.description,
     address: row.address,
     media: row.media.map(mapMedia),
-    buildings: row.buildings.map(mapBuilding),
+    buildings: row.buildings.map((building) => mapBuilding(building, isAuthenticated)),
   };
   return IS_DEV ? publicProjectDetailSchema.parse(detail) : detail;
 }
@@ -135,10 +146,21 @@ export async function getPublishedProjects(): Promise<PublicProjectSummary[]> {
   return rows.map(mapProjectSummary);
 }
 
+const apartmentPublicSelect = {
+  id: true,
+  code: true,
+  status: true,
+  areaSqm: true,
+  rooms: true,
+  priceAmd: true,
+  priceVisibility: true,
+} as const;
+
 /** Returns a published project by company and project slug, or null if missing or not published. */
 export async function getPublishedProjectBySlug(
   companySlug: string,
   projectSlug: string,
+  isAuthenticated = false,
 ): Promise<PublishedProjectLoad | null> {
   const row = await prisma.project.findFirst({
     where: {
@@ -172,14 +194,7 @@ export async function getPublishedProjectBySlug(
               level: true,
               apartments: {
                 orderBy: { code: 'asc' },
-                select: {
-                  id: true,
-                  code: true,
-                  status: true,
-                  areaSqm: true,
-                  rooms: true,
-                  priceAmd: true,
-                },
+                select: apartmentPublicSelect,
               },
             },
           },
@@ -193,7 +208,100 @@ export async function getPublishedProjectBySlug(
   }
 
   return {
-    project: mapProjectDetail(row),
+    project: mapProjectDetail(row, isAuthenticated),
     companyId: row.companyId,
   };
+}
+
+/** Validates apartmentId shape before DB lookup. */
+export function isValidApartmentId(apartmentId: string): boolean {
+  return APARTMENT_ID_PATTERN.test(apartmentId);
+}
+
+/**
+ * Published apartment detail for public page.
+ * Requires apartment → floor → building → project PUBLISHED chain matching slugs.
+ */
+export async function getPublishedApartment(
+  companySlug: string,
+  projectSlug: string,
+  apartmentId: string,
+  isAuthenticated: boolean,
+): Promise<PublicApartmentDetail | null> {
+  if (!isValidApartmentId(apartmentId)) {
+    return null;
+  }
+
+  const row = await prisma.apartment.findFirst({
+    where: {
+      id: apartmentId,
+      floor: {
+        building: {
+          project: {
+            slug: projectSlug,
+            status: 'PUBLISHED',
+            company: { slug: companySlug },
+          },
+        },
+      },
+    },
+    select: {
+      ...apartmentPublicSelect,
+      matterportUrl: true,
+      media: {
+        orderBy: { sortOrder: 'asc' },
+        select: { id: true, url: true, alt: true },
+      },
+      floor: {
+        select: {
+          name: true,
+          building: {
+            select: {
+              name: true,
+              project: {
+                select: {
+                  id: true,
+                  name: true,
+                  slug: true,
+                  companyId: true,
+                  company: { select: { slug: true, name: true } },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!row) {
+    return null;
+  }
+
+  const price = resolvePriceDisplay(row.priceVisibility, row.priceAmd, isAuthenticated);
+  const project = row.floor.building.project;
+  const detail: PublicApartmentDetail = {
+    id: row.id,
+    code: row.code,
+    status: row.status,
+    areaSqm: row.areaSqm,
+    rooms: row.rooms,
+    priceVisibility: row.priceVisibility,
+    priceDisplay: price.priceDisplay,
+    priceAmd: price.priceAmd,
+    matterportUrl: row.matterportUrl,
+    buildingName: row.floor.building.name,
+    floorName: row.floor.name,
+    media: row.media.map(mapMedia),
+    project: {
+      id: project.id,
+      name: project.name,
+      slug: project.slug,
+      companySlug: project.company.slug,
+      companyName: project.company.name,
+      companyId: project.companyId,
+    },
+  };
+
+  return IS_DEV ? publicApartmentDetailSchema.parse(detail) : detail;
 }

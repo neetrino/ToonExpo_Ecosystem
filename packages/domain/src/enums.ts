@@ -16,6 +16,25 @@ export const APARTMENT_STATUSES = ['AVAILABLE', 'RESERVED', 'SOLD'] as const;
 
 export type ApartmentStatus = (typeof APARTMENT_STATUSES)[number];
 
+/**
+ * Apartment price disclosure (v1).
+ * Docs: 05-Projects/02-Entity-Fields + 05-Public-Buyer-Experience.
+ * Prisma enum uses the same UPPER_SNAKE keys.
+ */
+export const PRICE_VISIBILITIES = [
+  'PUBLIC',
+  'BY_REQUEST',
+  'HIDDEN',
+  'VISIBLE_AFTER_LOGIN',
+] as const;
+
+export type PriceVisibility = (typeof PRICE_VISIBILITIES)[number];
+
+/** Public DTO discriminator for how price is shown to the viewer. */
+export const PRICE_DISPLAY_MODES = ['AMOUNT', 'BY_REQUEST', 'HIDDEN', 'LOGIN_REQUIRED'] as const;
+
+export type PriceDisplayMode = (typeof PRICE_DISPLAY_MODES)[number];
+
 /** Constructor CRM pipeline stages (v1). Docs: 09-Constructor-CRM/02-CRM-Pipeline-And-Statuses. */
 export const DEAL_STAGES = [
   'NEW_REQUEST',

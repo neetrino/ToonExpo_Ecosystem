@@ -244,6 +244,74 @@
   margin-top: 1rem;
 }
 
+.catalog-apartment__breadcrumb {
+  margin-bottom: 0.5rem;
+}
+
+.catalog-apartment__back {
+  color: var(--te-muted);
+  font-size: 0.875rem;
+  text-decoration: none;
+}
+
+.catalog-apartment__back:hover {
+  color: var(--te-accent);
+}
+
+.catalog-apartment__context {
+  color: var(--te-muted);
+  font-size: 0.9375rem;
+  margin: 0;
+}
+
+.catalog-apartment__meta {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  font-size: 0.9375rem;
+  margin: 0.75rem 0 0;
+}
+
+.catalog-apartment__meta-label {
+  color: var(--te-muted);
+  margin-right: 0.35rem;
+}
+
+.catalog-apartment__price {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0.75rem 0 0;
+}
+
+.catalog-apartment__price-msg {
+  font-size: 1rem;
+  margin: 0.75rem 0 0;
+}
+
+.catalog-apartment__login-link {
+  color: var(--te-accent);
+  text-decoration: underline;
+}
+
+.catalog-apartment__actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.catalog-apartment-link {
+  color: inherit;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.catalog-apartment-link:hover {
+  color: var(--te-accent);
+}
+
 .catalog-request-btn {
   background: transparent;
   border: 1px solid rgba(61, 139, 253, 0.45);

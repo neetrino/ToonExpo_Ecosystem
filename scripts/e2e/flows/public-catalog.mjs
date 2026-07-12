@@ -40,6 +40,46 @@ export async function runPublicCatalogFlow() {
     assert(html.includes('Site plan'), 'expected visual map (Site plan)');
   });
 
+  await runCheck('GET apartment detail 200 with code + public price', async () => {
+    const projectUrl = `${E2E_BASE_URL}/en/projects/${DEMO_COMPANY_SLUG}/${SUNRISE_SLUG}`;
+    const projectRes = await fetchWithJar(projectUrl);
+    assert(projectRes.status === 200, `project status ${projectRes.status}`);
+    const projectHtml = await projectRes.text();
+    const match = projectHtml.match(
+      new RegExp(
+        `/projects/${DEMO_COMPANY_SLUG}/${SUNRISE_SLUG}/apartments/(c[a-z0-9]+)[^"]*"[^>]*>\\s*101`,
+      ),
+    );
+    assert(match?.[1], 'apartment 101 detail link missing');
+    const apartmentId = match[1];
+    const aptRes = await fetchWithJar(
+      `${E2E_BASE_URL}/en/projects/${DEMO_COMPANY_SLUG}/${SUNRISE_SLUG}/apartments/${apartmentId}`,
+    );
+    assert(aptRes.status === 200, `apartment status ${aptRes.status}`);
+    const aptHtml = await aptRes.text();
+    assert(aptHtml.includes('101'), 'apartment code missing');
+    assert(/AMD|֏|85[\s,]?000[\s,]?000/.test(aptHtml), 'expected public AMD price');
+  });
+
+  await runCheck('GET BY_REQUEST apartment hides AMD amount anonymously', async () => {
+    const projectUrl = `${E2E_BASE_URL}/en/projects/${DEMO_COMPANY_SLUG}/${SUNRISE_SLUG}`;
+    const projectRes = await fetchWithJar(projectUrl);
+    const projectHtml = await projectRes.text();
+    const match = projectHtml.match(
+      new RegExp(
+        `/projects/${DEMO_COMPANY_SLUG}/${SUNRISE_SLUG}/apartments/(c[a-z0-9]+)[^"]*"[^>]*>\\s*201`,
+      ),
+    );
+    assert(match?.[1], 'apartment 201 detail link missing');
+    const aptRes = await fetchWithJar(
+      `${E2E_BASE_URL}/en/projects/${DEMO_COMPANY_SLUG}/${SUNRISE_SLUG}/apartments/${match[1]}`,
+    );
+    assert(aptRes.status === 200, `apartment status ${aptRes.status}`);
+    const aptHtml = await aptRes.text();
+    assert(aptHtml.includes('Price on request'), 'expected price-on-request copy');
+    assert(!/79[\s,]?000[\s,]?000/.test(aptHtml), 'BY_REQUEST price leaked as AMD amount');
+  });
+
   await runCheck('GET /de → 404', async () => {
     const res = await fetchWithJar(`${E2E_BASE_URL}/de`, { redirect: 'manual' });
     assert(res.status === 404, `expected 404, got ${res.status}`);

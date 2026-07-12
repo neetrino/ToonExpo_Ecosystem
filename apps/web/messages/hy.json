@@ -764,8 +764,16 @@
         "rooms": "Սենյակներ",
         "areaSqm": "Մակերես (մ²)",
         "priceAmd": "Գին (AMD)",
+        "priceVisibility": "Գնի տեսանելիություն",
+        "matterportUrl": "Matterport / 3D հղում",
         "status": "Կարգավիճակ"
       }
+    },
+    "priceVisibility": {
+      "PUBLIC": "Հրապարակային",
+      "BY_REQUEST": "Հարցումով",
+      "HIDDEN": "Թաքնված",
+      "VISIBLE_AFTER_LOGIN": "Մուտքից հետո"
     },
     "apartmentStatus": {
       "AVAILABLE": "Հասանելի",
@@ -931,6 +939,16 @@
         "status": "Կարգավիճակ",
         "request": "Հարցում"
       }
+    },
+    "apartment": {
+      "backToProject": "← Վերադառնալ {project}",
+      "building": "Շենք",
+      "floor": "Հարկ",
+      "priceByRequest": "Գինը հարցումով",
+      "priceHidden": "Գինը ճշտեք կառուցապատողից",
+      "priceLoginRequired": "Մուտք գործեք՝ գինը տեսնելու համար։",
+      "loginLink": "Մուտք",
+      "matterport": "Դիտել 3D շրջայց"
     },
     "request": {
       "ctaProject": "Հետաքրքրված եմ",

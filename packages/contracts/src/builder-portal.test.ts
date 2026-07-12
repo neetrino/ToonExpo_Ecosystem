@@ -40,6 +40,30 @@ describe('builder-portal schemas', () => {
     expect(result.success).toBe(false);
   });
 
+  it('rejects matterportUrl with a non-http scheme', () => {
+    const result = apartmentUpsertInputSchema.safeParse({
+      floorId: 'floor-1',
+      code: 'A-101',
+      status: 'AVAILABLE',
+      matterportUrl: 'javascript:alert(1)',
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('accepts matterportUrl https and defaults priceVisibility', () => {
+    const result = apartmentUpsertInputSchema.safeParse({
+      floorId: 'floor-1',
+      code: 'A-101',
+      status: 'AVAILABLE',
+      matterportUrl: 'https://my.matterport.com/show/?m=example',
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.priceVisibility).toBe('PUBLIC');
+      expect(result.data.matterportUrl).toBe('https://my.matterport.com/show/?m=example');
+    }
+  });
+
   it('rejects invalid publication status', () => {
     const result = projectPublicationInputSchema.safeParse({
       projectId: 'project-1',

@@ -13,12 +13,6 @@ vi.mock('@toonexpo/db', () => ({
   },
 }));
 
-vi.mock('@/lib/analytics/record-event', () => ({
-  scheduleAnalyticsEvent: vi.fn(),
-}));
-
-import { scheduleAnalyticsEvent } from '@/lib/analytics/record-event';
-
 import { submitPublicRequest } from './public-request-mutations';
 
 const PUBLISHED_PROJECT_ID = 'project-published';
@@ -113,12 +107,6 @@ describe('submitPublicRequest', () => {
         }),
       }),
     );
-    expect(scheduleAnalyticsEvent).toHaveBeenCalledWith({
-      type: 'APARTMENT_VIEW',
-      companyId: COMPANY_ID,
-      projectId: PUBLISHED_PROJECT_ID,
-      apartmentId: APARTMENT_ID,
-    });
   });
 
   it('creates a new project-page deal when no duplicate exists', async () => {

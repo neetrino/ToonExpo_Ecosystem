@@ -2,8 +2,6 @@ import { publicRequestInputSchema, type PublicRequestInput } from '@toonexpo/con
 import { prisma, type Prisma } from '@toonexpo/db';
 import type { RequestSource } from '@toonexpo/domain';
 
-import { scheduleAnalyticsEvent } from '@/lib/analytics/record-event';
-
 import { DEDUP_RECENCY_WINDOW_HOURS, OPEN_DEAL_STAGES } from './constants';
 import type { PublicRequestMutationResult } from './mutation-result';
 
@@ -214,9 +212,6 @@ export async function submitPublicRequest(
         ok: true as const,
         deduped: true as const,
         dealId: existing.id,
-        companyId: project.companyId,
-        projectId: project.id,
-        apartmentId: input.apartmentId,
       };
     }
 
@@ -236,22 +231,8 @@ export async function submitPublicRequest(
     return {
       ok: true as const,
       dealId,
-      companyId: project.companyId,
-      projectId: project.id,
-      apartmentId: input.apartmentId,
     };
   });
-
-  // Apartment interest signal: record when a request includes an apartmentId.
-  // No dedicated apartment pages exist; request submit is the server-side interaction.
-  if (result.ok && result.apartmentId) {
-    scheduleAnalyticsEvent({
-      type: 'APARTMENT_VIEW',
-      companyId: result.companyId,
-      projectId: result.projectId,
-      apartmentId: result.apartmentId,
-    });
-  }
 
   if (!result.ok) {
     return result;

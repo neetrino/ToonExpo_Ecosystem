@@ -4,8 +4,9 @@ import type { ApartmentStatus } from '@toonexpo/domain';
 
 import { ApartmentRequestButton } from '@/components/public-request/public-request-sheet';
 import { PublicVisualCanvas } from '@/components/visual-map/public-visual-canvas';
+import { Link } from '@/i18n/navigation';
 import { formatAreaSqm } from '@/lib/catalog/format-area';
-import { formatPriceAmd } from '@/lib/catalog/format-price';
+import { formatApartmentPriceCell } from '@/lib/catalog/format-apartment-price-cell';
 import {
   buildApartmentAnchorId,
   buildBuildingAnchorId,
@@ -26,6 +27,9 @@ type TableLabels = {
   status: string;
   request: string;
   noValue: string;
+  priceByRequest: string;
+  priceHidden: string;
+  priceLoginRequired: string;
 };
 
 function statusBadgeClass(status: ApartmentStatus): string {
@@ -35,6 +39,8 @@ function statusBadgeClass(status: ApartmentStatus): string {
 function ApartmentTableRow({
   apartment,
   locale,
+  companySlug,
+  projectSlug,
   projectId,
   projectName,
   tableLabels,
@@ -43,26 +49,31 @@ function ApartmentTableRow({
 }: {
   apartment: PublicApartment;
   locale: string;
+  companySlug: string;
+  projectSlug: string;
   projectId: string;
   projectName: string;
   tableLabels: TableLabels;
   statusLabel: string;
   prefill?: RequestPrefill;
 }) {
+  const detailHref = `/projects/${companySlug}/${projectSlug}/apartments/${apartment.id}`;
+  const priceText = formatApartmentPriceCell(apartment, locale, tableLabels);
+
   return (
     <tr id={buildApartmentAnchorId(apartment.id)}>
-      <td>{apartment.code}</td>
+      <td>
+        <Link href={detailHref} className="catalog-apartment-link">
+          {apartment.code}
+        </Link>
+      </td>
       <td>{apartment.rooms ?? tableLabels.noValue}</td>
       <td>
         {apartment.areaSqm !== null
           ? formatAreaSqm(apartment.areaSqm, locale)
           : tableLabels.noValue}
       </td>
-      <td>
-        {apartment.priceAmd !== null
-          ? formatPriceAmd(apartment.priceAmd, locale)
-          : tableLabels.noValue}
-      </td>
+      <td>{priceText}</td>
       <td>
         <span className={statusBadgeClass(apartment.status)}>{statusLabel}</span>
       </td>
@@ -83,6 +94,8 @@ function ApartmentTableRow({
 function FloorBlock({
   floor,
   locale,
+  companySlug,
+  projectSlug,
   projectId,
   projectName,
   tableLabels,
@@ -93,6 +106,8 @@ function FloorBlock({
 }: {
   floor: PublicFloor;
   locale: string;
+  companySlug: string;
+  projectSlug: string;
   projectId: string;
   projectName: string;
   tableLabels: TableLabels;
@@ -123,6 +138,8 @@ function FloorBlock({
                 key={apartment.id}
                 apartment={apartment}
                 locale={locale}
+                companySlug={companySlug}
+                projectSlug={projectSlug}
                 projectId={projectId}
                 projectName={projectName}
                 tableLabels={tableLabels}
@@ -140,6 +157,8 @@ function FloorBlock({
 function BuildingBlock({
   building,
   locale,
+  companySlug,
+  projectSlug,
   projectId,
   projectName,
   tableLabels,
@@ -150,6 +169,8 @@ function BuildingBlock({
 }: {
   building: PublicBuilding;
   locale: string;
+  companySlug: string;
+  projectSlug: string;
   projectId: string;
   projectName: string;
   tableLabels: TableLabels;
@@ -166,6 +187,8 @@ function BuildingBlock({
           key={floor.id}
           floor={floor}
           locale={locale}
+          companySlug={companySlug}
+          projectSlug={projectSlug}
           projectId={projectId}
           projectName={projectName}
           tableLabels={tableLabels}
@@ -182,6 +205,8 @@ function BuildingBlock({
 type ProjectBuildingsProps = {
   buildings: PublicBuilding[];
   locale: string;
+  companySlug: string;
+  projectSlug: string;
   projectId: string;
   projectName: string;
   tableLabels: TableLabels;
@@ -195,6 +220,8 @@ type ProjectBuildingsProps = {
 export function ProjectBuildings({
   buildings,
   locale,
+  companySlug,
+  projectSlug,
   projectId,
   projectName,
   tableLabels,
@@ -216,6 +243,8 @@ export function ProjectBuildings({
           key={building.id}
           building={building}
           locale={locale}
+          companySlug={companySlug}
+          projectSlug={projectSlug}
           projectId={projectId}
           projectName={projectName}
           tableLabels={tableLabels}

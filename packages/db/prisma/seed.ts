@@ -32,6 +32,7 @@ const APARTMENT_CONFIGS = [
     areaSqm: 72.5,
     rooms: 2,
     priceAmd: 85000000,
+    priceVisibility: 'PUBLIC' as const,
   },
   {
     floorIndex: 0,
@@ -40,6 +41,7 @@ const APARTMENT_CONFIGS = [
     areaSqm: 95.0,
     rooms: 3,
     priceAmd: 112000000,
+    priceVisibility: 'PUBLIC' as const,
   },
   {
     floorIndex: 1,
@@ -48,6 +50,7 @@ const APARTMENT_CONFIGS = [
     areaSqm: 68.0,
     rooms: 2,
     priceAmd: 79000000,
+    priceVisibility: 'BY_REQUEST' as const,
   },
   {
     floorIndex: 1,
@@ -56,6 +59,7 @@ const APARTMENT_CONFIGS = [
     areaSqm: 110.0,
     rooms: 4,
     priceAmd: 145000000,
+    priceVisibility: 'VISIBLE_AFTER_LOGIN' as const,
   },
 ] as const;
 
@@ -263,6 +267,7 @@ async function upsertSunriseApartments(floors: Floor[]): Promise<Apartment[]> {
         areaSqm: config.areaSqm,
         rooms: config.rooms,
         priceAmd: config.priceAmd,
+        priceVisibility: config.priceVisibility,
       },
       create: {
         floorId: floor.id,
@@ -271,6 +276,7 @@ async function upsertSunriseApartments(floors: Floor[]): Promise<Apartment[]> {
         areaSqm: config.areaSqm,
         rooms: config.rooms,
         priceAmd: config.priceAmd,
+        priceVisibility: config.priceVisibility,
       },
     });
     apartments.push(apartment);

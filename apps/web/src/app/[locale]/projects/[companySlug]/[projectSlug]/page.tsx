@@ -41,6 +41,9 @@ function ProjectDetailView({
     status: string;
     request: string;
     noValue: string;
+    priceByRequest: string;
+    priceHidden: string;
+    priceLoginRequired: string;
   };
   statusLabels: Record<ApartmentStatus, string>;
   galleryLabel: string;
@@ -83,6 +86,8 @@ function ProjectDetailView({
       <ProjectBuildings
         buildings={project.buildings}
         locale={locale}
+        companySlug={project.companySlug}
+        projectSlug={project.slug}
         projectId={project.id}
         projectName={project.name}
         tableLabels={tableLabels}
@@ -107,7 +112,14 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
     notFound();
   }
 
-  const loaded = await getPublishedProjectBySlug(parsedCompanySlug.data, parsedProjectSlug.data);
+  const session = await auth();
+  const isAuthenticated = Boolean(session?.user);
+
+  const loaded = await getPublishedProjectBySlug(
+    parsedCompanySlug.data,
+    parsedProjectSlug.data,
+    isAuthenticated,
+  );
   if (!loaded) {
     notFound();
   }
@@ -124,7 +136,6 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
     project.buildings,
   );
 
-  const session = await auth();
   const prefill = session?.user
     ? {
         name: session.user.name ?? undefined,
@@ -140,6 +151,9 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
     status: t('detail.table.status'),
     request: t('detail.table.request'),
     noValue: t('detail.noValue'),
+    priceByRequest: t('apartment.priceByRequest'),
+    priceHidden: t('apartment.priceHidden'),
+    priceLoginRequired: t('apartment.priceLoginRequired'),
   };
   const statusLabels: Record<ApartmentStatus, string> = {
     AVAILABLE: t('apartmentStatus.AVAILABLE'),

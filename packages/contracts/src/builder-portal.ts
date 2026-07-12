@@ -1,5 +1,7 @@
-import { APARTMENT_STATUSES, PUBLICATION_STATUSES } from '@toonexpo/domain';
+import { APARTMENT_STATUSES, PRICE_VISIBILITIES, PUBLICATION_STATUSES } from '@toonexpo/domain';
 import { z } from 'zod';
+
+import { optionalHttpUrlSchema } from './url';
 
 export const PROJECT_NAME_MAX_LENGTH = 120;
 export const PROJECT_CITY_ADDRESS_MAX_LENGTH = 160;
@@ -15,6 +17,7 @@ export const APARTMENT_CODE_MAX_LENGTH = 20;
 export const APARTMENT_ROOMS_MAX = 20;
 export const APARTMENT_AREA_SQM_MAX = 10_000;
 export const APARTMENT_PRICE_AMD_MAX = 10_000_000_000;
+export const APARTMENT_MATTERPORT_URL_MAX_LENGTH = 2048;
 
 const optionalTrimmedString = (maxLength: number) =>
   z.preprocess((value) => {
@@ -91,6 +94,8 @@ export const apartmentUpsertInputSchema = z.object({
   rooms: optionalCoercedInt(0, APARTMENT_ROOMS_MAX),
   areaSqm: optionalCoercedPositiveNumber(APARTMENT_AREA_SQM_MAX),
   priceAmd: optionalCoercedPositiveInt(APARTMENT_PRICE_AMD_MAX),
+  priceVisibility: z.enum(PRICE_VISIBILITIES).default('PUBLIC'),
+  matterportUrl: optionalHttpUrlSchema(APARTMENT_MATTERPORT_URL_MAX_LENGTH),
   status: z.enum(APARTMENT_STATUSES),
 });
 

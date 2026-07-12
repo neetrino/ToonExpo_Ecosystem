@@ -1,4 +1,5 @@
 export {
+  publicApartmentDetailSchema,
   publicApartmentSchema,
   publicBuildingSchema,
   publicFloorSchema,
@@ -6,6 +7,7 @@ export {
   publicProjectDetailSchema,
   publicProjectSummarySchema,
   type PublicApartment,
+  type PublicApartmentDetail,
   type PublicBuilding,
   type PublicFloor,
   type PublicMediaAsset,
@@ -37,6 +39,7 @@ export {
 export {
   APARTMENT_AREA_SQM_MAX,
   APARTMENT_CODE_MAX_LENGTH,
+  APARTMENT_MATTERPORT_URL_MAX_LENGTH,
   APARTMENT_PRICE_AMD_MAX,
   APARTMENT_ROOMS_MAX,
   BUILDING_NAME_MAX_LENGTH,

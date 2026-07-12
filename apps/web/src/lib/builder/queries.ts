@@ -1,4 +1,4 @@
-import type { ApartmentStatus, PublicationStatus } from '@toonexpo/domain';
+import type { ApartmentStatus, PriceVisibility, PublicationStatus } from '@toonexpo/domain';
 import { prisma } from '@toonexpo/db';
 
 export type ProjectStatusCounts = {
@@ -74,6 +74,8 @@ export type BuilderProjectApartment = {
   rooms: number | null;
   areaSqm: number | null;
   priceAmd: number | null;
+  priceVisibility: PriceVisibility;
+  matterportUrl: string | null;
   status: ApartmentStatus;
 };
 
@@ -129,6 +131,8 @@ export async function loadCompanyProjectDetail(
                   rooms: true,
                   areaSqm: true,
                   priceAmd: true,
+                  priceVisibility: true,
+                  matterportUrl: true,
                   status: true,
                 },
                 orderBy: { code: 'asc' },

@@ -28,6 +28,15 @@ enum ApartmentStatus {
   SOLD
 }
 
+/// Public price disclosure for apartments (v1).
+/// Docs: 05-Projects/02-Entity-Fields + 05-Public-Buyer-Experience.
+enum PriceVisibility {
+  PUBLIC
+  BY_REQUEST
+  HIDDEN
+  VISIBLE_AFTER_LOGIN
+}
+
 enum DealStage {
   NEW_REQUEST
   ASSIGNED
@@ -310,15 +319,17 @@ model Floor {
 }
 
 model Apartment {
-  id        String          @id @default(cuid())
-  floorId   String
-  code      String
-  status    ApartmentStatus @default(AVAILABLE)
-  areaSqm   Float?
-  rooms     Int?
-  priceAmd  Int?
-  createdAt DateTime        @default(now())
-  updatedAt DateTime        @updatedAt
+  id              String          @id @default(cuid())
+  floorId         String
+  code            String
+  status          ApartmentStatus @default(AVAILABLE)
+  areaSqm         Float?
+  rooms           Int?
+  priceAmd        Int?
+  priceVisibility PriceVisibility @default(PUBLIC)
+  matterportUrl   String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
   floor           Floor            @relation(fields: [floorId], references: [id], onDelete: Cascade)
   media           MediaAsset[]
   dealLinks       DealApartment[]

@@ -113,6 +113,8 @@ export function ApartmentTable({
             rooms: editingApartment.rooms,
             areaSqm: editingApartment.areaSqm,
             priceAmd: editingApartment.priceAmd,
+            priceVisibility: editingApartment.priceVisibility,
+            matterportUrl: editingApartment.matterportUrl,
             status: editingApartment.status,
           }}
         />

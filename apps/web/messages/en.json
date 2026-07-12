@@ -764,8 +764,16 @@
         "rooms": "Rooms",
         "areaSqm": "Area (m²)",
         "priceAmd": "Price (AMD)",
+        "priceVisibility": "Price visibility",
+        "matterportUrl": "Matterport / 3D URL",
         "status": "Status"
       }
+    },
+    "priceVisibility": {
+      "PUBLIC": "Public",
+      "BY_REQUEST": "On request",
+      "HIDDEN": "Hidden",
+      "VISIBLE_AFTER_LOGIN": "Visible after login"
     },
     "apartmentStatus": {
       "AVAILABLE": "Available",
@@ -931,6 +939,16 @@
         "status": "Status",
         "request": "Request"
       }
+    },
+    "apartment": {
+      "backToProject": "← Back to {project}",
+      "building": "Building",
+      "floor": "Floor",
+      "priceByRequest": "Price on request",
+      "priceHidden": "Contact builder for price",
+      "priceLoginRequired": "Log in to see price.",
+      "loginLink": "Sign in",
+      "matterport": "View 3D tour"
     },
     "request": {
       "ctaProject": "Request contact",

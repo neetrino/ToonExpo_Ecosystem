@@ -139,6 +139,8 @@ export async function upsertApartmentFormAction(
     rooms: getOptionalFormString(formData, 'rooms'),
     areaSqm: getOptionalFormString(formData, 'areaSqm'),
     priceAmd: getOptionalFormString(formData, 'priceAmd'),
+    priceVisibility: getFormString(formData, 'priceVisibility'),
+    matterportUrl: getOptionalFormString(formData, 'matterportUrl'),
     status: getFormString(formData, 'status'),
   });
   return toFormState(result);

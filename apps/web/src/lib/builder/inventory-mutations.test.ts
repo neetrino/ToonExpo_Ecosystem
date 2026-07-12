@@ -120,6 +120,7 @@ describe('inventory-mutations ownership', () => {
       floorId: 'floor-1',
       code: 'A-101',
       status: 'AVAILABLE',
+      priceVisibility: 'PUBLIC',
     });
 
     expect(result).toEqual({ ok: false, errorKey: 'notFound' });
@@ -141,6 +142,7 @@ describe('inventory-mutations ownership', () => {
       floorId: 'floor-foreign',
       code: 'A-101',
       status: 'AVAILABLE',
+      priceVisibility: 'PUBLIC',
     });
 
     expect(result).toEqual({ ok: false, errorKey: 'notFound' });
@@ -156,6 +158,7 @@ describe('inventory-mutations ownership', () => {
       floorId: 'floor-own',
       code: 'A-101',
       status: 'AVAILABLE',
+      priceVisibility: 'PUBLIC',
     });
 
     expect(result).toEqual({ ok: false, errorKey: 'notFound' });

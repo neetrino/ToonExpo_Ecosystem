@@ -764,8 +764,16 @@
         "rooms": "Комнаты",
         "areaSqm": "Площадь (м²)",
         "priceAmd": "Цена (AMD)",
+        "priceVisibility": "Видимость цены",
+        "matterportUrl": "Ссылка Matterport / 3D",
         "status": "Статус"
       }
+    },
+    "priceVisibility": {
+      "PUBLIC": "Публичная",
+      "BY_REQUEST": "По запросу",
+      "HIDDEN": "Скрыта",
+      "VISIBLE_AFTER_LOGIN": "После входа"
     },
     "apartmentStatus": {
       "AVAILABLE": "Доступна",
@@ -931,6 +939,16 @@
         "status": "Статус",
         "request": "Запрос"
       }
+    },
+    "apartment": {
+      "backToProject": "← Назад к {project}",
+      "building": "Корпус",
+      "floor": "Этаж",
+      "priceByRequest": "Цена по запросу",
+      "priceHidden": "Уточните цену у застройщика",
+      "priceLoginRequired": "Войдите, чтобы увидеть цену.",
+      "loginLink": "Войти",
+      "matterport": "Смотреть 3D-тур"
     },
     "request": {
       "ctaProject": "Заинтересован",
