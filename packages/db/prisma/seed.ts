@@ -823,6 +823,74 @@ async function seedPartners(): Promise<void> {
   console.log('Upserted demo partners (Converse Bank, PixelRender Studio, Draft Partner).');
 }
 
+async function seedPartnerUser(): Promise<void> {
+  const email = process.env.SEED_PARTNER_EMAIL?.trim();
+  const password = process.env.SEED_PARTNER_PASSWORD;
+
+  if (!email || !password) {
+    console.log(
+      'Skipping partner user seed: SEED_PARTNER_EMAIL and SEED_PARTNER_PASSWORD must be set.',
+    );
+    return;
+  }
+
+  const existingPartnerUser = await prisma.user.findFirst({
+    where: { role: 'PARTNER' },
+  });
+  if (existingPartnerUser) {
+    console.log('Skipping partner user seed: a PARTNER user already exists.');
+    return;
+  }
+
+  const converse = await prisma.partner.findUnique({
+    where: { slug: CONVERSE_BANK_SLUG },
+    select: { id: true, name: true, companyId: true },
+  });
+  if (!converse) {
+    console.log('Skipping partner user seed: Converse Bank demo partner not found.');
+    return;
+  }
+
+  const passwordHash = await argon2.hash(password, HASH_OPTIONS);
+  const companySlug = 'converse-bank-demo-workspace';
+
+  await prisma.$transaction(async (tx) => {
+    let companyId = converse.companyId;
+    if (!companyId) {
+      const company = await tx.company.upsert({
+        where: { slug: companySlug },
+        create: { name: converse.name, slug: companySlug },
+        update: { name: converse.name },
+        select: { id: true },
+      });
+      companyId = company.id;
+      await tx.partner.update({
+        where: { id: converse.id },
+        data: { companyId },
+      });
+    }
+
+    const user = await tx.user.create({
+      data: {
+        email: email.toLowerCase(),
+        name: 'Seed Partner',
+        passwordHash,
+        role: 'PARTNER',
+      },
+    });
+
+    await tx.companyMember.create({
+      data: {
+        companyId,
+        userId: user.id,
+        role: 'PARTNER',
+      },
+    });
+  });
+
+  console.log(`Created seed PARTNER linked to Converse Bank: ${email}`);
+}
+
 /** v1 category set from docs 03-Categories-Scoring examples. */
 const READINESS_CATEGORY_SEEDS = [
   {
@@ -1310,6 +1378,7 @@ async function main(): Promise<void> {
     catalog.apartments,
   );
   await seedPartners();
+  await seedPartnerUser();
   const categoryIds = await seedReadinessCategories();
   await seedDemoReadinessAssessment(catalog.company, categoryIds);
   await seedExhibitionEvent(catalog.company.id, catalog.sunriseProject.id);

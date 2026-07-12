@@ -6,6 +6,7 @@ import {
 
 import { assertAdminSession } from '@/lib/admin/assert-admin-session';
 import { assertBuilderSession } from '@/lib/builder/assert-builder-session';
+import { assertPartnerSession } from '@/lib/partner/assert-partner-session';
 import { assertNotRateLimited } from '@/lib/rate-limit';
 import {
   createUploadPresign,
@@ -33,16 +34,32 @@ async function resolveUploadAuth(purpose: UploadPurpose): Promise<ResolvedUpload
     return resolveBuilderUploadAuth();
   }
 
-  // COMPANY_LOGO: builder company scope preferred; admin forms fall back to admin scope.
+  // COMPANY_LOGO: builder → partner → admin.
   const builder = await resolveBuilderUploadAuth();
   if (builder.ok) {
     return builder;
+  }
+  const partner = await resolvePartnerUploadAuth();
+  if (partner.ok) {
+    return partner;
   }
   return resolveAdminUploadAuth();
 }
 
 async function resolveBuilderUploadAuth(): Promise<ResolvedUploadAuth> {
   const session = await assertBuilderSession();
+  if (!session?.session.user?.id) {
+    return { ok: false };
+  }
+  return {
+    ok: true,
+    userId: session.session.user.id,
+    scope: { kind: 'company', companyId: session.companyId },
+  };
+}
+
+async function resolvePartnerUploadAuth(): Promise<ResolvedUploadAuth> {
+  const session = await assertPartnerSession();
   if (!session?.session.user?.id) {
     return { ok: false };
   }
@@ -68,7 +85,7 @@ async function resolveAdminUploadAuth(): Promise<ResolvedUploadAuth> {
 /**
  * Mint a short-lived R2 PUT URL. Auth depends on `purpose`:
  * - MEDIA / CANVAS_IMAGE → builder session (company-scoped keys)
- * - COMPANY_LOGO → builder preferred, else admin
+ * - COMPANY_LOGO → builder preferred, else partner, else admin
  * - VENUE_IMAGE → admin session (admin-scoped keys)
  * R2 credentials never reach the browser.
  */

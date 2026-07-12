@@ -11,6 +11,9 @@ function revalidateLocalePartnerPaths(locale: string, params: PartnerPathParams)
   revalidatePath(`/${locale}/admin`);
   revalidatePath(`/${locale}/partners`);
   revalidatePath(`/${locale}/mortgage`);
+  revalidatePath(`/${locale}/partner`);
+  revalidatePath(`/${locale}/partner/profile`);
+  revalidatePath(`/${locale}/partner/offers`);
 
   if (params.partnerId) {
     revalidatePath(`/${locale}/admin/partners/${params.partnerId}`);
@@ -20,7 +23,7 @@ function revalidateLocalePartnerPaths(locale: string, params: PartnerPathParams)
   }
 }
 
-/** Revalidates admin and public partner/mortgage paths for every supported locale. */
+/** Revalidates admin, partner cabinet, and public partner/mortgage paths for every locale. */
 export function revalidatePartnerPaths(params: PartnerPathParams): void {
   for (const locale of SUPPORTED_LOCALES) {
     revalidateLocalePartnerPaths(locale, params);

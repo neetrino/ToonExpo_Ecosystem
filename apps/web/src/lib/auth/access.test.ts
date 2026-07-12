@@ -10,6 +10,8 @@ describe('getProtectedArea', () => {
     expect(getProtectedArea('/admin')).toBe('admin');
     expect(getProtectedArea('/checkin')).toBe('entrance');
     expect(getProtectedArea('/checkin/help')).toBe('entrance');
+    expect(getProtectedArea('/partner')).toBe('partner');
+    expect(getProtectedArea('/partner/profile')).toBe('partner');
   });
 
   it('returns null for public paths', () => {
@@ -44,5 +46,12 @@ describe('canAccessArea', () => {
     expect(canAccessArea('entrance', 'BUYER')).toBe(false);
     expect(canAccessArea('entrance', 'BUILDER')).toBe(false);
     expect(canAccessArea('entrance', 'BIGPROJECTS_ADMIN')).toBe(false);
+  });
+
+  it('restricts the partner area to PARTNER role', () => {
+    expect(canAccessArea('partner', 'PARTNER')).toBe(true);
+    expect(canAccessArea('partner', 'BUYER')).toBe(false);
+    expect(canAccessArea('partner', 'BUILDER')).toBe(false);
+    expect(canAccessArea('partner', 'BIGPROJECTS_ADMIN')).toBe(false);
   });
 });

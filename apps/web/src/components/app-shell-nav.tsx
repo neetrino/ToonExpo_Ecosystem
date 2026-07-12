@@ -47,6 +47,11 @@ export function AppShellNav({
           {t('nav.builder')}
         </Link>
       ) : null}
+      {navVisibility.partner ? (
+        <Link className="transition-colors hover:text-[var(--te-accent)]" href="/partner">
+          {t('nav.partnerCabinet')}
+        </Link>
+      ) : null}
       {navVisibility.checkin ? (
         <Link className="transition-colors hover:text-[var(--te-fg)]" href="/checkin">
           {t('nav.entrance')}

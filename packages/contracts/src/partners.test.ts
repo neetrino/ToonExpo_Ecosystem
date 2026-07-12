@@ -6,6 +6,7 @@ import {
   BANK_OFFER_MIN_DOWN_PAYMENT_PERCENT_MAX,
   BANK_OFFER_MIN_DOWN_PAYMENT_PERCENT_MIN,
   bankOfferUpsertInputSchema,
+  partnerSelfProfileInputSchema,
   partnerUpsertInputSchema,
 } from './partners';
 
@@ -25,6 +26,15 @@ describe('partner schemas', () => {
       phone: '+37410000000',
       website: 'https://bank.example',
       logoUrl: 'https://picsum.photos/seed/logo/200/200',
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it('accepts a partner self-profile payload without type or status', () => {
+    const result = partnerSelfProfileInputSchema.safeParse({
+      name: 'Converse Bank Demo',
+      phone: '+37410000000',
+      description: 'Updated description',
     });
     expect(result.success).toBe(true);
   });

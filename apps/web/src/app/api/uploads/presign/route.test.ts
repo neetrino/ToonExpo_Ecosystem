@@ -3,11 +3,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 const {
   assertBuilderSessionMock,
   assertAdminSessionMock,
+  assertPartnerSessionMock,
   assertNotRateLimitedMock,
   createUploadPresignMock,
 } = vi.hoisted(() => ({
   assertBuilderSessionMock: vi.fn(),
   assertAdminSessionMock: vi.fn(),
+  assertPartnerSessionMock: vi.fn(),
   assertNotRateLimitedMock: vi.fn(),
   createUploadPresignMock: vi.fn(),
 }));
@@ -18,6 +20,10 @@ vi.mock('@/lib/builder/assert-builder-session', () => ({
 
 vi.mock('@/lib/admin/assert-admin-session', () => ({
   assertAdminSession: assertAdminSessionMock,
+}));
+
+vi.mock('@/lib/partner/assert-partner-session', () => ({
+  assertPartnerSession: assertPartnerSessionMock,
 }));
 
 vi.mock('@/lib/rate-limit', () => ({
@@ -43,6 +49,7 @@ describe('POST /api/uploads/presign', () => {
     vi.clearAllMocks();
     assertNotRateLimitedMock.mockResolvedValue({ limited: false });
     assertAdminSessionMock.mockResolvedValue(null);
+    assertPartnerSessionMock.mockResolvedValue(null);
   });
 
   it('returns 401 when MEDIA caller is not a builder', async () => {
@@ -100,6 +107,7 @@ describe('POST /api/uploads/presign', () => {
 
   it('falls back COMPANY_LOGO to admin scope when no builder session', async () => {
     assertBuilderSessionMock.mockResolvedValue(null);
+    assertPartnerSessionMock.mockResolvedValue(null);
     assertAdminSessionMock.mockResolvedValue({ user: { id: 'admin-1' } });
     createUploadPresignMock.mockResolvedValue({
       ok: true,
@@ -121,6 +129,36 @@ describe('POST /api/uploads/presign', () => {
       { kind: 'admin', userId: 'admin-1' },
       expect.objectContaining({ contentType: 'image/webp', contentLength: 200 }),
     );
+  });
+
+  it('scopes COMPANY_LOGO to partner company when partner session exists', async () => {
+    assertBuilderSessionMock.mockResolvedValue(null);
+    assertPartnerSessionMock.mockResolvedValue({
+      session: { user: { id: 'partner-user-1' } },
+      companyId: 'partner-company-1',
+      partnerId: 'partner-1',
+    });
+    createUploadPresignMock.mockResolvedValue({
+      ok: true,
+      data: {
+        uploadUrl: 'https://signed.example/put',
+        publicUrl: 'https://cdn.example.com/logos/partner-company-1/x.jpg',
+        objectKey: 'logos/partner-company-1/x.jpg',
+        expiresAt: '2026-07-12T12:00:00.000Z',
+      },
+    });
+
+    const response = await POST(
+      presignRequest({ purpose: 'COMPANY_LOGO', contentType: 'image/png', contentLength: 150 }),
+    );
+
+    expect(response.status).toBe(200);
+    expect(createUploadPresignMock).toHaveBeenCalledWith(
+      'COMPANY_LOGO',
+      { kind: 'company', companyId: 'partner-company-1' },
+      expect.objectContaining({ contentType: 'image/png', contentLength: 150 }),
+    );
+    expect(assertAdminSessionMock).not.toHaveBeenCalled();
   });
 
   it('scopes CANVAS_IMAGE to builder company', async () => {

@@ -32,6 +32,7 @@
     "mortgage": "Mortgage",
     "buyer": "Account",
     "builder": "Portal",
+    "partnerCabinet": "Partner",
     "admin": "Admin",
     "entrance": "Check-in",
     "exhibition": "Exhibition"
@@ -1528,6 +1529,9 @@
       "hint": "This code identifies your ToonExpo visitor account. It does not contain your name or contact details in the code itself.",
       "ariaLabel": "Your ToonExpo visitor QR code",
       "revoked": "Your QR is currently inactive. Regenerate a new code to continue.",
+      "revoke": "Revoke QR",
+      "revokeConfirm": "Revoke your QR? It will stop working until you regenerate a new code.",
+      "revokeSuccess": "Your QR was revoked and no longer works for scans.",
       "regenerate": "Regenerate QR",
       "regenerateConfirm": "Regenerate your QR? The old code will stop working immediately.",
       "regenerateSuccess": "A new QR code was issued.",
@@ -1536,10 +1540,7 @@
         "invalidInput": "Could not update the QR. Try again.",
         "notFound": "Could not update the QR. Try again.",
         "revoked": "Could not update the QR. Try again."
-      },
-      "revoke": "Revoke QR",
-      "revokeConfirm": "Revoke your QR? It will stop working until you regenerate a new code.",
-      "revokeSuccess": "Your QR was revoked and no longer works for scans."
+      }
     }
   },
   "qr": {
@@ -1603,6 +1604,112 @@
       "eventCode": "Event code: {code}",
       "eventDates": "{start} – {end}",
       "dateOpen": "—"
+    }
+  },
+  "partnerCabinet": {
+    "nav": {
+      "ariaLabel": "Partner cabinet",
+      "overview": "Overview",
+      "profile": "Profile",
+      "offers": "Bank offers"
+    },
+    "unlinked": {
+      "title": "Partner profile not linked",
+      "description": "Your account is not linked to a partner profile yet. Ask a platform admin to provision your account with a partner."
+    },
+    "errors": {
+      "unauthorized": "You do not have permission to perform this action.",
+      "invalidInput": "Please check the fields and try again.",
+      "notFound": "The requested item was not found.",
+      "nameTaken": "A partner with this name already exists.",
+      "keyTaken": "This key is already in use.",
+      "notBankPartner": "Bank offers are only available for bank partners."
+    },
+    "types": {
+      "BANK": "Bank",
+      "IT_COMPANY": "IT company",
+      "SPONSOR": "Sponsor",
+      "SUPPLIER": "Supplier",
+      "INSURANCE": "Insurance",
+      "LEGAL": "Legal",
+      "DESIGN_FURNITURE": "Design / furniture",
+      "SERVICE_COMPANY": "Service company",
+      "OTHER": "Other"
+    },
+    "status": {
+      "DRAFT": "Draft",
+      "PUBLISHED": "Published",
+      "ARCHIVED": "Archived"
+    },
+    "overview": {
+      "title": "Partner overview",
+      "subtitle": "Your public partner profile at a glance. Publication status is managed by ToonExpo admins.",
+      "fields": {
+        "name": "Name",
+        "type": "Type",
+        "status": "Status",
+        "publicLink": "Public page"
+      },
+      "viewPublic": "View public profile",
+      "notPublicYet": "Not published yet — admins control publication."
+    },
+    "profile": {
+      "title": "Edit profile",
+      "subtitle": "Update your partner content. Type and publication status stay admin-controlled.",
+      "sectionTitle": "Profile",
+      "edit": "Edit profile",
+      "noValue": "—",
+      "fields": {
+        "description": "Description",
+        "phone": "Phone",
+        "email": "Email",
+        "website": "Website",
+        "serviceCategories": "Service categories"
+      },
+      "form": {
+        "title": "Edit profile",
+        "submit": "Save",
+        "fields": {
+          "name": "Name",
+          "description": "Description",
+          "phone": "Phone",
+          "email": "Email",
+          "website": "Website",
+          "serviceCategories": "Service categories",
+          "serviceCategoriesHint": "Comma-separated keys (for service companies / readiness)."
+        }
+      }
+    },
+    "offers": {
+      "title": "Bank offers",
+      "subtitle": "Create and update your mortgage offers. Publication status is managed by ToonExpo admins.",
+      "sectionTitle": "Offers",
+      "empty": "No bank offers yet.",
+      "newOffer": "New offer",
+      "edit": "Edit",
+      "featured": "Featured",
+      "columns": {
+        "title": "Title",
+        "rate": "Rate",
+        "term": "Term (months)",
+        "amount": "Max amount",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "form": {
+        "create": "New offer",
+        "edit": "Edit offer",
+        "submit": "Save",
+        "fields": {
+          "title": "Title",
+          "interestRate": "Interest rate (%)",
+          "minDownPaymentPercent": "Min. down payment (%)",
+          "maxTermMonths": "Max term (months)",
+          "maxAmountAmd": "Max amount (AMD)",
+          "description": "Description",
+          "featured": "Featured"
+        }
+      }
     }
   }
 }

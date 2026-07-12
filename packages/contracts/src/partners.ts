@@ -85,6 +85,19 @@ export const partnerUpsertInputSchema = z.object({
 
 export type PartnerUpsertInput = z.infer<typeof partnerUpsertInputSchema>;
 
+/** Content-only partner profile update for self-service (type/status stay admin-controlled). */
+export const partnerSelfProfileInputSchema = z.object({
+  name: z.string().trim().min(1).max(PARTNER_NAME_MAX_LENGTH),
+  logoUrl: optionalHttpUrlSchema(PARTNER_LOGO_URL_MAX_LENGTH),
+  description: optionalTrimmedString(PARTNER_DESCRIPTION_MAX_LENGTH),
+  phone: optionalTrimmedString(PARTNER_PHONE_MAX_LENGTH),
+  email: optionalEmail,
+  website: optionalHttpUrlSchema(PARTNER_WEBSITE_MAX_LENGTH),
+  serviceCategories: serviceCategoriesSchema,
+});
+
+export type PartnerSelfProfileInput = z.infer<typeof partnerSelfProfileInputSchema>;
+
 export const partnerStatusInputSchema = z.object({
   partnerId: z.string().trim().min(1),
   status: z.enum(PUBLICATION_STATUSES),

@@ -8,6 +8,7 @@ type PortalFormErrorProps = {
     | 'portal.errors'
     | 'portal.crm.errors'
     | 'admin.catalog.errors'
+    | 'partnerCabinet.errors'
     | 'catalog.request.errors'
     | 'qr.builder.errors'
     | 'qr.entrance.errors'
