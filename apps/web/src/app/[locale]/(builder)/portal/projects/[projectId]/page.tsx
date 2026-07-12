@@ -7,6 +7,7 @@ import { assertBuilderSession } from '@/lib/builder/assert-builder-session';
 import { loadCompanyProjectDetail } from '@/lib/builder/queries';
 
 import { BuildingsSection } from './buildings-section';
+import { MediaSection } from './media-section';
 import { ProjectHeader } from './project-header';
 import { VisualMapsSection } from './visual-maps-section';
 import { listCanvasesForProject } from '@/lib/visual-map/queries';
@@ -29,11 +30,12 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
     notFound();
   }
 
-  const [t, tStatus, tApartmentStatus, tVisualMap] = await Promise.all([
+  const [t, tStatus, tApartmentStatus, tVisualMap, tMedia] = await Promise.all([
     getTranslations('portal.projectDetail'),
     getTranslations('portal.projects.status'),
     getTranslations('portal.apartmentStatus'),
     getTranslations('portal.visualMap'),
+    getTranslations('portal.mediaForm'),
   ]);
 
   const canvases = await listCanvasesForProject(builderContext.companyId, projectId);
@@ -71,6 +73,24 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
         }}
       />
 
+      <MediaSection
+        locale={locale}
+        owner={{ projectId: project.id }}
+        media={project.media}
+        labels={{
+          title: tMedia('section.title'),
+          addMedia: tMedia('add'),
+          empty: tMedia('empty'),
+          edit: tMedia('edit'),
+          delete: tMedia('delete'),
+          coverBadge: tMedia('coverBadge'),
+          coverHint: tMedia('coverHint'),
+          sortOrder: tMedia('fields.sortOrder'),
+          noAlt: tMedia('noAlt'),
+          confirmDelete: tMedia('confirmDelete'),
+        }}
+      />
+
       <BuildingsSection
         locale={locale}
         project={project}
@@ -94,12 +114,18 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
             noValue: t('apartments.noValue'),
             edit: t('apartments.edit'),
             addApartment: t('apartments.addApartment'),
+            media: t('apartments.media'),
           },
         }}
         statusLabels={{
           AVAILABLE: tApartmentStatus('AVAILABLE'),
           RESERVED: tApartmentStatus('RESERVED'),
           SOLD: tApartmentStatus('SOLD'),
+        }}
+        publicationStatusLabels={{
+          DRAFT: tStatus('DRAFT'),
+          PUBLISHED: tStatus('PUBLISHED'),
+          ARCHIVED: tStatus('ARCHIVED'),
         }}
         formatPrice={(value) => priceFormatter.format(value)}
       />

@@ -6,6 +6,8 @@ type CatalogPathHint = {
   projectId?: string;
   buildingId?: string;
   floorId?: string;
+  apartmentId?: string;
+  mediaAssetId?: string;
 };
 
 function mapProjectToCatalogPaths(project: {
@@ -61,6 +63,63 @@ export async function resolveCatalogPaths(
       },
     });
     return floor ? mapProjectToCatalogPaths(floor.building.project) : null;
+  }
+
+  if (hint.apartmentId) {
+    const apartment = await prisma.apartment.findFirst({
+      where: { id: hint.apartmentId, floor: { building: { project: { companyId } } } },
+      select: {
+        floor: {
+          select: {
+            building: {
+              select: {
+                project: {
+                  select: { id: true, slug: true, company: { select: { slug: true } } },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+    return apartment ? mapProjectToCatalogPaths(apartment.floor.building.project) : null;
+  }
+
+  if (hint.mediaAssetId) {
+    const asset = await prisma.mediaAsset.findFirst({
+      where: {
+        id: hint.mediaAssetId,
+        OR: [
+          { project: { companyId } },
+          { apartment: { floor: { building: { project: { companyId } } } } },
+        ],
+      },
+      select: {
+        project: {
+          select: { id: true, slug: true, company: { select: { slug: true } } },
+        },
+        apartment: {
+          select: {
+            floor: {
+              select: {
+                building: {
+                  select: {
+                    project: {
+                      select: { id: true, slug: true, company: { select: { slug: true } } },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+    if (!asset) {
+      return null;
+    }
+    const project = asset.project ?? asset.apartment?.floor.building.project;
+    return project ? mapProjectToCatalogPaths(project) : null;
   }
 
   return null;

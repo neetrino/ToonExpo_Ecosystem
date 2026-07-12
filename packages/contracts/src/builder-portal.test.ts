@@ -4,9 +4,12 @@ import {
   apartmentUpsertInputSchema,
   buildingCreateInputSchema,
   floorCreateInputSchema,
+  mediaAssetUpsertInputSchema,
   projectPublicationInputSchema,
   projectUpsertInputSchema,
 } from './builder-portal';
+
+const SAMPLE_URL = 'https://picsum.photos/seed/cover/800/600';
 
 describe('builder-portal schemas', () => {
   it('rejects empty project name', () => {
@@ -91,5 +94,32 @@ describe('builder-portal schemas', () => {
       level: '',
     });
     expect(result.success).toBe(false);
+  });
+
+  it('rejects mediaAssetUpsertInput when both owners are set', () => {
+    const result = mediaAssetUpsertInputSchema.safeParse({
+      projectId: 'project-1',
+      apartmentId: 'apartment-1',
+      url: SAMPLE_URL,
+      sortOrder: 0,
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects mediaAssetUpsertInput when no owner is set', () => {
+    const result = mediaAssetUpsertInputSchema.safeParse({
+      url: SAMPLE_URL,
+      sortOrder: 0,
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('accepts mediaAssetUpsertInput with project owner', () => {
+    const result = mediaAssetUpsertInputSchema.safeParse({
+      projectId: 'project-1',
+      url: SAMPLE_URL,
+      sortOrder: 1,
+    });
+    expect(result.success).toBe(true);
   });
 });

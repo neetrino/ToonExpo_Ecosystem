@@ -77,18 +77,29 @@ export type BuilderProjectApartment = {
   priceVisibility: PriceVisibility;
   matterportUrl: string | null;
   status: ApartmentStatus;
+  media: BuilderMediaAsset[];
+};
+
+export type BuilderMediaAsset = {
+  id: string;
+  url: string;
+  alt: string | null;
+  sortOrder: number;
 };
 
 export type BuilderProjectFloor = {
   id: string;
   name: string;
   level: number;
+  status: PublicationStatus;
   apartments: BuilderProjectApartment[];
 };
 
 export type BuilderProjectBuilding = {
   id: string;
   name: string;
+  description: string | null;
+  status: PublicationStatus;
   floors: BuilderProjectFloor[];
 };
 
@@ -99,6 +110,7 @@ export type BuilderProjectDetail = {
   city: string | null;
   address: string | null;
   status: PublicationStatus;
+  media: BuilderMediaAsset[];
   buildings: BuilderProjectBuilding[];
 };
 
@@ -115,15 +127,22 @@ export async function loadCompanyProjectDetail(
       city: true,
       address: true,
       status: true,
+      media: {
+        orderBy: { sortOrder: 'asc' },
+        select: { id: true, url: true, alt: true, sortOrder: true },
+      },
       buildings: {
         select: {
           id: true,
           name: true,
+          description: true,
+          status: true,
           floors: {
             select: {
               id: true,
               name: true,
               level: true,
+              status: true,
               apartments: {
                 select: {
                   id: true,
@@ -134,6 +153,10 @@ export async function loadCompanyProjectDetail(
                   priceVisibility: true,
                   matterportUrl: true,
                   status: true,
+                  media: {
+                    orderBy: { sortOrder: 'asc' },
+                    select: { id: true, url: true, alt: true, sortOrder: true },
+                  },
                 },
                 orderBy: { code: 'asc' },
               },

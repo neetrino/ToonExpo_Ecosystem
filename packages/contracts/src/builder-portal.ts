@@ -1,13 +1,14 @@
 import { APARTMENT_STATUSES, PRICE_VISIBILITIES, PUBLICATION_STATUSES } from '@toonexpo/domain';
 import { z } from 'zod';
 
-import { optionalHttpUrlSchema } from './url';
+import { httpUrlSchema, optionalHttpUrlSchema } from './url';
 
 export const PROJECT_NAME_MAX_LENGTH = 120;
 export const PROJECT_CITY_ADDRESS_MAX_LENGTH = 160;
 export const PROJECT_DESCRIPTION_MAX_LENGTH = 4000;
 
 export const BUILDING_NAME_MAX_LENGTH = 120;
+export const BUILDING_DESCRIPTION_MAX_LENGTH = 4000;
 
 export const FLOOR_NAME_MAX_LENGTH = 60;
 export const FLOOR_LEVEL_MIN = -5;
@@ -67,9 +68,24 @@ export type BuildingCreateInput = z.infer<typeof buildingCreateInputSchema>;
 export const buildingUpdateInputSchema = z.object({
   buildingId: z.string().trim().min(1),
   name: z.string().trim().min(1).max(BUILDING_NAME_MAX_LENGTH),
+  description: optionalTrimmedString(BUILDING_DESCRIPTION_MAX_LENGTH),
 });
 
 export type BuildingUpdateInput = z.infer<typeof buildingUpdateInputSchema>;
+
+export const buildingPublicationInputSchema = z.object({
+  buildingId: z.string().trim().min(1),
+  status: z.enum(PUBLICATION_STATUSES),
+});
+
+export type BuildingPublicationInput = z.infer<typeof buildingPublicationInputSchema>;
+
+export const floorPublicationInputSchema = z.object({
+  floorId: z.string().trim().min(1),
+  status: z.enum(PUBLICATION_STATUSES),
+});
+
+export type FloorPublicationInput = z.infer<typeof floorPublicationInputSchema>;
 
 export const floorCreateInputSchema = z.object({
   buildingId: z.string().trim().min(1),
@@ -107,3 +123,45 @@ export const projectPublicationInputSchema = z.object({
 });
 
 export type ProjectPublicationInput = z.infer<typeof projectPublicationInputSchema>;
+
+export const MEDIA_ALT_MAX_LENGTH = 160;
+export const MEDIA_SORT_ORDER_MIN = 0;
+export const MEDIA_SORT_ORDER_MAX = 999;
+
+const mediaOwnerXorRefine = (
+  data: { projectId?: string; apartmentId?: string },
+  ctx: z.RefinementCtx,
+): void => {
+  const hasProject = Boolean(data.projectId);
+  const hasApartment = Boolean(data.apartmentId);
+  if (hasProject === hasApartment) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: 'Exactly one of projectId or apartmentId is required',
+    });
+  }
+};
+
+export const mediaAssetUpsertInputSchema = z
+  .object({
+    mediaAssetId: z.string().trim().min(1).optional(),
+    projectId: z.string().trim().min(1).optional(),
+    apartmentId: z.string().trim().min(1).optional(),
+    url: httpUrlSchema,
+    alt: optionalTrimmedString(MEDIA_ALT_MAX_LENGTH),
+    sortOrder: z.coerce
+      .number()
+      .int()
+      .min(MEDIA_SORT_ORDER_MIN)
+      .max(MEDIA_SORT_ORDER_MAX)
+      .default(MEDIA_SORT_ORDER_MIN),
+  })
+  .superRefine(mediaOwnerXorRefine);
+
+export type MediaAssetUpsertInput = z.infer<typeof mediaAssetUpsertInputSchema>;
+
+export const mediaAssetIdInputSchema = z.object({
+  mediaAssetId: z.string().trim().min(1),
+});
+
+export type MediaAssetIdInput = z.infer<typeof mediaAssetIdInputSchema>;

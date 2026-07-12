@@ -779,6 +779,25 @@
         "draft": "Move this project back to draft? It will be hidden from the public catalog."
       }
     },
+    "inventoryPublication": {
+      "actions": {
+        "publish": "Publish",
+        "archive": "Archive",
+        "draft": "Back to draft"
+      },
+      "confirm": {
+        "building": {
+          "publish": "Publish this building? Its floors and apartments will be visible on the public project page.",
+          "archive": "Archive this building? It will be hidden from the public catalog.",
+          "draft": "Move this building back to draft? It will be hidden from the public catalog."
+        },
+        "floor": {
+          "publish": "Publish this floor? Its apartments will be visible on the public project page.",
+          "archive": "Archive this floor? It will be hidden from the public catalog.",
+          "draft": "Move this floor back to draft? It will be hidden from the public catalog."
+        }
+      }
+    },
     "projectForm": {
       "create": "New project",
       "edit": "Edit project",
@@ -795,7 +814,8 @@
       "edit": "Edit building",
       "submit": "Save",
       "fields": {
-        "name": "Name"
+        "name": "Name",
+        "description": "Description"
       }
     },
     "floorForm": {
@@ -820,6 +840,31 @@
         "priceVisibility": "Price visibility",
         "matterportUrl": "Matterport / 3D URL",
         "status": "Status"
+      }
+    },
+    "mediaForm": {
+      "create": "Add media",
+      "edit": "Edit media",
+      "add": "Add media",
+      "editAction": "Edit",
+      "edit": "Edit",
+      "delete": "Delete",
+      "submit": "Save",
+      "empty": "No media yet.",
+      "noAlt": "No alt text",
+      "coverBadge": "Cover",
+      "coverHint": "The item with the lowest sort order is used as the project cover image. Explicit cover selection may come later.",
+      "confirmDelete": "Remove this media item?",
+      "uploadHint": "Paste an image URL. File upload will be supported in a later release.",
+      "apartmentTitle": "Media — {code}",
+      "section": {
+        "title": "Media"
+      },
+      "fields": {
+        "url": "Image URL",
+        "alt": "Alt text",
+        "sortOrder": "Sort order",
+        "sortOrderHint": "Lower numbers appear first (0–999)."
       }
     },
     "priceVisibility": {
@@ -849,6 +894,7 @@
         "title": "Apartments",
         "addApartment": "Add apartment",
         "edit": "Edit",
+        "media": "Media",
         "noValue": "—",
         "columns": {
           "code": "Unit",

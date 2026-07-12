@@ -6,6 +6,7 @@ import { useState } from 'react';
 import type { BuilderProjectApartment } from '@/lib/builder/queries';
 
 import { ApartmentFormSheet } from '../sheets/apartment-form-sheet';
+import { ApartmentMediaSheet } from '../sheets/apartment-media-sheet';
 
 import { ApartmentTableRow } from './apartment-table-row';
 
@@ -20,6 +21,7 @@ type ApartmentTableLabels = {
   noValue: string;
   edit: string;
   addApartment: string;
+  media: string;
 };
 
 type ApartmentTableProps = {
@@ -56,6 +58,7 @@ export function ApartmentTable({
 }: ApartmentTableProps) {
   const [createOpen, setCreateOpen] = useState(false);
   const [editingApartment, setEditingApartment] = useState<BuilderProjectApartment | null>(null);
+  const [mediaApartment, setMediaApartment] = useState<BuilderProjectApartment | null>(null);
 
   return (
     <div className="portal-subsection">
@@ -85,6 +88,7 @@ export function ApartmentTable({
                   statusLabels={statusLabels}
                   formatPrice={formatPrice}
                   onEdit={setEditingApartment}
+                  onMedia={setMediaApartment}
                 />
               ))}
             </tbody>
@@ -117,6 +121,15 @@ export function ApartmentTable({
             matterportUrl: editingApartment.matterportUrl,
             status: editingApartment.status,
           }}
+        />
+      ) : null}
+
+      {mediaApartment ? (
+        <ApartmentMediaSheet
+          locale={locale}
+          open
+          onClose={() => setMediaApartment(null)}
+          apartment={mediaApartment}
         />
       ) : null}
     </div>

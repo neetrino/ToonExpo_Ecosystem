@@ -5,11 +5,15 @@ export {
   createApartment,
   createBuilding,
   createFloor,
+  setBuildingPublication,
+  setFloorPublication,
   updateApartment,
   updateBuilding,
   updateFloor,
   upsertApartment,
 } from './inventory-mutations';
+
+export { addMediaAsset, deleteMediaAsset, updateMediaAsset } from './media-mutations';
 
 export { createProject, setProjectPublication, updateProject } from './project-mutations';
 export { updateCompanyProfile } from './company-mutations';

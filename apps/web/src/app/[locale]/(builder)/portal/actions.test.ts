@@ -14,6 +14,11 @@ vi.mock('@/lib/builder/mutations', () => ({
   updateFloor: vi.fn(),
   upsertApartment: vi.fn(),
   updateCompanyProfile: vi.fn(),
+  addMediaAsset: vi.fn(),
+  updateMediaAsset: vi.fn(),
+  deleteMediaAsset: vi.fn(),
+  setBuildingPublication: vi.fn(),
+  setFloorPublication: vi.fn(),
 }));
 
 vi.mock('@/lib/shared/resolve-catalog-paths', () => ({
@@ -30,9 +35,11 @@ vi.mock('next/cache', () => ({
 
 import { assertBuilderSession } from '@/lib/builder/assert-builder-session';
 import {
+  addMediaAsset,
   createBuilding,
   createFloor,
   createProject,
+  deleteMediaAsset,
   setProjectPublication,
   updateBuilding,
   updateFloor,
@@ -42,9 +49,11 @@ import {
 } from '@/lib/builder/mutations';
 
 import {
+  addMediaAssetAction,
   createBuildingAction,
   createFloorAction,
   createProjectAction,
+  deleteMediaAssetAction,
   setProjectPublicationAction,
   updateBuildingAction,
   updateFloorAction,
@@ -137,5 +146,21 @@ describe('builder portal actions authz', () => {
     });
     expect(result).toEqual({ ok: false, errorKey: 'unauthorized' });
     expect(updateCompanyProfile).not.toHaveBeenCalled();
+  });
+
+  it('addMediaAssetAction returns unauthorized without a builder session', async () => {
+    const result = await addMediaAssetAction('en', {
+      projectId: 'project-1',
+      url: 'https://picsum.photos/seed/cover/800/600',
+      sortOrder: 0,
+    });
+    expect(result).toEqual({ ok: false, errorKey: 'unauthorized' });
+    expect(addMediaAsset).not.toHaveBeenCalled();
+  });
+
+  it('deleteMediaAssetAction returns unauthorized without a builder session', async () => {
+    const result = await deleteMediaAssetAction('en', { mediaAssetId: 'media-1' });
+    expect(result).toEqual({ ok: false, errorKey: 'unauthorized' });
+    expect(deleteMediaAsset).not.toHaveBeenCalled();
   });
 });

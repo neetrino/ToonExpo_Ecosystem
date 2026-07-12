@@ -4,9 +4,13 @@ import { companyProfileUpdateInputSchema } from '@toonexpo/contracts';
 import {
   apartmentUpsertInputSchema,
   buildingCreateInputSchema,
+  buildingPublicationInputSchema,
   buildingUpdateInputSchema,
   floorCreateInputSchema,
+  floorPublicationInputSchema,
   floorUpdateInputSchema,
+  mediaAssetIdInputSchema,
+  mediaAssetUpsertInputSchema,
   projectPublicationInputSchema,
   projectUpsertInputSchema,
 } from '@toonexpo/contracts';
@@ -17,13 +21,18 @@ import { revalidatePath } from 'next/cache';
 import { assertBuilderSession } from '@/lib/builder/assert-builder-session';
 import type { BuilderMutationErrorKey, BuilderMutationResult } from '@/lib/builder/mutations';
 import {
+  addMediaAsset,
   createBuilding,
   createFloor,
   createProject,
+  deleteMediaAsset,
+  setBuildingPublication,
+  setFloorPublication,
   setProjectPublication,
   updateBuilding,
   updateCompanyProfile,
   updateFloor,
+  updateMediaAsset,
   updateProject,
   upsertApartment,
 } from '@/lib/builder/mutations';
@@ -89,6 +98,14 @@ async function revalidateAfterCompanyProfileMutation(
   }
 }
 
+async function revalidateAfterMediaMutation(
+  companyId: string,
+  hint: { projectId?: string; apartmentId?: string; mediaAssetId?: string },
+): Promise<void> {
+  const paths = await resolveCatalogPaths(companyId, hint);
+  revalidateCatalogPaths(paths ?? {});
+}
+
 export async function createProjectAction(
   _locale: string,
   raw: unknown,
@@ -111,6 +128,79 @@ export async function createProjectAction(
       result.projectId,
       result.projectSlug,
     );
+  }
+  return result;
+}
+
+export async function addMediaAssetAction(
+  _locale: string,
+  raw: unknown,
+): Promise<BuilderActionResult<{ mediaAssetId: string }>> {
+  const session = await assertBuilderSession();
+  if (!session) {
+    return unauthorized();
+  }
+
+  const parsed = mediaAssetUpsertInputSchema.safeParse(raw);
+  if (!parsed.success || parsed.data.mediaAssetId) {
+    return invalidInput();
+  }
+
+  const result = await addMediaAsset(session.companyId, parsed.data);
+  if (result.ok) {
+    await revalidateAfterMediaMutation(session.companyId, {
+      projectId: parsed.data.projectId,
+      apartmentId: parsed.data.apartmentId,
+    });
+  }
+  return result;
+}
+
+export async function updateMediaAssetAction(
+  _locale: string,
+  raw: unknown,
+): Promise<BuilderActionResult<{ mediaAssetId: string }>> {
+  const session = await assertBuilderSession();
+  if (!session) {
+    return unauthorized();
+  }
+
+  const parsed = mediaAssetUpsertInputSchema.safeParse(raw);
+  if (!parsed.success || !parsed.data.mediaAssetId) {
+    return invalidInput();
+  }
+
+  const result = await updateMediaAsset(session.companyId, {
+    ...parsed.data,
+    mediaAssetId: parsed.data.mediaAssetId,
+  });
+  if (result.ok) {
+    await revalidateAfterMediaMutation(session.companyId, {
+      mediaAssetId: result.mediaAssetId,
+    });
+  }
+  return result;
+}
+
+export async function deleteMediaAssetAction(
+  _locale: string,
+  raw: unknown,
+): Promise<BuilderActionResult<{ mediaAssetId: string }>> {
+  const session = await assertBuilderSession();
+  if (!session) {
+    return unauthorized();
+  }
+
+  const parsed = mediaAssetIdInputSchema.safeParse(raw);
+  if (!parsed.success) {
+    return invalidInput();
+  }
+
+  const result = await deleteMediaAsset(session.companyId, parsed.data);
+  if (result.ok) {
+    await revalidateAfterMediaMutation(session.companyId, {
+      mediaAssetId: result.mediaAssetId,
+    });
   }
   return result;
 }
@@ -273,6 +363,58 @@ export async function upsertApartmentAction(
   if (result.ok) {
     await revalidateAfterInventoryMutation(session.companyId, {
       floorId: parsed.data.floorId,
+    });
+  }
+  return result;
+}
+
+export async function setBuildingPublicationAction(
+  _locale: string,
+  raw: unknown,
+): Promise<BuilderActionResult<{ buildingId: string }>> {
+  const session = await assertBuilderSession();
+  if (!session) {
+    return unauthorized();
+  }
+
+  const parsed = buildingPublicationInputSchema.safeParse(raw);
+  if (!parsed.success) {
+    return invalidInput();
+  }
+
+  const result = await setBuildingPublication(session.companyId, parsed.data, {
+    userId: session.session.user.id,
+    role: session.session.user.role,
+  });
+  if (result.ok) {
+    await revalidateAfterInventoryMutation(session.companyId, {
+      buildingId: result.buildingId,
+    });
+  }
+  return result;
+}
+
+export async function setFloorPublicationAction(
+  _locale: string,
+  raw: unknown,
+): Promise<BuilderActionResult<{ floorId: string }>> {
+  const session = await assertBuilderSession();
+  if (!session) {
+    return unauthorized();
+  }
+
+  const parsed = floorPublicationInputSchema.safeParse(raw);
+  if (!parsed.success) {
+    return invalidInput();
+  }
+
+  const result = await setFloorPublication(session.companyId, parsed.data, {
+    userId: session.session.user.id,
+    role: session.session.user.role,
+  });
+  if (result.ok) {
+    await revalidateAfterInventoryMutation(session.companyId, {
+      floorId: result.floorId,
     });
   }
   return result;

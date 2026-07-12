@@ -7,6 +7,7 @@ import type { BuilderProjectApartment } from '@/lib/builder/queries';
 type ApartmentRowLabels = {
   noValue: string;
   edit: string;
+  media: string;
 };
 
 type ApartmentTableRowProps = {
@@ -15,6 +16,7 @@ type ApartmentTableRowProps = {
   statusLabels: Record<ApartmentStatus, string>;
   formatPrice: (value: number) => string;
   onEdit: (apartment: BuilderProjectApartment) => void;
+  onMedia: (apartment: BuilderProjectApartment) => void;
 };
 
 export function ApartmentTableRow({
@@ -23,6 +25,7 @@ export function ApartmentTableRow({
   statusLabels,
   formatPrice,
   onEdit,
+  onMedia,
 }: ApartmentTableRowProps) {
   return (
     <tr>
@@ -36,13 +39,22 @@ export function ApartmentTableRow({
         </span>
       </td>
       <td>
-        <button
-          type="button"
-          className="portal-btn portal-btn--ghost portal-btn--sm"
-          onClick={() => onEdit(apartment)}
-        >
-          {labels.edit}
-        </button>
+        <div className="portal-actions">
+          <button
+            type="button"
+            className="portal-btn portal-btn--ghost portal-btn--sm"
+            onClick={() => onMedia(apartment)}
+          >
+            {labels.media}
+          </button>
+          <button
+            type="button"
+            className="portal-btn portal-btn--ghost portal-btn--sm"
+            onClick={() => onEdit(apartment)}
+          >
+            {labels.edit}
+          </button>
+        </div>
       </td>
     </tr>
   );

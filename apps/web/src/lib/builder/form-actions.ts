@@ -3,12 +3,17 @@
 import type { BuilderFormActionState } from './action-state';
 import type { BuilderMutationErrorKey } from './mutation-result';
 import {
+  addMediaAssetAction,
   createBuildingAction,
   createFloorAction,
   createProjectAction,
+  deleteMediaAssetAction,
+  setBuildingPublicationAction,
+  setFloorPublicationAction,
   setProjectPublicationAction,
   updateBuildingAction,
   updateFloorAction,
+  updateMediaAssetAction,
   updateProjectAction,
   updateCompanyProfileAction,
   upsertApartmentAction,
@@ -98,6 +103,7 @@ export async function updateBuildingFormAction(
   const result = await updateBuildingAction(locale, {
     buildingId: getFormString(formData, 'buildingId'),
     name: getFormString(formData, 'name'),
+    description: getOptionalFormString(formData, 'description'),
   });
   return toFormState(result);
 }
@@ -161,6 +167,70 @@ export async function updateCompanyProfileFormAction(
     website: getOptionalFormString(formData, 'website'),
     city: getOptionalFormString(formData, 'city'),
     address: getOptionalFormString(formData, 'address'),
+  });
+  return toFormState(result);
+}
+
+function parseMediaFormPayload(formData: FormData) {
+  return {
+    mediaAssetId: getOptionalFormString(formData, 'mediaAssetId'),
+    projectId: getOptionalFormString(formData, 'projectId'),
+    apartmentId: getOptionalFormString(formData, 'apartmentId'),
+    url: getFormString(formData, 'url'),
+    alt: getOptionalFormString(formData, 'alt'),
+    sortOrder: getFormString(formData, 'sortOrder'),
+  };
+}
+
+export async function addMediaAssetFormAction(
+  locale: string,
+  _prevState: BuilderFormActionState,
+  formData: FormData,
+): Promise<BuilderFormActionState> {
+  const result = await addMediaAssetAction(locale, parseMediaFormPayload(formData));
+  return toFormState(result);
+}
+
+export async function updateMediaAssetFormAction(
+  locale: string,
+  _prevState: BuilderFormActionState,
+  formData: FormData,
+): Promise<BuilderFormActionState> {
+  const result = await updateMediaAssetAction(locale, parseMediaFormPayload(formData));
+  return toFormState(result);
+}
+
+export async function deleteMediaAssetFormAction(
+  locale: string,
+  _prevState: BuilderFormActionState,
+  formData: FormData,
+): Promise<BuilderFormActionState> {
+  const result = await deleteMediaAssetAction(locale, {
+    mediaAssetId: getFormString(formData, 'mediaAssetId'),
+  });
+  return toFormState(result);
+}
+
+export async function setBuildingPublicationFormAction(
+  locale: string,
+  _prevState: BuilderFormActionState,
+  formData: FormData,
+): Promise<BuilderFormActionState> {
+  const result = await setBuildingPublicationAction(locale, {
+    buildingId: getFormString(formData, 'buildingId'),
+    status: getFormString(formData, 'status'),
+  });
+  return toFormState(result);
+}
+
+export async function setFloorPublicationFormAction(
+  locale: string,
+  _prevState: BuilderFormActionState,
+  formData: FormData,
+): Promise<BuilderFormActionState> {
+  const result = await setFloorPublicationAction(locale, {
+    floorId: getFormString(formData, 'floorId'),
+    status: getFormString(formData, 'status'),
   });
   return toFormState(result);
 }
