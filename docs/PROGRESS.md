@@ -2,13 +2,23 @@
 
 ## Current Status
 
+Sprint 7.3 **COMPLETE** — Cloudflare R2 signed uploads for builder project/apartment media.
+
 Sprint 7.2 **COMPLETE** — Resend set-password invitation emails replace admin-typed temporary passwords for provisioned accounts (admin UI + BOS).
 
 Sprint 7.1 **COMPLETE** — Upstash Redis rate limiting on auth, public request, QR lookup, and BOS provisioning.
 
 Sprint 6 **COMPLETE** — Analytics v1, BOS provisioning (atomic idempotency), audit logs + CSV reports, e2e smoke, hardening + final audit fixes.
 
-**MVP backlog complete** — all six planned sprints are done. Deferred follow-ups (not blockers): media upload pipeline, venue map/booths, `ApartmentStatusHistory`, favorites, admin acting-on-behalf, company switcher, Playwright e2e, Swagger gating in prod, analytics aggregation/sampling, general Redis caching/queues.
+**MVP backlog complete** — all six planned sprints are done. Deferred follow-ups (not blockers): venue map/booths, `ApartmentStatusHistory`, favorites, admin acting-on-behalf, company switcher, Playwright e2e, Swagger gating in prod, analytics aggregation/sampling, general Redis caching/queues, company logo / visual-map image uploads (still URL-based).
+
+## Sprint 7.3 — R2 signed media uploads (COMPLETE)
+
+- **Signing** — Lives in `apps/web` (`POST /api/uploads/presign`), not Nest: builder session + company-scoped object keys; R2 secrets stay server-only; client only receives a short-lived PUT URL.
+- **Flow** — Validate MIME/size → presign → browser PUT to R2 → `addMediaAsset` with `publicUrl` (`R2_PUBLIC_URL` + key). Collapsed URL paste remains as fallback.
+- **Limits** — 10 MiB; `image/jpeg|png|webp`; 10 min TTL; key `media/{companyId}/{yyyy}/{mm}/{uuid}.{ext}`; 20 presign/min/userId (Upstash fail-open).
+- **Unset R2** — Presign returns 503 `storageNotConfigured`; UI shows i18n message; URL paste still works. Unit tests mock AWS SDK (no network).
+- **Delete** — Best-effort R2 object delete when URL is under `R2_PUBLIC_URL`; DB delete never fails on storage errors.
 
 ## Sprint 7.2 — Set-password invitation emails (COMPLETE)
 
@@ -54,7 +64,7 @@ Sprint 6 **COMPLETE** — Analytics v1, BOS provisioning (atomic idempotency), a
 ### Deferred (Sprint 5 follow-ups)
 
 - Venue map / booths / routing.
-- Media upload pipeline (replace URL inputs for logos, canvas images).
+- Company logo / visual-map canvas image uploads (still URL inputs; project/apartment media uses R2 as of Sprint 7.3).
 - Category CRUD UI for readiness.
 - Partner readiness module.
 
@@ -132,7 +142,7 @@ Sprint 6 **COMPLETE** — Analytics v1, BOS provisioning (atomic idempotency), a
 
 - pnpm + Turborepo; Next.js web + NestJS API.
 - Auth.js 5 + database sessions.
-- Zod validation; signed R2 uploads (wiring later).
+- Zod validation; signed R2 uploads for builder project/apartment media (web Route Handler; company logos / canvas images still URL).
 - Locales as code constants.
 - PWA out of scope; Upstash Redis used for rate limiting (general cache deferred).
 
@@ -158,7 +168,7 @@ Audit fixes applied on branch `sipan` after the feature pack landed:
 
 ### Deferred (unchanged)
 
-- Media upload pipeline, venue map/booths, `ApartmentStatusHistory`, favorites, admin acting-on-behalf, company switcher, Playwright e2e, Swagger gating in prod, analytics aggregation/sampling, general Redis caching/queues.
+- Venue map/booths, `ApartmentStatusHistory`, favorites, admin acting-on-behalf, company switcher, Playwright e2e, Swagger gating in prod, analytics aggregation/sampling, general Redis caching/queues; company logo / visual-map image uploads (URL-based).
 
 ## Open (non-blocking)
 

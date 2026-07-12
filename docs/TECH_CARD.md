@@ -27,7 +27,7 @@ Size C — large, layout: monorepo (`apps/*`, `packages/*`).
 | ORM | Prisma | Confirmed | Matches rules. |
 | Auth | Auth.js 5 + database sessions | Confirmed | Buyer self-registers; builders/partners/admins are provisioned. |
 | i18n | next-intl | Confirmed | Locales `hy`, `ru`, `en` as code constants (not env). |
-| File storage | Cloudflare R2 | Confirmed | Signed client uploads via API-issued URLs. |
+| File storage | Cloudflare R2 | Confirmed | Signed client uploads via web-issued PUT URLs (`/api/uploads/presign`). |
 | Email | Resend | Confirmed | Account invitations and login flows. |
 | QR | Server-generated signed token + QR rendering | Confirmed | Token stores no personal data. |
 | Maps | Custom image/hotspot editors first | Confirmed | Venue and real estate visual maps are image/coordinate based in v1. |
@@ -72,7 +72,7 @@ Size C — large, layout: monorepo (`apps/*`, `packages/*`).
 | Validation | Zod (shared via `packages/contracts`) | Confirmed |
 | API style | REST | Confirmed |
 | API docs | OpenAPI/Swagger | Confirmed |
-| Uploads | API-signed upload to R2 | Confirmed |
+| Uploads | Web-signed upload to R2 (builder media) | Confirmed | `POST /api/uploads/presign` in `apps/web`; Nest path deferred. Company logo / canvas still URL. |
 
 ## 4. Database
 
