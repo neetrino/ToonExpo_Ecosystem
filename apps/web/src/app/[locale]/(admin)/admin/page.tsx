@@ -48,10 +48,12 @@ export default async function AdminPage({ params }: AdminPageProps) {
   ]);
 
   return (
-    <section className="flex flex-col gap-10">
-      <header className="flex flex-col gap-2">
-        <h2 className="portal-page__title">{t('provision.title')}</h2>
-        <p className="text-[var(--te-muted)]">{t('provision.description')}</p>
+    <section className="portal-section">
+      <header className="portal-section__header">
+        <div>
+          <h2 className="portal-page__title">{t('provision.title')}</h2>
+          <p className="portal-muted">{t('provision.description')}</p>
+        </div>
       </header>
 
       <ProvisionForm action={provisionAccountAction.bind(null, locale)} partners={partners} />

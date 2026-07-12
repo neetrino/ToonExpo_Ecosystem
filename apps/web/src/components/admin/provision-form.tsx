@@ -9,6 +9,7 @@ import {
   INITIAL_PROVISION_ACTION_STATE,
   type ProvisionActionState,
 } from '@/lib/admin/action-state';
+import { TeButton } from '@/components/ui/te-button';
 
 type PartnerOption = {
   id: string;
@@ -21,9 +22,6 @@ type ProvisionFormProps = {
   partners: PartnerOption[];
 };
 
-const FIELD_CLASS =
-  'w-full rounded border border-white/20 bg-transparent px-3 py-2 text-sm outline-none focus:border-[var(--te-accent)]';
-
 export function ProvisionForm({ action, partners }: ProvisionFormProps) {
   const t = useTranslations('admin.provision');
   const tRoles = useTranslations('admin.users.roles');
@@ -35,25 +33,25 @@ export function ProvisionForm({ action, partners }: ProvisionFormProps) {
     <form
       action={formAction}
       data-testid="provision-account-form"
-      className="flex flex-col gap-4 rounded border border-white/10 p-6"
+      className="portal-card portal-form"
     >
-      <h2 className="text-lg font-medium">{t('title')}</h2>
-      <p className="text-sm text-[var(--te-muted)]">{t('description')}</p>
+      <h2 className="portal-card__title">{t('title')}</h2>
+      <p className="portal-muted">{t('description')}</p>
 
-      <label className="flex flex-col gap-1 text-sm">
-        <span>{t('fields.email')}</span>
-        <input className={FIELD_CLASS} type="email" name="email" autoComplete="off" required />
+      <label className="portal-form__field">
+        <span className="portal-form__label">{t('fields.email')}</span>
+        <input className="portal-form__input" type="email" name="email" autoComplete="off" required />
       </label>
 
-      <label className="flex flex-col gap-1 text-sm">
-        <span>{t('fields.name')}</span>
-        <input className={FIELD_CLASS} type="text" name="name" autoComplete="off" required />
+      <label className="portal-form__field">
+        <span className="portal-form__label">{t('fields.name')}</span>
+        <input className="portal-form__input" type="text" name="name" autoComplete="off" required />
       </label>
 
-      <label className="flex flex-col gap-1 text-sm">
-        <span>{t('fields.role')}</span>
+      <label className="portal-form__field">
+        <span className="portal-form__label">{t('fields.role')}</span>
         <select
-          className={FIELD_CLASS}
+          className="portal-form__select"
           name="role"
           required
           value={role}
@@ -67,16 +65,16 @@ export function ProvisionForm({ action, partners }: ProvisionFormProps) {
         </select>
       </label>
 
-      <label className="flex flex-col gap-1 text-sm">
-        <span>{t('fields.companyName')}</span>
-        <input className={FIELD_CLASS} type="text" name="companyName" autoComplete="off" />
-        <span className="text-xs text-[var(--te-muted)]">{t('fields.companyNameHint')}</span>
+      <label className="portal-form__field">
+        <span className="portal-form__label">{t('fields.companyName')}</span>
+        <input className="portal-form__input" type="text" name="companyName" autoComplete="off" />
+        <span className="portal-form__hint">{t('fields.companyNameHint')}</span>
       </label>
 
       {role === 'PARTNER' ? (
-        <label className="flex flex-col gap-1 text-sm">
-          <span>{t('fields.partnerId')}</span>
-          <select className={FIELD_CLASS} name="partnerId" defaultValue="">
+        <label className="portal-form__field">
+          <span className="portal-form__label">{t('fields.partnerId')}</span>
+          <select className="portal-form__select" name="partnerId" defaultValue="">
             <option value="">{t('fields.partnerIdNone')}</option>
             {partners.map((partner) => (
               <option key={partner.id} value={partner.id}>
@@ -84,38 +82,36 @@ export function ProvisionForm({ action, partners }: ProvisionFormProps) {
               </option>
             ))}
           </select>
-          <span className="text-xs text-[var(--te-muted)]">{t('fields.partnerIdHint')}</span>
+          <span className="portal-form__hint">{t('fields.partnerIdHint')}</span>
         </label>
       ) : null}
 
       {state.errorKey ? (
-        <p role="alert" className="text-sm text-red-400">
+        <p role="alert" className="portal-form__error">
           {t(`errors.${state.errorKey}`)}
         </p>
       ) : null}
 
       {state.successKey ? (
-        <p role="status" className="text-sm text-green-400">
+        <p role="status" className="portal-form__success">
           {t(`success.${state.successKey}`)}
         </p>
       ) : null}
 
       {state.inviteUrl ? (
-        <p className="text-xs text-[var(--te-muted)]">
+        <p className="portal-form__hint">
           {t('devInviteUrlLabel')}{' '}
-          <a className="underline" href={state.inviteUrl}>
+          <a className="portal-link" href={state.inviteUrl}>
             {state.inviteUrl}
           </a>
         </p>
       ) : null}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="self-start rounded bg-[var(--te-accent)] px-4 py-2 text-sm font-medium disabled:opacity-60"
-      >
-        {t('submit')}
-      </button>
+      <div className="portal-form__actions">
+        <TeButton type="submit" disabled={pending}>
+          {t('submit')}
+        </TeButton>
+      </div>
     </form>
   );
 }

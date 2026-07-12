@@ -21,30 +21,30 @@ export async function UsersTable({ users, locale }: UsersTableProps) {
   const dateFormatter = new Intl.DateTimeFormat(locale, { dateStyle: 'medium' });
 
   return (
-    <section className="flex flex-col gap-4">
-      <h2 className="text-lg font-medium">{t('title')}</h2>
+    <section className="portal-section">
+      <h2 className="portal-section__title">{t('title')}</h2>
       {users.length === 0 ? (
-        <p className="text-sm text-[var(--te-muted)]">{t('empty')}</p>
+        <p className="portal-empty">{t('empty')}</p>
       ) : (
-        <div className="overflow-x-auto rounded border border-white/10">
-          <table className="w-full min-w-[640px] text-left text-sm">
-            <thead className="border-b border-white/10 text-[var(--te-muted)]">
+        <div className="portal-table-wrap">
+          <table className="portal-table">
+            <thead>
               <tr>
-                <th className="px-4 py-3 font-medium">{t('columns.email')}</th>
-                <th className="px-4 py-3 font-medium">{t('columns.name')}</th>
-                <th className="px-4 py-3 font-medium">{t('columns.role')}</th>
-                <th className="px-4 py-3 font-medium">{t('columns.company')}</th>
-                <th className="px-4 py-3 font-medium">{t('columns.createdAt')}</th>
+                <th>{t('columns.email')}</th>
+                <th>{t('columns.name')}</th>
+                <th>{t('columns.role')}</th>
+                <th>{t('columns.company')}</th>
+                <th>{t('columns.createdAt')}</th>
               </tr>
             </thead>
             <tbody>
               {users.map((user) => (
-                <tr key={user.id} className="border-b border-white/5 last:border-0">
-                  <td className="px-4 py-3">{user.email}</td>
-                  <td className="px-4 py-3">{user.name ?? t('noName')}</td>
-                  <td className="px-4 py-3">{tRoles(user.role)}</td>
-                  <td className="px-4 py-3">{user.companyName ?? t('noCompany')}</td>
-                  <td className="px-4 py-3">{dateFormatter.format(user.createdAt)}</td>
+                <tr key={user.id}>
+                  <td>{user.email}</td>
+                  <td>{user.name ?? t('noName')}</td>
+                  <td>{tRoles(user.role)}</td>
+                  <td>{user.companyName ?? t('noCompany')}</td>
+                  <td>{dateFormatter.format(user.createdAt)}</td>
                 </tr>
               ))}
             </tbody>
