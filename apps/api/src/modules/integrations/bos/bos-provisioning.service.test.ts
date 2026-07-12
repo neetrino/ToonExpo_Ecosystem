@@ -49,7 +49,10 @@ vi.mock('../../../common/email/send-invite-email', () => ({ sendAccountInviteEma
 
 import { PrismaService } from '../../../common/prisma.service';
 
-import { EMAIL_CONFLICT_ERROR_MESSAGE } from './bos-provisioning.constants';
+import {
+  EMAIL_CONFLICT_ERROR_MESSAGE,
+  PROVISIONING_TX_TIMEOUT_MS,
+} from './bos-provisioning.constants';
 import { BosProvisioningService } from './bos-provisioning.service';
 
 const VALID_BODY = {
@@ -75,6 +78,7 @@ function buildTx(overrides: Record<string, unknown> = {}) {
       create: vi.fn().mockResolvedValue({ id: 'user-new' }),
     },
     company: {
+      findFirst: vi.fn().mockResolvedValue(null),
       findUnique: vi.fn().mockResolvedValue(null),
       create: vi.fn().mockResolvedValue({ id: 'co-new' }),
     },
@@ -256,6 +260,27 @@ describe('BosProvisioningService', () => {
       to: VALID_BODY.primaryContactEmail,
       name: VALID_BODY.primaryContactName,
       inviteUrl: 'https://app.example.com/en/invite/raw-invite-token',
+    });
+  });
+
+  it('sends the invite email only after the claim transaction commits', async () => {
+    const callOrder: string[] = [];
+    transaction.mockImplementation(async (fn: (tx: unknown) => Promise<unknown>) => {
+      callOrder.push('tx-start');
+      const result = await fn(buildTx());
+      callOrder.push('tx-end');
+      return result;
+    });
+    sendAccountInviteEmail.mockImplementation(async () => {
+      callOrder.push('email');
+      return { sent: true };
+    });
+
+    await service.provision(VALID_BODY);
+
+    expect(callOrder).toEqual(['tx-start', 'tx-end', 'email']);
+    expect(transaction).toHaveBeenCalledWith(expect.any(Function), {
+      timeout: PROVISIONING_TX_TIMEOUT_MS,
     });
   });
 

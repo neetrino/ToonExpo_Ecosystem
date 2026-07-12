@@ -24,3 +24,10 @@ export const EMAIL_CONFLICT_ERROR_MESSAGE = 'EMAIL_CONFLICT';
 
 /** Concurrent in-flight claim for the same requestId. */
 export const PROVISIONING_IN_PROGRESS_CODE = 'PROVISIONING_IN_PROGRESS';
+
+/**
+ * Interactive `$transaction` timeout for BOS claim → accounts → invite row.
+ * Default Prisma 5s is too tight on Neon when the claim does several RTTs
+ * (company/user/member/invite/snapshot). Email/network I/O stays outside.
+ */
+export const PROVISIONING_TX_TIMEOUT_MS = 15_000;

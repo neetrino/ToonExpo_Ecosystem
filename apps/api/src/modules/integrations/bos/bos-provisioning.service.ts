@@ -28,6 +28,7 @@ import {
   EMAIL_CONFLICT_ERROR_MESSAGE,
   PROVISIONING_CLAIM_STATUS,
   PROVISIONING_IN_PROGRESS_CODE,
+  PROVISIONING_TX_TIMEOUT_MS,
 } from './bos-provisioning.constants';
 import {
   buildFailedResponse,
@@ -90,8 +91,9 @@ export class BosProvisioningService {
 
   private async executeProvisioning(input: BosProvisioningRequest): Promise<ProvisionOutcome> {
     try {
-      const result = await this.prisma.client.$transaction((tx) =>
-        this.runClaimedProvision(tx, input),
+      const result = await this.prisma.client.$transaction(
+        (tx) => this.runClaimedProvision(tx, input),
+        { timeout: PROVISIONING_TX_TIMEOUT_MS },
       );
       if (result.kind === 'success') {
         await this.sendInviteEmailBestEffort(input, result.inviteRawToken);

@@ -2,7 +2,6 @@ import { slugifyCompanyName, type BosProvisioningRequest } from '@toonexpo/contr
 import { type Prisma, type PartnerType, type PlatformRole } from '@toonexpo/db';
 import type { BosCompanyType } from '@toonexpo/domain';
 
-import { MAX_SLUG_ATTEMPTS } from './bos-provisioning.constants';
 import { allocateUniqueSlug } from './bos-provisioning.crypto';
 
 type Tx = Prisma.TransactionClient;
@@ -22,16 +21,23 @@ export function needsPartnerProfile(companyType: BosCompanyType): boolean {
   return companyType === 'partner' || companyType === 'bank';
 }
 
+/**
+ * Reuse an existing company by exact name (one query), otherwise allocate a
+ * unique slug. Avoids probing up to MAX_SLUG_ATTEMPTS slug variants inside the
+ * BOS claim transaction (that path previously burned ~50 RTTs and hit the
+ * Prisma interactive-tx timeout under Neon latency).
+ */
 export async function resolveCompanyId(tx: Tx, companyName: string): Promise<string> {
-  const baseSlug = slugifyCompanyName(companyName);
-  for (let suffix = 0; suffix < MAX_SLUG_ATTEMPTS; suffix += 1) {
-    const slug = suffix === 0 ? baseSlug : `${baseSlug}-${suffix}`;
-    const existing = await tx.company.findUnique({ where: { slug } });
-    if (existing?.name === companyName) {
-      return existing.id;
-    }
+  const existing = await tx.company.findFirst({
+    where: { name: companyName },
+    orderBy: { createdAt: 'asc' },
+    select: { id: true },
+  });
+  if (existing) {
+    return existing.id;
   }
 
+  const baseSlug = slugifyCompanyName(companyName);
   const slug = await allocateUniqueSlug(baseSlug, async (candidate) => {
     const row = await tx.company.findUnique({ where: { slug: candidate } });
     return row !== null;
