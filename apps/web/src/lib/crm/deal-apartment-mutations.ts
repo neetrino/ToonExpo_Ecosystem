@@ -4,6 +4,7 @@ import type { DealStage } from '@toonexpo/domain';
 
 import { UNIQUE_CONSTRAINT_ERROR } from '../builder/mutation-result';
 import { STAGES_REQUIRING_APARTMENT } from './constants';
+import { buildDealApartmentSnapshotData } from './deal-apartment-snapshot';
 import {
   findCompanyApartment,
   findCompanyDeal,
@@ -34,7 +35,11 @@ export async function linkDealApartment(
       }
 
       await tx.dealApartment.create({
-        data: { dealId: deal.id, apartmentId: apartment.id },
+        data: {
+          dealId: deal.id,
+          apartmentId: apartment.id,
+          ...buildDealApartmentSnapshotData(apartment),
+        },
       });
 
       const projectIds = new Set<string>();

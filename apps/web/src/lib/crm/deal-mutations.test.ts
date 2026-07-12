@@ -268,6 +268,33 @@ describe('linkDealApartment / unlinkDealApartment', () => {
     expect(result).toEqual({ ok: false, errorKey: 'notFound' });
   });
 
+  it('stores apartment price and status snapshot on link', async () => {
+    vi.mocked(mockTx.deal.findFirst).mockResolvedValue(dealRow());
+    vi.mocked(mockTx.apartment.findFirst).mockResolvedValue({
+      id: APARTMENT_ID,
+      status: 'AVAILABLE',
+      priceAmd: 12_500_000,
+      floor: { building: { projectId: APARTMENT_PROJECT_ID } },
+    });
+    vi.mocked(mockTx.dealApartment.create).mockResolvedValue({ id: 'link-1' });
+
+    const result = await linkDealApartment(COMPANY_ID, {
+      dealId: DEAL_ID,
+      apartmentId: APARTMENT_ID,
+    });
+
+    expect(result.ok).toBe(true);
+    expect(mockTx.dealApartment.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        dealId: DEAL_ID,
+        apartmentId: APARTMENT_ID,
+        priceAmdSnapshot: 12_500_000,
+        statusSnapshot: 'AVAILABLE',
+        snapshotAt: expect.any(Date),
+      }),
+    });
+  });
+
   it('returns apartmentRequired when unlinking the last apartment on RESERVED', async () => {
     vi.mocked(mockTx.deal.findFirst).mockResolvedValue(
       dealRow({ stage: 'RESERVED', apartmentCount: 1 }),
@@ -276,6 +303,7 @@ describe('linkDealApartment / unlinkDealApartment', () => {
     vi.mocked(mockTx.apartment.findFirst).mockResolvedValue({
       id: APARTMENT_ID,
       status: 'RESERVED',
+      priceAmd: null,
       floor: { building: { projectId: 'project-1' } },
     });
     vi.mocked(mockTx.dealApartment.findMany).mockResolvedValue([{ apartmentId: APARTMENT_ID }]);
@@ -298,6 +326,7 @@ describe('linkDealApartment / unlinkDealApartment', () => {
     vi.mocked(mockTx.apartment.findFirst).mockResolvedValue({
       id: APARTMENT_ID,
       status: 'RESERVED',
+      priceAmd: null,
       floor: { building: { projectId: APARTMENT_PROJECT_ID } },
     });
     vi.mocked(mockTx.dealApartment.findMany).mockResolvedValue([
@@ -341,6 +370,7 @@ describe('linkDealApartment / unlinkDealApartment', () => {
     vi.mocked(mockTx.apartment.findFirst).mockResolvedValue({
       id: APARTMENT_ID,
       status: 'RESERVED',
+      priceAmd: null,
       floor: { building: { projectId: APARTMENT_PROJECT_ID } },
     });
     vi.mocked(mockTx.dealApartment.findMany).mockResolvedValue([

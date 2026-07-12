@@ -19,6 +19,8 @@ type DealDetailRow = {
   assignedUser: { name: string | null } | null;
   apartments: Array<{
     apartmentId: string;
+    priceAmdSnapshot: number | null;
+    statusSnapshot: DealDetailApartment['status'];
     apartment: {
       code: string;
       status: DealDetailApartment['status'];
@@ -61,6 +63,8 @@ export function mapDealDetailRow(deal: DealDetailRow): DealDetail {
       code: link.apartment.code,
       status: link.apartment.status,
       priceAmd: link.apartment.priceAmd,
+      priceAmdSnapshot: link.priceAmdSnapshot,
+      statusSnapshot: link.statusSnapshot,
       floorName: link.apartment.floor.name,
       buildingName: link.apartment.floor.building.name,
     })),

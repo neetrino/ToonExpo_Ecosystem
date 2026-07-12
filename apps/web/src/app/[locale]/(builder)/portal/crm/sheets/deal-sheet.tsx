@@ -64,6 +64,7 @@ type DealSheetProps = {
       noValue: string;
       status: Record<'AVAILABLE' | 'RESERVED' | 'SOLD', string>;
       price: string;
+      priceAtRequest: (value: string) => string;
     };
     activities: {
       title: string;
@@ -121,6 +122,7 @@ export function DealSheet({
           labels={{
             ...labels.apartments,
             price: (value) => labels.apartments.price.replace('{value}', value),
+            priceAtRequest: labels.apartments.priceAtRequest,
           }}
         />
         <DealSheetActivities

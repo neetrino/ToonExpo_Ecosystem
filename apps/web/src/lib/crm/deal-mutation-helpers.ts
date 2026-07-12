@@ -86,7 +86,7 @@ export async function findCompanyApartment(
   tx: TransactionClient,
   companyId: string,
   apartmentId: string,
-): Promise<{ id: string; status: ApartmentStatus; projectId: string } | null> {
+): Promise<{ id: string; status: ApartmentStatus; priceAmd: number | null; projectId: string } | null> {
   const apartment = await tx.apartment.findFirst({
     where: {
       id: apartmentId,
@@ -95,6 +95,7 @@ export async function findCompanyApartment(
     select: {
       id: true,
       status: true,
+      priceAmd: true,
       floor: { select: { building: { select: { projectId: true } } } },
     },
   });
@@ -106,6 +107,7 @@ export async function findCompanyApartment(
   return {
     id: apartment.id,
     status: apartment.status,
+    priceAmd: apartment.priceAmd,
     projectId: apartment.floor.building.projectId,
   };
 }

@@ -120,6 +120,13 @@
   margin: 0.25rem 0 0;
 }
 
+.crm-deal-sheet__apartment-price-hint {
+  color: var(--te-muted);
+  font-size: 0.75rem;
+  font-style: italic;
+  margin: 0.125rem 0 0;
+}
+
 .crm-deal-sheet__link-form {
   margin-top: 0.5rem;
 }

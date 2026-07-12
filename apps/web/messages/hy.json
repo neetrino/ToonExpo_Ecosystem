@@ -735,7 +735,8 @@
           "unlink": "Անջատել",
           "project": "Նախագիծ",
           "apartment": "Բնակարան",
-          "price": "{value} AMD"
+          "price": "{value} AMD",
+          "priceAtRequest": "դիմելու պահին՝ {value} AMD"
         },
         "activities": {
           "title": "Ակտիվություն",

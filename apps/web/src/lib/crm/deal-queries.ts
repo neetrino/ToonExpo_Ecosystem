@@ -31,6 +31,8 @@ export type DealDetailApartment = {
   code: string;
   status: ApartmentStatus;
   priceAmd: number | null;
+  priceAmdSnapshot: number | null;
+  statusSnapshot: ApartmentStatus | null;
   floorName: string;
   buildingName: string;
 };
@@ -135,6 +137,8 @@ export async function getCompanyDealDetail(
       apartments: {
         select: {
           apartmentId: true,
+          priceAmdSnapshot: true,
+          statusSnapshot: true,
           apartment: {
             select: {
               code: true,

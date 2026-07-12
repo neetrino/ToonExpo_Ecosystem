@@ -148,6 +148,7 @@ export function buildCrmWorkspaceLabels({
           SOLD: tApartmentStatus('SOLD'),
         },
         price: t('dealSheet.apartments.price'),
+        priceAtRequest: (value) => t('dealSheet.apartments.priceAtRequest', { value }),
       },
       activities: {
         title: t('dealSheet.activities.title'),

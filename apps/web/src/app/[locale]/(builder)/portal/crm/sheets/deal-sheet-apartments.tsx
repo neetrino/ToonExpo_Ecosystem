@@ -29,6 +29,7 @@ type DealSheetApartmentsProps = {
     noValue: string;
     status: Record<ApartmentStatus, string>;
     price: (value: string) => string;
+    priceAtRequest: (value: string) => string;
   };
 };
 
@@ -97,6 +98,12 @@ function DealLinkedApartment({ locale, dealId, apartment, labels }: DealLinkedAp
       ? labels.price(new Intl.NumberFormat(locale).format(apartment.priceAmd))
       : labels.noValue;
 
+  const showSnapshotHint =
+    apartment.priceAmdSnapshot !== null && apartment.priceAmdSnapshot !== apartment.priceAmd;
+  const snapshotPriceLabel = showSnapshotHint
+    ? labels.priceAtRequest(new Intl.NumberFormat(locale).format(apartment.priceAmdSnapshot))
+    : null;
+
   return (
     <li className="crm-deal-sheet__apartment">
       <div>
@@ -108,6 +115,9 @@ function DealLinkedApartment({ locale, dealId, apartment, labels }: DealLinkedAp
           {labels.status[apartment.status]}
         </span>
         <p className="crm-deal-sheet__apartment-price">{priceLabel}</p>
+        {snapshotPriceLabel ? (
+          <p className="crm-deal-sheet__apartment-price-hint">{snapshotPriceLabel}</p>
+        ) : null}
       </div>
       <form action={formAction}>
         <input type="hidden" name="dealId" value={dealId} />

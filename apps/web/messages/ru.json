@@ -735,7 +735,8 @@
           "unlink": "Отвязать",
           "project": "Проект",
           "apartment": "Квартира",
-          "price": "{value} AMD"
+          "price": "{value} AMD",
+          "priceAtRequest": "на момент запроса: {value} AMD"
         },
         "activities": {
           "title": "Активности",

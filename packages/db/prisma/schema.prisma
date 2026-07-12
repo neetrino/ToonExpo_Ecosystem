@@ -454,12 +454,15 @@ model Deal {
 }
 
 model DealApartment {
-  id          String    @id @default(cuid())
-  dealId      String
-  apartmentId String
-  createdAt   DateTime  @default(now())
-  deal        Deal      @relation(fields: [dealId], references: [id], onDelete: Cascade)
-  apartment   Apartment @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+  id               String           @id @default(cuid())
+  dealId           String
+  apartmentId      String
+  priceAmdSnapshot Int?
+  statusSnapshot   ApartmentStatus?
+  snapshotAt       DateTime?
+  createdAt        DateTime         @default(now())
+  deal             Deal             @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  apartment        Apartment        @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
 
   @@unique([dealId, apartmentId])
   @@index([dealId])

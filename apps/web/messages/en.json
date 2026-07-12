@@ -735,7 +735,8 @@
           "unlink": "Unlink",
           "project": "Project",
           "apartment": "Apartment",
-          "price": "{value} AMD"
+          "price": "{value} AMD",
+          "priceAtRequest": "at request: {value} AMD"
         },
         "activities": {
           "title": "Activities",

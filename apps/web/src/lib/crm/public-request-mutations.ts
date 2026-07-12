@@ -1,8 +1,9 @@
 import { publicRequestInputSchema, type PublicRequestInput } from '@toonexpo/contracts';
 import { prisma, type Prisma } from '@toonexpo/db';
-import type { RequestSource } from '@toonexpo/domain';
+import type { ApartmentStatus, RequestSource } from '@toonexpo/domain';
 
 import { DEDUP_RECENCY_WINDOW_HOURS, OPEN_DEAL_STAGES } from './constants';
+import { buildDealApartmentSnapshotData } from './deal-apartment-snapshot';
 import type { PublicRequestMutationResult } from './mutation-result';
 
 const MILLISECONDS_PER_HOUR = 60 * 60 * 1000;
@@ -81,20 +82,18 @@ async function resolvePublishedProject(
   return project;
 }
 
-async function verifyApartmentInProject(
+async function fetchApartmentInProject(
   tx: TransactionClient,
   apartmentId: string,
   projectId: string,
-): Promise<boolean> {
-  const apartment = await tx.apartment.findFirst({
+): Promise<{ id: string; priceAmd: number | null; status: ApartmentStatus } | null> {
+  return tx.apartment.findFirst({
     where: {
       id: apartmentId,
       floor: { building: { projectId } },
     },
-    select: { id: true },
+    select: { id: true, priceAmd: true, status: true },
   });
-
-  return apartment !== null;
 }
 
 function activityBody(message: string | undefined, source: RequestSource): string {
@@ -139,6 +138,7 @@ async function createDealWithActivity(
     email: string;
     message?: string;
     apartmentId?: string;
+    apartmentSnapshot?: { priceAmd: number | null; status: ApartmentStatus };
     buyerUserId?: string;
     authorUserId?: string;
   },
@@ -156,7 +156,15 @@ async function createDealWithActivity(
       contactEmail: params.email,
       message: params.message,
       lastActivityAt: now,
-      apartments: params.apartmentId ? { create: { apartmentId: params.apartmentId } } : undefined,
+      apartments:
+        params.apartmentId && params.apartmentSnapshot
+          ? {
+              create: {
+                apartmentId: params.apartmentId,
+                ...buildDealApartmentSnapshotData(params.apartmentSnapshot),
+              },
+            }
+          : undefined,
       activities: {
         create: {
           authorUserId: params.authorUserId,
@@ -192,11 +200,13 @@ export async function submitPublicRequest(
       return { ok: false as const, errorKey: 'notFound' as const };
     }
 
+    let apartmentSnapshot: { priceAmd: number | null; status: ApartmentStatus } | undefined;
     if (input.apartmentId) {
-      const valid = await verifyApartmentInProject(tx, input.apartmentId, project.id);
-      if (!valid) {
+      const apartment = await fetchApartmentInProject(tx, input.apartmentId, project.id);
+      if (!apartment) {
         return { ok: false as const, errorKey: 'invalidInput' as const };
       }
+      apartmentSnapshot = { priceAmd: apartment.priceAmd, status: apartment.status };
     }
 
     const identity = buildIdentityFilter(raw.buyerUserId, input.email, input.phone);
@@ -224,6 +234,7 @@ export async function submitPublicRequest(
       email: input.email,
       message: input.message,
       apartmentId: input.apartmentId,
+      apartmentSnapshot,
       buyerUserId: raw.buyerUserId,
       authorUserId: raw.buyerUserId,
     });

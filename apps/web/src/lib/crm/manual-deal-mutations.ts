@@ -1,5 +1,7 @@
 import type { ManualDealInput } from '@toonexpo/contracts';
+import type { ApartmentStatus } from '@toonexpo/domain';
 
+import { buildDealApartmentSnapshotData } from './deal-apartment-snapshot';
 import {
   findCompanyApartment,
   isCompanyMember,
@@ -12,6 +14,7 @@ const DEFAULT_MANUAL_NOTE = 'Manual builder entry.';
 
 type ManualDealContext = {
   apartmentId?: string;
+  apartmentSnapshot?: { priceAmd: number | null; status: ApartmentStatus };
   projectIds: string[];
 };
 
@@ -36,6 +39,7 @@ async function resolveManualDealContext(
 
   const projectIds: string[] = input.projectId ? [input.projectId] : [];
   let apartmentId: string | undefined;
+  let apartmentSnapshot: ManualDealContext['apartmentSnapshot'];
 
   if (input.apartmentId) {
     const apartment = await findCompanyApartment(tx, companyId, input.apartmentId);
@@ -43,12 +47,13 @@ async function resolveManualDealContext(
       return { ok: false, errorKey: 'notFound' };
     }
     apartmentId = apartment.id;
+    apartmentSnapshot = { priceAmd: apartment.priceAmd, status: apartment.status };
     if (!projectIds.includes(apartment.projectId)) {
       projectIds.push(apartment.projectId);
     }
   }
 
-  return { ok: true, apartmentId, projectIds };
+  return { ok: true, apartmentId, apartmentSnapshot, projectIds };
 }
 
 async function insertManualDeal(
@@ -74,9 +79,15 @@ async function insertManualDeal(
       assignedUserId: input.assignedUserId,
       createdByUserId: actorUserId,
       lastActivityAt: now,
-      apartments: context.apartmentId
-        ? { create: { apartmentId: context.apartmentId } }
-        : undefined,
+      apartments:
+        context.apartmentId && context.apartmentSnapshot
+          ? {
+              create: {
+                apartmentId: context.apartmentId,
+                ...buildDealApartmentSnapshotData(context.apartmentSnapshot),
+              },
+            }
+          : undefined,
       activities: {
         create: {
           authorUserId: actorUserId,
