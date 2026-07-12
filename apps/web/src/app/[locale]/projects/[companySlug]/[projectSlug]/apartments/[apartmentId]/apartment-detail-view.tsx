@@ -3,12 +3,13 @@ import { isHttpUrl } from '@toonexpo/contracts';
 import type { ApartmentStatus } from '@toonexpo/domain';
 import Image from 'next/image';
 
+import { FavoriteToggle } from '@/components/favorites/favorite-toggle';
 import { ApartmentRequestButton } from '@/components/public-request/public-request-sheet';
 import { Link } from '@/i18n/navigation';
+import { LOGIN_PATH } from '@/lib/auth/constants';
 import { formatAreaSqm } from '@/lib/catalog/format-area';
 import { formatPriceAmd } from '@/lib/catalog/format-price';
 import { CATALOG_IMAGE_HEIGHT, CATALOG_IMAGE_WIDTH } from '@/lib/catalog/image-dimensions';
-import { LOGIN_PATH } from '@/lib/auth/constants';
 
 type RequestPrefill = {
   name?: string;
@@ -33,11 +34,19 @@ type ApartmentDetailLabels = {
   statusLabels: Record<ApartmentStatus, string>;
 };
 
+type ApartmentFavoriteProps = {
+  returnPath: string;
+  initialFavorited: boolean;
+  isBuyer: boolean;
+  isAuthenticated: boolean;
+};
+
 type ApartmentDetailViewProps = {
   apartment: PublicApartmentDetail;
   locale: string;
   labels: ApartmentDetailLabels;
   prefill?: RequestPrefill;
+  favorite: ApartmentFavoriteProps;
 };
 
 function statusBadgeClass(status: ApartmentStatus): string {
@@ -118,6 +127,7 @@ export function ApartmentDetailView({
   locale,
   labels,
   prefill,
+  favorite,
 }: ApartmentDetailViewProps) {
   const projectHref = `/projects/${apartment.project.companySlug}/${apartment.project.slug}`;
 
@@ -157,6 +167,15 @@ export function ApartmentDetailView({
             apartmentId={apartment.id}
             apartmentCode={apartment.code}
             prefill={prefill}
+          />
+          <FavoriteToggle
+            locale={locale}
+            targetType="APARTMENT"
+            targetId={apartment.id}
+            returnPath={favorite.returnPath}
+            initialFavorited={favorite.initialFavorited}
+            isBuyer={favorite.isBuyer}
+            isAuthenticated={favorite.isAuthenticated}
           />
           {apartment.matterportUrl && isHttpUrl(apartment.matterportUrl) ? (
             <a

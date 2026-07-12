@@ -3,26 +3,46 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { auth } from '@/auth';
 import { LoginForm } from '@/components/auth/login-form';
 import { redirect } from '@/i18n/navigation';
+import { safeAuthCallbackPath } from '@/lib/auth/callback-url';
 import { ACCOUNT_PATH } from '@/lib/auth/constants';
 
 import { loginAction } from '../actions';
 
 type LoginPageProps = {
   params: Promise<{ locale: string }>;
-  searchParams: Promise<{ invited?: string }>;
+  searchParams: Promise<{ invited?: string; callbackUrl?: string }>;
 };
+
+function localeRelativePath(callbackUrl: string, locale: string): string {
+  const prefix = `/${locale}`;
+  if (callbackUrl === prefix) {
+    return '/';
+  }
+  if (callbackUrl.startsWith(`${prefix}/`)) {
+    return callbackUrl.slice(prefix.length);
+  }
+  return ACCOUNT_PATH;
+}
 
 export default async function LoginPage({ params, searchParams }: LoginPageProps) {
   const { locale } = await params;
-  const { invited } = await searchParams;
+  const { invited, callbackUrl: rawCallback } = await searchParams;
   setRequestLocale(locale);
+
+  const callbackUrl = safeAuthCallbackPath(rawCallback, locale);
 
   const session = await auth();
   if (session?.user) {
-    redirect({ href: ACCOUNT_PATH, locale });
+    redirect({
+      href: callbackUrl ? localeRelativePath(callbackUrl, locale) : ACCOUNT_PATH,
+      locale,
+    });
   }
 
   const t = await getTranslations('auth.login');
+  const registerHref = callbackUrl
+    ? `/register?callbackUrl=${encodeURIComponent(callbackUrl)}`
+    : '/register';
 
   return (
     <section className="mx-auto flex max-w-md flex-col gap-6 px-6 py-16">
@@ -35,7 +55,7 @@ export default async function LoginPage({ params, searchParams }: LoginPageProps
           {t('invitedSuccess')}
         </p>
       ) : null}
-      <LoginForm action={loginAction.bind(null, locale)} />
+      <LoginForm action={loginAction.bind(null, locale, callbackUrl)} registerHref={registerHref} />
     </section>
   );
 }

@@ -3,24 +3,46 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { auth } from '@/auth';
 import { RegisterForm } from '@/components/auth/register-form';
 import { redirect } from '@/i18n/navigation';
+import { safeAuthCallbackPath } from '@/lib/auth/callback-url';
 import { ACCOUNT_PATH } from '@/lib/auth/constants';
 
 import { registerAction } from '../actions';
 
 type RegisterPageProps = {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ callbackUrl?: string }>;
 };
 
-export default async function RegisterPage({ params }: RegisterPageProps) {
+function localeRelativePath(callbackUrl: string, locale: string): string {
+  const prefix = `/${locale}`;
+  if (callbackUrl === prefix) {
+    return '/';
+  }
+  if (callbackUrl.startsWith(`${prefix}/`)) {
+    return callbackUrl.slice(prefix.length);
+  }
+  return ACCOUNT_PATH;
+}
+
+export default async function RegisterPage({ params, searchParams }: RegisterPageProps) {
   const { locale } = await params;
+  const { callbackUrl: rawCallback } = await searchParams;
   setRequestLocale(locale);
+
+  const callbackUrl = safeAuthCallbackPath(rawCallback, locale);
 
   const session = await auth();
   if (session?.user) {
-    redirect({ href: ACCOUNT_PATH, locale });
+    redirect({
+      href: callbackUrl ? localeRelativePath(callbackUrl, locale) : ACCOUNT_PATH,
+      locale,
+    });
   }
 
   const t = await getTranslations('auth.register');
+  const loginHref = callbackUrl
+    ? `/login?callbackUrl=${encodeURIComponent(callbackUrl)}`
+    : '/login';
 
   return (
     <section className="mx-auto flex max-w-md flex-col gap-6 px-6 py-16">
@@ -28,7 +50,7 @@ export default async function RegisterPage({ params }: RegisterPageProps) {
         <h1 className="text-2xl font-semibold">{t('title')}</h1>
         <p className="text-sm text-[var(--te-muted)]">{t('subtitle')}</p>
       </div>
-      <RegisterForm action={registerAction.bind(null, locale)} />
+      <RegisterForm action={registerAction.bind(null, locale, callbackUrl)} loginHref={loginHref} />
     </section>
   );
 }

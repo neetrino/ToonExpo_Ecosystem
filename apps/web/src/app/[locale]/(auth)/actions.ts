@@ -5,16 +5,17 @@ import { AuthError } from 'next-auth';
 
 import { signIn } from '@/auth';
 import type { AuthActionState } from '@/lib/auth/action-state';
-import { ACCOUNT_PATH } from '@/lib/auth/constants';
+import { defaultAuthRedirect, safeAuthCallbackPath } from '@/lib/auth/callback-url';
 import { authRateLimitGate } from '@/lib/auth/rate-limit-gate';
 import { registerBuyer } from '@/lib/auth/register';
 
-function accountRedirect(locale: string): string {
-  return `/${locale}${ACCOUNT_PATH}`;
+function resolveAuthRedirect(locale: string, callbackUrl: string | null | undefined): string {
+  return safeAuthCallbackPath(callbackUrl, locale) ?? defaultAuthRedirect(locale);
 }
 
 export async function loginAction(
   locale: string,
+  callbackUrl: string | null,
   _prevState: AuthActionState,
   formData: FormData,
 ): Promise<AuthActionState> {
@@ -35,7 +36,7 @@ export async function loginAction(
     await signIn('credentials', {
       email: parsed.data.email,
       password: parsed.data.password,
-      redirectTo: accountRedirect(locale),
+      redirectTo: resolveAuthRedirect(locale, callbackUrl),
     });
   } catch (error) {
     // A successful sign-in throws a Next.js redirect that must propagate.
@@ -50,6 +51,7 @@ export async function loginAction(
 
 export async function registerAction(
   locale: string,
+  callbackUrl: string | null,
   _prevState: AuthActionState,
   formData: FormData,
 ): Promise<AuthActionState> {
@@ -77,7 +79,7 @@ export async function registerAction(
     await signIn('credentials', {
       email: parsed.data.email,
       password: parsed.data.password,
-      redirectTo: accountRedirect(locale),
+      redirectTo: resolveAuthRedirect(locale, callbackUrl),
     });
   } catch (error) {
     if (error instanceof AuthError) {

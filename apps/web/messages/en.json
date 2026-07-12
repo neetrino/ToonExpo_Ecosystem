@@ -431,7 +431,6 @@
         "ENTRANCE_STAFF": "Entrance staff"
       }
     },
-
     "integrations": {
       "title": "Integrations",
       "subtitle": "Recent BOS and external integration audit events.",
@@ -911,10 +910,9 @@
     },
     "mediaForm": {
       "create": "Add media",
-      "edit": "Edit media",
+      "edit": "Edit",
       "add": "Add media",
       "editAction": "Edit",
-      "edit": "Edit",
       "delete": "Delete",
       "submit": "Save",
       "empty": "No media yet.",
@@ -1178,6 +1176,16 @@
         "rateLimited": "Too many requests. Please wait a minute and try again."
       }
     },
+    "favorite": {
+      "save": "Save",
+      "saved": "Saved",
+      "errors": {
+        "unauthorized": "Sign in as a buyer to save favorites.",
+        "invalidInput": "Could not update favorite. Try again.",
+        "notFound": "This item is not available to save.",
+        "rateLimited": "Too many save actions. Please wait a minute and try again."
+      }
+    },
     "apartmentStatus": {
       "AVAILABLE": "Available",
       "RESERVED": "Reserved",
@@ -1273,12 +1281,19 @@
   "buyer": {
     "account": {
       "title": "My account",
-      "subtitle": "Your visitor QR, exhibition check-ins, and contact requests to builders.",
+      "subtitle": "Your visitor QR, saved favorites, exhibition check-ins, and contact requests to builders.",
       "empty": "You have not submitted any requests yet. Browse projects to get started.",
       "noValue": "—",
       "checkinsHeading": "Exhibition check-ins",
       "checkinsEmpty": "You have not checked in to an exhibition yet.",
       "requestsHeading": "My requests",
+      "favorites": {
+        "heading": "Saved favorites",
+        "empty": "You have not saved any projects or apartments yet.",
+        "remove": "Remove",
+        "typeProject": "Project",
+        "noValue": "—"
+      },
       "columns": {
         "company": "Builder",
         "project": "Project",

@@ -6,6 +6,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { auth } from '@/auth';
 import { scheduleAnalyticsEvent } from '@/lib/analytics/record-event';
 import { getPublishedApartment, isValidApartmentId } from '@/lib/catalog/queries';
+import { isFavorited } from '@/lib/favorites/queries';
 
 import { ApartmentDetailView } from './apartment-detail-view';
 
@@ -35,6 +36,8 @@ export default async function ApartmentDetailPage({ params }: ApartmentDetailPag
 
   const session = await auth();
   const isAuthenticated = Boolean(session?.user);
+  const isBuyer = session?.user?.role === 'BUYER';
+  const buyerUserId = isBuyer ? session?.user?.id : undefined;
 
   const apartment = await getPublishedApartment(
     parsedCompanySlug.data,
@@ -52,6 +55,10 @@ export default async function ApartmentDetailPage({ params }: ApartmentDetailPag
     projectId: apartment.project.id,
     apartmentId: apartment.id,
   });
+
+  const initialFavorited = buyerUserId
+    ? await isFavorited(buyerUserId, { targetType: 'APARTMENT', targetId: apartment.id })
+    : false;
 
   const prefill = session?.user
     ? {
@@ -88,6 +95,12 @@ export default async function ApartmentDetailPage({ params }: ApartmentDetailPag
           statusLabels,
         }}
         prefill={prefill}
+        favorite={{
+          returnPath: `/${locale}/projects/${parsedCompanySlug.data}/${parsedProjectSlug.data}/apartments/${apartment.id}`,
+          initialFavorited,
+          isBuyer,
+          isAuthenticated,
+        }}
       />
     </section>
   );

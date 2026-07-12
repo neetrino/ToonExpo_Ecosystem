@@ -10,6 +10,8 @@ export const RATE_LIMIT_MAX = {
   setPassword: 5,
   /** Builder media presign (signed R2 PUT URLs) per userId. */
   mediaPresign: 20,
+  /** Buyer favorite toggle (add/remove) per userId (or IP when anonymous). */
+  favoriteToggle: 30,
 } as const;
 
 /** Window duration shared by all web surfaces. */

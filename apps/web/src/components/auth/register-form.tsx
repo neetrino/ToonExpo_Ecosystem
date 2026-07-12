@@ -8,12 +8,13 @@ import { type AuthActionState, INITIAL_AUTH_ACTION_STATE } from '@/lib/auth/acti
 
 type RegisterFormProps = {
   action: (state: AuthActionState, formData: FormData) => Promise<AuthActionState>;
+  loginHref?: string;
 };
 
 const FIELD_CLASS =
   'w-full rounded border border-white/20 bg-transparent px-3 py-2 text-sm outline-none focus:border-[var(--te-accent)]';
 
-export function RegisterForm({ action }: RegisterFormProps) {
+export function RegisterForm({ action, loginHref = '/login' }: RegisterFormProps) {
   const t = useTranslations('auth');
   const [state, formAction, pending] = useActionState(action, INITIAL_AUTH_ACTION_STATE);
 
@@ -59,7 +60,7 @@ export function RegisterForm({ action }: RegisterFormProps) {
 
       <p className="text-sm text-[var(--te-muted)]">
         {t('register.loginPrompt')}{' '}
-        <Link className="underline" href="/login">
+        <Link className="underline" href={loginHref}>
           {t('register.loginLink')}
         </Link>
       </p>

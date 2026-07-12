@@ -5,15 +5,17 @@ import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { auth } from '@/auth';
+import { FavoriteToggle } from '@/components/favorites/favorite-toggle';
 import { ProjectRequestCta } from '@/components/public-request/public-request-sheet';
+import { PublicVisualCanvas } from '@/components/visual-map/public-visual-canvas';
 import { scheduleAnalyticsEvent } from '@/lib/analytics/record-event';
 import { getPublishedProjectBySlug } from '@/lib/catalog/queries';
+import { isFavorited } from '@/lib/favorites/queries';
 import { loadProjectVisualMaps } from '@/lib/visual-map/load-project-visual-maps';
 
 import { ProjectBuildings } from './project-buildings';
 import { ProjectBuilderBlock } from './project-builder-block';
 import { ProjectGallery } from './project-gallery';
-import { PublicVisualCanvas } from '@/components/visual-map/public-visual-canvas';
 
 type ProjectDetailPageProps = {
   params: Promise<{ locale: string; companySlug: string; projectSlug: string }>;
@@ -32,6 +34,7 @@ function ProjectDetailView({
   prefill,
   projectCanvas,
   floorCanvases,
+  favorite,
 }: {
   project: PublicProjectDetail;
   locale: string;
@@ -63,6 +66,12 @@ function ProjectDetailView({
   prefill?: { name?: string; email?: string; phone?: string };
   projectCanvas: PublicCanvas | null;
   floorCanvases: Record<string, PublicCanvas>;
+  favorite: {
+    returnPath: string;
+    initialFavorited: boolean;
+    isBuyer: boolean;
+    isAuthenticated: boolean;
+  };
 }) {
   return (
     <article className="catalog-detail">
@@ -83,6 +92,15 @@ function ProjectDetailView({
             projectId={project.id}
             projectName={project.name}
             prefill={prefill}
+          />
+          <FavoriteToggle
+            locale={locale}
+            targetType="PROJECT"
+            targetId={project.id}
+            returnPath={favorite.returnPath}
+            initialFavorited={favorite.initialFavorited}
+            isBuyer={favorite.isBuyer}
+            isAuthenticated={favorite.isAuthenticated}
           />
         </div>
       </header>
@@ -134,6 +152,8 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
 
   const session = await auth();
   const isAuthenticated = Boolean(session?.user);
+  const isBuyer = session?.user?.role === 'BUYER';
+  const buyerUserId = isBuyer ? session?.user?.id : undefined;
 
   const loaded = await getPublishedProjectBySlug(
     parsedCompanySlug.data,
@@ -155,6 +175,10 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
     project.id,
     project.buildings,
   );
+
+  const initialFavorited = buyerUserId
+    ? await isFavorited(buyerUserId, { targetType: 'PROJECT', targetId: project.id })
+    : false;
 
   const prefill = session?.user
     ? {
@@ -203,6 +227,12 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
         prefill={prefill}
         projectCanvas={projectCanvas}
         floorCanvases={floorCanvases}
+        favorite={{
+          returnPath: `/${locale}/projects/${parsedCompanySlug.data}/${parsedProjectSlug.data}`,
+          initialFavorited,
+          isBuyer,
+          isAuthenticated,
+        }}
       />
     </section>
   );
