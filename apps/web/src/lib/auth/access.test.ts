@@ -26,9 +26,9 @@ describe('canAccessArea', () => {
     expect(canAccessArea('buyer', 'ENTRANCE_STAFF')).toBe(true);
   });
 
-  it('restricts the builder area to builders only', () => {
+  it('allows builders and platform admins into the builder portal area', () => {
     expect(canAccessArea('builder', 'BUILDER')).toBe(true);
-    expect(canAccessArea('builder', 'BIGPROJECTS_ADMIN')).toBe(false);
+    expect(canAccessArea('builder', 'BIGPROJECTS_ADMIN')).toBe(true);
     expect(canAccessArea('builder', 'BUYER')).toBe(false);
     expect(canAccessArea('builder', 'PARTNER')).toBe(false);
   });

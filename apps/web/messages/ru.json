@@ -213,6 +213,7 @@
       "empty": "Компаний пока нет.",
       "newCompany": "Новая компания",
       "edit": "Изменить",
+      "openInPortal": "Открыть в портале",
       "columns": {
         "name": "Название",
         "slug": "Слаг",
@@ -473,16 +474,21 @@
       "actions": {
         "PUBLICATION_CHANGE": "Смена публикации",
         "PROVISION_ACCOUNT": "Провижининг аккаунта",
-        "SETTINGS_UPDATE": "Обновление настроек"
+        "SETTINGS_UPDATE": "Обновление настроек",
+        "ACTING_ON_BEHALF_START": "Начало работы от имени компании",
+        "ACTING_ON_BEHALF_STOP": "Завершение работы от имени компании"
       },
       "entityTypes": {
         "PROJECT": "Проект",
+        "BUILDING": "Корпус",
+        "FLOOR": "Этаж",
         "PARTNER": "Партнёр",
         "BANK_OFFER": "Банковское предложение",
         "VISUAL_CANVAS": "Визуальная карта",
         "EXHIBITION_EVENT": "Выставочное событие",
         "USER": "Пользователь",
-        "PLATFORM_SETTING": "Настройка платформы"
+        "PLATFORM_SETTING": "Настройка платформы",
+        "COMPANY": "Компания"
       }
     },
     "settings": {
@@ -599,6 +605,14 @@
       "readiness": "Готовность",
       "analytics": "Аналитика",
       "company": "Компания"
+    },
+    "actingOnBehalf": {
+      "message": "Управление «{company}» от имени админа",
+      "exit": "Вернуться в админку"
+    },
+    "companySwitcher": {
+      "label": "Активная компания",
+      "ariaLabel": "Сменить активную компанию"
     },
     "overview": {
       "title": "Обзор",

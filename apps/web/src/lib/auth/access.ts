@@ -8,7 +8,8 @@ export type ProtectedArea = 'buyer' | 'builder' | 'admin' | 'entrance';
  * user, so it is not constrained to a specific role set.
  */
 const AREA_ROLE_ACCESS: Record<Exclude<ProtectedArea, 'buyer'>, readonly PlatformRole[]> = {
-  builder: ['BUILDER'],
+  /** Admins may enter /portal while acting on behalf (cookie-gated by assertBuilderSession). */
+  builder: ['BUILDER', 'BIGPROJECTS_ADMIN'],
   admin: ['BIGPROJECTS_ADMIN'],
   entrance: ['ENTRANCE_STAFF'],
 };

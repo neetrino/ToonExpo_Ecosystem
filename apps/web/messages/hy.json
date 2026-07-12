@@ -213,6 +213,7 @@
       "empty": "Դեռ ընկերություններ չկան։",
       "newCompany": "Նոր ընկերություն",
       "edit": "Խմբագրել",
+      "openInPortal": "Բացել պորտալում",
       "columns": {
         "name": "Անվանում",
         "slug": "Սլագ",
@@ -473,16 +474,21 @@
       "actions": {
         "PUBLICATION_CHANGE": "Հրապարակման փոփոխություն",
         "PROVISION_ACCOUNT": "Հաշվի պրովիզիոնինգ",
-        "SETTINGS_UPDATE": "Կարգավորումների թարմացում"
+        "SETTINGS_UPDATE": "Կարգավորումների թարմացում",
+        "ACTING_ON_BEHALF_START": "Ընկերության անունից աշխատանքի սկիզբ",
+        "ACTING_ON_BEHALF_STOP": "Ընկերության անունից աշխատանքի ավարտ"
       },
       "entityTypes": {
         "PROJECT": "Նախագիծ",
+        "BUILDING": "Շենք",
+        "FLOOR": "Հարկ",
         "PARTNER": "Գործընկեր",
         "BANK_OFFER": "Բանկային առաջարկ",
         "VISUAL_CANVAS": "Վիզուալ քարտեզ",
         "EXHIBITION_EVENT": "Ցուցահանդեսային միջոցառում",
         "USER": "Օգտատեր",
-        "PLATFORM_SETTING": "Հարթակի կարգավորում"
+        "PLATFORM_SETTING": "Հարթակի կարգավորում",
+        "COMPANY": "Ընկերություն"
       }
     },
     "settings": {
@@ -599,6 +605,14 @@
       "readiness": "Պատրաստվածություն",
       "analytics": "Վերլուծություն",
       "company": "Ընկերություն"
+    },
+    "actingOnBehalf": {
+      "message": "Կառավարում եք «{company}»-ը որպես ադմին",
+      "exit": "Վերադառնալ ադմին"
+    },
+    "companySwitcher": {
+      "label": "Ակտիվ ընկերություն",
+      "ariaLabel": "Փոխել ակտիվ ընկերությունը"
     },
     "overview": {
       "title": "Ակնարկ",

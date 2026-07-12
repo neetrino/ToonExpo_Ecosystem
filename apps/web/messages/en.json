@@ -213,6 +213,7 @@
       "empty": "No companies yet.",
       "newCompany": "New company",
       "edit": "Edit",
+      "openInPortal": "Open in portal",
       "columns": {
         "name": "Name",
         "slug": "Slug",
@@ -473,16 +474,21 @@
       "actions": {
         "PUBLICATION_CHANGE": "Publication change",
         "PROVISION_ACCOUNT": "Provision account",
-        "SETTINGS_UPDATE": "Settings update"
+        "SETTINGS_UPDATE": "Settings update",
+        "ACTING_ON_BEHALF_START": "Acting on behalf started",
+        "ACTING_ON_BEHALF_STOP": "Acting on behalf stopped"
       },
       "entityTypes": {
         "PROJECT": "Project",
+        "BUILDING": "Building",
+        "FLOOR": "Floor",
         "PARTNER": "Partner",
         "BANK_OFFER": "Bank offer",
         "VISUAL_CANVAS": "Visual canvas",
         "EXHIBITION_EVENT": "Exhibition event",
         "USER": "User",
-        "PLATFORM_SETTING": "Platform setting"
+        "PLATFORM_SETTING": "Platform setting",
+        "COMPANY": "Company"
       }
     },
     "settings": {
@@ -599,6 +605,14 @@
       "readiness": "Readiness",
       "analytics": "Analytics",
       "company": "Company"
+    },
+    "actingOnBehalf": {
+      "message": "Managing {company} as admin",
+      "exit": "Exit to admin"
+    },
+    "companySwitcher": {
+      "label": "Active company",
+      "ariaLabel": "Switch active company"
     },
     "overview": {
       "title": "Overview",
