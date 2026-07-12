@@ -17,6 +17,14 @@ export const APARTMENT_STATUSES = ['AVAILABLE', 'RESERVED', 'SOLD'] as const;
 export type ApartmentStatus = (typeof APARTMENT_STATUSES)[number];
 
 /**
+ * Who/what triggered an apartment inventory status change.
+ * Docs: 09-Constructor-CRM/07-Entity-Fields (ApartmentStatusHistory.source).
+ */
+export const APARTMENT_STATUS_CHANGE_SOURCES = ['CRM_STAGE', 'MANUAL_INVENTORY', 'SYSTEM'] as const;
+
+export type ApartmentStatusChangeSource = (typeof APARTMENT_STATUS_CHANGE_SOURCES)[number];
+
+/**
  * Apartment price disclosure (v1).
  * Docs: 05-Projects/02-Entity-Fields + 05-Public-Buyer-Experience.
  * Prisma enum uses the same UPPER_SNAKE keys.

@@ -28,6 +28,14 @@ enum ApartmentStatus {
   SOLD
 }
 
+/// Origin of an apartment inventory status transition (v1).
+/// Docs: 09-Constructor-CRM/07-Entity-Fields (ApartmentStatusHistory.source).
+enum ApartmentStatusChangeSource {
+  CRM_STAGE
+  MANUAL_INVENTORY
+  SYSTEM
+}
+
 /// Public price disclosure for apartments (v1).
 /// Docs: 05-Projects/02-Entity-Fields + 05-Public-Buyer-Experience.
 enum PriceVisibility {
@@ -193,6 +201,7 @@ model User {
   auditLogs                AuditLog[]             @relation("AuditActor")
   platformSettingsUpdated  PlatformSetting[]      @relation("PlatformSettingUpdater")
   favorites                Favorite[]
+  apartmentStatusChanges   ApartmentStatusHistory[] @relation("ApartmentStatusChangedBy")
 }
 
 
@@ -356,25 +365,47 @@ model Floor {
 }
 
 model Apartment {
-  id              String          @id @default(cuid())
+  id              String                   @id @default(cuid())
   floorId         String
   code            String
-  status          ApartmentStatus @default(AVAILABLE)
+  status          ApartmentStatus          @default(AVAILABLE)
   areaSqm         Float?
   rooms           Int?
   priceAmd        Int?
-  priceVisibility PriceVisibility @default(PUBLIC)
+  priceVisibility PriceVisibility          @default(PUBLIC)
   matterportUrl   String?
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-  floor           Floor            @relation(fields: [floorId], references: [id], onDelete: Cascade)
+  createdAt       DateTime                 @default(now())
+  updatedAt       DateTime                 @updatedAt
+  floor           Floor                    @relation(fields: [floorId], references: [id], onDelete: Cascade)
   media           MediaAsset[]
   dealLinks       DealApartment[]
   hotspots        Hotspot[]
   analyticsEvents AnalyticsEvent[]
+  statusHistory   ApartmentStatusHistory[]
 
   @@unique([floorId, code])
   @@index([status])
+}
+
+/// Append-only apartment inventory status audit trail (v1).
+/// Docs: 09-Constructor-CRM/07-Entity-Fields.
+model ApartmentStatusHistory {
+  id              String                      @id @default(cuid())
+  apartmentId     String
+  dealId          String?
+  source          ApartmentStatusChangeSource
+  oldStatus       ApartmentStatus
+  newStatus       ApartmentStatus
+  changedByUserId String
+  reason          String?
+  createdAt       DateTime                    @default(now())
+  apartment       Apartment                   @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+  deal            Deal?                       @relation(fields: [dealId], references: [id], onDelete: SetNull)
+  changedByUser   User                        @relation("ApartmentStatusChangedBy", fields: [changedByUserId], references: [id], onDelete: Cascade)
+
+  @@index([apartmentId, createdAt])
+  @@index([dealId])
+  @@index([changedByUserId])
 }
 
 // Exactly one of projectId, buildingId, or floorId — enforced at application layer (MediaAsset-style XOR).
@@ -472,6 +503,7 @@ model Deal {
   project          Project?      @relation(fields: [projectId], references: [id], onDelete: SetNull)
   apartments       DealApartment[]
   activities       DealActivity[]
+  statusHistory    ApartmentStatusHistory[]
 
   @@index([companyId, stage])
   @@index([buyerUserId])

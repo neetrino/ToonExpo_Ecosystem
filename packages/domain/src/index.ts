@@ -1,5 +1,6 @@
 export {
   ANALYTICS_EVENT_TYPES,
+  APARTMENT_STATUS_CHANGE_SOURCES,
   APARTMENT_STATUSES,
   AUDIT_ACTIONS,
   AUDIT_ENTITY_TYPES,
@@ -25,6 +26,7 @@ export {
   REQUEST_SOURCES,
   type AnalyticsEventType,
   type ApartmentStatus,
+  type ApartmentStatusChangeSource,
   type AuditAction,
   type AuditEntityType,
   type BosCompanyType,
