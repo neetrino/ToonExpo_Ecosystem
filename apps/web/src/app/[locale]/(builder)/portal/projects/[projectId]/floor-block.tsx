@@ -34,7 +34,6 @@ type FloorBlockProps = {
   labels: FloorBlockLabels;
   statusLabels: Record<ApartmentStatus, string>;
   publicationStatusLabels: Record<PublicationStatus, string>;
-  formatPrice: (value: number) => string;
 };
 
 export function FloorBlock({
@@ -44,7 +43,6 @@ export function FloorBlock({
   labels,
   statusLabels,
   publicationStatusLabels,
-  formatPrice,
 }: FloorBlockProps) {
   const [editOpen, setEditOpen] = useState(false);
 
@@ -74,7 +72,6 @@ export function FloorBlock({
         apartments={floor.apartments}
         labels={labels.apartment}
         statusLabels={statusLabels}
-        formatPrice={formatPrice}
       />
 
       <FloorFormSheet

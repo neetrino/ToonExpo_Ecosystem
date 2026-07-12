@@ -40,12 +40,6 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
 
   const canvases = await listCanvasesForProject(builderContext.companyId, projectId);
 
-  const priceFormatter = new Intl.NumberFormat(locale, {
-    style: 'currency',
-    currency: 'AMD',
-    maximumFractionDigits: 0,
-  });
-
   return (
     <section>
       <ProjectHeader locale={locale} project={project} statusLabel={tStatus(project.status)} />
@@ -58,7 +52,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
           title: tVisualMap('section.title'),
           newCanvas: tVisualMap('section.newCanvas'),
           empty: tVisualMap('section.empty'),
-          hotspotCount: tVisualMap('section.hotspotCount'),
+          hotspotCount: tVisualMap.raw('section.hotspotCount'),
           untitled: tVisualMap('section.untitled'),
           context: {
             project: tVisualMap('context.project'),
@@ -127,7 +121,6 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
           PUBLISHED: tStatus('PUBLISHED'),
           ARCHIVED: tStatus('ARCHIVED'),
         }}
-        formatPrice={(value) => priceFormatter.format(value)}
       />
     </section>
   );

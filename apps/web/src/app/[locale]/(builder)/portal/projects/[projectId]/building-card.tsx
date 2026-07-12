@@ -35,7 +35,6 @@ type BuildingCardProps = {
   };
   statusLabels: Record<ApartmentStatus, string>;
   publicationStatusLabels: Record<PublicationStatus, string>;
-  formatPrice: (value: number) => string;
 };
 
 export function BuildingCard({
@@ -44,7 +43,6 @@ export function BuildingCard({
   labels,
   statusLabels,
   publicationStatusLabels,
-  formatPrice,
 }: BuildingCardProps) {
   const [editOpen, setEditOpen] = useState(false);
   const [createFloorOpen, setCreateFloorOpen] = useState(false);
@@ -92,7 +90,6 @@ export function BuildingCard({
             }}
             statusLabels={statusLabels}
             publicationStatusLabels={publicationStatusLabels}
-            formatPrice={formatPrice}
           />
         ))
       )}

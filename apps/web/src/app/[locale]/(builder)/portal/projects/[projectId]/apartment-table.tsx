@@ -30,7 +30,6 @@ type ApartmentTableProps = {
   apartments: BuilderProjectApartment[];
   labels: ApartmentTableLabels;
   statusLabels: Record<ApartmentStatus, string>;
-  formatPrice: (value: number) => string;
 };
 
 function ApartmentTableHeader({ labels }: { labels: ApartmentTableLabels }) {
@@ -54,7 +53,6 @@ export function ApartmentTable({
   apartments,
   labels,
   statusLabels,
-  formatPrice,
 }: ApartmentTableProps) {
   const [createOpen, setCreateOpen] = useState(false);
   const [editingApartment, setEditingApartment] = useState<BuilderProjectApartment | null>(null);
@@ -83,10 +81,10 @@ export function ApartmentTable({
               {apartments.map((apartment) => (
                 <ApartmentTableRow
                   key={apartment.id}
+                  locale={locale}
                   apartment={apartment}
                   labels={labels}
                   statusLabels={statusLabels}
-                  formatPrice={formatPrice}
                   onEdit={setEditingApartment}
                   onMedia={setMediaApartment}
                 />

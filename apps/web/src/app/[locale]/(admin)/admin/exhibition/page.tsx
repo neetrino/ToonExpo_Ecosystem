@@ -57,7 +57,6 @@ export default async function AdminExhibitionPage({ params }: AdminExhibitionPag
             noDates: t('noDates'),
           }}
           statusLabels={statusLabels}
-          formatDate={(date) => dateFormatter.format(date)}
         />
       )}
 

@@ -4,6 +4,7 @@ import type { PlatformSettingKey } from '@toonexpo/contracts';
 import { useState } from 'react';
 
 import type { PlatformSettingRow } from '@/lib/admin/settings-queries';
+import { formatDateTime } from '@/lib/crm/format-crm-dates';
 
 import { SettingFormSheet } from './sheets/setting-form-sheet';
 
@@ -21,10 +22,9 @@ type SettingsTableProps = {
     unset: string;
     keys: Record<PlatformSettingKey, string>;
   };
-  formatDate: (date: Date) => string;
 };
 
-export function SettingsTable({ locale, settings, labels, formatDate }: SettingsTableProps) {
+export function SettingsTable({ locale, settings, labels }: SettingsTableProps) {
   return (
     <div className="portal-table-wrap">
       <table className="portal-table">
@@ -43,7 +43,6 @@ export function SettingsTable({ locale, settings, labels, formatDate }: Settings
               locale={locale}
               setting={setting}
               labels={labels}
-              formatDate={formatDate}
             />
           ))}
         </tbody>
@@ -56,17 +55,16 @@ type SettingRowProps = {
   locale: string;
   setting: PlatformSettingRow;
   labels: SettingsTableProps['labels'];
-  formatDate: (date: Date) => string;
 };
 
-function SettingRow({ locale, setting, labels, formatDate }: SettingRowProps) {
+function SettingRow({ locale, setting, labels }: SettingRowProps) {
   const [editOpen, setEditOpen] = useState(false);
 
   return (
     <tr>
       <td>{labels.keys[setting.key]}</td>
       <td>{setting.value ?? labels.unset}</td>
-      <td>{setting.updatedAt ? formatDate(setting.updatedAt) : labels.unset}</td>
+      <td>{setting.updatedAt ? formatDateTime(setting.updatedAt, locale) : labels.unset}</td>
       <td>
         <button
           type="button"

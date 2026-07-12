@@ -4,6 +4,7 @@ import { useState } from 'react';
 
 import { OpenInPortalButton } from '@/components/portal/open-in-portal-button';
 import type { AdminCompanyRow } from '@/lib/admin/queries';
+import { formatShortDate } from '@/lib/crm/format-crm-dates';
 
 import { CompanyFormSheet } from './sheets/company-form-sheet';
 
@@ -27,10 +28,9 @@ type CompaniesTableProps = {
       archived: string;
     };
   };
-  formatDate: (date: Date) => string;
 };
 
-export function CompaniesTable({ locale, companies, labels, formatDate }: CompaniesTableProps) {
+export function CompaniesTable({ locale, companies, labels }: CompaniesTableProps) {
   return (
     <div className="portal-table-wrap">
       <table className="portal-table">
@@ -51,7 +51,6 @@ export function CompaniesTable({ locale, companies, labels, formatDate }: Compan
               locale={locale}
               company={company}
               labels={labels}
-              formatDate={formatDate}
             />
           ))}
         </tbody>
@@ -64,10 +63,9 @@ type CompanyRowProps = {
   locale: string;
   company: AdminCompanyRow;
   labels: CompaniesTableProps['labels'];
-  formatDate: (date: Date) => string;
 };
 
-function CompanyRow({ locale, company, labels, formatDate }: CompanyRowProps) {
+function CompanyRow({ locale, company, labels }: CompanyRowProps) {
   const [editOpen, setEditOpen] = useState(false);
   const { projectsCount } = company;
 
@@ -84,7 +82,7 @@ function CompanyRow({ locale, company, labels, formatDate }: CompanyRowProps) {
           {projectsCount.published} · {labels.projectCounts.archived}: {projectsCount.archived}
         </span>
       </td>
-      <td>{formatDate(company.createdAt)}</td>
+      <td>{formatShortDate(company.createdAt, locale)}</td>
       <td>
         <div className="portal-actions">
           <OpenInPortalButton locale={locale} companyId={company.id} label={labels.openInPortal} />

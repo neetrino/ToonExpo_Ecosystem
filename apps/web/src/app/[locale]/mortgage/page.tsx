@@ -51,7 +51,7 @@ export default async function MortgagePage({ params }: MortgagePageProps) {
           selectOffer: t('offers.selectManual'),
           yearsUnit: t('offers.yearsUnit'),
           minDownPayment: t('offers.minDownPayment'),
-          downPaymentBelowMinimum: t('calculator.downPaymentBelowMinimum'),
+          downPaymentBelowMinimum: t.raw('calculator.downPaymentBelowMinimum'),
         }}
       />
     </section>

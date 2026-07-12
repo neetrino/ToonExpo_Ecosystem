@@ -36,7 +36,6 @@ type BuildingsSectionProps = {
   };
   statusLabels: Record<ApartmentStatus, string>;
   publicationStatusLabels: Record<PublicationStatus, string>;
-  formatPrice: (value: number) => string;
 };
 
 export function BuildingsSection({
@@ -45,7 +44,6 @@ export function BuildingsSection({
   labels,
   statusLabels,
   publicationStatusLabels,
-  formatPrice,
 }: BuildingsSectionProps) {
   const [createOpen, setCreateOpen] = useState(false);
 
@@ -80,7 +78,6 @@ export function BuildingsSection({
             }}
             statusLabels={statusLabels}
             publicationStatusLabels={publicationStatusLabels}
-            formatPrice={formatPrice}
           />
         ))
       )}

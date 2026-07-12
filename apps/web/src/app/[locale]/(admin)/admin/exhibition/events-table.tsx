@@ -5,6 +5,7 @@ import type { ExhibitionEventStatus } from '@toonexpo/domain';
 
 import { Link } from '@/i18n/navigation';
 import type { AdminExhibitionEventRow } from '@/lib/admin/exhibition-queries';
+import { formatDateTime } from '@/lib/crm/format-crm-dates';
 
 import { EventFormSheet } from './sheets/event-form-sheet';
 
@@ -25,7 +26,6 @@ type EventsTableProps = {
     noDates: string;
   };
   statusLabels: Record<ExhibitionEventStatus, string>;
-  formatDate: (date: Date) => string;
 };
 
 export function EventsTable({
@@ -33,7 +33,6 @@ export function EventsTable({
   events,
   labels,
   statusLabels,
-  formatDate,
 }: EventsTableProps) {
   return (
     <div className="portal-table-wrap">
@@ -56,7 +55,6 @@ export function EventsTable({
               event={event}
               labels={labels}
               statusLabels={statusLabels}
-              formatDate={formatDate}
             />
           ))}
         </tbody>
@@ -70,7 +68,6 @@ type EventRowProps = {
   event: AdminExhibitionEventRow;
   labels: EventsTableProps['labels'];
   statusLabels: Record<ExhibitionEventStatus, string>;
-  formatDate: (date: Date) => string;
 };
 
 function toLocalInput(date: Date | null): string | undefined {
@@ -81,11 +78,11 @@ function toLocalInput(date: Date | null): string | undefined {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
-function EventRow({ locale, event, labels, statusLabels, formatDate }: EventRowProps) {
+function EventRow({ locale, event, labels, statusLabels }: EventRowProps) {
   const [editOpen, setEditOpen] = useState(false);
   const datesLabel =
     event.startDate || event.endDate
-      ? `${event.startDate ? formatDate(event.startDate) : '—'} → ${event.endDate ? formatDate(event.endDate) : '—'}`
+      ? `${event.startDate ? formatDateTime(event.startDate, locale) : '—'} → ${event.endDate ? formatDateTime(event.endDate, locale) : '—'}`
       : labels.noDates;
 
   return (

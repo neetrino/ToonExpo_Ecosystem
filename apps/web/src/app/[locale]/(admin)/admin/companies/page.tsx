@@ -18,8 +18,6 @@ export default async function AdminCompaniesPage({ params }: AdminCompaniesPageP
     loadAllCompanies(),
   ]);
 
-  const dateFormatter = new Intl.DateTimeFormat(locale, { dateStyle: 'medium' });
-
   return (
     <section>
       <div className="portal-page__header">
@@ -52,7 +50,6 @@ export default async function AdminCompaniesPage({ params }: AdminCompaniesPageP
               archived: t('projectCounts.archived'),
             },
           }}
-          formatDate={(date) => dateFormatter.format(date)}
         />
       )}
     </section>

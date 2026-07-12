@@ -18,11 +18,6 @@ export default async function AdminSettingsPage({ params }: AdminSettingsPagePro
     loadAllPlatformSettings(),
   ]);
 
-  const dateFormatter = new Intl.DateTimeFormat(locale, {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  });
-
   const keyLabels = Object.fromEntries(
     (['CONTACT_EMAIL', 'CONTACT_PHONE', 'MORTGAGE_PAGE_ENABLED'] as PlatformSettingKey[]).map(
       (key) => [key, t(`keys.${key}`)],
@@ -50,7 +45,6 @@ export default async function AdminSettingsPage({ params }: AdminSettingsPagePro
           unset: t('unset'),
           keys: keyLabels,
         }}
-        formatDate={(date) => dateFormatter.format(date)}
       />
     </section>
   );

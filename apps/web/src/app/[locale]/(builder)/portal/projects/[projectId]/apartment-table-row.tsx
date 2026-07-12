@@ -3,6 +3,7 @@
 import type { ApartmentStatus } from '@toonexpo/domain';
 
 import type { BuilderProjectApartment } from '@/lib/builder/queries';
+import { formatPriceAmd } from '@/lib/catalog/format-price';
 
 type ApartmentRowLabels = {
   noValue: string;
@@ -11,19 +12,19 @@ type ApartmentRowLabels = {
 };
 
 type ApartmentTableRowProps = {
+  locale: string;
   apartment: BuilderProjectApartment;
   labels: ApartmentRowLabels;
   statusLabels: Record<ApartmentStatus, string>;
-  formatPrice: (value: number) => string;
   onEdit: (apartment: BuilderProjectApartment) => void;
   onMedia: (apartment: BuilderProjectApartment) => void;
 };
 
 export function ApartmentTableRow({
+  locale,
   apartment,
   labels,
   statusLabels,
-  formatPrice,
   onEdit,
   onMedia,
 }: ApartmentTableRowProps) {
@@ -32,7 +33,9 @@ export function ApartmentTableRow({
       <td>{apartment.code}</td>
       <td>{apartment.rooms ?? labels.noValue}</td>
       <td>{apartment.areaSqm ?? labels.noValue}</td>
-      <td>{apartment.priceAmd != null ? formatPrice(apartment.priceAmd) : labels.noValue}</td>
+      <td>
+        {apartment.priceAmd != null ? formatPriceAmd(apartment.priceAmd, locale) : labels.noValue}
+      </td>
       <td>
         <span className={`portal-apartment-status portal-apartment-status--${apartment.status}`}>
           {statusLabels[apartment.status]}
