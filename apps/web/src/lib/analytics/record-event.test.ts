@@ -19,6 +19,7 @@ import { recordAnalyticsEvent, scheduleAnalyticsEvent } from './record-event';
 describe('recordAnalyticsEvent', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    delete process.env.ANALYTICS_SAMPLE_RATE;
   });
 
   it('resolves silently when prisma create fails', async () => {
@@ -51,11 +52,36 @@ describe('recordAnalyticsEvent', () => {
       },
     });
   });
+
+  it('skips insert for bot user-agents', async () => {
+    await recordAnalyticsEvent({
+      type: 'PROJECT_VIEW',
+      companyId: 'company-1',
+      projectId: 'project-1',
+      userAgent: 'Googlebot/2.1',
+    });
+
+    expect(create).not.toHaveBeenCalled();
+  });
+
+  it('skips sampled view events when rate is 0', async () => {
+    process.env.ANALYTICS_SAMPLE_RATE = '0';
+
+    await recordAnalyticsEvent({
+      type: 'APARTMENT_VIEW',
+      companyId: 'company-1',
+      projectId: 'project-1',
+      apartmentId: 'apt-1',
+    });
+
+    expect(create).not.toHaveBeenCalled();
+  });
 });
 
 describe('scheduleAnalyticsEvent', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    delete process.env.ANALYTICS_SAMPLE_RATE;
     create.mockResolvedValue({ id: 'evt-2' });
   });
 

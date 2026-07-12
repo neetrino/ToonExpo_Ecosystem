@@ -9,6 +9,7 @@ import { FavoriteToggle } from '@/components/favorites/favorite-toggle';
 import { ProjectRequestCta } from '@/components/public-request/public-request-sheet';
 import { PublicVisualCanvas } from '@/components/visual-map/public-visual-canvas';
 import { scheduleAnalyticsEvent } from '@/lib/analytics/record-event';
+import { resolveRequestUserAgent } from '@/lib/analytics/request-user-agent';
 import { getPublishedProjectBySlug } from '@/lib/catalog/queries';
 import { isFavorited } from '@/lib/favorites/queries';
 import { loadProjectVisualMaps } from '@/lib/visual-map/load-project-visual-maps';
@@ -169,6 +170,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
     type: 'PROJECT_VIEW',
     companyId,
     projectId: project.id,
+    userAgent: await resolveRequestUserAgent(),
   });
 
   const { projectCanvas, floorCanvases } = await loadProjectVisualMaps(

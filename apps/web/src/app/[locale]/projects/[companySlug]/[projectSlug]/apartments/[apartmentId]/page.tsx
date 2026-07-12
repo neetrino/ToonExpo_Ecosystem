@@ -5,6 +5,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { auth } from '@/auth';
 import { scheduleAnalyticsEvent } from '@/lib/analytics/record-event';
+import { resolveRequestUserAgent } from '@/lib/analytics/request-user-agent';
 import { getPublishedApartment, isValidApartmentId } from '@/lib/catalog/queries';
 import { isFavorited } from '@/lib/favorites/queries';
 
@@ -54,6 +55,7 @@ export default async function ApartmentDetailPage({ params }: ApartmentDetailPag
     companyId: apartment.project.companyId,
     projectId: apartment.project.id,
     apartmentId: apartment.id,
+    userAgent: await resolveRequestUserAgent(),
   });
 
   const initialFavorited = buyerUserId
