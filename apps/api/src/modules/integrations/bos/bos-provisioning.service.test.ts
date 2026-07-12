@@ -33,9 +33,19 @@ vi.mock('../../../common/prisma.service', () => ({
 }));
 
 vi.mock('./bos-provisioning.crypto', () => ({
-  hashUnusablePassword: vi.fn(async () => 'hashed'),
   allocateUniqueSlug: vi.fn(async (base: string) => base),
 }));
+
+const { createAccountInvite, sendAccountInviteEmail } = vi.hoisted(() => ({
+  createAccountInvite: vi.fn(async () => 'raw-invite-token'),
+  sendAccountInviteEmail: vi.fn(async () => ({ sent: true })),
+}));
+
+vi.mock('../../../common/invite/create-account-invite', () => ({ createAccountInvite }));
+vi.mock('../../../common/invite/invite-url', () => ({
+  buildInviteUrl: (token: string) => `https://app.example.com/en/invite/${token}`,
+}));
+vi.mock('../../../common/email/send-invite-email', () => ({ sendAccountInviteEmail }));
 
 import { PrismaService } from '../../../common/prisma.service';
 
@@ -89,6 +99,8 @@ describe('BosProvisioningService', () => {
     createProvisioning.mockResolvedValue({ id: 'prov-1' });
     updateManyProvisioning.mockResolvedValue({ count: 0 });
     findUniqueProvisioning.mockResolvedValue(null);
+    createAccountInvite.mockResolvedValue('raw-invite-token');
+    sendAccountInviteEmail.mockResolvedValue({ sent: true });
   });
 
   it('returns validation issues for invalid payloads', async () => {
@@ -239,6 +251,42 @@ describe('BosProvisioningService', () => {
         data: expect.objectContaining({ status: 'success' }),
       }),
     );
+    expect(createAccountInvite).toHaveBeenCalledWith(expect.anything(), 'user-new');
+    expect(sendAccountInviteEmail).toHaveBeenCalledWith({
+      to: VALID_BODY.primaryContactEmail,
+      name: VALID_BODY.primaryContactName,
+      inviteUrl: 'https://app.example.com/en/invite/raw-invite-token',
+    });
+  });
+
+  it('does not send an invite email for linked_existing accounts', async () => {
+    transaction.mockImplementation(async (fn: (tx: unknown) => Promise<unknown>) => {
+      const tx = buildTx({
+        user: {
+          findUnique: vi.fn().mockResolvedValue({ id: 'user-existing', role: 'BUILDER' }),
+          create: vi.fn(),
+        },
+        provisioningRequest: {
+          create: vi.fn().mockResolvedValue({ id: 'claim-1' }),
+          update: vi.fn().mockResolvedValue({ id: 'claim-1' }),
+          findFirst: vi.fn().mockResolvedValue({
+            toonexpoCompanyId: 'co-existing',
+            primaryUserId: 'user-existing',
+          }),
+          findUnique: vi.fn(),
+        },
+        companyMember: {
+          findUnique: vi.fn().mockResolvedValue({ id: 'mem-existing' }),
+          create: vi.fn(),
+        },
+      });
+      return fn(tx);
+    });
+
+    const outcome = await service.provision(VALID_BODY);
+    expect(outcome.kind).toBe('linked');
+    expect(createAccountInvite).not.toHaveBeenCalled();
+    expect(sendAccountInviteEmail).not.toHaveBeenCalled();
   });
 
   it('replays stored EMAIL_CONFLICT failure as ConflictException', async () => {

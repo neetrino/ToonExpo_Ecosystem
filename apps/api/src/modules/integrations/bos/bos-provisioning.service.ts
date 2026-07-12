@@ -6,6 +6,9 @@ import {
 } from '@toonexpo/contracts';
 import type { Prisma } from '@toonexpo/db';
 
+import { sendAccountInviteEmail } from '../../../common/email/send-invite-email';
+import { createAccountInvite } from '../../../common/invite/create-account-invite';
+import { buildInviteUrl } from '../../../common/invite/invite-url';
 import { PrismaService } from '../../../common/prisma.service';
 
 import {
@@ -26,7 +29,6 @@ import {
   PROVISIONING_CLAIM_STATUS,
   PROVISIONING_IN_PROGRESS_CODE,
 } from './bos-provisioning.constants';
-import { hashUnusablePassword } from './bos-provisioning.crypto';
 import {
   buildFailedResponse,
   createProcessingClaim,
@@ -87,11 +89,13 @@ export class BosProvisioningService {
   }
 
   private async executeProvisioning(input: BosProvisioningRequest): Promise<ProvisionOutcome> {
-    const passwordHash = await hashUnusablePassword();
     try {
       const result = await this.prisma.client.$transaction((tx) =>
-        this.runClaimedProvision(tx, input, passwordHash),
+        this.runClaimedProvision(tx, input),
       );
+      if (result.kind === 'success') {
+        await this.sendInviteEmailBestEffort(input, result.inviteRawToken);
+      }
       return this.finalizeClaimResult(input, result);
     } catch (error) {
       if (isRequestIdUniqueViolation(error)) {
@@ -101,10 +105,21 @@ export class BosProvisioningService {
     }
   }
 
+  /** Best-effort — a Resend outage must never fail BOS account provisioning. */
+  private async sendInviteEmailBestEffort(
+    input: BosProvisioningRequest,
+    rawInviteToken: string,
+  ): Promise<void> {
+    await sendAccountInviteEmail({
+      to: input.primaryContactEmail,
+      name: input.primaryContactName,
+      inviteUrl: buildInviteUrl(rawInviteToken),
+    });
+  }
+
   private async runClaimedProvision(
     tx: Prisma.TransactionClient,
     input: BosProvisioningRequest,
-    passwordHash: string,
   ): Promise<ClaimTxResult> {
     await createProcessingClaim(tx, input);
 
@@ -121,9 +136,9 @@ export class BosProvisioningService {
       return { kind: 'email_conflict', response: failed };
     }
 
-    const response = await this.createAccountsInTx(tx, input, email, passwordHash);
+    const { response, rawInviteToken } = await this.createAccountsInTx(tx, input, email);
     await writeClaimSnapshot(tx, input.requestId, response);
-    return { kind: 'success', response };
+    return { kind: 'success', response, inviteRawToken: rawInviteToken };
   }
 
   private async finalizeClaimResult(
@@ -239,8 +254,7 @@ export class BosProvisioningService {
     tx: Prisma.TransactionClient,
     input: BosProvisioningRequest,
     email: string,
-    passwordHash: string,
-  ): Promise<BosProvisioningResponse> {
+  ): Promise<{ response: BosProvisioningResponse; rawInviteToken: string }> {
     const role = mapRole(input.companyType);
     const companyId = await resolveCompanyId(tx, input.companyName);
     const user = await tx.user.create({
@@ -248,7 +262,7 @@ export class BosProvisioningService {
         email,
         name: input.primaryContactName,
         phone: input.primaryContactPhone ?? null,
-        passwordHash,
+        passwordHash: null,
         role,
       },
     });
@@ -258,12 +272,18 @@ export class BosProvisioningService {
     if (needsPartnerProfile(input.companyType)) {
       await ensurePartner(tx, input, companyId);
     }
+
+    const rawInviteToken = await createAccountInvite(tx, user.id);
+
     return {
-      requestId: input.requestId,
-      toonexpoCompanyId: companyId,
-      primaryUserId: user.id,
-      status: 'success',
-      createdAt: new Date().toISOString(),
+      response: {
+        requestId: input.requestId,
+        toonexpoCompanyId: companyId,
+        primaryUserId: user.id,
+        status: 'success',
+        createdAt: new Date().toISOString(),
+      },
+      rawInviteToken,
     };
   }
 }

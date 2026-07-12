@@ -11,7 +11,7 @@ import {
 type Tx = Prisma.TransactionClient;
 
 export type ClaimTxResult =
-  | { kind: 'success'; response: BosProvisioningResponse }
+  | { kind: 'success'; response: BosProvisioningResponse; inviteRawToken: string }
   | { kind: 'linked'; response: BosProvisioningResponse }
   | { kind: 'email_conflict'; response: BosProvisioningResponse };
 

@@ -4,9 +4,6 @@ export const BOS_API_KEY_HEADER = 'x-bos-api-key';
 /** Audit / operation name for inbound BOS provisioning. */
 export const BOS_PROVISIONING_OPERATION = 'bos.provisioning';
 
-/** Bytes of entropy for unusable random passwords on BOS-provisioned users. */
-export const UNUSABLE_PASSWORD_BYTES = 32;
-
 /** Max attempts when allocating a unique company/partner slug. */
 export const MAX_SLUG_ATTEMPTS = 50;
 
