@@ -110,7 +110,10 @@ export async function runRbacFlow(ctx) {
   }
 
   if (!seeds.entrance) {
-    skipCheck('Entrance staff /checkin', 'SEED_ENTRANCE_EMAIL / SEED_ENTRANCE_PASSWORD not set in .env');
+    skipCheck(
+      'Entrance staff /checkin',
+      'SEED_ENTRANCE_EMAIL / SEED_ENTRANCE_PASSWORD not set in .env',
+    );
   } else {
     await runCheck('Entrance staff login → /en/checkin 200', async () => {
       const jar = new CookieJar();

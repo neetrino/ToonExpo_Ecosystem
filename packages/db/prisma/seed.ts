@@ -148,7 +148,9 @@ async function seedEntranceStaff(): Promise<void> {
   const password = process.env.SEED_ENTRANCE_PASSWORD;
 
   if (!email || !password) {
-    console.log('Skipping entrance staff seed: SEED_ENTRANCE_EMAIL and SEED_ENTRANCE_PASSWORD must be set.');
+    console.log(
+      'Skipping entrance staff seed: SEED_ENTRANCE_EMAIL and SEED_ENTRANCE_PASSWORD must be set.',
+    );
     return;
   }
 
