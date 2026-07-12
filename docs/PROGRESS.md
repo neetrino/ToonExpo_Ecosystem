@@ -2,6 +2,8 @@
 
 ## Current Status
 
+**Recent:** DB seed adds ~20 PUBLISHED catalog projects (3 companies) for public browsing after UI redesign.
+
 Sprint 7.7 **COMPLETE** — Tech hardening: apartment status history, Swagger prod gate, analytics sampling/bot filter.
 
 Sprint 7.6 **COMPLETE** — Exhibition venue map with booths.

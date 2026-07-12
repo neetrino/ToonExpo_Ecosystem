@@ -7,6 +7,7 @@ import {
   type Project,
 } from '@prisma/client';
 import argon2 from 'argon2';
+import { seedCatalogProjects } from './seed-catalog-projects';
 
 const prisma = new PrismaClient();
 
@@ -1190,6 +1191,7 @@ async function seedExhibitionEvent(companyId: string): Promise<void> {
 async function main(): Promise<void> {
   await seedAdmin();
   const catalog = await seedDemoCatalog();
+  await seedCatalogProjects(prisma);
   await seedBuilder();
   await seedEntranceStaff();
   await seedDemoCrmDeals(catalog.company, catalog.sunriseProject, catalog.apartments);
