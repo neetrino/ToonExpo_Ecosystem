@@ -952,7 +952,16 @@
         "priceVisibility": "Видимость цены",
         "matterportUrl": "Ссылка Matterport / 3D",
         "status": "Статус"
+      },
+      "statusHistory": {
+        "title": "История статусов",
+        "empty": "Изменений статуса пока нет."
       }
+    },
+    "apartmentStatusHistorySource": {
+      "CRM_STAGE": "CRM этап",
+      "MANUAL_INVENTORY": "Ручной инвентарь",
+      "SYSTEM": "Система"
     },
     "mediaForm": {
       "create": "Добавить медиа",

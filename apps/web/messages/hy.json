@@ -952,7 +952,16 @@
         "priceVisibility": "Գնի տեսանելիություն",
         "matterportUrl": "Matterport / 3D հղում",
         "status": "Կարգավիճակ"
+      },
+      "statusHistory": {
+        "title": "Կարգավիճակի պատմություն",
+        "empty": "Կարգավիճակի փոփոխություններ դեռ չկան։"
       }
+    },
+    "apartmentStatusHistorySource": {
+      "CRM_STAGE": "CRM փուլ",
+      "MANUAL_INVENTORY": "Ձեռքով գույքագրում",
+      "SYSTEM": "Համակարգ"
     },
     "mediaForm": {
       "create": "Ավելացնել մեդիա",

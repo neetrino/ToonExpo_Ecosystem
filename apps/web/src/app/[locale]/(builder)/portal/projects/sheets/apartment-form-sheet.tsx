@@ -24,6 +24,7 @@ import {
   type BuilderFormActionState,
 } from '@/lib/builder/action-state';
 import { upsertApartmentFormAction } from '@/lib/builder/form-actions';
+import type { BuilderApartmentStatusHistoryEntry } from '@/lib/builder/queries';
 
 type ApartmentFormValues = {
   apartmentId?: string;
@@ -35,6 +36,7 @@ type ApartmentFormValues = {
   priceVisibility?: PriceVisibility;
   matterportUrl?: string | null;
   status: ApartmentStatus;
+  statusHistory?: BuilderApartmentStatusHistoryEntry[];
 };
 
 type ApartmentFormSheetProps = {
@@ -158,6 +160,8 @@ function ApartmentFormBody({ mode, values, state, formAction, pending }: Apartme
         </PortalSelect>
       </PortalFormField>
 
+      {mode === 'edit' ? <ApartmentStatusHistoryList entries={values.statusHistory ?? []} /> : null}
+
       <PortalFormError errorKey={state.errorKey} />
 
       <div className="portal-form__actions">
@@ -167,4 +171,44 @@ function ApartmentFormBody({ mode, values, state, formAction, pending }: Apartme
       </div>
     </form>
   );
+}
+
+function ApartmentStatusHistoryList({
+  entries,
+}: {
+  entries: BuilderApartmentStatusHistoryEntry[];
+}) {
+  const t = useTranslations('portal.apartmentForm');
+  const tStatus = useTranslations('portal.apartmentStatus');
+  const tSource = useTranslations('portal.apartmentStatusHistorySource');
+
+  return (
+    <details className="portal-form__details">
+      <summary className="portal-form__details-summary">{t('statusHistory.title')}</summary>
+      {entries.length === 0 ? (
+        <p className="portal-form__hint">{t('statusHistory.empty')}</p>
+      ) : (
+        <ul className="portal-form__history-list">
+          {entries.map((entry) => (
+            <li key={entry.id} className="portal-form__history-item">
+              <span>
+                {tStatus(entry.oldStatus)} → {tStatus(entry.newStatus)}
+              </span>
+              <span className="portal-form__meta">
+                {tSource(entry.source)} · {formatHistoryTimestamp(entry.createdAt)}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </details>
+  );
+}
+
+function formatHistoryTimestamp(value: Date | string): string {
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return String(value);
+  }
+  return date.toLocaleString();
 }

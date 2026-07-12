@@ -68,6 +68,7 @@ export async function linkDealApartment(
 export async function unlinkDealApartment(
   companyId: string,
   input: DealApartmentLinkInput,
+  actorUserId?: string,
 ): Promise<CrmMutationResult<{ dealId: string; affectedProjectIds: string[] }>> {
   return prisma.$transaction(async (tx) => {
     const deal = await findCompanyDeal(tx, companyId, input.dealId);
@@ -101,7 +102,7 @@ export async function unlinkDealApartment(
       },
     });
 
-    await releaseApartmentsIfUnheld(tx, [input.apartmentId], deal.id);
+    await releaseApartmentsIfUnheld(tx, [input.apartmentId], deal.id, actorUserId);
 
     const projectIds = new Set<string>();
     if (deal.projectId) {

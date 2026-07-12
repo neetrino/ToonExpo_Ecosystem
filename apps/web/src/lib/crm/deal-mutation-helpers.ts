@@ -1,6 +1,11 @@
 import type { PrismaClient } from '@toonexpo/db';
 import type { ApartmentStatus, DealStage } from '@toonexpo/domain';
 
+import {
+  recordApartmentStatusHistory,
+  recordApartmentStatusHistoryMany,
+} from '../shared/apartment-status-history';
+
 import { ACTIVE_INVENTORY_HOLD_STAGES } from './constants';
 
 export type TransactionClient = Omit<
@@ -146,16 +151,25 @@ export async function isCompanyProject(
  * Conditional updateMany: only AVAILABLE rows, or rows held solely by this deal
  * (linked to dealId with no other active RESERVED/CONVERTED holder).
  * Partial matches must abort the surrounding transaction so changed rows roll back.
+ * When `changedByUserId` is set, appends ApartmentStatusHistory in the same tx.
  */
 export async function claimApartmentsForDeal(
   tx: TransactionClient,
   apartmentIds: string[],
   status: 'RESERVED' | 'SOLD',
   dealId: string,
+  changedByUserId?: string,
 ): Promise<'ok' | 'reservationConflict'> {
   if (apartmentIds.length === 0) {
     return 'ok';
   }
+
+  const before = changedByUserId
+    ? await tx.apartment.findMany({
+        where: { id: { in: apartmentIds } },
+        select: { id: true, status: true },
+      })
+    : [];
 
   const result = await tx.apartment.updateMany({
     where: {
@@ -185,16 +199,32 @@ export async function claimApartmentsForDeal(
     return 'reservationConflict';
   }
 
+  if (changedByUserId) {
+    await recordApartmentStatusHistoryMany(
+      tx,
+      before.map((apartment) => ({
+        apartmentId: apartment.id,
+        dealId,
+        source: 'CRM_STAGE',
+        oldStatus: apartment.status,
+        newStatus: status,
+        changedByUserId,
+      })),
+    );
+  }
+
   return 'ok';
 }
 
 /**
  * Releases reservation when no other active hold remains (doc 04 Release Reservation).
+ * When `changedByUserId` is set, appends ApartmentStatusHistory in the same tx.
  */
 export async function releaseApartmentsIfUnheld(
   tx: TransactionClient,
   apartmentIds: string[],
   excludeDealId: string,
+  changedByUserId?: string,
 ): Promise<void> {
   for (const apartmentId of apartmentIds) {
     const otherHold = await tx.dealApartment.findFirst({
@@ -209,10 +239,21 @@ export async function releaseApartmentsIfUnheld(
       continue;
     }
 
-    await tx.apartment.updateMany({
+    const result = await tx.apartment.updateMany({
       where: { id: apartmentId, status: 'RESERVED' },
       data: { status: 'AVAILABLE' },
     });
+
+    if (result.count === 1 && changedByUserId) {
+      await recordApartmentStatusHistory(tx, {
+        apartmentId,
+        dealId: excludeDealId,
+        source: 'CRM_STAGE',
+        oldStatus: 'RESERVED',
+        newStatus: 'AVAILABLE',
+        changedByUserId,
+      });
+    }
   }
 }
 

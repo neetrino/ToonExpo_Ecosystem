@@ -952,7 +952,16 @@
         "priceVisibility": "Price visibility",
         "matterportUrl": "Matterport / 3D URL",
         "status": "Status"
+      },
+      "statusHistory": {
+        "title": "Status history",
+        "empty": "No status changes recorded yet."
       }
+    },
+    "apartmentStatusHistorySource": {
+      "CRM_STAGE": "CRM stage",
+      "MANUAL_INVENTORY": "Manual inventory",
+      "SYSTEM": "System"
     },
     "mediaForm": {
       "create": "Add media",

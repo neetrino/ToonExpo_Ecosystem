@@ -120,6 +120,7 @@ export function ApartmentTable({
             priceVisibility: editingApartment.priceVisibility,
             matterportUrl: editingApartment.matterportUrl,
             status: editingApartment.status,
+            statusHistory: editingApartment.statusHistory,
           }}
         />
       ) : null}

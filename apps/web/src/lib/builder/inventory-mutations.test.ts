@@ -23,8 +23,12 @@ vi.mock('@toonexpo/db', () => ({
       update: vi.fn(),
     },
     apartment: {
+      findFirst: vi.fn(),
       create: vi.fn(),
       updateMany: vi.fn(),
+    },
+    apartmentStatusHistory: {
+      create: vi.fn(),
     },
     auditLog: {
       create: vi.fn(),
@@ -205,7 +209,7 @@ describe('inventory-mutations ownership', () => {
 
   it('returns notFound when updateApartment targets a foreign apartment on an owned floor', async () => {
     vi.mocked(prisma.floor.findFirst).mockResolvedValue({ id: 'floor-own' } as never);
-    vi.mocked(prisma.apartment.updateMany).mockResolvedValue({ count: 0 });
+    vi.mocked(prisma.apartment.findFirst).mockResolvedValue(null);
 
     const result = await updateApartment(OWN_COMPANY_ID, {
       apartmentId: 'apartment-foreign',
@@ -216,15 +220,38 @@ describe('inventory-mutations ownership', () => {
     });
 
     expect(result).toEqual({ ok: false, errorKey: 'notFound' });
-    expect(prisma.apartment.updateMany).toHaveBeenCalledWith({
-      where: {
-        id: 'apartment-foreign',
-        floor: { building: { project: { companyId: OWN_COMPANY_ID } } },
-      },
-      data: expect.objectContaining({
+    expect(prisma.apartment.updateMany).not.toHaveBeenCalled();
+  });
+
+  it('records MANUAL_INVENTORY status history when apartment status changes', async () => {
+    vi.mocked(prisma.floor.findFirst).mockResolvedValue({ id: 'floor-own' } as never);
+    vi.mocked(prisma.apartment.findFirst).mockResolvedValue({
+      id: 'apartment-1',
+      status: 'AVAILABLE',
+    } as never);
+    vi.mocked(prisma.apartment.updateMany).mockResolvedValue({ count: 1 });
+    vi.mocked(prisma.apartmentStatusHistory.create).mockResolvedValue({} as never);
+
+    const result = await updateApartment(
+      OWN_COMPANY_ID,
+      {
+        apartmentId: 'apartment-1',
         floorId: 'floor-own',
         code: 'A-101',
-        status: 'AVAILABLE',
+        status: 'RESERVED',
+        priceVisibility: 'PUBLIC',
+      },
+      ACTOR.userId,
+    );
+
+    expect(result).toEqual({ ok: true, apartmentId: 'apartment-1' });
+    expect(prisma.apartmentStatusHistory.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        apartmentId: 'apartment-1',
+        source: 'MANUAL_INVENTORY',
+        oldStatus: 'AVAILABLE',
+        newStatus: 'RESERVED',
+        changedByUserId: ACTOR.userId,
       }),
     });
   });

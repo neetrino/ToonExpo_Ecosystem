@@ -1,5 +1,13 @@
-import type { ApartmentStatus, PriceVisibility, PublicationStatus } from '@toonexpo/domain';
+import type {
+  ApartmentStatus,
+  ApartmentStatusChangeSource,
+  PriceVisibility,
+  PublicationStatus,
+} from '@toonexpo/domain';
 import { prisma } from '@toonexpo/db';
+
+/** Max status-history rows shown in the apartment editor sheet. */
+const APARTMENT_STATUS_HISTORY_PREVIEW_LIMIT = 10;
 
 export type ProjectStatusCounts = {
   draft: number;
@@ -68,6 +76,15 @@ function mapProjectStatusCounts(
   return counts;
 }
 
+export type BuilderApartmentStatusHistoryEntry = {
+  id: string;
+  oldStatus: ApartmentStatus;
+  newStatus: ApartmentStatus;
+  source: ApartmentStatusChangeSource;
+  reason: string | null;
+  createdAt: Date;
+};
+
 export type BuilderProjectApartment = {
   id: string;
   code: string;
@@ -78,6 +95,7 @@ export type BuilderProjectApartment = {
   matterportUrl: string | null;
   status: ApartmentStatus;
   media: BuilderMediaAsset[];
+  statusHistory: BuilderApartmentStatusHistoryEntry[];
 };
 
 export type BuilderMediaAsset = {
@@ -156,6 +174,18 @@ export async function loadCompanyProjectDetail(
                   media: {
                     orderBy: { sortOrder: 'asc' },
                     select: { id: true, url: true, alt: true, sortOrder: true },
+                  },
+                  statusHistory: {
+                    orderBy: { createdAt: 'desc' },
+                    take: APARTMENT_STATUS_HISTORY_PREVIEW_LIMIT,
+                    select: {
+                      id: true,
+                      oldStatus: true,
+                      newStatus: true,
+                      source: true,
+                      reason: true,
+                      createdAt: true,
+                    },
                   },
                 },
                 orderBy: { code: 'asc' },

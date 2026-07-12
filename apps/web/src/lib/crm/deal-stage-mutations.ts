@@ -33,9 +33,16 @@ async function syncInventoryForStageChange(
   from: DealStage,
   to: DealStage,
   apartmentIds: string[],
+  changedByUserId?: string,
 ): Promise<void> {
   if (to === 'RESERVED' && from !== 'RESERVED') {
-    const claim = await claimApartmentsForDeal(tx, apartmentIds, 'RESERVED', dealId);
+    const claim = await claimApartmentsForDeal(
+      tx,
+      apartmentIds,
+      'RESERVED',
+      dealId,
+      changedByUserId,
+    );
     if (claim === 'reservationConflict') {
       throw new CrmInventoryAbortError();
     }
@@ -43,7 +50,7 @@ async function syncInventoryForStageChange(
   }
 
   if (to === 'CONVERTED') {
-    const claim = await claimApartmentsForDeal(tx, apartmentIds, 'SOLD', dealId);
+    const claim = await claimApartmentsForDeal(tx, apartmentIds, 'SOLD', dealId, changedByUserId);
     if (claim === 'reservationConflict') {
       throw new CrmInventoryAbortError();
     }
@@ -52,7 +59,7 @@ async function syncInventoryForStageChange(
 
   // Leaving RESERVED to any non-sale stage releases hold (doc 04).
   if (from === 'RESERVED') {
-    await releaseApartmentsIfUnheld(tx, apartmentIds, dealId);
+    await releaseApartmentsIfUnheld(tx, apartmentIds, dealId, changedByUserId);
   }
 }
 
@@ -86,7 +93,14 @@ export async function updateDealStage(
         return { ok: false, errorKey: 'apartmentRequired' };
       }
 
-      await syncInventoryForStageChange(tx, deal.id, deal.stage, input.stage, apartmentIds);
+      await syncInventoryForStageChange(
+        tx,
+        deal.id,
+        deal.stage,
+        input.stage,
+        apartmentIds,
+        actorUserId,
+      );
 
       const now = new Date();
       await tx.deal.update({

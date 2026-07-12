@@ -134,7 +134,7 @@ export async function upsertApartmentAction(
     return invalidInput();
   }
 
-  const result = await upsertApartment(session.companyId, parsed.data);
+  const result = await upsertApartment(session.companyId, parsed.data, session.session.user.id);
   if (result.ok) {
     await revalidateAfterInventoryMutation(session.companyId, {
       floorId: parsed.data.floorId,

@@ -112,7 +112,7 @@ export async function unlinkDealApartmentAction(
     return invalidInput();
   }
 
-  const result = await unlinkDealApartment(session.companyId, parsed.data);
+  const result = await unlinkDealApartment(session.companyId, parsed.data, session.session.user.id);
   if (result.ok) {
     await revalidateAfterInventoryTouch(session.companyId, result.affectedProjectIds);
   }

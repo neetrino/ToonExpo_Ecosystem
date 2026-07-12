@@ -19,6 +19,10 @@ const mockTx = {
     findMany: vi.fn(),
     updateMany: vi.fn(),
   },
+  apartmentStatusHistory: {
+    create: vi.fn(),
+    createMany: vi.fn(),
+  },
   companyMember: { findFirst: vi.fn() },
   project: { findFirst: vi.fn() },
 };
@@ -109,6 +113,9 @@ describe('updateDealStage', () => {
   it('sets apartments RESERVED via guarded claim when moving to RESERVED', async () => {
     vi.mocked(mockTx.deal.findFirst).mockResolvedValue(dealRow({ apartmentCount: 1 }));
     vi.mocked(mockTx.dealApartment.findMany).mockResolvedValue([{ apartmentId: APARTMENT_ID }]);
+    vi.mocked(mockTx.apartment.findMany)
+      .mockResolvedValueOnce([apartmentWithProject('project-1')])
+      .mockResolvedValueOnce([{ id: APARTMENT_ID, status: 'AVAILABLE' }]);
 
     const result = await updateDealStage(
       COMPANY_ID,
@@ -124,6 +131,18 @@ describe('updateDealStage', () => {
     expect(mockTx.apartment.updateMany).toHaveBeenCalledWith({
       where: CLAIM_WHERE_RESERVED,
       data: { status: 'RESERVED' },
+    });
+    expect(mockTx.apartmentStatusHistory.createMany).toHaveBeenCalledWith({
+      data: [
+        expect.objectContaining({
+          apartmentId: APARTMENT_ID,
+          dealId: DEAL_ID,
+          source: 'CRM_STAGE',
+          oldStatus: 'AVAILABLE',
+          newStatus: 'RESERVED',
+          changedByUserId: ACTOR_ID,
+        }),
+      ],
     });
     expect(mockTx.dealActivity.create).toHaveBeenCalledWith({
       data: expect.objectContaining({
@@ -189,15 +208,22 @@ describe('updateDealStage', () => {
     vi.mocked(mockTx.dealApartment.findMany).mockResolvedValue([{ apartmentId: APARTMENT_ID }]);
     vi.mocked(mockTx.dealApartment.findFirst).mockResolvedValue(null);
 
-    const result = await updateDealStage(COMPANY_ID, {
-      dealId: DEAL_ID,
-      stage: 'LOST',
-    });
+    const result = await updateDealStage(COMPANY_ID, { dealId: DEAL_ID, stage: 'LOST' }, ACTOR_ID);
 
     expect(result.ok).toBe(true);
     expect(mockTx.apartment.updateMany).toHaveBeenCalledWith({
       where: { id: APARTMENT_ID, status: 'RESERVED' },
       data: { status: 'AVAILABLE' },
+    });
+    expect(mockTx.apartmentStatusHistory.create).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        apartmentId: APARTMENT_ID,
+        dealId: DEAL_ID,
+        source: 'CRM_STAGE',
+        oldStatus: 'RESERVED',
+        newStatus: 'AVAILABLE',
+        changedByUserId: ACTOR_ID,
+      }),
     });
   });
 
