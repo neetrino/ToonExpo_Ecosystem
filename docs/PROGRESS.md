@@ -2,6 +2,8 @@
 
 ## Current Status
 
+Sprint 7.6 **COMPLETE** — Exhibition venue map with booths.
+
 Sprint 7.5 **COMPLETE** — Admin acting-on-behalf of a builder company + company switcher.
 
 Sprint 7.4 **COMPLETE** — Buyer favorites (save projects/apartments).
@@ -14,7 +16,17 @@ Sprint 7.1 **COMPLETE** — Upstash Redis rate limiting on auth, public request,
 
 Sprint 6 **COMPLETE** — Analytics v1, BOS provisioning (atomic idempotency), audit logs + CSV reports, e2e smoke, hardening + final audit fixes.
 
-**MVP backlog complete** — planned sprints through 7.5 are done. Deferred follow-ups (not blockers): venue map/booths, `ApartmentStatusHistory`, Playwright e2e, Swagger gating in prod, analytics aggregation/sampling, general Redis caching/queues, company logo / visual-map image uploads (still URL-based), builder/company favorites.
+**MVP backlog complete** — planned sprints through 7.6 are done. Deferred follow-ups (not blockers): indoor route graph / pathfinding, `ApartmentStatusHistory`, Playwright e2e, Swagger gating in prod, analytics aggregation/sampling, general Redis caching/queues, company logo / visual-map image uploads (still URL-based), builder/company favorites.
+
+## Sprint 7.6 — Exhibition venue map + booths (COMPLETE)
+
+- **Schema** — `VenueMap` (1:1 per `ExhibitionEvent`, image URL + alt) + `Booth` point markers (`xPercent`/`yPercent` 0–100, code, label, optional `companyId`/`partnerId`/note). Migration `20260712290000_sprint7_6_venue_map`.
+- **Visibility** — Reuses `ExhibitionEventStatus.ACTIVE` (no `mapPublished` flag). Public map + nav link only when an ACTIVE event has a venue map. Event status transitions already audited.
+- **Admin** — `/admin/exhibition/[eventId]/venue`: upsert map image URL, click-to-place + CRUD booths, company/partner assignment.
+- **Public** — `/{locale}/exhibition`: map, booth markers, search/filter, side detail with builder/partner links.
+- **Portal** — Overview shows “Your booth: {code}” when the company has a booth on the ACTIVE event.
+- **Seed** — Demo pavilion image (picsum) + booths A12 (demo-development), B03 (Converse Bank), C01 (info) on `toonexpo-2026-demo`.
+- **Deferred** — Indoor route graph / pathfinding, GPS blue-dot, spreadsheet booth import, booth types dictionary.
 
 ## Sprint 7.5 — Admin acting-on-behalf + company switcher (COMPLETE)
 
@@ -87,7 +99,7 @@ Sprint 6 **COMPLETE** — Analytics v1, BOS provisioning (atomic idempotency), a
 
 ### Deferred (Sprint 5 follow-ups)
 
-- Venue map / booths / routing.
+- Venue map / booths — done in Sprint 7.6; route graph / pathfinding still deferred.
 - Company logo / visual-map canvas image uploads (still URL inputs; project/apartment media uses R2 as of Sprint 7.3).
 - Category CRUD UI for readiness.
 - Partner readiness module.
@@ -184,7 +196,7 @@ Audit fixes applied on branch `sipan` after the feature pack landed:
 
 ### Deferred (unchanged)
 
-- Venue map/booths, `ApartmentStatusHistory`, Playwright e2e, Swagger gating in prod, analytics aggregation/sampling, general Redis caching/queues; company logo / visual-map image uploads (URL-based); builder/company favorites.
+- Indoor route graph / pathfinding, `ApartmentStatusHistory`, Playwright e2e, Swagger gating in prod, analytics aggregation/sampling, general Redis caching/queues; company logo / visual-map image uploads (URL-based); builder/company favorites.
 
 ## Open (non-blocking)
 
