@@ -206,7 +206,14 @@
         "fields": {
           "name": "Անվանում",
           "slug": "Սլագ",
-          "slugHint": "Սլագը սահմանվում է ստեղծման պահին և չի կարող փոխվել։"
+          "slugHint": "Սլագը սահմանվում է ստեղծման պահին և չի կարող փոխվել։",
+          "description": "Նկարագրություն",
+          "logoUrl": "Լոգոյի URL",
+          "phone": "Հեռախոս",
+          "email": "Էլ. փոստ",
+          "website": "Կայք",
+          "city": "Քաղաք",
+          "address": "Հասցե"
         }
       }
     },
@@ -533,7 +540,8 @@
       "projects": "Նախագծեր",
       "crm": "CRM",
       "readiness": "Պատրաստվածություն",
-      "analytics": "Վերլուծություն"
+      "analytics": "Վերլուծություն",
+      "company": "Ընկերություն"
     },
     "overview": {
       "title": "Ակնարկ",
@@ -541,6 +549,50 @@
         "draft": "Սևագիր",
         "published": "Հրապարակված",
         "archived": "Արխիվացված"
+      }
+    },
+    "company": {
+      "title": "Ընկերություն",
+      "subtitle": "Ձեր ընկերության պրոֆիլը և թիմի անդամները։",
+      "profileTitle": "Ընկերության պրոֆիլ",
+      "editProfile": "Խմբագրել պրոֆիլը",
+      "profileMissing": "Ընկերության պրոֆիլը չհաջողվեց բեռնել։",
+      "teamTitle": "Թիմ",
+      "teamEmpty": "Այս ընկերությանը դեռ անդամներ չեն կցված։",
+      "noValue": "—",
+      "fields": {
+        "description": "Նկարագրություն",
+        "phone": "Հեռախոս",
+        "email": "Էլ. փոստ",
+        "website": "Կայք",
+        "location": "Հասցե"
+      },
+      "columns": {
+        "name": "Անուն",
+        "email": "Էլ. փոստ",
+        "role": "Դեր",
+        "joinedAt": "Միացել է"
+      },
+      "roles": {
+        "BIGPROJECTS_ADMIN": "BigProjects ադմին",
+        "BUILDER": "Կառուցապատող",
+        "PARTNER": "Գործընկեր",
+        "BUYER": "Գնորդ",
+        "ENTRANCE_STAFF": "Մուտքի անձնակազմ"
+      },
+      "form": {
+        "title": "Խմբագրել ընկերության պրոֆիլը",
+        "submit": "Պահպանել",
+        "fields": {
+          "name": "Ընկերության անուն",
+          "description": "Նկարագրություն",
+          "logoUrl": "Լոգոյի URL",
+          "phone": "Հեռախոս",
+          "email": "Էլ. փոստ",
+          "website": "Կայք",
+          "city": "Քաղաք",
+          "address": "Հասցե"
+        }
       }
     },
     "readiness": {
@@ -939,6 +991,12 @@
         "priceAmd": "Գին",
         "status": "Կարգավիճակ",
         "request": "Հարցում"
+      },
+      "builder": {
+        "title": "Կառուցապատողի մասին",
+        "phone": "Հեռախոս",
+        "email": "Էլ. փոստ",
+        "website": "Կայք"
       }
     },
     "apartment": {

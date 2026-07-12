@@ -206,7 +206,14 @@
         "fields": {
           "name": "Название",
           "slug": "Слаг",
-          "slugHint": "Слаг задаётся при создании и не может быть изменён."
+          "slugHint": "Слаг задаётся при создании и не может быть изменён.",
+          "description": "Описание",
+          "logoUrl": "URL логотипа",
+          "phone": "Телефон",
+          "email": "Эл. почта",
+          "website": "Сайт",
+          "city": "Город",
+          "address": "Адрес"
         }
       }
     },
@@ -533,7 +540,8 @@
       "projects": "Проекты",
       "crm": "CRM",
       "readiness": "Готовность",
-      "analytics": "Аналитика"
+      "analytics": "Аналитика",
+      "company": "Компания"
     },
     "overview": {
       "title": "Обзор",
@@ -541,6 +549,50 @@
         "draft": "Черновик",
         "published": "Опубликован",
         "archived": "В архиве"
+      }
+    },
+    "company": {
+      "title": "Компания",
+      "subtitle": "Профиль компании и участники команды.",
+      "profileTitle": "Профиль компании",
+      "editProfile": "Редактировать профиль",
+      "profileMissing": "Не удалось загрузить профиль компании.",
+      "teamTitle": "Команда",
+      "teamEmpty": "К этой компании пока не привязаны участники.",
+      "noValue": "—",
+      "fields": {
+        "description": "Описание",
+        "phone": "Телефон",
+        "email": "Эл. почта",
+        "website": "Сайт",
+        "location": "Адрес"
+      },
+      "columns": {
+        "name": "Имя",
+        "email": "Эл. почта",
+        "role": "Роль",
+        "joinedAt": "Дата присоединения"
+      },
+      "roles": {
+        "BIGPROJECTS_ADMIN": "Админ BigProjects",
+        "BUILDER": "Застройщик",
+        "PARTNER": "Партнёр",
+        "BUYER": "Покупатель",
+        "ENTRANCE_STAFF": "Персонал входа"
+      },
+      "form": {
+        "title": "Редактировать профиль компании",
+        "submit": "Сохранить",
+        "fields": {
+          "name": "Название компании",
+          "description": "Описание",
+          "logoUrl": "URL логотипа",
+          "phone": "Телефон",
+          "email": "Эл. почта",
+          "website": "Сайт",
+          "city": "Город",
+          "address": "Адрес"
+        }
       }
     },
     "readiness": {
@@ -939,6 +991,12 @@
         "priceAmd": "Цена",
         "status": "Статус",
         "request": "Запрос"
+      },
+      "builder": {
+        "title": "О застройщике",
+        "phone": "Телефон",
+        "email": "Эл. почта",
+        "website": "Сайт"
       }
     },
     "apartment": {

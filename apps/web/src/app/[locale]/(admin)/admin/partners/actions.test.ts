@@ -78,6 +78,7 @@ describe('createBankOffer mutation guard', () => {
       partnerId: 'partner-service',
       title: 'Offer',
       interestRate: 10,
+      minDownPaymentPercent: 10,
       maxTermMonths: 240,
     });
 

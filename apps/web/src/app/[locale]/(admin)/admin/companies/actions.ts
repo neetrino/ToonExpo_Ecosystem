@@ -1,6 +1,6 @@
 'use server';
 
-import { companyUpsertInputSchema } from '@toonexpo/contracts';
+import { companyProfileUpdateInputSchema, companyUpsertInputSchema } from '@toonexpo/contracts';
 import { revalidatePath } from 'next/cache';
 
 import { assertAdminSession } from '@/lib/admin/assert-admin-session';
@@ -55,7 +55,7 @@ export async function updateCompanyAction(
     return unauthorized();
   }
 
-  const parsed = companyUpsertInputSchema.safeParse(raw);
+  const parsed = companyProfileUpdateInputSchema.safeParse(raw);
   if (!parsed.success || !parsed.data.companyId) {
     return invalidInput();
   }

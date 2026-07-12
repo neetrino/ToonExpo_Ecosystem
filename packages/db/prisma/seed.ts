@@ -193,8 +193,27 @@ async function upsertApartmentMedia(
 async function upsertDemoCompany(): Promise<Company> {
   return prisma.company.upsert({
     where: { slug: DEMO_COMPANY_SLUG },
-    update: { name: DEMO_COMPANY_NAME },
-    create: { name: DEMO_COMPANY_NAME, slug: DEMO_COMPANY_SLUG },
+    update: {
+      name: DEMO_COMPANY_NAME,
+      description: 'Sunrise Development builds premium residential projects in central Yerevan.',
+      logoUrl: 'https://picsum.photos/seed/sunrise-builder/200/200',
+      phone: '+37410000010',
+      email: 'info@sunrise-demo.local',
+      website: 'https://example.com/sunrise-development',
+      city: 'Yerevan',
+      address: '12 Abovyan Street, Yerevan 0001',
+    },
+    create: {
+      name: DEMO_COMPANY_NAME,
+      slug: DEMO_COMPANY_SLUG,
+      description: 'Sunrise Development builds premium residential projects in central Yerevan.',
+      logoUrl: 'https://picsum.photos/seed/sunrise-builder/200/200',
+      phone: '+37410000010',
+      email: 'info@sunrise-demo.local',
+      website: 'https://example.com/sunrise-development',
+      city: 'Yerevan',
+      address: '12 Abovyan Street, Yerevan 0001',
+    },
   });
 }
 

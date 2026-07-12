@@ -206,7 +206,14 @@
         "fields": {
           "name": "Name",
           "slug": "Slug",
-          "slugHint": "Slug is set at creation and cannot be changed."
+          "slugHint": "Slug is set at creation and cannot be changed.",
+          "description": "Description",
+          "logoUrl": "Logo URL",
+          "phone": "Phone",
+          "email": "Email",
+          "website": "Website",
+          "city": "City",
+          "address": "Address"
         }
       }
     },
@@ -533,7 +540,8 @@
       "projects": "Projects",
       "crm": "CRM",
       "readiness": "Readiness",
-      "analytics": "Analytics"
+      "analytics": "Analytics",
+      "company": "Company"
     },
     "overview": {
       "title": "Overview",
@@ -541,6 +549,50 @@
         "draft": "Draft",
         "published": "Published",
         "archived": "Archived"
+      }
+    },
+    "company": {
+      "title": "Company",
+      "subtitle": "Your company profile and team members.",
+      "profileTitle": "Company profile",
+      "editProfile": "Edit profile",
+      "profileMissing": "Company profile could not be loaded.",
+      "teamTitle": "Team",
+      "teamEmpty": "No team members are linked to this company yet.",
+      "noValue": "—",
+      "fields": {
+        "description": "Description",
+        "phone": "Phone",
+        "email": "Email",
+        "website": "Website",
+        "location": "Location"
+      },
+      "columns": {
+        "name": "Name",
+        "email": "Email",
+        "role": "Role",
+        "joinedAt": "Joined"
+      },
+      "roles": {
+        "BIGPROJECTS_ADMIN": "BigProjects admin",
+        "BUILDER": "Builder",
+        "PARTNER": "Partner",
+        "BUYER": "Buyer",
+        "ENTRANCE_STAFF": "Entrance staff"
+      },
+      "form": {
+        "title": "Edit company profile",
+        "submit": "Save",
+        "fields": {
+          "name": "Company name",
+          "description": "Description",
+          "logoUrl": "Logo URL",
+          "phone": "Phone",
+          "email": "Email",
+          "website": "Website",
+          "city": "City",
+          "address": "Address"
+        }
       }
     },
     "readiness": {
@@ -939,6 +991,12 @@
         "priceAmd": "Price",
         "status": "Status",
         "request": "Request"
+      },
+      "builder": {
+        "title": "About the builder",
+        "phone": "Phone",
+        "email": "Email",
+        "website": "Website"
       }
     },
     "apartment": {

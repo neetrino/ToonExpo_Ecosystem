@@ -10,6 +10,7 @@ import {
   updateBuildingAction,
   updateFloorAction,
   updateProjectAction,
+  updateCompanyProfileAction,
   upsertApartmentAction,
 } from '@/app/[locale]/(builder)/portal/actions';
 
@@ -142,6 +143,24 @@ export async function upsertApartmentFormAction(
     priceVisibility: getFormString(formData, 'priceVisibility'),
     matterportUrl: getOptionalFormString(formData, 'matterportUrl'),
     status: getFormString(formData, 'status'),
+  });
+  return toFormState(result);
+}
+
+export async function updateCompanyProfileFormAction(
+  locale: string,
+  _prevState: BuilderFormActionState,
+  formData: FormData,
+): Promise<BuilderFormActionState> {
+  const result = await updateCompanyProfileAction(locale, {
+    name: getFormString(formData, 'name'),
+    description: getOptionalFormString(formData, 'description'),
+    logoUrl: getOptionalFormString(formData, 'logoUrl'),
+    phone: getOptionalFormString(formData, 'phone'),
+    email: getOptionalFormString(formData, 'email'),
+    website: getOptionalFormString(formData, 'website'),
+    city: getOptionalFormString(formData, 'city'),
+    address: getOptionalFormString(formData, 'address'),
   });
   return toFormState(result);
 }

@@ -60,6 +60,13 @@ export const publicProjectDetailSchema = publicProjectSummarySchema.extend({
   address: z.string().nullable(),
   media: z.array(publicMediaAssetSchema),
   buildings: z.array(publicBuildingSchema),
+  companyDescription: z.string().nullable(),
+  companyLogoUrl: z.string().nullable(),
+  companyPhone: z.string().nullable(),
+  companyEmail: z.string().nullable(),
+  companyWebsite: z.string().nullable(),
+  companyCity: z.string().nullable(),
+  companyAddress: z.string().nullable(),
 });
 
 export type PublicProjectDetail = z.infer<typeof publicProjectDetailSchema>;

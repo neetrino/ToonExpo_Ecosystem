@@ -13,6 +13,7 @@ vi.mock('@/lib/builder/mutations', () => ({
   createFloor: vi.fn(),
   updateFloor: vi.fn(),
   upsertApartment: vi.fn(),
+  updateCompanyProfile: vi.fn(),
 }));
 
 vi.mock('@/lib/shared/resolve-catalog-paths', () => ({
@@ -37,6 +38,7 @@ import {
   updateFloor,
   updateProject,
   upsertApartment,
+  updateCompanyProfile,
 } from '@/lib/builder/mutations';
 
 import {
@@ -47,6 +49,7 @@ import {
   updateBuildingAction,
   updateFloorAction,
   updateProjectAction,
+  updateCompanyProfileAction,
   upsertApartmentAction,
 } from './actions';
 
@@ -126,5 +129,13 @@ describe('builder portal actions authz', () => {
     });
     expect(result).toEqual({ ok: false, errorKey: 'unauthorized' });
     expect(upsertApartment).not.toHaveBeenCalled();
+  });
+
+  it('updateCompanyProfileAction returns unauthorized without a builder session', async () => {
+    const result = await updateCompanyProfileAction('en', {
+      name: 'Sunrise Development',
+    });
+    expect(result).toEqual({ ok: false, errorKey: 'unauthorized' });
+    expect(updateCompanyProfile).not.toHaveBeenCalled();
   });
 });

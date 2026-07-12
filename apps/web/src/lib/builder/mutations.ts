@@ -12,3 +12,4 @@ export {
 } from './inventory-mutations';
 
 export { createProject, setProjectPublication, updateProject } from './project-mutations';
+export { updateCompanyProfile } from './company-mutations';

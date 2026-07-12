@@ -58,7 +58,13 @@ export async function runRbacFlow(ctx) {
   });
 
   await runCheck('Anonymous → protected routes denied', async () => {
-    for (const path of ['/en/portal', '/en/admin', '/en/checkin', '/en/account']) {
+    for (const path of [
+      '/en/portal',
+      '/en/portal/company',
+      '/en/admin',
+      '/en/checkin',
+      '/en/account',
+    ]) {
       const res = await fetchWithJar(`${E2E_BASE_URL}${path}`, { redirect: 'manual' });
       assertDenied(res, path);
     }

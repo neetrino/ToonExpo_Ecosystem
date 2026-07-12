@@ -96,7 +96,18 @@ function CompanyRow({ locale, company, labels, formatDate }: CompanyRowProps) {
           mode="edit"
           open={editOpen}
           onClose={() => setEditOpen(false)}
-          values={{ companyId: company.id, name: company.name, slug: company.slug }}
+          values={{
+            companyId: company.id,
+            name: company.name,
+            slug: company.slug,
+            description: company.description,
+            logoUrl: company.logoUrl,
+            phone: company.phone,
+            email: company.email,
+            website: company.website,
+            city: company.city,
+            address: company.address,
+          }}
         />
       </td>
     </tr>

@@ -23,6 +23,15 @@ function getFormString(formData: FormData, key: string): string | undefined {
   return typeof value === 'string' ? value : undefined;
 }
 
+function getOptionalFormString(formData: FormData, key: string): string | undefined {
+  const value = formData.get(key);
+  if (typeof value !== 'string') {
+    return undefined;
+  }
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : undefined;
+}
+
 function toFormState(
   result: { ok: true } | { ok: false; errorKey: AdminMutationErrorKey },
 ): AdminCatalogActionState {
@@ -49,6 +58,13 @@ export async function updateCompanyFormAction(
   const result = await updateCompanyAction(locale, {
     companyId: getFormString(formData, 'companyId'),
     name: getFormString(formData, 'name'),
+    description: getOptionalFormString(formData, 'description'),
+    logoUrl: getOptionalFormString(formData, 'logoUrl'),
+    phone: getOptionalFormString(formData, 'phone'),
+    email: getOptionalFormString(formData, 'email'),
+    website: getOptionalFormString(formData, 'website'),
+    city: getOptionalFormString(formData, 'city'),
+    address: getOptionalFormString(formData, 'address'),
   });
   return toFormState(result);
 }

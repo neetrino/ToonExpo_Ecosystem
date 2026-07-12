@@ -25,7 +25,17 @@ type ProjectSummaryRow = {
   slug: string;
   name: string;
   city: string | null;
-  company: { slug: string; name: string };
+  company: {
+    slug: string;
+    name: string;
+    description?: string | null;
+    logoUrl?: string | null;
+    phone?: string | null;
+    email?: string | null;
+    website?: string | null;
+    city?: string | null;
+    address?: string | null;
+  };
   media: { url: string }[];
 };
 
@@ -120,6 +130,13 @@ function mapProjectDetail(row: ProjectDetailRow, isAuthenticated: boolean): Publ
     address: row.address,
     media: row.media.map(mapMedia),
     buildings: row.buildings.map((building) => mapBuilding(building, isAuthenticated)),
+    companyDescription: row.company.description ?? null,
+    companyLogoUrl: row.company.logoUrl ?? null,
+    companyPhone: row.company.phone ?? null,
+    companyEmail: row.company.email ?? null,
+    companyWebsite: row.company.website ?? null,
+    companyCity: row.company.city ?? null,
+    companyAddress: row.company.address ?? null,
   };
   return IS_DEV ? publicProjectDetailSchema.parse(detail) : detail;
 }
@@ -176,7 +193,19 @@ export async function getPublishedProjectBySlug(
       city: true,
       description: true,
       address: true,
-      company: { select: { slug: true, name: true } },
+      company: {
+        select: {
+          slug: true,
+          name: true,
+          description: true,
+          logoUrl: true,
+          phone: true,
+          email: true,
+          website: true,
+          city: true,
+          address: true,
+        },
+      },
       media: {
         orderBy: { sortOrder: 'asc' },
         select: { id: true, url: true, alt: true },

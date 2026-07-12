@@ -37,6 +37,19 @@ export {
   type CompanyUpsertInput,
 } from './admin-catalog';
 export {
+  COMPANY_ADDRESS_MAX_LENGTH,
+  COMPANY_CITY_MAX_LENGTH,
+  COMPANY_DESCRIPTION_MAX_LENGTH,
+  COMPANY_EMAIL_MAX_LENGTH,
+  COMPANY_LOGO_URL_MAX_LENGTH,
+  COMPANY_PHONE_MAX_LENGTH,
+  COMPANY_WEBSITE_MAX_LENGTH,
+  companyProfileUpdateInputSchema,
+  publicCompanyProfileSchema,
+  type CompanyProfileUpdateInput,
+  type PublicCompanyProfile,
+} from './company';
+export {
   APARTMENT_AREA_SQM_MAX,
   APARTMENT_CODE_MAX_LENGTH,
   APARTMENT_MATTERPORT_URL_MAX_LENGTH,

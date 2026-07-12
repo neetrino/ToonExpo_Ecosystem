@@ -75,6 +75,7 @@ describe('createBankOffer', () => {
       partnerId: 'partner-1',
       title: 'Offer',
       interestRate: 10,
+      minDownPaymentPercent: 10,
       maxTermMonths: 240,
     });
 

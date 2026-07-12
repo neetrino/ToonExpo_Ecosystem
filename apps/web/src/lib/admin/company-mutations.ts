@@ -1,10 +1,23 @@
-import type { CompanyUpsertInput } from '@toonexpo/contracts';
+import type { CompanyProfileUpdateInput, CompanyUpsertInput } from '@toonexpo/contracts';
 import { slugifyCompanyName } from '@toonexpo/contracts';
 import { prisma, Prisma } from '@toonexpo/db';
 
 import { allocateUniqueSlug } from '@/lib/shared/unique-slug';
 
 import { type AdminMutationResult, UNIQUE_CONSTRAINT_ERROR } from './mutation-result';
+
+function toCompanyProfileWriteData(input: CompanyProfileUpdateInput) {
+  return {
+    name: input.name,
+    description: input.description ?? null,
+    logoUrl: input.logoUrl ?? null,
+    phone: input.phone ?? null,
+    email: input.email ?? null,
+    website: input.website ?? null,
+    city: input.city ?? null,
+    address: input.address ?? null,
+  };
+}
 
 export async function createCompany(
   input: CompanyUpsertInput,
@@ -39,11 +52,11 @@ export async function createCompany(
 }
 
 export async function updateCompany(
-  input: CompanyUpsertInput & { companyId: string },
+  input: CompanyProfileUpdateInput & { companyId: string },
 ): Promise<AdminMutationResult<{ companyId: string }>> {
   const result = await prisma.company.updateMany({
     where: { id: input.companyId },
-    data: { name: input.name },
+    data: toCompanyProfileWriteData(input),
   });
 
   if (result.count === 0) {

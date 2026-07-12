@@ -11,6 +11,7 @@ import { getPublishedProjectBySlug } from '@/lib/catalog/queries';
 import { loadProjectVisualMaps } from '@/lib/visual-map/load-project-visual-maps';
 
 import { ProjectBuildings } from './project-buildings';
+import { ProjectBuilderBlock } from './project-builder-block';
 import { ProjectGallery } from './project-gallery';
 import { PublicVisualCanvas } from '@/components/visual-map/public-visual-canvas';
 
@@ -27,6 +28,7 @@ function ProjectDetailView({
   buildingsLabel,
   visualMapLabel,
   floorPlanLabel,
+  builderLabels,
   prefill,
   projectCanvas,
   floorCanvases,
@@ -50,6 +52,13 @@ function ProjectDetailView({
   buildingsLabel: string;
   visualMapLabel: string;
   floorPlanLabel: string;
+  builderLabels: {
+    title: string;
+    phone: string;
+    email: string;
+    website: string;
+    noValue: string;
+  };
   prefill?: { name?: string; email?: string; phone?: string };
   projectCanvas: PublicCanvas | null;
   floorCanvases: Record<string, PublicCanvas>;
@@ -81,6 +90,15 @@ function ProjectDetailView({
         media={project.media}
         projectName={project.name}
         galleryLabel={galleryLabel}
+      />
+      <ProjectBuilderBlock
+        companyName={project.companyName}
+        companyDescription={project.companyDescription}
+        companyLogoUrl={project.companyLogoUrl}
+        companyPhone={project.companyPhone}
+        companyEmail={project.companyEmail}
+        companyWebsite={project.companyWebsite}
+        labels={builderLabels}
       />
       {projectCanvas ? <PublicVisualCanvas canvas={projectCanvas} title={visualMapLabel} /> : null}
       <ProjectBuildings
@@ -172,6 +190,13 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
         buildingsLabel={t('detail.buildings')}
         visualMapLabel={t('visualMap.projectTitle')}
         floorPlanLabel={t('visualMap.floorTitle')}
+        builderLabels={{
+          title: t('detail.builder.title'),
+          phone: t('detail.builder.phone'),
+          email: t('detail.builder.email'),
+          website: t('detail.builder.website'),
+          noValue: t('detail.noValue'),
+        }}
         prefill={prefill}
         projectCanvas={projectCanvas}
         floorCanvases={floorCanvases}

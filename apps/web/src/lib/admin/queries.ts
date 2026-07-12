@@ -7,6 +7,13 @@ export type AdminCompanyRow = {
   id: string;
   name: string;
   slug: string;
+  description: string | null;
+  logoUrl: string | null;
+  phone: string | null;
+  email: string | null;
+  website: string | null;
+  city: string | null;
+  address: string | null;
   membersCount: number;
   projectsCount: ProjectStatusCounts;
   createdAt: Date;
@@ -91,6 +98,13 @@ export async function loadAllCompanies(): Promise<AdminCompanyRow[]> {
         id: true,
         name: true,
         slug: true,
+        description: true,
+        logoUrl: true,
+        phone: true,
+        email: true,
+        website: true,
+        city: true,
+        address: true,
         createdAt: true,
         _count: { select: { members: true } },
       },
@@ -114,6 +128,13 @@ export async function loadAllCompanies(): Promise<AdminCompanyRow[]> {
     id: company.id,
     name: company.name,
     slug: company.slug,
+    description: company.description,
+    logoUrl: company.logoUrl,
+    phone: company.phone,
+    email: company.email,
+    website: company.website,
+    city: company.city,
+    address: company.address,
     membersCount: company._count.members,
     projectsCount: countsByCompany.get(company.id) ?? emptyProjectStatusCounts(),
     createdAt: company.createdAt,
