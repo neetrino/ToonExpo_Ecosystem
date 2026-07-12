@@ -1,12 +1,30 @@
-import { ServiceUnavailableException, UnauthorizedException } from '@nestjs/common';
+import { createHash } from 'node:crypto';
+
+import { HttpException, ServiceUnavailableException, UnauthorizedException } from '@nestjs/common';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { loadApiEnv } = vi.hoisted(() => ({
+const { loadApiEnv, allowBosProvisioningRequest } = vi.hoisted(() => ({
   loadApiEnv: vi.fn(),
+  allowBosProvisioningRequest: vi.fn(),
 }));
 
 vi.mock('../../../common/env', () => ({
   loadApiEnv,
+}));
+
+vi.mock('../../../common/rate-limit', () => ({
+  allowBosProvisioningRequest,
+  bosRateLimitKey: (apiKeyHeader: string | undefined, ip: string) => {
+    if (apiKeyHeader) {
+      const fingerprint = createHash('sha256')
+        .update(apiKeyHeader, 'utf8')
+        .digest('hex')
+        .slice(0, 16);
+      return `key:${fingerprint}`;
+    }
+    return `ip:${ip || 'unknown'}`;
+  },
+  RATE_LIMITED_HTTP_CODE: 'RATE_LIMITED',
 }));
 
 import { checkBosApiKey } from './bos-api-key';
@@ -42,6 +60,7 @@ describe('BosApiKeyGuard', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    allowBosProvisioningRequest.mockResolvedValue(true);
   });
 
   function contextWithHeader(header: string | undefined) {
@@ -49,35 +68,46 @@ describe('BosApiKeyGuard', () => {
       switchToHttp: () => ({
         getRequest: () => ({
           header: (name: string) => (name.toLowerCase() === 'x-bos-api-key' ? header : undefined),
+          headers: {},
+          ip: '127.0.0.1',
         }),
       }),
     };
   }
 
-  it('throws 503 INTEGRATION_DISABLED when BOS_API_KEY is unset', () => {
+  it('throws 503 INTEGRATION_DISABLED when BOS_API_KEY is unset', async () => {
     loadApiEnv.mockReturnValue({ BOS_API_KEY: undefined });
-    expect(() => guard.canActivate(contextWithHeader('any') as never)).toThrow(
+    await expect(guard.canActivate(contextWithHeader('any') as never)).rejects.toBeInstanceOf(
       ServiceUnavailableException,
     );
-    try {
-      guard.canActivate(contextWithHeader('any') as never);
-    } catch (error) {
-      expect(error).toBeInstanceOf(ServiceUnavailableException);
-      expect((error as ServiceUnavailableException).getResponse()).toMatchObject({
-        code: 'INTEGRATION_DISABLED',
-      });
-    }
   });
 
-  it('throws 401 when key is invalid', () => {
+  it('throws 401 when key is invalid', async () => {
     loadApiEnv.mockReturnValue({ BOS_API_KEY: 'correct' });
-    expect(() => guard.canActivate(contextWithHeader('wrong') as never)).toThrow(
+    await expect(guard.canActivate(contextWithHeader('wrong') as never)).rejects.toBeInstanceOf(
       UnauthorizedException,
     );
   });
 
-  it('returns true when key matches', () => {
+  it('returns true when key matches and rate limit allows', async () => {
     loadApiEnv.mockReturnValue({ BOS_API_KEY: 'correct' });
-    expect(guard.canActivate(contextWithHeader('correct') as never)).toBe(true);
+    await expect(guard.canActivate(contextWithHeader('correct') as never)).resolves.toBe(true);
+    expect(allowBosProvisioningRequest).toHaveBeenCalled();
+  });
+
+  it('throws 429 RATE_LIMITED when provisioning is rate limited', async () => {
+    loadApiEnv.mockReturnValue({ BOS_API_KEY: 'correct' });
+    allowBosProvisioningRequest.mockResolvedValue(false);
+
+    try {
+      await guard.canActivate(contextWithHeader('correct') as never);
+      expect.unreachable('expected rate limit exception');
+    } catch (error) {
+      expect(error).toBeInstanceOf(HttpException);
+      expect((error as HttpException).getStatus()).toBe(429);
+      expect((error as HttpException).getResponse()).toMatchObject({
+        code: 'RATE_LIMITED',
+      });
+    }
   });
 });

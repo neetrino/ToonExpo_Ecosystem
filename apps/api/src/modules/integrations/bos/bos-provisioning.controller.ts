@@ -42,6 +42,7 @@ export class BosProvisioningController {
   @ApiResponse({ status: 400, description: 'Validation error' })
   @ApiResponse({ status: 401, description: 'Missing or invalid API key' })
   @ApiResponse({ status: 409, description: 'Email already registered' })
+  @ApiResponse({ status: 429, description: 'Rate limited' })
   @ApiResponse({ status: 503, description: 'Integration disabled (BOS_API_KEY unset)' })
   async provision(
     @Body() body: unknown,
