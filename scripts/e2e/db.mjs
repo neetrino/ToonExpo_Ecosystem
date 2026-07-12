@@ -115,6 +115,62 @@ export async function countUsersByEmail(email) {
   return prisma.user.count({ where: { email: email.toLowerCase() } });
 }
 
+const E2E_EMAIL_DOMAIN = '@e2e.toonexpo.local';
+const E2E_MARKER_PREFIX = 'e2e-';
+
+/**
+ * Remove ALL smoke leftovers (any runId). Safe: only rows tagged with e2e- /
+ * @e2e.toonexpo.local. Call before a suite so stale ProvisioningRequest /
+ * IntegrationAuditLog / users cannot collide with a new run.
+ */
+export async function cleanupAllE2eData() {
+  const prisma = getPrisma();
+
+  await prisma.integrationAuditLog.deleteMany({
+    where: {
+      OR: [
+        { requestId: { startsWith: E2E_MARKER_PREFIX } },
+        { externalRef: { startsWith: E2E_MARKER_PREFIX } },
+      ],
+    },
+  });
+  await prisma.provisioningRequest.deleteMany({
+    where: { requestId: { startsWith: E2E_MARKER_PREFIX } },
+  });
+
+  const users = await prisma.user.findMany({
+    where: {
+      OR: [{ email: { endsWith: E2E_EMAIL_DOMAIN } }, { email: { startsWith: E2E_MARKER_PREFIX } }],
+    },
+    select: { id: true },
+  });
+  const userIds = users.map((u) => u.id);
+
+  if (userIds.length > 0) {
+    await prisma.deal.deleteMany({
+      where: {
+        OR: [{ buyerUserId: { in: userIds } }, { contactEmail: { endsWith: E2E_EMAIL_DOMAIN } }],
+      },
+    });
+    await prisma.user.deleteMany({ where: { id: { in: userIds } } });
+  }
+
+  const companies = await prisma.company.findMany({
+    where: {
+      OR: [
+        { name: { startsWith: E2E_MARKER_PREFIX } },
+        { slug: { startsWith: E2E_MARKER_PREFIX } },
+      ],
+    },
+    select: { id: true },
+  });
+  const companyIds = companies.map((c) => c.id);
+  if (companyIds.length > 0) {
+    await prisma.partner.deleteMany({ where: { companyId: { in: companyIds } } });
+    await prisma.company.deleteMany({ where: { id: { in: companyIds } } });
+  }
+}
+
 /**
  * Delete throwaway rows created during a smoke run.
  * @param {{ runId: string; emails?: string[]; requestIds?: string[]; companyIds?: string[]; userIds?: string[]; dealIds?: string[] }} markers

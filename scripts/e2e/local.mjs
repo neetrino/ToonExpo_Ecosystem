@@ -2,7 +2,7 @@
  * Convenience: build → start web:3010 + api:4010 → run smoke → kill servers.
  * Usage: pnpm e2e:local
  */
-import { spawn } from 'node:child_process';
+import { execFileSync, spawn } from 'node:child_process';
 import { resolve } from 'node:path';
 
 import {
@@ -13,11 +13,15 @@ import {
   READY_TIMEOUT_MS,
   ROOT,
 } from './config.mjs';
-import { waitForReady } from './http.mjs';
 
 /** @type {import('node:child_process').ChildProcess[]} */
 const children = [];
 let shuttingDown = false;
+/** @type {Error | null} */
+let serverFailed = null;
+
+const PORT_FREE_WAIT_MS = 500;
+const PORT_FREE_ATTEMPTS = 10;
 
 function killChildren() {
   if (shuttingDown) return;
@@ -47,6 +51,75 @@ process.on('SIGTERM', () => {
 });
 
 /**
+ * @param {number} port
+ * @returns {number[]}
+ */
+function listenPids(port) {
+  try {
+    const out = execFileSync('lsof', ['-nP', `-iTCP:${port}`, '-sTCP:LISTEN', '-t'], {
+      encoding: 'utf8',
+    }).trim();
+    if (!out) return [];
+    return out
+      .split('\n')
+      .map((line) => Number(line.trim()))
+      .filter((pid) => Number.isFinite(pid) && pid > 0);
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Free a TCP listen port so e2e does not silently attach to a leftover process
+ * (e.g. API without BOS_API_KEY=e2e-test-key → exactly 2 BOS FAILs).
+ * @param {number} port
+ */
+async function freeListenPort(port) {
+  for (let attempt = 0; attempt < PORT_FREE_ATTEMPTS; attempt += 1) {
+    const pids = listenPids(port);
+    if (pids.length === 0) return;
+    const signal = attempt < PORT_FREE_ATTEMPTS / 2 ? 'SIGTERM' : 'SIGKILL';
+    console.log(`Freeing :${port} (pids ${pids.join(', ')}, ${signal})…`);
+    for (const pid of pids) {
+      try {
+        process.kill(pid, signal);
+      } catch {
+        /* already gone */
+      }
+    }
+    await new Promise((r) => setTimeout(r, PORT_FREE_WAIT_MS));
+  }
+  const leftover = listenPids(port);
+  if (leftover.length > 0) {
+    throw new Error(`Could not free port ${port}; still held by pids ${leftover.join(', ')}`);
+  }
+}
+
+/**
+ * Confirm the API we reached accepts the e2e BOS key (not a leftover process).
+ * @param {string} apiUrl
+ * @param {string} apiKey
+ */
+async function assertBosKeyAccepted(apiUrl, apiKey) {
+  const res = await fetch(`${apiUrl}/integrations/bos/provisioning`, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      'x-bos-api-key': apiKey,
+    },
+    body: '{}',
+  });
+  if (res.status === 401 || res.status === 503) {
+    const body = await res.text().catch(() => '');
+    throw new Error(
+      `API at ${apiUrl} rejected e2e BOS key (HTTP ${res.status}). ` +
+        `Likely a leftover process on the port without BOS_API_KEY=${apiKey}. ` +
+        `Body: ${body.slice(0, 300)}`,
+    );
+  }
+}
+
+/**
  * @param {string} command
  * @param {string[]} args
  * @param {NodeJS.ProcessEnv} [env]
@@ -67,7 +140,16 @@ function spawnLogged(command, args, env = {}, cwd = ROOT) {
   child.stderr?.on('data', (buf) => {
     process.stderr.write(`[${tag}] ${buf}`);
   });
+  child.on('exit', (code, signal) => {
+    if (!shuttingDown) {
+      serverFailed = new Error(`${tag} exited early (code=${code}, signal=${signal})`);
+    }
+  });
   return child;
+}
+
+function throwIfServerFailed() {
+  if (serverFailed) throw serverFailed;
 }
 
 /**
@@ -89,15 +171,44 @@ function runSync(args, cwd = ROOT, extraEnv = {}) {
   });
 }
 
+/**
+ * @param {string} url
+ * @param {number} timeoutMs
+ * @param {number} intervalMs
+ * @param {(res: Response) => boolean | Promise<boolean>} [ok]
+ */
+async function waitForReadyOrFail(url, timeoutMs, intervalMs, ok) {
+  const start = Date.now();
+  let lastError = '';
+  while (Date.now() - start < timeoutMs) {
+    throwIfServerFailed();
+    try {
+      const res = await fetch(url, { redirect: 'manual' });
+      if (await (ok ?? ((r) => r.ok))(res)) return;
+      lastError = `status ${res.status}`;
+    } catch (err) {
+      lastError = err instanceof Error ? err.message : String(err);
+    }
+    await new Promise((r) => setTimeout(r, intervalMs));
+  }
+  throw new Error(`Timed out waiting for ${url} (${lastError})`);
+}
+
 async function main() {
-  console.log('e2e:local — building web + api…');
+  const webPort = Number(new URL(E2E_BASE_URL).port || '3010');
+  const apiPort = Number(new URL(E2E_API_URL).port || '4010');
+  const apiUrl = E2E_API_URL;
+
+  console.log(`e2e:local — freeing :${apiPort} and :${webPort}…`);
+  await freeListenPort(apiPort);
+  await freeListenPort(webPort);
+
+  console.log('e2e:local — prisma generate + building web + api…');
+  await runSync(['db:generate']);
   // Root .env may set NODE_ENV=development; Next production build requires production.
   await runSync(['--filter', '@toonexpo/web', '--filter', '@toonexpo/api', 'build'], ROOT, {
     NODE_ENV: 'production',
   });
-
-  const webPort = new URL(E2E_BASE_URL).port || '3010';
-  const apiUrl = E2E_API_URL;
 
   console.log(`Starting API on ${apiUrl} (BOS_API_KEY inline)…`);
   spawnLogged(
@@ -115,22 +226,24 @@ async function main() {
   console.log(`Starting web on ${E2E_BASE_URL}…`);
   spawnLogged(
     'pnpm',
-    ['exec', 'next', 'start', '--port', webPort],
+    ['exec', 'next', 'start', '--port', String(webPort)],
     {
       APP_URL: E2E_BASE_URL,
       AUTH_URL: E2E_BASE_URL,
       NODE_ENV: 'production',
-      PORT: webPort,
+      PORT: String(webPort),
     },
     resolve(ROOT, 'apps/web'),
   );
 
   try {
     console.log('Waiting for readiness…');
-    await waitForReady(`${apiUrl}/health`, READY_TIMEOUT_MS, READY_POLL_MS);
-    await waitForReady(E2E_BASE_URL, READY_TIMEOUT_MS, READY_POLL_MS, (res) => {
+    await waitForReadyOrFail(`${apiUrl}/health`, READY_TIMEOUT_MS, READY_POLL_MS);
+    await waitForReadyOrFail(E2E_BASE_URL, READY_TIMEOUT_MS, READY_POLL_MS, (res) => {
       return res.status === 307 || res.status === 308 || res.status === 200;
     });
+    throwIfServerFailed();
+    await assertBosKeyAccepted(apiUrl, E2E_BOS_API_KEY);
     console.log('Servers ready — running suite…\n');
 
     await runSync(['e2e']);

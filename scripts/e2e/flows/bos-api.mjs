@@ -41,12 +41,14 @@ export async function runBosApiFlow(ctx) {
 
   await runCheck('BOS no key → 401', async () => {
     const res = await postProvisioning(undefined, payload);
-    assert(res.status === 401, `expected 401, got ${res.status}`);
+    const body = await res.text().catch(() => '');
+    assert(res.status === 401, `expected 401, got ${res.status} body=${body.slice(0, 300)}`);
   });
 
   await runCheck('BOS wrong key → 401', async () => {
     const res = await postProvisioning('wrong-key', payload);
-    assert(res.status === 401, `expected 401, got ${res.status}`);
+    const body = await res.text().catch(() => '');
+    assert(res.status === 401, `expected 401, got ${res.status} body=${body.slice(0, 300)}`);
   });
 
   /** @type {Record<string, unknown> | null} */
@@ -54,9 +56,13 @@ export async function runBosApiFlow(ctx) {
 
   await runCheck('BOS valid key → success', async () => {
     const res = await postProvisioning(E2E_BOS_API_KEY, payload);
-    assert(res.status === 201 || res.status === 200, `expected 201/200, got ${res.status}`);
-    created = /** @type {Record<string, unknown>} */ (await res.json());
-    assert(created.status === 'success', `status=${created.status}`);
+    const bodyText = await res.text();
+    assert(
+      res.status === 201 || res.status === 200,
+      `expected 201/200, got ${res.status} body=${bodyText.slice(0, 300)}`,
+    );
+    created = /** @type {Record<string, unknown>} */ (JSON.parse(bodyText));
+    assert(created.status === 'success', `status=${created.status} body=${bodyText.slice(0, 300)}`);
     assert(typeof created.primaryUserId === 'string', 'primaryUserId missing');
     assert(typeof created.toonexpoCompanyId === 'string', 'companyId missing');
     ctx.track({
@@ -67,9 +73,10 @@ export async function runBosApiFlow(ctx) {
 
   await runCheck('BOS replay → idempotent:true', async () => {
     const res = await postProvisioning(E2E_BOS_API_KEY, payload);
-    assert(res.status === 200, `expected 200, got ${res.status}`);
-    const body = /** @type {Record<string, unknown>} */ (await res.json());
-    assert(body.idempotent === true, `expected idempotent:true, got ${JSON.stringify(body)}`);
+    const bodyText = await res.text();
+    assert(res.status === 200, `expected 200, got ${res.status} body=${bodyText.slice(0, 300)}`);
+    const body = /** @type {Record<string, unknown>} */ (JSON.parse(bodyText));
+    assert(body.idempotent === true, `expected idempotent:true, got ${bodyText.slice(0, 300)}`);
     assert(body.primaryUserId === created?.primaryUserId, 'replay user mismatch');
   });
 

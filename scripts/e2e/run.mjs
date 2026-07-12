@@ -3,7 +3,7 @@
  * Usage: pnpm e2e
  */
 import { E2E_API_URL, E2E_BASE_URL } from './config.mjs';
-import { cleanupE2eData, disconnectPrisma } from './db.mjs';
+import { cleanupAllE2eData, cleanupE2eData, disconnectPrisma } from './db.mjs';
 import { runAnalyticsFlow } from './flows/analytics.mjs';
 import { runBosApiFlow } from './flows/bos-api.mjs';
 import { runBuyerJourneyFlow } from './flows/buyer-journey.mjs';
@@ -48,6 +48,10 @@ async function main() {
   };
 
   try {
+    console.log('\n[cleanup] pre-run: removing stale e2e-* rows…');
+    await cleanupAllE2eData();
+    console.log('  pre-run cleanup done');
+
     await runPublicCatalogFlow();
     await runBuyerJourneyFlow({
       runId,
@@ -63,6 +67,7 @@ async function main() {
     console.log('\n[cleanup] removing e2e-* rows…');
     try {
       await cleanupE2eData({ runId, ...cleanup });
+      await cleanupAllE2eData();
       console.log('  cleanup done');
     } catch (err) {
       console.error('  cleanup failed:', err instanceof Error ? err.message : err);
