@@ -75,7 +75,8 @@
       "projects": "Նախագծեր",
       "readiness": "Պատրաստվածություն",
       "exhibition": "Ցուցահանդես",
-      "analytics": "Վերլուծություն"
+      "analytics": "Վերլուծություն",
+      "integrations": "Ինտեգրումներ"
     },
     "catalog": {
       "errors": {
@@ -391,6 +392,29 @@
           "staff": "Աշխատակից",
           "checkedInAt": "Ժամանակ"
         }
+      }
+    },
+
+    "integrations": {
+      "title": "Ինտեգրումներ",
+      "subtitle": "BOS և արտաքին ինտեգրումների վերջին աուդիտ իրադարձությունները։",
+      "empty": "Ինտեգրման իրադարձություններ դեռ չկան։",
+      "externalRefEmpty": "—",
+      "columns": {
+        "createdAt": "Երբ",
+        "direction": "Ուղղություն",
+        "operation": "Գործողություն",
+        "status": "Կարգավիճակ",
+        "externalRef": "Արտաքին ref"
+      },
+      "directions": {
+        "INBOUND": "Մուտքային",
+        "OUTBOUND": "Ելքային"
+      },
+      "statuses": {
+        "RECEIVED": "Ստացված",
+        "SUCCEEDED": "Հաջող",
+        "FAILED": "Ձախողված"
       }
     },
     "analytics": {

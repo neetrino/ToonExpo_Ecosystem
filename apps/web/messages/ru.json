@@ -75,7 +75,8 @@
       "projects": "Проекты",
       "readiness": "Готовность",
       "exhibition": "Выставка",
-      "analytics": "Аналитика"
+      "analytics": "Аналитика",
+      "integrations": "Интеграции"
     },
     "catalog": {
       "errors": {
@@ -391,6 +392,29 @@
           "staff": "Сотрудник",
           "checkedInAt": "Время"
         }
+      }
+    },
+
+    "integrations": {
+      "title": "Интеграции",
+      "subtitle": "Недавние события аудита BOS и внешних интеграций.",
+      "empty": "Событий интеграции пока нет.",
+      "externalRefEmpty": "—",
+      "columns": {
+        "createdAt": "Когда",
+        "direction": "Направление",
+        "operation": "Операция",
+        "status": "Статус",
+        "externalRef": "Внешний ref"
+      },
+      "directions": {
+        "INBOUND": "Входящий",
+        "OUTBOUND": "Исходящий"
+      },
+      "statuses": {
+        "RECEIVED": "Получено",
+        "SUCCEEDED": "Успех",
+        "FAILED": "Ошибка"
       }
     },
     "analytics": {

@@ -8,6 +8,8 @@ export const apiEnvSchema = z.object({
   DATABASE_URL: z.string().min(1),
   DIRECT_URL: z.preprocess(emptyToUndefined, z.string().url().optional()),
   AUTH_SECRET: z.string().min(32),
+  /** Shared secret for BOS inbound integration. Empty/unset disables the endpoint (503). */
+  BOS_API_KEY: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
   RESEND_API_KEY: z.preprocess(emptyToUndefined, z.string().optional()),
   RESEND_FROM_EMAIL: z.preprocess(emptyToUndefined, z.string().email().optional()),
   R2_ACCOUNT_ID: z.preprocess(emptyToUndefined, z.string().optional()),

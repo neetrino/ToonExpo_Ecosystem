@@ -29,6 +29,15 @@ async function bootstrap(): Promise<void> {
     .setTitle(APP_NAME)
     .setDescription('ToonExpo Ecosystem API')
     .setVersion('0.1.0')
+    .addApiKey(
+      {
+        type: 'apiKey',
+        in: 'header',
+        name: 'x-bos-api-key',
+        description: 'Shared secret for BOS inbound integration (BOS_API_KEY)',
+      },
+      'bos-api-key',
+    )
     .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('docs', app, document);

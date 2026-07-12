@@ -105,6 +105,19 @@ enum AnalyticsEventType {
   APARTMENT_VIEW
 }
 
+/// Integration audit direction (v1). Docs: 15-Integrations/05-Errors-Idempotency-And-Audit.
+enum IntegrationDirection {
+  INBOUND
+  OUTBOUND
+}
+
+/// Integration audit status (v1). Docs: 15-Integrations/05-Errors-Idempotency-And-Audit.
+enum IntegrationAuditStatus {
+  RECEIVED
+  SUCCEEDED
+  FAILED
+}
+
 
 
 model User {
@@ -616,4 +629,50 @@ model AnalyticsEvent {
   @@index([companyId, type, createdAt])
   @@index([projectId])
   @@index([createdAt])
+}
+
+/// Append-only integration audit trail (v1).
+/// Payload must never include secrets or unnecessary PII.
+/// Docs: 15-Integrations/05-Errors-Idempotency-And-Audit.
+model IntegrationAuditLog {
+  id          String                  @id @default(cuid())
+  direction   IntegrationDirection
+  operation   String
+  /// Typically the idempotency requestId from the external system.
+  externalRef String?
+  requestId   String?
+  status      IntegrationAuditStatus
+  message     String?
+  /// Minimal safe snapshot (ids, type, modules) — never passwords/API keys.
+  payload     Json?
+  createdAt   DateTime                @default(now())
+
+  @@index([createdAt])
+  @@index([operation, createdAt])
+  @@index([externalRef])
+  @@index([requestId])
+  @@index([status, createdAt])
+}
+
+/// Idempotency store for BOS account provisioning (v1).
+/// Same requestId returns the original result without duplicating accounts.
+/// Docs: 15-Integrations/02-BOS-Account-Provisioning + 05-Errors-Idempotency-And-Audit.
+model ProvisioningRequest {
+  id                  String   @id @default(cuid())
+  requestId           String   @unique
+  bosCompanyId        String
+  primaryContactEmail String
+  /// success | linked_existing | failed — matches BOS response status.
+  status              String
+  toonexpoCompanyId   String?
+  primaryUserId       String?
+  errorMessage        String?
+  /// Full Account Creation Result body for idempotent replay.
+  responseSnapshot    Json
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([bosCompanyId])
+  @@index([primaryContactEmail])
+  @@index([status])
 }

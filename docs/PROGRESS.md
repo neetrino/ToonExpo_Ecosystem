@@ -2,7 +2,7 @@
 
 ## Current Status
 
-Sprint 6 **IN PROGRESS** — Analytics v1 (event tracking + aggregation + dashboards).
+Sprint 6 **IN PROGRESS** — Analytics v1 + BOS account provisioning.
 
 ## Sprint 6 — Analytics v1
 
@@ -10,6 +10,14 @@ Sprint 6 **IN PROGRESS** — Analytics v1 (event tracking + aggregation + dashbo
 - **Aggregation** — admin global + builder company-scoped queries (`lib/analytics/*`).
 - **Dashboards** — `/admin/analytics`, `/portal/analytics` with i18n en/ru/hy.
 - **Deferred** — favorites, booth/route map events, mortgage offer selection instrumentation, dedicated apartment/building/floor/partner/builder profile view pages, AnalyticsDailyAggregate.
+
+## Sprint 6 — BOS Integration (inbound provisioning)
+
+- **API** — `POST /integrations/bos/provisioning` (NestJS); `X-BOS-API-KEY` / optional `BOS_API_KEY` (503 when unset).
+- **Idempotency** — `ProvisioningRequest.requestId` unique; replay returns original result.
+- **Audit** — `IntegrationAuditLog`; admin read-only `/admin/integrations`.
+- **Result to BOS** — HTTP response is the Account Creation Result (no outbound webhook in v1).
+- **Password** — random unusable hash; invitation email deferred.
 
 ## Sprint 5 — COMPLETE
 

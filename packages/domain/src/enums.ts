@@ -134,3 +134,50 @@ export type CheckInStatus = (typeof CHECK_IN_STATUSES)[number];
 export const ANALYTICS_EVENT_TYPES = ['PROJECT_VIEW', 'APARTMENT_VIEW'] as const;
 
 export type AnalyticsEventType = (typeof ANALYTICS_EVENT_TYPES)[number];
+
+/**
+ * Integration audit log direction (v1).
+ * Docs: 15-Integrations/05-Errors-Idempotency-And-Audit.
+ */
+export const INTEGRATION_DIRECTIONS = ['INBOUND', 'OUTBOUND'] as const;
+
+export type IntegrationDirection = (typeof INTEGRATION_DIRECTIONS)[number];
+
+/**
+ * Integration audit log status (v1).
+ * Docs: 15-Integrations/05-Errors-Idempotency-And-Audit.
+ */
+export const INTEGRATION_AUDIT_STATUSES = ['RECEIVED', 'SUCCEEDED', 'FAILED'] as const;
+
+export type IntegrationAuditStatus = (typeof INTEGRATION_AUDIT_STATUSES)[number];
+
+/**
+ * BOS provisioning result status returned to BOS (v1).
+ * Docs: 15-Integrations/02-BOS-Account-Provisioning + 03-Integration-With-BOS/03-Integration-Contracts.
+ */
+export const BOS_PROVISIONING_STATUSES = ['success', 'linked_existing', 'failed'] as const;
+
+export type BosProvisioningStatus = (typeof BOS_PROVISIONING_STATUSES)[number];
+
+/**
+ * Company types accepted on the BOS provisioning signal (v1).
+ * Docs: 15-Integrations/02-BOS-Account-Provisioning.
+ */
+export const BOS_COMPANY_TYPES = ['builder', 'partner', 'bank'] as const;
+
+export type BosCompanyType = (typeof BOS_COMPANY_TYPES)[number];
+
+/**
+ * Recommended ToonExpo module keys on provisioning requests (v1).
+ * Stored on the audit/idempotency snapshot; role remains the access gate until module ACL exists.
+ */
+export const BOS_REQUESTED_MODULES = [
+  'builder_portal',
+  'constructor_crm',
+  'readiness',
+  'partner_profile',
+  'bank_offers',
+  'analytics',
+] as const;
+
+export type BosRequestedModule = (typeof BOS_REQUESTED_MODULES)[number];

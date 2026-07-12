@@ -39,6 +39,9 @@ export default async function AdminAreaLayout({ children, params }: AdminLayoutP
           <Link className="portal-nav__link" href="/admin/analytics">
             {t('analytics')}
           </Link>
+          <Link className="portal-nav__link" href="/admin/integrations">
+            {t('integrations')}
+          </Link>
         </nav>
       </header>
       {children}

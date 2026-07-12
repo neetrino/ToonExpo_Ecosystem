@@ -75,7 +75,8 @@
       "projects": "Projects",
       "readiness": "Readiness",
       "exhibition": "Exhibition",
-      "analytics": "Analytics"
+      "analytics": "Analytics",
+      "integrations": "Integrations"
     },
     "catalog": {
       "errors": {
@@ -391,6 +392,29 @@
         "BUILDER": "Builder",
         "PARTNER": "Partner",
         "ENTRANCE_STAFF": "Entrance staff"
+      }
+    },
+
+    "integrations": {
+      "title": "Integrations",
+      "subtitle": "Recent BOS and external integration audit events.",
+      "empty": "No integration events yet.",
+      "externalRefEmpty": "—",
+      "columns": {
+        "createdAt": "When",
+        "direction": "Direction",
+        "operation": "Operation",
+        "status": "Status",
+        "externalRef": "External ref"
+      },
+      "directions": {
+        "INBOUND": "Inbound",
+        "OUTBOUND": "Outbound"
+      },
+      "statuses": {
+        "RECEIVED": "Received",
+        "SUCCEEDED": "Succeeded",
+        "FAILED": "Failed"
       }
     },
     "analytics": {

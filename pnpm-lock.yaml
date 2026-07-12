@@ -41,9 +41,15 @@ importers:
       '@toonexpo/db':
         specifier: workspace:*
         version: link:../../packages/db
+      '@toonexpo/domain':
+        specifier: workspace:*
+        version: link:../../packages/domain
       '@toonexpo/shared':
         specifier: workspace:*
         version: link:../../packages/shared
+      argon2:
+        specifier: ^0.44.0
+        version: 0.44.0
       dotenv:
         specifier: ^16.6.1
         version: 16.6.1
