@@ -107,6 +107,22 @@ export async function runRbacFlow(ctx) {
       const type = csv.headers.get('content-type') ?? '';
       assert(type.includes('text/csv'), `expected csv, got ${type}`);
     });
+
+    await runCheck('Admin with active-company cookie → /en/portal 200', async () => {
+      const jar = new CookieJar();
+      await loginWithCredentials(E2E_BASE_URL, jar, {
+        email: seeds.admin.email,
+        password: seeds.admin.password,
+      });
+      const company = await getPrisma().company.findFirst({
+        orderBy: { createdAt: 'asc' },
+        select: { id: true },
+      });
+      assert(company?.id, 'demo company required — run db:seed');
+      jar.set('toonexpo_active_company', company.id);
+      const portal = await fetchWithJar(`${E2E_BASE_URL}/en/portal`, { jar });
+      assert(portal.status === 200, `portal ${portal.status}`);
+    });
   }
 
   if (!seeds.entrance) {

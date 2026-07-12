@@ -230,6 +230,8 @@ export const AUDIT_ACTIONS = [
   'PUBLICATION_CHANGE',
   'PROVISION_ACCOUNT',
   'SETTINGS_UPDATE',
+  'ACTING_ON_BEHALF_START',
+  'ACTING_ON_BEHALF_STOP',
 ] as const;
 
 export type AuditAction = (typeof AUDIT_ACTIONS)[number];
@@ -247,6 +249,7 @@ export const AUDIT_ENTITY_TYPES = [
   'EXHIBITION_EVENT',
   'USER',
   'PLATFORM_SETTING',
+  'COMPANY',
 ] as const;
 
 export type AuditEntityType = (typeof AUDIT_ENTITY_TYPES)[number];

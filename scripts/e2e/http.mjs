@@ -8,6 +8,14 @@ export class CookieJar {
   #cookies = new Map();
 
   /**
+   * @param {string} name
+   * @param {string} value
+   */
+  set(name, value) {
+    this.#cookies.set(name, value);
+  }
+
+  /**
    * @param {Response} response
    */
   absorb(response) {

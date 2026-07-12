@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 
+import { OpenInPortalButton } from '@/components/portal/open-in-portal-button';
 import type { AdminCompanyRow } from '@/lib/admin/queries';
 
 import { CompanyFormSheet } from './sheets/company-form-sheet';
@@ -19,6 +20,7 @@ type CompaniesTableProps = {
       actions: string;
     };
     edit: string;
+    openInPortal: string;
     projectCounts: {
       draft: string;
       published: string;
@@ -84,13 +86,16 @@ function CompanyRow({ locale, company, labels, formatDate }: CompanyRowProps) {
       </td>
       <td>{formatDate(company.createdAt)}</td>
       <td>
-        <button
-          type="button"
-          className="portal-btn portal-btn--ghost portal-btn--sm"
-          onClick={() => setEditOpen(true)}
-        >
-          {labels.edit}
-        </button>
+        <div className="portal-actions">
+          <OpenInPortalButton locale={locale} companyId={company.id} label={labels.openInPortal} />
+          <button
+            type="button"
+            className="portal-btn portal-btn--ghost portal-btn--sm"
+            onClick={() => setEditOpen(true)}
+          >
+            {labels.edit}
+          </button>
+        </div>
         <CompanyFormSheet
           locale={locale}
           mode="edit"

@@ -147,6 +147,8 @@ enum AuditAction {
   PUBLICATION_CHANGE
   PROVISION_ACCOUNT
   SETTINGS_UPDATE
+  ACTING_ON_BEHALF_START
+  ACTING_ON_BEHALF_STOP
 }
 
 /// Platform audit entity kinds (v1).
@@ -160,6 +162,7 @@ enum AuditEntityType {
   EXHIBITION_EVENT
   USER
   PLATFORM_SETTING
+  COMPANY
 }
 
 

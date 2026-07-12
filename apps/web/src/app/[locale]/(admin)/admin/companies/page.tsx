@@ -45,6 +45,7 @@ export default async function AdminCompaniesPage({ params }: AdminCompaniesPageP
               actions: t('columns.actions'),
             },
             edit: t('edit'),
+            openInPortal: t('openInPortal'),
             projectCounts: {
               draft: t('projectCounts.draft'),
               published: t('projectCounts.published'),
