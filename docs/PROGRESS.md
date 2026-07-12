@@ -2,15 +2,22 @@
 
 ## Current Status
 
-Sprint 5 in progress — Visual Map / Hotspots **server layer complete** (schema, contracts, mutations, queries, actions, seed; UI next).
+Sprint 5 **COMPLETE** — visual map server+editor+public nav, partners+bank offers+admin, public partners+mortgage calculator, builder readiness, exhibition check-in, audit + fixes.
 
-## Sprint 5 — Visual Map / Hotspots (server)
+## Sprint 5 — COMPLETE
 
-- **Prisma** — `VisualCanvas` + `Hotspot` (migration `sprint5_visual_map`); context XOR (project|building|floor); target XOR (building|floor|apartment); Float % coords; `imageUrl`/`imageAlt` on canvas (v1, not MediaAsset).
-- **Contracts** — `packages/contracts/src/visual-map.ts` (upsert/status/move + public DTO).
-- **Mutations/queries** — company-scoped CRUD; target consistency matrix; public query requires canvas + project `PUBLISHED`.
-- **Actions** — `portal/visual-map-actions.ts` with catalog revalidation.
-- **Seed** — sunrise project canvas (1 building hotspot) + Floor 1 canvas (2 apartment hotspots).
+- **Visual map** — Prisma `VisualCanvas` + `Hotspot`; contracts; company-scoped CRUD; builder editor; public canvas on project detail; catalog revalidation.
+- **Partners & bank offers** — Admin CRUD; public `/partners` list + detail; `/mortgage` calculator with published offers; http(s)-only URL validation on partner/canvas inputs.
+- **Builder readiness** — Assessment categories, scores, builder portal + admin views.
+- **Exhibition check-in** — Events admin; entrance staff QR check-in; buyer account check-in history; single ACTIVE event invariant.
+- **Audit fixes** — Stored XSS URL hardening; partner route revalidation; role guards in check-in mutation; role-aware nav; file/function size splits; test coverage gaps closed.
+
+### Deferred (Sprint 5 follow-ups)
+
+- Venue map / booths / routing.
+- Media upload pipeline (replace URL inputs for logos, canvas images).
+- Category CRUD UI for readiness.
+- Partner readiness module.
 
 ## Sprint 4 — COMPLETE
 
@@ -29,7 +36,6 @@ Sprint 5 in progress — Visual Map / Hotspots **server layer complete** (schema
 - `ApartmentStatusHistory` audit trail.
 - Selective apartment reserve (partial inventory hold).
 - Scan-log analytics dashboard.
-- Entrance check-in flow (Sprint 5 exhibition module).
 
 ## Sprint 3 — COMPLETE
 
@@ -93,7 +99,7 @@ Sprint 5 in progress — Visual Map / Hotspots **server layer complete** (schema
 
 ## Next
 
-**Sprint 5 — Maps Readiness Partners**
+**Sprint 6 — Analytics And BOS Integration**
 
 ## Open (non-blocking)
 
