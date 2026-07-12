@@ -1225,6 +1225,24 @@
         "MANUAL_BUILDER_ENTRY": "Ввод застройщиком",
         "EVENT_INTERACTION": "Мероприятие"
       },
+      "profile": {
+        "title": "Профиль",
+        "edit": "Редактировать",
+        "editTitle": "Редактирование профиля",
+        "save": "Сохранить",
+        "noValue": "—",
+        "emailReadOnlyNote": "Смена email требует подтверждения и недоступна в v1.",
+        "fields": {
+          "name": "Имя",
+          "email": "Email",
+          "phone": "Телефон"
+        },
+        "errors": {
+          "unauthorized": "Войдите, чтобы обновить профиль.",
+          "invalidInput": "Проверьте поля и попробуйте снова.",
+          "notFound": "Не удалось обновить профиль."
+        }
+      },
       "checkinsHeading": "Чек-ины на выставке",
       "checkinsEmpty": "Вы ещё не регистрировались на входе выставки."
     },

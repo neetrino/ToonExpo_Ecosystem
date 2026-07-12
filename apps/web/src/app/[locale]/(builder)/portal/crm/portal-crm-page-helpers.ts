@@ -1,4 +1,4 @@
-import type { ActivityStatus, DealStage, RequestSource } from '@toonexpo/domain';
+import type { DealStage, RequestSource } from '@toonexpo/domain';
 import type { getTranslations } from 'next-intl/server';
 
 import type { DealBoardColumn } from '@/lib/crm/deal-queries';
@@ -148,7 +148,7 @@ export function buildCrmWorkspaceLabels({
           SOLD: tApartmentStatus('SOLD'),
         },
         price: t('dealSheet.apartments.price'),
-        priceAtRequest: (value) => t('dealSheet.apartments.priceAtRequest', { value }),
+        priceAtRequest: (value: string) => t('dealSheet.apartments.priceAtRequest', { value }),
       },
       activities: {
         title: t('dealSheet.activities.title'),

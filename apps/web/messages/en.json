@@ -1226,6 +1226,24 @@
         "BUILDER_QR_SCAN": "QR scan",
         "MANUAL_BUILDER_ENTRY": "Builder entry",
         "EVENT_INTERACTION": "Event"
+      },
+      "profile": {
+        "title": "Profile",
+        "edit": "Edit",
+        "editTitle": "Edit profile",
+        "save": "Save changes",
+        "noValue": "—",
+        "emailReadOnlyNote": "Email changes require verification and are not available in v1.",
+        "fields": {
+          "name": "Name",
+          "email": "Email",
+          "phone": "Phone"
+        },
+        "errors": {
+          "unauthorized": "You must be signed in to update your profile.",
+          "invalidInput": "Please check the fields and try again.",
+          "notFound": "Profile could not be updated."
+        }
       }
     },
     "qr": {

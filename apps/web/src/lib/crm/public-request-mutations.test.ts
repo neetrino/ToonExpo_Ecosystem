@@ -84,7 +84,11 @@ describe('submitPublicRequest', () => {
   });
 
   it('creates a new deal with activity and apartment link when apartmentId is valid', async () => {
-    vi.mocked(mockTx.apartment.findFirst).mockResolvedValue({ id: APARTMENT_ID });
+    vi.mocked(mockTx.apartment.findFirst).mockResolvedValue({
+      id: APARTMENT_ID,
+      priceAmd: 18_500_000,
+      status: 'AVAILABLE',
+    });
 
     const result = await submitPublicRequest({
       ...VALID_INPUT,
@@ -100,7 +104,14 @@ describe('submitPublicRequest', () => {
           stage: 'NEW_REQUEST',
           source: 'APARTMENT_PAGE',
           contactEmail: VALID_INPUT.email,
-          apartments: { create: { apartmentId: APARTMENT_ID } },
+          apartments: {
+            create: expect.objectContaining({
+              apartmentId: APARTMENT_ID,
+              priceAmdSnapshot: 18_500_000,
+              statusSnapshot: 'AVAILABLE',
+              snapshotAt: expect.any(Date),
+            }),
+          },
           activities: {
             create: expect.objectContaining({ type: 'COMMENT' }),
           },

@@ -11,7 +11,8 @@ type PortalFormErrorProps = {
     | 'catalog.request.errors'
     | 'qr.builder.errors'
     | 'qr.entrance.errors'
-    | 'buyer.qr.errors';
+    | 'buyer.qr.errors'
+    | 'buyer.account.profile.errors';
 };
 
 export function PortalFormError({ errorKey, namespace = 'portal.errors' }: PortalFormErrorProps) {

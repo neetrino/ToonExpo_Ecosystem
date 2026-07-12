@@ -21,6 +21,13 @@ export {
   type BuyerRegisterInput,
   type LoginInput,
 } from './auth';
+export {
+  BUYER_PROFILE_NAME_MAX_LENGTH,
+  BUYER_PROFILE_PHONE_MAX_LENGTH,
+  BUYER_PROFILE_PHONE_MIN_LENGTH,
+  buyerProfileUpdateInputSchema,
+  type BuyerProfileUpdateInput,
+} from './buyer';
 export { healthResponseSchema, type HealthResponse } from './health';
 export { SLUG_MAX_LENGTH, slugSchema } from './slug';
 export { httpUrlSchema, httpUrlSchemaWithMax, isHttpUrl, optionalHttpUrlSchema } from './url';

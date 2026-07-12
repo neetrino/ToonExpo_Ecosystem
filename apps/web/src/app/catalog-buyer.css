@@ -67,6 +67,44 @@
   margin: 0 0 1rem;
 }
 
+.buyer-account__profile {
+  margin-top: 1.5rem;
+}
+
+.buyer-account__profile-header {
+  align-items: center;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.buyer-account__profile-fields {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.buyer-account__profile-fields div {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.buyer-account__profile-fields dt {
+  color: var(--te-muted);
+  font-size: 0.8125rem;
+}
+
+.buyer-account__profile-fields dd {
+  margin: 0;
+}
+
+.buyer-account__profile-note {
+  color: var(--te-muted);
+  font-size: 0.8125rem;
+  margin: 0.75rem 0 0;
+}
+
 .buyer-account__requests {
   margin-top: 2.5rem;
 }

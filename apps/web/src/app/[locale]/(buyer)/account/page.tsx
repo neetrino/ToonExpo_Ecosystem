@@ -9,8 +9,10 @@ import { loadBuyerCheckIns } from '@/lib/exhibition/queries';
 import { loadWebEnv } from '@/lib/env';
 import { buildQrPayloadUrl, renderQrSvg } from '@/lib/qr/image';
 import { ensureBuyerQr } from '@/lib/qr/mutations';
+import { getBuyerProfile } from '@/lib/buyer/profile-mutations';
 
 import { BuyerDealsTable } from './buyer-deals-table';
+import { BuyerProfileSection } from './buyer-profile-section';
 
 type BuyerPageProps = {
   params: Promise<{ locale: string }>;
@@ -46,6 +48,7 @@ export default async function BuyerAccountPage({ params }: BuyerPageProps) {
 
   const session = await auth();
   const buyerUserId = session?.user?.id;
+  const profile = buyerUserId ? await getBuyerProfile(buyerUserId) : null;
   const deals: BuyerDealRow[] = buyerUserId ? await getBuyerDeals(buyerUserId) : [];
   const checkIns = buyerUserId ? await loadBuyerCheckIns(buyerUserId) : [];
   const qr = buyerUserId
@@ -69,6 +72,8 @@ export default async function BuyerAccountPage({ params }: BuyerPageProps) {
         <h1 className="buyer-account__title">{t('title')}</h1>
         <p className="buyer-account__subtitle">{t('subtitle')}</p>
       </header>
+
+      {profile ? <BuyerProfileSection locale={locale} profile={profile} /> : null}
 
       {buyerUserId ? (
         <BuyerQrSection

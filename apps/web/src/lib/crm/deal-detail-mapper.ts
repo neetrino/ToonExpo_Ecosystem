@@ -20,7 +20,7 @@ type DealDetailRow = {
   apartments: Array<{
     apartmentId: string;
     priceAmdSnapshot: number | null;
-    statusSnapshot: DealDetailApartment['status'];
+    statusSnapshot: DealDetailApartment['status'] | null;
     apartment: {
       code: string;
       status: DealDetailApartment['status'];

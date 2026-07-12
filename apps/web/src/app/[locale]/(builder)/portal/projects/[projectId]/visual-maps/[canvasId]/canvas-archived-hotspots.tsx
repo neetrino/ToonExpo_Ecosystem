@@ -8,7 +8,7 @@ import { VisualMapFormError } from '@/components/visual-map/visual-map-form-erro
 import type { BuilderArchivedHotspot } from '@/lib/visual-map/queries';
 import type { VisualMapMutationErrorKey } from '@/lib/visual-map/mutation-result';
 
-import { restoreHotspotAction } from '../../visual-map-actions';
+import { restoreHotspotAction } from '../../../../visual-map-actions';
 
 type CanvasArchivedHotspotsProps = {
   locale: string;

@@ -101,7 +101,9 @@ function DealLinkedApartment({ locale, dealId, apartment, labels }: DealLinkedAp
   const showSnapshotHint =
     apartment.priceAmdSnapshot !== null && apartment.priceAmdSnapshot !== apartment.priceAmd;
   const snapshotPriceLabel = showSnapshotHint
-    ? labels.priceAtRequest(new Intl.NumberFormat(locale).format(apartment.priceAmdSnapshot))
+    ? labels.priceAtRequest(
+        new Intl.NumberFormat(locale).format(apartment.priceAmdSnapshot as number),
+      )
     : null;
 
   return (
