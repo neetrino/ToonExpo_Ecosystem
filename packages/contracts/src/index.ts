@@ -177,6 +177,12 @@ export {
   type PublicPartnerSummary,
 } from './partners';
 export {
+  publicBuilderDetailSchema,
+  publicBuilderSummarySchema,
+  type PublicBuilderDetail,
+  type PublicBuilderSummary,
+} from './builders';
+export {
   READINESS_CONTACT_MAX_LENGTH,
   READINESS_IN_PROGRESS_MAX_SCORE,
   READINESS_NEEDS_IMPROVEMENT_MAX_SCORE,

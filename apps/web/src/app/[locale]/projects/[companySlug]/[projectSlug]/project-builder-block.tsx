@@ -1,6 +1,9 @@
 import { isHttpUrl } from '@toonexpo/contracts';
 
+import { Link } from '@/i18n/navigation';
+
 type ProjectBuilderBlockProps = {
+  companySlug: string;
   companyName: string;
   companyDescription: string | null;
   companyLogoUrl: string | null;
@@ -13,10 +16,12 @@ type ProjectBuilderBlockProps = {
     email: string;
     website: string;
     noValue: string;
+    viewProfile: string;
   };
 };
 
 export function ProjectBuilderBlock({
+  companySlug,
   companyName,
   companyDescription,
   companyLogoUrl,
@@ -42,10 +47,17 @@ export function ProjectBuilderBlock({
           <img src={companyLogoUrl} alt="" className="catalog-builder-block__logo" />
         ) : null}
         <div className="catalog-builder-block__body">
-          <h3 className="catalog-builder-block__name">{companyName}</h3>
+          <h3 className="catalog-builder-block__name">
+            <Link href={`/builders/${companySlug}`} className="catalog-builder-block__link">
+              {companyName}
+            </Link>
+          </h3>
           {companyDescription ? (
             <p className="catalog-builder-block__description">{companyDescription}</p>
           ) : null}
+          <p className="catalog-builder-block__profile-link">
+            <Link href={`/builders/${companySlug}`}>{labels.viewProfile}</Link>
+          </p>
           {hasContacts ? (
             <dl className="catalog-builder-block__contacts">
               <div>

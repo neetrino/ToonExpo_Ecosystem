@@ -11,6 +11,7 @@ export const E2E_API_URL = process.env.E2E_API_URL ?? 'http://localhost:4010';
 export const E2E_BOS_API_KEY = process.env.E2E_BOS_API_KEY ?? 'e2e-test-key';
 
 export const DEMO_COMPANY_SLUG = 'demo-development';
+export const DEMO_COMPANY_NAME = 'Demo Development';
 export const SUNRISE_SLUG = 'sunrise-residence';
 export const HIDDEN_COURT_SLUG = 'hidden-court';
 export const SUNRISE_NAME = 'Sunrise Residence';

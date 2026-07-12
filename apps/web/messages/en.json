@@ -11,6 +11,7 @@
   "nav": {
     "public": "Public",
     "projects": "Projects",
+    "builders": "Builders",
     "partners": "Partners",
     "mortgage": "Mortgage",
     "buyer": "Buyer",
@@ -1024,7 +1025,17 @@
     "list": {
       "title": "Projects",
       "subtitle": "Browse published residential developments.",
-      "empty": "No published projects yet."
+      "empty": "No published projects yet.",
+      "emptyFiltered": "No projects match your filters.",
+      "filter": {
+        "city": "City",
+        "cityPlaceholder": "e.g. Yerevan",
+        "builder": "Builder",
+        "builderAll": "All builders",
+        "apply": "Apply",
+        "clear": "Clear",
+        "ariaLabel": "Filter projects"
+      }
     },
     "detail": {
       "gallery": "Gallery",
@@ -1042,7 +1053,8 @@
         "title": "About the builder",
         "phone": "Phone",
         "email": "Email",
-        "website": "Website"
+        "website": "Website",
+        "viewProfile": "View builder profile"
       }
     },
     "apartment": {
@@ -1086,6 +1098,24 @@
     "visualMap": {
       "projectTitle": "Site plan",
       "floorTitle": "Floor plan"
+    },
+    "builders": {
+      "list": {
+        "title": "Builders",
+        "subtitle": "Development companies with published projects on ToonExpo.",
+        "empty": "No builders with published projects yet.",
+        "projectCount": "{count, plural, one {# published project} other {# published projects}}"
+      },
+      "detail": {
+        "contacts": "Contact",
+        "phone": "Phone",
+        "email": "Email",
+        "website": "Website",
+        "city": "City",
+        "address": "Address",
+        "projects": "Published projects",
+        "noValue": "—"
+      }
     },
     "partners": {
       "list": {

@@ -1,7 +1,6 @@
 import {
   publicApartmentDetailSchema,
   publicProjectDetailSchema,
-  publicProjectSummarySchema,
   type PublicApartment,
   type PublicApartmentDetail,
   type PublicBuilding,
@@ -13,6 +12,8 @@ import {
 import { prisma } from '@toonexpo/db';
 import type { ApartmentStatus, PriceVisibility } from '@toonexpo/domain';
 
+import { mapProjectSummary } from './map-project-summary';
+import type { PublishedProjectFilters } from './project-filters';
 import { resolvePriceDisplay } from './resolve-price-display';
 
 const IS_DEV = process.env.NODE_ENV === 'development';
@@ -112,19 +113,6 @@ function mapMedia(row: { id: string; url: string; alt: string | null }): PublicM
   return { id: row.id, url: row.url, alt: row.alt };
 }
 
-function mapProjectSummary(row: ProjectSummaryRow): PublicProjectSummary {
-  const summary: PublicProjectSummary = {
-    id: row.id,
-    slug: row.slug,
-    companySlug: row.company.slug,
-    companyName: row.company.name,
-    name: row.name,
-    city: row.city,
-    coverImageUrl: row.media[0]?.url ?? null,
-  };
-  return IS_DEV ? publicProjectSummarySchema.parse(summary) : summary;
-}
-
 function mapProjectDetail(row: ProjectDetailRow, isAuthenticated: boolean): PublicProjectDetail {
   const detail: PublicProjectDetail = {
     ...mapProjectSummary(row),
@@ -143,10 +131,22 @@ function mapProjectDetail(row: ProjectDetailRow, isAuthenticated: boolean): Publ
   return IS_DEV ? publicProjectDetailSchema.parse(detail) : detail;
 }
 
-/** Returns published projects ordered by newest first. */
-export async function getPublishedProjects(): Promise<PublicProjectSummary[]> {
+function buildPublishedProjectsWhere(filters?: PublishedProjectFilters) {
+  return {
+    status: 'PUBLISHED' as const,
+    ...(filters?.city
+      ? { city: { contains: filters.city, mode: 'insensitive' as const } }
+      : {}),
+    ...(filters?.builderSlug ? { company: { slug: filters.builderSlug } } : {}),
+  };
+}
+
+/** Returns published projects ordered by newest first; optional city/builder filters. */
+export async function getPublishedProjects(
+  filters?: PublishedProjectFilters,
+): Promise<PublicProjectSummary[]> {
   const rows = await prisma.project.findMany({
-    where: { status: 'PUBLISHED' },
+    where: buildPublishedProjectsWhere(filters),
     orderBy: { createdAt: 'desc' },
     select: {
       id: true,

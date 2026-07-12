@@ -7,13 +7,19 @@ vi.mock('@toonexpo/db', () => ({
     },
     project: {
       findFirst: vi.fn(),
+      findMany: vi.fn(),
     },
   },
 }));
 
 import { prisma } from '@toonexpo/db';
 
-import { getPublishedApartment, getPublishedProjectBySlug, isValidApartmentId } from './queries';
+import {
+  getPublishedApartment,
+  getPublishedProjectBySlug,
+  getPublishedProjects,
+  isValidApartmentId,
+} from './queries';
 
 const VALID_APARTMENT_ID = 'clxxxxxxxxxxxxxxxxxx01';
 const SAMPLE_PRICE = 85_000_000;
@@ -169,6 +175,39 @@ describe('getPublishedProjectBySlug', () => {
             }),
           }),
         }),
+      }),
+    );
+  });
+});
+
+describe('getPublishedProjects', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(prisma.project.findMany).mockResolvedValue([]);
+  });
+
+  it('applies city contains filter case-insensitively', async () => {
+    await getPublishedProjects({ city: 'Yerevan' });
+
+    expect(prisma.project.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: {
+          status: 'PUBLISHED',
+          city: { contains: 'Yerevan', mode: 'insensitive' },
+        },
+      }),
+    );
+  });
+
+  it('applies builder slug filter via company relation', async () => {
+    await getPublishedProjects({ builderSlug: 'demo-development' });
+
+    expect(prisma.project.findMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: {
+          status: 'PUBLISHED',
+          company: { slug: 'demo-development' },
+        },
       }),
     );
   });

@@ -28,6 +28,7 @@ export function AppShell({ children, authSlot, navVisibility }: AppShellProps) {
         <nav className="flex flex-wrap items-center gap-4 text-sm text-[var(--te-muted)]">
           <Link href="/">{t('nav.public')}</Link>
           <Link href="/projects">{t('nav.projects')}</Link>
+          <Link href="/builders">{t('nav.builders')}</Link>
           <Link href="/partners">{t('nav.partners')}</Link>
           <Link href="/mortgage">{t('nav.mortgage')}</Link>
           <Link href="/account">{t('nav.buyer')}</Link>

@@ -1,0 +1,225 @@
+.catalog-builder-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  overflow: hidden;
+  padding: 1.25rem;
+  text-decoration: none;
+  transition:
+    border-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.catalog-builder-card:hover {
+  border-color: rgba(61, 139, 253, 0.5);
+  transform: translateY(-2px);
+}
+
+.catalog-builder-card__logo {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 0.5rem;
+  display: flex;
+  height: 4rem;
+  justify-content: center;
+  width: 4rem;
+}
+
+.catalog-builder-card__logo-image {
+  max-height: 3rem;
+  max-width: 3.5rem;
+  object-fit: contain;
+}
+
+.catalog-builder-card__logo-fallback {
+  align-items: center;
+  background: rgba(61, 139, 253, 0.2);
+  border-radius: 0.375rem;
+  color: var(--te-accent);
+  display: flex;
+  font-size: 1.5rem;
+  font-weight: 600;
+  height: 3rem;
+  justify-content: center;
+  width: 3rem;
+}
+
+.catalog-builder-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.catalog-builder-card__meta {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.catalog-builder-card__title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.catalog-builder-card__city {
+  color: var(--te-muted);
+  font-size: 0.875rem;
+}
+
+.catalog-builder-card__description {
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  color: var(--te-muted);
+  display: -webkit-box;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin: 0;
+  overflow: hidden;
+}
+
+.catalog-builder-card__count {
+  color: var(--te-accent);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.catalog-builder-detail__header {
+  align-items: flex-start;
+  display: flex;
+  gap: 1.5rem;
+}
+
+.catalog-builder-detail__logo {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 0.75rem;
+  display: flex;
+  flex-shrink: 0;
+  height: 6rem;
+  justify-content: center;
+  width: 6rem;
+}
+
+.catalog-builder-detail__logo-image {
+  max-height: 4rem;
+  max-width: 4.5rem;
+  object-fit: contain;
+}
+
+.catalog-builder-detail__logo-fallback {
+  align-items: center;
+  background: rgba(61, 139, 253, 0.2);
+  border-radius: 0.5rem;
+  color: var(--te-accent);
+  display: flex;
+  font-size: 2rem;
+  font-weight: 600;
+  height: 4rem;
+  justify-content: center;
+  width: 4rem;
+}
+
+.catalog-builder-detail__city {
+  color: var(--te-muted);
+  font-size: 0.9375rem;
+  margin: 0;
+}
+
+.catalog-builder-detail__section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.catalog-builder-detail__contacts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.catalog-builder-detail__contact-label {
+  color: var(--te-muted);
+  display: block;
+  font-size: 0.75rem;
+  margin-bottom: 0.125rem;
+  text-transform: uppercase;
+}
+
+.catalog-filters {
+  align-items: flex-end;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.catalog-filters__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  min-width: 12rem;
+}
+
+.catalog-filters__label {
+  color: var(--te-muted);
+  font-size: 0.8125rem;
+}
+
+.catalog-filters__input,
+.catalog-filters__select {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 0.5rem;
+  color: inherit;
+  font-size: 0.9375rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.catalog-filters__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.catalog-filters__button {
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+}
+
+.catalog-filters__button--primary {
+  background: var(--te-accent);
+  border: none;
+  color: #0b1220;
+  cursor: pointer;
+}
+
+.catalog-filters__button--secondary {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: inherit;
+}
+
+.catalog-builder-block__profile-link {
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.catalog-builder-block__profile-link a {
+  color: var(--te-accent);
+  text-decoration: none;
+}
+
+.catalog-builder-block__profile-link a:hover {
+  text-decoration: underline;
+}

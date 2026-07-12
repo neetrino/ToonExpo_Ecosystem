@@ -1,55 +1,54 @@
-import type { PublicProjectSummary } from '@toonexpo/contracts';
-import Image from 'next/image';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
-import { Link } from '@/i18n/navigation';
-import { CATALOG_IMAGE_HEIGHT, CATALOG_IMAGE_WIDTH } from '@/lib/catalog/image-dimensions';
+import { getPublicBuilders } from '@/lib/builders/queries';
 import { getPublishedProjects } from '@/lib/catalog/queries';
+import { parseProjectFilters } from '@/lib/catalog/project-filters';
+
+import { ProjectCard } from './project-card';
+import { ProjectFiltersForm } from './project-filters-form';
 
 type ProjectsPageProps = {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ city?: string; builder?: string }>;
 };
 
-function ProjectCard({ project }: { project: PublicProjectSummary }) {
-  const href = `/projects/${project.companySlug}/${project.slug}`;
-
-  return (
-    <Link href={href} className="catalog-card">
-      {project.coverImageUrl ? (
-        <Image
-          src={project.coverImageUrl}
-          alt={project.name}
-          width={CATALOG_IMAGE_WIDTH}
-          height={CATALOG_IMAGE_HEIGHT}
-          className="catalog-card__image"
-        />
-      ) : (
-        <div className="catalog-card__placeholder" aria-hidden="true" />
-      )}
-      <div className="catalog-card__body">
-        <h2 className="catalog-card__title">{project.name}</h2>
-        {project.city ? <p className="catalog-card__meta">{project.city}</p> : null}
-        <p className="catalog-card__company">{project.companyName}</p>
-      </div>
-    </Link>
-  );
-}
-
-export default async function ProjectsPage({ params }: ProjectsPageProps) {
+export default async function ProjectsPage({ params, searchParams }: ProjectsPageProps) {
   const { locale } = await params;
+  const rawSearchParams = await searchParams;
   setRequestLocale(locale);
+
   const t = await getTranslations('catalog');
-  const projects = await getPublishedProjects();
+  const filters = parseProjectFilters(rawSearchParams);
+  const [projects, builders] = await Promise.all([
+    getPublishedProjects(filters),
+    getPublicBuilders(),
+  ]);
 
   return (
     <section className="catalog-page">
       <header className="catalog-page__header">
         <h1 className="catalog-page__title">{t('list.title')}</h1>
         <p className="catalog-page__subtitle">{t('list.subtitle')}</p>
+        <ProjectFiltersForm
+          builders={builders}
+          currentCity={filters.city}
+          currentBuilderSlug={filters.builderSlug}
+          labels={{
+            city: t('list.filter.city'),
+            cityPlaceholder: t('list.filter.cityPlaceholder'),
+            builder: t('list.filter.builder'),
+            builderAll: t('list.filter.builderAll'),
+            apply: t('list.filter.apply'),
+            clear: t('list.filter.clear'),
+            ariaLabel: t('list.filter.ariaLabel'),
+          }}
+        />
       </header>
 
       {projects.length === 0 ? (
-        <p className="catalog-empty">{t('list.empty')}</p>
+        <p className="catalog-empty">
+          {filters.hasActiveFilters ? t('list.emptyFiltered') : t('list.empty')}
+        </p>
       ) : (
         <div className="catalog-grid">
           {projects.map((project) => (

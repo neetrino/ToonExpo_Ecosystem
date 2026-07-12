@@ -1,5 +1,6 @@
 import {
   DRAFT_PARTNER_NAME,
+  DEMO_COMPANY_NAME,
   E2E_BASE_URL,
   HIDDEN_COURT_NAME,
   SUNRISE_NAME,
@@ -28,6 +29,39 @@ export async function runPublicCatalogFlow() {
     const html = await res.text();
     assert(html.includes(SUNRISE_NAME), 'Sunrise Residence missing');
     assert(!html.includes(HIDDEN_COURT_NAME), 'Hidden Court leaked into catalog');
+  });
+
+  await runCheck('GET /en/builders lists Demo Development', async () => {
+    const res = await fetchWithJar(`${E2E_BASE_URL}/en/builders`);
+    assert(res.status === 200, `status ${res.status}`);
+    const html = await res.text();
+    assert(html.includes(DEMO_COMPANY_NAME), 'Demo Development missing from builders');
+  });
+
+  await runCheck('GET /en/builders/demo-development shows Sunrise Residence', async () => {
+    const res = await fetchWithJar(`${E2E_BASE_URL}/en/builders/${DEMO_COMPANY_SLUG}`);
+    assert(res.status === 200, `status ${res.status}`);
+    const html = await res.text();
+    assert(html.includes(DEMO_COMPANY_NAME), 'builder name missing');
+    assert(html.includes(SUNRISE_NAME), 'Sunrise Residence missing on builder detail');
+  });
+
+  await runCheck('GET /en/projects?city=Yerevan includes Sunrise', async () => {
+    const res = await fetchWithJar(`${E2E_BASE_URL}/en/projects?city=Yerevan`);
+    assert(res.status === 200, `status ${res.status}`);
+    const html = await res.text();
+    assert(html.includes(SUNRISE_NAME), 'Sunrise Residence missing for city filter');
+  });
+
+  await runCheck('GET /en/projects?city=Nowhere shows empty filtered state', async () => {
+    const res = await fetchWithJar(`${E2E_BASE_URL}/en/projects?city=Nowhere`);
+    assert(res.status === 200, `status ${res.status}`);
+    const html = await res.text();
+    assert(
+      html.includes('No projects match your filters.'),
+      'expected empty filtered state copy',
+    );
+    assert(!html.includes(SUNRISE_NAME), 'Sunrise leaked into filtered empty result');
   });
 
   await runCheck('GET project detail has visual map + request CTA', async () => {

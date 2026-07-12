@@ -58,6 +58,7 @@ function ProjectDetailView({
     email: string;
     website: string;
     noValue: string;
+    viewProfile: string;
   };
   prefill?: { name?: string; email?: string; phone?: string };
   projectCanvas: PublicCanvas | null;
@@ -92,6 +93,7 @@ function ProjectDetailView({
         galleryLabel={galleryLabel}
       />
       <ProjectBuilderBlock
+        companySlug={project.companySlug}
         companyName={project.companyName}
         companyDescription={project.companyDescription}
         companyLogoUrl={project.companyLogoUrl}
@@ -196,6 +198,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
           email: t('detail.builder.email'),
           website: t('detail.builder.website'),
           noValue: t('detail.noValue'),
+          viewProfile: t('detail.builder.viewProfile'),
         }}
         prefill={prefill}
         projectCanvas={projectCanvas}
