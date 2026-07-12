@@ -21,7 +21,7 @@ export default async function EntranceCheckInPage({ params }: EntranceCheckInPag
     <section className="portal-shell">
       <header className="portal-page__header">
         <h1 className="portal-page__title">{t('title')}</h1>
-        <p className="portal-page__subtitle">{t('subtitle')}</p>
+        <p className="portal-page__subtitle">{t.raw('subtitle')}</p>
       </header>
 
       {event ? (

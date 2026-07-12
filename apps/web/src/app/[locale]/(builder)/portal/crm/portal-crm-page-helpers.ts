@@ -100,7 +100,7 @@ export function buildCrmWorkspaceLabels({
       noProject: t('card.noProject'),
       noAssignee: t('card.noAssignee'),
       noActivity: t('card.noActivity'),
-      apartmentCount: t('card.apartmentCount'),
+      apartmentCount: t.raw('card.apartmentCount'),
       source: sourceLabels,
     },
     list: {
