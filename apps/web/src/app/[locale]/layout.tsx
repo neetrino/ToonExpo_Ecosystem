@@ -1,13 +1,17 @@
 import { isAppLocale, SUPPORTED_LOCALES } from '@toonexpo/shared';
 import { NextIntlClientProvider } from 'next-intl';
 import { notFound } from 'next/navigation';
-import { getMessages, setRequestLocale } from 'next-intl/server';
+import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import type { ReactNode } from 'react';
 
 import { auth } from '@/auth';
 import { AppShell } from '@/components/app-shell';
 import { AuthNav } from '@/components/auth/auth-nav';
 import { buildAppShellNavVisibility } from '@/lib/auth/nav-visibility';
+import {
+  loadPlatformContactSettings,
+  resolveContactWithDefaults,
+} from '@/lib/shared/platform-settings';
 
 type LocaleLayoutProps = {
   children: ReactNode;
@@ -27,12 +31,22 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
   const messages = await getMessages();
   const session = await auth();
   const navVisibility = buildAppShellNavVisibility(session?.user?.role);
+  const tFooter = await getTranslations('footer.contact');
+  const contact = resolveContactWithDefaults(await loadPlatformContactSettings(), {
+    email: tFooter('emailDefault'),
+    phone: tFooter('phoneDefault'),
+  });
 
   return (
     <html lang={locale}>
       <body>
         <NextIntlClientProvider messages={messages}>
-          <AppShell authSlot={<AuthNav locale={locale} />} navVisibility={navVisibility}>
+          <AppShell
+            authSlot={<AuthNav locale={locale} />}
+            navVisibility={navVisibility}
+            contactEmail={contact.email}
+            contactPhone={contact.phone}
+          >
             {children}
           </AppShell>
         </NextIntlClientProvider>

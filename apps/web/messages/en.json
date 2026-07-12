@@ -19,6 +19,14 @@
     "admin": "Admin",
     "entrance": "Check-in"
   },
+  "footer": {
+    "contact": {
+      "emailLabel": "Email",
+      "phoneLabel": "Phone",
+      "emailDefault": "contact@toonexpo.com",
+      "phoneDefault": "+37410123456"
+    }
+  },
   "placeholders": {
     "buyer": {
       "title": "Buyer area",
@@ -78,7 +86,8 @@
       "exhibition": "Exhibition",
       "analytics": "Analytics",
       "audit": "Audit",
-      "integrations": "Integrations"
+      "integrations": "Integrations",
+      "settings": "Settings"
     },
     "catalog": {
       "errors": {
@@ -446,7 +455,8 @@
       },
       "actions": {
         "PUBLICATION_CHANGE": "Publication change",
-        "PROVISION_ACCOUNT": "Provision account"
+        "PROVISION_ACCOUNT": "Provision account",
+        "SETTINGS_UPDATE": "Settings update"
       },
       "entityTypes": {
         "PROJECT": "Project",
@@ -454,7 +464,36 @@
         "BANK_OFFER": "Bank offer",
         "VISUAL_CANVAS": "Visual canvas",
         "EXHIBITION_EVENT": "Exhibition event",
-        "USER": "User"
+        "USER": "User",
+        "PLATFORM_SETTING": "Platform setting"
+      }
+    },
+    "settings": {
+      "title": "Platform settings",
+      "subtitle": "Manage platform-wide configuration values.",
+      "edit": "Edit",
+      "unset": "—",
+      "columns": {
+        "key": "Setting",
+        "value": "Value",
+        "updatedAt": "Updated",
+        "actions": "Actions"
+      },
+      "keys": {
+        "CONTACT_EMAIL": "Contact email",
+        "CONTACT_PHONE": "Contact phone",
+        "MORTGAGE_PAGE_ENABLED": "Mortgage page enabled"
+      },
+      "form": {
+        "edit": "Edit setting",
+        "submit": "Save",
+        "fields": {
+          "value": "Value"
+        },
+        "boolean": {
+          "true": "Enabled",
+          "false": "Disabled"
+        }
       }
     },
     "analytics": {

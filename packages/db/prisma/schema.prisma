@@ -138,6 +138,7 @@ enum IntegrationAuditStatus {
 enum AuditAction {
   PUBLICATION_CHANGE
   PROVISION_ACCOUNT
+  SETTINGS_UPDATE
 }
 
 /// Platform audit entity kinds (v1).
@@ -150,6 +151,7 @@ enum AuditEntityType {
   VISUAL_CANVAS
   EXHIBITION_EVENT
   USER
+  PLATFORM_SETTING
 }
 
 
@@ -178,6 +180,7 @@ model User {
   readinessCategoryScores  ReadinessCategoryScore[] @relation("ReadinessScoreEvaluator")
   checkInsPerformed        CheckIn[]              @relation("CheckInStaff")
   auditLogs                AuditLog[]             @relation("AuditActor")
+  platformSettingsUpdated  PlatformSetting[]      @relation("PlatformSettingUpdater")
 }
 
 
@@ -687,6 +690,17 @@ model AnalyticsEvent {
   @@index([companyId, type, createdAt])
   @@index([projectId])
   @@index([createdAt])
+}
+
+/// Platform-level key/value settings (v1). Keys are constrained in application code.
+/// Docs: 13-Admin-Content-Management/05-Settings-Languages-And-Dictionaries.
+model PlatformSetting {
+  id              String   @id @default(cuid())
+  key             String   @unique
+  value           String
+  updatedAt       DateTime @updatedAt
+  updatedByUserId String?
+  updatedByUser   User?    @relation("PlatformSettingUpdater", fields: [updatedByUserId], references: [id], onDelete: SetNull)
 }
 
 /// Append-only platform audit trail for publication / provisioning (v1).

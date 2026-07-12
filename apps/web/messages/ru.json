@@ -19,6 +19,14 @@
     "admin": "Админ",
     "entrance": "Чек-ин"
   },
+  "footer": {
+    "contact": {
+      "emailLabel": "Email",
+      "phoneLabel": "Телефон",
+      "emailDefault": "contact@toonexpo.com",
+      "phoneDefault": "+37410123456"
+    }
+  },
   "placeholders": {
     "buyer": {
       "title": "Кабинет покупателя",
@@ -78,7 +86,8 @@
       "exhibition": "Выставка",
       "analytics": "Аналитика",
       "audit": "Аудит",
-      "integrations": "Интеграции"
+      "integrations": "Интеграции",
+      "settings": "Настройки"
     },
     "catalog": {
       "errors": {
@@ -446,7 +455,8 @@
       },
       "actions": {
         "PUBLICATION_CHANGE": "Смена публикации",
-        "PROVISION_ACCOUNT": "Провижининг аккаунта"
+        "PROVISION_ACCOUNT": "Провижининг аккаунта",
+        "SETTINGS_UPDATE": "Обновление настроек"
       },
       "entityTypes": {
         "PROJECT": "Проект",
@@ -454,7 +464,36 @@
         "BANK_OFFER": "Банковское предложение",
         "VISUAL_CANVAS": "Визуальная карта",
         "EXHIBITION_EVENT": "Выставочное событие",
-        "USER": "Пользователь"
+        "USER": "Пользователь",
+        "PLATFORM_SETTING": "Настройка платформы"
+      }
+    },
+    "settings": {
+      "title": "Настройки платформы",
+      "subtitle": "Управление конфигурацией платформы.",
+      "edit": "Изменить",
+      "unset": "—",
+      "columns": {
+        "key": "Настройка",
+        "value": "Значение",
+        "updatedAt": "Обновлено",
+        "actions": "Действия"
+      },
+      "keys": {
+        "CONTACT_EMAIL": "Контактный email",
+        "CONTACT_PHONE": "Контактный телефон",
+        "MORTGAGE_PAGE_ENABLED": "Страница ипотеки включена"
+      },
+      "form": {
+        "edit": "Изменить настройку",
+        "submit": "Сохранить",
+        "fields": {
+          "value": "Значение"
+        },
+        "boolean": {
+          "true": "Включено",
+          "false": "Выключено"
+        }
       }
     },
     "analytics": {

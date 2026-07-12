@@ -13,9 +13,17 @@ type AppShellProps = {
   children: ReactNode;
   authSlot?: ReactNode;
   navVisibility: AppShellNavVisibility;
+  contactEmail: string;
+  contactPhone: string;
 };
 
-export function AppShell({ children, authSlot, navVisibility }: AppShellProps) {
+export function AppShell({
+  children,
+  authSlot,
+  navVisibility,
+  contactEmail,
+  contactPhone,
+}: AppShellProps) {
   const t = useTranslations();
   const locale = useLocale();
 
@@ -40,6 +48,22 @@ export function AppShell({ children, authSlot, navVisibility }: AppShellProps) {
         </nav>
       </header>
       <main>{children}</main>
+      <footer className="border-t border-white/10 px-6 py-4 text-sm text-[var(--te-muted)]">
+        <p className="flex flex-wrap gap-x-4 gap-y-1">
+          <span>
+            {t('footer.contact.emailLabel')}:{' '}
+            <a href={`mailto:${contactEmail}`} className="underline underline-offset-2">
+              {contactEmail}
+            </a>
+          </span>
+          <span>
+            {t('footer.contact.phoneLabel')}:{' '}
+            <a href={`tel:${contactPhone}`} className="underline underline-offset-2">
+              {contactPhone}
+            </a>
+          </span>
+        </p>
+      </footer>
     </div>
   );
 }

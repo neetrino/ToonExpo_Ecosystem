@@ -19,6 +19,14 @@
     "admin": "Ադմին",
     "entrance": "Չեք-ին"
   },
+  "footer": {
+    "contact": {
+      "emailLabel": "Էլ. փոստ",
+      "phoneLabel": "Հեռախոս",
+      "emailDefault": "contact@toonexpo.com",
+      "phoneDefault": "+37410123456"
+    }
+  },
   "placeholders": {
     "buyer": {
       "title": "Գնորդի գոտի",
@@ -78,7 +86,8 @@
       "exhibition": "Ցուցահանդես",
       "analytics": "Վերլուծություն",
       "audit": "Աուդիտ",
-      "integrations": "Ինտեգրումներ"
+      "integrations": "Ինտեգրումներ",
+      "settings": "Կարգավորումներ"
     },
     "catalog": {
       "errors": {
@@ -446,7 +455,8 @@
       },
       "actions": {
         "PUBLICATION_CHANGE": "Հրապարակման փոփոխություն",
-        "PROVISION_ACCOUNT": "Հաշվի պրովիզիոնինգ"
+        "PROVISION_ACCOUNT": "Հաշվի պրովիզիոնինգ",
+        "SETTINGS_UPDATE": "Կարգավորումների թարմացում"
       },
       "entityTypes": {
         "PROJECT": "Նախագիծ",
@@ -454,7 +464,36 @@
         "BANK_OFFER": "Բանկային առաջարկ",
         "VISUAL_CANVAS": "Վիզուալ քարտեզ",
         "EXHIBITION_EVENT": "Ցուցահանդեսային միջոցառում",
-        "USER": "Օգտատեր"
+        "USER": "Օգտատեր",
+        "PLATFORM_SETTING": "Հարթակի կարգավորում"
+      }
+    },
+    "settings": {
+      "title": "Հարթակի կարգավորումներ",
+      "subtitle": "Կառավարեք հարթակի կոնֆիգուրացիան։",
+      "edit": "Խմբագրել",
+      "unset": "—",
+      "columns": {
+        "key": "Կարգավորում",
+        "value": "Արժեք",
+        "updatedAt": "Թարմացվել է",
+        "actions": "Գործողություններ"
+      },
+      "keys": {
+        "CONTACT_EMAIL": "Կոնտակտային էլ. փոստ",
+        "CONTACT_PHONE": "Կոնտակտային հեռախոս",
+        "MORTGAGE_PAGE_ENABLED": "Հիփոթեքի էջը միացված է"
+      },
+      "form": {
+        "edit": "Խմբագրել կարգավորումը",
+        "submit": "Պահպանել",
+        "fields": {
+          "value": "Արժեք"
+        },
+        "boolean": {
+          "true": "Միացված",
+          "false": "Անջատված"
+        }
       }
     },
     "analytics": {
