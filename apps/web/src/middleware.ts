@@ -31,7 +31,27 @@ function splitLocale(pathname: string): { locale: string; rest: string } {
  * (defense in depth). The `api` path stays excluded via `config.matcher`, so
  * `/api/auth/*` continues to work.
  */
+/** ISO-ish locale codes (e.g. `de`, `fr-CA`) that are not in SUPPORTED_LOCALES. */
+const LOCALE_CODE_PATTERN = /^[a-z]{2}(?:-[A-Za-z]{2})?$/;
+
+/**
+ * next-intl would otherwise treat `/de` as an unprefixed path and 307 to `/en/de`.
+ * Unsupported locale prefixes should 404 instead.
+ */
+function unsupportedLocaleResponse(pathname: string): NextResponse | null {
+  const first = pathname.split('/')[1] ?? '';
+  if (!first || !LOCALE_CODE_PATTERN.test(first) || isAppLocale(first)) {
+    return null;
+  }
+  return new NextResponse(null, { status: 404 });
+}
+
 export default function middleware(request: NextRequest): NextResponse {
+  const blocked = unsupportedLocaleResponse(request.nextUrl.pathname);
+  if (blocked) {
+    return blocked;
+  }
+
   const response = intlMiddleware(request);
   if (response.headers.has('location')) {
     return response;
