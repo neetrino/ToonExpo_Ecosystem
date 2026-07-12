@@ -68,18 +68,6 @@ export function ProvisionForm({ action, partners }: ProvisionFormProps) {
       </label>
 
       <label className="flex flex-col gap-1 text-sm">
-        <span>{t('fields.temporaryPassword')}</span>
-        <input
-          className={FIELD_CLASS}
-          type="password"
-          name="temporaryPassword"
-          autoComplete="new-password"
-          required
-          minLength={8}
-        />
-      </label>
-
-      <label className="flex flex-col gap-1 text-sm">
         <span>{t('fields.companyName')}</span>
         <input className={FIELD_CLASS} type="text" name="companyName" autoComplete="off" />
         <span className="text-xs text-[var(--te-muted)]">{t('fields.companyNameHint')}</span>
@@ -109,6 +97,15 @@ export function ProvisionForm({ action, partners }: ProvisionFormProps) {
       {state.successKey ? (
         <p role="status" className="text-sm text-green-400">
           {t(`success.${state.successKey}`)}
+        </p>
+      ) : null}
+
+      {state.inviteUrl ? (
+        <p className="text-xs text-[var(--te-muted)]">
+          {t('devInviteUrlLabel')}{' '}
+          <a className="underline" href={state.inviteUrl}>
+            {state.inviteUrl}
+          </a>
         </p>
       ) : null}
 

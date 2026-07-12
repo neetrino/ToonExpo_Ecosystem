@@ -11,6 +11,9 @@ export const webEnvSchema = z.object({
   /** Optional — when unset, rate limiting fails open (local/CI). */
   UPSTASH_REDIS_REST_URL: z.preprocess(emptyToUndefined, z.string().url().optional()),
   UPSTASH_REDIS_REST_TOKEN: z.preprocess(emptyToUndefined, z.string().optional()),
+  /** Optional — when unset, invite emails are skipped (account still created). */
+  RESEND_API_KEY: z.preprocess(emptyToUndefined, z.string().optional()),
+  RESEND_FROM_EMAIL: z.preprocess(emptyToUndefined, z.string().email().optional()),
 });
 
 export type WebEnv = z.infer<typeof webEnvSchema>;

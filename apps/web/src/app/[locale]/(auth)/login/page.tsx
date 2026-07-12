@@ -9,10 +9,12 @@ import { loginAction } from '../actions';
 
 type LoginPageProps = {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ invited?: string }>;
 };
 
-export default async function LoginPage({ params }: LoginPageProps) {
+export default async function LoginPage({ params, searchParams }: LoginPageProps) {
   const { locale } = await params;
+  const { invited } = await searchParams;
   setRequestLocale(locale);
 
   const session = await auth();
@@ -28,6 +30,11 @@ export default async function LoginPage({ params }: LoginPageProps) {
         <h1 className="text-2xl font-semibold">{t('title')}</h1>
         <p className="text-sm text-[var(--te-muted)]">{t('subtitle')}</p>
       </div>
+      {invited === '1' ? (
+        <p role="status" className="text-sm text-green-400">
+          {t('invitedSuccess')}
+        </p>
+      ) : null}
       <LoginForm action={loginAction.bind(null, locale)} />
     </section>
   );

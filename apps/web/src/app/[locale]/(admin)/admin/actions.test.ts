@@ -15,13 +15,14 @@ vi.mock('next/cache', () => ({
 import { assertAdminSession } from '@/lib/admin/assert-admin-session';
 import { provisionAccount } from '@/lib/admin/provision';
 
+const ADMIN_SESSION = { user: { id: 'admin-1', role: 'BIGPROJECTS_ADMIN' as const } };
+
 import { provisionAccountAction } from './actions';
 
 const VALID_FORM = {
   email: 'builder@example.com',
   name: 'Jane Builder',
   role: 'BUILDER',
-  temporaryPassword: 'temp-pass-1',
   companyName: 'Acme Development',
 };
 
@@ -31,7 +32,6 @@ function buildFormData(overrides: Partial<typeof VALID_FORM> = {}): FormData {
   formData.set('email', data.email);
   formData.set('name', data.name);
   formData.set('role', data.role);
-  formData.set('temporaryPassword', data.temporaryPassword);
   if (data.companyName) {
     formData.set('companyName', data.companyName);
   }
@@ -50,5 +50,35 @@ describe('provisionAccountAction', () => {
 
     expect(result).toEqual({ errorKey: 'unauthorized' });
     expect(provisionAccount).not.toHaveBeenCalled();
+  });
+
+  it('returns provisioned when the invite email was sent', async () => {
+    vi.mocked(assertAdminSession).mockResolvedValue(ADMIN_SESSION as never);
+    vi.mocked(provisionAccount).mockResolvedValue({
+      ok: true,
+      userId: 'user-1',
+      emailSent: true,
+    });
+
+    const result = await provisionAccountAction('en', {}, buildFormData());
+
+    expect(result).toEqual({ successKey: 'provisioned', inviteUrl: undefined });
+  });
+
+  it('returns provisionedEmailFailed with a dev inviteUrl when the email did not send', async () => {
+    vi.mocked(assertAdminSession).mockResolvedValue(ADMIN_SESSION as never);
+    vi.mocked(provisionAccount).mockResolvedValue({
+      ok: true,
+      userId: 'user-1',
+      emailSent: false,
+      inviteUrl: 'https://app.example.com/en/invite/raw-token',
+    });
+
+    const result = await provisionAccountAction('en', {}, buildFormData());
+
+    expect(result).toEqual({
+      successKey: 'provisionedEmailFailed',
+      inviteUrl: 'https://app.example.com/en/invite/raw-token',
+    });
   });
 });

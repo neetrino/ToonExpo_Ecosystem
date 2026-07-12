@@ -7,6 +7,7 @@ export const RATE_LIMIT_MAX = {
   register: 5,
   publicRequest: 5,
   qr: 30,
+  setPassword: 5,
 } as const;
 
 /** Window duration shared by all web surfaces. */

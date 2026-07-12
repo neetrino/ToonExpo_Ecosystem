@@ -1,0 +1,40 @@
+import { getTranslations, setRequestLocale } from 'next-intl/server';
+
+import { SetPasswordForm } from '@/components/auth/set-password-form';
+import { previewAccountInvite } from '@/lib/auth/invite';
+
+import { setPasswordAction } from './actions';
+
+type InvitePageProps = {
+  params: Promise<{ locale: string; token: string }>;
+};
+
+/**
+ * Public set-password page for provisioned accounts. The token is only
+ * previewed (validity + expiry check) here — it is consumed on submit.
+ */
+export default async function InvitePage({ params }: InvitePageProps) {
+  const { locale, token } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations('auth.invite');
+
+  const preview = await previewAccountInvite(token);
+  if (!preview.ok) {
+    return (
+      <section className="mx-auto flex max-w-md flex-col gap-4 px-6 py-16">
+        <h1 className="text-2xl font-semibold">{t('invalidTitle')}</h1>
+        <p className="text-sm text-[var(--te-muted)]">{t('errors.invalidOrExpired')}</p>
+      </section>
+    );
+  }
+
+  return (
+    <section className="mx-auto flex max-w-md flex-col gap-6 px-6 py-16">
+      <div className="flex flex-col gap-2">
+        <h1 className="text-2xl font-semibold">{t('title')}</h1>
+        <p className="text-sm text-[var(--te-muted)]">{t('subtitle')}</p>
+      </div>
+      <SetPasswordForm action={setPasswordAction.bind(null, locale, token)} />
+    </section>
+  );
+}

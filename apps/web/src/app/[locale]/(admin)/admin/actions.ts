@@ -35,7 +35,6 @@ export async function provisionAccountAction(
     email: formData.get('email'),
     name: formData.get('name'),
     role: formData.get('role'),
-    temporaryPassword: formData.get('temporaryPassword'),
     companyName: parseCompanyName(formData.get('companyName')),
     partnerId,
   });
@@ -53,5 +52,8 @@ export async function provisionAccountAction(
   }
 
   revalidatePath(`/${locale}/admin`);
-  return { successKey: 'provisioned' };
+  return {
+    successKey: result.emailSent ? 'provisioned' : 'provisionedEmailFailed',
+    inviteUrl: result.inviteUrl,
+  };
 }

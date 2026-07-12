@@ -3,7 +3,10 @@ import { slugifyCompanyName } from '@toonexpo/contracts';
 import { prisma, Prisma } from '@toonexpo/db';
 
 import { type AuditActor, recordAudit } from '@/lib/audit/record-audit';
-import { hashPassword } from '@/lib/auth/password';
+import { createAccountInvite } from '@/lib/auth/invite';
+import { buildInviteUrl } from '@/lib/auth/invite-url';
+import { loadWebEnv } from '@/lib/env';
+import { sendAccountInviteEmail } from '@/lib/email/send-invite-email';
 import { allocateUniqueSlug, MAX_SLUG_ATTEMPTS } from '@/lib/shared/unique-slug';
 
 const UNIQUE_CONSTRAINT_ERROR = 'P2002';
@@ -11,7 +14,15 @@ const UNIQUE_CONSTRAINT_ERROR = 'P2002';
 export type ProvisionErrorCode = 'emailTaken' | 'invalidInput';
 
 export type ProvisionAccountResult =
-  { ok: true; userId: string; companyId?: string } | { ok: false; error: ProvisionErrorCode };
+  | {
+      ok: true;
+      userId: string;
+      companyId?: string;
+      emailSent: boolean;
+      /** Non-production convenience only — never populated in production. */
+      inviteUrl?: string;
+    }
+  | { ok: false; error: ProvisionErrorCode };
 
 type ResolveCompanyResult = { ok: true; companyId: string } | { ok: false; error: 'invalidInput' };
 
@@ -91,22 +102,21 @@ async function linkPartnerCompany(
  * Provisions a non-buyer account (and optional company membership) in a single
  * transaction. Duplicate emails return a typed error without leaking details.
  * When role is PARTNER and partnerId is set, links Company → Partner.companyId.
- * Audit (PROVISION_ACCOUNT) is written inside the same transaction (atomic).
- * TODO(email-invite): send invitation email with temporary password.
+ * Audit (PROVISION_ACCOUNT) and the set-password invite token are written
+ * inside the same transaction (atomic); the invite email is sent afterwards,
+ * best-effort, so a Resend outage never blocks account creation.
  */
 export async function provisionAccount(
   input: ProvisionAccountInput,
   actor: AuditActor,
 ): Promise<ProvisionAccountResult> {
-  const passwordHash = await hashPassword(input.temporaryPassword);
-
   try {
     const result = await prisma.$transaction(async (tx) => {
       const user = await tx.user.create({
         data: {
           email: input.email.toLowerCase(),
           name: input.name,
-          passwordHash,
+          passwordHash: null,
           role: input.role,
         },
       });
@@ -143,10 +153,12 @@ export async function provisionAccount(
         detail: input.role,
       });
 
-      return { userId: user.id, companyId };
+      const rawInviteToken = await createAccountInvite(tx, user.id);
+
+      return { userId: user.id, companyId, rawInviteToken };
     });
 
-    return { ok: true, ...result };
+    return { ok: true, ...(await finishProvisionWithInvite(input, result)) };
   } catch (error) {
     if (error instanceof ProvisionAbortError) {
       return { ok: false, error: error.code };
@@ -162,6 +174,33 @@ export async function provisionAccount(
     }
     throw error;
   }
+}
+
+type ProvisionTxResult = { userId: string; companyId?: string; rawInviteToken: string };
+
+/**
+ * Sends the invite email (best-effort) and shapes the success response.
+ * `inviteUrl` is only exposed outside production so local/dev testing can
+ * complete the flow without a configured Resend account.
+ */
+async function finishProvisionWithInvite(
+  input: ProvisionAccountInput,
+  result: ProvisionTxResult,
+): Promise<Omit<ProvisionAccountResult & { ok: true }, 'ok'>> {
+  const inviteUrl = buildInviteUrl(result.rawInviteToken);
+  const emailResult = await sendAccountInviteEmail({
+    to: input.email,
+    name: input.name,
+    inviteUrl,
+  });
+
+  const env = loadWebEnv();
+  return {
+    userId: result.userId,
+    companyId: result.companyId,
+    emailSent: emailResult.sent,
+    inviteUrl: env.NODE_ENV !== 'production' ? inviteUrl : undefined,
+  };
 }
 
 class ProvisionAbortError extends Error {

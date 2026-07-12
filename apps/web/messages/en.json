@@ -54,7 +54,8 @@
       "subtitle": "Access your ToonExpo account.",
       "submit": "Sign in",
       "registerPrompt": "No account yet?",
-      "registerLink": "Create one"
+      "registerLink": "Create one",
+      "invitedSuccess": "Your password has been set. Sign in with your new password."
     },
     "register": {
       "title": "Create account",
@@ -71,6 +72,21 @@
       "emailTaken": "This email is already registered.",
       "invalidCredentials": "Invalid email or password.",
       "rateLimited": "Too many attempts. Please wait a minute and try again."
+    },
+    "invite": {
+      "title": "Set your password",
+      "subtitle": "Choose a password to activate your ToonExpo account.",
+      "invalidTitle": "Invitation not available",
+      "submit": "Set password",
+      "fields": {
+        "password": "New password",
+        "confirmPassword": "Confirm password"
+      },
+      "errors": {
+        "invalidInput": "Please check the fields and try again.",
+        "invalidOrExpired": "This invitation link is invalid or has expired. Ask an admin to resend it.",
+        "rateLimited": "Too many attempts. Please wait a minute and try again."
+      }
     }
   },
   "admin": {
@@ -375,11 +391,11 @@
       "title": "Provision account",
       "description": "Create builder, partner, admin, or entrance staff accounts. Buyers register themselves.",
       "submit": "Create account",
+      "devInviteUrlLabel": "Invite link (local testing only):",
       "fields": {
         "email": "Email",
         "name": "Full name",
         "role": "Role",
-        "temporaryPassword": "Temporary password",
         "companyName": "Company name",
         "companyNameHint": "Required for builder and partner roles.",
         "partnerId": "Partner profile",
@@ -392,7 +408,8 @@
         "unauthorized": "You do not have permission to provision accounts."
       },
       "success": {
-        "provisioned": "Account created successfully."
+        "provisioned": "Account created successfully. An invitation email was sent to set a password.",
+        "provisionedEmailFailed": "Account created successfully, but the invitation email could not be sent. Share the invite link with the user manually."
       }
     },
     "users": {
