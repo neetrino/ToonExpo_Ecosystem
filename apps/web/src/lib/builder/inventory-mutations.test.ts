@@ -69,6 +69,44 @@ describe('inventory-mutations ownership', () => {
     vi.clearAllMocks();
   });
 
+  it('creates a building as DRAFT for the owning company', async () => {
+    vi.mocked(prisma.project.findFirst).mockResolvedValue({ id: 'project-1' } as never);
+    vi.mocked(prisma.building.create).mockResolvedValue({ id: 'building-1' } as never);
+
+    const result = await createBuilding(OWN_COMPANY_ID, {
+      projectId: 'project-1',
+      name: 'Building A',
+    });
+
+    expect(result).toEqual({ ok: true, buildingId: 'building-1' });
+    expect(prisma.building.create).toHaveBeenCalledWith({
+      data: { projectId: 'project-1', name: 'Building A', status: 'DRAFT' },
+      select: { id: true },
+    });
+  });
+
+  it('creates a floor as DRAFT for the owning company', async () => {
+    vi.mocked(prisma.building.findFirst).mockResolvedValue({ id: 'building-1' } as never);
+    vi.mocked(prisma.floor.create).mockResolvedValue({ id: 'floor-1' } as never);
+
+    const result = await createFloor(OWN_COMPANY_ID, {
+      buildingId: 'building-1',
+      name: 'Floor 1',
+      level: 1,
+    });
+
+    expect(result).toEqual({ ok: true, floorId: 'floor-1' });
+    expect(prisma.floor.create).toHaveBeenCalledWith({
+      data: {
+        buildingId: 'building-1',
+        name: 'Floor 1',
+        level: 1,
+        status: 'DRAFT',
+      },
+      select: { id: true },
+    });
+  });
+
   it('returns notFound when createBuilding targets a foreign project', async () => {
     vi.mocked(prisma.project.findFirst).mockResolvedValue(null);
 

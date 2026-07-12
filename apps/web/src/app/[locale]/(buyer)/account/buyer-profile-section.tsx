@@ -1,9 +1,6 @@
 'use client';
 
-import {
-  BUYER_PROFILE_NAME_MAX_LENGTH,
-  BUYER_PROFILE_PHONE_MAX_LENGTH,
-} from '@toonexpo/contracts';
+import { BUYER_PROFILE_NAME_MAX_LENGTH, BUYER_PROFILE_PHONE_MAX_LENGTH } from '@toonexpo/contracts';
 import { SideSheet } from '@toonexpo/ui';
 import { useTranslations } from 'next-intl';
 import { useActionState, useState } from 'react';

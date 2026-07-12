@@ -86,7 +86,12 @@ export async function findCompanyApartment(
   tx: TransactionClient,
   companyId: string,
   apartmentId: string,
-): Promise<{ id: string; status: ApartmentStatus; priceAmd: number | null; projectId: string } | null> {
+): Promise<{
+  id: string;
+  status: ApartmentStatus;
+  priceAmd: number | null;
+  projectId: string;
+} | null> {
   const apartment = await tx.apartment.findFirst({
     where: {
       id: apartmentId,

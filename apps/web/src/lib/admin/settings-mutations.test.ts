@@ -52,10 +52,7 @@ describe('upsertSetting', () => {
   });
 
   it('rejects invalid contact email values', async () => {
-    const result = await upsertSetting(
-      { key: 'CONTACT_EMAIL', value: 'not-an-email' },
-      ACTOR,
-    );
+    const result = await upsertSetting({ key: 'CONTACT_EMAIL', value: 'not-an-email' }, ACTOR);
 
     expect(result).toEqual({ ok: false, errorKey: 'invalidInput' });
     expect(mockTransaction).not.toHaveBeenCalled();
@@ -90,10 +87,7 @@ describe('upsertSetting', () => {
   it('updates an existing setting and records the previous value in audit detail', async () => {
     mockFindUnique.mockResolvedValue({ id: 'setting-1', value: 'old@toonexpo.com' });
 
-    const result = await upsertSetting(
-      { key: 'CONTACT_EMAIL', value: 'new@toonexpo.com' },
-      ACTOR,
-    );
+    const result = await upsertSetting({ key: 'CONTACT_EMAIL', value: 'new@toonexpo.com' }, ACTOR);
 
     expect(result).toEqual({ ok: true, settingId: 'setting-1', key: 'CONTACT_EMAIL' });
     expect(mockUpdate).toHaveBeenCalled();

@@ -1,6 +1,8 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { notFound } from 'next/navigation';
 
 import { getPublishedBankOffers } from '@/lib/partners/queries';
+import { isMortgagePageEnabled } from '@/lib/shared/platform-settings';
 
 import { MortgageCalculator } from './mortgage-calculator';
 
@@ -11,6 +13,10 @@ type MortgagePageProps = {
 export default async function MortgagePage({ params }: MortgagePageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
+
+  if (!(await isMortgagePageEnabled())) {
+    notFound();
+  }
 
   const t = await getTranslations('catalog.mortgage');
   const offers = await getPublishedBankOffers();

@@ -2,8 +2,7 @@ import type { BuyerProfileUpdateInput } from '@toonexpo/contracts';
 import { prisma } from '@toonexpo/db';
 
 export type BuyerProfileMutationResult =
-  | { ok: true }
-  | { ok: false; errorKey: 'notFound' | 'invalidInput' | 'unauthorized' };
+  { ok: true } | { ok: false; errorKey: 'notFound' | 'invalidInput' | 'unauthorized' };
 
 /** Updates the signed-in buyer's name and phone. Email/role are not writable here. */
 export async function updateBuyerProfile(

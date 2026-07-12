@@ -410,6 +410,7 @@ model Hotspot {
   apartment   Apartment?   @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
 
   @@index([canvasId])
+  @@index([canvasId, archivedAt])
   @@index([buildingId])
   @@index([floorId])
   @@index([apartmentId])

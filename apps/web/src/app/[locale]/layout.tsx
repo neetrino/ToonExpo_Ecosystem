@@ -9,6 +9,7 @@ import { AppShell } from '@/components/app-shell';
 import { AuthNav } from '@/components/auth/auth-nav';
 import { buildAppShellNavVisibility } from '@/lib/auth/nav-visibility';
 import {
+  isMortgagePageEnabled,
   loadPlatformContactSettings,
   resolveContactWithDefaults,
 } from '@/lib/shared/platform-settings';
@@ -36,6 +37,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
     email: tFooter('emailDefault'),
     phone: tFooter('phoneDefault'),
   });
+  const mortgagePageEnabled = await isMortgagePageEnabled();
 
   return (
     <html lang={locale}>
@@ -46,6 +48,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
             navVisibility={navVisibility}
             contactEmail={contact.email}
             contactPhone={contact.phone}
+            mortgagePageEnabled={mortgagePageEnabled}
           >
             {children}
           </AppShell>

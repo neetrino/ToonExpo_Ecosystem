@@ -11,14 +11,9 @@ import { useTranslations } from 'next-intl';
 import { useActionState } from 'react';
 
 import { PortalFormError } from '@/components/portal-forms/form-error';
-import {
-  PortalFormField,
-  PortalTextInput,
-} from '@/components/portal-forms/form-fields';
+import { PortalFormField, PortalTextInput } from '@/components/portal-forms/form-fields';
 import { useCloseOnFormSuccess } from '@/components/portal-forms/use-close-on-form-success';
-import {
-  INITIAL_ADMIN_CATALOG_ACTION_STATE,
-} from '@/lib/admin/catalog-action-state';
+import { INITIAL_ADMIN_CATALOG_ACTION_STATE } from '@/lib/admin/catalog-action-state';
 import { upsertSettingFormAction } from '@/lib/admin/form-actions';
 
 type SettingFormSheetProps = {

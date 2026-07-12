@@ -1,0 +1,61 @@
+.portal-company-profile {
+  display: flex;
+  gap: 1.25rem;
+}
+
+.portal-company-profile__logo,
+.portal-company-profile__logo-fallback {
+  border-radius: 0.75rem;
+  flex-shrink: 0;
+  height: 4.5rem;
+  width: 4.5rem;
+}
+
+.portal-company-profile__logo {
+  object-fit: cover;
+}
+
+.portal-company-profile__logo-fallback {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.08);
+  display: flex;
+  font-size: 1.5rem;
+  font-weight: 600;
+  justify-content: center;
+}
+
+.portal-company-profile__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.portal-company-profile__name {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.portal-company-profile__slug {
+  margin: 0;
+}
+
+.portal-company-profile__facts {
+  display: grid;
+  gap: 0.75rem 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+  margin: 0;
+}
+
+.portal-company-profile__facts dt {
+  color: var(--te-muted);
+  font-size: 0.75rem;
+  margin: 0;
+}
+
+.portal-company-profile__facts dd {
+  font-size: 0.875rem;
+  margin: 0.2rem 0 0;
+}

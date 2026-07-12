@@ -21,7 +21,7 @@ type BuilderDetailViewProps = {
 };
 
 function BuilderLogo({ builder }: { builder: PublicBuilderDetail }) {
-  if (builder.logoUrl) {
+  if (builder.logoUrl && isHttpUrl(builder.logoUrl)) {
     return <img src={builder.logoUrl} alt="" className="catalog-builder-detail__logo-image" />;
   }
 

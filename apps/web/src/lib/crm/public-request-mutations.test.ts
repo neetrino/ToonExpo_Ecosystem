@@ -50,6 +50,32 @@ describe('submitPublicRequest', () => {
     expect(mockTx.deal.create).not.toHaveBeenCalled();
   });
 
+  it('returns invalidInput when apartment is not in the published chain', async () => {
+    vi.mocked(mockTx.apartment.findFirst).mockResolvedValue(null);
+
+    const result = await submitPublicRequest({
+      ...VALID_INPUT,
+      apartmentId: APARTMENT_ID,
+    });
+
+    expect(result).toEqual({ ok: false, errorKey: 'invalidInput' });
+    expect(mockTx.deal.create).not.toHaveBeenCalled();
+    expect(mockTx.apartment.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          id: APARTMENT_ID,
+          floor: expect.objectContaining({
+            status: 'PUBLISHED',
+            building: expect.objectContaining({
+              status: 'PUBLISHED',
+              projectId: PUBLISHED_PROJECT_ID,
+            }),
+          }),
+        }),
+      }),
+    );
+  });
+
   it('returns invalidInput when apartment does not belong to the project', async () => {
     vi.mocked(mockTx.apartment.findFirst).mockResolvedValue(null);
 

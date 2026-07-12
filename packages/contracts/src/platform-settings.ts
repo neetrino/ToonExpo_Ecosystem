@@ -19,11 +19,7 @@ export type PlatformSettingKey = (typeof PLATFORM_SETTING_KEYS)[number];
 
 export const platformSettingKeySchema = z.enum(PLATFORM_SETTING_KEYS);
 
-const contactEmailValueSchema = z
-  .string()
-  .trim()
-  .email()
-  .max(CONTACT_EMAIL_MAX_LENGTH);
+const contactEmailValueSchema = z.string().trim().email().max(CONTACT_EMAIL_MAX_LENGTH);
 
 const contactPhoneValueSchema = z
   .string()

@@ -110,8 +110,7 @@ function DealActivityRow({
   labels: DealSheetActivitiesProps['labels'];
   formatDateTime: (iso: string) => string;
 }) {
-  const showFollowUpControls =
-    activity.type === 'FOLLOW_UP' && activity.status === 'PLANNED';
+  const showFollowUpControls = activity.type === 'FOLLOW_UP' && activity.status === 'PLANNED';
 
   return (
     <li className={activityRowClassName(activity)}>
@@ -135,7 +134,12 @@ function DealActivityRow({
       </p>
       {showFollowUpControls ? (
         <div className="crm-deal-sheet__activity-actions">
-          <ActivityStatusButton locale={locale} activityId={activity.id} status="DONE" label={labels.markDone} />
+          <ActivityStatusButton
+            locale={locale}
+            activityId={activity.id}
+            status="DONE"
+            label={labels.markDone}
+          />
           <ActivityStatusButton
             locale={locale}
             activityId={activity.id}

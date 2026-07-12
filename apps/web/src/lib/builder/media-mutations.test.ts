@@ -81,6 +81,38 @@ describe('media-mutations ownership', () => {
     expect(prisma.mediaAsset.create).not.toHaveBeenCalled();
   });
 
+  it('updates owned media inside a company-scoped transaction', async () => {
+    vi.mocked(prisma.mediaAsset.findFirst).mockResolvedValue({
+      projectId: 'project-1',
+      apartmentId: null,
+    } as never);
+    vi.mocked(prisma.mediaAsset.updateMany).mockResolvedValue({ count: 1 });
+
+    const result = await updateMediaAsset(OWN_COMPANY_ID, {
+      mediaAssetId: 'media-1',
+      projectId: 'project-1',
+      url: SAMPLE_URL,
+      sortOrder: 1,
+    });
+
+    expect(result).toEqual({ ok: true, mediaAssetId: 'media-1' });
+    expect(prisma.$transaction).toHaveBeenCalled();
+    expect(prisma.mediaAsset.updateMany).toHaveBeenCalledWith({
+      where: {
+        id: 'media-1',
+        OR: [
+          { project: { companyId: OWN_COMPANY_ID } },
+          { apartment: { floor: { building: { project: { companyId: OWN_COMPANY_ID } } } } },
+        ],
+      },
+      data: {
+        url: SAMPLE_URL,
+        alt: null,
+        sortOrder: 1,
+      },
+    });
+  });
+
   it('returns notFound when updateMediaAsset targets a foreign asset', async () => {
     vi.mocked(prisma.mediaAsset.findFirst).mockResolvedValue(null);
 

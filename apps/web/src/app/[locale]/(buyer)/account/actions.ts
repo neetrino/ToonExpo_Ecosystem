@@ -21,7 +21,7 @@ export async function updateBuyerProfileAction(
 ): Promise<BuyerProfileActionResult> {
   const session = await auth();
   const userId = session?.user?.id;
-  if (!userId) {
+  if (!userId || session.user.role !== 'BUYER') {
     return unauthorized();
   }
 

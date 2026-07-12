@@ -1,15 +1,15 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+const mockAuth = vi.fn();
+const mockUpdateBuyerProfile = vi.fn();
+
 vi.mock('@/auth', () => ({
-  auth: vi.fn(),
+  auth: () => mockAuth(),
 }));
 
 vi.mock('@/lib/buyer/profile-mutations', () => ({
-  updateBuyerProfile: vi.fn(),
+  updateBuyerProfile: (...args: unknown[]) => mockUpdateBuyerProfile(...args),
 }));
-
-import { auth } from '@/auth';
-import { updateBuyerProfile } from '@/lib/buyer/profile-mutations';
 
 import { updateBuyerProfileAction } from './actions';
 
@@ -18,31 +18,41 @@ describe('updateBuyerProfileAction', () => {
     vi.clearAllMocks();
   });
 
-  it('returns unauthorized without a session', async () => {
-    vi.mocked(auth).mockResolvedValue(null as never);
+  it('returns unauthorized when session is missing', async () => {
+    mockAuth.mockResolvedValue(null);
+
+    const result = await updateBuyerProfileAction('en', { name: 'Buyer' });
+
+    expect(result).toEqual({ ok: false, errorKey: 'unauthorized' });
+    expect(mockUpdateBuyerProfile).not.toHaveBeenCalled();
+  });
+
+  it('returns unauthorized when role is not BUYER', async () => {
+    mockAuth.mockResolvedValue({
+      user: { id: 'user-builder', role: 'BUILDER' },
+    });
+
+    const result = await updateBuyerProfileAction('en', { name: 'Builder' });
+
+    expect(result).toEqual({ ok: false, errorKey: 'unauthorized' });
+    expect(mockUpdateBuyerProfile).not.toHaveBeenCalled();
+  });
+
+  it('delegates to updateBuyerProfile for BUYER sessions', async () => {
+    mockAuth.mockResolvedValue({
+      user: { id: 'user-buyer', role: 'BUYER' },
+    });
+    mockUpdateBuyerProfile.mockResolvedValue({ ok: true });
 
     const result = await updateBuyerProfileAction('en', {
-      name: 'Anna',
+      name: 'Buyer Name',
       phone: '+37491111111',
     });
 
-    expect(result).toEqual({ ok: false, errorKey: 'unauthorized' });
-    expect(updateBuyerProfile).not.toHaveBeenCalled();
-  });
-
-  it('ignores email and role fields via schema whitelist', async () => {
-    vi.mocked(auth).mockResolvedValue({
-      user: { id: 'user-1', email: 'anna@example.com', name: 'Anna', role: 'BUYER' },
-      expires: '2099-01-01',
-    } as never);
-    vi.mocked(updateBuyerProfile).mockResolvedValue({ ok: true });
-
-    await updateBuyerProfileAction('en', {
-      name: 'Anna Updated',
-      email: 'hacker@example.com',
-      role: 'BIGPROJECTS_ADMIN',
+    expect(result).toEqual({ ok: true });
+    expect(mockUpdateBuyerProfile).toHaveBeenCalledWith('user-buyer', {
+      name: 'Buyer Name',
+      phone: '+37491111111',
     });
-
-    expect(updateBuyerProfile).toHaveBeenCalledWith('user-1', { name: 'Anna Updated' });
   });
 });

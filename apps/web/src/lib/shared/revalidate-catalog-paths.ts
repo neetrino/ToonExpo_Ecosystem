@@ -11,13 +11,19 @@ function revalidateLocaleCatalogPaths(locale: string, params: CatalogPathParams)
   revalidatePath(`/${locale}/portal`);
   revalidatePath(`/${locale}/portal/projects`);
   revalidatePath(`/${locale}/projects`);
+  revalidatePath(`/${locale}/builders`);
+
+  if (params.companySlug) {
+    revalidatePath(`/${locale}/builders/${params.companySlug}`);
+  }
 
   if (params.projectId) {
     revalidatePath(`/${locale}/portal/projects/${params.projectId}`);
   }
 
   if (params.companySlug && params.projectSlug) {
-    revalidatePath(`/${locale}/projects/${params.companySlug}/${params.projectSlug}`);
+    // layout: invalidates project detail and nested apartment routes (Next.js 15).
+    revalidatePath(`/${locale}/projects/${params.companySlug}/${params.projectSlug}`, 'layout');
   }
 }
 
@@ -43,9 +49,14 @@ export function revalidateAdminCatalogPaths(params: CatalogPathParams): void {
   for (const locale of SUPPORTED_LOCALES) {
     revalidatePath(`/${locale}/admin/projects`);
     revalidatePath(`/${locale}/projects`);
+    revalidatePath(`/${locale}/builders`);
+
+    if (params.companySlug) {
+      revalidatePath(`/${locale}/builders/${params.companySlug}`);
+    }
 
     if (params.companySlug && params.projectSlug) {
-      revalidatePath(`/${locale}/projects/${params.companySlug}/${params.projectSlug}`);
+      revalidatePath(`/${locale}/projects/${params.companySlug}/${params.projectSlug}`, 'layout');
     }
   }
 }

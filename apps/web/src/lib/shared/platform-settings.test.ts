@@ -1,16 +1,22 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mockFindMany = vi.fn();
+const mockFindUnique = vi.fn();
 
 vi.mock('@toonexpo/db', () => ({
   prisma: {
     platformSetting: {
       findMany: (...args: unknown[]) => mockFindMany(...args),
+      findUnique: (...args: unknown[]) => mockFindUnique(...args),
     },
   },
 }));
 
-import { loadPlatformContactSettings, resolveContactWithDefaults } from './platform-settings';
+import {
+  isMortgagePageEnabled,
+  loadPlatformContactSettings,
+  resolveContactWithDefaults,
+} from './platform-settings';
 
 describe('loadPlatformContactSettings', () => {
   beforeEach(() => {
@@ -62,5 +68,29 @@ describe('resolveContactWithDefaults', () => {
       email: 'set@toonexpo.com',
       phone: '+37411111111',
     });
+  });
+});
+
+describe('isMortgagePageEnabled', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('defaults to enabled when setting is unset', async () => {
+    mockFindUnique.mockResolvedValue(null);
+
+    await expect(isMortgagePageEnabled()).resolves.toBe(true);
+  });
+
+  it('returns false when MORTGAGE_PAGE_ENABLED is false', async () => {
+    mockFindUnique.mockResolvedValue({ value: 'false' });
+
+    await expect(isMortgagePageEnabled()).resolves.toBe(false);
+  });
+
+  it('returns true when MORTGAGE_PAGE_ENABLED is true', async () => {
+    mockFindUnique.mockResolvedValue({ value: 'true' });
+
+    await expect(isMortgagePageEnabled()).resolves.toBe(true);
   });
 });

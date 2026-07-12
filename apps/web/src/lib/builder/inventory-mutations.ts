@@ -27,7 +27,7 @@ export async function createBuilding(
     }
 
     const building = await tx.building.create({
-      data: { projectId: project.id, name: input.name },
+      data: { projectId: project.id, name: input.name, status: 'DRAFT' },
       select: { id: true },
     });
 
@@ -102,6 +102,7 @@ export async function createFloor(
           buildingId: building.id,
           name: input.name,
           level: input.level,
+          status: 'DRAFT',
         },
         select: { id: true },
       });

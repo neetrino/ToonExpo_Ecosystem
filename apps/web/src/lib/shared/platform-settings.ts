@@ -6,6 +6,7 @@ export type PlatformContactSettings = {
 };
 
 const CONTACT_SETTING_KEYS = ['CONTACT_EMAIL', 'CONTACT_PHONE'] as const;
+const MORTGAGE_PAGE_SETTING_KEY = 'MORTGAGE_PAGE_ENABLED';
 
 export function resolveContactWithDefaults(
   settings: PlatformContactSettings,
@@ -29,4 +30,18 @@ export async function loadPlatformContactSettings(): Promise<PlatformContactSett
     email: byKey.get('CONTACT_EMAIL') ?? null,
     phone: byKey.get('CONTACT_PHONE') ?? null,
   };
+}
+
+/** Default/unset MORTGAGE_PAGE_ENABLED is treated as enabled. */
+export async function isMortgagePageEnabled(): Promise<boolean> {
+  const row = await prisma.platformSetting.findUnique({
+    where: { key: MORTGAGE_PAGE_SETTING_KEY },
+    select: { value: true },
+  });
+
+  if (!row) {
+    return true;
+  }
+
+  return row.value === 'true';
 }

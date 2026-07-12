@@ -1,6 +1,7 @@
 import type { DealActivityInput, DealAssignInput, ManualDealInput } from '@toonexpo/contracts';
 import { prisma } from '@toonexpo/db';
 
+import { recomputeDealNextFollowUpAt } from './activity-lifecycle-mutations';
 import { findCompanyDeal, isCompanyMember, statusChangeBody } from './deal-mutation-helpers';
 import type { CrmMutationResult } from './mutation-result';
 import { runCreateManualDealTransaction } from './manual-deal-mutations';
@@ -40,13 +41,12 @@ export async function addDealActivity(
 
     await tx.deal.update({
       where: { id: deal.id },
-      data: {
-        lastActivityAt: now,
-        ...(input.type === 'FOLLOW_UP' && followUpDueAt
-          ? { nextFollowUpAt: followUpDueAt }
-          : {}),
-      },
+      data: { lastActivityAt: now },
     });
+
+    if (input.type === 'FOLLOW_UP') {
+      await recomputeDealNextFollowUpAt(tx, deal.id);
+    }
 
     return { ok: true, dealId: deal.id };
   });

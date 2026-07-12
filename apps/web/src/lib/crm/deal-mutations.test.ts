@@ -13,7 +13,7 @@ const mockTx = {
     create: vi.fn(),
     delete: vi.fn(),
   },
-  dealActivity: { create: vi.fn() },
+  dealActivity: { create: vi.fn(), findFirst: vi.fn() },
   apartment: {
     findFirst: vi.fn(),
     findMany: vi.fn(),
@@ -472,6 +472,34 @@ describe('addDealActivity / createManualDeal ownership', () => {
     vi.mocked(mockTx.deal.update).mockResolvedValue({ id: DEAL_ID });
     vi.mocked(mockTx.dealActivity.create).mockResolvedValue({ id: 'act-1' });
     vi.mocked(mockTx.deal.create).mockResolvedValue({ id: 'deal-new' });
+    vi.mocked(mockTx.deal.findFirst).mockResolvedValue(dealRow());
+  });
+
+  it('recomputes nextFollowUpAt without clobbering an earlier PLANNED follow-up', async () => {
+    vi.mocked(mockTx.dealActivity.findFirst).mockResolvedValue({
+      dueAt: new Date('2026-07-10T09:00:00Z'),
+    });
+
+    const result = await addDealActivity(
+      COMPANY_ID,
+      {
+        dealId: DEAL_ID,
+        type: 'FOLLOW_UP',
+        body: 'Later follow-up',
+        nextFollowUpAt: new Date('2026-08-15T09:00:00Z'),
+      },
+      ACTOR_ID,
+    );
+
+    expect(result).toEqual({ ok: true, dealId: DEAL_ID });
+    expect(mockTx.deal.update).toHaveBeenCalledWith({
+      where: { id: DEAL_ID },
+      data: { lastActivityAt: expect.any(Date) },
+    });
+    expect(mockTx.deal.update).toHaveBeenCalledWith({
+      where: { id: DEAL_ID },
+      data: { nextFollowUpAt: new Date('2026-07-10T09:00:00Z') },
+    });
   });
 
   it('returns notFound for foreign company deal on addDealActivity', async () => {

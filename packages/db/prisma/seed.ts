@@ -251,7 +251,7 @@ async function upsertSunriseBuilding(projectId: string): Promise<Building> {
   }
 
   return prisma.building.create({
-    data: { projectId, name: BUILDING_NAME },
+    data: { projectId, name: BUILDING_NAME, status: 'PUBLISHED' },
   });
 }
 
@@ -266,6 +266,7 @@ async function upsertSunriseFloors(buildingId: string): Promise<Floor[]> {
         buildingId,
         level: floorConfig.level,
         name: floorConfig.name,
+        status: 'PUBLISHED',
       },
     });
     floors.push(floor);

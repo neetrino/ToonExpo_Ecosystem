@@ -1,8 +1,6 @@
 import {
-  publicApartmentDetailSchema,
   publicProjectDetailSchema,
   type PublicApartment,
-  type PublicApartmentDetail,
   type PublicBuilding,
   type PublicFloor,
   type PublicMediaAsset,
@@ -17,9 +15,6 @@ import type { PublishedProjectFilters } from './project-filters';
 import { resolvePriceDisplay } from './resolve-price-display';
 
 const IS_DEV = process.env.NODE_ENV === 'development';
-
-/** Prisma cuid-ish ids (c + base36 body). Rejects path traversal / junk. */
-const APARTMENT_ID_PATTERN = /^c[a-z0-9]{20,32}$/i;
 
 type ProjectSummaryRow = {
   id: string;
@@ -134,9 +129,7 @@ function mapProjectDetail(row: ProjectDetailRow, isAuthenticated: boolean): Publ
 function buildPublishedProjectsWhere(filters?: PublishedProjectFilters) {
   return {
     status: 'PUBLISHED' as const,
-    ...(filters?.city
-      ? { city: { contains: filters.city, mode: 'insensitive' as const } }
-      : {}),
+    ...(filters?.city ? { city: { contains: filters.city, mode: 'insensitive' as const } } : {}),
     ...(filters?.builderSlug ? { company: { slug: filters.builderSlug } } : {}),
   };
 }
@@ -247,97 +240,4 @@ export async function getPublishedProjectBySlug(
   };
 }
 
-/** Validates apartmentId shape before DB lookup. */
-export function isValidApartmentId(apartmentId: string): boolean {
-  return APARTMENT_ID_PATTERN.test(apartmentId);
-}
-
-/**
- * Published apartment detail for public page.
- * Requires apartment → floor → building → project PUBLISHED chain matching slugs.
- */
-export async function getPublishedApartment(
-  companySlug: string,
-  projectSlug: string,
-  apartmentId: string,
-  isAuthenticated: boolean,
-): Promise<PublicApartmentDetail | null> {
-  if (!isValidApartmentId(apartmentId)) {
-    return null;
-  }
-
-  const row = await prisma.apartment.findFirst({
-    where: {
-      id: apartmentId,
-      floor: {
-        status: 'PUBLISHED',
-        building: {
-          status: 'PUBLISHED',
-          project: {
-            slug: projectSlug,
-            status: 'PUBLISHED',
-            company: { slug: companySlug },
-          },
-        },
-      },
-    },
-    select: {
-      ...apartmentPublicSelect,
-      matterportUrl: true,
-      media: {
-        orderBy: { sortOrder: 'asc' },
-        select: { id: true, url: true, alt: true },
-      },
-      floor: {
-        select: {
-          name: true,
-          building: {
-            select: {
-              name: true,
-              project: {
-                select: {
-                  id: true,
-                  name: true,
-                  slug: true,
-                  companyId: true,
-                  company: { select: { slug: true, name: true } },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  });
-
-  if (!row) {
-    return null;
-  }
-
-  const price = resolvePriceDisplay(row.priceVisibility, row.priceAmd, isAuthenticated);
-  const project = row.floor.building.project;
-  const detail: PublicApartmentDetail = {
-    id: row.id,
-    code: row.code,
-    status: row.status,
-    areaSqm: row.areaSqm,
-    rooms: row.rooms,
-    priceVisibility: row.priceVisibility,
-    priceDisplay: price.priceDisplay,
-    priceAmd: price.priceAmd,
-    matterportUrl: row.matterportUrl,
-    buildingName: row.floor.building.name,
-    floorName: row.floor.name,
-    media: row.media.map(mapMedia),
-    project: {
-      id: project.id,
-      name: project.name,
-      slug: project.slug,
-      companySlug: project.company.slug,
-      companyName: project.company.name,
-      companyId: project.companyId,
-    },
-  };
-
-  return IS_DEV ? publicApartmentDetailSchema.parse(detail) : detail;
-}
+export { getPublishedApartment, isValidApartmentId } from './published-apartment-query';

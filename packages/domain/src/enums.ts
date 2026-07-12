@@ -210,7 +210,11 @@ export type BosRequestedModule = (typeof BOS_REQUESTED_MODULES)[number];
  * Platform audit log actions (v1).
  * Docs: 05-Projects §12 acceptance + 15-Integrations/05 audit conventions.
  */
-export const AUDIT_ACTIONS = ['PUBLICATION_CHANGE', 'PROVISION_ACCOUNT', 'SETTINGS_UPDATE'] as const;
+export const AUDIT_ACTIONS = [
+  'PUBLICATION_CHANGE',
+  'PROVISION_ACCOUNT',
+  'SETTINGS_UPDATE',
+] as const;
 
 export type AuditAction = (typeof AUDIT_ACTIONS)[number];
 

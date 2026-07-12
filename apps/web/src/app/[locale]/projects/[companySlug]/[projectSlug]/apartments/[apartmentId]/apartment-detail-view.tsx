@@ -1,4 +1,5 @@
 import type { PublicApartmentDetail, PublicMediaAsset } from '@toonexpo/contracts';
+import { isHttpUrl } from '@toonexpo/contracts';
 import type { ApartmentStatus } from '@toonexpo/domain';
 import Image from 'next/image';
 
@@ -157,7 +158,7 @@ export function ApartmentDetailView({
             apartmentCode={apartment.code}
             prefill={prefill}
           />
-          {apartment.matterportUrl ? (
+          {apartment.matterportUrl && isHttpUrl(apartment.matterportUrl) ? (
             <a
               href={apartment.matterportUrl}
               target="_blank"

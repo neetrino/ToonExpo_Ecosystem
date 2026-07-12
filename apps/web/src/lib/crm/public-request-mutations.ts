@@ -90,7 +90,13 @@ async function fetchApartmentInProject(
   return tx.apartment.findFirst({
     where: {
       id: apartmentId,
-      floor: { building: { projectId } },
+      floor: {
+        status: 'PUBLISHED',
+        building: {
+          status: 'PUBLISHED',
+          projectId,
+        },
+      },
     },
     select: { id: true, priceAmd: true, status: true },
   });

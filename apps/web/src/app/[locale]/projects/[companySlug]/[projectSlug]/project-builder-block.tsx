@@ -43,7 +43,7 @@ export function ProjectBuilderBlock({
         {labels.title}
       </h2>
       <div className="catalog-builder-block">
-        {companyLogoUrl ? (
+        {companyLogoUrl && isHttpUrl(companyLogoUrl) ? (
           <img src={companyLogoUrl} alt="" className="catalog-builder-block__logo" />
         ) : null}
         <div className="catalog-builder-block__body">

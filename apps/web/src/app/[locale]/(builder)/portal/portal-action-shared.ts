@@ -1,0 +1,74 @@
+import { prisma } from '@toonexpo/db';
+import { SUPPORTED_LOCALES } from '@toonexpo/shared';
+import { revalidatePath } from 'next/cache';
+
+import type { BuilderMutationErrorKey, BuilderMutationResult } from '@/lib/builder/mutations';
+import { resolveCatalogPaths } from '@/lib/shared/resolve-catalog-paths';
+import { revalidateCatalogPaths } from '@/lib/shared/revalidate-catalog-paths';
+
+export type BuilderActionResult<T extends Record<string, unknown> = Record<string, never>> =
+  BuilderMutationResult<T>;
+
+export type BuilderActionFailure = { ok: false; errorKey: BuilderMutationErrorKey };
+
+export function unauthorized(): BuilderActionFailure {
+  return { ok: false, errorKey: 'unauthorized' };
+}
+
+export function invalidInput(): BuilderActionFailure {
+  return { ok: false, errorKey: 'invalidInput' };
+}
+
+export async function revalidateAfterProjectMutation(
+  companyId: string,
+  companySlug: string,
+  projectId: string,
+  projectSlug?: string,
+): Promise<void> {
+  const paths =
+    projectSlug != null
+      ? { projectId, projectSlug, companySlug }
+      : await resolveCatalogPaths(companyId, { projectId });
+
+  if (paths) {
+    revalidateCatalogPaths(paths);
+  } else {
+    revalidateCatalogPaths({});
+  }
+}
+
+export async function revalidateAfterInventoryMutation(
+  companyId: string,
+  hint: { projectId?: string; buildingId?: string; floorId?: string },
+): Promise<void> {
+  const paths = await resolveCatalogPaths(companyId, hint);
+  revalidateCatalogPaths(paths ?? {});
+}
+
+export async function revalidateAfterCompanyProfileMutation(
+  companyId: string,
+  companySlug: string,
+): Promise<void> {
+  const projects = await prisma.project.findMany({
+    where: { companyId },
+    select: { slug: true },
+  });
+
+  const pathSets = projects.map((project) => ({
+    companySlug,
+    projectSlug: project.slug,
+  }));
+
+  revalidateCatalogPaths(pathSets.length > 0 ? pathSets : { companySlug });
+  for (const locale of SUPPORTED_LOCALES) {
+    revalidatePath(`/${locale}/portal/company`);
+  }
+}
+
+export async function revalidateAfterMediaMutation(
+  companyId: string,
+  hint: { projectId?: string; apartmentId?: string; mediaAssetId?: string },
+): Promise<void> {
+  const paths = await resolveCatalogPaths(companyId, hint);
+  revalidateCatalogPaths(paths ?? {});
+}

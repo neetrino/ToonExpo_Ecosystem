@@ -6,10 +6,7 @@ import {
 } from '@toonexpo/contracts';
 import { prisma } from '@toonexpo/db';
 
-import {
-  mapProjectSummary,
-  projectSummarySelect,
-} from '../catalog/map-project-summary';
+import { mapProjectSummary, projectSummarySelect } from '../catalog/map-project-summary';
 
 const IS_DEV = process.env.NODE_ENV === 'development';
 

@@ -14,10 +14,7 @@ vi.mock('@toonexpo/db', () => ({
   },
 }));
 
-import {
-  recomputeDealNextFollowUpAt,
-  setActivityStatus,
-} from './activity-lifecycle-mutations';
+import { recomputeDealNextFollowUpAt, setActivityStatus } from './activity-lifecycle-mutations';
 
 const COMPANY_ID = 'company-own';
 const FOREIGN_COMPANY_ID = 'company-foreign';

@@ -150,7 +150,11 @@ export async function setActivityStatusFormAction(
 ): Promise<CrmFormActionState> {
   const activityId = getFormString(formData, 'activityId');
   const statusRaw = getFormString(formData, 'status');
-  if (!activityId || !statusRaw || !ACTIVITY_STATUSES.includes(statusRaw as (typeof ACTIVITY_STATUSES)[number])) {
+  if (
+    !activityId ||
+    !statusRaw ||
+    !ACTIVITY_STATUSES.includes(statusRaw as (typeof ACTIVITY_STATUSES)[number])
+  ) {
     return { errorKey: 'invalidInput' satisfies CrmMutationErrorKey };
   }
 

@@ -4,13 +4,7 @@ import { z } from 'zod';
 export const PROJECT_CITY_FILTER_MAX_LENGTH = 80;
 
 const projectFiltersInputSchema = z.object({
-  city: z
-    .string()
-    .trim()
-    .min(1)
-    .max(PROJECT_CITY_FILTER_MAX_LENGTH)
-    .optional()
-    .catch(undefined),
+  city: z.string().trim().min(1).max(PROJECT_CITY_FILTER_MAX_LENGTH).optional().catch(undefined),
   builder: slugSchema.optional().catch(undefined),
 });
 

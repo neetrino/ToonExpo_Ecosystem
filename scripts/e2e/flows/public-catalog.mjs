@@ -57,10 +57,7 @@ export async function runPublicCatalogFlow() {
     const res = await fetchWithJar(`${E2E_BASE_URL}/en/projects?city=Nowhere`);
     assert(res.status === 200, `status ${res.status}`);
     const html = await res.text();
-    assert(
-      html.includes('No projects match your filters.'),
-      'expected empty filtered state copy',
-    );
+    assert(html.includes('No projects match your filters.'), 'expected empty filtered state copy');
     assert(!html.includes(SUNRISE_NAME), 'Sunrise leaked into filtered empty result');
   });
 
@@ -112,6 +109,30 @@ export async function runPublicCatalogFlow() {
     const aptHtml = await aptRes.text();
     assert(aptHtml.includes('Price on request'), 'expected price-on-request copy');
     assert(!/79[\s,]?000[\s,]?000/.test(aptHtml), 'BY_REQUEST price leaked as AMD amount');
+  });
+
+  await runCheck('GET VISIBLE_AFTER_LOGIN apartment hides price anonymously', async () => {
+    const projectUrl = `${E2E_BASE_URL}/en/projects/${DEMO_COMPANY_SLUG}/${SUNRISE_SLUG}`;
+    const projectRes = await fetchWithJar(projectUrl);
+    const projectHtml = await projectRes.text();
+    const match = projectHtml.match(
+      new RegExp(
+        `/projects/${DEMO_COMPANY_SLUG}/${SUNRISE_SLUG}/apartments/(c[a-z0-9]+)[^"]*"[^>]*>\\s*202`,
+      ),
+    );
+    assert(match?.[1], 'apartment 202 detail link missing');
+    const aptRes = await fetchWithJar(
+      `${E2E_BASE_URL}/en/projects/${DEMO_COMPANY_SLUG}/${SUNRISE_SLUG}/apartments/${match[1]}`,
+    );
+    assert(aptRes.status === 200, `apartment status ${aptRes.status}`);
+    const aptHtml = await aptRes.text();
+    assert(
+      aptHtml.includes('Log in to see price') || aptHtml.includes('Visible after login'),
+      'expected login-required price copy',
+    );
+    assert(!aptHtml.includes('145,000,000'), 'VISIBLE_AFTER_LOGIN price leaked as formatted AMD');
+    assert(!/145[\s,]?000[\s,]?000/.test(aptHtml), 'VISIBLE_AFTER_LOGIN price digits leaked');
+    assert(!aptHtml.includes('145000000'), 'VISIBLE_AFTER_LOGIN raw price leaked');
   });
 
   await runCheck('GET /de → 404', async () => {

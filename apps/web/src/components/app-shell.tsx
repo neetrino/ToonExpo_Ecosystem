@@ -15,6 +15,7 @@ type AppShellProps = {
   navVisibility: AppShellNavVisibility;
   contactEmail: string;
   contactPhone: string;
+  mortgagePageEnabled?: boolean;
 };
 
 export function AppShell({
@@ -23,6 +24,7 @@ export function AppShell({
   navVisibility,
   contactEmail,
   contactPhone,
+  mortgagePageEnabled = true,
 }: AppShellProps) {
   const t = useTranslations();
   const locale = useLocale();
@@ -38,7 +40,7 @@ export function AppShell({
           <Link href="/projects">{t('nav.projects')}</Link>
           <Link href="/builders">{t('nav.builders')}</Link>
           <Link href="/partners">{t('nav.partners')}</Link>
-          <Link href="/mortgage">{t('nav.mortgage')}</Link>
+          {mortgagePageEnabled ? <Link href="/mortgage">{t('nav.mortgage')}</Link> : null}
           <Link href="/account">{t('nav.buyer')}</Link>
           {navVisibility.portal ? <Link href="/portal">{t('nav.builder')}</Link> : null}
           {navVisibility.checkin ? <Link href="/checkin">{t('nav.entrance')}</Link> : null}
