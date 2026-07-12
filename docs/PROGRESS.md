@@ -10,8 +10,11 @@ Branch: `sipan`. MVP backlog through Sprint 7.7 is **done**. Use this section to
 - **Redesign** — navy/teal public + portal UI via `--te-*` design tokens (`apps/web/src/app/globals.css`).
 - **R2 uploads** — signed presign for media, company logos, canvas images, venue/partner images (`POST /api/uploads/presign`).
 - **Playwright (local)** — `pnpm test:e2e` under `e2e/playwright/` (catalog, auth RBAC, favorites); fetch smoke kept (`pnpm e2e` / `e2e:local`).
-- **Venue map + route path** — booth markers, BFS path graph, admin graph editor, public Show route polyline.
+- **Venue map + route path** — booth markers, BFS path graph, admin graph editor, public Show route polyline; `Booth.projectId` assign + public search/link; `BOOTH_SELECTED` / `ROUTE_REQUESTED` analytics.
 - **20-project seed** — `seedCatalogProjects` (~19 published catalog projects + demo Sunrise tree); run `pnpm db:seed`.
+- **P1 gap pack** — readiness category admin CRUD + assessment audit; project completeness incomplete flags (portal/admin); apartment views on builder/admin analytics dashboards.
+- **Partner self-service** — `/partner` portal (profile + bank offers for `BANK` partners); role-gated nav and server actions.
+- **P2 polish** — buyer QR revoke (`revokedAt`); public SEO (`generateMetadata` + JSON-LD on detail pages); optional Sentry env placeholders + no-op init (no SDK required).
 
 ### Backend next
 
@@ -30,15 +33,9 @@ Branch: `sipan`. MVP backlog through Sprint 7.7 is **done**. Use this section to
 1. **Playwright CI wiring** — same specs as local; document seed creds in CI secrets (local `pnpm test:e2e` already works).
 2. **GPS blue-dot** — explicitly **out of scope** (no live indoor positioning in v1).
 3. **Multi-floor venue routing** — single-floor BFS v1 done; multi-floor graph + UI is follow-up.
-4. **UI polish nits** — booth spreadsheet import, booth types dictionary, partner readiness module (deferred).
+4. **Exhibition / admin polish** — booth spreadsheet import, stacked sheets, booth types dictionary; company public vs internal field split (deferred).
 5. **Catalog / public polish** — builders directory filters, partners list UX, mobile pass on catalog cards/sheets under existing `--te-*` tokens (no new palette).
 6. **Keep `--te-*` tokens** — extend UI via tokens in `globals.css`, not ad-hoc hex/inline styles.
-
-### P2 polish (partial)
-
-- **QR revoke** — buyer account can revoke (`revokedAt`); resolve/check-in already reject revoked tokens; regenerate clears block.
-- **Public SEO** — `generateMetadata` + JSON-LD on project / apartment / partner / builder detail pages (`apps/web/src/lib/seo/`).
-- **Sentry** — optional env placeholders + no-op `initSentry` (full SDK wizard when DSN exists).
 
 ### Setup (read first)
 
@@ -51,7 +48,7 @@ Branch: `sipan`. MVP backlog through Sprint 7.7 is **done**. Use this section to
 
 ## Current Status
 
-**Recent:** Venue route/path graph v1 (entrance + waypoints/edges, public Show route, admin graph editor).
+**Recent:** P1 gap pack + partner self-service `/partner` portal + P2 polish (QR revoke, SEO metadata/JSON-LD, Sentry env placeholders). Overall readiness ~96% — see [`PROJECT-STATUS.md`](./PROJECT-STATUS.md).
 
 Sprint 7.7 **COMPLETE** — Tech hardening: apartment status history, Swagger prod gate, analytics sampling/bot filter.
 
@@ -171,7 +168,7 @@ Sprint 6 **COMPLETE** — Analytics v1, BOS provisioning (atomic idempotency), a
 
 - Venue map / booths — done in Sprint 7.6; route graph / pathfinding — done (Venue route path v1).
 - Company logo / visual-map / venue / partner image uploads — done (R2 purpose enum extension of Sprint 7.3).
-- Category CRUD UI for readiness.
+- Category CRUD UI for readiness — done (P1 gap pack).
 - Partner readiness module.
 
 ## Sprint 4 — COMPLETE

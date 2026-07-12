@@ -12,7 +12,7 @@ It contains only ToonExpo documentation plus a small integration contract with B
 - [Tech Card](./TECH_CARD.md)
 - [Architecture](./01-ARCHITECTURE.md)
 - [Development Start Pack](./00-Development-Start/01-MVP-Scope-Freeze.md)
-- [Project — Status](./PROJECT-STATUS.md) — module-by-module readiness (%)
+- [Project — Status](./PROJECT-STATUS.md) — module-by-module readiness (~96% overall)
 - [Progress](./PROGRESS.md) — current status; **[Handoff — next work (BE / FE)](./PROGRESS.md#handoff--next-work-be--fe)** for continue-dev backlog
 - [Decisions](./DECISIONS.md)
 - [ToonExpo Ecosystem Overview](./02-ToonExpo-Ecosystem/00-Ecosystem-Overview.md)
