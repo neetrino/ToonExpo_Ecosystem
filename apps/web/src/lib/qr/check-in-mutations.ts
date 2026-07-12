@@ -1,21 +1,16 @@
 import { checkInInputSchema, type CheckInInput } from '@toonexpo/contracts';
-import { prisma, Prisma } from '@toonexpo/db';
-
 import { hashQrToken } from './token';
+
+import { prisma, Prisma } from '@toonexpo/db';
 
 const MILLISECONDS_PER_MINUTE = 60 * 1000;
 const ENTRANCE_SCAN_LOG_DEBOUNCE_MINUTES = 5;
-const ENTRANCE_SCAN_LOG_DEBOUNCE_MS =
-  ENTRANCE_SCAN_LOG_DEBOUNCE_MINUTES * MILLISECONDS_PER_MINUTE;
+const ENTRANCE_SCAN_LOG_DEBOUNCE_MS = ENTRANCE_SCAN_LOG_DEBOUNCE_MINUTES * MILLISECONDS_PER_MINUTE;
 
 const UNIQUE_CONSTRAINT_ERROR = 'P2002';
 
 export type CheckInMutationErrorKey =
-  | 'unauthorized'
-  | 'invalidInput'
-  | 'notFound'
-  | 'noActiveEvent'
-  | 'alreadyCheckedIn';
+  'unauthorized' | 'invalidInput' | 'notFound' | 'noActiveEvent' | 'alreadyCheckedIn';
 
 export type CheckInMutationResult =
   | { ok: true; checkInId: string; alreadyCheckedIn: boolean; checkedInAt: Date }
@@ -181,6 +176,14 @@ export async function performEntranceCheckIn(
   raw: PerformCheckInParams,
 ): Promise<CheckInMutationResult> {
   if (!raw.staffUserId) {
+    return { ok: false, errorKey: 'unauthorized' };
+  }
+
+  const staff = await prisma.user.findUnique({
+    where: { id: raw.staffUserId },
+    select: { role: true },
+  });
+  if (!staff || staff.role !== 'ENTRANCE_STAFF') {
     return { ok: false, errorKey: 'unauthorized' };
   }
 

@@ -47,6 +47,18 @@ describe('calculateMortgagePayment', () => {
     });
   });
 
+  it('returns zero payment for negative property price inputs', () => {
+    const result = calculateMortgagePayment({
+      propertyPriceAmd: -1_000_000,
+      downPaymentAmd: 0,
+      termMonths: 120,
+      annualInterestRatePercent: 10,
+    });
+
+    expect(result.monthlyPaymentAmd).toBe(0);
+    expect(result.loanAmountAmd).toBe(0);
+  });
+
   it('returns zero payment for out-of-bounds term values', () => {
     expect(
       calculateMortgagePayment({

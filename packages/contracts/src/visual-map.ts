@@ -2,6 +2,8 @@ import { APARTMENT_STATUSES, PUBLICATION_STATUSES } from '@toonexpo/domain';
 import { emptyToUndefined } from '@toonexpo/shared';
 import { z } from 'zod';
 
+import { httpUrlSchemaWithMax } from './url';
+
 export const CANVAS_TITLE_MAX_LENGTH = 120;
 export const CANVAS_IMAGE_URL_MAX_LENGTH = 2048;
 export const CANVAS_IMAGE_ALT_MAX_LENGTH = 200;
@@ -43,7 +45,8 @@ export const canvasUpsertInputSchema = z
     buildingId: optionalId,
     floorId: optionalId,
     title: optionalTrimmedString(CANVAS_TITLE_MAX_LENGTH),
-    imageUrl: z.string().trim().url().max(CANVAS_IMAGE_URL_MAX_LENGTH),
+    // v1 URL input; replace with media-upload pipeline when available.
+    imageUrl: httpUrlSchemaWithMax(CANVAS_IMAGE_URL_MAX_LENGTH),
     imageAlt: optionalTrimmedString(CANVAS_IMAGE_ALT_MAX_LENGTH),
   })
   .superRefine((data, ctx) => {

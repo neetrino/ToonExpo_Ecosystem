@@ -24,6 +24,15 @@ describe('canvasUpsertInputSchema', () => {
     ).toBe(false);
   });
 
+  it('rejects non-http(s) image URLs', () => {
+    expect(
+      canvasUpsertInputSchema.safeParse({
+        projectId: 'proj_1',
+        imageUrl: 'javascript:alert(1)',
+      }).success,
+    ).toBe(false);
+  });
+
   it('accepts update with canvasId without context ids', () => {
     const parsed = canvasUpsertInputSchema.safeParse({
       canvasId: 'canvas_1',

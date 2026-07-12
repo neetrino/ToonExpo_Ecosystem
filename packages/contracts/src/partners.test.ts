@@ -21,8 +21,25 @@ describe('partner schemas', () => {
       name: 'Converse Bank Demo',
       type: 'BANK',
       phone: '+37410000000',
+      website: 'https://bank.example',
+      logoUrl: 'https://picsum.photos/seed/logo/200/200',
     });
     expect(result.success).toBe(true);
+  });
+
+  it('rejects javascript and data URL schemes on partner fields', () => {
+    const website = partnerUpsertInputSchema.safeParse({
+      name: 'Evil Partner',
+      type: 'SERVICE',
+      website: 'javascript:alert(1)',
+    });
+    const logo = partnerUpsertInputSchema.safeParse({
+      name: 'Evil Partner',
+      type: 'SERVICE',
+      logoUrl: 'data:text/html,evil',
+    });
+    expect(website.success).toBe(false);
+    expect(logo.success).toBe(false);
   });
 
   it('rejects interest rates outside bounds', () => {

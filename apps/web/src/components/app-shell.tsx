@@ -5,13 +5,17 @@ import type { ReactNode } from 'react';
 
 import { LocaleSwitcher } from '@/components/locale-switcher';
 import { Link } from '@/i18n/navigation';
+import type { AppShellNavVisibility } from '@/lib/auth/nav-visibility';
+
+export type { AppShellNavVisibility };
 
 type AppShellProps = {
   children: ReactNode;
   authSlot?: ReactNode;
+  navVisibility: AppShellNavVisibility;
 };
 
-export function AppShell({ children, authSlot }: AppShellProps) {
+export function AppShell({ children, authSlot, navVisibility }: AppShellProps) {
   const t = useTranslations();
   const locale = useLocale();
 
@@ -27,9 +31,9 @@ export function AppShell({ children, authSlot }: AppShellProps) {
           <Link href="/partners">{t('nav.partners')}</Link>
           <Link href="/mortgage">{t('nav.mortgage')}</Link>
           <Link href="/account">{t('nav.buyer')}</Link>
-          <Link href="/portal">{t('nav.builder')}</Link>
-          <Link href="/checkin">{t('nav.entrance')}</Link>
-          <Link href="/admin">{t('nav.admin')}</Link>
+          {navVisibility.portal ? <Link href="/portal">{t('nav.builder')}</Link> : null}
+          {navVisibility.checkin ? <Link href="/checkin">{t('nav.entrance')}</Link> : null}
+          {navVisibility.admin ? <Link href="/admin">{t('nav.admin')}</Link> : null}
           <LocaleSwitcher currentLocale={locale} />
           {authSlot}
         </nav>

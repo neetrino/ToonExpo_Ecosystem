@@ -1,6 +1,8 @@
 import { PARTNER_TYPES, PUBLICATION_STATUSES } from '@toonexpo/domain';
 import { z } from 'zod';
 
+import { optionalHttpUrlSchema } from './url';
+
 export const PARTNER_NAME_MAX_LENGTH = 160;
 export const PARTNER_DESCRIPTION_MAX_LENGTH = 4000;
 export const PARTNER_LOGO_URL_MAX_LENGTH = 2048;
@@ -71,11 +73,11 @@ export const partnerUpsertInputSchema = z.object({
   partnerId: z.string().trim().min(1).optional(),
   name: z.string().trim().min(1).max(PARTNER_NAME_MAX_LENGTH),
   type: z.enum(PARTNER_TYPES),
-  logoUrl: optionalTrimmedString(PARTNER_LOGO_URL_MAX_LENGTH),
+  logoUrl: optionalHttpUrlSchema(PARTNER_LOGO_URL_MAX_LENGTH),
   description: optionalTrimmedString(PARTNER_DESCRIPTION_MAX_LENGTH),
   phone: optionalTrimmedString(PARTNER_PHONE_MAX_LENGTH),
   email: optionalEmail,
-  website: optionalTrimmedString(PARTNER_WEBSITE_MAX_LENGTH),
+  website: optionalHttpUrlSchema(PARTNER_WEBSITE_MAX_LENGTH),
   serviceCategories: serviceCategoriesSchema,
 });
 

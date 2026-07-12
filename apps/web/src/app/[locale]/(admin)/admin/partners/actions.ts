@@ -6,7 +6,6 @@ import {
   partnerStatusInputSchema,
   partnerUpsertInputSchema,
 } from '@toonexpo/contracts';
-import { revalidatePath } from 'next/cache';
 
 import { assertAdminSession } from '@/lib/admin/assert-admin-session';
 import type { AdminMutationErrorKey, AdminMutationResult } from '@/lib/admin/mutation-result';
@@ -18,6 +17,7 @@ import {
   updateBankOffer,
   updatePartner,
 } from '@/lib/admin/partner-mutations';
+import { revalidatePartnerPaths } from '@/lib/shared/revalidate-partner-paths';
 
 export type PartnerActionResult<T extends Record<string, unknown> = Record<string, never>> =
   AdminMutationResult<T>;
@@ -30,14 +30,6 @@ function unauthorized(): PartnerActionFailure {
 
 function invalidInput(): PartnerActionFailure {
   return { ok: false, errorKey: 'invalidInput' };
-}
-
-function revalidatePartnerPaths(locale: string, partnerId?: string): void {
-  revalidatePath(`/${locale}/admin/partners`);
-  if (partnerId) {
-    revalidatePath(`/${locale}/admin/partners/${partnerId}`);
-  }
-  revalidatePath(`/${locale}/admin`);
 }
 
 export async function createPartnerAction(
@@ -56,7 +48,7 @@ export async function createPartnerAction(
 
   const result = await createPartner(parsed.data);
   if (result.ok) {
-    revalidatePartnerPaths(locale, result.partnerId);
+    revalidatePartnerPaths({ partnerId: result.partnerId, partnerSlug: result.partnerSlug });
   }
   return result;
 }
@@ -80,7 +72,7 @@ export async function updatePartnerAction(
     partnerId: parsed.data.partnerId,
   });
   if (result.ok) {
-    revalidatePartnerPaths(locale, result.partnerId);
+    revalidatePartnerPaths({ partnerId: result.partnerId, partnerSlug: result.partnerSlug });
   }
   return result;
 }
@@ -101,7 +93,7 @@ export async function setPartnerStatusAction(
 
   const result = await setPartnerStatus(parsed.data);
   if (result.ok) {
-    revalidatePartnerPaths(locale, result.partnerId);
+    revalidatePartnerPaths({ partnerId: result.partnerId, partnerSlug: result.partnerSlug });
   }
   return result;
 }
@@ -122,7 +114,10 @@ export async function createBankOfferAction(
 
   const result = await createBankOffer(parsed.data);
   if (result.ok) {
-    revalidatePartnerPaths(locale, parsed.data.partnerId);
+    revalidatePartnerPaths({
+      partnerId: parsed.data.partnerId,
+      partnerSlug: result.partnerSlug,
+    });
   }
   return result;
 }
@@ -146,7 +141,10 @@ export async function updateBankOfferAction(
     bankOfferId: parsed.data.bankOfferId,
   });
   if (result.ok) {
-    revalidatePartnerPaths(locale, parsed.data.partnerId);
+    revalidatePartnerPaths({
+      partnerId: parsed.data.partnerId,
+      partnerSlug: result.partnerSlug,
+    });
   }
   return result;
 }
@@ -168,7 +166,7 @@ export async function setBankOfferStatusAction(
 
   const result = await setBankOfferStatus(parsed.data);
   if (result.ok) {
-    revalidatePartnerPaths(locale, partnerId);
+    revalidatePartnerPaths({ partnerId, partnerSlug: result.partnerSlug });
   }
   return result;
 }

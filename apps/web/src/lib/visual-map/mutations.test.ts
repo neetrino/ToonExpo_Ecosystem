@@ -34,7 +34,14 @@ vi.mock('@toonexpo/db', () => ({
 
 import { prisma } from '@toonexpo/db';
 
-import { createCanvas, createHotspot, deleteCanvas, updateHotspot } from './mutations';
+import {
+  createCanvas,
+  createHotspot,
+  deleteCanvas,
+  moveHotspot,
+  updateCanvas,
+  updateHotspot,
+} from './mutations';
 
 const OWN_COMPANY_ID = 'company-own';
 const FOREIGN_COMPANY_ID = 'company-foreign';
@@ -147,6 +154,35 @@ describe('visual-map mutations ownership', () => {
     });
 
     expect(result).toEqual({ ok: false, errorKey: 'targetMismatch' });
+    expect(prisma.hotspot.update).not.toHaveBeenCalled();
+  });
+
+  it('returns notFound when updateCanvas targets a foreign company canvas', async () => {
+    vi.mocked(prisma.visualCanvas.findFirst).mockResolvedValue(null);
+
+    const result = await updateCanvas(FOREIGN_COMPANY_ID, {
+      canvasId: 'canvas-1',
+      imageUrl: 'https://picsum.photos/seed/map/1200/800',
+    });
+
+    expect(result).toEqual({ ok: false, errorKey: 'notFound' });
+    expect(prisma.visualCanvas.update).not.toHaveBeenCalled();
+  });
+
+  it('returns notFound when moveHotspot targets a foreign company canvas', async () => {
+    vi.mocked(prisma.hotspot.findFirst).mockResolvedValue({
+      id: 'hotspot-1',
+      canvasId: 'canvas-1',
+    } as never);
+    vi.mocked(prisma.visualCanvas.findFirst).mockResolvedValue(null);
+
+    const result = await moveHotspot(FOREIGN_COMPANY_ID, {
+      hotspotId: 'hotspot-1',
+      x: 10,
+      y: 20,
+    });
+
+    expect(result).toEqual({ ok: false, errorKey: 'notFound' });
     expect(prisma.hotspot.update).not.toHaveBeenCalled();
   });
 

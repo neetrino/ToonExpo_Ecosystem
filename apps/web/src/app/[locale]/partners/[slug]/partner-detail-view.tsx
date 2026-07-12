@@ -1,4 +1,5 @@
 import type { PublicBankOffer, PublicPartnerDetail } from '@toonexpo/contracts';
+import { isHttpUrl } from '@toonexpo/contracts';
 
 import { Link } from '@/i18n/navigation';
 import { formatPriceAmd } from '@/lib/catalog/format-price';
@@ -118,9 +119,13 @@ export function PartnerDetailView({ partner, locale, labels }: PartnerDetailView
             {partner.website ? (
               <li>
                 <span className="catalog-partner-detail__contact-label">{labels.website}</span>
-                <a href={partner.website} rel="noopener noreferrer" target="_blank">
-                  {partner.website}
-                </a>
+                {isHttpUrl(partner.website) ? (
+                  <a href={partner.website} rel="noopener noreferrer" target="_blank">
+                    {partner.website}
+                  </a>
+                ) : (
+                  <span>{partner.website}</span>
+                )}
               </li>
             ) : null}
           </ul>

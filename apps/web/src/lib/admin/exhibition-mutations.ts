@@ -9,6 +9,11 @@ import { UNIQUE_CONSTRAINT_ERROR } from '@/lib/admin/mutation-result';
 
 export type ExhibitionEventMutationResult = AdminMutationResult<{ eventId: string }>;
 
+type TransactionClient = Omit<
+  typeof prisma,
+  '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'
+>;
+
 function isCodeUniqueViolation(error: Prisma.PrismaClientKnownRequestError): boolean {
   const target = error.meta?.target;
   return Array.isArray(target) && target.includes('code');
@@ -18,40 +23,28 @@ function invalidInput(): { ok: false; errorKey: AdminMutationErrorKey } {
   return { ok: false, errorKey: 'invalidInput' };
 }
 
-export async function upsertExhibitionEvent(
-  raw: unknown,
-): Promise<ExhibitionEventMutationResult> {
-  const parsed = exhibitionEventUpsertInputSchema.safeParse(raw);
-  if (!parsed.success) {
-    return invalidInput();
-  }
-
-  const input = parsed.data;
-  if (input.startDate && input.endDate && input.endDate < input.startDate) {
-    return invalidInput();
-  }
-
-  try {
-    if (input.eventId) {
-      return updateEvent({ ...input, eventId: input.eventId });
-    }
-    return createEvent(input);
-  } catch (error: unknown) {
-    if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
-      error.code === UNIQUE_CONSTRAINT_ERROR &&
-      isCodeUniqueViolation(error)
-    ) {
-      return { ok: false, errorKey: 'nameTaken' };
-    }
-    throw error;
-  }
+async function demoteOtherActiveEvents(
+  tx: TransactionClient,
+  excludeEventId?: string,
+): Promise<void> {
+  await tx.exhibitionEvent.updateMany({
+    where: {
+      status: 'ACTIVE',
+      ...(excludeEventId ? { id: { not: excludeEventId } } : {}),
+    },
+    data: { status: 'PLANNING' },
+  });
 }
 
 async function createEvent(
+  tx: TransactionClient,
   input: ExhibitionEventUpsertInput,
 ): Promise<ExhibitionEventMutationResult> {
-  const created = await prisma.exhibitionEvent.create({
+  if (input.status === 'ACTIVE') {
+    await demoteOtherActiveEvents(tx);
+  }
+
+  const created = await tx.exhibitionEvent.create({
     data: {
       name: input.name,
       code: input.code.toLowerCase(),
@@ -65,9 +58,10 @@ async function createEvent(
 }
 
 async function updateEvent(
+  tx: TransactionClient,
   input: ExhibitionEventUpsertInput & { eventId: string },
 ): Promise<ExhibitionEventMutationResult> {
-  const existing = await prisma.exhibitionEvent.findUnique({
+  const existing = await tx.exhibitionEvent.findUnique({
     where: { id: input.eventId },
     select: { id: true },
   });
@@ -75,7 +69,11 @@ async function updateEvent(
     return { ok: false, errorKey: 'notFound' };
   }
 
-  await prisma.exhibitionEvent.update({
+  if (input.status === 'ACTIVE') {
+    await demoteOtherActiveEvents(tx, input.eventId);
+  }
+
+  await tx.exhibitionEvent.update({
     where: { id: input.eventId },
     data: {
       name: input.name,
@@ -86,4 +84,34 @@ async function updateEvent(
     },
   });
   return { ok: true, eventId: input.eventId };
+}
+
+export async function upsertExhibitionEvent(raw: unknown): Promise<ExhibitionEventMutationResult> {
+  const parsed = exhibitionEventUpsertInputSchema.safeParse(raw);
+  if (!parsed.success) {
+    return invalidInput();
+  }
+
+  const input = parsed.data;
+  if (input.startDate && input.endDate && input.endDate < input.startDate) {
+    return invalidInput();
+  }
+
+  try {
+    return await prisma.$transaction(async (tx) => {
+      if (input.eventId) {
+        return updateEvent(tx, { ...input, eventId: input.eventId });
+      }
+      return createEvent(tx, input);
+    });
+  } catch (error: unknown) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === UNIQUE_CONSTRAINT_ERROR &&
+      isCodeUniqueViolation(error)
+    ) {
+      return { ok: false, errorKey: 'nameTaken' };
+    }
+    throw error;
+  }
 }

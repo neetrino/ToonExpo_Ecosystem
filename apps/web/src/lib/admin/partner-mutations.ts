@@ -43,7 +43,7 @@ function isUniqueViolation(error: unknown): boolean {
 
 export async function createPartner(
   input: PartnerUpsertInput,
-): Promise<AdminMutationResult<{ partnerId: string }>> {
+): Promise<AdminMutationResult<{ partnerId: string; partnerSlug: string }>> {
   const baseSlug = slugifyCompanyName(input.name);
   const data = toPartnerWriteData(input);
 
@@ -59,10 +59,10 @@ export async function createPartner(
 
     const partner = await prisma.partner.create({
       data: { ...data, slug },
-      select: { id: true },
+      select: { id: true, slug: true },
     });
 
-    return { ok: true, partnerId: partner.id };
+    return { ok: true, partnerId: partner.id, partnerSlug: partner.slug };
   } catch (error) {
     if (isUniqueViolation(error)) {
       return { ok: false, errorKey: 'nameTaken' };
@@ -73,20 +73,24 @@ export async function createPartner(
 
 export async function updatePartner(
   input: PartnerUpsertInput & { partnerId: string },
-): Promise<AdminMutationResult<{ partnerId: string }>> {
+): Promise<AdminMutationResult<{ partnerId: string; partnerSlug: string }>> {
   const data = toPartnerWriteData(input);
 
   try {
-    const result = await prisma.partner.updateMany({
+    const existing = await prisma.partner.findUnique({
+      where: { id: input.partnerId },
+      select: { id: true, slug: true },
+    });
+    if (!existing) {
+      return { ok: false, errorKey: 'notFound' };
+    }
+
+    await prisma.partner.update({
       where: { id: input.partnerId },
       data,
     });
 
-    if (result.count === 0) {
-      return { ok: false, errorKey: 'notFound' };
-    }
-
-    return { ok: true, partnerId: input.partnerId };
+    return { ok: true, partnerId: existing.id, partnerSlug: existing.slug };
   } catch (error) {
     if (isUniqueViolation(error)) {
       return { ok: false, errorKey: 'nameTaken' };
@@ -97,17 +101,21 @@ export async function updatePartner(
 
 export async function setPartnerStatus(
   input: PartnerStatusInput,
-): Promise<AdminMutationResult<{ partnerId: string }>> {
-  const result = await prisma.partner.updateMany({
+): Promise<AdminMutationResult<{ partnerId: string; partnerSlug: string }>> {
+  const existing = await prisma.partner.findUnique({
+    where: { id: input.partnerId },
+    select: { id: true, slug: true },
+  });
+  if (!existing) {
+    return { ok: false, errorKey: 'notFound' };
+  }
+
+  await prisma.partner.update({
     where: { id: input.partnerId },
     data: { status: input.status },
   });
 
-  if (result.count === 0) {
-    return { ok: false, errorKey: 'notFound' };
-  }
-
-  return { ok: true, partnerId: input.partnerId };
+  return { ok: true, partnerId: existing.id, partnerSlug: existing.slug };
 }
 
 async function assertBankPartner(
@@ -147,12 +155,25 @@ function toBankOfferWriteData(input: BankOfferUpsertInput): BankOfferWriteData {
   };
 }
 
+async function partnerSlugById(partnerId: string): Promise<string | null> {
+  const partner = await prisma.partner.findUnique({
+    where: { id: partnerId },
+    select: { slug: true },
+  });
+  return partner?.slug ?? null;
+}
+
 export async function createBankOffer(
   input: BankOfferUpsertInput,
-): Promise<AdminMutationResult<{ bankOfferId: string }>> {
+): Promise<AdminMutationResult<{ bankOfferId: string; partnerSlug: string }>> {
   const bankCheck = await assertBankPartner(input.partnerId);
   if (!bankCheck.ok) {
     return bankCheck;
+  }
+
+  const partnerSlug = await partnerSlugById(input.partnerId);
+  if (!partnerSlug) {
+    return { ok: false, errorKey: 'notFound' };
   }
 
   const offer = await prisma.bankOffer.create({
@@ -163,12 +184,12 @@ export async function createBankOffer(
     select: { id: true },
   });
 
-  return { ok: true, bankOfferId: offer.id };
+  return { ok: true, bankOfferId: offer.id, partnerSlug };
 }
 
 export async function updateBankOffer(
   input: BankOfferUpsertInput & { bankOfferId: string },
-): Promise<AdminMutationResult<{ bankOfferId: string }>> {
+): Promise<AdminMutationResult<{ bankOfferId: string; partnerSlug: string }>> {
   const bankCheck = await assertBankPartner(input.partnerId);
   if (!bankCheck.ok) {
     return bankCheck;
@@ -183,15 +204,20 @@ export async function updateBankOffer(
     return { ok: false, errorKey: 'notFound' };
   }
 
-  return { ok: true, bankOfferId: input.bankOfferId };
+  const partnerSlug = await partnerSlugById(input.partnerId);
+  if (!partnerSlug) {
+    return { ok: false, errorKey: 'notFound' };
+  }
+
+  return { ok: true, bankOfferId: input.bankOfferId, partnerSlug };
 }
 
 export async function setBankOfferStatus(
   input: BankOfferStatusInput,
-): Promise<AdminMutationResult<{ bankOfferId: string }>> {
+): Promise<AdminMutationResult<{ bankOfferId: string; partnerSlug: string }>> {
   const existing = await prisma.bankOffer.findUnique({
     where: { id: input.bankOfferId },
-    select: { id: true, partner: { select: { type: true } } },
+    select: { id: true, partner: { select: { type: true, slug: true } } },
   });
 
   if (!existing) {
@@ -206,5 +232,5 @@ export async function setBankOfferStatus(
     data: { status: input.status },
   });
 
-  return { ok: true, bankOfferId: input.bankOfferId };
+  return { ok: true, bankOfferId: input.bankOfferId, partnerSlug: existing.partner.slug };
 }

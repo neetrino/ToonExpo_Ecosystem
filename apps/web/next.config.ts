@@ -16,6 +16,7 @@ const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 const nextConfig: NextConfig = {
   transpilePackages: ['@toonexpo/ui', '@toonexpo/shared', '@toonexpo/contracts'],
   images: {
+    // v1 remote URLs (e.g. seed picsum); replace with media-upload pipeline later.
     remotePatterns: [
       {
         protocol: 'https',

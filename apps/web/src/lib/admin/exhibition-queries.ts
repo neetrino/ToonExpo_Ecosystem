@@ -50,9 +50,7 @@ export async function loadExhibitionEvents(): Promise<AdminExhibitionEventRow[]>
   }));
 }
 
-export async function loadRecentCheckIns(
-  eventId?: string,
-): Promise<AdminRecentCheckInRow[]> {
+export async function loadRecentCheckIns(eventId?: string): Promise<AdminRecentCheckInRow[]> {
   const rows = await prisma.checkIn.findMany({
     where: eventId ? { eventId } : undefined,
     orderBy: { checkedInAt: 'desc' },

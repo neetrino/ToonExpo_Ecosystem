@@ -21,6 +21,7 @@ export {
 } from './auth';
 export { healthResponseSchema, type HealthResponse } from './health';
 export { SLUG_MAX_LENGTH, slugSchema } from './slug';
+export { httpUrlSchema, httpUrlSchemaWithMax, isHttpUrl, optionalHttpUrlSchema } from './url';
 export {
   PROVISIONABLE_ROLES,
   provisionAccountSchema,

@@ -9,16 +9,18 @@ const mockCheckInFindUnique = vi.fn();
 const mockCheckInCreate = vi.fn();
 const mockScanLogFindFirst = vi.fn();
 const mockScanLogCreate = vi.fn();
+const mockUserFindUnique = vi.fn();
 
 vi.mock('@toonexpo/db', () => ({
   prisma: {
     $transaction: (...args: unknown[]) => mockTransaction(...args),
+    user: { findUnique: (...args: unknown[]) => mockUserFindUnique(...args) },
   },
   Prisma: {
     PrismaClientKnownRequestError: class PrismaClientKnownRequestError extends Error {
       code: string;
       meta?: { target?: string[] };
-      constructor(message: string, code: string) {
+      constructor(message: string, { code }: { code: string; clientVersion?: string }) {
         super(message);
         this.code = code;
       }
@@ -27,6 +29,7 @@ vi.mock('@toonexpo/db', () => ({
 }));
 
 import { performEntranceCheckIn } from './check-in-mutations';
+import { Prisma } from '@toonexpo/db';
 
 const TOKEN = 'entrance-token';
 const STAFF_ID = 'staff-1';
@@ -54,6 +57,7 @@ function txClient() {
 describe('performEntranceCheckIn', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockUserFindUnique.mockResolvedValue({ role: 'ENTRANCE_STAFF' });
     mockTransaction.mockImplementation(async (fn: (tx: unknown) => Promise<unknown>) =>
       fn(txClient()),
     );
@@ -123,5 +127,52 @@ describe('performEntranceCheckIn', () => {
 
     expect(result).toEqual({ ok: false, errorKey: 'noActiveEvent' });
     expect(mockCheckInCreate).not.toHaveBeenCalled();
+  });
+
+  it('returns unauthorized when staff role is not ENTRANCE_STAFF', async () => {
+    mockUserFindUnique.mockResolvedValue({ role: 'BUYER' });
+
+    const result = await performEntranceCheckIn({
+      qrToken: TOKEN,
+      staffUserId: STAFF_ID,
+    });
+
+    expect(result).toEqual({ ok: false, errorKey: 'unauthorized' });
+    expect(mockTransaction).not.toHaveBeenCalled();
+  });
+
+  it('returns notFound for revoked QR tokens', async () => {
+    mockQrFindFirst.mockResolvedValue(null);
+
+    const result = await performEntranceCheckIn({
+      qrToken: TOKEN,
+      staffUserId: STAFF_ID,
+    });
+
+    expect(result).toEqual({ ok: false, errorKey: 'notFound' });
+    expect(mockCheckInCreate).not.toHaveBeenCalled();
+  });
+
+  it('returns idempotent success on P2002 race after concurrent check-in', async () => {
+    const raceError = new Prisma.PrismaClientKnownRequestError('Unique constraint', {
+      code: 'P2002',
+      clientVersion: 'test',
+    });
+    mockCheckInCreate.mockRejectedValueOnce(raceError);
+    mockCheckInFindUnique
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({ id: CHECK_IN_ID, checkedInAt: CHECKED_IN_AT });
+
+    const result = await performEntranceCheckIn({
+      qrToken: TOKEN,
+      staffUserId: STAFF_ID,
+    });
+
+    expect(result).toEqual({
+      ok: true,
+      checkInId: CHECK_IN_ID,
+      alreadyCheckedIn: true,
+      checkedInAt: CHECKED_IN_AT,
+    });
   });
 });

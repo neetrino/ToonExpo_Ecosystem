@@ -17,6 +17,10 @@ vi.mock('next/cache', () => ({
   revalidatePath: vi.fn(),
 }));
 
+vi.mock('@/lib/shared/revalidate-partner-paths', () => ({
+  revalidatePartnerPaths: vi.fn(),
+}));
+
 import { assertAdminSession } from '@/lib/admin/assert-admin-session';
 import { createBankOffer, createPartner } from '@/lib/admin/partner-mutations';
 

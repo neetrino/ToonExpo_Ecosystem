@@ -42,11 +42,7 @@ export type QrResolveEntrance = {
 export type QrResolveLimited = { kind: 'limited'; qrCodeId: string };
 
 export type QrResolveResult =
-  | QrResolveInvalid
-  | QrResolveOwner
-  | QrResolveBuilder
-  | QrResolveEntrance
-  | QrResolveLimited;
+  QrResolveInvalid | QrResolveOwner | QrResolveBuilder | QrResolveEntrance | QrResolveLimited;
 
 type SessionContext = {
   userId?: string;

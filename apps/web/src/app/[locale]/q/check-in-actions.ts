@@ -3,10 +3,7 @@
 import { revalidatePath } from 'next/cache';
 
 import { assertEntranceSession } from '@/lib/entrance/assert-entrance-session';
-import {
-  performEntranceCheckIn,
-  type CheckInMutationResult,
-} from '@/lib/qr/check-in-mutations';
+import { performEntranceCheckIn, type CheckInMutationResult } from '@/lib/qr/check-in-mutations';
 
 function revalidateCheckInPaths(locale: string): void {
   revalidatePath(`/${locale}/checkin`);

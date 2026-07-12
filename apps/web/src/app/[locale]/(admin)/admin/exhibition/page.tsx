@@ -1,10 +1,7 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { EXHIBITION_EVENT_STATUSES, type ExhibitionEventStatus } from '@toonexpo/domain';
 
-import {
-  loadExhibitionEvents,
-  loadRecentCheckIns,
-} from '@/lib/admin/exhibition-queries';
+import { loadExhibitionEvents, loadRecentCheckIns } from '@/lib/admin/exhibition-queries';
 
 import { EventsTable } from './events-table';
 import { NewEventButton } from './new-event-button';

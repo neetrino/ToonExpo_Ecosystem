@@ -16,9 +16,7 @@ import {
   PortalTextInput,
 } from '@/components/portal-forms/form-fields';
 import { useCloseOnFormSuccess } from '@/components/portal-forms/use-close-on-form-success';
-import {
-  INITIAL_ADMIN_CATALOG_ACTION_STATE,
-} from '@/lib/admin/catalog-action-state';
+import { INITIAL_ADMIN_CATALOG_ACTION_STATE } from '@/lib/admin/catalog-action-state';
 import { upsertExhibitionEventFormAction } from '@/lib/admin/form-actions';
 
 type EventFormValues = {
