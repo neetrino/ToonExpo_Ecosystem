@@ -172,6 +172,7 @@
           "fields": {
             "title": "Վերնագիր",
             "interestRate": "Տոկոսադրույք (%)",
+            "minDownPaymentPercent": "Նվազ. նախավճար (%)",
             "maxTermMonths": "Առավելագույն ժամկետ (ամիս)",
             "maxAmountAmd": "Առավելագույն գումար (AMD)",
             "description": "Նկարագրություն",
@@ -1028,6 +1029,7 @@
         "termYears": "Վարկի ժամկետ (տարի)",
         "interestRate": "Տոկոսադրույք",
         "manualRate": "Տարեկան դրույք (%)",
+        "downPaymentBelowMinimum": "Այս առաջարկի համար պահանջվում է առնվազն {percent}% նախավճար ({amount})։ Հաշվարկը օգտագործում է նվազագույնը։",
         "monthlyPayment": "Մոտավոր ամսական վճար",
         "loanAmount": "Վարկի գումար",
         "totalPayment": "Ընդհանուր վճարում",
@@ -1041,7 +1043,8 @@
         "viewBank": "Բանկի էջ",
         "empty": "Դեռ հրապարակված բանկային առաջարկներ չկան։",
         "selectManual": "Օգտագործել ձեռքով դրույք",
-        "yearsUnit": "տարի"
+        "yearsUnit": "տարի",
+        "minDownPayment": "Նվազ. նախավճար"
       }
     }
   },

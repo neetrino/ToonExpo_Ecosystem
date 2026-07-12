@@ -13,6 +13,7 @@ type MortgageCalculatorFormProps = {
   termYearsInput: string;
   manualRateInput: string;
   selectedRateLabel: string | null;
+  downPaymentBelowMinimumHint: string | null;
   onPropertyPriceChange: (value: string) => void;
   onDownPaymentChange: (value: string) => void;
   onTermYearsChange: (value: string) => void;
@@ -26,6 +27,7 @@ export function MortgageCalculatorForm({
   termYearsInput,
   manualRateInput,
   selectedRateLabel,
+  downPaymentBelowMinimumHint,
   onPropertyPriceChange,
   onDownPaymentChange,
   onTermYearsChange,
@@ -53,6 +55,11 @@ export function MortgageCalculatorForm({
           value={downPaymentInput}
           onChange={(event) => onDownPaymentChange(event.target.value)}
         />
+        {downPaymentBelowMinimumHint ? (
+          <p className="catalog-mortgage__hint" role="status">
+            {downPaymentBelowMinimumHint}
+          </p>
+        ) : null}
       </label>
 
       <label className="catalog-mortgage__field">

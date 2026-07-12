@@ -27,6 +27,7 @@ type BankOfferFormValues = {
   title: string;
   description?: string | null;
   interestRate: number;
+  minDownPaymentPercent: number;
   maxTermMonths: number;
   maxAmountAmd?: number | null;
   featured?: boolean;
@@ -102,6 +103,15 @@ function BankOfferFormBody({ mode, values, state, formAction, pending }: BankOff
           name="interestRate"
           type="number"
           defaultValue={String(values.interestRate)}
+          required
+        />
+      </PortalFormField>
+
+      <PortalFormField label={t('fields.minDownPaymentPercent')} name="minDownPaymentPercent">
+        <PortalTextInput
+          name="minDownPaymentPercent"
+          type="number"
+          defaultValue={String(values.minDownPaymentPercent)}
           required
         />
       </PortalFormField>

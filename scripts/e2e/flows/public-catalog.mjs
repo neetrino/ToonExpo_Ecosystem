@@ -99,6 +99,8 @@ export async function runPublicCatalogFlow() {
   await runCheck('GET /en/mortgage 200', async () => {
     const res = await fetchWithJar(`${E2E_BASE_URL}/en/mortgage`);
     assert(res.status === 200, `status ${res.status}`);
+    const html = await res.text();
+    assert(html.includes('Min. down payment'), 'min down payment label missing');
   });
 
   await runCheck('GET /en/q/invalidtoken generic 200', async () => {

@@ -37,6 +37,13 @@
   margin: 0;
 }
 
+.catalog-mortgage__hint {
+  color: var(--te-warning, #e8a838);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  margin: 0;
+}
+
 .catalog-mortgage__results {
   display: grid;
   gap: 0.75rem 1.25rem;
@@ -125,6 +132,12 @@
 .catalog-mortgage-offer__rate {
   color: var(--te-accent);
   font-size: 0.875rem;
+  margin: 0;
+}
+
+.catalog-mortgage-offer__min-down {
+  color: var(--te-muted);
+  font-size: 0.8125rem;
   margin: 0;
 }
 

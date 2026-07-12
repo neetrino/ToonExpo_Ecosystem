@@ -172,6 +172,7 @@
           "fields": {
             "title": "Title",
             "interestRate": "Interest rate (%)",
+            "minDownPaymentPercent": "Min. down payment (%)",
             "maxTermMonths": "Max term (months)",
             "maxAmountAmd": "Max amount (AMD)",
             "description": "Description",
@@ -1028,6 +1029,7 @@
         "termYears": "Loan term (years)",
         "interestRate": "Interest rate",
         "manualRate": "Annual rate (%)",
+        "downPaymentBelowMinimum": "This offer requires at least {percent}% down payment ({amount}). Estimate uses the minimum.",
         "monthlyPayment": "Estimated monthly payment",
         "loanAmount": "Loan amount",
         "totalPayment": "Total payment",
@@ -1041,7 +1043,8 @@
         "viewBank": "View bank profile",
         "empty": "No published bank offers yet.",
         "selectManual": "Use manual rate instead",
-        "yearsUnit": "years"
+        "yearsUnit": "years",
+        "minDownPayment": "Min. down payment"
       }
     }
   },

@@ -10,6 +10,7 @@ type MortgageOffersSectionLabels = {
   emptyOffers: string;
   selectOffer: string;
   yearsUnit: string;
+  minDownPayment: string;
 };
 
 type MortgageOffersSectionProps = {
@@ -56,6 +57,9 @@ function MortgageOfferItem({
         </div>
         <p className="catalog-mortgage-offer__rate">
           {offer.interestRate}% · {labels.maxTerm}: {termYearsLabel} {labels.yearsUnit}
+        </p>
+        <p className="catalog-mortgage-offer__min-down">
+          {labels.minDownPayment}: {offer.minDownPaymentPercent}%
         </p>
         {offer.description ? (
           <p className="catalog-mortgage-offer__description">{offer.description}</p>

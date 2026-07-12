@@ -172,6 +172,7 @@
           "fields": {
             "title": "Название",
             "interestRate": "Ставка (%)",
+            "minDownPaymentPercent": "Мин. первоначальный взнос (%)",
             "maxTermMonths": "Макс. срок (мес.)",
             "maxAmountAmd": "Макс. сумма (AMD)",
             "description": "Описание",
@@ -1028,6 +1029,7 @@
         "termYears": "Срок кредита (лет)",
         "interestRate": "Процентная ставка",
         "manualRate": "Годовая ставка (%)",
+        "downPaymentBelowMinimum": "Для этого предложения требуется минимум {percent}% первоначального взноса ({amount}). Расчёт использует минимум.",
         "monthlyPayment": "Ориентировочный ежемесячный платёж",
         "loanAmount": "Сумма кредита",
         "totalPayment": "Общая сумма выплат",
@@ -1041,7 +1043,8 @@
         "viewBank": "Профиль банка",
         "empty": "Опубликованных банковских предложений пока нет.",
         "selectManual": "Использовать ручную ставку",
-        "yearsUnit": "лет"
+        "yearsUnit": "лет",
+        "minDownPayment": "Мин. первоначальный взнос"
       }
     }
   },

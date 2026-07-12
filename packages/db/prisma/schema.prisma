@@ -513,9 +513,10 @@ model BankOffer {
   partnerId     String
   title         String
   description   String?           @db.Text
-  interestRate  Float
-  maxTermMonths Int
-  maxAmountAmd  Int?
+  interestRate          Float
+  minDownPaymentPercent Float             @default(0)
+  maxTermMonths         Int
+  maxAmountAmd          Int?
   featured      Boolean           @default(false)
   status        PublicationStatus @default(DRAFT)
   createdAt     DateTime          @default(now())

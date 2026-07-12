@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 
+import { formatPriceAmd } from '@/lib/catalog/format-price';
 import { MONTHS_PER_YEAR, calculateMortgagePayment } from '@/lib/mortgage/calc';
 import {
   DEFAULT_MANUAL_RATE_PERCENT,
@@ -13,6 +14,7 @@ import {
   parsePositiveFloat,
   parsePositiveInt,
 } from '@/lib/mortgage/input-parsers';
+import { resolveDownPaymentForOffer } from '@/lib/mortgage/min-down-payment';
 import type { PublicBankOfferListing } from '@/lib/partners/queries';
 
 import { MortgageCalculatorForm } from './mortgage-calculator-form';
@@ -38,6 +40,8 @@ type MortgageCalculatorLabels = {
   emptyOffers: string;
   selectOffer: string;
   yearsUnit: string;
+  minDownPayment: string;
+  downPaymentBelowMinimum: string;
 };
 
 type MortgageCalculatorProps = {
@@ -62,6 +66,14 @@ function useMortgageInputs(
   const selectedOffer = offers.find((offer) => offer.id === selectedOfferId);
   const propertyPriceAmd = parsePositiveInt(propertyPriceInput, DEFAULT_PROPERTY_PRICE_AMD);
   const downPaymentAmd = parsePositiveInt(downPaymentInput, 0);
+  const downPaymentValidation = selectedOffer
+    ? resolveDownPaymentForOffer({
+        propertyPriceAmd,
+        downPaymentAmd,
+        minDownPaymentPercent: selectedOffer.minDownPaymentPercent,
+      })
+    : null;
+  const effectiveDownPaymentAmd = downPaymentValidation?.effectiveDownPaymentAmd ?? downPaymentAmd;
   const termYears = parsePositiveInt(termYearsInput, DEFAULT_TERM_YEARS);
   const termMonths = termYears * MONTHS_PER_YEAR;
   const annualRate = selectedOffer
@@ -72,11 +84,11 @@ function useMortgageInputs(
     () =>
       calculateMortgagePayment({
         propertyPriceAmd,
-        downPaymentAmd,
+        downPaymentAmd: effectiveDownPaymentAmd,
         termMonths,
         annualInterestRatePercent: annualRate,
       }),
-    [propertyPriceAmd, downPaymentAmd, termMonths, annualRate],
+    [propertyPriceAmd, effectiveDownPaymentAmd, termMonths, annualRate],
   );
 
   const selectedRateLabel = selectedOffer
@@ -85,6 +97,8 @@ function useMortgageInputs(
 
   return {
     result,
+    selectedOffer,
+    downPaymentValidation,
     selectedOfferId,
     setSelectedOfferId,
     propertyPriceInput,
@@ -99,8 +113,29 @@ function useMortgageInputs(
   };
 }
 
+function buildDownPaymentHint(
+  labels: MortgageCalculatorLabels,
+  locale: string,
+  selectedOffer: PublicBankOfferListing | undefined,
+  validation: ReturnType<typeof resolveDownPaymentForOffer> | null,
+): string | null {
+  if (!validation?.isBelowMinimum || !selectedOffer) {
+    return null;
+  }
+
+  return labels.downPaymentBelowMinimum
+    .replace('{percent}', String(selectedOffer.minDownPaymentPercent))
+    .replace('{amount}', formatPriceAmd(validation.minimumDownPaymentAmd, locale));
+}
+
 export function MortgageCalculator({ offers, locale, labels }: MortgageCalculatorProps) {
   const inputs = useMortgageInputs(offers, labels);
+  const downPaymentHint = buildDownPaymentHint(
+    labels,
+    locale,
+    inputs.selectedOffer,
+    inputs.downPaymentValidation,
+  );
 
   return (
     <div className="catalog-mortgage">
@@ -116,6 +151,7 @@ export function MortgageCalculator({ offers, locale, labels }: MortgageCalculato
           termYearsInput={inputs.termYearsInput}
           manualRateInput={inputs.manualRateInput}
           selectedRateLabel={inputs.selectedRateLabel}
+          downPaymentBelowMinimumHint={downPaymentHint}
           onPropertyPriceChange={inputs.setPropertyPriceInput}
           onDownPaymentChange={inputs.setDownPaymentInput}
           onTermYearsChange={inputs.setTermYearsInput}

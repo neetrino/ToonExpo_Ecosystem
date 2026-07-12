@@ -52,6 +52,7 @@ export type AdminBankOfferRow = {
   title: string;
   description: string | null;
   interestRate: number;
+  minDownPaymentPercent: number;
   maxTermMonths: number;
   maxAmountAmd: number | null;
   featured: boolean;
@@ -193,6 +194,7 @@ export async function loadPartnerDetail(partnerId: string): Promise<AdminPartner
           title: true,
           description: true,
           interestRate: true,
+          minDownPaymentPercent: true,
           maxTermMonths: true,
           maxAmountAmd: true,
           featured: true,

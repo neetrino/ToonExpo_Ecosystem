@@ -19,6 +19,8 @@ export const BANK_OFFER_INTEREST_RATE_MAX = 50;
 export const BANK_OFFER_MAX_TERM_MONTHS_MIN = 1;
 export const BANK_OFFER_MAX_TERM_MONTHS_MAX = 600;
 export const BANK_OFFER_MAX_AMOUNT_AMD_MAX = 10_000_000_000;
+export const BANK_OFFER_MIN_DOWN_PAYMENT_PERCENT_MIN = 0;
+export const BANK_OFFER_MIN_DOWN_PAYMENT_PERCENT_MAX = 90;
 
 const optionalTrimmedString = (maxLength: number) =>
   z.preprocess((value) => {
@@ -96,6 +98,10 @@ export const bankOfferUpsertInputSchema = z.object({
   title: z.string().trim().min(1).max(BANK_OFFER_TITLE_MAX_LENGTH),
   description: optionalTrimmedString(BANK_OFFER_DESCRIPTION_MAX_LENGTH),
   interestRate: requiredCoercedNumber(BANK_OFFER_INTEREST_RATE_MIN, BANK_OFFER_INTEREST_RATE_MAX),
+  minDownPaymentPercent: requiredCoercedNumber(
+    BANK_OFFER_MIN_DOWN_PAYMENT_PERCENT_MIN,
+    BANK_OFFER_MIN_DOWN_PAYMENT_PERCENT_MAX,
+  ),
   maxTermMonths: requiredCoercedInt(BANK_OFFER_MAX_TERM_MONTHS_MIN, BANK_OFFER_MAX_TERM_MONTHS_MAX),
   maxAmountAmd: optionalCoercedInt(1, BANK_OFFER_MAX_AMOUNT_AMD_MAX),
   featured: z.preprocess((value) => {
@@ -123,6 +129,7 @@ export const publicBankOfferSchema = z.object({
   title: z.string(),
   description: z.string().nullable(),
   interestRate: z.number(),
+  minDownPaymentPercent: z.number(),
   maxTermMonths: z.number().int(),
   maxAmountAmd: z.number().int().nullable(),
   featured: z.boolean(),

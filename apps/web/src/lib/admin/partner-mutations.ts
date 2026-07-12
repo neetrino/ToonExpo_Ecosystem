@@ -153,6 +153,7 @@ type BankOfferWriteData = {
   title: string;
   description: string | null;
   interestRate: number;
+  minDownPaymentPercent: number;
   maxTermMonths: number;
   maxAmountAmd: number | null;
   featured: boolean;
@@ -163,6 +164,7 @@ function toBankOfferWriteData(input: BankOfferUpsertInput): BankOfferWriteData {
     title: input.title,
     description: input.description ?? null,
     interestRate: input.interestRate,
+    minDownPaymentPercent: input.minDownPaymentPercent,
     maxTermMonths: input.maxTermMonths,
     maxAmountAmd: input.maxAmountAmd ?? null,
     featured: input.featured ?? false,

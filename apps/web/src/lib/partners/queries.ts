@@ -33,6 +33,7 @@ type BankOfferRow = {
   title: string;
   description: string | null;
   interestRate: number;
+  minDownPaymentPercent: number;
   maxTermMonths: number;
   maxAmountAmd: number | null;
   featured: boolean;
@@ -60,6 +61,7 @@ function mapBankOffer(row: BankOfferRow): PublicBankOffer {
     title: row.title,
     description: row.description,
     interestRate: row.interestRate,
+    minDownPaymentPercent: row.minDownPaymentPercent,
     maxTermMonths: row.maxTermMonths,
     maxAmountAmd: row.maxAmountAmd,
     featured: row.featured,
@@ -114,6 +116,7 @@ const publishedBankOfferSelect = {
   title: true,
   description: true,
   interestRate: true,
+  minDownPaymentPercent: true,
   maxTermMonths: true,
   maxAmountAmd: true,
   featured: true,

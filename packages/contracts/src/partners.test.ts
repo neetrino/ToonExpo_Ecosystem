@@ -3,6 +3,8 @@ import { describe, expect, it } from 'vitest';
 import {
   BANK_OFFER_INTEREST_RATE_MAX,
   BANK_OFFER_INTEREST_RATE_MIN,
+  BANK_OFFER_MIN_DOWN_PAYMENT_PERCENT_MAX,
+  BANK_OFFER_MIN_DOWN_PAYMENT_PERCENT_MIN,
   bankOfferUpsertInputSchema,
   partnerUpsertInputSchema,
 } from './partners';
@@ -47,12 +49,33 @@ describe('partner schemas', () => {
       partnerId: 'partner-1',
       title: 'Standard',
       interestRate: BANK_OFFER_INTEREST_RATE_MIN - 0.01,
+      minDownPaymentPercent: 10,
       maxTermMonths: 240,
     });
     const tooHigh = bankOfferUpsertInputSchema.safeParse({
       partnerId: 'partner-1',
       title: 'Standard',
       interestRate: BANK_OFFER_INTEREST_RATE_MAX + 1,
+      minDownPaymentPercent: 10,
+      maxTermMonths: 240,
+    });
+    expect(tooLow.success).toBe(false);
+    expect(tooHigh.success).toBe(false);
+  });
+
+  it('rejects min down payment percent outside bounds', () => {
+    const tooLow = bankOfferUpsertInputSchema.safeParse({
+      partnerId: 'partner-1',
+      title: 'Standard',
+      interestRate: 10,
+      minDownPaymentPercent: BANK_OFFER_MIN_DOWN_PAYMENT_PERCENT_MIN - 1,
+      maxTermMonths: 240,
+    });
+    const tooHigh = bankOfferUpsertInputSchema.safeParse({
+      partnerId: 'partner-1',
+      title: 'Standard',
+      interestRate: 10,
+      minDownPaymentPercent: BANK_OFFER_MIN_DOWN_PAYMENT_PERCENT_MAX + 1,
       maxTermMonths: 240,
     });
     expect(tooLow.success).toBe(false);
@@ -64,6 +87,7 @@ describe('partner schemas', () => {
       partnerId: 'partner-1',
       title: 'Preferential mortgage',
       interestRate: '9.5',
+      minDownPaymentPercent: '10',
       maxTermMonths: '240',
       maxAmountAmd: '80000000',
       featured: 'true',
@@ -71,6 +95,7 @@ describe('partner schemas', () => {
     expect(result.success).toBe(true);
     if (result.success) {
       expect(result.data.interestRate).toBe(9.5);
+      expect(result.data.minDownPaymentPercent).toBe(10);
       expect(result.data.maxTermMonths).toBe(240);
       expect(result.data.featured).toBe(true);
     }

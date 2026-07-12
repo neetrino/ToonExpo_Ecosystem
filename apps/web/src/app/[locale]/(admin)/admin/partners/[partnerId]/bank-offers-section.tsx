@@ -88,6 +88,7 @@ export function BankOffersSection({ locale, partnerId, offers, labels }: BankOff
           partnerId,
           title: '',
           interestRate: 10,
+          minDownPaymentPercent: 10,
           maxTermMonths: 240,
           featured: false,
         }}
@@ -168,6 +169,7 @@ function BankOfferRow({ locale, partnerId, offer, labels }: BankOfferRowProps) {
             title: offer.title,
             description: offer.description,
             interestRate: offer.interestRate,
+            minDownPaymentPercent: offer.minDownPaymentPercent,
             maxTermMonths: offer.maxTermMonths,
             maxAmountAmd: offer.maxAmountAmd,
             featured: offer.featured,

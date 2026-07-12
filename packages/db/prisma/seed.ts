@@ -652,6 +652,7 @@ async function upsertBankOffer(params: {
   partnerId: string;
   title: string;
   interestRate: number;
+  minDownPaymentPercent: number;
   maxTermMonths: number;
   maxAmountAmd: number;
   description: string;
@@ -664,6 +665,7 @@ async function upsertBankOffer(params: {
   const data = {
     description: params.description,
     interestRate: params.interestRate,
+    minDownPaymentPercent: params.minDownPaymentPercent,
     maxTermMonths: params.maxTermMonths,
     maxAmountAmd: params.maxAmountAmd,
     featured: params.featured,
@@ -709,6 +711,7 @@ async function seedPartners(): Promise<void> {
     partnerId: converse.id,
     title: 'Preferential mortgage',
     interestRate: 9.5,
+    minDownPaymentPercent: 10,
     maxTermMonths: 240,
     maxAmountAmd: 80_000_000,
     description: 'Preferential rate for primary-market apartments.',
@@ -719,6 +722,7 @@ async function seedPartners(): Promise<void> {
     partnerId: converse.id,
     title: 'Standard mortgage',
     interestRate: 12.0,
+    minDownPaymentPercent: 20,
     maxTermMonths: 360,
     maxAmountAmd: 120_000_000,
     description: 'Standard long-term mortgage offer.',
