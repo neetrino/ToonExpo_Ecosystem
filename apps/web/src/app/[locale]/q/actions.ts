@@ -2,7 +2,7 @@
 
 import { assertBuilderSession } from '@/lib/builder/assert-builder-session';
 import type { QrScanDealMutationResult } from '@/lib/qr/mutation-result';
-import { regenerateBuyerQr } from '@/lib/qr/mutations';
+import { regenerateBuyerQr, revokeBuyerQr } from '@/lib/qr/mutations';
 import { createDealFromQrScan } from '@/lib/qr/scan-deal-mutations';
 import { auth } from '@/auth';
 import { revalidateCrmPortalPaths } from '@/lib/shared/revalidate-crm-paths';
@@ -68,6 +68,25 @@ export async function regenerateBuyerQrAction(
   }
 
   const result = await regenerateBuyerQr(session.user.id);
+  if (!result.ok) {
+    return { errorKey: result.errorKey };
+  }
+
+  revalidatePath(`/${locale}/account`);
+  return { success: true };
+}
+
+export async function revokeBuyerQrAction(
+  locale: string,
+  _prevState: RegenerateQrFormState,
+  _formData: FormData,
+): Promise<RegenerateQrFormState> {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return { errorKey: 'unauthorized' };
+  }
+
+  const result = await revokeBuyerQr(session.user.id);
   if (!result.ok) {
     return { errorKey: result.errorKey };
   }

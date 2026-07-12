@@ -69,6 +69,43 @@ export async function ensureBuyerQr(userId: string): Promise<QrEnsureResult> {
 }
 
 /**
+ * Blocks the active buyer QR by setting `revokedAt`. Resolve/check-in ignore
+ * revoked rows (`revokedAt: null` filter). Regenerate clears the block.
+ */
+export async function revokeBuyerQr(userId: string): Promise<QrEnsureResult> {
+  if (!userId) {
+    return { ok: false, errorKey: 'invalidInput' };
+  }
+
+  return prisma.$transaction(async (tx) => {
+    const buyerProfile = await tx.buyerProfile.findUnique({
+      where: { userId },
+      select: { id: true },
+    });
+    if (!buyerProfile) {
+      return { ok: false, errorKey: 'notFound' };
+    }
+
+    const existing = await tx.qrCode.findUnique({
+      where: { buyerProfileId: buyerProfile.id },
+      select: { id: true, revokedAt: true },
+    });
+    if (!existing) {
+      return { ok: false, errorKey: 'notFound' };
+    }
+    if (existing.revokedAt) {
+      return { ok: true, qrCodeId: existing.id, revoked: true };
+    }
+
+    await tx.qrCode.update({
+      where: { id: existing.id },
+      data: { revokedAt: new Date() },
+    });
+    return { ok: true, qrCodeId: existing.id, revoked: true };
+  });
+}
+
+/**
  * Invalidates the current token and issues a new one on the same QrCode row
  * (1:1 with BuyerProfile). Keeps scan history attached to the row.
  */

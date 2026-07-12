@@ -1297,7 +1297,8 @@
         "email": "Էլ. փոստ",
         "website": "Կայք",
         "viewProfile": "Կառուցապատողի էջ"
-      }
+      },
+      "seoFallback": "{project}՝ {company}, ToonExpo-ում"
     },
     "apartment": {
       "backToProject": "← Վերադառնալ {project}",
@@ -1307,7 +1308,8 @@
       "priceHidden": "Գինը ճշտեք կառուցապատողից",
       "priceLoginRequired": "Մուտք գործեք՝ գինը տեսնելու համար։",
       "loginLink": "Մուտք",
-      "matterport": "Դիտել 3D շրջայց"
+      "matterport": "Դիտել 3D շրջայց",
+      "seoFallback": "{code} բնակարան՝ {project} ({company}), ToonExpo-ում"
     },
     "request": {
       "ctaProject": "Հետաքրքրված եմ",
@@ -1357,7 +1359,8 @@
         "city": "Քաղաք",
         "address": "Հասցե",
         "projects": "Հրապարակված նախագծեր",
-        "noValue": "—"
+        "noValue": "—",
+        "seoFallback": "{name}՝ կառուցապատող ToonExpo-ում"
       }
     },
     "partners": {
@@ -1393,7 +1396,8 @@
         "maxTermYears": "Առավելագույն ժամկետ (տարի)",
         "maxAmount": "Առավելագույն վարկի գումար",
         "mortgageLink": "Հիփոթեքային հաշվիչ",
-        "noValue": "—"
+        "noValue": "—",
+        "seoFallback": "{name}՝ գործընկեր ToonExpo-ում"
       }
     },
     "mortgage": {
@@ -1531,7 +1535,10 @@
         "invalidInput": "Չհաջողվեց թարմացնել QR-ը։ Փորձեք կրկին։",
         "notFound": "Չհաջողվեց թարմացնել QR-ը։ Փորձեք կրկին։",
         "revoked": "Չհաջողվեց թարմացնել QR-ը։ Փորձեք կրկին։"
-      }
+      },
+      "revoke": "Չեղարկել QR",
+      "revokeConfirm": "Չեղարկե՞լ QR-ը։ Այն կդադարի գործել, մինչև չստեղծեք նոր կոդ։",
+      "revokeSuccess": "QR-ը չեղարկված է և այլևս չի գործում սկանավորման համար։"
     }
   },
   "qr": {

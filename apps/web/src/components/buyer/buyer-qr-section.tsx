@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { useActionState } from 'react';
 
 import { PortalFormError } from '@/components/portal-forms/form-error';
-import { regenerateBuyerQrAction } from '@/app/[locale]/q/actions';
+import { regenerateBuyerQrAction, revokeBuyerQrAction } from '@/app/[locale]/q/actions';
 import {
   INITIAL_REGENERATE_QR_FORM_STATE,
   type RegenerateQrFormState,
@@ -19,8 +19,18 @@ type BuyerQrSectionProps = {
 
 export function BuyerQrSection({ locale, qrSvg, revoked, payloadUrl }: BuyerQrSectionProps) {
   const t = useTranslations('buyer.qr');
-  const action = regenerateBuyerQrAction.bind(null, locale);
-  const [state, formAction, pending] = useActionState(action, INITIAL_REGENERATE_QR_FORM_STATE);
+  const regenerateAction = regenerateBuyerQrAction.bind(null, locale);
+  const revokeAction = revokeBuyerQrAction.bind(null, locale);
+  const [regenState, regenFormAction, regenPending] = useActionState(
+    regenerateAction,
+    INITIAL_REGENERATE_QR_FORM_STATE,
+  );
+  const [revokeState, revokeFormAction, revokePending] = useActionState(
+    revokeAction,
+    INITIAL_REGENERATE_QR_FORM_STATE,
+  );
+
+  const pending = regenPending || revokePending;
 
   return (
     <section id="my-qr" className="buyer-qr">
@@ -44,23 +54,45 @@ export function BuyerQrSection({ locale, qrSvg, revoked, payloadUrl }: BuyerQrSe
         </div>
       )}
 
-      <form
-        action={formAction}
-        className="buyer-qr__regenerate"
-        onSubmit={(event) => {
-          if (!window.confirm(t('regenerateConfirm'))) {
-            event.preventDefault();
-          }
-        }}
-      >
-        <PortalFormError errorKey={getErrorKey(state)} namespace="buyer.qr.errors" />
-        {'success' in state && state.success ? (
-          <p className="buyer-qr__success">{t('regenerateSuccess')}</p>
+      <div className="buyer-qr__actions">
+        {!revoked && qrSvg ? (
+          <form
+            action={revokeFormAction}
+            className="buyer-qr__action-form"
+            onSubmit={(event) => {
+              if (!window.confirm(t('revokeConfirm'))) {
+                event.preventDefault();
+              }
+            }}
+          >
+            <PortalFormError errorKey={getErrorKey(revokeState)} namespace="buyer.qr.errors" />
+            {'success' in revokeState && revokeState.success ? (
+              <p className="buyer-qr__success">{t('revokeSuccess')}</p>
+            ) : null}
+            <button type="submit" className="portal-btn portal-btn--ghost" disabled={pending}>
+              {t('revoke')}
+            </button>
+          </form>
         ) : null}
-        <button type="submit" className="portal-btn portal-btn--ghost" disabled={pending}>
-          {t('regenerate')}
-        </button>
-      </form>
+
+        <form
+          action={regenFormAction}
+          className="buyer-qr__action-form"
+          onSubmit={(event) => {
+            if (!window.confirm(t('regenerateConfirm'))) {
+              event.preventDefault();
+            }
+          }}
+        >
+          <PortalFormError errorKey={getErrorKey(regenState)} namespace="buyer.qr.errors" />
+          {'success' in regenState && regenState.success ? (
+            <p className="buyer-qr__success">{t('regenerateSuccess')}</p>
+          ) : null}
+          <button type="submit" className="portal-btn portal-btn--ghost" disabled={pending}>
+            {t('regenerate')}
+          </button>
+        </form>
+      </div>
     </section>
   );
 }

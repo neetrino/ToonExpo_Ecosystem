@@ -1298,7 +1298,8 @@
         "email": "Эл. почта",
         "website": "Сайт",
         "viewProfile": "Профиль застройщика"
-      }
+      },
+      "seoFallback": "{project} от {company} на ToonExpo"
     },
     "apartment": {
       "backToProject": "← Назад к {project}",
@@ -1308,7 +1309,8 @@
       "priceHidden": "Уточните цену у застройщика",
       "priceLoginRequired": "Войдите, чтобы увидеть цену.",
       "loginLink": "Войти",
-      "matterport": "Смотреть 3D-тур"
+      "matterport": "Смотреть 3D-тур",
+      "seoFallback": "Квартира {code} в проекте {project} ({company}) на ToonExpo"
     },
     "request": {
       "ctaProject": "Заинтересован",
@@ -1358,7 +1360,8 @@
         "city": "Город",
         "address": "Адрес",
         "projects": "Опубликованные проекты",
-        "noValue": "—"
+        "noValue": "—",
+        "seoFallback": "{name} — застройщик на ToonExpo"
       }
     },
     "partners": {
@@ -1394,7 +1397,8 @@
         "maxTermYears": "Макс. срок (лет)",
         "maxAmount": "Макс. сумма кредита",
         "mortgageLink": "Ипотечный калькулятор",
-        "noValue": "—"
+        "noValue": "—",
+        "seoFallback": "{name} — партнёр на ToonExpo"
       }
     },
     "mortgage": {
@@ -1532,7 +1536,10 @@
         "invalidInput": "Не удалось обновить QR. Попробуйте ещё раз.",
         "notFound": "Не удалось обновить QR. Попробуйте ещё раз.",
         "revoked": "Не удалось обновить QR. Попробуйте ещё раз."
-      }
+      },
+      "revoke": "Отозвать QR",
+      "revokeConfirm": "Отозвать QR? Он перестанет работать, пока вы не создадите новый код.",
+      "revokeSuccess": "QR отозван и больше не действует для сканирования."
     }
   },
   "qr": {

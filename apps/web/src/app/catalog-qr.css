@@ -61,6 +61,13 @@
   word-break: break-all;
 }
 
+.buyer-qr__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.buyer-qr__action-form,
 .buyer-qr__regenerate {
   display: flex;
   flex-direction: column;

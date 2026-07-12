@@ -1,5 +1,6 @@
 import { slugSchema } from '@toonexpo/contracts';
 import type { ApartmentStatus } from '@toonexpo/domain';
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
@@ -7,7 +8,11 @@ import { auth } from '@/auth';
 import { scheduleAnalyticsEvent } from '@/lib/analytics/record-event';
 import { resolveRequestUserAgent } from '@/lib/analytics/request-user-agent';
 import { getPublishedApartment, isValidApartmentId } from '@/lib/catalog/queries';
+import { loadWebEnv } from '@/lib/env';
 import { isFavorited } from '@/lib/favorites/queries';
+import { buildApartmentJsonLd } from '@/lib/seo/json-ld';
+import { JsonLdScript } from '@/lib/seo/json-ld-script';
+import { buildPublicPageMetadata } from '@/lib/seo/metadata';
 
 import { ApartmentDetailView } from './apartment-detail-view';
 
@@ -19,6 +24,47 @@ type ApartmentDetailPageProps = {
     apartmentId: string;
   }>;
 };
+
+export async function generateMetadata({ params }: ApartmentDetailPageProps): Promise<Metadata> {
+  const { locale, companySlug, projectSlug, apartmentId } = await params;
+  const parsedCompanySlug = slugSchema.safeParse(companySlug);
+  const parsedProjectSlug = slugSchema.safeParse(projectSlug);
+  if (
+    !parsedCompanySlug.success ||
+    !parsedProjectSlug.success ||
+    !isValidApartmentId(apartmentId)
+  ) {
+    return {};
+  }
+
+  const apartment = await getPublishedApartment(
+    parsedCompanySlug.data,
+    parsedProjectSlug.data,
+    apartmentId,
+    false,
+  );
+  if (!apartment) {
+    return {};
+  }
+
+  const { APP_URL } = loadWebEnv();
+  const t = await getTranslations({ locale, namespace: 'catalog' });
+
+  return buildPublicPageMetadata({
+    titleName: `${apartment.project.name} — ${apartment.code}`,
+    titleContext: apartment.project.companyName,
+    description: null,
+    descriptionFallback: t('apartment.seoFallback', {
+      code: apartment.code,
+      project: apartment.project.name,
+      company: apartment.project.companyName,
+    }),
+    path: `/${locale}/projects/${apartment.project.companySlug}/${apartment.project.slug}/apartments/${apartment.id}`,
+    appUrl: APP_URL,
+    locale,
+    imageUrl: apartment.media[0]?.url ?? null,
+  });
+}
 
 export default async function ApartmentDetailPage({ params }: ApartmentDetailPageProps) {
   const { locale, companySlug, projectSlug, apartmentId } = await params;
@@ -77,6 +123,13 @@ export default async function ApartmentDetailPage({ params }: ApartmentDetailPag
 
   return (
     <section className="catalog-page">
+      <JsonLdScript
+        data={buildApartmentJsonLd({
+          apartment,
+          locale,
+          appUrl: loadWebEnv().APP_URL,
+        })}
+      />
       <ApartmentDetailView
         apartment={apartment}
         locale={locale}

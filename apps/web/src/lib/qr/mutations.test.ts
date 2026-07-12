@@ -11,7 +11,7 @@ vi.mock('@toonexpo/db', () => ({
   },
 }));
 
-import { ensureBuyerQr, regenerateBuyerQr } from './mutations';
+import { ensureBuyerQr, regenerateBuyerQr, revokeBuyerQr } from './mutations';
 
 const USER_ID = 'user-buyer-1';
 const PROFILE_ID = 'profile-1';
@@ -61,6 +61,50 @@ describe('ensureBuyerQr', () => {
 
     expect(result).toEqual({ ok: true, qrCodeId: QR_ID, revoked: true });
     expect(mockTx.qrCode.create).not.toHaveBeenCalled();
+  });
+});
+
+describe('revokeBuyerQr', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(mockTx.buyerProfile.findUnique).mockResolvedValue({ id: PROFILE_ID });
+    vi.mocked(mockTx.qrCode.findUnique).mockResolvedValue({
+      id: QR_ID,
+      revokedAt: null,
+    });
+    vi.mocked(mockTx.qrCode.update).mockResolvedValue({ id: QR_ID });
+  });
+
+  it('sets revokedAt on the existing QR row', async () => {
+    const result = await revokeBuyerQr(USER_ID);
+
+    expect(result).toEqual({ ok: true, qrCodeId: QR_ID, revoked: true });
+    expect(mockTx.qrCode.update).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: QR_ID },
+        data: expect.objectContaining({ revokedAt: expect.any(Date) }),
+      }),
+    );
+  });
+
+  it('is idempotent when already revoked', async () => {
+    vi.mocked(mockTx.qrCode.findUnique).mockResolvedValue({
+      id: QR_ID,
+      revokedAt: new Date('2026-01-01T00:00:00.000Z'),
+    });
+
+    const result = await revokeBuyerQr(USER_ID);
+
+    expect(result).toEqual({ ok: true, qrCodeId: QR_ID, revoked: true });
+    expect(mockTx.qrCode.update).not.toHaveBeenCalled();
+  });
+
+  it('returns notFound when the buyer has no QR', async () => {
+    vi.mocked(mockTx.qrCode.findUnique).mockResolvedValue(null);
+
+    const result = await revokeBuyerQr(USER_ID);
+
+    expect(result).toEqual({ ok: false, errorKey: 'notFound' });
   });
 });
 

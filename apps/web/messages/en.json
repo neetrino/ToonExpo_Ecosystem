@@ -1298,7 +1298,8 @@
         "email": "Email",
         "website": "Website",
         "viewProfile": "View builder profile"
-      }
+      },
+      "seoFallback": "{project} by {company} on ToonExpo"
     },
     "apartment": {
       "backToProject": "← Back to {project}",
@@ -1308,7 +1309,8 @@
       "priceHidden": "Contact builder for price",
       "priceLoginRequired": "Log in to see price.",
       "loginLink": "Sign in",
-      "matterport": "View 3D tour"
+      "matterport": "View 3D tour",
+      "seoFallback": "Unit {code} in {project} by {company} on ToonExpo"
     },
     "request": {
       "ctaProject": "Request contact",
@@ -1368,7 +1370,8 @@
         "city": "City",
         "address": "Address",
         "projects": "Published projects",
-        "noValue": "—"
+        "noValue": "—",
+        "seoFallback": "{name} — builder on ToonExpo"
       }
     },
     "partners": {
@@ -1404,7 +1407,8 @@
         "maxTermYears": "Max term (years)",
         "maxAmount": "Max loan amount",
         "mortgageLink": "Mortgage calculator",
-        "noValue": "—"
+        "noValue": "—",
+        "seoFallback": "{name} — partner on ToonExpo"
       }
     },
     "mortgage": {
@@ -1529,10 +1533,13 @@
       "regenerateSuccess": "A new QR code was issued.",
       "errors": {
         "unauthorized": "Sign in to manage your QR.",
-        "invalidInput": "Could not regenerate the QR. Try again.",
-        "notFound": "Could not regenerate the QR. Try again.",
-        "revoked": "Could not regenerate the QR. Try again."
-      }
+        "invalidInput": "Could not update the QR. Try again.",
+        "notFound": "Could not update the QR. Try again.",
+        "revoked": "Could not update the QR. Try again."
+      },
+      "revoke": "Revoke QR",
+      "revokeConfirm": "Revoke your QR? It will stop working until you regenerate a new code.",
+      "revokeSuccess": "Your QR was revoked and no longer works for scans."
     }
   },
   "qr": {

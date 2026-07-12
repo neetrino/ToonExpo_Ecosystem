@@ -1,6 +1,7 @@
 import type { PublicCanvas, PublicProjectDetail } from '@toonexpo/contracts';
 import { slugSchema } from '@toonexpo/contracts';
 import type { ApartmentStatus } from '@toonexpo/domain';
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
@@ -11,7 +12,11 @@ import { PublicVisualCanvas } from '@/components/visual-map/public-visual-canvas
 import { scheduleAnalyticsEvent } from '@/lib/analytics/record-event';
 import { resolveRequestUserAgent } from '@/lib/analytics/request-user-agent';
 import { getPublishedProjectBySlug } from '@/lib/catalog/queries';
+import { loadWebEnv } from '@/lib/env';
 import { isFavorited } from '@/lib/favorites/queries';
+import { buildProjectRealEstateListingJsonLd } from '@/lib/seo/json-ld';
+import { JsonLdScript } from '@/lib/seo/json-ld-script';
+import { buildPublicPageMetadata } from '@/lib/seo/metadata';
 import { loadProjectVisualMaps } from '@/lib/visual-map/load-project-visual-maps';
 
 import { ProjectBuildings } from './project-buildings';
@@ -21,6 +26,42 @@ import { ProjectGallery } from './project-gallery';
 type ProjectDetailPageProps = {
   params: Promise<{ locale: string; companySlug: string; projectSlug: string }>;
 };
+
+export async function generateMetadata({ params }: ProjectDetailPageProps): Promise<Metadata> {
+  const { locale, companySlug, projectSlug } = await params;
+  const parsedCompanySlug = slugSchema.safeParse(companySlug);
+  const parsedProjectSlug = slugSchema.safeParse(projectSlug);
+  if (!parsedCompanySlug.success || !parsedProjectSlug.success) {
+    return {};
+  }
+
+  const loaded = await getPublishedProjectBySlug(
+    parsedCompanySlug.data,
+    parsedProjectSlug.data,
+    false,
+  );
+  if (!loaded) {
+    return {};
+  }
+
+  const { project } = loaded;
+  const { APP_URL } = loadWebEnv();
+  const t = await getTranslations({ locale, namespace: 'catalog' });
+
+  return buildPublicPageMetadata({
+    titleName: project.name,
+    titleContext: project.companyName,
+    description: project.description,
+    descriptionFallback: t('detail.seoFallback', {
+      project: project.name,
+      company: project.companyName,
+    }),
+    path: `/${locale}/projects/${project.companySlug}/${project.slug}`,
+    appUrl: APP_URL,
+    locale,
+    imageUrl: project.coverImageUrl ?? project.media[0]?.url ?? null,
+  });
+}
 
 function ProjectDetailView({
   project,
@@ -209,6 +250,13 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
 
   return (
     <section className="catalog-page">
+      <JsonLdScript
+        data={buildProjectRealEstateListingJsonLd({
+          project,
+          locale,
+          appUrl: loadWebEnv().APP_URL,
+        })}
+      />
       <ProjectDetailView
         project={project}
         locale={locale}
