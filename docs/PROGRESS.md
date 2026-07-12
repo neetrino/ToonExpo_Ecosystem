@@ -121,6 +121,26 @@ Sprint 6 **COMPLETE** — Analytics v1, BOS provisioning (atomic idempotency), a
 
 Post-MVP / deferred hardening (see Status). No further planned backlog sprints.
 
+## Post-MVP gap pack — COMPLETE
+
+Audit fixes applied on branch `sipan` after the feature pack landed:
+
+- **Apartment pages + price visibility** — public `/apartments/[id]` detail; `VISIBLE_AFTER_LOGIN` / `BY_REQUEST` / `HIDDEN` resolved at query boundary; e2e asserts login-gated price copy and absence of seed `145000000` digits for apt 202.
+- **Min down payment** — bank offer `minDownPaymentPercent`; mortgage calculator validation + i18n en/ru/hy.
+- **Company profile / team** — builder portal profile edit; public builder block on project detail; `/builders` directory.
+- **Media management** — builder CRUD with company-scoped ownership in update/delete transactions.
+- **Building/floor publication** — draft-first create (`DRAFT` explicit); seed keeps published chain for e2e.
+- **Builders directory + filters** — `/builders`, `/builders/[slug]`, project list `?builder=` filter.
+- **CRM snapshots / lifecycle** — deal apartment snapshots; `recomputeDealNextFollowUpAt` on follow-up add (no clobber).
+- **Hotspot archive** — soft archive + `@@index([canvasId, archivedAt])` migration `post_mvp_hotspot_archive_index`.
+- **Buyer profile** — account update gated to `BUYER` role in action layer.
+- **Platform settings** — `MORTGAGE_PAGE_ENABLED` (unset = enabled); disabled → `notFound` + nav hidden.
+- **Audit + fixes** — public request requires full published chain; catalog revalidation adds `/builders` + project `layout` scope for apartment subpages; `isHttpUrl` on matterport/logo; oversized modules split (queries, portal actions, CSS).
+
+### Deferred (unchanged)
+
+- Redis rate limiting, media upload pipeline, venue map/booths, `ApartmentStatusHistory`, favorites, admin acting-on-behalf, company switcher, Playwright e2e, Swagger gating in prod, analytics aggregation/sampling.
+
 ## Open (non-blocking)
 
 - Rate limiting on sign-in/registration (Upstash Redis).
