@@ -16,6 +16,7 @@ type AppShellProps = {
   contactEmail: string;
   contactPhone: string;
   mortgagePageEnabled?: boolean;
+  exhibitionMapEnabled?: boolean;
 };
 
 export function AppShell({
@@ -25,6 +26,7 @@ export function AppShell({
   contactEmail,
   contactPhone,
   mortgagePageEnabled = true,
+  exhibitionMapEnabled = false,
 }: AppShellProps) {
   const t = useTranslations();
   const locale = useLocale();
@@ -40,6 +42,7 @@ export function AppShell({
           <Link href="/projects">{t('nav.projects')}</Link>
           <Link href="/builders">{t('nav.builders')}</Link>
           <Link href="/partners">{t('nav.partners')}</Link>
+          {exhibitionMapEnabled ? <Link href="/exhibition">{t('nav.exhibition')}</Link> : null}
           {mortgagePageEnabled ? <Link href="/mortgage">{t('nav.mortgage')}</Link> : null}
           <Link href="/account">{t('nav.buyer')}</Link>
           {navVisibility.portal ? <Link href="/portal">{t('nav.builder')}</Link> : null}

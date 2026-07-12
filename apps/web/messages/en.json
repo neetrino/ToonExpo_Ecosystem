@@ -17,7 +17,8 @@
     "buyer": "Buyer",
     "builder": "Builder",
     "admin": "Admin",
-    "entrance": "Check-in"
+    "entrance": "Check-in",
+    "exhibition": "Exhibition"
   },
   "footer": {
     "contact": {
@@ -374,6 +375,36 @@
           "staff": "Staff",
           "checkedInAt": "Checked in"
         }
+      },
+      "venueMap": "Venue map",
+      "venue": {
+        "back": "Back to events",
+        "title": "Venue map — {name}",
+        "saveMap": "Save venue map",
+        "noMap": "Save an image URL to start placing booths.",
+        "clickHint": "Click the map to place a booth, or click a marker to edit.",
+        "coordHint": "Coordinates are percentages from {min} to {max}.",
+        "fields": {
+          "imageUrl": "Map image URL",
+          "imageAlt": "Image alt text"
+        },
+        "boothForm": {
+          "create": "New booth",
+          "edit": "Edit booth",
+          "submit": "Save booth",
+          "delete": "Delete booth",
+          "deleteConfirm": "Delete this booth?",
+          "none": "None",
+          "fields": {
+            "code": "Booth code",
+            "label": "Label",
+            "xPercent": "X %",
+            "yPercent": "Y %",
+            "company": "Company",
+            "partner": "Partner",
+            "note": "Note"
+          }
+        }
       }
     },
     "publication": {
@@ -620,7 +651,8 @@
         "draft": "Draft",
         "published": "Published",
         "archived": "Archived"
-      }
+      },
+      "booth": "Your booth: {code} ({label}) — {event}"
     },
     "company": {
       "title": "Company",
@@ -1289,6 +1321,24 @@
         "selectManual": "Use manual rate instead",
         "yearsUnit": "years",
         "minDownPayment": "Min. down payment"
+      }
+    },
+    "exhibition": {
+      "title": "Exhibition map",
+      "subtitle": "Find builders and partners at {event}.",
+      "searchLabel": "Search booths",
+      "searchPlaceholder": "Booth code, company, or partner",
+      "boothCount": "{count, plural, one {# booth} other {# booths}}",
+      "selectHint": "Select a booth on the map to see details.",
+      "noMatches": "No booths match your search.",
+      "detail": {
+        "code": "Booth",
+        "company": "Builder",
+        "partner": "Partner",
+        "note": "Note",
+        "viewCompany": "View builder",
+        "viewPartner": "View partner",
+        "close": "Close"
       }
     }
   },

@@ -13,6 +13,7 @@ import {
   loadPlatformContactSettings,
   resolveContactWithDefaults,
 } from '@/lib/shared/platform-settings';
+import { hasPublicVenueMap } from '@/lib/exhibition/venue-queries';
 
 type LocaleLayoutProps = {
   children: ReactNode;
@@ -37,7 +38,10 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
     email: tFooter('emailDefault'),
     phone: tFooter('phoneDefault'),
   });
-  const mortgagePageEnabled = await isMortgagePageEnabled();
+  const [mortgagePageEnabled, exhibitionMapEnabled] = await Promise.all([
+    isMortgagePageEnabled(),
+    hasPublicVenueMap(),
+  ]);
 
   return (
     <html lang={locale}>
@@ -49,6 +53,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
             contactEmail={contact.email}
             contactPhone={contact.phone}
             mortgagePageEnabled={mortgagePageEnabled}
+            exhibitionMapEnabled={exhibitionMapEnabled}
           >
             {children}
           </AppShell>

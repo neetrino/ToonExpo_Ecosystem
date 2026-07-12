@@ -2,6 +2,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { assertBuilderSession } from '@/lib/builder/assert-builder-session';
 import { loadProjectStatusCounts } from '@/lib/builder/queries';
+import { loadCompanyActiveBooth } from '@/lib/exhibition/venue-queries';
 
 type PortalOverviewPageProps = {
   params: Promise<{ locale: string }>;
@@ -16,9 +17,10 @@ export default async function PortalOverviewPage({ params }: PortalOverviewPageP
     return null;
   }
 
-  const [t, counts] = await Promise.all([
+  const [t, counts, booth] = await Promise.all([
     getTranslations('portal.overview'),
     loadProjectStatusCounts(builderContext.companyId),
+    loadCompanyActiveBooth(builderContext.companyId),
   ]);
 
   const stats = [
@@ -30,6 +32,11 @@ export default async function PortalOverviewPage({ params }: PortalOverviewPageP
   return (
     <section>
       <h2 className="portal-page__title">{t('title')}</h2>
+      {booth ? (
+        <p className="portal-visual-map-hint">
+          {t('booth', { code: booth.code, label: booth.label, event: booth.eventName })}
+        </p>
+      ) : null}
       <div className="portal-stats">
         {stats.map((stat) => (
           <article key={stat.key} className="portal-stat">

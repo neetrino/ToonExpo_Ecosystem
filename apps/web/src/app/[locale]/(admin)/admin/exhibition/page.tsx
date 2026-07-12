@@ -53,6 +53,7 @@ export default async function AdminExhibitionPage({ params }: AdminExhibitionPag
               actions: t('columns.actions'),
             },
             edit: t('edit'),
+            venueMap: t('venueMap'),
             noDates: t('noDates'),
           }}
           statusLabels={statusLabels}

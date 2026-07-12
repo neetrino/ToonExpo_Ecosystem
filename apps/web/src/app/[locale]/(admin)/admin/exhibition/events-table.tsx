@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import type { ExhibitionEventStatus } from '@toonexpo/domain';
 
+import { Link } from '@/i18n/navigation';
 import type { AdminExhibitionEventRow } from '@/lib/admin/exhibition-queries';
 
 import { EventFormSheet } from './sheets/event-form-sheet';
@@ -20,6 +21,7 @@ type EventsTableProps = {
       actions: string;
     };
     edit: string;
+    venueMap: string;
     noDates: string;
   };
   statusLabels: Record<ExhibitionEventStatus, string>;
@@ -103,6 +105,9 @@ function EventRow({ locale, event, labels, statusLabels, formatDate }: EventRowP
         >
           {labels.edit}
         </button>
+        <Link className="portal-btn portal-btn--ghost" href={`/admin/exhibition/${event.id}/venue`}>
+          {labels.venueMap}
+        </Link>
         <EventFormSheet
           locale={locale}
           mode="edit"

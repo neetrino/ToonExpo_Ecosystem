@@ -158,6 +158,16 @@ export async function runPublicCatalogFlow() {
     assert(html.includes('Min. down payment'), 'min down payment label missing');
   });
 
+  await runCheck('GET /en/exhibition 200 with seeded venue map', async () => {
+    const res = await fetchWithJar(`${E2E_BASE_URL}/en/exhibition`);
+    assert(res.status === 200, `status ${res.status}`);
+    const html = await res.text();
+    assert(
+      html.includes('Exhibition map') || html.includes('A12'),
+      'expected exhibition venue map',
+    );
+  });
+
   await runCheck('GET /en/q/invalidtoken generic 200', async () => {
     const res = await fetchWithJar(`${E2E_BASE_URL}/en/q/invalidtoken`);
     assert(res.status === 200, `status ${res.status}`);

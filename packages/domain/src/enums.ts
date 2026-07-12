@@ -151,7 +151,7 @@ export type CheckInStatus = (typeof CHECK_IN_STATUSES)[number];
  * - bank_offer_selected — mortgage offer pick not tracked yet
  * - request_created — Deal rows cover requests
  * - qr_scanned / check_in_recorded — QrScanLog / CheckIn tables
- * - booth_selected / route_requested — venue map deferred
+ * - booth_selected / route_requested — venue map / route graph deferred (map UI in Sprint 7.6; analytics later)
  * - crm_status_changed / readiness_status_changed — CRM / readiness own tables
  *
  * Note: favorite_* are aggregate counters only (no userId on AnalyticsEvent).

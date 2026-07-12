@@ -17,6 +17,8 @@ function revalidateExhibitionPaths(locale: string): void {
   revalidatePath(`/${locale}/admin/exhibition`);
   revalidatePath(`/${locale}/checkin`);
   revalidatePath(`/${locale}/account`);
+  revalidatePath(`/${locale}/exhibition`);
+  revalidatePath(`/${locale}/portal`);
 }
 
 export async function upsertExhibitionEventAction(
