@@ -93,3 +93,26 @@ export type ReadinessStatus = (typeof READINESS_STATUSES)[number];
 export const READINESS_TARGET_TYPES = ['BUILDER_COMPANY', 'PROJECT'] as const;
 
 export type ReadinessTargetType = (typeof READINESS_TARGET_TYPES)[number];
+
+/**
+ * Exhibition event lifecycle (v1). Docs: 12-Exhibition-Map-Checkin/07-Entity-Fields.
+ * Operational status — not PublicationStatus (draft/published/archived).
+ */
+export const EXHIBITION_EVENT_STATUSES = [
+  'PLANNING',
+  'ACTIVE',
+  'COMPLETED',
+  'ARCHIVED',
+  'CANCELLED',
+] as const;
+
+export type ExhibitionEventStatus = (typeof EXHIBITION_EVENT_STATUSES)[number];
+
+/**
+ * Successful check-in record status (v1).
+ * Denied/duplicate outcomes are action results, not persisted CheckIn rows.
+ * Docs: 12-Exhibition-Map-Checkin/04-Entrance-Checkin-Scanner.
+ */
+export const CHECK_IN_STATUSES = ['ALLOWED'] as const;
+
+export type CheckInStatus = (typeof CHECK_IN_STATUSES)[number];

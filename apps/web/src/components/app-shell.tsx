@@ -28,6 +28,7 @@ export function AppShell({ children, authSlot }: AppShellProps) {
           <Link href="/mortgage">{t('nav.mortgage')}</Link>
           <Link href="/account">{t('nav.buyer')}</Link>
           <Link href="/portal">{t('nav.builder')}</Link>
+          <Link href="/checkin">{t('nav.entrance')}</Link>
           <Link href="/admin">{t('nav.admin')}</Link>
           <LocaleSwitcher currentLocale={locale} />
           {authSlot}

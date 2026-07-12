@@ -8,6 +8,8 @@ describe('getProtectedArea', () => {
     expect(getProtectedArea('/account/settings')).toBe('buyer');
     expect(getProtectedArea('/portal')).toBe('builder');
     expect(getProtectedArea('/admin')).toBe('admin');
+    expect(getProtectedArea('/checkin')).toBe('entrance');
+    expect(getProtectedArea('/checkin/help')).toBe('entrance');
   });
 
   it('returns null for public paths', () => {
@@ -35,5 +37,12 @@ describe('canAccessArea', () => {
     expect(canAccessArea('admin', 'BIGPROJECTS_ADMIN')).toBe(true);
     expect(canAccessArea('admin', 'BUILDER')).toBe(false);
     expect(canAccessArea('admin', 'BUYER')).toBe(false);
+  });
+
+  it('restricts the entrance area to entrance staff', () => {
+    expect(canAccessArea('entrance', 'ENTRANCE_STAFF')).toBe(true);
+    expect(canAccessArea('entrance', 'BUYER')).toBe(false);
+    expect(canAccessArea('entrance', 'BUILDER')).toBe(false);
+    expect(canAccessArea('entrance', 'BIGPROJECTS_ADMIN')).toBe(false);
   });
 });

@@ -10,6 +10,12 @@ export type BuyerContactSnapshot = {
   phone: string | null;
 };
 
+/** Entrance staff may see display name only — no phone/email (docs 04). */
+export type EntranceBuyerSnapshot = {
+  userId: string;
+  name: string | null;
+};
+
 export type BuilderProjectOption = {
   id: string;
   name: string;
@@ -26,15 +32,21 @@ export type QrResolveBuilder = {
   projects: BuilderProjectOption[];
 };
 
-/** Valid QR, no PII — anonymous / partner / other non-builder roles. */
+export type QrResolveEntrance = {
+  kind: 'entrance';
+  qrCodeId: string;
+  buyer: EntranceBuyerSnapshot;
+};
+
+/** Valid QR, no PII — anonymous / partner / other non-privileged roles. */
 export type QrResolveLimited = { kind: 'limited'; qrCodeId: string };
 
-/**
- * Entrance staff check-in is out of this sprint; purpose enum already has
- * ENTRANCE_CHECKIN. Treat as limited until the check-in UI ships.
- */
 export type QrResolveResult =
-  QrResolveInvalid | QrResolveOwner | QrResolveBuilder | QrResolveLimited;
+  | QrResolveInvalid
+  | QrResolveOwner
+  | QrResolveBuilder
+  | QrResolveEntrance
+  | QrResolveLimited;
 
 type SessionContext = {
   userId?: string;
@@ -75,6 +87,18 @@ async function loadBuyerContact(userId: string): Promise<BuyerContactSnapshot | 
     email: user.email,
     phone: user.phone,
   };
+}
+
+/** Query-level narrowing: name only — never select phone/email for entrance. */
+async function loadEntranceBuyer(userId: string): Promise<EntranceBuyerSnapshot | null> {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true, name: true },
+  });
+  if (!user) {
+    return null;
+  }
+  return { userId: user.id, name: user.name };
 }
 
 async function loadCompanyProjects(companyId: string): Promise<BuilderProjectOption[]> {
@@ -122,7 +146,14 @@ export async function resolveQrScan(
     };
   }
 
-  // ENTRANCE_STAFF → limited until check-in sprint; anonymous/partner → limited.
+  if (session.role === 'ENTRANCE_STAFF') {
+    const buyer = await loadEntranceBuyer(qr.buyerProfile.userId);
+    if (!buyer) {
+      return { kind: 'invalid' };
+    }
+    return { kind: 'entrance', qrCodeId: qr.id, buyer };
+  }
+
   return { kind: 'limited', qrCodeId: qr.id };
 }
 
@@ -130,9 +161,13 @@ export async function resolveQrScan(
 export function toPublicResolveShape(result: QrResolveResult): {
   kind: QrResolveResult['kind'];
   hasBuyerPii: boolean;
+  hasContactPii: boolean;
 } {
   if (result.kind === 'builder') {
-    return { kind: 'builder', hasBuyerPii: true };
+    return { kind: 'builder', hasBuyerPii: true, hasContactPii: true };
   }
-  return { kind: result.kind, hasBuyerPii: false };
+  if (result.kind === 'entrance') {
+    return { kind: 'entrance', hasBuyerPii: true, hasContactPii: false };
+  }
+  return { kind: result.kind, hasBuyerPii: false, hasContactPii: false };
 }

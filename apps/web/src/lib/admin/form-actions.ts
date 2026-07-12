@@ -16,6 +16,7 @@ import {
 } from '@/app/[locale]/(admin)/admin/partners/actions';
 import { setProjectPublicationAsAdminAction } from '@/app/[locale]/(admin)/admin/projects/actions';
 import { upsertAssessmentAction } from '@/app/[locale]/(admin)/admin/readiness/actions';
+import { upsertExhibitionEventAction } from '@/app/[locale]/(admin)/admin/exhibition/actions';
 
 function getFormString(formData: FormData, key: string): string | undefined {
   const value = formData.get(key);
@@ -183,6 +184,22 @@ export async function upsertAssessmentFormAction(
     requiredActions: getFormString(formData, 'requiredActions'),
     internalNotes: getFormString(formData, 'internalNotes'),
     categoryScores: categoryScoresFromForm(formData),
+  });
+  return toFormState(result);
+}
+
+export async function upsertExhibitionEventFormAction(
+  locale: string,
+  _prevState: AdminCatalogActionState,
+  formData: FormData,
+): Promise<AdminCatalogActionState> {
+  const result = await upsertExhibitionEventAction(locale, {
+    eventId: getFormString(formData, 'eventId'),
+    name: getFormString(formData, 'name'),
+    code: getFormString(formData, 'code'),
+    startDate: getFormString(formData, 'startDate'),
+    endDate: getFormString(formData, 'endDate'),
+    status: getFormString(formData, 'status'),
   });
   return toFormState(result);
 }

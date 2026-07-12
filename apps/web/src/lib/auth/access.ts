@@ -1,7 +1,7 @@
 import type { PlatformRole } from '@toonexpo/domain';
 
 /** Route groups that require authentication. */
-export type ProtectedArea = 'buyer' | 'builder' | 'admin';
+export type ProtectedArea = 'buyer' | 'builder' | 'admin' | 'entrance';
 
 /**
  * Roles allowed into each protected area. `buyer` allows any authenticated
@@ -10,6 +10,7 @@ export type ProtectedArea = 'buyer' | 'builder' | 'admin';
 const AREA_ROLE_ACCESS: Record<Exclude<ProtectedArea, 'buyer'>, readonly PlatformRole[]> = {
   builder: ['BUILDER'],
   admin: ['BIGPROJECTS_ADMIN'],
+  entrance: ['ENTRANCE_STAFF'],
 };
 
 /** Locale-relative path prefixes mapped to their protected area. */
@@ -17,6 +18,7 @@ const AREA_PATH_PREFIXES: ReadonlyArray<readonly [prefix: string, area: Protecte
   ['/account', 'buyer'],
   ['/portal', 'builder'],
   ['/admin', 'admin'],
+  ['/checkin', 'entrance'],
 ];
 
 /**

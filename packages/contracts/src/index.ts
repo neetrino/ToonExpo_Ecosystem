@@ -163,3 +163,11 @@ export {
   type BuilderReadinessAssessment,
   type CategoryScoreInput,
 } from './readiness';
+export {
+  EXHIBITION_EVENT_CODE_MAX_LENGTH,
+  EXHIBITION_EVENT_NAME_MAX_LENGTH,
+  checkInInputSchema,
+  exhibitionEventUpsertInputSchema,
+  type CheckInInput,
+  type ExhibitionEventUpsertInput,
+} from './exhibition';

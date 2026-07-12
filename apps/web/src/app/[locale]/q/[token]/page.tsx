@@ -6,11 +6,13 @@ import {
   assertBuilderSession,
   type BuilderSessionContext,
 } from '@/lib/builder/assert-builder-session';
-import type { QrResolveBuilder } from '@/lib/qr/resolve';
+import { loadActiveExhibitionEvent } from '@/lib/exhibition/queries';
+import type { QrResolveBuilder, QrResolveEntrance } from '@/lib/qr/resolve';
 import { resolveQrScan } from '@/lib/qr/resolve';
 import { logBuilderQrScan } from '@/lib/qr/scan-deal-mutations';
 
 import { BuilderScanForm } from '../builder-scan-form';
+import { EntranceCheckInForm } from '../entrance-check-in-form';
 
 type QrScanPageProps = {
   params: Promise<{ locale: string; token: string }>;
@@ -19,10 +21,8 @@ type QrScanPageProps = {
 type QrMessages = Awaited<ReturnType<typeof getTranslations>>;
 
 /**
- * Public QR resolve route.
- * ENTRANCE_STAFF check-in is intentionally out of scope here — extend
- * resolveQrScan + this page when the entrance sprint lands (purpose already
- * includes ENTRANCE_CHECKIN).
+ * Public QR resolve route — role-branched:
+ * owner → account; BUILDER → CRM scan; ENTRANCE_STAFF → check-in; else limited.
  */
 export default async function QrScanPage({ params }: QrScanPageProps) {
   const { locale, token } = await params;
@@ -42,6 +42,9 @@ export default async function QrScanPage({ params }: QrScanPageProps) {
   }
   if (resolved.kind === 'builder' && builder) {
     return renderBuilderAction(locale, token, resolved, builder, t);
+  }
+  if (resolved.kind === 'entrance' && session?.user?.role === 'ENTRANCE_STAFF') {
+    return renderEntranceAction(locale, token, resolved, t);
   }
 
   return <QrStatusView title={t('public.title')} body={t('public.body')} />;
@@ -73,6 +76,31 @@ async function renderBuilderAction(
         buyerEmail={resolved.buyer.email}
         buyerPhone={resolved.buyer.phone?.trim() || t('builder.noPhone')}
         projects={resolved.projects}
+      />
+    </section>
+  );
+}
+
+async function renderEntranceAction(
+  locale: string,
+  token: string,
+  resolved: QrResolveEntrance,
+  t: QrMessages,
+) {
+  const event = await loadActiveExhibitionEvent();
+  const displayName = resolved.buyer.name?.trim() || t('entrance.unnamedVisitor');
+
+  return (
+    <section className="qr-page">
+      <header className="qr-page__header">
+        <h1 className="qr-page__title">{t('entrance.title')}</h1>
+        <p className="qr-page__subtitle">{t('entrance.subtitle')}</p>
+      </header>
+      <EntranceCheckInForm
+        locale={locale}
+        qrToken={token}
+        eventId={event?.id ?? null}
+        buyerName={displayName}
       />
     </section>
   );

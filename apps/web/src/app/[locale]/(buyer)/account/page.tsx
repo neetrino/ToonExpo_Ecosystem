@@ -5,6 +5,7 @@ import { auth } from '@/auth';
 import { BuyerQrSection } from '@/components/buyer/buyer-qr-section';
 import { BUYER_FACING_STATUSES, type BuyerFacingStatus } from '@/lib/crm/buyer-facing-status';
 import { getBuyerDeals, type BuyerDealRow } from '@/lib/crm/buyer-deals-queries';
+import { loadBuyerCheckIns } from '@/lib/exhibition/queries';
 import { loadWebEnv } from '@/lib/env';
 import { buildQrPayloadUrl, renderQrSvg } from '@/lib/qr/image';
 import { ensureBuyerQr } from '@/lib/qr/mutations';
@@ -46,6 +47,7 @@ export default async function BuyerAccountPage({ params }: BuyerPageProps) {
   const session = await auth();
   const buyerUserId = session?.user?.id;
   const deals: BuyerDealRow[] = buyerUserId ? await getBuyerDeals(buyerUserId) : [];
+  const checkIns = buyerUserId ? await loadBuyerCheckIns(buyerUserId) : [];
   const qr = buyerUserId
     ? await loadBuyerQrDisplay(buyerUserId, locale)
     : { qrSvg: null, payloadUrl: null, revoked: false };
@@ -56,6 +58,10 @@ export default async function BuyerAccountPage({ params }: BuyerPageProps) {
   const sourceLabels = Object.fromEntries(
     REQUEST_SOURCES_ORDER.map((source) => [source, t(`sources.${source}`)]),
   ) as Record<RequestSource, string>;
+  const dateFormatter = new Intl.DateTimeFormat(locale, {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  });
 
   return (
     <section className="buyer-account">
@@ -72,6 +78,26 @@ export default async function BuyerAccountPage({ params }: BuyerPageProps) {
           payloadUrl={qr.payloadUrl}
         />
       ) : null}
+
+      <section className="buyer-account__checkins" aria-labelledby="buyer-checkins-heading">
+        <h2 id="buyer-checkins-heading" className="buyer-account__section-title">
+          {t('checkinsHeading')}
+        </h2>
+        {checkIns.length === 0 ? (
+          <p className="buyer-account__empty">{t('checkinsEmpty')}</p>
+        ) : (
+          <ul className="buyer-account__checkin-list">
+            {checkIns.map((row) => (
+              <li key={row.id}>
+                <span>{row.eventName}</span>
+                <span className="buyer-account__checkin-meta">
+                  {dateFormatter.format(row.checkedInAt)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
 
       <section className="buyer-account__requests" aria-labelledby="buyer-requests-heading">
         <h2 id="buyer-requests-heading" className="buyer-account__section-title">

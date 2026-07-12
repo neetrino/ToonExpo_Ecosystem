@@ -10,6 +10,7 @@ type PortalFormErrorProps = {
     | 'admin.catalog.errors'
     | 'catalog.request.errors'
     | 'qr.builder.errors'
+    | 'qr.entrance.errors'
     | 'buyer.qr.errors';
 };
 

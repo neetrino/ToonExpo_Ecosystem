@@ -110,4 +110,29 @@ describe('resolveQrScan', () => {
       }),
     );
   });
+
+  it('returns entrance branch with name only — no phone/email fields', async () => {
+    mockUserFindUnique.mockResolvedValue({ id: BUYER_USER_ID, name: 'Anna Buyer' });
+
+    const result = await resolveQrScan(TOKEN, {
+      userId: 'entrance-1',
+      role: 'ENTRANCE_STAFF',
+    });
+
+    expect(result.kind).toBe('entrance');
+    if (result.kind === 'entrance') {
+      expect(result.buyer).toEqual({ userId: BUYER_USER_ID, name: 'Anna Buyer' });
+      expect(result.buyer).not.toHaveProperty('email');
+      expect(result.buyer).not.toHaveProperty('phone');
+    }
+    expect(toPublicResolveShape(result)).toEqual({
+      kind: 'entrance',
+      hasBuyerPii: true,
+      hasContactPii: false,
+    });
+    expect(mockUserFindUnique).toHaveBeenCalledWith({
+      where: { id: BUYER_USER_ID },
+      select: { id: true, name: true },
+    });
+  });
 });

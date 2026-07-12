@@ -998,6 +998,39 @@ async function seedDemoReadinessAssessment(
   console.log('Created demo company readiness assessment for demo-development.');
 }
 
+const DEMO_EVENT_CODE = 'toonexpo-2026-demo';
+const DEMO_EVENT_NAME = 'ToonExpo 2026 Demo';
+
+async function seedExhibitionEvent(): Promise<void> {
+  const existing = await prisma.exhibitionEvent.findUnique({
+    where: { code: DEMO_EVENT_CODE },
+    select: { id: true },
+  });
+
+  if (existing) {
+    await prisma.exhibitionEvent.update({
+      where: { id: existing.id },
+      data: {
+        name: DEMO_EVENT_NAME,
+        status: 'ACTIVE',
+      },
+    });
+    console.log(`Updated demo exhibition event: ${DEMO_EVENT_CODE}`);
+    return;
+  }
+
+  await prisma.exhibitionEvent.create({
+    data: {
+      name: DEMO_EVENT_NAME,
+      code: DEMO_EVENT_CODE,
+      status: 'ACTIVE',
+      startDate: new Date('2026-07-01T09:00:00.000Z'),
+      endDate: new Date('2026-07-31T18:00:00.000Z'),
+    },
+  });
+  console.log(`Created demo exhibition event: ${DEMO_EVENT_CODE}`);
+}
+
 async function main(): Promise<void> {
   await seedAdmin();
   const catalog = await seedDemoCatalog();
@@ -1012,6 +1045,7 @@ async function main(): Promise<void> {
   await seedPartners();
   const categoryIds = await seedReadinessCategories();
   await seedDemoReadinessAssessment(catalog.company, categoryIds);
+  await seedExhibitionEvent();
 }
 
 main()

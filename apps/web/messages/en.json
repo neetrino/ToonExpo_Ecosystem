@@ -15,7 +15,8 @@
     "mortgage": "Mortgage",
     "buyer": "Buyer",
     "builder": "Builder",
-    "admin": "Admin"
+    "admin": "Admin",
+    "entrance": "Check-in"
   },
   "placeholders": {
     "buyer": {
@@ -72,7 +73,8 @@
       "companies": "Companies",
       "partners": "Partners",
       "projects": "Projects",
-      "readiness": "Readiness"
+      "readiness": "Readiness",
+      "exhibition": "Exhibition"
     },
     "catalog": {
       "errors": {
@@ -286,6 +288,52 @@
           "categoryRecommendation": "Category recommendation",
           "categoryRequiredActions": "Category required actions",
           "categoryInternalNote": "Category internal note"
+        }
+      }
+    },
+    "exhibition": {
+      "title": "Exhibition events",
+      "empty": "No exhibition events yet.",
+      "newEvent": "New event",
+      "edit": "Edit",
+      "noDates": "No dates",
+      "columns": {
+        "name": "Name",
+        "code": "Code",
+        "status": "Status",
+        "checkIns": "Check-ins",
+        "dates": "Dates",
+        "actions": "Actions"
+      },
+      "form": {
+        "create": "New exhibition event",
+        "edit": "Edit exhibition event",
+        "submit": "Save",
+        "fields": {
+          "name": "Name",
+          "code": "Code",
+          "codeHint": "Lowercase letters, numbers, and hyphens.",
+          "startDate": "Start",
+          "endDate": "End",
+          "status": "Status"
+        },
+        "statuses": {
+          "PLANNING": "Planning",
+          "ACTIVE": "Active",
+          "COMPLETED": "Completed",
+          "ARCHIVED": "Archived",
+          "CANCELLED": "Cancelled"
+        }
+      },
+      "recent": {
+        "title": "Recent check-ins",
+        "empty": "No check-ins recorded yet.",
+        "unnamed": "—",
+        "columns": {
+          "visitor": "Visitor",
+          "event": "Event",
+          "staff": "Staff",
+          "checkedInAt": "Checked in"
         }
       }
     },
@@ -811,9 +859,11 @@
   "buyer": {
     "account": {
       "title": "My account",
-      "subtitle": "Your visitor QR and contact requests to builders.",
+      "subtitle": "Your visitor QR, exhibition check-ins, and contact requests to builders.",
       "empty": "You have not submitted any requests yet. Browse projects to get started.",
       "noValue": "—",
+      "checkinsHeading": "Exhibition check-ins",
+      "checkinsEmpty": "You have not checked in to an exhibition yet.",
       "requestsHeading": "My requests",
       "columns": {
         "company": "Builder",
@@ -860,7 +910,7 @@
   "qr": {
     "public": {
       "title": "Visitor QR",
-      "body": "Sign in as a builder to follow up with a registered visitor, or ask them to open My QR in their ToonExpo account."
+      "body": "Sign in as a builder or entrance staff to continue, or ask the visitor to open My QR in their ToonExpo account."
     },
     "builder": {
       "title": "Visitor from QR scan",
@@ -884,6 +934,36 @@
         "notFound": "This QR is no longer valid.",
         "revoked": "This QR is no longer valid."
       }
+    },
+    "entrance": {
+      "title": "Entrance check-in",
+      "subtitle": "Confirm this registered visitor for the active exhibition event.",
+      "unnamedVisitor": "Registered visitor",
+      "submit": "Check in",
+      "successNew": "Visitor checked in successfully.",
+      "successDuplicate": "This visitor is already checked in for this event.",
+      "noActiveEvent": "No active exhibition event. Ask an admin to activate one.",
+      "fields": {
+        "name": "Name"
+      },
+      "errors": {
+        "unauthorized": "Entrance staff sign-in is required.",
+        "invalidInput": "Check-in could not be completed. Try again.",
+        "notFound": "This QR is no longer valid.",
+        "noActiveEvent": "No active exhibition event is configured.",
+        "alreadyCheckedIn": "This visitor is already checked in."
+      }
+    }
+  },
+  "entrance": {
+    "checkin": {
+      "title": "Entrance check-in",
+      "subtitle": "Scan a visitor QR by opening their /q/{token} link while signed in as entrance staff.",
+      "instruction": "Ask the visitor to show My QR from their account. Open or scan that link to check them in.",
+      "noActiveEvent": "There is no active exhibition event right now.",
+      "eventCode": "Event code: {code}",
+      "eventDates": "{start} – {end}",
+      "dateOpen": "—"
     }
   }
 }
