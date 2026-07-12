@@ -7,6 +7,7 @@ import { runCreateManualDealTransaction } from './manual-deal-mutations';
 
 export { updateDealStage } from './deal-stage-mutations';
 export { linkDealApartment, unlinkDealApartment } from './deal-apartment-mutations';
+export { setActivityStatus, recomputeDealNextFollowUpAt } from './activity-lifecycle-mutations';
 
 /**
  * Adds a COMMENT or FOLLOW_UP activity. FOLLOW_UP may set nextFollowUpAt on the deal.
@@ -24,12 +25,16 @@ export async function addDealActivity(
     }
 
     const now = new Date();
+    const followUpDueAt = input.type === 'FOLLOW_UP' ? input.nextFollowUpAt : undefined;
+
     await tx.dealActivity.create({
       data: {
         dealId: deal.id,
         authorUserId: actorUserId,
         type: input.type,
         body: input.body,
+        status: input.type === 'FOLLOW_UP' ? 'PLANNED' : null,
+        dueAt: followUpDueAt ?? null,
       },
     });
 
@@ -37,8 +42,8 @@ export async function addDealActivity(
       where: { id: deal.id },
       data: {
         lastActivityAt: now,
-        ...(input.type === 'FOLLOW_UP' && input.nextFollowUpAt
-          ? { nextFollowUpAt: input.nextFollowUpAt }
+        ...(input.type === 'FOLLOW_UP' && followUpDueAt
+          ? { nextFollowUpAt: followUpDueAt }
           : {}),
       },
     });

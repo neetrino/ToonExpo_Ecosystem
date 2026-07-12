@@ -66,6 +66,11 @@ export const DEAL_ACTIVITY_TYPES = ['COMMENT', 'FOLLOW_UP', 'STATUS_CHANGE'] as 
 
 export type DealActivityType = (typeof DEAL_ACTIVITY_TYPES)[number];
 
+/** CRM follow-up lifecycle (v1). Docs: 09-Constructor-CRM/05-Clients-Activities-Notes. */
+export const ACTIVITY_STATUSES = ['PLANNED', 'DONE', 'CANCELLED'] as const;
+
+export type ActivityStatus = (typeof ACTIVITY_STATUSES)[number];
+
 /** QR scan context / purpose (v1). Docs: 07-QR-System/06-Entity-Fields. */
 export const QR_SCAN_PURPOSES = [
   'BUILDER_SCAN',

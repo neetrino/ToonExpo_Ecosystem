@@ -746,6 +746,14 @@
           "submitComment": "Ավելացնել մեկնաբանություն",
           "submitFollowUp": "Ավելացնել հետևում",
           "nextFollowUpAt": "Հաջորդ հետևում",
+          "dueAt": "Ժամկետ",
+          "markDone": "Կատարված",
+          "markCancelled": "Չեղարկել",
+          "statuses": {
+            "PLANNED": "Պլանավորված",
+            "DONE": "Կատարված",
+            "CANCELLED": "Չեղարկված"
+          },
           "noAuthor": "Համակարգ"
         }
       }

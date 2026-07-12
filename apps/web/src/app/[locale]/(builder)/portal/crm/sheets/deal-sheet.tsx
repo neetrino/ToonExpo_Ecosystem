@@ -1,6 +1,6 @@
 'use client';
 
-import type { DealStage, RequestSource } from '@toonexpo/domain';
+import type { ActivityStatus, DealStage, RequestSource } from '@toonexpo/domain';
 import { SideSheet } from '@toonexpo/ui';
 
 import type { ProjectApartmentGroup } from '@/lib/crm/apartment-link-queries';
@@ -28,6 +28,8 @@ export type SerializableDealDetail = {
     id: string;
     type: 'COMMENT' | 'FOLLOW_UP' | 'STATUS_CHANGE';
     body: string;
+    status: ActivityStatus | null;
+    dueAt: string | null;
     createdAt: string;
     authorName: string | null;
   }>;
@@ -74,7 +76,11 @@ type DealSheetProps = {
       submitComment: string;
       submitFollowUp: string;
       nextFollowUpAt: string;
+      dueAt: string;
+      markDone: string;
+      markCancelled: string;
       types: Record<'COMMENT' | 'FOLLOW_UP' | 'STATUS_CHANGE', string>;
+      statuses: Record<ActivityStatus, string>;
       noAuthor: string;
     };
   };

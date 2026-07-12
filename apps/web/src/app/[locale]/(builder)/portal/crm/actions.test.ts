@@ -9,6 +9,7 @@ vi.mock('@/lib/crm/deal-mutations', () => ({
   linkDealApartment: vi.fn(),
   unlinkDealApartment: vi.fn(),
   addDealActivity: vi.fn(),
+  setActivityStatus: vi.fn(),
   assignDeal: vi.fn(),
   createManualDeal: vi.fn(),
 }));
@@ -36,6 +37,7 @@ import {
   assignDeal,
   createManualDeal,
   linkDealApartment,
+  setActivityStatus,
   unlinkDealApartment,
   updateDealStage,
 } from '@/lib/crm/deal-mutations';
@@ -45,6 +47,7 @@ import {
   assignDealAction,
   createManualDealAction,
   linkDealApartmentAction,
+  setActivityStatusAction,
   unlinkDealApartmentAction,
   updateDealStageAction,
 } from './actions';
@@ -90,6 +93,15 @@ describe('portal CRM actions authz', () => {
     });
     expect(result).toEqual({ ok: false, errorKey: 'unauthorized' });
     expect(addDealActivity).not.toHaveBeenCalled();
+  });
+
+  it('setActivityStatusAction returns unauthorized without a builder session', async () => {
+    const result = await setActivityStatusAction('en', {
+      activityId: 'activity-1',
+      status: 'DONE',
+    });
+    expect(result).toEqual({ ok: false, errorKey: 'unauthorized' });
+    expect(setActivityStatus).not.toHaveBeenCalled();
   });
 
   it('assignDealAction returns unauthorized without a builder session', async () => {

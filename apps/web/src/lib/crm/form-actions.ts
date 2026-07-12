@@ -1,13 +1,14 @@
 'use server';
 
 import type { DealStage } from '@toonexpo/domain';
-import { DEAL_STAGES } from '@toonexpo/domain';
+import { ACTIVITY_STATUSES, DEAL_STAGES } from '@toonexpo/domain';
 
 import {
   addDealActivityAction,
   assignDealAction,
   createManualDealAction,
   linkDealApartmentAction,
+  setActivityStatusAction,
   unlinkDealApartmentAction,
   updateDealStageAction,
 } from '@/app/[locale]/(builder)/portal/crm/actions';
@@ -138,6 +139,24 @@ export async function addDealFollowUpFormAction(
     type: 'FOLLOW_UP',
     body,
     nextFollowUpAt: nextFollowUpAt ?? undefined,
+  });
+  return toFormState(result);
+}
+
+export async function setActivityStatusFormAction(
+  locale: string,
+  _prevState: CrmFormActionState,
+  formData: FormData,
+): Promise<CrmFormActionState> {
+  const activityId = getFormString(formData, 'activityId');
+  const statusRaw = getFormString(formData, 'status');
+  if (!activityId || !statusRaw || !ACTIVITY_STATUSES.includes(statusRaw as (typeof ACTIVITY_STATUSES)[number])) {
+    return { errorKey: 'invalidInput' satisfies CrmMutationErrorKey };
+  }
+
+  const result = await setActivityStatusAction(locale, {
+    activityId,
+    status: statusRaw as (typeof ACTIVITY_STATUSES)[number],
   });
   return toFormState(result);
 }

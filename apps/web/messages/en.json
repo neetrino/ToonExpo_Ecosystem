@@ -746,6 +746,14 @@
           "submitComment": "Add comment",
           "submitFollowUp": "Add follow-up",
           "nextFollowUpAt": "Next follow-up",
+          "dueAt": "Due",
+          "markDone": "Mark done",
+          "markCancelled": "Cancel follow-up",
+          "statuses": {
+            "PLANNED": "Planned",
+            "DONE": "Done",
+            "CANCELLED": "Cancelled"
+          },
           "noAuthor": "System"
         }
       }

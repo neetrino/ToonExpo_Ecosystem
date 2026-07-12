@@ -1,4 +1,4 @@
-import type { DealStage, RequestSource } from '@toonexpo/domain';
+import type { ActivityStatus, DealStage, RequestSource } from '@toonexpo/domain';
 import type { getTranslations } from 'next-intl/server';
 
 import type { DealBoardColumn } from '@/lib/crm/deal-queries';
@@ -158,10 +158,18 @@ export function buildCrmWorkspaceLabels({
         submitComment: t('dealSheet.activities.submitComment'),
         submitFollowUp: t('dealSheet.activities.submitFollowUp'),
         nextFollowUpAt: t('dealSheet.activities.nextFollowUpAt'),
+        dueAt: t('dealSheet.activities.dueAt'),
+        markDone: t('dealSheet.activities.markDone'),
+        markCancelled: t('dealSheet.activities.markCancelled'),
         types: {
           COMMENT: tActivities('COMMENT'),
           FOLLOW_UP: tActivities('FOLLOW_UP'),
           STATUS_CHANGE: tActivities('STATUS_CHANGE'),
+        },
+        statuses: {
+          PLANNED: t('dealSheet.activities.statuses.PLANNED'),
+          DONE: t('dealSheet.activities.statuses.DONE'),
+          CANCELLED: t('dealSheet.activities.statuses.CANCELLED'),
         },
         noAuthor: t('dealSheet.activities.noAuthor'),
       },
@@ -185,6 +193,7 @@ export function toSerializableDealDetail(deal: DealDetail): SerializableDealDeta
     apartments: deal.apartments,
     activities: deal.activities.map((activity) => ({
       ...activity,
+      dueAt: activity.dueAt?.toISOString() ?? null,
       createdAt: activity.createdAt.toISOString(),
     })),
   };

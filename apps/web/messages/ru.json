@@ -746,6 +746,14 @@
           "submitComment": "Добавить комментарий",
           "submitFollowUp": "Добавить контакт",
           "nextFollowUpAt": "Следующий контакт",
+          "dueAt": "Срок",
+          "markDone": "Выполнено",
+          "markCancelled": "Отменить",
+          "statuses": {
+            "PLANNED": "Запланировано",
+            "DONE": "Выполнено",
+            "CANCELLED": "Отменено"
+          },
           "noAuthor": "Система"
         }
       }

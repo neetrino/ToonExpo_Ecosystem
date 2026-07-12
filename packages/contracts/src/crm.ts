@@ -1,4 +1,4 @@
-import { DEAL_STAGES, REQUEST_SOURCES } from '@toonexpo/domain';
+import { ACTIVITY_STATUSES, DEAL_STAGES, REQUEST_SOURCES } from '@toonexpo/domain';
 import { z } from 'zod';
 
 export const CONTACT_NAME_MAX_LENGTH = 120;
@@ -56,6 +56,13 @@ export const dealActivityInputSchema = z.object({
 });
 
 export type DealActivityInput = z.infer<typeof dealActivityInputSchema>;
+
+export const activityStatusUpdateInputSchema = z.object({
+  activityId: z.string().trim().min(1),
+  status: z.enum(ACTIVITY_STATUSES),
+});
+
+export type ActivityStatusUpdateInput = z.infer<typeof activityStatusUpdateInputSchema>;
 
 export const dealApartmentLinkInputSchema = z.object({
   dealId: z.string().trim().min(1),

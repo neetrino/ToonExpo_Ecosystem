@@ -2,6 +2,7 @@
 
 import {
   dealActivityInputSchema,
+  activityStatusUpdateInputSchema,
   dealApartmentLinkInputSchema,
   dealAssignInputSchema,
   dealStageUpdateInputSchema,
@@ -14,6 +15,7 @@ import {
   assignDeal,
   createManualDeal,
   linkDealApartment,
+  setActivityStatus,
   unlinkDealApartment,
   updateDealStage,
 } from '@/lib/crm/deal-mutations';
@@ -132,6 +134,27 @@ export async function addDealActivityAction(
   }
 
   const result = await addDealActivity(session.companyId, parsed.data, session.session.user.id);
+  if (result.ok) {
+    revalidateCrmPortalPaths();
+  }
+  return result;
+}
+
+export async function setActivityStatusAction(
+  _locale: string,
+  raw: unknown,
+): Promise<CrmActionResult> {
+  const session = await assertBuilderSession();
+  if (!session) {
+    return unauthorized();
+  }
+
+  const parsed = activityStatusUpdateInputSchema.safeParse(raw);
+  if (!parsed.success) {
+    return invalidInput();
+  }
+
+  const result = await setActivityStatus(session.companyId, parsed.data);
   if (result.ok) {
     revalidateCrmPortalPaths();
   }

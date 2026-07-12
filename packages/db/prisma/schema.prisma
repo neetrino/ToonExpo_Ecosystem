@@ -63,6 +63,13 @@ enum DealActivityType {
   STATUS_CHANGE
 }
 
+/// CRM follow-up lifecycle (doc 09-Constructor-CRM/05). Null for comments and status audits.
+enum ActivityStatus {
+  PLANNED
+  DONE
+  CANCELLED
+}
+
 enum QrScanPurpose {
   BUILDER_SCAN
   ENTRANCE_CHECKIN
@@ -475,6 +482,9 @@ model DealActivity {
   authorUserId String?
   type         DealActivityType
   body         String           @db.Text
+  status       ActivityStatus?
+  dueAt        DateTime?
+  completedAt  DateTime?
   createdAt    DateTime         @default(now())
   deal         Deal             @relation(fields: [dealId], references: [id], onDelete: Cascade)
   authorUser   User?            @relation(fields: [authorUserId], references: [id], onDelete: SetNull)

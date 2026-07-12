@@ -155,6 +155,55 @@
   padding: 0.75rem;
 }
 
+.crm-deal-sheet__activity--muted {
+  opacity: 0.65;
+}
+
+.crm-deal-sheet__activity--overdue {
+  border-left: 3px solid var(--te-danger, #e5484d);
+}
+
+.crm-deal-sheet__activity-header {
+  align-items: center;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: space-between;
+}
+
+.crm-deal-sheet__activity-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+}
+
+.crm-deal-sheet__activity-status-form {
+  display: inline;
+}
+
+.crm-activity-status {
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  padding: 0.125rem 0.5rem;
+  text-transform: uppercase;
+}
+
+.crm-activity-status--planned {
+  background: rgba(59, 130, 246, 0.15);
+  color: #93c5fd;
+}
+
+.crm-activity-status--done {
+  background: rgba(34, 197, 94, 0.15);
+  color: #86efac;
+}
+
+.crm-activity-status--cancelled {
+  background: rgba(148, 163, 184, 0.15);
+  color: #cbd5e1;
+}
+
 .crm-deal-sheet__activity-type {
   color: var(--te-muted);
   font-size: 0.75rem;

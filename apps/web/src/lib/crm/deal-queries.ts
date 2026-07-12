@@ -2,6 +2,7 @@ import { prisma } from '@toonexpo/db';
 import {
   DEAL_STAGES,
   type ApartmentStatus,
+  type ActivityStatus,
   type DealStage,
   type RequestSource,
 } from '@toonexpo/domain';
@@ -41,6 +42,8 @@ export type DealDetailActivity = {
   id: string;
   type: 'COMMENT' | 'FOLLOW_UP' | 'STATUS_CHANGE';
   body: string;
+  status: ActivityStatus | null;
+  dueAt: Date | null;
   createdAt: Date;
   authorName: string | null;
 };
@@ -161,6 +164,8 @@ export async function getCompanyDealDetail(
           id: true,
           type: true,
           body: true,
+          status: true,
+          dueAt: true,
           createdAt: true,
           authorUser: { select: { name: true } },
         },

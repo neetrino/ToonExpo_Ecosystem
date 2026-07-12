@@ -1,4 +1,4 @@
-import type { ApartmentStatus, DealStage } from '@toonexpo/domain';
+import type { ActivityStatus, ApartmentStatus, DealStage } from '@toonexpo/domain';
 
 export const DEAL_STAGE_BADGE_CLASS: Record<DealStage, string> = {
   NEW_REQUEST: 'crm-stage-badge crm-stage-badge--new',
@@ -16,4 +16,10 @@ export const APARTMENT_STATUS_BADGE_CLASS: Record<ApartmentStatus, string> = {
   AVAILABLE: 'portal-apartment-status portal-apartment-status--AVAILABLE',
   RESERVED: 'portal-apartment-status portal-apartment-status--RESERVED',
   SOLD: 'portal-apartment-status portal-apartment-status--SOLD',
+};
+
+export const ACTIVITY_STATUS_BADGE_CLASS: Record<ActivityStatus, string> = {
+  PLANNED: 'crm-activity-status crm-activity-status--planned',
+  DONE: 'crm-activity-status crm-activity-status--done',
+  CANCELLED: 'crm-activity-status crm-activity-status--cancelled',
 };

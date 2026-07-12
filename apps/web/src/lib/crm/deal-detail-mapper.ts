@@ -35,6 +35,8 @@ type DealDetailRow = {
     id: string;
     type: DealDetailActivity['type'];
     body: string;
+    status: DealDetailActivity['status'];
+    dueAt: Date | null;
     createdAt: Date;
     authorUser: { name: string | null } | null;
   }>;
@@ -72,6 +74,8 @@ export function mapDealDetailRow(deal: DealDetailRow): DealDetail {
       id: activity.id,
       type: activity.type,
       body: activity.body,
+      status: activity.status,
+      dueAt: activity.dueAt,
       createdAt: activity.createdAt,
       authorName: activity.authorUser?.name ?? null,
     })),
