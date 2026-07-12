@@ -2,9 +2,18 @@
 
 ## Current Status
 
+Sprint 7.1 **COMPLETE** — Upstash Redis rate limiting on auth, public request, QR lookup, and BOS provisioning.
+
 Sprint 6 **COMPLETE** — Analytics v1, BOS provisioning (atomic idempotency), audit logs + CSV reports, e2e smoke, hardening + final audit fixes.
 
-**MVP backlog complete** — all six planned sprints are done. Deferred follow-ups (not blockers): Redis rate limiting, media upload pipeline, venue map/booths, `ApartmentStatusHistory`, favorites, admin acting-on-behalf, company switcher, Playwright e2e, Swagger gating in prod, analytics aggregation/sampling.
+**MVP backlog complete** — all six planned sprints are done. Deferred follow-ups (not blockers): media upload pipeline, venue map/booths, `ApartmentStatusHistory`, favorites, admin acting-on-behalf, company switcher, Playwright e2e, Swagger gating in prod, analytics aggregation/sampling, general Redis caching/queues.
+
+## Sprint 7.1 — Rate limiting (COMPLETE)
+
+- **Upstash** — `@upstash/redis` + `@upstash/ratelimit` sliding windows on web + API.
+- **Surfaces** — login 10/min/IP; register 5/min/IP; public request 5/min/IP; QR lookup 30/min/IP; BOS provisioning 60/min/API-key fingerprint.
+- **Fail-open** — when `UPSTASH_REDIS_REST_URL`/`TOKEN` unset or Redis errors, requests are allowed (local/CI); one-time warn log.
+- **Errors** — typed `rateLimited` / HTTP 429 `RATE_LIMITED`; no email enumeration via limits.
 
 ## Sprint 6 — COMPLETE
 
@@ -52,7 +61,7 @@ Sprint 6 **COMPLETE** — Analytics v1, BOS provisioning (atomic idempotency), a
 
 ### Deferred (Sprint 4 follow-ups)
 
-- IP rate limiting on public intake (needs Redis).
+- IP rate limiting on public intake — done in Sprint 7.1.
 - `ApartmentStatusHistory` audit trail.
 - Selective apartment reserve (partial inventory hold).
 - Scan-log analytics dashboard.
@@ -115,7 +124,7 @@ Sprint 6 **COMPLETE** — Analytics v1, BOS provisioning (atomic idempotency), a
 - Auth.js 5 + database sessions.
 - Zod validation; signed R2 uploads (wiring later).
 - Locales as code constants.
-- PWA out of scope; Upstash Redis later when needed.
+- PWA out of scope; Upstash Redis used for rate limiting (general cache deferred).
 
 ## Next
 
@@ -139,11 +148,10 @@ Audit fixes applied on branch `sipan` after the feature pack landed:
 
 ### Deferred (unchanged)
 
-- Redis rate limiting, media upload pipeline, venue map/booths, `ApartmentStatusHistory`, favorites, admin acting-on-behalf, company switcher, Playwright e2e, Swagger gating in prod, analytics aggregation/sampling.
+- Media upload pipeline, venue map/booths, `ApartmentStatusHistory`, favorites, admin acting-on-behalf, company switcher, Playwright e2e, Swagger gating in prod, analytics aggregation/sampling, general Redis caching/queues.
 
 ## Open (non-blocking)
 
-- Rate limiting on sign-in/registration (Upstash Redis).
 - Wire API auth verification against DB sessions.
 - Email invitations for provisioned accounts (deferred).
 - Email/phone verification and password reset (deferred from v1).

@@ -31,7 +31,7 @@ Size C — large, layout: monorepo (`apps/*`, `packages/*`).
 | Email | Resend | Confirmed | Account invitations and login flows. |
 | QR | Server-generated signed token + QR rendering | Confirmed | Token stores no personal data. |
 | Maps | Custom image/hotspot editors first | Confirmed | Venue and real estate visual maps are image/coordinate based in v1. |
-| Cache/queues | Upstash Redis when needed | Confirmed | Not in Sprint 0; connect only when rate-limit/cache/queue requires it. Prefer Upstash over self-hosted Redis. |
+| Cache/queues | Upstash Redis when needed | Confirmed | Rate limiting live (auth, public request, QR, BOS provisioning). General cache/queues still deferred. Prefer Upstash over self-hosted Redis. |
 | Error tracking | Sentry | Confirmed | Useful for public/admin flows. |
 | Hosting | Vercel for web, Google Cloud Run for API | Confirmed | NestJS API deploys to Cloud Run. |
 | CI/CD | GitHub Actions + turbo affected tasks | Confirmed | Size C default. |
@@ -81,7 +81,7 @@ Size C — large, layout: monorepo (`apps/*`, `packages/*`).
 | Database | PostgreSQL / Neon | Confirmed |
 | ORM | Prisma | Confirmed |
 | Seed data | Prisma seed for dev/test | Confirmed |
-| Cache | None initially; Upstash Redis when needed | Confirmed |
+| Cache | Upstash Redis (rate limiting live) | Confirmed |
 | Queues | Not in first sprint | Confirmed |
 | Pool limits / timeouts | Not set until load requires; not in env by default | Confirmed |
 
