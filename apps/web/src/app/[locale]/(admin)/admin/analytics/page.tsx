@@ -11,10 +11,7 @@ export default async function AdminAnalyticsPage({ params }: AdminAnalyticsPageP
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const [t, data] = await Promise.all([
-    getTranslations('admin.analytics'),
-    loadAdminAnalytics(),
-  ]);
+  const [t, data] = await Promise.all([getTranslations('admin.analytics'), loadAdminAnalytics()]);
 
   return <AdminAnalyticsView t={t} data={data} />;
 }

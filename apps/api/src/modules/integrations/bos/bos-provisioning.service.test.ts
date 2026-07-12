@@ -2,12 +2,7 @@ import { ConflictException } from '@nestjs/common';
 import { Prisma } from '@toonexpo/db';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const {
-  findUniqueProvisioning,
-  createAudit,
-  upsertProvisioning,
-  transaction,
-} = vi.hoisted(() => ({
+const { findUniqueProvisioning, createAudit, upsertProvisioning, transaction } = vi.hoisted(() => ({
   findUniqueProvisioning: vi.fn(),
   createAudit: vi.fn(),
   upsertProvisioning: vi.fn(),

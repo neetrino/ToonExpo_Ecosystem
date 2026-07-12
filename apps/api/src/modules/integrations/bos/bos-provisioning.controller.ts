@@ -8,13 +8,7 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import {
-  ApiHeader,
-  ApiOperation,
-  ApiResponse,
-  ApiSecurity,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiHeader, ApiOperation, ApiResponse, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import type { Response } from 'express';
 
 import { BosApiKeyGuard } from './bos-api-key.guard';
@@ -25,7 +19,9 @@ import { BosProvisioningService } from './bos-provisioning.service';
 @ApiSecurity('bos-api-key')
 @Controller('integrations/bos')
 export class BosProvisioningController {
-  constructor(@Inject(BosProvisioningService) private readonly provisioning: BosProvisioningService) {}
+  constructor(
+    @Inject(BosProvisioningService) private readonly provisioning: BosProvisioningService,
+  ) {}
 
   @Post('provisioning')
   @HttpCode(201)

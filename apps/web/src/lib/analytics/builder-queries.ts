@@ -140,10 +140,7 @@ async function loadReadinessSnapshot(companyId: string): Promise<BuilderReadines
 
   return rows.map((row) => ({
     id: row.id,
-    label:
-      row.targetType === 'PROJECT'
-        ? (row.project?.name ?? row.id)
-        : 'BUILDER_COMPANY',
+    label: row.targetType === 'PROJECT' ? (row.project?.name ?? row.id) : 'BUILDER_COMPANY',
     status: row.status,
     overallScore: row.overallScore,
   }));

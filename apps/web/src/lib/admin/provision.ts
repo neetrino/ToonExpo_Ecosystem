@@ -2,10 +2,7 @@ import type { ProvisionAccountInput } from '@toonexpo/contracts';
 import { slugifyCompanyName } from '@toonexpo/contracts';
 import { prisma, Prisma } from '@toonexpo/db';
 
-import {
-  type AuditActor,
-  recordAudit,
-} from '@/lib/audit/record-audit';
+import { type AuditActor, recordAudit } from '@/lib/audit/record-audit';
 import { hashPassword } from '@/lib/auth/password';
 import { allocateUniqueSlug, MAX_SLUG_ATTEMPTS } from '@/lib/shared/unique-slug';
 

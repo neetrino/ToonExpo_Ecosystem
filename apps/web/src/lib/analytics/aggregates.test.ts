@@ -4,9 +4,7 @@ import { mapGroupCounts, toPercentageShares } from './aggregates';
 
 describe('mapGroupCounts', () => {
   it('fills missing keys with zero when keys are provided', () => {
-    expect(
-      mapGroupCounts([{ key: 'A', count: 3 }], ['A', 'B', 'C']),
-    ).toEqual([
+    expect(mapGroupCounts([{ key: 'A', count: 3 }], ['A', 'B', 'C'])).toEqual([
       { key: 'A', count: 3 },
       { key: 'B', count: 0 },
       { key: 'C', count: 0 },

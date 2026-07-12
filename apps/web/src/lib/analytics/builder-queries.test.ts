@@ -1,18 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const {
-  projectFindMany,
-  analyticsGroupBy,
-  dealGroupBy,
-  dealCount,
-  readinessFindMany,
-} = vi.hoisted(() => ({
-  projectFindMany: vi.fn(),
-  analyticsGroupBy: vi.fn(),
-  dealGroupBy: vi.fn(),
-  dealCount: vi.fn(),
-  readinessFindMany: vi.fn(),
-}));
+const { projectFindMany, analyticsGroupBy, dealGroupBy, dealCount, readinessFindMany } = vi.hoisted(
+  () => ({
+    projectFindMany: vi.fn(),
+    analyticsGroupBy: vi.fn(),
+    dealGroupBy: vi.fn(),
+    dealCount: vi.fn(),
+    readinessFindMany: vi.fn(),
+  }),
+);
 
 vi.mock('@toonexpo/db', () => ({
   prisma: {

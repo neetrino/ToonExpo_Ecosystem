@@ -7,11 +7,7 @@ import type {
 import { slugifyCompanyName } from '@toonexpo/contracts';
 import { prisma, Prisma } from '@toonexpo/db';
 
-import {
-  type AuditActor,
-  formatStatusTransition,
-  recordAudit,
-} from '@/lib/audit/record-audit';
+import { type AuditActor, formatStatusTransition, recordAudit } from '@/lib/audit/record-audit';
 import { allocateUniqueSlug } from '@/lib/shared/unique-slug';
 
 import { type AdminMutationResult, UNIQUE_CONSTRAINT_ERROR } from './mutation-result';

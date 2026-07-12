@@ -1,7 +1,4 @@
-import {
-  AnalyticsBarTable,
-  AnalyticsStatCards,
-} from '@/components/analytics/analytics-widgets';
+import { AnalyticsBarTable, AnalyticsStatCards } from '@/components/analytics/analytics-widgets';
 import type { AdminAnalyticsSnapshot } from '@/lib/analytics/admin-queries';
 import {
   labeledSharesFromCounts,

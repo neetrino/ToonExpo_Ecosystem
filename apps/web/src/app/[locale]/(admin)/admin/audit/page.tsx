@@ -16,10 +16,7 @@ export default async function AdminAuditPage({ params, searchParams }: AdminAudi
   const { entityType: rawEntityType } = await searchParams;
   const entityType = parseAuditEntityTypeFilter(rawEntityType);
 
-  const [t, rows] = await Promise.all([
-    getTranslations('admin.audit'),
-    loadAuditLogs(entityType),
-  ]);
+  const [t, rows] = await Promise.all([getTranslations('admin.audit'), loadAuditLogs(entityType)]);
 
   const dateFormatter = new Intl.DateTimeFormat(locale, {
     dateStyle: 'medium',
@@ -39,7 +36,11 @@ export default async function AdminAuditPage({ params, searchParams }: AdminAudi
       </div>
 
       <nav className="portal-nav" aria-label={t('filter.ariaLabel')}>
-        <Link className="portal-nav__link" href="/admin/audit" aria-current={!entityType ? 'page' : undefined}>
+        <Link
+          className="portal-nav__link"
+          href="/admin/audit"
+          aria-current={!entityType ? 'page' : undefined}
+        >
           {t('filter.all')}
         </Link>
         {AUDIT_ENTITY_TYPES.map((type) => (

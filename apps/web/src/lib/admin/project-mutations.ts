@@ -1,11 +1,7 @@
 import type { ProjectPublicationInput } from '@toonexpo/contracts';
 import { prisma } from '@toonexpo/db';
 
-import {
-  type AuditActor,
-  formatStatusTransition,
-  recordAudit,
-} from '@/lib/audit/record-audit';
+import { type AuditActor, formatStatusTransition, recordAudit } from '@/lib/audit/record-audit';
 
 import type { AdminMutationResult } from './mutation-result';
 

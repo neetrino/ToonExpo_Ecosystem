@@ -15,10 +15,7 @@ import {
   needsPartnerProfile,
   resolveCompanyId,
 } from './bos-provisioning.accounts';
-import {
-  BOS_PROVISIONING_OPERATION,
-  PRISMA_UNIQUE_CONSTRAINT,
-} from './bos-provisioning.constants';
+import { BOS_PROVISIONING_OPERATION, PRISMA_UNIQUE_CONSTRAINT } from './bos-provisioning.constants';
 import { hashUnusablePassword } from './bos-provisioning.crypto';
 
 const logger = pino({ name: 'bos-provisioning' });

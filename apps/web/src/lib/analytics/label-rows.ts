@@ -1,13 +1,7 @@
 import type { NamedCount } from '@/lib/analytics/aggregates';
 import { toPercentageShares } from '@/lib/analytics/aggregates';
-import type {
-  CheckInEventCount,
-  ReadinessCompanyAverage,
-} from '@/lib/analytics/admin-queries';
-import type {
-  BuilderReadinessSnapshotRow,
-  ProjectViewRow,
-} from '@/lib/analytics/builder-queries';
+import type { CheckInEventCount, ReadinessCompanyAverage } from '@/lib/analytics/admin-queries';
+import type { BuilderReadinessSnapshotRow, ProjectViewRow } from '@/lib/analytics/builder-queries';
 
 type TranslateFn = {
   (key: string): string;
@@ -60,9 +54,7 @@ export function labeledSharesFromReadinessAverages(
     const match = companies.find((company) => company.companyId === row.key);
     return {
       ...row,
-      label: match
-        ? `${match.companyName} (${match.avgScore?.toFixed(1) ?? '—'})`
-        : row.key,
+      label: match ? `${match.companyName} (${match.avgScore?.toFixed(1) ?? '—'})` : row.key,
     };
   });
 }
@@ -82,16 +74,15 @@ export function labeledSharesFromBuilderReadiness(
   rows: ReadonlyArray<BuilderReadinessSnapshotRow>,
   companyLabel: string,
 ): LabeledShareRow[] {
-  return toPercentageShares(
-    rows.map((row) => ({ key: row.id, count: row.overallScore ?? 0 })),
-  ).map((row) => {
-    const match = rows.find((item) => item.id === row.key);
-    const base =
-      match?.label === 'BUILDER_COMPANY' ? companyLabel : (match?.label ?? row.key);
-    const score = match?.overallScore;
-    return {
-      ...row,
-      label: score === null || score === undefined ? base : `${base} (${score})`,
-    };
-  });
+  return toPercentageShares(rows.map((row) => ({ key: row.id, count: row.overallScore ?? 0 }))).map(
+    (row) => {
+      const match = rows.find((item) => item.id === row.key);
+      const base = match?.label === 'BUILDER_COMPANY' ? companyLabel : (match?.label ?? row.key);
+      const score = match?.overallScore;
+      return {
+        ...row,
+        label: score === null || score === undefined ? base : `${base} (${score})`,
+      };
+    },
+  );
 }

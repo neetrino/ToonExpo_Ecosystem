@@ -1,15 +1,8 @@
 import { prisma } from '@toonexpo/db';
 
-import {
-  ANALYTICS_LOOKBACK_DAYS,
-  analyticsLookbackStart,
-} from '../../analytics/constants';
+import { ANALYTICS_LOOKBACK_DAYS, analyticsLookbackStart } from '../../analytics/constants';
 
-import {
-  adminReportNameSchema,
-  type AdminReportName,
-  REPORT_ROW_LIMIT,
-} from './constants';
+import { adminReportNameSchema, type AdminReportName, REPORT_ROW_LIMIT } from './constants';
 import { buildCsv } from './csv';
 
 export { adminReportNameSchema };

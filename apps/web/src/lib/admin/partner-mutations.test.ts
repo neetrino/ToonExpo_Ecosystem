@@ -5,15 +5,21 @@ vi.mock('@/lib/shared/unique-slug', () => ({
   MAX_SLUG_ATTEMPTS: 50,
 }));
 
-const { partnerFindUnique, partnerUpdate, bankOfferFindUnique, bankOfferUpdate, bankOfferCreate, transaction } =
-  vi.hoisted(() => ({
-    partnerFindUnique: vi.fn(),
-    partnerUpdate: vi.fn(),
-    bankOfferFindUnique: vi.fn(),
-    bankOfferUpdate: vi.fn(),
-    bankOfferCreate: vi.fn(),
-    transaction: vi.fn(),
-  }));
+const {
+  partnerFindUnique,
+  partnerUpdate,
+  bankOfferFindUnique,
+  bankOfferUpdate,
+  bankOfferCreate,
+  transaction,
+} = vi.hoisted(() => ({
+  partnerFindUnique: vi.fn(),
+  partnerUpdate: vi.fn(),
+  bankOfferFindUnique: vi.fn(),
+  bankOfferUpdate: vi.fn(),
+  bankOfferCreate: vi.fn(),
+  transaction: vi.fn(),
+}));
 
 const { recordAudit } = vi.hoisted(() => ({
   recordAudit: vi.fn(),
@@ -98,10 +104,7 @@ describe('setPartnerStatus', () => {
     partnerUpdate.mockResolvedValue({ id: 'partner-1' });
     recordAudit.mockResolvedValue(undefined);
 
-    const result = await setPartnerStatus(
-      { partnerId: 'partner-1', status: 'PUBLISHED' },
-      ACTOR,
-    );
+    const result = await setPartnerStatus({ partnerId: 'partner-1', status: 'PUBLISHED' }, ACTOR);
 
     expect(result).toEqual({
       ok: true,
@@ -138,10 +141,7 @@ describe('setBankOfferStatus', () => {
     bankOfferUpdate.mockResolvedValue({ id: 'offer-1' });
     recordAudit.mockResolvedValue(undefined);
 
-    const result = await setBankOfferStatus(
-      { bankOfferId: 'offer-1', status: 'PUBLISHED' },
-      ACTOR,
-    );
+    const result = await setBankOfferStatus({ bankOfferId: 'offer-1', status: 'PUBLISHED' }, ACTOR);
 
     expect(result).toEqual({
       ok: true,

@@ -6,11 +6,7 @@ import { prisma, Prisma } from '@toonexpo/db';
 
 import type { AdminMutationErrorKey, AdminMutationResult } from '@/lib/admin/mutation-result';
 import { UNIQUE_CONSTRAINT_ERROR } from '@/lib/admin/mutation-result';
-import {
-  type AuditActor,
-  formatStatusTransition,
-  recordAudit,
-} from '@/lib/audit/record-audit';
+import { type AuditActor, formatStatusTransition, recordAudit } from '@/lib/audit/record-audit';
 
 export type ExhibitionEventMutationResult = AdminMutationResult<{ eventId: string }>;
 

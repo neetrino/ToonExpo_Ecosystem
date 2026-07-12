@@ -60,10 +60,7 @@ export function AnalyticsBarTable({
                   <td>{row.count}</td>
                   <td className="analytics-bar-cell">
                     <div className="analytics-bar" aria-hidden="true">
-                      <div
-                        className="analytics-bar__fill"
-                        style={{ width: `${row.percent}%` }}
-                      />
+                      <div className="analytics-bar__fill" style={{ width: `${row.percent}%` }} />
                     </div>
                   </td>
                 </tr>

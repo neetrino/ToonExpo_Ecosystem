@@ -28,7 +28,13 @@ describe('escapeCsvField', () => {
 
 describe('buildCsv', () => {
   it('includes UTF-8 BOM and CRLF rows', () => {
-    const csv = buildCsv(['Name', 'City'], [['Ada', 'Yerevan'], ['Bob, Jr', 'Gyumri']]);
+    const csv = buildCsv(
+      ['Name', 'City'],
+      [
+        ['Ada', 'Yerevan'],
+        ['Bob, Jr', 'Gyumri'],
+      ],
+    );
     expect(csv.startsWith('\uFEFF')).toBe(true);
     expect(csv).toContain('Name,City\r\n');
     expect(csv).toContain('"Bob, Jr",Gyumri');

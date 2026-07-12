@@ -1,7 +1,4 @@
-import {
-  AnalyticsBarTable,
-  AnalyticsStatCards,
-} from '@/components/analytics/analytics-widgets';
+import { AnalyticsBarTable, AnalyticsStatCards } from '@/components/analytics/analytics-widgets';
 import type { BuilderAnalyticsSnapshot } from '@/lib/analytics/builder-queries';
 import {
   labeledSharesFromBuilderReadiness,
