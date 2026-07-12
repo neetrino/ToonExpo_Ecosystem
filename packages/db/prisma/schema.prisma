@@ -122,6 +122,13 @@ enum CheckInStatus {
   ALLOWED
 }
 
+/// Path graph node role on a venue map (route / path guidance v1).
+enum VenuePathNodeKind {
+  ENTRANCE
+  WAYPOINT
+  BOOTH
+}
+
 /// Persisted view events only (v1). Docs: 14-Analytics/06-Entity-Fields.
 /// Broader metric list lives on domain ANALYTICS_EVENT_TYPES comments (deferred types).
 enum AnalyticsEventType {
@@ -702,19 +709,24 @@ model ExhibitionEvent {
 
 /// One venue floor-plan image per exhibition event. Coordinates are percentages (0–100).
 model VenueMap {
-  id        String          @id @default(cuid())
-  eventId   String          @unique
-  imageUrl  String
-  imageAlt  String?
-  createdAt DateTime        @default(now())
-  updatedAt DateTime        @updatedAt
-  event     ExhibitionEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  booths    Booth[]
+  id                String          @id @default(cuid())
+  eventId           String          @unique
+  imageUrl          String
+  imageAlt          String?
+  /// Main entrance for route guidance. Null → routes unavailable.
+  entranceXPercent  Float?
+  entranceYPercent  Float?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  event             ExhibitionEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  booths            Booth[]
+  pathNodes         VenuePathNode[]
+  pathEdges         VenuePathEdge[]
 }
 
 /// Point marker on a venue map (booth / stand). Optional company and/or partner assignment.
 model Booth {
-  id         String    @id @default(cuid())
+  id         String          @id @default(cuid())
   venueMapId String
   code       String
   label      String
@@ -723,17 +735,54 @@ model Booth {
   companyId  String?
   partnerId  String?
   note       String?
-  sortOrder  Int       @default(0)
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  venueMap   VenueMap  @relation(fields: [venueMapId], references: [id], onDelete: Cascade)
-  company    Company?  @relation(fields: [companyId], references: [id], onDelete: SetNull)
-  partner    Partner?  @relation(fields: [partnerId], references: [id], onDelete: SetNull)
+  sortOrder  Int             @default(0)
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+  venueMap   VenueMap        @relation(fields: [venueMapId], references: [id], onDelete: Cascade)
+  company    Company?        @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  partner    Partner?        @relation(fields: [partnerId], references: [id], onDelete: SetNull)
+  pathNodes  VenuePathNode[]
 
   @@unique([venueMapId, code])
   @@index([companyId])
   @@index([partnerId])
   @@index([venueMapId, sortOrder])
+}
+
+/// Walkable path graph node for indoor route guidance (percent coords).
+model VenuePathNode {
+  id         String            @id @default(cuid())
+  venueMapId String
+  xPercent   Float
+  yPercent   Float
+  kind       VenuePathNodeKind
+  boothId    String?
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+  venueMap   VenueMap          @relation(fields: [venueMapId], references: [id], onDelete: Cascade)
+  booth      Booth?            @relation(fields: [boothId], references: [id], onDelete: Cascade)
+  edgesFrom  VenuePathEdge[]   @relation("PathEdgeFrom")
+  edgesTo    VenuePathEdge[]   @relation("PathEdgeTo")
+
+  @@index([venueMapId, kind])
+  @@unique([venueMapId, boothId])
+}
+
+/// Undirected walkable edge (store one direction; routing treats as bidirectional).
+model VenuePathEdge {
+  id         String        @id @default(cuid())
+  venueMapId String
+  fromNodeId String
+  toNodeId   String
+  createdAt  DateTime      @default(now())
+  venueMap   VenueMap      @relation(fields: [venueMapId], references: [id], onDelete: Cascade)
+  fromNode   VenuePathNode @relation("PathEdgeFrom", fields: [fromNodeId], references: [id], onDelete: Cascade)
+  toNode     VenuePathNode @relation("PathEdgeTo", fields: [toNodeId], references: [id], onDelete: Cascade)
+
+  @@unique([venueMapId, fromNodeId, toNodeId])
+  @@index([venueMapId])
+  @@index([fromNodeId])
+  @@index([toNodeId])
 }
 
 model CheckIn {

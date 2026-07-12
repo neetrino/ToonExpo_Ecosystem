@@ -1150,7 +1150,106 @@ async function seedExhibitionVenueMap(eventId: string, companyId: string): Promi
     });
   }
 
+  await seedExhibitionVenuePathGraph(venueMap.id);
+
   console.log(`Seeded venue map + ${booths.length} booths for ${DEMO_EVENT_CODE}`);
+}
+
+const DEMO_ENTRANCE = { xPercent: 50, yPercent: 95 };
+
+async function seedExhibitionVenuePathGraph(venueMapId: string): Promise<void> {
+  const boothRows = await prisma.booth.findMany({
+    where: { venueMapId },
+    select: { id: true, code: true, xPercent: true, yPercent: true },
+  });
+  const byCode = new Map(boothRows.map((row) => [row.code, row]));
+  const boothA12 = byCode.get('A12');
+  const boothB03 = byCode.get('B03');
+  const boothC01 = byCode.get('C01');
+  if (!boothA12 || !boothB03 || !boothC01) {
+    throw new Error('Demo booths A12/B03/C01 required before path graph seed');
+  }
+
+  await prisma.venuePathEdge.deleteMany({ where: { venueMapId } });
+  await prisma.venuePathNode.deleteMany({ where: { venueMapId } });
+
+  await prisma.venueMap.update({
+    where: { id: venueMapId },
+    data: {
+      entranceXPercent: DEMO_ENTRANCE.xPercent,
+      entranceYPercent: DEMO_ENTRANCE.yPercent,
+    },
+  });
+
+  const entrance = await prisma.venuePathNode.create({
+    data: {
+      venueMapId,
+      kind: 'ENTRANCE',
+      xPercent: DEMO_ENTRANCE.xPercent,
+      yPercent: DEMO_ENTRANCE.yPercent,
+    },
+    select: { id: true },
+  });
+  const wpMain = await prisma.venuePathNode.create({
+    data: { venueMapId, kind: 'WAYPOINT', xPercent: 50, yPercent: 70 },
+    select: { id: true },
+  });
+  const wpHub = await prisma.venuePathNode.create({
+    data: { venueMapId, kind: 'WAYPOINT', xPercent: 50, yPercent: 50 },
+    select: { id: true },
+  });
+  const wpA = await prisma.venuePathNode.create({
+    data: { venueMapId, kind: 'WAYPOINT', xPercent: 28, yPercent: 50 },
+    select: { id: true },
+  });
+  const nodeA12 = await prisma.venuePathNode.create({
+    data: {
+      venueMapId,
+      kind: 'BOOTH',
+      boothId: boothA12.id,
+      xPercent: boothA12.xPercent,
+      yPercent: boothA12.yPercent,
+    },
+    select: { id: true },
+  });
+  const nodeB03 = await prisma.venuePathNode.create({
+    data: {
+      venueMapId,
+      kind: 'BOOTH',
+      boothId: boothB03.id,
+      xPercent: boothB03.xPercent,
+      yPercent: boothB03.yPercent,
+    },
+    select: { id: true },
+  });
+  const nodeC01 = await prisma.venuePathNode.create({
+    data: {
+      venueMapId,
+      kind: 'BOOTH',
+      boothId: boothC01.id,
+      xPercent: boothC01.xPercent,
+      yPercent: boothC01.yPercent,
+    },
+    select: { id: true },
+  });
+
+  const undirectedPairs: Array<[string, string]> = [
+    [entrance.id, wpMain.id],
+    [wpMain.id, nodeC01.id],
+    [wpMain.id, wpHub.id],
+    [wpHub.id, wpA.id],
+    [wpA.id, nodeA12.id],
+    [wpHub.id, nodeB03.id],
+  ];
+
+  for (const [a, b] of undirectedPairs) {
+    const [fromNodeId, toNodeId] = a < b ? [a, b] : [b, a];
+    await prisma.venuePathEdge.create({
+      data: { venueMapId, fromNodeId, toNodeId },
+    });
+  }
+
+  console.log('Seeded venue path graph (entrance + waypoints + booth routes)');
 }
 
 async function seedExhibitionEvent(companyId: string): Promise<void> {

@@ -150,6 +150,15 @@ export const CHECK_IN_STATUSES = ['ALLOWED'] as const;
 export type CheckInStatus = (typeof CHECK_IN_STATUSES)[number];
 
 /**
+ * Venue path graph node kinds (v1).
+ * Docs: 12-Exhibition-Map-Checkin/03-Search-And-Route-Path.
+ * ENTRANCE is the routing start; BOOTH links optional boothId; WAYPOINT is intermediate.
+ */
+export const VENUE_PATH_NODE_KINDS = ['ENTRANCE', 'WAYPOINT', 'BOOTH'] as const;
+
+export type VenuePathNodeKind = (typeof VENUE_PATH_NODE_KINDS)[number];
+
+/**
  * AnalyticsEvent.type values persisted in v1.
  * Docs: 14-Analytics/02-Metrics-And-Events + 06-Entity-Fields.
  *
@@ -159,7 +168,7 @@ export type CheckInStatus = (typeof CHECK_IN_STATUSES)[number];
  * - bank_offer_selected — mortgage offer pick not tracked yet
  * - request_created — Deal rows cover requests
  * - qr_scanned / check_in_recorded — QrScanLog / CheckIn tables
- * - booth_selected / route_requested — venue map / route graph deferred (map UI in Sprint 7.6; analytics later)
+ * - booth_selected / route_requested — venue map route UI exists; analytics instrumentation later
  * - crm_status_changed / readiness_status_changed — CRM / readiness own tables
  *
  * Note: favorite_* are aggregate counters only (no userId on AnalyticsEvent).

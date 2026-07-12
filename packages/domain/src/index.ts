@@ -24,6 +24,7 @@ export {
   READINESS_STATUSES,
   READINESS_TARGET_TYPES,
   REQUEST_SOURCES,
+  VENUE_PATH_NODE_KINDS,
   type AnalyticsEventType,
   type ApartmentStatus,
   type ApartmentStatusChangeSource,
@@ -49,4 +50,5 @@ export {
   type ReadinessStatus,
   type ReadinessTargetType,
   type RequestSource,
+  type VenuePathNodeKind,
 } from './enums';
