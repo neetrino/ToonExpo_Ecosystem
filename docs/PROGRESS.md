@@ -2,6 +2,8 @@
 
 ## Current Status
 
+Sprint 7.7 **COMPLETE** — Tech hardening: apartment status history, Swagger prod gate, analytics sampling/bot filter.
+
 Sprint 7.6 **COMPLETE** — Exhibition venue map with booths.
 
 Sprint 7.5 **COMPLETE** — Admin acting-on-behalf of a builder company + company switcher.
@@ -16,7 +18,13 @@ Sprint 7.1 **COMPLETE** — Upstash Redis rate limiting on auth, public request,
 
 Sprint 6 **COMPLETE** — Analytics v1, BOS provisioning (atomic idempotency), audit logs + CSV reports, e2e smoke, hardening + final audit fixes.
 
-**MVP backlog complete** — planned sprints through 7.6 are done. Deferred follow-ups (not blockers): indoor route graph / pathfinding, `ApartmentStatusHistory`, Playwright e2e, Swagger gating in prod, analytics aggregation/sampling, general Redis caching/queues, company logo / visual-map image uploads (still URL-based), builder/company favorites.
+**MVP backlog complete** — planned sprints through 7.7 are done. Deferred follow-ups (not blockers): indoor route graph / pathfinding, Playwright e2e, `AnalyticsDailyAggregate` warehouse, general Redis caching/queues, company logo / visual-map image uploads (still URL-based), builder/company favorites.
+
+## Sprint 7.7 — Tech hardening pack (COMPLETE)
+
+- **A — ApartmentStatusHistory** — Prisma model + `ApartmentStatusChangeSource` (`CRM_STAGE` | `MANUAL_INVENTORY` | `SYSTEM`). History writes inside the same transaction as guarded CRM claim/release (`updateMany`) and builder manual apartment status updates. Read-only expandable list in portal apartment editor (en/ru/hy). Migration `20260712300000_sprint7_7_apartment_status_history`.
+- **B — Swagger gate** — `/docs` mounts only when `NODE_ENV !== 'production'` or `SWAGGER_ENABLED=true` (emptyToUndefined). Unit helper `shouldEnableSwagger`.
+- **C — Analytics sampling / bot filter** — `ANALYTICS_SAMPLE_RATE` (0–1, default 1) for `PROJECT_VIEW` / `APARTMENT_VIEW`; skip bot/prerender UAs when `user-agent` is available on public detail pages. No `AnalyticsDailyAggregate` table in v1 (deferred).
 
 ## Sprint 7.6 — Exhibition venue map + booths (COMPLETE)
 
@@ -85,8 +93,7 @@ Sprint 6 **COMPLETE** — Analytics v1, BOS provisioning (atomic idempotency), a
 ### Deferred (Sprint 6 follow-ups)
 
 - Deeper view instrumentation (beyond favorites aggregates).
-- AnalyticsDailyAggregate / sampling / bot filter.
-- Swagger `/docs` gated in production.
+- `AnalyticsDailyAggregate` warehouse / rollup tables.
 - Playwright e2e (current suite is fetch-based smoke).
 
 ## Sprint 5 — COMPLETE
@@ -118,7 +125,7 @@ Sprint 6 **COMPLETE** — Analytics v1, BOS provisioning (atomic idempotency), a
 ### Deferred (Sprint 4 follow-ups)
 
 - IP rate limiting on public intake — done in Sprint 7.1.
-- `ApartmentStatusHistory` audit trail.
+- `ApartmentStatusHistory` audit trail — done in Sprint 7.7.
 - Selective apartment reserve (partial inventory hold).
 - Scan-log analytics dashboard.
 
@@ -196,7 +203,7 @@ Audit fixes applied on branch `sipan` after the feature pack landed:
 
 ### Deferred (unchanged)
 
-- Indoor route graph / pathfinding, `ApartmentStatusHistory`, Playwright e2e, Swagger gating in prod, analytics aggregation/sampling, general Redis caching/queues; company logo / visual-map image uploads (URL-based); builder/company favorites.
+- Indoor route graph / pathfinding, Playwright e2e, `AnalyticsDailyAggregate` warehouse, general Redis caching/queues; company logo / visual-map image uploads (URL-based); builder/company favorites.
 
 ## Open (non-blocking)
 
