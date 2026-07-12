@@ -1,6 +1,8 @@
 import type { CompanyProfileUpdateInput } from '@toonexpo/contracts';
 import { prisma } from '@toonexpo/db';
 
+import { bestEffortDeleteReplacedR2Object } from '@/lib/storage';
+
 import { type BuilderMutationResult } from './mutation-result';
 
 function toCompanyProfileWriteData(input: CompanyProfileUpdateInput) {
@@ -21,6 +23,15 @@ export async function updateCompanyProfile(
   companyId: string,
   input: CompanyProfileUpdateInput,
 ): Promise<BuilderMutationResult<{ companyId: string; companySlug: string }>> {
+  const existing = await prisma.company.findUnique({
+    where: { id: companyId },
+    select: { logoUrl: true, slug: true },
+  });
+
+  if (!existing) {
+    return { ok: false, errorKey: 'notFound' };
+  }
+
   const result = await prisma.company.updateMany({
     where: { id: companyId },
     data: toCompanyProfileWriteData(input),
@@ -30,14 +41,7 @@ export async function updateCompanyProfile(
     return { ok: false, errorKey: 'notFound' };
   }
 
-  const company = await prisma.company.findUnique({
-    where: { id: companyId },
-    select: { slug: true },
-  });
+  await bestEffortDeleteReplacedR2Object(existing.logoUrl, input.logoUrl ?? null);
 
-  if (!company) {
-    return { ok: false, errorKey: 'notFound' };
-  }
-
-  return { ok: true, companyId, companySlug: company.slug };
+  return { ok: true, companyId, companySlug: existing.slug };
 }

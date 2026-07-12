@@ -12,6 +12,7 @@ import { prisma, Prisma } from '@toonexpo/db';
 
 import type { AdminMutationErrorKey, AdminMutationResult } from '@/lib/admin/mutation-result';
 import { UNIQUE_CONSTRAINT_ERROR } from '@/lib/admin/mutation-result';
+import { bestEffortDeleteReplacedR2Object } from '@/lib/storage';
 
 export type VenueMutationResult<T extends Record<string, unknown> = Record<string, never>> =
   AdminMutationResult<T>;
@@ -61,6 +62,11 @@ export async function upsertVenueMap(
     return { ok: false, errorKey: 'notFound' };
   }
 
+  const previous = await prisma.venueMap.findUnique({
+    where: { eventId: input.eventId },
+    select: { imageUrl: true },
+  });
+
   const venueMap = await prisma.venueMap.upsert({
     where: { eventId: input.eventId },
     create: {
@@ -74,6 +80,8 @@ export async function upsertVenueMap(
     },
     select: { id: true, eventId: true },
   });
+
+  await bestEffortDeleteReplacedR2Object(previous?.imageUrl, input.imageUrl);
 
   return { ok: true, venueMapId: venueMap.id, eventId: venueMap.eventId };
 }

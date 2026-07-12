@@ -28,6 +28,10 @@ vi.mock('@/lib/admin/mutation-result', () => ({
   UNIQUE_CONSTRAINT_ERROR: 'P2002',
 }));
 
+vi.mock('@/lib/storage', () => ({
+  bestEffortDeleteReplacedR2Object: vi.fn(),
+}));
+
 vi.mock('@toonexpo/db', () => ({
   prisma: {
     exhibitionEvent: { findUnique: (...args: unknown[]) => mockEventFindUnique(...args) },
@@ -69,6 +73,7 @@ describe('upsertVenueMap', () => {
 
   it('upserts when the event exists', async () => {
     mockEventFindUnique.mockResolvedValue({ id: 'evt-1' });
+    mockVenueFindUnique.mockResolvedValue(null);
     mockVenueUpsert.mockResolvedValue({ id: 'vm-1', eventId: 'evt-1' });
     const result = await upsertVenueMap({
       eventId: 'evt-1',

@@ -9,6 +9,7 @@ import { prisma, Prisma } from '@toonexpo/db';
 
 import { type AuditActor, formatStatusTransition, recordAudit } from '@/lib/audit/record-audit';
 import { allocateUniqueSlug } from '@/lib/shared/unique-slug';
+import { bestEffortDeleteReplacedR2Object } from '@/lib/storage';
 
 import { type AdminMutationResult, UNIQUE_CONSTRAINT_ERROR } from './mutation-result';
 
@@ -80,7 +81,7 @@ export async function updatePartner(
   try {
     const existing = await prisma.partner.findUnique({
       where: { id: input.partnerId },
-      select: { id: true, slug: true },
+      select: { id: true, slug: true, logoUrl: true },
     });
     if (!existing) {
       return { ok: false, errorKey: 'notFound' };
@@ -90,6 +91,8 @@ export async function updatePartner(
       where: { id: input.partnerId },
       data,
     });
+
+    await bestEffortDeleteReplacedR2Object(existing.logoUrl, data.logoUrl);
 
     return { ok: true, partnerId: existing.id, partnerSlug: existing.slug };
   } catch (error) {

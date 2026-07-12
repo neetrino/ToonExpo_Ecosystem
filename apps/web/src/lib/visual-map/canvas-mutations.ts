@@ -2,6 +2,7 @@ import type { CanvasStatusInput, CanvasUpsertInput } from '@toonexpo/contracts';
 import { prisma } from '@toonexpo/db';
 
 import { type AuditActor, formatStatusTransition, recordAudit } from '@/lib/audit/record-audit';
+import { bestEffortDeleteR2Object, bestEffortDeleteReplacedR2Object } from '@/lib/storage';
 
 import { findOwnedCanvas, resolveContextOwnership } from './canvas-ownership';
 import { type VisualMapMutationResult } from './mutation-result';
@@ -52,11 +53,16 @@ export async function updateCanvas(
     return { ok: false, errorKey: 'invalidInput' };
   }
 
-  return prisma.$transaction(async (tx) => {
+  const outcome = await prisma.$transaction(async (tx) => {
     const owned = await findOwnedCanvas(tx, companyId, input.canvasId!);
     if (!owned) {
-      return { ok: false, errorKey: 'notFound' };
+      return null;
     }
+
+    const previous = await tx.visualCanvas.findUnique({
+      where: { id: owned.id },
+      select: { imageUrl: true },
+    });
 
     await tx.visualCanvas.update({
       where: { id: owned.id },
@@ -67,8 +73,19 @@ export async function updateCanvas(
       },
     });
 
-    return { ok: true, canvasId: owned.id, projectId: owned.owningProjectId };
+    return {
+      canvasId: owned.id,
+      projectId: owned.owningProjectId,
+      previousImageUrl: previous?.imageUrl,
+    };
   });
+
+  if (!outcome) {
+    return { ok: false, errorKey: 'notFound' };
+  }
+
+  await bestEffortDeleteReplacedR2Object(outcome.previousImageUrl, input.imageUrl);
+  return { ok: true, canvasId: outcome.canvasId, projectId: outcome.projectId };
 }
 
 /** Canvas publication change — audit written inside the same transaction (atomic). */
@@ -108,16 +125,35 @@ export async function deleteCanvas(
   companyId: string,
   canvasId: string,
 ): Promise<VisualMapMutationResult<{ canvasId: string; projectId: string }>> {
-  return prisma.$transaction(async (tx) => {
+  const outcome = await prisma.$transaction(async (tx) => {
     const owned = await findOwnedCanvas(tx, companyId, canvasId);
     if (!owned) {
-      return { ok: false, errorKey: 'notFound' };
+      return { ok: false as const, errorKey: 'notFound' as const };
     }
     if (owned.status !== 'DRAFT') {
-      return { ok: false, errorKey: 'invalidInput' };
+      return { ok: false as const, errorKey: 'invalidInput' as const };
     }
 
+    const previous = await tx.visualCanvas.findUnique({
+      where: { id: owned.id },
+      select: { imageUrl: true },
+    });
+
     await tx.visualCanvas.delete({ where: { id: owned.id } });
-    return { ok: true, canvasId: owned.id, projectId: owned.owningProjectId };
+    return {
+      ok: true as const,
+      canvasId: owned.id,
+      projectId: owned.owningProjectId,
+      previousImageUrl: previous?.imageUrl,
+    };
   });
+
+  if (!outcome.ok) {
+    return { ok: false, errorKey: outcome.errorKey };
+  }
+
+  if (outcome.previousImageUrl) {
+    await bestEffortDeleteR2Object(outcome.previousImageUrl);
+  }
+  return { ok: true, canvasId: outcome.canvasId, projectId: outcome.projectId };
 }

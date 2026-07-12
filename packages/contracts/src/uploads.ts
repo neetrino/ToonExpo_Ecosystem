@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-/** Max upload size for builder media (10 MiB). */
+/** Max upload size for signed image uploads (10 MiB). */
 export const MEDIA_UPLOAD_MAX_BYTES = 10 * 1024 * 1024;
 
 /** Presigned PUT URL lifetime. */
@@ -18,7 +18,28 @@ export const MEDIA_UPLOAD_MIME_TO_EXT: Record<MediaUploadMimeType, string> = {
 
 export const mediaUploadMimeTypeSchema = z.enum(MEDIA_UPLOAD_ALLOWED_MIME_TYPES);
 
+/** Upload purposes — drives object-key prefix and route authz. */
+export const UPLOAD_PURPOSES = [
+  'MEDIA',
+  'COMPANY_LOGO',
+  'CANVAS_IMAGE',
+  'VENUE_IMAGE',
+] as const;
+
+export type UploadPurpose = (typeof UPLOAD_PURPOSES)[number];
+
+export const uploadPurposeSchema = z.enum(UPLOAD_PURPOSES);
+
+/** Object-key path segment per purpose (under company or admin scope). */
+export const UPLOAD_PURPOSE_KEY_PREFIX: Record<UploadPurpose, string> = {
+  MEDIA: 'media',
+  COMPANY_LOGO: 'logos',
+  CANVAS_IMAGE: 'canvases',
+  VENUE_IMAGE: 'venue',
+};
+
 export const mediaPresignRequestSchema = z.object({
+  purpose: uploadPurposeSchema.default('MEDIA'),
   contentType: mediaUploadMimeTypeSchema,
   contentLength: z.number().int().positive().max(MEDIA_UPLOAD_MAX_BYTES),
 });

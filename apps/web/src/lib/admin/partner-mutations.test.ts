@@ -5,6 +5,10 @@ vi.mock('@/lib/shared/unique-slug', () => ({
   MAX_SLUG_ATTEMPTS: 50,
 }));
 
+vi.mock('@/lib/storage', () => ({
+  bestEffortDeleteReplacedR2Object: vi.fn(),
+}));
+
 const {
   partnerFindUnique,
   partnerUpdate,

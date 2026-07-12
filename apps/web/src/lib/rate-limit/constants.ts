@@ -8,7 +8,7 @@ export const RATE_LIMIT_MAX = {
   publicRequest: 5,
   qr: 30,
   setPassword: 5,
-  /** Builder media presign (signed R2 PUT URLs) per userId. */
+  /** Builder/admin image presign (signed R2 PUT URLs) per userId. */
   mediaPresign: 20,
   /** Buyer favorite toggle (add/remove) per userId (or IP when anonymous). */
   favoriteToggle: 30,

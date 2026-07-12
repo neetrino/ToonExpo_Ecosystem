@@ -3,6 +3,7 @@ import { slugifyCompanyName } from '@toonexpo/contracts';
 import { prisma, Prisma } from '@toonexpo/db';
 
 import { allocateUniqueSlug } from '@/lib/shared/unique-slug';
+import { bestEffortDeleteReplacedR2Object } from '@/lib/storage';
 
 import { type AdminMutationResult, UNIQUE_CONSTRAINT_ERROR } from './mutation-result';
 
@@ -54,6 +55,15 @@ export async function createCompany(
 export async function updateCompany(
   input: CompanyProfileUpdateInput & { companyId: string },
 ): Promise<AdminMutationResult<{ companyId: string }>> {
+  const existing = await prisma.company.findUnique({
+    where: { id: input.companyId },
+    select: { id: true, logoUrl: true },
+  });
+
+  if (!existing) {
+    return { ok: false, errorKey: 'notFound' };
+  }
+
   const result = await prisma.company.updateMany({
     where: { id: input.companyId },
     data: toCompanyProfileWriteData(input),
@@ -62,6 +72,8 @@ export async function updateCompany(
   if (result.count === 0) {
     return { ok: false, errorKey: 'notFound' };
   }
+
+  await bestEffortDeleteReplacedR2Object(existing.logoUrl, input.logoUrl ?? null);
 
   return { ok: true, companyId: input.companyId };
 }

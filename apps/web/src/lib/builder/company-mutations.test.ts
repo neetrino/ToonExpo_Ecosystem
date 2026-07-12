@@ -14,6 +14,10 @@ vi.mock('@toonexpo/db', () => ({
   },
 }));
 
+vi.mock('@/lib/storage', () => ({
+  bestEffortDeleteReplacedR2Object: vi.fn(),
+}));
+
 import { updateCompanyProfile } from './company-mutations';
 
 const OWN_COMPANY_ID = 'company-own';
@@ -24,24 +28,20 @@ describe('company-mutations ownership', () => {
     vi.clearAllMocks();
   });
 
-  it('returns notFound when updateCompanyProfile targets another company', async () => {
-    updateMany.mockResolvedValue({ count: 0 });
+  it('returns notFound when company does not exist', async () => {
+    findUnique.mockResolvedValue(null);
 
     const result = await updateCompanyProfile(FOREIGN_COMPANY_ID, {
       name: 'Hijacked Builder',
     });
 
     expect(result).toEqual({ ok: false, errorKey: 'notFound' });
-    expect(updateMany).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: { id: FOREIGN_COMPANY_ID },
-      }),
-    );
+    expect(updateMany).not.toHaveBeenCalled();
   });
 
   it('updates own company profile', async () => {
+    findUnique.mockResolvedValue({ logoUrl: null, slug: 'sunrise-demo' });
     updateMany.mockResolvedValue({ count: 1 });
-    findUnique.mockResolvedValue({ slug: 'sunrise-demo' });
 
     const result = await updateCompanyProfile(OWN_COMPANY_ID, {
       name: 'Sunrise Development',

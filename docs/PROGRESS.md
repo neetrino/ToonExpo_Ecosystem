@@ -12,7 +12,7 @@ Sprint 7.5 **COMPLETE** — Admin acting-on-behalf of a builder company + compan
 
 Sprint 7.4 **COMPLETE** — Buyer favorites (save projects/apartments).
 
-Sprint 7.3 **COMPLETE** — Cloudflare R2 signed uploads for builder project/apartment media.
+Sprint 7.3 **COMPLETE** — Cloudflare R2 signed uploads for media, company logos, canvas images, venue/partner images.
 
 Sprint 7.2 **COMPLETE** — Resend set-password invitation emails replace admin-typed temporary passwords for provisioned accounts (admin UI + BOS).
 
@@ -20,7 +20,7 @@ Sprint 7.1 **COMPLETE** — Upstash Redis rate limiting on auth, public request,
 
 Sprint 6 **COMPLETE** — Analytics v1, BOS provisioning (atomic idempotency), audit logs + CSV reports, e2e smoke, hardening + final audit fixes.
 
-**MVP backlog complete** — planned sprints through 7.7 are done. Deferred follow-ups (not blockers): indoor route graph / pathfinding, Playwright e2e, `AnalyticsDailyAggregate` warehouse, general Redis caching/queues, company logo / visual-map image uploads (still URL-based), builder/company favorites.
+**MVP backlog complete** — planned sprints through 7.7 are done. Deferred follow-ups (not blockers): indoor route graph / pathfinding, Playwright e2e, `AnalyticsDailyAggregate` warehouse, general Redis caching/queues.
 
 ## Sprint 7.7 — Tech hardening pack (COMPLETE)
 
@@ -58,13 +58,15 @@ Sprint 6 **COMPLETE** — Analytics v1, BOS provisioning (atomic idempotency), a
 - **i18n** — en/ru/hy for toggle + account favorites.
 - **Tests** — unit coverage for contracts, mutations (idempotent add, authz), actions, callback URL safety. E2E not extended (fetch smoke unchanged).
 
-## Sprint 7.3 — R2 signed media uploads (COMPLETE)
+## Sprint 7.3 — R2 signed image uploads (COMPLETE)
 
-- **Signing** — Lives in `apps/web` (`POST /api/uploads/presign`), not Nest: builder session + company-scoped object keys; R2 secrets stay server-only; client only receives a short-lived PUT URL.
-- **Flow** — Validate MIME/size → presign → browser PUT to R2 → `addMediaAsset` with `publicUrl` (`R2_PUBLIC_URL` + key). Collapsed URL paste remains as fallback.
-- **Limits** — 10 MiB; `image/jpeg|png|webp`; 10 min TTL; key `media/{companyId}/{yyyy}/{mm}/{uuid}.{ext}`; 20 presign/min/userId (Upstash fail-open).
+- **Signing** — Lives in `apps/web` (`POST /api/uploads/presign`), not Nest: purpose-aware auth; R2 secrets stay server-only; client only receives a short-lived PUT URL.
+- **Purposes** — `MEDIA` / `CANVAS_IMAGE` → builder company scope (`media/`, `canvases/`); `COMPANY_LOGO` → builder company or admin fallback (`logos/` or `admin/{userId}/logos/`); `VENUE_IMAGE` → admin (`admin/{userId}/venue/`).
+- **Flow** — Validate MIME/size → presign → browser PUT to R2 → save `publicUrl`. Shared `ImageUploadField` with collapsed URL paste fallback.
+- **Surfaces** — Builder media, company logo, visual-map canvas; admin company/partner logo + venue map image.
+- **Limits** — 10 MiB; `image/jpeg|png|webp`; 10 min TTL; 20 presign/min/userId (Upstash fail-open).
 - **Unset R2** — Presign returns 503 `storageNotConfigured`; UI shows i18n message; URL paste still works. Unit tests mock AWS SDK (no network).
-- **Delete** — Best-effort R2 object delete when URL is under `R2_PUBLIC_URL`; DB delete never fails on storage errors.
+- **Delete** — Best-effort R2 object delete when a replaced/removed URL is under `R2_PUBLIC_URL`; DB writes never fail on storage errors.
 
 ## Sprint 7.2 — Set-password invitation emails (COMPLETE)
 
@@ -109,7 +111,7 @@ Sprint 6 **COMPLETE** — Analytics v1, BOS provisioning (atomic idempotency), a
 ### Deferred (Sprint 5 follow-ups)
 
 - Venue map / booths — done in Sprint 7.6; route graph / pathfinding still deferred.
-- Company logo / visual-map canvas image uploads (still URL inputs; project/apartment media uses R2 as of Sprint 7.3).
+- Company logo / visual-map / venue / partner image uploads — done (R2 purpose enum extension of Sprint 7.3).
 - Category CRUD UI for readiness.
 - Partner readiness module.
 
@@ -179,7 +181,7 @@ Sprint 6 **COMPLETE** — Analytics v1, BOS provisioning (atomic idempotency), a
 
 - pnpm + Turborepo; Next.js web + NestJS API.
 - Auth.js 5 + database sessions.
-- Zod validation; signed R2 uploads for builder project/apartment media (web Route Handler; company logos / canvas images still URL).
+- Zod validation; signed R2 uploads for media, logos, canvas, and venue images (web Route Handler; purpose-scoped keys).
 - Locales as code constants.
 - PWA out of scope; Upstash Redis used for rate limiting (general cache deferred).
 
@@ -205,7 +207,7 @@ Audit fixes applied on branch `sipan` after the feature pack landed:
 
 ### Deferred (unchanged)
 
-- Indoor route graph / pathfinding, Playwright e2e, `AnalyticsDailyAggregate` warehouse, general Redis caching/queues; company logo / visual-map image uploads (URL-based); builder/company favorites.
+- Indoor route graph / pathfinding, Playwright e2e, `AnalyticsDailyAggregate` warehouse, general Redis caching/queues.
 
 ## Open (non-blocking)
 

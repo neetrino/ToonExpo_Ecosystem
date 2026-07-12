@@ -31,3 +31,16 @@ export async function bestEffortDeleteR2Object(url: string): Promise<void> {
     console.warn('[storage] Failed to delete R2 object (continuing)', error);
   }
 }
+
+/**
+ * Deletes the previous R2 object when a URL field is replaced or cleared.
+ */
+export async function bestEffortDeleteReplacedR2Object(
+  previousUrl: string | null | undefined,
+  nextUrl: string | null | undefined,
+): Promise<void> {
+  if (!previousUrl || previousUrl === nextUrl) {
+    return;
+  }
+  await bestEffortDeleteR2Object(previousUrl);
+}

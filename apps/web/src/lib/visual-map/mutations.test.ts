@@ -9,10 +9,16 @@ vi.mock('@/lib/audit/record-audit', () => ({
   formatStatusTransition: (from: string, to: string) => `${from}→${to}`,
 }));
 
+vi.mock('@/lib/storage', () => ({
+  bestEffortDeleteR2Object: vi.fn(),
+  bestEffortDeleteReplacedR2Object: vi.fn(),
+}));
+
 vi.mock('@toonexpo/db', () => ({
   prisma: {
     visualCanvas: {
       findFirst: vi.fn(),
+      findUnique: vi.fn(),
       create: vi.fn(),
       update: vi.fn(),
       delete: vi.fn(),

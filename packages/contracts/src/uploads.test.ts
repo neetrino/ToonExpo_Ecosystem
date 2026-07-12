@@ -4,15 +4,58 @@ import {
   MEDIA_UPLOAD_MAX_BYTES,
   mediaPresignRequestSchema,
   mediaPresignResponseSchema,
+  uploadPurposeSchema,
 } from './uploads';
+
+describe('uploadPurposeSchema', () => {
+  it('accepts known purposes', () => {
+    expect(uploadPurposeSchema.safeParse('MEDIA').success).toBe(true);
+    expect(uploadPurposeSchema.safeParse('COMPANY_LOGO').success).toBe(true);
+    expect(uploadPurposeSchema.safeParse('CANVAS_IMAGE').success).toBe(true);
+    expect(uploadPurposeSchema.safeParse('VENUE_IMAGE').success).toBe(true);
+  });
+
+  it('rejects unknown purposes', () => {
+    expect(uploadPurposeSchema.safeParse('OTHER').success).toBe(false);
+  });
+});
 
 describe('mediaPresignRequestSchema', () => {
   it('accepts a valid jpeg request under the size cap', () => {
     const result = mediaPresignRequestSchema.safeParse({
+      purpose: 'MEDIA',
       contentType: 'image/jpeg',
       contentLength: 1024,
     });
     expect(result.success).toBe(true);
+  });
+
+  it('defaults purpose to MEDIA when omitted', () => {
+    const result = mediaPresignRequestSchema.safeParse({
+      contentType: 'image/png',
+      contentLength: 1024,
+    });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.purpose).toBe('MEDIA');
+    }
+  });
+
+  it('accepts COMPANY_LOGO and CANVAS_IMAGE purposes', () => {
+    expect(
+      mediaPresignRequestSchema.safeParse({
+        purpose: 'COMPANY_LOGO',
+        contentType: 'image/webp',
+        contentLength: 512,
+      }).success,
+    ).toBe(true);
+    expect(
+      mediaPresignRequestSchema.safeParse({
+        purpose: 'CANVAS_IMAGE',
+        contentType: 'image/jpeg',
+        contentLength: 512,
+      }).success,
+    ).toBe(true);
   });
 
   it('rejects disallowed MIME types', () => {
