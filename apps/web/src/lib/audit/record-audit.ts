@@ -39,27 +39,24 @@ export function formatStatusTransition(from: string, to: string): string {
 }
 
 /**
- * Inserts one audit row. Never throws — product mutations must not fail solely
- * because audit write failed. Prefer calling inside the same `$transaction` as
- * the status change so successful writes commit atomically with the mutation.
+ * Inserts one audit row inside the caller's transaction/client.
+ * Failures propagate so the mutation rolls back — auditability is required.
+ * Callers must pass the same interactive `tx` as the mutation.
+ * BOS inbound integration audit uses a separate post-commit never-throw helper.
  */
 export async function recordAudit(
   client: AuditWriteClient,
   input: RecordAuditInput,
 ): Promise<void> {
-  try {
-    await client.auditLog.create({
-      data: {
-        actorUserId: input.actor.userId,
-        actorRole: input.actor.role,
-        action: input.action,
-        entityType: input.entityType,
-        entityId: input.entityId,
-        companyId: input.companyId ?? null,
-        detail: input.detail ?? null,
-      },
-    });
-  } catch {
-    // Audit must never break mutations.
-  }
+  await client.auditLog.create({
+    data: {
+      actorUserId: input.actor.userId,
+      actorRole: input.actor.role,
+      action: input.action,
+      entityType: input.entityType,
+      entityId: input.entityId,
+      companyId: input.companyId ?? null,
+      detail: input.detail ?? null,
+    },
+  });
 }

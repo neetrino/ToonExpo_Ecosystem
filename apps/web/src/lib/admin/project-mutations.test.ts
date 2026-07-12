@@ -59,4 +59,18 @@ describe('setProjectPublicationAsAdmin', () => {
       }),
     );
   });
+
+  it('rejects the mutation when recordAudit fails (rollback semantics)', async () => {
+    findUnique.mockResolvedValue({
+      id: 'project-1',
+      status: 'PUBLISHED',
+      companyId: 'company-1',
+    });
+    update.mockResolvedValue({ id: 'project-1' });
+    recordAudit.mockRejectedValue(new Error('audit write failed'));
+
+    await expect(
+      setProjectPublicationAsAdmin({ projectId: 'project-1', status: 'ARCHIVED' }, ACTOR),
+    ).rejects.toThrow('audit write failed');
+  });
 });

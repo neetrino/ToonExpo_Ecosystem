@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Body,
+  ConflictException,
   Controller,
   HttpCode,
   Inject,
@@ -12,7 +13,7 @@ import { ApiHeader, ApiOperation, ApiResponse, ApiSecurity, ApiTags } from '@nes
 import type { Response } from 'express';
 
 import { BosApiKeyGuard } from './bos-api-key.guard';
-import { BOS_API_KEY_HEADER } from './bos-provisioning.constants';
+import { BOS_API_KEY_HEADER, PROVISIONING_IN_PROGRESS_CODE } from './bos-provisioning.constants';
 import { BosProvisioningService } from './bos-provisioning.service';
 
 @ApiTags('integrations')
@@ -53,6 +54,13 @@ export class BosProvisioningController {
         code: 'VALIDATION_ERROR',
         message: 'Invalid provisioning payload',
         issues: outcome.issues,
+      });
+    }
+
+    if (outcome.kind === 'busy') {
+      throw new ConflictException({
+        code: PROVISIONING_IN_PROGRESS_CODE,
+        message: 'Provisioning request is already in progress',
       });
     }
 

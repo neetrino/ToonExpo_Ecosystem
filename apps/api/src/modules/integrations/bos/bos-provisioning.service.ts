@@ -4,8 +4,7 @@ import {
   type BosProvisioningRequest,
   type BosProvisioningResponse,
 } from '@toonexpo/contracts';
-import { Prisma } from '@toonexpo/db';
-import pino from 'pino';
+import type { Prisma } from '@toonexpo/db';
 
 import { PrismaService } from '../../../common/prisma.service';
 
@@ -15,39 +14,39 @@ import {
   needsPartnerProfile,
   resolveCompanyId,
 } from './bos-provisioning.accounts';
-import { BOS_PROVISIONING_OPERATION, PRISMA_UNIQUE_CONSTRAINT } from './bos-provisioning.constants';
+import {
+  extractRequestId,
+  logProvisioningFailure,
+  markFailedIfProcessing,
+  toBosAuditPayload,
+  writeBosIntegrationAuditBestEffort,
+} from './bos-provisioning.audit';
+import {
+  EMAIL_CONFLICT_ERROR_MESSAGE,
+  PROVISIONING_CLAIM_STATUS,
+  PROVISIONING_IN_PROGRESS_CODE,
+} from './bos-provisioning.constants';
 import { hashUnusablePassword } from './bos-provisioning.crypto';
-
-const logger = pino({ name: 'bos-provisioning' });
+import {
+  buildFailedResponse,
+  createProcessingClaim,
+  isEmailConflictSnapshot,
+  isEmailUniqueViolation,
+  isRequestIdUniqueViolation,
+  isTerminalProvisioningStatus,
+  toReplayResponse,
+  tryLinkedExisting,
+  writeClaimSnapshot,
+  type ClaimTxResult,
+} from './bos-provisioning.idempotency';
 
 export type ProvisionOutcome =
   | { kind: 'created'; response: BosProvisioningResponse; httpStatus: 201 }
+  | { kind: 'linked'; response: BosProvisioningResponse; httpStatus: 200 }
   | { kind: 'idempotent'; response: BosProvisioningResponse; httpStatus: 200 }
   | { kind: 'failed'; response: BosProvisioningResponse; httpStatus: 200 }
+  | { kind: 'busy'; httpStatus: 409 }
   | { kind: 'validation'; issues: Array<{ path: string; message: string }> };
-
-function isEmailUniqueViolation(error: Prisma.PrismaClientKnownRequestError): boolean {
-  const target = error.meta?.target;
-  return Array.isArray(target) && target.includes('email');
-}
-
-function toAuditPayload(input: BosProvisioningRequest): Prisma.InputJsonValue {
-  return {
-    bosCompanyId: input.bosCompanyId,
-    companyType: input.companyType,
-    requestedModules: input.requestedModules,
-    partnerType: input.partnerType ?? null,
-    eventCycleId: input.eventCycleId ?? null,
-  };
-}
-
-function extractRequestId(rawBody: unknown): string | null {
-  if (typeof rawBody !== 'object' || rawBody === null) {
-    return null;
-  }
-  const value = (rawBody as { requestId?: unknown }).requestId;
-  return typeof value === 'string' ? value : null;
-}
 
 @Injectable()
 export class BosProvisioningService {
@@ -60,17 +59,12 @@ export class BosProvisioningService {
     }
 
     const input = parsed.data;
-    await this.writeAudit({
+    await writeBosIntegrationAuditBestEffort(this.prisma.client, {
       requestId: input.requestId,
       status: 'RECEIVED',
       message: 'provisioning request received',
-      payload: toAuditPayload(input),
+      payload: toBosAuditPayload(input),
     });
-
-    const replay = await this.tryIdempotentReplay(input.requestId);
-    if (replay) {
-      return replay;
-    }
 
     return this.executeProvisioning(input);
   }
@@ -83,7 +77,7 @@ export class BosProvisioningService {
       path: issue.path.join('.') || '(root)',
       message: issue.message,
     }));
-    await this.writeAudit({
+    await writeBosIntegrationAuditBestEffort(this.prisma.client, {
       requestId: extractRequestId(rawBody),
       status: 'FAILED',
       message: 'VALIDATION_ERROR',
@@ -92,61 +86,56 @@ export class BosProvisioningService {
     return { kind: 'validation', issues };
   }
 
-  private async tryIdempotentReplay(requestId: string): Promise<ProvisionOutcome | null> {
-    const existing = await this.prisma.client.provisioningRequest.findUnique({
-      where: { requestId },
-    });
-    if (!existing || existing.status === 'failed') {
-      return null;
-    }
-
-    const response = {
-      ...(existing.responseSnapshot as BosProvisioningResponse),
-      idempotent: true,
-    };
-    await this.writeAudit({
-      requestId,
-      status: 'SUCCEEDED',
-      message: 'idempotent replay',
-      payload: { toonexpoCompanyId: existing.toonexpoCompanyId },
-    });
-    return { kind: 'idempotent', response, httpStatus: 200 };
-  }
-
   private async executeProvisioning(input: BosProvisioningRequest): Promise<ProvisionOutcome> {
+    const passwordHash = await hashUnusablePassword();
     try {
-      const response = await this.createAccounts(input);
-      await this.upsertIdempotencyRecord(input, response);
-      await this.writeAudit({
-        requestId: input.requestId,
-        status: 'SUCCEEDED',
-        message: 'account provisioned',
-        payload: {
-          toonexpoCompanyId: response.toonexpoCompanyId,
-          primaryUserId: response.primaryUserId,
-          status: response.status,
-        },
-      });
-      return { kind: 'created', response, httpStatus: 201 };
+      const result = await this.prisma.client.$transaction((tx) =>
+        this.runClaimedProvision(tx, input, passwordHash),
+      );
+      return this.finalizeClaimResult(input, result);
     } catch (error) {
+      if (isRequestIdUniqueViolation(error)) {
+        return this.replayAfterClaimConflict(input.requestId);
+      }
       return this.handleProvisioningError(input, error);
     }
   }
 
-  private async handleProvisioningError(
+  private async runClaimedProvision(
+    tx: Prisma.TransactionClient,
     input: BosProvisioningRequest,
-    error: unknown,
+    passwordHash: string,
+  ): Promise<ClaimTxResult> {
+    await createProcessingClaim(tx, input);
+
+    const email = input.primaryContactEmail.toLowerCase();
+    const existingUser = await tx.user.findUnique({ where: { email } });
+    if (existingUser) {
+      const linked = await tryLinkedExisting(tx, input, existingUser);
+      if (linked) {
+        await writeClaimSnapshot(tx, input.requestId, linked);
+        return { kind: 'linked', response: linked };
+      }
+      const failed = buildFailedResponse(input.requestId, EMAIL_CONFLICT_ERROR_MESSAGE);
+      await writeClaimSnapshot(tx, input.requestId, failed);
+      return { kind: 'email_conflict', response: failed };
+    }
+
+    const response = await this.createAccountsInTx(tx, input, email, passwordHash);
+    await writeClaimSnapshot(tx, input.requestId, response);
+    return { kind: 'success', response };
+  }
+
+  private async finalizeClaimResult(
+    input: BosProvisioningRequest,
+    result: ClaimTxResult,
   ): Promise<ProvisionOutcome> {
-    if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
-      error.code === PRISMA_UNIQUE_CONSTRAINT &&
-      isEmailUniqueViolation(error)
-    ) {
-      await this.writeAudit({
+    if (result.kind === 'email_conflict') {
+      await writeBosIntegrationAuditBestEffort(this.prisma.client, {
         requestId: input.requestId,
         status: 'FAILED',
         message: 'EMAIL_CONFLICT',
-        payload: toAuditPayload(input),
+        payload: toBosAuditPayload(input),
       });
       throw new ConflictException({
         code: 'EMAIL_CONFLICT',
@@ -154,103 +143,127 @@ export class BosProvisioningService {
       });
     }
 
-    const detail = error instanceof Error ? error.message : 'Provisioning failed';
-    logger.error({ requestId: input.requestId, err: detail }, 'BOS provisioning failed');
-    const failedResponse: BosProvisioningResponse = {
+    await writeBosIntegrationAuditBestEffort(this.prisma.client, {
       requestId: input.requestId,
-      toonexpoCompanyId: null,
-      primaryUserId: null,
-      status: 'failed',
-      errorMessage: 'Provisioning failed',
-      createdAt: new Date().toISOString(),
-    };
-    await this.upsertIdempotencyRecord(input, failedResponse);
-    await this.writeAudit({
+      status: 'SUCCEEDED',
+      message: result.kind === 'linked' ? 'linked existing account' : 'account provisioned',
+      payload: {
+        toonexpoCompanyId: result.response.toonexpoCompanyId,
+        primaryUserId: result.response.primaryUserId,
+        status: result.response.status,
+      },
+    });
+
+    if (result.kind === 'linked') {
+      return { kind: 'linked', response: result.response, httpStatus: 200 };
+    }
+    return { kind: 'created', response: result.response, httpStatus: 201 };
+  }
+
+  private async replayAfterClaimConflict(requestId: string): Promise<ProvisionOutcome> {
+    const existing = await this.prisma.client.provisioningRequest.findUnique({
+      where: { requestId },
+    });
+
+    if (!existing || existing.status === PROVISIONING_CLAIM_STATUS) {
+      await writeBosIntegrationAuditBestEffort(this.prisma.client, {
+        requestId,
+        status: 'FAILED',
+        message: PROVISIONING_IN_PROGRESS_CODE,
+        payload: { reason: 'claim_busy' },
+      });
+      return { kind: 'busy', httpStatus: 409 };
+    }
+
+    if (!isTerminalProvisioningStatus(existing.status)) {
+      return { kind: 'busy', httpStatus: 409 };
+    }
+
+    const snapshot = existing.responseSnapshot as BosProvisioningResponse;
+    if (isEmailConflictSnapshot(snapshot)) {
+      throw new ConflictException({
+        code: 'EMAIL_CONFLICT',
+        message: 'Primary contact email is already registered',
+      });
+    }
+
+    const response = toReplayResponse(snapshot);
+    await writeBosIntegrationAuditBestEffort(this.prisma.client, {
+      requestId,
+      status: existing.status === 'failed' ? 'FAILED' : 'SUCCEEDED',
+      message: 'idempotent replay',
+      payload: { toonexpoCompanyId: existing.toonexpoCompanyId, status: existing.status },
+    });
+
+    if (existing.status === 'failed') {
+      return { kind: 'failed', response, httpStatus: 200 };
+    }
+    return { kind: 'idempotent', response, httpStatus: 200 };
+  }
+
+  private async handleProvisioningError(
+    input: BosProvisioningRequest,
+    error: unknown,
+  ): Promise<ProvisionOutcome> {
+    if (isEmailUniqueViolation(error)) {
+      await markFailedIfProcessing(
+        this.prisma.client,
+        input,
+        buildFailedResponse(input.requestId, EMAIL_CONFLICT_ERROR_MESSAGE),
+      );
+      await writeBosIntegrationAuditBestEffort(this.prisma.client, {
+        requestId: input.requestId,
+        status: 'FAILED',
+        message: 'EMAIL_CONFLICT',
+        payload: toBosAuditPayload(input),
+      });
+      throw new ConflictException({
+        code: 'EMAIL_CONFLICT',
+        message: 'Primary contact email is already registered',
+      });
+    }
+
+    logProvisioningFailure(input.requestId, error);
+    const failedResponse = buildFailedResponse(input.requestId, 'Provisioning failed');
+    await markFailedIfProcessing(this.prisma.client, input, failedResponse);
+    await writeBosIntegrationAuditBestEffort(this.prisma.client, {
       requestId: input.requestId,
       status: 'FAILED',
       message: 'PROVISIONING_FAILED',
-      payload: toAuditPayload(input),
+      payload: toBosAuditPayload(input),
     });
     return { kind: 'failed', response: failedResponse, httpStatus: 200 };
   }
 
-  private async createAccounts(input: BosProvisioningRequest): Promise<BosProvisioningResponse> {
-    const passwordHash = await hashUnusablePassword();
+  private async createAccountsInTx(
+    tx: Prisma.TransactionClient,
+    input: BosProvisioningRequest,
+    email: string,
+    passwordHash: string,
+  ): Promise<BosProvisioningResponse> {
     const role = mapRole(input.companyType);
-    const email = input.primaryContactEmail.toLowerCase();
-
-    const result = await this.prisma.client.$transaction(async (tx) => {
-      const companyId = await resolveCompanyId(tx, input.companyName);
-      const user = await tx.user.create({
-        data: {
-          email,
-          name: input.primaryContactName,
-          phone: input.primaryContactPhone ?? null,
-          passwordHash,
-          role,
-        },
-      });
-      await tx.companyMember.create({
-        data: { companyId, userId: user.id, role },
-      });
-      if (needsPartnerProfile(input.companyType)) {
-        await ensurePartner(tx, input, companyId);
-      }
-      return { companyId, userId: user.id };
+    const companyId = await resolveCompanyId(tx, input.companyName);
+    const user = await tx.user.create({
+      data: {
+        email,
+        name: input.primaryContactName,
+        phone: input.primaryContactPhone ?? null,
+        passwordHash,
+        role,
+      },
     });
-
+    await tx.companyMember.create({
+      data: { companyId, userId: user.id, role },
+    });
+    if (needsPartnerProfile(input.companyType)) {
+      await ensurePartner(tx, input, companyId);
+    }
     return {
       requestId: input.requestId,
-      toonexpoCompanyId: result.companyId,
-      primaryUserId: result.userId,
+      toonexpoCompanyId: companyId,
+      primaryUserId: user.id,
       status: 'success',
       createdAt: new Date().toISOString(),
     };
-  }
-
-  private async upsertIdempotencyRecord(
-    input: BosProvisioningRequest,
-    response: BosProvisioningResponse,
-  ): Promise<void> {
-    const snapshot = response as unknown as Prisma.InputJsonValue;
-    await this.prisma.client.provisioningRequest.upsert({
-      where: { requestId: input.requestId },
-      create: {
-        requestId: input.requestId,
-        bosCompanyId: input.bosCompanyId,
-        primaryContactEmail: input.primaryContactEmail.toLowerCase(),
-        status: response.status,
-        toonexpoCompanyId: response.toonexpoCompanyId,
-        primaryUserId: response.primaryUserId,
-        errorMessage: response.errorMessage ?? null,
-        responseSnapshot: snapshot,
-      },
-      update: {
-        status: response.status,
-        toonexpoCompanyId: response.toonexpoCompanyId,
-        primaryUserId: response.primaryUserId,
-        errorMessage: response.errorMessage ?? null,
-        responseSnapshot: snapshot,
-      },
-    });
-  }
-
-  private async writeAudit(input: {
-    requestId: string | null;
-    status: 'RECEIVED' | 'SUCCEEDED' | 'FAILED';
-    message: string;
-    payload: Prisma.InputJsonValue;
-  }): Promise<void> {
-    await this.prisma.client.integrationAuditLog.create({
-      data: {
-        direction: 'INBOUND',
-        operation: BOS_PROVISIONING_OPERATION,
-        externalRef: input.requestId,
-        requestId: input.requestId,
-        status: input.status,
-        message: input.message,
-        payload: input.payload,
-      },
-    });
   }
 }

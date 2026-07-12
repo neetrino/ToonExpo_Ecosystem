@@ -43,7 +43,7 @@ describe('recordAudit', () => {
     });
   });
 
-  it('resolves silently when create fails', async () => {
+  it('propagates create failures so the caller transaction can roll back', async () => {
     create.mockRejectedValue(new Error('db down'));
 
     await expect(
@@ -56,6 +56,6 @@ describe('recordAudit', () => {
           entityId: 'user-2',
         },
       ),
-    ).resolves.toBeUndefined();
+    ).rejects.toThrow('db down');
   });
 });

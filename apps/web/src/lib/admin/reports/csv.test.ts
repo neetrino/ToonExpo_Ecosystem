@@ -13,6 +13,20 @@ describe('escapeCsvField', () => {
     expect(escapeCsvField(42)).toBe('42');
   });
 
+  it('keeps typed numeric negatives raw (string-only neutralization)', () => {
+    expect(escapeCsvField(-2)).toBe('-2');
+    expect(escapeCsvField(1)).toBe('1');
+  });
+
+  it('neutralizes formula-like string cells', () => {
+    expect(escapeCsvField('=cmd|"/c calc"!A1')).toBe(`"'=cmd|""/c calc""!A1"`);
+    expect(escapeCsvField('+1')).toBe("'+1");
+    expect(escapeCsvField('-2')).toBe("'-2");
+    expect(escapeCsvField('@x')).toBe("'@x");
+    expect(escapeCsvField('\t=1+1')).toBe("'\t=1+1");
+    expect(escapeCsvField('\r=1+1')).toBe(`"'\r=1+1"`);
+  });
+
   it('quotes fields with commas', () => {
     expect(escapeCsvField('a,b')).toBe('"a,b"');
   });
@@ -38,5 +52,10 @@ describe('buildCsv', () => {
     expect(csv.startsWith('\uFEFF')).toBe(true);
     expect(csv).toContain('Name,City\r\n');
     expect(csv).toContain('"Bob, Jr",Gyumri');
+  });
+
+  it('applies formula neutralization across all report cells', () => {
+    const csv = buildCsv(['name', 'count'], [['=cmd|x', 3]]);
+    expect(csv).toContain("'=cmd|x,3");
   });
 });

@@ -2,10 +2,17 @@ import { ConflictException } from '@nestjs/common';
 import { Prisma } from '@toonexpo/db';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const { findUniqueProvisioning, createAudit, upsertProvisioning, transaction } = vi.hoisted(() => ({
+const {
+  findUniqueProvisioning,
+  createProvisioning,
+  createAudit,
+  updateManyProvisioning,
+  transaction,
+} = vi.hoisted(() => ({
   findUniqueProvisioning: vi.fn(),
+  createProvisioning: vi.fn(),
   createAudit: vi.fn(),
-  upsertProvisioning: vi.fn(),
+  updateManyProvisioning: vi.fn(),
   transaction: vi.fn(),
 }));
 
@@ -14,7 +21,8 @@ vi.mock('../../../common/prisma.service', () => ({
     client = {
       provisioningRequest: {
         findUnique: findUniqueProvisioning,
-        upsert: upsertProvisioning,
+        create: createProvisioning,
+        updateMany: updateManyProvisioning,
       },
       integrationAuditLog: {
         create: createAudit,
@@ -31,6 +39,7 @@ vi.mock('./bos-provisioning.crypto', () => ({
 
 import { PrismaService } from '../../../common/prisma.service';
 
+import { EMAIL_CONFLICT_ERROR_MESSAGE } from './bos-provisioning.constants';
 import { BosProvisioningService } from './bos-provisioning.service';
 
 const VALID_BODY = {
@@ -43,13 +52,42 @@ const VALID_BODY = {
   requestedModules: ['builder_portal' as const],
 };
 
+function buildTx(overrides: Record<string, unknown> = {}) {
+  return {
+    provisioningRequest: {
+      create: vi.fn().mockResolvedValue({ id: 'claim-1' }),
+      update: vi.fn().mockResolvedValue({ id: 'claim-1' }),
+      findFirst: vi.fn().mockResolvedValue(null),
+      findUnique: vi.fn().mockResolvedValue(null),
+    },
+    user: {
+      findUnique: vi.fn().mockResolvedValue(null),
+      create: vi.fn().mockResolvedValue({ id: 'user-new' }),
+    },
+    company: {
+      findUnique: vi.fn().mockResolvedValue(null),
+      create: vi.fn().mockResolvedValue({ id: 'co-new' }),
+    },
+    companyMember: {
+      create: vi.fn().mockResolvedValue({ id: 'mem-1' }),
+      findUnique: vi.fn().mockResolvedValue(null),
+    },
+    partner: {
+      findUnique: vi.fn(),
+      create: vi.fn(),
+    },
+    ...overrides,
+  };
+}
+
 describe('BosProvisioningService', () => {
   const service = new BosProvisioningService(new PrismaService());
 
   beforeEach(() => {
     vi.clearAllMocks();
     createAudit.mockResolvedValue({ id: 'audit-1' });
-    upsertProvisioning.mockResolvedValue({ id: 'prov-1' });
+    createProvisioning.mockResolvedValue({ id: 'prov-1' });
+    updateManyProvisioning.mockResolvedValue({ count: 0 });
     findUniqueProvisioning.mockResolvedValue(null);
   });
 
@@ -66,7 +104,7 @@ describe('BosProvisioningService', () => {
     );
   });
 
-  it('replays the original result for the same requestId', async () => {
+  it('replays via P2002 requestId claim race (idempotent)', async () => {
     const snapshot = {
       requestId: 'req-100',
       toonexpoCompanyId: 'co-1',
@@ -74,6 +112,13 @@ describe('BosProvisioningService', () => {
       status: 'success',
       createdAt: '2026-07-12T00:00:00.000Z',
     };
+    transaction.mockRejectedValue(
+      new Prisma.PrismaClientKnownRequestError('Unique constraint failed', {
+        code: 'P2002',
+        clientVersion: 'test',
+        meta: { target: ['requestId'] },
+      }),
+    );
     findUniqueProvisioning.mockResolvedValue({
       status: 'success',
       toonexpoCompanyId: 'co-1',
@@ -87,17 +132,75 @@ describe('BosProvisioningService', () => {
       expect(outcome.response.toonexpoCompanyId).toBe('co-1');
       expect(outcome.httpStatus).toBe(200);
     }
-    expect(transaction).not.toHaveBeenCalled();
   });
 
-  it('maps email unique violations to ConflictException EMAIL_CONFLICT', async () => {
+  it('returns busy when claim race finds processing row', async () => {
     transaction.mockRejectedValue(
       new Prisma.PrismaClientKnownRequestError('Unique constraint failed', {
         code: 'P2002',
         clientVersion: 'test',
-        meta: { target: ['email'] },
+        meta: { target: ['requestId'] },
       }),
     );
+    findUniqueProvisioning.mockResolvedValue({
+      status: 'processing',
+      responseSnapshot: {},
+    });
+
+    const outcome = await service.provision(VALID_BODY);
+    expect(outcome).toEqual({ kind: 'busy', httpStatus: 409 });
+  });
+
+  it('returns linked_existing for same bosCompanyId email re-provision', async () => {
+    transaction.mockImplementation(async (fn: (tx: unknown) => Promise<unknown>) => {
+      const tx = buildTx({
+        user: {
+          findUnique: vi.fn().mockResolvedValue({ id: 'user-existing', role: 'BUILDER' }),
+          create: vi.fn(),
+        },
+        provisioningRequest: {
+          create: vi.fn().mockResolvedValue({ id: 'claim-1' }),
+          update: vi.fn().mockResolvedValue({ id: 'claim-1' }),
+          findFirst: vi.fn().mockResolvedValue({
+            toonexpoCompanyId: 'co-existing',
+            primaryUserId: 'user-existing',
+          }),
+          findUnique: vi.fn(),
+        },
+        companyMember: {
+          findUnique: vi.fn().mockResolvedValue({ id: 'mem-existing' }),
+          create: vi.fn(),
+        },
+      });
+      return fn(tx);
+    });
+
+    const outcome = await service.provision(VALID_BODY);
+    expect(outcome.kind).toBe('linked');
+    if (outcome.kind === 'linked') {
+      expect(outcome.response.status).toBe('linked_existing');
+      expect(outcome.response.toonexpoCompanyId).toBe('co-existing');
+      expect(outcome.response.primaryUserId).toBe('user-existing');
+      expect(outcome.httpStatus).toBe(200);
+    }
+  });
+
+  it('maps plain email conflicts to ConflictException EMAIL_CONFLICT', async () => {
+    transaction.mockImplementation(async (fn: (tx: unknown) => Promise<unknown>) => {
+      const tx = buildTx({
+        user: {
+          findUnique: vi.fn().mockResolvedValue({ id: 'user-other', role: 'BUYER' }),
+          create: vi.fn(),
+        },
+        provisioningRequest: {
+          create: vi.fn().mockResolvedValue({ id: 'claim-1' }),
+          update: vi.fn().mockResolvedValue({ id: 'claim-1' }),
+          findFirst: vi.fn().mockResolvedValue(null),
+          findUnique: vi.fn(),
+        },
+      });
+      return fn(tx);
+    });
 
     await expect(service.provision(VALID_BODY)).rejects.toBeInstanceOf(ConflictException);
     try {
@@ -109,24 +212,17 @@ describe('BosProvisioningService', () => {
     }
   });
 
-  it('creates accounts and stores an idempotency record on success', async () => {
+  it('creates accounts and stores success snapshot in the claim transaction', async () => {
+    const txUpdate = vi.fn().mockResolvedValue({ id: 'claim-1' });
     transaction.mockImplementation(async (fn: (tx: unknown) => Promise<unknown>) => {
-      const tx = {
-        company: {
-          findUnique: vi.fn().mockResolvedValue(null),
-          create: vi.fn().mockResolvedValue({ id: 'co-new' }),
-        },
-        user: {
-          create: vi.fn().mockResolvedValue({ id: 'user-new' }),
-        },
-        companyMember: {
-          create: vi.fn().mockResolvedValue({ id: 'mem-1' }),
-        },
-        partner: {
+      const tx = buildTx({
+        provisioningRequest: {
+          create: vi.fn().mockResolvedValue({ id: 'claim-1' }),
+          update: txUpdate,
+          findFirst: vi.fn(),
           findUnique: vi.fn(),
-          create: vi.fn(),
         },
-      };
+      });
       return fn(tx);
     });
 
@@ -138,6 +234,35 @@ describe('BosProvisioningService', () => {
       expect(outcome.response.toonexpoCompanyId).toBe('co-new');
       expect(outcome.response.primaryUserId).toBe('user-new');
     }
-    expect(upsertProvisioning).toHaveBeenCalled();
+    expect(txUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ status: 'success' }),
+      }),
+    );
+  });
+
+  it('replays stored EMAIL_CONFLICT failure as ConflictException', async () => {
+    transaction.mockRejectedValue(
+      new Prisma.PrismaClientKnownRequestError('Unique constraint failed', {
+        code: 'P2002',
+        clientVersion: 'test',
+        meta: { target: ['requestId'] },
+      }),
+    );
+    findUniqueProvisioning.mockResolvedValue({
+      status: 'failed',
+      responseSnapshot: {
+        requestId: 'req-100',
+        toonexpoCompanyId: null,
+        primaryUserId: null,
+        status: 'failed',
+        errorMessage: EMAIL_CONFLICT_ERROR_MESSAGE,
+        createdAt: '2026-07-12T00:00:00.000Z',
+      },
+    });
+
+    await expect(service.provision(VALID_BODY)).rejects.toMatchObject({
+      response: expect.objectContaining({ code: 'EMAIL_CONFLICT' }),
+    });
   });
 });
