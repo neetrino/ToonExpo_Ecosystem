@@ -136,6 +136,8 @@ enum AuditAction {
 /// Platform audit entity kinds (v1).
 enum AuditEntityType {
   PROJECT
+  BUILDING
+  FLOOR
   PARTNER
   BANK_OFFER
   VISUAL_CANVAS
@@ -297,32 +299,37 @@ model Project {
 
 
 model Building {
-  id        String         @id @default(cuid())
-  projectId String
-  name      String
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
-  project   Project        @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  floors    Floor[]
-  canvases  VisualCanvas[]
-  hotspots  Hotspot[]
+  id          String            @id @default(cuid())
+  projectId   String
+  name        String
+  description String?           @db.Text
+  status      PublicationStatus @default(PUBLISHED)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  project     Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  floors      Floor[]
+  canvases    VisualCanvas[]
+  hotspots    Hotspot[]
 
   @@index([projectId])
+  @@index([status])
 }
 
 model Floor {
-  id         String         @id @default(cuid())
+  id         String            @id @default(cuid())
   buildingId String
   name       String
   level      Int
-  createdAt  DateTime       @default(now())
-  updatedAt  DateTime       @updatedAt
-  building   Building       @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  status     PublicationStatus @default(PUBLISHED)
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+  building   Building          @relation(fields: [buildingId], references: [id], onDelete: Cascade)
   apartments Apartment[]
   canvases   VisualCanvas[]
   hotspots   Hotspot[]
 
   @@unique([buildingId, level])
+  @@index([status])
 }
 
 model Apartment {

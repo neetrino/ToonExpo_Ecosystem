@@ -1,9 +1,10 @@
 'use client';
 
-import type { ApartmentStatus } from '@toonexpo/domain';
+import type { ApartmentStatus, PublicationStatus } from '@toonexpo/domain';
 import { useState } from 'react';
 
 import type { BuilderProjectBuilding } from '@/lib/builder/queries';
+import { STATUS_BADGE_CLASS } from '@/lib/shared/publication';
 
 import { BuildingFormSheet } from '../sheets/building-form-sheet';
 import { FloorFormSheet } from '../sheets/floor-form-sheet';
@@ -29,9 +30,11 @@ type BuildingCardProps = {
       noValue: string;
       edit: string;
       addApartment: string;
+      media: string;
     };
   };
   statusLabels: Record<ApartmentStatus, string>;
+  publicationStatusLabels: Record<PublicationStatus, string>;
   formatPrice: (value: number) => string;
 };
 
@@ -40,6 +43,7 @@ export function BuildingCard({
   building,
   labels,
   statusLabels,
+  publicationStatusLabels,
   formatPrice,
 }: BuildingCardProps) {
   const [editOpen, setEditOpen] = useState(false);
@@ -48,7 +52,12 @@ export function BuildingCard({
   return (
     <article className="portal-card">
       <div className="portal-card__header">
-        <h3 className="portal-card__title">{building.name}</h3>
+        <div className="portal-page__heading">
+          <h3 className="portal-card__title">{building.name}</h3>
+          <span className={STATUS_BADGE_CLASS[building.status]}>
+            {publicationStatusLabels[building.status]}
+          </span>
+        </div>
         <div className="portal-actions">
           <button
             type="button"
@@ -82,6 +91,7 @@ export function BuildingCard({
               apartment: labels.apartment,
             }}
             statusLabels={statusLabels}
+            publicationStatusLabels={publicationStatusLabels}
             formatPrice={formatPrice}
           />
         ))
@@ -92,7 +102,13 @@ export function BuildingCard({
         mode="edit"
         open={editOpen}
         onClose={() => setEditOpen(false)}
-        values={{ buildingId: building.id, name: building.name }}
+        values={{
+          buildingId: building.id,
+          name: building.name,
+          description: building.description,
+          status: building.status,
+        }}
+        statusLabel={publicationStatusLabels[building.status]}
       />
 
       <FloorFormSheet

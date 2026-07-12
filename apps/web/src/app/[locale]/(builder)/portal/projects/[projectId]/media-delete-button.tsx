@@ -68,7 +68,11 @@ function DeleteMediaForm({
       }}
     >
       <input type="hidden" name="mediaAssetId" value={mediaAssetId} />
-      <button type="submit" className="portal-btn portal-btn--ghost portal-btn--sm" disabled={pending}>
+      <button
+        type="submit"
+        className="portal-btn portal-btn--ghost portal-btn--sm"
+        disabled={pending}
+      >
         {label}
       </button>
       <PortalFormError errorKey={state.errorKey} />

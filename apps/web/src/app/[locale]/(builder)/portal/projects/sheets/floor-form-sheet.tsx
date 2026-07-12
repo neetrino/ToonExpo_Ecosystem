@@ -1,6 +1,7 @@
 'use client';
 
 import { FLOOR_NAME_MAX_LENGTH } from '@toonexpo/contracts';
+import type { PublicationStatus } from '@toonexpo/domain';
 import { SideSheet } from '@toonexpo/ui';
 import { useTranslations } from 'next-intl';
 import { useActionState } from 'react';
@@ -14,12 +15,16 @@ import {
   type BuilderFormActionState,
 } from '@/lib/builder/action-state';
 import { createFloorFormAction, updateFloorFormAction } from '@/lib/builder/form-actions';
+import { STATUS_BADGE_CLASS } from '@/lib/shared/publication';
+
+import { InventoryPublicationActions } from '../inventory-publication-actions';
 
 type FloorFormValues = {
   floorId?: string;
   buildingId?: string;
   name: string;
   level: number;
+  status?: PublicationStatus;
 };
 
 type FloorFormSheetProps = {
@@ -28,9 +33,17 @@ type FloorFormSheetProps = {
   open: boolean;
   onClose: () => void;
   values: FloorFormValues;
+  statusLabel?: string;
 };
 
-export function FloorFormSheet({ locale, mode, open, onClose, values }: FloorFormSheetProps) {
+export function FloorFormSheet({
+  locale,
+  mode,
+  open,
+  onClose,
+  values,
+  statusLabel,
+}: FloorFormSheetProps) {
   const t = useTranslations('portal.floorForm');
   const action =
     mode === 'create'
@@ -44,8 +57,10 @@ export function FloorFormSheet({ locale, mode, open, onClose, values }: FloorFor
   return (
     <SideSheet title={t(mode)} open={open} onClose={onClose}>
       <FloorFormBody
+        locale={locale}
         mode={mode}
         values={values}
+        statusLabel={statusLabel}
         state={state}
         formAction={formAction}
         pending={pending}
@@ -55,15 +70,26 @@ export function FloorFormSheet({ locale, mode, open, onClose, values }: FloorFor
 }
 
 type FloorFormBodyProps = {
+  locale: string;
   mode: 'create' | 'edit';
   values: FloorFormValues;
+  statusLabel?: string;
   state: BuilderFormActionState;
   formAction: (formData: FormData) => void;
   pending: boolean;
 };
 
-function FloorFormBody({ mode, values, state, formAction, pending }: FloorFormBodyProps) {
+function FloorFormBody({
+  locale,
+  mode,
+  values,
+  statusLabel,
+  state,
+  formAction,
+  pending,
+}: FloorFormBodyProps) {
   const t = useTranslations('portal.floorForm');
+  const tPublication = useTranslations('portal.inventoryPublication');
 
   return (
     <form action={formAction} className="portal-form">
@@ -72,6 +98,28 @@ function FloorFormBody({ mode, values, state, formAction, pending }: FloorFormBo
       ) : null}
       {mode === 'edit' && values.floorId ? (
         <input type="hidden" name="floorId" value={values.floorId} />
+      ) : null}
+
+      {mode === 'edit' && values.status && statusLabel ? (
+        <div className="portal-form__meta">
+          <span className={STATUS_BADGE_CLASS[values.status]}>{statusLabel}</span>
+          <InventoryPublicationActions
+            locale={locale}
+            entityKind="floor"
+            entityId={values.floorId ?? ''}
+            status={values.status}
+            labels={{
+              publish: tPublication('actions.publish'),
+              archive: tPublication('actions.archive'),
+              draft: tPublication('actions.draft'),
+              confirm: {
+                publish: tPublication('confirm.floor.publish'),
+                archive: tPublication('confirm.floor.archive'),
+                draft: tPublication('confirm.floor.draft'),
+              },
+            }}
+          />
+        </div>
       ) : null}
 
       <PortalFormField label={t('fields.name')} name="name">

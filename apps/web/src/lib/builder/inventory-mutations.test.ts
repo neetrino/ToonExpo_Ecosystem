@@ -1,5 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
+vi.mock('@/lib/audit/record-audit', () => ({
+  formatStatusTransition: (from: string, to: string) => `${from}→${to}`,
+  recordAudit: vi.fn(),
+}));
+
 vi.mock('@toonexpo/db', () => ({
   prisma: {
     project: {
@@ -9,15 +14,20 @@ vi.mock('@toonexpo/db', () => ({
       findFirst: vi.fn(),
       create: vi.fn(),
       updateMany: vi.fn(),
+      update: vi.fn(),
     },
     floor: {
       findFirst: vi.fn(),
       create: vi.fn(),
       updateMany: vi.fn(),
+      update: vi.fn(),
     },
     apartment: {
       create: vi.fn(),
       updateMany: vi.fn(),
+    },
+    auditLog: {
+      create: vi.fn(),
     },
     $transaction: vi.fn(async (callback: (tx: typeof prisma) => Promise<unknown>) =>
       callback(prisma),
@@ -36,14 +46,20 @@ vi.mock('@toonexpo/db', () => ({
 
 import { prisma } from '@toonexpo/db';
 
+import { recordAudit } from '@/lib/audit/record-audit';
+
 import {
   createBuilding,
   createFloor,
+  setBuildingPublication,
+  setFloorPublication,
   updateApartment,
   updateBuilding,
   updateFloor,
   upsertApartment,
 } from './inventory-mutations';
+
+const ACTOR = { userId: 'user-1', role: 'BUILDER' as const };
 
 const FOREIGN_COMPANY_ID = 'company-foreign';
 const OWN_COMPANY_ID = 'company-own';
@@ -80,7 +96,7 @@ describe('inventory-mutations ownership', () => {
     expect(result).toEqual({ ok: false, errorKey: 'notFound' });
     expect(prisma.building.updateMany).toHaveBeenCalledWith({
       where: { id: 'building-1', project: { companyId: FOREIGN_COMPANY_ID } },
-      data: { name: 'Renamed' },
+      data: { name: 'Renamed', description: null },
     });
   });
 
@@ -173,5 +189,65 @@ describe('inventory-mutations ownership', () => {
         status: 'AVAILABLE',
       }),
     });
+  });
+});
+
+describe('inventory-mutations publication', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('returns notFound when setBuildingPublication targets a foreign building', async () => {
+    vi.mocked(prisma.building.findFirst).mockResolvedValue(null);
+
+    const result = await setBuildingPublication(
+      FOREIGN_COMPANY_ID,
+      { buildingId: 'building-1', status: 'DRAFT' },
+      ACTOR,
+    );
+
+    expect(result).toEqual({ ok: false, errorKey: 'notFound' });
+    expect(prisma.building.update).not.toHaveBeenCalled();
+    expect(recordAudit).not.toHaveBeenCalled();
+  });
+
+  it('records audit when setBuildingPublication succeeds', async () => {
+    vi.mocked(prisma.building.findFirst).mockResolvedValue({
+      id: 'building-1',
+      status: 'PUBLISHED',
+      project: { companyId: OWN_COMPANY_ID },
+    } as never);
+    vi.mocked(prisma.building.update).mockResolvedValue({} as never);
+
+    const result = await setBuildingPublication(
+      OWN_COMPANY_ID,
+      { buildingId: 'building-1', status: 'DRAFT' },
+      ACTOR,
+    );
+
+    expect(result).toEqual({ ok: true, buildingId: 'building-1' });
+    expect(recordAudit).toHaveBeenCalledWith(
+      prisma,
+      expect.objectContaining({
+        action: 'PUBLICATION_CHANGE',
+        entityType: 'BUILDING',
+        entityId: 'building-1',
+        detail: 'PUBLISHED→DRAFT',
+      }),
+    );
+  });
+
+  it('returns notFound when setFloorPublication targets a foreign floor', async () => {
+    vi.mocked(prisma.floor.findFirst).mockResolvedValue(null);
+
+    const result = await setFloorPublication(
+      FOREIGN_COMPANY_ID,
+      { floorId: 'floor-1', status: 'DRAFT' },
+      ACTOR,
+    );
+
+    expect(result).toEqual({ ok: false, errorKey: 'notFound' });
+    expect(prisma.floor.update).not.toHaveBeenCalled();
+    expect(recordAudit).not.toHaveBeenCalled();
   });
 });

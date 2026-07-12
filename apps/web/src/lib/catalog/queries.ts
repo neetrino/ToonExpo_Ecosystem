@@ -59,6 +59,7 @@ type FloorRow = {
 type BuildingRow = {
   id: string;
   name: string;
+  description: string | null;
   floors: FloorRow[];
 };
 
@@ -102,6 +103,7 @@ function mapBuilding(row: BuildingRow, isAuthenticated: boolean): PublicBuilding
   return {
     id: row.id,
     name: row.name,
+    description: row.description,
     floors: row.floors.map((floor) => mapFloor(floor, isAuthenticated)),
   };
 }
@@ -211,11 +213,14 @@ export async function getPublishedProjectBySlug(
         select: { id: true, url: true, alt: true },
       },
       buildings: {
+        where: { status: 'PUBLISHED' },
         orderBy: { name: 'asc' },
         select: {
           id: true,
           name: true,
+          description: true,
           floors: {
+            where: { status: 'PUBLISHED' },
             orderBy: { level: 'asc' },
             select: {
               id: true,
@@ -265,7 +270,9 @@ export async function getPublishedApartment(
     where: {
       id: apartmentId,
       floor: {
+        status: 'PUBLISHED',
         building: {
+          status: 'PUBLISHED',
           project: {
             slug: projectSlug,
             status: 'PUBLISHED',

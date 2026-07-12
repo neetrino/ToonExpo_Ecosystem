@@ -11,6 +11,7 @@ vi.mock('@toonexpo/db', () => ({
 import { prisma } from '@toonexpo/db';
 
 import { getPublishedCanvasForContext } from './public-queries';
+import { mapPublicHotspot } from './public-canvas-fetch';
 
 describe('getPublishedCanvasForContext', () => {
   beforeEach(() => {
@@ -44,7 +45,7 @@ describe('getPublishedCanvasForContext', () => {
         where: expect.objectContaining({
           buildingId: 'building-1',
           status: 'PUBLISHED',
-          building: { project: { status: 'PUBLISHED' } },
+          building: { status: 'PUBLISHED', project: { status: 'PUBLISHED' } },
         }),
       }),
     );
@@ -73,7 +74,7 @@ describe('getPublishedCanvasForContext', () => {
           buildingId: 'building-1',
           floorId: null,
           apartmentId: null,
-          building: { id: 'building-1', name: 'Tower A' },
+          building: { id: 'building-1', name: 'Tower A', status: 'PUBLISHED' },
           floor: null,
           apartment: null,
         },
@@ -97,5 +98,19 @@ describe('getPublishedCanvasForContext', () => {
         },
       ],
     });
+  });
+
+  it('filters hotspots targeting draft buildings', () => {
+    const hotspot = mapPublicHotspot({
+      id: 'hs-draft',
+      x: 10,
+      y: 20,
+      label: 'Draft tower',
+      building: { id: 'building-1', name: 'Draft tower', status: 'DRAFT' },
+      floor: null,
+      apartment: null,
+    });
+
+    expect(hotspot).toBeNull();
   });
 });

@@ -1,11 +1,15 @@
 import type {
   ApartmentUpsertInput,
   BuildingCreateInput,
+  BuildingPublicationInput,
   BuildingUpdateInput,
   FloorCreateInput,
+  FloorPublicationInput,
   FloorUpdateInput,
 } from '@toonexpo/contracts';
 import { prisma, Prisma } from '@toonexpo/db';
+
+import { type AuditActor, formatStatusTransition, recordAudit } from '@/lib/audit/record-audit';
 
 import { type BuilderMutationResult, UNIQUE_CONSTRAINT_ERROR } from './mutation-result';
 
@@ -37,7 +41,7 @@ export async function updateBuilding(
 ): Promise<BuilderMutationResult<{ buildingId: string }>> {
   const result = await prisma.building.updateMany({
     where: { id: input.buildingId, project: { companyId } },
-    data: { name: input.name },
+    data: { name: input.name, description: input.description ?? null },
   });
 
   if (result.count === 0) {
@@ -45,6 +49,38 @@ export async function updateBuilding(
   }
 
   return { ok: true, buildingId: input.buildingId };
+}
+
+export async function setBuildingPublication(
+  companyId: string,
+  input: BuildingPublicationInput,
+  actor: AuditActor,
+): Promise<BuilderMutationResult<{ buildingId: string }>> {
+  return prisma.$transaction(async (tx) => {
+    const existing = await tx.building.findFirst({
+      where: { id: input.buildingId, project: { companyId } },
+      select: { id: true, status: true, project: { select: { companyId: true } } },
+    });
+    if (!existing) {
+      return { ok: false, errorKey: 'notFound' };
+    }
+
+    await tx.building.update({
+      where: { id: existing.id },
+      data: { status: input.status },
+    });
+
+    await recordAudit(tx, {
+      actor,
+      action: 'PUBLICATION_CHANGE',
+      entityType: 'BUILDING',
+      entityId: existing.id,
+      companyId: existing.project.companyId,
+      detail: formatStatusTransition(existing.status, input.status),
+    });
+
+    return { ok: true, buildingId: existing.id };
+  });
 }
 
 export async function createFloor(
@@ -94,6 +130,42 @@ export async function updateFloor(
   } catch (error) {
     return mapFloorUniqueError(error);
   }
+}
+
+export async function setFloorPublication(
+  companyId: string,
+  input: FloorPublicationInput,
+  actor: AuditActor,
+): Promise<BuilderMutationResult<{ floorId: string }>> {
+  return prisma.$transaction(async (tx) => {
+    const existing = await tx.floor.findFirst({
+      where: { id: input.floorId, building: { project: { companyId } } },
+      select: {
+        id: true,
+        status: true,
+        building: { select: { project: { select: { companyId: true } } } },
+      },
+    });
+    if (!existing) {
+      return { ok: false, errorKey: 'notFound' };
+    }
+
+    await tx.floor.update({
+      where: { id: existing.id },
+      data: { status: input.status },
+    });
+
+    await recordAudit(tx, {
+      actor,
+      action: 'PUBLICATION_CHANGE',
+      entityType: 'FLOOR',
+      entityId: existing.id,
+      companyId: existing.building.project.companyId,
+      detail: formatStatusTransition(existing.status, input.status),
+    });
+
+    return { ok: true, floorId: existing.id };
+  });
 }
 
 export async function createApartment(

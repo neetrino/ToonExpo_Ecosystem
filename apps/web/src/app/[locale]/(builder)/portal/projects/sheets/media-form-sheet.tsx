@@ -10,20 +10,14 @@ import { useTranslations } from 'next-intl';
 import { useActionState } from 'react';
 
 import { PortalFormError } from '@/components/portal-forms/form-error';
-import {
-  PortalFormField,
-  PortalTextInput,
-} from '@/components/portal-forms/form-fields';
+import { PortalFormField, PortalTextInput } from '@/components/portal-forms/form-fields';
 import { useCloseOnFormSuccess } from '@/components/portal-forms/use-close-on-form-success';
 
 import {
   INITIAL_BUILDER_FORM_ACTION_STATE,
   type BuilderFormActionState,
 } from '@/lib/builder/action-state';
-import {
-  addMediaAssetFormAction,
-  updateMediaAssetFormAction,
-} from '@/lib/builder/form-actions';
+import { addMediaAssetFormAction, updateMediaAssetFormAction } from '@/lib/builder/form-actions';
 import type { BuilderMediaAsset } from '@/lib/builder/queries';
 
 type MediaOwnerValues = {
@@ -105,7 +99,11 @@ function MediaFormBody({ mode, values, state, formAction, pending }: MediaFormBo
         />
       </PortalFormField>
 
-      <PortalFormField label={t('fields.sortOrder')} name="sortOrder" hint={t('fields.sortOrderHint')}>
+      <PortalFormField
+        label={t('fields.sortOrder')}
+        name="sortOrder"
+        hint={t('fields.sortOrderHint')}
+      >
         <PortalTextInput
           name="sortOrder"
           type="number"

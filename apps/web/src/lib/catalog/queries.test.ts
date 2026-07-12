@@ -13,7 +13,7 @@ vi.mock('@toonexpo/db', () => ({
 
 import { prisma } from '@toonexpo/db';
 
-import { getPublishedApartment, isValidApartmentId } from './queries';
+import { getPublishedApartment, getPublishedProjectBySlug, isValidApartmentId } from './queries';
 
 const VALID_APARTMENT_ID = 'clxxxxxxxxxxxxxxxxxx01';
 const SAMPLE_PRICE = 85_000_000;
@@ -50,7 +50,9 @@ describe('getPublishedApartment', () => {
         where: expect.objectContaining({
           id: VALID_APARTMENT_ID,
           floor: {
+            status: 'PUBLISHED',
             building: {
+              status: 'PUBLISHED',
               project: {
                 slug: 'hidden-court',
                 status: 'PUBLISHED',
@@ -112,5 +114,62 @@ describe('getPublishedApartment', () => {
     expect(result).not.toBeNull();
     expect(result?.priceDisplay).toBe('LOGIN_REQUIRED');
     expect(result?.priceAmd).toBeNull();
+  });
+
+  it('returns null when floor or building is not PUBLISHED', async () => {
+    vi.mocked(prisma.apartment.findFirst).mockResolvedValue(null);
+
+    const result = await getPublishedApartment(
+      'demo-development',
+      'sunrise-residence',
+      VALID_APARTMENT_ID,
+      false,
+    );
+
+    expect(result).toBeNull();
+    expect(prisma.apartment.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          floor: {
+            status: 'PUBLISHED',
+            building: {
+              status: 'PUBLISHED',
+              project: {
+                slug: 'sunrise-residence',
+                status: 'PUBLISHED',
+                company: { slug: 'demo-development' },
+              },
+            },
+          },
+        }),
+      }),
+    );
+  });
+});
+
+describe('getPublishedProjectBySlug', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('queries only published buildings and floors', async () => {
+    vi.mocked(prisma.project.findFirst).mockResolvedValue(null);
+
+    await getPublishedProjectBySlug('demo-development', 'sunrise-residence');
+
+    expect(prisma.project.findFirst).toHaveBeenCalledWith(
+      expect.objectContaining({
+        select: expect.objectContaining({
+          buildings: expect.objectContaining({
+            where: { status: 'PUBLISHED' },
+            select: expect.objectContaining({
+              floors: expect.objectContaining({
+                where: { status: 'PUBLISHED' },
+              }),
+            }),
+          }),
+        }),
+      }),
+    );
   });
 });

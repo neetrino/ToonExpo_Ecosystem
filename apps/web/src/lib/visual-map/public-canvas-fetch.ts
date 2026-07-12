@@ -12,13 +12,15 @@ export const HOTSPOT_PUBLIC_SELECT = {
   buildingId: true,
   floorId: true,
   apartmentId: true,
-  building: { select: { id: true, name: true } },
+  building: { select: { id: true, name: true, status: true } },
   floor: {
     select: {
       id: true,
       name: true,
       level: true,
       buildingId: true,
+      status: true,
+      building: { select: { status: true } },
     },
   },
   apartment: {
@@ -27,7 +29,13 @@ export const HOTSPOT_PUBLIC_SELECT = {
       code: true,
       status: true,
       floorId: true,
-      floor: { select: { buildingId: true } },
+      floor: {
+        select: {
+          buildingId: true,
+          status: true,
+          building: { select: { status: true } },
+        },
+      },
     },
   },
 } as const;
@@ -40,24 +48,38 @@ export const PROJECT_META_SELECT = {
 
 const PUBLISHED = { status: 'PUBLISHED' as const };
 
+function isPublishedBuildingStatus(status: string): boolean {
+  return status === 'PUBLISHED';
+}
+
 type HotspotRow = {
   id: string;
   x: number;
   y: number;
   label: string | null;
-  building: { id: string; name: string } | null;
-  floor: { id: string; name: string; level: number; buildingId: string } | null;
+  building: { id: string; name: string; status: string } | null;
+  floor: {
+    id: string;
+    name: string;
+    level: number;
+    buildingId: string;
+    status: string;
+    building: { status: string };
+  } | null;
   apartment: {
     id: string;
     code: string;
     status: 'AVAILABLE' | 'RESERVED' | 'SOLD';
     floorId: string;
-    floor: { buildingId: string };
+    floor: { buildingId: string; status: string; building: { status: string } };
   } | null;
 };
 
 export function mapPublicHotspot(row: HotspotRow): PublicHotspot | null {
   if (row.building) {
+    if (!isPublishedBuildingStatus(row.building.status)) {
+      return null;
+    }
     return {
       id: row.id,
       x: row.x,
@@ -67,6 +89,12 @@ export function mapPublicHotspot(row: HotspotRow): PublicHotspot | null {
     };
   }
   if (row.floor) {
+    if (
+      !isPublishedBuildingStatus(row.floor.status) ||
+      !isPublishedBuildingStatus(row.floor.building.status)
+    ) {
+      return null;
+    }
     return {
       id: row.id,
       x: row.x,
@@ -82,6 +110,12 @@ export function mapPublicHotspot(row: HotspotRow): PublicHotspot | null {
     };
   }
   if (row.apartment) {
+    if (
+      !isPublishedBuildingStatus(row.apartment.floor.status) ||
+      !isPublishedBuildingStatus(row.apartment.floor.building.status)
+    ) {
+      return null;
+    }
     return {
       id: row.id,
       x: row.x,
@@ -168,7 +202,7 @@ export async function fetchPublishedBuildingCanvas(buildingId: string) {
     where: {
       buildingId,
       status: 'PUBLISHED',
-      building: { project: PUBLISHED },
+      building: { status: 'PUBLISHED', project: PUBLISHED },
     },
     orderBy: { updatedAt: 'desc' },
     select: {
@@ -193,7 +227,7 @@ export async function fetchPublishedFloorCanvas(floorId: string) {
     where: {
       floorId,
       status: 'PUBLISHED',
-      floor: { building: { project: PUBLISHED } },
+      floor: { status: 'PUBLISHED', building: { status: 'PUBLISHED', project: PUBLISHED } },
     },
     orderBy: { updatedAt: 'desc' },
     select: {

@@ -32,13 +32,7 @@ type MediaSectionProps = {
   compact?: boolean;
 };
 
-export function MediaSection({
-  locale,
-  owner,
-  media,
-  labels,
-  compact = false,
-}: MediaSectionProps) {
+export function MediaSection({ locale, owner, media, labels, compact = false }: MediaSectionProps) {
   const [createOpen, setCreateOpen] = useState(false);
   const [editingAsset, setEditingAsset] = useState<BuilderMediaAsset | null>(null);
 
@@ -126,7 +120,9 @@ function MediaCard({ locale, asset, isCover, labels, onEdit }: MediaCardProps) {
         loading="lazy"
       />
       <div className="portal-media-card__body">
-        {isCover ? <span className="portal-badge portal-badge--published">{labels.coverBadge}</span> : null}
+        {isCover ? (
+          <span className="portal-badge portal-badge--published">{labels.coverBadge}</span>
+        ) : null}
         <p className="portal-media-card__alt">{asset.alt ?? labels.noAlt}</p>
         <p className="portal-media-card__meta">
           {labels.sortOrder}: {asset.sortOrder}

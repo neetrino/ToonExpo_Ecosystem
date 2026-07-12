@@ -214,6 +214,8 @@ export type AuditAction = (typeof AUDIT_ACTIONS)[number];
  */
 export const AUDIT_ENTITY_TYPES = [
   'PROJECT',
+  'BUILDING',
+  'FLOOR',
   'PARTNER',
   'BANK_OFFER',
   'VISUAL_CANVAS',

@@ -1,9 +1,10 @@
 'use client';
 
-import type { ApartmentStatus } from '@toonexpo/domain';
+import type { ApartmentStatus, PublicationStatus } from '@toonexpo/domain';
 import { useState } from 'react';
 
 import type { BuilderProjectFloor } from '@/lib/builder/queries';
+import { STATUS_BADGE_CLASS } from '@/lib/shared/publication';
 
 import { FloorFormSheet } from '../sheets/floor-form-sheet';
 import { ApartmentTable } from './apartment-table';
@@ -22,6 +23,7 @@ type FloorBlockLabels = {
     noValue: string;
     edit: string;
     addApartment: string;
+    media: string;
   };
 };
 
@@ -31,6 +33,7 @@ type FloorBlockProps = {
   floor: BuilderProjectFloor;
   labels: FloorBlockLabels;
   statusLabels: Record<ApartmentStatus, string>;
+  publicationStatusLabels: Record<PublicationStatus, string>;
   formatPrice: (value: number) => string;
 };
 
@@ -40,6 +43,7 @@ export function FloorBlock({
   floor,
   labels,
   statusLabels,
+  publicationStatusLabels,
   formatPrice,
 }: FloorBlockProps) {
   const [editOpen, setEditOpen] = useState(false);
@@ -47,9 +51,14 @@ export function FloorBlock({
   return (
     <article className="portal-subsection">
       <div className="portal-subsection__header">
-        <h4 className="portal-subsection__title">
-          {floor.name} ({labels.level} {floor.level})
-        </h4>
+        <div className="portal-page__heading">
+          <h4 className="portal-subsection__title">
+            {floor.name} ({labels.level} {floor.level})
+          </h4>
+          <span className={STATUS_BADGE_CLASS[floor.status]}>
+            {publicationStatusLabels[floor.status]}
+          </span>
+        </div>
         <button
           type="button"
           className="portal-btn portal-btn--ghost portal-btn--sm"
@@ -78,7 +87,9 @@ export function FloorBlock({
           buildingId,
           name: floor.name,
           level: floor.level,
+          status: floor.status,
         }}
+        statusLabel={publicationStatusLabels[floor.status]}
       />
     </article>
   );

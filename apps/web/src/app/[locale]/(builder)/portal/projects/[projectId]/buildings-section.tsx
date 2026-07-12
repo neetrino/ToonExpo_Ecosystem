@@ -1,6 +1,6 @@
 'use client';
 
-import type { ApartmentStatus } from '@toonexpo/domain';
+import type { ApartmentStatus, PublicationStatus } from '@toonexpo/domain';
 import { useState } from 'react';
 
 import type { BuilderProjectDetail } from '@/lib/builder/queries';
@@ -31,9 +31,11 @@ type BuildingsSectionProps = {
       noValue: string;
       edit: string;
       addApartment: string;
+      media: string;
     };
   };
   statusLabels: Record<ApartmentStatus, string>;
+  publicationStatusLabels: Record<PublicationStatus, string>;
   formatPrice: (value: number) => string;
 };
 
@@ -42,6 +44,7 @@ export function BuildingsSection({
   project,
   labels,
   statusLabels,
+  publicationStatusLabels,
   formatPrice,
 }: BuildingsSectionProps) {
   const [createOpen, setCreateOpen] = useState(false);
@@ -76,6 +79,7 @@ export function BuildingsSection({
               apartment: labels.apartment,
             }}
             statusLabels={statusLabels}
+            publicationStatusLabels={publicationStatusLabels}
             formatPrice={formatPrice}
           />
         ))

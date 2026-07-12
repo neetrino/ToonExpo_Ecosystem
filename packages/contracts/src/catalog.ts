@@ -38,6 +38,7 @@ export type PublicFloor = z.infer<typeof publicFloorSchema>;
 export const publicBuildingSchema = z.object({
   id: z.string(),
   name: z.string(),
+  description: z.string().nullable(),
   floors: z.array(publicFloorSchema),
 });
 
