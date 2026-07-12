@@ -14,6 +14,12 @@ export const webEnvSchema = z.object({
   /** Optional — when unset, invite emails are skipped (account still created). */
   RESEND_API_KEY: z.preprocess(emptyToUndefined, z.string().optional()),
   RESEND_FROM_EMAIL: z.preprocess(emptyToUndefined, z.string().email().optional()),
+  /** Optional — when unset, media presign returns storageNotConfigured (URL paste still works). */
+  R2_ACCOUNT_ID: z.preprocess(emptyToUndefined, z.string().optional()),
+  R2_ACCESS_KEY_ID: z.preprocess(emptyToUndefined, z.string().optional()),
+  R2_SECRET_ACCESS_KEY: z.preprocess(emptyToUndefined, z.string().optional()),
+  R2_BUCKET_NAME: z.preprocess(emptyToUndefined, z.string().optional()),
+  R2_PUBLIC_URL: z.preprocess(emptyToUndefined, z.string().url().optional()),
 });
 
 export type WebEnv = z.infer<typeof webEnvSchema>;

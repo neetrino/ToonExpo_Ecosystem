@@ -1,6 +1,8 @@
 import type { MediaAssetIdInput, MediaAssetUpsertInput } from '@toonexpo/contracts';
 import { prisma, type Prisma } from '@toonexpo/db';
 
+import { bestEffortDeleteR2Object } from '@/lib/storage';
+
 import { type BuilderMutationResult } from './mutation-result';
 
 type MediaOwnerHint = {
@@ -33,10 +35,10 @@ async function findOwnedMediaAsset(
   tx: TransactionClient,
   companyId: string,
   mediaAssetId: string,
-): Promise<MediaOwnerHint | null> {
+): Promise<(MediaOwnerHint & { url: string }) | null> {
   const asset = await tx.mediaAsset.findFirst({
     where: ownedMediaWhere(companyId, mediaAssetId),
-    select: { projectId: true, apartmentId: true },
+    select: { projectId: true, apartmentId: true, url: true },
   });
   return asset ?? null;
 }
@@ -126,10 +128,10 @@ export async function deleteMediaAsset(
   companyId: string,
   input: MediaAssetIdInput,
 ): Promise<BuilderMutationResult<{ mediaAssetId: string }>> {
-  return prisma.$transaction(async (tx) => {
+  const deletedUrl = await prisma.$transaction(async (tx) => {
     const owned = await findOwnedMediaAsset(tx, companyId, input.mediaAssetId);
     if (!owned) {
-      return { ok: false, errorKey: 'notFound' };
+      return null;
     }
 
     const result = await tx.mediaAsset.deleteMany({
@@ -137,9 +139,16 @@ export async function deleteMediaAsset(
     });
 
     if (result.count === 0) {
-      return { ok: false, errorKey: 'notFound' };
+      return null;
     }
 
-    return { ok: true, mediaAssetId: input.mediaAssetId };
+    return owned.url;
   });
+
+  if (!deletedUrl) {
+    return { ok: false, errorKey: 'notFound' };
+  }
+
+  await bestEffortDeleteR2Object(deletedUrl);
+  return { ok: true, mediaAssetId: input.mediaAssetId };
 }

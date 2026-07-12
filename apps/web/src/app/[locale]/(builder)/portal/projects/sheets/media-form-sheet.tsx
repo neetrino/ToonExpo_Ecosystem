@@ -20,6 +20,8 @@ import {
 import { addMediaAssetFormAction, updateMediaAssetFormAction } from '@/lib/builder/form-actions';
 import type { BuilderMediaAsset } from '@/lib/builder/queries';
 
+import { MediaFileUploadField } from './media-file-upload-field';
+
 type MediaOwnerValues = {
   projectId?: string;
   apartmentId?: string;
@@ -87,9 +89,7 @@ function MediaFormBody({ mode, values, state, formAction, pending }: MediaFormBo
 
       <p className="portal-form__hint">{t('uploadHint')}</p>
 
-      <PortalFormField label={t('fields.url')} name="url">
-        <PortalTextInput name="url" type="text" defaultValue={values.url} required />
-      </PortalFormField>
+      <MediaFileUploadField initialUrl={values.url} required />
 
       <PortalFormField label={t('fields.alt')} name="alt">
         <PortalTextInput

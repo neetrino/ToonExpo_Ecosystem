@@ -60,6 +60,29 @@
   gap: 0.5rem;
 }
 
+.portal-form__upload {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.portal-form__file {
+  color: var(--te-fg);
+  font-size: 0.875rem;
+}
+
+.portal-form__details {
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding-top: 0.75rem;
+}
+
+.portal-form__details-summary {
+  color: var(--te-muted);
+  cursor: pointer;
+  font-size: 0.875rem;
+  margin-bottom: 0.75rem;
+}
+
 .portal-apartment-status {
   border-radius: 9999px;
   display: inline-block;

@@ -922,16 +922,34 @@
       "coverBadge": "Cover",
       "coverHint": "The item with the lowest sort order is used as the project cover image. Explicit cover selection may come later.",
       "confirmDelete": "Remove this media item?",
-      "uploadHint": "Paste an image URL. File upload will be supported in a later release.",
+      "uploadHint": "Upload a JPEG, PNG, or WebP image (max 10 MB). You can also paste a public URL.",
+      "pasteUrlToggle": "Or paste an image URL",
       "apartmentTitle": "Media — {code}",
       "section": {
         "title": "Media"
       },
       "fields": {
+        "file": "Image file",
+        "fileHint": "JPEG, PNG, or WebP · up to 10 MB",
         "url": "Image URL",
+        "urlPlaceholder": "https://…",
+        "urlHint": "Use this if file upload is unavailable or for an existing public URL.",
         "alt": "Alt text",
         "sortOrder": "Sort order",
         "sortOrderHint": "Lower numbers appear first (0–999)."
+      },
+      "uploadStatus": {
+        "presigning": "Preparing upload…",
+        "uploading": "Uploading…",
+        "readyNamed": "Ready: {name}"
+      },
+      "uploadErrors": {
+        "storageNotConfigured": "File upload is not configured on this environment. Paste a public image URL instead.",
+        "rateLimited": "Too many upload requests. Please wait a minute and try again.",
+        "unauthorized": "You must be signed in as a builder to upload.",
+        "uploadFailed": "Upload failed. Please try again or paste a URL.",
+        "unsupportedType": "Only JPEG, PNG, and WebP images are allowed.",
+        "fileTooLarge": "File is too large. Maximum size is 10 MB."
       }
     },
     "priceVisibility": {

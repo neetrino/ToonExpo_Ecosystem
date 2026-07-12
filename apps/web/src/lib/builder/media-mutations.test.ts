@@ -20,13 +20,20 @@ vi.mock('@toonexpo/db', () => ({
   },
 }));
 
+vi.mock('@/lib/storage', () => ({
+  bestEffortDeleteR2Object: vi.fn(),
+}));
+
 import { prisma } from '@toonexpo/db';
+
+import { bestEffortDeleteR2Object } from '@/lib/storage';
 
 import { addMediaAsset, deleteMediaAsset, updateMediaAsset } from './media-mutations';
 
 const FOREIGN_COMPANY_ID = 'company-foreign';
 const OWN_COMPANY_ID = 'company-own';
 const SAMPLE_URL = 'https://picsum.photos/seed/cover/800/600';
+const R2_URL = 'https://cdn.example.com/media/company-own/2026/07/uuid.jpg';
 
 describe('media-mutations ownership', () => {
   beforeEach(() => {
@@ -85,6 +92,7 @@ describe('media-mutations ownership', () => {
     vi.mocked(prisma.mediaAsset.findFirst).mockResolvedValue({
       projectId: 'project-1',
       apartmentId: null,
+      url: SAMPLE_URL,
     } as never);
     vi.mocked(prisma.mediaAsset.updateMany).mockResolvedValue({ count: 1 });
 
@@ -136,5 +144,22 @@ describe('media-mutations ownership', () => {
 
     expect(result).toEqual({ ok: false, errorKey: 'notFound' });
     expect(prisma.mediaAsset.deleteMany).not.toHaveBeenCalled();
+    expect(bestEffortDeleteR2Object).not.toHaveBeenCalled();
+  });
+
+  it('deletes owned media then best-effort deletes the R2 object', async () => {
+    vi.mocked(prisma.mediaAsset.findFirst).mockResolvedValue({
+      projectId: 'project-1',
+      apartmentId: null,
+      url: R2_URL,
+    } as never);
+    vi.mocked(prisma.mediaAsset.deleteMany).mockResolvedValue({ count: 1 });
+
+    const result = await deleteMediaAsset(OWN_COMPANY_ID, {
+      mediaAssetId: 'media-1',
+    });
+
+    expect(result).toEqual({ ok: true, mediaAssetId: 'media-1' });
+    expect(bestEffortDeleteR2Object).toHaveBeenCalledWith(R2_URL);
   });
 });

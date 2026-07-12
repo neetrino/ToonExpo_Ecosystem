@@ -8,6 +8,8 @@ export const RATE_LIMIT_MAX = {
   publicRequest: 5,
   qr: 30,
   setPassword: 5,
+  /** Builder media presign (signed R2 PUT URLs) per userId. */
+  mediaPresign: 20,
 } as const;
 
 /** Window duration shared by all web surfaces. */
