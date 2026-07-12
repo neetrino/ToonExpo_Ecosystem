@@ -5,6 +5,7 @@ import { useActionState } from 'react';
 
 import { Link } from '@/i18n/navigation';
 import { type AuthActionState, INITIAL_AUTH_ACTION_STATE } from '@/lib/auth/action-state';
+import { TeButton } from '@/components/ui/te-button';
 
 type RegisterFormProps = {
   action: (state: AuthActionState, formData: FormData) => Promise<AuthActionState>;
@@ -45,22 +46,18 @@ export function RegisterForm({ action, loginHref = '/login' }: RegisterFormProps
       </label>
 
       {state.errorKey ? (
-        <p role="alert" className="text-sm text-red-400">
+        <p role="alert" className="text-sm text-[#b91c1c]">
           {t(`errors.${state.errorKey}`)}
         </p>
       ) : null}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="rounded bg-[var(--te-accent)] px-4 py-2 text-sm font-medium disabled:opacity-60"
-      >
+      <TeButton type="submit" disabled={pending}>
         {t('register.submit')}
-      </button>
+      </TeButton>
 
       <p className="text-sm text-[var(--te-muted)]">
         {t('register.loginPrompt')}{' '}
-        <Link className="underline" href={loginHref}>
+        <Link className="font-medium text-[var(--te-accent)] underline" href={loginHref}>
           {t('register.loginLink')}
         </Link>
       </p>

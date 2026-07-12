@@ -7,6 +7,7 @@ import {
   INITIAL_INVITE_ACTION_STATE,
   type InviteActionState,
 } from '@/lib/auth/invite-action-state';
+import { TeButton } from '@/components/ui/te-button';
 
 type SetPasswordFormProps = {
   action: (state: InviteActionState, formData: FormData) => Promise<InviteActionState>;
@@ -45,18 +46,14 @@ export function SetPasswordForm({ action }: SetPasswordFormProps) {
       </label>
 
       {state.errorKey ? (
-        <p role="alert" className="text-sm text-red-400">
+        <p role="alert" className="text-sm text-[#b91c1c]">
           {t(`errors.${state.errorKey}`)}
         </p>
       ) : null}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="rounded bg-[var(--te-accent)] px-4 py-2 text-sm font-medium disabled:opacity-60"
-      >
+      <TeButton type="submit" disabled={pending}>
         {t('submit')}
-      </button>
+      </TeButton>
     </form>
   );
 }

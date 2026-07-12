@@ -46,16 +46,18 @@ export default async function LoginPage({ params, searchParams }: LoginPageProps
 
   return (
     <section className="mx-auto flex max-w-md flex-col gap-6 px-6 py-16">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-2xl font-semibold">{t('title')}</h1>
-        <p className="text-sm text-[var(--te-muted)]">{t('subtitle')}</p>
+      <div className="rounded-[var(--te-radius)] border border-[var(--te-border)] bg-[var(--te-card)] p-6 shadow-[var(--te-shadow-soft)]">
+        <div className="mb-6 flex flex-col gap-2">
+          <h1 className="text-2xl font-semibold text-[var(--te-fg)]">{t('title')}</h1>
+          <p className="text-sm text-[var(--te-muted)]">{t('subtitle')}</p>
+        </div>
+        {invited === '1' ? (
+          <p role="status" className="mb-4 text-sm text-[var(--te-accent)]">
+            {t('invitedSuccess')}
+          </p>
+        ) : null}
+        <LoginForm action={loginAction.bind(null, locale, callbackUrl)} registerHref={registerHref} />
       </div>
-      {invited === '1' ? (
-        <p role="status" className="text-sm text-green-400">
-          {t('invitedSuccess')}
-        </p>
-      ) : null}
-      <LoginForm action={loginAction.bind(null, locale, callbackUrl)} registerHref={registerHref} />
     </section>
   );
 }
