@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 
 import { Ratelimit } from '@upstash/ratelimit';
-import pino from 'pino';
+import { createAppLogger } from '../logger';
 
 import {
   API_RATE_LIMIT_REDIS_PREFIX,
@@ -11,7 +11,7 @@ import {
 } from './constants';
 import { getApiRateLimitRedis } from './redis';
 
-const logger = pino({ name: 'rate-limit-check' });
+const logger = createAppLogger('rate-limit-check');
 
 let bosLimiter: Ratelimit | null | undefined;
 let redisErrorWarned = false;

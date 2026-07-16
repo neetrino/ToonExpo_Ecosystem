@@ -1,4 +1,4 @@
-import pino from 'pino';
+import { createAppLogger } from '../logger';
 
 import { loadApiEnv } from '../env';
 
@@ -9,7 +9,7 @@ import {
 } from './invite-email-content';
 import { getResendClient } from './resend-client';
 
-const logger = pino({ name: 'email' });
+const logger = createAppLogger('email');
 
 export type SendInviteEmailResult = { sent: boolean };
 

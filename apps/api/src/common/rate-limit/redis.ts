@@ -1,9 +1,9 @@
 import { Redis } from '@upstash/redis';
-import pino from 'pino';
+import { createAppLogger } from '../logger';
 
 import { loadApiEnv } from '../env';
 
-const logger = pino({ name: 'rate-limit-redis' });
+const logger = createAppLogger('rate-limit-redis');
 
 let redisSingleton: Redis | null | undefined;
 let missingConfigWarned = false;
