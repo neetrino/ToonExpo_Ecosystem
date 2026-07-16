@@ -1,6 +1,6 @@
 ---
 description: i18n — externalized strings, locale-aware formatting, RTL when required.
-globs: ["**/locales/**", "**/i18n/**", "**/messages/**", "**/middleware.ts", "**/middleware.tsx"]
+globs: ["**/locales/**", "**/i18n/**", "**/messages/**", "**/proxy.ts", "**/proxy.tsx", "**/middleware.ts", "**/middleware.tsx"]
 alwaysApply: false
 ---
 

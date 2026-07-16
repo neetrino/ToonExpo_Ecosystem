@@ -46,7 +46,7 @@ function unsupportedLocaleResponse(pathname: string): NextResponse | null {
   return new NextResponse(null, { status: 404 });
 }
 
-export default function middleware(request: NextRequest): NextResponse {
+export default function proxy(request: NextRequest): NextResponse {
   const blocked = unsupportedLocaleResponse(request.nextUrl.pathname);
   if (blocked) {
     return blocked;
