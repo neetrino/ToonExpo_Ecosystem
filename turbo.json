@@ -1,9 +1,26 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "globalPassThroughEnv": [
+    "AUTH_SECRET",
+    "AUTH_URL",
+    "DATABASE_URL",
+    "DIRECT_URL",
+    "APP_URL",
+    "API_URL",
+    "NEXT_PUBLIC_API_URL"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**"],
+      "env": [
+        "AUTH_SECRET",
+        "AUTH_URL",
+        "DATABASE_URL",
+        "APP_URL",
+        "API_URL",
+        "NEXT_PUBLIC_API_URL"
+      ]
     },
     "dev": {
       "dependsOn": ["^build"],
@@ -17,7 +34,8 @@
       "dependsOn": ["^build"]
     },
     "test": {
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build"],
+      "passThroughEnv": ["AUTH_SECRET", "AUTH_URL", "DATABASE_URL"]
     },
     "clean": {
       "cache": false
