@@ -33,6 +33,12 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Generate Prisma client
+        run: pnpm db:generate
+        env:
+          # generate does not connect; URL only satisfies schema env()
+          DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/toonexpo
+
       - name: Format check
         run: pnpm format:check
 
