@@ -1,8 +1,9 @@
 # ToonExpo First Sprint Plan
 
-## Goal
+## Status
 
-Create the technical skeleton and first usable platform shell without implementing all product modules yet.
+Sprint 0 scaffold delivered locally. Quality gate: `pnpm lint`, `typecheck`, `test`, `build` pass. Prisma baseline migration applied.
+
 
 ## Stack Decisions (confirmed 2026-07-11)
 

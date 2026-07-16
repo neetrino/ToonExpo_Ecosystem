@@ -1,0 +1,928 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+enum PlatformRole {
+  BIGPROJECTS_ADMIN
+  BUILDER
+  PARTNER
+  BUYER
+  ENTRANCE_STAFF
+}
+
+enum PublicationStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum ApartmentStatus {
+  AVAILABLE
+  RESERVED
+  SOLD
+}
+
+/// Origin of an apartment inventory status transition (v1).
+/// Docs: 09-Constructor-CRM/07-Entity-Fields (ApartmentStatusHistory.source).
+enum ApartmentStatusChangeSource {
+  CRM_STAGE
+  MANUAL_INVENTORY
+  SYSTEM
+}
+
+/// Public price disclosure for apartments (v1).
+/// Docs: 05-Projects/02-Entity-Fields + 05-Public-Buyer-Experience.
+enum PriceVisibility {
+  PUBLIC
+  BY_REQUEST
+  HIDDEN
+  VISIBLE_AFTER_LOGIN
+}
+
+enum DealStage {
+  NEW_REQUEST
+  ASSIGNED
+  CONTACTED
+  FOLLOW_UP_NEEDED
+  APARTMENT_SELECTED
+  RESERVED
+  CONVERTED
+  CLOSED
+  LOST
+}
+
+enum RequestSource {
+  PROJECT_PAGE
+  APARTMENT_PAGE
+  BUILDER_QR_SCAN
+  MANUAL_BUILDER_ENTRY
+  EVENT_INTERACTION
+}
+
+enum DealActivityType {
+  COMMENT
+  FOLLOW_UP
+  STATUS_CHANGE
+}
+
+/// CRM follow-up lifecycle (doc 09-Constructor-CRM/05). Null for comments and status audits.
+enum ActivityStatus {
+  PLANNED
+  DONE
+  CANCELLED
+}
+
+enum QrScanPurpose {
+  BUILDER_SCAN
+  ENTRANCE_CHECKIN
+  BUYER_SELF_VIEW
+  UNKNOWN
+}
+
+enum PartnerType {
+  BANK
+  IT_COMPANY
+  SPONSOR
+  SUPPLIER
+  INSURANCE
+  LEGAL
+  DESIGN_FURNITURE
+  SERVICE_COMPANY
+  OTHER
+}
+
+enum ReadinessTargetType {
+  BUILDER_COMPANY
+  PROJECT
+}
+
+enum ReadinessStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  NEEDS_IMPROVEMENT
+  READY
+  BLOCKED
+}
+
+enum ExhibitionEventStatus {
+  PLANNING
+  ACTIVE
+  COMPLETED
+  ARCHIVED
+  CANCELLED
+}
+
+enum CheckInStatus {
+  ALLOWED
+}
+
+/// Path graph node role on a venue map (route / path guidance v1).
+enum VenuePathNodeKind {
+  ENTRANCE
+  WAYPOINT
+  BOOTH
+}
+
+/// Persisted analytics events (v1). Docs: 14-Analytics/06-Entity-Fields.
+/// Broader metric list lives on domain ANALYTICS_EVENT_TYPES comments (deferred types).
+enum AnalyticsEventType {
+  PROJECT_VIEW
+  APARTMENT_VIEW
+  FAVORITE_ADDED
+  FAVORITE_REMOVED
+  BOOTH_SELECTED
+  ROUTE_REQUESTED
+}
+
+/// Buyer favorite target discriminator (v1). Docs: 03-Buyer-Visitor-Area/04-Favorites.
+enum FavoriteTargetType {
+  PROJECT
+  APARTMENT
+}
+
+/// Integration audit direction (v1). Docs: 15-Integrations/05-Errors-Idempotency-And-Audit.
+enum IntegrationDirection {
+  INBOUND
+  OUTBOUND
+}
+
+/// Integration audit status (v1). Docs: 15-Integrations/05-Errors-Idempotency-And-Audit.
+enum IntegrationAuditStatus {
+  RECEIVED
+  SUCCEEDED
+  FAILED
+}
+
+/// Platform audit actions (v1). Docs: 05-Projects §12 + publication audit.
+enum AuditAction {
+  PUBLICATION_CHANGE
+  PROVISION_ACCOUNT
+  SETTINGS_UPDATE
+  ACTING_ON_BEHALF_START
+  ACTING_ON_BEHALF_STOP
+  READINESS_ASSESSMENT_UPSERT
+}
+
+/// Platform audit entity kinds (v1).
+enum AuditEntityType {
+  PROJECT
+  BUILDING
+  FLOOR
+  PARTNER
+  BANK_OFFER
+  VISUAL_CANVAS
+  EXHIBITION_EVENT
+  USER
+  PLATFORM_SETTING
+  COMPANY
+  READINESS_ASSESSMENT
+}
+
+
+
+model User {
+  id                       String                 @id @default(cuid())
+  email                    String                 @unique
+  emailVerified            DateTime?
+  name                     String?
+  image                    String?
+  phone                    String?
+  passwordHash             String?
+  role                     PlatformRole           @default(BUYER)
+  createdAt                DateTime               @default(now())
+  updatedAt                DateTime               @updatedAt
+  accounts                 Account[]
+  sessions                 Session[]
+  buyerProfile             BuyerProfile?
+  members                  CompanyMember[]
+  dealsAsBuyer             Deal[]                 @relation("DealBuyer")
+  dealsAssigned            Deal[]                 @relation("DealAssignee")
+  dealsCreated             Deal[]                 @relation("DealCreator")
+  dealActivities           DealActivity[]
+  qrScanLogs               QrScanLog[]
+  readinessAssessments     ReadinessAssessment[]  @relation("ReadinessEvaluator")
+  readinessCategoryScores  ReadinessCategoryScore[] @relation("ReadinessScoreEvaluator")
+  checkInsPerformed        CheckIn[]              @relation("CheckInStaff")
+  auditLogs                AuditLog[]             @relation("AuditActor")
+  platformSettingsUpdated  PlatformSetting[]      @relation("PlatformSettingUpdater")
+  favorites                Favorite[]
+  apartmentStatusChanges   ApartmentStatusHistory[] @relation("ApartmentStatusChangedBy")
+}
+
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model BuyerProfile {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  qrCode    QrCode?
+  checkIns  CheckIn[]
+}
+
+model QrCode {
+  id             String       @id @default(cuid())
+  buyerProfileId String       @unique
+  /// Opaque random token (no PII). Stored so the buyer can re-display their QR
+  /// without rotating on every view. tokenHash remains the lookup key.
+  /// Privacy: 05-Privacy-And-Security forbids encoding PII in the payload, not
+  /// storing the opaque secret server-side behind buyer auth.
+  token          String       @unique
+  tokenHash      String       @unique
+  createdAt      DateTime     @default(now())
+  revokedAt      DateTime?
+  buyerProfile   BuyerProfile @relation(fields: [buyerProfileId], references: [id], onDelete: Cascade)
+  scanLogs       QrScanLog[]
+  checkIns       CheckIn[]
+}
+
+model Company {
+  id                   String                 @id @default(cuid())
+  name                 String
+  slug                 String                 @unique
+  description          String?                @db.Text
+  logoUrl              String?
+  phone                String?
+  email                String?
+  website              String?
+  city                 String?
+  address              String?
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  members              CompanyMember[]
+  projects             Project[]
+  deals                Deal[]
+  qrScanLogs           QrScanLog[]
+  partner              Partner?
+  readinessAssessments ReadinessAssessment[]
+  analyticsEvents      AnalyticsEvent[]
+  auditLogs            AuditLog[]
+  booths               Booth[]
+}
+
+
+model CompanyMember {
+  id        String       @id @default(cuid())
+  companyId String
+  userId    String
+  role      PlatformRole
+  createdAt DateTime     @default(now())
+  company   Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, userId])
+  @@index([userId])
+}
+
+model Project {
+  id                   String                 @id @default(cuid())
+  companyId            String
+  name                 String
+  slug                 String
+  description          String?                @db.Text
+  city                 String?
+  address              String?
+  status               PublicationStatus      @default(DRAFT)
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+  company              Company                @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  buildings            Building[]
+  media                MediaAsset[]
+  deals                Deal[]
+  canvases             VisualCanvas[]
+  readinessAssessments ReadinessAssessment[]
+  analyticsEvents      AnalyticsEvent[]
+  booths               Booth[]
+
+  @@unique([companyId, slug])
+  @@index([status])
+}
+
+
+model Building {
+  id          String            @id @default(cuid())
+  projectId   String
+  name        String
+  description String?           @db.Text
+  status      PublicationStatus @default(PUBLISHED)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  project     Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  floors      Floor[]
+  canvases    VisualCanvas[]
+  hotspots    Hotspot[]
+
+  @@index([projectId])
+  @@index([status])
+}
+
+model Floor {
+  id         String            @id @default(cuid())
+  buildingId String
+  name       String
+  level      Int
+  status     PublicationStatus @default(PUBLISHED)
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+  building   Building          @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  apartments Apartment[]
+  canvases   VisualCanvas[]
+  hotspots   Hotspot[]
+
+  @@unique([buildingId, level])
+  @@index([status])
+}
+
+model Apartment {
+  id              String                   @id @default(cuid())
+  floorId         String
+  code            String
+  status          ApartmentStatus          @default(AVAILABLE)
+  areaSqm         Float?
+  rooms           Int?
+  priceAmd        Int?
+  priceVisibility PriceVisibility          @default(PUBLIC)
+  matterportUrl   String?
+  createdAt       DateTime                 @default(now())
+  updatedAt       DateTime                 @updatedAt
+  floor           Floor                    @relation(fields: [floorId], references: [id], onDelete: Cascade)
+  media           MediaAsset[]
+  dealLinks       DealApartment[]
+  hotspots        Hotspot[]
+  analyticsEvents AnalyticsEvent[]
+  statusHistory   ApartmentStatusHistory[]
+
+  @@unique([floorId, code])
+  @@index([status])
+}
+
+/// Append-only apartment inventory status audit trail (v1).
+/// Docs: 09-Constructor-CRM/07-Entity-Fields.
+model ApartmentStatusHistory {
+  id              String                      @id @default(cuid())
+  apartmentId     String
+  dealId          String?
+  source          ApartmentStatusChangeSource
+  oldStatus       ApartmentStatus
+  newStatus       ApartmentStatus
+  changedByUserId String
+  reason          String?
+  createdAt       DateTime                    @default(now())
+  apartment       Apartment                   @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+  deal            Deal?                       @relation(fields: [dealId], references: [id], onDelete: SetNull)
+  changedByUser   User                        @relation("ApartmentStatusChangedBy", fields: [changedByUserId], references: [id], onDelete: Cascade)
+
+  @@index([apartmentId, createdAt])
+  @@index([dealId])
+  @@index([changedByUserId])
+}
+
+// Exactly one of projectId, buildingId, or floorId — enforced at application layer (MediaAsset-style XOR).
+// v1 stores imageUrl/imageAlt directly (not MediaAsset): canvas contexts include building/floor,
+// while MediaAsset only attaches to project or apartment.
+model VisualCanvas {
+  id         String            @id @default(cuid())
+  title      String?
+  imageUrl   String
+  imageAlt   String?
+  status     PublicationStatus @default(DRAFT)
+  projectId  String?
+  buildingId String?
+  floorId    String?
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+  project    Project?          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  building   Building?         @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  floor      Floor?            @relation(fields: [floorId], references: [id], onDelete: Cascade)
+  hotspots   Hotspot[]
+
+  @@index([projectId])
+  @@index([buildingId])
+  @@index([floorId])
+  @@index([status])
+}
+
+// Exactly one of buildingId, floorId, or apartmentId — enforced at application layer.
+// Coordinates are percentages (0–100) relative to the canvas image.
+model Hotspot {
+  id          String       @id @default(cuid())
+  canvasId    String
+  x           Float
+  y           Float
+  label       String?
+  sortOrder   Int          @default(0)
+  buildingId  String?
+  floorId     String?
+  apartmentId String?
+  archivedAt  DateTime?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  canvas      VisualCanvas @relation(fields: [canvasId], references: [id], onDelete: Cascade)
+  building    Building?    @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  floor       Floor?       @relation(fields: [floorId], references: [id], onDelete: Cascade)
+  apartment   Apartment?   @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+
+  @@index([canvasId])
+  @@index([canvasId, archivedAt])
+  @@index([buildingId])
+  @@index([floorId])
+  @@index([apartmentId])
+}
+
+// Exactly one of projectId or apartmentId must be set — enforced at application layer, not DB.
+model MediaAsset {
+  id          String     @id @default(cuid())
+  url         String
+  alt         String?
+  sortOrder   Int        @default(0)
+  projectId   String?
+  apartmentId String?
+  createdAt   DateTime   @default(now())
+  project     Project?   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  apartment   Apartment? @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([apartmentId])
+}
+
+// Company-scoped CRM work item. Sources: public request, QR scan, or manual builder entry.
+// App layer must require ≥1 DealApartment before stage RESERVED or CONVERTED.
+model Deal {
+  id               String        @id @default(cuid())
+  companyId        String
+  stage            DealStage     @default(NEW_REQUEST)
+  source           RequestSource
+  buyerUserId      String?
+  contactName      String?
+  contactPhone     String?
+  contactEmail     String?
+  title            String?
+  message          String?       @db.Text
+  assignedUserId   String?
+  createdByUserId  String?
+  projectId        String?
+  lastActivityAt   DateTime?
+  nextFollowUpAt   DateTime?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  company          Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  buyerUser        User?         @relation("DealBuyer", fields: [buyerUserId], references: [id], onDelete: SetNull)
+  assignedUser     User?         @relation("DealAssignee", fields: [assignedUserId], references: [id], onDelete: SetNull)
+  createdByUser    User?         @relation("DealCreator", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  project          Project?      @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  apartments       DealApartment[]
+  activities       DealActivity[]
+  statusHistory    ApartmentStatusHistory[]
+
+  @@index([companyId, stage])
+  @@index([buyerUserId])
+  @@index([createdAt])
+}
+
+model DealApartment {
+  id               String           @id @default(cuid())
+  dealId           String
+  apartmentId      String
+  priceAmdSnapshot Int?
+  statusSnapshot   ApartmentStatus?
+  snapshotAt       DateTime?
+  createdAt        DateTime         @default(now())
+  deal             Deal             @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  apartment        Apartment        @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+
+  @@unique([dealId, apartmentId])
+  @@index([dealId])
+  @@index([apartmentId])
+}
+
+model DealActivity {
+  id           String           @id @default(cuid())
+  dealId       String
+  authorUserId String?
+  type         DealActivityType
+  body         String           @db.Text
+  status       ActivityStatus?
+  dueAt        DateTime?
+  completedAt  DateTime?
+  createdAt    DateTime         @default(now())
+  deal         Deal             @relation(fields: [dealId], references: [id], onDelete: Cascade)
+  authorUser   User?            @relation(fields: [authorUserId], references: [id], onDelete: SetNull)
+
+  @@index([dealId])
+}
+
+model QrScanLog {
+  id              String        @id @default(cuid())
+  qrCodeId        String
+  scannedByUserId String
+  companyId       String?
+  purpose         QrScanPurpose @default(UNKNOWN)
+  scannedAt       DateTime      @default(now())
+  qrCode          QrCode        @relation(fields: [qrCodeId], references: [id], onDelete: Cascade)
+  scannedByUser   User          @relation(fields: [scannedByUserId], references: [id], onDelete: Cascade)
+  company         Company?      @relation(fields: [companyId], references: [id], onDelete: SetNull)
+
+  @@index([qrCodeId])
+  @@index([scannedByUserId])
+  @@index([companyId])
+  @@index([scannedAt])
+}
+
+// Non-builder participant profile. Optional companyId links a provisioned PARTNER account
+// workspace (Company + CompanyMember). Docs: 11-Partners-Participants/03 + 06.
+model Partner {
+  id                String            @id @default(cuid())
+  companyId         String?           @unique
+  name              String
+  slug              String            @unique
+  type              PartnerType
+  logoUrl           String?
+  description       String?           @db.Text
+  phone             String?
+  email             String?
+  website           String?
+  /// Free-form category keys for SERVICE_COMPANY (readiness directory link later).
+  serviceCategories String[]          @default([])
+  status            PublicationStatus @default(DRAFT)
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  company           Company?          @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  bankOffers        BankOffer[]
+  booths            Booth[]
+
+  @@index([type])
+  @@index([status])
+}
+
+// Bank partners only — type=BANK enforced in app layer (errorKey: notBankPartner).
+model BankOffer {
+  id            String            @id @default(cuid())
+  partnerId     String
+  title         String
+  description   String?           @db.Text
+  interestRate          Float
+  minDownPaymentPercent Float             @default(0)
+  maxTermMonths         Int
+  maxAmountAmd          Int?
+  featured      Boolean           @default(false)
+  status        PublicationStatus @default(DRAFT)
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  partner       Partner           @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+
+  @@index([partnerId])
+  @@index([status])
+}
+
+// Configurable readiness categories (v1 seeded set). Docs: 10-Builder-Readiness/03 + 07.
+model ReadinessCategory {
+  id                  String                   @id @default(cuid())
+  /// Stable i18n / seed key (e.g. media_materials).
+  key                 String                   @unique
+  name                String
+  description         String?                  @db.Text
+  weight              Float?
+  sortOrder           Int
+  /// Maps to Partner.serviceCategories entry for provider suggestions.
+  serviceCategoryKey  String?
+  active              Boolean                  @default(true)
+  createdAt           DateTime                 @default(now())
+  updatedAt           DateTime                 @updatedAt
+  scores              ReadinessCategoryScore[]
+
+  @@index([active, sortOrder])
+}
+
+// One assessment per target; companyId always set for builder scoping.
+// Exactly one of: BUILDER_COMPANY (projectId null) | PROJECT (projectId set) — app XOR.
+model ReadinessAssessment {
+  id                   String                   @id @default(cuid())
+  targetType           ReadinessTargetType
+  companyId            String
+  projectId            String?
+  status               ReadinessStatus          @default(NOT_STARTED)
+  overallScore         Int?
+  evaluatedByUserId    String?
+  lastEvaluatedAt      DateTime?
+  responsibleContact   String?
+  /// Builder-visible assessment-level recommendation.
+  recommendation       String?                  @db.Text
+  /// Builder-visible assessment-level required actions.
+  requiredActions      String?                  @db.Text
+  /// Admin-only — never selected in builder queries.
+  internalNotes        String?                  @db.Text
+  archivedAt           DateTime?
+  createdAt            DateTime                 @default(now())
+  updatedAt            DateTime                 @updatedAt
+  company              Company                  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  project              Project?                 @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  evaluatedByUser      User?                    @relation("ReadinessEvaluator", fields: [evaluatedByUserId], references: [id], onDelete: SetNull)
+  categoryScores       ReadinessCategoryScore[]
+
+  @@index([companyId])
+  @@index([projectId])
+  @@index([targetType])
+  @@index([status])
+  @@index([archivedAt])
+}
+
+model ReadinessCategoryScore {
+  id                String              @id @default(cuid())
+  assessmentId      String
+  categoryId        String
+  score             Int?
+  status            ReadinessStatus     @default(NOT_STARTED)
+  /// Builder-visible category recommendation.
+  recommendation    String?             @db.Text
+  /// Builder-visible category required actions.
+  requiredActions   String?             @db.Text
+  /// Admin-only — never selected in builder queries.
+  internalNote      String?             @db.Text
+  evaluatedByUserId String?
+  evaluatedAt       DateTime?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  assessment        ReadinessAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  category          ReadinessCategory   @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  evaluatedByUser   User?               @relation("ReadinessScoreEvaluator", fields: [evaluatedByUserId], references: [id], onDelete: SetNull)
+
+  @@unique([assessmentId, categoryId])
+  @@index([categoryId])
+}
+
+// Exhibition event context for entrance check-in + venue map (v1).
+// Public venue map visibility: event.status === ACTIVE (no separate mapPublished flag).
+// Route graph / pathfinding deferred — docs 03-Search-And-Route-Path.
+// Docs: 12-Exhibition-Map-Checkin/07-Entity-Fields + 02-Venue-Map-And-Booths.
+model ExhibitionEvent {
+  id        String                @id @default(cuid())
+  name      String
+  code      String                @unique
+  startDate DateTime?
+  endDate   DateTime?
+  status    ExhibitionEventStatus @default(PLANNING)
+  createdAt DateTime              @default(now())
+  updatedAt DateTime              @updatedAt
+  checkIns  CheckIn[]
+  venueMap  VenueMap?
+
+  @@index([status])
+}
+
+/// One venue floor-plan image per exhibition event. Coordinates are percentages (0–100).
+model VenueMap {
+  id                String          @id @default(cuid())
+  eventId           String          @unique
+  imageUrl          String
+  imageAlt          String?
+  /// Main entrance for route guidance. Null → routes unavailable.
+  entranceXPercent  Float?
+  entranceYPercent  Float?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  event             ExhibitionEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  booths            Booth[]
+  pathNodes         VenuePathNode[]
+  pathEdges         VenuePathEdge[]
+}
+
+/// Point marker on a venue map (booth / stand). Optional company, partner, and/or project.
+model Booth {
+  id         String          @id @default(cuid())
+  venueMapId String
+  code       String
+  label      String
+  xPercent   Float
+  yPercent   Float
+  companyId  String?
+  partnerId  String?
+  projectId  String?
+  note       String?
+  sortOrder  Int             @default(0)
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+  venueMap   VenueMap        @relation(fields: [venueMapId], references: [id], onDelete: Cascade)
+  company    Company?        @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  partner    Partner?        @relation(fields: [partnerId], references: [id], onDelete: SetNull)
+  project    Project?        @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  pathNodes  VenuePathNode[]
+
+  @@unique([venueMapId, code])
+  @@index([companyId])
+  @@index([partnerId])
+  @@index([projectId])
+  @@index([venueMapId, sortOrder])
+}
+
+/// Walkable path graph node for indoor route guidance (percent coords).
+model VenuePathNode {
+  id         String            @id @default(cuid())
+  venueMapId String
+  xPercent   Float
+  yPercent   Float
+  kind       VenuePathNodeKind
+  boothId    String?
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+  venueMap   VenueMap          @relation(fields: [venueMapId], references: [id], onDelete: Cascade)
+  booth      Booth?            @relation(fields: [boothId], references: [id], onDelete: Cascade)
+  edgesFrom  VenuePathEdge[]   @relation("PathEdgeFrom")
+  edgesTo    VenuePathEdge[]   @relation("PathEdgeTo")
+
+  @@index([venueMapId, kind])
+  @@unique([venueMapId, boothId])
+}
+
+/// Undirected walkable edge (store one direction; routing treats as bidirectional).
+model VenuePathEdge {
+  id         String        @id @default(cuid())
+  venueMapId String
+  fromNodeId String
+  toNodeId   String
+  createdAt  DateTime      @default(now())
+  venueMap   VenueMap      @relation(fields: [venueMapId], references: [id], onDelete: Cascade)
+  fromNode   VenuePathNode @relation("PathEdgeFrom", fields: [fromNodeId], references: [id], onDelete: Cascade)
+  toNode     VenuePathNode @relation("PathEdgeTo", fields: [toNodeId], references: [id], onDelete: Cascade)
+
+  @@unique([venueMapId, fromNodeId, toNodeId])
+  @@index([venueMapId])
+  @@index([fromNodeId])
+  @@index([toNodeId])
+}
+
+model CheckIn {
+  id                String        @id @default(cuid())
+  eventId           String
+  buyerProfileId    String
+  qrCodeId          String
+  checkedInByUserId String
+  status            CheckInStatus @default(ALLOWED)
+  checkedInAt       DateTime      @default(now())
+  createdAt         DateTime      @default(now())
+  event             ExhibitionEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  buyerProfile      BuyerProfile    @relation(fields: [buyerProfileId], references: [id], onDelete: Cascade)
+  qrCode            QrCode          @relation(fields: [qrCodeId], references: [id], onDelete: Cascade)
+  checkedInByUser   User            @relation("CheckInStaff", fields: [checkedInByUserId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, buyerProfileId])
+  @@index([eventId, checkedInAt])
+  @@index([buyerProfileId])
+  @@index([qrCodeId])
+  @@index([checkedInByUserId])
+}
+
+/// Buyer-private saved project/apartment (v1).
+/// Exactly one logical target via targetType + targetId (validated at app layer).
+/// Docs: 03-Buyer-Visitor-Area/04-Favorites-And-Saved-Apartments.
+model Favorite {
+  id         String             @id @default(cuid())
+  userId     String
+  targetType FavoriteTargetType
+  targetId   String
+  createdAt  DateTime           @default(now())
+  user       User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, targetType, targetId])
+  @@index([userId, createdAt])
+}
+
+/// Public product activity events for dashboards (v1 minimal).
+/// Privacy: no userId / IP — aggregates only; bot noise acceptable without rate limits.
+/// Docs: 14-Analytics/06-Entity-Fields (subset) + 01-Definition-And-Boundaries privacy.
+model AnalyticsEvent {
+  id          String             @id @default(cuid())
+  type        AnalyticsEventType
+  projectId   String?
+  apartmentId String?
+  /// Denormalized builder company scope for fast portal queries.
+  companyId   String
+  createdAt   DateTime           @default(now())
+  project     Project?           @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  apartment   Apartment?         @relation(fields: [apartmentId], references: [id], onDelete: SetNull)
+  company     Company            @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, type, createdAt])
+  @@index([projectId])
+  @@index([createdAt])
+}
+
+/// Platform-level key/value settings (v1). Keys are constrained in application code.
+/// Docs: 13-Admin-Content-Management/05-Settings-Languages-And-Dictionaries.
+model PlatformSetting {
+  id              String   @id @default(cuid())
+  key             String   @unique
+  value           String
+  updatedAt       DateTime @updatedAt
+  updatedByUserId String?
+  updatedByUser   User?    @relation("PlatformSettingUpdater", fields: [updatedByUserId], references: [id], onDelete: SetNull)
+}
+
+/// Append-only platform audit trail for publication / provisioning (v1).
+/// Detail is a short status transition string (e.g. DRAFT→PUBLISHED) — no secrets.
+/// Docs: 05-Projects §12 acceptance + 15-Integrations/05 audit conventions.
+model AuditLog {
+  id          String          @id @default(cuid())
+  actorUserId String
+  actorRole   PlatformRole
+  action      AuditAction
+  entityType  AuditEntityType
+  entityId    String
+  companyId   String?
+  detail      String?
+  createdAt   DateTime        @default(now())
+  actorUser   User            @relation("AuditActor", fields: [actorUserId], references: [id], onDelete: Cascade)
+  company     Company?        @relation(fields: [companyId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([entityType, entityId])
+  @@index([actorUserId])
+}
+
+/// Append-only integration audit trail (v1).
+/// Payload must never include secrets or unnecessary PII.
+/// Docs: 15-Integrations/05-Errors-Idempotency-And-Audit.
+model IntegrationAuditLog {
+  id          String                  @id @default(cuid())
+  direction   IntegrationDirection
+  operation   String
+  /// Typically the idempotency requestId from the external system.
+  externalRef String?
+  requestId   String?
+  status      IntegrationAuditStatus
+  message     String?
+  /// Minimal safe snapshot (ids, type, modules) — never passwords/API keys.
+  payload     Json?
+  createdAt   DateTime                @default(now())
+
+  @@index([createdAt])
+  @@index([operation, createdAt])
+  @@index([externalRef])
+  @@index([requestId])
+  @@index([status, createdAt])
+}
+
+/// Idempotency store for BOS account provisioning (v1).
+/// Same requestId returns the original result without duplicating accounts.
+/// Docs: 15-Integrations/02-BOS-Account-Provisioning + 05-Errors-Idempotency-And-Audit.
+model ProvisioningRequest {
+  id                  String   @id @default(cuid())
+  requestId           String   @unique
+  bosCompanyId        String
+  primaryContactEmail String
+  /// success | linked_existing | failed — matches BOS response status.
+  status              String
+  toonexpoCompanyId   String?
+  primaryUserId       String?
+  errorMessage        String?
+  /// Full Account Creation Result body for idempotent replay.
+  responseSnapshot    Json
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([bosCompanyId])
+  @@index([primaryContactEmail])
+  @@index([status])
+}

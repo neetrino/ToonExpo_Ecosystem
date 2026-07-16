@@ -1,0 +1,1715 @@
+{
+  "brand": "TOONEXPO",
+  "completeness": {
+    "incomplete": "Неполное",
+    "missingCount": "({count})",
+    "items": {
+      "MISSING_COVER_MEDIA": "Нет обложки",
+      "MISSING_DESCRIPTION": "Пустое описание",
+      "MISSING_PUBLISHED_BUILDING": "Нет опубликованного корпуса",
+      "MISSING_PUBLISHED_FLOOR": "Нет опубликованного этажа",
+      "MISSING_APARTMENT": "Нет квартир",
+      "MISSING_CANVAS": "Нет визуальной карты"
+    }
+  },
+  "home": {
+    "title": "Найдите свой следующий дом",
+    "subtitle": "Просматривайте жилые проекты ведущих застройщиков на одной площадке.",
+    "ctaPublic": "Смотреть проекты",
+    "ctaBuyer": "Войти",
+    "ctaBuilder": "Портал застройщика",
+    "ctaAdmin": "Админ",
+    "newestTitle": "Новые проекты",
+    "newestSubtitle": "Недавно опубликованные объекты на TOONEXPO.",
+    "newestEmpty": "Пока нет опубликованных проектов.",
+    "ctaViewAll": "Все проекты"
+  },
+  "nav": {
+    "public": "Публичное",
+    "projects": "Проекты",
+    "builders": "Застройщики",
+    "partners": "Партнёры",
+    "mortgage": "Ипотека",
+    "buyer": "Аккаунт",
+    "builder": "Портал",
+    "partnerCabinet": "Партнёр",
+    "admin": "Админ",
+    "entrance": "Чек-ин",
+    "exhibition": "Выставка"
+  },
+  "footer": {
+    "contact": {
+      "emailLabel": "Email",
+      "phoneLabel": "Телефон",
+      "emailDefault": "contact@toonexpo.com",
+      "phoneDefault": "+37410123456"
+    }
+  },
+  "placeholders": {
+    "buyer": {
+      "title": "Кабинет покупателя",
+      "description": "Защищённая заготовка раздела для Sprint 0."
+    },
+    "builder": {
+      "title": "Портал застройщика",
+      "description": "Защищённая заготовка раздела для Sprint 0."
+    },
+    "admin": {
+      "title": "Админ",
+      "description": "Защищённая заготовка раздела для Sprint 0."
+    }
+  },
+  "common": {
+    "imageUpload": {
+      "pasteUrlToggle": "Или вставить URL изображения",
+      "fields": {
+        "file": "Файл изображения",
+        "fileHint": "JPEG, PNG или WebP · до 10 МБ",
+        "url": "URL изображения",
+        "urlPlaceholder": "https://…",
+        "urlHint": "Используйте, если загрузка файла недоступна или есть готовый публичный URL."
+      },
+      "uploadStatus": {
+        "presigning": "Подготовка загрузки…",
+        "uploading": "Загрузка…",
+        "readyNamed": "Готово: {name}"
+      },
+      "uploadErrors": {
+        "storageNotConfigured": "Загрузка файлов не настроена в этой среде. Вставьте публичный URL изображения.",
+        "rateLimited": "Слишком много запросов на загрузку. Подождите минуту и попробуйте снова.",
+        "unauthorized": "Чтобы загружать файлы, нужно войти в систему.",
+        "uploadFailed": "Не удалось загрузить. Попробуйте снова или вставьте URL.",
+        "unsupportedType": "Допускаются только JPEG, PNG и WebP.",
+        "fileTooLarge": "Файл слишком большой. Максимум 10 МБ."
+      }
+    }
+  },
+  "auth": {
+    "signInNav": "Войти",
+    "fields": {
+      "name": "Имя и фамилия",
+      "phone": "Телефон",
+      "email": "Эл. почта",
+      "password": "Пароль"
+    },
+    "login": {
+      "title": "Вход",
+      "subtitle": "Войдите в свой аккаунт ToonExpo.",
+      "submit": "Войти",
+      "registerPrompt": "Ещё нет аккаунта?",
+      "registerLink": "Создать",
+      "invitedSuccess": "Пароль установлен. Войдите с новым паролем."
+    },
+    "register": {
+      "title": "Создать аккаунт",
+      "subtitle": "Зарегистрируйтесь как покупатель, чтобы смотреть проекты.",
+      "submit": "Создать аккаунт",
+      "loginPrompt": "Уже есть аккаунт?",
+      "loginLink": "Войти"
+    },
+    "logout": {
+      "submit": "Выйти"
+    },
+    "errors": {
+      "invalidInput": "Проверьте выделенные поля и попробуйте снова.",
+      "emailTaken": "Эта почта уже зарегистрирована.",
+      "invalidCredentials": "Неверная почта или пароль.",
+      "rateLimited": "Слишком много попыток. Подождите минуту и попробуйте снова."
+    },
+    "invite": {
+      "title": "Установите пароль",
+      "subtitle": "Выберите пароль, чтобы активировать аккаунт ToonExpo.",
+      "invalidTitle": "Приглашение недоступно",
+      "submit": "Установить пароль",
+      "fields": {
+        "password": "Новый пароль",
+        "confirmPassword": "Подтвердите пароль"
+      },
+      "errors": {
+        "invalidInput": "Проверьте поля и попробуйте снова.",
+        "invalidOrExpired": "Эта ссылка-приглашение недействительна или устарела. Попросите администратора отправить новую.",
+        "rateLimited": "Слишком много попыток. Подождите минуту и попробуйте снова."
+      }
+    }
+  },
+  "admin": {
+    "title": "Админ",
+    "description": "Создание и управление учётными записями платформы.",
+    "nav": {
+      "title": "Админ",
+      "ariaLabel": "Навигация админки",
+      "provisioning": "Создание аккаунтов",
+      "companies": "Компании",
+      "partners": "Партнёры",
+      "projects": "Проекты",
+      "readiness": "Готовность",
+      "exhibition": "Выставка",
+      "analytics": "Аналитика",
+      "audit": "Аудит",
+      "integrations": "Интеграции",
+      "settings": "Настройки"
+    },
+    "catalog": {
+      "errors": {
+        "unauthorized": "У вас нет прав на это действие.",
+        "invalidInput": "Проверьте поля и попробуйте снова.",
+        "notFound": "Запрошенный элемент не найден.",
+        "nameTaken": "Компания с таким названием уже существует.",
+        "keyTaken": "Категория готовности с таким ключом уже существует.",
+        "notBankPartner": "Банковские предложения можно добавлять только партнёрам-банкам."
+      }
+    },
+    "partners": {
+      "title": "Партнёры",
+      "empty": "Нет партнёров по этому фильтру.",
+      "newPartner": "Новый партнёр",
+      "edit": "Изменить",
+      "open": "Открыть",
+      "backToList": "← Партнёры",
+      "columns": {
+        "name": "Название",
+        "type": "Тип",
+        "status": "Статус",
+        "offers": "Предложения",
+        "actions": "Действия"
+      },
+      "filter": {
+        "all": "Все",
+        "ariaLabel": "Фильтр партнёров по типу"
+      },
+      "status": {
+        "DRAFT": "Черновик",
+        "PUBLISHED": "Опубликован",
+        "ARCHIVED": "В архиве"
+      },
+      "types": {
+        "BANK": "Банк",
+        "IT_COMPANY": "IT-компания",
+        "SPONSOR": "Спонсор",
+        "SUPPLIER": "Поставщик",
+        "INSURANCE": "Страхование",
+        "LEGAL": "Юридические услуги",
+        "DESIGN_FURNITURE": "Дизайн / мебель",
+        "SERVICE_COMPANY": "Сервисная компания",
+        "OTHER": "Другое"
+      },
+      "form": {
+        "create": "Новый партнёр",
+        "edit": "Изменить партнёра",
+        "submit": "Сохранить",
+        "fields": {
+          "name": "Название",
+          "type": "Тип",
+          "slug": "Слаг",
+          "slugHint": "Слаг задаётся при создании и не меняется.",
+          "logoUrl": "URL логотипа",
+          "description": "Описание",
+          "phone": "Телефон",
+          "email": "Эл. почта",
+          "website": "Сайт",
+          "serviceCategories": "Категории услуг",
+          "serviceCategoriesHint": "Ключи через запятую (для сервисных компаний / readiness)."
+        }
+      },
+      "publication": {
+        "actions": {
+          "publish": "Опубликовать",
+          "archive": "В архив",
+          "draft": "В черновик"
+        },
+        "confirm": {
+          "publish": "Опубликовать? Элемент станет видимым на публичных страницах.",
+          "archive": "Отправить в архив? Элемент будет скрыт с публичных страниц.",
+          "draft": "Вернуть в черновик?"
+        }
+      },
+      "offers": {
+        "title": "Банковские предложения",
+        "empty": "Банковских предложений пока нет.",
+        "newOffer": "Новое предложение",
+        "featured": "Избранное",
+        "columns": {
+          "title": "Название",
+          "rate": "Ставка",
+          "term": "Макс. срок (мес.)",
+          "amount": "Макс. сумма (AMD)",
+          "status": "Статус",
+          "actions": "Действия"
+        },
+        "form": {
+          "create": "Новое банковское предложение",
+          "edit": "Изменить предложение",
+          "submit": "Сохранить",
+          "fields": {
+            "title": "Название",
+            "interestRate": "Ставка (%)",
+            "minDownPaymentPercent": "Мин. первоначальный взнос (%)",
+            "maxTermMonths": "Макс. срок (мес.)",
+            "maxAmountAmd": "Макс. сумма (AMD)",
+            "description": "Описание",
+            "featured": "Избранное"
+          }
+        }
+      }
+    },
+    "companies": {
+      "title": "Компании",
+      "empty": "Компаний пока нет.",
+      "newCompany": "Новая компания",
+      "edit": "Изменить",
+      "openInPortal": "Открыть в портале",
+      "columns": {
+        "name": "Название",
+        "slug": "Слаг",
+        "members": "Участники",
+        "projects": "Проекты",
+        "createdAt": "Создана",
+        "actions": "Действия"
+      },
+      "projectCounts": {
+        "draft": "Черновик",
+        "published": "Опубликован",
+        "archived": "Архив"
+      },
+      "form": {
+        "create": "Новая компания",
+        "edit": "Изменить компанию",
+        "submit": "Сохранить",
+        "fields": {
+          "name": "Название",
+          "slug": "Слаг",
+          "slugHint": "Слаг задаётся при создании и не может быть изменён.",
+          "description": "Описание",
+          "logoUrl": "URL логотипа",
+          "phone": "Телефон",
+          "email": "Эл. почта",
+          "website": "Сайт",
+          "city": "Город",
+          "address": "Адрес"
+        }
+      }
+    },
+    "projects": {
+      "title": "Проекты",
+      "empty": "Нет проектов по этому фильтру.",
+      "columns": {
+        "company": "Компания",
+        "name": "Название",
+        "status": "Статус",
+        "buildings": "Корпуса",
+        "updatedAt": "Обновлён",
+        "actions": "Действия"
+      },
+      "status": {
+        "DRAFT": "Черновик",
+        "PUBLISHED": "Опубликован",
+        "ARCHIVED": "Архив"
+      },
+      "filter": {
+        "all": "Все",
+        "ariaLabel": "Фильтр проектов по статусу"
+      }
+    },
+    "readiness": {
+      "title": "Готовность застройщика",
+      "empty": "Оценок готовности пока нет.",
+      "newAssessment": "Новая оценка",
+      "newCategory": "Новая категория",
+      "categoriesTitle": "Категории",
+      "categoriesEmpty": "Категорий готовности пока нет.",
+      "assessmentsTitle": "Оценки",
+      "edit": "Изменить",
+      "noEvaluator": "—",
+      "activeYes": "Активна",
+      "activeNo": "Неактивна",
+      "categoryColumns": {
+        "name": "Название",
+        "key": "Ключ",
+        "weight": "Вес",
+        "sortOrder": "Порядок",
+        "serviceCategoryKey": "Ключ услуги",
+        "active": "Активна",
+        "updatedAt": "Обновлено",
+        "actions": "Действия"
+      },
+      "columns": {
+        "target": "Цель",
+        "score": "Балл",
+        "status": "Статус",
+        "evaluator": "Оценщик",
+        "updatedAt": "Обновлено",
+        "actions": "Действия"
+      },
+      "filter": {
+        "all": "Все",
+        "ariaLabel": "Фильтр оценок по типу цели"
+      },
+      "targets": {
+        "BUILDER_COMPANY": "Компания",
+        "PROJECT": "Проект"
+      },
+      "statuses": {
+        "NOT_STARTED": "Не начато",
+        "IN_PROGRESS": "В работе",
+        "NEEDS_IMPROVEMENT": "Нужны улучшения",
+        "READY": "Готово",
+        "BLOCKED": "Заблокировано"
+      },
+      "categories": {
+        "company_profile": "Профиль компании",
+        "project_information": "Информация о проекте",
+        "media_materials": "Медиаматериалы",
+        "apartment_inventory": "Инвентарь квартир",
+        "visual_map_readiness": "Готовность визуальной карты",
+        "pricing_status_clarity": "Цены и статусы",
+        "crm_request_readiness": "Готовность CRM / заявок",
+        "event_presentation_readiness": "Готовность к событию"
+      },
+      "categoryForm": {
+        "create": "Новая категория готовности",
+        "edit": "Редактировать категорию готовности",
+        "submit": "Сохранить категорию",
+        "fields": {
+          "key": "Ключ",
+          "keyHint": "Ключ задаётся при создании и не меняется.",
+          "keyCreateHint": "Стабильный snake_case ключ (напр. media_materials).",
+          "name": "Название",
+          "description": "Описание",
+          "weight": "Вес",
+          "sortOrder": "Порядок сортировки",
+          "serviceCategoryKey": "Ключ категории услуг",
+          "serviceCategoryKeyHint": "Соответствует serviceCategories партнёров для подсказок провайдеров.",
+          "active": "Активна"
+        }
+      },
+      "form": {
+        "create": "Новая оценка готовности",
+        "edit": "Редактировать оценку готовности",
+        "submit": "Сохранить оценку",
+        "categoriesTitle": "Баллы по категориям",
+        "fields": {
+          "targetType": "Тип цели",
+          "company": "Компания",
+          "companyPlaceholder": "Выберите компанию",
+          "project": "Проект",
+          "projectPlaceholder": "Выберите проект",
+          "status": "Общий статус",
+          "responsibleContact": "Ответственный контакт",
+          "recommendation": "Рекомендации (видны застройщику)",
+          "requiredActions": "Обязательные действия (видны застройщику)",
+          "internalNotes": "Внутренние заметки",
+          "internalNotesHint": "Только для админов BigProjects — застройщикам не показываются.",
+          "score": "Балл (0–100)",
+          "categoryStatus": "Статус категории",
+          "categoryRecommendation": "Рекомендация по категории",
+          "categoryRequiredActions": "Действия по категории",
+          "categoryInternalNote": "Внутренняя заметка по категории"
+        }
+      }
+    },
+    "publication": {
+      "actions": {
+        "publish": "Опубликовать",
+        "archive": "В архив",
+        "draft": "Вернуть в черновик"
+      },
+      "confirm": {
+        "publish": "Опубликовать проект? Он станет виден в публичном каталоге.",
+        "archive": "Архивировать проект? Он будет скрыт из публичного каталога.",
+        "draft": "Вернуть проект в черновик? Он будет скрыт из публичного каталога."
+      }
+    },
+    "provision": {
+      "title": "Создать аккаунт",
+      "description": "Создайте аккаунт застройщика, партнёра, администратора или персонала входа. Покупатели регистрируются самостоятельно.",
+      "submit": "Создать аккаунт",
+      "devInviteUrlLabel": "Ссылка-приглашение (только для локального теста):",
+      "fields": {
+        "email": "Эл. почта",
+        "name": "Имя и фамилия",
+        "role": "Роль",
+        "companyName": "Название компании",
+        "companyNameHint": "Обязательно для ролей застройщика и партнёра.",
+        "partnerId": "Профиль партнёра",
+        "partnerIdNone": "Без привязки",
+        "partnerIdHint": "Необязательно. Связывает компанию аккаунта с существующим профилем партнёра."
+      },
+      "errors": {
+        "invalidInput": "Проверьте поля и попробуйте снова.",
+        "emailTaken": "Эта почта уже используется.",
+        "unauthorized": "У вас нет прав на создание учётных записей."
+      },
+      "success": {
+        "provisioned": "Аккаунт успешно создан. Письмо с приглашением для установки пароля отправлено.",
+        "provisionedEmailFailed": "Аккаунт создан, но письмо с приглашением не удалось отправить. Передайте ссылку-приглашение пользователю вручную."
+      }
+    },
+    "users": {
+      "title": "Созданные аккаунты",
+      "empty": "Созданных аккаунтов пока нет.",
+      "noName": "—",
+      "noCompany": "—",
+      "columns": {
+        "email": "Почта",
+        "name": "Имя",
+        "role": "Роль",
+        "company": "Компания",
+        "createdAt": "Создан"
+      },
+      "roles": {
+        "BIGPROJECTS_ADMIN": "Админ BigProjects",
+        "BUILDER": "Застройщик",
+        "PARTNER": "Партнёр",
+        "ENTRANCE_STAFF": "Персонал входа"
+      }
+    },
+    "exhibition": {
+      "title": "События выставки",
+      "empty": "Пока нет событий выставки.",
+      "newEvent": "Новое событие",
+      "edit": "Изменить",
+      "noDates": "Без дат",
+      "columns": {
+        "name": "Название",
+        "code": "Код",
+        "status": "Статус",
+        "checkIns": "Чек-ины",
+        "dates": "Даты",
+        "actions": "Действия"
+      },
+      "form": {
+        "create": "Новое событие выставки",
+        "edit": "Редактировать событие",
+        "submit": "Сохранить",
+        "fields": {
+          "name": "Название",
+          "code": "Код",
+          "codeHint": "Латиница, цифры и дефисы.",
+          "startDate": "Начало",
+          "endDate": "Конец",
+          "status": "Статус"
+        },
+        "statuses": {
+          "PLANNING": "Планирование",
+          "ACTIVE": "Активно",
+          "COMPLETED": "Завершено",
+          "ARCHIVED": "В архиве",
+          "CANCELLED": "Отменено"
+        }
+      },
+      "recent": {
+        "title": "Недавние чек-ины",
+        "empty": "Чек-инов пока нет.",
+        "unnamed": "—",
+        "columns": {
+          "visitor": "Посетитель",
+          "event": "Событие",
+          "staff": "Сотрудник",
+          "checkedInAt": "Время"
+        }
+      },
+      "venueMap": "Карта павильона",
+      "venue": {
+        "back": "К списку событий",
+        "title": "Карта павильона — {name}",
+        "saveMap": "Сохранить карту",
+        "noMap": "Сохраните URL изображения, чтобы размещать стенды.",
+        "clickHint": "Нажмите на карту, чтобы добавить стенд, или на маркер — чтобы редактировать.",
+        "coordHint": "Координаты — проценты от {min} до {max}.",
+        "fields": {
+          "imageUrl": "URL изображения карты",
+          "imageAlt": "Alt-текст изображения"
+        },
+        "boothForm": {
+          "create": "Новый стенд",
+          "edit": "Редактировать стенд",
+          "submit": "Сохранить стенд",
+          "delete": "Удалить стенд",
+          "deleteConfirm": "Удалить этот стенд?",
+          "none": "Нет",
+          "fields": {
+            "code": "Код стенда",
+            "label": "Название",
+            "xPercent": "X %",
+            "yPercent": "Y %",
+            "company": "Компания",
+            "partner": "Партнёр",
+            "project": "Проект",
+            "note": "Заметка"
+          }
+        },
+        "path": {
+          "title": "Граф маршрута",
+          "hint": "Задайте вход, добавьте точки пути, затем соедините два узла. Сохранение стенда автоматически создаёт узел BOOTH.",
+          "entranceStatus": "Вход: {status}",
+          "entranceUnset": "не задан (маршруты недоступны)",
+          "modesLabel": "Режим редактирования пути",
+          "modes": {
+            "entrance": "Задать вход",
+            "waypoint": "Добавить точку",
+            "link": "Соединить узлы"
+          },
+          "linkPickSecond": "Нажмите второй узел, чтобы создать ребро.",
+          "deleteNode": "Удалить узел",
+          "deleteEdge": "Удалить ребро"
+        }
+      }
+    },
+    "integrations": {
+      "title": "Интеграции",
+      "subtitle": "Недавние события аудита BOS и внешних интеграций.",
+      "empty": "Событий интеграции пока нет.",
+      "externalRefEmpty": "—",
+      "columns": {
+        "createdAt": "Когда",
+        "direction": "Направление",
+        "operation": "Операция",
+        "status": "Статус",
+        "externalRef": "Внешний ref"
+      },
+      "directions": {
+        "INBOUND": "Входящий",
+        "OUTBOUND": "Исходящий"
+      },
+      "statuses": {
+        "RECEIVED": "Получено",
+        "SUCCEEDED": "Успех",
+        "FAILED": "Ошибка"
+      }
+    },
+    "audit": {
+      "title": "Журнал аудита",
+      "subtitle": "Публикация и провижининг по платформе.",
+      "empty": "Событий аудита пока нет.",
+      "detailEmpty": "—",
+      "exportCsv": "Экспорт CSV",
+      "filter": {
+        "ariaLabel": "Фильтр аудита по типу сущности",
+        "all": "Все"
+      },
+      "columns": {
+        "createdAt": "Когда",
+        "actor": "Актор",
+        "action": "Действие",
+        "entity": "Сущность",
+        "detail": "Детали"
+      },
+      "actions": {
+        "PUBLICATION_CHANGE": "Смена публикации",
+        "PROVISION_ACCOUNT": "Провижининг аккаунта",
+        "SETTINGS_UPDATE": "Обновление настроек",
+        "ACTING_ON_BEHALF_START": "Начало работы от имени компании",
+        "ACTING_ON_BEHALF_STOP": "Завершение работы от имени компании",
+        "READINESS_ASSESSMENT_UPSERT": "Обновление оценки готовности"
+      },
+      "entityTypes": {
+        "PROJECT": "Проект",
+        "BUILDING": "Корпус",
+        "FLOOR": "Этаж",
+        "PARTNER": "Партнёр",
+        "BANK_OFFER": "Банковское предложение",
+        "VISUAL_CANVAS": "Визуальная карта",
+        "EXHIBITION_EVENT": "Выставочное событие",
+        "USER": "Пользователь",
+        "PLATFORM_SETTING": "Настройка платформы",
+        "COMPANY": "Компания",
+        "READINESS_ASSESSMENT": "Оценка готовности"
+      }
+    },
+    "settings": {
+      "title": "Настройки платформы",
+      "subtitle": "Управление конфигурацией платформы.",
+      "edit": "Изменить",
+      "unset": "—",
+      "columns": {
+        "key": "Настройка",
+        "value": "Значение",
+        "updatedAt": "Обновлено",
+        "actions": "Действия"
+      },
+      "keys": {
+        "CONTACT_EMAIL": "Контактный email",
+        "CONTACT_PHONE": "Контактный телефон",
+        "MORTGAGE_PAGE_ENABLED": "Страница ипотеки включена"
+      },
+      "form": {
+        "edit": "Изменить настройку",
+        "submit": "Сохранить",
+        "fields": {
+          "value": "Значение"
+        },
+        "boolean": {
+          "true": "Включено",
+          "false": "Выключено"
+        }
+      }
+    },
+    "analytics": {
+      "title": "Аналитика",
+      "subtitle": "Итоги платформы и последние {days} дней.",
+      "empty": "Пока нет данных.",
+      "exports": {
+        "ariaLabel": "Экспорт CSV-отчётов",
+        "deals": "Экспорт сделок CSV",
+        "checkins": "Экспорт чек-инов CSV",
+        "projectViews": "Экспорт просмотров проектов CSV",
+        "audit": "Экспорт аудита CSV"
+      },
+      "stats": {
+        "projectViewsTotal": "Просмотры проектов (всего)",
+        "projectViewsRecent": "Просмотры проектов (недавние)",
+        "apartmentViewsTotal": "Просмотры квартир (всего)",
+        "apartmentViewsRecent": "Просмотры квартир (недавние)",
+        "boothSelectedTotal": "Выборы стенда (всего)",
+        "routeRequestedTotal": "Запросы маршрута (всего)"
+      },
+      "sections": {
+        "dealsByStage": "Сделки по стадиям",
+        "dealsBySource": "Заявки по источникам",
+        "dealsBySourceRecent": "Заявки по источникам (недавние)",
+        "qrScans": "QR-сканы по назначению",
+        "checkIns": "Чек-ины по событиям",
+        "projectsByStatus": "Проекты по статусу публикации",
+        "apartmentsByStatus": "Квартиры по статусу",
+        "readiness": "Средний readiness-балл по компаниям",
+        "partnersByType": "Партнёры по типу"
+      },
+      "columns": {
+        "label": "Метка",
+        "count": "Кол-во"
+      },
+      "stages": {
+        "NEW_REQUEST": "Новая заявка",
+        "ASSIGNED": "Назначена",
+        "CONTACTED": "Связались",
+        "FOLLOW_UP_NEEDED": "Нужен follow-up",
+        "APARTMENT_SELECTED": "Квартира выбрана",
+        "RESERVED": "Резерв",
+        "CONVERTED": "Конверсия",
+        "CLOSED": "Закрыта",
+        "LOST": "Потеряна"
+      },
+      "sources": {
+        "PROJECT_PAGE": "Страница проекта",
+        "APARTMENT_PAGE": "Страница квартиры",
+        "BUILDER_QR_SCAN": "QR-скан",
+        "MANUAL_BUILDER_ENTRY": "Ручной ввод",
+        "EVENT_INTERACTION": "Событие"
+      },
+      "qrPurposes": {
+        "BUILDER_SCAN": "Скан застройщика",
+        "ENTRANCE_CHECKIN": "Входной чек-ин",
+        "BUYER_SELF_VIEW": "Просмотр покупателем",
+        "UNKNOWN": "Неизвестно"
+      },
+      "publicationStatuses": {
+        "DRAFT": "Черновик",
+        "PUBLISHED": "Опубликован",
+        "ARCHIVED": "Архив"
+      },
+      "apartmentStatuses": {
+        "AVAILABLE": "Доступна",
+        "RESERVED": "Резерв",
+        "SOLD": "Продана"
+      },
+      "partnerTypes": {
+        "BANK": "Банк",
+        "IT_COMPANY": "IT-компания",
+        "SPONSOR": "Спонсор",
+        "SUPPLIER": "Поставщик",
+        "INSURANCE": "Страхование",
+        "LEGAL": "Юридические услуги",
+        "DESIGN_FURNITURE": "Дизайн / мебель",
+        "SERVICE_COMPANY": "Сервисная компания",
+        "OTHER": "Другое"
+      }
+    }
+  },
+  "portal": {
+    "nav": {
+      "ariaLabel": "Навигация портала застройщика",
+      "overview": "Обзор",
+      "projects": "Проекты",
+      "crm": "CRM",
+      "readiness": "Готовность",
+      "analytics": "Аналитика",
+      "company": "Компания"
+    },
+    "actingOnBehalf": {
+      "message": "Управление «{company}» от имени админа",
+      "exit": "Вернуться в админку"
+    },
+    "companySwitcher": {
+      "label": "Активная компания",
+      "ariaLabel": "Сменить активную компанию"
+    },
+    "overview": {
+      "title": "Обзор",
+      "stats": {
+        "draft": "Черновик",
+        "published": "Опубликован",
+        "archived": "В архиве"
+      },
+      "booth": "Ваш стенд: {code} ({label}) — {event}"
+    },
+    "company": {
+      "title": "Компания",
+      "subtitle": "Профиль компании и участники команды.",
+      "profileTitle": "Профиль компании",
+      "editProfile": "Редактировать профиль",
+      "profileMissing": "Не удалось загрузить профиль компании.",
+      "teamTitle": "Команда",
+      "teamEmpty": "К этой компании пока не привязаны участники.",
+      "noValue": "—",
+      "fields": {
+        "description": "Описание",
+        "phone": "Телефон",
+        "email": "Эл. почта",
+        "website": "Сайт",
+        "location": "Адрес"
+      },
+      "columns": {
+        "name": "Имя",
+        "email": "Эл. почта",
+        "role": "Роль",
+        "joinedAt": "Дата присоединения"
+      },
+      "roles": {
+        "BIGPROJECTS_ADMIN": "Админ BigProjects",
+        "BUILDER": "Застройщик",
+        "PARTNER": "Партнёр",
+        "BUYER": "Покупатель",
+        "ENTRANCE_STAFF": "Персонал входа"
+      },
+      "form": {
+        "title": "Редактировать профиль компании",
+        "submit": "Сохранить",
+        "fields": {
+          "name": "Название компании",
+          "description": "Описание",
+          "logoUrl": "URL логотипа",
+          "phone": "Телефон",
+          "email": "Эл. почта",
+          "website": "Сайт",
+          "city": "Город",
+          "address": "Адрес"
+        }
+      }
+    },
+    "readiness": {
+      "title": "Готовность",
+      "subtitle": "Баллы, рекомендации и обязательные действия для вашей компании и проектов.",
+      "empty": "Оценки готовности пока нет. BigProjects опубликует рекомендации после проверки.",
+      "overallScore": "Общий балл",
+      "status": "Статус",
+      "recommendation": "Рекомендации",
+      "requiredActions": "Обязательные действия",
+      "lastUpdated": "Обновлено",
+      "categoriesTitle": "Категории",
+      "helpProviders": "Помощь / Провайдеры",
+      "targets": {
+        "BUILDER_COMPANY": "Готовность компании",
+        "PROJECT": "Готовность проекта"
+      },
+      "statuses": {
+        "NOT_STARTED": "Не начато",
+        "IN_PROGRESS": "В работе",
+        "NEEDS_IMPROVEMENT": "Нужны улучшения",
+        "READY": "Готово",
+        "BLOCKED": "Заблокировано"
+      },
+      "categories": {
+        "company_profile": "Профиль компании",
+        "project_information": "Информация о проекте",
+        "media_materials": "Медиаматериалы",
+        "apartment_inventory": "Инвентарь квартир",
+        "visual_map_readiness": "Готовность визуальной карты",
+        "pricing_status_clarity": "Цены и статусы",
+        "crm_request_readiness": "Готовность CRM / заявок",
+        "event_presentation_readiness": "Готовность к событию"
+      },
+      "providers": {
+        "title": "Помощь / Провайдеры",
+        "description": "Рекомендованные сервисные компании для слабых категорий. Свяжитесь напрямую — бронирования в приложении нет.",
+        "openProfile": "Открыть профиль",
+        "contact": "Контакты"
+      }
+    },
+    "errors": {
+      "unauthorized": "У вас нет прав для выполнения этого действия.",
+      "invalidInput": "Проверьте поля и попробуйте снова.",
+      "notFound": "Запрошенный элемент не найден.",
+      "targetMismatch": "Выбранная цель не относится к контексту этой визуальной карты.",
+      "levelTaken": "Этот уровень этажа уже используется в этом корпусе.",
+      "codeTaken": "Этот код квартиры уже используется на этом этаже.",
+      "nameTaken": "Проект с таким названием уже существует."
+    },
+    "crm": {
+      "title": "CRM",
+      "empty": "Сделок пока нет. Создайте вручную или дождитесь заявок от покупателей.",
+      "newDeal": "Новая сделка",
+      "view": {
+        "board": "Доска",
+        "list": "Список"
+      },
+      "card": {
+        "unnamedContact": "Без имени",
+        "noProject": "Без проекта",
+        "noAssignee": "Не назначен",
+        "noActivity": "Нет активности",
+        "apartmentCount": "{count} кв."
+      },
+      "list": {
+        "columns": {
+          "contact": "Контакт",
+          "project": "Проект",
+          "stage": "Стадия",
+          "source": "Источник",
+          "assignee": "Ответственный",
+          "apartments": "Квартиры",
+          "lastActivity": "Последняя активность"
+        }
+      },
+      "stages": {
+        "NEW_REQUEST": "Новая заявка",
+        "ASSIGNED": "Назначена",
+        "CONTACTED": "Связались",
+        "FOLLOW_UP_NEEDED": "Нужен повторный контакт",
+        "APARTMENT_SELECTED": "Квартира выбрана",
+        "RESERVED": "Забронирована",
+        "CONVERTED": "Продажа",
+        "CLOSED": "Закрыта",
+        "LOST": "Потеряна"
+      },
+      "sources": {
+        "PROJECT_PAGE": "Страница проекта",
+        "APARTMENT_PAGE": "Страница квартиры",
+        "BUILDER_QR_SCAN": "QR-скан",
+        "MANUAL_BUILDER_ENTRY": "Ручной ввод",
+        "EVENT_INTERACTION": "Мероприятие"
+      },
+      "activityTypes": {
+        "COMMENT": "Комментарий",
+        "FOLLOW_UP": "Повторный контакт",
+        "STATUS_CHANGE": "Смена статуса"
+      },
+      "errors": {
+        "unauthorized": "У вас нет прав для выполнения этого действия.",
+        "invalidInput": "Проверьте поля и попробуйте снова.",
+        "notFound": "Запрошенная сделка не найдена.",
+        "apartmentRequired": "Привяжите квартиру перед переходом на эту стадию.",
+        "reservationConflict": "Квартиру нельзя забронировать из-за конфликта в наличии."
+      },
+      "manualDeal": {
+        "title": "Новая сделка",
+        "submit": "Создать сделку",
+        "fields": {
+          "contactName": "Имя контакта",
+          "contactPhone": "Телефон",
+          "contactEmail": "Email (необязательно)",
+          "message": "Сообщение (необязательно)",
+          "project": "Проект (необязательно)",
+          "noProject": "Без проекта"
+        }
+      },
+      "dealSheet": {
+        "title": "Сделка — {name}",
+        "source": "Источник",
+        "createdAt": "Создана",
+        "stage": "Стадия",
+        "assignee": "Ответственный",
+        "unassigned": "Не назначен",
+        "noValue": "—",
+        "contact": {
+          "title": "Контакт",
+          "phone": "Телефон",
+          "email": "Email",
+          "buyerLinked": "Зарегистрированный покупатель",
+          "message": "Текст заявки"
+        },
+        "apartments": {
+          "title": "Квартиры",
+          "empty": "Квартира ещё не выбрана.",
+          "emptyHint": "Привяжите квартиру для перехода к бронированию или продаже.",
+          "link": "Привязать квартиру",
+          "unlink": "Отвязать",
+          "project": "Проект",
+          "apartment": "Квартира",
+          "price": "{value} AMD",
+          "priceAtRequest": "на момент запроса: {value} AMD"
+        },
+        "activities": {
+          "title": "Активности",
+          "empty": "Повторных контактов пока нет.",
+          "comment": "Добавить комментарий",
+          "followUp": "Запланировать контакт",
+          "submitComment": "Добавить комментарий",
+          "submitFollowUp": "Добавить контакт",
+          "nextFollowUpAt": "Следующий контакт",
+          "dueAt": "Срок",
+          "markDone": "Выполнено",
+          "markCancelled": "Отменить",
+          "statuses": {
+            "PLANNED": "Запланировано",
+            "DONE": "Выполнено",
+            "CANCELLED": "Отменено"
+          },
+          "noAuthor": "Система"
+        }
+      }
+    },
+    "projects": {
+      "title": "Проекты",
+      "empty": "Проектов пока нет.",
+      "newProject": "Новый проект",
+      "noCity": "—",
+      "columns": {
+        "name": "Название",
+        "city": "Город",
+        "status": "Статус",
+        "buildings": "Корпуса",
+        "updatedAt": "Обновлён",
+        "actions": "Действия"
+      },
+      "status": {
+        "DRAFT": "Черновик",
+        "PUBLISHED": "Опубликован",
+        "ARCHIVED": "В архиве"
+      }
+    },
+    "publication": {
+      "actions": {
+        "publish": "Опубликовать",
+        "archive": "В архив",
+        "draft": "Вернуть в черновик"
+      },
+      "confirm": {
+        "publish": "Опубликовать этот проект? Он станет виден в публичном каталоге.",
+        "archive": "Архивировать этот проект? Он будет скрыт из публичного каталога.",
+        "draft": "Вернуть проект в черновик? Он будет скрыт из публичного каталога."
+      }
+    },
+    "inventoryPublication": {
+      "actions": {
+        "publish": "Опубликовать",
+        "archive": "В архив",
+        "draft": "Вернуть в черновик"
+      },
+      "confirm": {
+        "building": {
+          "publish": "Опубликовать этот корпус? Его этажи и квартиры станут видны на публичной странице проекта.",
+          "archive": "Архивировать этот корпус? Он будет скрыт из публичного каталога.",
+          "draft": "Вернуть корпус в черновик? Он будет скрыт из публичного каталога."
+        },
+        "floor": {
+          "publish": "Опубликовать этот этаж? Его квартиры станут видны на публичной странице проекта.",
+          "archive": "Архивировать этот этаж? Он будет скрыт из публичного каталога.",
+          "draft": "Вернуть этаж в черновик? Он будет скрыт из публичного каталога."
+        }
+      }
+    },
+    "projectForm": {
+      "create": "Новый проект",
+      "edit": "Редактировать проект",
+      "submit": "Сохранить",
+      "fields": {
+        "name": "Название",
+        "city": "Город",
+        "address": "Адрес",
+        "description": "Описание"
+      }
+    },
+    "buildingForm": {
+      "create": "Добавить корпус",
+      "edit": "Редактировать корпус",
+      "submit": "Сохранить",
+      "fields": {
+        "name": "Название",
+        "description": "Описание"
+      }
+    },
+    "floorForm": {
+      "create": "Добавить этаж",
+      "edit": "Редактировать этаж",
+      "submit": "Сохранить",
+      "fields": {
+        "name": "Название",
+        "level": "Уровень",
+        "levelHint": "Целое число от -5 до 100. Должно быть уникальным в корпусе."
+      }
+    },
+    "apartmentForm": {
+      "create": "Добавить квартиру",
+      "edit": "Редактировать квартиру",
+      "submit": "Сохранить",
+      "fields": {
+        "code": "Код помещения",
+        "rooms": "Комнаты",
+        "areaSqm": "Площадь (м²)",
+        "priceAmd": "Цена (AMD)",
+        "priceVisibility": "Видимость цены",
+        "matterportUrl": "Ссылка Matterport / 3D",
+        "status": "Статус"
+      },
+      "statusHistory": {
+        "title": "История статусов",
+        "empty": "Изменений статуса пока нет."
+      }
+    },
+    "apartmentStatusHistorySource": {
+      "CRM_STAGE": "CRM этап",
+      "MANUAL_INVENTORY": "Ручной инвентарь",
+      "SYSTEM": "Система"
+    },
+    "mediaForm": {
+      "create": "Добавить медиа",
+      "edit": "Редактировать",
+      "add": "Добавить медиа",
+      "editAction": "Редактировать",
+      "delete": "Удалить",
+      "submit": "Сохранить",
+      "empty": "Медиа пока нет.",
+      "noAlt": "Без alt-текста",
+      "coverBadge": "Обложка",
+      "coverHint": "Элемент с наименьшим порядком сортировки используется как обложка проекта. Явный выбор обложки может появиться позже.",
+      "confirmDelete": "Удалить этот медиафайл?",
+      "uploadHint": "Загрузите изображение JPEG, PNG или WebP (макс. 10 МБ). Также можно вставить публичный URL.",
+      "pasteUrlToggle": "Или вставить URL изображения",
+      "apartmentTitle": "Медиа — {code}",
+      "section": {
+        "title": "Медиа"
+      },
+      "fields": {
+        "file": "Файл изображения",
+        "fileHint": "JPEG, PNG или WebP · до 10 МБ",
+        "url": "URL изображения",
+        "urlPlaceholder": "https://…",
+        "urlHint": "Используйте, если загрузка файла недоступна или есть готовый публичный URL.",
+        "alt": "Alt-текст",
+        "sortOrder": "Порядок сортировки",
+        "sortOrderHint": "Меньшие числа отображаются первыми (0–999)."
+      },
+      "uploadStatus": {
+        "presigning": "Подготовка загрузки…",
+        "uploading": "Загрузка…",
+        "readyNamed": "Готово: {name}"
+      },
+      "uploadErrors": {
+        "storageNotConfigured": "Загрузка файлов не настроена в этой среде. Вставьте публичный URL изображения.",
+        "rateLimited": "Слишком много запросов на загрузку. Подождите минуту и попробуйте снова.",
+        "unauthorized": "Для загрузки нужно войти как застройщик.",
+        "uploadFailed": "Загрузка не удалась. Попробуйте снова или вставьте URL.",
+        "unsupportedType": "Допускаются только изображения JPEG, PNG и WebP.",
+        "fileTooLarge": "Файл слишком большой. Максимальный размер — 10 МБ."
+      }
+    },
+    "priceVisibility": {
+      "PUBLIC": "Публичная",
+      "BY_REQUEST": "По запросу",
+      "HIDDEN": "Скрыта",
+      "VISIBLE_AFTER_LOGIN": "После входа"
+    },
+    "apartmentStatus": {
+      "AVAILABLE": "Доступна",
+      "RESERVED": "Забронирована",
+      "SOLD": "Продана"
+    },
+    "projectDetail": {
+      "editProject": "Редактировать проект",
+      "buildings": {
+        "title": "Корпуса",
+        "addBuilding": "Добавить корпус",
+        "empty": "Корпусов пока нет.",
+        "editBuilding": "Изменить",
+        "addFloor": "Добавить этаж",
+        "emptyFloors": "Этажей пока нет.",
+        "level": "уровень",
+        "editFloor": "Изменить этаж"
+      },
+      "apartments": {
+        "title": "Квартиры",
+        "addApartment": "Добавить квартиру",
+        "edit": "Изменить",
+        "media": "Медиа",
+        "noValue": "—",
+        "columns": {
+          "code": "Помещение",
+          "rooms": "Комнаты",
+          "areaSqm": "Площадь (м²)",
+          "priceAmd": "Цена",
+          "status": "Статус",
+          "actions": "Действия"
+        }
+      },
+      "completenessHint": "Для полного листинга не хватает: {items}."
+    },
+    "visualMap": {
+      "section": {
+        "title": "Визуальные карты",
+        "newCanvas": "Новая карта",
+        "empty": "Визуальных карт пока нет.",
+        "hotspotCount": "{count} меток",
+        "untitled": "Без названия"
+      },
+      "context": {
+        "project": "Проект",
+        "building": "Корпус",
+        "floor": "Этаж"
+      },
+      "errors": {
+        "unauthorized": "У вас нет прав для этого действия.",
+        "invalidInput": "Проверьте поля и попробуйте снова.",
+        "notFound": "Запрошенный элемент не найден.",
+        "targetMismatch": "Выбранная цель не относится к контексту этой визуальной карты."
+      },
+      "canvasForm": {
+        "title": "Новая визуальная карта",
+        "submit": "Создать карту",
+        "context": {
+          "project": "Этот проект",
+          "building": "Корпус",
+          "floor": "Этаж"
+        },
+        "fields": {
+          "context": "Контекст",
+          "building": "Корпус",
+          "floor": "Этаж",
+          "title": "Название",
+          "imageUrl": "URL изображения",
+          "imageUrlHint": "Загрузите JPEG, PNG или WebP (макс. 10 МБ) или вставьте публичный URL.",
+          "imageAlt": "Alt-текст изображения"
+        }
+      },
+      "editor": {
+        "backToProject": "← Назад к проекту",
+        "untitled": "Без названия",
+        "clickHint": "Нажмите на изображение, чтобы добавить метку, или на существующую метку для редактирования.",
+        "pickingHint": "Нажмите новую позицию на изображении.",
+        "marker": "Метка",
+        "showArchived": "Показать архив ({count})",
+        "hideArchived": "Скрыть архив",
+        "restoreHotspot": "Восстановить"
+      },
+      "hotspotForm": {
+        "create": "Новая метка",
+        "edit": "Редактировать метку",
+        "submit": "Сохранить метку",
+        "delete": "Удалить метку",
+        "deleteConfirm": "Удалить эту метку? Это действие нельзя отменить.",
+        "pickPosition": "Выбрать новую позицию на изображении",
+        "pickingActive": "Нажмите на изображение…",
+        "noTargets": "Нет доступных целей для этого контекста.",
+        "fields": {
+          "x": "X (%)",
+          "y": "Y (%)",
+          "target": "Цель",
+          "label": "Подпись"
+        }
+      },
+      "publication": {
+        "actions": {
+          "publish": "Опубликовать",
+          "archive": "Архивировать",
+          "draft": "Вернуть в черновик",
+          "delete": "Удалить карту"
+        },
+        "confirm": {
+          "publish": "Опубликовать эту визуальную карту? Она появится на публичной странице проекта.",
+          "archive": "Архивировать эту визуальную карту? Она будет скрыта с публичного сайта.",
+          "draft": "Вернуть визуальную карту в черновик? Она будет скрыта с публичного сайта.",
+          "delete": "Удалить этот черновик? Все метки будут удалены."
+        }
+      }
+    },
+    "analytics": {
+      "title": "Аналитика",
+      "subtitle": "Метрики вашей компании · последние {days} дней выделены где показано.",
+      "empty": "Пока нет данных.",
+      "readinessCompany": "Готовность компании",
+      "stats": {
+        "projectViewsRecent": "Просмотры проектов (недавние)",
+        "apartmentViewsRecent": "Просмотры квартир (недавние)",
+        "apartmentViewsTotal": "Просмотры квартир (всего)",
+        "qrScanDeals": "Сделки из QR-сканов"
+      },
+      "sections": {
+        "projectViews": "Просмотры проектов",
+        "dealsByStage": "CRM по стадиям",
+        "dealsBySource": "Заявки по источникам",
+        "readiness": "Снимок readiness"
+      },
+      "columns": {
+        "label": "Метка",
+        "count": "Кол-во"
+      },
+      "stages": {
+        "NEW_REQUEST": "Новая заявка",
+        "ASSIGNED": "Назначена",
+        "CONTACTED": "Связались",
+        "FOLLOW_UP_NEEDED": "Нужен follow-up",
+        "APARTMENT_SELECTED": "Квартира выбрана",
+        "RESERVED": "Резерв",
+        "CONVERTED": "Конверсия",
+        "CLOSED": "Закрыта",
+        "LOST": "Потеряна"
+      },
+      "sources": {
+        "PROJECT_PAGE": "Страница проекта",
+        "APARTMENT_PAGE": "Страница квартиры",
+        "BUILDER_QR_SCAN": "QR-скан",
+        "MANUAL_BUILDER_ENTRY": "Ручной ввод",
+        "EVENT_INTERACTION": "Событие"
+      }
+    }
+  },
+  "catalog": {
+    "card": {
+      "new": "Новое"
+    },
+    "list": {
+      "title": "Проекты",
+      "subtitle": "Опубликованные жилые комплексы.",
+      "empty": "Опубликованных проектов пока нет.",
+      "emptyFiltered": "Нет проектов по выбранным фильтрам.",
+      "filter": {
+        "city": "Город",
+        "cityPlaceholder": "напр. Ереван",
+        "builder": "Застройщик",
+        "builderAll": "Все застройщики",
+        "apply": "Применить",
+        "clear": "Сбросить",
+        "ariaLabel": "Фильтр проектов"
+      }
+    },
+    "detail": {
+      "gallery": "Галерея",
+      "buildings": "Корпуса и квартиры",
+      "noValue": "—",
+      "table": {
+        "code": "Квартира",
+        "rooms": "Комнаты",
+        "areaSqm": "Площадь (м²)",
+        "priceAmd": "Цена",
+        "status": "Статус",
+        "request": "Запрос"
+      },
+      "builder": {
+        "title": "О застройщике",
+        "phone": "Телефон",
+        "email": "Эл. почта",
+        "website": "Сайт",
+        "viewProfile": "Профиль застройщика"
+      },
+      "seoFallback": "{project} от {company} на ToonExpo"
+    },
+    "apartment": {
+      "backToProject": "← Назад к {project}",
+      "building": "Корпус",
+      "floor": "Этаж",
+      "priceByRequest": "Цена по запросу",
+      "priceHidden": "Уточните цену у застройщика",
+      "priceLoginRequired": "Войдите, чтобы увидеть цену.",
+      "loginLink": "Войти",
+      "matterport": "Смотреть 3D-тур",
+      "seoFallback": "Квартира {code} в проекте {project} ({company}) на ToonExpo"
+    },
+    "request": {
+      "ctaProject": "Заинтересован",
+      "ctaApartment": "Заинтересован",
+      "titleProject": "Запросить контакт",
+      "titleApartment": "Запрос по квартире {code}",
+      "contextProject": "Проект: {project}",
+      "contextApartment": "Проект: {project} · Квартира {code}",
+      "submit": "Отправить запрос",
+      "close": "Закрыть",
+      "successNew": "Ваш запрос отправлен. Застройщик свяжется с вами.",
+      "successDeduped": "У нас уже есть ваш запрос по этому проекту. Застройщик уведомлён об обновлении.",
+      "successHint": "Отслеживайте запросы в личном кабинете покупателя после входа.",
+      "fields": {
+        "name": "ФИО",
+        "phone": "Телефон",
+        "email": "Email",
+        "message": "Сообщение (необязательно)"
+      },
+      "errors": {
+        "invalidInput": "Проверьте поля и попробуйте снова.",
+        "notFound": "Этот проект недоступен для запросов.",
+        "rateLimited": "Слишком много запросов. Подождите минуту и попробуйте снова."
+      }
+    },
+    "apartmentStatus": {
+      "AVAILABLE": "Свободна",
+      "RESERVED": "Забронирована",
+      "SOLD": "Продана"
+    },
+    "visualMap": {
+      "projectTitle": "Генплан",
+      "floorTitle": "План этажа"
+    },
+    "builders": {
+      "list": {
+        "title": "Застройщики",
+        "subtitle": "Компании с опубликованными проектами на ToonExpo.",
+        "empty": "Пока нет застройщиков с опубликованными проектами.",
+        "projectCount": "{count, plural, one {# опубликованный проект} few {# опубликованных проекта} many {# опубликованных проектов} other {# опубликованных проекта}}"
+      },
+      "detail": {
+        "contacts": "Контакты",
+        "phone": "Телефон",
+        "email": "Эл. почта",
+        "website": "Сайт",
+        "city": "Город",
+        "address": "Адрес",
+        "projects": "Опубликованные проекты",
+        "noValue": "—",
+        "seoFallback": "{name} — застройщик на ToonExpo"
+      }
+    },
+    "partners": {
+      "list": {
+        "title": "Партнёры",
+        "subtitle": "Банки, сервисные компании и другие участники ToonExpo.",
+        "empty": "Нет опубликованных партнёров по этому фильтру."
+      },
+      "filter": {
+        "all": "Все",
+        "ariaLabel": "Фильтр партнёров по типу"
+      },
+      "types": {
+        "BANK": "Банк",
+        "IT_COMPANY": "IT-компания",
+        "SPONSOR": "Спонсор",
+        "SUPPLIER": "Поставщик",
+        "INSURANCE": "Страхование",
+        "LEGAL": "Юридические",
+        "DESIGN_FURNITURE": "Дизайн / мебель",
+        "SERVICE_COMPANY": "Сервисная компания",
+        "OTHER": "Другое"
+      },
+      "detail": {
+        "contacts": "Контакты",
+        "phone": "Телефон",
+        "email": "Email",
+        "website": "Сайт",
+        "serviceCategories": "Услуги",
+        "bankOffers": "Ипотечные предложения",
+        "featured": "Рекомендуемое",
+        "interestRate": "Ставка",
+        "maxTermYears": "Макс. срок (лет)",
+        "maxAmount": "Макс. сумма кредита",
+        "mortgageLink": "Ипотечный калькулятор",
+        "noValue": "—",
+        "seoFallback": "{name} — партнёр на ToonExpo"
+      }
+    },
+    "mortgage": {
+      "title": "Ипотека и банковские предложения",
+      "subtitle": "Сравните опубликованные предложения банков и оцените ежемесячный платёж.",
+      "calculator": {
+        "title": "Калькулятор платежа",
+        "propertyPrice": "Стоимость недвижимости (AMD)",
+        "downPayment": "Первоначальный взнос (AMD)",
+        "termYears": "Срок кредита (лет)",
+        "interestRate": "Процентная ставка",
+        "manualRate": "Годовая ставка (%)",
+        "downPaymentBelowMinimum": "Для этого предложения требуется минимум {percent}% первоначального взноса ({amount}). Расчёт использует минимум.",
+        "monthlyPayment": "Ориентировочный ежемесячный платёж",
+        "loanAmount": "Сумма кредита",
+        "totalPayment": "Общая сумма выплат",
+        "overpayment": "Сумма процентов",
+        "disclaimer": "Расчёты носят ознакомительный характер. Итоговые условия зависят от одобрения банка и не являются офертой."
+      },
+      "offers": {
+        "title": "Банковские предложения",
+        "featured": "Рекомендуемое",
+        "maxTerm": "До",
+        "viewBank": "Профиль банка",
+        "empty": "Опубликованных банковских предложений пока нет.",
+        "selectManual": "Использовать ручную ставку",
+        "yearsUnit": "лет",
+        "minDownPayment": "Мин. первоначальный взнос"
+      }
+    },
+    "favorite": {
+      "save": "Сохранить",
+      "saved": "Сохранено",
+      "errors": {
+        "unauthorized": "Войдите как покупатель, чтобы сохранять избранное.",
+        "invalidInput": "Не удалось обновить избранное. Попробуйте снова.",
+        "notFound": "Этот объект недоступен для сохранения.",
+        "rateLimited": "Слишком много действий. Подождите минуту и попробуйте снова."
+      }
+    },
+    "exhibition": {
+      "title": "Карта выставки",
+      "subtitle": "Найдите застройщиков и партнёров на {event}.",
+      "searchLabel": "Поиск стендов",
+      "searchPlaceholder": "Код стенда, компания, партнёр или проект",
+      "boothCount": "{count, plural, one {# стенд} few {# стенда} many {# стендов} other {# стенда}}",
+      "selectHint": "Выберите стенд на карте, чтобы увидеть детали.",
+      "noMatches": "Нет стендов по вашему запросу.",
+      "detail": {
+        "code": "Стенд",
+        "company": "Застройщик",
+        "partner": "Партнёр",
+        "project": "Проект",
+        "note": "Заметка",
+        "viewCompany": "Открыть застройщика",
+        "viewPartner": "Открыть партнёра",
+        "viewProject": "Открыть проект",
+        "close": "Закрыть",
+        "showRoute": "Показать маршрут",
+        "clearRoute": "Сбросить маршрут",
+        "routeUnavailable": "Маршрут пока недоступен"
+      }
+    }
+  },
+  "buyer": {
+    "account": {
+      "title": "Мой аккаунт",
+      "subtitle": "Ваш QR посетителя, избранное, чек-ины на выставке и заявки застройщикам.",
+      "empty": "Вы ещё не отправляли запросов. Просмотрите проекты, чтобы начать.",
+      "noValue": "—",
+      "requestsHeading": "Мои запросы",
+      "columns": {
+        "company": "Застройщик",
+        "project": "Проект",
+        "status": "Статус",
+        "source": "Источник",
+        "createdAt": "Отправлен",
+        "lastActivityAt": "Обновлён"
+      },
+      "statuses": {
+        "request_sent": "Запрос отправлен",
+        "builder_received": "Застройщик получил",
+        "in_contact": "На связи",
+        "offer_preparing": "Готовится предложение",
+        "reserved": "Забронировано",
+        "closed": "Закрыт",
+        "cancelled": "Отменён"
+      },
+      "sources": {
+        "PROJECT_PAGE": "Страница проекта",
+        "APARTMENT_PAGE": "Страница квартиры",
+        "BUILDER_QR_SCAN": "QR-скан",
+        "MANUAL_BUILDER_ENTRY": "Ввод застройщиком",
+        "EVENT_INTERACTION": "Мероприятие"
+      },
+      "profile": {
+        "title": "Профиль",
+        "edit": "Редактировать",
+        "editTitle": "Редактирование профиля",
+        "save": "Сохранить",
+        "noValue": "—",
+        "emailReadOnlyNote": "Смена email требует подтверждения и недоступна в v1.",
+        "fields": {
+          "name": "Имя",
+          "email": "Email",
+          "phone": "Телефон"
+        },
+        "errors": {
+          "unauthorized": "Войдите, чтобы обновить профиль.",
+          "invalidInput": "Проверьте поля и попробуйте снова.",
+          "notFound": "Не удалось обновить профиль."
+        }
+      },
+      "checkinsHeading": "Чек-ины на выставке",
+      "checkinsEmpty": "Вы ещё не регистрировались на входе выставки.",
+      "favorites": {
+        "heading": "Избранное",
+        "empty": "Вы ещё не сохранили проекты или квартиры.",
+        "remove": "Удалить",
+        "typeProject": "Проект",
+        "noValue": "—"
+      }
+    },
+    "qr": {
+      "title": "Мой QR",
+      "subtitle": "Покажите этот код застройщику на выставке. Он сможет сохранить запрос для связи с вами.",
+      "hint": "Код идентифицирует ваш аккаунт посетителя ToonExpo. Имя и контакты в самом коде не хранятся.",
+      "ariaLabel": "Ваш QR-код посетителя ToonExpo",
+      "revoked": "Ваш QR сейчас неактивен. Создайте новый код, чтобы продолжить.",
+      "revoke": "Отозвать QR",
+      "revokeConfirm": "Отозвать QR? Он перестанет работать, пока вы не создадите новый код.",
+      "revokeSuccess": "QR отозван и больше не действует для сканирования.",
+      "regenerate": "Обновить QR",
+      "regenerateConfirm": "Обновить QR? Старый код сразу перестанет работать.",
+      "regenerateSuccess": "Выдан новый QR-код.",
+      "errors": {
+        "unauthorized": "Войдите, чтобы управлять QR.",
+        "invalidInput": "Не удалось обновить QR. Попробуйте ещё раз.",
+        "notFound": "Не удалось обновить QR. Попробуйте ещё раз.",
+        "revoked": "Не удалось обновить QR. Попробуйте ещё раз."
+      }
+    }
+  },
+  "qr": {
+    "public": {
+      "title": "QR посетителя",
+      "body": "Войдите как застройщик или сотрудник входа, либо попросите посетителя открыть «Мой QR» в аккаунте ToonExpo."
+    },
+    "rateLimited": {
+      "title": "Слишком много сканов",
+      "body": "Подождите минуту перед следующим сканированием."
+    },
+    "builder": {
+      "title": "Посетитель по QR-скану",
+      "subtitle": "Создайте CRM-запрос для этого зарегистрированного покупателя.",
+      "noPhone": "—",
+      "submit": "Создать запрос",
+      "successNew": "Запрос создан. Покупатель увидит его в истории аккаунта.",
+      "successDeduped": "Открытый запрос уже есть. Ваша заметка добавлена к нему.",
+      "fields": {
+        "name": "Имя",
+        "email": "Email",
+        "phone": "Телефон",
+        "project": "Проект (необязательно)",
+        "projectHint": "Выберите проект вашей компании или оставьте пустым.",
+        "projectNone": "Без проекта",
+        "note": "Заметка (необязательно)"
+      },
+      "errors": {
+        "unauthorized": "Требуется вход застройщика.",
+        "invalidInput": "Проверьте форму и попробуйте снова.",
+        "notFound": "Этот QR больше не действителен.",
+        "revoked": "Этот QR больше не действителен."
+      }
+    },
+    "entrance": {
+      "title": "Чек-ин на входе",
+      "subtitle": "Подтвердите зарегистрированного посетителя для активного события.",
+      "unnamedVisitor": "Зарегистрированный посетитель",
+      "submit": "Отметить вход",
+      "successNew": "Посетитель успешно отмечен.",
+      "successDuplicate": "Этот посетитель уже отмечен на это событие.",
+      "noActiveEvent": "Нет активного события. Попросите администратора активировать его.",
+      "fields": {
+        "name": "Имя"
+      },
+      "errors": {
+        "unauthorized": "Требуется вход сотрудника входа.",
+        "invalidInput": "Не удалось выполнить чек-ин. Попробуйте снова.",
+        "notFound": "Этот QR больше не действителен.",
+        "noActiveEvent": "Активное событие выставки не настроено.",
+        "alreadyCheckedIn": "Этот посетитель уже отмечен."
+      }
+    }
+  },
+  "entrance": {
+    "checkin": {
+      "title": "Чек-ин на входе",
+      "subtitle": "Отсканируйте QR посетителя, открыв его ссылку /q/{token} под учётной записью сотрудника входа.",
+      "instruction": "Попросите посетителя показать «Мой QR» в аккаунте. Откройте или отсканируйте ссылку, чтобы отметить вход.",
+      "noActiveEvent": "Сейчас нет активного события выставки.",
+      "eventCode": "Код события: {code}",
+      "eventDates": "{start} – {end}",
+      "dateOpen": "—"
+    }
+  },
+  "partnerCabinet": {
+    "nav": {
+      "ariaLabel": "Кабинет партнёра",
+      "overview": "Обзор",
+      "profile": "Профиль",
+      "offers": "Банковские предложения"
+    },
+    "unlinked": {
+      "title": "Профиль партнёра не привязан",
+      "description": "Ваш аккаунт ещё не привязан к профилю партнёра. Попросите администратора платформы создать учётную запись с привязкой к партнёру."
+    },
+    "errors": {
+      "unauthorized": "У вас нет прав для этого действия.",
+      "invalidInput": "Проверьте поля и попробуйте снова.",
+      "notFound": "Запрошенный элемент не найден.",
+      "nameTaken": "Партнёр с таким именем уже существует.",
+      "keyTaken": "Этот ключ уже используется.",
+      "notBankPartner": "Банковские предложения доступны только банкам-партнёрам."
+    },
+    "types": {
+      "BANK": "Банк",
+      "IT_COMPANY": "IT-компания",
+      "SPONSOR": "Спонсор",
+      "SUPPLIER": "Поставщик",
+      "INSURANCE": "Страхование",
+      "LEGAL": "Юридические услуги",
+      "DESIGN_FURNITURE": "Дизайн / мебель",
+      "SERVICE_COMPANY": "Сервисная компания",
+      "OTHER": "Другое"
+    },
+    "status": {
+      "DRAFT": "Черновик",
+      "PUBLISHED": "Опубликован",
+      "ARCHIVED": "В архиве"
+    },
+    "overview": {
+      "title": "Обзор партнёра",
+      "subtitle": "Краткий вид вашего публичного профиля. Статус публикации управляется админами ToonExpo.",
+      "fields": {
+        "name": "Название",
+        "type": "Тип",
+        "status": "Статус",
+        "publicLink": "Публичная страница"
+      },
+      "viewPublic": "Открыть публичный профиль",
+      "notPublicYet": "Ещё не опубликовано — публикацию контролируют админы."
+    },
+    "profile": {
+      "title": "Редактирование профиля",
+      "subtitle": "Обновите контент профиля. Тип и статус публикации остаются под контролем админов.",
+      "sectionTitle": "Профиль",
+      "edit": "Редактировать",
+      "noValue": "—",
+      "fields": {
+        "description": "Описание",
+        "phone": "Телефон",
+        "email": "Email",
+        "website": "Сайт",
+        "serviceCategories": "Категории услуг"
+      },
+      "form": {
+        "title": "Редактировать профиль",
+        "submit": "Сохранить",
+        "fields": {
+          "name": "Название",
+          "description": "Описание",
+          "phone": "Телефон",
+          "email": "Email",
+          "website": "Сайт",
+          "serviceCategories": "Категории услуг",
+          "serviceCategoriesHint": "Ключи через запятую (для сервисных компаний / готовности)."
+        }
+      }
+    },
+    "offers": {
+      "title": "Банковские предложения",
+      "subtitle": "Создавайте и обновляйте ипотечные предложения. Статус публикации управляется админами ToonExpo.",
+      "sectionTitle": "Предложения",
+      "empty": "Пока нет банковских предложений.",
+      "newOffer": "Новое предложение",
+      "edit": "Изменить",
+      "featured": "Избранное",
+      "columns": {
+        "title": "Название",
+        "rate": "Ставка",
+        "term": "Срок (мес.)",
+        "amount": "Макс. сумма",
+        "status": "Статус",
+        "actions": "Действия"
+      },
+      "form": {
+        "create": "Новое предложение",
+        "edit": "Изменить предложение",
+        "submit": "Сохранить",
+        "fields": {
+          "title": "Название",
+          "interestRate": "Ставка (%)",
+          "minDownPaymentPercent": "Мин. первоначальный взнос (%)",
+          "maxTermMonths": "Макс. срок (мес.)",
+          "maxAmountAmd": "Макс. сумма (AMD)",
+          "description": "Описание",
+          "featured": "Избранное"
+        }
+      }
+    }
+  }
+}

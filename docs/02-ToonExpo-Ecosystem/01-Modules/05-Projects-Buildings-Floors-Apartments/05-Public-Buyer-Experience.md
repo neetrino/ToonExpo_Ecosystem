@@ -100,18 +100,19 @@ buyer_qr_scan
 manual_builder_entry
 ```
 
-## Login Rule
+## Auth Rule (v1)
 
 Buyer can browse public pages without account.
 
-Actions that create persistent personal records should require registration/login:
+Visitors can send a request without logging in (name + phone/email). Logged-in buyers get prefilled forms; their requests link to `buyerUserId` and appear in history. Anonymous requests are not retroactively linked.
+
+Actions that require registration/login:
 
 - save favorite;
-- send request;
 - show personal QR;
 - view request history.
 
-If user starts a request while logged out, the platform should guide registration/login and continue the request after account creation.
+A login-before-request gate may be enabled later; v1 does not require it.
 
 ## Price Visibility Messages
 

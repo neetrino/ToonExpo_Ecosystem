@@ -1,0 +1,33 @@
+{
+  "name": "toonexpo-ecosystem",
+  "private": true,
+  "packageManager": "pnpm@9.15.9",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "clean": "turbo run clean",
+    "db:generate": "pnpm --filter @toonexpo/db generate",
+    "db:migrate": "pnpm --filter @toonexpo/db migrate:dev",
+    "db:studio": "pnpm --filter @toonexpo/db studio",
+    "db:seed": "pnpm --filter @toonexpo/db exec prisma db seed",
+    "e2e": "node --env-file=.env scripts/e2e/run.mjs",
+    "e2e:local": "node --env-file=.env scripts/e2e/local.mjs",
+    "test:e2e": "node --env-file=.env ./node_modules/@playwright/test/cli.js test",
+    "test:e2e:ui": "node --env-file=.env ./node_modules/@playwright/test/cli.js test --ui"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.52.0",
+    "@toonexpo/config": "workspace:*",
+    "prettier": "^3.6.2",
+    "turbo": "^2.5.4",
+    "typescript": "^5.8.3"
+  }
+}

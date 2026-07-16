@@ -1,0 +1,57 @@
+import { describe, expect, it } from 'vitest';
+
+import { canAccessArea, getProtectedArea } from './access';
+
+describe('getProtectedArea', () => {
+  it('maps protected path prefixes to areas', () => {
+    expect(getProtectedArea('/account')).toBe('buyer');
+    expect(getProtectedArea('/account/settings')).toBe('buyer');
+    expect(getProtectedArea('/portal')).toBe('builder');
+    expect(getProtectedArea('/admin')).toBe('admin');
+    expect(getProtectedArea('/checkin')).toBe('entrance');
+    expect(getProtectedArea('/checkin/help')).toBe('entrance');
+    expect(getProtectedArea('/partner')).toBe('partner');
+    expect(getProtectedArea('/partner/profile')).toBe('partner');
+  });
+
+  it('returns null for public paths', () => {
+    expect(getProtectedArea('/')).toBeNull();
+    expect(getProtectedArea('')).toBeNull();
+    expect(getProtectedArea('/login')).toBeNull();
+    expect(getProtectedArea('/accountant')).toBeNull();
+  });
+});
+
+describe('canAccessArea', () => {
+  it('allows any authenticated user into the buyer area', () => {
+    expect(canAccessArea('buyer', 'BUYER')).toBe(true);
+    expect(canAccessArea('buyer', 'ENTRANCE_STAFF')).toBe(true);
+  });
+
+  it('allows builders and platform admins into the builder portal area', () => {
+    expect(canAccessArea('builder', 'BUILDER')).toBe(true);
+    expect(canAccessArea('builder', 'BIGPROJECTS_ADMIN')).toBe(true);
+    expect(canAccessArea('builder', 'BUYER')).toBe(false);
+    expect(canAccessArea('builder', 'PARTNER')).toBe(false);
+  });
+
+  it('restricts the admin area to platform admins', () => {
+    expect(canAccessArea('admin', 'BIGPROJECTS_ADMIN')).toBe(true);
+    expect(canAccessArea('admin', 'BUILDER')).toBe(false);
+    expect(canAccessArea('admin', 'BUYER')).toBe(false);
+  });
+
+  it('restricts the entrance area to entrance staff', () => {
+    expect(canAccessArea('entrance', 'ENTRANCE_STAFF')).toBe(true);
+    expect(canAccessArea('entrance', 'BUYER')).toBe(false);
+    expect(canAccessArea('entrance', 'BUILDER')).toBe(false);
+    expect(canAccessArea('entrance', 'BIGPROJECTS_ADMIN')).toBe(false);
+  });
+
+  it('restricts the partner area to PARTNER role', () => {
+    expect(canAccessArea('partner', 'PARTNER')).toBe(true);
+    expect(canAccessArea('partner', 'BUYER')).toBe(false);
+    expect(canAccessArea('partner', 'BUILDER')).toBe(false);
+    expect(canAccessArea('partner', 'BIGPROJECTS_ADMIN')).toBe(false);
+  });
+});

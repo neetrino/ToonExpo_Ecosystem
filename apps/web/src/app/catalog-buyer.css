@@ -1,0 +1,225 @@
+.buyer-account {
+  margin: 0 auto;
+  max-width: 72rem;
+  padding: 3rem 1.5rem;
+}
+
+.buyer-account__header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.buyer-account__title {
+  color: var(--te-fg);
+  font-size: 2rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.buyer-account__subtitle {
+  color: var(--te-muted);
+  font-size: 1rem;
+  margin: 0;
+}
+
+.buyer-account__empty {
+  color: var(--te-muted);
+  font-size: 1rem;
+}
+
+.buyer-deals-table-wrap {
+  background: var(--te-card);
+  border: 1px solid var(--te-border);
+  border-radius: var(--te-radius);
+  box-shadow: var(--te-shadow-soft);
+  overflow-x: auto;
+}
+
+.buyer-deals-table {
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  min-width: 48rem;
+  text-align: left;
+  width: 100%;
+}
+
+.buyer-deals-table thead {
+  background: var(--te-bg-soft);
+  border-bottom: 1px solid var(--te-border);
+  color: var(--te-muted);
+}
+
+.buyer-deals-table th,
+.buyer-deals-table td {
+  padding: 0.75rem 1rem;
+}
+
+.buyer-deals-table tbody tr {
+  border-bottom: 1px solid var(--te-border);
+}
+
+.buyer-deals-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.buyer-account__section-title {
+  color: var(--te-fg);
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 1rem;
+}
+
+.buyer-account__profile {
+  background: var(--te-card);
+  border: 1px solid var(--te-border);
+  border-radius: var(--te-radius);
+  box-shadow: var(--te-shadow-soft);
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+}
+
+.buyer-account__profile-header {
+  align-items: center;
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.buyer-account__profile-header .buyer-account__section-title {
+  margin-bottom: 0;
+}
+
+.buyer-account__profile-fields {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.buyer-account__profile-fields div {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.buyer-account__profile-fields dt {
+  color: var(--te-muted);
+  font-size: 0.8125rem;
+}
+
+.buyer-account__profile-fields dd {
+  color: var(--te-fg);
+  margin: 0;
+}
+
+.buyer-account__profile-note {
+  color: var(--te-muted);
+  font-size: 0.8125rem;
+  margin: 0.75rem 0 0;
+}
+
+.buyer-account__requests {
+  margin-top: 2.5rem;
+}
+
+.buyer-account__checkins {
+  margin-top: 2.5rem;
+}
+
+.buyer-account__favorites {
+  margin-top: 2.5rem;
+}
+
+.buyer-favorites__list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.buyer-favorites__item {
+  align-items: flex-start;
+  background: var(--te-card);
+  border: 1px solid var(--te-border);
+  border-radius: var(--te-radius);
+  box-shadow: var(--te-shadow-soft);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+}
+
+.buyer-favorites__main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 12rem;
+}
+
+.buyer-favorites__title {
+  color: var(--te-fg);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.buyer-favorites__title:hover {
+  color: var(--te-accent);
+}
+
+.buyer-favorites__meta {
+  color: var(--te-muted);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.buyer-favorites__remove {
+  background: var(--te-card);
+  border: 1px solid var(--te-border);
+  border-radius: 0.5rem;
+  color: var(--te-fg);
+  cursor: pointer;
+  font-size: 0.8125rem;
+  padding: 0.35rem 0.75rem;
+}
+
+.buyer-favorites__remove:hover {
+  border-color: var(--te-accent);
+  color: var(--te-accent);
+}
+
+.buyer-favorites__remove:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.buyer-account__checkin-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.buyer-account__checkin-list li {
+  align-items: baseline;
+  background: var(--te-card);
+  border: 1px solid var(--te-border);
+  border-radius: 0.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+}
+
+.buyer-account__checkin-meta {
+  color: var(--te-muted);
+  font-size: 0.875rem;
+}

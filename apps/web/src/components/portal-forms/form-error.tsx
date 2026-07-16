@@ -1,0 +1,31 @@
+'use client';
+
+import { useTranslations } from 'next-intl';
+
+type PortalFormErrorProps = {
+  errorKey?: string;
+  namespace?:
+    | 'portal.errors'
+    | 'portal.crm.errors'
+    | 'admin.catalog.errors'
+    | 'partnerCabinet.errors'
+    | 'catalog.request.errors'
+    | 'qr.builder.errors'
+    | 'qr.entrance.errors'
+    | 'buyer.qr.errors'
+    | 'buyer.account.profile.errors';
+};
+
+export function PortalFormError({ errorKey, namespace = 'portal.errors' }: PortalFormErrorProps) {
+  const t = useTranslations(namespace);
+
+  if (!errorKey) {
+    return null;
+  }
+
+  return (
+    <p role="alert" className="portal-form__error">
+      {t(errorKey)}
+    </p>
+  );
+}

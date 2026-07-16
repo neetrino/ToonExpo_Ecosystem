@@ -1,0 +1,269 @@
+.catalog-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.catalog-filter__link {
+  border: 1px solid var(--te-border);
+  border-radius: 9999px;
+  color: var(--te-muted);
+  font-size: 0.8125rem;
+  padding: 0.35rem 0.85rem;
+  text-decoration: none;
+  transition:
+    border-color 0.15s ease,
+    color 0.15s ease,
+    background 0.15s ease;
+}
+
+.catalog-filter__link:hover {
+  border-color: var(--te-accent);
+  color: var(--te-fg);
+  background: var(--te-bg-soft);
+}
+
+.catalog-filter__link--active {
+  background: var(--te-accent-soft);
+  border-color: var(--te-accent);
+  color: var(--te-accent);
+}
+
+.catalog-partner-card {
+  background: var(--te-card);
+  border: 1px solid var(--te-border);
+  border-radius: var(--te-radius);
+  box-shadow: var(--te-shadow-soft);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  text-decoration: none;
+  transition:
+    border-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.catalog-partner-card:hover {
+  border-color: var(--te-accent);
+  box-shadow: 0 12px 28px rgba(11, 31, 58, 0.1);
+  transform: translateY(-2px);
+}
+
+.catalog-partner-card__logo {
+  align-items: center;
+  background: var(--te-bg-soft);
+  display: flex;
+  height: 7rem;
+  justify-content: center;
+}
+
+.catalog-partner-card__logo-image {
+  max-height: 4rem;
+  max-width: 80%;
+  object-fit: contain;
+}
+
+.catalog-partner-card__logo-fallback {
+  align-items: center;
+  background: var(--te-accent-soft);
+  border-radius: 0.5rem;
+  color: var(--te-accent);
+  display: flex;
+  font-size: 2rem;
+  font-weight: 600;
+  height: 4rem;
+  justify-content: center;
+  width: 4rem;
+}
+
+.catalog-partner-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem 1.25rem;
+}
+
+.catalog-partner-card__meta {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.catalog-partner-card__title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.catalog-partner-card__description {
+  color: var(--te-muted);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.catalog-badge--partner-type {
+  background: var(--te-bg-soft);
+  color: var(--te-muted);
+}
+
+.catalog-badge--featured {
+  background: var(--te-accent-soft);
+  color: var(--te-accent);
+}
+
+.catalog-partner-detail__header {
+  align-items: flex-start;
+  display: flex;
+  gap: 1.5rem;
+}
+
+.catalog-partner-detail__logo {
+  align-items: center;
+  background: var(--te-bg-soft);
+  border-radius: 0.75rem;
+  display: flex;
+  flex-shrink: 0;
+  height: 6rem;
+  justify-content: center;
+  width: 6rem;
+}
+
+.catalog-partner-detail__logo-image {
+  max-height: 4rem;
+  max-width: 4.5rem;
+  object-fit: contain;
+}
+
+.catalog-partner-detail__logo-fallback {
+  align-items: center;
+  background: var(--te-accent-soft);
+  border-radius: 0.5rem;
+  color: var(--te-accent);
+  display: flex;
+  font-size: 2rem;
+  font-weight: 600;
+  height: 4rem;
+  justify-content: center;
+  width: 4rem;
+}
+
+.catalog-partner-detail__type {
+  color: var(--te-accent);
+  font-size: 0.9375rem;
+  margin: 0;
+}
+
+.catalog-partner-detail__section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.catalog-partner-detail__section-header {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.catalog-partner-detail__contacts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.catalog-partner-detail__contact-label {
+  color: var(--te-muted);
+  display: block;
+  font-size: 0.75rem;
+  margin-bottom: 0.15rem;
+}
+
+.catalog-partner-detail__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.catalog-chip {
+  background: var(--te-bg-soft);
+  border: 1px solid var(--te-border);
+  border-radius: 9999px;
+  font-size: 0.8125rem;
+  padding: 0.25rem 0.75rem;
+}
+
+.catalog-partner-detail__mortgage-link {
+  color: var(--te-accent);
+  font-size: 0.875rem;
+  text-decoration: none;
+}
+
+.catalog-bank-offers {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+}
+
+.catalog-bank-offer {
+  background: var(--te-card);
+  border: 1px solid var(--te-border);
+  border-radius: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+}
+
+.catalog-bank-offer--featured {
+  border-color: var(--te-accent);
+}
+
+.catalog-bank-offer__header {
+  align-items: flex-start;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: space-between;
+}
+
+.catalog-bank-offer__title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.catalog-bank-offer__facts {
+  display: grid;
+  gap: 0.5rem 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+  margin: 0;
+}
+
+.catalog-bank-offer__facts dt {
+  color: var(--te-muted);
+  font-size: 0.75rem;
+  margin: 0;
+}
+
+.catalog-bank-offer__facts dd {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  margin: 0.15rem 0 0;
+}
+
+.catalog-bank-offer__description {
+  color: var(--te-muted);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin: 0;
+}

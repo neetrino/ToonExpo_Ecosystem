@@ -4,5 +4,15 @@ dist
 build
 coverage
 pnpm-lock.yaml
-prisma/migrations
+**/prisma/migrations/**
 .git
+.turbo
+*.tsbuildinfo
+docs
+.cursor
+LICENSE
+*.md
+!README.md
+!docs/TECH_CARD.md
+!docs/PROGRESS.md
+!docs/00-Development-Start/**

@@ -1,0 +1,1715 @@
+{
+  "brand": "TOONEXPO",
+  "completeness": {
+    "incomplete": "Incomplete",
+    "missingCount": "({count})",
+    "items": {
+      "MISSING_COVER_MEDIA": "No cover media",
+      "MISSING_DESCRIPTION": "Empty description",
+      "MISSING_PUBLISHED_BUILDING": "No published building",
+      "MISSING_PUBLISHED_FLOOR": "No published floor",
+      "MISSING_APARTMENT": "No apartment inventory",
+      "MISSING_CANVAS": "No visual map"
+    }
+  },
+  "home": {
+    "title": "Find your next home",
+    "subtitle": "Browse residential projects from leading builders in one marketplace.",
+    "ctaPublic": "Browse projects",
+    "ctaBuyer": "Sign in",
+    "ctaBuilder": "Builder portal",
+    "ctaAdmin": "Admin",
+    "newestTitle": "Newest projects",
+    "newestSubtitle": "Recently published developments on TOONEXPO.",
+    "newestEmpty": "No published projects yet.",
+    "ctaViewAll": "View all projects"
+  },
+  "nav": {
+    "public": "Public",
+    "projects": "Projects",
+    "builders": "Builders",
+    "partners": "Partners",
+    "mortgage": "Mortgage",
+    "buyer": "Account",
+    "builder": "Portal",
+    "partnerCabinet": "Partner",
+    "admin": "Admin",
+    "entrance": "Check-in",
+    "exhibition": "Exhibition"
+  },
+  "footer": {
+    "contact": {
+      "emailLabel": "Email",
+      "phoneLabel": "Phone",
+      "emailDefault": "contact@toonexpo.com",
+      "phoneDefault": "+37410123456"
+    }
+  },
+  "placeholders": {
+    "buyer": {
+      "title": "Buyer area",
+      "description": "Protected shell placeholder for Sprint 0."
+    },
+    "builder": {
+      "title": "Builder portal",
+      "description": "Protected shell placeholder for Sprint 0."
+    },
+    "admin": {
+      "title": "Admin",
+      "description": "Protected shell placeholder for Sprint 0."
+    }
+  },
+  "common": {
+    "imageUpload": {
+      "pasteUrlToggle": "Or paste an image URL",
+      "fields": {
+        "file": "Image file",
+        "fileHint": "JPEG, PNG, or WebP · up to 10 MB",
+        "url": "Image URL",
+        "urlPlaceholder": "https://…",
+        "urlHint": "Use this if file upload is unavailable or for an existing public URL."
+      },
+      "uploadStatus": {
+        "presigning": "Preparing upload…",
+        "uploading": "Uploading…",
+        "readyNamed": "Ready: {name}"
+      },
+      "uploadErrors": {
+        "storageNotConfigured": "File upload is not configured on this environment. Paste a public image URL instead.",
+        "rateLimited": "Too many upload requests. Please wait a minute and try again.",
+        "unauthorized": "You must be signed in to upload.",
+        "uploadFailed": "Upload failed. Please try again or paste a URL.",
+        "unsupportedType": "Only JPEG, PNG, and WebP images are allowed.",
+        "fileTooLarge": "File is too large. Maximum size is 10 MB."
+      }
+    }
+  },
+  "auth": {
+    "signInNav": "Sign in",
+    "fields": {
+      "name": "Full name",
+      "phone": "Phone",
+      "email": "Email",
+      "password": "Password"
+    },
+    "login": {
+      "title": "Sign in",
+      "subtitle": "Access your ToonExpo account.",
+      "submit": "Sign in",
+      "registerPrompt": "No account yet?",
+      "registerLink": "Create one",
+      "invitedSuccess": "Your password has been set. Sign in with your new password."
+    },
+    "register": {
+      "title": "Create account",
+      "subtitle": "Register as a buyer to explore projects.",
+      "submit": "Create account",
+      "loginPrompt": "Already have an account?",
+      "loginLink": "Sign in"
+    },
+    "logout": {
+      "submit": "Sign out"
+    },
+    "errors": {
+      "invalidInput": "Please check the highlighted fields and try again.",
+      "emailTaken": "This email is already registered.",
+      "invalidCredentials": "Invalid email or password.",
+      "rateLimited": "Too many attempts. Please wait a minute and try again."
+    },
+    "invite": {
+      "title": "Set your password",
+      "subtitle": "Choose a password to activate your ToonExpo account.",
+      "invalidTitle": "Invitation not available",
+      "submit": "Set password",
+      "fields": {
+        "password": "New password",
+        "confirmPassword": "Confirm password"
+      },
+      "errors": {
+        "invalidInput": "Please check the fields and try again.",
+        "invalidOrExpired": "This invitation link is invalid or has expired. Ask an admin to resend it.",
+        "rateLimited": "Too many attempts. Please wait a minute and try again."
+      }
+    }
+  },
+  "admin": {
+    "title": "Admin",
+    "description": "Provision and manage platform accounts.",
+    "nav": {
+      "title": "Admin",
+      "ariaLabel": "Admin navigation",
+      "provisioning": "Provisioning",
+      "companies": "Companies",
+      "partners": "Partners",
+      "projects": "Projects",
+      "readiness": "Readiness",
+      "exhibition": "Exhibition",
+      "analytics": "Analytics",
+      "audit": "Audit",
+      "integrations": "Integrations",
+      "settings": "Settings"
+    },
+    "catalog": {
+      "errors": {
+        "unauthorized": "You do not have permission to perform this action.",
+        "invalidInput": "Please check the fields and try again.",
+        "notFound": "The requested item was not found.",
+        "nameTaken": "A company with this name already exists.",
+        "keyTaken": "A readiness category with this key already exists.",
+        "notBankPartner": "Bank offers can only be attached to bank partners."
+      }
+    },
+    "partners": {
+      "title": "Partners",
+      "empty": "No partners match this filter.",
+      "newPartner": "New partner",
+      "edit": "Edit",
+      "open": "Open",
+      "backToList": "← Partners",
+      "columns": {
+        "name": "Name",
+        "type": "Type",
+        "status": "Status",
+        "offers": "Offers",
+        "actions": "Actions"
+      },
+      "filter": {
+        "all": "All",
+        "ariaLabel": "Filter partners by type"
+      },
+      "status": {
+        "DRAFT": "Draft",
+        "PUBLISHED": "Published",
+        "ARCHIVED": "Archived"
+      },
+      "types": {
+        "BANK": "Bank",
+        "IT_COMPANY": "IT company",
+        "SPONSOR": "Sponsor",
+        "SUPPLIER": "Supplier",
+        "INSURANCE": "Insurance",
+        "LEGAL": "Legal",
+        "DESIGN_FURNITURE": "Design / furniture",
+        "SERVICE_COMPANY": "Service company",
+        "OTHER": "Other"
+      },
+      "form": {
+        "create": "New partner",
+        "edit": "Edit partner",
+        "submit": "Save",
+        "fields": {
+          "name": "Name",
+          "type": "Type",
+          "slug": "Slug",
+          "slugHint": "Slug is set at creation and cannot be changed.",
+          "logoUrl": "Logo URL",
+          "description": "Description",
+          "phone": "Phone",
+          "email": "Email",
+          "website": "Website",
+          "serviceCategories": "Service categories",
+          "serviceCategoriesHint": "Comma-separated keys (for service companies / readiness)."
+        }
+      },
+      "publication": {
+        "actions": {
+          "publish": "Publish",
+          "archive": "Archive",
+          "draft": "Back to draft"
+        },
+        "confirm": {
+          "publish": "Publish this item? It will become visible publicly when pages go live.",
+          "archive": "Archive this item? It will be hidden from public pages.",
+          "draft": "Move this item back to draft?"
+        }
+      },
+      "offers": {
+        "title": "Bank offers",
+        "empty": "No bank offers yet.",
+        "newOffer": "New offer",
+        "featured": "Featured",
+        "columns": {
+          "title": "Title",
+          "rate": "Rate",
+          "term": "Max term (months)",
+          "amount": "Max amount (AMD)",
+          "status": "Status",
+          "actions": "Actions"
+        },
+        "form": {
+          "create": "New bank offer",
+          "edit": "Edit bank offer",
+          "submit": "Save",
+          "fields": {
+            "title": "Title",
+            "interestRate": "Interest rate (%)",
+            "minDownPaymentPercent": "Min. down payment (%)",
+            "maxTermMonths": "Max term (months)",
+            "maxAmountAmd": "Max amount (AMD)",
+            "description": "Description",
+            "featured": "Featured"
+          }
+        }
+      }
+    },
+    "companies": {
+      "title": "Companies",
+      "empty": "No companies yet.",
+      "newCompany": "New company",
+      "edit": "Edit",
+      "openInPortal": "Open in portal",
+      "columns": {
+        "name": "Name",
+        "slug": "Slug",
+        "members": "Members",
+        "projects": "Projects",
+        "createdAt": "Created",
+        "actions": "Actions"
+      },
+      "projectCounts": {
+        "draft": "Draft",
+        "published": "Published",
+        "archived": "Archived"
+      },
+      "form": {
+        "create": "New company",
+        "edit": "Edit company",
+        "submit": "Save",
+        "fields": {
+          "name": "Name",
+          "slug": "Slug",
+          "slugHint": "Slug is set at creation and cannot be changed.",
+          "description": "Description",
+          "logoUrl": "Logo URL",
+          "phone": "Phone",
+          "email": "Email",
+          "website": "Website",
+          "city": "City",
+          "address": "Address"
+        }
+      }
+    },
+    "projects": {
+      "title": "Projects",
+      "empty": "No projects match this filter.",
+      "columns": {
+        "company": "Company",
+        "name": "Name",
+        "status": "Status",
+        "buildings": "Buildings",
+        "updatedAt": "Updated",
+        "actions": "Actions"
+      },
+      "status": {
+        "DRAFT": "Draft",
+        "PUBLISHED": "Published",
+        "ARCHIVED": "Archived"
+      },
+      "filter": {
+        "all": "All",
+        "ariaLabel": "Filter projects by status"
+      }
+    },
+    "readiness": {
+      "title": "Builder readiness",
+      "empty": "No readiness assessments yet.",
+      "newAssessment": "New assessment",
+      "newCategory": "New category",
+      "categoriesTitle": "Categories",
+      "categoriesEmpty": "No readiness categories yet.",
+      "assessmentsTitle": "Assessments",
+      "edit": "Edit",
+      "noEvaluator": "—",
+      "activeYes": "Active",
+      "activeNo": "Inactive",
+      "categoryColumns": {
+        "name": "Name",
+        "key": "Key",
+        "weight": "Weight",
+        "sortOrder": "Sort",
+        "serviceCategoryKey": "Service key",
+        "active": "Active",
+        "updatedAt": "Updated",
+        "actions": "Actions"
+      },
+      "columns": {
+        "target": "Target",
+        "score": "Score",
+        "status": "Status",
+        "evaluator": "Evaluator",
+        "updatedAt": "Updated",
+        "actions": "Actions"
+      },
+      "filter": {
+        "all": "All",
+        "ariaLabel": "Filter assessments by target type"
+      },
+      "targets": {
+        "BUILDER_COMPANY": "Company",
+        "PROJECT": "Project"
+      },
+      "statuses": {
+        "NOT_STARTED": "Not started",
+        "IN_PROGRESS": "In progress",
+        "NEEDS_IMPROVEMENT": "Needs improvement",
+        "READY": "Ready",
+        "BLOCKED": "Blocked"
+      },
+      "categories": {
+        "company_profile": "Company profile",
+        "project_information": "Project information",
+        "media_materials": "Media materials",
+        "apartment_inventory": "Apartment inventory",
+        "visual_map_readiness": "Visual map readiness",
+        "pricing_status_clarity": "Pricing / status clarity",
+        "crm_request_readiness": "CRM / request readiness",
+        "event_presentation_readiness": "Event presentation readiness"
+      },
+      "categoryForm": {
+        "create": "New readiness category",
+        "edit": "Edit readiness category",
+        "submit": "Save category",
+        "fields": {
+          "key": "Key",
+          "keyHint": "Key is set at creation and cannot be changed.",
+          "keyCreateHint": "Stable snake_case key (e.g. media_materials).",
+          "name": "Name",
+          "description": "Description",
+          "weight": "Weight",
+          "sortOrder": "Sort order",
+          "serviceCategoryKey": "Service category key",
+          "serviceCategoryKeyHint": "Maps to partner serviceCategories for provider suggestions.",
+          "active": "Active"
+        }
+      },
+      "form": {
+        "create": "New readiness assessment",
+        "edit": "Edit readiness assessment",
+        "submit": "Save assessment",
+        "categoriesTitle": "Category scores",
+        "fields": {
+          "targetType": "Target type",
+          "company": "Company",
+          "companyPlaceholder": "Select company",
+          "project": "Project",
+          "projectPlaceholder": "Select project",
+          "status": "Overall status",
+          "responsibleContact": "Responsible contact",
+          "recommendation": "Recommendation (builder-visible)",
+          "requiredActions": "Required actions (builder-visible)",
+          "internalNotes": "Internal notes",
+          "internalNotesHint": "Visible to BigProjects admins only — never shown to builders.",
+          "score": "Score (0–100)",
+          "categoryStatus": "Category status",
+          "categoryRecommendation": "Category recommendation",
+          "categoryRequiredActions": "Category required actions",
+          "categoryInternalNote": "Category internal note"
+        }
+      }
+    },
+    "exhibition": {
+      "title": "Exhibition events",
+      "empty": "No exhibition events yet.",
+      "newEvent": "New event",
+      "edit": "Edit",
+      "noDates": "No dates",
+      "columns": {
+        "name": "Name",
+        "code": "Code",
+        "status": "Status",
+        "checkIns": "Check-ins",
+        "dates": "Dates",
+        "actions": "Actions"
+      },
+      "form": {
+        "create": "New exhibition event",
+        "edit": "Edit exhibition event",
+        "submit": "Save",
+        "fields": {
+          "name": "Name",
+          "code": "Code",
+          "codeHint": "Lowercase letters, numbers, and hyphens.",
+          "startDate": "Start",
+          "endDate": "End",
+          "status": "Status"
+        },
+        "statuses": {
+          "PLANNING": "Planning",
+          "ACTIVE": "Active",
+          "COMPLETED": "Completed",
+          "ARCHIVED": "Archived",
+          "CANCELLED": "Cancelled"
+        }
+      },
+      "recent": {
+        "title": "Recent check-ins",
+        "empty": "No check-ins recorded yet.",
+        "unnamed": "—",
+        "columns": {
+          "visitor": "Visitor",
+          "event": "Event",
+          "staff": "Staff",
+          "checkedInAt": "Checked in"
+        }
+      },
+      "venueMap": "Venue map",
+      "venue": {
+        "back": "Back to events",
+        "title": "Venue map — {name}",
+        "saveMap": "Save venue map",
+        "noMap": "Save an image URL to start placing booths.",
+        "clickHint": "Click the map to place a booth, or click a marker to edit.",
+        "coordHint": "Coordinates are percentages from {min} to {max}.",
+        "fields": {
+          "imageUrl": "Map image URL",
+          "imageAlt": "Image alt text"
+        },
+        "boothForm": {
+          "create": "New booth",
+          "edit": "Edit booth",
+          "submit": "Save booth",
+          "delete": "Delete booth",
+          "deleteConfirm": "Delete this booth?",
+          "none": "None",
+          "fields": {
+            "code": "Booth code",
+            "label": "Label",
+            "xPercent": "X %",
+            "yPercent": "Y %",
+            "company": "Company",
+            "partner": "Partner",
+            "project": "Project",
+            "note": "Note"
+          }
+        },
+        "path": {
+          "title": "Route path graph",
+          "hint": "Set entrance, add waypoints, then link two nodes to build walkable routes. Saving a booth auto-creates a BOOTH node.",
+          "entranceStatus": "Entrance: {status}",
+          "entranceUnset": "not set (routes unavailable)",
+          "modesLabel": "Path edit mode",
+          "modes": {
+            "entrance": "Set entrance",
+            "waypoint": "Add waypoint",
+            "link": "Link nodes"
+          },
+          "linkPickSecond": "Click a second node to create an edge.",
+          "deleteNode": "Delete node",
+          "deleteEdge": "Delete edge"
+        }
+      }
+    },
+    "publication": {
+      "actions": {
+        "publish": "Publish",
+        "archive": "Archive",
+        "draft": "Back to draft"
+      },
+      "confirm": {
+        "publish": "Publish this project? It will become visible in the public catalog.",
+        "archive": "Archive this project? It will be hidden from the public catalog.",
+        "draft": "Move this project back to draft? It will be hidden from the public catalog."
+      }
+    },
+    "provision": {
+      "title": "Provision account",
+      "description": "Create builder, partner, admin, or entrance staff accounts. Buyers register themselves.",
+      "submit": "Create account",
+      "devInviteUrlLabel": "Invite link (local testing only):",
+      "fields": {
+        "email": "Email",
+        "name": "Full name",
+        "role": "Role",
+        "companyName": "Company name",
+        "companyNameHint": "Required for builder and partner roles.",
+        "partnerId": "Partner profile",
+        "partnerIdNone": "No partner link",
+        "partnerIdHint": "Optional. Links this account’s company to an existing partner profile."
+      },
+      "errors": {
+        "invalidInput": "Please check the fields and try again.",
+        "emailTaken": "This email is already in use.",
+        "unauthorized": "You do not have permission to provision accounts."
+      },
+      "success": {
+        "provisioned": "Account created successfully. An invitation email was sent to set a password.",
+        "provisionedEmailFailed": "Account created successfully, but the invitation email could not be sent. Share the invite link with the user manually."
+      }
+    },
+    "users": {
+      "title": "Provisioned accounts",
+      "empty": "No provisioned accounts yet.",
+      "noName": "—",
+      "noCompany": "—",
+      "columns": {
+        "email": "Email",
+        "name": "Name",
+        "role": "Role",
+        "company": "Company",
+        "createdAt": "Created"
+      },
+      "roles": {
+        "BIGPROJECTS_ADMIN": "BigProjects admin",
+        "BUILDER": "Builder",
+        "PARTNER": "Partner",
+        "ENTRANCE_STAFF": "Entrance staff"
+      }
+    },
+    "integrations": {
+      "title": "Integrations",
+      "subtitle": "Recent BOS and external integration audit events.",
+      "empty": "No integration events yet.",
+      "externalRefEmpty": "—",
+      "columns": {
+        "createdAt": "When",
+        "direction": "Direction",
+        "operation": "Operation",
+        "status": "Status",
+        "externalRef": "External ref"
+      },
+      "directions": {
+        "INBOUND": "Inbound",
+        "OUTBOUND": "Outbound"
+      },
+      "statuses": {
+        "RECEIVED": "Received",
+        "SUCCEEDED": "Succeeded",
+        "FAILED": "Failed"
+      }
+    },
+    "audit": {
+      "title": "Audit log",
+      "subtitle": "Publication and provisioning actions across the platform.",
+      "empty": "No audit events yet.",
+      "detailEmpty": "—",
+      "exportCsv": "Export CSV",
+      "filter": {
+        "ariaLabel": "Filter audit by entity type",
+        "all": "All"
+      },
+      "columns": {
+        "createdAt": "When",
+        "actor": "Actor",
+        "action": "Action",
+        "entity": "Entity",
+        "detail": "Detail"
+      },
+      "actions": {
+        "PUBLICATION_CHANGE": "Publication change",
+        "PROVISION_ACCOUNT": "Provision account",
+        "SETTINGS_UPDATE": "Settings update",
+        "ACTING_ON_BEHALF_START": "Acting on behalf started",
+        "ACTING_ON_BEHALF_STOP": "Acting on behalf stopped",
+        "READINESS_ASSESSMENT_UPSERT": "Readiness assessment update"
+      },
+      "entityTypes": {
+        "PROJECT": "Project",
+        "BUILDING": "Building",
+        "FLOOR": "Floor",
+        "PARTNER": "Partner",
+        "BANK_OFFER": "Bank offer",
+        "VISUAL_CANVAS": "Visual canvas",
+        "EXHIBITION_EVENT": "Exhibition event",
+        "USER": "User",
+        "PLATFORM_SETTING": "Platform setting",
+        "COMPANY": "Company",
+        "READINESS_ASSESSMENT": "Readiness assessment"
+      }
+    },
+    "settings": {
+      "title": "Platform settings",
+      "subtitle": "Manage platform-wide configuration values.",
+      "edit": "Edit",
+      "unset": "—",
+      "columns": {
+        "key": "Setting",
+        "value": "Value",
+        "updatedAt": "Updated",
+        "actions": "Actions"
+      },
+      "keys": {
+        "CONTACT_EMAIL": "Contact email",
+        "CONTACT_PHONE": "Contact phone",
+        "MORTGAGE_PAGE_ENABLED": "Mortgage page enabled"
+      },
+      "form": {
+        "edit": "Edit setting",
+        "submit": "Save",
+        "fields": {
+          "value": "Value"
+        },
+        "boolean": {
+          "true": "Enabled",
+          "false": "Disabled"
+        }
+      }
+    },
+    "analytics": {
+      "title": "Analytics",
+      "subtitle": "Platform totals and last {days} days.",
+      "empty": "No data yet.",
+      "exports": {
+        "ariaLabel": "CSV report exports",
+        "deals": "Export deals CSV",
+        "checkins": "Export check-ins CSV",
+        "projectViews": "Export project views CSV",
+        "audit": "Export audit CSV"
+      },
+      "stats": {
+        "projectViewsTotal": "Project views (all time)",
+        "projectViewsRecent": "Project views (recent)",
+        "apartmentViewsTotal": "Apartment views (all time)",
+        "apartmentViewsRecent": "Apartment views (recent)",
+        "boothSelectedTotal": "Booth selections (all time)",
+        "routeRequestedTotal": "Route requests (all time)"
+      },
+      "sections": {
+        "dealsByStage": "Deals by stage",
+        "dealsBySource": "Requests by source",
+        "dealsBySourceRecent": "Requests by source (recent)",
+        "qrScans": "QR scans by purpose",
+        "checkIns": "Check-ins by event",
+        "projectsByStatus": "Projects by publication status",
+        "apartmentsByStatus": "Apartments by status",
+        "readiness": "Readiness average score by company",
+        "partnersByType": "Partners by type"
+      },
+      "columns": {
+        "label": "Label",
+        "count": "Count"
+      },
+      "stages": {
+        "NEW_REQUEST": "New request",
+        "ASSIGNED": "Assigned",
+        "CONTACTED": "Contacted",
+        "FOLLOW_UP_NEEDED": "Follow-up needed",
+        "APARTMENT_SELECTED": "Apartment selected",
+        "RESERVED": "Reserved",
+        "CONVERTED": "Converted",
+        "CLOSED": "Closed",
+        "LOST": "Lost"
+      },
+      "sources": {
+        "PROJECT_PAGE": "Project page",
+        "APARTMENT_PAGE": "Apartment page",
+        "BUILDER_QR_SCAN": "QR scan",
+        "MANUAL_BUILDER_ENTRY": "Manual entry",
+        "EVENT_INTERACTION": "Event"
+      },
+      "qrPurposes": {
+        "BUILDER_SCAN": "Builder scan",
+        "ENTRANCE_CHECKIN": "Entrance check-in",
+        "BUYER_SELF_VIEW": "Buyer self-view",
+        "UNKNOWN": "Unknown"
+      },
+      "publicationStatuses": {
+        "DRAFT": "Draft",
+        "PUBLISHED": "Published",
+        "ARCHIVED": "Archived"
+      },
+      "apartmentStatuses": {
+        "AVAILABLE": "Available",
+        "RESERVED": "Reserved",
+        "SOLD": "Sold"
+      },
+      "partnerTypes": {
+        "BANK": "Bank",
+        "IT_COMPANY": "IT company",
+        "SPONSOR": "Sponsor",
+        "SUPPLIER": "Supplier",
+        "INSURANCE": "Insurance",
+        "LEGAL": "Legal",
+        "DESIGN_FURNITURE": "Design / furniture",
+        "SERVICE_COMPANY": "Service company",
+        "OTHER": "Other"
+      }
+    }
+  },
+  "portal": {
+    "nav": {
+      "ariaLabel": "Builder portal navigation",
+      "overview": "Overview",
+      "projects": "Projects",
+      "crm": "CRM",
+      "readiness": "Readiness",
+      "analytics": "Analytics",
+      "company": "Company"
+    },
+    "actingOnBehalf": {
+      "message": "Managing {company} as admin",
+      "exit": "Exit to admin"
+    },
+    "companySwitcher": {
+      "label": "Active company",
+      "ariaLabel": "Switch active company"
+    },
+    "overview": {
+      "title": "Overview",
+      "stats": {
+        "draft": "Draft",
+        "published": "Published",
+        "archived": "Archived"
+      },
+      "booth": "Your booth: {code} ({label}) — {event}"
+    },
+    "company": {
+      "title": "Company",
+      "subtitle": "Your company profile and team members.",
+      "profileTitle": "Company profile",
+      "editProfile": "Edit profile",
+      "profileMissing": "Company profile could not be loaded.",
+      "teamTitle": "Team",
+      "teamEmpty": "No team members are linked to this company yet.",
+      "noValue": "—",
+      "fields": {
+        "description": "Description",
+        "phone": "Phone",
+        "email": "Email",
+        "website": "Website",
+        "location": "Location"
+      },
+      "columns": {
+        "name": "Name",
+        "email": "Email",
+        "role": "Role",
+        "joinedAt": "Joined"
+      },
+      "roles": {
+        "BIGPROJECTS_ADMIN": "BigProjects admin",
+        "BUILDER": "Builder",
+        "PARTNER": "Partner",
+        "BUYER": "Buyer",
+        "ENTRANCE_STAFF": "Entrance staff"
+      },
+      "form": {
+        "title": "Edit company profile",
+        "submit": "Save",
+        "fields": {
+          "name": "Company name",
+          "description": "Description",
+          "logoUrl": "Logo URL",
+          "phone": "Phone",
+          "email": "Email",
+          "website": "Website",
+          "city": "City",
+          "address": "Address"
+        }
+      }
+    },
+    "readiness": {
+      "title": "Readiness",
+      "subtitle": "Scores, recommendations, and required actions for your company and projects.",
+      "empty": "No readiness assessment yet. BigProjects will publish guidance here after evaluation.",
+      "overallScore": "Overall score",
+      "status": "Status",
+      "recommendation": "Recommendations",
+      "requiredActions": "Required actions",
+      "lastUpdated": "Last updated",
+      "categoriesTitle": "Categories",
+      "helpProviders": "Help / Providers",
+      "targets": {
+        "BUILDER_COMPANY": "Company readiness",
+        "PROJECT": "Project readiness"
+      },
+      "statuses": {
+        "NOT_STARTED": "Not started",
+        "IN_PROGRESS": "In progress",
+        "NEEDS_IMPROVEMENT": "Needs improvement",
+        "READY": "Ready",
+        "BLOCKED": "Blocked"
+      },
+      "categories": {
+        "company_profile": "Company profile",
+        "project_information": "Project information",
+        "media_materials": "Media materials",
+        "apartment_inventory": "Apartment inventory",
+        "visual_map_readiness": "Visual map readiness",
+        "pricing_status_clarity": "Pricing / status clarity",
+        "crm_request_readiness": "CRM / request readiness",
+        "event_presentation_readiness": "Event presentation readiness"
+      },
+      "providers": {
+        "title": "Help / Providers",
+        "description": "Suggested service providers for weak or in-progress categories. Contact them directly — no booking in the app.",
+        "openProfile": "Open profile",
+        "contact": "Contact"
+      }
+    },
+    "errors": {
+      "unauthorized": "You are not authorized to perform this action.",
+      "invalidInput": "Please check the fields and try again.",
+      "notFound": "The requested item was not found.",
+      "targetMismatch": "The selected target does not belong to this visual map context.",
+      "levelTaken": "This floor level is already in use for this building.",
+      "codeTaken": "This apartment code is already in use on this floor.",
+      "nameTaken": "A project with this name already exists."
+    },
+    "crm": {
+      "title": "CRM",
+      "empty": "No deals yet. Create a manual deal or wait for buyer requests.",
+      "newDeal": "New deal",
+      "view": {
+        "board": "Board",
+        "list": "List"
+      },
+      "card": {
+        "unnamedContact": "Unnamed contact",
+        "noProject": "No project",
+        "noAssignee": "Unassigned",
+        "noActivity": "No activity",
+        "apartmentCount": "{count} apartments"
+      },
+      "list": {
+        "columns": {
+          "contact": "Contact",
+          "project": "Project",
+          "stage": "Stage",
+          "source": "Source",
+          "assignee": "Assignee",
+          "apartments": "Apartments",
+          "lastActivity": "Last activity"
+        }
+      },
+      "stages": {
+        "NEW_REQUEST": "New request",
+        "ASSIGNED": "Assigned",
+        "CONTACTED": "Contacted",
+        "FOLLOW_UP_NEEDED": "Follow-up needed",
+        "APARTMENT_SELECTED": "Apartment selected",
+        "RESERVED": "Reserved",
+        "CONVERTED": "Converted",
+        "CLOSED": "Closed",
+        "LOST": "Lost"
+      },
+      "sources": {
+        "PROJECT_PAGE": "Project page",
+        "APARTMENT_PAGE": "Apartment page",
+        "BUILDER_QR_SCAN": "QR scan",
+        "MANUAL_BUILDER_ENTRY": "Manual entry",
+        "EVENT_INTERACTION": "Event"
+      },
+      "activityTypes": {
+        "COMMENT": "Comment",
+        "FOLLOW_UP": "Follow-up",
+        "STATUS_CHANGE": "Status change"
+      },
+      "errors": {
+        "unauthorized": "You are not authorized to perform this action.",
+        "invalidInput": "Please check the fields and try again.",
+        "notFound": "The requested deal was not found.",
+        "apartmentRequired": "Link an apartment before moving to this stage.",
+        "reservationConflict": "This apartment cannot be reserved due to an inventory conflict."
+      },
+      "manualDeal": {
+        "title": "New deal",
+        "submit": "Create deal",
+        "fields": {
+          "contactName": "Contact name",
+          "contactPhone": "Phone",
+          "contactEmail": "Email (optional)",
+          "message": "Message (optional)",
+          "project": "Project (optional)",
+          "noProject": "No project"
+        }
+      },
+      "dealSheet": {
+        "title": "Deal — {name}",
+        "source": "Source",
+        "createdAt": "Created",
+        "stage": "Stage",
+        "assignee": "Assignee",
+        "unassigned": "Unassigned",
+        "noValue": "—",
+        "contact": {
+          "title": "Contact",
+          "phone": "Phone",
+          "email": "Email",
+          "buyerLinked": "Registered buyer",
+          "message": "Request message"
+        },
+        "apartments": {
+          "title": "Apartments",
+          "empty": "No apartment selected yet.",
+          "emptyHint": "Link an apartment to move toward reservation or sale.",
+          "link": "Link apartment",
+          "unlink": "Unlink",
+          "project": "Project",
+          "apartment": "Apartment",
+          "price": "{value} AMD",
+          "priceAtRequest": "at request: {value} AMD"
+        },
+        "activities": {
+          "title": "Activities",
+          "empty": "No follow-up activity yet.",
+          "comment": "Add comment",
+          "followUp": "Schedule follow-up",
+          "submitComment": "Add comment",
+          "submitFollowUp": "Add follow-up",
+          "nextFollowUpAt": "Next follow-up",
+          "dueAt": "Due",
+          "markDone": "Mark done",
+          "markCancelled": "Cancel follow-up",
+          "statuses": {
+            "PLANNED": "Planned",
+            "DONE": "Done",
+            "CANCELLED": "Cancelled"
+          },
+          "noAuthor": "System"
+        }
+      }
+    },
+    "projects": {
+      "title": "Projects",
+      "empty": "No projects yet.",
+      "newProject": "New project",
+      "noCity": "—",
+      "columns": {
+        "name": "Name",
+        "city": "City",
+        "status": "Status",
+        "buildings": "Buildings",
+        "updatedAt": "Updated",
+        "actions": "Actions"
+      },
+      "status": {
+        "DRAFT": "Draft",
+        "PUBLISHED": "Published",
+        "ARCHIVED": "Archived"
+      }
+    },
+    "publication": {
+      "actions": {
+        "publish": "Publish",
+        "archive": "Archive",
+        "draft": "Back to draft"
+      },
+      "confirm": {
+        "publish": "Publish this project? It will become visible in the public catalog.",
+        "archive": "Archive this project? It will be hidden from the public catalog.",
+        "draft": "Move this project back to draft? It will be hidden from the public catalog."
+      }
+    },
+    "inventoryPublication": {
+      "actions": {
+        "publish": "Publish",
+        "archive": "Archive",
+        "draft": "Back to draft"
+      },
+      "confirm": {
+        "building": {
+          "publish": "Publish this building? Its floors and apartments will be visible on the public project page.",
+          "archive": "Archive this building? It will be hidden from the public catalog.",
+          "draft": "Move this building back to draft? It will be hidden from the public catalog."
+        },
+        "floor": {
+          "publish": "Publish this floor? Its apartments will be visible on the public project page.",
+          "archive": "Archive this floor? It will be hidden from the public catalog.",
+          "draft": "Move this floor back to draft? It will be hidden from the public catalog."
+        }
+      }
+    },
+    "projectForm": {
+      "create": "New project",
+      "edit": "Edit project",
+      "submit": "Save",
+      "fields": {
+        "name": "Name",
+        "city": "City",
+        "address": "Address",
+        "description": "Description"
+      }
+    },
+    "buildingForm": {
+      "create": "Add building",
+      "edit": "Edit building",
+      "submit": "Save",
+      "fields": {
+        "name": "Name",
+        "description": "Description"
+      }
+    },
+    "floorForm": {
+      "create": "Add floor",
+      "edit": "Edit floor",
+      "submit": "Save",
+      "fields": {
+        "name": "Name",
+        "level": "Level",
+        "levelHint": "Integer from -5 to 100. Must be unique within the building."
+      }
+    },
+    "apartmentForm": {
+      "create": "Add apartment",
+      "edit": "Edit apartment",
+      "submit": "Save",
+      "fields": {
+        "code": "Unit code",
+        "rooms": "Rooms",
+        "areaSqm": "Area (m²)",
+        "priceAmd": "Price (AMD)",
+        "priceVisibility": "Price visibility",
+        "matterportUrl": "Matterport / 3D URL",
+        "status": "Status"
+      },
+      "statusHistory": {
+        "title": "Status history",
+        "empty": "No status changes recorded yet."
+      }
+    },
+    "apartmentStatusHistorySource": {
+      "CRM_STAGE": "CRM stage",
+      "MANUAL_INVENTORY": "Manual inventory",
+      "SYSTEM": "System"
+    },
+    "mediaForm": {
+      "create": "Add media",
+      "edit": "Edit",
+      "add": "Add media",
+      "editAction": "Edit",
+      "delete": "Delete",
+      "submit": "Save",
+      "empty": "No media yet.",
+      "noAlt": "No alt text",
+      "coverBadge": "Cover",
+      "coverHint": "The item with the lowest sort order is used as the project cover image. Explicit cover selection may come later.",
+      "confirmDelete": "Remove this media item?",
+      "uploadHint": "Upload a JPEG, PNG, or WebP image (max 10 MB). You can also paste a public URL.",
+      "pasteUrlToggle": "Or paste an image URL",
+      "apartmentTitle": "Media — {code}",
+      "section": {
+        "title": "Media"
+      },
+      "fields": {
+        "file": "Image file",
+        "fileHint": "JPEG, PNG, or WebP · up to 10 MB",
+        "url": "Image URL",
+        "urlPlaceholder": "https://…",
+        "urlHint": "Use this if file upload is unavailable or for an existing public URL.",
+        "alt": "Alt text",
+        "sortOrder": "Sort order",
+        "sortOrderHint": "Lower numbers appear first (0–999)."
+      },
+      "uploadStatus": {
+        "presigning": "Preparing upload…",
+        "uploading": "Uploading…",
+        "readyNamed": "Ready: {name}"
+      },
+      "uploadErrors": {
+        "storageNotConfigured": "File upload is not configured on this environment. Paste a public image URL instead.",
+        "rateLimited": "Too many upload requests. Please wait a minute and try again.",
+        "unauthorized": "You must be signed in as a builder to upload.",
+        "uploadFailed": "Upload failed. Please try again or paste a URL.",
+        "unsupportedType": "Only JPEG, PNG, and WebP images are allowed.",
+        "fileTooLarge": "File is too large. Maximum size is 10 MB."
+      }
+    },
+    "priceVisibility": {
+      "PUBLIC": "Public",
+      "BY_REQUEST": "On request",
+      "HIDDEN": "Hidden",
+      "VISIBLE_AFTER_LOGIN": "Visible after login"
+    },
+    "apartmentStatus": {
+      "AVAILABLE": "Available",
+      "RESERVED": "Reserved",
+      "SOLD": "Sold"
+    },
+    "projectDetail": {
+      "editProject": "Edit project",
+      "buildings": {
+        "title": "Buildings",
+        "addBuilding": "Add building",
+        "empty": "No buildings yet.",
+        "editBuilding": "Edit",
+        "addFloor": "Add floor",
+        "emptyFloors": "No floors yet.",
+        "level": "level",
+        "editFloor": "Edit floor"
+      },
+      "apartments": {
+        "title": "Apartments",
+        "addApartment": "Add apartment",
+        "edit": "Edit",
+        "media": "Media",
+        "noValue": "—",
+        "columns": {
+          "code": "Unit",
+          "rooms": "Rooms",
+          "areaSqm": "Area (m²)",
+          "priceAmd": "Price",
+          "status": "Status",
+          "actions": "Actions"
+        }
+      },
+      "completenessHint": "Missing for a complete listing: {items}."
+    },
+    "visualMap": {
+      "section": {
+        "title": "Visual maps",
+        "newCanvas": "New canvas",
+        "empty": "No visual maps yet.",
+        "hotspotCount": "{count} hotspots",
+        "untitled": "Untitled canvas"
+      },
+      "context": {
+        "project": "Project",
+        "building": "Building",
+        "floor": "Floor"
+      },
+      "errors": {
+        "unauthorized": "You are not authorized to perform this action.",
+        "invalidInput": "Please check the fields and try again.",
+        "notFound": "The requested item was not found.",
+        "targetMismatch": "The selected target does not belong to this visual map context."
+      },
+      "canvasForm": {
+        "title": "New visual canvas",
+        "submit": "Create canvas",
+        "context": {
+          "project": "This project",
+          "building": "Building",
+          "floor": "Floor"
+        },
+        "fields": {
+          "context": "Context",
+          "building": "Building",
+          "floor": "Floor",
+          "title": "Title",
+          "imageUrl": "Image URL",
+          "imageUrlHint": "Upload a JPEG, PNG, or WebP image (max 10 MB), or paste a public URL.",
+          "imageAlt": "Image alt text"
+        }
+      },
+      "editor": {
+        "backToProject": "← Back to project",
+        "untitled": "Untitled canvas",
+        "clickHint": "Click the image to add a hotspot, or click an existing marker to edit.",
+        "pickingHint": "Click a new position on the image.",
+        "marker": "Hotspot",
+        "showArchived": "Show archived ({count})",
+        "hideArchived": "Hide archived",
+        "restoreHotspot": "Restore"
+      },
+      "hotspotForm": {
+        "create": "New hotspot",
+        "edit": "Edit hotspot",
+        "submit": "Save hotspot",
+        "delete": "Delete hotspot",
+        "deleteConfirm": "Delete this hotspot? This cannot be undone.",
+        "pickPosition": "Pick new position on image",
+        "pickingActive": "Click the image…",
+        "noTargets": "No targets available for this context.",
+        "fields": {
+          "x": "X (%)",
+          "y": "Y (%)",
+          "target": "Target",
+          "label": "Label"
+        }
+      },
+      "publication": {
+        "actions": {
+          "publish": "Publish",
+          "archive": "Archive",
+          "draft": "Back to draft",
+          "delete": "Delete canvas"
+        },
+        "confirm": {
+          "publish": "Publish this visual map? It will appear on the public project page.",
+          "archive": "Archive this visual map? It will be hidden from the public site.",
+          "draft": "Move this visual map back to draft? It will be hidden from the public site.",
+          "delete": "Delete this draft canvas? All hotspots will be removed."
+        }
+      }
+    },
+    "analytics": {
+      "title": "Analytics",
+      "subtitle": "Your company metrics · last {days} days highlighted where shown.",
+      "empty": "No data yet.",
+      "readinessCompany": "Company readiness",
+      "stats": {
+        "projectViewsRecent": "Project views (recent)",
+        "apartmentViewsRecent": "Apartment views (recent)",
+        "apartmentViewsTotal": "Apartment views (all time)",
+        "qrScanDeals": "Deals from QR scans"
+      },
+      "sections": {
+        "projectViews": "Project views",
+        "dealsByStage": "CRM by stage",
+        "dealsBySource": "Requests by source",
+        "readiness": "Readiness snapshot"
+      },
+      "columns": {
+        "label": "Label",
+        "count": "Count"
+      },
+      "stages": {
+        "NEW_REQUEST": "New request",
+        "ASSIGNED": "Assigned",
+        "CONTACTED": "Contacted",
+        "FOLLOW_UP_NEEDED": "Follow-up needed",
+        "APARTMENT_SELECTED": "Apartment selected",
+        "RESERVED": "Reserved",
+        "CONVERTED": "Converted",
+        "CLOSED": "Closed",
+        "LOST": "Lost"
+      },
+      "sources": {
+        "PROJECT_PAGE": "Project page",
+        "APARTMENT_PAGE": "Apartment page",
+        "BUILDER_QR_SCAN": "QR scan",
+        "MANUAL_BUILDER_ENTRY": "Manual entry",
+        "EVENT_INTERACTION": "Event"
+      }
+    }
+  },
+  "catalog": {
+    "card": {
+      "new": "New"
+    },
+    "list": {
+      "title": "Projects",
+      "subtitle": "Browse published residential developments.",
+      "empty": "No published projects yet.",
+      "emptyFiltered": "No projects match your filters.",
+      "filter": {
+        "city": "City",
+        "cityPlaceholder": "e.g. Yerevan",
+        "builder": "Builder",
+        "builderAll": "All builders",
+        "apply": "Apply",
+        "clear": "Clear",
+        "ariaLabel": "Filter projects"
+      }
+    },
+    "detail": {
+      "gallery": "Gallery",
+      "buildings": "Buildings & apartments",
+      "noValue": "—",
+      "table": {
+        "code": "Unit",
+        "rooms": "Rooms",
+        "areaSqm": "Area (m²)",
+        "priceAmd": "Price",
+        "status": "Status",
+        "request": "Request"
+      },
+      "builder": {
+        "title": "About the builder",
+        "phone": "Phone",
+        "email": "Email",
+        "website": "Website",
+        "viewProfile": "View builder profile"
+      },
+      "seoFallback": "{project} by {company} on ToonExpo"
+    },
+    "apartment": {
+      "backToProject": "← Back to {project}",
+      "building": "Building",
+      "floor": "Floor",
+      "priceByRequest": "Price on request",
+      "priceHidden": "Contact builder for price",
+      "priceLoginRequired": "Log in to see price.",
+      "loginLink": "Sign in",
+      "matterport": "View 3D tour",
+      "seoFallback": "Unit {code} in {project} by {company} on ToonExpo"
+    },
+    "request": {
+      "ctaProject": "Request contact",
+      "ctaApartment": "Interested",
+      "titleProject": "Request contact",
+      "titleApartment": "Request unit {code}",
+      "contextProject": "Project: {project}",
+      "contextApartment": "Project: {project} · Unit {code}",
+      "submit": "Send request",
+      "close": "Close",
+      "successNew": "Your request was sent. The builder will contact you soon.",
+      "successDeduped": "We already have your request for this project. The builder was notified of your update.",
+      "successHint": "You can track your requests in your buyer account when signed in.",
+      "fields": {
+        "name": "Full name",
+        "phone": "Phone",
+        "email": "Email",
+        "message": "Message (optional)"
+      },
+      "errors": {
+        "invalidInput": "Please check the fields and try again.",
+        "notFound": "This project is not available for requests.",
+        "rateLimited": "Too many requests. Please wait a minute and try again."
+      }
+    },
+    "favorite": {
+      "save": "Save",
+      "saved": "Saved",
+      "errors": {
+        "unauthorized": "Sign in as a buyer to save favorites.",
+        "invalidInput": "Could not update favorite. Try again.",
+        "notFound": "This item is not available to save.",
+        "rateLimited": "Too many save actions. Please wait a minute and try again."
+      }
+    },
+    "apartmentStatus": {
+      "AVAILABLE": "Available",
+      "RESERVED": "Reserved",
+      "SOLD": "Sold"
+    },
+    "visualMap": {
+      "projectTitle": "Site plan",
+      "floorTitle": "Floor plan"
+    },
+    "builders": {
+      "list": {
+        "title": "Builders",
+        "subtitle": "Development companies with published projects on ToonExpo.",
+        "empty": "No builders with published projects yet.",
+        "projectCount": "{count, plural, one {# published project} other {# published projects}}"
+      },
+      "detail": {
+        "contacts": "Contact",
+        "phone": "Phone",
+        "email": "Email",
+        "website": "Website",
+        "city": "City",
+        "address": "Address",
+        "projects": "Published projects",
+        "noValue": "—",
+        "seoFallback": "{name} — builder on ToonExpo"
+      }
+    },
+    "partners": {
+      "list": {
+        "title": "Partners",
+        "subtitle": "Banks, service companies, and other ToonExpo participants.",
+        "empty": "No published partners match this filter."
+      },
+      "filter": {
+        "all": "All",
+        "ariaLabel": "Filter partners by type"
+      },
+      "types": {
+        "BANK": "Bank",
+        "IT_COMPANY": "IT company",
+        "SPONSOR": "Sponsor",
+        "SUPPLIER": "Supplier",
+        "INSURANCE": "Insurance",
+        "LEGAL": "Legal",
+        "DESIGN_FURNITURE": "Design / furniture",
+        "SERVICE_COMPANY": "Service company",
+        "OTHER": "Other"
+      },
+      "detail": {
+        "contacts": "Contact",
+        "phone": "Phone",
+        "email": "Email",
+        "website": "Website",
+        "serviceCategories": "Services",
+        "bankOffers": "Mortgage offers",
+        "featured": "Featured",
+        "interestRate": "Interest rate",
+        "maxTermYears": "Max term (years)",
+        "maxAmount": "Max loan amount",
+        "mortgageLink": "Mortgage calculator",
+        "noValue": "—",
+        "seoFallback": "{name} — partner on ToonExpo"
+      }
+    },
+    "mortgage": {
+      "title": "Mortgage & bank offers",
+      "subtitle": "Compare published bank offers and estimate your monthly payment.",
+      "calculator": {
+        "title": "Payment calculator",
+        "propertyPrice": "Property price (AMD)",
+        "downPayment": "Down payment (AMD)",
+        "termYears": "Loan term (years)",
+        "interestRate": "Interest rate",
+        "manualRate": "Annual rate (%)",
+        "downPaymentBelowMinimum": "This offer requires at least {percent}% down payment ({amount}). Estimate uses the minimum.",
+        "monthlyPayment": "Estimated monthly payment",
+        "loanAmount": "Loan amount",
+        "totalPayment": "Total payment",
+        "overpayment": "Total interest",
+        "disclaimer": "Figures are estimates for comparison only. Final terms depend on bank approval and are not a binding offer."
+      },
+      "offers": {
+        "title": "Bank offers",
+        "featured": "Featured",
+        "maxTerm": "Up to",
+        "viewBank": "View bank profile",
+        "empty": "No published bank offers yet.",
+        "selectManual": "Use manual rate instead",
+        "yearsUnit": "years",
+        "minDownPayment": "Min. down payment"
+      }
+    },
+    "exhibition": {
+      "title": "Exhibition map",
+      "subtitle": "Find builders and partners at {event}.",
+      "searchLabel": "Search booths",
+      "searchPlaceholder": "Booth code, company, partner, or project",
+      "boothCount": "{count, plural, one {# booth} other {# booths}}",
+      "selectHint": "Select a booth on the map to see details.",
+      "noMatches": "No booths match your search.",
+      "detail": {
+        "code": "Booth",
+        "company": "Builder",
+        "partner": "Partner",
+        "project": "Project",
+        "note": "Note",
+        "viewCompany": "View builder",
+        "viewPartner": "View partner",
+        "viewProject": "View project",
+        "close": "Close",
+        "showRoute": "Show route",
+        "clearRoute": "Clear route",
+        "routeUnavailable": "Route not available yet"
+      }
+    }
+  },
+  "buyer": {
+    "account": {
+      "title": "My account",
+      "subtitle": "Your visitor QR, saved favorites, exhibition check-ins, and contact requests to builders.",
+      "empty": "You have not submitted any requests yet. Browse projects to get started.",
+      "noValue": "—",
+      "checkinsHeading": "Exhibition check-ins",
+      "checkinsEmpty": "You have not checked in to an exhibition yet.",
+      "requestsHeading": "My requests",
+      "favorites": {
+        "heading": "Saved favorites",
+        "empty": "You have not saved any projects or apartments yet.",
+        "remove": "Remove",
+        "typeProject": "Project",
+        "noValue": "—"
+      },
+      "columns": {
+        "company": "Builder",
+        "project": "Project",
+        "status": "Status",
+        "source": "Source",
+        "createdAt": "Submitted",
+        "lastActivityAt": "Last update"
+      },
+      "statuses": {
+        "request_sent": "Request sent",
+        "builder_received": "Builder received",
+        "in_contact": "In contact",
+        "offer_preparing": "Offer preparing",
+        "reserved": "Reserved",
+        "closed": "Closed",
+        "cancelled": "Cancelled"
+      },
+      "sources": {
+        "PROJECT_PAGE": "Project page",
+        "APARTMENT_PAGE": "Apartment page",
+        "BUILDER_QR_SCAN": "QR scan",
+        "MANUAL_BUILDER_ENTRY": "Builder entry",
+        "EVENT_INTERACTION": "Event"
+      },
+      "profile": {
+        "title": "Profile",
+        "edit": "Edit",
+        "editTitle": "Edit profile",
+        "save": "Save changes",
+        "noValue": "—",
+        "emailReadOnlyNote": "Email changes require verification and are not available in v1.",
+        "fields": {
+          "name": "Name",
+          "email": "Email",
+          "phone": "Phone"
+        },
+        "errors": {
+          "unauthorized": "You must be signed in to update your profile.",
+          "invalidInput": "Please check the fields and try again.",
+          "notFound": "Profile could not be updated."
+        }
+      }
+    },
+    "qr": {
+      "title": "My QR",
+      "subtitle": "Show this code to a builder at the exhibition. They can save a follow-up request for you.",
+      "hint": "This code identifies your ToonExpo visitor account. It does not contain your name or contact details in the code itself.",
+      "ariaLabel": "Your ToonExpo visitor QR code",
+      "revoked": "Your QR is currently inactive. Regenerate a new code to continue.",
+      "revoke": "Revoke QR",
+      "revokeConfirm": "Revoke your QR? It will stop working until you regenerate a new code.",
+      "revokeSuccess": "Your QR was revoked and no longer works for scans.",
+      "regenerate": "Regenerate QR",
+      "regenerateConfirm": "Regenerate your QR? The old code will stop working immediately.",
+      "regenerateSuccess": "A new QR code was issued.",
+      "errors": {
+        "unauthorized": "Sign in to manage your QR.",
+        "invalidInput": "Could not update the QR. Try again.",
+        "notFound": "Could not update the QR. Try again.",
+        "revoked": "Could not update the QR. Try again."
+      }
+    }
+  },
+  "qr": {
+    "public": {
+      "title": "Visitor QR",
+      "body": "Sign in as a builder or entrance staff to continue, or ask the visitor to open My QR in their ToonExpo account."
+    },
+    "rateLimited": {
+      "title": "Too many scans",
+      "body": "Please wait a minute before scanning again."
+    },
+    "builder": {
+      "title": "Visitor from QR scan",
+      "subtitle": "Create a CRM request for this registered buyer.",
+      "noPhone": "—",
+      "submit": "Create request",
+      "successNew": "Request created. The buyer will see it in their account history.",
+      "successDeduped": "An open request already exists. Your note was added to it.",
+      "fields": {
+        "name": "Name",
+        "email": "Email",
+        "phone": "Phone",
+        "project": "Project (optional)",
+        "projectHint": "Choose a project from your company, or leave empty.",
+        "projectNone": "No project",
+        "note": "Note (optional)"
+      },
+      "errors": {
+        "unauthorized": "Builder sign-in is required.",
+        "invalidInput": "Check the form and try again.",
+        "notFound": "This QR is no longer valid.",
+        "revoked": "This QR is no longer valid."
+      }
+    },
+    "entrance": {
+      "title": "Entrance check-in",
+      "subtitle": "Confirm this registered visitor for the active exhibition event.",
+      "unnamedVisitor": "Registered visitor",
+      "submit": "Check in",
+      "successNew": "Visitor checked in successfully.",
+      "successDuplicate": "This visitor is already checked in for this event.",
+      "noActiveEvent": "No active exhibition event. Ask an admin to activate one.",
+      "fields": {
+        "name": "Name"
+      },
+      "errors": {
+        "unauthorized": "Entrance staff sign-in is required.",
+        "invalidInput": "Check-in could not be completed. Try again.",
+        "notFound": "This QR is no longer valid.",
+        "noActiveEvent": "No active exhibition event is configured.",
+        "alreadyCheckedIn": "This visitor is already checked in."
+      }
+    }
+  },
+  "entrance": {
+    "checkin": {
+      "title": "Entrance check-in",
+      "subtitle": "Scan a visitor QR by opening their /q/{token} link while signed in as entrance staff.",
+      "instruction": "Ask the visitor to show My QR from their account. Open or scan that link to check them in.",
+      "noActiveEvent": "There is no active exhibition event right now.",
+      "eventCode": "Event code: {code}",
+      "eventDates": "{start} – {end}",
+      "dateOpen": "—"
+    }
+  },
+  "partnerCabinet": {
+    "nav": {
+      "ariaLabel": "Partner cabinet",
+      "overview": "Overview",
+      "profile": "Profile",
+      "offers": "Bank offers"
+    },
+    "unlinked": {
+      "title": "Partner profile not linked",
+      "description": "Your account is not linked to a partner profile yet. Ask a platform admin to provision your account with a partner."
+    },
+    "errors": {
+      "unauthorized": "You do not have permission to perform this action.",
+      "invalidInput": "Please check the fields and try again.",
+      "notFound": "The requested item was not found.",
+      "nameTaken": "A partner with this name already exists.",
+      "keyTaken": "This key is already in use.",
+      "notBankPartner": "Bank offers are only available for bank partners."
+    },
+    "types": {
+      "BANK": "Bank",
+      "IT_COMPANY": "IT company",
+      "SPONSOR": "Sponsor",
+      "SUPPLIER": "Supplier",
+      "INSURANCE": "Insurance",
+      "LEGAL": "Legal",
+      "DESIGN_FURNITURE": "Design / furniture",
+      "SERVICE_COMPANY": "Service company",
+      "OTHER": "Other"
+    },
+    "status": {
+      "DRAFT": "Draft",
+      "PUBLISHED": "Published",
+      "ARCHIVED": "Archived"
+    },
+    "overview": {
+      "title": "Partner overview",
+      "subtitle": "Your public partner profile at a glance. Publication status is managed by ToonExpo admins.",
+      "fields": {
+        "name": "Name",
+        "type": "Type",
+        "status": "Status",
+        "publicLink": "Public page"
+      },
+      "viewPublic": "View public profile",
+      "notPublicYet": "Not published yet — admins control publication."
+    },
+    "profile": {
+      "title": "Edit profile",
+      "subtitle": "Update your partner content. Type and publication status stay admin-controlled.",
+      "sectionTitle": "Profile",
+      "edit": "Edit profile",
+      "noValue": "—",
+      "fields": {
+        "description": "Description",
+        "phone": "Phone",
+        "email": "Email",
+        "website": "Website",
+        "serviceCategories": "Service categories"
+      },
+      "form": {
+        "title": "Edit profile",
+        "submit": "Save",
+        "fields": {
+          "name": "Name",
+          "description": "Description",
+          "phone": "Phone",
+          "email": "Email",
+          "website": "Website",
+          "serviceCategories": "Service categories",
+          "serviceCategoriesHint": "Comma-separated keys (for service companies / readiness)."
+        }
+      }
+    },
+    "offers": {
+      "title": "Bank offers",
+      "subtitle": "Create and update your mortgage offers. Publication status is managed by ToonExpo admins.",
+      "sectionTitle": "Offers",
+      "empty": "No bank offers yet.",
+      "newOffer": "New offer",
+      "edit": "Edit",
+      "featured": "Featured",
+      "columns": {
+        "title": "Title",
+        "rate": "Rate",
+        "term": "Term (months)",
+        "amount": "Max amount",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "form": {
+        "create": "New offer",
+        "edit": "Edit offer",
+        "submit": "Save",
+        "fields": {
+          "title": "Title",
+          "interestRate": "Interest rate (%)",
+          "minDownPaymentPercent": "Min. down payment (%)",
+          "maxTermMonths": "Max term (months)",
+          "maxAmountAmd": "Max amount (AMD)",
+          "description": "Description",
+          "featured": "Featured"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,76 @@
+@import 'tailwindcss';
+@import './catalog.css';
+@import './portal.css';
+@import './portal-crm.css';
+@import './portal-crm-sheet.css';
+@import './portal-visual-map.css';
+@import './portal-media.css';
+@import './portal-forms.css';
+@import './portal-analytics.css';
+
+:root {
+  --te-bg: #ffffff;
+  --te-bg-soft: #f5f7fa;
+  --te-fg: #0b1f3a;
+  --te-accent: #0d9488;
+  --te-accent-soft: #e6f7f5;
+  --te-muted: #5b6b7c;
+  --te-border: #e5eaf0;
+  --te-card: #ffffff;
+  --te-radius: 1rem;
+  --te-shadow-soft: 0 8px 24px rgba(11, 31, 58, 0.06);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--te-fg);
+  background: var(--te-bg);
+  font-family:
+    var(--font-te-sans),
+    'Noto Sans Armenian',
+    'Noto Sans',
+    sans-serif;
+}
+
+a {
+  color: inherit;
+}
+
+.toonexpo-side-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+}
+
+.toonexpo-side-sheet__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(11, 31, 58, 0.35);
+}
+
+.toonexpo-side-sheet__panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: min(28rem, 100%);
+  background: var(--te-card);
+  border-left: 1px solid var(--te-border);
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--te-shadow-soft);
+}
+
+.toonexpo-side-sheet__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--te-border);
+}
+
+.toonexpo-side-sheet__body {
+  padding: 1.25rem;
+  overflow: auto;
+}

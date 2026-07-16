@@ -27,7 +27,9 @@ Each category should have:
 
 ## Readiness Mapping
 
-ReadinessCategory can link to one ServiceProviderCategory in v1.
+**v1:** `ReadinessCategory` links to matching `Partner.serviceCategories` for `SERVICE_COMPANY` partners.
+
+**Post-v1 target:** `ReadinessCategory` can link to one `ServiceProviderCategory` (below).
 
 Examples:
 

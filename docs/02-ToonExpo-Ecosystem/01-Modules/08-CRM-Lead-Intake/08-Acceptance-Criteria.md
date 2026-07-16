@@ -2,9 +2,11 @@
 
 ## Public Requests
 
-- Logged-in buyer can create request from project page.
-- Logged-in buyer can create request from apartment page.
-- Logged-out buyer is guided to register/login and request context is preserved.
+- Visitor can create request from project page without login (name + phone/email).
+- Visitor can create request from apartment page without login.
+- Logged-in buyer can create request from project page (prefilled, linked to account).
+- Logged-in buyer can create request from apartment page (prefilled, linked to account).
+- Anonymous request is not retroactively linked after registration.
 - Apartment request stores apartment context and snapshot.
 - Project request can exist without apartment.
 

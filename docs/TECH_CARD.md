@@ -18,7 +18,7 @@ Size C — large, layout: monorepo (`apps/*`, `packages/*`).
 |---|---|---:|---|
 | Package manager | pnpm | Confirmed | Matches project rules. |
 | Monorepo tooling | Turborepo | Confirmed | Size C default. |
-| Node.js | 24.x LTS | Confirmed | From template baseline. |
+| Node.js | 22.x LTS | Confirmed | Aligned with local/CI runtime; upgrade to 24 later as planned work. |
 | TypeScript | strict | Confirmed | Required by rules. |
 | Frontend | Next.js App Router | Confirmed | Public site + portals in one app. |
 | Backend | NestJS API | Confirmed | Clear module boundaries and integration contracts. |
@@ -27,12 +27,12 @@ Size C — large, layout: monorepo (`apps/*`, `packages/*`).
 | ORM | Prisma | Confirmed | Matches rules. |
 | Auth | Auth.js 5 + database sessions | Confirmed | Buyer self-registers; builders/partners/admins are provisioned. |
 | i18n | next-intl | Confirmed | Locales `hy`, `ru`, `en` as code constants (not env). |
-| File storage | Cloudflare R2 | Confirmed | Signed client uploads via API-issued URLs. |
+| File storage | Cloudflare R2 | Confirmed | Signed client uploads via web-issued PUT URLs (`/api/uploads/presign`). |
 | Email | Resend | Confirmed | Account invitations and login flows. |
 | QR | Server-generated signed token + QR rendering | Confirmed | Token stores no personal data. |
 | Maps | Custom image/hotspot editors first | Confirmed | Venue and real estate visual maps are image/coordinate based in v1. |
-| Cache/queues | Upstash Redis when needed | Confirmed | Not in Sprint 0; connect only when rate-limit/cache/queue requires it. Prefer Upstash over self-hosted Redis. |
-| Error tracking | Sentry | Confirmed | Useful for public/admin flows. |
+| Cache/queues | Upstash Redis when needed | Confirmed | Rate limiting live (auth, public request, QR, BOS provisioning). General cache/queues still deferred. Prefer Upstash over self-hosted Redis. |
+| Error tracking | Sentry | Confirmed | Env placeholders ready (`SENTRY_DSN` / `NEXT_PUBLIC_SENTRY_DSN`). Full `@sentry/nextjs` wizard when DSN projects exist. |
 | Hosting | Vercel for web, Google Cloud Run for API | Confirmed | NestJS API deploys to Cloud Run. |
 | CI/CD | GitHub Actions + turbo affected tasks | Confirmed | Size C default. |
 | Tests | Vitest, API integration tests, Playwright critical journeys | Confirmed | Buyer registration, QR, CRM, admin setup. |
@@ -72,7 +72,7 @@ Size C — large, layout: monorepo (`apps/*`, `packages/*`).
 | Validation | Zod (shared via `packages/contracts`) | Confirmed |
 | API style | REST | Confirmed |
 | API docs | OpenAPI/Swagger | Confirmed |
-| Uploads | API-signed upload to R2 | Confirmed |
+| Uploads | Web-signed upload to R2 (builder media) | Confirmed | `POST /api/uploads/presign` in `apps/web`; Nest path deferred. Company logo / canvas still URL. |
 
 ## 4. Database
 
@@ -81,7 +81,7 @@ Size C — large, layout: monorepo (`apps/*`, `packages/*`).
 | Database | PostgreSQL / Neon | Confirmed |
 | ORM | Prisma | Confirmed |
 | Seed data | Prisma seed for dev/test | Confirmed |
-| Cache | None initially; Upstash Redis when needed | Confirmed |
+| Cache | Upstash Redis (rate limiting live) | Confirmed |
 | Queues | Not in first sprint | Confirmed |
 | Pool limits / timeouts | Not set until load requires; not in env by default | Confirmed |
 
@@ -193,4 +193,4 @@ packages/
 
 - staging/prod domains and subdomain plan;
 - Cloud Run / Vercel project wiring;
-- Sentry project keys when observability is added.
+- Sentry project keys when observability is added — set `SENTRY_DSN` / `NEXT_PUBLIC_SENTRY_DSN`, then run the Next.js Sentry wizard (env placeholders + no-op `initSentry` already land).

@@ -1,0 +1,356 @@
+import { createRequire } from 'node:module';
+import { resolve } from 'node:path';
+
+import { DEMO_COMPANY_SLUG, ROOT, SUNRISE_SLUG } from './config.mjs';
+
+const require = createRequire(resolve(ROOT, 'packages/db/package.json'));
+const { PrismaClient } = require('@prisma/client');
+const argon2 = require('argon2');
+
+const HASH_OPTIONS = { type: argon2.argon2id };
+
+/** @type {import('@prisma/client').PrismaClient | null} */
+let client = null;
+
+export function getPrisma() {
+  if (!client) client = new PrismaClient();
+  return client;
+}
+
+export async function disconnectPrisma() {
+  if (client) {
+    await client.$disconnect();
+    client = null;
+  }
+}
+
+/**
+ * Create a BUYER (+ profile) the same way registration would — used because
+ * Next.js server actions are not reliably invokable over plain HTTP without
+ * build-specific Next-Action IDs.
+ *
+ * @param {{ email: string; name: string; phone: string; password: string }} input
+ */
+export async function seedBuyer(input) {
+  const prisma = getPrisma();
+  const passwordHash = await argon2.hash(input.password, HASH_OPTIONS);
+  const user = await prisma.user.create({
+    data: {
+      email: input.email.toLowerCase(),
+      name: input.name,
+      phone: input.phone,
+      passwordHash,
+      role: 'BUYER',
+      buyerProfile: { create: {} },
+    },
+  });
+  return user;
+}
+
+/**
+ * UI-less public request (server action is form-bound). Creates a NEW_REQUEST
+ * deal linked to the buyer, mirroring submitPublicRequest shape.
+ *
+ * @param {{ buyerUserId: string; name: string; email: string; phone: string; message: string }} input
+ */
+export async function createPublicRequestDeal(input) {
+  const prisma = getPrisma();
+  const project = await prisma.project.findFirst({
+    where: {
+      slug: SUNRISE_SLUG,
+      status: 'PUBLISHED',
+      company: { slug: DEMO_COMPANY_SLUG },
+    },
+    select: { id: true, companyId: true, name: true },
+  });
+  if (!project) throw new Error('Sunrise published project not found — run db:seed');
+
+  const now = new Date();
+  const deal = await prisma.deal.create({
+    data: {
+      companyId: project.companyId,
+      projectId: project.id,
+      stage: 'NEW_REQUEST',
+      source: 'PROJECT_PAGE',
+      buyerUserId: input.buyerUserId,
+      contactName: input.name,
+      contactEmail: input.email.toLowerCase(),
+      contactPhone: input.phone,
+      title: `Request: ${project.name}`,
+      message: input.message,
+      lastActivityAt: now,
+      activities: {
+        create: {
+          type: 'COMMENT',
+          body: input.message,
+          authorUserId: input.buyerUserId,
+        },
+      },
+    },
+  });
+  return { deal, project };
+}
+
+/**
+ * @param {string} projectSlug
+ */
+export async function countProjectViews(projectSlug) {
+  const prisma = getPrisma();
+  const project = await prisma.project.findFirst({
+    where: { slug: projectSlug, company: { slug: DEMO_COMPANY_SLUG } },
+    select: { id: true },
+  });
+  if (!project) throw new Error(`project ${projectSlug} not found`);
+  const count = await prisma.analyticsEvent.count({
+    where: { type: 'PROJECT_VIEW', projectId: project.id },
+  });
+  return { projectId: project.id, count };
+}
+
+/**
+ * @param {string} email
+ */
+export async function countUsersByEmail(email) {
+  const prisma = getPrisma();
+  return prisma.user.count({ where: { email: email.toLowerCase() } });
+}
+
+const E2E_EMAIL_DOMAIN = '@e2e.toonexpo.local';
+const E2E_MARKER_PREFIX = 'e2e-';
+
+/**
+ * Remove ALL smoke leftovers (any runId). Safe: only rows tagged with e2e- /
+ * @e2e.toonexpo.local. Call before a suite so stale ProvisioningRequest /
+ * IntegrationAuditLog / users cannot collide with a new run.
+ */
+export async function cleanupAllE2eData() {
+  const prisma = getPrisma();
+
+  await prisma.integrationAuditLog.deleteMany({
+    where: {
+      OR: [
+        { requestId: { startsWith: E2E_MARKER_PREFIX } },
+        { externalRef: { startsWith: E2E_MARKER_PREFIX } },
+      ],
+    },
+  });
+  await prisma.provisioningRequest.deleteMany({
+    where: { requestId: { startsWith: E2E_MARKER_PREFIX } },
+  });
+
+  const users = await prisma.user.findMany({
+    where: {
+      OR: [{ email: { endsWith: E2E_EMAIL_DOMAIN } }, { email: { startsWith: E2E_MARKER_PREFIX } }],
+    },
+    select: { id: true },
+  });
+  const userIds = users.map((u) => u.id);
+
+  if (userIds.length > 0) {
+    await prisma.deal.deleteMany({
+      where: {
+        OR: [{ buyerUserId: { in: userIds } }, { contactEmail: { endsWith: E2E_EMAIL_DOMAIN } }],
+      },
+    });
+    await prisma.user.deleteMany({ where: { id: { in: userIds } } });
+  }
+
+  const companies = await prisma.company.findMany({
+    where: {
+      OR: [
+        { name: { startsWith: E2E_MARKER_PREFIX } },
+        { slug: { startsWith: E2E_MARKER_PREFIX } },
+      ],
+    },
+    select: { id: true },
+  });
+  const companyIds = companies.map((c) => c.id);
+  if (companyIds.length > 0) {
+    await prisma.partner.deleteMany({ where: { companyId: { in: companyIds } } });
+    await prisma.company.deleteMany({ where: { id: { in: companyIds } } });
+  }
+}
+
+/**
+ * Delete throwaway rows created during a smoke run.
+ * @param {{ runId: string; emails?: string[]; requestIds?: string[]; companyIds?: string[]; userIds?: string[]; dealIds?: string[] }} markers
+ */
+export async function cleanupE2eData(markers) {
+  const prisma = getPrisma();
+  const emails = (markers.emails ?? []).map((e) => e.toLowerCase());
+  const requestIds = markers.requestIds ?? [];
+  const companyIds = [...new Set(markers.companyIds ?? [])];
+  const userIds = [...new Set(markers.userIds ?? [])];
+  const dealIds = [...new Set(markers.dealIds ?? [])];
+
+  if (dealIds.length > 0) {
+    await prisma.deal.deleteMany({ where: { id: { in: dealIds } } });
+  }
+
+  if (requestIds.length > 0) {
+    await prisma.integrationAuditLog.deleteMany({
+      where: { OR: [{ requestId: { in: requestIds } }, { externalRef: { in: requestIds } }] },
+    });
+    await prisma.provisioningRequest.deleteMany({ where: { requestId: { in: requestIds } } });
+  }
+
+  const users = await prisma.user.findMany({
+    where: {
+      OR: [
+        emails.length > 0 ? { email: { in: emails } } : undefined,
+        userIds.length > 0 ? { id: { in: userIds } } : undefined,
+        { email: { contains: `e2e-${markers.runId}` } },
+      ].filter(Boolean),
+    },
+    select: { id: true },
+  });
+  const ids = users.map((u) => u.id);
+
+  if (ids.length > 0) {
+    await prisma.deal.deleteMany({
+      where: {
+        OR: [{ buyerUserId: { in: ids } }, { contactEmail: { contains: `e2e-${markers.runId}` } }],
+      },
+    });
+    await prisma.user.deleteMany({ where: { id: { in: ids } } });
+  }
+
+  if (companyIds.length > 0) {
+    await prisma.partner.deleteMany({ where: { companyId: { in: companyIds } } });
+    await prisma.company.deleteMany({
+      where: {
+        id: { in: companyIds },
+        slug: { contains: `e2e-${markers.runId}` },
+      },
+    });
+  }
+
+  // Catch BOS companies named with the run marker.
+  await prisma.company.deleteMany({
+    where: { name: { contains: `e2e-${markers.runId}` } },
+  });
+}
+
+/**
+ * Detect optional seed credentials in process.env (never invents values).
+ */
+export function detectSeedCredentials() {
+  const builderPassword = process.env.SEED_DEMO_BUILDER_PASSWORD;
+  const adminEmail = process.env.SEED_ADMIN_EMAIL?.trim();
+  const adminPassword = process.env.SEED_ADMIN_PASSWORD;
+  const entranceEmail = process.env.SEED_ENTRANCE_EMAIL?.trim();
+  const entrancePassword = process.env.SEED_ENTRANCE_PASSWORD;
+  return {
+    builder: builderPassword
+      ? { email: 'builder@demo.toonexpo.local', password: builderPassword }
+      : null,
+    admin: adminEmail && adminPassword ? { email: adminEmail, password: adminPassword } : null,
+    entrance:
+      entranceEmail && entrancePassword
+        ? { email: entranceEmail, password: entrancePassword }
+        : null,
+  };
+}
+
+/**
+ * Raw buyer QR token for e2e check-in (created when buyer visits /en/account).
+ *
+ * @param {string} email
+ */
+export async function getBuyerQrTokenByEmail(email) {
+  const prisma = getPrisma();
+  const user = await prisma.user.findUnique({
+    where: { email: email.toLowerCase() },
+    select: {
+      buyerProfile: {
+        select: {
+          qrCode: {
+            select: { token: true, revokedAt: true },
+          },
+        },
+      },
+    },
+  });
+  const qr = user?.buyerProfile?.qrCode;
+  return qr && !qr.revokedAt ? qr.token : null;
+}
+
+/**
+ * UI-less entrance check-in (server action is form-bound). Mirrors performEntranceCheckIn.
+ *
+ * @param {{ qrToken: string; staffUserId: string; eventId?: string }} input
+ */
+export async function performEntranceCheckInViaPrisma(input) {
+  const prisma = getPrisma();
+  const crypto = await import('node:crypto');
+
+  const staff = await prisma.user.findUnique({
+    where: { id: input.staffUserId },
+    select: { role: true },
+  });
+  if (!staff || staff.role !== 'ENTRANCE_STAFF') {
+    return { ok: false, errorKey: 'unauthorized' };
+  }
+
+  const tokenHash = crypto.createHash('sha256').update(input.qrToken).digest('hex');
+  const qr = await prisma.qrCode.findFirst({
+    where: { tokenHash, revokedAt: null },
+    select: { id: true, buyerProfileId: true },
+  });
+  if (!qr) {
+    return { ok: false, errorKey: 'notFound' };
+  }
+
+  let eventId = input.eventId;
+  if (eventId) {
+    const event = await prisma.exhibitionEvent.findFirst({
+      where: { id: eventId, status: 'ACTIVE' },
+      select: { id: true },
+    });
+    if (!event) {
+      return { ok: false, errorKey: 'noActiveEvent' };
+    }
+  } else {
+    const active = await prisma.exhibitionEvent.findFirst({
+      where: { status: 'ACTIVE' },
+      orderBy: [{ startDate: 'desc' }, { createdAt: 'desc' }],
+      select: { id: true },
+    });
+    if (!active) {
+      return { ok: false, errorKey: 'noActiveEvent' };
+    }
+    eventId = active.id;
+  }
+
+  const existing = await prisma.checkIn.findUnique({
+    where: {
+      eventId_buyerProfileId: { eventId, buyerProfileId: qr.buyerProfileId },
+    },
+    select: { id: true, checkedInAt: true },
+  });
+  if (existing) {
+    return {
+      ok: true,
+      checkInId: existing.id,
+      alreadyCheckedIn: true,
+      checkedInAt: existing.checkedInAt,
+    };
+  }
+
+  const created = await prisma.checkIn.create({
+    data: {
+      eventId,
+      buyerProfileId: qr.buyerProfileId,
+      qrCodeId: qr.id,
+      checkedInByUserId: input.staffUserId,
+      status: 'ALLOWED',
+    },
+    select: { id: true, checkedInAt: true },
+  });
+  return {
+    ok: true,
+    checkInId: created.id,
+    alreadyCheckedIn: false,
+    checkedInAt: created.checkedInAt,
+  };
+}

@@ -20,6 +20,10 @@ This is a directory/help module.
 
 It is not a marketplace in v1.
 
+## v1 Implementation
+
+See [overview v1 Implementation Note](../17-Service-Provider-Directory.md#v1-implementation-note-2026-07-12): providers are `Partner` records (`type = SERVICE_COMPANY`, `serviceCategories`); public directory is `/partners` filtered by type.
+
 ## Reading Order
 
 1. [Definition And Boundaries](./01-Definition-And-Boundaries.md)

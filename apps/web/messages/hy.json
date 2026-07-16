@@ -1,0 +1,1714 @@
+{
+  "brand": "TOONEXPO",
+  "completeness": {
+    "incomplete": "Անավարտ",
+    "missingCount": "({count})",
+    "items": {
+      "MISSING_COVER_MEDIA": "Ծածկույթի մեդիա չկա",
+      "MISSING_DESCRIPTION": "Դատարկ նկարագրություն",
+      "MISSING_PUBLISHED_BUILDING": "Հրապարակված շենք չկա",
+      "MISSING_PUBLISHED_FLOOR": "Հրապարակված հարկ չկա",
+      "MISSING_APARTMENT": "Բնակարանների գույք չկա",
+      "MISSING_CANVAS": "Վիզուալ քարտեզ չկա"
+    }
+  },
+  "home": {
+    "title": "Գտեք ձեր հաջորդ տունը",
+    "subtitle": "Դիտեք առաջատար կառուցապատողների բնակելի նախագծերը մեկ հարթակում։",
+    "ctaPublic": "Դիտել նախագծերը",
+    "ctaBuyer": "Մուտք",
+    "ctaBuilder": "Կառուցապատողի պորտալ",
+    "ctaAdmin": "Ադմին",
+    "newestTitle": "Նոր նախագծեր",
+    "newestSubtitle": "Վերջերս հրապարակված օբյեկտներ TOONEXPO-ում։",
+    "newestEmpty": "Դեռ հրապարակված նախագծեր չկան։",
+    "ctaViewAll": "Բոլոր նախագծերը"
+  },
+  "nav": {
+    "public": "Հանրային",
+    "projects": "Նախագծեր",
+    "builders": "Կառուցապատողներ",
+    "partners": "Գործընկերներ",
+    "mortgage": "Հիփոթեք",
+    "buyer": "Հաշիվ",
+    "builder": "Պորտալ",
+    "partnerCabinet": "Գործընկեր",
+    "admin": "Ադմին",
+    "entrance": "Չեք-ին",
+    "exhibition": "Ցուցահանդես"
+  },
+  "footer": {
+    "contact": {
+      "emailLabel": "Էլ. փոստ",
+      "phoneLabel": "Հեռախոս",
+      "emailDefault": "contact@toonexpo.com",
+      "phoneDefault": "+37410123456"
+    }
+  },
+  "placeholders": {
+    "buyer": {
+      "title": "Գնորդի գոտի",
+      "description": "Պաշտպանված բաժնի սկզբնական տարբերակ Sprint 0-ի համար։"
+    },
+    "builder": {
+      "title": "Կառուցապատողի պորտալ",
+      "description": "Պաշտպանված բաժնի սկզբնական տարբերակ Sprint 0-ի համար։"
+    },
+    "admin": {
+      "title": "Ադմին",
+      "description": "Պաշտպանված բաժնի սկզբնական տարբերակ Sprint 0-ի համար։"
+    }
+  },
+  "common": {
+    "imageUpload": {
+      "pasteUrlToggle": "Կամ տեղադրել պատկերի URL",
+      "fields": {
+        "file": "Պատկերի ֆայլ",
+        "fileHint": "JPEG, PNG կամ WebP · մինչև 10 ՄԲ",
+        "url": "Պատկերի URL",
+        "urlPlaceholder": "https://…",
+        "urlHint": "Օգտագործեք, եթե ֆայլի վերբեռնումը հասանելի չէ կամ ունեք հրապարակային URL։"
+      },
+      "uploadStatus": {
+        "presigning": "Վերբեռնման նախապատրաստում…",
+        "uploading": "Վերբեռնում…",
+        "readyNamed": "Պատրաստ է՝ {name}"
+      },
+      "uploadErrors": {
+        "storageNotConfigured": "Այս միջավայրում ֆայլի վերբեռնում չի կարգավորված։ Տեղադրեք հրապարակային պատկերի URL։",
+        "rateLimited": "Չափից շատ վերբեռնման հարցումներ։ Սպասեք մեկ րոպե և կրկին փորձեք։",
+        "unauthorized": "Վերբեռնելու համար պետք է մուտք գործել։",
+        "uploadFailed": "Վերբեռնումը ձախողվեց։ Կրկին փորձեք կամ տեղադրեք URL։",
+        "unsupportedType": "Թույլատրվում են միայն JPEG, PNG և WebP պատկերներ։",
+        "fileTooLarge": "Ֆայլը չափազանց մեծ է։ Առավելագույնը 10 ՄԲ է։"
+      }
+    }
+  },
+  "auth": {
+    "signInNav": "Մուտք",
+    "fields": {
+      "name": "Անուն Ազգանուն",
+      "phone": "Հեռախոս",
+      "email": "Էլ. փոստ",
+      "password": "Գաղտնաբառ"
+    },
+    "login": {
+      "title": "Մուտք",
+      "subtitle": "Մուտք գործեք ձեր ToonExpo հաշիվ։",
+      "submit": "Մուտք",
+      "registerPrompt": "Դեռ հաշիվ չունե՞ք",
+      "registerLink": "Ստեղծել",
+      "invitedSuccess": "Գաղտնաբառը սահմանվեց։ Մուտք գործեք նոր գաղտնաբառով։"
+    },
+    "register": {
+      "title": "Ստեղծել հաշիվ",
+      "subtitle": "Գրանցվեք որպես գնորդ՝ նախագծերը դիտելու համար։",
+      "submit": "Ստեղծել հաշիվ",
+      "loginPrompt": "Արդեն ունե՞ք հաշիվ",
+      "loginLink": "Մուտք"
+    },
+    "logout": {
+      "submit": "Ելք"
+    },
+    "errors": {
+      "invalidInput": "Ստուգեք ընդգծված դաշտերը և կրկին փորձեք։",
+      "emailTaken": "Այս էլ. փոստն արդեն գրանցված է։",
+      "invalidCredentials": "Սխալ էլ. փոստ կամ գաղտնաբառ։",
+      "rateLimited": "Չափից շատ փորձեր։ Սպասեք մեկ րոպե և կրկին փորձեք։"
+    },
+    "invite": {
+      "title": "Սահմանեք գաղտնաբառ",
+      "subtitle": "Ընտրեք գաղտնաբառ ձեր ToonExpo հաշիվը ակտիվացնելու համար։",
+      "invalidTitle": "Հրավերը հասանելի չէ",
+      "submit": "Սահմանել գաղտնաբառ",
+      "fields": {
+        "password": "Նոր գաղտնաբառ",
+        "confirmPassword": "Հաստատեք գաղտնաբառը"
+      },
+      "errors": {
+        "invalidInput": "Ստուգեք դաշտերը և կրկին փորձեք։",
+        "invalidOrExpired": "Այս հրավերի հղումն անվավեր է կամ ժամկետանց։ Խնդրեք ադմինին կրկին ուղարկել այն։",
+        "rateLimited": "Չափից շատ փորձեր։ Սպասեք մեկ րոպե և կրկին փորձեք։"
+      }
+    }
+  },
+  "admin": {
+    "title": "Ադմին",
+    "description": "Հարթակի հաշիվների ստեղծում և կառավարում։",
+    "nav": {
+      "title": "Ադմին",
+      "ariaLabel": "Ադմինի նավիգացիա",
+      "provisioning": "Հաշիվների ստեղծում",
+      "companies": "Ընկերություններ",
+      "partners": "Գործընկերներ",
+      "projects": "Նախագծեր",
+      "readiness": "Պատրաստվածություն",
+      "exhibition": "Ցուցահանդես",
+      "analytics": "Վերլուծություն",
+      "audit": "Աուդիտ",
+      "integrations": "Ինտեգրումներ",
+      "settings": "Կարգավորումներ"
+    },
+    "catalog": {
+      "errors": {
+        "unauthorized": "Դուք չունեք այս գործողությունը կատարելու թույլտվություն։",
+        "invalidInput": "Ստուգեք դաշտերը և կրկին փորձեք։",
+        "notFound": "Հարցված տարրը չի գտնվել։",
+        "nameTaken": "Այս անվանումով ընկերություն արդեն գոյություն ունի։",
+        "keyTaken": "Այս բանալիով պատրաստվածության կատեգորիա արդեն գոյություն ունի։",
+        "notBankPartner": "Բանկային առաջարկները կարելի է կապել միայն բանկ գործընկերների հետ։"
+      }
+    },
+    "partners": {
+      "title": "Գործընկերներ",
+      "empty": "Այս ֆիլտրով գործընկերներ չկան։",
+      "newPartner": "Նոր գործընկեր",
+      "edit": "Խմբագրել",
+      "open": "Բացել",
+      "backToList": "← Գործընկերներ",
+      "columns": {
+        "name": "Անվանում",
+        "type": "Տեսակ",
+        "status": "Կարգավիճակ",
+        "offers": "Առաջարկներ",
+        "actions": "Գործողություններ"
+      },
+      "filter": {
+        "all": "Բոլորը",
+        "ariaLabel": "Գործընկերների ֆիլտր ըստ տեսակի"
+      },
+      "status": {
+        "DRAFT": "Սևագիր",
+        "PUBLISHED": "Հրապարակված",
+        "ARCHIVED": "Արխիվացված"
+      },
+      "types": {
+        "BANK": "Բանկ",
+        "IT_COMPANY": "IT ընկերություն",
+        "SPONSOR": "Հովանավոր",
+        "SUPPLIER": "Մատակարար",
+        "INSURANCE": "Ապահովագրություն",
+        "LEGAL": "Իրավական",
+        "DESIGN_FURNITURE": "Դիզայն / կահույք",
+        "SERVICE_COMPANY": "Ծառայությունների ընկերություն",
+        "OTHER": "Այլ"
+      },
+      "form": {
+        "create": "Նոր գործընկեր",
+        "edit": "Խմբագրել գործընկերոջը",
+        "submit": "Պահպանել",
+        "fields": {
+          "name": "Անվանում",
+          "type": "Տեսակ",
+          "slug": "Սլագ",
+          "slugHint": "Սլագը սահմանվում է ստեղծման ժամանակ և չի փոխվում։",
+          "logoUrl": "Լոգոյի URL",
+          "description": "Նկարագրություն",
+          "phone": "Հեռախոս",
+          "email": "Էլ. փոստ",
+          "website": "Կայք",
+          "serviceCategories": "Ծառայությունների կատեգորիաներ",
+          "serviceCategoriesHint": "Ստորակետով բաժանված բանալիներ (service company / readiness)։"
+        }
+      },
+      "publication": {
+        "actions": {
+          "publish": "Հրապարակել",
+          "archive": "Արխիվացնել",
+          "draft": "Վերադարձնել սևագիր"
+        },
+        "confirm": {
+          "publish": "Հրապարակե՞լ։ Տարրը կերևա հանրային էջերում։",
+          "archive": "Արխիվացնե՞լ։ Տարրը կթաքցվի հանրային էջերից։",
+          "draft": "Վերադարձնե՞լ սևագիր։"
+        }
+      },
+      "offers": {
+        "title": "Բանկային առաջարկներ",
+        "empty": "Դեռ բանկային առաջարկներ չկան։",
+        "newOffer": "Նոր առաջարկ",
+        "featured": "Ընտրված",
+        "columns": {
+          "title": "Վերնագիր",
+          "rate": "Տոկոսադրույք",
+          "term": "Առավելագույն ժամկետ (ամիս)",
+          "amount": "Առավելագույն գումար (AMD)",
+          "status": "Կարգավիճակ",
+          "actions": "Գործողություններ"
+        },
+        "form": {
+          "create": "Նոր բանկային առաջարկ",
+          "edit": "Խմբագրել առաջարկը",
+          "submit": "Պահպանել",
+          "fields": {
+            "title": "Վերնագիր",
+            "interestRate": "Տոկոսադրույք (%)",
+            "minDownPaymentPercent": "Նվազ. նախավճար (%)",
+            "maxTermMonths": "Առավելագույն ժամկետ (ամիս)",
+            "maxAmountAmd": "Առավելագույն գումար (AMD)",
+            "description": "Նկարագրություն",
+            "featured": "Ընտրված"
+          }
+        }
+      }
+    },
+    "companies": {
+      "title": "Ընկերություններ",
+      "empty": "Դեռ ընկերություններ չկան։",
+      "newCompany": "Նոր ընկերություն",
+      "edit": "Խմբագրել",
+      "openInPortal": "Բացել պորտալում",
+      "columns": {
+        "name": "Անվանում",
+        "slug": "Սլագ",
+        "members": "Անդամներ",
+        "projects": "Նախագծեր",
+        "createdAt": "Ստեղծված",
+        "actions": "Գործողություններ"
+      },
+      "projectCounts": {
+        "draft": "Սևագիր",
+        "published": "Հրապարակված",
+        "archived": "Արխիվ"
+      },
+      "form": {
+        "create": "Նոր ընկերություն",
+        "edit": "Խմբագրել ընկերությունը",
+        "submit": "Պահպանել",
+        "fields": {
+          "name": "Անվանում",
+          "slug": "Սլագ",
+          "slugHint": "Սլագը սահմանվում է ստեղծման պահին և չի կարող փոխվել։",
+          "description": "Նկարագրություն",
+          "logoUrl": "Լոգոյի URL",
+          "phone": "Հեռախոս",
+          "email": "Էլ. փոստ",
+          "website": "Կայք",
+          "city": "Քաղաք",
+          "address": "Հասցե"
+        }
+      }
+    },
+    "projects": {
+      "title": "Նախագծեր",
+      "empty": "Այս ֆիլտրով նախագծեր չկան։",
+      "columns": {
+        "company": "Ընկերություն",
+        "name": "Անվանում",
+        "status": "Կարգավիճակ",
+        "buildings": "Շենքեր",
+        "updatedAt": "Թարմացված",
+        "actions": "Գործողություններ"
+      },
+      "status": {
+        "DRAFT": "Սևագիր",
+        "PUBLISHED": "Հրապարակված",
+        "ARCHIVED": "Արխիվ"
+      },
+      "filter": {
+        "all": "Բոլորը",
+        "ariaLabel": "Զտել նախագծերը ըստ կարգավիճակի"
+      }
+    },
+    "readiness": {
+      "title": "Կառուցապատողի պատրաստվածություն",
+      "empty": "Պատրաստվածության գնահատումներ դեռ չկան։",
+      "newAssessment": "Նոր գնահատում",
+      "newCategory": "Նոր կատեգորիա",
+      "categoriesTitle": "Կատեգորիաներ",
+      "categoriesEmpty": "Պատրաստվածության կատեգորիաներ դեռ չկան։",
+      "assessmentsTitle": "Գնահատումներ",
+      "edit": "Խմբագրել",
+      "noEvaluator": "—",
+      "activeYes": "Ակտիվ",
+      "activeNo": "Անակտիվ",
+      "categoryColumns": {
+        "name": "Անուն",
+        "key": "Բանալի",
+        "weight": "Քաշ",
+        "sortOrder": "Կարգ",
+        "serviceCategoryKey": "Ծառայության բանալի",
+        "active": "Ակտիվ",
+        "updatedAt": "Թարմացված",
+        "actions": "Գործողություններ"
+      },
+      "columns": {
+        "target": "Թիրախ",
+        "score": "Միավոր",
+        "status": "Կարգավիճակ",
+        "evaluator": "Գնահատող",
+        "updatedAt": "Թարմացված",
+        "actions": "Գործողություններ"
+      },
+      "filter": {
+        "all": "Բոլորը",
+        "ariaLabel": "Զտել գնահատումները ըստ թիրախի տեսակի"
+      },
+      "targets": {
+        "BUILDER_COMPANY": "Ընկերություն",
+        "PROJECT": "Նախագիծ"
+      },
+      "statuses": {
+        "NOT_STARTED": "Չսկսված",
+        "IN_PROGRESS": "Ընթացքում",
+        "NEEDS_IMPROVEMENT": "Բարելավման կարիք",
+        "READY": "Պատրաստ",
+        "BLOCKED": "Արգելափակված"
+      },
+      "categories": {
+        "company_profile": "Ընկերության պրոֆիլ",
+        "project_information": "Նախագծի տեղեկություն",
+        "media_materials": "Մեդիա նյութեր",
+        "apartment_inventory": "Բնակարանների գույքացում",
+        "visual_map_readiness": "Վիզուալ քարտեզի պատրաստվածություն",
+        "pricing_status_clarity": "Գներ / կարգավիճակներ",
+        "crm_request_readiness": "CRM / հայտերի պատրաստվածություն",
+        "event_presentation_readiness": "Միջոցառման ներկայացման պատրաստվածություն"
+      },
+      "categoryForm": {
+        "create": "Նոր պատրաստվածության կատեգորիա",
+        "edit": "Խմբագրել պատրաստվածության կատեգորիան",
+        "submit": "Պահպանել կատեգորիան",
+        "fields": {
+          "key": "Բանալի",
+          "keyHint": "Բանալին սահմանվում է ստեղծման ժամանակ և չի փոխվում։",
+          "keyCreateHint": "Կայուն snake_case բանալի (օր. media_materials)։",
+          "name": "Անուն",
+          "description": "Նկարագրություն",
+          "weight": "Քաշ",
+          "sortOrder": "Տեսակավորման կարգ",
+          "serviceCategoryKey": "Ծառայության կատեգորիայի բանալի",
+          "serviceCategoryKeyHint": "Կապվում է գործընկերների serviceCategories-ին՝ առաջարկների համար։",
+          "active": "Ակտիվ"
+        }
+      },
+      "form": {
+        "create": "Նոր պատրաստվածության գնահատում",
+        "edit": "Խմբագրել պատրաստվածության գնահատումը",
+        "submit": "Պահպանել գնահատումը",
+        "categoriesTitle": "Կատեգորիաների միավորներ",
+        "fields": {
+          "targetType": "Թիրախի տեսակ",
+          "company": "Ընկերություն",
+          "companyPlaceholder": "Ընտրեք ընկերություն",
+          "project": "Նախագիծ",
+          "projectPlaceholder": "Ընտրեք նախագիծ",
+          "status": "Ընդհանուր կարգավիճակ",
+          "responsibleContact": "Պատասխանատու կոնտակտ",
+          "recommendation": "Առաջարկություններ (տեսանելի կառուցապատողին)",
+          "requiredActions": "Պարտադիր գործողություններ (տեսանելի կառուցապատողին)",
+          "internalNotes": "Ներքին նշումներ",
+          "internalNotesHint": "Միայն BigProjects ադմինների համար — կառուցապատողներին չի ցուցադրվում։",
+          "score": "Միավոր (0–100)",
+          "categoryStatus": "Կատեգորիայի կարգավիճակ",
+          "categoryRecommendation": "Կատեգորիայի առաջարկություն",
+          "categoryRequiredActions": "Կատեգորիայի գործողություններ",
+          "categoryInternalNote": "Կատեգորիայի ներքին նշում"
+        }
+      }
+    },
+    "publication": {
+      "actions": {
+        "publish": "Հրապարակել",
+        "archive": "Արխիվացնել",
+        "draft": "Վերադարձ սևագրին"
+      },
+      "confirm": {
+        "publish": "Հրապարակե՞լ այս նախագիծը։ Այն կհայտնվի հանրային կատալոգում։",
+        "archive": "Արխիվացնե՞լ այս նախագիծը։ Այն կթաքցվի հանրային կատալոգից։",
+        "draft": "Վերադարձնե՞լ նախագիծը սևագրի։ Այն կթաքցվի հանրային կատալոգից։"
+      }
+    },
+    "provision": {
+      "title": "Ստեղծել հաշիվ",
+      "description": "Ստեղծեք կառուցապատողի, գործընկերի, ադմինի կամ մուտքի անձնակազմի հաշիվ։ Գնորդները գրանցվում են ինքնուրույն։",
+      "submit": "Ստեղծել հաշիվ",
+      "devInviteUrlLabel": "Հրավերի հղում (միայն լոկալ թեստավորման համար)՝",
+      "fields": {
+        "email": "Էլ. փոստ",
+        "name": "Անուն Ազգանուն",
+        "role": "Դեր",
+        "companyName": "Ընկերության անվանում",
+        "companyNameHint": "Պարտադիր է կառուցապատողի և գործընկերի դերերի համար։",
+        "partnerId": "Գործընկերոջ պրոֆիլ",
+        "partnerIdNone": "Առանց կապի",
+        "partnerIdHint": "Ընտրովի։ Կապում է հաշվի ընկերությունը գոյություն ունեցող գործընկերոջ պրոֆիլի հետ։"
+      },
+      "errors": {
+        "invalidInput": "Ստուգեք դաշտերը և կրկին փորձեք։",
+        "emailTaken": "Այս էլ. փոստն արդեն օգտագործվում է։",
+        "unauthorized": "Դուք չունեք հաշիվներ ստեղծելու թույլտվություն։"
+      },
+      "success": {
+        "provisioned": "Հաշիվը հաջողությամբ ստեղծվեց։ Գաղտնաբառ սահմանելու հրավերով նամակ ուղարկվեց։",
+        "provisionedEmailFailed": "Հաշիվը ստեղծվեց, բայց հրավերի նամակը հնարավոր չեղավ ուղարկել։ Հրավերի հղումը փոխանցեք օգտագործողին ձեռքով։"
+      }
+    },
+    "users": {
+      "title": "Ստեղծված հաշիվներ",
+      "empty": "Դեռ ստեղծված հաշիվներ չկան։",
+      "noName": "—",
+      "noCompany": "—",
+      "columns": {
+        "email": "Էլ. փոստ",
+        "name": "Անուն",
+        "role": "Դեր",
+        "company": "Ընկերություն",
+        "createdAt": "Ստեղծված"
+      },
+      "roles": {
+        "BIGPROJECTS_ADMIN": "BigProjects ադմին",
+        "BUILDER": "Կառուցապատող",
+        "PARTNER": "Գործընկեր",
+        "ENTRANCE_STAFF": "Մուտքի անձնակազմ"
+      }
+    },
+    "exhibition": {
+      "title": "Ցուցահանդեսի միջոցառումներ",
+      "empty": "Դեռ ցուցահանդեսի միջոցառումներ չկան։",
+      "newEvent": "Նոր միջոցառում",
+      "edit": "Խմբագրել",
+      "noDates": "Ամսաթվեր չկան",
+      "columns": {
+        "name": "Անվանում",
+        "code": "Կոդ",
+        "status": "Կարգավիճակ",
+        "checkIns": "Չեք-իներ",
+        "dates": "Ամսաթվեր",
+        "actions": "Գործողություններ"
+      },
+      "form": {
+        "create": "Նոր ցուցահանդեսի միջոցառում",
+        "edit": "Խմբագրել միջոցառումը",
+        "submit": "Պահպանել",
+        "fields": {
+          "name": "Անվանում",
+          "code": "Կոդ",
+          "codeHint": "Լատինատառեր, թվեր և գծիկներ։",
+          "startDate": "Սկիզբ",
+          "endDate": "Ավարտ",
+          "status": "Կարգավիճակ"
+        },
+        "statuses": {
+          "PLANNING": "Պլանավորում",
+          "ACTIVE": "Ակտիվ",
+          "COMPLETED": "Ավարտված",
+          "ARCHIVED": "Արխիվ",
+          "CANCELLED": "Չեղարկված"
+        }
+      },
+      "recent": {
+        "title": "Վերջին չեք-իներ",
+        "empty": "Դեռ չեք-իներ չկան։",
+        "unnamed": "—",
+        "columns": {
+          "visitor": "Այցելու",
+          "event": "Միջոցառում",
+          "staff": "Աշխատակից",
+          "checkedInAt": "Ժամանակ"
+        }
+      },
+      "venueMap": "Տաղավարի քարտեզ",
+      "venue": {
+        "back": "Վերադառնալ իրադարձություններին",
+        "title": "Տաղավարի քարտեզ — {name}",
+        "saveMap": "Պահպանել քարտեզը",
+        "noMap": "Պահպանեք պատկերի URL՝ տաղավարներ տեղադրելու համար։",
+        "clickHint": "Սեղմեք քարտեզին՝ տաղավար ավելացնելու, կամ մարկերին՝ խմբագրելու համար։",
+        "coordHint": "Կոորդինատները տոկոսներ են {min}-ից {max}։",
+        "fields": {
+          "imageUrl": "Քարտեզի պատկերի URL",
+          "imageAlt": "Պատկերի alt տեքստ"
+        },
+        "boothForm": {
+          "create": "Նոր տաղավար",
+          "edit": "Խմբագրել տաղավարը",
+          "submit": "Պահպանել տաղավարը",
+          "delete": "Ջնջել տաղավարը",
+          "deleteConfirm": "Ջնջե՞լ այս տաղավարը։",
+          "none": "Չկա",
+          "fields": {
+            "code": "Տաղավարի կոդ",
+            "label": "Անվանում",
+            "xPercent": "X %",
+            "yPercent": "Y %",
+            "company": "Ընկերություն",
+            "partner": "Գործընկեր",
+            "note": "Նշում"
+          }
+        },
+        "path": {
+          "title": "Երթուղու գրաֆ",
+          "hint": "Սահմանեք մուտքը, ավելացրեք միջանկյալ կետեր, ապա կապեք երկու հանգույց։ Տաղավար պահպանելիս ավտոմատ ստեղծվում է BOOTH հանգույց։",
+          "entranceStatus": "Մուտք՝ {status}",
+          "entranceUnset": "սահմանված չէ (երթուղիներն անհասանելի են)",
+          "modesLabel": "Երթուղու խմբագրման ռեժիմ",
+          "modes": {
+            "entrance": "Սահմանել մուտք",
+            "waypoint": "Ավելացնել կետ",
+            "link": "Կապել հանգույցներ"
+          },
+          "linkPickSecond": "Սեղմեք երկրորդ հանգույցը՝ եզր ստեղծելու համար։",
+          "deleteNode": "Ջնջել հանգույցը",
+          "deleteEdge": "Ջնջել եզրը"
+        }
+      }
+    },
+    "integrations": {
+      "title": "Ինտեգրումներ",
+      "subtitle": "BOS և արտաքին ինտեգրումների վերջին աուդիտ իրադարձությունները։",
+      "empty": "Ինտեգրման իրադարձություններ դեռ չկան։",
+      "externalRefEmpty": "—",
+      "columns": {
+        "createdAt": "Երբ",
+        "direction": "Ուղղություն",
+        "operation": "Գործողություն",
+        "status": "Կարգավիճակ",
+        "externalRef": "Արտաքին ref"
+      },
+      "directions": {
+        "INBOUND": "Մուտքային",
+        "OUTBOUND": "Ելքային"
+      },
+      "statuses": {
+        "RECEIVED": "Ստացված",
+        "SUCCEEDED": "Հաջող",
+        "FAILED": "Ձախողված"
+      }
+    },
+    "audit": {
+      "title": "Աուդիտի մատյան",
+      "subtitle": "Հրապարակման և պրովիզիոնինգի գործողություններ հարթակում։",
+      "empty": "Աուդիտի իրադարձություններ դեռ չկան։",
+      "detailEmpty": "—",
+      "exportCsv": "Արտահանել CSV",
+      "filter": {
+        "ariaLabel": "Ֆիլտրել աուդիտը ըստ սուբյեկտի տեսակի",
+        "all": "Բոլորը"
+      },
+      "columns": {
+        "createdAt": "Երբ",
+        "actor": "Գործող",
+        "action": "Գործողություն",
+        "entity": "Սուբյեկտ",
+        "detail": "Մանրամասն"
+      },
+      "actions": {
+        "PUBLICATION_CHANGE": "Հրապարակման փոփոխություն",
+        "PROVISION_ACCOUNT": "Հաշվի պրովիզիոնինգ",
+        "SETTINGS_UPDATE": "Կարգավորումների թարմացում",
+        "ACTING_ON_BEHALF_START": "Ընկերության անունից աշխատանքի սկիզբ",
+        "ACTING_ON_BEHALF_STOP": "Ընկերության անունից աշխատանքի ավարտ",
+        "READINESS_ASSESSMENT_UPSERT": "Պատրաստվածության գնահատման թարմացում"
+      },
+      "entityTypes": {
+        "PROJECT": "Նախագիծ",
+        "BUILDING": "Շենք",
+        "FLOOR": "Հարկ",
+        "PARTNER": "Գործընկեր",
+        "BANK_OFFER": "Բանկային առաջարկ",
+        "VISUAL_CANVAS": "Վիզուալ քարտեզ",
+        "EXHIBITION_EVENT": "Ցուցահանդեսային միջոցառում",
+        "USER": "Օգտատեր",
+        "PLATFORM_SETTING": "Հարթակի կարգավորում",
+        "COMPANY": "Ընկերություն",
+        "READINESS_ASSESSMENT": "Պատրաստվածության գնահատում"
+      }
+    },
+    "settings": {
+      "title": "Հարթակի կարգավորումներ",
+      "subtitle": "Կառավարեք հարթակի կոնֆիգուրացիան։",
+      "edit": "Խմբագրել",
+      "unset": "—",
+      "columns": {
+        "key": "Կարգավորում",
+        "value": "Արժեք",
+        "updatedAt": "Թարմացվել է",
+        "actions": "Գործողություններ"
+      },
+      "keys": {
+        "CONTACT_EMAIL": "Կոնտակտային էլ. փոստ",
+        "CONTACT_PHONE": "Կոնտակտային հեռախոս",
+        "MORTGAGE_PAGE_ENABLED": "Հիփոթեքի էջը միացված է"
+      },
+      "form": {
+        "edit": "Խմբագրել կարգավորումը",
+        "submit": "Պահպանել",
+        "fields": {
+          "value": "Արժեք"
+        },
+        "boolean": {
+          "true": "Միացված",
+          "false": "Անջատված"
+        }
+      }
+    },
+    "analytics": {
+      "title": "Վերլուծություն",
+      "subtitle": "Հարթակի ամփոփում և վերջին {days} օրը.",
+      "empty": "Դեռ տվյալներ չկան.",
+      "exports": {
+        "ariaLabel": "CSV հաշվետվությունների արտահանում",
+        "deals": "Արտահանել գործարքներ CSV",
+        "checkins": "Արտահանել check-in-ներ CSV",
+        "projectViews": "Արտահանել նախագծերի դիտումներ CSV",
+        "audit": "Արտահանել աուդիտ CSV"
+      },
+      "stats": {
+        "projectViewsTotal": "Նախագծերի դիտումներ (ընդամենը)",
+        "projectViewsRecent": "Նախագծերի դիտումներ (վերջին)",
+        "apartmentViewsTotal": "Բնակարանների դիտումներ (ընդամենը)",
+        "apartmentViewsRecent": "Բնակարանների դիտումներ (վերջին)",
+        "boothSelectedTotal": "Տաղավարի ընտրություններ (ընդամենը)",
+        "routeRequestedTotal": "Երթուղու հարցումներ (ընդամենը)"
+      },
+      "sections": {
+        "dealsByStage": "Գործարքներ ըստ փուլի",
+        "dealsBySource": "Հարցումներ ըստ աղբյուրի",
+        "dealsBySourceRecent": "Հարցումներ ըստ աղբյուրի (վերջին)",
+        "qrScans": "QR սկաներ ըստ նպատակի",
+        "checkIns": "Check-in-ներ ըստ միջոցառման",
+        "projectsByStatus": "Նախագծեր ըստ հրապարակման կարգավիճակի",
+        "apartmentsByStatus": "Բնակարաններ ըստ կարգավիճակի",
+        "readiness": "Readiness միջին գնահատական ըստ ընկերության",
+        "partnersByType": "Գործընկերներ ըստ տեսակի"
+      },
+      "columns": {
+        "label": "Պիտակ",
+        "count": "Քանակ"
+      },
+      "stages": {
+        "NEW_REQUEST": "Նոր հարցում",
+        "ASSIGNED": "Նշանակված",
+        "CONTACTED": "Կապ հաստատված",
+        "FOLLOW_UP_NEEDED": "Հետևում է պետք",
+        "APARTMENT_SELECTED": "Բնակարան ընտրված",
+        "RESERVED": "Ամրագրված",
+        "CONVERTED": "Փոխակերպված",
+        "CLOSED": "Փակված",
+        "LOST": "Կորած"
+      },
+      "sources": {
+        "PROJECT_PAGE": "Նախագծի էջ",
+        "APARTMENT_PAGE": "Բնակարանի էջ",
+        "BUILDER_QR_SCAN": "QR սկան",
+        "MANUAL_BUILDER_ENTRY": "Ձեռքով մուտք",
+        "EVENT_INTERACTION": "Միջոցառում"
+      },
+      "qrPurposes": {
+        "BUILDER_SCAN": "Կառուցապատողի սկան",
+        "ENTRANCE_CHECKIN": "Մուտքի check-in",
+        "BUYER_SELF_VIEW": "Գնորդի ինքնադիտում",
+        "UNKNOWN": "Անհայտ"
+      },
+      "publicationStatuses": {
+        "DRAFT": "Սևագիր",
+        "PUBLISHED": "Հրապարակված",
+        "ARCHIVED": "Արխիվ"
+      },
+      "apartmentStatuses": {
+        "AVAILABLE": "Հասանելի",
+        "RESERVED": "Ամրագրված",
+        "SOLD": "Վաճառված"
+      },
+      "partnerTypes": {
+        "BANK": "Բանկ",
+        "IT_COMPANY": "IT ընկերություն",
+        "SPONSOR": "Հովանավոր",
+        "SUPPLIER": "Մատակարար",
+        "INSURANCE": "Ապահովագրություն",
+        "LEGAL": "Իրավական",
+        "DESIGN_FURNITURE": "Դիզայն / կահույք",
+        "SERVICE_COMPANY": "Ծառայությունների ընկերություն",
+        "OTHER": "Այլ"
+      }
+    }
+  },
+  "portal": {
+    "nav": {
+      "ariaLabel": "Կառուցապատողի պորտալի նավիգացիա",
+      "overview": "Ակնարկ",
+      "projects": "Նախագծեր",
+      "crm": "CRM",
+      "readiness": "Պատրաստվածություն",
+      "analytics": "Վերլուծություն",
+      "company": "Ընկերություն"
+    },
+    "actingOnBehalf": {
+      "message": "Կառավարում եք «{company}»-ը որպես ադմին",
+      "exit": "Վերադառնալ ադմին"
+    },
+    "companySwitcher": {
+      "label": "Ակտիվ ընկերություն",
+      "ariaLabel": "Փոխել ակտիվ ընկերությունը"
+    },
+    "overview": {
+      "title": "Ակնարկ",
+      "stats": {
+        "draft": "Սևագիր",
+        "published": "Հրապարակված",
+        "archived": "Արխիվացված"
+      },
+      "booth": "Ձեր տաղավարը՝ {code} ({label}) — {event}"
+    },
+    "company": {
+      "title": "Ընկերություն",
+      "subtitle": "Ձեր ընկերության պրոֆիլը և թիմի անդամները։",
+      "profileTitle": "Ընկերության պրոֆիլ",
+      "editProfile": "Խմբագրել պրոֆիլը",
+      "profileMissing": "Ընկերության պրոֆիլը չհաջողվեց բեռնել։",
+      "teamTitle": "Թիմ",
+      "teamEmpty": "Այս ընկերությանը դեռ անդամներ չեն կցված։",
+      "noValue": "—",
+      "fields": {
+        "description": "Նկարագրություն",
+        "phone": "Հեռախոս",
+        "email": "Էլ. փոստ",
+        "website": "Կայք",
+        "location": "Հասցե"
+      },
+      "columns": {
+        "name": "Անուն",
+        "email": "Էլ. փոստ",
+        "role": "Դեր",
+        "joinedAt": "Միացել է"
+      },
+      "roles": {
+        "BIGPROJECTS_ADMIN": "BigProjects ադմին",
+        "BUILDER": "Կառուցապատող",
+        "PARTNER": "Գործընկեր",
+        "BUYER": "Գնորդ",
+        "ENTRANCE_STAFF": "Մուտքի անձնակազմ"
+      },
+      "form": {
+        "title": "Խմբագրել ընկերության պրոֆիլը",
+        "submit": "Պահպանել",
+        "fields": {
+          "name": "Ընկերության անուն",
+          "description": "Նկարագրություն",
+          "logoUrl": "Լոգոյի URL",
+          "phone": "Հեռախոս",
+          "email": "Էլ. փոստ",
+          "website": "Կայք",
+          "city": "Քաղաք",
+          "address": "Հասցե"
+        }
+      }
+    },
+    "readiness": {
+      "title": "Պատրաստվածություն",
+      "subtitle": "Միավորներ, առաջարկություններ և պարտադիր գործողություններ ձեր ընկերության և նախագծերի համար։",
+      "empty": "Պատրաստվածության գնահատում դեռ չկա։ BigProjects-ը կհրապարակի ուղեցույցները գնահատումից հետո։",
+      "overallScore": "Ընդհանուր միավոր",
+      "status": "Կարգավիճակ",
+      "recommendation": "Առաջարկություններ",
+      "requiredActions": "Պարտադիր գործողություններ",
+      "lastUpdated": "Վերջին թարմացում",
+      "categoriesTitle": "Կատեգորիաներ",
+      "helpProviders": "Օգնություն / Մատակարարներ",
+      "targets": {
+        "BUILDER_COMPANY": "Ընկերության պատրաստվածություն",
+        "PROJECT": "Նախագծի պատրաստվածություն"
+      },
+      "statuses": {
+        "NOT_STARTED": "Չսկսված",
+        "IN_PROGRESS": "Ընթացքում",
+        "NEEDS_IMPROVEMENT": "Բարելավման կարիք",
+        "READY": "Պատրաստ",
+        "BLOCKED": "Արգելափակված"
+      },
+      "categories": {
+        "company_profile": "Ընկերության պրոֆիլ",
+        "project_information": "Նախագծի տեղեկություն",
+        "media_materials": "Մեդիա նյութեր",
+        "apartment_inventory": "Բնակարանների գույքացում",
+        "visual_map_readiness": "Վիզուալ քարտեզի պատրաստվածություն",
+        "pricing_status_clarity": "Գներ / կարգավիճակներ",
+        "crm_request_readiness": "CRM / հայտերի պատրաստվածություն",
+        "event_presentation_readiness": "Միջոցառման ներկայացման պատրաստվածություն"
+      },
+      "providers": {
+        "title": "Օգնություն / Մատակարարներ",
+        "description": "Առաջարկվող սերվիսային ընկերություններ թույլ կատեգորիաների համար։ Կապվեք ուղղակիորեն — հավելվածում ամրագրում չկա։",
+        "openProfile": "Բացել պրոֆիլը",
+        "contact": "Կապ"
+      }
+    },
+    "errors": {
+      "unauthorized": "Դուք չունեք այս գործողությունը կատարելու իրավասություն։",
+      "invalidInput": "Ստուգեք դաշտերը և կրկին փորձեք։",
+      "notFound": "Հարցված տարրը չի գտնվել։",
+      "targetMismatch": "Ընտրված նպատակը չի պատկանում այս վիզուալ քարտեզի կոնտեքstին։",
+      "levelTaken": "Այս հարկի մակարդակն արդեն օգտագործվում է այս շենքում։",
+      "codeTaken": "Այս բնակարանի կոդն արդեն օգտագործվում է այս հարկում։",
+      "nameTaken": "Այս անվանումով նախագիծ արդեն գոյություն ունի։"
+    },
+    "crm": {
+      "title": "CRM",
+      "empty": "Գործարքներ դեռ չկան։ Ստեղծեք ձեռքով կամ սպասեք գնորդների հարցումներին։",
+      "newDeal": "Նոր գործարք",
+      "view": {
+        "board": "Տախտակ",
+        "list": "Ցանկ"
+      },
+      "card": {
+        "unnamedContact": "Անանուն կոնտակտ",
+        "noProject": "Առանց նախագծի",
+        "noAssignee": "Նշանակված չէ",
+        "noActivity": "Ակտիվություն չկա",
+        "apartmentCount": "{count} բնակարան"
+      },
+      "list": {
+        "columns": {
+          "contact": "Կոնտակտ",
+          "project": "Նախագիծ",
+          "stage": "Փուլ",
+          "source": "Աղբյուր",
+          "assignee": "Պատասխանատու",
+          "apartments": "Բնակարաններ",
+          "lastActivity": "Վերջին ակտիվություն"
+        }
+      },
+      "stages": {
+        "NEW_REQUEST": "Նոր հարցում",
+        "ASSIGNED": "Նշանակված",
+        "CONTACTED": "Կապ հաստատված",
+        "FOLLOW_UP_NEEDED": "Պետք է հետևել",
+        "APARTMENT_SELECTED": "Բնակարան ընտրված",
+        "RESERVED": "Ամրագրված",
+        "CONVERTED": "Վաճառք",
+        "CLOSED": "Փակված",
+        "LOST": "Կորած"
+      },
+      "sources": {
+        "PROJECT_PAGE": "Նախագծի էջ",
+        "APARTMENT_PAGE": "Բնակարանի էջ",
+        "BUILDER_QR_SCAN": "QR սկան",
+        "MANUAL_BUILDER_ENTRY": "Ձեռքով մուտք",
+        "EVENT_INTERACTION": "Միջոցառում"
+      },
+      "activityTypes": {
+        "COMMENT": "Մեկնաբանություն",
+        "FOLLOW_UP": "Հետևում",
+        "STATUS_CHANGE": "Կարգավիճակի փոփոխություն"
+      },
+      "errors": {
+        "unauthorized": "Դուք չունեք այս գործողությունը կատարելու իրավասություն։",
+        "invalidInput": "Ստուգեք դաշտերը և կրկին փորձեք։",
+        "notFound": "Հարցված գործարքը չի գտնվել։",
+        "apartmentRequired": "Այս փուլին անցնելուց առաջ կապեք բնակարան։",
+        "reservationConflict": "Բնակարանը հնարավոր չէ ամրագրել՝ պաշարների կոնֆլիկտի պատճառով։"
+      },
+      "manualDeal": {
+        "title": "Նոր գործարք",
+        "submit": "Ստեղծել գործարք",
+        "fields": {
+          "contactName": "Կոնտակտի անուն",
+          "contactPhone": "Հեռախոս",
+          "contactEmail": "Էլ. փոստ (ընտրովի)",
+          "message": "Հաղորդագրություն (ընտրովի)",
+          "project": "Նախագիծ (ընտրովի)",
+          "noProject": "Առանց նախագծի"
+        }
+      },
+      "dealSheet": {
+        "title": "Գործարք — {name}",
+        "source": "Աղբյուր",
+        "createdAt": "Ստեղծված",
+        "stage": "Փուլ",
+        "assignee": "Պատասխանատու",
+        "unassigned": "Նշանակված չէ",
+        "noValue": "—",
+        "contact": {
+          "title": "Կոնտակտ",
+          "phone": "Հեռախոս",
+          "email": "Էլ. փոստ",
+          "buyerLinked": "Գրանցված գնորդ",
+          "message": "Հարցման տեքստ"
+        },
+        "apartments": {
+          "title": "Բնակարաններ",
+          "empty": "Բնակարան դեռ չի ընտրվել։",
+          "emptyHint": "Կապեք բնակարան՝ ամրագրման կամ վաճառքի համար։",
+          "link": "Կապել բնակարան",
+          "unlink": "Անջատել",
+          "project": "Նախագիծ",
+          "apartment": "Բնակարան",
+          "price": "{value} AMD",
+          "priceAtRequest": "դիմելու պահին՝ {value} AMD"
+        },
+        "activities": {
+          "title": "Ակտիվություն",
+          "empty": "Հետևման ակտիվություն դեռ չկա։",
+          "comment": "Ավելացնել մեկնաբանություն",
+          "followUp": "Պլանավորել հետևում",
+          "submitComment": "Ավելացնել մեկնաբանություն",
+          "submitFollowUp": "Ավելացնել հետևում",
+          "nextFollowUpAt": "Հաջորդ հետևում",
+          "dueAt": "Ժամկետ",
+          "markDone": "Կատարված",
+          "markCancelled": "Չեղարկել",
+          "statuses": {
+            "PLANNED": "Պլանավորված",
+            "DONE": "Կատարված",
+            "CANCELLED": "Չեղարկված"
+          },
+          "noAuthor": "Համակարգ"
+        }
+      }
+    },
+    "projects": {
+      "title": "Նախագծեր",
+      "empty": "Դեռ նախագծեր չկան։",
+      "newProject": "Նոր նախագիծ",
+      "noCity": "—",
+      "columns": {
+        "name": "Անվանում",
+        "city": "Քաղաք",
+        "status": "Կարգավիճակ",
+        "buildings": "Շենքեր",
+        "updatedAt": "Թարմացված",
+        "actions": "Գործողություններ"
+      },
+      "status": {
+        "DRAFT": "Սևագիր",
+        "PUBLISHED": "Հրապարակված",
+        "ARCHIVED": "Արխիվացված"
+      }
+    },
+    "publication": {
+      "actions": {
+        "publish": "Հրապարակել",
+        "archive": "Արխիվացնել",
+        "draft": "Վերադարձ սևագրին"
+      },
+      "confirm": {
+        "publish": "Հրապարակե՞լ այս նախագիծը։ Այն կհայտնվի հանրային կատալոգում։",
+        "archive": "Արխիվացնե՞լ այս նախագիծը։ Այն կթաքցվի հանրային կատալոգից։",
+        "draft": "Վերադարձնե՞լ նախագիծը սևագրի։ Այն կթաքցվի հանրային կատալոգից։"
+      }
+    },
+    "inventoryPublication": {
+      "actions": {
+        "publish": "Հրապարակել",
+        "archive": "Արխիվացնել",
+        "draft": "Վերադարձ սևագրին"
+      },
+      "confirm": {
+        "building": {
+          "publish": "Հրապարակե՞լ այս շենքը։ Նրա հարկերն ու բնակարանները կերևան նախագծի հանրային էջում։",
+          "archive": "Արխիվացնե՞լ այս շենքը։ Այն կթաքցվի հանրային կատալոգից։",
+          "draft": "Վերադարձնե՞լ շենքը սևագրի։ Այն կթաքցվի հանրային կատալոգից։"
+        },
+        "floor": {
+          "publish": "Հրապարակե՞լ այս հարկը։ Նրա բնակարանները կերևան նախագծի հանրային էջում։",
+          "archive": "Արխիվացնե՞լ այս հարկը։ Այն կթաքցվի հանրային կատալոգից։",
+          "draft": "Վերադարձնե՞լ հարկը սևագրի։ Այն կթաքցվի հանրային կատալոգից։"
+        }
+      }
+    },
+    "projectForm": {
+      "create": "Նոր նախագիծ",
+      "edit": "Խմբագրել նախագիծը",
+      "submit": "Պահպանել",
+      "fields": {
+        "name": "Անվանում",
+        "city": "Քաղաք",
+        "address": "Հասցե",
+        "description": "Նկարագրություն"
+      }
+    },
+    "buildingForm": {
+      "create": "Ավելացնել շենք",
+      "edit": "Խմբագրել շենքը",
+      "submit": "Պահպանել",
+      "fields": {
+        "name": "Անվանում",
+        "description": "Նկարագրություն"
+      }
+    },
+    "floorForm": {
+      "create": "Ավելացնել հարկ",
+      "edit": "Խմբագրել հարկը",
+      "submit": "Պահպանել",
+      "fields": {
+        "name": "Անվանում",
+        "level": "Մակարդակ",
+        "levelHint": "Ամբողջ թիվ -5-ից 100. Պետք է եզակի լինի շենքի ներսում։"
+      }
+    },
+    "apartmentForm": {
+      "create": "Ավելացնել բնակարան",
+      "edit": "Խմբագրել բնակարանը",
+      "submit": "Պահպանել",
+      "fields": {
+        "code": "Միավորի կոդ",
+        "rooms": "Սենյակներ",
+        "areaSqm": "Մակերես (մ²)",
+        "priceAmd": "Գին (AMD)",
+        "priceVisibility": "Գնի տեսանելիություն",
+        "matterportUrl": "Matterport / 3D հղում",
+        "status": "Կարգավիճակ"
+      },
+      "statusHistory": {
+        "title": "Կարգավիճակի պատմություն",
+        "empty": "Կարգավիճակի փոփոխություններ դեռ չկան։"
+      }
+    },
+    "apartmentStatusHistorySource": {
+      "CRM_STAGE": "CRM փուլ",
+      "MANUAL_INVENTORY": "Ձեռքով գույքագրում",
+      "SYSTEM": "Համակարգ"
+    },
+    "mediaForm": {
+      "create": "Ավելացնել մեդիա",
+      "edit": "Խմբագրել",
+      "add": "Ավելացնել մեդիա",
+      "editAction": "Խմբագրել",
+      "delete": "Ջնջել",
+      "submit": "Պահպանել",
+      "empty": "Դեռ մեդիա չկա։",
+      "noAlt": "Alt տեքստ չկա",
+      "coverBadge": "Շապիկ",
+      "coverHint": "Ամենափոքր sort order-ով տարրը օգտագործվում է որպես նախագծի շապիկ։ Լրացուցիչ ընտրություն կարող է ավելացվել հետո։",
+      "confirmDelete": "Ջնջե՞լ այս մեդիա տարրը։",
+      "uploadHint": "Վերբեռնեք JPEG, PNG կամ WebP պատկեր (առավելագույնը 10 ՄԲ)։ Կարող եք նաև տեղադրել հրապարակային URL։",
+      "pasteUrlToggle": "Կամ տեղադրել պատկերի URL",
+      "apartmentTitle": "Մեդիա — {code}",
+      "section": {
+        "title": "Մեդիա"
+      },
+      "fields": {
+        "file": "Պատկերի ֆայլ",
+        "fileHint": "JPEG, PNG կամ WebP · մինչև 10 ՄԲ",
+        "url": "Պատկերի URL",
+        "urlPlaceholder": "https://…",
+        "urlHint": "Օգտագործեք, եթե ֆայլի վերբեռնումը հասանելի չէ կամ ունեք պատրաստի հրապարակային URL։",
+        "alt": "Alt տեքստ",
+        "sortOrder": "Տեսակավորման կարգ",
+        "sortOrderHint": "Փոքր թվերը ցուցադրվում են առաջ (0–999)։"
+      },
+      "uploadStatus": {
+        "presigning": "Վերբեռնման նախապատրաստում…",
+        "uploading": "Վերբեռնում…",
+        "readyNamed": "Պատրաստ է՝ {name}"
+      },
+      "uploadErrors": {
+        "storageNotConfigured": "Ֆայլի վերբեռնումը կարգավորված չէ այս միջավայրում։ Տեղադրեք պատկերի հրապարակային URL։",
+        "rateLimited": "Չափից շատ վերբեռնման հարցումներ։ Սպասեք մեկ րոպե և կրկին փորձեք։",
+        "unauthorized": "Վերբեռնելու համար պետք է մուտք գործել որպես կառուցապատող։",
+        "uploadFailed": "Վերբեռնումը ձախողվեց։ Կրկին փորձեք կամ տեղադրեք URL։",
+        "unsupportedType": "Թույլատրվում են միայն JPEG, PNG և WebP պատկերներ։",
+        "fileTooLarge": "Ֆայլը չափազանց մեծ է։ Առավելագույն չափը 10 ՄԲ է։"
+      }
+    },
+    "priceVisibility": {
+      "PUBLIC": "Հրապարակային",
+      "BY_REQUEST": "Հարցումով",
+      "HIDDEN": "Թաքնված",
+      "VISIBLE_AFTER_LOGIN": "Մուտքից հետո"
+    },
+    "apartmentStatus": {
+      "AVAILABLE": "Հասանելի",
+      "RESERVED": "Պահված",
+      "SOLD": "Վաճառված"
+    },
+    "projectDetail": {
+      "editProject": "Խմբագրել նախագիծը",
+      "buildings": {
+        "title": "Շենքեր",
+        "addBuilding": "Ավելացնել շենք",
+        "empty": "Դեռ շենքեր չկան։",
+        "editBuilding": "Խմբագրել",
+        "addFloor": "Ավելացնել հարկ",
+        "emptyFloors": "Դեռ հարկեր չկան։",
+        "level": "մակարդակ",
+        "editFloor": "Խմբագրել հարկը"
+      },
+      "apartments": {
+        "title": "Բնակարաններ",
+        "addApartment": "Ավելացնել բնակարան",
+        "edit": "Խմբագրել",
+        "media": "Մեդիա",
+        "noValue": "—",
+        "columns": {
+          "code": "Միավոր",
+          "rooms": "Սենյակներ",
+          "areaSqm": "Մակերես (մ²)",
+          "priceAmd": "Գին",
+          "status": "Կարգավիճակ",
+          "actions": "Գործողություններ"
+        }
+      },
+      "completenessHint": "Ամբողջական ցանկի համար պակասում է՝ {items}։"
+    },
+    "visualMap": {
+      "section": {
+        "title": "Վիզուալ քարտեզներ",
+        "newCanvas": "Նոր քարտեզ",
+        "empty": "Դեռ վիզուալ քարտեզներ չկան։",
+        "hotspotCount": "{count} նշում",
+        "untitled": "Անվերնագիր"
+      },
+      "context": {
+        "project": "Նախագիծ",
+        "building": "Շենք",
+        "floor": "Հարկ"
+      },
+      "errors": {
+        "unauthorized": "Դուք չունեք այս գործողությունը կատարելու իրավասություն։",
+        "invalidInput": "Ստուգեք դաշտերը և կրկին փորձեք։",
+        "notFound": "Հարցված տարրը չի գտնվել։",
+        "targetMismatch": "Ընտրված նպատակը չի պատկանում այս վիզուալ քարտեզի համատեքstին։"
+      },
+      "canvasForm": {
+        "title": "Նոր վիզուալ քարտեզ",
+        "submit": "Ստեղծել քարտեզ",
+        "context": {
+          "project": "Այս նախագիծ",
+          "building": "Շենք",
+          "floor": "Հարկ"
+        },
+        "fields": {
+          "context": "Կոնտեքst",
+          "building": "Շենք",
+          "floor": "Հարկ",
+          "title": "Վերնագիր",
+          "imageUrl": "Պատկերի URL",
+          "imageUrlHint": "Վերբեռնեք JPEG, PNG կամ WebP պատկեր (մինչև 10 ՄԲ) կամ տեղադրեք հրապարակային URL։",
+          "imageAlt": "Պատկերի նկարագրություն"
+        }
+      },
+      "editor": {
+        "backToProject": "← Վերադառնալ նախագիծ",
+        "untitled": "Անվերնագիր",
+        "clickHint": "Սեղմեք պատկերի վրա՝ նոր նշում ավելացնելու, կամ գոյություն ունեցող նշման վրա՝ խմբագրելու համար։",
+        "pickingHint": "Սեղմեք պատկերի վրա նոր դիրք ընտրելու համար։",
+        "marker": "Նշում",
+        "showArchived": "Ցույց տալ արխիվը ({count})",
+        "hideArchived": "Թաքցնել արխիվը",
+        "restoreHotspot": "Վերականգնել"
+      },
+      "hotspotForm": {
+        "create": "Նոր նշում",
+        "edit": "Խմբագրել նշում",
+        "submit": "Պահպանել նշում",
+        "delete": "Ջնջել նշում",
+        "deleteConfirm": "Ջնջե՞լ այս նշումը։ Գործողությունը հետարկելի չէ։",
+        "pickPosition": "Ընտրել նոր դիրք պատկերի վրա",
+        "pickingActive": "Սեղմեք պատկերի վրա…",
+        "noTargets": "Այս կոնտեքstի համար նպատակներ չկան։",
+        "fields": {
+          "x": "X (%)",
+          "y": "Y (%)",
+          "target": "Նպատակ",
+          "label": "Պիտակ"
+        }
+      },
+      "publication": {
+        "actions": {
+          "publish": "Հրապարակել",
+          "archive": "Արխիվացնել",
+          "draft": "Վերադարձ սևագրին",
+          "delete": "Ջնջել քարտեզ"
+        },
+        "confirm": {
+          "publish": "Հրապարակե՞լ այս վիզուալ քարտեզը։ Այն կհայտնվի նախագծի հրապարակային էջում։",
+          "archive": "Արխիվացնե՞լ այս վիզուալ քարտեզը։ Այն կթաքցվի հրապարակային կայքից։",
+          "draft": "Վերադարձնե՞լ սևագրի։ Այն կթաքցվի հրապարակային կայքից։",
+          "delete": "Ջնջե՞լ այս սևագրի քարտեզը։ Բոլոր նշումները կհեռացվեն։"
+        }
+      }
+    },
+    "analytics": {
+      "title": "Վերլուծություն",
+      "subtitle": "Ձեր ընկերության ցուցանիշները · վերջին {days} օրը նշված է որտեղ կիրառելի է.",
+      "empty": "Դեռ տվյալներ չկան.",
+      "readinessCompany": "Ընկերության readiness",
+      "stats": {
+        "projectViewsRecent": "Նախագծերի դիտումներ (վերջին)",
+        "apartmentViewsRecent": "Բնակարանների դիտումներ (վերջին)",
+        "apartmentViewsTotal": "Բնակարանների դիտումներ (ընդամենը)",
+        "qrScanDeals": "Գործարքներ QR սկանից"
+      },
+      "sections": {
+        "projectViews": "Նախագծերի դիտումներ",
+        "dealsByStage": "CRM ըստ փուլի",
+        "dealsBySource": "Հարցումներ ըստ աղբյուրի",
+        "readiness": "Readiness ամփոփում"
+      },
+      "columns": {
+        "label": "Պիտակ",
+        "count": "Քանակ"
+      },
+      "stages": {
+        "NEW_REQUEST": "Նոր հարցում",
+        "ASSIGNED": "Նշանակված",
+        "CONTACTED": "Կապ հաստատված",
+        "FOLLOW_UP_NEEDED": "Հետևում է պետք",
+        "APARTMENT_SELECTED": "Բնակարան ընտրված",
+        "RESERVED": "Ամրագրված",
+        "CONVERTED": "Փոխակերպված",
+        "CLOSED": "Փակված",
+        "LOST": "Կորած"
+      },
+      "sources": {
+        "PROJECT_PAGE": "Նախագծի էջ",
+        "APARTMENT_PAGE": "Բնակարանի էջ",
+        "BUILDER_QR_SCAN": "QR սկան",
+        "MANUAL_BUILDER_ENTRY": "Ձեռքով մուտք",
+        "EVENT_INTERACTION": "Միջոցառում"
+      }
+    }
+  },
+  "catalog": {
+    "card": {
+      "new": "Նոր"
+    },
+    "list": {
+      "title": "Նախագծեր",
+      "subtitle": "Դիտեք հրապարակված բնակելի համալիրները։",
+      "empty": "Դեռ հրապարակված նախագծեր չկան։",
+      "emptyFiltered": "Ընտրված զտիչներով նախագծեր չկան։",
+      "filter": {
+        "city": "Քաղաք",
+        "cityPlaceholder": "օր. Երևան",
+        "builder": "Կառուցապատող",
+        "builderAll": "Բոլոր կառուցապատողները",
+        "apply": "Կիրառել",
+        "clear": "Մաքրել",
+        "ariaLabel": "Զտել նախագծերը"
+      }
+    },
+    "detail": {
+      "gallery": "Պատկերասրահ",
+      "buildings": "Շենքեր և բնակարաններ",
+      "noValue": "—",
+      "table": {
+        "code": "Բնակարան",
+        "rooms": "Սենյակներ",
+        "areaSqm": "Մակերես (մ²)",
+        "priceAmd": "Գին",
+        "status": "Կարգավիճակ",
+        "request": "Հարցում"
+      },
+      "builder": {
+        "title": "Կառուցապատողի մասին",
+        "phone": "Հեռախոս",
+        "email": "Էլ. փոստ",
+        "website": "Կայք",
+        "viewProfile": "Կառուցապատողի էջ"
+      },
+      "seoFallback": "{project}՝ {company}, ToonExpo-ում"
+    },
+    "apartment": {
+      "backToProject": "← Վերադառնալ {project}",
+      "building": "Շենք",
+      "floor": "Հարկ",
+      "priceByRequest": "Գինը հարցումով",
+      "priceHidden": "Գինը ճշտեք կառուցապատողից",
+      "priceLoginRequired": "Մուտք գործեք՝ գինը տեսնելու համար։",
+      "loginLink": "Մուտք",
+      "matterport": "Դիտել 3D շրջայց",
+      "seoFallback": "{code} բնակարան՝ {project} ({company}), ToonExpo-ում"
+    },
+    "request": {
+      "ctaProject": "Հետաքրքրված եմ",
+      "ctaApartment": "Հետաքրքրված եմ",
+      "titleProject": "Կապի հարցում",
+      "titleApartment": "Հարցում {code} բնակարանի համար",
+      "contextProject": "Նախագիծ՝ {project}",
+      "contextApartment": "Նախագիծ՝ {project} · Բնակարան {code}",
+      "submit": "Ուղարկել հարցում",
+      "close": "Փակել",
+      "successNew": "Ձեր հարցումը ուղարկված է։ Կառուցապատողը շուտով կկապվի ձեզ հետ։",
+      "successDeduped": "Այս նախագծի վերաբերյալ ձեր հարցումն արդեն ունենք։ Կառուցապատողը տեղեկացված է թարմացման մասին։",
+      "successHint": "Մուտք գործելուց հետո հարցումները կարող եք հետևել գնորդի հաշվում։",
+      "fields": {
+        "name": "Անուն",
+        "phone": "Հեռախոս",
+        "email": "Էլ․ փոստ",
+        "message": "Հաղորդագրություն (ընտրովի)"
+      },
+      "errors": {
+        "invalidInput": "Ստուգեք դաշտերը և կրկին փորձեք։",
+        "notFound": "Այս նախագիծը հասանելի չէ հարցումների համար։",
+        "rateLimited": "Չափից շատ հարցումներ։ Սպասեք մեկ րոպե և կրկին փորձեք։"
+      }
+    },
+    "apartmentStatus": {
+      "AVAILABLE": "Ազատ",
+      "RESERVED": "Ամրագրված",
+      "SOLD": "Վաճառված"
+    },
+    "visualMap": {
+      "projectTitle": "Գեներալ պլան",
+      "floorTitle": "Հարկի պլան"
+    },
+    "builders": {
+      "list": {
+        "title": "Կառուցապատողներ",
+        "subtitle": "ToonExpo-ում հրապարակված նախագծեր ունեցող ընկերություններ։",
+        "empty": "Դեռ հրապարակված նախագիծ ունեցող կառուցապատողներ չկան։",
+        "projectCount": "{count, plural, one {# հրապարակված նախագիծ} other {# հրապարակված նախագիծ}}"
+      },
+      "detail": {
+        "contacts": "Կապ",
+        "phone": "Հեռախոս",
+        "email": "Էլ. փոստ",
+        "website": "Կայք",
+        "city": "Քաղաք",
+        "address": "Հասցե",
+        "projects": "Հրապարակված նախագծեր",
+        "noValue": "—",
+        "seoFallback": "{name}՝ կառուցապատող ToonExpo-ում"
+      }
+    },
+    "partners": {
+      "list": {
+        "title": "Գործընկերներ",
+        "subtitle": "Բանկեր, սերվիսային ընկերություններ և ToonExpo-ի այլ մասնակիցներ։",
+        "empty": "Այս ֆիլտրով հրապարակված գործընկերներ չկան։"
+      },
+      "filter": {
+        "all": "Բոլորը",
+        "ariaLabel": "Զտել գործընկերներին ըստ տեսակի"
+      },
+      "types": {
+        "BANK": "Բանկ",
+        "IT_COMPANY": "IT ընկերություն",
+        "SPONSOR": "Հովանատու",
+        "SUPPLIER": "Մատակարար",
+        "INSURANCE": "Ապահովագրություն",
+        "LEGAL": "Իրավական",
+        "DESIGN_FURNITURE": "Դիզայն / կահույք",
+        "SERVICE_COMPANY": "Սերվիսային ընկերություն",
+        "OTHER": "Այլ"
+      },
+      "detail": {
+        "contacts": "Կապ",
+        "phone": "Հեռախոս",
+        "email": "Էլ․ փոստ",
+        "website": "Կայք",
+        "serviceCategories": "Ծառայություններ",
+        "bankOffers": "Հիփոթեքային առաջարկներ",
+        "featured": "Առաջարկվող",
+        "interestRate": "Տոկոսադրույք",
+        "maxTermYears": "Առավելագույն ժամկետ (տարի)",
+        "maxAmount": "Առավելագույն վարկի գումար",
+        "mortgageLink": "Հիփոթեքային հաշվիչ",
+        "noValue": "—",
+        "seoFallback": "{name}՝ գործընկեր ToonExpo-ում"
+      }
+    },
+    "mortgage": {
+      "title": "Հիփոթեք և բանկային առաջարկներ",
+      "subtitle": "Համեմատեք հրապարակված բանկային առաջարկները և գնահատեք ամսական վճարը։",
+      "calculator": {
+        "title": "Վճարման հաշվիչ",
+        "propertyPrice": "Գույքի արժեք (AMD)",
+        "downPayment": "Նախավճար (AMD)",
+        "termYears": "Վարկի ժամկետ (տարի)",
+        "interestRate": "Տոկոսադրույք",
+        "manualRate": "Տարեկան դրույք (%)",
+        "downPaymentBelowMinimum": "Այս առաջարկի համար պահանջվում է առնվազն {percent}% նախավճար ({amount})։ Հաշվարկը օգտագործում է նվազագույնը։",
+        "monthlyPayment": "Մոտավոր ամսական վճար",
+        "loanAmount": "Վարկի գումար",
+        "totalPayment": "Ընդհանուր վճարում",
+        "overpayment": "Ընդհանուր տոկոսներ",
+        "disclaimer": "Թվերը մոտավոր են համեմատության համար։ Վերջնական պայմանները կախված են բանկի հաստատումից և առաջարկ չեն հանդիսանում։"
+      },
+      "offers": {
+        "title": "Բանկային առաջարկներ",
+        "featured": "Առաջարկվող",
+        "maxTerm": "Մինչև",
+        "viewBank": "Բանկի էջ",
+        "empty": "Դեռ հրապարակված բանկային առաջարկներ չկան։",
+        "selectManual": "Օգտագործել ձեռքով դրույք",
+        "yearsUnit": "տարի",
+        "minDownPayment": "Նվազ. նախավճար"
+      }
+    },
+    "favorite": {
+      "save": "Պահպանել",
+      "saved": "Պահպանված է",
+      "errors": {
+        "unauthorized": "Մուտք գործեք որպես գնորդ՝ ընտրյալները պահպանելու համար։",
+        "invalidInput": "Չհաջողվեց թարմացնել ընտրյալը։ Կրկին փորձեք։",
+        "notFound": "Այս տարրը հասանելի չէ պահպանման համար։",
+        "rateLimited": "Չափից շատ գործողություններ։ Սպասեք մեկ րոպե և կրկին փորձեք։"
+      }
+    },
+    "exhibition": {
+      "title": "Ցուցահանդեսի քարտեզ",
+      "subtitle": "Գտեք կառուցապատողներին և գործընկերներին՝ {event}։",
+      "searchLabel": "Որոնել տաղավարներ",
+      "searchPlaceholder": "Տաղավարի կոդ, ընկերություն, գործընկեր կամ նախագիծ",
+      "boothCount": "{count, plural, one {# տաղավար} other {# տաղավար}}",
+      "selectHint": "Ընտրեք տաղավար քարտեզի վրա՝ մանրամասները տեսնելու համար։",
+      "noMatches": "Որոնմանը համապատասխան տաղավար չկա։",
+      "detail": {
+        "code": "Տաղավար",
+        "company": "Կառուցապատող",
+        "partner": "Գործընկեր",
+        "project": "Նախագիծ",
+        "note": "Նշում",
+        "viewCompany": "Դիտել կառուցապատողին",
+        "viewPartner": "Դիտել գործընկերոջը",
+        "viewProject": "Դիտել նախագիծը",
+        "close": "Փակել",
+        "showRoute": "Ցույց տալ երթուղին",
+        "clearRoute": "Մաքրել երթուղին",
+        "routeUnavailable": "Երթուղին դեռ հասանելի չէ"
+      }
+    }
+  },
+  "buyer": {
+    "account": {
+      "title": "Իմ հաշիվը",
+      "subtitle": "Ձեր այցելուի QR-ը, ընտրյալները, ցուցահանդեսի չեք-իները և հայտերը շինարարներին։",
+      "empty": "Դեռ հարցումներ չեք ուղարկել։ Սկսելու համար դիտեք նախագծերը։",
+      "noValue": "—",
+      "requestsHeading": "Իմ հարցումները",
+      "columns": {
+        "company": "Կառուցապատող",
+        "project": "Նախագիծ",
+        "status": "Կարգավիճակ",
+        "source": "Աղբյուր",
+        "createdAt": "Ուղարկված",
+        "lastActivityAt": "Վերջին թարմացում"
+      },
+      "statuses": {
+        "request_sent": "Հարցումն ուղարկված է",
+        "builder_received": "Կառուցապատողը ստացել է",
+        "in_contact": "Կապի մեջ",
+        "offer_preparing": "Պայմանագիրը պատրաստվում է",
+        "reserved": "Ամրագրված",
+        "closed": "Փակված",
+        "cancelled": "Չեղարկված"
+      },
+      "sources": {
+        "PROJECT_PAGE": "Նախագծի էջ",
+        "APARTMENT_PAGE": "Բնակարանի էջ",
+        "BUILDER_QR_SCAN": "QR սկան",
+        "MANUAL_BUILDER_ENTRY": "Կառուցապատողի մուտք",
+        "EVENT_INTERACTION": "Միջոցառում"
+      },
+      "profile": {
+        "title": "Պրոֆիլ",
+        "edit": "Խմբագրել",
+        "editTitle": "Պրոֆիլի խմբագրում",
+        "save": "Պահպանել",
+        "noValue": "—",
+        "emailReadOnlyNote": "Email-ի փոփոխությունը պահանջում է հաստատում և v1-ում հասանելի չէ։",
+        "fields": {
+          "name": "Անուն",
+          "email": "Email",
+          "phone": "Հեռախոս"
+        },
+        "errors": {
+          "unauthorized": "Մուտք գործեք՝ պրոֆիլը թարմացնելու համար։",
+          "invalidInput": "Ստուգեք դաշտերը և կրկին փորձեք։",
+          "notFound": "Պրոֆիլը թարմացնել հնարավոր չեղավ։"
+        }
+      },
+      "checkinsHeading": "Ցուցահանդեսի չեք-իներ",
+      "checkinsEmpty": "Դուք դեռ չեք գրանցվել ցուցահանդեսի մուտքում։",
+      "favorites": {
+        "heading": "Ընտրյալներ",
+        "empty": "Դեռ չեք պահպանել նախագծեր կամ բնակարաններ։",
+        "remove": "Հեռացնել",
+        "typeProject": "Նախագիծ",
+        "noValue": "—"
+      }
+    },
+    "qr": {
+      "title": "Իմ QR",
+      "subtitle": "Ցույց տվեք այս կոդը կառուցապատողին ցուցահանդեսում։ Նա կարող է պահել հետագա կապի հարցում։",
+      "hint": "Կոդը նույնականացնում է ձեր ToonExpo այցելուի հաշիվը։ Անունը և կոնտակտները կոդի մեջ չեն պարունակվում։",
+      "ariaLabel": "Ձեր ToonExpo այցելուի QR կոդը",
+      "revoked": "Ձեր QR-ը ներկայումս անգործուն է։ Շարունակելու համար ստեղծեք նոր կոդ։",
+      "revoke": "Չեղարկել QR",
+      "revokeConfirm": "Չեղարկե՞լ QR-ը։ Այն կդադարի գործել, մինչև չստեղծեք նոր կոդ։",
+      "revokeSuccess": "QR-ը չեղարկված է և այլևս չի գործում սկանավորման համար։",
+      "regenerate": "Թարմացնել QR",
+      "regenerateConfirm": "Թարմացնե՞լ QR-ը։ Հին կոդը անմիջապես կդադարի գործել։",
+      "regenerateSuccess": "Տրվել է նոր QR կոդ։",
+      "errors": {
+        "unauthorized": "Մուտք գործեք՝ QR-ը կառավարելու համար։",
+        "invalidInput": "Չհաջողվեց թարմացնել QR-ը։ Փորձեք կրկին։",
+        "notFound": "Չհաջողվեց թարմացնել QR-ը։ Փորձեք կրկին։",
+        "revoked": "Չհաջողվեց թարմացնել QR-ը։ Փորձեք կրկին։"
+      }
+    }
+  },
+  "qr": {
+    "public": {
+      "title": "Այցելուի QR",
+      "body": "Մուտք գործեք որպես շինարար կամ մուտքի աշխատակից, կամ խնդրեք այցելուին բացել «Իմ QR»-ը ToonExpo հաշվում։"
+    },
+    "rateLimited": {
+      "title": "Չափից շատ սկանավորումներ",
+      "body": "Սպասեք մեկ րոպե՝ կրկին սկանավորելուց առաջ։"
+    },
+    "builder": {
+      "title": "Այցելու QR սկանից",
+      "subtitle": "Ստեղծեք CRM հարցում այս գրանցված գնորդի համար։",
+      "noPhone": "—",
+      "submit": "Ստեղծել հարցում",
+      "successNew": "Հարցումը ստեղծվեց։ Գնորդը կտեսնի այն իր հաշվի պատմությունում։",
+      "successDeduped": "Բաց հարցում արդեն կա։ Ձեր նշումը ավելացվեց դրան։",
+      "fields": {
+        "name": "Անուն",
+        "email": "Էլ․ փոստ",
+        "phone": "Հեռախոս",
+        "project": "Նախագիծ (ըստ ցանկության)",
+        "projectHint": "Ընտրեք ձեր ընկերության նախագիծը կամ թողեք դատարկ։",
+        "projectNone": "Առանց նախագծի",
+        "note": "Նշում (ըստ ցանկության)"
+      },
+      "errors": {
+        "unauthorized": "Պահանջվում է կառուցապատողի մուտք։",
+        "invalidInput": "Ստուգեք ձևը և փորձեք կրկին։",
+        "notFound": "Այս QR-ն այլևս վավեր չէ։",
+        "revoked": "Այս QR-ն այլևս վավեր չէ։"
+      }
+    },
+    "entrance": {
+      "title": "Մուտքի չեք-ին",
+      "subtitle": "Հաստատեք գրանցված այցելուին ակտիվ միջոցառման համար։",
+      "unnamedVisitor": "Գրանցված այցելու",
+      "submit": "Գրանցել մուտքը",
+      "successNew": "Այցելուն հաջողությամբ գրանցվեց։",
+      "successDuplicate": "Այս այցելուն արդեն գրանցված է այս միջոցառման համար։",
+      "noActiveEvent": "Ակտիվ միջոցառում չկա։ Խնդրեք ադմինիստրատորին ակտիվացնել։",
+      "fields": {
+        "name": "Անուն"
+      },
+      "errors": {
+        "unauthorized": "Պահանջվում է մուտքի աշխատակցի մուտք։",
+        "invalidInput": "Չեք-ինը չհաջողվեց։ Փորձեք կրկին։",
+        "notFound": "Այս QR-ն այլևս վավեր չէ։",
+        "noActiveEvent": "Ակտիվ ցուցահանդեսային միջոցառում չկա։",
+        "alreadyCheckedIn": "Այս այցելուն արդեն գրանցված է։"
+      }
+    }
+  },
+  "entrance": {
+    "checkin": {
+      "title": "Մուտքի չեք-ին",
+      "subtitle": "Սկանավորեք այցելուի QR-ը՝ բացելով նրա /q/{token} հղումը մուտքի աշխատակցի հաշվով։",
+      "instruction": "Խնդրեք այցելուին ցույց տալ «Իմ QR»-ը հաշվից։ Բացեք կամ սկանավորեք հղումը՝ մուտքը գրանցելու համար։",
+      "noActiveEvent": "Այժմ ակտիվ ցուցահանդեսային միջոցառում չկա։",
+      "eventCode": "Միջոցառման կոդ՝ {code}",
+      "eventDates": "{start} – {end}",
+      "dateOpen": "—"
+    }
+  },
+  "partnerCabinet": {
+    "nav": {
+      "ariaLabel": "Գործընկերոջ կաբինետ",
+      "overview": "Ակնարկ",
+      "profile": "Պրոֆիլ",
+      "offers": "Բանկային առաջարկներ"
+    },
+    "unlinked": {
+      "title": "Գործընկերոջ պրոֆիլը կապված չէ",
+      "description": "Ձեր հաշիվը դեռ կապված չէ գործընկերոջ պրոֆիլի հետ։ Խնդրեք հարթակի ադմինին ստեղծել հաշիվ՝ գործընկերոջ կապով։"
+    },
+    "errors": {
+      "unauthorized": "Դուք չունեք այս գործողության թույլտվություն։",
+      "invalidInput": "Ստուգեք դաշտերը և փորձեք կրկին։",
+      "notFound": "Պահանջված տարրը չի գտնվել։",
+      "nameTaken": "Այս անունով գործընկեր արդեն կա։",
+      "keyTaken": "Այս բանալին արդեն օգտագործվում է։",
+      "notBankPartner": "Բանկային առաջարկները հասանելի են միայն բանկ-գործընկերներին։"
+    },
+    "types": {
+      "BANK": "Բանկ",
+      "IT_COMPANY": "IT ընկերություն",
+      "SPONSOR": "Հովանավոր",
+      "SUPPLIER": "Մատակարար",
+      "INSURANCE": "Ապահովագրություն",
+      "LEGAL": "Իրավաբանական",
+      "DESIGN_FURNITURE": "Դիզայն / կահույք",
+      "SERVICE_COMPANY": "Ծառայություններ",
+      "OTHER": "Այլ"
+    },
+    "status": {
+      "DRAFT": "Սևագիր",
+      "PUBLISHED": "Հրապարակված",
+      "ARCHIVED": "Արխիվ"
+    },
+    "overview": {
+      "title": "Գործընկերոջ ակնարկ",
+      "subtitle": "Ձեր հանրային պրոֆիլի ամփոփում։ Հրապարակման կարգավիճակը կառավարում են ToonExpo ադմինները։",
+      "fields": {
+        "name": "Անվանում",
+        "type": "Տեսակ",
+        "status": "Կարգավիճակ",
+        "publicLink": "Հանրային էջ"
+      },
+      "viewPublic": "Դիտել հանրային պրոֆիլը",
+      "notPublicYet": "Դեռ հրապարակված չէ — հրապարակումը վերահսկում են ադմինները։"
+    },
+    "profile": {
+      "title": "Խմբագրել պրոֆիլը",
+      "subtitle": "Թարմացրեք պրոֆիլի բովանդակությունը։ Տեսակը և հրապարակման կարգավիճակը մնում են ադմինի վերահսկողության տակ։",
+      "sectionTitle": "Պրոֆիլ",
+      "edit": "Խմբագրել",
+      "noValue": "—",
+      "fields": {
+        "description": "Նկարագրություն",
+        "phone": "Հեռախոս",
+        "email": "Email",
+        "website": "Կայք",
+        "serviceCategories": "Ծառայությունների կատեգորիաներ"
+      },
+      "form": {
+        "title": "Խմբագրել պրոֆիլը",
+        "submit": "Պահպանել",
+        "fields": {
+          "name": "Անվանում",
+          "description": "Նկարագրություն",
+          "phone": "Հեռախոս",
+          "email": "Email",
+          "website": "Կայք",
+          "serviceCategories": "Ծառայությունների կատեգորիաներ",
+          "serviceCategoriesHint": "Բանալիներ՝ ստորակետով (ծառայությունների ընկերությունների / պատրաստվածության համար)։"
+        }
+      }
+    },
+    "offers": {
+      "title": "Բանկային առաջարկներ",
+      "subtitle": "Ստեղծեք և թարմացրեք հիփոթեքային առաջարկները։ Հրապարակման կարգավիճակը կառավարում են ToonExpo ադմինները։",
+      "sectionTitle": "Առաջարկներ",
+      "empty": "Դեռ բանկային առաջարկներ չկան։",
+      "newOffer": "Նոր առաջարկ",
+      "edit": "Խմբագրել",
+      "featured": "Ընտրված",
+      "columns": {
+        "title": "Վերնագիր",
+        "rate": "Տոկոսադրույք",
+        "term": "Ժամկետ (ամիս)",
+        "amount": "Առավելագույն գումար",
+        "status": "Կարգավիճակ",
+        "actions": "Գործողություններ"
+      },
+      "form": {
+        "create": "Նոր առաջարկ",
+        "edit": "Խմբագրել առաջարկը",
+        "submit": "Պահպանել",
+        "fields": {
+          "title": "Վերնագիր",
+          "interestRate": "Տոկոսադրույք (%)",
+          "minDownPaymentPercent": "Նվազագույն կանխավճար (%)",
+          "maxTermMonths": "Առավելագույն ժամկետ (ամիս)",
+          "maxAmountAmd": "Առավելագույն գումար (AMD)",
+          "description": "Նկարագրություն",
+          "featured": "Ընտրված"
+        }
+      }
+    }
+  }
+}

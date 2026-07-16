@@ -1,0 +1,130 @@
+.portal-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.portal-section__header {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: space-between;
+}
+
+.portal-section__title {
+  color: var(--te-fg);
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.portal-card {
+  background: var(--te-card);
+  border: 1px solid var(--te-border);
+  border-radius: var(--te-radius);
+  box-shadow: var(--te-shadow-soft);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+}
+
+.portal-card__header {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: space-between;
+}
+
+.portal-card__title {
+  color: var(--te-fg);
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.portal-subsection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.portal-subsection__header {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: space-between;
+}
+
+.portal-subsection__title {
+  color: var(--te-muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+.portal-page__subtitle {
+  color: var(--te-muted);
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.portal-breadcrumb {
+  margin-bottom: 1rem;
+}
+
+.portal-breadcrumb a {
+  color: var(--te-accent);
+  text-decoration: none;
+}
+
+.portal-muted {
+  color: var(--te-muted);
+  margin: 0.35rem 0 0;
+}
+
+.portal-dl {
+  display: grid;
+  gap: 0.75rem;
+  margin: 1.5rem 0;
+}
+
+.portal-dl dt {
+  color: var(--te-muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+.portal-dl dd {
+  color: var(--te-fg);
+  margin: 0.15rem 0 0;
+}
+
+.portal-form__checkbox {
+  margin-top: 0.35rem;
+}
+
+.portal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.portal-list__item {
+  background: var(--te-card);
+  border: 1px solid var(--te-border);
+  border-radius: var(--te-radius);
+  box-shadow: var(--te-shadow-soft);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+}
