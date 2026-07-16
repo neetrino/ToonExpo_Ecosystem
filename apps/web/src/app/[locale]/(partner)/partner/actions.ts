@@ -1,9 +1,6 @@
 'use server';
 
-import {
-  bankOfferUpsertInputSchema,
-  partnerSelfProfileInputSchema,
-} from '@toonexpo/contracts';
+import { bankOfferUpsertInputSchema, partnerSelfProfileInputSchema } from '@toonexpo/contracts';
 
 import type { AdminMutationErrorKey, AdminMutationResult } from '@/lib/admin/mutation-result';
 import { createBankOffer, updateBankOffer } from '@/lib/admin/partner-mutations';

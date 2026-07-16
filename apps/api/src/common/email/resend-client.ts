@@ -1,9 +1,9 @@
-import pino from 'pino';
 import { Resend } from 'resend';
 
 import { loadApiEnv } from '../env';
+import { createAppLogger } from '../logger';
 
-const logger = pino({ name: 'email' });
+const logger = createAppLogger('email');
 
 let clientSingleton: Resend | null | undefined;
 let missingConfigWarned = false;

@@ -15,7 +15,10 @@ import {
   updatePartnerAction,
 } from '@/app/[locale]/(admin)/admin/partners/actions';
 import { setProjectPublicationAsAdminAction } from '@/app/[locale]/(admin)/admin/projects/actions';
-import { upsertAssessmentAction, upsertReadinessCategoryAction } from '@/app/[locale]/(admin)/admin/readiness/actions';
+import {
+  upsertAssessmentAction,
+  upsertReadinessCategoryAction,
+} from '@/app/[locale]/(admin)/admin/readiness/actions';
 import { upsertExhibitionEventAction } from '@/app/[locale]/(admin)/admin/exhibition/actions';
 import { upsertSettingAction } from '@/app/[locale]/(admin)/admin/settings/actions';
 

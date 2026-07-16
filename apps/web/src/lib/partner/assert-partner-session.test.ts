@@ -78,7 +78,9 @@ describe('assertPartnerSession', () => {
 
   it('returns null when company has no linked Partner', async () => {
     vi.mocked(auth).mockResolvedValue(PARTNER_SESSION as never);
-    vi.mocked(prisma.companyMember.findFirst).mockResolvedValue({ companyId: 'company-1' } as never);
+    vi.mocked(prisma.companyMember.findFirst).mockResolvedValue({
+      companyId: 'company-1',
+    } as never);
     vi.mocked(prisma.partner.findUnique).mockResolvedValue(null);
 
     await expect(assertPartnerSession()).resolves.toBeNull();
@@ -86,7 +88,9 @@ describe('assertPartnerSession', () => {
 
   it('returns scoped context for a linked PARTNER', async () => {
     vi.mocked(auth).mockResolvedValue(PARTNER_SESSION as never);
-    vi.mocked(prisma.companyMember.findFirst).mockResolvedValue({ companyId: 'company-1' } as never);
+    vi.mocked(prisma.companyMember.findFirst).mockResolvedValue({
+      companyId: 'company-1',
+    } as never);
     vi.mocked(prisma.partner.findUnique).mockResolvedValue(LINKED_PARTNER as never);
 
     const result = await assertPartnerSession();

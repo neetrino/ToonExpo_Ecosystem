@@ -1,25 +1,17 @@
 import { NextResponse } from 'next/server';
-import {
-  mediaPresignRequestSchema,
-  type UploadPurpose,
-} from '@toonexpo/contracts';
+import { mediaPresignRequestSchema, type UploadPurpose } from '@toonexpo/contracts';
 
 import { assertAdminSession } from '@/lib/admin/assert-admin-session';
 import { assertBuilderSession } from '@/lib/builder/assert-builder-session';
 import { assertPartnerSession } from '@/lib/partner/assert-partner-session';
 import { assertNotRateLimited } from '@/lib/rate-limit';
-import {
-  createUploadPresign,
-  type UploadObjectScope,
-} from '@/lib/storage';
+import { createUploadPresign, type UploadObjectScope } from '@/lib/storage';
 
 function jsonError(error: string, status: number): NextResponse {
   return NextResponse.json({ error }, { status });
 }
 
-type ResolvedUploadAuth =
-  | { ok: true; userId: string; scope: UploadObjectScope }
-  | { ok: false };
+type ResolvedUploadAuth = { ok: true; userId: string; scope: UploadObjectScope } | { ok: false };
 
 /**
  * Resolves auth + object-key scope for a upload purpose.

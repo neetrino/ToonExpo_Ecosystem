@@ -19,12 +19,7 @@ export const MEDIA_UPLOAD_MIME_TO_EXT: Record<MediaUploadMimeType, string> = {
 export const mediaUploadMimeTypeSchema = z.enum(MEDIA_UPLOAD_ALLOWED_MIME_TYPES);
 
 /** Upload purposes — drives object-key prefix and route authz. */
-export const UPLOAD_PURPOSES = [
-  'MEDIA',
-  'COMPANY_LOGO',
-  'CANVAS_IMAGE',
-  'VENUE_IMAGE',
-] as const;
+export const UPLOAD_PURPOSES = ['MEDIA', 'COMPANY_LOGO', 'CANVAS_IMAGE', 'VENUE_IMAGE'] as const;
 
 export type UploadPurpose = (typeof UPLOAD_PURPOSES)[number];
 

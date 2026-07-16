@@ -195,9 +195,7 @@ describe('POST /api/uploads/presign', () => {
     });
     createUploadPresignMock.mockResolvedValue({ ok: false, error: 'storageNotConfigured' });
 
-    const response = await POST(
-      presignRequest({ contentType: 'image/jpeg', contentLength: 100 }),
-    );
+    const response = await POST(presignRequest({ contentType: 'image/jpeg', contentLength: 100 }));
 
     expect(response.status).toBe(503);
     expect(createUploadPresignMock).toHaveBeenCalledWith(

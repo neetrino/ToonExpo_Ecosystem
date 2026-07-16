@@ -6,7 +6,9 @@ import { emptyToUndefined } from '@toonexpo/shared';
  * and replace this stub with real `Sentry.init`.
  */
 export function initSentry(): void {
-  const dsn = emptyToUndefined(process.env.SENTRY_DSN) ?? emptyToUndefined(process.env.NEXT_PUBLIC_SENTRY_DSN);
+  const dsn =
+    emptyToUndefined(process.env.SENTRY_DSN) ??
+    emptyToUndefined(process.env.NEXT_PUBLIC_SENTRY_DSN);
   if (typeof dsn !== 'string' || dsn.length === 0) {
     return;
   }

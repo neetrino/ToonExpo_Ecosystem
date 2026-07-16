@@ -68,12 +68,7 @@ export function PartnerBankOffersSection({
             </thead>
             <tbody>
               {offers.map((offer) => (
-                <PartnerBankOfferRow
-                  key={offer.id}
-                  locale={locale}
-                  offer={offer}
-                  labels={labels}
-                />
+                <PartnerBankOfferRow key={offer.id} locale={locale} offer={offer} labels={labels} />
               ))}
             </tbody>
           </table>

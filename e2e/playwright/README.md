@@ -34,8 +34,8 @@ Not wired into `.github/workflows/ci.yml` yet (follow-up). Run manually for now;
 
 ## Specs
 
-| File | Journey |
-|---|---|
-| `public-catalog.spec.ts` | Published catalog shows Sunrise, hides Hidden Court; open detail |
-| `auth-rbac.spec.ts` | Builder → portal; non-builder denied; admin → admin; entrance → check-in |
-| `favorites-smoke.spec.ts` | Logged-out Save → login with `callbackUrl` |
+| File                      | Journey                                                                  |
+| ------------------------- | ------------------------------------------------------------------------ |
+| `public-catalog.spec.ts`  | Published catalog shows Sunrise, hides Hidden Court; open detail         |
+| `auth-rbac.spec.ts`       | Builder → portal; non-builder denied; admin → admin; entrance → check-in |
+| `favorites-smoke.spec.ts` | Logged-out Save → login with `callbackUrl`                               |

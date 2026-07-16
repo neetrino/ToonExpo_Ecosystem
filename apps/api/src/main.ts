@@ -1,11 +1,11 @@
 import 'reflect-metadata';
 
+import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { APP_NAME } from '@toonexpo/shared';
 import { config as loadDotenv } from 'dotenv';
 import { resolve } from 'node:path';
-import pino from 'pino';
 
 import { AppModule } from './app.module';
 import { loadApiEnv } from './common/env';
@@ -17,9 +17,14 @@ loadDotenv({ path: resolve(process.cwd(), '../../.env') });
 
 async function bootstrap(): Promise<void> {
   const env = loadApiEnv();
-  const logger = pino({ level: env.NODE_ENV === 'production' ? 'info' : 'debug' });
+  const logger = new Logger('Bootstrap');
 
-  const app = await NestFactory.create(AppModule, { logger: false });
+  const app = await NestFactory.create(AppModule, {
+    logger:
+      env.NODE_ENV === 'production'
+        ? ['error', 'warn', 'log']
+        : ['error', 'warn', 'log', 'debug', 'verbose'],
+  });
 
   app.enableCors({
     origin: env.APP_URL,
@@ -47,7 +52,10 @@ async function bootstrap(): Promise<void> {
 
   const port = Number(new URL(env.API_URL).port || DEFAULT_API_PORT);
   await app.listen(port);
-  logger.info({ port }, 'API listening');
+  logger.log(`API listening on ${env.API_URL}`);
+  if (shouldEnableSwagger(env)) {
+    logger.log(`Swagger docs at ${env.API_URL}/docs`);
+  }
 }
 
 void bootstrap();

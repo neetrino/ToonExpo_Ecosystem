@@ -8,9 +8,9 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import type { Request } from 'express';
-import pino from 'pino';
 
 import { loadApiEnv } from '../../../common/env';
+import { createAppLogger } from '../../../common/logger';
 import {
   allowBosProvisioningRequest,
   bosRateLimitKey,
@@ -20,7 +20,7 @@ import {
 import { checkBosApiKey } from './bos-api-key';
 import { BOS_API_KEY_HEADER } from './bos-provisioning.constants';
 
-const logger = pino({ name: 'bos-api-key-guard' });
+const logger = createAppLogger('bos-api-key-guard');
 
 function resolveRequestIp(request: Request): string {
   const forwarded = request.headers['x-forwarded-for'];

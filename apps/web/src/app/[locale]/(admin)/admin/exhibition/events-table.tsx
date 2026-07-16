@@ -28,12 +28,7 @@ type EventsTableProps = {
   statusLabels: Record<ExhibitionEventStatus, string>;
 };
 
-export function EventsTable({
-  locale,
-  events,
-  labels,
-  statusLabels,
-}: EventsTableProps) {
+export function EventsTable({ locale, events, labels, statusLabels }: EventsTableProps) {
   return (
     <div className="portal-table-wrap">
       <table className="portal-table">

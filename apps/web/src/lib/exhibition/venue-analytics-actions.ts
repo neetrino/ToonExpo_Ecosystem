@@ -33,8 +33,7 @@ export async function recordVenueBoothEventAction(
     return;
   }
 
-  const companyId =
-    booth.companyId ?? booth.project?.companyId ?? booth.partner?.companyId ?? null;
+  const companyId = booth.companyId ?? booth.project?.companyId ?? booth.partner?.companyId ?? null;
   if (!companyId) {
     return;
   }

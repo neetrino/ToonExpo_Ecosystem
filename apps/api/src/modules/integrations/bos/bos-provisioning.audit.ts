@@ -1,6 +1,6 @@
 import type { BosProvisioningRequest, BosProvisioningResponse } from '@toonexpo/contracts';
 import type { Prisma, PrismaClient } from '@toonexpo/db';
-import pino from 'pino';
+import { createAppLogger } from '../../../common/logger';
 
 import {
   BOS_PROVISIONING_OPERATION,
@@ -8,7 +8,7 @@ import {
 } from './bos-provisioning.constants';
 import { isRequestIdUniqueViolation } from './bos-provisioning.idempotency';
 
-const logger = pino({ name: 'bos-provisioning' });
+const logger = createAppLogger('bos-provisioning');
 
 export type IntegrationAuditInput = {
   requestId: string | null;

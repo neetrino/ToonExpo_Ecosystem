@@ -26,11 +26,7 @@ body {
   min-height: 100vh;
   color: var(--te-fg);
   background: var(--te-bg);
-  font-family:
-    var(--font-te-sans),
-    'Noto Sans Armenian',
-    'Noto Sans',
-    sans-serif;
+  font-family: var(--font-te-sans), 'Noto Sans Armenian', 'Noto Sans', sans-serif;
 }
 
 a {

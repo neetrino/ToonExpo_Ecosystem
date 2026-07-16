@@ -40,7 +40,13 @@ export function ProvisionForm({ action, partners }: ProvisionFormProps) {
 
       <label className="portal-form__field">
         <span className="portal-form__label">{t('fields.email')}</span>
-        <input className="portal-form__input" type="email" name="email" autoComplete="off" required />
+        <input
+          className="portal-form__input"
+          type="email"
+          name="email"
+          autoComplete="off"
+          required
+        />
       </label>
 
       <label className="portal-form__field">

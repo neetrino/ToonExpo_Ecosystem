@@ -59,7 +59,14 @@ describe('upsertAssessment', () => {
     vi.clearAllMocks();
     companyFindUnique.mockResolvedValue({ id: 'company-1' });
     loadActiveReadinessCategories.mockResolvedValue([
-      { id: 'cat-1', key: 'media', name: 'Media', weight: 1, sortOrder: 1, serviceCategoryKey: null },
+      {
+        id: 'cat-1',
+        key: 'media',
+        name: 'Media',
+        weight: 1,
+        sortOrder: 1,
+        serviceCategoryKey: null,
+      },
     ]);
     recordAudit.mockResolvedValue(undefined);
   });

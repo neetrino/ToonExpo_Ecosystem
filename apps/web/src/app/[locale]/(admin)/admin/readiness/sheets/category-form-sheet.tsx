@@ -34,13 +34,7 @@ type CategoryFormSheetProps = {
   values?: AdminReadinessCategoryRow;
 };
 
-export function CategoryFormSheet({
-  locale,
-  mode,
-  open,
-  onClose,
-  values,
-}: CategoryFormSheetProps) {
+export function CategoryFormSheet({ locale, mode, open, onClose, values }: CategoryFormSheetProps) {
   const t = useTranslations('admin.readiness.categoryForm');
   const action = upsertReadinessCategoryFormAction.bind(null, locale);
   const [state, formAction, pending] = useActionState(action, INITIAL_ADMIN_CATALOG_ACTION_STATE);
