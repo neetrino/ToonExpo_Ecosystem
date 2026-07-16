@@ -63,7 +63,15 @@ export class PrismaService implements OnModuleInit, OnModuleDestroy {
 
   private async connect(): Promise<void> {
     const startedAt = Date.now();
-    await prisma.$connect();
+    try {
+      await prisma.$connect();
+    } catch (error) {
+      this.connected = false;
+      this.logger.error(
+        `Connection failed: ${error instanceof Error ? error.message : String(error)}`,
+      );
+      throw error;
+    }
     this.connected = true;
     this.logger.log(`Connected successfully (${Date.now() - startedAt}ms)`);
     this.scheduleIdleDisconnect();
@@ -91,10 +99,10 @@ export class PrismaService implements OnModuleInit, OnModuleDestroy {
     await prisma.$disconnect();
     this.connected = false;
     if (reason === 'idle') {
-      this.logger.log(`Disconnected (idle ${formatIdleDuration(this.idleTimeoutMs)})`);
+      this.logger.error(`Disconnected (idle ${formatIdleDuration(this.idleTimeoutMs)})`);
       return;
     }
-    this.logger.log('Disconnected (shutdown)');
+    this.logger.error('Disconnected (shutdown)');
   }
 
   private scheduleIdleDisconnect(): void {

@@ -31,6 +31,7 @@ describe('PrismaService connection lifecycle', () => {
   it('connects on init and disconnects after the coded idle timeout', async () => {
     const service = new PrismaService();
     const logSpy = vi.spyOn(Logger.prototype, 'log').mockImplementation(() => undefined);
+    const errorSpy = vi.spyOn(Logger.prototype, 'error').mockImplementation(() => undefined);
 
     await service.onModuleInit();
     expect(connectMock).toHaveBeenCalledTimes(1);
@@ -38,21 +39,34 @@ describe('PrismaService connection lifecycle', () => {
 
     await vi.advanceTimersByTimeAsync(DATABASE_IDLE_TIMEOUT_MS);
     expect(disconnectMock).toHaveBeenCalledTimes(1);
-    expect(logSpy).toHaveBeenCalledWith('Disconnected (idle 5m)');
+    expect(errorSpy).toHaveBeenCalledWith('Disconnected (idle 5m)');
 
     await service.onModuleDestroy();
     logSpy.mockRestore();
+    errorSpy.mockRestore();
   });
 
   it('disconnects on shutdown', async () => {
     const service = new PrismaService();
     const logSpy = vi.spyOn(Logger.prototype, 'log').mockImplementation(() => undefined);
+    const errorSpy = vi.spyOn(Logger.prototype, 'error').mockImplementation(() => undefined);
 
     await service.onModuleInit();
     await service.onModuleDestroy();
 
     expect(disconnectMock).toHaveBeenCalledTimes(1);
-    expect(logSpy).toHaveBeenCalledWith('Disconnected (shutdown)');
+    expect(errorSpy).toHaveBeenCalledWith('Disconnected (shutdown)');
     logSpy.mockRestore();
+    errorSpy.mockRestore();
+  });
+
+  it('logs connection failure in red', async () => {
+    connectMock.mockRejectedValueOnce(new Error('ECONNREFUSED'));
+    const service = new PrismaService();
+    const errorSpy = vi.spyOn(Logger.prototype, 'error').mockImplementation(() => undefined);
+
+    await expect(service.onModuleInit()).rejects.toThrow('ECONNREFUSED');
+    expect(errorSpy).toHaveBeenCalledWith('Connection failed: ECONNREFUSED');
+    errorSpy.mockRestore();
   });
 });
