@@ -59,9 +59,7 @@ export default async function BuilderDetailPage({ params }: BuilderDetailPagePro
 
   return (
     <section className="catalog-page">
-      <JsonLdScript
-        data={buildBuilderOrganizationJsonLd(builder, locale, loadWebEnv().APP_URL)}
-      />
+      <JsonLdScript data={buildBuilderOrganizationJsonLd(builder, locale, loadWebEnv().APP_URL)} />
       <BuilderDetailView
         builder={builder}
         labels={{

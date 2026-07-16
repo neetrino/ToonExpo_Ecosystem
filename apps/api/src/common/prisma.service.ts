@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  Logger,
-  type OnModuleDestroy,
-  type OnModuleInit,
-} from '@nestjs/common';
+import { Injectable, Logger, type OnModuleDestroy, type OnModuleInit } from '@nestjs/common';
 import { prisma, type PrismaClient } from '@toonexpo/db';
 
 /** Disconnect Prisma when there are no queries for this long. */

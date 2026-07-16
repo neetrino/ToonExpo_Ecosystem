@@ -24,7 +24,9 @@ export async function HomeHero() {
         <p className="text-4xl font-extrabold uppercase tracking-[0.18em] sm:text-5xl md:text-6xl">
           {tBrand('brand')}
         </p>
-        <h1 className="max-w-2xl text-2xl font-semibold tracking-tight sm:text-3xl">{t('title')}</h1>
+        <h1 className="max-w-2xl text-2xl font-semibold tracking-tight sm:text-3xl">
+          {t('title')}
+        </h1>
         <p className="max-w-xl text-base text-white/85 sm:text-lg">{t('subtitle')}</p>
         <div className="flex flex-wrap gap-3 pt-1">
           <TeButton href="/projects">{t('ctaPublic')}</TeButton>

@@ -46,12 +46,7 @@ export function CompaniesTable({ locale, companies, labels }: CompaniesTableProp
         </thead>
         <tbody>
           {companies.map((company) => (
-            <CompanyRow
-              key={company.id}
-              locale={locale}
-              company={company}
-              labels={labels}
-            />
+            <CompanyRow key={company.id} locale={locale} company={company} labels={labels} />
           ))}
         </tbody>
       </table>

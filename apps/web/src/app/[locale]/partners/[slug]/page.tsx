@@ -60,9 +60,7 @@ export default async function PartnerDetailPage({ params }: PartnerDetailPagePro
 
   return (
     <section className="catalog-page">
-      <JsonLdScript
-        data={buildPartnerOrganizationJsonLd(partner, locale, loadWebEnv().APP_URL)}
-      />
+      <JsonLdScript data={buildPartnerOrganizationJsonLd(partner, locale, loadWebEnv().APP_URL)} />
       <PartnerDetailView
         partner={partner}
         locale={locale}

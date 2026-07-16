@@ -46,12 +46,7 @@ export function CategoriesTable({ locale, categories, labels }: CategoriesTableP
         </thead>
         <tbody>
           {categories.map((category) => (
-            <CategoryRow
-              key={category.id}
-              locale={locale}
-              category={category}
-              labels={labels}
-            />
+            <CategoryRow key={category.id} locale={locale} category={category} labels={labels} />
           ))}
         </tbody>
       </table>

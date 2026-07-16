@@ -64,9 +64,5 @@ export async function createMediaPresign(
   companyId: string,
   input: MediaPresignRequest,
 ): Promise<CreateMediaPresignResult> {
-  return createUploadPresign(
-    input.purpose ?? 'MEDIA',
-    { kind: 'company', companyId },
-    input,
-  );
+  return createUploadPresign(input.purpose ?? 'MEDIA', { kind: 'company', companyId }, input);
 }

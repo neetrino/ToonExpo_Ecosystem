@@ -1,9 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import {
-  evaluateProjectCompleteness,
-  type ProjectCompletenessInput,
-} from './project-completeness';
+import { evaluateProjectCompleteness, type ProjectCompletenessInput } from './project-completeness';
 
 const completeProject: ProjectCompletenessInput = {
   description: 'A modern residential complex.',

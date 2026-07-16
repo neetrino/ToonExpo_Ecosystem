@@ -38,12 +38,7 @@ export function SettingsTable({ locale, settings, labels }: SettingsTableProps) 
         </thead>
         <tbody>
           {settings.map((setting) => (
-            <SettingRow
-              key={setting.key}
-              locale={locale}
-              setting={setting}
-              labels={labels}
-            />
+            <SettingRow key={setting.key} locale={locale} setting={setting} labels={labels} />
           ))}
         </tbody>
       </table>

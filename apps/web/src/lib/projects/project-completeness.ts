@@ -47,7 +47,9 @@ export function evaluateProjectCompleteness(
     missingKeys.push('MISSING_DESCRIPTION');
   }
 
-  const publishedBuildings = project.buildings.filter((building) => building.status === 'PUBLISHED');
+  const publishedBuildings = project.buildings.filter(
+    (building) => building.status === 'PUBLISHED',
+  );
   if (publishedBuildings.length === 0) {
     missingKeys.push('MISSING_PUBLISHED_BUILDING');
   }

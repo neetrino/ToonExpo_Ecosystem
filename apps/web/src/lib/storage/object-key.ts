@@ -9,8 +9,7 @@ const OBJECT_KEY_YEAR_PAD = 4;
 const OBJECT_KEY_MONTH_PAD = 2;
 
 export type UploadObjectScope =
-  | { kind: 'company'; companyId: string }
-  | { kind: 'admin'; userId: string };
+  { kind: 'company'; companyId: string } | { kind: 'admin'; userId: string };
 
 /**
  * Builds a scoped object key: `{prefix}/{scopeId}/…` or `admin/{userId}/{prefix}/…`.

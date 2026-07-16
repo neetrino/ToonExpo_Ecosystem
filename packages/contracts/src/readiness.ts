@@ -118,39 +118,41 @@ const optionalServiceCategoryKey = z.preprocess((value) => {
   return trimmed.length === 0 ? undefined : trimmed;
 }, z.string().max(READINESS_CATEGORY_SERVICE_KEY_MAX_LENGTH).optional());
 
-export const readinessCategoryUpsertInputSchema = z.object({
-  categoryId: z.string().trim().min(1).optional(),
-  key: readinessCategoryKeySchema.optional(),
-  name: z.string().trim().min(1).max(READINESS_CATEGORY_NAME_MAX_LENGTH),
-  description: optionalTrimmedString(READINESS_CATEGORY_DESCRIPTION_MAX_LENGTH),
-  weight: optionalCoercedWeight,
-  sortOrder: z.coerce
-    .number()
-    .int()
-    .min(READINESS_CATEGORY_SORT_ORDER_MIN)
-    .max(READINESS_CATEGORY_SORT_ORDER_MAX),
-  serviceCategoryKey: optionalServiceCategoryKey,
-  active: z.preprocess((value) => {
-    if (typeof value === 'boolean') {
+export const readinessCategoryUpsertInputSchema = z
+  .object({
+    categoryId: z.string().trim().min(1).optional(),
+    key: readinessCategoryKeySchema.optional(),
+    name: z.string().trim().min(1).max(READINESS_CATEGORY_NAME_MAX_LENGTH),
+    description: optionalTrimmedString(READINESS_CATEGORY_DESCRIPTION_MAX_LENGTH),
+    weight: optionalCoercedWeight,
+    sortOrder: z.coerce
+      .number()
+      .int()
+      .min(READINESS_CATEGORY_SORT_ORDER_MIN)
+      .max(READINESS_CATEGORY_SORT_ORDER_MAX),
+    serviceCategoryKey: optionalServiceCategoryKey,
+    active: z.preprocess((value) => {
+      if (typeof value === 'boolean') {
+        return value;
+      }
+      if (value === 'true' || value === 'on' || value === '1') {
+        return true;
+      }
+      if (value === 'false' || value === 'off' || value === '0' || value === '' || value == null) {
+        return false;
+      }
       return value;
+    }, z.boolean()),
+  })
+  .superRefine((value, ctx) => {
+    if (!value.categoryId && !value.key) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'keyRequired',
+        path: ['key'],
+      });
     }
-    if (value === 'true' || value === 'on' || value === '1') {
-      return true;
-    }
-    if (value === 'false' || value === 'off' || value === '0' || value === '' || value == null) {
-      return false;
-    }
-    return value;
-  }, z.boolean()),
-}).superRefine((value, ctx) => {
-  if (!value.categoryId && !value.key) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: 'keyRequired',
-      path: ['key'],
-    });
-  }
-});
+  });
 
 export type ReadinessCategoryUpsertInput = z.infer<typeof readinessCategoryUpsertInputSchema>;
 

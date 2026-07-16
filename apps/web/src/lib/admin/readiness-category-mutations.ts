@@ -1,10 +1,7 @@
 import type { ReadinessCategoryUpsertInput } from '@toonexpo/contracts';
 import { prisma } from '@toonexpo/db';
 
-import {
-  type AdminMutationResult,
-  UNIQUE_CONSTRAINT_ERROR,
-} from './mutation-result';
+import { type AdminMutationResult, UNIQUE_CONSTRAINT_ERROR } from './mutation-result';
 
 export async function upsertReadinessCategory(
   input: ReadinessCategoryUpsertInput,

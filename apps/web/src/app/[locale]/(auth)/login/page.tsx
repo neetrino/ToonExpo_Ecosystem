@@ -56,7 +56,10 @@ export default async function LoginPage({ params, searchParams }: LoginPageProps
             {t('invitedSuccess')}
           </p>
         ) : null}
-        <LoginForm action={loginAction.bind(null, locale, callbackUrl)} registerHref={registerHref} />
+        <LoginForm
+          action={loginAction.bind(null, locale, callbackUrl)}
+          registerHref={registerHref}
+        />
       </div>
     </section>
   );

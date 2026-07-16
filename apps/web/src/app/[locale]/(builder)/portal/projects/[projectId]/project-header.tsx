@@ -63,11 +63,7 @@ export function ProjectHeader({
   );
 }
 
-function ProjectCompletenessLabels({
-  missingKeys,
-}: {
-  missingKeys: ProjectCompletenessKey[];
-}) {
+function ProjectCompletenessLabels({ missingKeys }: { missingKeys: ProjectCompletenessKey[] }) {
   const tCompleteness = useTranslations('completeness');
 
   return (

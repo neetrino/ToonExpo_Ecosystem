@@ -17,12 +17,7 @@ export function NewCategoryButton({ locale, label }: NewCategoryButtonProps) {
       <button type="button" className="portal-btn portal-btn--ghost" onClick={() => setOpen(true)}>
         {label}
       </button>
-      <CategoryFormSheet
-        locale={locale}
-        mode="create"
-        open={open}
-        onClose={() => setOpen(false)}
-      />
+      <CategoryFormSheet locale={locale} mode="create" open={open} onClose={() => setOpen(false)} />
     </>
   );
 }

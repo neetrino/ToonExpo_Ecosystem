@@ -35,7 +35,9 @@ describe('PrismaService connection lifecycle', () => {
 
     await service.onModuleInit();
     expect(connectMock).toHaveBeenCalledTimes(1);
-    expect(logSpy).toHaveBeenCalledWith(expect.stringMatching(/^Connected successfully \(\d+ms\)$/));
+    expect(logSpy).toHaveBeenCalledWith(
+      expect.stringMatching(/^Connected successfully \(\d+ms\)$/),
+    );
 
     await vi.advanceTimersByTimeAsync(DATABASE_IDLE_TIMEOUT_MS);
     expect(disconnectMock).toHaveBeenCalledTimes(1);
