@@ -8,8 +8,15 @@ import { PrismaService } from '../../common/prisma.service';
 
 const QR_TOKEN_BYTE_LENGTH = 32;
 const SCAN_DEBOUNCE_MS = 5 * 60 * 1000;
-const DEAL_DEDUP_MS = 72 * 60 * 60 * 1000;
-const OPEN_DEAL_STAGES = ['NEW_REQUEST', 'CONTACTED', 'QUALIFIED'] as const;
+const DEAL_DEDUP_MS = 24 * 60 * 60 * 1000;
+const OPEN_DEAL_STAGES = [
+  'NEW_REQUEST',
+  'ASSIGNED',
+  'CONTACTED',
+  'FOLLOW_UP_NEEDED',
+  'APARTMENT_SELECTED',
+  'RESERVED',
+] as const;
 
 export type QrResult =
   | { ok: true; qrCodeId: string; token: string; revoked: false }
@@ -117,6 +124,23 @@ export class QrService {
         return { ok: false as const, errorKey: 'noActiveEvent' as const };
       }
       await this.logScan(tx, qr.id, userId, 'ENTRANCE_CHECKIN');
+      const existing = await tx.checkIn.findUnique({
+        where: {
+          eventId_buyerProfileId: {
+            eventId: event.id,
+            buyerProfileId: qr.buyerProfileId,
+          },
+        },
+        select: { id: true, checkedInAt: true },
+      });
+      if (existing) {
+        return {
+          ok: true as const,
+          checkInId: existing.id,
+          checkedInAt: existing.checkedInAt,
+          alreadyCheckedIn: true,
+        };
+      }
       const checkIn = await tx.checkIn.upsert({
         where: { eventId_buyerProfileId: { eventId: event.id, buyerProfileId: qr.buyerProfileId } },
         create: {
@@ -129,7 +153,12 @@ export class QrService {
         update: {},
         select: { id: true, checkedInAt: true },
       });
-      return { ok: true as const, checkInId: checkIn.id, checkedInAt: checkIn.checkedInAt };
+      return {
+        ok: true as const,
+        checkInId: checkIn.id,
+        checkedInAt: checkIn.checkedInAt,
+        alreadyCheckedIn: false,
+      };
     });
   }
 

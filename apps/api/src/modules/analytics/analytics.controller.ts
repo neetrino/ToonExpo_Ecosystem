@@ -4,7 +4,6 @@ import { ANALYTICS_EVENT_TYPES, type AnalyticsEventType } from '@toonexpo/domain
 
 import { PrismaService } from '../../common/prisma.service';
 import { AppOriginGuard } from '../auth/app-origin.guard';
-import { CsrfGuard } from '../auth/csrf.guard';
 
 type AnalyticsInput = {
   type: AnalyticsEventType;
@@ -20,7 +19,6 @@ export class AnalyticsController {
   constructor(private readonly prisma: PrismaService) {}
 
   @Post('events')
-  @UseGuards(CsrfGuard)
   async record(@Body() body: unknown): Promise<void> {
     const boothInput = parseBoothInput(body);
     if (boothInput) {

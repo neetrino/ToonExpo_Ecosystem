@@ -174,9 +174,6 @@ importers:
       react-dom:
         specifier: ^19.2.7
         version: 19.2.7(react@19.2.7)
-      resend:
-        specifier: ^6.17.2
-        version: 6.17.2
       zod:
         specifier: ^3.25.76
         version: 3.25.76

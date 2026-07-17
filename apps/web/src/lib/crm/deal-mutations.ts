@@ -1,127 +1,88 @@
-import type { DealActivityInput, DealAssignInput, ManualDealInput } from '@toonexpo/contracts';
-import { prisma } from '@toonexpo/db';
+import type {
+  ActivityStatusUpdateInput,
+  DealActivityInput,
+  DealApartmentLinkInput,
+  DealAssignInput,
+  DealStageUpdateInput,
+  ManualDealInput,
+} from '@toonexpo/contracts';
 
-import { recomputeDealNextFollowUpAt } from './activity-lifecycle-mutations';
-import { findCompanyDeal, isCompanyMember, statusChangeBody } from './deal-mutation-helpers';
+import { serverApiRequest } from '@/lib/api/server';
+
 import type { CrmMutationResult } from './mutation-result';
-import { runCreateManualDealTransaction } from './manual-deal-mutations';
 
-export { updateDealStage } from './deal-stage-mutations';
-export { linkDealApartment, unlinkDealApartment } from './deal-apartment-mutations';
-export { setActivityStatus, recomputeDealNextFollowUpAt } from './activity-lifecycle-mutations';
+type InventoryResult = CrmMutationResult<{ dealId: string; affectedProjectIds: string[] }>;
 
-/**
- * Adds a COMMENT or FOLLOW_UP activity. FOLLOW_UP may set nextFollowUpAt on the deal.
- * Assignment/status audits use STATUS_CHANGE elsewhere; notes stay COMMENT/FOLLOW_UP (doc 05).
- */
-export async function addDealActivity(
+export function updateDealStage(
+  companyId: string,
+  input: DealStageUpdateInput,
+  actorUserId?: string,
+): Promise<InventoryResult> {
+  void companyId;
+  void actorUserId;
+  return mutate('/crm/deals/stage', 'PATCH', input);
+}
+
+export function linkDealApartment(
+  companyId: string,
+  input: DealApartmentLinkInput,
+): Promise<InventoryResult> {
+  void companyId;
+  return mutate('/crm/deals/apartments', 'POST', input);
+}
+
+export function unlinkDealApartment(
+  companyId: string,
+  input: DealApartmentLinkInput,
+  actorUserId?: string,
+): Promise<InventoryResult> {
+  void companyId;
+  void actorUserId;
+  return mutate('/crm/deals/apartments/unlink', 'POST', input);
+}
+
+export function addDealActivity(
   companyId: string,
   input: DealActivityInput,
   actorUserId?: string,
 ): Promise<CrmMutationResult> {
-  return prisma.$transaction(async (tx) => {
-    const deal = await findCompanyDeal(tx, companyId, input.dealId);
-    if (!deal) {
-      return { ok: false, errorKey: 'notFound' };
-    }
-
-    const now = new Date();
-    const followUpDueAt = input.type === 'FOLLOW_UP' ? input.nextFollowUpAt : undefined;
-
-    await tx.dealActivity.create({
-      data: {
-        dealId: deal.id,
-        authorUserId: actorUserId,
-        type: input.type,
-        body: input.body,
-        status: input.type === 'FOLLOW_UP' ? 'PLANNED' : null,
-        dueAt: followUpDueAt ?? null,
-      },
-    });
-
-    await tx.deal.update({
-      where: { id: deal.id },
-      data: { lastActivityAt: now },
-    });
-
-    if (input.type === 'FOLLOW_UP') {
-      await recomputeDealNextFollowUpAt(tx, deal.id);
-    }
-
-    return { ok: true, dealId: deal.id };
-  });
+  void companyId;
+  void actorUserId;
+  return mutate('/crm/deals/activities', 'POST', input);
 }
 
-/**
- * Assigns a company member (or clears assignee). NEW_REQUEST auto-moves to ASSIGNED (doc 02).
- * Writes COMMENT for assignment change (STATUS_CHANGE reserved for pipeline stages).
- */
-export async function assignDeal(
+export function setActivityStatus(
+  companyId: string,
+  input: ActivityStatusUpdateInput,
+): Promise<CrmMutationResult> {
+  void companyId;
+  return mutate('/crm/activities/status', 'PATCH', input);
+}
+
+export function assignDeal(
   companyId: string,
   input: DealAssignInput,
   actorUserId?: string,
 ): Promise<CrmMutationResult> {
-  return prisma.$transaction(async (tx) => {
-    const deal = await findCompanyDeal(tx, companyId, input.dealId);
-    if (!deal) {
-      return { ok: false, errorKey: 'notFound' };
-    }
-
-    if (input.assigneeUserId !== null) {
-      const member = await isCompanyMember(tx, companyId, input.assigneeUserId);
-      if (!member) {
-        return { ok: false, errorKey: 'notFound' };
-      }
-    }
-
-    const now = new Date();
-    const nextStage = deal.stage === 'NEW_REQUEST' ? 'ASSIGNED' : deal.stage;
-    const stageChanged = nextStage !== deal.stage;
-
-    await tx.deal.update({
-      where: { id: deal.id },
-      data: {
-        assignedUserId: input.assigneeUserId,
-        stage: nextStage,
-        lastActivityAt: now,
-      },
-    });
-
-    if (stageChanged) {
-      await tx.dealActivity.create({
-        data: {
-          dealId: deal.id,
-          authorUserId: actorUserId,
-          type: 'STATUS_CHANGE',
-          body: statusChangeBody(deal.stage, nextStage),
-        },
-      });
-    }
-
-    const assigneeLabel = input.assigneeUserId ?? 'null';
-    await tx.dealActivity.create({
-      data: {
-        dealId: deal.id,
-        authorUserId: actorUserId,
-        type: 'COMMENT',
-        body: `Assignment updated → ${assigneeLabel}`,
-      },
-    });
-
-    return { ok: true, dealId: deal.id };
-  });
+  void companyId;
+  void actorUserId;
+  return mutate('/crm/deals/assignee', 'PATCH', input);
 }
 
-/**
- * Creates a manual CRM deal for the builder company (source MANUAL_BUILDER_ENTRY).
- * Ignores client companyId / buyerUserId — session companyId is authoritative.
- */
-export async function createManualDeal(
+export function createManualDeal(
   companyId: string,
   input: ManualDealInput,
   actorUserId?: string,
-): Promise<CrmMutationResult<{ dealId: string; affectedProjectIds: string[] }>> {
-  return prisma.$transaction((tx) =>
-    runCreateManualDealTransaction(tx, companyId, input, actorUserId),
-  );
+): Promise<InventoryResult> {
+  void companyId;
+  void actorUserId;
+  return mutate('/crm/deals/manual', 'POST', input);
+}
+
+function mutate<T>(
+  path: string,
+  method: 'POST' | 'PATCH',
+  body: unknown,
+): Promise<T> {
+  return serverApiRequest<T>(path, { method, body });
 }

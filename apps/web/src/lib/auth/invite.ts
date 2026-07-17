@@ -1,5 +1,3 @@
-import type { Prisma } from '@toonexpo/db';
-
 import {
   buildInviteIdentifier,
   generateInviteToken,
@@ -7,22 +5,23 @@ import {
   inviteExpiresAt,
 } from './invite-token';
 
-/**
- * Creates a one-time set-password invite for `userId`, invalidating any
- * previous unused invite for the same user first. Returns the raw token —
- * only its SHA-256 hash is persisted (`VerificationToken.token`).
- */
+type InviteTransaction = {
+  verificationToken: {
+    deleteMany(args: unknown): Promise<unknown>;
+    create(args: unknown): Promise<unknown>;
+  };
+};
+
+/** Legacy pure helper retained for tests; production invite creation is Nest-owned. */
 export async function createAccountInvite(
-  tx: Prisma.TransactionClient,
+  tx: InviteTransaction,
   userId: string,
 ): Promise<string> {
   const identifier = buildInviteIdentifier(userId);
   await tx.verificationToken.deleteMany({ where: { identifier } });
-
   const rawToken = generateInviteToken();
   await tx.verificationToken.create({
     data: { identifier, token: hashInviteToken(rawToken), expires: inviteExpiresAt() },
   });
-
   return rawToken;
 }

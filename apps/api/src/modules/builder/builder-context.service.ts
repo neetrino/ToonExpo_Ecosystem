@@ -28,6 +28,49 @@ export class BuilderContextService {
     return null;
   }
 
+  async select(
+    session: AuthSession,
+    companyId: string,
+    auditStart: boolean,
+  ): Promise<'ok' | 'notFound' | 'unauthorized'> {
+    const context = await this.resolve(session, companyId);
+    if (!context || context.companyId !== companyId) {
+      return session.user.role === 'BIGPROJECTS_ADMIN' ? 'notFound' : 'unauthorized';
+    }
+    if (auditStart && session.user.role === 'BIGPROJECTS_ADMIN') {
+      await this.prisma.client.auditLog.create({
+        data: {
+          actorUserId: session.user.id,
+          actorRole: session.user.role,
+          action: 'ACTING_ON_BEHALF_START',
+          entityType: 'COMPANY',
+          entityId: companyId,
+          companyId,
+        },
+      });
+    }
+    return 'ok';
+  }
+
+  async stopActing(session: AuthSession, companyId?: string): Promise<void> {
+    if (session.user.role !== 'BIGPROJECTS_ADMIN' || !companyId) return;
+    const company = await this.prisma.client.company.findUnique({
+      where: { id: companyId },
+      select: { id: true },
+    });
+    if (!company) return;
+    await this.prisma.client.auditLog.create({
+      data: {
+        actorUserId: session.user.id,
+        actorRole: session.user.role,
+        action: 'ACTING_ON_BEHALF_STOP',
+        entityType: 'COMPANY',
+        entityId: company.id,
+        companyId: company.id,
+      },
+    });
+  }
+
   private async resolveBuilder(
     session: AuthSession,
     activeCompanyId?: string,

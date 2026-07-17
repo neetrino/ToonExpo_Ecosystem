@@ -259,7 +259,18 @@ export class ExhibitionService {
             },
           })
         : await this.prisma.client.booth.create({
-            data: { ...input, boothId: undefined, code: input.code.toUpperCase() },
+            data: {
+              venueMapId: input.venueMapId,
+              code: input.code.toUpperCase(),
+              label: input.label,
+              xPercent: input.xPercent,
+              yPercent: input.yPercent,
+              companyId: input.companyId,
+              partnerId: input.partnerId,
+              projectId: input.projectId,
+              note: input.note,
+              sortOrder: input.sortOrder ?? 0,
+            },
           });
       await this.paths.ensureBoothNode(booth.venueMapId, booth.id, input.xPercent, input.yPercent);
       return { ok: true as const, boothId: booth.id, venueMapId: booth.venueMapId };

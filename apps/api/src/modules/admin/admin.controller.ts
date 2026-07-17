@@ -17,11 +17,7 @@ import {
   PARTNER_TYPES,
   PUBLICATION_STATUSES,
   READINESS_TARGET_TYPES,
-  type AuditEntityType,
-  type PartnerType,
   type PlatformRole,
-  type PublicationStatus,
-  type ReadinessTargetType,
 } from '@toonexpo/domain';
 import type { Response } from 'express';
 
