@@ -51,7 +51,7 @@ Apartment page
 - BigProjects can configure/help;
 - simple publishing/archive workflow.
 
-## MVP Editor
+## Initial Production Editor
 
 Start with simple point markers.
 

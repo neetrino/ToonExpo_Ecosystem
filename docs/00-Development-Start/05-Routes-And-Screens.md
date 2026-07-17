@@ -1,5 +1,7 @@
 # ToonExpo Routes And Screens
 
+All routes below are Next.js frontend routes only. Product API endpoints are separate NestJS routes under `/api/v1`; do not create matching Next.js route handlers.
+
 ## Public Routes
 
 ```text
@@ -79,4 +81,3 @@ Private areas should support entity sheet links where useful:
 ?buyer=:buyerId
 ?readiness=:assessmentId
 ```
-

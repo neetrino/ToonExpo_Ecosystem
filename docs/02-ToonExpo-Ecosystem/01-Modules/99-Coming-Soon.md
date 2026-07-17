@@ -6,7 +6,7 @@ Coming soon / not v1 blockers
 
 ## Paid Tickets / Payments
 
-Not in MVP.
+Not in the current production scope.
 
 Future possible scope:
 
@@ -18,7 +18,7 @@ Future possible scope:
 
 ## Push Notifications
 
-Not in MVP.
+Not in the current production scope.
 
 Future possible scope:
 
@@ -31,7 +31,7 @@ Future possible scope:
 
 Basic mortgage/bank offers page is v1.
 
-Advanced application flow is not core MVP.
+Advanced application flow is outside the current production scope.
 
 Future possible scope:
 
@@ -45,7 +45,7 @@ Future possible scope:
 
 ## Advanced Visual Map Editor
 
-Start minimal in MVP.
+Start with the approved initial production capability.
 
 Future possible scope:
 

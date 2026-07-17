@@ -25,7 +25,7 @@ This is not a "shared auth between separate platforms" anymore. ToonExpo is one 
 - BigProjects admin/staff accounts;
 - entrance staff accounts.
 
-## MVP Decisions
+## Initial Production Decisions
 
 - buyer / ordinary visitor can self-register;
 - BigProjects admin/staff can also create buyer accounts if needed;
@@ -46,6 +46,6 @@ Detailed implementation docs are split by topic:
 - [Company Members And Module Access](./01-Account-Access/04-Company-Members-And-Module-Access.md)
 - [Roles And Permissions](./01-Account-Access/05-Roles-And-Permissions.md)
 - [BOS Provisioning](./01-Account-Access/06-BOS-Provisioning.md)
-- [Security And Verification MVP](./01-Account-Access/07-Security-And-Verification-MVP.md)
+- [Security And Verification](./01-Account-Access/07-Security-And-Verification.md)
 - [Entity Fields](./01-Account-Access/08-Entity-Fields.md)
 - [Acceptance Criteria](./01-Account-Access/09-Acceptance-Criteria.md)

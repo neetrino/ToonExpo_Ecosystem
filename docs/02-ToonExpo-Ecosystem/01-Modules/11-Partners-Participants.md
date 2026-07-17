@@ -41,8 +41,8 @@ Bank offers appear on the Mortgage / Bank Offers page and affect the public calc
 
 ## Out Of Scope
 
-- partner readiness in MVP;
-- complex mortgage application flow in MVP.
+- partner readiness in the current production scope;
+- complex mortgage application flow in the current production scope.
 
 ## Important Rule
 

@@ -6,6 +6,14 @@ alwaysApply: false
 
 # Architecture
 
+## Fixed runtime split
+
+- `apps/web`: Next.js presentation layer only.
+- `apps/api`: NestJS application/backend layer and only database runtime.
+- `packages/db`: Prisma schema/client/migrations; runtime import allowed only from `apps/api`.
+- `apps/web` communicates with `apps/api` through the typed REST client.
+- Enforce forbidden imports in ESLint and CI; see `docs/architecture/DEPENDENCY_GRAPH.md`.
+
 ## Layers (Clean-style)
 
 - **Presentation** (UI/API) → **Application** (use cases/services) → **Domain** (entities/rules) → **Infrastructure** (DB, external APIs).
@@ -32,3 +40,4 @@ alwaysApply: false
 - [ ] Folder layout matches declared project size
 - [ ] No circular imports between features
 - [ ] No SQL or server-only secrets in client components
+- [ ] No Prisma, product route handlers or backend Server Actions in `apps/web`

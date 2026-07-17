@@ -27,7 +27,7 @@ ToonExpo should be mobile-first. The mobile web/app experience is a core product
 - apartment pages should be readable on phone;
 - visual map/hotspots must work on mobile.
 
-## Out Of Scope For MVP
+## Out Of Current Production Scope
 
 - push notifications;
 - complex offline mode;

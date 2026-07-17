@@ -1,6 +1,8 @@
-# ToonExpo MVP Scope Freeze
+# ToonExpo Production Scope
 
-## Included In v1
+This is the approved full product scope for the initial production release. It is not a prototype or MVP; every included capability requires production-quality implementation and acceptance criteria.
+
+## Included In Initial Production Release
 
 - account/access and roles;
 - buyer self-registration with name, phone, email;
@@ -29,10 +31,9 @@
 - full marketplace/ecommerce;
 - public chat/messaging;
 - broad ToonExpo data sync to BOS;
-- complex builder subroles in v1;
-- phone/email verification in v1.
+- complex builder subroles in the initial production release;
+- phone/email verification in the initial production release.
 
-## v1 Success Definition
+## Production Release Success Definition
 
 Buyer can register, get QR, browse projects/apartments, request/contact builders, and builders/admins can manage inventory, CRM follow-up and readiness inside ToonExpo.
-

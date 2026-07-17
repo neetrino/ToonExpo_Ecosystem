@@ -1,4 +1,4 @@
-# Security And Verification MVP
+# Security And Verification
 
 ## v1 Verification Decision
 
@@ -7,7 +7,7 @@ v1 does not require:
 - phone verification;
 - email verification.
 
-This is an explicit MVP decision.
+This is an explicit initial production decision.
 
 ## Authentication
 
@@ -55,4 +55,3 @@ Implementation should support a practical account access flow:
 - password reset or magic link depending chosen auth approach.
 
 Exact auth provider/implementation is technical decision.
-

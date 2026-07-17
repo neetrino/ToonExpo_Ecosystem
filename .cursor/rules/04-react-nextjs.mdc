@@ -6,15 +6,21 @@ alwaysApply: false
 
 # React and Next.js
 
+Next.js is the frontend runtime only. Server Components may run on a server, but that does not make them the product backend.
+
 - **Server Components by default** — add `'use client'` only when you need hooks, browser APIs, or event handlers.
 - **Named exports** for components; no default exports for route components if project forbids (see `00-core.mdc`).
 - **Colocate** feature code; avoid prop-drilling hell — use composition or context sparingly.
-- **Server state** — fetch on server or React Query on client per `16-state-management.mdc`.
+- **Server state** — fetch the NestJS REST API from Server Components or use React Query on the client per `16-state-management.mdc`.
 - **`next/image`** for images; **`next/link`** for navigation.
 - **Metadata** (`generateMetadata` / static) for SEO where applicable.
 - **Loading / error / not-found** UI for route segments.
 
 ## Forbidden
 
-- Fetching secrets or DB in client components.
+- Prisma imports, SQL, direct database access, `packages/db` or `packages/domain` imports anywhere in `apps/web`.
+- Product APIs in `app/api/**/route.ts`.
+- Product mutations or business workflows in Server Actions.
+- Treating Next.js redirects/proxy as authoritative authorization; NestJS guards are authoritative.
+- Fetching secrets or database data directly in client components.
 - Huge client bundles — move data fetching and heavy logic server-side when possible.

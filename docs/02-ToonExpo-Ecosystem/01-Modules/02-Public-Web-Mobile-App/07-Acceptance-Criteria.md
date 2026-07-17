@@ -31,6 +31,5 @@
 
 - No paid tickets/payment flow in v1.
 - No online mortgage application flow in v1.
-- No push notifications in MVP.
-- No complex offline mode in MVP.
-
+- No push notifications in the current production scope.
+- No complex offline mode in the current production scope.

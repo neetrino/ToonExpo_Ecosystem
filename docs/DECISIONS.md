@@ -5,7 +5,11 @@
 - ToonExpo Ecosystem is separate from BigProjects BOS.
 - Project size is C — large monorepo.
 - Use monorepo layout with `apps/*` and `packages/*`.
-- Backend API runs on Google Cloud Run.
+- ToonExpo is a full production product; no MVP/prototype delivery model.
+- `apps/web` is a Next.js 16.2.x frontend only.
+- `apps/api` is the complete NestJS 11.1.x backend and runs on Google Cloud Run.
+- Only NestJS may access Prisma/PostgreSQL or implement product APIs and mutations.
+- PostgreSQL 18.x on Neon and Prisma ORM 7.x are the data baseline.
 - Buyer/visitor can self-register.
 - Builder/partner/bank accounts are created by BigProjects Admin/staff or BOS provisioning.
 - Buyer receives one permanent QR after registration.

@@ -1,5 +1,5 @@
 # Minimal P0 Must-have checklist
-(Next.js + (Next API или NestJS) + Neon + Upstash опционально)
+(Next.js frontend + NestJS backend + Neon + Upstash опционально)
 
 > [!info] Кто что делает
 > **🤖 В коде** — реализует AI / разработчик в репозитории. Сначала закрывай эти пункты (отдаёшь задачу AI).  
@@ -21,17 +21,17 @@
 ## 2. Auth + Sessions — [[2 Auth + Sessions (самая любимая точка атаки)]]
 *Сначала 🤖, в конце 👤*
 
-* [ ] 🤖 **2.2** Secure cookies + session TTL/rotation (Clerk/Auth.js)
+* [ ] 🤖 **2.2** Secure cookies + backend session TTL/rotation (NestJS Auth)
 * [ ] 🤖 **2.3** CSRF protection (Code)
 * [ ] 🤖 **2.4** RBAC server-side (Code)
-* [ ] 🤖 **2.7** Logout invalidates session/token (Code/Clerk/Auth.js)
-* [ ] 👤 **2.1** ADR: схема auth (Clerk/Auth.js) (Docs)
+* [ ] 🤖 **2.7** Logout invalidates backend session/token (NestJS Auth)
+* [ ] 👤 **2.1** ADR: схема NestJS auth (Docs)
 * [ ] 👤 **2.5** Admin MFA mandatory (Clerk/Policy)
 * [ ] 👤 **2.6** Password policy if not OAuth-only (Docs/Policy)
 
 ---
 
-## 3. API безопасность — [[3 API безопасность (Next API - Nest)]]
+## 3. API безопасность — [[3 API безопасность (NestJS)]]
 *Всё в коде 🤖*
 
 * [ ] 🤖 **3.1** Input validation (Code)

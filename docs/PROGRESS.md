@@ -14,12 +14,14 @@ Production code has not started yet.
 - Development start pack created.
 - Technical architecture draft created.
 - TECH_CARD draft created.
+- Frontend/backend runtime boundary confirmed.
+- Production scope replaces MVP terminology.
 
 ## Next
 
-1. Confirm TECH_CARD stack choices.
-2. Confirm initial monorepo layout.
-3. Scaffold `apps/web`, `apps/api` and shared packages.
+1. Confirm the remaining auth/session strategy.
+2. Scaffold the confirmed monorepo layout.
+3. Scaffold Next.js `apps/web` and the full NestJS `apps/api` together.
 4. Create Prisma schema draft from development start database schema.
 5. Implement auth, i18n and core layout.
 
