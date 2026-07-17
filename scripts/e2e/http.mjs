@@ -1,7 +1,9 @@
 /**
- * Minimal cookie jar + fetch helpers for Auth.js credentials login.
+ * Minimal cookie jar + fetch helpers for NestJS session login.
  * Uses Headers.getSetCookie when available (Node 18+).
  */
+
+import { E2E_BASE_URL } from './config.mjs';
 
 export class CookieJar {
   /** @type {Map<string, string>} */
@@ -44,11 +46,9 @@ export class CookieJar {
     return [...this.#cookies.entries()].map(([k, v]) => `${k}=${v}`).join('; ');
   }
 
+  /** Nest httpOnly session cookie (`toonexpo.sid`). */
   hasSession() {
-    return (
-      this.#cookies.has('authjs.session-token') ||
-      this.#cookies.has('__Secure-authjs.session-token')
-    );
+    return this.#cookies.has('toonexpo.sid');
   }
 
   clear() {
@@ -73,37 +73,48 @@ export async function fetchWithJar(url, init = {}) {
 }
 
 /**
- * @param {string} baseUrl
+ * Nest CSRF + JSON login against the API origin (direct; no Next `/nest` proxy).
+ * @param {string} apiBaseUrl
  * @param {CookieJar} jar
  * @param {{ email: string; password: string }} creds
+ * @param {string} [appOrigin] Frontend origin for AppOriginGuard (must match APP_URL)
  */
-export async function loginWithCredentials(baseUrl, jar, creds) {
-  const csrfRes = await fetchWithJar(`${baseUrl}/api/auth/csrf`, { jar });
+export async function loginWithCredentials(
+  apiBaseUrl,
+  jar,
+  creds,
+  appOrigin = E2E_BASE_URL,
+) {
+  const csrfRes = await fetchWithJar(`${apiBaseUrl}/auth/csrf`, { jar });
   if (!csrfRes.ok) {
     throw new Error(`csrf failed: ${csrfRes.status}`);
   }
   const { csrfToken } = /** @type {{ csrfToken?: string }} */ (await csrfRes.json());
   if (!csrfToken) throw new Error('csrfToken missing');
 
-  const body = new URLSearchParams({
-    csrfToken,
-    email: creds.email,
-    password: creds.password,
-    redirect: 'false',
-    json: 'true',
-  });
-
-  const loginRes = await fetchWithJar(`${baseUrl}/api/auth/callback/credentials`, {
+  const loginRes = await fetchWithJar(`${apiBaseUrl}/auth/login`, {
     jar,
     method: 'POST',
-    headers: { 'content-type': 'application/x-www-form-urlencoded' },
-    body,
+    headers: {
+      accept: 'application/json',
+      'content-type': 'application/json',
+      'x-csrf-token': csrfToken,
+      origin: appOrigin,
+    },
+    body: JSON.stringify({
+      email: creds.email,
+      password: creds.password,
+    }),
   });
 
-  if (!jar.hasSession()) {
+  if (!loginRes.ok) {
     const text = await loginRes.text().catch(() => '');
+    throw new Error(`login failed (status ${loginRes.status}): ${text.slice(0, 200)}`);
+  }
+
+  if (!jar.hasSession()) {
     throw new Error(
-      `login did not set session cookie (status ${loginRes.status}): ${text.slice(0, 200)}`,
+      `login did not set toonexpo.sid (status ${loginRes.status})`,
     );
   }
   return loginRes;
