@@ -1,4 +1,4 @@
-import { apiRequest } from '@/lib/api/client';
+import { apiRequest } from '@/lib/api';
 import type { BuilderMutationErrorKey, BuilderMutationResult } from '@/lib/builder/mutations';
 import { resolveCatalogPaths } from '@/lib/shared/resolve-catalog-paths';
 import { revalidateCatalogPaths } from '@/lib/shared/revalidate-catalog-paths';
