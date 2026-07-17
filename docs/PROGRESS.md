@@ -6,9 +6,10 @@ Branch: `sipan`. MVP backlog through Sprint 7.7 is **done**. Use this section to
 
 ### Done (summary)
 
+- **Nest backend isolation** — all product APIs and infra (Prisma, auth sessions, R2, Resend, Redis, BOS) live in `apps/api`; `apps/web` is frontend-only via `/nest` rewrite + typed client. Auth.js removed from web.
 - **MVP + Sprint 7** — auth, inventory, CRM/QR, visual map, partners/mortgage, exhibition check-in, analytics v1, BOS provisioning, audit/CSV, favorites, R2 uploads, rate limits, set-password invites, admin acting-on-behalf, venue map + route path, apartment status history, Swagger prod gate, analytics sampling.
 - **Redesign** — navy/teal public + portal UI via `--te-*` design tokens (`apps/web/src/app/globals.css`).
-- **R2 uploads** — signed presign for media, company logos, canvas images, venue/partner images (`POST /api/uploads/presign`).
+- **R2 uploads** — Nest signed presign (`POST /uploads/presign` via `/nest`); web uses typed API client only.
 - **Playwright (local)** — `pnpm test:e2e` under `e2e/playwright/` (catalog, auth RBAC, favorites); fetch smoke kept (`pnpm e2e` / `e2e:local`).
 - **Venue map + route path** — booth markers, BFS path graph, admin graph editor, public Show route polyline; `Booth.projectId` assign + public search/link; `BOOTH_SELECTED` / `ROUTE_REQUESTED` analytics.
 - **20-project seed** — `seedCatalogProjects` (~19 published catalog projects + demo Sunrise tree); run `pnpm db:seed`.
@@ -21,12 +22,13 @@ Branch: `sipan`. MVP backlog through Sprint 7.7 is **done**. Use this section to
 1. **`AnalyticsDailyAggregate` warehouse** — rollup table + nightly/job aggregation (deferred from analytics v1).
 2. **General Redis cache/queues** — beyond Upstash rate limiting (cache layers, background jobs).
 3. **Playwright in CI** — job alongside existing fetch smoke (`pnpm e2e:local`); see `e2e/playwright/README.md`.
-4. **Wire API auth against DB sessions** — Nest guards should verify Auth.js session rows, not JWT-only shortcuts.
-5. **Email/phone verification + password reset** — deferred from v1 (set-password invite flow exists).
-6. **Sentry project keys** — env placeholders exist; wire `@sentry/nextjs` when DSN projects exist.
-7. **Staging/prod domain + env** — `AUTH_URL`, CORS, cookie `Secure`, deploy targets (Vercel web, Cloud Run API).
-8. **Neon `DIRECT_URL`** — add if pooler migrate issues appear.
-9. **BOS / integration** — provisioning v1 done; no Open blockers. Future sync/contracts: [`docs/03-Integration-With-BOS/`](./03-Integration-With-BOS/).
+4. **Email/phone verification + password reset** — deferred from v1 (set-password invite flow exists; Nest auth already owns sessions).
+5. **Sentry project keys** — env placeholders exist; wire `@sentry/nextjs` / Nest Sentry when DSN projects exist.
+6. **Staging/prod domain + env** — `APP_URL`, CORS, cookie `Secure`, deploy targets (Vercel web, Cloud Run API).
+7. **Neon `DIRECT_URL`** — add if pooler migrate issues appear.
+8. **BOS / integration** — provisioning v1 done; no Open blockers. Future sync/contracts: [`docs/03-Integration-With-BOS/`](./03-Integration-With-BOS/).
+
+**Do not** reintroduce Auth.js in web or “wire Nest to Auth.js” — Nest DB sessions are the source of truth (see `docs/TECH_CARD.md`).
 
 ### Frontend next
 
