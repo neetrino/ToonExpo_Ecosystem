@@ -31,3 +31,40 @@ export const setPasswordSchema = z
   });
 
 export type SetPasswordInput = z.infer<typeof setPasswordSchema>;
+
+/** Public session user returned by GET /auth/me and login/register. */
+export const authUserSchema = z.object({
+  id: z.string().min(1),
+  email: z.string().email(),
+  name: z.string().nullable(),
+  image: z.string().nullable(),
+  role: platformRoleSchema,
+});
+
+export type AuthUser = z.infer<typeof authUserSchema>;
+
+export const authSessionSchema = z.object({
+  user: authUserSchema,
+  expires: z.string().min(1),
+});
+
+export type AuthSession = z.infer<typeof authSessionSchema>;
+
+export const authErrorCodeSchema = z.enum([
+  'VALIDATION_ERROR',
+  'INVALID_CREDENTIALS',
+  'EMAIL_TAKEN',
+  'RATE_LIMITED',
+  'UNAUTHORIZED',
+  'CSRF_REJECTED',
+  'FORBIDDEN_ORIGIN',
+]);
+
+export type AuthErrorCode = z.infer<typeof authErrorCodeSchema>;
+
+export const authErrorResponseSchema = z.object({
+  code: authErrorCodeSchema,
+  message: z.string(),
+});
+
+export type AuthErrorResponse = z.infer<typeof authErrorResponseSchema>;

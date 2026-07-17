@@ -1,6 +1,5 @@
+import type { AuthSession } from '@toonexpo/contracts';
 import type { PartnerType, PublicationStatus } from '@toonexpo/domain';
-import type { Session } from 'next-auth';
-
 import { prisma } from '@toonexpo/db';
 
 import { auth } from '@/auth';
@@ -21,7 +20,7 @@ export type PartnerSessionPartner = {
 };
 
 export type PartnerSessionContext = {
-  session: Session;
+  session: AuthSession;
   partnerId: string;
   companyId: string;
   partner: PartnerSessionPartner;

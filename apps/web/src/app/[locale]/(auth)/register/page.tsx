@@ -6,8 +6,6 @@ import { redirect } from '@/i18n/navigation';
 import { safeAuthCallbackPath } from '@/lib/auth/callback-url';
 import { ACCOUNT_PATH } from '@/lib/auth/constants';
 
-import { registerAction } from '../actions';
-
 type RegisterPageProps = {
   params: Promise<{ locale: string }>;
   searchParams: Promise<{ callbackUrl?: string }>;
@@ -51,10 +49,7 @@ export default async function RegisterPage({ params, searchParams }: RegisterPag
           <h1 className="text-2xl font-semibold text-[var(--te-fg)]">{t('title')}</h1>
           <p className="text-sm text-[var(--te-muted)]">{t('subtitle')}</p>
         </div>
-        <RegisterForm
-          action={registerAction.bind(null, locale, callbackUrl)}
-          loginHref={loginHref}
-        />
+        <RegisterForm locale={locale} callbackUrl={callbackUrl} loginHref={loginHref} />
       </div>
     </section>
   );

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { Session } from 'next-auth';
+import type { AuthSession } from '@toonexpo/contracts';
 
 vi.mock('@/auth', () => ({
   auth: vi.fn(),
@@ -25,7 +25,7 @@ const PARTNER_SESSION = {
     name: 'Partner User',
     role: 'PARTNER',
   },
-} as Session;
+} as AuthSession;
 
 const BUYER_SESSION = {
   expires: new Date().toISOString(),
@@ -35,7 +35,7 @@ const BUYER_SESSION = {
     name: 'Buyer User',
     role: 'BUYER',
   },
-} as Session;
+} as AuthSession;
 
 const LINKED_PARTNER = {
   id: 'partner-1',

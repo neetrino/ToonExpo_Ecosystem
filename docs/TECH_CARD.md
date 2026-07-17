@@ -25,7 +25,7 @@ Size C — large, layout: monorepo (`apps/*`, `packages/*`).
 | API style | REST + OpenAPI | Confirmed | Works well for app and integration endpoints. |
 | Database | PostgreSQL / Neon | Confirmed | Fits relational inventory/CRM data. |
 | ORM | Prisma | Confirmed | Matches rules. |
-| Auth | Auth.js 5 + database sessions | Confirmed | Buyer self-registers; builders/partners/admins are provisioned. |
+| Auth | NestJS httpOnly DB sessions (Cookie) | Confirmed | Buyer self-registers; builders/partners/admins are provisioned. Auth.js removed from web; sessions reuse Prisma `Session` rows. |
 | i18n | next-intl | Confirmed | Locales `hy`, `ru`, `en` as code constants (not env). |
 | File storage | Cloudflare R2 | Confirmed | Signed client uploads via web-issued PUT URLs (`/api/uploads/presign`). |
 | Email | Resend | Confirmed | Account invitations and login flows. |
@@ -72,7 +72,7 @@ Size C — large, layout: monorepo (`apps/*`, `packages/*`).
 | Validation | Zod (shared via `packages/contracts`) | Confirmed |
 | API style | REST | Confirmed |
 | API docs | OpenAPI/Swagger | Confirmed |
-| Uploads | Web-signed upload to R2 (builder media) | Confirmed | `POST /api/uploads/presign` in `apps/web`; Nest path deferred. Company logo / canvas still URL. |
+| Uploads | Nest-signed upload to R2 (builder media) | Confirmed | `POST /uploads/presign` on Nest; web uses typed API client. Company logo / canvas still URL paste fallback. |
 
 ## 4. Database
 

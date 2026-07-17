@@ -1,12 +1,11 @@
-import type { Session } from 'next-auth';
-
+import type { AuthSession } from '@toonexpo/contracts';
 import { prisma } from '@toonexpo/db';
 
 import { auth } from '@/auth';
 import { readActiveCompanyId } from '@/lib/builder/active-company-cookie';
 
 export type BuilderSessionContext = {
-  session: Session;
+  session: AuthSession;
   companyId: string;
   companySlug: string;
   companyName: string;
@@ -46,7 +45,7 @@ export async function assertBuilderSession(): Promise<BuilderSessionContext | nu
   return null;
 }
 
-async function resolveBuilderContext(session: Session): Promise<BuilderSessionContext | null> {
+async function resolveBuilderContext(session: AuthSession): Promise<BuilderSessionContext | null> {
   const memberships = await prisma.companyMember.findMany({
     where: { userId: session.user.id },
     orderBy: { createdAt: 'asc' },
@@ -73,7 +72,7 @@ async function resolveBuilderContext(session: Session): Promise<BuilderSessionCo
   });
 }
 
-async function resolveAdminActingContext(session: Session): Promise<BuilderSessionContext | null> {
+async function resolveAdminActingContext(session: AuthSession): Promise<BuilderSessionContext | null> {
   const cookieCompanyId = await readActiveCompanyId();
   if (!cookieCompanyId) {
     return null;
@@ -95,7 +94,7 @@ async function resolveAdminActingContext(session: Session): Promise<BuilderSessi
 }
 
 function toContext(
-  session: Session,
+  session: AuthSession,
   company: CompanyRef,
   flags: { actingOnBehalf: boolean; membershipCount: number },
 ): BuilderSessionContext {

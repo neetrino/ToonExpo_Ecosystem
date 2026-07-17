@@ -4,10 +4,14 @@ import { z } from 'zod';
 export const webEnvSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   APP_URL: z.string().url().default('http://localhost:3000'),
-  NEXT_PUBLIC_API_URL: z.string().url().default('http://localhost:4000'),
-  AUTH_SECRET: z.string().min(32),
-  AUTH_URL: z.string().url().optional(),
-  DATABASE_URL: z.string().url().optional(),
+  /** Browser API base. Prefer same-origin `/nest` rewrite so session cookies work with SSR. */
+  NEXT_PUBLIC_API_URL: z.string().min(1).default('/nest'),
+  /** Server-side Nest base (direct Cloud Run / localhost:4000). Falls back to APP_URL + public path. */
+  API_URL: z.preprocess(emptyToUndefined, z.string().url().optional()),
+  /** Deprecated for web — Nest owns sessions. Kept optional during migration. */
+  AUTH_SECRET: z.preprocess(emptyToUndefined, z.string().min(32).optional()),
+  AUTH_URL: z.preprocess(emptyToUndefined, z.string().url().optional()),
+  DATABASE_URL: z.preprocess(emptyToUndefined, z.string().url().optional()),
   /** Optional — when unset, rate limiting fails open (local/CI). */
   UPSTASH_REDIS_REST_URL: z.preprocess(emptyToUndefined, z.string().url().optional()),
   UPSTASH_REDIS_REST_TOKEN: z.preprocess(emptyToUndefined, z.string().optional()),
@@ -33,5 +37,7 @@ export function loadWebEnv(env: NodeJS.ProcessEnv = process.env): WebEnv {
     AUTH_SECRET: emptyToUndefined(env.AUTH_SECRET),
     AUTH_URL: emptyToUndefined(env.AUTH_URL),
     DATABASE_URL: emptyToUndefined(env.DATABASE_URL),
+    API_URL: emptyToUndefined(env.API_URL),
+    NEXT_PUBLIC_API_URL: emptyToUndefined(env.NEXT_PUBLIC_API_URL) ?? '/nest',
   });
 }

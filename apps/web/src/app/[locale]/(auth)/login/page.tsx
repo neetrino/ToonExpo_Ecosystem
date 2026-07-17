@@ -6,8 +6,6 @@ import { redirect } from '@/i18n/navigation';
 import { safeAuthCallbackPath } from '@/lib/auth/callback-url';
 import { ACCOUNT_PATH } from '@/lib/auth/constants';
 
-import { loginAction } from '../actions';
-
 type LoginPageProps = {
   params: Promise<{ locale: string }>;
   searchParams: Promise<{ invited?: string; callbackUrl?: string }>;
@@ -56,10 +54,7 @@ export default async function LoginPage({ params, searchParams }: LoginPageProps
             {t('invitedSuccess')}
           </p>
         ) : null}
-        <LoginForm
-          action={loginAction.bind(null, locale, callbackUrl)}
-          registerHref={registerHref}
-        />
+        <LoginForm locale={locale} callbackUrl={callbackUrl} registerHref={registerHref} />
       </div>
     </section>
   );

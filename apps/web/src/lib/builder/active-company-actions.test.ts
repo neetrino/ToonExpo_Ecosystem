@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { Session } from 'next-auth';
+import type { AuthSession } from '@toonexpo/contracts';
 
 const redirectMock = vi.fn((path: string): never => {
   throw new Error(`NEXT_REDIRECT:${path}`);
@@ -63,7 +63,7 @@ const ADMIN_SESSION = {
     name: 'Admin',
     role: 'BIGPROJECTS_ADMIN',
   },
-} as Session;
+} as AuthSession;
 
 const BUILDER_SESSION = {
   expires: new Date().toISOString(),
@@ -73,7 +73,7 @@ const BUILDER_SESSION = {
     name: 'Builder',
     role: 'BUILDER',
   },
-} as Session;
+} as AuthSession;
 
 describe('active-company-actions', () => {
   beforeEach(() => {

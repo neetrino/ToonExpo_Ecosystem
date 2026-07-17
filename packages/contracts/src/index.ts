@@ -23,10 +23,18 @@ export {
   type PublicProjectSummary,
 } from './catalog';
 export {
+  authErrorCodeSchema,
+  authErrorResponseSchema,
+  authSessionSchema,
+  authUserSchema,
   buyerRegisterSchema,
   loginSchema,
   platformRoleSchema,
   setPasswordSchema,
+  type AuthErrorCode,
+  type AuthErrorResponse,
+  type AuthSession,
+  type AuthUser,
   type BuyerRegisterInput,
   type LoginInput,
   type SetPasswordInput,
