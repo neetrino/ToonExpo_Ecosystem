@@ -5,7 +5,7 @@ import {
   type FavoriteToggleInput,
 } from '@toonexpo/contracts';
 
-import { serverApiRequest } from '@/lib/api/server';
+import { serverApiRequest } from '../api/server';
 
 /**
  * Buyer-private favorite list for account UI.

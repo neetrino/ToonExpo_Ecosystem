@@ -1,4 +1,4 @@
-import { prisma } from '@toonexpo/db';
+import { serverApiRequest } from '@/lib/api/server';
 
 export type CompanyMemberOption = {
   userId: string;
@@ -7,21 +7,6 @@ export type CompanyMemberOption = {
 
 /** Company members for CRM assignee selects. */
 export async function loadCompanyMembers(companyId: string): Promise<CompanyMemberOption[]> {
-  const members = await prisma.companyMember.findMany({
-    where: { companyId },
-    select: {
-      user: {
-        select: {
-          id: true,
-          name: true,
-        },
-      },
-    },
-    orderBy: { user: { name: 'asc' } },
-  });
-
-  return members.map((member) => ({
-    userId: member.user.id,
-    name: member.user.name ?? '—',
-  }));
+  void companyId;
+  return serverApiRequest<CompanyMemberOption[]>('/crm/members');
 }

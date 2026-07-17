@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 const mockServerApiRequest = vi.fn();
 
-vi.mock('@/lib/api/server', () => ({
+vi.mock('../api/server', () => ({
   serverApiRequest: (...args: unknown[]) => mockServerApiRequest(...args),
 }));
 

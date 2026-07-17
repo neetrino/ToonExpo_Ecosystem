@@ -5,8 +5,8 @@ import {
   favoriteToggleInputSchema,
 } from '@toonexpo/contracts';
 
-import { getApiErrorKey } from '@/lib/api/errors';
-import { serverApiRequest } from '@/lib/api/server';
+import { getApiErrorKey } from '../api/errors';
+import { serverApiRequest } from '../api/server';
 
 export type FavoriteMutationErrorKey = 'unauthorized' | 'invalidInput' | 'notFound' | 'rateLimited';
 

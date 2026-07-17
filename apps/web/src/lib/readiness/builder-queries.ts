@@ -1,6 +1,7 @@
 import type { BuilderReadinessAssessment } from '@toonexpo/contracts';
-import { prisma } from '@toonexpo/db';
 import type { ReadinessStatus, ReadinessTargetType } from '@toonexpo/domain';
+
+import { serverApiRequest } from '@/lib/api/server';
 
 import { filterProvidersForServiceCategory, type ProviderSuggestionInput } from './provider-match';
 import { isWeakReadinessStatus } from './score';
@@ -40,38 +41,6 @@ function toBuilderAssessment(row: {
  * Builder-facing select — intentionally omits internalNotes / internalNote.
  * Visibility is enforced at the query layer, not only in the UI.
  */
-const builderAssessmentSelect = {
-  id: true,
-  targetType: true,
-  companyId: true,
-  projectId: true,
-  status: true,
-  overallScore: true,
-  recommendation: true,
-  requiredActions: true,
-  responsibleContact: true,
-  lastEvaluatedAt: true,
-  updatedAt: true,
-  project: { select: { name: true } },
-  categoryScores: {
-    orderBy: { category: { sortOrder: 'asc' as const } },
-    select: {
-      categoryId: true,
-      score: true,
-      status: true,
-      recommendation: true,
-      requiredActions: true,
-      category: {
-        select: {
-          key: true,
-          name: true,
-          serviceCategoryKey: true,
-        },
-      },
-    },
-  },
-} as const;
-
 function mapBuilderRow(row: {
   id: string;
   targetType: BuilderReadinessAssessment['targetType'];
@@ -131,31 +100,23 @@ function mapBuilderRow(row: {
 export async function listBuilderAssessments(
   companyId: string,
 ): Promise<BuilderReadinessAssessment[]> {
-  const rows = await prisma.readinessAssessment.findMany({
-    where: { companyId, archivedAt: null },
-    orderBy: [{ updatedAt: 'desc' }],
-    select: builderAssessmentSelect,
-  });
+  void companyId;
+  const rows = await serverApiRequest<Parameters<typeof mapBuilderRow>[0][]>(
+    '/builder/readiness',
+  );
 
-  return rows.map(mapBuilderRow);
+  return rows.map((row) =>
+    mapBuilderRow({
+      ...row,
+      lastEvaluatedAt: row.lastEvaluatedAt ? new Date(row.lastEvaluatedAt) : null,
+      updatedAt: new Date(row.updatedAt),
+    }),
+  );
 }
 
 /** Published SERVICE_COMPANY partners for readiness provider suggestions. */
 export async function loadPublishedServiceProviders(): Promise<ProviderSuggestionInput[]> {
-  return prisma.partner.findMany({
-    where: { status: 'PUBLISHED', type: 'SERVICE_COMPANY' },
-    orderBy: { name: 'asc' },
-    select: {
-      id: true,
-      name: true,
-      slug: true,
-      serviceCategories: true,
-      phone: true,
-      email: true,
-      website: true,
-      description: true,
-    },
-  });
+  return serverApiRequest<ProviderSuggestionInput[]>('/builder/readiness/providers');
 }
 
 export type CategoryProviderGroup = {

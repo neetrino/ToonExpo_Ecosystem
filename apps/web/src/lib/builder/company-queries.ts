@@ -1,7 +1,8 @@
 import type { PublicCompanyProfile } from '@toonexpo/contracts';
 import { publicCompanyProfileSchema } from '@toonexpo/contracts';
-import { prisma } from '@toonexpo/db';
 import type { PlatformRole } from '@toonexpo/domain';
+
+import { serverApiRequest } from '@/lib/api/server';
 
 const IS_DEV = process.env.NODE_ENV === 'development';
 
@@ -12,19 +13,6 @@ export type BuilderCompanyMemberRow = {
   role: PlatformRole;
   joinedAt: Date;
 };
-
-const companyProfileSelect = {
-  id: true,
-  name: true,
-  slug: true,
-  description: true,
-  logoUrl: true,
-  phone: true,
-  email: true,
-  website: true,
-  city: true,
-  address: true,
-} as const;
 
 function mapCompanyProfile(row: {
   name: string;
@@ -53,10 +41,8 @@ function mapCompanyProfile(row: {
 
 /** Returns the builder company profile for portal display. */
 export async function loadCompanyProfile(companyId: string): Promise<PublicCompanyProfile | null> {
-  const row = await prisma.company.findUnique({
-    where: { id: companyId },
-    select: companyProfileSelect,
-  });
+  void companyId;
+  const row = await serverApiRequest<PublicCompanyProfile | null>('/builder/company/profile');
 
   if (!row) {
     return null;
@@ -67,27 +53,9 @@ export async function loadCompanyProfile(companyId: string): Promise<PublicCompa
 
 /** Lists company members without sensitive user fields. */
 export async function loadCompanyMembers(companyId: string): Promise<BuilderCompanyMemberRow[]> {
-  const rows = await prisma.companyMember.findMany({
-    where: { companyId },
-    orderBy: { createdAt: 'asc' },
-    select: {
-      id: true,
-      role: true,
-      createdAt: true,
-      user: {
-        select: {
-          name: true,
-          email: true,
-        },
-      },
-    },
-  });
-
-  return rows.map((row) => ({
-    id: row.id,
-    name: row.user.name?.trim() || row.user.email,
-    email: row.user.email,
-    role: row.role,
-    joinedAt: row.createdAt,
-  }));
+  void companyId;
+  const rows = await serverApiRequest<
+    Array<Omit<BuilderCompanyMemberRow, 'joinedAt'> & { joinedAt: string }>
+  >('/builder/company/members');
+  return rows.map((row) => ({ ...row, joinedAt: new Date(row.joinedAt) }));
 }

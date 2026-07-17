@@ -1,13 +1,13 @@
-import { prisma } from '@toonexpo/db';
 import {
-  DEAL_STAGES,
-  type ApartmentStatus,
   type ActivityStatus,
+  type ApartmentStatus,
   type DealStage,
   type RequestSource,
 } from '@toonexpo/domain';
 
-import { DEAL_DETAIL_ACTIVITY_LIMIT } from './constants';
+import { getApiErrorKey } from '@/lib/api/errors';
+import { serverApiRequest } from '@/lib/api/server';
+
 import { mapDealDetailRow } from './deal-detail-mapper';
 
 export type DealBoardCard = {
@@ -22,10 +22,7 @@ export type DealBoardCard = {
   nextFollowUpAt: Date | null;
 };
 
-export type DealBoardColumn = {
-  stage: DealStage;
-  deals: DealBoardCard[];
-};
+export type DealBoardColumn = { stage: DealStage; deals: DealBoardCard[] };
 
 export type DealDetailApartment = {
   apartmentId: string;
@@ -69,113 +66,48 @@ export type DealDetail = {
   activities: DealDetailActivity[];
 };
 
-/** Company-scoped CRM board: deals grouped by pipeline stage. */
+type WireBoardCard = Omit<DealBoardCard, 'lastActivityAt' | 'nextFollowUpAt'> & {
+  lastActivityAt: string | null;
+  nextFollowUpAt: string | null;
+};
+
 export async function getCompanyDealsBoard(companyId: string): Promise<DealBoardColumn[]> {
-  const rows = await prisma.deal.findMany({
-    where: { companyId },
-    orderBy: [{ lastActivityAt: 'desc' }, { createdAt: 'desc' }],
-    select: {
-      id: true,
-      stage: true,
-      source: true,
-      contactName: true,
-      lastActivityAt: true,
-      nextFollowUpAt: true,
-      project: { select: { name: true } },
-      assignedUser: { select: { name: true } },
-      _count: { select: { apartments: true } },
-    },
-  });
-
-  const byStage = new Map<DealStage, DealBoardCard[]>(DEAL_STAGES.map((stage) => [stage, []]));
-
-  for (const row of rows) {
-    const column = byStage.get(row.stage);
-    if (!column) {
-      continue;
-    }
-    column.push({
-      id: row.id,
-      stage: row.stage,
-      source: row.source,
-      contactName: row.contactName,
-      projectName: row.project?.name ?? null,
-      apartmentCount: row._count.apartments,
-      assigneeName: row.assignedUser?.name ?? null,
-      lastActivityAt: row.lastActivityAt,
-      nextFollowUpAt: row.nextFollowUpAt,
-    });
-  }
-
-  return DEAL_STAGES.map((stage) => ({
-    stage,
-    deals: byStage.get(stage) ?? [],
+  void companyId;
+  const columns = await serverApiRequest<Array<{ stage: DealStage; deals: WireBoardCard[] }>>(
+    '/crm/board',
+  );
+  return columns.map((column) => ({
+    ...column,
+    deals: column.deals.map((deal) => ({
+      ...deal,
+      lastActivityAt: deal.lastActivityAt ? new Date(deal.lastActivityAt) : null,
+      nextFollowUpAt: deal.nextFollowUpAt ? new Date(deal.nextFollowUpAt) : null,
+    })),
   }));
 }
 
-/** Company-scoped deal detail with apartments and latest activities. */
 export async function getCompanyDealDetail(
   companyId: string,
   dealId: string,
 ): Promise<DealDetail | null> {
-  const deal = await prisma.deal.findFirst({
-    where: { id: dealId, companyId },
-    select: {
-      id: true,
-      stage: true,
-      source: true,
-      title: true,
-      message: true,
-      contactName: true,
-      contactPhone: true,
-      contactEmail: true,
-      buyerUserId: true,
-      projectId: true,
-      lastActivityAt: true,
-      nextFollowUpAt: true,
-      createdAt: true,
-      assignedUserId: true,
-      project: { select: { name: true } },
-      assignedUser: { select: { name: true } },
-      apartments: {
-        select: {
-          apartmentId: true,
-          priceAmdSnapshot: true,
-          statusSnapshot: true,
-          apartment: {
-            select: {
-              code: true,
-              status: true,
-              priceAmd: true,
-              floor: {
-                select: {
-                  name: true,
-                  building: { select: { name: true } },
-                },
-              },
-            },
-          },
-        },
-      },
-      activities: {
-        orderBy: { createdAt: 'desc' },
-        take: DEAL_DETAIL_ACTIVITY_LIMIT,
-        select: {
-          id: true,
-          type: true,
-          body: true,
-          status: true,
-          dueAt: true,
-          createdAt: true,
-          authorUser: { select: { name: true } },
-        },
-      },
-    },
-  });
-
-  if (!deal) {
-    return null;
+  void companyId;
+  try {
+    const row = await serverApiRequest<Parameters<typeof mapDealDetailRow>[0]>(
+      `/crm/deals/${encodeURIComponent(dealId)}`,
+    );
+    return mapDealDetailRow({
+      ...row,
+      createdAt: new Date(row.createdAt),
+      lastActivityAt: row.lastActivityAt ? new Date(row.lastActivityAt) : null,
+      nextFollowUpAt: row.nextFollowUpAt ? new Date(row.nextFollowUpAt) : null,
+      activities: row.activities.map((activity) => ({
+        ...activity,
+        dueAt: activity.dueAt ? new Date(activity.dueAt) : null,
+        createdAt: new Date(activity.createdAt),
+      })),
+    });
+  } catch (error) {
+    if (getApiErrorKey(error) === 'notFound') return null;
+    throw error;
   }
-
-  return mapDealDetailRow(deal);
 }
