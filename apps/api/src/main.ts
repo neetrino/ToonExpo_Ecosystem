@@ -50,9 +50,10 @@ async function bootstrap(): Promise<void> {
     SwaggerModule.setup('docs', app, document);
   }
 
-  const port = Number(new URL(env.API_URL).port || DEFAULT_API_PORT);
-  await app.listen(port);
-  logger.log(`API listening on ${env.API_URL}`);
+  const port = Number(process.env.PORT ?? DEFAULT_API_PORT);
+  await app.listen(port, '0.0.0.0');
+  logger.log(`API listening on port ${port}`);
+  logger.log(`Public API URL: ${env.API_URL}`);
   if (shouldEnableSwagger(env)) {
     logger.log(`Swagger docs at ${env.API_URL}/docs`);
   }
