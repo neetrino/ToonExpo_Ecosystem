@@ -17,10 +17,7 @@ export const apiEnvSchema = z.object({
    * Optional override. When unset, Nest picks `lax` for same-hostname (local) and
    * `none` for cross-host (Vercel → Cloud Run; requires Secure).
    */
-  COOKIE_SAME_SITE: z.preprocess(
-    emptyToUndefined,
-    z.enum(['lax', 'none', 'strict']).optional(),
-  ),
+  COOKIE_SAME_SITE: z.preprocess(emptyToUndefined, z.enum(['lax', 'none', 'strict']).optional()),
   /** Shared secret for BOS inbound integration. Empty/unset disables the endpoint (503). */
   BOS_API_KEY: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
   RESEND_API_KEY: z.preprocess(emptyToUndefined, z.string().optional()),

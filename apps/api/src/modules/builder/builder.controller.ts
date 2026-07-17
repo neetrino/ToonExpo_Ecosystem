@@ -187,19 +187,12 @@ export class BuilderController {
       throw new UnauthorizedException({ error: 'unauthorized' });
     }
     const env = loadApiEnv();
-    res.cookie(
-      ACTIVE_COMPANY_COOKIE,
-      parsed.data.companyId,
-      buildActiveCompanyCookieOptions(env),
-    );
+    res.cookie(ACTIVE_COMPANY_COOKIE, parsed.data.companyId, buildActiveCompanyCookieOptions(env));
     return { ok: true };
   }
 
   @Post('company/stop-acting')
-  async stopActing(
-    @Req() request: RequestWithAuth,
-    @Res({ passthrough: true }) res: Response,
-  ) {
+  async stopActing(@Req() request: RequestWithAuth, @Res({ passthrough: true }) res: Response) {
     const session = requireSession(request);
     const raw = request.cookies?.[ACTIVE_COMPANY_COOKIE];
     await this.contexts.stopActing(session, typeof raw === 'string' ? raw : undefined);

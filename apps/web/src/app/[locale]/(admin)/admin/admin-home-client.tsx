@@ -26,10 +26,7 @@ export function AdminHomeClient() {
   useEffect(() => {
     let cancelled = false;
     void (async () => {
-      const [users, partners] = await Promise.all([
-        loadProvisionedUsers(),
-        loadPartnerOptions(),
-      ]);
+      const [users, partners] = await Promise.all([loadProvisionedUsers(), loadPartnerOptions()]);
       if (cancelled) {
         return;
       }

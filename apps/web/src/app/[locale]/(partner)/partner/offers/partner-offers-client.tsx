@@ -5,10 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import { assertPartnerSession } from '@/lib/partner/assert-partner-session';
-import {
-  loadOwnPartnerDetail,
-  type PartnerCabinetBankOffer,
-} from '@/lib/partner/queries';
+import { loadOwnPartnerDetail, type PartnerCabinetBankOffer } from '@/lib/partner/queries';
 
 import { PartnerBankOffersSection } from './bank-offers-section';
 

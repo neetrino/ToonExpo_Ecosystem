@@ -4,7 +4,10 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 import { BuilderAnalyticsView } from '@/components/analytics/builder-analytics-view';
-import { loadBuilderAnalytics, type BuilderAnalyticsSnapshot } from '@/lib/analytics/builder-queries';
+import {
+  loadBuilderAnalytics,
+  type BuilderAnalyticsSnapshot,
+} from '@/lib/analytics/builder-queries';
 import { assertBuilderSession } from '@/lib/builder/assert-builder-session';
 
 export function PortalAnalyticsClient() {

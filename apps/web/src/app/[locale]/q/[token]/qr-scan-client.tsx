@@ -36,8 +36,7 @@ export function QrScanClient({ token }: QrScanClientProps) {
     let cancelled = false;
     void (async () => {
       const session = await getSession();
-      const builder =
-        session?.user?.role === 'BUILDER' ? await assertBuilderSession() : null;
+      const builder = session?.user?.role === 'BUILDER' ? await assertBuilderSession() : null;
       if (cancelled) {
         return;
       }

@@ -3,10 +3,7 @@
 import { useLocale, useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
-import {
-  loadActiveExhibitionEvent,
-  type ActiveExhibitionEvent,
-} from '@/lib/exhibition/queries';
+import { loadActiveExhibitionEvent, type ActiveExhibitionEvent } from '@/lib/exhibition/queries';
 
 export function EntranceCheckInClient() {
   const locale = useLocale();

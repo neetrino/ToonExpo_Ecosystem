@@ -25,12 +25,7 @@ type FavoriteToggleProps = {
   isAuthenticated?: boolean;
 };
 
-export function FavoriteToggle({
-  locale,
-  targetType,
-  targetId,
-  returnPath,
-}: FavoriteToggleProps) {
+export function FavoriteToggle({ locale, targetType, targetId, returnPath }: FavoriteToggleProps) {
   const t = useTranslations('catalog.favorite');
   const router = useRouter();
   const { status, user } = useSession();

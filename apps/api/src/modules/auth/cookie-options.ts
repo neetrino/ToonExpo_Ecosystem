@@ -27,10 +27,9 @@ export function resolveCookieSameSite(env: ApiEnv): 'lax' | 'none' | 'strict' {
   }
 }
 
-function baseCookieOptions(env: ApiEnv): Pick<
-  CookieOptions,
-  'secure' | 'sameSite' | 'path' | 'domain'
-> {
+function baseCookieOptions(
+  env: ApiEnv,
+): Pick<CookieOptions, 'secure' | 'sameSite' | 'path' | 'domain'> {
   const sameSite = resolveCookieSameSite(env);
   const secure = env.NODE_ENV === 'production' || sameSite === 'none';
 

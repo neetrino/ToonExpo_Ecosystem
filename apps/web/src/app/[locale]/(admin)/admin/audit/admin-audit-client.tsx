@@ -6,7 +6,11 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import { buildApiUrl } from '@/lib/api/base-url';
-import { loadAuditLogs, parseAuditEntityTypeFilter, type AuditLogRow } from '@/lib/admin/audit-queries';
+import {
+  loadAuditLogs,
+  parseAuditEntityTypeFilter,
+  type AuditLogRow,
+} from '@/lib/admin/audit-queries';
 import { Link } from '@/i18n/navigation';
 
 export function AdminAuditClient() {

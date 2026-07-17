@@ -56,21 +56,15 @@ export function AdminReadinessClient() {
     let cancelled = false;
     setData(null);
     void (async () => {
-      const [
-        assessments,
-        activeCategories,
-        allCategories,
-        companies,
-        projects,
-        editAssessment,
-      ] = await Promise.all([
-        listAdminAssessments(targetFilter),
-        loadActiveReadinessCategories(),
-        listAdminReadinessCategories(),
-        loadAdminCompanyOptions(),
-        loadAdminProjectOptions(),
-        editId ? getAdminAssessment(editId) : Promise.resolve(null),
-      ]);
+      const [assessments, activeCategories, allCategories, companies, projects, editAssessment] =
+        await Promise.all([
+          listAdminAssessments(targetFilter),
+          loadActiveReadinessCategories(),
+          listAdminReadinessCategories(),
+          loadAdminCompanyOptions(),
+          loadAdminProjectOptions(),
+          editId ? getAdminAssessment(editId) : Promise.resolve(null),
+        ]);
       if (cancelled) {
         return;
       }

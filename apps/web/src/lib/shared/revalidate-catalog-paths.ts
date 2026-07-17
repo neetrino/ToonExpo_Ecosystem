@@ -11,9 +11,7 @@ export type CatalogPathParams = {
  * the browser against Nest; callers should `router.refresh()` after success.
  * Kept as a no-op so shared mutation helpers stay isomorphic.
  */
-export function revalidateCatalogPaths(
-  _params: CatalogPathParams | CatalogPathParams[],
-): void {
+export function revalidateCatalogPaths(_params: CatalogPathParams | CatalogPathParams[]): void {
   void _params;
   void SUPPORTED_LOCALES;
 }

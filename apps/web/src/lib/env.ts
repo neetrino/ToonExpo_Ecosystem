@@ -16,7 +16,6 @@ export type WebEnv = z.infer<typeof webEnvSchema>;
 export function loadWebEnv(env: NodeJS.ProcessEnv = process.env): WebEnv {
   return webEnvSchema.parse({
     ...env,
-    NEXT_PUBLIC_API_URL:
-      emptyToUndefined(env.NEXT_PUBLIC_API_URL) ?? 'http://localhost:4000',
+    NEXT_PUBLIC_API_URL: emptyToUndefined(env.NEXT_PUBLIC_API_URL) ?? 'http://localhost:4000',
   });
 }

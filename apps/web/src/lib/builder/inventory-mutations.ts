@@ -65,10 +65,10 @@ export function setFloorPublication(
 ) {
   void companyId;
   void actor;
-  return apiRequest<BuilderMutationResult<{ floorId: string }>>(
-    '/builder/floors/publication',
-    { method: 'PATCH', body: input },
-  );
+  return apiRequest<BuilderMutationResult<{ floorId: string }>>('/builder/floors/publication', {
+    method: 'PATCH',
+    body: input,
+  });
 }
 
 export function upsertApartment(
@@ -78,10 +78,10 @@ export function upsertApartment(
 ) {
   void companyId;
   void actorUserId;
-  return apiRequest<BuilderMutationResult<{ apartmentId: string }>>(
-    '/builder/apartments/upsert',
-    { method: 'POST', body: input },
-  );
+  return apiRequest<BuilderMutationResult<{ apartmentId: string }>>('/builder/apartments/upsert', {
+    method: 'POST',
+    body: input,
+  });
 }
 
 export function createApartment(companyId: string, input: ApartmentUpsertInput) {
