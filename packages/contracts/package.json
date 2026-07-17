@@ -20,7 +20,7 @@
   "dependencies": {
     "@toonexpo/domain": "workspace:*",
     "@toonexpo/shared": "workspace:*",
-    "zod": "^3.25.76"
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@toonexpo/config": "workspace:*",
