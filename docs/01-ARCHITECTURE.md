@@ -499,7 +499,7 @@ Mobile priority:
 
 Security baseline:
 
-- Auth.js 5 with database sessions;
+- NestJS authentication with database sessions;
 - httpOnly secure cookies;
 - buyer self-registration only for buyer/visitor accounts;
 - builder, partner, bank, admin and entrance accounts are provisioned by BigProjects Admin or BOS;

@@ -1,22 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const mockAuth = vi.fn();
-const mockToggleFavorite = vi.fn();
-const mockAssertNotRateLimited = vi.fn();
+const mockServerApiRequest = vi.fn();
 
-vi.mock('@/auth', () => ({
-  auth: () => mockAuth(),
+vi.mock('../api/server', () => ({
+  serverApiRequest: (...args: unknown[]) => mockServerApiRequest(...args),
 }));
 
-vi.mock('@/lib/favorites/mutations', () => ({
-  toggleFavorite: (...args: unknown[]) => mockToggleFavorite(...args),
-  addFavorite: vi.fn(),
-  removeFavorite: vi.fn(),
-}));
-
-vi.mock('@/lib/rate-limit', () => ({
-  assertNotRateLimited: (...args: unknown[]) => mockAssertNotRateLimited(...args),
-}));
+import { ApiClientError } from '../api/errors';
 
 import { toggleFavoriteAction } from './actions';
 
@@ -28,45 +18,34 @@ const TARGET = {
 describe('toggleFavoriteAction', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockAssertNotRateLimited.mockResolvedValue({ limited: false });
   });
 
-  it('denies non-buyer sessions', async () => {
-    mockAuth.mockResolvedValue({ user: { id: 'u1', role: 'BUILDER' } });
+  it('rejects invalid input before calling the API', async () => {
+    const result = await toggleFavoriteAction({ targetType: 'PROJECT', targetId: 'invalid' });
 
-    const result = await toggleFavoriteAction(TARGET);
-
-    expect(result).toEqual({ ok: false, errorKey: 'unauthorized' });
-    expect(mockToggleFavorite).not.toHaveBeenCalled();
+    expect(result).toEqual({ ok: false, errorKey: 'invalidInput' });
+    expect(mockServerApiRequest).not.toHaveBeenCalled();
   });
 
-  it('denies missing session', async () => {
-    mockAuth.mockResolvedValue(null);
-
-    await expect(toggleFavoriteAction(TARGET)).resolves.toEqual({
-      ok: false,
-      errorKey: 'unauthorized',
-    });
-  });
-
-  it('delegates to toggleFavorite for BUYER', async () => {
-    mockAuth.mockResolvedValue({ user: { id: 'buyer-1', role: 'BUYER' } });
-    mockToggleFavorite.mockResolvedValue({ ok: true, favorited: true });
+  it('delegates a valid toggle to Nest', async () => {
+    mockServerApiRequest.mockResolvedValue({ favorited: true });
 
     const result = await toggleFavoriteAction(TARGET);
 
     expect(result).toEqual({ ok: true, favorited: true });
-    expect(mockAssertNotRateLimited).toHaveBeenCalledWith('favoriteToggle', 'buyer-1');
-    expect(mockToggleFavorite).toHaveBeenCalledWith('buyer-1', TARGET);
+    expect(mockServerApiRequest).toHaveBeenCalledWith('/favorites/toggle', {
+      method: 'POST',
+      body: TARGET,
+    });
   });
 
-  it('returns rateLimited when limited', async () => {
-    mockAuth.mockResolvedValue({ user: { id: 'buyer-1', role: 'BUYER' } });
-    mockAssertNotRateLimited.mockResolvedValue({ limited: true, errorKey: 'rateLimited' });
+  it('preserves API rate-limit errors', async () => {
+    mockServerApiRequest.mockRejectedValue(
+      new ApiClientError(429, 'UNKNOWN', 'Too many requests', { error: 'rateLimited' }),
+    );
 
     const result = await toggleFavoriteAction(TARGET);
 
     expect(result).toEqual({ ok: false, errorKey: 'rateLimited' });
-    expect(mockToggleFavorite).not.toHaveBeenCalled();
   });
 });

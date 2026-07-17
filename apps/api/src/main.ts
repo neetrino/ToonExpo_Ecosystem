@@ -4,10 +4,12 @@ import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { APP_NAME } from '@toonexpo/shared';
+import cookieParser from 'cookie-parser';
 import { config as loadDotenv } from 'dotenv';
 import { resolve } from 'node:path';
 
 import { AppModule } from './app.module';
+import { ApiHttpExceptionFilter } from './common/api-http-exception.filter';
 import { loadApiEnv } from './common/env';
 import { shouldEnableSwagger } from './common/swagger-gate';
 
@@ -25,6 +27,9 @@ async function bootstrap(): Promise<void> {
         ? ['error', 'warn', 'log']
         : ['error', 'warn', 'log', 'debug', 'verbose'],
   });
+
+  app.use(cookieParser());
+  app.useGlobalFilters(new ApiHttpExceptionFilter());
 
   app.enableCors({
     origin: env.APP_URL,

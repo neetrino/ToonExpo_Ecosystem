@@ -1,7 +1,7 @@
-import { prisma } from '@toonexpo/db';
 import { SUPPORTED_LOCALES } from '@toonexpo/shared';
 import { revalidatePath } from 'next/cache';
 
+import { serverApiRequest } from '@/lib/api/server';
 import type { BuilderMutationErrorKey, BuilderMutationResult } from '@/lib/builder/mutations';
 import { resolveCatalogPaths } from '@/lib/shared/resolve-catalog-paths';
 import { revalidateCatalogPaths } from '@/lib/shared/revalidate-catalog-paths';
@@ -49,10 +49,8 @@ export async function revalidateAfterCompanyProfileMutation(
   companyId: string,
   companySlug: string,
 ): Promise<void> {
-  const projects = await prisma.project.findMany({
-    where: { companyId },
-    select: { slug: true },
-  });
+  void companyId;
+  const projects = await serverApiRequest<Array<{ slug: string }>>('/builder/projects');
 
   const pathSets = projects.map((project) => ({
     companySlug,

@@ -1,159 +1,46 @@
 import type { CanvasStatusInput, CanvasUpsertInput } from '@toonexpo/contracts';
-import { prisma } from '@toonexpo/db';
 
-import { type AuditActor, formatStatusTransition, recordAudit } from '@/lib/audit/record-audit';
-import { bestEffortDeleteR2Object, bestEffortDeleteReplacedR2Object } from '@/lib/storage';
+import type { AuditActor } from '@/lib/audit/record-audit';
+import { serverApiRequest } from '@/lib/api/server';
 
-import { findOwnedCanvas, resolveContextOwnership } from './canvas-ownership';
-import { type VisualMapMutationResult } from './mutation-result';
+import type { VisualMapMutationResult } from './mutation-result';
 
-export async function createCanvas(
+function mutate<T extends Record<string, unknown>>(
+  action: string,
   companyId: string,
-  input: CanvasUpsertInput,
-): Promise<VisualMapMutationResult<{ canvasId: string; projectId: string }>> {
-  if (input.canvasId) {
-    return { ok: false, errorKey: 'invalidInput' };
-  }
-
-  return prisma.$transaction(async (tx) => {
-    const ownership = await resolveContextOwnership(tx, companyId, {
-      projectId: input.projectId,
-      buildingId: input.buildingId,
-      floorId: input.floorId,
-    });
-    if (!ownership) {
-      return { ok: false, errorKey: 'notFound' };
-    }
-
-    const canvas = await tx.visualCanvas.create({
-      data: {
-        title: input.title,
-        imageUrl: input.imageUrl,
-        imageAlt: input.imageAlt,
-        projectId: input.projectId,
-        buildingId: input.buildingId,
-        floorId: input.floorId,
-      },
-      select: { id: true },
-    });
-
-    return {
-      ok: true,
-      canvasId: canvas.id,
-      projectId: ownership.owningProjectId,
-    };
+  input: unknown,
+): Promise<VisualMapMutationResult<T>> {
+  return serverApiRequest(`/visual-map/builder/actions/${action}`, {
+    method: 'POST',
+    body: { companyId, input },
   });
 }
 
-export async function updateCanvas(
+export function createCanvas(
   companyId: string,
   input: CanvasUpsertInput,
 ): Promise<VisualMapMutationResult<{ canvasId: string; projectId: string }>> {
-  if (!input.canvasId) {
-    return { ok: false, errorKey: 'invalidInput' };
-  }
-
-  const outcome = await prisma.$transaction(async (tx) => {
-    const owned = await findOwnedCanvas(tx, companyId, input.canvasId!);
-    if (!owned) {
-      return null;
-    }
-
-    const previous = await tx.visualCanvas.findUnique({
-      where: { id: owned.id },
-      select: { imageUrl: true },
-    });
-
-    await tx.visualCanvas.update({
-      where: { id: owned.id },
-      data: {
-        title: input.title,
-        imageUrl: input.imageUrl,
-        imageAlt: input.imageAlt,
-      },
-    });
-
-    return {
-      canvasId: owned.id,
-      projectId: owned.owningProjectId,
-      previousImageUrl: previous?.imageUrl,
-    };
-  });
-
-  if (!outcome) {
-    return { ok: false, errorKey: 'notFound' };
-  }
-
-  await bestEffortDeleteReplacedR2Object(outcome.previousImageUrl, input.imageUrl);
-  return { ok: true, canvasId: outcome.canvasId, projectId: outcome.projectId };
+  return mutate('create-canvas', companyId, input);
 }
 
-/** Canvas publication change — audit written inside the same transaction (atomic). */
-export async function setCanvasStatus(
+export function updateCanvas(
+  companyId: string,
+  input: CanvasUpsertInput,
+): Promise<VisualMapMutationResult<{ canvasId: string; projectId: string }>> {
+  return mutate('update-canvas', companyId, input);
+}
+
+export function setCanvasStatus(
   companyId: string,
   input: CanvasStatusInput,
-  actor: AuditActor,
+  _actor: AuditActor,
 ): Promise<VisualMapMutationResult<{ canvasId: string; projectId: string }>> {
-  return prisma.$transaction(async (tx) => {
-    const owned = await findOwnedCanvas(tx, companyId, input.canvasId);
-    if (!owned) {
-      return { ok: false, errorKey: 'notFound' };
-    }
-
-    await tx.visualCanvas.update({
-      where: { id: owned.id },
-      data: { status: input.status },
-    });
-
-    await recordAudit(tx, {
-      actor,
-      action: 'PUBLICATION_CHANGE',
-      entityType: 'VISUAL_CANVAS',
-      entityId: owned.id,
-      companyId,
-      detail: formatStatusTransition(owned.status, input.status),
-    });
-
-    return { ok: true, canvasId: owned.id, projectId: owned.owningProjectId };
-  });
+  return mutate('set-canvas-status', companyId, input);
 }
 
-/**
- * Hard-delete is allowed for DRAFT canvases only (doc 06). Published/archived use archive.
- */
-export async function deleteCanvas(
+export function deleteCanvas(
   companyId: string,
   canvasId: string,
 ): Promise<VisualMapMutationResult<{ canvasId: string; projectId: string }>> {
-  const outcome = await prisma.$transaction(async (tx) => {
-    const owned = await findOwnedCanvas(tx, companyId, canvasId);
-    if (!owned) {
-      return { ok: false as const, errorKey: 'notFound' as const };
-    }
-    if (owned.status !== 'DRAFT') {
-      return { ok: false as const, errorKey: 'invalidInput' as const };
-    }
-
-    const previous = await tx.visualCanvas.findUnique({
-      where: { id: owned.id },
-      select: { imageUrl: true },
-    });
-
-    await tx.visualCanvas.delete({ where: { id: owned.id } });
-    return {
-      ok: true as const,
-      canvasId: owned.id,
-      projectId: owned.owningProjectId,
-      previousImageUrl: previous?.imageUrl,
-    };
-  });
-
-  if (!outcome.ok) {
-    return { ok: false, errorKey: outcome.errorKey };
-  }
-
-  if (outcome.previousImageUrl) {
-    await bestEffortDeleteR2Object(outcome.previousImageUrl);
-  }
-  return { ok: true, canvasId: outcome.canvasId, projectId: outcome.projectId };
+  return mutate('delete-canvas', companyId, { canvasId });
 }

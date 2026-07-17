@@ -1,22 +1,39 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { useTransition } from 'react';
+
+import { logoutWithApi } from '@/lib/auth/api-auth';
 
 type LogoutButtonProps = {
-  action: () => Promise<void>;
+  locale: string;
 };
 
-export function LogoutButton({ action }: LogoutButtonProps) {
+export function LogoutButton({ locale }: LogoutButtonProps) {
   const t = useTranslations('auth');
+  const router = useRouter();
+  const [pending, startTransition] = useTransition();
+
+  function onLogout(): void {
+    startTransition(async () => {
+      try {
+        await logoutWithApi();
+      } finally {
+        router.push(`/${locale}`);
+        router.refresh();
+      }
+    });
+  }
 
   return (
-    <form action={action}>
-      <button
-        type="submit"
-        className="text-sm font-medium text-[var(--te-muted)] transition-colors hover:text-[var(--te-fg)]"
-      >
-        {t('logout.submit')}
-      </button>
-    </form>
+    <button
+      type="button"
+      disabled={pending}
+      onClick={onLogout}
+      className="text-sm font-medium text-[var(--te-muted)] transition-colors hover:text-[var(--te-fg)]"
+    >
+      {t('logout.submit')}
+    </button>
   );
 }

@@ -1,243 +1,59 @@
 import {
   publicProjectDetailSchema,
-  type PublicApartment,
-  type PublicBuilding,
-  type PublicFloor,
-  type PublicMediaAsset,
+  publicProjectSummarySchema,
   type PublicProjectDetail,
   type PublicProjectSummary,
 } from '@toonexpo/contracts';
-import { prisma } from '@toonexpo/db';
-import type { ApartmentStatus, PriceVisibility } from '@toonexpo/domain';
+import { z } from 'zod';
 
-import { mapProjectSummary } from './map-project-summary';
+import { apiRequest, ApiClientError } from '@/lib/api';
+
 import type { PublishedProjectFilters } from './project-filters';
-import { resolvePriceDisplay } from './resolve-price-display';
 
-const IS_DEV = process.env.NODE_ENV === 'development';
-
-type ProjectSummaryRow = {
-  id: string;
-  slug: string;
-  name: string;
-  city: string | null;
-  company: {
-    slug: string;
-    name: string;
-    description?: string | null;
-    logoUrl?: string | null;
-    phone?: string | null;
-    email?: string | null;
-    website?: string | null;
-    city?: string | null;
-    address?: string | null;
-  };
-  media: { url: string }[];
-};
-
-type ApartmentRow = {
-  id: string;
-  code: string;
-  status: ApartmentStatus;
-  areaSqm: number | null;
-  rooms: number | null;
-  priceAmd: number | null;
-  priceVisibility: PriceVisibility;
-};
-
-type FloorRow = {
-  id: string;
-  name: string;
-  level: number;
-  apartments: ApartmentRow[];
-};
-
-type BuildingRow = {
-  id: string;
-  name: string;
-  description: string | null;
-  floors: FloorRow[];
-};
-
-type ProjectDetailRow = ProjectSummaryRow & {
-  companyId: string;
-  description: string | null;
-  address: string | null;
-  media: { id: string; url: string; alt: string | null }[];
-  buildings: BuildingRow[];
-};
+const publishedProjectLoadSchema = z.object({
+  project: publicProjectDetailSchema,
+  companyId: z.string(),
+});
 
 export type PublishedProjectLoad = {
   project: PublicProjectDetail;
   companyId: string;
 };
 
-function mapApartment(row: ApartmentRow, isAuthenticated: boolean): PublicApartment {
-  const price = resolvePriceDisplay(row.priceVisibility, row.priceAmd, isAuthenticated);
-  return {
-    id: row.id,
-    code: row.code,
-    status: row.status,
-    areaSqm: row.areaSqm,
-    rooms: row.rooms,
-    priceVisibility: row.priceVisibility,
-    priceDisplay: price.priceDisplay,
-    priceAmd: price.priceAmd,
-  };
-}
-
-function mapFloor(row: FloorRow, isAuthenticated: boolean): PublicFloor {
-  return {
-    id: row.id,
-    name: row.name,
-    level: row.level,
-    apartments: row.apartments.map((apartment) => mapApartment(apartment, isAuthenticated)),
-  };
-}
-
-function mapBuilding(row: BuildingRow, isAuthenticated: boolean): PublicBuilding {
-  return {
-    id: row.id,
-    name: row.name,
-    description: row.description,
-    floors: row.floors.map((floor) => mapFloor(floor, isAuthenticated)),
-  };
-}
-
-function mapMedia(row: { id: string; url: string; alt: string | null }): PublicMediaAsset {
-  return { id: row.id, url: row.url, alt: row.alt };
-}
-
-function mapProjectDetail(row: ProjectDetailRow, isAuthenticated: boolean): PublicProjectDetail {
-  const detail: PublicProjectDetail = {
-    ...mapProjectSummary(row),
-    description: row.description,
-    address: row.address,
-    media: row.media.map(mapMedia),
-    buildings: row.buildings.map((building) => mapBuilding(building, isAuthenticated)),
-    companyDescription: row.company.description ?? null,
-    companyLogoUrl: row.company.logoUrl ?? null,
-    companyPhone: row.company.phone ?? null,
-    companyEmail: row.company.email ?? null,
-    companyWebsite: row.company.website ?? null,
-    companyCity: row.company.city ?? null,
-    companyAddress: row.company.address ?? null,
-  };
-  return IS_DEV ? publicProjectDetailSchema.parse(detail) : detail;
-}
-
-function buildPublishedProjectsWhere(filters?: PublishedProjectFilters) {
-  return {
-    status: 'PUBLISHED' as const,
-    ...(filters?.city ? { city: { contains: filters.city, mode: 'insensitive' as const } } : {}),
-    ...(filters?.builderSlug ? { company: { slug: filters.builderSlug } } : {}),
-  };
-}
-
-/** Returns published projects ordered by newest first; optional city/builder filters. */
+/** Loads published projects from Nest, preserving optional city/builder filters. */
 export async function getPublishedProjects(
   filters?: PublishedProjectFilters,
 ): Promise<PublicProjectSummary[]> {
-  const rows = await prisma.project.findMany({
-    where: buildPublishedProjectsWhere(filters),
-    orderBy: { createdAt: 'desc' },
-    select: {
-      id: true,
-      slug: true,
-      name: true,
-      city: true,
-      company: { select: { slug: true, name: true } },
-      media: {
-        orderBy: { sortOrder: 'asc' },
-        take: 1,
-        select: { url: true },
-      },
-    },
-  });
-
-  return rows.map(mapProjectSummary);
+  const search = new URLSearchParams();
+  if (filters?.city) {
+    search.set('city', filters.city);
+  }
+  if (filters?.builderSlug) {
+    search.set('builder', filters.builderSlug);
+  }
+  const suffix = search.size > 0 ? `?${search.toString()}` : '';
+  const raw = await apiRequest<unknown>(`/catalog/projects${suffix}`);
+  return z.array(publicProjectSummarySchema).parse(raw);
 }
 
-const apartmentPublicSelect = {
-  id: true,
-  code: true,
-  status: true,
-  areaSqm: true,
-  rooms: true,
-  priceAmd: true,
-  priceVisibility: true,
-} as const;
-
-/** Returns a published project by company and project slug, or null if missing or not published. */
+/** Loads a published project from Nest; forwards a session cookie for protected prices. */
 export async function getPublishedProjectBySlug(
   companySlug: string,
   projectSlug: string,
-  isAuthenticated = false,
+  cookie?: string,
 ): Promise<PublishedProjectLoad | null> {
-  const row = await prisma.project.findFirst({
-    where: {
-      slug: projectSlug,
-      status: 'PUBLISHED',
-      company: { slug: companySlug },
-    },
-    select: {
-      id: true,
-      companyId: true,
-      slug: true,
-      name: true,
-      city: true,
-      description: true,
-      address: true,
-      company: {
-        select: {
-          slug: true,
-          name: true,
-          description: true,
-          logoUrl: true,
-          phone: true,
-          email: true,
-          website: true,
-          city: true,
-          address: true,
-        },
-      },
-      media: {
-        orderBy: { sortOrder: 'asc' },
-        select: { id: true, url: true, alt: true },
-      },
-      buildings: {
-        where: { status: 'PUBLISHED' },
-        orderBy: { name: 'asc' },
-        select: {
-          id: true,
-          name: true,
-          description: true,
-          floors: {
-            where: { status: 'PUBLISHED' },
-            orderBy: { level: 'asc' },
-            select: {
-              id: true,
-              name: true,
-              level: true,
-              apartments: {
-                orderBy: { code: 'asc' },
-                select: apartmentPublicSelect,
-              },
-            },
-          },
-        },
-      },
-    },
-  });
-
-  if (!row) {
-    return null;
+  try {
+    const raw = await apiRequest<unknown>(
+      `/catalog/projects/${encodeURIComponent(companySlug)}/${encodeURIComponent(projectSlug)}`,
+      { cookie },
+    );
+    return publishedProjectLoadSchema.parse(raw);
+  } catch (error) {
+    if (error instanceof ApiClientError && error.status === 404) {
+      return null;
+    }
+    throw error;
   }
-
-  return {
-    project: mapProjectDetail(row, isAuthenticated),
-    companyId: row.companyId,
-  };
 }
 
 export { getPublishedApartment, isValidApartmentId } from './published-apartment-query';

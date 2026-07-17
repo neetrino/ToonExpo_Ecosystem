@@ -1,69 +1,26 @@
-import type { PartnerSelfProfileInput } from '@toonexpo/contracts';
-import { prisma, Prisma } from '@toonexpo/db';
+import type { BankOfferUpsertInput, PartnerSelfProfileInput } from '@toonexpo/contracts';
 
-import { bestEffortDeleteReplacedR2Object } from '@/lib/storage';
+import type { AdminMutationResult } from '@/lib/admin/mutation-result';
+import { serverApiRequest } from '@/lib/api/server';
 
-import { type AdminMutationResult, UNIQUE_CONSTRAINT_ERROR } from '@/lib/admin/mutation-result';
-
-type PartnerProfileWriteData = {
-  name: string;
-  logoUrl: string | null;
-  description: string | null;
-  phone: string | null;
-  email: string | null;
-  website: string | null;
-  serviceCategories: string[];
-};
-
-function toProfileWriteData(input: PartnerSelfProfileInput): PartnerProfileWriteData {
-  return {
-    name: input.name,
-    logoUrl: input.logoUrl ?? null,
-    description: input.description ?? null,
-    phone: input.phone ?? null,
-    email: input.email ?? null,
-    website: input.website ?? null,
-    serviceCategories: input.serviceCategories ?? [],
-  };
-}
-
-function isUniqueViolation(error: unknown): boolean {
-  return (
-    error instanceof Prisma.PrismaClientKnownRequestError && error.code === UNIQUE_CONSTRAINT_ERROR
-  );
-}
-
-/**
- * Updates own partner content fields only. Type and publication status are unchanged.
- * `partnerId` must come from assertPartnerSession — never from client input alone.
- */
-export async function updateOwnPartnerProfile(
-  partnerId: string,
+export function updateOwnPartnerProfile(
+  _partnerId: string,
   input: PartnerSelfProfileInput,
 ): Promise<AdminMutationResult<{ partnerId: string; partnerSlug: string }>> {
-  const data = toProfileWriteData(input);
+  return serverApiRequest('/partner/profile', { method: 'PATCH', body: input });
+}
 
-  try {
-    const existing = await prisma.partner.findUnique({
-      where: { id: partnerId },
-      select: { id: true, slug: true, logoUrl: true },
-    });
-    if (!existing) {
-      return { ok: false, errorKey: 'notFound' };
-    }
+export function createOwnBankOffer(
+  input: BankOfferUpsertInput,
+): Promise<AdminMutationResult<{ bankOfferId: string; partnerSlug: string }>> {
+  return serverApiRequest('/partner/bank-offers', { method: 'POST', body: input });
+}
 
-    await prisma.partner.update({
-      where: { id: partnerId },
-      data,
-    });
-
-    await bestEffortDeleteReplacedR2Object(existing.logoUrl, data.logoUrl);
-
-    return { ok: true, partnerId: existing.id, partnerSlug: existing.slug };
-  } catch (error) {
-    if (isUniqueViolation(error)) {
-      return { ok: false, errorKey: 'nameTaken' };
-    }
-    throw error;
-  }
+export function updateOwnBankOffer(
+  input: BankOfferUpsertInput & { bankOfferId: string },
+): Promise<AdminMutationResult<{ bankOfferId: string; partnerSlug: string }>> {
+  return serverApiRequest(`/partner/bank-offers/${encodeURIComponent(input.bankOfferId)}`, {
+    method: 'PATCH',
+    body: input,
+  });
 }

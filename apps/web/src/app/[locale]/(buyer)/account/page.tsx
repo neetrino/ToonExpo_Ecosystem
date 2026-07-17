@@ -52,9 +52,9 @@ export default async function BuyerAccountPage({ params }: BuyerPageProps) {
 
   const session = await auth();
   const buyerUserId = session?.user?.id;
-  const profile = buyerUserId ? await getBuyerProfile(buyerUserId) : null;
+  const profile = buyerUserId ? await getBuyerProfile() : null;
   const deals: BuyerDealRow[] = buyerUserId ? await getBuyerDeals(buyerUserId) : [];
-  const favorites = buyerUserId ? await listBuyerFavorites(buyerUserId) : [];
+  const favorites = buyerUserId ? await listBuyerFavorites() : [];
   const checkIns = buyerUserId ? await loadBuyerCheckIns(buyerUserId) : [];
   const qr = buyerUserId
     ? await loadBuyerQrDisplay(buyerUserId, locale)

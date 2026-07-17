@@ -3,7 +3,6 @@
 import { auth } from '@/auth';
 import type { PublicRequestMutationResult } from '@/lib/crm/mutation-result';
 import { submitPublicRequest } from '@/lib/crm/public-request-mutations';
-import { assertIpNotRateLimited } from '@/lib/rate-limit';
 
 import type { PublicRequestFormActionState } from './request-form-state';
 
@@ -61,11 +60,6 @@ async function executePublicRequestSubmission(
 ): Promise<PublicRequestMutationResult> {
   if (isHoneypotTripped(raw[HONEYPOT_FIELD_NAME])) {
     return { ok: true, dealId: HONEYPOT_SUPPRESSED_DEAL_ID };
-  }
-
-  const rate = await assertIpNotRateLimited('publicRequest');
-  if (rate.limited) {
-    return { ok: false, errorKey: rate.errorKey };
   }
 
   const { [HONEYPOT_FIELD_NAME]: _honeypot, ...input } = raw;

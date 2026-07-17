@@ -1,6 +1,4 @@
-import { prisma } from '@toonexpo/db';
-
-import { findOwnedCanvas } from './canvas-ownership';
+import { serverApiRequest } from '@/lib/api/server';
 
 export type BuilderCanvasSummary = {
   id: string;
@@ -14,7 +12,6 @@ export type BuilderCanvasSummary = {
   hotspotCount: number;
   updatedAt: Date;
 };
-
 export type BuilderCanvasDetail = BuilderCanvasSummary & {
   hotspots: Array<{
     id: string;
@@ -27,108 +24,6 @@ export type BuilderCanvasDetail = BuilderCanvasSummary & {
     apartmentId: string | null;
   }>;
 };
-
-export async function listCanvasesForProject(
-  companyId: string,
-  projectId: string,
-): Promise<BuilderCanvasSummary[]> {
-  const project = await prisma.project.findFirst({
-    where: { id: projectId, companyId },
-    select: { id: true },
-  });
-  if (!project) {
-    return [];
-  }
-
-  const rows = await prisma.visualCanvas.findMany({
-    where: {
-      OR: [{ projectId }, { building: { projectId } }, { floor: { building: { projectId } } }],
-    },
-    select: {
-      id: true,
-      title: true,
-      imageUrl: true,
-      imageAlt: true,
-      status: true,
-      projectId: true,
-      buildingId: true,
-      floorId: true,
-      updatedAt: true,
-      _count: { select: { hotspots: { where: { archivedAt: null } } } },
-    },
-    orderBy: { updatedAt: 'desc' },
-  });
-
-  return rows.map((row) => ({
-    id: row.id,
-    title: row.title,
-    imageUrl: row.imageUrl,
-    imageAlt: row.imageAlt,
-    status: row.status,
-    projectId: row.projectId,
-    buildingId: row.buildingId,
-    floorId: row.floorId,
-    hotspotCount: row._count.hotspots,
-    updatedAt: row.updatedAt,
-  }));
-}
-
-export async function getCanvasForEdit(
-  companyId: string,
-  canvasId: string,
-): Promise<BuilderCanvasDetail | null> {
-  const owned = await findOwnedCanvas(prisma, companyId, canvasId);
-  if (!owned) {
-    return null;
-  }
-
-  const row = await prisma.visualCanvas.findFirst({
-    where: { id: canvasId },
-    select: {
-      id: true,
-      title: true,
-      imageUrl: true,
-      imageAlt: true,
-      status: true,
-      projectId: true,
-      buildingId: true,
-      floorId: true,
-      updatedAt: true,
-      hotspots: {
-        where: { archivedAt: null },
-        select: {
-          id: true,
-          x: true,
-          y: true,
-          label: true,
-          sortOrder: true,
-          buildingId: true,
-          floorId: true,
-          apartmentId: true,
-        },
-        orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
-      },
-    },
-  });
-  if (!row) {
-    return null;
-  }
-
-  return {
-    id: row.id,
-    title: row.title,
-    imageUrl: row.imageUrl,
-    imageAlt: row.imageAlt,
-    status: row.status,
-    projectId: row.projectId,
-    buildingId: row.buildingId,
-    floorId: row.floorId,
-    hotspotCount: row.hotspots.length,
-    updatedAt: row.updatedAt,
-    hotspots: row.hotspots,
-  };
-}
-
 export type BuilderArchivedHotspot = {
   id: string;
   x: number;
@@ -137,34 +32,48 @@ export type BuilderArchivedHotspot = {
   archivedAt: Date;
 };
 
+export async function listCanvasesForProject(
+  companyId: string,
+  projectId: string,
+): Promise<BuilderCanvasSummary[]> {
+  const rows = await serverApiRequest<
+    Array<
+      Omit<BuilderCanvasSummary, 'updatedAt'> & {
+        updatedAt: string;
+      }
+    >
+  >(
+    `/visual-map/builder/projects/${encodeURIComponent(projectId)}?companyId=${encodeURIComponent(companyId)}`,
+  );
+  return rows.map((row) => ({ ...row, updatedAt: new Date(row.updatedAt) }));
+}
+
+export async function getCanvasForEdit(
+  companyId: string,
+  canvasId: string,
+): Promise<BuilderCanvasDetail | null> {
+  const row = await serverApiRequest<
+    (Omit<BuilderCanvasDetail, 'updatedAt'> & { updatedAt: string }) | null
+  >(
+    `/visual-map/builder/canvases/${encodeURIComponent(canvasId)}?companyId=${encodeURIComponent(companyId)}`,
+  );
+  return row ? { ...row, updatedAt: new Date(row.updatedAt) } : null;
+}
+
 export async function listArchivedHotspotsForCanvas(
   companyId: string,
   canvasId: string,
 ): Promise<BuilderArchivedHotspot[]> {
-  const owned = await findOwnedCanvas(prisma, companyId, canvasId);
-  if (!owned) {
-    return [];
-  }
-
-  const rows = await prisma.hotspot.findMany({
-    where: { canvasId, archivedAt: { not: null } },
-    select: {
-      id: true,
-      x: true,
-      y: true,
-      label: true,
-      archivedAt: true,
-    },
-    orderBy: [{ archivedAt: 'desc' }],
-  });
-
-  return rows.map((row) => ({
-    id: row.id,
-    x: row.x,
-    y: row.y,
-    label: row.label,
-    archivedAt: row.archivedAt as Date,
-  }));
+  const rows = await serverApiRequest<
+    Array<
+      Omit<BuilderArchivedHotspot, 'archivedAt'> & {
+        archivedAt: string;
+      }
+    >
+  >(
+    `/visual-map/builder/canvases/${encodeURIComponent(canvasId)}/archived-hotspots?companyId=${encodeURIComponent(companyId)}`,
+  );
+  return rows.map((row) => ({ ...row, archivedAt: new Date(row.archivedAt) }));
 }
 
 export { getPublishedCanvasForContext, type PublicCanvasContext } from './public-queries';

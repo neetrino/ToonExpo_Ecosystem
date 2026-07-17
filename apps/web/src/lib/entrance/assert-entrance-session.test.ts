@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { Session } from 'next-auth';
+import type { AuthSession } from '@toonexpo/contracts';
 
 vi.mock('@/auth', () => ({
   auth: vi.fn(),
@@ -17,7 +17,7 @@ const ENTRANCE_SESSION = {
     name: 'Entrance Staff',
     role: 'ENTRANCE_STAFF',
   },
-} as Session;
+} as AuthSession;
 
 const BUYER_SESSION = {
   expires: new Date().toISOString(),
@@ -27,7 +27,7 @@ const BUYER_SESSION = {
     name: 'Buyer User',
     role: 'BUYER',
   },
-} as Session;
+} as AuthSession;
 
 const ADMIN_SESSION = {
   expires: new Date().toISOString(),
@@ -37,7 +37,7 @@ const ADMIN_SESSION = {
     name: 'Admin User',
     role: 'BIGPROJECTS_ADMIN',
   },
-} as Session;
+} as AuthSession;
 
 const BUILDER_SESSION = {
   expires: new Date().toISOString(),
@@ -47,7 +47,7 @@ const BUILDER_SESSION = {
     name: 'Builder User',
     role: 'BUILDER',
   },
-} as Session;
+} as AuthSession;
 
 describe('assertEntranceSession', () => {
   beforeEach(() => {

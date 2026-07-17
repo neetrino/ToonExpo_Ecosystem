@@ -8,6 +8,16 @@ export const apiEnvSchema = z.object({
   DATABASE_URL: z.string().min(1),
   DIRECT_URL: z.preprocess(emptyToUndefined, z.string().url().optional()),
   AUTH_SECRET: z.string().min(32),
+  /**
+   * Optional parent domain for session cookies (e.g. `.toonexpo.com`) when web and API
+   * share a registrable domain. Leave unset for host-only cookies (same-origin rewrite).
+   */
+  COOKIE_DOMAIN: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
+  /**
+   * `lax` for same-origin rewrite (default). `none` when the browser calls Cloud Run
+   * directly across sites (requires Secure).
+   */
+  COOKIE_SAME_SITE: z.enum(['lax', 'none', 'strict']).default('lax'),
   /** Shared secret for BOS inbound integration. Empty/unset disables the endpoint (503). */
   BOS_API_KEY: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
   RESEND_API_KEY: z.preprocess(emptyToUndefined, z.string().optional()),

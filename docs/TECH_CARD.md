@@ -25,9 +25,9 @@ Size C — large, layout: monorepo (`apps/*`, `packages/*`).
 | API style | REST + OpenAPI | Confirmed | Works well for app and integration endpoints. |
 | Database | PostgreSQL / Neon | Confirmed | Fits relational inventory/CRM data. |
 | ORM | Prisma | Confirmed | Matches rules. |
-| Auth | Auth.js 5 + database sessions | Confirmed | Buyer self-registers; builders/partners/admins are provisioned. |
+| Auth | NestJS httpOnly DB sessions (Cookie) | Confirmed | Buyer self-registers; builders/partners/admins are provisioned. Auth.js removed; Prisma/Redis/Resend/R2/BOS only on Nest. Web is frontend-only (`NEXT_PUBLIC_API_URL` + `/nest` rewrite). |
 | i18n | next-intl | Confirmed | Locales `hy`, `ru`, `en` as code constants (not env). |
-| File storage | Cloudflare R2 | Confirmed | Signed client uploads via web-issued PUT URLs (`/api/uploads/presign`). |
+| File storage | Cloudflare R2 | Confirmed | NestJS issues signed PUT URLs through `POST /uploads/presign`. |
 | Email | Resend | Confirmed | Account invitations and login flows. |
 | QR | Server-generated signed token + QR rendering | Confirmed | Token stores no personal data. |
 | Maps | Custom image/hotspot editors first | Confirmed | Venue and real estate visual maps are image/coordinate based in v1. |
@@ -72,7 +72,7 @@ Size C — large, layout: monorepo (`apps/*`, `packages/*`).
 | Validation | Zod (shared via `packages/contracts`) | Confirmed |
 | API style | REST | Confirmed |
 | API docs | OpenAPI/Swagger | Confirmed |
-| Uploads | Web-signed upload to R2 (builder media) | Confirmed | `POST /api/uploads/presign` in `apps/web`; Nest path deferred. Company logo / canvas still URL. |
+| Uploads | Nest-signed upload to R2 (builder media) | Confirmed | `POST /uploads/presign` on Nest; web uses typed API client. Company logo / canvas still URL paste fallback. |
 
 ## 4. Database
 
@@ -89,9 +89,9 @@ Size C — large, layout: monorepo (`apps/*`, `packages/*`).
 
 | Parameter | Decision | Status |
 |---|---|---:|
-| Solution | Auth.js 5 | Confirmed |
+| Solution | NestJS session auth | Confirmed |
 | Providers | Buyer credentials/email; admin/provisioned accounts | Confirmed |
-| Sessions | Database sessions via Auth.js | Confirmed |
+| Sessions | Database sessions via NestJS httpOnly cookies | Confirmed |
 | RBAC | BigProjects Admin, Builder, Partner, Buyer/Visitor, Entrance Staff | Confirmed |
 | Email verification | Not required in v1 | Confirmed |
 | Phone verification | Not required in v1 | Confirmed |

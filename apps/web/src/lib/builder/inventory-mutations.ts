@@ -1,4 +1,5 @@
 import type {
+  ApartmentUpsertInput,
   BuildingCreateInput,
   BuildingPublicationInput,
   BuildingUpdateInput,
@@ -6,176 +7,91 @@ import type {
   FloorPublicationInput,
   FloorUpdateInput,
 } from '@toonexpo/contracts';
-import { prisma, Prisma } from '@toonexpo/db';
 
-import { type AuditActor, formatStatusTransition, recordAudit } from '@/lib/audit/record-audit';
+import { serverApiRequest } from '@/lib/api/server';
+import type { AuditActor } from '@/lib/audit/record-audit';
 
-import { type BuilderMutationResult, UNIQUE_CONSTRAINT_ERROR } from './mutation-result';
+import type { BuilderMutationResult } from './mutation-result';
 
-export { createApartment, updateApartment, upsertApartment } from './apartment-inventory-mutations';
-
-export async function createBuilding(
-  companyId: string,
-  input: BuildingCreateInput,
-): Promise<BuilderMutationResult<{ buildingId: string }>> {
-  return prisma.$transaction(async (tx) => {
-    const project = await tx.project.findFirst({
-      where: { id: input.projectId, companyId },
-      select: { id: true },
-    });
-    if (!project) {
-      return { ok: false, errorKey: 'notFound' };
-    }
-
-    const building = await tx.building.create({
-      data: { projectId: project.id, name: input.name, status: 'DRAFT' },
-      select: { id: true },
-    });
-
-    return { ok: true, buildingId: building.id };
+export function createBuilding(companyId: string, input: BuildingCreateInput) {
+  void companyId;
+  return serverApiRequest<BuilderMutationResult<{ buildingId: string }>>('/builder/buildings', {
+    method: 'POST',
+    body: input,
   });
 }
 
-export async function updateBuilding(
-  companyId: string,
-  input: BuildingUpdateInput,
-): Promise<BuilderMutationResult<{ buildingId: string }>> {
-  const result = await prisma.building.updateMany({
-    where: { id: input.buildingId, project: { companyId } },
-    data: { name: input.name, description: input.description ?? null },
+export function updateBuilding(companyId: string, input: BuildingUpdateInput) {
+  void companyId;
+  return serverApiRequest<BuilderMutationResult<{ buildingId: string }>>('/builder/buildings', {
+    method: 'PATCH',
+    body: input,
   });
-
-  if (result.count === 0) {
-    return { ok: false, errorKey: 'notFound' };
-  }
-
-  return { ok: true, buildingId: input.buildingId };
 }
 
-export async function setBuildingPublication(
+export function setBuildingPublication(
   companyId: string,
   input: BuildingPublicationInput,
   actor: AuditActor,
-): Promise<BuilderMutationResult<{ buildingId: string }>> {
-  return prisma.$transaction(async (tx) => {
-    const existing = await tx.building.findFirst({
-      where: { id: input.buildingId, project: { companyId } },
-      select: { id: true, status: true, project: { select: { companyId: true } } },
-    });
-    if (!existing) {
-      return { ok: false, errorKey: 'notFound' };
-    }
+) {
+  void companyId;
+  void actor;
+  return serverApiRequest<BuilderMutationResult<{ buildingId: string }>>(
+    '/builder/buildings/publication',
+    { method: 'PATCH', body: input },
+  );
+}
 
-    await tx.building.update({
-      where: { id: existing.id },
-      data: { status: input.status },
-    });
-
-    await recordAudit(tx, {
-      actor,
-      action: 'PUBLICATION_CHANGE',
-      entityType: 'BUILDING',
-      entityId: existing.id,
-      companyId: existing.project.companyId,
-      detail: formatStatusTransition(existing.status, input.status),
-    });
-
-    return { ok: true, buildingId: existing.id };
+export function createFloor(companyId: string, input: FloorCreateInput) {
+  void companyId;
+  return serverApiRequest<BuilderMutationResult<{ floorId: string }>>('/builder/floors', {
+    method: 'POST',
+    body: input,
   });
 }
 
-export async function createFloor(
-  companyId: string,
-  input: FloorCreateInput,
-): Promise<BuilderMutationResult<{ floorId: string }>> {
-  try {
-    return await prisma.$transaction(async (tx) => {
-      const building = await tx.building.findFirst({
-        where: { id: input.buildingId, project: { companyId } },
-        select: { id: true },
-      });
-      if (!building) {
-        return { ok: false, errorKey: 'notFound' };
-      }
-
-      const floor = await tx.floor.create({
-        data: {
-          buildingId: building.id,
-          name: input.name,
-          level: input.level,
-          status: 'DRAFT',
-        },
-        select: { id: true },
-      });
-      return { ok: true, floorId: floor.id };
-    });
-  } catch (error) {
-    return mapFloorUniqueError(error);
-  }
+export function updateFloor(companyId: string, input: FloorUpdateInput) {
+  void companyId;
+  return serverApiRequest<BuilderMutationResult<{ floorId: string }>>('/builder/floors', {
+    method: 'PATCH',
+    body: input,
+  });
 }
 
-export async function updateFloor(
-  companyId: string,
-  input: FloorUpdateInput,
-): Promise<BuilderMutationResult<{ floorId: string }>> {
-  try {
-    const result = await prisma.floor.updateMany({
-      where: { id: input.floorId, building: { project: { companyId } } },
-      data: { name: input.name, level: input.level },
-    });
-
-    if (result.count === 0) {
-      return { ok: false, errorKey: 'notFound' };
-    }
-
-    return { ok: true, floorId: input.floorId };
-  } catch (error) {
-    return mapFloorUniqueError(error);
-  }
-}
-
-export async function setFloorPublication(
+export function setFloorPublication(
   companyId: string,
   input: FloorPublicationInput,
   actor: AuditActor,
-): Promise<BuilderMutationResult<{ floorId: string }>> {
-  return prisma.$transaction(async (tx) => {
-    const existing = await tx.floor.findFirst({
-      where: { id: input.floorId, building: { project: { companyId } } },
-      select: {
-        id: true,
-        status: true,
-        building: { select: { project: { select: { companyId: true } } } },
-      },
-    });
-    if (!existing) {
-      return { ok: false, errorKey: 'notFound' };
-    }
-
-    await tx.floor.update({
-      where: { id: existing.id },
-      data: { status: input.status },
-    });
-
-    await recordAudit(tx, {
-      actor,
-      action: 'PUBLICATION_CHANGE',
-      entityType: 'FLOOR',
-      entityId: existing.id,
-      companyId: existing.building.project.companyId,
-      detail: formatStatusTransition(existing.status, input.status),
-    });
-
-    return { ok: true, floorId: existing.id };
-  });
+) {
+  void companyId;
+  void actor;
+  return serverApiRequest<BuilderMutationResult<{ floorId: string }>>(
+    '/builder/floors/publication',
+    { method: 'PATCH', body: input },
+  );
 }
 
-function mapFloorUniqueError(error: unknown): BuilderMutationResult<{ floorId: string }> {
-  if (
-    error instanceof Prisma.PrismaClientKnownRequestError &&
-    error.code === UNIQUE_CONSTRAINT_ERROR
-  ) {
-    return { ok: false, errorKey: 'levelTaken' };
-  }
-  throw error;
+export function upsertApartment(
+  companyId: string,
+  input: ApartmentUpsertInput,
+  actorUserId?: string,
+) {
+  void companyId;
+  void actorUserId;
+  return serverApiRequest<BuilderMutationResult<{ apartmentId: string }>>(
+    '/builder/apartments/upsert',
+    { method: 'POST', body: input },
+  );
+}
+
+export function createApartment(companyId: string, input: ApartmentUpsertInput) {
+  return upsertApartment(companyId, input);
+}
+
+export function updateApartment(
+  companyId: string,
+  input: ApartmentUpsertInput & { apartmentId: string },
+  actorUserId?: string,
+) {
+  return upsertApartment(companyId, input, actorUserId);
 }

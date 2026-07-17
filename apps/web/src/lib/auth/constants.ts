@@ -5,14 +5,11 @@ const SESSION_MAX_AGE_DAYS = 30;
 export const SESSION_MAX_AGE_SECONDS = SESSION_MAX_AGE_DAYS * SECONDS_PER_DAY;
 
 /**
- * Auth.js session cookie names. The `__Secure-` prefixed variant is used when
- * cookies are served over HTTPS (production). Middleware checks both because it
- * cannot know the runtime scheme ahead of time.
+ * NestJS session cookie. Middleware checks presence only; Nest validates the token.
  */
-export const SESSION_COOKIE_NAMES = [
-  'authjs.session-token',
-  '__Secure-authjs.session-token',
-] as const;
+export const SESSION_COOKIE_NAMES = ['toonexpo.sid'] as const;
+
+export const SESSION_COOKIE_NAME = SESSION_COOKIE_NAMES[0];
 
 /** Locale-relative route used to send unauthenticated users to sign in. */
 export const LOGIN_PATH = '/login';

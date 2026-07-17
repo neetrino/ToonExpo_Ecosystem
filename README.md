@@ -69,15 +69,15 @@ pnpm dev               # web :3000, api :4000
 
 ### Environment variables
 
-All secrets live in the **monorepo root `.env`** (single source of truth), not in
-per-app `.env` files. Both apps load it explicitly:
+Local development uses the **monorepo root `.env`**. Deployed environments are
+isolated by runtime:
 
 - `apps/api` loads it in `src/main.ts` via `dotenv`.
-- `apps/web` loads it in `next.config.ts` via `dotenv` (Next.js otherwise only
-  reads env files from the app directory).
+- Vercel receives only web-safe URLs and optional frontend Sentry configuration.
+- Cloud Run receives database, auth, Redis, email, R2, BOS and API Sentry secrets.
 
-Auth requires `DATABASE_URL`, `AUTH_SECRET` (≥32 chars), and `AUTH_URL` in the
-root `.env`.
+NestJS auth requires `DATABASE_URL` and `AUTH_SECRET` (≥32 chars). The web app
+does not read either value.
 
 Useful commands:
 

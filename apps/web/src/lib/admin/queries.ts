@@ -1,11 +1,14 @@
 import type { PartnerType, PublicationStatus } from '@toonexpo/domain';
-import { prisma } from '@toonexpo/db';
 
 import type { ProjectStatusCounts } from '@/lib/builder/queries';
-import {
-  evaluateProjectCompleteness,
-  type ProjectCompletenessKey,
-} from '@/lib/projects/project-completeness';
+import type { ProvisionedUserRow } from '@/components/admin/users-table';
+import type { ProjectCompletenessKey } from '@/lib/projects/project-completeness';
+
+import { adminApiRequest } from './admin-api';
+
+export function loadProvisionedUsers(): Promise<ProvisionedUserRow[]> {
+  return adminApiRequest<ProvisionedUserRow[]>('/users');
+}
 
 export type AdminCompanyRow = {
   id: string;
@@ -78,199 +81,26 @@ export type AdminPartnerOption = {
   type: PartnerType;
 };
 
-function emptyProjectStatusCounts(): ProjectStatusCounts {
-  return { draft: 0, published: 0, archived: 0 };
-}
-
-function applyProjectGroup(
-  counts: ProjectStatusCounts,
-  status: PublicationStatus,
-  count: number,
-): void {
-  if (status === 'DRAFT') {
-    counts.draft = count;
-  } else if (status === 'PUBLISHED') {
-    counts.published = count;
-  } else {
-    counts.archived = count;
-  }
-}
-
 export async function loadAllCompanies(): Promise<AdminCompanyRow[]> {
-  const [companies, projectGroups] = await Promise.all([
-    prisma.company.findMany({
-      select: {
-        id: true,
-        name: true,
-        slug: true,
-        description: true,
-        logoUrl: true,
-        phone: true,
-        email: true,
-        website: true,
-        city: true,
-        address: true,
-        createdAt: true,
-        _count: { select: { members: true } },
-      },
-      orderBy: { name: 'asc' },
-    }),
-    prisma.project.groupBy({
-      by: ['companyId', 'status'],
-      _count: { _all: true },
-    }),
-  ]);
-
-  const countsByCompany = new Map<string, ProjectStatusCounts>();
-
-  for (const group of projectGroups) {
-    const counts = countsByCompany.get(group.companyId) ?? emptyProjectStatusCounts();
-    applyProjectGroup(counts, group.status, group._count._all);
-    countsByCompany.set(group.companyId, counts);
-  }
-
-  return companies.map((company) => ({
-    id: company.id,
-    name: company.name,
-    slug: company.slug,
-    description: company.description,
-    logoUrl: company.logoUrl,
-    phone: company.phone,
-    email: company.email,
-    website: company.website,
-    city: company.city,
-    address: company.address,
-    membersCount: company._count.members,
-    projectsCount: countsByCompany.get(company.id) ?? emptyProjectStatusCounts(),
-    createdAt: company.createdAt,
-  }));
+  return adminApiRequest<AdminCompanyRow[]>('/companies');
 }
 
 export async function loadAllProjects(
   statusFilter?: PublicationStatus,
 ): Promise<AdminProjectRow[]> {
-  const projects = await prisma.project.findMany({
-    where: statusFilter ? { status: statusFilter } : undefined,
-    select: {
-      id: true,
-      name: true,
-      status: true,
-      updatedAt: true,
-      description: true,
-      company: { select: { name: true } },
-      _count: { select: { buildings: true, media: true, canvases: true } },
-      buildings: {
-        select: {
-          status: true,
-          floors: {
-            select: {
-              status: true,
-              _count: { select: { apartments: true } },
-            },
-          },
-        },
-      },
-    },
-    orderBy: { updatedAt: 'desc' },
-  });
-
-  return projects.map((project) => {
-    const completeness = evaluateProjectCompleteness({
-      description: project.description,
-      hasCoverMedia: project._count.media > 0,
-      hasCanvas: project._count.canvases > 0,
-      buildings: project.buildings.map((building) => ({
-        status: building.status,
-        floors: building.floors.map((floor) => ({
-          status: floor.status,
-          apartmentCount: floor._count.apartments,
-        })),
-      })),
-    });
-
-    return {
-      id: project.id,
-      name: project.name,
-      companyName: project.company.name,
-      status: project.status,
-      buildingsCount: project._count.buildings,
-      updatedAt: project.updatedAt,
-      completenessMissingKeys: completeness.missingKeys,
-    };
-  });
+  const query = statusFilter ? `?status=${encodeURIComponent(statusFilter)}` : '';
+  return adminApiRequest<AdminProjectRow[]>(`/projects${query}`);
 }
 
 export async function loadAllPartners(typeFilter?: PartnerType): Promise<AdminPartnerRow[]> {
-  const partners = await prisma.partner.findMany({
-    where: typeFilter ? { type: typeFilter } : undefined,
-    select: {
-      id: true,
-      name: true,
-      slug: true,
-      type: true,
-      status: true,
-      updatedAt: true,
-      _count: { select: { bankOffers: true } },
-    },
-    orderBy: { name: 'asc' },
-  });
-
-  return partners.map((partner) => ({
-    id: partner.id,
-    name: partner.name,
-    slug: partner.slug,
-    type: partner.type,
-    status: partner.status,
-    offersCount: partner._count.bankOffers,
-    updatedAt: partner.updatedAt,
-  }));
+  const query = typeFilter ? `?type=${encodeURIComponent(typeFilter)}` : '';
+  return adminApiRequest<AdminPartnerRow[]>(`/partners${query}`);
 }
 
 export async function loadPartnerDetail(partnerId: string): Promise<AdminPartnerDetail | null> {
-  const partner = await prisma.partner.findUnique({
-    where: { id: partnerId },
-    select: {
-      id: true,
-      name: true,
-      slug: true,
-      type: true,
-      logoUrl: true,
-      description: true,
-      phone: true,
-      email: true,
-      website: true,
-      serviceCategories: true,
-      status: true,
-      companyId: true,
-      bankOffers: {
-        select: {
-          id: true,
-          title: true,
-          description: true,
-          interestRate: true,
-          minDownPaymentPercent: true,
-          maxTermMonths: true,
-          maxAmountAmd: true,
-          featured: true,
-          status: true,
-          updatedAt: true,
-        },
-        orderBy: [{ featured: 'desc' }, { updatedAt: 'desc' }],
-      },
-    },
-  });
-
-  if (!partner) {
-    return null;
-  }
-
-  return partner;
+  return adminApiRequest<AdminPartnerDetail | null>(`/partners/${encodeURIComponent(partnerId)}`);
 }
 
 export async function loadPartnerOptions(): Promise<AdminPartnerOption[]> {
-  const partners = await prisma.partner.findMany({
-    select: { id: true, name: true, type: true },
-    orderBy: { name: 'asc' },
-  });
-  return partners;
+  return adminApiRequest<AdminPartnerOption[]>('/partners/options');
 }

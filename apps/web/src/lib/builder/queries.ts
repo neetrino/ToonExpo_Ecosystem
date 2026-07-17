@@ -4,12 +4,12 @@ import type {
   PriceVisibility,
   PublicationStatus,
 } from '@toonexpo/domain';
-import { prisma } from '@toonexpo/db';
-
 import {
   evaluateProjectCompleteness,
   type ProjectCompletenessKey,
 } from '@/lib/projects/project-completeness';
+import { getApiErrorKey } from '@/lib/api/errors';
+import { serverApiRequest } from '@/lib/api/server';
 
 /** Max status-history rows shown in the apartment editor sheet. */
 const APARTMENT_STATUS_HISTORY_PREVIEW_LIMIT = 10;
@@ -31,40 +31,31 @@ export type BuilderProjectRow = {
 };
 
 export async function loadProjectStatusCounts(companyId: string): Promise<ProjectStatusCounts> {
-  const groups = await prisma.project.groupBy({
-    by: ['status'],
-    where: { companyId },
-    _count: { _all: true },
-  });
+  void companyId;
+  const groups = await serverApiRequest<
+    Array<{ status: PublicationStatus; _count: { _all: number } }>
+  >('/builder/projects/counts');
 
   return mapProjectStatusCounts(groups);
 }
 
 export async function loadCompanyProjects(companyId: string): Promise<BuilderProjectRow[]> {
-  const projects = await prisma.project.findMany({
-    where: { companyId },
-    select: {
-      id: true,
-      name: true,
-      city: true,
-      status: true,
-      updatedAt: true,
-      description: true,
-      _count: { select: { buildings: true, media: true, canvases: true } },
-      buildings: {
-        select: {
-          status: true,
-          floors: {
-            select: {
-              status: true,
-              _count: { select: { apartments: true } },
-            },
-          },
-        },
-      },
-    },
-    orderBy: { updatedAt: 'desc' },
-  });
+  void companyId;
+  const projects = await serverApiRequest<
+    Array<{
+      id: string;
+      name: string;
+      city: string | null;
+      status: PublicationStatus;
+      updatedAt: string;
+      description: string | null;
+      _count: { buildings: number; media: number; canvases: number };
+      buildings: Array<{
+        status: PublicationStatus;
+        floors: Array<{ status: PublicationStatus; _count: { apartments: number } }>;
+      }>;
+    }>
+  >('/builder/projects');
 
   return projects.map((project) => {
     const completeness = evaluateProjectCompleteness({
@@ -85,7 +76,7 @@ export async function loadCompanyProjects(companyId: string): Promise<BuilderPro
       name: project.name,
       city: project.city,
       status: project.status,
-      updatedAt: project.updatedAt,
+      updatedAt: new Date(project.updatedAt),
       buildingsCount: project._count.buildings,
       completenessMissingKeys: completeness.missingKeys,
     };
@@ -170,66 +161,25 @@ export async function loadCompanyProjectDetail(
   companyId: string,
   projectId: string,
 ): Promise<BuilderProjectDetail | null> {
-  return prisma.project.findFirst({
-    where: { id: projectId, companyId },
-    select: {
-      id: true,
-      name: true,
-      description: true,
-      city: true,
-      address: true,
-      status: true,
-      media: {
-        orderBy: { sortOrder: 'asc' },
-        select: { id: true, url: true, alt: true, sortOrder: true },
-      },
-      buildings: {
-        select: {
-          id: true,
-          name: true,
-          description: true,
-          status: true,
-          floors: {
-            select: {
-              id: true,
-              name: true,
-              level: true,
-              status: true,
-              apartments: {
-                select: {
-                  id: true,
-                  code: true,
-                  rooms: true,
-                  areaSqm: true,
-                  priceAmd: true,
-                  priceVisibility: true,
-                  matterportUrl: true,
-                  status: true,
-                  media: {
-                    orderBy: { sortOrder: 'asc' },
-                    select: { id: true, url: true, alt: true, sortOrder: true },
-                  },
-                  statusHistory: {
-                    orderBy: { createdAt: 'desc' },
-                    take: APARTMENT_STATUS_HISTORY_PREVIEW_LIMIT,
-                    select: {
-                      id: true,
-                      oldStatus: true,
-                      newStatus: true,
-                      source: true,
-                      reason: true,
-                      createdAt: true,
-                    },
-                  },
-                },
-                orderBy: { code: 'asc' },
-              },
-            },
-            orderBy: { level: 'asc' },
-          },
-        },
-        orderBy: { name: 'asc' },
-      },
-    },
-  });
+  void companyId;
+  void APARTMENT_STATUS_HISTORY_PREVIEW_LIMIT;
+  try {
+    const detail = await serverApiRequest<BuilderProjectDetail>(
+      `/builder/projects/${encodeURIComponent(projectId)}`,
+    );
+    for (const building of detail.buildings) {
+      for (const floor of building.floors) {
+        for (const apartment of floor.apartments) {
+          apartment.statusHistory = apartment.statusHistory.map((entry) => ({
+            ...entry,
+            createdAt: new Date(entry.createdAt),
+          }));
+        }
+      }
+    }
+    return detail;
+  } catch (error) {
+    if (getApiErrorKey(error) === 'notFound') return null;
+    throw error;
+  }
 }

@@ -5,13 +5,14 @@ import { resolve } from 'node:path';
 
 import { loadWebEnv } from './src/lib/env';
 
-// Secrets (AUTH_SECRET, AUTH_URL, DATABASE_URL) live in the monorepo ROOT .env.
-// Next.js only auto-loads env files from the app directory, so we load the root
-// file here (relative to apps/web) before the server reads configuration.
+// Local development uses the monorepo root .env. Vercel supplies only web-safe
+// runtime configuration; backend secrets belong to the Cloud Run service.
 loadDotenv({ path: resolve(process.cwd(), '../../.env') });
-loadWebEnv();
+const webEnv = loadWebEnv();
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
+
+const nestProxyDestination = (process.env.API_URL ?? 'http://localhost:4000').replace(/\/$/, '');
 
 const nextConfig: NextConfig = {
   transpilePackages: ['@toonexpo/ui', '@toonexpo/shared', '@toonexpo/contracts'],
@@ -24,6 +25,21 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  /**
+   * Same-origin reverse proxy to Nest so httpOnly session cookies stay on the
+   * web host (required for RSC session reads). No business logic here.
+   */
+  async rewrites() {
+    return [
+      {
+        source: '/nest/:path*',
+        destination: `${nestProxyDestination}/:path*`,
+      },
+    ];
+  },
 };
+
+// Touch validated env so misconfiguration fails at boot.
+void webEnv.NEXT_PUBLIC_API_URL;
 
 export default withNextIntl(nextConfig);

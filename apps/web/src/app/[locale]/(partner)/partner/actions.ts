@@ -3,9 +3,12 @@
 import { bankOfferUpsertInputSchema, partnerSelfProfileInputSchema } from '@toonexpo/contracts';
 
 import type { AdminMutationErrorKey, AdminMutationResult } from '@/lib/admin/mutation-result';
-import { createBankOffer, updateBankOffer } from '@/lib/admin/partner-mutations';
 import { assertPartnerSession } from '@/lib/partner/assert-partner-session';
-import { updateOwnPartnerProfile } from '@/lib/partner/mutations';
+import {
+  createOwnBankOffer,
+  updateOwnBankOffer,
+  updateOwnPartnerProfile,
+} from '@/lib/partner/mutations';
 import { revalidatePartnerPaths } from '@/lib/shared/revalidate-partner-paths';
 
 type PartnerActionFailure = { ok: false; errorKey: AdminMutationErrorKey };
@@ -63,7 +66,7 @@ export async function createOwnBankOfferAction(
     return invalidInput();
   }
 
-  const result = await createBankOffer({
+  const result = await createOwnBankOffer({
     ...parsed.data,
     partnerId: ctx.partnerId,
   });
@@ -96,7 +99,7 @@ export async function updateOwnBankOfferAction(
     return invalidInput();
   }
 
-  const result = await updateBankOffer({
+  const result = await updateOwnBankOffer({
     ...parsed.data,
     partnerId: ctx.partnerId,
     bankOfferId: parsed.data.bankOfferId,

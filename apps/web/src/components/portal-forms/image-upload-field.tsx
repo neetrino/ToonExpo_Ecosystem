@@ -10,6 +10,8 @@ import {
 import { useTranslations } from 'next-intl';
 import { useId, useState, type ChangeEvent } from 'react';
 
+import { ApiClientError, apiRequest } from '@/lib/api';
+
 const ACCEPT_ATTR = MEDIA_UPLOAD_ALLOWED_MIME_TYPES.join(',');
 
 const UPLOAD_ERROR_KEYS = [
@@ -58,41 +60,46 @@ function mapPresignHttpError(status: number, bodyError: string | undefined): Upl
   return 'uploadFailed';
 }
 
+function extractBodyError(body: unknown): string | undefined {
+  if (body && typeof body === 'object' && 'error' in body) {
+    return String((body as { error: unknown }).error);
+  }
+  return undefined;
+}
+
 async function requestPresign(
   purpose: UploadPurpose,
   file: File,
 ): Promise<
   { ok: true; uploadUrl: string; publicUrl: string } | { ok: false; errorKey: UploadErrorKey }
 > {
-  const response = await fetch('/api/uploads/presign', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      purpose,
-      contentType: file.type,
-      contentLength: file.size,
-    }),
-  });
-
-  const payload: unknown = await response.json().catch(() => null);
-  if (!response.ok) {
-    const bodyError =
-      payload && typeof payload === 'object' && 'error' in payload
-        ? String((payload as { error: unknown }).error)
-        : undefined;
-    return { ok: false, errorKey: mapPresignHttpError(response.status, bodyError) };
-  }
-
-  const parsed = mediaPresignResponseSchema.safeParse(payload);
-  if (!parsed.success) {
+  try {
+    const payload = await apiRequest<unknown>('/uploads/presign', {
+      method: 'POST',
+      body: {
+        purpose,
+        contentType: file.type,
+        contentLength: file.size,
+      },
+    });
+    const parsed = mediaPresignResponseSchema.safeParse(payload);
+    if (!parsed.success) {
+      return { ok: false, errorKey: 'uploadFailed' };
+    }
+    return {
+      ok: true,
+      uploadUrl: parsed.data.uploadUrl,
+      publicUrl: parsed.data.publicUrl,
+    };
+  } catch (error) {
+    if (error instanceof ApiClientError) {
+      return {
+        ok: false,
+        errorKey: mapPresignHttpError(error.status, extractBodyError(error.body)),
+      };
+    }
     return { ok: false, errorKey: 'uploadFailed' };
   }
-
-  return {
-    ok: true,
-    uploadUrl: parsed.data.uploadUrl,
-    publicUrl: parsed.data.publicUrl,
-  };
 }
 
 function validateSelectedFile(file: File): UploadErrorKey | null {

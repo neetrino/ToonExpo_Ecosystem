@@ -1,44 +1,49 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('@toonexpo/db', () => ({
-  prisma: {
-    user: {
-      updateMany: vi.fn(),
-    },
-  },
+const mockServerApiRequest = vi.fn();
+
+vi.mock('../api/server', () => ({
+  serverApiRequest: (...args: unknown[]) => mockServerApiRequest(...args),
 }));
 
-import { prisma } from '@toonexpo/db';
+import { ApiClientError } from '../api/errors';
 
-import { updateBuyerProfile } from './profile-mutations';
+import { getBuyerProfile, updateBuyerProfile } from './profile-mutations';
 
 describe('updateBuyerProfile', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('updates name and phone for buyer user', async () => {
-    vi.mocked(prisma.user.updateMany).mockResolvedValue({ count: 1 });
+  it('updates name and phone through Nest', async () => {
+    mockServerApiRequest.mockResolvedValue({ ok: true });
 
-    const result = await updateBuyerProfile('user-1', {
+    const result = await updateBuyerProfile({
       name: 'Updated Name',
       phone: '+37491111111',
     });
 
     expect(result).toEqual({ ok: true });
-    expect(prisma.user.updateMany).toHaveBeenCalledWith({
-      where: { id: 'user-1', role: 'BUYER' },
-      data: { name: 'Updated Name', phone: '+37491111111' },
+    expect(mockServerApiRequest).toHaveBeenCalledWith('/buyer/profile', {
+      method: 'PATCH',
+      body: { name: 'Updated Name', phone: '+37491111111' },
     });
   });
 
-  it('returns notFound when user is not a buyer', async () => {
-    vi.mocked(prisma.user.updateMany).mockResolvedValue({ count: 0 });
+  it('preserves notFound from Nest', async () => {
+    mockServerApiRequest.mockRejectedValue(
+      new ApiClientError(404, 'UNKNOWN', 'Not found', { error: 'notFound' }),
+    );
 
-    const result = await updateBuyerProfile('user-foreign', {
-      name: 'Updated Name',
-    });
+    const result = await updateBuyerProfile({ name: 'Updated Name' });
 
     expect(result).toEqual({ ok: false, errorKey: 'notFound' });
+  });
+
+  it('loads and validates the buyer profile through Nest', async () => {
+    const profile = { name: 'Buyer', email: 'buyer@example.com', phone: null };
+    mockServerApiRequest.mockResolvedValue(profile);
+
+    await expect(getBuyerProfile()).resolves.toEqual(profile);
   });
 });
