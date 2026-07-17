@@ -14,7 +14,7 @@ import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
 import { AppOriginGuard } from '../auth/app-origin.guard';
 import { CsrfGuard } from '../auth/csrf.guard';
 import { SessionAuthGuard, type RequestWithAuth } from '../auth/session-auth.guard';
-import { ExhibitionService } from './exhibition.service';
+import { type ExhibitionService } from './exhibition.service';
 
 @ApiTags('exhibition')
 @ApiCookieAuth()

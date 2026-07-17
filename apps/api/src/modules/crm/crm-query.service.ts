@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DEAL_STAGES } from '@toonexpo/domain';
 
-import { PrismaService } from '../../common/prisma.service';
+import { type PrismaService } from '../../common/prisma.service';
 
 const ACTIVITY_LIMIT = 50;
 

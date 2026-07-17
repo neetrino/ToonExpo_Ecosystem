@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { PrismaService } from '../../common/prisma.service';
+import { type PrismaService } from '../../common/prisma.service';
 
 type Hint = {
   projectId?: string;

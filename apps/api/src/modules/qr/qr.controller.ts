@@ -19,9 +19,9 @@ import { AppOriginGuard } from '../auth/app-origin.guard';
 import { SESSION_COOKIE_NAME } from '../auth/auth.constants';
 import { CsrfGuard } from '../auth/csrf.guard';
 import { SessionAuthGuard, type RequestWithAuth } from '../auth/session-auth.guard';
-import { SessionService } from '../auth/session.service';
+import { type SessionService } from '../auth/session.service';
 import { allowQrRequest } from './qr-rate-limit';
-import { QrService } from './qr.service';
+import { type QrService } from './qr.service';
 
 @ApiTags('qr')
 @ApiCookieAuth()

@@ -4,6 +4,10 @@ vi.mock('@/lib/builder/assert-builder-session', () => ({
   assertBuilderSession: vi.fn(),
 }));
 
+vi.mock('@/lib/api/server', () => ({
+  serverApiRequest: vi.fn(),
+}));
+
 vi.mock('@/lib/builder/mutations', () => ({
   createProject: vi.fn(),
   updateProject: vi.fn(),

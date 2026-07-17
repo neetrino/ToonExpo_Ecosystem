@@ -1,5 +1,5 @@
 import { HttpException, HttpStatus, UnauthorizedException } from '@nestjs/common';
-import { z } from 'zod';
+import { type z } from 'zod';
 
 import type { RequestWithAuth } from '../auth/session-auth.guard';
 import type { BuilderContext } from './builder-context.service';

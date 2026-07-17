@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import type { AuthSession, AuthUser } from '@toonexpo/contracts';
 import type { PlatformRole } from '@toonexpo/domain';
 
-import { PrismaService } from '../../common/prisma.service';
+import { type PrismaService } from '../../common/prisma.service';
 import { SESSION_MAX_AGE_SECONDS } from './auth.constants';
 
 const MS_PER_SECOND = 1000;

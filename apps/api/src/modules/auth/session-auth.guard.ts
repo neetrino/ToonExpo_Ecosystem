@@ -1,6 +1,6 @@
 import {
-  CanActivate,
-  ExecutionContext,
+  type CanActivate,
+  type ExecutionContext,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -8,7 +8,7 @@ import type { AuthSession } from '@toonexpo/contracts';
 import type { Request } from 'express';
 
 import { SESSION_COOKIE_NAME } from './auth.constants';
-import { SessionService } from './session.service';
+import { type SessionService } from './session.service';
 
 export type RequestWithAuth = Request & {
   authSession?: AuthSession;

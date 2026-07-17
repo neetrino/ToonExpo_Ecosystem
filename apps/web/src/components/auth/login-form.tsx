@@ -1,6 +1,6 @@
 'use client';
 
-import { buyerRegisterSchema, loginSchema } from '@toonexpo/contracts';
+import { loginSchema } from '@toonexpo/contracts';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useState, useTransition, type FormEvent } from 'react';

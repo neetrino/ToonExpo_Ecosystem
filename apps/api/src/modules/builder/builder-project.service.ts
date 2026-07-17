@@ -3,7 +3,7 @@ import type { ProjectPublicationInput, ProjectUpsertInput } from '@toonexpo/cont
 import { slugifyCompanyName } from '@toonexpo/contracts';
 import { Prisma } from '@toonexpo/db';
 
-import { PrismaService } from '../../common/prisma.service';
+import { type PrismaService } from '../../common/prisma.service';
 import {
   type AuditActor,
   type BuilderMutationResult,

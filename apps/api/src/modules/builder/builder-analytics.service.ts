@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DEAL_STAGES, REQUEST_SOURCES } from '@toonexpo/domain';
 
-import { PrismaService } from '../../common/prisma.service';
+import { type PrismaService } from '../../common/prisma.service';
 
 const LOOKBACK_DAYS = 30;
 const DAY_MS = 24 * 60 * 60 * 1000;

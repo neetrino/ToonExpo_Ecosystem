@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import type { PublicCanvas, PublicHotspot } from '@toonexpo/contracts';
 
-import { PrismaService } from '../../common/prisma.service';
+import { type PrismaService } from '../../common/prisma.service';
 
 const hotspotSelect = {
   id: true,

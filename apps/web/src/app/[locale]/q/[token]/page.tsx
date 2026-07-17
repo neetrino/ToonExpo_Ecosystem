@@ -10,7 +10,6 @@ import { loadActiveExhibitionEvent } from '@/lib/exhibition/queries';
 import type { QrResolveBuilder, QrResolveEntrance } from '@/lib/qr/resolve';
 import { resolveQrScan } from '@/lib/qr/resolve';
 import { logBuilderQrScan } from '@/lib/qr/scan-deal-mutations';
-import { assertIpNotRateLimited } from '@/lib/rate-limit';
 
 import { BuilderScanForm } from '../builder-scan-form';
 import { EntranceCheckInForm } from '../entrance-check-in-form';
@@ -29,11 +28,6 @@ export default async function QrScanPage({ params }: QrScanPageProps) {
   const { locale, token } = await params;
   setRequestLocale(locale);
   const t = await getTranslations('qr');
-
-  const rate = await assertIpNotRateLimited('qr');
-  if (rate.limited) {
-    return <QrStatusView title={t('rateLimited.title')} body={t('rateLimited.body')} />;
-  }
 
   const session = await auth();
   const builder = session?.user?.role === 'BUILDER' ? await assertBuilderSession() : null;

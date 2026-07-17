@@ -5,9 +5,8 @@ import { resolve } from 'node:path';
 
 import { loadWebEnv } from './src/lib/env';
 
-// Secrets (AUTH_SECRET, AUTH_URL, DATABASE_URL) live in the monorepo ROOT .env.
-// Next.js only auto-loads env files from the app directory, so we load the root
-// file here (relative to apps/web) before the server reads configuration.
+// Local development uses the monorepo root .env. Vercel supplies only web-safe
+// runtime configuration; backend secrets belong to the Cloud Run service.
 loadDotenv({ path: resolve(process.cwd(), '../../.env') });
 const webEnv = loadWebEnv();
 

@@ -6,20 +6,20 @@ vi.mock('@/lib/partner/assert-partner-session', () => ({
 
 vi.mock('@/lib/partner/mutations', () => ({
   updateOwnPartnerProfile: vi.fn(),
-}));
-
-vi.mock('@/lib/admin/partner-mutations', () => ({
-  createBankOffer: vi.fn(),
-  updateBankOffer: vi.fn(),
+  createOwnBankOffer: vi.fn(),
+  updateOwnBankOffer: vi.fn(),
 }));
 
 vi.mock('@/lib/shared/revalidate-partner-paths', () => ({
   revalidatePartnerPaths: vi.fn(),
 }));
 
-import { createBankOffer, updateBankOffer } from '@/lib/admin/partner-mutations';
 import { assertPartnerSession } from '@/lib/partner/assert-partner-session';
-import { updateOwnPartnerProfile } from '@/lib/partner/mutations';
+import {
+  createOwnBankOffer,
+  updateOwnBankOffer,
+  updateOwnPartnerProfile,
+} from '@/lib/partner/mutations';
 
 import {
   createOwnBankOfferAction,
@@ -102,12 +102,12 @@ describe('partner cabinet actions', () => {
     });
 
     expect(result).toEqual({ ok: false, errorKey: 'notBankPartner' });
-    expect(createBankOffer).not.toHaveBeenCalled();
+    expect(createOwnBankOffer).not.toHaveBeenCalled();
   });
 
   it('forces session partnerId when creating a bank offer', async () => {
     vi.mocked(assertPartnerSession).mockResolvedValue(BANK_CTX as never);
-    vi.mocked(createBankOffer).mockResolvedValue({
+    vi.mocked(createOwnBankOffer).mockResolvedValue({
       ok: true,
       bankOfferId: 'offer-1',
       partnerSlug: 'own-bank',
@@ -122,7 +122,7 @@ describe('partner cabinet actions', () => {
     });
 
     expect(result).toEqual({ ok: true, bankOfferId: 'offer-1', partnerSlug: 'own-bank' });
-    expect(createBankOffer).toHaveBeenCalledWith(
+    expect(createOwnBankOffer).toHaveBeenCalledWith(
       expect.objectContaining({
         partnerId: 'partner-own',
         title: 'Preferential',
@@ -132,7 +132,7 @@ describe('partner cabinet actions', () => {
 
   it('forces session partnerId when updating a bank offer (foreign partner denied)', async () => {
     vi.mocked(assertPartnerSession).mockResolvedValue(BANK_CTX as never);
-    vi.mocked(updateBankOffer).mockResolvedValue({ ok: false, errorKey: 'notFound' });
+    vi.mocked(updateOwnBankOffer).mockResolvedValue({ ok: false, errorKey: 'notFound' });
 
     const result = await updateOwnBankOfferAction('en', {
       bankOfferId: 'foreign-offer',
@@ -144,7 +144,7 @@ describe('partner cabinet actions', () => {
     });
 
     expect(result).toEqual({ ok: false, errorKey: 'notFound' });
-    expect(updateBankOffer).toHaveBeenCalledWith(
+    expect(updateOwnBankOffer).toHaveBeenCalledWith(
       expect.objectContaining({
         partnerId: 'partner-own',
         bankOfferId: 'foreign-offer',

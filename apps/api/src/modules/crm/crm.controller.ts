@@ -21,17 +21,17 @@ import {
   dealStageUpdateInputSchema,
   manualDealInputSchema,
 } from '@toonexpo/contracts';
-import { z } from 'zod';
+import { type z } from 'zod';
 
 import { AppOriginGuard } from '../auth/app-origin.guard';
 import { CsrfGuard } from '../auth/csrf.guard';
 import { SessionAuthGuard, type RequestWithAuth } from '../auth/session-auth.guard';
 import {
   ACTIVE_COMPANY_COOKIE,
-  BuilderContextService,
+  type BuilderContextService,
 } from '../builder/builder-context.service';
-import { CrmQueryService } from './crm-query.service';
-import { CrmMutationService } from './crm-mutation.service';
+import { type CrmQueryService } from './crm-query.service';
+import { type CrmMutationService } from './crm-mutation.service';
 
 @ApiTags('crm')
 @ApiCookieAuth()

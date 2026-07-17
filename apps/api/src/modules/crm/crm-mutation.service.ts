@@ -9,7 +9,7 @@ import type {
 } from '@toonexpo/contracts';
 import { Prisma } from '@toonexpo/db';
 
-import { PrismaService } from '../../common/prisma.service';
+import { type PrismaService } from '../../common/prisma.service';
 import {
   apartmentIds,
   claim,
