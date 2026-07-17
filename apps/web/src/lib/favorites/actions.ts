@@ -1,89 +1,68 @@
 'use server';
 
-import { favoriteToggleInputSchema } from '@toonexpo/contracts';
-
-import { auth } from '@/auth';
 import {
-  addFavorite,
-  removeFavorite,
-  toggleFavorite,
-  type FavoriteMutationResult,
-} from '@/lib/favorites/mutations';
-import { assertNotRateLimited } from '@/lib/rate-limit';
+  favoriteMutationResponseSchema,
+  favoriteToggleInputSchema,
+} from '@toonexpo/contracts';
 
-function unauthorized(): FavoriteMutationResult {
-  return { ok: false, errorKey: 'unauthorized' };
-}
+import { getApiErrorKey } from '@/lib/api/errors';
+import { serverApiRequest } from '@/lib/api/server';
+
+export type FavoriteMutationErrorKey = 'unauthorized' | 'invalidInput' | 'notFound' | 'rateLimited';
+
+export type FavoriteMutationResult =
+  | { ok: true; favorited: boolean }
+  | { ok: false; errorKey: FavoriteMutationErrorKey };
 
 function invalidInput(): FavoriteMutationResult {
   return { ok: false, errorKey: 'invalidInput' };
 }
 
-async function requireBuyerUserId(): Promise<string | null> {
-  const session = await auth();
-  const userId = session?.user?.id;
-  if (!userId || session.user.role !== 'BUYER') {
-    return null;
-  }
-  return userId;
+function parseInput(raw: unknown): { targetType: 'PROJECT' | 'APARTMENT'; targetId: string } | null {
+  const parsed = favoriteToggleInputSchema.safeParse(raw);
+  return parsed.success ? parsed.data : null;
 }
 
-async function gateFavoriteMutation(
-  userId: string,
+async function mutateFavorite(
+  path: '/favorites' | '/favorites/toggle',
+  method: 'POST' | 'DELETE',
   raw: unknown,
-): Promise<
-  { input: { targetType: 'PROJECT' | 'APARTMENT'; targetId: string } } | FavoriteMutationResult
-> {
-  const rate = await assertNotRateLimited('favoriteToggle', userId);
-  if (rate.limited) {
-    return { ok: false, errorKey: 'rateLimited' };
-  }
-
-  const parsed = favoriteToggleInputSchema.safeParse(raw);
-  if (!parsed.success) {
+): Promise<FavoriteMutationResult> {
+  const input = parseInput(raw);
+  if (!input) {
     return invalidInput();
   }
-  return { input: parsed.data };
+
+  try {
+    const response = await serverApiRequest<unknown>(path, { method, body: input });
+    const result = favoriteMutationResponseSchema.parse(response);
+    return { ok: true, favorited: result.favorited };
+  } catch (error) {
+    const errorKey = getApiErrorKey(error);
+    if (isFavoriteErrorKey(errorKey)) {
+      return { ok: false, errorKey };
+    }
+    throw error;
+  }
 }
 
 export async function toggleFavoriteAction(raw: unknown): Promise<FavoriteMutationResult> {
-  const userId = await requireBuyerUserId();
-  if (!userId) {
-    return unauthorized();
-  }
-
-  const gated = await gateFavoriteMutation(userId, raw);
-  if ('ok' in gated) {
-    return gated;
-  }
-
-  return toggleFavorite(userId, gated.input);
+  return mutateFavorite('/favorites/toggle', 'POST', raw);
 }
 
 export async function addFavoriteAction(raw: unknown): Promise<FavoriteMutationResult> {
-  const userId = await requireBuyerUserId();
-  if (!userId) {
-    return unauthorized();
-  }
-
-  const gated = await gateFavoriteMutation(userId, raw);
-  if ('ok' in gated) {
-    return gated;
-  }
-
-  return addFavorite(userId, gated.input);
+  return mutateFavorite('/favorites', 'POST', raw);
 }
 
 export async function removeFavoriteAction(raw: unknown): Promise<FavoriteMutationResult> {
-  const userId = await requireBuyerUserId();
-  if (!userId) {
-    return unauthorized();
-  }
+  return mutateFavorite('/favorites', 'DELETE', raw);
+}
 
-  const gated = await gateFavoriteMutation(userId, raw);
-  if ('ok' in gated) {
-    return gated;
-  }
-
-  return removeFavorite(userId, gated.input);
+function isFavoriteErrorKey(value: string | null): value is FavoriteMutationErrorKey {
+  return (
+    value === 'unauthorized' ||
+    value === 'invalidInput' ||
+    value === 'notFound' ||
+    value === 'rateLimited'
+  );
 }

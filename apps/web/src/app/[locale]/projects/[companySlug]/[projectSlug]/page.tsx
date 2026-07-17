@@ -2,6 +2,7 @@ import type { PublicCanvas, PublicProjectDetail } from '@toonexpo/contracts';
 import { slugSchema } from '@toonexpo/contracts';
 import type { ApartmentStatus } from '@toonexpo/domain';
 import type { Metadata } from 'next';
+import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
@@ -11,6 +12,7 @@ import { ProjectRequestCta } from '@/components/public-request/public-request-sh
 import { PublicVisualCanvas } from '@/components/visual-map/public-visual-canvas';
 import { scheduleAnalyticsEvent } from '@/lib/analytics/record-event';
 import { resolveRequestUserAgent } from '@/lib/analytics/request-user-agent';
+import { SESSION_COOKIE_NAME } from '@/lib/auth/constants';
 import { getPublishedProjectBySlug } from '@/lib/catalog/queries';
 import { loadWebEnv } from '@/lib/env';
 import { isFavorited } from '@/lib/favorites/queries';
@@ -38,7 +40,6 @@ export async function generateMetadata({ params }: ProjectDetailPageProps): Prom
   const loaded = await getPublishedProjectBySlug(
     parsedCompanySlug.data,
     parsedProjectSlug.data,
-    false,
   );
   if (!loaded) {
     return {};
@@ -193,6 +194,8 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
   }
 
   const session = await auth();
+  const sessionToken = (await cookies()).get(SESSION_COOKIE_NAME)?.value;
+  const sessionCookie = sessionToken ? `${SESSION_COOKIE_NAME}=${sessionToken}` : undefined;
   const isAuthenticated = Boolean(session?.user);
   const isBuyer = session?.user?.role === 'BUYER';
   const buyerUserId = isBuyer ? session?.user?.id : undefined;
@@ -200,7 +203,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
   const loaded = await getPublishedProjectBySlug(
     parsedCompanySlug.data,
     parsedProjectSlug.data,
-    isAuthenticated,
+    sessionCookie,
   );
   if (!loaded) {
     notFound();
@@ -220,7 +223,7 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
   );
 
   const initialFavorited = buyerUserId
-    ? await isFavorited(buyerUserId, { targetType: 'PROJECT', targetId: project.id })
+    ? await isFavorited({ targetType: 'PROJECT', targetId: project.id })
     : false;
 
   const prefill = session?.user

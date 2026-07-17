@@ -1,12 +1,24 @@
-import { prisma } from '@toonexpo/db';
+import { z } from 'zod';
+
+import { apiRequest } from '@/lib/api';
 
 export type PlatformContactSettings = {
   email: string | null;
   phone: string | null;
 };
 
-const CONTACT_SETTING_KEYS = ['CONTACT_EMAIL', 'CONTACT_PHONE'] as const;
-const MORTGAGE_PAGE_SETTING_KEY = 'MORTGAGE_PAGE_ENABLED';
+const publicPlatformSettingsSchema = z.object({
+  contact: z.object({
+    email: z.string().nullable(),
+    phone: z.string().nullable(),
+  }),
+  mortgagePageEnabled: z.boolean(),
+});
+
+async function loadPublicPlatformSettings() {
+  const raw = await apiRequest<unknown>('/catalog/platform-settings');
+  return publicPlatformSettingsSchema.parse(raw);
+}
 
 export function resolveContactWithDefaults(
   settings: PlatformContactSettings,
@@ -19,29 +31,10 @@ export function resolveContactWithDefaults(
 }
 
 export async function loadPlatformContactSettings(): Promise<PlatformContactSettings> {
-  const rows = await prisma.platformSetting.findMany({
-    where: { key: { in: [...CONTACT_SETTING_KEYS] } },
-    select: { key: true, value: true },
-  });
-
-  const byKey = new Map(rows.map((row) => [row.key, row.value]));
-
-  return {
-    email: byKey.get('CONTACT_EMAIL') ?? null,
-    phone: byKey.get('CONTACT_PHONE') ?? null,
-  };
+  return (await loadPublicPlatformSettings()).contact;
 }
 
 /** Default/unset MORTGAGE_PAGE_ENABLED is treated as enabled. */
 export async function isMortgagePageEnabled(): Promise<boolean> {
-  const row = await prisma.platformSetting.findUnique({
-    where: { key: MORTGAGE_PAGE_SETTING_KEY },
-    select: { value: true },
-  });
-
-  if (!row) {
-    return true;
-  }
-
-  return row.value === 'true';
+  return (await loadPublicPlatformSettings()).mortgagePageEnabled;
 }

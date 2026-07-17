@@ -16,6 +16,18 @@ export const favoriteToggleInputSchema = z.object({
 
 export type FavoriteToggleInput = z.infer<typeof favoriteToggleInputSchema>;
 
+export const favoriteMutationResponseSchema = z.object({
+  favorited: z.boolean(),
+});
+
+export type FavoriteMutationResponse = z.infer<typeof favoriteMutationResponseSchema>;
+
+export const favoriteStatusResponseSchema = z.object({
+  favorited: z.boolean(),
+});
+
+export type FavoriteStatusResponse = z.infer<typeof favoriteStatusResponseSchema>;
+
 /** Account-area list row for a saved project or apartment. */
 export const favoriteListItemSchema = z.object({
   id: z.string().min(1),
@@ -33,3 +45,5 @@ export const favoriteListItemSchema = z.object({
 });
 
 export type FavoriteListItem = z.infer<typeof favoriteListItemSchema>;
+
+export const favoriteListSchema = z.array(favoriteListItemSchema);

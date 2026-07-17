@@ -1,9 +1,7 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { SetPasswordForm } from '@/components/auth/set-password-form';
-import { previewAccountInvite } from '@/lib/auth/invite';
-
-import { setPasswordAction } from './actions';
+import { previewInviteWithApi } from '@/lib/auth/api-auth';
 
 type InvitePageProps = {
   params: Promise<{ locale: string; token: string }>;
@@ -18,8 +16,8 @@ export default async function InvitePage({ params }: InvitePageProps) {
   setRequestLocale(locale);
   const t = await getTranslations('auth.invite');
 
-  const preview = await previewAccountInvite(token);
-  if (!preview.ok) {
+  const valid = await isInviteValid(token);
+  if (!valid) {
     return (
       <section className="mx-auto flex max-w-md flex-col gap-4 px-6 py-16">
         <div className="rounded-[var(--te-radius)] border border-[var(--te-border)] bg-[var(--te-card)] p-6 shadow-[var(--te-shadow-soft)]">
@@ -37,8 +35,17 @@ export default async function InvitePage({ params }: InvitePageProps) {
           <h1 className="text-2xl font-semibold text-[var(--te-fg)]">{t('title')}</h1>
           <p className="text-sm text-[var(--te-muted)]">{t('subtitle')}</p>
         </div>
-        <SetPasswordForm action={setPasswordAction.bind(null, locale, token)} />
+        <SetPasswordForm locale={locale} token={token} />
       </div>
     </section>
   );
+}
+
+async function isInviteValid(token: string): Promise<boolean> {
+  try {
+    await previewInviteWithApi(token);
+    return true;
+  } catch {
+    return false;
+  }
 }

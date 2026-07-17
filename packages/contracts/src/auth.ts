@@ -54,6 +54,7 @@ export const authErrorCodeSchema = z.enum([
   'VALIDATION_ERROR',
   'INVALID_CREDENTIALS',
   'EMAIL_TAKEN',
+  'INVALID_INVITE',
   'RATE_LIMITED',
   'UNAUTHORIZED',
   'CSRF_REJECTED',

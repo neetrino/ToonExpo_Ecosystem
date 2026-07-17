@@ -17,6 +17,7 @@ export const CSRF_HEADER_NAME = 'x-csrf-token';
 export const AUTH_RATE_LIMIT_MAX = {
   login: 10,
   register: 5,
+  setPassword: 5,
 } as const;
 
 export const AUTH_RATE_LIMIT_WINDOW = '1 m' as const;

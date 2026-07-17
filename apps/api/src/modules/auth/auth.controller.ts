@@ -10,6 +10,8 @@ import {
   HttpException,
   HttpStatus,
   Inject,
+  NotFoundException,
+  Param,
   Post,
   Req,
   Res,
@@ -21,6 +23,7 @@ import type { AuthSession } from '@toonexpo/contracts';
 import type { Request, Response } from 'express';
 
 import { loadApiEnv } from '../../common/env';
+import { AccountInviteService, type SetPasswordResult } from './account-invite.service';
 import { AppOriginGuard } from './app-origin.guard';
 import { allowAuthRequest } from './auth-rate-limit';
 import { CSRF_COOKIE_NAME, SESSION_COOKIE_NAME } from './auth.constants';
@@ -47,7 +50,10 @@ function readSessionToken(req: Request): string | undefined {
 @Controller('auth')
 @UseGuards(AppOriginGuard)
 export class AuthController {
-  constructor(@Inject(AuthService) private readonly auth: AuthService) {}
+  constructor(
+    @Inject(AuthService) private readonly auth: AuthService,
+    @Inject(AccountInviteService) private readonly invites: AccountInviteService,
+  ) {}
 
   @Get('csrf')
   @ApiOperation({ summary: 'Issue CSRF cookie for subsequent mutating auth calls' })
@@ -57,6 +63,33 @@ export class AuthController {
     const csrfToken = randomBytes(CSRF_BYTE_LENGTH).toString('base64url');
     res.cookie(CSRF_COOKIE_NAME, csrfToken, buildCsrfCookieOptions(env));
     return { csrfToken };
+  }
+
+  @Get('invite/:token')
+  @ApiOperation({ summary: 'Check whether an account invite is valid and unexpired' })
+  @ApiResponse({ status: 200, description: 'Invite is valid' })
+  @ApiResponse({ status: 404, description: 'Invite is missing, expired, or already consumed' })
+  async previewInvite(@Param('token') token: string): Promise<{ valid: true }> {
+    const result = await this.invites.preview(token);
+    if (!result.ok) {
+      throw new NotFoundException({
+        code: result.code,
+        message: 'Invite is invalid or expired',
+      });
+    }
+    return { valid: true };
+  }
+
+  @Post('set-password')
+  @HttpCode(204)
+  @UseGuards(CsrfGuard)
+  @ApiOperation({ summary: 'Consume an account invite and set the account password' })
+  async setPassword(@Body() body: unknown, @Req() req: Request): Promise<void> {
+    await this.assertNotRateLimited('setPassword', req);
+    const result = await this.invites.setPassword(body);
+    if (!result.ok) {
+      this.throwSetPasswordFailure(result);
+    }
   }
 
   @Post('register')
@@ -112,7 +145,7 @@ export class AuthController {
   }
 
   private async assertNotRateLimited(
-    surface: 'login' | 'register',
+    surface: 'login' | 'register' | 'setPassword',
     req: Request,
   ): Promise<void> {
     const allowed = await allowAuthRequest(surface, `ip:${clientIp(req)}`);
@@ -122,6 +155,16 @@ export class AuthController {
         HttpStatus.TOO_MANY_REQUESTS,
       );
     }
+  }
+
+  private throwSetPasswordFailure(result: Exclude<SetPasswordResult, { ok: true }>): never {
+    if (result.code === 'VALIDATION_ERROR') {
+      throw new BadRequestException({ code: result.code, message: 'Invalid input' });
+    }
+    throw new NotFoundException({
+      code: result.code,
+      message: 'Invite is invalid or expired',
+    });
   }
 
   private finishAuthMutation(

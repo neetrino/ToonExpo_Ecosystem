@@ -1,2 +1,2 @@
 export { apiRequest } from './client';
-export { ApiClientError, mapAuthErrorCode } from './errors';
+export { ApiClientError, getApiErrorKey, mapAuthErrorCode } from './errors';

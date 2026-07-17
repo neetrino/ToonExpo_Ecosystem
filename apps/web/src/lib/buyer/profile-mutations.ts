@@ -1,38 +1,52 @@
-import type { BuyerProfileUpdateInput } from '@toonexpo/contracts';
-import { prisma } from '@toonexpo/db';
+import {
+  buyerProfileSchema,
+  buyerProfileUpdateResponseSchema,
+  type BuyerProfile,
+  type BuyerProfileUpdateInput,
+} from '@toonexpo/contracts';
+
+import { getApiErrorKey } from '@/lib/api/errors';
+import { serverApiRequest } from '@/lib/api/server';
 
 export type BuyerProfileMutationResult =
   { ok: true } | { ok: false; errorKey: 'notFound' | 'invalidInput' | 'unauthorized' };
 
 /** Updates the signed-in buyer's name and phone. Email/role are not writable here. */
 export async function updateBuyerProfile(
-  userId: string,
   input: BuyerProfileUpdateInput,
 ): Promise<BuyerProfileMutationResult> {
-  const result = await prisma.user.updateMany({
-    where: { id: userId, role: 'BUYER' },
-    data: {
-      name: input.name,
-      phone: input.phone ?? null,
-    },
-  });
-
-  if (result.count === 0) {
-    return { ok: false, errorKey: 'notFound' };
+  try {
+    const response = await serverApiRequest<unknown>('/buyer/profile', {
+      method: 'PATCH',
+      body: input,
+    });
+    buyerProfileUpdateResponseSchema.parse(response);
+    return { ok: true };
+  } catch (error) {
+    const errorKey = getApiErrorKey(error);
+    if (isProfileErrorKey(errorKey)) {
+      return { ok: false, errorKey };
+    }
+    throw error;
   }
-
-  return { ok: true };
 }
 
-export type BuyerProfileView = {
-  name: string | null;
-  email: string;
-  phone: string | null;
-};
+export type BuyerProfileView = BuyerProfile;
 
-export async function getBuyerProfile(userId: string): Promise<BuyerProfileView | null> {
-  return prisma.user.findFirst({
-    where: { id: userId, role: 'BUYER' },
-    select: { name: true, email: true, phone: true },
-  });
+export async function getBuyerProfile(): Promise<BuyerProfileView | null> {
+  try {
+    const response = await serverApiRequest<unknown>('/buyer/profile');
+    return buyerProfileSchema.parse(response);
+  } catch (error) {
+    if (getApiErrorKey(error) === 'notFound') {
+      return null;
+    }
+    throw error;
+  }
+}
+
+function isProfileErrorKey(
+  value: string | null,
+): value is 'notFound' | 'invalidInput' | 'unauthorized' {
+  return value === 'notFound' || value === 'invalidInput' || value === 'unauthorized';
 }

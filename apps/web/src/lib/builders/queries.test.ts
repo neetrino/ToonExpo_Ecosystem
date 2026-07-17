@@ -1,49 +1,45 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const mockCompanyFindMany = vi.fn();
-const mockCompanyFindFirst = vi.fn();
+const mockApiRequest = vi.fn();
 
-vi.mock('@toonexpo/db', () => ({
-  prisma: {
-    company: {
-      findMany: (...args: unknown[]) => mockCompanyFindMany(...args),
-      findFirst: (...args: unknown[]) => mockCompanyFindFirst(...args),
-    },
+vi.mock('@/lib/api', () => ({
+  apiRequest: (...args: unknown[]) => mockApiRequest(...args),
+  ApiClientError: class ApiClientError extends Error {
+    constructor(readonly status: number) {
+      super('API error');
+    }
   },
 }));
 
 import { getPublicBuilderBySlug, getPublicBuilders } from './queries';
 
-describe('builder public queries', () => {
+describe('builder public API queries', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockCompanyFindMany.mockResolvedValue([]);
-    mockCompanyFindFirst.mockResolvedValue(null);
   });
 
-  it('lists only companies with published projects', async () => {
-    await getPublicBuilders();
-
-    expect(mockCompanyFindMany).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: { projects: { some: { status: 'PUBLISHED' } } },
-        orderBy: { name: 'asc' },
-      }),
-    );
+  it('loads builder listings from Nest', async () => {
+    mockApiRequest.mockResolvedValue([]);
+    await expect(getPublicBuilders()).resolves.toEqual([]);
+    expect(mockApiRequest).toHaveBeenCalledWith('/catalog/builders');
   });
 
-  it('loads builder detail only when published projects exist', async () => {
-    await getPublicBuilderBySlug('demo-development');
-
-    expect(mockCompanyFindFirst).toHaveBeenCalledWith(
-      expect.objectContaining({
-        where: { slug: 'demo-development', projects: { some: { status: 'PUBLISHED' } } },
-        select: expect.objectContaining({
-          projects: expect.objectContaining({
-            where: { status: 'PUBLISHED' },
-          }),
-        }),
-      }),
-    );
+  it('loads builder detail by encoded slug', async () => {
+    mockApiRequest.mockResolvedValue({
+      id: 'builder-1',
+      name: 'Builder',
+      slug: 'builder',
+      logoUrl: null,
+      city: null,
+      description: null,
+      publishedProjectCount: 1,
+      phone: null,
+      email: null,
+      website: null,
+      address: null,
+      projects: [],
+    });
+    await getPublicBuilderBySlug('builder');
+    expect(mockApiRequest).toHaveBeenCalledWith('/catalog/builders/builder');
   });
 });

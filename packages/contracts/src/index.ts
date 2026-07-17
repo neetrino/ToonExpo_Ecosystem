@@ -43,15 +43,24 @@ export {
   BUYER_PROFILE_NAME_MAX_LENGTH,
   BUYER_PROFILE_PHONE_MAX_LENGTH,
   BUYER_PROFILE_PHONE_MIN_LENGTH,
+  buyerProfileSchema,
   buyerProfileUpdateInputSchema,
+  buyerProfileUpdateResponseSchema,
+  type BuyerProfile,
   type BuyerProfileUpdateInput,
+  type BuyerProfileUpdateResponse,
 } from './buyer';
 export {
+  favoriteListSchema,
   favoriteListItemSchema,
+  favoriteMutationResponseSchema,
+  favoriteStatusResponseSchema,
   favoriteTargetIdSchema,
   favoriteTargetTypeSchema,
   favoriteToggleInputSchema,
   type FavoriteListItem,
+  type FavoriteMutationResponse,
+  type FavoriteStatusResponse,
   type FavoriteToggleInput,
 } from './favorites';
 export { healthResponseSchema, type HealthResponse } from './health';

@@ -19,3 +19,17 @@ export const buyerProfileUpdateInputSchema = z.object({
 });
 
 export type BuyerProfileUpdateInput = z.infer<typeof buyerProfileUpdateInputSchema>;
+
+export const buyerProfileSchema = z.object({
+  name: z.string().nullable(),
+  email: z.string().email(),
+  phone: z.string().nullable(),
+});
+
+export type BuyerProfile = z.infer<typeof buyerProfileSchema>;
+
+export const buyerProfileUpdateResponseSchema = z.object({
+  ok: z.literal(true),
+});
+
+export type BuyerProfileUpdateResponse = z.infer<typeof buyerProfileUpdateResponseSchema>;

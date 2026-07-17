@@ -10,6 +10,8 @@ type RequestOptions = {
   body?: unknown;
   /** Forward Cookie header (RSC / server actions). */
   cookie?: string;
+  /** Forward double-submit token for server-side mutations. */
+  csrfToken?: string;
   /** Skip CSRF header (safe methods only). */
   skipCsrf?: boolean;
 };
@@ -102,6 +104,9 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
 
   if (options.cookie) {
     headers.Cookie = options.cookie;
+  }
+  if (options.csrfToken) {
+    headers[CSRF_HEADER_NAME] = options.csrfToken;
   }
 
   const needsCsrf = !options.skipCsrf && method !== 'GET';

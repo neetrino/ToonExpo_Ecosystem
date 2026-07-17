@@ -1,12 +1,14 @@
 import { slugSchema } from '@toonexpo/contracts';
 import type { ApartmentStatus } from '@toonexpo/domain';
 import type { Metadata } from 'next';
+import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { auth } from '@/auth';
 import { scheduleAnalyticsEvent } from '@/lib/analytics/record-event';
 import { resolveRequestUserAgent } from '@/lib/analytics/request-user-agent';
+import { SESSION_COOKIE_NAME } from '@/lib/auth/constants';
 import { getPublishedApartment, isValidApartmentId } from '@/lib/catalog/queries';
 import { loadWebEnv } from '@/lib/env';
 import { isFavorited } from '@/lib/favorites/queries';
@@ -41,7 +43,6 @@ export async function generateMetadata({ params }: ApartmentDetailPageProps): Pr
     parsedCompanySlug.data,
     parsedProjectSlug.data,
     apartmentId,
-    false,
   );
   if (!apartment) {
     return {};
@@ -82,6 +83,8 @@ export default async function ApartmentDetailPage({ params }: ApartmentDetailPag
   }
 
   const session = await auth();
+  const sessionToken = (await cookies()).get(SESSION_COOKIE_NAME)?.value;
+  const sessionCookie = sessionToken ? `${SESSION_COOKIE_NAME}=${sessionToken}` : undefined;
   const isAuthenticated = Boolean(session?.user);
   const isBuyer = session?.user?.role === 'BUYER';
   const buyerUserId = isBuyer ? session?.user?.id : undefined;
@@ -90,7 +93,7 @@ export default async function ApartmentDetailPage({ params }: ApartmentDetailPag
     parsedCompanySlug.data,
     parsedProjectSlug.data,
     apartmentId,
-    isAuthenticated,
+    sessionCookie,
   );
   if (!apartment) {
     notFound();
@@ -105,7 +108,7 @@ export default async function ApartmentDetailPage({ params }: ApartmentDetailPag
   });
 
   const initialFavorited = buyerUserId
-    ? await isFavorited(buyerUserId, { targetType: 'APARTMENT', targetId: apartment.id })
+    ? await isFavorited({ targetType: 'APARTMENT', targetId: apartment.id })
     : false;
 
   const prefill = session?.user

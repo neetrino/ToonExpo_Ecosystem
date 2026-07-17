@@ -21,3 +21,15 @@ export function mapAuthErrorCode(code: string | undefined): AuthErrorCode | 'UNK
   const parsed = authErrorCodeSchema.safeParse(code);
   return parsed.success ? parsed.data : 'UNKNOWN';
 }
+
+/** Reads a domain error key from the API exception payload. */
+export function getApiErrorKey(error: unknown): string | null {
+  if (!(error instanceof ApiClientError)) {
+    return null;
+  }
+  const body = error.body;
+  if (!body || typeof body !== 'object' || !('error' in body)) {
+    return null;
+  }
+  return typeof body.error === 'string' ? body.error : null;
+}
