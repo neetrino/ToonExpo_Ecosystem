@@ -37,10 +37,7 @@ export async function generateMetadata({ params }: ProjectDetailPageProps): Prom
     return {};
   }
 
-  const loaded = await getPublishedProjectBySlug(
-    parsedCompanySlug.data,
-    parsedProjectSlug.data,
-  );
+  const loaded = await getPublishedProjectBySlug(parsedCompanySlug.data, parsedProjectSlug.data);
   if (!loaded) {
     return {};
   }

@@ -244,9 +244,7 @@ function ok(dealId: string, affectedProjectIds: string[]) {
   return { ok: true as const, dealId, affectedProjectIds };
 }
 
-function fail(
-  errorKey: 'notFound' | 'invalidInput' | 'apartmentRequired' | 'reservationConflict',
-) {
+function fail(errorKey: 'notFound' | 'invalidInput' | 'apartmentRequired' | 'reservationConflict') {
   return { ok: false as const, errorKey };
 }
 
@@ -256,7 +254,6 @@ function uniqueProjects(first: string | null, second?: string): string[] {
 
 function isUnique(error: unknown): boolean {
   return (
-    error instanceof Prisma.PrismaClientKnownRequestError &&
-    error.code === UNIQUE_CONSTRAINT_ERROR
+    error instanceof Prisma.PrismaClientKnownRequestError && error.code === UNIQUE_CONSTRAINT_ERROR
   );
 }

@@ -59,9 +59,7 @@ export function loadPublicVenueMap(): Promise<PublicVenueMap | null> {
   return serverApiRequest<PublicVenueMap | null>('/exhibition/venue');
 }
 
-export function loadCompanyActiveBooth(
-  companyId: string,
-): Promise<CompanyBoothAssignment | null> {
+export function loadCompanyActiveBooth(companyId: string): Promise<CompanyBoothAssignment | null> {
   return serverApiRequest<CompanyBoothAssignment | null>(
     `/exhibition/company-booth?companyId=${encodeURIComponent(companyId)}`,
   );

@@ -31,8 +31,7 @@ export class AnalyticsController {
           partner: { select: { companyId: true } },
         },
       });
-      const companyId =
-        booth?.companyId ?? booth?.project?.companyId ?? booth?.partner?.companyId;
+      const companyId = booth?.companyId ?? booth?.project?.companyId ?? booth?.partner?.companyId;
       if (booth && companyId) {
         await this.prisma.client.analyticsEvent.create({
           data: {

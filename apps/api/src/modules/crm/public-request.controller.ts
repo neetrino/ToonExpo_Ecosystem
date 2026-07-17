@@ -1,12 +1,4 @@
-import {
-  Body,
-  Controller,
-  HttpException,
-  HttpStatus,
-  Post,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, HttpException, HttpStatus, Post, Req, UseGuards } from '@nestjs/common';
 import { publicRequestInputSchema } from '@toonexpo/contracts';
 import type { Request } from 'express';
 
@@ -35,7 +27,9 @@ export class PublicRequestController {
       throw new HttpException({ error: 'rateLimited' }, HttpStatus.TOO_MANY_REQUESTS);
     }
     const token = request.cookies?.[SESSION_COOKIE_NAME];
-    const session = await this.sessions.resolveSession(typeof token === 'string' ? token : undefined);
+    const session = await this.sessions.resolveSession(
+      typeof token === 'string' ? token : undefined,
+    );
     const buyerUserId = session?.user.role === 'BUYER' ? session.user.id : undefined;
     return this.requests.submit(parsed.data, buyerUserId);
   }

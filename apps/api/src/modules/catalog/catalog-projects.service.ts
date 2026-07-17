@@ -6,11 +6,7 @@ import type {
 } from '@toonexpo/contracts';
 
 import { PrismaService } from '../../common/prisma.service';
-import {
-  mapApartmentDetail,
-  mapProjectDetail,
-  mapProjectSummary,
-} from './catalog.mapper';
+import { mapApartmentDetail, mapProjectDetail, mapProjectSummary } from './catalog.mapper';
 
 export const APARTMENT_ID_PATTERN = /^c[a-z0-9]{20,32}$/i;
 
@@ -55,9 +51,7 @@ export class CatalogProjectsService {
     const rows = await this.prisma.client.project.findMany({
       where: {
         status: 'PUBLISHED',
-        ...(filters.city
-          ? { city: { contains: filters.city, mode: 'insensitive' as const } }
-          : {}),
+        ...(filters.city ? { city: { contains: filters.city, mode: 'insensitive' as const } } : {}),
         ...(filters.builderSlug ? { company: { slug: filters.builderSlug } } : {}),
       },
       orderBy: { createdAt: 'desc' },

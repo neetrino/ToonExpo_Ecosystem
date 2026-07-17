@@ -25,11 +25,7 @@ export type QrResolveEntrance = {
 };
 export type QrResolveLimited = { kind: 'limited'; qrCodeId: string };
 export type QrResolveResult =
-  | QrResolveInvalid
-  | QrResolveOwner
-  | QrResolveBuilder
-  | QrResolveEntrance
-  | QrResolveLimited;
+  QrResolveInvalid | QrResolveOwner | QrResolveBuilder | QrResolveEntrance | QrResolveLimited;
 
 type SessionContext = {
   userId?: string;
@@ -38,16 +34,9 @@ type SessionContext = {
 };
 
 /** Resolves a QR through Nest; authorization is derived from the API session. */
-export function resolveQrScan(
-  token: string,
-  session: SessionContext,
-): Promise<QrResolveResult> {
-  const query = session.companyId
-    ? `?companyId=${encodeURIComponent(session.companyId)}`
-    : '';
-  return serverApiRequest<QrResolveResult>(
-    `/qr/resolve/${encodeURIComponent(token)}${query}`,
-  );
+export function resolveQrScan(token: string, session: SessionContext): Promise<QrResolveResult> {
+  const query = session.companyId ? `?companyId=${encodeURIComponent(session.companyId)}` : '';
+  return serverApiRequest<QrResolveResult>(`/qr/resolve/${encodeURIComponent(token)}${query}`);
 }
 
 export function toPublicResolveShape(result: QrResolveResult): {

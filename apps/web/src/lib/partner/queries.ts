@@ -33,9 +33,10 @@ export async function loadOwnPartnerDetail(
   _partnerId: string,
 ): Promise<PartnerCabinetDetail | null> {
   const detail = await serverApiRequest<
-    (Omit<PartnerCabinetDetail, 'bankOffers'> & {
-      bankOffers: Array<Omit<PartnerCabinetBankOffer, 'updatedAt'> & { updatedAt: string }>;
-    }) | null
+    | (Omit<PartnerCabinetDetail, 'bankOffers'> & {
+        bankOffers: Array<Omit<PartnerCabinetBankOffer, 'updatedAt'> & { updatedAt: string }>;
+      })
+    | null
   >('/partner/detail');
   return detail
     ? {

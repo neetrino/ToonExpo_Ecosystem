@@ -26,10 +26,7 @@ import { type z } from 'zod';
 import { AppOriginGuard } from '../auth/app-origin.guard';
 import { CsrfGuard } from '../auth/csrf.guard';
 import { SessionAuthGuard, type RequestWithAuth } from '../auth/session-auth.guard';
-import {
-  ACTIVE_COMPANY_COOKIE,
-  BuilderContextService,
-} from '../builder/builder-context.service';
+import { ACTIVE_COMPANY_COOKIE, BuilderContextService } from '../builder/builder-context.service';
 import { CrmQueryService } from './crm-query.service';
 import { CrmMutationService } from './crm-mutation.service';
 
@@ -64,10 +61,7 @@ export class CrmController {
   }
 
   @Get('apartment-options')
-  async apartments(
-    @Req() request: RequestWithAuth,
-    @Query('projectId') projectId?: string,
-  ) {
+  async apartments(@Req() request: RequestWithAuth, @Query('projectId') projectId?: string) {
     return this.queries.apartmentOptions(await this.companyId(request), projectId);
   }
 
@@ -137,10 +131,7 @@ export class CrmController {
   private async context(request: RequestWithAuth) {
     const session = requireSession(request);
     const raw = request.cookies?.[ACTIVE_COMPANY_COOKIE];
-    const context = await this.contexts.resolve(
-      session,
-      typeof raw === 'string' ? raw : undefined,
-    );
+    const context = await this.contexts.resolve(session, typeof raw === 'string' ? raw : undefined);
     if (!context) {
       throw new UnauthorizedException({ error: 'unauthorized' });
     }
@@ -148,10 +139,7 @@ export class CrmController {
   }
 }
 
-function parse<TSchema extends z.ZodTypeAny>(
-  schema: TSchema,
-  body: unknown,
-): z.output<TSchema> {
+function parse<TSchema extends z.ZodTypeAny>(schema: TSchema, body: unknown): z.output<TSchema> {
   const parsed = schema.safeParse(body);
   if (!parsed.success) {
     throw new HttpException({ error: 'invalidInput' }, HttpStatus.BAD_REQUEST);

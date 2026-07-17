@@ -34,8 +34,12 @@ export async function loadActiveExhibitionEvent(): Promise<ActiveExhibitionEvent
 }
 
 export async function loadBuyerCheckIns(_userId: string): Promise<BuyerCheckInRow[]> {
-  const rows = await serverApiRequest<Array<Omit<BuyerCheckInRow, 'checkedInAt'> & {
-    checkedInAt: string;
-  }>>('/exhibition/check-ins');
+  const rows = await serverApiRequest<
+    Array<
+      Omit<BuyerCheckInRow, 'checkedInAt'> & {
+        checkedInAt: string;
+      }
+    >
+  >('/exhibition/check-ins');
   return rows.map((row) => ({ ...row, checkedInAt: new Date(row.checkedInAt) }));
 }

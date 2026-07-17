@@ -10,11 +10,7 @@ export type PublicPlatformSettings = {
   mortgagePageEnabled: boolean;
 };
 
-const PUBLIC_SETTING_KEYS = [
-  'CONTACT_EMAIL',
-  'CONTACT_PHONE',
-  'MORTGAGE_PAGE_ENABLED',
-] as const;
+const PUBLIC_SETTING_KEYS = ['CONTACT_EMAIL', 'CONTACT_PHONE', 'MORTGAGE_PAGE_ENABLED'] as const;
 
 @Injectable()
 export class CatalogSettingsService {

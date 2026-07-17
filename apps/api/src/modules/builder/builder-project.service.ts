@@ -97,7 +97,6 @@ export class BuilderProjectService {
 
 function isUniqueError(error: unknown): boolean {
   return (
-    error instanceof Prisma.PrismaClientKnownRequestError &&
-    error.code === UNIQUE_CONSTRAINT_ERROR
+    error instanceof Prisma.PrismaClientKnownRequestError && error.code === UNIQUE_CONSTRAINT_ERROR
   );
 }

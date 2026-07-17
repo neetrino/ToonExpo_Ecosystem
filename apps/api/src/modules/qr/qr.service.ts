@@ -94,7 +94,11 @@ export class QrService {
         select: { id: true, name: true },
       });
       return buyer
-        ? { kind: 'entrance' as const, qrCodeId: qr.id, buyer: { userId: buyer.id, name: buyer.name } }
+        ? {
+            kind: 'entrance' as const,
+            qrCodeId: qr.id,
+            buyer: { userId: buyer.id, name: buyer.name },
+          }
         : { kind: 'invalid' as const };
     }
     if (session?.user.role === 'BUILDER' && companyId) {
@@ -174,7 +178,10 @@ export class QrService {
       if (!qr || qr.buyerProfile.user.id === userId) {
         return { ok: false as const, errorKey: 'notFound' as const };
       }
-      if (input.projectId && !(await tx.project.findFirst({ where: { id: input.projectId, companyId } }))) {
+      if (
+        input.projectId &&
+        !(await tx.project.findFirst({ where: { id: input.projectId, companyId } }))
+      ) {
         return { ok: false as const, errorKey: 'invalidInput' as const };
       }
       const existing = await tx.deal.findFirst({
@@ -189,7 +196,12 @@ export class QrService {
       });
       if (existing) {
         await tx.dealActivity.create({
-          data: { dealId: existing.id, authorUserId: userId, type: 'COMMENT', body: input.note ?? 'Repeated QR scan interest recorded.' },
+          data: {
+            dealId: existing.id,
+            authorUserId: userId,
+            type: 'COMMENT',
+            body: input.note ?? 'Repeated QR scan interest recorded.',
+          },
         });
         return { ok: true as const, deduped: true as const, dealId: existing.id };
       }
@@ -233,16 +245,32 @@ export class QrService {
       }),
     ]);
     return buyer
-      ? { kind: 'builder' as const, qrCodeId, buyer: { userId: buyer.id, name: buyer.name, email: buyer.email, phone: buyer.phone }, projects }
+      ? {
+          kind: 'builder' as const,
+          qrCodeId,
+          buyer: { userId: buyer.id, name: buyer.name, email: buyer.email, phone: buyer.phone },
+          projects,
+        }
       : { kind: 'invalid' as const };
   }
 
-  private async isCompanyMember(userId: string, companyId: string, role: 'BUILDER'): Promise<boolean> {
-    return Boolean(await this.prisma.client.companyMember.findFirst({ where: { userId, companyId, role } }));
+  private async isCompanyMember(
+    userId: string,
+    companyId: string,
+    role: 'BUILDER',
+  ): Promise<boolean> {
+    return Boolean(
+      await this.prisma.client.companyMember.findFirst({ where: { userId, companyId, role } }),
+    );
   }
 
   private async ensureProfile(tx: Prisma.TransactionClient, userId: string) {
-    return tx.buyerProfile.upsert({ where: { userId }, create: { userId }, update: {}, select: { id: true } });
+    return tx.buyerProfile.upsert({
+      where: { userId },
+      create: { userId },
+      update: {},
+      select: { id: true },
+    });
   }
 
   private tokenPair(): { token: string; tokenHash: string } {
@@ -262,10 +290,17 @@ export class QrService {
     companyId?: string,
   ): Promise<void> {
     const recent = await tx.qrScanLog.findFirst({
-      where: { qrCodeId, scannedByUserId: userId, purpose, scannedAt: { gte: new Date(Date.now() - SCAN_DEBOUNCE_MS) } },
+      where: {
+        qrCodeId,
+        scannedByUserId: userId,
+        purpose,
+        scannedAt: { gte: new Date(Date.now() - SCAN_DEBOUNCE_MS) },
+      },
     });
     if (!recent) {
-      await tx.qrScanLog.create({ data: { qrCodeId, scannedByUserId: userId, purpose, companyId } });
+      await tx.qrScanLog.create({
+        data: { qrCodeId, scannedByUserId: userId, purpose, companyId },
+      });
     }
   }
 }

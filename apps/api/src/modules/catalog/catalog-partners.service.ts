@@ -7,11 +7,7 @@ import type {
 import type { PartnerType } from '@toonexpo/domain';
 
 import { PrismaService } from '../../common/prisma.service';
-import {
-  mapBankOffer,
-  mapPartnerDetail,
-  mapPartnerSummary,
-} from './catalog.mapper';
+import { mapBankOffer, mapPartnerDetail, mapPartnerSummary } from './catalog.mapper';
 
 export type PublicBankOfferListing = PublicBankOffer & {
   partnerName: string;

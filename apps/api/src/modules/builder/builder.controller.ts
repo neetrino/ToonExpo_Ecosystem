@@ -167,7 +167,11 @@ export class BuilderController {
       .safeParse(body);
     if (!parsed.success) throwInvalid();
     const session = requireSession(request);
-    const result = await this.contexts.select(session, parsed.data.companyId, parsed.data.auditStart === true);
+    const result = await this.contexts.select(
+      session,
+      parsed.data.companyId,
+      parsed.data.auditStart === true,
+    );
     if (result === 'notFound') {
       throw new HttpException({ error: 'notFound' }, HttpStatus.NOT_FOUND);
     }

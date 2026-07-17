@@ -79,10 +79,6 @@ export function createManualDeal(
   return mutate('/crm/deals/manual', 'POST', input);
 }
 
-function mutate<T>(
-  path: string,
-  method: 'POST' | 'PATCH',
-  body: unknown,
-): Promise<T> {
+function mutate<T>(path: string, method: 'POST' | 'PATCH', body: unknown): Promise<T> {
   return serverApiRequest<T>(path, { method, body });
 }

@@ -56,7 +56,10 @@ export class BuilderAnalyticsService {
       projectViews,
       apartmentViewsTotal: apartmentViews.total,
       apartmentViewsLastPeriod: apartmentViews.recent,
-      dealsByStage: groups(stages.map((row) => ({ key: row.stage, count: row._count._all })), DEAL_STAGES),
+      dealsByStage: groups(
+        stages.map((row) => ({ key: row.stage, count: row._count._all })),
+        DEAL_STAGES,
+      ),
       dealsBySource: groups(
         sources.map((row) => ({ key: row.source, count: row._count._all })),
         REQUEST_SOURCES,
@@ -86,7 +89,12 @@ export class BuilderAnalyticsService {
       }),
       this.prisma.client.analyticsEvent.groupBy({
         by: ['projectId'],
-        where: { companyId, type: 'PROJECT_VIEW', projectId: { in: ids }, createdAt: { gte: since } },
+        where: {
+          companyId,
+          type: 'PROJECT_VIEW',
+          projectId: { in: ids },
+          createdAt: { gte: since },
+        },
         _count: { _all: true },
       }),
     ]);

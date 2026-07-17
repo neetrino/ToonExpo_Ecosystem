@@ -365,28 +365,66 @@ export class AdminQueryService {
   async analytics(): Promise<unknown> {
     const client = this.prisma.client;
     const since = new Date(Date.now() - LOOKBACK_DAYS * DAY_MS);
-    const count = (type: 'PROJECT_VIEW' | 'APARTMENT_VIEW' | 'BOOTH_SELECTED' | 'ROUTE_REQUESTED', recent = false) =>
-      client.analyticsEvent.count({ where: { type, ...(recent ? { createdAt: { gte: since } } : {}) } });
-    const [projectViewsTotal, projectViewsLastPeriod, apartmentViewsTotal, apartmentViewsLastPeriod,
-      boothSelectedTotal, boothSelectedLastPeriod, routeRequestedTotal, routeRequestedLastPeriod,
-      dealSources, recentDealSources, dealStages, qrPurposes, recentQrPurposes, projects, apartments, partners] =
-      await Promise.all([
-        count('PROJECT_VIEW'), count('PROJECT_VIEW', true), count('APARTMENT_VIEW'),
-        count('APARTMENT_VIEW', true), count('BOOTH_SELECTED'), count('BOOTH_SELECTED', true),
-        count('ROUTE_REQUESTED'), count('ROUTE_REQUESTED', true),
-        client.deal.groupBy({ by: ['source'], _count: { _all: true } }),
-        client.deal.groupBy({ by: ['source'], where: { createdAt: { gte: since } }, _count: { _all: true } }),
-        client.deal.groupBy({ by: ['stage'], _count: { _all: true } }),
-        client.qrScanLog.groupBy({ by: ['purpose'], _count: { _all: true } }),
-        client.qrScanLog.groupBy({ by: ['purpose'], where: { scannedAt: { gte: since } }, _count: { _all: true } }),
-        client.project.groupBy({ by: ['status'], _count: { _all: true } }),
-        client.apartment.groupBy({ by: ['status'], _count: { _all: true } }),
-        client.partner.groupBy({ by: ['type'], _count: { _all: true } }),
-      ]);
+    const count = (
+      type: 'PROJECT_VIEW' | 'APARTMENT_VIEW' | 'BOOTH_SELECTED' | 'ROUTE_REQUESTED',
+      recent = false,
+    ) =>
+      client.analyticsEvent.count({
+        where: { type, ...(recent ? { createdAt: { gte: since } } : {}) },
+      });
+    const [
+      projectViewsTotal,
+      projectViewsLastPeriod,
+      apartmentViewsTotal,
+      apartmentViewsLastPeriod,
+      boothSelectedTotal,
+      boothSelectedLastPeriod,
+      routeRequestedTotal,
+      routeRequestedLastPeriod,
+      dealSources,
+      recentDealSources,
+      dealStages,
+      qrPurposes,
+      recentQrPurposes,
+      projects,
+      apartments,
+      partners,
+    ] = await Promise.all([
+      count('PROJECT_VIEW'),
+      count('PROJECT_VIEW', true),
+      count('APARTMENT_VIEW'),
+      count('APARTMENT_VIEW', true),
+      count('BOOTH_SELECTED'),
+      count('BOOTH_SELECTED', true),
+      count('ROUTE_REQUESTED'),
+      count('ROUTE_REQUESTED', true),
+      client.deal.groupBy({ by: ['source'], _count: { _all: true } }),
+      client.deal.groupBy({
+        by: ['source'],
+        where: { createdAt: { gte: since } },
+        _count: { _all: true },
+      }),
+      client.deal.groupBy({ by: ['stage'], _count: { _all: true } }),
+      client.qrScanLog.groupBy({ by: ['purpose'], _count: { _all: true } }),
+      client.qrScanLog.groupBy({
+        by: ['purpose'],
+        where: { scannedAt: { gte: since } },
+        _count: { _all: true },
+      }),
+      client.project.groupBy({ by: ['status'], _count: { _all: true } }),
+      client.apartment.groupBy({ by: ['status'], _count: { _all: true } }),
+      client.partner.groupBy({ by: ['type'], _count: { _all: true } }),
+    ]);
     return {
       lookbackDays: LOOKBACK_DAYS,
-      projectViewsTotal, projectViewsLastPeriod, apartmentViewsTotal, apartmentViewsLastPeriod,
-      boothSelectedTotal, boothSelectedLastPeriod, routeRequestedTotal, routeRequestedLastPeriod,
+      projectViewsTotal,
+      projectViewsLastPeriod,
+      apartmentViewsTotal,
+      apartmentViewsLastPeriod,
+      boothSelectedTotal,
+      boothSelectedLastPeriod,
+      routeRequestedTotal,
+      routeRequestedLastPeriod,
       dealsBySource: stableCounts(dealSources, 'source', REQUEST_SOURCES),
       dealsBySourceLastPeriod: stableCounts(recentDealSources, 'source', REQUEST_SOURCES),
       dealsByStage: stableCounts(dealStages, 'stage', DEAL_STAGES),
@@ -401,19 +439,28 @@ export class AdminQueryService {
   }
 
   private async checkInsByEvent(): Promise<unknown> {
-    const groups = await this.prisma.client.checkIn.groupBy({ by: ['eventId'], _count: { _all: true } });
+    const groups = await this.prisma.client.checkIn.groupBy({
+      by: ['eventId'],
+      _count: { _all: true },
+    });
     const events = await this.prisma.client.exhibitionEvent.findMany({
       where: { id: { in: groups.map((row) => row.eventId) } },
       select: { id: true, name: true },
     });
     const names = new Map(events.map((event) => [event.id, event.name]));
-    return groups.map((row) => ({ eventId: row.eventId, eventName: names.get(row.eventId) ?? row.eventId, count: row._count._all }));
+    return groups.map((row) => ({
+      eventId: row.eventId,
+      eventName: names.get(row.eventId) ?? row.eventId,
+      count: row._count._all,
+    }));
   }
 
   private async readinessAverages(): Promise<unknown> {
     const groups = await this.prisma.client.readinessAssessment.groupBy({
-      by: ['companyId'], where: { archivedAt: null, overallScore: { not: null } },
-      _avg: { overallScore: true }, _count: { _all: true },
+      by: ['companyId'],
+      where: { archivedAt: null, overallScore: { not: null } },
+      _avg: { overallScore: true },
+      _count: { _all: true },
     });
     const companies = await this.prisma.client.company.findMany({
       where: { id: { in: groups.map((row) => row.companyId) } },
@@ -421,8 +468,10 @@ export class AdminQueryService {
     });
     const names = new Map(companies.map((company) => [company.id, company.name]));
     return groups.map((row) => ({
-      companyId: row.companyId, companyName: names.get(row.companyId) ?? row.companyId,
-      avgScore: row._avg.overallScore, assessmentCount: row._count._all,
+      companyId: row.companyId,
+      companyName: names.get(row.companyId) ?? row.companyId,
+      avgScore: row._avg.overallScore,
+      assessmentCount: row._count._all,
     }));
   }
 }
@@ -430,7 +479,10 @@ export class AdminQueryService {
 type ProjectCompletenessInput = {
   description: string | null;
   _count: { media: number; canvases: number };
-  buildings: Array<{ status: PublicationStatus; floors: Array<{ status: PublicationStatus; _count: { apartments: number } }> }>;
+  buildings: Array<{
+    status: PublicationStatus;
+    floors: Array<{ status: PublicationStatus; _count: { apartments: number } }>;
+  }>;
 };
 
 function projectMissingKeys(project: ProjectCompletenessInput): string[] {
@@ -439,7 +491,9 @@ function projectMissingKeys(project: ProjectCompletenessInput): string[] {
   if (!project.description?.trim()) missing.push('MISSING_DESCRIPTION');
   const buildings = project.buildings.filter((row) => row.status === 'PUBLISHED');
   if (buildings.length === 0) missing.push('MISSING_PUBLISHED_BUILDING');
-  const floors = buildings.flatMap((row) => row.floors.filter((floor) => floor.status === 'PUBLISHED'));
+  const floors = buildings.flatMap((row) =>
+    row.floors.filter((floor) => floor.status === 'PUBLISHED'),
+  );
   if (floors.length === 0) missing.push('MISSING_PUBLISHED_FLOOR');
   if (!floors.some((floor) => floor._count.apartments > 0)) missing.push('MISSING_APARTMENT');
   if (project._count.canvases === 0) missing.push('MISSING_CANVAS');
@@ -451,6 +505,8 @@ function stableCounts<T extends Record<string, unknown>>(
   field: keyof T,
   keys: readonly string[],
 ): Array<{ key: string; count: number }> {
-  const counts = new Map(groups.map((row) => [String(row[field]), (row._count as { _all: number })._all]));
+  const counts = new Map(
+    groups.map((row) => [String(row[field]), (row._count as { _all: number })._all]),
+  );
   return keys.map((key) => ({ key, count: counts.get(key) ?? 0 }));
 }

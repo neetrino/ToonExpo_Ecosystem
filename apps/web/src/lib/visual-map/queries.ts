@@ -36,9 +36,13 @@ export async function listCanvasesForProject(
   companyId: string,
   projectId: string,
 ): Promise<BuilderCanvasSummary[]> {
-  const rows = await serverApiRequest<Array<Omit<BuilderCanvasSummary, 'updatedAt'> & {
-    updatedAt: string;
-  }>>(
+  const rows = await serverApiRequest<
+    Array<
+      Omit<BuilderCanvasSummary, 'updatedAt'> & {
+        updatedAt: string;
+      }
+    >
+  >(
     `/visual-map/builder/projects/${encodeURIComponent(projectId)}?companyId=${encodeURIComponent(companyId)}`,
   );
   return rows.map((row) => ({ ...row, updatedAt: new Date(row.updatedAt) }));
@@ -60,9 +64,13 @@ export async function listArchivedHotspotsForCanvas(
   companyId: string,
   canvasId: string,
 ): Promise<BuilderArchivedHotspot[]> {
-  const rows = await serverApiRequest<Array<Omit<BuilderArchivedHotspot, 'archivedAt'> & {
-    archivedAt: string;
-  }>>(
+  const rows = await serverApiRequest<
+    Array<
+      Omit<BuilderArchivedHotspot, 'archivedAt'> & {
+        archivedAt: string;
+      }
+    >
+  >(
     `/visual-map/builder/canvases/${encodeURIComponent(canvasId)}/archived-hotspots?companyId=${encodeURIComponent(companyId)}`,
   );
   return rows.map((row) => ({ ...row, archivedAt: new Date(row.archivedAt) }));

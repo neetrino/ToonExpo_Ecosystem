@@ -1,14 +1,16 @@
-import {
-  authErrorCodeSchema,
-  type AuthErrorCode,
-} from '@toonexpo/contracts';
+import { authErrorCodeSchema, type AuthErrorCode } from '@toonexpo/contracts';
 
 export class ApiClientError extends Error {
   readonly status: number;
   readonly code: AuthErrorCode | 'UNKNOWN' | 'NETWORK';
   readonly body: unknown;
 
-  constructor(status: number, code: AuthErrorCode | 'UNKNOWN' | 'NETWORK', message: string, body?: unknown) {
+  constructor(
+    status: number,
+    code: AuthErrorCode | 'UNKNOWN' | 'NETWORK',
+    message: string,
+    body?: unknown,
+  ) {
     super(message);
     this.name = 'ApiClientError';
     this.status = status;

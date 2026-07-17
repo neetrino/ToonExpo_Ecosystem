@@ -68,11 +68,7 @@ export class VisualMapController {
 
   @Post('builder/actions/:action')
   @UseGuards(SessionAuthGuard, CsrfGuard)
-  mutate(
-    @Param('action') action: string,
-    @Body() body: unknown,
-    @Req() request: RequestWithAuth,
-  ) {
+  mutate(@Param('action') action: string, @Body() body: unknown, @Req() request: RequestWithAuth) {
     const companyId = readField(body, 'companyId');
     const input = readObjectField(body, 'input');
     return this.builderMaps.mutate(requireBuilder(request), companyId, action, input);

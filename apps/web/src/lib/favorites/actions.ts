@@ -1,9 +1,6 @@
 'use server';
 
-import {
-  favoriteMutationResponseSchema,
-  favoriteToggleInputSchema,
-} from '@toonexpo/contracts';
+import { favoriteMutationResponseSchema, favoriteToggleInputSchema } from '@toonexpo/contracts';
 
 import { getApiErrorKey } from '../api/errors';
 import { serverApiRequest } from '../api/server';
@@ -11,14 +8,15 @@ import { serverApiRequest } from '../api/server';
 export type FavoriteMutationErrorKey = 'unauthorized' | 'invalidInput' | 'notFound' | 'rateLimited';
 
 export type FavoriteMutationResult =
-  | { ok: true; favorited: boolean }
-  | { ok: false; errorKey: FavoriteMutationErrorKey };
+  { ok: true; favorited: boolean } | { ok: false; errorKey: FavoriteMutationErrorKey };
 
 function invalidInput(): FavoriteMutationResult {
   return { ok: false, errorKey: 'invalidInput' };
 }
 
-function parseInput(raw: unknown): { targetType: 'PROJECT' | 'APARTMENT'; targetId: string } | null {
+function parseInput(
+  raw: unknown,
+): { targetType: 'PROJECT' | 'APARTMENT'; targetId: string } | null {
   const parsed = favoriteToggleInputSchema.safeParse(raw);
   return parsed.success ? parsed.data : null;
 }

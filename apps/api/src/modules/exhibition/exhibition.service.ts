@@ -111,7 +111,9 @@ export class ExhibitionService {
   }
 
   async hasPublicVenue(): Promise<boolean> {
-    return (await this.prisma.client.venueMap.count({ where: { event: { status: 'ACTIVE' } } })) > 0;
+    return (
+      (await this.prisma.client.venueMap.count({ where: { event: { status: 'ACTIVE' } } })) > 0
+    );
   }
 
   async companyBooth(userId: string, companyId: string) {
@@ -204,8 +206,14 @@ export class ExhibitionService {
 
   async assignmentOptions() {
     const [companies, partners, projects] = await Promise.all([
-      this.prisma.client.company.findMany({ orderBy: { name: 'asc' }, select: { id: true, name: true } }),
-      this.prisma.client.partner.findMany({ orderBy: { name: 'asc' }, select: { id: true, name: true } }),
+      this.prisma.client.company.findMany({
+        orderBy: { name: 'asc' },
+        select: { id: true, name: true },
+      }),
+      this.prisma.client.partner.findMany({
+        orderBy: { name: 'asc' },
+        select: { id: true, name: true },
+      }),
       this.prisma.client.project.findMany({
         where: { status: 'PUBLISHED' },
         orderBy: { name: 'asc' },
@@ -301,7 +309,9 @@ export class ExhibitionService {
   }
 
   private async isMember(userId: string, companyId: string, role: 'BUILDER'): Promise<boolean> {
-    return Boolean(await this.prisma.client.companyMember.findFirst({ where: { userId, companyId, role } }));
+    return Boolean(
+      await this.prisma.client.companyMember.findFirst({ where: { userId, companyId, role } }),
+    );
   }
 }
 

@@ -12,10 +12,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiCookieAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import {
-  mediaPresignRequestSchema,
-  type MediaPresignResponse,
-} from '@toonexpo/contracts';
+import { mediaPresignRequestSchema, type MediaPresignResponse } from '@toonexpo/contracts';
 import type { Response } from 'express';
 
 import { AppOriginGuard } from '../auth/app-origin.guard';

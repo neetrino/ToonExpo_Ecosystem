@@ -22,13 +22,21 @@ function createAuthService(overrides?: {
   };
 
   const sessions = {
-    toAuthUser: vi.fn((user: { id: string; email: string; name: string | null; image: string | null; role: string }) => ({
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      image: user.image,
-      role: user.role,
-    })),
+    toAuthUser: vi.fn(
+      (user: {
+        id: string;
+        email: string;
+        name: string | null;
+        image: string | null;
+        role: string;
+      }) => ({
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        image: user.image,
+        role: user.role,
+      }),
+    ),
     createSession:
       overrides?.createSession ??
       vi.fn(async () => ({

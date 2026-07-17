@@ -11,11 +11,7 @@ vi.mock('@/lib/api', () => ({
   },
 }));
 
-import {
-  getPublishedBankOffers,
-  getPublishedPartnerBySlug,
-  getPublishedPartners,
-} from './queries';
+import { getPublishedBankOffers, getPublishedPartnerBySlug, getPublishedPartners } from './queries';
 
 describe('partner public API queries', () => {
   beforeEach(() => {

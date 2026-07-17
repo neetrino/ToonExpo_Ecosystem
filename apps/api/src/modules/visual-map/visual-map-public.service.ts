@@ -66,7 +66,11 @@ export class VisualMapPublicService {
   async get(context: { projectId?: string; buildingId?: string; floorId?: string }) {
     if (context.projectId) {
       const row = await this.prisma.client.visualCanvas.findFirst({
-        where: { projectId: context.projectId, status: 'PUBLISHED', project: { status: 'PUBLISHED' } },
+        where: {
+          projectId: context.projectId,
+          status: 'PUBLISHED',
+          project: { status: 'PUBLISHED' },
+        },
         orderBy: { updatedAt: 'desc' },
         select: {
           id: true,

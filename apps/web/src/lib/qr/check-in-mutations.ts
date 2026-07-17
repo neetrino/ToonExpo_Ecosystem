@@ -3,11 +3,7 @@ import type { CheckInInput } from '@toonexpo/contracts';
 import { serverApiRequest } from '@/lib/api/server';
 
 export type CheckInMutationErrorKey =
-  | 'unauthorized'
-  | 'invalidInput'
-  | 'notFound'
-  | 'noActiveEvent'
-  | 'alreadyCheckedIn';
+  'unauthorized' | 'invalidInput' | 'notFound' | 'noActiveEvent' | 'alreadyCheckedIn';
 export type CheckInMutationResult =
   | { ok: true; checkInId: string; alreadyCheckedIn: boolean; checkedInAt: Date }
   | { ok: false; errorKey: CheckInMutationErrorKey };

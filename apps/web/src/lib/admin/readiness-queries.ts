@@ -60,8 +60,6 @@ export function listAdminAssessments(
   return adminApiRequest(`/readiness/assessments${query}`);
 }
 
-export function getAdminAssessment(
-  assessmentId: string,
-): Promise<AdminReadinessAssessment | null> {
+export function getAdminAssessment(assessmentId: string): Promise<AdminReadinessAssessment | null> {
   return adminApiRequest(`/readiness/assessments/${encodeURIComponent(assessmentId)}`);
 }

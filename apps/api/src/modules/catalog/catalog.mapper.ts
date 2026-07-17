@@ -18,7 +18,12 @@ import {
   type PublicProjectDetail,
   type PublicProjectSummary,
 } from '@toonexpo/contracts';
-import type { ApartmentStatus, PartnerType, PriceDisplayMode, PriceVisibility } from '@toonexpo/domain';
+import type {
+  ApartmentStatus,
+  PartnerType,
+  PriceDisplayMode,
+  PriceVisibility,
+} from '@toonexpo/domain';
 
 const IS_DEV = process.env.NODE_ENV === 'development';
 

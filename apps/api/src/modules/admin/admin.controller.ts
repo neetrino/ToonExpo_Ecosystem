@@ -45,10 +45,14 @@ export class AdminController {
   ) {}
 
   @Get('users')
-  users(): Promise<unknown> { return this.queries.users(); }
+  users(): Promise<unknown> {
+    return this.queries.users();
+  }
 
   @Get('companies')
-  companies(): Promise<unknown> { return this.queries.companies(); }
+  companies(): Promise<unknown> {
+    return this.queries.companies();
+  }
 
   @Get('projects')
   projects(@Query('status') raw?: string): Promise<unknown> {
@@ -61,13 +65,19 @@ export class AdminController {
   }
 
   @Get('partners/options')
-  partnerOptions(): Promise<unknown> { return this.queries.partnerOptions(); }
+  partnerOptions(): Promise<unknown> {
+    return this.queries.partnerOptions();
+  }
 
   @Get('partners/:id')
-  partner(@Param('id') id: string): Promise<unknown> { return this.queries.partner(id); }
+  partner(@Param('id') id: string): Promise<unknown> {
+    return this.queries.partner(id);
+  }
 
   @Get('settings')
-  settings(): Promise<unknown> { return this.queries.settings(); }
+  settings(): Promise<unknown> {
+    return this.queries.settings();
+  }
 
   @Get('audit')
   audit(@Query('entityType') raw?: string): Promise<unknown> {
@@ -75,10 +85,14 @@ export class AdminController {
   }
 
   @Get('integrations')
-  integrations(): Promise<unknown> { return this.queries.integrations(); }
+  integrations(): Promise<unknown> {
+    return this.queries.integrations();
+  }
 
   @Get('exhibition/events')
-  exhibitionEvents(): Promise<unknown> { return this.queries.exhibitionEvents(); }
+  exhibitionEvents(): Promise<unknown> {
+    return this.queries.exhibitionEvents();
+  }
 
   @Get('exhibition/check-ins')
   checkIns(@Query('eventId') eventId?: string): Promise<unknown> {
@@ -91,10 +105,14 @@ export class AdminController {
   }
 
   @Get('readiness/company-options')
-  companyOptions(): Promise<unknown> { return this.queries.companyOptions(); }
+  companyOptions(): Promise<unknown> {
+    return this.queries.companyOptions();
+  }
 
   @Get('readiness/project-options')
-  projectOptions(): Promise<unknown> { return this.queries.projectOptions(); }
+  projectOptions(): Promise<unknown> {
+    return this.queries.projectOptions();
+  }
 
   @Get('readiness/assessments')
   assessments(@Query('targetType') raw?: string): Promise<unknown> {
@@ -107,7 +125,9 @@ export class AdminController {
   }
 
   @Get('analytics')
-  analytics(): Promise<unknown> { return this.queries.analytics(); }
+  analytics(): Promise<unknown> {
+    return this.queries.analytics();
+  }
 
   @Post('commands/:operation')
   execute(

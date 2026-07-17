@@ -26,10 +26,14 @@ export class VisualMapBuilderService {
 
   async list(userId: string, companyId: string, projectId: string) {
     if (!(await this.isMember(userId, companyId))) return [];
-    const project = await this.prisma.client.project.findFirst({ where: { id: projectId, companyId } });
+    const project = await this.prisma.client.project.findFirst({
+      where: { id: projectId, companyId },
+    });
     if (!project) return [];
     const rows = await this.prisma.client.visualCanvas.findMany({
-      where: { OR: [{ projectId }, { building: { projectId } }, { floor: { building: { projectId } } }] },
+      where: {
+        OR: [{ projectId }, { building: { projectId } }, { floor: { building: { projectId } } }],
+      },
       select: {
         id: true,
         title: true,
@@ -92,12 +96,7 @@ export class VisualMapBuilderService {
     });
   }
 
-  async mutate(
-    userId: string,
-    companyId: string,
-    action: string,
-    raw: unknown,
-  ) {
+  async mutate(userId: string, companyId: string, action: string, raw: unknown) {
     if (!(await this.isMember(userId, companyId))) {
       return { ok: false as const, errorKey: 'unauthorized' as const };
     }
@@ -149,7 +148,10 @@ export class VisualMapBuilderService {
     return this.prisma.client.$transaction(async (tx) => {
       const owned = await this.owned(tx, companyId, parsed.data.canvasId);
       if (!owned) return notFound();
-      await tx.visualCanvas.update({ where: { id: owned.id }, data: { status: parsed.data.status } });
+      await tx.visualCanvas.update({
+        where: { id: owned.id },
+        data: { status: parsed.data.status },
+      });
       await tx.auditLog.create({
         data: {
           actorUserId: userId,
@@ -234,23 +236,38 @@ export class VisualMapBuilderService {
   }
 
   private async isMember(userId: string, companyId: string): Promise<boolean> {
-    return Boolean(await this.prisma.client.companyMember.findFirst({
-      where: { userId, companyId, role: 'BUILDER' },
-    }));
+    return Boolean(
+      await this.prisma.client.companyMember.findFirst({
+        where: { userId, companyId, role: 'BUILDER' },
+      }),
+    );
   }
 
-  private async contextProject(companyId: string, context: {
-    projectId?: string;
-    buildingId?: string;
-    floorId?: string;
-  }): Promise<string | null> {
+  private async contextProject(
+    companyId: string,
+    context: {
+      projectId?: string;
+      buildingId?: string;
+      floorId?: string;
+    },
+  ): Promise<string | null> {
     if (context.projectId) {
-      return (await this.prisma.client.project.findFirst({ where: { id: context.projectId, companyId } }))?.id ?? null;
+      return (
+        (
+          await this.prisma.client.project.findFirst({
+            where: { id: context.projectId, companyId },
+          })
+        )?.id ?? null
+      );
     }
     if (context.buildingId) {
-      return (await this.prisma.client.building.findFirst({
-        where: { id: context.buildingId, project: { companyId } },
-      }))?.projectId ?? null;
+      return (
+        (
+          await this.prisma.client.building.findFirst({
+            where: { id: context.buildingId, project: { companyId } },
+          })
+        )?.projectId ?? null
+      );
     }
     const floor = await this.prisma.client.floor.findFirst({
       where: { id: context.floorId, building: { project: { companyId } } },
@@ -274,7 +291,9 @@ export class VisualMapBuilderService {
         floorId: true,
         project: { select: { id: true, companyId: true } },
         building: { select: { project: { select: { id: true, companyId: true } } } },
-        floor: { select: { building: { select: { project: { select: { id: true, companyId: true } } } } } },
+        floor: {
+          select: { building: { select: { project: { select: { id: true, companyId: true } } } } },
+        },
       },
     });
     const project = row?.project ?? row?.building?.project ?? row?.floor?.building.project;
@@ -289,13 +308,33 @@ export class VisualMapBuilderService {
     target: { buildingId?: string; floorId?: string; apartmentId?: string },
   ): Promise<boolean> {
     if (canvas.projectId && target.buildingId) {
-      return Boolean(await tx.building.findFirst({ where: { id: target.buildingId, projectId: canvas.projectId, project: { companyId } } }));
+      return Boolean(
+        await tx.building.findFirst({
+          where: { id: target.buildingId, projectId: canvas.projectId, project: { companyId } },
+        }),
+      );
     }
     if (canvas.buildingId && target.floorId) {
-      return Boolean(await tx.floor.findFirst({ where: { id: target.floorId, buildingId: canvas.buildingId, building: { project: { companyId } } } }));
+      return Boolean(
+        await tx.floor.findFirst({
+          where: {
+            id: target.floorId,
+            buildingId: canvas.buildingId,
+            building: { project: { companyId } },
+          },
+        }),
+      );
     }
     if (canvas.floorId && target.apartmentId) {
-      return Boolean(await tx.apartment.findFirst({ where: { id: target.apartmentId, floorId: canvas.floorId, floor: { building: { project: { companyId } } } } }));
+      return Boolean(
+        await tx.apartment.findFirst({
+          where: {
+            id: target.apartmentId,
+            floorId: canvas.floorId,
+            floor: { building: { project: { companyId } } },
+          },
+        }),
+      );
     }
     return false;
   }

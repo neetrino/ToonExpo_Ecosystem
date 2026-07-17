@@ -60,8 +60,7 @@ export function RegisterForm({ locale, callbackUrl, loginHref = '/login' }: Regi
     startTransition(async () => {
       try {
         await registerWithApi(parsed.data);
-        const redirectTo =
-          safeAuthCallbackPath(callbackUrl, locale) ?? defaultAuthRedirect(locale);
+        const redirectTo = safeAuthCallbackPath(callbackUrl, locale) ?? defaultAuthRedirect(locale);
         router.push(redirectTo);
         router.refresh();
       } catch (error) {

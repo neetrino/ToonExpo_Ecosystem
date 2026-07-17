@@ -4,16 +4,10 @@ export const UNIQUE_CONSTRAINT_ERROR = 'P2002';
 export const MAX_SLUG_ATTEMPTS = 100;
 
 export type BuilderMutationErrorKey =
-  | 'unauthorized'
-  | 'notFound'
-  | 'invalidInput'
-  | 'levelTaken'
-  | 'codeTaken'
-  | 'nameTaken';
+  'unauthorized' | 'notFound' | 'invalidInput' | 'levelTaken' | 'codeTaken' | 'nameTaken';
 
 export type BuilderMutationResult<T extends Record<string, unknown> = Record<string, never>> =
-  | ({ ok: true } & T)
-  | { ok: false; errorKey: BuilderMutationErrorKey };
+  ({ ok: true } & T) | { ok: false; errorKey: BuilderMutationErrorKey };
 
 export type AuditActor = { userId: string; role: PlatformRole };
 

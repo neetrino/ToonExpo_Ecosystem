@@ -73,9 +73,8 @@ type WireBoardCard = Omit<DealBoardCard, 'lastActivityAt' | 'nextFollowUpAt'> & 
 
 export async function getCompanyDealsBoard(companyId: string): Promise<DealBoardColumn[]> {
   void companyId;
-  const columns = await serverApiRequest<Array<{ stage: DealStage; deals: WireBoardCard[] }>>(
-    '/crm/board',
-  );
+  const columns =
+    await serverApiRequest<Array<{ stage: DealStage; deals: WireBoardCard[] }>>('/crm/board');
   return columns.map((column) => ({
     ...column,
     deals: column.deals.map((deal) => ({

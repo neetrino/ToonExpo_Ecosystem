@@ -101,9 +101,7 @@ export async function listBuilderAssessments(
   companyId: string,
 ): Promise<BuilderReadinessAssessment[]> {
   void companyId;
-  const rows = await serverApiRequest<Parameters<typeof mapBuilderRow>[0][]>(
-    '/builder/readiness',
-  );
+  const rows = await serverApiRequest<Parameters<typeof mapBuilderRow>[0][]>('/builder/readiness');
 
   return rows.map((row) =>
     mapBuilderRow({

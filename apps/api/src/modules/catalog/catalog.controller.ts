@@ -1,12 +1,4 @@
-import {
-  Controller,
-  Get,
-  Inject,
-  NotFoundException,
-  Param,
-  Query,
-  Req,
-} from '@nestjs/common';
+import { Controller, Get, Inject, NotFoundException, Param, Query, Req } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { slugSchema } from '@toonexpo/contracts';
 import { PARTNER_TYPES, type PartnerType } from '@toonexpo/domain';
@@ -16,10 +8,7 @@ import { SESSION_COOKIE_NAME } from '../auth/auth.constants';
 import { SessionService } from '../auth/session.service';
 import { CatalogBuildersService } from './catalog-builders.service';
 import { CatalogPartnersService } from './catalog-partners.service';
-import {
-  APARTMENT_ID_PATTERN,
-  CatalogProjectsService,
-} from './catalog-projects.service';
+import { APARTMENT_ID_PATTERN, CatalogProjectsService } from './catalog-projects.service';
 import { CatalogSettingsService } from './catalog-settings.service';
 
 const CITY_FILTER_MAX_LENGTH = 80;
@@ -59,7 +48,11 @@ export class CatalogController {
   ) {
     const parsedCompany = slugSchema.safeParse(companySlug);
     const parsedProject = slugSchema.safeParse(projectSlug);
-    if (!parsedCompany.success || !parsedProject.success || !APARTMENT_ID_PATTERN.test(apartmentId)) {
+    if (
+      !parsedCompany.success ||
+      !parsedProject.success ||
+      !APARTMENT_ID_PATTERN.test(apartmentId)
+    ) {
       throw new NotFoundException();
     }
     const authenticated = await this.isAuthenticated(request);

@@ -67,9 +67,8 @@ describe('public catalog API queries', () => {
       },
     });
     await getPublishedProjectBySlug('demo-development', 'sunrise', 'toonexpo.sid=token');
-    expect(mockApiRequest).toHaveBeenCalledWith(
-      '/catalog/projects/demo-development/sunrise',
-      { cookie: 'toonexpo.sid=token' },
-    );
+    expect(mockApiRequest).toHaveBeenCalledWith('/catalog/projects/demo-development/sunrise', {
+      cookie: 'toonexpo.sid=token',
+    });
   });
 });

@@ -7,8 +7,7 @@ import { hashPassword } from './password';
 
 export type InviteResult = { ok: true } | { ok: false; code: 'INVALID_INVITE' };
 export type SetPasswordResult =
-  | { ok: true }
-  | { ok: false; code: 'VALIDATION_ERROR' | 'INVALID_INVITE' };
+  { ok: true } | { ok: false; code: 'VALIDATION_ERROR' | 'INVALID_INVITE' };
 
 class InvalidInviteError extends Error {}
 
@@ -21,9 +20,7 @@ export class AccountInviteService {
       where: { token: hashInviteToken(rawToken) },
       select: { identifier: true, expires: true },
     });
-    return isValidInviteRecord(record)
-      ? { ok: true }
-      : { ok: false, code: 'INVALID_INVITE' };
+    return isValidInviteRecord(record) ? { ok: true } : { ok: false, code: 'INVALID_INVITE' };
   }
 
   async setPassword(raw: unknown): Promise<SetPasswordResult> {
@@ -44,9 +41,8 @@ export class AccountInviteService {
           where: { token: tokenHash },
           select: { identifier: true, expires: true },
         });
-        const userId = record && isValidInviteRecord(record)
-          ? parseInviteUserId(record.identifier)
-          : null;
+        const userId =
+          record && isValidInviteRecord(record) ? parseInviteUserId(record.identifier) : null;
         if (!userId) {
           throw new InvalidInviteError();
         }

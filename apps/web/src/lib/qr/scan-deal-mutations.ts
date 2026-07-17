@@ -9,9 +9,7 @@ export type CreateScanDealParams = BuilderQrScanDealInput & {
   companyId: string;
 };
 
-export function createDealFromQrScan(
-  raw: CreateScanDealParams,
-): Promise<QrScanDealMutationResult> {
+export function createDealFromQrScan(raw: CreateScanDealParams): Promise<QrScanDealMutationResult> {
   return serverApiRequest<QrScanDealMutationResult>('/qr/builder/deals', {
     method: 'POST',
     body: {
@@ -28,8 +26,8 @@ export function logBuilderQrScan(params: {
   scannedByUserId: string;
   companyId: string;
 }): Promise<void> {
-  return serverApiRequest<void>(
-    `/qr/${encodeURIComponent(params.qrCodeId)}/builder-scan`,
-    { method: 'POST', body: { companyId: params.companyId } },
-  );
+  return serverApiRequest<void>(`/qr/${encodeURIComponent(params.qrCodeId)}/builder-scan`, {
+    method: 'POST',
+    body: { companyId: params.companyId },
+  });
 }

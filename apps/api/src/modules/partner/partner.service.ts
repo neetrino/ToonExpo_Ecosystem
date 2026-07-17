@@ -124,7 +124,10 @@ export class PartnerService {
     if (partner.type !== 'BANK') {
       return { ok: false as const, errorKey: 'notBankPartner' as const };
     }
-    const parsed = bankOfferUpsertInputSchema.safeParse({ ...asObject(raw), partnerId: partner.id });
+    const parsed = bankOfferUpsertInputSchema.safeParse({
+      ...asObject(raw),
+      partnerId: partner.id,
+    });
     if (!parsed.success || parsed.data.bankOfferId) {
       return invalid();
     }

@@ -41,9 +41,7 @@ export type AdminVenueMapDetail = {
 export type AdminAssignmentOption = { id: string; name: string };
 export type AdminProjectOption = { id: string; name: string; companyId: string };
 
-export function loadAdminVenueMapDetail(
-  eventId: string,
-): Promise<AdminVenueMapDetail | null> {
+export function loadAdminVenueMapDetail(eventId: string): Promise<AdminVenueMapDetail | null> {
   return serverApiRequest<AdminVenueMapDetail | null>(
     `/exhibition/admin/events/${encodeURIComponent(eventId)}/venue`,
   );

@@ -55,10 +55,7 @@ export class FavoritesController {
   @Post()
   @HttpCode(200)
   @ApiOperation({ summary: 'Add a buyer favorite' })
-  add(
-    @Body() body: unknown,
-    @Req() request: RequestWithAuth,
-  ): Promise<FavoriteMutationResponse> {
+  add(@Body() body: unknown, @Req() request: RequestWithAuth): Promise<FavoriteMutationResponse> {
     return this.runMutation(request, parseInput(body), 'add');
   }
 

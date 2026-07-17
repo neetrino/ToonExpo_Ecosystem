@@ -46,10 +46,7 @@ export class ExhibitionController {
 
   @Get('company-booth')
   @UseGuards(SessionAuthGuard)
-  companyBooth(
-    @Query('companyId') companyId: string,
-    @Req() request: RequestWithAuth,
-  ) {
+  companyBooth(@Query('companyId') companyId: string, @Req() request: RequestWithAuth) {
     return this.exhibition.companyBooth(requireRole(request, 'BUILDER'), companyId);
   }
 
@@ -69,11 +66,7 @@ export class ExhibitionController {
 
   @Post('admin/venue/:action')
   @UseGuards(SessionAuthGuard, CsrfGuard)
-  mutate(
-    @Param('action') action: string,
-    @Body() body: unknown,
-    @Req() request: RequestWithAuth,
-  ) {
+  mutate(@Param('action') action: string, @Body() body: unknown, @Req() request: RequestWithAuth) {
     requireRole(request, 'BIGPROJECTS_ADMIN');
     return this.exhibition.mutate(action, body);
   }

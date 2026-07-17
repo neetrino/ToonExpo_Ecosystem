@@ -3,9 +3,7 @@ import type { PublicCanvas, PublicHotspot } from '@toonexpo/contracts';
 import { serverApiRequest } from '@/lib/api/server';
 
 export type PublicCanvasContext =
-  | { projectId: string }
-  | { buildingId: string }
-  | { floorId: string };
+  { projectId: string } | { buildingId: string } | { floorId: string };
 
 type HotspotRow = {
   id: string;
@@ -78,9 +76,7 @@ export function mapPublicHotspot(row: HotspotRow): PublicHotspot | null {
   return null;
 }
 
-export function resolvePublishedCanvas(
-  context: PublicCanvasContext,
-): Promise<PublicCanvas | null> {
+export function resolvePublishedCanvas(context: PublicCanvasContext): Promise<PublicCanvas | null> {
   const query = new URLSearchParams(context).toString();
   return serverApiRequest<PublicCanvas | null>(`/visual-map/public?${query}`);
 }

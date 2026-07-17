@@ -34,21 +34,36 @@ export class AdminMutationService {
 
   async execute(operation: string, raw: unknown, actor: Actor): Promise<unknown> {
     switch (operation) {
-      case 'create-company': return this.createCompany(raw);
-      case 'update-company': return this.updateCompany(raw);
-      case 'project-publication': return this.projectPublication(raw, actor);
-      case 'upsert-setting': return this.upsertSetting(raw, actor);
-      case 'upsert-event': return this.upsertEvent(raw, actor);
-      case 'create-partner': return this.createPartner(raw);
-      case 'update-partner': return this.updatePartner(raw);
-      case 'partner-status': return this.partnerStatus(raw, actor);
-      case 'create-bank-offer': return this.createBankOffer(raw);
-      case 'update-bank-offer': return this.updateBankOffer(raw);
-      case 'bank-offer-status': return this.bankOfferStatus(raw, actor);
-      case 'upsert-readiness-category': return this.upsertCategory(raw);
-      case 'upsert-assessment': return this.upsertAssessment(raw, actor);
-      case 'provision': return this.provision(raw, actor);
-      default: return { ok: false, errorKey: 'invalidInput' };
+      case 'create-company':
+        return this.createCompany(raw);
+      case 'update-company':
+        return this.updateCompany(raw);
+      case 'project-publication':
+        return this.projectPublication(raw, actor);
+      case 'upsert-setting':
+        return this.upsertSetting(raw, actor);
+      case 'upsert-event':
+        return this.upsertEvent(raw, actor);
+      case 'create-partner':
+        return this.createPartner(raw);
+      case 'update-partner':
+        return this.updatePartner(raw);
+      case 'partner-status':
+        return this.partnerStatus(raw, actor);
+      case 'create-bank-offer':
+        return this.createBankOffer(raw);
+      case 'update-bank-offer':
+        return this.updateBankOffer(raw);
+      case 'bank-offer-status':
+        return this.bankOfferStatus(raw, actor);
+      case 'upsert-readiness-category':
+        return this.upsertCategory(raw);
+      case 'upsert-assessment':
+        return this.upsertAssessment(raw, actor);
+      case 'provision':
+        return this.provision(raw, actor);
+      default:
+        return { ok: false, errorKey: 'invalidInput' };
     }
   }
 
@@ -59,7 +74,8 @@ export class AdminMutationService {
     if (!slug) return invalid();
     try {
       const row = await this.prisma.client.company.create({
-        data: { name: parsed.data.name, slug }, select: { id: true },
+        data: { name: parsed.data.name, slug },
+        select: { id: true },
       });
       return { ok: true, companyId: row.id };
     } catch (error) {
@@ -75,9 +91,14 @@ export class AdminMutationService {
     const result = await this.prisma.client.company.updateMany({
       where: { id: companyId },
       data: {
-        name: data.name, description: data.description ?? null, logoUrl: data.logoUrl ?? null,
-        phone: data.phone ?? null, email: data.email ?? null, website: data.website ?? null,
-        city: data.city ?? null, address: data.address ?? null,
+        name: data.name,
+        description: data.description ?? null,
+        logoUrl: data.logoUrl ?? null,
+        phone: data.phone ?? null,
+        email: data.email ?? null,
+        website: data.website ?? null,
+        city: data.city ?? null,
+        address: data.address ?? null,
       },
     });
     return result.count ? { ok: true, companyId } : notFound();
@@ -93,8 +114,15 @@ export class AdminMutationService {
       });
       if (!existing) return notFound();
       await tx.project.update({ where: { id: existing.id }, data: { status: parsed.data.status } });
-      await audit(tx, actor, 'PUBLICATION_CHANGE', 'PROJECT', existing.id,
-        transition(existing.status, parsed.data.status), existing.companyId);
+      await audit(
+        tx,
+        actor,
+        'PUBLICATION_CHANGE',
+        'PROJECT',
+        existing.id,
+        transition(existing.status, parsed.data.status),
+        existing.companyId,
+      );
       return { ok: true, projectId: existing.id };
     });
   }
@@ -110,8 +138,14 @@ export class AdminMutationService {
         create: { key: parsed.data.key, value: parsed.data.value, updatedByUserId: actor.userId },
         select: { id: true },
       });
-      await audit(tx, actor, 'SETTINGS_UPDATE', 'PLATFORM_SETTING', setting.id,
-        `${parsed.data.key}: ${existing?.value ?? 'null'}→${parsed.data.value}`);
+      await audit(
+        tx,
+        actor,
+        'SETTINGS_UPDATE',
+        'PLATFORM_SETTING',
+        setting.id,
+        `${parsed.data.key}: ${existing?.value ?? 'null'}→${parsed.data.value}`,
+      );
       return { ok: true, settingId: setting.id, key: parsed.data.key };
     });
   }
@@ -129,11 +163,18 @@ export class AdminMutationService {
             select: { id: true, status: true },
           });
           await tx.exhibitionEvent.updateMany({
-            where: { id: { in: active.map((row) => row.id) } }, data: { status: 'PLANNING' },
+            where: { id: { in: active.map((row) => row.id) } },
+            data: { status: 'PLANNING' },
           });
           for (const row of active) {
-            await audit(tx, actor, 'PUBLICATION_CHANGE', 'EXHIBITION_EVENT', row.id,
-              transition(row.status, 'PLANNING'));
+            await audit(
+              tx,
+              actor,
+              'PUBLICATION_CHANGE',
+              'EXHIBITION_EVENT',
+              row.id,
+              transition(row.status, 'PLANNING'),
+            );
           }
         }
         const existing = input.eventId
@@ -143,16 +184,32 @@ export class AdminMutationService {
         const row = input.eventId
           ? await tx.exhibitionEvent.update({
               where: { id: input.eventId },
-              data: { name: input.name, code: input.code.toLowerCase(), startDate: input.startDate ?? null,
-                endDate: input.endDate ?? null, status: input.status },
+              data: {
+                name: input.name,
+                code: input.code.toLowerCase(),
+                startDate: input.startDate ?? null,
+                endDate: input.endDate ?? null,
+                status: input.status,
+              },
             })
           : await tx.exhibitionEvent.create({
-              data: { name: input.name, code: input.code.toLowerCase(), startDate: input.startDate,
-                endDate: input.endDate, status: input.status },
+              data: {
+                name: input.name,
+                code: input.code.toLowerCase(),
+                startDate: input.startDate,
+                endDate: input.endDate,
+                status: input.status,
+              },
             });
         if (!existing || existing.status !== input.status) {
-          await audit(tx, actor, 'PUBLICATION_CHANGE', 'EXHIBITION_EVENT', row.id,
-            transition(existing?.status ?? 'NEW', input.status));
+          await audit(
+            tx,
+            actor,
+            'PUBLICATION_CHANGE',
+            'EXHIBITION_EVENT',
+            row.id,
+            transition(existing?.status ?? 'NEW', input.status),
+          );
         }
         return { ok: true, eventId: row.id };
       });
@@ -169,7 +226,8 @@ export class AdminMutationService {
     if (!slug) return invalid();
     try {
       const row = await this.prisma.client.partner.create({
-        data: { ...partnerData(parsed.data), slug }, select: { id: true, slug: true },
+        data: { ...partnerData(parsed.data), slug },
+        select: { id: true, slug: true },
       });
       return { ok: true, partnerId: row.id, partnerSlug: row.slug };
     } catch (error) {
@@ -182,11 +240,13 @@ export class AdminMutationService {
     const parsed = partnerUpsertInputSchema.safeParse(raw);
     if (!parsed.success || !parsed.data.partnerId) return invalid();
     const existing = await this.prisma.client.partner.findUnique({
-      where: { id: parsed.data.partnerId }, select: { id: true, slug: true },
+      where: { id: parsed.data.partnerId },
+      select: { id: true, slug: true },
     });
     if (!existing) return notFound();
     await this.prisma.client.partner.update({
-      where: { id: existing.id }, data: partnerData(parsed.data),
+      where: { id: existing.id },
+      data: partnerData(parsed.data),
     });
     return { ok: true, partnerId: existing.id, partnerSlug: existing.slug };
   }
@@ -198,8 +258,15 @@ export class AdminMutationService {
       const existing = await tx.partner.findUnique({ where: { id: parsed.data.partnerId } });
       if (!existing) return notFound();
       await tx.partner.update({ where: { id: existing.id }, data: { status: parsed.data.status } });
-      await audit(tx, actor, 'PUBLICATION_CHANGE', 'PARTNER', existing.id,
-        transition(existing.status, parsed.data.status), existing.companyId);
+      await audit(
+        tx,
+        actor,
+        'PUBLICATION_CHANGE',
+        'PARTNER',
+        existing.id,
+        transition(existing.status, parsed.data.status),
+        existing.companyId,
+      );
       return { ok: true, partnerId: existing.id, partnerSlug: existing.slug };
     });
   }
@@ -240,9 +307,19 @@ export class AdminMutationService {
       });
       if (!existing) return notFound();
       if (existing.partner.type !== 'BANK') return { ok: false, errorKey: 'notBankPartner' };
-      await tx.bankOffer.update({ where: { id: existing.id }, data: { status: parsed.data.status } });
-      await audit(tx, actor, 'PUBLICATION_CHANGE', 'BANK_OFFER', existing.id,
-        transition(existing.status, parsed.data.status), existing.partner.companyId);
+      await tx.bankOffer.update({
+        where: { id: existing.id },
+        data: { status: parsed.data.status },
+      });
+      await audit(
+        tx,
+        actor,
+        'PUBLICATION_CHANGE',
+        'BANK_OFFER',
+        existing.id,
+        transition(existing.status, parsed.data.status),
+        existing.partner.companyId,
+      );
       return { ok: true, bankOfferId: existing.id, partnerSlug: existing.partner.slug };
     });
   }
@@ -255,16 +332,28 @@ export class AdminMutationService {
       if (input.categoryId) {
         const result = await this.prisma.client.readinessCategory.updateMany({
           where: { id: input.categoryId },
-          data: { name: input.name, description: input.description ?? null, weight: input.weight ?? null,
-            sortOrder: input.sortOrder, serviceCategoryKey: input.serviceCategoryKey ?? null, active: input.active },
+          data: {
+            name: input.name,
+            description: input.description ?? null,
+            weight: input.weight ?? null,
+            sortOrder: input.sortOrder,
+            serviceCategoryKey: input.serviceCategoryKey ?? null,
+            active: input.active,
+          },
         });
         return result.count ? { ok: true, categoryId: input.categoryId } : notFound();
       }
       if (!input.key) return invalid();
       const row = await this.prisma.client.readinessCategory.create({
-        data: { key: input.key, name: input.name, description: input.description ?? null,
-          weight: input.weight ?? null, sortOrder: input.sortOrder,
-          serviceCategoryKey: input.serviceCategoryKey ?? null, active: input.active },
+        data: {
+          key: input.key,
+          name: input.name,
+          description: input.description ?? null,
+          weight: input.weight ?? null,
+          sortOrder: input.sortOrder,
+          serviceCategoryKey: input.serviceCategoryKey ?? null,
+          active: input.active,
+        },
         select: { id: true },
       });
       return { ok: true, categoryId: row.id };
@@ -298,32 +387,57 @@ export class AdminMutationService {
       projectId = project.id;
     }
     const categories = await this.prisma.client.readinessCategory.findMany({
-      where: { active: true }, select: { id: true, weight: true },
+      where: { active: true },
+      select: { id: true, weight: true },
     });
     const weights = new Map(categories.map((row) => [row.id, row.weight]));
     if (input.categoryScores.some((row) => !weights.has(row.categoryId))) return invalid();
-    const overallScore = overall(input.categoryScores.map((row) => ({
-      score: row.score, weight: weights.get(row.categoryId) ?? null,
-    })));
+    const overallScore = overall(
+      input.categoryScores.map((row) => ({
+        score: row.score,
+        weight: weights.get(row.categoryId) ?? null,
+      })),
+    );
     return this.prisma.client.$transaction(async (tx) => {
-      const data = { targetType: input.targetType, companyId, projectId, status: input.status,
-        overallScore, evaluatedByUserId: actor.userId, lastEvaluatedAt: new Date(),
-        responsibleContact: input.responsibleContact ?? null, recommendation: input.recommendation ?? null,
-        requiredActions: input.requiredActions ?? null, internalNotes: input.internalNotes ?? null };
+      const data = {
+        targetType: input.targetType,
+        companyId,
+        projectId,
+        status: input.status,
+        overallScore,
+        evaluatedByUserId: actor.userId,
+        lastEvaluatedAt: new Date(),
+        responsibleContact: input.responsibleContact ?? null,
+        recommendation: input.recommendation ?? null,
+        requiredActions: input.requiredActions ?? null,
+        internalNotes: input.internalNotes ?? null,
+      };
       const assessment = input.assessmentId
         ? await tx.readinessAssessment.update({ where: { id: input.assessmentId }, data })
         : await tx.readinessAssessment.create({ data });
       await tx.readinessCategoryScore.deleteMany({ where: { assessmentId: assessment.id } });
       await tx.readinessCategoryScore.createMany({
         data: input.categoryScores.map((row) => ({
-          assessmentId: assessment.id, categoryId: row.categoryId, score: row.score ?? null,
-          status: row.status, recommendation: row.recommendation ?? null,
-          requiredActions: row.requiredActions ?? null, internalNote: row.internalNote ?? null,
-          evaluatedByUserId: actor.userId, evaluatedAt: new Date(),
+          assessmentId: assessment.id,
+          categoryId: row.categoryId,
+          score: row.score ?? null,
+          status: row.status,
+          recommendation: row.recommendation ?? null,
+          requiredActions: row.requiredActions ?? null,
+          internalNote: row.internalNote ?? null,
+          evaluatedByUserId: actor.userId,
+          evaluatedAt: new Date(),
         })),
       });
-      await audit(tx, actor, 'READINESS_ASSESSMENT_UPSERT', 'READINESS_ASSESSMENT',
-        assessment.id, `status:${input.status}; score:${overallScore ?? 'null'}`, companyId);
+      await audit(
+        tx,
+        actor,
+        'READINESS_ASSESSMENT_UPSERT',
+        'READINESS_ASSESSMENT',
+        assessment.id,
+        `status:${input.status}; score:${overallScore ?? 'null'}`,
+        companyId,
+      );
       return { ok: true, assessmentId: assessment.id };
     });
   }
@@ -335,20 +449,32 @@ export class AdminMutationService {
       const result = await this.prisma.client.$transaction(async (tx) => {
         const input = parsed.data;
         const user = await tx.user.create({
-          data: { email: input.email.toLowerCase(), name: input.name, passwordHash: null, role: input.role },
+          data: {
+            email: input.email.toLowerCase(),
+            name: input.name,
+            passwordHash: null,
+            role: input.role,
+          },
         });
         let companyId: string | undefined;
         if (input.companyName) {
-          const slug = await this.uniqueSlugTx(tx, 'company', slugifyCompanyName(input.companyName));
+          const slug = await this.uniqueSlugTx(
+            tx,
+            'company',
+            slugifyCompanyName(input.companyName),
+          );
           if (!slug) throw new ProvisionAbort();
           const company = await tx.company.upsert({
-            where: { slug }, update: {}, create: { name: input.companyName, slug },
+            where: { slug },
+            update: {},
+            create: { name: input.companyName, slug },
           });
           companyId = company.id;
           await tx.companyMember.create({ data: { companyId, userId: user.id, role: input.role } });
           if (input.partnerId) {
             const partner = await tx.partner.findUnique({ where: { id: input.partnerId } });
-            if (!partner || (partner.companyId && partner.companyId !== companyId)) throw new ProvisionAbort();
+            if (!partner || (partner.companyId && partner.companyId !== companyId))
+              throw new ProvisionAbort();
             await tx.partner.update({ where: { id: partner.id }, data: { companyId } });
           }
         }
@@ -357,10 +483,17 @@ export class AdminMutationService {
       });
       const inviteUrl = buildInviteUrl(result.token);
       const email = await sendAccountInviteEmail({
-        to: parsed.data.email, name: parsed.data.name, inviteUrl,
+        to: parsed.data.email,
+        name: parsed.data.name,
+        inviteUrl,
       });
-      return { ok: true, userId: result.userId, companyId: result.companyId,
-        emailSent: email.sent, ...(process.env.NODE_ENV !== 'production' ? { inviteUrl } : {}) };
+      return {
+        ok: true,
+        userId: result.userId,
+        companyId: result.companyId,
+        emailSent: email.sent,
+        ...(process.env.NODE_ENV !== 'production' ? { inviteUrl } : {}),
+      };
     } catch (error) {
       if (error instanceof ProvisionAbort) return { ok: false, error: 'invalidInput' };
       if (isUnique(error)) return { ok: false, error: 'emailTaken' };
@@ -379,9 +512,10 @@ export class AdminMutationService {
   ): Promise<string | null> {
     for (let suffix = 0; suffix < MAX_SLUG_ATTEMPTS; suffix += 1) {
       const slug = suffix ? `${base}-${suffix}` : base;
-      const found = model === 'company'
-        ? await client.company.findUnique({ where: { slug }, select: { id: true } })
-        : await client.partner.findUnique({ where: { slug }, select: { id: true } });
+      const found =
+        model === 'company'
+          ? await client.company.findUnique({ where: { slug }, select: { id: true } })
+          : await client.partner.findUnique({ where: { slug }, select: { id: true } });
       if (!found) return slug;
     }
     return null;
@@ -389,37 +523,64 @@ export class AdminMutationService {
 
   private async bankPartner(id: string): Promise<{ ok: true; slug: string } | Failure> {
     const row = await this.prisma.client.partner.findUnique({
-      where: { id }, select: { type: true, slug: true },
+      where: { id },
+      select: { type: true, slug: true },
     });
     if (!row) return notFound();
-    return row.type === 'BANK' ? { ok: true, slug: row.slug } : { ok: false, errorKey: 'notBankPartner' };
+    return row.type === 'BANK'
+      ? { ok: true, slug: row.slug }
+      : { ok: false, errorKey: 'notBankPartner' };
   }
 }
 
-function invalid(): Failure { return { ok: false, errorKey: 'invalidInput' }; }
-function notFound(): Failure { return { ok: false, errorKey: 'notFound' }; }
-function transition(from: string, to: string): string { return `${from}→${to}`; }
+function invalid(): Failure {
+  return { ok: false, errorKey: 'invalidInput' };
+}
+function notFound(): Failure {
+  return { ok: false, errorKey: 'notFound' };
+}
+function transition(from: string, to: string): string {
+  return `${from}→${to}`;
+}
 function isUnique(error: unknown): boolean {
   return error instanceof Prisma.PrismaClientKnownRequestError && error.code === UNIQUE_ERROR;
 }
 
 function partnerData(input: ReturnType<typeof partnerUpsertInputSchema.parse>) {
-  return { name: input.name, type: input.type, logoUrl: input.logoUrl ?? null,
-    description: input.description ?? null, phone: input.phone ?? null, email: input.email ?? null,
-    website: input.website ?? null, serviceCategories: input.serviceCategories ?? [] };
+  return {
+    name: input.name,
+    type: input.type,
+    logoUrl: input.logoUrl ?? null,
+    description: input.description ?? null,
+    phone: input.phone ?? null,
+    email: input.email ?? null,
+    website: input.website ?? null,
+    serviceCategories: input.serviceCategories ?? [],
+  };
 }
 
 function bankOfferData(input: ReturnType<typeof bankOfferUpsertInputSchema.parse>) {
-  return { title: input.title, description: input.description ?? null, interestRate: input.interestRate,
-    minDownPaymentPercent: input.minDownPaymentPercent, maxTermMonths: input.maxTermMonths,
-    maxAmountAmd: input.maxAmountAmd ?? null, featured: input.featured ?? false };
+  return {
+    title: input.title,
+    description: input.description ?? null,
+    interestRate: input.interestRate,
+    minDownPaymentPercent: input.minDownPaymentPercent,
+    maxTermMonths: input.maxTermMonths,
+    maxAmountAmd: input.maxAmountAmd ?? null,
+    featured: input.featured ?? false,
+  };
 }
 
 function overall(rows: Array<{ score?: number; weight: number | null }>): number | null {
-  const scored = rows.filter((row): row is { score: number; weight: number | null } => row.score !== undefined);
+  const scored = rows.filter(
+    (row): row is { score: number; weight: number | null } => row.score !== undefined,
+  );
   if (!scored.length) return null;
   const weighted = scored.some((row) => row.weight !== null && row.weight > 0);
-  const total = scored.reduce((sum, row) => sum + row.score * (weighted ? (row.weight ?? 1) : 1), 0);
+  const total = scored.reduce(
+    (sum, row) => sum + row.score * (weighted ? (row.weight ?? 1) : 1),
+    0,
+  );
   const divisor = scored.reduce((sum, row) => sum + (weighted ? (row.weight ?? 1) : 1), 0);
   return Math.round(total / divisor);
 }
@@ -433,8 +594,17 @@ async function audit(
   detail: string,
   companyId?: string | null,
 ): Promise<void> {
-  await tx.auditLog.create({ data: { actorUserId: actor.userId, actorRole: actor.role,
-    action, entityType, entityId, detail, companyId: companyId ?? null } });
+  await tx.auditLog.create({
+    data: {
+      actorUserId: actor.userId,
+      actorRole: actor.role,
+      action,
+      entityType,
+      entityId,
+      detail,
+      companyId: companyId ?? null,
+    },
+  });
 }
 
 class ProvisionAbort extends Error {}

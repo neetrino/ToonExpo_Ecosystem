@@ -1,7 +1,4 @@
-import {
-  publicApartmentDetailSchema,
-  type PublicApartmentDetail,
-} from '@toonexpo/contracts';
+import { publicApartmentDetailSchema, type PublicApartmentDetail } from '@toonexpo/contracts';
 
 import { apiRequest, ApiClientError } from '@/lib/api';
 

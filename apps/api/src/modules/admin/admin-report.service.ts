@@ -16,47 +16,94 @@ export class AdminReportService {
 
   async build(report: AdminReportName): Promise<string> {
     switch (report) {
-      case 'deals': return this.deals();
-      case 'checkins': return this.checkIns();
-      case 'project-views': return this.projectViews();
-      case 'audit': return this.audit();
+      case 'deals':
+        return this.deals();
+      case 'checkins':
+        return this.checkIns();
+      case 'project-views':
+        return this.projectViews();
+      case 'audit':
+        return this.audit();
     }
   }
 
   private async deals(): Promise<string> {
     const rows = await this.prisma.client.deal.findMany({
-      orderBy: { createdAt: 'desc' }, take: REPORT_LIMIT,
-      select: { stage: true, source: true, contactName: true, contactEmail: true,
-        createdAt: true, lastActivityAt: true, company: { select: { name: true } },
-        project: { select: { name: true } } },
+      orderBy: { createdAt: 'desc' },
+      take: REPORT_LIMIT,
+      select: {
+        stage: true,
+        source: true,
+        contactName: true,
+        contactEmail: true,
+        createdAt: true,
+        lastActivityAt: true,
+        company: { select: { name: true } },
+        project: { select: { name: true } },
+      },
     });
-    return csv(['company', 'project', 'stage', 'source', 'contactName', 'contactEmail', 'createdAt', 'lastActivityAt'],
-      rows.map((row) => [row.company.name, row.project?.name ?? '', row.stage, row.source,
-        row.contactName, row.contactEmail, iso(row.createdAt), iso(row.lastActivityAt)]));
+    return csv(
+      [
+        'company',
+        'project',
+        'stage',
+        'source',
+        'contactName',
+        'contactEmail',
+        'createdAt',
+        'lastActivityAt',
+      ],
+      rows.map((row) => [
+        row.company.name,
+        row.project?.name ?? '',
+        row.stage,
+        row.source,
+        row.contactName,
+        row.contactEmail,
+        iso(row.createdAt),
+        iso(row.lastActivityAt),
+      ]),
+    );
   }
 
   private async checkIns(): Promise<string> {
     const rows = await this.prisma.client.checkIn.findMany({
-      orderBy: { checkedInAt: 'desc' }, take: REPORT_LIMIT,
-      select: { checkedInAt: true, status: true, event: { select: { name: true, code: true } },
-        buyerProfile: { select: { user: { select: { name: true, email: true } } } } },
+      orderBy: { checkedInAt: 'desc' },
+      take: REPORT_LIMIT,
+      select: {
+        checkedInAt: true,
+        status: true,
+        event: { select: { name: true, code: true } },
+        buyerProfile: { select: { user: { select: { name: true, email: true } } } },
+      },
     });
-    return csv(['event', 'eventCode', 'buyerName', 'buyerEmail', 'status', 'checkedInAt'],
-      rows.map((row) => [row.event.name, row.event.code, row.buyerProfile.user.name,
-        row.buyerProfile.user.email, row.status, iso(row.checkedInAt)]));
+    return csv(
+      ['event', 'eventCode', 'buyerName', 'buyerEmail', 'status', 'checkedInAt'],
+      rows.map((row) => [
+        row.event.name,
+        row.event.code,
+        row.buyerProfile.user.name,
+        row.buyerProfile.user.email,
+        row.status,
+        iso(row.checkedInAt),
+      ]),
+    );
   }
 
   private async projectViews(): Promise<string> {
     const groups = await this.prisma.client.analyticsEvent.groupBy({
       by: ['projectId', 'companyId'],
-      where: { type: 'PROJECT_VIEW', createdAt: { gte: new Date(Date.now() - LOOKBACK_DAYS * DAY_MS) },
-        projectId: { not: null } },
+      where: {
+        type: 'PROJECT_VIEW',
+        createdAt: { gte: new Date(Date.now() - LOOKBACK_DAYS * DAY_MS) },
+        projectId: { not: null },
+      },
       _count: { _all: true },
     });
     const ranked = [...groups].sort((a, b) => b._count._all - a._count._all).slice(0, REPORT_LIMIT);
     const [projects, companies] = await Promise.all([
       this.prisma.client.project.findMany({
-        where: { id: { in: ranked.flatMap((row) => row.projectId ? [row.projectId] : []) } },
+        where: { id: { in: ranked.flatMap((row) => (row.projectId ? [row.projectId] : [])) } },
         select: { id: true, name: true },
       }),
       this.prisma.client.company.findMany({
@@ -66,23 +113,56 @@ export class AdminReportService {
     ]);
     const projectNames = new Map(projects.map((row) => [row.id, row.name]));
     const companyNames = new Map(companies.map((row) => [row.id, row.name]));
-    return csv(['project', 'company', 'viewCount', 'lookbackDays'], ranked.map((row) => [
-      row.projectId ? (projectNames.get(row.projectId) ?? row.projectId) : '',
-      companyNames.get(row.companyId) ?? row.companyId, row._count._all, LOOKBACK_DAYS,
-    ]));
+    return csv(
+      ['project', 'company', 'viewCount', 'lookbackDays'],
+      ranked.map((row) => [
+        row.projectId ? (projectNames.get(row.projectId) ?? row.projectId) : '',
+        companyNames.get(row.companyId) ?? row.companyId,
+        row._count._all,
+        LOOKBACK_DAYS,
+      ]),
+    );
   }
 
   private async audit(): Promise<string> {
     const rows = await this.prisma.client.auditLog.findMany({
-      orderBy: { createdAt: 'desc' }, take: REPORT_LIMIT,
-      select: { action: true, entityType: true, entityId: true, detail: true, actorRole: true,
-        createdAt: true, actorUser: { select: { email: true, name: true } },
-        company: { select: { name: true } } },
+      orderBy: { createdAt: 'desc' },
+      take: REPORT_LIMIT,
+      select: {
+        action: true,
+        entityType: true,
+        entityId: true,
+        detail: true,
+        actorRole: true,
+        createdAt: true,
+        actorUser: { select: { email: true, name: true } },
+        company: { select: { name: true } },
+      },
     });
-    return csv(['createdAt', 'actorEmail', 'actorName', 'actorRole', 'action', 'entityType',
-      'entityId', 'company', 'detail'], rows.map((row) => [iso(row.createdAt), row.actorUser.email,
-      row.actorUser.name, row.actorRole, row.action, row.entityType, row.entityId,
-      row.company?.name ?? '', row.detail]));
+    return csv(
+      [
+        'createdAt',
+        'actorEmail',
+        'actorName',
+        'actorRole',
+        'action',
+        'entityType',
+        'entityId',
+        'company',
+        'detail',
+      ],
+      rows.map((row) => [
+        iso(row.createdAt),
+        row.actorUser.email,
+        row.actorUser.name,
+        row.actorRole,
+        row.action,
+        row.entityType,
+        row.entityId,
+        row.company?.name ?? '',
+        row.detail,
+      ]),
+    );
   }
 }
 
