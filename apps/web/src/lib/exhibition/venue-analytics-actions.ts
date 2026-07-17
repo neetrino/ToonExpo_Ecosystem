@@ -1,10 +1,8 @@
 'use server';
 
-import { prisma } from '@toonexpo/db';
 import type { AnalyticsEventType } from '@toonexpo/domain';
 
-import { scheduleAnalyticsEvent } from '@/lib/analytics/record-event';
-import { resolveRequestUserAgent } from '@/lib/analytics/request-user-agent';
+import { serverApiRequest } from '@/lib/api/server';
 
 const VENUE_ANALYTICS_TYPES = new Set<AnalyticsEventType>(['BOOTH_SELECTED', 'ROUTE_REQUESTED']);
 
@@ -20,28 +18,8 @@ export async function recordVenueBoothEventAction(
     return;
   }
 
-  const booth = await prisma.booth.findUnique({
-    where: { id: boothId },
-    select: {
-      companyId: true,
-      projectId: true,
-      project: { select: { companyId: true } },
-      partner: { select: { companyId: true } },
-    },
-  });
-  if (!booth) {
-    return;
-  }
-
-  const companyId = booth.companyId ?? booth.project?.companyId ?? booth.partner?.companyId ?? null;
-  if (!companyId) {
-    return;
-  }
-
-  scheduleAnalyticsEvent({
-    type,
-    companyId,
-    projectId: booth.projectId ?? undefined,
-    userAgent: await resolveRequestUserAgent(),
+  await serverApiRequest<void>('/analytics/events', {
+    method: 'POST',
+    body: { boothId, type },
   });
 }

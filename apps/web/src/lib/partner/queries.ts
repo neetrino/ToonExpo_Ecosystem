@@ -1,6 +1,6 @@
 import type { PartnerType, PublicationStatus } from '@toonexpo/domain';
 
-import { prisma } from '@toonexpo/db';
+import { serverApiRequest } from '@/lib/api/server';
 
 export type PartnerCabinetBankOffer = {
   id: string;
@@ -14,7 +14,6 @@ export type PartnerCabinetBankOffer = {
   status: PublicationStatus;
   updatedAt: Date;
 };
-
 export type PartnerCabinetDetail = {
   id: string;
   name: string;
@@ -30,41 +29,21 @@ export type PartnerCabinetDetail = {
   bankOffers: PartnerCabinetBankOffer[];
 };
 
-/** Loads the partner cabinet detail scoped by partnerId (caller must authorize). */
 export async function loadOwnPartnerDetail(
-  partnerId: string,
+  _partnerId: string,
 ): Promise<PartnerCabinetDetail | null> {
-  const partner = await prisma.partner.findUnique({
-    where: { id: partnerId },
-    select: {
-      id: true,
-      name: true,
-      slug: true,
-      type: true,
-      logoUrl: true,
-      description: true,
-      phone: true,
-      email: true,
-      website: true,
-      serviceCategories: true,
-      status: true,
-      bankOffers: {
-        orderBy: [{ featured: 'desc' }, { updatedAt: 'desc' }],
-        select: {
-          id: true,
-          title: true,
-          description: true,
-          interestRate: true,
-          minDownPaymentPercent: true,
-          maxTermMonths: true,
-          maxAmountAmd: true,
-          featured: true,
-          status: true,
-          updatedAt: true,
-        },
-      },
-    },
-  });
-
-  return partner;
+  const detail = await serverApiRequest<
+    (Omit<PartnerCabinetDetail, 'bankOffers'> & {
+      bankOffers: Array<Omit<PartnerCabinetBankOffer, 'updatedAt'> & { updatedAt: string }>;
+    }) | null
+  >('/partner/detail');
+  return detail
+    ? {
+        ...detail,
+        bankOffers: detail.bankOffers.map((offer) => ({
+          ...offer,
+          updatedAt: new Date(offer.updatedAt),
+        })),
+      }
+    : null;
 }

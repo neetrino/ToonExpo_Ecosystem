@@ -1,6 +1,7 @@
 import { AUDIT_ENTITY_TYPES, type AuditAction, type AuditEntityType } from '@toonexpo/domain';
-import { prisma } from '@toonexpo/db';
 import { z } from 'zod';
+
+import { adminApiRequest } from './admin-api';
 
 export const AUDIT_LOG_PAGE_LIMIT = 200;
 
@@ -34,31 +35,7 @@ export async function loadAuditLogs(
   entityType?: AuditEntityType,
   limit: number = AUDIT_LOG_PAGE_LIMIT,
 ): Promise<AuditLogRow[]> {
-  const rows = await prisma.auditLog.findMany({
-    where: entityType ? { entityType } : undefined,
-    orderBy: { createdAt: 'desc' },
-    take: limit,
-    select: {
-      id: true,
-      actorRole: true,
-      action: true,
-      entityType: true,
-      entityId: true,
-      detail: true,
-      createdAt: true,
-      actorUser: { select: { email: true, name: true } },
-    },
-  });
-
-  return rows.map((row) => ({
-    id: row.id,
-    actorEmail: row.actorUser.email,
-    actorName: row.actorUser.name,
-    actorRole: row.actorRole,
-    action: row.action,
-    entityType: row.entityType,
-    entityId: row.entityId,
-    detail: row.detail,
-    createdAt: row.createdAt,
-  }));
+  const query = entityType ? `?entityType=${encodeURIComponent(entityType)}` : '';
+  const rows = await adminApiRequest<AuditLogRow[]>(`/audit${query}`);
+  return rows.slice(0, limit);
 }

@@ -317,8 +317,8 @@ export class AdminQueryService {
     }));
   }
 
-  assessment(id: string): Promise<unknown> {
-    return this.prisma.client.readinessAssessment.findFirst({
+  async assessment(id: string): Promise<unknown> {
+    const row = await this.prisma.client.readinessAssessment.findFirst({
       where: { id, archivedAt: null },
       include: {
         company: { select: { name: true } },
@@ -330,6 +330,36 @@ export class AdminQueryService {
         },
       },
     });
+    if (!row) return null;
+    return {
+      id: row.id,
+      targetType: row.targetType,
+      companyId: row.companyId,
+      companyName: row.company.name,
+      projectId: row.projectId,
+      projectName: row.project?.name ?? null,
+      status: row.status,
+      overallScore: row.overallScore,
+      recommendation: row.recommendation,
+      requiredActions: row.requiredActions,
+      internalNotes: row.internalNotes,
+      responsibleContact: row.responsibleContact,
+      lastEvaluatedAt: row.lastEvaluatedAt,
+      updatedAt: row.updatedAt,
+      evaluatedByUserId: row.evaluatedByUserId,
+      evaluatorEmail: row.evaluatedByUser?.email ?? null,
+      categoryScores: row.categoryScores.map((score) => ({
+        categoryId: score.categoryId,
+        categoryKey: score.category.key,
+        categoryName: score.category.name,
+        serviceCategoryKey: score.category.serviceCategoryKey,
+        score: score.score,
+        status: score.status,
+        recommendation: score.recommendation,
+        requiredActions: score.requiredActions,
+        internalNote: score.internalNote,
+      })),
+    };
   }
 
   async analytics(): Promise<unknown> {

@@ -278,12 +278,25 @@ export class AdminMutationService {
     const parsed = assessmentUpsertInputSchema.safeParse(raw);
     if (!parsed.success) return invalid();
     const input = parsed.data;
-    const target = input.targetType === 'BUILDER_COMPANY'
-      ? await this.prisma.client.company.findUnique({ where: { id: input.companyId ?? '' }, select: { id: true } })
-      : await this.prisma.client.project.findUnique({ where: { id: input.projectId ?? '' }, select: { id: true, companyId: true } });
-    if (!target) return notFound();
-    const companyId = 'companyId' in target ? target.companyId : target.id;
-    const projectId = 'companyId' in target ? target.id : null;
+    let companyId: string;
+    let projectId: string | null;
+    if (input.targetType === 'BUILDER_COMPANY') {
+      const company = await this.prisma.client.company.findUnique({
+        where: { id: input.companyId ?? '' },
+        select: { id: true },
+      });
+      if (!company) return notFound();
+      companyId = company.id;
+      projectId = null;
+    } else {
+      const project = await this.prisma.client.project.findUnique({
+        where: { id: input.projectId ?? '' },
+        select: { id: true, companyId: true },
+      });
+      if (!project) return notFound();
+      companyId = project.companyId;
+      projectId = project.id;
+    }
     const categories = await this.prisma.client.readinessCategory.findMany({
       where: { active: true }, select: { id: true, weight: true },
     });

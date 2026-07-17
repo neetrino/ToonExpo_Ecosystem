@@ -1,5 +1,6 @@
 import type { IntegrationAuditStatus, IntegrationDirection } from '@toonexpo/domain';
-import { prisma } from '@toonexpo/db';
+
+import { adminApiRequest } from './admin-api';
 
 export const INTEGRATION_AUDIT_LOG_LIMIT = 100;
 
@@ -16,16 +17,6 @@ export type IntegrationAuditLogRow = {
 export async function loadIntegrationAuditLogs(
   limit: number = INTEGRATION_AUDIT_LOG_LIMIT,
 ): Promise<IntegrationAuditLogRow[]> {
-  return prisma.integrationAuditLog.findMany({
-    orderBy: { createdAt: 'desc' },
-    take: limit,
-    select: {
-      id: true,
-      direction: true,
-      operation: true,
-      status: true,
-      externalRef: true,
-      createdAt: true,
-    },
-  });
+  const rows = await adminApiRequest<IntegrationAuditLogRow[]>('/integrations');
+  return rows.slice(0, limit);
 }

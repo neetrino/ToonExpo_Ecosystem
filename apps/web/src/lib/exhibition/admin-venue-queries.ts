@@ -1,5 +1,6 @@
 import type { ExhibitionEventStatus, VenuePathNodeKind } from '@toonexpo/domain';
-import { prisma } from '@toonexpo/db';
+
+import { serverApiRequest } from '@/lib/api/server';
 
 export type AdminVenueBoothRow = {
   id: string;
@@ -16,7 +17,6 @@ export type AdminVenueBoothRow = {
   partnerName: string | null;
   projectName: string | null;
 };
-
 export type AdminPathNodeRow = {
   id: string;
   xPercent: number;
@@ -24,20 +24,9 @@ export type AdminPathNodeRow = {
   kind: VenuePathNodeKind;
   boothId: string | null;
 };
-
-export type AdminPathEdgeRow = {
-  id: string;
-  fromNodeId: string;
-  toNodeId: string;
-};
-
+export type AdminPathEdgeRow = { id: string; fromNodeId: string; toNodeId: string };
 export type AdminVenueMapDetail = {
-  event: {
-    id: string;
-    name: string;
-    code: string;
-    status: ExhibitionEventStatus;
-  };
+  event: { id: string; name: string; code: string; status: ExhibitionEventStatus };
   venueMap: {
     id: string;
     imageUrl: string;
@@ -49,134 +38,21 @@ export type AdminVenueMapDetail = {
   pathNodes: AdminPathNodeRow[];
   pathEdges: AdminPathEdgeRow[];
 };
+export type AdminAssignmentOption = { id: string; name: string };
+export type AdminProjectOption = { id: string; name: string; companyId: string };
 
-export type AdminAssignmentOption = {
-  id: string;
-  name: string;
-};
-
-export type AdminProjectOption = {
-  id: string;
-  name: string;
-  companyId: string;
-};
-
-export async function loadAdminVenueMapDetail(
+export function loadAdminVenueMapDetail(
   eventId: string,
 ): Promise<AdminVenueMapDetail | null> {
-  const event = await prisma.exhibitionEvent.findUnique({
-    where: { id: eventId },
-    select: {
-      id: true,
-      name: true,
-      code: true,
-      status: true,
-      venueMap: {
-        select: {
-          id: true,
-          imageUrl: true,
-          imageAlt: true,
-          entranceXPercent: true,
-          entranceYPercent: true,
-          booths: {
-            orderBy: [{ sortOrder: 'asc' }, { code: 'asc' }],
-            select: {
-              id: true,
-              code: true,
-              label: true,
-              xPercent: true,
-              yPercent: true,
-              note: true,
-              sortOrder: true,
-              companyId: true,
-              partnerId: true,
-              projectId: true,
-              company: { select: { name: true } },
-              partner: { select: { name: true } },
-              project: { select: { name: true } },
-            },
-          },
-          pathNodes: {
-            select: {
-              id: true,
-              xPercent: true,
-              yPercent: true,
-              kind: true,
-              boothId: true,
-            },
-          },
-          pathEdges: {
-            select: {
-              id: true,
-              fromNodeId: true,
-              toNodeId: true,
-            },
-          },
-        },
-      },
-    },
-  });
-
-  if (!event) {
-    return null;
-  }
-
-  const venueMap = event.venueMap;
-  return {
-    event: {
-      id: event.id,
-      name: event.name,
-      code: event.code,
-      status: event.status,
-    },
-    venueMap: venueMap
-      ? {
-          id: venueMap.id,
-          imageUrl: venueMap.imageUrl,
-          imageAlt: venueMap.imageAlt,
-          entranceXPercent: venueMap.entranceXPercent,
-          entranceYPercent: venueMap.entranceYPercent,
-        }
-      : null,
-    booths: (venueMap?.booths ?? []).map((booth) => ({
-      id: booth.id,
-      code: booth.code,
-      label: booth.label,
-      xPercent: booth.xPercent,
-      yPercent: booth.yPercent,
-      note: booth.note,
-      sortOrder: booth.sortOrder,
-      companyId: booth.companyId,
-      partnerId: booth.partnerId,
-      projectId: booth.projectId,
-      companyName: booth.company?.name ?? null,
-      partnerName: booth.partner?.name ?? null,
-      projectName: booth.project?.name ?? null,
-    })),
-    pathNodes: venueMap?.pathNodes ?? [],
-    pathEdges: venueMap?.pathEdges ?? [],
-  };
+  return serverApiRequest<AdminVenueMapDetail | null>(
+    `/exhibition/admin/events/${encodeURIComponent(eventId)}/venue`,
+  );
 }
 
-export async function loadAssignmentOptions(): Promise<{
+export function loadAssignmentOptions(): Promise<{
   companies: AdminAssignmentOption[];
   partners: AdminAssignmentOption[];
   projects: AdminProjectOption[];
 }> {
-  const [companies, partners, projects] = await Promise.all([
-    prisma.company.findMany({
-      orderBy: { name: 'asc' },
-      select: { id: true, name: true },
-    }),
-    prisma.partner.findMany({
-      orderBy: { name: 'asc' },
-      select: { id: true, name: true },
-    }),
-    prisma.project.findMany({
-      where: { status: 'PUBLISHED' },
-      orderBy: { name: 'asc' },
-      select: { id: true, name: true, companyId: true },
-    }),
-  ]);
-  return { companies, partners, projects };
+  return serverApiRequest('/exhibition/admin/assignment-options');
 }

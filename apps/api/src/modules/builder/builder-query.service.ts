@@ -255,8 +255,14 @@ export class BuilderQueryService {
       projectViews,
       apartmentViewsTotal: apartmentViews.total,
       apartmentViewsLastPeriod: apartmentViews.recent,
-      dealsByStage: mapGroups(stages, DEAL_STAGES, 'stage'),
-      dealsBySource: mapGroups(sources, REQUEST_SOURCES, 'source'),
+      dealsByStage: mapGroups(
+        stages.map((row) => ({ key: row.stage, count: row._count._all })),
+        DEAL_STAGES,
+      ),
+      dealsBySource: mapGroups(
+        sources.map((row) => ({ key: row.source, count: row._count._all })),
+        REQUEST_SOURCES,
+      ),
       qrScanCreatedDealsCount: qrCount,
       readiness: readiness.map((row) => ({
         id: row.id,
@@ -307,11 +313,10 @@ export class BuilderQueryService {
   }
 }
 
-function mapGroups<T extends string, F extends string>(
-  groups: Array<Record<F, T> & { _count: { _all: number } }>,
+function mapGroups<T extends string>(
+  groups: Array<{ key: T; count: number }>,
   keys: readonly T[],
-  field: F,
 ) {
-  const counts = new Map(groups.map((group) => [group[field], group._count._all]));
+  const counts = new Map(groups.map((group) => [group.key, group.count]));
   return keys.map((key) => ({ key, count: counts.get(key) ?? 0 }));
 }
