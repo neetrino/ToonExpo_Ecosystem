@@ -1,7 +1,7 @@
 import type { CanvasStatusInput, CanvasUpsertInput } from '@toonexpo/contracts';
 
 import type { AuditActor } from '@/lib/audit/record-audit';
-import { serverApiRequest } from '@/lib/api/server';
+import { apiRequest } from '@/lib/api/client';
 
 import type { VisualMapMutationResult } from './mutation-result';
 
@@ -10,7 +10,7 @@ function mutate<T extends Record<string, unknown>>(
   companyId: string,
   input: unknown,
 ): Promise<VisualMapMutationResult<T>> {
-  return serverApiRequest(`/visual-map/builder/actions/${action}`, {
+  return apiRequest(`/visual-map/builder/actions/${action}`, {
     method: 'POST',
     body: { companyId, input },
   });

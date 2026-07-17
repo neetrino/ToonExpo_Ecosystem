@@ -2,7 +2,7 @@ import type { AuthSession } from '@toonexpo/contracts';
 import type { PartnerType, PublicationStatus } from '@toonexpo/domain';
 
 import { ApiClientError } from '@/lib/api';
-import { serverApiRequest } from '@/lib/api/server';
+import { apiRequest } from '@/lib/api/client';
 
 export type PartnerSessionPartner = {
   id: string;
@@ -28,7 +28,7 @@ export type PartnerSessionContext = {
 /** Loads the tenant-scoped partner context from Nest. */
 export async function assertPartnerSession(): Promise<PartnerSessionContext | null> {
   try {
-    return await serverApiRequest<PartnerSessionContext | null>('/partner/context');
+    return await apiRequest<PartnerSessionContext | null>('/partner/context');
   } catch (error) {
     if (error instanceof ApiClientError && error.status === 401) {
       return null;

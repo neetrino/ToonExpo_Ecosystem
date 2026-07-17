@@ -1,6 +1,6 @@
 import type { ProjectPublicationInput, ProjectUpsertInput } from '@toonexpo/contracts';
 
-import { serverApiRequest } from '@/lib/api/server';
+import { apiRequest } from '@/lib/api/client';
 import type { AuditActor } from '@/lib/audit/record-audit';
 
 import type { BuilderMutationResult } from './mutation-result';
@@ -10,7 +10,7 @@ export function createProject(
   input: ProjectUpsertInput,
 ): Promise<BuilderMutationResult<{ projectId: string; projectSlug: string }>> {
   void companyId;
-  return serverApiRequest('/builder/projects', { method: 'POST', body: input });
+  return apiRequest('/builder/projects', { method: 'POST', body: input });
 }
 
 export function updateProject(
@@ -18,7 +18,7 @@ export function updateProject(
   input: ProjectUpsertInput & { projectId: string },
 ): Promise<BuilderMutationResult<{ projectId: string }>> {
   void companyId;
-  return serverApiRequest('/builder/projects', { method: 'PATCH', body: input });
+  return apiRequest('/builder/projects', { method: 'PATCH', body: input });
 }
 
 export function setProjectPublication(
@@ -28,5 +28,5 @@ export function setProjectPublication(
 ): Promise<BuilderMutationResult<{ projectId: string }>> {
   void companyId;
   void actor;
-  return serverApiRequest('/builder/projects/publication', { method: 'PATCH', body: input });
+  return apiRequest('/builder/projects/publication', { method: 'PATCH', body: input });
 }

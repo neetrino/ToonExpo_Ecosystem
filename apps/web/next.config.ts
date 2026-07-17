@@ -12,8 +12,6 @@ const webEnv = loadWebEnv();
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
-const nestProxyDestination = (process.env.API_URL ?? 'http://localhost:4000').replace(/\/$/, '');
-
 const nextConfig: NextConfig = {
   transpilePackages: ['@toonexpo/ui', '@toonexpo/shared', '@toonexpo/contracts'],
   images: {
@@ -24,18 +22,6 @@ const nextConfig: NextConfig = {
         hostname: 'picsum.photos',
       },
     ],
-  },
-  /**
-   * Same-origin reverse proxy to Nest so httpOnly session cookies stay on the
-   * web host (required for RSC session reads). No business logic here.
-   */
-  async rewrites() {
-    return [
-      {
-        source: '/nest/:path*',
-        destination: `${nestProxyDestination}/:path*`,
-      },
-    ];
   },
 };
 

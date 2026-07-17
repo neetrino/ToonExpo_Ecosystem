@@ -1,8 +1,4 @@
-'use server';
-
 import { provisionAccountSchema } from '@toonexpo/contracts';
-import { revalidatePath } from 'next/cache';
-
 import type { ProvisionActionState } from '@/lib/admin/action-state';
 import { assertAdminSession } from '@/lib/admin/assert-admin-session';
 import { provisionAccount } from '@/lib/admin/provision';
@@ -50,8 +46,6 @@ export async function provisionAccountAction(
   if (!result.ok) {
     return { errorKey: result.error };
   }
-
-  revalidatePath(`/${locale}/admin`);
   return {
     successKey: result.emailSent ? 'provisioned' : 'provisionedEmailFailed',
     inviteUrl: result.inviteUrl,

@@ -1,7 +1,7 @@
 import type { AnalyticsEventType } from '@toonexpo/domain';
 import { after } from 'next/server';
 
-import { serverApiRequest } from '@/lib/api/server';
+import { apiRequest } from '@/lib/api/client';
 
 import { isBotUserAgent, parseAnalyticsSampleRate, shouldSampleAnalyticsEvent } from './sampling';
 
@@ -29,7 +29,7 @@ export async function recordAnalyticsEvent(input: RecordAnalyticsEventInput): Pr
       return;
     }
 
-    await serverApiRequest<void>('/analytics/events', {
+    await apiRequest<void>('/analytics/events', {
       method: 'POST',
       body: {
         type: input.type,

@@ -1,10 +1,4 @@
-import { SUPPORTED_LOCALES } from '@toonexpo/shared';
-import { revalidatePath } from 'next/cache';
-
-/** Revalidates builder CRM portal routes for every supported locale. */
+/** No-op: browser mutations should call `router.refresh()` after success. */
 export function revalidateCrmPortalPaths(): void {
-  for (const locale of SUPPORTED_LOCALES) {
-    revalidatePath(`/${locale}/portal`);
-    revalidatePath(`/${locale}/portal/crm`);
-  }
+  // intentionally empty
 }

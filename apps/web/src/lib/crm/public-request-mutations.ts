@@ -1,7 +1,7 @@
 import { publicRequestInputSchema, type PublicRequestInput } from '@toonexpo/contracts';
 
 import { getApiErrorKey } from '@/lib/api/errors';
-import { serverApiRequest } from '@/lib/api/server';
+import { apiRequest } from '@/lib/api/client';
 
 import type { PublicRequestMutationResult } from './mutation-result';
 
@@ -13,7 +13,7 @@ export async function submitPublicRequest(
   const parsed = publicRequestInputSchema.safeParse(raw);
   if (!parsed.success) return { ok: false, errorKey: 'invalidInput' };
   try {
-    return await serverApiRequest<PublicRequestMutationResult>('/crm/public-requests', {
+    return await apiRequest<PublicRequestMutationResult>('/crm/public-requests', {
       method: 'POST',
       body: parsed.data,
     });

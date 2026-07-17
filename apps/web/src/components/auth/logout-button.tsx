@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useTransition } from 'react';
 
+import { useSession } from '@/components/auth/session-provider';
 import { logoutWithApi } from '@/lib/auth/api-auth';
 
 type LogoutButtonProps = {
@@ -13,6 +14,7 @@ type LogoutButtonProps = {
 export function LogoutButton({ locale }: LogoutButtonProps) {
   const t = useTranslations('auth');
   const router = useRouter();
+  const { refresh } = useSession();
   const [pending, startTransition] = useTransition();
 
   function onLogout(): void {
@@ -20,6 +22,7 @@ export function LogoutButton({ locale }: LogoutButtonProps) {
       try {
         await logoutWithApi();
       } finally {
+        await refresh();
         router.push(`/${locale}`);
         router.refresh();
       }

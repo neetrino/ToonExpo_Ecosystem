@@ -6,10 +6,10 @@ Branch: `sipan`. MVP backlog through Sprint 7.7 is **done**. Use this section to
 
 ### Done (summary)
 
-- **Nest backend isolation** — all product APIs and infra (Prisma, auth sessions, R2, Resend, Redis, BOS) live in `apps/api`; `apps/web` is frontend-only via `/nest` rewrite + typed client. Auth.js removed from web.
+- **Nest backend isolation** — all product APIs and infra (Prisma, auth sessions, R2, Resend, Redis, BOS) live in `apps/api`; `apps/web` is frontend-only via `NEXT_PUBLIC_API_URL` → Nest + typed client. Auth.js removed from web.
 - **MVP + Sprint 7** — auth, inventory, CRM/QR, visual map, partners/mortgage, exhibition check-in, analytics v1, BOS provisioning, audit/CSV, favorites, R2 uploads, rate limits, set-password invites, admin acting-on-behalf, venue map + route path, apartment status history, Swagger prod gate, analytics sampling.
 - **Redesign** — navy/teal public + portal UI via `--te-*` design tokens (`apps/web/src/app/globals.css`).
-- **R2 uploads** — Nest signed presign (`POST /uploads/presign` via `/nest`); web uses typed API client only.
+- **R2 uploads** — Nest signed presign (`POST /uploads/presign`); web uses typed API client only.
 - **Playwright (local)** — `pnpm test:e2e` under `e2e/playwright/` (catalog, auth RBAC, favorites); fetch smoke kept (`pnpm e2e` / `e2e:local`).
 - **Venue map + route path** — booth markers, BFS path graph, admin graph editor, public Show route polyline; `Booth.projectId` assign + public search/link; `BOOTH_SELECTED` / `ROUTE_REQUESTED` analytics.
 - **20-project seed** — `seedCatalogProjects` (~19 published catalog projects + demo Sunrise tree); run `pnpm db:seed`.

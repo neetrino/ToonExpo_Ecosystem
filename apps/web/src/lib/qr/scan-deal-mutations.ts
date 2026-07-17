@@ -1,6 +1,6 @@
 import type { BuilderQrScanDealInput } from '@toonexpo/contracts';
 
-import { serverApiRequest } from '@/lib/api/server';
+import { apiRequest } from '@/lib/api/client';
 
 import type { QrScanDealMutationResult } from './mutation-result';
 
@@ -10,7 +10,7 @@ export type CreateScanDealParams = BuilderQrScanDealInput & {
 };
 
 export function createDealFromQrScan(raw: CreateScanDealParams): Promise<QrScanDealMutationResult> {
-  return serverApiRequest<QrScanDealMutationResult>('/qr/builder/deals', {
+  return apiRequest<QrScanDealMutationResult>('/qr/builder/deals', {
     method: 'POST',
     body: {
       companyId: raw.companyId,
@@ -26,7 +26,7 @@ export function logBuilderQrScan(params: {
   scannedByUserId: string;
   companyId: string;
 }): Promise<void> {
-  return serverApiRequest<void>(`/qr/${encodeURIComponent(params.qrCodeId)}/builder-scan`, {
+  return apiRequest<void>(`/qr/${encodeURIComponent(params.qrCodeId)}/builder-scan`, {
     method: 'POST',
     body: { companyId: params.companyId },
   });

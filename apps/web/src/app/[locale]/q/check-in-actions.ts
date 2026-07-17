@@ -1,14 +1,8 @@
-'use server';
-
-import { revalidatePath } from 'next/cache';
-
 import { assertEntranceSession } from '@/lib/entrance/assert-entrance-session';
 import { performEntranceCheckIn, type CheckInMutationResult } from '@/lib/qr/check-in-mutations';
 
-function revalidateCheckInPaths(locale: string): void {
-  revalidatePath(`/${locale}/checkin`);
-  revalidatePath(`/${locale}/admin/exhibition`);
-  revalidatePath(`/${locale}/account`);
+function revalidateCheckInPaths(..._args: unknown[]): void {
+  void _args;
 }
 
 export async function performCheckInAction(

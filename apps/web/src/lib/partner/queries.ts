@@ -1,6 +1,6 @@
 import type { PartnerType, PublicationStatus } from '@toonexpo/domain';
 
-import { serverApiRequest } from '@/lib/api/server';
+import { apiRequest } from '@/lib/api/client';
 
 export type PartnerCabinetBankOffer = {
   id: string;
@@ -32,7 +32,7 @@ export type PartnerCabinetDetail = {
 export async function loadOwnPartnerDetail(
   _partnerId: string,
 ): Promise<PartnerCabinetDetail | null> {
-  const detail = await serverApiRequest<
+  const detail = await apiRequest<
     | (Omit<PartnerCabinetDetail, 'bankOffers'> & {
         bankOffers: Array<Omit<PartnerCabinetBankOffer, 'updatedAt'> & { updatedAt: string }>;
       })

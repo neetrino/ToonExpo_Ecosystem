@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
 
 import { startActingOnBehalfAction } from '@/lib/builder/active-company-actions';
@@ -12,6 +13,7 @@ type OpenInPortalButtonProps = {
 
 /** Admin companies row action: start acting-on-behalf and open the builder portal. */
 export function OpenInPortalButton({ locale, companyId, label }: OpenInPortalButtonProps) {
+  const router = useRouter();
   const [pending, startTransition] = useTransition();
 
   return (
@@ -20,8 +22,12 @@ export function OpenInPortalButton({ locale, companyId, label }: OpenInPortalBut
       className="portal-btn portal-btn--ghost portal-btn--sm"
       disabled={pending}
       onClick={() => {
-        startTransition(() => {
-          void startActingOnBehalfAction(locale, companyId);
+        startTransition(async () => {
+          const result = await startActingOnBehalfAction(locale, companyId);
+          if (result.ok) {
+            router.push(result.redirectTo);
+            router.refresh();
+          }
         });
       }}
     >

@@ -12,10 +12,9 @@ This repository is only for ToonExpo Ecosystem.
 | R2, Resend, Upstash Redis, BOS secrets | Private infra secrets / AWS SDK for R2 |
 | Business logic, auth sessions, rate limits | Product `app/api` routes; Prisma in Server Actions |
 
-- Browser calls Nest via same-origin `/nest/*` rewrite (`NEXT_PUBLIC_API_URL`, default `/nest`).
-- Auth = Nest httpOnly DB sessions (`toonexpo.sid`) + CSRF — **not** Auth.js.
-- Thin `'use server'` wrappers may only call Nest (`serverApiRequest`), never the database.
-- Stack of truth: `docs/TECH_CARD.md` + `docs/01-ARCHITECTURE.md`. Ignore older sprint notes that contradict them (Auth.js in web, `/api/uploads/presign` on Next, “wire Nest to Auth.js”).
+- Browser calls Nest directly via `NEXT_PUBLIC_API_URL` (absolute API origin). Auth = Nest httpOnly DB sessions (`toonexpo.sid`) + CSRF — **not** Auth.js.
+- Thin client helpers / optional `'use server'` wrappers must not touch the database; authenticated Nest calls use browser `credentials: 'include'`.
+- Stack of truth: `docs/TECH_CARD.md` + `docs/01-ARCHITECTURE.md`. Ignore older sprint notes that contradict them (Auth.js in web, `/nest` rewrite, “wire Nest to Auth.js”).
 
 Cursor rule: `.cursor/rules/22-backend-isolation.mdc` (always applied).
 

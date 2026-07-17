@@ -1,7 +1,7 @@
 import type { BuilderReadinessAssessment } from '@toonexpo/contracts';
 import type { ReadinessStatus, ReadinessTargetType } from '@toonexpo/domain';
 
-import { serverApiRequest } from '@/lib/api/server';
+import { apiRequest } from '@/lib/api/client';
 
 import { filterProvidersForServiceCategory, type ProviderSuggestionInput } from './provider-match';
 import { isWeakReadinessStatus } from './score';
@@ -101,7 +101,7 @@ export async function listBuilderAssessments(
   companyId: string,
 ): Promise<BuilderReadinessAssessment[]> {
   void companyId;
-  const rows = await serverApiRequest<Parameters<typeof mapBuilderRow>[0][]>('/builder/readiness');
+  const rows = await apiRequest<Parameters<typeof mapBuilderRow>[0][]>('/builder/readiness');
 
   return rows.map((row) =>
     mapBuilderRow({
@@ -114,7 +114,7 @@ export async function listBuilderAssessments(
 
 /** Published SERVICE_COMPANY partners for readiness provider suggestions. */
 export async function loadPublishedServiceProviders(): Promise<ProviderSuggestionInput[]> {
-  return serverApiRequest<ProviderSuggestionInput[]>('/builder/readiness/providers');
+  return apiRequest<ProviderSuggestionInput[]>('/builder/readiness/providers');
 }
 
 export type CategoryProviderGroup = {

@@ -1,5 +1,4 @@
 import { SUPPORTED_LOCALES } from '@toonexpo/shared';
-import { revalidatePath } from 'next/cache';
 
 export type CatalogPathParams = {
   companySlug?: string;
@@ -7,56 +6,18 @@ export type CatalogPathParams = {
   projectId?: string;
 };
 
-function revalidateLocaleCatalogPaths(locale: string, params: CatalogPathParams): void {
-  revalidatePath(`/${locale}/portal`);
-  revalidatePath(`/${locale}/portal/projects`);
-  revalidatePath(`/${locale}/projects`);
-  revalidatePath(`/${locale}/builders`);
-
-  if (params.companySlug) {
-    revalidatePath(`/${locale}/builders/${params.companySlug}`);
-  }
-
-  if (params.projectId) {
-    revalidatePath(`/${locale}/portal/projects/${params.projectId}`);
-  }
-
-  if (params.companySlug && params.projectSlug) {
-    // layout: invalidates project detail and nested apartment routes (Next.js 15).
-    revalidatePath(`/${locale}/projects/${params.companySlug}/${params.projectSlug}`, 'layout');
-  }
+/**
+ * Previously called Next.js `revalidatePath`. Authenticated mutations now run in
+ * the browser against Nest; callers should `router.refresh()` after success.
+ * Kept as a no-op so shared mutation helpers stay isomorphic.
+ */
+export function revalidateCatalogPaths(_params: CatalogPathParams | CatalogPathParams[]): void {
+  void _params;
+  void SUPPORTED_LOCALES;
 }
 
-/**
- * Revalidates builder portal and public catalog paths for every supported locale.
- * Pass multiple resolved path sets when several projects were touched.
- */
-export function revalidateCatalogPaths(params: CatalogPathParams | CatalogPathParams[]): void {
-  const entries = Array.isArray(params) ? params : [params];
-  const pathSets = entries.length > 0 ? entries : [{}];
-
-  for (const locale of SUPPORTED_LOCALES) {
-    for (const entry of pathSets) {
-      revalidateLocaleCatalogPaths(locale, entry);
-    }
-  }
-}
-
-/**
- * Revalidates admin project list and public catalog paths for every supported locale.
- */
-export function revalidateAdminCatalogPaths(params: CatalogPathParams): void {
-  for (const locale of SUPPORTED_LOCALES) {
-    revalidatePath(`/${locale}/admin/projects`);
-    revalidatePath(`/${locale}/projects`);
-    revalidatePath(`/${locale}/builders`);
-
-    if (params.companySlug) {
-      revalidatePath(`/${locale}/builders/${params.companySlug}`);
-    }
-
-    if (params.companySlug && params.projectSlug) {
-      revalidatePath(`/${locale}/projects/${params.companySlug}/${params.projectSlug}`, 'layout');
-    }
-  }
+/** @see revalidateCatalogPaths */
+export function revalidateAdminCatalogPaths(_params: CatalogPathParams): void {
+  void _params;
+  void SUPPORTED_LOCALES;
 }

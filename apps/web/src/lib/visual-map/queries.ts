@@ -1,4 +1,4 @@
-import { serverApiRequest } from '@/lib/api/server';
+import { apiRequest } from '@/lib/api/client';
 
 export type BuilderCanvasSummary = {
   id: string;
@@ -36,7 +36,7 @@ export async function listCanvasesForProject(
   companyId: string,
   projectId: string,
 ): Promise<BuilderCanvasSummary[]> {
-  const rows = await serverApiRequest<
+  const rows = await apiRequest<
     Array<
       Omit<BuilderCanvasSummary, 'updatedAt'> & {
         updatedAt: string;
@@ -52,7 +52,7 @@ export async function getCanvasForEdit(
   companyId: string,
   canvasId: string,
 ): Promise<BuilderCanvasDetail | null> {
-  const row = await serverApiRequest<
+  const row = await apiRequest<
     (Omit<BuilderCanvasDetail, 'updatedAt'> & { updatedAt: string }) | null
   >(
     `/visual-map/builder/canvases/${encodeURIComponent(canvasId)}?companyId=${encodeURIComponent(companyId)}`,
@@ -64,7 +64,7 @@ export async function listArchivedHotspotsForCanvas(
   companyId: string,
   canvasId: string,
 ): Promise<BuilderArchivedHotspot[]> {
-  const rows = await serverApiRequest<
+  const rows = await apiRequest<
     Array<
       Omit<BuilderArchivedHotspot, 'archivedAt'> & {
         archivedAt: string;

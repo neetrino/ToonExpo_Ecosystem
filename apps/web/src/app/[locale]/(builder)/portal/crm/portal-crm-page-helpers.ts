@@ -1,5 +1,4 @@
 import type { DealStage, RequestSource } from '@toonexpo/domain';
-import type { getTranslations } from 'next-intl/server';
 
 import type { DealBoardColumn } from '@/lib/crm/deal-queries';
 import {
@@ -32,7 +31,11 @@ const CRM_REQUEST_SOURCES = [
   'EVENT_INTERACTION',
 ] as const satisfies readonly RequestSource[];
 
-type CrmTranslations = Awaited<ReturnType<typeof getTranslations>>;
+/** Compatible with next-intl `useTranslations` / `getTranslations`. */
+type CrmTranslations = {
+  (key: string, values?: Record<string, string | number | Date>): string;
+  raw(key: string): unknown;
+};
 
 export function buildCrmStageLabels(tStages: CrmTranslations): Record<DealStage, string> {
   return Object.fromEntries(CRM_DEAL_STAGES.map((stage) => [stage, tStages(stage)])) as Record<
@@ -100,7 +103,7 @@ export function buildCrmWorkspaceLabels({
       noProject: t('card.noProject'),
       noAssignee: t('card.noAssignee'),
       noActivity: t('card.noActivity'),
-      apartmentCount: t.raw('card.apartmentCount'),
+      apartmentCount: t('card.apartmentCount'),
       source: sourceLabels,
     },
     list: {

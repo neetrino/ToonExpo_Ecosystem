@@ -1,7 +1,3 @@
-'use server';
-
-import { revalidatePath } from 'next/cache';
-
 import { assertAdminSession } from '@/lib/admin/assert-admin-session';
 import type { AdminMutationErrorKey, AdminMutationResult } from '@/lib/admin/mutation-result';
 import {
@@ -25,11 +21,8 @@ function unauthorized(): { ok: false; errorKey: AdminMutationErrorKey } {
   return { ok: false, errorKey: 'unauthorized' };
 }
 
-function revalidateVenuePaths(locale: string, eventId: string): void {
-  revalidatePath(`/${locale}/admin/exhibition`);
-  revalidatePath(`/${locale}/admin/exhibition/${eventId}/venue`);
-  revalidatePath(`/${locale}/exhibition`);
-  revalidatePath(`/${locale}/portal`);
+function revalidateVenuePaths(..._args: unknown[]): void {
+  void _args;
 }
 
 export async function upsertVenueMapAction(

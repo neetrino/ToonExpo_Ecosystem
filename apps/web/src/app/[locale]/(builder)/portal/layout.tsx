@@ -1,46 +1,90 @@
-import type { ReactNode } from 'react';
+'use client';
 
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { useLocale, useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState, type ReactNode } from 'react';
 
-import { auth } from '@/auth';
 import { ActingOnBehalfBanner } from '@/components/portal/acting-on-behalf-banner';
 import { CompanySwitcher } from '@/components/portal/company-switcher';
-import { Link, redirect } from '@/i18n/navigation';
+import { useSession } from '@/components/auth/session-provider';
+import { Link } from '@/i18n/navigation';
 import { LOGIN_PATH } from '@/lib/auth/constants';
-import { assertBuilderSession } from '@/lib/builder/assert-builder-session';
+import {
+  assertBuilderSession,
+  type BuilderSessionContext,
+} from '@/lib/builder/assert-builder-session';
 import { loadAdminCompanyOptions, loadBuilderCompanyOptions } from '@/lib/builder/company-options';
+import type { PortalCompanyOption } from '@/lib/builder/company-options';
 
 type PortalLayoutProps = {
   children: ReactNode;
-  params: Promise<{ locale: string }>;
 };
 
-export default async function PortalLayout({ children, params }: PortalLayoutProps) {
-  const { locale } = await params;
-  setRequestLocale(locale);
+export default function PortalLayout({ children }: PortalLayoutProps) {
+  const locale = useLocale();
+  const router = useRouter();
+  const { status, user } = useSession();
+  const t = useTranslations('portal');
+  const [context, setContext] = useState<BuilderSessionContext | null>(null);
+  const [companies, setCompanies] = useState<PortalCompanyOption[]>([]);
+  const [ready, setReady] = useState(false);
 
-  const builderContext = await assertBuilderSession();
-  if (!builderContext) {
-    const session = await auth();
-    if (session?.user?.role === 'BIGPROJECTS_ADMIN') {
-      return redirect({ href: '/admin/companies', locale });
+  useEffect(() => {
+    if (status === 'loading') {
+      return;
     }
-    return redirect({ href: LOGIN_PATH, locale });
-  }
+    if (status === 'unauthenticated' || !user) {
+      router.replace(`/${locale}${LOGIN_PATH}`);
+      return;
+    }
 
-  const t = await getTranslations('portal');
-  const companies = builderContext.actingOnBehalf
-    ? await loadAdminCompanyOptions()
-    : await loadBuilderCompanyOptions(builderContext.session.user.id);
+    let cancelled = false;
+    void (async () => {
+      const builderContext = await assertBuilderSession();
+      if (cancelled) {
+        return;
+      }
+      if (!builderContext) {
+        if (user.role === 'BIGPROJECTS_ADMIN') {
+          router.replace(`/${locale}/admin/companies`);
+        } else {
+          router.replace(`/${locale}${LOGIN_PATH}`);
+        }
+        return;
+      }
+
+      const options = builderContext.actingOnBehalf
+        ? await loadAdminCompanyOptions()
+        : await loadBuilderCompanyOptions(builderContext.session.user.id);
+      if (cancelled) {
+        return;
+      }
+      setContext(builderContext);
+      setCompanies(options);
+      setReady(true);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [locale, router, status, user]);
+
+  if (!ready || !context) {
+    return (
+      <div className="mx-auto max-w-7xl px-6 py-16 text-sm text-[var(--te-muted)]" role="status">
+        Loading…
+      </div>
+    );
+  }
 
   const showSwitcher = companies.length > 1;
 
   return (
     <div className="portal-shell">
-      {builderContext.actingOnBehalf ? (
+      {context.actingOnBehalf ? (
         <ActingOnBehalfBanner
           locale={locale}
-          message={t('actingOnBehalf.message', { company: builderContext.companyName })}
+          message={t('actingOnBehalf.message', { company: context.companyName })}
           exitLabel={t('actingOnBehalf.exit')}
         />
       ) : null}
@@ -49,13 +93,13 @@ export default async function PortalLayout({ children, params }: PortalLayoutPro
           {showSwitcher ? (
             <CompanySwitcher
               locale={locale}
-              activeCompanyId={builderContext.companyId}
+              activeCompanyId={context.companyId}
               companies={companies}
               label={t('companySwitcher.label')}
               ariaLabel={t('companySwitcher.ariaLabel')}
             />
           ) : (
-            <h1 className="portal-shell__company">{builderContext.companyName}</h1>
+            <h1 className="portal-shell__company">{context.companyName}</h1>
           )}
         </div>
         <nav className="portal-nav" aria-label={t('nav.ariaLabel')}>

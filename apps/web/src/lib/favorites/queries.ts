@@ -5,7 +5,7 @@ import {
   type FavoriteToggleInput,
 } from '@toonexpo/contracts';
 
-import { serverApiRequest } from '../api/server';
+import { apiRequest } from '../api/client';
 
 /**
  * Buyer-private favorite list for account UI.
@@ -13,13 +13,13 @@ import { serverApiRequest } from '../api/server';
  * Drops rows whose target was deleted.
  */
 export async function listBuyerFavorites(): Promise<FavoriteListItem[]> {
-  const response = await serverApiRequest<unknown>('/favorites');
+  const response = await apiRequest<unknown>('/favorites');
   return favoriteListSchema.parse(response);
 }
 
 /** Whether the buyer already saved this target (for public page toggle state). */
 export async function isFavorited(input: FavoriteToggleInput): Promise<boolean> {
   const query = new URLSearchParams(input);
-  const response = await serverApiRequest<unknown>(`/favorites/status?${query.toString()}`);
+  const response = await apiRequest<unknown>(`/favorites/status?${query.toString()}`);
   return favoriteStatusResponseSchema.parse(response).favorited;
 }

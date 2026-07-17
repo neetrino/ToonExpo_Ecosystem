@@ -1,13 +1,9 @@
-'use server';
-
 import { assertBuilderSession } from '@/lib/builder/assert-builder-session';
 import type { QrScanDealMutationResult } from '@/lib/qr/mutation-result';
 import { regenerateBuyerQr, revokeBuyerQr } from '@/lib/qr/mutations';
 import { createDealFromQrScan } from '@/lib/qr/scan-deal-mutations';
 import { auth } from '@/auth';
 import { revalidateCrmPortalPaths } from '@/lib/shared/revalidate-crm-paths';
-import { revalidatePath } from 'next/cache';
-
 import type { BuilderScanFormState } from './scan-form-state';
 import type { RegenerateQrFormState } from './regenerate-form-state';
 
@@ -58,7 +54,7 @@ export async function createScanDealAction(
 }
 
 export async function regenerateBuyerQrAction(
-  locale: string,
+  _locale: string,
   _prevState: RegenerateQrFormState,
   _formData: FormData,
 ): Promise<RegenerateQrFormState> {
@@ -71,13 +67,11 @@ export async function regenerateBuyerQrAction(
   if (!result.ok) {
     return { errorKey: result.errorKey };
   }
-
-  revalidatePath(`/${locale}/account`);
   return { success: true };
 }
 
 export async function revokeBuyerQrAction(
-  locale: string,
+  _locale: string,
   _prevState: RegenerateQrFormState,
   _formData: FormData,
 ): Promise<RegenerateQrFormState> {
@@ -90,7 +84,5 @@ export async function revokeBuyerQrAction(
   if (!result.ok) {
     return { errorKey: result.errorKey };
   }
-
-  revalidatePath(`/${locale}/account`);
   return { success: true };
 }

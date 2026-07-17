@@ -1,5 +1,3 @@
-'use server';
-
 import { companyProfileUpdateInputSchema } from '@toonexpo/contracts';
 
 import { assertBuilderSession } from '@/lib/builder/assert-builder-session';

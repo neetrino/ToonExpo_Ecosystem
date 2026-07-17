@@ -1,6 +1,6 @@
 import type { ApartmentStatus } from '@toonexpo/domain';
 
-import { serverApiRequest } from '@/lib/api/server';
+import { apiRequest } from '@/lib/api/client';
 
 export type ApartmentLinkOption = {
   apartmentId: string;
@@ -24,5 +24,5 @@ export async function loadApartmentLinkOptions(
 ): Promise<ProjectApartmentGroup[]> {
   void companyId;
   const query = projectId ? `?projectId=${encodeURIComponent(projectId)}` : '';
-  return serverApiRequest<ProjectApartmentGroup[]>(`/crm/apartment-options${query}`);
+  return apiRequest<ProjectApartmentGroup[]>(`/crm/apartment-options${query}`);
 }

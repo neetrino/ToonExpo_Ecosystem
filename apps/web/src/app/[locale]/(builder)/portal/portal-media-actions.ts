@@ -1,5 +1,3 @@
-'use server';
-
 import { mediaAssetIdInputSchema, mediaAssetUpsertInputSchema } from '@toonexpo/contracts';
 
 import { assertBuilderSession } from '@/lib/builder/assert-builder-session';

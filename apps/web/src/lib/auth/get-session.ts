@@ -1,24 +1,18 @@
 import { authSessionSchema, type AuthSession } from '@toonexpo/contracts';
-import { cookies } from 'next/headers';
 
-import { apiRequest } from '@/lib/api';
-import { SESSION_COOKIE_NAME } from '@/lib/auth/constants';
+import { apiRequest } from '@/lib/api/client';
 
 /**
- * Resolves the current Nest-backed session for Server Components / actions.
- * Returns null when unauthenticated or the session cookie is missing/invalid.
+ * Browser session restore via Nest `/auth/me` (credentials include).
+ * Do not call from RSC — Nest cookies are not on the Next.js domain.
  */
 export async function getSession(): Promise<AuthSession | null> {
-  const cookieStore = await cookies();
-  const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
-  if (!token) {
+  if (typeof window === 'undefined') {
     return null;
   }
 
   try {
-    const raw = await apiRequest<unknown>('/auth/me', {
-      cookie: `${SESSION_COOKIE_NAME}=${token}`,
-    });
+    const raw = await apiRequest<unknown>('/auth/me');
     const parsed = authSessionSchema.safeParse(raw);
     return parsed.success ? parsed.data : null;
   } catch {
@@ -26,5 +20,5 @@ export async function getSession(): Promise<AuthSession | null> {
   }
 }
 
-/** Drop-in replacement for the former Auth.js `auth()` helper. */
+/** Drop-in replacement for the former Auth.js `auth()` helper (browser only). */
 export const auth = getSession;

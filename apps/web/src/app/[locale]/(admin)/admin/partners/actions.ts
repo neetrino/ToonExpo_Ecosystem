@@ -1,5 +1,3 @@
-'use server';
-
 import {
   bankOfferStatusInputSchema,
   bankOfferUpsertInputSchema,

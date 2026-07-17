@@ -6,7 +6,7 @@ import {
 } from '@toonexpo/contracts';
 
 import { getApiErrorKey } from '../api/errors';
-import { serverApiRequest } from '../api/server';
+import { apiRequest } from '../api/client';
 
 export type BuyerProfileMutationResult =
   { ok: true } | { ok: false; errorKey: 'notFound' | 'invalidInput' | 'unauthorized' };
@@ -16,7 +16,7 @@ export async function updateBuyerProfile(
   input: BuyerProfileUpdateInput,
 ): Promise<BuyerProfileMutationResult> {
   try {
-    const response = await serverApiRequest<unknown>('/buyer/profile', {
+    const response = await apiRequest<unknown>('/buyer/profile', {
       method: 'PATCH',
       body: input,
     });
@@ -35,7 +35,7 @@ export type BuyerProfileView = BuyerProfile;
 
 export async function getBuyerProfile(): Promise<BuyerProfileView | null> {
   try {
-    const response = await serverApiRequest<unknown>('/buyer/profile');
+    const response = await apiRequest<unknown>('/buyer/profile');
     return buyerProfileSchema.parse(response);
   } catch (error) {
     if (getApiErrorKey(error) === 'notFound') {

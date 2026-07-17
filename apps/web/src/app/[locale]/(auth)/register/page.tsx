@@ -1,8 +1,7 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
-import { auth } from '@/auth';
+import { AuthRedirectIfAuthenticated } from '@/components/auth/auth-redirect-if-authenticated';
 import { RegisterForm } from '@/components/auth/register-form';
-import { redirect } from '@/i18n/navigation';
 import { safeAuthCallbackPath } from '@/lib/auth/callback-url';
 import { ACCOUNT_PATH } from '@/lib/auth/constants';
 
@@ -28,14 +27,9 @@ export default async function RegisterPage({ params, searchParams }: RegisterPag
   setRequestLocale(locale);
 
   const callbackUrl = safeAuthCallbackPath(rawCallback, locale);
-
-  const session = await auth();
-  if (session?.user) {
-    redirect({
-      href: callbackUrl ? localeRelativePath(callbackUrl, locale) : ACCOUNT_PATH,
-      locale,
-    });
-  }
+  const redirectTo = `/${locale}${
+    callbackUrl ? localeRelativePath(callbackUrl, locale) : ACCOUNT_PATH
+  }`;
 
   const t = await getTranslations('auth.register');
   const loginHref = callbackUrl
@@ -43,14 +37,16 @@ export default async function RegisterPage({ params, searchParams }: RegisterPag
     : '/login';
 
   return (
-    <section className="mx-auto flex max-w-md flex-col gap-6 px-6 py-16">
-      <div className="rounded-[var(--te-radius)] border border-[var(--te-border)] bg-[var(--te-card)] p-6 shadow-[var(--te-shadow-soft)]">
-        <div className="mb-6 flex flex-col gap-2">
-          <h1 className="text-2xl font-semibold text-[var(--te-fg)]">{t('title')}</h1>
-          <p className="text-sm text-[var(--te-muted)]">{t('subtitle')}</p>
+    <AuthRedirectIfAuthenticated redirectTo={redirectTo}>
+      <section className="mx-auto flex max-w-md flex-col gap-6 px-6 py-16">
+        <div className="rounded-[var(--te-radius)] border border-[var(--te-border)] bg-[var(--te-card)] p-6 shadow-[var(--te-shadow-soft)]">
+          <div className="mb-6 flex flex-col gap-2">
+            <h1 className="text-2xl font-semibold text-[var(--te-fg)]">{t('title')}</h1>
+            <p className="text-sm text-[var(--te-muted)]">{t('subtitle')}</p>
+          </div>
+          <RegisterForm locale={locale} callbackUrl={callbackUrl} loginHref={loginHref} />
         </div>
-        <RegisterForm locale={locale} callbackUrl={callbackUrl} loginHref={loginHref} />
-      </div>
-    </section>
+      </section>
+    </AuthRedirectIfAuthenticated>
   );
 }

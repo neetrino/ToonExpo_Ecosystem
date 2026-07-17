@@ -1,5 +1,3 @@
-'use server';
-
 import type { BuilderFormActionState } from './action-state';
 import type { BuilderMutationErrorKey } from './mutation-result';
 import {

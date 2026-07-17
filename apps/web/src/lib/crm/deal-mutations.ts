@@ -7,7 +7,7 @@ import type {
   ManualDealInput,
 } from '@toonexpo/contracts';
 
-import { serverApiRequest } from '@/lib/api/server';
+import { apiRequest } from '@/lib/api/client';
 
 import type { CrmMutationResult } from './mutation-result';
 
@@ -80,5 +80,5 @@ export function createManualDeal(
 }
 
 function mutate<T>(path: string, method: 'POST' | 'PATCH', body: unknown): Promise<T> {
-  return serverApiRequest<T>(path, { method, body });
+  return apiRequest<T>(path, { method, body });
 }

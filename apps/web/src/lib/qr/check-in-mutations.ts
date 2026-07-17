@@ -1,6 +1,6 @@
 import type { CheckInInput } from '@toonexpo/contracts';
 
-import { serverApiRequest } from '@/lib/api/server';
+import { apiRequest } from '@/lib/api/client';
 
 export type CheckInMutationErrorKey =
   'unauthorized' | 'invalidInput' | 'notFound' | 'noActiveEvent' | 'alreadyCheckedIn';
@@ -12,7 +12,7 @@ export type PerformCheckInParams = CheckInInput & { staffUserId: string };
 export async function performEntranceCheckIn(
   raw: PerformCheckInParams,
 ): Promise<CheckInMutationResult> {
-  const result = await serverApiRequest<
+  const result = await apiRequest<
     | { ok: true; checkInId: string; alreadyCheckedIn?: boolean; checkedInAt: string }
     | { ok: false; errorKey: CheckInMutationErrorKey }
   >('/qr/check-in', {

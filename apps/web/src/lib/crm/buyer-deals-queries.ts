@@ -1,6 +1,6 @@
 import type { RequestSource } from '@toonexpo/domain';
 
-import { serverApiRequest } from '@/lib/api/server';
+import { apiRequest } from '@/lib/api/client';
 
 import { mapDealStageToBuyerStatus, type BuyerFacingStatus } from './buyer-facing-status';
 
@@ -17,7 +17,7 @@ export type BuyerDealRow = {
 /** Deals owned by the authenticated buyer, newest activity first. */
 export async function getBuyerDeals(buyerUserId: string): Promise<BuyerDealRow[]> {
   void buyerUserId;
-  const rows = await serverApiRequest<
+  const rows = await apiRequest<
     Array<{
       id: string;
       stage: Parameters<typeof mapDealStageToBuyerStatus>[0];

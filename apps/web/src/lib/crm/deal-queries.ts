@@ -6,7 +6,7 @@ import {
 } from '@toonexpo/domain';
 
 import { getApiErrorKey } from '@/lib/api/errors';
-import { serverApiRequest } from '@/lib/api/server';
+import { apiRequest } from '@/lib/api/client';
 
 import { mapDealDetailRow } from './deal-detail-mapper';
 
@@ -74,7 +74,7 @@ type WireBoardCard = Omit<DealBoardCard, 'lastActivityAt' | 'nextFollowUpAt'> & 
 export async function getCompanyDealsBoard(companyId: string): Promise<DealBoardColumn[]> {
   void companyId;
   const columns =
-    await serverApiRequest<Array<{ stage: DealStage; deals: WireBoardCard[] }>>('/crm/board');
+    await apiRequest<Array<{ stage: DealStage; deals: WireBoardCard[] }>>('/crm/board');
   return columns.map((column) => ({
     ...column,
     deals: column.deals.map((deal) => ({
@@ -91,7 +91,7 @@ export async function getCompanyDealDetail(
 ): Promise<DealDetail | null> {
   void companyId;
   try {
-    const row = await serverApiRequest<Parameters<typeof mapDealDetailRow>[0]>(
+    const row = await apiRequest<Parameters<typeof mapDealDetailRow>[0]>(
       `/crm/deals/${encodeURIComponent(dealId)}`,
     );
     return mapDealDetailRow({

@@ -1,7 +1,7 @@
 import type { AuthSession } from '@toonexpo/contracts';
 
+import { apiRequest } from '@/lib/api/client';
 import { getApiErrorKey } from '@/lib/api/errors';
-import { serverApiRequest } from '@/lib/api/server';
 
 export type BuilderSessionContext = {
   session: AuthSession;
@@ -23,7 +23,7 @@ export type BuilderSessionContext = {
  */
 export async function assertBuilderSession(): Promise<BuilderSessionContext | null> {
   try {
-    return await serverApiRequest<BuilderSessionContext>('/builder/context');
+    return await apiRequest<BuilderSessionContext>('/builder/context');
   } catch (error) {
     if (getApiErrorKey(error) === 'unauthorized') {
       return null;

@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const mockServerApiRequest = vi.fn();
+const mockapiRequest = vi.fn();
 
-vi.mock('../api/server', () => ({
-  serverApiRequest: (...args: unknown[]) => mockServerApiRequest(...args),
+vi.mock('../api/client', () => ({
+  apiRequest: (...args: unknown[]) => mockapiRequest(...args),
 }));
 
 import { ApiClientError } from '../api/errors';
@@ -16,7 +16,7 @@ describe('updateBuyerProfile', () => {
   });
 
   it('updates name and phone through Nest', async () => {
-    mockServerApiRequest.mockResolvedValue({ ok: true });
+    mockapiRequest.mockResolvedValue({ ok: true });
 
     const result = await updateBuyerProfile({
       name: 'Updated Name',
@@ -24,14 +24,14 @@ describe('updateBuyerProfile', () => {
     });
 
     expect(result).toEqual({ ok: true });
-    expect(mockServerApiRequest).toHaveBeenCalledWith('/buyer/profile', {
+    expect(mockapiRequest).toHaveBeenCalledWith('/buyer/profile', {
       method: 'PATCH',
       body: { name: 'Updated Name', phone: '+37491111111' },
     });
   });
 
   it('preserves notFound from Nest', async () => {
-    mockServerApiRequest.mockRejectedValue(
+    mockapiRequest.mockRejectedValue(
       new ApiClientError(404, 'UNKNOWN', 'Not found', { error: 'notFound' }),
     );
 
@@ -42,7 +42,7 @@ describe('updateBuyerProfile', () => {
 
   it('loads and validates the buyer profile through Nest', async () => {
     const profile = { name: 'Buyer', email: 'buyer@example.com', phone: null };
-    mockServerApiRequest.mockResolvedValue(profile);
+    mockapiRequest.mockResolvedValue(profile);
 
     await expect(getBuyerProfile()).resolves.toEqual(profile);
   });

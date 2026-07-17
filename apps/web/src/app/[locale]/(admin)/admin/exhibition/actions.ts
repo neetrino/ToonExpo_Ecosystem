@@ -1,7 +1,3 @@
-'use server';
-
-import { revalidatePath } from 'next/cache';
-
 import { assertAdminSession } from '@/lib/admin/assert-admin-session';
 import { upsertExhibitionEvent } from '@/lib/admin/exhibition-mutations';
 import type { AdminMutationErrorKey, AdminMutationResult } from '@/lib/admin/mutation-result';
@@ -13,12 +9,8 @@ function unauthorized(): { ok: false; errorKey: AdminMutationErrorKey } {
   return { ok: false, errorKey: 'unauthorized' };
 }
 
-function revalidateExhibitionPaths(locale: string): void {
-  revalidatePath(`/${locale}/admin/exhibition`);
-  revalidatePath(`/${locale}/checkin`);
-  revalidatePath(`/${locale}/account`);
-  revalidatePath(`/${locale}/exhibition`);
-  revalidatePath(`/${locale}/portal`);
+function revalidateExhibitionPaths(..._args: unknown[]): void {
+  void _args;
 }
 
 export async function upsertExhibitionEventAction(

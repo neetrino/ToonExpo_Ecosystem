@@ -1,4 +1,4 @@
-import { serverApiRequest } from '@/lib/api/server';
+import { apiRequest } from '@/lib/api/client';
 
 export type PortalCompanyOption = {
   id: string;
@@ -8,10 +8,10 @@ export type PortalCompanyOption = {
 /** Companies a builder may switch into (memberships, earliest first). */
 export async function loadBuilderCompanyOptions(userId: string): Promise<PortalCompanyOption[]> {
   void userId;
-  return serverApiRequest<PortalCompanyOption[]>('/builder/company/options');
+  return apiRequest<PortalCompanyOption[]>('/builder/company/options');
 }
 
 /** All companies for admin portal switcher (name ascending). */
 export async function loadAdminCompanyOptions(): Promise<PortalCompanyOption[]> {
-  return serverApiRequest<PortalCompanyOption[]>('/builder/company/options');
+  return apiRequest<PortalCompanyOption[]>('/builder/company/options');
 }

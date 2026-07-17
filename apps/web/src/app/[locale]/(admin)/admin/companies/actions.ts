@@ -1,8 +1,4 @@
-'use server';
-
 import { companyProfileUpdateInputSchema, companyUpsertInputSchema } from '@toonexpo/contracts';
-import { revalidatePath } from 'next/cache';
-
 import { assertAdminSession } from '@/lib/admin/assert-admin-session';
 import { createCompany, updateCompany } from '@/lib/admin/company-mutations';
 import type { AdminMutationErrorKey, AdminMutationResult } from '@/lib/admin/mutation-result';
@@ -12,9 +8,8 @@ export type CompanyActionResult<T extends Record<string, unknown> = Record<strin
 
 type CompanyActionFailure = { ok: false; errorKey: AdminMutationErrorKey };
 
-function revalidateCompanyPaths(locale: string): void {
-  revalidatePath(`/${locale}/admin/companies`);
-  revalidatePath(`/${locale}/projects`);
+function revalidateCompanyPaths(..._args: unknown[]): void {
+  void _args;
 }
 
 function unauthorized(): CompanyActionFailure {

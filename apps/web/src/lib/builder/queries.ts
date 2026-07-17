@@ -8,8 +8,8 @@ import {
   evaluateProjectCompleteness,
   type ProjectCompletenessKey,
 } from '@/lib/projects/project-completeness';
+import { apiRequest } from '@/lib/api/client';
 import { getApiErrorKey } from '@/lib/api/errors';
-import { serverApiRequest } from '@/lib/api/server';
 
 /** Max status-history rows shown in the apartment editor sheet. */
 const APARTMENT_STATUS_HISTORY_PREVIEW_LIMIT = 10;
@@ -32,16 +32,16 @@ export type BuilderProjectRow = {
 
 export async function loadProjectStatusCounts(companyId: string): Promise<ProjectStatusCounts> {
   void companyId;
-  const groups = await serverApiRequest<
-    Array<{ status: PublicationStatus; _count: { _all: number } }>
-  >('/builder/projects/counts');
+  const groups = await apiRequest<Array<{ status: PublicationStatus; _count: { _all: number } }>>(
+    '/builder/projects/counts',
+  );
 
   return mapProjectStatusCounts(groups);
 }
 
 export async function loadCompanyProjects(companyId: string): Promise<BuilderProjectRow[]> {
   void companyId;
-  const projects = await serverApiRequest<
+  const projects = await apiRequest<
     Array<{
       id: string;
       name: string;
@@ -164,7 +164,7 @@ export async function loadCompanyProjectDetail(
   void companyId;
   void APARTMENT_STATUS_HISTORY_PREVIEW_LIMIT;
   try {
-    const detail = await serverApiRequest<BuilderProjectDetail>(
+    const detail = await apiRequest<BuilderProjectDetail>(
       `/builder/projects/${encodeURIComponent(projectId)}`,
     );
     for (const building of detail.buildings) {

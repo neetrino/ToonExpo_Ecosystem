@@ -1,5 +1,3 @@
-'use server';
-
 import { buyerProfileUpdateInputSchema } from '@toonexpo/contracts';
 
 import { updateBuyerProfile, type BuyerProfileMutationResult } from '@/lib/buyer/profile-mutations';

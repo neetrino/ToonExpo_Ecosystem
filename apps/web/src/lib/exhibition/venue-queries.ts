@@ -1,6 +1,6 @@
 import type { ExhibitionEventStatus, VenuePathNodeKind } from '@toonexpo/domain';
 
-import { serverApiRequest } from '@/lib/api/server';
+import { apiRequest } from '@/lib/api/client';
 
 export type PublicBooth = {
   id: string;
@@ -49,18 +49,18 @@ export type CompanyBoothAssignment = {
 
 export async function hasPublicVenueMap(): Promise<boolean> {
   try {
-    return (await serverApiRequest<{ exists: boolean }>('/exhibition/venue/exists')).exists;
+    return (await apiRequest<{ exists: boolean }>('/exhibition/venue/exists')).exists;
   } catch {
     return false;
   }
 }
 
 export function loadPublicVenueMap(): Promise<PublicVenueMap | null> {
-  return serverApiRequest<PublicVenueMap | null>('/exhibition/venue');
+  return apiRequest<PublicVenueMap | null>('/exhibition/venue');
 }
 
 export function loadCompanyActiveBooth(companyId: string): Promise<CompanyBoothAssignment | null> {
-  return serverApiRequest<CompanyBoothAssignment | null>(
+  return apiRequest<CompanyBoothAssignment | null>(
     `/exhibition/company-booth?companyId=${encodeURIComponent(companyId)}`,
   );
 }
