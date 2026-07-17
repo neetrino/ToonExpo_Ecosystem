@@ -48,7 +48,11 @@ export type CompanyBoothAssignment = {
 };
 
 export async function hasPublicVenueMap(): Promise<boolean> {
-  return (await serverApiRequest<{ exists: boolean }>('/exhibition/venue/exists')).exists;
+  try {
+    return (await serverApiRequest<{ exists: boolean }>('/exhibition/venue/exists')).exists;
+  } catch {
+    return false;
+  }
 }
 
 export function loadPublicVenueMap(): Promise<PublicVenueMap | null> {

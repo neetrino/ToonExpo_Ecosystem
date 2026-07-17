@@ -6,8 +6,8 @@ import type {
 } from '@toonexpo/contracts';
 import type { Prisma, PrismaClient } from '@toonexpo/db';
 
-import { type PrismaService } from '../../common/prisma.service';
-import { type R2DeleteService } from '../uploads/r2-delete.service';
+import { PrismaService } from '../../common/prisma.service';
+import { R2DeleteService } from '../uploads/r2-delete.service';
 import type { BuilderMutationResult } from './builder-mutation.types';
 
 type Tx = Omit<

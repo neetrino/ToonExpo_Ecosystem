@@ -8,9 +8,9 @@ import {
 } from '@toonexpo/contracts';
 import { Prisma } from '@toonexpo/db';
 
-import { type PrismaService } from '../../common/prisma.service';
+import { PrismaService } from '../../common/prisma.service';
 import { hashPassword, verifyPassword } from './password';
-import { type SessionService } from './session.service';
+import { SessionService } from './session.service';
 
 const UNIQUE_CONSTRAINT_ERROR = 'P2002';
 

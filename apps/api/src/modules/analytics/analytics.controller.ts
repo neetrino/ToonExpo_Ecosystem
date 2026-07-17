@@ -2,7 +2,7 @@ import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ANALYTICS_EVENT_TYPES, type AnalyticsEventType } from '@toonexpo/domain';
 
-import { type PrismaService } from '../../common/prisma.service';
+import { PrismaService } from '../../common/prisma.service';
 import { AppOriginGuard } from '../auth/app-origin.guard';
 
 type AnalyticsInput = {

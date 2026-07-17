@@ -5,7 +5,7 @@ import {
   type AuthSession,
 } from '@toonexpo/contracts';
 
-import { type PrismaService } from '../../common/prisma.service';
+import { PrismaService } from '../../common/prisma.service';
 
 const partnerSelect = {
   id: true,

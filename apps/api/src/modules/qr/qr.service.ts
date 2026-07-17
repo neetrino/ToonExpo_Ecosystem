@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 import type { AuthSession, BuilderQrScanDealInput, CheckInInput } from '@toonexpo/contracts';
 import type { Prisma } from '@toonexpo/db';
 
-import { type PrismaService } from '../../common/prisma.service';
+import { PrismaService } from '../../common/prisma.service';
 
 const QR_TOKEN_BYTE_LENGTH = 32;
 const SCAN_DEBOUNCE_MS = 5 * 60 * 1000;

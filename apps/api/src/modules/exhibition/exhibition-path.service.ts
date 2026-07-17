@@ -7,7 +7,7 @@ import {
   venuePathNodeUpsertInputSchema,
 } from '@toonexpo/contracts';
 
-import { type PrismaService } from '../../common/prisma.service';
+import { PrismaService } from '../../common/prisma.service';
 
 @Injectable()
 export class ExhibitionPathService {

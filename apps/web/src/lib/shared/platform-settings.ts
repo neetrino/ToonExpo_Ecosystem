@@ -31,10 +31,18 @@ export function resolveContactWithDefaults(
 }
 
 export async function loadPlatformContactSettings(): Promise<PlatformContactSettings> {
-  return (await loadPublicPlatformSettings()).contact;
+  try {
+    return (await loadPublicPlatformSettings()).contact;
+  } catch {
+    return { email: null, phone: null };
+  }
 }
 
 /** Default/unset MORTGAGE_PAGE_ENABLED is treated as enabled. */
 export async function isMortgagePageEnabled(): Promise<boolean> {
-  return (await loadPublicPlatformSettings()).mortgagePageEnabled;
+  try {
+    return (await loadPublicPlatformSettings()).mortgagePageEnabled;
+  } catch {
+    return true;
+  }
 }

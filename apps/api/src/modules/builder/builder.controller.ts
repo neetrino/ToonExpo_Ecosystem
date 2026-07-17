@@ -1,4 +1,4 @@
-import { type BuilderCatalogPathService } from './builder-catalog-path.service';
+import { BuilderCatalogPathService } from './builder-catalog-path.service';
 import {
   Body,
   Controller,
@@ -34,17 +34,17 @@ import { z } from 'zod';
 import { AppOriginGuard } from '../auth/app-origin.guard';
 import { CsrfGuard } from '../auth/csrf.guard';
 import { SessionAuthGuard, type RequestWithAuth } from '../auth/session-auth.guard';
-import { type BuilderAnalyticsService } from './builder-analytics.service';
+import { BuilderAnalyticsService } from './builder-analytics.service';
 import { actor, parse, requireSession, single, throwInvalid } from './builder-controller.helpers';
 import {
   ACTIVE_COMPANY_COOKIE,
+  BuilderContextService,
   type BuilderContext,
-  type BuilderContextService,
 } from './builder-context.service';
-import { type BuilderInventoryService } from './builder-inventory.service';
-import { type BuilderMediaService } from './builder-media.service';
-import { type BuilderProjectService } from './builder-project.service';
-import { type BuilderQueryService } from './builder-query.service';
+import { BuilderInventoryService } from './builder-inventory.service';
+import { BuilderMediaService } from './builder-media.service';
+import { BuilderProjectService } from './builder-project.service';
+import { BuilderQueryService } from './builder-query.service';
 
 @ApiTags('builder')
 @ApiCookieAuth()

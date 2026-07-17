@@ -29,7 +29,7 @@ export default async function AdminAuditPage({ params, searchParams }: AdminAudi
         <h2 className="portal-page__title">{t('title')}</h2>
         <p className="portal-page__subtitle">{t('subtitle')}</p>
         <p>
-          <a className="portal-nav__link" href="/api/admin/reports/audit">
+          <a className="portal-nav__link" href="/nest/admin/reports/audit">
             {t('exportCsv')}
           </a>
         </p>

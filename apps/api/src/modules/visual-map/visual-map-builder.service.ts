@@ -9,7 +9,7 @@ import {
 } from '@toonexpo/contracts';
 import type { Prisma } from '@toonexpo/db';
 
-import { type PrismaService } from '../../common/prisma.service';
+import { PrismaService } from '../../common/prisma.service';
 
 type OwnedCanvas = {
   id: string;

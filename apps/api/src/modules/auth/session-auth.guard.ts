@@ -8,7 +8,7 @@ import type { AuthSession } from '@toonexpo/contracts';
 import type { Request } from 'express';
 
 import { SESSION_COOKIE_NAME } from './auth.constants';
-import { type SessionService } from './session.service';
+import { SessionService } from './session.service';
 
 export type RequestWithAuth = Request & {
   authSession?: AuthSession;

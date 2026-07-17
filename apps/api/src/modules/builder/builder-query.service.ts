@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 
-import { type PrismaService } from '../../common/prisma.service';
+import { PrismaService } from '../../common/prisma.service';
 
 const STATUS_HISTORY_LIMIT = 10;
 

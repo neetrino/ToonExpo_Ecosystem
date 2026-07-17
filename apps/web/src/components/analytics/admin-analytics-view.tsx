@@ -23,16 +23,16 @@ export function AdminAnalyticsView({ t, data }: AdminAnalyticsViewProps) {
         <h2 className="portal-page__title">{t('title')}</h2>
         <p className="analytics-page__subtitle">{t('subtitle', { days: data.lookbackDays })}</p>
         <nav className="portal-nav" aria-label={t('exports.ariaLabel')}>
-          <a className="portal-nav__link" href="/api/admin/reports/deals">
+          <a className="portal-nav__link" href="/nest/admin/reports/deals">
             {t('exports.deals')}
           </a>
-          <a className="portal-nav__link" href="/api/admin/reports/checkins">
+          <a className="portal-nav__link" href="/nest/admin/reports/checkins">
             {t('exports.checkins')}
           </a>
-          <a className="portal-nav__link" href="/api/admin/reports/project-views">
+          <a className="portal-nav__link" href="/nest/admin/reports/project-views">
             {t('exports.projectViews')}
           </a>
-          <a className="portal-nav__link" href="/api/admin/reports/audit">
+          <a className="portal-nav__link" href="/nest/admin/reports/audit">
             {t('exports.audit')}
           </a>
         </nav>

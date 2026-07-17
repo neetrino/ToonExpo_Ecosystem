@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import type { AuthSession, UploadPurpose } from '@toonexpo/contracts';
 
-import { type PrismaService } from '../../common/prisma.service';
+import { PrismaService } from '../../common/prisma.service';
 import type { UploadObjectScope } from './object-key';
 
 /** Must match apps/web active-company cookie (same-origin /nest rewrite forwards it). */

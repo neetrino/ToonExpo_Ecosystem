@@ -28,8 +28,8 @@ function splitLocale(pathname: string): { locale: string; rest: string } {
  * Runs next-intl first (locale negotiation/prefixing). For protected areas it
  * then performs a COARSE check: presence of a session cookie only. Real session
  * validation and role checks happen server-side in the route-group layouts
- * (defense in depth). The `api` path stays excluded via `config.matcher`, so
- * `/api/auth/*` continues to work.
+ * (defense in depth). The `api` and `nest` paths stay excluded via `config.matcher`
+ * so Nest rewrites (`/nest/*`) are never locale-prefixed.
  */
 /** ISO-ish locale codes (e.g. `de`, `fr-CA`) that are not in SUPPORTED_LOCALES. */
 const LOCALE_CODE_PATTERN = /^[a-z]{2}(?:-[A-Za-z]{2})?$/;

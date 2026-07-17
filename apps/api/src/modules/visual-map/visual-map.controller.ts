@@ -14,8 +14,8 @@ import { ApiCookieAuth, ApiTags } from '@nestjs/swagger';
 import { AppOriginGuard } from '../auth/app-origin.guard';
 import { CsrfGuard } from '../auth/csrf.guard';
 import { SessionAuthGuard, type RequestWithAuth } from '../auth/session-auth.guard';
-import { type VisualMapBuilderService } from './visual-map-builder.service';
-import { type VisualMapPublicService } from './visual-map-public.service';
+import { VisualMapBuilderService } from './visual-map-builder.service';
+import { VisualMapPublicService } from './visual-map-public.service';
 
 @ApiTags('visual-map')
 @ApiCookieAuth()

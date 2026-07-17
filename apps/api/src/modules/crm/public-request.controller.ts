@@ -13,9 +13,9 @@ import type { Request } from 'express';
 import { AppOriginGuard } from '../auth/app-origin.guard';
 import { SESSION_COOKIE_NAME } from '../auth/auth.constants';
 import { CsrfGuard } from '../auth/csrf.guard';
-import { type SessionService } from '../auth/session.service';
+import { SessionService } from '../auth/session.service';
 import { allowPublicRequest } from './public-request-rate-limit';
-import { type PublicRequestService } from './public-request.service';
+import { PublicRequestService } from './public-request.service';
 
 @Controller('crm/public-requests')
 @UseGuards(AppOriginGuard, CsrfGuard)

@@ -3,7 +3,7 @@ import type { PublicRequestInput } from '@toonexpo/contracts';
 import type { Prisma, PrismaClient } from '@toonexpo/db';
 import type { ApartmentStatus, RequestSource } from '@toonexpo/domain';
 
-import { type PrismaService } from '../../common/prisma.service';
+import { PrismaService } from '../../common/prisma.service';
 
 type Tx = Omit<
   PrismaClient,

@@ -7,8 +7,8 @@ import {
 } from '@toonexpo/contracts';
 import { Prisma } from '@toonexpo/db';
 
-import { type PrismaService } from '../../common/prisma.service';
-import { type ExhibitionPathService } from './exhibition-path.service';
+import { PrismaService } from '../../common/prisma.service';
+import { ExhibitionPathService } from './exhibition-path.service';
 
 const RECENT_CHECK_INS_LIMIT = 20;
 
