@@ -1,5 +1,3 @@
-import { randomBytes } from 'node:crypto';
-
 import {
   BadRequestException,
   Body,
@@ -30,8 +28,7 @@ import { CSRF_COOKIE_NAME, SESSION_COOKIE_NAME } from './auth.constants';
 import { AuthService, type AuthMutationFailure } from './auth.service';
 import { buildCsrfCookieOptions, buildSessionCookieOptions } from './cookie-options';
 import { CsrfGuard } from './csrf.guard';
-
-const CSRF_BYTE_LENGTH = 32;
+import { issueOrReuseCsrfToken } from './csrf-token';
 
 function clientIp(req: Request): string {
   const forwarded = req.headers['x-forwarded-for'];
@@ -56,12 +53,20 @@ export class AuthController {
   ) {}
 
   @Get('csrf')
-  @ApiOperation({ summary: 'Issue CSRF cookie for subsequent mutating auth calls' })
-  @ApiResponse({ status: 200, description: 'CSRF token (also set as cookie)' })
-  getCsrf(@Res({ passthrough: true }) res: Response): { csrfToken: string } {
-    const env = loadApiEnv();
-    const csrfToken = randomBytes(CSRF_BYTE_LENGTH).toString('base64url');
-    res.cookie(CSRF_COOKIE_NAME, csrfToken, buildCsrfCookieOptions(env));
+  @ApiOperation({
+    summary: 'Return CSRF cookie token for mutating calls (reuse existing when valid)',
+  })
+  @ApiResponse({ status: 200, description: 'CSRF token (set as cookie when newly issued)' })
+  getCsrf(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ): { csrfToken: string } {
+    const existing = req.cookies?.[CSRF_COOKIE_NAME];
+    const { csrfToken, setCookie } = issueOrReuseCsrfToken(existing);
+    if (setCookie) {
+      const env = loadApiEnv();
+      res.cookie(CSRF_COOKIE_NAME, csrfToken, buildCsrfCookieOptions(env));
+    }
     return { csrfToken };
   }
 

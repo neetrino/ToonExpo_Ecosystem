@@ -23,6 +23,11 @@ type RequestOptions = {
   skipCsrf?: boolean;
 };
 
+/** Clears the in-memory CSRF cache (tests and CSRF_REJECTED recovery). */
+export function clearCachedBrowserCsrfToken(): void {
+  cachedBrowserCsrfToken = null;
+}
+
 function readBrowserCsrfToken(): string | null {
   if (cachedBrowserCsrfToken) {
     return cachedBrowserCsrfToken;
@@ -82,12 +87,11 @@ async function parseError(response: Response): Promise<ApiClientError> {
   return new ApiClientError(response.status, code, message, body);
 }
 
-/**
- * Typed fetch wrapper for the NestJS API.
- * Always sends credentials so cross-origin httpOnly session cookies are included.
- * Mutating browser calls send double-submit CSRF.
- */
-export async function apiRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
+async function executeApiRequest<T>(
+  path: string,
+  options: RequestOptions,
+  isCsrfRetry: boolean,
+): Promise<T> {
   const method = options.method ?? 'GET';
   const isServer = typeof window === 'undefined';
   const headers: Record<string, string> = {
@@ -128,10 +132,30 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
   }
 
   if (!response.ok) {
-    throw await parseError(response);
+    const error = await parseError(response);
+    if (
+      !isCsrfRetry &&
+      !isServer &&
+      needsCsrf &&
+      error.code === 'CSRF_REJECTED'
+    ) {
+      clearCachedBrowserCsrfToken();
+      return executeApiRequest(path, options, true);
+    }
+    throw error;
   }
 
   return (await response.json()) as T;
+}
+
+/**
+ * Typed fetch wrapper for the NestJS API.
+ * Always sends credentials so cross-origin httpOnly session cookies are included.
+ * Mutating browser calls send double-submit CSRF.
+ * On CSRF_REJECTED, clears the cached token, re-fetches CSRF, and retries once.
+ */
+export async function apiRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
+  return executeApiRequest(path, options, false);
 }
 
 export { resolveApiBaseUrl, buildApiUrl };
