@@ -5,7 +5,9 @@ Public and private role-based platform for ToonExpo buyers, builders, partners, 
 **Project size:** C - large  
 **Architecture style:** modular monolith in a monorepo  
 **Primary deployables:** `apps/web` and `apps/api`  
-**Last updated:** 2026-07-08
+**Last updated:** 2026-07-17
+
+**Backend isolation:** NestJS is the only backend. Next.js is frontend-only (typed client + `/nest` rewrite). Do not put Prisma, Auth.js, R2/Resend/Redis/BOS secrets, or product API routes in `apps/web`.
 
 ---
 
@@ -153,9 +155,12 @@ Hard rules:
 - `packages/domain` must not import Next.js, NestJS, Prisma, React or browser APIs.
 - `packages/db` maps database records to domain concepts; it does not own business policy.
 - `packages/contracts` owns shared request/response shapes and status enums.
-- `apps/web` never imports Prisma or server secrets.
-- `apps/api` is the only runtime that talks directly to the database and external services.
+- `apps/web` never imports Prisma, Auth.js/next-auth, argon2, or server secrets (`DATABASE_URL`, `AUTH_SECRET`, R2, Resend, Redis, BOS).
+- `apps/web` must not host product REST under `app/api`; it calls Nest via `/nest/*` (same-origin rewrite) using `apps/web/src/lib/api/*`.
+- `apps/api` is the only runtime that talks directly to the database and external services (auth sessions, uploads presign, email, rate limits, BOS).
+- Thin `'use server'` wrappers in web may call Nest only — never Prisma.
 - Cross-module imports go through public module exports, not deep internal paths.
+- If historical docs conflict with these rules or `docs/TECH_CARD.md`, follow this file and TECH_CARD.
 
 ---
 

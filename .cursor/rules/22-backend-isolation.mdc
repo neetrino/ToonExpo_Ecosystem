@@ -1,0 +1,38 @@
+---
+description: NestJS is the only backend — Next.js is frontend-only. Prevents Auth.js/Prisma-in-web regressions.
+alwaysApply: true
+---
+
+# Backend isolation (ToonExpo)
+
+**Source of truth:** `docs/TECH_CARD.md`, `docs/01-ARCHITECTURE.md`, `AGENTS.md`.
+
+If older docs (`docs/PROGRESS.md` history, `docs/reference/*`, sprint notes) mention Auth.js, Prisma in `apps/web`, or Next.js `app/api` routes for business logic — **ignore them**. Prefer Nest.
+
+## Hard boundaries
+
+- **`apps/api` (NestJS)** — only runtime that may use Prisma (`@toonexpo/db`), `DATABASE_URL`, `AUTH_SECRET`, R2, Resend, Upstash Redis, BOS secrets.
+- **`apps/web` (Next.js)** — UI + typed HTTP client only. Allowed env: `APP_URL`, `NEXT_PUBLIC_API_URL` (default `/nest`), `API_URL` (rewrite target), Sentry public/DSN as documented. **No** Prisma, argon2, next-auth/Auth.js, AWS SDK, private Redis/R2/BOS keys.
+- Browser → same-origin **`/nest/*`** rewrite → Nest. Session cookie: Nest httpOnly DB sessions (`toonexpo.sid`) + CSRF double-submit.
+- Thin `'use server'` wrappers may call Nest via `serverApiRequest` — they must **not** touch the database.
+
+## Never do (regressions)
+
+- Add `apps/web/src/app/api/**` for product APIs.
+- Import `@toonexpo/db` / Prisma from `apps/web`.
+- Reintroduce Auth.js / NextAuth in web.
+- Put infrastructure secrets in web env or client bundles.
+- “Wire Nest to Auth.js sessions” — auth **is** Nest DB sessions already.
+
+## Where new backend work goes
+
+| Concern | Place |
+|---|---|
+| Auth, CRM, catalog, QR, uploads, admin, analytics, exhibition, visual-map, favorites, partner, builder, buyer | Nest module under `apps/api/src/modules/*` |
+| Shared DTOs / Zod | `packages/contracts` |
+| Schema / migrations | `packages/db` |
+| UI calling API | `apps/web/src/lib/api/*` + feature `lib/*` wrappers |
+
+## Before large changes
+
+Read `docs/TECH_CARD.md` auth/backend rows and architecture hard rules. Do not follow sprint history that contradicts them.

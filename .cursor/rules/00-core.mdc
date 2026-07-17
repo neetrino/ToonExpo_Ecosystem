@@ -98,6 +98,7 @@ Full DoD/PR/release checklists: [`docs/reference/Check/Quality/project-quality-c
 | CI/CD | `17-cicd.mdc` |
 | i18n | `20-i18n.mdc` |
 | Onboarding | `21-project-onboarding.mdc` |
+| Backend isolation (Nest-only) | `22-backend-isolation.mdc` |
 | Project size | `99-project-size.mdc` |
 
 Platform how-tos: `docs/reference/platforms/`.

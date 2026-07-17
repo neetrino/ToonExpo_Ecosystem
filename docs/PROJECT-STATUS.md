@@ -1,7 +1,7 @@
 # Project — Status
 
-**Branch:** `sipan` · **Updated:** 2026-07-12  
-**Overall (v1 product):** ~96% — MVP + post-MVP features shipped; partner self-service and P1/P2 polish landed; remaining work is ops/deferred enhancements.
+**Branch:** `refactor/nestjs-backend-isolation` (see current git) · **Updated:** 2026-07-17  
+**Overall (v1 product):** ~96% — MVP + post-MVP features shipped; Nest is sole backend (web frontend-only); remaining work is ops/deferred enhancements.
 
 Status legend:
 
@@ -20,7 +20,7 @@ Continue-dev backlog: [`PROGRESS.md` → Handoff](./PROGRESS.md#handoff--next-wo
 
 | # | Module | Status | Ready | What’s in | Gaps / next |
 |---|--------|--------|------:|-----------|-------------|
-| 01 | [Account & Access](./02-ToonExpo-Ecosystem/01-Modules/01-Account-Access.md) | Done | 95% | Auth.js DB sessions, buyer register/login, roles, invite set-password (Resend), rate limits | Email/phone verification; password reset for existing users |
+| 01 | [Account & Access](./02-ToonExpo-Ecosystem/01-Modules/01-Account-Access.md) | Done | 95% | Nest httpOnly DB sessions, buyer register/login, roles, invite set-password (Resend), rate limits; Auth.js removed from web | Email/phone verification; password reset for existing users |
 | 02 | [Public Web / Mobile App](./02-ToonExpo-Ecosystem/01-Modules/02-Public-Web-Mobile-App.md) | Done | 93% | Navy/teal marketplace UI, catalog (~20 seeded projects), builders, partners, mortgage, exhibition, SEO metadata + JSON-LD on detail pages | Mobile polish pass; Playwright in CI |
 | 03 | [Buyer / Visitor Area](./02-ToonExpo-Ecosystem/01-Modules/03-Buyer-Visitor-Area.md) | Done | 95% | Account, QR (incl. revoke), request history, favorites, profile edit | — |
 | 04 | [Builder Portal](./02-ToonExpo-Ecosystem/01-Modules/04-Builder-Portal.md) | Done | 95% | Projects/inventory/media, CRM, company, readiness, analytics, visual maps, company switcher, completeness flags | Admin acting-on-behalf already works |
@@ -34,7 +34,7 @@ Continue-dev backlog: [`PROGRESS.md` → Handoff](./PROGRESS.md#handoff--next-wo
 | 12 | [Exhibition Map & Check-in](./02-ToonExpo-Ecosystem/01-Modules/12-Exhibition-Map-Checkin.md) | Mostly done | 93% | Events, check-in, venue map, booths (`projectId` assign + public search/link), route path (BFS), seed graph | No GPS; no multi-floor routing; booth spreadsheet import; stacked sheets |
 | 13 | [Admin / Content Management](./02-ToonExpo-Ecosystem/01-Modules/13-Admin-Content-Management.md) | Done | 95% | Companies/projects/partners/exhibition/settings/audit/CSV, Open in portal, readiness category CRUD | Company public vs internal field split (deferred) |
 | 14 | [Analytics](./02-ToonExpo-Ecosystem/01-Modules/14-Analytics.md) | Mostly done | 90% | Event tracking (`PROJECT_VIEW`, `APARTMENT_VIEW`, `BOOTH_SELECTED`, `ROUTE_REQUESTED`), admin/builder dashboards with apartment views, sampling + bot filter | `AnalyticsDailyAggregate` warehouse |
-| 15 | [Integrations (BOS)](./02-ToonExpo-Ecosystem/01-Modules/15-Integrations.md) | Done | 90% | BOS provisioning API (atomic/idempotent), audit log, invites | Nest session verification vs DB; future sync contracts |
+| 15 | [Integrations (BOS)](./02-ToonExpo-Ecosystem/01-Modules/15-Integrations.md) | Done | 90% | BOS provisioning API (atomic/idempotent), audit log, invites | Future sync contracts |
 | 16 | [Mortgage / Bank Offers](./02-ToonExpo-Ecosystem/01-Modules/16-Mortgage-Bank-Offers.md) | Done | 95% | Public calculator, bank offers, min down payment, platform toggle | — |
 | 17 | [Service Provider Directory](./02-ToonExpo-Ecosystem/01-Modules/17-Service-Provider-Directory.md) | Done | 90% | Via Partners `SERVICE_COMPANY` + `serviceCategories` (product decision) | No separate ServiceProvider models (by design) |
 
