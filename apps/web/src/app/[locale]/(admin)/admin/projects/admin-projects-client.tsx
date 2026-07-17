@@ -3,8 +3,9 @@
 import type { PublicationStatus } from '@toonexpo/domain';
 import { useLocale, useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
+import { DataRefreshProvider } from '@/components/portal-forms/data-refresh-context';
 import { loadAllProjects, type AdminProjectRow } from '@/lib/admin/queries';
 import { parseProjectStatusFilter } from '@/lib/admin/project-status-filter';
 import { PROJECT_COMPLETENESS_KEYS } from '@/lib/projects/project-completeness';
@@ -21,20 +22,14 @@ export function AdminProjectsClient() {
   const tCompleteness = useTranslations('completeness');
   const [projects, setProjects] = useState<AdminProjectRow[] | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
-    setProjects(null);
-    void (async () => {
-      const next = await loadAllProjects(statusFilter);
-      if (cancelled) {
-        return;
-      }
-      setProjects(next);
-    })();
-    return () => {
-      cancelled = true;
-    };
+  const loadProjects = useCallback(async () => {
+    setProjects(await loadAllProjects(statusFilter));
   }, [statusFilter]);
+
+  useEffect(() => {
+    setProjects(null);
+    void loadProjects();
+  }, [loadProjects]);
 
   if (!projects) {
     return (
@@ -59,41 +54,43 @@ export function AdminProjectsClient() {
   };
 
   return (
-    <section>
-      <div className="portal-page__header">
-        <h2 className="portal-page__title">{t('title')}</h2>
-        <ProjectStatusFilter
-          currentStatus={statusFilter}
-          labels={{
-            all: t('filter.all'),
-            ariaLabel: t('filter.ariaLabel'),
-            DRAFT: statusLabels.DRAFT,
-            PUBLISHED: statusLabels.PUBLISHED,
-            ARCHIVED: statusLabels.ARCHIVED,
-          }}
-        />
-      </div>
+    <DataRefreshProvider refresh={loadProjects}>
+      <section>
+        <div className="portal-page__header">
+          <h2 className="portal-page__title">{t('title')}</h2>
+          <ProjectStatusFilter
+            currentStatus={statusFilter}
+            labels={{
+              all: t('filter.all'),
+              ariaLabel: t('filter.ariaLabel'),
+              DRAFT: statusLabels.DRAFT,
+              PUBLISHED: statusLabels.PUBLISHED,
+              ARCHIVED: statusLabels.ARCHIVED,
+            }}
+          />
+        </div>
 
-      {projects.length === 0 ? (
-        <p className="portal-empty">{t('empty')}</p>
-      ) : (
-        <AdminProjectsTable
-          locale={locale}
-          projects={projects}
-          labels={{
-            columns: {
-              company: t('columns.company'),
-              name: t('columns.name'),
-              status: t('columns.status'),
-              buildings: t('columns.buildings'),
-              updatedAt: t('columns.updatedAt'),
-              actions: t('columns.actions'),
-            },
-          }}
-          statusLabels={statusLabels}
-          completenessLabels={completenessLabels}
-        />
-      )}
-    </section>
+        {projects.length === 0 ? (
+          <p className="portal-empty">{t('empty')}</p>
+        ) : (
+          <AdminProjectsTable
+            locale={locale}
+            projects={projects}
+            labels={{
+              columns: {
+                company: t('columns.company'),
+                name: t('columns.name'),
+                status: t('columns.status'),
+                buildings: t('columns.buildings'),
+                updatedAt: t('columns.updatedAt'),
+                actions: t('columns.actions'),
+              },
+            }}
+            statusLabels={statusLabels}
+            completenessLabels={completenessLabels}
+          />
+        )}
+      </section>
+    </DataRefreshProvider>
   );
 }

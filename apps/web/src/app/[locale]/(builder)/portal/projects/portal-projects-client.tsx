@@ -1,8 +1,9 @@
 'use client';
 
 import { useLocale, useTranslations } from 'next-intl';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
+import { DataRefreshProvider } from '@/components/portal-forms/data-refresh-context';
 import { assertBuilderSession } from '@/lib/builder/assert-builder-session';
 import { loadCompanyProjects, type BuilderProjectRow } from '@/lib/builder/queries';
 import { PROJECT_COMPLETENESS_KEYS } from '@/lib/projects/project-completeness';
@@ -17,23 +18,17 @@ export function PortalProjectsClient() {
   const tCompleteness = useTranslations('completeness');
   const [projects, setProjects] = useState<BuilderProjectRow[] | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
-    void (async () => {
-      const builderContext = await assertBuilderSession();
-      if (!builderContext || cancelled) {
-        return;
-      }
-      const next = await loadCompanyProjects(builderContext.companyId);
-      if (cancelled) {
-        return;
-      }
-      setProjects(next);
-    })();
-    return () => {
-      cancelled = true;
-    };
+  const loadProjects = useCallback(async () => {
+    const builderContext = await assertBuilderSession();
+    if (!builderContext) {
+      return;
+    }
+    setProjects(await loadCompanyProjects(builderContext.companyId));
   }, []);
+
+  useEffect(() => {
+    void loadProjects();
+  }, [loadProjects]);
 
   if (!projects) {
     return (
@@ -52,39 +47,41 @@ export function PortalProjectsClient() {
   };
 
   return (
-    <section>
-      <div className="portal-page__header">
-        <h2 className="portal-page__title">{t('title')}</h2>
-        <div className="portal-toolbar">
-          <NewProjectButton locale={locale} label={t('newProject')} />
+    <DataRefreshProvider refresh={loadProjects}>
+      <section>
+        <div className="portal-page__header">
+          <h2 className="portal-page__title">{t('title')}</h2>
+          <div className="portal-toolbar">
+            <NewProjectButton locale={locale} label={t('newProject')} />
+          </div>
         </div>
-      </div>
 
-      {projects.length === 0 ? (
-        <p className="portal-empty">{t('empty')}</p>
-      ) : (
-        <ProjectsTable
-          locale={locale}
-          projects={projects}
-          labels={{
-            noCity: t('noCity'),
-            columns: {
-              name: t('columns.name'),
-              city: t('columns.city'),
-              status: t('columns.status'),
-              buildings: t('columns.buildings'),
-              updatedAt: t('columns.updatedAt'),
-              actions: t('columns.actions'),
-            },
-          }}
-          statusLabels={{
-            DRAFT: tStatus('DRAFT'),
-            PUBLISHED: tStatus('PUBLISHED'),
-            ARCHIVED: tStatus('ARCHIVED'),
-          }}
-          completenessLabels={completenessLabels}
-        />
-      )}
-    </section>
+        {projects.length === 0 ? (
+          <p className="portal-empty">{t('empty')}</p>
+        ) : (
+          <ProjectsTable
+            locale={locale}
+            projects={projects}
+            labels={{
+              noCity: t('noCity'),
+              columns: {
+                name: t('columns.name'),
+                city: t('columns.city'),
+                status: t('columns.status'),
+                buildings: t('columns.buildings'),
+                updatedAt: t('columns.updatedAt'),
+                actions: t('columns.actions'),
+              },
+            }}
+            statusLabels={{
+              DRAFT: tStatus('DRAFT'),
+              PUBLISHED: tStatus('PUBLISHED'),
+              ARCHIVED: tStatus('ARCHIVED'),
+            }}
+            completenessLabels={completenessLabels}
+          />
+        )}
+      </section>
+    </DataRefreshProvider>
   );
 }

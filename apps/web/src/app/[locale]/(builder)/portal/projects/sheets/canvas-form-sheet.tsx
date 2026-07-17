@@ -10,6 +10,7 @@ import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { useState, useTransition } from 'react';
 
+import { useDataRefresh } from '@/components/portal-forms/data-refresh-context';
 import {
   PortalFormField,
   PortalSelect,
@@ -35,6 +36,7 @@ type ContextKind = 'project' | 'building' | 'floor';
 export function CanvasFormSheet({ locale, project, open, onClose }: CanvasFormSheetProps) {
   const t = useTranslations('portal.visualMap.canvasForm');
   const router = useRouter();
+  const refreshData = useDataRefresh();
   const [pending, startTransition] = useTransition();
   const [errorKey, setErrorKey] = useState<VisualMapMutationErrorKey | undefined>();
   const [contextKind, setContextKind] = useState<ContextKind>('project');
@@ -59,6 +61,7 @@ export function CanvasFormSheet({ locale, project, open, onClose }: CanvasFormSh
       }
       onClose();
       router.push(`/portal/projects/${project.id}/visual-maps/${result.canvasId}`);
+      void refreshData?.();
       router.refresh();
     });
   }

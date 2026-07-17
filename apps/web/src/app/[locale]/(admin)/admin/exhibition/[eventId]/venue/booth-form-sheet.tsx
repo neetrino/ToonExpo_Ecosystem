@@ -11,6 +11,7 @@ import { SideSheet } from '@toonexpo/ui';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState, useTransition } from 'react';
 
+import { useDataRefresh } from '@/components/portal-forms/data-refresh-context';
 import { PortalFormError } from '@/components/portal-forms/form-error';
 import {
   PortalFormField,
@@ -58,6 +59,7 @@ export function BoothFormSheet({
 }: BoothFormSheetProps) {
   const t = useTranslations('admin.exhibition.venue.boothForm');
   const router = useRouter();
+  const refreshData = useDataRefresh();
   const [pending, startTransition] = useTransition();
   const [errorKey, setErrorKey] = useState<AdminMutationErrorKey | undefined>();
   const [companyId, setCompanyId] = useState(booth?.companyId ?? '');
@@ -105,6 +107,7 @@ export function BoothFormSheet({
         return;
       }
       onClose();
+      void refreshData?.();
       router.refresh();
     });
   }
@@ -121,6 +124,7 @@ export function BoothFormSheet({
         return;
       }
       onClose();
+      void refreshData?.();
       router.refresh();
     });
   }

@@ -4,8 +4,9 @@ import type { PartnerType, PublicationStatus } from '@toonexpo/domain';
 import { PARTNER_TYPES } from '@toonexpo/domain';
 import { useLocale, useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
+import { DataRefreshProvider } from '@/components/portal-forms/data-refresh-context';
 import { loadAllPartners, type AdminPartnerRow } from '@/lib/admin/queries';
 import { parsePartnerTypeFilter } from '@/lib/admin/partner-type-filter';
 
@@ -22,20 +23,14 @@ export function AdminPartnersClient() {
   const tStatus = useTranslations('admin.partners.status');
   const [partners, setPartners] = useState<AdminPartnerRow[] | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
-    setPartners(null);
-    void (async () => {
-      const next = await loadAllPartners(typeFilter);
-      if (cancelled) {
-        return;
-      }
-      setPartners(next);
-    })();
-    return () => {
-      cancelled = true;
-    };
+  const loadPartners = useCallback(async () => {
+    setPartners(await loadAllPartners(typeFilter));
   }, [typeFilter]);
+
+  useEffect(() => {
+    setPartners(null);
+    void loadPartners();
+  }, [loadPartners]);
 
   if (!partners) {
     return (
@@ -56,42 +51,44 @@ export function AdminPartnersClient() {
   };
 
   return (
-    <section>
-      <div className="portal-page__header">
-        <h2 className="portal-page__title">{t('title')}</h2>
-        <div className="portal-toolbar">
-          <NewPartnerButton locale={locale} label={t('newPartner')} />
+    <DataRefreshProvider refresh={loadPartners}>
+      <section>
+        <div className="portal-page__header">
+          <h2 className="portal-page__title">{t('title')}</h2>
+          <div className="portal-toolbar">
+            <NewPartnerButton locale={locale} label={t('newPartner')} />
+          </div>
         </div>
-      </div>
 
-      <PartnerTypeFilter
-        currentType={typeFilter}
-        labels={{
-          all: t('filter.all'),
-          ariaLabel: t('filter.ariaLabel'),
-          ...typeLabels,
-        }}
-      />
-
-      {partners.length === 0 ? (
-        <p className="portal-empty">{t('empty')}</p>
-      ) : (
-        <PartnersTable
-          partners={partners}
+        <PartnerTypeFilter
+          currentType={typeFilter}
           labels={{
-            columns: {
-              name: t('columns.name'),
-              type: t('columns.type'),
-              status: t('columns.status'),
-              offers: t('columns.offers'),
-              actions: t('columns.actions'),
-            },
-            open: t('open'),
+            all: t('filter.all'),
+            ariaLabel: t('filter.ariaLabel'),
+            ...typeLabels,
           }}
-          typeLabels={typeLabels}
-          statusLabels={statusLabels}
         />
-      )}
-    </section>
+
+        {partners.length === 0 ? (
+          <p className="portal-empty">{t('empty')}</p>
+        ) : (
+          <PartnersTable
+            partners={partners}
+            labels={{
+              columns: {
+                name: t('columns.name'),
+                type: t('columns.type'),
+                status: t('columns.status'),
+                offers: t('columns.offers'),
+                actions: t('columns.actions'),
+              },
+              open: t('open'),
+            }}
+            typeLabels={typeLabels}
+            statusLabels={statusLabels}
+          />
+        )}
+      </section>
+    </DataRefreshProvider>
   );
 }

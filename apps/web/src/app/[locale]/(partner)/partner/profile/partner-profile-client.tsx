@@ -1,8 +1,9 @@
 'use client';
 
 import { useLocale, useTranslations } from 'next-intl';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
+import { DataRefreshProvider } from '@/components/portal-forms/data-refresh-context';
 import {
   assertPartnerSession,
   type PartnerSessionPartner,
@@ -16,20 +17,15 @@ export function PartnerProfileClient() {
   const [partner, setPartner] = useState<PartnerSessionPartner | null>(null);
   const [ready, setReady] = useState(false);
 
-  useEffect(() => {
-    let cancelled = false;
-    void (async () => {
-      const ctx = await assertPartnerSession();
-      if (cancelled) {
-        return;
-      }
-      setPartner(ctx?.partner ?? null);
-      setReady(true);
-    })();
-    return () => {
-      cancelled = true;
-    };
+  const loadProfile = useCallback(async () => {
+    const ctx = await assertPartnerSession();
+    setPartner(ctx?.partner ?? null);
+    setReady(true);
   }, []);
+
+  useEffect(() => {
+    void loadProfile();
+  }, [loadProfile]);
 
   if (!ready) {
     return (
@@ -44,28 +40,30 @@ export function PartnerProfileClient() {
   }
 
   return (
-    <section>
-      <div className="portal-page__header">
-        <div>
-          <h2 className="portal-page__title">{t('title')}</h2>
-          <p className="portal-page__subtitle">{t('subtitle')}</p>
+    <DataRefreshProvider refresh={loadProfile}>
+      <section>
+        <div className="portal-page__header">
+          <div>
+            <h2 className="portal-page__title">{t('title')}</h2>
+            <p className="portal-page__subtitle">{t('subtitle')}</p>
+          </div>
         </div>
-      </div>
 
-      <PartnerProfileSection
-        locale={locale}
-        partner={partner}
-        labels={{
-          title: t('sectionTitle'),
-          edit: t('edit'),
-          description: t('fields.description'),
-          phone: t('fields.phone'),
-          email: t('fields.email'),
-          website: t('fields.website'),
-          serviceCategories: t('fields.serviceCategories'),
-          noValue: t('noValue'),
-        }}
-      />
-    </section>
+        <PartnerProfileSection
+          locale={locale}
+          partner={partner}
+          labels={{
+            title: t('sectionTitle'),
+            edit: t('edit'),
+            description: t('fields.description'),
+            phone: t('fields.phone'),
+            email: t('fields.email'),
+            website: t('fields.website'),
+            serviceCategories: t('fields.serviceCategories'),
+            noValue: t('noValue'),
+          }}
+        />
+      </section>
+    </DataRefreshProvider>
   );
 }

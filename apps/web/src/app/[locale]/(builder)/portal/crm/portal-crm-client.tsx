@@ -2,8 +2,9 @@
 
 import { useLocale, useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
+import { DataRefreshProvider } from '@/components/portal-forms/data-refresh-context';
 import { assertBuilderSession } from '@/lib/builder/assert-builder-session';
 import { loadCompanyProjects } from '@/lib/builder/queries';
 import { loadApartmentLinkOptions } from '@/lib/crm/apartment-link-queries';
@@ -48,71 +49,60 @@ export function PortalCrmClient() {
   const tApartmentStatus = useTranslations('portal.apartmentStatus');
   const [data, setData] = useState<CrmPageData | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
-    setData(null);
-    void (async () => {
-      const builderContext = await assertBuilderSession();
-      if (!builderContext || cancelled) {
-        return;
-      }
-      const companyId = builderContext.companyId;
+  const loadCrm = useCallback(async () => {
+    const builderContext = await assertBuilderSession();
+    if (!builderContext) {
+      return;
+    }
+    const companyId = builderContext.companyId;
 
-      const [columns, projects, members] = await Promise.all([
-        getCompanyDealsBoard(companyId),
-        loadCompanyProjects(companyId),
-        loadCompanyMembers(companyId),
-      ]);
-      if (cancelled) {
-        return;
-      }
+    const [columns, projects, members] = await Promise.all([
+      getCompanyDealsBoard(companyId),
+      loadCompanyProjects(companyId),
+      loadCompanyMembers(companyId),
+    ]);
 
-      const dealDetailRaw = dealId ? await getCompanyDealDetail(companyId, dealId) : null;
-      if (cancelled) {
-        return;
-      }
-      const dealDetail = dealDetailRaw ? toSerializableDealDetail(dealDetailRaw) : null;
-      const apartmentGroups = dealDetail
-        ? await loadApartmentLinkOptions(companyId, dealDetail.projectId)
-        : [];
-      if (cancelled) {
-        return;
-      }
+    const dealDetailRaw = dealId ? await getCompanyDealDetail(companyId, dealId) : null;
+    const dealDetail = dealDetailRaw ? toSerializableDealDetail(dealDetailRaw) : null;
+    const apartmentGroups = dealDetail
+      ? await loadApartmentLinkOptions(companyId, dealDetail.projectId)
+      : [];
 
-      const stageLabels = buildCrmStageLabels(tStages);
-      const sourceLabels = buildCrmSourceLabels(tSources);
-      const boardColumns = columns.map((column) => ({
-        stage: column.stage,
-        stageLabel: stageLabels[column.stage],
-        deals: column.deals.map((deal) => mapCrmDealCard(deal, locale)),
-      }));
-      const listRows = columns.flatMap((column) =>
-        column.deals.map((deal) => mapCrmDealCard(deal, locale)),
-      );
+    const stageLabels = buildCrmStageLabels(tStages);
+    const sourceLabels = buildCrmSourceLabels(tSources);
+    const boardColumns = columns.map((column) => ({
+      stage: column.stage,
+      stageLabel: stageLabels[column.stage],
+      deals: column.deals.map((deal) => mapCrmDealCard(deal, locale)),
+    }));
+    const listRows = columns.flatMap((column) =>
+      column.deals.map((deal) => mapCrmDealCard(deal, locale)),
+    );
 
-      setData({
-        view,
-        boardColumns,
-        listRows,
+    setData({
+      view,
+      boardColumns,
+      listRows,
+      dealDetail,
+      members,
+      apartmentGroups,
+      projects: projects.map((project) => ({ id: project.id, name: project.name })),
+      labels: buildCrmWorkspaceLabels({
+        t,
+        tActivities,
+        tApartmentStatus,
+        stageLabels,
+        sourceLabels,
         dealDetail,
-        members,
-        apartmentGroups,
-        projects: projects.map((project) => ({ id: project.id, name: project.name })),
-        labels: buildCrmWorkspaceLabels({
-          t,
-          tActivities,
-          tApartmentStatus,
-          stageLabels,
-          sourceLabels,
-          dealDetail,
-          locale,
-        }),
-      });
-    })();
-    return () => {
-      cancelled = true;
-    };
+        locale,
+      }),
+    });
   }, [dealId, locale, view, t, tStages, tSources, tActivities, tApartmentStatus]);
+
+  useEffect(() => {
+    setData(null);
+    void loadCrm();
+  }, [loadCrm]);
 
   if (!data) {
     return (
@@ -122,5 +112,9 @@ export function PortalCrmClient() {
     );
   }
 
-  return <CrmWorkspace locale={locale} {...data} />;
+  return (
+    <DataRefreshProvider refresh={loadCrm}>
+      <CrmWorkspace locale={locale} {...data} />
+    </DataRefreshProvider>
+  );
 }

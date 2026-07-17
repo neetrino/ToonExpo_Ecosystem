@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useActionState } from 'react';
 
 import { PortalFormError } from '@/components/portal-forms/form-error';
+import { useRefreshOnFormSuccess } from '@/components/portal-forms/use-refresh-on-form-success';
 import {
   INITIAL_ADMIN_CATALOG_ACTION_STATE,
   type AdminCatalogActionState,
@@ -29,6 +30,7 @@ export function AdminPublicationActionButton({
     setProjectPublicationAsAdminFormAction.bind(null, locale),
     INITIAL_ADMIN_CATALOG_ACTION_STATE,
   );
+  useRefreshOnFormSuccess(state, true);
 
   return (
     <PublicationForm

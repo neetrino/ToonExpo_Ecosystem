@@ -2,8 +2,9 @@
 
 import { notFound } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
+import { DataRefreshProvider } from '@/components/portal-forms/data-refresh-context';
 import { Link } from '@/i18n/navigation';
 import {
   loadAdminVenueMapDetail,
@@ -32,31 +33,29 @@ export function AdminVenueClient({ eventId }: AdminVenueClientProps) {
   const [data, setData] = useState<VenuePageData | null>(null);
   const [missing, setMissing] = useState(false);
 
-  useEffect(() => {
-    let cancelled = false;
-    void (async () => {
-      const [detail, options] = await Promise.all([
-        loadAdminVenueMapDetail(eventId),
-        loadAssignmentOptions(),
-      ]);
-      if (cancelled) {
-        return;
-      }
-      if (!detail) {
-        setMissing(true);
-        return;
-      }
-      setData({
-        detail,
-        companies: options.companies,
-        partners: options.partners,
-        projects: options.projects,
-      });
-    })();
-    return () => {
-      cancelled = true;
-    };
+  const loadVenue = useCallback(async () => {
+    const [detail, options] = await Promise.all([
+      loadAdminVenueMapDetail(eventId),
+      loadAssignmentOptions(),
+    ]);
+    if (!detail) {
+      setMissing(true);
+      return;
+    }
+    setMissing(false);
+    setData({
+      detail,
+      companies: options.companies,
+      partners: options.partners,
+      projects: options.projects,
+    });
   }, [eventId]);
+
+  useEffect(() => {
+    setData(null);
+    setMissing(false);
+    void loadVenue();
+  }, [loadVenue]);
 
   if (missing) {
     notFound();
@@ -71,19 +70,21 @@ export function AdminVenueClient({ eventId }: AdminVenueClientProps) {
   }
 
   return (
-    <section>
-      <p className="portal-visual-map-hint">
-        <Link className="portal-link" href="/admin/exhibition">
-          {t('back')}
-        </Link>
-      </p>
-      <VenueEditor
-        locale={locale}
-        detail={data.detail}
-        companies={data.companies}
-        partners={data.partners}
-        projects={data.projects}
-      />
-    </section>
+    <DataRefreshProvider refresh={loadVenue}>
+      <section>
+        <p className="portal-visual-map-hint">
+          <Link className="portal-link" href="/admin/exhibition">
+            {t('back')}
+          </Link>
+        </p>
+        <VenueEditor
+          locale={locale}
+          detail={data.detail}
+          companies={data.companies}
+          partners={data.partners}
+          projects={data.projects}
+        />
+      </section>
+    </DataRefreshProvider>
   );
 }

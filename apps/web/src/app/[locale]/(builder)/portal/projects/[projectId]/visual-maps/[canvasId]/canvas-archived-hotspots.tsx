@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { useState, useTransition } from 'react';
 
+import { useDataRefresh } from '@/components/portal-forms/data-refresh-context';
 import { VisualMapFormError } from '@/components/visual-map/visual-map-form-error';
 import type { BuilderArchivedHotspot } from '@/lib/visual-map/queries';
 import type { VisualMapMutationErrorKey } from '@/lib/visual-map/mutation-result';
@@ -53,6 +54,7 @@ function ArchivedHotspotRow({
 }) {
   const t = useTranslations('portal.visualMap.editor');
   const router = useRouter();
+  const refreshData = useDataRefresh();
   const [pending, startTransition] = useTransition();
   const [errorKey, setErrorKey] = useState<VisualMapMutationErrorKey | undefined>();
 
@@ -64,6 +66,7 @@ function ArchivedHotspotRow({
         setErrorKey(result.errorKey);
         return;
       }
+      void refreshData?.();
       router.refresh();
     });
   }

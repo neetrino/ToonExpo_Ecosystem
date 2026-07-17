@@ -9,6 +9,7 @@ import {
 import { useTranslations } from 'next-intl';
 import { useRef, useState, useTransition } from 'react';
 
+import { useDataRefresh } from '@/components/portal-forms/data-refresh-context';
 import { PortalFormError } from '@/components/portal-forms/form-error';
 import { PortalFormField, PortalTextInput } from '@/components/portal-forms/form-fields';
 import { ImageUploadField } from '@/components/portal-forms/image-upload-field';
@@ -42,6 +43,7 @@ type EditorSheet =
 export function VenueEditor({ locale, detail, companies, partners, projects }: VenueEditorProps) {
   const t = useTranslations('admin.exhibition.venue');
   const router = useRouter();
+  const refreshData = useDataRefresh();
   const imageRef = useRef<HTMLImageElement>(null);
   const [sheet, setSheet] = useState<EditorSheet>({ kind: 'closed' });
   const [mapError, setMapError] = useState<AdminMutationErrorKey | undefined>();
@@ -72,6 +74,7 @@ export function VenueEditor({ locale, detail, companies, partners, projects }: V
         setMapError(result.errorKey);
         return;
       }
+      void refreshData?.();
       router.refresh();
     });
   }

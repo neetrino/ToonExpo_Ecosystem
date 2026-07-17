@@ -10,6 +10,7 @@ import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { useState, useTransition } from 'react';
 
+import { useDataRefresh } from '@/components/portal-forms/data-refresh-context';
 import {
   PortalFormField,
   PortalSelect,
@@ -66,6 +67,7 @@ export function HotspotFormSheet({
 }: HotspotFormSheetProps) {
   const t = useTranslations('portal.visualMap.hotspotForm');
   const router = useRouter();
+  const refreshData = useDataRefresh();
   const [pending, startTransition] = useTransition();
   const [errorKey, setErrorKey] = useState<VisualMapMutationErrorKey | undefined>();
 
@@ -100,6 +102,7 @@ export function HotspotFormSheet({
       }
 
       onClose();
+      void refreshData?.();
       router.refresh();
     });
   }
@@ -117,6 +120,7 @@ export function HotspotFormSheet({
         return;
       }
       onClose();
+      void refreshData?.();
       router.refresh();
     });
   }

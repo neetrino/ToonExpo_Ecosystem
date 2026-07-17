@@ -1,8 +1,9 @@
 'use client';
 
 import { useLocale, useTranslations } from 'next-intl';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
+import { DataRefreshProvider } from '@/components/portal-forms/data-refresh-context';
 import { loadAllCompanies, type AdminCompanyRow } from '@/lib/admin/queries';
 
 import { CompaniesTable } from './companies-table';
@@ -13,19 +14,13 @@ export function AdminCompaniesClient() {
   const t = useTranslations('admin.companies');
   const [companies, setCompanies] = useState<AdminCompanyRow[] | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
-    void (async () => {
-      const next = await loadAllCompanies();
-      if (cancelled) {
-        return;
-      }
-      setCompanies(next);
-    })();
-    return () => {
-      cancelled = true;
-    };
+  const loadCompanies = useCallback(async () => {
+    setCompanies(await loadAllCompanies());
   }, []);
+
+  useEffect(() => {
+    void loadCompanies();
+  }, [loadCompanies]);
 
   if (!companies) {
     return (
@@ -36,39 +31,41 @@ export function AdminCompaniesClient() {
   }
 
   return (
-    <section>
-      <div className="portal-page__header">
-        <h2 className="portal-page__title">{t('title')}</h2>
-        <div className="portal-toolbar">
-          <NewCompanyButton locale={locale} label={t('newCompany')} />
+    <DataRefreshProvider refresh={loadCompanies}>
+      <section>
+        <div className="portal-page__header">
+          <h2 className="portal-page__title">{t('title')}</h2>
+          <div className="portal-toolbar">
+            <NewCompanyButton locale={locale} label={t('newCompany')} />
+          </div>
         </div>
-      </div>
 
-      {companies.length === 0 ? (
-        <p className="portal-empty">{t('empty')}</p>
-      ) : (
-        <CompaniesTable
-          locale={locale}
-          companies={companies}
-          labels={{
-            columns: {
-              name: t('columns.name'),
-              slug: t('columns.slug'),
-              members: t('columns.members'),
-              projects: t('columns.projects'),
-              createdAt: t('columns.createdAt'),
-              actions: t('columns.actions'),
-            },
-            edit: t('edit'),
-            openInPortal: t('openInPortal'),
-            projectCounts: {
-              draft: t('projectCounts.draft'),
-              published: t('projectCounts.published'),
-              archived: t('projectCounts.archived'),
-            },
-          }}
-        />
-      )}
-    </section>
+        {companies.length === 0 ? (
+          <p className="portal-empty">{t('empty')}</p>
+        ) : (
+          <CompaniesTable
+            locale={locale}
+            companies={companies}
+            labels={{
+              columns: {
+                name: t('columns.name'),
+                slug: t('columns.slug'),
+                members: t('columns.members'),
+                projects: t('columns.projects'),
+                createdAt: t('columns.createdAt'),
+                actions: t('columns.actions'),
+              },
+              edit: t('edit'),
+              openInPortal: t('openInPortal'),
+              projectCounts: {
+                draft: t('projectCounts.draft'),
+                published: t('projectCounts.published'),
+                archived: t('projectCounts.archived'),
+              },
+            }}
+          />
+        )}
+      </section>
+    </DataRefreshProvider>
   );
 }

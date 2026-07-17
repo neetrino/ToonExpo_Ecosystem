@@ -3,6 +3,7 @@
 import { useRef, useState, useTransition } from 'react';
 import { useTranslations } from 'next-intl';
 
+import { useDataRefresh } from '@/components/portal-forms/data-refresh-context';
 import { PortalFormError } from '@/components/portal-forms/form-error';
 import { useRouter } from '@/i18n/navigation';
 import type { AdminPathEdgeRow, AdminPathNodeRow } from '@/lib/exhibition/admin-venue-queries';
@@ -44,6 +45,7 @@ export function PathGraphEditor({
 }: PathGraphEditorProps) {
   const t = useTranslations('admin.exhibition.venue.path');
   const router = useRouter();
+  const refreshData = useDataRefresh();
   const imageRef = useRef<HTMLImageElement>(null);
   const [mode, setMode] = useState<ClickMode>('waypoint');
   const [linkFirstId, setLinkFirstId] = useState<string | null>(null);
@@ -51,6 +53,7 @@ export function PathGraphEditor({
   const [pending, startTransition] = useTransition();
 
   function refresh(): void {
+    void refreshData?.();
     router.refresh();
   }
 

@@ -4,6 +4,7 @@ import type { PublicationStatus } from '@toonexpo/domain';
 import { useActionState } from 'react';
 
 import { PortalFormError } from '@/components/portal-forms/form-error';
+import { useRefreshOnFormSuccess } from '@/components/portal-forms/use-refresh-on-form-success';
 
 import {
   INITIAL_BUILDER_FORM_ACTION_STATE,
@@ -41,6 +42,7 @@ export function InventoryPublicationActionButton({
     formActionFactory,
     INITIAL_BUILDER_FORM_ACTION_STATE,
   );
+  useRefreshOnFormSuccess(state, true);
 
   return (
     <InventoryPublicationForm

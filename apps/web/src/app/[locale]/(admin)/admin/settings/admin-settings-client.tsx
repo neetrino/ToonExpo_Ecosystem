@@ -2,8 +2,9 @@
 
 import type { PlatformSettingKey } from '@toonexpo/contracts';
 import { useLocale, useTranslations } from 'next-intl';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
+import { DataRefreshProvider } from '@/components/portal-forms/data-refresh-context';
 import { loadAllPlatformSettings, type PlatformSettingRow } from '@/lib/admin/settings-queries';
 
 import { SettingsTable } from './settings-table';
@@ -13,19 +14,13 @@ export function AdminSettingsClient() {
   const t = useTranslations('admin.settings');
   const [settings, setSettings] = useState<PlatformSettingRow[] | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
-    void (async () => {
-      const next = await loadAllPlatformSettings();
-      if (cancelled) {
-        return;
-      }
-      setSettings(next);
-    })();
-    return () => {
-      cancelled = true;
-    };
+  const loadSettings = useCallback(async () => {
+    setSettings(await loadAllPlatformSettings());
   }, []);
+
+  useEffect(() => {
+    void loadSettings();
+  }, [loadSettings]);
 
   if (!settings) {
     return (
@@ -42,27 +37,29 @@ export function AdminSettingsClient() {
   ) as Record<PlatformSettingKey, string>;
 
   return (
-    <section>
-      <div className="portal-page__header">
-        <h2 className="portal-page__title">{t('title')}</h2>
-        <p className="portal-page__subtitle">{t('subtitle')}</p>
-      </div>
+    <DataRefreshProvider refresh={loadSettings}>
+      <section>
+        <div className="portal-page__header">
+          <h2 className="portal-page__title">{t('title')}</h2>
+          <p className="portal-page__subtitle">{t('subtitle')}</p>
+        </div>
 
-      <SettingsTable
-        locale={locale}
-        settings={settings}
-        labels={{
-          columns: {
-            key: t('columns.key'),
-            value: t('columns.value'),
-            updatedAt: t('columns.updatedAt'),
-            actions: t('columns.actions'),
-          },
-          edit: t('edit'),
-          unset: t('unset'),
-          keys: keyLabels,
-        }}
-      />
-    </section>
+        <SettingsTable
+          locale={locale}
+          settings={settings}
+          labels={{
+            columns: {
+              key: t('columns.key'),
+              value: t('columns.value'),
+              updatedAt: t('columns.updatedAt'),
+              actions: t('columns.actions'),
+            },
+            edit: t('edit'),
+            unset: t('unset'),
+            keys: keyLabels,
+          }}
+        />
+      </section>
+    </DataRefreshProvider>
   );
 }

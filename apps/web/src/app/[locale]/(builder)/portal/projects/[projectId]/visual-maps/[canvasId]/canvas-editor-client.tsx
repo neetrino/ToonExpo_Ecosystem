@@ -2,8 +2,9 @@
 
 import { notFound } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
+import { DataRefreshProvider } from '@/components/portal-forms/data-refresh-context';
 import { assertBuilderSession } from '@/lib/builder/assert-builder-session';
 import { loadCompanyProjectDetail, type BuilderProjectDetail } from '@/lib/builder/queries';
 import {
@@ -33,31 +34,29 @@ export function CanvasEditorClient({ projectId, canvasId }: CanvasEditorClientPr
   const [data, setData] = useState<CanvasEditorData | null>(null);
   const [missing, setMissing] = useState(false);
 
-  useEffect(() => {
-    let cancelled = false;
-    void (async () => {
-      const builderContext = await assertBuilderSession();
-      if (!builderContext || cancelled) {
-        return;
-      }
-      const [project, canvas, archivedHotspots] = await Promise.all([
-        loadCompanyProjectDetail(builderContext.companyId, projectId),
-        getCanvasForEdit(builderContext.companyId, canvasId),
-        listArchivedHotspotsForCanvas(builderContext.companyId, canvasId),
-      ]);
-      if (cancelled) {
-        return;
-      }
-      if (!project || !canvas) {
-        setMissing(true);
-        return;
-      }
-      setData({ project, canvas, archivedHotspots });
-    })();
-    return () => {
-      cancelled = true;
-    };
+  const loadCanvas = useCallback(async () => {
+    const builderContext = await assertBuilderSession();
+    if (!builderContext) {
+      return;
+    }
+    const [project, canvas, archivedHotspots] = await Promise.all([
+      loadCompanyProjectDetail(builderContext.companyId, projectId),
+      getCanvasForEdit(builderContext.companyId, canvasId),
+      listArchivedHotspotsForCanvas(builderContext.companyId, canvasId),
+    ]);
+    if (!project || !canvas) {
+      setMissing(true);
+      return;
+    }
+    setMissing(false);
+    setData({ project, canvas, archivedHotspots });
   }, [canvasId, projectId]);
+
+  useEffect(() => {
+    setData(null);
+    setMissing(false);
+    void loadCanvas();
+  }, [loadCanvas]);
 
   if (missing) {
     notFound();
@@ -72,19 +71,21 @@ export function CanvasEditorClient({ projectId, canvasId }: CanvasEditorClientPr
   }
 
   return (
-    <section>
-      <CanvasEditor
-        locale={locale}
-        project={data.project}
-        canvas={data.canvas}
-        archivedHotspots={data.archivedHotspots}
-        statusLabel={tStatus(data.canvas.status)}
-        contextLabels={{
-          project: t('context.project'),
-          building: t('context.building'),
-          floor: t('context.floor'),
-        }}
-      />
-    </section>
+    <DataRefreshProvider refresh={loadCanvas}>
+      <section>
+        <CanvasEditor
+          locale={locale}
+          project={data.project}
+          canvas={data.canvas}
+          archivedHotspots={data.archivedHotspots}
+          statusLabel={tStatus(data.canvas.status)}
+          contextLabels={{
+            project: t('context.project'),
+            building: t('context.building'),
+            floor: t('context.floor'),
+          }}
+        />
+      </section>
+    </DataRefreshProvider>
   );
 }

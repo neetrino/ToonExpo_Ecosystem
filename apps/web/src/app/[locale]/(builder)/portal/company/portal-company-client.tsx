@@ -3,8 +3,9 @@
 import type { PublicCompanyProfile } from '@toonexpo/contracts';
 import { PLATFORM_ROLES } from '@toonexpo/domain';
 import { useLocale, useTranslations } from 'next-intl';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
+import { DataRefreshProvider } from '@/components/portal-forms/data-refresh-context';
 import { assertBuilderSession } from '@/lib/builder/assert-builder-session';
 import {
   loadCompanyMembers,
@@ -26,26 +27,21 @@ export function PortalCompanyClient() {
   const tRoles = useTranslations('portal.company.roles');
   const [data, setData] = useState<CompanyPageData | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
-    void (async () => {
-      const builderContext = await assertBuilderSession();
-      if (!builderContext || cancelled) {
-        return;
-      }
-      const [profile, members] = await Promise.all([
-        loadCompanyProfile(builderContext.companyId),
-        loadCompanyMembers(builderContext.companyId),
-      ]);
-      if (cancelled) {
-        return;
-      }
-      setData({ profile, members });
-    })();
-    return () => {
-      cancelled = true;
-    };
+  const loadCompany = useCallback(async () => {
+    const builderContext = await assertBuilderSession();
+    if (!builderContext) {
+      return;
+    }
+    const [profile, members] = await Promise.all([
+      loadCompanyProfile(builderContext.companyId),
+      loadCompanyMembers(builderContext.companyId),
+    ]);
+    setData({ profile, members });
   }, []);
+
+  useEffect(() => {
+    void loadCompany();
+  }, [loadCompany]);
 
   if (!data) {
     return (
@@ -70,44 +66,46 @@ export function PortalCompanyClient() {
   ) as Record<(typeof PLATFORM_ROLES)[number], string>;
 
   return (
-    <section>
-      <div className="portal-page__header">
-        <div>
-          <h2 className="portal-page__title">{t('title')}</h2>
-          <p className="portal-page__subtitle">{t('subtitle')}</p>
+    <DataRefreshProvider refresh={loadCompany}>
+      <section>
+        <div className="portal-page__header">
+          <div>
+            <h2 className="portal-page__title">{t('title')}</h2>
+            <p className="portal-page__subtitle">{t('subtitle')}</p>
+          </div>
         </div>
-      </div>
 
-      <CompanyProfileSection
-        locale={locale}
-        profile={data.profile}
-        labels={{
-          title: t('profileTitle'),
-          edit: t('editProfile'),
-          description: t('fields.description'),
-          phone: t('fields.phone'),
-          email: t('fields.email'),
-          website: t('fields.website'),
-          location: t('fields.location'),
-          noValue: t('noValue'),
-        }}
-      />
+        <CompanyProfileSection
+          locale={locale}
+          profile={data.profile}
+          labels={{
+            title: t('profileTitle'),
+            edit: t('editProfile'),
+            description: t('fields.description'),
+            phone: t('fields.phone'),
+            email: t('fields.email'),
+            website: t('fields.website'),
+            location: t('fields.location'),
+            noValue: t('noValue'),
+          }}
+        />
 
-      <CompanyTeamSection
-        members={data.members}
-        labels={{
-          title: t('teamTitle'),
-          empty: t('teamEmpty'),
-          columns: {
-            name: t('columns.name'),
-            email: t('columns.email'),
-            role: t('columns.role'),
-            joinedAt: t('columns.joinedAt'),
-          },
-          roles: roleLabels,
-        }}
-        formatDate={(date) => dateFormatter.format(date)}
-      />
-    </section>
+        <CompanyTeamSection
+          members={data.members}
+          labels={{
+            title: t('teamTitle'),
+            empty: t('teamEmpty'),
+            columns: {
+              name: t('columns.name'),
+              email: t('columns.email'),
+              role: t('columns.role'),
+              joinedAt: t('columns.joinedAt'),
+            },
+            roles: roleLabels,
+          }}
+          formatDate={(date) => dateFormatter.format(date)}
+        />
+      </section>
+    </DataRefreshProvider>
   );
 }

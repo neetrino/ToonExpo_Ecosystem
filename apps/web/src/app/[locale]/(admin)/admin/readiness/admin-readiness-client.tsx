@@ -5,8 +5,9 @@ import type { ReadinessStatus, ReadinessTargetType } from '@toonexpo/domain';
 import { READINESS_STATUSES, READINESS_TARGET_TYPES } from '@toonexpo/domain';
 import { useLocale, useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
+import { DataRefreshProvider } from '@/components/portal-forms/data-refresh-context';
 import {
   getAdminAssessment,
   listAdminAssessments,
@@ -52,35 +53,30 @@ export function AdminReadinessClient() {
   const tTarget = useTranslations('admin.readiness.targets');
   const [data, setData] = useState<ReadinessPageData | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
-    setData(null);
-    void (async () => {
-      const [assessments, activeCategories, allCategories, companies, projects, editAssessment] =
-        await Promise.all([
-          listAdminAssessments(targetFilter),
-          loadActiveReadinessCategories(),
-          listAdminReadinessCategories(),
-          loadAdminCompanyOptions(),
-          loadAdminProjectOptions(),
-          editId ? getAdminAssessment(editId) : Promise.resolve(null),
-        ]);
-      if (cancelled) {
-        return;
-      }
-      setData({
-        assessments,
-        activeCategories,
-        allCategories,
-        companies,
-        projects,
-        editAssessment,
-      });
-    })();
-    return () => {
-      cancelled = true;
-    };
+  const loadReadiness = useCallback(async () => {
+    const [assessments, activeCategories, allCategories, companies, projects, editAssessment] =
+      await Promise.all([
+        listAdminAssessments(targetFilter),
+        loadActiveReadinessCategories(),
+        listAdminReadinessCategories(),
+        loadAdminCompanyOptions(),
+        loadAdminProjectOptions(),
+        editId ? getAdminAssessment(editId) : Promise.resolve(null),
+      ]);
+    setData({
+      assessments,
+      activeCategories,
+      allCategories,
+      companies,
+      projects,
+      editAssessment,
+    });
   }, [editId, targetFilter]);
+
+  useEffect(() => {
+    setData(null);
+    void loadReadiness();
+  }, [loadReadiness]);
 
   if (!data) {
     return (
@@ -99,80 +95,82 @@ export function AdminReadinessClient() {
   ) as Record<ReadinessTargetType, string>;
 
   return (
-    <section>
-      <div className="portal-page__header">
-        <h2 className="portal-page__title">{t('title')}</h2>
-        <div className="portal-toolbar">
-          <NewCategoryButton locale={locale} label={t('newCategory')} />
-          <NewAssessmentButton
-            locale={locale}
-            label={t('newAssessment')}
-            categories={data.activeCategories}
-            companies={data.companies}
-            projects={data.projects}
-            editAssessment={data.editAssessment}
-          />
+    <DataRefreshProvider refresh={loadReadiness}>
+      <section>
+        <div className="portal-page__header">
+          <h2 className="portal-page__title">{t('title')}</h2>
+          <div className="portal-toolbar">
+            <NewCategoryButton locale={locale} label={t('newCategory')} />
+            <NewAssessmentButton
+              locale={locale}
+              label={t('newAssessment')}
+              categories={data.activeCategories}
+              companies={data.companies}
+              projects={data.projects}
+              editAssessment={data.editAssessment}
+            />
+          </div>
         </div>
-      </div>
 
-      <h3 className="portal-section__title">{t('categoriesTitle')}</h3>
-      {data.allCategories.length === 0 ? (
-        <p className="portal-empty">{t('categoriesEmpty')}</p>
-      ) : (
-        <CategoriesTable
-          locale={locale}
-          categories={data.allCategories}
+        <h3 className="portal-section__title">{t('categoriesTitle')}</h3>
+        {data.allCategories.length === 0 ? (
+          <p className="portal-empty">{t('categoriesEmpty')}</p>
+        ) : (
+          <CategoriesTable
+            locale={locale}
+            categories={data.allCategories}
+            labels={{
+              columns: {
+                name: t('categoryColumns.name'),
+                key: t('categoryColumns.key'),
+                weight: t('categoryColumns.weight'),
+                sortOrder: t('categoryColumns.sortOrder'),
+                serviceCategoryKey: t('categoryColumns.serviceCategoryKey'),
+                active: t('categoryColumns.active'),
+                updatedAt: t('categoryColumns.updatedAt'),
+                actions: t('categoryColumns.actions'),
+              },
+              edit: t('edit'),
+              activeYes: t('activeYes'),
+              activeNo: t('activeNo'),
+              emptyValue: t('noEvaluator'),
+            }}
+          />
+        )}
+
+        <h3 className="portal-section__title">{t('assessmentsTitle')}</h3>
+        <TargetTypeFilter
+          currentType={targetFilter}
           labels={{
-            columns: {
-              name: t('categoryColumns.name'),
-              key: t('categoryColumns.key'),
-              weight: t('categoryColumns.weight'),
-              sortOrder: t('categoryColumns.sortOrder'),
-              serviceCategoryKey: t('categoryColumns.serviceCategoryKey'),
-              active: t('categoryColumns.active'),
-              updatedAt: t('categoryColumns.updatedAt'),
-              actions: t('categoryColumns.actions'),
-            },
-            edit: t('edit'),
-            activeYes: t('activeYes'),
-            activeNo: t('activeNo'),
-            emptyValue: t('noEvaluator'),
+            all: t('filter.all'),
+            ariaLabel: t('filter.ariaLabel'),
+            ...targetLabels,
           }}
         />
-      )}
 
-      <h3 className="portal-section__title">{t('assessmentsTitle')}</h3>
-      <TargetTypeFilter
-        currentType={targetFilter}
-        labels={{
-          all: t('filter.all'),
-          ariaLabel: t('filter.ariaLabel'),
-          ...targetLabels,
-        }}
-      />
-
-      {data.assessments.length === 0 ? (
-        <p className="portal-empty">{t('empty')}</p>
-      ) : (
-        <ReadinessTable
-          locale={locale}
-          assessments={data.assessments}
-          labels={{
-            columns: {
-              target: t('columns.target'),
-              score: t('columns.score'),
-              status: t('columns.status'),
-              evaluator: t('columns.evaluator'),
-              updatedAt: t('columns.updatedAt'),
-              actions: t('columns.actions'),
-            },
-            edit: t('edit'),
-            noEvaluator: t('noEvaluator'),
-          }}
-          statusLabels={statusLabels}
-          targetLabels={targetLabels}
-        />
-      )}
-    </section>
+        {data.assessments.length === 0 ? (
+          <p className="portal-empty">{t('empty')}</p>
+        ) : (
+          <ReadinessTable
+            locale={locale}
+            assessments={data.assessments}
+            labels={{
+              columns: {
+                target: t('columns.target'),
+                score: t('columns.score'),
+                status: t('columns.status'),
+                evaluator: t('columns.evaluator'),
+                updatedAt: t('columns.updatedAt'),
+                actions: t('columns.actions'),
+              },
+              edit: t('edit'),
+              noEvaluator: t('noEvaluator'),
+            }}
+            statusLabels={statusLabels}
+            targetLabels={targetLabels}
+          />
+        )}
+      </section>
+    </DataRefreshProvider>
   );
 }

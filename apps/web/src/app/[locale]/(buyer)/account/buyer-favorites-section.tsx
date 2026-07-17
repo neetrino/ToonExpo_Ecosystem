@@ -3,9 +3,9 @@
 import type { FavoriteListItem } from '@toonexpo/contracts';
 import type { ApartmentStatus } from '@toonexpo/domain';
 import { useTranslations } from 'next-intl';
-import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
 
+import { useDataRefresh } from '@/components/portal-forms/data-refresh-context';
 import { Link } from '@/i18n/navigation';
 import { formatPriceAmd } from '@/lib/catalog/format-price';
 import { removeFavoriteAction } from '@/lib/favorites/actions';
@@ -61,7 +61,7 @@ function FavoriteRow({
   dateFormatter: Intl.DateTimeFormat;
 }) {
   const t = useTranslations('buyer.account.favorites');
-  const router = useRouter();
+  const refreshData = useDataRefresh();
   const [pending, startTransition] = useTransition();
 
   function onRemove(): void {
@@ -70,7 +70,7 @@ function FavoriteRow({
         targetType: item.targetType,
         targetId: item.targetId,
       });
-      router.refresh();
+      void refreshData?.();
     });
   }
 

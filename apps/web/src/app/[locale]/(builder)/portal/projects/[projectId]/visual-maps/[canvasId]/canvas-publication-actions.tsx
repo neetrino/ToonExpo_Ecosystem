@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useRouter } from '@/i18n/navigation';
 import { useState, useTransition } from 'react';
 
+import { useDataRefresh } from '@/components/portal-forms/data-refresh-context';
 import { VisualMapFormError } from '@/components/visual-map/visual-map-form-error';
 
 import { publicationActionsFor } from '@/lib/shared/publication';
@@ -27,6 +28,7 @@ export function CanvasPublicationActions({
 }: CanvasPublicationActionsProps) {
   const t = useTranslations('portal.visualMap.publication');
   const router = useRouter();
+  const refreshData = useDataRefresh();
   const [pending, startTransition] = useTransition();
   const [errorKey, setErrorKey] = useState<VisualMapMutationErrorKey | undefined>();
 
@@ -44,6 +46,7 @@ export function CanvasPublicationActions({
         setErrorKey(result.errorKey);
         return;
       }
+      void refreshData?.();
       router.refresh();
     });
   }
@@ -61,6 +64,7 @@ export function CanvasPublicationActions({
         return;
       }
       router.push(`/portal/projects/${projectId}`);
+      void refreshData?.();
       router.refresh();
     });
   }

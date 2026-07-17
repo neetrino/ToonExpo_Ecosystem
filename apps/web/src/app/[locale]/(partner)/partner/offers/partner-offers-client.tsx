@@ -2,8 +2,9 @@
 
 import { useLocale, useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
+import { DataRefreshProvider } from '@/components/portal-forms/data-refresh-context';
 import { assertPartnerSession } from '@/lib/partner/assert-partner-session';
 import { loadOwnPartnerDetail, type PartnerCabinetBankOffer } from '@/lib/partner/queries';
 
@@ -16,31 +17,23 @@ export function PartnerOffersClient() {
   const tStatus = useTranslations('partnerCabinet.status');
   const [offers, setOffers] = useState<PartnerCabinetBankOffer[] | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
-    void (async () => {
-      const ctx = await assertPartnerSession();
-      if (cancelled) {
-        return;
-      }
-      if (!ctx) {
-        setOffers([]);
-        return;
-      }
-      if (ctx.partner.type !== 'BANK') {
-        router.replace(`/${locale}/partner`);
-        return;
-      }
-      const detail = await loadOwnPartnerDetail(ctx.partnerId);
-      if (cancelled) {
-        return;
-      }
-      setOffers(detail?.bankOffers ?? []);
-    })();
-    return () => {
-      cancelled = true;
-    };
+  const loadOffers = useCallback(async () => {
+    const ctx = await assertPartnerSession();
+    if (!ctx) {
+      setOffers([]);
+      return;
+    }
+    if (ctx.partner.type !== 'BANK') {
+      router.replace(`/${locale}/partner`);
+      return;
+    }
+    const detail = await loadOwnPartnerDetail(ctx.partnerId);
+    setOffers(detail?.bankOffers ?? []);
   }, [locale, router]);
+
+  useEffect(() => {
+    void loadOffers();
+  }, [loadOffers]);
 
   if (!offers) {
     return (
@@ -51,38 +44,40 @@ export function PartnerOffersClient() {
   }
 
   return (
-    <section>
-      <div className="portal-page__header">
-        <div>
-          <h2 className="portal-page__title">{t('title')}</h2>
-          <p className="portal-page__subtitle">{t('subtitle')}</p>
+    <DataRefreshProvider refresh={loadOffers}>
+      <section>
+        <div className="portal-page__header">
+          <div>
+            <h2 className="portal-page__title">{t('title')}</h2>
+            <p className="portal-page__subtitle">{t('subtitle')}</p>
+          </div>
         </div>
-      </div>
 
-      <PartnerBankOffersSection
-        locale={locale}
-        offers={offers}
-        labels={{
-          title: t('sectionTitle'),
-          empty: t('empty'),
-          newOffer: t('newOffer'),
-          edit: t('edit'),
-          featured: t('featured'),
-          columns: {
-            title: t('columns.title'),
-            rate: t('columns.rate'),
-            term: t('columns.term'),
-            amount: t('columns.amount'),
-            status: t('columns.status'),
-            actions: t('columns.actions'),
-          },
-          status: {
-            DRAFT: tStatus('DRAFT'),
-            PUBLISHED: tStatus('PUBLISHED'),
-            ARCHIVED: tStatus('ARCHIVED'),
-          },
-        }}
-      />
-    </section>
+        <PartnerBankOffersSection
+          locale={locale}
+          offers={offers}
+          labels={{
+            title: t('sectionTitle'),
+            empty: t('empty'),
+            newOffer: t('newOffer'),
+            edit: t('edit'),
+            featured: t('featured'),
+            columns: {
+              title: t('columns.title'),
+              rate: t('columns.rate'),
+              term: t('columns.term'),
+              amount: t('columns.amount'),
+              status: t('columns.status'),
+              actions: t('columns.actions'),
+            },
+            status: {
+              DRAFT: tStatus('DRAFT'),
+              PUBLISHED: tStatus('PUBLISHED'),
+              ARCHIVED: tStatus('ARCHIVED'),
+            },
+          }}
+        />
+      </section>
+    </DataRefreshProvider>
   );
 }

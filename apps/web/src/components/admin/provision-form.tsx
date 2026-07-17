@@ -3,13 +3,15 @@
 import { PROVISIONABLE_ROLES } from '@toonexpo/contracts';
 import type { PartnerType } from '@toonexpo/domain';
 import { useTranslations } from 'next-intl';
-import { useActionState, useState } from 'react';
+import { useActionState, useEffect, useState } from 'react';
 
+import { useDataRefresh } from '@/components/portal-forms/data-refresh-context';
+import { TeButton } from '@/components/ui/te-button';
+import { useRouter } from '@/i18n/navigation';
 import {
   INITIAL_PROVISION_ACTION_STATE,
   type ProvisionActionState,
 } from '@/lib/admin/action-state';
-import { TeButton } from '@/components/ui/te-button';
 
 type PartnerOption = {
   id: string;
@@ -26,8 +28,18 @@ export function ProvisionForm({ action, partners }: ProvisionFormProps) {
   const t = useTranslations('admin.provision');
   const tRoles = useTranslations('admin.users.roles');
   const tTypes = useTranslations('admin.partners.types');
+  const router = useRouter();
+  const refreshData = useDataRefresh();
   const [state, formAction, pending] = useActionState(action, INITIAL_PROVISION_ACTION_STATE);
   const [role, setRole] = useState<string>('BUILDER');
+
+  useEffect(() => {
+    if (!state.successKey) {
+      return;
+    }
+    void refreshData?.();
+    router.refresh();
+  }, [state.successKey, refreshData, router]);
 
   return (
     <form
