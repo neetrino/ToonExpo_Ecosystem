@@ -2,20 +2,16 @@ import type { PublicCanvas, PublicProjectDetail } from '@toonexpo/contracts';
 import { slugSchema } from '@toonexpo/contracts';
 import type { ApartmentStatus } from '@toonexpo/domain';
 import type { Metadata } from 'next';
-import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
-import { auth } from '@/auth';
 import { FavoriteToggle } from '@/components/favorites/favorite-toggle';
 import { ProjectRequestCta } from '@/components/public-request/public-request-sheet';
 import { PublicVisualCanvas } from '@/components/visual-map/public-visual-canvas';
 import { scheduleAnalyticsEvent } from '@/lib/analytics/record-event';
 import { resolveRequestUserAgent } from '@/lib/analytics/request-user-agent';
-import { SESSION_COOKIE_NAME } from '@/lib/auth/constants';
 import { getPublishedProjectBySlug } from '@/lib/catalog/queries';
 import { loadWebEnv } from '@/lib/env';
-import { isFavorited } from '@/lib/favorites/queries';
 import { buildProjectRealEstateListingJsonLd } from '@/lib/seo/json-ld';
 import { JsonLdScript } from '@/lib/seo/json-ld-script';
 import { buildPublicPageMetadata } from '@/lib/seo/metadata';
@@ -190,18 +186,8 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
     notFound();
   }
 
-  const session = await auth();
-  const sessionToken = (await cookies()).get(SESSION_COOKIE_NAME)?.value;
-  const sessionCookie = sessionToken ? `${SESSION_COOKIE_NAME}=${sessionToken}` : undefined;
-  const isAuthenticated = Boolean(session?.user);
-  const isBuyer = session?.user?.role === 'BUYER';
-  const buyerUserId = isBuyer ? session?.user?.id : undefined;
-
-  const loaded = await getPublishedProjectBySlug(
-    parsedCompanySlug.data,
-    parsedProjectSlug.data,
-    sessionCookie,
-  );
+  // Public catalog only — Nest session cookies are not visible to Next.js RSC.
+  const loaded = await getPublishedProjectBySlug(parsedCompanySlug.data, parsedProjectSlug.data);
   if (!loaded) {
     notFound();
   }
@@ -219,16 +205,10 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
     project.buildings,
   );
 
-  const initialFavorited = buyerUserId
-    ? await isFavorited({ targetType: 'PROJECT', targetId: project.id })
-    : false;
-
-  const prefill = session?.user
-    ? {
-        name: session.user.name ?? undefined,
-        email: session.user.email ?? undefined,
-      }
-    : undefined;
+  const initialFavorited = false;
+  const isAuthenticated = false;
+  const isBuyer = false;
+  const prefill = undefined;
 
   const tableLabels = {
     code: t('detail.table.code'),

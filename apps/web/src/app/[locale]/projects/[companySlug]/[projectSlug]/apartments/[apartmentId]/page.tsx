@@ -1,17 +1,13 @@
 import { slugSchema } from '@toonexpo/contracts';
 import type { ApartmentStatus } from '@toonexpo/domain';
 import type { Metadata } from 'next';
-import { cookies } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
-import { auth } from '@/auth';
 import { scheduleAnalyticsEvent } from '@/lib/analytics/record-event';
 import { resolveRequestUserAgent } from '@/lib/analytics/request-user-agent';
-import { SESSION_COOKIE_NAME } from '@/lib/auth/constants';
 import { getPublishedApartment, isValidApartmentId } from '@/lib/catalog/queries';
 import { loadWebEnv } from '@/lib/env';
-import { isFavorited } from '@/lib/favorites/queries';
 import { buildApartmentJsonLd } from '@/lib/seo/json-ld';
 import { JsonLdScript } from '@/lib/seo/json-ld-script';
 import { buildPublicPageMetadata } from '@/lib/seo/metadata';
@@ -82,22 +78,20 @@ export default async function ApartmentDetailPage({ params }: ApartmentDetailPag
     notFound();
   }
 
-  const session = await auth();
-  const sessionToken = (await cookies()).get(SESSION_COOKIE_NAME)?.value;
-  const sessionCookie = sessionToken ? `${SESSION_COOKIE_NAME}=${sessionToken}` : undefined;
-  const isAuthenticated = Boolean(session?.user);
-  const isBuyer = session?.user?.role === 'BUYER';
-  const buyerUserId = isBuyer ? session?.user?.id : undefined;
-
+  // Public catalog only — Nest session cookies are not visible to Next.js RSC.
   const apartment = await getPublishedApartment(
     parsedCompanySlug.data,
     parsedProjectSlug.data,
     apartmentId,
-    sessionCookie,
   );
   if (!apartment) {
     notFound();
   }
+
+  const isAuthenticated = false;
+  const isBuyer = false;
+  const initialFavorited = false;
+  const prefill = undefined;
 
   scheduleAnalyticsEvent({
     type: 'APARTMENT_VIEW',
@@ -106,17 +100,6 @@ export default async function ApartmentDetailPage({ params }: ApartmentDetailPag
     apartmentId: apartment.id,
     userAgent: await resolveRequestUserAgent(),
   });
-
-  const initialFavorited = buyerUserId
-    ? await isFavorited({ targetType: 'APARTMENT', targetId: apartment.id })
-    : false;
-
-  const prefill = session?.user
-    ? {
-        name: session.user.name ?? undefined,
-        email: session.user.email ?? undefined,
-      }
-    : undefined;
 
   const statusLabels: Record<ApartmentStatus, string> = {
     AVAILABLE: t('apartmentStatus.AVAILABLE'),

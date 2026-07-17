@@ -3,11 +3,13 @@
 import type { FavoriteTargetType } from '@toonexpo/domain';
 import { useTranslations } from 'next-intl';
 import { useRouter } from 'next/navigation';
-import { useState, useTransition } from 'react';
+import { useEffect, useState, useTransition } from 'react';
 
+import { useSession } from '@/components/auth/session-provider';
 import { Link } from '@/i18n/navigation';
 import { loginHrefWithCallback } from '@/lib/auth/callback-url';
 import { toggleFavoriteAction } from '@/lib/favorites/actions';
+import { isFavorited } from '@/lib/favorites/queries';
 
 type FavoriteToggleProps = {
   locale: string;
@@ -15,9 +17,12 @@ type FavoriteToggleProps = {
   targetId: string;
   /** Current page path including locale prefix, used as login return URL. */
   returnPath: string;
-  initialFavorited: boolean;
-  isBuyer: boolean;
-  isAuthenticated: boolean;
+  /** @deprecated Ignored — session is restored client-side from Nest. */
+  initialFavorited?: boolean;
+  /** @deprecated Ignored — derived from useSession. */
+  isBuyer?: boolean;
+  /** @deprecated Ignored — derived from useSession. */
+  isAuthenticated?: boolean;
 };
 
 export function FavoriteToggle({
@@ -25,15 +30,36 @@ export function FavoriteToggle({
   targetType,
   targetId,
   returnPath,
-  initialFavorited,
-  isBuyer,
-  isAuthenticated,
 }: FavoriteToggleProps) {
   const t = useTranslations('catalog.favorite');
   const router = useRouter();
-  const [favorited, setFavorited] = useState(initialFavorited);
+  const { status, user } = useSession();
+  const [favorited, setFavorited] = useState(false);
   const [errorKey, setErrorKey] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+
+  const isAuthenticated = status === 'authenticated' && Boolean(user);
+  const isBuyer = user?.role === 'BUYER';
+
+  useEffect(() => {
+    if (!isBuyer) {
+      return;
+    }
+    let cancelled = false;
+    void (async () => {
+      const next = await isFavorited({ targetType, targetId });
+      if (!cancelled) {
+        setFavorited(next);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [isBuyer, targetId, targetType]);
+
+  if (status === 'loading') {
+    return null;
+  }
 
   if (!isAuthenticated) {
     return (
@@ -59,10 +85,12 @@ export function FavoriteToggle({
       if (!result.ok) {
         setFavorited(previous);
         setErrorKey(result.errorKey);
-        return;
+        if (result.errorKey === 'unauthorized') {
+          router.push(loginHrefWithCallback(locale, returnPath));
+        }
+      } else {
+        setFavorited(result.favorited);
       }
-      setFavorited(result.favorited);
-      router.refresh();
     });
   }
 
@@ -70,9 +98,7 @@ export function FavoriteToggle({
     <div className="catalog-favorite">
       <button
         type="button"
-        className={
-          favorited ? 'catalog-favorite-btn catalog-favorite-btn--active' : 'catalog-favorite-btn'
-        }
+        className="catalog-favorite-btn"
         disabled={pending}
         aria-pressed={favorited}
         onClick={onToggle}

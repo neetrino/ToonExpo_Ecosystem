@@ -1,14 +1,11 @@
 import type { ReactNode } from 'react';
 
-import { requireAreaAccess } from '@/lib/auth/guard';
+import { AreaAccessGate } from '@/components/auth/area-access-gate';
 
-type EntranceLayoutProps = {
+type AreaLayoutProps = {
   children: ReactNode;
-  params: Promise<{ locale: string }>;
 };
 
-export default async function EntranceLayout({ children, params }: EntranceLayoutProps) {
-  const { locale } = await params;
-  await requireAreaAccess('entrance', locale);
-  return children;
+export default function EntranceLayout({ children }: AreaLayoutProps) {
+  return <AreaAccessGate area="entrance">{children}</AreaAccessGate>;
 }

@@ -25,7 +25,7 @@ Size C — large, layout: monorepo (`apps/*`, `packages/*`).
 | API style | REST + OpenAPI | Confirmed | Works well for app and integration endpoints. |
 | Database | PostgreSQL / Neon | Confirmed | Fits relational inventory/CRM data. |
 | ORM | Prisma | Confirmed | Matches rules. |
-| Auth | NestJS httpOnly DB sessions (Cookie) | Confirmed | Buyer self-registers; builders/partners/admins are provisioned. Auth.js removed; Prisma/Redis/Resend/R2/BOS only on Nest. Web is frontend-only (`NEXT_PUBLIC_API_URL` + `/nest` rewrite). |
+| Auth | NestJS httpOnly DB sessions (Cookie) | Confirmed | Buyer self-registers; builders/partners/admins are provisioned. Auth.js removed; Prisma/Redis/Resend/R2/BOS only on Nest. Web is frontend-only (`NEXT_PUBLIC_API_URL` → Nest directly; no `/nest` rewrite). |
 | i18n | next-intl | Confirmed | Locales `hy`, `ru`, `en` as code constants (not env). |
 | File storage | Cloudflare R2 | Confirmed | NestJS issues signed PUT URLs through `POST /uploads/presign`. |
 | Email | Resend | Confirmed | Account invitations and login flows. |

@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useTransition } from 'react';
 
 import { switchActiveCompanyAction } from '@/lib/builder/active-company-actions';
@@ -23,6 +24,7 @@ export function CompanySwitcher({
   label,
   ariaLabel,
 }: CompanySwitcherProps) {
+  const router = useRouter();
   const [pending, startTransition] = useTransition();
 
   return (
@@ -38,8 +40,12 @@ export function CompanySwitcher({
           if (nextId === activeCompanyId) {
             return;
           }
-          startTransition(() => {
-            void switchActiveCompanyAction(locale, nextId);
+          startTransition(async () => {
+            const result = await switchActiveCompanyAction(locale, nextId);
+            if (result.ok) {
+              router.push(result.redirectTo);
+              router.refresh();
+            }
           });
         }}
       >

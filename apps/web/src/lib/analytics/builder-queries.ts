@@ -1,6 +1,6 @@
 import type { ReadinessStatus } from '@toonexpo/domain';
 
-import { serverApiRequest } from '@/lib/api/server';
+import { apiRequest } from '@/lib/api/client';
 
 import type { NamedCount } from './aggregates';
 
@@ -32,5 +32,5 @@ export type BuilderAnalyticsSnapshot = {
 /** Company scope is resolved and enforced by Nest from the session cookie. */
 export async function loadBuilderAnalytics(companyId: string): Promise<BuilderAnalyticsSnapshot> {
   void companyId;
-  return serverApiRequest<BuilderAnalyticsSnapshot>('/builder/analytics');
+  return apiRequest<BuilderAnalyticsSnapshot>('/builder/analytics');
 }

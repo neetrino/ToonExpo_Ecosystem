@@ -1,14 +1,11 @@
 import type { ReactNode } from 'react';
 
-import { requireAreaAccess } from '@/lib/auth/guard';
+import { AreaAccessGate } from '@/components/auth/area-access-gate';
 
-type AdminLayoutProps = {
+type AreaLayoutProps = {
   children: ReactNode;
-  params: Promise<{ locale: string }>;
 };
 
-export default async function AdminLayout({ children, params }: AdminLayoutProps) {
-  const { locale } = await params;
-  await requireAreaAccess('admin', locale);
-  return children;
+export default function AdminLayout({ children }: AreaLayoutProps) {
+  return <AreaAccessGate area="admin">{children}</AreaAccessGate>;
 }

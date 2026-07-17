@@ -5,12 +5,13 @@ import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useState, useTransition, type FormEvent } from 'react';
 
+import { useSession } from '@/components/auth/session-provider';
+import { TeButton } from '@/components/ui/te-button';
 import { Link } from '@/i18n/navigation';
 import { ApiClientError } from '@/lib/api';
 import type { AuthErrorKey } from '@/lib/auth/action-state';
 import { registerWithApi } from '@/lib/auth/api-auth';
 import { defaultAuthRedirect, safeAuthCallbackPath } from '@/lib/auth/callback-url';
-import { TeButton } from '@/components/ui/te-button';
 
 type RegisterFormProps = {
   locale: string;
@@ -40,6 +41,7 @@ function toAuthErrorKey(error: unknown): AuthErrorKey {
 export function RegisterForm({ locale, callbackUrl, loginHref = '/login' }: RegisterFormProps) {
   const t = useTranslations('auth');
   const router = useRouter();
+  const { refresh } = useSession();
   const [errorKey, setErrorKey] = useState<AuthErrorKey | undefined>();
   const [pending, startTransition] = useTransition();
 
@@ -60,6 +62,7 @@ export function RegisterForm({ locale, callbackUrl, loginHref = '/login' }: Regi
     startTransition(async () => {
       try {
         await registerWithApi(parsed.data);
+        await refresh();
         const redirectTo = safeAuthCallbackPath(callbackUrl, locale) ?? defaultAuthRedirect(locale);
         router.push(redirectTo);
         router.refresh();

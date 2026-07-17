@@ -1,9 +1,7 @@
-'use server';
-
 import { favoriteMutationResponseSchema, favoriteToggleInputSchema } from '@toonexpo/contracts';
 
 import { getApiErrorKey } from '../api/errors';
-import { serverApiRequest } from '../api/server';
+import { apiRequest } from '../api/client';
 
 export type FavoriteMutationErrorKey = 'unauthorized' | 'invalidInput' | 'notFound' | 'rateLimited';
 
@@ -32,7 +30,7 @@ async function mutateFavorite(
   }
 
   try {
-    const response = await serverApiRequest<unknown>(path, { method, body: input });
+    const response = await apiRequest<unknown>(path, { method, body: input });
     const result = favoriteMutationResponseSchema.parse(response);
     return { ok: true, favorited: result.favorited };
   } catch (error) {

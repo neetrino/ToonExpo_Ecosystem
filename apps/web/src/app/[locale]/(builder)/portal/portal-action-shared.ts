@@ -1,7 +1,4 @@
-import { SUPPORTED_LOCALES } from '@toonexpo/shared';
-import { revalidatePath } from 'next/cache';
-
-import { serverApiRequest } from '@/lib/api/server';
+import { apiRequest } from '@/lib/api/client';
 import type { BuilderMutationErrorKey, BuilderMutationResult } from '@/lib/builder/mutations';
 import { resolveCatalogPaths } from '@/lib/shared/resolve-catalog-paths';
 import { revalidateCatalogPaths } from '@/lib/shared/revalidate-catalog-paths';
@@ -30,11 +27,7 @@ export async function revalidateAfterProjectMutation(
       ? { projectId, projectSlug, companySlug }
       : await resolveCatalogPaths(companyId, { projectId });
 
-  if (paths) {
-    revalidateCatalogPaths(paths);
-  } else {
-    revalidateCatalogPaths({});
-  }
+  revalidateCatalogPaths(paths ?? {});
 }
 
 export async function revalidateAfterInventoryMutation(
@@ -50,7 +43,7 @@ export async function revalidateAfterCompanyProfileMutation(
   companySlug: string,
 ): Promise<void> {
   void companyId;
-  const projects = await serverApiRequest<Array<{ slug: string }>>('/builder/projects');
+  const projects = await apiRequest<Array<{ slug: string }>>('/builder/projects');
 
   const pathSets = projects.map((project) => ({
     companySlug,
@@ -58,9 +51,6 @@ export async function revalidateAfterCompanyProfileMutation(
   }));
 
   revalidateCatalogPaths(pathSets.length > 0 ? pathSets : { companySlug });
-  for (const locale of SUPPORTED_LOCALES) {
-    revalidatePath(`/${locale}/portal/company`);
-  }
 }
 
 export async function revalidateAfterMediaMutation(

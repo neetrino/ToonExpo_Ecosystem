@@ -1,18 +1,24 @@
-import { getTranslations } from 'next-intl/server';
+'use client';
 
-import { auth } from '@/auth';
+import { useTranslations } from 'next-intl';
+
 import { LogoutButton } from '@/components/auth/logout-button';
+import { useSession } from '@/components/auth/session-provider';
 import { Link } from '@/i18n/navigation';
 
 type AuthNavProps = {
   locale: string;
 };
 
-export async function AuthNav({ locale }: AuthNavProps) {
-  const session = await auth();
-  const t = await getTranslations('auth');
+export function AuthNav({ locale }: AuthNavProps) {
+  const { status, user } = useSession();
+  const t = useTranslations('auth');
 
-  if (!session?.user) {
+  if (status === 'loading') {
+    return <span className="text-sm text-[var(--te-muted)]" aria-hidden="true" />;
+  }
+
+  if (!user) {
     return (
       <Link
         href="/login"

@@ -1,4 +1,4 @@
-import { serverApiRequest } from '@/lib/api/server';
+import { apiRequest } from '@/lib/api/client';
 
 import type { CatalogPathParams } from './revalidate-catalog-paths';
 
@@ -18,7 +18,7 @@ export function resolveCatalogPaths(
   const query = new URLSearchParams(
     Object.entries(hint).filter((entry): entry is [string, string] => Boolean(entry[1])),
   );
-  return serverApiRequest(`/builder/catalog-paths?${query.toString()}`);
+  return apiRequest(`/builder/catalog-paths?${query.toString()}`);
 }
 
 export function resolveCatalogPathsForProjects(
@@ -28,9 +28,9 @@ export function resolveCatalogPathsForProjects(
   void companyId;
   const query = new URLSearchParams();
   projectIds.forEach((id) => query.append('projectIds', id));
-  return serverApiRequest(`/builder/catalog-paths?${query.toString()}`);
+  return apiRequest(`/builder/catalog-paths?${query.toString()}`);
 }
 
 export function resolveAdminCatalogPaths(projectId: string): Promise<CatalogPathParams | null> {
-  return serverApiRequest(`/builder/catalog-paths/admin/${encodeURIComponent(projectId)}`);
+  return apiRequest(`/builder/catalog-paths/admin/${encodeURIComponent(projectId)}`);
 }

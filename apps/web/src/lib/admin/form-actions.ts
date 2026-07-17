@@ -1,5 +1,3 @@
-'use server';
-
 import type { AdminCatalogActionState } from './catalog-action-state';
 import type { AdminMutationErrorKey } from './mutation-result';
 import {

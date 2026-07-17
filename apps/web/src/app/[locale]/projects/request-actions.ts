@@ -1,5 +1,3 @@
-'use server';
-
 import { auth } from '@/auth';
 import type { PublicRequestMutationResult } from '@/lib/crm/mutation-result';
 import { submitPublicRequest } from '@/lib/crm/public-request-mutations';

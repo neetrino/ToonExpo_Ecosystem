@@ -4,7 +4,7 @@ import type { AuthSession, UploadPurpose } from '@toonexpo/contracts';
 import { PrismaService } from '../../common/prisma.service';
 import type { UploadObjectScope } from './object-key';
 
-/** Must match apps/web active-company cookie (same-origin /nest rewrite forwards it). */
+/** Must match Nest Set-Cookie name for active company (browser → API credentials). */
 export const ACTIVE_COMPANY_COOKIE = 'toonexpo_active_company';
 
 export type ResolvedUploadAuth =

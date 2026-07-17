@@ -1,8 +1,6 @@
-'use server';
-
 import type { AnalyticsEventType } from '@toonexpo/domain';
 
-import { serverApiRequest } from '@/lib/api/server';
+import { apiRequest } from '@/lib/api/client';
 
 const VENUE_ANALYTICS_TYPES = new Set<AnalyticsEventType>(['BOOTH_SELECTED', 'ROUTE_REQUESTED']);
 
@@ -18,7 +16,7 @@ export async function recordVenueBoothEventAction(
     return;
   }
 
-  await serverApiRequest<void>('/analytics/events', {
+  await apiRequest<void>('/analytics/events', {
     method: 'POST',
     body: { boothId, type },
   });

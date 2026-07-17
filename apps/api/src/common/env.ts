@@ -10,14 +10,17 @@ export const apiEnvSchema = z.object({
   AUTH_SECRET: z.string().min(32),
   /**
    * Optional parent domain for session cookies (e.g. `.toonexpo.com`) when web and API
-   * share a registrable domain. Leave unset for host-only cookies (same-origin rewrite).
+   * share a registrable domain. Leave unset for host-only cookies on the API origin.
    */
   COOKIE_DOMAIN: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
   /**
-   * `lax` for same-origin rewrite (default). `none` when the browser calls Cloud Run
-   * directly across sites (requires Secure).
+   * Optional override. When unset, Nest picks `lax` for same-hostname (local) and
+   * `none` for cross-host (Vercel → Cloud Run; requires Secure).
    */
-  COOKIE_SAME_SITE: z.enum(['lax', 'none', 'strict']).default('lax'),
+  COOKIE_SAME_SITE: z.preprocess(
+    emptyToUndefined,
+    z.enum(['lax', 'none', 'strict']).optional(),
+  ),
   /** Shared secret for BOS inbound integration. Empty/unset disables the endpoint (503). */
   BOS_API_KEY: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
   RESEND_API_KEY: z.preprocess(emptyToUndefined, z.string().optional()),

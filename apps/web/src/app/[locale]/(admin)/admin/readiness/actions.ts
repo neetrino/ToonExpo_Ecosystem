@@ -1,11 +1,7 @@
-'use server';
-
 import {
   assessmentUpsertInputSchema,
   readinessCategoryUpsertInputSchema,
 } from '@toonexpo/contracts';
-import { revalidatePath } from 'next/cache';
-
 import { assertAdminSession } from '@/lib/admin/assert-admin-session';
 import type { AdminMutationErrorKey, AdminMutationResult } from '@/lib/admin/mutation-result';
 import { upsertReadinessCategory } from '@/lib/admin/readiness-category-mutations';
@@ -22,9 +18,8 @@ function invalidInput(): { ok: false; errorKey: AdminMutationErrorKey } {
   return { ok: false, errorKey: 'invalidInput' };
 }
 
-function revalidateReadinessPaths(locale: string): void {
-  revalidatePath(`/${locale}/admin/readiness`);
-  revalidatePath(`/${locale}/portal/readiness`);
+function revalidateReadinessPaths(..._args: unknown[]): void {
+  void _args;
 }
 
 export async function upsertAssessmentAction(

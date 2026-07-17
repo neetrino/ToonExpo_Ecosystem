@@ -2,7 +2,7 @@ import type { PublicCompanyProfile } from '@toonexpo/contracts';
 import { publicCompanyProfileSchema } from '@toonexpo/contracts';
 import type { PlatformRole } from '@toonexpo/domain';
 
-import { serverApiRequest } from '@/lib/api/server';
+import { apiRequest } from '@/lib/api/client';
 
 const IS_DEV = process.env.NODE_ENV === 'development';
 
@@ -42,7 +42,7 @@ function mapCompanyProfile(row: {
 /** Returns the builder company profile for portal display. */
 export async function loadCompanyProfile(companyId: string): Promise<PublicCompanyProfile | null> {
   void companyId;
-  const row = await serverApiRequest<PublicCompanyProfile | null>('/builder/company/profile');
+  const row = await apiRequest<PublicCompanyProfile | null>('/builder/company/profile');
 
   if (!row) {
     return null;
@@ -54,7 +54,7 @@ export async function loadCompanyProfile(companyId: string): Promise<PublicCompa
 /** Lists company members without sensitive user fields. */
 export async function loadCompanyMembers(companyId: string): Promise<BuilderCompanyMemberRow[]> {
   void companyId;
-  const rows = await serverApiRequest<
+  const rows = await apiRequest<
     Array<Omit<BuilderCompanyMemberRow, 'joinedAt'> & { joinedAt: string }>
   >('/builder/company/members');
   return rows.map((row) => ({ ...row, joinedAt: new Date(row.joinedAt) }));

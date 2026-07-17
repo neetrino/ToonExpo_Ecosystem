@@ -1,5 +1,3 @@
-'use server';
-
 import type { PartnerFormActionState } from './action-state';
 import type { AdminMutationErrorKey } from '@/lib/admin/mutation-result';
 import {

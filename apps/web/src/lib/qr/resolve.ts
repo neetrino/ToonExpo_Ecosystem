@@ -1,6 +1,6 @@
 import type { PlatformRole } from '@toonexpo/domain';
 
-import { serverApiRequest } from '@/lib/api/server';
+import { apiRequest } from '@/lib/api/client';
 
 export type BuyerContactSnapshot = {
   userId: string;
@@ -36,7 +36,7 @@ type SessionContext = {
 /** Resolves a QR through Nest; authorization is derived from the API session. */
 export function resolveQrScan(token: string, session: SessionContext): Promise<QrResolveResult> {
   const query = session.companyId ? `?companyId=${encodeURIComponent(session.companyId)}` : '';
-  return serverApiRequest<QrResolveResult>(`/qr/resolve/${encodeURIComponent(token)}${query}`);
+  return apiRequest<QrResolveResult>(`/qr/resolve/${encodeURIComponent(token)}${query}`);
 }
 
 export function toPublicResolveShape(result: QrResolveResult): {

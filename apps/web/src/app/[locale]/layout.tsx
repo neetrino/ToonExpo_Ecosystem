@@ -5,16 +5,17 @@ import { notFound } from 'next/navigation';
 import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import type { ReactNode } from 'react';
 
-import { auth } from '@/auth';
-import { AppShell } from '@/components/app-shell';
-import { AuthNav } from '@/components/auth/auth-nav';
-import { buildAppShellNavVisibility } from '@/lib/auth/nav-visibility';
+import { AppShellWithSession } from '@/components/app-shell-with-session';
+import { SessionProvider } from '@/components/auth/session-provider';
 import {
   isMortgagePageEnabled,
   loadPlatformContactSettings,
   resolveContactWithDefaults,
 } from '@/lib/shared/platform-settings';
 import { hasPublicVenueMap } from '@/lib/exhibition/venue-queries';
+
+/** Nest is reached at request time; do not prerender against a live API. */
+export const dynamic = 'force-dynamic';
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin', 'latin-ext'],
@@ -38,8 +39,6 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
   }
   setRequestLocale(locale);
   const messages = await getMessages();
-  const session = await auth();
-  const navVisibility = buildAppShellNavVisibility(session?.user?.role);
   const tFooter = await getTranslations('footer.contact');
   const contact = resolveContactWithDefaults(await loadPlatformContactSettings(), {
     email: tFooter('emailDefault'),
@@ -54,16 +53,17 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
     <html lang={locale} className={plusJakartaSans.variable}>
       <body className={plusJakartaSans.className}>
         <NextIntlClientProvider messages={messages}>
-          <AppShell
-            authSlot={<AuthNav locale={locale} />}
-            navVisibility={navVisibility}
-            contactEmail={contact.email}
-            contactPhone={contact.phone}
-            mortgagePageEnabled={mortgagePageEnabled}
-            exhibitionMapEnabled={exhibitionMapEnabled}
-          >
-            {children}
-          </AppShell>
+          <SessionProvider>
+            <AppShellWithSession
+              locale={locale}
+              contactEmail={contact.email}
+              contactPhone={contact.phone}
+              mortgagePageEnabled={mortgagePageEnabled}
+              exhibitionMapEnabled={exhibitionMapEnabled}
+            >
+              {children}
+            </AppShellWithSession>
+          </SessionProvider>
         </NextIntlClientProvider>
       </body>
     </html>

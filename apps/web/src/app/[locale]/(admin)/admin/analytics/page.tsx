@@ -1,7 +1,6 @@
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { setRequestLocale } from 'next-intl/server';
 
-import { AdminAnalyticsView } from '@/components/analytics/admin-analytics-view';
-import { loadAdminAnalytics } from '@/lib/analytics/admin-queries';
+import { AdminAnalyticsClient } from './admin-analytics-client';
 
 type AdminAnalyticsPageProps = {
   params: Promise<{ locale: string }>;
@@ -10,8 +9,5 @@ type AdminAnalyticsPageProps = {
 export default async function AdminAnalyticsPage({ params }: AdminAnalyticsPageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
-
-  const [t, data] = await Promise.all([getTranslations('admin.analytics'), loadAdminAnalytics()]);
-
-  return <AdminAnalyticsView t={t} data={data} />;
+  return <AdminAnalyticsClient />;
 }

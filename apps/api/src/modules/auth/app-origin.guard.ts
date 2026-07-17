@@ -10,7 +10,7 @@ import { loadApiEnv } from '../../common/env';
 
 /**
  * Rejects credentialed mutating requests whose Origin/Referer is not APP_URL.
- * Same-origin rewrites typically omit cross-site Origin mismatches.
+ * Browser → Nest cross-origin calls must send the exact frontend Origin.
  */
 @Injectable()
 export class AppOriginGuard implements CanActivate {

@@ -1,6 +1,6 @@
 import type { ExhibitionEventStatus } from '@toonexpo/domain';
 
-import { serverApiRequest } from '@/lib/api/server';
+import { apiRequest } from '@/lib/api/client';
 
 export type ActiveExhibitionEvent = {
   id: string;
@@ -18,7 +18,7 @@ export type BuyerCheckInRow = {
 };
 
 export async function loadActiveExhibitionEvent(): Promise<ActiveExhibitionEvent | null> {
-  const event = await serverApiRequest<
+  const event = await apiRequest<
     Omit<ActiveExhibitionEvent, 'startDate' | 'endDate'> & {
       startDate: string | null;
       endDate: string | null;
@@ -34,7 +34,7 @@ export async function loadActiveExhibitionEvent(): Promise<ActiveExhibitionEvent
 }
 
 export async function loadBuyerCheckIns(_userId: string): Promise<BuyerCheckInRow[]> {
-  const rows = await serverApiRequest<
+  const rows = await apiRequest<
     Array<
       Omit<BuyerCheckInRow, 'checkedInAt'> & {
         checkedInAt: string;

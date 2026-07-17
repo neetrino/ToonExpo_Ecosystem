@@ -1,8 +1,4 @@
-'use server';
-
 import { platformSettingUpdateInputSchema } from '@toonexpo/contracts';
-import { revalidatePath } from 'next/cache';
-
 import { assertAdminSession } from '@/lib/admin/assert-admin-session';
 import { upsertSetting } from '@/lib/admin/settings-mutations';
 import type { AdminMutationErrorKey, AdminMutationResult } from '@/lib/admin/mutation-result';
@@ -20,9 +16,8 @@ function invalidInput(): SettingActionFailure {
   return { ok: false, errorKey: 'invalidInput' };
 }
 
-function revalidateSettingPaths(locale: string): void {
-  revalidatePath(`/${locale}/admin/settings`);
-  revalidatePath(`/${locale}`);
+function revalidateSettingPaths(..._args: unknown[]): void {
+  void _args;
 }
 
 export async function upsertSettingAction(

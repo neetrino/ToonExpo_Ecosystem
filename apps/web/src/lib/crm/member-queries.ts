@@ -1,4 +1,4 @@
-import { serverApiRequest } from '@/lib/api/server';
+import { apiRequest } from '@/lib/api/client';
 
 export type CompanyMemberOption = {
   userId: string;
@@ -8,5 +8,5 @@ export type CompanyMemberOption = {
 /** Company members for CRM assignee selects. */
 export async function loadCompanyMembers(companyId: string): Promise<CompanyMemberOption[]> {
   void companyId;
-  return serverApiRequest<CompanyMemberOption[]>('/crm/members');
+  return apiRequest<CompanyMemberOption[]>('/crm/members');
 }

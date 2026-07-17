@@ -1,5 +1,3 @@
-'use server';
-
 import { updateBuyerProfileAction } from '@/app/[locale]/(buyer)/account/actions';
 
 export type BuyerProfileFormActionState = {

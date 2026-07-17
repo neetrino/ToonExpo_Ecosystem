@@ -1,38 +1,32 @@
-import { loadWebEnv } from '@/lib/env';
+import { buildApiUrl, resolveApiBaseUrl } from '@/lib/api/base-url';
 
 import { ApiClientError, mapAuthErrorCode } from './errors';
 
 const CSRF_COOKIE_NAME = 'toonexpo.csrf';
 const CSRF_HEADER_NAME = 'x-csrf-token';
 
+/** In-memory CSRF token — cross-origin API cookies are not visible on document.cookie. */
+let cachedBrowserCsrfToken: string | null = null;
+
 type RequestOptions = {
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
   body?: unknown;
-  /** Forward Cookie header (RSC / server actions). */
+  /**
+   * Optional Cookie header for rare server-to-server public calls.
+   * Cross-origin Nest session cookies are not available to Next.js — authenticated
+   * browser traffic must rely on `credentials: 'include'` instead.
+   */
   cookie?: string;
-  /** Forward double-submit token for server-side mutations. */
+  /** Forward double-submit token when the caller already has it. */
   csrfToken?: string;
   /** Skip CSRF header (safe methods only). */
   skipCsrf?: boolean;
 };
 
-function resolveBrowserBaseUrl(): string {
-  const env = loadWebEnv();
-  return env.NEXT_PUBLIC_API_URL.replace(/\/$/, '');
-}
-
-function resolveServerBaseUrl(): string {
-  const env = loadWebEnv();
-  if (env.API_URL) {
-    return env.API_URL.replace(/\/$/, '');
-  }
-  if (env.NEXT_PUBLIC_API_URL.startsWith('/')) {
-    return `${env.APP_URL.replace(/\/$/, '')}${env.NEXT_PUBLIC_API_URL}`;
-  }
-  return env.NEXT_PUBLIC_API_URL.replace(/\/$/, '');
-}
-
 function readBrowserCsrfToken(): string | null {
+  if (cachedBrowserCsrfToken) {
+    return cachedBrowserCsrfToken;
+  }
   if (typeof document === 'undefined') {
     return null;
   }
@@ -46,13 +40,14 @@ function readBrowserCsrfToken(): string | null {
   return decodeURIComponent(match.slice(CSRF_COOKIE_NAME.length + 1));
 }
 
-async function ensureBrowserCsrfToken(baseUrl: string): Promise<string> {
+async function ensureBrowserCsrfToken(): Promise<string> {
   const existing = readBrowserCsrfToken();
   if (existing) {
+    cachedBrowserCsrfToken = existing;
     return existing;
   }
 
-  const response = await fetch(`${baseUrl}/auth/csrf`, {
+  const response = await fetch(buildApiUrl('/auth/csrf'), {
     method: 'GET',
     credentials: 'include',
   });
@@ -63,6 +58,7 @@ async function ensureBrowserCsrfToken(baseUrl: string): Promise<string> {
   if (!data.csrfToken) {
     throw new ApiClientError(response.status, 'UNKNOWN', 'CSRF token missing in response');
   }
+  cachedBrowserCsrfToken = data.csrfToken;
   return data.csrfToken;
 }
 
@@ -88,12 +84,12 @@ async function parseError(response: Response): Promise<ApiClientError> {
 
 /**
  * Typed fetch wrapper for the NestJS API.
- * Browser calls use credentials; mutating calls send double-submit CSRF.
+ * Always sends credentials so cross-origin httpOnly session cookies are included.
+ * Mutating browser calls send double-submit CSRF.
  */
 export async function apiRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
   const method = options.method ?? 'GET';
   const isServer = typeof window === 'undefined';
-  const baseUrl = isServer ? resolveServerBaseUrl() : resolveBrowserBaseUrl();
   const headers: Record<string, string> = {
     Accept: 'application/json',
   };
@@ -111,12 +107,12 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
 
   const needsCsrf = !options.skipCsrf && method !== 'GET';
   if (needsCsrf && !isServer) {
-    headers[CSRF_HEADER_NAME] = await ensureBrowserCsrfToken(baseUrl);
+    headers[CSRF_HEADER_NAME] = await ensureBrowserCsrfToken();
   }
 
   let response: Response;
   try {
-    response = await fetch(`${baseUrl}${path.startsWith('/') ? path : `/${path}`}`, {
+    response = await fetch(buildApiUrl(path), {
       method,
       headers,
       credentials: 'include',
@@ -137,3 +133,5 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
 
   return (await response.json()) as T;
 }
+
+export { resolveApiBaseUrl, buildApiUrl };

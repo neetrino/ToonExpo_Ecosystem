@@ -1,5 +1,3 @@
-'use server';
-
 import type { DealStage } from '@toonexpo/domain';
 import { ACTIVITY_STATUSES, DEAL_STAGES } from '@toonexpo/domain';
 

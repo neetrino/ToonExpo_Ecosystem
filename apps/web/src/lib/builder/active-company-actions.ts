@@ -1,21 +1,15 @@
-'use server';
-
-import { redirect } from 'next/navigation';
 import { z } from 'zod';
 
-import { auth } from '@/auth';
 import { assertAdminSession } from '@/lib/admin/assert-admin-session';
 import { getApiErrorKey } from '@/lib/api/errors';
-import { serverApiRequest } from '@/lib/api/server';
-import {
-  clearActiveCompanyCookie,
-  setActiveCompanyCookie,
-} from '@/lib/builder/active-company-cookie';
+import { apiRequest } from '@/lib/api/client';
+import { getSession } from '@/lib/auth/get-session';
 
 const companyIdSchema = z.string().trim().min(1).max(64);
 
 export type ActiveCompanyActionResult =
-  { ok: true } | { ok: false; errorKey: 'unauthorized' | 'invalidInput' | 'notFound' };
+  | { ok: true; redirectTo: string }
+  | { ok: false; errorKey: 'unauthorized' | 'invalidInput' | 'notFound' };
 
 export async function startActingOnBehalfAction(
   locale: string,
@@ -27,38 +21,35 @@ export async function startActingOnBehalfAction(
   if (!companyId) return failure('invalidInput');
   const result = await selectCompany(companyId, true);
   if (!result.ok) return result;
-  await setActiveCompanyCookie(companyId);
-  redirect(`/${locale}/portal`);
+  return { ok: true, redirectTo: `/${locale}/portal` };
 }
 
 export async function stopActingOnBehalfAction(locale: string): Promise<ActiveCompanyActionResult> {
   const session = await assertAdminSession();
   if (!session?.user) return failure('unauthorized');
-  await serverApiRequest('/builder/company/stop-acting', { method: 'POST' });
-  await clearActiveCompanyCookie();
-  redirect(`/${locale}/admin/companies`);
+  await apiRequest('/builder/company/stop-acting', { method: 'POST' });
+  return { ok: true, redirectTo: `/${locale}/admin/companies` };
 }
 
 export async function switchActiveCompanyAction(
   locale: string,
   companyIdRaw: unknown,
 ): Promise<ActiveCompanyActionResult> {
-  const session = await auth();
+  const session = await getSession();
   if (!session?.user) return failure('unauthorized');
   const companyId = parseCompanyId(companyIdRaw);
   if (!companyId) return failure('invalidInput');
   const result = await selectCompany(companyId, false);
   if (!result.ok) return result;
-  await setActiveCompanyCookie(companyId);
-  redirect(`/${locale}/portal`);
+  return { ok: true, redirectTo: `/${locale}/portal` };
 }
 
 async function selectCompany(
   companyId: string,
   auditStart: boolean,
-): Promise<ActiveCompanyActionResult> {
+): Promise<ActiveCompanyActionResult | { ok: true }> {
   try {
-    await serverApiRequest('/builder/company/select', {
+    await apiRequest('/builder/company/select', {
       method: 'POST',
       body: { companyId, auditStart },
     });

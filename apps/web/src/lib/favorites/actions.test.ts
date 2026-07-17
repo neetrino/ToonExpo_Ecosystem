@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const mockServerApiRequest = vi.fn();
+const mockapiRequest = vi.fn();
 
-vi.mock('../api/server', () => ({
-  serverApiRequest: (...args: unknown[]) => mockServerApiRequest(...args),
+vi.mock('../api/client', () => ({
+  apiRequest: (...args: unknown[]) => mockapiRequest(...args),
 }));
 
 import { ApiClientError } from '../api/errors';
@@ -24,23 +24,23 @@ describe('toggleFavoriteAction', () => {
     const result = await toggleFavoriteAction({ targetType: 'PROJECT', targetId: 'invalid' });
 
     expect(result).toEqual({ ok: false, errorKey: 'invalidInput' });
-    expect(mockServerApiRequest).not.toHaveBeenCalled();
+    expect(mockapiRequest).not.toHaveBeenCalled();
   });
 
   it('delegates a valid toggle to Nest', async () => {
-    mockServerApiRequest.mockResolvedValue({ favorited: true });
+    mockapiRequest.mockResolvedValue({ favorited: true });
 
     const result = await toggleFavoriteAction(TARGET);
 
     expect(result).toEqual({ ok: true, favorited: true });
-    expect(mockServerApiRequest).toHaveBeenCalledWith('/favorites/toggle', {
+    expect(mockapiRequest).toHaveBeenCalledWith('/favorites/toggle', {
       method: 'POST',
       body: TARGET,
     });
   });
 
   it('preserves API rate-limit errors', async () => {
-    mockServerApiRequest.mockRejectedValue(
+    mockapiRequest.mockRejectedValue(
       new ApiClientError(429, 'UNKNOWN', 'Too many requests', { error: 'rateLimited' }),
     );
 

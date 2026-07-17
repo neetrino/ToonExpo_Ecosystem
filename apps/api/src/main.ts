@@ -31,8 +31,9 @@ async function bootstrap(): Promise<void> {
   app.use(cookieParser());
   app.useGlobalFilters(new ApiHttpExceptionFilter());
 
+  // Exact frontend origin only — never wildcard when credentials are enabled.
   app.enableCors({
-    origin: env.APP_URL,
+    origin: new URL(env.APP_URL).origin,
     credentials: true,
   });
 

@@ -12,9 +12,9 @@ If older docs (`docs/PROGRESS.md` history, `docs/reference/*`, sprint notes) men
 ## Hard boundaries
 
 - **`apps/api` (NestJS)** — only runtime that may use Prisma (`@toonexpo/db`), `DATABASE_URL`, `AUTH_SECRET`, R2, Resend, Upstash Redis, BOS secrets.
-- **`apps/web` (Next.js)** — UI + typed HTTP client only. Allowed env: `APP_URL`, `NEXT_PUBLIC_API_URL` (default `/nest`), `API_URL` (rewrite target), Sentry public/DSN as documented. **No** Prisma, argon2, next-auth/Auth.js, AWS SDK, private Redis/R2/BOS keys.
-- Browser → same-origin **`/nest/*`** rewrite → Nest. Session cookie: Nest httpOnly DB sessions (`toonexpo.sid`) + CSRF double-submit.
-- Thin `'use server'` wrappers may call Nest via `serverApiRequest` — they must **not** touch the database.
+- **`apps/web` (Next.js)** — UI + typed HTTP client only. Allowed env: `APP_URL`, `NEXT_PUBLIC_API_URL` (absolute Nest origin), Sentry public/DSN as documented. **No** Prisma, argon2, next-auth/Auth.js, AWS SDK, private Redis/R2/BOS keys. **No** `API_URL` proxy target.
+- Browser → `NEXT_PUBLIC_API_URL` → Nest directly. Session cookie: Nest httpOnly DB sessions (`toonexpo.sid`) + CSRF double-submit (`SameSite=None; Secure` across Vercel → Cloud Run).
+- Authenticated Nest calls must run in the browser with `credentials: 'include'` — Next.js cannot read cookies set by the Cloud Run domain.
 
 ## Never do (regressions)
 

@@ -1,6 +1,6 @@
 import type { CompanyProfileUpdateInput } from '@toonexpo/contracts';
 
-import { serverApiRequest } from '@/lib/api/server';
+import { apiRequest } from '@/lib/api/client';
 
 import type { BuilderMutationResult } from './mutation-result';
 
@@ -9,5 +9,5 @@ export function updateCompanyProfile(
   input: CompanyProfileUpdateInput,
 ): Promise<BuilderMutationResult<{ companyId: string; companySlug: string }>> {
   void companyId;
-  return serverApiRequest('/builder/company/profile', { method: 'PATCH', body: input });
+  return apiRequest('/builder/company/profile', { method: 'PATCH', body: input });
 }

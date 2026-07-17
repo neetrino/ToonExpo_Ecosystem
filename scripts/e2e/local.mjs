@@ -229,7 +229,7 @@ async function main() {
     ['exec', 'next', 'start', '--port', String(webPort)],
     {
       APP_URL: E2E_BASE_URL,
-      AUTH_URL: E2E_BASE_URL,
+      NEXT_PUBLIC_API_URL: apiUrl,
       NODE_ENV: 'production',
       PORT: String(webPort),
     },

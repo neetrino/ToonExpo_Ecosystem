@@ -1,5 +1,3 @@
-'use server';
-
 import { projectPublicationInputSchema } from '@toonexpo/contracts';
 
 import { assertAdminSession } from '@/lib/admin/assert-admin-session';

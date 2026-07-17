@@ -11,6 +11,7 @@ import {
   Post,
   Query,
   Req,
+  Res,
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
@@ -29,9 +30,12 @@ import {
   projectPublicationInputSchema,
   projectUpsertInputSchema,
 } from '@toonexpo/contracts';
+import type { Response } from 'express';
 import { z } from 'zod';
 
+import { loadApiEnv } from '../../common/env';
 import { AppOriginGuard } from '../auth/app-origin.guard';
+import { buildActiveCompanyCookieOptions } from '../auth/cookie-options';
 import { CsrfGuard } from '../auth/csrf.guard';
 import { SessionAuthGuard, type RequestWithAuth } from '../auth/session-auth.guard';
 import { BuilderAnalyticsService } from './builder-analytics.service';
@@ -158,7 +162,11 @@ export class BuilderController {
   }
 
   @Post('company/select')
-  async selectCompany(@Req() request: RequestWithAuth, @Body() body: unknown) {
+  async selectCompany(
+    @Req() request: RequestWithAuth,
+    @Body() body: unknown,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     const parsed = z
       .object({
         companyId: z.string().trim().min(1).max(64),
@@ -178,14 +186,25 @@ export class BuilderController {
     if (result === 'unauthorized') {
       throw new UnauthorizedException({ error: 'unauthorized' });
     }
+    const env = loadApiEnv();
+    res.cookie(
+      ACTIVE_COMPANY_COOKIE,
+      parsed.data.companyId,
+      buildActiveCompanyCookieOptions(env),
+    );
     return { ok: true };
   }
 
   @Post('company/stop-acting')
-  async stopActing(@Req() request: RequestWithAuth) {
+  async stopActing(
+    @Req() request: RequestWithAuth,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     const session = requireSession(request);
     const raw = request.cookies?.[ACTIVE_COMPANY_COOKIE];
     await this.contexts.stopActing(session, typeof raw === 'string' ? raw : undefined);
+    const env = loadApiEnv();
+    res.clearCookie(ACTIVE_COMPANY_COOKIE, buildActiveCompanyCookieOptions(env));
     return { ok: true };
   }
 

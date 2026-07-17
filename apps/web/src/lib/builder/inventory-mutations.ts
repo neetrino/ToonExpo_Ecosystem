@@ -8,14 +8,14 @@ import type {
   FloorUpdateInput,
 } from '@toonexpo/contracts';
 
-import { serverApiRequest } from '@/lib/api/server';
+import { apiRequest } from '@/lib/api/client';
 import type { AuditActor } from '@/lib/audit/record-audit';
 
 import type { BuilderMutationResult } from './mutation-result';
 
 export function createBuilding(companyId: string, input: BuildingCreateInput) {
   void companyId;
-  return serverApiRequest<BuilderMutationResult<{ buildingId: string }>>('/builder/buildings', {
+  return apiRequest<BuilderMutationResult<{ buildingId: string }>>('/builder/buildings', {
     method: 'POST',
     body: input,
   });
@@ -23,7 +23,7 @@ export function createBuilding(companyId: string, input: BuildingCreateInput) {
 
 export function updateBuilding(companyId: string, input: BuildingUpdateInput) {
   void companyId;
-  return serverApiRequest<BuilderMutationResult<{ buildingId: string }>>('/builder/buildings', {
+  return apiRequest<BuilderMutationResult<{ buildingId: string }>>('/builder/buildings', {
     method: 'PATCH',
     body: input,
   });
@@ -36,7 +36,7 @@ export function setBuildingPublication(
 ) {
   void companyId;
   void actor;
-  return serverApiRequest<BuilderMutationResult<{ buildingId: string }>>(
+  return apiRequest<BuilderMutationResult<{ buildingId: string }>>(
     '/builder/buildings/publication',
     { method: 'PATCH', body: input },
   );
@@ -44,7 +44,7 @@ export function setBuildingPublication(
 
 export function createFloor(companyId: string, input: FloorCreateInput) {
   void companyId;
-  return serverApiRequest<BuilderMutationResult<{ floorId: string }>>('/builder/floors', {
+  return apiRequest<BuilderMutationResult<{ floorId: string }>>('/builder/floors', {
     method: 'POST',
     body: input,
   });
@@ -52,7 +52,7 @@ export function createFloor(companyId: string, input: FloorCreateInput) {
 
 export function updateFloor(companyId: string, input: FloorUpdateInput) {
   void companyId;
-  return serverApiRequest<BuilderMutationResult<{ floorId: string }>>('/builder/floors', {
+  return apiRequest<BuilderMutationResult<{ floorId: string }>>('/builder/floors', {
     method: 'PATCH',
     body: input,
   });
@@ -65,7 +65,7 @@ export function setFloorPublication(
 ) {
   void companyId;
   void actor;
-  return serverApiRequest<BuilderMutationResult<{ floorId: string }>>(
+  return apiRequest<BuilderMutationResult<{ floorId: string }>>(
     '/builder/floors/publication',
     { method: 'PATCH', body: input },
   );
@@ -78,7 +78,7 @@ export function upsertApartment(
 ) {
   void companyId;
   void actorUserId;
-  return serverApiRequest<BuilderMutationResult<{ apartmentId: string }>>(
+  return apiRequest<BuilderMutationResult<{ apartmentId: string }>>(
     '/builder/apartments/upsert',
     { method: 'POST', body: input },
   );

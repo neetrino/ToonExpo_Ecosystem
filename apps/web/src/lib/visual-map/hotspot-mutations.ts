@@ -1,6 +1,6 @@
 import type { HotspotMoveInput, HotspotUpsertInput } from '@toonexpo/contracts';
 
-import { serverApiRequest } from '@/lib/api/server';
+import { apiRequest } from '@/lib/api/client';
 
 import type { VisualMapMutationResult } from './mutation-result';
 
@@ -9,7 +9,7 @@ function mutate(
   companyId: string,
   input: unknown,
 ): Promise<VisualMapMutationResult<{ hotspotId: string; projectId: string }>> {
-  return serverApiRequest(`/visual-map/builder/actions/${action}`, {
+  return apiRequest(`/visual-map/builder/actions/${action}`, {
     method: 'POST',
     body: { companyId, input },
   });

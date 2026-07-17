@@ -1,5 +1,5 @@
 import type { AdminMutationResult } from '@/lib/admin/mutation-result';
-import { serverApiRequest } from '@/lib/api/server';
+import { apiRequest } from '@/lib/api/client';
 
 export type VenueMutationResult<T extends Record<string, unknown> = Record<string, never>> =
   AdminMutationResult<T>;
@@ -8,7 +8,7 @@ function mutate<T extends Record<string, unknown>>(
   action: string,
   raw: unknown,
 ): Promise<VenueMutationResult<T>> {
-  return serverApiRequest(`/exhibition/admin/venue/${action}`, {
+  return apiRequest(`/exhibition/admin/venue/${action}`, {
     method: 'POST',
     body: raw,
   });
