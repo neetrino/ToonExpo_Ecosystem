@@ -2,7 +2,7 @@
 
 ## Current Status
 
-Sprint 2 (Public Real Estate Core / catalog) is in progress. NestJS catalog backend is implemented on `main`. Next.js public catalog frontend is in progress. Sprint 1 (Auth, Access, i18n) is closed: auth backend, auth frontend and two-layer CSRF hardening are on `main`.
+Sprint 4 (QR + Requests/CRM) is closed; orchestrator end-to-end verification passed (2026-07-18). Next is Sprint 5 (Readiness, Partners, Mortgage, Service Providers, Events, Check-in, Analytics, BOS provisioning, Audit). Sprints 0–4 are on `main`.
 
 ## Completed
 
@@ -25,11 +25,17 @@ Sprint 2 (Public Real Estate Core / catalog) is in progress. NestJS catalog back
 - Sprint 1 closed: protected routes, i18n auth flows and acceptance criteria verified.
 - Sprint 2 catalog backend implemented: NestJS public catalog API (projects, buildings, floors, apartments, pricing visibility rules).
 - Catalog product decisions confirmed (2026-07-18): AMD pricing, price visibility modes, trilingual content, Company-only builder profile, Variant A design.
+- Sprint 2 public catalog frontend implemented and closed: Next.js project/building/floor/apartment pages, price visibility UX, trilingual content.
+- Sprint 3 closed: platform admin company provisioning (set-password invite for first company_admin), company team invites/roles, builder portal catalog CRUD with translations and publication status, platform admin and builder portal UI.
+- Sprint 4 closed: permanent buyer QR (opaque tokens, role-based disclosure, QrScanEvent log), project QR deep links, unified lead intake with deduplication, buyer requests UI, constructor CRM deals pipeline (notes, follow-up, apartment attach/detach), builder CRM UI and QR scanner, password reset flow; orchestrator end-to-end verification passed (2026-07-18); monorepo lint/typecheck/test/build green (88 API tests).
 
 ## Next
 
-1. Complete Sprint 2 public catalog frontend (Next.js): project/building/floor/apartment pages, price visibility UX, trilingual content display.
-2. Sprint 2 acceptance: public browse, authenticated price reveal, builder portal catalog editing.
+1. Sprint 5 — Builder readiness workflows and publication readiness tracking.
+2. Partners module and participant management.
+3. Mortgage and service provider integrations.
+4. Events, exhibition check-in and analytics dashboards.
+5. BOS provisioning integration and audit trail.
 
 ## Environment Inputs Before Staging / Production
 
