@@ -98,6 +98,10 @@ model User {
   updatedServiceProviders         ServiceProvider[]         @relation("ServiceProviderUpdater")
   createdVenueMaps                VenueMap[]                @relation("VenueMapCreator")
   updatedVenueMaps                VenueMap[]                @relation("VenueMapUpdater")
+  createdVisualMapCanvases        VisualMapCanvas[]         @relation("VisualMapCanvasCreator")
+  updatedVisualMapCanvases        VisualMapCanvas[]         @relation("VisualMapCanvasUpdater")
+  createdVisualHotspots           VisualHotspot[]           @relation("VisualHotspotCreator")
+  updatedVisualHotspots           VisualHotspot[]           @relation("VisualHotspotUpdater")
   checkInRecords                  CheckInRecord[]           @relation("CheckInStaff")
 
   @@index([accountType])
@@ -232,7 +236,8 @@ model Company {
 
   members     CompanyMember[]
   logoMedia   MediaAsset?     @relation("CompanyLogo", fields: [logoMediaId], references: [id], onDelete: SetNull)
-  ownedMedia  MediaAsset[]    @relation("MediaOwnerCompany")
+  ownedMedia       MediaAsset[]      @relation("MediaOwnerCompany")
+  visualMapCanvases VisualMapCanvas[]
   projects    Project[]
   requests             Request[]
   crmDeals             CrmDeal[]
@@ -342,6 +347,7 @@ model MediaAsset {
   partnerLogos      PartnerCompany[] @relation("PartnerLogo")
   partnerCovers     PartnerCompany[] @relation("PartnerCover")
   venueMaps         VenueMap[]
+  visualMapCanvases VisualMapCanvas[]
 
   @@index([ownerCompanyId])
   @@index([relatedEntityType, relatedEntityId])
@@ -381,6 +387,7 @@ model Project {
   crmDeals             CrmDeal[]
   readinessAssessments ReadinessAssessment[]
   boothAssignments     BoothAssignment[]
+  visualMapCanvases    VisualMapCanvas[]
 
   @@index([builderCompanyId])
   @@index([publicationStatus])
@@ -1391,4 +1398,77 @@ model IntegrationAuditLog {
 
   @@index([provisioningRequestId, createdAt])
   @@map("integration_audit_logs")
+}
+
+/// Visual map canvas context (project / building / floor layer).
+enum VisualMapContextType {
+  project
+  building
+  floor
+}
+
+/// Hotspot navigation target on a visual map canvas.
+enum VisualHotspotTargetType {
+  building
+  floor
+  apartment
+}
+
+/// Image canvas with clickable hotspots for real-estate navigation.
+model VisualMapCanvas {
+  id                String               @id @default(cuid())
+  ownerCompanyId    String               @map("owner_company_id")
+  projectId         String               @map("project_id")
+  contextType       VisualMapContextType @map("context_type")
+  /// Polymorphic reference: contextId points to Project.id, Building.id, or Floor.id per contextType.
+  contextId         String               @map("context_id")
+  mediaAssetId      String               @map("media_asset_id")
+  title             String?
+  description       String?
+  publicationStatus PublicationStatus    @default(draft) @map("publication_status")
+  /// Only one primary canvas per (contextType, contextId) — enforced in service layer.
+  isPrimary         Boolean              @default(false) @map("is_primary")
+  sortOrder         Int                  @default(0) @map("sort_order")
+  createdByUserId   String               @map("created_by_user_id")
+  updatedByUserId   String?              @map("updated_by_user_id")
+  createdAt         DateTime             @default(now()) @map("created_at")
+  updatedAt         DateTime             @updatedAt @map("updated_at")
+
+  ownerCompany Company         @relation(fields: [ownerCompanyId], references: [id], onDelete: Restrict)
+  project      Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  mediaAsset   MediaAsset      @relation(fields: [mediaAssetId], references: [id], onDelete: Restrict)
+  createdBy    User            @relation("VisualMapCanvasCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  updatedBy    User?           @relation("VisualMapCanvasUpdater", fields: [updatedByUserId], references: [id], onDelete: SetNull)
+  hotspots     VisualHotspot[]
+
+  @@index([projectId, contextType, contextId])
+  @@index([ownerCompanyId])
+  @@index([publicationStatus])
+  @@map("visual_map_canvases")
+}
+
+/// Clickable marker on a visual map canvas.
+model VisualHotspot {
+  id                String                  @id @default(cuid())
+  canvasId          String                  @map("canvas_id")
+  targetType        VisualHotspotTargetType @map("target_type")
+  targetId          String                  @map("target_id")
+  label             String
+  xPercent          Decimal                 @map("x_percent") @db.Decimal(6, 3)
+  yPercent          Decimal                 @map("y_percent") @db.Decimal(6, 3)
+  markerStyle       String?                 @map("marker_style")
+  publicationStatus PublicationStatus       @default(draft) @map("publication_status")
+  sortOrder         Int?                    @map("sort_order")
+  createdByUserId   String                  @map("created_by_user_id")
+  updatedByUserId   String?                 @map("updated_by_user_id")
+  createdAt         DateTime                @default(now()) @map("created_at")
+  updatedAt         DateTime                @updatedAt @map("updated_at")
+
+  canvas    VisualMapCanvas @relation(fields: [canvasId], references: [id], onDelete: Cascade)
+  createdBy User            @relation("VisualHotspotCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  updatedBy User?           @relation("VisualHotspotUpdater", fields: [updatedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([canvasId])
+  @@index([publicationStatus])
+  @@map("visual_hotspots")
 }
