@@ -59,6 +59,19 @@ All adaptive operational values in this document are sized for this load profile
 | Backend hosting | Google Cloud Run | Confirmed | Deploys containerized `apps/api`. |
 | CI/CD | GitHub Actions | Confirmed | Lint, typecheck, tests, builds and migrations. |
 
+## Error Tracking (Sentry)
+
+Both apps initialize Sentry only when their DSN env var is set. Empty values keep the SDK fully disabled so local development stays quiet.
+
+| App | Env var | Init files |
+|---|---|---|
+| `apps/api` | `SENTRY_DSN` | `src/instrument.ts` (imported first in `main.ts`), `SentryModule.forRoot()` |
+| `apps/web` | `NEXT_PUBLIC_SENTRY_DSN` | `src/instrumentation-client.ts`, `src/sentry.server.config.ts`, `src/sentry.edge.config.ts`, `src/instrumentation.ts` |
+
+- Performance sampling uses `tracesSampleRate = 0.1` in each app; session replay is off on web.
+- API unhandled 5xx errors are reported via `@SentryExceptionCaptured()` on `AllExceptionsFilter`; NestJS `HttpException` (4xx) stays control-flow only.
+- Source map upload to Sentry is **deferred** until CI provides `SENTRY_AUTH_TOKEN`; web builds set `sourcemaps.disable: true` in `next.config.ts` so builds succeed without the token.
+
 ## Frontend - `apps/web`
 
 TypeScript 7.0 is current but is not selected at project start because 7.0 does not expose the programmatic compiler API required by parts of the lint/tooling ecosystem. Reassess at TypeScript 7.1 through an ADR.
