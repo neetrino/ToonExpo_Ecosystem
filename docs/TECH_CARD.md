@@ -150,7 +150,7 @@ Next.js Server Components may fetch the NestJS API. Server Actions must not impl
 | Seed data | Explicit dev/test seed scripts |
 | Local development | Neon dev branch via `DATABASE_URL` in local `.env` (not committed); no docker-compose for database |
 | Auth persistence | Password hash on the user credential record, revocable DB sessions and single-use invite/reset token hashes |
-| Cache/queues | Not initially; introduce Redis only for a measured requirement |
+| Cache/queues | **Next.js Data Cache** for anonymous public SSR/RSC GETs (TTL 30–60 min + tag purge on publish via `POST /api/revalidate`). No Redis application/data cache. Redis remains optional for distributed rate limits only (Upstash). |
 
 ## Authentication And Security
 

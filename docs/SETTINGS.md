@@ -57,3 +57,30 @@ Budget: `max_instances × DB_POOL_MAX` must stay under the Neon plan connection 
 | Min instances | **2–4** | **0–1** |
 
 Also: session touch coalescing is fixed in code at **10 minutes** (`SESSION_TOUCH_INTERVAL_MS`); idle 7d / absolute 30d unchanged.
+
+## Public web cache (Next Data Cache)
+
+Anonymous public SSR/RSC GETs use Next.js Data Cache with tag-based purge on publish.
+
+### TTLs
+
+| Content | TTL | Tag(s) |
+|---|---|---|
+| Catalog / builders / exhibition / visual-map | **1800s** (30 min) | `catalog`, `catalog-project-<id>`, `exhibition`, `visual-map` |
+| Partners / mortgage offers | **3600s** (60 min) | `partners`, `mortgage` |
+
+Authenticated/private data (buyer QR, favorites, portals, admin) is never shared-cached.
+
+### Publish invalidation (production)
+
+Owner generates one secret (≥32 characters). Set the same value on both sides:
+
+| Where | Variable | Example |
+|---|---|---|
+| Vercel (web) | `REVALIDATE_SECRET` | (generated secret) |
+| Cloud Run (API) | `WEB_REVALIDATE_SECRET` | same secret |
+| Cloud Run (API) | `WEB_REVALIDATE_URL` | `https://www.toonexpo.com/api/revalidate` |
+
+Webhook: `POST /api/revalidate` with header `x-revalidate-secret` and body `{ "tags": ["catalog", ...] }`.
+
+If these envs are unset, the cache is **TTL-only** (max staleness 30–60 min until natural expiry). Locally leave them unset unless testing purge.

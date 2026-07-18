@@ -53,12 +53,13 @@ Infrastructure and platform services completed during waves 1–4 (2026-07-18):
 
 ## Next
 
-1. **Performance P0 (backend)** — ✅ Done (2026-07-19): session touch coalescing (10m), CRM one-open-deal partial unique + transactional intake, Neon pool/timeouts, trust proxy / `req.ip`, booth search DB filter (min length 2), route graph in-memory TTL cache, check-in QR pass-through. Remaining: public CDN/edge caching (P0-1), Upstash required in prod + Cloudflare backstop, load test.
-2. **Owner OPEN_QUESTIONS walkthrough** — `docs/OPEN_QUESTIONS.md` (design variant, domains, prod admin bootstrap, BOS outbound, post-v1 scope confirmation, secrets rotation).
-3. **Owner manual deploy** — `docs/DEPLOYMENT.md` + `docs/SETTINGS.md` (Vercel web, Cloud Run API, Neon `migrate deploy`).
-4. **Sentry → Telegram alerts** — owner request in `toso.md`; pending discussion (not in v1 scope).
-5. **BOS outbound summaries** — push readiness/lead summaries to BOS (blocked on BOS platform API contract).
-6. **Deferred post-v1** (confirm in OPEN_QUESTIONS Q6): admin homepage CMS, global admin audit log, admin cross-company catalog editing, public service-provider directory, PWA, BOS provisioning admin UI.
+1. **Performance P0 (web caching + invalidation)** — ✅ Done (2026-07-19): Next Data Cache for anonymous public SSR GETs (catalog/builders 30m, partners/mortgage 60m) with tag purge webhook; API `WebRevalidationService` wired on publish/unpublish; React `cache()` for metadata/page dedupe; R2 hostname in `images.remotePatterns`. Remaining: Upstash required in prod + Cloudflare backstop, load test.
+2. **Performance P0 (backend)** — ✅ Done (2026-07-19): session touch coalescing (10m), CRM one-open-deal partial unique + transactional intake, Neon pool/timeouts, trust proxy / `req.ip`, booth search DB filter (min length 2), route graph in-memory TTL cache, check-in QR pass-through.
+3. **Owner OPEN_QUESTIONS walkthrough** — `docs/OPEN_QUESTIONS.md` (design variant, domains, prod admin bootstrap, BOS outbound, post-v1 scope confirmation, secrets rotation).
+4. **Owner manual deploy** — `docs/DEPLOYMENT.md` + `docs/SETTINGS.md` (Vercel web, Cloud Run API, Neon `migrate deploy`).
+5. **Sentry → Telegram alerts** — owner request in `toso.md`; pending discussion (not in v1 scope).
+6. **BOS outbound summaries** — push readiness/lead summaries to BOS (blocked on BOS platform API contract).
+7. **Deferred post-v1** (confirm in OPEN_QUESTIONS Q6): admin homepage CMS, global admin audit log, admin cross-company catalog editing, public service-provider directory, PWA, BOS provisioning admin UI.
 
 ## Environment Inputs Before Staging / Production
 
