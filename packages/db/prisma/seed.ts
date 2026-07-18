@@ -24,6 +24,7 @@ import {
   SEED_ID_PREFIX,
   SEED_PROJECTS,
 } from "./seed-data.js";
+import { buildSeedTranslations } from "./seed-translations.js";
 
 const packageRoot = path.dirname(fileURLToPath(import.meta.url));
 const monorepoRoot = path.resolve(packageRoot, "../..", "..");
@@ -42,6 +43,9 @@ const resolveConnectionString = (): string => {
 const clearSeedData = async (
   prisma: ReturnType<typeof createPrismaClient>,
 ): Promise<void> => {
+  await prisma.translation.deleteMany({
+    where: { id: { startsWith: SEED_ID_PREFIX } },
+  });
   await prisma.apartmentStatusHistory.deleteMany({
     where: { apartmentId: { startsWith: SEED_ID_PREFIX } },
   });
@@ -87,6 +91,7 @@ const seedBuilders = async (
       data: {
         id: builder.id,
         name: builder.name,
+        description: `${builder.name} — residential developer in Yerevan.`,
         type: CompanyType.builder,
         status: CompanyStatus.active,
         source: CompanySource.admin,
@@ -235,8 +240,21 @@ const main = async (): Promise<void> => {
     await clearSeedData(prisma);
     await seedBuilders(prisma);
     const apartmentCount = await seedProjects(prisma);
+    const translations = buildSeedTranslations();
+    for (const row of translations) {
+      await prisma.translation.create({
+        data: {
+          id: row.id,
+          entityType: row.entityType,
+          entityId: row.entityId,
+          fieldName: row.fieldName,
+          locale: row.locale,
+          value: row.value,
+        },
+      });
+    }
     console.info(
-      `Seed complete: ${SEED_BUILDERS.length} builders, ${SEED_PROJECTS.length} published projects, ${apartmentCount} apartments`,
+      `Seed complete: ${SEED_BUILDERS.length} builders, ${SEED_PROJECTS.length} published projects, ${apartmentCount} apartments, ${translations.length} translations`,
     );
   } finally {
     await prisma.$disconnect();

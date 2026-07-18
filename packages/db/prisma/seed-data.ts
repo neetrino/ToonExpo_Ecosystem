@@ -172,7 +172,11 @@ export const buildApartments = (
       price: basePrice + rooms * 12_000_000 + index * 500_000,
       salesStatus: statuses[(index - 1) % statuses.length] ?? ApartmentSalesStatus.available,
       priceVisibility:
-        index % 7 === 0 ? PriceVisibility.by_request : PriceVisibility.public,
+        index === 1
+          ? PriceVisibility.visible_after_login
+          : index === 2
+            ? PriceVisibility.by_request
+            : PriceVisibility.public,
     });
   }
 

@@ -122,6 +122,8 @@ model BuyerProfile {
 model Company {
   id           String        @id @default(cuid())
   name         String
+  /// Public builder/company blurb (Armenian canonical; localized via Translation).
+  description  String?
   type         CompanyType
   status       CompanyStatus @default(pending)
   source       CompanySource
@@ -196,7 +198,6 @@ enum ApartmentSalesStatus {
 enum PriceVisibility {
   public
   by_request
-  hidden
   visible_after_login
 }
 
@@ -400,4 +401,22 @@ model ApartmentStatusHistory {
   @@index([apartmentId])
   @@index([createdAt])
   @@map("apartment_status_history")
+}
+
+/// Localized public catalog text (hy / ru / en). Scalar columns remain Armenian fallbacks.
+model Translation {
+  id              String   @id @default(cuid())
+  entityType      String   @map("entity_type")
+  entityId        String   @map("entity_id")
+  fieldName       String   @map("field_name")
+  locale          String
+  value           String
+  updatedByUserId String?  @map("updated_by_user_id")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@unique([entityType, entityId, fieldName, locale])
+  @@index([entityType, entityId])
+  @@index([locale])
+  @@map("translations")
 }
