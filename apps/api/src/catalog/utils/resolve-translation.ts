@@ -8,6 +8,8 @@ export const TRANSLATION_ENTITY = {
   company: "company",
   project: "project",
   apartment: "apartment",
+  partnerCompany: "partner_company",
+  partnerOffer: "partner_offer",
 } as const;
 
 export type TranslationEntityType =
@@ -19,6 +21,7 @@ export const TRANSLATION_FIELD = {
   shortDescription: "shortDescription",
   fullDescription: "fullDescription",
   locationText: "locationText",
+  title: "title",
 } as const;
 
 export type TranslationFieldName =
