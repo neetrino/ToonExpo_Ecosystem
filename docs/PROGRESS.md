@@ -2,9 +2,9 @@
 
 ## Current Status
 
-Documentation/start phase.
+Sprint 0 (Foundation) started 2026-07-18.
 
-Production code has not started yet.
+Documentation phase complete; TECH_CARD confirmed. Production code has not started yet.
 
 ## Completed
 
@@ -13,22 +13,21 @@ Production code has not started yet.
 - Project size set to Size C.
 - Development start pack created.
 - Technical architecture draft created.
-- TECH_CARD draft created.
+- TECH_CARD confirmed (2026-07-18).
 - Frontend/backend runtime boundary confirmed.
 - Production scope replaces MVP terminology.
+- Foundation decisions confirmed: auth, services (R2, Resend, Sentry, GitHub Actions), git strategy, state management, Neon PostgreSQL local dev setup.
+- Sprint 0 (Foundation) started (2026-07-18).
 
 ## Next
 
-1. Confirm the remaining auth/session strategy.
-2. Scaffold the confirmed monorepo layout.
-3. Scaffold Next.js `apps/web` and the full NestJS `apps/api` together.
-4. Create Prisma schema draft from development start database schema.
-5. Implement auth, i18n and core layout.
+1. Scaffold the confirmed monorepo layout.
+2. Scaffold Next.js `apps/web` and the full NestJS `apps/api` together.
+3. Create Prisma schema draft from development start database schema.
+4. Implement auth, i18n and core layout.
 
 ## Blockers / Needs Confirmation
 
-- final auth approach;
-- database/provider credentials;
-- file storage and email provider credentials;
-- final domain/subdomain plan;
-- exact first sprint owner/order.
+- staging and production domains;
+- Cloudflare R2, Resend, Sentry, Vercel and Google Cloud accounts/credentials;
+- adaptive rate, timeout and pool values based on environments.
