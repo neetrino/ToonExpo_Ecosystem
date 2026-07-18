@@ -11,6 +11,9 @@ describe("loadPortalAnalyticsOverview company scoping", () => {
   const readinessFindFirst = vi.fn();
   const projectFindMany = vi.fn();
   const apartmentFindMany = vi.fn();
+  const buyerFavoriteCount = vi.fn();
+  const buyerFavoriteFindMany = vi.fn();
+  const buyerFavoriteGroupBy = vi.fn();
 
   let prisma: PrismaService;
 
@@ -23,15 +26,23 @@ describe("loadPortalAnalyticsOverview company scoping", () => {
     readinessFindFirst.mockResolvedValue(null);
     projectFindMany.mockResolvedValue([]);
     apartmentFindMany.mockResolvedValue([]);
+    buyerFavoriteCount.mockResolvedValue(0);
+    buyerFavoriteFindMany.mockResolvedValue([]);
+    buyerFavoriteGroupBy.mockResolvedValue([]);
 
     prisma = {
       db: {
         analyticsEvent: { groupBy: analyticsGroupBy },
         request: { groupBy: requestGroupBy },
         crmDeal: { groupBy: crmDealGroupBy },
-        apartment: { groupBy: apartmentGroupBy, findMany: apartmentFindMany },
+        apartment: { groupBy: apartmentGroupBy, findMany: apartmentFindMany, count: vi.fn() },
         readinessAssessment: { findFirst: readinessFindFirst },
         project: { findMany: projectFindMany },
+        buyerFavorite: {
+          count: buyerFavoriteCount,
+          findMany: buyerFavoriteFindMany,
+          groupBy: buyerFavoriteGroupBy,
+        },
       },
     } as unknown as PrismaService;
   });
@@ -68,7 +79,28 @@ describe("loadPortalAnalyticsOverview company scoping", () => {
     analyticsGroupBy.mockResolvedValueOnce([
       { projectId: "proj_a", _count: { _all: 12 } },
     ]);
-    projectFindMany.mockResolvedValueOnce([{ id: "proj_a", name: "Mine" }]);
+    projectFindMany.mockImplementation(({ where }) => {
+      if ("builderCompanyId" in where && where.builderCompanyId) {
+        return Promise.resolve([{ id: "proj_a" }]);
+      }
+      if (
+        where &&
+        typeof where === "object" &&
+        "id" in where &&
+        where.id &&
+        typeof where.id === "object" &&
+        "in" in where.id &&
+        Array.isArray(where.id.in)
+      ) {
+        return Promise.resolve(
+          where.id.in.map((id: string) => ({
+            id,
+            name: id === "proj_a" ? "Mine" : null,
+          })),
+        );
+      }
+      return Promise.resolve([]);
+    });
 
     const from = new Date("2026-06-18T00:00:00.000Z");
     const to = new Date("2026-07-18T00:00:00.000Z");

@@ -20,6 +20,7 @@ import {
 } from "../analytics.constants.js";
 import type { ResolvedAnalyticsDateRange } from "../analytics.types.js";
 import { createdAtInRange } from "../utils/resolve-date-range.js";
+import { loadAdminFavoritesSummary } from "../utils/favorites-aggregates.js";
 import type { PrismaService } from "../../prisma/prisma.service.js";
 
 export const loadAdminAnalyticsOverview = async (
@@ -42,6 +43,7 @@ export const loadAdminAnalyticsOverview = async (
     checkInGroups,
     assessmentGroups,
     weakestCategories,
+    favorites,
   ] = await Promise.all([
     prisma.db.user.count(),
     prisma.db.user.count({ where: { accountType: AccountType.buyer } }),
@@ -100,6 +102,7 @@ export const loadAdminAnalyticsOverview = async (
       _count: { _all: true },
     }),
     loadWeakestReadinessCategories(prisma),
+    loadAdminFavoritesSummary(prisma),
   ]);
 
   const projectIds = topProjectGroups
@@ -129,6 +132,7 @@ export const loadAdminAnalyticsOverview = async (
         name: projectNames.get(row.projectId as string) ?? null,
         viewCount: row._count._all,
       })),
+    favorites,
     requests: {
       total: requestsTotal,
       bySource: requestGroups.map((row) => ({

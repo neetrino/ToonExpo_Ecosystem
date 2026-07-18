@@ -16,6 +16,7 @@ import {
 } from "../analytics.constants.js";
 import type { ResolvedAnalyticsDateRange } from "../analytics.types.js";
 import { createdAtInRange } from "../utils/resolve-date-range.js";
+import { loadPortalFavoritesSummary } from "../utils/favorites-aggregates.js";
 import type { PrismaService } from "../../prisma/prisma.service.js";
 
 export const loadPortalAnalyticsOverview = async (
@@ -33,6 +34,7 @@ export const loadPortalAnalyticsOverview = async (
     apartmentSalesGroups,
     companyAssessment,
     projectAssessment,
+    favorites,
   ] = await Promise.all([
     prisma.db.analyticsEvent.groupBy({
       by: ["projectId"],
@@ -94,6 +96,7 @@ export const loadPortalAnalyticsOverview = async (
       orderBy: { createdAt: "desc" },
       select: { status: true, overallScore: true },
     }),
+    loadPortalFavoritesSummary(prisma, companyId),
   ]);
 
   const projectIds = topProjectGroups
@@ -129,6 +132,7 @@ export const loadPortalAnalyticsOverview = async (
         name: apartmentLabels.get(row.apartmentId as string) ?? null,
         viewCount: row._count._all,
       })),
+    favorites,
     requests: {
       total: requestsTotal,
       bySource: requestGroups.map((row) => ({

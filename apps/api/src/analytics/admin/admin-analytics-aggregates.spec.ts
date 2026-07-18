@@ -17,6 +17,8 @@ describe("loadAdminAnalyticsOverview", () => {
   const readinessScoreGroupBy = vi.fn();
   const projectFindMany = vi.fn();
   const readinessCategoryFindMany = vi.fn();
+  const buyerFavoriteCount = vi.fn();
+  const buyerFavoriteGroupBy = vi.fn();
 
   let prisma: PrismaService;
 
@@ -55,12 +57,16 @@ describe("loadAdminAnalyticsOverview", () => {
     readinessScoreGroupBy.mockResolvedValue([
       { categoryId: "cat_1", _avg: { score: 45 } },
     ]);
+    readinessCategoryFindMany.mockResolvedValue([
+      { id: "cat_1", name: "Catalog Quality" },
+    ]);
+    buyerFavoriteCount.mockResolvedValue(42);
+    buyerFavoriteGroupBy.mockResolvedValue([
+      { targetId: "proj_a", _count: { _all: 8 } },
+    ]);
     projectFindMany.mockResolvedValue([
       { id: "proj_a", name: "Project Alpha" },
       { id: "proj_b", name: "Project Beta" },
-    ]);
-    readinessCategoryFindMany.mockResolvedValue([
-      { id: "cat_1", name: "Catalog Quality" },
     ]);
 
     prisma = {
@@ -77,6 +83,10 @@ describe("loadAdminAnalyticsOverview", () => {
         readinessAssessment: { groupBy: readinessGroupBy },
         readinessScore: { groupBy: readinessScoreGroupBy },
         readinessCategory: { findMany: readinessCategoryFindMany },
+        buyerFavorite: {
+          count: buyerFavoriteCount,
+          groupBy: buyerFavoriteGroupBy,
+        },
       },
     } as unknown as PrismaService;
   });
@@ -104,6 +114,12 @@ describe("loadAdminAnalyticsOverview", () => {
       { entityId: "proj_a", name: "Project Alpha", viewCount: 50 },
       { entityId: "proj_b", name: "Project Beta", viewCount: 30 },
     ]);
+    expect(overview.favorites).toEqual({
+      total: 42,
+      topProjects: [
+        { entityId: "proj_a", name: "Project Alpha", favoriteCount: 8 },
+      ],
+    });
     expect(overview.requests.total).toBe(10);
     expect(overview.dealsByStatus).toEqual([
       { status: "new_request", count: 4 },
