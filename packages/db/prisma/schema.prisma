@@ -79,6 +79,13 @@ model User {
   companyMembership  CompanyMember?
   invitedMemberships CompanyMember[]      @relation("CompanyMemberInviter")
   accessTokens       AccountAccessToken[]
+  createdRequests    Request[]            @relation("RequestCreatedBy")
+  assignedCrmDeals   CrmDeal[]            @relation("CrmDealAssignee")
+  createdCrmDeals    CrmDeal[]            @relation("CrmDealCreatedBy")
+  crmNotes           CrmNote[]
+  createdCrmActivities CrmFollowUpActivity[] @relation("CrmActivityCreatedBy")
+  assignedCrmActivities CrmFollowUpActivity[] @relation("CrmActivityAssignee")
+  createdApartmentLinks CrmDealApartmentLink[] @relation("CrmApartmentLinkCreatedBy")
 
   @@index([accountType])
   @@map("users")
@@ -114,8 +121,10 @@ model BuyerProfile {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  qrCode QrCode?
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  qrCode   QrCode?
+  requests Request[]
+  crmDeals CrmDeal[]
 
   @@map("buyer_profiles")
 }
@@ -180,7 +189,8 @@ model QrScanEvent {
   userAgent        String?            @map("user_agent")
   createdAt        DateTime           @default(now()) @map("created_at")
 
-  qrCode QrCode @relation(fields: [qrCodeId], references: [id], onDelete: Cascade)
+  qrCode   QrCode    @relation(fields: [qrCodeId], references: [id], onDelete: Cascade)
+  requests Request[]
 
   @@index([qrCodeId])
   @@index([buyerProfileId])
@@ -208,6 +218,8 @@ model Company {
   logoMedia   MediaAsset?     @relation("CompanyLogo", fields: [logoMediaId], references: [id], onDelete: SetNull)
   ownedMedia  MediaAsset[]    @relation("MediaOwnerCompany")
   projects    Project[]
+  requests    Request[]
+  crmDeals    CrmDeal[]
 
   @@index([type])
   @@index([status])
@@ -342,6 +354,8 @@ model Project {
   coverMedia     MediaAsset? @relation("ProjectCover", fields: [coverMediaId], references: [id], onDelete: SetNull)
   buildings      Building[]
   apartments     Apartment[]
+  requests       Request[]
+  crmDeals       CrmDeal[]
 
   @@index([builderCompanyId])
   @@index([publicationStatus])
@@ -437,11 +451,13 @@ model Apartment {
   createdAt               DateTime             @default(now()) @map("created_at")
   updatedAt               DateTime             @updatedAt @map("updated_at")
 
-  project    Project                   @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  building   Building                  @relation(fields: [buildingId], references: [id], onDelete: Cascade)
-  floor      Floor                     @relation(fields: [floorId], references: [id], onDelete: Cascade)
-  planMedia  MediaAsset?               @relation("ApartmentPlan", fields: [planMediaId], references: [id], onDelete: SetNull)
+  project       Project                   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  building      Building                  @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  floor         Floor                     @relation(fields: [floorId], references: [id], onDelete: Cascade)
+  planMedia     MediaAsset?               @relation("ApartmentPlan", fields: [planMediaId], references: [id], onDelete: SetNull)
   statusHistory ApartmentStatusHistory[]
+  requests      Request[]
+  dealLinks     CrmDealApartmentLink[]
 
   @@unique([floorId, number])
   @@index([projectId])
@@ -490,4 +506,207 @@ model Translation {
   @@index([entityType, entityId])
   @@index([locale])
   @@map("translations")
+}
+
+/// Canonical deal/request creation source (unified intake use case).
+enum RequestSource {
+  buyer_project_request
+  builder_buyer_qr_scan
+  manual_builder_entry
+  event_interaction
+}
+
+/// Intake request lifecycle (deal owns the sales pipeline).
+enum RequestStatus {
+  submitted
+  attached
+  cancelled
+}
+
+/// Constructor CRM pipeline status (docs: CRM-Pipeline-And-Statuses).
+enum CrmDealStatus {
+  new_request
+  assigned
+  contacted
+  follow_up_needed
+  apartment_selected
+  reserved
+  converted
+  closed
+  lost
+}
+
+enum CrmDealApartmentLinkType {
+  interest
+  selected
+  reserved
+  sold
+}
+
+enum CrmNoteVisibility {
+  internal
+}
+
+enum CrmActivityType {
+  call
+  email
+  meeting
+  send_offer
+  follow_up
+  status_update
+  other
+}
+
+enum CrmActivityStatus {
+  planned
+  done
+  cancelled
+}
+
+/// Intake request from buyer/QR/manual sources. Many requests may attach to one deal.
+model Request {
+  id               String         @id @default(cuid())
+  /// Null for manual CRM-only contacts without a registered buyer.
+  buyerProfileId   String?        @map("buyer_profile_id")
+  builderCompanyId String         @map("builder_company_id")
+  projectId        String?        @map("project_id")
+  apartmentId      String?        @map("apartment_id")
+  source           RequestSource
+  status           RequestStatus  @default(submitted)
+  note             String?
+  scanEventId      String?        @map("scan_event_id")
+  createdByUserId  String?        @map("created_by_user_id")
+  crmDealId        String?        @map("crm_deal_id")
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+
+  buyerProfile   BuyerProfile? @relation(fields: [buyerProfileId], references: [id], onDelete: SetNull)
+  builderCompany Company       @relation(fields: [builderCompanyId], references: [id], onDelete: Restrict)
+  project        Project?      @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  apartment      Apartment?    @relation(fields: [apartmentId], references: [id], onDelete: SetNull)
+  scanEvent      QrScanEvent?  @relation(fields: [scanEventId], references: [id], onDelete: SetNull)
+  createdBy      User?         @relation("RequestCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  crmDeal        CrmDeal?      @relation(fields: [crmDealId], references: [id], onDelete: SetNull)
+  primaryForDeals CrmDeal[]    @relation("CrmDealPrimaryRequest")
+
+  @@index([buyerProfileId])
+  @@index([builderCompanyId])
+  @@index([projectId])
+  @@index([apartmentId])
+  @@index([source])
+  @@index([status])
+  @@index([crmDealId])
+  @@index([scanEventId])
+  @@index([createdAt])
+  @@map("requests")
+}
+
+/// Constructor CRM work item (one open deal per builder+buyer via intake dedup).
+model CrmDeal {
+  id               String        @id @default(cuid())
+  companyId        String        @map("company_id")
+  buyerProfileId   String?       @map("buyer_profile_id")
+  primaryRequestId String?       @map("primary_request_id")
+  source           RequestSource
+  status           CrmDealStatus @default(new_request)
+  title            String?
+  message          String?
+  /// Manual entry contact fields when no BuyerProfile is linked yet.
+  contactName      String?       @map("contact_name")
+  contactPhone     String?       @map("contact_phone")
+  contactEmail     String?       @map("contact_email")
+  assignedUserId   String?       @map("assigned_user_id")
+  createdByUserId  String?       @map("created_by_user_id")
+  lostReason       String?       @map("lost_reason")
+  lastActivityAt   DateTime?     @map("last_activity_at")
+  nextFollowUpAt   DateTime?     @map("next_follow_up_at")
+  createdAt        DateTime      @default(now()) @map("created_at")
+  updatedAt        DateTime      @updatedAt @map("updated_at")
+
+  company        Company                 @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  buyerProfile   BuyerProfile?           @relation(fields: [buyerProfileId], references: [id], onDelete: SetNull)
+  primaryRequest Request?                @relation("CrmDealPrimaryRequest", fields: [primaryRequestId], references: [id], onDelete: SetNull)
+  assignedUser   User?                   @relation("CrmDealAssignee", fields: [assignedUserId], references: [id], onDelete: SetNull)
+  createdBy      User?                   @relation("CrmDealCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
+  projectId      String?                 @map("project_id")
+  project        Project?                @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  requests       Request[]
+  apartmentLinks CrmDealApartmentLink[]
+  notes          CrmNote[]
+  activities     CrmFollowUpActivity[]
+
+  @@index([companyId])
+  @@index([buyerProfileId])
+  @@index([status])
+  @@index([source])
+  @@index([projectId])
+  @@index([assignedUserId])
+  @@index([updatedAt])
+  @@index([companyId, buyerProfileId, status])
+  @@map("crm_deals")
+}
+
+model CrmDealApartmentLink {
+  id                         String                    @id @default(cuid())
+  crmDealId                  String                    @map("crm_deal_id")
+  apartmentId                String                    @map("apartment_id")
+  linkType                   CrmDealApartmentLinkType  @default(interest) @map("link_type")
+  isPrimary                  Boolean                   @default(false) @map("is_primary")
+  apartmentSalesStatusAtLink ApartmentSalesStatus?     @map("apartment_sales_status_at_link")
+  priceAtLink                Decimal?                  @map("price_at_link") @db.Decimal(14, 2)
+  priceVisibilityAtLink      PriceVisibility?          @map("price_visibility_at_link")
+  createdByUserId            String?                   @map("created_by_user_id")
+  createdAt                  DateTime                  @default(now()) @map("created_at")
+
+  crmDeal         CrmDeal    @relation(fields: [crmDealId], references: [id], onDelete: Cascade)
+  apartment       Apartment  @relation(fields: [apartmentId], references: [id], onDelete: Restrict)
+  createdBy       User?      @relation("CrmApartmentLinkCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
+
+  @@unique([crmDealId, apartmentId])
+  @@index([crmDealId])
+  @@index([apartmentId])
+  @@map("crm_deal_apartment_links")
+}
+
+model CrmNote {
+  id           String            @id @default(cuid())
+  crmDealId    String            @map("crm_deal_id")
+  authorUserId String            @map("author_user_id")
+  body         String
+  visibility   CrmNoteVisibility @default(internal)
+  createdAt    DateTime          @default(now()) @map("created_at")
+  updatedAt    DateTime          @updatedAt @map("updated_at")
+
+  crmDeal CrmDeal @relation(fields: [crmDealId], references: [id], onDelete: Cascade)
+  author  User    @relation(fields: [authorUserId], references: [id], onDelete: Restrict)
+
+  @@index([crmDealId])
+  @@index([authorUserId])
+  @@index([createdAt])
+  @@map("crm_notes")
+}
+
+model CrmFollowUpActivity {
+  id              String            @id @default(cuid())
+  crmDealId       String            @map("crm_deal_id")
+  type            CrmActivityType
+  title           String
+  description     String?
+  dueAt           DateTime?         @map("due_at")
+  status          CrmActivityStatus @default(planned)
+  assignedUserId  String?           @map("assigned_user_id")
+  createdByUserId String            @map("created_by_user_id")
+  completedAt     DateTime?         @map("completed_at")
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
+
+  crmDeal      CrmDeal @relation(fields: [crmDealId], references: [id], onDelete: Cascade)
+  assignedUser User?   @relation("CrmActivityAssignee", fields: [assignedUserId], references: [id], onDelete: SetNull)
+  createdBy    User    @relation("CrmActivityCreatedBy", fields: [createdByUserId], references: [id], onDelete: Restrict)
+
+  @@index([crmDealId])
+  @@index([status])
+  @@index([dueAt])
+  @@index([assignedUserId])
+  @@map("crm_follow_up_activities")
 }
