@@ -10,7 +10,7 @@ Builder Readiness helps BigProjects evaluate builder and project readiness for T
 
 ## Scope
 
-Readiness applies to builders only in MVP.
+Readiness applies to builders only in the initial production release.
 
 ## Evaluation Levels
 
@@ -46,7 +46,7 @@ Builders should not see:
 
 ## Out Of Scope
 
-- partner readiness in MVP;
+- partner readiness in the current production scope;
 - CRM-native readiness editing.
 
 ## Service Provider Directory Link

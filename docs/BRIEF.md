@@ -20,7 +20,9 @@ Do not implement BigProjects BOS internal CRM, tasks, KPI, deal onboarding check
 - Buyer / Visitor;
 - Entrance Staff.
 
-## MVP Scope
+## Production Scope
+
+ToonExpo is a full production product, not an MVP or prototype. The list below defines the initial production release, not a reduced-quality implementation.
 
 - account/access foundation;
 - public website and mobile-like UX;
@@ -55,5 +57,4 @@ v1 languages:
 
 - [Documentation Hub](./00-Documentation-Hub.md)
 - [Consistency Audit](./00-Consistency-Audit.md)
-- [Development Start Pack](./00-Development-Start/01-MVP-Scope-Freeze.md)
-
+- [Development Start Pack](./00-Development-Start/01-Production-Scope.md)

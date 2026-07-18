@@ -11,7 +11,7 @@ It contains only ToonExpo documentation plus a small integration contract with B
 - [Brief](./BRIEF.md)
 - [Tech Card](./TECH_CARD.md)
 - [Architecture](./01-ARCHITECTURE.md)
-- [Development Start Pack](./00-Development-Start/01-MVP-Scope-Freeze.md)
+- [Development Start Pack](./00-Development-Start/01-Production-Scope.md)
 - [Progress](./PROGRESS.md)
 - [Decisions](./DECISIONS.md)
 - [ToonExpo Ecosystem Overview](./02-ToonExpo-Ecosystem/00-Ecosystem-Overview.md)
@@ -55,10 +55,11 @@ It contains only ToonExpo documentation plus a small integration contract with B
 - [Mobile UX](./02-ToonExpo-Ecosystem/03-UI-UX/03-Mobile-UX.md)
 - [Page / Card / Sheet Standard](./02-ToonExpo-Ecosystem/03-UI-UX/04-Page-Card-Sheet-Standard.md)
 - [Dependency Graph](./architecture/DEPENDENCY_GRAPH.md)
+- [Frontend / Backend Boundary](./architecture/FRONTEND_BACKEND_BOUNDARY.md)
 
 ## Development Start Pack
 
-- [MVP Scope Freeze](./00-Development-Start/01-MVP-Scope-Freeze.md)
+- [Production Scope](./00-Development-Start/01-Production-Scope.md)
 - [Implementation Backlog](./00-Development-Start/02-Implementation-Backlog.md)
 - [Technical Architecture](./00-Development-Start/03-Technical-Architecture.md)
 - [Database Schema Draft](./00-Development-Start/04-Database-Schema-Draft.md)

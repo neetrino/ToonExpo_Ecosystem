@@ -6,6 +6,8 @@ alwaysApply: false
 
 # Database (PostgreSQL, Prisma)
 
+**Runtime owner:** `apps/api` (NestJS) only. `apps/web`, Next.js route code and UI packages must never import Prisma Client or query PostgreSQL.
+
 ## Principles
 
 - **PostgreSQL** default for relational data; **Prisma** as ORM — avoid raw SQL unless necessary.
@@ -25,7 +27,7 @@ alwaysApply: false
 - **Runtime app** uses **`DATABASE_URL`** with **pooled** Neon host (`-pooler` / pooler endpoint) and **`app_user`** (DML-only), not the database owner.
 - **`DIRECT_URL`** (non-pooled, owner) — **migrations only** (`prisma migrate deploy`, introspection). Never use owner URL for serverless hot path.
 - **SSL**: `sslmode=require` in URLs.
-- Serverless (Vercel): low **connection_limit** on pooler URL; tune **pool_timeout**. See Neon docs for recommended limits.
+- Cloud Run: use the Neon pooled runtime URL, set an explicit per-instance connection budget and align it with Cloud Run max instances/concurrency. Tune values from load tests.
 
 ## Roles (blast radius)
 
@@ -49,6 +51,7 @@ Defence-in-depth with app-level timeouts in `14-ops.mdc`.
 - Local: `pnpm prisma migrate dev --name descriptive_name`
 - CI/Prod: `pnpm prisma migrate deploy` once per deploy (single job; avoid parallel migrate from many instances — use migration lock pattern if needed).
 - Failed migration: **do not** delete migration SQL — fix schema and add a corrective migration; use `prisma migrate resolve` only when Prisma docs say so.
+- Prisma 7 uses the `prisma-client` generator with an explicit output path and `prisma.config.ts` for datasource CLI configuration.
 
 ## Checklist (runtime)
 

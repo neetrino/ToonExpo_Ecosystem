@@ -73,7 +73,7 @@ Floor-level visuals usually target apartments.
 
 ## Marker Types
 
-MVP starts with point markers.
+The initial production release starts with point markers.
 
 Later options if needed:
 
@@ -130,4 +130,3 @@ For v1:
 - markers must be tappable;
 - list fallback must be easy to access;
 - CTA should not be hidden below a large image.
-

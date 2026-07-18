@@ -29,7 +29,7 @@ Analytics helps BigProjects and builders understand activity inside ToonExpo.
 
 ## Out Of Scope
 
-- full BI warehouse in MVP;
+- full BI warehouse in the current production scope;
 - advanced attribution model;
 - paid ticket/payment reports.
 

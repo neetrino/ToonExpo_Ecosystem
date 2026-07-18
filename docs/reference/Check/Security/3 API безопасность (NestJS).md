@@ -1,4 +1,4 @@
-# 3. API безопасность (Next API / Nest)
+# 3. API безопасность (NestJS)
 
 > [!info] Условные обозначения
 > **🤖 В коде** — все пункты этого блока делаются в коде. Задаёшь AI: что реализовать в репозитории.
@@ -8,7 +8,7 @@
 ## 🤖 3.1 Input validation
 
 **Что сделать в коде (AI):**
-- Для всех API: body, query, params валидировать схемой (Zod в Next.js, class-validator + ValidationPipe в Nest).
+- Для всех NestJS API: body, query и params валидировать DTO через глобальный `ValidationPipe` и class-validator.
 - Не доверять `req.body`/`req.query` без проверки. При ошибке валидации возвращать 400 с понятным сообщением, не 500.
 
 **Проверка:** Отправка мусорного payload (лишние поля, неверные типы) → 400 Bad Request, не 500.
@@ -29,8 +29,8 @@
 ## 🤖 3.2 No stack traces in prod
 
 **Что сделать в коде (AI):**
-- В production не отдавать в ответе клиенту `stack`, внутренние пути, детали ошибок. В Next.js: не показывать `NEXT_PUBLIC_*` с отладочной инфой; в обработчиках ошибок проверять `NODE_ENV === 'production'` и возвращать универсальное сообщение.
-- В Vercel: убедиться, что деплой идёт с `NODE_ENV=production`.
+- В production NestJS не отдает клиенту `stack`, внутренние пути или детали ошибок. Глобальный exception filter возвращает стабильный безопасный формат.
+- В Google Cloud Run убедиться, что API запускается с production-конфигурацией.
 
 **Проверка:** Специально вызвать 500 в prod — в теле ответа нет stack trace и путей к файлам.
 
@@ -50,7 +50,7 @@
 
 **Что сделать в коде (AI):**
 - Настроить CORS с allowlist доменов (prod + при необходимости staging). Не использовать `Access-Control-Allow-Origin: *` для приватных API, особенно с credentials.
-- В Next.js — в API route или в `next.config` headers; в Nest — настройки CORS в main/guard.
+- Настроить CORS централизованно в NestJS bootstrap/config; Next.js не является product API.
 
 **Проверка:** Запрос с постороннего origin отклоняется или не получает нужных заголовков; с разрешённого — проходит.
 

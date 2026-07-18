@@ -8,7 +8,10 @@
 - create app shell;
 - configure i18n foundation;
 - configure env schema;
-- create Prisma baseline.
+- scaffold the full NestJS `apps/api` with `/api/v1`, validation, errors, logging and OpenAPI;
+- create Prisma 7 baseline owned by NestJS;
+- add typed NestJS API client for Next.js;
+- add CI boundary check preventing Prisma/backend imports from `apps/web`.
 
 ## Sprint 1 - Auth Access I18n
 
@@ -58,4 +61,3 @@
 - audit logs;
 - reports;
 - hardening and e2e flows.
-

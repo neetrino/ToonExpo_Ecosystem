@@ -8,7 +8,7 @@ v1
 
 Constructor CRM is the builder sales/inventory module inside ToonExpo Ecosystem.
 
-It is not a separate public SaaS signup in MVP.
+It is not a separate public SaaS signup in the initial production release.
 
 ## In Scope
 

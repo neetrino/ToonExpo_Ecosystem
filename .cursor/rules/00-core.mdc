@@ -8,6 +8,16 @@ alwaysApply: true
 
 Other `.mdc` files apply by **globs** and task. If a rule seems missing, check the file type matches that rule’s globs.
 
+## Product architecture - hard rule
+
+- `apps/web` is the Next.js frontend only.
+- `apps/api` is the complete NestJS backend deployed to Google Cloud Run.
+- Runtime flow is browser -> Next.js -> NestJS REST API -> Prisma -> PostgreSQL.
+- Only `apps/api` may import Prisma Client, access PostgreSQL, authorize product operations or implement business workflows.
+- Never create product APIs in Next.js route handlers and never use Server Actions as the product backend.
+- Read `docs/architecture/FRONTEND_BACKEND_BOUNDARY.md` before scaffolding or changing architecture.
+- This is a full production product, not an MVP or prototype.
+
 ## Project size
 
 If not decided: read [`99-project-size.mdc`](99-project-size.mdc), propose A/B/C with rationale, get confirmation, then replace the line below with e.g. `Size: B — medium, layout: feature-based`.
@@ -74,7 +84,7 @@ Do not invent accounts or keys. Ask the developer when `DATABASE_URL`, OAuth, R2
 
 ## Human checklists
 
-Full DoD/PR/release checklists: [`docs/reference/Check/Quality/project-quality-checklist.md`](docs/reference/Check/Quality/project-quality-checklist.md) (not loaded as Cursor rules — open when needed).
+Full DoD/PR/release checklists: [`docs/reference/Check/Quality/project-quality-checklist.md`](../../docs/reference/Check/Quality/project-quality-checklist.md) (not loaded as Cursor rules — open when needed).
 
 ## Rules index (by domain)
 

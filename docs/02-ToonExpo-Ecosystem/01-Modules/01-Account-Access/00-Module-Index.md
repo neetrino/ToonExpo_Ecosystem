@@ -29,7 +29,7 @@ It supports:
 4. [Company Members And Module Access](./04-Company-Members-And-Module-Access.md)
 5. [Roles And Permissions](./05-Roles-And-Permissions.md)
 6. [BOS Provisioning](./06-BOS-Provisioning.md)
-7. [Security And Verification MVP](./07-Security-And-Verification-MVP.md)
+7. [Security And Verification](./07-Security-And-Verification.md)
 8. [Entity Fields](./08-Entity-Fields.md)
 9. [Acceptance Criteria](./09-Acceptance-Criteria.md)
 
@@ -43,4 +43,3 @@ It supports:
 - Admin / Content Management
 - Exhibition Map & Check-in
 - BOS Integration
-

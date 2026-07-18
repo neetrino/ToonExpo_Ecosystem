@@ -48,19 +48,19 @@
 ## 🧩 ՀԱՄԱԿԱՐԳԻ ԿՈՄՊՈՆԵՆՏՆԵՐ
 
 ### Frontend
-- **Տեխնոլոգիա.** Next.js 16.x (App Router), React 19
+- **Տեխնոլոգիա.** Next.js 16.2.x (App Router), React 19.2.x
 - **Նշանակություն.** [Նկարագրություն]
 - **Գտնվելու վայր.** `apps/web/` կամ `src/`
 - **Առանձնահատկություններ.** [SSR/SSG, PWA և այլն]
 
 ### Backend
-- **Տեխնոլոգիա.** [NestJS / Next.js API Routes]
+- **Տեխնոլոգիա.** NestJS 11.1.x (mandatory complete backend)
 - **Նշանակություն.** [Նկարագրություն]
-- **Գտնվելու վայր.** `apps/api/` կամ `src/app/api/`
+- **Գտնվելու վայր.** `apps/api/`
 - **API ոճ.** REST
 
 ### Բազային տվյալներ
-- **Տեխնոլոգիա.** PostgreSQL 17 (Neon)
+- **Տեխնոլոգիա.** PostgreSQL 18.x (Neon)
 - **ORM.** Prisma 7.x
 - **Սխեմա.** `prisma/schema.prisma`
 
@@ -80,7 +80,8 @@
 
 | Թղթապանակ | Նշանակություն |
 |------------|----------------|
-| `src/app/` | Next.js էջեր և API routes |
+| `apps/web/src/app/` | Next.js frontend pages/layouts only |
+| `apps/api/src/` | NestJS controllers, services, auth and integrations |
 | `src/features/` | Feature մոդուլներ (B/C-ի համար) |
 | `src/shared/` | Ընդհանուր կոմպոնենտներ և ուտիլիտաներ |
 | `prisma/` | ԲԴ սխեմա և միգրացիաներ |
@@ -203,7 +204,7 @@
 | ORM | Prisma | Type-safe, միգրացիաներ |
 | State | Zustand | Պարզ, փոքր |
 | Ոճեր | Tailwind | Utility-first |
-| Auth | [NextAuth/Custom] | [Պատճառ] |
+| Auth | NestJS Auth + Passport | Backend-owned authentication |
 
 ---
 

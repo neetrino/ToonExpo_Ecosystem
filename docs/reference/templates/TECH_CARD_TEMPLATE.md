@@ -21,7 +21,7 @@
 | 1.2 | Ճարտարապետություն | Պարզ / Feature-based / Monorepo | ⬜ | |
 | 1.3 | Package manager | pnpm | ⬜ | ստանդարտ |
 | 1.4 | Node.js | 24.x LTS | ⬜ | Active LTS (2025+) |
-| 1.5 | TypeScript | 5.9, strict: true | ⬜ | |
+| 1.5 | TypeScript | 6.0.x, strict: true | ⬜ | TS 7.0 reconsider at 7.1 tooling API |
 | 1.6 | Monorepo գործիք | — / Turborepo | ⬜ | միայն C-ի համար |
 | 1.7 | Git ստրատեգիա | trunk-based / feature branches | ⬜ | |
 | 1.8 | Commit կոնվենցիա | Conventional Commits | ⬜ | ստանդարտ |
@@ -32,12 +32,12 @@
 
 | # | Պարամետր | Որոշում | Ստատուս | Նշում |
 |---|----------|---------|---------|-------|
-| 2.1 | Framework | Next.js 16.x (App Router, Turbopack) | ⬜ | React 19, proxy.ts (Next 16) |
-| 2.2 | Ոճեր | Tailwind CSS 4.x | ⬜ | |
+| 2.1 | Framework | Next.js 16.2.x (App Router, Turbopack) | ⬜ | Frontend only; React 19.2.x |
+| 2.2 | Ոճեր | Tailwind CSS 4.3.x | ⬜ | |
 | 2.3 | UI Kit | shadcn/ui / custom / պետք չէ | ⬜ | |
 | 2.4 | State management | useState / Zustand 5.x | ⬜ | |
-| 2.5 | Ձևեր | React Hook Form + Zod / Server Actions | ⬜ | |
-| 2.6 | Data fetching | Server Components / React Query 5.x | ⬜ | |
+| 2.5 | Ձևեր | React Hook Form + Zod → NestJS API | ⬜ | Server Actions are not product backend |
+| 2.6 | Data fetching | Server Components / React Query 5.x → typed NestJS client | ⬜ | No DB access from Next.js |
 | 2.7 | i18n | պետք չէ / next-intl (լեզուներ. ...) | ⬜ | |
 | 2.8 | SEO | Metadata API + JSON-LD / պետք չէ | ⬜ | |
 | 2.9 | Մուգ թեմա | պետք չէ / CSS variables + next-themes | ⬜ | որոշել UI-ից առաջ |
@@ -50,13 +50,13 @@
 
 | # | Պարամետր | Որոշում | Ստատուս | Նշում |
 |---|----------|---------|---------|-------|
-| 3.1 | Տիպ | Next.js API Routes / NestJS 11.x | ⬜ | |
-| 3.2 | Վալիդացիա | Zod / class-validator | ⬜ | |
+| 3.1 | Տիպ | NestJS 11.1.x in `apps/api` | ⬜ | Mandatory complete backend |
+| 3.2 | Վալիդացիա | NestJS ValidationPipe + class-validator DTOs | ⬜ | |
 | 3.3 | API ձևաչափ | REST / GraphQL | ⬜ | |
-| 3.4 | Rate limiting | middleware / ThrottlerModule / պետք չէ | ⬜ | |
+| 3.4 | Rate limiting | NestJS ThrottlerModule / պետք չէ | ⬜ | |
 | 3.5 | API փաստաթղթավորում | պետք չէ / Swagger | ⬜ | |
-| 3.6 | CRON / ժամանակացույցի առաջադրանքներ | պետք չէ / Vercel Cron / node-cron | ⬜ | ազդում է հոսթինգի ընտրության վրա |
-| 3.7 | Ֆայլերի բեռնում | պետք չէ / Multer / Server Actions → R2 | ⬜ | |
+| 3.6 | CRON / ժամանակացույցի առաջադրանքներ | պետք չէ / Cloud Scheduler → NestJS / Nest Schedule | ⬜ | |
+| 3.7 | Ֆայլերի բեռնում | պետք չէ / NestJS Multer or signed R2 upload | ⬜ | NestJS authorizes upload |
 
 ---
 
@@ -64,7 +64,7 @@
 
 | # | Պարամետր | Որոշում | Ստատուս | Նշում |
 |---|----------|---------|---------|-------|
-| 4.1 | ՍՈՒԲԴ | PostgreSQL 17 (Neon) | ⬜ | |
+| 4.1 | ՍՈՒԲԴ | PostgreSQL 18.x (Neon) | ⬜ | Production GA |
 | 4.2 | ORM | Prisma 7.x | ⬜ | |
 | 4.3 | ԲԴ դերեր | app_user + readonly_user | ⬜ | ստանդարտ |
 | 4.4 | Connection limit | [ադապտիվ — քննարկել] | ⬜ | |
@@ -81,7 +81,7 @@
 
 | # | Պարամետր | Որոշում | Ստատուս | Նշում |
 |---|----------|---------|---------|-------|
-| 5.1 | Լուծում | Auth.js 5.x / Clerk (Core 3) | ⬜ | Auth.js — ստանդարտ; Clerk Core 3 — Node 20.9+ |
+| 5.1 | Լուծում | NestJS Auth module + Passport | ⬜ | Backend-owned auth |
 | 5.2 | Մատակարարներ | GitHub, Google, Email... | ⬜ | |
 | 5.3 | Սեսիաների ստրատեգիա | JWT / Database sessions | ⬜ | |
 | 5.4 | Դերեր / RBAC | պետք չէ / USER, ADMIN, ... | ⬜ | |
@@ -122,7 +122,7 @@
 | # | Պարամետր | Որոշում | Ստատուս | Նշում |
 |---|----------|---------|---------|-------|
 | 8.1 | Frontend հոսթինգ | Vercel | ⬜ | |
-| 8.2 | Backend հոսթինգ | պետք չէ / Render / Fly.io | ⬜ | |
+| 8.2 | Backend հոսթինգ | Google Cloud Run | ⬜ | NestJS container |
 | 8.3 | CI/CD | GitHub Actions | ⬜ | |
 | 8.4 | Docker | պետք չէ / Dockerfile | ⬜ | |
 | 8.5 | WAF | պետք չէ / Cloudflare | ⬜ | |

@@ -20,16 +20,16 @@
 
 | Կատեգորիա | Տեխնոլոգիա | Տարբերակ | Նշանակություն |
 |------------|-------------|-----------|----------------|
-| **Framework** | Next.js | 16.x | Full-stack React (React 19, Turbopack) |
-| **Language** | TypeScript | 5.9 | Տիպացում |
-| **Styling** | Tailwind CSS | 4.x | Utility-first ոճեր |
+| **Framework** | Next.js | 16.2.x | Frontend only (React 19.2.x, Turbopack) |
+| **Language** | TypeScript | 6.0.x | Stable tooling-compatible baseline |
+| **Styling** | Tailwind CSS | 4.3.x | Utility-first ոճեր |
 | **UI Components** | shadcn/ui | - | Կոմպոնենտներ |
 | **State** | Zustand | 5.x | Գլոբալ state |
 | **Forms** | React Hook Form | 7.x | Ձևեր |
-| **Validation** | Zod | 3.x | Սխեմաների վալիդացիա |
-| **ORM** | Prisma | 7.x | Աշխատանք ԲԴ-ի հետ |
-| **Database** | PostgreSQL | 17.x | Հիմնական ԲԴ |
-| **Auth** | Auth.js (NextAuth v5) | 5.x | Ինքնություն հաստատում |
+| **Validation** | Zod | 4.x | Սխեմաների վալիդացիա |
+| **API Client** | OpenAPI generated client | - | NestJS API access |
+| **Database** | No frontend access | - | Prisma/PostgreSQL belong to NestJS |
+| **Auth** | NestJS-owned session | - | Frontend consumes backend auth |
 | **Icons** | Lucide React | - | Իկոններ |
 | **Storage** | Cloudflare R2 | - | Ֆայլերի պահոց (S3-compatible) |
 
@@ -38,12 +38,12 @@
 | Կատեգորիա | Տեխնոլոգիա | Տարբերակ | Նշանակություն |
 |------------|-------------|-----------|----------------|
 | **Monorepo** | Turborepo | 2.x | Monorepo կառավարում |
-| **Package Manager** | pnpm | 9.x | Արագ մենեջեր |
-| **Backend** | NestJS | 11.x | Enterprise backend |
+| **Package Manager** | pnpm | 11.x | Արագ մենեջեր |
+| **Backend** | NestJS | 11.1.x | Enterprise backend |
 | **Cache** | Redis | 7.x | Cache |
 | **Queue** | BullMQ | 5.x | Առաջադրանքների հերթեր |
 | **Search** | Meilisearch | 1.x | Ամբողջատեքստային որոնում |
-| **Logging** | Pino | 9.x | Կառուցվածքային լոգեր |
+| **Logging** | Pino | 10.x | Կառուցվածքային լոգեր |
 | **Monitoring** | Sentry | - | Սխալների մոնիտորինգ |
 
 ---
@@ -54,16 +54,16 @@
 
 | Կատեգորիա | Տեխնոլոգիա | Տարբերակ | Նշանակություն |
 |------------|-------------|-----------|----------------|
-| **Framework** | NestJS | 11.x | Backend framework |
-| **Language** | TypeScript | 5.9 | Տիպացում |
+| **Framework** | NestJS | 11.1.x | Backend framework |
+| **Language** | TypeScript | 6.0.x | Stable tooling-compatible baseline |
 | **ORM** | Prisma | 7.x | Աշխատանք ԲԴ-ի հետ |
-| **Validation** | class-validator | 0.14.x | DTO վալիդացիա |
+| **Validation** | class-validator | 0.15.x | DTO վալիդացիա |
 | **Transform** | class-transformer | 0.5.x | Տրանսֆորմացիա |
 | **Auth** | Passport | 0.7.x | Ինքնություն հաստատում |
-| **JWT** | @nestjs/jwt | 10.x | JWT tokens |
-| **Swagger** | @nestjs/swagger | 7.x | API փաստաթղթավորում |
-| **Config** | @nestjs/config | 3.x | Կոնֆիգուրացիա |
-| **Cache** | @nestjs/cache-manager | 2.x | Cache |
+| **JWT** | @nestjs/jwt | 11.x | JWT tokens when selected |
+| **Swagger** | @nestjs/swagger | 11.x | API փաստաթղթավորում |
+| **Config** | @nestjs/config | 4.x | Կոնֆիգուրացիա |
+| **Cache** | @nestjs/cache-manager | 3.x | Cache when required |
 
 ### Լրացուցիչ
 
@@ -83,7 +83,7 @@
 
 | ԲԴ | Երբ օգտագործել |
 |----|-----------------|
-| **PostgreSQL 17+** | 95% նախագծեր (լռելյայն) |
+| **PostgreSQL 18.x** | Հիմնական production relational database |
 | **MongoDB** | Փաստաթղթեր, նախատիպեր, ճկուն սխեմա |
 | **SQLite** | Նախատիպեր, ներկառուցված համակարգեր |
 
@@ -127,6 +127,7 @@
 | Պլատֆորմ | Ինչի համար | Նախագծեր |
 |-----------|-------------|-----------|
 | **Vercel** | Frontend (Next.js) | A, B |
+| **Google Cloud Run** | Backend (NestJS container) | C |
 | **Railway** | Backend + DB | A, B |
 | **VPS** | Ամբողջական վերահսկում | B, C |
 | **Kubernetes** | Enterprise | C |

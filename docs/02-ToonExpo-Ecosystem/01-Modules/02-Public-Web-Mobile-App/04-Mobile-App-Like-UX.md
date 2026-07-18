@@ -45,10 +45,9 @@ Product rule:
 If web/mobile experience is ready, app shell should be mostly ready too.
 ```
 
-## Out Of Scope For MVP
+## Out Of Current Production Scope
 
 - push notifications;
 - complex offline mode;
 - paid ticket wallet;
 - native-only features.
-

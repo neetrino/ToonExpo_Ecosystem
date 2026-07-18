@@ -70,7 +70,6 @@ Event 1..n CheckInRecords
 
 ## Offline Mode
 
-Complex offline mode is out of scope for MVP.
+Complex offline mode is outside the current production scope.
 
 If internet is unreliable, add later as operational requirement.
-

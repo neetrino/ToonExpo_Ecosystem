@@ -28,7 +28,7 @@ Public Web / Mobile App is the public face of ToonExpo.
 
 - paid tickets;
 - payment flow;
-- push notifications in MVP;
+- push notifications in the current production scope;
 - online mortgage application flow.
 
 ## UX Rule

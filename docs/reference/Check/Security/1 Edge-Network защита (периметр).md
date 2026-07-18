@@ -23,12 +23,12 @@
 ## 🤖 / 👤 1.4 Rate limiting
 
 **Вариант А — в коде (🤖, если нет Cloudflare):**
-- В Next.js: middleware или отдельный route handler, который считает запросы по IP (или по ключу) и возвращает `429` после порога (например 50 req/min на `/api/auth/*`, 100 на остальные).
-- Можно использовать Upstash Redis для счётчика (rate limit by IP).
+- В NestJS: `ThrottlerModule`/guard считает запросы по IP, account или API key и возвращает `429` после согласованного порога.
+- Для распределенного счетчика между Cloud Run instances можно использовать Upstash Redis, когда это действительно требуется.
 
 **Вариант Б — вручную (👤):**
 - **Cloudflare:** Зайти в **Security → WAF → Rate limiting rules** (или **Rules → Rate rules**). Создать правило: путь `/api/auth/*` и/или `/api/*`, порог запросов в минуту, действие — Block. Аналогично для форм (contact, webhook receiver).
-- **Vercel:** через Edge Config или свой middleware в коде (см. Вариант А).
+- **Vercel:** frontend/WAF защита может дополнять, но не заменяет rate limiting в NestJS API.
 
 **Проверка:** 20–50 запросов за минуту на защищённый путь → ответ `429 Too Many Requests`.
 

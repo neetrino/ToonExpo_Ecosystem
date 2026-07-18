@@ -6,6 +6,8 @@ alwaysApply: false
 
 # NestJS
 
+NestJS in `apps/api` is the complete and mandatory product backend. All product endpoints, auth, authorization, business workflows, integrations and persistence belong here.
+
 - **Thin controllers** — HTTP mapping + DTO validation only; business logic in **services**.
 - **Modules** per domain; clear boundaries; avoid circular module imports.
 - **DTOs** + `class-validator` / `class-transformer` for all inputs.
@@ -13,3 +15,6 @@ alwaysApply: false
 - **Swagger** (`@nestjs/swagger`) if API is documented publicly.
 - **ConfigModule** for env — validate schema at startup (e.g. Joi/Zod).
 - **No secrets** in code; use `ConfigService` / env.
+- **Database ownership** — only NestJS repositories/adapters may import the Prisma runtime client from `packages/db`.
+- **OpenAPI is canonical** — generate frontend client/types from or validate them against the NestJS document.
+- **Deployment** — build a production Docker image and deploy `apps/api` to Google Cloud Run.

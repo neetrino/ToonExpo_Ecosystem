@@ -7,9 +7,10 @@ alwaysApply: false
 # Error handling
 
 - **Typed errors** — domain/app errors with stable `code` for API mapping.
-- **Central handler** — Nest exception filter or Next route handlers map errors to HTTP + safe body.
+- **Central API handler** — a NestJS global exception filter maps domain/application errors to HTTP + safe bodies.
 - **RFC 7807**-style problem+json if project uses it — stay consistent.
 - **Production**: never return stack traces, paths, or secrets to clients.
 - **Log** full detail server-side with request id; **redact** PII/secrets.
 - **Retries** for transient failures — see `14-ops.mdc`.
 - **Frontend**: error boundaries / error.tsx; user-friendly messages.
+- Next.js displays API failures; it does not define backend error semantics.
