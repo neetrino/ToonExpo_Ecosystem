@@ -1,0 +1,22 @@
+{
+  "extends": "@toonexpo/config/tsconfig/nestjs.json",
+  "compilerOptions": {
+    "module": "Node16",
+    "moduleResolution": "Node16",
+    "outDir": "dist",
+    "rootDir": "src",
+    "types": ["node"],
+    "strictPropertyInitialization": false,
+    "ignoreDeprecations": "6.0",
+    "verbatimModuleSyntax": false
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": [
+    "dist",
+    "node_modules",
+    "test",
+    "**/*.spec.ts",
+    "**/*.test.ts",
+    "**/*.e2e-spec.ts"
+  ]
+}
