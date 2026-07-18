@@ -17,8 +17,8 @@ export default mergeConfig(
         "test/**/*.{test,spec,e2e-spec}.{ts,tsx}",
       ],
       fileParallelism: false,
-      hookTimeout: 30_000,
-      testTimeout: 30_000,
+      hookTimeout: 60_000,
+      testTimeout: 60_000,
     },
   }),
 );

@@ -61,3 +61,25 @@ export type {
   UpdateCompanyMemberRequest,
   UpdateCompanyRequest,
 } from "./companies.js";
+
+export type {
+  BulkCreatePortalApartmentsRequest,
+  CreatePortalApartmentRequest,
+  CreatePortalBuildingRequest,
+  CreatePortalFloorRequest,
+  CreatePortalProjectRequest,
+  LocaleTextMap,
+  PortalApartmentDetail,
+  PortalApartmentStatusHistoryItem,
+  PortalBuildingSummary,
+  PortalFloorSummary,
+  PortalProjectDetail,
+  PortalProjectListItem,
+  PortalProjectListResponse,
+  PortalTranslationsInput,
+  UpdatePortalApartmentRequest,
+  UpdatePortalBuildingRequest,
+  UpdatePortalFloorRequest,
+  UpdatePortalProjectRequest,
+  UpdatePortalPublicationRequest,
+} from "./portal.js";

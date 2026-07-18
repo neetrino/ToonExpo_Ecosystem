@@ -21,6 +21,7 @@ import { resolveEnvFilePaths } from "./config/env-files.js";
 import { validateEnv } from "./config/env.validation.js";
 import { EmailModule } from "./email/email.module.js";
 import { HealthModule } from "./health/health.module.js";
+import { PortalModule } from "./portal/portal.module.js";
 import { PrismaModule } from "./prisma/prisma.module.js";
 
 const isProduction = process.env["NODE_ENV"] === NODE_ENV_PRODUCTION;
@@ -71,6 +72,7 @@ const isProduction = process.env["NODE_ENV"] === NODE_ENV_PRODUCTION;
     AdminCompaniesModule,
     CompanyMembersModule,
     CatalogModule,
+    PortalModule,
     HealthModule,
   ],
   providers: [
