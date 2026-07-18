@@ -260,7 +260,9 @@ export type {
   ApartmentSalesStatusSummary,
   BuilderReadinessSummary,
   CheckInSummary,
+  EntityFavoriteCount,
   EntityViewCount,
+  FavoritesSummary,
   PlatformActivitySummary,
   PortalAnalyticsOverview,
   QrScanContextCount,
@@ -268,6 +270,16 @@ export type {
   SourceCount,
   StatusCount,
 } from "./analytics.js";
+
+export type {
+  BuyerFavoritesListResponse,
+  BuyerFavoritesStatusResponse,
+  FavoriteApartmentCard,
+  FavoriteApartmentListItem,
+  FavoriteListItem,
+  FavoriteProjectListItem,
+  FavoriteTargetType,
+} from "./favorites.js";
 
 export type {
   AdminServiceProviderItem,

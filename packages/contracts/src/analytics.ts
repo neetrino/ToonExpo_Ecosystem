@@ -44,6 +44,17 @@ export type EntityViewCount = {
   viewCount: number;
 };
 
+export type EntityFavoriteCount = {
+  entityId: string;
+  name: string | null;
+  favoriteCount: number;
+};
+
+export type FavoritesSummary = {
+  total: number;
+  topProjects: EntityFavoriteCount[];
+};
+
 export type SourceCount = {
   source: RequestSource;
   count: number;
@@ -75,6 +86,7 @@ export type AdminAnalyticsOverview = {
   range: AnalyticsDateRange;
   platformActivity: PlatformActivitySummary;
   topProjectsByViews: EntityViewCount[];
+  favorites: FavoritesSummary;
   requests: {
     total: number;
     bySource: SourceCount[];
@@ -105,6 +117,7 @@ export type PortalAnalyticsOverview = {
   range: AnalyticsDateRange;
   topProjectsByViews: EntityViewCount[];
   topApartmentsByViews: EntityViewCount[];
+  favorites: FavoritesSummary;
   requests: {
     total: number;
     bySource: SourceCount[];
