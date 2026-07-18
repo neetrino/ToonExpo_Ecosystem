@@ -3,6 +3,7 @@ import "./instrument.js";
 import { ValidationPipe } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
+import type { NestExpressApplication } from "@nestjs/platform-express";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { API_V1_PREFIX } from "@toonexpo/contracts";
 import cookieParser from "cookie-parser";
@@ -14,6 +15,7 @@ import {
   DEFAULT_API_PORT,
   NODE_ENV_PRODUCTION,
   SWAGGER_PATH,
+  TRUST_PROXY_HOPS,
 } from "./common/constants/app.constants.js";
 import { AllExceptionsFilter } from "./common/filters/all-exceptions.filter.js";
 import type { AppEnv } from "./config/env.validation.js";
@@ -21,7 +23,9 @@ import type { AppEnv } from "./config/env.validation.js";
 const GLOBAL_PREFIX = API_V1_PREFIX.replace(/^\//, "");
 
 const bootstrap = async (): Promise<void> => {
-  const app = await NestFactory.create(AppModule, { bufferLogs: true });
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    bufferLogs: true,
+  });
   const logger = app.get(Logger);
   app.useLogger(logger);
 
@@ -29,6 +33,11 @@ const bootstrap = async (): Promise<void> => {
   const port = configService.get("PORT", { infer: true }) ?? DEFAULT_API_PORT;
   const corsOrigins = configService.get("CORS_ORIGINS", { infer: true });
   const nodeEnv = configService.get("NODE_ENV", { infer: true });
+
+  // Cloud Run sits behind Google's HTTPS load balancer, which sets
+  // X-Forwarded-For. Trust only the first hop so req.ip is the client IP
+  // (Nest throttler and controllers use req.ip consistently).
+  app.set("trust proxy", TRUST_PROXY_HOPS);
 
   app.use(helmet());
   app.use(cookieParser());

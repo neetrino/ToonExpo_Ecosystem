@@ -153,6 +153,7 @@ export class QrResolveService {
       buyerProfileId: qr.buyerProfile.id,
       name: qr.buyerProfile.name,
       scanEventId,
+      qrCodeId: qr.id,
     };
   }
 

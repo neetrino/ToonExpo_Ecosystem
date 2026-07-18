@@ -50,17 +50,12 @@ export class QrResolveController {
     @OptionalUser() scanner: AuthenticatedUser | null,
     @Req() request: Request,
   ): Promise<QrResolveResponse> {
-    const forwarded = request.headers["x-forwarded-for"];
-    const ipAddress =
-      typeof forwarded === "string"
-        ? forwarded.split(",")[0]?.trim()
-        : request.ip;
     const userAgentHeader = request.headers["user-agent"];
     const userAgent =
       typeof userAgentHeader === "string" ? userAgentHeader : undefined;
 
     return this.resolveService.resolve(body.token, scanner, {
-      ipAddress,
+      ipAddress: request.ip,
       userAgent,
     });
   }

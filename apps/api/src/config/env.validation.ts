@@ -4,6 +4,9 @@ import { CSRF_COOKIE_NAME } from "@toonexpo/contracts";
 
 import {
   DEFAULT_API_PORT,
+  DEFAULT_DB_POOL_CONNECTION_TIMEOUT_MS,
+  DEFAULT_DB_POOL_MAX,
+  DEFAULT_DB_STATEMENT_TIMEOUT_MS,
   DEFAULT_SESSION_ABSOLUTE_TTL_SECONDS,
   DEFAULT_SESSION_COOKIE_NAME,
   DEFAULT_SESSION_IDLE_TTL_SECONDS,
@@ -107,6 +110,26 @@ const envSchema = z
       emptyToUndefined,
       z.string().min(1).optional(),
     ),
+    DB_POOL_MAX: z.preprocess(
+      emptyToUndefined,
+      z.coerce.number().int().positive().default(DEFAULT_DB_POOL_MAX),
+    ),
+    DB_POOL_CONNECTION_TIMEOUT_MS: z.preprocess(
+      emptyToUndefined,
+      z.coerce
+        .number()
+        .int()
+        .positive()
+        .default(DEFAULT_DB_POOL_CONNECTION_TIMEOUT_MS),
+    ),
+    DB_STATEMENT_TIMEOUT_MS: z.preprocess(
+      emptyToUndefined,
+      z.coerce
+        .number()
+        .int()
+        .positive()
+        .default(DEFAULT_DB_STATEMENT_TIMEOUT_MS),
+    ),
   })
   .superRefine((env, ctx) => {
     const hasUpstashUrl = Boolean(env.UPSTASH_REDIS_REST_URL);
@@ -167,6 +190,9 @@ export type AppEnv = {
   SENTRY_DSN?: string | undefined;
   UPSTASH_REDIS_REST_URL?: string | undefined;
   UPSTASH_REDIS_REST_TOKEN?: string | undefined;
+  DB_POOL_MAX: number;
+  DB_POOL_CONNECTION_TIMEOUT_MS: number;
+  DB_STATEMENT_TIMEOUT_MS: number;
 };
 
 /**
@@ -195,6 +221,9 @@ export const validateEnv = (config: Record<string, unknown>): AppEnv => {
     SESSION_ABSOLUTE_TTL_SECONDS: data.SESSION_ABSOLUTE_TTL_SECONDS,
     CSRF_SECRET: data.CSRF_SECRET,
     CSRF_COOKIE_NAME: data.CSRF_COOKIE_NAME,
+    DB_POOL_MAX: data.DB_POOL_MAX,
+    DB_POOL_CONNECTION_TIMEOUT_MS: data.DB_POOL_CONNECTION_TIMEOUT_MS,
+    DB_STATEMENT_TIMEOUT_MS: data.DB_STATEMENT_TIMEOUT_MS,
   };
 
   if (data.RESEND_API_KEY) {

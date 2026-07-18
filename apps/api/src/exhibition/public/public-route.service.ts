@@ -8,8 +8,8 @@ import {
   PublicationStatus,
 } from "@toonexpo/db";
 
-import { PrismaService } from "../../prisma/prisma.service.js";
 import { AnalyticsService } from "../../analytics/analytics.service.js";
+import { PrismaService } from "../../prisma/prisma.service.js";
 import { EUCLIDEAN_WEIGHT_SCALE } from "../exhibition.constants.js";
 import {
   dijkstraShortestPath,
@@ -17,12 +17,18 @@ import {
   type GraphEdge,
   type GraphNode,
 } from "../utils/dijkstra.js";
+import {
+  type CachedRouteEdge,
+  type CachedRouteNode,
+  RouteGraphCache,
+} from "./route-graph.cache.js";
 
 @Injectable()
 export class PublicRouteService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly analytics: AnalyticsService,
+    private readonly routeGraphCache: RouteGraphCache,
   ) {}
 
   async listEntranceNodes(mapId: string): Promise<PublicEntranceNodeListResponse> {
@@ -85,10 +91,7 @@ export class PublicRouteService {
       return { routeAvailable: false, nodes: [] };
     }
 
-    const [nodes, edges] = await Promise.all([
-      this.prisma.db.routeNode.findMany({ where: { venueMapId: mapId } }),
-      this.prisma.db.routeEdge.findMany({ where: { venueMapId: mapId } }),
-    ]);
+    const { nodes, edges } = await this.loadGraph(mapId);
 
     if (nodes.length === 0 || edges.length === 0) {
       return { routeAvailable: false, nodes: [] };
@@ -120,16 +123,33 @@ export class PublicRouteService {
 
     const pathNodes = result.path
       .map((id) => nodeById.get(id))
-      .filter((node): node is NonNullable<typeof node> => node != null)
+      .filter((node): node is CachedRouteNode => node != null)
       .map((node) => ({
         id: node.id,
         xPercent: node.xPercent.toString(),
         yPercent: node.yPercent.toString(),
         label: node.label,
-        type: node.type,
+        type: node.type as RoutePathResponse["nodes"][number]["type"],
       }));
 
     return { routeAvailable: true, nodes: pathNodes };
+  }
+
+  private async loadGraph(
+    mapId: string,
+  ): Promise<{ nodes: CachedRouteNode[]; edges: CachedRouteEdge[] }> {
+    const cached = this.routeGraphCache.get(mapId);
+    if (cached) {
+      return cached;
+    }
+
+    const [nodes, edges] = await Promise.all([
+      this.prisma.db.routeNode.findMany({ where: { venueMapId: mapId } }),
+      this.prisma.db.routeEdge.findMany({ where: { venueMapId: mapId } }),
+    ]);
+
+    this.routeGraphCache.set(mapId, nodes, edges);
+    return { nodes, edges };
   }
 
   private async requirePublishedMap(mapId: string): Promise<void> {
@@ -152,15 +172,8 @@ export class PublicRouteService {
 }
 
 const resolveEdgeWeight = (
-  edge: {
-    fromNodeId: string;
-    toNodeId: string;
-    weight: { toString(): string } | null;
-  },
-  nodeById: Map<
-    string,
-    { xPercent: { toString(): string }; yPercent: { toString(): string } }
-  >,
+  edge: CachedRouteEdge,
+  nodeById: Map<string, CachedRouteNode>,
 ): number => {
   if (edge.weight != null) {
     return Number(edge.weight.toString());

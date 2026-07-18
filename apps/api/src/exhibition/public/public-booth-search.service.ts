@@ -1,8 +1,11 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import type { BoothSearchResponse } from "@toonexpo/contracts";
 import {
+  BoothType,
+  CompanyType,
   EventStatus,
   PublicationStatus,
+  type Prisma,
 } from "@toonexpo/db";
 import { resolveCatalogLocale } from "@toonexpo/shared";
 
@@ -36,12 +39,9 @@ export class PublicBoothSearchService {
 
     const locale = resolveCatalogLocale(localeInput);
     const needle = trimmed.toLowerCase();
-
     const booths = await this.prisma.db.booth.findMany({
-      where: {
-        venueMapId: mapId,
-        publicationStatus: PublicationStatus.published,
-      },
+      where: buildBoothSearchWhere(mapId, trimmed, needle),
+      take: BOOTH_SEARCH_MAX_RESULTS,
       include: {
         assignments: {
           where: { active: true },
@@ -104,6 +104,56 @@ export class PublicBoothSearchService {
   }
 }
 
+const enumValuesMatching = <T extends string>(
+  values: readonly T[],
+  needle: string,
+): T[] => values.filter((value) => value.toLowerCase().includes(needle));
+
+const buildBoothSearchWhere = (
+  mapId: string,
+  trimmed: string,
+  needle: string,
+): Prisma.BoothWhereInput => {
+  const matchingBoothTypes = enumValuesMatching(
+    Object.values(BoothType),
+    needle,
+  );
+  const matchingCompanyTypes = enumValuesMatching(
+    Object.values(CompanyType),
+    needle,
+  );
+
+  const assignmentOr: Prisma.BoothAssignmentWhereInput[] = [
+    { assignmentLabel: { contains: trimmed, mode: "insensitive" } },
+    { company: { name: { contains: trimmed, mode: "insensitive" } } },
+    { project: { name: { contains: trimmed, mode: "insensitive" } } },
+  ];
+  if (matchingCompanyTypes.length > 0) {
+    assignmentOr.push({ company: { type: { in: matchingCompanyTypes } } });
+  }
+
+  const or: Prisma.BoothWhereInput[] = [
+    { code: { contains: trimmed, mode: "insensitive" } },
+    {
+      assignments: {
+        some: {
+          active: true,
+          OR: assignmentOr,
+        },
+      },
+    },
+  ];
+  if (matchingBoothTypes.length > 0) {
+    or.push({ type: { in: matchingBoothTypes } });
+  }
+
+  return {
+    venueMapId: mapId,
+    publicationStatus: PublicationStatus.published,
+    OR: or,
+  };
+};
+
 const matchBooth = (
   booth: {
     id: string;
@@ -123,35 +173,35 @@ const matchBooth = (
   const cards: BoothSearchResponse["data"] = [];
 
   if (booth.code.toLowerCase().includes(needle)) {
-      cards.push(buildCard(booth, booth.code));
-      return cards;
-    }
+    cards.push(buildCard(booth, booth.code));
+    return cards;
+  }
 
-    if (booth.type.toLowerCase().includes(needle)) {
-      cards.push(buildCard(booth, booth.type));
+  if (booth.type.toLowerCase().includes(needle)) {
+    cards.push(buildCard(booth, booth.type));
   }
 
   for (const assignment of booth.assignments) {
     const companyName = assignment.company
-      ? resolveTranslatedValue(
+      ? (resolveTranslatedValue(
           translations,
           TRANSLATION_ENTITY.company,
           assignment.company.id,
           TRANSLATION_FIELD.name,
           locale,
           assignment.company.name,
-        ) ?? assignment.company.name
+        ) ?? assignment.company.name)
       : null;
 
     const projectName = assignment.project
-      ? resolveTranslatedValue(
+      ? (resolveTranslatedValue(
           translations,
           TRANSLATION_ENTITY.project,
           assignment.project.id,
           TRANSLATION_FIELD.name,
           locale,
           assignment.project.name,
-        ) ?? assignment.project.name
+        ) ?? assignment.project.name)
       : null;
 
     const partnerType = assignment.company?.type ?? null;

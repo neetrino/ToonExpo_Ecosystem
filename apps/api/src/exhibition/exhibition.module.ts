@@ -18,6 +18,7 @@ import { PublicBoothSearchService } from "./public/public-booth-search.service.j
 import { PublicExhibitionController } from "./public/public-exhibition.controller.js";
 import { PublicExhibitionService } from "./public/public-exhibition.service.js";
 import { PublicRouteService } from "./public/public-route.service.js";
+import { RouteGraphCache } from "./public/route-graph.cache.js";
 
 @Module({
   imports: [PrismaModule, QrModule],
@@ -40,6 +41,7 @@ import { PublicRouteService } from "./public/public-route.service.js";
     PublicExhibitionService,
     PublicBoothSearchService,
     PublicRouteService,
+    RouteGraphCache,
   ],
 })
 export class ExhibitionModule {}

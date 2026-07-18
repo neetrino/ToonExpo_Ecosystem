@@ -58,6 +58,7 @@ describe("CheckInService.scan", () => {
       buyerProfileId: "bp_1",
       name: "Alice Visitor",
       scanEventId: "scan_1",
+      qrCodeId: "qr_1",
     });
     checkInFindFirst.mockResolvedValue(null);
     checkInCreate.mockResolvedValue({
@@ -71,9 +72,13 @@ describe("CheckInService.scan", () => {
       {},
     );
 
+    expect(qrCodeFindUniqueOrThrow).not.toHaveBeenCalled();
     expect(checkInCreate).toHaveBeenCalledWith(
       expect.objectContaining({
-        data: expect.objectContaining({ status: "allowed" }),
+        data: expect.objectContaining({
+          status: "allowed",
+          qrCodeId: "qr_1",
+        }),
       }),
     );
     expect(result).toEqual({
@@ -93,6 +98,7 @@ describe("CheckInService.scan", () => {
       buyerProfileId: "bp_1",
       name: "Alice Visitor",
       scanEventId: "scan_2",
+      qrCodeId: "qr_1",
     });
     checkInFindFirst.mockResolvedValue({ id: "ci_allowed_1" });
     checkInCreate.mockResolvedValue({

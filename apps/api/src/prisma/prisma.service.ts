@@ -12,8 +12,21 @@ export class PrismaService implements OnModuleInit, OnModuleDestroy {
     const connectionString = configService.get("DATABASE_URL", {
       infer: true,
     });
+    const poolMax = configService.get("DB_POOL_MAX", { infer: true });
+    const poolConnectionTimeoutMs = configService.get(
+      "DB_POOL_CONNECTION_TIMEOUT_MS",
+      { infer: true },
+    );
+    const statementTimeoutMs = configService.get("DB_STATEMENT_TIMEOUT_MS", {
+      infer: true,
+    });
 
-    this.client = createPrismaClient({ connectionString });
+    this.client = createPrismaClient({
+      connectionString,
+      poolMax,
+      poolConnectionTimeoutMs,
+      statementTimeoutMs,
+    });
   }
 
   get db(): PrismaClient {

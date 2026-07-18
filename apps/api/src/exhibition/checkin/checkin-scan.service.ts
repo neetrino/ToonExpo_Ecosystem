@@ -134,14 +134,6 @@ export class CheckInScanService {
     };
   }
 
-  async lookupQrCodeId(buyerProfileId: string): Promise<string> {
-    const qr = await this.prisma.db.qrCode.findUniqueOrThrow({
-      where: { buyerProfileId },
-      select: { id: true },
-    });
-    return qr.id;
-  }
-
   private async createDuplicateRecord(
     input: SuccessfulScanInput,
     duplicateOfCheckInId: string,

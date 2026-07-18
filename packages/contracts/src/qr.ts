@@ -76,6 +76,8 @@ export type QrBuyerActionPayload = QrBuyerIdentity & {
 export type QrEntranceCheckinPayload = QrBuyerIdentity & {
   kind: "entrance_checkin";
   scanEventId: string;
+  /** Already-resolved QR row id — avoids a second lookup on check-in. */
+  qrCodeId: string;
 };
 
 /**

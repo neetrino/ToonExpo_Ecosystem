@@ -65,7 +65,7 @@ export class CheckInService {
       return this.scanService.recordSuccessfulScan({
         eventId,
         buyerProfileId: resolved.buyerProfileId,
-        qrCodeId: await this.scanService.lookupQrCodeId(resolved.buyerProfileId),
+        qrCodeId: resolved.qrCodeId,
         scanEventId: resolved.scanEventId,
         staffUserId: staff.id,
         visitorDisplayName: resolved.name,

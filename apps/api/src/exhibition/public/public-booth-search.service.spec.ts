@@ -26,6 +26,33 @@ describe("PublicBoothSearchService.search", () => {
     service = new PublicBoothSearchService(prisma);
   });
 
+  it("returns empty results for queries shorter than the minimum length", async () => {
+    const result = await service.search("map_1", "a");
+
+    expect(result.data).toEqual([]);
+    expect(boothFindMany).not.toHaveBeenCalled();
+  });
+
+  it("pushes contains filters into the DB query with a take limit", async () => {
+    boothFindMany.mockResolvedValue([]);
+
+    await service.search("map_1", "al");
+
+    expect(boothFindMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        take: 50,
+        where: expect.objectContaining({
+          venueMapId: "map_1",
+          OR: expect.arrayContaining([
+            expect.objectContaining({
+              code: { contains: "al", mode: "insensitive" },
+            }),
+          ]),
+        }),
+      }),
+    );
+  });
+
   it("matches booths by company name", async () => {
     boothFindMany.mockResolvedValue([
       {

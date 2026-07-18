@@ -136,10 +136,7 @@ export class AuthController {
     ipAddress?: string;
     userAgent?: string;
   } {
-    const forwarded = request.headers["x-forwarded-for"];
-    const forwardedIp =
-      typeof forwarded === "string" ? forwarded.split(",")[0]?.trim() : undefined;
-    const ipAddress = forwardedIp || request.ip;
+    const ipAddress = request.ip;
     const userAgent = request.headers["user-agent"];
     const meta: { ipAddress?: string; userAgent?: string } = {};
 
