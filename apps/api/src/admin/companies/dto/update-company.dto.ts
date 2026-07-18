@@ -38,4 +38,10 @@ export class UpdateCompanyDto {
   @IsOptional()
   @IsEnum(CompanyStatusDto)
   status?: CompanyStatusDto;
+
+  @ApiPropertyOptional({ nullable: true })
+  @IsOptional()
+  @ValidateIf((_, value) => value !== null)
+  @IsString()
+  logoMediaId?: string | null;
 }

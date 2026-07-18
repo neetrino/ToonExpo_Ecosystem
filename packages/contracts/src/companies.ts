@@ -25,6 +25,8 @@ export type CompanyResponse = {
   status: CompanyStatus;
   source: CompanySource;
   bosCompanyId: string | null;
+  logoMediaId: string | null;
+  logoUrl: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -37,6 +39,7 @@ export type CompanyProfileResponse = {
   name: string;
   type: CompanyType;
   status: CompanyStatus;
+  logoMediaId: string | null;
   logoUrl: string | null;
   role: CompanyMemberRole;
 };
@@ -62,6 +65,14 @@ export type UpdateCompanyRequest = {
   name?: string;
   description?: string | null;
   status?: CompanyStatus;
+  logoMediaId?: string | null;
+};
+
+/**
+ * Company-admin self-service profile update (`PATCH /company/me`).
+ */
+export type UpdateCompanyProfileRequest = {
+  logoMediaId?: string | null;
 };
 
 /**

@@ -64,6 +64,7 @@ export type {
   ProvisionCompanyResponse,
   SetPasswordRequest,
   UpdateCompanyMemberRequest,
+  UpdateCompanyProfileRequest,
   UpdateCompanyRequest,
 } from "./companies.js";
 

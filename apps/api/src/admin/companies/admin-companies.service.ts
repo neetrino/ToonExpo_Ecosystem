@@ -17,6 +17,7 @@ import {
   UserStatus,
 } from "@toonexpo/db";
 
+import { resolveOptionalCompanyLogoMediaId } from "../../media/utils/media-ownership.js";
 import { toUserResponse } from "../../auth/mappers/user.mapper.js";
 import { toCompanyResponse } from "../../companies/mappers/company.mapper.js";
 import { CompanyProvisioningService } from "../../company/provisioning/company-provisioning.service.js";
@@ -36,6 +37,7 @@ type UpdateCompanyInput = {
   name?: string;
   description?: string | null;
   status?: CompanyStatus;
+  logoMediaId?: string | null;
 };
 
 /**
@@ -97,7 +99,10 @@ export class AdminCompaniesService {
   }
 
   async getById(id: string): Promise<CompanyResponse> {
-    const company = await this.prisma.db.company.findUnique({ where: { id } });
+    const company = await this.prisma.db.company.findUnique({
+      where: { id },
+      include: { logoMedia: { select: { id: true, fileUrl: true } } },
+    });
     if (!company) {
       throw new NotFoundException("Company not found");
     }
@@ -130,6 +135,11 @@ export class AdminCompaniesService {
 
   async update(id: string, input: UpdateCompanyInput): Promise<CompanyResponse> {
     await this.getById(id);
+    const logoMediaId = await resolveOptionalCompanyLogoMediaId(
+      this.prisma,
+      input.logoMediaId,
+      id,
+    );
     const company = await this.prisma.db.company.update({
       where: { id },
       data: {
@@ -138,7 +148,9 @@ export class AdminCompaniesService {
           ? { description: input.description?.trim() || null }
           : {}),
         ...(input.status !== undefined ? { status: input.status } : {}),
+        ...(logoMediaId !== undefined ? { logoMediaId } : {}),
       },
+      include: { logoMedia: { select: { id: true, fileUrl: true } } },
     });
     return toCompanyResponse(company);
   }
