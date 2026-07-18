@@ -227,6 +227,7 @@ model Company {
   requests             Request[]
   crmDeals             CrmDeal[]
   readinessAssessments ReadinessAssessment[]
+  partnerCompany       PartnerCompany?
 
   @@index([type])
   @@index([status])
@@ -321,11 +322,13 @@ model MediaAsset {
   createdAt         DateTime       @default(now()) @map("created_at")
 
   ownerCompany   Company?   @relation("MediaOwnerCompany", fields: [ownerCompanyId], references: [id], onDelete: SetNull)
-  companyLogos   Company[]  @relation("CompanyLogo")
-  projectCovers  Project[]  @relation("ProjectCover")
-  buildingCovers Building[] @relation("BuildingCover")
-  floorPlans     Floor[]    @relation("FloorPlan")
-  apartmentPlans Apartment[] @relation("ApartmentPlan")
+  companyLogos      Company[]       @relation("CompanyLogo")
+  projectCovers     Project[]       @relation("ProjectCover")
+  buildingCovers    Building[]      @relation("BuildingCover")
+  floorPlans        Floor[]         @relation("FloorPlan")
+  apartmentPlans    Apartment[]     @relation("ApartmentPlan")
+  partnerLogos      PartnerCompany[] @relation("PartnerLogo")
+  partnerCovers     PartnerCompany[] @relation("PartnerCover")
 
   @@index([ownerCompanyId])
   @@index([relatedEntityType, relatedEntityId])
@@ -886,4 +889,73 @@ model ReadinessInternalNote {
   @@index([scoreId])
   @@index([authorUserId])
   @@map("readiness_internal_notes")
+}
+
+/// Partner profile type (display category on public partner pages).
+enum PartnerCompanyType {
+  bank
+  it_company
+  sponsor
+  supplier
+  insurance
+  legal
+  design_furniture
+  service_company
+  other
+}
+
+enum PartnerCompanyStatus {
+  active
+  inactive
+}
+
+/// Public partner profile linked 1:1 to a Company (partner / bank / service).
+model PartnerCompany {
+  id                String               @id @default(cuid())
+  companyId         String               @unique @map("company_id")
+  type              PartnerCompanyType
+  name              String
+  slug              String               @unique
+  logoMediaId       String?              @map("logo_media_id")
+  coverMediaId      String?              @map("cover_media_id")
+  shortDescription  String?              @map("short_description")
+  fullDescription   String?              @map("full_description")
+  contacts          Json?
+  website           String?
+  socialLinks       Json?                @map("social_links")
+  status            PartnerCompanyStatus @default(active)
+  publicationStatus PublicationStatus    @default(draft) @map("publication_status")
+  featured          Boolean              @default(false)
+  createdAt         DateTime             @default(now()) @map("created_at")
+  updatedAt         DateTime             @updatedAt @map("updated_at")
+
+  company    Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  logoMedia  MediaAsset?    @relation("PartnerLogo", fields: [logoMediaId], references: [id], onDelete: SetNull)
+  coverMedia MediaAsset?    @relation("PartnerCover", fields: [coverMediaId], references: [id], onDelete: SetNull)
+  offers     PartnerOffer[]
+  /// BankOffer rows attach here in the Mortgage module (later segment).
+
+  @@index([slug])
+  @@index([companyId])
+  @@index([type, publicationStatus])
+  @@map("partner_companies")
+}
+
+/// Generic partner offer/service (non-bank; BankOffer is a separate Mortgage entity).
+model PartnerOffer {
+  id                String            @id @default(cuid())
+  partnerCompanyId  String            @map("partner_company_id")
+  title             String
+  description       String?
+  type              String?
+  publicationStatus PublicationStatus @default(draft) @map("publication_status")
+  sortOrder         Int               @default(0) @map("sort_order")
+  createdAt         DateTime          @default(now()) @map("created_at")
+  updatedAt         DateTime          @updatedAt @map("updated_at")
+
+  partnerCompany PartnerCompany @relation(fields: [partnerCompanyId], references: [id], onDelete: Cascade)
+
+  @@index([partnerCompanyId])
+  @@index([publicationStatus])
+  @@map("partner_offers")
 }
