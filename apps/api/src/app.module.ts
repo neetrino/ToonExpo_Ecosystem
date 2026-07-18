@@ -25,6 +25,7 @@ import { HealthModule } from "./health/health.module.js";
 import { PortalModule } from "./portal/portal.module.js";
 import { PrismaModule } from "./prisma/prisma.module.js";
 import { QrModule } from "./qr/qr.module.js";
+import { ReadinessModule } from "./readiness/readiness.module.js";
 
 const isProduction = process.env["NODE_ENV"] === NODE_ENV_PRODUCTION;
 
@@ -77,6 +78,7 @@ const isProduction = process.env["NODE_ENV"] === NODE_ENV_PRODUCTION;
     PortalModule,
     QrModule,
     CrmModule,
+    ReadinessModule,
     HealthModule,
   ],
   providers: [
