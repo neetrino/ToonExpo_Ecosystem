@@ -1,5 +1,4 @@
 import {
-  ConflictException,
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
@@ -10,7 +9,6 @@ import type {
   ProvisionCompanyResponse,
 } from "@toonexpo/contracts";
 import {
-  AccountType,
   CompanyMemberRole,
   CompanyMemberStatus,
   CompanySource,
@@ -19,9 +17,9 @@ import {
   UserStatus,
 } from "@toonexpo/db";
 
-import { InviteMailerService } from "../../access-tokens/invite-mailer.service.js";
-import { normalizeEmail, toUserResponse } from "../../auth/mappers/user.mapper.js";
+import { toUserResponse } from "../../auth/mappers/user.mapper.js";
 import { toCompanyResponse } from "../../companies/mappers/company.mapper.js";
+import { CompanyProvisioningService } from "../../company/provisioning/company-provisioning.service.js";
 import { PrismaService } from "../../prisma/prisma.service.js";
 
 type CreateCompanyInput = {
@@ -47,45 +45,23 @@ type UpdateCompanyInput = {
 export class AdminCompaniesService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly inviteMailer: InviteMailerService,
+    private readonly provisioning: CompanyProvisioningService,
   ) {}
 
   async create(input: CreateCompanyInput): Promise<ProvisionCompanyResponse> {
-    const email = normalizeEmail(input.adminEmail);
-    await this.assertEmailAvailable(email);
+    await this.provisioning.assertEmailAvailable(input.adminEmail);
 
-    const result = await this.prisma.db.$transaction(async (tx) => {
-      const company = await tx.company.create({
-        data: {
-          name: input.name.trim(),
-          type: input.type,
-          description: input.description?.trim() || null,
-          status: CompanyStatus.active,
-          source: CompanySource.admin,
-        },
-      });
-
-      const adminUser = await tx.user.create({
-        data: {
-          name: input.adminName.trim(),
-          email,
-          phone: input.adminPhone?.trim() || null,
-          accountType: AccountType.company_member,
-          status: UserStatus.invited,
-          companyMembership: {
-            create: {
-              companyId: company.id,
-              role: CompanyMemberRole.company_admin,
-              status: CompanyMemberStatus.active,
-            },
-          },
-        },
-      });
-
-      return { company, adminUser };
+    const result = await this.provisioning.createCompanyWithPrimaryAdmin({
+      companyName: input.name.trim(),
+      companyType: input.type,
+      companyDescription: input.description?.trim() || null,
+      source: CompanySource.admin,
+      adminName: input.adminName.trim(),
+      adminEmail: input.adminEmail,
+      adminPhone: input.adminPhone?.trim() || null,
     });
 
-    await this.inviteMailer.sendSetPasswordInvite({
+    await this.provisioning.sendSetPasswordInvite({
       userId: result.adminUser.id,
       email: result.adminUser.email,
       name: result.adminUser.name,
@@ -183,18 +159,11 @@ export class AdminCompaniesService {
       throw new NotFoundException("No invited company admin found");
     }
 
-    await this.inviteMailer.sendSetPasswordInvite({
+    await this.provisioning.sendSetPasswordInvite({
       userId: membership.user.id,
       email: membership.user.email,
       name: membership.user.name,
       ...(locale ? { locale } : {}),
     });
-  }
-
-  private async assertEmailAvailable(email: string): Promise<void> {
-    const existing = await this.prisma.db.user.findUnique({ where: { email } });
-    if (existing) {
-      throw new ConflictException("Email is already registered");
-    }
   }
 }

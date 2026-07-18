@@ -85,6 +85,10 @@ const envSchema = z
       emptyToUndefined,
       z.string().email().optional(),
     ),
+    BOS_API_KEY: z.preprocess(
+      emptyToUndefined,
+      z.string().min(32).optional(),
+    ),
   })
   .superRefine((env, ctx) => {
     if (env.NODE_ENV !== NODE_ENV_PRODUCTION) {
@@ -123,6 +127,7 @@ export type AppEnv = {
   CSRF_COOKIE_NAME: string;
   RESEND_API_KEY?: string | undefined;
   RESEND_FROM_EMAIL?: string | undefined;
+  BOS_API_KEY?: string | undefined;
 };
 
 /**
@@ -160,6 +165,10 @@ export const validateEnv = (config: Record<string, unknown>): AppEnv => {
 
   if (data.RESEND_FROM_EMAIL) {
     result.RESEND_FROM_EMAIL = data.RESEND_FROM_EMAIL;
+  }
+
+  if (data.BOS_API_KEY) {
+    result.BOS_API_KEY = data.BOS_API_KEY;
   }
 
   return result;

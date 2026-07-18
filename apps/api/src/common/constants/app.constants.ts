@@ -153,6 +153,27 @@ export const QR_RESOLVE_RATE_LIMIT_TTL_MS = 60_000;
 /** Public path segment for buyer QR payload URLs (`{APP_URL}/qr/{token}`). */
 export const BUYER_QR_PATH_SEGMENT = "qr";
 
+/**
+ * ADAPTIVE VALUE — confirm with owner.
+ * BOS provisioning rate limit: attempts per IP per window.
+ */
+export const BOS_PROVISIONING_RATE_LIMIT_LIMIT = 20;
+
+/**
+ * ADAPTIVE VALUE — confirm with owner.
+ * BOS provisioning rate limit window in milliseconds (1 minute).
+ */
+export const BOS_PROVISIONING_RATE_LIMIT_TTL_MS = 60_000;
+
+/** Header carrying the BOS service-to-service API key. */
+export const BOS_API_KEY_HEADER = "x-bos-api-key";
+
+/** Default page size for admin BOS provisioning lists. */
+export const ADMIN_BOS_PROVISIONING_DEFAULT_PAGE_SIZE = 20;
+
+/** Maximum page size for admin BOS provisioning lists. */
+export const ADMIN_BOS_PROVISIONING_MAX_PAGE_SIZE = 50;
+
 /** Default page size for buyer QR scan history. */
 export const BUYER_QR_SCANS_DEFAULT_PAGE_SIZE = 50;
 

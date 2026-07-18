@@ -23,6 +23,8 @@ describe("AdminCompaniesService.listProjects", () => {
     } as unknown as PrismaService;
 
     service = new AdminCompaniesService(prisma, {
+      assertEmailAvailable: vi.fn(),
+      createCompanyWithPrimaryAdmin: vi.fn(),
       sendSetPasswordInvite: vi.fn(),
     } as never);
   });
