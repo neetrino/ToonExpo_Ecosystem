@@ -66,6 +66,9 @@ export const SiteHeader = ({
           <Link href="/partners" className="hover:opacity-80">
             {t("partners")}
           </Link>
+          <Link href="/mortgage" className="hover:opacity-80">
+            {t("mortgage")}
+          </Link>
         </nav>
 
         <div className="flex items-center gap-2 sm:gap-3">
@@ -153,6 +156,9 @@ export const SiteHeader = ({
             </Link>
             <Link href="/partners" onClick={() => setMenuOpen(false)}>
               {t("partners")}
+            </Link>
+            <Link href="/mortgage" onClick={() => setMenuOpen(false)}>
+              {t("mortgage")}
             </Link>
             {!user ? (
               <>

@@ -1,0 +1,28 @@
+/** Mirrors NestJS mortgage module limits (`apps/api/src/mortgage/mortgage.constants.ts`). */
+export const BANK_OFFER_TITLE_MAX_LENGTH = 200;
+export const BANK_OFFER_SHORT_DESCRIPTION_MAX_LENGTH = 2000;
+export const BANK_OFFER_FEES_MAX_LENGTH = 4000;
+export const BANK_OFFER_CALCULATION_NOTES_MAX_LENGTH = 4000;
+export const BANK_OFFER_RATE_MIN = 0;
+export const BANK_OFFER_RATE_MAX = 100;
+export const BANK_OFFER_DOWN_PAYMENT_MIN = 0;
+export const BANK_OFFER_DOWN_PAYMENT_MAX = 100;
+export const BANK_OFFER_TERM_MIN_YEARS = 1;
+export const BANK_OFFER_TERM_MAX_YEARS = 50;
+export const BANK_OFFER_MAX_TERM_OPTIONS = 10;
+export const BANK_OFFER_SORT_ORDER_MAX = 9999;
+
+export const MORTGAGE_PROPERTY_PRICE_MIN = 1;
+export const MORTGAGE_PROPERTY_PRICE_MAX = 10_000_000_000;
+
+/** Debounce before calling POST /mortgage/calculate. */
+export const MORTGAGE_CALCULATOR_DEBOUNCE_MS = 400;
+
+export const PUBLIC_MORTGAGE_OFFERS_QUERY_KEY = ["public", "mortgage", "offers"] as const;
+
+export const ADMIN_BANK_OFFERS_QUERY_KEY = ["admin", "bank-offers"] as const;
+
+export const adminBankOfferQueryKey = (id: string) =>
+  [...ADMIN_BANK_OFFERS_QUERY_KEY, id] as const;
+
+export const PORTAL_BANK_OFFERS_QUERY_KEY = ["portal", "bank-offers"] as const;

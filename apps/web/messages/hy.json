@@ -50,6 +50,7 @@
     "projects": "Նախագծեր",
     "builders": "Կառուցապատողներ",
     "partners": "Գործընկերներ",
+    "mortgage": "Հիփոթեք",
     "login": "Մուտք",
     "register": "Գրանցում",
     "loading": "…"
@@ -358,6 +359,8 @@
       "section": "Կառավարում",
       "companies": "Ընկերություններ",
       "partners": "Գործընկերներ",
+      "bankOffers": "Բանկային առաջարկներ",
+      "serviceProviders": "Ծառայություն մատուցողներ",
       "readiness": "Պատրաստվածություն",
       "readinessCategories": "Կատեգորիաներ"
     },
@@ -555,6 +558,139 @@
           "draft": "Սևագիր",
           "published": "Հրապարակված",
           "archived": "Արխիվացված"
+        }
+      }
+    },
+    "bankOffers": {
+      "title": "Բանկային առաջարկներ",
+      "subtitle": "Կառավարեք բանկային գործընկերների հիփոթեքային առաջարկները",
+      "loading": "Բեռնվում է…",
+      "error": "Չհաջողվեց բեռնել բանկային առաջարկները։",
+      "empty": "Դեռ բանկային առաջարկներ չկան։",
+      "newOffer": "Նոր առաջարկ",
+      "createTitle": "Նոր բանկային առաջարկ",
+      "editTitle": "Խմբագրել {title}",
+      "edit": "Խմբագրել",
+      "delete": "Ջնջել",
+      "filters": {
+        "allBanks": "Բոլոր բանկերը",
+        "allPublication": "Բոլոր կարգավիճակները",
+        "draft": "Սևագիր",
+        "published": "Հրապարակված",
+        "archived": "Արխիվացված"
+      },
+      "columns": {
+        "title": "Անվանում",
+        "bank": "Բանկ",
+        "rate": "Տոկոս",
+        "publication": "Հրապարակում",
+        "actions": "Գործողություններ"
+      },
+      "form": {
+        "bankPartner": "Բանկային գործընկեր",
+        "title": "Անվանում",
+        "shortDescription": "Կարճ նկարագրություն",
+        "rate": "Տարեկան տոկոս (%)",
+        "apr": "APR (%)",
+        "minDownPayment": "Նվազագույն կանխավճար (%)",
+        "termOptions": "Ժամկետներ (տարի, ստորակետով)",
+        "fees": "Վճարներ",
+        "calculationNotes": "Հաշվարկի նշումներ",
+        "publication": "Հրապարակում",
+        "sortOrder": "Դասավորություն",
+        "featured": "Առանցքային առաջարկ",
+        "create": "Ստեղծել",
+        "save": "Պահպանել",
+        "cancel": "Չեղարկել",
+        "publicationStatuses": {
+          "draft": "Սևագիր",
+          "published": "Հրապարակված",
+          "archived": "Արխիվացված"
+        }
+      }
+    },
+    "serviceProviders": {
+      "title": "Ծառայություն մատուցողների կատալոգ",
+      "subtitle": "Կատեգորիաներ և մատակարարներ պատրաստվածության աջակցության համար",
+      "loading": "Բեռնվում է…",
+      "error": "Չհաջողվեց բեռնել տվյալները։",
+      "categories": {
+        "title": "Կատեգորիաներ",
+        "newCategory": "Նոր կատեգորիա",
+        "empty": "Կատեգորիաներ դեռ չկան։",
+        "edit": "Խմբագրել",
+        "delete": "Ջնջել",
+        "activeYes": "Ակտիվ",
+        "activeNo": "Ոչ ակտիվ",
+        "columns": {
+          "name": "Անվանում",
+          "sort": "Դասավորություն",
+          "active": "Կարգավիճակ",
+          "actions": "Գործողություններ"
+        },
+        "form": {
+          "name": "Անվանում",
+          "description": "Նկարագրություն",
+          "sortOrder": "Դասավորություն",
+          "active": "Ակտիվ",
+          "create": "Ստեղծել",
+          "save": "Պահպանել",
+          "cancel": "Չեղարկել"
+        }
+      },
+      "providers": {
+        "title": "Մատակարարներ",
+        "newProvider": "Նոր մատակարար",
+        "empty": "Ֆիլտրերին համապատասխան մատակարարներ չկան։",
+        "edit": "Խմբագրել",
+        "delete": "Ջնջել",
+        "activeYes": "Ակտիվ",
+        "activeNo": "Ոչ ակտիվ",
+        "create": "Ստեղծել",
+        "save": "Պահպանել",
+        "filters": {
+          "searchPlaceholder": "Որոնել անունով…",
+          "allCategories": "Բոլոր կատեգորիաները",
+          "allActive": "Բոլոր կարգավիճակները",
+          "active": "Միայն ակտիվ",
+          "inactive": "Միայն ոչ ակտիվ"
+        },
+        "columns": {
+          "name": "Անվանում",
+          "type": "Տեսակ",
+          "categories": "Կատեգորիաներ",
+          "active": "Կարգավիճակ",
+          "actions": "Գործողություններ"
+        },
+        "form": {
+          "name": "Անվանում",
+          "providerType": "Տեսակ",
+          "description": "Նկարագրություն",
+          "services": "Ծառայություններ",
+          "phone": "Հեռախոս",
+          "email": "Էլ. փոստ",
+          "website": "Կայք",
+          "socialFacebook": "Facebook",
+          "socialInstagram": "Instagram",
+          "socialLinkedin": "LinkedIn",
+          "categories": "Կատեգորիաներ",
+          "internalNotes": "Ներքին նշումներ (միայն ադմին)",
+          "internalNotesHint": "Կառուցապատողները ներքին նշումները չեն տեսնում։",
+          "publication": "Հրապարակային կատալոգ",
+          "publicationNone": "Չի սահմանված",
+          "active": "Ակտիվ",
+          "cancel": "Չեղարկել",
+          "types": {
+            "company": "Ընկերություն",
+            "person": "Անհատ",
+            "team": "Թիմ",
+            "other": "Այլ"
+          },
+          "publicationStatuses": {
+            "draft": "Սևագիր",
+            "published": "Հրապարակված",
+            "archived": "Արխիվացված"
+          }
         }
       }
     },
@@ -1208,6 +1344,20 @@
       "categoriesTitle": "Կատեգորիաներ",
       "categoryScore": "Միավոր",
       "noRecommendation": "Խորհուրդ դեռ չկա",
+      "helpButton": "Օգնություն / մատակարարներ",
+      "help": {
+        "title": "Օգնության մատակարարներ",
+        "loading": "Բեռնվում է…",
+        "error": "Չհաջողվեց բեռնել մատակարարներին։",
+        "empty": "Այս կատեգորիայում ակտիվ մատակարարներ դեռ չկան։",
+        "close": "Փակել",
+        "types": {
+          "company": "Ընկերություն",
+          "person": "Անհատ",
+          "team": "Թիմ",
+          "other": "Այլ"
+        }
+      },
       "requiredActionsTitle": "Պարտադիր գործողություններ",
       "recommendationsTitle": "Խորհուրդներ",
       "statuses": {
@@ -1326,6 +1476,56 @@
       }
     }
   },
+  "Mortgage": {
+    "title": "Հիփոթեքային հաշվիչ",
+    "subtitle": "Համեմատեք բանկային առաջարկները և գնահատեք ամսական վճարումը",
+    "loading": "Բեռնվում է…",
+    "error": "Չհաջողվեց բեռնել հիփոթեքային առաջարկները։",
+    "empty": "Դեռ հրապարակված հիփոթեքային առաջարկներ չկան։",
+    "meta": {
+      "title": "Հիփոթեք — ToonExpo",
+      "description": "Համեմատեք բանկային հիփոթեքային առաջարկները և գնահատեք ամսական վճարումը դրամով։"
+    },
+    "offers": {
+      "featured": "Առանցքային",
+      "rate": "Տոկոս",
+      "apr": "APR",
+      "minDownPayment": "Նվազ. կանխավճար",
+      "terms": "Ժամկետներ",
+      "years": "տարի",
+      "estimatedMonthly": "մոտ. {amount}/ամիս"
+    },
+    "calculator": {
+      "inputsTitle": "Ձեր տվյալները",
+      "offersTitle": "Բանկային առաջարկներ",
+      "propertyPrice": "Գույքի արժեք (դրամ)",
+      "propertyPricePlaceholder": "օր. 45000000",
+      "downPaymentPercent": "Կանխավճար (%)",
+      "downPaymentAmount": "Կանխավճար (դրամ)",
+      "loanTerm": "Վարկի ժամկետ",
+      "termYears": "{years} տարի",
+      "termAdjusted": "Ժամկետը փոխվել է {years} տարվայի այս առաջարկի համար",
+      "resultsTitle": "Գնահատական",
+      "monthlyPayment": "Ամսական վճար",
+      "loanAmount": "Վարկի գումար",
+      "downPayment": "Կանխավճար",
+      "totalPayment": "Ընդամենը վճարում",
+      "totalInterest": "Տոկոսագումար",
+      "selectedBank": "Բանկ",
+      "selectedRate": "Տոկոս",
+      "selectedTerm": "Ժամկետ",
+      "perMonth": "/ ամիս",
+      "disclaimer": "Թվերը միայն գնահատական են։ Վերջնական պայմանները կախված են բանկի հաստատումից։",
+      "calculating": "Հաշվարկ…",
+      "enterInputs": "Մուտքագրեք գույքի արժեքը և ընտրեք առաջարկը։",
+      "fixInputs": "Ուղղեք նշված դաշտերը հաշվարկի համար։",
+      "validation": {
+        "invalid": "Ստուգեք մուտքագրումները և կրկին փորձեք։",
+        "downPaymentBelowMinimum": "Կանխավճարը ցածր է այս առաջարկի նվազագույնից։",
+        "invalidTerm": "Ընտրված ժամկետը հասանելի չէ այս առաջարկի համար։"
+      }
+    }
+  },
   "Partner": {
     "badge": "Գործընկեր",
     "profileLink": "Պրոֆիլ",
@@ -1333,7 +1533,8 @@
       "label": "Գործընկերոջ նավիգացիա",
       "section": "Կառավարում",
       "profile": "Պրոֆիլ",
-      "offers": "Առաջարկներ"
+      "offers": "Առաջարկներ",
+      "bankOffers": "Հիփոթեքային առաջարկներ"
     },
     "profile": {
       "loading": "Բեռնում…",
@@ -1351,6 +1552,33 @@
       "error": "Չհաջողվեց բեռնել առաջարկները։",
       "pageTitle": "Առաջարկներ և ծառայություններ",
       "subtitle": "Կառավարեք ձեր հրապարակային էջում ցուցադրվող ծառայությունները։"
+    },
+    "bankOffers": {
+      "loading": "Բեռնվում է…",
+      "error": "Չհաջողվեց բեռնել հիփոթեքային առաջարկները։",
+      "pageTitle": "Հիփոթեքային առաջարկներ",
+      "subtitle": "Կառավարեք ձեր բանկի հիփոթեքային առաջարկների սևագրերը։",
+      "publicationNote": "Հրապարակումը կատարում է ToonExpo հարթակի թիմը։",
+      "empty": "Դեռ հիփոթեքային առաջարկներ չկան։",
+      "add": "Ավելացնել առաջարկ",
+      "edit": "Խմբագրել",
+      "delete": "Ջնջել",
+      "create": "Ստեղծել",
+      "save": "Պահպանել",
+      "rateLabel": "Տոկոս՝ {rate}%",
+      "form": {
+        "title": "Անվանում",
+        "shortDescription": "Կարճ նկարագրություն",
+        "rate": "Տարեկան տոկոս (%)",
+        "apr": "APR (%)",
+        "minDownPayment": "Նվազագույն կանխավճար (%)",
+        "termOptions": "Ժամկետներ (տարի, ստորակետով)",
+        "fees": "Վճարներ",
+        "calculationNotes": "Հաշվարկի նշումներ",
+        "sortOrder": "Դասավորություն",
+        "featured": "Առանցքային առաջարկ",
+        "cancel": "Չեղարկել"
+      }
     }
   }
 }

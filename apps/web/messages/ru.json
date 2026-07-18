@@ -52,7 +52,8 @@
     "login": "Войти",
     "register": "Регистрация",
     "loading": "…",
-    "partners": "Партнёры"
+    "partners": "Партнёры",
+    "mortgage": "Ипотека"
   },
   "Footer": {
     "tagline": "ToonExpo соединяет покупателей с проверенными новостройками Армении.",
@@ -359,7 +360,9 @@
       "companies": "Компании",
       "readiness": "Готовность",
       "readinessCategories": "Категории",
-      "partners": "Партнёры"
+      "partners": "Партнёры",
+      "bankOffers": "Банковские предложения",
+      "serviceProviders": "Поставщики услуг"
     },
     "companies": {
       "title": "Компании",
@@ -809,6 +812,139 @@
           "archived": "В архиве"
         }
       }
+    },
+    "bankOffers": {
+      "title": "Банковские предложения",
+      "subtitle": "Управление ипотечными предложениями банков-партнёров",
+      "loading": "Загрузка…",
+      "error": "Не удалось загрузить предложения.",
+      "empty": "Предложений пока нет.",
+      "newOffer": "Новое предложение",
+      "createTitle": "Новое банковское предложение",
+      "editTitle": "Редактировать {title}",
+      "edit": "Редактировать",
+      "delete": "Удалить",
+      "filters": {
+        "allBanks": "Все банки",
+        "allPublication": "Все статусы публикации",
+        "draft": "Черновик",
+        "published": "Опубликовано",
+        "archived": "В архиве"
+      },
+      "columns": {
+        "title": "Название",
+        "bank": "Банк",
+        "rate": "Ставка",
+        "publication": "Публикация",
+        "actions": "Действия"
+      },
+      "form": {
+        "bankPartner": "Банк-партнёр",
+        "title": "Название",
+        "shortDescription": "Краткое описание",
+        "rate": "Годовая ставка (%)",
+        "apr": "APR (%)",
+        "minDownPayment": "Мин. первый взнос (%)",
+        "termOptions": "Сроки (годы, через запятую)",
+        "fees": "Комиссии",
+        "calculationNotes": "Примечания к расчёту",
+        "publication": "Публикация",
+        "sortOrder": "Порядок сортировки",
+        "featured": "Избранное предложение",
+        "create": "Создать",
+        "save": "Сохранить",
+        "cancel": "Отмена",
+        "publicationStatuses": {
+          "draft": "Черновик",
+          "published": "Опубликовано",
+          "archived": "В архиве"
+        }
+      }
+    },
+    "serviceProviders": {
+      "title": "Каталог поставщиков услуг",
+      "subtitle": "Категории и поставщики для помощи по готовности",
+      "loading": "Загрузка…",
+      "error": "Не удалось загрузить данные.",
+      "categories": {
+        "title": "Категории",
+        "newCategory": "Новая категория",
+        "empty": "Категорий пока нет.",
+        "edit": "Редактировать",
+        "delete": "Удалить",
+        "activeYes": "Активна",
+        "activeNo": "Неактивна",
+        "columns": {
+          "name": "Название",
+          "sort": "Порядок",
+          "active": "Статус",
+          "actions": "Действия"
+        },
+        "form": {
+          "name": "Название",
+          "description": "Описание",
+          "sortOrder": "Порядок",
+          "active": "Активна",
+          "create": "Создать",
+          "save": "Сохранить",
+          "cancel": "Отмена"
+        }
+      },
+      "providers": {
+        "title": "Поставщики",
+        "newProvider": "Новый поставщик",
+        "empty": "Нет поставщиков по этим фильтрам.",
+        "edit": "Редактировать",
+        "delete": "Удалить",
+        "activeYes": "Активен",
+        "activeNo": "Неактивен",
+        "create": "Создать",
+        "save": "Сохранить",
+        "filters": {
+          "searchPlaceholder": "Поиск по названию…",
+          "allCategories": "Все категории",
+          "allActive": "Все статусы",
+          "active": "Только активные",
+          "inactive": "Только неактивные"
+        },
+        "columns": {
+          "name": "Название",
+          "type": "Тип",
+          "categories": "Категории",
+          "active": "Статус",
+          "actions": "Действия"
+        },
+        "form": {
+          "name": "Название",
+          "providerType": "Тип",
+          "description": "Описание",
+          "services": "Услуги",
+          "phone": "Телефон",
+          "email": "Email",
+          "website": "Сайт",
+          "socialFacebook": "Facebook",
+          "socialInstagram": "Instagram",
+          "socialLinkedin": "LinkedIn",
+          "categories": "Категории",
+          "internalNotes": "Внутренние заметки (только админ)",
+          "internalNotesHint": "Застройщики не видят внутренние заметки.",
+          "publication": "Публикация в каталоге",
+          "publicationNone": "Не задано",
+          "active": "Активен",
+          "cancel": "Отмена",
+          "types": {
+            "company": "Компания",
+            "person": "Частное лицо",
+            "team": "Команда",
+            "other": "Другое"
+          },
+          "publicationStatuses": {
+            "draft": "Черновик",
+            "published": "Опубликовано",
+            "archived": "В архиве"
+          }
+        }
+      }
     }
   },
   "Builder": {
@@ -1208,6 +1344,20 @@
       "categoriesTitle": "Категории",
       "categoryScore": "Балл",
       "noRecommendation": "Рекомендаций пока нет",
+      "helpButton": "Помощь / поставщики",
+      "help": {
+        "title": "Поставщики помощи",
+        "loading": "Загрузка…",
+        "error": "Не удалось загрузить поставщиков.",
+        "empty": "В этой категории пока нет активных поставщиков.",
+        "close": "Закрыть",
+        "types": {
+          "company": "Компания",
+          "person": "Частное лицо",
+          "team": "Команда",
+          "other": "Другое"
+        }
+      },
       "requiredActionsTitle": "Обязательные действия",
       "recommendationsTitle": "Рекомендации",
       "statuses": {
@@ -1326,6 +1476,56 @@
       }
     }
   },
+  "Mortgage": {
+    "title": "Ипотечный калькулятор",
+    "subtitle": "Сравните банковские предложения и оцените ежемесячный платёж",
+    "loading": "Загрузка…",
+    "error": "Не удалось загрузить ипотечные предложения.",
+    "empty": "Опубликованных ипотечных предложений пока нет.",
+    "meta": {
+      "title": "Ипотека — ToonExpo",
+      "description": "Сравнение банковских ипотечных предложений и расчёт ежемесячного платежа в AMD."
+    },
+    "offers": {
+      "featured": "Избранное",
+      "rate": "Ставка",
+      "apr": "APR",
+      "minDownPayment": "Мин. первый взнос",
+      "terms": "Сроки",
+      "years": "лет",
+      "estimatedMonthly": "≈ {amount}/мес"
+    },
+    "calculator": {
+      "inputsTitle": "Ваши параметры",
+      "offersTitle": "Банковские предложения",
+      "propertyPrice": "Стоимость недвижимости (AMD)",
+      "propertyPricePlaceholder": "напр. 45000000",
+      "downPaymentPercent": "Первый взнос (%)",
+      "downPaymentAmount": "Первый взнос (AMD)",
+      "loanTerm": "Срок кредита",
+      "termYears": "{years} лет",
+      "termAdjusted": "Срок изменён на {years} лет для этого предложения",
+      "resultsTitle": "Оценка",
+      "monthlyPayment": "Ежемесячный платёж",
+      "loanAmount": "Сумма кредита",
+      "downPayment": "Первый взнос",
+      "totalPayment": "Общая сумма выплат",
+      "totalInterest": "Сумма процентов",
+      "selectedBank": "Банк",
+      "selectedRate": "Ставка",
+      "selectedTerm": "Срок",
+      "perMonth": "/ мес",
+      "disclaimer": "Цифры носят оценочный характер. Итоговые условия зависят от одобрения банка.",
+      "calculating": "Расчёт…",
+      "enterInputs": "Введите стоимость и выберите предложение.",
+      "fixInputs": "Исправьте выделенные поля для расчёта.",
+      "validation": {
+        "invalid": "Проверьте введённые данные.",
+        "downPaymentBelowMinimum": "Первый взнос ниже минимума для этого предложения.",
+        "invalidTerm": "Выбранный срок недоступен для этого предложения."
+      }
+    }
+  },
   "Partner": {
     "badge": "Партнёр",
     "profileLink": "Профиль",
@@ -1333,7 +1533,8 @@
       "label": "Навигация партнёра",
       "section": "Управление",
       "profile": "Профиль",
-      "offers": "Предложения"
+      "offers": "Предложения",
+      "bankOffers": "Ипотечные предложения"
     },
     "profile": {
       "loading": "Загрузка…",
@@ -1351,6 +1552,33 @@
       "error": "Не удалось загрузить предложения.",
       "pageTitle": "Предложения",
       "subtitle": "Управляйте услугами на публичной странице."
+    },
+    "bankOffers": {
+      "loading": "Загрузка…",
+      "error": "Не удалось загрузить ипотечные предложения.",
+      "pageTitle": "Ипотечные предложения",
+      "subtitle": "Управляйте черновиками ипотечных предложений вашего банка.",
+      "publicationNote": "Публикацию выполняет команда платформы ToonExpo.",
+      "empty": "Ипотечных предложений пока нет.",
+      "add": "Добавить предложение",
+      "edit": "Редактировать",
+      "delete": "Удалить",
+      "create": "Создать",
+      "save": "Сохранить",
+      "rateLabel": "Ставка: {rate}%",
+      "form": {
+        "title": "Название",
+        "shortDescription": "Краткое описание",
+        "rate": "Годовая ставка (%)",
+        "apr": "APR (%)",
+        "minDownPayment": "Мин. первый взнос (%)",
+        "termOptions": "Сроки (годы, через запятую)",
+        "fees": "Комиссии",
+        "calculationNotes": "Примечания к расчёту",
+        "sortOrder": "Порядок сортировки",
+        "featured": "Избранное предложение",
+        "cancel": "Отмена"
+      }
     }
   }
 }

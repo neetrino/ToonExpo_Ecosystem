@@ -50,6 +50,7 @@
     "projects": "Projects",
     "builders": "Builders",
     "partners": "Partners",
+    "mortgage": "Mortgage",
     "login": "Sign in",
     "register": "Register",
     "loading": "…"
@@ -358,6 +359,8 @@
       "section": "Manage",
       "companies": "Companies",
       "partners": "Partners",
+      "bankOffers": "Bank offers",
+      "serviceProviders": "Service providers",
       "readiness": "Readiness",
       "readinessCategories": "Categories"
     },
@@ -555,6 +558,139 @@
           "draft": "Draft",
           "published": "Published",
           "archived": "Archived"
+        }
+      }
+    },
+    "bankOffers": {
+      "title": "Bank offers",
+      "subtitle": "Manage mortgage offers for bank partners",
+      "loading": "Loading bank offers…",
+      "error": "Could not load bank offers. Try again.",
+      "empty": "No bank offers yet.",
+      "newOffer": "New offer",
+      "createTitle": "New bank offer",
+      "editTitle": "Edit {title}",
+      "edit": "Edit",
+      "delete": "Delete",
+      "filters": {
+        "allBanks": "All banks",
+        "allPublication": "All publication states",
+        "draft": "Draft",
+        "published": "Published",
+        "archived": "Archived"
+      },
+      "columns": {
+        "title": "Title",
+        "bank": "Bank",
+        "rate": "Rate",
+        "publication": "Publication",
+        "actions": "Actions"
+      },
+      "form": {
+        "bankPartner": "Bank partner",
+        "title": "Title",
+        "shortDescription": "Short description",
+        "rate": "Annual rate (%)",
+        "apr": "APR (%)",
+        "minDownPayment": "Min down payment (%)",
+        "termOptions": "Term options (years, comma-separated)",
+        "fees": "Fees",
+        "calculationNotes": "Calculation notes",
+        "publication": "Publication",
+        "sortOrder": "Sort order",
+        "featured": "Featured offer",
+        "create": "Create offer",
+        "save": "Save changes",
+        "cancel": "Cancel",
+        "publicationStatuses": {
+          "draft": "Draft",
+          "published": "Published",
+          "archived": "Archived"
+        }
+      }
+    },
+    "serviceProviders": {
+      "title": "Service provider directory",
+      "subtitle": "Categories and providers for readiness help",
+      "loading": "Loading…",
+      "error": "Could not load service providers. Try again.",
+      "categories": {
+        "title": "Categories",
+        "newCategory": "New category",
+        "empty": "No categories yet.",
+        "edit": "Edit",
+        "delete": "Delete",
+        "activeYes": "Active",
+        "activeNo": "Inactive",
+        "columns": {
+          "name": "Name",
+          "sort": "Sort",
+          "active": "Active",
+          "actions": "Actions"
+        },
+        "form": {
+          "name": "Name",
+          "description": "Description",
+          "sortOrder": "Sort order",
+          "active": "Active",
+          "create": "Create category",
+          "save": "Save",
+          "cancel": "Cancel"
+        }
+      },
+      "providers": {
+        "title": "Providers",
+        "newProvider": "New provider",
+        "empty": "No providers match these filters.",
+        "edit": "Edit",
+        "delete": "Delete",
+        "activeYes": "Active",
+        "activeNo": "Inactive",
+        "create": "Create provider",
+        "save": "Save changes",
+        "filters": {
+          "searchPlaceholder": "Search by name…",
+          "allCategories": "All categories",
+          "allActive": "All statuses",
+          "active": "Active only",
+          "inactive": "Inactive only"
+        },
+        "columns": {
+          "name": "Name",
+          "type": "Type",
+          "categories": "Categories",
+          "active": "Active",
+          "actions": "Actions"
+        },
+        "form": {
+          "name": "Name",
+          "providerType": "Provider type",
+          "description": "Description",
+          "services": "Services",
+          "phone": "Phone",
+          "email": "Email",
+          "website": "Website",
+          "socialFacebook": "Facebook",
+          "socialInstagram": "Instagram",
+          "socialLinkedin": "LinkedIn",
+          "categories": "Categories",
+          "internalNotes": "Internal notes (admin only)",
+          "internalNotesHint": "Builders never see internal notes.",
+          "publication": "Public directory publication",
+          "publicationNone": "Not set",
+          "active": "Active",
+          "cancel": "Cancel",
+          "types": {
+            "company": "Company",
+            "person": "Person",
+            "team": "Team",
+            "other": "Other"
+          },
+          "publicationStatuses": {
+            "draft": "Draft",
+            "published": "Published",
+            "archived": "Archived"
+          }
         }
       }
     },
@@ -880,6 +1016,56 @@
       }
     }
   },
+  "Mortgage": {
+    "title": "Mortgage calculator",
+    "subtitle": "Compare bank offers and estimate your monthly payment",
+    "loading": "Loading mortgage offers…",
+    "error": "Could not load mortgage offers. Try again.",
+    "empty": "No mortgage offers are published yet. Check back soon.",
+    "meta": {
+      "title": "Mortgage — ToonExpo",
+      "description": "Compare bank mortgage offers and estimate monthly payments in AMD."
+    },
+    "offers": {
+      "featured": "Featured",
+      "rate": "Rate",
+      "apr": "APR",
+      "minDownPayment": "Min down payment",
+      "terms": "Terms",
+      "years": "years",
+      "estimatedMonthly": "Est. {amount}/mo"
+    },
+    "calculator": {
+      "inputsTitle": "Your inputs",
+      "offersTitle": "Bank offers",
+      "propertyPrice": "Property price (AMD)",
+      "propertyPricePlaceholder": "e.g. 45000000",
+      "downPaymentPercent": "Down payment (%)",
+      "downPaymentAmount": "Down payment (AMD)",
+      "loanTerm": "Loan term",
+      "termYears": "{years} years",
+      "termAdjusted": "Term adjusted to {years} years for this offer",
+      "resultsTitle": "Estimate",
+      "monthlyPayment": "Monthly payment",
+      "loanAmount": "Loan amount",
+      "downPayment": "Down payment",
+      "totalPayment": "Total payment",
+      "totalInterest": "Total interest",
+      "selectedBank": "Bank",
+      "selectedRate": "Rate",
+      "selectedTerm": "Term",
+      "perMonth": "/ month",
+      "disclaimer": "Figures are estimates only. Final terms depend on bank approval.",
+      "calculating": "Calculating…",
+      "enterInputs": "Enter property price and select an offer to see an estimate.",
+      "fixInputs": "Fix the highlighted inputs to calculate.",
+      "validation": {
+        "invalid": "Check your inputs and try again.",
+        "downPaymentBelowMinimum": "Down payment is below the minimum for this offer.",
+        "invalidTerm": "Selected term is not available for this offer."
+      }
+    }
+  },
   "Partner": {
     "badge": "Partner",
     "profileLink": "Profile",
@@ -887,7 +1073,8 @@
       "label": "Partner navigation",
       "section": "Manage",
       "profile": "Profile",
-      "offers": "Offers"
+      "offers": "Offers",
+      "bankOffers": "Mortgage offers"
     },
     "profile": {
       "loading": "Loading profile…",
@@ -905,6 +1092,33 @@
       "error": "Could not load offers.",
       "pageTitle": "Offers & services",
       "subtitle": "Manage the services shown on your public partner page."
+    },
+    "bankOffers": {
+      "loading": "Loading mortgage offers…",
+      "error": "Could not load mortgage offers.",
+      "pageTitle": "Mortgage offers",
+      "subtitle": "Manage your bank's mortgage offer drafts.",
+      "publicationNote": "Publication is managed by the ToonExpo platform team.",
+      "empty": "No mortgage offers yet.",
+      "add": "Add offer",
+      "edit": "Edit",
+      "delete": "Delete",
+      "create": "Create offer",
+      "save": "Save changes",
+      "rateLabel": "Rate: {rate}%",
+      "form": {
+        "title": "Title",
+        "shortDescription": "Short description",
+        "rate": "Annual rate (%)",
+        "apr": "APR (%)",
+        "minDownPayment": "Min down payment (%)",
+        "termOptions": "Term options (years, comma-separated)",
+        "fees": "Fees",
+        "calculationNotes": "Calculation notes",
+        "sortOrder": "Sort order",
+        "featured": "Featured offer",
+        "cancel": "Cancel"
+      }
     }
   },
   "Builder": {
@@ -1304,6 +1518,20 @@
       "categoriesTitle": "Categories",
       "categoryScore": "Score",
       "noRecommendation": "No recommendation yet",
+      "helpButton": "Help / providers",
+      "help": {
+        "title": "Help providers",
+        "loading": "Loading providers…",
+        "error": "Could not load providers.",
+        "empty": "No active providers in this category yet.",
+        "close": "Close",
+        "types": {
+          "company": "Company",
+          "person": "Person",
+          "team": "Team",
+          "other": "Other"
+        }
+      },
       "requiredActionsTitle": "Required actions",
       "recommendationsTitle": "Recommendations",
       "statuses": {
