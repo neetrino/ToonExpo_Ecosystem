@@ -283,3 +283,17 @@ export type {
   UpdateServiceProviderBody,
   UpdateServiceProviderCategoryBody,
 } from "./service-providers.js";
+
+export type {
+  AdminBosProvisioningDetail,
+  AdminBosProvisioningListItem,
+  AdminBosProvisioningListResponse,
+  BosProvisioningCompanyType,
+  BosProvisioningRequestBody,
+  BosProvisioningResponse,
+  BosProvisioningStatus,
+  BosProvisioningWireStatus,
+  BosRequestedModule,
+  IntegrationAuditAction,
+  IntegrationAuditLogItem,
+} from "./integrations.js";
