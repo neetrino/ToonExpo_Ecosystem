@@ -949,168 +949,168 @@
       }
     },
     "events": {
-      "title": "Events",
-      "subtitle": "{count, plural, =0 {No events} one {# event} other {# events}}",
-      "empty": "No events yet. Create the first one.",
-      "loading": "Loading events…",
-      "error": "Could not load events. Try again.",
-      "newEvent": "New event",
+      "title": "Միջոցառումներ",
+      "subtitle": "{count, plural, =0 {Միջոցառումներ չկան} one {# միջոցառում} other {# միջոցառում}}",
+      "empty": "Դեռ միջոցառումներ չկան։ Ստեղծեք առաջինը։",
+      "loading": "Բեռնվում է…",
+      "error": "Չհաջողվեց բեռնել միջոցառումները։ Կրկին փորձեք։",
+      "newEvent": "Նոր միջոցառում",
       "columns": {
-        "name": "Name",
-        "code": "Code",
-        "status": "Status",
-        "publication": "Publication"
+        "name": "Անուն",
+        "code": "Կոդ",
+        "status": "Կարգավիճակ",
+        "publication": "Հրապարակում"
       },
       "statuses": {
-        "planning": "Planning",
-        "active": "Active",
-        "completed": "Completed",
-        "archived": "Archived",
-        "cancelled": "Cancelled"
+        "planning": "Պլանավորում",
+        "active": "Ակտիվ",
+        "completed": "Ավարտված",
+        "archived": "Արխիվացված",
+        "cancelled": "Չեղարկված"
       },
       "new": {
-        "title": "New event",
-        "subtitle": "Create an exhibition event for maps and check-in"
+        "title": "Նոր միջոցառում",
+        "subtitle": "Ստեղծեք ցուցահանդեսային միջոցառում քարտեզների և գրանցման համար"
       },
       "detail": {
-        "back": "← Events",
-        "notFound": "Event not found"
+        "back": "← Միջոցառումներ",
+        "notFound": "Միջոցառումը չի գտնվել"
       },
       "form": {
-        "name": "Event name",
-        "code": "Event code",
-        "startDate": "Start date",
-        "endDate": "End date",
-        "status": "Status",
-        "publication": "Publication",
+        "name": "Միջոցառման անուն",
+        "code": "Միջոցառման կոդ",
+        "startDate": "Սկզբի ամսաթիվ",
+        "endDate": "Ավարտի ամսաթիվ",
+        "status": "Կարգավիճակ",
+        "publication": "Հրապարակում",
         "statuses": {
-          "planning": "Planning",
-          "active": "Active",
-          "completed": "Completed",
-          "archived": "Archived",
-          "cancelled": "Cancelled"
+          "planning": "Պլանավորում",
+          "active": "Ակտիվ",
+          "completed": "Ավարտված",
+          "archived": "Արխիվացված",
+          "cancelled": "Չեղարկված"
         },
         "publicationStatuses": {
-          "draft": "Draft",
-          "published": "Published",
-          "archived": "Archived"
+          "draft": "Սևագիր",
+          "published": "Հրապարակված",
+          "archived": "Արխիվացված"
         },
-        "create": "Create event",
-        "save": "Save changes",
-        "saving": "Saving…"
+        "create": "Ստեղծել միջոցառում",
+        "save": "Պահպանել փոփոխությունները",
+        "saving": "Պահպանում…"
       },
       "checkInSummary": {
-        "title": "Check-in summary",
-        "allowed": "Allowed",
-        "unique": "Unique visitors",
-        "duplicates": "Duplicate scans",
-        "denied": "Denied",
-        "day": "Day",
-        "noDays": "No check-ins recorded yet."
+        "title": "Գրանցման ամփոփում",
+        "allowed": "Թույլատրված",
+        "unique": "Ունիկալ այցելուներ",
+        "duplicates": "Կրկնակի սկաներներ",
+        "denied": "Մերժված",
+        "day": "Օր",
+        "noDays": "Դեռ գրանցումներ չեն արձանագրվել։"
       },
       "venueMaps": {
-        "title": "Venue maps",
-        "newMap": "New map",
-        "cancelCreate": "Cancel",
-        "empty": "No venue maps yet.",
-        "loading": "Loading maps…",
+        "title": "Վայրի քարտեզներ",
+        "newMap": "Նոր քարտեզ",
+        "cancelCreate": "Չեղարկել",
+        "empty": "Դեռ վայրի քարտեզներ չկան։",
+        "loading": "Քարտեզները բեռնվում են…",
         "form": {
-          "title": "Map title",
-          "mediaAssetId": "Map image URL or asset id",
-          "mediaHint": "Paste a full https:// image URL until media upload is available in admin.",
-          "width": "Width (px)",
-          "height": "Height (px)",
-          "publication": "Publication",
+          "title": "Քարտեզի վերնագիր",
+          "mediaAssetId": "Քարտեզի պատկերի URL կամ asset id",
+          "mediaHint": "Տեղադրեք ամբողջական https:// պատկերի URL, մինչև ադմինում մեդիա վերբեռնումը հասանելի լինի։",
+          "width": "Լայնություն (px)",
+          "height": "Բարձրություն (px)",
+          "publication": "Հրապարակում",
           "publicationStatuses": {
-            "draft": "Draft",
-            "published": "Published",
-            "archived": "Archived"
+            "draft": "Սևագիր",
+            "published": "Հրապարակված",
+            "archived": "Արխիվացված"
           },
-          "create": "Create map",
-          "creating": "Creating…",
-          "save": "Save map",
-          "saving": "Saving…",
-          "delete": "Delete map"
+          "create": "Ստեղծել քարտեզ",
+          "creating": "Ստեղծում…",
+          "save": "Պահպանել քարտեզը",
+          "saving": "Պահպանում…",
+          "delete": "Ջնջել քարտեզը"
         }
       },
       "booths": {
-        "title": "Booths",
-        "newBooth": "New booth",
-        "loading": "Loading booths…",
-        "empty": "Այս քartezում դեռ կիոսkner չկան։",
-        "selectHint": "Select a booth or create a new one.",
+        "title": "Կիոսկներ",
+        "newBooth": "Նոր կիոսկ",
+        "loading": "Կիոսկները բեռնվում են…",
+        "empty": "Այս քարտեզում դեռ կիոսկներ չկան։",
+        "selectHint": "Ընտրեք կիոսկ կամ ստեղծեք նորը։",
         "form": {
-          "code": "Booth code",
-          "name": "Display name",
-          "type": "Type",
+          "code": "Կիոսկի կոդ",
+          "name": "Ցուցադրվող անուն",
+          "type": "Տեսակ",
           "types": {
-            "builder": "Builder",
-            "bank": "Bank",
-            "partner": "Partner",
-            "sponsor": "Sponsor",
-            "service": "Service",
-            "info": "Info",
-            "entrance": "Entrance",
-            "other": "Other"
+            "builder": "Կառուցապատող",
+            "bank": "Բանկ",
+            "partner": "Գործընկեր",
+            "sponsor": "Հովանավոր",
+            "service": "Ծառայություն",
+            "info": "Տեղեկատվություն",
+            "entrance": "Մուտք",
+            "other": "Այլ"
           },
-          "xPercent": "X position (%)",
-          "yPercent": "Y position (%)",
-          "locationText": "Location hint",
-          "publication": "Publication",
+          "xPercent": "X դիրք (%)",
+          "yPercent": "Y դիրք (%)",
+          "locationText": "Տեղադրության հուշում",
+          "publication": "Հրապարակում",
           "publicationStatuses": {
-            "draft": "Draft",
-            "published": "Published",
-            "archived": "Archived"
+            "draft": "Սևագիր",
+            "published": "Հրապարակված",
+            "archived": "Արխիվացված"
           },
-          "create": "Create booth",
-          "save": "Save booth",
-          "saving": "Saving…",
-          "delete": "Delete booth"
+          "create": "Ստեղծել կիոսկ",
+          "save": "Պահպանել կիոսկը",
+          "saving": "Պահպանում…",
+          "delete": "Ջնջել կիոսկը"
         },
         "map": {
-          "noImage": "Քartezի պատկերը հասanելi չէ։ Մեդիա դաշտում օգտagorzreq https:// URL։",
-          "alt": "Վayri քartez",
-          "hint": "Կտտatsreq քartezi vra` lrivatel X/Y koordinatnery formum."
+          "noImage": "Քարտեզի պատկերը հասանելի չէ։ Մեդիա դաշտում օգտագործեք ամբողջական https:// URL։",
+          "alt": "Վայրի քարտեզ",
+          "hint": "Կտտացրեք քարտեզի վրա՝ X/Y կոորդինատները ձևում լրացնելու համար։"
         },
         "assignments": {
-          "title": "Assignments",
-          "listGapHint": "Գoyutyan unecox kcumnere kcuycadryven, erb backend-um avelacvi list endpoint.",
-          "empty": "Ays ashxatashrjyanum kcumnere chen avelacvel.",
-          "company": "Company",
-          "noCompany": "No company",
-          "project": "Project",
-          "noProject": "No project",
-          "label": "Label",
-          "active": "Աktiv",
-          "add": "Add assignment",
-          "adding": "Adding…",
-          "remove": "Remove"
+          "title": "Կցումներ",
+          "loading": "Կցումները բեռնվում են…",
+          "empty": "Դեռ կցումներ չկան։",
+          "company": "Ընկերություն",
+          "noCompany": "Ընկերություն չկա",
+          "project": "Նախագիծ",
+          "noProject": "Նախագիծ չկա",
+          "label": "Պիտակ",
+          "active": "Ակտիվ",
+          "add": "Ավելացնել կցում",
+          "adding": "Ավելացվում է…",
+          "remove": "Հեռացնել"
         }
       },
       "routeGraph": {
-        "title": "Yertughayin gtsapatker",
-        "nodes": "Hanguytsner",
-        "edges": "Edges",
-        "addNode": "Avelacnel hanguyts",
-        "addEdge": "Add edge",
-        "code": "Code",
-        "label": "Label",
-        "type": "Type",
-        "booth": "Kioks",
-        "noBooth": "None",
-        "from": "From",
-        "to": "To",
-        "weight": "Weight",
-        "accessible": "Accessible",
-        "save": "Save graph",
-        "saving": "Saving…",
-        "saved": "Yertughayin gtsapatkery pahpanvel e.",
+        "title": "Երթուղային գրաֆ",
+        "nodes": "Հանգույցներ",
+        "edges": "Կապեր",
+        "addNode": "Ավելացնել հանգույց",
+        "addEdge": "Ավելացնել կապ",
+        "code": "Կոդ",
+        "label": "Պիտակ",
+        "type": "Տեսակ",
+        "booth": "Կիոսկ",
+        "noBooth": "Չկա",
+        "from": "Սկսած",
+        "to": "Մինչև",
+        "weight": "Կշիռ",
+        "accessible": "Հասանելի",
+        "save": "Պահպանել գրաֆը",
+        "saving": "Պահպանում…",
+        "saved": "Երթուղային գրաֆը պահպանվել է։",
         "nodeTypes": {
-          "entrance": "Entrance",
-          "intersection": "Intersection",
-          "booth": "Kioks",
-          "info": "Info",
-          "other": "Other"
+          "entrance": "Մուտք",
+          "intersection": "Հատում",
+          "booth": "Կիոսկ",
+          "info": "Տեղեկատվություն",
+          "other": "Այլ"
         }
       }
     }
@@ -1819,15 +1819,15 @@
       "title": "Բոլոր կիոսկները"
     },
     "map": {
-      "noImage": "Քartezi patkery dzer hasaneli che.",
-      "alt": "Vayri qartez"
+      "noImage": "Քարտեզի պատկերը դեռ հասանելի չէ։",
+      "alt": "Վայրի քարտեզ"
     },
     "booth": {
       "close": "Փակել",
       "code": "Կիոսկ {code}",
       "openProject": "Բացել նախագիծը",
       "route": "Երթուղի",
-      "routeUnavailable": "Yertughi hasaneli che",
+      "routeUnavailable": "Երթուղին հասանելի չէ",
       "types": {
         "builder": "Կառուցապատող",
         "bank": "Բանկ",
@@ -1840,9 +1840,13 @@
       }
     },
     "route": {
-      "unavailable": "Ays kioksi hamar yertughi dzer hasaneli che.",
-      "noEntranceNodes": "Mutqi ketery dzer hasaneli chen hanrayin API-um.",
-      "reset": "Maqrel yertughin"
+      "pickEntrance": "Ընտրեք մուտք",
+      "pickEntranceHint": "Նշեք, թե որտեղից եք սկսում։",
+      "entranceOption": "{label}",
+      "cancel": "Չեղարկել",
+      "unavailable": "Այս կիոսկի համար երթուղին դեռ հասանելի չէ։",
+      "noEntranceNodes": "Այս քարտեզում մուտքի հանգույցներ չեն կազմաձևվել։",
+      "reset": "Մաքրել երթուղին"
     }
   }
 }
