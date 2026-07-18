@@ -55,3 +55,8 @@ export const portalApartmentQueryKey = (id: string) =>
 export const COMPANY_MEMBERS_QUERY_KEY = ["company", "members"] as const;
 
 export const COMPANY_PROFILE_QUERY_KEY = ["company", "me"] as const;
+
+export const PORTAL_CRM_DEALS_QUERY_KEY = ["portal", "crm", "deals"] as const;
+
+export const portalCrmDealQueryKey = (id: string) =>
+  [...PORTAL_CRM_DEALS_QUERY_KEY, id] as const;

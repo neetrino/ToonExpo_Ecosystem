@@ -6,18 +6,14 @@ import { Link, usePathname } from "@/i18n/navigation";
 import { cn } from "@/shared/ui/cn";
 
 type NavItem =
-  | { href: "/builder"; key: "dashboard"; disabled?: false }
-  | { href: "/builder/projects"; key: "projects"; disabled?: false }
-  | { href: "/builder/team"; key: "team"; disabled?: false }
+  | {
+      href: "/builder" | "/builder/projects" | "/builder/team" | "/builder/crm" | "/builder/scanner";
+      key: "dashboard" | "projects" | "team" | "crm" | "scanner";
+      disabled?: false;
+    }
   | {
       href: string;
-      key:
-        | "visualMap"
-        | "crm"
-        | "readiness"
-        | "analytics"
-        | "company"
-        | "inventory";
+      key: "visualMap" | "readiness" | "analytics" | "company" | "inventory";
       disabled: true;
     };
 
@@ -25,8 +21,9 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/builder", key: "dashboard" },
   { href: "/builder/projects", key: "projects" },
   { href: "/builder/team", key: "team" },
+  { href: "/builder/crm", key: "crm" },
+  { href: "/builder/scanner", key: "scanner" },
   { href: "/builder/visual-map", key: "visualMap", disabled: true },
-  { href: "/builder/crm", key: "crm", disabled: true },
   { href: "/builder/readiness", key: "readiness", disabled: true },
   { href: "/builder/analytics", key: "analytics", disabled: true },
 ];

@@ -417,6 +417,7 @@
       "team": "Команда",
       "visualMap": "Визуальная карта",
       "crm": "CRM",
+      "scanner": "Сканер",
       "readiness": "Готовность",
       "analytics": "Аналитика",
       "company": "Компания",
@@ -437,7 +438,18 @@
       "links": {
         "projects": "Все проекты",
         "newProject": "Новый проект",
-        "team": "Команда"
+        "team": "Команда",
+        "crm": "CRM",
+        "scanner": "Сканер"
+      },
+      "crm": {
+        "title": "CRM-воронка",
+        "subtitle": "Открытые сделки по последней странице списка",
+        "loading": "Загрузка CRM…",
+        "error": "Не удалось загрузить статистику CRM.",
+        "openCrm": "Открыть CRM",
+        "openTotal": "Открытые сделки",
+        "createdToday": "Создано сегодня"
       }
     },
     "projects": {
@@ -639,6 +651,165 @@
       "errors": {
         "emailTaken": "Этот email уже зарегистрирован",
         "generic": "Что-то пошло не так. Попробуйте ещё раз."
+      }
+    },
+    "crm": {
+      "title": "CRM",
+      "subtitle": "{count, plural, =0 {Нет сделок} one {# сделка} few {# сделки} other {# сделок}}",
+      "loading": "Загрузка сделок…",
+      "error": "Не удалось загрузить сделки. Попробуйте ещё раз.",
+      "empty": "Сделок пока нет. Создайте вручную или отсканируйте QR покупателя.",
+      "unnamedBuyer": "Без имени",
+      "noProject": "Без проекта",
+      "unassigned": "Не назначен",
+      "columns": {
+        "buyer": "Покупатель",
+        "project": "Проект",
+        "status": "Статус",
+        "source": "Источник",
+        "assignee": "Ответственный",
+        "updated": "Обновлено"
+      },
+      "filters": {
+        "allStatuses": "Все",
+        "source": "Источник",
+        "allSources": "Все источники",
+        "project": "Проект",
+        "allProjects": "Все проекты"
+      },
+      "pagination": {
+        "previous": "Назад",
+        "next": "Далее"
+      },
+      "statuses": {
+        "new_request": "Новая",
+        "assigned": "Назначена",
+        "contacted": "Контакт",
+        "follow_up_needed": "Нужен follow-up",
+        "apartment_selected": "Квартира выбрана",
+        "reserved": "Бронь",
+        "converted": "Сделка",
+        "closed": "Закрыта",
+        "lost": "Потеряна"
+      },
+      "sources": {
+        "buyer_project_request": "Заявка покупателя",
+        "builder_buyer_qr_scan": "QR-скан",
+        "manual_builder_entry": "Вручную",
+        "event_interaction": "Мероприятие"
+      },
+      "newDeal": {
+        "cta": "Новая сделка",
+        "title": "Новая сделка",
+        "contactName": "Имя",
+        "contactPhone": "Телефон",
+        "contactEmail": "Email",
+        "project": "Проект",
+        "projectOptional": "Без проекта",
+        "note": "Заметка",
+        "submit": "Создать сделку",
+        "submitting": "Создание…",
+        "cancel": "Отмена"
+      },
+      "validation": {
+        "contactName": "Укажите имя",
+        "phone": "Укажите корректный телефон",
+        "email": "Укажите корректный email"
+      },
+      "errors": {
+        "generic": "Что-то пошло не так. Попробуйте ещё раз."
+      },
+      "detail": {
+        "back": "← CRM",
+        "notFound": "Сделка не найдена.",
+        "phone": "Телефон",
+        "email": "Email",
+        "source": "Источник",
+        "created": "Создана",
+        "project": "Проект",
+        "statusTitle": "Статус",
+        "status": "Статус воронки",
+        "lostReason": "Причина потери",
+        "lostReasonRequired": "Укажите причину потери",
+        "apartmentRequired": "Сначала прикрепите квартиру",
+        "apartmentHint": "Для статусов «квартира выбрана», «бронь» и «сделка» нужна прикреплённая квартира.",
+        "saveStatus": "Обновить статус",
+        "assigneeTitle": "Ответственный",
+        "assignee": "Ответственный",
+        "unassigned": "Не назначен",
+        "saveAssignee": "Сохранить",
+        "saving": "Сохранение…",
+        "notesTitle": "Заметки",
+        "notesEmpty": "Заметок пока нет",
+        "notePlaceholder": "Внутренняя заметка…",
+        "addNote": "Добавить заметку",
+        "activitiesTitle": "Активности",
+        "activitiesEmpty": "Активностей пока нет",
+        "activityType": "Тип",
+        "activityDue": "Срок",
+        "addActivity": "Добавить активность",
+        "markDone": "Отметить выполненной",
+        "activityTypes": {
+          "call": "Звонок",
+          "email": "Email",
+          "meeting": "Встреча",
+          "send_offer": "Отправить предложение",
+          "follow_up": "Follow-up",
+          "status_update": "Смена статуса",
+          "other": "Другое"
+        },
+        "apartmentsTitle": "Квартиры",
+        "apartmentsEmpty": "Квартира ещё не выбрана",
+        "linkProject": "Проект",
+        "linkApartment": "Квартира",
+        "selectProject": "Выберите проект",
+        "selectApartment": "Выберите квартиру",
+        "loadingApartments": "Загрузка квартир…",
+        "linkApartmentAction": "Прикрепить квартиру",
+        "linkNeedsEmail": "Для прикрепления квартиры к существующей сделке нужен email покупателя.",
+        "linkNote": "Квартира прикреплена со страницы сделки",
+        "linkSuccess": "Квартира прикреплена",
+        "linkCreatedOtherDeal": "Прикреплено к другой открытой сделке этого покупателя",
+        "unnamedBuyer": "Без имени",
+        "primary": "Основная",
+        "linkTypes": {
+          "interest": "Интерес",
+          "selected": "Выбрана",
+          "reserved": "Бронь",
+          "sold": "Продана"
+        },
+        "requestsTitle": "История заявок",
+        "requestsEmpty": "Заявок пока нет",
+        "errors": {
+          "generic": "Что-то пошло не так. Попробуйте ещё раз."
+        }
+      }
+    },
+    "scanner": {
+      "title": "QR-сканер",
+      "subtitle": "Отсканируйте QR покупателя на выставке, чтобы создать сделку",
+      "cameraDenied": "Нет доступа к камере.",
+      "useManual": "Введите URL или токен QR вручную ниже.",
+      "resolving": "Распознаём QR…",
+      "manualLabel": "URL или токен QR",
+      "manualPlaceholder": "https://…/qr/… или токен",
+      "manualSubmit": "Распознать",
+      "buyerBadge": "Покупатель",
+      "phone": "Телефон",
+      "email": "Email",
+      "projectOptional": "Проект (необязательно)",
+      "noProject": "Без проекта",
+      "createDeal": "Создать сделку",
+      "creating": "Создание…",
+      "success": "Сделка создана по скану.",
+      "openDeal": "Открыть сделку",
+      "scanAgain": "Сканировать ещё",
+      "errors": {
+        "notToonexpo": "Это не QR покупателя ToonExpo.",
+        "invalid": "Не удалось прочитать токен ToonExpo QR.",
+        "notBuyer": "Этот QR не является buyer-action кодом.",
+        "resolve": "Не удалось распознать QR. Попробуйте ещё раз.",
+        "create": "Не удалось создать сделку. Попробуйте ещё раз."
       }
     }
   }

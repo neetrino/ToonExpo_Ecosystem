@@ -3,6 +3,7 @@
 import type { PublicationStatus } from "@toonexpo/contracts";
 import { useTranslations } from "next-intl";
 
+import { CrmDashboardWidget } from "@/features/builder/components/crm-dashboard-widget";
 import { PORTAL_MAX_PAGE_SIZE } from "@/features/builder/constants";
 import { usePortalProjectsQuery } from "@/features/builder/hooks/use-portal-projects";
 import { Link } from "@/i18n/navigation";
@@ -104,7 +105,21 @@ export const BuilderDashboardPage = () => {
         >
           {t("links.team")}
         </Link>
+        <Link
+          href="/builder/crm"
+          className="inline-flex h-9 items-center rounded-pill border border-border-strong px-4 text-sm font-medium text-ink hover:bg-surface"
+        >
+          {t("links.crm")}
+        </Link>
+        <Link
+          href="/builder/scanner"
+          className="inline-flex h-9 items-center rounded-pill border border-border-strong px-4 text-sm font-medium text-ink hover:bg-surface"
+        >
+          {t("links.scanner")}
+        </Link>
       </div>
+
+      <CrmDashboardWidget />
     </div>
   );
 };

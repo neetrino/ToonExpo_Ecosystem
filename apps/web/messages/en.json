@@ -417,6 +417,7 @@
       "team": "Team",
       "visualMap": "Visual map",
       "crm": "CRM",
+      "scanner": "Scanner",
       "readiness": "Readiness",
       "analytics": "Analytics",
       "company": "Company",
@@ -437,7 +438,18 @@
       "links": {
         "projects": "All projects",
         "newProject": "New project",
-        "team": "Team"
+        "team": "Team",
+        "crm": "CRM",
+        "scanner": "Scanner"
+      },
+      "crm": {
+        "title": "CRM pipeline",
+        "subtitle": "Open deals snapshot from the latest page",
+        "loading": "Loading CRM…",
+        "error": "Could not load CRM stats.",
+        "openCrm": "Open CRM",
+        "openTotal": "Open deals",
+        "createdToday": "Created today"
       }
     },
     "projects": {
@@ -639,6 +651,165 @@
       "errors": {
         "emailTaken": "This email is already registered",
         "generic": "Something went wrong. Please try again."
+      }
+    },
+    "crm": {
+      "title": "CRM",
+      "subtitle": "{count, plural, =0 {No deals} one {# deal} other {# deals}}",
+      "loading": "Loading deals…",
+      "error": "Could not load deals. Try again.",
+      "empty": "No deals yet. Create one or scan a buyer QR.",
+      "unnamedBuyer": "Unnamed contact",
+      "noProject": "No project",
+      "unassigned": "Unassigned",
+      "columns": {
+        "buyer": "Buyer",
+        "project": "Project",
+        "status": "Status",
+        "source": "Source",
+        "assignee": "Assignee",
+        "updated": "Updated"
+      },
+      "filters": {
+        "allStatuses": "All",
+        "source": "Source",
+        "allSources": "All sources",
+        "project": "Project",
+        "allProjects": "All projects"
+      },
+      "pagination": {
+        "previous": "Previous",
+        "next": "Next"
+      },
+      "statuses": {
+        "new_request": "New",
+        "assigned": "Assigned",
+        "contacted": "Contacted",
+        "follow_up_needed": "Follow-up",
+        "apartment_selected": "Apartment selected",
+        "reserved": "Reserved",
+        "converted": "Converted",
+        "closed": "Closed",
+        "lost": "Lost"
+      },
+      "sources": {
+        "buyer_project_request": "Buyer request",
+        "builder_buyer_qr_scan": "QR scan",
+        "manual_builder_entry": "Manual",
+        "event_interaction": "Event"
+      },
+      "newDeal": {
+        "cta": "New deal",
+        "title": "New deal",
+        "contactName": "Name",
+        "contactPhone": "Phone",
+        "contactEmail": "Email",
+        "project": "Project",
+        "projectOptional": "No project",
+        "note": "Note",
+        "submit": "Create deal",
+        "submitting": "Creating…",
+        "cancel": "Cancel"
+      },
+      "validation": {
+        "contactName": "Enter a name",
+        "phone": "Enter a valid phone number",
+        "email": "Enter a valid email"
+      },
+      "errors": {
+        "generic": "Something went wrong. Please try again."
+      },
+      "detail": {
+        "back": "← CRM",
+        "notFound": "Deal not found.",
+        "phone": "Phone",
+        "email": "Email",
+        "source": "Source",
+        "created": "Created",
+        "project": "Project",
+        "statusTitle": "Status",
+        "status": "Pipeline status",
+        "lostReason": "Lost reason",
+        "lostReasonRequired": "Lost reason is required",
+        "apartmentRequired": "Link an apartment before this status",
+        "apartmentHint": "Reserved / converted / apartment selected require a linked apartment.",
+        "saveStatus": "Update status",
+        "assigneeTitle": "Assignee",
+        "assignee": "Responsible",
+        "unassigned": "Unassigned",
+        "saveAssignee": "Update assignee",
+        "saving": "Saving…",
+        "notesTitle": "Notes",
+        "notesEmpty": "No notes yet",
+        "notePlaceholder": "Add an internal note…",
+        "addNote": "Add note",
+        "activitiesTitle": "Activities",
+        "activitiesEmpty": "No follow-up activity yet",
+        "activityType": "Type",
+        "activityDue": "Due",
+        "addActivity": "Add activity",
+        "markDone": "Mark done",
+        "activityTypes": {
+          "call": "Call",
+          "email": "Email",
+          "meeting": "Meeting",
+          "send_offer": "Send offer",
+          "follow_up": "Follow-up",
+          "status_update": "Status update",
+          "other": "Other"
+        },
+        "apartmentsTitle": "Apartments",
+        "apartmentsEmpty": "No apartment selected yet",
+        "linkProject": "Project",
+        "linkApartment": "Apartment",
+        "selectProject": "Select project",
+        "selectApartment": "Select apartment",
+        "loadingApartments": "Loading apartments…",
+        "linkApartmentAction": "Link apartment",
+        "linkNeedsEmail": "Buyer email is required to link an apartment on an existing deal.",
+        "linkNote": "Apartment linked from deal sheet",
+        "linkSuccess": "Apartment linked",
+        "linkCreatedOtherDeal": "Linked on a different open deal for this buyer",
+        "unnamedBuyer": "Unnamed contact",
+        "primary": "Primary",
+        "linkTypes": {
+          "interest": "Interest",
+          "selected": "Selected",
+          "reserved": "Reserved",
+          "sold": "Sold"
+        },
+        "requestsTitle": "Request history",
+        "requestsEmpty": "No requests yet",
+        "errors": {
+          "generic": "Something went wrong. Please try again."
+        }
+      }
+    },
+    "scanner": {
+      "title": "QR scanner",
+      "subtitle": "Scan a buyer QR at the exhibition to open a CRM deal",
+      "cameraDenied": "Camera access was denied or unavailable.",
+      "useManual": "Enter the QR URL or token manually below.",
+      "resolving": "Resolving QR…",
+      "manualLabel": "QR URL or token",
+      "manualPlaceholder": "https://…/qr/… or token",
+      "manualSubmit": "Resolve",
+      "buyerBadge": "Buyer",
+      "phone": "Phone",
+      "email": "Email",
+      "projectOptional": "Project (optional)",
+      "noProject": "No project",
+      "createDeal": "Create deal",
+      "creating": "Creating…",
+      "success": "Deal created from scan.",
+      "openDeal": "Open deal",
+      "scanAgain": "Scan another",
+      "errors": {
+        "notToonexpo": "This QR is not a ToonExpo buyer code.",
+        "invalid": "Could not read a ToonExpo QR token.",
+        "notBuyer": "This QR is not a buyer action code.",
+        "resolve": "Could not resolve the QR. Try again.",
+        "create": "Could not create the deal. Try again."
       }
     }
   }

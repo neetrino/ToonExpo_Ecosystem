@@ -417,6 +417,7 @@
       "team": "Թիմ",
       "visualMap": "Վիզուալ քարտեզ",
       "crm": "CRM",
+      "scanner": "Սկաներ",
       "readiness": "Պատրաստվածություն",
       "analytics": "Վերլուծություն",
       "company": "Ընկերություն",
@@ -437,7 +438,18 @@
       "links": {
         "projects": "Բոլոր նախագծերը",
         "newProject": "Նոր նախագիծ",
-        "team": "Թիմ"
+        "team": "Թիմ",
+        "crm": "CRM",
+        "scanner": "Սկաներ"
+      },
+      "crm": {
+        "title": "CRM խողովակ",
+        "subtitle": "Բաց գործարքների ամփոփում վերջին էջից",
+        "loading": "CRM-ը բեռնվում է…",
+        "error": "Չհաջողվեց բեռնել CRM վիճակագրությունը։",
+        "openCrm": "Բացել CRM",
+        "openTotal": "Բաց գործարքներ",
+        "createdToday": "Ստեղծված այսօր"
       }
     },
     "projects": {
@@ -639,6 +651,165 @@
       "errors": {
         "emailTaken": "Այս էլ․ փոստն արդեն գրանցված է",
         "generic": "Ինչ-որ սխալ տեղի ունեցավ։ Կրկին փորձեք։"
+      }
+    },
+    "crm": {
+      "title": "CRM",
+      "subtitle": "{count, plural, =0 {Գործարքներ չկան} one {# գործարք} other {# գործարք}}",
+      "loading": "Գործարքները բեռնվում են…",
+      "error": "Չհաջողվեց բեռնել գործարքները։ Կրկին փորձեք։",
+      "empty": "Գործարքներ դեռ չկան։ Ստեղծեք ձեռքով կամ սկանավորեք գնորդի QR։",
+      "unnamedBuyer": "Անանուն կոնտակտ",
+      "noProject": "Առանց նախագծի",
+      "unassigned": "Չնշանակված",
+      "columns": {
+        "buyer": "Գնորդ",
+        "project": "Նախագիծ",
+        "status": "Կարգավիճակ",
+        "source": "Աղբյուր",
+        "assignee": "Պատասխանատու",
+        "updated": "Թարմացված"
+      },
+      "filters": {
+        "allStatuses": "Բոլորը",
+        "source": "Աղբյուր",
+        "allSources": "Բոլոր աղբյուրները",
+        "project": "Նախագիծ",
+        "allProjects": "Բոլոր նախագծերը"
+      },
+      "pagination": {
+        "previous": "Նախորդ",
+        "next": "Հաջորդ"
+      },
+      "statuses": {
+        "new_request": "Նոր",
+        "assigned": "Նշանակված",
+        "contacted": "Կապ հաստատված",
+        "follow_up_needed": "Հետևում",
+        "apartment_selected": "Բնակարան ընտրված",
+        "reserved": "Ամրագրված",
+        "converted": "Կնքված",
+        "closed": "Փակված",
+        "lost": "Կորած"
+      },
+      "sources": {
+        "buyer_project_request": "Գնորդի հայտ",
+        "builder_buyer_qr_scan": "QR սկան",
+        "manual_builder_entry": "Ձեռքով",
+        "event_interaction": "Միջոցառում"
+      },
+      "newDeal": {
+        "cta": "Նոր գործարք",
+        "title": "Նոր գործարք",
+        "contactName": "Անուն",
+        "contactPhone": "Հեռախոս",
+        "contactEmail": "Էլ․ փոստ",
+        "project": "Նախագիծ",
+        "projectOptional": "Առանց նախագծի",
+        "note": "Նշում",
+        "submit": "Ստեղծել գործարք",
+        "submitting": "Ստեղծվում է…",
+        "cancel": "Չեղարկել"
+      },
+      "validation": {
+        "contactName": "Մուտքագրեք անունը",
+        "phone": "Մուտքագրեք վավեր հեռախոսահամար",
+        "email": "Մուտքագրեք վավեր էլ․ փոստ"
+      },
+      "errors": {
+        "generic": "Ինչ-որ սխալ տեղի ունեցավ։ Կրկին փորձեք։"
+      },
+      "detail": {
+        "back": "← CRM",
+        "notFound": "Գործարքը չի գտնվել։",
+        "phone": "Հեռախոս",
+        "email": "Էլ․ փոստ",
+        "source": "Աղբյուր",
+        "created": "Ստեղծված",
+        "project": "Նախագիծ",
+        "statusTitle": "Կարգավիճակ",
+        "status": "Խողովակի կարգավիճակ",
+        "lostReason": "Կորստի պատճառ",
+        "lostReasonRequired": "Կորստի պատճառը պարտադիր է",
+        "apartmentRequired": "Նախ կցեք բնակարան",
+        "apartmentHint": "Ամրագրման / վաճառքի / ընտրության կարգավիճակների համար պետք է կցված բնակարան։",
+        "saveStatus": "Թարմացնել կարգավիճակը",
+        "assigneeTitle": "Պատասխանատու",
+        "assignee": "Պատասխանատու",
+        "unassigned": "Չնշանակված",
+        "saveAssignee": "Պահպանել",
+        "saving": "Պահպանվում է…",
+        "notesTitle": "Նշումներ",
+        "notesEmpty": "Նշումներ դեռ չկան",
+        "notePlaceholder": "Ներքին նշում…",
+        "addNote": "Ավելացնել նշում",
+        "activitiesTitle": "Գործողություններ",
+        "activitiesEmpty": "Գործողություններ դեռ չկան",
+        "activityType": "Տեսակ",
+        "activityDue": "Ժամկետ",
+        "addActivity": "Ավելացնել գործողություն",
+        "markDone": "Նշել կատարված",
+        "activityTypes": {
+          "call": "Զանգ",
+          "email": "Էլ․ փոստ",
+          "meeting": "Հանդիպում",
+          "send_offer": "Ուղարկել առաջարկ",
+          "follow_up": "Հետևում",
+          "status_update": "Կարգավիճակի փոփոխություն",
+          "other": "Այլ"
+        },
+        "apartmentsTitle": "Բնակարաններ",
+        "apartmentsEmpty": "Բնակարան դեռ ընտրված չէ",
+        "linkProject": "Նախագիծ",
+        "linkApartment": "Բնակարան",
+        "selectProject": "Ընտրեք նախագիծ",
+        "selectApartment": "Ընտրեք բնակարան",
+        "loadingApartments": "Բնակարանները բեռնվում են…",
+        "linkApartmentAction": "Կցել բնակարան",
+        "linkNeedsEmail": "Գործարքին բնակարան կցելու համար անհրաժեշտ է գնորդի էլ․ փոստ։",
+        "linkNote": "Բնակարանը կցված է գործարքի էջից",
+        "linkSuccess": "Բնակարանը կցված է",
+        "linkCreatedOtherDeal": "Կցված է այս գնորդի այլ բաց գործարքին",
+        "unnamedBuyer": "Անանուն կոնտակտ",
+        "primary": "Հիմնական",
+        "linkTypes": {
+          "interest": "Հետաքրքրություն",
+          "selected": "Ընտրված",
+          "reserved": "Ամրագրված",
+          "sold": "Վաճառված"
+        },
+        "requestsTitle": "Հայտերի պատմություն",
+        "requestsEmpty": "Հայտեր դեռ չկան",
+        "errors": {
+          "generic": "Ինչ-որ սխալ տեղի ունեցավ։ Կրկին փորձեք։"
+        }
+      }
+    },
+    "scanner": {
+      "title": "QR սկաներ",
+      "subtitle": "Սկանավորեք գնորդի QR-ը ցուցահանդեսում՝ CRM գործարք ստեղծելու համար",
+      "cameraDenied": "Տեսախցիկի հասանելիությունը մերժված է կամ անհասանելի է։",
+      "useManual": "Ստորև ձեռքով մուտքագրեք QR URL-ը կամ տոկենը։",
+      "resolving": "QR-ը ճանաչվում է…",
+      "manualLabel": "QR URL կամ տոկեն",
+      "manualPlaceholder": "https://…/qr/… կամ տոկեն",
+      "manualSubmit": "Ճանաչել",
+      "buyerBadge": "Գնորդ",
+      "phone": "Հեռախոս",
+      "email": "Էլ․ փոստ",
+      "projectOptional": "Նախագիծ (ոչ պարտադիր)",
+      "noProject": "Առանց նախագծի",
+      "createDeal": "Ստեղծել գործարք",
+      "creating": "Ստեղծվում է…",
+      "success": "Գործարքը ստեղծվել է սկանից։",
+      "openDeal": "Բացել գործարքը",
+      "scanAgain": "Սկանավորել մեկ այլ",
+      "errors": {
+        "notToonexpo": "Սա ToonExpo գնորդի QR չէ։",
+        "invalid": "Չհաջողվեց կարդալ ToonExpo QR տոկենը։",
+        "notBuyer": "Սա գնորդի գործողության QR չէ։",
+        "resolve": "Չհաջողվեց ճանաչել QR-ը։ Կրկին փորձեք։",
+        "create": "Չհաջողվեց ստեղծել գործարքը։ Կրկին փորձեք։"
       }
     }
   }
