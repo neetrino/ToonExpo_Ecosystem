@@ -22,7 +22,7 @@ In progress:
 
 Pending:
 
-- Wave 4: docs synchronization (MODULE_STATUS, PROGRESS, TECH_CARD, architecture layout), final full verification (lint/typecheck/test/build), Docker image build + boot check (needs OrbStack/Docker running).
+- Wave 4: docs synchronization (MODULE_STATUS, PROGRESS, TECH_CARD, architecture layout, README refresh — it is still Sprint-0 era; add links to DEPLOYMENT/SETTINGS/OPEN_QUESTIONS), final full verification (lint/typecheck/test/build), Docker image build + boot check (needs OrbStack/Docker running).
 - NEXT MAJOR STEP after Wave 4: performance/caching/scalability architecture review per `PERFORMANCE-CACHING-SCALABILITY-REVIEW-BRIEF.md` (repo root) — evidence-based, read-only review by a strong model; deliverable = review document + prioritized P0/P1/P2 plan; MUST run against the post-wave code, not mid-wave. Owner decision follows the review.
 - Pre-launch checklist and open decisions: see `docs/OPEN_QUESTIONS.md` (secrets rotation, prod Neon DB, first prod admin, design variant, domains, BOS outbound, post-v1 scope confirmation).
 - Deferred post-v1 (owner to confirm in OPEN_QUESTIONS Q6): admin homepage CMS, global admin audit log, admin cross-company catalog editing, public service-provider directory, PWA, BOS provisioning admin UI.
