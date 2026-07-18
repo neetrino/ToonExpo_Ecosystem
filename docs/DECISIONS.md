@@ -20,14 +20,23 @@
 - No paid tickets or payment/e-ticket flow in v1.
 - No broad ToonExpo data sync to BOS in v1.
 
+## Confirmed 2026-07-18 (Sprint 0 Foundation)
+
+- Auth uses httpOnly cookies with DB-backed sessions; NestJS + Passport; email+password with argon2; OAuth providers not in v1.
+- Cloudflare R2 for media storage.
+- Resend for email.
+- Sentry for error tracking.
+- GitHub Actions for CI.
+- Git strategy: trunk-based development, short feature branches merged to `main` via pull request, Conventional Commits (commitlint configured).
+- State management: TanStack Query for server data + local React state; Zustand only when proven necessary.
+- Neon PostgreSQL connected; local development uses Neon dev branch via `DATABASE_URL` in local `.env` (not committed); no docker-compose for database.
+- Sprint 0 (Foundation) started 2026-07-18.
+
 ## Pending Decisions
 
-- final auth approach;
-- database provider/account;
-- file storage provider/account;
-- email provider/account;
 - final domain/subdomain plan;
-- exact CI quality gates for first sprint.
+- Cloudflare R2, Resend, Sentry, Vercel and Google Cloud accounts/credentials;
+- adaptive rate, timeout and pool values based on environments.
 
 ## Source Docs
 

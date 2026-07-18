@@ -2,7 +2,7 @@
 
 ## Status
 
-Architecture baseline confirmed. Provider accounts, credentials and operational limits still require environment-specific confirmation.
+Core stack and foundation decisions confirmed (2026-07-18). Sprint 0 started. Provider credentials, staging/production domains and adaptive operational limits still require environment-specific confirmation.
 
 ## Project Size
 
@@ -10,7 +10,7 @@ Size C - large, layout: monorepo (`apps/*`, `packages/*`).
 
 ## Date
 
-2026-07-17
+2026-07-18
 
 ## Delivery Model
 
@@ -37,15 +37,15 @@ ToonExpo Ecosystem is a full production product. It is not a prototype or MVP. R
 | API | REST + OpenAPI | Confirmed | NestJS controllers are canonical. |
 | Database | PostgreSQL 18.x on Neon | Confirmed | Neon PostgreSQL 18 is production GA. |
 | ORM | Prisma ORM 7.x | Confirmed | Runtime database access from NestJS only. |
-| Authentication | NestJS Auth module + Passport | Proposed | Buyer and provisioned-account auth are backend-owned. |
+| Authentication | NestJS Auth module + Passport | Confirmed | Email+password with argon2; OAuth providers not in v1. |
 | i18n | next-intl | Confirmed | Armenian, Russian and English first. |
-| File storage | Cloudflare R2 | Proposed | Project, apartment, map and content media. |
-| Email | Resend | Proposed | Invitations and account flows. |
+| File storage | Cloudflare R2 | Confirmed | Project, apartment, map and content media. |
+| Email | Resend | Confirmed | Invitations and account flows. |
 | QR | Opaque server-side token + QR rendering | Confirmed | No personal data encoded in QR. |
-| Error tracking | Sentry | Proposed | Web and API error capture. |
+| Error tracking | Sentry | Confirmed | Web and API error capture. |
 | Frontend hosting | Vercel | Confirmed | Deploys `apps/web`. |
 | Backend hosting | Google Cloud Run | Confirmed | Deploys containerized `apps/api`. |
-| CI/CD | GitHub Actions | Proposed | Lint, typecheck, tests, builds and migrations. |
+| CI/CD | GitHub Actions | Confirmed | Lint, typecheck, tests, builds and migrations. |
 
 ## Frontend - `apps/web`
 
@@ -57,7 +57,7 @@ TypeScript 7.0 is current but is not selected at project start because 7.0 does 
 | Rendering | Next.js App Router, Server Components by default, Client Components where interactive |
 | Data access | Typed HTTP client calling the NestJS API |
 | Forms | React Hook Form + Zod for frontend feedback; NestJS repeats authoritative validation |
-| Server state | API-driven; React Query only where client revalidation is needed |
+| Server state | TanStack Query for server data + local React state; Zustand only when proven necessary |
 | i18n | next-intl with `hy`, `ru`, `en` and extensible locale configuration |
 | SEO | Next.js Metadata API and JSON-LD for public entities |
 | Forbidden | Prisma, SQL, direct PostgreSQL, product route handlers, backend Server Actions, authoritative auth/business logic |
@@ -91,6 +91,7 @@ Next.js Server Components may fetch the NestJS API. Server Actions must not impl
 | Runtime credentials | Pooled DML-only application role |
 | Migration credentials | Direct owner connection available only to migration jobs |
 | Seed data | Explicit dev/test seed scripts |
+| Local development | Neon dev branch via `DATABASE_URL` in local `.env` (not committed); no docker-compose for database |
 | Cache/queues | Not initially; introduce Redis only for a measured requirement |
 
 ## Authentication And Security
@@ -100,8 +101,9 @@ Next.js Server Components may fetch the NestJS API. Server Actions must not impl
 | Auth owner | NestJS API | Confirmed |
 | Roles | BigProjects Admin, Builder, Partner, Buyer/Visitor, Entrance Staff | Confirmed |
 | Account creation | Buyer self-registration; all other accounts admin/BOS provisioned | Confirmed |
-| Session transport | Backend-issued secure httpOnly cookies | Proposed |
-| Password hashing | argon2id | Confirmed when passwords are used |
+| Session transport | Backend-issued secure httpOnly cookies + DB-backed sessions | Confirmed |
+| Auth method | Email+password; OAuth providers not in v1 | Confirmed |
+| Password hashing | argon2id | Confirmed |
 | Authorization | NestJS guards plus company/resource ownership policies | Confirmed |
 | CORS/CSRF | Explicit allowlist and CSRF protection for cookie mutations | Confirmed |
 | Rate limits | Auth, QR, public request and provisioning endpoints | Proposed |
@@ -132,6 +134,14 @@ packages/
   config/               # shared build/lint/type configuration
 ```
 
+## Git Strategy
+
+| Parameter | Decision |
+|---|---|
+| Branching model | Trunk-based development |
+| Feature workflow | Short feature branches merged to `main` via pull request |
+| Commit convention | Conventional Commits; commitlint already configured |
+
 ## Non-Negotiable Runtime Boundary
 
 - Request flow: browser -> Next.js UI -> NestJS REST API -> Prisma -> PostgreSQL.
@@ -142,7 +152,6 @@ packages/
 
 ## Confirmation Still Needed
 
-- exact backend cookie/session or access/refresh-token strategy;
-- Neon, R2, Resend, Vercel and Google Cloud accounts/credentials;
 - staging and production domains;
+- Cloudflare R2, Resend, Sentry, Vercel and Google Cloud accounts/credentials;
 - adaptive rate, timeout and pool values based on environments.
