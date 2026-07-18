@@ -82,7 +82,11 @@ export default async function PartnerLayout({
       </header>
       <div className="mx-auto flex w-full max-w-content flex-col gap-8 px-6 py-8 md:flex-row">
         <aside className="w-full shrink-0 md:w-56">
-          <PartnerNav companyName={company.name} partnerName={partner.name} />
+          <PartnerNav
+            companyName={company.name}
+            partnerName={partner.name}
+            partnerType={partner.type}
+          />
         </aside>
         <main className="min-w-0 flex-1">{children}</main>
       </div>
