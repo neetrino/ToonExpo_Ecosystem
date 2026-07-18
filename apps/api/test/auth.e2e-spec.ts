@@ -211,6 +211,39 @@ describe("Auth endpoints (e2e)", () => {
     expect(cookieValue(csrfCookie as string)).toBe(csrfToken);
   });
 
+  it("rejects login with a foreign Origin and allows login without Origin", async () => {
+    const email = uniqueEmail("origin");
+    createdEmails.push(email);
+    const password = "password123";
+
+    await request(app.getHttpServer())
+      .post(`${API_V1_PREFIX}/auth/register`)
+      .send({
+        name: "Origin Buyer",
+        email,
+        phone: "+37491110005",
+        password,
+      })
+      .expect(201);
+
+    await request(app.getHttpServer())
+      .post(`${API_V1_PREFIX}/auth/login`)
+      .set("Origin", "https://evil.example.com")
+      .send({ email, password })
+      .expect(403);
+
+    await request(app.getHttpServer())
+      .post(`${API_V1_PREFIX}/auth/login`)
+      .set("Origin", CORS_ORIGIN)
+      .send({ email, password })
+      .expect(200);
+
+    await request(app.getHttpServer())
+      .post(`${API_V1_PREFIX}/auth/login`)
+      .send({ email, password })
+      .expect(200);
+  });
+
   it("rejects wrong password with the same generic error", async () => {
     const email = uniqueEmail("wrong-pass");
     createdEmails.push(email);
