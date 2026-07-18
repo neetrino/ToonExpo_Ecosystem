@@ -2,81 +2,112 @@ import type {
   ApartmentAvailabilitySummary,
   BuildingSummary,
   FloorApartmentSummary,
+  FloorSummary,
 } from "@toonexpo/contracts";
 import { getLocale, getTranslations } from "next-intl/server";
 
 import { formatCatalogPrice } from "@/features/catalog/utils/format-price";
 import { Link } from "@/i18n/navigation";
 
-type ProjectBuildingsProps = {
+type BuildingFloorsListProps = {
   projectId: string;
-  buildings: BuildingSummary[];
+  building: BuildingSummary;
 };
 
 /**
- * Project buildings → floors → apartment rows with status and price rules.
+ * Floor and apartment list fallback for a building page.
  */
-export const ProjectBuildings = async ({
+export const BuildingFloorsList = async ({
   projectId,
-  buildings,
-}: ProjectBuildingsProps) => {
+  building,
+}: BuildingFloorsListProps) => {
   const t = await getTranslations("Catalog");
   const locale = await getLocale();
 
-  if (buildings.length === 0) {
+  if (building.floors.length === 0) {
     return (
-      <p className="text-sm text-ink-secondary">{t("project.noBuildings")}</p>
+      <p className="text-sm text-ink-secondary">{t("building.noFloors")}</p>
     );
   }
 
   return (
-    <div className="flex flex-col gap-8">
-      {buildings.map((building) => (
-        <section key={building.id} className="rounded-md bg-surface p-4 sm:p-6">
-          <div className="mb-4 flex flex-wrap items-baseline justify-between gap-2">
-            <Link
-              href={`/projects/${projectId}/buildings/${building.id}`}
-              className="font-brand text-lg font-semibold text-ink hover:text-brand"
-            >
-              {building.name}
-            </Link>
-            <AvailabilityLine
-              label={t("availability.summary")}
-              availability={building.availability}
-              t={t}
-            />
-          </div>
-
-          <div className="flex flex-col gap-6">
-            {building.floors.map((floor) => (
-              <div key={floor.id}>
-                <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
-                  <h4 className="text-sm font-semibold text-ink">
-                    {floor.displayLabel ??
-                      t("project.floor", { number: floor.number })}
-                  </h4>
-                  <AvailabilityLine
-                    label={t("availability.summary")}
-                    availability={floor.availability}
-                    t={t}
-                  />
-                </div>
-                <ul className="divide-y divide-border overflow-hidden rounded-sm border border-border bg-background">
-                  {floor.apartments.map((apartment) => (
-                    <ApartmentRow
-                      key={apartment.id}
-                      apartment={apartment}
-                      locale={locale}
-                      t={t}
-                    />
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </section>
+    <div className="flex flex-col gap-6">
+      {building.floors.map((floor) => (
+        <FloorSection
+          key={floor.id}
+          projectId={projectId}
+          buildingId={building.id}
+          floor={floor}
+          locale={locale}
+          t={t}
+        />
       ))}
     </div>
+  );
+};
+
+type FloorSectionProps = {
+  projectId: string;
+  buildingId: string;
+  floor: FloorSummary;
+  locale: string;
+  t: Awaited<ReturnType<typeof getTranslations>>;
+};
+
+const FloorSection = ({
+  projectId,
+  buildingId,
+  floor,
+  locale,
+  t,
+}: FloorSectionProps) => {
+  return (
+    <div>
+      <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
+        <Link
+          href={`/projects/${projectId}/buildings/${buildingId}/floors/${floor.id}`}
+          className="text-sm font-semibold text-ink hover:text-brand"
+        >
+          {floor.displayLabel ?? t("project.floor", { number: floor.number })}
+        </Link>
+        <AvailabilityLine
+          label={t("availability.summary")}
+          availability={floor.availability}
+          t={t}
+        />
+      </div>
+      <ul className="divide-y divide-border overflow-hidden rounded-sm border border-border bg-background">
+        {floor.apartments.map((apartment) => (
+          <ApartmentRow key={apartment.id} apartment={apartment} locale={locale} t={t} />
+        ))}
+      </ul>
+    </div>
+  );
+};
+
+type FloorApartmentsListProps = {
+  floor: FloorSummary;
+};
+
+/**
+ * Apartment list fallback for a floor page.
+ */
+export const FloorApartmentsList = async ({ floor }: FloorApartmentsListProps) => {
+  const t = await getTranslations("Catalog");
+  const locale = await getLocale();
+
+  if (floor.apartments.length === 0) {
+    return (
+      <p className="text-sm text-ink-secondary">{t("floor.noApartments")}</p>
+    );
+  }
+
+  return (
+    <ul className="divide-y divide-border overflow-hidden rounded-sm border border-border bg-background">
+      {floor.apartments.map((apartment) => (
+        <ApartmentRow key={apartment.id} apartment={apartment} locale={locale} t={t} />
+      ))}
+    </ul>
   );
 };
 

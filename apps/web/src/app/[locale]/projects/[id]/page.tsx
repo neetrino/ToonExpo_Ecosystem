@@ -8,6 +8,12 @@ import { getProject } from "@/features/catalog/api/catalog-api";
 import { ProjectBuildings } from "@/features/catalog/components/project-buildings";
 import { RequestPriceButton } from "@/features/catalog/components/request-price-button";
 import { SiteFooter } from "@/features/catalog/components/site-footer";
+import { listProjectVisualCanvases } from "@/features/visual-map/api/public-visual-map-api";
+import { PublicVisualMap } from "@/features/visual-map/components/public-visual-map";
+import {
+  buildProjectBuildingHref,
+  pickPrimaryVisualCanvas,
+} from "@/features/visual-map/utils/public-visual-map";
 import {
   formatCompactPrice,
   formatPriceRange,
@@ -55,6 +61,10 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
   const t = await getTranslations("Catalog");
   const activeLocale = await getLocale();
+  const headerStore = await headers();
+  const cookieHeader = headerStore.get("cookie") ?? undefined;
+  const visualResponse = await listProjectVisualCanvases(id, { cookieHeader });
+  const visualCanvas = pickPrimaryVisualCanvas(visualResponse?.data ?? []);
   const location =
     project.locationText ??
     [project.district, project.city].filter(Boolean).join(", ");
@@ -159,7 +169,16 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             </Link>
           </div>
 
-          <ProjectBuildings buildings={project.buildings} />
+          {visualCanvas ? (
+            <PublicVisualMap
+              canvas={visualCanvas}
+              buildTargetHref={(hotspot) =>
+                buildProjectBuildingHref(project.id, hotspot)
+              }
+            />
+          ) : null}
+
+          <ProjectBuildings projectId={project.id} buildings={project.buildings} />
         </div>
       </main>
       <SiteFooter />
