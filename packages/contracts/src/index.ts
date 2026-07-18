@@ -35,6 +35,7 @@ export type {
 export type {
   ApartmentAvailabilitySummary,
   ApartmentDetail,
+  ApartmentPriceOverlayItem,
   ApartmentSalesStatus,
   BuilderDetail,
   BuilderSummary,
@@ -50,6 +51,9 @@ export type {
   PriceVisibility,
   ProjectDetail,
   ProjectListItem,
+  ProjectPriceRangeOverlay,
+  ProjectPriceRangeOverlayListResponse,
+  ProjectPricesOverlay,
   PublicationStatus,
 } from "./catalog.js";
 

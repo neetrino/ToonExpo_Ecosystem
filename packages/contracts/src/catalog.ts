@@ -199,6 +199,40 @@ export type ApartmentDetail = {
   };
 };
 
+/**
+ * Authenticated price overlay item: an apartment whose numeric price is
+ * hidden from anonymous viewers (`visible_after_login`) but visible to
+ * the current session.
+ */
+export type ApartmentPriceOverlayItem = {
+  id: string;
+  price: string;
+  priceCurrency: string;
+};
+
+/**
+ * Authenticated min/max price range for one project (includes
+ * `visible_after_login` apartments, matching the legacy logged-in view).
+ */
+export type ProjectPriceRangeOverlay = {
+  projectId: string;
+  minPrice: string | null;
+  maxPrice: string | null;
+  priceCurrency: string | null;
+};
+
+/**
+ * Full authenticated price overlay for a project detail scope:
+ * range plus per-apartment prices for `visible_after_login` units.
+ */
+export type ProjectPricesOverlay = ProjectPriceRangeOverlay & {
+  apartments: ApartmentPriceOverlayItem[];
+};
+
+export type ProjectPriceRangeOverlayListResponse = {
+  data: ProjectPriceRangeOverlay[];
+};
+
 export type ListProjectsQuery = {
   page?: number;
   pageSize?: number;
