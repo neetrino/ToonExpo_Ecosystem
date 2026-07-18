@@ -148,6 +148,32 @@
       "notFoundTitle": "Проект не найден",
       "metaFallback": "{name} — карточка проекта на ToonExpo"
     },
+    "building": {
+      "floors": "Этажи",
+      "noFloors": "Пока нет опубликованных этажей.",
+      "backToProject": "← К проекту",
+      "notFoundTitle": "Корпус не найден"
+    },
+    "floor": {
+      "apartments": "Квартиры",
+      "noApartments": "Пока нет опубликованных квартир.",
+      "backToBuilding": "← К корпусу",
+      "notFoundTitle": "Этаж не найден"
+    },
+    "visualMap": {
+      "title": "Визуальная карта",
+      "alt": "Визуальная карта проекта",
+      "viewAsList": "Смотреть списком ниже",
+      "hotspot": {
+        "close": "Закрыть",
+        "openTarget": "Открыть",
+        "targetTypes": {
+          "building": "Корпус",
+          "floor": "Этаж",
+          "apartment": "Квартира"
+        }
+      }
+    },
     "apartment": {
       "unit": "Кв. {number}",
       "floor": "Этаж: {floor}",
@@ -1367,6 +1393,96 @@
       },
       "errors": {
         "generic": "Что-то пошло не так. Попробуйте ещё раз."
+      }
+    },
+    "visualMap": {
+      "title": "Визуальные карты",
+      "subtitle": "Рендеры проекта, карты корпусов и поэтажные планы с навигационными точками",
+      "loading": "Загрузка визуальных карт…",
+      "empty": "Визуальных canvas пока нет. Создайте и добавьте точки.",
+      "newCanvas": "Новый canvas",
+      "cancelCreate": "Отмена",
+      "untitled": "Canvas без названия",
+      "primaryYes": "Основной",
+      "primaryNo": "—",
+      "editCanvas": "Редактировать",
+      "unknownContext": "Неизвестно",
+      "contextTypes": {
+        "project": "Проект",
+        "building": "Корпус",
+        "floor": "Этаж"
+      },
+      "columns": {
+        "title": "Название",
+        "context": "Контекст",
+        "primary": "Основной",
+        "status": "Статус",
+        "hotspots": "Точки",
+        "actions": "Действия"
+      },
+      "form": {
+        "contextType": "Тип контекста",
+        "contextEntity": "Объект контекста",
+        "contextProject": "Проект",
+        "contextBuilding": "Корпус",
+        "contextFloor": "Этаж",
+        "mediaAssetId": "URL изображения или asset id",
+        "mediaHint": "Вставьте публичный https:// URL изображения, пока загрузка в R2 недоступна.",
+        "title": "Название",
+        "create": "Создать canvas",
+        "creating": "Создание…",
+        "cancel": "Отмена"
+      },
+      "editor": {
+        "loading": "Загрузка canvas…",
+        "notFound": "Визуальный canvas не найден",
+        "back": "← К проекту",
+        "untitled": "Canvas без названия",
+        "publish": "Опубликовать canvas",
+        "archive": "Архивировать canvas",
+        "hotspotPanel": "Настройки точки",
+        "hotspotEmpty": "Выберите или разместите точку",
+        "hotspotHint": "Нажмите на изображение, чтобы поставить точку, или выберите из списка.",
+        "map": {
+          "noImage": "Добавьте корректный URL изображения для canvas.",
+          "alt": "Визуальный canvas",
+          "hint": "Нажмите на изображение, чтобы поставить точку. Нажмите на маркер для редактирования."
+        },
+        "hotspotForm": {
+          "target": "Цель",
+          "selectTarget": "Выберите цель…",
+          "label": "Подпись",
+          "xPercent": "X (%)",
+          "yPercent": "Y (%)",
+          "markerStyle": "Стиль маркера (необяз.)",
+          "publication": "Публикация",
+          "create": "Создать точку",
+          "save": "Сохранить точку",
+          "saving": "Сохранение…",
+          "delete": "Удалить точку",
+          "targetStatusHint": "Привяжите к опубликованной цели или архивируйте эту точку.",
+          "targetStatus": {
+            "unpublished": "Цель не опубликована",
+            "missing": "Цель отсутствует"
+          },
+          "publicationStatuses": {
+            "draft": "Черновик",
+            "published": "Опубликовано",
+            "archived": "В архиве"
+          }
+        },
+        "hotspotList": {
+          "empty": "Точек пока нет. Нажмите на изображение, чтобы добавить.",
+          "targetStatus": {
+            "unpublished": "Неопубликованная цель",
+            "missing": "Отсутствующая цель"
+          },
+          "publicationStatuses": {
+            "draft": "Черновик",
+            "published": "Опубликовано",
+            "archived": "В архиве"
+          }
+        }
       }
     },
     "apartments": {

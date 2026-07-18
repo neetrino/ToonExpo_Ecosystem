@@ -148,6 +148,32 @@
       "notFoundTitle": "Նախագիծը չի գտնվել",
       "metaFallback": "{name} — նախագծի էջ ToonExpo-ում"
     },
+    "building": {
+      "floors": "Հարկեր",
+      "noFloors": "Դեռ հրապարակված հարկեր չկան։",
+      "backToProject": "← Վերադառնալ նախագծին",
+      "notFoundTitle": "Շենքը չի գտնվել"
+    },
+    "floor": {
+      "apartments": "Բնակարաններ",
+      "noApartments": "Դեռ հրապարակված բնակարաններ չկան։",
+      "backToBuilding": "← Վերադառնալ շենքին",
+      "notFoundTitle": "Հարկը չի գտնվել"
+    },
+    "visualMap": {
+      "title": "Տեսական քարտեզ",
+      "alt": "Նախագծի տեսական քարտեզ",
+      "viewAsList": "Դիտել ցանկով ստորև",
+      "hotspot": {
+        "close": "Փակել",
+        "openTarget": "Բացել մանրամասները",
+        "targetTypes": {
+          "building": "Շենք",
+          "floor": "Հարկ",
+          "apartment": "Բնակարան"
+        }
+      }
+    },
     "apartment": {
       "unit": "Բն. {number}",
       "floor": "Հարկ՝ {floor}",
@@ -1367,6 +1393,96 @@
       },
       "errors": {
         "generic": "Ինչ-որ սխալ տեղի ունեցավ։ Կրկին փորձեք։"
+      }
+    },
+    "visualMap": {
+      "title": "Տեսական քարտեզներ",
+      "subtitle": "Նախագծի ռենդերներ, շենքերի քարտեզներ և հատակագծեր՝ հղման կետերով",
+      "loading": "Բեռնվում են տեսական քարտեզները…",
+      "empty": "Դեռ տեսական canvas չկա։ Ստեղծեք և ավելացրեք կետեր։",
+      "newCanvas": "Նոր canvas",
+      "cancelCreate": "Չեղարկել",
+      "untitled": "Անվերնագիր canvas",
+      "primaryYes": "Հիմնական",
+      "primaryNo": "—",
+      "editCanvas": "Խմբագրել",
+      "unknownContext": "Անհայտ",
+      "contextTypes": {
+        "project": "Նախագիծ",
+        "building": "Շենք",
+        "floor": "Հարկ"
+      },
+      "columns": {
+        "title": "Վերնագիր",
+        "context": "Կոնտեքստ",
+        "primary": "Հիմնական",
+        "status": "Կարգավիճակ",
+        "hotspots": "Կետեր",
+        "actions": "Գործողություն"
+      },
+      "form": {
+        "contextType": "Կոնտեքստի տեսակ",
+        "contextEntity": "Կոնտեքստի օբյեկտ",
+        "contextProject": "Նախագիծ",
+        "contextBuilding": "Շենք",
+        "contextFloor": "Հարկ",
+        "mediaAssetId": "Պատկերի URL կամ asset id",
+        "mediaHint": "Տեղադրեք հրապարակային https:// պատկերի URL՝ մինչև R2 վերբեռնումը հասանելի լինի։",
+        "title": "Վերնագիր",
+        "create": "Ստեղծել canvas",
+        "creating": "Ստեղծվում է…",
+        "cancel": "Չեղարկել"
+      },
+      "editor": {
+        "loading": "Canvas-ը բեռնվում է…",
+        "notFound": "Տեսական canvas-ը չի գտնվել",
+        "back": "← Վերադառնալ նախագիծ",
+        "untitled": "Անվերնագիր canvas",
+        "publish": "Հրապարակել canvas",
+        "archive": "Արխիվացնել canvas",
+        "hotspotPanel": "Կետի կարգավորումներ",
+        "hotspotEmpty": "Ընտրեք կամ տեղադրեք կետ",
+        "hotspotHint": "Սեղմեք պատկերի վրա՝ կետ տեղադրելու համար, կամ ընտրեք ցանկից։",
+        "map": {
+          "noImage": "Canvas-ի համար ավելացրեք վավեր պատկերի URL։",
+          "alt": "Տեսական canvas",
+          "hint": "Սեղմեք պատկերի վրա՝ կետ տեղադրելու համար։ Սեղմեք կետին՝ խմբագրելու համար։"
+        },
+        "hotspotForm": {
+          "target": "Նշանակ점",
+          "selectTarget": "Ընտրեք նշանակ점…",
+          "label": "Պիտակ",
+          "xPercent": "X (%)",
+          "yPercent": "Y (%)",
+          "markerStyle": "Կետի ոճ (ընտրովի)",
+          "publication": "Հրապարակում",
+          "create": "Ստեղծել կետ",
+          "save": "Պահպանել կետը",
+          "saving": "Պահպանում…",
+          "delete": "Ջնջել կետը",
+          "targetStatusHint": "Կապեք վավեր հրապարակված նշանակ점ի հետ կամ արխիվացրեք այս կետը։",
+          "targetStatus": {
+            "unpublished": "Նշանակ점ը հրապարակված չէ",
+            "missing": "Նշանակ점ը բացակայում է"
+          },
+          "publicationStatuses": {
+            "draft": "Սևագիր",
+            "published": "Հրապարակված",
+            "archived": "Արխիվ"
+          }
+        },
+        "hotspotList": {
+          "empty": "Դեռ կետեր չկան։ Սեղմեք պատկերի վրա՝ ավելացնելու համար։",
+          "targetStatus": {
+            "unpublished": "Չհրապարակված նշանակ점",
+            "missing": "Բացակայող նշանակ점"
+          },
+          "publicationStatuses": {
+            "draft": "Սևագիր",
+            "published": "Հրապարակված",
+            "archived": "Արխիվ"
+          }
+        }
       }
     },
     "apartments": {

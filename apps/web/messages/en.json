@@ -148,6 +148,32 @@
       "notFoundTitle": "Project not found",
       "metaFallback": "{name} — project details on ToonExpo"
     },
+    "building": {
+      "floors": "Floors",
+      "noFloors": "No published floors yet.",
+      "backToProject": "← Back to project",
+      "notFoundTitle": "Building not found"
+    },
+    "floor": {
+      "apartments": "Apartments",
+      "noApartments": "No published apartments yet.",
+      "backToBuilding": "← Back to building",
+      "notFoundTitle": "Floor not found"
+    },
+    "visualMap": {
+      "title": "Site map",
+      "alt": "Project visual map",
+      "viewAsList": "View as list below",
+      "hotspot": {
+        "close": "Close",
+        "openTarget": "Open details",
+        "targetTypes": {
+          "building": "Building",
+          "floor": "Floor",
+          "apartment": "Apartment"
+        }
+      }
+    },
     "apartment": {
       "unit": "Apt. {number}",
       "floor": "Floor: {floor}",
@@ -1541,6 +1567,96 @@
       },
       "errors": {
         "generic": "Something went wrong. Please try again."
+      }
+    },
+    "visualMap": {
+      "title": "Visual maps",
+      "subtitle": "Site renders, building maps, and floorplans with navigation hotspots",
+      "loading": "Loading visual maps…",
+      "empty": "No visual canvases yet. Create one to add hotspots.",
+      "newCanvas": "New canvas",
+      "cancelCreate": "Cancel",
+      "untitled": "Untitled canvas",
+      "primaryYes": "Primary",
+      "primaryNo": "—",
+      "editCanvas": "Edit",
+      "unknownContext": "Unknown",
+      "contextTypes": {
+        "project": "Project",
+        "building": "Building",
+        "floor": "Floor"
+      },
+      "columns": {
+        "title": "Title",
+        "context": "Context",
+        "primary": "Primary",
+        "status": "Status",
+        "hotspots": "Hotspots",
+        "actions": "Actions"
+      },
+      "form": {
+        "contextType": "Context type",
+        "contextEntity": "Context entity",
+        "contextProject": "Project",
+        "contextBuilding": "Building",
+        "contextFloor": "Floor",
+        "mediaAssetId": "Image URL or asset id",
+        "mediaHint": "Paste a public https:// image URL until R2 upload is available.",
+        "title": "Title",
+        "create": "Create canvas",
+        "creating": "Creating…",
+        "cancel": "Cancel"
+      },
+      "editor": {
+        "loading": "Loading canvas…",
+        "notFound": "Visual canvas not found",
+        "back": "← Back to project",
+        "untitled": "Untitled canvas",
+        "publish": "Publish canvas",
+        "archive": "Archive canvas",
+        "hotspotPanel": "Hotspot settings",
+        "hotspotEmpty": "Select or place a hotspot",
+        "hotspotHint": "Click the image to place a hotspot, or select one from the list.",
+        "map": {
+          "noImage": "Add a valid image URL on the canvas to start placing hotspots.",
+          "alt": "Visual canvas",
+          "hint": "Click the image to place a hotspot. Click a marker to edit it."
+        },
+        "hotspotForm": {
+          "target": "Target",
+          "selectTarget": "Select target…",
+          "label": "Label",
+          "xPercent": "X (%)",
+          "yPercent": "Y (%)",
+          "markerStyle": "Marker style (optional)",
+          "publication": "Publication",
+          "create": "Create hotspot",
+          "save": "Save hotspot",
+          "saving": "Saving…",
+          "delete": "Delete hotspot",
+          "targetStatusHint": "Relink to a valid published target or archive this hotspot.",
+          "targetStatus": {
+            "unpublished": "Target is not published",
+            "missing": "Target is missing"
+          },
+          "publicationStatuses": {
+            "draft": "Draft",
+            "published": "Published",
+            "archived": "Archived"
+          }
+        },
+        "hotspotList": {
+          "empty": "No hotspots yet. Click the image to add one.",
+          "targetStatus": {
+            "unpublished": "Unpublished target",
+            "missing": "Missing target"
+          },
+          "publicationStatuses": {
+            "draft": "Draft",
+            "published": "Published",
+            "archived": "Archived"
+          }
+        }
       }
     },
     "apartments": {
