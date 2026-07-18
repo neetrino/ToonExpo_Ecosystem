@@ -36,6 +36,7 @@ export type {
   ApartmentSalesStatus,
   BuilderSummary,
   BuildingSummary,
+  FloorApartmentSummary,
   FloorSummary,
   ListProjectsQuery,
   MediaAssetSummary,

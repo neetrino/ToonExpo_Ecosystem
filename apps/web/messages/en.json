@@ -2,15 +2,160 @@
   "HomePage": {
     "brand": "ToonExpo",
     "tagline": "Real estate exhibition platform for Armenia",
-    "description": "Sprint 0 shell — public site, buyer area and builder portal foundation.",
+    "description": "Discover new developments, builders and apartments across Armenia.",
     "apiStatusLabel": "API status",
     "apiUnavailable": "API unavailable",
-    "languageLabel": "Language"
+    "languageLabel": "Language",
+    "meta": {
+      "title": "ToonExpo — Find your next home",
+      "description": "Public catalog of new developments, apartments and builders in Armenia."
+    },
+    "hero": {
+      "eyebrow": "Discover your next home",
+      "title": "Toon Expo",
+      "findProject": "Find a project",
+      "searchLabel": "Search by city",
+      "searchPlaceholder": "Project name, builder, or city…",
+      "search": "Search",
+      "explore": "Explore Projects",
+      "register": "Register Free"
+    },
+    "stats": {
+      "badge": "Market pulse",
+      "projects": "Projects",
+      "projectsHint": "Published now",
+      "listings": "Listings",
+      "availableHint": "{count} available",
+      "builders": "Builders",
+      "buildersHint": "Active partners",
+      "cities": "Cities",
+      "citiesHint": "Coverage"
+    },
+    "featured": {
+      "eyebrow": "New developments",
+      "title": "New developments to watch.",
+      "viewAll": "View all →",
+      "empty": "No published projects yet."
+    },
+    "builders": {
+      "eyebrow": "Partners",
+      "title": "Trusted builders",
+      "viewAll": "View all →",
+      "empty": "No builders yet."
+    }
   },
   "Nav": {
+    "main": "Main navigation",
+    "menu": "Open menu",
+    "projects": "Projects",
+    "builders": "Builders",
     "login": "Sign in",
     "register": "Register",
     "loading": "…"
+  },
+  "Footer": {
+    "tagline": "ToonExpo connects buyers with verified new developments across Armenia.",
+    "marketplace": "Marketplace",
+    "company": "Company",
+    "links": {
+      "projects": "Projects",
+      "builders": "Builders",
+      "register": "Register",
+      "login": "Sign in"
+    },
+    "trust": "Verified listings · GDPR-ready · Encrypted in transit",
+    "copyright": "© 2026 Toon Expo"
+  },
+  "Catalog": {
+    "price": {
+      "from": "from",
+      "onRequest": "Price on request"
+    },
+    "status": {
+      "available": "Available",
+      "reserved": "Reserved",
+      "sold": "Sold"
+    },
+    "availability": {
+      "total": "Units",
+      "available": "Available",
+      "reserved": "Reserved",
+      "sold": "Sold",
+      "summary": "Availability",
+      "availableCount": "{count} free"
+    },
+    "actions": {
+      "details": "Details",
+      "viewProjects": "View projects",
+      "viewProject": "View project",
+      "backToProjects": "← All projects",
+      "requestPrice": "Request price",
+      "comingSoon": "Coming soon"
+    },
+    "filters": {
+      "rooms": "Rooms",
+      "minPrice": "Min price",
+      "maxPrice": "Max price",
+      "salesStatus": "Status",
+      "any": "Any",
+      "pricePlaceholder": "AMD",
+      "apply": "Apply"
+    },
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next"
+    },
+    "projects": {
+      "title": "Projects",
+      "subtitle": "{count, plural, =0 {No projects} one {# project} other {# projects}}",
+      "empty": "No projects match these filters.",
+      "meta": {
+        "title": "Projects — ToonExpo",
+        "description": "Browse published residential projects with prices and availability."
+      }
+    },
+    "project": {
+      "about": "About the project",
+      "units": "Buildings & apartments",
+      "priceRange": "Price range",
+      "noDescription": "Description coming soon.",
+      "noBuildings": "No published buildings yet.",
+      "floor": "Floor {number}",
+      "notFoundTitle": "Project not found",
+      "metaFallback": "{name} — project details on ToonExpo"
+    },
+    "apartment": {
+      "unit": "Apt. {number}",
+      "floor": "Floor: {floor}",
+      "rooms": "{count, plural, one {# room} other {# rooms}}",
+      "area": "{area} m²",
+      "statusLabel": "Status",
+      "roomsLabel": "Rooms",
+      "areaLabel": "Area",
+      "bedroomsLabel": "Bedrooms",
+      "bathroomsLabel": "Bathrooms",
+      "noPlan": "Floor plan coming soon",
+      "notFoundTitle": "Apartment not found",
+      "metaTitle": "Apt. {number} — {project}",
+      "metaFallback": "Apartment {number} in {project}"
+    },
+    "builders": {
+      "projectCount": "{count, plural, =0 {No projects} one {# project} other {# projects}}"
+    },
+    "buildersPage": {
+      "title": "Builders",
+      "subtitle": "{count, plural, =0 {No builders} one {# builder} other {# builders}}",
+      "empty": "No active builders yet.",
+      "meta": {
+        "title": "Builders — ToonExpo",
+        "description": "Active development companies with published projects on ToonExpo."
+      }
+    }
+  },
+  "NotFound": {
+    "title": "Page not found",
+    "description": "This page does not exist or is no longer published.",
+    "home": "Back to home"
   },
   "Auth": {
     "fields": {

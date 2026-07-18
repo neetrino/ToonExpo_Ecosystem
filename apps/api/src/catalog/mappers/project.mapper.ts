@@ -1,5 +1,7 @@
 import type {
   ApartmentAvailabilitySummary,
+  FloorApartmentSummary,
+  PriceVisibility,
   ProjectDetail,
   ProjectListItem,
 } from "@toonexpo/contracts";
@@ -9,6 +11,7 @@ import { DEFAULT_CATALOG_CURRENCY } from "../catalog.constants.js";
 import {
   decimalToString,
   emptyAvailability,
+  shouldRevealPublicPrice,
   summarizeSalesStatuses,
   toMediaSummary,
 } from "./catalog.mapper.js";
@@ -63,9 +66,42 @@ type ProjectDetailSource = ProjectListSource & {
       name: string | null;
       displayLabel: string | null;
       displayOrder: number;
-      apartments: Array<{ salesStatus: ApartmentSalesStatus }>;
+      apartments: Array<{
+        id: string;
+        number: string;
+        salesStatus: ApartmentSalesStatus;
+        rooms: number | null;
+        areaTotal: Prisma.Decimal | null;
+        price: Prisma.Decimal | null;
+        priceCurrency: string;
+        priceVisibility: string;
+      }>;
     }>;
   }>;
+};
+
+const mapFloorApartment = (apartment: {
+  id: string;
+  number: string;
+  salesStatus: ApartmentSalesStatus;
+  rooms: number | null;
+  areaTotal: Prisma.Decimal | null;
+  price: Prisma.Decimal | null;
+  priceCurrency: string;
+  priceVisibility: string;
+}): FloorApartmentSummary => {
+  const revealPrice = shouldRevealPublicPrice(apartment.priceVisibility);
+
+  return {
+    id: apartment.id,
+    number: apartment.number,
+    salesStatus: apartment.salesStatus,
+    rooms: apartment.rooms,
+    areaTotal: decimalToString(apartment.areaTotal),
+    price: revealPrice ? decimalToString(apartment.price) : null,
+    priceCurrency: apartment.priceCurrency,
+    priceVisibility: apartment.priceVisibility as PriceVisibility,
+  };
 };
 
 const statusesToSummary = (
@@ -174,6 +210,7 @@ export const mapProjectDetail = (project: ProjectDetailSource): ProjectDetail =>
         displayLabel: floor.displayLabel,
         displayOrder: floor.displayOrder,
         availability: statusesToSummary(floor.apartments),
+        apartments: floor.apartments.map(mapFloorApartment),
       })),
     })),
     minPrice: prices.minPrice,

@@ -83,7 +83,17 @@ export class ProjectsService {
               include: {
                 apartments: {
                   where: publishedApartmentWhere(),
-                  select: { salesStatus: true },
+                  orderBy: [{ number: "asc" }],
+                  select: {
+                    id: true,
+                    number: true,
+                    salesStatus: true,
+                    rooms: true,
+                    areaTotal: true,
+                    price: true,
+                    priceCurrency: true,
+                    priceVisibility: true,
+                  },
                 },
               },
             },

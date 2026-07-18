@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Inter, Outfit } from "next/font/google";
+import { Inter, Outfit, Syne } from "next/font/google";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -19,6 +19,14 @@ const outfit = Outfit({
   subsets: ["latin", "latin-ext"],
   variable: "--font-outfit",
   display: "swap",
+});
+
+/** Wide display face approximating Variant A BBH Bartle (not on Google Fonts). */
+const syne = Syne({
+  subsets: ["latin", "latin-ext"],
+  variable: "--font-syne",
+  display: "swap",
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 type LocaleLayoutProps = {
@@ -44,7 +52,10 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} className={`${inter.variable} ${outfit.variable}`}>
+    <html
+      lang={locale}
+      className={`${inter.variable} ${outfit.variable} ${syne.variable}`}
+    >
       <body className="min-h-screen font-ui antialiased">
         <NextIntlClientProvider messages={messages}>
           <QueryProvider>{children}</QueryProvider>

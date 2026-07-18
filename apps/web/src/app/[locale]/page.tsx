@@ -1,38 +1,48 @@
+import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
-import { getHealth } from "@/shared/api/health";
-import { ApiStatus } from "@/shared/ui/api-status";
-import { SiteHeader } from "@/shared/ui/site-header";
+import { listBuilders, listProjects } from "@/features/catalog/api/catalog-api";
+import { FeaturedProjects } from "@/features/catalog/components/featured-projects";
+import { HomeBuilders } from "@/features/catalog/components/home-builders";
+import { HomeHero } from "@/features/catalog/components/home-hero";
+import { HomeStats } from "@/features/catalog/components/home-stats";
+import { SiteFooter } from "@/features/catalog/components/site-footer";
 
 type HomePageProps = {
   params: Promise<{ locale: string }>;
+};
+
+export const generateMetadata = async ({
+  params,
+}: HomePageProps): Promise<Metadata> => {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "HomePage" });
+
+  return {
+    title: t("meta.title"),
+    description: t("meta.description"),
+  };
 };
 
 export default async function HomePage({ params }: HomePageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const t = await getTranslations("HomePage");
-  const health = await getHealth();
+  const [projectsResponse, builders] = await Promise.all([
+    listProjects({ page: 1, pageSize: 4 }),
+    listBuilders(),
+  ]);
 
   return (
     <div className="min-h-screen bg-background">
-      <SiteHeader />
-      <main className="mx-auto flex w-full max-w-3xl flex-col gap-10 px-6 py-16">
-        <header className="flex flex-col gap-4">
-          <p className="font-brand text-4xl font-bold tracking-tight text-ink">
-            {t("brand")}
-          </p>
-          <h1 className="text-xl font-medium text-ink">{t("tagline")}</h1>
-          <p className="max-w-2xl text-base leading-relaxed text-ink-secondary">
-            {t("description")}
-          </p>
-        </header>
-
-        <section aria-label={t("apiStatusLabel")}>
-          <ApiStatus health={health} />
-        </section>
-      </main>
+      <HomeHero />
+      <HomeStats
+        projects={projectsResponse.data}
+        builderCount={builders.length}
+      />
+      <FeaturedProjects projects={projectsResponse.data} />
+      <HomeBuilders builders={builders} />
+      <SiteFooter />
     </div>
   );
 }

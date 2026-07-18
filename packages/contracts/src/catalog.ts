@@ -67,6 +67,21 @@ export type ProjectListItem = {
   priceCurrency: string | null;
 };
 
+/**
+ * Compact apartment row nested under a floor on project detail.
+ * Price is null when priceVisibility hides the amount from public viewers.
+ */
+export type FloorApartmentSummary = {
+  id: string;
+  number: string;
+  salesStatus: ApartmentSalesStatus;
+  rooms: number | null;
+  areaTotal: string | null;
+  price: string | null;
+  priceCurrency: string;
+  priceVisibility: PriceVisibility;
+};
+
 export type FloorSummary = {
   id: string;
   number: number;
@@ -74,6 +89,7 @@ export type FloorSummary = {
   displayLabel: string | null;
   displayOrder: number;
   availability: ApartmentAvailabilitySummary;
+  apartments: FloorApartmentSummary[];
 };
 
 export type BuildingSummary = {

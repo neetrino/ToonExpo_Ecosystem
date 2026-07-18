@@ -2,15 +2,160 @@
   "HomePage": {
     "brand": "ToonExpo",
     "tagline": "Անշարժ գույքի ցուցահանդեսային հարթակ Հայաստանի համար",
-    "description": "Sprint 0 թաղանթ — հանրային կայք, գնորդի գոտի և շինարարի պորտալի հիմք։",
+    "description": "Նոր շինություններ, կառուցապատողներ և բնակարաններ Հայաստանում։",
     "apiStatusLabel": "API կարգավիճակ",
     "apiUnavailable": "API-ն հասանելի չէ",
-    "languageLabel": "Լեզու"
+    "languageLabel": "Լեզու",
+    "meta": {
+      "title": "ToonExpo — գտեք ձեր տունը",
+      "description": "Հրապարակային կատալոգ՝ նոր շինություններ, բնակարաններ և կառուցապատողներ Հայաստանում։"
+    },
+    "hero": {
+      "eyebrow": "Ձեր հաջորդ տունը",
+      "title": "Toon Expo",
+      "findProject": "Գտնել նախագիծ",
+      "searchLabel": "Որոնում ըստ քաղաքի",
+      "searchPlaceholder": "Նախագիծ, կառուցապատող կամ քաղաք…",
+      "search": "Որոնել",
+      "explore": "Դիտել նախագծերը",
+      "register": "Գրանցվել"
+    },
+    "stats": {
+      "badge": "Շուկայի զարկերակ",
+      "projects": "Նախագծեր",
+      "projectsHint": "Հրապարակված",
+      "listings": "Միավորներ",
+      "availableHint": "{count} ազատ",
+      "builders": "Կառուցապատողներ",
+      "buildersHint": "Գործընկերներ",
+      "cities": "Քաղաքներ",
+      "citiesHint": "Ծածկույթ"
+    },
+    "featured": {
+      "eyebrow": "Նոր շինություններ",
+      "title": "Նախագծեր, որոնք արժե հետևել։",
+      "viewAll": "Բոլորը →",
+      "empty": "Դեռ հրապարակված նախագծեր չկան։"
+    },
+    "builders": {
+      "eyebrow": "Գործընկերներ",
+      "title": "Վստահելի կառուցապատողներ",
+      "viewAll": "Բոլորը →",
+      "empty": "Դեռ կառուցապատողներ չկան։"
+    }
   },
   "Nav": {
+    "main": "Հիմնական նավիգացիա",
+    "menu": "Բացել մենյուն",
+    "projects": "Նախագծեր",
+    "builders": "Կառուցապատողներ",
     "login": "Մուտք",
     "register": "Գրանցում",
     "loading": "…"
+  },
+  "Footer": {
+    "tagline": "ToonExpo-ն կապում է գնորդներին Հայաստանի ստուգված նոր շինությունների հետ։",
+    "marketplace": "Կատալոգ",
+    "company": "Ընկերություն",
+    "links": {
+      "projects": "Նախագծեր",
+      "builders": "Կառուցապատողներ",
+      "register": "Գրանցում",
+      "login": "Մուտք"
+    },
+    "trust": "Ստուգված հայտարարություններ · GDPR · Կոդավորում",
+    "copyright": "© 2026 Toon Expo"
+  },
+  "Catalog": {
+    "price": {
+      "from": "սկսած",
+      "onRequest": "Գինը ըստ հարցման"
+    },
+    "status": {
+      "available": "Ազատ",
+      "reserved": "Ամրագրված",
+      "sold": "Վաճառված"
+    },
+    "availability": {
+      "total": "Ընդամենը",
+      "available": "Ազատ",
+      "reserved": "Ամրագրված",
+      "sold": "Վաճառված",
+      "summary": "Հասանելիություն",
+      "availableCount": "{count} ազատ"
+    },
+    "actions": {
+      "details": "Մանրամասն",
+      "viewProjects": "Նախագծեր",
+      "viewProject": "Դեպի նախագիծ",
+      "backToProjects": "← Բոլոր նախագծերը",
+      "requestPrice": "Հարցնել գինը",
+      "comingSoon": "Շուտով"
+    },
+    "filters": {
+      "rooms": "Սենյակներ",
+      "minPrice": "Գինը սկսած",
+      "maxPrice": "Գինը մինչև",
+      "salesStatus": "Կարգավիճակ",
+      "any": "Ցանկացած",
+      "pricePlaceholder": "AMD",
+      "apply": "Կիրառել"
+    },
+    "pagination": {
+      "previous": "Նախորդ",
+      "next": "Հաջորդ"
+    },
+    "projects": {
+      "title": "Նախագծեր",
+      "subtitle": "{count, plural, =0 {Նախագծեր չկան} one {# նախագիծ} other {# նախագիծ}}",
+      "empty": "Այս ֆիլտրերով նախագծեր չկան։",
+      "meta": {
+        "title": "Նախագծեր — ToonExpo",
+        "description": "Հրապարակված բնակելի նախագծերի կատալոգ՝ գներով և հասանելիությամբ։"
+      }
+    },
+    "project": {
+      "about": "Նախագծի մասին",
+      "units": "Շենքեր և բնակարաններ",
+      "priceRange": "Գնային միջակայք",
+      "noDescription": "Նկարագրությունը շուտով։",
+      "noBuildings": "Դեռ հրապարակված շենքեր չկան։",
+      "floor": "Հարկ {number}",
+      "notFoundTitle": "Նախագիծը չի գտնվել",
+      "metaFallback": "{name} — նախագծի էջ ToonExpo-ում"
+    },
+    "apartment": {
+      "unit": "Բն. {number}",
+      "floor": "Հարկ՝ {floor}",
+      "rooms": "{count} սենյակ",
+      "area": "{area} մ²",
+      "statusLabel": "Կարգավիճակ",
+      "roomsLabel": "Սենյակներ",
+      "areaLabel": "Մակերես",
+      "bedroomsLabel": "Ննջասենյակներ",
+      "bathroomsLabel": "Սանհանգույցներ",
+      "noPlan": "Հատակագիծը շուտով",
+      "notFoundTitle": "Բնակարանը չի գտնվել",
+      "metaTitle": "Բն. {number} — {project}",
+      "metaFallback": "Բնակարան {number}՝ {project} նախագծում"
+    },
+    "builders": {
+      "projectCount": "{count, plural, =0 {Նախագծեր չկան} one {# նախագիծ} other {# նախագիծ}}"
+    },
+    "buildersPage": {
+      "title": "Կառուցապատողներ",
+      "subtitle": "{count, plural, =0 {Կառուցապատողներ չկան} one {# կառուցապատող} other {# կառուցապատող}}",
+      "empty": "Դեռ ակտիվ կառուցապատողներ չկան։",
+      "meta": {
+        "title": "Կառուցապատողներ — ToonExpo",
+        "description": "Ակտիվ կառուցապատողներ՝ հրապարակված նախագծերով ToonExpo-ում։"
+      }
+    }
+  },
+  "NotFound": {
+    "title": "Էջը չի գտնվել",
+    "description": "Այս էջը գոյություն չունի կամ այլևս հրապարակված չէ։",
+    "home": "Գլխավոր էջ"
   },
   "Auth": {
     "fields": {

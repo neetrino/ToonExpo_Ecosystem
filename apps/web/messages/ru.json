@@ -2,15 +2,160 @@
   "HomePage": {
     "brand": "ToonExpo",
     "tagline": "Платформа недвижимости для выставок в Армении",
-    "description": "Оболочка Sprint 0 — публичный сайт, зона покупателя и фундамент портала застройщика.",
+    "description": "Новые ЖК, застройщики и квартиры по всей Армении.",
     "apiStatusLabel": "Статус API",
     "apiUnavailable": "API недоступен",
-    "languageLabel": "Язык"
+    "languageLabel": "Язык",
+    "meta": {
+      "title": "ToonExpo — найдите свой дом",
+      "description": "Публичный каталог новостроек, квартир и застройщиков в Армении."
+    },
+    "hero": {
+      "eyebrow": "Ваш следующий дом",
+      "title": "Toon Expo",
+      "findProject": "Найти проект",
+      "searchLabel": "Поиск по городу",
+      "searchPlaceholder": "Проект, застройщик или город…",
+      "search": "Поиск",
+      "explore": "Смотреть проекты",
+      "register": "Регистрация"
+    },
+    "stats": {
+      "badge": "Пульс рынка",
+      "projects": "Проекты",
+      "projectsHint": "Опубликовано",
+      "listings": "Объекты",
+      "availableHint": "{count} свободно",
+      "builders": "Застройщики",
+      "buildersHint": "Партнёры",
+      "cities": "Города",
+      "citiesHint": "Покрытие"
+    },
+    "featured": {
+      "eyebrow": "Новостройки",
+      "title": "Проекты, на которые стоит смотреть.",
+      "viewAll": "Все проекты →",
+      "empty": "Пока нет опубликованных проектов."
+    },
+    "builders": {
+      "eyebrow": "Партнёры",
+      "title": "Надёжные застройщики",
+      "viewAll": "Все →",
+      "empty": "Пока нет застройщиков."
+    }
   },
   "Nav": {
+    "main": "Основная навигация",
+    "menu": "Открыть меню",
+    "projects": "Проекты",
+    "builders": "Застройщики",
     "login": "Войти",
     "register": "Регистрация",
     "loading": "…"
+  },
+  "Footer": {
+    "tagline": "ToonExpo соединяет покупателей с проверенными новостройками Армении.",
+    "marketplace": "Каталог",
+    "company": "Компания",
+    "links": {
+      "projects": "Проекты",
+      "builders": "Застройщики",
+      "register": "Регистрация",
+      "login": "Войти"
+    },
+    "trust": "Проверенные объекты · GDPR · Шифрование в пути",
+    "copyright": "© 2026 Toon Expo"
+  },
+  "Catalog": {
+    "price": {
+      "from": "от",
+      "onRequest": "Цена по запросу"
+    },
+    "status": {
+      "available": "Свободна",
+      "reserved": "Бронь",
+      "sold": "Продана"
+    },
+    "availability": {
+      "total": "Всего",
+      "available": "Свободно",
+      "reserved": "Бронь",
+      "sold": "Продано",
+      "summary": "Наличие",
+      "availableCount": "{count} своб."
+    },
+    "actions": {
+      "details": "Подробнее",
+      "viewProjects": "Проекты",
+      "viewProject": "К проекту",
+      "backToProjects": "← Все проекты",
+      "requestPrice": "Запросить цену",
+      "comingSoon": "Скоро"
+    },
+    "filters": {
+      "rooms": "Комнаты",
+      "minPrice": "Цена от",
+      "maxPrice": "Цена до",
+      "salesStatus": "Статус",
+      "any": "Любой",
+      "pricePlaceholder": "AMD",
+      "apply": "Применить"
+    },
+    "pagination": {
+      "previous": "Назад",
+      "next": "Вперёд"
+    },
+    "projects": {
+      "title": "Проекты",
+      "subtitle": "{count, plural, =0 {Нет проектов} one {# проект} few {# проекта} many {# проектов} other {# проекта}}",
+      "empty": "Нет проектов по этим фильтрам.",
+      "meta": {
+        "title": "Проекты — ToonExpo",
+        "description": "Каталог опубликованных жилых проектов с ценами и наличием."
+      }
+    },
+    "project": {
+      "about": "О проекте",
+      "units": "Корпуса и квартиры",
+      "priceRange": "Диапазон цен",
+      "noDescription": "Описание скоро появится.",
+      "noBuildings": "Пока нет опубликованных корпусов.",
+      "floor": "Этаж {number}",
+      "notFoundTitle": "Проект не найден",
+      "metaFallback": "{name} — карточка проекта на ToonExpo"
+    },
+    "apartment": {
+      "unit": "Кв. {number}",
+      "floor": "Этаж: {floor}",
+      "rooms": "{count, plural, one {# комната} few {# комнаты} many {# комнат} other {# комнаты}}",
+      "area": "{area} м²",
+      "statusLabel": "Статус",
+      "roomsLabel": "Комнаты",
+      "areaLabel": "Площадь",
+      "bedroomsLabel": "Спальни",
+      "bathroomsLabel": "Санузлы",
+      "noPlan": "Планировка скоро",
+      "notFoundTitle": "Квартира не найдена",
+      "metaTitle": "Кв. {number} — {project}",
+      "metaFallback": "Квартира {number} в проекте {project}"
+    },
+    "builders": {
+      "projectCount": "{count, plural, =0 {Нет проектов} one {# проект} few {# проекта} many {# проектов} other {# проекта}}"
+    },
+    "buildersPage": {
+      "title": "Застройщики",
+      "subtitle": "{count, plural, =0 {Нет застройщиков} one {# застройщик} few {# застройщика} many {# застройщиков} other {# застройщика}}",
+      "empty": "Пока нет активных застройщиков.",
+      "meta": {
+        "title": "Застройщики — ToonExpo",
+        "description": "Активные девелоперы с опубликованными проектами на ToonExpo."
+      }
+    }
+  },
+  "NotFound": {
+    "title": "Страница не найдена",
+    "description": "Такой страницы нет или она больше не опубликована.",
+    "home": "На главную"
   },
   "Auth": {
     "fields": {
