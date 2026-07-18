@@ -30,6 +30,9 @@ const createConfigService = (): ConfigService<AppEnv, true> =>
         SESSION_ABSOLUTE_TTL_SECONDS: 7200,
         CSRF_SECRET: "test-csrf-secret-at-least-32-chars!!",
         CSRF_COOKIE_NAME: "toonexpo_csrf",
+        DB_POOL_MAX: 8,
+        DB_POOL_CONNECTION_TIMEOUT_MS: 5000,
+        DB_STATEMENT_TIMEOUT_MS: 10000,
       };
       return values[key];
     },
@@ -256,5 +259,63 @@ describe("AuthService", () => {
     expect(cookie).toHaveBeenCalledTimes(2);
     expect(result.csrfToken).toEqual(expect.any(String));
     expect(result.user.id).toBe("user_1");
+  });
+
+  describe("validateSessionToken touch coalescing", () => {
+    const activeUser = {
+      id: "user_1",
+      name: "Ani",
+      email: "ani@example.com",
+      phone: "+37491111222",
+      accountType: AccountType.buyer,
+      status: UserStatus.active,
+      defaultLocale: null,
+      createdAt: new Date("2026-07-18T00:00:00.000Z"),
+      updatedAt: new Date("2026-07-18T00:00:00.000Z"),
+    };
+
+    const baseSession = {
+      id: "session_1",
+      revokedAt: null,
+      absoluteExpiresAt: new Date(Date.now() + 60 * 60 * 1000),
+      idleExpiresAt: new Date(Date.now() + 30 * 60 * 1000),
+      user: activeUser,
+    };
+
+    it("touches session when lastSeenAt is older than the coalesce interval", async () => {
+      const staleSeenAt = new Date(Date.now() - 11 * 60 * 1000);
+      sessionFindUnique.mockResolvedValue({
+        ...baseSession,
+        lastSeenAt: staleSeenAt,
+      });
+      sessionUpdate.mockResolvedValue({});
+
+      const user = await service.validateSessionToken("raw-session-token");
+
+      expect(user?.sessionId).toBe("session_1");
+      expect(sessionUpdate).toHaveBeenCalledOnce();
+      expect(sessionUpdate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: "session_1" },
+          data: expect.objectContaining({
+            lastSeenAt: expect.any(Date),
+            idleExpiresAt: expect.any(Date),
+          }),
+        }),
+      );
+    });
+
+    it("skips session touch when lastSeenAt is within the coalesce interval", async () => {
+      const freshSeenAt = new Date(Date.now() - 60 * 1000);
+      sessionFindUnique.mockResolvedValue({
+        ...baseSession,
+        lastSeenAt: freshSeenAt,
+      });
+
+      const user = await service.validateSessionToken("raw-session-token");
+
+      expect(user?.sessionId).toBe("session_1");
+      expect(sessionUpdate).not.toHaveBeenCalled();
+    });
   });
 });

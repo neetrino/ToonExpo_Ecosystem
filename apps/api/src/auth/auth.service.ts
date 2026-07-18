@@ -14,7 +14,10 @@ import type {
 import { AccountType, UserStatus } from "@toonexpo/db";
 import type { Request, Response } from "express";
 
-import { DUMMY_PASSWORD_HASH } from "../common/constants/app.constants.js";
+import {
+  DUMMY_PASSWORD_HASH,
+  SESSION_TOUCH_INTERVAL_MS,
+} from "../common/constants/app.constants.js";
 import type { AppEnv } from "../config/env.validation.js";
 import { PrismaService } from "../prisma/prisma.service.js";
 import { QrCodesService } from "../qr/qr-codes.service.js";
@@ -170,7 +173,11 @@ export class AuthService {
       return null;
     }
 
-    await this.touchSession(session.id, session.absoluteExpiresAt);
+    await this.touchSession(
+      session.id,
+      session.absoluteExpiresAt,
+      session.lastSeenAt,
+    );
 
     return {
       id: session.user.id,
@@ -216,13 +223,22 @@ export class AuthService {
   private async touchSession(
     sessionId: string,
     absoluteExpiresAt: Date,
+    lastSeenAt: Date | null,
   ): Promise<void> {
+    const nowMs = Date.now();
+    if (
+      lastSeenAt != null &&
+      nowMs - lastSeenAt.getTime() < SESSION_TOUCH_INTERVAL_MS
+    ) {
+      return;
+    }
+
     const idleTtl = this.configService.get("SESSION_IDLE_TTL_SECONDS", {
       infer: true,
     });
-    const now = new Date();
+    const now = new Date(nowMs);
     const nextIdle = new Date(
-      Math.min(now.getTime() + idleTtl * 1000, absoluteExpiresAt.getTime()),
+      Math.min(nowMs + idleTtl * 1000, absoluteExpiresAt.getTime()),
     );
 
     await this.prisma.db.session.update({

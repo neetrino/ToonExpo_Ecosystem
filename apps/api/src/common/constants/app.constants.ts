@@ -33,7 +33,29 @@ export const DEFAULT_SESSION_IDLE_TTL_SECONDS = 7 * 24 * 60 * 60;
  */
 export const DEFAULT_SESSION_ABSOLUTE_TTL_SECONDS = 30 * 24 * 60 * 60;
 
+/**
+ * Approved starting point (2026-07-19): coalesce session lastSeenAt / idle
+ * sliding updates so authenticated traffic does not UPDATE sessions every request.
+ */
+export const SESSION_TOUCH_INTERVAL_MS = 10 * 60 * 1000;
+
 export const DEFAULT_SESSION_COOKIE_NAME = "toonexpo_session";
+
+/**
+ * Cloud Run (and similar) terminate TLS at the platform frontend.
+ * Trust only the first proxy hop so `req.ip` reflects the client.
+ */
+export const TRUST_PROXY_HOPS = 1;
+
+/**
+ * Approved starting points for Neon/pg pool (tune after load test).
+ * Keep Cloud Run max instances × DB_POOL_MAX under the Neon connection budget.
+ */
+export const DEFAULT_DB_POOL_MAX = 8;
+
+export const DEFAULT_DB_POOL_CONNECTION_TIMEOUT_MS = 5_000;
+
+export const DEFAULT_DB_STATEMENT_TIMEOUT_MS = 10_000;
 
 /** Safe HTTP methods that never require CSRF tokens. */
 export const CSRF_SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
