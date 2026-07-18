@@ -1,11 +1,11 @@
-import type { PlatformRole, UserResponse, UserStatus } from "@toonexpo/contracts";
+import type { AccountType, UserResponse, UserStatus } from "@toonexpo/contracts";
 
 type UserRecord = {
   id: string;
   name: string;
   email: string;
   phone: string | null;
-  role: PlatformRole;
+  accountType: AccountType;
   status: UserStatus;
   defaultLocale: string | null;
   createdAt: Date;
@@ -20,7 +20,7 @@ export const toUserResponse = (user: UserRecord): UserResponse => ({
   name: user.name,
   email: user.email,
   phone: user.phone,
-  role: user.role,
+  accountType: user.accountType,
   status: user.status,
   defaultLocale: user.defaultLocale,
   createdAt: user.createdAt.toISOString(),

@@ -1,6 +1,6 @@
 import { ConflictException, UnauthorizedException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { PlatformRole, UserStatus } from "@toonexpo/db";
+import { AccountType, UserStatus } from "@toonexpo/db";
 import type { Response } from "express";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -76,7 +76,7 @@ describe("AuthService", () => {
       name: "Ani",
       email: "ani@example.com",
       phone: "+37491111222",
-      role: PlatformRole.buyer,
+      accountType: AccountType.buyer,
       status: UserStatus.active,
       defaultLocale: null,
       createdAt: new Date("2026-07-18T00:00:00.000Z"),
@@ -104,7 +104,7 @@ describe("AuthService", () => {
       expect.objectContaining({
         data: expect.objectContaining({
           email: "ani@example.com",
-          role: PlatformRole.buyer,
+          accountType: AccountType.buyer,
           buyerProfile: {
             create: expect.objectContaining({
               email: "ani@example.com",
@@ -169,7 +169,7 @@ describe("AuthService", () => {
       email: "ani@example.com",
       phone: "+37491111222",
       passwordHash,
-      role: PlatformRole.buyer,
+      accountType: AccountType.buyer,
       status: UserStatus.active,
       defaultLocale: null,
       createdAt: new Date("2026-07-18T00:00:00.000Z"),

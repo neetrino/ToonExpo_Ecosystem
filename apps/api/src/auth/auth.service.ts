@@ -9,7 +9,7 @@ import type {
   CsrfTokenResponse,
   UserResponse,
 } from "@toonexpo/contracts";
-import { PlatformRole, UserStatus } from "@toonexpo/db";
+import { AccountType, UserStatus } from "@toonexpo/db";
 import type { Request, Response } from "express";
 
 import { DUMMY_PASSWORD_HASH } from "../common/constants/app.constants.js";
@@ -64,7 +64,7 @@ export class AuthService {
         email,
         phone: input.phone.trim(),
         passwordHash,
-        role: PlatformRole.buyer,
+        accountType: AccountType.buyer,
         status: UserStatus.active,
         buyerProfile: {
           create: {
@@ -150,7 +150,7 @@ export class AuthService {
       name: session.user.name,
       email: session.user.email,
       phone: session.user.phone,
-      role: session.user.role,
+      accountType: session.user.accountType,
       status: session.user.status,
       defaultLocale: session.user.defaultLocale,
       createdAt: session.user.createdAt,

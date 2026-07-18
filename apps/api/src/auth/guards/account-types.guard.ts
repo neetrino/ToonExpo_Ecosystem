@@ -5,10 +5,10 @@ import {
   Injectable,
 } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
-import type { PlatformRole } from "@toonexpo/contracts";
+import type { AccountType } from "@toonexpo/contracts";
 import type { Request } from "express";
 
-import { ROLES_KEY } from "../decorators/roles.decorator.js";
+import { ACCOUNT_TYPES_KEY } from "../decorators/account-types.decorator.js";
 import type { AuthenticatedUser } from "../types/authenticated-user.js";
 
 type RequestWithUser = Request & {
@@ -16,18 +16,18 @@ type RequestWithUser = Request & {
 };
 
 /**
- * Enforces @Roles(...) metadata against the authenticated user's platform role.
+ * Enforces @AccountTypes(...) metadata against the authenticated user's account type.
  */
 @Injectable()
-export class RolesGuard implements CanActivate {
+export class AccountTypesGuard implements CanActivate {
   constructor(private readonly reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const requiredRoles = this.reflector.getAllAndOverride<
-      PlatformRole[] | undefined
-    >(ROLES_KEY, [context.getHandler(), context.getClass()]);
+    const requiredTypes = this.reflector.getAllAndOverride<
+      AccountType[] | undefined
+    >(ACCOUNT_TYPES_KEY, [context.getHandler(), context.getClass()]);
 
-    if (!requiredRoles || requiredRoles.length === 0) {
+    if (!requiredTypes || requiredTypes.length === 0) {
       return true;
     }
 
@@ -38,7 +38,7 @@ export class RolesGuard implements CanActivate {
       throw new ForbiddenException("Insufficient permissions");
     }
 
-    if (!requiredRoles.includes(user.role)) {
+    if (!requiredTypes.includes(user.accountType)) {
       throw new ForbiddenException("Insufficient permissions");
     }
 

@@ -5,9 +5,9 @@ import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 import { LoggerModule } from "nestjs-pino";
 
 import { AuthModule } from "./auth/auth.module.js";
+import { AccountTypesGuard } from "./auth/guards/account-types.guard.js";
 import { CsrfOriginGuard } from "./auth/guards/csrf-origin.guard.js";
 import { CsrfTokenGuard } from "./auth/guards/csrf-token.guard.js";
-import { RolesGuard } from "./auth/guards/roles.guard.js";
 import { SessionAuthGuard } from "./auth/guards/session-auth.guard.js";
 import {
   AUTH_RATE_LIMIT_LIMIT,
@@ -68,7 +68,7 @@ const isProduction = process.env["NODE_ENV"] === NODE_ENV_PRODUCTION;
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },
     { provide: APP_GUARD, useClass: SessionAuthGuard },
-    { provide: APP_GUARD, useClass: RolesGuard },
+    { provide: APP_GUARD, useClass: AccountTypesGuard },
     { provide: APP_GUARD, useClass: CsrfOriginGuard },
     { provide: APP_GUARD, useClass: CsrfTokenGuard },
   ],

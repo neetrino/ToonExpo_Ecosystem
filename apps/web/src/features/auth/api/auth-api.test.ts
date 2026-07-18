@@ -19,7 +19,7 @@ describe("getMeOrNull", () => {
       name: "Ani",
       email: "ani@example.com",
       phone: "+37491111222",
-      role: "buyer" as const,
+      accountType: "buyer" as const,
       status: "active" as const,
       defaultLocale: "hy",
       createdAt: "2026-01-01T00:00:00.000Z",

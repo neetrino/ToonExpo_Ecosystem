@@ -45,7 +45,7 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
               label={t("fields.phone")}
               value={user.phone ?? t("fields.phoneEmpty")}
             />
-            <ProfileRow label={t("fields.role")} value={user.role} />
+            <ProfileRow label={t("fields.accountType")} value={user.accountType} />
           </dl>
           <div className="pt-2">
             <LogoutButton variant="secondary" size="md" className="w-full" />

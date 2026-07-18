@@ -60,7 +60,7 @@
       "email": "Email",
       "phone": "Phone",
       "phoneEmpty": "Not set",
-      "role": "Role"
+      "accountType": "Account type"
     }
   }
 }

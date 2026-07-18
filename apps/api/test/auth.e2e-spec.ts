@@ -99,7 +99,7 @@ describe("Auth endpoints (e2e)", () => {
 
     expect(registerResponse.body.user).toMatchObject({
       email,
-      role: "buyer",
+      accountType: "buyer",
       name: "E2E Buyer",
     });
     expect(registerResponse.body.csrfToken).toEqual(expect.any(String));
@@ -147,7 +147,7 @@ describe("Auth endpoints (e2e)", () => {
 
     expect(meResponse.body).toMatchObject({
       email,
-      role: "buyer",
+      accountType: "buyer",
     });
 
     await request(app.getHttpServer())

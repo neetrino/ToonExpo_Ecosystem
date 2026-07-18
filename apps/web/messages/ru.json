@@ -60,7 +60,7 @@
       "email": "Email",
       "phone": "Телефон",
       "phoneEmpty": "Не указан",
-      "role": "Роль"
+      "accountType": "Тип аккаунта"
     }
   }
 }
