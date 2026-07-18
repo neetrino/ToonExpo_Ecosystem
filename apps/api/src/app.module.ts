@@ -13,11 +13,7 @@ import { CsrfOriginGuard } from "./auth/guards/csrf-origin.guard.js";
 import { CsrfTokenGuard } from "./auth/guards/csrf-token.guard.js";
 import { SessionAuthGuard } from "./auth/guards/session-auth.guard.js";
 import { CatalogModule } from "./catalog/catalog.module.js";
-import {
-  AUTH_RATE_LIMIT_LIMIT,
-  AUTH_RATE_LIMIT_TTL_MS,
-  NODE_ENV_PRODUCTION,
-} from "./common/constants/app.constants.js";
+import { NODE_ENV_PRODUCTION } from "./common/constants/app.constants.js";
 import { CompanyMembersModule } from "./company/company-members.module.js";
 import { resolveEnvFilePaths } from "./config/env-files.js";
 import { validateEnv } from "./config/env.validation.js";
@@ -33,6 +29,7 @@ import { PartnersModule } from "./partners/partners.module.js";
 import { PortalModule } from "./portal/portal.module.js";
 import { PrismaModule } from "./prisma/prisma.module.js";
 import { QrModule } from "./qr/qr.module.js";
+import { ThrottlerConfigService } from "./rate-limit/throttler-config.service.js";
 import { ReadinessModule } from "./readiness/readiness.module.js";
 import { ServiceProvidersModule } from "./service-providers/service-providers.module.js";
 import { VisualMapModule } from "./visual-map/visual-map.module.js";
@@ -71,14 +68,8 @@ const isProduction = process.env["NODE_ENV"] === NODE_ENV_PRODUCTION;
         },
       },
     }),
-    ThrottlerModule.forRoot({
-      throttlers: [
-        {
-          name: "default",
-          ttl: AUTH_RATE_LIMIT_TTL_MS,
-          limit: AUTH_RATE_LIMIT_LIMIT * 10,
-        },
-      ],
+    ThrottlerModule.forRootAsync({
+      useClass: ThrottlerConfigService,
     }),
     PrismaModule,
     EmailModule,

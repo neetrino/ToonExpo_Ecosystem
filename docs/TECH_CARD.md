@@ -137,6 +137,7 @@ Next.js Server Components may fetch the NestJS API. Server Actions must not impl
 | Authorization | NestJS guards plus company/resource ownership policies | Confirmed |
 | CORS/CSRF | Two-layer protection: Origin allowlist check plus double-submit CSRF tokens (HMAC-bound cookie + `X-CSRF-Token`) | Confirmed |
 | Rate limits | Required for auth, QR, public request and provisioning endpoints; confirmed thresholds in Adaptive Operational Values | Confirmed |
+| Rate limit storage | `@nestjs/throttler` with optional Upstash Redis (`UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN`); atomic Lua counters, fail-open on Redis errors; in-memory when unset (local dev) | Confirmed |
 | Buyer registration | Name, required phone, email and password (minimum 8 characters) | Confirmed |
 | QR privacy | Opaque token with server-side lookup; no embedded personal data | Confirmed |
 

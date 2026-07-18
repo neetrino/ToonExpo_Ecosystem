@@ -99,8 +99,30 @@ const envSchema = z
       z.string().url().optional(),
     ),
     SENTRY_DSN: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
+    UPSTASH_REDIS_REST_URL: z.preprocess(
+      emptyToUndefined,
+      z.string().url().optional(),
+    ),
+    UPSTASH_REDIS_REST_TOKEN: z.preprocess(
+      emptyToUndefined,
+      z.string().min(1).optional(),
+    ),
   })
   .superRefine((env, ctx) => {
+    const hasUpstashUrl = Boolean(env.UPSTASH_REDIS_REST_URL);
+    const hasUpstashToken = Boolean(env.UPSTASH_REDIS_REST_TOKEN);
+
+    if (hasUpstashUrl !== hasUpstashToken) {
+      ctx.addIssue({
+        code: "custom",
+        path: hasUpstashUrl
+          ? ["UPSTASH_REDIS_REST_TOKEN"]
+          : ["UPSTASH_REDIS_REST_URL"],
+        message:
+          "UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN must both be set or both omitted",
+      });
+    }
+
     if (env.NODE_ENV !== NODE_ENV_PRODUCTION) {
       return;
     }
@@ -143,6 +165,8 @@ export type AppEnv = {
   R2_BUCKET_NAME?: string | undefined;
   R2_PUBLIC_URL?: string | undefined;
   SENTRY_DSN?: string | undefined;
+  UPSTASH_REDIS_REST_URL?: string | undefined;
+  UPSTASH_REDIS_REST_TOKEN?: string | undefined;
 };
 
 /**
@@ -207,6 +231,14 @@ export const validateEnv = (config: Record<string, unknown>): AppEnv => {
 
   if (data.SENTRY_DSN) {
     result.SENTRY_DSN = data.SENTRY_DSN;
+  }
+
+  if (data.UPSTASH_REDIS_REST_URL) {
+    result.UPSTASH_REDIS_REST_URL = data.UPSTASH_REDIS_REST_URL;
+  }
+
+  if (data.UPSTASH_REDIS_REST_TOKEN) {
+    result.UPSTASH_REDIS_REST_TOKEN = data.UPSTASH_REDIS_REST_TOKEN;
   }
 
   return result;

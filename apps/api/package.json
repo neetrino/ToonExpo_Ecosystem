@@ -27,6 +27,7 @@
     "@toonexpo/contracts": "workspace:*",
     "@toonexpo/db": "workspace:*",
     "@toonexpo/shared": "workspace:*",
+    "@upstash/redis": "^1.38.0",
     "argon2": "0.44.0",
     "class-transformer": "0.5.1",
     "class-validator": "0.15.1",
