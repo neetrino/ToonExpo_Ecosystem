@@ -18,10 +18,12 @@ export {
 } from "./auth.js";
 
 export type {
+  AccountType,
   AuthSessionResponse,
+  CompanyMemberRole,
+  CompanyType,
   CsrfTokenResponse,
   LoginRequest,
-  PlatformRole,
   RegisterRequest,
   UserResponse,
   UserStatus,

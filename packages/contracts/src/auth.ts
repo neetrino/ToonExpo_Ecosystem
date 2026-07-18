@@ -1,12 +1,21 @@
 /**
- * Platform roles shared by API and web clients (v1).
+ * Exclusive platform account type (one user = one type).
  */
-export type PlatformRole =
-  | "bigprojects_admin"
-  | "builder"
-  | "partner"
+export type AccountType =
   | "buyer"
-  | "entrance_staff";
+  | "platform_admin"
+  | "entrance_staff"
+  | "company_member";
+
+/**
+ * Role inside a company (v1). Applies when accountType = company_member.
+ */
+export type CompanyMemberRole = "company_admin" | "member";
+
+/**
+ * Business organization type (not a user account type).
+ */
+export type CompanyType = "builder" | "partner" | "bank" | "service";
 
 /**
  * Account lifecycle status shared by API and web clients.
@@ -39,7 +48,7 @@ export type UserResponse = {
   name: string;
   email: string;
   phone: string | null;
-  role: PlatformRole;
+  accountType: AccountType;
   status: UserStatus;
   defaultLocale: string | null;
   createdAt: string;

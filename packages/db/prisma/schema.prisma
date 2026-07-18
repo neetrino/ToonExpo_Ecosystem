@@ -7,13 +7,12 @@ datasource db {
   provider = "postgresql"
 }
 
-/// Platform-wide account roles (v1).
-enum PlatformRole {
-  bigprojects_admin
-  builder
-  partner
+/// Exclusive platform account type (one user = one type).
+enum AccountType {
   buyer
+  platform_admin
   entrance_staff
+  company_member
 }
 
 enum UserStatus {
@@ -22,13 +21,12 @@ enum UserStatus {
   suspended
 }
 
+/// Business organization type (not a user account type).
 enum CompanyType {
-  bigprojects
   builder
   partner
   bank
   service
-  other
 }
 
 enum CompanyStatus {
@@ -43,31 +41,44 @@ enum CompanySource {
   bos
 }
 
+/// Role inside a company (v1). Applies when accountType = company_member.
+enum CompanyMemberRole {
+  company_admin
+  member
+}
+
 enum CompanyMemberStatus {
   invited
   active
   disabled
 }
 
+/// Purpose of a one-time account access token (set-password / invite).
+enum AccountAccessTokenPurpose {
+  set_password
+  invite
+}
+
 model User {
-  id            String       @id @default(cuid())
+  id            String      @id @default(cuid())
   name          String
-  email         String       @unique
+  email         String      @unique
   phone         String?
-  passwordHash  String       @map("password_hash")
-  /// Primary platform role used by NestJS RBAC for users without company context (e.g. buyers).
-  role          PlatformRole @default(buyer)
-  status        UserStatus   @default(active)
-  defaultLocale String?      @map("default_locale")
-  createdAt     DateTime     @default(now()) @map("created_at")
-  updatedAt     DateTime     @updatedAt @map("updated_at")
+  passwordHash  String      @map("password_hash")
+  /// Exclusive account type used by NestJS RBAC.
+  accountType   AccountType @default(buyer) @map("account_type")
+  status        UserStatus  @default(active)
+  defaultLocale String?     @map("default_locale")
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
 
-  sessions             Session[]
-  buyerProfile         BuyerProfile?
-  companyMemberships   CompanyMember[]
-  invitedMemberships   CompanyMember[] @relation("CompanyMemberInviter")
+  sessions           Session[]
+  buyerProfile       BuyerProfile?
+  companyMembership  CompanyMember?
+  invitedMemberships CompanyMember[]      @relation("CompanyMemberInviter")
+  accessTokens       AccountAccessToken[]
 
-  @@index([role])
+  @@index([accountType])
   @@map("users")
 }
 
@@ -126,8 +137,8 @@ model Company {
 model CompanyMember {
   id              String              @id @default(cuid())
   companyId       String              @map("company_id")
-  userId          String              @map("user_id")
-  role            PlatformRole
+  userId          String              @unique @map("user_id")
+  role            CompanyMemberRole
   status          CompanyMemberStatus @default(invited)
   invitedByUserId String?             @map("invited_by_user_id")
   joinedAt        DateTime?           @map("joined_at")
@@ -138,8 +149,24 @@ model CompanyMember {
   user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   invitedBy User?   @relation("CompanyMemberInviter", fields: [invitedByUserId], references: [id], onDelete: SetNull)
 
-  @@unique([companyId, userId])
-  @@index([userId])
+  @@index([companyId])
   @@index([role])
   @@map("company_members")
+}
+
+/// One-time set-password / invite tokens (schema only; issue/accept in provisioning sprint).
+model AccountAccessToken {
+  id        String                     @id @default(cuid())
+  userId    String                     @map("user_id")
+  purpose   AccountAccessTokenPurpose
+  tokenHash String                     @unique @map("token_hash")
+  expiresAt DateTime                   @map("expires_at")
+  usedAt    DateTime?                  @map("used_at")
+  createdAt DateTime                   @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("account_access_tokens")
 }
