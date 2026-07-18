@@ -49,6 +49,7 @@
     "menu": "Բացել մենյուն",
     "projects": "Նախագծեր",
     "builders": "Կառուցապատողներ",
+    "partners": "Գործընկերներ",
     "login": "Մուտք",
     "register": "Գրանցում",
     "loading": "…"
@@ -170,6 +171,33 @@
       "meta": {
         "title": "Կառուցապատողներ — ToonExpo",
         "description": "Ակտիվ կառուցապատողներ՝ հրապարակված նախագծերով ToonExpo-ում։"
+      }
+    },
+    "partnersPage": {
+      "title": "Գործընկերներ և մասնակիցներ",
+      "subtitle": "{count, plural, =0 {Գործընկերներ չկան} one {# գործընկեր} other {# գործընկեր}}",
+      "empty": "Դեռ հրapaրakvac gorcynkerner chkan.",
+      "notFoundTitle": "Gorcynker@ chgtvel",
+      "metaFallback": "Profil` {name}",
+      "meta": {
+        "title": "Gorcynkerner — ToonExpo",
+        "description": "Banker, hovanavorner, matakararner ev tsarrayutyunner ToonExpo-um."
+      },
+      "filters": {
+        "type": "Tesak",
+        "allTypes": "Bol or tesakner",
+        "apply": "Kirarel",
+        "reset": "Makrel"
+      },
+      "actions": {
+        "details": "Ditel profil@"
+      },
+      "detail": {
+        "offersTitle": "Tsarrayutyunner ev arajarkner",
+        "contactsTitle": "Kontaktner",
+        "phone": "Heraxos",
+        "email": "El. post",
+        "website": "Kayq"
       }
     }
   },
@@ -329,6 +357,7 @@
       "label": "Ադմին նավիգացիա",
       "section": "Կառավարում",
       "companies": "Ընկերություններ",
+      "partners": "Գործընկերներ",
       "readiness": "Պատրաստվածություն",
       "readinessCategories": "Կատեգորիաներ"
     },
@@ -408,6 +437,125 @@
         "resendSubmitting": "Ուղարկում…",
         "resendSuccess": "Հրավերն կրկին ուղարկված է",
         "resendNotFound": "Այս ընկերության համար հրավիրված ադմին չկա"
+      }
+    },
+    "partners": {
+      "title": "Գործընկերներ",
+      "subtitle": "{count, plural, =0 {Գործընկերներ չկան} one {# գործընկեր} other {# գործընկեր}}",
+      "empty": "Դեռ գործընկeri պրոֆիլներ չկան։ Ստեղծեք առաջինը։",
+      "loading": "Բեռնում…",
+      "error": "Չհաջողվեց բեռնել գործընկերներին։",
+      "newPartner": "Նոր գործընկեր",
+      "pagination": {
+        "previous": "Նախորդ",
+        "next": "Հաջորդ"
+      },
+      "columns": {
+        "name": "Անվանում",
+        "type": "Տեսակ",
+        "status": "Կարգավիճակ",
+        "publication": "Հրապարակում",
+        "updatedAt": "Թարմացվել է"
+      },
+      "filters": {
+        "search": "Որոնում",
+        "searchPlaceholder": "Որոնել անվանումով…",
+        "type": "Տեսակ",
+        "allTypes": "Բոլոր տեսակները",
+        "status": "Կարգավիճակ",
+        "allStatuses": "Բոլor կարգavijakner",
+        "publication": "Հրապարակում",
+        "allPublication": "Բոլor հրapaրakumner",
+        "types": {
+          "bank": "Բանկ",
+          "it_company": "IT ընկերություն",
+          "sponsor": "Հովանավոր",
+          "supplier": "Մատակարար",
+          "insurance": "Ապահովագրություն",
+          "legal": "Իրավական",
+          "design_furniture": "Դիզayn և կահույք",
+          "service_company": "Ծառայություն",
+          "other": "Այլ"
+        },
+        "statuses": {
+          "active": "Ակտիվ",
+          "inactive": "Անactiv"
+        },
+        "publicationStatuses": {
+          "draft": "Սևագիր",
+          "published": "Հրapaրakvac",
+          "archived": "Աrchiv"
+        }
+      },
+      "create": {
+        "title": "Նոր գործընկeri պրoֆիլ",
+        "company": "Ընկերություն",
+        "selectCompany": "Ընտրել ընկերություն",
+        "type": "Գործընկeri տեսak",
+        "name": "Ցուցadryalich anvanum",
+        "slug": "Slug (ընտրովի)",
+        "slugHint": "Դատarkel datark՝ anvanumic stegcelu hamar.",
+        "submit": "Ստեղծել",
+        "submitting": "Ստeghcnum…",
+        "cancel": "Չեղարկել",
+        "types": {
+          "bank": "Բանկ",
+          "it_company": "IT ընկերություն",
+          "sponsor": "Հովանավոր",
+          "supplier": "Մատակարար",
+          "insurance": "Ապահովագրություն",
+          "legal": "Իրավական",
+          "design_furniture": "Դիզayn և կահույք",
+          "service_company": "Ծառայություն",
+          "other": "Այլ"
+        },
+        "validation": {
+          "company": "Ընտրեք ընկերություն",
+          "name": "Մուտքagreq anvanum"
+        },
+        "errors": {
+          "generic": "Սխal em. Krkrel popytak."
+        }
+      },
+      "detail": {
+        "loading": "Բեռնում…",
+        "notFound": "Գործընկer chgtvel",
+        "back": "← Գործընկerner",
+        "save": "Պahpanel",
+        "saving": "Պahpanum…",
+        "saveSuccess": "Թarmacvel e",
+        "errors": {
+          "generic": "Սխal em. Krkrel popytak."
+        },
+        "form": {
+          "name": "Anvanum",
+          "slug": "Slug",
+          "type": "Տesak",
+          "status": "Kargavijak",
+          "publication": "Hraparakum",
+          "featured": "Featured",
+          "featuredLabel": "Nshvel hraparak kataralogum"
+        },
+        "types": {
+          "bank": "Բանկ",
+          "it_company": "IT ընկերություն",
+          "sponsor": "Հովանավոր",
+          "supplier": "Մատակարար",
+          "insurance": "Ապահովագրություն",
+          "legal": "Իրավական",
+          "design_furniture": "Դիզayn և կահույք",
+          "service_company": "Ծառայություն",
+          "other": "Այլ"
+        },
+        "statuses": {
+          "active": "Ակտիվ",
+          "inactive": "Անactiv"
+        },
+        "publicationStatuses": {
+          "draft": "Սևագիր",
+          "published": "Հրapaրakvac",
+          "archived": "Աrchiv"
+        }
       }
     },
     "readiness": {
@@ -1098,6 +1246,102 @@
         "resolve": "Չհաջողվեց ճանաչել QR-ը։ Կրկին փորձեք։",
         "create": "Չհաջողվեց ստեղծել գործարքը։ Կրկին փորձեք։"
       }
+    }
+  },
+  "Partners": {
+    "featured": "Featured",
+    "types": {
+      "bank": "Բանկ",
+      "it_company": "IT ընկերություն",
+      "sponsor": "Հովanavor",
+      "supplier": "Մatakarar",
+      "insurance": "Apahovagrutyun",
+      "legal": "Iravakan",
+      "design_furniture": "Dizayn ev kahuyq",
+      "service_company": "Tsarrayutyun",
+      "other": "Ayl"
+    },
+    "companyStatus": {
+      "active": "Aktiv",
+      "inactive": "Anaktiv"
+    },
+    "publication": {
+      "draft": "Sevagir",
+      "published": "Hraparakvac",
+      "archived": "Arkhivats"
+    },
+    "form": {
+      "type": "Tesak",
+      "slug": "Slug",
+      "status": "Kargavijak",
+      "publication": "Hraparakum",
+      "featured": "Featured",
+      "featuredYes": "Ayo",
+      "featuredNo": "Voch",
+      "shortDescription": "Kratk e nkaragrutyun",
+      "fullDescription": "Lriv nkaragrutyun",
+      "contactPhone": "Heraxos",
+      "contactEmail": "El. post",
+      "website": "Kayq",
+      "socialFacebook": "Facebook",
+      "socialInstagram": "Instagram",
+      "socialLinkedin": "LinkedIn",
+      "validation": {
+        "shortDescription": "Mutqagreq kratk e nkaragrutyun hayerenov"
+      }
+    },
+    "offers": {
+      "title": "Offers & services",
+      "pageTitle": "Offers",
+      "empty": "No offers yet.",
+      "add": "Add offer",
+      "edit": "Edit",
+      "delete": "Delete",
+      "create": "Create offer",
+      "save": "Save offer",
+      "cancel": "Cancel",
+      "sortOrder": "Sort order: {value}",
+      "fields": {
+        "title": "Title",
+        "description": "Description",
+        "publication": "Publication",
+        "sortOrder": "Sort order"
+      },
+      "publication": {
+        "draft": "Draft",
+        "published": "Published",
+        "archived": "Archived"
+      },
+      "validation": {
+        "title": "Enter a title in Armenian"
+      }
+    }
+  },
+  "Partner": {
+    "badge": "Partner",
+    "profileLink": "Profil",
+    "nav": {
+      "label": "Partner nav",
+      "section": "Manage",
+      "profile": "Profil",
+      "offers": "Arajarkner"
+    },
+    "profile": {
+      "loading": "Beranum…",
+      "error": "Chhjoghvets berel profil@",
+      "slugLabel": "Hraparak slug",
+      "save": "Pahpanel",
+      "saving": "Pahpanum…",
+      "saveSuccess": "Profil@ tarmacvel e",
+      "errors": {
+        "generic": "Sxal e"
+      }
+    },
+    "offers": {
+      "loading": "Beranum…",
+      "error": "Chhjoghvets berel arajarkner@",
+      "pageTitle": "Arajarkner",
+      "subtitle": "Kargavarel hraparak arajarkner@"
     }
   }
 }

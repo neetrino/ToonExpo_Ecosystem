@@ -49,6 +49,7 @@
     "menu": "Open menu",
     "projects": "Projects",
     "builders": "Builders",
+    "partners": "Partners",
     "login": "Sign in",
     "register": "Register",
     "loading": "…"
@@ -170,6 +171,33 @@
       "meta": {
         "title": "Builders — ToonExpo",
         "description": "Active development companies with published projects on ToonExpo."
+      }
+    },
+    "partnersPage": {
+      "title": "Partners & participants",
+      "subtitle": "{count, plural, =0 {No partners} one {# partner} other {# partners}}",
+      "empty": "No published partners yet.",
+      "notFoundTitle": "Partner not found",
+      "metaFallback": "Partner profile for {name}",
+      "meta": {
+        "title": "Partners — ToonExpo",
+        "description": "Banks, sponsors, suppliers and service partners on ToonExpo."
+      },
+      "filters": {
+        "type": "Partner type",
+        "allTypes": "All types",
+        "apply": "Apply filters",
+        "reset": "Reset"
+      },
+      "actions": {
+        "details": "View profile"
+      },
+      "detail": {
+        "offersTitle": "Services & offers",
+        "contactsTitle": "Contacts",
+        "phone": "Phone",
+        "email": "Email",
+        "website": "Website"
       }
     }
   },
@@ -329,6 +357,7 @@
       "label": "Admin navigation",
       "section": "Manage",
       "companies": "Companies",
+      "partners": "Partners",
       "readiness": "Readiness",
       "readinessCategories": "Categories"
     },
@@ -408,6 +437,125 @@
         "resendSubmitting": "Sending…",
         "resendSuccess": "Invite resent successfully",
         "resendNotFound": "No invited admin found for this company"
+      }
+    },
+    "partners": {
+      "title": "Partners",
+      "subtitle": "{count, plural, =0 {No partners} one {# partner} other {# partners}}",
+      "empty": "No partner profiles yet. Create the first one.",
+      "loading": "Loading partners…",
+      "error": "Could not load partners. Try again.",
+      "newPartner": "New partner",
+      "pagination": {
+        "previous": "Previous",
+        "next": "Next"
+      },
+      "columns": {
+        "name": "Name",
+        "type": "Type",
+        "status": "Status",
+        "publication": "Publication",
+        "updatedAt": "Updated"
+      },
+      "filters": {
+        "search": "Search",
+        "searchPlaceholder": "Search by name…",
+        "type": "Type",
+        "allTypes": "All types",
+        "status": "Status",
+        "allStatuses": "All statuses",
+        "publication": "Publication",
+        "allPublication": "All publication states",
+        "types": {
+          "bank": "Bank",
+          "it_company": "IT company",
+          "sponsor": "Sponsor",
+          "supplier": "Supplier",
+          "insurance": "Insurance",
+          "legal": "Legal",
+          "design_furniture": "Design & furniture",
+          "service_company": "Service company",
+          "other": "Other"
+        },
+        "statuses": {
+          "active": "Active",
+          "inactive": "Inactive"
+        },
+        "publicationStatuses": {
+          "draft": "Draft",
+          "published": "Published",
+          "archived": "Archived"
+        }
+      },
+      "create": {
+        "title": "New partner profile",
+        "company": "Company",
+        "selectCompany": "Select company",
+        "type": "Partner type",
+        "name": "Display name",
+        "slug": "Slug (optional)",
+        "slugHint": "Leave empty to generate from the name.",
+        "submit": "Create partner",
+        "submitting": "Creating…",
+        "cancel": "Cancel",
+        "types": {
+          "bank": "Bank",
+          "it_company": "IT company",
+          "sponsor": "Sponsor",
+          "supplier": "Supplier",
+          "insurance": "Insurance",
+          "legal": "Legal",
+          "design_furniture": "Design & furniture",
+          "service_company": "Service company",
+          "other": "Other"
+        },
+        "validation": {
+          "company": "Select a company",
+          "name": "Enter a display name"
+        },
+        "errors": {
+          "generic": "Something went wrong. Please try again."
+        }
+      },
+      "detail": {
+        "loading": "Loading partner…",
+        "notFound": "Partner not found",
+        "back": "← Partners",
+        "save": "Save changes",
+        "saving": "Saving…",
+        "saveSuccess": "Partner updated",
+        "errors": {
+          "generic": "Something went wrong. Please try again."
+        },
+        "form": {
+          "name": "Display name",
+          "slug": "Slug",
+          "type": "Partner type",
+          "status": "Status",
+          "publication": "Publication",
+          "featured": "Featured",
+          "featuredLabel": "Show as featured on public list"
+        },
+        "types": {
+          "bank": "Bank",
+          "it_company": "IT company",
+          "sponsor": "Sponsor",
+          "supplier": "Supplier",
+          "insurance": "Insurance",
+          "legal": "Legal",
+          "design_furniture": "Design & furniture",
+          "service_company": "Service company",
+          "other": "Other"
+        },
+        "statuses": {
+          "active": "Active",
+          "inactive": "Inactive"
+        },
+        "publicationStatuses": {
+          "draft": "Draft",
+          "published": "Published",
+          "archived": "Archived"
+        }
       }
     },
     "readiness": {
@@ -652,6 +800,102 @@
           }
         }
       }
+    }
+  },
+  "Partners": {
+    "featured": "Featured",
+    "types": {
+      "bank": "Bank",
+      "it_company": "IT company",
+      "sponsor": "Sponsor",
+      "supplier": "Supplier",
+      "insurance": "Insurance",
+      "legal": "Legal",
+      "design_furniture": "Design & furniture",
+      "service_company": "Service company",
+      "other": "Other"
+    },
+    "companyStatus": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "publication": {
+      "draft": "Draft",
+      "published": "Published",
+      "archived": "Archived"
+    },
+    "form": {
+      "type": "Type",
+      "slug": "Slug",
+      "status": "Status",
+      "publication": "Publication",
+      "featured": "Featured",
+      "featuredYes": "Yes",
+      "featuredNo": "No",
+      "shortDescription": "Short description",
+      "fullDescription": "Full description",
+      "contactPhone": "Phone",
+      "contactEmail": "Email",
+      "website": "Website",
+      "socialFacebook": "Facebook",
+      "socialInstagram": "Instagram",
+      "socialLinkedin": "LinkedIn",
+      "validation": {
+        "shortDescription": "Enter a short description in Armenian"
+      }
+    },
+    "offers": {
+      "title": "Offers & services",
+      "pageTitle": "Offers",
+      "empty": "No offers yet.",
+      "add": "Add offer",
+      "edit": "Edit",
+      "delete": "Delete",
+      "create": "Create offer",
+      "save": "Save offer",
+      "cancel": "Cancel",
+      "sortOrder": "Sort order: {value}",
+      "fields": {
+        "title": "Title",
+        "description": "Description",
+        "publication": "Publication",
+        "sortOrder": "Sort order"
+      },
+      "publication": {
+        "draft": "Draft",
+        "published": "Published",
+        "archived": "Archived"
+      },
+      "validation": {
+        "title": "Enter a title in Armenian"
+      }
+    }
+  },
+  "Partner": {
+    "badge": "Partner",
+    "profileLink": "Profile",
+    "nav": {
+      "label": "Partner navigation",
+      "section": "Manage",
+      "profile": "Profile",
+      "offers": "Offers"
+    },
+    "profile": {
+      "loading": "Loading profile…",
+      "error": "Could not load your partner profile.",
+      "slugLabel": "Public slug",
+      "save": "Save changes",
+      "saving": "Saving…",
+      "saveSuccess": "Profile updated",
+      "errors": {
+        "generic": "Something went wrong. Please try again."
+      }
+    },
+    "offers": {
+      "loading": "Loading offers…",
+      "error": "Could not load offers.",
+      "pageTitle": "Offers & services",
+      "subtitle": "Manage the services shown on your public partner page."
     }
   },
   "Builder": {
