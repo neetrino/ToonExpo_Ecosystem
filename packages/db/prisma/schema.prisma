@@ -92,6 +92,10 @@ model User {
   createdReadinessRecommendations ReadinessRecommendation[] @relation("ReadinessRecommendationCreator")
   createdReadinessRequiredActions ReadinessRequiredAction[] @relation("ReadinessRequiredActionCreator")
   authoredReadinessInternalNotes  ReadinessInternalNote[]   @relation("ReadinessInternalNoteAuthor")
+  createdBankOffers               BankOffer[]               @relation("BankOfferCreator")
+  updatedBankOffers               BankOffer[]               @relation("BankOfferUpdater")
+  createdServiceProviders         ServiceProvider[]         @relation("ServiceProviderCreator")
+  updatedServiceProviders         ServiceProvider[]         @relation("ServiceProviderUpdater")
 
   @@index([accountType])
   @@map("users")
@@ -787,16 +791,17 @@ model ReadinessCategory {
   description               String?
   weight                    Int?
   sortOrder                 Int      @default(0) @map("sort_order")
-  /// Future FK to ServiceProviderCategory (Directory module — later segment).
-  serviceProviderCategoryId String?  @map("service_provider_category_id")
-  active                    Boolean  @default(true)
-  createdAt                 DateTime @default(now()) @map("created_at")
-  updatedAt                 DateTime @updatedAt @map("updated_at")
+  serviceProviderCategoryId String?                  @map("service_provider_category_id")
+  active                    Boolean                  @default(true)
+  createdAt                 DateTime                 @default(now()) @map("created_at")
+  updatedAt                 DateTime                 @updatedAt @map("updated_at")
 
-  scores ReadinessScore[]
+  scores                    ReadinessScore[]
+  serviceProviderCategory   ServiceProviderCategory? @relation(fields: [serviceProviderCategoryId], references: [id], onDelete: SetNull)
 
   @@index([active])
   @@index([sortOrder])
+  @@index([serviceProviderCategoryId])
   @@map("readiness_categories")
 }
 
@@ -933,7 +938,7 @@ model PartnerCompany {
   logoMedia  MediaAsset?    @relation("PartnerLogo", fields: [logoMediaId], references: [id], onDelete: SetNull)
   coverMedia MediaAsset?    @relation("PartnerCover", fields: [coverMediaId], references: [id], onDelete: SetNull)
   offers     PartnerOffer[]
-  /// BankOffer rows attach here in the Mortgage module (later segment).
+  bankOffers BankOffer[]
 
   @@index([slug])
   @@index([companyId])
@@ -958,4 +963,99 @@ model PartnerOffer {
   @@index([partnerCompanyId])
   @@index([publicationStatus])
   @@map("partner_offers")
+}
+
+/// Mortgage offer terms for bank partners (Mortgage module).
+model BankOffer {
+  id                    String            @id @default(cuid())
+  partnerCompanyId      String            @map("partner_company_id")
+  title                 String
+  shortDescription      String?           @map("short_description")
+  /// Annual interest rate in percent (e.g. 12.5).
+  rate                  Decimal           @db.Decimal(5, 2)
+  apr                   Decimal?          @db.Decimal(5, 2)
+  minDownPaymentPercent Decimal           @map("min_down_payment_percent") @db.Decimal(5, 2)
+  termOptionsYears      Int[]             @map("term_options_years")
+  fees                  String?
+  calculationNotes      String?           @map("calculation_notes")
+  featured              Boolean           @default(false)
+  sortOrder             Int               @default(0) @map("sort_order")
+  publicationStatus     PublicationStatus @default(draft) @map("publication_status")
+  createdByUserId       String            @map("created_by_user_id")
+  updatedByUserId       String?           @map("updated_by_user_id")
+  publishedAt           DateTime?         @map("published_at")
+  createdAt             DateTime          @default(now()) @map("created_at")
+  updatedAt             DateTime          @updatedAt @map("updated_at")
+
+  partnerCompany PartnerCompany @relation(fields: [partnerCompanyId], references: [id], onDelete: Cascade)
+  createdBy      User           @relation("BankOfferCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  updatedBy      User?          @relation("BankOfferUpdater", fields: [updatedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([partnerCompanyId])
+  @@index([publicationStatus])
+  @@map("bank_offers")
+}
+
+enum ServiceProviderType {
+  company
+  person
+  team
+  other
+}
+
+model ServiceProviderCategory {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  sortOrder   Int      @default(0) @map("sort_order")
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  providers           ServiceProviderCategoryLink[]
+  readinessCategories ReadinessCategory[]
+
+  @@index([active])
+  @@index([sortOrder])
+  @@map("service_provider_categories")
+}
+
+model ServiceProvider {
+  id                String               @id @default(cuid())
+  name              String
+  providerType      ServiceProviderType  @map("provider_type")
+  description       String?
+  services          String?
+  phone             String?
+  email             String?
+  website           String?
+  socialLinks       Json?                @map("social_links")
+  internalNotes     String?              @map("internal_notes")
+  active            Boolean              @default(true)
+  publicationStatus PublicationStatus?   @map("publication_status")
+  createdByUserId   String               @map("created_by_user_id")
+  updatedByUserId   String?              @map("updated_by_user_id")
+  createdAt         DateTime             @default(now()) @map("created_at")
+  updatedAt         DateTime             @updatedAt @map("updated_at")
+
+  categories ServiceProviderCategoryLink[]
+  createdBy  User                          @relation("ServiceProviderCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  updatedBy  User?                         @relation("ServiceProviderUpdater", fields: [updatedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([active])
+  @@index([providerType])
+  @@index([publicationStatus])
+  @@map("service_providers")
+}
+
+model ServiceProviderCategoryLink {
+  serviceProviderId         String @map("service_provider_id")
+  serviceProviderCategoryId String @map("service_provider_category_id")
+
+  serviceProvider ServiceProvider         @relation(fields: [serviceProviderId], references: [id], onDelete: Cascade)
+  category        ServiceProviderCategory @relation(fields: [serviceProviderCategoryId], references: [id], onDelete: Cascade)
+
+  @@id([serviceProviderId, serviceProviderCategoryId])
+  @@index([serviceProviderCategoryId])
+  @@map("service_provider_category_links")
 }
