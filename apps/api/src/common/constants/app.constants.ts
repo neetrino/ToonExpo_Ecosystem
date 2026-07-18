@@ -70,3 +70,48 @@ export const EMAIL_MAX_LENGTH = 254;
  */
 export const DUMMY_PASSWORD_HASH =
   "$argon2id$v=19$m=65536,t=3,p=4$ER0Utc+ij9NOUKMOECoagQ$JU7nhYe9bsg4LO+2teIJtK/yJQmagTDISNzYL5lb/uI";
+
+/**
+ * ADAPTIVE VALUE — confirm with owner.
+ * Set-password / invite token lifetime (7 days).
+ */
+export const ACCOUNT_ACCESS_TOKEN_TTL_SECONDS = 7 * 24 * 60 * 60;
+
+/** Opaque access-token entropy (≥256 bits). */
+export const ACCOUNT_ACCESS_TOKEN_BYTES = 32;
+
+/**
+ * ADAPTIVE VALUE — confirm with owner.
+ * Default page size for admin company lists.
+ */
+export const ADMIN_COMPANIES_DEFAULT_PAGE_SIZE = 20;
+
+/**
+ * ADAPTIVE VALUE — confirm with owner.
+ * Maximum page size for admin company lists.
+ */
+export const ADMIN_COMPANIES_MAX_PAGE_SIZE = 50;
+
+/**
+ * ADAPTIVE VALUE — confirm with owner.
+ * Default page size for company member lists.
+ */
+export const COMPANY_MEMBERS_DEFAULT_PAGE_SIZE = 20;
+
+/**
+ * ADAPTIVE VALUE — confirm with owner.
+ * Maximum page size for company member lists.
+ */
+export const COMPANY_MEMBERS_MAX_PAGE_SIZE = 50;
+
+export const LIST_MIN_PAGE = 1;
+
+/**
+ * ADAPTIVE VALUE — confirm with owner.
+ * Fallback locale segment in set-password email links when none provided.
+ */
+export const DEFAULT_APP_LOCALE = "en";
+
+export const COMPANY_NAME_MAX_LENGTH = 200;
+
+export const COMPANY_DESCRIPTION_MAX_LENGTH = 4000;

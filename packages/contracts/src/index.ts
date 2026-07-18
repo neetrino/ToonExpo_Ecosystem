@@ -46,3 +46,18 @@ export type {
   ProjectListItem,
   PublicationStatus,
 } from "./catalog.js";
+
+export type {
+  CompanyListResponse,
+  CompanyMemberListResponse,
+  CompanyMemberResponse,
+  CompanyResponse,
+  CompanySource,
+  CompanyStatus,
+  CreateCompanyRequest,
+  InviteCompanyMemberRequest,
+  ProvisionCompanyResponse,
+  SetPasswordRequest,
+  UpdateCompanyMemberRequest,
+  UpdateCompanyRequest,
+} from "./companies.js";

@@ -12,37 +12,27 @@ import type {
 import { AccountType, UserStatus } from "@toonexpo/db";
 import type { Request, Response } from "express";
 
+import { AccessTokenService } from "../access-tokens/access-token.service.js";
 import { DUMMY_PASSWORD_HASH } from "../common/constants/app.constants.js";
 import type { AppEnv } from "../config/env.validation.js";
 import { PrismaService } from "../prisma/prisma.service.js";
 import { normalizeEmail, toUserResponse } from "./mappers/user.mapper.js";
+import {
+  type ClientMeta,
+  SessionCookieService,
+} from "./session-cookie.service.js";
 import type { AuthenticatedUser } from "./types/authenticated-user.js";
 import { createCsrfToken } from "./utils/csrf-token.util.js";
 import { hashPassword, verifyPassword } from "./utils/password.util.js";
-import {
-  buildCsrfCookieOptions,
-  buildSessionCookieOptions,
-} from "./utils/session-cookie.util.js";
-import {
-  createSessionToken,
-  hashSessionToken,
-} from "./utils/session-token.util.js";
-
-type ClientMeta = {
-  ipAddress?: string;
-  userAgent?: string;
-};
-
-type CreatedSession = {
-  rawToken: string;
-  absoluteExpiresAt: Date;
-};
+import { hashSessionToken } from "./utils/session-token.util.js";
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly configService: ConfigService<AppEnv, true>,
+    private readonly accessTokens: AccessTokenService,
+    private readonly sessionCookies: SessionCookieService,
   ) {}
 
   async register(
@@ -76,7 +66,11 @@ export class AuthService {
       },
     });
 
-    const csrfToken = await this.issueSessionCookies(user.id, meta, response);
+    const csrfToken = await this.sessionCookies.issueSessionCookies(
+      user.id,
+      meta,
+      response,
+    );
     return { user: toUserResponse(user), csrfToken };
   }
 
@@ -99,7 +93,11 @@ export class AuthService {
       throw new UnauthorizedException("Invalid email or password");
     }
 
-    const csrfToken = await this.issueSessionCookies(user.id, meta, response);
+    const csrfToken = await this.sessionCookies.issueSessionCookies(
+      user.id,
+      meta,
+      response,
+    );
     return { user: toUserResponse(user), csrfToken };
   }
 
@@ -108,7 +106,56 @@ export class AuthService {
       where: { id: user.sessionId },
       data: { revokedAt: new Date() },
     });
-    this.clearSessionCookies(response);
+    this.sessionCookies.clearSessionCookies(response);
+  }
+
+  async setPassword(
+    input: { token: string; password: string },
+    meta: ClientMeta,
+    response: Response,
+  ): Promise<AuthSessionResponse> {
+    const validated = await this.accessTokens.validateSetPasswordToken(
+      input.token,
+    );
+
+    if (
+      validated.user.status !== UserStatus.invited &&
+      validated.user.status !== UserStatus.active
+    ) {
+      throw new UnauthorizedException("Invalid or expired token");
+    }
+
+    const passwordHash = await hashPassword(input.password);
+    const now = new Date();
+
+    const user = await this.prisma.db.$transaction(async (tx) => {
+      const updated = await tx.user.update({
+        where: { id: validated.user.id },
+        data: {
+          passwordHash,
+          status: UserStatus.active,
+        },
+      });
+
+      await tx.accountAccessToken.update({
+        where: { id: validated.token.id },
+        data: { usedAt: now },
+      });
+
+      await tx.companyMember.updateMany({
+        where: { userId: updated.id, joinedAt: null },
+        data: { joinedAt: now },
+      });
+
+      return updated;
+    });
+
+    const csrfToken = await this.sessionCookies.issueSessionCookies(
+      user.id,
+      meta,
+      response,
+    );
+    return { user: toUserResponse(user), csrfToken };
   }
 
   getMe(user: AuthenticatedUser): UserResponse {
@@ -158,95 +205,6 @@ export class AuthService {
       updatedAt: session.user.updatedAt,
       sessionId: session.id,
     };
-  }
-
-  private async issueSessionCookies(
-    userId: string,
-    meta: ClientMeta,
-    response: Response,
-  ): Promise<string> {
-    const created = await this.createSession(userId, meta);
-    const nodeEnv = this.configService.get("NODE_ENV", { infer: true });
-    const sessionCookieName = this.configService.get("SESSION_COOKIE_NAME", {
-      infer: true,
-    });
-    const csrfCookieName = this.configService.get("CSRF_COOKIE_NAME", {
-      infer: true,
-    });
-    const maxAgeMs = Math.max(
-      created.absoluteExpiresAt.getTime() - Date.now(),
-      0,
-    );
-    const secret = this.configService.get("CSRF_SECRET", { infer: true });
-    const csrfToken = createCsrfToken(created.rawToken, secret);
-
-    response.cookie(
-      sessionCookieName,
-      created.rawToken,
-      buildSessionCookieOptions(nodeEnv, maxAgeMs),
-    );
-    response.cookie(
-      csrfCookieName,
-      csrfToken,
-      buildCsrfCookieOptions(nodeEnv, maxAgeMs),
-    );
-
-    return csrfToken;
-  }
-
-  private clearSessionCookies(response: Response): void {
-    const nodeEnv = this.configService.get("NODE_ENV", { infer: true });
-    const sessionCookieName = this.configService.get("SESSION_COOKIE_NAME", {
-      infer: true,
-    });
-    const csrfCookieName = this.configService.get("CSRF_COOKIE_NAME", {
-      infer: true,
-    });
-
-    response.clearCookie(
-      sessionCookieName,
-      buildSessionCookieOptions(nodeEnv, 0),
-    );
-    response.clearCookie(csrfCookieName, buildCsrfCookieOptions(nodeEnv, 0));
-  }
-
-  private async createSession(
-    userId: string,
-    meta: ClientMeta,
-  ): Promise<CreatedSession> {
-    const pepper = this.configService.get("SESSION_TOKEN_PEPPER", {
-      infer: true,
-    });
-    const idleTtl = this.configService.get("SESSION_IDLE_TTL_SECONDS", {
-      infer: true,
-    });
-    const absoluteTtl = this.configService.get("SESSION_ABSOLUTE_TTL_SECONDS", {
-      infer: true,
-    });
-    const now = new Date();
-    const absoluteExpiresAt = new Date(now.getTime() + absoluteTtl * 1000);
-    const idleExpiresAt = new Date(
-      Math.min(
-        now.getTime() + idleTtl * 1000,
-        absoluteExpiresAt.getTime(),
-      ),
-    );
-    const rawToken = createSessionToken();
-    const tokenHash = hashSessionToken(rawToken, pepper);
-
-    await this.prisma.db.session.create({
-      data: {
-        userId,
-        tokenHash,
-        idleExpiresAt,
-        absoluteExpiresAt,
-        lastSeenAt: now,
-        ...(meta.ipAddress ? { ipAddress: meta.ipAddress } : {}),
-        ...(meta.userAgent ? { userAgent: meta.userAgent } : {}),
-      },
-    });
-
-    return { rawToken, absoluteExpiresAt };
   }
 
   private isSessionActive(session: {

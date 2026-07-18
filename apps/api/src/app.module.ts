@@ -4,6 +4,7 @@ import { APP_GUARD } from "@nestjs/core";
 import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 import { LoggerModule } from "nestjs-pino";
 
+import { AdminCompaniesModule } from "./admin/companies/admin-companies.module.js";
 import { AuthModule } from "./auth/auth.module.js";
 import { AccountTypesGuard } from "./auth/guards/account-types.guard.js";
 import { CsrfOriginGuard } from "./auth/guards/csrf-origin.guard.js";
@@ -15,8 +16,10 @@ import {
   AUTH_RATE_LIMIT_TTL_MS,
   NODE_ENV_PRODUCTION,
 } from "./common/constants/app.constants.js";
+import { CompanyMembersModule } from "./company/company-members.module.js";
 import { resolveEnvFilePaths } from "./config/env-files.js";
 import { validateEnv } from "./config/env.validation.js";
+import { EmailModule } from "./email/email.module.js";
 import { HealthModule } from "./health/health.module.js";
 import { PrismaModule } from "./prisma/prisma.module.js";
 
@@ -63,7 +66,10 @@ const isProduction = process.env["NODE_ENV"] === NODE_ENV_PRODUCTION;
       ],
     }),
     PrismaModule,
+    EmailModule,
     AuthModule,
+    AdminCompaniesModule,
+    CompanyMembersModule,
     CatalogModule,
     HealthModule,
   ],

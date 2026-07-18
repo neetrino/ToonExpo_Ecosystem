@@ -4,9 +4,11 @@ import { AccountType, UserStatus } from "@toonexpo/db";
 import type { Response } from "express";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
+import type { AccessTokenService } from "../access-tokens/access-token.service.js";
 import type { AppEnv } from "../config/env.validation.js";
 import type { PrismaService } from "../prisma/prisma.service.js";
 import { AuthService } from "./auth.service.js";
+import { SessionCookieService } from "./session-cookie.service.js";
 import * as passwordUtil from "./utils/password.util.js";
 
 const PEPPER = "test-session-token-pepper-32chars-min";
@@ -18,6 +20,8 @@ const createConfigService = (): ConfigService<AppEnv, true> =>
         NODE_ENV: "test",
         PORT: 4000,
         DATABASE_URL: "postgresql://test",
+        APP_URL: "http://localhost:3000",
+        DEFAULT_LOCALE: "en",
         CORS_ORIGINS: ["http://localhost:3000"],
         SESSION_TOKEN_PEPPER: PEPPER,
         SESSION_COOKIE_NAME: "toonexpo_session",
@@ -66,7 +70,13 @@ describe("AuthService", () => {
       },
     } as unknown as PrismaService;
 
-    service = new AuthService(prisma, createConfigService());
+    const config = createConfigService();
+    const accessTokens = {
+      validateSetPasswordToken: vi.fn(),
+    } as unknown as AccessTokenService;
+    const sessionCookies = new SessionCookieService(prisma, config);
+
+    service = new AuthService(prisma, config, accessTokens, sessionCookies);
     response = { cookie, clearCookie } as unknown as Response;
   });
 

@@ -31,6 +31,7 @@ import { CurrentUser } from "./decorators/current-user.decorator.js";
 import { Public } from "./decorators/public.decorator.js";
 import { LoginDto } from "./dto/login.dto.js";
 import { RegisterDto } from "./dto/register.dto.js";
+import { SetPasswordDto } from "./dto/set-password.dto.js";
 import type { AuthenticatedUser } from "./types/authenticated-user.js";
 
 @ApiTags("auth")
@@ -64,6 +65,24 @@ export class AuthController {
     @Res({ passthrough: true }) response: Response,
   ): Promise<AuthSessionResponse> {
     return this.authService.login(body, this.clientMeta(request), response);
+  }
+
+  @Public()
+  @Post("set-password")
+  @HttpCode(HttpStatus.OK)
+  @Throttle({ default: { limit: AUTH_RATE_LIMIT_LIMIT, ttl: AUTH_RATE_LIMIT_TTL_MS } })
+  @ApiOperation({ summary: "Set password from invite token and start a session" })
+  @ApiOkResponse({ description: "Password set; session cookie set" })
+  setPassword(
+    @Body() body: SetPasswordDto,
+    @Req() request: Request,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<AuthSessionResponse> {
+    return this.authService.setPassword(
+      body,
+      this.clientMeta(request),
+      response,
+    );
   }
 
   @Post("logout")
