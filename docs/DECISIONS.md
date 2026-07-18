@@ -55,6 +55,12 @@
 - **Buyer QR resolution:** opaque token; builder company member sees minimal buyer action screen; entrance staff sees check-in; unauthorized/stranger sees no name/phone/email.
 - **Unified deal creation:** one backend use case with sources `buyer_project_request` (buyer via Project QR → project page → request) and `builder_buyer_qr_scan` (company member scans Buyer QR → action screen → request). Deduplication, CRM and history are shared.
 
+## Confirmed 2026-07-18 (Same-Origin API Proxy)
+
+- **One main domain for the browser:** the web app is the only origin the browser calls for product API traffic in staging and initial production.
+- **Env-gated Next.js rewrite proxy:** when Vercel sets server-only `API_PROXY_TARGET` to the Cloud Run origin and leaves `NEXT_PUBLIC_API_URL` empty, Next.js rewrites `/api/v1/*` to the API; session cookies stay first-party on the web hostname.
+- **Direct mode without code changes:** later, unset `API_PROXY_TARGET` and set `NEXT_PUBLIC_API_URL=https://api.toonexpo.com` after `api.toonexpo.com` is mapped to Cloud Run.
+
 ## Confirmed 2026-07-18 (Catalog)
 
 - **Currency (v1):** AMD only. Apartment prices are stored in major units as `Decimal(14,2)` (e.g. `79500000` dram). A `currency` column exists in the schema for future use; multi-currency display and a currency switcher are out of v1.

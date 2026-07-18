@@ -196,10 +196,11 @@ Set these on the Cloud Run service (Console → Edit & deploy → Variables & se
 
 ### 3.5 Custom domain (later)
 
-Map `api.toonexpo.com` in Cloud Run → Domain mappings, then add DNS records Google provides. Update:
+Map `api.toonexpo.com` in Cloud Run → Domain mappings, then add DNS records Google provides. Switch to **direct mode** (§4.2):
 
-- Vercel `NEXT_PUBLIC_API_URL=https://api.toonexpo.com`
-- Cloud Run `CORS_ORIGINS` to include your production web origin(s)
+- Unset Vercel `API_PROXY_TARGET`
+- Set Vercel `NEXT_PUBLIC_API_URL=https://api.toonexpo.com`
+- Update Cloud Run `CORS_ORIGINS` to include your production web origin(s)
 
 ---
 
@@ -226,9 +227,14 @@ Turbo builds `@toonexpo/contracts` and `@toonexpo/shared` first (`dependsOn: ["^
 
 | Variable | Required | Notes |
 |----------|----------|-------|
-| `NEXT_PUBLIC_API_URL` | **Yes** | Cloud Run URL, e.g. `https://toonexpo-api-xxxxx-ew.a.run.app` or `https://api.toonexpo.com` |
+| `API_PROXY_TARGET` | **Staging / initial prod** | Cloud Run origin, e.g. `https://toonexpo-api-xxxxx-ew.a.run.app`. Enables same-origin `/api/v1/*` rewrites; keep the Run URL server-side only. |
+| `NEXT_PUBLIC_API_URL` | **Direct mode only** | When `API_PROXY_TARGET` is unset, set to `https://api.toonexpo.com` (or the Run URL for debugging). **Leave empty** when the proxy is enabled. |
 | `NEXT_PUBLIC_SENTRY_DSN` | Optional | Browser Sentry |
 | `SENTRY_AUTH_TOKEN` | Optional | CI/sourcemap upload only; not needed at runtime |
+
+**Default posture (staging + first production deploy):** set `API_PROXY_TARGET` to the Cloud Run URL; leave `NEXT_PUBLIC_API_URL` empty. The browser never sees the Run hostname.
+
+**Later direct mode:** unset `API_PROXY_TARGET`; set `NEXT_PUBLIC_API_URL=https://api.toonexpo.com`. No code changes.
 
 **Not on Vercel:** API secrets (`DATABASE_URL`, `SESSION_*`, `RESEND_*`, R2, BOS, etc.) — those live on Cloud Run only.
 
@@ -250,51 +256,53 @@ After both services are deployed:
 
 1. **`CORS_ORIGINS`** on Cloud Run includes every production web origin (scheme + host, no trailing slash), e.g. Vercel preview URL during staging and `https://toonexpo.com` for production.
 2. **`APP_URL`** matches the canonical public web URL (used in transactional emails and QR deep links).
-3. **`NEXT_PUBLIC_API_URL`** points to the Cloud Run service URL (or custom API domain).
+3. **API connectivity:** either `API_PROXY_TARGET` on Vercel (proxy mode, empty `NEXT_PUBLIC_API_URL`) or `NEXT_PUBLIC_API_URL` pointing at the API origin (direct mode). See §4.2 and §6.
 4. Re-test login, a mutating portal action, and file upload (if R2 configured) from the deployed web origin.
 
 ---
 
-## 6. Cross-domain cookies and authentication
+## 6. Same-origin API proxy and authentication
 
-> **Read this before going live on default `*.vercel.app` + `*.run.app` hostnames.**
+> **Default for staging and initial production:** enable the env-gated Next.js rewrite proxy so session cookies stay first-party. Switch to direct mode later with env only (§4.2).
 
-### How auth works today
+### Two connectivity modes (env matrix)
 
-- The **browser calls the NestJS API directly** using `NEXT_PUBLIC_API_URL` (`apps/web/src/shared/api/client.ts` → `fetch(buildApiUrl(...))`), not a Next.js rewrite proxy.
+| Mode | `API_PROXY_TARGET` (Vercel, server-only) | `NEXT_PUBLIC_API_URL` | Browser calls | Server Components call |
+|------|------------------------------------------|------------------------|---------------|-------------------------|
+| **Proxy (default staging / initial prod)** | Cloud Run origin, e.g. `https://…run.app` | empty / unset | Same-origin `/api/v1/*` (Next.js rewrite) | `API_PROXY_TARGET` directly (absolute URL) |
+| **Direct (after `api.toonexpo.com`)** | unset | `https://api.toonexpo.com` | API origin directly | same as browser |
+
+Implementation: `apps/web/next.config.ts` (`rewrites()`), `apps/web/src/shared/config/env.ts`, `apps/web/src/shared/api/client.ts` (`buildApiUrl`).
+
+### How auth works
+
+- The browser uses `buildApiUrl` → relative `/api/v1/…` in proxy mode or absolute `NEXT_PUBLIC_API_URL` in direct mode.
 - Requests use `credentials: "include"` on authenticated routes (e.g. `apps/web/src/features/auth/api/auth-api.ts`).
 - The API sets **httpOnly session cookies** and a readable CSRF cookie with:
   - `sameSite: "lax"`
   - `secure: true` in production
-  - **No `Domain` attribute** (host-only on the API hostname)
+  - **No `Domain` attribute** (host-only on the response origin — with the proxy, that is the web hostname)
   - See `apps/api/src/auth/utils/session-cookie.util.ts`
 - CORS allows credentials: `credentials: true` in `apps/api/src/main.ts`.
-- Mutations require a valid `Origin` header on allowlisted origins when a session cookie is present (`CsrfOriginGuard`).
-- CSRF tokens: returned in login/register JSON and cached in memory for cross-origin clients; cookie-based CSRF is used when the API shares the document origin (`apps/web/src/shared/api/csrf.ts`).
+- Mutations require a valid `Origin` header on allowlisted origins when a session cookie is present (`CsrfOriginGuard`). With the proxy, the API sees the **web origin** (`https://toonexpo.vercel.app` or `https://toonexpo.com`) — ensure it is in `CORS_ORIGINS`.
+- CSRF tokens: returned in login/register JSON and cached in memory; cookie-based CSRF works in proxy mode because API cookies are scoped to the web origin.
 
-### WARNING — default Cloud Run + Vercel hostnames
+### Why the proxy exists
 
-If the web app is on **`*.vercel.app`** and the API on **`*.run.app`**, they are **different sites** (different registrable domains). With `SameSite=Lax`:
+On default **`*.vercel.app` + `*.run.app`** hostnames, web and API are **different sites**. With `SameSite=Lax`, session cookies set by the API are **not sent** on cross-site `fetch(..., { credentials: "include" })`. Login may appear to succeed, but authenticated requests return 401.
 
-- Session cookies set by the API are **not sent** on cross-site `fetch(..., { credentials: "include" })` from the Vercel origin to Cloud Run.
-- Login may appear to succeed (JSON response + CSRF token in memory), but **subsequent authenticated requests will fail** (401) because the session cookie never attaches cross-site.
+**Proxy mode** keeps the browser on one origin: Next.js forwards `/api/v1/*` to Cloud Run server-side; `Set-Cookie` from the API is returned to the browser unchanged and binds to the web hostname (no `Domain=` attribute).
 
-**Do not rely on auth working end-to-end on mismatched default hostnames.**
+### Staging checklist
 
-### Recommended fixes (pick one)
+1. Vercel: `API_PROXY_TARGET=https://<cloud-run-service-url>` (no trailing slash).
+2. Vercel: leave `NEXT_PUBLIC_API_URL` empty.
+3. Cloud Run: `CORS_ORIGINS` includes the exact Vercel web origin(s).
+4. Smoke-test login and an authenticated mutation from the deployed web URL.
 
-1. **Custom domains (recommended)**  
-   - Web: `https://toonexpo.com` (Vercel)  
-   - API: `https://api.toonexpo.com` (Cloud Run domain mapping)  
-   Same registrable domain (`toonexpo.com`) → same-site requests → `SameSite=Lax` cookies work with `credentials: "include"`. Still set `CORS_ORIGINS` to the exact web origin(s).
+### Direct mode later
 
-2. **Next.js rewrite proxy (same-origin to the browser)**  
-   Add rewrites so the browser calls `/api/v1/*` on the web origin and Next.js forwards to Cloud Run server-side. Requires code/config changes (not implemented today). Cookies would need to target the web domain or remain API-scoped with careful proxy cookie forwarding.
-
-3. **Change cookie policy (API code change)**  
-   Set `sameSite: "none"` and `secure: true` for production cross-site cookies, and optionally `Domain=.toonexpo.com` when using custom subdomains. Requires an API change and thorough testing.
-
-For **staging on Vercel preview URLs**, prefer option 1 with a staging custom domain, or accept that cookie auth will not work on preview unless you implement option 2 or 3.
+When `api.toonexpo.com` is mapped to Cloud Run, unset `API_PROXY_TARGET` and set `NEXT_PUBLIC_API_URL=https://api.toonexpo.com`. Same registrable domain as the web app → same-site cookies with `SameSite=Lax`.
 
 ---
 
@@ -322,7 +330,7 @@ curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/api/v1/health
 2. Create production Neon DB; set `DATABASE_URL` / `DIRECT_URL` locally.
 3. Run migrations (§2).
 4. Build and deploy API to Cloud Run (§3); note the service URL.
-5. Set Vercel env vars including `NEXT_PUBLIC_API_URL` (§4).
+5. Set Vercel env vars: `API_PROXY_TARGET` + empty `NEXT_PUBLIC_API_URL` for staging/initial prod (§4.2).
 6. Deploy web on Vercel.
 7. Update `CORS_ORIGINS` and `APP_URL` on Cloud Run to match the live web URL (§5).
 8. Verify auth and critical flows (§6).

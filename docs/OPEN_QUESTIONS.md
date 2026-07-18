@@ -6,25 +6,7 @@ Last updated: 2026-07-18.
 
 ---
 
-## Q1. Cross-domain session cookies for staging deploy (CRITICAL — decide before first deploy)
-
-**Context.** Sessions are httpOnly cookies with `SameSite=Lax`, and the browser calls the API directly (`NEXT_PUBLIC_API_URL`). `toonexpo.vercel.app` (web) and `*.run.app` (API) are different registrable domains, so the browser will NOT attach the session cookie to API requests: login appears to succeed, but every following authenticated request returns 401. Safari/iOS additionally blocks cross-site cookies entirely, regardless of SameSite.
-
-**Works out of the box** with production custom domains: `toonexpo.com` + `api.toonexpo.com` are the same site — no code change needed.
-
-**Options for the staging period on vercel.app:**
-
-| Option | How | Pros | Cons |
-|---|---|---|---|
-| A. Env-gated Next.js rewrite proxy (recommended) | When a proxy env var is set, web rewrites `/api/v1/*` to the Cloud Run URL; cookies stay first-party. Off in production with custom domains. | Works everywhere incl. Safari; zero API changes; reversible | API traffic passes through Vercel while enabled (latency + bandwidth) |
-| B. Custom domains from day one | Map `staging.toonexpo.com` + `api-staging.toonexpo.com` immediately | No code at all | Requires DNS access to toonexpo.com now, before client confirmation |
-| C. `SameSite=None; Secure` | Change cookie options | Trivial change | Broken in Safari/iOS private + ITP; weakens CSRF posture — NOT recommended |
-
-**Recommendation:** A (implementation prepared but NOT built yet — awaiting owner decision).
-
----
-
-## Q2. Final design variant
+## Q1. Final design variant
 
 **Context.** Three Figma style variants were provided; the product is currently built in the style of Variant A (node 1-2).
 
@@ -32,15 +14,15 @@ Last updated: 2026-07-18.
 
 ---
 
-## Q3. Production domains and go-live sequence
+## Q2. Production domains and go-live sequence
 
-**Context.** Target domain `toonexpo.com` awaits client confirmation; interim production runs on `toonexpo.vercel.app` + Cloud Run URL.
+**Context.** Target domain `toonexpo.com` awaits client confirmation; interim production runs on `toonexpo.vercel.app` + Cloud Run URL (API hidden behind the same-origin proxy — see `DECISIONS.md`).
 
-**Needed from owner:** timing of DNS switch; whether `api.toonexpo.com` will be mapped at the same time (also resolves Q1 permanently). Config impact is limited to `APP_URL`, `CORS_ORIGINS`, `NEXT_PUBLIC_API_URL`.
+**Needed from owner:** timing of DNS switch; whether `api.toonexpo.com` will be mapped at the same time (enables direct mode via env). Config impact is limited to `APP_URL`, `CORS_ORIGINS`, `API_PROXY_TARGET`, and `NEXT_PUBLIC_API_URL`.
 
 ---
 
-## Q4. First platform admin in production (seed policy)
+## Q3. First platform admin in production (seed policy)
 
 **Context.** Dev/staging use Prisma seeds with demo companies and a seeded admin. Production must not contain demo data.
 
@@ -48,7 +30,7 @@ Last updated: 2026-07-18.
 
 ---
 
-## Q5. BOS outbound integration scope
+## Q4. BOS outbound integration scope
 
 **Context.** Inbound provisioning (BOS → ToonExpo company creation) is implemented and audited. Outbound summaries (ToonExpo → BOS) are documented as planned but blocked: BOS API is not available yet.
 
@@ -56,7 +38,7 @@ Last updated: 2026-07-18.
 
 ---
 
-## Q6. Post-v1 scope confirmation
+## Q5. Post-v1 scope confirmation
 
 **Context.** The docs mention features that were consciously NOT built for v1. Confirm they stay post-v1 (docs will be marked accordingly in the docs-sync pass):
 
@@ -76,4 +58,4 @@ Last updated: 2026-07-18.
 - **Rotate secrets before production:** Resend, R2, BOS API key, Upstash token and the Neon password were exposed during development (chat/screenshots). Generate fresh production values; never reuse dev secrets.
 - **Separate production Neon database** (dev DB stays for development); run `prisma migrate deploy` against prod before first release.
 - **Enable Sentry sourcemap upload** in CI once `SENTRY_AUTH_TOKEN` is wired into the pipeline (currently disabled by design).
-- **Strong production values** for `SESSION_TOKEN_PEPPER`, `CSRF_SECRET`, `SEED_ADMIN_PASSWORD` (if seeding at all — see Q4).
+- **Strong production values** for `SESSION_TOKEN_PEPPER`, `CSRF_SECRET`, `SEED_ADMIN_PASSWORD` (if seeding at all — see Q3).
