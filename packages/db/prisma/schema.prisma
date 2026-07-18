@@ -1272,3 +1272,51 @@ model CheckInRecord {
   @@index([checkedInAt])
   @@map("check_in_records")
 }
+
+/// Product analytics event types (v1).
+enum AnalyticsEventType {
+  project_view
+  building_view
+  floor_view
+  apartment_view
+  builder_profile_view
+  partner_profile_view
+  mortgage_page_view
+  bank_offer_selected
+  favorite_added
+  request_created
+  qr_scanned
+  check_in_recorded
+  booth_selected
+  route_requested
+  crm_status_changed
+  readiness_status_changed
+
+  @@map("analytics_event_type")
+}
+
+/// Append-only analytics events. Entity id columns are plain strings (no FK) so
+/// analytics never blocks or cascades with domain data lifecycle.
+model AnalyticsEvent {
+  id          String             @id @default(cuid())
+  eventType   AnalyticsEventType @map("event_type")
+  actorUserId String?            @map("actor_user_id")
+  actorRole   String?            @map("actor_role")
+  companyId   String?            @map("company_id")
+  projectId   String?            @map("project_id")
+  buildingId  String?            @map("building_id")
+  floorId     String?            @map("floor_id")
+  apartmentId String?            @map("apartment_id")
+  eventId     String?            @map("event_id")
+  boothId     String?            @map("booth_id")
+  requestId   String?            @map("request_id")
+  crmDealId   String?            @map("crm_deal_id")
+  source      String?
+  metadata    Json?
+  createdAt   DateTime           @default(now()) @map("created_at")
+
+  @@index([eventType, createdAt])
+  @@index([companyId, createdAt])
+  @@index([projectId, createdAt])
+  @@map("analytics_events")
+}
