@@ -34,13 +34,24 @@
 - Neon PostgreSQL connected; local development uses Neon dev branch via `DATABASE_URL` in local `.env` (not committed); no docker-compose for database.
 - Sprint 0 (Foundation) started 2026-07-18.
 
+## Confirmed 2026-07-18 (Scale Profile And Auth Operations)
+
+- **Scale and load profile:** full production platform, not an MVP. ~3 exhibitions per year; exhibition-day peaks of up to ~25,000 buyer registrations and QR scans; ~100 builder companies year-round (~5 employees each, ~500 B2B users). Connection pools, rate limits, caching and infrastructure must target this profile.
+- **Session absolute TTL:** 30 days.
+- **Session idle TTL:** 7 days (sliding).
+- **Auth rate limit:** 10 requests per IP per minute on login and register endpoints.
+- **Minimum password length:** 8 characters.
+- **Buyer registration phone:** required.
+- **CSRF strategy:** two-layer protection — Origin allowlist check (already implemented) plus full CSRF tokens (double-submit cookie) in Sprint 1 hardening.
+
 ## Remaining Environment Decisions
 
 - final staging and production web/API domains before those environments are deployed;
 - Cloudflare R2, Resend, Sentry, Vercel and Google Cloud accounts/credentials;
-- adaptive rate, timeout and pool values based on environments.
+- database pool sizes and statement timeouts tuned per environment for the confirmed load profile;
+- QR, public request and provisioning rate limits finalized for staging/production.
 
-These inputs do not block local Sprint 0 development.
+These inputs do not block local development or Sprint 1 CSRF hardening.
 
 ## Source Docs
 

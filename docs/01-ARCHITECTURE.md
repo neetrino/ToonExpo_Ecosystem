@@ -5,7 +5,7 @@ Public and role-based digital platform for ToonExpo buyers, builders, partners, 
 **Project size:** C - large
 **Architecture style:** modular monolith in a monorepo
 **Primary deployables:** `apps/web` and `apps/api`
-**Last updated:** 2026-07-17
+**Last updated:** 2026-07-18
 
 ---
 
@@ -23,6 +23,8 @@ ToonExpo is one product with multiple role-based experiences. It should be imple
 This keeps deployment and transactions manageable while preserving module boundaries suitable for a large, long-lived product. Microservices are not justified at the current scale.
 
 ToonExpo is a full production product, not an MVP or prototype. Delivery may be incremental, but included modules must be production-ready and complete for their approved release scope.
+
+**Load profile (NFR context):** ~3 exhibitions per year; on exhibition days up to ~25,000 buyers must register and receive QR codes (registration and scan peaks). Year-round ~100 builder companies with ~5 employees each (~500 B2B users). Connection pools, rate limits, caching and infrastructure sizing must target this profile. See [Tech Card — Scale And Load Profile](./TECH_CARD.md#scale-and-load-profile).
 
 ### Authoritative runtime boundary
 
@@ -407,16 +409,16 @@ Authentication is owned by NestJS. Passport Local validates email+password, and 
 
 Baseline:
 
-- buyer self-registration with name, phone, email and password; the password is stored only as an argon2id hash;
+- buyer self-registration with name, required phone, email and password (minimum 8 characters); the password is stored only as an argon2id hash;
 - builder, partner, bank and staff accounts created by admin or BOS provisioning;
 - argon2id for stored passwords;
 - opaque random session token in a secure httpOnly cookie, with only its hash stored in PostgreSQL;
-- revocable sessions with configurable idle and absolute expiry;
+- revocable sessions with 30-day absolute TTL and 7-day sliding idle TTL;
 - single-use, expiring set-password and password-reset token hashes delivered through Resend;
-- explicit CORS allowlist and CSRF protection for cookie-authenticated mutations;
+- two-layer CSRF protection for cookie-authenticated mutations: Origin allowlist check (implemented) plus double-submit CSRF tokens (Sprint 1 hardening);
 - NestJS guards for role checks;
 - policy checks for company and resource ownership;
-- rate limits for auth, QR resolution, public requests and provisioning;
+- auth rate limit of 10 requests per IP per minute on login and register; additional rate limits for QR resolution, public requests and provisioning sized for the confirmed load profile;
 - no authorization based only on hidden UI or Next.js redirect logic.
 
 ---
@@ -442,6 +444,8 @@ Infrastructure responsibilities:
 ---
 
 ## 14. Scaling And Reliability
+
+Capacity planning assumes the confirmed load profile: exhibition-day peaks of up to ~25,000 buyer registrations and QR scans (~3 exhibitions per year) plus ~500 steady-state B2B users across ~100 builder companies. Pool sizes, rate limits and caching must be validated against this profile before staging/production cutover.
 
 1. Keep the modular monolith while module boundaries remain healthy.
 2. Scale Next.js and Cloud Run independently.

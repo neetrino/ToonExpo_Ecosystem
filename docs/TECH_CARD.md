@@ -2,7 +2,7 @@
 
 ## Status
 
-Core stack and foundation decisions confirmed (2026-07-18). Sprint 0 started. Provider credentials, staging/production domains and adaptive operational limits still require environment-specific confirmation.
+Core stack, foundation decisions and scale/load profile confirmed (2026-07-18). Sprint 1 auth is implemented; CSRF hardening remains. Provider credentials, staging/production domains and environment-specific pool/timeout tuning still require confirmation before staging/production deploy.
 
 ## Project Size
 
@@ -15,6 +15,18 @@ Size C - large, layout: monorepo (`apps/*`, `packages/*`).
 ## Delivery Model
 
 ToonExpo Ecosystem is a full production product. It is not a prototype or MVP. Release planning may split implementation into stages, but every included module must be designed for production operation, security, maintainability and complete acceptance criteria.
+
+## Scale And Load Profile
+
+ToonExpo is a full production platform, not an MVP. Capacity decisions — connection pools, rate limits, caching and infrastructure sizing — must target this profile:
+
+| Period | Audience | Scale | Peak behavior |
+|---|---|---|---|
+| Exhibition days | Buyers / visitors | ~25,000 must register and receive QR codes per exhibition | Registration and QR scan traffic spikes |
+| Exhibition cadence | Events | ~3 exhibitions per year | Short, predictable peak windows |
+| Year-round | Builder companies | ~100 companies, ~5 employees each (~500 B2B users) | Steady operational portal usage |
+
+All adaptive operational values in this document are sized for this load profile unless a future ADR documents a change.
 
 ## Version Policy
 
@@ -106,11 +118,12 @@ Next.js Server Components may fetch the NestJS API. Server Actions must not impl
 | Session transport | Opaque random token in a backend-issued secure httpOnly cookie; only its hash is stored in a revocable DB session | Confirmed |
 | Auth method | Email+password; OAuth providers not in v1 | Confirmed |
 | Password hashing | argon2id | Confirmed |
-| Session lifecycle | Configurable idle and absolute expiry; rotate on login/privilege-sensitive events and revoke on logout, suspension or admin action | Confirmed |
+| Session lifecycle | Absolute TTL 30 days; idle TTL 7 days (sliding); rotate on login/privilege-sensitive events and revoke on logout, suspension or admin action | Confirmed |
 | Invite/reset flow | Single-use expiring token hashes delivered by Resend; raw tokens and passwords are never stored or emailed | Confirmed |
 | Authorization | NestJS guards plus company/resource ownership policies | Confirmed |
-| CORS/CSRF | Explicit allowlist and CSRF protection for cookie mutations | Confirmed |
-| Rate limits | Required for auth, QR, public request and provisioning endpoints; exact thresholds are environment-configured | Confirmed |
+| CORS/CSRF | Two-layer protection: Origin allowlist check (implemented) plus full CSRF tokens (double-submit cookie) added in Sprint 1 hardening | Confirmed |
+| Rate limits | Required for auth, QR, public request and provisioning endpoints; confirmed thresholds in Adaptive Operational Values | Confirmed |
+| Buyer registration | Name, required phone, email and password (minimum 8 characters) | Confirmed |
 | QR privacy | Opaque token with server-side lookup; no embedded personal data | Confirmed |
 
 ## Testing
@@ -154,10 +167,26 @@ packages/
 - Auth, authorization and business mutations are always enforced by NestJS.
 - Canonical rules: [Frontend / Backend Boundary](./architecture/FRONTEND_BACKEND_BOUNDARY.md).
 
+## Adaptive Operational Values
+
+Confirmed 2026-07-18 for the scale and load profile above. Environment variables may override defaults, but production must not drift below these baselines without an ADR.
+
+| Parameter | Value | Status |
+|---|---|---:|
+| Session absolute TTL | 30 days | Confirmed |
+| Session idle TTL (sliding) | 7 days | Confirmed |
+| Auth rate limit (login/register) | 10 requests per IP per minute | Confirmed |
+| Minimum password length | 8 characters | Confirmed |
+| Buyer registration phone | Required | Confirmed |
+| CSRF strategy | Origin allowlist (implemented) + double-submit CSRF tokens (Sprint 1 hardening) | Confirmed |
+| QR, public request and provisioning rate limits | Environment-configured under the same load profile | Pending environment deploy |
+| Database pool sizes and statement timeouts | Environment-configured under the same load profile | Pending environment deploy |
+
 ## Environment-Specific Configuration Still Needed
 
 - staging and production domains;
 - Cloudflare R2, Resend, Sentry, Vercel and Google Cloud accounts/credentials;
-- adaptive rate, timeout and pool values based on environments.
+- database pool sizes and statement timeouts tuned per environment for the confirmed load profile;
+- QR, public request and provisioning rate limits finalized for staging/production.
 
-These inputs do not block local Sprint 0 development.
+These inputs do not block local development or Sprint 1 hardening.
