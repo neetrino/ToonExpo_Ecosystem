@@ -2,6 +2,7 @@ packages:
   - "apps/*"
   - "packages/*"
 allowBuilds:
+  "@toonexpo/db": true
   "@parcel/watcher": true
   "@prisma/engines": true
   "@scarf/scarf": false

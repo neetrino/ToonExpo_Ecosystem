@@ -13,6 +13,9 @@ ARG API_PACKAGE=@toonexpo/api
 FROM node:${NODE_VERSION} AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
+RUN apt-get update -y \
+  && apt-get install -y --no-install-recommends openssl ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
 RUN corepack enable && corepack prepare pnpm@${PNPM_VERSION} --activate
 WORKDIR /app
 
@@ -27,11 +30,14 @@ FROM base AS build
 ARG API_PACKAGE
 COPY --from=prune /app/out/json/ .
 COPY --from=prune /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile --ignore-scripts
 COPY --from=prune /app/out/full/ .
-RUN pnpm --filter @toonexpo/db exec prisma generate \
+# Turbo and prisma.config.ts load DATABASE_URL from the monorepo root .env at build time (no DB connection).
+RUN printf 'DATABASE_URL=postgresql://build:build@127.0.0.1:5432/build\n' > .env
+RUN pnpm install --frozen-lockfile \
+  && pnpm --filter @toonexpo/db exec prisma generate \
   && pnpm turbo run build --filter=${API_PACKAGE}
-RUN pnpm --filter ${API_PACKAGE} --prod deploy --legacy /app/deploy
+RUN pnpm --filter ${API_PACKAGE} --prod deploy --legacy /app/deploy --config.ignore-scripts=true
 
 # Stage 3 — slim runtime (Debian slim: Prisma 7 library engine + argon2 native bindings)
 FROM node:${NODE_VERSION} AS runner
