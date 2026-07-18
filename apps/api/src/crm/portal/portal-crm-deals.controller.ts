@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -12,12 +13,14 @@ import {
 } from "@nestjs/common";
 import {
   ApiCreatedResponse,
+  ApiNoContentResponse,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
 } from "@nestjs/swagger";
 import type {
   CrmActivityItem,
+  CrmApartmentLinkItem,
   CrmDealDetail,
   CrmDealListResponse,
   CrmNoteItem,
@@ -31,6 +34,7 @@ import { CompanyMember } from "../../company/decorators/company-member.decorator
 import { CurrentCompanyMember } from "../../company/decorators/current-company-member.decorator.js";
 import { CompanyMemberGuard } from "../../company/guards/company-member.guard.js";
 import type { CompanyMemberContext } from "../../company/types/company-member-context.js";
+import { AttachCrmDealApartmentDto } from "../dto/attach-deal-apartment.dto.js";
 import {
   ListCrmDealsQueryDto,
   UpdateCrmDealDto,
@@ -44,6 +48,7 @@ import {
   CreateDealFromScanDto,
   CreateManualDealDto,
 } from "../dto/create-portal-deal.dto.js";
+import { PortalCrmDealApartmentsService } from "./portal-crm-deal-apartments.service.js";
 import { PortalCrmDealsService } from "./portal-crm-deals.service.js";
 import { PortalCrmNotesActivitiesService } from "./portal-crm-notes-activities.service.js";
 
@@ -56,6 +61,7 @@ export class PortalCrmDealsController {
   constructor(
     private readonly deals: PortalCrmDealsService,
     private readonly notesActivities: PortalCrmNotesActivitiesService,
+    private readonly apartments: PortalCrmDealApartmentsService,
   ) {}
 
   @Get()
@@ -112,6 +118,34 @@ export class PortalCrmDealsController {
     @Body() body: UpdateCrmDealDto,
   ): Promise<CrmDealDetail> {
     return this.deals.update(member, id, user.id, body);
+  }
+
+  @Post(":id/apartments")
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: "Attach an apartment to a CRM deal" })
+  @ApiCreatedResponse({
+    description: "Apartment link (idempotent on duplicate)",
+  })
+  attachApartment(
+    @CurrentCompanyMember() member: CompanyMemberContext,
+    @CurrentUser() user: AuthenticatedUser,
+    @Param("id") id: string,
+    @Body() body: AttachCrmDealApartmentDto,
+  ): Promise<CrmApartmentLinkItem> {
+    return this.apartments.attach(member, id, user.id, body.apartmentId);
+  }
+
+  @Delete(":id/apartments/:apartmentId")
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: "Detach an apartment from a CRM deal" })
+  @ApiNoContentResponse({ description: "Apartment unlinked" })
+  async detachApartment(
+    @CurrentCompanyMember() member: CompanyMemberContext,
+    @CurrentUser() user: AuthenticatedUser,
+    @Param("id") id: string,
+    @Param("apartmentId") apartmentId: string,
+  ): Promise<void> {
+    await this.apartments.detach(member, id, user.id, apartmentId);
   }
 
   @Post(":id/notes")

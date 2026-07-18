@@ -105,6 +105,7 @@ export type {
 } from "./qr.js";
 
 export type {
+  AttachCrmDealApartmentBody,
   BuyerFacingRequestStatus,
   BuyerRequestListItem,
   BuyerRequestListResponse,

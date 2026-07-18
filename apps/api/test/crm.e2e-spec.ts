@@ -66,6 +66,7 @@ describe("CRM lead intake + Constructor CRM (e2e)", () => {
   let buyerProfileId = "";
   let projectId = "";
   let apartmentId = "";
+  let foreignApartmentId = "";
   let qrCodeId = "";
   let scanEventId = "";
   const password = "crm-e2e-pass-123";
@@ -441,6 +442,104 @@ describe("CRM lead intake + Constructor CRM (e2e)", () => {
       .expect(404);
   });
 
+  it("attach/detach apartment; foreign apartment 404; reserved last-link blocked", async () => {
+    const builder = await login(builderEmail);
+    const created = await request(app.getHttpServer())
+      .post(`${API_V1_PREFIX}/portal/crm/deals`)
+      .set("Cookie", builder.cookie)
+      .set(CSRF_HEADER_NAME, builder.csrf)
+      .set("Origin", "http://localhost:3000")
+      .send({ contactName: "Apartment Link Client", note: "Link test" })
+      .expect(201);
+
+    const dealId = created.body.dealId as string;
+
+    const attached = await request(app.getHttpServer())
+      .post(`${API_V1_PREFIX}/portal/crm/deals/${dealId}/apartments`)
+      .set("Cookie", builder.cookie)
+      .set(CSRF_HEADER_NAME, builder.csrf)
+      .set("Origin", "http://localhost:3000")
+      .send({ apartmentId })
+      .expect(201);
+
+    expect(attached.body.apartmentId).toBe(apartmentId);
+    expect(attached.body.isPrimary).toBe(true);
+
+    await request(app.getHttpServer())
+      .post(`${API_V1_PREFIX}/portal/crm/deals/${dealId}/apartments`)
+      .set("Cookie", builder.cookie)
+      .set(CSRF_HEADER_NAME, builder.csrf)
+      .set("Origin", "http://localhost:3000")
+      .send({ apartmentId })
+      .expect(201);
+
+    await request(app.getHttpServer())
+      .post(`${API_V1_PREFIX}/portal/crm/deals/${dealId}/apartments`)
+      .set("Cookie", builder.cookie)
+      .set(CSRF_HEADER_NAME, builder.csrf)
+      .set("Origin", "http://localhost:3000")
+      .send({ apartmentId: foreignApartmentId })
+      .expect(404);
+
+    await request(app.getHttpServer())
+      .delete(
+        `${API_V1_PREFIX}/portal/crm/deals/${dealId}/apartments/${apartmentId}`,
+      )
+      .set("Cookie", builder.cookie)
+      .set(CSRF_HEADER_NAME, builder.csrf)
+      .set("Origin", "http://localhost:3000")
+      .expect(204);
+
+    await request(app.getHttpServer())
+      .post(`${API_V1_PREFIX}/portal/crm/deals/${dealId}/apartments`)
+      .set("Cookie", builder.cookie)
+      .set(CSRF_HEADER_NAME, builder.csrf)
+      .set("Origin", "http://localhost:3000")
+      .send({ apartmentId })
+      .expect(201);
+
+    await request(app.getHttpServer())
+      .patch(`${API_V1_PREFIX}/portal/crm/deals/${dealId}`)
+      .set("Cookie", builder.cookie)
+      .set(CSRF_HEADER_NAME, builder.csrf)
+      .set("Origin", "http://localhost:3000")
+      .send({ status: "assigned" })
+      .expect(200);
+
+    await request(app.getHttpServer())
+      .patch(`${API_V1_PREFIX}/portal/crm/deals/${dealId}`)
+      .set("Cookie", builder.cookie)
+      .set(CSRF_HEADER_NAME, builder.csrf)
+      .set("Origin", "http://localhost:3000")
+      .send({ status: "contacted" })
+      .expect(200);
+
+    await request(app.getHttpServer())
+      .patch(`${API_V1_PREFIX}/portal/crm/deals/${dealId}`)
+      .set("Cookie", builder.cookie)
+      .set(CSRF_HEADER_NAME, builder.csrf)
+      .set("Origin", "http://localhost:3000")
+      .send({ status: "apartment_selected" })
+      .expect(200);
+
+    await request(app.getHttpServer())
+      .patch(`${API_V1_PREFIX}/portal/crm/deals/${dealId}`)
+      .set("Cookie", builder.cookie)
+      .set(CSRF_HEADER_NAME, builder.csrf)
+      .set("Origin", "http://localhost:3000")
+      .send({ status: "reserved" })
+      .expect(200);
+
+    await request(app.getHttpServer())
+      .delete(
+        `${API_V1_PREFIX}/portal/crm/deals/${dealId}/apartments/${apartmentId}`,
+      )
+      .set("Cookie", builder.cookie)
+      .set(CSRF_HEADER_NAME, builder.csrf)
+      .set("Origin", "http://localhost:3000")
+      .expect(400);
+  });
+
   async function seedFixtures(): Promise<void> {
     const passwordHash = await hashPassword(password);
     buyerEmail = uniqueEmail("buyer");
@@ -587,6 +686,44 @@ describe("CRM lead intake + Constructor CRM (e2e)", () => {
       },
     });
     apartmentId = apartment.id;
+
+    const foreignProject = await prisma.db.project.create({
+      data: {
+        builderCompanyId: otherCompanyId,
+        name: `${FIXTURE_PREFIX}ForeignProject`,
+        slug: `${FIXTURE_PREFIX}foreign-${Date.now()}`,
+        publicationStatus: PublicationStatus.published,
+        shortDescription: "Foreign CRM project",
+      },
+    });
+    const foreignBuilding = await prisma.db.building.create({
+      data: {
+        projectId: foreignProject.id,
+        name: "B",
+        publicationStatus: PublicationStatus.published,
+      },
+    });
+    const foreignFloor = await prisma.db.floor.create({
+      data: {
+        buildingId: foreignBuilding.id,
+        number: 1,
+        publicationStatus: PublicationStatus.published,
+      },
+    });
+    const foreignApartment = await prisma.db.apartment.create({
+      data: {
+        projectId: foreignProject.id,
+        buildingId: foreignBuilding.id,
+        floorId: foreignFloor.id,
+        number: "201",
+        salesStatus: ApartmentSalesStatus.available,
+        publicationStatus: PublicationStatus.published,
+        price: 40_000_000,
+        priceVisibility: PriceVisibility.public,
+        crmStatusSource: CrmStatusSource.manual,
+      },
+    });
+    foreignApartmentId = foreignApartment.id;
 
     const qr = await prisma.db.qrCode.create({
       data: {

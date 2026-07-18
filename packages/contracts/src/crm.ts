@@ -169,6 +169,10 @@ export type UpdateCrmDealBody = {
   projectId?: string | null;
 };
 
+export type AttachCrmDealApartmentBody = {
+  apartmentId: string;
+};
+
 export type CreateCrmNoteBody = {
   body: string;
 };

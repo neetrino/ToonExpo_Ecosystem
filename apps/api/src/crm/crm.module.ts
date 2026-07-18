@@ -8,6 +8,7 @@ import {
 } from "./buyer/buyer-requests.controller.js";
 import { BuyerRequestsService } from "./buyer/buyer-requests.service.js";
 import { RequestIntakeService } from "./intake/request-intake.service.js";
+import { PortalCrmDealApartmentsService } from "./portal/portal-crm-deal-apartments.service.js";
 import { PortalCrmDealsController } from "./portal/portal-crm-deals.controller.js";
 import { PortalCrmDealsService } from "./portal/portal-crm-deals.service.js";
 import { PortalCrmNotesActivitiesService } from "./portal/portal-crm-notes-activities.service.js";
@@ -24,6 +25,7 @@ import { DealStatusService } from "./status/deal-status.service.js";
     RequestIntakeService,
     BuyerRequestsService,
     PortalCrmDealsService,
+    PortalCrmDealApartmentsService,
     PortalCrmNotesActivitiesService,
     DealStatusService,
     CompanyMemberGuard,
