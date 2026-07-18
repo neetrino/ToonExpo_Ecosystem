@@ -328,7 +328,9 @@
     "nav": {
       "label": "Навигация админки",
       "section": "Управление",
-      "companies": "Компании"
+      "companies": "Компании",
+      "readiness": "Готовность",
+      "readinessCategories": "Категории"
     },
     "companies": {
       "title": "Компании",
@@ -406,6 +408,249 @@
         "resendSubmitting": "Отправка…",
         "resendSuccess": "Приглашение отправлено повторно",
         "resendNotFound": "У этой компании нет приглашённого администратора"
+      }
+    },
+    "readiness": {
+      "statuses": {
+        "not_started": "Не начато",
+        "needs_improvement": "Нужно улучшить",
+        "in_progress": "В работе",
+        "ready": "Готово",
+        "blocked": "Заблокировано"
+      },
+      "targetTypes": {
+        "builder_company": "Компания застройщика",
+        "project": "Проект"
+      },
+      "categories": {
+        "title": "Категории готовности",
+        "subtitle": "Настройка категорий оценки и весов",
+        "loading": "Загрузка категорий…",
+        "error": "Не удалось загрузить категории. Попробуйте снова.",
+        "empty": "Категорий пока нет. Создайте первую.",
+        "newCategory": "Новая категория",
+        "createTitle": "Новая категория",
+        "editTitle": "Редактировать {name}",
+        "edit": "Редактировать",
+        "activeYes": "Активна",
+        "activeNo": "Неактивна",
+        "columns": {
+          "name": "Название",
+          "weight": "Вес",
+          "sort": "Порядок",
+          "active": "Активна",
+          "actions": "Действия"
+        },
+        "form": {
+          "name": "Название",
+          "description": "Описание",
+          "weight": "Вес (необязательно)",
+          "sortOrder": "Порядок сортировки",
+          "active": "Активна",
+          "save": "Сохранить",
+          "saving": "Сохранение…",
+          "cancel": "Отмена"
+        },
+        "validation": {
+          "name": "Введите название категории",
+          "weight": "Вес должен быть от 1 до 100"
+        },
+        "errors": {
+          "generic": "Что-то пошло не так. Попробуйте снова."
+        }
+      },
+      "assessments": {
+        "title": "Оценки готовности",
+        "subtitle": "{count, plural, =0 {Нет оценок} one {# оценка} few {# оценки} many {# оценок} other {# оценок}}",
+        "loading": "Загрузка оценок…",
+        "error": "Не удалось загрузить оценки. Попробуйте снова.",
+        "empty": "Оценок пока нет. Создайте первую для начала работы.",
+        "newAssessment": "Новая оценка",
+        "categoriesLink": "Категории",
+        "overridden": "переопределено",
+        "pagination": {
+          "previous": "Назад",
+          "next": "Далее"
+        },
+        "columns": {
+          "company": "Компания",
+          "target": "Объект",
+          "status": "Статус",
+          "score": "Балл",
+          "evaluated": "Последняя оценка"
+        },
+        "targetTypes": {
+          "builder_company": "Компания застройщика",
+          "project": "Проект"
+        },
+        "filters": {
+          "company": "Компания",
+          "allCompanies": "Все компании",
+          "targetType": "Тип объекта",
+          "allTargets": "Все объекты",
+          "targetTypes": {
+            "builder_company": "Компания застройщика",
+            "project": "Проект"
+          },
+          "status": "Статус",
+          "allStatuses": "Все статусы",
+          "statuses": {
+            "not_started": "Не начато",
+            "needs_improvement": "Нужно улучшить",
+            "in_progress": "В работе",
+            "ready": "Готово",
+            "blocked": "Заблокировано"
+          }
+        },
+        "create": {
+          "title": "Новая оценка",
+          "targetType": "Тип объекта",
+          "company": "Компания застройщика",
+          "selectCompany": "Выберите компанию",
+          "projectId": "ID проекта",
+          "projectIdHint": "Введите UUID проекта. Выбор проекта в админке пока недоступен.",
+          "submit": "Создать оценку",
+          "submitting": "Создание…",
+          "cancel": "Отмена"
+        },
+        "validation": {
+          "company": "Выберите компанию",
+          "projectId": "Для оценки проекта укажите ID проекта"
+        },
+        "errors": {
+          "generic": "Что-то пошло не так. Попробуйте снова."
+        }
+      },
+      "detail": {
+        "loading": "Загрузка оценки…",
+        "notFound": "Оценка не найдена",
+        "back": "← Оценки",
+        "overallScore": "Общий балл",
+        "overridden": "переопределено",
+        "lastEvaluated": "Последняя оценка",
+        "targetTypes": {
+          "builder_company": "Оценка компании",
+          "project": "Оценка проекта"
+        },
+        "categories": {
+          "title": "Оценка по категориям",
+          "score": "Балл (0–100)",
+          "status": "Статус",
+          "recommendationSummary": "Краткая рекомендация",
+          "save": "Сохранить категорию",
+          "saving": "Сохранение…",
+          "saved": "Категория сохранена",
+          "validation": {
+            "score": "Балл должен быть от 0 до 100"
+          },
+          "errors": {
+            "generic": "Не удалось сохранить. Попробуйте снова."
+          },
+          "statuses": {
+            "not_started": "Не начато",
+            "needs_improvement": "Нужно улучшить",
+            "in_progress": "В работе",
+            "ready": "Готово",
+            "blocked": "Заблокировано"
+          }
+        },
+        "actions": {
+          "title": "Действия с оценкой",
+          "status": "Общий статус",
+          "saveStatus": "Обновить статус",
+          "saving": "Сохранение…",
+          "statusSaved": "Статус обновлён",
+          "overrideScore": "Переопределить общий балл",
+          "saveScore": "Сохранить переопределение",
+          "scoreSaved": "Общий балл обновлён",
+          "archive": "Архивировать оценку",
+          "archiveConfirm": "Архивировать эту оценку? Застройщики больше не увидят её.",
+          "archived": "Оценка архивирована",
+          "validation": {
+            "score": "Балл должен быть от 0 до 100"
+          },
+          "errors": {
+            "generic": "Что-то пошло не так. Попробуйте снова."
+          },
+          "statuses": {
+            "not_started": "Не начато",
+            "needs_improvement": "Нужно улучшить",
+            "in_progress": "В работе",
+            "ready": "Готово",
+            "blocked": "Заблокировано"
+          }
+        },
+        "recommendations": {
+          "title": "Рекомендации",
+          "addTitle": "Добавить рекомендацию",
+          "add": "Добавить",
+          "adding": "Добавление…",
+          "delete": "Удалить",
+          "deleteConfirm": "Удалить эту рекомендацию?",
+          "toggleVisibility": "Изменить видимость",
+          "fields": {
+            "title": "Заголовок",
+            "description": "Описание",
+            "visibility": "Видимость"
+          },
+          "visibility": {
+            "builder_visible": "Видно застройщику",
+            "internal_only": "Только внутреннее"
+          },
+          "validation": {
+            "required": "Заголовок и описание обязательны"
+          },
+          "errors": {
+            "generic": "Что-то пошло не так. Попробуйте снова."
+          }
+        },
+        "requiredActions": {
+          "title": "Обязательные действия",
+          "addTitle": "Добавить действие",
+          "add": "Добавить",
+          "adding": "Добавление…",
+          "delete": "Удалить",
+          "deleteConfirm": "Удалить это действие?",
+          "toggleVisibility": "Изменить видимость",
+          "status": "Статус",
+          "fields": {
+            "title": "Заголовок",
+            "description": "Описание",
+            "visibility": "Видимость"
+          },
+          "visibility": {
+            "builder_visible": "Видно застройщику",
+            "internal_only": "Только внутреннее"
+          },
+          "statuses": {
+            "open": "Открыто",
+            "in_progress": "В работе",
+            "done": "Выполнено",
+            "blocked": "Заблокировано",
+            "cancelled": "Отменено"
+          },
+          "validation": {
+            "required": "Заголовок обязателен"
+          },
+          "errors": {
+            "generic": "Что-то пошло не так. Попробуйте снова."
+          }
+        },
+        "internalNotes": {
+          "title": "Внутренние заметки",
+          "subtitle": "Только для админов BigProjects — застройщики их не видят.",
+          "addLabel": "Новая внутренняя заметка",
+          "add": "Добавить",
+          "adding": "Добавление…",
+          "delete": "Удалить",
+          "deleteConfirm": "Удалить эту заметку?",
+          "validation": {
+            "required": "Введите заметку"
+          },
+          "errors": {
+            "generic": "Что-то пошло не так. Попробуйте снова."
+          }
+        }
       }
     }
   },
@@ -792,6 +1037,39 @@
         "unlinkApartment": "Открепить",
         "unlinkConfirm": "Открепить квартиру {apartment} от этой сделки?",
         "unlinkSuccess": "Квартира откреплена"
+      }
+    },
+    "readiness": {
+      "title": "Готовность",
+      "subtitle": "Узнайте, что готово, что слабо и что улучшить дальше",
+      "loading": "Загрузка готовности…",
+      "error": "Не удалось загрузить готовность. Попробуйте снова.",
+      "empty": "Готовность ещё не оценена. Оценщик опубликует рекомендации здесь, когда будет готово.",
+      "companyAssessment": "Готовность компании",
+      "overallScore": "Общий балл",
+      "lastUpdated": "Последнее обновление",
+      "categoriesTitle": "Категории",
+      "categoryScore": "Балл",
+      "noRecommendation": "Рекомендаций пока нет",
+      "requiredActionsTitle": "Обязательные действия",
+      "recommendationsTitle": "Рекомендации",
+      "statuses": {
+        "not_started": "Не начато",
+        "needs_improvement": "Нужно улучшить",
+        "in_progress": "В работе",
+        "ready": "Готово",
+        "blocked": "Заблокировано"
+      },
+      "targetTypes": {
+        "builder_company": "На уровне компании",
+        "project": "Проект"
+      },
+      "actionStatuses": {
+        "open": "Открыто",
+        "in_progress": "В работе",
+        "done": "Выполнено",
+        "blocked": "Заблокировано",
+        "cancelled": "Отменено"
       }
     },
     "scanner": {

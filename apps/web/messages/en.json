@@ -328,7 +328,9 @@
     "nav": {
       "label": "Admin navigation",
       "section": "Manage",
-      "companies": "Companies"
+      "companies": "Companies",
+      "readiness": "Readiness",
+      "readinessCategories": "Categories"
     },
     "companies": {
       "title": "Companies",
@@ -406,6 +408,249 @@
         "resendSubmitting": "Sending…",
         "resendSuccess": "Invite resent successfully",
         "resendNotFound": "No invited admin found for this company"
+      }
+    },
+    "readiness": {
+      "statuses": {
+        "not_started": "Not started",
+        "needs_improvement": "Needs improvement",
+        "in_progress": "In progress",
+        "ready": "Ready",
+        "blocked": "Blocked"
+      },
+      "targetTypes": {
+        "builder_company": "Builder company",
+        "project": "Project"
+      },
+      "categories": {
+        "title": "Readiness categories",
+        "subtitle": "Configure evaluation categories and weights",
+        "loading": "Loading categories…",
+        "error": "Could not load categories. Try again.",
+        "empty": "No categories yet. Create the first one.",
+        "newCategory": "New category",
+        "createTitle": "New category",
+        "editTitle": "Edit {name}",
+        "edit": "Edit",
+        "activeYes": "Active",
+        "activeNo": "Inactive",
+        "columns": {
+          "name": "Name",
+          "weight": "Weight",
+          "sort": "Sort",
+          "active": "Active",
+          "actions": "Actions"
+        },
+        "form": {
+          "name": "Name",
+          "description": "Description",
+          "weight": "Weight (optional)",
+          "sortOrder": "Sort order",
+          "active": "Active",
+          "save": "Save",
+          "saving": "Saving…",
+          "cancel": "Cancel"
+        },
+        "validation": {
+          "name": "Enter a category name",
+          "weight": "Weight must be between 1 and 100"
+        },
+        "errors": {
+          "generic": "Something went wrong. Please try again."
+        }
+      },
+      "assessments": {
+        "title": "Readiness assessments",
+        "subtitle": "{count, plural, =0 {No assessments} one {# assessment} other {# assessments}}",
+        "loading": "Loading assessments…",
+        "error": "Could not load assessments. Try again.",
+        "empty": "No assessments yet. Create one to start evaluating.",
+        "newAssessment": "New assessment",
+        "categoriesLink": "Manage categories",
+        "overridden": "overridden",
+        "pagination": {
+          "previous": "Previous",
+          "next": "Next"
+        },
+        "columns": {
+          "company": "Company",
+          "target": "Target",
+          "status": "Status",
+          "score": "Score",
+          "evaluated": "Last evaluated"
+        },
+        "targetTypes": {
+          "builder_company": "Builder company",
+          "project": "Project"
+        },
+        "filters": {
+          "company": "Company",
+          "allCompanies": "All companies",
+          "targetType": "Target type",
+          "allTargets": "All targets",
+          "targetTypes": {
+            "builder_company": "Builder company",
+            "project": "Project"
+          },
+          "status": "Status",
+          "allStatuses": "All statuses",
+          "statuses": {
+            "not_started": "Not started",
+            "needs_improvement": "Needs improvement",
+            "in_progress": "In progress",
+            "ready": "Ready",
+            "blocked": "Blocked"
+          }
+        },
+        "create": {
+          "title": "New assessment",
+          "targetType": "Target type",
+          "company": "Builder company",
+          "selectCompany": "Select company",
+          "projectId": "Project ID",
+          "projectIdHint": "Enter the project UUID. No admin project picker is available yet.",
+          "submit": "Create assessment",
+          "submitting": "Creating…",
+          "cancel": "Cancel"
+        },
+        "validation": {
+          "company": "Select a company",
+          "projectId": "Enter a project ID for project assessments"
+        },
+        "errors": {
+          "generic": "Something went wrong. Please try again."
+        }
+      },
+      "detail": {
+        "loading": "Loading assessment…",
+        "notFound": "Assessment not found",
+        "back": "← Assessments",
+        "overallScore": "Overall score",
+        "overridden": "overridden",
+        "lastEvaluated": "Last evaluated",
+        "targetTypes": {
+          "builder_company": "Builder company assessment",
+          "project": "Project assessment"
+        },
+        "categories": {
+          "title": "Category evaluation",
+          "score": "Score (0–100)",
+          "status": "Status",
+          "recommendationSummary": "Recommendation summary",
+          "save": "Save category",
+          "saving": "Saving…",
+          "saved": "Category saved",
+          "validation": {
+            "score": "Score must be between 0 and 100"
+          },
+          "errors": {
+            "generic": "Could not save. Try again."
+          },
+          "statuses": {
+            "not_started": "Not started",
+            "needs_improvement": "Needs improvement",
+            "in_progress": "In progress",
+            "ready": "Ready",
+            "blocked": "Blocked"
+          }
+        },
+        "actions": {
+          "title": "Assessment actions",
+          "status": "Overall status",
+          "saveStatus": "Update status",
+          "saving": "Saving…",
+          "statusSaved": "Status updated",
+          "overrideScore": "Override overall score",
+          "saveScore": "Save score override",
+          "scoreSaved": "Overall score updated",
+          "archive": "Archive assessment",
+          "archiveConfirm": "Archive this assessment? Builders will no longer see it.",
+          "archived": "Assessment archived",
+          "validation": {
+            "score": "Score must be between 0 and 100"
+          },
+          "errors": {
+            "generic": "Something went wrong. Please try again."
+          },
+          "statuses": {
+            "not_started": "Not started",
+            "needs_improvement": "Needs improvement",
+            "in_progress": "In progress",
+            "ready": "Ready",
+            "blocked": "Blocked"
+          }
+        },
+        "recommendations": {
+          "title": "Recommendations",
+          "addTitle": "Add recommendation",
+          "add": "Add recommendation",
+          "adding": "Adding…",
+          "delete": "Delete",
+          "deleteConfirm": "Delete this recommendation?",
+          "toggleVisibility": "Toggle visibility",
+          "fields": {
+            "title": "Title",
+            "description": "Description",
+            "visibility": "Visibility"
+          },
+          "visibility": {
+            "builder_visible": "Builder visible",
+            "internal_only": "Internal only"
+          },
+          "validation": {
+            "required": "Title and description are required"
+          },
+          "errors": {
+            "generic": "Something went wrong. Please try again."
+          }
+        },
+        "requiredActions": {
+          "title": "Required actions",
+          "addTitle": "Add required action",
+          "add": "Add action",
+          "adding": "Adding…",
+          "delete": "Delete",
+          "deleteConfirm": "Delete this required action?",
+          "toggleVisibility": "Toggle visibility",
+          "status": "Status",
+          "fields": {
+            "title": "Title",
+            "description": "Description",
+            "visibility": "Visibility"
+          },
+          "visibility": {
+            "builder_visible": "Builder visible",
+            "internal_only": "Internal only"
+          },
+          "statuses": {
+            "open": "Open",
+            "in_progress": "In progress",
+            "done": "Done",
+            "blocked": "Blocked",
+            "cancelled": "Cancelled"
+          },
+          "validation": {
+            "required": "Title is required"
+          },
+          "errors": {
+            "generic": "Something went wrong. Please try again."
+          }
+        },
+        "internalNotes": {
+          "title": "Internal notes",
+          "subtitle": "BigProjects admin only — builders never see these notes.",
+          "addLabel": "New internal note",
+          "add": "Add note",
+          "adding": "Adding…",
+          "delete": "Delete",
+          "deleteConfirm": "Delete this internal note?",
+          "validation": {
+            "required": "Enter a note"
+          },
+          "errors": {
+            "generic": "Something went wrong. Please try again."
+          }
+        }
       }
     }
   },
@@ -792,6 +1037,39 @@
         "unlinkApartment": "Unlink",
         "unlinkConfirm": "Unlink apartment {apartment} from this deal?",
         "unlinkSuccess": "Apartment unlinked"
+      }
+    },
+    "readiness": {
+      "title": "Readiness",
+      "subtitle": "See what is ready, what needs work, and what to improve next",
+      "loading": "Loading readiness…",
+      "error": "Could not load readiness. Try again.",
+      "empty": "Readiness has not been evaluated yet. Your evaluator will publish guidance here when ready.",
+      "companyAssessment": "Company readiness",
+      "overallScore": "Overall score",
+      "lastUpdated": "Last updated",
+      "categoriesTitle": "Categories",
+      "categoryScore": "Score",
+      "noRecommendation": "No recommendation yet",
+      "requiredActionsTitle": "Required actions",
+      "recommendationsTitle": "Recommendations",
+      "statuses": {
+        "not_started": "Not started",
+        "needs_improvement": "Needs improvement",
+        "in_progress": "In progress",
+        "ready": "Ready",
+        "blocked": "Blocked"
+      },
+      "targetTypes": {
+        "builder_company": "Company-wide",
+        "project": "Project"
+      },
+      "actionStatuses": {
+        "open": "Open",
+        "in_progress": "In progress",
+        "done": "Done",
+        "blocked": "Blocked",
+        "cancelled": "Cancelled"
       }
     },
     "scanner": {

@@ -5,7 +5,11 @@ import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { cn } from "@/shared/ui/cn";
 
-const NAV_ITEMS = [{ href: "/admin/companies", key: "companies" as const }];
+const NAV_ITEMS = [
+  { href: "/admin/companies", key: "companies" as const },
+  { href: "/admin/readiness", key: "readiness" as const },
+  { href: "/admin/readiness/categories", key: "readinessCategories" as const },
+];
 
 /**
  * Compact sidebar nav for the platform admin area.

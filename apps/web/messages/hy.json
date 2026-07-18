@@ -328,7 +328,9 @@
     "nav": {
       "label": "Ադմին նավիգացիա",
       "section": "Կառավարում",
-      "companies": "Ընկերություններ"
+      "companies": "Ընկերություններ",
+      "readiness": "Պատրաստվածություն",
+      "readinessCategories": "Կատեգորիաներ"
     },
     "companies": {
       "title": "Ընկերություններ",
@@ -406,6 +408,249 @@
         "resendSubmitting": "Ուղարկում…",
         "resendSuccess": "Հրավերն կրկին ուղարկված է",
         "resendNotFound": "Այս ընկերության համար հրավիրված ադմին չկա"
+      }
+    },
+    "readiness": {
+      "statuses": {
+        "not_started": "Չի սկսվել",
+        "needs_improvement": "Պետք է բարելավել",
+        "in_progress": "Ընթացքում",
+        "ready": "Պատրաստ",
+        "blocked": "Արգելափակված"
+      },
+      "targetTypes": {
+        "builder_company": "Կառուցապատող ընկերություն",
+        "project": "Նախագիծ"
+      },
+      "categories": {
+        "title": "Պատրաստվածության կատեգորիաներ",
+        "subtitle": "Կարգավորեք գնահատման կատեգորիաներն ու կշիռները",
+        "loading": "Բեռնվում է…",
+        "error": "Չհաջողվեց բեռնել կատեգորիաները։ Կրկին փորձեք։",
+        "empty": "Դեռ կատեգորիաներ չկան։ Ստեղծեք առաջինը։",
+        "newCategory": "Նոր կատեգորիա",
+        "createTitle": "Նոր կատեգորիա",
+        "editTitle": "Խմբագրել {name}",
+        "edit": "Խմբագրել",
+        "activeYes": "Ակտիվ",
+        "activeNo": "Անակտիվ",
+        "columns": {
+          "name": "Անվանում",
+          "weight": "Կշիռ",
+          "sort": "Դասավորություն",
+          "active": "Ակտիվ",
+          "actions": "Գործողություններ"
+        },
+        "form": {
+          "name": "Անվանում",
+          "description": "Նկարագրություն",
+          "weight": "Կշիռ (ըստ ցանկության)",
+          "sortOrder": "Դասավորության համար",
+          "active": "Ակտիվ",
+          "save": "Պահպանել",
+          "saving": "Պահպանվում է…",
+          "cancel": "Չեղարկել"
+        },
+        "validation": {
+          "name": "Մուտքագրեք կատեգորիայի անվանումը",
+          "weight": "Կշիռը պետք է լինի 1-100 միջակայքում"
+        },
+        "errors": {
+          "generic": "Ինչ-որ բան սխալ գնաց։ Կրկին փորձեք։"
+        }
+      },
+      "assessments": {
+        "title": "Պատրաստվածության գնահատումներ",
+        "subtitle": "{count, plural, =0 {Գնահատումներ չկան} one {# գնահատում} other {# գնահատում}}",
+        "loading": "Բեռնվում է…",
+        "error": "Չհաջողվեց բեռնել գնահատումները։ Կրկին փորձեք։",
+        "empty": "Դեռ գնահատումներ չկան։ Ստեղծեք առաջինը։",
+        "newAssessment": "Նոր գնահատում",
+        "categoriesLink": "Կատեգորիաներ",
+        "overridden": "վերագրավված",
+        "pagination": {
+          "previous": "Նախորդ",
+          "next": "Հաջորդ"
+        },
+        "columns": {
+          "company": "Ընկերություն",
+          "target": "Թarget",
+          "status": "Կարգավիճակ",
+          "score": "Միավոր",
+          "evaluated": "Վերջին գնահատում"
+        },
+        "targetTypes": {
+          "builder_company": "Կառուցապատող ընկերություն",
+          "project": "Նախագիծ"
+        },
+        "filters": {
+          "company": "Ընկերություն",
+          "allCompanies": "Բոլոր ընկերությունները",
+          "targetType": "Թarget տեսակ",
+          "allTargets": "Բոլոր target-ները",
+          "targetTypes": {
+            "builder_company": "Կառուցապատող ընկերություն",
+            "project": "Նախագիծ"
+          },
+          "status": "Կարգավիճակ",
+          "allStatuses": "Բոլոր կարգավիճակները",
+          "statuses": {
+            "not_started": "Չի սկսվել",
+            "needs_improvement": "Պետք է բարելավել",
+            "in_progress": "Ընթացքում",
+            "ready": "Պատրաստ",
+            "blocked": "Արգելափակված"
+          }
+        },
+        "create": {
+          "title": "Նոր գնահատում",
+          "targetType": "Target տեսակ",
+          "company": "Կառուցապատող ընկերություն",
+          "selectCompany": "Ընտրեք ընկերությունը",
+          "projectId": "Նախագծի ID",
+          "projectIdHint": "Մուտքագրեք նախագծի UUID-ը։ Admin նախագծերի ընտրիչ դեռ չկա։",
+          "submit": "Ստեղծել գնահատում",
+          "submitting": "Ստեղծվում է…",
+          "cancel": "Չեղարկել"
+        },
+        "validation": {
+          "company": "Ընտրեք ընկերությունը",
+          "projectId": "Նախագծի գնահատման համար մուտքագրեք նախագծի ID-ն"
+        },
+        "errors": {
+          "generic": "Ինչ-որ բան սխալ գնաց։ Կրկին փորձեք։"
+        }
+      },
+      "detail": {
+        "loading": "Բեռնվում է…",
+        "notFound": "Գնահատումը չի գտնվել",
+        "back": "← Գնահատումներ",
+        "overallScore": "Ընդհանուր միավոր",
+        "overridden": "վերագրավված",
+        "lastEvaluated": "Վերջին գնահատում",
+        "targetTypes": {
+          "builder_company": "Ընկերության գնահատում",
+          "project": "Նախագծի գնահատում"
+        },
+        "categories": {
+          "title": "Կատեգորիայի գնահատում",
+          "score": "Միավոր (0–100)",
+          "status": "Կարգավիճակ",
+          "recommendationSummary": "Խորհուրդի ամփոփում",
+          "save": "Պահպանել կատեգորիան",
+          "saving": "Պահպանվում է…",
+          "saved": "Կատեգորիան պահպանված է",
+          "validation": {
+            "score": "Միավորն պետք է լինի 0-100 միջակայքում"
+          },
+          "errors": {
+            "generic": "Չհաջողվեց պահպանել։ Կրկին փորձեք։"
+          },
+          "statuses": {
+            "not_started": "Չի սկսվել",
+            "needs_improvement": "Պետք է բարելավել",
+            "in_progress": "Ընթացքում",
+            "ready": "Պատրաստ",
+            "blocked": "Արգելափակված"
+          }
+        },
+        "actions": {
+          "title": "Գնահատման գործողություններ",
+          "status": "Ընդհանուր կարգավիճակ",
+          "saveStatus": "Թարմացնել կարգավիճակը",
+          "saving": "Պահպանվում է…",
+          "statusSaved": "Կարգավիճակը թարմացված է",
+          "overrideScore": "Վերագրել ընդհանուր միավոր",
+          "saveScore": "Պահպանել վերագրումը",
+          "scoreSaved": "Ընդհանուր միավորն թարմացված է",
+          "archive": "Արխիվացնել գնահատումը",
+          "archiveConfirm": "Արխիվացնե՞լ այս գնահատումը։ Կառուցապատողները այլևս չեն տեսնի։",
+          "archived": "Գնահատումը արխիվացված է",
+          "validation": {
+            "score": "Միավորն պետք է լինի 0-100 միջակայքում"
+          },
+          "errors": {
+            "generic": "Ինչ-որ բան սխալ գնաց։ Կրկին փորձեք։"
+          },
+          "statuses": {
+            "not_started": "Չի սկսվել",
+            "needs_improvement": "Պետք է բարելավել",
+            "in_progress": "Ընթացքում",
+            "ready": "Պատրաստ",
+            "blocked": "Արգելափակված"
+          }
+        },
+        "recommendations": {
+          "title": "Խորհուրդներ",
+          "addTitle": "Ավելացնել խորհուրդ",
+          "add": "Ավելացնել",
+          "adding": "Ավելացվում է…",
+          "delete": "Ջնջել",
+          "deleteConfirm": "Ջնջե՞լ այս խորհուրդը։",
+          "toggleVisibility": "Փոխել տեսանելիությունը",
+          "fields": {
+            "title": "Վերնագիր",
+            "description": "Նկարագրություն",
+            "visibility": "Տեսանելիություն"
+          },
+          "visibility": {
+            "builder_visible": "Տեսանելի կառուցապատողին",
+            "internal_only": "Միայն ներքին"
+          },
+          "validation": {
+            "required": "Վերնագիրն ու նկարագրությունը պարտադիր են"
+          },
+          "errors": {
+            "generic": "Ինչ-որ բան սխալ գնաց։ Կրկին փորձեք։"
+          }
+        },
+        "requiredActions": {
+          "title": "Պարտադիր գործողություններ",
+          "addTitle": "Ավելացնել գործողություն",
+          "add": "Ավելացնել",
+          "adding": "Ավելացվում է…",
+          "delete": "Ջնջել",
+          "deleteConfirm": "Ջնջե՞լ այս գործողությունը։",
+          "toggleVisibility": "Փոխել տեսանելիությունը",
+          "status": "Կարգավիճակ",
+          "fields": {
+            "title": "Վերնագիր",
+            "description": "Նկարագրություն",
+            "visibility": "Տեսանելիություն"
+          },
+          "visibility": {
+            "builder_visible": "Տեսանելի կառուցապատողին",
+            "internal_only": "Միայն ներքին"
+          },
+          "statuses": {
+            "open": "Բաց",
+            "in_progress": "Ընթացքում",
+            "done": "Կատարված",
+            "blocked": "Արգելափակված",
+            "cancelled": "Չեղարկված"
+          },
+          "validation": {
+            "required": "Վերնագիրը պարտադիր է"
+          },
+          "errors": {
+            "generic": "Ինչ-որ բան սխալ գնաց։ Կրկին փորձեք։"
+          }
+        },
+        "internalNotes": {
+          "title": "Ներքին նotes",
+          "subtitle": "Միայն BigProjects ադմինի համար — կառուցապատողները երբեք չեն տեսնի։",
+          "addLabel": "Նոր ներքին note",
+          "add": "Ավելացնել",
+          "adding": "Ավելացվում է…",
+          "delete": "Ջնջել",
+          "deleteConfirm": "Ջնջե՞լ այս նote-ը։",
+          "validation": {
+            "required": "Մուտքագրեք note"
+          },
+          "errors": {
+            "generic": "Ինչ-որ բան սխալ գնաց։ Կրկին փորձեք։"
+          }
+        }
       }
     }
   },
@@ -792,6 +1037,39 @@
         "unlinkApartment": "Ապակցել",
         "unlinkConfirm": "Ապակցե՞լ բնակարան {apartment}-ը այս գործարքից",
         "unlinkSuccess": "Բնակարանը ապակցված է"
+      }
+    },
+    "readiness": {
+      "title": "Պատրաստվածություն",
+      "subtitle": "Տեսեք, թե ինչն է պատրաստ, ինչն է թույլ և ինչ պետք է բարելավել",
+      "loading": "Բեռնվում է…",
+      "error": "Չհաջողվեց բեռնել պատրաստվածությունը։ Կրկին փորձեք։",
+      "empty": "Պատրաստվածությունը դեռ գնահատված չէ։ Գնահատողը կհրապարակի ուղեցույցը, երբ պատրաստ լինի։",
+      "companyAssessment": "Ընկերության պատրաստվածություն",
+      "overallScore": "Ընդհանուր միավոր",
+      "lastUpdated": "Վերջին թարմացում",
+      "categoriesTitle": "Կատեգորիաներ",
+      "categoryScore": "Միավոր",
+      "noRecommendation": "Խորհուրդ դեռ չկա",
+      "requiredActionsTitle": "Պարտադիր գործողություններ",
+      "recommendationsTitle": "Խորհուրդներ",
+      "statuses": {
+        "not_started": "Չի սկսվել",
+        "needs_improvement": "Պետք է բարելավել",
+        "in_progress": "Ընթացքում",
+        "ready": "Պատրաստ",
+        "blocked": "Արգելափակված"
+      },
+      "targetTypes": {
+        "builder_company": "Ընկերության մակարդակ",
+        "project": "Նախագիծ"
+      },
+      "actionStatuses": {
+        "open": "Բաց",
+        "in_progress": "Ընթացքում",
+        "done": "Կատարված",
+        "blocked": "Արգելափակված",
+        "cancelled": "Չեղարկված"
       }
     },
     "scanner": {

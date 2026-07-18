@@ -18,3 +18,18 @@ export const ADMIN_COMPANIES_QUERY_KEY = ["admin", "companies"] as const;
 
 export const adminCompanyQueryKey = (id: string) =>
   [...ADMIN_COMPANIES_QUERY_KEY, id] as const;
+
+export const ADMIN_READINESS_CATEGORIES_QUERY_KEY = [
+  "admin",
+  "readiness",
+  "categories",
+] as const;
+
+export const ADMIN_READINESS_ASSESSMENTS_QUERY_KEY = [
+  "admin",
+  "readiness",
+  "assessments",
+] as const;
+
+export const adminReadinessAssessmentQueryKey = (id: string) =>
+  [...ADMIN_READINESS_ASSESSMENTS_QUERY_KEY, id] as const;
