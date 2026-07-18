@@ -50,7 +50,8 @@ Apartment is no longer available.
 
 Recommended behavior:
 
-- show as sold or hide from public search depending builder setting;
+- show as sold publicly;
+- project remains in the public catalog even when some or all apartments are sold;
 - keep apartment page accessible if needed for history/SEO;
 - prevent new normal purchase/request flow unless builder allows "similar apartments" request.
 

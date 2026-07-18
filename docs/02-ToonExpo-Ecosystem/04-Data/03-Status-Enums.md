@@ -125,12 +125,21 @@ sold
 
 ## Price Visibility
 
+v1 modes (builder selects per apartment):
+
 ```text
 public
 by_request
-hidden
 visible_after_login
 ```
+
+Rules:
+
+- `public` — numeric price included in anonymous and authenticated public API responses.
+- `by_request` — price never exposed to anonymous callers; UI shows "Price by request".
+- `visible_after_login` — price included only for authenticated buyer sessions; anonymous callers receive no numeric price (registration incentive).
+
+Multi-currency is out of v1. Prices are stored in AMD major units (`Decimal(14,2)`); see [DECISIONS.md](../../../DECISIONS.md) Catalog section.
 
 ## Request / Lead Status
 

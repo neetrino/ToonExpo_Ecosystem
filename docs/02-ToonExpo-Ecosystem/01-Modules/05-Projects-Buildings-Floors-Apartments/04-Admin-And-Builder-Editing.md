@@ -133,7 +133,7 @@ Examples:
 - floor has no floorplan;
 - apartment has no area;
 - apartment has no plan image;
-- price is hidden without reason;
+- price visibility not set when price exists;
 - published project has no available apartments.
 
 These warnings should feed Builder Readiness later.

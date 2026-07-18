@@ -50,7 +50,7 @@ All adaptive operational values in this document are sized for this load profile
 | Database | PostgreSQL 18.x on Neon | Confirmed | Neon PostgreSQL 18 is production GA. |
 | ORM | Prisma ORM 7.x | Confirmed | Runtime database access from NestJS only. |
 | Authentication | NestJS Auth module + Passport | Confirmed | Email+password with argon2; OAuth providers not in v1. |
-| i18n | next-intl | Confirmed | Armenian, Russian and English first. |
+| i18n | next-intl | Confirmed | UI locale: Armenian, Russian and English. Catalog content (project/builder descriptions) is stored per locale via translation records; UI language and content language are independent. |
 | File storage | Cloudflare R2 | Confirmed | Project, apartment, map and content media. |
 | Email | Resend | Confirmed | Invitations and account flows. |
 | QR | Opaque server-side token + QR rendering | Confirmed | No personal data encoded in QR. |
@@ -71,7 +71,7 @@ TypeScript 7.0 is current but is not selected at project start because 7.0 does 
 | Forms | React Hook Form + Zod for frontend feedback; NestJS repeats authoritative validation |
 | Server state | Server Components call the typed NestJS API client directly; TanStack Query is used for client-side server-state workflows |
 | UI state | Local React state by default; Zustand only when cross-component client state proves necessary |
-| i18n | next-intl with `hy`, `ru`, `en` and extensible locale configuration |
+| i18n | next-intl with `hy`, `ru`, `en` for UI; catalog public text via DB translation records (same locales), independent of UI locale |
 | SEO | Next.js Metadata API and JSON-LD for public entities |
 | Forbidden | Prisma, SQL, direct PostgreSQL, product route handlers, backend Server Actions, authoritative auth/business logic |
 
@@ -103,6 +103,7 @@ Next.js Server Components may fetch the NestJS API. Server Actions must not impl
 | Migration execution | One dedicated CI/deploy job; never a web request or Next.js build |
 | Runtime credentials | Pooled DML-only application role |
 | Migration credentials | Direct owner connection available only to migration jobs |
+| Catalog pricing | AMD only in v1; `Decimal(14,2)` major units (e.g. `79500000`); `currency` column reserved; multi-currency out of v1 | Confirmed 2026-07-18 |
 | Seed data | Explicit dev/test seed scripts |
 | Local development | Neon dev branch via `DATABASE_URL` in local `.env` (not committed); no docker-compose for database |
 | Auth persistence | Password hash on the user credential record, revocable DB sessions and single-use invite/reset token hashes |

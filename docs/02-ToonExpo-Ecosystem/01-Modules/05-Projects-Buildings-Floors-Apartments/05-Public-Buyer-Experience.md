@@ -115,22 +115,22 @@ If user starts a request while logged out, the platform should guide registratio
 
 ## Price Visibility Messages
 
-Price visibility can be:
+Price visibility modes (v1):
 
 ```text
 public
 by_request
-hidden
 visible_after_login
 ```
+
+API rule: anonymous public responses include numeric price only when mode is `public`. Authenticated buyers may see price when mode is `public` or `visible_after_login`.
 
 Public UX should avoid confusing empty price blocks.
 
 Recommended messages:
 
 - `by_request`: "Price by request";
-- `hidden`: no price shown, or "Contact builder";
-- `visible_after_login`: "Sign in to view price".
+- `visible_after_login`: "Sign in to view price" (anonymous); show AMD amount when buyer is signed in.
 
 ## Mobile Priority
 

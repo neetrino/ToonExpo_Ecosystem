@@ -2,7 +2,7 @@
 
 ## Current Status
 
-Sprint 1 (Auth, Access, i18n) is in progress. NestJS auth backend, Next.js auth frontend and two-layer CSRF hardening are implemented (commits on `main`). Remaining Sprint 1 work: sprint closure (protected routes, i18n auth flows, acceptance criteria).
+Sprint 2 (Public Real Estate Core / catalog) is in progress. NestJS catalog backend is implemented on `main`. Next.js public catalog frontend is in progress. Sprint 1 (Auth, Access, i18n) is closed: auth backend, auth frontend and two-layer CSRF hardening are on `main`.
 
 ## Completed
 
@@ -22,11 +22,14 @@ Sprint 1 (Auth, Access, i18n) is in progress. NestJS auth backend, Next.js auth 
 - Sprint 1 auth backend implemented: session auth, RBAC, buyer registration (`feat(api): implement session auth and RBAC`).
 - Sprint 1 auth frontend implemented: login/register pages, session state, profile shell (`feat(web): implement auth pages and session state`).
 - Sprint 1 CSRF hardening implemented: Origin allowlist + double-submit CSRF tokens.
+- Sprint 1 closed: protected routes, i18n auth flows and acceptance criteria verified.
+- Sprint 2 catalog backend implemented: NestJS public catalog API (projects, buildings, floors, apartments, pricing visibility rules).
+- Catalog product decisions confirmed (2026-07-18): AMD pricing, price visibility modes, trilingual content, Company-only builder profile, Variant A design.
 
 ## Next
 
-1. Close Sprint 1: verify protected routes, i18n auth flows and acceptance criteria; update docs as needed.
-2. Begin Sprint 2 (Public Real Estate Core) after Sprint 1 closure.
+1. Complete Sprint 2 public catalog frontend (Next.js): project/building/floor/apartment pages, price visibility UX, trilingual content display.
+2. Sprint 2 acceptance: public browse, authenticated price reveal, builder portal catalog editing.
 
 ## Environment Inputs Before Staging / Production
 

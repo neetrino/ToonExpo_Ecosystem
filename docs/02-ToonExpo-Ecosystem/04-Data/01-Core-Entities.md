@@ -14,7 +14,7 @@ Draft
 
 ## Public / Real Estate Entities
 
-- builder company;
+- company (`type = builder`) — v1 catalog owner; no separate builder company profile table;
 - partner company;
 - project;
 - building;

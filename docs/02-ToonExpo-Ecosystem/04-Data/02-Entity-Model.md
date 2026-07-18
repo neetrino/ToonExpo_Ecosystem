@@ -19,15 +19,16 @@ ProvisioningRequest
 ## Real Estate Entities
 
 ```text
-BuilderCompany
+Company (type = builder)   — v1: no separate BuilderCompany table
 Project
 Building
 Floor
 Apartment
 ApartmentStatusHistory
-MediaAsset
+MediaAsset                   — v1 catalog: cover/logo URL fields; full galleries post-v1
 VisualMapCanvas
 VisualHotspot
+Translation                  — catalog content hy/ru/en from v1
 ```
 
 ## Buyer / Event Entities
@@ -107,11 +108,11 @@ User 0..1 CompanyMember          (v1: one company per user, hard DB constraint)
 Company 0..n ModuleAccess
 User 0..n ModuleAccess
 User 0..1 BuyerProfile           (only when account_type = buyer)
-Company 0..1 BuilderCompany      (when type = builder)
+Company 0..1 BuilderCompany      (conceptual alias when type = builder; no separate table in v1)
 Company 0..1 PartnerCompany      (when type = partner or bank)
 ProvisioningRequest 0..1 Company
 ProvisioningRequest 0..1 User
-BuilderCompany 1..n Projects
+Company(type=builder) 1..n Projects
 Project 1..n Buildings
 Building 1..n Floors
 Floor 1..n Apartments
@@ -129,7 +130,7 @@ Event 0..n VenueMaps
 Event 0..n Booths
 VenueMap 0..n Booths
 Booth 0..n BoothAssignments
-BoothAssignment 0..1 BuilderCompany
+BoothAssignment 0..1 Company(type=builder)
 BoothAssignment 0..1 PartnerCompany
 BoothAssignment 0..1 Project
 VenueMap 0..n RouteNodes
@@ -146,7 +147,7 @@ CrmDealApartmentLink n..1 Apartment
 CrmDeal 0..1 BuyerBuilderInteraction
 CrmDeal 0..n ApartmentStatusHistory
 Project 0..n ReadinessAssessments
-BuilderCompany 0..n ReadinessAssessments
+Company(type=builder) 0..n ReadinessAssessments
 ReadinessAssessment 0..n ReadinessScores
 ReadinessScore n..1 ReadinessCategory
 ReadinessAssessment 0..n ReadinessRecommendations
@@ -162,7 +163,7 @@ ContentPage 0..n ContentBlocks
 Any public entity 0..n Translations
 User 0..n AuditLogs
 User 0..n AnalyticsEvents
-BuilderCompany 0..n AnalyticsEvents
+Company(type=builder) 0..n AnalyticsEvents
 PartnerCompany 0..n AnalyticsEvents
 Project 0..n AnalyticsEvents
 Apartment 0..n AnalyticsEvents
