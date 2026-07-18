@@ -54,10 +54,11 @@ enum CompanyMemberStatus {
   removed
 }
 
-/// Purpose of a one-time account access token (set-password / invite).
+/// Purpose of a one-time account access token (set-password / invite / reset).
 enum AccountAccessTokenPurpose {
   set_password
   invite
+  password_reset
 }
 
 model User {

@@ -18,6 +18,7 @@ import { Throttle } from "@nestjs/throttler";
 import type {
   AuthSessionResponse,
   CsrfTokenResponse,
+  ForgotPasswordResponse,
   UserResponse,
 } from "@toonexpo/contracts";
 import type { Request, Response } from "express";
@@ -25,10 +26,13 @@ import type { Request, Response } from "express";
 import {
   AUTH_RATE_LIMIT_LIMIT,
   AUTH_RATE_LIMIT_TTL_MS,
+  FORGOT_PASSWORD_RATE_LIMIT_LIMIT,
+  FORGOT_PASSWORD_RATE_LIMIT_TTL_MS,
 } from "../common/constants/app.constants.js";
 import { AuthService } from "./auth.service.js";
 import { CurrentUser } from "./decorators/current-user.decorator.js";
 import { Public } from "./decorators/public.decorator.js";
+import { ForgotPasswordDto } from "./dto/forgot-password.dto.js";
 import { LoginDto } from "./dto/login.dto.js";
 import { RegisterDto } from "./dto/register.dto.js";
 import { SetPasswordDto } from "./dto/set-password.dto.js";
@@ -68,10 +72,29 @@ export class AuthController {
   }
 
   @Public()
+  @Post("forgot-password")
+  @HttpCode(HttpStatus.OK)
+  @Throttle({
+    default: {
+      limit: FORGOT_PASSWORD_RATE_LIMIT_LIMIT,
+      ttl: FORGOT_PASSWORD_RATE_LIMIT_TTL_MS,
+    },
+  })
+  @ApiOperation({ summary: "Request a password-reset email (always opaque 200)" })
+  @ApiOkResponse({ description: "Generic acknowledgement; does not reveal email existence" })
+  forgotPassword(
+    @Body() body: ForgotPasswordDto,
+  ): Promise<ForgotPasswordResponse> {
+    return this.authService.forgotPassword(body);
+  }
+
+  @Public()
   @Post("set-password")
   @HttpCode(HttpStatus.OK)
   @Throttle({ default: { limit: AUTH_RATE_LIMIT_LIMIT, ttl: AUTH_RATE_LIMIT_TTL_MS } })
-  @ApiOperation({ summary: "Set password from invite token and start a session" })
+  @ApiOperation({
+    summary: "Set password from invite or reset token and start a session",
+  })
   @ApiOkResponse({ description: "Password set; session cookie set" })
   setPassword(
     @Body() body: SetPasswordDto,

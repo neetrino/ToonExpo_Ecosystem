@@ -89,6 +89,29 @@ describe("AccessTokenService", () => {
     expect(issued.rawToken.length).toBeGreaterThan(16);
   });
 
+  it("issues a password-reset token with reset purpose", async () => {
+    updateMany.mockResolvedValue({ count: 0 });
+    create.mockResolvedValue({ id: "tok_reset" });
+
+    const issued = await service.issuePasswordResetToken("user_1");
+
+    expect(updateMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          purpose: AccountAccessTokenPurpose.password_reset,
+        }),
+      }),
+    );
+    expect(create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          purpose: AccountAccessTokenPurpose.password_reset,
+        }),
+      }),
+    );
+    expect(issued.rawToken.length).toBeGreaterThan(16);
+  });
+
   it("rejects used or expired tokens", async () => {
     findUnique.mockResolvedValue({
       id: "tok_1",
@@ -107,7 +130,7 @@ describe("AccessTokenService", () => {
     ).rejects.toBeInstanceOf(UnauthorizedException);
   });
 
-  it("accepts a valid unused token", async () => {
+  it("accepts a valid unused set-password token", async () => {
     const rawToken = "valid-raw-token-value-32bytes!!";
     findUnique.mockResolvedValue({
       id: "tok_1",
@@ -128,5 +151,25 @@ describe("AccessTokenService", () => {
       include: { user: true },
     });
     expect(result.token.id).toBe("tok_1");
+  });
+
+  it("accepts a valid unused password-reset token", async () => {
+    const rawToken = "valid-reset-token-value-32bytes!";
+    findUnique.mockResolvedValue({
+      id: "tok_reset",
+      purpose: AccountAccessTokenPurpose.password_reset,
+      usedAt: null,
+      expiresAt: new Date(Date.now() + 60_000),
+      user: {
+        id: "user_1",
+        status: UserStatus.active,
+        accountType: AccountType.buyer,
+      },
+    });
+
+    const result = await service.validateSetPasswordToken(rawToken);
+
+    expect(result.token.purpose).toBe(AccountAccessTokenPurpose.password_reset);
+    expect(result.token.id).toBe("tok_reset");
   });
 });

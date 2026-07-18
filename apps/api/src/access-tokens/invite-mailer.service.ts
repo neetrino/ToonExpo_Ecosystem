@@ -3,7 +3,10 @@ import { ConfigService } from "@nestjs/config";
 import { DEFAULT_LOCALE, isSupportedLocale } from "@toonexpo/shared";
 
 import type { AppEnv } from "../config/env.validation.js";
-import { buildSetPasswordEmail } from "../email/email.templates.js";
+import {
+  buildPasswordResetEmail,
+  buildSetPasswordEmail,
+} from "../email/email.templates.js";
 import {
   EMAIL_SERVICE,
   type EmailService,
@@ -11,7 +14,7 @@ import {
 import { AccessTokenService } from "./access-token.service.js";
 
 /**
- * Issues a set-password token and emails the invitation link.
+ * Issues set-password / password-reset tokens and emails the link.
  */
 @Injectable()
 export class InviteMailerService {
@@ -30,6 +33,26 @@ export class InviteMailerService {
     const issued = await this.accessTokens.issueSetPasswordToken(input.userId);
     const url = this.buildSetPasswordUrl(issued.rawToken, input.locale);
     const message = buildSetPasswordEmail({
+      recipientName: input.name,
+      setPasswordUrl: url,
+    });
+
+    await this.emailService.send({
+      to: input.email,
+      subject: message.subject,
+      text: message.text,
+    });
+  }
+
+  async sendPasswordReset(input: {
+    userId: string;
+    email: string;
+    name: string;
+    locale?: string;
+  }): Promise<void> {
+    const issued = await this.accessTokens.issuePasswordResetToken(input.userId);
+    const url = this.buildSetPasswordUrl(issued.rawToken, input.locale);
+    const message = buildPasswordResetEmail({
       recipientName: input.name,
       setPasswordUrl: url,
     });

@@ -52,6 +52,18 @@ export const AUTH_RATE_LIMIT_TTL_MS = 60_000;
 
 /**
  * ADAPTIVE VALUE — confirm with owner.
+ * Forgot-password rate limit: attempts per IP per window (stricter).
+ */
+export const FORGOT_PASSWORD_RATE_LIMIT_LIMIT = 3;
+
+/**
+ * ADAPTIVE VALUE — confirm with owner.
+ * Forgot-password rate limit window in milliseconds (1 minute).
+ */
+export const FORGOT_PASSWORD_RATE_LIMIT_TTL_MS = 60_000;
+
+/**
+ * ADAPTIVE VALUE — confirm with owner.
  * Minimum password length for buyer registration/login validation.
  */
 export const PASSWORD_MIN_LENGTH = 8;
@@ -76,6 +88,16 @@ export const DUMMY_PASSWORD_HASH =
  * Set-password / invite token lifetime (7 days).
  */
 export const ACCOUNT_ACCESS_TOKEN_TTL_SECONDS = 7 * 24 * 60 * 60;
+
+/**
+ * ADAPTIVE VALUE — confirm with owner.
+ * Password-reset token lifetime (1 hour).
+ */
+export const PASSWORD_RESET_TOKEN_TTL_SECONDS = 60 * 60;
+
+/** Generic response body for forgot-password (always the same; no email enumeration). */
+export const FORGOT_PASSWORD_RESPONSE_MESSAGE =
+  "If the email exists, a link has been sent";
 
 /** Opaque access-token entropy (≥256 bits). */
 export const ACCOUNT_ACCESS_TOKEN_BYTES = 32;

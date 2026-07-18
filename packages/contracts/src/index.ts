@@ -24,6 +24,8 @@ export type {
   CompanyMemberStatus,
   CompanyType,
   CsrfTokenResponse,
+  ForgotPasswordRequest,
+  ForgotPasswordResponse,
   LoginRequest,
   RegisterRequest,
   UserResponse,

@@ -4,7 +4,6 @@ import { AccountType, UserStatus } from "@toonexpo/db";
 import type { Response } from "express";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { AccessTokenService } from "../access-tokens/access-token.service.js";
 import type { AppEnv } from "../config/env.validation.js";
 import type { PrismaService } from "../prisma/prisma.service.js";
 import type { QrCodesService } from "../qr/qr-codes.service.js";
@@ -77,9 +76,10 @@ describe("AuthService", () => {
     } as unknown as PrismaService;
 
     const config = createConfigService();
-    const accessTokens = {
-      validateSetPasswordToken: vi.fn(),
-    } as unknown as AccessTokenService;
+    const passwordFlows = {
+      forgotPassword: vi.fn(),
+      setPassword: vi.fn(),
+    } as unknown as import("./auth-password.service.js").AuthPasswordService;
     const sessionCookies = new SessionCookieService(prisma, config);
     const qrCodes = {
       createForBuyerProfile,
@@ -88,7 +88,7 @@ describe("AuthService", () => {
     service = new AuthService(
       prisma,
       config,
-      accessTokens,
+      passwordFlows,
       sessionCookies,
       qrCodes,
     );

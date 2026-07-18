@@ -8,16 +8,17 @@ import { ConfigService } from "@nestjs/config";
 import type {
   AuthSessionResponse,
   CsrfTokenResponse,
+  ForgotPasswordResponse,
   UserResponse,
 } from "@toonexpo/contracts";
 import { AccountType, UserStatus } from "@toonexpo/db";
 import type { Request, Response } from "express";
 
-import { AccessTokenService } from "../access-tokens/access-token.service.js";
 import { DUMMY_PASSWORD_HASH } from "../common/constants/app.constants.js";
 import type { AppEnv } from "../config/env.validation.js";
 import { PrismaService } from "../prisma/prisma.service.js";
 import { QrCodesService } from "../qr/qr-codes.service.js";
+import { AuthPasswordService } from "./auth-password.service.js";
 import { normalizeEmail, toUserResponse } from "./mappers/user.mapper.js";
 import {
   type ClientMeta,
@@ -33,7 +34,7 @@ export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly configService: ConfigService<AppEnv, true>,
-    private readonly accessTokens: AccessTokenService,
+    private readonly passwordFlows: AuthPasswordService,
     private readonly sessionCookies: SessionCookieService,
     private readonly qrCodes: QrCodesService,
   ) {}
@@ -122,53 +123,16 @@ export class AuthService {
     this.sessionCookies.clearSessionCookies(response);
   }
 
-  async setPassword(
+  forgotPassword(input: { email: string }): Promise<ForgotPasswordResponse> {
+    return this.passwordFlows.forgotPassword(input);
+  }
+
+  setPassword(
     input: { token: string; password: string },
     meta: ClientMeta,
     response: Response,
   ): Promise<AuthSessionResponse> {
-    const validated = await this.accessTokens.validateSetPasswordToken(
-      input.token,
-    );
-
-    if (
-      validated.user.status !== UserStatus.invited &&
-      validated.user.status !== UserStatus.active
-    ) {
-      throw new UnauthorizedException("Invalid or expired token");
-    }
-
-    const passwordHash = await hashPassword(input.password);
-    const now = new Date();
-
-    const user = await this.prisma.db.$transaction(async (tx) => {
-      const updated = await tx.user.update({
-        where: { id: validated.user.id },
-        data: {
-          passwordHash,
-          status: UserStatus.active,
-        },
-      });
-
-      await tx.accountAccessToken.update({
-        where: { id: validated.token.id },
-        data: { usedAt: now },
-      });
-
-      await tx.companyMember.updateMany({
-        where: { userId: updated.id, joinedAt: null },
-        data: { joinedAt: now },
-      });
-
-      return updated;
-    });
-
-    const csrfToken = await this.sessionCookies.issueSessionCookies(
-      user.id,
-      meta,
-      response,
-    );
-    return { user: toUserResponse(user), csrfToken };
+    return this.passwordFlows.setPassword(input, meta, response);
   }
 
   getMe(user: AuthenticatedUser): UserResponse {

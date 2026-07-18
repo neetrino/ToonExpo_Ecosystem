@@ -47,6 +47,20 @@ export type LoginRequest = {
 };
 
 /**
+ * Forgot-password request (email only; response is always opaque).
+ */
+export type ForgotPasswordRequest = {
+  email: string;
+};
+
+/**
+ * Opaque acknowledgement for forgot-password (never reveals email existence).
+ */
+export type ForgotPasswordResponse = {
+  message: string;
+};
+
+/**
  * Public user projection without credential fields.
  */
 export type UserResponse = {
