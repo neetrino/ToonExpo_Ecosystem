@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import type { PrismaService } from "../../prisma/prisma.service.js";
 import type { QrResolveService } from "../../qr/qr-resolve.service.js";
+import { CheckInScanService } from "./checkin-scan.service.js";
 import { CheckInService } from "./checkin.service.js";
 
 describe("CheckInService.scan", () => {
@@ -36,13 +37,18 @@ describe("CheckInService.scan", () => {
       },
     } as unknown as PrismaService;
 
-    service = new CheckInService(
+    const scanService = new CheckInScanService(
       prisma,
-      { resolve } as unknown as QrResolveService,
       {
         get: vi.fn().mockReturnValue("pepper"),
       } as never,
       { track: vi.fn() } as never,
+    );
+
+    service = new CheckInService(
+      prisma,
+      { resolve } as unknown as QrResolveService,
+      scanService,
     );
   });
 

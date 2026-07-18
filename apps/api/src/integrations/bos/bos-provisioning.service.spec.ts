@@ -11,6 +11,7 @@ import {
 import type { PrismaService } from "../../prisma/prisma.service.js";
 import type { CompanyProvisioningService } from "../../company/provisioning/company-provisioning.service.js";
 import { BosProvisioningAuditService } from "./bos-provisioning-audit.service.js";
+import { BosProvisioningExecutorService } from "./bos-provisioning.executor.service.js";
 import { BosProvisioningService } from "./bos-provisioning.service.js";
 import {
   BOS_CROSS_COMPANY_MESSAGE,
@@ -83,10 +84,18 @@ describe("BosProvisioningService", () => {
       },
     } as unknown as PrismaService;
 
+    const audit = new BosProvisioningAuditService();
+    const executor = new BosProvisioningExecutorService(
+      prisma,
+      provisioning as unknown as CompanyProvisioningService,
+      audit,
+    );
+
     service = new BosProvisioningService(
       prisma,
       provisioning as unknown as CompanyProvisioningService,
-      new BosProvisioningAuditService(),
+      audit,
+      executor,
     );
   });
 

@@ -23,7 +23,7 @@ import { AccountTypes } from "../../auth/decorators/account-types.decorator.js";
 import { CurrentUser } from "../../auth/decorators/current-user.decorator.js";
 import type { AuthenticatedUser } from "../../auth/types/authenticated-user.js";
 import { ListMediaQueryDto } from "../dto/list-media.query.dto.js";
-import { MEDIA_UPLOAD_FIELD_NAME } from "../media.constants.js";
+import { MEDIA_UPLOAD_FIELD_NAME, MEDIA_UPLOAD_MAX_BYTES } from "../media.constants.js";
 import { MediaUploadService } from "../media-upload.service.js";
 import type { UploadedImageFile } from "../uploaded-file.type.js";
 
@@ -47,7 +47,7 @@ export class AdminMediaController {
   @ApiCreatedResponse({ description: "Uploaded media asset" })
   @UseInterceptors(
     FileInterceptor(MEDIA_UPLOAD_FIELD_NAME, {
-      limits: { fileSize: 10 * 1024 * 1024 },
+      limits: { fileSize: MEDIA_UPLOAD_MAX_BYTES },
     }),
   )
   upload(

@@ -2,14 +2,17 @@ import {
   Catch,
   HttpException,
   HttpStatus,
+  Injectable,
   Logger,
   type ArgumentsHost,
   type ExceptionFilter,
 } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { SentryExceptionCaptured } from "@sentry/nestjs";
 import type { Request, Response } from "express";
 
 import { NODE_ENV_PRODUCTION } from "../constants/app.constants.js";
+import type { AppEnv } from "../../config/env.validation.js";
 
 type ErrorBody = {
   statusCode: number;
@@ -20,8 +23,11 @@ type ErrorBody = {
 };
 
 @Catch()
+@Injectable()
 export class AllExceptionsFilter implements ExceptionFilter {
   private readonly logger = new Logger(AllExceptionsFilter.name);
+
+  constructor(private readonly configService: ConfigService<AppEnv, true>) {}
 
   @SentryExceptionCaptured()
   catch(exception: unknown, host: ArgumentsHost): void {
@@ -50,7 +56,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
       return this.fromHttpException(exception, path, timestamp);
     }
 
-    const isProduction = process.env["NODE_ENV"] === NODE_ENV_PRODUCTION;
+    const nodeEnv = this.configService.get("NODE_ENV", { infer: true });
+    const isProduction = nodeEnv === NODE_ENV_PRODUCTION;
 
     return {
       statusCode: HttpStatus.INTERNAL_SERVER_ERROR,

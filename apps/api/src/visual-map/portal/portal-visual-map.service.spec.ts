@@ -3,6 +3,8 @@ import { BadRequestException, NotFoundException } from "@nestjs/common";
 import { PublicationStatus } from "@toonexpo/db";
 
 import type { PrismaService } from "../../prisma/prisma.service.js";
+import { PortalVisualMapCanvasService } from "./portal-visual-map-canvas.service.js";
+import { PortalVisualMapHotspotService } from "./portal-visual-map-hotspot.service.js";
 import { PortalVisualMapService } from "./portal-visual-map.service.js";
 
 describe("PortalVisualMapService validation", () => {
@@ -115,7 +117,10 @@ describe("PortalVisualMapService validation", () => {
       },
     } as unknown as PrismaService;
 
-    service = new PortalVisualMapService(prisma);
+    service = new PortalVisualMapService(
+      new PortalVisualMapCanvasService(prisma),
+      new PortalVisualMapHotspotService(prisma),
+    );
   });
 
   it("rejects building context outside the project", async () => {

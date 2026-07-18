@@ -85,7 +85,7 @@ describe("Buyer QR system (e2e)", () => {
         forbidNonWhitelisted: true,
       }),
     );
-    app.useGlobalFilters(new AllExceptionsFilter());
+    app.useGlobalFilters(app.get(AllExceptionsFilter));
     await app.init();
 
     prisma = app.get(PrismaService);

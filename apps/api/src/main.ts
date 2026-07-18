@@ -44,7 +44,7 @@ const bootstrap = async (): Promise<void> => {
       forbidNonWhitelisted: true,
     }),
   );
-  app.useGlobalFilters(new AllExceptionsFilter());
+  app.useGlobalFilters(app.get(AllExceptionsFilter));
   app.enableShutdownHooks();
 
   if (nodeEnv !== NODE_ENV_PRODUCTION) {

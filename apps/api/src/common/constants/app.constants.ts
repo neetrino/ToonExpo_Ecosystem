@@ -51,6 +51,16 @@ export const AUTH_RATE_LIMIT_LIMIT = 10;
 export const AUTH_RATE_LIMIT_TTL_MS = 60_000;
 
 /**
+ * Global throttler uses a higher ceiling than auth-only endpoints because it
+ * covers all routes; auth limits remain the baseline per {@link AUTH_RATE_LIMIT_LIMIT}.
+ */
+export const GLOBAL_RATE_LIMIT_AUTH_MULTIPLIER = 10;
+
+/** Default global rate limit derived from auth baseline × multiplier. */
+export const DEFAULT_GLOBAL_RATE_LIMIT =
+  AUTH_RATE_LIMIT_LIMIT * GLOBAL_RATE_LIMIT_AUTH_MULTIPLIER;
+
+/**
  * ADAPTIVE VALUE — confirm with owner.
  * Forgot-password rate limit: attempts per IP per window (stricter).
  */

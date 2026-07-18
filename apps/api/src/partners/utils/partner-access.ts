@@ -8,6 +8,7 @@ import { CompanyType } from "@toonexpo/db";
 import { loadTranslations } from "../../catalog/utils/load-translations.js";
 import { TRANSLATION_ENTITY } from "../../catalog/utils/resolve-translation.js";
 import { PrismaService } from "../../prisma/prisma.service.js";
+import { SLUG_UNIQUENESS_MAX_ATTEMPTS } from "../../common/constants/slug.constants.js";
 import { buildProjectSlug } from "../../portal/utils/slug.js";
 import { PARTNER_COMPATIBLE_COMPANY_TYPES } from "../partners.constants.js";
 
@@ -53,7 +54,7 @@ export const resolvePartnerSlug = async (
   while (await slugTaken(db, candidate, excludePartnerId)) {
     attempt += 1;
     candidate = buildProjectSlug(`${name}-${attempt}`);
-    if (attempt > 20) {
+    if (attempt > SLUG_UNIQUENESS_MAX_ATTEMPTS) {
       throw new ConflictException("Unable to generate a unique slug");
     }
   }

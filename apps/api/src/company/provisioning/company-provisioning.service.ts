@@ -18,8 +18,9 @@ import {
 
 import { InviteMailerService } from "../../access-tokens/invite-mailer.service.js";
 import { normalizeEmail } from "../../auth/mappers/user.mapper.js";
-import { buildProjectSlug } from "../../portal/utils/slug.js";
+import { SLUG_UNIQUENESS_MAX_ATTEMPTS } from "../../common/constants/slug.constants.js";
 import { PrismaService } from "../../prisma/prisma.service.js";
+import { buildProjectSlug } from "../../portal/utils/slug.js";
 import { isPartnerCompatibleType } from "../../partners/utils/partner-access.js";
 
 type CompanyRecord = Prisma.CompanyGetPayload<object>;
@@ -195,7 +196,7 @@ export class CompanyProvisioningService {
     while (await db.partnerCompany.findUnique({ where: { slug: candidate } })) {
       attempt += 1;
       candidate = buildProjectSlug(`${name}-${attempt}`);
-      if (attempt > 20) {
+      if (attempt > SLUG_UNIQUENESS_MAX_ATTEMPTS) {
         throw new ConflictException("Unable to generate a unique partner slug");
       }
     }

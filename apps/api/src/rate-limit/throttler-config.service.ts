@@ -7,10 +7,11 @@ import type {
 import { InjectPinoLogger, PinoLogger } from "nestjs-pino";
 
 import {
-  AUTH_RATE_LIMIT_LIMIT,
   AUTH_RATE_LIMIT_TTL_MS,
+  DEFAULT_GLOBAL_RATE_LIMIT,
 } from "../common/constants/app.constants.js";
 import type { AppEnv } from "../config/env.validation.js";
+import { isVitestRuntime } from "../config/test-runtime.js";
 import { UpstashThrottlerStorage } from "./upstash-throttler.storage.js";
 
 /**
@@ -36,12 +37,12 @@ export class ThrottlerConfigService implements ThrottlerOptionsFactory {
       {
         name: "default",
         ttl: AUTH_RATE_LIMIT_TTL_MS,
-        limit: AUTH_RATE_LIMIT_LIMIT * 10,
+        limit: DEFAULT_GLOBAL_RATE_LIMIT,
       },
     ];
 
     const useDistributedStorage =
-      Boolean(restUrl && restToken) && process.env["VITEST"] !== "true";
+      Boolean(restUrl && restToken) && !isVitestRuntime();
 
     if (useDistributedStorage && restUrl && restToken) {
       this.logger.info(
@@ -53,7 +54,7 @@ export class ThrottlerConfigService implements ThrottlerOptionsFactory {
       };
     }
 
-    if (restUrl && restToken && process.env["VITEST"] === "true") {
+    if (restUrl && restToken && isVitestRuntime()) {
       this.logger.info(
         "Rate limiting storage: in-memory (Vitest; shared Redis counters would leak across tests)",
       );

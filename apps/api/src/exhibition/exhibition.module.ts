@@ -10,6 +10,7 @@ import { AdminRouteGraphService } from "./admin/admin-route-graph.service.js";
 import { AdminVenueMapsController } from "./admin/admin-venue-maps.controller.js";
 import { AdminVenueMapsService } from "./admin/admin-venue-maps.service.js";
 import { CheckInController } from "./checkin/checkin.controller.js";
+import { CheckInScanService } from "./checkin/checkin-scan.service.js";
 import { CheckInService } from "./checkin/checkin.service.js";
 import { PublicBoothSearchService } from "./public/public-booth-search.service.js";
 import { PublicExhibitionController } from "./public/public-exhibition.controller.js";
@@ -30,6 +31,7 @@ import { PublicRouteService } from "./public/public-route.service.js";
     AdminVenueMapsService,
     AdminRouteGraphService,
     AdminBoothsService,
+    CheckInScanService,
     CheckInService,
     PublicExhibitionService,
     PublicBoothSearchService,
