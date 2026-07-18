@@ -655,15 +655,24 @@
           "targetType": "Target type",
           "company": "Builder company",
           "selectCompany": "Select company",
-          "projectId": "Project ID",
-          "projectIdHint": "Enter the project UUID. No admin project picker is available yet.",
+          "project": "Project",
+          "selectProject": "Select project",
+          "selectCompanyFirst": "Select a company first to load its projects.",
+          "loadingProjects": "Loading projects…",
+          "noProjects": "This company has no projects yet.",
+          "projectsError": "Could not load projects. Try again.",
+          "publicationStatuses": {
+            "draft": "Draft",
+            "published": "Published",
+            "archived": "Archived"
+          },
           "submit": "Create assessment",
           "submitting": "Creating…",
           "cancel": "Cancel"
         },
         "validation": {
           "company": "Select a company",
-          "projectId": "Enter a project ID for project assessments"
+          "project": "Select a project"
         },
         "errors": {
           "generic": "Something went wrong. Please try again."

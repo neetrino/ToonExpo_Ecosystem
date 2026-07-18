@@ -1,4 +1,5 @@
 import type {
+  AdminCompanyProjectListResponse,
   CompanyListResponse,
   CompanyResponse,
   CreateCompanyRequest,
@@ -70,6 +71,25 @@ export const getAdminCompany = (
     withCookie(
       {
         path: `/admin/companies/${encodeURIComponent(id)}`,
+        method: "GET",
+        credentials: "include",
+        cache: "no-store",
+      },
+      options.cookieHeader,
+    ),
+  );
+
+/**
+ * Lists all projects for a company (admin project pickers).
+ */
+export const listAdminCompanyProjects = (
+  companyId: string,
+  options: AdminRequestOptions = {},
+): Promise<AdminCompanyProjectListResponse> =>
+  apiFetch<AdminCompanyProjectListResponse>(
+    withCookie(
+      {
+        path: `/admin/companies/${encodeURIComponent(companyId)}/projects`,
         method: "GET",
         credentials: "include",
         cache: "no-store",

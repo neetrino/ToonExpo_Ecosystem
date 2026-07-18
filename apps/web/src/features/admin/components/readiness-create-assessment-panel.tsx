@@ -3,8 +3,10 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { CompanyResponse } from "@toonexpo/contracts";
 import { useTranslations } from "next-intl";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
+import { useAdminCompanyProjectsQuery } from "@/features/admin/hooks/use-admin-companies";
 import { useCreateReadinessAssessmentMutation } from "@/features/admin/hooks/use-admin-readiness";
 import {
   createReadinessAssessmentSchema,
@@ -14,7 +16,6 @@ import { READINESS_TARGET_TYPES } from "@/features/readiness/constants";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/shared/ui/button";
 import { FormField } from "@/shared/ui/form-field";
-import { Input } from "@/shared/ui/input";
 
 type ReadinessCreateAssessmentPanelProps = {
   companies: CompanyResponse[];
@@ -42,6 +43,15 @@ export const ReadinessCreateAssessmentPanel = ({
   });
 
   const targetType = form.watch("targetType");
+  const builderCompanyId = form.watch("builderCompanyId");
+  const projectsQuery = useAdminCompanyProjectsQuery(
+    builderCompanyId,
+    targetType === "project",
+  );
+
+  useEffect(() => {
+    form.setValue("projectId", "");
+  }, [builderCompanyId, form]);
 
   const onSubmit = form.handleSubmit(async (values) => {
     try {
@@ -58,6 +68,9 @@ export const ReadinessCreateAssessmentPanel = ({
       form.setError("root", { message: t("errors.generic") });
     }
   });
+
+  const projectSelectDisabled =
+    builderCompanyId.length === 0 || projectsQuery.isLoading;
 
   return (
     <div
@@ -124,17 +137,50 @@ export const ReadinessCreateAssessmentPanel = ({
           {targetType === "project" ? (
             <FormField
               id="projectId"
-              label={t("create.projectId")}
+              label={t("create.project")}
               error={
                 form.formState.errors.projectId
-                  ? t("validation.projectId")
+                  ? t("validation.project")
                   : undefined
               }
             >
-              <Input id="projectId" {...form.register("projectId")} />
-              <p className="mt-1 text-xs text-ink-muted">
-                {t("create.projectIdHint")}
-              </p>
+              <select
+                id="projectId"
+                className="h-11 w-full rounded-sm border border-border bg-background px-3 text-sm text-ink disabled:cursor-not-allowed disabled:opacity-60"
+                disabled={projectSelectDisabled}
+                {...form.register("projectId")}
+              >
+                <option value="">
+                  {builderCompanyId.length === 0
+                    ? t("create.selectCompanyFirst")
+                    : projectsQuery.isLoading
+                      ? t("create.loadingProjects")
+                      : t("create.selectProject")}
+                </option>
+                {(projectsQuery.data?.data ?? []).map((project) => (
+                  <option key={project.id} value={project.id}>
+                    {project.name} (
+                    {t(`create.publicationStatuses.${project.publicationStatus}`)}
+                    )
+                  </option>
+                ))}
+              </select>
+              {builderCompanyId.length === 0 ? (
+                <p className="mt-1 text-xs text-ink-muted">
+                  {t("create.selectCompanyFirst")}
+                </p>
+              ) : null}
+              {projectsQuery.isError ? (
+                <p role="alert" className="mt-1 text-xs text-danger">
+                  {t("create.projectsError")}
+                </p>
+              ) : null}
+              {projectsQuery.isSuccess &&
+              projectsQuery.data.data.length === 0 ? (
+                <p className="mt-1 text-xs text-ink-muted">
+                  {t("create.noProjects")}
+                </p>
+              ) : null}
             </FormField>
           ) : null}
 

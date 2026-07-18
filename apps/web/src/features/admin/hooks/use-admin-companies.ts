@@ -10,11 +10,13 @@ import {
   createAdminCompany,
   getAdminCompany,
   listAdminCompanies,
+  listAdminCompanyProjects,
   resendAdminCompanyInvite,
   updateAdminCompany,
 } from "@/features/admin/api/admin-companies-api";
 import {
   ADMIN_COMPANIES_QUERY_KEY,
+  adminCompanyProjectsQueryKey,
   adminCompanyQueryKey,
 } from "@/features/admin/constants";
 
@@ -35,6 +37,19 @@ export const useAdminCompanyQuery = (id: string) =>
     queryKey: adminCompanyQueryKey(id),
     queryFn: () => getAdminCompany(id),
     enabled: id.length > 0,
+  });
+
+/**
+ * Lists all projects for a company (readiness and other admin pickers).
+ */
+export const useAdminCompanyProjectsQuery = (
+  companyId: string,
+  enabled = true,
+) =>
+  useQuery({
+    queryKey: adminCompanyProjectsQueryKey(companyId),
+    queryFn: () => listAdminCompanyProjects(companyId),
+    enabled: enabled && companyId.length > 0,
   });
 
 /**
