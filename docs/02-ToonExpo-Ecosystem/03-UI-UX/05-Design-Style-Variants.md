@@ -2,10 +2,10 @@
 
 ## Status
 
-- **Design variant:** not final — three homepage directions remain in Figma.
-- **Style baseline:** approved for interim use until the product owner selects Variant A, B, or C.
+- **Design variant:** **Variant A selected** — confirmed by the product owner on 2026-07-18.
+- **Style baseline:** Shared Style Baseline remains valid; Variant A tokens (clean white/gray surfaces, large display typography) are now the canonical direction for public pages.
 
-Use the **Shared Style Baseline** section for all new UI work. Treat variant-specific tokens as reference only; do not hard-code a single variant globally until the final choice is recorded here.
+Use Variant A (node 1:2) as the reference for public marketing/catalog UI. Variants B and C are kept below for historical reference only.
 
 ## Source
 
