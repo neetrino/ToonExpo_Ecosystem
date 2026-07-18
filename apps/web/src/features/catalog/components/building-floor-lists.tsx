@@ -4,9 +4,9 @@ import type {
   FloorApartmentSummary,
   FloorSummary,
 } from "@toonexpo/contracts";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 
-import { formatCatalogPrice } from "@/features/catalog/utils/format-price";
+import { ApartmentPriceLabel } from "@/features/catalog/components/apartment-price-label";
 import { Link } from "@/i18n/navigation";
 
 type BuildingFloorsListProps = {
@@ -22,7 +22,6 @@ export const BuildingFloorsList = async ({
   building,
 }: BuildingFloorsListProps) => {
   const t = await getTranslations("Catalog");
-  const locale = await getLocale();
 
   if (building.floors.length === 0) {
     return (
@@ -38,7 +37,6 @@ export const BuildingFloorsList = async ({
           projectId={projectId}
           buildingId={building.id}
           floor={floor}
-          locale={locale}
           t={t}
         />
       ))}
@@ -50,7 +48,6 @@ type FloorSectionProps = {
   projectId: string;
   buildingId: string;
   floor: FloorSummary;
-  locale: string;
   t: Awaited<ReturnType<typeof getTranslations>>;
 };
 
@@ -58,7 +55,6 @@ const FloorSection = ({
   projectId,
   buildingId,
   floor,
-  locale,
   t,
 }: FloorSectionProps) => {
   return (
@@ -78,7 +74,7 @@ const FloorSection = ({
       </div>
       <ul className="divide-y divide-border overflow-hidden rounded-sm border border-border bg-background">
         {floor.apartments.map((apartment) => (
-          <ApartmentRow key={apartment.id} apartment={apartment} locale={locale} t={t} />
+          <ApartmentRow key={apartment.id} apartment={apartment} t={t} />
         ))}
       </ul>
     </div>
@@ -94,7 +90,6 @@ type FloorApartmentsListProps = {
  */
 export const FloorApartmentsList = async ({ floor }: FloorApartmentsListProps) => {
   const t = await getTranslations("Catalog");
-  const locale = await getLocale();
 
   if (floor.apartments.length === 0) {
     return (
@@ -105,7 +100,7 @@ export const FloorApartmentsList = async ({ floor }: FloorApartmentsListProps) =
   return (
     <ul className="divide-y divide-border overflow-hidden rounded-sm border border-border bg-background">
       {floor.apartments.map((apartment) => (
-        <ApartmentRow key={apartment.id} apartment={apartment} locale={locale} t={t} />
+        <ApartmentRow key={apartment.id} apartment={apartment} t={t} />
       ))}
     </ul>
   );
@@ -132,22 +127,11 @@ const AvailabilityLine = ({
 
 const ApartmentRow = ({
   apartment,
-  locale,
   t,
 }: {
   apartment: FloorApartmentSummary;
-  locale: string;
   t: Translate;
 }) => {
-  const price = formatCatalogPrice({
-    amount: apartment.price,
-    currency: apartment.priceCurrency,
-    locale,
-    priceVisibility: apartment.priceVisibility,
-    onRequestLabel: t("price.onRequest"),
-    signInLabel: t("price.signInToSee"),
-  });
-
   return (
     <li>
       <Link
@@ -170,7 +154,12 @@ const ApartmentRow = ({
             </span>
           ) : null}
         </div>
-        <span className="font-brand font-semibold text-ink">{price}</span>
+        <ApartmentPriceLabel
+          apartmentId={apartment.id}
+          amount={apartment.price}
+          currency={apartment.priceCurrency}
+          priceVisibility={apartment.priceVisibility}
+        />
       </Link>
     </li>
   );

@@ -6,6 +6,7 @@ import { cache } from "react";
 
 import { getBuilder } from "@/features/catalog/api/catalog-api";
 import { ProjectCard } from "@/features/catalog/components/project-card";
+import { ProjectPriceRangesOverlayScope } from "@/features/catalog/components/price-overlay-scope";
 import { SiteFooter } from "@/features/catalog/components/site-footer";
 import { Link } from "@/i18n/navigation";
 import { SiteHeader } from "@/shared/ui/site-header";
@@ -107,11 +108,15 @@ export default async function BuilderDetailPage({ params }: BuilderDetailPagePro
             {t("buildersPage.detail.emptyProjects")}
           </p>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {builder.projects.map((project) => (
-              <ProjectCard key={project.id} project={project} />
-            ))}
-          </div>
+          <ProjectPriceRangesOverlayScope
+            projectIds={builder.projects.map((project) => project.id)}
+          >
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {builder.projects.map((project) => (
+                <ProjectCard key={project.id} project={project} />
+              ))}
+            </div>
+          </ProjectPriceRangesOverlayScope>
         )}
       </main>
       <SiteFooter />

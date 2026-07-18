@@ -53,7 +53,7 @@ Infrastructure and platform services completed during waves 1–4 (2026-07-18):
 
 ## Next
 
-1. **Performance P0 (web caching + invalidation)** — ✅ Done (2026-07-19): Next Data Cache for anonymous public SSR GETs (catalog/builders 30m, partners/mortgage 60m) with tag purge webhook; API `WebRevalidationService` wired on publish/unpublish; React `cache()` for metadata/page dedupe; R2 hostname in `images.remotePatterns`. Remaining: Upstash required in prod + Cloudflare backstop, load test.
+1. **Performance P0 (web caching + invalidation)** — ✅ Done (2026-07-19): Next Data Cache for anonymous public SSR GETs (catalog/builders 30m, partners/mortgage 60m) with tag purge webhook; API `WebRevalidationService` wired on publish/unpublish; React `cache()` for metadata/page dedupe; R2 hostname in `images.remotePatterns`; authenticated price overlay (`GET /catalog/projects/:id/prices` + bulk ranges) restores `visible_after_login` prices client-side on cached pages. Remaining: Upstash required in prod + Cloudflare backstop, load test.
 2. **Performance P0 (backend)** — ✅ Done (2026-07-19): session touch coalescing (10m), CRM one-open-deal partial unique + transactional intake, Neon pool/timeouts, trust proxy / `req.ip`, booth search DB filter (min length 2), route graph in-memory TTL cache, check-in QR pass-through.
 3. **Owner OPEN_QUESTIONS walkthrough** — `docs/OPEN_QUESTIONS.md` (design variant, domains, prod admin bootstrap, BOS outbound, post-v1 scope confirmation, secrets rotation).
 4. **Owner manual deploy** — `docs/DEPLOYMENT.md` + `docs/SETTINGS.md` (Vercel web, Cloud Run API, Neon `migrate deploy`).

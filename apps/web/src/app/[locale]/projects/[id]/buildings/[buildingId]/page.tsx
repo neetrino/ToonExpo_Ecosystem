@@ -4,6 +4,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { cache } from "react";
 
 import { BuildingFloorsList } from "@/features/catalog/components/building-floor-lists";
+import { ProjectPricesOverlayScope } from "@/features/catalog/components/price-overlay-scope";
 import { getBuilding } from "@/features/catalog/api/catalog-api";
 import { listBuildingVisualCanvases } from "@/features/visual-map/api/public-visual-map-api";
 import { PublicVisualMap } from "@/features/visual-map/components/public-visual-map";
@@ -80,7 +81,12 @@ export default async function BuildingPage({ params }: BuildingPageProps) {
         <div className="mb-4">
           <h2 className="text-xl font-bold text-ink">{t("building.floors")}</h2>
         </div>
-        <BuildingFloorsList projectId={building.project.id} building={building} />
+        <ProjectPricesOverlayScope projectId={building.project.id}>
+          <BuildingFloorsList
+            projectId={building.project.id}
+            building={building}
+          />
+        </ProjectPricesOverlayScope>
       </main>
       <SiteFooter />
     </div>

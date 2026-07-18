@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { cache } from "react";
 
 import { getApartment } from "@/features/catalog/api/catalog-api";
 import { ApartmentDetailFavorite } from "@/features/buyer/components/apartment-detail-favorite";
+import { ApartmentDetailPrice } from "@/features/catalog/components/apartment-price-label";
+import { ProjectPricesOverlayScope } from "@/features/catalog/components/price-overlay-scope";
 import { RequestPriceButton } from "@/features/catalog/components/request-price-button";
 import { SiteFooter } from "@/features/catalog/components/site-footer";
-import { formatCatalogPrice } from "@/features/catalog/utils/format-price";
 import { Link } from "@/i18n/navigation";
 import { SiteHeader } from "@/shared/ui/site-header";
 
@@ -55,18 +56,6 @@ export default async function ApartmentPage({ params }: ApartmentPageProps) {
   }
 
   const t = await getTranslations("Catalog");
-  const activeLocale = await getLocale();
-  const price = formatCatalogPrice({
-    amount: apartment.price,
-    currency: apartment.priceCurrency,
-    locale: activeLocale,
-    priceVisibility: apartment.priceVisibility,
-    onRequestLabel: t("price.onRequest"),
-    signInLabel: t("price.signInToSee"),
-  });
-  const needsSignIn =
-    apartment.priceVisibility === "visible_after_login" &&
-    apartment.price == null;
   const showRequestCta =
     apartment.priceVisibility === "by_request" ||
     (apartment.priceVisibility === "public" && apartment.price == null);
@@ -74,6 +63,7 @@ export default async function ApartmentPage({ params }: ApartmentPageProps) {
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
+      <ProjectPricesOverlayScope projectId={apartment.project.id}>
       <main className="mx-auto w-full max-w-content px-6 py-10">
         <nav className="mb-6 text-sm text-ink-secondary">
           <Link href="/projects" className="hover:text-ink">
@@ -130,15 +120,12 @@ export default async function ApartmentPage({ params }: ApartmentPageProps) {
               <ApartmentDetailFavorite apartmentId={apartment.id} />
             </header>
 
-            {needsSignIn ? (
-              <p className="font-brand text-2xl font-bold text-ink">
-                <Link href="/auth/login" className="underline-offset-4 hover:underline">
-                  {price}
-                </Link>
-              </p>
-            ) : (
-              <p className="font-brand text-3xl font-bold text-ink">{price}</p>
-            )}
+            <ApartmentDetailPrice
+              apartmentId={apartment.id}
+              amount={apartment.price}
+              currency={apartment.priceCurrency}
+              priceVisibility={apartment.priceVisibility}
+            />
 
             <dl className="grid grid-cols-2 gap-3">
               <Detail
@@ -215,6 +202,7 @@ export default async function ApartmentPage({ params }: ApartmentPageProps) {
           </div>
         </div>
       </main>
+      </ProjectPricesOverlayScope>
       <SiteFooter />
     </div>
   );

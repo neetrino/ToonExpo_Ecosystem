@@ -5,6 +5,7 @@ import { listProjects } from "@/features/catalog/api/catalog-api";
 import { CatalogFavoritesScope } from "@/features/buyer/components/catalog-favorites-scope";
 import { CatalogPagination } from "@/features/catalog/components/catalog-pagination";
 import { ProjectCard } from "@/features/catalog/components/project-card";
+import { ProjectPriceRangesOverlayScope } from "@/features/catalog/components/price-overlay-scope";
 import { ProjectFiltersForm } from "@/features/catalog/components/project-filters-form";
 import { SiteFooter } from "@/features/catalog/components/site-footer";
 import {
@@ -71,15 +72,19 @@ export default async function ProjectsPage({
           </p>
         ) : (
           <CatalogFavoritesScope projects={response.data}>
-            <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {response.data.map((project) => (
-                <ProjectCard
-                  key={project.id}
-                  project={project}
-                  showFavorite
-                />
-              ))}
-            </div>
+            <ProjectPriceRangesOverlayScope
+              projectIds={response.data.map((project) => project.id)}
+            >
+              <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {response.data.map((project) => (
+                  <ProjectCard
+                    key={project.id}
+                    project={project}
+                    showFavorite
+                  />
+                ))}
+              </div>
+            </ProjectPriceRangesOverlayScope>
           </CatalogFavoritesScope>
         )}
 

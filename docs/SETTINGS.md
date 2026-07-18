@@ -71,6 +71,8 @@ Anonymous public SSR/RSC GETs use Next.js Data Cache with tag-based purge on pub
 
 Authenticated/private data (buyer QR, favorites, portals, admin) is never shared-cached.
 
+Цены `visible_after_login`: закэшированный HTML всегда анонимный; залогиненный покупатель получает цены после гидрации отдельным приватным запросом (`GET /api/v1/catalog/projects/:id/prices`, `no-store`). Настройки не требуются.
+
 ### Publish invalidation (production)
 
 Owner generates one secret (≥32 characters). Set the same value on both sides:

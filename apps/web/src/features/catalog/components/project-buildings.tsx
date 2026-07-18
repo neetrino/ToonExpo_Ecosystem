@@ -3,9 +3,9 @@ import type {
   BuildingSummary,
   FloorApartmentSummary,
 } from "@toonexpo/contracts";
-import { getLocale, getTranslations } from "next-intl/server";
+import { getTranslations } from "next-intl/server";
 
-import { formatCatalogPrice } from "@/features/catalog/utils/format-price";
+import { ApartmentPriceLabel } from "@/features/catalog/components/apartment-price-label";
 import { Link } from "@/i18n/navigation";
 
 type ProjectBuildingsProps = {
@@ -21,7 +21,6 @@ export const ProjectBuildings = async ({
   buildings,
 }: ProjectBuildingsProps) => {
   const t = await getTranslations("Catalog");
-  const locale = await getLocale();
 
   if (buildings.length === 0) {
     return (
@@ -63,12 +62,7 @@ export const ProjectBuildings = async ({
                 </div>
                 <ul className="divide-y divide-border overflow-hidden rounded-sm border border-border bg-background">
                   {floor.apartments.map((apartment) => (
-                    <ApartmentRow
-                      key={apartment.id}
-                      apartment={apartment}
-                      locale={locale}
-                      t={t}
-                    />
+                    <ApartmentRow key={apartment.id} apartment={apartment} t={t} />
                   ))}
                 </ul>
               </div>
@@ -101,22 +95,11 @@ const AvailabilityLine = ({
 
 const ApartmentRow = ({
   apartment,
-  locale,
   t,
 }: {
   apartment: FloorApartmentSummary;
-  locale: string;
   t: Translate;
 }) => {
-  const price = formatCatalogPrice({
-    amount: apartment.price,
-    currency: apartment.priceCurrency,
-    locale,
-    priceVisibility: apartment.priceVisibility,
-    onRequestLabel: t("price.onRequest"),
-    signInLabel: t("price.signInToSee"),
-  });
-
   return (
     <li>
       <Link
@@ -139,7 +122,12 @@ const ApartmentRow = ({
             </span>
           ) : null}
         </div>
-        <span className="font-brand font-semibold text-ink">{price}</span>
+        <ApartmentPriceLabel
+          apartmentId={apartment.id}
+          amount={apartment.price}
+          currency={apartment.priceCurrency}
+          priceVisibility={apartment.priceVisibility}
+        />
       </Link>
     </li>
   );

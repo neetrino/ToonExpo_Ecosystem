@@ -4,6 +4,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { cache } from "react";
 
 import { FloorApartmentsList } from "@/features/catalog/components/building-floor-lists";
+import { ProjectPricesOverlayScope } from "@/features/catalog/components/price-overlay-scope";
 import { getFloor } from "@/features/catalog/api/catalog-api";
 import { SiteFooter } from "@/features/catalog/components/site-footer";
 import { listFloorVisualCanvases } from "@/features/visual-map/api/public-visual-map-api";
@@ -91,7 +92,9 @@ export default async function FloorPage({ params }: FloorPageProps) {
         <div className="mb-4">
           <h2 className="text-xl font-bold text-ink">{t("floor.apartments")}</h2>
         </div>
-        <FloorApartmentsList floor={floor} />
+        <ProjectPricesOverlayScope projectId={floor.project.id}>
+          <FloorApartmentsList floor={floor} />
+        </ProjectPricesOverlayScope>
       </main>
       <SiteFooter />
     </div>

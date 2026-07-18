@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { cache } from "react";
 
 import { getProject } from "@/features/catalog/api/catalog-api";
 import { ProjectDetailFavorite } from "@/features/buyer/components/project-detail-favorite";
 import { ProjectBuildings } from "@/features/catalog/components/project-buildings";
+import { ProjectPricesOverlayScope } from "@/features/catalog/components/price-overlay-scope";
+import { ProjectPriceText } from "@/features/catalog/components/project-price-text";
 import { RequestPriceButton } from "@/features/catalog/components/request-price-button";
 import { SiteFooter } from "@/features/catalog/components/site-footer";
 import { listProjectVisualCanvases } from "@/features/visual-map/api/public-visual-map-api";
@@ -15,10 +17,6 @@ import {
   buildProjectBuildingHref,
   pickPrimaryVisualCanvas,
 } from "@/features/visual-map/utils/public-visual-map";
-import {
-  formatCompactPrice,
-  formatPriceRange,
-} from "@/features/catalog/utils/format-price";
 import { Link } from "@/i18n/navigation";
 import { SiteHeader } from "@/shared/ui/site-header";
 
@@ -59,30 +57,16 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   }
 
   const t = await getTranslations("Catalog");
-  const activeLocale = await getLocale();
   const visualResponse = await listProjectVisualCanvases(id);
   const visualCanvas = pickPrimaryVisualCanvas(visualResponse?.data ?? []);
   const location =
     project.locationText ??
     [project.district, project.city].filter(Boolean).join(", ");
-  const priceRange = formatPriceRange({
-    minPrice: project.minPrice,
-    maxPrice: project.maxPrice,
-    currency: project.priceCurrency,
-    locale: activeLocale,
-    onRequestLabel: t("price.onRequest"),
-  });
-  const fromPrice = formatCompactPrice({
-    amount: project.minPrice,
-    currency: project.priceCurrency,
-    locale: activeLocale,
-    fromLabel: t("price.from"),
-    onRequestLabel: t("price.onRequest"),
-  });
 
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
+      <ProjectPricesOverlayScope projectId={project.id}>
       <main>
         <section className="relative isolate h-[min(50vh,420px)] w-full overflow-hidden bg-surface">
           {project.cover ? (
@@ -105,7 +89,15 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             <h1 className="mt-2 font-brand text-3xl font-bold text-on-dark sm:text-4xl">
               {project.name}
             </h1>
-            <p className="mt-2 text-sm text-on-dark/90">{fromPrice}</p>
+            <p className="mt-2 text-sm text-on-dark/90">
+              <ProjectPriceText
+                projectId={project.id}
+                minPrice={project.minPrice}
+                maxPrice={project.maxPrice}
+                priceCurrency={project.priceCurrency}
+                variant="from"
+              />
+            </p>
           </div>
         </section>
 
@@ -140,7 +132,13 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             </p>
             <p className="mt-4 text-sm text-ink">
               <span className="font-medium">{t("project.priceRange")}: </span>
-              {priceRange}
+              <ProjectPriceText
+                projectId={project.id}
+                minPrice={project.minPrice}
+                maxPrice={project.maxPrice}
+                priceCurrency={project.priceCurrency}
+                variant="range"
+              />
             </p>
             {project.address ? (
               <p className="mt-2 text-sm text-ink-secondary">
@@ -179,6 +177,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
           <ProjectBuildings projectId={project.id} buildings={project.buildings} />
         </div>
       </main>
+      </ProjectPricesOverlayScope>
       <SiteFooter />
     </div>
   );

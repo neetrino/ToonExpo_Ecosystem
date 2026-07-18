@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 
 import { FavoriteToggleButton } from "@/features/buyer/components/favorite-toggle-button";
+import { usePriceOverlay } from "@/features/catalog/components/price-overlay-scope";
 import {
   formatCompactPrice,
   formatPriceRange,
@@ -33,18 +34,20 @@ export const ProjectCard = ({
   const location =
     project.locationText ??
     [project.district, project.city].filter(Boolean).join(", ");
+  // Authenticated overlay widens the range with visible_after_login prices.
+  const range = usePriceOverlay().getProjectRange(project.id) ?? project;
   const priceLabel = featured
     ? formatCompactPrice({
-        amount: project.minPrice,
-        currency: project.priceCurrency,
+        amount: range.minPrice,
+        currency: range.priceCurrency,
         locale,
         fromLabel: t("price.from"),
         onRequestLabel: t("price.onRequest"),
       })
     : formatPriceRange({
-        minPrice: project.minPrice,
-        maxPrice: project.maxPrice,
-        currency: project.priceCurrency,
+        minPrice: range.minPrice,
+        maxPrice: range.maxPrice,
+        currency: range.priceCurrency,
         locale,
         onRequestLabel: t("price.onRequest"),
       });
