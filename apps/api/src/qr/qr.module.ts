@@ -8,6 +8,6 @@ import { QrResolveService } from "./qr-resolve.service.js";
 @Module({
   controllers: [BuyerQrController, QrResolveController],
   providers: [QrCodesService, QrResolveService],
-  exports: [QrCodesService],
+  exports: [QrCodesService, QrResolveService],
 })
 export class QrModule {}

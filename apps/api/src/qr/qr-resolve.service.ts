@@ -96,6 +96,10 @@ export class QrResolveService {
       return this.resolveEntrance(qr, scanner, meta);
     }
 
+    if (scanner?.accountType === AccountType.platform_admin) {
+      return this.resolveEntrance(qr, scanner, meta);
+    }
+
     if (scanner?.accountType === AccountType.company_member) {
       return this.resolveBuilder(qr, scanner, meta);
     }

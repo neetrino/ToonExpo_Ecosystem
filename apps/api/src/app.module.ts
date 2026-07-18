@@ -21,6 +21,7 @@ import { resolveEnvFilePaths } from "./config/env-files.js";
 import { validateEnv } from "./config/env.validation.js";
 import { CrmModule } from "./crm/crm.module.js";
 import { EmailModule } from "./email/email.module.js";
+import { ExhibitionModule } from "./exhibition/exhibition.module.js";
 import { HealthModule } from "./health/health.module.js";
 import { MortgageModule } from "./mortgage/mortgage.module.js";
 import { PartnersModule } from "./partners/partners.module.js";
@@ -85,6 +86,7 @@ const isProduction = process.env["NODE_ENV"] === NODE_ENV_PRODUCTION;
     PartnersModule,
     MortgageModule,
     ServiceProvidersModule,
+    ExhibitionModule,
     HealthModule,
   ],
   providers: [
