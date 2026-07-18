@@ -187,6 +187,26 @@ export default async function ApartmentPage({ params }: ApartmentPageProps) {
                   labelKey="requestPrice"
                 />
               ) : null}
+              {apartment.matterportUrl ? (
+                <a
+                  href={apartment.matterportUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex h-11 items-center justify-center rounded-pill bg-brand px-5 text-sm font-medium text-brand-foreground hover:opacity-90"
+                >
+                  {t("apartment.matterportTour")}
+                </a>
+              ) : null}
+              {apartment.external3dUrl ? (
+                <a
+                  href={apartment.external3dUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex h-11 items-center justify-center rounded-pill border border-border-strong px-5 text-sm font-medium text-ink hover:bg-surface"
+                >
+                  {t("apartment.external3dTour")}
+                </a>
+              ) : null}
               <Link
                 href={`/projects/${apartment.project.id}`}
                 className="inline-flex h-11 items-center justify-center rounded-pill border border-border-strong px-5 text-sm font-medium text-ink hover:bg-surface"

@@ -185,6 +185,8 @@
       "bedroomsLabel": "Спальни",
       "bathroomsLabel": "Санузлы",
       "noPlan": "Планировка скоро",
+      "matterportTour": "Виртуальный тур Matterport",
+      "external3dTour": "3D-тур",
       "notFoundTitle": "Квартира не найдена",
       "metaTitle": "Кв. {number} — {project}",
       "metaFallback": "Квартира {number} в проекте {project}"
@@ -529,6 +531,7 @@
         "type": "Тип",
         "description": "Описание",
         "status": "Статус",
+        "logoMedia": "Логотип",
         "adminName": "Имя администратора",
         "adminEmail": "Email администратора",
         "adminPhone": "Телефон администратора",
@@ -1360,6 +1363,7 @@
         "projectType": "Тип проекта",
         "constructionStatus": "Статус строительства",
         "completionDate": "Дата сдачи",
+        "coverMedia": "Обложка",
         "submit": "Создать проект",
         "submitting": "Создание…"
       },
@@ -1396,6 +1400,12 @@
       "adding": "Сохранение…",
       "buildingName": "Название здания",
       "buildingDescription": "Описание",
+      "coverMedia": "Обложка",
+      "floorplanMedia": "Изображение планировки",
+      "saveCover": "Сохранить обложку",
+      "saveFloorplan": "Сохранить планировку",
+      "coverSaved": "Обложка сохранена",
+      "floorplanSaved": "Планировка сохранена",
       "floorNumber": "Номер этажа",
       "floorName": "Название этажа",
       "displayLabel": "Метка",
@@ -1533,10 +1543,14 @@
         "priceVisibility": "Видимость цены",
         "salesStatus": "Статус продаж",
         "statusChangeReason": "Причина смены статуса",
-        "description": "Описание"
+        "description": "Описание",
+        "planMedia": "Изображение планировки",
+        "matterportUrl": "Ссылка Matterport",
+        "external3dUrl": "Внешняя 3D-ссылка"
       },
       "validation": {
-        "number": "Укажите номер квартиры"
+        "number": "Укажите номер квартиры",
+        "invalidUrl": "Введите корректный https URL или оставьте пустым"
       },
       "priceVisibility": {
         "public": "Публичная",
@@ -1553,6 +1567,18 @@
         "published": "Опубликована",
         "archived": "В архиве"
       },
+      "errors": {
+        "generic": "Что-то пошло не так. Попробуйте ещё раз."
+      }
+    },
+    "company": {
+      "title": "Профиль компании",
+      "subtitle": "Логотип отображается в публичном каталоге застройщиков",
+      "logoMedia": "Логотип компании",
+      "save": "Сохранить логотип",
+      "saving": "Сохранение…",
+      "saveSuccess": "Логотип компании обновлён",
+      "adminOnly": "Обновлять логотип могут только администраторы компании.",
       "errors": {
         "generic": "Что-то пошло не так. Попробуйте ещё раз."
       }
@@ -1855,6 +1881,8 @@
       "socialFacebook": "Facebook",
       "socialInstagram": "Instagram",
       "socialLinkedin": "LinkedIn",
+      "logoMedia": "Логотип",
+      "coverMedia": "Обложка",
       "validation": {
         "shortDescription": "Enter a short description in Armenian"
       }

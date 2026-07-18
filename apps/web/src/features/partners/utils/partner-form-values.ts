@@ -38,6 +38,8 @@ export const toUpdatePartnerFormValues = (
   socialFacebook: readSocial(partner.socialLinks, "facebook"),
   socialInstagram: readSocial(partner.socialLinks, "instagram"),
   socialLinkedin: readSocial(partner.socialLinks, "linkedin"),
+  logoMediaId: partner.logoMediaId ?? "",
+  coverMediaId: partner.coverMediaId ?? "",
 });
 
 export const toPartnerProfileFormValues = (
@@ -57,6 +59,8 @@ export const toPartnerProfileFormValues = (
   socialFacebook: readSocial(partner.socialLinks, "facebook"),
   socialInstagram: readSocial(partner.socialLinks, "instagram"),
   socialLinkedin: readSocial(partner.socialLinks, "linkedin"),
+  logoMediaId: partner.logoMediaId ?? "",
+  coverMediaId: partner.coverMediaId ?? "",
 });
 
 export const toPartnerOfferFormValues = (

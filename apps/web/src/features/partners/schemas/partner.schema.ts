@@ -10,6 +10,7 @@ import {
   PARTNER_COMPANY_TYPES,
   PARTNER_PUBLICATION_STATUSES,
 } from "@/features/partners/constants";
+import { optionalMediaIdField } from "@/features/media/schemas/media-fields.schema";
 
 const partnerTypeSchema = z.enum(
   PARTNER_COMPANY_TYPES as unknown as [PartnerCompanyType, ...PartnerCompanyType[]],
@@ -56,6 +57,11 @@ const contactFields = {
   socialLinkedin: z.string().max(500),
 };
 
+const mediaFields = {
+  logoMediaId: optionalMediaIdField,
+  coverMediaId: optionalMediaIdField,
+};
+
 export const updatePartnerSchema = z.object({
   type: partnerTypeSchema,
   name: z.string().trim().min(1).max(200),
@@ -65,6 +71,7 @@ export const updatePartnerSchema = z.object({
   featured: z.boolean(),
   ...profileLocaleFields,
   ...contactFields,
+  ...mediaFields,
 });
 
 export type UpdatePartnerFormValues = z.infer<typeof updatePartnerSchema>;
@@ -72,6 +79,7 @@ export type UpdatePartnerFormValues = z.infer<typeof updatePartnerSchema>;
 export const partnerProfileSchema = z.object({
   ...profileLocaleFields,
   ...contactFields,
+  ...mediaFields,
 });
 
 export type PartnerProfileFormValues = z.infer<typeof partnerProfileSchema>;

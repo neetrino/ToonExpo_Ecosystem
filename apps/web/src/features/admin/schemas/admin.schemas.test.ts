@@ -66,6 +66,7 @@ describe("updateCompanySchema", () => {
       name: "Updated Co",
       description: "New copy",
       status: "inactive",
+      logoMediaId: "",
     });
 
     expect(result.success).toBe(true);

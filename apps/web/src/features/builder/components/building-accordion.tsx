@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { AddFloorForm } from "@/features/builder/components/add-floor-form";
+import { EditBuildingMediaForm } from "@/features/builder/components/edit-building-media-form";
 import { FloorInventoryRow } from "@/features/builder/components/floor-inventory-row";
 
 type BuildingAccordionProps = {
@@ -59,6 +60,7 @@ export const BuildingAccordion = ({
               />
             ))
           )}
+          <EditBuildingMediaForm projectId={projectId} building={building} />
           <AddFloorForm projectId={projectId} buildingId={building.id} />
         </div>
       ) : null}

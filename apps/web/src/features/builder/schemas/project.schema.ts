@@ -8,6 +8,7 @@ import {
   PORTAL_PROJECT_NAME_MAX_LENGTH,
   PORTAL_SLUG_MAX_LENGTH,
 } from "@/features/builder/constants";
+import { optionalMediaIdField } from "@/features/media/schemas/media-fields.schema";
 
 const localeTextSchema = z.object({
   hy: z.string().trim().max(PORTAL_PROJECT_NAME_MAX_LENGTH),
@@ -50,6 +51,7 @@ export const createProjectSchema = z.object({
   projectType: z.string().trim().max(120),
   constructionStatus: z.string().trim().max(120),
   completionDate: z.string().trim().max(32),
+  coverMediaId: optionalMediaIdField,
 });
 
 export type CreateProjectFormValues = z.infer<typeof createProjectSchema>;

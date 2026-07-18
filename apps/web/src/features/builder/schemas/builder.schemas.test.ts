@@ -9,6 +9,12 @@ import {
 import { createProjectSchema } from "./project.schema";
 import { inviteMemberSchema } from "./team.schema";
 
+const apartmentFields = {
+  planMediaId: "",
+  matterportUrl: "",
+  external3dUrl: "",
+};
+
 describe("createProjectSchema", () => {
   it("requires Armenian name", () => {
     const result = createProjectSchema.safeParse({
@@ -31,6 +37,7 @@ describe("createProjectSchema", () => {
       projectType: "",
       constructionStatus: "",
       completionDate: "",
+      coverMediaId: "",
     });
 
     expect(result.success).toBe(false);
@@ -57,6 +64,7 @@ describe("createProjectSchema", () => {
       projectType: "residential",
       constructionStatus: "under_construction",
       completionDate: "2027-06-01",
+      coverMediaId: "",
     });
 
     expect(result.success).toBe(true);
@@ -66,7 +74,11 @@ describe("createProjectSchema", () => {
 describe("createBuildingSchema", () => {
   it("rejects empty name", () => {
     expect(
-      createBuildingSchema.safeParse({ name: "  ", description: "" }).success,
+      createBuildingSchema.safeParse({
+        name: "  ",
+        description: "",
+        coverMediaId: "",
+      }).success,
     ).toBe(false);
   });
 });
@@ -77,6 +89,7 @@ describe("createFloorSchema", () => {
       floorNumber: "3",
       name: "",
       displayLabel: "3F",
+      floorplanMediaId: "",
     });
     expect(result.success).toBe(true);
   });
@@ -129,6 +142,7 @@ describe("updateApartmentSchema", () => {
       descriptionHy: "",
       descriptionRu: "",
       descriptionEn: "",
+      ...apartmentFields,
     });
     expect(result.success).toBe(true);
   });
@@ -149,6 +163,7 @@ describe("updateApartmentSchema", () => {
       descriptionHy: "Նկարագրություն",
       descriptionRu: "",
       descriptionEn: "",
+      ...apartmentFields,
     });
     expect(result.success).toBe(true);
   });

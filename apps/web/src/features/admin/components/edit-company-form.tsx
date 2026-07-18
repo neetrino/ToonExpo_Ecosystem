@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import type { CompanyResponse } from "@toonexpo/contracts";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 
 import { COMPANY_STATUSES } from "@/features/admin/constants";
 import { useUpdateAdminCompanyMutation } from "@/features/admin/hooks/use-admin-companies";
@@ -12,6 +12,8 @@ import {
   updateCompanySchema,
   type UpdateCompanyFormValues,
 } from "@/features/admin/schemas/update-company.schema";
+import { MediaUploadField } from "@/features/media/components/media-upload-field";
+import { toNullableMediaId } from "@/features/media/schemas/media-fields.schema";
 import { Button } from "@/shared/ui/button";
 import { FormField } from "@/shared/ui/form-field";
 import { Input } from "@/shared/ui/input";
@@ -32,6 +34,7 @@ export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors, isSubmitting, isDirty },
   } = useForm<UpdateCompanyFormValues>({
     resolver: zodResolver(updateCompanySchema),
@@ -39,6 +42,7 @@ export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
       name: company.name,
       description: company.description ?? "",
       status: company.status,
+      logoMediaId: company.logoMediaId ?? "",
     },
   });
 
@@ -50,6 +54,7 @@ export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
         name: values.name,
         description: values.description.length > 0 ? values.description : null,
         status: values.status,
+        logoMediaId: toNullableMediaId(values.logoMediaId),
       });
       setSuccess(true);
     } catch {
@@ -106,6 +111,22 @@ export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
           ))}
         </select>
       </FormField>
+
+      <Controller
+        control={control}
+        name="logoMediaId"
+        render={({ field, fieldState }) => (
+          <MediaUploadField
+            id="edit-company-logo"
+            label={t("form.logoMedia")}
+            context="admin"
+            value={field.value}
+            onChange={field.onChange}
+            previewUrl={company.logoUrl}
+            error={fieldState.error?.message}
+          />
+        )}
+      />
 
       <p className="text-sm text-ink-secondary">
         {t("detail.typeLabel")}: {t(`types.${company.type}`)}

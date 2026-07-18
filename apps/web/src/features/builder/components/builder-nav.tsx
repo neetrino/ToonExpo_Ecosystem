@@ -11,6 +11,7 @@ type NavItem =
         | "/builder"
         | "/builder/projects"
         | "/builder/team"
+        | "/builder/company"
         | "/builder/crm"
         | "/builder/scanner"
         | "/builder/readiness"
@@ -19,6 +20,7 @@ type NavItem =
         | "dashboard"
         | "projects"
         | "team"
+        | "company"
         | "crm"
         | "scanner"
         | "readiness"
@@ -27,7 +29,7 @@ type NavItem =
     }
   | {
       href: string;
-      key: "visualMap" | "company" | "inventory";
+      key: "visualMap" | "inventory";
       disabled: true;
     };
 
@@ -35,6 +37,7 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/builder", key: "dashboard" },
   { href: "/builder/projects", key: "projects" },
   { href: "/builder/team", key: "team" },
+  { href: "/builder/company", key: "company" },
   { href: "/builder/crm", key: "crm" },
   { href: "/builder/scanner", key: "scanner" },
   { href: "/builder/readiness", key: "readiness" },

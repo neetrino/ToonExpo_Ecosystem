@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { BulkApartmentsForm } from "@/features/builder/components/bulk-apartments-form";
+import { EditFloorMediaForm } from "@/features/builder/components/edit-floor-media-form";
 import { usePortalFloorApartmentsQuery } from "@/features/builder/hooks/use-portal-inventory";
 import { Link } from "@/i18n/navigation";
 import { Button } from "@/shared/ui/button";
@@ -75,6 +76,8 @@ export const FloorInventoryRow = ({
           ))}
         </ul>
       ) : null}
+
+      <EditFloorMediaForm projectId={projectId} floor={floor} />
 
       {showBulk ? (
         <BulkApartmentsForm

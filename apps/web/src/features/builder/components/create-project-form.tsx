@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 
 import { TranslationTabs } from "@/features/builder/components/translation-tabs";
 import { useCreatePortalProjectMutation } from "@/features/builder/hooks/use-portal-projects";
@@ -12,6 +12,7 @@ import {
   type CreateProjectFormValues,
 } from "@/features/builder/schemas/project.schema";
 import { toCreateProjectRequest } from "@/features/builder/utils/project-mappers";
+import { MediaUploadField } from "@/features/media/components/media-upload-field";
 import { useRouter } from "@/i18n/navigation";
 import { Button } from "@/shared/ui/button";
 import { FormField } from "@/shared/ui/form-field";
@@ -37,6 +38,7 @@ const emptyValues = (): CreateProjectFormValues => ({
   projectType: "",
   constructionStatus: "",
   completionDate: "",
+  coverMediaId: "",
 });
 
 /**
@@ -51,6 +53,7 @@ export const CreateProjectForm = () => {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<CreateProjectFormValues>({
     resolver: zodResolver(createProjectSchema),
@@ -184,6 +187,21 @@ export const CreateProjectForm = () => {
           />
         </FormField>
       </fieldset>
+
+      <Controller
+        control={control}
+        name="coverMediaId"
+        render={({ field, fieldState }) => (
+          <MediaUploadField
+            id="project-cover"
+            label={t("form.coverMedia")}
+            context="portal"
+            value={field.value}
+            onChange={field.onChange}
+            error={fieldState.error?.message}
+          />
+        )}
+      />
 
       {formError ? (
         <p role="alert" className="rounded-sm bg-danger-soft px-3 py-2 text-sm text-danger">

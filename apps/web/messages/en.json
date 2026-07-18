@@ -185,6 +185,8 @@
       "bedroomsLabel": "Bedrooms",
       "bathroomsLabel": "Bathrooms",
       "noPlan": "Floor plan coming soon",
+      "matterportTour": "Matterport walkthrough",
+      "external3dTour": "3D tour",
       "notFoundTitle": "Apartment not found",
       "metaTitle": "Apt. {number} — {project}",
       "metaFallback": "Apartment {number} in {project}"
@@ -529,6 +531,7 @@
         "type": "Type",
         "description": "Description",
         "status": "Status",
+        "logoMedia": "Logo",
         "adminName": "Admin name",
         "adminEmail": "Admin email",
         "adminPhone": "Admin phone",
@@ -1276,6 +1279,8 @@
       "socialFacebook": "Facebook",
       "socialInstagram": "Instagram",
       "socialLinkedin": "LinkedIn",
+      "logoMedia": "Logo",
+      "coverMedia": "Cover image",
       "validation": {
         "shortDescription": "Enter a short description in Armenian"
       }
@@ -1534,6 +1539,7 @@
         "projectType": "Project type",
         "constructionStatus": "Construction status",
         "completionDate": "Completion date",
+        "coverMedia": "Cover image",
         "submit": "Create project",
         "submitting": "Creating…"
       },
@@ -1570,6 +1576,12 @@
       "adding": "Saving…",
       "buildingName": "Building name",
       "buildingDescription": "Description",
+      "coverMedia": "Cover image",
+      "floorplanMedia": "Floor plan image",
+      "saveCover": "Save cover",
+      "saveFloorplan": "Save floor plan",
+      "coverSaved": "Cover image saved",
+      "floorplanSaved": "Floor plan saved",
       "floorNumber": "Floor number",
       "floorName": "Floor name",
       "displayLabel": "Display label",
@@ -1707,10 +1719,14 @@
         "priceVisibility": "Price visibility",
         "salesStatus": "Sales status",
         "statusChangeReason": "Status change reason",
-        "description": "Description"
+        "description": "Description",
+        "planMedia": "Floor plan image",
+        "matterportUrl": "Matterport URL",
+        "external3dUrl": "External 3D URL"
       },
       "validation": {
-        "number": "Enter an apartment number"
+        "number": "Enter an apartment number",
+        "invalidUrl": "Enter a valid https URL or leave empty"
       },
       "priceVisibility": {
         "public": "Public",
@@ -1727,6 +1743,18 @@
         "published": "Published",
         "archived": "Archived"
       },
+      "errors": {
+        "generic": "Something went wrong. Please try again."
+      }
+    },
+    "company": {
+      "title": "Company profile",
+      "subtitle": "Logo shown on the public builders directory",
+      "logoMedia": "Company logo",
+      "save": "Save logo",
+      "saving": "Saving…",
+      "saveSuccess": "Company logo updated",
+      "adminOnly": "Only company administrators can update the logo.",
       "errors": {
         "generic": "Something went wrong. Please try again."
       }

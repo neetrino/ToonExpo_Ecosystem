@@ -3,13 +3,15 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 
 import { useCreateFloorMutation } from "@/features/builder/hooks/use-portal-inventory";
 import {
   createFloorSchema,
   type CreateFloorFormValues,
 } from "@/features/builder/schemas/inventory.schema";
+import { MediaUploadField } from "@/features/media/components/media-upload-field";
+import { toOptionalMediaId } from "@/features/media/schemas/media-fields.schema";
 import { Button } from "@/shared/ui/button";
 import { FormField } from "@/shared/ui/form-field";
 import { Input } from "@/shared/ui/input";
@@ -32,11 +34,17 @@ export const AddFloorForm = ({
   const {
     register,
     handleSubmit,
+    control,
     reset,
     formState: { errors, isSubmitting },
   } = useForm<CreateFloorFormValues>({
     resolver: zodResolver(createFloorSchema),
-    defaultValues: { floorNumber: "1", name: "", displayLabel: "" },
+    defaultValues: {
+      floorNumber: "1",
+      name: "",
+      displayLabel: "",
+      floorplanMediaId: "",
+    },
   });
 
   const onSubmit = handleSubmit(async (values) => {
@@ -49,11 +57,15 @@ export const AddFloorForm = ({
         ...(values.displayLabel.length > 0
           ? { displayLabel: values.displayLabel }
           : {}),
+        ...(toOptionalMediaId(values.floorplanMediaId)
+          ? { floorplanMediaId: values.floorplanMediaId }
+          : {}),
       });
       reset({
         floorNumber: String(floorNumber + 1),
         name: "",
         displayLabel: "",
+        floorplanMediaId: "",
       });
     } catch {
       setError(t("errors.generic"));
@@ -91,6 +103,20 @@ export const AddFloorForm = ({
           />
         </FormField>
       </div>
+      <Controller
+        control={control}
+        name="floorplanMediaId"
+        render={({ field, fieldState }) => (
+          <MediaUploadField
+            id={`floor-plan-new-${buildingId}`}
+            label={t("floorplanMedia")}
+            context="portal"
+            value={field.value}
+            onChange={field.onChange}
+            error={fieldState.error?.message}
+          />
+        )}
+      />
       {error ? (
         <p role="alert" className="text-sm text-danger">
           {error}

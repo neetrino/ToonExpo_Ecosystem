@@ -4,7 +4,7 @@ import type { PortalPartnerDetail } from "@toonexpo/contracts";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, type Control } from "react-hook-form";
 
 import {
   usePortalPartnerQuery,
@@ -16,6 +16,8 @@ import {
   PublicationStatusBadge,
 } from "@/features/partners/components/partner-badges";
 import { PartnerProfileFields } from "@/features/partners/components/partner-profile-fields";
+import { PartnerMediaFields } from "@/features/partners/components/partner-media-fields";
+import type { PartnerMediaFieldValues } from "@/features/partners/components/partner-media-fields";
 import { PartnerTypeLabel } from "@/features/partners/components/partner-type-label";
 import {
   partnerProfileSchema,
@@ -101,6 +103,11 @@ const PartnerProfileForm = ({ partner }: PartnerProfileFormProps) => {
             publicationStatus: tPartners(`publication.${partner.publicationStatus}`),
             featured: partner.featured,
           }}
+        />
+
+        <PartnerMediaFields
+          control={form.control as unknown as Control<PartnerMediaFieldValues>}
+          context="portal"
         />
 
         {saveError ? (

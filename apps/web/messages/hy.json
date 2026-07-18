@@ -185,6 +185,8 @@
       "bedroomsLabel": "Ննջասենյակներ",
       "bathroomsLabel": "Սանհանգույցներ",
       "noPlan": "Հատակագիծը շուտով",
+      "matterportTour": "Matterport վիրտուալ տուր",
+      "external3dTour": "3D տուր",
       "notFoundTitle": "Բնակարանը չի գտնվել",
       "metaTitle": "Բն. {number} — {project}",
       "metaFallback": "Բնակարան {number}՝ {project} նախագծում"
@@ -529,6 +531,7 @@
         "type": "Տեսակ",
         "description": "Նկարագրություն",
         "status": "Կարգավիճակ",
+        "logoMedia": "Լոգո",
         "adminName": "Ադմինի անուն",
         "adminEmail": "Ադմինի էլ․ փոստ",
         "adminPhone": "Ադմինի հեռախոս",
@@ -1360,6 +1363,7 @@
         "projectType": "Տեսակ",
         "constructionStatus": "Շինարարության կարգավիճակ",
         "completionDate": "Ավարտի ամսաթիվ",
+        "coverMedia": "Շապիկի նկար",
         "submit": "Ստեղծել նախագիծ",
         "submitting": "Ստեղծում…"
       },
@@ -1396,6 +1400,12 @@
       "adding": "Պահպանում…",
       "buildingName": "Շենքի անուն",
       "buildingDescription": "Նկարագրություն",
+      "coverMedia": "Շապիկի նկար",
+      "floorplanMedia": "Հատակագծի նկար",
+      "saveCover": "Պահպանել շապիկը",
+      "saveFloorplan": "Պահպանել հատակագիծը",
+      "coverSaved": "Շապիկի նկարը պահպանված է",
+      "floorplanSaved": "Հատակագծի նկարը պահպանված է",
       "floorNumber": "Հարկի համար",
       "floorName": "Հարկի անուն",
       "displayLabel": "Ցուցադրման պիտակ",
@@ -1533,10 +1543,14 @@
         "priceVisibility": "Գնի տեսանելիություն",
         "salesStatus": "Վաճառքի կարգավիճակ",
         "statusChangeReason": "Կարգավիճակի փոփոխության պատճառ",
-        "description": "Նկարագրություն"
+        "description": "Նկարագրություն",
+        "planMedia": "Հատակագծի նկար",
+        "matterportUrl": "Matterport հղում",
+        "external3dUrl": "Արտաքին 3D հղում"
       },
       "validation": {
-        "number": "Մուտքագրեք բնակարանի համարը"
+        "number": "Մուտքագրեք բնակարանի համարը",
+        "invalidUrl": "Մուտքագրեք վավեր https հղում կամ թողեք դատարկ"
       },
       "priceVisibility": {
         "public": "Հանրային",
@@ -1553,6 +1567,18 @@
         "published": "Հրապարակված",
         "archived": "Արխիվ"
       },
+      "errors": {
+        "generic": "Ինչ-որ սխալ տեղի ունեցավ։ Կրկին փորձեք։"
+      }
+    },
+    "company": {
+      "title": "Ընկերության պրոֆիլ",
+      "subtitle": "Լոգոն ցուցադրվում է հանրային կառուցապատողների կատալոգում",
+      "logoMedia": "Ընկերության լոգո",
+      "save": "Պահպանել լոգոն",
+      "saving": "Պահպանում…",
+      "saveSuccess": "Ընկերության լոգոն թարմացված է",
+      "adminOnly": "Լոգոն կարող են թարմացնել միայն ընկերության ադմինիստրատորները։",
       "errors": {
         "generic": "Ինչ-որ սխալ տեղի ունեցավ։ Կրկին փորձեք։"
       }
@@ -1855,6 +1881,8 @@
       "socialFacebook": "Facebook",
       "socialInstagram": "Instagram",
       "socialLinkedin": "LinkedIn",
+      "logoMedia": "Լոգո",
+      "coverMedia": "Շապիկի նկար",
       "validation": {
         "shortDescription": "Մուտքագրեք կարճ նկարագրություն հայերենով"
       }

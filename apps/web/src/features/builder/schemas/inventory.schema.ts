@@ -6,6 +6,7 @@ import {
   PORTAL_BULK_APARTMENTS_MAX,
   PORTAL_DESCRIPTION_MAX_LENGTH,
 } from "@/features/builder/constants";
+import { optionalMediaIdField } from "@/features/media/schemas/media-fields.schema";
 
 /**
  * Inline form schema for adding a building.
@@ -13,9 +14,16 @@ import {
 export const createBuildingSchema = z.object({
   name: z.string().trim().min(1).max(PORTAL_BUILDING_NAME_MAX_LENGTH),
   description: z.string().trim().max(PORTAL_DESCRIPTION_MAX_LENGTH),
+  coverMediaId: optionalMediaIdField,
 });
 
 export type CreateBuildingFormValues = z.infer<typeof createBuildingSchema>;
+
+export const updateBuildingSchema = z.object({
+  coverMediaId: optionalMediaIdField,
+});
+
+export type UpdateBuildingFormValues = z.infer<typeof updateBuildingSchema>;
 
 /**
  * Inline form schema for adding a floor.
@@ -30,9 +38,16 @@ export const createFloorSchema = z.object({
     }),
   name: z.string().trim().max(PORTAL_BUILDING_NAME_MAX_LENGTH),
   displayLabel: z.string().trim().max(PORTAL_BUILDING_NAME_MAX_LENGTH),
+  floorplanMediaId: optionalMediaIdField,
 });
 
 export type CreateFloorFormValues = z.infer<typeof createFloorSchema>;
+
+export const updateFloorSchema = z.object({
+  floorplanMediaId: optionalMediaIdField,
+});
+
+export type UpdateFloorFormValues = z.infer<typeof updateFloorSchema>;
 
 /**
  * Bulk apartment creation template.

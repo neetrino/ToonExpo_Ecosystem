@@ -1,21 +1,28 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type {
-  BulkCreatePortalApartmentsRequest,
-  CreatePortalBuildingRequest,
-  CreatePortalFloorRequest,
-  UpdatePortalApartmentRequest,
-} from "@toonexpo/contracts";
-
 import {
   bulkCreatePortalApartments,
   getPortalApartment,
   listPortalApartments,
   updatePortalApartment,
 } from "@/features/builder/api/portal-apartments-api";
-import { createPortalBuilding } from "@/features/builder/api/portal-buildings-api";
-import { createPortalFloor } from "@/features/builder/api/portal-floors-api";
+import {
+  createPortalBuilding,
+  updatePortalBuilding,
+} from "@/features/builder/api/portal-buildings-api";
+import {
+  createPortalFloor,
+  updatePortalFloor,
+} from "@/features/builder/api/portal-floors-api";
+import type {
+  BulkCreatePortalApartmentsRequest,
+  CreatePortalBuildingRequest,
+  CreatePortalFloorRequest,
+  UpdatePortalApartmentRequest,
+  UpdatePortalBuildingRequest,
+  UpdatePortalFloorRequest,
+} from "@toonexpo/contracts";
 import {
   PORTAL_PROJECTS_QUERY_KEY,
   portalApartmentQueryKey,
@@ -100,6 +107,42 @@ export const useBulkCreateApartmentsMutation = (
       void queryClient.invalidateQueries({
         queryKey: portalFloorApartmentsQueryKey(floorId),
       });
+      invalidateProject(queryClient, projectId);
+    },
+  });
+};
+
+/**
+ * Patches a building.
+ */
+export const useUpdateBuildingMutation = (
+  projectId: string,
+  buildingId: string,
+) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (body: UpdatePortalBuildingRequest) =>
+      updatePortalBuilding(buildingId, body),
+    onSuccess: () => {
+      invalidateProject(queryClient, projectId);
+    },
+  });
+};
+
+/**
+ * Patches a floor.
+ */
+export const useUpdateFloorMutation = (
+  projectId: string,
+  floorId: string,
+) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (body: UpdatePortalFloorRequest) =>
+      updatePortalFloor(floorId, body),
+    onSuccess: () => {
       invalidateProject(queryClient, projectId);
     },
   });

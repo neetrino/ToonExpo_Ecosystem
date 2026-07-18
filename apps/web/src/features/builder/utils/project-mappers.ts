@@ -7,6 +7,7 @@ import type {
 
 import type { BulkApartmentsFormValues } from "@/features/builder/schemas/inventory.schema";
 import type { CreateProjectFormValues } from "@/features/builder/schemas/project.schema";
+import { toNullableMediaId } from "@/features/media/schemas/media-fields.schema";
 
 const optionalText = (value: string): string | undefined =>
   value.length > 0 ? value : undefined;
@@ -100,6 +101,9 @@ export const toCreateProjectRequest = (
     ...(optionalText(values.completionDate)
       ? { completionDate: values.completionDate }
       : {}),
+    ...(optionalText(values.coverMediaId)
+      ? { coverMediaId: values.coverMediaId }
+      : {}),
     ...(translations ? { translations } : {}),
   };
 };
@@ -122,6 +126,7 @@ export const toUpdateProjectRequest = (
     projectType: optionalText(values.projectType) ?? null,
     constructionStatus: optionalText(values.constructionStatus) ?? null,
     completionDate: optionalText(values.completionDate) ?? null,
+    coverMediaId: toNullableMediaId(values.coverMediaId),
   };
 
   const slug = optionalText(values.slug);

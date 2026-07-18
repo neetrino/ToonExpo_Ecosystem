@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import type { PortalProjectDetail } from "@toonexpo/contracts";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 
 import { TranslationTabs } from "@/features/builder/components/translation-tabs";
 import { useUpdatePortalProjectMutation } from "@/features/builder/hooks/use-portal-projects";
@@ -13,6 +13,7 @@ import {
   type UpdateProjectFormValues,
 } from "@/features/builder/schemas/project.schema";
 import { toUpdateProjectRequest } from "@/features/builder/utils/project-mappers";
+import { MediaUploadField } from "@/features/media/components/media-upload-field";
 import { Button } from "@/shared/ui/button";
 import { FormField } from "@/shared/ui/form-field";
 import { Input } from "@/shared/ui/input";
@@ -44,6 +45,7 @@ const toFormValues = (project: PortalProjectDetail): UpdateProjectFormValues => 
   projectType: project.projectType ?? "",
   constructionStatus: project.constructionStatus ?? "",
   completionDate: project.completionDate ?? "",
+  coverMediaId: project.coverMediaId ?? "",
 });
 
 /**
@@ -58,6 +60,7 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors, isSubmitting, isDirty },
   } = useForm<UpdateProjectFormValues>({
     resolver: zodResolver(updateProjectSchema),
@@ -182,6 +185,21 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
           />
         </FormField>
       </div>
+
+      <Controller
+        control={control}
+        name="coverMediaId"
+        render={({ field, fieldState }) => (
+          <MediaUploadField
+            id="edit-project-cover"
+            label={t("form.coverMedia")}
+            context="portal"
+            value={field.value}
+            onChange={field.onChange}
+            error={fieldState.error?.message}
+          />
+        )}
+      />
 
       {formError ? (
         <p role="alert" className="rounded-sm bg-danger-soft px-3 py-2 text-sm text-danger">

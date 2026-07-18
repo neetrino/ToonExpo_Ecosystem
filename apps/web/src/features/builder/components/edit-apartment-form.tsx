@@ -7,7 +7,7 @@ import type {
 } from "@toonexpo/contracts";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 
 import { TranslationTabs } from "@/features/builder/components/translation-tabs";
 import {
@@ -19,6 +19,11 @@ import {
   updateApartmentSchema,
   type UpdateApartmentFormValues,
 } from "@/features/builder/schemas/apartment.schema";
+import { MediaUploadField } from "@/features/media/components/media-upload-field";
+import {
+  toNullableHttpsUrl,
+  toNullableMediaId,
+} from "@/features/media/schemas/media-fields.schema";
 import { Button } from "@/shared/ui/button";
 import { FormField } from "@/shared/ui/form-field";
 import { Input } from "@/shared/ui/input";
@@ -53,6 +58,9 @@ const toFormValues = (
     apartment.translations?.description?.hy ?? apartment.description ?? "",
   descriptionRu: apartment.translations?.description?.ru ?? "",
   descriptionEn: apartment.translations?.description?.en ?? "",
+  planMediaId: apartment.planMediaId ?? "",
+  matterportUrl: apartment.matterportUrl ?? "",
+  external3dUrl: apartment.external3dUrl ?? "",
 });
 
 const toUpdateRequest = (
@@ -84,6 +92,9 @@ const toUpdateRequest = (
     ...(Object.keys(description).length > 0
       ? { translations: { description } }
       : {}),
+    planMediaId: toNullableMediaId(values.planMediaId),
+    matterportUrl: toNullableHttpsUrl(values.matterportUrl),
+    external3dUrl: toNullableHttpsUrl(values.external3dUrl),
   };
 };
 
@@ -99,6 +110,7 @@ export const EditApartmentForm = ({ apartment }: EditApartmentFormProps) => {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors, isSubmitting, isDirty },
   } = useForm<UpdateApartmentFormValues>({
     resolver: zodResolver(updateApartmentSchema),
@@ -205,6 +217,52 @@ export const EditApartmentForm = ({ apartment }: EditApartmentFormProps) => {
           </FormField>
         )}
       </TranslationTabs>
+
+      <Controller
+        control={control}
+        name="planMediaId"
+        render={({ field, fieldState }) => (
+          <MediaUploadField
+            id="apt-plan"
+            label={t("form.planMedia")}
+            context="portal"
+            value={field.value}
+            onChange={field.onChange}
+            error={fieldState.error?.message}
+          />
+        )}
+      />
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <FormField
+          id="apt-matterport"
+          label={t("form.matterportUrl")}
+          error={
+            errors.matterportUrl ? t("validation.invalidUrl") : undefined
+          }
+        >
+          <Input
+            id="apt-matterport"
+            type="url"
+            placeholder="https://"
+            {...register("matterportUrl")}
+          />
+        </FormField>
+        <FormField
+          id="apt-external-3d"
+          label={t("form.external3dUrl")}
+          error={
+            errors.external3dUrl ? t("validation.invalidUrl") : undefined
+          }
+        >
+          <Input
+            id="apt-external-3d"
+            type="url"
+            placeholder="https://"
+            {...register("external3dUrl")}
+          />
+        </FormField>
+      </div>
 
       {formError ? (
         <p role="alert" className="rounded-sm bg-danger-soft px-3 py-2 text-sm text-danger">

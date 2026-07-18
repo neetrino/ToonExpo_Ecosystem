@@ -1,8 +1,12 @@
-import type { CompanyProfileResponse } from "@toonexpo/contracts";
+import type {
+  CompanyProfileResponse,
+  UpdateCompanyProfileRequest,
+} from "@toonexpo/contracts";
 
 import { apiFetch } from "@/shared/api/client";
 
 import {
+  jsonCredentials,
   withPortalCookie,
   type PortalRequestOptions,
 } from "./portal-request";
@@ -24,3 +28,16 @@ export const getCompanyProfile = (
       options.cookieHeader,
     ),
   );
+
+/**
+ * Updates the authenticated company profile (company_admin).
+ */
+export const updateCompanyProfile = (
+  body: UpdateCompanyProfileRequest,
+): Promise<CompanyProfileResponse> =>
+  apiFetch<CompanyProfileResponse>({
+    path: "/company/me",
+    method: "PATCH",
+    ...jsonCredentials,
+    body: JSON.stringify(body),
+  });

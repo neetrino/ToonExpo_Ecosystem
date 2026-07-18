@@ -15,6 +15,7 @@ import type {
   PartnerProfileFormValues,
   UpdatePartnerFormValues,
 } from "@/features/partners/schemas/partner.schema";
+import { toNullableMediaId } from "@/features/media/schemas/media-fields.schema";
 
 const optionalText = (value: string): string | undefined =>
   value.length > 0 ? value : undefined;
@@ -156,6 +157,8 @@ export const toUpdatePartnerBody = (
     status: values.status,
     publicationStatus: values.publicationStatus,
     featured: values.featured,
+    logoMediaId: toNullableMediaId(values.logoMediaId),
+    coverMediaId: toNullableMediaId(values.coverMediaId),
     ...(translations ? { translations } : {}),
   };
 };
@@ -175,6 +178,8 @@ export const toUpdatePortalPartnerBody = (
       values.socialInstagram,
       values.socialLinkedin,
     ),
+    logoMediaId: toNullableMediaId(values.logoMediaId),
+    coverMediaId: toNullableMediaId(values.coverMediaId),
     ...(translations ? { translations } : {}),
   };
 };

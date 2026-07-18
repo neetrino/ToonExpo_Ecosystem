@@ -3,13 +3,15 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 
 import { useCreateBuildingMutation } from "@/features/builder/hooks/use-portal-inventory";
 import {
   createBuildingSchema,
   type CreateBuildingFormValues,
 } from "@/features/builder/schemas/inventory.schema";
+import { MediaUploadField } from "@/features/media/components/media-upload-field";
+import { toOptionalMediaId } from "@/features/media/schemas/media-fields.schema";
 import { Button } from "@/shared/ui/button";
 import { FormField } from "@/shared/ui/form-field";
 import { Input } from "@/shared/ui/input";
@@ -28,11 +30,12 @@ export const AddBuildingForm = ({ projectId }: AddBuildingFormProps) => {
   const {
     register,
     handleSubmit,
+    control,
     reset,
     formState: { errors, isSubmitting },
   } = useForm<CreateBuildingFormValues>({
     resolver: zodResolver(createBuildingSchema),
-    defaultValues: { name: "", description: "" },
+    defaultValues: { name: "", description: "", coverMediaId: "" },
   });
 
   const onSubmit = handleSubmit(async (values) => {
@@ -42,6 +45,9 @@ export const AddBuildingForm = ({ projectId }: AddBuildingFormProps) => {
         name: values.name,
         ...(values.description.length > 0
           ? { description: values.description }
+          : {}),
+        ...(toOptionalMediaId(values.coverMediaId)
+          ? { coverMediaId: values.coverMediaId }
           : {}),
       });
       reset();
@@ -69,6 +75,20 @@ export const AddBuildingForm = ({ projectId }: AddBuildingFormProps) => {
       <FormField id="building-description" label={t("buildingDescription")}>
         <Input id="building-description" {...register("description")} />
       </FormField>
+      <Controller
+        control={control}
+        name="coverMediaId"
+        render={({ field, fieldState }) => (
+          <MediaUploadField
+            id="building-cover-new"
+            label={t("coverMedia")}
+            context="portal"
+            value={field.value}
+            onChange={field.onChange}
+            error={fieldState.error?.message}
+          />
+        )}
+      />
       {error ? (
         <p role="alert" className="text-sm text-danger">
           {error}
