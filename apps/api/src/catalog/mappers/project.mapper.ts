@@ -6,12 +6,19 @@ import type {
   ProjectListItem,
 } from "@toonexpo/contracts";
 import type { ApartmentSalesStatus, Prisma } from "@toonexpo/db";
+import type { SupportedLocale } from "@toonexpo/shared";
 
-import { DEFAULT_CATALOG_CURRENCY } from "../catalog.constants.js";
+import {
+  resolveTranslatedValue,
+  TRANSLATION_ENTITY,
+  TRANSLATION_FIELD,
+  type TranslationRow,
+} from "../utils/resolve-translation.js";
+import { aggregateVisiblePrices } from "./aggregate-prices.js";
 import {
   decimalToString,
   emptyAvailability,
-  shouldRevealPublicPrice,
+  shouldRevealPrice,
   summarizeSalesStatuses,
   toMediaSummary,
 } from "./catalog.mapper.js";
@@ -80,17 +87,29 @@ type ProjectDetailSource = ProjectListSource & {
   }>;
 };
 
-const mapFloorApartment = (apartment: {
-  id: string;
-  number: string;
-  salesStatus: ApartmentSalesStatus;
-  rooms: number | null;
-  areaTotal: Prisma.Decimal | null;
-  price: Prisma.Decimal | null;
-  priceCurrency: string;
-  priceVisibility: string;
-}): FloorApartmentSummary => {
-  const revealPrice = shouldRevealPublicPrice(apartment.priceVisibility);
+type MapContext = {
+  locale: SupportedLocale;
+  isAuthenticated: boolean;
+  translations: TranslationRow[];
+};
+
+const mapFloorApartment = (
+  apartment: {
+    id: string;
+    number: string;
+    salesStatus: ApartmentSalesStatus;
+    rooms: number | null;
+    areaTotal: Prisma.Decimal | null;
+    price: Prisma.Decimal | null;
+    priceCurrency: string;
+    priceVisibility: string;
+  },
+  isAuthenticated: boolean,
+): FloorApartmentSummary => {
+  const revealPrice = shouldRevealPrice(
+    apartment.priceVisibility,
+    isAuthenticated,
+  );
 
   return {
     id: apartment.id,
@@ -114,60 +133,74 @@ const statusesToSummary = (
   return summarizeSalesStatuses(rows.map((row) => row.salesStatus));
 };
 
-const aggregatePrices = (
-  apartments: ApartmentPriceRow[],
+const localizeProjectFields = (
+  project: ProjectListSource,
+  ctx: MapContext,
 ): {
-  minPrice: string | null;
-  maxPrice: string | null;
-  priceCurrency: string | null;
+  name: string;
+  shortDescription: string | null;
+  locationText: string | null;
+  builderName: string;
 } => {
-  const publicPrices = apartments.filter(
-    (apartment) =>
-      apartment.priceVisibility === "public" && apartment.price != null,
-  );
-
-  if (publicPrices.length === 0) {
-    return { minPrice: null, maxPrice: null, priceCurrency: null };
-  }
-
-  let min = publicPrices[0]?.price;
-  let max = publicPrices[0]?.price;
-
-  for (const apartment of publicPrices) {
-    if (apartment.price == null) {
-      continue;
-    }
-    if (min == null || apartment.price.lt(min)) {
-      min = apartment.price;
-    }
-    if (max == null || apartment.price.gt(max)) {
-      max = apartment.price;
-    }
-  }
-
+  const { locale, translations } = ctx;
   return {
-    minPrice: decimalToString(min),
-    maxPrice: decimalToString(max),
-    priceCurrency: publicPrices[0]?.priceCurrency ?? DEFAULT_CATALOG_CURRENCY,
+    name:
+      resolveTranslatedValue(
+        translations,
+        TRANSLATION_ENTITY.project,
+        project.id,
+        TRANSLATION_FIELD.name,
+        locale,
+        project.name,
+      ) ?? project.name,
+    shortDescription: resolveTranslatedValue(
+      translations,
+      TRANSLATION_ENTITY.project,
+      project.id,
+      TRANSLATION_FIELD.shortDescription,
+      locale,
+      project.shortDescription,
+    ),
+    locationText: resolveTranslatedValue(
+      translations,
+      TRANSLATION_ENTITY.project,
+      project.id,
+      TRANSLATION_FIELD.locationText,
+      locale,
+      project.locationText,
+    ),
+    builderName:
+      resolveTranslatedValue(
+        translations,
+        TRANSLATION_ENTITY.company,
+        project.builderCompany.id,
+        TRANSLATION_FIELD.name,
+        locale,
+        project.builderCompany.name,
+      ) ?? project.builderCompany.name,
   };
 };
 
-export const mapProjectListItem = (project: ProjectListSource): ProjectListItem => {
-  const prices = aggregatePrices(project.apartments);
+export const mapProjectListItem = (
+  project: ProjectListSource,
+  ctx: MapContext,
+): ProjectListItem => {
+  const prices = aggregateVisiblePrices(project.apartments, ctx.isAuthenticated);
+  const localized = localizeProjectFields(project, ctx);
 
   return {
     id: project.id,
-    name: project.name,
+    name: localized.name,
     slug: project.slug,
-    shortDescription: project.shortDescription,
-    locationText: project.locationText,
+    shortDescription: localized.shortDescription,
+    locationText: localized.locationText,
     address: project.address,
     city: project.city,
     district: project.district,
     cover: toMediaSummary(project.coverMedia),
     builder: {
       id: project.builderCompany.id,
-      name: project.builderCompany.name,
+      name: localized.builderName,
       logoUrl: project.builderCompany.logoMedia?.fileUrl ?? null,
     },
     availability: summarizeSalesStatuses(
@@ -179,13 +212,24 @@ export const mapProjectListItem = (project: ProjectListSource): ProjectListItem 
   };
 };
 
-export const mapProjectDetail = (project: ProjectDetailSource): ProjectDetail => {
-  const listBase = mapProjectListItem(project);
-  const prices = aggregatePrices(project.apartments);
+export const mapProjectDetail = (
+  project: ProjectDetailSource,
+  ctx: MapContext,
+): ProjectDetail => {
+  const listBase = mapProjectListItem(project, ctx);
+  const prices = aggregateVisiblePrices(project.apartments, ctx.isAuthenticated);
+  const fullDescription = resolveTranslatedValue(
+    ctx.translations,
+    TRANSLATION_ENTITY.project,
+    project.id,
+    TRANSLATION_FIELD.fullDescription,
+    ctx.locale,
+    project.fullDescription,
+  );
 
   return {
     ...listBase,
-    fullDescription: project.fullDescription,
+    fullDescription,
     latitude: decimalToString(project.latitude),
     longitude: decimalToString(project.longitude),
     projectType: project.projectType,
@@ -210,7 +254,9 @@ export const mapProjectDetail = (project: ProjectDetailSource): ProjectDetail =>
         displayLabel: floor.displayLabel,
         displayOrder: floor.displayOrder,
         availability: statusesToSummary(floor.apartments),
-        apartments: floor.apartments.map(mapFloorApartment),
+        apartments: floor.apartments.map((apartment) =>
+          mapFloorApartment(apartment, ctx.isAuthenticated),
+        ),
       })),
     })),
     minPrice: prices.minPrice,

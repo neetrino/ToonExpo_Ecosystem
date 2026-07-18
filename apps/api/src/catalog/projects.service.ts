@@ -5,7 +5,6 @@ import {
   type Prisma,
   PublicationStatus,
 } from "@toonexpo/db";
-
 import { PrismaService } from "../prisma/prisma.service.js";
 import {
   CATALOG_DEFAULT_PAGE_SIZE,
@@ -17,6 +16,16 @@ import {
   mapProjectDetail,
   mapProjectListItem,
 } from "./mappers/project.mapper.js";
+import { loadTranslations } from "./utils/load-translations.js";
+import {
+  resolveCatalogLocale,
+  TRANSLATION_ENTITY,
+} from "./utils/resolve-translation.js";
+
+export type CatalogViewerContext = {
+  locale?: string | undefined;
+  isAuthenticated: boolean;
+};
 
 @Injectable()
 export class ProjectsService {
@@ -24,10 +33,12 @@ export class ProjectsService {
 
   async listProjects(
     query: ListProjectsQueryDto,
+    viewer: CatalogViewerContext,
   ): Promise<PaginatedResponse<ProjectListItem>> {
     const page = query.page;
     const pageSize = query.pageSize || CATALOG_DEFAULT_PAGE_SIZE;
     const where = this.buildListWhere(query);
+    const locale = resolveCatalogLocale(viewer.locale ?? query.locale);
 
     const [total, projects] = await Promise.all([
       this.prisma.db.project.count({ where }),
@@ -52,8 +63,21 @@ export class ProjectsService {
       }),
     ]);
 
+    const translations = await this.loadProjectBundleTranslations(
+      projects.map((project) => ({
+        id: project.id,
+        builderId: project.builderCompany.id,
+      })),
+    );
+
     return {
-      data: projects.map((project) => mapProjectListItem(project)),
+      data: projects.map((project) =>
+        mapProjectListItem(project, {
+          locale,
+          isAuthenticated: viewer.isAuthenticated,
+          translations,
+        }),
+      ),
       meta: {
         page,
         pageSize,
@@ -63,7 +87,11 @@ export class ProjectsService {
     };
   }
 
-  async getProjectById(projectId: string): Promise<ProjectDetail> {
+  async getProjectById(
+    projectId: string,
+    viewer: CatalogViewerContext,
+  ): Promise<ProjectDetail> {
+    const locale = resolveCatalogLocale(viewer.locale);
     const project = await this.prisma.db.project.findFirst({
       where: {
         id: projectId,
@@ -119,7 +147,15 @@ export class ProjectsService {
       throw new NotFoundException("Project not found");
     }
 
-    return mapProjectDetail(project);
+    const translations = await this.loadProjectBundleTranslations([
+      { id: project.id, builderId: project.builderCompany.id },
+    ]);
+
+    return mapProjectDetail(project, {
+      locale,
+      isAuthenticated: viewer.isAuthenticated,
+      translations,
+    });
   }
 
   buildListWhere(query: ListProjectsQueryDto): Prisma.ProjectWhereInput {
@@ -180,5 +216,21 @@ export class ProjectsService {
     }
 
     return filter;
+  }
+
+  private async loadProjectBundleTranslations(
+    projects: Array<{ id: string; builderId: string }>,
+  ) {
+    const projectIds = projects.map((project) => project.id);
+    const builderIds = [
+      ...new Set(projects.map((project) => project.builderId)),
+    ];
+
+    const [projectRows, companyRows] = await Promise.all([
+      loadTranslations(this.prisma.db, TRANSLATION_ENTITY.project, projectIds),
+      loadTranslations(this.prisma.db, TRANSLATION_ENTITY.company, builderIds),
+    ]);
+
+    return [...projectRows, ...companyRows];
   }
 }

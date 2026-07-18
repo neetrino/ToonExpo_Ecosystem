@@ -19,6 +19,9 @@ describe("ProjectsService filters and pagination", () => {
           count: projectCount,
           findMany: projectFindMany,
         },
+        translation: {
+          findMany: vi.fn().mockResolvedValue([]),
+        },
       },
     } as unknown as PrismaService;
 
@@ -65,7 +68,9 @@ describe("ProjectsService filters and pagination", () => {
       pageSize: 10,
     });
 
-    const result = await service.listProjects(query);
+    const result = await service.listProjects(query, {
+      isAuthenticated: false,
+    });
 
     expect(projectFindMany).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -85,7 +90,9 @@ describe("ProjectsService filters and pagination", () => {
     projectCount.mockResolvedValue(0);
     projectFindMany.mockResolvedValue([]);
 
-    const result = await service.listProjects(new ListProjectsQueryDto());
+    const result = await service.listProjects(new ListProjectsQueryDto(), {
+      isAuthenticated: false,
+    });
 
     expect(result.meta.totalPages).toBe(0);
     expect(result.data).toEqual([]);

@@ -9,7 +9,6 @@ export type ApartmentSalesStatus = "available" | "reserved" | "sold";
 export type PriceVisibility =
   | "public"
   | "by_request"
-  | "hidden"
   | "visible_after_login";
 
 /**
@@ -35,6 +34,7 @@ export type MediaAssetSummary = {
 export type BuilderSummary = {
   id: string;
   name: string;
+  description: string | null;
   logoUrl: string | null;
   publishedProjectCount: number;
 };
@@ -186,4 +186,6 @@ export type ListProjectsQuery = {
   rooms?: number;
   city?: string;
   builderId?: string;
+  /** Catalog content locale (`hy` | `ru` | `en`). Falls back to Armenian. */
+  locale?: string;
 };

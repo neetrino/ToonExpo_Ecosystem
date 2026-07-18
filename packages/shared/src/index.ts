@@ -4,9 +4,14 @@
 export const SUPPORTED_LOCALES = ["hy", "ru", "en"] as const;
 
 /**
- * Locale code used when no preference is available.
+ * Locale code used when no preference is available (UI shell).
  */
 export const DEFAULT_LOCALE = "en" as const;
+
+/**
+ * Catalog content fallback locale (Armenian canonical text).
+ */
+export const CATALOG_CONTENT_FALLBACK_LOCALE = "hy" as const;
 
 export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
 
@@ -15,4 +20,15 @@ export type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
  */
 export const isSupportedLocale = (value: string): value is SupportedLocale => {
   return (SUPPORTED_LOCALES as readonly string[]).includes(value);
+};
+
+/**
+ * Normalizes a catalog content locale; unknown values fall back to Armenian.
+ */
+export const resolveCatalogLocale = (value: string | undefined | null): SupportedLocale => {
+  if (value && isSupportedLocale(value)) {
+    return value;
+  }
+
+  return CATALOG_CONTENT_FALLBACK_LOCALE;
 };

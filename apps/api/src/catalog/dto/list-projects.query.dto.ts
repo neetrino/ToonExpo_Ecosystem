@@ -79,4 +79,15 @@ export class ListProjectsQueryDto {
   @IsOptional()
   @IsString()
   builderId?: string;
+
+  @ApiPropertyOptional({
+    enum: ["hy", "ru", "en"],
+    description: "Catalog content locale; falls back to hy",
+  })
+  @IsOptional()
+  @IsString()
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === "string" ? value.trim().toLowerCase() : value,
+  )
+  locale?: string;
 }

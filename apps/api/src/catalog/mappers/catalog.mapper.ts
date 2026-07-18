@@ -64,6 +64,17 @@ export const publishedApartmentWhere = (): Prisma.ApartmentWhereInput => ({
   publicationStatus: PUBLIC_PUBLICATION_STATUS,
 });
 
-export const shouldRevealPublicPrice = (
+/**
+ * Whether the numeric price may be included in a catalog API response.
+ * Anonymous callers only see `public`; authenticated callers also see `visible_after_login`.
+ */
+export const shouldRevealPrice = (
   priceVisibility: string,
-): boolean => priceVisibility === "public";
+  isAuthenticated: boolean,
+): boolean => {
+  if (priceVisibility === "public") {
+    return true;
+  }
+
+  return isAuthenticated && priceVisibility === "visible_after_login";
+};
