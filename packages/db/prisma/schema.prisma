@@ -240,6 +240,7 @@ model Company {
   partnerCompany       PartnerCompany?
   boothAssignments     BoothAssignment[]
 
+  @@unique([bosCompanyId])
   @@index([type])
   @@index([status])
   @@map("companies")
@@ -1319,4 +1320,75 @@ model AnalyticsEvent {
   @@index([companyId, createdAt])
   @@index([projectId, createdAt])
   @@map("analytics_events")
+}
+
+/// BOS inbound provisioning lifecycle (idempotency key = requestId).
+enum BosProvisioningStatus {
+  success
+  linked_existing
+  failed
+  partial
+}
+
+/// Company type accepted on the BOS provisioning wire contract.
+enum BosProvisioningCompanyType {
+  builder
+  partner
+  bank
+}
+
+/// Append-only integration audit trail for BOS provisioning.
+enum IntegrationAuditAction {
+  provisioning_received
+  company_created
+  company_linked
+  user_created
+  user_linked
+  member_created
+  invitation_sent
+  provisioning_failed
+  provisioning_retried
+  result_returned
+}
+
+model BosProvisioningRequest {
+  id                  String                     @id @default(cuid())
+  requestId           String                     @unique @map("request_id")
+  bosCompanyId        String                     @map("bos_company_id")
+  companyName         String                     @map("company_name")
+  companyType         BosProvisioningCompanyType @map("company_type")
+  primaryContactName  String                     @map("primary_contact_name")
+  primaryContactEmail String                     @map("primary_contact_email")
+  primaryContactPhone String?                    @map("primary_contact_phone")
+  eventCycleId        String?                    @map("event_cycle_id")
+  eventCycleName      String?                    @map("event_cycle_name")
+  requestedModules    String[]                   @map("requested_modules")
+  status              BosProvisioningStatus
+  toonexpoCompanyId   String?                    @map("toonexpo_company_id")
+  primaryUserId       String?                    @map("primary_user_id")
+  errorMessage        String?                    @map("error_message")
+  attemptCount        Int                        @default(1) @map("attempt_count")
+  createdAt           DateTime                   @default(now()) @map("created_at")
+  updatedAt           DateTime                   @updatedAt @map("updated_at")
+
+  auditLogs IntegrationAuditLog[]
+
+  @@index([bosCompanyId])
+  @@index([status])
+  @@index([primaryContactEmail])
+  @@index([createdAt])
+  @@map("bos_provisioning_requests")
+}
+
+model IntegrationAuditLog {
+  id                    String                 @id @default(cuid())
+  action                IntegrationAuditAction
+  provisioningRequestId String?                @map("provisioning_request_id")
+  details               Json?
+  createdAt             DateTime               @default(now()) @map("created_at")
+
+  provisioningRequest BosProvisioningRequest? @relation(fields: [provisioningRequestId], references: [id], onDelete: SetNull)
+
+  @@index([provisioningRequestId, createdAt])
+  @@map("integration_audit_logs")
 }
