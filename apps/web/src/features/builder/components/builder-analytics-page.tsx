@@ -7,6 +7,7 @@ import { AnalyticsBarRow } from "@/features/analytics/components/analytics-bar-r
 import { AnalyticsDateRangeFilter } from "@/features/analytics/components/analytics-date-range-filter";
 import { AnalyticsEntityRankList } from "@/features/analytics/components/analytics-entity-rank-list";
 import { AnalyticsSectionCard } from "@/features/analytics/components/analytics-section-card";
+import { AnalyticsStatCard } from "@/features/analytics/components/analytics-stat-card";
 import { usePortalAnalyticsOverviewQuery } from "@/features/builder/hooks/use-portal-analytics";
 import { ReadinessStatusBadge } from "@/features/readiness/components/readiness-status-badge";
 
@@ -81,6 +82,32 @@ export const BuilderAnalyticsPage = () => {
           rankLabel={t("table.rank")}
           nameLabel={t("table.name")}
           viewsLabel={t("table.views")}
+          emptyLabel={tCommon("empty")}
+        />
+      </AnalyticsSectionCard>
+
+      <section className="flex flex-col gap-3">
+        <h2 className="text-sm font-semibold text-ink">{t("sections.favorites")}</h2>
+        <AnalyticsStatCard
+          label={t("favorites.total")}
+          value={data.favorites.total}
+        />
+      </section>
+
+      <AnalyticsSectionCard
+        title={t("sections.topProjectsByFavorites")}
+        empty={data.favorites.topProjects.length === 0}
+        emptyLabel={tCommon("empty")}
+      >
+        <AnalyticsEntityRankList
+          items={data.favorites.topProjects.map((item) => ({
+            entityId: item.entityId,
+            name: item.name,
+            viewCount: item.favoriteCount,
+          }))}
+          rankLabel={t("table.rank")}
+          nameLabel={t("table.name")}
+          viewsLabel={t("table.favorites")}
           emptyLabel={tCommon("empty")}
         />
       </AnalyticsSectionCard>
