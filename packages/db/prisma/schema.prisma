@@ -358,6 +358,8 @@ model MediaAsset {
   thumbnailUrl      String?        @map("thumbnail_url")
   title             String?
   altText           String?        @map("alt_text")
+  width             Int?
+  height            Int?
   sortOrder         Int            @default(0) @map("sort_order")
   uploadedByUserId  String?        @map("uploaded_by_user_id")
   createdAt         DateTime       @default(now()) @map("created_at")
