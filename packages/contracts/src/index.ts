@@ -164,3 +164,26 @@ export type {
   UpdateReadinessRequiredActionBody,
   UpsertReadinessScoreBody,
 } from "./readiness.js";
+
+export type {
+  AdminPartnerDetail,
+  AdminPartnerListItem,
+  AdminPartnerListResponse,
+  CreateAdminPartnerBody,
+  CreatePartnerOfferBody,
+  PartnerCompanyStatus,
+  PartnerCompanyType,
+  PartnerContacts,
+  PartnerOfferItem,
+  PartnerOfferTranslationsInput,
+  PartnerProfileTranslationsInput,
+  PartnerSocialLinks,
+  PortalPartnerDetail,
+  PublicPartnerDetail,
+  PublicPartnerListItem,
+  PublicPartnerListResponse,
+  PublicPartnerOfferItem,
+  UpdateAdminPartnerBody,
+  UpdatePartnerOfferBody,
+  UpdatePortalPartnerBody,
+} from "./partners.js";
