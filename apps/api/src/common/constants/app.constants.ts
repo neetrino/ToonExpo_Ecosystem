@@ -115,3 +115,25 @@ export const DEFAULT_APP_LOCALE = "en";
 export const COMPANY_NAME_MAX_LENGTH = 200;
 
 export const COMPANY_DESCRIPTION_MAX_LENGTH = 4000;
+
+/**
+ * ADAPTIVE VALUE — confirm with owner.
+ * QR resolve rate limit: attempts per IP per window.
+ */
+export const QR_RESOLVE_RATE_LIMIT_LIMIT = 30;
+
+/**
+ * ADAPTIVE VALUE — confirm with owner.
+ * QR resolve rate limit window in milliseconds (1 minute).
+ */
+export const QR_RESOLVE_RATE_LIMIT_TTL_MS = 60_000;
+
+/** Public path segment for buyer QR payload URLs (`{APP_URL}/qr/{token}`). */
+export const BUYER_QR_PATH_SEGMENT = "qr";
+
+/** Default page size for buyer QR scan history. */
+export const BUYER_QR_SCANS_DEFAULT_PAGE_SIZE = 50;
+
+/** Maximum page size for buyer QR scan history. */
+export const BUYER_QR_SCANS_MAX_PAGE_SIZE = 100;
+

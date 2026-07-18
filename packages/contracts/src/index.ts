@@ -84,3 +84,20 @@ export type {
   UpdatePortalProjectRequest,
   UpdatePortalPublicationRequest,
 } from "./portal.js";
+
+export type {
+  BuyerQrResponse,
+  BuyerQrScanHistoryItem,
+  BuyerQrScanHistoryResponse,
+  ProjectQrResponse,
+  QrBuyerActionPayload,
+  QrBuyerIdentity,
+  QrCodeStatus,
+  QrEntranceCheckinPayload,
+  QrOwnerProfilePayload,
+  QrResolveKind,
+  QrResolveResponse,
+  QrScanContext,
+  QrScanResultStatus,
+  ResolveQrRequest,
+} from "./qr.js";

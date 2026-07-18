@@ -21,6 +21,7 @@ import {
 import type {
   PortalProjectDetail,
   PortalProjectListResponse,
+  ProjectQrResponse,
 } from "@toonexpo/contracts";
 
 import { AccountTypes } from "../../auth/decorators/account-types.decorator.js";
@@ -34,6 +35,7 @@ import { CreatePortalProjectDto } from "../dto/create-portal-project.dto.js";
 import { ListPortalProjectsQueryDto } from "../dto/list-portal-projects.query.dto.js";
 import { UpdatePortalProjectDto } from "../dto/update-portal-project.dto.js";
 import { UpdatePortalPublicationDto } from "../dto/update-portal-publication.dto.js";
+import { PortalProjectQrService } from "./portal-project-qr.service.js";
 import { PortalProjectsService } from "./portal-projects.service.js";
 
 @ApiTags("portal-projects")
@@ -42,7 +44,10 @@ import { PortalProjectsService } from "./portal-projects.service.js";
 @UseGuards(CompanyMemberGuard)
 @Controller("portal/projects")
 export class PortalProjectsController {
-  constructor(private readonly projectsService: PortalProjectsService) {}
+  constructor(
+    private readonly projectsService: PortalProjectsService,
+    private readonly projectQrService: PortalProjectQrService,
+  ) {}
 
   @Get()
   @ApiOperation({ summary: "List company projects (including drafts)" })
@@ -64,6 +69,16 @@ export class PortalProjectsController {
     @Body() body: CreatePortalProjectDto,
   ): Promise<PortalProjectDetail> {
     return this.projectsService.create(member, user.id, body);
+  }
+
+  @Get(":projectId/qr")
+  @ApiOperation({ summary: "Get Project QR payload URL for exhibition printouts" })
+  @ApiOkResponse({ description: "Public project page URL" })
+  getQr(
+    @CurrentCompanyMember() member: CompanyMemberContext,
+    @Param("projectId") projectId: string,
+  ): Promise<ProjectQrResponse> {
+    return this.projectQrService.getProjectQr(member, projectId);
   }
 
   @Get(":projectId")

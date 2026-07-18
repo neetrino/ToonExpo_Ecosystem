@@ -7,6 +7,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { AccessTokenService } from "../access-tokens/access-token.service.js";
 import type { AppEnv } from "../config/env.validation.js";
 import type { PrismaService } from "../prisma/prisma.service.js";
+import type { QrCodesService } from "../qr/qr-codes.service.js";
 import { AuthService } from "./auth.service.js";
 import { SessionCookieService } from "./session-cookie.service.js";
 import * as passwordUtil from "./utils/password.util.js";
@@ -40,6 +41,8 @@ describe("AuthService", () => {
   const sessionCreate = vi.fn();
   const sessionFindUnique = vi.fn();
   const sessionUpdate = vi.fn();
+  const transaction = vi.fn();
+  const createForBuyerProfile = vi.fn();
   const cookie = vi.fn();
   const clearCookie = vi.fn();
 
@@ -53,6 +56,8 @@ describe("AuthService", () => {
     sessionCreate.mockReset();
     sessionFindUnique.mockReset();
     sessionUpdate.mockReset();
+    transaction.mockReset();
+    createForBuyerProfile.mockReset();
     cookie.mockReset();
     clearCookie.mockReset();
 
@@ -67,6 +72,7 @@ describe("AuthService", () => {
           findUnique: sessionFindUnique,
           update: sessionUpdate,
         },
+        $transaction: transaction,
       },
     } as unknown as PrismaService;
 
@@ -75,8 +81,17 @@ describe("AuthService", () => {
       validateSetPasswordToken: vi.fn(),
     } as unknown as AccessTokenService;
     const sessionCookies = new SessionCookieService(prisma, config);
+    const qrCodes = {
+      createForBuyerProfile,
+    } as unknown as QrCodesService;
 
-    service = new AuthService(prisma, config, accessTokens, sessionCookies);
+    service = new AuthService(
+      prisma,
+      config,
+      accessTokens,
+      sessionCookies,
+      qrCodes,
+    );
     response = { cookie, clearCookie } as unknown as Response;
   });
 
@@ -91,9 +106,17 @@ describe("AuthService", () => {
       defaultLocale: null,
       createdAt: new Date("2026-07-18T00:00:00.000Z"),
       updatedAt: new Date("2026-07-18T00:00:00.000Z"),
+      buyerProfile: { id: "bp_1" },
     };
     userFindUnique.mockResolvedValue(null);
     userCreate.mockResolvedValue(createdUser);
+    createForBuyerProfile.mockResolvedValue(undefined);
+    transaction.mockImplementation(
+      async (fn: (tx: unknown) => Promise<unknown>) =>
+        fn({
+          user: { create: userCreate },
+        }),
+    );
     sessionCreate.mockResolvedValue({ id: "session_1" });
 
     const hashSpy = vi.spyOn(passwordUtil, "hashPassword");
@@ -124,6 +147,7 @@ describe("AuthService", () => {
         }),
       }),
     );
+    expect(createForBuyerProfile).toHaveBeenCalledWith("bp_1", expect.anything());
     expect(sessionCreate).toHaveBeenCalledOnce();
     expect(cookie).toHaveBeenCalledWith(
       "toonexpo_session",

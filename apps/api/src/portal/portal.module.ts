@@ -8,6 +8,7 @@ import { PortalBuildingsController } from "./buildings/portal-buildings.controll
 import { PortalBuildingsService } from "./buildings/portal-buildings.service.js";
 import { PortalFloorsController } from "./floors/portal-floors.controller.js";
 import { PortalFloorsService } from "./floors/portal-floors.service.js";
+import { PortalProjectQrService } from "./projects/portal-project-qr.service.js";
 import { PortalProjectsController } from "./projects/portal-projects.controller.js";
 import { PortalProjectsService } from "./projects/portal-projects.service.js";
 
@@ -21,6 +22,7 @@ import { PortalProjectsService } from "./projects/portal-projects.service.js";
   ],
   providers: [
     PortalProjectsService,
+    PortalProjectQrService,
     PortalBuildingsService,
     PortalFloorsService,
     PortalApartmentsService,

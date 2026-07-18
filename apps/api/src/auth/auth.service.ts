@@ -1,6 +1,7 @@
 import {
   ConflictException,
   Injectable,
+  InternalServerErrorException,
   UnauthorizedException,
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
@@ -16,6 +17,7 @@ import { AccessTokenService } from "../access-tokens/access-token.service.js";
 import { DUMMY_PASSWORD_HASH } from "../common/constants/app.constants.js";
 import type { AppEnv } from "../config/env.validation.js";
 import { PrismaService } from "../prisma/prisma.service.js";
+import { QrCodesService } from "../qr/qr-codes.service.js";
 import { normalizeEmail, toUserResponse } from "./mappers/user.mapper.js";
 import {
   type ClientMeta,
@@ -33,6 +35,7 @@ export class AuthService {
     private readonly configService: ConfigService<AppEnv, true>,
     private readonly accessTokens: AccessTokenService,
     private readonly sessionCookies: SessionCookieService,
+    private readonly qrCodes: QrCodesService,
   ) {}
 
   async register(
@@ -48,22 +51,32 @@ export class AuthService {
     }
 
     const passwordHash = await hashPassword(input.password);
-    const user = await this.prisma.db.user.create({
-      data: {
-        name: input.name.trim(),
-        email,
-        phone: input.phone.trim(),
-        passwordHash,
-        accountType: AccountType.buyer,
-        status: UserStatus.active,
-        buyerProfile: {
-          create: {
-            name: input.name.trim(),
-            phone: input.phone.trim(),
-            email,
+    const user = await this.prisma.db.$transaction(async (tx) => {
+      const created = await tx.user.create({
+        data: {
+          name: input.name.trim(),
+          email,
+          phone: input.phone.trim(),
+          passwordHash,
+          accountType: AccountType.buyer,
+          status: UserStatus.active,
+          buyerProfile: {
+            create: {
+              name: input.name.trim(),
+              phone: input.phone.trim(),
+              email,
+            },
           },
         },
-      },
+        include: { buyerProfile: true },
+      });
+
+      if (!created.buyerProfile) {
+        throw new InternalServerErrorException("Buyer profile was not created");
+      }
+
+      await this.qrCodes.createForBuyerProfile(created.buyerProfile.id, tx);
+      return created;
     });
 
     const csrfToken = await this.sessionCookies.issueSessionCookies(
