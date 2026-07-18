@@ -52,6 +52,7 @@ export type UpdateReadinessCategoryBody = {
   description?: string | null;
   weight?: number | null;
   sortOrder?: number;
+  serviceProviderCategoryId?: string | null;
   active?: boolean;
 };
 
@@ -196,6 +197,8 @@ export type PortalReadinessScoreItem = {
   score: number | null;
   status: ReadinessScoreStatus;
   recommendationSummary: string | null;
+  serviceProviderCategoryId: string | null;
+  helpAvailable: boolean;
 };
 
 export type PortalReadinessRecommendationItem = {

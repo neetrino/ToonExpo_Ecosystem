@@ -189,3 +189,33 @@ export type {
   UpdatePartnerOfferBody,
   UpdatePortalPartnerBody,
 } from "./partners.js";
+
+export type {
+  BankOfferListItem,
+  BankOfferListResponse,
+  CreateBankOfferBody,
+  MortgageCalculatorInput,
+  MortgageCalculatorOfferSummary,
+  MortgageCalculatorResult,
+  PortalCreateBankOfferBody,
+  PortalUpdateBankOfferBody,
+  PublicMortgageBankSummary,
+  PublicMortgageOfferItem,
+  PublicMortgageOfferListResponse,
+  UpdateBankOfferBody,
+} from "./mortgage.js";
+
+export type {
+  AdminServiceProviderItem,
+  AdminServiceProviderListResponse,
+  CreateServiceProviderBody,
+  CreateServiceProviderCategoryBody,
+  PortalServiceProviderItem,
+  PortalServiceProviderListResponse,
+  ServiceProviderCategoryItem,
+  ServiceProviderCategoryListResponse,
+  ServiceProviderCategoryRef,
+  ServiceProviderType,
+  UpdateServiceProviderBody,
+  UpdateServiceProviderCategoryBody,
+} from "./service-providers.js";
