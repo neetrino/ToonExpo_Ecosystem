@@ -9,12 +9,12 @@ type ApiStatusProps = {
 
 const statusClassName = (status: HealthResponse["status"] | "unavailable"): string => {
   if (status === "ok") {
-    return "bg-emerald-50 text-emerald-800 ring-emerald-200";
+    return "bg-success/10 text-success ring-success/30";
   }
   if (status === "degraded") {
-    return "bg-amber-50 text-amber-800 ring-amber-200";
+    return "bg-surface-input text-ink-secondary ring-border-strong";
   }
-  return "bg-rose-50 text-rose-800 ring-rose-200";
+  return "bg-danger-soft text-danger ring-danger/20";
 };
 
 /**
@@ -46,7 +46,7 @@ export const ApiStatus = async ({ health }: ApiStatusProps) => {
     >
       <span className="font-medium">{t("apiStatusLabel")}</span>
       <span className="uppercase tracking-wide">{health.status}</span>
-      <span className="text-zinc-500">{health.service}</span>
+      <span className="text-ink-muted">{health.service}</span>
     </div>
   );
 };

@@ -6,5 +6,61 @@
     "apiStatusLabel": "API կարգավիճակ",
     "apiUnavailable": "API-ն հասանելի չէ",
     "languageLabel": "Լեզու"
+  },
+  "Nav": {
+    "login": "Մուտք",
+    "register": "Գրանցում",
+    "loading": "…"
+  },
+  "Auth": {
+    "fields": {
+      "name": "Անուն ազգանուն",
+      "email": "Էլ․ փոստ",
+      "phone": "Հեռախոս",
+      "password": "Գաղտնաբառ"
+    },
+    "validation": {
+      "name": "Մուտքագրեք ձեր անունը",
+      "email": "Մուտքագրեք վավեր էլ․ փոստ",
+      "phone": "Մուտքագրեք վավեր հեռախոսահամար",
+      "password": "Գաղտնաբառը պետք է լինի առնվազն 8 նիշ"
+    },
+    "errors": {
+      "invalidCredentials": "Սխալ էլ․ փոստ կամ գաղտնաբառ",
+      "emailTaken": "Այս էլ․ փոստն արդեն գրանցված է",
+      "tooManyRequests": "Չափից շատ փորձեր։ Սպասեք մեկ րոպե և կրկին փորձեք։",
+      "generic": "Ինչ-որ սխալ տեղի ունեցավ։ Կրկին փորձեք։"
+    },
+    "login": {
+      "title": "Մուտք",
+      "subtitle": "Մուտք գործեք ձեր ToonExpo գնորդի հաշիվ",
+      "submit": "Մուտք",
+      "submitting": "Մուտք…",
+      "noAccount": "Դեռ հաշիվ չունե՞ք",
+      "registerLink": "Գրանցվել"
+    },
+    "register": {
+      "title": "Գրանցում",
+      "subtitle": "Գրանցվեք որպես գնորդ՝ պահպանելու ընտրվածները և հայտերը",
+      "submit": "Ստեղծել հաշիվ",
+      "submitting": "Ստեղծում…",
+      "hasAccount": "Արդեն գրանցվա՞ծ եք",
+      "loginLink": "Մուտք"
+    },
+    "logout": {
+      "submit": "Ելք",
+      "submitting": "Ելք…"
+    }
+  },
+  "Profile": {
+    "title": "Իմ պրոֆիլը",
+    "subtitle": "Ձեր ToonExpo հաշվի տվյալները",
+    "fields": {
+      "name": "Անուն",
+      "email": "Էլ․ փոստ",
+      "phone": "Հեռախոս",
+      "phoneEmpty": "Նշված չէ",
+      "role": "Դեր"
+    }
   }
 }

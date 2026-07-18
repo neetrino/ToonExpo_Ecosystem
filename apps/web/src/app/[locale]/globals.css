@@ -1,16 +1,36 @@
 @import "tailwindcss";
 
-:root {
-  --background: #fafafa;
-  --foreground: #18181b;
+@theme {
+  --color-brand: #2ba8b0;
+  --color-brand-secondary: #2a667b;
+  --color-background: #ffffff;
+  --color-surface: #f1f1f2;
+  --color-surface-input: #f5f4f1;
+  --color-ink: #0d0e12;
+  --color-ink-secondary: #6b7280;
+  --color-ink-muted: #9ca3af;
+  --color-border: #e5e9f2;
+  --color-border-strong: #d1d5db;
+  --color-cta-dark: #0d0e12;
+  --color-success: #00bc7d;
+  --color-on-dark: #ffffff;
+  --color-danger: #dc2626;
+  --color-danger-soft: #fef2f2;
+
+  --font-ui: var(--font-inter), "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --font-brand: var(--font-outfit), "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+
+  --radius-pill: 9999px;
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+
+  --shadow-sm: 0 1px 3px rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 4px 20px rgb(0 0 0 / 0.1);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family:
-    "Segoe UI",
-    "Helvetica Neue",
-    Arial,
-    sans-serif;
+  background: var(--color-background);
+  color: var(--color-ink);
+  font-family: var(--font-ui);
 }

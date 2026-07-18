@@ -6,5 +6,61 @@
     "apiStatusLabel": "Статус API",
     "apiUnavailable": "API недоступен",
     "languageLabel": "Язык"
+  },
+  "Nav": {
+    "login": "Войти",
+    "register": "Регистрация",
+    "loading": "…"
+  },
+  "Auth": {
+    "fields": {
+      "name": "Имя и фамилия",
+      "email": "Email",
+      "phone": "Телефон",
+      "password": "Пароль"
+    },
+    "validation": {
+      "name": "Укажите имя",
+      "email": "Укажите корректный email",
+      "phone": "Укажите корректный телефон",
+      "password": "Пароль должен быть не короче 8 символов"
+    },
+    "errors": {
+      "invalidCredentials": "Неверный email или пароль",
+      "emailTaken": "Этот email уже зарегистрирован",
+      "tooManyRequests": "Слишком много попыток. Подождите минуту и попробуйте снова.",
+      "generic": "Что-то пошло не так. Попробуйте ещё раз."
+    },
+    "login": {
+      "title": "Вход",
+      "subtitle": "Войдите в аккаунт покупателя ToonExpo",
+      "submit": "Войти",
+      "submitting": "Вход…",
+      "noAccount": "Ещё нет аккаунта?",
+      "registerLink": "Зарегистрироваться"
+    },
+    "register": {
+      "title": "Регистрация",
+      "subtitle": "Зарегистрируйтесь как покупатель, чтобы сохранять избранное и заявки",
+      "submit": "Создать аккаунт",
+      "submitting": "Создание…",
+      "hasAccount": "Уже зарегистрированы?",
+      "loginLink": "Войти"
+    },
+    "logout": {
+      "submit": "Выйти",
+      "submitting": "Выход…"
+    }
+  },
+  "Profile": {
+    "title": "Мой профиль",
+    "subtitle": "Данные вашего аккаунта ToonExpo",
+    "fields": {
+      "name": "Имя",
+      "email": "Email",
+      "phone": "Телефон",
+      "phoneEmpty": "Не указан",
+      "role": "Роль"
+    }
   }
 }

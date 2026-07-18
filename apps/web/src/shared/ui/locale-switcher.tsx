@@ -13,7 +13,7 @@ const LOCALE_LABELS: Record<string, string> = {
 };
 
 /**
- * Client locale switcher for the Sprint 0 shell.
+ * Client locale switcher for the public web shell.
  */
 export const LocaleSwitcher = () => {
   const t = useTranslations("HomePage");
@@ -23,17 +23,17 @@ export const LocaleSwitcher = () => {
 
   return (
     <div className="flex items-center gap-2" role="group" aria-label={t("languageLabel")}>
-      <span className="text-sm text-zinc-500">{t("languageLabel")}</span>
+      <span className="text-sm text-ink-secondary">{t("languageLabel")}</span>
       <div className="flex gap-1">
         {routing.locales.map((code) => (
           <button
             key={code}
             type="button"
             className={cn(
-              "rounded-md px-2.5 py-1 text-sm font-medium transition-colors",
+              "rounded-pill px-2.5 py-1 text-sm font-medium transition-colors",
               code === locale
-                ? "bg-zinc-900 text-white"
-                : "bg-zinc-100 text-zinc-700 hover:bg-zinc-200",
+                ? "bg-cta-dark text-on-dark"
+                : "bg-surface text-ink-secondary hover:bg-border",
             )}
             onClick={() => {
               router.replace(pathname, { locale: code });

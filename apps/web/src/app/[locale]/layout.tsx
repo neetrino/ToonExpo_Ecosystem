@@ -1,11 +1,25 @@
 import type { ReactNode } from "react";
+import { Inter, Outfit } from "next/font/google";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 
 import { routing } from "@/i18n/routing";
+import { QueryProvider } from "@/shared/providers/query-provider";
 
 import "./globals.css";
+
+const inter = Inter({
+  subsets: ["latin", "latin-ext", "cyrillic"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
+const outfit = Outfit({
+  subsets: ["latin", "latin-ext"],
+  variable: "--font-outfit",
+  display: "swap",
+});
 
 type LocaleLayoutProps = {
   children: ReactNode;
@@ -30,10 +44,10 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale}>
-      <body className="min-h-screen antialiased">
+    <html lang={locale} className={`${inter.variable} ${outfit.variable}`}>
+      <body className="min-h-screen font-ui antialiased">
         <NextIntlClientProvider messages={messages}>
-          {children}
+          <QueryProvider>{children}</QueryProvider>
         </NextIntlClientProvider>
       </body>
     </html>
