@@ -254,6 +254,22 @@ export type {
 } from "./exhibition.js";
 
 export type {
+  AdminAnalyticsOverview,
+  AnalyticsDateRange,
+  AnalyticsEventType,
+  ApartmentSalesStatusSummary,
+  BuilderReadinessSummary,
+  CheckInSummary,
+  EntityViewCount,
+  PlatformActivitySummary,
+  PortalAnalyticsOverview,
+  QrScanContextCount,
+  ReadinessCategoryAverage,
+  SourceCount,
+  StatusCount,
+} from "./analytics.js";
+
+export type {
   AdminServiceProviderItem,
   AdminServiceProviderListResponse,
   CreateServiceProviderBody,
