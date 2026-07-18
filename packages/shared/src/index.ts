@@ -33,3 +33,25 @@ export const resolveCatalogLocale = (value: string | undefined | null): Supporte
 
   return CATALOG_CONTENT_FALLBACK_LOCALE;
 };
+
+/** Next Data Cache TTL for catalog, builders, exhibition, visual-map (30 min). */
+export const PUBLIC_CACHE_TTL_CATALOG_SECONDS = 1_800;
+
+/** Next Data Cache TTL for partners and mortgage offers (60 min). */
+export const PUBLIC_CACHE_TTL_PARTNERS_SECONDS = 3_600;
+
+/** Shared Next Data Cache tags for anonymous public fetches + publish purge. */
+export const PUBLIC_CACHE_TAG = {
+  CATALOG: "catalog",
+  PARTNERS: "partners",
+  MORTGAGE: "mortgage",
+  EXHIBITION: "exhibition",
+  VISUAL_MAP: "visual-map",
+} as const;
+
+export type PublicCacheTag =
+  (typeof PUBLIC_CACHE_TAG)[keyof typeof PUBLIC_CACHE_TAG];
+
+/** Per-project catalog detail tag (`catalog-project-<id>`). */
+export const catalogProjectCacheTag = (projectId: string): string =>
+  `catalog-project-${projectId}`;

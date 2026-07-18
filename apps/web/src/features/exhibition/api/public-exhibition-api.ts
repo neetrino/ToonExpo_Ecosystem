@@ -9,44 +9,25 @@ import type {
 
 import { apiFetch } from "@/shared/api/client";
 import { ApiError, isApiErrorStatus } from "@/shared/api/errors";
+import { exhibitionFetch } from "@/shared/api/public-fetch";
 
-export type PublicExpoRequestOptions = {
-  cookieHeader?: string | undefined;
-};
-
-const withCookie = (
-  options: Parameters<typeof apiFetch>[0],
-  cookieHeader?: string,
-): Parameters<typeof apiFetch>[0] => {
-  if (!cookieHeader) {
-    return options;
-  }
-  return {
-    ...options,
-    headers: {
-      ...(options.headers as Record<string, string> | undefined),
-      Cookie: cookieHeader,
-    },
-  };
+/**
+ * Private / side-effect GETs stay uncached (TanStack client + booth analytics).
+ */
+const PRIVATE_GET_INIT = {
+  method: "GET" as const,
+  cache: "no-store" as const,
 };
 
 /**
  * Returns the current published active event with venue maps, or null.
  */
-export const getPublicCurrentEvent = async (
-  options: PublicExpoRequestOptions = {},
-): Promise<CurrentEventResponse | null> => {
+export const getPublicCurrentEvent = async (): Promise<CurrentEventResponse | null> => {
   try {
-    return await apiFetch<CurrentEventResponse>(
-      withCookie(
-        {
-          path: "/events/current",
-          method: "GET",
-          cache: "no-store",
-        },
-        options.cookieHeader,
-      ),
-    );
+    return await apiFetch<CurrentEventResponse>({
+      path: "/events/current",
+      ...exhibitionFetch(),
+    });
   } catch (error) {
     if (isApiErrorStatus(error, 404)) {
       return null;
@@ -61,62 +42,41 @@ export const getPublicCurrentEvent = async (
 export const getPublicVenueMapBooths = (
   mapId: string,
   locale: string,
-  options: PublicExpoRequestOptions = {},
 ): Promise<PublicBoothListResponse> => {
   const params = new URLSearchParams({ locale });
-  return apiFetch<PublicBoothListResponse>(
-    withCookie(
-      {
-        path: `/venue-maps/${encodeURIComponent(mapId)}/booths?${params.toString()}`,
-        method: "GET",
-        cache: "no-store",
-      },
-      options.cookieHeader,
-    ),
-  );
+  return apiFetch<PublicBoothListResponse>({
+    path: `/venue-maps/${encodeURIComponent(mapId)}/booths?${params.toString()}`,
+    ...exhibitionFetch(),
+  });
 };
 
 /**
- * Searches booths on a venue map.
+ * Searches booths on a venue map (uncached — query-specific, client-driven).
  */
 export const searchPublicVenueMapBooths = (
   mapId: string,
   query: string,
   locale: string,
-  options: PublicExpoRequestOptions = {},
 ): Promise<BoothSearchResponse> => {
   const params = new URLSearchParams({ q: query, locale });
-  return apiFetch<BoothSearchResponse>(
-    withCookie(
-      {
-        path: `/venue-maps/${encodeURIComponent(mapId)}/search?${params.toString()}`,
-        method: "GET",
-        cache: "no-store",
-      },
-      options.cookieHeader,
-    ),
-  );
+  return apiFetch<BoothSearchResponse>({
+    path: `/venue-maps/${encodeURIComponent(mapId)}/search?${params.toString()}`,
+    ...PRIVATE_GET_INIT,
+  });
 };
 
 /**
- * Loads a published booth detail and records booth_selected analytics server-side.
+ * Loads a published booth detail. Uncached — API records booth_selected analytics.
  */
 export const getPublicBooth = (
   boothId: string,
   locale: string,
-  options: PublicExpoRequestOptions = {},
 ): Promise<PublicBoothDetail> => {
   const params = new URLSearchParams({ locale });
-  return apiFetch<PublicBoothDetail>(
-    withCookie(
-      {
-        path: `/booths/${encodeURIComponent(boothId)}?${params.toString()}`,
-        method: "GET",
-        cache: "no-store",
-      },
-      options.cookieHeader,
-    ),
-  );
+  return apiFetch<PublicBoothDetail>({
+    path: `/booths/${encodeURIComponent(boothId)}?${params.toString()}`,
+    ...PRIVATE_GET_INIT,
+  });
 };
 
 /**
@@ -124,40 +84,26 @@ export const getPublicBooth = (
  */
 export const getPublicVenueMapEntranceNodes = (
   mapId: string,
-  options: PublicExpoRequestOptions = {},
 ): Promise<PublicEntranceNodeListResponse> =>
-  apiFetch<PublicEntranceNodeListResponse>(
-    withCookie(
-      {
-        path: `/venue-maps/${encodeURIComponent(mapId)}/entrance-nodes`,
-        method: "GET",
-        cache: "no-store",
-      },
-      options.cookieHeader,
-    ),
-  );
+  apiFetch<PublicEntranceNodeListResponse>({
+    path: `/venue-maps/${encodeURIComponent(mapId)}/entrance-nodes`,
+    ...exhibitionFetch(),
+  });
 
 /**
- * Computes a walking path from a route node to a booth.
+ * Computes a walking path from a route node to a booth (uncached — per-request).
  */
 export const getPublicVenueMapRoute = (
   mapId: string,
   fromNodeId: string,
   toBoothId: string,
-  options: PublicExpoRequestOptions = {},
 ): Promise<RoutePathResponse> =>
-  apiFetch<RoutePathResponse>(
-    withCookie(
-      {
-        path: `/venue-maps/${encodeURIComponent(mapId)}/route?${new URLSearchParams({
-          fromNodeId,
-          toBoothId,
-        }).toString()}`,
-        method: "GET",
-        cache: "no-store",
-      },
-      options.cookieHeader,
-    ),
-  );
+  apiFetch<RoutePathResponse>({
+    path: `/venue-maps/${encodeURIComponent(mapId)}/route?${new URLSearchParams({
+      fromNodeId,
+      toBoothId,
+    }).toString()}`,
+    ...PRIVATE_GET_INIT,
+  });
 
 export { ApiError, isApiErrorStatus };

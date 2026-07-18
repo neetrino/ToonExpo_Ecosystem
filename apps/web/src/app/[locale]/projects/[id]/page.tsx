@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
+import { cache } from "react";
 
 import { getProject } from "@/features/catalog/api/catalog-api";
 import { ProjectDetailFavorite } from "@/features/buyer/components/project-detail-favorite";
@@ -26,11 +26,9 @@ type ProjectPageProps = {
   params: Promise<{ locale: string; id: string }>;
 };
 
-const loadProject = async (id: string, locale: string) => {
-  const headerStore = await headers();
-  const cookieHeader = headerStore.get("cookie") ?? undefined;
-  return getProject(id, { locale, cookieHeader });
-};
+const loadProject = cache((id: string, locale: string) =>
+  getProject(id, { locale }),
+);
 
 export const generateMetadata = async ({
   params,
@@ -62,9 +60,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
   const t = await getTranslations("Catalog");
   const activeLocale = await getLocale();
-  const headerStore = await headers();
-  const cookieHeader = headerStore.get("cookie") ?? undefined;
-  const visualResponse = await listProjectVisualCanvases(id, { cookieHeader });
+  const visualResponse = await listProjectVisualCanvases(id);
   const visualCanvas = pickPrimaryVisualCanvas(visualResponse?.data ?? []);
   const location =
     project.locationText ??

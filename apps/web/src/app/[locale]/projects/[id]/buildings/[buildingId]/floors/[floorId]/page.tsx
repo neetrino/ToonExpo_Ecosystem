@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { cache } from "react";
 
 import { FloorApartmentsList } from "@/features/catalog/components/building-floor-lists";
 import { getFloor } from "@/features/catalog/api/catalog-api";
@@ -24,18 +24,16 @@ type FloorPageProps = {
   }>;
 };
 
-const loadFloor = async (floorId: string, locale: string) => {
-  const headerStore = await headers();
-  const cookieHeader = headerStore.get("cookie") ?? undefined;
-  return getFloor(floorId, { locale, cookieHeader });
-};
+const loadFloor = cache((floorId: string, locale: string, projectId: string) =>
+  getFloor(floorId, { locale, projectId }),
+);
 
 export const generateMetadata = async ({
   params,
 }: FloorPageProps): Promise<Metadata> => {
-  const { locale, floorId } = await params;
+  const { locale, id, floorId } = await params;
   const t = await getTranslations({ locale, namespace: "Catalog" });
-  const floor = await loadFloor(floorId, locale);
+  const floor = await loadFloor(floorId, locale, id);
 
   if (!floor) {
     return { title: t("floor.notFoundTitle") };
@@ -51,9 +49,7 @@ export default async function FloorPage({ params }: FloorPageProps) {
   const { locale, id, buildingId, floorId } = await params;
   setRequestLocale(locale);
 
-  const headerStore = await headers();
-  const cookieHeader = headerStore.get("cookie") ?? undefined;
-  const floor = await loadFloor(floorId, locale);
+  const floor = await loadFloor(floorId, locale, id);
 
   if (
     !floor ||
@@ -64,7 +60,7 @@ export default async function FloorPage({ params }: FloorPageProps) {
   }
 
   const t = await getTranslations("Catalog");
-  const visualResponse = await listFloorVisualCanvases(floorId, { cookieHeader });
+  const visualResponse = await listFloorVisualCanvases(floorId);
   const visualCanvas = pickPrimaryVisualCanvas(visualResponse?.data ?? []);
   const floorLabel = floor.displayLabel ?? t("project.floor", { number: floor.number });
 

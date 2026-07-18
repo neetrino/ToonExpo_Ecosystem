@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { listPublicPartners } from "@/features/catalog/api/partners-api";
@@ -42,15 +41,13 @@ export default async function PartnersPage({
   const tPartners = await getTranslations("Partners");
   const rawParams = await searchParams;
   const filters = parsePartnerFilters(rawParams);
-  const headerStore = await headers();
-  const cookieHeader = headerStore.get("cookie") ?? undefined;
 
   const response = await listPublicPartners(
     {
       page: filters.page,
       ...(filters.type ? { type: filters.type } : {}),
     },
-    { locale, cookieHeader },
+    { locale },
   );
 
   const buildHref = (page: number): string => {

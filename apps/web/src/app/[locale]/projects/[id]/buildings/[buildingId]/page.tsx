@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { cache } from "react";
 
 import { BuildingFloorsList } from "@/features/catalog/components/building-floor-lists";
 import { getBuilding } from "@/features/catalog/api/catalog-api";
@@ -19,18 +19,16 @@ type BuildingPageProps = {
   params: Promise<{ locale: string; id: string; buildingId: string }>;
 };
 
-const loadBuilding = async (buildingId: string, locale: string) => {
-  const headerStore = await headers();
-  const cookieHeader = headerStore.get("cookie") ?? undefined;
-  return getBuilding(buildingId, { locale, cookieHeader });
-};
+const loadBuilding = cache((buildingId: string, locale: string, projectId: string) =>
+  getBuilding(buildingId, { locale, projectId }),
+);
 
 export const generateMetadata = async ({
   params,
 }: BuildingPageProps): Promise<Metadata> => {
-  const { locale, buildingId } = await params;
+  const { locale, id, buildingId } = await params;
   const t = await getTranslations({ locale, namespace: "Catalog" });
-  const building = await loadBuilding(buildingId, locale);
+  const building = await loadBuilding(buildingId, locale, id);
 
   if (!building) {
     return { title: t("building.notFoundTitle") };
@@ -45,18 +43,14 @@ export default async function BuildingPage({ params }: BuildingPageProps) {
   const { locale, id, buildingId } = await params;
   setRequestLocale(locale);
 
-  const headerStore = await headers();
-  const cookieHeader = headerStore.get("cookie") ?? undefined;
-  const building = await loadBuilding(buildingId, locale);
+  const building = await loadBuilding(buildingId, locale, id);
 
   if (!building || building.project.id !== id) {
     notFound();
   }
 
   const t = await getTranslations("Catalog");
-  const visualResponse = await listBuildingVisualCanvases(buildingId, {
-    cookieHeader,
-  });
+  const visualResponse = await listBuildingVisualCanvases(buildingId);
   const visualCanvas = pickPrimaryVisualCanvas(visualResponse?.data ?? []);
 
   return (

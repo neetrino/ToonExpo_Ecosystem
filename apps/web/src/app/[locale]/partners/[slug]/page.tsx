@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
+import { cache } from "react";
 
 import { getPublicPartnerBySlug } from "@/features/catalog/api/partners-api";
 import { SiteFooter } from "@/features/catalog/components/site-footer";
@@ -14,16 +14,13 @@ type PartnerDetailPageProps = {
   params: Promise<{ locale: string; slug: string }>;
 };
 
-const loadPartner = async (slug: string, locale: string) => {
-  const headerStore = await headers();
-  const cookieHeader = headerStore.get("cookie") ?? undefined;
-
+const loadPartner = cache(async (slug: string, locale: string) => {
   try {
-    return await getPublicPartnerBySlug(slug, { locale, cookieHeader });
+    return await getPublicPartnerBySlug(slug, { locale });
   } catch {
     return null;
   }
-};
+});
 
 export const generateMetadata = async ({
   params,

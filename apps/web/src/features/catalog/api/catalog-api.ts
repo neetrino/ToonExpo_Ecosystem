@@ -10,33 +10,15 @@ import type {
   ProjectListItem,
 } from "@toonexpo/contracts";
 
-import { apiFetch, type ApiFetchOptions } from "@/shared/api/client";
+import { apiFetch } from "@/shared/api/client";
 import { ApiError, isApiErrorStatus } from "@/shared/api/errors";
-
-const CATALOG_FETCH_INIT: RequestInit = {
-  method: "GET",
-  cache: "no-store",
-  credentials: "include",
-};
+import {
+  catalogListFetch,
+  catalogProjectFetch,
+} from "@/shared/api/public-fetch";
 
 export type CatalogRequestOptions = {
   locale?: string | undefined;
-  cookieHeader?: string | undefined;
-};
-
-const buildCatalogFetch = (
-  path: string,
-  cookieHeader?: string,
-): ApiFetchOptions => {
-  if (!cookieHeader) {
-    return { path, ...CATALOG_FETCH_INIT };
-  }
-
-  return {
-    path,
-    ...CATALOG_FETCH_INIT,
-    headers: { Cookie: cookieHeader },
-  };
 };
 
 const toSearchParams = (query: ListProjectsQuery): string => {
@@ -83,6 +65,8 @@ const localeQuery = (locale?: string): string => {
 
 /**
  * Lists published projects with optional filters and pagination.
+ * Anonymous Next Data Cache — never send cookies (price personalization is
+ * auth-only on the API; favorites use separate buyer endpoints).
  */
 export const listProjects = (
   query: ListProjectsQuery = {},
@@ -93,9 +77,10 @@ export const listProjects = (
     merged.locale = options.locale;
   }
 
-  return apiFetch<PaginatedResponse<ProjectListItem>>(
-    buildCatalogFetch(`/projects${toSearchParams(merged)}`, options.cookieHeader),
-  );
+  return apiFetch<PaginatedResponse<ProjectListItem>>({
+    path: `/projects${toSearchParams(merged)}`,
+    ...catalogListFetch(),
+  });
 };
 
 /**
@@ -106,12 +91,10 @@ export const getProject = async (
   options: CatalogRequestOptions = {},
 ): Promise<ProjectDetail | null> => {
   try {
-    return await apiFetch<ProjectDetail>(
-      buildCatalogFetch(
-        `/projects/${encodeURIComponent(projectId)}${localeQuery(options.locale)}`,
-        options.cookieHeader,
-      ),
-    );
+    return await apiFetch<ProjectDetail>({
+      path: `/projects/${encodeURIComponent(projectId)}${localeQuery(options.locale)}`,
+      ...catalogProjectFetch(projectId),
+    });
   } catch (error) {
     if (isApiErrorStatus(error, 404)) {
       return null;
@@ -128,12 +111,10 @@ export const getApartment = async (
   options: CatalogRequestOptions = {},
 ): Promise<ApartmentDetail | null> => {
   try {
-    return await apiFetch<ApartmentDetail>(
-      buildCatalogFetch(
-        `/apartments/${encodeURIComponent(apartmentId)}${localeQuery(options.locale)}`,
-        options.cookieHeader,
-      ),
-    );
+    return await apiFetch<ApartmentDetail>({
+      path: `/apartments/${encodeURIComponent(apartmentId)}${localeQuery(options.locale)}`,
+      ...catalogListFetch(),
+    });
   } catch (error) {
     if (isApiErrorStatus(error, 404)) {
       return null;
@@ -148,9 +129,10 @@ export const getApartment = async (
 export const listBuilders = (
   options: CatalogRequestOptions = {},
 ): Promise<BuilderSummary[]> => {
-  return apiFetch<BuilderSummary[]>(
-    buildCatalogFetch(`/builders${localeQuery(options.locale)}`, options.cookieHeader),
-  );
+  return apiFetch<BuilderSummary[]>({
+    path: `/builders${localeQuery(options.locale)}`,
+    ...catalogListFetch(),
+  });
 };
 
 /**
@@ -161,12 +143,10 @@ export const getBuilder = async (
   options: CatalogRequestOptions = {},
 ): Promise<BuilderDetail | null> => {
   try {
-    return await apiFetch<BuilderDetail>(
-      buildCatalogFetch(
-        `/builders/${encodeURIComponent(builderId)}${localeQuery(options.locale)}`,
-        options.cookieHeader,
-      ),
-    );
+    return await apiFetch<BuilderDetail>({
+      path: `/builders/${encodeURIComponent(builderId)}${localeQuery(options.locale)}`,
+      ...catalogListFetch(),
+    });
   } catch (error) {
     if (isApiErrorStatus(error, 404)) {
       return null;
@@ -177,18 +157,19 @@ export const getBuilder = async (
 
 /**
  * Loads a published building. Returns null on 404.
+ * Pass `projectId` when known so the per-project cache tag is applied.
  */
 export const getBuilding = async (
   buildingId: string,
-  options: CatalogRequestOptions = {},
+  options: CatalogRequestOptions & { projectId?: string } = {},
 ): Promise<BuildingDetail | null> => {
   try {
-    return await apiFetch<BuildingDetail>(
-      buildCatalogFetch(
-        `/buildings/${encodeURIComponent(buildingId)}${localeQuery(options.locale)}`,
-        options.cookieHeader,
-      ),
-    );
+    return await apiFetch<BuildingDetail>({
+      path: `/buildings/${encodeURIComponent(buildingId)}${localeQuery(options.locale)}`,
+      ...(options.projectId
+        ? catalogProjectFetch(options.projectId)
+        : catalogListFetch()),
+    });
   } catch (error) {
     if (isApiErrorStatus(error, 404)) {
       return null;
@@ -199,18 +180,19 @@ export const getBuilding = async (
 
 /**
  * Loads a published floor. Returns null on 404.
+ * Pass `projectId` when known so the per-project cache tag is applied.
  */
 export const getFloor = async (
   floorId: string,
-  options: CatalogRequestOptions = {},
+  options: CatalogRequestOptions & { projectId?: string } = {},
 ): Promise<FloorDetail | null> => {
   try {
-    return await apiFetch<FloorDetail>(
-      buildCatalogFetch(
-        `/floors/${encodeURIComponent(floorId)}${localeQuery(options.locale)}`,
-        options.cookieHeader,
-      ),
-    );
+    return await apiFetch<FloorDetail>({
+      path: `/floors/${encodeURIComponent(floorId)}${localeQuery(options.locale)}`,
+      ...(options.projectId
+        ? catalogProjectFetch(options.projectId)
+        : catalogListFetch()),
+    });
   } catch (error) {
     if (isApiErrorStatus(error, 404)) {
       return null;

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import Image from "next/image";
+import { cache } from "react";
 
 import { getBuilder } from "@/features/catalog/api/catalog-api";
 import { ProjectCard } from "@/features/catalog/components/project-card";
@@ -14,11 +14,9 @@ type BuilderDetailPageProps = {
   params: Promise<{ locale: string; id: string }>;
 };
 
-const loadBuilder = async (id: string, locale: string) => {
-  const headerStore = await headers();
-  const cookieHeader = headerStore.get("cookie") ?? undefined;
-  return getBuilder(id, { locale, cookieHeader });
-};
+const loadBuilder = cache((id: string, locale: string) =>
+  getBuilder(id, { locale }),
+);
 
 export const generateMetadata = async ({
   params,

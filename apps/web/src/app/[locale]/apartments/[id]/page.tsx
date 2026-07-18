@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
+import { cache } from "react";
 
 import { getApartment } from "@/features/catalog/api/catalog-api";
 import { ApartmentDetailFavorite } from "@/features/buyer/components/apartment-detail-favorite";
@@ -16,11 +16,9 @@ type ApartmentPageProps = {
   params: Promise<{ locale: string; id: string }>;
 };
 
-const loadApartment = async (id: string, locale: string) => {
-  const headerStore = await headers();
-  const cookieHeader = headerStore.get("cookie") ?? undefined;
-  return getApartment(id, { locale, cookieHeader });
-};
+const loadApartment = cache((id: string, locale: string) =>
+  getApartment(id, { locale }),
+);
 
 export const generateMetadata = async ({
   params,

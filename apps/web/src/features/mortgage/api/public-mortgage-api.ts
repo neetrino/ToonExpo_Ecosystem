@@ -5,6 +5,7 @@ import type {
 } from "@toonexpo/contracts";
 
 import { apiFetch } from "@/shared/api/client";
+import { mortgageFetch } from "@/shared/api/public-fetch";
 
 const jsonCredentials = {
   credentials: "include" as const,
@@ -14,8 +15,7 @@ const jsonCredentials = {
 export const listPublicMortgageOffers = (): Promise<PublicMortgageOfferListResponse> =>
   apiFetch<PublicMortgageOfferListResponse>({
     path: "/mortgage/offers",
-    method: "GET",
-    cache: "no-store",
+    ...mortgageFetch(),
   });
 
 export const calculateMortgage = (

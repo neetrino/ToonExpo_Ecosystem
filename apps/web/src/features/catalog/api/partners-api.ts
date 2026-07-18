@@ -6,6 +6,7 @@ import type {
 
 import { PARTNERS_DEFAULT_PAGE_SIZE } from "@/features/partners/constants";
 import { apiFetch } from "@/shared/api/client";
+import { partnersFetch } from "@/shared/api/public-fetch";
 
 export type ListPublicPartnersQuery = {
   page?: number;
@@ -33,28 +34,6 @@ const toSearchParams = (query: ListPublicPartnersQuery): string => {
 
 export type PublicPartnersRequestOptions = {
   locale?: string | undefined;
-  cookieHeader?: string | undefined;
-};
-
-const buildFetchOptions = (
-  path: string,
-  options: PublicPartnersRequestOptions = {},
-) => {
-  const init = {
-    path,
-    method: "GET" as const,
-    cache: "no-store" as const,
-    credentials: "include" as const,
-  };
-
-  if (!options.cookieHeader) {
-    return init;
-  }
-
-  return {
-    ...init,
-    headers: { Cookie: options.cookieHeader },
-  };
 };
 
 export const listPublicPartners = (
@@ -76,18 +55,17 @@ export const listPublicPartners = (
     params.locale = locale;
   }
 
-  return apiFetch<PublicPartnerListResponse>(
-    buildFetchOptions(`/partners${toSearchParams(params)}`, options),
-  );
+  return apiFetch<PublicPartnerListResponse>({
+    path: `/partners${toSearchParams(params)}`,
+    ...partnersFetch(),
+  });
 };
 
 export const getPublicPartnerBySlug = (
   slug: string,
   options: PublicPartnersRequestOptions = {},
 ): Promise<PublicPartnerDetail> =>
-  apiFetch<PublicPartnerDetail>(
-    buildFetchOptions(
-      `/partners/${encodeURIComponent(slug)}${options.locale ? `?locale=${encodeURIComponent(options.locale)}` : ""}`,
-      options,
-    ),
-  );
+  apiFetch<PublicPartnerDetail>({
+    path: `/partners/${encodeURIComponent(slug)}${options.locale ? `?locale=${encodeURIComponent(options.locale)}` : ""}`,
+    ...partnersFetch(),
+  });
