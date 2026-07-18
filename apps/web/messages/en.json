@@ -305,5 +305,247 @@
         "resendNotFound": "No invited admin found for this company"
       }
     }
+  },
+  "Builder": {
+    "badge": "Builder",
+    "profileLink": "Profile",
+    "locales": {
+      "label": "Translation language",
+      "hy": "Armenian",
+      "ru": "Russian",
+      "en": "English"
+    },
+    "nav": {
+      "label": "Builder navigation",
+      "section": "Workspace",
+      "dashboard": "Dashboard",
+      "projects": "Projects",
+      "team": "Team",
+      "visualMap": "Visual map",
+      "crm": "CRM",
+      "readiness": "Readiness",
+      "analytics": "Analytics",
+      "company": "Company",
+      "inventory": "Inventory",
+      "comingSoon": "Coming soon"
+    },
+    "dashboard": {
+      "title": "Dashboard",
+      "subtitle": "Overview of your company projects and inventory",
+      "loading": "Loading dashboard…",
+      "error": "Could not load dashboard. Try again.",
+      "stats": {
+        "projects": "Projects",
+        "published": "Published",
+        "drafts": "Drafts",
+        "apartments": "Apartments"
+      },
+      "links": {
+        "projects": "All projects",
+        "newProject": "New project",
+        "team": "Team"
+      }
+    },
+    "projects": {
+      "title": "Projects",
+      "subtitle": "{count, plural, =0 {No projects} one {# project} other {# projects}}",
+      "empty": "No projects yet. Create the first one.",
+      "loading": "Loading projects…",
+      "error": "Could not load projects. Try again.",
+      "newProject": "New project",
+      "pagination": {
+        "previous": "Previous",
+        "next": "Next"
+      },
+      "columns": {
+        "name": "Name",
+        "status": "Status",
+        "city": "City",
+        "buildings": "Buildings",
+        "apartments": "Apartments"
+      },
+      "publication": {
+        "draft": "Draft",
+        "published": "Published",
+        "archived": "Archived"
+      },
+      "new": {
+        "title": "New project",
+        "subtitle": "Create a draft project with multilingual content"
+      },
+      "form": {
+        "detailsSection": "Details",
+        "name": "Name",
+        "slug": "Slug",
+        "shortDescription": "Short description",
+        "fullDescription": "Full description",
+        "locationText": "Location text",
+        "address": "Address",
+        "city": "City",
+        "district": "District",
+        "projectType": "Project type",
+        "constructionStatus": "Construction status",
+        "completionDate": "Completion date",
+        "submit": "Create project",
+        "submitting": "Creating…"
+      },
+      "validation": {
+        "name": "Enter the Armenian project name"
+      },
+      "errors": {
+        "generic": "Something went wrong. Please try again."
+      },
+      "detail": {
+        "back": "← Projects",
+        "save": "Save changes",
+        "saving": "Saving…",
+        "saveSuccess": "Project updated",
+        "notFound": "Project not found",
+        "publish": "Publish",
+        "archive": "Archive",
+        "delete": "Delete",
+        "deleteConfirm": "Delete this draft project? This cannot be undone.",
+        "publicationSuccess": "Publication status updated"
+      }
+    },
+    "inventory": {
+      "title": "Buildings & inventory",
+      "subtitle": "Manage buildings, floors, and apartments",
+      "loading": "Loading apartments…",
+      "noBuildings": "No buildings yet. Add the first building below.",
+      "noFloors": "No floors yet.",
+      "addBuilding": "Add building",
+      "addFloor": "Add floor",
+      "addApartments": "Add apartments",
+      "createApartments": "Create apartments",
+      "cancel": "Cancel",
+      "adding": "Saving…",
+      "buildingName": "Building name",
+      "buildingDescription": "Description",
+      "floorNumber": "Floor number",
+      "floorName": "Floor name",
+      "displayLabel": "Display label",
+      "floorLabel": "Floor {number}",
+      "floorLabelNamed": "Floor {number} · {name}",
+      "floorsCount": "{count, plural, =0 {No floors} one {# floor} other {# floors}}",
+      "apartmentsCount": "{count, plural, =0 {No apartments} one {# apartment} other {# apartments}}",
+      "apartmentLink": "#{number} · {status}",
+      "count": "Count",
+      "numberPrefix": "Number prefix",
+      "startNumber": "Start number",
+      "rooms": "Rooms",
+      "areaTotal": "Area (m²)",
+      "price": "Price",
+      "publication": {
+        "draft": "Draft",
+        "published": "Published",
+        "archived": "Archived"
+      },
+      "validation": {
+        "name": "Enter a building name",
+        "floorNumber": "Enter a valid floor number",
+        "count": "Enter a valid count"
+      },
+      "errors": {
+        "generic": "Something went wrong. Please try again."
+      }
+    },
+    "apartments": {
+      "title": "Apartment {number}",
+      "back": "← Back to project",
+      "loading": "Loading apartment…",
+      "notFound": "Apartment not found",
+      "save": "Save changes",
+      "saving": "Saving…",
+      "saveSuccess": "Apartment updated",
+      "form": {
+        "number": "Number",
+        "rooms": "Rooms",
+        "bedrooms": "Bedrooms",
+        "bathrooms": "Bathrooms",
+        "areaTotal": "Total area",
+        "areaLiving": "Living area",
+        "balconyArea": "Balcony area",
+        "price": "Price",
+        "priceVisibility": "Price visibility",
+        "salesStatus": "Sales status",
+        "statusChangeReason": "Status change reason",
+        "description": "Description"
+      },
+      "validation": {
+        "number": "Enter an apartment number"
+      },
+      "priceVisibility": {
+        "public": "Public",
+        "by_request": "By request",
+        "visible_after_login": "After login"
+      },
+      "salesStatus": {
+        "available": "Available",
+        "reserved": "Reserved",
+        "sold": "Sold"
+      },
+      "publication": {
+        "draft": "Draft",
+        "published": "Published",
+        "archived": "Archived"
+      },
+      "errors": {
+        "generic": "Something went wrong. Please try again."
+      }
+    },
+    "team": {
+      "title": "Team",
+      "subtitle": "{count, plural, =0 {No members} one {# member} other {# members}}",
+      "empty": "No members yet.",
+      "loading": "Loading team…",
+      "error": "Could not load team. Try again.",
+      "inviteMember": "Invite member",
+      "readOnlyNotice": "Team management is available to company admins only. Member list API requires company_admin.",
+      "inviteSuccess": "Invite sent to {email}",
+      "updateSuccess": "Member updated",
+      "deactivate": "Deactivate",
+      "pagination": {
+        "previous": "Previous",
+        "next": "Next"
+      },
+      "columns": {
+        "name": "Name",
+        "email": "Email",
+        "role": "Role",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "roles": {
+        "company_admin": "Admin",
+        "member": "Member"
+      },
+      "statuses": {
+        "active": "Active",
+        "inactive": "Inactive",
+        "removed": "Removed"
+      },
+      "confirm": {
+        "role": "Change role of {name} to {role}?",
+        "deactivate": "Deactivate {name}?"
+      },
+      "form": {
+        "name": "Name",
+        "email": "Email",
+        "phone": "Phone",
+        "role": "Role",
+        "submit": "Send invite",
+        "submitting": "Sending…"
+      },
+      "validation": {
+        "name": "Enter a name",
+        "email": "Enter a valid email",
+        "phone": "Enter a valid phone number"
+      },
+      "errors": {
+        "emailTaken": "This email is already registered",
+        "generic": "Something went wrong. Please try again."
+      }
+    }
   }
 }

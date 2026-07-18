@@ -305,5 +305,247 @@
         "resendNotFound": "Այս ընկերության համար հրավիրված ադմին չկա"
       }
     }
+  },
+  "Builder": {
+    "badge": "Կառուցապատող",
+    "profileLink": "Պրոֆիլ",
+    "locales": {
+      "label": "Թարգմանության լեզու",
+      "hy": "Հայերեն",
+      "ru": "Ռուսերեն",
+      "en": "Անգլերեն"
+    },
+    "nav": {
+      "label": "Կառուցապատողի նավիգացիա",
+      "section": "Աշխատանքային տարածք",
+      "dashboard": "Վահանակ",
+      "projects": "Նախագծեր",
+      "team": "Թիմ",
+      "visualMap": "Վիզուալ քարտեզ",
+      "crm": "CRM",
+      "readiness": "Պատրաստվածություն",
+      "analytics": "Վերլուծություն",
+      "company": "Ընկերություն",
+      "inventory": "Գույքացուցակ",
+      "comingSoon": "Շուտով"
+    },
+    "dashboard": {
+      "title": "Վահանակ",
+      "subtitle": "Ձեր ընկերության նախագծերի և գույքի ամփոփում",
+      "loading": "Բեռնվում է…",
+      "error": "Չհաջողվեց բեռնել վահանակը։ Կրկին փորձեք։",
+      "stats": {
+        "projects": "Նախագծեր",
+        "published": "Հրապարակված",
+        "drafts": "Սևագրեր",
+        "apartments": "Բնակարաններ"
+      },
+      "links": {
+        "projects": "Բոլոր նախագծերը",
+        "newProject": "Նոր նախագիծ",
+        "team": "Թիմ"
+      }
+    },
+    "projects": {
+      "title": "Նախագծեր",
+      "subtitle": "{count, plural, =0 {Նախագծեր չկան} one {# նախագիծ} other {# նախագիծ}}",
+      "empty": "Դեռ նախագծեր չկան։ Ստեղծեք առաջինը։",
+      "loading": "Բեռնվում է…",
+      "error": "Չհաջողվեց բեռնել նախագծերը։ Կրկին փորձեք։",
+      "newProject": "Նոր նախագիծ",
+      "pagination": {
+        "previous": "Նախորդ",
+        "next": "Հաջորդ"
+      },
+      "columns": {
+        "name": "Անուն",
+        "status": "Կարգավիճակ",
+        "city": "Քաղաք",
+        "buildings": "Շենքեր",
+        "apartments": "Բնակարաններ"
+      },
+      "publication": {
+        "draft": "Սևագիր",
+        "published": "Հրապարակված",
+        "archived": "Արխիվ"
+      },
+      "new": {
+        "title": "Նոր նախագիծ",
+        "subtitle": "Ստեղծեք սևագիր նախագիծ՝ բազմալեզու բովանդակությամբ"
+      },
+      "form": {
+        "detailsSection": "Մանրամասներ",
+        "name": "Անուն",
+        "slug": "Slug",
+        "shortDescription": "Կարճ նկարագրություն",
+        "fullDescription": "Լրիվ նկարագրություն",
+        "locationText": "Տեղանք",
+        "address": "Հասցե",
+        "city": "Քաղաք",
+        "district": "Թաղամաս",
+        "projectType": "Տեսակ",
+        "constructionStatus": "Շինարարության կարգավիճակ",
+        "completionDate": "Ավարտի ամսաթիվ",
+        "submit": "Ստեղծել նախագիծ",
+        "submitting": "Ստեղծում…"
+      },
+      "validation": {
+        "name": "Մուտքագրեք հայերեն անունը"
+      },
+      "errors": {
+        "generic": "Ինչ-որ սխալ տեղի ունեցավ։ Կրկին փորձեք։"
+      },
+      "detail": {
+        "back": "← Նախագծեր",
+        "save": "Պահպանել",
+        "saving": "Պահպանում…",
+        "saveSuccess": "Նախագիծը թարմացված է",
+        "notFound": "Նախագիծը չի գտնվել",
+        "publish": "Հրապարակել",
+        "archive": "Արխիվացնել",
+        "delete": "Ջնջել",
+        "deleteConfirm": "Ջնջե՞լ այս սևագիր նախագիծը։ Գործողությունն անդառնալի է։",
+        "publicationSuccess": "Հրապարակման կարգավիճակը թարմացված է"
+      }
+    },
+    "inventory": {
+      "title": "Շենքեր և գույք",
+      "subtitle": "Կառավարեք շենքերը, հարկերը և բնակարանները",
+      "loading": "Բեռնվում է…",
+      "noBuildings": "Դեռ շենքեր չկան։ Ավելացրեք առաջինը ներքևում։",
+      "noFloors": "Դեռ հարկեր չկան։",
+      "addBuilding": "Ավելացնել շենք",
+      "addFloor": "Ավելացնել հարկ",
+      "addApartments": "Ավելացնել բնակարաններ",
+      "createApartments": "Ստեղծել բնակարաններ",
+      "cancel": "Չեղարկել",
+      "adding": "Պահպանում…",
+      "buildingName": "Շենքի անուն",
+      "buildingDescription": "Նկարագրություն",
+      "floorNumber": "Հարկի համար",
+      "floorName": "Հարկի անուն",
+      "displayLabel": "Ցուցադրման պիտակ",
+      "floorLabel": "Հարկ {number}",
+      "floorLabelNamed": "Հարկ {number} · {name}",
+      "floorsCount": "{count, plural, =0 {Հարկեր չկան} one {# հարկ} other {# հարկ}}",
+      "apartmentsCount": "{count, plural, =0 {Բնակարաններ չկան} one {# բնակարան} other {# բնակարան}}",
+      "apartmentLink": "#{number} · {status}",
+      "count": "Քանակ",
+      "numberPrefix": "Համարի նախածանց",
+      "startNumber": "Սկզբնական համար",
+      "rooms": "Սենյակներ",
+      "areaTotal": "Մակերես (մ²)",
+      "price": "Գին",
+      "publication": {
+        "draft": "Սևագիր",
+        "published": "Հրապարակված",
+        "archived": "Արխիվ"
+      },
+      "validation": {
+        "name": "Մուտքագրեք շենքի անունը",
+        "floorNumber": "Մուտքագրեք վավեր հարկի համար",
+        "count": "Մուտքագրեք վավեր քանակ"
+      },
+      "errors": {
+        "generic": "Ինչ-որ սխալ տեղի ունեցավ։ Կրկին փորձեք։"
+      }
+    },
+    "apartments": {
+      "title": "Բնակարան {number}",
+      "back": "← Վերադառնալ նախագիծ",
+      "loading": "Բեռնվում է…",
+      "notFound": "Բնակարանը չի գտնվել",
+      "save": "Պահպանել",
+      "saving": "Պահպանում…",
+      "saveSuccess": "Բնակարանը թարմացված է",
+      "form": {
+        "number": "Համար",
+        "rooms": "Սենյակներ",
+        "bedrooms": "Ննջասենյակներ",
+        "bathrooms": "Սանհանգույցներ",
+        "areaTotal": "Ընդհանուր մակերես",
+        "areaLiving": "Բնակելի մակերես",
+        "balconyArea": "Պատշգամբ",
+        "price": "Գին",
+        "priceVisibility": "Գնի տեսանելիություն",
+        "salesStatus": "Վաճառքի կարգավիճակ",
+        "statusChangeReason": "Կարգավիճակի փոփոխության պատճառ",
+        "description": "Նկարագրություն"
+      },
+      "validation": {
+        "number": "Մուտքագրեք բնակարանի համարը"
+      },
+      "priceVisibility": {
+        "public": "Հանրային",
+        "by_request": "Ըստ հարցման",
+        "visible_after_login": "Մուտքից հետո"
+      },
+      "salesStatus": {
+        "available": "Հասանելի",
+        "reserved": "Ամրագրված",
+        "sold": "Վաճառված"
+      },
+      "publication": {
+        "draft": "Սևագիր",
+        "published": "Հրապարակված",
+        "archived": "Արխիվ"
+      },
+      "errors": {
+        "generic": "Ինչ-որ սխալ տեղի ունեցավ։ Կրկին փորձեք։"
+      }
+    },
+    "team": {
+      "title": "Թիմ",
+      "subtitle": "{count, plural, =0 {Անդամներ չկան} one {# անդամ} other {# անդամ}}",
+      "empty": "Դեռ անդամներ չկան։",
+      "loading": "Բեռնվում է…",
+      "error": "Չհաջողվեց բեռնել թիմը։ Կրկին փորձեք։",
+      "inviteMember": "Հրավիրել անդամ",
+      "readOnlyNotice": "Թիմի կառավարումը հասանելի է միայն ընկերության ադմիններին։",
+      "inviteSuccess": "Հրավերն ուղարկվել է {email} հասցեին",
+      "updateSuccess": "Անդամը թարմացված է",
+      "deactivate": "Ապաակտիվացնել",
+      "pagination": {
+        "previous": "Նախորդ",
+        "next": "Հաջորդ"
+      },
+      "columns": {
+        "name": "Անուն",
+        "email": "Էլ․ փոստ",
+        "role": "Դեր",
+        "status": "Կարգավիճակ",
+        "actions": "Գործողություններ"
+      },
+      "roles": {
+        "company_admin": "Ադմին",
+        "member": "Անդամ"
+      },
+      "statuses": {
+        "active": "Ակտիվ",
+        "inactive": "Ոչ ակտիվ",
+        "removed": "Հեռացված"
+      },
+      "confirm": {
+        "role": "Փոխե՞լ {name}-ի դերը՝ {role}։",
+        "deactivate": "Ապաակտիվացնե՞լ {name}-ին։"
+      },
+      "form": {
+        "name": "Անուն",
+        "email": "Էլ․ փոստ",
+        "phone": "Հեռախոս",
+        "role": "Դեր",
+        "submit": "Ուղարկել հրավեր",
+        "submitting": "Ուղարկում…"
+      },
+      "validation": {
+        "name": "Մուտքագրեք անունը",
+        "email": "Մուտքագրեք վավեր էլ․ փոստ",
+        "phone": "Մուտքագրեք վավեր հեռախոսահամար"
+      },
+      "errors": {
+        "emailTaken": "Այս էլ․ փոստն արդեն գրանցված է",
+        "generic": "Ինչ-որ սխալ տեղի ունեցավ։ Կրկին փորձեք։"
+      }
+    }
   }
 }

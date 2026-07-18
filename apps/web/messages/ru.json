@@ -305,5 +305,247 @@
         "resendNotFound": "У этой компании нет приглашённого администратора"
       }
     }
+  },
+  "Builder": {
+    "badge": "Застройщик",
+    "profileLink": "Профиль",
+    "locales": {
+      "label": "Язык перевода",
+      "hy": "Армянский",
+      "ru": "Русский",
+      "en": "Английский"
+    },
+    "nav": {
+      "label": "Навигация портала",
+      "section": "Рабочая область",
+      "dashboard": "Дашборд",
+      "projects": "Проекты",
+      "team": "Команда",
+      "visualMap": "Визуальная карта",
+      "crm": "CRM",
+      "readiness": "Готовность",
+      "analytics": "Аналитика",
+      "company": "Компания",
+      "inventory": "Инвентарь",
+      "comingSoon": "Скоро"
+    },
+    "dashboard": {
+      "title": "Дашборд",
+      "subtitle": "Сводка по проектам и инвентарю компании",
+      "loading": "Загрузка…",
+      "error": "Не удалось загрузить дашборд. Попробуйте ещё раз.",
+      "stats": {
+        "projects": "Проекты",
+        "published": "Опубликовано",
+        "drafts": "Черновики",
+        "apartments": "Квартиры"
+      },
+      "links": {
+        "projects": "Все проекты",
+        "newProject": "Новый проект",
+        "team": "Команда"
+      }
+    },
+    "projects": {
+      "title": "Проекты",
+      "subtitle": "{count, plural, =0 {Нет проектов} one {# проект} few {# проекта} other {# проектов}}",
+      "empty": "Проектов пока нет. Создайте первый.",
+      "loading": "Загрузка проектов…",
+      "error": "Не удалось загрузить проекты. Попробуйте ещё раз.",
+      "newProject": "Новый проект",
+      "pagination": {
+        "previous": "Назад",
+        "next": "Вперёд"
+      },
+      "columns": {
+        "name": "Название",
+        "status": "Статус",
+        "city": "Город",
+        "buildings": "Здания",
+        "apartments": "Квартиры"
+      },
+      "publication": {
+        "draft": "Черновик",
+        "published": "Опубликован",
+        "archived": "В архиве"
+      },
+      "new": {
+        "title": "Новый проект",
+        "subtitle": "Создайте черновик проекта с многоязычным контентом"
+      },
+      "form": {
+        "detailsSection": "Детали",
+        "name": "Название",
+        "slug": "Slug",
+        "shortDescription": "Краткое описание",
+        "fullDescription": "Полное описание",
+        "locationText": "Локация",
+        "address": "Адрес",
+        "city": "Город",
+        "district": "Район",
+        "projectType": "Тип проекта",
+        "constructionStatus": "Статус строительства",
+        "completionDate": "Дата сдачи",
+        "submit": "Создать проект",
+        "submitting": "Создание…"
+      },
+      "validation": {
+        "name": "Укажите название на армянском"
+      },
+      "errors": {
+        "generic": "Что-то пошло не так. Попробуйте ещё раз."
+      },
+      "detail": {
+        "back": "← Проекты",
+        "save": "Сохранить",
+        "saving": "Сохранение…",
+        "saveSuccess": "Проект обновлён",
+        "notFound": "Проект не найден",
+        "publish": "Опубликовать",
+        "archive": "В архив",
+        "delete": "Удалить",
+        "deleteConfirm": "Удалить этот черновик проекта? Действие необратимо.",
+        "publicationSuccess": "Статус публикации обновлён"
+      }
+    },
+    "inventory": {
+      "title": "Здания и инвентарь",
+      "subtitle": "Управление зданиями, этажами и квартирами",
+      "loading": "Загрузка…",
+      "noBuildings": "Зданий пока нет. Добавьте первое ниже.",
+      "noFloors": "Этажей пока нет.",
+      "addBuilding": "Добавить здание",
+      "addFloor": "Добавить этаж",
+      "addApartments": "Добавить квартиры",
+      "createApartments": "Создать квартиры",
+      "cancel": "Отмена",
+      "adding": "Сохранение…",
+      "buildingName": "Название здания",
+      "buildingDescription": "Описание",
+      "floorNumber": "Номер этажа",
+      "floorName": "Название этажа",
+      "displayLabel": "Метка",
+      "floorLabel": "Этаж {number}",
+      "floorLabelNamed": "Этаж {number} · {name}",
+      "floorsCount": "{count, plural, =0 {Нет этажей} one {# этаж} few {# этажа} other {# этажей}}",
+      "apartmentsCount": "{count, plural, =0 {Нет квартир} one {# квартира} few {# квартиры} other {# квартир}}",
+      "apartmentLink": "#{number} · {status}",
+      "count": "Количество",
+      "numberPrefix": "Префикс номера",
+      "startNumber": "Начальный номер",
+      "rooms": "Комнаты",
+      "areaTotal": "Площадь (м²)",
+      "price": "Цена",
+      "publication": {
+        "draft": "Черновик",
+        "published": "Опубликован",
+        "archived": "В архиве"
+      },
+      "validation": {
+        "name": "Укажите название здания",
+        "floorNumber": "Укажите корректный номер этажа",
+        "count": "Укажите корректное количество"
+      },
+      "errors": {
+        "generic": "Что-то пошло не так. Попробуйте ещё раз."
+      }
+    },
+    "apartments": {
+      "title": "Квартира {number}",
+      "back": "← К проекту",
+      "loading": "Загрузка…",
+      "notFound": "Квартира не найдена",
+      "save": "Сохранить",
+      "saving": "Сохранение…",
+      "saveSuccess": "Квартира обновлена",
+      "form": {
+        "number": "Номер",
+        "rooms": "Комнаты",
+        "bedrooms": "Спальни",
+        "bathrooms": "Санузлы",
+        "areaTotal": "Общая площадь",
+        "areaLiving": "Жилая площадь",
+        "balconyArea": "Балкон",
+        "price": "Цена",
+        "priceVisibility": "Видимость цены",
+        "salesStatus": "Статус продаж",
+        "statusChangeReason": "Причина смены статуса",
+        "description": "Описание"
+      },
+      "validation": {
+        "number": "Укажите номер квартиры"
+      },
+      "priceVisibility": {
+        "public": "Публичная",
+        "by_request": "По запросу",
+        "visible_after_login": "После входа"
+      },
+      "salesStatus": {
+        "available": "Доступна",
+        "reserved": "Забронирована",
+        "sold": "Продана"
+      },
+      "publication": {
+        "draft": "Черновик",
+        "published": "Опубликована",
+        "archived": "В архиве"
+      },
+      "errors": {
+        "generic": "Что-то пошло не так. Попробуйте ещё раз."
+      }
+    },
+    "team": {
+      "title": "Команда",
+      "subtitle": "{count, plural, =0 {Нет участников} one {# участник} few {# участника} other {# участников}}",
+      "empty": "Участников пока нет.",
+      "loading": "Загрузка…",
+      "error": "Не удалось загрузить команду. Попробуйте ещё раз.",
+      "inviteMember": "Пригласить участника",
+      "readOnlyNotice": "Управление командой доступно только администраторам компании.",
+      "inviteSuccess": "Приглашение отправлено на {email}",
+      "updateSuccess": "Участник обновлён",
+      "deactivate": "Деактивировать",
+      "pagination": {
+        "previous": "Назад",
+        "next": "Вперёд"
+      },
+      "columns": {
+        "name": "Имя",
+        "email": "Email",
+        "role": "Роль",
+        "status": "Статус",
+        "actions": "Действия"
+      },
+      "roles": {
+        "company_admin": "Админ",
+        "member": "Участник"
+      },
+      "statuses": {
+        "active": "Активен",
+        "inactive": "Неактивен",
+        "removed": "Удалён"
+      },
+      "confirm": {
+        "role": "Изменить роль {name} на {role}?",
+        "deactivate": "Деактивировать {name}?"
+      },
+      "form": {
+        "name": "Имя",
+        "email": "Email",
+        "phone": "Телефон",
+        "role": "Роль",
+        "submit": "Отправить приглашение",
+        "submitting": "Отправка…"
+      },
+      "validation": {
+        "name": "Укажите имя",
+        "email": "Укажите корректный email",
+        "phone": "Укажите корректный телефон"
+      },
+      "errors": {
+        "emailTaken": "Этот email уже зарегистрирован",
+        "generic": "Что-то пошло не так. Попробуйте ещё раз."
+      }
+    }
   }
 }

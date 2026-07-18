@@ -1,0 +1,70 @@
+"use client";
+
+import { useTranslations } from "next-intl";
+
+import { EditProjectForm } from "@/features/builder/components/edit-project-form";
+import { ProjectInventorySection } from "@/features/builder/components/project-inventory-section";
+import { ProjectPublicationActions } from "@/features/builder/components/project-publication-actions";
+import { usePortalProjectQuery } from "@/features/builder/hooks/use-portal-projects";
+import { Link } from "@/i18n/navigation";
+import { Card } from "@/shared/ui/card";
+
+type ProjectDetailPageProps = {
+  projectId: string;
+};
+
+/**
+ * Project edit shell with publication actions and inventory hierarchy.
+ */
+export const ProjectDetailPage = ({ projectId }: ProjectDetailPageProps) => {
+  const t = useTranslations("Builder.projects");
+  const query = usePortalProjectQuery(projectId);
+
+  if (query.isLoading) {
+    return <p className="text-sm text-ink-secondary">{t("loading")}</p>;
+  }
+
+  if (query.isError || !query.data) {
+    return (
+      <div className="flex flex-col gap-3">
+        <p role="alert" className="text-sm text-danger">
+          {t("detail.notFound")}
+        </p>
+        <Link
+          href="/builder/projects"
+          className="text-sm font-medium text-brand hover:underline"
+        >
+          {t("detail.back")}
+        </Link>
+      </div>
+    );
+  }
+
+  const project = query.data;
+
+  return (
+    <div className="flex flex-col gap-8">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="flex flex-col gap-1">
+          <Link
+            href="/builder/projects"
+            className="text-sm text-ink-secondary hover:text-ink"
+          >
+            {t("detail.back")}
+          </Link>
+          <h1 className="text-xl font-semibold text-ink">{project.name}</h1>
+          <p className="text-sm text-ink-secondary">
+            {t(`publication.${project.publicationStatus}`)}
+          </p>
+        </div>
+        <ProjectPublicationActions project={project} />
+      </div>
+
+      <Card>
+        <EditProjectForm project={project} />
+      </Card>
+
+      <ProjectInventorySection project={project} />
+    </div>
+  );
+};
