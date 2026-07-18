@@ -81,7 +81,7 @@ export const seedAuthAccounts = async (
     },
   });
 
-  await prisma.user.upsert({
+  const companyAdmin = await prisma.user.upsert({
     where: { email: SEED_COMPANY_ADMIN_EMAIL },
     create: {
       id: SEED_COMPANY_ADMIN_ID,
@@ -90,15 +90,6 @@ export const seedAuthAccounts = async (
       passwordHash,
       accountType: AccountType.company_member,
       status: UserStatus.active,
-      companyMembership: {
-        create: {
-          id: SEED_COMPANY_MEMBER_ID,
-          companyId: builderCompanyId,
-          role: CompanyMemberRole.company_admin,
-          status: CompanyMemberStatus.active,
-          joinedAt: new Date(),
-        },
-      },
     },
     update: {
       passwordHash,
@@ -108,11 +99,11 @@ export const seedAuthAccounts = async (
   });
 
   await prisma.companyMember.upsert({
-    where: { userId: SEED_COMPANY_ADMIN_ID },
+    where: { userId: companyAdmin.id },
     create: {
       id: SEED_COMPANY_MEMBER_ID,
       companyId: builderCompanyId,
-      userId: SEED_COMPANY_ADMIN_ID,
+      userId: companyAdmin.id,
       role: CompanyMemberRole.company_admin,
       status: CompanyMemberStatus.active,
       joinedAt: new Date(),
@@ -195,30 +186,3 @@ const seedBuyerWithQr = async (
   });
 };
 
-/**
- * Removes seed auth users (and cascading memberships/sessions/tokens/QR).
- */
-export const clearSeedAuthAccounts = async (
-  prisma: PrismaClient,
-): Promise<void> => {
-  await prisma.user.deleteMany({
-    where: {
-      OR: [
-        {
-          id: {
-            in: [SEED_PLATFORM_ADMIN_ID, SEED_COMPANY_ADMIN_ID, SEED_BUYER_ID],
-          },
-        },
-        {
-          email: {
-            in: [
-              SEED_PLATFORM_ADMIN_EMAIL,
-              SEED_COMPANY_ADMIN_EMAIL,
-              SEED_BUYER_EMAIL,
-            ],
-          },
-        },
-      ],
-    },
-  });
-};

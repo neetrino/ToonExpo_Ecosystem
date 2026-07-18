@@ -4,6 +4,9 @@ import {
 } from "../src/index.js";
 
 export const SEED_ID_PREFIX = "seed_";
+
+export const SEED_DRAFT_PROJECT_ID = `${SEED_ID_PREFIX}project_draft_hidden`;
+
 export const DEFAULT_PRICE_CURRENCY = "AMD";
 export const PLACEHOLDER_IMAGE_BASE = "https://placehold.co";
 
