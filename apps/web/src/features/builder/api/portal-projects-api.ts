@@ -2,6 +2,7 @@ import type {
   CreatePortalProjectRequest,
   PortalProjectDetail,
   PortalProjectListResponse,
+  ProjectQrResponse,
   UpdatePortalProjectRequest,
   UpdatePortalPublicationRequest,
 } from "@toonexpo/contracts";
@@ -109,3 +110,22 @@ export const deletePortalProject = (id: string): Promise<void> =>
     method: "DELETE",
     credentials: "include",
   });
+
+/**
+ * Returns the public project page URL for exhibition QR printouts.
+ */
+export const getPortalProjectQr = (
+  projectId: string,
+  options: PortalRequestOptions = {},
+): Promise<ProjectQrResponse> =>
+  apiFetch<ProjectQrResponse>(
+    withPortalCookie(
+      {
+        path: `/portal/projects/${encodeURIComponent(projectId)}/qr`,
+        method: "GET",
+        credentials: "include",
+        cache: "no-store",
+      },
+      options.cookieHeader,
+    ),
+  );

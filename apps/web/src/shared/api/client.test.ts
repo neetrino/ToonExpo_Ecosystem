@@ -17,6 +17,10 @@ describe("buildApiUrl", () => {
       `http://localhost:4000${API_V1_PREFIX}/health`,
     );
   });
+
+  it("returns same-origin relative URLs when base is empty", () => {
+    expect(buildApiUrl("/health", "")).toBe(`${API_V1_PREFIX}/health`);
+  });
 });
 
 describe("csrf helpers", () => {

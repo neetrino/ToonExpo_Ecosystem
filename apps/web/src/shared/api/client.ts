@@ -1,6 +1,6 @@
 import { API_V1_PREFIX } from "@toonexpo/contracts";
 
-import { getPublicEnv } from "@/shared/config/env";
+import { getPublicEnv, getServerApiBaseUrl } from "@/shared/config/env";
 
 import {
   clearCsrfTokenCache,
@@ -25,12 +25,26 @@ export type ApiFetchOptions = RequestInit & {
   csrfRetryAttempted?: boolean;
 };
 
+const resolveApiBaseUrl = (): string => {
+  if (typeof window !== "undefined") {
+    return getPublicEnv().apiBaseUrl;
+  }
+
+  return getServerApiBaseUrl();
+};
+
 /**
- * Builds a full API v1 URL from a path segment.
+ * Builds an API v1 URL from a path segment.
+ * Browser proxy mode uses same-origin relative URLs when the public base is empty.
  */
 export const buildApiUrl = (path: string, baseUrl?: string): string => {
-  const origin = (baseUrl ?? getPublicEnv().apiBaseUrl).replace(/\/$/, "");
+  const origin = (baseUrl ?? resolveApiBaseUrl()).replace(/\/$/, "");
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+
+  if (!origin) {
+    return `${API_V1_PREFIX}${normalizedPath}`;
+  }
+
   return `${origin}${API_V1_PREFIX}${normalizedPath}`;
 };
 
