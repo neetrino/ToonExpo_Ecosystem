@@ -9,6 +9,7 @@ import { cn } from "@/shared/ui/cn";
 
 type ExpoMapViewProps = {
   mediaAssetId: string;
+  mediaFileUrl?: string | null;
   booths: PublicBoothDetail[];
   highlightedBoothId: string | null;
   routeNodes: RoutePathNode[];
@@ -21,6 +22,7 @@ type ExpoMapViewProps = {
  */
 export const ExpoMapView = ({
   mediaAssetId,
+  mediaFileUrl,
   booths,
   highlightedBoothId,
   routeNodes,
@@ -28,7 +30,7 @@ export const ExpoMapView = ({
   onSelectBooth,
 }: ExpoMapViewProps) => {
   const t = useTranslations("Expo.map");
-  const imageUrl = resolveMediaUrl(mediaAssetId);
+  const imageUrl = resolveMediaUrl(mediaAssetId, mediaFileUrl);
   const polylinePoints = useMemo(
     () =>
       routeNodes

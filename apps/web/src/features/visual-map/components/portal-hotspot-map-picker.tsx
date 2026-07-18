@@ -11,6 +11,7 @@ import { resolveMediaUrl } from "@/features/exhibition/utils/resolve-media-url";
 
 type PortalHotspotMapPickerProps = {
   mediaAssetId: string;
+  mediaFileUrl?: string | null;
   hotspots: PortalVisualHotspotItem[];
   selectedHotspotId: string | null;
   onSelectHotspot: (hotspotId: string) => void;
@@ -22,13 +23,14 @@ type PortalHotspotMapPickerProps = {
  */
 export const PortalHotspotMapPicker = ({
   mediaAssetId,
+  mediaFileUrl,
   hotspots,
   selectedHotspotId,
   onSelectHotspot,
   onPickCoordinates,
 }: PortalHotspotMapPickerProps) => {
   const t = useTranslations("Builder.visualMap.editor.map");
-  const imageUrl = resolveMediaUrl(mediaAssetId);
+  const imageUrl = resolveMediaUrl(mediaAssetId, mediaFileUrl);
 
   if (!imageUrl) {
     return (

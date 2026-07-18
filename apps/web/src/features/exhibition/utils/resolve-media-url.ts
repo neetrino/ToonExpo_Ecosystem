@@ -1,10 +1,18 @@
 const HTTP_URL_PATTERN = /^https?:\/\//i;
 
 /**
- * Resolves a venue map media reference for display.
- * v1: only absolute http(s) URLs are renderable; opaque asset ids need media CDN wiring.
+ * Resolves a media reference for display.
+ * Prefers an explicit CDN URL; falls back to legacy absolute URLs stored in id fields.
  */
-export const resolveMediaUrl = (mediaAssetId: string): string | null => {
+export const resolveMediaUrl = (
+  mediaAssetId: string,
+  mediaFileUrl?: string | null,
+): string | null => {
+  const resolvedUrl = mediaFileUrl?.trim();
+  if (resolvedUrl) {
+    return resolvedUrl;
+  }
+
   const trimmed = mediaAssetId.trim();
   if (!trimmed) {
     return null;

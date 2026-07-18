@@ -8,6 +8,7 @@ import { cn } from "@/shared/ui/cn";
 
 type AdminBoothMapPickerProps = {
   mediaAssetId: string;
+  mediaFileUrl?: string | null;
   booths: BoothSummary[];
   selectedBoothId: string | null;
   onSelectBooth: (boothId: string) => void;
@@ -19,13 +20,14 @@ type AdminBoothMapPickerProps = {
  */
 export const AdminBoothMapPicker = ({
   mediaAssetId,
+  mediaFileUrl,
   booths,
   selectedBoothId,
   onSelectBooth,
   onPickCoordinates,
 }: AdminBoothMapPickerProps) => {
   const t = useTranslations("Admin.events.booths.map");
-  const imageUrl = resolveMediaUrl(mediaAssetId);
+  const imageUrl = resolveMediaUrl(mediaAssetId, mediaFileUrl);
 
   if (!imageUrl) {
     return (

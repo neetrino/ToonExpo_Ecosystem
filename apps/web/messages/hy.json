@@ -1140,8 +1140,7 @@
         "loading": "Քարտեզները բեռնվում են…",
         "form": {
           "title": "Քարտեզի վերնագիր",
-          "mediaAssetId": "Քարտեզի պատկերի URL կամ asset id",
-          "mediaHint": "Տեղադրեք ամբողջական https:// պատկերի URL, մինչև ադմինում մեդիա վերբեռնումը հասանելի լինի։",
+          "mediaAssetId": "Քարտեզի պատկեր",
           "width": "Լայնություն (px)",
           "height": "Բարձրություն (px)",
           "publication": "Հրապարակում",
@@ -1456,8 +1455,7 @@
         "contextProject": "Նախագիծ",
         "contextBuilding": "Շենք",
         "contextFloor": "Հարկ",
-        "mediaAssetId": "Պատկերի URL կամ asset id",
-        "mediaHint": "Տեղադրեք հրապարակային https:// պատկերի URL՝ մինչև R2 վերբեռնումը հասանելի լինի։",
+        "mediaAssetId": "Canvas-ի պատկեր",
         "title": "Վերնագիր",
         "create": "Ստեղծել canvas",
         "creating": "Ստեղծվում է…",
@@ -1474,7 +1472,7 @@
         "hotspotEmpty": "Ընտրեք կամ տեղադրեք կետ",
         "hotspotHint": "Սեղմեք պատկերի վրա՝ կետ տեղադրելու համար, կամ ընտրեք ցանկից։",
         "map": {
-          "noImage": "Canvas-ի համար ավելացրեք վավեր պատկերի URL։",
+          "noImage": "Վերբեռնեք canvas-ի պատկեր՝ hotspot-ներ տեղադրելու համար։",
           "alt": "Տեսական canvas",
           "hint": "Սեղմեք պատկերի վրա՝ կետ տեղադրելու համար։ Սեղմեք կետին՝ խմբագրելու համար։"
         },
@@ -2030,6 +2028,26 @@
         "denied_invalid_qr": "Անվավեր QR",
         "denied_blocked": "Արգելված",
         "error": "Սխալ"
+      }
+    }
+  },
+  "Media": {
+    "upload": {
+      "browse": "Ընտրել պատկեր",
+      "uploading": "Վերբեռնվում է…",
+      "hint": "JPEG, PNG, WebP կամ AVIF՝ մինչև 10 ՄԲ։ SVG-ն չի աջակցվում։",
+      "useExisting": "Ընտրել գոյություն ունեցող",
+      "libraryTitle": "Վերբեռնված պատկերներ",
+      "closeLibrary": "Փակել",
+      "emptyLibrary": "Դեռ վերբեռնված պատկերներ չկան։",
+      "loadMore": "Բեռնել ավելին",
+      "loadingLibrary": "Բեռնվում է…",
+      "selectedId": "Ընտրված asset՝ {id}",
+      "errors": {
+        "type": "Թույլատրվում են միայն JPEG, PNG, WebP և AVIF պատկերներ։",
+        "size": "Պատկերի չափը պետք է լինի ոչ ավելի քան 10 ՄԲ։",
+        "uploadFailed": "Վերբեռնումը ձախողվեց։ Կրկին փորձեք։",
+        "notConfigured": "Սերվերում մեդիա վերբեռնումը կարգավորված չէ։"
       }
     }
   },

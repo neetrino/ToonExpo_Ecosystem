@@ -4,8 +4,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import type { PortalProjectDetail, VisualMapContextType } from "@toonexpo/contracts";
 import { useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 
+import { MediaUploadField } from "@/features/media/components/media-upload-field";
 import {
   useCreatePortalVisualCanvasMutation,
   usePortalProjectVisualCanvasesQuery,
@@ -201,10 +202,20 @@ const PortalVisualCanvasCreateForm = ({
             ))}
           </select>
         </FormField>
-        <FormField id="canvas-media" label={t("mediaAssetId")}>
-          <Input id="canvas-media" {...form.register("mediaAssetId")} />
-          <p className="mt-1 text-xs text-ink-muted">{t("mediaHint")}</p>
-        </FormField>
+        <Controller
+          control={form.control}
+          name="mediaAssetId"
+          render={({ field, fieldState }) => (
+            <MediaUploadField
+              id="canvas-media"
+              label={t("mediaAssetId")}
+              context="portal"
+              value={field.value}
+              onChange={field.onChange}
+              error={fieldState.error?.message}
+            />
+          )}
+        />
         <FormField id="canvas-title" label={t("title")}>
           <Input id="canvas-title" {...form.register("title")} />
         </FormField>

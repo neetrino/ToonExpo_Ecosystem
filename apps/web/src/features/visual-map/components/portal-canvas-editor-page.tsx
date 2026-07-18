@@ -149,6 +149,7 @@ export const PortalCanvasEditorPage = ({
         <div className="flex flex-col gap-4">
           <PortalHotspotMapPicker
             mediaAssetId={canvas.mediaAssetId}
+            mediaFileUrl={canvas.media.fileUrl}
             hotspots={hotspots}
             selectedHotspotId={selectedHotspotId}
             onSelectHotspot={(hotspotId) => {

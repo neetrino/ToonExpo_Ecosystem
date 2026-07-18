@@ -1140,8 +1140,7 @@
         "loading": "Loading maps…",
         "form": {
           "title": "Map title",
-          "mediaAssetId": "Map image URL or asset id",
-          "mediaHint": "Paste a full https:// image URL until media upload is available in admin.",
+          "mediaAssetId": "Изображение карты",
           "width": "Width (px)",
           "height": "Height (px)",
           "publication": "Publication",
@@ -1456,8 +1455,7 @@
         "contextProject": "Проект",
         "contextBuilding": "Корпус",
         "contextFloor": "Этаж",
-        "mediaAssetId": "URL изображения или asset id",
-        "mediaHint": "Вставьте публичный https:// URL изображения, пока загрузка в R2 недоступна.",
+        "mediaAssetId": "Изображение canvas",
         "title": "Название",
         "create": "Создать canvas",
         "creating": "Создание…",
@@ -1474,7 +1472,7 @@
         "hotspotEmpty": "Выберите или разместите точку",
         "hotspotHint": "Нажмите на изображение, чтобы поставить точку, или выберите из списка.",
         "map": {
-          "noImage": "Добавьте корректный URL изображения для canvas.",
+          "noImage": "Загрузите изображение canvas, чтобы размещать точки.",
           "alt": "Визуальный canvas",
           "hint": "Нажмите на изображение, чтобы поставить точку. Нажмите на маркер для редактирования."
         },
@@ -2030,6 +2028,26 @@
         "denied_invalid_qr": "Invalid QR",
         "denied_blocked": "Blocked",
         "error": "Error"
+      }
+    }
+  },
+  "Media": {
+    "upload": {
+      "browse": "Выбрать изображение",
+      "uploading": "Загрузка…",
+      "hint": "JPEG, PNG, WebP или AVIF до 10 МБ. SVG не поддерживается.",
+      "useExisting": "Выбрать из библиотеки",
+      "libraryTitle": "Загруженные изображения",
+      "closeLibrary": "Закрыть",
+      "emptyLibrary": "Загруженных изображений пока нет.",
+      "loadMore": "Загрузить ещё",
+      "loadingLibrary": "Загрузка…",
+      "selectedId": "Выбранный asset: {id}",
+      "errors": {
+        "type": "Допускаются только JPEG, PNG, WebP и AVIF.",
+        "size": "Размер изображения не должен превышать 10 МБ.",
+        "uploadFailed": "Не удалось загрузить. Попробуйте снова.",
+        "notConfigured": "Загрузка медиа на сервере не настроена."
       }
     }
   },

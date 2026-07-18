@@ -4,7 +4,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import type { VenueMapSummary } from "@toonexpo/contracts";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
+
+import { MediaUploadField } from "@/features/media/components/media-upload-field";
 
 import { AdminBoothsSection } from "@/features/exhibition/components/admin/admin-booths-section";
 import { EXHIBITION_PUBLICATION_STATUSES } from "@/features/exhibition/constants";
@@ -178,7 +180,7 @@ const VenueMapEditCard = ({
       <div className="flex items-center gap-2">
         <PublicationStatusBadge status={map.publicationStatus} />
       </div>
-      <VenueMapFields form={form} />
+      <VenueMapFields form={form} previewUrl={map.mediaUrl} />
       <div className="flex flex-wrap gap-2">
         <Button
           type="button"
@@ -198,9 +200,10 @@ const VenueMapEditCard = ({
 
 type VenueMapFieldsProps = {
   form: ReturnType<typeof useForm<VenueMapFormInput, unknown, VenueMapFormValues>>;
+  previewUrl?: string | null;
 };
 
-const VenueMapFields = ({ form }: VenueMapFieldsProps) => {
+const VenueMapFields = ({ form, previewUrl }: VenueMapFieldsProps) => {
   const t = useTranslations("Admin.events.venueMaps.form");
 
   return (
@@ -208,10 +211,21 @@ const VenueMapFields = ({ form }: VenueMapFieldsProps) => {
       <FormField id="map-title" label={t("title")}>
         <Input id="map-title" {...form.register("title")} />
       </FormField>
-      <FormField id="map-media" label={t("mediaAssetId")}>
-        <Input id="map-media" {...form.register("mediaAssetId")} />
-        <p className="text-xs text-ink-muted">{t("mediaHint")}</p>
-      </FormField>
+      <Controller
+        control={form.control}
+        name="mediaAssetId"
+        render={({ field, fieldState }) => (
+          <MediaUploadField
+            id="map-media"
+            label={t("mediaAssetId")}
+            context="admin"
+            value={field.value}
+            onChange={field.onChange}
+            previewUrl={previewUrl}
+            error={fieldState.error?.message}
+          />
+        )}
+      />
       <div className="grid gap-3 sm:grid-cols-2">
         <FormField id="map-width" label={t("width")}>
           <Input id="map-width" type="number" {...form.register("width")} />

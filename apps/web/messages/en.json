@@ -1140,8 +1140,7 @@
         "loading": "Loading maps…",
         "form": {
           "title": "Map title",
-          "mediaAssetId": "Map image URL or asset id",
-          "mediaHint": "Paste a full https:// image URL until media upload is available in admin.",
+          "mediaAssetId": "Map image",
           "width": "Width (px)",
           "height": "Height (px)",
           "publication": "Publication",
@@ -1630,8 +1629,7 @@
         "contextProject": "Project",
         "contextBuilding": "Building",
         "contextFloor": "Floor",
-        "mediaAssetId": "Image URL or asset id",
-        "mediaHint": "Paste a public https:// image URL until R2 upload is available.",
+        "mediaAssetId": "Canvas image",
         "title": "Title",
         "create": "Create canvas",
         "creating": "Creating…",
@@ -1648,7 +1646,7 @@
         "hotspotEmpty": "Select or place a hotspot",
         "hotspotHint": "Click the image to place a hotspot, or select one from the list.",
         "map": {
-          "noImage": "Add a valid image URL on the canvas to start placing hotspots.",
+          "noImage": "Upload a canvas image to start placing hotspots.",
           "alt": "Visual canvas",
           "hint": "Click the image to place a hotspot. Click a marker to edit it."
         },
@@ -2030,6 +2028,26 @@
         "denied_invalid_qr": "Invalid QR",
         "denied_blocked": "Blocked",
         "error": "Error"
+      }
+    }
+  },
+  "Media": {
+    "upload": {
+      "browse": "Choose image",
+      "uploading": "Uploading…",
+      "hint": "JPEG, PNG, WebP, or AVIF up to 10 MB. SVG is not supported.",
+      "useExisting": "Choose existing",
+      "libraryTitle": "Uploaded images",
+      "closeLibrary": "Close",
+      "emptyLibrary": "No images uploaded yet.",
+      "loadMore": "Load more",
+      "loadingLibrary": "Loading…",
+      "selectedId": "Selected asset: {id}",
+      "errors": {
+        "type": "Only JPEG, PNG, WebP, and AVIF images are allowed.",
+        "size": "Image must be 10 MB or smaller.",
+        "uploadFailed": "Upload failed. Try again.",
+        "notConfigured": "Media upload is not configured on the server."
       }
     }
   },

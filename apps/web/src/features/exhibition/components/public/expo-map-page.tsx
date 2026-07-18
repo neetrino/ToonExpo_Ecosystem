@@ -163,6 +163,7 @@ export const ExpoMapPage = () => {
 
       <ExpoMapView
         mediaAssetId={venueMap.mediaAssetId}
+        mediaFileUrl={venueMap.mediaUrl}
         booths={booths}
         highlightedBoothId={selectedBoothId}
         routeNodes={routeNodes}

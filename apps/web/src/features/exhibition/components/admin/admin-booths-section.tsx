@@ -91,6 +91,7 @@ export const AdminBoothsSection = ({ map }: AdminBoothsSectionProps) => {
           <div className="flex flex-col gap-4">
             <AdminBoothMapPicker
               mediaAssetId={map.mediaAssetId}
+              mediaFileUrl={map.mediaUrl}
               booths={booths}
               selectedBoothId={selectedBoothId}
               onSelectBooth={setSelectedBoothId}
