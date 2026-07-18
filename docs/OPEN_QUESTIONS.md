@@ -1,0 +1,79 @@
+# Open Questions
+
+Live register of unresolved decisions. Walk through this file with the owner before production launch. When a question is resolved, move the decision to `DECISIONS.md` and delete it here.
+
+Last updated: 2026-07-18.
+
+---
+
+## Q1. Cross-domain session cookies for staging deploy (CRITICAL — decide before first deploy)
+
+**Context.** Sessions are httpOnly cookies with `SameSite=Lax`, and the browser calls the API directly (`NEXT_PUBLIC_API_URL`). `toonexpo.vercel.app` (web) and `*.run.app` (API) are different registrable domains, so the browser will NOT attach the session cookie to API requests: login appears to succeed, but every following authenticated request returns 401. Safari/iOS additionally blocks cross-site cookies entirely, regardless of SameSite.
+
+**Works out of the box** with production custom domains: `toonexpo.com` + `api.toonexpo.com` are the same site — no code change needed.
+
+**Options for the staging period on vercel.app:**
+
+| Option | How | Pros | Cons |
+|---|---|---|---|
+| A. Env-gated Next.js rewrite proxy (recommended) | When a proxy env var is set, web rewrites `/api/v1/*` to the Cloud Run URL; cookies stay first-party. Off in production with custom domains. | Works everywhere incl. Safari; zero API changes; reversible | API traffic passes through Vercel while enabled (latency + bandwidth) |
+| B. Custom domains from day one | Map `staging.toonexpo.com` + `api-staging.toonexpo.com` immediately | No code at all | Requires DNS access to toonexpo.com now, before client confirmation |
+| C. `SameSite=None; Secure` | Change cookie options | Trivial change | Broken in Safari/iOS private + ITP; weakens CSRF posture — NOT recommended |
+
+**Recommendation:** A (implementation prepared but NOT built yet — awaiting owner decision).
+
+---
+
+## Q2. Final design variant
+
+**Context.** Three Figma style variants were provided; the product is currently built in the style of Variant A (node 1-2).
+
+**Needed from owner:** confirm the final variant. After confirmation a dedicated UI polish pass will align all screens with the chosen style.
+
+---
+
+## Q3. Production domains and go-live sequence
+
+**Context.** Target domain `toonexpo.com` awaits client confirmation; interim production runs on `toonexpo.vercel.app` + Cloud Run URL.
+
+**Needed from owner:** timing of DNS switch; whether `api.toonexpo.com` will be mapped at the same time (also resolves Q1 permanently). Config impact is limited to `APP_URL`, `CORS_ORIGINS`, `NEXT_PUBLIC_API_URL`.
+
+---
+
+## Q4. First platform admin in production (seed policy)
+
+**Context.** Dev/staging use Prisma seeds with demo companies and a seeded admin. Production must not contain demo data.
+
+**Needed from owner:** how to create the first `platform_admin` in prod — a one-off production-safe seed (admin only, strong password from env) or manual SQL/script during launch. Recommendation: minimal production seed that creates only the admin account and refuses to run if data already exists.
+
+---
+
+## Q5. BOS outbound integration scope
+
+**Context.** Inbound provisioning (BOS → ToonExpo company creation) is implemented and audited. Outbound summaries (ToonExpo → BOS) are documented as planned but blocked: BOS API is not available yet.
+
+**Needed from owner:** when BOS endpoint/contract is ready — which summary data BOS expects (leads? check-ins? participation stats?), push frequency, auth scheme.
+
+---
+
+## Q6. Post-v1 scope confirmation
+
+**Context.** The docs mention features that were consciously NOT built for v1. Confirm they stay post-v1 (docs will be marked accordingly in the docs-sync pass):
+
+- Admin CMS for homepage/content blocks.
+- Global admin audit log (only BOS `IntegrationAuditLog` exists).
+- Admin editing of any company's catalog/inventory (currently builder portal only).
+- Public service-provider directory page (admin CRUD + readiness help flow exist).
+- PWA (manifest/offline).
+- Admin UI for BOS provisioning history (API exists, screen does not).
+
+**Needed from owner:** confirm post-v1 status, or pick any item to pull into the launch scope.
+
+---
+
+## Pre-launch actions (agreed, not questions — do not lose)
+
+- **Rotate secrets before production:** Resend, R2, BOS API key, Upstash token and the Neon password were exposed during development (chat/screenshots). Generate fresh production values; never reuse dev secrets.
+- **Separate production Neon database** (dev DB stays for development); run `prisma migrate deploy` against prod before first release.
+- **Enable Sentry sourcemap upload** in CI once `SENTRY_AUTH_TOKEN` is wired into the pipeline (currently disabled by design).
+- **Strong production values** for `SESSION_TOKEN_PEPPER`, `CSRF_SECRET`, `SEED_ADMIN_PASSWORD` (if seeding at all — see Q4).
