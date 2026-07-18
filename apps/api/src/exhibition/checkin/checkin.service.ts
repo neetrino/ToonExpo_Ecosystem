@@ -19,6 +19,7 @@ import {
 import type { AuthenticatedUser } from "../../auth/types/authenticated-user.js";
 import type { AppEnv } from "../../config/env.validation.js";
 import { PrismaService } from "../../prisma/prisma.service.js";
+import { AnalyticsService } from "../../analytics/analytics.service.js";
 import { extractQrToken } from "../../qr/qr-payload.util.js";
 import type { QrResolveMeta } from "../../qr/qr-resolve.service.js";
 import { QrResolveService } from "../../qr/qr-resolve.service.js";
@@ -30,6 +31,7 @@ export class CheckInService {
     private readonly prisma: PrismaService,
     private readonly qrResolve: QrResolveService,
     private readonly configService: ConfigService<AppEnv, true>,
+    private readonly analytics: AnalyticsService,
   ) {}
 
   async getActiveEvent(): Promise<ActiveEventResponse> {
@@ -142,6 +144,8 @@ export class CheckInService {
         },
       });
 
+      this.trackCheckIn(input.eventId, CheckInStatus.duplicate_checkin);
+
       return {
         status: CheckInStatus.duplicate_checkin,
         visitorDisplayName: input.visitorDisplayName,
@@ -162,6 +166,8 @@ export class CheckInService {
           checkedInAt: input.checkedInAt,
         },
       });
+
+      this.trackCheckIn(input.eventId, CheckInStatus.allowed);
 
       return {
         status: CheckInStatus.allowed,
@@ -208,12 +214,22 @@ export class CheckInService {
       },
     });
 
+    this.trackCheckIn(input.eventId, CheckInStatus.duplicate_checkin);
+
     return {
       status: CheckInStatus.duplicate_checkin,
       visitorDisplayName: input.visitorDisplayName,
       checkedInAt: duplicate.checkedInAt.toISOString(),
       duplicateWarning: true,
     };
+  }
+
+  private trackCheckIn(eventId: string, status: CheckInStatus): void {
+    this.analytics.track({
+      eventType: "check_in_recorded",
+      eventId,
+      metadata: { status },
+    });
   }
 
   private async handleDeniedScan(
@@ -257,6 +273,8 @@ export class CheckInService {
         checkedInAt,
       },
     });
+
+    this.trackCheckIn(eventId, status);
 
     return {
       status,

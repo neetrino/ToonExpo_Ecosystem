@@ -11,6 +11,7 @@ import {
 } from "@toonexpo/db";
 
 import { PrismaService } from "../../prisma/prisma.service.js";
+import { AnalyticsService } from "../../analytics/analytics.service.js";
 import { calculateMortgagePayment } from "../calculator/mortgage-calculator.util.js";
 import { toPublicMortgageOfferItem } from "../mappers/bank-offer.mapper.js";
 import type { MortgageCalculatorDto } from "./dto/mortgage-calculator.dto.js";
@@ -30,7 +31,10 @@ const publicOfferInclude = {
 
 @Injectable()
 export class PublicMortgageService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly analytics: AnalyticsService,
+  ) {}
 
   async listOffers(): Promise<PublicMortgageOfferListResponse> {
     const offers = await this.prisma.db.bankOffer.findMany({
@@ -49,6 +53,8 @@ export class PublicMortgageService {
         { createdAt: "desc" },
       ],
     });
+
+    this.analytics.track({ eventType: "mortgage_page_view" });
 
     return { data: offers.map(toPublicMortgageOfferItem) };
   }
@@ -72,6 +78,12 @@ export class PublicMortgageService {
     if (!offer) {
       throw new NotFoundException("Bank offer not found");
     }
+
+    this.analytics.track({
+      eventType: "bank_offer_selected",
+      companyId: offer.partnerCompanyId,
+      metadata: { offerId: offer.id },
+    });
 
     return calculateMortgagePayment(dto, offer);
   }

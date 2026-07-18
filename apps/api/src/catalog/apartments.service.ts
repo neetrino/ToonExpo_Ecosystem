@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import type { ApartmentDetail } from "@toonexpo/contracts";
 
 import { PrismaService } from "../prisma/prisma.service.js";
+import { AnalyticsService } from "../analytics/analytics.service.js";
 import { PUBLIC_PUBLICATION_STATUS } from "./catalog.constants.js";
 import type { CatalogViewerContext } from "./projects.service.js";
 import {
@@ -19,7 +20,10 @@ import {
 
 @Injectable()
 export class ApartmentsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly analytics: AnalyticsService,
+  ) {}
 
   async getApartmentById(
     apartmentId: string,
@@ -88,6 +92,15 @@ export class ApartmentsService {
       locale,
       apartment.description,
     );
+
+    this.analytics.track({
+      eventType: "apartment_view",
+      apartmentId: apartment.id,
+      projectId: apartment.projectId,
+      buildingId: apartment.buildingId,
+      floorId: apartment.floorId,
+      companyId: apartment.project.builderCompany.id,
+    });
 
     return {
       id: apartment.id,

@@ -5,6 +5,7 @@ import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 import { LoggerModule } from "nestjs-pino";
 
 import { AdminCompaniesModule } from "./admin/companies/admin-companies.module.js";
+import { AnalyticsModule } from "./analytics/analytics.module.js";
 import { AuthModule } from "./auth/auth.module.js";
 import { AccountTypesGuard } from "./auth/guards/account-types.guard.js";
 import { CsrfOriginGuard } from "./auth/guards/csrf-origin.guard.js";
@@ -75,6 +76,7 @@ const isProduction = process.env["NODE_ENV"] === NODE_ENV_PRODUCTION;
     }),
     PrismaModule,
     EmailModule,
+    AnalyticsModule,
     AuthModule,
     AdminCompaniesModule,
     CompanyMembersModule,

@@ -42,6 +42,7 @@ describe("CheckInService.scan", () => {
       {
         get: vi.fn().mockReturnValue("pepper"),
       } as never,
+      { track: vi.fn() } as never,
     );
   });
 

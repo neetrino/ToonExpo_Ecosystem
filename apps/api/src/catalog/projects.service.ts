@@ -6,6 +6,7 @@ import {
   PublicationStatus,
 } from "@toonexpo/db";
 import { PrismaService } from "../prisma/prisma.service.js";
+import { AnalyticsService } from "../analytics/analytics.service.js";
 import {
   CATALOG_DEFAULT_PAGE_SIZE,
   PUBLIC_PUBLICATION_STATUS,
@@ -29,7 +30,10 @@ export type CatalogViewerContext = {
 
 @Injectable()
 export class ProjectsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly analytics: AnalyticsService,
+  ) {}
 
   async listProjects(
     query: ListProjectsQueryDto,
@@ -150,6 +154,12 @@ export class ProjectsService {
     const translations = await this.loadProjectBundleTranslations([
       { id: project.id, builderId: project.builderCompany.id },
     ]);
+
+    this.analytics.track({
+      eventType: "project_view",
+      projectId: project.id,
+      companyId: project.builderCompanyId,
+    });
 
     return mapProjectDetail(project, {
       locale,

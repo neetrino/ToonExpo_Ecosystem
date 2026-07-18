@@ -44,7 +44,8 @@ describe("AdminReadinessAssessmentsService", () => {
           findUnique: readinessAssessmentFindUnique,
           update: readinessAssessmentUpdate,
         },
-        readinessCategory: { findMany: readinessCategoryFindMany },
+        readinessCategory: { findMany: readinessCategoryFindMany, findUnique: vi.fn() },
+        readinessScore: { findUnique: vi.fn(), upsert: readinessScoreUpsert },
         company: { findUnique: companyFindUnique },
       },
     } as unknown as PrismaService;
@@ -52,6 +53,7 @@ describe("AdminReadinessAssessmentsService", () => {
     service = new AdminReadinessAssessmentsService(
       prisma,
       new ReadinessAssessmentSupportService(prisma),
+      { track: vi.fn() } as never,
     );
   });
 

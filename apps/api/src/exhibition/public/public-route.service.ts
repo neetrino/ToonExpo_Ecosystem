@@ -9,6 +9,7 @@ import {
 } from "@toonexpo/db";
 
 import { PrismaService } from "../../prisma/prisma.service.js";
+import { AnalyticsService } from "../../analytics/analytics.service.js";
 import { EUCLIDEAN_WEIGHT_SCALE } from "../exhibition.constants.js";
 import {
   dijkstraShortestPath,
@@ -19,7 +20,10 @@ import {
 
 @Injectable()
 export class PublicRouteService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly analytics: AnalyticsService,
+  ) {}
 
   async listEntranceNodes(mapId: string): Promise<PublicEntranceNodeListResponse> {
     await this.requirePublishedMap(mapId);
@@ -66,6 +70,11 @@ export class PublicRouteService {
     if (!booth) {
       throw new NotFoundException("Published booth not found");
     }
+
+    this.analytics.track({
+      eventType: "route_requested",
+      boothId: toBoothId,
+    });
 
     const destinationNode = await this.prisma.db.routeNode.findFirst({
       where: { venueMapId: mapId, boothId: toBoothId },

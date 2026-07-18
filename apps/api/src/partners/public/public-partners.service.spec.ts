@@ -31,7 +31,7 @@ describe("PublicPartnersService visibility rules", () => {
       },
     } as unknown as PrismaService;
 
-    service = new PublicPartnersService(prisma);
+    service = new PublicPartnersService(prisma, { track: vi.fn() } as never);
     partnerCompanyCount.mockResolvedValue(0);
     partnerCompanyFindMany.mockResolvedValue([]);
   });

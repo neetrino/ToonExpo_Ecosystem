@@ -11,6 +11,7 @@ import {
 } from "@toonexpo/db";
 
 import { PrismaService } from "../../prisma/prisma.service.js";
+import { AnalyticsService } from "../../analytics/analytics.service.js";
 import {
   findOpenDealForBuyer,
   toApartmentLinkCreateData,
@@ -29,7 +30,10 @@ type Tx = Prisma.TransactionClient;
  */
 @Injectable()
 export class RequestIntakeService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly analytics: AnalyticsService,
+  ) {}
 
   async create(context: IntakeCreateContext): Promise<IntakeCreateOutcome> {
     this.assertSourceRequirements(context);
@@ -156,6 +160,8 @@ export class RequestIntakeService {
       return { request, deal };
     });
 
+    this.trackRequestCreated(result.request.id, result.deal.id, context);
+
     return {
       requestId: result.request.id,
       dealId: result.deal.id,
@@ -201,6 +207,8 @@ export class RequestIntakeService {
       await this.maybeLinkApartment(tx, deal.id, context);
       return { request, deal };
     });
+
+    this.trackRequestCreated(result.request.id, result.deal.id, context);
 
     return {
       requestId: result.request.id,
@@ -261,6 +269,22 @@ export class RequestIntakeService {
       },
       create: { crmDealId: dealId, ...linkData },
       update: {},
+    });
+  }
+
+  private trackRequestCreated(
+    requestId: string,
+    crmDealId: string,
+    context: IntakeCreateContext,
+  ): void {
+    this.analytics.track({
+      eventType: "request_created",
+      source: context.source,
+      requestId,
+      crmDealId,
+      projectId: context.projectId ?? null,
+      companyId: context.builderCompanyId,
+      actorUserId: context.createdByUserId ?? null,
     });
   }
 }

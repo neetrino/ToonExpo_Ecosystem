@@ -25,7 +25,7 @@ describe("ProjectsService filters and pagination", () => {
       },
     } as unknown as PrismaService;
 
-    service = new ProjectsService(prisma);
+    service = new ProjectsService(prisma, { track: vi.fn() } as never);
   });
 
   it("builds where for published projects only by default", () => {

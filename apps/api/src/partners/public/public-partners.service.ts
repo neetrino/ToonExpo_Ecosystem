@@ -18,6 +18,7 @@ import {
   TRANSLATION_FIELD,
 } from "../../catalog/utils/resolve-translation.js";
 import { PrismaService } from "../../prisma/prisma.service.js";
+import { AnalyticsService } from "../../analytics/analytics.service.js";
 import { toPublicPartnerDetail, toPublicPartnerListItem } from "../mappers/partner.mapper.js";
 import type { ListPublicPartnersQueryDto } from "./dto/list-public-partners.query.dto.js";
 
@@ -28,7 +29,10 @@ const publicPartnerInclude = {
 
 @Injectable()
 export class PublicPartnersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly analytics: AnalyticsService,
+  ) {}
 
   buildPublicWhere(
     query: ListPublicPartnersQueryDto,
@@ -131,6 +135,11 @@ export class PublicPartnersService {
       offerRows,
       locale,
     );
+
+    this.analytics.track({
+      eventType: "partner_profile_view",
+      companyId: partner.id,
+    });
 
     return toPublicPartnerDetail(partner, partner.offers, {
       shortDescription: resolveTranslatedValue(

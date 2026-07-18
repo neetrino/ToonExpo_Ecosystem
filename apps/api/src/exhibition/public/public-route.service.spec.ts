@@ -20,7 +20,7 @@ describe("PublicRouteService.listEntranceNodes", () => {
       },
     } as unknown as PrismaService;
 
-    service = new PublicRouteService(prisma);
+    service = new PublicRouteService(prisma, { track: vi.fn() } as never);
   });
 
   it("returns entrance nodes for a published venue map", async () => {

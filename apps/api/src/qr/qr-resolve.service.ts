@@ -18,6 +18,7 @@ import {
 import type { AuthenticatedUser } from "../auth/types/authenticated-user.js";
 import type { AppEnv } from "../config/env.validation.js";
 import { PrismaService } from "../prisma/prisma.service.js";
+import { AnalyticsService } from "../analytics/analytics.service.js";
 import {
   buildBuyerQrPayloadUrl,
   extractQrToken,
@@ -46,6 +47,7 @@ export class QrResolveService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly configService: ConfigService<AppEnv, true>,
+    private readonly analytics: AnalyticsService,
   ) {}
 
   async resolve(
@@ -177,6 +179,15 @@ export class QrResolveService {
       resultStatus: QrScanResultStatus.resolved,
       meta,
       scannerRole: membership.role,
+    });
+
+    this.analytics.track({
+      eventType: "qr_scanned",
+      source: QrScanContext.builder_scan,
+      companyId: membership.companyId,
+      actorUserId: scanner.id,
+      actorRole: scanner.accountType,
+      metadata: { scanEventId, buyerProfileId: qr.buyerProfile.id },
     });
 
     return {

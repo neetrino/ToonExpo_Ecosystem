@@ -12,6 +12,7 @@ import {
 } from "@toonexpo/db";
 
 import { PrismaService } from "../../prisma/prisma.service.js";
+import { AnalyticsService } from "../../analytics/analytics.service.js";
 import { CRM_STATUSES_REQUIRING_APARTMENT } from "../crm.constants.js";
 import { isCrmStatusTransitionAllowed } from "./deal-status.transitions.js";
 
@@ -20,7 +21,10 @@ import { isCrmStatusTransitionAllowed } from "./deal-status.transitions.js";
  */
 @Injectable()
 export class DealStatusService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly analytics: AnalyticsService,
+  ) {}
 
   async applyStatusChange(input: {
     dealId: string;
@@ -63,6 +67,14 @@ export class DealStatusService {
     });
 
     await this.syncInventory(input);
+
+    this.analytics.track({
+      eventType: "crm_status_changed",
+      crmDealId: input.dealId,
+      companyId: input.companyId,
+      actorUserId: input.actorUserId,
+      metadata: { from: input.from, to: input.to },
+    });
   }
 
   async assertAssigneeInCompany(

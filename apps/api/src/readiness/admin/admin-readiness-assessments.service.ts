@@ -14,6 +14,7 @@ import {
 } from "@toonexpo/db";
 
 import { PrismaService } from "../../prisma/prisma.service.js";
+import { AnalyticsService } from "../../analytics/analytics.service.js";
 import {
   assessmentDetailInclude,
   toReadinessAssessmentDetail,
@@ -32,6 +33,7 @@ export class AdminReadinessAssessmentsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly support: ReadinessAssessmentSupportService,
+    private readonly analytics: AnalyticsService,
   ) {}
 
   async list(
@@ -129,7 +131,7 @@ export class AdminReadinessAssessmentsService {
     id: string,
     body: UpdateReadinessAssessmentDto,
   ): Promise<ReadinessAssessmentDetail> {
-    await this.support.getAssessmentOrThrow(id);
+    const existing = await this.support.getAssessmentOrThrow(id);
 
     const assessment = await this.prisma.db.readinessAssessment.update({
       where: { id },
@@ -146,6 +148,18 @@ export class AdminReadinessAssessmentsService {
       include: assessmentDetailInclude,
     });
 
+    if (body.status !== undefined && body.status !== existing.status) {
+      this.trackReadinessChange({
+        companyId: existing.builderCompanyId,
+        projectId: existing.projectId,
+        categoryId: null,
+        oldStatus: existing.status,
+        newStatus: body.status,
+        oldScore: existing.overallScore,
+        newScore: body.overallScore ?? existing.overallScore,
+      });
+    }
+
     return toReadinessAssessmentDetail(assessment);
   }
 
@@ -155,7 +169,7 @@ export class AdminReadinessAssessmentsService {
     evaluatorUserId: string,
     body: UpsertReadinessScoreDto,
   ): Promise<ReadinessScoreItem> {
-    await this.support.getAssessmentOrThrow(assessmentId);
+    const assessment = await this.support.getAssessmentOrThrow(assessmentId);
 
     const category = await this.prisma.db.readinessCategory.findUnique({
       where: { id: categoryId },
@@ -166,6 +180,12 @@ export class AdminReadinessAssessmentsService {
 
     const evaluatedAt = new Date();
     const resolvedStatus = this.resolveScoreStatus(body);
+    const previous = await this.prisma.db.readinessScore.findUnique({
+      where: {
+        assessmentId_categoryId: { assessmentId, categoryId },
+      },
+      select: { score: true, status: true },
+    });
 
     const score = await this.prisma.db.$transaction(async (tx) => {
       const row = await tx.readinessScore.upsert({
@@ -205,7 +225,40 @@ export class AdminReadinessAssessmentsService {
       return row;
     });
 
+    this.trackReadinessChange({
+      companyId: assessment.builderCompanyId,
+      projectId: assessment.projectId,
+      categoryId,
+      oldStatus: previous?.status ?? ReadinessScoreStatus.not_started,
+      newStatus: resolvedStatus,
+      oldScore: previous?.score ?? null,
+      newScore: body.score ?? previous?.score ?? null,
+    });
+
     return toReadinessScoreItem(score);
+  }
+
+  private trackReadinessChange(input: {
+    companyId: string;
+    projectId: string | null;
+    categoryId: string | null;
+    oldStatus: ReadinessScoreStatus;
+    newStatus: ReadinessScoreStatus;
+    oldScore: number | null;
+    newScore: number | null;
+  }): void {
+    this.analytics.track({
+      eventType: "readiness_status_changed",
+      companyId: input.companyId,
+      projectId: input.projectId,
+      metadata: {
+        categoryId: input.categoryId,
+        oldStatus: input.oldStatus,
+        newStatus: input.newStatus,
+        oldScore: input.oldScore,
+        newScore: input.newScore,
+      },
+    });
   }
 
   private resolveScoreStatus(body: UpsertReadinessScoreDto): ReadinessScoreStatus {
