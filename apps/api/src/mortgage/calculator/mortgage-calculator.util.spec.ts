@@ -32,8 +32,15 @@ describe("calculateMortgagePayment", () => {
     expect(result.downPaymentAmount).toBe(10_000_000);
     expect(result.loanAmount).toBe(40_000_000);
     expect(result.monthlyPayment).toBeGreaterThan(0);
-    expect(result.totalPayment).toBe(result.monthlyPayment * 20 * 12);
+    // totalPayment is rounded once from the unrounded schedule, so it may
+    // differ from monthlyPayment * n by at most half a dram per payment.
+    expect(
+      Math.abs(result.totalPayment - result.monthlyPayment * 20 * 12),
+    ).toBeLessThanOrEqual((20 * 12) / 2);
     expect(result.totalInterest).toBe(result.totalPayment - result.loanAmount);
+    expect(result.totalInterest).toBeGreaterThan(0);
+    expect(Number.isInteger(result.totalPayment)).toBe(true);
+    expect(Number.isInteger(result.totalInterest)).toBe(true);
     expect(result.offer.bankName).toBe("Example Bank");
   });
 
@@ -53,8 +60,8 @@ describe("calculateMortgagePayment", () => {
 
     expect(result.loanAmount).toBe(10_000_000);
     expect(result.monthlyPayment).toBe(Math.round(10_000_000 / 180));
-    expect(result.totalPayment).toBe(result.monthlyPayment * 15 * 12);
-    expect(result.totalInterest).toBe(result.totalPayment - result.loanAmount);
+    expect(result.totalPayment).toBe(result.loanAmount);
+    expect(result.totalInterest).toBe(0);
   });
 
   it("accepts down payment exactly at offer minimum", () => {

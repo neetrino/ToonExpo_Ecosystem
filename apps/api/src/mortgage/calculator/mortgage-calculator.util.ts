@@ -53,23 +53,43 @@ const resolveDownPayment = (
   return { downPaymentAmount, downPaymentPercent: percent };
 };
 
-const calculateMonthlyPayment = (
+type PaymentTotals = {
+  /** Rounded AMD value for display. */
+  monthlyPayment: number;
+  /** Rounded once from the unrounded schedule, so totals stay exact. */
+  totalPayment: number;
+  totalInterest: number;
+};
+
+const calculatePaymentTotals = (
   loanAmount: number,
   annualRatePercent: number,
   loanTermYears: number,
-): number => {
+): PaymentTotals => {
   const numberOfPayments = loanTermYears * MORTGAGE_MONTHS_PER_YEAR;
 
   if (annualRatePercent === 0) {
-    return roundAmd(loanAmount / numberOfPayments);
+    // A 0% loan repays exactly the principal: no rounding residual in totals.
+    return {
+      monthlyPayment: roundAmd(loanAmount / numberOfPayments),
+      totalPayment: loanAmount,
+      totalInterest: 0,
+    };
   }
 
   const monthlyRate =
     annualRatePercent / MORTGAGE_PERCENT_DIVISOR / MORTGAGE_MONTHS_PER_YEAR;
   const factor = (1 + monthlyRate) ** numberOfPayments;
-  const payment = (loanAmount * monthlyRate * factor) / (factor - 1);
+  const rawMonthlyPayment = (loanAmount * monthlyRate * factor) / (factor - 1);
 
-  return roundAmd(payment);
+  const totalPayment = roundAmd(rawMonthlyPayment * numberOfPayments);
+  const totalInterest = Math.max(0, totalPayment - loanAmount);
+
+  return {
+    monthlyPayment: roundAmd(rawMonthlyPayment),
+    totalPayment,
+    totalInterest,
+  };
 };
 
 export const calculateMortgagePayment = (
@@ -106,13 +126,8 @@ export const calculateMortgagePayment = (
     throw new BadRequestException("Loan amount must be positive");
   }
 
-  const monthlyPayment = calculateMonthlyPayment(
-    loanAmount,
-    rate,
-    input.loanTermYears,
-  );
-  const totalPayment = monthlyPayment * input.loanTermYears * MORTGAGE_MONTHS_PER_YEAR;
-  const totalInterest = totalPayment - loanAmount;
+  const { monthlyPayment, totalPayment, totalInterest } =
+    calculatePaymentTotals(loanAmount, rate, input.loanTermYears);
 
   return {
     monthlyPayment,
