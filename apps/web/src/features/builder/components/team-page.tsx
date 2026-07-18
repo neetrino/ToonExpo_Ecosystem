@@ -7,12 +7,9 @@ import { useState } from "react";
 import { InviteMemberForm } from "@/features/builder/components/invite-member-form";
 import { TeamTable } from "@/features/builder/components/team-table";
 import { PORTAL_DEFAULT_PAGE_SIZE } from "@/features/builder/constants";
-import {
-  useCompanyMembersQuery,
-  useIsCompanyAdminQuery,
-} from "@/features/builder/hooks/use-company-members";
+import { useCompanyMembersQuery } from "@/features/builder/hooks/use-company-members";
+import { useIsCompanyAdmin } from "@/features/builder/hooks/use-company-profile";
 import { CatalogPagination } from "@/features/catalog/components/catalog-pagination";
-import { isApiErrorStatus } from "@/shared/api/errors";
 import { Card } from "@/shared/ui/card";
 
 const parsePage = (raw: string | null): number => {
@@ -24,49 +21,20 @@ const parsePage = (raw: string | null): number => {
 };
 
 /**
- * Team management page: list, invite, role/status changes for company_admin.
+ * Team page: list for all members; invite/role actions for company_admin only.
  */
 export const TeamPage = () => {
   const t = useTranslations("Builder.team");
   const searchParams = useSearchParams();
   const page = parsePage(searchParams.get("page"));
   const pageSize = PORTAL_DEFAULT_PAGE_SIZE;
-  const adminQuery = useIsCompanyAdminQuery();
-  const membersQuery = useCompanyMembersQuery(
-    page,
-    pageSize,
-    adminQuery.data === true,
-  );
+  const canManage = useIsCompanyAdmin();
+  const membersQuery = useCompanyMembersQuery(page, pageSize);
   const [inviteEmail, setInviteEmail] = useState<string | null>(null);
   const [showInvite, setShowInvite] = useState(false);
 
-  if (adminQuery.isLoading) {
-    return <p className="text-sm text-ink-secondary">{t("loading")}</p>;
-  }
-
-  if (adminQuery.data === false) {
-    return (
-      <div className="flex flex-col gap-2">
-        <h1 className="text-xl font-semibold text-ink">{t("title")}</h1>
-        <p className="text-sm text-ink-secondary">{t("readOnlyNotice")}</p>
-      </div>
-    );
-  }
-
   if (membersQuery.isLoading) {
     return <p className="text-sm text-ink-secondary">{t("loading")}</p>;
-  }
-
-  if (
-    membersQuery.isError &&
-    isApiErrorStatus(membersQuery.error, 403)
-  ) {
-    return (
-      <div className="flex flex-col gap-2">
-        <h1 className="text-xl font-semibold text-ink">{t("title")}</h1>
-        <p className="text-sm text-ink-secondary">{t("readOnlyNotice")}</p>
-      </div>
-    );
   }
 
   if (membersQuery.isError || !membersQuery.data) {
@@ -87,17 +55,22 @@ export const TeamPage = () => {
           <p className="text-sm text-ink-secondary">
             {t("subtitle", { count: response.meta.total })}
           </p>
+          {!canManage ? (
+            <p className="text-sm text-ink-muted">{t("readOnlyNotice")}</p>
+          ) : null}
         </div>
-        <button
-          type="button"
-          className="inline-flex h-9 items-center rounded-pill bg-cta-dark px-4 text-sm font-medium text-on-dark hover:bg-cta-dark/90"
-          onClick={() => {
-            setShowInvite((value) => !value);
-            setInviteEmail(null);
-          }}
-        >
-          {t("inviteMember")}
-        </button>
+        {canManage ? (
+          <button
+            type="button"
+            className="inline-flex h-9 items-center rounded-pill bg-cta-dark px-4 text-sm font-medium text-on-dark hover:bg-cta-dark/90"
+            onClick={() => {
+              setShowInvite((value) => !value);
+              setInviteEmail(null);
+            }}
+          >
+            {t("inviteMember")}
+          </button>
+        ) : null}
       </div>
 
       {inviteEmail ? (
@@ -106,7 +79,7 @@ export const TeamPage = () => {
         </p>
       ) : null}
 
-      {showInvite ? (
+      {canManage && showInvite ? (
         <Card className="max-w-lg">
           <InviteMemberForm
             onSuccess={(email) => {
@@ -120,7 +93,7 @@ export const TeamPage = () => {
       {response.data.length === 0 ? (
         <p className="text-sm text-ink-secondary">{t("empty")}</p>
       ) : (
-        <TeamTable members={response.data} canManage />
+        <TeamTable members={response.data} canManage={canManage} />
       )}
 
       <CatalogPagination

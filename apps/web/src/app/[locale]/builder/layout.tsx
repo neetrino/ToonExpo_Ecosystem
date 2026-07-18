@@ -3,8 +3,8 @@ import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import type { ReactNode } from "react";
 
+import { getCompanyProfile } from "@/features/builder/api/company-profile-api";
 import { BuilderNav } from "@/features/builder/components/builder-nav";
-import { resolveBuilderCompanyName } from "@/features/builder/utils/resolve-company-name";
 import { getMeOrNull } from "@/features/auth/api/auth-api";
 import { Link, redirect } from "@/i18n/navigation";
 import { LocaleSwitcher } from "@/shared/ui/locale-switcher";
@@ -37,7 +37,7 @@ export default async function BuilderLayout({
     notFound();
   }
 
-  const companyName = await resolveBuilderCompanyName(cookieHeader);
+  const companyName = await loadCompanyName(cookieHeader);
   const t = await getTranslations("Builder");
 
   return (
@@ -77,3 +77,14 @@ export default async function BuilderLayout({
     </div>
   );
 }
+
+const loadCompanyName = async (
+  cookieHeader: string | undefined,
+): Promise<string | null> => {
+  try {
+    const profile = await getCompanyProfile({ cookieHeader });
+    return profile.name;
+  } catch {
+    return null;
+  }
+};

@@ -11,34 +11,11 @@ import {
   listCompanyMembers,
   updateCompanyMember,
 } from "@/features/builder/api/company-members-api";
-import {
-  COMPANY_ADMIN_PROBE_QUERY_KEY,
-  COMPANY_MEMBERS_QUERY_KEY,
-} from "@/features/builder/constants";
+import { COMPANY_MEMBERS_QUERY_KEY } from "@/features/builder/constants";
 import { isApiErrorStatus } from "@/shared/api/errors";
 
 /**
- * Probes whether the current user is a company_admin (members API access).
- */
-export const useIsCompanyAdminQuery = () =>
-  useQuery({
-    queryKey: COMPANY_ADMIN_PROBE_QUERY_KEY,
-    queryFn: async (): Promise<boolean> => {
-      try {
-        await listCompanyMembers(1, 1);
-        return true;
-      } catch (error) {
-        if (isApiErrorStatus(error, 403)) {
-          return false;
-        }
-        throw error;
-      }
-    },
-    staleTime: 60_000,
-  });
-
-/**
- * Paginated company members (company_admin only).
+ * Paginated company members (readable by any company member).
  */
 export const useCompanyMembersQuery = (
   page: number,

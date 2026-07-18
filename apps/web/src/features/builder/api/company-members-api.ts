@@ -14,7 +14,7 @@ import {
 } from "./portal-request";
 
 /**
- * Lists company members (company_admin only).
+ * Lists company members (any active company member; mutations require admin).
  */
 export const listCompanyMembers = (
   page: number,

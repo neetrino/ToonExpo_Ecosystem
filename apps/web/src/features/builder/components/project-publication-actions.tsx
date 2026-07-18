@@ -4,7 +4,7 @@ import type { PortalProjectDetail } from "@toonexpo/contracts";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
-import { useIsCompanyAdminQuery } from "@/features/builder/hooks/use-company-members";
+import { useIsCompanyAdmin } from "@/features/builder/hooks/use-company-profile";
 import {
   useDeletePortalProjectMutation,
   useUpdateProjectPublicationMutation,
@@ -24,12 +24,12 @@ export const ProjectPublicationActions = ({
 }: ProjectPublicationActionsProps) => {
   const t = useTranslations("Builder.projects");
   const router = useRouter();
-  const adminQuery = useIsCompanyAdminQuery();
+  const isAdmin = useIsCompanyAdmin();
   const publicationMutation = useUpdateProjectPublicationMutation(project.id);
   const deleteMutation = useDeletePortalProjectMutation();
   const [toast, setToast] = useState<"success" | "error" | null>(null);
 
-  if (!adminQuery.data) {
+  if (!isAdmin) {
     return null;
   }
 

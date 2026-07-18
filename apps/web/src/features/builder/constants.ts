@@ -54,7 +54,4 @@ export const portalApartmentQueryKey = (id: string) =>
 
 export const COMPANY_MEMBERS_QUERY_KEY = ["company", "members"] as const;
 
-export const COMPANY_ADMIN_PROBE_QUERY_KEY = [
-  "company",
-  "admin-probe",
-] as const;
+export const COMPANY_PROFILE_QUERY_KEY = ["company", "me"] as const;

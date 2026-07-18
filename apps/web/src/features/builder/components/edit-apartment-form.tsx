@@ -49,9 +49,10 @@ const toFormValues = (
   priceVisibility: apartment.priceVisibility,
   salesStatus: apartment.salesStatus,
   statusChangeReason: "",
-  descriptionHy: apartment.description ?? "",
-  descriptionRu: "",
-  descriptionEn: "",
+  descriptionHy:
+    apartment.translations?.description?.hy ?? apartment.description ?? "",
+  descriptionRu: apartment.translations?.description?.ru ?? "",
+  descriptionEn: apartment.translations?.description?.en ?? "",
 });
 
 const toUpdateRequest = (

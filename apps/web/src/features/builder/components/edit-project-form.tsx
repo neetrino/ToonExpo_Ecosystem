@@ -22,19 +22,22 @@ type EditProjectFormProps = {
 };
 
 const toFormValues = (project: PortalProjectDetail): UpdateProjectFormValues => ({
-  nameHy: project.name,
-  nameRu: "",
-  nameEn: "",
+  nameHy: project.translations?.name?.hy ?? project.name,
+  nameRu: project.translations?.name?.ru ?? "",
+  nameEn: project.translations?.name?.en ?? "",
   slug: project.slug,
-  shortDescriptionHy: project.shortDescription ?? "",
-  shortDescriptionRu: "",
-  shortDescriptionEn: "",
-  fullDescriptionHy: project.fullDescription ?? "",
-  fullDescriptionRu: "",
-  fullDescriptionEn: "",
-  locationTextHy: project.locationText ?? "",
-  locationTextRu: "",
-  locationTextEn: "",
+  shortDescriptionHy:
+    project.translations?.shortDescription?.hy ?? project.shortDescription ?? "",
+  shortDescriptionRu: project.translations?.shortDescription?.ru ?? "",
+  shortDescriptionEn: project.translations?.shortDescription?.en ?? "",
+  fullDescriptionHy:
+    project.translations?.fullDescription?.hy ?? project.fullDescription ?? "",
+  fullDescriptionRu: project.translations?.fullDescription?.ru ?? "",
+  fullDescriptionEn: project.translations?.fullDescription?.en ?? "",
+  locationTextHy:
+    project.translations?.locationText?.hy ?? project.locationText ?? "",
+  locationTextRu: project.translations?.locationText?.ru ?? "",
+  locationTextEn: project.translations?.locationText?.en ?? "",
   address: project.address ?? "",
   city: project.city ?? "",
   district: project.district ?? "",

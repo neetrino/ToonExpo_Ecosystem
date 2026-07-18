@@ -501,7 +501,7 @@
       "loading": "Loading team…",
       "error": "Could not load team. Try again.",
       "inviteMember": "Invite member",
-      "readOnlyNotice": "Team management is available to company admins only. Member list API requires company_admin.",
+      "readOnlyNotice": "You can view the team. Only company admins can invite members or change roles.",
       "inviteSuccess": "Invite sent to {email}",
       "updateSuccess": "Member updated",
       "deactivate": "Deactivate",
