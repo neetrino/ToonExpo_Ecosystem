@@ -32,6 +32,7 @@ import { PrismaModule } from "./prisma/prisma.module.js";
 import { QrModule } from "./qr/qr.module.js";
 import { ReadinessModule } from "./readiness/readiness.module.js";
 import { ServiceProvidersModule } from "./service-providers/service-providers.module.js";
+import { VisualMapModule } from "./visual-map/visual-map.module.js";
 
 const isProduction = process.env["NODE_ENV"] === NODE_ENV_PRODUCTION;
 
@@ -91,6 +92,7 @@ const isProduction = process.env["NODE_ENV"] === NODE_ENV_PRODUCTION;
     ServiceProvidersModule,
     ExhibitionModule,
     IntegrationsModule,
+    VisualMapModule,
     HealthModule,
   ],
   providers: [
