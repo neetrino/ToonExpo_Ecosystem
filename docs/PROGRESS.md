@@ -2,9 +2,30 @@
 
 ## Current Status
 
-Sprint 6 core scope is closed; orchestrator end-to-end verification passed (2026-07-18, 273 tests green, live smoke 8/8). Sprints 0–6 are on `main`.
+Final pre-production completion pass in progress (2026-07-18). Sprints 0–6 are functionally closed; a full three-way audit (docs vs implementation, code hygiene, frontend completeness) produced a fix plan executed in waves. See "Final Completion Waves" below for the live tracker and `OPEN_QUESTIONS.md` for pending owner decisions.
 
-Known gaps carried forward: media upload UI (R2) absent — venue maps/logos use asset id/URL (blocked on Cloudflare R2 credentials); BOS outbound summary flow pending (blocked on BOS platform API); `booth_selected` / `builder_profile_view` analytics events not instrumented.
+## Final Completion Waves (live tracker — keep updated)
+
+Post-Sprint-6 items completed today (2026-07-18):
+
+- .env / .env.example revision and mirroring; Armenian (`hy`) hardcoded as platform default locale (DEFAULT_LOCALE env removed).
+- Sentry integrated in api + web (DSN-gated; sourcemap upload deferred to CI); SENTRY_AUTH_TOKEN stored in GitHub Secrets.
+- Distributed rate limiting via Upstash Redis (atomic Lua, fail-open, in-memory fallback) — live-verified 429.
+- Deploy artifacts: `apps/api/Dockerfile` (Cloud Run), `.dockerignore`, `apps/web/vercel.json`, `docs/DEPLOYMENT.md` (owner deploys manually).
+- Wave 1: media uploads wired into ALL forms (project/building covers, floor/apartment plans, Matterport/3D links, partner logo/cover, company logo write API `PATCH /company/me`); API hygiene (oversized files split, named constants, ConfigService).
+- Wave 2: buyer check-in status (`GET /buyer/checkin` + `/profile/checkin` tab); web hygiene (oversized components split).
+
+In progress:
+
+- Wave 3a: env-gated same-origin API proxy (owner decision: one main domain; browser never sees the Cloud Run URL; direct `api.toonexpo.com` mode as future env-only switch).
+- Wave 3b: project QR UI in builder portal, partner post-login redirect to `/partner`, builder nav visual-map stub fix, admin link to `/checkin`, public builder detail page `/builders/[id]` + `builder_profile_view`, analytics events `building_view`/`floor_view`/`booth_selected`, CRM assignee filter, admin booth assignment edit, pagination aria-label i18n, footer links.
+
+Pending:
+
+- Wave 4: docs synchronization (MODULE_STATUS, PROGRESS, TECH_CARD, architecture layout), final full verification (lint/typecheck/test/build), Docker image build + boot check (needs OrbStack/Docker running).
+- Pre-launch checklist and open decisions: see `docs/OPEN_QUESTIONS.md` (secrets rotation, prod Neon DB, first prod admin, design variant, domains, BOS outbound, post-v1 scope confirmation).
+- Deferred post-v1 (owner to confirm in OPEN_QUESTIONS Q6): admin homepage CMS, global admin audit log, admin cross-company catalog editing, public service-provider directory, PWA, BOS provisioning admin UI.
+- Candidate after staging load test: short-TTL Redis cache for top public GET endpoints (only if measurements justify it).
 
 ## Completed
 
