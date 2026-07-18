@@ -305,13 +305,14 @@
   },
   "Profile": {
     "cabinetTitle": "Իմ կաբինետը",
-    "cabinetSubtitle": "Պրոֆիլ, ընտրյալներ, QR և հայտեր",
+    "cabinetSubtitle": "Պրոֆիլ, ընտրյալներ, check-in, QR և հայտեր",
     "title": "Իմ պրոֆիլը",
     "subtitle": "Ձեր ToonExpo հաշվի տվյալները",
     "nav": {
       "label": "Կաբինետի բաժիններ",
       "profile": "Պրոֆիլ",
       "favorites": "Ընտրյալներ",
+      "checkin": "Check-in",
       "qr": "Իմ QR",
       "requests": "Իմ հայտերը"
     },
@@ -353,6 +354,26 @@
       "empty": "Դուք դեռ ընտրյալներ չեք պահպանել։",
       "browseCatalog": "Դիտել նախագծերը",
       "removeButton": "Հեռացնել ընտրյալներից"
+    },
+    "checkin": {
+      "title": "Check-in կարգավիճակ",
+      "subtitle": "Դիտեք, արդյո՞ք գրանցվել եք ակտիվ ցուցահանդեսում",
+      "loading": "Check-in-ի տվյալները բեռնվում են…",
+      "error": "Չհաջողվեց բեռնել check-in-ի կարգավիճակը։ Կրկին փորձեք։",
+      "empty": "Դուք դեռ check-in չեք արել որևէ ցուցահանդեսում։",
+      "openQr": "Բացել իմ QR-ը",
+      "noActiveEvent": "Այս պահին ակտիվ ցուցահանդես չկա։",
+      "current": {
+        "title": "Ընթացիկ ցուցահանդես",
+        "checkedIn": "Դուք գրանցված եք",
+        "notCheckedIn": "Դեռ check-in չեք արել",
+        "checkedInAt": "Գրանցման ժամանակը՝ {time}",
+        "showQrHint": "Մուտքի կետում ցույց տվեք QR-ը։"
+      },
+      "history": {
+        "title": "Նախորդ ցուցահանդեսներ",
+        "empty": "Նախորդ check-in-ներ չկան։"
+      }
     },
     "requests": {
       "title": "Իմ հայտերը",

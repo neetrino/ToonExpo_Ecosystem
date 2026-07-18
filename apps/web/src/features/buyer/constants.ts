@@ -11,6 +11,7 @@ export const BUYER_FAVORITES_STATUS_QUERY_KEY = [
   "favorites",
   "status",
 ] as const;
+export const BUYER_CHECKIN_QUERY_KEY = ["buyer", "checkin"] as const;
 
 /** Max targets per favorites status batch (matches NestJS cap). */
 export const BUYER_FAVORITES_STATUS_BATCH_LIMIT = 100;

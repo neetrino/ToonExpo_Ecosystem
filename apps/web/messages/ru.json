@@ -305,13 +305,14 @@
   },
   "Profile": {
     "cabinetTitle": "Мой кабинет",
-    "cabinetSubtitle": "Профиль, избранное, QR и заявки",
+    "cabinetSubtitle": "Профиль, избранное, check-in, QR и заявки",
     "title": "Мой профиль",
     "subtitle": "Данные вашего аккаунта ToonExpo",
     "nav": {
       "label": "Разделы кабинета",
       "profile": "Профиль",
       "favorites": "Избранное",
+      "checkin": "Check-in",
       "qr": "Мой QR",
       "requests": "Мои заявки"
     },
@@ -353,6 +354,26 @@
       "empty": "Вы ещё ничего не сохранили в избранное.",
       "browseCatalog": "Смотреть проекты",
       "removeButton": "Удалить из избранного"
+    },
+    "checkin": {
+      "title": "Статус check-in",
+      "subtitle": "Проверьте, прошли ли вы check-in на активной выставке",
+      "loading": "Загрузка статуса check-in…",
+      "error": "Не удалось загрузить статус check-in. Попробуйте ещё раз.",
+      "empty": "Вы ещё не проходили check-in ни на одной выставке.",
+      "openQr": "Открыть мой QR",
+      "noActiveEvent": "Сейчас нет активной выставки.",
+      "current": {
+        "title": "Текущая выставка",
+        "checkedIn": "Вы прошли check-in",
+        "notCheckedIn": "Check-in ещё не пройден",
+        "checkedInAt": "Check-in в {time}",
+        "showQrHint": "Покажите QR на входе."
+      },
+      "history": {
+        "title": "Прошлые выставки",
+        "empty": "Прошлых check-in пока нет."
+      }
     },
     "requests": {
       "title": "Мои заявки",

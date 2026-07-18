@@ -305,13 +305,14 @@
   },
   "Profile": {
     "cabinetTitle": "My account",
-    "cabinetSubtitle": "Profile, favorites, QR and requests",
+    "cabinetSubtitle": "Profile, favorites, check-in, QR and requests",
     "title": "My profile",
     "subtitle": "Your ToonExpo account details",
     "nav": {
       "label": "Account sections",
       "profile": "Profile",
       "favorites": "Favorites",
+      "checkin": "Check-in",
       "qr": "My QR",
       "requests": "My requests"
     },
@@ -353,6 +354,26 @@
       "empty": "You have not saved any favorites yet.",
       "browseCatalog": "Browse projects",
       "removeButton": "Remove from favorites"
+    },
+    "checkin": {
+      "title": "Check-in status",
+      "subtitle": "See whether you are checked in to the active exhibition",
+      "loading": "Loading check-in status…",
+      "error": "Could not load check-in status. Try again.",
+      "empty": "You have not checked in to any exhibition yet.",
+      "openQr": "Open my QR",
+      "noActiveEvent": "There is no active exhibition right now.",
+      "current": {
+        "title": "Current exhibition",
+        "checkedIn": "You are checked in",
+        "notCheckedIn": "Not checked in yet",
+        "checkedInAt": "Checked in at {time}",
+        "showQrHint": "Show your QR at the entrance."
+      },
+      "history": {
+        "title": "Past exhibitions",
+        "empty": "No past check-ins yet."
+      }
     },
     "requests": {
       "title": "My requests",

@@ -7,14 +7,15 @@ import { useMeQuery } from "@/features/auth/hooks/use-auth";
 import { Link, usePathname } from "@/i18n/navigation";
 import { cn } from "@/shared/ui/cn";
 
-type NavKey = "profile" | "qr" | "requests" | "favorites";
+type NavKey = "profile" | "qr" | "requests" | "favorites" | "checkin";
 
 type NavItem = {
   href:
     | "/profile"
     | "/profile/qr"
     | "/profile/requests"
-    | "/profile/favorites";
+    | "/profile/favorites"
+    | "/profile/checkin";
   key: NavKey;
   buyerOnly: boolean;
 };
@@ -22,6 +23,7 @@ type NavItem = {
 const NAV_ITEMS: NavItem[] = [
   { href: "/profile", key: "profile", buyerOnly: false },
   { href: "/profile/favorites", key: "favorites", buyerOnly: true },
+  { href: "/profile/checkin", key: "checkin", buyerOnly: true },
   { href: "/profile/qr", key: "qr", buyerOnly: true },
   { href: "/profile/requests", key: "requests", buyerOnly: true },
 ];
