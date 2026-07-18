@@ -51,6 +51,7 @@
     "builders": "Կառուցապատողներ",
     "partners": "Գործընկերներ",
     "mortgage": "Հիփոթեք",
+    "expoMap": "Ցուցահանդեսի քարտեզ",
     "login": "Մուտք",
     "register": "Գրանցում",
     "loading": "…"
@@ -362,7 +363,8 @@
       "bankOffers": "Բանկային առաջարկներ",
       "serviceProviders": "Ծառայություն մատուցողներ",
       "readiness": "Պատրաստվածություն",
-      "readinessCategories": "Կատեգորիաներ"
+      "readinessCategories": "Կատեգորիաներ",
+      "events": "Միջոցառումներ"
     },
     "companies": {
       "title": "Ընկերություններ",
@@ -943,6 +945,172 @@
           "errors": {
             "generic": "Ինչ-որ բան սխալ գնաց։ Կրկին փորձեք։"
           }
+        }
+      }
+    },
+    "events": {
+      "title": "Events",
+      "subtitle": "{count, plural, =0 {No events} one {# event} other {# events}}",
+      "empty": "No events yet. Create the first one.",
+      "loading": "Loading events…",
+      "error": "Could not load events. Try again.",
+      "newEvent": "New event",
+      "columns": {
+        "name": "Name",
+        "code": "Code",
+        "status": "Status",
+        "publication": "Publication"
+      },
+      "statuses": {
+        "planning": "Planning",
+        "active": "Active",
+        "completed": "Completed",
+        "archived": "Archived",
+        "cancelled": "Cancelled"
+      },
+      "new": {
+        "title": "New event",
+        "subtitle": "Create an exhibition event for maps and check-in"
+      },
+      "detail": {
+        "back": "← Events",
+        "notFound": "Event not found"
+      },
+      "form": {
+        "name": "Event name",
+        "code": "Event code",
+        "startDate": "Start date",
+        "endDate": "End date",
+        "status": "Status",
+        "publication": "Publication",
+        "statuses": {
+          "planning": "Planning",
+          "active": "Active",
+          "completed": "Completed",
+          "archived": "Archived",
+          "cancelled": "Cancelled"
+        },
+        "publicationStatuses": {
+          "draft": "Draft",
+          "published": "Published",
+          "archived": "Archived"
+        },
+        "create": "Create event",
+        "save": "Save changes",
+        "saving": "Saving…"
+      },
+      "checkInSummary": {
+        "title": "Check-in summary",
+        "allowed": "Allowed",
+        "unique": "Unique visitors",
+        "duplicates": "Duplicate scans",
+        "denied": "Denied",
+        "day": "Day",
+        "noDays": "No check-ins recorded yet."
+      },
+      "venueMaps": {
+        "title": "Venue maps",
+        "newMap": "New map",
+        "cancelCreate": "Cancel",
+        "empty": "No venue maps yet.",
+        "loading": "Loading maps…",
+        "form": {
+          "title": "Map title",
+          "mediaAssetId": "Map image URL or asset id",
+          "mediaHint": "Paste a full https:// image URL until media upload is available in admin.",
+          "width": "Width (px)",
+          "height": "Height (px)",
+          "publication": "Publication",
+          "publicationStatuses": {
+            "draft": "Draft",
+            "published": "Published",
+            "archived": "Archived"
+          },
+          "create": "Create map",
+          "creating": "Creating…",
+          "save": "Save map",
+          "saving": "Saving…",
+          "delete": "Delete map"
+        }
+      },
+      "booths": {
+        "title": "Booths",
+        "newBooth": "New booth",
+        "loading": "Loading booths…",
+        "empty": "Այս քartezում դեռ կիոսkner չկան։",
+        "selectHint": "Select a booth or create a new one.",
+        "form": {
+          "code": "Booth code",
+          "name": "Display name",
+          "type": "Type",
+          "types": {
+            "builder": "Builder",
+            "bank": "Bank",
+            "partner": "Partner",
+            "sponsor": "Sponsor",
+            "service": "Service",
+            "info": "Info",
+            "entrance": "Entrance",
+            "other": "Other"
+          },
+          "xPercent": "X position (%)",
+          "yPercent": "Y position (%)",
+          "locationText": "Location hint",
+          "publication": "Publication",
+          "publicationStatuses": {
+            "draft": "Draft",
+            "published": "Published",
+            "archived": "Archived"
+          },
+          "create": "Create booth",
+          "save": "Save booth",
+          "saving": "Saving…",
+          "delete": "Delete booth"
+        },
+        "map": {
+          "noImage": "Քartezի պատկերը հասanելi չէ։ Մեդիա դաշտում օգտagorzreq https:// URL։",
+          "alt": "Վayri քartez",
+          "hint": "Կտտatsreq քartezi vra` lrivatel X/Y koordinatnery formum."
+        },
+        "assignments": {
+          "title": "Assignments",
+          "listGapHint": "Գoyutyan unecox kcumnere kcuycadryven, erb backend-um avelacvi list endpoint.",
+          "empty": "Ays ashxatashrjyanum kcumnere chen avelacvel.",
+          "company": "Company",
+          "noCompany": "No company",
+          "project": "Project",
+          "noProject": "No project",
+          "label": "Label",
+          "active": "Աktiv",
+          "add": "Add assignment",
+          "adding": "Adding…",
+          "remove": "Remove"
+        }
+      },
+      "routeGraph": {
+        "title": "Yertughayin gtsapatker",
+        "nodes": "Hanguytsner",
+        "edges": "Edges",
+        "addNode": "Avelacnel hanguyts",
+        "addEdge": "Add edge",
+        "code": "Code",
+        "label": "Label",
+        "type": "Type",
+        "booth": "Kioks",
+        "noBooth": "None",
+        "from": "From",
+        "to": "To",
+        "weight": "Weight",
+        "accessible": "Accessible",
+        "save": "Save graph",
+        "saving": "Saving…",
+        "saved": "Yertughayin gtsapatkery pahpanvel e.",
+        "nodeTypes": {
+          "entrance": "Entrance",
+          "intersection": "Intersection",
+          "booth": "Kioks",
+          "info": "Info",
+          "other": "Other"
         }
       }
     }
@@ -1579,6 +1747,102 @@
         "featured": "Առանցքային առաջարկ",
         "cancel": "Չեղարկել"
       }
+    }
+  },
+  "Checkin": {
+    "badge": "Գրանցում",
+    "profileLink": "Պրոֆիլ",
+    "meta": {
+      "title": "Մուտքի գրանցում",
+      "description": "Սկանավորեք այցելուի QR կոդը ցուցահանդեսի մուտքում։"
+    },
+    "loading": "Բեռնվում է…",
+    "error": "Չհաջողվեց բեռնել գրանցումը։ Կրկին փորձեք։",
+    "activeEvent": "Ակտիվ միջոցառում",
+    "scanning": "Մշակվում է…",
+    "noEvent": {
+      "title": "Ակտիվ միջոցառում չկա",
+      "message": "Գրանցման համար ակտիվ ցուցահանդեսային միջոցառում կարգավորված չէ։"
+    },
+    "result": {
+      "scanNext": "Հաջորդ սկանավորում",
+      "time": "Գրանցվել է {time}",
+      "duplicateHint": "Այս այցելուն արդեն գրանցվել է այս միջոցառման համար։",
+      "status": {
+        "allowed": "Թույլատրված",
+        "duplicate_checkin": "Կրկնվող գրանցում",
+        "denied_invalid_qr": "Անվավեր QR",
+        "denied_blocked": "Արգելված",
+        "error": "Սխալ"
+      }
+    },
+    "recent": {
+      "title": "Վերջին գրանցումներ",
+      "empty": "Դեռ գրանցումներ չկան։",
+      "unknownVisitor": "Անհայտ այցելու",
+      "status": {
+        "allowed": "Թույլատրված",
+        "duplicate_checkin": "Կրկնվող",
+        "denied_invalid_qr": "Անվավեր QR",
+        "denied_blocked": "Արգելված",
+        "error": "Սխալ"
+      }
+    }
+  },
+  "Expo": {
+    "meta": {
+      "title": "Ցուցահանդեսի քարտեզ",
+      "description": "Գտեք կառուցապատողներին, գործընկերներին և կիոսկները ընթացիկ ToonExpo միջոցառմանը։"
+    },
+    "loading": "Բեռնվում է…",
+    "error": "Չհաջողվեց բեռնել քարտեզը։ Կրկին փորձեք։",
+    "noEvent": {
+      "title": "Ակտիվ միջոցառում չկա",
+      "message": "Այս պահին հրապարակված ցուցահանդեսային քարտեզ հասանելի չէ։"
+    },
+    "search": {
+      "label": "Որոնել կիոսկներ",
+      "placeholder": "Ընկերություն, նախագիծ կամ կիոսկի կոդ…",
+      "meta": "{code} · {type}",
+      "types": {
+        "builder": "Կառուցապատող",
+        "bank": "Բանկ",
+        "partner": "Գործընկեր",
+        "sponsor": "Հովանավոր",
+        "service": "Ծառայություն",
+        "info": "Տեղեկատվություն",
+        "entrance": "Մուտք",
+        "other": "Այլ"
+      }
+    },
+    "list": {
+      "title": "Բոլոր կիոսկները"
+    },
+    "map": {
+      "noImage": "Քartezi patkery dzer hasaneli che.",
+      "alt": "Vayri qartez"
+    },
+    "booth": {
+      "close": "Փակել",
+      "code": "Կիոսկ {code}",
+      "openProject": "Բացել նախագիծը",
+      "route": "Երթուղի",
+      "routeUnavailable": "Yertughi hasaneli che",
+      "types": {
+        "builder": "Կառուցապատող",
+        "bank": "Բանկ",
+        "partner": "Գործընկեր",
+        "sponsor": "Հովանավոր",
+        "service": "Ծառայություն",
+        "info": "Տեղեկատվություն",
+        "entrance": "Մուտք",
+        "other": "Այլ"
+      }
+    },
+    "route": {
+      "unavailable": "Ays kioksi hamar yertughi dzer hasaneli che.",
+      "noEntranceNodes": "Mutqi ketery dzer hasaneli chen hanrayin API-um.",
+      "reset": "Maqrel yertughin"
     }
   }
 }

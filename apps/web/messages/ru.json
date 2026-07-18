@@ -53,7 +53,8 @@
     "register": "Регистрация",
     "loading": "…",
     "partners": "Партнёры",
-    "mortgage": "Ипотека"
+    "mortgage": "Ипотека",
+    "expoMap": "Карта выставки"
   },
   "Footer": {
     "tagline": "ToonExpo соединяет покупателей с проверенными новостройками Армении.",
@@ -362,7 +363,8 @@
       "readinessCategories": "Категории",
       "partners": "Партнёры",
       "bankOffers": "Банковские предложения",
-      "serviceProviders": "Поставщики услуг"
+      "serviceProviders": "Поставщики услуг",
+      "events": "События"
     },
     "companies": {
       "title": "Компании",
@@ -943,6 +945,172 @@
             "published": "Опубликовано",
             "archived": "В архиве"
           }
+        }
+      }
+    },
+    "events": {
+      "title": "События",
+      "subtitle": "{count, plural, =0 {No events} one {# event} other {# events}}",
+      "empty": "No events yet. Create the first one.",
+      "loading": "Loading events…",
+      "error": "Could not load events. Try again.",
+      "newEvent": "New event",
+      "columns": {
+        "name": "Name",
+        "code": "Code",
+        "status": "Status",
+        "publication": "Publication"
+      },
+      "statuses": {
+        "planning": "Planning",
+        "active": "Active",
+        "completed": "Completed",
+        "archived": "Archived",
+        "cancelled": "Cancelled"
+      },
+      "new": {
+        "title": "New event",
+        "subtitle": "Create an exhibition event for maps and check-in"
+      },
+      "detail": {
+        "back": "← Events",
+        "notFound": "Event not found"
+      },
+      "form": {
+        "name": "Event name",
+        "code": "Event code",
+        "startDate": "Start date",
+        "endDate": "End date",
+        "status": "Status",
+        "publication": "Publication",
+        "statuses": {
+          "planning": "Planning",
+          "active": "Active",
+          "completed": "Completed",
+          "archived": "Archived",
+          "cancelled": "Cancelled"
+        },
+        "publicationStatuses": {
+          "draft": "Draft",
+          "published": "Published",
+          "archived": "Archived"
+        },
+        "create": "Create event",
+        "save": "Save changes",
+        "saving": "Saving…"
+      },
+      "checkInSummary": {
+        "title": "Check-in summary",
+        "allowed": "Allowed",
+        "unique": "Unique visitors",
+        "duplicates": "Duplicate scans",
+        "denied": "Denied",
+        "day": "Day",
+        "noDays": "No check-ins recorded yet."
+      },
+      "venueMaps": {
+        "title": "Venue maps",
+        "newMap": "New map",
+        "cancelCreate": "Cancel",
+        "empty": "No venue maps yet.",
+        "loading": "Loading maps…",
+        "form": {
+          "title": "Map title",
+          "mediaAssetId": "Map image URL or asset id",
+          "mediaHint": "Paste a full https:// image URL until media upload is available in admin.",
+          "width": "Width (px)",
+          "height": "Height (px)",
+          "publication": "Publication",
+          "publicationStatuses": {
+            "draft": "Draft",
+            "published": "Published",
+            "archived": "Archived"
+          },
+          "create": "Create map",
+          "creating": "Creating…",
+          "save": "Save map",
+          "saving": "Saving…",
+          "delete": "Delete map"
+        }
+      },
+      "booths": {
+        "title": "Booths",
+        "newBooth": "New booth",
+        "loading": "Loading booths…",
+        "empty": "No booths on this map yet.",
+        "selectHint": "Select a booth or create a new one.",
+        "form": {
+          "code": "Booth code",
+          "name": "Display name",
+          "type": "Type",
+          "types": {
+            "builder": "Builder",
+            "bank": "Bank",
+            "partner": "Partner",
+            "sponsor": "Sponsor",
+            "service": "Service",
+            "info": "Info",
+            "entrance": "Entrance",
+            "other": "Other"
+          },
+          "xPercent": "X position (%)",
+          "yPercent": "Y position (%)",
+          "locationText": "Location hint",
+          "publication": "Publication",
+          "publicationStatuses": {
+            "draft": "Draft",
+            "published": "Published",
+            "archived": "Archived"
+          },
+          "create": "Create booth",
+          "save": "Save booth",
+          "saving": "Saving…",
+          "delete": "Delete booth"
+        },
+        "map": {
+          "noImage": "Map image is not available. Use a full https:// URL in the media field.",
+          "alt": "Venue map",
+          "hint": "Click the map to set X/Y coordinates in the form."
+        },
+        "assignments": {
+          "title": "Assignments",
+          "listGapHint": "Existing assignments reload after a backend list endpoint is added.",
+          "empty": "No assignments added in this session.",
+          "company": "Company",
+          "noCompany": "No company",
+          "project": "Project",
+          "noProject": "No project",
+          "label": "Label",
+          "active": "Active",
+          "add": "Add assignment",
+          "adding": "Adding…",
+          "remove": "Remove"
+        }
+      },
+      "routeGraph": {
+        "title": "Route graph",
+        "nodes": "Nodes",
+        "edges": "Edges",
+        "addNode": "Add node",
+        "addEdge": "Add edge",
+        "code": "Code",
+        "label": "Label",
+        "type": "Type",
+        "booth": "Booth link",
+        "noBooth": "None",
+        "from": "From",
+        "to": "To",
+        "weight": "Weight",
+        "accessible": "Accessible",
+        "save": "Save graph",
+        "saving": "Saving…",
+        "saved": "Route graph saved.",
+        "nodeTypes": {
+          "entrance": "Entrance",
+          "intersection": "Intersection",
+          "booth": "Booth",
+          "info": "Info",
+          "other": "Other"
         }
       }
     }
@@ -1579,6 +1747,102 @@
         "featured": "Избранное предложение",
         "cancel": "Отмена"
       }
+    }
+  },
+  "Checkin": {
+    "badge": "Регистрация",
+    "profileLink": "Profile",
+    "meta": {
+      "title": "Регистрация на входе",
+      "description": "Сканируйте QR-код посетителя на входе на выставку."
+    },
+    "loading": "Loading check-in…",
+    "error": "Could not load check-in. Try again.",
+    "activeEvent": "Active event",
+    "scanning": "Processing scan…",
+    "noEvent": {
+      "title": "No active event",
+      "message": "There is no active exhibition event configured for check-in."
+    },
+    "result": {
+      "scanNext": "Scan next",
+      "time": "Checked in at {time}",
+      "duplicateHint": "This visitor was already checked in for this event.",
+      "status": {
+        "allowed": "Allowed",
+        "duplicate_checkin": "Duplicate check-in",
+        "denied_invalid_qr": "Invalid QR",
+        "denied_blocked": "Blocked",
+        "error": "Error"
+      }
+    },
+    "recent": {
+      "title": "Recent check-ins",
+      "empty": "No check-ins yet.",
+      "unknownVisitor": "Unknown visitor",
+      "status": {
+        "allowed": "Allowed",
+        "duplicate_checkin": "Duplicate",
+        "denied_invalid_qr": "Invalid QR",
+        "denied_blocked": "Blocked",
+        "error": "Error"
+      }
+    }
+  },
+  "Expo": {
+    "meta": {
+      "title": "Карта выставки",
+      "description": "Найдите застройщиков, партнёров и стенды на текущем событии ToonExpo."
+    },
+    "loading": "Loading expo map…",
+    "error": "Could not load the expo map. Try again.",
+    "noEvent": {
+      "title": "No active event",
+      "message": "There is no published event map available right now."
+    },
+    "search": {
+      "label": "Search booths",
+      "placeholder": "Company, project or booth code…",
+      "meta": "{code} · {type}",
+      "types": {
+        "builder": "Builder",
+        "bank": "Bank",
+        "partner": "Partner",
+        "sponsor": "Sponsor",
+        "service": "Service",
+        "info": "Info",
+        "entrance": "Entrance",
+        "other": "Other"
+      }
+    },
+    "list": {
+      "title": "All booths"
+    },
+    "map": {
+      "noImage": "Map image is not available yet.",
+      "alt": "Venue map"
+    },
+    "booth": {
+      "close": "Close",
+      "code": "Booth {code}",
+      "openProject": "Open project",
+      "route": "Route",
+      "routeUnavailable": "Route not available",
+      "types": {
+        "builder": "Builder",
+        "bank": "Bank",
+        "partner": "Partner",
+        "sponsor": "Sponsor",
+        "service": "Service",
+        "info": "Info",
+        "entrance": "Entrance",
+        "other": "Other"
+      }
+    },
+    "route": {
+      "unavailable": "Route is not available for this booth yet.",
+      "noEntranceNodes": "Entrance start points are not exposed on the public API yet.",
+      "reset": "Clear route"
     }
   }
 }

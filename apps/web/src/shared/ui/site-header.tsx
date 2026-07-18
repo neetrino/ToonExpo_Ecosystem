@@ -69,6 +69,9 @@ export const SiteHeader = ({
           <Link href="/mortgage" className="hover:opacity-80">
             {t("mortgage")}
           </Link>
+          <Link href="/expo" className="hover:opacity-80">
+            {t("expoMap")}
+          </Link>
         </nav>
 
         <div className="flex items-center gap-2 sm:gap-3">
@@ -159,6 +162,9 @@ export const SiteHeader = ({
             </Link>
             <Link href="/mortgage" onClick={() => setMenuOpen(false)}>
               {t("mortgage")}
+            </Link>
+            <Link href="/expo" onClick={() => setMenuOpen(false)}>
+              {t("expoMap")}
             </Link>
             {!user ? (
               <>
