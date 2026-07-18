@@ -7,6 +7,7 @@ import {
   updateCompanyProfile,
 } from "@/features/builder/api/company-profile-api";
 import { COMPANY_PROFILE_QUERY_KEY } from "@/features/builder/constants";
+import { QUERY_DEFAULT_STALE_TIME_MS } from "@/shared/config/constants";
 
 /**
  * Authenticated company profile (name, type, status, role).
@@ -15,7 +16,7 @@ export const useCompanyProfileQuery = () =>
   useQuery({
     queryKey: COMPANY_PROFILE_QUERY_KEY,
     queryFn: () => getCompanyProfile(),
-    staleTime: 60_000,
+    staleTime: QUERY_DEFAULT_STALE_TIME_MS,
   });
 
 /**
