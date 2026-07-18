@@ -775,11 +775,7 @@
         "selectApartment": "Select apartment",
         "loadingApartments": "Loading apartments…",
         "linkApartmentAction": "Link apartment",
-        "linkNeedsEmail": "Buyer email is required to link an apartment on an existing deal.",
-        "linkNote": "Apartment linked from deal sheet",
         "linkSuccess": "Apartment linked",
-        "linkCreatedOtherDeal": "Linked on a different open deal for this buyer",
-        "unnamedBuyer": "Unnamed contact",
         "primary": "Primary",
         "linkTypes": {
           "interest": "Interest",
@@ -790,8 +786,12 @@
         "requestsTitle": "Request history",
         "requestsEmpty": "No requests yet",
         "errors": {
-          "generic": "Something went wrong. Please try again."
-        }
+          "generic": "Something went wrong. Please try again.",
+          "unlinkBlocked": "Cannot unlink: deal status requires a linked apartment."
+        },
+        "unlinkApartment": "Unlink",
+        "unlinkConfirm": "Unlink apartment {apartment} from this deal?",
+        "unlinkSuccess": "Apartment unlinked"
       }
     },
     "scanner": {

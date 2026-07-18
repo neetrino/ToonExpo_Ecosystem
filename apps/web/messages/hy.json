@@ -775,11 +775,7 @@
         "selectApartment": "Ընտրեք բնակարան",
         "loadingApartments": "Բնակարանները բեռնվում են…",
         "linkApartmentAction": "Կցել բնակարան",
-        "linkNeedsEmail": "Գործարքին բնակարան կցելու համար անհրաժեշտ է գնորդի էլ․ փոստ։",
-        "linkNote": "Բնակարանը կցված է գործարքի էջից",
         "linkSuccess": "Բնակարանը կցված է",
-        "linkCreatedOtherDeal": "Կցված է այս գնորդի այլ բաց գործարքին",
-        "unnamedBuyer": "Անանուն կոնտակտ",
         "primary": "Հիմնական",
         "linkTypes": {
           "interest": "Հետաքրքրություն",
@@ -790,8 +786,12 @@
         "requestsTitle": "Հայտերի պատմություն",
         "requestsEmpty": "Հայտեր դեռ չկան",
         "errors": {
-          "generic": "Ինչ-որ սխալ տեղի ունեցավ։ Կրկին փորձեք։"
-        }
+          "generic": "Ինչ-որ սխալ տեղի ունեցավ։ Կրկին փորձեք։",
+          "unlinkBlocked": "Հնարավոր չէ ապակցել․ կարգավիճակը պահանջում է կցված բնակարան։"
+        },
+        "unlinkApartment": "Ապակցել",
+        "unlinkConfirm": "Ապակցե՞լ բնակարան {apartment}-ը այս գործարքից",
+        "unlinkSuccess": "Բնակարանը ապակցված է"
       }
     },
     "scanner": {

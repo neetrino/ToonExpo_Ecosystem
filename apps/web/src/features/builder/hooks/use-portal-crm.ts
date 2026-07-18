@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type {
+  AttachCrmDealApartmentBody,
   CreateCrmActivityBody,
   CreateCrmNoteBody,
   CreateDealFromScanBody,
@@ -13,8 +14,10 @@ import type {
 import {
   addCrmActivity,
   addCrmNote,
+  attachCrmDealApartment,
   createCrmDealFromScan,
   createManualCrmDeal,
+  detachCrmDealApartment,
   getCrmDeal,
   listCrmDeals,
   updateCrmActivity,
@@ -84,6 +87,40 @@ export const useUpdateCrmDealMutation = (dealId: string) => {
     mutationFn: (body: UpdateCrmDealBody) => updateCrmDeal(dealId, body),
     onSuccess: (deal) => {
       queryClient.setQueryData(portalCrmDealQueryKey(dealId), deal);
+      invalidateCrmLists(queryClient);
+    },
+  });
+};
+
+/**
+ * Attaches an apartment to a deal.
+ */
+export const useAttachDealApartmentMutation = (dealId: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (body: AttachCrmDealApartmentBody) =>
+      attachCrmDealApartment(dealId, body),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: portalCrmDealQueryKey(dealId),
+      });
+      invalidateCrmLists(queryClient);
+    },
+  });
+};
+
+/**
+ * Detaches an apartment from a deal.
+ */
+export const useDetachDealApartmentMutation = (dealId: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (apartmentId: string) =>
+      detachCrmDealApartment(dealId, apartmentId),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: portalCrmDealQueryKey(dealId),
+      });
       invalidateCrmLists(queryClient);
     },
   });

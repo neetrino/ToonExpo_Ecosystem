@@ -1,16 +1,15 @@
 "use client";
 
 import type { CrmDealDetail } from "@toonexpo/contracts";
-import { useQueryClient } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
 import { listPortalApartments } from "@/features/builder/api/portal-apartments-api";
+import { PORTAL_MAX_PAGE_SIZE } from "@/features/builder/constants";
 import {
-  PORTAL_MAX_PAGE_SIZE,
-  portalCrmDealQueryKey,
-} from "@/features/builder/constants";
-import { useCreateManualDealMutation } from "@/features/builder/hooks/use-portal-crm";
+  useAttachDealApartmentMutation,
+  useDetachDealApartmentMutation,
+} from "@/features/builder/hooks/use-portal-crm";
 import {
   usePortalProjectQuery,
   usePortalProjectsQuery,
@@ -25,15 +24,15 @@ type CrmDealApartmentsSectionProps = {
 type ApartmentOption = { id: string; label: string };
 
 /**
- * Linked apartments + attach via intake dedup (requires buyer email).
+ * Linked apartments with attach/detach via dedicated deal apartment endpoints.
  */
 export const CrmDealApartmentsSection = ({
   deal,
 }: CrmDealApartmentsSectionProps) => {
   const t = useTranslations("Builder.crm.detail");
-  const queryClient = useQueryClient();
   const projectsQuery = usePortalProjectsQuery(1, PORTAL_MAX_PAGE_SIZE);
-  const linkMutation = useCreateManualDealMutation();
+  const attachMutation = useAttachDealApartmentMutation(deal.id);
+  const detachMutation = useDetachDealApartmentMutation(deal.id);
   const [projectId, setProjectId] = useState(deal.projectId ?? "");
   const [apartmentId, setApartmentId] = useState("");
   const [apartments, setApartments] = useState<ApartmentOption[]>([]);
@@ -42,7 +41,6 @@ export const CrmDealApartmentsSection = ({
   const [message, setMessage] = useState<string | null>(null);
 
   const projectQuery = usePortalProjectQuery(projectId);
-  const canLinkViaIntake = Boolean(deal.buyer.email?.trim());
 
   useEffect(() => {
     const project = projectQuery.data;
@@ -92,37 +90,34 @@ export const CrmDealApartmentsSection = ({
   const onLink = async () => {
     setError(null);
     setMessage(null);
-    if (!canLinkViaIntake) {
-      setError(t("linkNeedsEmail"));
-      return;
-    }
     if (!apartmentId) {
       setError(t("selectApartment"));
       return;
     }
-    const name = deal.buyer.name?.trim() || t("unnamedBuyer");
     try {
-      const result = await linkMutation.mutateAsync({
-        contactName: name,
-        ...(deal.buyer.email ? { contactEmail: deal.buyer.email } : {}),
-        ...(deal.buyer.phone ? { contactPhone: deal.buyer.phone } : {}),
-        ...(projectId ? { projectId } : {}),
-        apartmentId,
-        note: t("linkNote"),
-      });
-      await queryClient.invalidateQueries({
-        queryKey: portalCrmDealQueryKey(deal.id),
-      });
-      setMessage(
-        result.dealId !== deal.id
-          ? t("linkCreatedOtherDeal")
-          : t("linkSuccess"),
-      );
+      await attachMutation.mutateAsync({ apartmentId });
+      setMessage(t("linkSuccess"));
       setApartmentId("");
     } catch {
       setError(t("errors.generic"));
     }
   };
+
+  const onUnlink = async (linkedApartmentId: string, label: string) => {
+    setError(null);
+    setMessage(null);
+    if (!window.confirm(t("unlinkConfirm", { apartment: label }))) {
+      return;
+    }
+    try {
+      await detachMutation.mutateAsync(linkedApartmentId);
+      setMessage(t("unlinkSuccess"));
+    } catch {
+      setError(t("errors.unlinkBlocked"));
+    }
+  };
+
+  const busy = attachMutation.isPending || detachMutation.isPending;
 
   return (
     <section className="flex flex-col gap-3 rounded-sm border border-border p-4">
@@ -132,20 +127,34 @@ export const CrmDealApartmentsSection = ({
         <p className="text-sm text-ink-muted">{t("apartmentsEmpty")}</p>
       ) : (
         <ul className="flex flex-col gap-2">
-          {deal.apartments.map((link) => (
-            <li
-              key={link.id}
-              className="flex items-center justify-between rounded-sm bg-surface px-3 py-2 text-sm"
-            >
-              <span className="font-medium text-ink">
-                {link.apartmentNumber ?? link.apartmentId}
-              </span>
-              <span className="text-xs text-ink-muted">
-                {t(`linkTypes.${link.linkType}`)}
-                {link.isPrimary ? ` · ${t("primary")}` : null}
-              </span>
-            </li>
-          ))}
+          {deal.apartments.map((link) => {
+            const label = link.apartmentNumber ?? link.apartmentId;
+            return (
+              <li
+                key={link.id}
+                className="flex items-center justify-between gap-3 rounded-sm bg-surface px-3 py-2 text-sm"
+              >
+                <span className="font-medium text-ink">
+                  {label}
+                  <span className="ml-2 text-xs font-normal text-ink-muted">
+                    {t(`linkTypes.${link.linkType}`)}
+                    {link.isPrimary ? ` · ${t("primary")}` : null}
+                  </span>
+                </span>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="ghost"
+                  disabled={busy}
+                  onClick={() => {
+                    void onUnlink(link.apartmentId, label);
+                  }}
+                >
+                  {t("unlinkApartment")}
+                </Button>
+              </li>
+            );
+          })}
         </ul>
       )}
 
@@ -203,12 +212,12 @@ export const CrmDealApartmentsSection = ({
       <Button
         type="button"
         size="sm"
-        disabled={linkMutation.isPending || !apartmentId}
+        disabled={busy || !apartmentId}
         onClick={() => {
           void onLink();
         }}
       >
-        {linkMutation.isPending ? t("saving") : t("linkApartmentAction")}
+        {attachMutation.isPending ? t("saving") : t("linkApartmentAction")}
       </Button>
     </section>
   );

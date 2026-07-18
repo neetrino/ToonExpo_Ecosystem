@@ -1,9 +1,11 @@
 import type {
+  AttachCrmDealApartmentBody,
   CreateCrmActivityBody,
   CreateCrmNoteBody,
   CreateDealFromScanBody,
   CreateManualDealBody,
   CrmActivityItem,
+  CrmApartmentLinkItem,
   CrmDealDetail,
   CrmDealListResponse,
   CrmDealStatus,
@@ -121,6 +123,33 @@ export const addCrmNote = (
     method: "POST",
     ...jsonCredentials,
     body: JSON.stringify(body),
+  });
+
+/**
+ * POST /portal/crm/deals/:id/apartments
+ */
+export const attachCrmDealApartment = (
+  dealId: string,
+  body: AttachCrmDealApartmentBody,
+): Promise<CrmApartmentLinkItem> =>
+  apiFetch({
+    path: `/portal/crm/deals/${encodeURIComponent(dealId)}/apartments`,
+    method: "POST",
+    ...jsonCredentials,
+    body: JSON.stringify(body),
+  });
+
+/**
+ * DELETE /portal/crm/deals/:id/apartments/:apartmentId
+ */
+export const detachCrmDealApartment = (
+  dealId: string,
+  apartmentId: string,
+): Promise<void> =>
+  apiFetch({
+    path: `/portal/crm/deals/${encodeURIComponent(dealId)}/apartments/${encodeURIComponent(apartmentId)}`,
+    method: "DELETE",
+    ...jsonCredentials,
   });
 
 /**
