@@ -16,6 +16,7 @@ import {
   MediaAssetType,
   PublicationStatus,
 } from "../src/index.js";
+import { clearSeedAuthAccounts, seedAuthAccounts } from "./seed-auth.js";
 import {
   buildApartments,
   DEFAULT_PRICE_CURRENCY,
@@ -25,6 +26,7 @@ import {
   SEED_PROJECTS,
 } from "./seed-data.js";
 import { buildSeedTranslations } from "./seed-translations.js";
+import * as argon2 from "argon2";
 
 const packageRoot = path.dirname(fileURLToPath(import.meta.url));
 const monorepoRoot = path.resolve(packageRoot, "../..", "..");
@@ -237,6 +239,7 @@ const main = async (): Promise<void> => {
   });
 
   try {
+    await clearSeedAuthAccounts(prisma);
     await clearSeedData(prisma);
     await seedBuilders(prisma);
     const apartmentCount = await seedProjects(prisma);
@@ -253,8 +256,11 @@ const main = async (): Promise<void> => {
         },
       });
     }
+    await seedAuthAccounts(prisma, (password) =>
+      argon2.hash(password, { type: argon2.argon2id }),
+    );
     console.info(
-      `Seed complete: ${SEED_BUILDERS.length} builders, ${SEED_PROJECTS.length} published projects, ${apartmentCount} apartments, ${translations.length} translations`,
+      `Seed complete: ${SEED_BUILDERS.length} builders, ${SEED_PROJECTS.length} published projects, ${apartmentCount} apartments, ${translations.length} translations, auth accounts ready`,
     );
   } finally {
     await prisma.$disconnect();
