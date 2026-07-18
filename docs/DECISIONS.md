@@ -22,21 +22,25 @@
 
 ## Confirmed 2026-07-18 (Sprint 0 Foundation)
 
-- Auth uses httpOnly cookies with DB-backed sessions; NestJS + Passport; email+password with argon2; OAuth providers not in v1.
+- Auth is owned by NestJS and uses Passport Local, email+password and argon2id; OAuth providers are not in v1.
+- Browser authentication uses opaque random session tokens in secure httpOnly cookies. Only token hashes are stored in PostgreSQL; sessions are revocable and have configurable idle and absolute expiry.
+- Password reset and admin/BOS invitations use single-use, expiring, server-stored token hashes delivered by Resend. Passwords and raw tokens are never emailed or stored in plaintext.
 - Cloudflare R2 for media storage.
 - Resend for email.
 - Sentry for error tracking.
 - GitHub Actions for CI.
 - Git strategy: trunk-based development, short feature branches merged to `main` via pull request, Conventional Commits (commitlint configured).
-- State management: TanStack Query for server data + local React state; Zustand only when proven necessary.
+- State management: Server Components fetch through the typed NestJS API client; TanStack Query is used for client-side server-state workflows; local React state is the default for UI state and Zustand is introduced only when proven necessary.
 - Neon PostgreSQL connected; local development uses Neon dev branch via `DATABASE_URL` in local `.env` (not committed); no docker-compose for database.
 - Sprint 0 (Foundation) started 2026-07-18.
 
-## Pending Decisions
+## Remaining Environment Decisions
 
-- final domain/subdomain plan;
+- final staging and production web/API domains before those environments are deployed;
 - Cloudflare R2, Resend, Sentry, Vercel and Google Cloud accounts/credentials;
 - adaptive rate, timeout and pool values based on environments.
+
+These inputs do not block local Sprint 0 development.
 
 ## Source Docs
 

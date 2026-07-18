@@ -15,6 +15,9 @@ Updated after modular documentation pass.
 - No heavy moderation queue in v1; use simple publication statuses.
 - Service Provider Directory is not marketplace/ecommerce.
 - Files/media belong to real entities; no separate drive/files module.
+- NestJS owns email/password authentication through Passport Local and argon2id.
+- Browser authentication uses revocable opaque DB-backed sessions in secure httpOnly cookies; OAuth and JWT access/refresh-token auth are not in v1.
+- Admin/BOS-created accounts use single-use set-password invitations; buyer self-registration requires a password.
 
 ## Canonical Roles
 
@@ -58,10 +61,10 @@ Detailed subroles are later:
 - v1 vs coming soon boundaries;
 - BOS integration contracts;
 - provisioning response statuses.
+- auth/session, password reset/invitation and registration-field consistency.
 
 ## Remaining Watch Items
 
 - If builders later need content approval before publishing, add a v2 moderation queue deliberately.
 - If partner-side requests become real, define a separate partner request model before adding it to v1 navigation.
 - If ToonExpo analytics must appear in BOS, define a narrow report contract first instead of broad sync.
-

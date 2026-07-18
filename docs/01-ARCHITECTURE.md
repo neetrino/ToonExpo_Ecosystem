@@ -310,7 +310,7 @@ Major aggregates:
 
 | Aggregate | Important entities |
 |---|---|
-| Identity | User, BuyerProfile, CompanyMember, ModuleAccess, Session/RefreshToken |
+| Identity | User, BuyerProfile, CompanyMember, ModuleAccess, Session, AccountAccessToken |
 | Organization | Company, BuilderCompany, PartnerCompany |
 | Catalog | Project, Building, Floor, Apartment, ApartmentStatusHistory |
 | Presentation | MediaAsset, VisualMapCanvas, VisualHotspot, Translation |
@@ -403,14 +403,16 @@ sequenceDiagram
 
 ## 12. Authentication And Authorization
 
-Authentication is owned by NestJS, using Passport and a confirmed secure backend session/token strategy.
+Authentication is owned by NestJS. Passport Local validates email+password, and NestJS issues opaque DB-backed browser sessions. OAuth and JWT access/refresh-token authentication are not part of the initial production scope.
 
 Baseline:
 
-- buyer self-registration with name, phone and email;
+- buyer self-registration with name, phone, email and password; the password is stored only as an argon2id hash;
 - builder, partner, bank and staff accounts created by admin or BOS provisioning;
 - argon2id for stored passwords;
-- secure httpOnly cookies for browser credentials;
+- opaque random session token in a secure httpOnly cookie, with only its hash stored in PostgreSQL;
+- revocable sessions with configurable idle and absolute expiry;
+- single-use, expiring set-password and password-reset token hashes delivered through Resend;
 - explicit CORS allowlist and CSRF protection for cookie-authenticated mutations;
 - NestJS guards for role checks;
 - policy checks for company and resource ownership;

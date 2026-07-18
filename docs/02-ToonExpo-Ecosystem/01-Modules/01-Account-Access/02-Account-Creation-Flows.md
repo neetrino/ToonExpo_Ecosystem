@@ -8,12 +8,16 @@ Required fields:
 
 - name;
 - phone;
-- email.
+- email;
+- password.
+
+The password is accepted only by the NestJS API, hashed with argon2id and never stored or logged in plaintext.
 
 After registration:
 
 - BuyerProfile is created;
 - permanent QR is generated;
+- a revocable DB-backed session is created and returned through a secure httpOnly cookie;
 - buyer can use My QR, favorites, requests and check-in identity.
 
 ## Buyer Created By Admin
@@ -25,6 +29,8 @@ Use cases:
 - event entrance registration;
 - support case;
 - manual visitor entry.
+
+Admin-created buyers are not given generated passwords. ToonExpo sends a single-use, expiring set-password link through Resend. QR identity may be created immediately, while interactive account access requires the buyer to set a password.
 
 ## Builder Account Creation
 
@@ -43,6 +49,8 @@ Builder account receives:
 - CompanyMember;
 - Builder role/module access.
 
+The primary user receives a single-use, expiring set-password invitation. Neither BOS nor an administrator sends or stores a plaintext password.
+
 ## Partner Account Creation
 
 Partner accounts are not public self-registered in v1.
@@ -59,6 +67,8 @@ Partner account receives:
 - primary User;
 - CompanyMember;
 - Partner role/module access.
+
+The primary user receives the same single-use set-password invitation flow as a builder user.
 
 ## Bank Account Creation
 
@@ -90,4 +100,3 @@ Entrance Staff should only access:
 BigProjects Admin accounts are created internally by existing admin/support process.
 
 They have global ToonExpo admin access according to v1 role model.
-

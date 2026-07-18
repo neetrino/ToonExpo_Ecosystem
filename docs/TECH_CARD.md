@@ -57,7 +57,8 @@ TypeScript 7.0 is current but is not selected at project start because 7.0 does 
 | Rendering | Next.js App Router, Server Components by default, Client Components where interactive |
 | Data access | Typed HTTP client calling the NestJS API |
 | Forms | React Hook Form + Zod for frontend feedback; NestJS repeats authoritative validation |
-| Server state | TanStack Query for server data + local React state; Zustand only when proven necessary |
+| Server state | Server Components call the typed NestJS API client directly; TanStack Query is used for client-side server-state workflows |
+| UI state | Local React state by default; Zustand only when cross-component client state proves necessary |
 | i18n | next-intl with `hy`, `ru`, `en` and extensible locale configuration |
 | SEO | Next.js Metadata API and JSON-LD for public entities |
 | Forbidden | Prisma, SQL, direct PostgreSQL, product route handlers, backend Server Actions, authoritative auth/business logic |
@@ -92,6 +93,7 @@ Next.js Server Components may fetch the NestJS API. Server Actions must not impl
 | Migration credentials | Direct owner connection available only to migration jobs |
 | Seed data | Explicit dev/test seed scripts |
 | Local development | Neon dev branch via `DATABASE_URL` in local `.env` (not committed); no docker-compose for database |
+| Auth persistence | Password hash on the user credential record, revocable DB sessions and single-use invite/reset token hashes |
 | Cache/queues | Not initially; introduce Redis only for a measured requirement |
 
 ## Authentication And Security
@@ -101,12 +103,14 @@ Next.js Server Components may fetch the NestJS API. Server Actions must not impl
 | Auth owner | NestJS API | Confirmed |
 | Roles | BigProjects Admin, Builder, Partner, Buyer/Visitor, Entrance Staff | Confirmed |
 | Account creation | Buyer self-registration; all other accounts admin/BOS provisioned | Confirmed |
-| Session transport | Backend-issued secure httpOnly cookies + DB-backed sessions | Confirmed |
+| Session transport | Opaque random token in a backend-issued secure httpOnly cookie; only its hash is stored in a revocable DB session | Confirmed |
 | Auth method | Email+password; OAuth providers not in v1 | Confirmed |
 | Password hashing | argon2id | Confirmed |
+| Session lifecycle | Configurable idle and absolute expiry; rotate on login/privilege-sensitive events and revoke on logout, suspension or admin action | Confirmed |
+| Invite/reset flow | Single-use expiring token hashes delivered by Resend; raw tokens and passwords are never stored or emailed | Confirmed |
 | Authorization | NestJS guards plus company/resource ownership policies | Confirmed |
 | CORS/CSRF | Explicit allowlist and CSRF protection for cookie mutations | Confirmed |
-| Rate limits | Auth, QR, public request and provisioning endpoints | Proposed |
+| Rate limits | Required for auth, QR, public request and provisioning endpoints; exact thresholds are environment-configured | Confirmed |
 | QR privacy | Opaque token with server-side lookup; no embedded personal data | Confirmed |
 
 ## Testing
@@ -150,8 +154,10 @@ packages/
 - Auth, authorization and business mutations are always enforced by NestJS.
 - Canonical rules: [Frontend / Backend Boundary](./architecture/FRONTEND_BACKEND_BOUNDARY.md).
 
-## Confirmation Still Needed
+## Environment-Specific Configuration Still Needed
 
 - staging and production domains;
 - Cloudflare R2, Resend, Sentry, Vercel and Google Cloud accounts/credentials;
 - adaptive rate, timeout and pool values based on environments.
+
+These inputs do not block local Sprint 0 development.

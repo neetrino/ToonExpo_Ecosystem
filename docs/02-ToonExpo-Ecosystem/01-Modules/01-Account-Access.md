@@ -31,7 +31,7 @@ This is not a "shared auth between separate platforms" anymore. ToonExpo is one 
 - BigProjects admin/staff can also create buyer accounts if needed;
 - builder, partner and bank accounts are created by BigProjects admin/staff or by BOS account creation signal;
 - visitor can be registered at entrance if needed;
-- required buyer fields: name, phone, email;
+- required buyer profile fields: name, phone, email; self-registration also requires a password;
 - no phone verification;
 - no email verification.
 

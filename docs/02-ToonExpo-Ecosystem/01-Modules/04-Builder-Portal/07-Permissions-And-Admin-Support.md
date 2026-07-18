@@ -91,7 +91,7 @@ Minimum v1 email content:
 
 - ToonExpo login link;
 - account email;
-- temporary password or password setup link;
+- single-use, expiring password setup link;
 - company name;
 - support/contact instruction.
 
@@ -104,4 +104,3 @@ No paid subscription or billing access is required.
 - Admin-only notes must stay internal.
 - Archived/deactivated builder users should lose portal access.
 - Audit important admin and publication actions.
-

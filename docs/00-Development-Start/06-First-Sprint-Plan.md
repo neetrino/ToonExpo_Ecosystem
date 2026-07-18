@@ -13,7 +13,7 @@ Create the technical skeleton and first usable platform shell without implementi
 - TypeScript/lint/format/test baseline;
 - env validation;
 - i18n foundation for Armenian/Russian/English;
-- NestJS-owned auth foundation after session strategy confirmation;
+- NestJS-owned email/password auth with argon2id, opaque DB-backed sessions, CSRF protection and invite/reset token foundations;
 - public layout + protected portal/admin layouts;
 - side sheet UI primitive;
 - Prisma 7 baseline schema imported at runtime only by NestJS;
@@ -34,10 +34,10 @@ Create the technical skeleton and first usable platform shell without implementi
 - docs updated with setup commands;
 - no secrets committed.
 
-## Decisions Needed Before Sprint
+## Environment Inputs Needed Before Staging / Production
 
-- auth approach;
-- database credentials/provider;
-- file storage and email provider credentials;
+- staging/production provider credentials;
 - final domain/subdomain plan;
-- exact backend session/cookie strategy.
+- adaptive rate, timeout and database pool values.
+
+These inputs do not block local Sprint 0 implementation. Local development uses the confirmed Neon development branch and localhost web/API origins.

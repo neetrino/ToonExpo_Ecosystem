@@ -14,7 +14,10 @@ Required:
 
 - name;
 - phone;
-- email.
+- email;
+- password.
+
+The password is submitted only to the NestJS API and stored only as an argon2id hash.
 
 Optional later:
 
@@ -63,4 +66,3 @@ This can be added later if abuse/support needs require it.
 Buyer QR should not encode personal data directly.
 
 QR System owns token/security details.
-

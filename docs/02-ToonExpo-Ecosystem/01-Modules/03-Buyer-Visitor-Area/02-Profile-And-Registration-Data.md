@@ -2,11 +2,13 @@
 
 ## Required Buyer Data
 
-v1 required fields:
+v1 required buyer profile fields:
 
 - name;
 - phone;
 - email.
+
+Buyer self-registration additionally requires a password. Passwords, sessions and reset/invitation flows belong to the Account Access module and are not profile fields.
 
 ## Profile View
 
@@ -41,6 +43,8 @@ Examples:
 - event entrance registration;
 - support/help case.
 
+An admin-created buyer receives a single-use set-password link instead of a generated password.
+
 ## Entrance Registration
 
 If visitor is registered at entrance:
@@ -51,4 +55,3 @@ Create buyer account
 -> create QR
 -> allow check-in
 ```
-

@@ -95,6 +95,6 @@ failed
 
 ## Invitation / Login
 
-After account creation, ToonExpo can send invitation/login instructions to primary contact email.
+After account creation, ToonExpo sends the primary contact a single-use, expiring set-password invitation through Resend. BOS receives provisioning status but never receives or sends a plaintext ToonExpo password.
 
-Exact email content belongs to implementation.
+Exact email presentation belongs to implementation; token lifecycle and security follow the Account Access security specification.

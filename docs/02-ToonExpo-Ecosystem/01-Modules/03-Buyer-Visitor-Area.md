@@ -38,6 +38,8 @@ The buyer sees this as request/interest/contact history.
 
 Buyer / ordinary visitor can self-register.
 
+Self-registration uses name, phone, email and password. Password handling and session creation are owned by the NestJS Account Access module.
+
 BigProjects admin/staff can also create buyer accounts if needed.
 
 Visitor can be registered at event entrance if needed.

@@ -12,10 +12,53 @@ Fields:
 - name;
 - email;
 - phone optional;
+- password_hash;
 - status;
 - default_locale optional;
 - created_at;
 - updated_at.
+
+`password_hash` contains an argon2id hash. Plaintext passwords are input-only and never persisted.
+
+## Session
+
+Fields:
+
+- id;
+- user_id;
+- token_hash;
+- idle_expires_at;
+- absolute_expires_at;
+- last_seen_at optional;
+- revoked_at optional;
+- ip_address optional;
+- user_agent optional;
+- created_at;
+- updated_at.
+
+The browser receives the raw opaque token only in a secure httpOnly cookie. PostgreSQL stores only `token_hash`.
+
+## AccountAccessToken
+
+Purpose values:
+
+```text
+set_password
+password_reset
+```
+
+Fields:
+
+- id;
+- user_id;
+- purpose;
+- token_hash;
+- expires_at;
+- used_at optional;
+- created_by_user_id optional;
+- created_at.
+
+Tokens are single-use. Raw token values are delivered only through the Resend link and are not stored.
 
 ## Company
 
@@ -116,6 +159,8 @@ Fields:
 
 ```text
 User 0..n CompanyMembers
+User 0..n Sessions
+User 0..n AccountAccessTokens
 Company 0..n CompanyMembers
 Company 0..n ModuleAccess
 User 0..n ModuleAccess
@@ -124,4 +169,3 @@ Company 0..1 BuilderCompany
 Company 0..1 PartnerCompany
 BuyerProfile 1..1 QrCode
 ```
-
