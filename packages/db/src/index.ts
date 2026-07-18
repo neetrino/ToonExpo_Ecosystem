@@ -4,6 +4,13 @@ import { PrismaClient } from "./generated/prisma/client.js";
 
 export { Prisma, PrismaClient } from "./generated/prisma/client.js";
 export * from "./generated/prisma/enums.js";
+export {
+  QR_TOKEN_BYTES,
+  createQrToken,
+  decryptQrToken,
+  encryptQrToken,
+  hashQrToken,
+} from "./qr-token.js";
 
 export type CreatePrismaClientOptions = {
   connectionString: string;

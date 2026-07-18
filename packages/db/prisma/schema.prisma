@@ -114,9 +114,80 @@ model BuyerProfile {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  qrCode QrCode?
 
   @@map("buyer_profiles")
+}
+
+/// Permanent buyer QR lifecycle status.
+enum QrCodeStatus {
+  active
+  inactive
+  blocked
+}
+
+/// Who/what context triggered a QR resolve.
+enum QrScanContext {
+  builder_scan
+  entrance_checkin
+  buyer_self_view
+  unknown
+}
+
+/// Outcome of a QR resolve attempt.
+enum QrScanResultStatus {
+  resolved
+  invalid
+  blocked
+  unauthorized
+  error
+}
+
+/// One permanent opaque QR token per buyer profile.
+model QrCode {
+  id             String       @id @default(cuid())
+  buyerProfileId String       @unique @map("buyer_profile_id")
+  /// SHA-256(pepper:token) — resolve lookups never use the raw token column.
+  tokenHash      String       @unique @map("token_hash")
+  /// AES-256-GCM blob of the raw token for permanent My QR redisplay.
+  tokenEncrypted String       @map("token_encrypted")
+  status         QrCodeStatus @default(active)
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+  regeneratedAt  DateTime?    @map("regenerated_at")
+  blockedAt      DateTime?    @map("blocked_at")
+  blockedReason  String?      @map("blocked_reason")
+
+  buyerProfile BuyerProfile  @relation(fields: [buyerProfileId], references: [id], onDelete: Cascade)
+  scanEvents   QrScanEvent[]
+
+  @@index([status])
+  @@map("qr_codes")
+}
+
+/// Technical scan/resolve log for a buyer QR.
+model QrScanEvent {
+  id               String             @id @default(cuid())
+  qrCodeId         String             @map("qr_code_id")
+  buyerProfileId   String             @map("buyer_profile_id")
+  scannerUserId    String?            @map("scanner_user_id")
+  scannerCompanyId String?            @map("scanner_company_id")
+  scannerRole      String?            @map("scanner_role")
+  scanContext      QrScanContext      @map("scan_context")
+  resultStatus     QrScanResultStatus @map("result_status")
+  ipAddress        String?            @map("ip_address")
+  userAgent        String?            @map("user_agent")
+  createdAt        DateTime           @default(now()) @map("created_at")
+
+  qrCode QrCode @relation(fields: [qrCodeId], references: [id], onDelete: Cascade)
+
+  @@index([qrCodeId])
+  @@index([buyerProfileId])
+  @@index([scannerUserId])
+  @@index([scannerCompanyId])
+  @@index([createdAt])
+  @@map("qr_scan_events")
 }
 
 model Company {
