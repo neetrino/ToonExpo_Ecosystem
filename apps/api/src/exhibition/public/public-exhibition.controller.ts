@@ -9,6 +9,7 @@ import type {
   BoothSearchResponse,
   CurrentEventResponse,
   PublicBoothListResponse,
+  PublicEntranceNodeListResponse,
   RoutePathResponse,
 } from "@toonexpo/contracts";
 
@@ -52,6 +53,15 @@ export class PublicExhibitionController {
     @Query() query: BoothSearchQueryDto,
   ): Promise<BoothSearchResponse> {
     return this.exhibition.searchBooths(id, query.q, query.locale);
+  }
+
+  @Public()
+  @Get("venue-maps/:id/entrance-nodes")
+  @ApiOperation({ summary: "List entrance route nodes on a published venue map" })
+  @ApiOkResponse({ description: "Entrance nodes" })
+  @ApiNotFoundResponse({ description: "Published venue map not found" })
+  entranceNodes(@Param("id") id: string): Promise<PublicEntranceNodeListResponse> {
+    return this.exhibition.listEntranceNodes(id);
   }
 
   @Public()

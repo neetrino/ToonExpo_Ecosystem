@@ -4,6 +4,8 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import type {
+  BoothAssignmentDetail,
+  BoothAssignmentListResponse,
   BoothAssignmentSummary,
   BoothListResponse,
   BoothSummary,
@@ -92,6 +94,23 @@ export class AdminBoothsService {
   async remove(id: string): Promise<void> {
     await this.requireBooth(id);
     await this.prisma.db.booth.delete({ where: { id } });
+  }
+
+  async listAssignments(boothId: string): Promise<BoothAssignmentListResponse> {
+    await this.requireBooth(boothId);
+
+    const assignments = await this.prisma.db.boothAssignment.findMany({
+      where: { boothId },
+      orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+      include: {
+        company: { select: { id: true, name: true } },
+        project: { select: { id: true, name: true } },
+      },
+    });
+
+    return {
+      data: assignments.map(toAssignmentDetail),
+    };
   }
 
   async createAssignment(
@@ -236,4 +255,22 @@ const toAssignmentSummary = (assignment: {
   active: assignment.active,
   createdAt: assignment.createdAt.toISOString(),
   updatedAt: assignment.updatedAt.toISOString(),
+});
+
+const toAssignmentDetail = (assignment: {
+  id: string;
+  boothId: string;
+  companyId: string | null;
+  projectId: string | null;
+  assignmentLabel: string | null;
+  sortOrder: number | null;
+  active: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  company: { id: string; name: string } | null;
+  project: { id: string; name: string } | null;
+}): BoothAssignmentDetail => ({
+  ...toAssignmentSummary(assignment),
+  companyName: assignment.company?.name ?? null,
+  projectName: assignment.project?.name ?? null,
 });

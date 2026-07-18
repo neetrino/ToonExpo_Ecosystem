@@ -17,6 +17,7 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 import type {
+  BoothAssignmentListResponse,
   BoothAssignmentSummary,
   BoothListResponse,
   BoothSummary,
@@ -69,6 +70,15 @@ export class AdminBoothsController {
   @ApiNoContentResponse({ description: "Deleted booth" })
   async remove(@Param("id") id: string): Promise<void> {
     await this.booths.remove(id);
+  }
+
+  @Get("admin/booths/:boothId/assignments")
+  @ApiOperation({ summary: "List booth assignments with resolved names" })
+  @ApiOkResponse({ description: "Assignment list" })
+  listAssignments(
+    @Param("boothId") boothId: string,
+  ): Promise<BoothAssignmentListResponse> {
+    return this.booths.listAssignments(boothId);
   }
 
   @Post("admin/booths/:boothId/assignments")

@@ -150,6 +150,15 @@ export type BoothAssignmentSummary = {
   updatedAt: string;
 };
 
+export type BoothAssignmentDetail = BoothAssignmentSummary & {
+  companyName: string | null;
+  projectName: string | null;
+};
+
+export type BoothAssignmentListResponse = {
+  data: BoothAssignmentDetail[];
+};
+
 export type CreateBoothAssignmentRequest = {
   companyId?: string;
   projectId?: string;
@@ -322,4 +331,16 @@ export type RoutePathNode = {
 export type RoutePathResponse = {
   routeAvailable: boolean;
   nodes: RoutePathNode[];
+};
+
+export type PublicEntranceNode = {
+  id: string;
+  code: string | null;
+  label: string | null;
+  xPercent: string;
+  yPercent: string;
+};
+
+export type PublicEntranceNodeListResponse = {
+  data: PublicEntranceNode[];
 };

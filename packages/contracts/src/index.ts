@@ -207,6 +207,8 @@ export type {
 
 export type {
   ActiveEventResponse,
+  BoothAssignmentDetail,
+  BoothAssignmentListResponse,
   BoothAssignmentSummary,
   BoothListResponse,
   BoothSearchResponse,
@@ -229,6 +231,8 @@ export type {
   PublicBoothAssignment,
   PublicBoothDetail,
   PublicBoothListResponse,
+  PublicEntranceNode,
+  PublicEntranceNodeListResponse,
   PublicVenueMapSummary,
   RecentCheckInItem,
   RecentCheckInResponse,

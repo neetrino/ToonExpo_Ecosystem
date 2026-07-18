@@ -3,6 +3,7 @@ import type {
   BoothSearchResponse,
   CurrentEventResponse,
   PublicBoothListResponse,
+  PublicEntranceNodeListResponse,
   RoutePathResponse,
 } from "@toonexpo/contracts";
 import {
@@ -130,6 +131,10 @@ export class PublicExhibitionService {
     toBoothId: string,
   ): Promise<RoutePathResponse> {
     return this.routeService.computeRoute(mapId, fromNodeId, toBoothId);
+  }
+
+  listEntranceNodes(mapId: string): Promise<PublicEntranceNodeListResponse> {
+    return this.routeService.listEntranceNodes(mapId);
   }
 
   private async requirePublishedMap(mapId: string): Promise<void> {

@@ -1,5 +1,8 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import type { RoutePathResponse } from "@toonexpo/contracts";
+import type {
+  PublicEntranceNodeListResponse,
+  RoutePathResponse,
+} from "@toonexpo/contracts";
 import {
   EventStatus,
   PublicationStatus,
@@ -17,6 +20,32 @@ import {
 @Injectable()
 export class PublicRouteService {
   constructor(private readonly prisma: PrismaService) {}
+
+  async listEntranceNodes(mapId: string): Promise<PublicEntranceNodeListResponse> {
+    await this.requirePublishedMap(mapId);
+
+    const nodes = await this.prisma.db.routeNode.findMany({
+      where: { venueMapId: mapId, type: "entrance" },
+      orderBy: [{ label: "asc" }, { code: "asc" }, { createdAt: "asc" }],
+      select: {
+        id: true,
+        code: true,
+        label: true,
+        xPercent: true,
+        yPercent: true,
+      },
+    });
+
+    return {
+      data: nodes.map((node) => ({
+        id: node.id,
+        code: node.code,
+        label: node.label,
+        xPercent: node.xPercent.toString(),
+        yPercent: node.yPercent.toString(),
+      })),
+    };
+  }
 
   async computeRoute(
     mapId: string,
