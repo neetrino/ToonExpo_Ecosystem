@@ -91,7 +91,27 @@
       "viewProject": "View project",
       "backToProjects": "← All projects",
       "requestPrice": "Request price",
+      "requestInfo": "Request info",
       "comingSoon": "Coming soon"
+    },
+    "request": {
+      "title": "Send a request",
+      "noteLabel": "Message (optional)",
+      "notePlaceholder": "Tell the builder what you need…",
+      "submit": "Send request",
+      "submitting": "Sending…",
+      "cancel": "Cancel",
+      "close": "Close",
+      "validation": {
+        "note": "Message is too long"
+      },
+      "success": {
+        "created": "Request sent. The builder will contact you.",
+        "deduplicated": "Request added to your open conversation with the builder."
+      },
+      "errors": {
+        "generic": "Could not send the request. Please try again."
+      }
     },
     "filters": {
       "rooms": "Rooms",
@@ -209,14 +229,88 @@
     }
   },
   "Profile": {
+    "cabinetTitle": "My account",
+    "cabinetSubtitle": "Profile, QR and requests",
     "title": "My profile",
     "subtitle": "Your ToonExpo account details",
+    "nav": {
+      "label": "Account sections",
+      "profile": "Profile",
+      "qr": "My QR",
+      "requests": "My requests"
+    },
     "fields": {
       "name": "Name",
       "email": "Email",
       "phone": "Phone",
       "phoneEmpty": "Not set",
       "accountType": "Account type"
+    },
+    "qr": {
+      "title": "My QR",
+      "subtitle": "Show this code to a builder at the exhibition",
+      "hint": "Hold your phone steady so the staff can scan the code.",
+      "codeTitle": "QR code for {name}",
+      "fullscreen": "Enlarge fullscreen",
+      "exitFullscreen": "Exit fullscreen",
+      "loading": "Loading your QR…",
+      "error": "Could not load your QR. Try again.",
+      "scans": {
+        "title": "Scan history",
+        "loading": "Loading scans…",
+        "error": "Could not load scan history.",
+        "empty": "No scans yet. Show your QR to a builder to get started.",
+        "unknownCompany": "Unknown company",
+        "context": {
+          "builder_scan": "Builder scan",
+          "entrance_checkin": "Entrance check-in",
+          "buyer_self_view": "Self view",
+          "unknown": "Scan"
+        }
+      }
+    },
+    "requests": {
+      "title": "My requests",
+      "subtitle": "Interest and contact history with builders",
+      "loading": "Loading requests…",
+      "error": "Could not load requests. Try again.",
+      "empty": "You have not sent any requests yet.",
+      "browseCatalog": "Browse projects",
+      "apartmentLinked": "Includes apartment interest",
+      "status": {
+        "request_sent": "Request sent",
+        "builder_received": "Builder received",
+        "in_contact": "In contact",
+        "apartment_selected": "Apartment selected",
+        "reserved": "Reserved",
+        "closed": "Closed",
+        "cancelled": "Cancelled"
+      }
+    }
+  },
+  "QrLanding": {
+    "loading": "Recognizing QR…",
+    "redirecting": "Opening your QR…",
+    "denied": {
+      "title": "QR not recognized",
+      "description": "This QR could not be resolved, or you do not have access. Sign in if you are staff or the owner.",
+      "login": "Sign in"
+    },
+    "checkin": {
+      "title": "Check-in coming soon",
+      "description": "Entrance check-in will be available in a later release."
+    },
+    "buyerAction": {
+      "badge": "Buyer contact",
+      "phone": "Phone",
+      "email": "Email",
+      "createRequest": "Create request / Send offer",
+      "submitting": "Creating…",
+      "success": "Request created. Open it in CRM to continue.",
+      "openDeal": "Open in CRM",
+      "errors": {
+        "generic": "Could not create the request. Try again."
+      }
     }
   },
   "Admin": {

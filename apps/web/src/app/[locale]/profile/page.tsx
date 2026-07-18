@@ -5,7 +5,6 @@ import { getMeOrNull } from "@/features/auth/api/auth-api";
 import { LogoutButton } from "@/features/auth/components/logout-button";
 import { redirect } from "@/i18n/navigation";
 import { Card } from "@/shared/ui/card";
-import { SiteHeader } from "@/shared/ui/site-header";
 
 type ProfilePageProps = {
   params: Promise<{ locale: string }>;
@@ -27,31 +26,26 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   const t = await getTranslations("Profile");
 
   return (
-    <div className="min-h-screen bg-background">
-      <SiteHeader />
-      <main className="mx-auto flex w-full max-w-lg flex-col gap-6 px-6 py-12">
-        <div className="flex flex-col gap-2">
-          <h1 className="text-2xl font-semibold tracking-tight text-ink">
-            {t("title")}
-          </h1>
-          <p className="text-sm text-ink-secondary">{t("subtitle")}</p>
-        </div>
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-1">
+        <h2 className="text-lg font-semibold text-ink">{t("title")}</h2>
+        <p className="text-sm text-ink-secondary">{t("subtitle")}</p>
+      </div>
 
-        <Card className="flex flex-col gap-4">
-          <dl className="flex flex-col gap-4">
-            <ProfileRow label={t("fields.name")} value={user.name} />
-            <ProfileRow label={t("fields.email")} value={user.email} />
-            <ProfileRow
-              label={t("fields.phone")}
-              value={user.phone ?? t("fields.phoneEmpty")}
-            />
-            <ProfileRow label={t("fields.accountType")} value={user.accountType} />
-          </dl>
-          <div className="pt-2">
-            <LogoutButton variant="secondary" size="md" className="w-full" />
-          </div>
-        </Card>
-      </main>
+      <Card className="flex flex-col gap-4">
+        <dl className="flex flex-col gap-4">
+          <ProfileRow label={t("fields.name")} value={user.name} />
+          <ProfileRow label={t("fields.email")} value={user.email} />
+          <ProfileRow
+            label={t("fields.phone")}
+            value={user.phone ?? t("fields.phoneEmpty")}
+          />
+          <ProfileRow label={t("fields.accountType")} value={user.accountType} />
+        </dl>
+        <div className="pt-2">
+          <LogoutButton variant="secondary" size="md" className="w-full" />
+        </div>
+      </Card>
     </div>
   );
 }

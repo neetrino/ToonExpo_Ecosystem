@@ -176,7 +176,13 @@ export default async function ApartmentPage({ params }: ApartmentPageProps) {
             ) : null}
 
             <div className="flex flex-wrap gap-3">
-              {showRequestCta ? <RequestPriceButton /> : null}
+              {showRequestCta ? (
+                <RequestPriceButton
+                  projectId={apartment.project.id}
+                  apartmentId={apartment.id}
+                  labelKey="requestPrice"
+                />
+              ) : null}
               <Link
                 href={`/projects/${apartment.project.id}`}
                 className="inline-flex h-11 items-center justify-center rounded-pill border border-border-strong px-5 text-sm font-medium text-ink hover:bg-surface"

@@ -6,10 +6,15 @@ import { SiteHeader } from "@/shared/ui/site-header";
 
 type LoginPageProps = {
   params: Promise<{ locale: string }>;
+  searchParams: Promise<{ returnUrl?: string }>;
 };
 
-export default async function LoginPage({ params }: LoginPageProps) {
+export default async function LoginPage({
+  params,
+  searchParams,
+}: LoginPageProps) {
   const { locale } = await params;
+  const { returnUrl } = await searchParams;
   setRequestLocale(locale);
 
   const t = await getTranslations("Auth");
@@ -25,7 +30,7 @@ export default async function LoginPage({ params }: LoginPageProps) {
           <p className="text-sm text-ink-secondary">{t("login.subtitle")}</p>
         </div>
         <Card>
-          <LoginForm />
+          <LoginForm returnUrl={returnUrl} />
         </Card>
       </main>
     </div>

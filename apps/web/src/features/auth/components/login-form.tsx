@@ -11,19 +11,25 @@ import {
   type LoginFormValues,
 } from "@/features/auth/schemas/login.schema";
 import { mapAuthError } from "@/features/auth/utils/map-auth-error";
+import { sanitizeReturnUrl } from "@/features/auth/utils/sanitize-return-url";
 import { Link, useRouter } from "@/i18n/navigation";
 import { Button } from "@/shared/ui/button";
 import { FormField } from "@/shared/ui/form-field";
 import { Input } from "@/shared/ui/input";
 
+type LoginFormProps = {
+  returnUrl?: string | undefined;
+};
+
 /**
  * Email/password login form with NestJS-backed session cookie.
  */
-export const LoginForm = () => {
+export const LoginForm = ({ returnUrl }: LoginFormProps) => {
   const t = useTranslations("Auth");
   const router = useRouter();
   const loginMutation = useLoginMutation();
   const [formError, setFormError] = useState<string | null>(null);
+  const safeReturn = sanitizeReturnUrl(returnUrl);
 
   const {
     register,
@@ -38,7 +44,7 @@ export const LoginForm = () => {
     setFormError(null);
     try {
       await loginMutation.mutateAsync(values);
-      router.push("/profile");
+      router.push(safeReturn);
     } catch (error) {
       setFormError(t(`errors.${mapAuthError(error)}`));
     }

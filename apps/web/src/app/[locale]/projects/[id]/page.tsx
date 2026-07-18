@@ -6,6 +6,7 @@ import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 
 import { getProject } from "@/features/catalog/api/catalog-api";
 import { ProjectBuildings } from "@/features/catalog/components/project-buildings";
+import { RequestPriceButton } from "@/features/catalog/components/request-price-button";
 import { SiteFooter } from "@/features/catalog/components/site-footer";
 import {
   formatCompactPrice,
@@ -138,6 +139,12 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
                 {project.address}
               </p>
             ) : null}
+            <div className="mt-6">
+              <RequestPriceButton
+                projectId={project.id}
+                labelKey="requestInfo"
+              />
+            </div>
           </div>
 
           <div className="mb-4 flex items-center justify-between gap-4">
