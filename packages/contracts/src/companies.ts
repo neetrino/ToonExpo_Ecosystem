@@ -51,7 +51,7 @@ export type CreateCompanyRequest = {
   adminName: string;
   adminEmail: string;
   adminPhone?: string;
-  /** Locale segment in the set-password link; defaults to APP DEFAULT_LOCALE. */
+  /** Locale segment in the set-password link; defaults to platform DEFAULT_LOCALE (`hy`). */
   locale?: string;
 };
 

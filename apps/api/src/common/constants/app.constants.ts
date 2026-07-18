@@ -128,12 +128,6 @@ export const COMPANY_MEMBERS_MAX_PAGE_SIZE = 50;
 
 export const LIST_MIN_PAGE = 1;
 
-/**
- * ADAPTIVE VALUE — confirm with owner.
- * Fallback locale segment in set-password email links when none provided.
- */
-export const DEFAULT_APP_LOCALE = "en";
-
 export const COMPANY_NAME_MAX_LENGTH = 200;
 
 export const COMPANY_DESCRIPTION_MAX_LENGTH = 4000;

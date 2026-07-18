@@ -66,15 +66,8 @@ export class InviteMailerService {
 
   private buildSetPasswordUrl(rawToken: string, locale?: string): string {
     const appUrl = this.configService.get("APP_URL", { infer: true });
-    const defaultLocale = this.configService.get("DEFAULT_LOCALE", {
-      infer: true,
-    });
     const resolvedLocale =
-      locale && isSupportedLocale(locale)
-        ? locale
-        : isSupportedLocale(defaultLocale)
-          ? defaultLocale
-          : DEFAULT_LOCALE;
+      locale && isSupportedLocale(locale) ? locale : DEFAULT_LOCALE;
     const base = appUrl.replace(/\/$/, "");
 
     return `${base}/${resolvedLocale}/auth/set-password?token=${encodeURIComponent(rawToken)}`;

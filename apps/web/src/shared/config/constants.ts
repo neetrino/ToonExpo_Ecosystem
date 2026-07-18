@@ -1,7 +1,5 @@
-import type { SupportedLocale } from "@toonexpo/shared";
-
-/** Public web default locale (Armenian). */
-export const WEB_DEFAULT_LOCALE: SupportedLocale = "hy";
+/** Public web default locale (Armenian); re-exported from shared platform constant. */
+export { DEFAULT_LOCALE as WEB_DEFAULT_LOCALE } from "@toonexpo/shared";
 
 /** Fallback API origin for local development when env is unset. */
 export const DEFAULT_API_ORIGIN = "http://localhost:4000";

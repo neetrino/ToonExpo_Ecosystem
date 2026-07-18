@@ -4,7 +4,6 @@ import { CSRF_COOKIE_NAME } from "@toonexpo/contracts";
 
 import {
   DEFAULT_API_PORT,
-  DEFAULT_APP_LOCALE,
   DEFAULT_SESSION_ABSOLUTE_TTL_SECONDS,
   DEFAULT_SESSION_COOKIE_NAME,
   DEFAULT_SESSION_IDLE_TTL_SECONDS,
@@ -32,10 +31,6 @@ const envSchema = z
     APP_URL: z.preprocess(
       emptyToUndefined,
       z.string().url().default("http://localhost:3000"),
-    ),
-    DEFAULT_LOCALE: z.preprocess(
-      emptyToUndefined,
-      z.string().min(2).max(8).default(DEFAULT_APP_LOCALE),
     ),
     CORS_ORIGINS: z
       .string()
@@ -131,7 +126,6 @@ export type AppEnv = {
   PORT: number;
   DATABASE_URL: string;
   APP_URL: string;
-  DEFAULT_LOCALE: string;
   CORS_ORIGINS: string[];
   SESSION_TOKEN_PEPPER: string;
   SESSION_COOKIE_NAME: string;
@@ -168,7 +162,6 @@ export const validateEnv = (config: Record<string, unknown>): AppEnv => {
     PORT: data.PORT,
     DATABASE_URL: data.DATABASE_URL,
     APP_URL: data.APP_URL,
-    DEFAULT_LOCALE: data.DEFAULT_LOCALE,
     CORS_ORIGINS: data.CORS_ORIGINS,
     SESSION_TOKEN_PEPPER: data.SESSION_TOKEN_PEPPER,
     SESSION_COOKIE_NAME: data.SESSION_COOKIE_NAME,

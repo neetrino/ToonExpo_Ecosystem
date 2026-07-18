@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import type { ProjectQrResponse } from "@toonexpo/contracts";
+import { DEFAULT_LOCALE } from "@toonexpo/shared";
 
 import type { CompanyMemberContext } from "../../company/types/company-member-context.js";
 import type { AppEnv } from "../../config/env.validation.js";
@@ -27,11 +28,10 @@ export class PortalProjectQrService {
       throw entityNotFound("Project");
     }
     const appUrl = this.configService.get("APP_URL", { infer: true });
-    const locale = this.configService.get("DEFAULT_LOCALE", { infer: true });
     return {
       projectId: project.id,
       slug: project.slug,
-      payloadUrl: buildProjectQrPayloadUrl(appUrl, locale, project.id),
+      payloadUrl: buildProjectQrPayloadUrl(appUrl, DEFAULT_LOCALE, project.id),
     };
   }
 }

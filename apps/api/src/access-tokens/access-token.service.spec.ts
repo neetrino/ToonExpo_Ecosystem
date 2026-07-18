@@ -22,7 +22,6 @@ const createConfigService = (): ConfigService<AppEnv, true> =>
         PORT: 4000,
         DATABASE_URL: "postgresql://test",
         APP_URL: "http://localhost:3000",
-        DEFAULT_LOCALE: "en",
         CORS_ORIGINS: ["http://localhost:3000"],
         SESSION_TOKEN_PEPPER: PEPPER,
         SESSION_COOKIE_NAME: "toonexpo_session",
