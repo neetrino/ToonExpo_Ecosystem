@@ -13,6 +13,7 @@ import {
   type Prisma,
 } from "@toonexpo/db";
 
+import { WebRevalidationService } from "../../common/web-revalidation/web-revalidation.service.js";
 import { PrismaService } from "../../prisma/prisma.service.js";
 import { toAdminPartnerDetail, toAdminPartnerListItem } from "../mappers/partner.mapper.js";
 import {
@@ -32,7 +33,10 @@ const partnerOffersInclude = {
 
 @Injectable()
 export class AdminPartnersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly webRevalidation: WebRevalidationService,
+  ) {}
 
   async list(query: ListAdminPartnersQueryDto): Promise<AdminPartnerListResponse> {
     const where = this.buildListWhere(query);
@@ -150,6 +154,13 @@ export class AdminPartnersService {
       dto.translations,
     );
 
+    if (
+      (dto.publicationStatus ?? PublicationStatus.draft) ===
+      PublicationStatus.published
+    ) {
+      this.webRevalidation.revalidatePartners();
+    }
+
     return this.getById(partner.id);
   }
 
@@ -200,6 +211,10 @@ export class AdminPartnersService {
       userId,
       dto.translations,
     );
+
+    if (dto.publicationStatus !== undefined) {
+      this.webRevalidation.revalidatePartners();
+    }
 
     return this.getById(id);
   }

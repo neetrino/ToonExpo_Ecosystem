@@ -16,12 +16,16 @@ import type {
 } from "@toonexpo/contracts";
 import { PublicationStatus, Prisma } from "@toonexpo/db";
 
+import { WebRevalidationService } from "../../common/web-revalidation/web-revalidation.service.js";
 import { PrismaService } from "../../prisma/prisma.service.js";
 import { toBoothSummary } from "../mappers/exhibition.mapper.js";
 
 @Injectable()
 export class AdminBoothsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly webRevalidation: WebRevalidationService,
+  ) {}
 
   async listByVenueMap(mapId: string): Promise<BoothListResponse> {
     await this.requireVenueMap(mapId);
@@ -57,6 +61,13 @@ export class AdminBoothsService {
       },
     });
 
+    if (
+      (body.publicationStatus ?? PublicationStatus.draft) ===
+      PublicationStatus.published
+    ) {
+      this.webRevalidation.revalidateExhibition();
+    }
+
     return toBoothSummary(booth);
   }
 
@@ -87,6 +98,10 @@ export class AdminBoothsService {
           : {}),
       },
     });
+
+    if (body.publicationStatus !== undefined) {
+      this.webRevalidation.revalidateExhibition();
+    }
 
     return toBoothSummary(booth);
   }

@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import type { BankOfferListItem, BankOfferListResponse } from "@toonexpo/contracts";
 import { PublicationStatus, type Prisma } from "@toonexpo/db";
 
+import { WebRevalidationService } from "../../common/web-revalidation/web-revalidation.service.js";
 import { PrismaService } from "../../prisma/prisma.service.js";
 import { toBankOfferListItem } from "../mappers/bank-offer.mapper.js";
 import {
@@ -18,7 +19,10 @@ const bankOfferInclude = {
 
 @Injectable()
 export class AdminBankOffersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly webRevalidation: WebRevalidationService,
+  ) {}
 
   async list(query: ListAdminBankOffersQueryDto): Promise<BankOfferListResponse> {
     const offers = await this.prisma.db.bankOffer.findMany({
@@ -64,6 +68,13 @@ export class AdminBankOffersService {
       include: bankOfferInclude,
     });
 
+    if (
+      (dto.publicationStatus ?? PublicationStatus.draft) ===
+      PublicationStatus.published
+    ) {
+      this.webRevalidation.revalidateMortgage();
+    }
+
     return toBankOfferListItem(offer, offer.partnerCompany.name);
   }
 
@@ -79,6 +90,10 @@ export class AdminBankOffersService {
       data: this.buildUpdateData(userId, dto),
       include: bankOfferInclude,
     });
+
+    if (dto.publicationStatus !== undefined) {
+      this.webRevalidation.revalidateMortgage();
+    }
 
     return toBankOfferListItem(offer, offer.partnerCompany.name);
   }

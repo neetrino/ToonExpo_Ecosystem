@@ -110,6 +110,14 @@ const envSchema = z
       emptyToUndefined,
       z.string().min(1).optional(),
     ),
+    WEB_REVALIDATE_URL: z.preprocess(
+      emptyToUndefined,
+      z.string().url().optional(),
+    ),
+    WEB_REVALIDATE_SECRET: z.preprocess(
+      emptyToUndefined,
+      z.string().min(32).optional(),
+    ),
     DB_POOL_MAX: z.preprocess(
       emptyToUndefined,
       z.coerce.number().int().positive().default(DEFAULT_DB_POOL_MAX),
@@ -143,6 +151,20 @@ const envSchema = z
           : ["UPSTASH_REDIS_REST_URL"],
         message:
           "UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN must both be set or both omitted",
+      });
+    }
+
+    const hasWebRevalidateUrl = Boolean(env.WEB_REVALIDATE_URL);
+    const hasWebRevalidateSecret = Boolean(env.WEB_REVALIDATE_SECRET);
+
+    if (hasWebRevalidateUrl !== hasWebRevalidateSecret) {
+      ctx.addIssue({
+        code: "custom",
+        path: hasWebRevalidateUrl
+          ? ["WEB_REVALIDATE_SECRET"]
+          : ["WEB_REVALIDATE_URL"],
+        message:
+          "WEB_REVALIDATE_URL and WEB_REVALIDATE_SECRET must both be set or both omitted",
       });
     }
 
@@ -190,6 +212,8 @@ export type AppEnv = {
   SENTRY_DSN?: string | undefined;
   UPSTASH_REDIS_REST_URL?: string | undefined;
   UPSTASH_REDIS_REST_TOKEN?: string | undefined;
+  WEB_REVALIDATE_URL?: string | undefined;
+  WEB_REVALIDATE_SECRET?: string | undefined;
   DB_POOL_MAX: number;
   DB_POOL_CONNECTION_TIMEOUT_MS: number;
   DB_STATEMENT_TIMEOUT_MS: number;
@@ -268,6 +292,14 @@ export const validateEnv = (config: Record<string, unknown>): AppEnv => {
 
   if (data.UPSTASH_REDIS_REST_TOKEN) {
     result.UPSTASH_REDIS_REST_TOKEN = data.UPSTASH_REDIS_REST_TOKEN;
+  }
+
+  if (data.WEB_REVALIDATE_URL) {
+    result.WEB_REVALIDATE_URL = data.WEB_REVALIDATE_URL;
+  }
+
+  if (data.WEB_REVALIDATE_SECRET) {
+    result.WEB_REVALIDATE_SECRET = data.WEB_REVALIDATE_SECRET;
   }
 
   return result;

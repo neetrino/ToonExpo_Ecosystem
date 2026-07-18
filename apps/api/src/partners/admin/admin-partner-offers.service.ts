@@ -4,6 +4,7 @@ import { PublicationStatus, type Prisma } from "@toonexpo/db";
 
 import { loadTranslations } from "../../catalog/utils/load-translations.js";
 import { TRANSLATION_ENTITY } from "../../catalog/utils/resolve-translation.js";
+import { WebRevalidationService } from "../../common/web-revalidation/web-revalidation.service.js";
 import { PrismaService } from "../../prisma/prisma.service.js";
 import { toPartnerOfferItem } from "../mappers/partner.mapper.js";
 import { groupPartnerOfferTranslations } from "../utils/group-partner-translations.js";
@@ -18,6 +19,7 @@ export class AdminPartnerOffersService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly partners: AdminPartnersService,
+    private readonly webRevalidation: WebRevalidationService,
   ) {}
 
   async create(
@@ -44,6 +46,13 @@ export class AdminPartnerOffersService {
       userId,
       dto.translations,
     );
+
+    if (
+      (dto.publicationStatus ?? PublicationStatus.draft) ===
+      PublicationStatus.published
+    ) {
+      this.webRevalidation.revalidatePartners();
+    }
 
     return this.toOfferItem(offer);
   }
@@ -75,6 +84,10 @@ export class AdminPartnerOffersService {
       userId,
       dto.translations,
     );
+
+    if (dto.publicationStatus !== undefined) {
+      this.webRevalidation.revalidatePartners();
+    }
 
     return this.toOfferItem(offer);
   }

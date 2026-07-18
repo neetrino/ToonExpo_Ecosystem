@@ -12,6 +12,7 @@ import type {
 } from "@toonexpo/contracts";
 import { PublicationStatus } from "@toonexpo/db";
 
+import { WebRevalidationService } from "../../common/web-revalidation/web-revalidation.service.js";
 import { PrismaService } from "../../prisma/prisma.service.js";
 import { toVenueMapSummary } from "../mappers/exhibition.mapper.js";
 import { AdminRouteGraphService } from "./admin-route-graph.service.js";
@@ -21,6 +22,7 @@ export class AdminVenueMapsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly routeGraph: AdminRouteGraphService,
+    private readonly webRevalidation: WebRevalidationService,
   ) {}
 
   async listByEvent(eventId: string): Promise<VenueMapListResponse> {
@@ -54,6 +56,13 @@ export class AdminVenueMapsService {
       include: { mediaAsset: { select: { fileUrl: true } } },
     });
 
+    if (
+      (body.publicationStatus ?? PublicationStatus.draft) ===
+      PublicationStatus.published
+    ) {
+      this.webRevalidation.revalidateExhibition();
+    }
+
     return toVenueMapSummary(map);
   }
 
@@ -80,6 +89,10 @@ export class AdminVenueMapsService {
       },
       include: { mediaAsset: { select: { fileUrl: true } } },
     });
+
+    if (body.publicationStatus !== undefined) {
+      this.webRevalidation.revalidateExhibition();
+    }
 
     return toVenueMapSummary(map);
   }

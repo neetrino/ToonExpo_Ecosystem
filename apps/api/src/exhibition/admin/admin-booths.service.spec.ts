@@ -21,7 +21,15 @@ describe("AdminBoothsService.listAssignments", () => {
       },
     } as unknown as PrismaService;
 
-    service = new AdminBoothsService(prisma);
+    const webRevalidation = {
+      revalidateCatalog: vi.fn(),
+      revalidatePartners: vi.fn(),
+      revalidateMortgage: vi.fn(),
+      revalidateExhibition: vi.fn(),
+      revalidateVisualMap: vi.fn(),
+      revalidateTags: vi.fn(),
+    } as never;
+    service = new AdminBoothsService(prisma, webRevalidation);
   });
 
   it("returns assignments with resolved company and project names", async () => {

@@ -3,6 +3,7 @@ import type { PortalVisualHotspotItem } from "@toonexpo/contracts";
 import { PublicationStatus } from "@toonexpo/db";
 
 import type { CompanyMemberContext } from "../../company/types/company-member-context.js";
+import { WebRevalidationService } from "../../common/web-revalidation/web-revalidation.service.js";
 import { PrismaService } from "../../prisma/prisma.service.js";
 import { entityNotFound } from "../../portal/utils/access.js";
 import { mapPortalHotspot } from "../mappers/visual-map.mapper.js";
@@ -20,7 +21,10 @@ import { requireOwnedCanvas } from "./portal-visual-map.shared.js";
 
 @Injectable()
 export class PortalVisualMapHotspotService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly webRevalidation: WebRevalidationService,
+  ) {}
 
   async create(
     member: CompanyMemberContext,
@@ -62,6 +66,12 @@ export class PortalVisualMapHotspotService {
     });
 
     const entities = await loadTargetEntities(this.prisma, [hotspot]);
+    if (
+      ((dto.publicationStatus as PublicationStatus | undefined) ??
+        PublicationStatus.draft) === PublicationStatus.published
+    ) {
+      this.webRevalidation.revalidateVisualMap();
+    }
     return mapPortalHotspot(hotspot, entities);
   }
 
@@ -119,6 +129,9 @@ export class PortalVisualMapHotspotService {
     });
 
     const entities = await loadTargetEntities(this.prisma, [hotspot]);
+    if (dto.publicationStatus !== undefined) {
+      this.webRevalidation.revalidateVisualMap();
+    }
     return mapPortalHotspot(hotspot, entities);
   }
 

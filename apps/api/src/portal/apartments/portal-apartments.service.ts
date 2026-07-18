@@ -8,6 +8,7 @@ import {
   TRANSLATION_FIELD,
 } from "../../catalog/utils/resolve-translation.js";
 import type { CompanyMemberContext } from "../../company/types/company-member-context.js";
+import { WebRevalidationService } from "../../common/web-revalidation/web-revalidation.service.js";
 import { PrismaService } from "../../prisma/prisma.service.js";
 import type {
   BulkCreatePortalApartmentsDto,
@@ -32,7 +33,10 @@ const APARTMENT_TRANSLATION_FIELDS = [TRANSLATION_FIELD.description] as const;
 
 @Injectable()
 export class PortalApartmentsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly webRevalidation: WebRevalidationService,
+  ) {}
 
   async listByFloor(
     member: CompanyMemberContext,
@@ -173,7 +177,11 @@ export class PortalApartmentsService {
     dto: UpdatePortalPublicationDto,
   ): Promise<PortalApartmentDetail> {
     assertCompanyAdmin(member);
-    await requireOwnedApartment(this.prisma, apartmentId, member.companyId);
+    const owned = await requireOwnedApartment(
+      this.prisma,
+      apartmentId,
+      member.companyId,
+    );
     const apartment = await this.prisma.db.apartment.update({
       where: { id: apartmentId },
       data: {
@@ -181,6 +189,7 @@ export class PortalApartmentsService {
         updatedByUserId: userId,
       },
     });
+    this.webRevalidation.revalidateCatalog(owned.projectId);
     return this.toApartmentDetail(apartment);
   }
 

@@ -194,6 +194,15 @@ export const BOS_PROVISIONING_RATE_LIMIT_TTL_MS = 60_000;
 /** Header carrying the BOS service-to-service API key. */
 export const BOS_API_KEY_HEADER = "x-bos-api-key";
 
+/** Header for web cache revalidation webhook (API → Next.js). */
+export const WEB_REVALIDATE_SECRET_HEADER = "x-revalidate-secret";
+
+/**
+ * ADAPTIVE VALUE — confirm with owner.
+ * Timeout for fire-and-forget web cache revalidation POST.
+ */
+export const WEB_REVALIDATE_TIMEOUT_MS = 3_000;
+
 /** Default page size for admin BOS provisioning lists. */
 export const ADMIN_BOS_PROVISIONING_DEFAULT_PAGE_SIZE = 20;
 

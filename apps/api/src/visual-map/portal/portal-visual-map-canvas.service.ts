@@ -6,6 +6,7 @@ import type {
 import { PublicationStatus } from "@toonexpo/db";
 
 import type { CompanyMemberContext } from "../../company/types/company-member-context.js";
+import { WebRevalidationService } from "../../common/web-revalidation/web-revalidation.service.js";
 import { PrismaService } from "../../prisma/prisma.service.js";
 import { entityNotFound } from "../../portal/utils/access.js";
 import { requireOwnedProject } from "../../portal/utils/ownership.js";
@@ -29,7 +30,10 @@ import { canvasInclude, requireOwnedCanvas } from "./portal-visual-map.shared.js
 
 @Injectable()
 export class PortalVisualMapCanvasService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly webRevalidation: WebRevalidationService,
+  ) {}
 
   async listByProject(
     member: CompanyMemberContext,
@@ -157,6 +161,9 @@ export class PortalVisualMapCanvasService {
     });
 
     const entities = await loadTargetEntities(this.prisma, canvas.hotspots);
+    if (dto.publicationStatus !== undefined) {
+      this.webRevalidation.revalidateVisualMap();
+    }
     return mapPortalCanvasDetail(canvas, entities);
   }
 

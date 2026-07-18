@@ -57,7 +57,15 @@ describe("PortalPartnerService field whitelist", () => {
       },
     } as unknown as PrismaService;
 
-    service = new PortalPartnerService(prisma);
+    const webRevalidation = {
+      revalidateCatalog: vi.fn(),
+      revalidatePartners: vi.fn(),
+      revalidateMortgage: vi.fn(),
+      revalidateExhibition: vi.fn(),
+      revalidateVisualMap: vi.fn(),
+      revalidateTags: vi.fn(),
+    } as never;
+    service = new PortalPartnerService(prisma, webRevalidation);
   });
 
   it("exposes only content fields as portal-editable", () => {

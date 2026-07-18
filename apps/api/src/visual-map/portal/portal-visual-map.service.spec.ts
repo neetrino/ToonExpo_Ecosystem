@@ -117,9 +117,17 @@ describe("PortalVisualMapService validation", () => {
       },
     } as unknown as PrismaService;
 
+    const webRevalidation = {
+      revalidateCatalog: vi.fn(),
+      revalidatePartners: vi.fn(),
+      revalidateMortgage: vi.fn(),
+      revalidateExhibition: vi.fn(),
+      revalidateVisualMap: vi.fn(),
+      revalidateTags: vi.fn(),
+    } as never;
     service = new PortalVisualMapService(
-      new PortalVisualMapCanvasService(prisma),
-      new PortalVisualMapHotspotService(prisma),
+      new PortalVisualMapCanvasService(prisma, webRevalidation),
+      new PortalVisualMapHotspotService(prisma, webRevalidation),
     );
   });
 

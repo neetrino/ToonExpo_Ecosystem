@@ -11,6 +11,7 @@ import {
   TRANSLATION_FIELD,
 } from "../../catalog/utils/resolve-translation.js";
 import type { CompanyMemberContext } from "../../company/types/company-member-context.js";
+import { WebRevalidationService } from "../../common/web-revalidation/web-revalidation.service.js";
 import { PrismaService } from "../../prisma/prisma.service.js";
 import {
   mapPortalProjectDetail,
@@ -47,7 +48,10 @@ const projectDetailInclude = {
 
 @Injectable()
 export class PortalProjectsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly webRevalidation: WebRevalidationService,
+  ) {}
 
   async list(
     member: CompanyMemberContext,
@@ -253,6 +257,7 @@ export class PortalProjectsService {
       include: projectDetailInclude,
     });
 
+    this.webRevalidation.revalidateCatalog(projectId);
     return this.toProjectDetail(project);
   }
 

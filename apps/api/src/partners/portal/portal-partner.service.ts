@@ -5,6 +5,7 @@ import { PublicationStatus, type Prisma } from "@toonexpo/db";
 import { loadTranslations } from "../../catalog/utils/load-translations.js";
 import { TRANSLATION_ENTITY } from "../../catalog/utils/resolve-translation.js";
 import type { CompanyMemberContext } from "../../company/types/company-member-context.js";
+import { WebRevalidationService } from "../../common/web-revalidation/web-revalidation.service.js";
 import { PrismaService } from "../../prisma/prisma.service.js";
 import { toPortalPartnerDetail, toPartnerOfferItem } from "../mappers/partner.mapper.js";
 import { groupPartnerOfferTranslations } from "../utils/group-partner-translations.js";
@@ -36,7 +37,10 @@ const PORTAL_PARTNER_EDITABLE_KEYS = [
 
 @Injectable()
 export class PortalPartnerService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly webRevalidation: WebRevalidationService,
+  ) {}
 
   portalEditableFieldKeys(): readonly string[] {
     return PORTAL_PARTNER_EDITABLE_KEYS;
@@ -115,6 +119,13 @@ export class PortalPartnerService {
       dto.translations,
     );
 
+    if (
+      (dto.publicationStatus ?? PublicationStatus.draft) ===
+      PublicationStatus.published
+    ) {
+      this.webRevalidation.revalidatePartners();
+    }
+
     return this.toOfferItem(offer);
   }
 
@@ -146,6 +157,10 @@ export class PortalPartnerService {
       userId,
       dto.translations,
     );
+
+    if (dto.publicationStatus !== undefined) {
+      this.webRevalidation.revalidatePartners();
+    }
 
     return this.toOfferItem(offer);
   }

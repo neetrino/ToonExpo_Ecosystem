@@ -20,7 +20,15 @@ describe("AdminBankOffersService bank validation", () => {
       },
     } as unknown as PrismaService;
 
-    service = new AdminBankOffersService(prisma);
+    const webRevalidation = {
+      revalidateCatalog: vi.fn(),
+      revalidatePartners: vi.fn(),
+      revalidateMortgage: vi.fn(),
+      revalidateExhibition: vi.fn(),
+      revalidateVisualMap: vi.fn(),
+      revalidateTags: vi.fn(),
+    } as never;
+    service = new AdminBankOffersService(prisma, webRevalidation);
   });
 
   it("rejects offer creation for non-bank partner companies", async () => {

@@ -12,12 +12,16 @@ import type {
 } from "@toonexpo/contracts";
 import { CheckInStatus, EventStatus, PublicationStatus } from "@toonexpo/db";
 
+import { WebRevalidationService } from "../../common/web-revalidation/web-revalidation.service.js";
 import { PrismaService } from "../../prisma/prisma.service.js";
 import { toEventSummary } from "../mappers/exhibition.mapper.js";
 
 @Injectable()
 export class AdminEventsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly webRevalidation: WebRevalidationService,
+  ) {}
 
   async list(): Promise<EventListResponse> {
     const events = await this.prisma.db.event.findMany({
@@ -37,6 +41,13 @@ export class AdminEventsService {
         publicationStatus: body.publicationStatus ?? PublicationStatus.draft,
       },
     });
+    if (
+      (body.publicationStatus ?? PublicationStatus.draft) ===
+      PublicationStatus.published
+    ) {
+      this.webRevalidation.revalidateExhibition();
+    }
+
     return toEventSummary(event);
   }
 
@@ -69,6 +80,10 @@ export class AdminEventsService {
           : {}),
       },
     });
+
+    if (body.publicationStatus !== undefined) {
+      this.webRevalidation.revalidateExhibition();
+    }
 
     return toEventSummary(event);
   }

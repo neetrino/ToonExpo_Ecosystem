@@ -3,6 +3,7 @@ import type { PortalFloorSummary } from "@toonexpo/contracts";
 import { PublicationStatus, type Prisma } from "@toonexpo/db";
 
 import type { CompanyMemberContext } from "../../company/types/company-member-context.js";
+import { WebRevalidationService } from "../../common/web-revalidation/web-revalidation.service.js";
 import { PrismaService } from "../../prisma/prisma.service.js";
 import type {
   CreatePortalFloorDto,
@@ -22,7 +23,10 @@ const floorInclude = {
 
 @Injectable()
 export class PortalFloorsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly webRevalidation: WebRevalidationService,
+  ) {}
 
   async list(
     member: CompanyMemberContext,
@@ -106,7 +110,7 @@ export class PortalFloorsService {
     dto: UpdatePortalPublicationDto,
   ): Promise<PortalFloorSummary> {
     assertCompanyAdmin(member);
-    await requireOwnedFloor(this.prisma, floorId, member.companyId);
+    const owned = await requireOwnedFloor(this.prisma, floorId, member.companyId);
     const floor = await this.prisma.db.floor.update({
       where: { id: floorId },
       data: {
@@ -115,6 +119,7 @@ export class PortalFloorsService {
       },
       include: floorInclude,
     });
+    this.webRevalidation.revalidateCatalog(owned.building.projectId);
     return mapPortalFloor(floor);
   }
 

@@ -15,6 +15,7 @@ import { SessionAuthGuard } from "./auth/guards/session-auth.guard.js";
 import { CatalogModule } from "./catalog/catalog.module.js";
 import { NODE_ENV_PRODUCTION } from "./common/constants/app.constants.js";
 import { AllExceptionsFilter } from "./common/filters/all-exceptions.filter.js";
+import { WebRevalidationModule } from "./common/web-revalidation/web-revalidation.module.js";
 import { CompanyMembersModule } from "./company/company-members.module.js";
 import { resolveEnvFilePaths } from "./config/env-files.js";
 import { validateEnv } from "./config/env.validation.js";
@@ -73,6 +74,7 @@ const isProduction = process.env["NODE_ENV"] === NODE_ENV_PRODUCTION;
       useClass: ThrottlerConfigService,
     }),
     PrismaModule,
+    WebRevalidationModule,
     EmailModule,
     AnalyticsModule,
     AuthModule,
