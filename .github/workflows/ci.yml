@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Lint, typecheck, test, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.14.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Architecture boundary check
+        run: |
+          set -euo pipefail
+          fail=0
+          if [ -d apps/web ]; then
+            if grep -RInE --include='*.ts' --include='*.tsx' --include='*.js' --include='*.jsx' \
+              -e "@prisma/client" \
+              -e "@toonexpo/db" \
+              -e "packages/db" \
+              apps/web; then
+              echo "::error::apps/web must not import Prisma Client or @toonexpo/db"
+              fail=1
+            else
+              echo "Boundary check passed for apps/web"
+            fi
+          else
+            echo "apps/web not present yet — boundary check skipped"
+          fi
+          exit "$fail"
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build

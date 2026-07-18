@@ -1,0 +1,123 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// Platform-wide account roles (v1).
+enum PlatformRole {
+  bigprojects_admin
+  builder
+  partner
+  buyer
+  entrance_staff
+}
+
+enum UserStatus {
+  active
+  inactive
+  suspended
+}
+
+enum CompanyType {
+  bigprojects
+  builder
+  partner
+  bank
+  service
+  other
+}
+
+enum CompanyStatus {
+  active
+  inactive
+  pending
+}
+
+enum CompanySource {
+  self_registered
+  admin
+  bos
+}
+
+enum CompanyMemberStatus {
+  invited
+  active
+  disabled
+}
+
+model User {
+  id            String     @id @default(cuid())
+  name          String
+  email         String     @unique
+  phone         String?
+  passwordHash  String     @map("password_hash")
+  status        UserStatus @default(active)
+  defaultLocale String?    @map("default_locale")
+  createdAt     DateTime   @default(now()) @map("created_at")
+  updatedAt     DateTime   @updatedAt @map("updated_at")
+
+  sessions             Session[]
+  companyMemberships   CompanyMember[]
+  invitedMemberships   CompanyMember[] @relation("CompanyMemberInviter")
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  tokenHash String   @unique @map("token_hash")
+  expiresAt DateTime @map("expires_at")
+  ipAddress String?  @map("ip_address")
+  userAgent String?  @map("user_agent")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("sessions")
+}
+
+model Company {
+  id           String        @id @default(cuid())
+  name         String
+  type         CompanyType
+  status       CompanyStatus @default(pending)
+  source       CompanySource
+  bosCompanyId String?       @map("bos_company_id")
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+
+  members CompanyMember[]
+
+  @@index([type])
+  @@index([status])
+  @@map("companies")
+}
+
+model CompanyMember {
+  id              String              @id @default(cuid())
+  companyId       String              @map("company_id")
+  userId          String              @map("user_id")
+  role            PlatformRole
+  status          CompanyMemberStatus @default(invited)
+  invitedByUserId String?             @map("invited_by_user_id")
+  joinedAt        DateTime?           @map("joined_at")
+  createdAt       DateTime            @default(now()) @map("created_at")
+  updatedAt       DateTime            @updatedAt @map("updated_at")
+
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  invitedBy User?   @relation("CompanyMemberInviter", fields: [invitedByUserId], references: [id], onDelete: SetNull)
+
+  @@unique([companyId, userId])
+  @@index([userId])
+  @@index([role])
+  @@map("company_members")
+}

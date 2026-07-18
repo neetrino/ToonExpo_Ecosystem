@@ -1,0 +1,26 @@
+{
+  "name": "toonexpo-ecosystem",
+  "private": true,
+  "version": "0.0.0",
+  "description": "ToonExpo Ecosystem monorepo",
+  "packageManager": "pnpm@11.14.0",
+  "engines": {
+    "node": ">=24",
+    "pnpm": ">=11"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "@toonexpo/config": "workspace:*",
+    "prettier": "^3.6.2",
+    "turbo": "^2.10.5",
+    "typescript": "6.0.3"
+  }
+}
