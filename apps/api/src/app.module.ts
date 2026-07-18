@@ -22,6 +22,7 @@ import { validateEnv } from "./config/env.validation.js";
 import { CrmModule } from "./crm/crm.module.js";
 import { EmailModule } from "./email/email.module.js";
 import { HealthModule } from "./health/health.module.js";
+import { PartnersModule } from "./partners/partners.module.js";
 import { PortalModule } from "./portal/portal.module.js";
 import { PrismaModule } from "./prisma/prisma.module.js";
 import { QrModule } from "./qr/qr.module.js";
@@ -79,6 +80,7 @@ const isProduction = process.env["NODE_ENV"] === NODE_ENV_PRODUCTION;
     QrModule,
     CrmModule,
     ReadinessModule,
+    PartnersModule,
     HealthModule,
   ],
   providers: [
