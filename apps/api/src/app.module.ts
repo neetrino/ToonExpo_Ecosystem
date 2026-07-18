@@ -26,6 +26,7 @@ import { ExhibitionModule } from "./exhibition/exhibition.module.js";
 import { FavoritesModule } from "./favorites/favorites.module.js";
 import { HealthModule } from "./health/health.module.js";
 import { IntegrationsModule } from "./integrations/integrations.module.js";
+import { MediaModule } from "./media/media.module.js";
 import { MortgageModule } from "./mortgage/mortgage.module.js";
 import { PartnersModule } from "./partners/partners.module.js";
 import { PortalModule } from "./portal/portal.module.js";
@@ -95,6 +96,7 @@ const isProduction = process.env["NODE_ENV"] === NODE_ENV_PRODUCTION;
     FavoritesModule,
     IntegrationsModule,
     VisualMapModule,
+    MediaModule,
     HealthModule,
   ],
   providers: [

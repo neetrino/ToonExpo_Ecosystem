@@ -28,6 +28,7 @@ export class AdminVenueMapsService {
     const maps = await this.prisma.db.venueMap.findMany({
       where: { eventId },
       orderBy: [{ updatedAt: "desc" }],
+      include: { mediaAsset: { select: { fileUrl: true } } },
     });
     return { data: maps.map(toVenueMapSummary) };
   }
@@ -50,6 +51,7 @@ export class AdminVenueMapsService {
         height: body.height ?? null,
         createdByUserId: userId,
       },
+      include: { mediaAsset: { select: { fileUrl: true } } },
     });
 
     return toVenueMapSummary(map);
@@ -76,6 +78,7 @@ export class AdminVenueMapsService {
         ...(body.height !== undefined ? { height: body.height } : {}),
         updatedByUserId: userId,
       },
+      include: { mediaAsset: { select: { fileUrl: true } } },
     });
 
     return toVenueMapSummary(map);

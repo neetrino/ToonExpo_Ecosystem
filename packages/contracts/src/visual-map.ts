@@ -72,6 +72,10 @@ export type PortalVisualCanvasDetail = {
   contextType: VisualMapContextType;
   contextId: string;
   mediaAssetId: string;
+  media: PublicVisualMapMedia & {
+    width: number | null;
+    height: number | null;
+  };
   title: string | null;
   description: string | null;
   publicationStatus: PublicationStatus;

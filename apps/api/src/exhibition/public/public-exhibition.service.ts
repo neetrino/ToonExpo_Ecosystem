@@ -42,6 +42,7 @@ export class PublicExhibitionService {
         venueMaps: {
           where: { publicationStatus: PublicationStatus.published },
           orderBy: [{ updatedAt: "desc" }],
+          include: { mediaAsset: { select: { fileUrl: true } } },
         },
       },
     });
@@ -60,6 +61,7 @@ export class PublicExhibitionService {
         id: map.id,
         title: map.title,
         mediaAssetId: map.mediaAssetId,
+        mediaUrl: map.mediaAsset.fileUrl,
         width: map.width,
         height: map.height,
       })),

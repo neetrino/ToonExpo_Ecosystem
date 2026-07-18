@@ -89,6 +89,20 @@ const envSchema = z
       emptyToUndefined,
       z.string().min(32).optional(),
     ),
+    R2_ACCOUNT_ID: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
+    R2_ACCESS_KEY_ID: z.preprocess(
+      emptyToUndefined,
+      z.string().min(1).optional(),
+    ),
+    R2_SECRET_ACCESS_KEY: z.preprocess(
+      emptyToUndefined,
+      z.string().min(1).optional(),
+    ),
+    R2_BUCKET_NAME: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
+    R2_PUBLIC_URL: z.preprocess(
+      emptyToUndefined,
+      z.string().url().optional(),
+    ),
   })
   .superRefine((env, ctx) => {
     if (env.NODE_ENV !== NODE_ENV_PRODUCTION) {
@@ -128,6 +142,11 @@ export type AppEnv = {
   RESEND_API_KEY?: string | undefined;
   RESEND_FROM_EMAIL?: string | undefined;
   BOS_API_KEY?: string | undefined;
+  R2_ACCOUNT_ID?: string | undefined;
+  R2_ACCESS_KEY_ID?: string | undefined;
+  R2_SECRET_ACCESS_KEY?: string | undefined;
+  R2_BUCKET_NAME?: string | undefined;
+  R2_PUBLIC_URL?: string | undefined;
 };
 
 /**
@@ -169,6 +188,26 @@ export const validateEnv = (config: Record<string, unknown>): AppEnv => {
 
   if (data.BOS_API_KEY) {
     result.BOS_API_KEY = data.BOS_API_KEY;
+  }
+
+  if (data.R2_ACCOUNT_ID) {
+    result.R2_ACCOUNT_ID = data.R2_ACCOUNT_ID;
+  }
+
+  if (data.R2_ACCESS_KEY_ID) {
+    result.R2_ACCESS_KEY_ID = data.R2_ACCESS_KEY_ID;
+  }
+
+  if (data.R2_SECRET_ACCESS_KEY) {
+    result.R2_SECRET_ACCESS_KEY = data.R2_SECRET_ACCESS_KEY;
+  }
+
+  if (data.R2_BUCKET_NAME) {
+    result.R2_BUCKET_NAME = data.R2_BUCKET_NAME;
+  }
+
+  if (data.R2_PUBLIC_URL) {
+    result.R2_PUBLIC_URL = data.R2_PUBLIC_URL;
   }
 
   return result;

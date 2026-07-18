@@ -8,6 +8,7 @@ import type {
 } from "@toonexpo/contracts";
 import type { Prisma } from "@toonexpo/db";
 
+import { toPortalMediaSummary } from "../../media/media.mapper.js";
 import {
   formatFloorDisplayName,
   resolveTargetStatus,
@@ -79,6 +80,7 @@ export const mapPortalCanvasDetail = (
   contextType: canvas.contextType,
   contextId: canvas.contextId,
   mediaAssetId: canvas.mediaAssetId,
+  media: toPortalMediaSummary(canvas.mediaAsset),
   title: canvas.title,
   description: canvas.description,
   publicationStatus: canvas.publicationStatus,

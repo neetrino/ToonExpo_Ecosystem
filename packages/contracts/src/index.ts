@@ -327,3 +327,9 @@ export type {
   VisualHotspotTargetType,
   VisualMapContextType,
 } from "./visual-map.js";
+
+export type {
+  ListMediaQuery,
+  MediaAssetItem,
+  MediaListResponse,
+} from "./media.js";

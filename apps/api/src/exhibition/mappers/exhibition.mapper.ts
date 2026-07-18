@@ -33,6 +33,7 @@ type VenueMapRow = {
   eventId: string;
   title: string;
   mediaAssetId: string;
+  mediaAsset: { fileUrl: string };
   publicationStatus: PublicationStatus;
   width: number | null;
   height: number | null;
@@ -92,6 +93,7 @@ export const toVenueMapSummary = (map: VenueMapRow): VenueMapSummary => ({
   eventId: map.eventId,
   title: map.title,
   mediaAssetId: map.mediaAssetId,
+  mediaUrl: map.mediaAsset.fileUrl,
   publicationStatus: map.publicationStatus,
   width: map.width,
   height: map.height,

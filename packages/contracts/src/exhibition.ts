@@ -70,6 +70,7 @@ export type VenueMapSummary = {
   eventId: string;
   title: string;
   mediaAssetId: string;
+  mediaUrl: string;
   publicationStatus: PublicationStatus;
   width: number | null;
   height: number | null;
@@ -281,6 +282,7 @@ export type PublicVenueMapSummary = {
   id: string;
   title: string;
   mediaAssetId: string;
+  mediaUrl: string;
   width: number | null;
   height: number | null;
 };
