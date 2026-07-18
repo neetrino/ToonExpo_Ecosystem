@@ -126,10 +126,15 @@ model Company {
   status       CompanyStatus @default(pending)
   source       CompanySource
   bosCompanyId String?       @map("bos_company_id")
+  /// Optional public logo (MediaAsset URL metadata only in this sprint).
+  logoMediaId  String?       @map("logo_media_id")
   createdAt    DateTime      @default(now()) @map("created_at")
   updatedAt    DateTime      @updatedAt @map("updated_at")
 
-  members CompanyMember[]
+  members     CompanyMember[]
+  logoMedia   MediaAsset?     @relation("CompanyLogo", fields: [logoMediaId], references: [id], onDelete: SetNull)
+  ownedMedia  MediaAsset[]    @relation("MediaOwnerCompany")
+  projects    Project[]
 
   @@index([type])
   @@index([status])
@@ -171,4 +176,228 @@ model AccountAccessToken {
   @@index([userId])
   @@index([expiresAt])
   @@map("account_access_tokens")
+}
+
+/// Public/draft/archived gate for catalog entities.
+enum PublicationStatus {
+  draft
+  published
+  archived
+}
+
+/// Sellable apartment inventory status (Constructor CRM is SoT after CRM is live).
+enum ApartmentSalesStatus {
+  available
+  reserved
+  sold
+}
+
+/// How apartment price is shown on public surfaces.
+enum PriceVisibility {
+  public
+  by_request
+  hidden
+  visible_after_login
+}
+
+/// Origin of the current apartment sales status.
+enum CrmStatusSource {
+  manual
+  crm
+  import
+}
+
+/// Shared media metadata (file upload pipeline comes later; URL fields only).
+enum MediaAssetType {
+  image
+  video
+  document
+  other
+}
+
+model MediaAsset {
+  id                String         @id @default(cuid())
+  ownerCompanyId    String?        @map("owner_company_id")
+  relatedEntityType String?        @map("related_entity_type")
+  relatedEntityId   String?        @map("related_entity_id")
+  type              MediaAssetType
+  fileUrl           String         @map("file_url")
+  thumbnailUrl      String?        @map("thumbnail_url")
+  title             String?
+  altText           String?        @map("alt_text")
+  sortOrder         Int            @default(0) @map("sort_order")
+  uploadedByUserId  String?        @map("uploaded_by_user_id")
+  createdAt         DateTime       @default(now()) @map("created_at")
+
+  ownerCompany   Company?   @relation("MediaOwnerCompany", fields: [ownerCompanyId], references: [id], onDelete: SetNull)
+  companyLogos   Company[]  @relation("CompanyLogo")
+  projectCovers  Project[]  @relation("ProjectCover")
+  buildingCovers Building[] @relation("BuildingCover")
+  floorPlans     Floor[]    @relation("FloorPlan")
+  apartmentPlans Apartment[] @relation("ApartmentPlan")
+
+  @@index([ownerCompanyId])
+  @@index([relatedEntityType, relatedEntityId])
+  @@map("media_assets")
+}
+
+model Project {
+  id                  String            @id @default(cuid())
+  builderCompanyId    String            @map("builder_company_id")
+  name                String
+  slug                String            @unique
+  publicationStatus   PublicationStatus @default(draft) @map("publication_status")
+  shortDescription    String?           @map("short_description")
+  fullDescription     String?           @map("full_description")
+  locationText        String?           @map("location_text")
+  address             String?
+  city                String?
+  district            String?
+  latitude            Decimal?          @db.Decimal(10, 7)
+  longitude           Decimal?          @db.Decimal(10, 7)
+  coverMediaId        String?           @map("cover_media_id")
+  projectType         String?           @map("project_type")
+  constructionStatus  String?           @map("construction_status")
+  completionDate      DateTime?         @map("completion_date") @db.Date
+  amenities           Json?
+  nearbyPlaces        Json?             @map("nearby_places")
+  createdByUserId     String?           @map("created_by_user_id")
+  updatedByUserId     String?           @map("updated_by_user_id")
+  createdAt           DateTime          @default(now()) @map("created_at")
+  updatedAt           DateTime          @updatedAt @map("updated_at")
+
+  builderCompany Company     @relation(fields: [builderCompanyId], references: [id], onDelete: Restrict)
+  coverMedia     MediaAsset? @relation("ProjectCover", fields: [coverMediaId], references: [id], onDelete: SetNull)
+  buildings      Building[]
+  apartments     Apartment[]
+
+  @@index([builderCompanyId])
+  @@index([publicationStatus])
+  @@index([city])
+  @@map("projects")
+}
+
+model Building {
+  id                String            @id @default(cuid())
+  projectId         String            @map("project_id")
+  name              String
+  publicationStatus PublicationStatus @default(draft) @map("publication_status")
+  description       String?
+  displayOrder      Int               @default(0) @map("display_order")
+  floorsCount       Int?              @map("floors_count")
+  coverMediaId      String?           @map("cover_media_id")
+  internalCode      String?           @map("internal_code")
+  createdByUserId   String?           @map("created_by_user_id")
+  updatedByUserId   String?           @map("updated_by_user_id")
+  createdAt         DateTime          @default(now()) @map("created_at")
+  updatedAt         DateTime          @updatedAt @map("updated_at")
+
+  project    Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  coverMedia MediaAsset? @relation("BuildingCover", fields: [coverMediaId], references: [id], onDelete: SetNull)
+  floors     Floor[]
+  apartments Apartment[]
+
+  @@unique([projectId, name])
+  @@index([projectId])
+  @@index([publicationStatus])
+  @@map("buildings")
+}
+
+model Floor {
+  id                String            @id @default(cuid())
+  buildingId        String            @map("building_id")
+  number            Int
+  publicationStatus PublicationStatus @default(draft) @map("publication_status")
+  name              String?
+  displayLabel      String?           @map("display_label")
+  displayOrder      Int               @default(0) @map("display_order")
+  floorplanMediaId  String?           @map("floorplan_media_id")
+  description       String?
+  createdByUserId   String?           @map("created_by_user_id")
+  updatedByUserId   String?           @map("updated_by_user_id")
+  createdAt         DateTime          @default(now()) @map("created_at")
+  updatedAt         DateTime          @updatedAt @map("updated_at")
+
+  building       Building    @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  floorplanMedia MediaAsset? @relation("FloorPlan", fields: [floorplanMediaId], references: [id], onDelete: SetNull)
+  apartments     Apartment[]
+
+  @@unique([buildingId, number])
+  @@index([buildingId])
+  @@index([publicationStatus])
+  @@map("floors")
+}
+
+model Apartment {
+  id                      String               @id @default(cuid())
+  projectId               String               @map("project_id")
+  buildingId              String               @map("building_id")
+  floorId                 String               @map("floor_id")
+  number                  String
+  salesStatus             ApartmentSalesStatus @default(available) @map("sales_status")
+  publicationStatus       PublicationStatus    @default(draft) @map("publication_status")
+  rooms                   Int?
+  bedrooms                Int?
+  bathrooms               Int?
+  areaTotal               Decimal?             @map("area_total") @db.Decimal(10, 2)
+  areaLiving              Decimal?             @map("area_living") @db.Decimal(10, 2)
+  balconyArea             Decimal?             @map("balcony_area") @db.Decimal(10, 2)
+  /// Amount in `priceCurrency` major units (e.g. AMD). ADAPTIVE: confirm minor-unit storage later.
+  price                   Decimal?             @db.Decimal(14, 2)
+  priceCurrency           String               @default("AMD") @map("price_currency")
+  priceVisibility         PriceVisibility      @default(public) @map("price_visibility")
+  description             String?
+  planMediaId             String?              @map("plan_media_id")
+  matterportUrl           String?              @map("matterport_url")
+  external3dUrl           String?              @map("external_3d_url")
+  orientation             String?
+  viewType                String?              @map("view_type")
+  features                Json?
+  crmStatusSource         CrmStatusSource      @default(manual) @map("crm_status_source")
+  activeCrmDealId         String?              @map("active_crm_deal_id")
+  reservedUntil           DateTime?            @map("reserved_until")
+  lastStatusChangedAt     DateTime?            @map("last_status_changed_at")
+  lastStatusChangedByUserId String?            @map("last_status_changed_by_user_id")
+  internalCode            String?              @map("internal_code")
+  importExternalId        String?              @map("import_external_id")
+  createdByUserId         String?              @map("created_by_user_id")
+  updatedByUserId         String?              @map("updated_by_user_id")
+  createdAt               DateTime             @default(now()) @map("created_at")
+  updatedAt               DateTime             @updatedAt @map("updated_at")
+
+  project    Project                   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  building   Building                  @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  floor      Floor                     @relation(fields: [floorId], references: [id], onDelete: Cascade)
+  planMedia  MediaAsset?               @relation("ApartmentPlan", fields: [planMediaId], references: [id], onDelete: SetNull)
+  statusHistory ApartmentStatusHistory[]
+
+  @@unique([floorId, number])
+  @@index([projectId])
+  @@index([buildingId])
+  @@index([floorId])
+  @@index([publicationStatus])
+  @@index([salesStatus])
+  @@index([price])
+  @@index([rooms])
+  @@index([publicationStatus, salesStatus])
+  @@index([projectId, publicationStatus])
+  @@map("apartments")
+}
+
+/// Audit trail for apartment sales status changes (price/publication history can extend later).
+model ApartmentStatusHistory {
+  id              String                @id @default(cuid())
+  apartmentId     String                @map("apartment_id")
+  previousStatus  ApartmentSalesStatus? @map("previous_status")
+  newStatus       ApartmentSalesStatus  @map("new_status")
+  reason          String?
+  changedByUserId String?               @map("changed_by_user_id")
+  linkedDealId    String?               @map("linked_deal_id")
+  createdAt       DateTime              @default(now()) @map("created_at")
+
+  apartment Apartment @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+
+  @@index([apartmentId])
+  @@index([createdAt])
+  @@map("apartment_status_history")
 }
