@@ -49,6 +49,10 @@ export type {
 } from "./exhibition/routes.js";
 
 export type {
+  BuyerCheckInActiveEventSummary,
+  BuyerCheckInCurrentStatus,
+  BuyerCheckInHistoryItem,
+  BuyerCheckInStatusResponse,
   CheckInDayBreakdown,
   CheckInScanRequest,
   CheckInScanResponse,

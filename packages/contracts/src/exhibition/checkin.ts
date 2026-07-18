@@ -42,3 +42,27 @@ export type RecentCheckInItem = {
 export type RecentCheckInResponse = {
   data: RecentCheckInItem[];
 };
+
+export type BuyerCheckInActiveEventSummary = {
+  id: string;
+  name: string;
+};
+
+export type BuyerCheckInCurrentStatus = {
+  checkedIn: boolean;
+  eventId: string;
+  eventName: string;
+  checkedInAt: string | null;
+};
+
+export type BuyerCheckInHistoryItem = {
+  eventId: string;
+  eventName: string;
+  checkedInAt: string;
+};
+
+export type BuyerCheckInStatusResponse = {
+  activeEvent: BuyerCheckInActiveEventSummary | null;
+  current: BuyerCheckInCurrentStatus | null;
+  history: BuyerCheckInHistoryItem[];
+};

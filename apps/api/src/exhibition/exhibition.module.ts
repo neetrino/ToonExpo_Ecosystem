@@ -12,6 +12,8 @@ import { AdminVenueMapsService } from "./admin/admin-venue-maps.service.js";
 import { CheckInController } from "./checkin/checkin.controller.js";
 import { CheckInScanService } from "./checkin/checkin-scan.service.js";
 import { CheckInService } from "./checkin/checkin.service.js";
+import { BuyerCheckInController } from "./checkin/buyer-checkin.controller.js";
+import { BuyerCheckInService } from "./checkin/buyer-checkin.service.js";
 import { PublicBoothSearchService } from "./public/public-booth-search.service.js";
 import { PublicExhibitionController } from "./public/public-exhibition.controller.js";
 import { PublicExhibitionService } from "./public/public-exhibition.service.js";
@@ -24,6 +26,7 @@ import { PublicRouteService } from "./public/public-route.service.js";
     AdminVenueMapsController,
     AdminBoothsController,
     CheckInController,
+    BuyerCheckInController,
     PublicExhibitionController,
   ],
   providers: [
@@ -33,6 +36,7 @@ import { PublicRouteService } from "./public/public-route.service.js";
     AdminBoothsService,
     CheckInScanService,
     CheckInService,
+    BuyerCheckInService,
     PublicExhibitionService,
     PublicBoothSearchService,
     PublicRouteService,
