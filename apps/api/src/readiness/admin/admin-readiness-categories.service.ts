@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import type {
   ReadinessCategoryItem,
   ReadinessCategoryListResponse,
@@ -22,6 +22,10 @@ export class AdminReadinessCategoriesService {
   }
 
   async create(body: CreateReadinessCategoryDto): Promise<ReadinessCategoryItem> {
+    if (body.serviceProviderCategoryId) {
+      await this.assertServiceProviderCategoryExists(body.serviceProviderCategoryId);
+    }
+
     const category = await this.prisma.db.readinessCategory.create({
       data: {
         name: body.name.trim(),
@@ -42,6 +46,10 @@ export class AdminReadinessCategoriesService {
   ): Promise<ReadinessCategoryItem> {
     await this.assertExists(id);
 
+    if (body.serviceProviderCategoryId) {
+      await this.assertServiceProviderCategoryExists(body.serviceProviderCategoryId);
+    }
+
     const category = await this.prisma.db.readinessCategory.update({
       where: { id },
       data: {
@@ -51,11 +59,30 @@ export class AdminReadinessCategoriesService {
           : {}),
         ...(body.weight !== undefined ? { weight: body.weight } : {}),
         ...(body.sortOrder !== undefined ? { sortOrder: body.sortOrder } : {}),
+        ...(body.serviceProviderCategoryId !== undefined
+          ? {
+              serviceProviderCategoryId:
+                body.serviceProviderCategoryId?.trim() || null,
+            }
+          : {}),
         ...(body.active !== undefined ? { active: body.active } : {}),
       },
     });
 
     return toReadinessCategoryItem(category);
+  }
+
+  private async assertServiceProviderCategoryExists(
+    categoryId: string,
+  ): Promise<void> {
+    const category = await this.prisma.db.serviceProviderCategory.findUnique({
+      where: { id: categoryId.trim() },
+      select: { id: true },
+    });
+
+    if (!category) {
+      throw new BadRequestException("Service provider category not found");
+    }
   }
 
   private async assertExists(id: string): Promise<void> {

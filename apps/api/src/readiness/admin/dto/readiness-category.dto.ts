@@ -89,6 +89,13 @@ export class UpdateReadinessCategoryDto {
   @Min(0)
   sortOrder?: number;
 
+  @ApiPropertyOptional({ nullable: true })
+  @IsOptional()
+  @ValidateIf((_, value) => value !== null)
+  @IsString()
+  @MinLength(1)
+  serviceProviderCategoryId?: string | null;
+
   @ApiPropertyOptional()
   @IsOptional()
   @IsBoolean()

@@ -46,7 +46,17 @@ export class PortalReadinessService {
       include: this.portalInclude(),
     });
 
-    return assessment ? toPortalReadinessAssessmentItem(assessment) : null;
+    if (!assessment) {
+      return null;
+    }
+
+    const helpAvailabilityByCategoryId =
+      await this.buildHelpAvailabilityMap(assessment.scores);
+
+    return toPortalReadinessAssessmentItem(
+      assessment,
+      helpAvailabilityByCategoryId,
+    );
   }
 
   private async findActiveProjectAssessments(companyId: string) {
@@ -68,6 +78,50 @@ export class PortalReadinessService {
     return assessments.filter(
       (item): item is NonNullable<typeof item> => item !== null,
     );
+  }
+
+  private async buildHelpAvailabilityMap(
+    scores: Array<{
+      categoryId: string;
+      category: { serviceProviderCategoryId: string | null };
+    }>,
+  ): Promise<Map<string, boolean>> {
+    const categoryIds = [
+      ...new Set(
+        scores
+          .map((score) => score.category.serviceProviderCategoryId)
+          .filter((value): value is string => value != null),
+      ),
+    ];
+
+    if (categoryIds.length === 0) {
+      return new Map();
+    }
+
+    const counts = await this.prisma.db.serviceProviderCategoryLink.groupBy({
+      by: ["serviceProviderCategoryId"],
+      where: {
+        serviceProviderCategoryId: { in: categoryIds },
+        serviceProvider: { active: true },
+      },
+      _count: { serviceProviderId: true },
+    });
+
+    const activeCounts = new Map(
+      counts.map((row) => [row.serviceProviderCategoryId, row._count.serviceProviderId]),
+    );
+
+    const helpByScoreCategory = new Map<string, boolean>();
+
+    for (const score of scores) {
+      const linkedCategoryId = score.category.serviceProviderCategoryId;
+      const helpAvailable =
+        linkedCategoryId != null &&
+        (activeCounts.get(linkedCategoryId) ?? 0) > 0;
+      helpByScoreCategory.set(score.categoryId, helpAvailable);
+    }
+
+    return helpByScoreCategory;
   }
 
   private portalInclude() {

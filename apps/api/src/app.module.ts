@@ -22,11 +22,13 @@ import { validateEnv } from "./config/env.validation.js";
 import { CrmModule } from "./crm/crm.module.js";
 import { EmailModule } from "./email/email.module.js";
 import { HealthModule } from "./health/health.module.js";
+import { MortgageModule } from "./mortgage/mortgage.module.js";
 import { PartnersModule } from "./partners/partners.module.js";
 import { PortalModule } from "./portal/portal.module.js";
 import { PrismaModule } from "./prisma/prisma.module.js";
 import { QrModule } from "./qr/qr.module.js";
 import { ReadinessModule } from "./readiness/readiness.module.js";
+import { ServiceProvidersModule } from "./service-providers/service-providers.module.js";
 
 const isProduction = process.env["NODE_ENV"] === NODE_ENV_PRODUCTION;
 
@@ -81,6 +83,8 @@ const isProduction = process.env["NODE_ENV"] === NODE_ENV_PRODUCTION;
     CrmModule,
     ReadinessModule,
     PartnersModule,
+    MortgageModule,
+    ServiceProvidersModule,
     HealthModule,
   ],
   providers: [

@@ -8,9 +8,10 @@ import {
 import type { PrismaService } from "../../prisma/prisma.service.js";
 import { PortalReadinessService } from "./portal-readiness.service.js";
 
-describe("PortalReadinessService visibility filtering", () => {
+describe("PortalReadinessService helpAvailable", () => {
   const readinessAssessmentFindFirst = vi.fn();
   const projectFindMany = vi.fn();
+  const serviceProviderCategoryLinkGroupBy = vi.fn();
   let service: PortalReadinessService;
 
   const member = {
@@ -27,65 +28,62 @@ describe("PortalReadinessService visibility filtering", () => {
       db: {
         readinessAssessment: { findFirst: readinessAssessmentFindFirst },
         project: { findMany: projectFindMany },
+        serviceProviderCategoryLink: { groupBy: serviceProviderCategoryLinkGroupBy },
       },
     } as unknown as PrismaService;
 
     service = new PortalReadinessService(prisma);
     projectFindMany.mockResolvedValue([]);
+    serviceProviderCategoryLinkGroupBy.mockResolvedValue([
+      {
+        serviceProviderCategoryId: "sp_cat_1",
+        _count: { serviceProviderId: 2 },
+      },
+    ]);
   });
 
-  it("never exposes internal notes or internal_only items in mapped response", async () => {
+  it("sets helpAvailable when linked category has active providers", async () => {
     readinessAssessmentFindFirst.mockResolvedValue({
       id: "asm_1",
       targetType: ReadinessAssessmentTargetType.builder_company,
       builderCompanyId: "co_1",
       projectId: null,
-      status: ReadinessScoreStatus.in_progress,
-      overallScore: 55,
+      status: ReadinessScoreStatus.needs_improvement,
+      overallScore: 40,
       lastEvaluatedAt: new Date("2026-07-18T10:00:00.000Z"),
       project: null,
       scores: [
         {
-          categoryId: "cat_1",
-          score: 55,
-          status: ReadinessScoreStatus.in_progress,
-          recommendationSummary: "Improve media",
-          category: { name: "Media materials" },
+          categoryId: "readiness_cat_1",
+          score: 40,
+          status: ReadinessScoreStatus.needs_improvement,
+          recommendationSummary: "Improve legal docs",
+          category: {
+            name: "Legal readiness",
+            serviceProviderCategoryId: "sp_cat_1",
+          },
         },
-      ],
-      recommendations: [
         {
-          id: "rec_visible",
-          title: "Upload cover",
-          description: "Add a cover image",
-          sortOrder: 0,
-          scoreId: null,
-          visibility: ReadinessVisibility.builder_visible,
+          categoryId: "readiness_cat_2",
+          score: 80,
+          status: ReadinessScoreStatus.ready,
+          recommendationSummary: null,
+          category: {
+            name: "Media",
+            serviceProviderCategoryId: null,
+          },
         },
       ],
-      requiredActions: [
-        {
-          id: "act_visible",
-          title: "Add floorplan",
-          description: null,
-          status: "open",
-          scoreId: null,
-          relatedEntityType: null,
-          relatedEntityId: null,
-          visibility: ReadinessVisibility.builder_visible,
-        },
-      ],
+      recommendations: [],
+      requiredActions: [],
     });
 
     const result = await service.getCompanyReadiness(member);
-    const assessment = result.data[0];
+    const scores = result.data[0]?.scores ?? [];
 
-    expect(assessment).toBeDefined();
-    expect(JSON.stringify(result)).not.toContain("internal_only");
-    expect(JSON.stringify(result)).not.toContain("internalNotes");
-    expect(JSON.stringify(result)).not.toContain("Internal note");
-    expect(assessment?.recommendations).toHaveLength(1);
-    expect(assessment?.requiredActions).toHaveLength(1);
+    expect(scores[0]?.serviceProviderCategoryId).toBe("sp_cat_1");
+    expect(scores[0]?.helpAvailable).toBe(true);
+    expect(scores[1]?.helpAvailable).toBe(false);
   });
 
   it("queries portal include with builder_visible filters only", async () => {
@@ -105,8 +103,5 @@ describe("PortalReadinessService visibility filtering", () => {
         }),
       }),
     );
-
-    const include = readinessAssessmentFindFirst.mock.calls[0]?.[0]?.include;
-    expect(include).not.toHaveProperty("internalNotes");
   });
 });

@@ -140,12 +140,15 @@ export const toReadinessAssessmentDetail = (
 
 export const toPortalReadinessScoreItem = (
   score: ScoreWithCategory,
+  helpAvailable: boolean,
 ): PortalReadinessScoreItem => ({
   categoryId: score.categoryId,
   categoryName: score.category.name,
   score: score.score,
   status: score.status,
   recommendationSummary: score.recommendationSummary,
+  serviceProviderCategoryId: score.category.serviceProviderCategoryId,
+  helpAvailable,
 });
 
 export const toPortalReadinessRecommendationItem = (
@@ -179,6 +182,7 @@ type PortalAssessmentSource = ReadinessAssessment & {
 
 export const toPortalReadinessAssessmentItem = (
   assessment: PortalAssessmentSource,
+  helpAvailabilityByCategoryId: ReadonlyMap<string, boolean>,
 ): PortalReadinessAssessmentItem => ({
   id: assessment.id,
   targetType: assessment.targetType,
@@ -189,7 +193,12 @@ export const toPortalReadinessAssessmentItem = (
   lastEvaluatedAt: assessment.lastEvaluatedAt
     ? toIso(assessment.lastEvaluatedAt)
     : null,
-  scores: assessment.scores.map(toPortalReadinessScoreItem),
+  scores: assessment.scores.map((score) =>
+    toPortalReadinessScoreItem(
+      score,
+      helpAvailabilityByCategoryId.get(score.categoryId) ?? false,
+    ),
+  ),
   recommendations: assessment.recommendations.map(toPortalReadinessRecommendationItem),
   requiredActions: assessment.requiredActions.map(toPortalReadinessRequiredActionItem),
 });
