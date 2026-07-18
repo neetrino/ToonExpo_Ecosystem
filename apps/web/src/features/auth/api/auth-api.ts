@@ -6,6 +6,10 @@ import type {
 } from "@toonexpo/contracts";
 
 import { apiFetch } from "@/shared/api/client";
+import {
+  clearCsrfTokenCache,
+  setCsrfTokenCache,
+} from "@/shared/api/csrf";
 import { ApiError, isApiErrorStatus } from "@/shared/api/errors";
 
 const jsonCredentials = {
@@ -16,36 +20,46 @@ const jsonCredentials = {
 /**
  * Registers a buyer and establishes a session cookie.
  */
-export const registerUser = (
+export const registerUser = async (
   body: RegisterRequest,
-): Promise<AuthSessionResponse> =>
-  apiFetch<AuthSessionResponse>({
+): Promise<AuthSessionResponse> => {
+  const result = await apiFetch<AuthSessionResponse>({
     path: "/auth/register",
     method: "POST",
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
+  setCsrfTokenCache(result.csrfToken);
+  return result;
+};
 
 /**
  * Logs in with email/password and establishes a session cookie.
  */
-export const loginUser = (body: LoginRequest): Promise<AuthSessionResponse> =>
-  apiFetch<AuthSessionResponse>({
+export const loginUser = async (
+  body: LoginRequest,
+): Promise<AuthSessionResponse> => {
+  const result = await apiFetch<AuthSessionResponse>({
     path: "/auth/login",
     method: "POST",
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
+  setCsrfTokenCache(result.csrfToken);
+  return result;
+};
 
 /**
  * Revokes the current session and clears the cookie.
  */
-export const logoutUser = (): Promise<void> =>
-  apiFetch<void>({
+export const logoutUser = async (): Promise<void> => {
+  await apiFetch<void>({
     path: "/auth/logout",
     method: "POST",
     credentials: "include",
   });
+  clearCsrfTokenCache();
+};
 
 /**
  * Fetches the authenticated user. Optionally forwards a Cookie header (SSR).

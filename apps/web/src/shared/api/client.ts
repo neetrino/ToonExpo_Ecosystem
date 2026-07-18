@@ -2,11 +2,22 @@ import { API_V1_PREFIX } from "@toonexpo/contracts";
 
 import { getPublicEnv } from "@/shared/config/env";
 
+import {
+  clearCsrfTokenCache,
+  isMutatingMethod,
+  redirectToLogin,
+  withCsrfHeaders,
+} from "./csrf";
 import { ApiError } from "./errors";
+
+/** Public auth mutations establish the session; CSRF is not available yet. */
+const CSRF_EXEMPT_PATHS = new Set(["/auth/login", "/auth/register"]);
 
 export type ApiFetchOptions = RequestInit & {
   /** Absolute or relative path under the API v1 prefix (e.g. `/health`). */
   path: string;
+  /** Internal: prevents infinite CSRF refresh retries. */
+  csrfRetryAttempted?: boolean;
 };
 
 /**
@@ -27,19 +38,58 @@ const isEmptyBody = (response: Response): boolean => {
   return length === "0";
 };
 
+const toHeaderRecord = (
+  headers: HeadersInit | undefined,
+): Record<string, string> => {
+  const merged: Record<string, string> = { Accept: "application/json" };
+
+  if (!headers) {
+    return merged;
+  }
+
+  new Headers(headers).forEach((value, key) => {
+    merged[key] = value;
+  });
+
+  return merged;
+};
+
 /**
  * Typed fetch wrapper for NestJS `/api/v1` endpoints.
  * Throws {@link ApiError} on non-OK responses; callers handle domain failures.
+ * Authenticated mutations attach X-CSRF-Token; one 403 CSRF refresh+retry is attempted.
  */
 export const apiFetch = async <T>(options: ApiFetchOptions): Promise<T> => {
-  const { path, ...init } = options;
+  const { path, csrfRetryAttempted = false, ...init } = options;
+  const mutating = isMutatingMethod(init.method);
+  const requiresCsrf = mutating && !CSRF_EXEMPT_PATHS.has(path);
+  const headers = requiresCsrf
+    ? await withCsrfHeaders(init.headers)
+    : toHeaderRecord(init.headers);
+
   const response = await fetch(buildApiUrl(path), {
     ...init,
-    headers: {
-      Accept: "application/json",
-      ...init.headers,
-    },
+    headers,
   });
+
+  if (
+    response.status === 403 &&
+    requiresCsrf &&
+    !csrfRetryAttempted &&
+    typeof window !== "undefined"
+  ) {
+    clearCsrfTokenCache();
+
+    try {
+      return await apiFetch<T>({
+        ...options,
+        csrfRetryAttempted: true,
+      });
+    } catch {
+      redirectToLogin();
+      throw new ApiError(response.status, response.statusText);
+    }
+  }
 
   if (!response.ok) {
     throw new ApiError(response.status, response.statusText);
