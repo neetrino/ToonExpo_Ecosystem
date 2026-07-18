@@ -297,3 +297,21 @@ export type {
   IntegrationAuditAction,
   IntegrationAuditLogItem,
 } from "./integrations.js";
+
+export type {
+  CreatePortalVisualCanvasRequest,
+  CreatePortalVisualHotspotRequest,
+  PortalVisualCanvasDetail,
+  PortalVisualCanvasListItem,
+  PortalVisualCanvasListResponse,
+  PortalVisualHotspotItem,
+  PublicVisualCanvasItem,
+  PublicVisualCanvasListResponse,
+  PublicVisualHotspotItem,
+  PublicVisualMapMedia,
+  UpdatePortalVisualCanvasRequest,
+  UpdatePortalVisualHotspotRequest,
+  VisualHotspotTargetStatus,
+  VisualHotspotTargetType,
+  VisualMapContextType,
+} from "./visual-map.js";
