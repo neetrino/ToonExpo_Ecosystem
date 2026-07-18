@@ -17,6 +17,7 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 import type {
+  AdminCompanyProjectListResponse,
   CompanyListResponse,
   CompanyResponse,
   ProvisionCompanyResponse,
@@ -26,6 +27,7 @@ import { CompanyStatus, CompanyType } from "@toonexpo/db";
 import { AccountTypes } from "../../auth/decorators/account-types.decorator.js";
 import { AdminCompaniesService } from "./admin-companies.service.js";
 import { CreateCompanyDto } from "./dto/create-company.dto.js";
+import { CompanyIdParamDto } from "./dto/company-id.param.dto.js";
 import { ListCompaniesQueryDto } from "./dto/list-companies.query.dto.js";
 import { UpdateCompanyDto } from "./dto/update-company.dto.js";
 
@@ -58,6 +60,15 @@ export class AdminCompaniesController {
   @ApiOkResponse({ description: "Paginated company list" })
   list(@Query() query: ListCompaniesQueryDto): Promise<CompanyListResponse> {
     return this.companiesService.list(query.page, query.pageSize);
+  }
+
+  @Get(":companyId/projects")
+  @ApiOperation({ summary: "List all projects for a company" })
+  @ApiOkResponse({ description: "Company projects for admin pickers" })
+  listProjects(
+    @Param() params: CompanyIdParamDto,
+  ): Promise<AdminCompanyProjectListResponse> {
+    return this.companiesService.listProjects(params.companyId);
   }
 
   @Get(":id")

@@ -50,6 +50,8 @@ export type {
 } from "./catalog.js";
 
 export type {
+  AdminCompanyProjectListItem,
+  AdminCompanyProjectListResponse,
   CompanyListResponse,
   CompanyMemberListResponse,
   CompanyMemberResponse,

@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import type {
+  AdminCompanyProjectListResponse,
   CompanyListResponse,
   CompanyResponse,
   ProvisionCompanyResponse,
@@ -125,6 +126,30 @@ export class AdminCompaniesService {
       throw new NotFoundException("Company not found");
     }
     return toCompanyResponse(company);
+  }
+
+  async listProjects(companyId: string): Promise<AdminCompanyProjectListResponse> {
+    await this.getById(companyId);
+
+    const projects = await this.prisma.db.project.findMany({
+      where: { builderCompanyId: companyId },
+      orderBy: [{ updatedAt: "desc" }],
+      select: {
+        id: true,
+        name: true,
+        publicationStatus: true,
+        createdAt: true,
+      },
+    });
+
+    return {
+      data: projects.map((project) => ({
+        id: project.id,
+        name: project.name,
+        publicationStatus: project.publicationStatus,
+        createdAt: project.createdAt.toISOString(),
+      })),
+    };
   }
 
   async update(id: string, input: UpdateCompanyInput): Promise<CompanyResponse> {

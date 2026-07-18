@@ -8,7 +8,7 @@ import type {
   CompanyType,
   UserResponse,
 } from "./auth.js";
-import type { PaginatedResponse } from "./catalog.js";
+import type { PaginatedResponse, PublicationStatus } from "./catalog.js";
 
 export type CompanyStatus = "active" | "inactive" | "pending";
 
@@ -116,5 +116,19 @@ export type SetPasswordRequest = {
 };
 
 export type CompanyListResponse = PaginatedResponse<CompanyResponse>;
+
+/**
+ * Lightweight project row for admin company project pickers.
+ */
+export type AdminCompanyProjectListItem = {
+  id: string;
+  name: string;
+  publicationStatus: PublicationStatus;
+  createdAt: string;
+};
+
+export type AdminCompanyProjectListResponse = {
+  data: AdminCompanyProjectListItem[];
+};
 
 export type CompanyMemberListResponse = PaginatedResponse<CompanyMemberResponse>;
