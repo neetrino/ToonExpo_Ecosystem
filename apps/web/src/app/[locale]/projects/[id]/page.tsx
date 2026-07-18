@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 
 import { getProject } from "@/features/catalog/api/catalog-api";
+import { ProjectDetailFavorite } from "@/features/buyer/components/project-detail-favorite";
 import { ProjectBuildings } from "@/features/catalog/components/project-buildings";
 import { RequestPriceButton } from "@/features/catalog/components/request-price-button";
 import { SiteFooter } from "@/features/catalog/components/site-footer";
@@ -99,6 +100,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             />
           ) : null}
           <div className="absolute inset-0 bg-gradient-to-t from-ink/70 to-ink/10" />
+          <ProjectDetailFavorite projectId={project.id} />
           <div className="absolute inset-x-0 bottom-0 mx-auto w-full max-w-content px-6 pb-8">
             <p className="text-xs font-medium uppercase tracking-widest text-on-dark/80">
               {project.builder.name}

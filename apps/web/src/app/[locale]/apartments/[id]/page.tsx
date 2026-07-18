@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 
 import { getApartment } from "@/features/catalog/api/catalog-api";
+import { ApartmentDetailFavorite } from "@/features/buyer/components/apartment-detail-favorite";
 import { RequestPriceButton } from "@/features/catalog/components/request-price-button";
 import { SiteFooter } from "@/features/catalog/components/site-footer";
 import { formatCatalogPrice } from "@/features/catalog/utils/format-price";
@@ -112,20 +113,23 @@ export default async function ApartmentPage({ params }: ApartmentPageProps) {
           </div>
 
           <div className="flex flex-col gap-6">
-            <header>
-              <p className="text-xs font-medium uppercase tracking-widest text-ink-muted">
-                {apartment.builder.name} · {apartment.building.name}
-              </p>
-              <h1 className="mt-2 font-brand text-3xl font-bold text-ink">
-                {t("apartment.unit", { number: apartment.number })}
-              </h1>
-              <p className="mt-1 text-sm text-ink-secondary">
-                {t("apartment.floor", {
-                  floor:
-                    apartment.floor.displayLabel ??
-                    String(apartment.floor.number),
-                })}
-              </p>
+            <header className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-xs font-medium uppercase tracking-widest text-ink-muted">
+                  {apartment.builder.name} · {apartment.building.name}
+                </p>
+                <h1 className="mt-2 font-brand text-3xl font-bold text-ink">
+                  {t("apartment.unit", { number: apartment.number })}
+                </h1>
+                <p className="mt-1 text-sm text-ink-secondary">
+                  {t("apartment.floor", {
+                    floor:
+                      apartment.floor.displayLabel ??
+                      String(apartment.floor.number),
+                  })}
+                </p>
+              </div>
+              <ApartmentDetailFavorite apartmentId={apartment.id} />
             </header>
 
             {needsSignIn ? (

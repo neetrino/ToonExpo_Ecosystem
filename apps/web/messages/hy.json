@@ -293,14 +293,23 @@
       "submitting": "Ելք…"
     }
   },
+  "Favorites": {
+    "addLabel": "Ավելացնել ընտրյալներին",
+    "removeLabel": "Հեռացնել ընտրյալներից",
+    "loginToSave": "Մուտք գործեք՝ ընտրյալներ պահպանելու համար",
+    "removeButton": "Հեռացնել ընտրյալներից",
+    "priceLabel": "Գին",
+    "apartmentTitle": "Բնակարան {number} · {project}"
+  },
   "Profile": {
     "cabinetTitle": "Իմ կաբինետը",
-    "cabinetSubtitle": "Պրոֆիլ, QR և հայտեր",
+    "cabinetSubtitle": "Պրոֆիլ, ընտրյալներ, QR և հայտեր",
     "title": "Իմ պրոֆիլը",
     "subtitle": "Ձեր ToonExpo հաշվի տվյալները",
     "nav": {
       "label": "Կաբինետի բաժիններ",
       "profile": "Պրոֆիլ",
+      "favorites": "Ընտրյալներ",
       "qr": "Իմ QR",
       "requests": "Իմ հայտերը"
     },
@@ -333,6 +342,15 @@
           "unknown": "Սկանավորում"
         }
       }
+    },
+    "favorites": {
+      "title": "Իմ ընտրյալները",
+      "subtitle": "Կատալոգից պահպանված նախագծեր և բնակարաններ",
+      "loading": "Ընտրյալները բեռնվում են…",
+      "error": "Չհաջողվեց բեռնել ընտրյալները։ Կրկին փորձեք։",
+      "empty": "Դուք դեռ ընտրյալներ չեք պահպանել։",
+      "browseCatalog": "Դիտել նախագծերը",
+      "removeButton": "Հեռացնել ընտրյալներից"
     },
     "requests": {
       "title": "Իմ հայտերը",
@@ -435,6 +453,8 @@
       "sections": {
         "platformActivity": "Հարթակի ակտիվություն",
         "topProjects": "Լավագույն նախագծեր ըստ դիտումների",
+        "favorites": "Ընտրյալներ",
+        "topProjectsByFavorites": "Լավագույն նախագծեր ըստ ընտրյալների",
         "requests": "Հայտեր",
         "dealsByStatus": "CRM գործարքներ ըստ կարգավիճակի",
         "qrScans": "QR սկանավորումներ ըստ կոնտեքստի",
@@ -452,6 +472,9 @@
       "requests": {
         "total": "Ընդամենը հայտեր"
       },
+      "favorites": {
+        "total": "Ընդամենը ընտրյալներ"
+      },
       "checkIns": {
         "allowed": "Թույլատրված",
         "duplicate": "Կրկնօրինակ",
@@ -463,7 +486,8 @@
       "table": {
         "rank": "#",
         "name": "Անվանում",
-        "views": "Դիտումներ"
+        "views": "Դիտումներ",
+        "favorites": "Ընտրյալներ"
       }
     },
     "companies": {
@@ -1245,6 +1269,8 @@
       "sections": {
         "topProjects": "Լավագույն նախագծեր ըստ դիտումների",
         "topApartments": "Լավագույն բնակարաններ ըստ դիտումների",
+        "favorites": "Ընտրյալներ",
+        "topProjectsByFavorites": "Իմ լավագույն նախագծերը ըստ ընտրյալների",
         "requests": "Հայտեր",
         "dealsByStatus": "CRM գործարքներ ըստ կարգավիճակի",
         "apartmentSales": "Բնակարանների վաճառքի կարգավիճակ",
@@ -1253,6 +1279,9 @@
       "requests": {
         "total": "Ընդամենը հայտեր"
       },
+      "favorites": {
+        "total": "Ընդամենը ընտրյալներ"
+      },
       "readiness": {
         "company": "Ընկերության պատրաստվածություն",
         "project": "Նախագծի պատրաստվածություն"
@@ -1260,7 +1289,8 @@
       "table": {
         "rank": "#",
         "name": "Անվանում",
-        "views": "Դիտումներ"
+        "views": "Դիտումներ",
+        "favorites": "Ընտրյալներ"
       }
     },
     "dashboard": {

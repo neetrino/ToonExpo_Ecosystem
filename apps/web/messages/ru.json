@@ -293,14 +293,23 @@
       "submitting": "Выход…"
     }
   },
+  "Favorites": {
+    "addLabel": "Добавить в избранное",
+    "removeLabel": "Удалить из избранного",
+    "loginToSave": "Войдите, чтобы сохранять избранное",
+    "removeButton": "Удалить из избранного",
+    "priceLabel": "Цена",
+    "apartmentTitle": "Квартира {number} · {project}"
+  },
   "Profile": {
     "cabinetTitle": "Мой кабинет",
-    "cabinetSubtitle": "Профиль, QR и заявки",
+    "cabinetSubtitle": "Профиль, избранное, QR и заявки",
     "title": "Мой профиль",
     "subtitle": "Данные вашего аккаунта ToonExpo",
     "nav": {
       "label": "Разделы кабинета",
       "profile": "Профиль",
+      "favorites": "Избранное",
       "qr": "Мой QR",
       "requests": "Мои заявки"
     },
@@ -333,6 +342,15 @@
           "unknown": "Сканирование"
         }
       }
+    },
+    "favorites": {
+      "title": "Моё избранное",
+      "subtitle": "Сохранённые проекты и квартиры из каталога",
+      "loading": "Загрузка избранного…",
+      "error": "Не удалось загрузить избранное. Попробуйте ещё раз.",
+      "empty": "Вы ещё ничего не сохранили в избранное.",
+      "browseCatalog": "Смотреть проекты",
+      "removeButton": "Удалить из избранного"
     },
     "requests": {
       "title": "Мои заявки",
@@ -435,6 +453,8 @@
       "sections": {
         "platformActivity": "Активность платформы",
         "topProjects": "Топ проектов по просмотрам",
+        "favorites": "Избранное",
+        "topProjectsByFavorites": "Топ проектов по избранному",
         "requests": "Заявки",
         "dealsByStatus": "CRM-сделки по статусу",
         "qrScans": "QR-сканы по контексту",
@@ -452,6 +472,9 @@
       "requests": {
         "total": "Всего заявок"
       },
+      "favorites": {
+        "total": "Всего в избранном"
+      },
       "checkIns": {
         "allowed": "Разрешено",
         "duplicate": "Дубликаты",
@@ -463,7 +486,8 @@
       "table": {
         "rank": "#",
         "name": "Название",
-        "views": "Просмотры"
+        "views": "Просмотры",
+        "favorites": "Избранное"
       }
     },
     "companies": {
@@ -1245,6 +1269,8 @@
       "sections": {
         "topProjects": "Топ проектов по просмотрам",
         "topApartments": "Топ квартир по просмотрам",
+        "favorites": "Избранное",
+        "topProjectsByFavorites": "Мои топ проекты по избранному",
         "requests": "Заявки",
         "dealsByStatus": "CRM-сделки по статусу",
         "apartmentSales": "Статус продаж квартир",
@@ -1253,6 +1279,9 @@
       "requests": {
         "total": "Всего заявок"
       },
+      "favorites": {
+        "total": "Всего в избранном"
+      },
       "readiness": {
         "company": "Готовность компании",
         "project": "Готовность проекта"
@@ -1260,7 +1289,8 @@
       "table": {
         "rank": "#",
         "name": "Название",
-        "views": "Просмотры"
+        "views": "Просмотры",
+        "favorites": "Избранное"
       }
     },
     "dashboard": {

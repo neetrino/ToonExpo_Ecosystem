@@ -4,6 +4,7 @@ import type { ProjectListItem } from "@toonexpo/contracts";
 import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 
+import { FavoriteToggleButton } from "@/features/buyer/components/favorite-toggle-button";
 import {
   formatCompactPrice,
   formatPriceRange,
@@ -15,6 +16,7 @@ type ProjectCardProps = {
   project: ProjectListItem;
   className?: string | undefined;
   featured?: boolean | undefined;
+  showFavorite?: boolean | undefined;
 };
 
 /**
@@ -24,6 +26,7 @@ export const ProjectCard = ({
   project,
   className,
   featured = false,
+  showFavorite = false,
 }: ProjectCardProps) => {
   const t = useTranslations("Catalog");
   const locale = useLocale();
@@ -75,6 +78,13 @@ export const ProjectCard = ({
             count: project.availability.available,
           })}
         </span>
+        {showFavorite ? (
+          <FavoriteToggleButton
+            targetType="project"
+            targetId={project.id}
+            className="absolute right-3 top-3"
+          />
+        ) : null}
       </Link>
 
       <div className="flex flex-1 flex-col gap-2 p-4">

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { listProjects } from "@/features/catalog/api/catalog-api";
+import { CatalogFavoritesScope } from "@/features/buyer/components/catalog-favorites-scope";
 import { CatalogPagination } from "@/features/catalog/components/catalog-pagination";
 import { ProjectCard } from "@/features/catalog/components/project-card";
 import { ProjectFiltersForm } from "@/features/catalog/components/project-filters-form";
@@ -69,11 +70,17 @@ export default async function ProjectsPage({
             {t("projects.empty")}
           </p>
         ) : (
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {response.data.map((project) => (
-              <ProjectCard key={project.id} project={project} />
-            ))}
-          </div>
+          <CatalogFavoritesScope projects={response.data}>
+            <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {response.data.map((project) => (
+                <ProjectCard
+                  key={project.id}
+                  project={project}
+                  showFavorite
+                />
+              ))}
+            </div>
+          </CatalogFavoritesScope>
         )}
 
         <CatalogPagination

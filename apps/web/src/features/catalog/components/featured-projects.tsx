@@ -2,6 +2,7 @@ import type { ProjectListItem } from "@toonexpo/contracts";
 import { getTranslations } from "next-intl/server";
 
 import { ProjectCard } from "@/features/catalog/components/project-card";
+import { CatalogFavoritesScope } from "@/features/buyer/components/catalog-favorites-scope";
 import { Link } from "@/i18n/navigation";
 
 type FeaturedProjectsProps = {
@@ -35,20 +36,32 @@ export const FeaturedProjects = async ({ projects }: FeaturedProjectsProps) => {
       </div>
 
       {featured ? (
-        <div className="mb-4">
-          <ProjectCard project={featured} featured className="sm:flex-row" />
-        </div>
+        <CatalogFavoritesScope projects={projects}>
+          <div className="mb-4">
+            <ProjectCard
+              project={featured}
+              featured
+              className="sm:flex-row"
+              showFavorite
+            />
+          </div>
+
+          {rest.length > 0 ? (
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {rest.map((project) => (
+                <ProjectCard
+                  key={project.id}
+                  project={project}
+                  featured
+                  showFavorite
+                />
+              ))}
+            </div>
+          ) : null}
+        </CatalogFavoritesScope>
       ) : (
         <p className="text-sm text-ink-secondary">{t("featured.empty")}</p>
       )}
-
-      {rest.length > 0 ? (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {rest.map((project) => (
-            <ProjectCard key={project.id} project={project} featured />
-          ))}
-        </div>
-      ) : null}
     </section>
   );
 };

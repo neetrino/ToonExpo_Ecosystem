@@ -5,6 +5,15 @@ export const BUYER_REQUEST_NOTE_MAX_LENGTH = 4000;
 export const BUYER_QR_QUERY_KEY = ["buyer", "qr"] as const;
 export const BUYER_QR_SCANS_QUERY_KEY = ["buyer", "qr", "scans"] as const;
 export const BUYER_REQUESTS_QUERY_KEY = ["buyer", "requests"] as const;
+export const BUYER_FAVORITES_QUERY_KEY = ["buyer", "favorites"] as const;
+export const BUYER_FAVORITES_STATUS_QUERY_KEY = [
+  "buyer",
+  "favorites",
+  "status",
+] as const;
+
+/** Max targets per favorites status batch (matches NestJS cap). */
+export const BUYER_FAVORITES_STATUS_BATCH_LIMIT = 100;
 
 /** Default page size for buyer request history. */
 export const BUYER_REQUESTS_PAGE_SIZE = 20;

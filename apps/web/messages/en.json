@@ -293,14 +293,23 @@
       "submitting": "Logging out…"
     }
   },
+  "Favorites": {
+    "addLabel": "Add to favorites",
+    "removeLabel": "Remove from favorites",
+    "loginToSave": "Sign in to save favorites",
+    "removeButton": "Remove from favorites",
+    "priceLabel": "Price",
+    "apartmentTitle": "Apartment {number} · {project}"
+  },
   "Profile": {
     "cabinetTitle": "My account",
-    "cabinetSubtitle": "Profile, QR and requests",
+    "cabinetSubtitle": "Profile, favorites, QR and requests",
     "title": "My profile",
     "subtitle": "Your ToonExpo account details",
     "nav": {
       "label": "Account sections",
       "profile": "Profile",
+      "favorites": "Favorites",
       "qr": "My QR",
       "requests": "My requests"
     },
@@ -333,6 +342,15 @@
           "unknown": "Scan"
         }
       }
+    },
+    "favorites": {
+      "title": "My favorites",
+      "subtitle": "Saved projects and apartments from the catalog",
+      "loading": "Loading favorites…",
+      "error": "Could not load favorites. Try again.",
+      "empty": "You have not saved any favorites yet.",
+      "browseCatalog": "Browse projects",
+      "removeButton": "Remove from favorites"
     },
     "requests": {
       "title": "My requests",
@@ -435,6 +453,8 @@
       "sections": {
         "platformActivity": "Platform activity",
         "topProjects": "Top projects by views",
+        "favorites": "Favorites",
+        "topProjectsByFavorites": "Top projects by favorites",
         "requests": "Requests",
         "dealsByStatus": "CRM deals by status",
         "qrScans": "QR scans by context",
@@ -452,6 +472,9 @@
       "requests": {
         "total": "Requests total"
       },
+      "favorites": {
+        "total": "Favorites total"
+      },
       "checkIns": {
         "allowed": "Allowed",
         "duplicate": "Duplicates",
@@ -463,7 +486,8 @@
       "table": {
         "rank": "#",
         "name": "Name",
-        "views": "Views"
+        "views": "Views",
+        "favorites": "Favorites"
       }
     },
     "companies": {
@@ -1419,6 +1443,8 @@
       "sections": {
         "topProjects": "Top projects by views",
         "topApartments": "Top apartments by views",
+        "favorites": "Favorites",
+        "topProjectsByFavorites": "Top projects by favorites",
         "requests": "Requests",
         "dealsByStatus": "CRM deals by status",
         "apartmentSales": "Apartment sales status",
@@ -1427,6 +1453,9 @@
       "requests": {
         "total": "Requests total"
       },
+      "favorites": {
+        "total": "Favorites total"
+      },
       "readiness": {
         "company": "Company readiness",
         "project": "Project readiness"
@@ -1434,7 +1463,8 @@
       "table": {
         "rank": "#",
         "name": "Name",
-        "views": "Views"
+        "views": "Views",
+        "favorites": "Favorites"
       }
     },
     "dashboard": {
