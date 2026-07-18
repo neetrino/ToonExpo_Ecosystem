@@ -11,6 +11,7 @@ import {
   type LoginFormValues,
 } from "@/features/auth/schemas/login.schema";
 import { mapAuthError } from "@/features/auth/utils/map-auth-error";
+import { resolvePostLoginPath } from "@/features/auth/utils/resolve-post-login-path";
 import { sanitizeReturnUrl } from "@/features/auth/utils/sanitize-return-url";
 import { Link, useRouter } from "@/i18n/navigation";
 import { Button } from "@/shared/ui/button";
@@ -29,7 +30,7 @@ export const LoginForm = ({ returnUrl }: LoginFormProps) => {
   const router = useRouter();
   const loginMutation = useLoginMutation();
   const [formError, setFormError] = useState<string | null>(null);
-  const safeReturn = sanitizeReturnUrl(returnUrl);
+  const safeReturn = returnUrl ? sanitizeReturnUrl(returnUrl) : null;
 
   const {
     register,
@@ -43,8 +44,8 @@ export const LoginForm = ({ returnUrl }: LoginFormProps) => {
   const onSubmit = handleSubmit(async (values) => {
     setFormError(null);
     try {
-      await loginMutation.mutateAsync(values);
-      router.push(safeReturn);
+      const session = await loginMutation.mutateAsync(values);
+      router.push(resolvePostLoginPath(session.user, safeReturn));
     } catch (error) {
       setFormError(t(`errors.${mapAuthError(error)}`));
     }
