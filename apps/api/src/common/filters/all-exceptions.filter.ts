@@ -6,6 +6,7 @@ import {
   type ArgumentsHost,
   type ExceptionFilter,
 } from "@nestjs/common";
+import { SentryExceptionCaptured } from "@sentry/nestjs";
 import type { Request, Response } from "express";
 
 import { NODE_ENV_PRODUCTION } from "../constants/app.constants.js";
@@ -22,6 +23,7 @@ type ErrorBody = {
 export class AllExceptionsFilter implements ExceptionFilter {
   private readonly logger = new Logger(AllExceptionsFilter.name);
 
+  @SentryExceptionCaptured()
   catch(exception: unknown, host: ArgumentsHost): void {
     const http = host.switchToHttp();
     const response = http.getResponse<Response>();

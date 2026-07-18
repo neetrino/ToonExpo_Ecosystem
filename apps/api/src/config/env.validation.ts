@@ -98,6 +98,7 @@ const envSchema = z
       emptyToUndefined,
       z.string().url().optional(),
     ),
+    SENTRY_DSN: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
   })
   .superRefine((env, ctx) => {
     if (env.NODE_ENV !== NODE_ENV_PRODUCTION) {
@@ -141,6 +142,7 @@ export type AppEnv = {
   R2_SECRET_ACCESS_KEY?: string | undefined;
   R2_BUCKET_NAME?: string | undefined;
   R2_PUBLIC_URL?: string | undefined;
+  SENTRY_DSN?: string | undefined;
 };
 
 /**
@@ -201,6 +203,10 @@ export const validateEnv = (config: Record<string, unknown>): AppEnv => {
 
   if (data.R2_PUBLIC_URL) {
     result.R2_PUBLIC_URL = data.R2_PUBLIC_URL;
+  }
+
+  if (data.SENTRY_DSN) {
+    result.SENTRY_DSN = data.SENTRY_DSN;
   }
 
   return result;
