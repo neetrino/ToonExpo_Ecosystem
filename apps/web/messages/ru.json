@@ -1,0 +1,10 @@
+{
+  "HomePage": {
+    "brand": "ToonExpo",
+    "tagline": "Платформа недвижимости для выставок в Армении",
+    "description": "Оболочка Sprint 0 — публичный сайт, зона покупателя и фундамент портала застройщика.",
+    "apiStatusLabel": "Статус API",
+    "apiUnavailable": "API недоступен",
+    "languageLabel": "Язык"
+  }
+}

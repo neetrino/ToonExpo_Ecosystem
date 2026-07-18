@@ -1,0 +1,10 @@
+{
+  "HomePage": {
+    "brand": "ToonExpo",
+    "tagline": "Real estate exhibition platform for Armenia",
+    "description": "Sprint 0 shell — public site, buyer area and builder portal foundation.",
+    "apiStatusLabel": "API status",
+    "apiUnavailable": "API unavailable",
+    "languageLabel": "Language"
+  }
+}

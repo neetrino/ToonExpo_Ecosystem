@@ -1,0 +1,10 @@
+{
+  "HomePage": {
+    "brand": "ToonExpo",
+    "tagline": "Անշարժ գույքի ցուցահանդեսային հարթակ Հայաստանի համար",
+    "description": "Sprint 0 թաղանթ — հանրային կայք, գնորդի գոտի և շինարարի պորտալի հիմք։",
+    "apiStatusLabel": "API կարգավիճակ",
+    "apiUnavailable": "API-ն հասանելի չէ",
+    "languageLabel": "Լեզու"
+  }
+}
