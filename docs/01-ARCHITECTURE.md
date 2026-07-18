@@ -105,10 +105,28 @@ toonexpo-ecosystem/
       public/
     api/
       src/
-        modules/                # NestJS product modules
-        common/                 # guards, filters, interceptors, decorators
-        integrations/           # BOS, R2 and email adapters
+        auth/                   # sessions, RBAC, CSRF guards
+        catalog/                # projects, buildings, floors, apartments, builders
+        media/                  # R2 upload, MediaAsset
+        visual-map/             # canvases and hotspots
+        crm/                    # lead intake + constructor CRM
+        qr/                     # buyer QR resolve
+        favorites/              # buyer favorites
+        exhibition/             # events, venue maps, check-in
+        readiness/              # builder readiness assessments
+        partners/               # partner companies and offers
+        mortgage/               # bank offers + calculator
+        service-providers/      # provider directory (admin)
+        analytics/              # event tracking + dashboards
+        integrations/           # BOS inbound provisioning
+        admin/                  # platform admin (companies, etc.)
+        company/                # company members, logo
+        portal/                 # builder portal APIs
+        common/                 # guards, filters, interceptors
+        prisma/                 # Prisma module
+        rate-limit/             # Upstash throttler config
         main.ts
+        instrument.ts           # Sentry (imported first)
       Dockerfile                # Cloud Run image target
   packages/
     domain/                     # small shared kernel; feature domains stay in API modules
@@ -158,7 +176,7 @@ Hard rules:
 - `apps/web` cannot import `packages/db` or `packages/domain`.
 - `apps/api` is the only runtime allowed to import Prisma Client.
 - `packages/domain` is a small shared kernel, not a global home for all business logic; it cannot import Next.js, React, NestJS or Prisma.
-- Feature-specific domain rules live in `apps/api/src/modules/<module>/domain`.
+- Feature-specific domain rules live alongside their NestJS module under `apps/api/src/<module>/`.
 - `packages/ui` cannot import server secrets, database code or backend modules.
 - NestJS OpenAPI is the canonical HTTP contract; frontend types are generated from or checked against it.
 - Product endpoints cannot be implemented in Next.js route handlers.
@@ -184,10 +202,10 @@ The boundary should be enforced in ESLint/CI, not left as documentation only.
 | Partners & Mortgage | Partner profiles, bank offers and calculator inputs |
 | Service Providers | Categorized provider directory connected to readiness help |
 | Events | Event records, venue maps, booths, routes and check-in |
-| Content | Public content blocks, translations and publication controls |
 | Analytics | Product/event measurements and role-scoped summaries |
 | Provisioning | Idempotent BOS account/company provisioning contract |
-| Audit | Security and business-critical mutation history |
+| Content | 📋 post-v1 — homepage CMS / content blocks (not built) |
+| Audit | 📋 post-v1 — global admin audit log (only BOS `IntegrationAuditLog` exists today) |
 
 Frontend features mirror user workflows, not persistence tables. A single backend module may serve several frontend areas.
 
@@ -248,46 +266,45 @@ Frontend rules:
 `apps/api` is the complete product backend. It is a NestJS modular monolith deployed independently from Next.js.
 
 ```text
-apps/api/src/modules/
-  auth/
-  users/
-  companies/
-  catalog/
-  media/
-  visual-maps/
-  buyers/
-  qr/
-  lead-intake/
-  crm/
-  readiness/
-  partners/
-  mortgage/
-  service-providers/
-  events/
-  check-in/
-  content/
-  analytics/
-  provisioning/
-  audit/
+apps/api/src/
+  auth/                   # sessions, guards, buyer registration
+  catalog/                # public + admin catalog, builders
+  media/                  # R2 upload, MediaAsset
+  visual-map/             # canvases, hotspots
+  crm/                    # request intake + constructor CRM
+  qr/                     # QR resolve
+  favorites/              # buyer favorites
+  exhibition/             # events, venue maps, booths, check-in
+  readiness/              # assessments, scores
+  partners/               # partner companies, offers
+  mortgage/               # bank offers, calculator
+  service-providers/      # admin provider directory
+  analytics/              # event tracking, dashboards
+  integrations/           # BOS inbound provisioning + audit log
+  admin/                  # platform admin (companies, …)
+  company/                # company members, logo
+  portal/                 # builder portal APIs
+  access-tokens/          # invite/set-password mail helpers
+  email/                  # Resend adapter
+  health/                 # liveness/readiness
+  common/                 # filters, interceptors, decorators
+  prisma/                 # Prisma module
+  rate-limit/             # Upstash throttler config
+  config/                 # env validation
 ```
 
-Recommended internal module shape:
+Typical module layout (flat, feature-colocated):
 
 ```text
-modules/catalog/
-  presentation/
-    catalog.controller.ts
-    dto/
-  application/
-    commands/
-    queries/
-    catalog.service.ts
-  domain/
-    policies/
-    errors/
-  infrastructure/
-    prisma-catalog.repository.ts
+catalog/
   catalog.module.ts
+  projects.service.ts
+  public/
+    public-projects.controller.ts
+  portal/
+    portal-projects.controller.ts
+  dto/
+  mappers/
 ```
 
 Backend rules:

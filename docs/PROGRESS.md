@@ -2,31 +2,26 @@
 
 ## Current Status
 
-Final pre-production completion pass in progress (2026-07-18). Sprints 0–6 are functionally closed; a full three-way audit (docs vs implementation, code hygiene, frontend completeness) produced a fix plan executed in waves. See "Final Completion Waves" below for the live tracker and `OPEN_QUESTIONS.md` for pending owner decisions.
+Final pre-production completion pass **closed** (2026-07-18). Sprints 0–6 and final completion waves 1–4 are done. Platform is ready for owner review (`OPEN_QUESTIONS.md`), performance architecture review, and manual deploy per `DEPLOYMENT.md`.
 
 ## Final Completion Waves (live tracker — keep updated)
 
-Post-Sprint-6 items completed today (2026-07-18):
+| Wave | Scope | Status |
+|------|-------|--------|
+| **Wave 1** | R2 media uploads in all forms; API hygiene (oversized files split, named constants, ConfigService) | ✅ Done |
+| **Wave 2** | Buyer check-in status (`GET /buyer/checkin` + `/profile/checkin`); web hygiene (oversized components split) | ✅ Done |
+| **Wave 3** | Same-origin API proxy (`API_PROXY_TARGET`); builder portal gaps (project QR UI, partner → `/partner`, public builder detail, admin `/checkin`, CRM assignee filter, booth assignment edit, analytics gaps, pagination aria-label i18n) | ✅ Done |
+| **Wave 4** | Docs sync (MODULE_STATUS, PROGRESS, TECH_CARD, architecture layout, README, Documentation Hub); full verification (lint/typecheck/test/build); Docker image build + boot check | ✅ Done |
 
-- .env / .env.example revision and mirroring; Armenian (`hy`) hardcoded as platform default locale (DEFAULT_LOCALE env removed).
-- Sentry integrated in api + web (DSN-gated; sourcemap upload deferred to CI); SENTRY_AUTH_TOKEN stored in GitHub Secrets.
-- Distributed rate limiting via Upstash Redis (atomic Lua, fail-open, in-memory fallback) — live-verified 429.
-- Deploy artifacts: `apps/api/Dockerfile` (Cloud Run), `.dockerignore`, `apps/web/vercel.json`, `docs/DEPLOYMENT.md` (owner deploys manually).
-- Wave 1: media uploads wired into ALL forms (project/building covers, floor/apartment plans, Matterport/3D links, partner logo/cover, company logo write API `PATCH /company/me`); API hygiene (oversized files split, named constants, ConfigService).
-- Wave 2: buyer check-in status (`GET /buyer/checkin` + `/profile/checkin` tab); web hygiene (oversized components split).
+Infrastructure and platform services completed during waves 1–4 (2026-07-18):
 
-In progress:
+- `.env` / `.env.example` revision; Armenian (`hy`) hardcoded as platform default locale (`DEFAULT_LOCALE` env removed).
+- Sentry in api + web (DSN-gated; sourcemap upload deferred to CI); `SENTRY_AUTH_TOKEN` in GitHub Secrets.
+- Distributed rate limiting via Upstash Redis (atomic Lua, fail-open, in-memory fallback).
+- Deploy artifacts: `apps/api/Dockerfile`, `.dockerignore`, `apps/web/vercel.json`, `docs/DEPLOYMENT.md`, `docs/SETTINGS.md`.
+- Idempotent Prisma seeds (`pnpm --filter @toonexpo/db db:seed`).
 
-- Wave 3a: env-gated same-origin API proxy (owner decision: one main domain; browser never sees the Cloud Run URL; direct `api.toonexpo.com` mode as future env-only switch).
-- Wave 3b: project QR UI in builder portal, partner post-login redirect to `/partner`, builder nav visual-map stub fix, admin link to `/checkin`, public builder detail page `/builders/[id]` + `builder_profile_view`, analytics events `building_view`/`floor_view`/`booth_selected`, CRM assignee filter, admin booth assignment edit, pagination aria-label i18n, footer links.
-
-Pending:
-
-- Wave 4: docs synchronization (MODULE_STATUS, PROGRESS, TECH_CARD, architecture layout, README refresh — it is still Sprint-0 era; add links to DEPLOYMENT/SETTINGS/OPEN_QUESTIONS), final full verification (lint/typecheck/test/build), Docker image build + boot check (needs OrbStack/Docker running).
-- NEXT MAJOR STEP after Wave 4: performance/caching/scalability architecture review per `PERFORMANCE-CACHING-SCALABILITY-REVIEW-BRIEF.md` (repo root) — evidence-based, read-only review by a strong model; deliverable = review document + prioritized P0/P1/P2 plan; MUST run against the post-wave code, not mid-wave. Owner decision follows the review.
-- Pre-launch checklist and open decisions: see `docs/OPEN_QUESTIONS.md` (secrets rotation, prod Neon DB, first prod admin, design variant, domains, BOS outbound, post-v1 scope confirmation).
-- Deferred post-v1 (owner to confirm in OPEN_QUESTIONS Q6): admin homepage CMS, global admin audit log, admin cross-company catalog editing, public service-provider directory, PWA, BOS provisioning admin UI.
-- Candidate after staging load test: short-TTL Redis cache for top public GET endpoints (only if measurements justify it).
+**Owner note (pending discussion):** Sentry → Telegram alerts requested in `toso.md` — not implemented; discuss alert routing before production.
 
 ## Completed
 
@@ -54,14 +49,16 @@ Pending:
 - Sprint 4 closed: permanent buyer QR (opaque tokens, role-based disclosure, QrScanEvent log), project QR deep links, unified lead intake with deduplication, buyer requests UI, constructor CRM deals pipeline (notes, follow-up, apartment attach/detach), builder CRM UI and QR scanner, password reset flow; orchestrator end-to-end verification passed (2026-07-18); monorepo lint/typecheck/test/build green (88 API tests).
 - Sprint 5 closed: builder readiness admin evaluation workflow (categories, assessments, weighted overall scores, recommendations, required actions, internal notes) + builder read-only view + help-flow to service providers; partners/participants (PartnerCompany, offers, admin + partner portal + public pages, trilingual); mortgage/bank offers (BankOffer schema, admin + bank-partner portal, public `/mortgage` with AMD annuity calculator); service provider directory (admin CRUD, builder-facing via readiness help flow); exhibition map & check-in (Event/VenueMap/Booth/route graph, admin setup with route editor and click-to-place booths, entrance staff scanner with duplicate protection, public `/expo` map with search + Dijkstra routing); analytics (AnalyticsEvent, 16 event types / 11 instrumented points, admin + builder dashboards); BOS inbound provisioning (`POST /integrations/bos/provisioning`, idempotent by `request_id`, audit log, admin read views); orchestrator end-to-end verification passed (2026-07-18); monorepo green (248 tests).
 - Sprint 6 core closed: Visual Map / Hotspots (module 06) — VisualMapCanvas + VisualHotspot schema (percent coords, polymorphic context project/building/floor), builder portal editor (canvas list per project, click-to-place hotspot editor with hierarchy validation and broken-target warnings, publication controls), public catalog integration (project/building/floor pages show published primary canvases with tappable SVG markers, list fallback always kept); buyer favorites — BuyerFavorite schema (polymorphic, no FK), idempotent PUT/DELETE endpoints, localized favorites list reusing catalog card logic + price visibility, batch status endpoint for hearts, `favorite_added` analytics tracking, favorites totals + top projects in admin and builder analytics dashboards, hearts in catalog (list/detail/apartment), `/profile/favorites` page with profile tab (guests get login-redirect hearts); orchestrator end-to-end verification passed (2026-07-18); monorepo green (273 tests, live smoke 8/8).
+- Final waves 1–4 (2026-07-18): R2 media pipeline + form wiring; Sentry + Upstash; buyer check-in status; env-gated same-origin API proxy; frontend/backend audit fixes (public builder profile, analytics instrumentation complete, CRM assignee filter, admin booth edit, project QR UI, partner redirect, idempotent seeds); deployment docs and Docker image; documentation synchronized with code.
 
 ## Next
 
-1. R2 media upload UI — covers, floor plans, venue maps/logos instead of manual URL/asset id (blocked on Cloudflare R2 credentials from owner).
-2. BOS outbound summaries — push readiness/lead summaries to BOS (blocked on BOS platform API contract).
-3. Staging preparation — domains, Vercel/Cloud Run deploy, Sentry, env tuning per the "Environment Inputs" section below.
-4. Admin UI for BOS provisioning history — browse/retry inbound provisioning audit trail.
-5. Analytics gaps — instrument `booth_selected` and `builder_profile_view`.
+1. **Performance / caching / scalability review** — evidence-based read-only review per `PERFORMANCE-CACHING-SCALABILITY-REVIEW-BRIEF.md` (repo root). Deliverable: review document + prioritized P0/P1/P2 plan. Run against post-wave code; owner decision follows the review.
+2. **Owner OPEN_QUESTIONS walkthrough** — `docs/OPEN_QUESTIONS.md` (design variant, domains, prod admin bootstrap, BOS outbound, post-v1 scope confirmation, secrets rotation).
+3. **Owner manual deploy** — `docs/DEPLOYMENT.md` + `docs/SETTINGS.md` (Vercel web, Cloud Run API, Neon `migrate deploy`).
+4. **Sentry → Telegram alerts** — owner request in `toso.md`; pending discussion (not in v1 scope).
+5. **BOS outbound summaries** — push readiness/lead summaries to BOS (blocked on BOS platform API contract).
+6. **Deferred post-v1** (confirm in OPEN_QUESTIONS Q6): admin homepage CMS, global admin audit log, admin cross-company catalog editing, public service-provider directory, PWA, BOS provisioning admin UI.
 
 ## Environment Inputs Before Staging / Production
 

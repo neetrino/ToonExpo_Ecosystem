@@ -72,6 +72,36 @@ Both apps initialize Sentry only when their DSN env var is set. Empty values kee
 - API unhandled 5xx errors are reported via `@SentryExceptionCaptured()` on `AllExceptionsFilter`; NestJS `HttpException` (4xx) stays control-flow only.
 - Source map upload to Sentry is **deferred** until CI provides `SENTRY_AUTH_TOKEN`; web builds set `sourcemaps.disable: true` in `next.config.ts` so builds succeed without the token.
 
+## Media Upload (Cloudflare R2)
+
+NestJS owns upload authorization, validation and persistence; R2 stores bytes; PostgreSQL stores `MediaAsset` metadata.
+
+| Step | Owner | Notes |
+|---|---|---|
+| Upload | `POST /api/v1/portal/media` or `POST /api/v1/admin/media` | Multipart; MIME whitelist; max size enforced server-side |
+| Storage | `R2StorageService` (S3-compatible) | Object keys scoped by uploader role and entity context |
+| Metadata | Prisma `MediaAsset` | Public URL, dimensions (when image), ownership |
+| Wiring | Catalog, partners, company forms | Project/building covers, floor/apartment plans, venue maps, partner logo/cover, company logo via `PATCH /company/me` |
+| Degraded mode | Empty R2 env vars | Upload endpoints return 503; URL/`mediaAssetId` fields still accept manual values |
+
+Required env: `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET_NAME`, `R2_PUBLIC_URL`. See `.env.example`.
+
+## Same-Origin API Proxy (`apps/web`)
+
+Browser calls `/api/v1/*` on the Next.js origin; the server forwards to NestJS when proxy mode is enabled.
+
+| Mode | `API_PROXY_TARGET` | `NEXT_PUBLIC_API_URL` | Use |
+|---|---|---|---|
+| Proxy (staging, initial prod) | Cloud Run URL | unset | Browser never sees the Cloud Run hostname |
+| Direct (after `api.toonexpo.com`) | unset | `https://api.toonexpo.com` | Optional future env-only switch |
+| Local dev | unset | `http://localhost:4000` | Default |
+
+Implementation: `next.config.ts` rewrites when `API_PROXY_TARGET` is set; `apps/web/src/shared/config/env.ts` resolves the client base URL. Owner cheat sheet: `docs/SETTINGS.md`.
+
+## Default Locale
+
+Armenian (`hy`) is the hardcoded platform default for UI routing and catalog content fallbacks. Shared constant: `DEFAULT_LOCALE` in `@toonexpo/shared` (re-exported in web as `WEB_DEFAULT_LOCALE`). Supported locales: `hy`, `ru`, `en`. The former `DEFAULT_LOCALE` environment variable was removed.
+
 ## Frontend - `apps/web`
 
 TypeScript 7.0 is current but is not selected at project start because 7.0 does not expose the programmatic compiler API required by parts of the lint/tooling ecosystem. Reassess at TypeScript 7.1 through an ADR.

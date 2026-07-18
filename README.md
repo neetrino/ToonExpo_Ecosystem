@@ -36,76 +36,98 @@ Out of scope:
 - pnpm 11 workspaces + Turborepo
 - Node.js 24 LTS
 - TypeScript strict
-- `apps/web` — Next.js frontend (presentation only)
-- `apps/api` — NestJS product backend (Cloud Run)
+- `apps/web` — Next.js 16 frontend (presentation only; Vercel)
+- `apps/api` — NestJS 11 product backend (Google Cloud Run)
 - `packages/db` — Prisma 7 + PostgreSQL (Neon); runtime import only from `apps/api`
+- Cloudflare R2 (media), Resend (email), Sentry (errors), Upstash Redis (distributed rate limits)
 
 ## Monorepo layout
 
 ```text
 apps/
-  web/                 # Next.js frontend (created in Sprint 0 stage 2/3)
-  api/                 # NestJS backend (created in Sprint 0 stage 2/3)
+  web/                 # Next.js frontend
+  api/                 # NestJS backend (+ Dockerfile for Cloud Run)
 packages/
   config/              # shared ESLint / tsconfig / Vitest presets
-  shared/              # environment-neutral utilities
+  shared/              # environment-neutral utilities (incl. DEFAULT_LOCALE = hy)
   contracts/           # framework-neutral API types/contracts
-  db/                  # Prisma schema, migrations, client
+  db/                  # Prisma schema, migrations, seed scripts
 ```
 
 ## Prerequisites
 
 - Node.js >= 24
 - pnpm >= 11
-- Neon `DATABASE_URL` (and preferably `DIRECT_URL` for migrations) in a local `.env` (never commit secrets)
+- Neon `DATABASE_URL` (and `DIRECT_URL` for migrations/seeds) in a local `.env` (never commit secrets)
 
 ## Local development
 
 ```bash
 cp .env.example .env
-# fill DATABASE_URL / DIRECT_URL and other secrets
+# fill DATABASE_URL, DIRECT_URL, SESSION_TOKEN_PEPPER, CSRF_SECRET, and other values
 
 pnpm install
 
-# Prisma client (from packages/db)
 pnpm --filter @toonexpo/db db:generate
 pnpm --filter @toonexpo/db db:validate
 
-# Fresh empty database only (do not reset a Neon branch that already has schema):
-# pnpm --filter @toonexpo/db db:migrate:dev -- --name init
+# Apply migrations on a fresh database:
+pnpm --filter @toonexpo/db db:migrate:dev
 
+# Idempotent demo data (local/dev only):
+pnpm --filter @toonexpo/db db:seed
+```
+
+Seeded accounts (password from `SEED_ADMIN_PASSWORD` in `.env`, or dev fallback documented in seed script — never commit real passwords):
+
+| Role | Email |
+|------|-------|
+| Platform admin | `admin@toonexpo.local` |
+| Company admin (first seed builder) | `builder.admin@toonexpo.local` |
+| Buyer (with QR) | `buyer@toonexpo.local` |
+
+Start both apps (web on `:3000`, API on `:4000`):
+
+```bash
+pnpm dev
+```
+
+Set `NEXT_PUBLIC_API_URL=http://localhost:4000` for local API calls. For staging/production proxy mode see `docs/SETTINGS.md`.
+
+## Quality gates
+
+```bash
 pnpm lint
 pnpm typecheck
 pnpm test
 pnpm build
-
-# After apps exist:
-pnpm dev
 ```
 
-Workspace packages:
+## Docker (API image)
 
-| Package | Name |
-|---|---|
-| Config presets | `@toonexpo/config` |
-| Shared utils | `@toonexpo/shared` |
-| API contracts | `@toonexpo/contracts` |
-| Prisma / DB | `@toonexpo/db` (API only) |
+Build from repo root (Cloud Run target):
+
+```bash
+docker build -f apps/api/Dockerfile -t toonexpo-api .
+```
+
+Deploy steps: `docs/DEPLOYMENT.md`.
 
 ## Documentation
 
-Start here:
+| Doc | Purpose |
+|-----|---------|
+| [Documentation Hub](./docs/00-Documentation-Hub.md) | Index |
+| [Tech Card](./docs/TECH_CARD.md) | Stack and operational decisions |
+| [Architecture](./docs/01-ARCHITECTURE.md) | System design |
+| [Module Status](./docs/MODULE_STATUS.md) | Per-module readiness |
+| [Progress](./docs/PROGRESS.md) | Sprint and wave tracker |
+| [Deployment](./docs/DEPLOYMENT.md) | Cloud Run + Vercel + Neon |
+| [Settings](./docs/SETTINGS.md) | Owner env cheat sheet |
+| [Open Questions](./docs/OPEN_QUESTIONS.md) | Pre-launch decisions |
+| [Frontend / Backend Boundary](./docs/architecture/FRONTEND_BACKEND_BOUNDARY.md) | Runtime rules |
 
-- [Brief](./docs/BRIEF.md)
-- [Tech Card](./docs/TECH_CARD.md)
-- [Architecture](./docs/01-ARCHITECTURE.md)
-- [Frontend / Backend Boundary](./docs/architecture/FRONTEND_BACKEND_BOUNDARY.md)
-- [Development Start Pack](./docs/00-Development-Start/01-Production-Scope.md)
-- [Documentation Hub](./docs/00-Documentation-Hub.md)
-- [ToonExpo Ecosystem Overview](./docs/02-ToonExpo-Ecosystem/00-Ecosystem-Overview.md)
-- [BOS / ToonExpo Boundary](./docs/03-Integration-With-BOS/01-BOS-ToonExpo-Boundary.md)
-
-## Project Size
+## Project size
 
 Size C — large monorepo (`apps/*`, `packages/*`).
 
