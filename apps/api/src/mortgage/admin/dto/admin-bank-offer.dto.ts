@@ -1,0 +1,203 @@
+import { ApiPropertyOptional } from "@nestjs/swagger";
+import { Type } from "class-transformer";
+import {
+  ArrayMaxSize,
+  ArrayMinSize,
+  IsArray,
+  IsBoolean,
+  IsEnum,
+  IsInt,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Max,
+  MaxLength,
+  Min,
+  MinLength,
+} from "class-validator";
+import { PublicationStatus } from "@toonexpo/db";
+
+import {
+  BANK_OFFER_CALCULATION_NOTES_MAX_LENGTH,
+  BANK_OFFER_DOWN_PAYMENT_MAX,
+  BANK_OFFER_DOWN_PAYMENT_MIN,
+  BANK_OFFER_FEES_MAX_LENGTH,
+  BANK_OFFER_MAX_TERM_OPTIONS,
+  BANK_OFFER_RATE_MAX,
+  BANK_OFFER_RATE_MIN,
+  BANK_OFFER_SHORT_DESCRIPTION_MAX_LENGTH,
+  BANK_OFFER_SORT_ORDER_MAX,
+  BANK_OFFER_TERM_MAX_YEARS,
+  BANK_OFFER_TERM_MIN_YEARS,
+  BANK_OFFER_TITLE_MAX_LENGTH,
+} from "../../mortgage.constants.js";
+
+enum PublicationStatusDto {
+  draft = "draft",
+  published = "published",
+  archived = "archived",
+}
+
+export class CreateBankOfferDto {
+  @IsString()
+  @MinLength(1)
+  partnerCompanyId!: string;
+
+  @IsString()
+  @MinLength(1)
+  @MaxLength(BANK_OFFER_TITLE_MAX_LENGTH)
+  title!: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MaxLength(BANK_OFFER_SHORT_DESCRIPTION_MAX_LENGTH)
+  shortDescription?: string;
+
+  @Type(() => Number)
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(BANK_OFFER_RATE_MIN)
+  @Max(BANK_OFFER_RATE_MAX)
+  rate!: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(BANK_OFFER_RATE_MIN)
+  @Max(BANK_OFFER_RATE_MAX)
+  apr?: number;
+
+  @Type(() => Number)
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(BANK_OFFER_DOWN_PAYMENT_MIN)
+  @Max(BANK_OFFER_DOWN_PAYMENT_MAX)
+  minDownPaymentPercent!: number;
+
+  @IsArray()
+  @ArrayMinSize(1)
+  @ArrayMaxSize(BANK_OFFER_MAX_TERM_OPTIONS)
+  @Type(() => Number)
+  @IsInt({ each: true })
+  @Min(BANK_OFFER_TERM_MIN_YEARS, { each: true })
+  @Max(BANK_OFFER_TERM_MAX_YEARS, { each: true })
+  termOptionsYears!: number[];
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MaxLength(BANK_OFFER_FEES_MAX_LENGTH)
+  fees?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MaxLength(BANK_OFFER_CALCULATION_NOTES_MAX_LENGTH)
+  calculationNotes?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  featured?: boolean;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  @Max(BANK_OFFER_SORT_ORDER_MAX)
+  sortOrder?: number;
+
+  @ApiPropertyOptional({ enum: PublicationStatusDto })
+  @IsOptional()
+  @IsEnum(PublicationStatusDto)
+  publicationStatus?: PublicationStatus;
+}
+
+export class UpdateBankOfferDto {
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MinLength(1)
+  @MaxLength(BANK_OFFER_TITLE_MAX_LENGTH)
+  title?: string;
+
+  @ApiPropertyOptional({ nullable: true })
+  @IsOptional()
+  @IsString()
+  @MaxLength(BANK_OFFER_SHORT_DESCRIPTION_MAX_LENGTH)
+  shortDescription?: string | null;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(BANK_OFFER_RATE_MIN)
+  @Max(BANK_OFFER_RATE_MAX)
+  rate?: number;
+
+  @ApiPropertyOptional({ nullable: true })
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(BANK_OFFER_RATE_MIN)
+  @Max(BANK_OFFER_RATE_MAX)
+  apr?: number | null;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(BANK_OFFER_DOWN_PAYMENT_MIN)
+  @Max(BANK_OFFER_DOWN_PAYMENT_MAX)
+  minDownPaymentPercent?: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsArray()
+  @ArrayMinSize(1)
+  @ArrayMaxSize(BANK_OFFER_MAX_TERM_OPTIONS)
+  @Type(() => Number)
+  @IsInt({ each: true })
+  @Min(BANK_OFFER_TERM_MIN_YEARS, { each: true })
+  @Max(BANK_OFFER_TERM_MAX_YEARS, { each: true })
+  termOptionsYears?: number[];
+
+  @ApiPropertyOptional({ nullable: true })
+  @IsOptional()
+  @IsString()
+  @MaxLength(BANK_OFFER_FEES_MAX_LENGTH)
+  fees?: string | null;
+
+  @ApiPropertyOptional({ nullable: true })
+  @IsOptional()
+  @IsString()
+  @MaxLength(BANK_OFFER_CALCULATION_NOTES_MAX_LENGTH)
+  calculationNotes?: string | null;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  featured?: boolean;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  @Max(BANK_OFFER_SORT_ORDER_MAX)
+  sortOrder?: number;
+
+  @ApiPropertyOptional({ enum: PublicationStatusDto })
+  @IsOptional()
+  @IsEnum(PublicationStatusDto)
+  publicationStatus?: PublicationStatus;
+}
+
+export class ListAdminBankOffersQueryDto {
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MinLength(1)
+  partnerCompanyId?: string;
+}
