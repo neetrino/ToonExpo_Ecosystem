@@ -2,6 +2,7 @@ import type {
   AuthSessionResponse,
   LoginRequest,
   RegisterRequest,
+  SetPasswordRequest,
   UserResponse,
 } from "@toonexpo/contracts";
 
@@ -41,6 +42,22 @@ export const loginUser = async (
 ): Promise<AuthSessionResponse> => {
   const result = await apiFetch<AuthSessionResponse>({
     path: "/auth/login",
+    method: "POST",
+    ...jsonCredentials,
+    body: JSON.stringify(body),
+  });
+  setCsrfTokenCache(result.csrfToken);
+  return result;
+};
+
+/**
+ * Sets a password from an invite token and establishes a session cookie.
+ */
+export const setPassword = async (
+  body: SetPasswordRequest,
+): Promise<AuthSessionResponse> => {
+  const result = await apiFetch<AuthSessionResponse>({
+    path: "/auth/set-password",
     method: "POST",
     ...jsonCredentials,
     body: JSON.stringify(body),

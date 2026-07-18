@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { loginSchema } from "./login.schema";
 import { registerSchema } from "./register.schema";
+import { setPasswordSchema } from "./set-password.schema";
 
 describe("loginSchema", () => {
   it("accepts a valid email and password", () => {
@@ -75,6 +76,35 @@ describe("registerSchema", () => {
       email: "ani@example.com",
       phone: "+37491111222",
       password: "password123",
+    });
+
+    expect(result.success).toBe(false);
+  });
+});
+
+describe("setPasswordSchema", () => {
+  it("accepts matching passwords of sufficient length", () => {
+    const result = setPasswordSchema.safeParse({
+      password: "password123",
+      confirmPassword: "password123",
+    });
+
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects short passwords", () => {
+    const result = setPasswordSchema.safeParse({
+      password: "short",
+      confirmPassword: "short",
+    });
+
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects mismatched confirmation", () => {
+    const result = setPasswordSchema.safeParse({
+      password: "password123",
+      confirmPassword: "password456",
     });
 
     expect(result.success).toBe(false);

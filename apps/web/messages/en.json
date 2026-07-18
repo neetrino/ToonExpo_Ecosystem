@@ -163,16 +163,19 @@
       "name": "Full name",
       "email": "Email",
       "phone": "Phone",
-      "password": "Password"
+      "password": "Password",
+      "confirmPassword": "Confirm password"
     },
     "validation": {
       "name": "Enter your name",
       "email": "Enter a valid email",
       "phone": "Enter a valid phone number",
-      "password": "Password must be at least 8 characters"
+      "password": "Password must be at least 8 characters",
+      "confirmPassword": "Passwords must match"
     },
     "errors": {
       "invalidCredentials": "Invalid email or password",
+      "invalidToken": "This invite link is invalid or has expired.",
       "emailTaken": "This email is already registered",
       "tooManyRequests": "Too many attempts. Please wait a minute and try again.",
       "generic": "Something went wrong. Please try again."
@@ -193,6 +196,13 @@
       "hasAccount": "Already registered?",
       "loginLink": "Sign in"
     },
+    "setPassword": {
+      "title": "Set your password",
+      "subtitle": "Choose a password to activate your ToonExpo account",
+      "submit": "Set password",
+      "submitting": "Saving…",
+      "supportHint": "Need help? Contact support at support@toonexpo.com"
+    },
     "logout": {
       "submit": "Log out",
       "submitting": "Logging out…"
@@ -207,6 +217,93 @@
       "phone": "Phone",
       "phoneEmpty": "Not set",
       "accountType": "Account type"
+    }
+  },
+  "Admin": {
+    "badge": "Admin",
+    "profileLink": "Profile",
+    "nav": {
+      "label": "Admin navigation",
+      "section": "Manage",
+      "companies": "Companies"
+    },
+    "companies": {
+      "title": "Companies",
+      "subtitle": "{count, plural, =0 {No companies} one {# company} other {# companies}}",
+      "empty": "No companies yet. Create the first one.",
+      "loading": "Loading companies…",
+      "error": "Could not load companies. Try again.",
+      "newCompany": "New company",
+      "pagination": {
+        "previous": "Previous",
+        "next": "Next"
+      },
+      "columns": {
+        "name": "Name",
+        "type": "Type",
+        "status": "Status",
+        "createdAt": "Created"
+      },
+      "types": {
+        "builder": "Builder",
+        "partner": "Partner",
+        "bank": "Bank",
+        "service": "Service"
+      },
+      "statuses": {
+        "active": "Active",
+        "inactive": "Inactive",
+        "pending": "Pending"
+      },
+      "new": {
+        "title": "New company",
+        "subtitle": "Create a company and invite the first administrator"
+      },
+      "form": {
+        "companySection": "Company",
+        "adminSection": "First administrator",
+        "name": "Company name",
+        "type": "Type",
+        "description": "Description",
+        "status": "Status",
+        "adminName": "Admin name",
+        "adminEmail": "Admin email",
+        "adminPhone": "Admin phone",
+        "submit": "Create & send invite",
+        "submitting": "Creating…"
+      },
+      "validation": {
+        "name": "Enter a company name",
+        "type": "Select a type",
+        "description": "Description is too long",
+        "status": "Select a status",
+        "adminName": "Enter the admin name",
+        "adminEmail": "Enter a valid email",
+        "adminPhone": "Enter a valid phone number"
+      },
+      "errors": {
+        "emailTaken": "This email is already registered",
+        "generic": "Something went wrong. Please try again."
+      },
+      "inviteSuccess": {
+        "title": "Invite sent",
+        "message": "Invite sent to {email}",
+        "backToList": "Back to companies",
+        "createAnother": "Create another"
+      },
+      "detail": {
+        "back": "← Companies",
+        "typeLabel": "Type",
+        "save": "Save changes",
+        "saving": "Saving…",
+        "saveSuccess": "Company updated",
+        "notFound": "Company not found",
+        "resendInvite": "Resend invite",
+        "resendConfirm": "Resend the set-password invite email to the invited admin?",
+        "resendSubmitting": "Sending…",
+        "resendSuccess": "Invite resent successfully",
+        "resendNotFound": "No invited admin found for this company"
+      }
     }
   }
 }

@@ -11,7 +11,11 @@ import {
 import { ApiError } from "./errors";
 
 /** Public auth mutations establish the session; CSRF is not available yet. */
-const CSRF_EXEMPT_PATHS = new Set(["/auth/login", "/auth/register"]);
+const CSRF_EXEMPT_PATHS = new Set([
+  "/auth/login",
+  "/auth/register",
+  "/auth/set-password",
+]);
 
 export type ApiFetchOptions = RequestInit & {
   /** Absolute or relative path under the API v1 prefix (e.g. `/health`). */

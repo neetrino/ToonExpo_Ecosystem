@@ -7,11 +7,14 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 
+import type { SetPasswordRequest } from "@toonexpo/contracts";
+
 import {
   getMeOrNull,
   loginUser,
   logoutUser,
   registerUser,
+  setPassword,
 } from "@/features/auth/api/auth-api";
 import { AUTH_ME_QUERY_KEY } from "@/shared/config/auth.constants";
 import type { LoginFormValues } from "@/features/auth/schemas/login.schema";
@@ -48,6 +51,20 @@ export const useRegisterMutation = () => {
 
   return useMutation({
     mutationFn: (values: RegisterFormValues) => registerUser(values),
+    onSuccess: (data) => {
+      queryClient.setQueryData(AUTH_ME_QUERY_KEY, data.user);
+    },
+  });
+};
+
+/**
+ * Set-password mutation — invite token + new password, then session.
+ */
+export const useSetPasswordMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (body: SetPasswordRequest) => setPassword(body),
     onSuccess: (data) => {
       queryClient.setQueryData(AUTH_ME_QUERY_KEY, data.user);
     },
