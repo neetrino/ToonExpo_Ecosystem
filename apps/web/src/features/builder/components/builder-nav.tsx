@@ -13,13 +13,21 @@ type NavItem =
         | "/builder/team"
         | "/builder/crm"
         | "/builder/scanner"
-        | "/builder/readiness";
-      key: "dashboard" | "projects" | "team" | "crm" | "scanner" | "readiness";
+        | "/builder/readiness"
+        | "/builder/analytics";
+      key:
+        | "dashboard"
+        | "projects"
+        | "team"
+        | "crm"
+        | "scanner"
+        | "readiness"
+        | "analytics";
       disabled?: false;
     }
   | {
       href: string;
-      key: "visualMap" | "analytics" | "company" | "inventory";
+      key: "visualMap" | "company" | "inventory";
       disabled: true;
     };
 
@@ -30,8 +38,8 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/builder/crm", key: "crm" },
   { href: "/builder/scanner", key: "scanner" },
   { href: "/builder/readiness", key: "readiness" },
+  { href: "/builder/analytics", key: "analytics" },
   { href: "/builder/visual-map", key: "visualMap", disabled: true },
-  { href: "/builder/analytics", key: "analytics", disabled: true },
 ];
 
 type BuilderNavProps = {

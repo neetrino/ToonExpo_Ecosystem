@@ -62,3 +62,8 @@ export const portalCrmDealQueryKey = (id: string) =>
   [...PORTAL_CRM_DEALS_QUERY_KEY, id] as const;
 
 export const PORTAL_READINESS_QUERY_KEY = ["portal", "readiness"] as const;
+
+export const PORTAL_ANALYTICS_QUERY_KEY = ["portal", "analytics"] as const;
+
+export const portalAnalyticsQueryKey = (from: string, to: string) =>
+  [...PORTAL_ANALYTICS_QUERY_KEY, from, to] as const;
