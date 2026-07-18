@@ -53,7 +53,7 @@ Infrastructure and platform services completed during waves 1–4 (2026-07-18):
 
 ## Next
 
-1. **Performance / caching / scalability review** — evidence-based read-only review per `PERFORMANCE-CACHING-SCALABILITY-REVIEW-BRIEF.md` (repo root). Deliverable: review document + prioritized P0/P1/P2 plan. Run against post-wave code; owner decision follows the review.
+1. **Performance P0 (backend)** — ✅ Done (2026-07-19): session touch coalescing (10m), CRM one-open-deal partial unique + transactional intake, Neon pool/timeouts, trust proxy / `req.ip`, booth search DB filter (min length 2), route graph in-memory TTL cache, check-in QR pass-through. Remaining: public CDN/edge caching (P0-1), Upstash required in prod + Cloudflare backstop, load test.
 2. **Owner OPEN_QUESTIONS walkthrough** — `docs/OPEN_QUESTIONS.md` (design variant, domains, prod admin bootstrap, BOS outbound, post-v1 scope confirmation, secrets rotation).
 3. **Owner manual deploy** — `docs/DEPLOYMENT.md` + `docs/SETTINGS.md` (Vercel web, Cloud Run API, Neon `migrate deploy`).
 4. **Sentry → Telegram alerts** — owner request in `toso.md`; pending discussion (not in v1 scope).
@@ -64,7 +64,7 @@ Infrastructure and platform services completed during waves 1–4 (2026-07-18):
 
 - staging and production domains;
 - Cloudflare R2, Resend, Sentry, Vercel and Google Cloud accounts/credentials;
-- database pool sizes and statement timeouts tuned per environment for the confirmed load profile;
+- Cloud Run concurrency / instance caps applied to match Neon pool budget (`docs/SETTINGS.md`);
 - QR, public request and provisioning rate limits finalized for staging/production.
 
 These are not blockers for local development or Sprint 1 CSRF hardening.

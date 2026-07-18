@@ -2,7 +2,7 @@
 
 ## Status
 
-Core stack, foundation decisions and scale/load profile confirmed (2026-07-18). Sprint 1 auth and two-layer CSRF hardening are implemented. Provider credentials, staging/production domains and environment-specific pool/timeout tuning still require confirmation before staging/production deploy.
+Core stack, foundation decisions and scale/load profile confirmed (2026-07-18). Sprint 1 auth and two-layer CSRF hardening are implemented. Provider credentials and staging/production domains still require confirmation before staging/production deploy. Neon pool / statement timeout starting points and session touch coalescing are configured (2026-07-19); tune after load test.
 
 ## Project Size
 
@@ -225,13 +225,17 @@ Confirmed 2026-07-18 for the scale and load profile above. Environment variables
 | Buyer registration phone | Required | Confirmed |
 | CSRF strategy | Origin allowlist + double-submit CSRF tokens (HMAC session binding) | Confirmed |
 | QR, public request and provisioning rate limits | Environment-configured under the same load profile | Pending environment deploy |
-| Database pool sizes and statement timeouts | Environment-configured under the same load profile | Pending environment deploy |
+| Database pool max (`DB_POOL_MAX`) | **8** per Cloud Run instance | Confirmed starting point (2026-07-19) |
+| Pool connection timeout (`DB_POOL_CONNECTION_TIMEOUT_MS`) | **5000** ms | Confirmed starting point (2026-07-19) |
+| Statement timeout (`DB_STATEMENT_TIMEOUT_MS`) | **10000** ms | Confirmed starting point (2026-07-19) |
+| Session touch coalesce | **10 minutes** | Confirmed (2026-07-19) |
+| Cloud Run concurrency / max instances / min instances | 40–80 / 10–20 / 2–4 expo (0–1 off-season) | Confirmed starting points — apply at deploy |
 
 ## Environment-Specific Configuration Still Needed
 
 - staging and production domains;
 - Cloudflare R2, Resend, Sentry, Vercel and Google Cloud accounts/credentials;
-- database pool sizes and statement timeouts tuned per environment for the confirmed load profile;
+- Cloud Run concurrency / instance caps applied in GCP to match the pool budget above;
 - QR, public request and provisioning rate limits finalized for staging/production.
 
 These inputs do not block local development or Sprint 1 hardening.
