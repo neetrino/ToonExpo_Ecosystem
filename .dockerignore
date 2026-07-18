@@ -1,0 +1,50 @@
+# Dependencies and build output
+node_modules
+**/node_modules
+.next
+**/.next
+dist
+**/dist
+build
+**/build
+coverage
+**/.turbo
+.turbo
+*.tsbuildinfo
+
+# Environment and secrets (never in image context)
+.env
+.env.*
+!.env.example
+
+# Version control and IDE
+.git
+.gitignore
+**/.git
+.idea
+.vscode
+.cursor
+
+# Docs, notes, and local tooling
+docs
+terminals
+*.md
+!README.md
+
+# Tests (not needed in production image)
+**/*.spec.ts
+**/*.test.ts
+**/*.e2e-spec.ts
+**/test
+**/coverage
+
+# Prisma generated client (rebuilt during image build)
+packages/db/src/generated
+
+# OS and logs
+.DS_Store
+Thumbs.db
+*.log
+tmp
+temp
+.cache
