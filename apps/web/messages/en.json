@@ -1074,8 +1074,8 @@
         },
         "assignments": {
           "title": "Assignments",
-          "listGapHint": "Existing assignments reload after a backend list endpoint is added.",
-          "empty": "No assignments added in this session.",
+          "loading": "Loading assignments…",
+          "empty": "No assignments yet.",
           "company": "Company",
           "noCompany": "No company",
           "project": "Project",
@@ -1840,8 +1840,12 @@
       }
     },
     "route": {
+      "pickEntrance": "Choose entrance",
+      "pickEntranceHint": "Select where you're starting from.",
+      "entranceOption": "{label}",
+      "cancel": "Cancel",
       "unavailable": "Route is not available for this booth yet.",
-      "noEntranceNodes": "Entrance start points are not exposed on the public API yet.",
+      "noEntranceNodes": "No entrance points are configured on this map.",
       "reset": "Clear route"
     }
   }

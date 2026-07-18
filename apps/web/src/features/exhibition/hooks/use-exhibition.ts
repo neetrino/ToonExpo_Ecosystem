@@ -25,6 +25,7 @@ import {
   getAdminEvent,
   getAdminEventCheckInSummary,
   getAdminVenueMapRouteGraph,
+  listAdminBoothAssignments,
   listAdminEvents,
   listAdminEventVenueMaps,
   listAdminVenueMapBooths,
@@ -37,12 +38,14 @@ import {
 import {
   getPublicCurrentEvent,
   getPublicVenueMapBooths,
+  getPublicVenueMapEntranceNodes,
   getPublicVenueMapRoute,
   searchPublicVenueMapBooths,
 } from "@/features/exhibition/api/public-exhibition-api";
 import {
   ADMIN_EVENTS_QUERY_KEY,
   EXPO_SEARCH_MIN_LENGTH,
+  adminBoothAssignmentsQueryKey,
   adminEventCheckInSummaryQueryKey,
   adminEventQueryKey,
   adminEventVenueMapsQueryKey,
@@ -50,6 +53,7 @@ import {
   adminVenueMapRouteGraphQueryKey,
   publicCurrentEventQueryKey,
   publicVenueMapBoothsQueryKey,
+  publicVenueMapEntranceNodesQueryKey,
   publicVenueMapSearchQueryKey,
 } from "@/features/exhibition/constants";
 
@@ -77,6 +81,13 @@ export const usePublicVenueMapSearchQuery = (mapId: string, query: string) => {
     enabled: mapId.length > 0 && trimmed.length >= EXPO_SEARCH_MIN_LENGTH,
   });
 };
+
+export const usePublicVenueMapEntranceNodesQuery = (mapId: string) =>
+  useQuery({
+    queryKey: publicVenueMapEntranceNodesQueryKey(mapId),
+    queryFn: () => getPublicVenueMapEntranceNodes(mapId),
+    enabled: mapId.length > 0,
+  });
 
 export const usePublicVenueMapRouteQuery = (
   mapId: string,
@@ -246,10 +257,23 @@ export const useDeleteAdminBoothMutation = (mapId: string) => {
   });
 };
 
+export const useAdminBoothAssignmentsQuery = (boothId: string) =>
+  useQuery({
+    queryKey: adminBoothAssignmentsQueryKey(boothId),
+    queryFn: () => listAdminBoothAssignments(boothId),
+    enabled: boothId.length > 0,
+  });
+
 export const useCreateAdminBoothAssignmentMutation = (boothId: string) => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (body: CreateBoothAssignmentRequest) =>
       createAdminBoothAssignment(boothId, body),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: adminBoothAssignmentsQueryKey(boothId),
+      });
+    },
   });
 };
 
@@ -266,9 +290,15 @@ export const useUpdateAdminBoothAssignmentMutation = (boothId: string) => {
 };
 
 export const useDeleteAdminBoothAssignmentMutation = (boothId: string) => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (assignmentId: string) =>
       deleteAdminBoothAssignment(boothId, assignmentId),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: adminBoothAssignmentsQueryKey(boothId),
+      });
+    },
   });
 };
 

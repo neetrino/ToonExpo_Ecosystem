@@ -56,6 +56,8 @@ export const publicVenueMapSearchQueryKey = (
   query: string,
   locale: string,
 ) => [...PUBLIC_EXPO_QUERY_KEY, "search", mapId, query, locale] as const;
+export const publicVenueMapEntranceNodesQueryKey = (mapId: string) =>
+  [...PUBLIC_EXPO_QUERY_KEY, "entrance-nodes", mapId] as const;
 
 export const ADMIN_EVENTS_QUERY_KEY = ["admin", "events"] as const;
 export const adminEventQueryKey = (id: string) =>

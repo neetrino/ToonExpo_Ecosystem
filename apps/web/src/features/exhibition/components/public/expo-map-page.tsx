@@ -1,5 +1,6 @@
 "use client";
 
+import type { PublicEntranceNode } from "@toonexpo/contracts";
 import { useLocale, useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 
@@ -10,6 +11,7 @@ import { EXPO_SEARCH_DEBOUNCE_MS } from "@/features/exhibition/constants";
 import {
   usePublicCurrentEventQuery,
   usePublicVenueMapBoothsQuery,
+  usePublicVenueMapEntranceNodesQuery,
   usePublicVenueMapRouteQuery,
   usePublicVenueMapSearchQuery,
 } from "@/features/exhibition/hooks/use-exhibition";
@@ -18,6 +20,9 @@ import { useDebouncedValue } from "@/shared/hooks/use-debounced-value";
 import { Button } from "@/shared/ui/button";
 import { Card } from "@/shared/ui/card";
 import { Input } from "@/shared/ui/input";
+
+const resolveEntranceLabel = (node: PublicEntranceNode): string =>
+  node.label ?? node.code ?? node.id.slice(0, 8);
 
 /**
  * Public mobile-first expo venue map page content.
@@ -30,19 +35,23 @@ export const ExpoMapPage = () => {
   const [selectedMapIndex, setSelectedMapIndex] = useState(0);
   const [selectedBoothId, setSelectedBoothId] = useState<string | null>(null);
   const [routeRequested, setRouteRequested] = useState(false);
+  const [fromNodeId, setFromNodeId] = useState<string | null>(null);
+  const [showEntrancePicker, setShowEntrancePicker] = useState(false);
   const debouncedSearch = useDebouncedValue(search, EXPO_SEARCH_DEBOUNCE_MS);
 
   const event = eventQuery.data ?? null;
   const venueMap = event?.venueMaps[selectedMapIndex] ?? event?.venueMaps[0] ?? null;
   const boothsQuery = usePublicVenueMapBoothsQuery(venueMap?.id ?? "");
   const searchQuery = usePublicVenueMapSearchQuery(venueMap?.id ?? "", debouncedSearch);
+  const entranceNodesQuery = usePublicVenueMapEntranceNodesQuery(venueMap?.id ?? "");
 
   const booths = boothsQuery.data?.data ?? [];
   const selectedBooth = booths.find((booth) => booth.id === selectedBoothId) ?? null;
+  const entranceNodes = entranceNodesQuery.data?.data ?? [];
 
   const routeQuery = usePublicVenueMapRouteQuery(
     venueMap?.id ?? "",
-    null,
+    fromNodeId,
     selectedBoothId,
     routeRequested,
   );
@@ -57,6 +66,36 @@ export const ExpoMapPage = () => {
     }
     return routeQuery.data.nodes;
   }, [routeQuery.data, routeRequested]);
+
+  const routeAvailable = entranceNodes.length > 0;
+
+  const resetRoute = () => {
+    setRouteRequested(false);
+    setFromNodeId(null);
+    setShowEntrancePicker(false);
+  };
+
+  const startRoute = (entranceId: string) => {
+    setFromNodeId(entranceId);
+    setRouteRequested(true);
+    setShowEntrancePicker(false);
+  };
+
+  const onRouteRequest = () => {
+    if (entranceNodes.length === 0) {
+      setRouteRequested(true);
+      setFromNodeId(null);
+      setShowEntrancePicker(false);
+      return;
+    }
+
+    if (entranceNodes.length === 1) {
+      startRoute(entranceNodes[0]?.id ?? "");
+      return;
+    }
+
+    setShowEntrancePicker(true);
+  };
 
   if (eventQuery.isLoading) {
     return <p className="text-sm text-ink-secondary">{t("loading")}</p>;
@@ -97,7 +136,7 @@ export const ExpoMapPage = () => {
               onClick={() => {
                 setSelectedMapIndex(index);
                 setSelectedBoothId(null);
-                setRouteRequested(false);
+                resetRoute();
               }}
             >
               {map.title}
@@ -118,7 +157,7 @@ export const ExpoMapPage = () => {
         highlightedBoothId={selectedBoothId}
         onSelect={(boothId) => {
           setSelectedBoothId(boothId);
-          setRouteRequested(false);
+          resetRoute();
         }}
       />
 
@@ -130,28 +169,51 @@ export const ExpoMapPage = () => {
         routeAvailable={routeQuery.data?.routeAvailable ?? false}
         onSelectBooth={(boothId) => {
           setSelectedBoothId(boothId);
-          setRouteRequested(false);
+          resetRoute();
         }}
       />
 
-      {routeRequested && routeQuery.data && !routeQuery.data.routeAvailable ? (
-        <p className="text-sm text-ink-secondary">{t("route.unavailable")}</p>
+      {showEntrancePicker ? (
+        <Card className="flex flex-col gap-3 px-4 py-4">
+          <div>
+            <h2 className="text-sm font-semibold text-ink">{t("route.pickEntrance")}</h2>
+            <p className="mt-1 text-xs text-ink-muted">{t("route.pickEntranceHint")}</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {entranceNodes.map((node) => (
+              <Button
+                key={node.id}
+                type="button"
+                size="sm"
+                variant="secondary"
+                onClick={() => startRoute(node.id)}
+              >
+                {t("route.entranceOption", { label: resolveEntranceLabel(node) })}
+              </Button>
+            ))}
+          </div>
+          <Button type="button" variant="ghost" size="sm" onClick={resetRoute}>
+            {t("route.cancel")}
+          </Button>
+        </Card>
       ) : null}
 
-      {routeRequested && !routeQuery.data ? (
+      {routeRequested && !routeAvailable ? (
         <p className="text-sm text-ink-secondary">{t("route.noEntranceNodes")}</p>
+      ) : null}
+
+      {routeRequested && routeAvailable && routeQuery.data && !routeQuery.data.routeAvailable ? (
+        <p className="text-sm text-ink-secondary">{t("route.unavailable")}</p>
       ) : null}
 
       {selectedBooth ? (
         <ExpoBoothSheet
           booth={selectedBooth}
-          routeAvailable={false}
-          onRoute={() => {
-            setRouteRequested(true);
-          }}
+          routeAvailable={routeAvailable}
+          onRoute={onRouteRequest}
           onClose={() => {
             setSelectedBoothId(null);
-            setRouteRequested(false);
+            resetRoute();
           }}
         />
       ) : null}
@@ -161,17 +223,12 @@ export const ExpoMapPage = () => {
         highlightedBoothId={selectedBoothId}
         onSelect={(boothId) => {
           setSelectedBoothId(boothId);
-          setRouteRequested(false);
+          resetRoute();
         }}
       />
 
       {routeRequested ? (
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={() => setRouteRequested(false)}
-        >
+        <Button type="button" variant="ghost" size="sm" onClick={resetRoute}>
           {t("route.reset")}
         </Button>
       ) : null}

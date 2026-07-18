@@ -1073,18 +1073,18 @@
           "hint": "Click the map to set X/Y coordinates in the form."
         },
         "assignments": {
-          "title": "Assignments",
-          "listGapHint": "Existing assignments reload after a backend list endpoint is added.",
-          "empty": "No assignments added in this session.",
-          "company": "Company",
-          "noCompany": "No company",
-          "project": "Project",
-          "noProject": "No project",
-          "label": "Label",
-          "active": "Active",
-          "add": "Add assignment",
-          "adding": "Adding…",
-          "remove": "Remove"
+          "title": "Назначения",
+          "loading": "Загрузка назначений…",
+          "empty": "Назначений пока нет.",
+          "company": "Компания",
+          "noCompany": "Без компании",
+          "project": "Проект",
+          "noProject": "Без проекта",
+          "label": "Метка",
+          "active": "Активно",
+          "add": "Добавить назначение",
+          "adding": "Добавление…",
+          "remove": "Удалить"
         }
       },
       "routeGraph": {
@@ -1840,9 +1840,13 @@
       }
     },
     "route": {
-      "unavailable": "Route is not available for this booth yet.",
-      "noEntranceNodes": "Entrance start points are not exposed on the public API yet.",
-      "reset": "Clear route"
+      "pickEntrance": "Выберите вход",
+      "pickEntranceHint": "Укажите, откуда вы начинаете маршрут.",
+      "entranceOption": "{label}",
+      "cancel": "Отмена",
+      "unavailable": "Маршрут для этого стенда пока недоступен.",
+      "noEntranceNodes": "На этой карте не настроены входные точки.",
+      "reset": "Сбросить маршрут"
     }
   }
 }

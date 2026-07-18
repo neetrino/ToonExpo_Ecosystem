@@ -2,6 +2,7 @@ import type {
   BoothSearchResponse,
   CurrentEventResponse,
   PublicBoothListResponse,
+  PublicEntranceNodeListResponse,
   RoutePathResponse,
 } from "@toonexpo/contracts";
 
@@ -95,6 +96,24 @@ export const searchPublicVenueMapBooths = (
     ),
   );
 };
+
+/**
+ * Lists entrance route nodes on a published venue map.
+ */
+export const getPublicVenueMapEntranceNodes = (
+  mapId: string,
+  options: PublicExpoRequestOptions = {},
+): Promise<PublicEntranceNodeListResponse> =>
+  apiFetch<PublicEntranceNodeListResponse>(
+    withCookie(
+      {
+        path: `/venue-maps/${encodeURIComponent(mapId)}/entrance-nodes`,
+        method: "GET",
+        cache: "no-store",
+      },
+      options.cookieHeader,
+    ),
+  );
 
 /**
  * Computes a walking path from a route node to a booth.

@@ -1,9 +1,8 @@
 "use client";
 
-import type { BoothAssignmentSummary } from "@toonexpo/contracts";
+import type { BoothAssignmentDetail } from "@toonexpo/contracts";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { ADMIN_COMPANIES_DEFAULT_PAGE_SIZE } from "@/features/admin/constants";
@@ -12,6 +11,7 @@ import {
   useAdminCompanyProjectsQuery,
 } from "@/features/admin/hooks/use-admin-companies";
 import {
+  useAdminBoothAssignmentsQuery,
   useCreateAdminBoothAssignmentMutation,
   useDeleteAdminBoothAssignmentMutation,
 } from "@/features/exhibition/hooks/use-exhibition";
@@ -28,15 +28,22 @@ type AdminBoothAssignmentsPanelProps = {
   boothId: string;
 };
 
+const resolveAssignmentDisplayName = (
+  assignment: BoothAssignmentDetail,
+): string =>
+  assignment.assignmentLabel ??
+  assignment.projectName ??
+  assignment.companyName ??
+  assignment.id.slice(0, 8);
+
 /**
  * Booth assignment create/list panel.
- * Note: backend has no list endpoint — assignments persist in session state after create.
  */
 export const AdminBoothAssignmentsPanel = ({
   boothId,
 }: AdminBoothAssignmentsPanelProps) => {
   const t = useTranslations("Admin.events.booths.assignments");
-  const [assignments, setAssignments] = useState<BoothAssignmentSummary[]>([]);
+  const assignmentsQuery = useAdminBoothAssignmentsQuery(boothId);
   const createMutation = useCreateAdminBoothAssignmentMutation(boothId);
   const deleteMutation = useDeleteAdminBoothAssignmentMutation(boothId);
   const companiesQuery = useAdminCompaniesQuery(1, ADMIN_COMPANIES_DEFAULT_PAGE_SIZE);
@@ -53,42 +60,37 @@ export const AdminBoothAssignmentsPanel = ({
 
   const companyId = form.watch("companyId") ?? "";
   const projectsQuery = useAdminCompanyProjectsQuery(companyId, companyId.length > 0);
+  const assignments = assignmentsQuery.data?.data ?? [];
 
   const onSubmit = form.handleSubmit(async (values) => {
-    const created = await createMutation.mutateAsync({
+    await createMutation.mutateAsync({
       ...(values.companyId ? { companyId: values.companyId } : {}),
       ...(values.projectId ? { projectId: values.projectId } : {}),
       ...(values.assignmentLabel ? { assignmentLabel: values.assignmentLabel } : {}),
       active: values.active,
     });
-    setAssignments((current) => [...current, created]);
     form.reset({ companyId: "", projectId: "", assignmentLabel: "", active: true });
   });
 
   const onRemove = async (assignmentId: string) => {
     await deleteMutation.mutateAsync(assignmentId);
-    setAssignments((current) => current.filter((item) => item.id !== assignmentId));
   };
 
   return (
     <div className="flex flex-col gap-4 rounded-sm border border-border p-4">
       <div>
         <h4 className="text-sm font-semibold text-ink">{t("title")}</h4>
-        <p className="mt-1 text-xs text-ink-muted">{t("listGapHint")}</p>
       </div>
-      {assignments.length > 0 ? (
+      {assignmentsQuery.isLoading ? (
+        <p className="text-sm text-ink-secondary">{t("loading")}</p>
+      ) : assignments.length > 0 ? (
         <ul className="flex flex-col gap-2 text-sm">
           {assignments.map((assignment) => (
             <li
               key={assignment.id}
               className="flex items-center justify-between gap-2 rounded-sm bg-surface px-3 py-2"
             >
-              <span>
-                {assignment.assignmentLabel ??
-                  assignment.companyId ??
-                  assignment.projectId ??
-                  assignment.id.slice(0, 8)}
-              </span>
+              <span>{resolveAssignmentDisplayName(assignment)}</span>
               <Button
                 type="button"
                 size="sm"

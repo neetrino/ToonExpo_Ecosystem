@@ -1,4 +1,5 @@
 import type {
+  BoothAssignmentListResponse,
   BoothAssignmentSummary,
   BoothListResponse,
   BoothSummary,
@@ -203,6 +204,22 @@ export const deleteAdminBooth = (id: string): Promise<void> =>
     method: "DELETE",
     credentials: "include",
   });
+
+export const listAdminBoothAssignments = (
+  boothId: string,
+  options: AdminExhibitionRequestOptions = {},
+): Promise<BoothAssignmentListResponse> =>
+  apiFetch<BoothAssignmentListResponse>(
+    withCookie(
+      {
+        path: `/admin/booths/${encodeURIComponent(boothId)}/assignments`,
+        method: "GET",
+        credentials: "include",
+        cache: "no-store",
+      },
+      options.cookieHeader,
+    ),
+  );
 
 export const createAdminBoothAssignment = (
   boothId: string,
