@@ -8,13 +8,12 @@ import { ConfigService } from "@nestjs/config";
 import { Reflector } from "@nestjs/core";
 import type { Request } from "express";
 
-import { IS_PUBLIC_KEY } from "../decorators/public.decorator.js";
+import { CSRF_SAFE_METHODS } from "../../common/constants/app.constants.js";
 import type { AppEnv } from "../../config/env.validation.js";
-
-const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
+import { IS_PUBLIC_KEY } from "../decorators/public.decorator.js";
 
 /**
- * Minimal CSRF defense for cookie-authenticated mutations: Origin must match CORS allowlist.
+ * Layer-1 CSRF defense for cookie-authenticated mutations: Origin must match CORS allowlist.
  */
 @Injectable()
 export class CsrfOriginGuard implements CanActivate {
@@ -36,7 +35,7 @@ export class CsrfOriginGuard implements CanActivate {
     const request = context.switchToHttp().getRequest<Request>();
     const method = request.method.toUpperCase();
 
-    if (SAFE_METHODS.has(method)) {
+    if (CSRF_SAFE_METHODS.has(method)) {
       return true;
     }
 

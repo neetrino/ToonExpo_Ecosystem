@@ -4,19 +4,25 @@ import {
   UnauthorizedException,
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import type { AuthSessionResponse, UserResponse } from "@toonexpo/contracts";
+import type {
+  AuthSessionResponse,
+  CsrfTokenResponse,
+  UserResponse,
+} from "@toonexpo/contracts";
 import { PlatformRole, UserStatus } from "@toonexpo/db";
-import type { CookieOptions, Response } from "express";
+import type { Request, Response } from "express";
 
-import {
-  DUMMY_PASSWORD_HASH,
-  NODE_ENV_PRODUCTION,
-} from "../common/constants/app.constants.js";
+import { DUMMY_PASSWORD_HASH } from "../common/constants/app.constants.js";
 import type { AppEnv } from "../config/env.validation.js";
 import { PrismaService } from "../prisma/prisma.service.js";
 import { normalizeEmail, toUserResponse } from "./mappers/user.mapper.js";
 import type { AuthenticatedUser } from "./types/authenticated-user.js";
+import { createCsrfToken } from "./utils/csrf-token.util.js";
 import { hashPassword, verifyPassword } from "./utils/password.util.js";
+import {
+  buildCsrfCookieOptions,
+  buildSessionCookieOptions,
+} from "./utils/session-cookie.util.js";
 import {
   createSessionToken,
   hashSessionToken,
@@ -70,8 +76,8 @@ export class AuthService {
       },
     });
 
-    await this.issueSessionCookie(user.id, meta, response);
-    return { user: toUserResponse(user) };
+    const csrfToken = await this.issueSessionCookies(user.id, meta, response);
+    return { user: toUserResponse(user), csrfToken };
   }
 
   async login(
@@ -92,23 +98,33 @@ export class AuthService {
       throw new UnauthorizedException("Invalid email or password");
     }
 
-    await this.issueSessionCookie(user.id, meta, response);
-    return { user: toUserResponse(user) };
+    const csrfToken = await this.issueSessionCookies(user.id, meta, response);
+    return { user: toUserResponse(user), csrfToken };
   }
 
-  async logout(
-    user: AuthenticatedUser,
-    response: Response,
-  ): Promise<void> {
+  async logout(user: AuthenticatedUser, response: Response): Promise<void> {
     await this.prisma.db.session.update({
       where: { id: user.sessionId },
       data: { revokedAt: new Date() },
     });
-    this.clearSessionCookie(response);
+    this.clearSessionCookies(response);
   }
 
   getMe(user: AuthenticatedUser): UserResponse {
     return toUserResponse(user);
+  }
+
+  getCsrfToken(request: Request): CsrfTokenResponse {
+    const sessionCookieName = this.configService.get("SESSION_COOKIE_NAME", {
+      infer: true,
+    });
+    const cookies = request.cookies as Record<string, string> | undefined;
+    const sessionToken = cookies?.[sessionCookieName];
+    if (!sessionToken) {
+      throw new UnauthorizedException("Authentication required");
+    }
+    const secret = this.configService.get("CSRF_SECRET", { infer: true });
+    return { csrfToken: createCsrfToken(sessionToken, secret) };
   }
 
   async validateSessionToken(
@@ -143,44 +159,54 @@ export class AuthService {
     };
   }
 
-  buildSessionCookieOptions(maxAgeMs: number): CookieOptions {
-    const nodeEnv = this.configService.get("NODE_ENV", { infer: true });
-
-    return {
-      httpOnly: true,
-      secure: nodeEnv === NODE_ENV_PRODUCTION,
-      sameSite: "lax",
-      path: "/",
-      maxAge: maxAgeMs,
-    };
-  }
-
-  private async issueSessionCookie(
+  private async issueSessionCookies(
     userId: string,
     meta: ClientMeta,
     response: Response,
-  ): Promise<void> {
+  ): Promise<string> {
     const created = await this.createSession(userId, meta);
-    const cookieName = this.configService.get("SESSION_COOKIE_NAME", {
+    const nodeEnv = this.configService.get("NODE_ENV", { infer: true });
+    const sessionCookieName = this.configService.get("SESSION_COOKIE_NAME", {
+      infer: true,
+    });
+    const csrfCookieName = this.configService.get("CSRF_COOKIE_NAME", {
       infer: true,
     });
     const maxAgeMs = Math.max(
       created.absoluteExpiresAt.getTime() - Date.now(),
       0,
     );
+    const secret = this.configService.get("CSRF_SECRET", { infer: true });
+    const csrfToken = createCsrfToken(created.rawToken, secret);
 
     response.cookie(
-      cookieName,
+      sessionCookieName,
       created.rawToken,
-      this.buildSessionCookieOptions(maxAgeMs),
+      buildSessionCookieOptions(nodeEnv, maxAgeMs),
     );
+    response.cookie(
+      csrfCookieName,
+      csrfToken,
+      buildCsrfCookieOptions(nodeEnv, maxAgeMs),
+    );
+
+    return csrfToken;
   }
 
-  private clearSessionCookie(response: Response): void {
-    const cookieName = this.configService.get("SESSION_COOKIE_NAME", {
+  private clearSessionCookies(response: Response): void {
+    const nodeEnv = this.configService.get("NODE_ENV", { infer: true });
+    const sessionCookieName = this.configService.get("SESSION_COOKIE_NAME", {
       infer: true,
     });
-    response.clearCookie(cookieName, this.buildSessionCookieOptions(0));
+    const csrfCookieName = this.configService.get("CSRF_COOKIE_NAME", {
+      infer: true,
+    });
+
+    response.clearCookie(
+      sessionCookieName,
+      buildSessionCookieOptions(nodeEnv, 0),
+    );
+    response.clearCookie(csrfCookieName, buildCsrfCookieOptions(nodeEnv, 0));
   }
 
   private async createSession(

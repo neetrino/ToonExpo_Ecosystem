@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { CSRF_COOKIE_NAME } from "@toonexpo/contracts";
+
 import {
   DEFAULT_API_PORT,
   DEFAULT_SESSION_ABSOLUTE_TTL_SECONDS,
@@ -59,6 +61,12 @@ const envSchema = z.object({
       .positive()
       .default(DEFAULT_SESSION_ABSOLUTE_TTL_SECONDS),
   ),
+  CSRF_SECRET: z
+    .string()
+    .min(32, "CSRF_SECRET must be at least 32 characters"),
+  CSRF_COOKIE_NAME: z
+    .preprocess(emptyToUndefined, z.string().min(1).optional())
+    .transform((value) => value ?? CSRF_COOKIE_NAME),
 });
 
 export type AppEnv = {
@@ -70,6 +78,8 @@ export type AppEnv = {
   SESSION_COOKIE_NAME: string;
   SESSION_IDLE_TTL_SECONDS: number;
   SESSION_ABSOLUTE_TTL_SECONDS: number;
+  CSRF_SECRET: string;
+  CSRF_COOKIE_NAME: string;
 };
 
 /**

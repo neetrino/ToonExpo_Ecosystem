@@ -2,7 +2,7 @@
 
 ## Status
 
-Core stack, foundation decisions and scale/load profile confirmed (2026-07-18). Sprint 1 auth is implemented; CSRF hardening remains. Provider credentials, staging/production domains and environment-specific pool/timeout tuning still require confirmation before staging/production deploy.
+Core stack, foundation decisions and scale/load profile confirmed (2026-07-18). Sprint 1 auth and two-layer CSRF hardening are implemented. Provider credentials, staging/production domains and environment-specific pool/timeout tuning still require confirmation before staging/production deploy.
 
 ## Project Size
 
@@ -121,7 +121,7 @@ Next.js Server Components may fetch the NestJS API. Server Actions must not impl
 | Session lifecycle | Absolute TTL 30 days; idle TTL 7 days (sliding); rotate on login/privilege-sensitive events and revoke on logout, suspension or admin action | Confirmed |
 | Invite/reset flow | Single-use expiring token hashes delivered by Resend; raw tokens and passwords are never stored or emailed | Confirmed |
 | Authorization | NestJS guards plus company/resource ownership policies | Confirmed |
-| CORS/CSRF | Two-layer protection: Origin allowlist check (implemented) plus full CSRF tokens (double-submit cookie) added in Sprint 1 hardening | Confirmed |
+| CORS/CSRF | Two-layer protection: Origin allowlist check plus double-submit CSRF tokens (HMAC-bound cookie + `X-CSRF-Token`) | Confirmed |
 | Rate limits | Required for auth, QR, public request and provisioning endpoints; confirmed thresholds in Adaptive Operational Values | Confirmed |
 | Buyer registration | Name, required phone, email and password (minimum 8 characters) | Confirmed |
 | QR privacy | Opaque token with server-side lookup; no embedded personal data | Confirmed |
@@ -178,7 +178,7 @@ Confirmed 2026-07-18 for the scale and load profile above. Environment variables
 | Auth rate limit (login/register) | 10 requests per IP per minute | Confirmed |
 | Minimum password length | 8 characters | Confirmed |
 | Buyer registration phone | Required | Confirmed |
-| CSRF strategy | Origin allowlist (implemented) + double-submit CSRF tokens (Sprint 1 hardening) | Confirmed |
+| CSRF strategy | Origin allowlist + double-submit CSRF tokens (HMAC session binding) | Confirmed |
 | QR, public request and provisioning rate limits | Environment-configured under the same load profile | Pending environment deploy |
 | Database pool sizes and statement timeouts | Environment-configured under the same load profile | Pending environment deploy |
 

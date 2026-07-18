@@ -35,6 +35,9 @@ export const DEFAULT_SESSION_ABSOLUTE_TTL_SECONDS = 30 * 24 * 60 * 60;
 
 export const DEFAULT_SESSION_COOKIE_NAME = "toonexpo_session";
 
+/** Safe HTTP methods that never require CSRF tokens. */
+export const CSRF_SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
+
 /**
  * ADAPTIVE VALUE — confirm with owner.
  * Auth endpoint rate limit: attempts per IP per window.

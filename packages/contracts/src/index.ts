@@ -12,8 +12,14 @@ export type HealthResponse = {
  */
 export const API_V1_PREFIX = "/api/v1" as const;
 
+export {
+  CSRF_COOKIE_NAME,
+  CSRF_HEADER_NAME,
+} from "./auth.js";
+
 export type {
   AuthSessionResponse,
+  CsrfTokenResponse,
   LoginRequest,
   PlatformRole,
   RegisterRequest,

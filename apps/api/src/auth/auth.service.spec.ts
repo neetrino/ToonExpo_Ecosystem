@@ -23,6 +23,8 @@ const createConfigService = (): ConfigService<AppEnv, true> =>
         SESSION_COOKIE_NAME: "toonexpo_session",
         SESSION_IDLE_TTL_SECONDS: 3600,
         SESSION_ABSOLUTE_TTL_SECONDS: 7200,
+        CSRF_SECRET: "test-csrf-secret-at-least-32-chars!!",
+        CSRF_COOKIE_NAME: "toonexpo_csrf",
       };
       return values[key];
     },
@@ -118,6 +120,12 @@ describe("AuthService", () => {
       expect.any(String),
       expect.objectContaining({ httpOnly: true, sameSite: "lax" }),
     );
+    expect(cookie).toHaveBeenCalledWith(
+      "toonexpo_csrf",
+      expect.any(String),
+      expect.objectContaining({ httpOnly: false, sameSite: "lax" }),
+    );
+    expect(result.csrfToken).toEqual(expect.any(String));
     expect(result.user.email).toBe("ani@example.com");
     expect(result.user).not.toHaveProperty("passwordHash");
   });
@@ -176,7 +184,8 @@ describe("AuthService", () => {
     );
 
     expect(sessionCreate).toHaveBeenCalledOnce();
-    expect(cookie).toHaveBeenCalledOnce();
+    expect(cookie).toHaveBeenCalledTimes(2);
+    expect(result.csrfToken).toEqual(expect.any(String));
     expect(result.user.id).toBe("user_1");
   });
 });

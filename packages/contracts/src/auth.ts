@@ -47,8 +47,27 @@ export type UserResponse = {
 };
 
 /**
+ * Cookie name for the non-httpOnly double-submit CSRF token (readable by JS when same-origin).
+ */
+export const CSRF_COOKIE_NAME = "toonexpo_csrf" as const;
+
+/**
+ * Request header carrying the double-submit CSRF token on mutating API calls.
+ */
+export const CSRF_HEADER_NAME = "X-CSRF-Token" as const;
+
+/**
  * Auth mutation response that establishes or confirms a session cookie.
+ * `csrfToken` mirrors the CSRF cookie for cross-origin clients that cannot read API-host cookies.
  */
 export type AuthSessionResponse = {
   user: UserResponse;
+  csrfToken: string;
+};
+
+/**
+ * CSRF token for the current session (e.g. after page reload).
+ */
+export type CsrfTokenResponse = {
+  csrfToken: string;
 };

@@ -15,7 +15,11 @@ import {
   ApiTags,
 } from "@nestjs/swagger";
 import { Throttle } from "@nestjs/throttler";
-import type { AuthSessionResponse, UserResponse } from "@toonexpo/contracts";
+import type {
+  AuthSessionResponse,
+  CsrfTokenResponse,
+  UserResponse,
+} from "@toonexpo/contracts";
 import type { Request, Response } from "express";
 
 import {
@@ -77,6 +81,13 @@ export class AuthController {
   @ApiOkResponse({ description: "Current user without sensitive fields" })
   me(@CurrentUser() user: AuthenticatedUser): UserResponse {
     return this.authService.getMe(user);
+  }
+
+  @Get("csrf")
+  @ApiOperation({ summary: "Return the CSRF token for the current session" })
+  @ApiOkResponse({ description: "Session-bound CSRF token" })
+  csrf(@Req() request: Request): CsrfTokenResponse {
+    return this.authService.getCsrfToken(request);
   }
 
   private clientMeta(request: Request): {
