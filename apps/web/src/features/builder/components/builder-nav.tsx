@@ -7,13 +7,19 @@ import { cn } from "@/shared/ui/cn";
 
 type NavItem =
   | {
-      href: "/builder" | "/builder/projects" | "/builder/team" | "/builder/crm" | "/builder/scanner";
-      key: "dashboard" | "projects" | "team" | "crm" | "scanner";
+      href:
+        | "/builder"
+        | "/builder/projects"
+        | "/builder/team"
+        | "/builder/crm"
+        | "/builder/scanner"
+        | "/builder/readiness";
+      key: "dashboard" | "projects" | "team" | "crm" | "scanner" | "readiness";
       disabled?: false;
     }
   | {
       href: string;
-      key: "visualMap" | "readiness" | "analytics" | "company" | "inventory";
+      key: "visualMap" | "analytics" | "company" | "inventory";
       disabled: true;
     };
 
@@ -23,8 +29,8 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/builder/team", key: "team" },
   { href: "/builder/crm", key: "crm" },
   { href: "/builder/scanner", key: "scanner" },
+  { href: "/builder/readiness", key: "readiness" },
   { href: "/builder/visual-map", key: "visualMap", disabled: true },
-  { href: "/builder/readiness", key: "readiness", disabled: true },
   { href: "/builder/analytics", key: "analytics", disabled: true },
 ];
 
