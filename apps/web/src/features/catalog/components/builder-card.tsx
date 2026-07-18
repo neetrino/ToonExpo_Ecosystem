@@ -44,6 +44,11 @@ export const BuilderCard = ({ builder, className }: BuilderCardProps) => {
         <h3 className="truncate font-brand text-sm font-semibold text-ink">
           {builder.name}
         </h3>
+        {builder.description ? (
+          <p className="mt-0.5 line-clamp-2 text-xs text-ink-secondary">
+            {builder.description}
+          </p>
+        ) : null}
         <p className="text-xs text-ink-secondary">
           {t("builders.projectCount", {
             count: builder.publishedProjectCount,

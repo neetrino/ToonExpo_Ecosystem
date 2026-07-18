@@ -69,7 +69,8 @@
   "Catalog": {
     "price": {
       "from": "սկսած",
-      "onRequest": "Գինը ըստ հարցման"
+      "onRequest": "Գինը ըստ հարցման",
+      "signInToSee": "Մուտք գործեք՝ գինը տեսնելու համար"
     },
     "status": {
       "available": "Ազատ",

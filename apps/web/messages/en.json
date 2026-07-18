@@ -69,7 +69,8 @@
   "Catalog": {
     "price": {
       "from": "from",
-      "onRequest": "Price on request"
+      "onRequest": "Price on request",
+      "signInToSee": "Sign in to see price"
     },
     "status": {
       "available": "Available",

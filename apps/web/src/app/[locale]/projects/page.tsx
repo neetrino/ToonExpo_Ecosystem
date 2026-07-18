@@ -40,7 +40,7 @@ export default async function ProjectsPage({
   const t = await getTranslations("Catalog");
   const rawParams = await searchParams;
   const filters = parseProjectFilters(rawParams);
-  const response = await listProjects(toListProjectsQuery(filters));
+  const response = await listProjects(toListProjectsQuery(filters), { locale });
 
   const buildHref = (page: number): string => {
     const query = new URLSearchParams(

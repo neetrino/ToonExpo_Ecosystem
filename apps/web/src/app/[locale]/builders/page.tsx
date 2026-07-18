@@ -27,7 +27,7 @@ export default async function BuildersPage({ params }: BuildersPageProps) {
   setRequestLocale(locale);
 
   const t = await getTranslations("Catalog");
-  const builders = await listBuilders();
+  const builders = await listBuilders({ locale });
 
   return (
     <div className="min-h-screen bg-background">

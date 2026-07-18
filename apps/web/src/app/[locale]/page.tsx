@@ -29,8 +29,8 @@ export default async function HomePage({ params }: HomePageProps) {
   setRequestLocale(locale);
 
   const [projectsResponse, builders] = await Promise.all([
-    listProjects({ page: 1, pageSize: 4 }),
-    listBuilders(),
+    listProjects({ page: 1, pageSize: 4 }, { locale }),
+    listBuilders({ locale }),
   ]);
 
   return (

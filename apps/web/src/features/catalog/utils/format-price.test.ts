@@ -5,6 +5,7 @@ import {
   formatCompactPrice,
   formatPriceRange,
   isPriceHidden,
+  resolveHiddenPriceLabel,
 } from "./format-price";
 
 describe("isPriceHidden", () => {
@@ -13,26 +14,58 @@ describe("isPriceHidden", () => {
     expect(isPriceHidden("public", "")).toBe(true);
   });
 
-  it("hides non-public visibility even when amount exists", () => {
-    expect(isPriceHidden("by_request", "100")).toBe(true);
-    expect(isPriceHidden("hidden", "100")).toBe(true);
-    expect(isPriceHidden("visible_after_login", "100")).toBe(true);
-  });
-
-  it("shows public amounts", () => {
+  it("shows amounts the API already revealed (any visibility)", () => {
+    expect(isPriceHidden("by_request", "100")).toBe(false);
+    expect(isPriceHidden("visible_after_login", "100")).toBe(false);
     expect(isPriceHidden("public", "100")).toBe(false);
   });
 });
 
+describe("resolveHiddenPriceLabel", () => {
+  it("uses sign-in label for visible_after_login", () => {
+    expect(
+      resolveHiddenPriceLabel({
+        priceVisibility: "visible_after_login",
+        onRequestLabel: "Price on request",
+        signInLabel: "Sign in to see price",
+      }),
+    ).toBe("Sign in to see price");
+  });
+
+  it("uses on-request for by_request", () => {
+    expect(
+      resolveHiddenPriceLabel({
+        priceVisibility: "by_request",
+        onRequestLabel: "Price on request",
+        signInLabel: "Sign in to see price",
+      }),
+    ).toBe("Price on request");
+  });
+});
+
 describe("formatCatalogPrice", () => {
-  it("returns on-request label when hidden", () => {
+  it("returns sign-in label when visible_after_login and amount missing", () => {
     expect(
       formatCatalogPrice({
-        amount: "50000000",
+        amount: null,
+        currency: "AMD",
+        locale: "en",
+        priceVisibility: "visible_after_login",
+        onRequestLabel: "Price on request",
+        signInLabel: "Sign in to see price",
+      }),
+    ).toBe("Sign in to see price");
+  });
+
+  it("returns on-request label when by_request", () => {
+    expect(
+      formatCatalogPrice({
+        amount: null,
         currency: "AMD",
         locale: "en",
         priceVisibility: "by_request",
         onRequestLabel: "Price on request",
+        signInLabel: "Sign in to see price",
       }),
     ).toBe("Price on request");
   });

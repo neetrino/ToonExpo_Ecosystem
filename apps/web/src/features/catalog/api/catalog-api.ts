@@ -7,12 +7,33 @@ import type {
   ProjectListItem,
 } from "@toonexpo/contracts";
 
-import { apiFetch } from "@/shared/api/client";
+import { apiFetch, type ApiFetchOptions } from "@/shared/api/client";
 import { ApiError, isApiErrorStatus } from "@/shared/api/errors";
 
 const CATALOG_FETCH_INIT: RequestInit = {
   method: "GET",
   cache: "no-store",
+  credentials: "include",
+};
+
+export type CatalogRequestOptions = {
+  locale?: string | undefined;
+  cookieHeader?: string | undefined;
+};
+
+const buildCatalogFetch = (
+  path: string,
+  cookieHeader?: string,
+): ApiFetchOptions => {
+  if (!cookieHeader) {
+    return { path, ...CATALOG_FETCH_INIT };
+  }
+
+  return {
+    path,
+    ...CATALOG_FETCH_INIT,
+    headers: { Cookie: cookieHeader },
+  };
 };
 
 const toSearchParams = (query: ListProjectsQuery): string => {
@@ -42,9 +63,19 @@ const toSearchParams = (query: ListProjectsQuery): string => {
   if (query.builderId) {
     params.set("builderId", query.builderId);
   }
+  if (query.locale) {
+    params.set("locale", query.locale);
+  }
 
   const serialized = params.toString();
   return serialized.length > 0 ? `?${serialized}` : "";
+};
+
+const localeQuery = (locale?: string): string => {
+  if (!locale) {
+    return "";
+  }
+  return `?locale=${encodeURIComponent(locale)}`;
 };
 
 /**
@@ -52,11 +83,16 @@ const toSearchParams = (query: ListProjectsQuery): string => {
  */
 export const listProjects = (
   query: ListProjectsQuery = {},
+  options: CatalogRequestOptions = {},
 ): Promise<PaginatedResponse<ProjectListItem>> => {
-  return apiFetch<PaginatedResponse<ProjectListItem>>({
-    path: `/projects${toSearchParams(query)}`,
-    ...CATALOG_FETCH_INIT,
-  });
+  const merged: ListProjectsQuery = { ...query };
+  if (options.locale) {
+    merged.locale = options.locale;
+  }
+
+  return apiFetch<PaginatedResponse<ProjectListItem>>(
+    buildCatalogFetch(`/projects${toSearchParams(merged)}`, options.cookieHeader),
+  );
 };
 
 /**
@@ -64,12 +100,15 @@ export const listProjects = (
  */
 export const getProject = async (
   projectId: string,
+  options: CatalogRequestOptions = {},
 ): Promise<ProjectDetail | null> => {
   try {
-    return await apiFetch<ProjectDetail>({
-      path: `/projects/${encodeURIComponent(projectId)}`,
-      ...CATALOG_FETCH_INIT,
-    });
+    return await apiFetch<ProjectDetail>(
+      buildCatalogFetch(
+        `/projects/${encodeURIComponent(projectId)}${localeQuery(options.locale)}`,
+        options.cookieHeader,
+      ),
+    );
   } catch (error) {
     if (isApiErrorStatus(error, 404)) {
       return null;
@@ -83,12 +122,15 @@ export const getProject = async (
  */
 export const getApartment = async (
   apartmentId: string,
+  options: CatalogRequestOptions = {},
 ): Promise<ApartmentDetail | null> => {
   try {
-    return await apiFetch<ApartmentDetail>({
-      path: `/apartments/${encodeURIComponent(apartmentId)}`,
-      ...CATALOG_FETCH_INIT,
-    });
+    return await apiFetch<ApartmentDetail>(
+      buildCatalogFetch(
+        `/apartments/${encodeURIComponent(apartmentId)}${localeQuery(options.locale)}`,
+        options.cookieHeader,
+      ),
+    );
   } catch (error) {
     if (isApiErrorStatus(error, 404)) {
       return null;
@@ -100,11 +142,12 @@ export const getApartment = async (
 /**
  * Lists active builders with published project counts.
  */
-export const listBuilders = (): Promise<BuilderSummary[]> => {
-  return apiFetch<BuilderSummary[]>({
-    path: "/builders",
-    ...CATALOG_FETCH_INIT,
-  });
+export const listBuilders = (
+  options: CatalogRequestOptions = {},
+): Promise<BuilderSummary[]> => {
+  return apiFetch<BuilderSummary[]>(
+    buildCatalogFetch(`/builders${localeQuery(options.locale)}`, options.cookieHeader),
+  );
 };
 
 export { ApiError };

@@ -69,7 +69,8 @@
   "Catalog": {
     "price": {
       "from": "от",
-      "onRequest": "Цена по запросу"
+      "onRequest": "Цена по запросу",
+      "signInToSee": "Войдите, чтобы увидеть цену"
     },
     "status": {
       "available": "Свободна",

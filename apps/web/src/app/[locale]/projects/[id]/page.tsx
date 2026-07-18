@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 
@@ -17,12 +18,18 @@ type ProjectPageProps = {
   params: Promise<{ locale: string; id: string }>;
 };
 
+const loadProject = async (id: string, locale: string) => {
+  const headerStore = await headers();
+  const cookieHeader = headerStore.get("cookie") ?? undefined;
+  return getProject(id, { locale, cookieHeader });
+};
+
 export const generateMetadata = async ({
   params,
 }: ProjectPageProps): Promise<Metadata> => {
   const { locale, id } = await params;
   const t = await getTranslations({ locale, namespace: "Catalog" });
-  const project = await getProject(id);
+  const project = await loadProject(id, locale);
 
   if (!project) {
     return { title: t("project.notFoundTitle") };
@@ -40,7 +47,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   const { locale, id } = await params;
   setRequestLocale(locale);
 
-  const project = await getProject(id);
+  const project = await loadProject(id, locale);
   if (!project) {
     notFound();
   }

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations, setRequestLocale } from "next-intl/server";
 
@@ -14,12 +15,18 @@ type ApartmentPageProps = {
   params: Promise<{ locale: string; id: string }>;
 };
 
+const loadApartment = async (id: string, locale: string) => {
+  const headerStore = await headers();
+  const cookieHeader = headerStore.get("cookie") ?? undefined;
+  return getApartment(id, { locale, cookieHeader });
+};
+
 export const generateMetadata = async ({
   params,
 }: ApartmentPageProps): Promise<Metadata> => {
   const { locale, id } = await params;
   const t = await getTranslations({ locale, namespace: "Catalog" });
-  const apartment = await getApartment(id);
+  const apartment = await loadApartment(id, locale);
 
   if (!apartment) {
     return { title: t("apartment.notFoundTitle") };
@@ -43,7 +50,7 @@ export default async function ApartmentPage({ params }: ApartmentPageProps) {
   const { locale, id } = await params;
   setRequestLocale(locale);
 
-  const apartment = await getApartment(id);
+  const apartment = await loadApartment(id, locale);
   if (!apartment) {
     notFound();
   }
@@ -56,8 +63,14 @@ export default async function ApartmentPage({ params }: ApartmentPageProps) {
     locale: activeLocale,
     priceVisibility: apartment.priceVisibility,
     onRequestLabel: t("price.onRequest"),
+    signInLabel: t("price.signInToSee"),
   });
-  const showRequestCta = apartment.priceVisibility !== "public" || apartment.price == null;
+  const needsSignIn =
+    apartment.priceVisibility === "visible_after_login" &&
+    apartment.price == null;
+  const showRequestCta =
+    apartment.priceVisibility === "by_request" ||
+    (apartment.priceVisibility === "public" && apartment.price == null);
 
   return (
     <div className="min-h-screen bg-background">
@@ -115,7 +128,15 @@ export default async function ApartmentPage({ params }: ApartmentPageProps) {
               </p>
             </header>
 
-            <p className="font-brand text-3xl font-bold text-ink">{price}</p>
+            {needsSignIn ? (
+              <p className="font-brand text-2xl font-bold text-ink">
+                <Link href="/auth/login" className="underline-offset-4 hover:underline">
+                  {price}
+                </Link>
+              </p>
+            ) : (
+              <p className="font-brand text-3xl font-bold text-ink">{price}</p>
+            )}
 
             <dl className="grid grid-cols-2 gap-3">
               <Detail

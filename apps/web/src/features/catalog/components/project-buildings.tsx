@@ -107,6 +107,7 @@ const ApartmentRow = ({
     locale,
     priceVisibility: apartment.priceVisibility,
     onRequestLabel: t("price.onRequest"),
+    signInLabel: t("price.signInToSee"),
   });
 
   return (

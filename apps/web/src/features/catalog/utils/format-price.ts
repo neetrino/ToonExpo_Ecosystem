@@ -9,10 +9,11 @@ export type FormatPriceOptions = {
   locale: string;
   priceVisibility?: PriceVisibility | undefined;
   onRequestLabel: string;
+  signInLabel?: string | undefined;
 };
 
 /**
- * Returns true when the public catalog should hide the numeric price.
+ * Returns true when the catalog response omitted a numeric price for this viewer.
  */
 export const isPriceHidden = (
   priceVisibility: PriceVisibility | undefined,
@@ -26,7 +27,23 @@ export const isPriceHidden = (
     return false;
   }
 
-  return priceVisibility !== "public";
+  // API already nulls hidden prices; a non-null amount means this viewer may see it.
+  return false;
+};
+
+/**
+ * Picks the UX label when price is not shown: sign-in CTA vs on-request.
+ */
+export const resolveHiddenPriceLabel = (options: {
+  priceVisibility: PriceVisibility | undefined;
+  onRequestLabel: string;
+  signInLabel: string;
+}): string => {
+  if (options.priceVisibility === "visible_after_login") {
+    return options.signInLabel;
+  }
+
+  return options.onRequestLabel;
 };
 
 const toNumber = (amount: string | number): number | null => {
@@ -35,13 +52,24 @@ const toNumber = (amount: string | number): number | null => {
 };
 
 /**
- * Formats a catalog price for display, or returns the on-request label.
+ * Formats a catalog price for display, or returns the hidden-price label.
  */
 export const formatCatalogPrice = (options: FormatPriceOptions): string => {
-  const { amount, currency, locale, priceVisibility, onRequestLabel } = options;
+  const {
+    amount,
+    currency,
+    locale,
+    priceVisibility,
+    onRequestLabel,
+    signInLabel,
+  } = options;
 
   if (isPriceHidden(priceVisibility, amount) || amount == null) {
-    return onRequestLabel;
+    return resolveHiddenPriceLabel({
+      priceVisibility,
+      onRequestLabel,
+      signInLabel: signInLabel ?? onRequestLabel,
+    });
   }
 
   const value = toNumber(amount);
