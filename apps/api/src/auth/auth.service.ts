@@ -87,10 +87,11 @@ export class AuthService {
   ): Promise<AuthSessionResponse> {
     const email = normalizeEmail(input.email);
     const user = await this.prisma.db.user.findUnique({ where: { email } });
-    const passwordHash = user?.passwordHash ?? DUMMY_PASSWORD_HASH;
+    const storedHash = user?.passwordHash;
+    const passwordHash = storedHash ?? DUMMY_PASSWORD_HASH;
     const passwordValid = await verifyPassword(passwordHash, input.password);
 
-    if (!user || !passwordValid) {
+    if (!user || storedHash == null || !passwordValid) {
       throw new UnauthorizedException("Invalid email or password");
     }
 

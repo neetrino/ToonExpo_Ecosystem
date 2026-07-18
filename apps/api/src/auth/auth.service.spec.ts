@@ -161,6 +161,33 @@ describe("AuthService", () => {
     expect(sessionCreate).not.toHaveBeenCalled();
   });
 
+  it("rejects login when passwordHash is null with a generic error", async () => {
+    const verifySpy = vi.spyOn(passwordUtil, "verifyPassword");
+    userFindUnique.mockResolvedValue({
+      id: "user_invited",
+      name: "Invited",
+      email: "invited@example.com",
+      phone: null,
+      passwordHash: null,
+      accountType: AccountType.company_member,
+      status: UserStatus.invited,
+      defaultLocale: null,
+      createdAt: new Date("2026-07-18T00:00:00.000Z"),
+      updatedAt: new Date("2026-07-18T00:00:00.000Z"),
+    });
+
+    await expect(
+      service.login(
+        { email: "invited@example.com", password: "password123" },
+        {},
+        response,
+      ),
+    ).rejects.toBeInstanceOf(UnauthorizedException);
+
+    expect(verifySpy).toHaveBeenCalledOnce();
+    expect(sessionCreate).not.toHaveBeenCalled();
+  });
+
   it("creates a session on successful login", async () => {
     const passwordHash = await passwordUtil.hashPassword("password123");
     userFindUnique.mockResolvedValue({

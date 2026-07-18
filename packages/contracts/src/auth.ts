@@ -19,8 +19,14 @@ export type CompanyType = "builder" | "partner" | "bank" | "service";
 
 /**
  * Account lifecycle status shared by API and web clients.
+ * `invited` = provisioned user without a password yet.
  */
-export type UserStatus = "active" | "inactive" | "suspended";
+export type UserStatus = "invited" | "active" | "inactive" | "blocked";
+
+/**
+ * Membership lifecycle inside a company (v1).
+ */
+export type CompanyMemberStatus = "active" | "inactive" | "removed";
 
 /**
  * Buyer self-registration payload.

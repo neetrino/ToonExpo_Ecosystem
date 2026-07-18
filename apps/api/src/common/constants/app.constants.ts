@@ -65,8 +65,8 @@ export const PHONE_MAX_LENGTH = 32;
 export const EMAIL_MAX_LENGTH = 254;
 
 /**
- * Precomputed argon2id hash used only for constant-time login when the user is missing.
- * Password material is not a real credential.
+ * Precomputed argon2id hash used only for constant-time login when the user is
+ * missing or has no passwordHash yet. Password material is not a real credential.
  */
 export const DUMMY_PASSWORD_HASH =
   "$argon2id$v=19$m=65536,t=3,p=4$ER0Utc+ij9NOUKMOECoagQ$JU7nhYe9bsg4LO+2teIJtK/yJQmagTDISNzYL5lb/uI";

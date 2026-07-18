@@ -15,7 +15,7 @@ Fields:
 - name;
 - email;
 - phone optional;
-- password_hash;
+- password_hash optional;
 - status;
 - default_locale optional;
 - created_at;
@@ -30,7 +30,9 @@ entrance_staff
 company_member
 ```
 
-`password_hash` contains an argon2id hash. Plaintext passwords are input-only and never persisted.
+`status` values: `invited` | `active` | `inactive` | `blocked`. `invited` is for provisioned users before password set.
+
+`password_hash` is optional. When set, it contains an argon2id hash. Null means the password is not set yet (typical for `invited` company provisioning). Plaintext passwords are input-only and never persisted.
 
 v1 constraint: a `company_member` user may have at most one active `CompanyMember` row.
 
@@ -111,6 +113,8 @@ Fields:
 - joined_at optional;
 - created_at;
 - updated_at.
+
+`status` values: `active` | `inactive` | `removed`. User invite lifecycle uses `User.status = invited`, not a company-member status.
 
 v1 constraint: `user_id` unique among active memberships (one user, one company).
 

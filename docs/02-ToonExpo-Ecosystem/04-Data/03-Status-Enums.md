@@ -43,10 +43,10 @@ archived
 ## User Status
 
 ```text
+invited
 active
 inactive
 blocked
-invited
 ```
 
 ## Company Type
@@ -83,7 +83,6 @@ Future: `manager`, `sales_agent`.
 ## Company Member Status
 
 ```text
-invited
 active
 inactive
 removed

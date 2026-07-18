@@ -21,6 +21,7 @@ export type {
   AccountType,
   AuthSessionResponse,
   CompanyMemberRole,
+  CompanyMemberStatus,
   CompanyType,
   CsrfTokenResponse,
   LoginRequest,
