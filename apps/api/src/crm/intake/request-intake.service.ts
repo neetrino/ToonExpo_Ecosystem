@@ -1,7 +1,7 @@
 import {
   BadRequestException,
   Injectable,
-  NotFoundException,
+  InternalServerErrorException,
 } from "@nestjs/common";
 import {
   CrmDealStatus,
@@ -10,13 +10,18 @@ import {
   type Prisma,
 } from "@toonexpo/db";
 
-import { PrismaService } from "../../prisma/prisma.service.js";
 import { AnalyticsService } from "../../analytics/analytics.service.js";
+import { PrismaService } from "../../prisma/prisma.service.js";
+import { isUniqueOpenDealViolation } from "./intake-unique.util.js";
 import {
   findOpenDealForBuyer,
   toApartmentLinkCreateData,
   toDedupActivityData,
 } from "./intake.helpers.js";
+import {
+  assertIntakeSourceRequirements,
+  validateIntakeProjectAndApartment,
+} from "./intake-validate.js";
 import type {
   IntakeCreateContext,
   IntakeCreateOutcome,
@@ -36,82 +41,61 @@ export class RequestIntakeService {
   ) {}
 
   async create(context: IntakeCreateContext): Promise<IntakeCreateOutcome> {
-    this.assertSourceRequirements(context);
-    await this.validateProjectAndApartment(context);
+    assertIntakeSourceRequirements(context);
+    await validateIntakeProjectAndApartment(this.prisma.db, context);
 
-    if (context.buyerProfileId && !context.forceNewDeal) {
-      const existing = await findOpenDealForBuyer(
-        this.prisma.db,
-        context.builderCompanyId,
-        context.buyerProfileId,
-      );
-      if (existing) {
-        return this.attachToExistingDeal(existing.id, context);
-      }
+    if (!context.buyerProfileId || context.forceNewDeal) {
+      return this.createNewDealAndRequest(context);
     }
 
-    return this.createNewDealAndRequest(context);
+    return this.findOrCreateForBuyer(context);
   }
 
-  private assertSourceRequirements(context: IntakeCreateContext): void {
-    if (
-      context.source === RequestSource.buyer_project_request &&
-      (!context.buyerProfileId || !context.projectId)
-    ) {
-      throw new BadRequestException(
-        "buyer_project_request requires buyer and projectId",
-      );
-    }
-    if (
-      context.source === RequestSource.builder_buyer_qr_scan &&
-      (!context.buyerProfileId || !context.scanEventId)
-    ) {
-      throw new BadRequestException(
-        "builder_buyer_qr_scan requires buyer and scanEventId",
-      );
-    }
-    if (
-      context.source === RequestSource.manual_builder_entry &&
-      !context.contactName?.trim()
-    ) {
-      throw new BadRequestException(
-        "manual_builder_entry requires contactName",
-      );
-    }
-  }
-
-  private async validateProjectAndApartment(
+  private async findOrCreateForBuyer(
     context: IntakeCreateContext,
-  ): Promise<void> {
-    if (context.projectId) {
-      const project = await this.prisma.db.project.findFirst({
-        where: {
-          id: context.projectId,
-          builderCompanyId: context.builderCompanyId,
-        },
-        select: { id: true },
+  ): Promise<IntakeCreateOutcome> {
+    const buyerProfileId = context.buyerProfileId;
+    if (!buyerProfileId) {
+      throw new BadRequestException("buyerProfileId is required");
+    }
+
+    try {
+      const outcome = await this.prisma.db.$transaction(async (tx) => {
+        const existing = await findOpenDealForBuyer(
+          tx,
+          context.builderCompanyId,
+          buyerProfileId,
+        );
+        if (existing) {
+          return this.attachInTransaction(tx, existing.id, context);
+        }
+        return this.createInTransaction(tx, context);
       });
-      if (!project) {
-        throw new NotFoundException("Project not found");
+      this.trackRequestCreated(outcome.requestId, outcome.dealId, context);
+      return outcome;
+    } catch (error) {
+      if (!isUniqueOpenDealViolation(error)) {
+        throw error;
       }
+      return this.attachAfterUniqueViolation(context, buyerProfileId);
     }
-    if (!context.apartmentId) {
-      return;
+  }
+
+  private async attachAfterUniqueViolation(
+    context: IntakeCreateContext,
+    buyerProfileId: string,
+  ): Promise<IntakeCreateOutcome> {
+    const existing = await findOpenDealForBuyer(
+      this.prisma.db,
+      context.builderCompanyId,
+      buyerProfileId,
+    );
+    if (!existing) {
+      throw new InternalServerErrorException(
+        "Open deal conflict could not be resolved",
+      );
     }
-    const apartment = await this.prisma.db.apartment.findFirst({
-      where: {
-        id: context.apartmentId,
-        project: { builderCompanyId: context.builderCompanyId },
-        ...(context.projectId ? { projectId: context.projectId } : {}),
-      },
-      select: { id: true, projectId: true },
-    });
-    if (!apartment) {
-      throw new NotFoundException("Apartment not found");
-    }
-    if (context.projectId && apartment.projectId !== context.projectId) {
-      throw new BadRequestException("Apartment does not belong to project");
-    }
+    return this.attachToExistingDeal(existing.id, context);
   }
 
   private async resolveActivityActorId(
@@ -135,87 +119,103 @@ export class RequestIntakeService {
     context: IntakeCreateContext,
   ): Promise<IntakeCreateOutcome> {
     const actorId = await this.resolveActivityActorId(context);
-    const result = await this.prisma.db.$transaction(async (tx) => {
-      const request = await tx.request.create({
-        data: this.toRequestData(context, dealId),
-      });
-      await this.maybeLinkApartment(tx, dealId, context);
-      if (actorId) {
-        await tx.crmFollowUpActivity.create({
-          data: {
-            crmDealId: dealId,
-            ...toDedupActivityData({
-              source: context.source,
-              note: context.note,
-              createdByUserId: actorId,
-            }),
-          },
-        });
-      }
-      const deal = await tx.crmDeal.update({
-        where: { id: dealId },
-        data: { lastActivityAt: new Date() },
-        select: { id: true, status: true, source: true },
-      });
-      return { request, deal };
+    const result = await this.prisma.db.$transaction(async (tx) =>
+      this.attachInTransaction(tx, dealId, context, actorId),
+    );
+    this.trackRequestCreated(result.requestId, result.dealId, context);
+    return result;
+  }
+
+  private async attachInTransaction(
+    tx: Tx,
+    dealId: string,
+    context: IntakeCreateContext,
+    actorId?: string | null,
+  ): Promise<IntakeCreateOutcome> {
+    const resolvedActorId =
+      actorId === undefined
+        ? await this.resolveActivityActorId(context)
+        : actorId;
+    const request = await tx.request.create({
+      data: this.toRequestData(context, dealId),
     });
-
-    this.trackRequestCreated(result.request.id, result.deal.id, context);
-
+    await this.maybeLinkApartment(tx, dealId, context);
+    if (resolvedActorId) {
+      await tx.crmFollowUpActivity.create({
+        data: {
+          crmDealId: dealId,
+          ...toDedupActivityData({
+            source: context.source,
+            note: context.note,
+            createdByUserId: resolvedActorId,
+          }),
+        },
+      });
+    }
+    const deal = await tx.crmDeal.update({
+      where: { id: dealId },
+      data: { lastActivityAt: new Date() },
+      select: { id: true, status: true, source: true },
+    });
     return {
-      requestId: result.request.id,
-      dealId: result.deal.id,
+      requestId: request.id,
+      dealId: deal.id,
       deduplicated: true,
-      dealStatus: result.deal.status,
-      source: result.deal.source,
+      dealStatus: deal.status,
+      source: deal.source,
     };
   }
 
   private async createNewDealAndRequest(
     context: IntakeCreateContext,
   ): Promise<IntakeCreateOutcome> {
+    const result = await this.prisma.db.$transaction(async (tx) =>
+      this.createInTransaction(tx, context),
+    );
+    this.trackRequestCreated(result.requestId, result.dealId, context);
+    return result;
+  }
+
+  private async createInTransaction(
+    tx: Tx,
+    context: IntakeCreateContext,
+  ): Promise<IntakeCreateOutcome> {
     const assignCreator =
       context.source === RequestSource.builder_buyer_qr_scan ||
       context.source === RequestSource.manual_builder_entry;
 
-    const result = await this.prisma.db.$transaction(async (tx) => {
-      const deal = await tx.crmDeal.create({
-        data: {
-          companyId: context.builderCompanyId,
-          buyerProfileId: context.buyerProfileId ?? null,
-          source: context.source,
-          status: CrmDealStatus.new_request,
-          message: context.note ?? null,
-          contactName: context.contactName ?? null,
-          contactPhone: context.contactPhone ?? null,
-          contactEmail: context.contactEmail ?? null,
-          createdByUserId: context.createdByUserId ?? null,
-          assignedUserId: assignCreator
-            ? (context.createdByUserId ?? null)
-            : null,
-          projectId: context.projectId ?? null,
-          lastActivityAt: new Date(),
-        },
-      });
-      const request = await tx.request.create({
-        data: this.toRequestData(context, deal.id),
-      });
-      await tx.crmDeal.update({
-        where: { id: deal.id },
-        data: { primaryRequestId: request.id },
-      });
-      await this.maybeLinkApartment(tx, deal.id, context);
-      return { request, deal };
+    const deal = await tx.crmDeal.create({
+      data: {
+        companyId: context.builderCompanyId,
+        buyerProfileId: context.buyerProfileId ?? null,
+        source: context.source,
+        status: CrmDealStatus.new_request,
+        message: context.note ?? null,
+        contactName: context.contactName ?? null,
+        contactPhone: context.contactPhone ?? null,
+        contactEmail: context.contactEmail ?? null,
+        createdByUserId: context.createdByUserId ?? null,
+        assignedUserId: assignCreator
+          ? (context.createdByUserId ?? null)
+          : null,
+        projectId: context.projectId ?? null,
+        lastActivityAt: new Date(),
+      },
     });
-
-    this.trackRequestCreated(result.request.id, result.deal.id, context);
-
+    const request = await tx.request.create({
+      data: this.toRequestData(context, deal.id),
+    });
+    await tx.crmDeal.update({
+      where: { id: deal.id },
+      data: { primaryRequestId: request.id },
+    });
+    await this.maybeLinkApartment(tx, deal.id, context);
     return {
-      requestId: result.request.id,
-      dealId: result.deal.id,
+      requestId: request.id,
+      dealId: deal.id,
       deduplicated: false,
-      dealStatus: result.deal.status,
-      source: result.deal.source,
+      dealStatus: deal.status,
+      source: deal.source,
     };
   }
 

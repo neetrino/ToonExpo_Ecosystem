@@ -5,19 +5,21 @@ import {
   CrmDealStatus,
   type ApartmentSalesStatus,
   type PriceVisibility,
+  type PrismaClient,
   type RequestSource,
 } from "@toonexpo/db";
 
 import { CRM_OPEN_DEAL_STATUSES } from "../crm.constants.js";
-import type { PrismaService } from "../../prisma/prisma.service.js";
 
-type DbClient = PrismaService["db"];
+type DealLookupClient = Pick<PrismaClient, "crmDeal"> | {
+  crmDeal: Pick<PrismaClient["crmDeal"], "findFirst">;
+};
 
 /**
  * Finds an open CRM deal for the same builder company + buyer (dedup key).
  */
 export const findOpenDealForBuyer = (
-  db: DbClient,
+  db: DealLookupClient,
   companyId: string,
   buyerProfileId: string,
 ): Promise<{ id: string; status: CrmDealStatus } | null> =>

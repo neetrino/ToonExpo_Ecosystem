@@ -701,6 +701,9 @@ model CrmDeal {
   @@index([assignedUserId])
   @@index([updatedAt])
   @@index([companyId, buyerProfileId, status])
+  /// SQL partial unique (see migration crm_one_open_deal): at most one open
+  /// deal per (company_id, buyer_profile_id) where status is in the open set
+  /// and buyer_profile_id IS NOT NULL. Prisma cannot express partial uniques.
   @@map("crm_deals")
 }
 
