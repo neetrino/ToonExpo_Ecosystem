@@ -82,6 +82,15 @@ export const LoginForm = ({ returnUrl }: LoginFormProps) => {
         />
       </FormField>
 
+      <p className="text-right text-sm">
+        <Link
+          href="/auth/forgot-password"
+          className="font-medium text-brand hover:underline"
+        >
+          {t("login.forgotPassword")}
+        </Link>
+      </p>
+
       {formError ? (
         <p role="alert" className="rounded-sm bg-danger-soft px-3 py-2 text-sm text-danger">
           {formError}

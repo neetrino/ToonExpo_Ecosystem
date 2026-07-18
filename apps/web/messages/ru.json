@@ -205,8 +205,17 @@
       "subtitle": "Войдите в аккаунт покупателя ToonExpo",
       "submit": "Войти",
       "submitting": "Вход…",
+      "forgotPassword": "Забыли пароль?",
       "noAccount": "Ещё нет аккаунта?",
       "registerLink": "Зарегистрироваться"
+    },
+    "forgotPassword": {
+      "title": "Восстановление пароля",
+      "subtitle": "Введите email — мы отправим ссылку, если аккаунт существует",
+      "submit": "Отправить ссылку",
+      "submitting": "Отправка…",
+      "success": "Если email существует, ссылка отправлена.",
+      "backToLogin": "Вернуться ко входу"
     },
     "register": {
       "title": "Регистрация",

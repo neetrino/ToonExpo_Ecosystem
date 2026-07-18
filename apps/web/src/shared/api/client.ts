@@ -15,6 +15,7 @@ const CSRF_EXEMPT_PATHS = new Set([
   "/auth/login",
   "/auth/register",
   "/auth/set-password",
+  "/auth/forgot-password",
 ]);
 
 export type ApiFetchOptions = RequestInit & {

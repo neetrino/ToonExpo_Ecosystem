@@ -205,8 +205,17 @@
       "subtitle": "Access your ToonExpo buyer account",
       "submit": "Sign in",
       "submitting": "Signing in…",
+      "forgotPassword": "Forgot password?",
       "noAccount": "No account yet?",
       "registerLink": "Create one"
+    },
+    "forgotPassword": {
+      "title": "Forgot password",
+      "subtitle": "Enter your email and we will send a reset link if an account exists",
+      "submit": "Send reset link",
+      "submitting": "Sending…",
+      "success": "If the email exists, a link has been sent.",
+      "backToLogin": "Back to sign in"
     },
     "register": {
       "title": "Create account",

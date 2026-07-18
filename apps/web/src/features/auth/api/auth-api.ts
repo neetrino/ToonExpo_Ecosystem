@@ -1,5 +1,7 @@
 import type {
   AuthSessionResponse,
+  ForgotPasswordRequest,
+  ForgotPasswordResponse,
   LoginRequest,
   RegisterRequest,
   SetPasswordRequest,
@@ -49,6 +51,19 @@ export const loginUser = async (
   setCsrfTokenCache(result.csrfToken);
   return result;
 };
+
+/**
+ * Requests a password-reset email (always opaque 200).
+ */
+export const forgotPassword = (
+  body: ForgotPasswordRequest,
+): Promise<ForgotPasswordResponse> =>
+  apiFetch({
+    path: "/auth/forgot-password",
+    method: "POST",
+    ...jsonCredentials,
+    body: JSON.stringify(body),
+  });
 
 /**
  * Sets a password from an invite token and establishes a session cookie.
