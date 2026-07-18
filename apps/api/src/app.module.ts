@@ -9,6 +9,7 @@ import { AccountTypesGuard } from "./auth/guards/account-types.guard.js";
 import { CsrfOriginGuard } from "./auth/guards/csrf-origin.guard.js";
 import { CsrfTokenGuard } from "./auth/guards/csrf-token.guard.js";
 import { SessionAuthGuard } from "./auth/guards/session-auth.guard.js";
+import { CatalogModule } from "./catalog/catalog.module.js";
 import {
   AUTH_RATE_LIMIT_LIMIT,
   AUTH_RATE_LIMIT_TTL_MS,
@@ -63,6 +64,7 @@ const isProduction = process.env["NODE_ENV"] === NODE_ENV_PRODUCTION;
     }),
     PrismaModule,
     AuthModule,
+    CatalogModule,
     HealthModule,
   ],
   providers: [

@@ -29,3 +29,19 @@ export type {
   UserResponse,
   UserStatus,
 } from "./auth.js";
+
+export type {
+  ApartmentAvailabilitySummary,
+  ApartmentDetail,
+  ApartmentSalesStatus,
+  BuilderSummary,
+  BuildingSummary,
+  FloorSummary,
+  ListProjectsQuery,
+  MediaAssetSummary,
+  PaginatedResponse,
+  PriceVisibility,
+  ProjectDetail,
+  ProjectListItem,
+  PublicationStatus,
+} from "./catalog.js";
