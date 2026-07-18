@@ -87,6 +87,11 @@ model User {
   createdCrmActivities CrmFollowUpActivity[] @relation("CrmActivityCreatedBy")
   assignedCrmActivities CrmFollowUpActivity[] @relation("CrmActivityAssignee")
   createdApartmentLinks CrmDealApartmentLink[] @relation("CrmApartmentLinkCreatedBy")
+  evaluatedReadinessAssessments ReadinessAssessment[] @relation("ReadinessAssessmentEvaluator")
+  evaluatedReadinessScores      ReadinessScore[]      @relation("ReadinessScoreEvaluator")
+  createdReadinessRecommendations ReadinessRecommendation[] @relation("ReadinessRecommendationCreator")
+  createdReadinessRequiredActions ReadinessRequiredAction[] @relation("ReadinessRequiredActionCreator")
+  authoredReadinessInternalNotes  ReadinessInternalNote[]   @relation("ReadinessInternalNoteAuthor")
 
   @@index([accountType])
   @@map("users")
@@ -219,8 +224,9 @@ model Company {
   logoMedia   MediaAsset?     @relation("CompanyLogo", fields: [logoMediaId], references: [id], onDelete: SetNull)
   ownedMedia  MediaAsset[]    @relation("MediaOwnerCompany")
   projects    Project[]
-  requests    Request[]
-  crmDeals    CrmDeal[]
+  requests             Request[]
+  crmDeals             CrmDeal[]
+  readinessAssessments ReadinessAssessment[]
 
   @@index([type])
   @@index([status])
@@ -355,8 +361,9 @@ model Project {
   coverMedia     MediaAsset? @relation("ProjectCover", fields: [coverMediaId], references: [id], onDelete: SetNull)
   buildings      Building[]
   apartments     Apartment[]
-  requests       Request[]
-  crmDeals       CrmDeal[]
+  requests             Request[]
+  crmDeals             CrmDeal[]
+  readinessAssessments ReadinessAssessment[]
 
   @@index([builderCompanyId])
   @@index([publicationStatus])
@@ -710,4 +717,173 @@ model CrmFollowUpActivity {
   @@index([dueAt])
   @@index([assignedUserId])
   @@map("crm_follow_up_activities")
+}
+
+/// Builder Readiness assessment target (company-wide or per project).
+enum ReadinessAssessmentTargetType {
+  builder_company
+  project
+}
+
+/// Overall assessment and per-category score lifecycle.
+enum ReadinessScoreStatus {
+  not_started
+  needs_improvement
+  in_progress
+  ready
+  blocked
+}
+
+/// Builder-facing vs admin-only content on recommendations and required actions.
+enum ReadinessVisibility {
+  builder_visible
+  internal_only
+}
+
+enum ReadinessRequiredActionStatus {
+  open
+  in_progress
+  done
+  blocked
+  cancelled
+}
+
+model ReadinessAssessment {
+  id                      String                        @id @default(cuid())
+  targetType              ReadinessAssessmentTargetType @map("target_type")
+  builderCompanyId        String                        @map("builder_company_id")
+  projectId               String?                       @map("project_id")
+  status                  ReadinessScoreStatus          @default(not_started)
+  overallScore            Int?                          @map("overall_score")
+  overallScoreOverridden  Boolean                       @default(false) @map("overall_score_overridden")
+  evaluatedByUserId       String?                       @map("evaluated_by_user_id")
+  lastEvaluatedAt         DateTime?                     @map("last_evaluated_at")
+  archivedAt              DateTime?                     @map("archived_at")
+  createdAt               DateTime                      @default(now()) @map("created_at")
+  updatedAt               DateTime                      @updatedAt @map("updated_at")
+
+  builderCompany   Company                   @relation(fields: [builderCompanyId], references: [id], onDelete: Restrict)
+  project          Project?                  @relation(fields: [projectId], references: [id], onDelete: Restrict)
+  evaluatedBy      User?                     @relation("ReadinessAssessmentEvaluator", fields: [evaluatedByUserId], references: [id], onDelete: SetNull)
+  scores           ReadinessScore[]
+  recommendations  ReadinessRecommendation[]
+  requiredActions  ReadinessRequiredAction[]
+  internalNotes    ReadinessInternalNote[]
+
+  @@index([builderCompanyId])
+  @@index([projectId])
+  @@index([status])
+  @@index([builderCompanyId, targetType, archivedAt])
+  @@index([projectId, archivedAt])
+  @@map("readiness_assessments")
+}
+
+model ReadinessCategory {
+  id                        String   @id @default(cuid())
+  name                      String
+  description               String?
+  weight                    Int?
+  sortOrder                 Int      @default(0) @map("sort_order")
+  /// Future FK to ServiceProviderCategory (Directory module — later segment).
+  serviceProviderCategoryId String?  @map("service_provider_category_id")
+  active                    Boolean  @default(true)
+  createdAt                 DateTime @default(now()) @map("created_at")
+  updatedAt                 DateTime @updatedAt @map("updated_at")
+
+  scores ReadinessScore[]
+
+  @@index([active])
+  @@index([sortOrder])
+  @@map("readiness_categories")
+}
+
+model ReadinessScore {
+  id                    String               @id @default(cuid())
+  assessmentId          String               @map("assessment_id")
+  categoryId            String               @map("category_id")
+  score                 Int?
+  status                ReadinessScoreStatus @default(not_started)
+  recommendationSummary String?              @map("recommendation_summary")
+  evaluatedByUserId     String?              @map("evaluated_by_user_id")
+  evaluatedAt           DateTime?            @map("evaluated_at")
+  createdAt             DateTime             @default(now()) @map("created_at")
+  updatedAt             DateTime             @updatedAt @map("updated_at")
+
+  assessment      ReadinessAssessment       @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  category        ReadinessCategory         @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  evaluatedBy     User?                     @relation("ReadinessScoreEvaluator", fields: [evaluatedByUserId], references: [id], onDelete: SetNull)
+  recommendations ReadinessRecommendation[]
+  requiredActions ReadinessRequiredAction[]
+  internalNotes   ReadinessInternalNote[]
+
+  @@unique([assessmentId, categoryId])
+  @@index([assessmentId])
+  @@index([categoryId])
+  @@map("readiness_scores")
+}
+
+model ReadinessRecommendation {
+  id              String              @id @default(cuid())
+  assessmentId    String              @map("assessment_id")
+  scoreId         String?             @map("score_id")
+  title           String
+  description     String
+  visibility      ReadinessVisibility
+  sortOrder       Int                 @default(0) @map("sort_order")
+  createdByUserId String              @map("created_by_user_id")
+  createdAt       DateTime            @default(now()) @map("created_at")
+  updatedAt       DateTime            @updatedAt @map("updated_at")
+
+  assessment ReadinessAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  score      ReadinessScore?     @relation(fields: [scoreId], references: [id], onDelete: SetNull)
+  createdBy  User                @relation("ReadinessRecommendationCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
+
+  @@index([assessmentId])
+  @@index([scoreId])
+  @@index([visibility])
+  @@map("readiness_recommendations")
+}
+
+model ReadinessRequiredAction {
+  id                String                        @id @default(cuid())
+  assessmentId      String                        @map("assessment_id")
+  scoreId           String?                       @map("score_id")
+  title             String
+  description       String?
+  status            ReadinessRequiredActionStatus @default(open)
+  relatedEntityType String?                       @map("related_entity_type")
+  relatedEntityId   String?                       @map("related_entity_id")
+  visibility        ReadinessVisibility
+  createdByUserId   String                        @map("created_by_user_id")
+  createdAt         DateTime                      @default(now()) @map("created_at")
+  updatedAt         DateTime                      @updatedAt @map("updated_at")
+
+  assessment ReadinessAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  score      ReadinessScore?     @relation(fields: [scoreId], references: [id], onDelete: SetNull)
+  createdBy  User                @relation("ReadinessRequiredActionCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
+
+  @@index([assessmentId])
+  @@index([scoreId])
+  @@index([status])
+  @@index([visibility])
+  @@map("readiness_required_actions")
+}
+
+model ReadinessInternalNote {
+  id           String   @id @default(cuid())
+  assessmentId String   @map("assessment_id")
+  scoreId      String?  @map("score_id")
+  authorUserId String   @map("author_user_id")
+  body         String
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  assessment ReadinessAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  score      ReadinessScore?     @relation(fields: [scoreId], references: [id], onDelete: SetNull)
+  author     User                @relation("ReadinessInternalNoteAuthor", fields: [authorUserId], references: [id], onDelete: Restrict)
+
+  @@index([assessmentId])
+  @@index([scoreId])
+  @@index([authorUserId])
+  @@map("readiness_internal_notes")
 }
