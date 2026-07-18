@@ -5,6 +5,7 @@ import type {
 } from "@toonexpo/contracts";
 import { PublicationStatus, type Prisma } from "@toonexpo/db";
 
+import { loadTranslations } from "../../catalog/utils/load-translations.js";
 import {
   TRANSLATION_ENTITY,
   TRANSLATION_FIELD,
@@ -17,12 +18,20 @@ import {
 } from "../mappers/portal.mapper.js";
 import { PORTAL_DEFAULT_PAGE_SIZE } from "../portal.constants.js";
 import { assertCompanyAdmin, entityNotFound } from "../utils/access.js";
+import { groupPortalTranslations } from "../utils/group-translations.js";
 import { requireOwnedProject } from "../utils/ownership.js";
 import { buildProjectSlug } from "../utils/slug.js";
 import { upsertTranslations } from "../utils/upsert-translations.js";
 import type { CreatePortalProjectDto } from "../dto/create-portal-project.dto.js";
 import type { UpdatePortalProjectDto } from "../dto/update-portal-project.dto.js";
 import type { UpdatePortalPublicationDto } from "../dto/update-portal-publication.dto.js";
+
+const PROJECT_TRANSLATION_FIELDS = [
+  TRANSLATION_FIELD.name,
+  TRANSLATION_FIELD.shortDescription,
+  TRANSLATION_FIELD.fullDescription,
+  TRANSLATION_FIELD.locationText,
+] as const;
 
 const projectDetailInclude = {
   buildings: {
@@ -84,7 +93,7 @@ export class PortalProjectsService {
     if (!project) {
       throw entityNotFound("Project");
     }
-    return mapPortalProjectDetail(project);
+    return this.toProjectDetail(project);
   }
 
   async create(
@@ -151,7 +160,7 @@ export class PortalProjectsService {
       });
     }
 
-    return mapPortalProjectDetail(project);
+    return this.toProjectDetail(project);
   }
 
   async update(
@@ -223,7 +232,7 @@ export class PortalProjectsService {
       });
     }
 
-    return mapPortalProjectDetail(project);
+    return this.toProjectDetail(project);
   }
 
   async updatePublication(
@@ -244,7 +253,7 @@ export class PortalProjectsService {
       include: projectDetailInclude,
     });
 
-    return mapPortalProjectDetail(project);
+    return this.toProjectDetail(project);
   }
 
   async remove(
@@ -263,5 +272,20 @@ export class PortalProjectsService {
       throw new BadRequestException("Only draft projects can be deleted");
     }
     await this.prisma.db.project.delete({ where: { id: projectId } });
+  }
+
+  private async toProjectDetail(
+    project: Prisma.ProjectGetPayload<{ include: typeof projectDetailInclude }>,
+  ): Promise<PortalProjectDetail> {
+    const rows = await loadTranslations(
+      this.prisma.db,
+      TRANSLATION_ENTITY.project,
+      [project.id],
+    );
+    const translations = groupPortalTranslations(
+      rows,
+      PROJECT_TRANSLATION_FIELDS,
+    );
+    return mapPortalProjectDetail(project, translations);
   }
 }

@@ -156,6 +156,17 @@ describe("Builder portal inventory CRUD (e2e)", () => {
     createdProjectIds.push(projectId);
     expect(projectRes.body.publicationStatus).toBe("draft");
     expect(projectRes.body.builderCompanyId).toBe(companyAId);
+    expect(projectRes.body.translations?.name?.en).toBe("Portal E2E Tower EN");
+    expect(projectRes.body.translations?.name?.ru).toBe("Башня E2E");
+    expect(projectRes.body.translations?.shortDescription?.en).toBe("Short EN");
+
+    const projectGet = await request(app.getHttpServer())
+      .get(`${API_V1_PREFIX}/portal/projects/${projectId}`)
+      .set("Cookie", admin.cookieHeader)
+      .expect(200);
+    expect(projectGet.body.translations?.name?.en).toBe("Portal E2E Tower EN");
+    expect(projectGet.body.translations?.name?.ru).toBe("Башня E2E");
+    expect(projectGet.body.translations?.shortDescription?.en).toBe("Short EN");
 
     const buildingRes = await request(app.getHttpServer())
       .post(`${API_V1_PREFIX}/portal/projects/${projectId}/buildings`)
@@ -310,10 +321,23 @@ describe("Builder portal inventory CRUD (e2e)", () => {
         `${API_V1_PREFIX}/portal/floors/${floorRes.body.id as string}/apartments`,
       )
       .set(authHeaders(admin))
-      .send({ number: "101", price: 10_000_000 })
+      .send({
+        number: "101",
+        price: 10_000_000,
+        translations: {
+          description: { en: "Bright EN", ru: "Светлая RU" },
+        },
+      })
       .expect(201);
 
     const apartmentId = aptRes.body.id as string;
+
+    const aptGet = await request(app.getHttpServer())
+      .get(`${API_V1_PREFIX}/portal/apartments/${apartmentId}`)
+      .set("Cookie", admin.cookieHeader)
+      .expect(200);
+    expect(aptGet.body.translations?.description?.en).toBe("Bright EN");
+    expect(aptGet.body.translations?.description?.ru).toBe("Светлая RU");
 
     await request(app.getHttpServer())
       .patch(`${API_V1_PREFIX}/portal/apartments/${apartmentId}`)
@@ -335,6 +359,49 @@ describe("Builder portal inventory CRUD (e2e)", () => {
     expect(last.newStatus).toBe("reserved");
     expect(last.reason).toBe("Buyer hold");
     expect(last.changedByUserId).toBeTruthy();
+  });
+
+  it("returns company profile for member and company_admin", async () => {
+    const admin = await loginAs(adminAEmail);
+    const member = await loginAs(memberAEmail);
+
+    const adminProfile = await request(app.getHttpServer())
+      .get(`${API_V1_PREFIX}/company/me`)
+      .set("Cookie", admin.cookieHeader)
+      .expect(200);
+    expect(adminProfile.body.id).toBe(companyAId);
+    expect(adminProfile.body.name).toBe(`${FIXTURE_PREFIX}Company A`);
+    expect(adminProfile.body.type).toBe("builder");
+    expect(adminProfile.body.status).toBe("active");
+    expect(adminProfile.body.role).toBe("company_admin");
+    expect(adminProfile.body).toHaveProperty("logoUrl");
+
+    const memberProfile = await request(app.getHttpServer())
+      .get(`${API_V1_PREFIX}/company/me`)
+      .set("Cookie", member.cookieHeader)
+      .expect(200);
+    expect(memberProfile.body.id).toBe(companyAId);
+    expect(memberProfile.body.role).toBe("member");
+  });
+
+  it("allows member to list team but blocks invite", async () => {
+    const member = await loginAs(memberAEmail);
+
+    const listRes = await request(app.getHttpServer())
+      .get(`${API_V1_PREFIX}/company/members`)
+      .set("Cookie", member.cookieHeader)
+      .expect(200);
+    expect(listRes.body.data.length).toBeGreaterThanOrEqual(2);
+
+    await request(app.getHttpServer())
+      .post(`${API_V1_PREFIX}/company/members`)
+      .set(authHeaders(member))
+      .send({
+        name: "Should Fail",
+        email: uniqueEmail("blocked-invite"),
+        role: "member",
+      })
+      .expect(403);
   });
 
   async function seedUsers(): Promise<void> {

@@ -66,6 +66,8 @@ export type PortalProjectDetail = {
   createdAt: string;
   updatedAt: string;
   buildings: PortalBuildingSummary[];
+  /** Existing Translation rows grouped by field → locale (portal edit prefills). */
+  translations?: PortalTranslationsInput;
 };
 
 export type PortalBuildingSummary = {
@@ -123,6 +125,8 @@ export type PortalApartmentDetail = {
   planMediaId: string | null;
   createdAt: string;
   updatedAt: string;
+  /** Existing Translation rows grouped by field → locale (portal edit prefills). */
+  translations?: PortalTranslationsInput;
 };
 
 export type PortalApartmentStatusHistoryItem = {

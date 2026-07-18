@@ -51,6 +51,7 @@ export type {
   CompanyListResponse,
   CompanyMemberListResponse,
   CompanyMemberResponse,
+  CompanyProfileResponse,
   CompanyResponse,
   CompanySource,
   CompanyStatus,

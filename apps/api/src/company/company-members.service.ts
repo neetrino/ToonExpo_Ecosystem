@@ -100,12 +100,12 @@ export class CompanyMembersService {
   }
 
   async list(
-    admin: CompanyAdminContext,
+    companyId: string,
     page: number,
     pageSize: number,
   ): Promise<CompanyMemberListResponse> {
     const where = {
-      companyId: admin.companyId,
+      companyId,
       status: { not: CompanyMemberStatus.removed },
     };
     const skip = (page - 1) * pageSize;

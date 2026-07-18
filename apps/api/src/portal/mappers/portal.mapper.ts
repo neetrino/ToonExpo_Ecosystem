@@ -4,6 +4,7 @@ import type {
   PortalFloorSummary,
   PortalProjectDetail,
   PortalProjectListItem,
+  PortalTranslationsInput,
 } from "@toonexpo/contracts";
 import type { Prisma } from "@toonexpo/db";
 
@@ -160,6 +161,7 @@ export const mapPortalBuilding = (
 
 export const mapPortalProjectDetail = (
   project: ProjectDetailRow,
+  translations?: PortalTranslationsInput,
 ): PortalProjectDetail => ({
   id: project.id,
   builderCompanyId: project.builderCompanyId,
@@ -183,10 +185,14 @@ export const mapPortalProjectDetail = (
   createdAt: project.createdAt.toISOString(),
   updatedAt: project.updatedAt.toISOString(),
   buildings: project.buildings.map(mapPortalBuilding),
+  ...(translations && Object.keys(translations).length > 0
+    ? { translations }
+    : {}),
 });
 
 export const mapPortalApartment = (
   apartment: ApartmentRow,
+  translations?: PortalTranslationsInput,
 ): PortalApartmentDetail => ({
   id: apartment.id,
   projectId: apartment.projectId,
@@ -213,4 +219,7 @@ export const mapPortalApartment = (
   planMediaId: apartment.planMediaId,
   createdAt: apartment.createdAt.toISOString(),
   updatedAt: apartment.updatedAt.toISOString(),
+  ...(translations && Object.keys(translations).length > 0
+    ? { translations }
+    : {}),
 });

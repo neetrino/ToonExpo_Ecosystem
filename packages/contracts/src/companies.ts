@@ -30,6 +30,18 @@ export type CompanyResponse = {
 };
 
 /**
+ * Authenticated company member's company profile (`GET /company/me`).
+ */
+export type CompanyProfileResponse = {
+  id: string;
+  name: string;
+  type: CompanyType;
+  status: CompanyStatus;
+  logoUrl: string | null;
+  role: CompanyMemberRole;
+};
+
+/**
  * Platform-admin company create payload (first company_admin invited).
  */
 export type CreateCompanyRequest = {

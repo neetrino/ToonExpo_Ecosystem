@@ -22,26 +22,44 @@ import type {
 } from "@toonexpo/contracts";
 import { CompanyMemberRole, CompanyMemberStatus } from "@toonexpo/db";
 
+import { AccountTypes } from "../auth/decorators/account-types.decorator.js";
 import { CurrentUser } from "../auth/decorators/current-user.decorator.js";
 import type { AuthenticatedUser } from "../auth/types/authenticated-user.js";
 import { CompanyMembersService } from "./company-members.service.js";
 import { CompanyAdmin } from "./decorators/company-admin.decorator.js";
+import { CompanyMember } from "./decorators/company-member.decorator.js";
 import { CurrentCompanyAdmin } from "./decorators/current-company-admin.decorator.js";
+import { CurrentCompanyMember } from "./decorators/current-company-member.decorator.js";
 import { InviteCompanyMemberDto } from "./dto/invite-company-member.dto.js";
 import { ListCompanyMembersQueryDto } from "./dto/list-company-members.query.dto.js";
 import { UpdateCompanyMemberDto } from "./dto/update-company-member.dto.js";
 import { CompanyAdminGuard } from "./guards/company-admin.guard.js";
+import { CompanyMemberGuard } from "./guards/company-member.guard.js";
 import type { CompanyAdminContext } from "./types/company-admin-context.js";
+import type { CompanyMemberContext } from "./types/company-member-context.js";
 
 @ApiTags("company-members")
-@CompanyAdmin()
-@UseGuards(CompanyAdminGuard)
+@AccountTypes("company_member")
 @Controller("company/members")
 export class CompanyMembersController {
   constructor(private readonly membersService: CompanyMembersService) {}
 
+  @Get()
+  @CompanyMember()
+  @UseGuards(CompanyMemberGuard)
+  @ApiOperation({ summary: "List members of the caller's company (read-only for members)" })
+  @ApiOkResponse({ description: "Paginated company members" })
+  list(
+    @CurrentCompanyMember() member: CompanyMemberContext,
+    @Query() query: ListCompanyMembersQueryDto,
+  ): Promise<CompanyMemberListResponse> {
+    return this.membersService.list(member.companyId, query.page, query.pageSize);
+  }
+
   @Post()
   @HttpCode(HttpStatus.CREATED)
+  @CompanyAdmin()
+  @UseGuards(CompanyAdminGuard)
   @ApiOperation({ summary: "Invite a company member" })
   @ApiCreatedResponse({ description: "Member invited; set-password email sent" })
   invite(
@@ -58,17 +76,9 @@ export class CompanyMembersController {
     });
   }
 
-  @Get()
-  @ApiOperation({ summary: "List members of the caller's company" })
-  @ApiOkResponse({ description: "Paginated company members" })
-  list(
-    @CurrentCompanyAdmin() admin: CompanyAdminContext,
-    @Query() query: ListCompanyMembersQueryDto,
-  ): Promise<CompanyMemberListResponse> {
-    return this.membersService.list(admin, query.page, query.pageSize);
-  }
-
   @Patch(":id")
+  @CompanyAdmin()
+  @UseGuards(CompanyAdminGuard)
   @ApiOperation({ summary: "Update member role or status" })
   @ApiOkResponse({ description: "Updated membership" })
   update(

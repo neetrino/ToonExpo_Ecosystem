@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from "@nestjs/common";
 import type { PortalApartmentDetail } from "@toonexpo/contracts";
 import { ApartmentSalesStatus, PublicationStatus } from "@toonexpo/db";
 
+import { loadTranslations } from "../../catalog/utils/load-translations.js";
 import {
   TRANSLATION_ENTITY,
   TRANSLATION_FIELD,
@@ -16,6 +17,7 @@ import type {
 import type { UpdatePortalPublicationDto } from "../dto/update-portal-publication.dto.js";
 import { mapPortalApartment } from "../mappers/portal.mapper.js";
 import { assertCompanyAdmin, entityNotFound } from "../utils/access.js";
+import { groupPortalTranslations } from "../utils/group-translations.js";
 import {
   requireOwnedApartment,
   requireOwnedFloor,
@@ -25,6 +27,8 @@ import {
   buildApartmentUpdateData,
   createPortalApartmentRow,
 } from "./apartment-write.helpers.js";
+
+const APARTMENT_TRANSLATION_FIELDS = [TRANSLATION_FIELD.description] as const;
 
 @Injectable()
 export class PortalApartmentsService {
@@ -39,7 +43,7 @@ export class PortalApartmentsService {
       where: { floorId },
       orderBy: [{ number: "asc" }],
     });
-    return apartments.map(mapPortalApartment);
+    return apartments.map((apartment) => mapPortalApartment(apartment));
   }
 
   async getById(
@@ -54,7 +58,7 @@ export class PortalApartmentsService {
     const apartment = await this.prisma.db.apartment.findUniqueOrThrow({
       where: { id: owned.id },
     });
-    return mapPortalApartment(apartment);
+    return this.toApartmentDetail(apartment);
   }
 
   async create(
@@ -75,7 +79,7 @@ export class PortalApartmentsService {
       floorId,
       dto,
     });
-    return mapPortalApartment(apartment);
+    return this.toApartmentDetail(apartment);
   }
 
   async createBulk(
@@ -98,7 +102,7 @@ export class PortalApartmentsService {
         floorId,
         dto: item,
       });
-      created.push(mapPortalApartment(apartment));
+      created.push(await this.toApartmentDetail(apartment));
     }
     return created;
   }
@@ -159,7 +163,7 @@ export class PortalApartmentsService {
       });
     }
 
-    return mapPortalApartment(apartment);
+    return this.toApartmentDetail(apartment);
   }
 
   async updatePublication(
@@ -177,7 +181,7 @@ export class PortalApartmentsService {
         updatedByUserId: userId,
       },
     });
-    return mapPortalApartment(apartment);
+    return this.toApartmentDetail(apartment);
   }
 
   async remove(
@@ -199,5 +203,20 @@ export class PortalApartmentsService {
       throw new BadRequestException("Only draft apartments can be deleted");
     }
     await this.prisma.db.apartment.delete({ where: { id: apartmentId } });
+  }
+
+  private async toApartmentDetail(
+    apartment: Parameters<typeof mapPortalApartment>[0],
+  ): Promise<PortalApartmentDetail> {
+    const rows = await loadTranslations(
+      this.prisma.db,
+      TRANSLATION_ENTITY.apartment,
+      [apartment.id],
+    );
+    const translations = groupPortalTranslations(
+      rows,
+      APARTMENT_TRANSLATION_FIELDS,
+    );
+    return mapPortalApartment(apartment, translations);
   }
 }
