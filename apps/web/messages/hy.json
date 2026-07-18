@@ -352,12 +352,49 @@
       }
     }
   },
+  "Analytics": {
+    "common": {
+      "loading": "Վերլուծությունը բեռնվում է…",
+      "error": "Չհաջողվեց բեռնել վերլուծությունը։ Կրկին փորձեք։",
+      "empty": "Այս ժամանակահատվածի համար տվյալներ չկան"
+    },
+    "dateRange": {
+      "label": "Ժամանակահատված",
+      "today": "Այսօր",
+      "last7Days": "Վերջին 7 օր",
+      "last30Days": "Վերջին 30 օր",
+      "activeRange": "{from} – {to}"
+    },
+    "crmStatuses": {
+      "new_request": "Նոր",
+      "assigned": "Նշանակված",
+      "contacted": "Կապվել են",
+      "follow_up_needed": "Հետևում",
+      "apartment_selected": "Բնակարան ընտրված",
+      "reserved": "Ամրագրված",
+      "converted": "Փոխարկված",
+      "closed": "Փակված",
+      "lost": "Կորցրած"
+    },
+    "requestSources": {
+      "buyer_project_request": "Գնորդի հայտ",
+      "builder_buyer_qr_scan": "QR սկանավորում",
+      "manual_builder_entry": "Ձեռքով մուտք",
+      "event_interaction": "Միջոցառում"
+    },
+    "apartmentSales": {
+      "available": "Հասանելի",
+      "reserved": "Ամրագրված",
+      "sold": "Վաճառված"
+    }
+  },
   "Admin": {
     "badge": "Ադմին",
     "profileLink": "Պրոֆիլ",
     "nav": {
       "label": "Ադմին նավիգացիա",
       "section": "Կառավարում",
+      "analytics": "Վերլուծություն",
       "companies": "Ընկերություններ",
       "partners": "Գործընկերներ",
       "bankOffers": "Բանկային առաջարկներ",
@@ -365,6 +402,43 @@
       "readiness": "Պատրաստվածություն",
       "readinessCategories": "Կատեգորիաներ",
       "events": "Միջոցառումներ"
+    },
+    "analytics": {
+      "title": "Վերլուծություն",
+      "subtitle": "Հարթակի ընդհանուր ակտիվություն և արդյունավետություն",
+      "sections": {
+        "platformActivity": "Հարթակի ակտիվություն",
+        "topProjects": "Լավագույն նախագծեր ըստ դիտումների",
+        "requests": "Հայտեր",
+        "dealsByStatus": "CRM գործարքներ ըստ կարգավիճակի",
+        "qrScans": "QR սկանավորումներ ըստ կոնտեքստի",
+        "checkIns": "Check-in ամփոփում",
+        "readiness": "Պատրաստվածության ամփոփում"
+      },
+      "platformActivity": {
+        "totalUsers": "Ընդհանուր օգտատերեր",
+        "registeredBuyers": "Գրանցված գնորդներ",
+        "activeBuilderCompanies": "Ակտիվ կառուցապատողներ",
+        "activePartners": "Ակտիվ գործընկերներ",
+        "publishedProjects": "Հրապարակված նախագծեր",
+        "publishedApartments": "Հրապարակված բնակարաններ"
+      },
+      "requests": {
+        "total": "Ընդամենը հայտեր"
+      },
+      "checkIns": {
+        "allowed": "Թույլատրված",
+        "duplicate": "Կրկնօրինակ",
+        "denied": "Մերժված"
+      },
+      "readiness": {
+        "weakestCategories": "Թույլ կատեգորիաներ (միջ. միավոր)"
+      },
+      "table": {
+        "rank": "#",
+        "name": "Անվանում",
+        "views": "Դիտումներ"
+      }
     },
     "companies": {
       "title": "Ընկերություններ",
@@ -1138,6 +1212,30 @@
       "company": "Ընկերություն",
       "inventory": "Գույքացուցակ",
       "comingSoon": "Շուտով"
+    },
+    "analytics": {
+      "title": "Վերլուծություն",
+      "subtitle": "Ձեր ընկերության արդյունավետությունը ընտրված ժամանակահատվածում",
+      "sections": {
+        "topProjects": "Լավագույն նախագծեր ըստ դիտումների",
+        "topApartments": "Լավագույն բնակարաններ ըստ դիտումների",
+        "requests": "Հայտեր",
+        "dealsByStatus": "CRM գործարքներ ըստ կարգավիճակի",
+        "apartmentSales": "Բնակարանների վաճառքի կարգավիճակ",
+        "readiness": "Պատրաստվածության կարգավիճակ"
+      },
+      "requests": {
+        "total": "Ընդամենը հայտեր"
+      },
+      "readiness": {
+        "company": "Ընկերության պատրաստվածություն",
+        "project": "Նախագծի պատրաստվածություն"
+      },
+      "table": {
+        "rank": "#",
+        "name": "Անվանում",
+        "views": "Դիտումներ"
+      }
     },
     "dashboard": {
       "title": "Վահանակ",

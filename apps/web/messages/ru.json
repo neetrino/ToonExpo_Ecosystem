@@ -352,12 +352,49 @@
       }
     }
   },
+  "Analytics": {
+    "common": {
+      "loading": "Загрузка аналитики…",
+      "error": "Не удалось загрузить аналитику. Попробуйте ещё раз.",
+      "empty": "Нет данных за этот период"
+    },
+    "dateRange": {
+      "label": "Период",
+      "today": "Сегодня",
+      "last7Days": "Последние 7 дней",
+      "last30Days": "Последние 30 дней",
+      "activeRange": "{from} – {to}"
+    },
+    "crmStatuses": {
+      "new_request": "Новая",
+      "assigned": "Назначена",
+      "contacted": "Связались",
+      "follow_up_needed": "Нужен follow-up",
+      "apartment_selected": "Квартира выбрана",
+      "reserved": "Бронь",
+      "converted": "Конверсия",
+      "closed": "Закрыта",
+      "lost": "Потеряна"
+    },
+    "requestSources": {
+      "buyer_project_request": "Заявка покупателя",
+      "builder_buyer_qr_scan": "QR-скан",
+      "manual_builder_entry": "Вручную",
+      "event_interaction": "Событие"
+    },
+    "apartmentSales": {
+      "available": "Доступно",
+      "reserved": "Бронь",
+      "sold": "Продано"
+    }
+  },
   "Admin": {
     "badge": "Админ",
     "profileLink": "Профиль",
     "nav": {
       "label": "Навигация админки",
       "section": "Управление",
+      "analytics": "Аналитика",
       "companies": "Компании",
       "readiness": "Готовность",
       "readinessCategories": "Категории",
@@ -365,6 +402,43 @@
       "bankOffers": "Банковские предложения",
       "serviceProviders": "Поставщики услуг",
       "events": "События"
+    },
+    "analytics": {
+      "title": "Аналитика",
+      "subtitle": "Сводка по активности и эффективности платформы",
+      "sections": {
+        "platformActivity": "Активность платформы",
+        "topProjects": "Топ проектов по просмотрам",
+        "requests": "Заявки",
+        "dealsByStatus": "CRM-сделки по статусу",
+        "qrScans": "QR-сканы по контексту",
+        "checkIns": "Сводка check-in",
+        "readiness": "Сводка по готовности"
+      },
+      "platformActivity": {
+        "totalUsers": "Всего пользователей",
+        "registeredBuyers": "Зарегистрированные покупатели",
+        "activeBuilderCompanies": "Активные застройщики",
+        "activePartners": "Активные партнёры",
+        "publishedProjects": "Опубликованные проекты",
+        "publishedApartments": "Опубликованные квартиры"
+      },
+      "requests": {
+        "total": "Всего заявок"
+      },
+      "checkIns": {
+        "allowed": "Разрешено",
+        "duplicate": "Дубликаты",
+        "denied": "Отклонено"
+      },
+      "readiness": {
+        "weakestCategories": "Слабые категории (ср. балл)"
+      },
+      "table": {
+        "rank": "#",
+        "name": "Название",
+        "views": "Просмотры"
+      }
     },
     "companies": {
       "title": "Компании",
@@ -1138,6 +1212,30 @@
       "company": "Компания",
       "inventory": "Инвентарь",
       "comingSoon": "Скоро"
+    },
+    "analytics": {
+      "title": "Аналитика",
+      "subtitle": "Показатели вашей компании за выбранный период",
+      "sections": {
+        "topProjects": "Топ проектов по просмотрам",
+        "topApartments": "Топ квартир по просмотрам",
+        "requests": "Заявки",
+        "dealsByStatus": "CRM-сделки по статусу",
+        "apartmentSales": "Статус продаж квартир",
+        "readiness": "Статус готовности"
+      },
+      "requests": {
+        "total": "Всего заявок"
+      },
+      "readiness": {
+        "company": "Готовность компании",
+        "project": "Готовность проекта"
+      },
+      "table": {
+        "rank": "#",
+        "name": "Название",
+        "views": "Просмотры"
+      }
     },
     "dashboard": {
       "title": "Дашборд",

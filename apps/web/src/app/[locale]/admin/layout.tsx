@@ -43,7 +43,7 @@ export default async function AdminLayout({
       <header className="border-b border-border bg-background">
         <div className="mx-auto flex w-full max-w-content items-center justify-between gap-4 px-6 py-3">
           <Link
-            href="/admin/companies"
+            href="/admin/analytics"
             className="font-brand text-base font-extrabold tracking-tight text-ink"
           >
             <span>TOON</span>

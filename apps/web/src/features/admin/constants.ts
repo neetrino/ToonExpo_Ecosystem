@@ -36,3 +36,8 @@ export const ADMIN_READINESS_ASSESSMENTS_QUERY_KEY = [
 
 export const adminReadinessAssessmentQueryKey = (id: string) =>
   [...ADMIN_READINESS_ASSESSMENTS_QUERY_KEY, id] as const;
+
+export const ADMIN_ANALYTICS_QUERY_KEY = ["admin", "analytics"] as const;
+
+export const adminAnalyticsQueryKey = (from: string, to: string) =>
+  [...ADMIN_ANALYTICS_QUERY_KEY, from, to] as const;

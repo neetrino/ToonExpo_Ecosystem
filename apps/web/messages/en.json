@@ -352,12 +352,49 @@
       }
     }
   },
+  "Analytics": {
+    "common": {
+      "loading": "Loading analytics…",
+      "error": "Could not load analytics. Try again.",
+      "empty": "No data for this period"
+    },
+    "dateRange": {
+      "label": "Period",
+      "today": "Today",
+      "last7Days": "Last 7 days",
+      "last30Days": "Last 30 days",
+      "activeRange": "{from} – {to}"
+    },
+    "crmStatuses": {
+      "new_request": "New",
+      "assigned": "Assigned",
+      "contacted": "Contacted",
+      "follow_up_needed": "Follow-up",
+      "apartment_selected": "Apartment selected",
+      "reserved": "Reserved",
+      "converted": "Converted",
+      "closed": "Closed",
+      "lost": "Lost"
+    },
+    "requestSources": {
+      "buyer_project_request": "Buyer request",
+      "builder_buyer_qr_scan": "QR scan",
+      "manual_builder_entry": "Manual",
+      "event_interaction": "Event"
+    },
+    "apartmentSales": {
+      "available": "Available",
+      "reserved": "Reserved",
+      "sold": "Sold"
+    }
+  },
   "Admin": {
     "badge": "Admin",
     "profileLink": "Profile",
     "nav": {
       "label": "Admin navigation",
       "section": "Manage",
+      "analytics": "Analytics",
       "companies": "Companies",
       "partners": "Partners",
       "bankOffers": "Bank offers",
@@ -365,6 +402,43 @@
       "readiness": "Readiness",
       "readinessCategories": "Categories",
       "events": "Events"
+    },
+    "analytics": {
+      "title": "Analytics",
+      "subtitle": "Platform-wide activity and performance",
+      "sections": {
+        "platformActivity": "Platform activity",
+        "topProjects": "Top projects by views",
+        "requests": "Requests",
+        "dealsByStatus": "CRM deals by status",
+        "qrScans": "QR scans by context",
+        "checkIns": "Check-in summary",
+        "readiness": "Readiness summary"
+      },
+      "platformActivity": {
+        "totalUsers": "Total users",
+        "registeredBuyers": "Registered buyers",
+        "activeBuilderCompanies": "Active builders",
+        "activePartners": "Active partners",
+        "publishedProjects": "Published projects",
+        "publishedApartments": "Published apartments"
+      },
+      "requests": {
+        "total": "Requests total"
+      },
+      "checkIns": {
+        "allowed": "Allowed",
+        "duplicate": "Duplicates",
+        "denied": "Denied"
+      },
+      "readiness": {
+        "weakestCategories": "Weakest categories (avg. score)"
+      },
+      "table": {
+        "rank": "#",
+        "name": "Name",
+        "views": "Views"
+      }
     },
     "companies": {
       "title": "Companies",
@@ -1312,6 +1386,30 @@
       "company": "Company",
       "inventory": "Inventory",
       "comingSoon": "Coming soon"
+    },
+    "analytics": {
+      "title": "Analytics",
+      "subtitle": "Your company performance for the selected period",
+      "sections": {
+        "topProjects": "Top projects by views",
+        "topApartments": "Top apartments by views",
+        "requests": "Requests",
+        "dealsByStatus": "CRM deals by status",
+        "apartmentSales": "Apartment sales status",
+        "readiness": "Readiness status"
+      },
+      "requests": {
+        "total": "Requests total"
+      },
+      "readiness": {
+        "company": "Company readiness",
+        "project": "Project readiness"
+      },
+      "table": {
+        "rank": "#",
+        "name": "Name",
+        "views": "Views"
+      }
     },
     "dashboard": {
       "title": "Dashboard",

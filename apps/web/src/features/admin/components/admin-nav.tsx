@@ -6,6 +6,7 @@ import { Link, usePathname } from "@/i18n/navigation";
 import { cn } from "@/shared/ui/cn";
 
 const NAV_ITEMS = [
+  { href: "/admin/analytics", key: "analytics" as const },
   { href: "/admin/companies", key: "companies" as const },
   { href: "/admin/partners", key: "partners" as const },
   { href: "/admin/bank-offers", key: "bankOffers" as const },
