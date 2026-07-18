@@ -7,6 +7,7 @@ type PaginationProps = {
   buildHref: (page: number) => string;
   previousLabel: string;
   nextLabel: string;
+  ariaLabel: string;
   className?: string | undefined;
 };
 
@@ -19,6 +20,7 @@ export const CatalogPagination = ({
   buildHref,
   previousLabel,
   nextLabel,
+  ariaLabel,
   className,
 }: PaginationProps) => {
   if (totalPages <= 1) {
@@ -31,7 +33,7 @@ export const CatalogPagination = ({
   return (
     <nav
       className={cn("flex items-center justify-between gap-4", className)}
-      aria-label="Pagination"
+      aria-label={ariaLabel}
     >
       {hasPrevious ? (
         <Link

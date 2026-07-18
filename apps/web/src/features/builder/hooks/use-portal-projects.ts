@@ -11,12 +11,14 @@ import {
   createPortalProject,
   deletePortalProject,
   getPortalProject,
+  getPortalProjectQr,
   listPortalProjects,
   updatePortalProject,
   updatePortalProjectPublication,
 } from "@/features/builder/api/portal-projects-api";
 import {
   PORTAL_PROJECTS_QUERY_KEY,
+  portalProjectQrQueryKey,
   portalProjectQueryKey,
 } from "@/features/builder/constants";
 
@@ -37,6 +39,16 @@ export const usePortalProjectQuery = (id: string) =>
     queryKey: portalProjectQueryKey(id),
     queryFn: () => getPortalProject(id),
     enabled: id.length > 0,
+  });
+
+/**
+ * Project QR payload URL for exhibition printouts.
+ */
+export const usePortalProjectQrQuery = (projectId: string) =>
+  useQuery({
+    queryKey: portalProjectQrQueryKey(projectId),
+    queryFn: () => getPortalProjectQr(projectId),
+    enabled: projectId.length > 0,
   });
 
 /**

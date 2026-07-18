@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { EditProjectForm } from "@/features/builder/components/edit-project-form";
 import { ProjectInventorySection } from "@/features/builder/components/project-inventory-section";
 import { ProjectPublicationActions } from "@/features/builder/components/project-publication-actions";
+import { ProjectQrSection } from "@/features/builder/components/project-qr-section";
 import { PortalVisualCanvasesSection } from "@/features/visual-map/components/portal-visual-canvases-section";
 import { usePortalProjectQuery } from "@/features/builder/hooks/use-portal-projects";
 import { Link } from "@/i18n/navigation";
@@ -64,6 +65,8 @@ export const ProjectDetailPage = ({ projectId }: ProjectDetailPageProps) => {
       <Card>
         <EditProjectForm project={project} />
       </Card>
+
+      <ProjectQrSection projectId={project.id} projectName={project.name} />
 
       <PortalVisualCanvasesSection project={project} />
 

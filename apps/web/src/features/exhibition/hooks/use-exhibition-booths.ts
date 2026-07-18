@@ -120,6 +120,7 @@ export const useCreateAdminBoothAssignmentMutation = (boothId: string) => {
 };
 
 export const useUpdateAdminBoothAssignmentMutation = (boothId: string) => {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({
       assignmentId,
@@ -128,6 +129,11 @@ export const useUpdateAdminBoothAssignmentMutation = (boothId: string) => {
       assignmentId: string;
       body: UpdateBoothAssignmentRequest;
     }) => updateAdminBoothAssignment(boothId, assignmentId, body),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({
+        queryKey: adminBoothAssignmentsQueryKey(boothId),
+      });
+    },
   });
 };
 

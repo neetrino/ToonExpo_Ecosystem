@@ -2,7 +2,9 @@
 
 import type { PublicEntranceNode } from "@toonexpo/contracts";
 import { useLocale, useTranslations } from "next-intl";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+
+import { getPublicBooth } from "@/features/exhibition/api/public-exhibition-api";
 
 import { ExpoBoothList, ExpoSearchResults } from "@/features/exhibition/components/public/expo-search-results";
 import { ExpoBoothSheet } from "@/features/exhibition/components/public/expo-booth-sheet";
@@ -68,6 +70,14 @@ export const ExpoMapPage = () => {
   }, [routeQuery.data, routeRequested]);
 
   const routeAvailable = entranceNodes.length > 0;
+
+  useEffect(() => {
+    if (!selectedBoothId) {
+      return;
+    }
+
+    void getPublicBooth(selectedBoothId, locale).catch(() => undefined);
+  }, [locale, selectedBoothId]);
 
   const resetRoute = () => {
     setRouteRequested(false);

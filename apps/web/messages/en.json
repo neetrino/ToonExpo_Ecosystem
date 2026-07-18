@@ -64,7 +64,10 @@
       "projects": "Projects",
       "builders": "Builders",
       "register": "Register",
-      "login": "Sign in"
+      "login": "Sign in",
+      "partners": "Partners",
+      "mortgage": "Mortgage",
+      "expo": "Expo map"
     },
     "trust": "Verified listings · GDPR-ready · Encrypted in transit",
     "copyright": "© 2026 Toon Expo"
@@ -127,7 +130,8 @@
     },
     "pagination": {
       "previous": "Previous",
-      "next": "Next"
+      "next": "Next",
+      "ariaLabel": "Pagination"
     },
     "projects": {
       "title": "Projects",
@@ -198,9 +202,18 @@
       "title": "Builders",
       "subtitle": "{count, plural, =0 {No builders} one {# builder} other {# builders}}",
       "empty": "No active builders yet.",
+      "notFoundTitle": "Builder not found",
       "meta": {
         "title": "Builders — ToonExpo",
         "description": "Active development companies with published projects on ToonExpo."
+      },
+      "detail": {
+        "back": "← All builders",
+        "projectsTitle": "Published projects",
+        "emptyProjects": "No published projects yet.",
+        "catalogLink": "View projects in catalog",
+        "metaTitle": "{name} — builder profile",
+        "metaDescription": "Published projects by {name} on ToonExpo."
       }
     },
     "partnersPage": {
@@ -468,7 +481,8 @@
       "serviceProviders": "Service providers",
       "readiness": "Readiness",
       "readinessCategories": "Categories",
-      "events": "Events"
+      "events": "Events",
+      "checkin": "Check-in scanner"
     },
     "analytics": {
       "title": "Analytics",
@@ -522,7 +536,8 @@
       "newCompany": "New company",
       "pagination": {
         "previous": "Previous",
-        "next": "Next"
+        "next": "Next",
+        "ariaLabel": "Pagination"
       },
       "columns": {
         "name": "Name",
@@ -601,7 +616,8 @@
       "newPartner": "New partner",
       "pagination": {
         "previous": "Previous",
-        "next": "Next"
+        "next": "Next",
+        "ariaLabel": "Pagination"
       },
       "columns": {
         "name": "Name",
@@ -904,7 +920,8 @@
         "overridden": "overridden",
         "pagination": {
           "previous": "Previous",
-          "next": "Next"
+          "next": "Next",
+          "ariaLabel": "Pagination"
         },
         "columns": {
           "company": "Company",
@@ -1231,7 +1248,11 @@
           "active": "Active",
           "add": "Add assignment",
           "adding": "Adding…",
-          "remove": "Remove"
+          "remove": "Remove",
+          "edit": "Edit",
+          "save": "Save",
+          "saving": "Saving…",
+          "cancel": "Cancel"
         }
       },
       "routeGraph": {
@@ -1529,7 +1550,8 @@
       "newProject": "New project",
       "pagination": {
         "previous": "Previous",
-        "next": "Next"
+        "next": "Next",
+        "ariaLabel": "Pagination"
       },
       "columns": {
         "name": "Name",
@@ -1537,6 +1559,15 @@
         "city": "City",
         "buildings": "Buildings",
         "apartments": "Apartments"
+      },
+      "qr": {
+        "title": "Project QR",
+        "subtitle": "Print this QR for exhibition stands — buyers land on the public project page.",
+        "loading": "Loading QR…",
+        "error": "Could not load project QR.",
+        "codeTitle": "Project QR for {name}",
+        "copyLink": "Copy link",
+        "copied": "Copied"
       },
       "publication": {
         "draft": "Draft",
@@ -1793,7 +1824,8 @@
       "deactivate": "Deactivate",
       "pagination": {
         "previous": "Previous",
-        "next": "Next"
+        "next": "Next",
+        "ariaLabel": "Pagination"
       },
       "columns": {
         "name": "Name",
@@ -1855,11 +1887,14 @@
         "source": "Source",
         "allSources": "All sources",
         "project": "Project",
-        "allProjects": "All projects"
+        "allProjects": "All projects",
+        "assignee": "Assignee",
+        "allAssignees": "All assignees"
       },
       "pagination": {
         "previous": "Previous",
-        "next": "Next"
+        "next": "Next",
+        "ariaLabel": "Pagination"
       },
       "statuses": {
         "new_request": "New",

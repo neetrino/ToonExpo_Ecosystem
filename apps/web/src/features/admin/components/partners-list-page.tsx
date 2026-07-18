@@ -113,6 +113,7 @@ export const PartnersListPage = () => {
         }
         previousLabel={t("pagination.previous")}
         nextLabel={t("pagination.next")}
+        ariaLabel={t("pagination.ariaLabel")}
       />
 
       {showCreate && companiesQuery.data ? (

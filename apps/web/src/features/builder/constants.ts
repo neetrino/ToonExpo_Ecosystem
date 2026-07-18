@@ -46,6 +46,9 @@ export const PORTAL_PROJECTS_QUERY_KEY = ["portal", "projects"] as const;
 export const portalProjectQueryKey = (id: string) =>
   [...PORTAL_PROJECTS_QUERY_KEY, id] as const;
 
+export const portalProjectQrQueryKey = (projectId: string) =>
+  [...portalProjectQueryKey(projectId), "qr"] as const;
+
 export const portalFloorApartmentsQueryKey = (floorId: string) =>
   ["portal", "floors", floorId, "apartments"] as const;
 

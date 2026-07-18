@@ -64,7 +64,10 @@
       "projects": "Նախագծեր",
       "builders": "Կառուցապատողներ",
       "register": "Գրանցում",
-      "login": "Մուտք"
+      "login": "Մուտք",
+      "partners": "Գործընկերներ",
+      "mortgage": "Հիփոթեք",
+      "expo": "Ցուցահանդեսի քարտեզ"
     },
     "trust": "Ստուգված հայտարարություններ · GDPR · Կոդավորում",
     "copyright": "© 2026 Toon Expo"
@@ -127,7 +130,8 @@
     },
     "pagination": {
       "previous": "Նախորդ",
-      "next": "Հաջորդ"
+      "next": "Հաջորդ",
+      "ariaLabel": "Էջավորում"
     },
     "projects": {
       "title": "Նախագծեր",
@@ -198,9 +202,18 @@
       "title": "Կառուցապատողներ",
       "subtitle": "{count, plural, =0 {Կառուցապատողներ չկան} one {# կառուցապատող} other {# կառուցապատող}}",
       "empty": "Դեռ ակտիվ կառուցապատողներ չկան։",
+      "notFoundTitle": "Կառուցապատողը չի գտնվել",
       "meta": {
         "title": "Կառուցապատողներ — ToonExpo",
         "description": "Ակտիվ կառուցապատողներ՝ հրապարակված նախագծերով ToonExpo-ում։"
+      },
+      "detail": {
+        "back": "← Բոլոր կառուցապատողները",
+        "projectsTitle": "Հրապարակված նախագծեր",
+        "emptyProjects": "Դեռ հրապարակված նախագծեր չկան։",
+        "catalogLink": "Դիտել նախագծերը կատալոգում",
+        "metaTitle": "{name} — կառուցապատողի էջ",
+        "metaDescription": "{name} ընկերության հրապարակված նախագծերը ToonExpo-ում։"
       }
     },
     "partnersPage": {
@@ -468,7 +481,8 @@
       "serviceProviders": "Ծառայություն մատուցողներ",
       "readiness": "Պատրաստվածություն",
       "readinessCategories": "Կատեգորիաներ",
-      "events": "Միջոցառումներ"
+      "events": "Միջոցառումներ",
+      "checkin": "Գրանցման սկաներ"
     },
     "analytics": {
       "title": "Վերլուծություն",
@@ -522,7 +536,8 @@
       "newCompany": "Նոր ընկերություն",
       "pagination": {
         "previous": "Նախորդ",
-        "next": "Հաջորդ"
+        "next": "Հաջորդ",
+        "ariaLabel": "Էջավորում"
       },
       "columns": {
         "name": "Անուն",
@@ -601,7 +616,8 @@
       "newPartner": "Նոր գործընկեր",
       "pagination": {
         "previous": "Նախորդ",
-        "next": "Հաջորդ"
+        "next": "Հաջորդ",
+        "ariaLabel": "Էջավորում"
       },
       "columns": {
         "name": "Անվանում",
@@ -904,7 +920,8 @@
         "overridden": "վերագրավված",
         "pagination": {
           "previous": "Նախորդ",
-          "next": "Հաջորդ"
+          "next": "Հաջորդ",
+          "ariaLabel": "Էջավորում"
         },
         "columns": {
           "company": "Ընկերություն",
@@ -1231,7 +1248,11 @@
           "active": "Ակտիվ",
           "add": "Ավելացնել կցում",
           "adding": "Ավելացվում է…",
-          "remove": "Հեռացնել"
+          "remove": "Հեռացնել",
+          "edit": "Խմբագրել",
+          "save": "Պահպանել",
+          "saving": "Պահպանում…",
+          "cancel": "Չեղարկել"
         }
       },
       "routeGraph": {
@@ -1353,7 +1374,8 @@
       "newProject": "Նոր նախագիծ",
       "pagination": {
         "previous": "Նախորդ",
-        "next": "Հաջորդ"
+        "next": "Հաջորդ",
+        "ariaLabel": "Էջավորում"
       },
       "columns": {
         "name": "Անուն",
@@ -1361,6 +1383,15 @@
         "city": "Քաղաք",
         "buildings": "Շենքեր",
         "apartments": "Բնակարաններ"
+      },
+      "qr": {
+        "title": "Նախագծի QR",
+        "subtitle": "Տպեք այս QR-ը ցուցահանդեսի համար — գնորդները կանցնեն հրապարակային նախագծի էջ։",
+        "loading": "QR-ը բեռնվում է…",
+        "error": "Չհաջողվեց բեռնել նախագծի QR-ը։",
+        "codeTitle": "{name} նախագծի QR",
+        "copyLink": "Պատճենել հղումը",
+        "copied": "Պատճենվեց"
       },
       "publication": {
         "draft": "Սևագիր",
@@ -1617,7 +1648,8 @@
       "deactivate": "Ապաակտիվացնել",
       "pagination": {
         "previous": "Նախորդ",
-        "next": "Հաջորդ"
+        "next": "Հաջորդ",
+        "ariaLabel": "Էջավորում"
       },
       "columns": {
         "name": "Անուն",
@@ -1679,11 +1711,14 @@
         "source": "Աղբյուր",
         "allSources": "Բոլոր աղբյուրները",
         "project": "Նախագիծ",
-        "allProjects": "Բոլոր նախագծերը"
+        "allProjects": "Բոլոր նախագծերը",
+        "assignee": "Պատասխանատու",
+        "allAssignees": "Բոլոր պատասխանատուները"
       },
       "pagination": {
         "previous": "Նախորդ",
-        "next": "Հաջորդ"
+        "next": "Հաջորդ",
+        "ariaLabel": "Էջավորում"
       },
       "statuses": {
         "new_request": "Նոր",

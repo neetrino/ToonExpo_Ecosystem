@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { FloorApartmentsList } from "@/features/catalog/components/building-floor-lists";
-import { getProject } from "@/features/catalog/api/catalog-api";
+import { getFloor } from "@/features/catalog/api/catalog-api";
 import { SiteFooter } from "@/features/catalog/components/site-footer";
 import { listFloorVisualCanvases } from "@/features/visual-map/api/public-visual-map-api";
 import { PublicVisualMap } from "@/features/visual-map/components/public-visual-map";
@@ -24,28 +24,26 @@ type FloorPageProps = {
   }>;
 };
 
-const loadProject = async (id: string, locale: string) => {
+const loadFloor = async (floorId: string, locale: string) => {
   const headerStore = await headers();
   const cookieHeader = headerStore.get("cookie") ?? undefined;
-  return getProject(id, { locale, cookieHeader });
+  return getFloor(floorId, { locale, cookieHeader });
 };
 
 export const generateMetadata = async ({
   params,
 }: FloorPageProps): Promise<Metadata> => {
-  const { locale, id, buildingId, floorId } = await params;
+  const { locale, floorId } = await params;
   const t = await getTranslations({ locale, namespace: "Catalog" });
-  const project = await loadProject(id, locale);
-  const building = project?.buildings.find((item) => item.id === buildingId);
-  const floor = building?.floors.find((item) => item.id === floorId);
+  const floor = await loadFloor(floorId, locale);
 
-  if (!project || !building || !floor) {
+  if (!floor) {
     return { title: t("floor.notFoundTitle") };
   }
 
   const floorLabel = floor.displayLabel ?? String(floor.number);
   return {
-    title: `${floorLabel} — ${building.name}`,
+    title: `${floorLabel} — ${floor.building.name}`,
   };
 };
 
@@ -55,11 +53,13 @@ export default async function FloorPage({ params }: FloorPageProps) {
 
   const headerStore = await headers();
   const cookieHeader = headerStore.get("cookie") ?? undefined;
-  const project = await loadProject(id, locale);
-  const building = project?.buildings.find((item) => item.id === buildingId);
-  const floor = building?.floors.find((item) => item.id === floorId);
+  const floor = await loadFloor(floorId, locale);
 
-  if (!project || !building || !floor) {
+  if (
+    !floor ||
+    floor.project.id !== id ||
+    floor.building.id !== buildingId
+  ) {
     notFound();
   }
 
@@ -74,14 +74,14 @@ export default async function FloorPage({ params }: FloorPageProps) {
       <main className="mx-auto w-full max-w-content px-6 py-10">
         <div className="mb-6 flex flex-col gap-2">
           <Link
-            href={`/projects/${project.id}/buildings/${building.id}`}
+            href={`/projects/${floor.project.id}/buildings/${floor.building.id}`}
             className="text-sm text-ink-secondary hover:text-ink"
           >
             {t("floor.backToBuilding")}
           </Link>
           <h1 className="font-brand text-2xl font-bold text-ink">{floorLabel}</h1>
           <p className="text-sm text-ink-secondary">
-            {building.name} · {project.name}
+            {floor.building.name} · {floor.project.name}
           </p>
         </div>
 

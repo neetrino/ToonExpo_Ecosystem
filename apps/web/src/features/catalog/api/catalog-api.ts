@@ -1,6 +1,9 @@
 import type {
   ApartmentDetail,
+  BuilderDetail,
   BuilderSummary,
+  BuildingDetail,
+  FloorDetail,
   ListProjectsQuery,
   PaginatedResponse,
   ProjectDetail,
@@ -148,6 +151,72 @@ export const listBuilders = (
   return apiFetch<BuilderSummary[]>(
     buildCatalogFetch(`/builders${localeQuery(options.locale)}`, options.cookieHeader),
   );
+};
+
+/**
+ * Loads a builder profile with published projects. Returns null on 404.
+ */
+export const getBuilder = async (
+  builderId: string,
+  options: CatalogRequestOptions = {},
+): Promise<BuilderDetail | null> => {
+  try {
+    return await apiFetch<BuilderDetail>(
+      buildCatalogFetch(
+        `/builders/${encodeURIComponent(builderId)}${localeQuery(options.locale)}`,
+        options.cookieHeader,
+      ),
+    );
+  } catch (error) {
+    if (isApiErrorStatus(error, 404)) {
+      return null;
+    }
+    throw error;
+  }
+};
+
+/**
+ * Loads a published building. Returns null on 404.
+ */
+export const getBuilding = async (
+  buildingId: string,
+  options: CatalogRequestOptions = {},
+): Promise<BuildingDetail | null> => {
+  try {
+    return await apiFetch<BuildingDetail>(
+      buildCatalogFetch(
+        `/buildings/${encodeURIComponent(buildingId)}${localeQuery(options.locale)}`,
+        options.cookieHeader,
+      ),
+    );
+  } catch (error) {
+    if (isApiErrorStatus(error, 404)) {
+      return null;
+    }
+    throw error;
+  }
+};
+
+/**
+ * Loads a published floor. Returns null on 404.
+ */
+export const getFloor = async (
+  floorId: string,
+  options: CatalogRequestOptions = {},
+): Promise<FloorDetail | null> => {
+  try {
+    return await apiFetch<FloorDetail>(
+      buildCatalogFetch(
+        `/floors/${encodeURIComponent(floorId)}${localeQuery(options.locale)}`,
+        options.cookieHeader,
+      ),
+    );
+  } catch (error) {
+    if (isApiErrorStatus(error, 404)) {
+      return null;
+    }
+    throw error;
+  }
 };
 
 export { ApiError };

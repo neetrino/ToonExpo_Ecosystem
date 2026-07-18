@@ -64,7 +64,10 @@
       "projects": "Проекты",
       "builders": "Застройщики",
       "register": "Регистрация",
-      "login": "Войти"
+      "login": "Войти",
+      "partners": "Партнёры",
+      "mortgage": "Ипотека",
+      "expo": "Карта выставки"
     },
     "trust": "Проверенные объекты · GDPR · Шифрование в пути",
     "copyright": "© 2026 Toon Expo"
@@ -127,7 +130,8 @@
     },
     "pagination": {
       "previous": "Назад",
-      "next": "Вперёд"
+      "next": "Вперёд",
+      "ariaLabel": "Пагинация"
     },
     "projects": {
       "title": "Проекты",
@@ -198,9 +202,18 @@
       "title": "Застройщики",
       "subtitle": "{count, plural, =0 {Нет застройщиков} one {# застройщик} few {# застройщика} many {# застройщиков} other {# застройщика}}",
       "empty": "Пока нет активных застройщиков.",
+      "notFoundTitle": "Застройщик не найден",
       "meta": {
         "title": "Застройщики — ToonExpo",
         "description": "Активные девелоперы с опубликованными проектами на ToonExpo."
+      },
+      "detail": {
+        "back": "← Все застройщики",
+        "projectsTitle": "Опубликованные проекты",
+        "emptyProjects": "Пока нет опубликованных проектов.",
+        "catalogLink": "Смотреть проекты в каталоге",
+        "metaTitle": "{name} — профиль застройщика",
+        "metaDescription": "Опубликованные проекты компании {name} на ToonExpo."
       }
     },
     "partnersPage": {
@@ -468,7 +481,8 @@
       "partners": "Партнёры",
       "bankOffers": "Банковские предложения",
       "serviceProviders": "Поставщики услуг",
-      "events": "События"
+      "events": "События",
+      "checkin": "Сканер check-in"
     },
     "analytics": {
       "title": "Аналитика",
@@ -522,7 +536,8 @@
       "newCompany": "Новая компания",
       "pagination": {
         "previous": "Назад",
-        "next": "Вперёд"
+        "next": "Вперёд",
+        "ariaLabel": "Пагинация"
       },
       "columns": {
         "name": "Название",
@@ -652,7 +667,8 @@
         "overridden": "переопределено",
         "pagination": {
           "previous": "Назад",
-          "next": "Далее"
+          "next": "Далее",
+          "ariaLabel": "Пагинация"
         },
         "columns": {
           "company": "Компания",
@@ -853,7 +869,8 @@
       "newPartner": "Новый партнёр",
       "pagination": {
         "previous": "Назад",
-        "next": "Далее"
+        "next": "Далее",
+        "ariaLabel": "Пагинация"
       },
       "columns": {
         "name": "Название",
@@ -1231,7 +1248,11 @@
           "active": "Активно",
           "add": "Добавить назначение",
           "adding": "Добавление…",
-          "remove": "Удалить"
+          "remove": "Удалить",
+          "edit": "Изменить",
+          "save": "Сохранить",
+          "saving": "Сохранение…",
+          "cancel": "Отмена"
         }
       },
       "routeGraph": {
@@ -1353,7 +1374,8 @@
       "newProject": "Новый проект",
       "pagination": {
         "previous": "Назад",
-        "next": "Вперёд"
+        "next": "Вперёд",
+        "ariaLabel": "Пагинация"
       },
       "columns": {
         "name": "Название",
@@ -1361,6 +1383,15 @@
         "city": "Город",
         "buildings": "Здания",
         "apartments": "Квартиры"
+      },
+      "qr": {
+        "title": "QR проекта",
+        "subtitle": "Распечатайте этот QR для стенда — покупатели попадут на публичную страницу проекта.",
+        "loading": "Загрузка QR…",
+        "error": "Не удалось загрузить QR проекта.",
+        "codeTitle": "QR проекта {name}",
+        "copyLink": "Копировать ссылку",
+        "copied": "Скопировано"
       },
       "publication": {
         "draft": "Черновик",
@@ -1617,7 +1648,8 @@
       "deactivate": "Деактивировать",
       "pagination": {
         "previous": "Назад",
-        "next": "Вперёд"
+        "next": "Вперёд",
+        "ariaLabel": "Пагинация"
       },
       "columns": {
         "name": "Имя",
@@ -1679,11 +1711,14 @@
         "source": "Источник",
         "allSources": "Все источники",
         "project": "Проект",
-        "allProjects": "Все проекты"
+        "allProjects": "Все проекты",
+        "assignee": "Ответственный",
+        "allAssignees": "Все ответственные"
       },
       "pagination": {
         "previous": "Назад",
-        "next": "Далее"
+        "next": "Далее",
+        "ariaLabel": "Пагинация"
       },
       "statuses": {
         "new_request": "Новая",

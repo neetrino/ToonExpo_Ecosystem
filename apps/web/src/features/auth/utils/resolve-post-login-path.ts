@@ -1,5 +1,6 @@
 import type { UserResponse } from "@toonexpo/contracts";
 
+import { isPartnerCompatibleCompany } from "@/features/partners/utils/is-partner-compatible-company";
 import { sanitizeReturnUrl } from "@/features/auth/utils/sanitize-return-url";
 
 /**
@@ -19,6 +20,12 @@ export const resolvePostLoginPath = (
     case "platform_admin":
       return "/admin/companies";
     case "company_member":
+      if (
+        user.companyType != null &&
+        isPartnerCompatibleCompany(user.companyType)
+      ) {
+        return "/partner";
+      }
       return "/builder";
     default:
       return "/profile";

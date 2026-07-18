@@ -13,6 +13,7 @@ import {
   PORTAL_MAX_PAGE_SIZE,
 } from "@/features/builder/constants";
 import { useCrmDealsQuery } from "@/features/builder/hooks/use-portal-crm";
+import { useCompanyMembersQuery } from "@/features/builder/hooks/use-company-members";
 import { usePortalProjectsQuery } from "@/features/builder/hooks/use-portal-projects";
 import { CatalogPagination } from "@/features/catalog/components/catalog-pagination";
 import { Button } from "@/shared/ui/button";
@@ -37,15 +38,20 @@ export const CrmDealsListPage = () => {
     status: CrmDealStatus | "";
     source: RequestSource | "";
     projectId: string;
-  }>({ status: "", source: "", projectId: "" });
+    assignedUserId: string;
+  }>({ status: "", source: "", projectId: "", assignedUserId: "" });
 
   const projectsQuery = usePortalProjectsQuery(1, PORTAL_MAX_PAGE_SIZE);
+  const membersQuery = useCompanyMembersQuery(1, PORTAL_MAX_PAGE_SIZE);
   const dealsQuery = useCrmDealsQuery({
     page,
     pageSize: PORTAL_DEFAULT_PAGE_SIZE,
     ...(filters.status ? { status: filters.status } : {}),
     ...(filters.source ? { source: filters.source } : {}),
     ...(filters.projectId ? { projectId: filters.projectId } : {}),
+    ...(filters.assignedUserId
+      ? { assignedUserId: filters.assignedUserId }
+      : {}),
   });
 
   const projects = useMemo(
@@ -55,6 +61,17 @@ export const CrmDealsListPage = () => {
         name: project.name,
       })),
     [projectsQuery.data],
+  );
+
+  const assignees = useMemo(
+    () =>
+      (membersQuery.data?.data ?? [])
+        .filter((member) => member.status === "active")
+        .map((member) => ({
+          id: member.user.id,
+          name: member.user.name,
+        })),
+    [membersQuery.data],
   );
 
   if (dealsQuery.isLoading) {
@@ -102,6 +119,7 @@ export const CrmDealsListPage = () => {
       <CrmDealFilters
         value={filters}
         projects={projects}
+        assignees={assignees}
         onChange={setFilters}
       />
 
@@ -143,6 +161,7 @@ export const CrmDealsListPage = () => {
         buildHref={buildHref}
         previousLabel={t("pagination.previous")}
         nextLabel={t("pagination.next")}
+        ariaLabel={t("pagination.ariaLabel")}
       />
 
       {showNew ? (

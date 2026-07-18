@@ -5,33 +5,26 @@ import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { cn } from "@/shared/ui/cn";
 
-type NavItem =
-  | {
-      href:
-        | "/builder"
-        | "/builder/projects"
-        | "/builder/team"
-        | "/builder/company"
-        | "/builder/crm"
-        | "/builder/scanner"
-        | "/builder/readiness"
-        | "/builder/analytics";
-      key:
-        | "dashboard"
-        | "projects"
-        | "team"
-        | "company"
-        | "crm"
-        | "scanner"
-        | "readiness"
-        | "analytics";
-      disabled?: false;
-    }
-  | {
-      href: string;
-      key: "visualMap" | "inventory";
-      disabled: true;
-    };
+type NavItem = {
+  href:
+    | "/builder"
+    | "/builder/projects"
+    | "/builder/team"
+    | "/builder/company"
+    | "/builder/crm"
+    | "/builder/scanner"
+    | "/builder/readiness"
+    | "/builder/analytics";
+  key:
+    | "dashboard"
+    | "projects"
+    | "team"
+    | "company"
+    | "crm"
+    | "scanner"
+    | "readiness"
+    | "analytics";
+};
 
 const NAV_ITEMS: NavItem[] = [
   { href: "/builder", key: "dashboard" },
@@ -42,7 +35,6 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/builder/scanner", key: "scanner" },
   { href: "/builder/readiness", key: "readiness" },
   { href: "/builder/analytics", key: "analytics" },
-  { href: "/builder/visual-map", key: "visualMap", disabled: true },
 ];
 
 type BuilderNavProps = {
@@ -65,21 +57,6 @@ export const BuilderNav = ({ companyName }: BuilderNavProps) => {
         {t("section")}
       </p>
       {NAV_ITEMS.map((item) => {
-        if (item.disabled) {
-          return (
-            <span
-              key={item.key}
-              className="flex items-center justify-between rounded-sm px-3 py-2 text-sm text-ink-muted"
-              title={t("comingSoon")}
-            >
-              <span>{t(item.key)}</span>
-              <span className="text-[0.65rem] uppercase tracking-wide">
-                {t("comingSoon")}
-              </span>
-            </span>
-          );
-        }
-
         const active =
           item.href === "/builder"
             ? pathname === "/builder"

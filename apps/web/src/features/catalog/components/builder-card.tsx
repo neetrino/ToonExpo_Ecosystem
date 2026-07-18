@@ -41,9 +41,12 @@ export const BuilderCard = ({ builder, className }: BuilderCardProps) => {
         )}
       </div>
       <div className="min-w-0 flex-1">
-        <h3 className="truncate font-brand text-sm font-semibold text-ink">
+        <Link
+          href={`/builders/${builder.id}`}
+          className="block truncate font-brand text-sm font-semibold text-ink hover:text-brand"
+        >
           {builder.name}
-        </h3>
+        </Link>
         {builder.description ? (
           <p className="mt-0.5 line-clamp-2 text-xs text-ink-secondary">
             {builder.description}

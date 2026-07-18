@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 
 import { BuildingFloorsList } from "@/features/catalog/components/building-floor-lists";
-import { getProject } from "@/features/catalog/api/catalog-api";
+import { getBuilding } from "@/features/catalog/api/catalog-api";
 import { listBuildingVisualCanvases } from "@/features/visual-map/api/public-visual-map-api";
 import { PublicVisualMap } from "@/features/visual-map/components/public-visual-map";
 import {
@@ -19,26 +19,25 @@ type BuildingPageProps = {
   params: Promise<{ locale: string; id: string; buildingId: string }>;
 };
 
-const loadProject = async (id: string, locale: string) => {
+const loadBuilding = async (buildingId: string, locale: string) => {
   const headerStore = await headers();
   const cookieHeader = headerStore.get("cookie") ?? undefined;
-  return getProject(id, { locale, cookieHeader });
+  return getBuilding(buildingId, { locale, cookieHeader });
 };
 
 export const generateMetadata = async ({
   params,
 }: BuildingPageProps): Promise<Metadata> => {
-  const { locale, id, buildingId } = await params;
+  const { locale, buildingId } = await params;
   const t = await getTranslations({ locale, namespace: "Catalog" });
-  const project = await loadProject(id, locale);
-  const building = project?.buildings.find((item) => item.id === buildingId);
+  const building = await loadBuilding(buildingId, locale);
 
-  if (!project || !building) {
+  if (!building) {
     return { title: t("building.notFoundTitle") };
   }
 
   return {
-    title: `${building.name} — ${project.name}`,
+    title: `${building.name} — ${building.project.name}`,
   };
 };
 
@@ -48,10 +47,9 @@ export default async function BuildingPage({ params }: BuildingPageProps) {
 
   const headerStore = await headers();
   const cookieHeader = headerStore.get("cookie") ?? undefined;
-  const project = await loadProject(id, locale);
-  const building = project?.buildings.find((item) => item.id === buildingId);
+  const building = await loadBuilding(buildingId, locale);
 
-  if (!project || !building) {
+  if (!building || building.project.id !== id) {
     notFound();
   }
 
@@ -67,20 +65,20 @@ export default async function BuildingPage({ params }: BuildingPageProps) {
       <main className="mx-auto w-full max-w-content px-6 py-10">
         <div className="mb-6 flex flex-col gap-2">
           <Link
-            href={`/projects/${project.id}`}
+            href={`/projects/${building.project.id}`}
             className="text-sm text-ink-secondary hover:text-ink"
           >
             {t("building.backToProject")}
           </Link>
           <h1 className="font-brand text-2xl font-bold text-ink">{building.name}</h1>
-          <p className="text-sm text-ink-secondary">{project.name}</p>
+          <p className="text-sm text-ink-secondary">{building.project.name}</p>
         </div>
 
         {visualCanvas ? (
           <PublicVisualMap
             canvas={visualCanvas}
             buildTargetHref={(hotspot) =>
-              buildBuildingFloorHref(project.id, building.id, hotspot)
+              buildBuildingFloorHref(building.project.id, building.id, hotspot)
             }
           />
         ) : null}
@@ -88,7 +86,7 @@ export default async function BuildingPage({ params }: BuildingPageProps) {
         <div className="mb-4">
           <h2 className="text-xl font-bold text-ink">{t("building.floors")}</h2>
         </div>
-        <BuildingFloorsList projectId={project.id} building={building} />
+        <BuildingFloorsList projectId={building.project.id} building={building} />
       </main>
       <SiteFooter />
     </div>

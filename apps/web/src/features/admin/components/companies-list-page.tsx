@@ -77,6 +77,7 @@ export const CompaniesListPage = () => {
         }
         previousLabel={t("pagination.previous")}
         nextLabel={t("pagination.next")}
+        ariaLabel={t("pagination.ariaLabel")}
       />
     </div>
   );

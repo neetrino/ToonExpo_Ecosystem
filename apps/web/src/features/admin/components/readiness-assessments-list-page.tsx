@@ -143,6 +143,7 @@ export const ReadinessAssessmentsListPage = () => {
         buildHref={buildHref}
         previousLabel={t("pagination.previous")}
         nextLabel={t("pagination.next")}
+        ariaLabel={t("pagination.ariaLabel")}
       />
 
       {showCreate && companiesQuery.data ? (

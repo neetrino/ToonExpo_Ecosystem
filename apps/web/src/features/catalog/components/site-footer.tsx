@@ -36,6 +36,21 @@ export const SiteFooter = async () => {
                 {t("links.builders")}
               </Link>
             </li>
+            <li>
+              <Link href="/partners" className="hover:text-ink">
+                {t("links.partners")}
+              </Link>
+            </li>
+            <li>
+              <Link href="/mortgage" className="hover:text-ink">
+                {t("links.mortgage")}
+              </Link>
+            </li>
+            <li>
+              <Link href="/expo" className="hover:text-ink">
+                {t("links.expo")}
+              </Link>
+            </li>
           </ul>
         </div>
 

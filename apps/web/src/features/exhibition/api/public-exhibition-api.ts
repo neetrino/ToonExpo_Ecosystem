@@ -1,6 +1,7 @@
 import type {
   BoothSearchResponse,
   CurrentEventResponse,
+  PublicBoothDetail,
   PublicBoothListResponse,
   PublicEntranceNodeListResponse,
   RoutePathResponse,
@@ -89,6 +90,27 @@ export const searchPublicVenueMapBooths = (
     withCookie(
       {
         path: `/venue-maps/${encodeURIComponent(mapId)}/search?${params.toString()}`,
+        method: "GET",
+        cache: "no-store",
+      },
+      options.cookieHeader,
+    ),
+  );
+};
+
+/**
+ * Loads a published booth detail and records booth_selected analytics server-side.
+ */
+export const getPublicBooth = (
+  boothId: string,
+  locale: string,
+  options: PublicExpoRequestOptions = {},
+): Promise<PublicBoothDetail> => {
+  const params = new URLSearchParams({ locale });
+  return apiFetch<PublicBoothDetail>(
+    withCookie(
+      {
+        path: `/booths/${encodeURIComponent(boothId)}?${params.toString()}`,
         method: "GET",
         cache: "no-store",
       },

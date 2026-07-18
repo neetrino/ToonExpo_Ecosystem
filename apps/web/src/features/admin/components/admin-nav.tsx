@@ -8,6 +8,7 @@ import { cn } from "@/shared/ui/cn";
 const NAV_ITEMS = [
   { href: "/admin/analytics", key: "analytics" as const },
   { href: "/admin/companies", key: "companies" as const },
+  { href: "/checkin", key: "checkin" as const },
   { href: "/admin/partners", key: "partners" as const },
   { href: "/admin/bank-offers", key: "bankOffers" as const },
   { href: "/admin/service-providers", key: "serviceProviders" as const },

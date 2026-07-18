@@ -10,6 +10,7 @@ import {
   useAdminCompaniesQuery,
   useAdminCompanyProjectsQuery,
 } from "@/features/admin/hooks/use-admin-companies";
+import { AdminBoothAssignmentRow } from "@/features/exhibition/components/admin/admin-booth-assignment-row";
 import {
   useAdminBoothAssignmentsQuery,
   useCreateAdminBoothAssignmentMutation,
@@ -86,23 +87,14 @@ export const AdminBoothAssignmentsPanel = ({
       ) : assignments.length > 0 ? (
         <ul className="flex flex-col gap-2 text-sm">
           {assignments.map((assignment) => (
-            <li
+            <AdminBoothAssignmentRow
               key={assignment.id}
-              className="flex items-center justify-between gap-2 rounded-sm bg-surface px-3 py-2"
-            >
-              <span>{resolveAssignmentDisplayName(assignment)}</span>
-              <Button
-                type="button"
-                size="sm"
-                variant="ghost"
-                disabled={deleteMutation.isPending}
-                onClick={() => {
-                  void onRemove(assignment.id);
-                }}
-              >
-                {t("remove")}
-              </Button>
-            </li>
+              boothId={boothId}
+              assignment={assignment}
+              displayName={resolveAssignmentDisplayName(assignment)}
+              onRemove={onRemove}
+              removePending={deleteMutation.isPending}
+            />
           ))}
         </ul>
       ) : (

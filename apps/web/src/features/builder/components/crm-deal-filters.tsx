@@ -13,13 +13,16 @@ export type CrmDealFiltersState = {
   status: CrmDealStatus | "";
   source: RequestSource | "";
   projectId: string;
+  assignedUserId: string;
 };
 
 type ProjectOption = { id: string; name: string };
+type AssigneeOption = { id: string; name: string };
 
 type CrmDealFiltersProps = {
   value: CrmDealFiltersState;
   projects: ProjectOption[];
+  assignees: AssigneeOption[];
   onChange: (next: CrmDealFiltersState) => void;
 };
 
@@ -29,6 +32,7 @@ type CrmDealFiltersProps = {
 export const CrmDealFilters = ({
   value,
   projects,
+  assignees,
   onChange,
 }: CrmDealFiltersProps) => {
   const t = useTranslations("Builder.crm");
@@ -94,6 +98,26 @@ export const CrmDealFilters = ({
             {projects.map((project) => (
               <option key={project.id} value={project.id}>
                 {project.name}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className="flex min-w-0 flex-1 flex-col gap-1.5">
+          <span className="text-xs font-medium uppercase tracking-wide text-ink-muted">
+            {t("filters.assignee")}
+          </span>
+          <select
+            className="h-10 rounded-sm border border-border bg-background px-3 text-sm text-ink"
+            value={value.assignedUserId}
+            onChange={(event) => {
+              onChange({ ...value, assignedUserId: event.target.value });
+            }}
+          >
+            <option value="">{t("filters.allAssignees")}</option>
+            {assignees.map((member) => (
+              <option key={member.id} value={member.id}>
+                {member.name}
               </option>
             ))}
           </select>
