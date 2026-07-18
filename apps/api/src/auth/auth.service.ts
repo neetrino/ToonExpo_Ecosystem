@@ -19,7 +19,8 @@ import type { AppEnv } from "../config/env.validation.js";
 import { PrismaService } from "../prisma/prisma.service.js";
 import { QrCodesService } from "../qr/qr-codes.service.js";
 import { AuthPasswordService } from "./auth-password.service.js";
-import { normalizeEmail, toUserResponse } from "./mappers/user.mapper.js";
+import { AuthUserResponseService } from "./auth-user-response.service.js";
+import { normalizeEmail } from "./mappers/user.mapper.js";
 import {
   type ClientMeta,
   SessionCookieService,
@@ -37,6 +38,7 @@ export class AuthService {
     private readonly passwordFlows: AuthPasswordService,
     private readonly sessionCookies: SessionCookieService,
     private readonly qrCodes: QrCodesService,
+    private readonly userResponses: AuthUserResponseService,
   ) {}
 
   async register(
@@ -85,7 +87,7 @@ export class AuthService {
       meta,
       response,
     );
-    return { user: toUserResponse(user), csrfToken };
+    return { user: await this.userResponses.build(user), csrfToken };
   }
 
   async login(
@@ -112,7 +114,7 @@ export class AuthService {
       meta,
       response,
     );
-    return { user: toUserResponse(user), csrfToken };
+    return { user: await this.userResponses.build(user), csrfToken };
   }
 
   async logout(user: AuthenticatedUser, response: Response): Promise<void> {
@@ -135,8 +137,8 @@ export class AuthService {
     return this.passwordFlows.setPassword(input, meta, response);
   }
 
-  getMe(user: AuthenticatedUser): UserResponse {
-    return toUserResponse(user);
+  getMe(user: AuthenticatedUser): Promise<UserResponse> {
+    return this.userResponses.build(user);
   }
 
   getCsrfToken(request: Request): CsrfTokenResponse {

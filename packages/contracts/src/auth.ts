@@ -69,6 +69,8 @@ export type UserResponse = {
   email: string;
   phone: string | null;
   accountType: AccountType;
+  /** Present for active `company_member` users; null when unassigned. */
+  companyType?: CompanyType | null;
   status: UserStatus;
   defaultLocale: string | null;
   createdAt: string;

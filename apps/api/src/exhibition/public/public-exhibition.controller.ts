@@ -8,6 +8,7 @@ import {
 import type {
   BoothSearchResponse,
   CurrentEventResponse,
+  PublicBoothDetail,
   PublicBoothListResponse,
   PublicEntranceNodeListResponse,
   RoutePathResponse,
@@ -42,6 +43,18 @@ export class PublicExhibitionController {
     @Query() query: CatalogLocaleQueryDto,
   ): Promise<PublicBoothListResponse> {
     return this.exhibition.listPublishedBooths(id, query.locale);
+  }
+
+  @Public()
+  @Get("booths/:id")
+  @ApiOperation({ summary: "Get a published booth detail (tracks booth selection)" })
+  @ApiOkResponse({ description: "Published booth detail" })
+  @ApiNotFoundResponse({ description: "Published booth not found" })
+  getBooth(
+    @Param("id") id: string,
+    @Query() query: CatalogLocaleQueryDto,
+  ): Promise<PublicBoothDetail> {
+    return this.exhibition.getPublishedBoothById(id, query.locale);
   }
 
   @Public()

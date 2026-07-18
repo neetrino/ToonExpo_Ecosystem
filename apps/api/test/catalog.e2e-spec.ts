@@ -37,6 +37,8 @@ describe("Catalog public endpoints (e2e)", () => {
   let byRequestApartmentId = "";
   let afterLoginApartmentId = "";
   let builderId = "";
+  let catalogBuildingId = "";
+  let catalogFloorId = "";
   const createdEmails: string[] = [];
 
   beforeAll(async () => {
@@ -155,6 +157,43 @@ describe("Catalog public endpoints (e2e)", () => {
     expect(builder.publishedProjectCount).toBeGreaterThanOrEqual(1);
   });
 
+  it("returns builder profile with published projects", async () => {
+    const response = await request(app.getHttpServer())
+      .get(`${API_V1_PREFIX}/builders/${builderId}`)
+      .expect(200);
+
+    expect(response.body).toMatchObject({
+      id: builderId,
+      name: "E2E Catalog Builder",
+    });
+    expect(response.body.projects.length).toBeGreaterThanOrEqual(1);
+    expect(
+      response.body.projects.some(
+        (project: { id: string }) => project.id === publishedProjectId,
+      ),
+    ).toBe(true);
+  });
+
+  it("returns published building detail", async () => {
+    const response = await request(app.getHttpServer())
+      .get(`${API_V1_PREFIX}/buildings/${catalogBuildingId}`)
+      .expect(200);
+
+    expect(response.body.id).toBe(catalogBuildingId);
+    expect(response.body.project.id).toBe(publishedProjectId);
+    expect(response.body.floors.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("returns published floor detail", async () => {
+    const response = await request(app.getHttpServer())
+      .get(`${API_V1_PREFIX}/floors/${catalogFloorId}`)
+      .expect(200);
+
+    expect(response.body.id).toBe(catalogFloorId);
+    expect(response.body.building.id).toBe(catalogBuildingId);
+    expect(response.body.apartments.length).toBeGreaterThanOrEqual(1);
+  });
+
   it("returns localized project text for ?locale=ru with hy fallback", async () => {
     const response = await request(app.getHttpServer())
       .get(`${API_V1_PREFIX}/projects/${publishedProjectId}`)
@@ -232,6 +271,8 @@ describe("Catalog public endpoints (e2e)", () => {
     draftProjectId = `${FIXTURE_PREFIX}project_draft`;
     const buildingId = `${FIXTURE_PREFIX}building`;
     const floorId = `${FIXTURE_PREFIX}floor`;
+    catalogBuildingId = buildingId;
+    catalogFloorId = floorId;
     publishedApartmentId = `${FIXTURE_PREFIX}apartment_published`;
     draftApartmentId = `${FIXTURE_PREFIX}apartment_draft`;
     byRequestApartmentId = `${FIXTURE_PREFIX}apartment_by_request`;

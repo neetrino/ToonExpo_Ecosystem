@@ -39,6 +39,28 @@ export type BuilderSummary = {
   publishedProjectCount: number;
 };
 
+export type CatalogProjectRef = {
+  id: string;
+  name: string;
+  slug: string;
+};
+
+export type BuilderDetail = BuilderSummary & {
+  projects: ProjectListItem[];
+};
+
+export type BuildingDetail = BuildingSummary & {
+  project: CatalogProjectRef;
+};
+
+export type FloorDetail = FloorSummary & {
+  project: CatalogProjectRef;
+  building: {
+    id: string;
+    name: string;
+  };
+};
+
 export type ApartmentAvailabilitySummary = {
   total: number;
   available: number;

@@ -8,7 +8,9 @@ import type { AppEnv } from "../config/env.validation.js";
 import type { PrismaService } from "../prisma/prisma.service.js";
 import type { QrCodesService } from "../qr/qr-codes.service.js";
 import { AuthService } from "./auth.service.js";
+import type { AuthUserResponseService } from "./auth-user-response.service.js";
 import { SessionCookieService } from "./session-cookie.service.js";
+import { toUserResponse } from "./mappers/user.mapper.js";
 import * as passwordUtil from "./utils/password.util.js";
 
 const PEPPER = "test-session-token-pepper-32chars-min";
@@ -43,6 +45,7 @@ describe("AuthService", () => {
   const createForBuyerProfile = vi.fn();
   const cookie = vi.fn();
   const clearCookie = vi.fn();
+  const buildUserResponse = vi.fn();
 
   let service: AuthService;
   let response: Response;
@@ -58,6 +61,8 @@ describe("AuthService", () => {
     createForBuyerProfile.mockReset();
     cookie.mockReset();
     clearCookie.mockReset();
+    buildUserResponse.mockReset();
+    buildUserResponse.mockImplementation(async (user) => toUserResponse(user));
 
     const prisma = {
       db: {
@@ -83,6 +88,9 @@ describe("AuthService", () => {
     const qrCodes = {
       createForBuyerProfile,
     } as unknown as QrCodesService;
+    const userResponses = {
+      build: buildUserResponse,
+    } as unknown as AuthUserResponseService;
 
     service = new AuthService(
       prisma,
@@ -90,6 +98,7 @@ describe("AuthService", () => {
       passwordFlows,
       sessionCookies,
       qrCodes,
+      userResponses,
     );
     response = { cookie, clearCookie } as unknown as Response;
   });

@@ -10,11 +10,12 @@ import { AccessTokenService } from "../access-tokens/access-token.service.js";
 import { InviteMailerService } from "../access-tokens/invite-mailer.service.js";
 import { FORGOT_PASSWORD_RESPONSE_MESSAGE } from "../common/constants/app.constants.js";
 import { PrismaService } from "../prisma/prisma.service.js";
-import { normalizeEmail, toUserResponse } from "./mappers/user.mapper.js";
+import { normalizeEmail } from "./mappers/user.mapper.js";
 import {
   type ClientMeta,
   SessionCookieService,
 } from "./session-cookie.service.js";
+import { AuthUserResponseService } from "./auth-user-response.service.js";
 import { hashPassword } from "./utils/password.util.js";
 
 /**
@@ -27,6 +28,7 @@ export class AuthPasswordService {
     private readonly accessTokens: AccessTokenService,
     private readonly inviteMailer: InviteMailerService,
     private readonly sessionCookies: SessionCookieService,
+    private readonly userResponses: AuthUserResponseService,
   ) {}
 
   async forgotPassword(input: {
@@ -81,7 +83,7 @@ export class AuthPasswordService {
       meta,
       response,
     );
-    return { user: toUserResponse(user), csrfToken };
+    return { user: await this.userResponses.build(user), csrfToken };
   }
 
   private assertTokenUserStatus(status: string, isReset: boolean): void {

@@ -121,7 +121,7 @@ export class AuthController {
   @Get("me")
   @ApiOperation({ summary: "Return the authenticated user" })
   @ApiOkResponse({ description: "Current user without sensitive fields" })
-  me(@CurrentUser() user: AuthenticatedUser): UserResponse {
+  me(@CurrentUser() user: AuthenticatedUser): Promise<UserResponse> {
     return this.authService.getMe(user);
   }
 

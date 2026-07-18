@@ -6,6 +6,7 @@ import { QrModule } from "../qr/qr.module.js";
 import { AuthController } from "./auth.controller.js";
 import { AuthPasswordService } from "./auth-password.service.js";
 import { AuthService } from "./auth.service.js";
+import { AuthUserResponseService } from "./auth-user-response.service.js";
 import { SessionCookieService } from "./session-cookie.service.js";
 import { SessionStrategy } from "./strategies/session.strategy.js";
 
@@ -19,9 +20,10 @@ import { SessionStrategy } from "./strategies/session.strategy.js";
   providers: [
     AuthService,
     AuthPasswordService,
+    AuthUserResponseService,
     SessionCookieService,
     SessionStrategy,
   ],
-  exports: [AuthService],
+  exports: [AuthService, AuthUserResponseService],
 })
 export class AuthModule {}

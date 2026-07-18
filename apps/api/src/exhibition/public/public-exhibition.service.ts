@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import type {
   BoothSearchResponse,
   CurrentEventResponse,
+  PublicBoothDetail,
   PublicBoothListResponse,
   PublicEntranceNodeListResponse,
   RoutePathResponse,
@@ -12,6 +13,7 @@ import {
 } from "@toonexpo/db";
 import { resolveCatalogLocale, type SupportedLocale } from "@toonexpo/shared";
 
+import { AnalyticsService } from "../../analytics/analytics.service.js";
 import { PrismaService } from "../../prisma/prisma.service.js";
 import {
   TRANSLATION_ENTITY,
@@ -29,6 +31,7 @@ export class PublicExhibitionService {
     private readonly prisma: PrismaService,
     private readonly boothSearch: PublicBoothSearchService,
     private readonly routeService: PublicRouteService,
+    private readonly analytics: AnalyticsService,
   ) {}
 
   async getCurrentEvent(): Promise<CurrentEventResponse> {
@@ -125,6 +128,70 @@ export class PublicExhibitionService {
     localeInput?: string,
   ): Promise<BoothSearchResponse> {
     return this.boothSearch.search(mapId, query, localeInput);
+  }
+
+  async getPublishedBoothById(
+    boothId: string,
+    localeInput?: string,
+  ): Promise<PublicBoothDetail> {
+    const locale = resolveCatalogLocale(localeInput);
+    const booth = await this.prisma.db.booth.findFirst({
+      where: {
+        id: boothId,
+        publicationStatus: PublicationStatus.published,
+        venueMap: {
+          publicationStatus: PublicationStatus.published,
+          event: {
+            status: EventStatus.active,
+            publicationStatus: PublicationStatus.published,
+          },
+        },
+      },
+      include: {
+        venueMap: { select: { id: true, eventId: true } },
+        assignments: {
+          where: { active: true },
+          orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+          include: {
+            company: { select: { id: true, name: true } },
+            project: { select: { id: true, name: true } },
+          },
+        },
+      },
+    });
+
+    if (!booth) {
+      throw new NotFoundException("Published booth not found");
+    }
+
+    const entityIds = collectTranslationEntityIds([booth]);
+    const translations = await loadEntityTranslations(
+      this.prisma.db,
+      entityIds,
+    );
+
+    this.analytics.track({
+      eventType: "booth_selected",
+      boothId: booth.id,
+      eventId: booth.venueMap.eventId,
+    });
+
+    return {
+      id: booth.id,
+      code: booth.code,
+      name: booth.name,
+      type: booth.type,
+      xPercent: booth.xPercent.toString(),
+      yPercent: booth.yPercent.toString(),
+      locationText: booth.locationText,
+      assignments: booth.assignments.map((assignment) => ({
+        id: assignment.id,
+        displayName: resolveAssignmentDisplayName(assignment, locale, translations),
+        companyId: assignment.companyId,
+        projectId: assignment.projectId,
+        assignmentLabel: assignment.assignmentLabel,
+      })),
+    };
   }
 
   computeRoute(
