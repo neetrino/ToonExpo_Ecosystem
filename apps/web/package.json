@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
+    "@sentry/nextjs": "^10.66.0",
     "@tanstack/react-query": "^5.101.2",
     "@toonexpo/contracts": "workspace:*",
     "@toonexpo/shared": "workspace:*",

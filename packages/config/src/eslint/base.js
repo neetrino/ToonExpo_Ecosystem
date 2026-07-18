@@ -5,7 +5,7 @@ import tseslint from "typescript-eslint";
  * Shared ESLint flat config for ToonExpo packages and apps.
  *
  * Default exports are forbidden except for Next.js App Router entry files
- * that the framework requires (`page`, `layout`, `loading`, `error`,
+ * that the framework requires (`page`, `layout`, `loading`, `error`, `global-error`,
  * `not-found`, `default`, `template`, `route`, `middleware`, `proxy`).
  */
 export const baseEslintConfig = tseslint.config(
@@ -41,8 +41,8 @@ export const baseEslintConfig = tseslint.config(
   },
   {
     files: [
-      "**/app/**/{page,layout,loading,error,not-found,default,template,route}.{ts,tsx,js,jsx}",
-      "**/src/app/**/{page,layout,loading,error,not-found,default,template,route}.{ts,tsx,js,jsx}",
+      "**/app/**/{page,layout,loading,error,global-error,not-found,default,template,route}.{ts,tsx,js,jsx}",
+      "**/src/app/**/{page,layout,loading,error,global-error,not-found,default,template,route}.{ts,tsx,js,jsx}",
       "**/middleware.{ts,js}",
       "**/src/middleware.{ts,js}",
       "**/proxy.{ts,js}",
