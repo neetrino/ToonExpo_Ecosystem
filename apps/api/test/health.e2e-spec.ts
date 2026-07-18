@@ -5,6 +5,7 @@ import { ValidationPipe } from "@nestjs/common";
 import type { NestExpressApplication } from "@nestjs/platform-express";
 import { Test, type TestingModule } from "@nestjs/testing";
 import { API_V1_PREFIX } from "@toonexpo/contracts";
+import cookieParser from "cookie-parser";
 import request from "supertest";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
@@ -27,6 +28,7 @@ describe("Health endpoint (e2e)", () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
+    app.use(cookieParser());
     app.setGlobalPrefix(GLOBAL_PREFIX);
     app.useGlobalPipes(
       new ValidationPipe({

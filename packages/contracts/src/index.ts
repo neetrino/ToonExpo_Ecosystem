@@ -11,3 +11,12 @@ export type HealthResponse = {
  * API version prefix used by NestJS controllers.
  */
 export const API_V1_PREFIX = "/api/v1" as const;
+
+export type {
+  AuthSessionResponse,
+  LoginRequest,
+  PlatformRole,
+  RegisterRequest,
+  UserResponse,
+  UserStatus,
+} from "./auth.js";
