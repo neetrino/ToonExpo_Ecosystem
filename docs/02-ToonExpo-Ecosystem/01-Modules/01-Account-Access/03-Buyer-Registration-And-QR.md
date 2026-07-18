@@ -1,5 +1,11 @@
 # Buyer Registration And QR
 
+## Eligibility
+
+Only `User(account_type = buyer)` may have `BuyerProfile` and personal QR.
+
+`platform_admin`, `entrance_staff` and `company_member` accounts must not have `BuyerProfile`, personal QR or public profile. Staff who need buyer features create a separate personal buyer account.
+
 ## Core Rule
 
 ```text
@@ -30,9 +36,9 @@ Optional later:
 After successful buyer registration:
 
 ```text
-User created
+User(account_type = buyer) created
 -> BuyerProfile created
--> QrCode created
+-> QrCode created (opaque token; no personal data in QR)
 -> My QR becomes available
 ```
 

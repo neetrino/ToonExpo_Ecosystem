@@ -6,24 +6,25 @@ Permissions in v1 should be strong enough to prevent data leakage, but not so co
 
 ## Role Model v1
 
-Use these main access groups:
+Use account types and company context:
 
-- BigProjects Admin;
-- Builder Member;
-- Partner/Bank Member;
-- Buyer/Visitor;
-- Entrance Staff.
+- Platform Admin (`account_type = platform_admin`);
+- Company Member (`account_type = company_member`) — access depends on `Company.type`;
+- Buyer (`account_type = buyer`);
+- Entrance Staff (`account_type = entrance_staff`).
+
+Builder, partner and bank are company types, not user account types.
 
 Builder Portal is available to:
 
-- BigProjects Admin;
-- Builder Member for their own builder company.
+- platform admin;
+- company member linked to `Company(type = builder)`.
 
-Partner/Bank users use partner-related areas, not Builder Portal, unless they also have a separate builder company membership.
+Partner/bank company members use partner-related areas, not Builder Portal.
 
-## Builder Member Access
+## Builder Company Member Access
 
-Builder Member can view and manage data for their own company:
+Company member of a builder company can view and manage data for their own company:
 
 - company profile;
 - company users/team view;

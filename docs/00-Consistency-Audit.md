@@ -19,21 +19,24 @@ Updated after modular documentation pass.
 - Browser authentication uses revocable opaque DB-backed sessions in secure httpOnly cookies; OAuth and JWT access/refresh-token auth are not in v1.
 - Admin/BOS-created accounts use single-use set-password invitations; buyer self-registration requires a password.
 
-## Canonical Roles
+## Canonical Account Model (Confirmed 2026-07-18)
 
-v1 roles:
+Exclusive `AccountType` on User:
 
-- BigProjects Admin;
-- Builder;
-- Partner;
-- Buyer / Visitor;
-- Entrance Staff.
+- `buyer`;
+- `platform_admin`;
+- `entrance_staff`;
+- `company_member`.
 
-Detailed subroles are later:
+`Company.type`: builder | partner | bank | service — not user account types.
 
-- Builder Owner/Admin/Sales Manager/Viewer;
-- Partner Owner/Admin/Editor;
-- BigProjects Platform Admin/Content Manager/Readiness Evaluator.
+`CompanyMemberRole` (v1): `company_admin` | `member`.
+
+v1 constraint: one user, one company membership (hard DB constraint).
+
+Only `buyer` accounts have `BuyerProfile` and personal QR.
+
+Future `CompanyMemberRole` expansion: manager, sales_agent — when permissions differ.
 
 ## Canonical Status Groups
 

@@ -52,13 +52,33 @@ invited
 ## Company Type
 
 ```text
-bigprojects
 builder
 partner
 bank
 service
-other
 ```
+
+## AccountType (User)
+
+Exclusive user account type. One account = one type.
+
+```text
+buyer
+platform_admin
+entrance_staff
+company_member
+```
+
+## CompanyMemberRole (v1)
+
+Role inside a company. Applies when `account_type = company_member`.
+
+```text
+company_admin
+member
+```
+
+Future: `manager`, `sales_agent`.
 
 ## Company Member Status
 
@@ -67,16 +87,6 @@ invited
 active
 inactive
 removed
-```
-
-## Role Key
-
-```text
-bigprojects_admin
-builder
-partner
-buyer
-entrance_staff
 ```
 
 ## Module Key
@@ -152,7 +162,18 @@ done
 cancelled
 ```
 
-## Request Source
+## Deal Creation Source (unified backend use case)
+
+Primary sources for CRM deal/request creation:
+
+```text
+buyer_project_request
+builder_buyer_qr_scan
+```
+
+Legacy granular values may be stored as metadata but the backend use case treats these two as canonical v1 sources.
+
+## Request Source (metadata / sub-context)
 
 ```text
 project_page

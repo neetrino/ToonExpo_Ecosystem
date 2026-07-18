@@ -6,10 +6,9 @@ Draft
 
 ## Account Entities
 
-- user;
-- company;
-- company member;
-- role;
+- user (with exclusive `AccountType`);
+- company (with `Company.type`);
+- company member (with `CompanyMemberRole`);
 - module access;
 - provisioning request.
 

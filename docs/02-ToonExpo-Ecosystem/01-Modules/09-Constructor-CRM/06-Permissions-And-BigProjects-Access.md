@@ -1,18 +1,18 @@
 # Permissions And BigProjects Access
 
-## v1 Roles
+## v1 Access Model
 
 Keep v1 simple:
 
-- BigProjects Admin;
-- Builder;
-- Buyer / Visitor.
+- Platform Admin (`platform_admin`);
+- Company Member (`company_member`) at builder company;
+- Buyer (`buyer`).
 
-Detailed builder sub-roles can be added later.
+`CompanyMemberRole` beyond `company_admin` / `member` can be added later.
 
-## Builder Permissions
+## Builder Company Member Permissions
 
-Builder can:
+Company member at a builder company can:
 
 - view own CRM deals/requests;
 - change own deal statuses;
@@ -21,16 +21,16 @@ Builder can:
 - reserve/sell own apartments through CRM;
 - view own CRM analytics.
 
-Builder cannot:
+Builder company member cannot:
 
 - access another builder CRM;
 - reserve/sell another builder apartment;
 - view another builder buyer pipeline;
 - edit BigProjects internal data.
 
-## BigProjects Admin Permissions
+## Platform Admin Permissions
 
-BigProjects Admin can view:
+Platform admin can view:
 
 - all builder CRM summaries;
 - CRM analytics;
@@ -39,7 +39,7 @@ BigProjects Admin can view:
 
 v1 rule:
 
-BigProjects Admin should not edit builder CRM sales data by default.
+Platform admin should not edit builder CRM sales data by default.
 
 If later enabled, editing must be explicit and audited.
 

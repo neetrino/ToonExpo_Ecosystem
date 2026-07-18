@@ -16,25 +16,25 @@ or an equivalent route.
 
 ## Role-Based Resolution
 
-Same QR can resolve differently depending on scanner:
+Same QR can resolve differently depending on scanner account type and role:
 
-- buyer owner: opens own QR/profile area;
-- builder: opens buyer action page;
+- buyer owner: opens own QR in buyer cabinet;
+- company member (builder company): opens minimal buyer action screen;
 - entrance staff: opens check-in result;
-- unauthenticated user: limited page or sign-in;
+- unauthenticated / unauthorized user: no name, phone or email exposed;
 - blocked/invalid token: safe error page.
 
 ## Data Exposure
 
-Builder should see only buyer data needed for follow-up.
+Company member (builder) sees only buyer data needed for follow-up on the buyer action screen.
 
-Recommended v1:
+Recommended v1 for authorized builder company member:
 
 - name;
 - phone;
 - email.
 
-If privacy requirements change later, add explicit consent/display controls.
+Unauthenticated or unauthorized scanners must not see name, phone or email.
 
 ## Invalid QR
 

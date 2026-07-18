@@ -113,7 +113,7 @@ Next.js Server Components may fetch the NestJS API. Server Actions must not impl
 | Parameter | Decision | Status |
 |---|---|---:|
 | Auth owner | NestJS API | Confirmed |
-| Roles | BigProjects Admin, Builder, Partner, Buyer/Visitor, Entrance Staff | Confirmed |
+| Roles | Exclusive `AccountType`: buyer, platform_admin, entrance_staff, company_member; `CompanyMemberRole`: company_admin, member (v1) | Confirmed 2026-07-18 |
 | Account creation | Buyer self-registration; all other accounts admin/BOS provisioned | Confirmed |
 | Session transport | Opaque random token in a backend-issued secure httpOnly cookie; only its hash is stored in a revocable DB session | Confirmed |
 | Auth method | Email+password; OAuth providers not in v1 | Confirmed |

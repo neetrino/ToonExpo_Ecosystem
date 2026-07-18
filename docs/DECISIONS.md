@@ -11,7 +11,7 @@
 - Only NestJS may access Prisma/PostgreSQL or implement product APIs and mutations.
 - PostgreSQL 18.x on Neon and Prisma ORM 7.x are the data baseline.
 - Buyer/visitor can self-register.
-- Builder/partner/bank accounts are created by BigProjects Admin/staff or BOS provisioning.
+- Builder/partner/bank/service companies are provisioned by platform admin or BOS; employees are `company_member` users with personal logins.
 - Buyer receives one permanent QR after registration.
 - QR token does not encode personal data directly.
 - Constructor CRM is the builder sales workspace.
@@ -43,6 +43,17 @@
 - **Minimum password length:** 8 characters.
 - **Buyer registration phone:** required.
 - **CSRF strategy:** two-layer protection — Origin allowlist check (already implemented) plus full CSRF tokens (double-submit cookie) in Sprint 1 hardening.
+
+## Confirmed 2026-07-18 (Account Model)
+
+- **Exclusive account type:** each `User` has exactly one `AccountType`: `buyer` | `platform_admin` | `entrance_staff` | `company_member`. Mixing types on one account is forbidden. Staff who need buyer features use a separate personal buyer account.
+- **Company type vs user type:** `builder`, `partner`, `bank` and `service` are `Company.type` values, not user account types. Builder/partner/bank employees are `company_member` users linked via `CompanyMember` to their company.
+- **Company member role (v1):** `CompanyMemberRole` is separate from account type: `company_admin` | `member`. Roles `manager` and `sales_agent` deferred until permissions actually differ.
+- **No shared company login:** ToonExpo provisions `Company` + first `User(company_member)` + `CompanyMember(company_admin)` and sends a set-password link via Resend. `company_admin` invites staff; each employee has a personal login for audit, offboarding and deal assignment.
+- **Single company membership (v1):** one user may belong to at most one company — hard DB constraint, expandable later.
+- **BuyerProfile and QR eligibility:** only `buyer` accounts have `BuyerProfile` and personal QR. `platform_admin`, `entrance_staff` and `company_member` have neither BuyerProfile, personal QR nor public profile.
+- **Buyer QR resolution:** opaque token; builder company member sees minimal buyer action screen; entrance staff sees check-in; unauthorized/stranger sees no name/phone/email.
+- **Unified deal creation:** one backend use case with sources `buyer_project_request` (buyer via Project QR → project page → request) and `builder_buyer_qr_scan` (company member scans Buyer QR → action screen → request). Deduplication, CRM and history are shared.
 
 ## Remaining Environment Decisions
 

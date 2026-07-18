@@ -9,10 +9,9 @@ It is not a final SQL schema yet.
 ## Account Entities
 
 ```text
-User
-Company
-CompanyMember
-Role
+User                    (account_type: buyer | platform_admin | entrance_staff | company_member)
+Company                 (type: builder | partner | bank | service)
+CompanyMember           (role: company_admin | member)
 ModuleAccess
 ProvisioningRequest
 ```
@@ -104,12 +103,12 @@ AnalyticsDailyAggregate
 
 ```text
 Company 1..n CompanyMembers
-User 0..n CompanyMembers
+User 0..1 CompanyMember          (v1: one company per user, hard DB constraint)
 Company 0..n ModuleAccess
 User 0..n ModuleAccess
-User 0..1 BuyerProfile
-Company 0..1 BuilderCompany
-Company 0..1 PartnerCompany
+User 0..1 BuyerProfile           (only when account_type = buyer)
+Company 0..1 BuilderCompany      (when type = builder)
+Company 0..1 PartnerCompany      (when type = partner or bank)
 ProvisioningRequest 0..1 Company
 ProvisioningRequest 0..1 User
 BuilderCompany 1..n Projects
@@ -176,7 +175,7 @@ CrmDeal 0..n AnalyticsEvents
 ## Source Of Truth
 
 - ToonExpo public module owns public project/building/apartment presentation.
-- Account & Access owns users, companies, memberships, roles, module access and provisioning requests.
+- Account & Access owns users, account types, companies, memberships, company member roles, module access and provisioning requests.
 - Public Web / Mobile App owns public navigation and browsing surfaces.
 - Buyer / Visitor Area owns buyer profile display, favorites, My QR entry and buyer-facing request/history views.
 - Constructor CRM owns apartment sales status.

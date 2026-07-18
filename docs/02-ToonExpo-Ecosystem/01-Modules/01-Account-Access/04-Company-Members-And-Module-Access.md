@@ -4,24 +4,45 @@
 
 Company is the business account container.
 
-Used for:
+`Company.type`:
 
-- builder;
-- partner;
-- bank partner;
-- BigProjects organization.
+```text
+builder
+partner
+bank
+service
+```
+
+Company type defines business context and default modules. It is not stored on `User`.
 
 ## CompanyMember
 
-CompanyMember links User to Company.
+CompanyMember links `User(account_type = company_member)` to Company.
 
 Fields should support:
 
 - user;
 - company;
-- role;
+- role (`company_admin` | `member` in v1);
 - status;
 - invited/created metadata.
+
+v1 constraint: one user may belong to at most one company (hard DB constraint on active membership).
+
+## No Shared Company Login
+
+Every company employee has a personal user account. Companies do not have a shared login or password.
+
+Provisioning creates the first `company_admin`; they invite additional `member` users.
+
+## Company Member Role (v1)
+
+```text
+company_admin   — first provisioned user; invites/manages team
+member          — regular company employee
+```
+
+Future: `manager`, `sales_agent` when permissions differ.
 
 ## Module Access
 
@@ -44,16 +65,16 @@ Examples:
 v1 can be simple:
 
 - company type defines default modules;
-- user role defines allowed actions.
+- company member role defines team-management actions (`company_admin` invites staff).
 
 If needed later:
 
 - add per-user module overrides;
-- add detailed permissions.
+- add `CompanyMemberRole`-based permissions.
 
-## Builder Default Modules
+## Builder Company Default Modules
 
-Builder company can have:
+When `Company.type = builder`:
 
 - builder portal;
 - projects/buildings/apartments;
@@ -62,17 +83,17 @@ Builder company can have:
 - readiness;
 - analytics own data.
 
-## Partner Default Modules
+## Partner Company Default Modules
 
-Partner company can have:
+When `Company.type = partner`:
 
 - partner profile;
 - partner offers/services;
 - analytics own data if enabled.
 
-## Bank Partner Default Modules
+## Bank Company Default Modules
 
-Bank partner can have:
+When `Company.type = bank`:
 
 - partner profile;
 - bank offers;
@@ -81,7 +102,14 @@ Bank partner can have:
 
 ## Entrance Staff Access
 
-Entrance Staff is not normal company portal access.
+Entrance staff (`account_type = entrance_staff`) is not company portal access.
 
-It should be limited to scanner/check-in screens.
+It should be limited to scanner/check-in screens. No `CompanyMember` record.
 
+## Platform Admin Access
+
+Platform admin (`account_type = platform_admin`) has global admin module access. No `CompanyMember` record required.
+
+## Separate Buyer Account
+
+If a company employee needs buyer features, they use a separate personal buyer account. Account types must not be mixed.
