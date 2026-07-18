@@ -2,7 +2,9 @@
 
 ## Current Status
 
-Sprint 4 (QR + Requests/CRM) is closed; orchestrator end-to-end verification passed (2026-07-18). Next is Sprint 5 (Readiness, Partners, Mortgage, Service Providers, Events, Check-in, Analytics, BOS provisioning, Audit). Sprints 0–4 are on `main`.
+Sprint 5 (Readiness, Partners, Mortgage, Service Providers, Exhibition, Check-in, Analytics, BOS provisioning) is closed; orchestrator end-to-end verification passed (2026-07-18, 248 tests green, live smoke 15/15). Next is Sprint 6. Sprints 0–5 are on `main`.
+
+Known gaps carried forward: media upload UI (R2) absent — venue maps/logos use asset id/URL; buyer favorites absent; Visual Map/Hotspots (module 06) not started; `booth_selected` / `builder_profile_view` analytics events not instrumented; BOS outbound summary flow pending.
 
 ## Completed
 
@@ -28,14 +30,15 @@ Sprint 4 (QR + Requests/CRM) is closed; orchestrator end-to-end verification pas
 - Sprint 2 public catalog frontend implemented and closed: Next.js project/building/floor/apartment pages, price visibility UX, trilingual content.
 - Sprint 3 closed: platform admin company provisioning (set-password invite for first company_admin), company team invites/roles, builder portal catalog CRUD with translations and publication status, platform admin and builder portal UI.
 - Sprint 4 closed: permanent buyer QR (opaque tokens, role-based disclosure, QrScanEvent log), project QR deep links, unified lead intake with deduplication, buyer requests UI, constructor CRM deals pipeline (notes, follow-up, apartment attach/detach), builder CRM UI and QR scanner, password reset flow; orchestrator end-to-end verification passed (2026-07-18); monorepo lint/typecheck/test/build green (88 API tests).
+- Sprint 5 closed: builder readiness admin evaluation workflow (categories, assessments, weighted overall scores, recommendations, required actions, internal notes) + builder read-only view + help-flow to service providers; partners/participants (PartnerCompany, offers, admin + partner portal + public pages, trilingual); mortgage/bank offers (BankOffer schema, admin + bank-partner portal, public `/mortgage` with AMD annuity calculator); service provider directory (admin CRUD, builder-facing via readiness help flow); exhibition map & check-in (Event/VenueMap/Booth/route graph, admin setup with route editor and click-to-place booths, entrance staff scanner with duplicate protection, public `/expo` map with search + Dijkstra routing); analytics (AnalyticsEvent, 16 event types / 11 instrumented points, admin + builder dashboards); BOS inbound provisioning (`POST /integrations/bos/provisioning`, idempotent by `request_id`, audit log, admin read views); orchestrator end-to-end verification passed (2026-07-18); monorepo green (248 tests).
 
 ## Next
 
-1. Sprint 5 — Builder readiness workflows and publication readiness tracking.
-2. Partners module and participant management.
-3. Mortgage and service provider integrations.
-4. Events, exhibition check-in and analytics dashboards.
-5. BOS provisioning integration and audit trail.
+1. Sprint 6 — Visual Map / Hotspots (module 06): interactive project/building map and hotspot navigation.
+2. R2 media upload UI — covers, floor plans, venue maps/logos instead of manual URL/asset id.
+3. Buyer favorites — Favorite model, save/list UI, login gate.
+4. BOS outbound summaries — push readiness/lead summaries to BOS (needs BOS API contract).
+5. Admin UI for BOS provisioning history — browse/retry inbound provisioning audit trail.
 
 ## Environment Inputs Before Staging / Production
 
