@@ -5,17 +5,15 @@ import type {
   BosProvisioningStatus,
   BosProvisioningWireStatus,
   IntegrationAuditLogItem,
-} from "@toonexpo/contracts";
-import type { Prisma } from "@toonexpo/db";
+} from '@toonexpo/contracts';
+import type { Prisma } from '@toonexpo/db';
 
 type BosProvisioningRecord = Prisma.BosProvisioningRequestGetPayload<object>;
 type IntegrationAuditRecord = Prisma.IntegrationAuditLogGetPayload<object>;
 
-const toWireStatus = (
-  status: BosProvisioningStatus,
-): BosProvisioningWireStatus => {
-  if (status === "partial") {
-    return "failed";
+const toWireStatus = (status: BosProvisioningStatus): BosProvisioningWireStatus => {
+  if (status === 'partial') {
+    return 'failed';
   }
   return status;
 };
@@ -43,6 +41,7 @@ export const toAdminBosProvisioningListItem = (
   status: record.status,
   toonexpoCompanyId: record.toonexpoCompanyId,
   primaryUserId: record.primaryUserId,
+  errorMessage: record.errorMessage,
   attemptCount: record.attemptCount,
   createdAt: record.createdAt.toISOString(),
   updatedAt: record.updatedAt.toISOString(),
@@ -54,7 +53,7 @@ export const toIntegrationAuditLogItem = (
   id: row.id,
   action: row.action,
   details:
-    row.details && typeof row.details === "object" && !Array.isArray(row.details)
+    row.details && typeof row.details === 'object' && !Array.isArray(row.details)
       ? (row.details as Record<string, unknown>)
       : null,
   createdAt: row.createdAt.toISOString(),
@@ -69,7 +68,7 @@ export const toAdminBosProvisioningDetail = (
   primaryContactPhone: record.primaryContactPhone,
   eventCycleId: record.eventCycleId,
   eventCycleName: record.eventCycleName,
-  requestedModules: record.requestedModules as AdminBosProvisioningDetail["requestedModules"],
+  requestedModules: record.requestedModules as AdminBosProvisioningDetail['requestedModules'],
   errorMessage: record.errorMessage,
   auditLogs: auditLogs.map(toIntegrationAuditLogItem),
 });

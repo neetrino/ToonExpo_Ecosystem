@@ -504,7 +504,8 @@
       "readiness": "Readiness",
       "readinessCategories": "Categories",
       "events": "Events",
-      "checkin": "Check-in scanner"
+      "checkin": "Check-in scanner",
+      "bos": "BOS"
     },
     "analytics": {
       "title": "Analytics",
@@ -887,6 +888,92 @@
             "draft": "Draft",
             "published": "Published",
             "archived": "Archived"
+          }
+        }
+      }
+    },
+    "bos": {
+      "title": "BOS provisioning",
+      "subtitle": "{count, plural, =0 {No provisioning requests} one {# request} other {# requests}}",
+      "empty": "No BOS provisioning requests yet. Inbound requests from BOS will appear here.",
+      "loading": "Loading provisioning history…",
+      "error": "Could not load BOS provisioning requests. Try again.",
+      "pagination": {
+        "previous": "Previous",
+        "next": "Next",
+        "ariaLabel": "Pagination"
+      },
+      "columns": {
+        "requestId": "Request ID",
+        "company": "Company",
+        "status": "Status",
+        "createdAt": "Received",
+        "processedAt": "Processed",
+        "error": "Error"
+      },
+      "filters": {
+        "status": "Status",
+        "allStatuses": "All statuses",
+        "statuses": {
+          "success": "Success",
+          "linked_existing": "Linked existing",
+          "failed": "Failed",
+          "partial": "Partial"
+        }
+      },
+      "statuses": {
+        "success": "Success",
+        "linked_existing": "Linked existing",
+        "failed": "Failed",
+        "partial": "Partial"
+      },
+      "companyTypes": {
+        "builder": "Builder",
+        "partner": "Partner",
+        "bank": "Bank"
+      },
+      "modules": {
+        "builder_portal": "Builder portal",
+        "constructor_crm": "Constructor CRM",
+        "readiness": "Readiness",
+        "partner_profile": "Partner profile",
+        "bank_offers": "Bank offers",
+        "analytics": "Analytics"
+      },
+      "detail": {
+        "loading": "Loading request…",
+        "notFound": "Provisioning request not found",
+        "back": "← BOS provisioning",
+        "summary": {
+          "title": "Request summary",
+          "bosCompanyId": "BOS company ID",
+          "companyType": "Company type",
+          "primaryContact": "Primary contact",
+          "eventCycle": "Event cycle",
+          "requestedModules": "Requested modules",
+          "attemptCount": "Attempts",
+          "createdAt": "Received at",
+          "processedAt": "Last updated",
+          "toonexpoCompany": "ToonExpo company",
+          "errorMessage": "Error message"
+        },
+        "audit": {
+          "title": "Audit log",
+          "empty": "No audit entries for this request.",
+          "time": "Time",
+          "action": "Action",
+          "details": "Details",
+          "actions": {
+            "provisioning_received": "Request received",
+            "company_created": "Company created",
+            "company_linked": "Company linked",
+            "user_created": "User created",
+            "user_linked": "User linked",
+            "member_created": "Member created",
+            "invitation_sent": "Invitation sent",
+            "provisioning_failed": "Provisioning failed",
+            "provisioning_retried": "Provisioning retried",
+            "result_returned": "Result returned to BOS"
           }
         }
       }

@@ -504,7 +504,8 @@
       "readiness": "Պատրաստվածություն",
       "readinessCategories": "Կատեգորիաներ",
       "events": "Միջոցառումներ",
-      "checkin": "Գրանցման սկաներ"
+      "checkin": "Գրանցման սկաներ",
+      "bos": "BOS"
     },
     "analytics": {
       "title": "Վերլուծություն",
@@ -887,6 +888,92 @@
             "draft": "Սևագիր",
             "published": "Հրապարակված",
             "archived": "Արխիվացված"
+          }
+        }
+      }
+    },
+    "bos": {
+      "title": "BOS ապահովում",
+      "subtitle": "{count, plural, =0 {Հարցումներ չկան} one {# հարցում} other {# հարցում}}",
+      "empty": "BOS ապահովման հարցումներ դեռ չկան։ BOS-ից մուտքային հարցումները կհայտնվեն այստեղ։",
+      "loading": "Ապահովման պատմությունը բեռնվում է…",
+      "error": "Չհաջողվեց բեռնել BOS ապահովման հարցումները։ Փորձեք կրկին։",
+      "pagination": {
+        "previous": "Նախորդ",
+        "next": "Հաջորդ",
+        "ariaLabel": "Էջավորում"
+      },
+      "columns": {
+        "requestId": "Հարցման ID",
+        "company": "Ընկերություն",
+        "status": "Կարգավիճակ",
+        "createdAt": "Ստացվել է",
+        "processedAt": "Մշակվել է",
+        "error": "Սխալ"
+      },
+      "filters": {
+        "status": "Կարգավիճակ",
+        "allStatuses": "Բոլոր կարգավիճակները",
+        "statuses": {
+          "success": "Հաջող",
+          "linked_existing": "Կապված գոյություն ունեցող",
+          "failed": "Ձախողված",
+          "partial": "Մասնակի"
+        }
+      },
+      "statuses": {
+        "success": "Հաջող",
+        "linked_existing": "Կապված գոյություն ունեցող",
+        "failed": "Ձախողված",
+        "partial": "Մասնակի"
+      },
+      "companyTypes": {
+        "builder": "Կառուցապատող",
+        "partner": "Գործընկեր",
+        "bank": "Բանկ"
+      },
+      "modules": {
+        "builder_portal": "Կառուցապատողի պորտալ",
+        "constructor_crm": "Կոնստրուկտոր CRM",
+        "readiness": "Պատրաստվածություն",
+        "partner_profile": "Գործընկերոջ պրոֆիլ",
+        "bank_offers": "Բանկային առաջարկներ",
+        "analytics": "Վերլուծություն"
+      },
+      "detail": {
+        "loading": "Հարցումը բեռնվում է…",
+        "notFound": "Ապահովման հարցումը չի գտնվել",
+        "back": "← BOS ապահովում",
+        "summary": {
+          "title": "Հարցման ամփոփում",
+          "bosCompanyId": "BOS ընկերության ID",
+          "companyType": "Ընկերության տեսակ",
+          "primaryContact": "Հիմնական կոնտակտ",
+          "eventCycle": "Միջոցառման ցիկլ",
+          "requestedModules": "Պահանջված մոդուլներ",
+          "attemptCount": "Փորձեր",
+          "createdAt": "Ստացվել է",
+          "processedAt": "Վերջին թարմացում",
+          "toonexpoCompany": "ToonExpo ընկերություն",
+          "errorMessage": "Սխալի հաղորդագրություն"
+        },
+        "audit": {
+          "title": "Վերահսկման մատյան",
+          "empty": "Այս հարցման համար վերահսկման գրառումներ չկան։",
+          "time": "Ժամ",
+          "action": "Գործողություն",
+          "details": "Մանրամասներ",
+          "actions": {
+            "provisioning_received": "Հարցումը ստացվել է",
+            "company_created": "Ընկերությունը ստեղծվել է",
+            "company_linked": "Ընկերությունը կապվել է",
+            "user_created": "Օգտատերը ստեղծվել է",
+            "user_linked": "Օգտատերը կապվել է",
+            "member_created": "Անդամը ստեղծվել է",
+            "invitation_sent": "Հրավերը ուղարկվել է",
+            "provisioning_failed": "Ապահովումը ձախողվել է",
+            "provisioning_retried": "Ապահովումը կրկնվել է",
+            "result_returned": "Արդյունքը վերադարձվել է BOS-ին"
           }
         }
       }

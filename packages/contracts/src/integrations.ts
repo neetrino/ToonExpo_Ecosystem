@@ -3,40 +3,36 @@
  * Wire payloads use snake_case per integration spec; admin views use camelCase.
  */
 
-import type { PaginatedResponse } from "./catalog.js";
+import type { PaginatedResponse } from './catalog.js';
 
 /** Module keys accepted on the BOS provisioning request. */
 export type BosRequestedModule =
-  | "builder_portal"
-  | "constructor_crm"
-  | "readiness"
-  | "partner_profile"
-  | "bank_offers"
-  | "analytics";
+  | 'builder_portal'
+  | 'constructor_crm'
+  | 'readiness'
+  | 'partner_profile'
+  | 'bank_offers'
+  | 'analytics';
 
-export type BosProvisioningCompanyType = "builder" | "partner" | "bank";
+export type BosProvisioningCompanyType = 'builder' | 'partner' | 'bank';
 
 /** Stored lifecycle status (includes internal partial for retry). */
-export type BosProvisioningStatus =
-  | "success"
-  | "linked_existing"
-  | "failed"
-  | "partial";
+export type BosProvisioningStatus = 'success' | 'linked_existing' | 'failed' | 'partial';
 
 /** Status returned to BOS (partial is mapped to failed with retry hint). */
-export type BosProvisioningWireStatus = "success" | "linked_existing" | "failed";
+export type BosProvisioningWireStatus = 'success' | 'linked_existing' | 'failed';
 
 export type IntegrationAuditAction =
-  | "provisioning_received"
-  | "company_created"
-  | "company_linked"
-  | "user_created"
-  | "user_linked"
-  | "member_created"
-  | "invitation_sent"
-  | "provisioning_failed"
-  | "provisioning_retried"
-  | "result_returned";
+  | 'provisioning_received'
+  | 'company_created'
+  | 'company_linked'
+  | 'user_created'
+  | 'user_linked'
+  | 'member_created'
+  | 'invitation_sent'
+  | 'provisioning_failed'
+  | 'provisioning_retried'
+  | 'result_returned';
 
 /** BOS POST /integrations/bos/provisioning request (snake_case wire format). */
 export type BosProvisioningRequestBody = {
@@ -72,13 +68,13 @@ export type AdminBosProvisioningListItem = {
   status: BosProvisioningStatus;
   toonexpoCompanyId: string | null;
   primaryUserId: string | null;
+  errorMessage: string | null;
   attemptCount: number;
   createdAt: string;
   updatedAt: string;
 };
 
-export type AdminBosProvisioningListResponse =
-  PaginatedResponse<AdminBosProvisioningListItem>;
+export type AdminBosProvisioningListResponse = PaginatedResponse<AdminBosProvisioningListItem>;
 
 export type IntegrationAuditLogItem = {
   id: string;

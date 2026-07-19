@@ -504,7 +504,8 @@
       "bankOffers": "Банковские предложения",
       "serviceProviders": "Поставщики услуг",
       "events": "События",
-      "checkin": "Сканер check-in"
+      "checkin": "Сканер check-in",
+      "bos": "BOS"
     },
     "analytics": {
       "title": "Аналитика",
@@ -1008,6 +1009,92 @@
           "draft": "Черновик",
           "published": "Опубликован",
           "archived": "В архиве"
+        }
+      }
+    },
+    "bos": {
+      "title": "BOS provisioning",
+      "subtitle": "{count, plural, =0 {Нет запросов} one {# запрос} few {# запроса} many {# запросов} other {# запроса}}",
+      "empty": "Запросов BOS provisioning пока нет. Входящие запросы от BOS появятся здесь.",
+      "loading": "Загрузка истории provisioning…",
+      "error": "Не удалось загрузить запросы BOS provisioning. Попробуйте снова.",
+      "pagination": {
+        "previous": "Назад",
+        "next": "Далее",
+        "ariaLabel": "Пагинация"
+      },
+      "columns": {
+        "requestId": "ID запроса",
+        "company": "Компания",
+        "status": "Статус",
+        "createdAt": "Получен",
+        "processedAt": "Обработан",
+        "error": "Ошибка"
+      },
+      "filters": {
+        "status": "Статус",
+        "allStatuses": "Все статусы",
+        "statuses": {
+          "success": "Успех",
+          "linked_existing": "Привязан существующий",
+          "failed": "Ошибка",
+          "partial": "Частично"
+        }
+      },
+      "statuses": {
+        "success": "Успех",
+        "linked_existing": "Привязан существующий",
+        "failed": "Ошибка",
+        "partial": "Частично"
+      },
+      "companyTypes": {
+        "builder": "Застройщик",
+        "partner": "Партнёр",
+        "bank": "Банк"
+      },
+      "modules": {
+        "builder_portal": "Портал застройщика",
+        "constructor_crm": "CRM застройщика",
+        "readiness": "Готовность",
+        "partner_profile": "Профиль партнёра",
+        "bank_offers": "Банковские предложения",
+        "analytics": "Аналитика"
+      },
+      "detail": {
+        "loading": "Загрузка запроса…",
+        "notFound": "Запрос provisioning не найден",
+        "back": "← BOS provisioning",
+        "summary": {
+          "title": "Сводка запроса",
+          "bosCompanyId": "ID компании в BOS",
+          "companyType": "Тип компании",
+          "primaryContact": "Основной контакт",
+          "eventCycle": "Цикл события",
+          "requestedModules": "Запрошенные модули",
+          "attemptCount": "Попытки",
+          "createdAt": "Получен",
+          "processedAt": "Последнее обновление",
+          "toonexpoCompany": "Компания ToonExpo",
+          "errorMessage": "Сообщение об ошибке"
+        },
+        "audit": {
+          "title": "Журнал аудита",
+          "empty": "Для этого запроса нет записей аудита.",
+          "time": "Время",
+          "action": "Действие",
+          "details": "Детали",
+          "actions": {
+            "provisioning_received": "Запрос получен",
+            "company_created": "Компания создана",
+            "company_linked": "Компания привязана",
+            "user_created": "Пользователь создан",
+            "user_linked": "Пользователь привязан",
+            "member_created": "Участник создан",
+            "invitation_sent": "Приглашение отправлено",
+            "provisioning_failed": "Provisioning не удался",
+            "provisioning_retried": "Provisioning повторён",
+            "result_returned": "Результат возвращён в BOS"
+          }
         }
       }
     },

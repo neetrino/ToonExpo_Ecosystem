@@ -6,6 +6,8 @@ Final pre-production completion pass **closed** (2026-07-18). Sprints 0–6 and 
 
 **2026-07-19:** Self-service password change (`/profile/password`, `POST /auth/change-password`) and production-safe first-admin seed (`db:seed:prod`).
 
+**2026-07-19:** Admin BOS provisioning history UI (`/admin/integrations/bos` — paginated list, detail + audit log, status filter, hy/ru/en).
+
 ## Final Completion Waves (live tracker — keep updated)
 
 | Wave       | Scope                                                                                                                                                                                                                                  | Status  |
@@ -60,7 +62,7 @@ Infrastructure and platform services completed during waves 1–4 (2026-07-18):
 3. **Owner OPEN_QUESTIONS walkthrough** — `docs/OPEN_QUESTIONS.md` (design variant, domains, prod admin bootstrap, BOS outbound, post-v1 scope confirmation, secrets rotation).
 4. **Owner manual deploy** — `docs/DEPLOYMENT.md` + `docs/SETTINGS.md` (Vercel web, Cloud Run API, Neon `migrate deploy`).
 5. **BOS outbound summaries** — push readiness/lead summaries to BOS (blocked on BOS platform API contract).
-6. **Deferred post-v1** (confirm in OPEN_QUESTIONS Q5): admin homepage CMS, global admin audit log, public service-provider directory page, PWA, BOS provisioning admin UI. Admin cross-company catalog editing pulled into v1 (2026-07-19).
+6. **Deferred post-v1** (confirm in OPEN_QUESTIONS Q5): admin homepage CMS, global admin audit log, public service-provider directory page, PWA. Admin cross-company catalog editing and BOS provisioning admin UI pulled into v1 (2026-07-19).
 
 ## Environment Inputs Before Staging / Production
 
