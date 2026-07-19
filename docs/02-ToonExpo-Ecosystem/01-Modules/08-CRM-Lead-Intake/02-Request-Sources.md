@@ -1,55 +1,69 @@
 # Request Sources
 
-## v1 Sources
+## Unified Deal Creation (v1)
+
+Deal/request creation is one backend use case. CRM, deduplication and buyer history are shared regardless of entry path.
+
+Primary sources:
+
+```text
+buyer_project_request
+builder_buyer_qr_scan
+```
+
+Do not build two separate CRM pipelines.
+
+## Source: buyer_project_request
+
+Buyer-initiated request from a project context (typically after scanning Project QR).
+
+Flow:
+
+```text
+Buyer scans Project QR
+-> project page
+-> Request price / Get offer
+-> Request created
+-> Deal in builder company CRM
+```
+
+Required context:
+
+- buyer_id;
+- builder_company_id;
+- project_id;
+- source = buyer_project_request.
+
+Apartment may be optional at first and selected later by sales team.
+
+Sub-context metadata (optional):
 
 ```text
 project_page
 apartment_page
-builder_qr_scan
-manual_builder_entry
-event_interaction
 ```
 
-## Source: project_page
+## Source: builder_buyer_qr_scan
 
-Buyer sends request from project page without selecting a specific apartment.
+Company member scans buyer QR and creates request/deal from buyer action screen.
 
-Required context:
+Flow:
 
-- buyer_id;
-- builder_company_id;
-- project_id;
-- source.
-
-Apartment is optional and can be selected later by sales team.
-
-## Source: apartment_page
-
-Buyer sends request from apartment page.
-
-Required context:
-
-- buyer_id;
-- builder_company_id;
-- project_id;
-- building_id;
-- floor_id;
-- apartment_id;
-- source.
-
-Store apartment price/status snapshot.
-
-## Source: builder_qr_scan
-
-Builder scans buyer QR and creates request/deal.
+```text
+Company member scans Buyer QR
+-> buyer action screen
+-> Create request / Send offer
+-> Request created
+-> Deal in builder company CRM
+```
 
 Required context:
 
 - buyer_id;
 - builder_company_id;
 - scan_event_id;
-- source;
-- created_by_builder_user_id.
+- source = builder_buyer_qr_scan;
+- created_by_user_id (company member).
 
 Optional:
 
@@ -59,14 +73,14 @@ Optional:
 
 ## Source: manual_builder_entry
 
-Builder manually creates request/deal in CRM.
+Company member manually creates request/deal in CRM.
 
 This may be used when buyer contact was received outside QR/public form.
 
 Required context:
 
 - builder_company_id;
-- created_by_builder_user_id;
+- created_by_user_id;
 - buyer/contact info.
 
 If buyer account exists, link buyer_id.
@@ -81,15 +95,12 @@ Use carefully.
 
 Prefer precise source values when possible.
 
-## Source Naming Rule
+## Source Naming Rules
 
-Do not use vague source `qr_scan` for CRM creation.
+- Use `buyer_project_request` and `builder_buyer_qr_scan` as canonical deal-creation sources.
+- Do not use vague source `qr_scan` for CRM creation.
+- Entrance check-in scan must not become CRM lead source.
 
-Use:
+## Relationship To Legacy Metadata
 
-```text
-builder_qr_scan
-```
-
-Entrance check-in scan must not become CRM lead source.
-
+Granular page-level values (`project_page`, `apartment_page`, `builder_qr_scan`) may be stored as request metadata but the backend use case normalizes to the two canonical sources above.

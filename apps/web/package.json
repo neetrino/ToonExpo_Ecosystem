@@ -1,0 +1,45 @@
+{
+  "name": "@toonexpo/web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "ToonExpo Next.js frontend",
+  "scripts": {
+    "dev": "next dev --port 3000",
+    "build": "next build",
+    "start": "next start --port 3000",
+    "lint": "eslint .",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^5.4.0",
+    "@sentry/nextjs": "^10.66.0",
+    "@tanstack/react-query": "^5.101.2",
+    "@toonexpo/contracts": "workspace:*",
+    "@toonexpo/shared": "workspace:*",
+    "@yudiel/react-qr-scanner": "^2.6.0",
+    "clsx": "2.1.1",
+    "next": "16.2.10",
+    "next-intl": "4.13.2",
+    "qrcode.react": "^4.2.0",
+    "react": "19.2.7",
+    "react-dom": "19.2.7",
+    "react-hook-form": "^7.81.0",
+    "tailwind-merge": "3.6.0",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.3.3",
+    "@toonexpo/config": "workspace:*",
+    "@types/node": "^24.10.1",
+    "@types/react": "19.2.17",
+    "@types/react-dom": "19.2.3",
+    "eslint": "^9.39.2",
+    "eslint-config-next": "16.2.10",
+    "tailwindcss": "4.3.3",
+    "typescript": "6.0.3",
+    "vitest": "^4.1.10"
+  }
+}

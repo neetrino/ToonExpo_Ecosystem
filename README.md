@@ -31,24 +31,130 @@ Out of scope:
 - BigProjects staff/team KPI;
 - BigProjects BOS implementation.
 
+## Stack
+
+- pnpm 11 workspaces + Turborepo
+- Node.js 24 LTS
+- TypeScript strict
+- `apps/web` — Next.js 16 frontend (presentation only; Vercel)
+- `apps/api` — NestJS 11 product backend (Google Cloud Run)
+- `packages/db` — Prisma 7 + PostgreSQL (Neon); runtime import only from `apps/api`
+- Cloudflare R2 (media), Resend (email), Sentry (errors), Upstash Redis (distributed rate limits)
+
+## Monorepo layout
+
+```text
+apps/
+  web/                 # Next.js frontend
+  web-e2e/             # Playwright smoke e2e (not in default turbo build/test)
+  api/                 # NestJS backend (+ Dockerfile for Cloud Run)
+packages/
+  config/              # shared ESLint / tsconfig / Vitest presets
+  shared/              # environment-neutral utilities (incl. DEFAULT_LOCALE = hy)
+  contracts/           # framework-neutral API types/contracts
+  db/                  # Prisma schema, migrations, seed scripts
+```
+
+## Prerequisites
+
+- Node.js >= 24
+- pnpm >= 11
+- Neon `DATABASE_URL` (and `DIRECT_URL` for migrations/seeds) in a local `.env` (never commit secrets)
+
+## Local development
+
+```bash
+cp .env.example .env
+# fill DATABASE_URL, DIRECT_URL, SESSION_TOKEN_PEPPER, CSRF_SECRET, and other values
+
+pnpm install
+
+Git hooks install automatically via the root `prepare` script (Husky + lint-staged on pre-commit).
+
+pnpm --filter @toonexpo/db db:generate
+pnpm --filter @toonexpo/db db:validate
+
+# Apply migrations on a fresh database:
+pnpm --filter @toonexpo/db db:migrate:dev
+
+# Idempotent demo data (local/dev only):
+pnpm --filter @toonexpo/db db:seed
+```
+
+Seeded accounts (password from `SEED_ADMIN_PASSWORD` in `.env`, or dev fallback documented in seed script — never commit real passwords):
+
+| Role                               | Email                          |
+| ---------------------------------- | ------------------------------ |
+| Platform admin                     | `admin@toonexpo.local`         |
+| Company admin (first seed builder) | `builder.admin@toonexpo.local` |
+| Buyer (with QR)                    | `buyer@toonexpo.local`         |
+
+Start both apps (web on `:3000`, API on `:4000`):
+
+```bash
+pnpm dev
+```
+
+Set `NEXT_PUBLIC_API_URL=http://localhost:4000` for local API calls. For staging/production proxy mode see `docs/SETTINGS.md`.
+
+## Quality gates
+
+```bash
+pnpm lint
+pnpm typecheck
+pnpm test
+pnpm build
+```
+
+## E2E smoke (Playwright)
+
+Chromium-only smoke suite in `apps/web-e2e`. Not part of the default turbo `build` / `test` pipeline.
+
+Prerequisites: root `.env` with `DATABASE_URL` / `DIRECT_URL`, `SESSION_TOKEN_PEPPER`, `CSRF_SECRET`, and optional `SEED_ADMIN_PASSWORD` (fallback `ChangeMeAdmin123!`).
+
+```bash
+# Builds API + web, seeds DB (globalSetup), starts both servers if needed, runs smoke tests
+pnpm e2e
+
+# Or after an existing build / with servers already on :3000 and :4000:
+pnpm --filter @toonexpo/web-e2e e2e
+```
+
+Install browsers once (CI and first local run):
+
+```bash
+pnpm --filter @toonexpo/web-e2e e2e:install
+```
+
+CI runs a separate `e2e` job with a Postgres service (migrations + seed) in parallel with the quality job.
+
+## Docker (API image)
+
+Build from repo root (Cloud Run target):
+
+```bash
+docker build -f apps/api/Dockerfile -t toonexpo-api .
+```
+
+Deploy steps: `docs/DEPLOYMENT.md`.
+
 ## Documentation
 
-Start here:
+| Doc                                                                             | Purpose                         |
+| ------------------------------------------------------------------------------- | ------------------------------- |
+| [Documentation Hub](./docs/00-Documentation-Hub.md)                             | Index                           |
+| [Tech Card](./docs/TECH_CARD.md)                                                | Stack and operational decisions |
+| [Architecture](./docs/01-ARCHITECTURE.md)                                       | System design                   |
+| [Module Status](./docs/MODULE_STATUS.md)                                        | Per-module readiness            |
+| [Progress](./docs/PROGRESS.md)                                                  | Sprint and wave tracker         |
+| [Deployment](./docs/DEPLOYMENT.md)                                              | Cloud Run + Vercel + Neon       |
+| [Settings](./docs/SETTINGS.md)                                                  | Owner env cheat sheet           |
+| [Open Questions](./docs/OPEN_QUESTIONS.md)                                      | Pre-launch decisions            |
+| [Frontend / Backend Boundary](./docs/architecture/FRONTEND_BACKEND_BOUNDARY.md) | Runtime rules                   |
 
-- [Brief](./docs/BRIEF.md)
-- [Tech Card](./docs/TECH_CARD.md)
-- [Architecture](./docs/01-ARCHITECTURE.md)
-- [Frontend / Backend Boundary](./docs/architecture/FRONTEND_BACKEND_BOUNDARY.md)
-- [Development Start Pack](./docs/00-Development-Start/01-Production-Scope.md)
-- [Documentation Hub](./docs/00-Documentation-Hub.md)
-- [ToonExpo Ecosystem Overview](./docs/02-ToonExpo-Ecosystem/00-Ecosystem-Overview.md)
-- [BOS / ToonExpo Boundary](./docs/03-Integration-With-BOS/01-BOS-ToonExpo-Boundary.md)
-
-## Project Size
+## Project size
 
 Size C — large monorepo (`apps/*`, `packages/*`).
-
-Production code should start only after `docs/TECH_CARD.md` stack choices are confirmed.
 
 Runtime boundary: `apps/web` is a Next.js frontend; `apps/api` is the complete NestJS backend and the only runtime allowed to access Prisma/PostgreSQL.
 

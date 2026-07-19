@@ -1,0 +1,41 @@
+{
+  "name": "@toonexpo/config",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./eslint/base": "./src/eslint/base.js",
+    "./tsconfig/base.json": "./src/tsconfig/base.json",
+    "./tsconfig/nestjs.json": "./src/tsconfig/nestjs.json",
+    "./tsconfig/nextjs.json": "./src/tsconfig/nextjs.json",
+    "./vitest/base": "./src/vitest/base.js"
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "node -e \"process.exit(0)\"",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@eslint/js": "^9.39.2",
+    "typescript-eslint": "^8.64.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "eslint": "^9.39.2",
+    "typescript": "6.0.3",
+    "vitest": "^4.1.10"
+  },
+  "peerDependencies": {
+    "eslint": "^9.0.0",
+    "typescript": ">=5.4.0",
+    "vitest": "^4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "vitest": {
+      "optional": true
+    }
+  }
+}

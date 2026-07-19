@@ -7,6 +7,8 @@ QR System identifies registered buyers and supports two main flows:
 - builder scans buyer QR and creates a CRM request/deal;
 - entrance staff scans buyer QR for event check-in.
 
+The mirror flow uses Project QR: a buyer scans a project QR at the exhibition, lands on the public project page and can create a request (`buyer_project_request`), which opens a deal in the builder company CRM. Buyer QR and Project QR together connect buyers and builder companies through one unified deal-creation use case (see CRM Lead Intake / Request Sources).
+
 ## Core Rule
 
 ```text

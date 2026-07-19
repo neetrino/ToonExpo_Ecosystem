@@ -6,10 +6,12 @@ This module does not own the hotspot editor, but it provides the target entities
 
 ## Media Types Used
 
+v1 scope: single cover/logo/plan URL fields per entity. Multi-image galleries are post-v1.
+
 Project:
 
-- cover image;
-- gallery images;
+- cover image URL;
+- gallery images deferred (post-v1);
 - location/complex map optional;
 - promotional renders/videos optional.
 
@@ -27,8 +29,8 @@ Floor:
 
 Apartment:
 
-- apartment plan image;
-- gallery images;
+- apartment plan image URL;
+- gallery images deferred (post-v1);
 - interior renders/photos optional;
 - Matterport/3D external link.
 

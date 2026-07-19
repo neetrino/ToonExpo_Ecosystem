@@ -6,16 +6,15 @@ Draft
 
 ## Account Entities
 
-- user;
-- company;
-- company member;
-- role;
+- user (with exclusive `AccountType`);
+- company (with `Company.type`);
+- company member (with `CompanyMemberRole`);
 - module access;
 - provisioning request.
 
 ## Public / Real Estate Entities
 
-- builder company;
+- company (`type = builder`) — v1 catalog owner; no separate builder company profile table;
 - partner company;
 - project;
 - building;

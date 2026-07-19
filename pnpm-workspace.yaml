@@ -1,0 +1,15 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+allowBuilds:
+  "@toonexpo/db": true
+  "@parcel/watcher": true
+  "@prisma/engines": true
+  "@scarf/scarf": false
+  '@sentry/cli': true
+  "@swc/core": true
+  argon2: true
+  esbuild: true
+  prisma: true
+  sharp: true
+  unrs-resolver: true

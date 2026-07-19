@@ -36,12 +36,13 @@ Fields:
 - company id from BOS;
 - company name;
 - company type;
+- company type: builder | partner | bank | service;
 - primary contact name;
 - primary contact email;
 - primary contact phone optional;
-- role/type: builder | partner | bank;
-- event cycle id/name if relevant;
 - modules to enable: builder_portal, constructor_crm, readiness, partner_profile, bank_offers, analytics.
+
+Note: `builder`, `partner` and `bank` are company types, not user account types. ToonExpo creates `User(account_type = company_member)` with `CompanyMember(role = company_admin)`.
 
 ## ToonExpo -> BOS Response
 

@@ -15,22 +15,28 @@ Updated after modular documentation pass.
 - No heavy moderation queue in v1; use simple publication statuses.
 - Service Provider Directory is not marketplace/ecommerce.
 - Files/media belong to real entities; no separate drive/files module.
+- NestJS owns email/password authentication through Passport Local and argon2id.
+- Browser authentication uses revocable opaque DB-backed sessions in secure httpOnly cookies; OAuth and JWT access/refresh-token auth are not in v1.
+- Admin/BOS-created accounts use single-use set-password invitations; buyer self-registration requires a password.
 
-## Canonical Roles
+## Canonical Account Model (Confirmed 2026-07-18)
 
-v1 roles:
+Exclusive `AccountType` on User:
 
-- BigProjects Admin;
-- Builder;
-- Partner;
-- Buyer / Visitor;
-- Entrance Staff.
+- `buyer`;
+- `platform_admin`;
+- `entrance_staff`;
+- `company_member`.
 
-Detailed subroles are later:
+`Company.type`: builder | partner | bank | service — not user account types.
 
-- Builder Owner/Admin/Sales Manager/Viewer;
-- Partner Owner/Admin/Editor;
-- BigProjects Platform Admin/Content Manager/Readiness Evaluator.
+`CompanyMemberRole` (v1): `company_admin` | `member`.
+
+v1 constraint: one user, one company membership (hard DB constraint).
+
+Only `buyer` accounts have `BuyerProfile` and personal QR.
+
+Future `CompanyMemberRole` expansion: manager, sales_agent — when permissions differ.
 
 ## Canonical Status Groups
 
@@ -58,10 +64,10 @@ Detailed subroles are later:
 - v1 vs coming soon boundaries;
 - BOS integration contracts;
 - provisioning response statuses.
+- auth/session, password reset/invitation and registration-field consistency.
 
 ## Remaining Watch Items
 
 - If builders later need content approval before publishing, add a v2 moderation queue deliberately.
 - If partner-side requests become real, define a separate partner request model before adding it to v1 navigation.
 - If ToonExpo analytics must appear in BOS, define a narrow report contract first instead of broad sync.
-

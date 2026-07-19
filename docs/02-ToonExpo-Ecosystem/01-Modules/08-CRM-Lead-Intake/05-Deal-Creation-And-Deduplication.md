@@ -19,7 +19,8 @@ Request
 Product rule:
 
 ```text
-Buyer request and builder-created QR request are the same CRM work item family.
+buyer_project_request and builder_buyer_qr_scan are the same CRM work item family.
+One unified backend use case; deduplication, CRM and buyer history are shared.
 ```
 
 Do not build two separate pipelines.
@@ -37,10 +38,10 @@ new_request
 v1 can assign to:
 
 - builder company default CRM queue;
-- creator user if builder created it by QR/manual;
-- assigned sales manager if selected.
+- creator user if company member created it by QR scan or manual entry;
+- assigned sales user optional when `CompanyMemberRole` supports assignment.
 
-If builder team roles are not implemented yet, keep assignment simple.
+If company member roles beyond `company_admin` / `member` are not implemented yet, keep assignment simple.
 
 ## Deduplication Keys
 

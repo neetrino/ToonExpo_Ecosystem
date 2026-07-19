@@ -1,0 +1,175 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: Lint, typecheck, test, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_USER: toonexpo
+          POSTGRES_PASSWORD: toonexpo
+          POSTGRES_DB: toonexpo
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U toonexpo -d toonexpo"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      PORT: "4000"
+      APP_URL: http://localhost:3000
+      CORS_ORIGINS: http://localhost:3000
+      NEXT_PUBLIC_API_URL: http://localhost:4000
+      DATABASE_URL: postgresql://toonexpo:toonexpo@localhost:5432/toonexpo
+      DIRECT_URL: postgresql://toonexpo:toonexpo@localhost:5432/toonexpo
+      SESSION_TOKEN_PEPPER: ci-only-session-token-pepper-min-32-chars
+      CSRF_SECRET: ci-only-csrf-secret-value-min-32-chars!!
+      SEED_ADMIN_PASSWORD: ChangeMeAdmin123!
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.14.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Apply migrations
+        run: pnpm --filter @toonexpo/db db:migrate:deploy
+
+      - name: Architecture boundary check
+        run: |
+          set -euo pipefail
+          fail=0
+          if [ -d apps/web ]; then
+            if grep -RInE --include='*.ts' --include='*.tsx' --include='*.js' --include='*.jsx' \
+              -e "@prisma/client" \
+              -e "@toonexpo/db" \
+              -e "packages/db" \
+              apps/web; then
+              echo "::error::apps/web must not import Prisma Client or @toonexpo/db"
+              fail=1
+            else
+              echo "Boundary check passed for apps/web"
+            fi
+          else
+            echo "apps/web not present yet — boundary check skipped"
+          fi
+          exit "$fail"
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Test
+        run: pnpm test
+
+      - name: Seed database
+        run: pnpm --filter @toonexpo/db db:seed
+
+      - name: Build
+        run: pnpm run e2e:build
+
+  e2e:
+    name: Playwright smoke e2e
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_USER: toonexpo
+          POSTGRES_PASSWORD: toonexpo
+          POSTGRES_DB: toonexpo
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U toonexpo -d toonexpo"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      PORT: "4000"
+      APP_URL: http://localhost:3000
+      CORS_ORIGINS: http://localhost:3000
+      NEXT_PUBLIC_API_URL: http://localhost:4000
+      DATABASE_URL: postgresql://toonexpo:toonexpo@localhost:5432/toonexpo
+      DIRECT_URL: postgresql://toonexpo:toonexpo@localhost:5432/toonexpo
+      SESSION_TOKEN_PEPPER: ci-only-session-token-pepper-min-32-chars
+      CSRF_SECRET: ci-only-csrf-secret-value-min-32-chars!!
+      SEED_ADMIN_PASSWORD: ChangeMeAdmin123!
+      PLAYWRIGHT_BASE_URL: http://localhost:3000
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.14.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Apply migrations
+        run: pnpm --filter @toonexpo/db db:migrate:deploy
+
+      - name: Seed database
+        run: pnpm --filter @toonexpo/db db:seed
+
+      - name: Build API and web (API boots briefly for Next prerender)
+        run: pnpm run e2e:build
+
+      - name: Install Playwright Chromium
+        run: pnpm --filter @toonexpo/web-e2e exec playwright install --with-deps chromium
+
+      - name: Free dev server ports
+        run: |
+          for port in 4000 3000; do
+            pids=$(lsof -ti :"$port" || true)
+            if [ -n "$pids" ]; then
+              kill -TERM $pids || true
+            fi
+          done
+
+      - name: Run smoke e2e
+        run: pnpm --filter @toonexpo/web-e2e e2e

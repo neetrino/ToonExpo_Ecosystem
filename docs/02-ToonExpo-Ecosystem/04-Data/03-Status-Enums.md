@@ -43,40 +43,49 @@ archived
 ## User Status
 
 ```text
+invited
 active
 inactive
 blocked
-invited
 ```
 
 ## Company Type
 
 ```text
-bigprojects
 builder
 partner
 bank
 service
-other
 ```
+
+## AccountType (User)
+
+Exclusive user account type. One account = one type.
+
+```text
+buyer
+platform_admin
+entrance_staff
+company_member
+```
+
+## CompanyMemberRole (v1)
+
+Role inside a company. Applies when `account_type = company_member`.
+
+```text
+company_admin
+member
+```
+
+Future: `manager`, `sales_agent`.
 
 ## Company Member Status
 
 ```text
-invited
 active
 inactive
 removed
-```
-
-## Role Key
-
-```text
-bigprojects_admin
-builder
-partner
-buyer
-entrance_staff
 ```
 
 ## Module Key
@@ -116,12 +125,21 @@ sold
 
 ## Price Visibility
 
+v1 modes (builder selects per apartment):
+
 ```text
 public
 by_request
-hidden
 visible_after_login
 ```
+
+Rules:
+
+- `public` — numeric price included in anonymous and authenticated public API responses.
+- `by_request` — price never exposed to anonymous callers; UI shows "Price by request".
+- `visible_after_login` — price included only for authenticated buyer sessions; anonymous callers receive no numeric price (registration incentive).
+
+Multi-currency is out of v1. Prices are stored in AMD major units (`Decimal(14,2)`); see [DECISIONS.md](../../../DECISIONS.md) Catalog section.
 
 ## Request / Lead Status
 
@@ -152,7 +170,18 @@ done
 cancelled
 ```
 
-## Request Source
+## Deal Creation Source (unified backend use case)
+
+Primary sources for CRM deal/request creation:
+
+```text
+buyer_project_request
+builder_buyer_qr_scan
+```
+
+Legacy granular values may be stored as metadata but the backend use case treats these two as canonical v1 sources.
+
+## Request Source (metadata / sub-context)
 
 ```text
 project_page

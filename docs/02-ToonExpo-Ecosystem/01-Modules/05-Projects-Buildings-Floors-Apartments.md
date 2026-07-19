@@ -168,8 +168,8 @@ Status syncs immediately to ToonExpo public apartment status
 - rooms;
 - area;
 - status;
-- price;
-- price_visibility;
+- price (`Decimal(14,2)`, AMD major units);
+- price_visibility (`public` | `by_request` | `visible_after_login`);
 - visual_media_id;
 - matterport_url optional;
 - description;
@@ -218,12 +218,15 @@ sold
 
 ### Price Visibility
 
+v1 modes:
+
 ```text
 public
 by_request
-hidden
 visible_after_login
 ```
+
+Prices are AMD only in v1, stored in major units (`Decimal(14,2)`). Multi-currency is out of v1.
 
 ## 11. Integrations
 
@@ -241,7 +244,9 @@ visible_after_login
 - Buyer can view published project/building/floor/apartment pages.
 - Buyer cannot view unpublished data.
 - Apartment status is visible publicly as Available / Reserved / Sold.
-- Price visibility follows the selected setting.
+- Price visibility follows the selected setting; anonymous API omits price unless mode is `public`.
+- Authenticated buyers see price when mode is `public` or `visible_after_login`.
+- Projects with sold apartments remain in the public catalog.
 - CRM status changes can update public apartment status.
 - All publish/archive actions are auditable.
 

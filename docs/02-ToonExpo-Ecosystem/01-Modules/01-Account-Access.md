@@ -2,7 +2,7 @@
 
 ## Status
 
-v1
+v1 — account model confirmed 2026-07-18
 
 ## Purpose
 
@@ -12,28 +12,35 @@ This is not a "shared auth between separate platforms" anymore. ToonExpo is one 
 
 ## In Scope
 
-- users;
-- companies;
-- company members;
-- roles;
+- users and exclusive account types;
+- companies and company types;
+- company members and company member roles;
 - module access;
-- buyer / ordinary visitor self-registration;
-- buyer accounts created by BigProjects admin/staff if needed;
-- builder company accounts;
-- partner accounts;
-- bank partner account fields/offers;
-- BigProjects admin/staff accounts;
-- entrance staff accounts.
+- buyer self-registration;
+- buyer accounts created by platform admin if needed;
+- company provisioning (builder, partner, bank, service);
+- platform admin accounts;
+- entrance staff accounts;
+- personal logins for every company employee (no shared company credentials).
+
+## Account Model (Confirmed 2026-07-18)
+
+- `User.account_type`: `buyer` | `platform_admin` | `entrance_staff` | `company_member` — one account, one type;
+- `Company.type`: `builder` | `partner` | `bank` | `service` — business context, not a user type;
+- `CompanyMember.role`: `company_admin` | `member` in v1;
+- v1 constraint: one user may belong to at most one company;
+- `BuyerProfile` and personal QR only for `buyer` accounts.
 
 ## Initial Production Decisions
 
-- buyer / ordinary visitor can self-register;
-- BigProjects admin/staff can also create buyer accounts if needed;
-- builder, partner and bank accounts are created by BigProjects admin/staff or by BOS account creation signal;
+- buyer can self-register;
+- platform admin can also create buyer accounts if needed;
+- builder, partner, bank and service companies are provisioned by platform admin or BOS signal — each employee gets a personal login;
 - visitor can be registered at entrance if needed;
-- required buyer fields: name, phone, email;
+- required buyer profile fields: name, phone, email; self-registration also requires a password;
 - no phone verification;
-- no email verification.
+- no email verification;
+- company provisioning sends set-password link via Resend; no shared company password.
 
 ## Deep Documentation
 

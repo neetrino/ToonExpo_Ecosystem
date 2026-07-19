@@ -5,7 +5,7 @@ Public and role-based digital platform for ToonExpo buyers, builders, partners, 
 **Project size:** C - large
 **Architecture style:** modular monolith in a monorepo
 **Primary deployables:** `apps/web` and `apps/api`
-**Last updated:** 2026-07-17
+**Last updated:** 2026-07-18
 
 ---
 
@@ -23,6 +23,8 @@ ToonExpo is one product with multiple role-based experiences. It should be imple
 This keeps deployment and transactions manageable while preserving module boundaries suitable for a large, long-lived product. Microservices are not justified at the current scale.
 
 ToonExpo is a full production product, not an MVP or prototype. Delivery may be incremental, but included modules must be production-ready and complete for their approved release scope.
+
+**Load profile (NFR context):** ~3 exhibitions per year; on exhibition days up to ~25,000 buyers must register and receive QR codes (registration and scan peaks). Year-round ~100 builder companies with ~5 employees each (~500 B2B users). Connection pools, rate limits, caching and infrastructure sizing must target this profile. See [Tech Card — Scale And Load Profile](./TECH_CARD.md#scale-and-load-profile).
 
 ### Authoritative runtime boundary
 
@@ -103,10 +105,28 @@ toonexpo-ecosystem/
       public/
     api/
       src/
-        modules/                # NestJS product modules
-        common/                 # guards, filters, interceptors, decorators
-        integrations/           # BOS, R2 and email adapters
+        auth/                   # sessions, RBAC, CSRF guards
+        catalog/                # projects, buildings, floors, apartments, builders
+        media/                  # R2 upload, MediaAsset
+        visual-map/             # canvases and hotspots
+        crm/                    # lead intake + constructor CRM
+        qr/                     # buyer QR resolve
+        favorites/              # buyer favorites
+        exhibition/             # events, venue maps, check-in
+        readiness/              # builder readiness assessments
+        partners/               # partner companies and offers
+        mortgage/               # bank offers + calculator
+        service-providers/      # provider directory (admin)
+        analytics/              # event tracking + dashboards
+        integrations/           # BOS inbound provisioning
+        admin/                  # platform admin (companies, etc.)
+        company/                # company members, logo
+        portal/                 # builder portal APIs
+        common/                 # guards, filters, interceptors
+        prisma/                 # Prisma module
+        rate-limit/             # Upstash throttler config
         main.ts
+        instrument.ts           # Sentry (imported first)
       Dockerfile                # Cloud Run image target
   packages/
     domain/                     # small shared kernel; feature domains stay in API modules
@@ -156,7 +176,7 @@ Hard rules:
 - `apps/web` cannot import `packages/db` or `packages/domain`.
 - `apps/api` is the only runtime allowed to import Prisma Client.
 - `packages/domain` is a small shared kernel, not a global home for all business logic; it cannot import Next.js, React, NestJS or Prisma.
-- Feature-specific domain rules live in `apps/api/src/modules/<module>/domain`.
+- Feature-specific domain rules live alongside their NestJS module under `apps/api/src/<module>/`.
 - `packages/ui` cannot import server secrets, database code or backend modules.
 - NestJS OpenAPI is the canonical HTTP contract; frontend types are generated from or checked against it.
 - Product endpoints cannot be implemented in Next.js route handlers.
@@ -182,10 +202,10 @@ The boundary should be enforced in ESLint/CI, not left as documentation only.
 | Partners & Mortgage | Partner profiles, bank offers and calculator inputs |
 | Service Providers | Categorized provider directory connected to readiness help |
 | Events | Event records, venue maps, booths, routes and check-in |
-| Content | Public content blocks, translations and publication controls |
 | Analytics | Product/event measurements and role-scoped summaries |
 | Provisioning | Idempotent BOS account/company provisioning contract |
-| Audit | Security and business-critical mutation history |
+| Content | 📋 post-v1 — homepage CMS / content blocks (not built) |
+| Audit | 📋 post-v1 — global admin audit log (only BOS `IntegrationAuditLog` exists today) |
 
 Frontend features mirror user workflows, not persistence tables. A single backend module may serve several frontend areas.
 
@@ -246,46 +266,45 @@ Frontend rules:
 `apps/api` is the complete product backend. It is a NestJS modular monolith deployed independently from Next.js.
 
 ```text
-apps/api/src/modules/
-  auth/
-  users/
-  companies/
-  catalog/
-  media/
-  visual-maps/
-  buyers/
-  qr/
-  lead-intake/
-  crm/
-  readiness/
-  partners/
-  mortgage/
-  service-providers/
-  events/
-  check-in/
-  content/
-  analytics/
-  provisioning/
-  audit/
+apps/api/src/
+  auth/                   # sessions, guards, buyer registration
+  catalog/                # public + admin catalog, builders
+  media/                  # R2 upload, MediaAsset
+  visual-map/             # canvases, hotspots
+  crm/                    # request intake + constructor CRM
+  qr/                     # QR resolve
+  favorites/              # buyer favorites
+  exhibition/             # events, venue maps, booths, check-in
+  readiness/              # assessments, scores
+  partners/               # partner companies, offers
+  mortgage/               # bank offers, calculator
+  service-providers/      # admin provider directory
+  analytics/              # event tracking, dashboards
+  integrations/           # BOS inbound provisioning + audit log
+  admin/                  # platform admin (companies, …)
+  company/                # company members, logo
+  portal/                 # builder portal APIs
+  access-tokens/          # invite/set-password mail helpers
+  email/                  # Resend adapter
+  health/                 # liveness/readiness
+  common/                 # filters, interceptors, decorators
+  prisma/                 # Prisma module
+  rate-limit/             # Upstash throttler config
+  config/                 # env validation
 ```
 
-Recommended internal module shape:
+Typical module layout (flat, feature-colocated):
 
 ```text
-modules/catalog/
-  presentation/
-    catalog.controller.ts
-    dto/
-  application/
-    commands/
-    queries/
-    catalog.service.ts
-  domain/
-    policies/
-    errors/
-  infrastructure/
-    prisma-catalog.repository.ts
+catalog/
   catalog.module.ts
+  projects.service.ts
+  public/
+    public-projects.controller.ts
+  portal/
+    portal-projects.controller.ts
+  dto/
+  mappers/
 ```
 
 Backend rules:
@@ -310,7 +329,7 @@ Major aggregates:
 
 | Aggregate | Important entities |
 |---|---|
-| Identity | User, BuyerProfile, CompanyMember, ModuleAccess, Session/RefreshToken |
+| Identity | User, BuyerProfile, CompanyMember, ModuleAccess, Session, AccountAccessToken |
 | Organization | Company, BuilderCompany, PartnerCompany |
 | Catalog | Project, Building, Floor, Apartment, ApartmentStatusHistory |
 | Presentation | MediaAsset, VisualMapCanvas, VisualHotspot, Translation |
@@ -403,18 +422,20 @@ sequenceDiagram
 
 ## 12. Authentication And Authorization
 
-Authentication is owned by NestJS, using Passport and a confirmed secure backend session/token strategy.
+Authentication is owned by NestJS. Passport Local validates email+password, and NestJS issues opaque DB-backed browser sessions. OAuth and JWT access/refresh-token authentication are not part of the initial production scope.
 
 Baseline:
 
-- buyer self-registration with name, phone and email;
+- buyer self-registration with name, required phone, email and password (minimum 8 characters); the password is stored only as an argon2id hash;
 - builder, partner, bank and staff accounts created by admin or BOS provisioning;
 - argon2id for stored passwords;
-- secure httpOnly cookies for browser credentials;
-- explicit CORS allowlist and CSRF protection for cookie-authenticated mutations;
+- opaque random session token in a secure httpOnly cookie, with only its hash stored in PostgreSQL;
+- revocable sessions with 30-day absolute TTL and 7-day sliding idle TTL;
+- single-use, expiring set-password and password-reset token hashes delivered through Resend;
+- two-layer CSRF protection for cookie-authenticated mutations: Origin allowlist check (implemented) plus double-submit CSRF tokens (Sprint 1 hardening);
 - NestJS guards for role checks;
 - policy checks for company and resource ownership;
-- rate limits for auth, QR resolution, public requests and provisioning;
+- auth rate limit of 10 requests per IP per minute on login and register; additional rate limits for QR resolution, public requests and provisioning sized for the confirmed load profile;
 - no authorization based only on hidden UI or Next.js redirect logic.
 
 ---
@@ -440,6 +461,8 @@ Infrastructure responsibilities:
 ---
 
 ## 14. Scaling And Reliability
+
+Capacity planning assumes the confirmed load profile: exhibition-day peaks of up to ~25,000 buyer registrations and QR scans (~3 exhibitions per year) plus ~500 steady-state B2B users across ~100 builder companies. Pool sizes, rate limits and caching must be validated against this profile before staging/production cutover.
 
 1. Keep the modular monolith while module boundaries remain healthy.
 2. Scale Next.js and Cloud Run independently.

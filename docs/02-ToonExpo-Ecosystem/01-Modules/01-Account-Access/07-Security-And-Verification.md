@@ -11,10 +11,14 @@ This is an explicit initial production decision.
 
 ## Authentication
 
-Implementation should still use secure authentication basics:
+Confirmed authentication model:
 
-- hashed passwords or trusted auth provider;
-- secure sessions;
+- NestJS owns all registration, login, logout, session and password flows;
+- Passport Local authenticates email+password; OAuth providers are not in v1;
+- argon2id hashes stored passwords;
+- a secure httpOnly cookie carries an opaque random session token;
+- PostgreSQL stores only the session-token hash, expiry and revocation state;
+- CSRF protection applies to cookie-authenticated mutations;
 - protected admin routes;
 - role/module access checks.
 
@@ -49,9 +53,20 @@ Important admin actions must be audited:
 
 ## Password Reset / Invite
 
-Implementation should support a practical account access flow:
+Implementation must support:
 
-- invitation email for admin-created business users;
-- password reset or magic link depending chosen auth approach.
+- single-use, expiring set-password invitations for admin/BOS-created users;
+- single-use, expiring password-reset links for existing users;
+- token hashes in PostgreSQL, with raw tokens present only in the emailed link;
+- invalidation after successful use, replacement or expiry;
+- revocation of active sessions after password reset when required by the security policy.
 
-Exact auth provider/implementation is technical decision.
+Resend delivers these emails. Generated or plaintext passwords must never be sent by email.
+
+## Session Lifecycle
+
+- create and rotate the opaque session token at successful login;
+- enforce configurable idle and absolute expiration;
+- revoke the current session on logout;
+- revoke affected sessions after account suspension, security-sensitive credential changes or an explicit admin action;
+- never expose session-token hashes through APIs or logs.

@@ -5,7 +5,7 @@ This is the approved full product scope for the initial production release. It i
 ## Included In Initial Production Release
 
 - account/access and roles;
-- buyer self-registration with name, phone, email;
+- buyer self-registration with name, phone, email and password;
 - permanent buyer QR;
 - public website and mobile-like UX;
 - builder portal;

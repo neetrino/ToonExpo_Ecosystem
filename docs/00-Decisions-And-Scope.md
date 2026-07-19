@@ -44,7 +44,7 @@ This repository is only for ToonExpo Ecosystem.
 - No payment/e-ticket flow in the current production scope.
 - Buyer / ordinary visitor can self-register.
 - Builder, partner and bank accounts are created by BigProjects admin/staff or through BOS account creation signal.
-- Required buyer fields: name, phone, email.
+- Required buyer profile fields: name, phone, email. Buyer self-registration additionally requires a password for the confirmed email+password auth flow.
 - No phone verification in the current production scope.
 - No email verification in the current production scope.
 - Visitor can be registered at event entrance if needed.

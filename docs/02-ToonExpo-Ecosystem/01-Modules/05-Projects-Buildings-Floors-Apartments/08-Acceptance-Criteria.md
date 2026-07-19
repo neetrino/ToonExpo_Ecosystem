@@ -36,6 +36,10 @@
 - Apartment sales status is required.
 - Publication status is required.
 - Price visibility is required when price exists.
+- Anonymous public API omits apartment price unless mode is `public`.
+- Authenticated buyer sees price when mode is `public` or `visible_after_login`.
+- Project and builder descriptions support `hy`, `ru`, `en` via translation records.
+- Projects with sold apartments remain listed in the public catalog.
 
 ## Inventory / CRM
 
@@ -48,10 +52,10 @@
 
 ## Media / Visuals
 
-- Project can have cover and gallery.
-- Building can have visual image.
-- Floor can have floorplan image.
-- Apartment can have plan/gallery.
+- Project can have cover URL (galleries post-v1).
+- Building can have visual image URL.
+- Floor can have floorplan image URL.
+- Apartment can have plan URL (gallery post-v1).
 - Apartment can have Matterport/3D external link.
 - Visual hotspot module can link to building/floor/apartment ids.
 

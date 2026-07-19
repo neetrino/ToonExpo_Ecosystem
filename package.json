@@ -1,0 +1,32 @@
+{
+  "name": "toonexpo-ecosystem",
+  "private": true,
+  "version": "0.0.0",
+  "description": "ToonExpo Ecosystem monorepo",
+  "packageManager": "pnpm@11.14.0",
+  "engines": {
+    "node": ">=24",
+    "pnpm": ">=11"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "e2e:build": "bash scripts/e2e-build.sh",
+    "e2e": "pnpm run e2e:build && pnpm --filter @toonexpo/web-e2e e2e",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@toonexpo/config": "workspace:*",
+    "eslint": "^9.39.5",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.8",
+    "prettier": "^3.6.2",
+    "turbo": "^2.10.5",
+    "typescript": "6.0.3"
+  }
+}

@@ -65,13 +65,13 @@ BigProjects Admin can view CRM data and analytics by default.
 
 BigProjects should not edit builder sales pipeline data in v1 unless this is explicitly enabled later.
 
-## v1 Role Simplicity
+## v1 Access Simplicity
 
-v1 role model is simple:
+v1 access model is simple:
 
-- BigProjects Admin;
-- Builder;
-- Buyer / Visitor.
+- Platform Admin (`platform_admin`);
+- Company Member (`company_member`) at builder company;
+- Buyer (`buyer`).
 
-Detailed builder roles like Sales Manager, Owner, Viewer can be added later if needed.
+`CompanyMemberRole` values such as Sales Manager can be added later when permissions differ.
 

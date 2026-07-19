@@ -9,18 +9,20 @@ It stores and displays the builder inventory that buyers browse and builders sel
 ## Hierarchy
 
 ```text
-BuilderCompany
+Company (type = builder)   — v1: no separate BuilderCompany table
 └── Project
     └── Building
         └── Floor
             └── Apartment
 ```
 
+In v1 the hierarchy root is `Company` with `type = builder`. `BuilderCompany` remains a conceptual label in older docs only.
+
 ## Entity Meaning
 
-### BuilderCompany
+### Builder Company (Company)
 
-The builder/developer participant company.
+The builder/developer participant company (`Company`, `type = builder`).
 
 Examples:
 
@@ -77,8 +79,8 @@ It can later be extended for other unit types if needed.
 - BigProjects Admin editing all companies;
 - publication status;
 - apartment sales status;
-- price visibility control;
-- media attachments;
+- price visibility control (`public`, `by_request`, `visible_after_login`);
+- cover/logo URL attachments (media galleries post-v1);
 - visual/hotspot navigation hooks;
 - Matterport/3D external link;
 - request CTA from project/building/floor/apartment pages;
@@ -93,7 +95,9 @@ It can later be extended for other unit types if needed.
 - legally binding purchase flow;
 - mortgage application submission;
 - complex approval workflow with many moderation states;
-- public user-generated apartment edits.
+- public user-generated apartment edits;
+- multi-image media galleries (v1: single cover/logo URL per entity);
+- multi-currency pricing and currency switcher.
 
 ## Ownership Rule
 

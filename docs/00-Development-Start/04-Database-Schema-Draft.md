@@ -7,6 +7,8 @@ PostgreSQL 18.x on Neon is accessed only by the NestJS `apps/api` runtime throug
 ## Core Tables
 
 - users;
+- sessions;
+- account_access_tokens;
 - buyer_profiles;
 - companies;
 - company_members;
@@ -52,7 +54,10 @@ PostgreSQL 18.x on Neon is accessed only by the NestJS `apps/api` runtime throug
 ## Key Relationships
 
 ```text
-users 0..1 buyer_profiles
+users 0..1 buyer_profiles           (only when account_type = buyer)
+users 0..1 company_members          (v1: one company per user, hard DB constraint)
+users 0..n sessions
+users 0..n account_access_tokens
 companies 1..n company_members
 companies 0..1 builder_companies
 companies 0..1 partner_companies
@@ -73,17 +78,23 @@ partner_companies 0..n bank_offers
 
 ## Important Rules
 
-- buyer QR is permanent per buyer account;
+- `users.account_type` is exclusive: buyer | platform_admin | entrance_staff | company_member;
+- buyer QR is permanent per buyer account only;
 - QR token stores no personal data directly;
+- user credentials use an argon2id password hash; plaintext passwords are never persisted;
+- session cookies contain opaque random tokens and only token hashes are persisted in `sessions`;
+- sessions are revocable and track idle/absolute expiry needed by the NestJS auth module;
+- invitation and password-reset links use single-use, expiring hashes in `account_access_tokens`;
 - apartment is the core sellable product;
 - `reserved` and `converted` CRM statuses require linked apartment where relevant;
-- builder/partner/bank accounts are provisioned/admin-created, not public self-registered;
+- builder/partner/bank/service companies are provisioned with personal logins per employee; no shared company password; not public self-registered;
 - publication status is simple in v1: draft, published, archived.
 
-## Needs Confirmation
+## Implementation-Time Configuration
 
-- exact auth/session tables;
 - attachment/media storage metadata;
 - audit log granularity;
 - soft delete policy;
 - database timeout/pool settings.
+
+Authentication table ownership and lifecycle are confirmed. Exact Prisma scalar types and indexes are finalized during Sprint 0 without changing the auth model above.

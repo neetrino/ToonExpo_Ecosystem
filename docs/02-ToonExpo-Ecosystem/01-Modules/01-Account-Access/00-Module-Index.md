@@ -6,19 +6,21 @@ Account & Access is the identity, company membership and module access foundatio
 
 It supports:
 
-- buyer/visitor accounts;
-- BigProjects admin accounts;
-- builder company accounts;
-- partner/bank accounts;
-- entrance staff accounts;
-- module access by role/company.
+- buyer accounts (`account_type = buyer`);
+- platform admin accounts (`account_type = platform_admin`);
+- company member accounts (`account_type = company_member`) for builder, partner, bank and service companies;
+- entrance staff accounts (`account_type = entrance_staff`);
+- module access by account type, company type and company member role.
 
 ## Core v1 Rules
 
-- Buyer / ordinary visitor can self-register.
-- Builder, partner and bank accounts are created by BigProjects Admin/staff or BOS provisioning.
+- One user account = one exclusive `AccountType`. Mixing is forbidden.
+- Buyer can self-register.
+- Builder, partner, bank and service companies are provisioned by platform admin or BOS — not public self-registration.
+- Each company employee has a personal login. No shared company password.
+- v1: one user may belong to at most one company (hard DB constraint).
+- `BuyerProfile` and personal QR exist only for `buyer` accounts.
 - Buyer receives one permanent QR after registration.
-- No public self-registration for builders/partners/banks in v1.
 - No phone/email verification in v1.
 
 ## Reading Order
@@ -43,3 +45,7 @@ It supports:
 - Admin / Content Management
 - Exhibition Map & Check-in
 - BOS Integration
+
+## Canonical Role Reference
+
+See [Roles And Access](../../02-Roles-And-Access/01-Roles.md) for the full account model.

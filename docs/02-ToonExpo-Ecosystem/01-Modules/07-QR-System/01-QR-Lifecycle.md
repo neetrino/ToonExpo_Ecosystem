@@ -8,7 +8,10 @@ Required buyer data for registration:
 
 - name;
 - phone;
-- email.
+- email;
+- password for buyer self-registration.
+
+The Account Access module owns password handling. QR creation uses the resulting buyer account and never receives or stores the password.
 
 The QR belongs to the buyer account.
 
@@ -82,4 +85,3 @@ Scanning QR should resolve to buyer account according to scanner role:
 - builder scanner opens buyer action page;
 - entrance staff scanner opens check-in result;
 - unauthorized scanner sees limited/no private data.
-

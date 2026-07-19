@@ -58,12 +58,15 @@ Examples:
 ```text
 BOS marks participant approved
 -> BOS sends Create ToonExpo Account Request
--> ToonExpo creates or finds Company
--> ToonExpo creates or finds primary User
--> ToonExpo creates CompanyMember
+-> ToonExpo creates or finds Company(type = builder | partner | bank | service)
+-> ToonExpo creates or finds primary User(account_type = company_member)
+-> ToonExpo creates CompanyMember(role = company_admin)
 -> ToonExpo enables modules
+-> ToonExpo sends set-password invitation via Resend
 -> ToonExpo sends result back to BOS
 ```
+
+No shared company login or password. Each invited employee gets a personal user account.
 
 ## Idempotency
 
@@ -95,6 +98,6 @@ failed
 
 ## Invitation / Login
 
-After account creation, ToonExpo can send invitation/login instructions to primary contact email.
+After account creation, ToonExpo sends the primary contact a single-use, expiring set-password invitation through Resend. BOS receives provisioning status but never receives or sends a plaintext ToonExpo password.
 
-Exact email content belongs to implementation.
+Exact email presentation belongs to implementation; token lifecycle and security follow the Account Access security specification.

@@ -6,16 +6,19 @@ This is a product-level entity model, not final SQL.
 
 Implementation can split fields into tables, localized content records, media join tables or audit tables as needed.
 
-## BuilderCompany Fields Used By This Module
+## Builder / Company Fields Used By This Module
+
+v1 uses `Company` (`type = builder`) directly. A separate `BuilderCompany` profile table is not created in v1.
+
+Fields on `Company` used for public catalog presentation:
 
 - id;
-- company_id;
 - display_name;
 - legal_name optional;
 - slug;
-- logo_media_id optional;
-- cover_media_id optional;
-- description;
+- logo_url optional;
+- cover_url optional;
+- description (via translation records: `hy`, `ru`, `en`);
 - contacts public/private;
 - website optional;
 - social_links optional;
@@ -45,8 +48,8 @@ Implementation can split fields into tables, localized content records, media jo
 - city optional;
 - district optional;
 - map_coordinates optional;
-- cover_media_id optional;
-- gallery_media_ids;
+- cover_url optional;
+- gallery_media_ids deferred (post-v1);
 - project_type optional;
 - construction_status optional;
 - completion_date optional;
@@ -78,8 +81,8 @@ Implementation can split fields into tables, localized content records, media jo
 - display_order;
 - floors_count optional;
 - visual_media_id optional;
-- cover_media_id optional;
-- gallery_media_ids optional;
+- cover_url optional;
+- gallery_media_ids optional deferred (post-v1);
 
 ### Operational Fields
 
@@ -134,12 +137,12 @@ Implementation can split fields into tables, localized content records, media jo
 - area_total optional;
 - area_living optional;
 - balcony_area optional;
-- price optional;
-- price_currency;
-- price_visibility;
+- price optional (`Decimal(14,2)`, AMD major units, e.g. `79500000`);
+- currency (schema field; v1 always `AMD`; multi-currency out of v1);
+- price_visibility (`public` | `by_request` | `visible_after_login`);
 - description optional;
-- plan_media_id optional;
-- gallery_media_ids optional;
+- plan_url optional;
+- gallery_media_ids optional deferred (post-v1);
 - matterport_url optional;
 - external_3d_url optional;
 - orientation optional;
@@ -193,21 +196,25 @@ This module must still expose stable target ids:
 
 ## Localized Content
 
-ToonExpo supports Armenian, Russian and English.
+ToonExpo supports Armenian, Russian and English for catalog content.
 
-Recommended implementation:
+Confirmed v1 rules:
 
 - store language-independent operational fields once;
-- store translated public text in translation records.
+- store translated public text in `Translation` records in the DB schema from v1;
+- project and builder descriptions must be fillable in all three locales (`hy`, `ru`, `en`);
+- UI locale (next-intl) and catalog content locale are independent — a buyer may browse in Russian while reading an English project description if that is the only translation available.
 
 Translatable fields:
 
-- name if needed;
+- company display_name and description;
+- project name if localized;
 - short_description;
 - full_description;
 - location_text;
 - amenities;
 - nearby_places;
+- building/floor labels where public-facing;
 - apartment description;
-- media title/alt text.
+- media title/alt text (when galleries are enabled post-v1).
 
