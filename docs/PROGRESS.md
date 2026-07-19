@@ -54,6 +54,7 @@ Infrastructure and platform services completed during waves 1–4 (2026-07-18):
 - Final waves 1–4 (2026-07-18): R2 media pipeline + form wiring; Sentry + Upstash; buyer check-in status; env-gated same-origin API proxy; frontend/backend audit fixes (public builder profile, analytics instrumentation complete, CRM assignee filter, admin booth edit, project QR UI, partner redirect, idempotent seeds); deployment docs and Docker image; documentation synchronized with code.
 - Playwright smoke e2e suite (`apps/web-e2e`, `pnpm e2e`) covering critical buyer/builder/public flows; separate CI `e2e` job with Postgres (2026-07-19).
 - Admin cross-company catalog management (v1): platform_admin can manage any builder company's projects/inventory/visual maps/media via `/admin/companies/:id/catalog/...`, reusing portal services and UI (2026-07-19).
+- k6 load-test scenarios (`load/`): public browse, registration/login storm, buyer QR display, expo day, CRM portal, cache stampede; thresholds encode PERFORMANCE_REVIEW §15 targets; run against staging before the first exhibition (2026-07-19).
 
 ## Next
 
