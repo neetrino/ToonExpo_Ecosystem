@@ -4,11 +4,11 @@ Manual deployment checklist for the owner. This document covers **Google Cloud R
 
 ## Architecture overview
 
-| Component | Platform | Package |
-|-----------|----------|---------|
-| API | Google Cloud Run (`europe-west*`) | `@toonexpo/api` |
-| Web | Vercel | `@toonexpo/web` |
-| Database | Neon PostgreSQL | `@toonexpo/db` (Prisma) |
+| Component | Platform                          | Package                 |
+| --------- | --------------------------------- | ----------------------- |
+| API       | Google Cloud Run (`europe-west*`) | `@toonexpo/api`         |
+| Web       | Vercel                            | `@toonexpo/web`         |
+| Database  | Neon PostgreSQL                   | `@toonexpo/db` (Prisma) |
 
 Runtime flow: **browser → Next.js (Vercel) → NestJS REST API (Cloud Run) → Prisma → PostgreSQL**.
 
@@ -29,19 +29,37 @@ Runtime flow: **browser → Next.js (Vercel) → NestJS REST API (Cloud Run) →
 
 These keys were used during development and may have been exposed. **Rotate before launch:**
 
-| Service | Variables |
-|---------|-----------|
-| Resend | `RESEND_API_KEY` |
-| Cloudflare R2 | `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY` |
-| BOS integration | `BOS_API_KEY` |
-| Upstash Redis | `UPSTASH_REDIS_REST_TOKEN` |
-| Session / CSRF | `SESSION_TOKEN_PEPPER`, `CSRF_SECRET` (rotating invalidates all sessions) |
+| Service         | Variables                                                                 |
+| --------------- | ------------------------------------------------------------------------- |
+| Resend          | `RESEND_API_KEY`                                                          |
+| Cloudflare R2   | `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`                                |
+| BOS integration | `BOS_API_KEY`                                                             |
+| Upstash Redis   | `UPSTASH_REDIS_REST_TOKEN`                                                |
+| Session / CSRF  | `SESSION_TOKEN_PEPPER`, `CSRF_SECRET` (rotating invalidates all sessions) |
 
 Additional hardening:
 
 - Use a **dedicated Neon production branch/database**; keep `DATABASE_URL` (pooled) and `DIRECT_URL` (non-pooled) for that instance only.
-- **Do not run seed in production.** Omit `SEED_ADMIN_PASSWORD` or leave it unset; the seed script is for local/dev only.
-- If you must bootstrap an admin, set a strong `SEED_ADMIN_PASSWORD` once, run seed manually, then unset it.
+- **Do not run dev seed in production.** `pnpm --filter @toonexpo/db db:seed` is for local/dev only.
+- **First platform admin:** after migrations on an **empty** production database, run the production-safe seed once (see §2.1).
+
+### 2.1 Create the first platform admin (empty DB only)
+
+From the monorepo root, with production `DATABASE_URL` / `DIRECT_URL` in `.env`:
+
+```bash
+export PROD_ADMIN_EMAIL="you@company.com"
+export PROD_ADMIN_PASSWORD="your-strong-password-at-least-12-chars"
+pnpm --filter @toonexpo/db run db:seed:prod
+```
+
+Guardrails (non-zero exit if violated):
+
+- Both `PROD_ADMIN_EMAIL` and `PROD_ADMIN_PASSWORD` must be set.
+- Password must be ≥ 12 characters.
+- Database must have **zero** users (refuses if any account exists).
+
+Creates exactly one `platform_admin` — no demo companies or catalog data. Unset `PROD_ADMIN_PASSWORD` from your shell when done.
 
 ---
 
@@ -121,12 +139,12 @@ docker push europe-west1-docker.pkg.dev/PROJECT_ID/toonexpo/api:latest
 
 #### Dockerfile stages (summary)
 
-| Stage | Purpose |
-|-------|---------|
-| `base` | Node 24 (Debian slim), Corepack, pnpm 11.14 |
-| `prune` | `turbo prune @toonexpo/api --docker` — minimal build context |
-| `build` | `pnpm install`, `prisma generate`, `turbo build`, `pnpm deploy` production bundle |
-| `runner` | Non-root user `nestjs`, `NODE_ENV=production`, `CMD node dist/main.js` |
+| Stage    | Purpose                                                                           |
+| -------- | --------------------------------------------------------------------------------- |
+| `base`   | Node 24 (Debian slim), Corepack, pnpm 11.14                                       |
+| `prune`  | `turbo prune @toonexpo/api --docker` — minimal build context                      |
+| `build`  | `pnpm install`, `prisma generate`, `turbo build`, `pnpm deploy` production bundle |
+| `runner` | Non-root user `nestjs`, `NODE_ENV=production`, `CMD node dist/main.js`            |
 
 Prisma 7 uses the **library engine** with `@prisma/adapter-pg`; Debian slim is used (not Alpine) for native deps (`argon2`, `pg`).
 
@@ -163,32 +181,33 @@ Expect HTTP 200 with JSON `status: "ok"` when the database is reachable.
 
 Set these on the Cloud Run service (Console → Edit & deploy → Variables & secrets).
 
-| Variable | Required | Notes |
-|----------|----------|-------|
-| `NODE_ENV` | **Yes** | `production` |
-| `PORT` | **No — do not set** | Injected by Cloud Run |
-| `DATABASE_URL` | **Yes** | Neon **pooled** connection string |
-| `APP_URL` | **Yes** | Public web URL, e.g. `https://toonexpo.com` (emails, QR links) |
-| `CORS_ORIGINS` | **Yes** | Comma-separated browser origins, e.g. `https://toonexpo.com,https://www.toonexpo.com` — must include the exact Vercel/production web origin(s) |
-| `SESSION_TOKEN_PEPPER` | **Yes** | ≥ 32 chars; changing invalidates all sessions |
-| `CSRF_SECRET` | **Yes** | ≥ 32 chars |
-| `RESEND_API_KEY` | **Yes** (prod) | Validated when `NODE_ENV=production` |
-| `RESEND_FROM_EMAIL` | **Yes** (prod) | Verified sender in Resend |
-| `SESSION_COOKIE_NAME` | Optional | Default `toonexpo_session` |
-| `SESSION_IDLE_TTL_SECONDS` | Optional | Default 604800 (7d) |
-| `SESSION_ABSOLUTE_TTL_SECONDS` | Optional | Default 2592000 (30d) |
-| `CSRF_COOKIE_NAME` | Optional | Default `toonexpo_csrf` |
-| `UPSTASH_REDIS_REST_URL` | Optional* | Both Upstash vars required together for distributed rate limiting |
-| `UPSTASH_REDIS_REST_TOKEN` | Optional* | |
-| `R2_ACCOUNT_ID` | Optional | All R2 vars needed for media uploads |
-| `R2_ACCESS_KEY_ID` | Optional | |
-| `R2_SECRET_ACCESS_KEY` | Optional | |
-| `R2_BUCKET_NAME` | Optional | |
-| `R2_PUBLIC_URL` | Optional | Public CDN/base URL for R2 objects |
-| `BOS_API_KEY` | Optional | ≥ 32 chars; unset → inbound BOS provisioning returns 503 |
-| `SENTRY_DSN` | Optional | API error tracking |
-| `DIRECT_URL` | **Not on Cloud Run** | Migrations only (local/CI `.env`) |
-| `SEED_ADMIN_PASSWORD` | **Do not set** | Dev seed only |
+| Variable                                   | Required             | Notes                                                                                                                                          |
+| ------------------------------------------ | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `NODE_ENV`                                 | **Yes**              | `production`                                                                                                                                   |
+| `PORT`                                     | **No — do not set**  | Injected by Cloud Run                                                                                                                          |
+| `DATABASE_URL`                             | **Yes**              | Neon **pooled** connection string                                                                                                              |
+| `APP_URL`                                  | **Yes**              | Public web URL, e.g. `https://toonexpo.com` (emails, QR links)                                                                                 |
+| `CORS_ORIGINS`                             | **Yes**              | Comma-separated browser origins, e.g. `https://toonexpo.com,https://www.toonexpo.com` — must include the exact Vercel/production web origin(s) |
+| `SESSION_TOKEN_PEPPER`                     | **Yes**              | ≥ 32 chars; changing invalidates all sessions                                                                                                  |
+| `CSRF_SECRET`                              | **Yes**              | ≥ 32 chars                                                                                                                                     |
+| `RESEND_API_KEY`                           | **Yes** (prod)       | Validated when `NODE_ENV=production`                                                                                                           |
+| `RESEND_FROM_EMAIL`                        | **Yes** (prod)       | Verified sender in Resend                                                                                                                      |
+| `SESSION_COOKIE_NAME`                      | Optional             | Default `toonexpo_session`                                                                                                                     |
+| `SESSION_IDLE_TTL_SECONDS`                 | Optional             | Default 604800 (7d)                                                                                                                            |
+| `SESSION_ABSOLUTE_TTL_SECONDS`             | Optional             | Default 2592000 (30d)                                                                                                                          |
+| `CSRF_COOKIE_NAME`                         | Optional             | Default `toonexpo_csrf`                                                                                                                        |
+| `UPSTASH_REDIS_REST_URL`                   | Optional*            | Both Upstash vars required together for distributed rate limiting                                                                              |
+| `UPSTASH_REDIS_REST_TOKEN`                 | Optional*            |                                                                                                                                                |
+| `R2_ACCOUNT_ID`                            | Optional             | All R2 vars needed for media uploads                                                                                                           |
+| `R2_ACCESS_KEY_ID`                         | Optional             |                                                                                                                                                |
+| `R2_SECRET_ACCESS_KEY`                     | Optional             |                                                                                                                                                |
+| `R2_BUCKET_NAME`                           | Optional             |                                                                                                                                                |
+| `R2_PUBLIC_URL`                            | Optional             | Public CDN/base URL for R2 objects                                                                                                             |
+| `BOS_API_KEY`                              | Optional             | ≥ 32 chars; unset → inbound BOS provisioning returns 503                                                                                       |
+| `SENTRY_DSN`                               | Optional             | API error tracking                                                                                                                             |
+| `DIRECT_URL`                               | **Not on Cloud Run** | Migrations only (local/CI `.env`)                                                                                                              |
+| `SEED_ADMIN_PASSWORD`                      | **Do not set**       | Dev seed only (`db:seed`)                                                                                                                      |
+| `PROD_ADMIN_EMAIL` / `PROD_ADMIN_PASSWORD` | **Bootstrap only**   | One-off `db:seed:prod` on empty prod DB; never on Cloud Run runtime                                                                            |
 
 \* If one Upstash variable is set, the other must be set too (API startup validation).
 
@@ -210,11 +229,11 @@ Map `api.toonexpo.com` in Cloud Run → Domain mappings, then add DNS records Go
 
 Create a Vercel project from this repo:
 
-| Setting | Value |
-|---------|-------|
-| **Root Directory** | `apps/web` |
-| **Framework Preset** | Next.js |
-| **Node.js Version** | 24.x |
+| Setting              | Value      |
+| -------------------- | ---------- |
+| **Root Directory**   | `apps/web` |
+| **Framework Preset** | Next.js    |
+| **Node.js Version**  | 24.x       |
 
 `apps/web/vercel.json` configures monorepo install/build from the repo root:
 
@@ -225,12 +244,12 @@ Turbo builds `@toonexpo/contracts` and `@toonexpo/shared` first (`dependsOn: ["^
 
 ### 4.2 Vercel environment variables
 
-| Variable | Required | Notes |
-|----------|----------|-------|
-| `API_PROXY_TARGET` | **Staging / initial prod** | Cloud Run origin, e.g. `https://toonexpo-api-xxxxx-ew.a.run.app`. Enables same-origin `/api/v1/*` rewrites; keep the Run URL server-side only. |
-| `NEXT_PUBLIC_API_URL` | **Direct mode only** | When `API_PROXY_TARGET` is unset, set to `https://api.toonexpo.com` (or the Run URL for debugging). **Leave empty** when the proxy is enabled. |
-| `NEXT_PUBLIC_SENTRY_DSN` | Optional | Browser Sentry |
-| `SENTRY_AUTH_TOKEN` | Optional | CI/sourcemap upload only; not needed at runtime |
+| Variable                 | Required                   | Notes                                                                                                                                          |
+| ------------------------ | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `API_PROXY_TARGET`       | **Staging / initial prod** | Cloud Run origin, e.g. `https://toonexpo-api-xxxxx-ew.a.run.app`. Enables same-origin `/api/v1/*` rewrites; keep the Run URL server-side only. |
+| `NEXT_PUBLIC_API_URL`    | **Direct mode only**       | When `API_PROXY_TARGET` is unset, set to `https://api.toonexpo.com` (or the Run URL for debugging). **Leave empty** when the proxy is enabled. |
+| `NEXT_PUBLIC_SENTRY_DSN` | Optional                   | Browser Sentry                                                                                                                                 |
+| `SENTRY_AUTH_TOKEN`      | Optional                   | CI/sourcemap upload only; not needed at runtime                                                                                                |
 
 **Default posture (staging + first production deploy):** set `API_PROXY_TARGET` to the Cloud Run URL; leave `NEXT_PUBLIC_API_URL` empty. The browser never sees the Run hostname.
 
@@ -243,7 +262,9 @@ Turbo builds `@toonexpo/contracts` and `@toonexpo/shared` first (`dependsOn: ["^
 Sourcemap upload is **disabled** in `apps/web/next.config.ts`:
 
 ```typescript
-sourcemaps: { disable: true }
+sourcemaps: {
+  disable: true;
+}
 ```
 
 To enable later: set `SENTRY_AUTH_TOKEN` in Vercel, remove or set `disable: false`, and configure your Sentry org/project in the Sentry webpack plugin options.
@@ -267,10 +288,10 @@ After both services are deployed:
 
 ### Two connectivity modes (env matrix)
 
-| Mode | `API_PROXY_TARGET` (Vercel, server-only) | `NEXT_PUBLIC_API_URL` | Browser calls | Server Components call |
-|------|------------------------------------------|------------------------|---------------|-------------------------|
-| **Proxy (default staging / initial prod)** | Cloud Run origin, e.g. `https://…run.app` | empty / unset | Same-origin `/api/v1/*` (Next.js rewrite) | `API_PROXY_TARGET` directly (absolute URL) |
-| **Direct (after `api.toonexpo.com`)** | unset | `https://api.toonexpo.com` | API origin directly | same as browser |
+| Mode                                       | `API_PROXY_TARGET` (Vercel, server-only)  | `NEXT_PUBLIC_API_URL`      | Browser calls                             | Server Components call                     |
+| ------------------------------------------ | ----------------------------------------- | -------------------------- | ----------------------------------------- | ------------------------------------------ |
+| **Proxy (default staging / initial prod)** | Cloud Run origin, e.g. `https://…run.app` | empty / unset              | Same-origin `/api/v1/*` (Next.js rewrite) | `API_PROXY_TARGET` directly (absolute URL) |
+| **Direct (after `api.toonexpo.com`)**      | unset                                     | `https://api.toonexpo.com` | API origin directly                       | same as browser                            |
 
 Implementation: `apps/web/next.config.ts` (`rewrites()`), `apps/web/src/shared/config/env.ts`, `apps/web/src/shared/api/client.ts` (`buildApiUrl`).
 

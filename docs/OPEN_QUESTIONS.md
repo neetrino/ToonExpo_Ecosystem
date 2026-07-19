@@ -2,7 +2,7 @@
 
 Live register of unresolved decisions. Walk through this file with the owner before production launch. When a question is resolved, move the decision to `DECISIONS.md` and delete it here.
 
-Last updated: 2026-07-18.
+Last updated: 2026-07-19.
 
 ---
 
@@ -22,14 +22,6 @@ Last updated: 2026-07-18.
 
 ---
 
-## Q3. First platform admin in production (seed policy)
-
-**Context.** Dev/staging use Prisma seeds with demo companies and a seeded admin. Production must not contain demo data.
-
-**Needed from owner:** how to create the first `platform_admin` in prod — a one-off production-safe seed (admin only, strong password from env) or manual SQL/script during launch. Recommendation: minimal production seed that creates only the admin account and refuses to run if data already exists.
-
----
-
 ## Q4. BOS outbound integration scope
 
 **Context.** Inbound provisioning (BOS → ToonExpo company creation) is implemented and audited. Outbound summaries (ToonExpo → BOS) are documented as planned but blocked: BOS API is not available yet.
@@ -42,14 +34,10 @@ Last updated: 2026-07-18.
 
 **Context.** The docs mention features that were consciously NOT built for v1. Confirm they stay post-v1 (docs will be marked accordingly in the docs-sync pass):
 
-- Admin CMS for homepage/content blocks.
 - Global admin audit log (only BOS `IntegrationAuditLog` exists).
-- Admin editing of any company's catalog/inventory (currently builder portal only).
 - Public service-provider directory page (admin CRUD + readiness help flow exist).
-- PWA (manifest/offline).
-- Admin UI for BOS provisioning history (API exists, screen does not).
 
-**Needed from owner:** confirm post-v1 status, or pick any item to pull into the launch scope.
+**Needed from owner:** confirm post-v1 status for the remaining items, or pick any item to pull into the launch scope.
 
 ---
 
@@ -58,4 +46,4 @@ Last updated: 2026-07-18.
 - **Rotate secrets before production:** Resend, R2, BOS API key, Upstash token and the Neon password were exposed during development (chat/screenshots). Generate fresh production values; never reuse dev secrets.
 - **Separate production Neon database** (dev DB stays for development); run `prisma migrate deploy` against prod before first release.
 - **Enable Sentry sourcemap upload** in CI once `SENTRY_AUTH_TOKEN` is wired into the pipeline (currently disabled by design).
-- **Strong production values** for `SESSION_TOKEN_PEPPER`, `CSRF_SECRET`, `SEED_ADMIN_PASSWORD` (if seeding at all — see Q3).
+- **First platform admin:** use `pnpm --filter @toonexpo/db run db:seed:prod` on an empty production DB (see `DEPLOYMENT.md` and `DECISIONS.md`).

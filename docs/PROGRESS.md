@@ -4,6 +4,8 @@
 
 Final pre-production completion pass **closed** (2026-07-18). Sprints 0–6 and final completion waves 1–4 are done. Platform is ready for owner review (`OPEN_QUESTIONS.md`), performance architecture review, and manual deploy per `DEPLOYMENT.md`.
 
+**2026-07-19:** Self-service password change (`/profile/password`, `POST /auth/change-password`) and production-safe first-admin seed (`db:seed:prod`).
+
 ## Final Completion Waves (live tracker — keep updated)
 
 | Wave       | Scope                                                                                                                                                                                                                                  | Status  |
