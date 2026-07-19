@@ -68,6 +68,8 @@ cp .env.example .env
 
 pnpm install
 
+Git hooks install automatically via the root `prepare` script (Husky + lint-staged on pre-commit).
+
 pnpm --filter @toonexpo/db db:generate
 pnpm --filter @toonexpo/db db:validate
 
@@ -80,11 +82,11 @@ pnpm --filter @toonexpo/db db:seed
 
 Seeded accounts (password from `SEED_ADMIN_PASSWORD` in `.env`, or dev fallback documented in seed script — never commit real passwords):
 
-| Role | Email |
-|------|-------|
-| Platform admin | `admin@toonexpo.local` |
+| Role                               | Email                          |
+| ---------------------------------- | ------------------------------ |
+| Platform admin                     | `admin@toonexpo.local`         |
 | Company admin (first seed builder) | `builder.admin@toonexpo.local` |
-| Buyer (with QR) | `buyer@toonexpo.local` |
+| Buyer (with QR)                    | `buyer@toonexpo.local`         |
 
 Start both apps (web on `:3000`, API on `:4000`):
 
@@ -115,17 +117,17 @@ Deploy steps: `docs/DEPLOYMENT.md`.
 
 ## Documentation
 
-| Doc | Purpose |
-|-----|---------|
-| [Documentation Hub](./docs/00-Documentation-Hub.md) | Index |
-| [Tech Card](./docs/TECH_CARD.md) | Stack and operational decisions |
-| [Architecture](./docs/01-ARCHITECTURE.md) | System design |
-| [Module Status](./docs/MODULE_STATUS.md) | Per-module readiness |
-| [Progress](./docs/PROGRESS.md) | Sprint and wave tracker |
-| [Deployment](./docs/DEPLOYMENT.md) | Cloud Run + Vercel + Neon |
-| [Settings](./docs/SETTINGS.md) | Owner env cheat sheet |
-| [Open Questions](./docs/OPEN_QUESTIONS.md) | Pre-launch decisions |
-| [Frontend / Backend Boundary](./docs/architecture/FRONTEND_BACKEND_BOUNDARY.md) | Runtime rules |
+| Doc                                                                             | Purpose                         |
+| ------------------------------------------------------------------------------- | ------------------------------- |
+| [Documentation Hub](./docs/00-Documentation-Hub.md)                             | Index                           |
+| [Tech Card](./docs/TECH_CARD.md)                                                | Stack and operational decisions |
+| [Architecture](./docs/01-ARCHITECTURE.md)                                       | System design                   |
+| [Module Status](./docs/MODULE_STATUS.md)                                        | Per-module readiness            |
+| [Progress](./docs/PROGRESS.md)                                                  | Sprint and wave tracker         |
+| [Deployment](./docs/DEPLOYMENT.md)                                              | Cloud Run + Vercel + Neon       |
+| [Settings](./docs/SETTINGS.md)                                                  | Owner env cheat sheet           |
+| [Open Questions](./docs/OPEN_QUESTIONS.md)                                      | Pre-launch decisions            |
+| [Frontend / Backend Boundary](./docs/architecture/FRONTEND_BACKEND_BOUNDARY.md) | Runtime rules                   |
 
 ## Project size
 
