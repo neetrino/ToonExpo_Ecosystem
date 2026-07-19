@@ -104,7 +104,17 @@ export const apiFetch = async <T>(options: ApiFetchOptions): Promise<T> => {
   }
 
   if (!response.ok) {
-    throw new ApiError(response.status, response.statusText);
+    let code: string | undefined;
+    try {
+      const body = (await response.json()) as { code?: unknown };
+      if (typeof body.code === 'string') {
+        code = body.code;
+      }
+    } catch {
+      // Non-JSON error bodies fall back to status-only ApiError.
+    }
+
+    throw new ApiError(response.status, response.statusText, undefined, code);
   }
 
   if (isEmptyBody(response)) {

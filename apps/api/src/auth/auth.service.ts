@@ -3,35 +3,33 @@ import {
   Injectable,
   InternalServerErrorException,
   UnauthorizedException,
-} from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
+} from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import type {
   AuthSessionResponse,
+  ChangePasswordResponse,
   CsrfTokenResponse,
   ForgotPasswordResponse,
   UserResponse,
-} from "@toonexpo/contracts";
-import { AccountType, UserStatus } from "@toonexpo/db";
-import type { Request, Response } from "express";
+} from '@toonexpo/contracts';
+import { AccountType, UserStatus } from '@toonexpo/db';
+import type { Request, Response } from 'express';
 
 import {
   DUMMY_PASSWORD_HASH,
   SESSION_TOUCH_INTERVAL_MS,
-} from "../common/constants/app.constants.js";
-import type { AppEnv } from "../config/env.validation.js";
-import { PrismaService } from "../prisma/prisma.service.js";
-import { QrCodesService } from "../qr/qr-codes.service.js";
-import { AuthPasswordService } from "./auth-password.service.js";
-import { AuthUserResponseService } from "./auth-user-response.service.js";
-import { normalizeEmail } from "./mappers/user.mapper.js";
-import {
-  type ClientMeta,
-  SessionCookieService,
-} from "./session-cookie.service.js";
-import type { AuthenticatedUser } from "./types/authenticated-user.js";
-import { createCsrfToken } from "./utils/csrf-token.util.js";
-import { hashPassword, verifyPassword } from "./utils/password.util.js";
-import { hashSessionToken } from "./utils/session-token.util.js";
+} from '../common/constants/app.constants.js';
+import type { AppEnv } from '../config/env.validation.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { QrCodesService } from '../qr/qr-codes.service.js';
+import { AuthPasswordService } from './auth-password.service.js';
+import { AuthUserResponseService } from './auth-user-response.service.js';
+import { normalizeEmail } from './mappers/user.mapper.js';
+import { type ClientMeta, SessionCookieService } from './session-cookie.service.js';
+import type { AuthenticatedUser } from './types/authenticated-user.js';
+import { createCsrfToken } from './utils/csrf-token.util.js';
+import { hashPassword, verifyPassword } from './utils/password.util.js';
+import { hashSessionToken } from './utils/session-token.util.js';
 
 @Injectable()
 export class AuthService {
@@ -53,7 +51,7 @@ export class AuthService {
     const existing = await this.prisma.db.user.findUnique({ where: { email } });
 
     if (existing) {
-      throw new ConflictException("Email is already registered");
+      throw new ConflictException('Email is already registered');
     }
 
     const passwordHash = await hashPassword(input.password);
@@ -78,18 +76,14 @@ export class AuthService {
       });
 
       if (!created.buyerProfile) {
-        throw new InternalServerErrorException("Buyer profile was not created");
+        throw new InternalServerErrorException('Buyer profile was not created');
       }
 
       await this.qrCodes.createForBuyerProfile(created.buyerProfile.id, tx);
       return created;
     });
 
-    const csrfToken = await this.sessionCookies.issueSessionCookies(
-      user.id,
-      meta,
-      response,
-    );
+    const csrfToken = await this.sessionCookies.issueSessionCookies(user.id, meta, response);
     return { user: await this.userResponses.build(user), csrfToken };
   }
 
@@ -105,18 +99,14 @@ export class AuthService {
     const passwordValid = await verifyPassword(passwordHash, input.password);
 
     if (!user || storedHash == null || !passwordValid) {
-      throw new UnauthorizedException("Invalid email or password");
+      throw new UnauthorizedException('Invalid email or password');
     }
 
     if (user.status !== UserStatus.active) {
-      throw new UnauthorizedException("Invalid email or password");
+      throw new UnauthorizedException('Invalid email or password');
     }
 
-    const csrfToken = await this.sessionCookies.issueSessionCookies(
-      user.id,
-      meta,
-      response,
-    );
+    const csrfToken = await this.sessionCookies.issueSessionCookies(user.id, meta, response);
     return { user: await this.userResponses.build(user), csrfToken };
   }
 
@@ -140,27 +130,32 @@ export class AuthService {
     return this.passwordFlows.setPassword(input, meta, response);
   }
 
+  changePassword(
+    user: AuthenticatedUser,
+    input: { currentPassword: string; newPassword: string },
+  ): Promise<ChangePasswordResponse> {
+    return this.passwordFlows.changePassword(user, input);
+  }
+
   getMe(user: AuthenticatedUser): Promise<UserResponse> {
     return this.userResponses.build(user);
   }
 
   getCsrfToken(request: Request): CsrfTokenResponse {
-    const sessionCookieName = this.configService.get("SESSION_COOKIE_NAME", {
+    const sessionCookieName = this.configService.get('SESSION_COOKIE_NAME', {
       infer: true,
     });
     const cookies = request.cookies as Record<string, string> | undefined;
     const sessionToken = cookies?.[sessionCookieName];
     if (!sessionToken) {
-      throw new UnauthorizedException("Authentication required");
+      throw new UnauthorizedException('Authentication required');
     }
-    const secret = this.configService.get("CSRF_SECRET", { infer: true });
+    const secret = this.configService.get('CSRF_SECRET', { infer: true });
     return { csrfToken: createCsrfToken(sessionToken, secret) };
   }
 
-  async validateSessionToken(
-    rawToken: string,
-  ): Promise<AuthenticatedUser | null> {
-    const pepper = this.configService.get("SESSION_TOKEN_PEPPER", {
+  async validateSessionToken(rawToken: string): Promise<AuthenticatedUser | null> {
+    const pepper = this.configService.get('SESSION_TOKEN_PEPPER', {
       infer: true,
     });
     const tokenHash = hashSessionToken(rawToken, pepper);
@@ -173,11 +168,7 @@ export class AuthService {
       return null;
     }
 
-    await this.touchSession(
-      session.id,
-      session.absoluteExpiresAt,
-      session.lastSeenAt,
-    );
+    await this.touchSession(session.id, session.absoluteExpiresAt, session.lastSeenAt);
 
     return {
       id: session.user.id,
@@ -226,20 +217,15 @@ export class AuthService {
     lastSeenAt: Date | null,
   ): Promise<void> {
     const nowMs = Date.now();
-    if (
-      lastSeenAt != null &&
-      nowMs - lastSeenAt.getTime() < SESSION_TOUCH_INTERVAL_MS
-    ) {
+    if (lastSeenAt != null && nowMs - lastSeenAt.getTime() < SESSION_TOUCH_INTERVAL_MS) {
       return;
     }
 
-    const idleTtl = this.configService.get("SESSION_IDLE_TTL_SECONDS", {
+    const idleTtl = this.configService.get('SESSION_IDLE_TTL_SECONDS', {
       infer: true,
     });
     const now = new Date(nowMs);
-    const nextIdle = new Date(
-      Math.min(nowMs + idleTtl * 1000, absoluteExpiresAt.getTime()),
-    );
+    const nextIdle = new Date(Math.min(nowMs + idleTtl * 1000, absoluteExpiresAt.getTime()));
 
     await this.prisma.db.session.update({
       where: { id: sessionId },

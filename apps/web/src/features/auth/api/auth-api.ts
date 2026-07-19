@@ -1,34 +1,31 @@
 import type {
   AuthSessionResponse,
+  ChangePasswordRequest,
+  ChangePasswordResponse,
   ForgotPasswordRequest,
   ForgotPasswordResponse,
   LoginRequest,
   RegisterRequest,
   SetPasswordRequest,
   UserResponse,
-} from "@toonexpo/contracts";
+} from '@toonexpo/contracts';
 
-import { apiFetch } from "@/shared/api/client";
-import {
-  clearCsrfTokenCache,
-  setCsrfTokenCache,
-} from "@/shared/api/csrf";
-import { ApiError, isApiErrorStatus } from "@/shared/api/errors";
+import { apiFetch } from '@/shared/api/client';
+import { clearCsrfTokenCache, setCsrfTokenCache } from '@/shared/api/csrf';
+import { ApiError, isApiErrorStatus } from '@/shared/api/errors';
 
 const jsonCredentials = {
-  credentials: "include" as const,
-  headers: { "Content-Type": "application/json" },
+  credentials: 'include' as const,
+  headers: { 'Content-Type': 'application/json' },
 };
 
 /**
  * Registers a buyer and establishes a session cookie.
  */
-export const registerUser = async (
-  body: RegisterRequest,
-): Promise<AuthSessionResponse> => {
+export const registerUser = async (body: RegisterRequest): Promise<AuthSessionResponse> => {
   const result = await apiFetch<AuthSessionResponse>({
-    path: "/auth/register",
-    method: "POST",
+    path: '/auth/register',
+    method: 'POST',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
@@ -39,12 +36,10 @@ export const registerUser = async (
 /**
  * Logs in with email/password and establishes a session cookie.
  */
-export const loginUser = async (
-  body: LoginRequest,
-): Promise<AuthSessionResponse> => {
+export const loginUser = async (body: LoginRequest): Promise<AuthSessionResponse> => {
   const result = await apiFetch<AuthSessionResponse>({
-    path: "/auth/login",
-    method: "POST",
+    path: '/auth/login',
+    method: 'POST',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
@@ -55,12 +50,10 @@ export const loginUser = async (
 /**
  * Requests a password-reset email (always opaque 200).
  */
-export const forgotPassword = (
-  body: ForgotPasswordRequest,
-): Promise<ForgotPasswordResponse> =>
+export const forgotPassword = (body: ForgotPasswordRequest): Promise<ForgotPasswordResponse> =>
   apiFetch({
-    path: "/auth/forgot-password",
-    method: "POST",
+    path: '/auth/forgot-password',
+    method: 'POST',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
@@ -68,12 +61,10 @@ export const forgotPassword = (
 /**
  * Sets a password from an invite token and establishes a session cookie.
  */
-export const setPassword = async (
-  body: SetPasswordRequest,
-): Promise<AuthSessionResponse> => {
+export const setPassword = async (body: SetPasswordRequest): Promise<AuthSessionResponse> => {
   const result = await apiFetch<AuthSessionResponse>({
-    path: "/auth/set-password",
-    method: "POST",
+    path: '/auth/set-password',
+    method: 'POST',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
@@ -82,13 +73,25 @@ export const setPassword = async (
 };
 
 /**
+ * Changes the authenticated user's password (CSRF-protected).
+ */
+export const changePassword = (body: ChangePasswordRequest): Promise<ChangePasswordResponse> =>
+  apiFetch({
+    path: '/auth/change-password',
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+
+/**
  * Revokes the current session and clears the cookie.
  */
 export const logoutUser = async (): Promise<void> => {
   await apiFetch<void>({
-    path: "/auth/logout",
-    method: "POST",
-    credentials: "include",
+    path: '/auth/logout',
+    method: 'POST',
+    credentials: 'include',
   });
   clearCsrfTokenCache();
 };
@@ -98,10 +101,10 @@ export const logoutUser = async (): Promise<void> => {
  */
 export const getMe = (cookieHeader?: string): Promise<UserResponse> => {
   const options: Parameters<typeof apiFetch<UserResponse>>[0] = {
-    path: "/auth/me",
-    method: "GET",
-    credentials: "include",
-    cache: "no-store",
+    path: '/auth/me',
+    method: 'GET',
+    credentials: 'include',
+    cache: 'no-store',
   };
 
   if (cookieHeader) {
@@ -113,9 +116,7 @@ export const getMe = (cookieHeader?: string): Promise<UserResponse> => {
 /**
  * Returns the current user or `null` when unauthenticated (401).
  */
-export const getMeOrNull = async (
-  cookieHeader?: string,
-): Promise<UserResponse | null> => {
+export const getMeOrNull = async (cookieHeader?: string): Promise<UserResponse | null> => {
   try {
     return await getMe(cookieHeader);
   } catch (error) {

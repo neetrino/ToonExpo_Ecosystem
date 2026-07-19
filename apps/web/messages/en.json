@@ -324,6 +324,7 @@
     "nav": {
       "label": "Account sections",
       "profile": "Profile",
+      "password": "Password",
       "favorites": "Favorites",
       "checkin": "Check-in",
       "qr": "My QR",
@@ -335,6 +336,27 @@
       "phone": "Phone",
       "phoneEmpty": "Not set",
       "accountType": "Account type"
+    },
+    "changePassword": {
+      "title": "Change password",
+      "subtitle": "Update your sign-in password. Other active sessions will be signed out.",
+      "fields": {
+        "currentPassword": "Current password",
+        "newPassword": "New password",
+        "confirmPassword": "Confirm new password"
+      },
+      "validation": {
+        "currentPassword": "Enter your current password"
+      },
+      "errors": {
+        "invalidCurrentPassword": "Current password is incorrect",
+        "samePassword": "New password must differ from the current one",
+        "tooManyRequests": "Too many attempts. Please wait a minute and try again.",
+        "generic": "Could not change password. Please try again."
+      },
+      "submit": "Save new password",
+      "submitting": "Saving…",
+      "success": "Password updated successfully."
     },
     "qr": {
       "title": "My QR",

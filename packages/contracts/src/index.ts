@@ -2,7 +2,7 @@
  * Health check response returned by NestJS `/api/v1/health`.
  */
 export type HealthResponse = {
-  status: "ok" | "degraded" | "error";
+  status: 'ok' | 'degraded' | 'error';
   service: string;
   timestamp: string;
 };
@@ -10,16 +10,24 @@ export type HealthResponse = {
 /**
  * API version prefix used by NestJS controllers.
  */
-export const API_V1_PREFIX = "/api/v1" as const;
+export const API_V1_PREFIX = '/api/v1' as const;
 
 export {
+  CHANGE_PASSWORD_ERROR_CODES,
   CSRF_COOKIE_NAME,
   CSRF_HEADER_NAME,
-} from "./auth.js";
+  PASSWORD_MAX_LENGTH,
+  PASSWORD_MIN_LENGTH,
+  changePasswordRequestSchema,
+  passwordFieldSchema,
+} from './auth.js';
 
 export type {
   AccountType,
   AuthSessionResponse,
+  ChangePasswordErrorCode,
+  ChangePasswordRequest,
+  ChangePasswordResponse,
   CompanyMemberRole,
   CompanyMemberStatus,
   CompanyType,
@@ -30,7 +38,7 @@ export type {
   RegisterRequest,
   UserResponse,
   UserStatus,
-} from "./auth.js";
+} from './auth.js';
 
 export type {
   ApartmentAvailabilitySummary,
@@ -55,7 +63,7 @@ export type {
   ProjectPriceRangeOverlayListResponse,
   ProjectPricesOverlay,
   PublicationStatus,
-} from "./catalog.js";
+} from './catalog.js';
 
 export type {
   AdminCompanyProjectListItem,
@@ -74,7 +82,7 @@ export type {
   UpdateCompanyMemberRequest,
   UpdateCompanyProfileRequest,
   UpdateCompanyRequest,
-} from "./companies.js";
+} from './companies.js';
 
 export type {
   BulkCreatePortalApartmentsRequest,
@@ -96,7 +104,7 @@ export type {
   UpdatePortalFloorRequest,
   UpdatePortalProjectRequest,
   UpdatePortalPublicationRequest,
-} from "./portal.js";
+} from './portal.js';
 
 export type {
   BuyerQrResponse,
@@ -113,7 +121,7 @@ export type {
   QrScanContext,
   QrScanResultStatus,
   ResolveQrRequest,
-} from "./qr.js";
+} from './qr.js';
 
 export type {
   AttachCrmDealApartmentBody,
@@ -143,7 +151,7 @@ export type {
   RequestStatus,
   UpdateCrmActivityBody,
   UpdateCrmDealBody,
-} from "./crm.js";
+} from './crm.js';
 
 export type {
   CreateReadinessAssessmentBody,
@@ -174,7 +182,7 @@ export type {
   UpdateReadinessRecommendationBody,
   UpdateReadinessRequiredActionBody,
   UpsertReadinessScoreBody,
-} from "./readiness.js";
+} from './readiness.js';
 
 export type {
   AdminPartnerDetail,
@@ -197,7 +205,7 @@ export type {
   UpdateAdminPartnerBody,
   UpdatePartnerOfferBody,
   UpdatePortalPartnerBody,
-} from "./partners.js";
+} from './partners.js';
 
 export type {
   BankOfferListItem,
@@ -212,7 +220,7 @@ export type {
   PublicMortgageOfferItem,
   PublicMortgageOfferListResponse,
   UpdateBankOfferBody,
-} from "./mortgage.js";
+} from './mortgage.js';
 
 export type {
   ActiveEventResponse,
@@ -264,7 +272,7 @@ export type {
   UpdateVenueMapRequest,
   VenueMapListResponse,
   VenueMapSummary,
-} from "./exhibition.js";
+} from './exhibition.js';
 
 export type {
   AdminAnalyticsOverview,
@@ -282,7 +290,7 @@ export type {
   ReadinessCategoryAverage,
   SourceCount,
   StatusCount,
-} from "./analytics.js";
+} from './analytics.js';
 
 export type {
   BuyerFavoritesListResponse,
@@ -292,7 +300,7 @@ export type {
   FavoriteListItem,
   FavoriteProjectListItem,
   FavoriteTargetType,
-} from "./favorites.js";
+} from './favorites.js';
 
 export type {
   AdminServiceProviderItem,
@@ -307,7 +315,7 @@ export type {
   ServiceProviderType,
   UpdateServiceProviderBody,
   UpdateServiceProviderCategoryBody,
-} from "./service-providers.js";
+} from './service-providers.js';
 
 export type {
   AdminBosProvisioningDetail,
@@ -321,7 +329,7 @@ export type {
   BosRequestedModule,
   IntegrationAuditAction,
   IntegrationAuditLogItem,
-} from "./integrations.js";
+} from './integrations.js';
 
 export type {
   CreatePortalVisualCanvasRequest,
@@ -339,10 +347,6 @@ export type {
   VisualHotspotTargetStatus,
   VisualHotspotTargetType,
   VisualMapContextType,
-} from "./visual-map.js";
+} from './visual-map.js';
 
-export type {
-  ListMediaQuery,
-  MediaAssetItem,
-  MediaListResponse,
-} from "./media.js";
+export type { ListMediaQuery, MediaAssetItem, MediaListResponse } from './media.js';

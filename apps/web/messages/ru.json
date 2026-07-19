@@ -324,6 +324,7 @@
     "nav": {
       "label": "Разделы кабинета",
       "profile": "Профиль",
+      "password": "Пароль",
       "favorites": "Избранное",
       "checkin": "Check-in",
       "qr": "Мой QR",
@@ -335,6 +336,27 @@
       "phone": "Телефон",
       "phoneEmpty": "Не указан",
       "accountType": "Тип аккаунта"
+    },
+    "changePassword": {
+      "title": "Сменить пароль",
+      "subtitle": "Обновите пароль для входа. Другие активные сессии будут завершены.",
+      "fields": {
+        "currentPassword": "Текущий пароль",
+        "newPassword": "Новый пароль",
+        "confirmPassword": "Подтвердите новый пароль"
+      },
+      "validation": {
+        "currentPassword": "Введите текущий пароль"
+      },
+      "errors": {
+        "invalidCurrentPassword": "Текущий пароль неверный",
+        "samePassword": "Новый пароль должен отличаться от текущего",
+        "tooManyRequests": "Слишком много попыток. Подождите минуту и повторите.",
+        "generic": "Не удалось сменить пароль. Попробуйте снова."
+      },
+      "submit": "Сохранить новый пароль",
+      "submitting": "Сохранение…",
+      "success": "Пароль успешно обновлён."
     },
     "qr": {
       "title": "Мой QR",

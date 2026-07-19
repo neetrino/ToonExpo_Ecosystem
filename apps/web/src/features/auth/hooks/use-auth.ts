@@ -1,25 +1,23 @@
 import type {
+  ChangePasswordRequest,
   ForgotPasswordRequest,
   SetPasswordRequest,
   UserResponse,
-} from "@toonexpo/contracts";
-import {
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+} from '@toonexpo/contracts';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import {
+  changePassword,
   forgotPassword,
   getMeOrNull,
   loginUser,
   logoutUser,
   registerUser,
   setPassword,
-} from "@/features/auth/api/auth-api";
-import type { LoginFormValues } from "@/features/auth/schemas/login.schema";
-import type { RegisterFormValues } from "@/features/auth/schemas/register.schema";
-import { AUTH_ME_QUERY_KEY } from "@/shared/config/auth.constants";
+} from '@/features/auth/api/auth-api';
+import type { LoginFormValues } from '@/features/auth/schemas/login.schema';
+import type { RegisterFormValues } from '@/features/auth/schemas/register.schema';
+import { AUTH_ME_QUERY_KEY } from '@/shared/config/auth.constants';
 
 /**
  * Client query for the current session user (`null` when logged out).
@@ -79,6 +77,14 @@ export const useSetPasswordMutation = () => {
     },
   });
 };
+
+/**
+ * Change-password mutation for authenticated users.
+ */
+export const useChangePasswordMutation = () =>
+  useMutation({
+    mutationFn: (body: ChangePasswordRequest) => changePassword(body),
+  });
 
 /**
  * Logout mutation — invalidates the `me` query after cookie clear.

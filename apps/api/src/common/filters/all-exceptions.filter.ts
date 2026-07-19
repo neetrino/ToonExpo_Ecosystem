@@ -6,13 +6,13 @@ import {
   Logger,
   type ArgumentsHost,
   type ExceptionFilter,
-} from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { SentryExceptionCaptured } from "@sentry/nestjs";
-import type { Request, Response } from "express";
+} from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { SentryExceptionCaptured } from '@sentry/nestjs';
+import type { Request, Response } from 'express';
 
-import { NODE_ENV_PRODUCTION } from "../constants/app.constants.js";
-import type { AppEnv } from "../../config/env.validation.js";
+import { NODE_ENV_PRODUCTION } from '../constants/app.constants.js';
+import type { AppEnv } from '../../config/env.validation.js';
 
 type ErrorBody = {
   statusCode: number;
@@ -20,6 +20,7 @@ type ErrorBody = {
   error: string;
   path: string;
   timestamp: string;
+  code?: string;
 };
 
 @Catch()
@@ -43,7 +44,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
         method: request.method,
         statusCode: body.statusCode,
       },
-      typeof body.message === "string" ? body.message : body.message.join("; "),
+      typeof body.message === 'string' ? body.message : body.message.join('; '),
     );
 
     response.status(body.statusCode).json(body);
@@ -56,29 +57,23 @@ export class AllExceptionsFilter implements ExceptionFilter {
       return this.fromHttpException(exception, path, timestamp);
     }
 
-    const nodeEnv = this.configService.get("NODE_ENV", { infer: true });
+    const nodeEnv = this.configService.get('NODE_ENV', { infer: true });
     const isProduction = nodeEnv === NODE_ENV_PRODUCTION;
 
     return {
       statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-      message: isProduction
-        ? "Internal server error"
-        : this.unknownMessage(exception),
-      error: "Internal Server Error",
+      message: isProduction ? 'Internal server error' : this.unknownMessage(exception),
+      error: 'Internal Server Error',
       path,
       timestamp,
     };
   }
 
-  private fromHttpException(
-    exception: HttpException,
-    path: string,
-    timestamp: string,
-  ): ErrorBody {
+  private fromHttpException(exception: HttpException, path: string, timestamp: string): ErrorBody {
     const statusCode = exception.getStatus();
     const exceptionResponse = exception.getResponse();
 
-    if (typeof exceptionResponse === "string") {
+    if (typeof exceptionResponse === 'string') {
       return {
         statusCode,
         message: exceptionResponse,
@@ -89,30 +84,26 @@ export class AllExceptionsFilter implements ExceptionFilter {
     }
 
     const payload = exceptionResponse as Record<string, unknown>;
-    const message = payload["message"];
-    const error = payload["error"];
+    const message = payload['message'];
+    const error = payload['error'];
+    const code = payload['code'];
 
     return {
       statusCode,
       message: this.normalizeMessage(message, exception.message),
-      error: typeof error === "string" ? error : exception.name,
+      error: typeof error === 'string' ? error : exception.name,
       path,
       timestamp,
+      ...(typeof code === 'string' ? { code } : {}),
     };
   }
 
-  private normalizeMessage(
-    message: unknown,
-    fallback: string,
-  ): string | string[] {
-    if (typeof message === "string") {
+  private normalizeMessage(message: unknown, fallback: string): string | string[] {
+    if (typeof message === 'string') {
       return message;
     }
 
-    if (
-      Array.isArray(message) &&
-      message.every((item) => typeof item === "string")
-    ) {
+    if (Array.isArray(message) && message.every((item) => typeof item === 'string')) {
       return message;
     }
 
@@ -124,6 +115,6 @@ export class AllExceptionsFilter implements ExceptionFilter {
       return exception.message;
     }
 
-    return "Internal server error";
+    return 'Internal server error';
   }
 }

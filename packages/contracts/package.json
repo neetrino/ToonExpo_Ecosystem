@@ -18,6 +18,9 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run --passWithNoTests"
   },
+  "dependencies": {
+    "zod": "4.4.3"
+  },
   "devDependencies": {
     "@toonexpo/config": "workspace:*",
     "eslint": "^9.39.2",

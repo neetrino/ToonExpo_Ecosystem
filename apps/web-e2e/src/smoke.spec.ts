@@ -70,6 +70,47 @@ test.describe('smoke', () => {
     await expect(page.getByRole('heading', { name: 'Իմ պրոֆիլը' })).toBeVisible();
   });
 
+  test('buyer can change password and re-login', async ({ page }) => {
+    const stamp = Date.now();
+    const email = `e2e.pwd.${stamp}@toonexpo.local`;
+    const initialPassword = 'E2eBuyerPass123!';
+    const nextPassword = 'E2eNewPass456!';
+
+    await page.goto('/hy/auth/register');
+    await page.getByLabel('Անուն ազգանուն').fill(`E2E Pwd ${stamp}`);
+    await page.getByLabel('Էլ․ փոստ').fill(email);
+    await page.getByLabel('Հեռախոս').fill(`+3749${String(stamp).slice(-7)}`);
+    await page.getByLabel('Գաղտնաբառ').fill(initialPassword);
+    await page.getByRole('button', { name: 'Ստեղծել հաշիվ' }).click();
+    await expect(page).toHaveURL(/\/hy\/profile/);
+
+    await page.goto('/hy/profile/password');
+    await page.getByLabel('Ընթացիկ գաղտնաբառ', { exact: true }).fill(initialPassword);
+    await page.getByLabel('Նոր գաղտնաբառ', { exact: true }).fill(nextPassword);
+    await page.getByLabel('Հաստատել նոր գաղտնաբառը', { exact: true }).fill(nextPassword);
+
+    const changeResponse = page.waitForResponse(
+      (response) =>
+        response.url().includes('/auth/change-password') &&
+        response.request().method() === 'POST' &&
+        response.ok(),
+    );
+    await page.getByRole('button', { name: 'Պահպանել նոր գաղտնաբառը' }).click();
+    await changeResponse;
+    await expect(page.getByText('Գաղտնաբառը հաջողությամբ թարմացվեց։')).toBeVisible();
+
+    await page.goto('/hy/profile');
+    await page.getByRole('button', { name: 'Ելք' }).click();
+    await page.waitForURL(/\/hy(\/|$)|\/auth\/login/);
+
+    await page.goto('/hy/auth/login');
+    await page.getByLabel('Էլ․ փոստ').fill(email);
+    await page.getByLabel('Գաղտնաբառ').fill(nextPassword);
+    await page.getByRole('button', { name: 'Մուտք' }).click();
+    await page.waitForURL((url) => !url.pathname.includes('/auth/login'));
+    await expect(page).toHaveURL(/\/hy\/profile/);
+  });
+
   test('buyer login shows QR on profile', async ({ page }) => {
     await loginAs(page, SEED_BUYER_EMAIL);
     await page.goto('/hy/profile/qr');
