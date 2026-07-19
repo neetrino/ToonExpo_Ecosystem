@@ -31,7 +31,6 @@ jobs:
           --health-retries 10
 
     env:
-      NODE_ENV: development
       PORT: "4000"
       APP_URL: http://localhost:3000
       CORS_ORIGINS: http://localhost:3000
@@ -93,6 +92,8 @@ jobs:
 
       - name: Build
         run: pnpm build
+        env:
+          NODE_ENV: production
 
   e2e:
     name: Playwright smoke e2e
@@ -115,7 +116,6 @@ jobs:
           --health-retries 10
 
     env:
-      NODE_ENV: development
       PORT: "4000"
       APP_URL: http://localhost:3000
       CORS_ORIGINS: http://localhost:3000
@@ -150,6 +150,8 @@ jobs:
 
       - name: Build API and web (API boots briefly for Next prerender)
         run: pnpm run e2e:build
+        env:
+          NODE_ENV: production
 
       - name: Install Playwright Chromium
         run: pnpm --filter @toonexpo/web-e2e exec playwright install --with-deps chromium
