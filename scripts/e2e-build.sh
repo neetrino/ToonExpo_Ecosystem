@@ -14,9 +14,13 @@ pnpm turbo run build --filter=@toonexpo/api...
 
 API_PID=""
 cleanup() {
-  if [[ -n "${API_PID}" ]] && kill -0 "${API_PID}" 2>/dev/null; then
-    kill "${API_PID}" 2>/dev/null || true
+  if [[ -n "${API_PID}" ]]; then
+    kill -TERM "${API_PID}" 2>/dev/null || true
     wait "${API_PID}" 2>/dev/null || true
+  fi
+
+  if command -v fuser >/dev/null 2>&1; then
+    fuser -k "${API_PORT}/tcp" 2>/dev/null || true
   fi
 }
 trap cleanup EXIT
@@ -41,3 +45,6 @@ if ! curl -sf "$HEALTH_URL" >/dev/null; then
 fi
 
 pnpm turbo run build --filter=@toonexpo/web...
+
+cleanup
+trap - EXIT

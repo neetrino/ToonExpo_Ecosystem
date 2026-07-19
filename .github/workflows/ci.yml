@@ -154,5 +154,14 @@ jobs:
       - name: Install Playwright Chromium
         run: pnpm --filter @toonexpo/web-e2e exec playwright install --with-deps chromium
 
+      - name: Free dev server ports
+        run: |
+          for port in 4000 3000; do
+            pids=$(lsof -ti :"$port" || true)
+            if [ -n "$pids" ]; then
+              kill -TERM $pids || true
+            fi
+          done
+
       - name: Run smoke e2e
         run: pnpm --filter @toonexpo/web-e2e e2e
