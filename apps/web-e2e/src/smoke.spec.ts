@@ -112,13 +112,13 @@ test.describe('smoke', () => {
     await expect(page.getByText('Գաղտնաբառը հաջողությամբ թարմացվեց։')).toBeVisible();
 
     await page.goto('/hy/profile');
-    await page.getByRole('button', { name: 'Ելք' }).first().click();
+    await page.locator('button.w-full').filter({ hasText: 'Ելք' }).click();
     await page.waitForURL(/\/hy(\/|$)|\/auth\/login/);
 
     await page.goto('/hy/auth/login');
     await page.getByLabel('Էլ․ փոստ').fill(email);
     await page.getByLabel('Գաղտնաբառ').fill(nextPassword);
-    await page.getByRole('button', { name: 'Մուտք' }).first().click();
+    await page.locator('form').getByRole('button', { name: 'Մուտք' }).click();
     await page.waitForURL((url) => !url.pathname.includes('/auth/login'));
     await expect(page).toHaveURL(/\/hy\/profile/);
   });
