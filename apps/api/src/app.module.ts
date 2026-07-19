@@ -1,42 +1,43 @@
-import { Module } from "@nestjs/common";
-import { ConfigModule } from "@nestjs/config";
-import { APP_GUARD } from "@nestjs/core";
-import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
-import { SentryModule } from "@sentry/nestjs/setup";
-import { LoggerModule } from "nestjs-pino";
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { SentryModule } from '@sentry/nestjs/setup';
+import { LoggerModule } from 'nestjs-pino';
 
-import { AdminCompaniesModule } from "./admin/companies/admin-companies.module.js";
-import { AnalyticsModule } from "./analytics/analytics.module.js";
-import { AuthModule } from "./auth/auth.module.js";
-import { AccountTypesGuard } from "./auth/guards/account-types.guard.js";
-import { CsrfOriginGuard } from "./auth/guards/csrf-origin.guard.js";
-import { CsrfTokenGuard } from "./auth/guards/csrf-token.guard.js";
-import { SessionAuthGuard } from "./auth/guards/session-auth.guard.js";
-import { CatalogModule } from "./catalog/catalog.module.js";
-import { NODE_ENV_PRODUCTION } from "./common/constants/app.constants.js";
-import { AllExceptionsFilter } from "./common/filters/all-exceptions.filter.js";
-import { WebRevalidationModule } from "./common/web-revalidation/web-revalidation.module.js";
-import { CompanyMembersModule } from "./company/company-members.module.js";
-import { resolveEnvFilePaths } from "./config/env-files.js";
-import { validateEnv } from "./config/env.validation.js";
-import { CrmModule } from "./crm/crm.module.js";
-import { EmailModule } from "./email/email.module.js";
-import { ExhibitionModule } from "./exhibition/exhibition.module.js";
-import { FavoritesModule } from "./favorites/favorites.module.js";
-import { HealthModule } from "./health/health.module.js";
-import { IntegrationsModule } from "./integrations/integrations.module.js";
-import { MediaModule } from "./media/media.module.js";
-import { MortgageModule } from "./mortgage/mortgage.module.js";
-import { PartnersModule } from "./partners/partners.module.js";
-import { PortalModule } from "./portal/portal.module.js";
-import { PrismaModule } from "./prisma/prisma.module.js";
-import { QrModule } from "./qr/qr.module.js";
-import { ThrottlerConfigService } from "./rate-limit/throttler-config.service.js";
-import { ReadinessModule } from "./readiness/readiness.module.js";
-import { ServiceProvidersModule } from "./service-providers/service-providers.module.js";
-import { VisualMapModule } from "./visual-map/visual-map.module.js";
+import { AdminCatalogModule } from './admin/catalog/admin-catalog.module.js';
+import { AdminCompaniesModule } from './admin/companies/admin-companies.module.js';
+import { AnalyticsModule } from './analytics/analytics.module.js';
+import { AuthModule } from './auth/auth.module.js';
+import { AccountTypesGuard } from './auth/guards/account-types.guard.js';
+import { CsrfOriginGuard } from './auth/guards/csrf-origin.guard.js';
+import { CsrfTokenGuard } from './auth/guards/csrf-token.guard.js';
+import { SessionAuthGuard } from './auth/guards/session-auth.guard.js';
+import { CatalogModule } from './catalog/catalog.module.js';
+import { NODE_ENV_PRODUCTION } from './common/constants/app.constants.js';
+import { AllExceptionsFilter } from './common/filters/all-exceptions.filter.js';
+import { WebRevalidationModule } from './common/web-revalidation/web-revalidation.module.js';
+import { CompanyMembersModule } from './company/company-members.module.js';
+import { resolveEnvFilePaths } from './config/env-files.js';
+import { validateEnv } from './config/env.validation.js';
+import { CrmModule } from './crm/crm.module.js';
+import { EmailModule } from './email/email.module.js';
+import { ExhibitionModule } from './exhibition/exhibition.module.js';
+import { FavoritesModule } from './favorites/favorites.module.js';
+import { HealthModule } from './health/health.module.js';
+import { IntegrationsModule } from './integrations/integrations.module.js';
+import { MediaModule } from './media/media.module.js';
+import { MortgageModule } from './mortgage/mortgage.module.js';
+import { PartnersModule } from './partners/partners.module.js';
+import { PortalModule } from './portal/portal.module.js';
+import { PrismaModule } from './prisma/prisma.module.js';
+import { QrModule } from './qr/qr.module.js';
+import { ThrottlerConfigService } from './rate-limit/throttler-config.service.js';
+import { ReadinessModule } from './readiness/readiness.module.js';
+import { ServiceProvidersModule } from './service-providers/service-providers.module.js';
+import { VisualMapModule } from './visual-map/visual-map.module.js';
 
-const isProduction = process.env["NODE_ENV"] === NODE_ENV_PRODUCTION;
+const isProduction = process.env['NODE_ENV'] === NODE_ENV_PRODUCTION;
 
 @Module({
   imports: [
@@ -53,7 +54,7 @@ const isProduction = process.env["NODE_ENV"] === NODE_ENV_PRODUCTION;
           ? {}
           : {
               transport: {
-                target: "pino-pretty",
+                target: 'pino-pretty',
                 options: {
                   singleLine: true,
                   colorize: true,
@@ -61,11 +62,7 @@ const isProduction = process.env["NODE_ENV"] === NODE_ENV_PRODUCTION;
               },
             }),
         redact: {
-          paths: [
-            "req.headers.authorization",
-            "req.headers.cookie",
-            "res.headers['set-cookie']",
-          ],
+          paths: ['req.headers.authorization', 'req.headers.cookie', "res.headers['set-cookie']"],
           remove: true,
         },
       },
@@ -79,6 +76,7 @@ const isProduction = process.env["NODE_ENV"] === NODE_ENV_PRODUCTION;
     AnalyticsModule,
     AuthModule,
     AdminCompaniesModule,
+    AdminCatalogModule,
     CompanyMembersModule,
     CatalogModule,
     PortalModule,
