@@ -35,7 +35,6 @@ Last updated: 2026-07-19.
 **Context.** The docs mention features that were consciously NOT built for v1. Confirm they stay post-v1 (docs will be marked accordingly in the docs-sync pass):
 
 - Global admin audit log (only BOS `IntegrationAuditLog` exists).
-- Public service-provider directory page (admin CRUD + readiness help flow exist).
 
 **Needed from owner:** confirm post-v1 status for the remaining items, or pick any item to pull into the launch scope.
 

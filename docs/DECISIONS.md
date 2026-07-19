@@ -83,7 +83,12 @@ These inputs do not block local development or Sprint 1 CSRF hardening.
 - **Production first admin:** use `pnpm --filter @toonexpo/db run db:seed:prod` with `PROD_ADMIN_EMAIL` + `PROD_ADMIN_PASSWORD` (≥12 chars). Script creates only one `platform_admin`, refuses when any user already exists, and never seeds demo companies. Dev seed (`db:seed`) remains local-only.
 - **Self-service password change:** authenticated users of all account types may change password from `/profile/password` (`POST /auth/change-password`). Wrong current password returns HTTP 400 (session preserved). On success, all other sessions are revoked (current session kept), mirroring reset-password security.
 - **Not planned (mobile):** Admin CMS for homepage/content blocks and PWA (manifest/offline) are out of scope — a WebView app will cover mobile instead.
-- **Pulled into v1 (next):** Admin editing of any company's catalog/inventory; Admin UI for BOS provisioning history.
+- **Pulled into v1:** Admin editing of any company's catalog/inventory (platform team fills content in the first months); Admin UI for BOS provisioning history still next.
+
+## Confirmed 2026-07-19 (Admin catalog + deferred public directory)
+
+- **Admin cross-company catalog (v1):** `platform_admin` may manage any builder company's catalog (projects, buildings, floors, apartments, translations, publication, media, visual maps, project QR, company profile logo) through `/admin/companies/:companyId/catalog/...` and `/admin/companies/:companyId/profile`. Portal catalog services take an explicit `companyId`; portal controllers keep membership scoping; admin controllers reuse the same services. Web admin UI reuses builder portal components via catalog scope.
+- **Public service-provider directory page:** deferred to post-v1. Admin CRUD and the readiness help-flow link remain the main v1 value for service providers (owner confirmed).
 
 ## Source Docs
 
