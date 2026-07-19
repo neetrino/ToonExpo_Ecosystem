@@ -18,10 +18,6 @@ cleanup() {
     kill -TERM "${API_PID}" 2>/dev/null || true
     wait "${API_PID}" 2>/dev/null || true
   fi
-
-  if command -v fuser >/dev/null 2>&1; then
-    fuser -k "${API_PORT}/tcp" 2>/dev/null || true
-  fi
 }
 trap cleanup EXIT
 
@@ -44,7 +40,7 @@ if ! curl -sf "$HEALTH_URL" >/dev/null; then
   exit 1
 fi
 
-pnpm turbo run build --filter=@toonexpo/web...
+NODE_ENV=production pnpm turbo run build --filter=@toonexpo/web...
 
 cleanup
 trap - EXIT
