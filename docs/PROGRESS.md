@@ -23,8 +23,6 @@ Infrastructure and platform services completed during waves 1–4 (2026-07-18):
 - Deploy artifacts: `apps/api/Dockerfile`, `.dockerignore`, `apps/web/vercel.json`, `docs/DEPLOYMENT.md`, `docs/SETTINGS.md`.
 - Idempotent Prisma seeds (`pnpm --filter @toonexpo/db db:seed`).
 
-**Owner note (pending discussion):** Sentry → Telegram alerts requested in `toso.md` — not implemented; discuss alert routing before production.
-
 ## Completed
 
 - Product/module documentation split by modules.
@@ -53,6 +51,7 @@ Infrastructure and platform services completed during waves 1–4 (2026-07-18):
 - Sprint 6 core closed: Visual Map / Hotspots (module 06) — VisualMapCanvas + VisualHotspot schema (percent coords, polymorphic context project/building/floor), builder portal editor (canvas list per project, click-to-place hotspot editor with hierarchy validation and broken-target warnings, publication controls), public catalog integration (project/building/floor pages show published primary canvases with tappable SVG markers, list fallback always kept); buyer favorites — BuyerFavorite schema (polymorphic, no FK), idempotent PUT/DELETE endpoints, localized favorites list reusing catalog card logic + price visibility, batch status endpoint for hearts, `favorite_added` analytics tracking, favorites totals + top projects in admin and builder analytics dashboards, hearts in catalog (list/detail/apartment), `/profile/favorites` page with profile tab (guests get login-redirect hearts); orchestrator end-to-end verification passed (2026-07-18); monorepo green (273 tests, live smoke 8/8).
 - Final waves 1–4 (2026-07-18): R2 media pipeline + form wiring; Sentry + Upstash; buyer check-in status; env-gated same-origin API proxy; frontend/backend audit fixes (public builder profile, analytics instrumentation complete, CRM assignee filter, admin booth edit, project QR UI, partner redirect, idempotent seeds); deployment docs and Docker image; documentation synchronized with code.
 - Playwright smoke e2e suite (`apps/web-e2e`, `pnpm e2e`) covering critical buyer/builder/public flows; separate CI `e2e` job with Postgres (2026-07-19).
+- Admin cross-company catalog management (v1): platform_admin can manage any builder company's projects/inventory/visual maps/media via `/admin/companies/:id/catalog/...`, reusing portal services and UI (2026-07-19).
 
 ## Next
 
@@ -60,9 +59,8 @@ Infrastructure and platform services completed during waves 1–4 (2026-07-18):
 2. **Performance P0 (backend)** — ✅ Done (2026-07-19): session touch coalescing (10m), CRM one-open-deal partial unique + transactional intake, Neon pool/timeouts, trust proxy / `req.ip`, booth search DB filter (min length 2), route graph in-memory TTL cache, check-in QR pass-through.
 3. **Owner OPEN_QUESTIONS walkthrough** — `docs/OPEN_QUESTIONS.md` (design variant, domains, prod admin bootstrap, BOS outbound, post-v1 scope confirmation, secrets rotation).
 4. **Owner manual deploy** — `docs/DEPLOYMENT.md` + `docs/SETTINGS.md` (Vercel web, Cloud Run API, Neon `migrate deploy`).
-5. **Sentry → Telegram alerts** — owner request in `toso.md`; pending discussion (not in v1 scope).
-6. **BOS outbound summaries** — push readiness/lead summaries to BOS (blocked on BOS platform API contract).
-7. **Deferred post-v1** (confirm in OPEN_QUESTIONS Q6): admin homepage CMS, global admin audit log, admin cross-company catalog editing, public service-provider directory, PWA, BOS provisioning admin UI.
+5. **BOS outbound summaries** — push readiness/lead summaries to BOS (blocked on BOS platform API contract).
+6. **Deferred post-v1** (confirm in OPEN_QUESTIONS Q5): admin homepage CMS, global admin audit log, public service-provider directory page, PWA, BOS provisioning admin UI. Admin cross-company catalog editing pulled into v1 (2026-07-19).
 
 ## Environment Inputs Before Staging / Production
 
