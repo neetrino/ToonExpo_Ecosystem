@@ -11,6 +11,7 @@
     "SESSION_TOKEN_PEPPER",
     "CSRF_SECRET",
     "BOS_API_KEY",
+    "SEED_ADMIN_PASSWORD",
     "CI"
   ],
   "tasks": {

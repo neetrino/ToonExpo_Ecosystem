@@ -39,6 +39,7 @@ jobs:
       DIRECT_URL: postgresql://toonexpo:toonexpo@localhost:5432/toonexpo
       SESSION_TOKEN_PEPPER: ci-only-session-token-pepper-min-32-chars
       CSRF_SECRET: ci-only-csrf-secret-value-min-32-chars!!
+      SEED_ADMIN_PASSWORD: ChangeMeAdmin123!
 
     steps:
       - name: Checkout
@@ -89,6 +90,9 @@ jobs:
 
       - name: Test
         run: pnpm test
+
+      - name: Seed database
+        run: pnpm --filter @toonexpo/db db:seed
 
       - name: Build
         run: pnpm run e2e:build
@@ -145,6 +149,9 @@ jobs:
 
       - name: Apply migrations
         run: pnpm --filter @toonexpo/db db:migrate:deploy
+
+      - name: Seed database
+        run: pnpm --filter @toonexpo/db db:seed
 
       - name: Build API and web (API boots briefly for Next prerender)
         run: pnpm run e2e:build
