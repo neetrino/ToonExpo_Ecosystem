@@ -1,20 +1,22 @@
-"use client";
+'use client';
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useCatalogScope } from '@/features/builder/catalog-scope-context';
+import { catalogMediaContext } from '@/features/builder/catalog-scope';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
+import { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 
-import { useCreateBuildingMutation } from "@/features/builder/hooks/use-portal-inventory";
+import { useCreateBuildingMutation } from '@/features/builder/hooks/use-portal-inventory';
 import {
   createBuildingSchema,
   type CreateBuildingFormValues,
-} from "@/features/builder/schemas/inventory.schema";
-import { MediaUploadField } from "@/features/media/components/media-upload-field";
-import { toOptionalMediaId } from "@/features/media/schemas/media-fields.schema";
-import { Button } from "@/shared/ui/button";
-import { FormField } from "@/shared/ui/form-field";
-import { Input } from "@/shared/ui/input";
+} from '@/features/builder/schemas/inventory.schema';
+import { MediaUploadField } from '@/features/media/components/media-upload-field';
+import { toOptionalMediaId } from '@/features/media/schemas/media-fields.schema';
+import { Button } from '@/shared/ui/button';
+import { FormField } from '@/shared/ui/form-field';
+import { Input } from '@/shared/ui/input';
 
 type AddBuildingFormProps = {
   projectId: string;
@@ -24,7 +26,9 @@ type AddBuildingFormProps = {
  * Inline form to add a building to a project.
  */
 export const AddBuildingForm = ({ projectId }: AddBuildingFormProps) => {
-  const t = useTranslations("Builder.inventory");
+  const scope = useCatalogScope();
+  const mediaContext = catalogMediaContext(scope);
+  const t = useTranslations('Builder.inventory');
   const mutation = useCreateBuildingMutation(projectId);
   const [error, setError] = useState<string | null>(null);
   const {
@@ -35,7 +39,7 @@ export const AddBuildingForm = ({ projectId }: AddBuildingFormProps) => {
     formState: { errors, isSubmitting },
   } = useForm<CreateBuildingFormValues>({
     resolver: zodResolver(createBuildingSchema),
-    defaultValues: { name: "", description: "", coverMediaId: "" },
+    defaultValues: { name: '', description: '', coverMediaId: '' },
   });
 
   const onSubmit = handleSubmit(async (values) => {
@@ -43,16 +47,12 @@ export const AddBuildingForm = ({ projectId }: AddBuildingFormProps) => {
     try {
       await mutation.mutateAsync({
         name: values.name,
-        ...(values.description.length > 0
-          ? { description: values.description }
-          : {}),
-        ...(toOptionalMediaId(values.coverMediaId)
-          ? { coverMediaId: values.coverMediaId }
-          : {}),
+        ...(values.description.length > 0 ? { description: values.description } : {}),
+        ...(toOptionalMediaId(values.coverMediaId) ? { coverMediaId: values.coverMediaId } : {}),
       });
       reset();
     } catch {
-      setError(t("errors.generic"));
+      setError(t('errors.generic'));
     }
   });
 
@@ -64,16 +64,16 @@ export const AddBuildingForm = ({ projectId }: AddBuildingFormProps) => {
       className="flex flex-col gap-3 rounded-sm border border-border p-3"
       noValidate
     >
-      <p className="text-sm font-medium text-ink">{t("addBuilding")}</p>
+      <p className="text-sm font-medium text-ink">{t('addBuilding')}</p>
       <FormField
         id="building-name"
-        label={t("buildingName")}
-        error={errors.name ? t("validation.name") : undefined}
+        label={t('buildingName')}
+        error={errors.name ? t('validation.name') : undefined}
       >
-        <Input id="building-name" {...register("name")} />
+        <Input id="building-name" {...register('name')} />
       </FormField>
-      <FormField id="building-description" label={t("buildingDescription")}>
-        <Input id="building-description" {...register("description")} />
+      <FormField id="building-description" label={t('buildingDescription')}>
+        <Input id="building-description" {...register('description')} />
       </FormField>
       <Controller
         control={control}
@@ -81,8 +81,8 @@ export const AddBuildingForm = ({ projectId }: AddBuildingFormProps) => {
         render={({ field, fieldState }) => (
           <MediaUploadField
             id="building-cover-new"
-            label={t("coverMedia")}
-            context="portal"
+            label={t('coverMedia')}
+            context={mediaContext}
             value={field.value}
             onChange={field.onChange}
             error={fieldState.error?.message}
@@ -95,7 +95,7 @@ export const AddBuildingForm = ({ projectId }: AddBuildingFormProps) => {
         </p>
       ) : null}
       <Button type="submit" size="sm" variant="ghost" disabled={busy}>
-        {busy ? t("adding") : t("addBuilding")}
+        {busy ? t('adding') : t('addBuilding')}
       </Button>
     </form>
   );

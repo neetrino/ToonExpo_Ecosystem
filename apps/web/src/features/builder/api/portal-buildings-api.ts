@@ -3,23 +3,24 @@ import type {
   PortalBuildingSummary,
   UpdatePortalBuildingRequest,
   UpdatePortalPublicationRequest,
-} from "@toonexpo/contracts";
+} from '@toonexpo/contracts';
 
-import { apiFetch } from "@/shared/api/client";
+import { apiFetch } from '@/shared/api/client';
 
-import { jsonCredentials } from "./portal-request";
+import { catalogPath, jsonCredentials, type PortalRequestOptions } from './portal-request';
 
 /**
  * Lists buildings for a portal project.
  */
 export const listPortalBuildings = (
   projectId: string,
+  options: PortalRequestOptions = {},
 ): Promise<PortalBuildingSummary[]> =>
   apiFetch<PortalBuildingSummary[]>({
-    path: `/portal/projects/${encodeURIComponent(projectId)}/buildings`,
-    method: "GET",
-    credentials: "include",
-    cache: "no-store",
+    path: catalogPath(`/portal/projects/${encodeURIComponent(projectId)}/buildings`, options),
+    method: 'GET',
+    credentials: 'include',
+    cache: 'no-store',
   });
 
 /**
@@ -28,10 +29,11 @@ export const listPortalBuildings = (
 export const createPortalBuilding = (
   projectId: string,
   body: CreatePortalBuildingRequest,
+  options: PortalRequestOptions = {},
 ): Promise<PortalBuildingSummary> =>
   apiFetch<PortalBuildingSummary>({
-    path: `/portal/projects/${encodeURIComponent(projectId)}/buildings`,
-    method: "POST",
+    path: catalogPath(`/portal/projects/${encodeURIComponent(projectId)}/buildings`, options),
+    method: 'POST',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
@@ -42,10 +44,11 @@ export const createPortalBuilding = (
 export const updatePortalBuilding = (
   id: string,
   body: UpdatePortalBuildingRequest,
+  options: PortalRequestOptions = {},
 ): Promise<PortalBuildingSummary> =>
   apiFetch<PortalBuildingSummary>({
-    path: `/portal/buildings/${encodeURIComponent(id)}`,
-    method: "PATCH",
+    path: catalogPath(`/portal/buildings/${encodeURIComponent(id)}`, options),
+    method: 'PATCH',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
@@ -56,10 +59,11 @@ export const updatePortalBuilding = (
 export const updatePortalBuildingPublication = (
   id: string,
   body: UpdatePortalPublicationRequest,
+  options: PortalRequestOptions = {},
 ): Promise<PortalBuildingSummary> =>
   apiFetch<PortalBuildingSummary>({
-    path: `/portal/buildings/${encodeURIComponent(id)}/publication`,
-    method: "PATCH",
+    path: catalogPath(`/portal/buildings/${encodeURIComponent(id)}/publication`, options),
+    method: 'PATCH',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
@@ -67,9 +71,12 @@ export const updatePortalBuildingPublication = (
 /**
  * Deletes a draft building (company_admin).
  */
-export const deletePortalBuilding = (id: string): Promise<void> =>
+export const deletePortalBuilding = (
+  id: string,
+  options: PortalRequestOptions = {},
+): Promise<void> =>
   apiFetch<void>({
-    path: `/portal/buildings/${encodeURIComponent(id)}`,
-    method: "DELETE",
-    credentials: "include",
+    path: catalogPath(`/portal/buildings/${encodeURIComponent(id)}`, options),
+    method: 'DELETE',
+    credentials: 'include',
   });

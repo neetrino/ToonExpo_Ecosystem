@@ -1,29 +1,26 @@
-"use client";
+'use client';
 
-import type {
-  PortalProjectDetail,
-  PortalVisualHotspotItem,
-} from "@toonexpo/contracts";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { catalogProjectDetailHref } from '@/features/builder/catalog-scope';
+import { useCatalogScope } from '@/features/builder/catalog-scope-context';
+import type { PortalProjectDetail, PortalVisualHotspotItem } from '@toonexpo/contracts';
+import { useTranslations } from 'next-intl';
+import { useState } from 'react';
 
-import { PortalHotspotForm } from "@/features/visual-map/components/portal-hotspot-form";
-import {
-  toHotspotBody,
-} from "@/features/visual-map/utils/portal-request-mappers";
-import { PortalHotspotMapPicker } from "@/features/visual-map/components/portal-hotspot-map-picker";
+import { PortalHotspotForm } from '@/features/visual-map/components/portal-hotspot-form';
+import { toHotspotBody } from '@/features/visual-map/utils/portal-request-mappers';
+import { PortalHotspotMapPicker } from '@/features/visual-map/components/portal-hotspot-map-picker';
 import {
   useCreatePortalVisualHotspotMutation,
   useDeletePortalVisualHotspotMutation,
   usePortalVisualCanvasQuery,
   useUpdatePortalVisualCanvasMutation,
   useUpdatePortalVisualHotspotMutation,
-} from "@/features/visual-map/hooks/use-portal-visual-map";
-import { PublicationStatusBadge } from "@/features/partners/components/partner-badges";
-import { Link } from "@/i18n/navigation";
-import { Button } from "@/shared/ui/button";
-import { Card } from "@/shared/ui/card";
-import { cn } from "@/shared/ui/cn";
+} from '@/features/visual-map/hooks/use-portal-visual-map';
+import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
+import { Link } from '@/i18n/navigation';
+import { Button } from '@/shared/ui/button';
+import { Card } from '@/shared/ui/card';
+import { cn } from '@/shared/ui/cn';
 
 type PortalCanvasEditorPageProps = {
   project: PortalProjectDetail;
@@ -33,28 +30,14 @@ type PortalCanvasEditorPageProps = {
 /**
  * Builder portal visual canvas editor with click-to-place hotspots.
  */
-export const PortalCanvasEditorPage = ({
-  project,
-  canvasId,
-}: PortalCanvasEditorPageProps) => {
-  const t = useTranslations("Builder.visualMap.editor");
+export const PortalCanvasEditorPage = ({ project, canvasId }: PortalCanvasEditorPageProps) => {
+  const scope = useCatalogScope();
+  const t = useTranslations('Builder.visualMap.editor');
   const canvasQuery = usePortalVisualCanvasQuery(canvasId);
-  const updateCanvasMutation = useUpdatePortalVisualCanvasMutation(
-    project.id,
-    canvasId,
-  );
-  const createHotspotMutation = useCreatePortalVisualHotspotMutation(
-    project.id,
-    canvasId,
-  );
-  const updateHotspotMutation = useUpdatePortalVisualHotspotMutation(
-    project.id,
-    canvasId,
-  );
-  const deleteHotspotMutation = useDeletePortalVisualHotspotMutation(
-    project.id,
-    canvasId,
-  );
+  const updateCanvasMutation = useUpdatePortalVisualCanvasMutation(project.id, canvasId);
+  const createHotspotMutation = useCreatePortalVisualHotspotMutation(project.id, canvasId);
+  const updateHotspotMutation = useUpdatePortalVisualHotspotMutation(project.id, canvasId);
+  const deleteHotspotMutation = useDeletePortalVisualHotspotMutation(project.id, canvasId);
 
   const [selectedHotspotId, setSelectedHotspotId] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
@@ -64,20 +47,20 @@ export const PortalCanvasEditorPage = ({
   } | null>(null);
 
   if (canvasQuery.isLoading) {
-    return <p className="text-sm text-ink-secondary">{t("loading")}</p>;
+    return <p className="text-sm text-ink-secondary">{t('loading')}</p>;
   }
 
   if (canvasQuery.isError || !canvasQuery.data) {
     return (
       <div className="flex flex-col gap-3">
         <p role="alert" className="text-sm text-danger">
-          {t("notFound")}
+          {t('notFound')}
         </p>
         <Link
-          href={`/builder/projects/${project.id}`}
+          href={catalogProjectDetailHref(scope, project.id)}
           className="text-sm font-medium text-brand hover:underline"
         >
-          {t("back")}
+          {t('back')}
         </Link>
       </div>
     );
@@ -85,19 +68,18 @@ export const PortalCanvasEditorPage = ({
 
   const canvas = canvasQuery.data;
   const hotspots = canvas.hotspots;
-  const selectedHotspot =
-    hotspots.find((hotspot) => hotspot.id === selectedHotspotId) ?? null;
+  const selectedHotspot = hotspots.find((hotspot) => hotspot.id === selectedHotspotId) ?? null;
   const hotspotBusy =
     createHotspotMutation.isPending ||
     updateHotspotMutation.isPending ||
     deleteHotspotMutation.isPending;
 
   const publishCanvas = async () => {
-    await updateCanvasMutation.mutateAsync({ publicationStatus: "published" });
+    await updateCanvasMutation.mutateAsync({ publicationStatus: 'published' });
   };
 
   const archiveCanvas = async () => {
-    await updateCanvasMutation.mutateAsync({ publicationStatus: "archived" });
+    await updateCanvasMutation.mutateAsync({ publicationStatus: 'archived' });
   };
 
   return (
@@ -105,18 +87,16 @@ export const PortalCanvasEditorPage = ({
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex flex-col gap-1">
           <Link
-            href={`/builder/projects/${project.id}`}
+            href={catalogProjectDetailHref(scope, project.id)}
             className="text-sm text-ink-secondary hover:text-ink"
           >
-            {t("back")}
+            {t('back')}
           </Link>
-          <h1 className="text-xl font-semibold text-ink">
-            {canvas.title ?? t("untitled")}
-          </h1>
+          <h1 className="text-xl font-semibold text-ink">{canvas.title ?? t('untitled')}</h1>
           <PublicationStatusBadge status={canvas.publicationStatus} />
         </div>
         <div className="flex flex-wrap gap-2">
-          {canvas.publicationStatus !== "published" ? (
+          {canvas.publicationStatus !== 'published' ? (
             <Button
               type="button"
               size="sm"
@@ -126,10 +106,10 @@ export const PortalCanvasEditorPage = ({
                 void publishCanvas();
               }}
             >
-              {t("publish")}
+              {t('publish')}
             </Button>
           ) : null}
-          {canvas.publicationStatus !== "archived" ? (
+          {canvas.publicationStatus !== 'archived' ? (
             <Button
               type="button"
               size="sm"
@@ -139,7 +119,7 @@ export const PortalCanvasEditorPage = ({
                 void archiveCanvas();
               }}
             >
-              {t("archive")}
+              {t('archive')}
             </Button>
           ) : null}
         </div>
@@ -176,7 +156,7 @@ export const PortalCanvasEditorPage = ({
 
         <Card className="flex flex-col gap-3">
           <h2 className="text-sm font-semibold text-ink">
-            {creating || selectedHotspot ? t("hotspotPanel") : t("hotspotEmpty")}
+            {creating || selectedHotspot ? t('hotspotPanel') : t('hotspotEmpty')}
           </h2>
           {creating || selectedHotspot ? (
             <PortalHotspotForm
@@ -211,7 +191,7 @@ export const PortalCanvasEditorPage = ({
               }
             />
           ) : (
-            <p className="text-sm text-ink-secondary">{t("hotspotHint")}</p>
+            <p className="text-sm text-ink-secondary">{t('hotspotHint')}</p>
           )}
         </Card>
       </div>
@@ -225,17 +205,11 @@ type HotspotListProps = {
   onSelect: (hotspotId: string) => void;
 };
 
-const HotspotList = ({
-  hotspots,
-  selectedHotspotId,
-  onSelect,
-}: HotspotListProps) => {
-  const t = useTranslations("Builder.visualMap.editor.hotspotList");
+const HotspotList = ({ hotspots, selectedHotspotId, onSelect }: HotspotListProps) => {
+  const t = useTranslations('Builder.visualMap.editor.hotspotList');
 
   if (hotspots.length === 0) {
-    return (
-      <p className="text-sm text-ink-secondary">{t("empty")}</p>
-    );
+    return <p className="text-sm text-ink-secondary">{t('empty')}</p>;
   }
 
   return (
@@ -245,14 +219,14 @@ const HotspotList = ({
           <button
             type="button"
             className={cn(
-              "flex w-full items-center justify-between gap-3 px-4 py-3 text-left text-sm hover:bg-surface",
-              selectedHotspotId === hotspot.id && "bg-surface",
+              'flex w-full items-center justify-between gap-3 px-4 py-3 text-left text-sm hover:bg-surface',
+              selectedHotspotId === hotspot.id && 'bg-surface',
             )}
             onClick={() => onSelect(hotspot.id)}
           >
             <span className="font-medium text-ink">{hotspot.label}</span>
             <span className="text-xs text-ink-secondary">
-              {hotspot.targetStatus !== "ok"
+              {hotspot.targetStatus !== 'ok'
                 ? t(`targetStatus.${hotspot.targetStatus}`)
                 : t(`publicationStatuses.${hotspot.publicationStatus}`)}
             </span>

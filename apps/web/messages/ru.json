@@ -627,6 +627,15 @@
         "resendSubmitting": "Отправка…",
         "resendSuccess": "Приглашение отправлено повторно",
         "resendNotFound": "У этой компании нет приглашённого администратора"
+      },
+      "catalog": {
+        "title": "Каталог",
+        "description": "Управляйте проектами, инвентарём, медиа и визуальными картами этого застройщика.",
+        "open": "Управлять каталогом",
+        "breadcrumbLabel": "Навигация по каталогу",
+        "breadcrumbCompanies": "Компании",
+        "breadcrumbCatalog": "Каталог",
+        "companyFallback": "Компания"
       }
     },
     "readiness": {

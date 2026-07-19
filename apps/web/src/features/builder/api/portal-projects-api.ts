@@ -5,15 +5,16 @@ import type {
   ProjectQrResponse,
   UpdatePortalProjectRequest,
   UpdatePortalPublicationRequest,
-} from "@toonexpo/contracts";
+} from '@toonexpo/contracts';
 
-import { apiFetch } from "@/shared/api/client";
+import { apiFetch } from '@/shared/api/client';
 
 import {
+  catalogPath,
   jsonCredentials,
   withPortalCookie,
   type PortalRequestOptions,
-} from "./portal-request";
+} from './portal-request';
 
 /**
  * Lists all company projects including drafts.
@@ -31,10 +32,10 @@ export const listPortalProjects = (
   return apiFetch<PortalProjectListResponse>(
     withPortalCookie(
       {
-        path: `/portal/projects?${params.toString()}`,
-        method: "GET",
-        credentials: "include",
-        cache: "no-store",
+        path: `${catalogPath('/portal/projects', options)}?${params.toString()}`,
+        method: 'GET',
+        credentials: 'include',
+        cache: 'no-store',
       },
       options.cookieHeader,
     ),
@@ -51,10 +52,10 @@ export const getPortalProject = (
   apiFetch<PortalProjectDetail>(
     withPortalCookie(
       {
-        path: `/portal/projects/${encodeURIComponent(id)}`,
-        method: "GET",
-        credentials: "include",
-        cache: "no-store",
+        path: catalogPath(`/portal/projects/${encodeURIComponent(id)}`, options),
+        method: 'GET',
+        credentials: 'include',
+        cache: 'no-store',
       },
       options.cookieHeader,
     ),
@@ -65,10 +66,11 @@ export const getPortalProject = (
  */
 export const createPortalProject = (
   body: CreatePortalProjectRequest,
+  options: PortalRequestOptions = {},
 ): Promise<PortalProjectDetail> =>
   apiFetch<PortalProjectDetail>({
-    path: "/portal/projects",
-    method: "POST",
+    path: catalogPath('/portal/projects', options),
+    method: 'POST',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
@@ -79,10 +81,11 @@ export const createPortalProject = (
 export const updatePortalProject = (
   id: string,
   body: UpdatePortalProjectRequest,
+  options: PortalRequestOptions = {},
 ): Promise<PortalProjectDetail> =>
   apiFetch<PortalProjectDetail>({
-    path: `/portal/projects/${encodeURIComponent(id)}`,
-    method: "PATCH",
+    path: catalogPath(`/portal/projects/${encodeURIComponent(id)}`, options),
+    method: 'PATCH',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
@@ -93,10 +96,11 @@ export const updatePortalProject = (
 export const updatePortalProjectPublication = (
   id: string,
   body: UpdatePortalPublicationRequest,
+  options: PortalRequestOptions = {},
 ): Promise<PortalProjectDetail> =>
   apiFetch<PortalProjectDetail>({
-    path: `/portal/projects/${encodeURIComponent(id)}/publication`,
-    method: "PATCH",
+    path: catalogPath(`/portal/projects/${encodeURIComponent(id)}/publication`, options),
+    method: 'PATCH',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
@@ -104,11 +108,14 @@ export const updatePortalProjectPublication = (
 /**
  * Deletes a draft project (company_admin).
  */
-export const deletePortalProject = (id: string): Promise<void> =>
+export const deletePortalProject = (
+  id: string,
+  options: PortalRequestOptions = {},
+): Promise<void> =>
   apiFetch<void>({
-    path: `/portal/projects/${encodeURIComponent(id)}`,
-    method: "DELETE",
-    credentials: "include",
+    path: catalogPath(`/portal/projects/${encodeURIComponent(id)}`, options),
+    method: 'DELETE',
+    credentials: 'include',
   });
 
 /**
@@ -121,10 +128,10 @@ export const getPortalProjectQr = (
   apiFetch<ProjectQrResponse>(
     withPortalCookie(
       {
-        path: `/portal/projects/${encodeURIComponent(projectId)}/qr`,
-        method: "GET",
-        credentials: "include",
-        cache: "no-store",
+        path: catalogPath(`/portal/projects/${encodeURIComponent(projectId)}/qr`, options),
+        method: 'GET',
+        credentials: 'include',
+        cache: 'no-store',
       },
       options.cookieHeader,
     ),

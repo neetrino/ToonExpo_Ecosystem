@@ -5,9 +5,11 @@ import {
   SEED_APARTMENT_NUMBER,
   SEED_APARTMENT_VISIBLE_AFTER_LOGIN_ID,
   SEED_BUILDER_ADMIN_EMAIL,
+  SEED_BUILDER_COMPANY_ID,
   SEED_BUILDING_NAME,
   SEED_BUYER_EMAIL,
   SEED_FLOOR_LABEL,
+  SEED_PLATFORM_ADMIN_EMAIL,
   SEED_PROJECT_ID,
   SEED_PROJECT_NAME,
 } from './helpers/env.js';
@@ -230,5 +232,46 @@ test.describe('smoke', () => {
     await loginAs(page, SEED_BUYER_EMAIL);
     await page.goto('/hy/admin');
     await expect(page.getByRole('heading', { name: 'Էջը չի գտնվել' })).toBeVisible();
+  });
+
+  test('admin can edit a company catalog project', async ({ page }) => {
+    await loginAs(page, SEED_PLATFORM_ADMIN_EMAIL);
+    await page.goto(
+      `/hy/admin/companies/${SEED_BUILDER_COMPANY_ID}/catalog/projects/${SEED_PROJECT_ID}`,
+    );
+    await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+
+    const nameField = page.getByLabel('Անուն', { exact: true }).first();
+    await expect(nameField).toBeVisible();
+    const originalName = await nameField.inputValue();
+    const tempName = `${originalName} E2E`;
+
+    await nameField.fill(tempName);
+    const saveButton = page.getByRole('button', { name: 'Պահպանել', exact: true });
+    await expect(saveButton).toBeEnabled();
+    const saveResponse = page.waitForResponse(
+      (response) =>
+        response.url().includes(`/admin/companies/${SEED_BUILDER_COMPANY_ID}/catalog/projects/`) &&
+        response.request().method() === 'PATCH' &&
+        response.ok(),
+    );
+    await saveButton.click();
+    await saveResponse;
+    await expect(page.getByRole('status')).toContainText('Նախագիծը թարմացված է');
+
+    // Reload so form defaults match the temp name; restoring original then dirties the form.
+    await page.reload();
+    await expect(nameField).toHaveValue(tempName);
+    await nameField.fill(originalName);
+    await expect(saveButton).toBeEnabled();
+    const restoreResponse = page.waitForResponse(
+      (response) =>
+        response.url().includes(`/admin/companies/${SEED_BUILDER_COMPANY_ID}/catalog/projects/`) &&
+        response.request().method() === 'PATCH' &&
+        response.ok(),
+    );
+    await saveButton.click();
+    await restoreResponse;
+    await expect(page.getByRole('status')).toContainText('Նախագիծը թարմացված է');
   });
 });

@@ -627,6 +627,15 @@
         "resendSubmitting": "Ուղարկում…",
         "resendSuccess": "Հրավերն կրկին ուղարկված է",
         "resendNotFound": "Այս ընկերության համար հրավիրված ադմին չկա"
+      },
+      "catalog": {
+        "title": "Կատալոգ",
+        "description": "Կառավարեք այս կառուցապատողի նախագծերը, գույքագրումը, մեդիան և տեսողական քարտեզները։",
+        "open": "Կառավարել կատալոգը",
+        "breadcrumbLabel": "Կատալոգի նավարկում",
+        "breadcrumbCompanies": "Ընկերություններ",
+        "breadcrumbCatalog": "Կատալոգ",
+        "companyFallback": "Ընկերություն"
       }
     },
     "partners": {

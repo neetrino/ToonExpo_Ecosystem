@@ -4,27 +4,29 @@ import type {
   PortalApartmentDetail,
   UpdatePortalApartmentRequest,
   UpdatePortalPublicationRequest,
-} from "@toonexpo/contracts";
+} from '@toonexpo/contracts';
 
-import { apiFetch } from "@/shared/api/client";
+import { apiFetch } from '@/shared/api/client';
 
 import {
+  catalogPath,
   jsonCredentials,
   withPortalCookie,
   type PortalRequestOptions,
-} from "./portal-request";
+} from './portal-request';
 
 /**
  * Lists apartments on a floor.
  */
 export const listPortalApartments = (
   floorId: string,
+  options: PortalRequestOptions = {},
 ): Promise<PortalApartmentDetail[]> =>
   apiFetch<PortalApartmentDetail[]>({
-    path: `/portal/floors/${encodeURIComponent(floorId)}/apartments`,
-    method: "GET",
-    credentials: "include",
-    cache: "no-store",
+    path: catalogPath(`/portal/floors/${encodeURIComponent(floorId)}/apartments`, options),
+    method: 'GET',
+    credentials: 'include',
+    cache: 'no-store',
   });
 
 /**
@@ -33,10 +35,11 @@ export const listPortalApartments = (
 export const createPortalApartment = (
   floorId: string,
   body: CreatePortalApartmentRequest,
+  options: PortalRequestOptions = {},
 ): Promise<PortalApartmentDetail> =>
   apiFetch<PortalApartmentDetail>({
-    path: `/portal/floors/${encodeURIComponent(floorId)}/apartments`,
-    method: "POST",
+    path: catalogPath(`/portal/floors/${encodeURIComponent(floorId)}/apartments`, options),
+    method: 'POST',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
@@ -47,10 +50,11 @@ export const createPortalApartment = (
 export const bulkCreatePortalApartments = (
   floorId: string,
   body: BulkCreatePortalApartmentsRequest,
+  options: PortalRequestOptions = {},
 ): Promise<PortalApartmentDetail[]> =>
   apiFetch<PortalApartmentDetail[]>({
-    path: `/portal/floors/${encodeURIComponent(floorId)}/apartments/bulk`,
-    method: "POST",
+    path: catalogPath(`/portal/floors/${encodeURIComponent(floorId)}/apartments/bulk`, options),
+    method: 'POST',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
@@ -65,10 +69,10 @@ export const getPortalApartment = (
   apiFetch<PortalApartmentDetail>(
     withPortalCookie(
       {
-        path: `/portal/apartments/${encodeURIComponent(id)}`,
-        method: "GET",
-        credentials: "include",
-        cache: "no-store",
+        path: catalogPath(`/portal/apartments/${encodeURIComponent(id)}`, options),
+        method: 'GET',
+        credentials: 'include',
+        cache: 'no-store',
       },
       options.cookieHeader,
     ),
@@ -80,10 +84,11 @@ export const getPortalApartment = (
 export const updatePortalApartment = (
   id: string,
   body: UpdatePortalApartmentRequest,
+  options: PortalRequestOptions = {},
 ): Promise<PortalApartmentDetail> =>
   apiFetch<PortalApartmentDetail>({
-    path: `/portal/apartments/${encodeURIComponent(id)}`,
-    method: "PATCH",
+    path: catalogPath(`/portal/apartments/${encodeURIComponent(id)}`, options),
+    method: 'PATCH',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
@@ -94,10 +99,11 @@ export const updatePortalApartment = (
 export const updatePortalApartmentPublication = (
   id: string,
   body: UpdatePortalPublicationRequest,
+  options: PortalRequestOptions = {},
 ): Promise<PortalApartmentDetail> =>
   apiFetch<PortalApartmentDetail>({
-    path: `/portal/apartments/${encodeURIComponent(id)}/publication`,
-    method: "PATCH",
+    path: catalogPath(`/portal/apartments/${encodeURIComponent(id)}/publication`, options),
+    method: 'PATCH',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
@@ -105,9 +111,12 @@ export const updatePortalApartmentPublication = (
 /**
  * Deletes a draft apartment (company_admin).
  */
-export const deletePortalApartment = (id: string): Promise<void> =>
+export const deletePortalApartment = (
+  id: string,
+  options: PortalRequestOptions = {},
+): Promise<void> =>
   apiFetch<void>({
-    path: `/portal/apartments/${encodeURIComponent(id)}`,
-    method: "DELETE",
-    credentials: "include",
+    path: catalogPath(`/portal/apartments/${encodeURIComponent(id)}`, options),
+    method: 'DELETE',
+    credentials: 'include',
   });

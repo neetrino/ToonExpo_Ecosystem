@@ -32,6 +32,8 @@ export const SEED_PASSWORD =
 
 export const SEED_BUYER_EMAIL = 'buyer@toonexpo.local';
 export const SEED_BUILDER_ADMIN_EMAIL = 'builder.admin@toonexpo.local';
+export const SEED_PLATFORM_ADMIN_EMAIL = 'admin@toonexpo.local';
+export const SEED_BUILDER_COMPANY_ID = 'seed_company_glendale';
 
 export const SEED_PROJECT_NAME = 'Northern Avenue Residences';
 export const SEED_PROJECT_ID = 'seed_project_northern_avenue';

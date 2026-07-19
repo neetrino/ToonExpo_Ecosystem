@@ -1,13 +1,17 @@
-import type { MediaAssetItem, MediaListResponse } from "@toonexpo/contracts";
+import type { MediaAssetItem, MediaListResponse } from '@toonexpo/contracts';
 
-import { apiFetch, buildApiUrl } from "@/shared/api/client";
-import { ApiError } from "@/shared/api/errors";
-import { withCsrfHeaders } from "@/shared/api/csrf";
+import { apiFetch, buildApiUrl } from '@/shared/api/client';
+import { ApiError } from '@/shared/api/errors';
+import { withCsrfHeaders } from '@/shared/api/csrf';
 
-export type MediaUploadContext = "portal" | "admin";
+export type MediaUploadContext = 'portal' | 'admin' | { companyId: string };
 
-const listPath = (context: MediaUploadContext): string =>
-  context === "portal" ? "/portal/media" : "/admin/media";
+const listPath = (context: MediaUploadContext): string => {
+  if (typeof context === 'object') {
+    return `/admin/companies/${encodeURIComponent(context.companyId)}/catalog/media`;
+  }
+  return context === 'portal' ? '/portal/media' : '/admin/media';
+};
 
 export const listMediaAssets = (
   context: MediaUploadContext,
@@ -16,9 +20,9 @@ export const listMediaAssets = (
 ): Promise<MediaListResponse> =>
   apiFetch<MediaListResponse>({
     path: `${listPath(context)}?page=${page}&pageSize=${pageSize}`,
-    method: "GET",
-    credentials: "include",
-    cache: "no-store",
+    method: 'GET',
+    credentials: 'include',
+    cache: 'no-store',
   });
 
 export const uploadMediaAsset = async (
@@ -26,13 +30,13 @@ export const uploadMediaAsset = async (
   file: File,
 ): Promise<MediaAssetItem> => {
   const formData = new FormData();
-  formData.append("file", file);
+  formData.append('file', file);
 
   const headers = await withCsrfHeaders(undefined);
   const response = await fetch(buildApiUrl(listPath(context)), {
-    method: "POST",
+    method: 'POST',
     body: formData,
-    credentials: "include",
+    credentials: 'include',
     headers,
   });
 

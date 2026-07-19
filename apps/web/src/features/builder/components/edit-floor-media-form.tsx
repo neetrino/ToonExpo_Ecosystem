@@ -1,19 +1,21 @@
-"use client";
+'use client';
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import type { PortalFloorSummary } from "@toonexpo/contracts";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useCatalogScope } from '@/features/builder/catalog-scope-context';
+import { catalogMediaContext } from '@/features/builder/catalog-scope';
+import { zodResolver } from '@hookform/resolvers/zod';
+import type { PortalFloorSummary } from '@toonexpo/contracts';
+import { useTranslations } from 'next-intl';
+import { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 
-import { useUpdateFloorMutation } from "@/features/builder/hooks/use-portal-inventory";
+import { useUpdateFloorMutation } from '@/features/builder/hooks/use-portal-inventory';
 import {
   updateFloorSchema,
   type UpdateFloorFormValues,
-} from "@/features/builder/schemas/inventory.schema";
-import { MediaUploadField } from "@/features/media/components/media-upload-field";
-import { toNullableMediaId } from "@/features/media/schemas/media-fields.schema";
-import { Button } from "@/shared/ui/button";
+} from '@/features/builder/schemas/inventory.schema';
+import { MediaUploadField } from '@/features/media/components/media-upload-field';
+import { toNullableMediaId } from '@/features/media/schemas/media-fields.schema';
+import { Button } from '@/shared/ui/button';
 
 type EditFloorMediaFormProps = {
   projectId: string;
@@ -23,11 +25,10 @@ type EditFloorMediaFormProps = {
 /**
  * Inline form to set or replace a floor plan image.
  */
-export const EditFloorMediaForm = ({
-  projectId,
-  floor,
-}: EditFloorMediaFormProps) => {
-  const t = useTranslations("Builder.inventory");
+export const EditFloorMediaForm = ({ projectId, floor }: EditFloorMediaFormProps) => {
+  const scope = useCatalogScope();
+  const mediaContext = catalogMediaContext(scope);
+  const t = useTranslations('Builder.inventory');
   const mutation = useUpdateFloorMutation(projectId, floor.id);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -38,7 +39,7 @@ export const EditFloorMediaForm = ({
     formState: { isSubmitting, isDirty },
   } = useForm<UpdateFloorFormValues>({
     resolver: zodResolver(updateFloorSchema),
-    defaultValues: { floorplanMediaId: floor.floorplanMediaId ?? "" },
+    defaultValues: { floorplanMediaId: floor.floorplanMediaId ?? '' },
   });
 
   const onSubmit = handleSubmit(async (values) => {
@@ -50,7 +51,7 @@ export const EditFloorMediaForm = ({
       });
       setSuccess(true);
     } catch {
-      setError(t("errors.generic"));
+      setError(t('errors.generic'));
     }
   });
 
@@ -64,8 +65,8 @@ export const EditFloorMediaForm = ({
         render={({ field, fieldState }) => (
           <MediaUploadField
             id={`floor-plan-${floor.id}`}
-            label={t("floorplanMedia")}
-            context="portal"
+            label={t('floorplanMedia')}
+            context={mediaContext}
             value={field.value}
             onChange={field.onChange}
             error={fieldState.error?.message}
@@ -79,11 +80,11 @@ export const EditFloorMediaForm = ({
       ) : null}
       {success ? (
         <p role="status" className="text-xs text-success">
-          {t("floorplanSaved")}
+          {t('floorplanSaved')}
         </p>
       ) : null}
       <Button type="submit" size="sm" variant="ghost" disabled={busy || !isDirty}>
-        {busy ? t("adding") : t("saveFloorplan")}
+        {busy ? t('adding') : t('saveFloorplan')}
       </Button>
     </form>
   );

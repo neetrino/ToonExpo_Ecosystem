@@ -6,14 +6,15 @@ import type {
   PortalVisualHotspotItem,
   UpdatePortalVisualCanvasRequest,
   UpdatePortalVisualHotspotRequest,
-} from "@toonexpo/contracts";
+} from '@toonexpo/contracts';
 
 import {
+  catalogPath,
   jsonCredentials,
   withPortalCookie,
   type PortalRequestOptions,
-} from "@/features/builder/api/portal-request";
-import { apiFetch } from "@/shared/api/client";
+} from '@/features/builder/api/portal-request';
+import { apiFetch } from '@/shared/api/client';
 
 export const listPortalProjectVisualCanvases = (
   projectId: string,
@@ -22,10 +23,13 @@ export const listPortalProjectVisualCanvases = (
   apiFetch<PortalVisualCanvasListResponse>(
     withPortalCookie(
       {
-        path: `/portal/projects/${encodeURIComponent(projectId)}/visual-canvases`,
-        method: "GET",
-        credentials: "include",
-        cache: "no-store",
+        path: catalogPath(
+          `/portal/projects/${encodeURIComponent(projectId)}/visual-canvases`,
+          options,
+        ),
+        method: 'GET',
+        credentials: 'include',
+        cache: 'no-store',
       },
       options.cookieHeader,
     ),
@@ -34,10 +38,11 @@ export const listPortalProjectVisualCanvases = (
 export const createPortalVisualCanvas = (
   projectId: string,
   body: CreatePortalVisualCanvasRequest,
+  options: PortalRequestOptions = {},
 ): Promise<PortalVisualCanvasDetail> =>
   apiFetch<PortalVisualCanvasDetail>({
-    path: `/portal/projects/${encodeURIComponent(projectId)}/visual-canvases`,
-    method: "POST",
+    path: catalogPath(`/portal/projects/${encodeURIComponent(projectId)}/visual-canvases`, options),
+    method: 'POST',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
@@ -49,10 +54,10 @@ export const getPortalVisualCanvas = (
   apiFetch<PortalVisualCanvasDetail>(
     withPortalCookie(
       {
-        path: `/portal/visual-canvases/${encodeURIComponent(canvasId)}`,
-        method: "GET",
-        credentials: "include",
-        cache: "no-store",
+        path: catalogPath(`/portal/visual-canvases/${encodeURIComponent(canvasId)}`, options),
+        method: 'GET',
+        credentials: 'include',
+        cache: 'no-store',
       },
       options.cookieHeader,
     ),
@@ -61,28 +66,33 @@ export const getPortalVisualCanvas = (
 export const updatePortalVisualCanvas = (
   canvasId: string,
   body: UpdatePortalVisualCanvasRequest,
+  options: PortalRequestOptions = {},
 ): Promise<PortalVisualCanvasDetail> =>
   apiFetch<PortalVisualCanvasDetail>({
-    path: `/portal/visual-canvases/${encodeURIComponent(canvasId)}`,
-    method: "PATCH",
+    path: catalogPath(`/portal/visual-canvases/${encodeURIComponent(canvasId)}`, options),
+    method: 'PATCH',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
 
-export const deletePortalVisualCanvas = (canvasId: string): Promise<void> =>
+export const deletePortalVisualCanvas = (
+  canvasId: string,
+  options: PortalRequestOptions = {},
+): Promise<void> =>
   apiFetch<void>({
-    path: `/portal/visual-canvases/${encodeURIComponent(canvasId)}`,
-    method: "DELETE",
-    credentials: "include",
+    path: catalogPath(`/portal/visual-canvases/${encodeURIComponent(canvasId)}`, options),
+    method: 'DELETE',
+    credentials: 'include',
   });
 
 export const createPortalVisualHotspot = (
   canvasId: string,
   body: CreatePortalVisualHotspotRequest,
+  options: PortalRequestOptions = {},
 ): Promise<PortalVisualHotspotItem> =>
   apiFetch<PortalVisualHotspotItem>({
-    path: `/portal/visual-canvases/${encodeURIComponent(canvasId)}/hotspots`,
-    method: "POST",
+    path: catalogPath(`/portal/visual-canvases/${encodeURIComponent(canvasId)}/hotspots`, options),
+    method: 'POST',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
@@ -91,10 +101,14 @@ export const updatePortalVisualHotspot = (
   canvasId: string,
   hotspotId: string,
   body: UpdatePortalVisualHotspotRequest,
+  options: PortalRequestOptions = {},
 ): Promise<PortalVisualHotspotItem> =>
   apiFetch<PortalVisualHotspotItem>({
-    path: `/portal/visual-canvases/${encodeURIComponent(canvasId)}/hotspots/${encodeURIComponent(hotspotId)}`,
-    method: "PATCH",
+    path: catalogPath(
+      `/portal/visual-canvases/${encodeURIComponent(canvasId)}/hotspots/${encodeURIComponent(hotspotId)}`,
+      options,
+    ),
+    method: 'PATCH',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
@@ -102,9 +116,13 @@ export const updatePortalVisualHotspot = (
 export const deletePortalVisualHotspot = (
   canvasId: string,
   hotspotId: string,
+  options: PortalRequestOptions = {},
 ): Promise<void> =>
   apiFetch<void>({
-    path: `/portal/visual-canvases/${encodeURIComponent(canvasId)}/hotspots/${encodeURIComponent(hotspotId)}`,
-    method: "DELETE",
-    credentials: "include",
+    path: catalogPath(
+      `/portal/visual-canvases/${encodeURIComponent(canvasId)}/hotspots/${encodeURIComponent(hotspotId)}`,
+      options,
+    ),
+    method: 'DELETE',
+    credentials: 'include',
   });

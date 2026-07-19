@@ -1,14 +1,16 @@
-"use client";
+'use client';
 
-import type { PortalFloorSummary } from "@toonexpo/contracts";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { catalogApartmentDetailHref } from '@/features/builder/catalog-scope';
+import { useCatalogScope } from '@/features/builder/catalog-scope-context';
+import type { PortalFloorSummary } from '@toonexpo/contracts';
+import { useTranslations } from 'next-intl';
+import { useState } from 'react';
 
-import { BulkApartmentsForm } from "@/features/builder/components/bulk-apartments-form";
-import { EditFloorMediaForm } from "@/features/builder/components/edit-floor-media-form";
-import { usePortalFloorApartmentsQuery } from "@/features/builder/hooks/use-portal-inventory";
-import { Link } from "@/i18n/navigation";
-import { Button } from "@/shared/ui/button";
+import { BulkApartmentsForm } from '@/features/builder/components/bulk-apartments-form';
+import { EditFloorMediaForm } from '@/features/builder/components/edit-floor-media-form';
+import { usePortalFloorApartmentsQuery } from '@/features/builder/hooks/use-portal-inventory';
+import { Link } from '@/i18n/navigation';
+import { Button } from '@/shared/ui/button';
 
 type FloorInventoryRowProps = {
   projectId: string;
@@ -18,11 +20,9 @@ type FloorInventoryRowProps = {
 /**
  * Floor row with apartment list and bulk-add toggle.
  */
-export const FloorInventoryRow = ({
-  projectId,
-  floor,
-}: FloorInventoryRowProps) => {
-  const t = useTranslations("Builder.inventory");
+export const FloorInventoryRow = ({ projectId, floor }: FloorInventoryRowProps) => {
+  const scope = useCatalogScope();
+  const t = useTranslations('Builder.inventory');
   const [showBulk, setShowBulk] = useState(false);
   const apartmentsQuery = usePortalFloorApartmentsQuery(floor.id);
 
@@ -32,14 +32,14 @@ export const FloorInventoryRow = ({
         <div>
           <p className="text-sm font-medium text-ink">
             {floor.name || floor.displayLabel
-              ? t("floorLabelNamed", {
+              ? t('floorLabelNamed', {
                   number: floor.number,
-                  name: floor.name ?? floor.displayLabel ?? "",
+                  name: floor.name ?? floor.displayLabel ?? '',
                 })
-              : t("floorLabel", { number: floor.number })}
+              : t('floorLabel', { number: floor.number })}
           </p>
           <p className="text-xs text-ink-muted">
-            {t("apartmentsCount", { count: floor.apartmentsCount })} ·{" "}
+            {t('apartmentsCount', { count: floor.apartmentsCount })} ·{' '}
             {t(`publication.${floor.publicationStatus}`)}
           </p>
         </div>
@@ -51,12 +51,12 @@ export const FloorInventoryRow = ({
             setShowBulk((value) => !value);
           }}
         >
-          {showBulk ? t("cancel") : t("addApartments")}
+          {showBulk ? t('cancel') : t('addApartments')}
         </Button>
       </div>
 
       {apartmentsQuery.isLoading ? (
-        <p className="mt-2 text-xs text-ink-secondary">{t("loading")}</p>
+        <p className="mt-2 text-xs text-ink-secondary">{t('loading')}</p>
       ) : null}
 
       {apartmentsQuery.data && apartmentsQuery.data.length > 0 ? (
@@ -64,10 +64,10 @@ export const FloorInventoryRow = ({
           {apartmentsQuery.data.map((apartment) => (
             <li key={apartment.id} className="text-sm">
               <Link
-                href={`/builder/apartments/${apartment.id}`}
+                href={catalogApartmentDetailHref(scope, apartment.id)}
                 className="text-brand hover:underline"
               >
-                {t("apartmentLink", {
+                {t('apartmentLink', {
                   number: apartment.number,
                   status: apartment.salesStatus,
                 })}

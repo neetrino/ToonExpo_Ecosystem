@@ -627,6 +627,15 @@
         "resendSubmitting": "Sending…",
         "resendSuccess": "Invite resent successfully",
         "resendNotFound": "No invited admin found for this company"
+      },
+      "catalog": {
+        "title": "Catalog",
+        "description": "Manage this builder’s projects, inventory, media, and visual maps.",
+        "open": "Manage catalog",
+        "breadcrumbLabel": "Catalog breadcrumb",
+        "breadcrumbCompanies": "Companies",
+        "breadcrumbCatalog": "Catalog",
+        "companyFallback": "Company"
       }
     },
     "partners": {
