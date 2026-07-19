@@ -57,6 +57,16 @@ test.describe('smoke', () => {
     ).toBeVisible();
   });
 
+  test('set-password link reads token from URL fragment', async ({ page }) => {
+    await page.goto('/hy/auth/set-password#token=fake-test-token');
+
+    await expect(page.getByRole('heading', { name: 'Սահմանեք գաղտնաբառ' })).toBeVisible();
+    await expect(page.getByLabel('Գաղտնաբառ', { exact: true })).toBeVisible();
+    await expect(page.getByLabel('Հաստատել գաղտնաբառը', { exact: true })).toBeVisible();
+    await expect(page).toHaveURL('/hy/auth/set-password');
+    await expect.poll(async () => page.evaluate(() => window.location.hash)).toBe('');
+  });
+
   test('buyer registration lands on profile', async ({ page }) => {
     const stamp = Date.now();
     const email = `e2e.buyer.${stamp}@toonexpo.local`;

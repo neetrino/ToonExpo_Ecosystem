@@ -8,6 +8,8 @@ Final pre-production completion pass **closed** (2026-07-18). Sprints 0–6 and 
 
 **2026-07-19:** Admin BOS provisioning history UI (`/admin/integrations/bos` — paginated list, detail + audit log, status filter, hy/ru/en).
 
+**2026-07-19:** Security review 2026-07-19: 0 critical/high, 1 medium fixed — set-password/reset tokens moved from query string to URL fragment.
+
 ## Final Completion Waves (live tracker — keep updated)
 
 | Wave       | Scope                                                                                                                                                                                                                                  | Status  |

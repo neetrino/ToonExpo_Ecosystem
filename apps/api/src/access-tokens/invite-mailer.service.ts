@@ -1,17 +1,11 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { DEFAULT_LOCALE, isSupportedLocale } from "@toonexpo/shared";
+import { Inject, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { DEFAULT_LOCALE, isSupportedLocale } from '@toonexpo/shared';
 
-import type { AppEnv } from "../config/env.validation.js";
-import {
-  buildPasswordResetEmail,
-  buildSetPasswordEmail,
-} from "../email/email.templates.js";
-import {
-  EMAIL_SERVICE,
-  type EmailService,
-} from "../email/email.types.js";
-import { AccessTokenService } from "./access-token.service.js";
+import type { AppEnv } from '../config/env.validation.js';
+import { buildPasswordResetEmail, buildSetPasswordEmail } from '../email/email.templates.js';
+import { EMAIL_SERVICE, type EmailService } from '../email/email.types.js';
+import { AccessTokenService } from './access-token.service.js';
 
 /**
  * Issues set-password / password-reset tokens and emails the link.
@@ -65,11 +59,10 @@ export class InviteMailerService {
   }
 
   private buildSetPasswordUrl(rawToken: string, locale?: string): string {
-    const appUrl = this.configService.get("APP_URL", { infer: true });
-    const resolvedLocale =
-      locale && isSupportedLocale(locale) ? locale : DEFAULT_LOCALE;
-    const base = appUrl.replace(/\/$/, "");
+    const appUrl = this.configService.get('APP_URL', { infer: true });
+    const resolvedLocale = locale && isSupportedLocale(locale) ? locale : DEFAULT_LOCALE;
+    const base = appUrl.replace(/\/$/, '');
 
-    return `${base}/${resolvedLocale}/auth/set-password?token=${encodeURIComponent(rawToken)}`;
+    return `${base}/${resolvedLocale}/auth/set-password#token=${encodeURIComponent(rawToken)}`;
   }
 }
