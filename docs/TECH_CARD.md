@@ -184,13 +184,13 @@ Next.js Server Components may fetch the NestJS API. Server Actions must not impl
 
 ## Testing
 
-| Layer                   | Tool / expectation                                                        |
-| ----------------------- | ------------------------------------------------------------------------- |
-| Domain/application unit | Vitest, focused on business rules and services                            |
-| API integration         | Nest testing utilities + Supertest against test database                  |
-| Contract                | OpenAPI generation and frontend client compatibility check                |
-| Frontend component      | React Testing Library where behavior warrants it                          |
-| End to end              | Playwright for registration, QR, requests, CRM, inventory and admin flows |
+| Layer                   | Tool / expectation                                                                                                                                                                     |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Domain/application unit | Vitest, focused on business rules and services                                                                                                                                         |
+| API integration         | Nest testing utilities + Supertest against test database                                                                                                                               |
+| Contract                | OpenAPI generation and frontend client compatibility check                                                                                                                             |
+| Frontend component      | React Testing Library where behavior warrants it                                                                                                                                       |
+| End to end              | Playwright (`apps/web-e2e`) — Chromium smoke for home, catalog, auth, favorites, price gate, builder portal, mortgage, locale, admin access; `pnpm e2e`; separate CI job with Postgres |
 
 ## Monorepo Layout
 

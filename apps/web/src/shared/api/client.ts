@@ -1,21 +1,18 @@
-import { API_V1_PREFIX } from "@toonexpo/contracts";
+import { API_V1_PREFIX } from '@toonexpo/contracts';
 
-import { getPublicEnv, getServerApiBaseUrl } from "@/shared/config/env";
+import { getPublicEnv, getServerApiBaseUrl } from '@/shared/config/env';
 
-import {
-  clearCsrfTokenCache,
-  isMutatingMethod,
-  redirectToLogin,
-  withCsrfHeaders,
-} from "./csrf";
-import { ApiError } from "./errors";
+import { clearCsrfTokenCache, isMutatingMethod, redirectToLogin, withCsrfHeaders } from './csrf';
+import { ApiError } from './errors';
 
 /** Public auth mutations establish the session; CSRF is not available yet. */
 const CSRF_EXEMPT_PATHS = new Set([
-  "/auth/login",
-  "/auth/register",
-  "/auth/set-password",
-  "/auth/forgot-password",
+  '/auth/login',
+  '/auth/register',
+  '/auth/set-password',
+  '/auth/forgot-password',
+  /** Public calculator; @Public() on API and no session for anonymous visitors. */
+  '/mortgage/calculate',
 ]);
 
 export type ApiFetchOptions = RequestInit & {
@@ -26,7 +23,7 @@ export type ApiFetchOptions = RequestInit & {
 };
 
 const resolveApiBaseUrl = (): string => {
-  if (typeof window !== "undefined") {
+  if (typeof window !== 'undefined') {
     return getPublicEnv().apiBaseUrl;
   }
 
@@ -38,8 +35,8 @@ const resolveApiBaseUrl = (): string => {
  * Browser proxy mode uses same-origin relative URLs when the public base is empty.
  */
 export const buildApiUrl = (path: string, baseUrl?: string): string => {
-  const origin = (baseUrl ?? resolveApiBaseUrl()).replace(/\/$/, "");
-  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  const origin = (baseUrl ?? resolveApiBaseUrl()).replace(/\/$/, '');
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
 
   if (!origin) {
     return `${API_V1_PREFIX}${normalizedPath}`;
@@ -53,14 +50,12 @@ const isEmptyBody = (response: Response): boolean => {
     return true;
   }
 
-  const length = response.headers.get("content-length");
-  return length === "0";
+  const length = response.headers.get('content-length');
+  return length === '0';
 };
 
-const toHeaderRecord = (
-  headers: HeadersInit | undefined,
-): Record<string, string> => {
-  const merged: Record<string, string> = { Accept: "application/json" };
+const toHeaderRecord = (headers: HeadersInit | undefined): Record<string, string> => {
+  const merged: Record<string, string> = { Accept: 'application/json' };
 
   if (!headers) {
     return merged;
@@ -82,9 +77,7 @@ export const apiFetch = async <T>(options: ApiFetchOptions): Promise<T> => {
   const { path, csrfRetryAttempted = false, ...init } = options;
   const mutating = isMutatingMethod(init.method);
   const requiresCsrf = mutating && !CSRF_EXEMPT_PATHS.has(path);
-  const headers = requiresCsrf
-    ? await withCsrfHeaders(init.headers)
-    : toHeaderRecord(init.headers);
+  const headers = requiresCsrf ? await withCsrfHeaders(init.headers) : toHeaderRecord(init.headers);
 
   const response = await fetch(buildApiUrl(path), {
     ...init,
@@ -95,7 +88,7 @@ export const apiFetch = async <T>(options: ApiFetchOptions): Promise<T> => {
     response.status === 403 &&
     requiresCsrf &&
     !csrfRetryAttempted &&
-    typeof window !== "undefined"
+    typeof window !== 'undefined'
   ) {
     clearCsrfTokenCache();
 
