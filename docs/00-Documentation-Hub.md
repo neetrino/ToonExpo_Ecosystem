@@ -18,7 +18,7 @@ It contains only ToonExpo documentation plus a small integration contract with B
 - [Deployment](./DEPLOYMENT.md)
 - [Settings Cheat Sheet](./SETTINGS.md)
 - [Open Questions](./OPEN_QUESTIONS.md)
-- [Performance Review Brief](../PERFORMANCE-CACHING-SCALABILITY-REVIEW-BRIEF.md)
+- [Performance Review](./PERFORMANCE_REVIEW.md)
 - [ToonExpo Ecosystem Overview](./02-ToonExpo-Ecosystem/00-Ecosystem-Overview.md)
 - [Decisions And Scope](./00-Decisions-And-Scope.md)
 - [Consistency Audit](./00-Consistency-Audit.md)

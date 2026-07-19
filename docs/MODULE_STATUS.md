@@ -45,7 +45,7 @@ Pulled into v1 (owner 2026-07-19):
 
 ## Ближайшие шаги (после wave 4)
 
-1. **Performance review** — read-only архитектурный обзор по `PERFORMANCE-CACHING-SCALABILITY-REVIEW-BRIEF.md`.
-2. **Owner walkthrough** — `docs/OPEN_QUESTIONS.md` (domains, prod admin, design variant, BOS outbound, post-v1 scope).
+1. **Performance review** — done: findings and P0 hardening implemented, see `docs/PERFORMANCE_REVIEW.md`; k6 load test on staging remains before the first exhibition.
+2. **Owner walkthrough** — `docs/OPEN_QUESTIONS.md` (domains, design variant, BOS outbound).
 3. **Manual deploy** — owner по `docs/DEPLOYMENT.md` (Vercel + Cloud Run + Neon migrate deploy).
 4. **BOS outbound summaries (15)** — исходящий статус/readiness в BOS (blocked on BOS platform API).

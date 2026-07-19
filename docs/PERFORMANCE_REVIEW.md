@@ -3,7 +3,7 @@
 **Date:** 2026-07-18  
 **Branch audited:** `sipan`  
 **Scope:** Evidence-based architecture review only — no code changes.  
-**Brief:** `PERFORMANCE-CACHING-SCALABILITY-REVIEW-BRIEF.md` (repo root)
+**Brief:** owner's review brief (2026-07-18, retired after the P0 hardening was implemented on 2026-07-19)
 
 ---
 
@@ -24,15 +24,15 @@ A focused pre-expo hardening set (public caching at the edge + session touch coa
 
 ## 2. Evaluation of the owner's proposed model
 
-| Owner assumption | Verdict | Adjustment |
-|---|---|---|
-| Register once, permanent QR | **Correct** | `QrCode` is one-per-buyer (`buyerProfileId` unique); opaque `tokenHash` + encrypted token for redisplay. |
-| QR available quickly / local cache after first fetch | **Mostly correct; privacy constraints** | Safe to cache the *rendered image* and opaque payload URL in browser memory / private storage for the logged-in buyer session. Must clear on logout, regeneration, block. Do not put QR token in CDN, service-worker shared cache, or localStorage on shared kiosks without an explicit “this device” consent. |
-| Public content relatively static after publish; TTL 30 min–2 h + publish invalidation | **Correct** | Today the opposite is coded: `cache: "no-store"` everywhere. Prefer Cloudflare/Next edge cache for anonymous public JSON/HTML; invalidate on admin publish. |
-| Only live ops hit DB | **Correct goal; not current state** | Session touch + analytics + full catalog trees + booth search currently hit DB constantly. |
-| QR scan → request → CRM deal must not be lost or duplicated | **Correct requirement; incomplete integrity** | Check-in has a SQL partial unique. CRM open-deal dedup does not. |
-| Builder CRM / admin must not share public caches | **Correct** | Keep `private, no-store` for authenticated portals; separate anonymous public payloads from personalized overlays (favorites, prices). |
-| Layered rate limits (Cloudflare + Nest + Redis) | **Correct** | Nest Upstash path exists; Cloudflare perimeter and trust-proxy/IP identity still need production wiring. Fail-open is right for availability but wrong as the only protection during Redis outage — Cloudflare must remain the coarse backstop. |
+| Owner assumption                                                                      | Verdict                                       | Adjustment                                                                                                                                                                                                                                                                                                     |
+| ------------------------------------------------------------------------------------- | --------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Register once, permanent QR                                                           | **Correct**                                   | `QrCode` is one-per-buyer (`buyerProfileId` unique); opaque `tokenHash` + encrypted token for redisplay.                                                                                                                                                                                                       |
+| QR available quickly / local cache after first fetch                                  | **Mostly correct; privacy constraints**       | Safe to cache the _rendered image_ and opaque payload URL in browser memory / private storage for the logged-in buyer session. Must clear on logout, regeneration, block. Do not put QR token in CDN, service-worker shared cache, or localStorage on shared kiosks without an explicit “this device” consent. |
+| Public content relatively static after publish; TTL 30 min–2 h + publish invalidation | **Correct**                                   | Today the opposite is coded: `cache: "no-store"` everywhere. Prefer Cloudflare/Next edge cache for anonymous public JSON/HTML; invalidate on admin publish.                                                                                                                                                    |
+| Only live ops hit DB                                                                  | **Correct goal; not current state**           | Session touch + analytics + full catalog trees + booth search currently hit DB constantly.                                                                                                                                                                                                                     |
+| QR scan → request → CRM deal must not be lost or duplicated                           | **Correct requirement; incomplete integrity** | Check-in has a SQL partial unique. CRM open-deal dedup does not.                                                                                                                                                                                                                                               |
+| Builder CRM / admin must not share public caches                                      | **Correct**                                   | Keep `private, no-store` for authenticated portals; separate anonymous public payloads from personalized overlays (favorites, prices).                                                                                                                                                                         |
+| Layered rate limits (Cloudflare + Nest + Redis)                                       | **Correct**                                   | Nest Upstash path exists; Cloudflare perimeter and trust-proxy/IP identity still need production wiring. Fail-open is right for availability but wrong as the only protection during Redis outage — Cloudflare must remain the coarse backstop.                                                                |
 
 **Central correction:** caching should start at **CDN / Next fetch cache / ISR for anonymous public reads**, not by putting Redis in front of every Nest handler. Redis remains valuable for **distributed rate limits** (already) and optionally short-lived API caches or idempotency — not as the system of record.
 
@@ -162,13 +162,13 @@ No `max`, idle timeout, or statement timeout in code. TECH_CARD lists pool sizes
 
 ### 3.13 Indexes (strong vs gaps)
 
-| Strong | Gap |
-|---|---|
-| `Session.tokenHash` @unique | Session touch write amplification (not an index gap) |
-| `QrCode.tokenHash` @unique | `QrScanEvent` has 5 secondary indexes (write amp) |
+| Strong                                                                         | Gap                                                     |
+| ------------------------------------------------------------------------------ | ------------------------------------------------------- |
+| `Session.tokenHash` @unique                                                    | Session touch write amplification (not an index gap)    |
+| `QrCode.tokenHash` @unique                                                     | `QrScanEvent` has 5 secondary indexes (write amp)       |
 | Apartment `[publicationStatus, salesStatus]`, `[projectId, publicationStatus]` | Project missing `[builderCompanyId, publicationStatus]` |
-| Check-in partial unique (SQL) | CRM open-deal uniqueness missing |
-| CRM `[companyId, buyerProfileId, status]` for lookup | `AnalyticsEvent` 3 indexes on hot insert path |
+| Check-in partial unique (SQL)                                                  | CRM open-deal uniqueness missing                        |
+| CRM `[companyId, buyerProfileId, status]` for lookup                           | `AnalyticsEvent` 3 indexes on hot insert path           |
 
 ---
 
@@ -229,35 +229,35 @@ Assumptions use ranges until load tests produce measurements. “Visitor” ≠ 
 
 ### Scenario A — Off-season
 
-| Metric | Assumption |
-|---|---|
-| Concurrent users | 20–100 (mostly B2B portals) |
-| Origin API RPS | 5–30 |
+| Metric                   | Assumption                              |
+| ------------------------ | --------------------------------------- |
+| Concurrent users         | 20–100 (mostly B2B portals)             |
+| Origin API RPS           | 5–30                                    |
 | Cache-hit ratio (public) | ~0% today → target 70–90% after caching |
-| Write RPS | low (CRM updates, inventory edits) |
-| DB queries / s | tens |
+| Write RPS                | low (CRM updates, inventory edits)      |
+| DB queries / s           | tens                                    |
 
 ### Scenario B — Expected exhibition peak
 
-| Metric | Assumption |
-|---|---|
-| Physical visitors / day | up to ~10k (brief) / ~25k registered buyers per exhibition (TECH_CARD) |
-| Concurrent interactive users (peak hour) | **500–2,000** (arrivals + browsing + staff) |
-| Requests per active user / min | 6–20 (map + catalog + auth cookie) |
-| Origin RPS without caching | **500–2,000+** plausible |
-| Origin RPS with edge public cache 80% hit | **100–400** |
-| Write RPS (register, QR resolve, check-in, CRM) | **50–200** concentrated |
-| Session DB writes if uncoalesced | ≈ authenticated request rate |
+| Metric                                          | Assumption                                                             |
+| ----------------------------------------------- | ---------------------------------------------------------------------- |
+| Physical visitors / day                         | up to ~10k (brief) / ~25k registered buyers per exhibition (TECH_CARD) |
+| Concurrent interactive users (peak hour)        | **500–2,000** (arrivals + browsing + staff)                            |
+| Requests per active user / min                  | 6–20 (map + catalog + auth cookie)                                     |
+| Origin RPS without caching                      | **500–2,000+** plausible                                               |
+| Origin RPS with edge public cache 80% hit       | **100–400**                                                            |
+| Write RPS (register, QR resolve, check-in, CRM) | **50–200** concentrated                                                |
+| Session DB writes if uncoalesced                | ≈ authenticated request rate                                           |
 
 ### Scenario C — Stress / failure
 
-| Stressor | Effect |
-|---|---|
-| Arrival wave + cold Cloud Run | Latency spike; stampede on uncached public endpoints |
-| Cache miss / TTL expiry stampede | Origin × stampede multiplier |
-| Upstash down (fail-open) | Throttling gone at Nest; rely on Cloudflare |
-| Neon connection exhaustion | Cascading 5xx across all product paths |
-| Analytics storm | Same pool as CRM/QR; amplify write latency |
+| Stressor                         | Effect                                               |
+| -------------------------------- | ---------------------------------------------------- |
+| Arrival wave + cold Cloud Run    | Latency spike; stampede on uncached public endpoints |
+| Cache miss / TTL expiry stampede | Origin × stampede multiplier                         |
+| Upstash down (fail-open)         | Throttling gone at Nest; rely on Cloudflare          |
+| Neon connection exhaustion       | Cascading 5xx across all product paths               |
+| Analytics storm                  | Same pool as CRM/QR; amplify write latency           |
 
 **Formula reminder:** `peak_db_connections ≈ cloud_run_instances × pg_pool_max_per_instance` (plus Neon pooler overhead). Visitors do not each open a DB connection.
 
@@ -265,34 +265,34 @@ Assumptions use ranges until load tests produce measurements. “Visitor” ≠ 
 
 ## 7. Data-location matrix
 
-| Data | PostgreSQL | R2 | Browser/WebView | Edge/CDN | Redis |
-|---|---|---|---|---|---|
-| Users, credentials, sessions | **SoT** | — | cookie only (opaque) | never | optional short session *cache* only |
-| QR token hash / encrypted token / status | **SoT** | — | private display cache OK | never | no |
-| Scan events, check-ins, requests, CRM deals | **SoT** | — | — | never | idempotency keys optional |
-| Published catalog / booths / maps / partners | **SoT** | — | short private memory | **primary read cache** | optional origin shield |
-| Media bytes | metadata in PG | **SoT** | browser HTTP cache | **CDN** | no |
-| Rate-limit counters | — | — | — | Cloudflare coarse | **Nest counters** |
-| Analytics events | SoT (or warehouse later) | — | — | — | buffer optional |
+| Data                                         | PostgreSQL               | R2      | Browser/WebView          | Edge/CDN               | Redis                               |
+| -------------------------------------------- | ------------------------ | ------- | ------------------------ | ---------------------- | ----------------------------------- |
+| Users, credentials, sessions                 | **SoT**                  | —       | cookie only (opaque)     | never                  | optional short session _cache_ only |
+| QR token hash / encrypted token / status     | **SoT**                  | —       | private display cache OK | never                  | no                                  |
+| Scan events, check-ins, requests, CRM deals  | **SoT**                  | —       | —                        | never                  | idempotency keys optional           |
+| Published catalog / booths / maps / partners | **SoT**                  | —       | short private memory     | **primary read cache** | optional origin shield              |
+| Media bytes                                  | metadata in PG           | **SoT** | browser HTTP cache       | **CDN**                | no                                  |
+| Rate-limit counters                          | —                        | —       | —                        | Cloudflare coarse      | **Nest counters**                   |
+| Analytics events                             | SoT (or warehouse later) | —       | —                        | —                      | buffer optional                     |
 
 ---
 
 ## 8. Endpoint / cache freshness matrix
 
-| Endpoint / surface | Cacheability | Layer | Proposed TTL | Invalidation | Notes |
-|---|---|---|---|---|---|
-| `GET` public projects list (anonymous) | public | CDN + Next `revalidate` | **Proposal:** 5–15 min + SWR | publish/unpublish project | Strip cookies from cache key; prices: anonymous vs auth overlay |
-| `GET` project/building/floor/apartment detail (anonymous) | public | CDN + Next | **Proposal:** 5–15 min | entity publish | Large payloads — consider splitting inventory |
-| `GET` builders / partners | public | CDN + Next | **Proposal:** 15–60 min | admin publish | |
-| `GET` `/events/current`, venue booths, entrance nodes | public | CDN + Redis optional | **Proposal:** 1–5 min expo day | map publish | High fan-out on expo page |
-| `GET` booth search | careful | in-memory map snapshot or Redis | **Proposal:** warm booth index TTL 1–5 min | map publish | Do not full-scan DB per keystroke |
-| `GET` route path | public | Redis/in-memory graph | graph TTL until publish; path cache 1–5 min | map publish | Precompute graph |
-| `GET` mortgage offers | public | CDN | **Proposal:** 15–60 min | offer edit | |
-| R2 media | public immutable | CDN | days–weeks | new object key on replace | Versioned URLs |
-| `GET /buyer/qr` | **private** | browser memory only | session-scoped | logout / regenerate / block | Never CDN |
-| `POST /qr/resolve` | **no-store** | — | — | — | Live write path |
-| Check-in / CRM / portal / admin | **no-store** | — | — | — | |
-| `GET /auth/me` | **private** | TanStack 60s OK | short | logout | |
+| Endpoint / surface                                        | Cacheability     | Layer                           | Proposed TTL                                | Invalidation                | Notes                                                           |
+| --------------------------------------------------------- | ---------------- | ------------------------------- | ------------------------------------------- | --------------------------- | --------------------------------------------------------------- |
+| `GET` public projects list (anonymous)                    | public           | CDN + Next `revalidate`         | **Proposal:** 5–15 min + SWR                | publish/unpublish project   | Strip cookies from cache key; prices: anonymous vs auth overlay |
+| `GET` project/building/floor/apartment detail (anonymous) | public           | CDN + Next                      | **Proposal:** 5–15 min                      | entity publish              | Large payloads — consider splitting inventory                   |
+| `GET` builders / partners                                 | public           | CDN + Next                      | **Proposal:** 15–60 min                     | admin publish               |                                                                 |
+| `GET` `/events/current`, venue booths, entrance nodes     | public           | CDN + Redis optional            | **Proposal:** 1–5 min expo day              | map publish                 | High fan-out on expo page                                       |
+| `GET` booth search                                        | careful          | in-memory map snapshot or Redis | **Proposal:** warm booth index TTL 1–5 min  | map publish                 | Do not full-scan DB per keystroke                               |
+| `GET` route path                                          | public           | Redis/in-memory graph           | graph TTL until publish; path cache 1–5 min | map publish                 | Precompute graph                                                |
+| `GET` mortgage offers                                     | public           | CDN                             | **Proposal:** 15–60 min                     | offer edit                  |                                                                 |
+| R2 media                                                  | public immutable | CDN                             | days–weeks                                  | new object key on replace   | Versioned URLs                                                  |
+| `GET /buyer/qr`                                           | **private**      | browser memory only             | session-scoped                              | logout / regenerate / block | Never CDN                                                       |
+| `POST /qr/resolve`                                        | **no-store**     | —                               | —                                           | —                           | Live write path                                                 |
+| Check-in / CRM / portal / admin                           | **no-store**     | —                               | —                                           | —                           |                                                                 |
+| `GET /auth/me`                                            | **private**      | TanStack 60s OK                 | short                                       | logout                      |                                                                 |
 
 **Canonical rule:** Cloudflare/Next own **anonymous public** caching. Nest Redis cache is an **origin shield** only if edge is insufficient. Do not double-cache conflicting TTLs without a single invalidation owner (prefer: publish hooks purge CDN tags + bump Redis version key).
 
@@ -302,17 +302,17 @@ Assumptions use ranges until load tests produce measurements. “Visitor” ≠ 
 
 ## 9. Redis decision matrix
 
-| Use | Decision | Rationale |
-|---|---|---|
-| Distributed rate-limit counters | **Required before multi-instance production** | Already implemented; must be configured in prod |
-| Short-lived public API response cache | **Optional (P1)** | Prefer CDN/ISR first; Redis if Cloud Run still sees high identical GETs |
-| Idempotency keys (QR intake / requests) | **Useful optional** | Complements DB uniqueness; not a substitute |
-| Distributed locks | **Unnecessary for v1** | Prefer DB constraints/transactions |
-| Queues (BullMQ) | **Unnecessary initially** | Prefer Cloud Tasks / Pub/Sub or PG outbox if async needed; less Redis ops burden on Cloud Run |
-| Session acceleration | **Optional after coalescing** | Correctness favors PG SoT; Redis session cache needs careful revocation |
-| Analytics counters | **Optional** | Do not use Redis as analytics SoT |
-| Cache invalidation bus | **Optional** | CDN purge API + version keys often enough |
-| Source of truth for deals/QR/sessions | **Prohibited** | Dangerous |
+| Use                                     | Decision                                      | Rationale                                                                                     |
+| --------------------------------------- | --------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| Distributed rate-limit counters         | **Required before multi-instance production** | Already implemented; must be configured in prod                                               |
+| Short-lived public API response cache   | **Optional (P1)**                             | Prefer CDN/ISR first; Redis if Cloud Run still sees high identical GETs                       |
+| Idempotency keys (QR intake / requests) | **Useful optional**                           | Complements DB uniqueness; not a substitute                                                   |
+| Distributed locks                       | **Unnecessary for v1**                        | Prefer DB constraints/transactions                                                            |
+| Queues (BullMQ)                         | **Unnecessary initially**                     | Prefer Cloud Tasks / Pub/Sub or PG outbox if async needed; less Redis ops burden on Cloud Run |
+| Session acceleration                    | **Optional after coalescing**                 | Correctness favors PG SoT; Redis session cache needs careful revocation                       |
+| Analytics counters                      | **Optional**                                  | Do not use Redis as analytics SoT                                                             |
+| Cache invalidation bus                  | **Optional**                                  | CDN purge API + version keys often enough                                                     |
+| Source of truth for deals/QR/sessions   | **Prohibited**                                | Dangerous                                                                                     |
 
 **Upstash vs GCP Memorystore:** Upstash REST already integrated for throttling — keep it for rate limits. A second Redis for caching is optional complexity; only add if edge caching proves insufficient under load test.
 
@@ -328,17 +328,17 @@ Assumptions use ranges until load tests produce measurements. “Visitor” ≠ 
 
 ### Proposed starting ranges (adaptive — owner confirmation required)
 
-| Parameter | Proposed start | Rationale |
-|---|---|---|
-| Cloud Run concurrency | **40–80** | Balance latency vs connection multiplication |
-| Min instances (expo days) | **2–4** | Avoid cold-start stampede |
-| Min instances (off-season) | **0–1** | Cost |
-| Max instances | **10–20** | Hard cap against DB meltdown |
-| `pg` pool `max` per instance | **5–10** | With Neon pooler; keep total under plan limit |
-| Example budget | 20 × 8 = **160** app connections | Must fit Neon compute/pooler tier |
-| Connection timeout | **3–5 s** | Fail fast under saturation |
-| Statement / query timeout | **Proposal: 5–10 s** reads; tighter for public GETs | Prevent stuck queries holding pool slots |
-| Transaction timeout | **Proposal: 10–15 s** for intake/check-in | |
+| Parameter                    | Proposed start                                      | Rationale                                     |
+| ---------------------------- | --------------------------------------------------- | --------------------------------------------- |
+| Cloud Run concurrency        | **40–80**                                           | Balance latency vs connection multiplication  |
+| Min instances (expo days)    | **2–4**                                             | Avoid cold-start stampede                     |
+| Min instances (off-season)   | **0–1**                                             | Cost                                          |
+| Max instances                | **10–20**                                           | Hard cap against DB meltdown                  |
+| `pg` pool `max` per instance | **5–10**                                            | With Neon pooler; keep total under plan limit |
+| Example budget               | 20 × 8 = **160** app connections                    | Must fit Neon compute/pooler tier             |
+| Connection timeout           | **3–5 s**                                           | Fail fast under saturation                    |
+| Statement / query timeout    | **Proposal: 5–10 s** reads; tighter for public GETs | Prevent stuck queries holding pool slots      |
+| Transaction timeout          | **Proposal: 10–15 s** for intake/check-in           |                                               |
 
 **Validate via load test** — do not treat these as final.
 
@@ -364,12 +364,12 @@ Assumptions use ranges until load tests produce measurements. “Visitor” ≠ 
 
 ## 12. Rate-limit and security-layer plan
 
-| Layer | Role |
-|---|---|
-| Cloudflare | DDoS, bot, coarse IP/path limits; **must** protect when Nest fail-opens |
-| Vercel | Only traffic that hits Vercel (HTML + proxy mode API) |
-| Nest + Upstash | Business limits: auth 10/min, QR resolve 30/min, global 100/min — tune per expo |
-| Trust proxy | Set correctly behind Cloud Run / Cloudflare so throttler keys use real client IP |
+| Layer          | Role                                                                             |
+| -------------- | -------------------------------------------------------------------------------- |
+| Cloudflare     | DDoS, bot, coarse IP/path limits; **must** protect when Nest fail-opens          |
+| Vercel         | Only traffic that hits Vercel (HTML + proxy mode API)                            |
+| Nest + Upstash | Business limits: auth 10/min, QR resolve 30/min, global 100/min — tune per expo  |
+| Trust proxy    | Set correctly behind Cloud Run / Cloudflare so throttler keys use real client IP |
 
 Separate stricter limits for login, register, password reset, QR resolve, public request creation, BOS provisioning. Avoid entrance check-in limits that block legitimate burst (prefer per-staff + per-QR limits over crude global IP only on venue Wi-Fi NAT).
 
@@ -405,14 +405,14 @@ scan → validate QR + scanner auth
 
 ## 14. Failure-mode and degraded operation
 
-| Dependency | Behavior |
-|---|---|
-| Neon down | Fail closed on writes and auth; serve **stale public** from CDN if populated |
-| Redis (Upstash) down | Nest rate limit fail-open; Cloudflare coarse limits remain; do not invent successful writes |
-| Cloud Run overload | 503 + backoff; warm instances reduce cold starts |
-| Vercel down | Direct API mode still serves API; HTML down — mitigate with Cloudflare-cached HTML where possible |
-| R2 down | Media broken; metadata/API may still work |
-| Resend down | Auth/email flows degrade; do not block QR scan path |
+| Dependency           | Behavior                                                                                          |
+| -------------------- | ------------------------------------------------------------------------------------------------- |
+| Neon down            | Fail closed on writes and auth; serve **stale public** from CDN if populated                      |
+| Redis (Upstash) down | Nest rate limit fail-open; Cloudflare coarse limits remain; do not invent successful writes       |
+| Cloud Run overload   | 503 + backoff; warm instances reduce cold starts                                                  |
+| Vercel down          | Direct API mode still serves API; HTML down — mitigate with Cloudflare-cached HTML where possible |
+| R2 down              | Media broken; metadata/API may still work                                                         |
+| Resend down          | Auth/email flows degrade; do not block QR scan path                                               |
 
 Warm min instances **justified on exhibition days**. Health checks should not open unbounded DB pools or recurse. Retries: idempotent GETs yes; POSTs only with idempotency keys.
 
@@ -433,16 +433,16 @@ Warm min instances **justified on exhibition days**. Health checks should not op
 
 ### Target metrics (proposals — confirm with owner)
 
-| Metric | Proposal |
-|---|---|
-| Public HTML p95 | &lt; 500 ms cached; &lt; 2 s origin |
-| Public API p95 (cached) | &lt; 200 ms edge; &lt; 500 ms origin |
-| QR resolve / check-in p95 | &lt; 1 s |
-| Error rate (5xx) | &lt; 0.1% steady; &lt; 1% peak |
-| Cache hit ratio (public) | &gt; 80% on expo day |
-| Duplicate open deals | **0** |
-| Lost scans/check-ins | **0** |
-| DB connections | &lt; 70% of plan limit |
+| Metric                    | Proposal                             |
+| ------------------------- | ------------------------------------ |
+| Public HTML p95           | &lt; 500 ms cached; &lt; 2 s origin  |
+| Public API p95 (cached)   | &lt; 200 ms edge; &lt; 500 ms origin |
+| QR resolve / check-in p95 | &lt; 1 s                             |
+| Error rate (5xx)          | &lt; 0.1% steady; &lt; 1% peak       |
+| Cache hit ratio (public)  | &gt; 80% on expo day                 |
+| Duplicate open deals      | **0**                                |
+| Lost scans/check-ins      | **0**                                |
+| DB connections            | &lt; 70% of plan limit               |
 
 ### Alerts / dashboard
 
@@ -458,65 +458,65 @@ Warm caches (crawl public catalog + expo map); set Cloud Run min instances; veri
 
 ### P0 — Before staging / load testing
 
-| Item | Effort | Notes |
-|---|---|---|
-| Configure Neon pooled URL + explicit pool max + Cloud Run max instances/concurrency | **S–M** | Adaptive values — confirm with owner |
-| Enable Upstash in staging/prod; verify distributed throttling | **S** | Already coded |
-| Trust proxy / real client IP for throttler | **S** | |
-| Cloudflare WAF + coarse rate limits | **M** | Perimeter |
-| CRM open-deal partial unique + transactional intake | **M** | Correctness under retries |
-| Session touch coalescing | **S** | Cuts write amp |
-| Remove `cache: "no-store"` from **anonymous** public GETs; add Next `revalidate` / CDN cache headers; separate auth overlays | **M** | Biggest origin relief |
-| Fix duplicate SSR metadata+page fetches where cheap | **S** | |
+| Item                                                                                                                         | Effort  | Notes                                |
+| ---------------------------------------------------------------------------------------------------------------------------- | ------- | ------------------------------------ |
+| Configure Neon pooled URL + explicit pool max + Cloud Run max instances/concurrency                                          | **S–M** | Adaptive values — confirm with owner |
+| Enable Upstash in staging/prod; verify distributed throttling                                                                | **S**   | Already coded                        |
+| Trust proxy / real client IP for throttler                                                                                   | **S**   |                                      |
+| Cloudflare WAF + coarse rate limits                                                                                          | **M**   | Perimeter                            |
+| CRM open-deal partial unique + transactional intake                                                                          | **M**   | Correctness under retries            |
+| Session touch coalescing                                                                                                     | **S**   | Cuts write amp                       |
+| Remove `cache: "no-store"` from **anonymous** public GETs; add Next `revalidate` / CDN cache headers; separate auth overlays | **M**   | Biggest origin relief                |
+| Fix duplicate SSR metadata+page fetches where cheap                                                                          | **S**   |                                      |
 
 ### P0 — Before first production exhibition
 
-| Item | Effort | Notes |
-|---|---|---|
-| Load test scenarios B+C; tune limits | **L** | Mandatory |
-| Warm Cloud Run min instances for expo window | **S** | |
-| Pre-warm public CDN/ISR | **S** | Crawl |
-| Booth search: stop full-table scan (DB filter or cached index) | **M** | |
-| Cap/split catalog detail payloads or paginate nested apartments | **M** | |
-| Exhibition graph cache (in-memory per instance or Redis) | **S–M** | |
-| Confirm QR/request rate limits for venue NAT | **S** | Adaptive |
-| Observability dashboards + runbook | **M** | |
+| Item                                                            | Effort  | Notes     |
+| --------------------------------------------------------------- | ------- | --------- |
+| Load test scenarios B+C; tune limits                            | **L**   | Mandatory |
+| Warm Cloud Run min instances for expo window                    | **S**   |           |
+| Pre-warm public CDN/ISR                                         | **S**   | Crawl     |
+| Booth search: stop full-table scan (DB filter or cached index)  | **M**   |           |
+| Cap/split catalog detail payloads or paginate nested apartments | **M**   |           |
+| Exhibition graph cache (in-memory per instance or Redis)        | **S–M** |           |
+| Confirm QR/request rate limits for venue NAT                    | **S**   | Adaptive  |
+| Observability dashboards + runbook                              | **M**   |           |
 
 ### P1 — After measurements
 
-| Item | Effort |
-|---|---|
-| Optional Redis origin shield for hottest public GETs | **M** |
-| Analytics batching / sampling / async worker | **M** |
-| Next Image remotePatterns for R2 + CDN | **S** |
-| Composite indexes (`Project` builder+status, `Event` status+publication) | **S** |
-| Direct `api.toonexpo.com` behind Cloudflare (reduce Vercel proxy cost) | **M** ops |
-| Idempotency keys on intake | **S–M** |
+| Item                                                                     | Effort    |
+| ------------------------------------------------------------------------ | --------- |
+| Optional Redis origin shield for hottest public GETs                     | **M**     |
+| Analytics batching / sampling / async worker                             | **M**     |
+| Next Image remotePatterns for R2 + CDN                                   | **S**     |
+| Composite indexes (`Project` builder+status, `Event` status+publication) | **S**     |
+| Direct `api.toonexpo.com` behind Cloudflare (reduce Vercel proxy cost)   | **M** ops |
+| Idempotency keys on intake                                               | **S–M**   |
 
 ### P2 — Optional later
 
-| Item | Effort |
-|---|---|
-| PWA / offline QR display | **L** |
-| Offline scan queue + sync | **L** |
-| BullMQ — only if Cloud Tasks/outbox insufficient | **L** |
-| Redis session cache | **M** |
+| Item                                             | Effort |
+| ------------------------------------------------ | ------ |
+| PWA / offline QR display                         | **L**  |
+| Offline scan queue + sync                        | **L**  |
+| BullMQ — only if Cloud Tasks/outbox insufficient | **L**  |
+| Redis session cache                              | **M**  |
 
 ---
 
 ## 17. Repository areas likely to change (not modified in this review)
 
-| Area | Paths |
-|---|---|
-| Web fetch cache policy | `apps/web/src/features/catalog/api/*`, `exhibition/api/public-exhibition-api.ts`, `partners-api.ts`, `mortgage/api/*`, Next page `revalidate` |
-| Session touch | `apps/api/src/auth/auth.service.ts` |
-| CRM intake + schema | `apps/api/src/crm/intake/*`, `packages/db/prisma/schema.prisma` + migration |
-| Booth search / routes | `apps/api/src/exhibition/public/public-booth-search.service.ts`, `public-route.service.ts` |
-| Catalog payload shape | `apps/api/src/catalog/projects.service.ts`, related mappers/contracts |
-| Pool / timeouts | `packages/db/src/index.ts`, Cloud Run service config, `.env` / TECH_CARD adaptive values |
-| Trust proxy / throttling | `apps/api/src/main.ts`, rate-limit module, Cloudflare config docs |
-| Analytics | `apps/api/src/analytics/analytics.service.ts` |
-| Images | `apps/web/next.config.ts` |
+| Area                     | Paths                                                                                                                                         |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Web fetch cache policy   | `apps/web/src/features/catalog/api/*`, `exhibition/api/public-exhibition-api.ts`, `partners-api.ts`, `mortgage/api/*`, Next page `revalidate` |
+| Session touch            | `apps/api/src/auth/auth.service.ts`                                                                                                           |
+| CRM intake + schema      | `apps/api/src/crm/intake/*`, `packages/db/prisma/schema.prisma` + migration                                                                   |
+| Booth search / routes    | `apps/api/src/exhibition/public/public-booth-search.service.ts`, `public-route.service.ts`                                                    |
+| Catalog payload shape    | `apps/api/src/catalog/projects.service.ts`, related mappers/contracts                                                                         |
+| Pool / timeouts          | `packages/db/src/index.ts`, Cloud Run service config, `.env` / TECH_CARD adaptive values                                                      |
+| Trust proxy / throttling | `apps/api/src/main.ts`, rate-limit module, Cloudflare config docs                                                                             |
+| Analytics                | `apps/api/src/analytics/analytics.service.ts`                                                                                                 |
+| Images                   | `apps/web/next.config.ts`                                                                                                                     |
 
 ---
 
@@ -524,36 +524,36 @@ Warm caches (crawl public catalog + expo map); set Cloud Run min instances; veri
 
 ### P0 — Will break or corrupt under expo load
 
-| ID | Finding | Recommendation | Effort | Trade-offs |
-|---|---|---|---|---|
-| P0-1 | No public caching; all public clients use `cache: "no-store"` | Cache anonymous public HTML/JSON at Cloudflare + Next revalidate; personalize via separate private calls | **M** | Stale windows until purge; must never cache auth responses |
-| P0-2 | Session UPDATE on every authenticated/optional-auth request | Coalesce `lastSeenAt` / idle refresh (proposal 5–15 min) | **S** | Idle expiry less precise between touches |
-| P0-3 | Cloud Run × unset `pg` pool can exhaust Neon | Explicit pool max + max instances; load-test | **S–M** | Lower max instances → queueing under extreme spikes |
-| P0-4 | CRM open-deal dedup is race-prone | Partial unique + transactional intake | **M** | Migration must clean existing duplicates if any |
-| P0-5 | Rate limit fail-open + possible missing Upstash / bad client IP | Require Upstash in prod; Cloudflare backstop; trust proxy | **S–M** | Fail-open preserves availability during Redis blips |
+| ID   | Finding                                                         | Recommendation                                                                                           | Effort  | Trade-offs                                                 |
+| ---- | --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | ------- | ---------------------------------------------------------- |
+| P0-1 | No public caching; all public clients use `cache: "no-store"`   | Cache anonymous public HTML/JSON at Cloudflare + Next revalidate; personalize via separate private calls | **M**   | Stale windows until purge; must never cache auth responses |
+| P0-2 | Session UPDATE on every authenticated/optional-auth request     | Coalesce `lastSeenAt` / idle refresh (proposal 5–15 min)                                                 | **S**   | Idle expiry less precise between touches                   |
+| P0-3 | Cloud Run × unset `pg` pool can exhaust Neon                    | Explicit pool max + max instances; load-test                                                             | **S–M** | Lower max instances → queueing under extreme spikes        |
+| P0-4 | CRM open-deal dedup is race-prone                               | Partial unique + transactional intake                                                                    | **M**   | Migration must clean existing duplicates if any            |
+| P0-5 | Rate limit fail-open + possible missing Upstash / bad client IP | Require Upstash in prod; Cloudflare backstop; trust proxy                                                | **S–M** | Fail-open preserves availability during Redis blips        |
 
 ### P1 — Degrades under load
 
-| ID | Finding | Recommendation | Effort | Trade-offs |
-|---|---|---|---|---|
-| P1-1 | Booth search full-scan + min length 1 | Cached booth index or SQL `ILIKE` with trigram; raise min length to 2–3 | **M** | Slightly less autocomplete |
-| P1-2 | Route Dijkstra every request | Cache published graph in memory/Redis | **S–M** | Invalidate on map publish |
-| P1-3 | Catalog detail / list nested apartments unbounded | Summaries on list; paginate or lazy-load inventory | **M** | Extra round-trips |
-| P1-4 | Analytics INSERT per event on product pool | Batch, sample, or async worker during peaks | **M** | Delayed analytics |
-| P1-5 | SSR duplicate metadata + page fetches | `cache()` / single load per request | **S** | — |
-| P1-6 | Proxy mode doubles hop for browser API | Prefer Cloudflare → API for public GETs after domain ready | **M** | Cookie/CORS domain setup |
-| P1-7 | Check-in path extra QR lookup | Pass resolved `qrCodeId` through | **S** | — |
+| ID   | Finding                                           | Recommendation                                                          | Effort  | Trade-offs                 |
+| ---- | ------------------------------------------------- | ----------------------------------------------------------------------- | ------- | -------------------------- |
+| P1-1 | Booth search full-scan + min length 1             | Cached booth index or SQL `ILIKE` with trigram; raise min length to 2–3 | **M**   | Slightly less autocomplete |
+| P1-2 | Route Dijkstra every request                      | Cache published graph in memory/Redis                                   | **S–M** | Invalidate on map publish  |
+| P1-3 | Catalog detail / list nested apartments unbounded | Summaries on list; paginate or lazy-load inventory                      | **M**   | Extra round-trips          |
+| P1-4 | Analytics INSERT per event on product pool        | Batch, sample, or async worker during peaks                             | **M**   | Delayed analytics          |
+| P1-5 | SSR duplicate metadata + page fetches             | `cache()` / single load per request                                     | **S**   | —                          |
+| P1-6 | Proxy mode doubles hop for browser API            | Prefer Cloudflare → API for public GETs after domain ready              | **M**   | Cookie/CORS domain setup   |
+| P1-7 | Check-in path extra QR lookup                     | Pass resolved `qrCodeId` through                                        | **S**   | —                          |
 
 ### P2 — Optimizations
 
-| ID | Finding | Recommendation | Effort |
-|---|---|---|---|
-| P2-1 | No PWA / offline QR | Explicit offline QR feature | **L** |
-| P2-2 | Next Image only allowlists placehold.co | Add R2 hostname; versioned CDN | **S** |
-| P2-3 | Missing composites on Project/Event | Add indexes after query EXPLAIN | **S** |
-| P2-4 | Mortgage offers unbounded `findMany` | Soft cap / pagination | **S** |
-| P2-5 | Redis data cache | Only if edge miss rate high | **M** |
-| P2-6 | QrScanEvent index write amp | Review unused secondary indexes | **S** |
+| ID   | Finding                                 | Recommendation                  | Effort |
+| ---- | --------------------------------------- | ------------------------------- | ------ |
+| P2-1 | No PWA / offline QR                     | Explicit offline QR feature     | **L**  |
+| P2-2 | Next Image only allowlists placehold.co | Add R2 hostname; versioned CDN  | **S**  |
+| P2-3 | Missing composites on Project/Event     | Add indexes after query EXPLAIN | **S**  |
+| P2-4 | Mortgage offers unbounded `findMany`    | Soft cap / pagination           | **S**  |
+| P2-5 | Redis data cache                        | Only if edge miss rate high     | **M**  |
+| P2-6 | QrScanEvent index write amp             | Review unused secondary indexes | **S**  |
 
 ---
 
