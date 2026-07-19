@@ -1,6 +1,3 @@
-import { resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
-
 import { ValidationPipe } from '@nestjs/common';
 import type { NestExpressApplication } from '@nestjs/platform-express';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -17,10 +14,9 @@ import { FORGOT_PASSWORD_RESPONSE_MESSAGE } from '../src/common/constants/app.co
 import { EMAIL_SERVICE, type EmailMessage } from '../src/email/email.types.js';
 import { PrismaService } from '../src/prisma/prisma.service.js';
 import { hashPassword } from '../src/auth/utils/password.util.js';
+import { loadRootEnv } from './load-root-env.js';
 
 const GLOBAL_PREFIX = API_V1_PREFIX.replace(/^\//, '');
-const TEST_DIR = fileURLToPath(new URL('.', import.meta.url));
-const ROOT_ENV_PATH = resolve(TEST_DIR, '../../../.env');
 
 const uniqueEmail = (suffix: string): string =>
   `reset.e2e.${suffix}.${Date.now()}.${Math.random().toString(16).slice(2)}@example.com`;
@@ -50,7 +46,7 @@ describe('Password reset (e2e)', () => {
 
   beforeAll(async () => {
     process.env['NODE_ENV'] = process.env['NODE_ENV'] ?? 'test';
-    process.loadEnvFile?.(ROOT_ENV_PATH);
+    loadRootEnv();
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],

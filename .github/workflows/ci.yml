@@ -15,6 +15,32 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_USER: toonexpo
+          POSTGRES_PASSWORD: toonexpo
+          POSTGRES_DB: toonexpo
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U toonexpo -d toonexpo"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      NODE_ENV: development
+      PORT: "4000"
+      APP_URL: http://localhost:3000
+      CORS_ORIGINS: http://localhost:3000
+      NEXT_PUBLIC_API_URL: http://localhost:4000
+      DATABASE_URL: postgresql://toonexpo:toonexpo@localhost:5432/toonexpo
+      DIRECT_URL: postgresql://toonexpo:toonexpo@localhost:5432/toonexpo
+      SESSION_TOKEN_PEPPER: ci-only-session-token-pepper-min-32-chars
+      CSRF_SECRET: ci-only-csrf-secret-value-min-32-chars!!
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -32,6 +58,9 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Apply migrations
+        run: pnpm --filter @toonexpo/db db:migrate:deploy
 
       - name: Architecture boundary check
         run: |

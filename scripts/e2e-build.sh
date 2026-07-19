@@ -10,7 +10,7 @@ API_ORIGIN="${NEXT_PUBLIC_API_URL:-http://localhost:${API_PORT}}"
 HEALTH_URL="${API_ORIGIN%/}/api/v1/health"
 export NEXT_PUBLIC_API_URL="$API_ORIGIN"
 
-pnpm --filter @toonexpo/api build
+pnpm turbo run build --filter=@toonexpo/api...
 
 API_PID=""
 cleanup() {
@@ -40,4 +40,4 @@ if ! curl -sf "$HEALTH_URL" >/dev/null; then
   exit 1
 fi
 
-pnpm --filter @toonexpo/web build
+pnpm turbo run build --filter=@toonexpo/web...
