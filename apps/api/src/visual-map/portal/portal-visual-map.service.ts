@@ -1,19 +1,18 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable } from '@nestjs/common';
 import type {
   PortalVisualCanvasDetail,
   PortalVisualCanvasListResponse,
   PortalVisualHotspotItem,
-} from "@toonexpo/contracts";
+} from '@toonexpo/contracts';
 
-import type { CompanyMemberContext } from "../../company/types/company-member-context.js";
 import type {
   CreatePortalVisualCanvasDto,
   CreatePortalVisualHotspotDto,
   UpdatePortalVisualCanvasDto,
   UpdatePortalVisualHotspotDto,
-} from "./dto/portal-visual-map.dto.js";
-import { PortalVisualMapCanvasService } from "./portal-visual-map-canvas.service.js";
-import { PortalVisualMapHotspotService } from "./portal-visual-map-hotspot.service.js";
+} from './dto/portal-visual-map.dto.js';
+import { PortalVisualMapCanvasService } from './portal-visual-map-canvas.service.js';
+import { PortalVisualMapHotspotService } from './portal-visual-map-hotspot.service.js';
 
 @Injectable()
 export class PortalVisualMapService {
@@ -22,66 +21,56 @@ export class PortalVisualMapService {
     private readonly hotspotService: PortalVisualMapHotspotService,
   ) {}
 
-  listByProject(
-    member: CompanyMemberContext,
-    projectId: string,
-  ): Promise<PortalVisualCanvasListResponse> {
-    return this.canvasService.listByProject(member, projectId);
+  listByProject(companyId: string, projectId: string): Promise<PortalVisualCanvasListResponse> {
+    return this.canvasService.listByProject(companyId, projectId);
   }
 
   create(
-    member: CompanyMemberContext,
+    companyId: string,
     userId: string,
     projectId: string,
     dto: CreatePortalVisualCanvasDto,
   ): Promise<PortalVisualCanvasDetail> {
-    return this.canvasService.create(member, userId, projectId, dto);
+    return this.canvasService.create(companyId, userId, projectId, dto);
   }
 
-  getById(
-    member: CompanyMemberContext,
-    canvasId: string,
-  ): Promise<PortalVisualCanvasDetail> {
-    return this.canvasService.getById(member, canvasId);
+  getById(companyId: string, canvasId: string): Promise<PortalVisualCanvasDetail> {
+    return this.canvasService.getById(companyId, canvasId);
   }
 
   update(
-    member: CompanyMemberContext,
+    companyId: string,
     userId: string,
     canvasId: string,
     dto: UpdatePortalVisualCanvasDto,
   ): Promise<PortalVisualCanvasDetail> {
-    return this.canvasService.update(member, userId, canvasId, dto);
+    return this.canvasService.update(companyId, userId, canvasId, dto);
   }
 
-  remove(member: CompanyMemberContext, canvasId: string): Promise<void> {
-    return this.canvasService.remove(member, canvasId);
+  remove(companyId: string, canvasId: string): Promise<void> {
+    return this.canvasService.remove(companyId, canvasId);
   }
 
   createHotspot(
-    member: CompanyMemberContext,
+    companyId: string,
     userId: string,
     canvasId: string,
     dto: CreatePortalVisualHotspotDto,
   ): Promise<PortalVisualHotspotItem> {
-    return this.hotspotService.create(member, userId, canvasId, dto);
+    return this.hotspotService.create(companyId, userId, canvasId, dto);
   }
 
   updateHotspot(
-    member: CompanyMemberContext,
+    companyId: string,
     userId: string,
     canvasId: string,
     hotspotId: string,
     dto: UpdatePortalVisualHotspotDto,
   ): Promise<PortalVisualHotspotItem> {
-    return this.hotspotService.update(member, userId, canvasId, hotspotId, dto);
+    return this.hotspotService.update(companyId, userId, canvasId, hotspotId, dto);
   }
 
-  removeHotspot(
-    member: CompanyMemberContext,
-    canvasId: string,
-    hotspotId: string,
-  ): Promise<void> {
-    return this.hotspotService.remove(member, canvasId, hotspotId);
+  removeHotspot(companyId: string, canvasId: string, hotspotId: string): Promise<void> {
+    return this.hotspotService.remove(companyId, canvasId, hotspotId);
   }
 }

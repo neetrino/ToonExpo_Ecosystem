@@ -1,13 +1,12 @@
-import { Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import type { ProjectQrResponse } from "@toonexpo/contracts";
-import { DEFAULT_LOCALE } from "@toonexpo/shared";
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import type { ProjectQrResponse } from '@toonexpo/contracts';
+import { DEFAULT_LOCALE } from '@toonexpo/shared';
 
-import type { CompanyMemberContext } from "../../company/types/company-member-context.js";
-import type { AppEnv } from "../../config/env.validation.js";
-import { PrismaService } from "../../prisma/prisma.service.js";
-import { buildProjectQrPayloadUrl } from "../../qr/qr-payload.util.js";
-import { entityNotFound } from "../utils/access.js";
+import type { AppEnv } from '../../config/env.validation.js';
+import { PrismaService } from '../../prisma/prisma.service.js';
+import { buildProjectQrPayloadUrl } from '../../qr/qr-payload.util.js';
+import { entityNotFound } from '../utils/access.js';
 
 @Injectable()
 export class PortalProjectQrService {
@@ -16,18 +15,15 @@ export class PortalProjectQrService {
     private readonly configService: ConfigService<AppEnv, true>,
   ) {}
 
-  async getProjectQr(
-    member: CompanyMemberContext,
-    projectId: string,
-  ): Promise<ProjectQrResponse> {
+  async getProjectQr(companyId: string, projectId: string): Promise<ProjectQrResponse> {
     const project = await this.prisma.db.project.findFirst({
-      where: { id: projectId, builderCompanyId: member.companyId },
+      where: { id: projectId, builderCompanyId: companyId },
       select: { id: true, slug: true },
     });
     if (!project) {
-      throw entityNotFound("Project");
+      throw entityNotFound('Project');
     }
-    const appUrl = this.configService.get("APP_URL", { infer: true });
+    const appUrl = this.configService.get('APP_URL', { infer: true });
     return {
       projectId: project.id,
       slug: project.slug,

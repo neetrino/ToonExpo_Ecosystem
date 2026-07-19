@@ -1,33 +1,23 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
-import type { PortalApartmentDetail } from "@toonexpo/contracts";
-import { ApartmentSalesStatus, PublicationStatus } from "@toonexpo/db";
+import { BadRequestException, Injectable } from '@nestjs/common';
+import type { PortalApartmentDetail } from '@toonexpo/contracts';
+import { ApartmentSalesStatus, PublicationStatus } from '@toonexpo/db';
 
-import { loadTranslations } from "../../catalog/utils/load-translations.js";
-import {
-  TRANSLATION_ENTITY,
-  TRANSLATION_FIELD,
-} from "../../catalog/utils/resolve-translation.js";
-import type { CompanyMemberContext } from "../../company/types/company-member-context.js";
-import { WebRevalidationService } from "../../common/web-revalidation/web-revalidation.service.js";
-import { PrismaService } from "../../prisma/prisma.service.js";
+import { loadTranslations } from '../../catalog/utils/load-translations.js';
+import { TRANSLATION_ENTITY, TRANSLATION_FIELD } from '../../catalog/utils/resolve-translation.js';
+import { WebRevalidationService } from '../../common/web-revalidation/web-revalidation.service.js';
+import { PrismaService } from '../../prisma/prisma.service.js';
 import type {
   BulkCreatePortalApartmentsDto,
   CreatePortalApartmentDto,
   UpdatePortalApartmentDto,
-} from "../dto/portal-apartment.dto.js";
-import type { UpdatePortalPublicationDto } from "../dto/update-portal-publication.dto.js";
-import { mapPortalApartment } from "../mappers/portal.mapper.js";
-import { assertCompanyAdmin, entityNotFound } from "../utils/access.js";
-import { groupPortalTranslations } from "../utils/group-translations.js";
-import {
-  requireOwnedApartment,
-  requireOwnedFloor,
-} from "../utils/ownership.js";
-import { upsertTranslations } from "../utils/upsert-translations.js";
-import {
-  buildApartmentUpdateData,
-  createPortalApartmentRow,
-} from "./apartment-write.helpers.js";
+} from '../dto/portal-apartment.dto.js';
+import type { UpdatePortalPublicationDto } from '../dto/update-portal-publication.dto.js';
+import { mapPortalApartment } from '../mappers/portal.mapper.js';
+import { entityNotFound } from '../utils/access.js';
+import { groupPortalTranslations } from '../utils/group-translations.js';
+import { requireOwnedApartment, requireOwnedFloor } from '../utils/ownership.js';
+import { upsertTranslations } from '../utils/upsert-translations.js';
+import { buildApartmentUpdateData, createPortalApartmentRow } from './apartment-write.helpers.js';
 
 const APARTMENT_TRANSLATION_FIELDS = [TRANSLATION_FIELD.description] as const;
 
@@ -38,27 +28,17 @@ export class PortalApartmentsService {
     private readonly webRevalidation: WebRevalidationService,
   ) {}
 
-  async listByFloor(
-    member: CompanyMemberContext,
-    floorId: string,
-  ): Promise<PortalApartmentDetail[]> {
-    await requireOwnedFloor(this.prisma, floorId, member.companyId);
+  async listByFloor(companyId: string, floorId: string): Promise<PortalApartmentDetail[]> {
+    await requireOwnedFloor(this.prisma, floorId, companyId);
     const apartments = await this.prisma.db.apartment.findMany({
       where: { floorId },
-      orderBy: [{ number: "asc" }],
+      orderBy: [{ number: 'asc' }],
     });
     return apartments.map((apartment) => mapPortalApartment(apartment));
   }
 
-  async getById(
-    member: CompanyMemberContext,
-    apartmentId: string,
-  ): Promise<PortalApartmentDetail> {
-    const owned = await requireOwnedApartment(
-      this.prisma,
-      apartmentId,
-      member.companyId,
-    );
+  async getById(companyId: string, apartmentId: string): Promise<PortalApartmentDetail> {
+    const owned = await requireOwnedApartment(this.prisma, apartmentId, companyId);
     const apartment = await this.prisma.db.apartment.findUniqueOrThrow({
       where: { id: owned.id },
     });
@@ -66,16 +46,12 @@ export class PortalApartmentsService {
   }
 
   async create(
-    member: CompanyMemberContext,
+    companyId: string,
     userId: string,
     floorId: string,
     dto: CreatePortalApartmentDto,
   ): Promise<PortalApartmentDetail> {
-    const floor = await requireOwnedFloor(
-      this.prisma,
-      floorId,
-      member.companyId,
-    );
+    const floor = await requireOwnedFloor(this.prisma, floorId, companyId);
     const apartment = await createPortalApartmentRow(this.prisma.db, {
       userId,
       projectId: floor.building.projectId,
@@ -87,16 +63,12 @@ export class PortalApartmentsService {
   }
 
   async createBulk(
-    member: CompanyMemberContext,
+    companyId: string,
     userId: string,
     floorId: string,
     dto: BulkCreatePortalApartmentsDto,
   ): Promise<PortalApartmentDetail[]> {
-    const floor = await requireOwnedFloor(
-      this.prisma,
-      floorId,
-      member.companyId,
-    );
+    const floor = await requireOwnedFloor(this.prisma, floorId, companyId);
     const created: PortalApartmentDetail[] = [];
     for (const item of dto.apartments) {
       const apartment = await createPortalApartmentRow(this.prisma.db, {
@@ -112,7 +84,7 @@ export class PortalApartmentsService {
   }
 
   async update(
-    member: CompanyMemberContext,
+    companyId: string,
     userId: string,
     apartmentId: string,
     dto: UpdatePortalApartmentDto,
@@ -120,20 +92,17 @@ export class PortalApartmentsService {
     const existing = await this.prisma.db.apartment.findFirst({
       where: {
         id: apartmentId,
-        project: { builderCompanyId: member.companyId },
+        project: { builderCompanyId: companyId },
       },
     });
     if (!existing) {
-      throw entityNotFound("Apartment");
+      throw entityNotFound('Apartment');
     }
 
     const nextSalesStatus =
-      dto.salesStatus !== undefined
-        ? (dto.salesStatus as ApartmentSalesStatus)
-        : undefined;
+      dto.salesStatus !== undefined ? (dto.salesStatus as ApartmentSalesStatus) : undefined;
     const salesStatusChanged =
-      nextSalesStatus !== undefined &&
-      nextSalesStatus !== existing.salesStatus;
+      nextSalesStatus !== undefined && nextSalesStatus !== existing.salesStatus;
 
     const apartment = await this.prisma.db.$transaction(async (tx) => {
       if (salesStatusChanged && nextSalesStatus) {
@@ -143,9 +112,7 @@ export class PortalApartmentsService {
             previousStatus: existing.salesStatus,
             newStatus: nextSalesStatus,
             changedByUserId: userId,
-            ...(dto.statusChangeReason !== undefined
-              ? { reason: dto.statusChangeReason }
-              : {}),
+            ...(dto.statusChangeReason !== undefined ? { reason: dto.statusChangeReason } : {}),
           },
         });
       }
@@ -171,17 +138,12 @@ export class PortalApartmentsService {
   }
 
   async updatePublication(
-    member: CompanyMemberContext,
+    companyId: string,
     userId: string,
     apartmentId: string,
     dto: UpdatePortalPublicationDto,
   ): Promise<PortalApartmentDetail> {
-    assertCompanyAdmin(member);
-    const owned = await requireOwnedApartment(
-      this.prisma,
-      apartmentId,
-      member.companyId,
-    );
+    const owned = await requireOwnedApartment(this.prisma, apartmentId, companyId);
     const apartment = await this.prisma.db.apartment.update({
       where: { id: apartmentId },
       data: {
@@ -193,23 +155,19 @@ export class PortalApartmentsService {
     return this.toApartmentDetail(apartment);
   }
 
-  async remove(
-    member: CompanyMemberContext,
-    apartmentId: string,
-  ): Promise<void> {
-    assertCompanyAdmin(member);
+  async remove(companyId: string, apartmentId: string): Promise<void> {
     const apartment = await this.prisma.db.apartment.findFirst({
       where: {
         id: apartmentId,
-        project: { builderCompanyId: member.companyId },
+        project: { builderCompanyId: companyId },
       },
       select: { id: true, publicationStatus: true },
     });
     if (!apartment) {
-      throw entityNotFound("Apartment");
+      throw entityNotFound('Apartment');
     }
     if (apartment.publicationStatus !== PublicationStatus.draft) {
-      throw new BadRequestException("Only draft apartments can be deleted");
+      throw new BadRequestException('Only draft apartments can be deleted');
     }
     await this.prisma.db.apartment.delete({ where: { id: apartmentId } });
   }
@@ -217,15 +175,10 @@ export class PortalApartmentsService {
   private async toApartmentDetail(
     apartment: Parameters<typeof mapPortalApartment>[0],
   ): Promise<PortalApartmentDetail> {
-    const rows = await loadTranslations(
-      this.prisma.db,
-      TRANSLATION_ENTITY.apartment,
-      [apartment.id],
-    );
-    const translations = groupPortalTranslations(
-      rows,
-      APARTMENT_TRANSLATION_FIELDS,
-    );
+    const rows = await loadTranslations(this.prisma.db, TRANSLATION_ENTITY.apartment, [
+      apartment.id,
+    ]);
+    const translations = groupPortalTranslations(rows, APARTMENT_TRANSLATION_FIELDS);
     return mapPortalApartment(apartment, translations);
   }
 }

@@ -1,21 +1,14 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
-import type { PortalFloorSummary } from "@toonexpo/contracts";
-import { PublicationStatus, type Prisma } from "@toonexpo/db";
+import { BadRequestException, Injectable } from '@nestjs/common';
+import type { PortalFloorSummary } from '@toonexpo/contracts';
+import { PublicationStatus, type Prisma } from '@toonexpo/db';
 
-import type { CompanyMemberContext } from "../../company/types/company-member-context.js";
-import { WebRevalidationService } from "../../common/web-revalidation/web-revalidation.service.js";
-import { PrismaService } from "../../prisma/prisma.service.js";
-import type {
-  CreatePortalFloorDto,
-  UpdatePortalFloorDto,
-} from "../dto/portal-floor.dto.js";
-import type { UpdatePortalPublicationDto } from "../dto/update-portal-publication.dto.js";
-import { mapPortalFloor } from "../mappers/portal.mapper.js";
-import { assertCompanyAdmin, entityNotFound } from "../utils/access.js";
-import {
-  requireOwnedBuilding,
-  requireOwnedFloor,
-} from "../utils/ownership.js";
+import { WebRevalidationService } from '../../common/web-revalidation/web-revalidation.service.js';
+import { PrismaService } from '../../prisma/prisma.service.js';
+import type { CreatePortalFloorDto, UpdatePortalFloorDto } from '../dto/portal-floor.dto.js';
+import type { UpdatePortalPublicationDto } from '../dto/update-portal-publication.dto.js';
+import { mapPortalFloor } from '../mappers/portal.mapper.js';
+import { entityNotFound } from '../utils/access.js';
+import { requireOwnedBuilding, requireOwnedFloor } from '../utils/ownership.js';
 
 const floorInclude = {
   _count: { select: { apartments: true } },
@@ -28,26 +21,23 @@ export class PortalFloorsService {
     private readonly webRevalidation: WebRevalidationService,
   ) {}
 
-  async list(
-    member: CompanyMemberContext,
-    buildingId: string,
-  ): Promise<PortalFloorSummary[]> {
-    await requireOwnedBuilding(this.prisma, buildingId, member.companyId);
+  async list(companyId: string, buildingId: string): Promise<PortalFloorSummary[]> {
+    await requireOwnedBuilding(this.prisma, buildingId, companyId);
     const floors = await this.prisma.db.floor.findMany({
       where: { buildingId },
-      orderBy: [{ displayOrder: "asc" }, { number: "asc" }],
+      orderBy: [{ displayOrder: 'asc' }, { number: 'asc' }],
       include: floorInclude,
     });
     return floors.map(mapPortalFloor);
   }
 
   async create(
-    member: CompanyMemberContext,
+    companyId: string,
     userId: string,
     buildingId: string,
     dto: CreatePortalFloorDto,
   ): Promise<PortalFloorSummary> {
-    await requireOwnedBuilding(this.prisma, buildingId, member.companyId);
+    await requireOwnedBuilding(this.prisma, buildingId, companyId);
     const floor = await this.prisma.db.floor.create({
       data: {
         buildingId,
@@ -57,15 +47,9 @@ export class PortalFloorsService {
         createdByUserId: userId,
         updatedByUserId: userId,
         ...(dto.name !== undefined ? { name: dto.name } : {}),
-        ...(dto.displayLabel !== undefined
-          ? { displayLabel: dto.displayLabel }
-          : {}),
-        ...(dto.description !== undefined
-          ? { description: dto.description }
-          : {}),
-        ...(dto.floorplanMediaId !== undefined
-          ? { floorplanMediaId: dto.floorplanMediaId }
-          : {}),
+        ...(dto.displayLabel !== undefined ? { displayLabel: dto.displayLabel } : {}),
+        ...(dto.description !== undefined ? { description: dto.description } : {}),
+        ...(dto.floorplanMediaId !== undefined ? { floorplanMediaId: dto.floorplanMediaId } : {}),
       },
       include: floorInclude,
     });
@@ -73,29 +57,21 @@ export class PortalFloorsService {
   }
 
   async update(
-    member: CompanyMemberContext,
+    companyId: string,
     userId: string,
     floorId: string,
     dto: UpdatePortalFloorDto,
   ): Promise<PortalFloorSummary> {
-    await requireOwnedFloor(this.prisma, floorId, member.companyId);
+    await requireOwnedFloor(this.prisma, floorId, companyId);
     const floor = await this.prisma.db.floor.update({
       where: { id: floorId },
       data: {
         ...(dto.floorNumber !== undefined ? { number: dto.floorNumber } : {}),
         ...(dto.name !== undefined ? { name: dto.name } : {}),
-        ...(dto.displayLabel !== undefined
-          ? { displayLabel: dto.displayLabel }
-          : {}),
-        ...(dto.displayOrder !== undefined
-          ? { displayOrder: dto.displayOrder }
-          : {}),
-        ...(dto.description !== undefined
-          ? { description: dto.description }
-          : {}),
-        ...(dto.floorplanMediaId !== undefined
-          ? { floorplanMediaId: dto.floorplanMediaId }
-          : {}),
+        ...(dto.displayLabel !== undefined ? { displayLabel: dto.displayLabel } : {}),
+        ...(dto.displayOrder !== undefined ? { displayOrder: dto.displayOrder } : {}),
+        ...(dto.description !== undefined ? { description: dto.description } : {}),
+        ...(dto.floorplanMediaId !== undefined ? { floorplanMediaId: dto.floorplanMediaId } : {}),
         updatedByUserId: userId,
       },
       include: floorInclude,
@@ -104,13 +80,12 @@ export class PortalFloorsService {
   }
 
   async updatePublication(
-    member: CompanyMemberContext,
+    companyId: string,
     userId: string,
     floorId: string,
     dto: UpdatePortalPublicationDto,
   ): Promise<PortalFloorSummary> {
-    assertCompanyAdmin(member);
-    const owned = await requireOwnedFloor(this.prisma, floorId, member.companyId);
+    const owned = await requireOwnedFloor(this.prisma, floorId, companyId);
     const floor = await this.prisma.db.floor.update({
       where: { id: floorId },
       data: {
@@ -123,20 +98,19 @@ export class PortalFloorsService {
     return mapPortalFloor(floor);
   }
 
-  async remove(member: CompanyMemberContext, floorId: string): Promise<void> {
-    assertCompanyAdmin(member);
+  async remove(companyId: string, floorId: string): Promise<void> {
     const floor = await this.prisma.db.floor.findFirst({
       where: {
         id: floorId,
-        building: { project: { builderCompanyId: member.companyId } },
+        building: { project: { builderCompanyId: companyId } },
       },
       select: { id: true, publicationStatus: true },
     });
     if (!floor) {
-      throw entityNotFound("Floor");
+      throw entityNotFound('Floor');
     }
     if (floor.publicationStatus !== PublicationStatus.draft) {
-      throw new BadRequestException("Only draft floors can be deleted");
+      throw new BadRequestException('Only draft floors can be deleted');
     }
     await this.prisma.db.floor.delete({ where: { id: floorId } });
   }

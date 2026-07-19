@@ -1,23 +1,22 @@
-import { Injectable } from "@nestjs/common";
-import type { PortalVisualHotspotItem } from "@toonexpo/contracts";
-import { PublicationStatus } from "@toonexpo/db";
+import { Injectable } from '@nestjs/common';
+import type { PortalVisualHotspotItem } from '@toonexpo/contracts';
+import { PublicationStatus } from '@toonexpo/db';
 
-import type { CompanyMemberContext } from "../../company/types/company-member-context.js";
-import { WebRevalidationService } from "../../common/web-revalidation/web-revalidation.service.js";
-import { PrismaService } from "../../prisma/prisma.service.js";
-import { entityNotFound } from "../../portal/utils/access.js";
-import { mapPortalHotspot } from "../mappers/visual-map.mapper.js";
-import { assertValidCoordinates } from "../utils/coordinates.js";
+import { WebRevalidationService } from '../../common/web-revalidation/web-revalidation.service.js';
+import { PrismaService } from '../../prisma/prisma.service.js';
+import { entityNotFound } from '../../portal/utils/access.js';
+import { mapPortalHotspot } from '../mappers/visual-map.mapper.js';
+import { assertValidCoordinates } from '../utils/coordinates.js';
 import {
   loadTargetEntities,
   toDbTargetType,
   validateHotspotTarget,
-} from "../utils/target-validation.js";
+} from '../utils/target-validation.js';
 import type {
   CreatePortalVisualHotspotDto,
   UpdatePortalVisualHotspotDto,
-} from "./dto/portal-visual-map.dto.js";
-import { requireOwnedCanvas } from "./portal-visual-map.shared.js";
+} from './dto/portal-visual-map.dto.js';
+import { requireOwnedCanvas } from './portal-visual-map.shared.js';
 
 @Injectable()
 export class PortalVisualMapHotspotService {
@@ -27,22 +26,18 @@ export class PortalVisualMapHotspotService {
   ) {}
 
   async create(
-    member: CompanyMemberContext,
+    companyId: string,
     userId: string,
     canvasId: string,
     dto: CreatePortalVisualHotspotDto,
   ): Promise<PortalVisualHotspotItem> {
-    const canvas = await requireOwnedCanvas(
-      this.prisma,
-      canvasId,
-      member.companyId,
-    );
+    const canvas = await requireOwnedCanvas(this.prisma, canvasId, companyId);
     assertValidCoordinates(dto.xPercent, dto.yPercent);
     await validateHotspotTarget(this.prisma, {
       contextType: canvas.contextType,
       contextId: canvas.contextId,
       projectId: canvas.projectId,
-      companyId: member.companyId,
+      companyId: companyId,
       targetType: dto.targetType,
       targetId: dto.targetId,
     });
@@ -56,8 +51,7 @@ export class PortalVisualMapHotspotService {
         xPercent: dto.xPercent,
         yPercent: dto.yPercent,
         publicationStatus:
-          (dto.publicationStatus as PublicationStatus | undefined) ??
-          PublicationStatus.draft,
+          (dto.publicationStatus as PublicationStatus | undefined) ?? PublicationStatus.draft,
         createdByUserId: userId,
         updatedByUserId: userId,
         ...(dto.markerStyle !== undefined ? { markerStyle: dto.markerStyle } : {}),
@@ -67,8 +61,8 @@ export class PortalVisualMapHotspotService {
 
     const entities = await loadTargetEntities(this.prisma, [hotspot]);
     if (
-      ((dto.publicationStatus as PublicationStatus | undefined) ??
-        PublicationStatus.draft) === PublicationStatus.published
+      ((dto.publicationStatus as PublicationStatus | undefined) ?? PublicationStatus.draft) ===
+      PublicationStatus.published
     ) {
       this.webRevalidation.revalidateVisualMap();
     }
@@ -76,20 +70,16 @@ export class PortalVisualMapHotspotService {
   }
 
   async update(
-    member: CompanyMemberContext,
+    companyId: string,
     userId: string,
     canvasId: string,
     hotspotId: string,
     dto: UpdatePortalVisualHotspotDto,
   ): Promise<PortalVisualHotspotItem> {
-    const canvas = await requireOwnedCanvas(
-      this.prisma,
-      canvasId,
-      member.companyId,
-    );
+    const canvas = await requireOwnedCanvas(this.prisma, canvasId, companyId);
     const existing = canvas.hotspots.find((row) => row.id === hotspotId);
     if (!existing) {
-      throw entityNotFound("Visual hotspot");
+      throw entityNotFound('Visual hotspot');
     }
 
     const nextTargetType = dto.targetType ?? existing.targetType;
@@ -103,7 +93,7 @@ export class PortalVisualMapHotspotService {
         contextType: canvas.contextType,
         contextId: canvas.contextId,
         projectId: canvas.projectId,
-        companyId: member.companyId,
+        companyId: companyId,
         targetType: nextTargetType,
         targetId: nextTargetId,
       });
@@ -112,9 +102,7 @@ export class PortalVisualMapHotspotService {
     const hotspot = await this.prisma.db.visualHotspot.update({
       where: { id: hotspotId },
       data: {
-        ...(dto.targetType !== undefined
-          ? { targetType: toDbTargetType(dto.targetType) }
-          : {}),
+        ...(dto.targetType !== undefined ? { targetType: toDbTargetType(dto.targetType) } : {}),
         ...(dto.targetId !== undefined ? { targetId: dto.targetId } : {}),
         ...(dto.label !== undefined ? { label: dto.label } : {}),
         ...(dto.xPercent !== undefined ? { xPercent: dto.xPercent } : {}),
@@ -135,18 +123,14 @@ export class PortalVisualMapHotspotService {
     return mapPortalHotspot(hotspot, entities);
   }
 
-  async remove(
-    member: CompanyMemberContext,
-    canvasId: string,
-    hotspotId: string,
-  ): Promise<void> {
-    await requireOwnedCanvas(this.prisma, canvasId, member.companyId);
+  async remove(companyId: string, canvasId: string, hotspotId: string): Promise<void> {
+    await requireOwnedCanvas(this.prisma, canvasId, companyId);
     const hotspot = await this.prisma.db.visualHotspot.findFirst({
       where: { id: hotspotId, canvasId },
       select: { id: true },
     });
     if (!hotspot) {
-      throw entityNotFound("Visual hotspot");
+      throw entityNotFound('Visual hotspot');
     }
     await this.prisma.db.visualHotspot.delete({ where: { id: hotspotId } });
   }

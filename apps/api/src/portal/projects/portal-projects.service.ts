@@ -1,31 +1,21 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
-import type {
-  PortalProjectDetail,
-  PortalProjectListResponse,
-} from "@toonexpo/contracts";
-import { PublicationStatus, type Prisma } from "@toonexpo/db";
+import { BadRequestException, Injectable } from '@nestjs/common';
+import type { PortalProjectDetail, PortalProjectListResponse } from '@toonexpo/contracts';
+import { PublicationStatus, type Prisma } from '@toonexpo/db';
 
-import { loadTranslations } from "../../catalog/utils/load-translations.js";
-import {
-  TRANSLATION_ENTITY,
-  TRANSLATION_FIELD,
-} from "../../catalog/utils/resolve-translation.js";
-import type { CompanyMemberContext } from "../../company/types/company-member-context.js";
-import { WebRevalidationService } from "../../common/web-revalidation/web-revalidation.service.js";
-import { PrismaService } from "../../prisma/prisma.service.js";
-import {
-  mapPortalProjectDetail,
-  mapPortalProjectListItem,
-} from "../mappers/portal.mapper.js";
-import { PORTAL_DEFAULT_PAGE_SIZE } from "../portal.constants.js";
-import { assertCompanyAdmin, entityNotFound } from "../utils/access.js";
-import { groupPortalTranslations } from "../utils/group-translations.js";
-import { requireOwnedProject } from "../utils/ownership.js";
-import { buildProjectSlug } from "../utils/slug.js";
-import { upsertTranslations } from "../utils/upsert-translations.js";
-import type { CreatePortalProjectDto } from "../dto/create-portal-project.dto.js";
-import type { UpdatePortalProjectDto } from "../dto/update-portal-project.dto.js";
-import type { UpdatePortalPublicationDto } from "../dto/update-portal-publication.dto.js";
+import { loadTranslations } from '../../catalog/utils/load-translations.js';
+import { TRANSLATION_ENTITY, TRANSLATION_FIELD } from '../../catalog/utils/resolve-translation.js';
+import { WebRevalidationService } from '../../common/web-revalidation/web-revalidation.service.js';
+import { PrismaService } from '../../prisma/prisma.service.js';
+import { mapPortalProjectDetail, mapPortalProjectListItem } from '../mappers/portal.mapper.js';
+import { PORTAL_DEFAULT_PAGE_SIZE } from '../portal.constants.js';
+import { entityNotFound } from '../utils/access.js';
+import { groupPortalTranslations } from '../utils/group-translations.js';
+import { requireOwnedProject } from '../utils/ownership.js';
+import { buildProjectSlug } from '../utils/slug.js';
+import { upsertTranslations } from '../utils/upsert-translations.js';
+import type { CreatePortalProjectDto } from '../dto/create-portal-project.dto.js';
+import type { UpdatePortalProjectDto } from '../dto/update-portal-project.dto.js';
+import type { UpdatePortalPublicationDto } from '../dto/update-portal-publication.dto.js';
 
 const PROJECT_TRANSLATION_FIELDS = [
   TRANSLATION_FIELD.name,
@@ -36,10 +26,10 @@ const PROJECT_TRANSLATION_FIELDS = [
 
 const projectDetailInclude = {
   buildings: {
-    orderBy: [{ displayOrder: "asc" as const }, { name: "asc" as const }],
+    orderBy: [{ displayOrder: 'asc' as const }, { name: 'asc' as const }],
     include: {
       floors: {
-        orderBy: [{ displayOrder: "asc" as const }, { number: "asc" as const }],
+        orderBy: [{ displayOrder: 'asc' as const }, { number: 'asc' as const }],
         include: { _count: { select: { apartments: true } } },
       },
     },
@@ -54,19 +44,19 @@ export class PortalProjectsService {
   ) {}
 
   async list(
-    member: CompanyMemberContext,
+    companyId: string,
     page: number,
     pageSize = PORTAL_DEFAULT_PAGE_SIZE,
   ): Promise<PortalProjectListResponse> {
     const where: Prisma.ProjectWhereInput = {
-      builderCompanyId: member.companyId,
+      builderCompanyId: companyId,
     };
 
     const [total, projects] = await Promise.all([
       this.prisma.db.project.count({ where }),
       this.prisma.db.project.findMany({
         where,
-        orderBy: [{ updatedAt: "desc" }],
+        orderBy: [{ updatedAt: 'desc' }],
         skip: (page - 1) * pageSize,
         take: pageSize,
         include: {
@@ -86,51 +76,40 @@ export class PortalProjectsService {
     };
   }
 
-  async getById(
-    member: CompanyMemberContext,
-    projectId: string,
-  ): Promise<PortalProjectDetail> {
+  async getById(companyId: string, projectId: string): Promise<PortalProjectDetail> {
     const project = await this.prisma.db.project.findFirst({
-      where: { id: projectId, builderCompanyId: member.companyId },
+      where: { id: projectId, builderCompanyId: companyId },
       include: projectDetailInclude,
     });
     if (!project) {
-      throw entityNotFound("Project");
+      throw entityNotFound('Project');
     }
     return this.toProjectDetail(project);
   }
 
   async create(
-    member: CompanyMemberContext,
+    companyId: string,
     userId: string,
     dto: CreatePortalProjectDto,
   ): Promise<PortalProjectDetail> {
     const slug = dto.slug?.trim() || buildProjectSlug(dto.name);
     const project = await this.prisma.db.project.create({
       data: {
-        builderCompanyId: member.companyId,
+        builderCompanyId: companyId,
         name: dto.name,
         slug,
         publicationStatus: PublicationStatus.draft,
         createdByUserId: userId,
         updatedByUserId: userId,
-        ...(dto.shortDescription !== undefined
-          ? { shortDescription: dto.shortDescription }
-          : {}),
-        ...(dto.fullDescription !== undefined
-          ? { fullDescription: dto.fullDescription }
-          : {}),
-        ...(dto.locationText !== undefined
-          ? { locationText: dto.locationText }
-          : {}),
+        ...(dto.shortDescription !== undefined ? { shortDescription: dto.shortDescription } : {}),
+        ...(dto.fullDescription !== undefined ? { fullDescription: dto.fullDescription } : {}),
+        ...(dto.locationText !== undefined ? { locationText: dto.locationText } : {}),
         ...(dto.address !== undefined ? { address: dto.address } : {}),
         ...(dto.city !== undefined ? { city: dto.city } : {}),
         ...(dto.district !== undefined ? { district: dto.district } : {}),
         ...(dto.latitude !== undefined ? { latitude: dto.latitude } : {}),
         ...(dto.longitude !== undefined ? { longitude: dto.longitude } : {}),
-        ...(dto.projectType !== undefined
-          ? { projectType: dto.projectType }
-          : {}),
+        ...(dto.projectType !== undefined ? { projectType: dto.projectType } : {}),
         ...(dto.constructionStatus !== undefined
           ? { constructionStatus: dto.constructionStatus }
           : {}),
@@ -143,9 +122,7 @@ export class PortalProjectsService {
         ...(dto.nearbyPlaces !== undefined
           ? { nearbyPlaces: dto.nearbyPlaces as Prisma.InputJsonValue }
           : {}),
-        ...(dto.coverMediaId !== undefined
-          ? { coverMediaId: dto.coverMediaId }
-          : {}),
+        ...(dto.coverMediaId !== undefined ? { coverMediaId: dto.coverMediaId } : {}),
       },
       include: projectDetailInclude,
     });
@@ -168,44 +145,33 @@ export class PortalProjectsService {
   }
 
   async update(
-    member: CompanyMemberContext,
+    companyId: string,
     userId: string,
     projectId: string,
     dto: UpdatePortalProjectDto,
   ): Promise<PortalProjectDetail> {
-    await requireOwnedProject(this.prisma, projectId, member.companyId);
+    await requireOwnedProject(this.prisma, projectId, companyId);
 
     const project = await this.prisma.db.project.update({
       where: { id: projectId },
       data: {
         ...(dto.name !== undefined ? { name: dto.name } : {}),
         ...(dto.slug !== undefined ? { slug: dto.slug } : {}),
-        ...(dto.shortDescription !== undefined
-          ? { shortDescription: dto.shortDescription }
-          : {}),
-        ...(dto.fullDescription !== undefined
-          ? { fullDescription: dto.fullDescription }
-          : {}),
-        ...(dto.locationText !== undefined
-          ? { locationText: dto.locationText }
-          : {}),
+        ...(dto.shortDescription !== undefined ? { shortDescription: dto.shortDescription } : {}),
+        ...(dto.fullDescription !== undefined ? { fullDescription: dto.fullDescription } : {}),
+        ...(dto.locationText !== undefined ? { locationText: dto.locationText } : {}),
         ...(dto.address !== undefined ? { address: dto.address } : {}),
         ...(dto.city !== undefined ? { city: dto.city } : {}),
         ...(dto.district !== undefined ? { district: dto.district } : {}),
         ...(dto.latitude !== undefined ? { latitude: dto.latitude } : {}),
         ...(dto.longitude !== undefined ? { longitude: dto.longitude } : {}),
-        ...(dto.projectType !== undefined
-          ? { projectType: dto.projectType }
-          : {}),
+        ...(dto.projectType !== undefined ? { projectType: dto.projectType } : {}),
         ...(dto.constructionStatus !== undefined
           ? { constructionStatus: dto.constructionStatus }
           : {}),
         ...(dto.completionDate !== undefined
           ? {
-              completionDate:
-                dto.completionDate === null
-                  ? null
-                  : new Date(dto.completionDate),
+              completionDate: dto.completionDate === null ? null : new Date(dto.completionDate),
             }
           : {}),
         ...(dto.amenities !== undefined
@@ -214,9 +180,7 @@ export class PortalProjectsService {
         ...(dto.nearbyPlaces !== undefined
           ? { nearbyPlaces: dto.nearbyPlaces as Prisma.InputJsonValue }
           : {}),
-        ...(dto.coverMediaId !== undefined
-          ? { coverMediaId: dto.coverMediaId }
-          : {}),
+        ...(dto.coverMediaId !== undefined ? { coverMediaId: dto.coverMediaId } : {}),
         updatedByUserId: userId,
       },
       include: projectDetailInclude,
@@ -240,13 +204,12 @@ export class PortalProjectsService {
   }
 
   async updatePublication(
-    member: CompanyMemberContext,
+    companyId: string,
     userId: string,
     projectId: string,
     dto: UpdatePortalPublicationDto,
   ): Promise<PortalProjectDetail> {
-    assertCompanyAdmin(member);
-    await requireOwnedProject(this.prisma, projectId, member.companyId);
+    await requireOwnedProject(this.prisma, projectId, companyId);
 
     const project = await this.prisma.db.project.update({
       where: { id: projectId },
@@ -261,20 +224,16 @@ export class PortalProjectsService {
     return this.toProjectDetail(project);
   }
 
-  async remove(
-    member: CompanyMemberContext,
-    projectId: string,
-  ): Promise<void> {
-    assertCompanyAdmin(member);
+  async remove(companyId: string, projectId: string): Promise<void> {
     const project = await this.prisma.db.project.findFirst({
-      where: { id: projectId, builderCompanyId: member.companyId },
+      where: { id: projectId, builderCompanyId: companyId },
       select: { id: true, publicationStatus: true },
     });
     if (!project) {
-      throw entityNotFound("Project");
+      throw entityNotFound('Project');
     }
     if (project.publicationStatus !== PublicationStatus.draft) {
-      throw new BadRequestException("Only draft projects can be deleted");
+      throw new BadRequestException('Only draft projects can be deleted');
     }
     await this.prisma.db.project.delete({ where: { id: projectId } });
   }
@@ -282,15 +241,8 @@ export class PortalProjectsService {
   private async toProjectDetail(
     project: Prisma.ProjectGetPayload<{ include: typeof projectDetailInclude }>,
   ): Promise<PortalProjectDetail> {
-    const rows = await loadTranslations(
-      this.prisma.db,
-      TRANSLATION_ENTITY.project,
-      [project.id],
-    );
-    const translations = groupPortalTranslations(
-      rows,
-      PROJECT_TRANSLATION_FIELDS,
-    );
+    const rows = await loadTranslations(this.prisma.db, TRANSLATION_ENTITY.project, [project.id]);
+    const translations = groupPortalTranslations(rows, PROJECT_TRANSLATION_FIELDS);
     return mapPortalProjectDetail(project, translations);
   }
 }
