@@ -1,39 +1,35 @@
-import { withSentryConfig } from "@sentry/nextjs";
-import type { NextConfig } from "next";
-import createNextIntlPlugin from "next-intl/plugin";
+import { withSentryConfig } from '@sentry/nextjs';
+import type { NextConfig } from 'next';
+import createNextIntlPlugin from 'next-intl/plugin';
 
-import {
-  API_PROXY_TARGET_ENV,
-  API_V1_PREFIX,
-} from "./src/shared/config/api-proxy.constants";
+import { API_PROXY_TARGET_ENV, API_V1_PREFIX } from './src/shared/config/api-proxy.constants';
 
-const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
+const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
 const API_PROXY_REWRITE_SOURCE = `${API_V1_PREFIX}/:path*` as const;
 
 const PLACEHOLD_REMOTE_PATTERN = {
-  protocol: "https" as const,
-  hostname: "placehold.co",
+  protocol: 'https' as const,
+  hostname: 'placehold.co',
 };
 
 const resolveR2RemotePattern = ():
-  | { protocol: "https" | "http"; hostname: string; pathname?: string }
-  | undefined => {
-  const raw = process.env["R2_PUBLIC_URL"]?.trim();
+  { protocol: 'https' | 'http'; hostname: string; pathname?: string } | undefined => {
+  const raw = process.env['R2_PUBLIC_URL']?.trim();
   if (!raw) {
     return undefined;
   }
 
   try {
     const url = new URL(raw);
-    if (url.protocol !== "https:" && url.protocol !== "http:") {
+    if (url.protocol !== 'https:' && url.protocol !== 'http:') {
       return undefined;
     }
 
     return {
-      protocol: url.protocol === "https:" ? "https" : "http",
+      protocol: url.protocol === 'https:' ? 'https' : 'http',
       hostname: url.hostname,
-      pathname: "/**",
+      pathname: '/**',
     };
   } catch {
     return undefined;
@@ -43,12 +39,9 @@ const resolveR2RemotePattern = ():
 const r2RemotePattern = resolveR2RemotePattern();
 
 const nextConfig: NextConfig = {
-  transpilePackages: ["@toonexpo/contracts", "@toonexpo/shared"],
+  transpilePackages: ['@toonexpo/contracts', '@toonexpo/shared'],
   images: {
-    remotePatterns: [
-      PLACEHOLD_REMOTE_PATTERN,
-      ...(r2RemotePattern ? [r2RemotePattern] : []),
-    ],
+    remotePatterns: [PLACEHOLD_REMOTE_PATTERN, ...(r2RemotePattern ? [r2RemotePattern] : [])],
   },
   async rewrites() {
     const apiProxyTarget = process.env[API_PROXY_TARGET_ENV]?.trim();
@@ -57,7 +50,7 @@ const nextConfig: NextConfig = {
       return [];
     }
 
-    const origin = apiProxyTarget.replace(/\/$/, "");
+    const origin = apiProxyTarget.replace(/\/$/, '');
 
     return [
       {
@@ -68,9 +61,18 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withSentryConfig(withNextIntl(nextConfig), {
-  silent: true,
-  sourcemaps: {
-    disable: true,
-  },
-});
+const baseConfig = withNextIntl(nextConfig);
+
+/**
+ * `withSentryConfig` injects experimental.clientTraceMetadata, which Next prints on
+ * every `next dev` boot. Keep Sentry webpack wrap for production/CI builds only;
+ * runtime SDK still initializes via instrumentation + sentry.*.config.ts.
+ */
+export default process.env['NODE_ENV'] === 'development'
+  ? baseConfig
+  : withSentryConfig(baseConfig, {
+      silent: true,
+      sourcemaps: {
+        disable: true,
+      },
+    });
