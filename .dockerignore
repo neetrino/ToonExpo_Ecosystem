@@ -1,3 +1,7 @@
+# Used when building from monorepo root, e.g.:
+#   docker build -f apps/api/Dockerfile -t toonexpo-api .
+# Docker only reads this file (context root), not nested .dockerignore files.
+
 # Dependencies and build output
 node_modules
 **/node_modules
@@ -8,9 +12,11 @@ dist
 build
 **/build
 coverage
-**/.turbo
+**/coverage
 .turbo
+**/.turbo
 *.tsbuildinfo
+**/*.tsbuildinfo
 
 # Environment and secrets (never in image context)
 .env
@@ -19,32 +25,41 @@ coverage
 
 # Version control and IDE
 .git
-.gitignore
 **/.git
+.gitignore
 .idea
 .vscode
 .cursor
+.DS_Store
+Thumbs.db
 
-# Docs, notes, and local tooling
+# CI, hooks, local tooling (not needed to build the API image)
+.github
+.husky
+.load
+load
+scripts
+
+# Docs and markdown (keep root README for image metadata if needed)
 docs
-terminals
 *.md
 !README.md
+AGENTS.md
+LICENSE
 
 # Tests (not needed in production image)
+**/test
 **/*.spec.ts
 **/*.test.ts
 **/*.e2e-spec.ts
-**/test
-**/coverage
 
 # Prisma generated client (rebuilt during image build)
 packages/db/src/generated
 
-# OS and logs
-.DS_Store
-Thumbs.db
+# OS, logs, caches
 *.log
 tmp
 temp
 .cache
+**/playwright-report
+**/test-results
