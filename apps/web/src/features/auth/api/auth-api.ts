@@ -14,6 +14,8 @@ import { apiFetch } from '@/shared/api/client';
 import { clearCsrfTokenCache, setCsrfTokenCache } from '@/shared/api/csrf';
 import { ApiError, isApiErrorStatus } from '@/shared/api/errors';
 
+import { hasClientSessionHint, hasSessionCookieInHeader } from '@/features/auth/utils/session-hint';
+
 const jsonCredentials = {
   credentials: 'include' as const,
   headers: { 'Content-Type': 'application/json' },
@@ -115,9 +117,20 @@ export const getMe = (cookieHeader?: string): Promise<UserResponse | undefined> 
   return apiFetch<UserResponse | undefined>(options);
 };
 /**
- * Returns the current user or `null` when unauthenticated (204 / legacy 401).
+ * Returns the current user or `null` when unauthenticated.
+ * Skips the network call when no session cookie / CSRF hint is present (guest).
+ * Nest still returns 204 for cookie-less probes as a safety net.
  */
 export const getMeOrNull = async (cookieHeader?: string): Promise<UserResponse | null> => {
+  const hasHint =
+    typeof cookieHeader === 'string'
+      ? hasSessionCookieInHeader(cookieHeader)
+      : hasClientSessionHint();
+
+  if (!hasHint) {
+    return null;
+  }
+
   try {
     const user = await getMe(cookieHeader);
     return user ?? null;

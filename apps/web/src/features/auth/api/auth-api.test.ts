@@ -13,6 +13,11 @@ import { apiFetch } from '@/shared/api/client';
 const mockedApiFetch = vi.mocked(apiFetch);
 
 describe('getMeOrNull', () => {
+  it('skips the network when no session cookie hint is present', async () => {
+    await expect(getMeOrNull()).resolves.toBeNull();
+    expect(mockedApiFetch).not.toHaveBeenCalled();
+  });
+
   it('returns the user when authenticated', async () => {
     const user = {
       id: 'user-1',
@@ -36,21 +41,23 @@ describe('getMeOrNull', () => {
     );
   });
 
-  it('returns null on 204 (anonymous)', async () => {
+  it('returns null on 204 (anonymous with cookie present)', async () => {
     mockedApiFetch.mockResolvedValueOnce(undefined);
 
-    await expect(getMeOrNull()).resolves.toBeNull();
+    await expect(getMeOrNull('toonexpo_session=stale')).resolves.toBeNull();
   });
 
   it('returns null on legacy 401', async () => {
     mockedApiFetch.mockRejectedValueOnce(new ApiError(401, 'Unauthorized'));
 
-    await expect(getMeOrNull()).resolves.toBeNull();
+    await expect(getMeOrNull('toonexpo_session=stale')).resolves.toBeNull();
   });
 
   it('rethrows non-401 errors', async () => {
     mockedApiFetch.mockRejectedValueOnce(new ApiError(500, 'Server Error'));
 
-    await expect(getMeOrNull()).rejects.toMatchObject({ status: 500 });
+    await expect(getMeOrNull('toonexpo_session=abc')).rejects.toMatchObject({
+      status: 500,
+    });
   });
 });

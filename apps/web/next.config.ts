@@ -1,8 +1,21 @@
+import { config as loadEnv } from 'dotenv';
+import { resolve } from 'node:path';
+
 import { withSentryConfig } from '@sentry/nextjs';
 import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
 
 import { API_PROXY_TARGET_ENV, API_V1_PREFIX } from './src/shared/config/api-proxy.constants';
+
+// Load monorepo root env quietly (Next otherwise inherits root PORT and may bind wrong).
+loadEnv({ path: resolve(process.cwd(), '../../.env.local'), quiet: true });
+loadEnv({ path: resolve(process.cwd(), '../../.env'), quiet: true });
+loadEnv({ path: resolve(process.cwd(), '.env.local'), quiet: true });
+loadEnv({ path: resolve(process.cwd(), '.env'), quiet: true });
+
+if (process.env['NODE_ENV'] !== 'production') {
+  delete process.env['PORT'];
+}
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 

@@ -227,20 +227,20 @@ packages/
 
 Confirmed 2026-07-18 for the scale and load profile above. Environment variables may override defaults, but production must not drift below these baselines without an ADR.
 
-| Parameter                                                 | Value                                                               |                                      Status |
-| --------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------: |
-| Session absolute TTL                                      | 30 days                                                             |                                   Confirmed |
-| Session idle TTL (sliding)                                | 7 days                                                              |                                   Confirmed |
-| Auth rate limit (login/register)                          | 10 requests per IP per minute                                       |                                   Confirmed |
-| Minimum password length                                   | 8 characters                                                        |                                   Confirmed |
-| Buyer registration phone                                  | Required                                                            |                                   Confirmed |
-| CSRF strategy                                             | Origin allowlist + double-submit CSRF tokens (HMAC session binding) |                                   Confirmed |
-| QR, public request and provisioning rate limits           | Environment-configured under the same load profile                  |                  Pending environment deploy |
-| Database pool max (`DB_POOL_MAX`)                         | **8** per Cloud Run instance                                        |       Confirmed starting point (2026-07-19) |
-| Pool connection timeout (`DB_POOL_CONNECTION_TIMEOUT_MS`) | **5000** ms                                                         |       Confirmed starting point (2026-07-19) |
-| Statement timeout (`DB_STATEMENT_TIMEOUT_MS`)             | **10000** ms                                                        |       Confirmed starting point (2026-07-19) |
-| Session touch coalesce                                    | **10 minutes**                                                      |                      Confirmed (2026-07-19) |
-| Cloud Run concurrency / max instances / min instances     | 40–80 / 10–20 / 2–4 expo (0–1 off-season)                           | Confirmed starting points — apply at deploy |
+| Parameter                                             | Value                                                               |                                      Status |
+| ----------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------: |
+| Session absolute TTL                                  | 30 days                                                             |                                   Confirmed |
+| Session idle TTL (sliding)                            | 7 days                                                              |                                   Confirmed |
+| Auth rate limit (login/register)                      | 10 requests per IP per minute                                       |                                   Confirmed |
+| Minimum password length                               | 8 characters                                                        |                                   Confirmed |
+| Buyer registration phone                              | Required                                                            |                                   Confirmed |
+| CSRF strategy                                         | Origin allowlist + double-submit CSRF tokens (HMAC session binding) |                                   Confirmed |
+| QR, public request and provisioning rate limits       | Environment-configured under the same load profile                  |                  Pending environment deploy |
+| Database pool max                                     | **8** per Cloud Run instance                                        |         Fixed in `packages/db` (2026-07-19) |
+| Pool connection timeout                               | **5000** ms                                                         |         Fixed in `packages/db` (2026-07-19) |
+| Statement timeout                                     | **10000** ms                                                        |         Fixed in `packages/db` (2026-07-19) |
+| Session touch coalesce                                | **10 minutes**                                                      |                      Confirmed (2026-07-19) |
+| Cloud Run concurrency / max instances / min instances | 40–80 / 10–20 / 2–4 expo (0–1 off-season)                           | Confirmed starting points — apply at deploy |
 
 ## Environment-Specific Configuration Still Needed
 

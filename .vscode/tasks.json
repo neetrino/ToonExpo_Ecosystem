@@ -8,6 +8,7 @@
       "options": {
         "cwd": "${workspaceFolder}/apps/api",
         "env": {
+          "NODE_ENV": "development",
           "FORCE_COLOR": "1"
         }
       },
@@ -34,6 +35,7 @@
       "options": {
         "cwd": "${workspaceFolder}/apps/web",
         "env": {
+          "NODE_ENV": "development",
           "FORCE_COLOR": "1"
         }
       },

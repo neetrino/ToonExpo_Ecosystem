@@ -9,10 +9,11 @@
     "pnpm": ">=11"
   },
   "scripts": {
-    "dev": "turbo run dev --filter=@toonexpo/api --filter=@toonexpo/web --ui=stream",
+    "dev": "node scripts/dev-guide.mjs",
     "dev:api": "pnpm --filter @toonexpo/api dev",
     "dev:web": "pnpm --filter @toonexpo/web dev",
-    "build": "turbo run build",
+    "build:database": "pnpm --filter @toonexpo/db build",
+    "build": "pnpm run build:database && turbo run build",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",

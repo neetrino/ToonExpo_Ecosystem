@@ -6,6 +6,15 @@ import { NODE_ENV_PRODUCTION } from '../common/constants/app.constants.js';
 
 const isProduction = process.env['NODE_ENV'] === NODE_ENV_PRODUCTION;
 
+const pathWithoutQuery = (url: string | undefined): string => {
+  if (!url) {
+    return '?';
+  }
+
+  const queryIndex = url.indexOf('?');
+  return queryIndex === -1 ? url : url.slice(0, queryIndex);
+};
+
 /**
  * Compact HTTP access logging for nestjs-pino (no header dumps in the terminal).
  */
@@ -13,21 +22,23 @@ export const buildLoggerModuleParams = (): Params => ({
   // Nest 11 / path-to-regexp: named wildcard (nestjs-pino default `*` warns).
   forRoutes: [{ path: '{*path}', method: RequestMethod.ALL }],
   pinoHttp: {
+    level: process.env['LOG_LEVEL']?.trim() || 'info',
     quietReqLogger: true,
     quietResLogger: true,
     serializers: {
       req: (req: IncomingMessage) => ({
+        id: (req as IncomingMessage & { id?: number | string }).id,
         method: req.method,
-        url: req.url,
+        path: pathWithoutQuery(req.url),
       }),
       res: (res: ServerResponse) => ({
         statusCode: res.statusCode,
       }),
     },
     customSuccessMessage: (req: IncomingMessage, res: ServerResponse, responseTime: number) =>
-      `${req.method ?? '?'} ${req.url ?? '?'} ${String(res.statusCode)} ${Math.round(responseTime)}ms`,
+      `${req.method ?? '?'} ${pathWithoutQuery(req.url)} ${String(res.statusCode)} ${Math.round(responseTime)}ms`,
     customErrorMessage: (req: IncomingMessage, res: ServerResponse, error: Error) =>
-      `${req.method ?? '?'} ${req.url ?? '?'} ${String(res.statusCode)} — ${error.message}`,
+      `${req.method ?? '?'} ${pathWithoutQuery(req.url)} ${String(res.statusCode)} — ${error.message}`,
     redact: {
       paths: ['req.headers.authorization', 'req.headers.cookie', "res.headers['set-cookie']"],
       remove: true,
@@ -40,7 +51,7 @@ export const buildLoggerModuleParams = (): Params => ({
             options: {
               colorize: true,
               singleLine: true,
-              translateTime: 'HH:MM:ss.l',
+              translateTime: 'HH:MM:ss',
               ignore: 'pid,hostname,req,res,responseTime',
               messageFormat: '{msg}',
             },

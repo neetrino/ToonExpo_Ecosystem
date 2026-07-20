@@ -18,9 +18,28 @@ import {
   TRUST_PROXY_HOPS,
 } from './common/constants/app.constants.js';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter.js';
+import { QuietConsoleLogger } from './common/logging/quiet-console.logger.js';
 import type { AppEnv } from './config/env.validation.js';
 
 const GLOBAL_PREFIX = API_V1_PREFIX.replace(/^\//, '');
+
+const logDevStartupSummary = (
+  logger: NestLogger,
+  options: {
+    nodeEnv: string;
+    port: number;
+    corsOrigins: readonly string[];
+    swaggerEnabled: boolean;
+  },
+): void => {
+  const { nodeEnv, port, corsOrigins, swaggerEnabled } = options;
+  logger.log(`Ready — http://localhost:${port}/${GLOBAL_PREFIX}`);
+  logger.log(`Environment: ${nodeEnv}`);
+  logger.log(`CORS: ${corsOrigins.join(', ') || '(none)'}`);
+  if (swaggerEnabled) {
+    logger.log(`Swagger: http://localhost:${port}/${GLOBAL_PREFIX}/${SWAGGER_PATH}`);
+  }
+};
 
 const bootstrap = async (): Promise<void> => {
   // Keep Nest/ANSI colors in local terminals (Cursor/Windows often strip otherwise).
@@ -28,9 +47,17 @@ const bootstrap = async (): Promise<void> => {
     process.env['FORCE_COLOR'] ??= '1';
   }
 
-  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    bufferLogs: true,
-  });
+  const isProductionBoot = process.env['NODE_ENV'] === NODE_ENV_PRODUCTION;
+  const quietLogger = new QuietConsoleLogger();
+  const app = await NestFactory.create<NestExpressApplication>(
+    AppModule,
+    isProductionBoot
+      ? { bufferLogs: true }
+      : {
+          bufferLogs: true,
+          logger: quietLogger,
+        },
+  );
 
   const configService = app.get(ConfigService<AppEnv, true>);
   const port = configService.get('PORT', { infer: true }) ?? DEFAULT_API_PORT;
@@ -38,10 +65,11 @@ const bootstrap = async (): Promise<void> => {
   const nodeEnv = configService.get('NODE_ENV', { infer: true });
   const isProduction = nodeEnv === NODE_ENV_PRODUCTION;
 
-  // Production: structured Pino. Local: Nest ConsoleLogger (default green/yellow/red).
+  // Production: structured Pino. Local: quiet Nest ConsoleLogger (colors, less boot spam).
   if (isProduction) {
     app.useLogger(app.get(PinoLogger));
   } else {
+    app.useLogger(quietLogger);
     app.flushLogs();
   }
 
@@ -79,8 +107,17 @@ const bootstrap = async (): Promise<void> => {
 
   await app.listen(port);
 
-  const bootstrapLogger = isProduction ? app.get(PinoLogger) : new NestLogger('Bootstrap');
-  bootstrapLogger.log(`API listening on port ${port}`);
+  if (isProduction) {
+    app.get(PinoLogger).log(`API listening on port ${port}`);
+  } else {
+    const bootstrapLogger = new NestLogger('Bootstrap');
+    logDevStartupSummary(bootstrapLogger, {
+      nodeEnv,
+      port,
+      corsOrigins,
+      swaggerEnabled: true,
+    });
+  }
 };
 
 void bootstrap();

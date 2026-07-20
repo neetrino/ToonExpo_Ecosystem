@@ -1,32 +1,21 @@
-import { Injectable, type OnModuleDestroy, type OnModuleInit } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { createPrismaClient, type PrismaClient } from "@toonexpo/db";
+import { Injectable, type OnModuleDestroy, type OnModuleInit } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { createPrismaClient, type PrismaClient } from '@toonexpo/db';
 
-import type { AppEnv } from "../config/env.validation.js";
+import type { AppEnv } from '../config/env.validation.js';
 
 @Injectable()
 export class PrismaService implements OnModuleInit, OnModuleDestroy {
   private readonly client: PrismaClient;
 
   constructor(configService: ConfigService<AppEnv, true>) {
-    const connectionString = configService.get("DATABASE_URL", {
-      infer: true,
-    });
-    const poolMax = configService.get("DB_POOL_MAX", { infer: true });
-    const poolConnectionTimeoutMs = configService.get(
-      "DB_POOL_CONNECTION_TIMEOUT_MS",
-      { infer: true },
-    );
-    const statementTimeoutMs = configService.get("DB_STATEMENT_TIMEOUT_MS", {
+    const connectionString = configService.get('DATABASE_URL', {
       infer: true,
     });
 
-    this.client = createPrismaClient({
-      connectionString,
-      poolMax,
-      poolConnectionTimeoutMs,
-      statementTimeoutMs,
-    });
+    // Pool max / connection timeout / statement timeout are fixed in
+    // `@toonexpo/db` (`DEFAULT_DB_*`) — not env-configurable.
+    this.client = createPrismaClient({ connectionString });
   }
 
   get db(): PrismaClient {

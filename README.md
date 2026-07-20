@@ -68,9 +68,11 @@ cp .env.example .env
 
 pnpm install
 
-Git hooks install automatically via the root `prepare` script (Husky + lint-staged on pre-commit).
+# Workspace packages export dist/ (gitignored) — build after clone / lockfile changes:
+pnpm run build:database
+pnpm --filter @toonexpo/contracts build
+pnpm --filter @toonexpo/shared build
 
-pnpm --filter @toonexpo/db db:generate
 pnpm --filter @toonexpo/db db:validate
 
 # Apply migrations on a fresh database:
@@ -80,6 +82,8 @@ pnpm --filter @toonexpo/db db:migrate:dev
 pnpm --filter @toonexpo/db db:seed
 ```
 
+Git hooks install automatically via the root `prepare` script (Husky + lint-staged on pre-commit).
+
 Seeded accounts (password from `SEED_ADMIN_PASSWORD` in `.env`, or dev fallback documented in seed script — never commit real passwords):
 
 | Role                               | Email                          |
@@ -88,13 +92,26 @@ Seeded accounts (password from `SEED_ADMIN_PASSWORD` in `.env`, or dev fallback 
 | Company admin (first seed builder) | `builder.admin@toonexpo.local` |
 | Buyer (with QR)                    | `buyer@toonexpo.local`         |
 
-Start both apps (web on `:3000`, API on `:4000`):
+Start apps in **separate terminals** (do not use turbo TUI for local `dev`):
 
 ```bash
-pnpm dev
+pnpm run dev          # prints the guide only
+pnpm run dev:api      # Nest on :4000  (set FORCE_COLOR=1 in IDE terminals)
+pnpm run dev:web      # Next on :3000
 ```
 
-Set `NEXT_PUBLIC_API_URL=http://localhost:4000` for local API calls. For staging/production proxy mode see `docs/SETTINGS.md`.
+Or VS Code/Cursor: **Run Build Task** → `Dev: API + Web` (dedicated panels, `FORCE_COLOR=1`).
+
+`NEXT_PUBLIC_API_URL=http://localhost:4000` is the local default (browser → Nest). For staging/production proxy mode see `docs/SETTINGS.md`.
+
+**Pitfalls**
+
+1. After clone, run `pnpm run build:database` (and contracts/shared builds) — `dist/` is gitignored.
+2. Use separate terminals (`dev:api` / `dev:web`); `pnpm dev` only prints instructions.
+3. Set `FORCE_COLOR=1` for colored Nest/pino output in IDE terminals.
+4. Windows: `.npmrc` uses `node-linker=hoisted` to avoid intermittent ENOTENT.
+5. Do not let root `PORT` bind Next — `next.config.ts` deletes `PORT` in non-production.
+6. Guests skip `/auth/me` until a CSRF session hint exists; Nest still returns **204** (not 401) for anonymous probes.
 
 ## Quality gates
 
