@@ -1,9 +1,9 @@
-import { z } from "zod";
+import { z } from 'zod';
 
-import { API_PROXY_TARGET_ENV } from "./api-proxy.constants";
-import { DEFAULT_API_ORIGIN } from "./constants";
+import { API_PROXY_TARGET_ENV } from './api-proxy.constants';
+import { DEFAULT_API_ORIGIN } from './constants';
 
-export { API_PROXY_TARGET_ENV } from "./api-proxy.constants";
+export { API_PROXY_TARGET_ENV } from './api-proxy.constants';
 
 const publicEnvSchema = z.object({
   NEXT_PUBLIC_API_URL: z.string().url().optional(),
@@ -25,43 +25,53 @@ const trimOptionalEnv = (value: string | undefined): string | undefined => {
   return trimmed && trimmed.length > 0 ? trimmed : undefined;
 };
 
+/**
+ * Static `process.env.NEXT_PUBLIC_API_URL` access (not bracket) so Next.js
+ * can inline the public env at build time.
+ */
+const readNextPublicApiUrl = (): string | undefined =>
+  trimOptionalEnv(
+    // @ts-expect-error Next.js inlining needs static property access, not index signature.
+    process.env.NEXT_PUBLIC_API_URL,
+  );
+
 const readApiProxyTarget = (): string | undefined =>
   trimOptionalEnv(process.env[API_PROXY_TARGET_ENV]);
 
 /** True when same-origin proxy rewrites are enabled (server-only env). */
-export const isApiProxyEnabled = (): boolean =>
-  readApiProxyTarget() !== undefined;
+export const isApiProxyEnabled = (): boolean => readApiProxyTarget() !== undefined;
 
 const formatEnvValidationError = (error: z.ZodError): string =>
-  error.issues
-    .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
-    .join("; ");
+  error.issues.map((issue) => `${issue.path.join('.')}: ${issue.message}`).join('; ');
 
 /**
  * Validates and resolves public web environment variables for browser fetch.
- * When `NEXT_PUBLIC_API_URL` is unset and `API_PROXY_TARGET` is set, returns
- * an empty base URL so requests stay same-origin through the Next.js rewrite.
+ * When `NEXT_PUBLIC_API_URL` is unset in the browser, returns an empty base URL
+ * so requests stay same-origin through the Next.js rewrite (`API_PROXY_TARGET`
+ * is server-only and cannot be read from the client bundle).
  */
 export const getPublicEnv = (): PublicEnv => {
   const parsed = publicEnvSchema.safeParse({
-    NEXT_PUBLIC_API_URL: trimOptionalEnv(process.env["NEXT_PUBLIC_API_URL"]),
+    NEXT_PUBLIC_API_URL: readNextPublicApiUrl(),
   });
 
   if (!parsed.success) {
-    throw new Error(
-      `Invalid public environment: ${formatEnvValidationError(parsed.error)}`,
-    );
+    throw new Error(`Invalid public environment: ${formatEnvValidationError(parsed.error)}`);
   }
 
   if (parsed.data.NEXT_PUBLIC_API_URL) {
     return { apiBaseUrl: parsed.data.NEXT_PUBLIC_API_URL };
   }
 
-  if (isApiProxyEnabled()) {
-    return { apiBaseUrl: "" };
+  if (typeof window !== 'undefined') {
+    return { apiBaseUrl: '' };
   }
 
-  const apiUrl = trimOptionalEnv(process.env["API_URL"]);
+  if (isApiProxyEnabled()) {
+    return { apiBaseUrl: '' };
+  }
+
+  const apiUrl = trimOptionalEnv(process.env['API_URL']);
   if (apiUrl) {
     return { apiBaseUrl: apiUrl };
   }
@@ -77,14 +87,12 @@ export const getPublicEnv = (): PublicEnv => {
 export const getServerApiBaseUrl = (): string => {
   const parsed = serverEnvSchema.safeParse({
     API_PROXY_TARGET: readApiProxyTarget(),
-    NEXT_PUBLIC_API_URL: trimOptionalEnv(process.env["NEXT_PUBLIC_API_URL"]),
-    API_URL: trimOptionalEnv(process.env["API_URL"]),
+    NEXT_PUBLIC_API_URL: readNextPublicApiUrl(),
+    API_URL: trimOptionalEnv(process.env['API_URL']),
   });
 
   if (!parsed.success) {
-    throw new Error(
-      `Invalid server environment: ${formatEnvValidationError(parsed.error)}`,
-    );
+    throw new Error(`Invalid server environment: ${formatEnvValidationError(parsed.error)}`);
   }
 
   return (
