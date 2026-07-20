@@ -33,18 +33,17 @@ Draft
 ## Buyer / Event Entities
 
 - event;
-- venue map;
-- booth;
-- booth assignment;
-- route node;
-- route edge;
+- public venue map snapshot;
+- public venue area;
+- public venue landmark;
+- map publication receipt;
 - buyer profile;
 - buyer builder interaction;
 - favorite;
 - request;
 - QR code;
 - QR scan event;
-- check-in record.
+- check-in record (separate later module).
 
 ## CRM Entities
 

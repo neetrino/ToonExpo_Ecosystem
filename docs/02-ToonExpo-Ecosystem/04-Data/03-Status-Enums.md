@@ -112,6 +112,7 @@ pending
 success
 failed
 linked_existing
+needs_review
 cancelled
 ```
 
@@ -139,7 +140,7 @@ Rules:
 - `by_request` — price never exposed to anonymous callers; UI shows "Price by request".
 - `visible_after_login` — price included only for authenticated buyer sessions; anonymous callers receive no numeric price (registration incentive).
 
-Multi-currency is out of v1. Prices are stored in AMD major units (`Decimal(14,2)`); see [DECISIONS.md](../../../DECISIONS.md) Catalog section.
+Multi-currency is out of v1. Prices are stored in AMD major units (`Decimal(14,2)`); see [DECISIONS.md](../../DECISIONS.md) Catalog section.
 
 ## Request / Lead Status
 
@@ -250,6 +251,8 @@ error
 
 ## Check-in Status
 
+Separate later module, not Public Exhibition Map:
+
 ```text
 allowed
 denied_invalid_qr
@@ -268,26 +271,43 @@ archived
 cancelled
 ```
 
-## Booth Type
+## Public Venue Snapshot Status
 
 ```text
-builder
-bank
-partner
-sponsor
-service
-info
-entrance
-other
+received
+validated
+active
+rejected
+archived
 ```
 
-## Route Node Type
+## Map Publication Receipt Status
+
+```text
+published
+already_published
+rejected
+failed
+```
+
+## Public Area Display Mode
+
+```text
+organization
+custom_label
+hidden
+```
+
+## Public Venue Landmark Type
 
 ```text
 entrance
-intersection
-booth
+exit
+wc
+stairs
+elevator
 info
+named_zone
 other
 ```
 

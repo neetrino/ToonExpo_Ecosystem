@@ -1,75 +1,14 @@
-# Entrance Check-in Scanner
+# Check-in Separation
 
-## Purpose
+## Decision
 
-Entrance staff scans registered visitor QR and records check-in.
+Entrance check-in is not part of Public Exhibition Map and is not part of the current map delivery.
 
-## Flow
+If implemented later, check-in will be a separate ToonExpo module that may use buyer QR identity and Event records. It must not be implemented in BOS and must not be required for opening or using the public map.
 
-```text
-Visitor shows buyer QR
--> Entrance staff scans
--> system resolves QR
--> system validates account/status
--> system checks duplicate check-in
--> system records check-in
--> staff sees result
-```
+## Current Map Rules
 
-## Scanner User
-
-Scanner is used by Entrance Staff role.
-
-Entrance Staff should have limited access.
-
-## Staff Result View
-
-Show:
-
-- allowed/denied status;
-- visitor display name if needed;
-- duplicate check-in warning;
-- QR blocked/invalid reason;
-- timestamp.
-
-Do not show:
-
-- buyer CRM history;
-- buyer requests;
-- builder interactions;
-- private profile details beyond check-in need.
-
-## Check-in Statuses
-
-```text
-allowed
-denied_invalid_qr
-denied_blocked
-duplicate_checkin
-error
-```
-
-## Duplicate Check-in
-
-If visitor already checked in for the same event:
-
-- show duplicate warning;
-- do not create another normal check-in record;
-- optionally log duplicate scan attempt.
-
-## Event-Specific Record
-
-Buyer QR is permanent.
-
-Check-in is event-specific:
-
-```text
-BuyerProfile 1..n CheckInRecords
-Event 1..n CheckInRecords
-```
-
-## Offline Mode
-
-Complex offline mode is outside the current production scope.
-
-If internet is unreliable, add later as operational requirement.
+- no QR is required to locate a participant on the map;
+- no visitor attendance record is created by opening or interacting with the map;
+- no entrance-staff interface is included in this module;
+- map analytics, if enabled, are ordinary product analytics and not check-in records.

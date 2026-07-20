@@ -24,7 +24,7 @@ This repository is only for ToonExpo Ecosystem.
 - constructor CRM;
 - builder readiness;
 - partners / participants;
-- exhibition map and check-in;
+- public exhibition map synchronized from BOS;
 - admin / content management / publication;
 - analytics;
 - integrations.
@@ -53,10 +53,15 @@ This repository is only for ToonExpo Ecosystem.
 - CRM status syncs to ToonExpo immediately.
 - BigProjects access to Constructor CRM is view/analytics only by default.
 - Push notifications are not required in the current production scope.
+- Public exhibition map does not require QR or check-in.
+- Professional indoor routing and automatic positioning are deferred until real walkability data is validated.
+- Entrance check-in remains a separate ToonExpo capability and is not owned by Public Exhibition Map.
 
 ## Integration Decision
 
-ToonExpo returns provisioning results/status to BOS.
+ToonExpo returns provisioning and map-publication results/status to BOS.
+
+ToonExpo stores an immutable local copy of each accepted `VenueMapSnapshotV1` and never queries BOS during a public map request.
 
 No broad ToonExpo data summaries are synced to BOS in v1 unless a specific report/view is explicitly added later.
 

@@ -2,71 +2,40 @@
 
 ## Purpose
 
-Most visitors will use the event map on mobile.
+The exhibition map is mobile-first and must remain useful in a crowded venue with limited attention and variable connectivity.
 
-The map should help them find a booth quickly in a crowded event environment.
+## Main Screen
 
-## Main Mobile Actions
+```text
+Search
+Map with pan/zoom
+Category/legend controls
+Selected destination bottom sheet
+List fallback
+Reset view
+I am here (manual, optional)
+```
 
-- open map;
-- search company/project;
-- select booth/result;
-- view booth/company details;
-- start route/path if available;
-- access My QR/check-in status.
+## Area Interaction
 
-## Map Screen
+Tap or search selection:
 
-Recommended mobile layout:
+- highlights the full area, not a tiny point marker;
+- centers it without hiding the bottom sheet;
+- shows public organization/custom label, area code and nearby landmarks;
+- links to public company/project page when available.
 
-- search bar at top;
-- map area;
-- selected booth bottom sheet;
-- quick buttons: My QR, Reset, List.
+## Approximate Location
 
-## Selected Booth Sheet
+`I am here` enters a placement mode. The visitor taps an approximate map point, can move it and can clear it. The UI clearly labels it as approximate.
 
-Show:
+No route button is shown until professional routing is implemented.
 
-- company/project name;
-- booth code;
-- type;
-- short description optional;
-- open company/project page;
-- route/path action.
+## Accessibility And Fallback
 
-## List Fallback
-
-Map should have list fallback:
-
-- all booths;
-- builders;
-- banks;
-- partners;
-- search results.
-
-This is important if map image is hard to inspect on a phone.
-
-## My QR Access
-
-Visitor should be able to access personal QR quickly near event/check-in flow.
-
-But showing My QR is owned by Buyer / Visitor Area and QR System.
-
-## Accessibility
-
-Do not rely only on visual markers.
-
-Provide:
-
-- searchable list;
-- booth codes;
-- text labels;
-- sufficient tap target size.
-
-## Performance
-
-Venue map image should be optimized for mobile.
-
-Avoid loading huge original map files.
-
+- searchable list mirrors all public destinations;
+- public labels are available as text, not color alone;
+- touch targets remain usable while zoomed;
+- keyboard interaction is supported on desktop;
+- selected-area details are available outside the canvas accessibility tree;
+- optimized background/geometry assets avoid loading the source PDF.

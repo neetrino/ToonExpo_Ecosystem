@@ -35,18 +35,17 @@ Translation                  — catalog content hy/ru/en from v1
 
 ```text
 Event
-VenueMap
-Booth
-BoothAssignment
-RouteNode
-RouteEdge
+PublicVenueMapSnapshot
+PublicVenueArea
+PublicVenueLandmark
+MapPublicationReceipt
 BuyerProfile
 BuyerBuilderInteraction
 Favorite
 Request
 QrCode
 QrScanEvent
-CheckInRecord
+CheckInRecord (separate later module)
 ```
 
 ## CRM Entities
@@ -126,17 +125,12 @@ BuyerProfile 1..n Requests
 BuyerProfile 0..n BuyerBuilderInteractions
 QrCode 0..n QrScanEvents
 QrScanEvent 0..1 Request
-Event 0..n VenueMaps
-Event 0..n Booths
-VenueMap 0..n Booths
-Booth 0..n BoothAssignments
-BoothAssignment 0..1 Company(type=builder)
-BoothAssignment 0..1 PartnerCompany
-BoothAssignment 0..1 Project
-VenueMap 0..n RouteNodes
-VenueMap 0..n RouteEdges
-BuyerProfile 0..n CheckInRecords
-Event 0..n CheckInRecords
+Event 0..n PublicVenueMapSnapshots
+PublicVenueMapSnapshot 1..n PublicVenueAreas
+PublicVenueMapSnapshot 0..n PublicVenueLandmarks
+PublicVenueArea 0..1 Company
+PublicVenueArea 0..1 Project
+PublicVenueMapSnapshot 1..n MapPublicationReceipts
 Request 0..1 Lead
 Request 0..1 CrmDeal
 Lead 0..1 CrmDeal
@@ -168,7 +162,7 @@ PartnerCompany 0..n AnalyticsEvents
 Project 0..n AnalyticsEvents
 Apartment 0..n AnalyticsEvents
 Event 0..n AnalyticsEvents
-Booth 0..n AnalyticsEvents
+PublicVenueArea 0..n AnalyticsEvents
 Request 0..n AnalyticsEvents
 CrmDeal 0..n AnalyticsEvents
 ```
@@ -183,7 +177,8 @@ CrmDeal 0..n AnalyticsEvents
 - Readiness owns readiness scores/recommendations.
 - Service Provider Directory owns service providers and provider categories used for readiness help.
 - QR module owns QR tokens and scan logs.
-- Exhibition Map & Check-in owns venue maps, booths, booth assignments, route graph and check-in records.
+- Public Exhibition Map owns immutable BOS snapshot copies, public areas, landmarks, search/read models and visitor rendering.
+- Check-in is a separate later ToonExpo module and is not owned by Public Exhibition Map.
 - Admin / Content Management owns public content, settings and audit logs.
 - Analytics owns analytics events and aggregate reporting views.
 

@@ -1,5 +1,9 @@
 # Entrance Check-in Boundary
 
+## Delivery Status
+
+This is the contract for a separate later Entrance Check-in module. It is not owned by Public Exhibition Map.
+
 ## Purpose
 
 The same permanent buyer QR can be scanned at the event entrance.
@@ -59,17 +63,18 @@ Buyer has one QR
 Buyer can have many CheckInRecord entries over time
 ```
 
-## Boundary With Exhibition Map
+## Ownership Boundary
 
-Exhibition Map & Check-in owns:
+Future Entrance Check-in owns:
 
 - entrance scanner UI;
 - check-in records;
 - venue attendance summary.
+
+Public Exhibition Map has no dependency on this flow.
 
 QR System owns:
 
 - buyer QR token;
 - QR status;
 - QR resolution.
-

@@ -19,7 +19,7 @@ It is not three separate platforms for the user.
 - [Constructor CRM](./01-Modules/09-Constructor-CRM.md)
 - [Builder Readiness](./01-Modules/10-Builder-Readiness.md)
 - [Partners / Participants](./01-Modules/11-Partners-Participants.md)
-- [Exhibition Map & Check-in](./01-Modules/12-Exhibition-Map-Checkin.md)
+- [Public Exhibition Map](./01-Modules/12-Exhibition-Map-Checkin.md)
 - [Admin / Content Management](./01-Modules/13-Admin-Content-Management.md)
 - [Analytics](./01-Modules/14-Analytics.md)
 - [Integrations](./01-Modules/15-Integrations.md)

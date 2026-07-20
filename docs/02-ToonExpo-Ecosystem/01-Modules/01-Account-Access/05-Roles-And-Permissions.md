@@ -34,7 +34,7 @@ Can manage ToonExpo globally:
 - bank offers;
 - service providers;
 - readiness;
-- exhibition map/check-in;
+- Public Exhibition Map snapshot administration; future check-in remains separately permissioned;
 - settings;
 - analytics.
 

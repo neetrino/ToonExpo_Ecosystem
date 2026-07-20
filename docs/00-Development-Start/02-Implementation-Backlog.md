@@ -45,10 +45,9 @@
 - CRM deal/request creation;
 - Constructor CRM board/list/sheet.
 
-## Sprint 5 - Maps Readiness Partners
+## Sprint 5 - Visual Maps Readiness Partners
 
 - visual map/hotspot editor;
-- exhibition map/check-in;
 - readiness assessment;
 - partners/banks;
 - mortgage offers;
@@ -61,3 +60,16 @@
 - audit logs;
 - reports;
 - hardening and e2e flows.
+
+## Sprint 7 - Public Exhibition Map Redesign
+
+- inbound `VenueMapSnapshotV1` endpoint;
+- schema/version/checksum validation;
+- immutable snapshot, area, landmark and receipt models;
+- local R2 asset copy and atomic activation;
+- Konva public area viewer with pan/zoom;
+- participant/project/area/landmark search;
+- destination sheet and list fallback;
+- optional device-local approximate `I am here` marker;
+- migrate public reads away from legacy Booth/Route models;
+- no current route generation or check-in coupling.

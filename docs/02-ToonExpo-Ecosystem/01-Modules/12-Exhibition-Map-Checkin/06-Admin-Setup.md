@@ -1,86 +1,38 @@
-# Admin Setup
+# BOS Publication And ToonExpo Admin Support
 
-## Purpose
+## Primary Workflow
 
-BigProjects Admin prepares venue map, booths and assignments before the event.
-
-## Setup Flow
+All geometry authoring occurs in BOS.
 
 ```text
-BigProjects Admin creates event
--> uploads/selects venue map
--> creates booth/cell records
--> places booths on map
--> assigns companies/projects to booths
--> configures entrance/start point
--> optionally configures path graph
--> publishes map
+BOS Admin validates draft
+-> BOS publishes VenueMapSnapshotV1
+-> ToonExpo NestJS validates version/checksum/schema
+-> ToonExpo copies/stores normalized public media
+-> ToonExpo stores immutable snapshot
+-> ToonExpo atomically activates version
+-> result returns to BOS
 ```
 
-## Event
+## ToonExpo Admin Scope
 
-Even though ToonExpo has recurring cycles, ToonExpo app needs an event record/context for check-in and map.
+ToonExpo Admin may:
 
-Examples:
+- view active and historical snapshot metadata;
+- inspect validation/publication errors;
+- reactivate a previously accepted version in an emergency if explicitly allowed;
+- hide the entire public map during an incident.
 
-- ToonExpo 2026 Q1;
-- ToonExpo 2026 Spring;
-- ToonExpo 2026-1.
+ToonExpo Admin does not redraw cells, move areas, assign companies or change privacy labels. Corrections happen in BOS and arrive through a new publication.
 
-## Booth Creation
+## Idempotency
 
-v1 can support manual booth creation.
+- identity: BOS venue plan id + snapshot version;
+- same identity/same checksum returns `already_published`;
+- same identity/different checksum is rejected;
+- older version cannot replace a newer active version;
+- failure leaves the prior version active.
 
-Possible helpers later:
+## Existing Implementation Migration
 
-- import booths from spreadsheet;
-- duplicate map layout;
-- bulk assign booths.
-
-## Assignment
-
-Admin can assign booth to:
-
-- builder company;
-- partner company;
-- project;
-- bank partner;
-- sponsor/info stand.
-
-## Publication
-
-Use publication status:
-
-```text
-draft
-published
-archived
-```
-
-Only published event map appears publicly.
-
-## Path Graph
-
-Path graph is optional in v1.
-
-If configured:
-
-- admin creates route nodes;
-- admin connects nodes;
-- route draws path from start point to booth.
-
-If not configured:
-
-- show map marker and booth code only.
-
-## Attendance Summary
-
-Admin can view:
-
-- total check-ins;
-- duplicate scans;
-- invalid/blocked scans;
-- check-ins over time.
-
-Do not build complex event operations dashboard in v1.
-
+Legacy percentage-marker `VenueMap`, `Booth`, `RouteNode`, `RouteEdge` and mixed check-in assumptions are not the canonical target model. Implementation must migrate to snapshot/area read models before claiming this module complete.

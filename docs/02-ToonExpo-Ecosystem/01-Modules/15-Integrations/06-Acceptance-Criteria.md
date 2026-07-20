@@ -2,19 +2,27 @@
 
 ## BOS Provisioning
 
-- BOS can send approved participant account creation request.
+- BOS can send a won-builder or confirmed-partner account creation request.
 - ToonExpo can create/fetch Company.
 - ToonExpo can create/fetch primary User.
 - ToonExpo can create CompanyMember.
 - ToonExpo can enable requested modules.
 - ToonExpo returns provisioning result to BOS.
 - Retry does not create duplicates.
+- Ambiguous Company matching requires explicit resolution.
+
+## Public Venue Map Publication
+
+- ToonExpo accepts and validates `VenueMapSnapshotV1`.
+- ToonExpo stores a local immutable snapshot and media copy.
+- Activation is atomic and failure keeps the prior version active.
+- Hidden allocation payloads contain no private organization identity.
+- Public map requests never call BOS.
 
 ## Internal Flows
 
 - Public request creates CRM deal/request.
 - Builder QR saved action creates CRM deal/request.
-- Entrance check-in scan does not create CRM deal/request.
 - CRM reserved/converted/lost status can update apartment public status.
 - Readiness weak category can show service providers.
 
@@ -24,4 +32,3 @@
 - BOS does not directly edit Constructor CRM sales data.
 - BigProjects admins can open ToonExpo directly for ToonExpo data.
 - No payments/ticketing/external CRM sync in v1.
-

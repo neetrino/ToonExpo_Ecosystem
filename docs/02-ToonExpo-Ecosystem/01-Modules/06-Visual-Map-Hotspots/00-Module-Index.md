@@ -48,9 +48,8 @@ Start simple:
 
 ## Not The Same As
 
-This module is not Exhibition Map & Check-in.
+This module is not Public Exhibition Map.
 
-Exhibition Map & Check-in is for the physical event venue, booths, entrance and route/path inside the pavilion.
+Public Exhibition Map is for the physical event venue, published participant areas and landmarks inside the pavilion.
 
 Visual Map / Hotspots is for navigating real estate project visuals.
-

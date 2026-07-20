@@ -39,5 +39,4 @@ Buyer sees request/interest/contact history.
 - CRM Lead Intake
 - Constructor CRM
 - Public Web / Mobile App
-- Exhibition Map & Check-in
-
+- Public Exhibition Map; future Check-in is separate

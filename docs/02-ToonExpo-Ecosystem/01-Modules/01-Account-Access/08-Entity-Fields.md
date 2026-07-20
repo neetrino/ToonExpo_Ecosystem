@@ -85,7 +85,7 @@ Fields:
 - type;
 - status;
 - source;
-- bos_company_id optional;
+- bos_organization_id optional;
 - created_at;
 - updated_at.
 
@@ -162,7 +162,8 @@ Fields:
 - id;
 - source;
 - external_request_id optional;
-- bos_company_id optional;
+- bos_organization_id optional;
+- bos_cycle_engagement_id optional;
 - company_type;
 - company_name;
 - primary_contact_name;
@@ -189,9 +190,9 @@ BuyerProfile 1..1 QrCode         (buyer only)
 
 ## Account Type Eligibility
 
-| account_type | BuyerProfile | Personal QR | CompanyMember |
-|---|:---:|:---:|:---:|
-| buyer | Yes | Yes | No |
-| platform_admin | No | No | No |
-| entrance_staff | No | No | No |
-| company_member | No | No | Yes (max 1 in v1) |
+| account_type   | BuyerProfile | Personal QR |   CompanyMember   |
+| -------------- | :----------: | :---------: | :---------------: |
+| buyer          |     Yes      |     Yes     |        No         |
+| platform_admin |      No      |     No      |        No         |
+| entrance_staff |      No      |     No      |        No         |
+| company_member |      No      |     No      | Yes (max 1 in v1) |

@@ -10,7 +10,7 @@ Visual Map / Hotspots lets users navigate from project/building visuals to floor
 
 This module is for real estate project visuals.
 
-It is separate from Exhibition Map & Check-in, which handles the physical event venue, booths, entrance and route/path.
+It is separate from Public Exhibition Map, which renders the physical event venue and participant areas from a BOS snapshot.
 
 ## Clarification
 

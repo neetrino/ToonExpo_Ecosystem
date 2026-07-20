@@ -48,14 +48,30 @@ No heavy moderation queue is required in v1.
 - CRM deal/request creation;
 - constructor CRM lead/follow-up/status workflow.
 
-## Phase 5 - Readiness, Partners, Mortgage, Service Providers, Check-in
+## Phase 5 - Readiness, Partners, Mortgage And Service Providers
 
 - builder readiness;
 - partners/participants;
 - bank offers / mortgage page;
 - service provider directory linked to readiness;
-- exhibition map and check-in;
 - analytics summaries.
+
+## Phase 6 - Public Exhibition Map
+
+- `VenueMapSnapshotV1` ingestion from BOS;
+- immutable snapshot persistence and atomic activation;
+- local public map asset storage;
+- Konva read-only area rendering;
+- participant/project/area/landmark search;
+- mobile detail sheet and list fallback;
+- optional device-local approximate `I am here` marker;
+- no route simulation and no check-in dependency.
+
+## Later Event Capabilities
+
+- professional route generation after walkability validation;
+- automatic indoor positioning only if reliable infrastructure is approved;
+- entrance check-in as a separate module.
 
 ## First Deep Module
 

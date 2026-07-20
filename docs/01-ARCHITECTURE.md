@@ -50,7 +50,7 @@ flowchart LR
   Db["PostgreSQL 18\nNeon"]
   R2["Cloudflare R2\nmedia"]
   Email["Resend\nemail"]
-  BOS["BigProjects BOS\nprovisioning client"]
+  BOS["BigProjects BOS\nprovisioning + map publisher"]
   Sentry["Sentry\nerrors"]
 
   Buyer --> Web
@@ -62,32 +62,32 @@ flowchart LR
   Api --> Db
   Api --> R2
   Api --> Email
-  BOS -->|"provision account"| Api
-  Api -->|"result/status"| BOS
+  BOS -->|"provision account / publish map snapshot"| Api
+  Api -->|"provisioning / publication result"| BOS
   Web --> Sentry
   Api --> Sentry
 ```
 
 ### Product ownership boundary
 
-ToonExpo owns public content, accounts, builder and partner organizations, project/apartment inventory, buyer QR, requests, Constructor CRM, readiness, event maps/check-in and analytics.
+ToonExpo owns public content, accounts, builder and partner organizations, project/apartment inventory, buyer QR, requests, Constructor CRM, readiness, the public exhibition-map read model and analytics. Check-in is a separate later module.
 
-BigProjects BOS owns internal participant acquisition, internal deals, onboarding checklists, staff tasks and KPI. The systems exchange only account provisioning data required to activate an approved participant.
+BigProjects BOS owns Builder Sales, Partner Relations, event cycles, editable venue geometry, allocations and the public-map publication decision. The systems exchange only provisioning data and immutable public map snapshots; they do not share a database.
 
 ---
 
 ## 3. Runtime Components
 
-| Component | Path | Responsibility | Deployment |
-|---|---|---|---|
-| Web app | `apps/web` | Public pages and role-based frontend experiences | Vercel |
-| API app | `apps/api` | Complete backend: auth, RBAC, workflows, persistence and integrations | Google Cloud Run |
-| Domain package | `packages/domain` | Small shared kernel for cross-module value objects only | Bundled into API |
-| Contracts package | `packages/contracts` | Framework-neutral enums/schemas and generated API client support | Bundled |
-| Database package | `packages/db` | Prisma schema, migrations, generated client and persistence support | API runtime only |
-| UI package | `packages/ui` | Reusable visual primitives and design tokens | Bundled into web |
-| Shared package | `packages/shared` | Environment-neutral utilities and types | Bundled |
-| Config package | `packages/config` | Shared TypeScript, lint, Tailwind and build config | Build time |
+| Component         | Path                 | Responsibility                                                        | Deployment       |
+| ----------------- | -------------------- | --------------------------------------------------------------------- | ---------------- |
+| Web app           | `apps/web`           | Public pages and role-based frontend experiences                      | Vercel           |
+| API app           | `apps/api`           | Complete backend: auth, RBAC, workflows, persistence and integrations | Google Cloud Run |
+| Domain package    | `packages/domain`    | Small shared kernel for cross-module value objects only               | Bundled into API |
+| Contracts package | `packages/contracts` | Framework-neutral enums/schemas and generated API client support      | Bundled          |
+| Database package  | `packages/db`        | Prisma schema, migrations, generated client and persistence support   | API runtime only |
+| UI package        | `packages/ui`        | Reusable visual primitives and design tokens                          | Bundled into web |
+| Shared package    | `packages/shared`    | Environment-neutral utilities and types                               | Bundled          |
+| Config package    | `packages/config`    | Shared TypeScript, lint, Tailwind and build config                    | Build time       |
 
 ---
 
@@ -112,7 +112,7 @@ toonexpo-ecosystem/
         crm/                    # lead intake + constructor CRM
         qr/                     # buyer QR resolve
         favorites/              # buyer favorites
-        exhibition/             # events, venue maps, check-in
+        exhibition-map/         # BOS snapshot ingestion + public area read model
         readiness/              # builder readiness assessments
         partners/               # partner companies and offers
         mortgage/               # bank offers + calculator
@@ -189,23 +189,23 @@ The boundary should be enforced in ESLint/CI, not left as documentation only.
 
 ## 6. Product Modules
 
-| Backend module | Core ownership |
-|---|---|
-| Accounts & Access | Registration, provisioned accounts, sessions, roles, company membership |
-| Companies | Builder, partner and bank organizations and members |
-| Catalog | Projects, buildings, floors, apartments, statuses and publication |
-| Media & Visual Maps | Media metadata, image maps, hotspots and 3D links |
-| Buyer | Buyer profile, favorites, requests and permanent QR identity |
-| Lead Intake | Normalizes buyer-created and builder-created contact requests |
-| Constructor CRM | Builder pipeline, deal stages, notes, follow-up activities and apartment links |
-| Readiness | Assessments, categories, scores and recommendations |
-| Partners & Mortgage | Partner profiles, bank offers and calculator inputs |
-| Service Providers | Categorized provider directory connected to readiness help |
-| Events | Event records, venue maps, booths, routes and check-in |
-| Analytics | Product/event measurements and role-scoped summaries |
-| Provisioning | Idempotent BOS account/company provisioning contract |
-| Content | 📋 post-v1 — homepage CMS / content blocks (not built) |
-| Audit | 📋 post-v1 — global admin audit log (only BOS `IntegrationAuditLog` exists today) |
+| Backend module        | Core ownership                                                                           |
+| --------------------- | ---------------------------------------------------------------------------------------- |
+| Accounts & Access     | Registration, provisioned accounts, sessions, roles, company membership                  |
+| Companies             | Builder, partner and bank organizations and members                                      |
+| Catalog               | Projects, buildings, floors, apartments, statuses and publication                        |
+| Media & Visual Maps   | Media metadata, image maps, hotspots and 3D links                                        |
+| Buyer                 | Buyer profile, favorites, requests and permanent QR identity                             |
+| Lead Intake           | Normalizes buyer-created and builder-created contact requests                            |
+| Constructor CRM       | Builder pipeline, deal stages, notes, follow-up activities and apartment links           |
+| Readiness             | Assessments, categories, scores and recommendations                                      |
+| Partners & Mortgage   | Partner profiles, bank offers and calculator inputs                                      |
+| Service Providers     | Categorized provider directory connected to readiness help                               |
+| Public Exhibition Map | BOS snapshot ingestion, immutable versions, public areas/landmarks, search and rendering |
+| Analytics             | Product/event measurements and role-scoped summaries                                     |
+| Provisioning          | Idempotent BOS account/company provisioning contract                                     |
+| Content               | 📋 post-v1 — homepage CMS / content blocks (not built)                                   |
+| Audit                 | 📋 post-v1 — global admin audit log (only BOS `IntegrationAuditLog` exists today)        |
 
 Frontend features mirror user workflows, not persistence tables. A single backend module may serve several frontend areas.
 
@@ -244,8 +244,7 @@ apps/web/src/features/
   crm/
   readiness/
   partners/
-  event-map/
-  check-in/
+  exhibition-map/
   admin-content/
 ```
 
@@ -274,7 +273,7 @@ apps/api/src/
   crm/                    # request intake + constructor CRM
   qr/                     # QR resolve
   favorites/              # buyer favorites
-  exhibition/             # events, venue maps, booths, check-in
+  exhibition-map/         # snapshot ingestion, activation and public APIs
   readiness/              # assessments, scores
   partners/               # partner companies, offers
   mortgage/               # bank offers, calculator
@@ -327,18 +326,18 @@ PostgreSQL 18 on Neon is the source of truth. Prisma ORM 7 schema, migrations an
 
 Major aggregates:
 
-| Aggregate | Important entities |
-|---|---|
-| Identity | User, BuyerProfile, CompanyMember, ModuleAccess, Session, AccountAccessToken |
-| Organization | Company, BuilderCompany, PartnerCompany |
-| Catalog | Project, Building, Floor, Apartment, ApartmentStatusHistory |
-| Presentation | MediaAsset, VisualMapCanvas, VisualHotspot, Translation |
-| Buyer engagement | Request, Favorite, QrCode, QrScanEvent |
-| CRM | CrmDeal, CrmDealApartmentLink, CrmNote, CrmFollowUpActivity |
-| Readiness | Assessment, Category, Score, Recommendation |
-| Partner | BankOffer, ServiceProvider, ServiceProviderCategory |
-| Event | Event, VenueMap, Booth, BoothAssignment, RouteNode, RouteEdge, CheckInRecord |
-| Operations | ProvisioningRequest, AnalyticsEvent, AuditLog |
+| Aggregate             | Important entities                                                                                                                 |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Identity              | User, BuyerProfile, CompanyMember, ModuleAccess, Session, AccountAccessToken                                                       |
+| Organization          | Company, BuilderCompany, PartnerCompany                                                                                            |
+| Catalog               | Project, Building, Floor, Apartment, ApartmentStatusHistory                                                                        |
+| Presentation          | MediaAsset, VisualMapCanvas, VisualHotspot, Translation                                                                            |
+| Buyer engagement      | Request, Favorite, QrCode, QrScanEvent                                                                                             |
+| CRM                   | CrmDeal, CrmDealApartmentLink, CrmNote, CrmFollowUpActivity                                                                        |
+| Readiness             | Assessment, Category, Score, Recommendation                                                                                        |
+| Partner               | BankOffer, ServiceProvider, ServiceProviderCategory                                                                                |
+| Public Exhibition Map | Event, PublicVenueMapSnapshot, PublicVenueArea, PublicVenueLandmark, MapPublicationReceipt                                         |
+| Operations            | ProvisioningRequest, PublicVenueMapSnapshot, PublicVenueArea, PublicVenueLandmark, MapPublicationReceipt, AnalyticsEvent, AuditLog |
 
 Data rules:
 
@@ -406,6 +405,23 @@ sequenceDiagram
   API-->>BOS: Result, ToonExpo IDs and status
 ```
 
+### BOS publishes public exhibition map
+
+```mermaid
+sequenceDiagram
+  participant BOS as BOS NestJS API
+  participant API as ToonExpo NestJS API
+  participant DB as PostgreSQL
+  participant R2 as Cloudflare R2
+
+  BOS->>API: Publish immutable VenueMapSnapshotV1
+  API->>API: Validate schema, version, checksum and privacy
+  API->>R2: Copy/store normalized public map asset
+  API->>DB: Store complete immutable snapshot
+  API->>DB: Atomically activate accepted version
+  API-->>BOS: Publication result and active snapshot id
+```
+
 ---
 
 ## 11. API And Contract Strategy
@@ -415,7 +431,7 @@ sequenceDiagram
 - Frontend client/types are generated from or validated against OpenAPI in CI.
 - Stable error payloads include `code`, `message`, `requestId` and field errors where applicable.
 - Cursor pagination is preferred for large activity/CRM lists; bounded page pagination is acceptable for admin catalogs.
-- Idempotency keys are required for BOS provisioning and other retry-sensitive create operations.
+- Idempotency keys are required for BOS provisioning and map publication. Map publication additionally requires monotonic version and checksum validation.
 - No API contract is defined only inside a React component or Next.js route handler.
 
 ---
@@ -442,11 +458,11 @@ Baseline:
 
 ## 13. Deployment Architecture
 
-| Environment | Web | API | Database | Purpose |
-|---|---|---|---|---|
-| Development | `localhost:3000` | `localhost:4000` | Local or Neon dev branch | Local development |
-| Staging | Vercel staging | Cloud Run staging service | Neon staging branch/database | QA and acceptance |
-| Production | ToonExpo domain on Vercel | Cloud Run production service | Neon production database | Live product |
+| Environment | Web                       | API                          | Database                     | Purpose           |
+| ----------- | ------------------------- | ---------------------------- | ---------------------------- | ----------------- |
+| Development | `localhost:3000`          | `localhost:4000`             | Local or Neon dev branch     | Local development |
+| Staging     | Vercel staging            | Cloud Run staging service    | Neon staging branch/database | QA and acceptance |
+| Production  | ToonExpo domain on Vercel | Cloud Run production service | Neon production database     | Live product      |
 
 Infrastructure responsibilities:
 

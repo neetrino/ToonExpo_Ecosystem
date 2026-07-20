@@ -19,7 +19,8 @@ BigProjects Admin can manage:
 - bank offers;
 - service providers;
 - readiness categories/assessments;
-- exhibition maps/booths/check-in summary;
+- Public Exhibition Map active/history summary;
+- future check-in summary only when that separate module is enabled;
 - settings/languages.
 
 ## Builder Data
@@ -65,4 +66,3 @@ Potential later helpers:
 - booth spreadsheet import;
 - media bulk upload;
 - duplicate project/floor structures.
-

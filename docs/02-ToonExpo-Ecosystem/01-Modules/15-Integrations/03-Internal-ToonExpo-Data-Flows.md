@@ -34,10 +34,12 @@ Raw scan without saved action does not have to create buyer-visible history.
 
 ## Entrance QR Scan To Check-in
 
+Later separate module:
+
 ```text
 Entrance staff scans buyer QR
 -> QR System resolves buyer
--> Exhibition Map & Check-in records check-in
+-> Entrance Check-in records check-in
 ```
 
 This must not create CRM deal/request.
@@ -78,4 +80,3 @@ Important actions can emit AnalyticsEvent:
 - readiness_status_changed.
 
 Analytics owns reporting; it does not own business workflow.
-

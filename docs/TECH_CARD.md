@@ -45,6 +45,7 @@ All adaptive operational values in this document are sized for this load profile
 | TypeScript         | 6.0.x, strict                           | Confirmed | Stable ecosystem-compatible compiler baseline.                                                                                                                                           |
 | Frontend           | Next.js 16.2.x + React 19.2.x           | Confirmed | `apps/web` presentation layer only.                                                                                                                                                      |
 | Frontend styles    | Tailwind CSS 4.3.x                      | Confirmed | With shadcn/ui and custom ToonExpo components.                                                                                                                                           |
+| Exhibition map     | Konva 10.x + compatible react-konva     | Confirmed | Client-side read-only area renderer with pan/zoom/search/highlight; snapshots are persisted by NestJS, never as Konva JSON.                                                              |
 | Backend            | NestJS 11.1.x                           | Confirmed | `apps/api` owns the complete product backend.                                                                                                                                            |
 | API                | REST + OpenAPI                          | Confirmed | NestJS controllers are canonical.                                                                                                                                                        |
 | Database           | PostgreSQL 18.x on Neon                 | Confirmed | Neon PostgreSQL 18 is production GA.                                                                                                                                                     |
@@ -133,18 +134,18 @@ Next.js Server Components may fetch the NestJS API. Server Actions must not impl
 
 ## Backend - `apps/api`
 
-| Parameter       | Decision                                                                                            |
-| --------------- | --------------------------------------------------------------------------------------------------- |
-| Framework       | NestJS 11.1.x modular monolith                                                                      |
-| Responsibility  | All auth, RBAC, validation, business logic, persistence, audit and integrations                     |
-| Product modules | Accounts, companies, inventory, CRM, QR, maps, readiness, partners, content, check-in and analytics |
-| HTTP            | REST controllers with `/api/v1` version prefix                                                      |
-| Validation      | Global `ValidationPipe`; class-validator DTOs unless an ADR approves another standard               |
-| Documentation   | Swagger/OpenAPI generated from NestJS controllers and DTOs                                          |
-| Persistence     | Repositories/services call Prisma through `packages/db`                                             |
-| Errors          | Global NestJS exception filter with stable problem codes and request IDs                            |
-| Logging         | Pino structured logs with sensitive-field redaction                                                 |
-| Uploads         | NestJS authorizes and signs R2 uploads or receives uploads when required                            |
+| Parameter       | Decision                                                                                                                                                          |
+| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Framework       | NestJS 11.1.x modular monolith                                                                                                                                    |
+| Responsibility  | All auth, RBAC, validation, business logic, persistence, audit and integrations                                                                                   |
+| Product modules | Accounts, companies, inventory, CRM, QR, visual maps, readiness, partners, public exhibition map, content and analytics; check-in remains a separate later module |
+| HTTP            | REST controllers with `/api/v1` version prefix                                                                                                                    |
+| Validation      | Global `ValidationPipe`; class-validator DTOs unless an ADR approves another standard                                                                             |
+| Documentation   | Swagger/OpenAPI generated from NestJS controllers and DTOs                                                                                                        |
+| Persistence     | Repositories/services call Prisma through `packages/db`                                                                                                           |
+| Errors          | Global NestJS exception filter with stable problem codes and request IDs                                                                                          |
+| Logging         | Pino structured logs with sensitive-field redaction                                                                                                               |
+| Uploads         | NestJS authorizes and signs R2 uploads or receives uploads when required                                                                                          |
 
 ## Database - `packages/db`
 

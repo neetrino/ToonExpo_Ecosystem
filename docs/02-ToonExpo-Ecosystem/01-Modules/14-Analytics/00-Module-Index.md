@@ -24,5 +24,4 @@ v1 focuses on practical summaries, not full BI.
 - CRM Lead Intake
 - Constructor CRM
 - Builder Readiness
-- Exhibition Map & Check-in
-
+- Public Exhibition Map; future Check-in is separate

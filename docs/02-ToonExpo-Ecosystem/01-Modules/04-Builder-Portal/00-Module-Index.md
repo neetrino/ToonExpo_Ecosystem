@@ -44,7 +44,6 @@ It gives builders one place to manage:
 - [CRM Lead Intake](../08-CRM-Lead-Intake/00-Module-Index.md)
 - [Constructor CRM](../09-Constructor-CRM/00-Module-Index.md)
 - [Builder Readiness](../10-Builder-Readiness/00-Module-Index.md)
-- [Exhibition Map & Check-in](../12-Exhibition-Map-Checkin/00-Module-Index.md)
+- [Public Exhibition Map](../12-Exhibition-Map-Checkin/00-Module-Index.md)
 - [Analytics](../14-Analytics/00-Module-Index.md)
 - [Integrations](../15-Integrations/00-Module-Index.md)
-

@@ -2,10 +2,10 @@
 
 ## Purpose
 
-QR System identifies registered buyers and supports two main flows:
+QR System identifies registered buyers and supports the builder CRM flow plus a separate future entrance flow:
 
 - builder scans buyer QR and creates a CRM request/deal;
-- entrance staff scans buyer QR for event check-in.
+- future entrance staff scans buyer QR for event check-in.
 
 The mirror flow uses Project QR: a buyer scans a project QR at the exhibition, lands on the public project page and can create a request (`buyer_project_request`), which opens a deal in the builder company CRM. Buyer QR and Project QR together connect buyers and builder companies through one unified deal-creation use case (see CRM Lead Intake / Request Sources).
 
@@ -34,7 +34,8 @@ Unregistered visitors do not have QR.
 - Buyer / Visitor Area
 - CRM Lead Intake
 - Constructor CRM
-- Exhibition Map & Check-in
+- Public Exhibition Map (no QR dependency)
+- Future Entrance Check-in
 - Account & Access
 
 ## Not Included In v1
@@ -43,4 +44,3 @@ Unregistered visitors do not have QR.
 - event-specific QR per event;
 - multiple QR codes per buyer;
 - QR as payment/entry ticket product.
-

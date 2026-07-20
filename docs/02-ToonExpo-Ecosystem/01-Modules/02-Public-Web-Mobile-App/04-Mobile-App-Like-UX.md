@@ -11,7 +11,7 @@ Mobile should feel like an app even when delivered as web/mobile web.
 - favorites;
 - requests;
 - My QR;
-- exhibition map/check-in;
+- Public Exhibition Map;
 - builder QR scan action if builder user;
 - search/filter.
 

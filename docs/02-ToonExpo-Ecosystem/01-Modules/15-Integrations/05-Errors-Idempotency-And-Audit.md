@@ -19,6 +19,8 @@ Use idempotency keys:
 - bos_company_id;
 - primary_contact_email.
 
+`primary_contact_email` matches a User. It must not silently merge Company records. Ambiguous organization candidates return `needs_review` for explicit Admin resolution.
+
 ## Partial Failure
 
 If Company is created but User/module access fails:
@@ -38,6 +40,15 @@ Audit:
 - provisioning retried;
 - account creation result sent to BOS.
 
+## Venue Map Publication
+
+- validate schema version, monotonic snapshot version and checksum;
+- store the complete immutable snapshot before activation;
+- return `already_published` for the same version/checksum;
+- reject version/checksum conflict or stale version;
+- leave the previous active version unchanged on any failure;
+- audit receipt, validation, media copy, activation and rejection.
+
 ## Internal Sync Failure
 
 For important internal flows:
@@ -51,5 +62,4 @@ Examples:
 
 - request creation failed;
 - apartment status update failed;
-- check-in record failed.
-
+- public venue-map publication failed.

@@ -35,9 +35,9 @@ ToonExpo is a full production product, not an MVP or prototype. The list below d
 - partners and bank offers;
 - mortgage calculator page;
 - service provider directory;
-- exhibition map and check-in;
+- public exhibition map synchronized from BOS;
 - analytics summaries;
-- BOS account provisioning integration.
+- BOS account provisioning and venue-map publication integrations.
 
 ## Project Size
 

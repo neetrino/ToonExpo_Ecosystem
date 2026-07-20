@@ -54,7 +54,7 @@ Examples:
 - visual point setup is owned by Visual Map / Hotspots;
 - buyer requests and sales pipeline are owned by CRM Lead Intake and Constructor CRM;
 - readiness logic is owned by Builder Readiness;
-- event venue location is owned by Exhibition Map & Check-in.
+- public event venue location is owned by Public Exhibition Map and sourced from BOS publication.
 
 Builder Portal must connect these modules into one coherent builder experience.
 
@@ -63,4 +63,3 @@ Builder Portal must connect these modules into one coherent builder experience.
 The builder should not feel that they are jumping between unrelated systems.
 
 The portal can have separate sections, but navigation, sheets, cards, filters, statuses and empty states must feel like one product.
-
