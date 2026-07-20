@@ -86,7 +86,7 @@ jobs:
           exit "$fail"
 
       - name: Lint
-        run: pnpm lint
+        run: pnpm lint:all
 
       - name: Typecheck
         run: pnpm typecheck

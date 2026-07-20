@@ -24,9 +24,7 @@ const GLOBAL_PREFIX = API_V1_PREFIX.replace(/^\//, '');
 
 const logDevStartupSummary = (port: number): void => {
   // Local UX (GymHub-style): plain success lines, not Nest context spam.
-  // eslint-disable-next-line no-console -- intentional local startup banner
   console.log(`✓ ToonExpo API started successfully → http://localhost:${port}/${GLOBAL_PREFIX}`);
-  // eslint-disable-next-line no-console -- intentional local startup banner
   console.log(`  Swagger → http://localhost:${port}/${GLOBAL_PREFIX}/${SWAGGER_PATH}`);
 };
 

@@ -53,7 +53,6 @@ export class PrismaService implements OnModuleInit, OnApplicationBootstrap, OnMo
     }
 
     const hostHint = this.connectionString.includes(NEON_HOST_MARKER) ? ' (Neon)' : '';
-    // eslint-disable-next-line no-console -- intentional local startup banner
     console.log(`✓ Database connected successfully${hostHint}`);
   }
 
