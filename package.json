@@ -9,7 +9,9 @@
     "pnpm": ">=11"
   },
   "scripts": {
-    "dev": "turbo run dev",
+    "dev": "turbo run dev --filter=@toonexpo/api --filter=@toonexpo/web --ui=stream",
+    "dev:api": "pnpm --filter @toonexpo/api dev",
+    "dev:web": "pnpm --filter @toonexpo/web dev",
     "build": "turbo run build",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
