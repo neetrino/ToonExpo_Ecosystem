@@ -1,6 +1,6 @@
 import './instrument.js';
 
-import { Logger as NestLogger, ValidationPipe } from '@nestjs/common';
+import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import type { NestExpressApplication } from '@nestjs/platform-express';
@@ -18,27 +18,16 @@ import {
   TRUST_PROXY_HOPS,
 } from './common/constants/app.constants.js';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter.js';
-import { QuietConsoleLogger } from './common/logging/quiet-console.logger.js';
 import type { AppEnv } from './config/env.validation.js';
 
 const GLOBAL_PREFIX = API_V1_PREFIX.replace(/^\//, '');
 
-const logDevStartupSummary = (
-  logger: NestLogger,
-  options: {
-    nodeEnv: string;
-    port: number;
-    corsOrigins: readonly string[];
-    swaggerEnabled: boolean;
-  },
-): void => {
-  const { nodeEnv, port, corsOrigins, swaggerEnabled } = options;
-  logger.log(`Ready — http://localhost:${port}/${GLOBAL_PREFIX}`);
-  logger.log(`Environment: ${nodeEnv}`);
-  logger.log(`CORS: ${corsOrigins.join(', ') || '(none)'}`);
-  if (swaggerEnabled) {
-    logger.log(`Swagger: http://localhost:${port}/${GLOBAL_PREFIX}/${SWAGGER_PATH}`);
-  }
+const logDevStartupSummary = (port: number): void => {
+  // Local UX (GymHub-style): plain success lines, not Nest context spam.
+  // eslint-disable-next-line no-console -- intentional local startup banner
+  console.log(`✓ ToonExpo API started successfully → http://localhost:${port}/${GLOBAL_PREFIX}`);
+  // eslint-disable-next-line no-console -- intentional local startup banner
+  console.log(`  Swagger → http://localhost:${port}/${GLOBAL_PREFIX}/${SWAGGER_PATH}`);
 };
 
 const bootstrap = async (): Promise<void> => {
@@ -48,29 +37,19 @@ const bootstrap = async (): Promise<void> => {
   }
 
   const isProductionBoot = process.env['NODE_ENV'] === NODE_ENV_PRODUCTION;
-  const quietLogger = new QuietConsoleLogger();
   const app = await NestFactory.create<NestExpressApplication>(
     AppModule,
-    isProductionBoot
-      ? { bufferLogs: true }
-      : {
-          bufferLogs: true,
-          logger: quietLogger,
-        },
+    isProductionBoot ? { bufferLogs: true } : undefined,
   );
 
   const configService = app.get(ConfigService<AppEnv, true>);
   const port = configService.get('PORT', { infer: true }) ?? DEFAULT_API_PORT;
-  const corsOrigins = configService.get('CORS_ORIGINS', { infer: true });
   const nodeEnv = configService.get('NODE_ENV', { infer: true });
   const isProduction = nodeEnv === NODE_ENV_PRODUCTION;
 
-  // Production: structured Pino. Local: quiet Nest ConsoleLogger (colors, less boot spam).
+  // Production: structured Pino. Local: default Nest ConsoleLogger (full boot + routes).
   if (isProduction) {
     app.useLogger(app.get(PinoLogger));
-  } else {
-    app.useLogger(quietLogger);
-    app.flushLogs();
   }
 
   // Cloud Run sits behind Google's HTTPS load balancer, which sets
@@ -81,7 +60,7 @@ const bootstrap = async (): Promise<void> => {
   app.use(helmet());
   app.use(cookieParser());
   app.enableCors({
-    origin: corsOrigins,
+    origin: configService.get('CORS_ORIGINS', { infer: true }),
     credentials: true,
   });
   app.setGlobalPrefix(GLOBAL_PREFIX);
@@ -110,13 +89,7 @@ const bootstrap = async (): Promise<void> => {
   if (isProduction) {
     app.get(PinoLogger).log(`API listening on port ${port}`);
   } else {
-    const bootstrapLogger = new NestLogger('Bootstrap');
-    logDevStartupSummary(bootstrapLogger, {
-      nodeEnv,
-      port,
-      corsOrigins,
-      swaggerEnabled: true,
-    });
+    logDevStartupSummary(port);
   }
 };
 

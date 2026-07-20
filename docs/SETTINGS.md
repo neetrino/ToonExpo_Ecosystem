@@ -58,6 +58,8 @@ Defaults live in `packages/db` (`DEFAULT_DB_POOL_*`). Not env-configurable.
 | ------------------ | --------- | ------------------------------------------------------------------------------------------------------------------------- |
 | Pool max           | `8`       | Max `pg` connections per Cloud Run instance                                                                               |
 | Connection timeout | `5000`ms  | Fail fast when the pool is saturated                                                                                      |
+| Pool idle timeout  | `30000`ms | Drop idle clients so Neon suspend does not leave dead sockets in the pool                                                 |
+| Keepalive interval | `4` min   | `SELECT 1` while the API process is up — prevents Neon ~5 min auto-suspend (skipped in `NODE_ENV=test`)                   |
 | Statement timeout  | `10000`ms | Applied via `SET statement_timeout` on each new pool connection (Neon pooled URLs reject it as a startup `options` param) |
 
 Budget: `max_instances × pool max (8)` must stay under the Neon plan connection limit (leave headroom for migrations, admin, analytics).

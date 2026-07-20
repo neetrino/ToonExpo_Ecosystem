@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { SentryModule } from '@sentry/nestjs/setup';
 import { LoggerModule } from 'nestjs-pino';
@@ -15,6 +15,7 @@ import { CsrfTokenGuard } from './auth/guards/csrf-token.guard.js';
 import { SessionAuthGuard } from './auth/guards/session-auth.guard.js';
 import { CatalogModule } from './catalog/catalog.module.js';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter.js';
+import { HttpLoggingInterceptor } from './common/logging/http-logging.interceptor.js';
 import { WebRevalidationModule } from './common/web-revalidation/web-revalidation.module.js';
 import { CompanyMembersModule } from './company/company-members.module.js';
 import { resolveEnvFilePaths } from './config/env-files.js';
@@ -75,6 +76,7 @@ import { VisualMapModule } from './visual-map/visual-map.module.js';
   ],
   providers: [
     AllExceptionsFilter,
+    { provide: APP_INTERCEPTOR, useClass: HttpLoggingInterceptor },
     { provide: APP_GUARD, useClass: ThrottlerGuard },
     { provide: APP_GUARD, useClass: SessionAuthGuard },
     { provide: APP_GUARD, useClass: AccountTypesGuard },

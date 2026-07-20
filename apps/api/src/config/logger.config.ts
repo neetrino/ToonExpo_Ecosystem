@@ -16,13 +16,16 @@ const pathWithoutQuery = (url: string | undefined): string => {
 };
 
 /**
- * Compact HTTP access logging for nestjs-pino (no header dumps in the terminal).
+ * Production: structured Pino HTTP access logs.
+ * Local/test: nestjs-pino stays for InjectPinoLogger; HTTP lines come from
+ * {@link HttpLoggingInterceptor} (Nest ConsoleLogger `→` / `←` style).
  */
 export const buildLoggerModuleParams = (): Params => ({
   // Nest 11 / path-to-regexp: named wildcard (nestjs-pino default `*` warns).
   forRoutes: [{ path: '{*path}', method: RequestMethod.ALL }],
   pinoHttp: {
     level: process.env['LOG_LEVEL']?.trim() || 'info',
+    autoLogging: isProduction,
     quietReqLogger: true,
     quietResLogger: true,
     serializers: {
