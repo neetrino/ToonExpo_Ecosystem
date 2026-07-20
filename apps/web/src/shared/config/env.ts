@@ -5,15 +5,6 @@ import { DEFAULT_API_ORIGIN } from './constants';
 
 export { API_PROXY_TARGET_ENV } from './api-proxy.constants';
 
-/** Enables static `process.env.NEXT_PUBLIC_API_URL` access for Next.js inlining. */
-declare global {
-  namespace NodeJS {
-    interface ProcessEnv {
-      NEXT_PUBLIC_API_URL?: string;
-    }
-  }
-}
-
 const publicEnvSchema = z.object({
   NEXT_PUBLIC_API_URL: z.string().url().optional(),
 });
@@ -34,6 +25,16 @@ const trimOptionalEnv = (value: string | undefined): string | undefined => {
   return trimmed && trimmed.length > 0 ? trimmed : undefined;
 };
 
+/**
+ * Static `process.env.NEXT_PUBLIC_API_URL` access (not bracket) so Next.js
+ * can inline the public env at build time.
+ */
+const readNextPublicApiUrl = (): string | undefined =>
+  trimOptionalEnv(
+    // @ts-expect-error Next.js inlining needs static property access, not index signature.
+    process.env.NEXT_PUBLIC_API_URL,
+  );
+
 const readApiProxyTarget = (): string | undefined =>
   trimOptionalEnv(process.env[API_PROXY_TARGET_ENV]);
 
@@ -51,7 +52,7 @@ const formatEnvValidationError = (error: z.ZodError): string =>
  */
 export const getPublicEnv = (): PublicEnv => {
   const parsed = publicEnvSchema.safeParse({
-    NEXT_PUBLIC_API_URL: trimOptionalEnv(process.env.NEXT_PUBLIC_API_URL),
+    NEXT_PUBLIC_API_URL: readNextPublicApiUrl(),
   });
 
   if (!parsed.success) {
@@ -86,7 +87,7 @@ export const getPublicEnv = (): PublicEnv => {
 export const getServerApiBaseUrl = (): string => {
   const parsed = serverEnvSchema.safeParse({
     API_PROXY_TARGET: readApiProxyTarget(),
-    NEXT_PUBLIC_API_URL: trimOptionalEnv(process.env.NEXT_PUBLIC_API_URL),
+    NEXT_PUBLIC_API_URL: readNextPublicApiUrl(),
     API_URL: trimOptionalEnv(process.env['API_URL']),
   });
 
