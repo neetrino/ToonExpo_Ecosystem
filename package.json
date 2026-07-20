@@ -29,7 +29,7 @@
     "@toonexpo/config": "workspace:*",
     "eslint": "^9.39.5",
     "husky": "^9.1.7",
-    "lint-staged": "^17.0.8",
+    "lint-staged": "^17.1.0",
     "prettier": "^3.6.2",
     "turbo": "^2.10.5",
     "typescript": "6.0.3"
