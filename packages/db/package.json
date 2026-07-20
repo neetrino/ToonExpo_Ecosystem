@@ -35,7 +35,7 @@
   },
   "devDependencies": {
     "@toonexpo/config": "workspace:*",
-    "@types/node": "^24.10.1",
+    "@types/node": "^26.1.1",
     "@types/pg": "^8.15.6",
     "dotenv": "^17.2.3",
     "eslint": "^9.39.2",
