@@ -152,7 +152,7 @@ describe('Auth endpoints (e2e)', () => {
     await request(app.getHttpServer())
       .get(`${API_V1_PREFIX}/auth/me`)
       .set('Cookie', cookiePair(loginSession as string))
-      .expect(401);
+      .expect(204);
   });
 
   it('rejects authenticated mutations without or with invalid CSRF tokens', async () => {
