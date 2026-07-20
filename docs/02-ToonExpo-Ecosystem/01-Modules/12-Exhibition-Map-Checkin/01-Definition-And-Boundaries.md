@@ -2,68 +2,45 @@
 
 ## Definition
 
-Exhibition Map & Check-in is the event navigation and entrance validation module.
+Public Exhibition Map is a ToonExpo public read model generated from a version explicitly published by BOS.
 
-It helps visitors:
+It answers:
 
-- enter using their registered buyer QR;
-- find builders, projects, banks and partners inside the pavilion;
-- see booth/stand location;
-- follow route/path when available.
+```text
+What is in the pavilion, where is it, and what is near it?
+```
 
-## What This Module Owns
+## ToonExpo Owns
 
-This module owns:
+- snapshot validation and immutable storage;
+- active public version selection;
+- local copy of normalized map media;
+- public search index/read model;
+- public map rendering and list fallback;
+- public area/organization/project detail links;
+- device-local approximate visitor marker;
+- public analytics for map use if enabled.
 
-- event venue map;
-- booth/stand/cell records;
-- company/project booth assignments;
-- visitor-facing venue map;
-- search by company/project/booth;
-- route/path guidance;
-- entrance scanner UI;
-- check-in records;
-- attendance summary.
+## BOS Owns
 
-## What QR System Owns
+- source PDF/image upload and normalization;
+- metric calibration and 1 m x 1 m logical grid;
+- cell classification;
+- sellable area creation and geometry;
+- BuilderDeal and PartnerParticipation allocations;
+- privacy/public-label decision;
+- manual publish action and snapshot version.
 
-QR System owns:
+## Not Owned Here
 
-- permanent buyer QR;
-- QR token resolution;
-- QR status.
+- editing the venue plan;
+- builder sales or partner pipeline;
+- internal deal status, pricing or staff data;
+- project/building/floor Visual Map / Hotspots;
+- check-in or attendance records;
+- buyer QR identity lifecycle;
+- route generation in the current delivery.
 
-Exhibition Check-in uses QR but does not own QR token lifecycle.
+## Runtime Independence
 
-## What This Module Does Not Own
-
-This module does not own:
-
-- paid tickets;
-- payment validation;
-- builder CRM deal creation;
-- buyer interest/request creation;
-- real estate visual hotspots;
-- event sales operations in BOS.
-
-## Check-in Is Not CRM
-
-Entrance scan must not create:
-
-- CRM deal;
-- builder request;
-- apartment interest;
-- builder contact history.
-
-It creates only check-in record/log.
-
-## Visual Map Boundary
-
-Visual Map / Hotspots:
-
-- project/building/floor/apartment visuals.
-
-Exhibition Map & Check-in:
-
-- physical pavilion/venue map and booths.
-
+ToonExpo public traffic reads only ToonExpo PostgreSQL/R2 data. A BOS outage must not break the currently active public map.

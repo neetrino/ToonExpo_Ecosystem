@@ -1,93 +1,45 @@
-# Search And Route Path
+# Search, Orientation And Future Routing
 
-## Search Goal
+## Current Search
 
-Visitor should quickly find:
+Search matches:
 
-- builder company;
-- project;
-- bank;
-- partner;
-- booth code.
+- builder/partner/bank public name;
+- project name when published;
+- custom public label;
+- area code/name;
+- landmark or named zone.
 
-## Search Inputs
+Selecting a result centers and highlights its map area and opens its public detail sheet.
 
-Search should match:
+## Current Orientation
 
-- company name;
-- project name;
-- booth code;
-- partner type;
-- bank name.
+The current delivery does not claim precise indoor positioning.
 
-## Search Result
+Visitor may optionally tap `I am here` and place an approximate marker manually. The marker:
 
-Result card should show:
+- remains device-local UI state;
+- is not saved to PostgreSQL;
+- is not synchronized to BOS;
+- does not generate a path;
+- can be moved or cleared.
 
-- company/project name;
-- booth code;
-- type;
-- short location hint;
-- open on map action;
-- route/path action if available.
+The map displays both the marker and selected destination. Nearby builders, banks, zones and landmarks let the visitor orient against what is visible in the real pavilion.
 
-## Route / Path
+## No Misleading Route
 
-Route/path helps visitor walk from entrance/current point to selected booth.
+Do not draw a straight line between approximate location and destination. It could cross walls, stands or restricted areas and would imply navigation accuracy the system does not have.
 
-v1 can support simple path if map graph is configured.
+## Future Professional Routing
 
-## Route Data
+Routing begins only after real plans and walkability data are validated. The future engine will require:
 
-Route building needs:
+- explicit `walkable`, `blocked` and `fixed_object` classifications;
+- entrances/start points;
+- an access point for each destination area;
+- graph/grid validation;
+- A* or equivalent pathfinding over walkable cells;
+- route simplification for clean display;
+- tests proving paths do not cross blocked geometry.
 
-- start point;
-- destination booth;
-- path nodes;
-- path edges;
-- map coordinates.
-
-## Start Point
-
-Recommended v1 start points:
-
-- main entrance;
-- selected entrance;
-- current point selected manually.
-
-True live indoor positioning is out of scope.
-
-## Route Flow
-
-```text
-Visitor searches company/project
--> selects result
--> system highlights booth
--> visitor taps Route
--> system draws path from entrance/start point
-```
-
-## Fallback Without Route Graph
-
-If route graph is not configured:
-
-- highlight booth;
-- show booth code;
-- show location text;
-- optionally show "Route not available yet".
-
-## Route Is Not GPS
-
-Do not promise precise live navigation in v1.
-
-Route is visual guidance on venue map.
-
-## Mobile
-
-Route/path should be visible on mobile:
-
-- highlighted path;
-- destination label;
-- reset/back action;
-- search remains accessible.
-
+QR positioning, BLE beacons, Wi-Fi positioning and live indoor tracking are separate future decisions, not hidden dependencies of the current map.

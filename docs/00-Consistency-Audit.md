@@ -7,9 +7,9 @@ Updated after modular documentation pass.
 ## Canonical v1 Decisions
 
 - ToonExpo is separate from BigProjects BOS.
-- ToonExpo owns public website/app, buyer accounts, builder portal, projects, apartments, visual maps, QR, Constructor CRM, readiness, partners, mortgage offers, service provider directory, exhibition map, check-in, admin/content and analytics.
-- BOS owns internal sales, deals, event cycles, tasks, KPI and participant onboarding checklist.
-- The main v1 integration is BOS -> ToonExpo account/company provisioning.
+- ToonExpo owns public website/app, buyer accounts, builder portal, projects, apartments, visual maps, QR, Constructor CRM, readiness, partners, mortgage offers, service provider directory, the public exhibition-map read model, admin/content and analytics.
+- BOS owns Builder Sales, Partner Relations, event cycles, editable venue geometry, space allocations and the public map publication decision.
+- Release 1 integrations are BOS -> ToonExpo account/company provisioning and immutable `VenueMapSnapshotV1` publication.
 - No broad ToonExpo data sync to BOS in v1.
 - No paid tickets, payment/e-ticket flow or ticket QR in v1.
 - No heavy moderation queue in v1; use simple publication statuses.
@@ -18,6 +18,8 @@ Updated after modular documentation pass.
 - NestJS owns email/password authentication through Passport Local and argon2id.
 - Browser authentication uses revocable opaque DB-backed sessions in secure httpOnly cookies; OAuth and JWT access/refresh-token auth are not in v1.
 - Admin/BOS-created accounts use single-use set-password invitations; buyer self-registration requires a password.
+- Public Exhibition Map is independent from check-in and buyer QR.
+- Professional routing, automatic indoor positioning and QR location markers are deferred.
 
 ## Canonical Account Model (Confirmed 2026-07-18)
 
@@ -41,7 +43,7 @@ Future `CompanyMemberRole` expansion: manager, sales_agent — when permissions 
 ## Canonical Status Groups
 
 - Publication: draft, published, archived.
-- Provisioning: not_started, pending, success, failed, linked_existing, cancelled.
+- Provisioning: not_started, pending, success, failed, linked_existing, needs_review, cancelled.
 - Apartment sales: available, reserved, sold.
 - CRM request/deal: new_request, assigned, contacted, follow_up_needed, apartment_selected, reserved, converted, closed, lost.
 - Event: planning, active, completed, archived, cancelled.
@@ -53,6 +55,7 @@ Future `CompanyMemberRole` expansion: manager, sales_agent — when permissions 
 - CrmFollowUpActivity is a CRM activity, not a general platform task.
 - Service Provider Directory replaces the old marketplace wording.
 - Exhibition Map is the physical venue map.
+- BOS edits Exhibition Map; ToonExpo stores and renders the immutable public snapshot.
 - Visual Map / Hotspots is project/building/floor/apartment visual navigation.
 
 ## Checked Areas

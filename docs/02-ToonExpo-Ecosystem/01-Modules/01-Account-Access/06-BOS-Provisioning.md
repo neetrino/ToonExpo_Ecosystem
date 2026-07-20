@@ -2,9 +2,9 @@
 
 ## Purpose
 
-BOS can request creation of ToonExpo accounts for approved participants.
+BOS can request creation/linking of ToonExpo access for a won BuilderDeal or confirmed PartnerParticipation.
 
-This is the main v1 integration between BOS and ToonExpo.
+This is one of two Release 1 integrations between BOS and ToonExpo; the other is public venue-map publication.
 
 ## Principle
 
@@ -33,7 +33,8 @@ other
 
 Minimum payload:
 
-- BOS company id;
+- BOS Organization id;
+- BOS CycleEngagement id;
 - company name;
 - company type;
 - primary contact name;
@@ -56,7 +57,7 @@ Examples:
 ## Provisioning Flow
 
 ```text
-BOS marks participant approved
+BOS BuilderDeal reaches won or PartnerParticipation reaches confirmed
 -> BOS sends Create ToonExpo Account Request
 -> ToonExpo creates or finds Company(type = builder | partner | bank | service)
 -> ToonExpo creates or finds primary User(account_type = company_member)
@@ -77,6 +78,8 @@ If company/user already exists:
 - return `linked_existing` or update/link carefully;
 - do not create duplicates.
 
+Company resolution must prefer an existing external link or exact registration/tax identifier. Normalized email matches a User only. Display name/email candidates require explicit Admin review and return `needs_review`; they must not silently merge Company records.
+
 ## Response
 
 Fields:
@@ -93,6 +96,7 @@ Status:
 ```text
 success
 linked_existing
+needs_review
 failed
 ```
 

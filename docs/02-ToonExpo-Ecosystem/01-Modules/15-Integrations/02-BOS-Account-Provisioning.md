@@ -2,14 +2,14 @@
 
 ## Purpose
 
-BOS account provisioning creates ToonExpo access for approved participants.
+BOS account provisioning creates ToonExpo access for won builders and confirmed partners.
 
 This is the main v1 integration between the two systems.
 
 ## Flow
 
 ```text
-BOS deal/participant approved
+BOS BuilderDeal won or PartnerParticipation confirmed
 -> BOS sends Create ToonExpo Account Request
 -> ToonExpo creates/fetches Company
 -> ToonExpo creates/fetches primary User
@@ -51,7 +51,8 @@ analytics
 Minimum fields:
 
 - request_id;
-- bos_company_id;
+- bos_organization_id;
+- bos_cycle_engagement_id;
 - company_name;
 - company_type;
 - primary_contact_name;
@@ -75,12 +76,15 @@ Status:
 ```text
 success
 linked_existing
+needs_review
 failed
 ```
 
 `success` means ToonExpo created the required company/user access.
 
 `linked_existing` means ToonExpo found and linked existing company/user access without creating duplicates.
+
+`needs_review` means one or more possible Company matches require an explicit BOS/ToonExpo Admin decision.
 
 ## Idempotency
 
@@ -89,10 +93,14 @@ Provisioning must be safe to retry.
 Use:
 
 - request_id;
-- bos_company_id;
-- primary_contact_email.
+- bos_organization_id;
+- previously stored ToonExpo Company link;
+- exact registration/tax identifier when available;
+- primary_contact_email for User matching only.
 
 Do not create duplicate Company/User records on retry.
+
+Do not merge Company records automatically by display name or primary contact email alone.
 
 ## Invitation
 

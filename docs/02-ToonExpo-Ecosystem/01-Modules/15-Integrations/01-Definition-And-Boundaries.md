@@ -20,6 +20,14 @@ ToonExpo creates account/company/module access
 ToonExpo sends result/status back to BOS
 ```
 
+Second external integration:
+
+```text
+BOS explicitly publishes VenueMapSnapshotV1
+ToonExpo validates, stores and activates its local immutable public copy
+ToonExpo returns publication result/status
+```
+
 ## Internal Flow Principle
 
 Internal ToonExpo modules can update each other through clear ownership rules.
@@ -39,7 +47,7 @@ Integrations does not own:
 - QR token security;
 - apartment inventory rules;
 - readiness scoring;
-- event map setup;
+- editable event map setup;
 - account model.
 
 It documents contracts and data movement between owners.
@@ -52,4 +60,4 @@ It documents contracts and data movement between owners.
 - marketing automation;
 - full BOS-ToonExpo data warehouse sync;
 - live bank API integration.
-
+- live public dependency on BOS.

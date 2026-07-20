@@ -37,6 +37,5 @@ archived
 - Partners / Participants
 - Mortgage / Bank Offers
 - Service Provider Directory
-- Exhibition Map & Check-in
+- Public Exhibition Map snapshot administration
 - Analytics
-

@@ -18,9 +18,10 @@ BigProjects owners/admins can log into ToonExpo directly to see ToonExpo data.
 ```text
 BOS -> ToonExpo
 participant/company/account creation request
+versioned public venue-map snapshot
 
 ToonExpo -> BOS
-account creation result/status only if needed
+account creation and map publication result/status
 
 ToonExpo internal
 CRM apartment status -> public apartment status
@@ -43,6 +44,17 @@ ToonExpo returns:
 - provisioning status;
 - error message if failed.
 
+On explicit BOS Admin publication, BOS also sends:
+
+- map/cycle external identity, version and checksum;
+- normalized public background asset;
+- public area geometry, labels and landmarks;
+- allowed organization/project references;
+- optional routing-ready classifications/access points;
+- no deal stage, price, staff, note, attachment or private occupant identity.
+
+ToonExpo stores the complete immutable version in its own PostgreSQL/R2 environment and serves it without a BOS runtime dependency.
+
 ## Do Not Sync In v1
 
 - full project/building/floor/apartment inventory to BOS;
@@ -52,6 +64,8 @@ ToonExpo returns:
 - QR scan logs to BOS;
 - check-in details to BOS;
 - public content/media to BOS.
+
+Do not synchronize map editor commands or drafts. Only complete published snapshots cross the boundary.
 
 ## Important Rules
 

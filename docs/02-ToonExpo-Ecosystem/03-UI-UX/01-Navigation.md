@@ -41,7 +41,7 @@ Apartments
 Partners
 Content Management
 Readiness
-QR / Check-in
+Public Exhibition Map
 Analytics
 Settings
 ```
@@ -49,3 +49,5 @@ Settings
 ## UX Rule
 
 Builder should experience ToonExpo as one portal with multiple sections, not as separate unrelated platforms.
+
+Entrance Check-in, when delivered, uses a separate role-scoped navigation and does not appear as part of Public Exhibition Map.

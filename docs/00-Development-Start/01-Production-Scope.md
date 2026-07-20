@@ -16,7 +16,7 @@ This is the approved full product scope for the initial production release. It i
 - partners/participants and bank offers;
 - mortgage calculator page;
 - service provider directory;
-- exhibition venue map and check-in;
+- public exhibition venue map from an immutable BOS snapshot;
 - admin/content/publication controls;
 - analytics summaries;
 - BOS provisioning endpoint/status.
@@ -32,8 +32,11 @@ This is the approved full product scope for the initial production release. It i
 - public chat/messaging;
 - broad ToonExpo data sync to BOS;
 - complex builder subroles in the initial production release;
-- phone/email verification in the initial production release.
+- phone/email verification in the initial production release;
+- professional indoor route generation;
+- automatic indoor positioning and QR location markers;
+- entrance check-in in the current map delivery; it remains a separate later ToonExpo capability.
 
 ## Production Release Success Definition
 
-Buyer can register, get QR, browse projects/apartments, request/contact builders, and builders/admins can manage inventory, CRM follow-up and readiness inside ToonExpo.
+Buyer can register, get QR, browse projects/apartments, request/contact builders, find public event participants on the published venue map, and builders/admins can manage inventory, CRM follow-up and readiness inside ToonExpo.

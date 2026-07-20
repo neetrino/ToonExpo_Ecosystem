@@ -84,16 +84,15 @@ Visual Map / Hotspots:
 - no booth cells;
 - no route/path graph.
 
-Exhibition Map & Check-in:
+Public Exhibition Map:
 
 - event venue map;
 - entrance/check-in;
 - booth/stand locations;
-- route/path to booth/project.
+- participant areas and venue landmarks from a BOS-published snapshot.
 
 ## Recommended v1 Shape
 
 Use a practical image-marker editor first.
 
 Only add rectangles/polygons after real project visuals prove that point markers are not enough.
-

@@ -19,10 +19,10 @@ In scope:
 - constructor CRM;
 - builder readiness;
 - partners / participants;
-- exhibition map and check-in;
+- public exhibition map synchronized from BOS;
 - admin / content management / publication;
 - analytics;
-- BOS account provisioning integration.
+- BOS account provisioning and venue-map publication integrations.
 
 Out of scope:
 

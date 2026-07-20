@@ -81,7 +81,7 @@ Mortgage page shows bank partner offers and calculator.
 
 ## Exhibition Map
 
-Exhibition map page shows physical event venue map, booth search and route/path.
+Public Exhibition Map shows the active BOS-published venue snapshot, participant/project/area/landmark search, full-area highlight, public details and optional manual approximate visitor marker. It does not simulate routes.
 
 ## Authenticated Shortcuts
 
@@ -91,4 +91,3 @@ When logged in as buyer:
 - Requests;
 - My QR;
 - Profile.
-

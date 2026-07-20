@@ -1,51 +1,35 @@
-# Exhibition Map & Check-in - Module Index
+# Public Exhibition Map - Module Index
 
 ## Purpose
 
-Exhibition Map & Check-in supports the physical ToonExpo event experience:
+Public Exhibition Map helps a visitor understand the pavilion, search for a participant, highlight its physical area and orient using nearby brands and landmarks.
 
-- free visitor check-in by QR;
-- venue/pavilion map;
-- booth/stand locations;
-- search for builder/project/bank/partner;
-- route/path guidance to selected booth/project.
+## Product Ownership
 
-## Core Boundary
+```text
+BOS: editable metric venue plan and publication
+ToonExpo: immutable public snapshot and visitor experience
+```
 
-This module is for the physical event venue.
+ToonExpo does not edit area geometry and does not call BOS while serving a public request.
 
-It is separate from Visual Map / Hotspots, which is for real estate project visuals.
+## Current Delivery
 
-## Reading Order
+- receive and validate `VenueMapSnapshotV1`;
+- persist an immutable local version and activate it atomically;
+- public read-only map with pan/zoom;
+- search by organization, project, public label, area code and landmark;
+- highlighted destination and detail sheet;
+- manual approximate `I am here` marker stored only on the device;
+- list fallback and mobile accessibility.
 
-1. [Definition And Boundaries](./01-Definition-And-Boundaries.md)
-2. [Venue Map And Booths](./02-Venue-Map-And-Booths.md)
-3. [Search And Route Path](./03-Search-And-Route-Path.md)
-4. [Entrance Check-in Scanner](./04-Entrance-Checkin-Scanner.md)
-5. [Public Mobile UX](./05-Public-Mobile-UX.md)
-6. [Admin Setup](./06-Admin-Setup.md)
-7. [Entity Fields](./07-Entity-Fields.md)
-8. [Acceptance Criteria](./08-Acceptance-Criteria.md)
+## Deferred
 
-## Related Modules
+- professional route generation/pathfinding;
+- automatic indoor positioning;
+- QR location markers;
+- entrance check-in and attendance workflows.
 
-- QR System
-- Buyer / Visitor Area
-- Public Web / Mobile App
-- Partners / Participants
-- Projects / Buildings / Floors / Apartments
-- Admin / Content Management
+## Important Boundary
 
-## v1 Principle
-
-Start with a practical event map:
-
-- ready venue map image/plan;
-- booth/cell markers;
-- company/project assignments;
-- search;
-- optional route/path if graph data is configured;
-- check-in scanner.
-
-Do not build paid ticketing or complex event operations in v1.
-
+This module is different from Visual Map / Hotspots, which maps projects, buildings, floors and apartments. Their entities, editors and APIs must not be reused as one map domain.

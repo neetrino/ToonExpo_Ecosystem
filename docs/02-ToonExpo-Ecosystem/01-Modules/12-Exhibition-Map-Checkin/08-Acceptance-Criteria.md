@@ -1,46 +1,40 @@
 # Acceptance Criteria
 
-## Event Map
+## Publication Contract
 
-- BigProjects Admin can create event map.
-- BigProjects Admin can upload/select venue map image.
-- BigProjects Admin can create booth/cell.
-- BigProjects Admin can assign builder/partner/project to booth.
-- Published map is visible publicly.
-- Draft map is not visible publicly.
+- ToonExpo accepts a valid immutable `VenueMapSnapshotV1` from BOS.
+- Retry of the same version/checksum is idempotent.
+- A checksum conflict or older version is rejected.
+- Failed/rejected publication leaves the previous active version intact.
+- ToonExpo stores its own snapshot and media copy and serves public traffic without BOS.
+- Hidden allocations contain no private organization identity.
 
-## Public Navigation
+## Public Experience
 
-- Visitor can open exhibition map.
-- Visitor can search by company.
-- Visitor can search by project.
-- Visitor can search by booth code.
-- Visitor can select booth and see details.
-- Visitor can see booth highlighted on map.
-- Visitor can see route/path if graph is configured.
-- Visitor sees fallback location info if route graph is not configured.
+- Visitor can open the active event map without check-in or QR.
+- Map supports pan/zoom on mobile and desktop.
+- Visitor can search organization, project, public label, area code and landmark.
+- Search result highlights and centers the full destination area.
+- Area sheet shows only permitted public data and relevant public links.
+- List fallback provides the same discoverable public destinations.
+- Visual Map / Hotspots data is not mixed with exhibition venue data.
 
-## Check-in
+## Approximate Orientation
 
-- Entrance Staff can scan buyer QR.
-- Registered visitor can be checked in.
-- Invalid QR is denied safely.
-- Blocked QR is denied.
-- Duplicate check-in is detected.
-- Check-in scan does not create CRM request/deal.
+- Visitor may place, move and remove an approximate `I am here` marker.
+- Marker remains local to the device and is not persisted.
+- Map shows marker, destination and nearby landmarks simultaneously.
+- No straight-line or simulated route is displayed.
 
-## Mobile
+## Deferred Boundaries
 
-- Map is usable on mobile.
-- Search is usable on mobile.
-- Selected booth details are readable on mobile.
-- My QR is easy to access from event context.
+- Professional pathfinding is not required for current completion.
+- Automatic indoor positioning and QR location markers are not required.
+- Check-in scanner, attendance records and entrance staff UI are not owned by this module.
 
-## Boundaries
+## Technical Boundary
 
-- No paid tickets in v1.
-- No payment validation in v1.
-- No separate ticketing platform.
-- No live indoor GPS requirement.
-- No builder CRM interaction from entrance check-in.
-
+- Next.js renders and interacts with the map.
+- NestJS owns snapshot ingestion, validation, persistence, activation and public APIs.
+- Prisma/PostgreSQL access does not occur in Next.js.
+- Konva scene JSON is not the canonical persistence contract.

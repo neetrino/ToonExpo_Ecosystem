@@ -28,7 +28,6 @@ All routes below are Next.js frontend routes only. Product API endpoints are sep
 /profile/qr
 /profile/favorites
 /profile/requests
-/profile/check-in
 ```
 
 ## Builder Portal Routes
@@ -58,17 +57,21 @@ All routes below are Next.js frontend routes only. Product API endpoints are sep
 /admin/service-providers
 /admin/content
 /admin/readiness
-/admin/check-in
+/admin/exhibition-map
 /admin/analytics
 /admin/settings
 ```
 
-## Entrance Routes
+## Future Check-in Routes
 
 ```text
 /entrance/scanner
 /entrance/scans
+/profile/check-in
+/admin/check-in
 ```
+
+Future check-in routes are not part of Public Exhibition Map delivery.
 
 ## Sheet / Deep Link Pattern
 

@@ -40,7 +40,7 @@ BigProjects Admin can manage all public/platform entities:
 - partners;
 - bank offers;
 - service providers;
-- exhibition maps/booths;
+- Public Exhibition Map snapshot status/history (geometry editing stays in BOS);
 - public content/settings.
 
 This is required because BigProjects may initially prepare most builder/project content.
@@ -62,4 +62,3 @@ archived
 ```
 
 Add moderation queue only in v2 if builder self-editing requires formal approval workflow.
-

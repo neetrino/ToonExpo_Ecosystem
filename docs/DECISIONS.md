@@ -19,6 +19,12 @@
 - Service Provider Directory is not marketplace/ecommerce.
 - No paid tickets or payment/e-ticket flow in v1.
 - No broad ToonExpo data sync to BOS in v1.
+- BOS is the only editor/source of truth for exhibition venue geometry and allocations.
+- ToonExpo receives `VenueMapSnapshotV1`, stores an immutable local copy and serves public map traffic without BOS.
+- Public map uses Konva 10.x/react-konva for the client-side read-only area viewer; persistence remains NestJS/PostgreSQL.
+- Public map supports search, full-area highlight, landmarks and an optional device-local approximate `I am here` marker.
+- Professional routing, automatic indoor positioning and QR location markers are deferred.
+- Check-in is separate from Public Exhibition Map.
 
 ## Confirmed 2026-07-18 (Sprint 0 Foundation)
 

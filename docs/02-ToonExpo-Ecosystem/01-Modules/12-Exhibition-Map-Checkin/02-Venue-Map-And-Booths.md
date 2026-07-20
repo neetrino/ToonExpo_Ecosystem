@@ -1,95 +1,49 @@
-# Venue Map And Booths
+# Published Snapshot And Areas
 
-## Venue Map
+## Canonical Input
 
-Venue map is the 2D map/plan of the event location.
+ToonExpo receives `VenueMapSnapshotV1`, not arbitrary map editor commands and not a list of percentage markers.
 
-It can be:
+The snapshot contains:
 
-- image;
-- floor plan;
-- simplified drawing;
-- SVG/map later if needed.
+- schema version and immutable snapshot version;
+- BOS map/cycle external identifiers;
+- checksum and publication timestamp;
+- normalized background asset descriptor;
+- public map dimensions;
+- public area geometry and labels;
+- public landmarks;
+- eligible organization/project references;
+- optional future-routing classifications and access points.
 
-v1 can use a ready image/plan with coordinates.
+## Area Geometry
 
-## Booth / Stand / Cell
+The public viewer receives derived area geometry produced from BOS metric cells. ToonExpo does not recalculate ownership, area sales or grid overlap.
 
-A booth/cell is a physical location on the venue map.
+The source grid may be omitted from normal public rendering. Visitors see clean area fills, outlines, names and landmarks.
 
-Examples:
-
-- A01;
-- B12;
-- Bank Zone 3;
-- Sponsor Stand 5.
-
-## Booth Data
-
-Each booth/cell should have:
-
-- code;
-- name/label optional;
-- type;
-- map position;
-- size/shape optional;
-- assigned company/project;
-- public visibility.
-
-## Booth Types
-
-Recommended v1:
+## Public Display Mode
 
 ```text
-builder
-bank
-partner
-sponsor
-service
-info
-entrance
-other
+organization
+custom_label
+hidden
 ```
 
-## Assignments
+Default for a publish-eligible allocation is `organization`; `custom_label` and `hidden` must be selected explicitly in BOS.
 
-Booth can be assigned to:
+- `organization`: show the public Company identity and available public links.
+- `custom_label`: show only the supplied public label.
+- `hidden`: show neutral/empty geometry with no occupant identity.
 
-- BuilderCompany;
-- PartnerCompany;
-- Project optional;
-- Bank partner via PartnerCompany type bank.
+For `hidden`, BOS omits organization identity from the payload. ToonExpo cannot reveal it through another endpoint or client state.
 
-Project assignment is useful when visitor searches for a specific project.
+## Eligibility
 
-## Coordinate Rule
+- builder identity is publishable after the related BOS BuilderDeal is `won`;
+- partner identity is publishable after PartnerParticipation is `confirmed`;
+- earlier/internal allocation stages may render as neutral areas only.
 
-Store booth position as percentages relative to the venue map image:
+## Snapshot Activation
 
-```text
-x_percent: 0-100
-y_percent: 0-100
-```
-
-If area/shape is needed later, add shape data.
-
-## Public Display
-
-Public map should show:
-
-- booth marker/cell;
-- company name;
-- project name if assigned;
-- booth code;
-- type/category.
-
-## Fallback
-
-If map visual is unavailable or route is not configured:
-
-- show booth list;
-- show search results;
-- show booth code/location text.
-
-Do not block visitor from finding company because route graph is incomplete.
-
+ToonExpo validates and stores the complete immutable version before activation. A rejected/failed version never partially replaces the active public map.

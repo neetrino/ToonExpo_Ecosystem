@@ -31,13 +31,11 @@ PostgreSQL 18.x on Neon is accessed only by the NestJS `apps/api` runtime throug
 - crm_follow_up_activities;
 - qr_codes;
 - qr_scan_events;
-- check_in_records;
 - events;
-- venue_maps;
-- booths;
-- booth_assignments;
-- route_nodes;
-- route_edges;
+- public_venue_map_snapshots;
+- public_venue_areas;
+- public_venue_landmarks;
+- map_publication_receipts;
 - readiness_assessments;
 - readiness_categories;
 - readiness_scores;
@@ -70,7 +68,8 @@ buyer_profiles 1..n requests
 requests 0..1 crm_deals
 crm_deals 0..n crm_deal_apartment_links
 apartments 0..n crm_deal_apartment_links
-events 0..n venue_maps/booths/check_in_records
+events 0..n public_venue_map_snapshots
+public_venue_map_snapshots 1..n public_venue_areas/public_venue_landmarks/map_publication_receipts
 readiness_assessments 0..n readiness_scores
 readiness_categories 0..1 service_provider_categories
 partner_companies 0..n bank_offers
@@ -89,6 +88,10 @@ partner_companies 0..n bank_offers
 - `reserved` and `converted` CRM statuses require linked apartment where relevant;
 - builder/partner/bank/service companies are provisioned with personal logins per employee; no shared company password; not public self-registered;
 - publication status is simple in v1: draft, published, archived.
+- public venue snapshots are immutable and uniquely versioned by BOS venue plan id + snapshot version;
+- hidden public areas do not store private Company identity;
+- approximate visitor location is frontend-only state and is not persisted;
+- legacy venue_maps/booths/routes/check_in_records require an explicit migration/deprecation plan and are not the canonical Public Exhibition Map schema.
 
 ## Implementation-Time Configuration
 

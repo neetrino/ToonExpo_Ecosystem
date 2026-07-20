@@ -28,7 +28,6 @@ My QR
 Favorites
 Requests
 Saved Apartments
-Check-in Status
 ```
 
 ## Builder Portal
@@ -58,17 +57,19 @@ Apartments
 Partners
 Content Management
 Readiness
-QR / Check-in
+Public Exhibition Map Status
 Mortgage / Bank Offers
 Service Provider Directory
 Analytics
 Settings
 ```
 
-## Entrance Staff
+## Future Entrance Staff
 
 ```text
 Scanner
 Check-in Result
 Recent Scans
 ```
+
+Entrance Staff and check-in screens are a separate later module and are not part of the current Public Exhibition Map delivery.

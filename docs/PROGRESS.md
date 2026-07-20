@@ -1,5 +1,9 @@
 # ToonExpo Ecosystem Progress
 
+## Canonical Map Redesign Notice
+
+The historical Wave 3/Sprint 5 implementation below accurately records what was built, but it is no longer the accepted Public Exhibition Map architecture. The owner subsequently confirmed BOS-owned metric area authoring, immutable `VenueMapSnapshotV1` publication, ToonExpo-local public rendering, no current route generation and check-in separation. See Module 12 and `MODULE_STATUS.md`; legacy booth/route completion must not be treated as current acceptance.
+
 ## Current Status
 
 Final pre-production completion pass **closed** (2026-07-18). Sprints 0–6 and final completion waves 1–4 are done. Platform is ready for owner review (`OPEN_QUESTIONS.md`), performance architecture review, and manual deploy per `DEPLOYMENT.md`.

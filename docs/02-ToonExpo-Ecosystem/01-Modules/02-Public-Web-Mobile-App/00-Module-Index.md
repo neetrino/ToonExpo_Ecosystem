@@ -32,5 +32,4 @@ The public web should feel app-like on mobile because a large share of users is 
 - CRM Lead Intake
 - Partners / Participants
 - Mortgage / Bank Offers
-- Exhibition Map & Check-in
-
+- Public Exhibition Map

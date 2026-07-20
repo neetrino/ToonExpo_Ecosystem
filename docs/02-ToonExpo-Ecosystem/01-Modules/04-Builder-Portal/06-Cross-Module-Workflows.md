@@ -83,11 +83,12 @@ No marketplace booking/payment/chat is required in v1.
 
 Flow:
 
-1. Admin assigns builder to booth/cell on venue map.
-2. Public visitor opens exhibition map.
-3. Visitor searches builder/project or taps booth.
-4. Booth details link to builder/company/project public page.
-5. Visitor can route/path to the booth if the venue graph is configured.
+1. BOS assigns one or more venue areas to a won BuilderDeal.
+2. BOS Admin publishes a new `VenueMapSnapshotV1`.
+3. ToonExpo activates its immutable local copy.
+4. Visitor searches the builder/project or selects its public area.
+5. Area details link to the builder/company/project public page.
+6. Visitor can compare the destination with an approximate manual position and nearby landmarks; route generation is deferred.
 
 This flow is event navigation, not apartment visual map.
 
@@ -104,4 +105,3 @@ Builder Portal can show builder-specific analytics from:
 - readiness progress.
 
 Analytics in Builder Portal should only show the builder's own data.
-

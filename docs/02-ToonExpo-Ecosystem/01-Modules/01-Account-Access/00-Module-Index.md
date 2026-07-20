@@ -43,7 +43,7 @@ It supports:
 - Partners / Participants
 - Mortgage / Bank Offers
 - Admin / Content Management
-- Exhibition Map & Check-in
+- Public Exhibition Map; future Check-in remains separate
 - BOS Integration
 
 ## Canonical Role Reference
