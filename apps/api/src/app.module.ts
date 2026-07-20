@@ -14,12 +14,12 @@ import { CsrfOriginGuard } from './auth/guards/csrf-origin.guard.js';
 import { CsrfTokenGuard } from './auth/guards/csrf-token.guard.js';
 import { SessionAuthGuard } from './auth/guards/session-auth.guard.js';
 import { CatalogModule } from './catalog/catalog.module.js';
-import { NODE_ENV_PRODUCTION } from './common/constants/app.constants.js';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter.js';
 import { WebRevalidationModule } from './common/web-revalidation/web-revalidation.module.js';
 import { CompanyMembersModule } from './company/company-members.module.js';
 import { resolveEnvFilePaths } from './config/env-files.js';
 import { validateEnv } from './config/env.validation.js';
+import { buildLoggerModuleParams } from './config/logger.config.js';
 import { CrmModule } from './crm/crm.module.js';
 import { EmailModule } from './email/email.module.js';
 import { ExhibitionModule } from './exhibition/exhibition.module.js';
@@ -37,8 +37,6 @@ import { ReadinessModule } from './readiness/readiness.module.js';
 import { ServiceProvidersModule } from './service-providers/service-providers.module.js';
 import { VisualMapModule } from './visual-map/visual-map.module.js';
 
-const isProduction = process.env['NODE_ENV'] === NODE_ENV_PRODUCTION;
-
 @Module({
   imports: [
     SentryModule.forRoot(),
@@ -48,28 +46,7 @@ const isProduction = process.env['NODE_ENV'] === NODE_ENV_PRODUCTION;
       envFilePath: resolveEnvFilePaths(),
       validate: validateEnv,
     }),
-    LoggerModule.forRoot({
-      pinoHttp: {
-        ...(isProduction
-          ? {}
-          : {
-              transport: {
-                target: 'pino-pretty',
-                options: {
-                  colorize: true,
-                  colorizeObjects: true,
-                  singleLine: true,
-                  translateTime: 'HH:MM:ss.l',
-                  ignore: 'pid,hostname',
-                },
-              },
-            }),
-        redact: {
-          paths: ['req.headers.authorization', 'req.headers.cookie', "res.headers['set-cookie']"],
-          remove: true,
-        },
-      },
-    }),
+    LoggerModule.forRoot(buildLoggerModuleParams()),
     ThrottlerModule.forRootAsync({
       useClass: ThrottlerConfigService,
     }),

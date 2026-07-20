@@ -44,15 +44,13 @@ export class AllExceptionsFilter implements ExceptionFilter {
       statusCode: body.statusCode,
     };
 
-    // Guests probing /auth/me (and other expected 4xx) must not spam ERROR.
+    // Guests probing /auth/me → 401 is expected; do not log.
     if (body.statusCode >= 500) {
       this.logger.error(logPayload, message);
     } else if (
-      body.statusCode === HttpStatus.UNAUTHORIZED ||
-      body.statusCode === HttpStatus.FORBIDDEN
+      body.statusCode !== HttpStatus.UNAUTHORIZED &&
+      body.statusCode !== HttpStatus.FORBIDDEN
     ) {
-      this.logger.debug(logPayload, message);
-    } else {
       this.logger.warn(logPayload, message);
     }
 

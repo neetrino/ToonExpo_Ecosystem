@@ -98,9 +98,10 @@ export const logoutUser = async (): Promise<void> => {
 
 /**
  * Fetches the authenticated user. Optionally forwards a Cookie header (SSR).
+ * Anonymous sessions resolve as `undefined` (HTTP 204).
  */
-export const getMe = (cookieHeader?: string): Promise<UserResponse> => {
-  const options: Parameters<typeof apiFetch<UserResponse>>[0] = {
+export const getMe = (cookieHeader?: string): Promise<UserResponse | undefined> => {
+  const options: Parameters<typeof apiFetch<UserResponse | undefined>>[0] = {
     path: '/auth/me',
     method: 'GET',
     credentials: 'include',
@@ -111,14 +112,15 @@ export const getMe = (cookieHeader?: string): Promise<UserResponse> => {
     options.headers = { Cookie: cookieHeader };
   }
 
-  return apiFetch<UserResponse>(options);
+  return apiFetch<UserResponse | undefined>(options);
 };
 /**
- * Returns the current user or `null` when unauthenticated (401).
+ * Returns the current user or `null` when unauthenticated (204 / legacy 401).
  */
 export const getMeOrNull = async (cookieHeader?: string): Promise<UserResponse | null> => {
   try {
-    return await getMe(cookieHeader);
+    const user = await getMe(cookieHeader);
+    return user ?? null;
   } catch (error) {
     if (isApiErrorStatus(error, 401)) {
       return null;
