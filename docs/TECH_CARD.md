@@ -190,7 +190,7 @@ Next.js Server Components may fetch the NestJS API. Server Actions must not impl
 | API integration         | Nest testing utilities + Supertest against test database                                                                                                                               |
 | Contract                | OpenAPI generation and frontend client compatibility check                                                                                                                             |
 | Frontend component      | React Testing Library where behavior warrants it                                                                                                                                       |
-| End to end              | Playwright (`apps/web-e2e`) — Chromium smoke for home, catalog, auth, favorites, price gate, builder portal, mortgage, locale, admin access; `pnpm e2e`; separate CI job with Postgres |
+| End to end              | Playwright (`apps/web/e2e`) — Chromium smoke for home, catalog, auth, favorites, price gate, builder portal, mortgage, locale, admin access; `pnpm e2e`; separate CI job with Postgres |
 
 ## Monorepo Layout
 

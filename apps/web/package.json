@@ -11,7 +11,10 @@
     "lint": "eslint .",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "e2e": "playwright test -c e2e/playwright.config.ts",
+    "e2e:ui": "playwright test --ui -c e2e/playwright.config.ts",
+    "e2e:install": "playwright install chromium"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
@@ -31,11 +34,13 @@
     "zod": "4.4.3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.54.2",
     "@tailwindcss/postcss": "4.3.3",
     "@toonexpo/config": "workspace:*",
     "@types/node": "^24.10.1",
     "@types/react": "19.2.17",
     "@types/react-dom": "19.2.3",
+    "dotenv": "^17.2.3",
     "eslint": "^9.39.2",
     "eslint-config-next": "16.2.10",
     "tailwindcss": "4.3.3",

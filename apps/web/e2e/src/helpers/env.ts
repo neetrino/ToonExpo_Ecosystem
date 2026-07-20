@@ -4,8 +4,8 @@ import { fileURLToPath } from 'node:url';
 import { config as loadEnv } from 'dotenv';
 
 const packageRoot = path.dirname(fileURLToPath(import.meta.url));
-/** `apps/web-e2e/src/helpers` → monorepo root (4 levels up). */
-export const MONOREPO_ROOT = path.resolve(packageRoot, '../../../..');
+/** `apps/web/e2e/src/helpers` → monorepo root (5 levels up). */
+export const MONOREPO_ROOT = path.resolve(packageRoot, '../../../../..');
 
 loadEnv({ path: path.join(MONOREPO_ROOT, '.env') });
 

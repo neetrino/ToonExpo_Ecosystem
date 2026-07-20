@@ -45,8 +45,7 @@ Out of scope:
 
 ```text
 apps/
-  web/                 # Next.js frontend
-  web-e2e/             # Playwright smoke e2e (not in default turbo build/test)
+  web/                 # Next.js frontend (+ Playwright smoke e2e under e2e/)
   api/                 # NestJS backend (+ Dockerfile for Cloud Run)
 packages/
   config/              # shared ESLint / tsconfig / Vitest presets
@@ -108,7 +107,7 @@ pnpm build
 
 ## E2E smoke (Playwright)
 
-Chromium-only smoke suite in `apps/web-e2e`. Not part of the default turbo `build` / `test` pipeline.
+Chromium-only smoke suite in `apps/web/e2e`. Not part of the default turbo `build` / `test` pipeline.
 
 Prerequisites: root `.env` with `DATABASE_URL` / `DIRECT_URL`, `SESSION_TOKEN_PEPPER`, `CSRF_SECRET`, and optional `SEED_ADMIN_PASSWORD` (fallback `ChangeMeAdmin123!`).
 
@@ -117,13 +116,13 @@ Prerequisites: root `.env` with `DATABASE_URL` / `DIRECT_URL`, `SESSION_TOKEN_PE
 pnpm e2e
 
 # Or after an existing build / with servers already on :3000 and :4000:
-pnpm --filter @toonexpo/web-e2e e2e
+pnpm --filter @toonexpo/web e2e
 ```
 
 Install browsers once (CI and first local run):
 
 ```bash
-pnpm --filter @toonexpo/web-e2e e2e:install
+pnpm --filter @toonexpo/web e2e:install
 ```
 
 CI runs a separate `e2e` job with a Postgres service (migrations + seed) in parallel with the quality job.

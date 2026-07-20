@@ -15,7 +15,7 @@
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
     "e2e:build": "bash scripts/e2e-build.sh",
-    "e2e": "pnpm run e2e:build && pnpm --filter @toonexpo/web-e2e e2e",
+    "e2e": "pnpm run e2e:build && pnpm --filter @toonexpo/web e2e",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "prepare": "husky"

@@ -160,7 +160,7 @@ jobs:
         run: pnpm run e2e:build
 
       - name: Install Playwright Chromium
-        run: pnpm --filter @toonexpo/web-e2e exec playwright install --with-deps chromium
+        run: pnpm --filter @toonexpo/web exec playwright install --with-deps chromium
 
       - name: Free dev server ports
         run: |
@@ -172,4 +172,4 @@ jobs:
           done
 
       - name: Run smoke e2e
-        run: pnpm --filter @toonexpo/web-e2e e2e
+        run: pnpm --filter @toonexpo/web e2e

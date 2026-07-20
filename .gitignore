@@ -28,10 +28,10 @@ temp/
 .cache/
 
 # Playwright
-apps/web-e2e/test-results/
-apps/web-e2e/playwright-report/
-apps/web-e2e/blob-report/
-apps/web-e2e/playwright/.cache/
+apps/web/e2e/test-results/
+apps/web/e2e/playwright-report/
+apps/web/e2e/blob-report/
+apps/web/e2e/playwright/.cache/
 
 # IDE (optional, uncomment if needed)
 # .idea/
