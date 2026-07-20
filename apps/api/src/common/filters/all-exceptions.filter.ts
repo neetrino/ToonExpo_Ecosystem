@@ -36,16 +36,23 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const response = http.getResponse<Response>();
     const request = http.getRequest<Request>();
     const body = this.toErrorBody(exception, request.url);
+    const message = typeof body.message === 'string' ? body.message : body.message.join('; ');
+    const logPayload = {
+      err: exception,
+      path: request.url,
+      method: request.method,
+      statusCode: body.statusCode,
+    };
 
-    this.logger.error(
-      {
-        err: exception,
-        path: request.url,
-        method: request.method,
-        statusCode: body.statusCode,
-      },
-      typeof body.message === 'string' ? body.message : body.message.join('; '),
-    );
+    // Guests probing /auth/me → 401 is expected; do not log.
+    if (body.statusCode >= 500) {
+      this.logger.error(logPayload, message);
+    } else if (
+      body.statusCode !== HttpStatus.UNAUTHORIZED &&
+      body.statusCode !== HttpStatus.FORBIDDEN
+    ) {
+      this.logger.warn(logPayload, message);
+    }
 
     response.status(body.statusCode).json(body);
   }

@@ -5,6 +5,7 @@
   "type": "module",
   "description": "ToonExpo NestJS product API",
   "scripts": {
+    "predev": "pnpm --filter @toonexpo/db db:generate",
     "dev": "nest start --watch",
     "build": "nest build",
     "start": "node dist/main.js",

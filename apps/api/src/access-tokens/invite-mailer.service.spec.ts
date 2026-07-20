@@ -21,9 +21,6 @@ const createConfigService = (): ConfigService<AppEnv, true> =>
         SESSION_ABSOLUTE_TTL_SECONDS: 7200,
         CSRF_SECRET: 'test-csrf-secret-at-least-32-chars!!',
         CSRF_COOKIE_NAME: 'toonexpo_csrf',
-        DB_POOL_MAX: 8,
-        DB_POOL_CONNECTION_TIMEOUT_MS: 5000,
-        DB_STATEMENT_TIMEOUT_MS: 10000,
       };
       return values[key];
     },

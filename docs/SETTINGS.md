@@ -50,15 +50,19 @@ pnpm --filter @toonexpo/db run db:seed:prod
 
 Approved starting points (2026-07-19). Tune after load test; do not treat as final.
 
-### API / Neon pool (env)
+### API / Neon pool (fixed in code)
 
-| Variable                        | Default | Notes                                                                                                                     |
-| ------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------- |
-| `DB_POOL_MAX`                   | `8`     | Max `pg` connections per Cloud Run instance                                                                               |
-| `DB_POOL_CONNECTION_TIMEOUT_MS` | `5000`  | Fail fast when the pool is saturated                                                                                      |
-| `DB_STATEMENT_TIMEOUT_MS`       | `10000` | Applied via `SET statement_timeout` on each new pool connection (Neon pooled URLs reject it as a startup `options` param) |
+Defaults live in `packages/db` (`DEFAULT_DB_POOL_*`). Not env-configurable.
 
-Budget: `max_instances × DB_POOL_MAX` must stay under the Neon plan connection limit (leave headroom for migrations, admin, analytics).
+| Setting            | Value     | Notes                                                                                                                     |
+| ------------------ | --------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Pool max           | `8`       | Max `pg` connections per Cloud Run instance                                                                               |
+| Connection timeout | `5000`ms  | Fail fast when the pool is saturated                                                                                      |
+| Pool idle timeout  | `30000`ms | Drop idle clients so Neon suspend does not leave dead sockets in the pool                                                 |
+| Keepalive interval | `4` min   | `SELECT 1` while the API process is up — prevents Neon ~5 min auto-suspend (skipped in `NODE_ENV=test`)                   |
+| Statement timeout  | `10000`ms | Applied via `SET statement_timeout` on each new pool connection (Neon pooled URLs reject it as a startup `options` param) |
+
+Budget: `max_instances × pool max (8)` must stay under the Neon plan connection limit (leave headroom for migrations, admin, analytics).
 
 ### Cloud Run (owner applies at deploy)
 

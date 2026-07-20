@@ -50,6 +50,8 @@ export const baseEslintConfig = tseslint.config(
       "**/eslint.config.{js,mjs,cjs,ts}",
       "**/prisma.config.ts",
       "**/vitest.config.{ts,js,mts}",
+      "**/playwright.config.{ts,js,mts}",
+      "**/e2e/global-setup.{ts,js,mts}",
       "**/next.config.{ts,js,mjs}",
       "**/prettier.config.{js,cjs,mjs,ts}",
     ],

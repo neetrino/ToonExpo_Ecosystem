@@ -1,4 +1,4 @@
-import type { PriceVisibility } from "@toonexpo/contracts";
+import type { PriceVisibility } from '@toonexpo/contracts';
 
 const COMPACT_MILLION = 1_000_000;
 const COMPACT_THOUSAND = 1_000;
@@ -19,7 +19,7 @@ export const isPriceHidden = (
   priceVisibility: PriceVisibility | undefined,
   amount: string | number | null | undefined,
 ): boolean => {
-  if (amount == null || amount === "") {
+  if (amount == null || amount === '') {
     return true;
   }
 
@@ -39,7 +39,7 @@ export const resolveHiddenPriceLabel = (options: {
   onRequestLabel: string;
   signInLabel: string;
 }): string => {
-  if (options.priceVisibility === "visible_after_login") {
+  if (options.priceVisibility === 'visible_after_login') {
     return options.signInLabel;
   }
 
@@ -47,22 +47,47 @@ export const resolveHiddenPriceLabel = (options: {
 };
 
 const toNumber = (amount: string | number): number | null => {
-  const value = typeof amount === "number" ? amount : Number(amount);
+  const value = typeof amount === 'number' ? amount : Number(amount);
   return Number.isFinite(value) ? value : null;
+};
+
+/**
+ * SSR/client-safe decimal string (always `.`, Latin digits).
+ * Avoids ICU locale mismatches that cause React hydration errors
+ * (e.g. Node `hy` → `51,5` vs Chrome `hy` → `51.5`).
+ */
+const formatInvariantDecimal = (value: number, maxFractionDigits: number): string => {
+  const factor = 10 ** maxFractionDigits;
+  const rounded = Math.round(value * factor) / factor;
+
+  if (maxFractionDigits === 0 || Number.isInteger(rounded)) {
+    return String(Math.trunc(rounded));
+  }
+
+  return rounded.toFixed(maxFractionDigits).replace(/\.?0+$/, '');
+};
+
+/**
+ * SSR/client-safe currency amount (fixed en-US + Latin digits).
+ */
+const formatInvariantCurrency = (value: number, currencyCode: string): string => {
+  try {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: currencyCode,
+      maximumFractionDigits: 0,
+      numberingSystem: 'latn',
+    }).format(value);
+  } catch {
+    return `${formatInvariantDecimal(value, 0)} ${currencyCode}`.trim();
+  }
 };
 
 /**
  * Formats a catalog price for display, or returns the hidden-price label.
  */
 export const formatCatalogPrice = (options: FormatPriceOptions): string => {
-  const {
-    amount,
-    currency,
-    locale,
-    priceVisibility,
-    onRequestLabel,
-    signInLabel,
-  } = options;
+  const { amount, currency, priceVisibility, onRequestLabel, signInLabel } = options;
 
   if (isPriceHidden(priceVisibility, amount) || amount == null) {
     return resolveHiddenPriceLabel({
@@ -77,19 +102,13 @@ export const formatCatalogPrice = (options: FormatPriceOptions): string => {
     return onRequestLabel;
   }
 
-  try {
-    return new Intl.NumberFormat(locale, {
-      style: "currency",
-      currency: currency && currency.length === 3 ? currency : "AMD",
-      maximumFractionDigits: 0,
-    }).format(value);
-  } catch {
-    return `${value.toLocaleString(locale)} ${currency ?? ""}`.trim();
-  }
+  const currencyCode = currency && currency.length === 3 ? currency : 'AMD';
+  return formatInvariantCurrency(value, currencyCode);
 };
 
 /**
  * Formats a compact “from …” price for project cards (e.g. 61.5M AMD).
+ * Magnitude uses invariant decimals so SSR and the browser always match.
  */
 export const formatCompactPrice = (options: {
   amount: string | number | null | undefined;
@@ -98,9 +117,9 @@ export const formatCompactPrice = (options: {
   fromLabel: string;
   onRequestLabel: string;
 }): string => {
-  const { amount, currency, locale, fromLabel, onRequestLabel } = options;
+  const { amount, currency, fromLabel, onRequestLabel } = options;
 
-  if (amount == null || amount === "") {
+  if (amount == null || amount === '') {
     return onRequestLabel;
   }
 
@@ -111,20 +130,14 @@ export const formatCompactPrice = (options: {
 
   let compact: string;
   if (value >= COMPACT_MILLION) {
-    const millions = value / COMPACT_MILLION;
-    compact = `${millions.toLocaleString(locale, {
-      maximumFractionDigits: 1,
-    })}M`;
+    compact = `${formatInvariantDecimal(value / COMPACT_MILLION, 1)}M`;
   } else if (value >= COMPACT_THOUSAND) {
-    const thousands = value / COMPACT_THOUSAND;
-    compact = `${thousands.toLocaleString(locale, {
-      maximumFractionDigits: 0,
-    })}K`;
+    compact = `${formatInvariantDecimal(value / COMPACT_THOUSAND, 0)}K`;
   } else {
-    compact = value.toLocaleString(locale, { maximumFractionDigits: 0 });
+    compact = formatInvariantDecimal(value, 0);
   }
 
-  const currencyPart = currency ? ` ${currency}` : "";
+  const currencyPart = currency ? ` ${currency}` : '';
   return `${fromLabel} ${compact}${currencyPart}`;
 };
 
@@ -152,7 +165,7 @@ export const formatPriceRange = (options: {
       amount,
       currency,
       locale,
-      priceVisibility: "public",
+      priceVisibility: 'public',
       onRequestLabel,
     });
   };

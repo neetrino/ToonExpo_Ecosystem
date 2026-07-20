@@ -1,0 +1,33 @@
+{
+  "task.allowAutomaticTasks": "on",
+  "terminal.integrated.enablePersistentSessions": true,
+  "terminal.integrated.tabs.showColors": true,
+  "terminal.integrated.profiles.windows": {
+    "API": {
+      "path": "powershell.exe",
+      "icon": "server",
+      "color": "terminal.ansiGreen",
+      "overrideName": true,
+      "args": [
+        "-NoExit",
+        "-Command",
+        "Set-Location '${workspaceFolder}/apps/api'; $env:FORCE_COLOR='1'"
+      ]
+    },
+    "Web": {
+      "path": "powershell.exe",
+      "icon": "browser",
+      "color": "terminal.ansiBlue",
+      "overrideName": true,
+      "args": [
+        "-NoExit",
+        "-Command",
+        "Set-Location '${workspaceFolder}/apps/web'; $env:FORCE_COLOR='1'"
+      ]
+    },
+    "PowerShell": {
+      "source": "PowerShell",
+      "icon": "terminal-powershell"
+    }
+  }
+}

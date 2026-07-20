@@ -17,16 +17,23 @@ import {
 } from '@/features/auth/api/auth-api';
 import type { LoginFormValues } from '@/features/auth/schemas/login.schema';
 import type { RegisterFormValues } from '@/features/auth/schemas/register.schema';
+import { hasClientSessionHint } from '@/features/auth/utils/session-hint';
 import { AUTH_ME_QUERY_KEY } from '@/shared/config/auth.constants';
 
 /**
  * Client query for the current session user (`null` when logged out).
+ * Guests (no CSRF session hint) do not hit `/auth/me`.
  */
-export const useMeQuery = () =>
-  useQuery<UserResponse | null>({
+export const useMeQuery = () => {
+  const hasHint = typeof window !== 'undefined' && hasClientSessionHint();
+
+  return useQuery<UserResponse | null>({
     queryKey: AUTH_ME_QUERY_KEY,
     queryFn: () => getMeOrNull(),
+    enabled: hasHint,
+    ...(hasHint ? {} : { initialData: null }),
   });
+};
 
 /**
  * Login mutation — hits NestJS directly with credentials.

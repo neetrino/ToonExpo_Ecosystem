@@ -152,7 +152,7 @@ describe('Auth endpoints (e2e)', () => {
     await request(app.getHttpServer())
       .get(`${API_V1_PREFIX}/auth/me`)
       .set('Cookie', cookiePair(loginSession as string))
-      .expect(401);
+      .expect(204);
   });
 
   it('rejects authenticated mutations without or with invalid CSRF tokens', async () => {
@@ -281,7 +281,7 @@ describe('Auth endpoints (e2e)', () => {
     expect(duplicate.body.message).toBe('Email is already registered');
   });
 
-  it('rejects /auth/me without a session cookie', async () => {
-    await request(app.getHttpServer()).get(`${API_V1_PREFIX}/auth/me`).expect(401);
+  it('returns 204 for /auth/me without a session cookie', async () => {
+    await request(app.getHttpServer()).get(`${API_V1_PREFIX}/auth/me`).expect(204);
   });
 });

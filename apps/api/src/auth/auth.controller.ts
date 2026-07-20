@@ -1,5 +1,11 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res } from '@nestjs/common';
-import { ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiCreatedResponse,
+  ApiNoContentResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import type {
   AuthSessionResponse,
@@ -18,6 +24,8 @@ import {
 } from '../common/constants/app.constants.js';
 import { AuthService } from './auth.service.js';
 import { CurrentUser } from './decorators/current-user.decorator.js';
+import { OptionalAuth } from './decorators/optional-auth.decorator.js';
+import { OptionalUser } from './decorators/optional-user.decorator.js';
 import { Public } from './decorators/public.decorator.js';
 import { ForgotPasswordDto } from './dto/forgot-password.dto.js';
 import { ChangePasswordDto } from './dto/change-password.dto.js';
@@ -79,7 +87,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   @Throttle({ default: { limit: AUTH_RATE_LIMIT_LIMIT, ttl: AUTH_RATE_LIMIT_TTL_MS } })
   @ApiOperation({
-    summary: 'Set password from invite or reset token and start a session',
+    summary: 'Set password from an invite or reset token and start a session',
   })
   @ApiOkResponse({ description: 'Password set; session cookie set' })
   setPassword(
@@ -112,10 +120,21 @@ export class AuthController {
     return this.authService.changePassword(user, body);
   }
 
+  @OptionalAuth()
   @Get('me')
-  @ApiOperation({ summary: 'Return the authenticated user' })
+  @ApiOperation({ summary: 'Return the authenticated user, or 204 when anonymous' })
   @ApiOkResponse({ description: 'Current user without sensitive fields' })
-  me(@CurrentUser() user: AuthenticatedUser): Promise<UserResponse> {
+  @ApiNoContentResponse({ description: 'No active session' })
+  async me(
+    @OptionalUser() user: AuthenticatedUser | null,
+    @Res({ passthrough: true }) response: Response,
+  ): Promise<UserResponse | undefined> {
+    if (!user) {
+      // 204 avoids browser console noise from guest session probes (was 401).
+      response.status(HttpStatus.NO_CONTENT);
+      return undefined;
+    }
+
     return this.authService.getMe(user);
   }
 

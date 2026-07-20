@@ -14,6 +14,8 @@ import { apiFetch } from '@/shared/api/client';
 import { clearCsrfTokenCache, setCsrfTokenCache } from '@/shared/api/csrf';
 import { ApiError, isApiErrorStatus } from '@/shared/api/errors';
 
+import { hasClientSessionHint, hasSessionCookieInHeader } from '@/features/auth/utils/session-hint';
+
 const jsonCredentials = {
   credentials: 'include' as const,
   headers: { 'Content-Type': 'application/json' },
@@ -98,9 +100,10 @@ export const logoutUser = async (): Promise<void> => {
 
 /**
  * Fetches the authenticated user. Optionally forwards a Cookie header (SSR).
+ * Anonymous sessions resolve as `undefined` (HTTP 204).
  */
-export const getMe = (cookieHeader?: string): Promise<UserResponse> => {
-  const options: Parameters<typeof apiFetch<UserResponse>>[0] = {
+export const getMe = (cookieHeader?: string): Promise<UserResponse | undefined> => {
+  const options: Parameters<typeof apiFetch<UserResponse | undefined>>[0] = {
     path: '/auth/me',
     method: 'GET',
     credentials: 'include',
@@ -111,14 +114,26 @@ export const getMe = (cookieHeader?: string): Promise<UserResponse> => {
     options.headers = { Cookie: cookieHeader };
   }
 
-  return apiFetch<UserResponse>(options);
+  return apiFetch<UserResponse | undefined>(options);
 };
 /**
- * Returns the current user or `null` when unauthenticated (401).
+ * Returns the current user or `null` when unauthenticated.
+ * Skips the network call when no session cookie / CSRF hint is present (guest).
+ * Nest still returns 204 for cookie-less probes as a safety net.
  */
 export const getMeOrNull = async (cookieHeader?: string): Promise<UserResponse | null> => {
+  const hasHint =
+    typeof cookieHeader === 'string'
+      ? hasSessionCookieInHeader(cookieHeader)
+      : hasClientSessionHint();
+
+  if (!hasHint) {
+    return null;
+  }
+
   try {
-    return await getMe(cookieHeader);
+    const user = await getMe(cookieHeader);
+    return user ?? null;
   } catch (error) {
     if (isApiErrorStatus(error, 401)) {
       return null;

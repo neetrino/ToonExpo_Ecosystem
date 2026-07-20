@@ -1,17 +1,14 @@
-"use client";
+'use client';
 
-import type { ProjectListItem } from "@toonexpo/contracts";
-import Image from "next/image";
-import { useLocale, useTranslations } from "next-intl";
+import type { ProjectListItem } from '@toonexpo/contracts';
+import Image from 'next/image';
+import { useLocale, useTranslations } from 'next-intl';
 
-import { FavoriteToggleButton } from "@/features/buyer/components/favorite-toggle-button";
-import { usePriceOverlay } from "@/features/catalog/components/price-overlay-scope";
-import {
-  formatCompactPrice,
-  formatPriceRange,
-} from "@/features/catalog/utils/format-price";
-import { Link } from "@/i18n/navigation";
-import { cn } from "@/shared/ui/cn";
+import { FavoriteToggleButton } from '@/features/buyer/components/favorite-toggle-button';
+import { usePriceOverlay } from '@/features/catalog/components/price-overlay-scope';
+import { formatCompactPrice, formatPriceRange } from '@/features/catalog/utils/format-price';
+import { Link } from '@/i18n/navigation';
+import { cn } from '@/shared/ui/cn';
 
 type ProjectCardProps = {
   project: ProjectListItem;
@@ -29,11 +26,10 @@ export const ProjectCard = ({
   featured = false,
   showFavorite = false,
 }: ProjectCardProps) => {
-  const t = useTranslations("Catalog");
+  const t = useTranslations('Catalog');
   const locale = useLocale();
   const location =
-    project.locationText ??
-    [project.district, project.city].filter(Boolean).join(", ");
+    project.locationText ?? [project.district, project.city].filter(Boolean).join(', ');
   // Authenticated overlay widens the range with visible_after_login prices.
   const range = usePriceOverlay().getProjectRange(project.id) ?? project;
   const priceLabel = featured
@@ -41,62 +37,53 @@ export const ProjectCard = ({
         amount: range.minPrice,
         currency: range.priceCurrency,
         locale,
-        fromLabel: t("price.from"),
-        onRequestLabel: t("price.onRequest"),
+        fromLabel: t('price.from'),
+        onRequestLabel: t('price.onRequest'),
       })
     : formatPriceRange({
         minPrice: range.minPrice,
         maxPrice: range.maxPrice,
         currency: range.priceCurrency,
         locale,
-        onRequestLabel: t("price.onRequest"),
+        onRequestLabel: t('price.onRequest'),
       });
 
   return (
-    <article
-      className={cn(
-        "flex flex-col overflow-hidden rounded-md bg-surface",
-        className,
-      )}
-    >
-      <Link
-        href={`/projects/${project.id}`}
-        className="relative block aspect-[4/3] overflow-hidden rounded-md"
-      >
-        {project.cover ? (
-          <Image
-            src={project.cover.fileUrl}
-            alt={project.cover.altText ?? project.name}
-            fill
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, 33vw"
-          />
-        ) : (
-          <div className="flex size-full items-center justify-center bg-border text-sm text-ink-muted">
-            {project.name}
-          </div>
-        )}
-        <span className="absolute left-3 top-3 rounded-pill border border-white/50 bg-white/80 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-ink">
-          {t("availability.availableCount", {
-            count: project.availability.available,
-          })}
-        </span>
+    <article className={cn('flex flex-col overflow-hidden rounded-md bg-surface', className)}>
+      <div className="relative aspect-[4/3] overflow-hidden rounded-md">
+        <Link href={`/projects/${project.id}`} className="absolute inset-0 block">
+          {project.cover ? (
+            <Image
+              src={project.cover.fileUrl}
+              alt={project.cover.altText ?? project.name}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 33vw"
+            />
+          ) : (
+            <div className="flex size-full items-center justify-center bg-border text-sm text-ink-muted">
+              {project.name}
+            </div>
+          )}
+          <span className="absolute left-3 top-3 rounded-pill border border-white/50 bg-white/80 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-ink">
+            {t('availability.availableCount', {
+              count: project.availability.available,
+            })}
+          </span>
+        </Link>
         {showFavorite ? (
           <FavoriteToggleButton
             targetType="project"
             targetId={project.id}
-            className="absolute right-3 top-3"
+            className="absolute right-3 top-3 z-10"
           />
         ) : null}
-      </Link>
+      </div>
 
       <div className="flex flex-1 flex-col gap-2 p-4">
         <div className="flex items-start justify-between gap-2">
           <h3 className="font-brand text-sm font-semibold text-ink">
-            <Link
-              href={`/projects/${project.id}`}
-              className="hover:text-brand"
-            >
+            <Link href={`/projects/${project.id}`} className="hover:text-brand">
               {project.name}
             </Link>
           </h3>
@@ -107,47 +94,31 @@ export const ProjectCard = ({
           {location ? ` · ${location}` : null}
         </p>
         {project.shortDescription ? (
-          <p className="line-clamp-2 text-xs text-ink-secondary">
-            {project.shortDescription}
-          </p>
+          <p className="line-clamp-2 text-xs text-ink-secondary">{project.shortDescription}</p>
         ) : null}
         <div className="mt-auto grid grid-cols-3 gap-2 pt-2">
+          <AvailabilityTile label={t('availability.total')} value={project.availability.total} />
           <AvailabilityTile
-            label={t("availability.total")}
-            value={project.availability.total}
-          />
-          <AvailabilityTile
-            label={t("availability.available")}
+            label={t('availability.available')}
             value={project.availability.available}
           />
-          <AvailabilityTile
-            label={t("availability.sold")}
-            value={project.availability.sold}
-          />
+          <AvailabilityTile label={t('availability.sold')} value={project.availability.sold} />
         </div>
         <Link
           href={`/projects/${project.id}`}
           className="mt-3 inline-flex h-[34px] items-center justify-center rounded-sm bg-cta-dark text-sm font-medium text-on-dark hover:bg-cta-dark/90"
         >
-          {t("actions.details")}
+          {t('actions.details')}
         </Link>
       </div>
     </article>
   );
 };
 
-const AvailabilityTile = ({
-  label,
-  value,
-}: {
-  label: string;
-  value: number;
-}) => {
+const AvailabilityTile = ({ label, value }: { label: string; value: number }) => {
   return (
     <div className="rounded-[10px] bg-background px-1 py-2 text-center">
-      <p className="text-[8px] font-bold uppercase tracking-wider text-ink-muted">
-        {label}
-      </p>
+      <p className="text-[8px] font-bold uppercase tracking-wider text-ink-muted">{label}</p>
       <p className="text-xs font-semibold text-ink">{value}</p>
     </div>
   );

@@ -137,7 +137,7 @@ describe('Password reset (e2e)', () => {
     await request(app.getHttpServer())
       .get(`${API_V1_PREFIX}/auth/me`)
       .set('Cookie', oldCookie)
-      .expect(401);
+      .expect(204);
 
     await request(app.getHttpServer())
       .get(`${API_V1_PREFIX}/auth/me`)

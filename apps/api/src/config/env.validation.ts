@@ -1,22 +1,19 @@
-import { z } from "zod";
+import { z } from 'zod';
 
-import { CSRF_COOKIE_NAME } from "@toonexpo/contracts";
+import { CSRF_COOKIE_NAME } from '@toonexpo/contracts';
 
 import {
   DEFAULT_API_PORT,
-  DEFAULT_DB_POOL_CONNECTION_TIMEOUT_MS,
-  DEFAULT_DB_POOL_MAX,
-  DEFAULT_DB_STATEMENT_TIMEOUT_MS,
   DEFAULT_SESSION_ABSOLUTE_TTL_SECONDS,
   DEFAULT_SESSION_COOKIE_NAME,
   DEFAULT_SESSION_IDLE_TTL_SECONDS,
   NODE_ENV_DEVELOPMENT,
   NODE_ENV_PRODUCTION,
   NODE_ENV_TEST,
-} from "../common/constants/app.constants.js";
+} from '../common/constants/app.constants.js';
 
 const emptyToUndefined = (value: unknown): unknown => {
-  if (typeof value !== "string") {
+  if (typeof value !== 'string') {
     return value;
   }
 
@@ -30,114 +27,49 @@ const envSchema = z
       .enum([NODE_ENV_DEVELOPMENT, NODE_ENV_PRODUCTION, NODE_ENV_TEST])
       .default(NODE_ENV_DEVELOPMENT),
     PORT: z.coerce.number().int().positive().default(DEFAULT_API_PORT),
-    DATABASE_URL: z.string().min(1, "DATABASE_URL is required"),
-    APP_URL: z.preprocess(
-      emptyToUndefined,
-      z.string().url().default("http://localhost:3000"),
-    ),
+    DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
+    APP_URL: z.preprocess(emptyToUndefined, z.string().url().default('http://localhost:3000')),
     CORS_ORIGINS: z
       .string()
-      .min(1, "CORS_ORIGINS is required")
+      .min(1, 'CORS_ORIGINS is required')
       .transform((value) =>
         value
-          .split(",")
+          .split(',')
           .map((origin) => origin.trim())
           .filter((origin) => origin.length > 0),
       )
       .refine((origins) => origins.length > 0, {
-        message: "CORS_ORIGINS must contain at least one origin",
+        message: 'CORS_ORIGINS must contain at least one origin',
       }),
-    SESSION_TOKEN_PEPPER: z
-      .string()
-      .min(32, "SESSION_TOKEN_PEPPER must be at least 32 characters"),
+    SESSION_TOKEN_PEPPER: z.string().min(32, 'SESSION_TOKEN_PEPPER must be at least 32 characters'),
     SESSION_COOKIE_NAME: z
       .preprocess(emptyToUndefined, z.string().min(1).optional())
       .transform((value) => value ?? DEFAULT_SESSION_COOKIE_NAME),
     SESSION_IDLE_TTL_SECONDS: z.preprocess(
       emptyToUndefined,
-      z.coerce
-        .number()
-        .int()
-        .positive()
-        .default(DEFAULT_SESSION_IDLE_TTL_SECONDS),
+      z.coerce.number().int().positive().default(DEFAULT_SESSION_IDLE_TTL_SECONDS),
     ),
     SESSION_ABSOLUTE_TTL_SECONDS: z.preprocess(
       emptyToUndefined,
-      z.coerce
-        .number()
-        .int()
-        .positive()
-        .default(DEFAULT_SESSION_ABSOLUTE_TTL_SECONDS),
+      z.coerce.number().int().positive().default(DEFAULT_SESSION_ABSOLUTE_TTL_SECONDS),
     ),
-    CSRF_SECRET: z
-      .string()
-      .min(32, "CSRF_SECRET must be at least 32 characters"),
+    CSRF_SECRET: z.string().min(32, 'CSRF_SECRET must be at least 32 characters'),
     CSRF_COOKIE_NAME: z
       .preprocess(emptyToUndefined, z.string().min(1).optional())
       .transform((value) => value ?? CSRF_COOKIE_NAME),
-    RESEND_API_KEY: z.preprocess(
-      emptyToUndefined,
-      z.string().min(1).optional(),
-    ),
-    RESEND_FROM_EMAIL: z.preprocess(
-      emptyToUndefined,
-      z.string().email().optional(),
-    ),
-    BOS_API_KEY: z.preprocess(
-      emptyToUndefined,
-      z.string().min(32).optional(),
-    ),
+    RESEND_API_KEY: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
+    RESEND_FROM_EMAIL: z.preprocess(emptyToUndefined, z.string().email().optional()),
+    BOS_API_KEY: z.preprocess(emptyToUndefined, z.string().min(32).optional()),
     R2_ACCOUNT_ID: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
-    R2_ACCESS_KEY_ID: z.preprocess(
-      emptyToUndefined,
-      z.string().min(1).optional(),
-    ),
-    R2_SECRET_ACCESS_KEY: z.preprocess(
-      emptyToUndefined,
-      z.string().min(1).optional(),
-    ),
+    R2_ACCESS_KEY_ID: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
+    R2_SECRET_ACCESS_KEY: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
     R2_BUCKET_NAME: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
-    R2_PUBLIC_URL: z.preprocess(
-      emptyToUndefined,
-      z.string().url().optional(),
-    ),
+    R2_PUBLIC_URL: z.preprocess(emptyToUndefined, z.string().url().optional()),
     SENTRY_DSN: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
-    UPSTASH_REDIS_REST_URL: z.preprocess(
-      emptyToUndefined,
-      z.string().url().optional(),
-    ),
-    UPSTASH_REDIS_REST_TOKEN: z.preprocess(
-      emptyToUndefined,
-      z.string().min(1).optional(),
-    ),
-    WEB_REVALIDATE_URL: z.preprocess(
-      emptyToUndefined,
-      z.string().url().optional(),
-    ),
-    WEB_REVALIDATE_SECRET: z.preprocess(
-      emptyToUndefined,
-      z.string().min(32).optional(),
-    ),
-    DB_POOL_MAX: z.preprocess(
-      emptyToUndefined,
-      z.coerce.number().int().positive().default(DEFAULT_DB_POOL_MAX),
-    ),
-    DB_POOL_CONNECTION_TIMEOUT_MS: z.preprocess(
-      emptyToUndefined,
-      z.coerce
-        .number()
-        .int()
-        .positive()
-        .default(DEFAULT_DB_POOL_CONNECTION_TIMEOUT_MS),
-    ),
-    DB_STATEMENT_TIMEOUT_MS: z.preprocess(
-      emptyToUndefined,
-      z.coerce
-        .number()
-        .int()
-        .positive()
-        .default(DEFAULT_DB_STATEMENT_TIMEOUT_MS),
-    ),
+    UPSTASH_REDIS_REST_URL: z.preprocess(emptyToUndefined, z.string().url().optional()),
+    UPSTASH_REDIS_REST_TOKEN: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
+    WEB_REVALIDATE_URL: z.preprocess(emptyToUndefined, z.string().url().optional()),
+    WEB_REVALIDATE_SECRET: z.preprocess(emptyToUndefined, z.string().min(32).optional()),
   })
   .superRefine((env, ctx) => {
     const hasUpstashUrl = Boolean(env.UPSTASH_REDIS_REST_URL);
@@ -145,12 +77,10 @@ const envSchema = z
 
     if (hasUpstashUrl !== hasUpstashToken) {
       ctx.addIssue({
-        code: "custom",
-        path: hasUpstashUrl
-          ? ["UPSTASH_REDIS_REST_TOKEN"]
-          : ["UPSTASH_REDIS_REST_URL"],
+        code: 'custom',
+        path: hasUpstashUrl ? ['UPSTASH_REDIS_REST_TOKEN'] : ['UPSTASH_REDIS_REST_URL'],
         message:
-          "UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN must both be set or both omitted",
+          'UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN must both be set or both omitted',
       });
     }
 
@@ -159,12 +89,9 @@ const envSchema = z
 
     if (hasWebRevalidateUrl !== hasWebRevalidateSecret) {
       ctx.addIssue({
-        code: "custom",
-        path: hasWebRevalidateUrl
-          ? ["WEB_REVALIDATE_SECRET"]
-          : ["WEB_REVALIDATE_URL"],
-        message:
-          "WEB_REVALIDATE_URL and WEB_REVALIDATE_SECRET must both be set or both omitted",
+        code: 'custom',
+        path: hasWebRevalidateUrl ? ['WEB_REVALIDATE_SECRET'] : ['WEB_REVALIDATE_URL'],
+        message: 'WEB_REVALIDATE_URL and WEB_REVALIDATE_SECRET must both be set or both omitted',
       });
     }
 
@@ -174,23 +101,23 @@ const envSchema = z
 
     if (!env.RESEND_API_KEY) {
       ctx.addIssue({
-        code: "custom",
-        path: ["RESEND_API_KEY"],
-        message: "RESEND_API_KEY is required in production",
+        code: 'custom',
+        path: ['RESEND_API_KEY'],
+        message: 'RESEND_API_KEY is required in production',
       });
     }
 
     if (!env.RESEND_FROM_EMAIL) {
       ctx.addIssue({
-        code: "custom",
-        path: ["RESEND_FROM_EMAIL"],
-        message: "RESEND_FROM_EMAIL is required in production",
+        code: 'custom',
+        path: ['RESEND_FROM_EMAIL'],
+        message: 'RESEND_FROM_EMAIL is required in production',
       });
     }
   });
 
 export type AppEnv = {
-  NODE_ENV: "development" | "production" | "test";
+  NODE_ENV: 'development' | 'production' | 'test';
   PORT: number;
   DATABASE_URL: string;
   APP_URL: string;
@@ -214,9 +141,6 @@ export type AppEnv = {
   UPSTASH_REDIS_REST_TOKEN?: string | undefined;
   WEB_REVALIDATE_URL?: string | undefined;
   WEB_REVALIDATE_SECRET?: string | undefined;
-  DB_POOL_MAX: number;
-  DB_POOL_CONNECTION_TIMEOUT_MS: number;
-  DB_STATEMENT_TIMEOUT_MS: number;
 };
 
 /**
@@ -227,8 +151,8 @@ export const validateEnv = (config: Record<string, unknown>): AppEnv => {
 
   if (!parsed.success) {
     const details = parsed.error.issues
-      .map((issue) => `${issue.path.join(".")}: ${issue.message}`)
-      .join("; ");
+      .map((issue) => `${issue.path.join('.')}: ${issue.message}`)
+      .join('; ');
     throw new Error(`Invalid environment configuration: ${details}`);
   }
 
@@ -245,9 +169,6 @@ export const validateEnv = (config: Record<string, unknown>): AppEnv => {
     SESSION_ABSOLUTE_TTL_SECONDS: data.SESSION_ABSOLUTE_TTL_SECONDS,
     CSRF_SECRET: data.CSRF_SECRET,
     CSRF_COOKIE_NAME: data.CSRF_COOKIE_NAME,
-    DB_POOL_MAX: data.DB_POOL_MAX,
-    DB_POOL_CONNECTION_TIMEOUT_MS: data.DB_POOL_CONNECTION_TIMEOUT_MS,
-    DB_STATEMENT_TIMEOUT_MS: data.DB_STATEMENT_TIMEOUT_MS,
   };
 
   if (data.RESEND_API_KEY) {
