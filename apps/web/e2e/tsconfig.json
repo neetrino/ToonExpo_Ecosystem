@@ -4,8 +4,7 @@
     "noEmit": true,
     "types": ["node"],
     "lib": ["ES2023", "DOM"],
-    "rootDir": ".",
-    "baseUrl": "."
+    "rootDir": "."
   },
   "include": ["./**/*.ts"],
   "exclude": ["node_modules", "test-results", "playwright-report"]
