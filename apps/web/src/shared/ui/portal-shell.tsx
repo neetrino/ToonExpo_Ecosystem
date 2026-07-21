@@ -26,10 +26,13 @@ type PortalShellProps = {
   variant?: 'default' | 'rail';
 };
 
-/** Matches SiteHeader solid spacer (`top-3` + bar) plus a small gap below the header. */
-const SITE_HEADER_OFFSET_CLASS = 'top-[6.25rem]';
-const SITE_HEADER_RAIL_HEIGHT_CLASS = 'h-[calc(100vh-6.25rem)]';
-const SITE_HEADER_RAIL_TOP_GAP_CLASS = 'mt-4';
+/**
+ * SiteHeader solid spacer is `top-3` + bar (~4.75rem on sm+).
+ * Rail sits one gap below that and fills the rest of the viewport.
+ */
+const SITE_HEADER_RAIL_TOP_CLASS = 'top-[6.25rem]';
+const SITE_HEADER_RAIL_HEIGHT_CLASS = 'h-[calc(100dvh-6.25rem)]';
+const SITE_HEADER_RAIL_ROW_GAP_CLASS = 'md:pt-6';
 
 /**
  * Shared portal chrome: top bar + desktop sidebar + mobile drawer.
@@ -106,7 +109,12 @@ export const PortalShell = ({
       ) : null}
 
       {isRail ? (
-        <div className="flex flex-col gap-8 md:flex-row md:gap-8 md:py-0">
+        <div
+          className={cn(
+            'flex flex-col gap-8 md:flex-row md:gap-8 md:py-0',
+            SITE_HEADER_RAIL_ROW_GAP_CLASS,
+          )}
+        >
           <div className="page-container flex items-center md:hidden">
             <IconButton
               label={navLabel}
@@ -123,8 +131,7 @@ export const PortalShell = ({
             <div
               className={cn(
                 'sticky flex flex-col rounded-tr-[2.5rem] rounded-br-[2.5rem] bg-brand-secondary p-4 shadow-md',
-                SITE_HEADER_RAIL_TOP_GAP_CLASS,
-                SITE_HEADER_OFFSET_CLASS,
+                SITE_HEADER_RAIL_TOP_CLASS,
                 SITE_HEADER_RAIL_HEIGHT_CLASS,
               )}
             >
