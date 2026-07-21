@@ -23,12 +23,12 @@ export const SectionHeader = ({
   as: Tag = 'h2',
 }: SectionHeaderProps) => {
   return (
-    <div className={cn('mb-8 flex flex-wrap items-end justify-between gap-4', className)}>
+    <div className={cn('mb-9 flex flex-wrap items-end justify-between gap-4', className)}>
       <div className="min-w-0 max-w-2xl">
-        {eyebrow ? <p className="text-eyebrow mb-2">{eyebrow}</p> : null}
+        {eyebrow ? <p className="text-eyebrow mb-2.5">{eyebrow}</p> : null}
         <Tag className="text-section-title text-ink">{title}</Tag>
         {description ? (
-          <p className="mt-2 text-sm leading-relaxed text-ink-secondary">{description}</p>
+          <p className="text-body-sm mt-2.5 text-ink-secondary">{description}</p>
         ) : null}
       </div>
       {action}

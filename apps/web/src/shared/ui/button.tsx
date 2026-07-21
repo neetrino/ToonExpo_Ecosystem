@@ -46,10 +46,11 @@ export const Button = ({
       type={type}
       disabled={disabled}
       className={cn(
-        'inline-flex items-center justify-center rounded-sm font-medium',
-        'transition-[color,background-color,border-color,box-shadow,transform] duration-[var(--duration-fast)]',
+        'inline-flex items-center justify-center rounded-sm font-medium tracking-tight',
+        'shadow-xs transition-[color,background-color,border-color,box-shadow,transform] duration-[var(--duration-fast)]',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
         'active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50',
+        'hover:shadow-sm',
         variantClassName[variant],
         sizeClassName[size],
         className,

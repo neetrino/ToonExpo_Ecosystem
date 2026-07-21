@@ -28,7 +28,7 @@ export const PageHeader = ({
         {eyebrow ? <p className="text-eyebrow mb-2">{eyebrow}</p> : null}
         <h1 className="text-page-title text-ink">{title}</h1>
         {description ? (
-          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-ink-secondary">{description}</p>
+          <p className="text-body-sm mt-2 max-w-2xl text-ink-secondary">{description}</p>
         ) : null}
       </div>
       {actions ? <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div> : null}

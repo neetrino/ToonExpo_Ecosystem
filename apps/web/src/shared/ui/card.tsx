@@ -12,9 +12,9 @@ export type CardProps = HTMLAttributes<HTMLDivElement> & {
 
 const variantClassName: Record<CardVariant, string> = {
   muted: 'bg-surface shadow-xs',
-  elevated: 'bg-surface-elevated shadow-sm border border-border/80',
+  elevated: 'bg-surface-elevated shadow-sm border border-border/70',
   outline: 'bg-transparent border border-border',
-  inverse: 'bg-surface-inverse text-on-dark',
+  inverse: 'bg-surface-inverse text-on-dark shadow-md',
 };
 
 const paddingClassName = {

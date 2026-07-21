@@ -4,13 +4,14 @@ import type { BosProvisioningStatus } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 
 import { BOS_PROVISIONING_STATUSES } from '@/features/admin/constants';
+import { selectFieldClassName } from '@/shared/ui/select';
 
 type BosProvisioningFiltersProps = {
   status: BosProvisioningStatus | '';
   onChange: (status: BosProvisioningStatus | '') => void;
 };
 
-const selectClassName = 'h-10 rounded-sm border border-border bg-background px-3 text-sm text-ink';
+const selectClassName = `${selectFieldClassName} h-10`;
 
 /**
  * Status filter for admin BOS provisioning list.

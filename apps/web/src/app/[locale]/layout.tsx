@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Noto_Sans, Noto_Sans_Armenian, Outfit } from 'next/font/google';
+import { Manrope, Noto_Sans, Noto_Sans_Armenian, Outfit } from 'next/font/google';
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { getMessages, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
@@ -10,9 +10,16 @@ import { QueryProvider } from '@/shared/providers/query-provider';
 import './globals.css';
 
 /**
- * UI face for Latin + Cyrillic. Armenian glyphs come from Noto Sans Armenian
- * in the same font stack so hy / ru / en share weight and rhythm.
+ * Refined UI face for Latin + Cyrillic. Armenian glyphs come from Noto Sans Armenian.
  */
+const manrope = Manrope({
+  subsets: ['latin', 'latin-ext', 'cyrillic'],
+  variable: '--font-manrope',
+  display: 'swap',
+  weight: ['400', '500', '600', '700', '800'],
+});
+
+/** Fallback UI face — full Cyrillic / extended coverage. */
 const notoSans = Noto_Sans({
   subsets: ['latin', 'latin-ext', 'cyrillic'],
   variable: '--font-noto-sans',
@@ -27,7 +34,7 @@ const notoSansArmenian = Noto_Sans_Armenian({
   weight: ['400', '500', '600', '700'],
 });
 
-/** Brand / display — Latin-first; falls back to Noto for hy glyphs. */
+/** Brand / display — expressive headlines; falls back to Noto for hy glyphs. */
 const outfit = Outfit({
   subsets: ['latin', 'latin-ext'],
   variable: '--font-outfit',
@@ -57,7 +64,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
   return (
     <html
       lang={locale}
-      className={`${notoSans.variable} ${notoSansArmenian.variable} ${outfit.variable}`}
+      className={`${manrope.variable} ${notoSans.variable} ${notoSansArmenian.variable} ${outfit.variable}`}
     >
       <body className="min-h-screen font-ui antialiased">
         <NextIntlClientProvider messages={messages}>

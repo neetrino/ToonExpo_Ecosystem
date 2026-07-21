@@ -1,34 +1,38 @@
 @import 'tailwindcss';
 
 @theme {
-  /* Brand — refined teal (accessible on white & charcoal) */
-  --color-brand: #1f9aa3;
-  --color-brand-hover: #1a858c;
-  --color-brand-soft: #e8f6f7;
-  --color-brand-secondary: #2a667b;
+  /* Brand — refined teal with deeper secondary */
+  --color-brand: #1a8f98;
+  --color-brand-hover: #157a82;
+  --color-brand-soft: #e6f4f5;
+  --color-brand-secondary: #1e4f5f;
 
-  /* Surfaces — warm ivory system */
-  --color-background: #fafaf8;
-  --color-surface: #f3f2ef;
+  /* Champagne accent — subtle luxury highlight */
+  --color-accent: #b8956c;
+  --color-accent-soft: #f7f1e8;
+
+  /* Surfaces — warm ivory with deeper contrast */
+  --color-background: #f7f6f3;
+  --color-surface: #efeee9;
   --color-surface-elevated: #ffffff;
-  --color-surface-input: #f5f4f1;
-  --color-surface-inverse: #12131a;
+  --color-surface-input: #f3f2ee;
+  --color-surface-inverse: #0e0f14;
 
   /* Ink */
-  --color-ink: #12131a;
-  --color-ink-secondary: #5c6370;
-  --color-ink-muted: #8b929e;
-  --color-ink-label: #4b5563;
+  --color-ink: #0e0f14;
+  --color-ink-secondary: #555c68;
+  --color-ink-muted: #8a919c;
+  --color-ink-label: #454b56;
   --color-on-dark: #ffffff;
   --color-on-brand: #ffffff;
 
   /* Borders */
-  --color-border: #e6e4df;
-  --color-border-strong: #d4d1ca;
-  --color-border-focus: #1f9aa3;
+  --color-border: #e3e0d9;
+  --color-border-strong: #cdc9c0;
+  --color-border-focus: #1a8f98;
 
   /* CTA */
-  --color-cta-dark: #12131a;
+  --color-cta-dark: #0e0f14;
 
   /* Status */
   --color-success: #0d9f6e;
@@ -37,26 +41,26 @@
   --color-warning-soft: #fef6e8;
   --color-danger: #c53d3d;
   --color-danger-soft: #fef2f2;
-  --color-info: #2a667b;
+  --color-info: #1e4f5f;
   --color-info-soft: #eef4f7;
 
   /* Maps / charts */
   --color-map-canvas: #d8e2ec;
-  --color-chart-1: #1f9aa3;
-  --color-chart-2: #2a667b;
+  --color-chart-1: #1a8f98;
+  --color-chart-2: #1e4f5f;
   --color-chart-3: #0d9f6e;
-  --color-chart-4: #c47d1a;
-  --color-chart-5: #5c6370;
+  --color-chart-4: #b8956c;
+  --color-chart-5: #555c68;
 
-  /* Typography — Noto Sans + Noto Sans Armenian cover hy / ru / en */
+  /* Typography — Manrope UI + Outfit display + Noto Armenian */
   --font-ui:
-    var(--font-noto-sans), var(--font-noto-sans-armenian), 'Segoe UI', 'Helvetica Neue', Arial,
-    sans-serif;
+    var(--font-manrope), var(--font-noto-sans), var(--font-noto-sans-armenian), 'Segoe UI',
+    'Helvetica Neue', Arial, sans-serif;
   --font-brand:
-    var(--font-outfit), var(--font-noto-sans), var(--font-noto-sans-armenian), 'Segoe UI',
+    var(--font-outfit), var(--font-manrope), var(--font-noto-sans-armenian), var(--font-noto-sans),
     sans-serif;
   --font-display:
-    var(--font-outfit), var(--font-noto-sans), var(--font-noto-sans-armenian), 'Segoe UI',
+    var(--font-outfit), var(--font-manrope), var(--font-noto-sans-armenian), var(--font-noto-sans),
     sans-serif;
 
   /* Radii */
@@ -67,13 +71,13 @@
   --radius-xl: 32px;
   --radius-pill: 9999px;
 
-  /* Shadows — soft, architectural */
-  --shadow-xs: 0 1px 2px rgb(18 19 26 / 0.04);
-  --shadow-sm: 0 1px 3px rgb(18 19 26 / 0.06), 0 1px 2px rgb(18 19 26 / 0.04);
-  --shadow-md: 0 8px 24px rgb(18 19 26 / 0.08);
-  --shadow-lg: 0 16px 40px rgb(18 19 26 / 0.1);
-  --shadow-card: 0 12px 28px rgb(69 85 108 / 0.08);
-  --shadow-sheet: -8px 0 32px rgb(18 19 26 / 0.12);
+  /* Shadows — soft, architectural, deeper luxury lift */
+  --shadow-xs: 0 1px 2px rgb(14 15 20 / 0.04);
+  --shadow-sm: 0 2px 8px rgb(14 15 20 / 0.05), 0 1px 2px rgb(14 15 20 / 0.04);
+  --shadow-md: 0 12px 32px rgb(14 15 20 / 0.08);
+  --shadow-lg: 0 24px 56px rgb(14 15 20 / 0.12);
+  --shadow-card: 0 14px 36px rgb(69 85 108 / 0.09);
+  --shadow-sheet: -8px 0 40px rgb(14 15 20 / 0.14);
 
   /* Layout */
   --spacing-content: 1280px;
@@ -81,25 +85,37 @@
   --max-width-narrow: 720px;
   --max-width-wide: 1440px;
   --page-gutter: 1.5rem;
-  --section-space: 4rem;
-  --section-space-lg: 6rem;
+  --section-space: 4.5rem;
+  --section-space-lg: 6.5rem;
 
   /* Motion */
   --ease-out-premium: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-in-out-premium: cubic-bezier(0.65, 0, 0.35, 1);
   --duration-fast: 150ms;
-  --duration-base: 220ms;
-  --duration-slow: 360ms;
+  --duration-base: 240ms;
+  --duration-slow: 400ms;
 
   /* Z-index scale */
   --z-base: 0;
   --z-sticky: 30;
-  --z-header: 40;
-  --z-dropdown: 50;
-  --z-overlay: 60;
-  --z-sheet: 70;
-  --z-modal: 80;
-  --z-toast: 90;
+  --z-header: 100;
+  --z-dropdown: 110;
+  --z-overlay: 120;
+  --z-sheet: 130;
+  --z-modal: 140;
+  --z-toast: 150;
+}
+
+@keyframes locale-dropdown-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.35rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @layer base {
@@ -123,15 +139,65 @@
   }
 
   body {
-    background: var(--color-background);
+    background:
+      radial-gradient(ellipse 120% 60% at 50% -10%, rgb(26 143 152 / 0.05), transparent 55%),
+      var(--color-background);
     color: var(--color-ink);
     font-family: var(--font-ui);
+    font-size: 0.96875rem;
+    font-weight: 400;
+    letter-spacing: -0.011em;
+    line-height: 1.65;
     font-feature-settings:
       'kern' 1,
-      'liga' 1;
+      'liga' 1,
+      'calt' 1;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display);
+    font-weight: 650;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    color: var(--color-ink);
+    text-wrap: balance;
+  }
+
+  h1 {
+    font-size: clamp(2rem, 4.2vw, 3rem);
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+  }
+
+  h2 {
+    font-size: clamp(1.5rem, 2.8vw, 2rem);
+    letter-spacing: -0.032em;
+  }
+
+  h3 {
+    font-size: clamp(1.2rem, 2vw, 1.45rem);
+    letter-spacing: -0.025em;
+  }
+
+  h4 {
+    font-size: 1.0625rem;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  a {
+    text-underline-offset: 0.18em;
   }
 
   :focus-visible {
@@ -141,6 +207,48 @@
 
   ::selection {
     background: color-mix(in srgb, var(--color-brand) 28%, white);
+    color: var(--color-ink);
+  }
+
+  /* Luxury native selects site-wide */
+  select {
+    appearance: none;
+    background-color: var(--color-surface-elevated);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23555c68' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.85rem center;
+    background-size: 0.9rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    color: var(--color-ink);
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: inherit;
+    padding-inline-end: 2.5rem;
+    transition:
+      border-color var(--duration-fast) var(--ease-out-premium),
+      box-shadow var(--duration-fast) var(--ease-out-premium),
+      background-color var(--duration-fast) var(--ease-out-premium);
+  }
+
+  select:hover:not(:disabled) {
+    border-color: var(--color-border-strong);
+    background-color: var(--color-surface-elevated);
+  }
+
+  select:focus-visible {
+    border-color: var(--color-brand);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-brand) 20%, transparent);
+    outline: none;
+  }
+
+  select:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  select option {
+    background: var(--color-surface-elevated);
     color: var(--color-ink);
   }
 }
@@ -161,39 +269,72 @@
   }
 
   .section-pad {
-    padding-block: clamp(2.5rem, 5vw, var(--section-space));
+    padding-block: clamp(2.75rem, 5.5vw, var(--section-space));
   }
 
   .section-pad-lg {
-    padding-block: clamp(3.5rem, 7vw, var(--section-space-lg));
+    padding-block: clamp(3.75rem, 7.5vw, var(--section-space-lg));
   }
 
   .text-display {
     font-family: var(--font-display);
-    font-weight: 600;
-    letter-spacing: -0.03em;
-    line-height: 1.05;
+    font-weight: 650;
+    letter-spacing: -0.045em;
+    line-height: 0.98;
   }
 
   .text-page-title {
-    font-size: clamp(1.5rem, 2.5vw, 2rem);
+    font-family: var(--font-display);
+    font-size: clamp(1.65rem, 2.8vw, 2.35rem);
     font-weight: 650;
-    letter-spacing: -0.025em;
-    line-height: 1.2;
+    letter-spacing: -0.035em;
+    line-height: 1.12;
   }
 
   .text-section-title {
-    font-size: clamp(1.375rem, 2.2vw, 1.75rem);
+    font-family: var(--font-display);
+    font-size: clamp(1.45rem, 2.4vw, 2rem);
+    font-weight: 650;
+    letter-spacing: -0.03em;
+    line-height: 1.18;
+  }
+
+  .text-card-title {
+    font-family: var(--font-brand);
+    font-size: 0.9375rem;
     font-weight: 650;
     letter-spacing: -0.02em;
-    line-height: 1.25;
+    line-height: 1.3;
+  }
+
+  .text-body {
+    font-size: 0.96875rem;
+    font-weight: 400;
+    letter-spacing: -0.011em;
+    line-height: 1.65;
+  }
+
+  .text-body-sm {
+    font-size: 0.875rem;
+    font-weight: 400;
+    letter-spacing: -0.008em;
+    line-height: 1.55;
   }
 
   .text-eyebrow {
+    font-family: var(--font-ui);
     font-size: 0.6875rem;
-    font-weight: 650;
-    letter-spacing: 0.12em;
+    font-weight: 700;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
+    color: var(--color-accent);
+  }
+
+  .text-caption {
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    line-height: 1.45;
     color: var(--color-ink-muted);
   }
 
@@ -210,13 +351,26 @@
     background:
       radial-gradient(
         ellipse at 20% 0%,
-        color-mix(in srgb, var(--color-brand) 45%, transparent),
+        color-mix(in srgb, var(--color-brand) 42%, transparent),
         transparent 55%
       ),
       radial-gradient(
         ellipse at 80% 100%,
-        color-mix(in srgb, var(--color-brand-secondary) 35%, transparent),
+        color-mix(in srgb, var(--color-accent) 22%, transparent),
         transparent 50%
+      ),
+      radial-gradient(
+        ellipse at 50% 50%,
+        color-mix(in srgb, var(--color-brand-secondary) 28%, transparent),
+        transparent 60%
       );
+  }
+
+  .select-field {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%231a8f98' stroke-width='2.25' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.85rem center;
+    background-size: 0.95rem;
   }
 }

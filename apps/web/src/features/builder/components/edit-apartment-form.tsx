@@ -23,6 +23,7 @@ import {
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
+import { selectFieldClassName } from '@/shared/ui/select';
 
 type EditApartmentFormProps = {
   apartment: PortalApartmentDetail;
@@ -122,8 +123,7 @@ export const EditApartmentForm = ({ apartment }: EditApartmentFormProps) => {
   });
 
   const busy = isSubmitting || mutation.isPending;
-  const selectClassName =
-    'h-11 w-full rounded-sm border border-border bg-background px-4 text-sm text-ink focus-visible:border-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/20';
+  const selectClassName = selectFieldClassName;
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-5" noValidate>

@@ -51,7 +51,7 @@ export const ProjectCard = ({
   return (
     <article
       className={cn(
-        'group flex flex-col overflow-hidden rounded-md border border-border/80 bg-surface-elevated shadow-xs transition-[box-shadow,transform] duration-[var(--duration-base)] hover:-translate-y-0.5 hover:shadow-md',
+        'group flex flex-col overflow-hidden rounded-md border border-border/60 bg-surface-elevated shadow-sm transition-[box-shadow,transform,border-color] duration-[var(--duration-base)] ease-[var(--ease-out-premium)] hover:-translate-y-1 hover:border-brand/25 hover:shadow-card',
         className,
       )}
     >
@@ -87,7 +87,7 @@ export const ProjectCard = ({
 
       <div className="flex flex-1 flex-col gap-2 p-4 sm:p-5">
         <div className="flex items-start justify-between gap-2">
-          <h3 className="font-brand text-sm font-semibold text-ink">
+          <h3 className="text-card-title text-ink">
             <Link href={`/projects/${project.id}`} className="transition-colors hover:text-brand">
               {project.name}
             </Link>

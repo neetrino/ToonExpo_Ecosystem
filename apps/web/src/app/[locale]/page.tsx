@@ -13,6 +13,7 @@ import { HomeMortgage } from '@/features/catalog/components/home-mortgage';
 import { HomePartners } from '@/features/catalog/components/home-partners';
 import { HomeStats } from '@/features/catalog/components/home-stats';
 import { SiteFooter } from '@/features/catalog/components/site-footer';
+import { SiteHeader } from '@/shared/ui/site-header';
 
 type HomePageProps = {
   params: Promise<{ locale: string }>;
@@ -33,7 +34,7 @@ export default async function HomePage({ params }: HomePageProps) {
   setRequestLocale(locale);
 
   const [projectsResponse, builders, partnersResponse] = await Promise.all([
-    listProjects({ page: 1, pageSize: 4 }, { locale }),
+    listProjects({ page: 1, pageSize: 7 }, { locale }),
     listBuilders({ locale }),
     listPublicPartners({ page: 1, pageSize: 6 }, { locale }).catch(() => ({
       data: [],
@@ -48,6 +49,7 @@ export default async function HomePage({ params }: HomePageProps) {
 
   return (
     <div className="min-h-screen bg-background">
+      <SiteHeader variant="transparent" />
       <HomeHero />
       <HomeStats
         projects={projectsResponse.data}

@@ -2,26 +2,20 @@
  * Dev-only cleanup: removes runtime rows that reference seed catalog entities.
  * Non-seed user data (other companies, buyers, events) is never touched.
  */
-import type { PrismaClient } from "../src/index.js";
+import type { PrismaClient } from '../src/index.js';
+import { SEED_DRAFT_PROJECT_ID, SEED_ID_PREFIX } from './seed-data.js';
 import {
-  SEED_BUILDERS,
-  SEED_DRAFT_PROJECT_ID,
-  SEED_ID_PREFIX,
-  SEED_PROJECTS,
-} from "./seed-data.js";
+  ALL_SEED_BUILDERS as SEED_BUILDERS,
+  ALL_SEED_PROJECTS as SEED_PROJECTS,
+} from './seed-entities.js';
 
 const SEED_COMPANY_IDS = SEED_BUILDERS.map((builder) => builder.id);
 
-const SEED_PROJECT_IDS = [
-  ...SEED_PROJECTS.map((project) => project.id),
-  SEED_DRAFT_PROJECT_ID,
-];
+const SEED_PROJECT_IDS = [...SEED_PROJECTS.map((project) => project.id), SEED_DRAFT_PROJECT_ID];
 
 const logRuntimeCleanup = (label: string, count: number): void => {
   if (count > 0) {
-    console.info(
-      `[seed] Dev cleanup: removed ${count} runtime ${label} referencing seed entities`,
-    );
+    console.info(`[seed] Dev cleanup: removed ${count} runtime ${label} referencing seed entities`);
   }
 };
 
@@ -35,9 +29,7 @@ const seedEntityFilter = {
  * Deletes dev smoke-test rows that reference seed companies/projects/apartments.
  * Required before catalog delete/recreate; optional hygiene when upserting seed rows.
  */
-export const clearSeedRuntimeDependents = async (
-  prisma: PrismaClient,
-): Promise<void> => {
+export const clearSeedRuntimeDependents = async (prisma: PrismaClient): Promise<void> => {
   const { companyIds, projectIds } = seedEntityFilter;
 
   const seedDeals = await prisma.crmDeal.findMany({
@@ -51,13 +43,10 @@ export const clearSeedRuntimeDependents = async (
   if (seedDealIds.length > 0) {
     const apartmentLinks = await prisma.crmDealApartmentLink.deleteMany({
       where: {
-        OR: [
-          { crmDealId: { in: seedDealIds } },
-          { apartmentId: { startsWith: SEED_ID_PREFIX } },
-        ],
+        OR: [{ crmDealId: { in: seedDealIds } }, { apartmentId: { startsWith: SEED_ID_PREFIX } }],
       },
     });
-    logRuntimeCleanup("CRM apartment links", apartmentLinks.count);
+    logRuntimeCleanup('CRM apartment links', apartmentLinks.count);
 
     await prisma.request.updateMany({
       where: { crmDealId: { in: seedDealIds } },
@@ -72,7 +61,7 @@ export const clearSeedRuntimeDependents = async (
     const deals = await prisma.crmDeal.deleteMany({
       where: { id: { in: seedDealIds } },
     });
-    logRuntimeCleanup("CRM deals", deals.count);
+    logRuntimeCleanup('CRM deals', deals.count);
   }
 
   const requests = await prisma.request.deleteMany({
@@ -84,37 +73,28 @@ export const clearSeedRuntimeDependents = async (
       ],
     },
   });
-  logRuntimeCleanup("requests", requests.count);
+  logRuntimeCleanup('requests', requests.count);
 
   const readiness = await prisma.readinessAssessment.deleteMany({
     where: {
-      OR: [
-        { builderCompanyId: { in: companyIds } },
-        { projectId: { in: projectIds } },
-      ],
+      OR: [{ builderCompanyId: { in: companyIds } }, { projectId: { in: projectIds } }],
     },
   });
-  logRuntimeCleanup("readiness assessments", readiness.count);
+  logRuntimeCleanup('readiness assessments', readiness.count);
 
   const visualMaps = await prisma.visualMapCanvas.deleteMany({
     where: {
-      OR: [
-        { ownerCompanyId: { in: companyIds } },
-        { projectId: { in: projectIds } },
-      ],
+      OR: [{ ownerCompanyId: { in: companyIds } }, { projectId: { in: projectIds } }],
     },
   });
-  logRuntimeCleanup("visual map canvases", visualMaps.count);
+  logRuntimeCleanup('visual map canvases', visualMaps.count);
 
   const boothAssignments = await prisma.boothAssignment.deleteMany({
     where: {
-      OR: [
-        { companyId: { in: companyIds } },
-        { projectId: { in: projectIds } },
-      ],
+      OR: [{ companyId: { in: companyIds } }, { projectId: { in: projectIds } }],
     },
   });
-  logRuntimeCleanup("booth assignments", boothAssignments.count);
+  logRuntimeCleanup('booth assignments', boothAssignments.count);
 
   const analytics = await prisma.analyticsEvent.deleteMany({
     where: {
@@ -125,5 +105,5 @@ export const clearSeedRuntimeDependents = async (
       ],
     },
   });
-  logRuntimeCleanup("analytics events", analytics.count);
+  logRuntimeCleanup('analytics events', analytics.count);
 };

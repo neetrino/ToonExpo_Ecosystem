@@ -10,7 +10,8 @@ import {
   type PrismaClient,
 } from '../src/index.js';
 import { SEED_PLATFORM_ADMIN_ID } from './seed-auth.js';
-import { DEMO_VISUAL_MAP_URL, SEED_ID_PREFIX, SEED_PROJECTS } from './seed-data.js';
+import { DEMO_VISUAL_MAP_URL, SEED_ID_PREFIX } from './seed-data.js';
+import { ALL_SEED_PROJECTS as SEED_PROJECTS } from './seed-entities.js';
 
 /**
  * Upserts one published primary project canvas per seed project with building hotspots.

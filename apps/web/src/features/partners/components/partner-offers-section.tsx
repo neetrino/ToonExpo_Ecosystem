@@ -1,35 +1,33 @@
-"use client";
+'use client';
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import type { PartnerOfferItem } from "@toonexpo/contracts";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { zodResolver } from '@hookform/resolvers/zod';
+import type { PartnerOfferItem } from '@toonexpo/contracts';
+import { useTranslations } from 'next-intl';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 
-import { TranslationTabs } from "@/features/builder/components/translation-tabs";
-import { PARTNER_PUBLICATION_STATUSES } from "@/features/partners/constants";
+import { TranslationTabs } from '@/features/builder/components/translation-tabs';
+import { PARTNER_PUBLICATION_STATUSES } from '@/features/partners/constants';
 import {
   partnerOfferSchema,
   type PartnerOfferFormValues,
-} from "@/features/partners/schemas/partner.schema";
-import { toPartnerOfferFormValues } from "@/features/partners/utils/partner-form-values";
+} from '@/features/partners/schemas/partner.schema';
+import { toPartnerOfferFormValues } from '@/features/partners/utils/partner-form-values';
 import {
   toCreatePartnerOfferBody,
   toUpdatePartnerOfferBody,
-} from "@/features/partners/utils/partner-mappers";
-import { PublicationStatusBadge } from "@/features/partners/components/partner-badges";
-import { Button } from "@/shared/ui/button";
-import { FormField } from "@/shared/ui/form-field";
-import { Input } from "@/shared/ui/input";
-import { Textarea } from "@/shared/ui/textarea";
+} from '@/features/partners/utils/partner-mappers';
+import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
+import { Button } from '@/shared/ui/button';
+import { FormField } from '@/shared/ui/form-field';
+import { Input } from '@/shared/ui/input';
+import { Select } from '@/shared/ui/select';
+import { Textarea } from '@/shared/ui/textarea';
 
 type PartnerOffersSectionProps = {
   offers: PartnerOfferItem[];
   onCreate: (body: ReturnType<typeof toCreatePartnerOfferBody>) => Promise<void>;
-  onUpdate: (
-    offerId: string,
-    body: ReturnType<typeof toUpdatePartnerOfferBody>,
-  ) => Promise<void>;
+  onUpdate: (offerId: string, body: ReturnType<typeof toUpdatePartnerOfferBody>) => Promise<void>;
   onDelete: (offerId: string) => Promise<void>;
   isBusy?: boolean | undefined;
 };
@@ -44,14 +42,14 @@ export const PartnerOffersSection = ({
   onDelete,
   isBusy = false,
 }: PartnerOffersSectionProps) => {
-  const t = useTranslations("Partners.offers");
+  const t = useTranslations('Partners.offers');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showCreate, setShowCreate] = useState(false);
 
   return (
     <section className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-base font-semibold text-ink">{t("title")}</h2>
+        <h2 className="text-base font-semibold text-ink">{t('title')}</h2>
         <Button
           type="button"
           size="sm"
@@ -61,19 +59,16 @@ export const PartnerOffersSection = ({
             setShowCreate(true);
           }}
         >
-          {t("add")}
+          {t('add')}
         </Button>
       </div>
 
       {offers.length === 0 ? (
-        <p className="text-sm text-ink-secondary">{t("empty")}</p>
+        <p className="text-sm text-ink-secondary">{t('empty')}</p>
       ) : (
         <ul className="flex flex-col gap-3">
           {offers.map((offer) => (
-            <li
-              key={offer.id}
-              className="rounded-sm border border-border bg-surface p-4"
-            >
+            <li key={offer.id} className="rounded-sm border border-border bg-surface p-4">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
                   <p className="font-medium text-ink">{offer.title}</p>
@@ -85,7 +80,7 @@ export const PartnerOffersSection = ({
                   <div className="mt-2 flex flex-wrap gap-2">
                     <PublicationStatusBadge status={offer.publicationStatus} />
                     <span className="text-xs text-ink-muted">
-                      {t("sortOrder", { value: offer.sortOrder })}
+                      {t('sortOrder', { value: offer.sortOrder })}
                     </span>
                   </div>
                 </div>
@@ -99,7 +94,7 @@ export const PartnerOffersSection = ({
                       setEditingId(offer.id);
                     }}
                   >
-                    {t("edit")}
+                    {t('edit')}
                   </Button>
                   <Button
                     type="button"
@@ -110,7 +105,7 @@ export const PartnerOffersSection = ({
                       void onDelete(offer.id);
                     }}
                   >
-                    {t("delete")}
+                    {t('delete')}
                   </Button>
                 </div>
               </div>
@@ -120,7 +115,7 @@ export const PartnerOffersSection = ({
                   <PartnerOfferForm
                     key={offer.id}
                     defaultValues={toPartnerOfferFormValues(offer)}
-                    submitLabel={t("save")}
+                    submitLabel={t('save')}
                     onCancel={() => {
                       setEditingId(null);
                     }}
@@ -141,16 +136,16 @@ export const PartnerOffersSection = ({
         <div className="rounded-sm border border-border bg-background p-4">
           <PartnerOfferForm
             defaultValues={{
-              titleHy: "",
-              titleRu: "",
-              titleEn: "",
-              descriptionHy: "",
-              descriptionRu: "",
-              descriptionEn: "",
-              publicationStatus: "draft",
+              titleHy: '',
+              titleRu: '',
+              titleEn: '',
+              descriptionHy: '',
+              descriptionRu: '',
+              descriptionEn: '',
+              publicationStatus: 'draft',
               sortOrder: offers.length,
             }}
-            submitLabel={t("create")}
+            submitLabel={t('create')}
             onCancel={() => {
               setShowCreate(false);
             }}
@@ -181,7 +176,7 @@ const PartnerOfferForm = ({
   onSubmit,
   isBusy,
 }: PartnerOfferFormProps) => {
-  const t = useTranslations("Partners.offers");
+  const t = useTranslations('Partners.offers');
   const form = useForm<PartnerOfferFormValues>({
     resolver: zodResolver(partnerOfferSchema),
     defaultValues,
@@ -198,34 +193,28 @@ const PartnerOfferForm = ({
           <div className="flex flex-col gap-4">
             <FormField
               id={`offer-title-${locale}`}
-              label={t("fields.title")}
+              label={t('fields.title')}
               error={
-                locale === "hy" && form.formState.errors.titleHy
-                  ? t("validation.title")
-                  : undefined
+                locale === 'hy' && form.formState.errors.titleHy ? t('validation.title') : undefined
               }
             >
               <Input
                 id={`offer-title-${locale}`}
                 {...form.register(
-                  locale === "hy"
-                    ? "titleHy"
-                    : locale === "ru"
-                      ? "titleRu"
-                      : "titleEn",
+                  locale === 'hy' ? 'titleHy' : locale === 'ru' ? 'titleRu' : 'titleEn',
                 )}
               />
             </FormField>
-            <FormField id={`offer-desc-${locale}`} label={t("fields.description")}>
+            <FormField id={`offer-desc-${locale}`} label={t('fields.description')}>
               <Textarea
                 id={`offer-desc-${locale}`}
                 rows={4}
                 {...form.register(
-                  locale === "hy"
-                    ? "descriptionHy"
-                    : locale === "ru"
-                      ? "descriptionRu"
-                      : "descriptionEn",
+                  locale === 'hy'
+                    ? 'descriptionHy'
+                    : locale === 'ru'
+                      ? 'descriptionRu'
+                      : 'descriptionEn',
                 )}
               />
             </FormField>
@@ -234,26 +223,22 @@ const PartnerOfferForm = ({
       </TranslationTabs>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <FormField id="offerPublication" label={t("fields.publication")}>
-          <select
-            id="offerPublication"
-            className="h-11 w-full rounded-sm border border-border bg-background px-3 text-sm text-ink"
-            {...form.register("publicationStatus")}
-          >
+        <FormField id="offerPublication" label={t('fields.publication')}>
+          <Select id="offerPublication" {...form.register('publicationStatus')}>
             {PARTNER_PUBLICATION_STATUSES.map((status) => (
               <option key={status} value={status}>
                 {t(`publication.${status}`)}
               </option>
             ))}
-          </select>
+          </Select>
         </FormField>
-        <FormField id="offerSort" label={t("fields.sortOrder")}>
+        <FormField id="offerSort" label={t('fields.sortOrder')}>
           <Input
             id="offerSort"
             type="number"
             min={0}
             max={9999}
-            {...form.register("sortOrder", { valueAsNumber: true })}
+            {...form.register('sortOrder', { valueAsNumber: true })}
           />
         </FormField>
       </div>
@@ -263,7 +248,7 @@ const PartnerOfferForm = ({
           {submitLabel}
         </Button>
         <Button type="button" size="sm" variant="ghost" onClick={onCancel}>
-          {t("cancel")}
+          {t('cancel')}
         </Button>
       </div>
     </form>

@@ -46,9 +46,9 @@ export const HomeStats = async ({ projects, builderCount, projectTotal }: HomeSt
   return (
     <div className="relative z-10 mx-auto -mt-16 w-full max-w-content px-6">
       <Reveal>
-        <div className="rounded-lg border border-border/70 bg-surface-elevated px-5 py-6 shadow-card sm:px-8">
+        <div className="rounded-lg border border-border/60 bg-surface-elevated/95 px-5 py-6 shadow-card backdrop-blur-sm sm:px-8">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center">
-            <span className="shrink-0 rounded-pill border border-border-strong bg-background/70 px-4 py-1.5 text-xs font-medium tracking-wide text-ink-label">
+            <span className="shrink-0 rounded-pill border border-accent/30 bg-accent-soft px-4 py-1.5 text-xs font-medium tracking-wide text-ink-label">
               {t('stats.badge')}
             </span>
             <div className="grid flex-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">

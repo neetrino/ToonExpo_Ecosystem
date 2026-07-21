@@ -12,7 +12,10 @@ import { createPrismaClient } from '../src/index.js';
 import { seedAuthAccounts } from './seed-auth.js';
 import { upsertSeedBuilders, upsertSeedProjects, upsertSeedTranslations } from './seed-catalog.js';
 import { clearSeedRuntimeDependents } from './seed-cleanup.js';
-import { SEED_BUILDERS, SEED_PROJECTS } from './seed-data.js';
+import {
+  ALL_SEED_BUILDERS as SEED_BUILDERS,
+  ALL_SEED_PROJECTS as SEED_PROJECTS,
+} from './seed-entities.js';
 import { upsertSeedExhibition } from './seed-exhibition.js';
 import { upsertSeedMortgageOffer } from './seed-mortgage.js';
 import { upsertSeedVisualMaps } from './seed-visual-maps.js';

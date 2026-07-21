@@ -5,6 +5,8 @@ import { useTranslations } from 'next-intl';
 
 import type { ProjectFilterParams } from '@/features/catalog/utils/project-filters';
 import { Button } from '@/shared/ui/button';
+import { Input } from '@/shared/ui/input';
+import { Select } from '@/shared/ui/select';
 
 type ProjectFiltersFormProps = {
   filters: ProjectFilterParams;
@@ -19,7 +21,7 @@ export const ProjectFiltersForm = ({ filters }: ProjectFiltersFormProps) => {
   return (
     <form
       method="get"
-      className="rounded-md border border-border/80 bg-surface-elevated p-4 shadow-xs sm:p-5"
+      className="rounded-md border border-border/70 bg-surface-elevated/95 p-4 shadow-sm backdrop-blur-sm sm:p-5"
     >
       <div className="mb-4 flex items-center gap-2">
         <SlidersHorizontal className="size-4 text-brand" aria-hidden />
@@ -28,55 +30,45 @@ export const ProjectFiltersForm = ({ filters }: ProjectFiltersFormProps) => {
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
         <label className="flex flex-col gap-1.5 text-xs font-medium text-ink-secondary">
           {t('filters.rooms')}
-          <select
-            name="rooms"
-            defaultValue={filters.rooms != null ? String(filters.rooms) : ''}
-            className="h-11 rounded-sm border border-border bg-surface-elevated px-3 text-base text-ink sm:text-sm"
-          >
+          <Select name="rooms" defaultValue={filters.rooms != null ? String(filters.rooms) : ''}>
             <option value="">{t('filters.any')}</option>
             <option value="1">1</option>
             <option value="2">2</option>
             <option value="3">3</option>
             <option value="4">4+</option>
-          </select>
+          </Select>
         </label>
 
         <label className="flex flex-col gap-1.5 text-xs font-medium text-ink-secondary">
           {t('filters.minPrice')}
-          <input
+          <Input
             type="number"
             name="minPrice"
             min={0}
             defaultValue={filters.minPrice ?? ''}
             placeholder={t('filters.pricePlaceholder')}
-            className="h-11 rounded-sm border border-border bg-surface-elevated px-3 text-base text-ink sm:text-sm"
           />
         </label>
 
         <label className="flex flex-col gap-1.5 text-xs font-medium text-ink-secondary">
           {t('filters.maxPrice')}
-          <input
+          <Input
             type="number"
             name="maxPrice"
             min={0}
             defaultValue={filters.maxPrice ?? ''}
             placeholder={t('filters.pricePlaceholder')}
-            className="h-11 rounded-sm border border-border bg-surface-elevated px-3 text-base text-ink sm:text-sm"
           />
         </label>
 
         <label className="flex flex-col gap-1.5 text-xs font-medium text-ink-secondary">
           {t('filters.salesStatus')}
-          <select
-            name="salesStatus"
-            defaultValue={filters.salesStatus ?? ''}
-            className="h-11 rounded-sm border border-border bg-surface-elevated px-3 text-base text-ink sm:text-sm"
-          >
+          <Select name="salesStatus" defaultValue={filters.salesStatus ?? ''}>
             <option value="">{t('filters.any')}</option>
             <option value="available">{t('status.available')}</option>
             <option value="reserved">{t('status.reserved')}</option>
             <option value="sold">{t('status.sold')}</option>
-          </select>
+          </Select>
         </label>
 
         <div className="flex items-end gap-2">

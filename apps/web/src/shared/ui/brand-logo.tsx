@@ -30,14 +30,14 @@ export const BrandLogo = ({
     <Link
       href={href}
       className={cn(
-        'font-brand font-extrabold tracking-tight',
+        'font-brand font-extrabold tracking-[-0.04em]',
         sizeClassName[size],
         inverted ? 'text-on-dark' : 'text-ink',
         className,
       )}
     >
       <span>TOON</span>
-      <span className={inverted ? 'text-brand' : 'text-brand'}>EXPO</span>
+      <span className="text-brand">EXPO</span>
       {badge ? (
         <span
           className={cn(

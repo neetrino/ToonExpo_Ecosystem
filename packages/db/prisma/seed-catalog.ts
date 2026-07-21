@@ -17,12 +17,14 @@ import {
   DEMO_ORPHAN_BUILDER_LOGO,
   demoCoverUrl,
   demoLogoUrl,
-  SEED_BUILDERS,
   SEED_DRAFT_PROJECT_ID,
   SEED_ID_PREFIX,
-  SEED_PROJECTS,
 } from './seed-data.js';
+import { ALL_SEED_BUILDERS, ALL_SEED_PROJECTS } from './seed-entities.js';
 import { buildSeedTranslations, type SeedTranslation } from './seed-translations.js';
+
+const SEED_BUILDERS = ALL_SEED_BUILDERS;
+const SEED_PROJECTS = ALL_SEED_PROJECTS;
 
 const upsertBuilderLogo = async (
   prisma: PrismaClient,
