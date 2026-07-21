@@ -63,6 +63,22 @@ export const AdminNav = () => {
   const t = useTranslations('Admin.nav');
   const pathname = usePathname();
 
+  const isItemActive = (href: string): boolean => {
+    if (pathname === href) {
+      return true;
+    }
+    if (!pathname.startsWith(`${href}/`)) {
+      return false;
+    }
+    // Prefer a more specific nav item (e.g. Categories over Readiness).
+    return !NAV_ITEMS.some(
+      (item) =>
+        item.href !== href &&
+        item.href.startsWith(`${href}/`) &&
+        (pathname === item.href || pathname.startsWith(`${item.href}/`)),
+    );
+  };
+
   return (
     <nav aria-label={t('label')} className="flex h-full flex-col gap-1">
       <div className="mb-5 hidden px-2 md:block">
@@ -74,7 +90,7 @@ export const AdminNav = () => {
 
       <div className="flex flex-1 flex-col gap-1">
         {NAV_ITEMS.map((item) => {
-          const active = pathname.startsWith(item.href);
+          const active = isItemActive(item.href);
           const Icon = item.icon;
           return (
             <Link
