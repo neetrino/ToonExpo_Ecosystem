@@ -1,4 +1,7 @@
 {
+  "Common": {
+    "close": "Закрыть"
+  },
   "HomePage": {
     "brand": "ToonExpo",
     "tagline": "Платформа недвижимости для выставок в Армении",
@@ -393,7 +396,7 @@
       "profile": "Профиль",
       "password": "Пароль",
       "favorites": "Избранное",
-      "checkin": "Check-in",
+      "checkin": "Регистрация",
       "qr": "Мой QR",
       "requests": "Мои заявки"
     },
@@ -563,7 +566,7 @@
     "nav": {
       "label": "Навигация админки",
       "section": "Управление",
-      "portalLabel": "Management portal",
+      "portalLabel": "Портал управления",
       "analytics": "Аналитика",
       "companies": "Компании",
       "readiness": "Готовность",
@@ -1093,11 +1096,11 @@
       }
     },
     "bos": {
-      "title": "BOS provisioning",
+      "title": "Обеспечение BOS",
       "subtitle": "{count, plural, =0 {Нет запросов} one {# запрос} few {# запроса} many {# запросов} other {# запроса}}",
-      "empty": "Запросов BOS provisioning пока нет. Входящие запросы от BOS появятся здесь.",
-      "loading": "Загрузка истории provisioning…",
-      "error": "Не удалось загрузить запросы BOS provisioning. Попробуйте снова.",
+      "empty": "Запросов на обеспечение BOS пока нет. Входящие запросы от BOS появятся здесь.",
+      "loading": "Загрузка истории обеспечения…",
+      "error": "Не удалось загрузить запросы на обеспечение BOS. Попробуйте снова.",
       "pagination": {
         "previous": "Назад",
         "next": "Далее",
@@ -1142,8 +1145,8 @@
       },
       "detail": {
         "loading": "Загрузка запроса…",
-        "notFound": "Запрос provisioning не найден",
-        "back": "← BOS provisioning",
+        "notFound": "Запрос на обеспечение не найден",
+        "back": "← Обеспечение BOS",
         "summary": {
           "title": "Сводка запроса",
           "bosCompanyId": "ID компании в BOS",
@@ -1171,8 +1174,8 @@
             "user_linked": "Пользователь привязан",
             "member_created": "Участник создан",
             "invitation_sent": "Приглашение отправлено",
-            "provisioning_failed": "Provisioning не удался",
-            "provisioning_retried": "Provisioning повторён",
+            "provisioning_failed": "Обеспечение не удалось",
+            "provisioning_retried": "Обеспечение повторено",
             "result_returned": "Результат возвращён в BOS"
           }
         }
@@ -1313,126 +1316,126 @@
     },
     "events": {
       "title": "События",
-      "subtitle": "{count, plural, =0 {No events} one {# event} other {# events}}",
-      "empty": "No events yet. Create the first one.",
-      "loading": "Loading events…",
-      "error": "Could not load events. Try again.",
-      "newEvent": "New event",
+      "subtitle": "{count, plural, =0 {Нет событий} one {# событие} few {# события} many {# событий} other {# события}}",
+      "empty": "Событий пока нет. Создайте первое.",
+      "loading": "Загрузка событий…",
+      "error": "Не удалось загрузить события. Попробуйте ещё раз.",
+      "newEvent": "Новое событие",
       "columns": {
-        "name": "Name",
-        "code": "Code",
-        "status": "Status",
-        "publication": "Publication"
+        "name": "Название",
+        "code": "Код",
+        "status": "Статус",
+        "publication": "Публикация"
       },
       "statuses": {
-        "planning": "Planning",
-        "active": "Active",
-        "completed": "Completed",
-        "archived": "Archived",
-        "cancelled": "Cancelled"
+        "planning": "Планирование",
+        "active": "Активно",
+        "completed": "Завершено",
+        "archived": "В архиве",
+        "cancelled": "Отменено"
       },
       "new": {
-        "title": "New event",
-        "subtitle": "Create an exhibition event for maps and check-in"
+        "title": "Новое событие",
+        "subtitle": "Создайте выставочное событие для карт и регистрации"
       },
       "detail": {
-        "back": "← Events",
-        "notFound": "Event not found"
+        "back": "← События",
+        "notFound": "Событие не найдено"
       },
       "form": {
-        "name": "Event name",
-        "code": "Event code",
-        "startDate": "Start date",
-        "endDate": "End date",
-        "status": "Status",
-        "publication": "Publication",
+        "name": "Название события",
+        "code": "Код события",
+        "startDate": "Дата начала",
+        "endDate": "Дата окончания",
+        "status": "Статус",
+        "publication": "Публикация",
         "statuses": {
-          "planning": "Planning",
-          "active": "Active",
-          "completed": "Completed",
-          "archived": "Archived",
-          "cancelled": "Cancelled"
+          "planning": "Планирование",
+          "active": "Активно",
+          "completed": "Завершено",
+          "archived": "В архиве",
+          "cancelled": "Отменено"
         },
         "publicationStatuses": {
-          "draft": "Draft",
-          "published": "Published",
-          "archived": "Archived"
+          "draft": "Черновик",
+          "published": "Опубликовано",
+          "archived": "В архиве"
         },
-        "create": "Create event",
-        "save": "Save changes",
-        "saving": "Saving…"
+        "create": "Создать событие",
+        "save": "Сохранить изменения",
+        "saving": "Сохранение…"
       },
       "checkInSummary": {
-        "title": "Check-in summary",
-        "allowed": "Allowed",
-        "unique": "Unique visitors",
-        "duplicates": "Duplicate scans",
-        "denied": "Denied",
-        "day": "Day",
-        "noDays": "No check-ins recorded yet."
+        "title": "Сводка check-in",
+        "allowed": "Разрешено",
+        "unique": "Уникальные посетители",
+        "duplicates": "Повторные сканы",
+        "denied": "Отклонено",
+        "day": "День",
+        "noDays": "Регистраций пока нет."
       },
       "venueMaps": {
-        "title": "Venue maps",
-        "newMap": "New map",
-        "cancelCreate": "Cancel",
-        "empty": "No venue maps yet.",
-        "loading": "Loading maps…",
+        "title": "Карты площадки",
+        "newMap": "Новая карта",
+        "cancelCreate": "Отмена",
+        "empty": "Карт площадки пока нет.",
+        "loading": "Загрузка карт…",
         "form": {
-          "title": "Map title",
+          "title": "Название карты",
           "mediaAssetId": "Изображение карты",
-          "width": "Width (px)",
-          "height": "Height (px)",
-          "publication": "Publication",
+          "width": "Ширина (px)",
+          "height": "Высота (px)",
+          "publication": "Публикация",
           "publicationStatuses": {
-            "draft": "Draft",
-            "published": "Published",
-            "archived": "Archived"
+            "draft": "Черновик",
+            "published": "Опубликовано",
+            "archived": "В архиве"
           },
-          "create": "Create map",
-          "creating": "Creating…",
-          "save": "Save map",
-          "saving": "Saving…",
-          "delete": "Delete map"
+          "create": "Создать карту",
+          "creating": "Создание…",
+          "save": "Сохранить карту",
+          "saving": "Сохранение…",
+          "delete": "Удалить карту"
         }
       },
       "booths": {
-        "title": "Booths",
-        "newBooth": "New booth",
-        "loading": "Loading booths…",
-        "empty": "No booths on this map yet.",
-        "selectHint": "Select a booth or create a new one.",
+        "title": "Стенды",
+        "newBooth": "Новый стенд",
+        "loading": "Загрузка стендов…",
+        "empty": "На этой карте стендов пока нет.",
+        "selectHint": "Выберите стенд или создайте новый.",
         "form": {
-          "code": "Booth code",
-          "name": "Display name",
-          "type": "Type",
+          "code": "Код стенда",
+          "name": "Отображаемое имя",
+          "type": "Тип",
           "types": {
-            "builder": "Builder",
-            "bank": "Bank",
-            "partner": "Partner",
-            "sponsor": "Sponsor",
-            "service": "Service",
-            "info": "Info",
-            "entrance": "Entrance",
-            "other": "Other"
+            "builder": "Застройщик",
+            "bank": "Банк",
+            "partner": "Партнёр",
+            "sponsor": "Спонсор",
+            "service": "Услуга",
+            "info": "Информация",
+            "entrance": "Вход",
+            "other": "Другое"
           },
-          "xPercent": "X position (%)",
-          "yPercent": "Y position (%)",
-          "locationText": "Location hint",
-          "publication": "Publication",
+          "xPercent": "Позиция X (%)",
+          "yPercent": "Позиция Y (%)",
+          "locationText": "Подсказка по расположению",
+          "publication": "Публикация",
           "publicationStatuses": {
-            "draft": "Draft",
-            "published": "Published",
-            "archived": "Archived"
+            "draft": "Черновик",
+            "published": "Опубликовано",
+            "archived": "В архиве"
           },
-          "create": "Create booth",
-          "save": "Save booth",
-          "saving": "Saving…",
-          "delete": "Delete booth"
+          "create": "Создать стенд",
+          "save": "Сохранить стенд",
+          "saving": "Сохранение…",
+          "delete": "Удалить стенд"
         },
         "map": {
-          "noImage": "Map image is not available. Use a full https:// URL in the media field.",
-          "alt": "Venue map",
-          "hint": "Click the map to set X/Y coordinates in the form."
+          "noImage": "Изображение карты недоступно. Укажите полный https:// URL в поле медиа.",
+          "alt": "Карта площадки",
+          "hint": "Нажмите на карту, чтобы задать координаты X/Y в форме."
         },
         "assignments": {
           "title": "Назначения",
@@ -1454,29 +1457,29 @@
         }
       },
       "routeGraph": {
-        "title": "Route graph",
-        "nodes": "Nodes",
-        "edges": "Edges",
-        "addNode": "Add node",
-        "addEdge": "Add edge",
-        "code": "Code",
-        "label": "Label",
-        "type": "Type",
-        "booth": "Booth link",
-        "noBooth": "None",
-        "from": "From",
-        "to": "To",
-        "weight": "Weight",
-        "accessible": "Accessible",
-        "save": "Save graph",
-        "saving": "Saving…",
-        "saved": "Route graph saved.",
+        "title": "Граф маршрутов",
+        "nodes": "Узлы",
+        "edges": "Рёбра",
+        "addNode": "Добавить узел",
+        "addEdge": "Добавить ребро",
+        "code": "Код",
+        "label": "Метка",
+        "type": "Тип",
+        "booth": "Связь со стендом",
+        "noBooth": "Нет",
+        "from": "Откуда",
+        "to": "Куда",
+        "weight": "Вес",
+        "accessible": "Доступно",
+        "save": "Сохранить граф",
+        "saving": "Сохранение…",
+        "saved": "Граф маршрутов сохранён.",
         "nodeTypes": {
-          "entrance": "Entrance",
-          "intersection": "Intersection",
-          "booth": "Booth",
-          "info": "Info",
-          "other": "Other"
+          "entrance": "Вход",
+          "intersection": "Перекрёсток",
+          "booth": "Стенд",
+          "info": "Информация",
+          "other": "Другое"
         }
       }
     }
@@ -1991,7 +1994,7 @@
           "email": "Email",
           "meeting": "Встреча",
           "send_offer": "Отправить предложение",
-          "follow_up": "Follow-up",
+          "follow_up": "Повторный контакт",
           "status_update": "Смена статуса",
           "other": "Другое"
         },
@@ -2120,51 +2123,51 @@
       "archived": "В архиве"
     },
     "form": {
-      "type": "Type",
+      "type": "Тип",
       "slug": "Slug",
-      "status": "Status",
-      "publication": "Publication",
-      "featured": "Featured",
-      "featuredYes": "Yes",
-      "featuredNo": "No",
-      "shortDescription": "Short description",
-      "fullDescription": "Full description",
-      "contactPhone": "Phone",
+      "status": "Статус",
+      "publication": "Публикация",
+      "featured": "Избранное",
+      "featuredYes": "Да",
+      "featuredNo": "Нет",
+      "shortDescription": "Краткое описание",
+      "fullDescription": "Полное описание",
+      "contactPhone": "Телефон",
       "contactEmail": "Email",
-      "website": "Website",
+      "website": "Сайт",
       "socialFacebook": "Facebook",
       "socialInstagram": "Instagram",
       "socialLinkedin": "LinkedIn",
       "logoMedia": "Логотип",
       "coverMedia": "Обложка",
       "validation": {
-        "shortDescription": "Enter a short description in Armenian"
+        "shortDescription": "Введите краткое описание на армянском"
       }
     },
     "offers": {
-      "title": "Offers & services",
-      "pageTitle": "Offers",
-      "empty": "No offers yet.",
-      "add": "Add offer",
-      "edit": "Edit",
-      "delete": "Delete",
-      "create": "Create offer",
-      "save": "Save offer",
-      "cancel": "Cancel",
-      "sortOrder": "Sort order: {value}",
+      "title": "Предложения и услуги",
+      "pageTitle": "Предложения",
+      "empty": "Предложений пока нет.",
+      "add": "Добавить предложение",
+      "edit": "Изменить",
+      "delete": "Удалить",
+      "create": "Создать предложение",
+      "save": "Сохранить предложение",
+      "cancel": "Отмена",
+      "sortOrder": "Порядок: {value}",
       "fields": {
-        "title": "Title",
-        "description": "Description",
-        "publication": "Publication",
-        "sortOrder": "Sort order"
+        "title": "Заголовок",
+        "description": "Описание",
+        "publication": "Публикация",
+        "sortOrder": "Порядок сортировки"
       },
       "publication": {
-        "draft": "Draft",
-        "published": "Published",
-        "archived": "Archived"
+        "draft": "Черновик",
+        "published": "Опубликовано",
+        "archived": "В архиве"
       },
       "validation": {
-        "title": "Enter a title in Armenian"
+        "title": "Введите заголовок на армянском"
       }
     }
   },
@@ -2275,41 +2278,41 @@
   },
   "Checkin": {
     "badge": "Регистрация",
-    "profileLink": "Profile",
+    "profileLink": "Профиль",
     "meta": {
       "title": "Регистрация на входе",
       "description": "Сканируйте QR-код посетителя на входе на выставку."
     },
-    "loading": "Loading check-in…",
-    "error": "Could not load check-in. Try again.",
-    "activeEvent": "Active event",
-    "scanning": "Processing scan…",
+    "loading": "Загрузка регистрации…",
+    "error": "Не удалось загрузить регистрацию. Попробуйте ещё раз.",
+    "activeEvent": "Активное событие",
+    "scanning": "Обработка скана…",
     "noEvent": {
-      "title": "No active event",
-      "message": "There is no active exhibition event configured for check-in."
+      "title": "Нет активного события",
+      "message": "Для регистрации не настроено активное выставочное событие."
     },
     "result": {
-      "scanNext": "Scan next",
-      "time": "Checked in at {time}",
-      "duplicateHint": "This visitor was already checked in for this event.",
+      "scanNext": "Сканировать следующего",
+      "time": "Зарегистрирован в {time}",
+      "duplicateHint": "Этот посетитель уже был зарегистрирован на это событие.",
       "status": {
-        "allowed": "Allowed",
-        "duplicate_checkin": "Duplicate check-in",
-        "denied_invalid_qr": "Invalid QR",
-        "denied_blocked": "Blocked",
-        "error": "Error"
+        "allowed": "Разрешено",
+        "duplicate_checkin": "Повторная регистрация",
+        "denied_invalid_qr": "Недействительный QR",
+        "denied_blocked": "Заблокирован",
+        "error": "Ошибка"
       }
     },
     "recent": {
-      "title": "Recent check-ins",
-      "empty": "No check-ins yet.",
-      "unknownVisitor": "Unknown visitor",
+      "title": "Недавние регистрации",
+      "empty": "Регистраций пока нет.",
+      "unknownVisitor": "Неизвестный посетитель",
       "status": {
-        "allowed": "Allowed",
-        "duplicate_checkin": "Duplicate",
-        "denied_invalid_qr": "Invalid QR",
-        "denied_blocked": "Blocked",
-        "error": "Error"
+        "allowed": "Разрешено",
+        "duplicate_checkin": "Повтор",
+        "denied_invalid_qr": "Недействительный QR",
+        "denied_blocked": "Заблокирован",
+        "error": "Ошибка"
       }
     }
   },
@@ -2338,49 +2341,49 @@
       "title": "Карта выставки",
       "description": "Найдите застройщиков, партнёров и стенды на текущем событии ToonExpo."
     },
-    "loading": "Loading expo map…",
-    "error": "Could not load the expo map. Try again.",
+    "loading": "Загрузка карты выставки…",
+    "error": "Не удалось загрузить карту выставки. Попробуйте ещё раз.",
     "noEvent": {
-      "title": "No active event",
-      "message": "There is no published event map available right now."
+      "title": "Нет активного события",
+      "message": "Опубликованная карта события сейчас недоступна."
     },
     "search": {
-      "label": "Search booths",
-      "placeholder": "Company, project or booth code…",
+      "label": "Поиск стендов",
+      "placeholder": "Компания, проект или код стенда…",
       "meta": "{code} · {type}",
       "types": {
-        "builder": "Builder",
-        "bank": "Bank",
-        "partner": "Partner",
-        "sponsor": "Sponsor",
-        "service": "Service",
-        "info": "Info",
-        "entrance": "Entrance",
-        "other": "Other"
+        "builder": "Застройщик",
+        "bank": "Банк",
+        "partner": "Партнёр",
+        "sponsor": "Спонсор",
+        "service": "Услуга",
+        "info": "Информация",
+        "entrance": "Вход",
+        "other": "Другое"
       }
     },
     "list": {
-      "title": "All booths"
+      "title": "Все стенды"
     },
     "map": {
-      "noImage": "Map image is not available yet.",
-      "alt": "Venue map"
+      "noImage": "Изображение карты пока недоступно.",
+      "alt": "Карта площадки"
     },
     "booth": {
-      "close": "Close",
-      "code": "Booth {code}",
-      "openProject": "Open project",
-      "route": "Route",
-      "routeUnavailable": "Route not available",
+      "close": "Закрыть",
+      "code": "Стенд {code}",
+      "openProject": "Открыть проект",
+      "route": "Маршрут",
+      "routeUnavailable": "Маршрут недоступен",
       "types": {
-        "builder": "Builder",
-        "bank": "Bank",
-        "partner": "Partner",
-        "sponsor": "Sponsor",
-        "service": "Service",
-        "info": "Info",
-        "entrance": "Entrance",
-        "other": "Other"
+        "builder": "Застройщик",
+        "bank": "Банк",
+        "partner": "Партнёр",
+        "sponsor": "Спонсор",
+        "service": "Услуга",
+        "info": "Информация",
+        "entrance": "Вход",
+        "other": "Другое"
       }
     },
     "route": {

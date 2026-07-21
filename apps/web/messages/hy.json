@@ -1,4 +1,7 @@
 {
+  "Common": {
+    "close": "Փակել"
+  },
   "HomePage": {
     "brand": "ToonExpo",
     "tagline": "Անշարժ գույքի ցուցահանդեսային հարթակ Հայաստանի համար",
@@ -393,7 +396,7 @@
       "profile": "Պրոֆիլ",
       "password": "Գաղտնաբառ",
       "favorites": "Ընտրյալներ",
-      "checkin": "Check-in",
+      "checkin": "Գրանցում",
       "qr": "Իմ QR",
       "requests": "Իմ հայտերը"
     },
@@ -563,7 +566,7 @@
     "nav": {
       "label": "Ադմին նավիգացիա",
       "section": "Կառավարում",
-      "portalLabel": "Management portal",
+      "portalLabel": "Կառավարման պորտալ",
       "analytics": "Վերլուծություն",
       "companies": "Ընկերություններ",
       "partners": "Գործընկերներ",

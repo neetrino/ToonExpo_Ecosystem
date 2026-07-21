@@ -1,4 +1,7 @@
 {
+  "Common": {
+    "close": "Close"
+  },
   "HomePage": {
     "brand": "ToonExpo",
     "tagline": "Real estate exhibition platform for Armenia",
