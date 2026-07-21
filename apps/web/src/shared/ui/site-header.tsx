@@ -31,7 +31,8 @@ const SCROLL_SOLID_OFFSET_PX = 24;
 
 /**
  * Fixed public header — always visible while scrolling on every page.
- * Transparent hero variant solidifies after a short scroll for readability.
+ * Transparent hero variant is full-bleed over imagery, then matches the solid
+ * floating rounded chrome used on every other page.
  */
 export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) => {
   const t = useTranslations('Nav');
@@ -41,6 +42,8 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
   const [scrolled, setScrolled] = useState(false);
   const isTransparentStart = variant === 'transparent';
   const isOverHero = isTransparentStart && !scrolled && !menuOpen;
+  /** Solid chrome is always the same floating rounded bar on every page. */
+  const isFloating = !isOverHero;
   const needsSpacer = !isTransparentStart;
 
   useEffect(() => {
@@ -79,11 +82,11 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
     <>
       <header
         className={cn(
-          'fixed inset-x-0 top-0 z-[var(--z-header)] w-full',
-          'transition-[background-color,border-color,box-shadow,color,backdrop-filter] duration-[var(--duration-base)] ease-[var(--ease-out-premium)]',
-          isOverHero
-            ? 'border-b border-transparent bg-transparent text-on-dark'
-            : 'border-b border-border/80 bg-surface-elevated/90 text-ink shadow-xs backdrop-blur-xl',
+          'fixed z-[var(--z-header)]',
+          'transition-[top,left,right,border-radius,background-color,border-color,box-shadow,color,backdrop-filter] duration-[var(--duration-base)] ease-[var(--ease-out-premium)]',
+          isFloating
+            ? 'top-3 inset-x-3 overflow-hidden rounded-lg border border-border/80 bg-surface-elevated/90 text-ink shadow-xs backdrop-blur-xl sm:inset-x-4'
+            : 'inset-x-0 top-0 w-full rounded-none border-b border-transparent bg-transparent text-on-dark',
           className,
         )}
       >
@@ -229,7 +232,9 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
         ) : null}
       </header>
 
-      {needsSpacer ? <div className="h-[4.25rem] sm:h-[4.5rem]" aria-hidden /> : null}
+      {needsSpacer ? (
+        <div className="h-[calc(0.75rem+4.25rem)] sm:h-[calc(0.75rem+4.5rem)]" aria-hidden />
+      ) : null}
     </>
   );
 };
