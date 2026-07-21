@@ -30,6 +30,11 @@ export default async function SettingsLayout({ children, params }: SettingsLayou
     return null;
   }
 
+  if (user.accountType === 'platform_admin') {
+    redirect({ href: '/admin/settings', locale });
+    return null;
+  }
+
   const t = await getTranslations('Profile');
 
   return (

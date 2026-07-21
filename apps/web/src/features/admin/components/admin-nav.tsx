@@ -59,7 +59,7 @@ const PRIMARY_NAV_ITEMS: NavItem[] = [
 ];
 
 const SETTINGS_NAV_ITEM: NavItem = {
-  href: '/settings',
+  href: '/admin/settings',
   key: 'settings',
   icon: Settings,
 };

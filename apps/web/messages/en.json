@@ -576,6 +576,17 @@
       "bos": "BOS",
       "settings": "Settings"
     },
+    "settings": {
+      "title": "Settings",
+      "subtitle": "Your account details and security",
+      "profileTitle": "My profile",
+      "profileSubtitle": "Your ToonExpo admin account details",
+      "nav": {
+        "label": "Settings sections",
+        "profile": "Profile",
+        "password": "Password"
+      }
+    },
     "analytics": {
       "title": "Analytics",
       "subtitle": "Platform-wide activity and performance",
