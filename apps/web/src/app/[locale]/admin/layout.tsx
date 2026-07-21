@@ -42,6 +42,7 @@ export default async function AdminLayout({ children, params }: AdminLayoutProps
       userEmail={user.email}
       profileLabel={t('profileLink')}
       navLabel={t('nav.label')}
+      variant="rail"
       sidebar={<AdminNav />}
     >
       {children}

@@ -15,6 +15,7 @@ import {
 import type { LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { BrandLogo } from '@/shared/ui/brand-logo';
 import { Link, usePathname } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 
@@ -56,36 +57,43 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 /**
- * Compact sidebar nav for the platform admin area.
+ * Compact sidebar nav for the platform admin rail.
  */
 export const AdminNav = () => {
   const t = useTranslations('Admin.nav');
+  const tAdmin = useTranslations('Admin');
   const pathname = usePathname();
 
   return (
-    <nav aria-label={t('label')} className="flex flex-col gap-1">
-      <p className="mb-2 px-3 text-[10px] font-bold uppercase tracking-widest text-ink-muted">
-        {t('section')}
-      </p>
-      {NAV_ITEMS.map((item) => {
-        const active = pathname.startsWith(item.href);
-        const Icon = item.icon;
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={cn(
-              'flex items-center gap-2.5 rounded-sm px-3 py-2.5 text-sm font-medium transition-colors',
-              active
-                ? 'bg-brand-soft text-brand'
-                : 'text-ink-secondary hover:bg-surface hover:text-ink',
-            )}
-          >
-            <Icon className="size-4 shrink-0 opacity-80" aria-hidden />
-            {t(item.key)}
-          </Link>
-        );
-      })}
+    <nav aria-label={t('label')} className="flex h-full flex-col gap-1">
+      <div className="mb-5 hidden px-2 md:block">
+        <BrandLogo href="/admin" size="sm" inverted />
+        <p className="mt-2 px-0.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-on-dark/65">
+          {tAdmin('badge')} · {t('section')}
+        </p>
+      </div>
+
+      <div className="flex flex-1 flex-col gap-1">
+        {NAV_ITEMS.map((item) => {
+          const active = pathname.startsWith(item.href);
+          const Icon = item.icon;
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={cn(
+                'flex items-center gap-2.5 rounded-pill px-3.5 py-2.5 text-sm font-medium tracking-wide transition-colors',
+                active
+                  ? 'bg-surface-elevated text-brand-secondary shadow-xs'
+                  : 'text-on-dark/85 hover:bg-on-dark/10 hover:text-on-dark',
+              )}
+            >
+              <Icon className="size-4 shrink-0 opacity-90" aria-hidden />
+              {t(item.key)}
+            </Link>
+          );
+        })}
+      </div>
     </nav>
   );
 };

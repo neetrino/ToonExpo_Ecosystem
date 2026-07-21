@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 import { BrandLogo } from '@/shared/ui/brand-logo';
 import { IconButton } from '@/shared/ui/icon-button';
 import { LocaleSwitcher } from '@/shared/ui/locale-switcher';
+import { SiteHeader } from '@/shared/ui/site-header';
 import { Link, usePathname } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 
@@ -18,7 +19,16 @@ type PortalShellProps = {
   navLabel: string;
   children: ReactNode;
   sidebar: ReactNode;
+  /**
+   * `rail` — floating dark sidebar + public SiteHeader (admin).
+   * Default keeps the light portal card chrome.
+   */
+  variant?: 'default' | 'rail';
 };
+
+/** Matches SiteHeader solid spacer (`top-3` + bar height). */
+const SITE_HEADER_OFFSET_CLASS = 'top-[5.25rem]';
+const SITE_HEADER_RAIL_HEIGHT_CLASS = 'h-[calc(100vh-5.25rem)]';
 
 /**
  * Shared portal chrome: top bar + desktop sidebar + mobile drawer.
@@ -31,10 +41,12 @@ export const PortalShell = ({
   navLabel,
   children,
   sidebar,
+  variant = 'default',
 }: PortalShellProps) => {
   const t = useTranslations('Nav');
   const pathname = usePathname();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const isRail = variant === 'rail';
 
   useEffect(() => {
     setDrawerOpen(false);
@@ -53,49 +65,82 @@ export const PortalShell = ({
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-[var(--z-header)] border-b border-border bg-surface-elevated/95 backdrop-blur-md">
-        <div className="page-container flex items-center justify-between gap-3 py-3">
-          <div className="flex items-center gap-2">
+      {isRail ? <SiteHeader /> : null}
+
+      {!isRail ? (
+        <header className="sticky top-0 z-[var(--z-header)] border-b border-border bg-surface-elevated/95 backdrop-blur-md">
+          <div className="page-container flex items-center justify-between gap-3 py-3">
+            <div className="flex items-center gap-2">
+              <IconButton
+                label={t('menu')}
+                className="md:hidden"
+                variant="outline"
+                size="sm"
+                onClick={() => setDrawerOpen((open) => !open)}
+                aria-expanded={drawerOpen}
+                aria-controls="portal-mobile-nav"
+              >
+                {drawerOpen ? (
+                  <X className="size-4" aria-hidden />
+                ) : (
+                  <Menu className="size-4" aria-hidden />
+                )}
+              </IconButton>
+              <BrandLogo href={brandHref} badge={badge} size="sm" />
+            </div>
+            <div className="flex items-center gap-2 sm:gap-3">
+              <span className="hidden max-w-48 truncate text-sm text-ink-secondary lg:inline">
+                {userEmail}
+              </span>
+              <LocaleSwitcher />
+              <Link
+                href="/profile"
+                className="text-sm font-medium text-ink-secondary transition-colors hover:text-ink"
+              >
+                {profileLabel}
+              </Link>
+            </div>
+          </div>
+        </header>
+      ) : null}
+
+      {isRail ? (
+        <div className="flex flex-col gap-8 md:flex-row md:gap-8 md:py-0">
+          <div className="page-container flex items-center md:hidden">
             <IconButton
-              label={drawerOpen ? t('menu') : t('menu')}
-              className="md:hidden"
+              label={navLabel}
               variant="outline"
               size="sm"
-              onClick={() => setDrawerOpen((open) => !open)}
+              onClick={() => setDrawerOpen(true)}
               aria-expanded={drawerOpen}
               aria-controls="portal-mobile-nav"
             >
-              {drawerOpen ? (
-                <X className="size-4" aria-hidden />
-              ) : (
-                <Menu className="size-4" aria-hidden />
-              )}
+              <Menu className="size-4" aria-hidden />
             </IconButton>
-            <BrandLogo href={brandHref} badge={badge} size="sm" />
           </div>
-          <div className="flex items-center gap-2 sm:gap-3">
-            <span className="hidden max-w-48 truncate text-sm text-ink-secondary lg:inline">
-              {userEmail}
-            </span>
-            <LocaleSwitcher />
-            <Link
-              href="/profile"
-              className="text-sm font-medium text-ink-secondary transition-colors hover:text-ink"
+          <aside className="hidden w-60 shrink-0 self-stretch md:block">
+            <div
+              className={cn(
+                'sticky flex flex-col rounded-tr-[2.5rem] bg-brand-secondary p-4 shadow-md',
+                SITE_HEADER_OFFSET_CLASS,
+                SITE_HEADER_RAIL_HEIGHT_CLASS,
+              )}
             >
-              {profileLabel}
-            </Link>
-          </div>
+              {sidebar}
+            </div>
+          </aside>
+          <main className="page-container min-w-0 flex-1 py-6 md:py-8">{children}</main>
         </div>
-      </header>
-
-      <div className="page-container flex flex-col gap-8 py-6 md:flex-row md:py-8">
-        <aside className="hidden w-56 shrink-0 md:block">
-          <div className="sticky top-24 rounded-md border border-border bg-surface-elevated p-3 shadow-xs">
-            {sidebar}
-          </div>
-        </aside>
-        <main className="min-w-0 flex-1">{children}</main>
-      </div>
+      ) : (
+        <div className="page-container flex flex-col gap-8 py-6 md:flex-row md:py-8">
+          <aside className="hidden w-56 shrink-0 md:block">
+            <div className="sticky top-24 rounded-md border border-border bg-surface-elevated p-3 shadow-xs">
+              {sidebar}
+            </div>
+          </aside>
+          <main className="min-w-0 flex-1">{children}</main>
+        </div>
+      )}
 
       {drawerOpen ? (
         <div className="fixed inset-0 z-[var(--z-overlay)] md:hidden">
@@ -109,13 +154,18 @@ export const PortalShell = ({
             id="portal-mobile-nav"
             aria-label={navLabel}
             className={cn(
-              'absolute inset-y-0 left-0 flex w-[min(100%,20rem)] flex-col',
-              'border-r border-border bg-surface-elevated p-4 shadow-lg',
+              'absolute inset-y-0 left-0 flex w-[min(100%,20rem)] flex-col p-4 shadow-lg',
+              isRail ? 'bg-brand-secondary' : 'border-r border-border bg-surface-elevated',
             )}
           >
             <div className="mb-4 flex items-center justify-between">
-              <BrandLogo href={brandHref} badge={badge} size="sm" />
-              <IconButton label={t('menu')} size="sm" onClick={() => setDrawerOpen(false)}>
+              <BrandLogo href={brandHref} badge={badge} size="sm" inverted={isRail} />
+              <IconButton
+                label={t('menu')}
+                size="sm"
+                className={isRail ? 'text-on-dark hover:bg-on-dark/10' : undefined}
+                onClick={() => setDrawerOpen(false)}
+              >
                 <X className="size-4" aria-hidden />
               </IconButton>
             </div>
