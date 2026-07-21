@@ -24,7 +24,8 @@ export default async function BuildersPage({ params }: BuildersPageProps) {
   setRequestLocale(locale);
 
   const t = await getTranslations('Catalog');
-  const builders = await listBuilders({ locale });
+  /** Soft-fail when API is down during prerender (`next build` without Nest). */
+  const builders = await listBuilders({ locale }).catch(() => []);
 
   return (
     <div className="min-h-screen bg-background">
