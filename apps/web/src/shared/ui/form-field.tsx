@@ -1,6 +1,6 @@
-import type { ReactNode } from "react";
+import type { ReactNode } from 'react';
 
-import { cn } from "@/shared/ui/cn";
+import { cn } from '@/shared/ui/cn';
 
 export type FormFieldProps = {
   id: string;
@@ -8,6 +8,7 @@ export type FormFieldProps = {
   error?: string | undefined;
   children: ReactNode;
   className?: string | undefined;
+  labelClassName?: string | undefined;
 };
 
 /**
@@ -19,10 +20,11 @@ export const FormField = ({
   error,
   children,
   className,
+  labelClassName,
 }: FormFieldProps) => {
   return (
-    <div className={cn("flex flex-col gap-1.5", className)}>
-      <label htmlFor={id} className="text-sm font-medium text-ink">
+    <div className={cn('flex flex-col gap-2', className)}>
+      <label htmlFor={id} className={cn('text-sm font-medium text-ink', labelClassName)}>
         {label}
       </label>
       {children}

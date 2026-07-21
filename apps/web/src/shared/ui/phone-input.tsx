@@ -43,7 +43,7 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(function
       )}
     >
       <span
-        className="inline-flex shrink-0 items-center border-r border-border bg-surface px-3 text-sm font-medium text-ink-secondary"
+        className="inline-flex shrink-0 items-center border-r border-border/70 bg-accent-soft/60 px-3.5 text-sm font-semibold tracking-wide text-ink-secondary"
         aria-hidden
       >
         {PHONE_PREFIX}

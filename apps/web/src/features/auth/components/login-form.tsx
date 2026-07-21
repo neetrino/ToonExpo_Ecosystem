@@ -5,6 +5,11 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
+import {
+  AUTH_CONTROL_CLASS,
+  AUTH_LABEL_CLASS,
+  AUTH_SUBMIT_CLASS,
+} from '@/features/auth/constants/auth-form-styles';
 import { useLoginMutation } from '@/features/auth/hooks/use-auth';
 import { loginSchema, type LoginFormValues } from '@/features/auth/schemas/login.schema';
 import { mapAuthError } from '@/features/auth/utils/map-auth-error';
@@ -52,10 +57,11 @@ export const LoginForm = ({ returnUrl }: LoginFormProps) => {
   const busy = isSubmitting || loginMutation.isPending;
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-5" noValidate>
+    <form onSubmit={onSubmit} className="flex flex-col gap-6" noValidate>
       <FormField
         id="login-email"
         label={t('fields.email')}
+        labelClassName={AUTH_LABEL_CLASS}
         error={errors.email ? t('validation.email') : undefined}
       >
         <Input
@@ -64,7 +70,7 @@ export const LoginForm = ({ returnUrl }: LoginFormProps) => {
           autoComplete="email"
           placeholder={t('login.placeholders.email')}
           aria-invalid={Boolean(errors.email)}
-          className="bg-surface-input"
+          className={AUTH_CONTROL_CLASS}
           {...register('email')}
         />
       </FormField>
@@ -72,6 +78,7 @@ export const LoginForm = ({ returnUrl }: LoginFormProps) => {
       <FormField
         id="login-password"
         label={t('fields.password')}
+        labelClassName={AUTH_LABEL_CLASS}
         error={errors.password ? t('validation.password') : undefined}
       >
         <PasswordInput
@@ -79,35 +86,44 @@ export const LoginForm = ({ returnUrl }: LoginFormProps) => {
           autoComplete="current-password"
           placeholder={t('login.placeholders.password')}
           aria-invalid={Boolean(errors.password)}
-          className="bg-surface-input"
+          className={AUTH_CONTROL_CLASS}
           revealLabel={t('fields.showPassword')}
           hideLabel={t('fields.hidePassword')}
           {...register('password')}
         />
       </FormField>
 
-      <p className="-mt-1 text-right text-sm">
+      <p className="-mt-2 text-right text-sm">
         <Link
           href="/auth/forgot-password"
-          className="font-medium text-brand transition-colors hover:text-brand-hover"
+          className="font-medium tracking-tight text-brand transition-colors hover:text-brand-hover"
         >
           {t('login.forgotPassword')}
         </Link>
       </p>
 
       {formError ? (
-        <p role="alert" className="rounded-sm bg-danger-soft px-3 py-2.5 text-sm text-danger">
+        <p role="alert" className="rounded-md bg-danger-soft px-3.5 py-2.5 text-sm text-danger">
           {formError}
         </p>
       ) : null}
 
-      <Button type="submit" variant="secondary" size="lg" disabled={busy} className="mt-1 w-full">
+      <Button
+        type="submit"
+        variant="secondary"
+        size="lg"
+        disabled={busy}
+        className={AUTH_SUBMIT_CLASS}
+      >
         {busy ? t('login.submitting') : t('login.submit')}
       </Button>
 
-      <div className="relative py-1">
-        <div className="absolute inset-x-0 top-1/2 h-px bg-border" aria-hidden />
-        <p className="relative mx-auto w-fit bg-surface-elevated px-3 text-center text-sm text-ink-secondary">
+      <div className="relative pt-1">
+        <div
+          className="absolute inset-x-0 top-1/2 h-px bg-gradient-to-r from-transparent via-border to-transparent"
+          aria-hidden
+        />
+        <p className="relative mx-auto w-fit bg-surface-elevated px-4 text-center text-sm text-ink-secondary">
           {t('login.noAccount')}{' '}
           <Link
             href="/auth/register"

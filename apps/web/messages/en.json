@@ -326,6 +326,8 @@
       "panelTitle": "Your gateway to new developments",
       "loginBody": "Sign in to manage favorites, requests, and your exhibition profile.",
       "registerBody": "Create a free buyer account to save homes, send requests, and check in at the expo.",
+      "loginEyebrow": "Welcome back",
+      "registerEyebrow": "Private access",
       "backHome": "Back to home"
     },
     "fields": {

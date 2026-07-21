@@ -3,8 +3,14 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 
+import {
+  AUTH_CONTROL_CLASS,
+  AUTH_LABEL_CLASS,
+  AUTH_PHONE_CLASS,
+  AUTH_SUBMIT_CLASS,
+} from '@/features/auth/constants/auth-form-styles';
 import { useRegisterMutation } from '@/features/auth/hooks/use-auth';
 import {
   registerSchema,
@@ -58,11 +64,12 @@ export const RegisterForm = () => {
   const busy = isSubmitting || registerMutation.isPending;
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-5" noValidate>
-      <div className="grid gap-5 sm:grid-cols-2">
+    <form onSubmit={onSubmit} className="flex flex-col gap-5 sm:gap-6" noValidate>
+      <div className="grid gap-5 sm:grid-cols-2 sm:gap-4">
         <FormField
           id="register-first-name"
           label={t('fields.firstName')}
+          labelClassName={AUTH_LABEL_CLASS}
           error={errors.firstName ? t('validation.firstName') : undefined}
         >
           <Input
@@ -70,7 +77,7 @@ export const RegisterForm = () => {
             autoComplete="given-name"
             placeholder={t('register.placeholders.firstName')}
             aria-invalid={Boolean(errors.firstName)}
-            className="bg-surface-input"
+            className={AUTH_CONTROL_CLASS}
             {...register('firstName')}
           />
         </FormField>
@@ -78,6 +85,7 @@ export const RegisterForm = () => {
         <FormField
           id="register-surname"
           label={t('fields.surname')}
+          labelClassName={AUTH_LABEL_CLASS}
           error={errors.surname ? t('validation.surname') : undefined}
         >
           <Input
@@ -85,7 +93,7 @@ export const RegisterForm = () => {
             autoComplete="family-name"
             placeholder={t('register.placeholders.surname')}
             aria-invalid={Boolean(errors.surname)}
-            className="bg-surface-input"
+            className={AUTH_CONTROL_CLASS}
             {...register('surname')}
           />
         </FormField>
@@ -94,6 +102,7 @@ export const RegisterForm = () => {
       <FormField
         id="register-phone"
         label={t('fields.phone')}
+        labelClassName={AUTH_LABEL_CLASS}
         error={errors.phone ? t('validation.phone') : undefined}
       >
         <Controller
@@ -108,7 +117,7 @@ export const RegisterForm = () => {
               ref={field.ref}
               placeholder={t('register.placeholders.phone')}
               aria-invalid={Boolean(errors.phone)}
-              className="bg-surface-input"
+              className={AUTH_PHONE_CLASS}
               onChange={field.onChange}
             />
           )}
@@ -118,6 +127,7 @@ export const RegisterForm = () => {
       <FormField
         id="register-email"
         label={t('fields.email')}
+        labelClassName={AUTH_LABEL_CLASS}
         error={errors.email ? t('validation.email') : undefined}
       >
         <Input
@@ -126,7 +136,7 @@ export const RegisterForm = () => {
           autoComplete="email"
           placeholder={t('register.placeholders.email')}
           aria-invalid={Boolean(errors.email)}
-          className="bg-surface-input"
+          className={AUTH_CONTROL_CLASS}
           {...register('email')}
         />
       </FormField>
@@ -134,6 +144,7 @@ export const RegisterForm = () => {
       <FormField
         id="register-password"
         label={t('fields.password')}
+        labelClassName={AUTH_LABEL_CLASS}
         error={errors.password ? t('validation.password') : undefined}
       >
         <PasswordInput
@@ -141,7 +152,7 @@ export const RegisterForm = () => {
           autoComplete="new-password"
           placeholder={t('register.placeholders.password')}
           aria-invalid={Boolean(errors.password)}
-          className="bg-surface-input"
+          className={AUTH_CONTROL_CLASS}
           revealLabel={t('fields.showPassword')}
           hideLabel={t('fields.hidePassword')}
           {...register('password')}
@@ -151,6 +162,7 @@ export const RegisterForm = () => {
       <FormField
         id="register-confirm-password"
         label={t('fields.confirmPassword')}
+        labelClassName={AUTH_LABEL_CLASS}
         error={errors.confirmPassword ? t('validation.confirmPassword') : undefined}
       >
         <PasswordInput
@@ -158,7 +170,7 @@ export const RegisterForm = () => {
           autoComplete="new-password"
           placeholder={t('register.placeholders.confirmPassword')}
           aria-invalid={Boolean(errors.confirmPassword)}
-          className="bg-surface-input"
+          className={AUTH_CONTROL_CLASS}
           revealLabel={t('fields.showPassword')}
           hideLabel={t('fields.hidePassword')}
           {...register('confirmPassword')}
@@ -166,18 +178,27 @@ export const RegisterForm = () => {
       </FormField>
 
       {formError ? (
-        <p role="alert" className="rounded-sm bg-danger-soft px-3 py-2.5 text-sm text-danger">
+        <p role="alert" className="rounded-md bg-danger-soft px-3.5 py-2.5 text-sm text-danger">
           {formError}
         </p>
       ) : null}
 
-      <Button type="submit" variant="secondary" size="lg" disabled={busy} className="mt-1 w-full">
+      <Button
+        type="submit"
+        variant="secondary"
+        size="lg"
+        disabled={busy}
+        className={AUTH_SUBMIT_CLASS}
+      >
         {busy ? t('register.submitting') : t('register.submit')}
       </Button>
 
-      <div className="relative py-1">
-        <div className="absolute inset-x-0 top-1/2 h-px bg-border" aria-hidden />
-        <p className="relative mx-auto w-fit bg-surface-elevated px-3 text-center text-sm text-ink-secondary">
+      <div className="relative pt-1">
+        <div
+          className="absolute inset-x-0 top-1/2 h-px bg-gradient-to-r from-transparent via-border to-transparent"
+          aria-hidden
+        />
+        <p className="relative mx-auto w-fit bg-surface-elevated px-4 text-center text-sm text-ink-secondary">
           {t('register.hasAccount')}{' '}
           <Link
             href="/auth/login"
