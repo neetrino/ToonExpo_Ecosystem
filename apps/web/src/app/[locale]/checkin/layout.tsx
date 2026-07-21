@@ -59,7 +59,10 @@ export default async function CheckinLayout({ children, params }: CheckinLayoutP
           <div className="flex items-center gap-3">
             <span className="hidden text-sm text-ink-secondary sm:inline">{user.email}</span>
             <LocaleSwitcher />
-            <Link href="/profile" className="text-sm font-medium text-ink-secondary hover:text-ink">
+            <Link
+              href="/settings"
+              className="text-sm font-medium text-ink-secondary hover:text-ink"
+            >
               {t('profileLink')}
             </Link>
           </div>

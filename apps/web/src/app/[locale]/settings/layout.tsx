@@ -6,15 +6,15 @@ import { ProfileNav } from '@/features/buyer/components/profile-nav';
 import { getMeOrNull } from '@/features/auth/api/auth-api';
 import { redirect } from '@/i18n/navigation';
 
-type ProfileLayoutProps = {
+type SettingsLayoutProps = {
   children: ReactNode;
   params: Promise<{ locale: string }>;
 };
 
 /**
- * Authenticated buyer cabinet shell with mobile-first section tabs.
+ * Authenticated account settings shell with mobile-first section tabs.
  */
-export default async function ProfileLayout({ children, params }: ProfileLayoutProps) {
+export default async function SettingsLayout({ children, params }: SettingsLayoutProps) {
   const { locale } = await params;
   setRequestLocale(locale);
 
@@ -24,7 +24,7 @@ export default async function ProfileLayout({ children, params }: ProfileLayoutP
 
   if (!user) {
     redirect({
-      href: '/auth/login?returnUrl=%2Fprofile',
+      href: '/auth/login?returnUrl=%2Fsettings',
       locale,
     });
     return null;

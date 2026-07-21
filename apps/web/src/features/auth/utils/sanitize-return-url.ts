@@ -3,18 +3,18 @@
  */
 export const sanitizeReturnUrl = (
   value: string | null | undefined,
-  fallback = "/profile",
+  fallback = '/settings',
 ): string => {
   if (!value) {
     return fallback;
   }
 
   const trimmed = value.trim();
-  if (!trimmed.startsWith("/") || trimmed.startsWith("//")) {
+  if (!trimmed.startsWith('/') || trimmed.startsWith('//')) {
     return fallback;
   }
 
-  if (trimmed.includes("://") || trimmed.includes("\\")) {
+  if (trimmed.includes('://') || trimmed.includes('\\')) {
     return fallback;
   }
 

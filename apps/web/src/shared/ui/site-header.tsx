@@ -142,7 +142,7 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
             ) : user ? (
               <div className="hidden items-center gap-2 sm:flex">
                 <Link
-                  href="/profile"
+                  href="/settings"
                   className={cn(
                     'max-w-28 truncate text-sm font-medium',
                     isOverHero ? 'text-on-dark hover:opacity-80' : 'text-ink hover:text-brand',
@@ -244,7 +244,7 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
                 </>
               ) : (
                 <Link
-                  href="/profile"
+                  href="/settings"
                   className="rounded-sm px-3 py-3 font-medium text-ink hover:bg-surface"
                   onClick={() => setMenuOpen(false)}
                 >

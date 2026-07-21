@@ -9,6 +9,7 @@ import {
   LayoutList,
   LineChart,
   ScanLine,
+  Settings,
   Tags,
   Workflow,
 } from 'lucide-react';
@@ -31,11 +32,12 @@ type NavItem = {
     | 'readiness'
     | 'readinessCategories'
     | 'bos'
-    | 'events';
+    | 'events'
+    | 'settings';
   icon: LucideIcon;
 };
 
-const NAV_ITEMS: NavItem[] = [
+const PRIMARY_NAV_ITEMS: NavItem[] = [
   { href: '/admin/analytics', key: 'analytics', icon: LineChart },
   { href: '/admin/companies', key: 'companies', icon: Building2 },
   { href: '/admin/checkin', key: 'checkin', icon: ScanLine },
@@ -56,6 +58,24 @@ const NAV_ITEMS: NavItem[] = [
   { href: '/admin/events', key: 'events', icon: CalendarDays },
 ];
 
+const SETTINGS_NAV_ITEM: NavItem = {
+  href: '/settings',
+  key: 'settings',
+  icon: Settings,
+};
+
+const ALL_NAV_ITEMS: NavItem[] = [...PRIMARY_NAV_ITEMS, SETTINGS_NAV_ITEM];
+
+const NAV_ICON_CLASS = 'size-5 shrink-0 opacity-90';
+
+const navLinkClassName = (active: boolean): string =>
+  cn(
+    'flex items-center gap-3 rounded-pill px-3.5 py-2.5 text-base font-medium tracking-wide transition-colors',
+    active
+      ? 'bg-surface-elevated text-brand-secondary shadow-xs'
+      : 'text-on-dark/85 hover:bg-on-dark/10 hover:text-on-dark',
+  );
+
 /**
  * Compact sidebar nav for the platform admin rail.
  */
@@ -71,7 +91,7 @@ export const AdminNav = () => {
       return false;
     }
     // Prefer a more specific nav item (e.g. Categories over Readiness).
-    return !NAV_ITEMS.some(
+    return !ALL_NAV_ITEMS.some(
       (item) =>
         item.href !== href &&
         item.href.startsWith(`${href}/`) &&
@@ -89,25 +109,26 @@ export const AdminNav = () => {
       </div>
 
       <div className="flex flex-1 flex-col gap-1">
-        {NAV_ITEMS.map((item) => {
+        {PRIMARY_NAV_ITEMS.map((item) => {
           const active = isItemActive(item.href);
           const Icon = item.icon;
           return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                'flex items-center gap-2.5 rounded-pill px-3.5 py-2.5 text-sm font-medium tracking-wide transition-colors',
-                active
-                  ? 'bg-surface-elevated text-brand-secondary shadow-xs'
-                  : 'text-on-dark/85 hover:bg-on-dark/10 hover:text-on-dark',
-              )}
-            >
-              <Icon className="size-4 shrink-0 opacity-90" aria-hidden />
+            <Link key={item.href} href={item.href} className={navLinkClassName(active)}>
+              <Icon className={NAV_ICON_CLASS} aria-hidden />
               {t(item.key)}
             </Link>
           );
         })}
+      </div>
+
+      <div className="mt-auto border-t border-on-dark/15 pt-3">
+        <Link
+          href={SETTINGS_NAV_ITEM.href}
+          className={navLinkClassName(isItemActive(SETTINGS_NAV_ITEM.href))}
+        >
+          <Settings className={NAV_ICON_CLASS} aria-hidden />
+          {t(SETTINGS_NAV_ITEM.key)}
+        </Link>
       </div>
     </nav>
   );

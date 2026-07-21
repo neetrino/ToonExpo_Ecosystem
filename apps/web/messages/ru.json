@@ -573,7 +573,8 @@
       "serviceProviders": "Поставщики услуг",
       "events": "События",
       "checkin": "Сканер check-in",
-      "bos": "BOS"
+      "bos": "BOS",
+      "settings": "Настройки"
     },
     "analytics": {
       "title": "Аналитика",

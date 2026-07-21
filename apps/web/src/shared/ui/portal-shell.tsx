@@ -95,7 +95,7 @@ export const PortalShell = ({
               </span>
               <LocaleSwitcher />
               <Link
-                href="/profile"
+                href="/settings"
                 className="text-sm font-medium text-ink-secondary transition-colors hover:text-ink"
               >
                 {profileLabel}
@@ -119,7 +119,7 @@ export const PortalShell = ({
               <Menu className="size-4" aria-hidden />
             </IconButton>
           </div>
-          <aside className="hidden w-60 shrink-0 self-stretch md:block">
+          <aside className="hidden w-72 shrink-0 self-stretch md:block">
             <div
               className={cn(
                 'sticky flex flex-col rounded-tr-[2.5rem] bg-brand-secondary p-4 shadow-md',

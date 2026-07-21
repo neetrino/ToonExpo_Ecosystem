@@ -573,7 +573,8 @@
       "readinessCategories": "Կատեգորիաներ",
       "events": "Միջոցառումներ",
       "checkin": "Գրանցման սկաներ",
-      "bos": "BOS"
+      "bos": "BOS",
+      "settings": "Կարգավորումներ"
     },
     "analytics": {
       "title": "Վերլուծություն",

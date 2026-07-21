@@ -13,35 +13,35 @@ type NavKey = 'profile' | 'password' | 'qr' | 'requests' | 'favorites' | 'checki
 
 type NavItem = {
   href:
-    | '/profile'
-    | '/profile/password'
-    | '/profile/qr'
-    | '/profile/requests'
-    | '/profile/favorites'
-    | '/profile/checkin';
+    | '/settings'
+    | '/settings/password'
+    | '/settings/qr'
+    | '/settings/requests'
+    | '/settings/favorites'
+    | '/settings/checkin';
   key: NavKey;
   buyerOnly: boolean;
   icon: LucideIcon;
 };
 
 const NAV_ITEMS: NavItem[] = [
-  { href: '/profile', key: 'profile', buyerOnly: false, icon: UserRound },
-  { href: '/profile/password', key: 'password', buyerOnly: false, icon: KeyRound },
-  { href: '/profile/favorites', key: 'favorites', buyerOnly: true, icon: Heart },
-  { href: '/profile/checkin', key: 'checkin', buyerOnly: true, icon: ScanLine },
-  { href: '/profile/qr', key: 'qr', buyerOnly: true, icon: QrCode },
-  { href: '/profile/requests', key: 'requests', buyerOnly: true, icon: Inbox },
+  { href: '/settings', key: 'profile', buyerOnly: false, icon: UserRound },
+  { href: '/settings/password', key: 'password', buyerOnly: false, icon: KeyRound },
+  { href: '/settings/favorites', key: 'favorites', buyerOnly: true, icon: Heart },
+  { href: '/settings/checkin', key: 'checkin', buyerOnly: true, icon: ScanLine },
+  { href: '/settings/qr', key: 'qr', buyerOnly: true, icon: QrCode },
+  { href: '/settings/requests', key: 'requests', buyerOnly: true, icon: Inbox },
 ];
 
 const isActive = (pathname: string, href: string): boolean => {
-  if (href === '/profile') {
-    return pathname === '/profile';
+  if (href === '/settings') {
+    return pathname === '/settings';
   }
   return pathname === href || pathname.startsWith(`${href}/`);
 };
 
 /**
- * Horizontal cabinet tabs for the buyer profile area (mobile-first).
+ * Horizontal cabinet tabs for the account settings area (mobile-first).
  */
 export const ProfileNav = () => {
   const t = useTranslations('Profile.nav');

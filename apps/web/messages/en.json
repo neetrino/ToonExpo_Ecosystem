@@ -573,7 +573,8 @@
       "readinessCategories": "Categories",
       "events": "Events",
       "checkin": "Check-in scanner",
-      "bos": "BOS"
+      "bos": "BOS",
+      "settings": "Settings"
     },
     "analytics": {
       "title": "Analytics",
