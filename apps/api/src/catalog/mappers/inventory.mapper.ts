@@ -1,18 +1,14 @@
-import type { BuildingDetail, FloorDetail } from "@toonexpo/contracts";
-import type { ApartmentSalesStatus, Prisma } from "@toonexpo/db";
-import type { SupportedLocale } from "@toonexpo/shared";
+import type { BuildingDetail, FloorDetail } from '@toonexpo/contracts';
+import type { ApartmentSalesStatus, Prisma } from '@toonexpo/db';
+import type { SupportedLocale } from '@toonexpo/shared';
 
 import {
   resolveTranslatedValue,
   TRANSLATION_ENTITY,
   TRANSLATION_FIELD,
   type TranslationRow,
-} from "../utils/resolve-translation.js";
-import {
-  shouldRevealPrice,
-  summarizeSalesStatuses,
-  toMediaSummary,
-} from "./catalog.mapper.js";
+} from '../utils/resolve-translation.js';
+import { shouldRevealPrice, summarizeSalesStatuses, toMediaSummary } from './catalog.mapper.js';
 
 type MapContext = {
   locale: SupportedLocale;
@@ -41,10 +37,11 @@ const mapFloorApartment = (
   rooms: apartment.rooms,
   areaTotal: apartment.areaTotal?.toString() ?? null,
   price: shouldRevealPrice(apartment.priceVisibility, isAuthenticated)
-    ? apartment.price?.toString() ?? null
+    ? (apartment.price?.toString() ?? null)
     : null,
   priceCurrency: apartment.priceCurrency,
-  priceVisibility: apartment.priceVisibility as FloorDetail["apartments"][number]["priceVisibility"],
+  priceVisibility:
+    apartment.priceVisibility as FloorDetail['apartments'][number]['priceVisibility'],
 });
 
 export const mapBuildingDetail = (
@@ -125,6 +122,7 @@ export const mapFloorDetail = (
     name: string | null;
     displayLabel: string | null;
     displayOrder: number;
+    floorplanMedia: MediaRow;
     building: { id: string; name: string };
     project: { id: string; name: string; slug: string };
     apartments: Array<{
@@ -156,6 +154,7 @@ export const mapFloorDetail = (
     name: floor.name,
     displayLabel: floor.displayLabel,
     displayOrder: floor.displayOrder,
+    floorplan: toMediaSummary(floor.floorplanMedia),
     availability: summarizeSalesStatuses(
       floor.apartments.map((apartment) => apartment.salesStatus),
     ),

@@ -11,14 +11,14 @@
       "description": "Public catalog of new developments, apartments and builders in Armenia."
     },
     "hero": {
-      "eyebrow": "Discover your next home",
+      "eyebrow": "Armenia real estate exhibition",
       "title": "Toon Expo",
-      "findProject": "Find a project",
-      "searchLabel": "Search by city",
-      "searchPlaceholder": "Project name, builder, or city…",
+      "findProject": "Find your next home with confidence",
+      "searchLabel": "Search projects",
+      "searchPlaceholder": "Project, builder, or city…",
       "search": "Search",
-      "explore": "Explore Projects",
-      "register": "Register Free"
+      "explore": "Explore projects",
+      "register": "Register free"
     },
     "stats": {
       "badge": "Market pulse",
@@ -32,16 +32,75 @@
       "citiesHint": "Coverage"
     },
     "featured": {
-      "eyebrow": "New developments",
-      "title": "New developments to watch.",
-      "viewAll": "View all →",
+      "eyebrow": "Featured",
+      "title": "Developments to watch",
+      "viewAll": "View all",
       "empty": "No published projects yet."
     },
     "builders": {
-      "eyebrow": "Partners",
-      "title": "Trusted builders",
-      "viewAll": "View all →",
+      "eyebrow": "Builders",
+      "title": "Trusted development partners",
+      "viewAll": "View all",
       "empty": "No builders yet."
+    },
+    "explore": {
+      "eyebrow": "Explore",
+      "title": "Browse by location",
+      "description": "Start with districts and cities represented in the live catalog.",
+      "allProjects": "All projects"
+    },
+    "exhibition": {
+      "eyebrow": "Exhibition",
+      "title": "The ToonExpo experience",
+      "description": "Discover projects on the venue map, keep your permanent QR ready, and meet builders in person.",
+      "cta": "Open expo map",
+      "items": {
+        "map": {
+          "title": "Venue map",
+          "body": "Orient yourself and find builder booths quickly."
+        },
+        "qr": {
+          "title": "Permanent QR",
+          "body": "One visitor identity for the whole exhibition."
+        },
+        "scan": {
+          "title": "Builder scans",
+          "body": "Share interest instantly when a builder scans your code."
+        },
+        "builders": {
+          "title": "Meet builders",
+          "body": "Connect catalog discovery with on-site conversations."
+        }
+      }
+    },
+    "mortgage": {
+      "eyebrow": "Financing",
+      "title": "Plan your mortgage with bank partners",
+      "description": "Compare published bank offers and estimate monthly payments before you visit the exhibition.",
+      "cta": "Open calculator",
+      "partnersCta": "View partners",
+      "cardTitle": "Bank offers in one place",
+      "cardBody": "Transparent rates and terms from ToonExpo bank partners.",
+      "bullets": {
+        "rates": "Published rate ranges",
+        "terms": "Term and down-payment guidance",
+        "compare": "Side-by-side comparison"
+      }
+    },
+    "partners": {
+      "eyebrow": "Ecosystem",
+      "title": "Partners & banks",
+      "description": "Trusted participants supporting buyers across the exhibition journey.",
+      "viewAll": "View all",
+      "empty": "Partners will appear here once published."
+    },
+    "finalCta": {
+      "eyebrow": "Join ToonExpo",
+      "title": "Ready for your next home?",
+      "description": "Create a free buyer account, save favorites, and bring your permanent QR to the exhibition.",
+      "register": "Create account",
+      "browse": "Browse projects",
+      "expo": "Exhibition map"
     }
   },
   "Nav": {
@@ -70,7 +129,12 @@
       "expo": "Expo map"
     },
     "trust": "Verified listings · GDPR-ready · Encrypted in transit",
-    "copyright": "© 2026 Toon Expo"
+    "copyright": "© 2026 Toon Expo",
+    "legal": "Legal",
+    "contact": "Contact",
+    "contactEmail": "hello@toonexpo.am",
+    "privacy": "Privacy",
+    "terms": "Terms"
   },
   "Catalog": {
     "price": {
@@ -126,7 +190,8 @@
       "salesStatus": "Status",
       "any": "Any",
       "pricePlaceholder": "AMD",
-      "apply": "Apply"
+      "apply": "Apply",
+      "title": "Filters"
     },
     "pagination": {
       "previous": "Previous",
@@ -162,7 +227,9 @@
       "apartments": "Apartments",
       "noApartments": "No published apartments yet.",
       "backToBuilding": "← Back to building",
-      "notFoundTitle": "Floor not found"
+      "notFoundTitle": "Floor not found",
+      "floorplanTitle": "Floor plan",
+      "floorplanAlt": "Floor plan image"
     },
     "visualMap": {
       "title": "Site map",
@@ -496,6 +563,7 @@
     "nav": {
       "label": "Admin navigation",
       "section": "Manage",
+      "portalLabel": "Management portal",
       "analytics": "Analytics",
       "companies": "Companies",
       "partners": "Partners",
@@ -505,7 +573,19 @@
       "readinessCategories": "Categories",
       "events": "Events",
       "checkin": "Check-in scanner",
-      "bos": "BOS"
+      "bos": "BOS",
+      "settings": "Settings"
+    },
+    "settings": {
+      "title": "Settings",
+      "subtitle": "Your account details and security",
+      "profileTitle": "My profile",
+      "profileSubtitle": "Your ToonExpo admin account details",
+      "nav": {
+        "label": "Settings sections",
+        "profile": "Profile",
+        "password": "Password"
+      }
     },
     "analytics": {
       "title": "Analytics",

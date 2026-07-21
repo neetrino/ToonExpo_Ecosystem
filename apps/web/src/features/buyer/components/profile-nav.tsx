@@ -1,5 +1,7 @@
 'use client';
 
+import { Heart, KeyRound, QrCode, ScanLine, UserRound, Inbox } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { isBuyerAccount } from '@/features/buyer/utils/is-buyer-account';
@@ -11,34 +13,35 @@ type NavKey = 'profile' | 'password' | 'qr' | 'requests' | 'favorites' | 'checki
 
 type NavItem = {
   href:
-    | '/profile'
-    | '/profile/password'
-    | '/profile/qr'
-    | '/profile/requests'
-    | '/profile/favorites'
-    | '/profile/checkin';
+    | '/settings'
+    | '/settings/password'
+    | '/settings/qr'
+    | '/settings/requests'
+    | '/settings/favorites'
+    | '/settings/checkin';
   key: NavKey;
   buyerOnly: boolean;
+  icon: LucideIcon;
 };
 
 const NAV_ITEMS: NavItem[] = [
-  { href: '/profile', key: 'profile', buyerOnly: false },
-  { href: '/profile/password', key: 'password', buyerOnly: false },
-  { href: '/profile/favorites', key: 'favorites', buyerOnly: true },
-  { href: '/profile/checkin', key: 'checkin', buyerOnly: true },
-  { href: '/profile/qr', key: 'qr', buyerOnly: true },
-  { href: '/profile/requests', key: 'requests', buyerOnly: true },
+  { href: '/settings', key: 'profile', buyerOnly: false, icon: UserRound },
+  { href: '/settings/password', key: 'password', buyerOnly: false, icon: KeyRound },
+  { href: '/settings/favorites', key: 'favorites', buyerOnly: true, icon: Heart },
+  { href: '/settings/checkin', key: 'checkin', buyerOnly: true, icon: ScanLine },
+  { href: '/settings/qr', key: 'qr', buyerOnly: true, icon: QrCode },
+  { href: '/settings/requests', key: 'requests', buyerOnly: true, icon: Inbox },
 ];
 
 const isActive = (pathname: string, href: string): boolean => {
-  if (href === '/profile') {
-    return pathname === '/profile';
+  if (href === '/settings') {
+    return pathname === '/settings';
   }
   return pathname === href || pathname.startsWith(`${href}/`);
 };
 
 /**
- * Horizontal cabinet tabs for the buyer profile area (mobile-first).
+ * Horizontal cabinet tabs for the account settings area (mobile-first).
  */
 export const ProfileNav = () => {
   const t = useTranslations('Profile.nav');
@@ -49,18 +52,22 @@ export const ProfileNav = () => {
   const items = NAV_ITEMS.filter((item) => !item.buyerOnly || showBuyerTabs);
 
   return (
-    <nav aria-label={t('label')} className="-mx-1 flex gap-1 overflow-x-auto pb-1">
+    <nav aria-label={t('label')} className="-mx-1 flex gap-1.5 overflow-x-auto pb-1">
       {items.map((item) => {
         const active = isActive(pathname, item.href);
+        const Icon = item.icon;
         return (
           <Link
             key={item.href}
             href={item.href}
             className={cn(
-              'shrink-0 rounded-pill px-4 py-2.5 text-sm font-medium transition-colors',
-              active ? 'bg-brand text-on-dark' : 'bg-surface text-ink-secondary hover:text-ink',
+              'inline-flex shrink-0 items-center gap-1.5 rounded-pill px-3.5 py-2.5 text-sm font-medium transition-colors',
+              active
+                ? 'bg-brand text-on-brand shadow-xs'
+                : 'bg-surface text-ink-secondary hover:text-ink',
             )}
           >
+            <Icon className="size-3.5 opacity-90" aria-hidden />
             {t(item.key)}
           </Link>
         );

@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import type { BuilderSummary } from "@toonexpo/contracts";
-import Image from "next/image";
-import { useTranslations } from "next-intl";
+import type { BuilderSummary } from '@toonexpo/contracts';
+import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
-import { Link } from "@/i18n/navigation";
-import { cn } from "@/shared/ui/cn";
+import { Link } from '@/i18n/navigation';
+import { cn } from '@/shared/ui/cn';
 
 type BuilderCardProps = {
   builder: BuilderSummary;
@@ -16,16 +16,16 @@ type BuilderCardProps = {
  * Builder summary card with logo and published project count.
  */
 export const BuilderCard = ({ builder, className }: BuilderCardProps) => {
-  const t = useTranslations("Catalog");
+  const t = useTranslations('Catalog');
 
   return (
     <article
       className={cn(
-        "flex items-center gap-4 rounded-md bg-surface p-4",
+        'flex items-center gap-4 rounded-md border border-border/80 bg-surface-elevated p-4 shadow-xs transition-shadow hover:shadow-sm',
         className,
       )}
     >
-      <div className="relative size-14 shrink-0 overflow-hidden rounded-sm bg-background">
+      <div className="relative size-14 shrink-0 overflow-hidden rounded-sm bg-surface">
         {builder.logoUrl ? (
           <Image
             src={builder.logoUrl}
@@ -43,26 +43,24 @@ export const BuilderCard = ({ builder, className }: BuilderCardProps) => {
       <div className="min-w-0 flex-1">
         <Link
           href={`/builders/${builder.id}`}
-          className="block truncate font-brand text-sm font-semibold text-ink hover:text-brand"
+          className="block truncate font-brand text-sm font-semibold text-ink transition-colors hover:text-brand"
         >
           {builder.name}
         </Link>
         {builder.description ? (
-          <p className="mt-0.5 line-clamp-2 text-xs text-ink-secondary">
-            {builder.description}
-          </p>
+          <p className="mt-0.5 line-clamp-2 text-xs text-ink-secondary">{builder.description}</p>
         ) : null}
-        <p className="text-xs text-ink-secondary">
-          {t("builders.projectCount", {
+        <p className="mt-1 text-xs text-ink-muted">
+          {t('builders.projectCount', {
             count: builder.publishedProjectCount,
           })}
         </p>
       </div>
       <Link
         href={`/projects?builderId=${encodeURIComponent(builder.id)}`}
-        className="shrink-0 text-xs font-semibold text-ink hover:text-brand"
+        className="shrink-0 rounded-sm px-2 py-1.5 text-xs font-semibold text-ink transition-colors hover:bg-brand-soft hover:text-brand"
       >
-        {t("actions.viewProjects")}
+        {t('actions.viewProjects')}
       </Link>
     </article>
   );

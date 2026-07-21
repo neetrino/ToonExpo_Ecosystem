@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import type { PublicVisualCanvasItem, PublicVisualHotspotItem } from "@toonexpo/contracts";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
+import type { PublicVisualCanvasItem, PublicVisualHotspotItem } from '@toonexpo/contracts';
+import { useTranslations } from 'next-intl';
+import { useState } from 'react';
 
-import { PercentMapMarkers } from "@/features/visual-map/components/percent-map-markers";
-import { PublicVisualHotspotSheet } from "@/features/visual-map/components/public-visual-hotspot-sheet";
+import { PercentMapMarkers } from '@/features/visual-map/components/percent-map-markers';
+import { PublicVisualHotspotSheet } from '@/features/visual-map/components/public-visual-hotspot-sheet';
 
 type PublicVisualMapProps = {
   canvas: PublicVisualCanvasItem;
@@ -15,18 +15,12 @@ type PublicVisualMapProps = {
 /**
  * Public visual map with tappable SVG markers and optional bottom sheet.
  */
-export const PublicVisualMap = ({
-  canvas,
-  buildTargetHref,
-}: PublicVisualMapProps) => {
-  const t = useTranslations("Catalog.visualMap");
+export const PublicVisualMap = ({ canvas, buildTargetHref }: PublicVisualMapProps) => {
+  const t = useTranslations('Catalog.visualMap');
   const [selectedHotspotId, setSelectedHotspotId] = useState<string | null>(null);
 
-  if (canvas.hotspots.length === 0) {
-    return null;
-  }
-
   const imageUrl = canvas.media.fileUrl;
+  const hasHotspots = canvas.hotspots.length > 0;
   const selectedHotspot =
     canvas.hotspots.find((hotspot) => hotspot.id === selectedHotspotId) ?? null;
 
@@ -41,24 +35,24 @@ export const PublicVisualMap = ({
   return (
     <section className="mb-8 flex flex-col gap-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-xl font-bold text-ink">
-          {canvas.title ?? t("title")}
-        </h2>
-        <p className="text-xs text-ink-secondary">{t("viewAsList")}</p>
+        <h2 className="text-xl font-bold text-ink">{canvas.title ?? t('title')}</h2>
+        {hasHotspots ? <p className="text-xs text-ink-secondary">{t('viewAsList')}</p> : null}
       </div>
       <div className="relative w-full overflow-x-auto rounded-md border border-border bg-surface">
         <div className="relative min-w-[280px]">
           <img
             src={imageUrl}
-            alt={canvas.media.altText ?? canvas.title ?? t("alt")}
+            alt={canvas.media.altText ?? canvas.title ?? t('alt')}
             className="h-auto w-full"
           />
-          <PercentMapMarkers
-            markers={markers}
-            interactive
-            showLabels
-            onSelectMarker={setSelectedHotspotId}
-          />
+          {hasHotspots ? (
+            <PercentMapMarkers
+              markers={markers}
+              interactive
+              showLabels
+              onSelectMarker={setSelectedHotspotId}
+            />
+          ) : null}
         </div>
       </div>
       {selectedHotspot ? (

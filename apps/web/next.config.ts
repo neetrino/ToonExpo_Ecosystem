@@ -55,6 +55,24 @@ const nextConfig: NextConfig = {
   transpilePackages: ['@toonexpo/contracts', '@toonexpo/shared'],
   images: {
     remotePatterns: [PLACEHOLD_REMOTE_PATTERN, ...(r2RemotePattern ? [r2RemotePattern] : [])],
+    // Dev seed uses local SVG architecture placeholders under /public/demo.
+    dangerouslyAllowSVG: true,
+    contentDispositionType: 'attachment',
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+  },
+  async redirects() {
+    return [
+      {
+        source: '/:locale/profile',
+        destination: '/:locale/settings',
+        permanent: true,
+      },
+      {
+        source: '/:locale/profile/:path*',
+        destination: '/:locale/settings/:path*',
+        permanent: true,
+      },
+    ];
   },
   async rewrites() {
     const apiProxyTarget = process.env[API_PROXY_TARGET_ENV]?.trim();

@@ -8,7 +8,6 @@ import { getPublicPartnerBySlug } from '@/features/catalog/api/partners-api';
 import { SiteFooter } from '@/features/catalog/components/site-footer';
 import { FeaturedBadge } from '@/features/partners/components/partner-badges';
 import { PartnerTypeLabel } from '@/features/partners/components/partner-type-label';
-import { SiteHeader } from '@/shared/ui/site-header';
 
 type PartnerDetailPageProps = {
   params: Promise<{ locale: string; slug: string }>;
@@ -56,7 +55,6 @@ export default async function PartnerDetailPage({ params }: PartnerDetailPagePro
 
   return (
     <div className="min-h-screen bg-background">
-      <SiteHeader />
       <main>
         <section className="relative isolate h-[min(40vh,320px)] w-full overflow-hidden bg-surface">
           {partner.coverUrl ? (

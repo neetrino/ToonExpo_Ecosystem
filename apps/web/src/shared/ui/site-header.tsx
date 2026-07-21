@@ -1,188 +1,273 @@
-"use client";
+'use client';
 
-import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { Menu, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { useEffect, useState } from 'react';
 
-import { LogoutButton } from "@/features/auth/components/logout-button";
-import { useMeQuery } from "@/features/auth/hooks/use-auth";
-import { Link } from "@/i18n/navigation";
-import { Button } from "@/shared/ui/button";
-import { LocaleSwitcher } from "@/shared/ui/locale-switcher";
-import { cn } from "@/shared/ui/cn";
+import { LogoutButton } from '@/features/auth/components/logout-button';
+import { useMeQuery } from '@/features/auth/hooks/use-auth';
+import { Link, usePathname } from '@/i18n/navigation';
+import { BrandLogo } from '@/shared/ui/brand-logo';
+import { Button } from '@/shared/ui/button';
+import { IconButton } from '@/shared/ui/icon-button';
+import { LocaleSwitcher } from '@/shared/ui/locale-switcher';
+import { cn } from '@/shared/ui/cn';
 
 type SiteHeaderProps = {
   className?: string | undefined;
-  /** Transparent over hero imagery (Variant A). */
-  variant?: "solid" | "transparent" | undefined;
+  /** Transparent over hero imagery; becomes solid after scroll. */
+  variant?: 'solid' | 'transparent' | undefined;
 };
 
+const NAV_HREFS = [
+  { href: '/projects' as const, key: 'projects' as const },
+  { href: '/builders' as const, key: 'builders' as const },
+  { href: '/partners' as const, key: 'partners' as const },
+  { href: '/mortgage' as const, key: 'mortgage' as const },
+  { href: '/expo' as const, key: 'expoMap' as const },
+];
+
+const SCROLL_SOLID_OFFSET_PX = 24;
+const HEADER_BAR_CLASS =
+  'page-container grid grid-cols-[minmax(0,auto)_minmax(0,1fr)] items-center gap-3 py-3 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:gap-6 lg:py-3.5';
+
 /**
- * Shared top nav: logo, catalog links, locale switcher, auth actions.
+ * Fixed public header — always visible while scrolling on every page.
+ * Transparent hero variant is full-bleed over imagery, then matches the solid
+ * floating rounded chrome used on every other page.
  */
-export const SiteHeader = ({
-  className,
-  variant = "solid",
-}: SiteHeaderProps) => {
-  const t = useTranslations("Nav");
-  const { data: user, isLoading } = useMeQuery();
+export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) => {
+  const t = useTranslations('Nav');
+  const pathname = usePathname();
+  const { data: user, isLoading, isFetching } = useMeQuery();
   const [menuOpen, setMenuOpen] = useState(false);
-  const isTransparent = variant === "transparent";
+  const [scrolled, setScrolled] = useState(false);
+  /** Avoid auth SSR/client mismatch until the session hint is readable. */
+  const [authReady, setAuthReady] = useState(false);
+  const isTransparentStart = variant === 'transparent';
+  const isOverHero = isTransparentStart && !scrolled && !menuOpen;
+  /** Solid chrome is always the same floating rounded bar on every page. */
+  const isFloating = !isOverHero;
+  const needsSpacer = !isTransparentStart;
+  const showAuthLoading = !authReady || isLoading || (isFetching && !user);
+
+  useEffect(() => {
+    setAuthReady(true);
+  }, []);
+
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!isTransparentStart) {
+      setScrolled(false);
+      return;
+    }
+
+    const updateScrolled = (): void => {
+      setScrolled(window.scrollY > SCROLL_SOLID_OFFSET_PX);
+    };
+
+    updateScrolled();
+    window.addEventListener('scroll', updateScrolled, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', updateScrolled);
+    };
+  }, [isTransparentStart]);
+
+  useEffect(() => {
+    if (!menuOpen) {
+      return;
+    }
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [menuOpen]);
+
+  const settingsHref = user?.accountType === 'platform_admin' ? '/admin/settings' : '/settings';
 
   return (
-    <header
-      className={cn(
-        "relative z-20 w-full",
-        isTransparent
-          ? "bg-transparent text-on-dark"
-          : "border-b border-border bg-background text-ink",
-        className,
-      )}
-    >
-      <div className="mx-auto flex w-full max-w-content items-center justify-between gap-4 px-6 py-4">
-        <Link
-          href="/"
-          className={cn(
-            "font-brand text-lg font-extrabold tracking-tight",
-            isTransparent ? "text-on-dark" : "text-ink",
-          )}
-        >
-          <span>TOON</span>
-          <span className="text-brand">EXPO</span>
-        </Link>
-
-        <nav
-          className={cn(
-            "hidden items-center gap-7 text-[13px] md:flex",
-            isTransparent ? "text-on-dark" : "text-ink",
-          )}
-          aria-label={t("main")}
-        >
-          <Link href="/projects" className="hover:opacity-80">
-            {t("projects")}
-          </Link>
-          <Link href="/builders" className="hover:opacity-80">
-            {t("builders")}
-          </Link>
-          <Link href="/partners" className="hover:opacity-80">
-            {t("partners")}
-          </Link>
-          <Link href="/mortgage" className="hover:opacity-80">
-            {t("mortgage")}
-          </Link>
-          <Link href="/expo" className="hover:opacity-80">
-            {t("expoMap")}
-          </Link>
-        </nav>
-
-        <div className="flex items-center gap-2 sm:gap-3">
-          <div className={cn(isTransparent && "[&_button]:text-on-dark")}>
-            <LocaleSwitcher />
+    <>
+      <header
+        className={cn(
+          'fixed z-[var(--z-header)]',
+          'transition-[top,left,right,border-radius,background-color,border-color,box-shadow,color,backdrop-filter] duration-[var(--duration-base)] ease-[var(--ease-out-premium)]',
+          isFloating
+            ? 'top-3 inset-x-3 overflow-hidden rounded-md border border-border/70 bg-surface-elevated/92 text-ink shadow-sm backdrop-blur-xl sm:inset-x-5 lg:inset-x-6'
+            : 'inset-x-0 top-0 w-full rounded-none border-b border-transparent bg-transparent text-on-dark',
+          className,
+        )}
+      >
+        <div className={HEADER_BAR_CLASS}>
+          <div className="justify-self-start">
+            <BrandLogo inverted={isOverHero} />
           </div>
-          {isLoading ? (
-            <span className="text-sm opacity-70">{t("loading")}</span>
-          ) : user ? (
-            <div className="flex items-center gap-2">
-              <Link
-                href="/profile"
-                className={cn(
-                  "hidden max-w-32 truncate text-sm font-medium sm:inline",
-                  isTransparent
-                    ? "text-on-dark hover:opacity-80"
-                    : "text-ink hover:text-brand",
-                )}
-              >
-                {user.name}
-              </Link>
-              <LogoutButton />
-            </div>
-          ) : (
-            <div className="hidden items-center gap-2 sm:flex">
-              <Link href="/auth/login">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className={cn(
-                    isTransparent &&
-                      "border-transparent text-on-dark hover:bg-white/10",
-                  )}
-                >
-                  {t("login")}
-                </Button>
-              </Link>
-              <Link href="/auth/register">
-                <Button
-                  size="sm"
-                  className={cn(
-                    "rounded-sm",
-                    isTransparent
-                      ? "bg-on-dark text-ink hover:bg-on-dark/90"
-                      : "bg-background text-ink border border-border-strong hover:bg-surface",
-                  )}
-                >
-                  {t("register")}
-                </Button>
-              </Link>
-            </div>
-          )}
 
-          <button
-            type="button"
+          <nav
             className={cn(
-              "inline-flex h-9 w-9 items-center justify-center rounded-sm border text-sm md:hidden",
-              isTransparent
-                ? "border-white/40 text-on-dark"
-                : "border-border text-ink",
+              'hidden items-center justify-center gap-1 lg:flex',
+              isOverHero ? 'text-on-dark/80' : 'text-ink-secondary',
             )}
-            aria-expanded={menuOpen}
-            aria-controls="mobile-nav"
-            onClick={() => {
-              setMenuOpen((open) => !open);
-            }}
+            aria-label={t('main')}
           >
-            <span className="sr-only">{t("menu")}</span>
-            {menuOpen ? "✕" : "☰"}
-          </button>
-        </div>
-      </div>
-
-      {menuOpen ? (
-        <div
-          id="mobile-nav"
-          className="border-t border-border/40 bg-background px-6 py-4 text-ink md:hidden"
-        >
-          <nav className="flex flex-col gap-3 text-sm" aria-label={t("main")}>
-            <Link href="/projects" onClick={() => setMenuOpen(false)}>
-              {t("projects")}
-            </Link>
-            <Link href="/builders" onClick={() => setMenuOpen(false)}>
-              {t("builders")}
-            </Link>
-            <Link href="/partners" onClick={() => setMenuOpen(false)}>
-              {t("partners")}
-            </Link>
-            <Link href="/mortgage" onClick={() => setMenuOpen(false)}>
-              {t("mortgage")}
-            </Link>
-            <Link href="/expo" onClick={() => setMenuOpen(false)}>
-              {t("expoMap")}
-            </Link>
-            {!user ? (
-              <>
-                <Link href="/auth/login" onClick={() => setMenuOpen(false)}>
-                  {t("login")}
+            {NAV_HREFS.map((item) => {
+              const active = isNavActive(pathname, item.href);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    'relative whitespace-nowrap rounded-sm px-3 py-2 text-[13px] font-medium tracking-[-0.01em]',
+                    'transition-[color,background-color] duration-[var(--duration-fast)]',
+                    active
+                      ? isOverHero
+                        ? 'bg-white/12 text-on-dark'
+                        : 'bg-brand-soft text-brand'
+                      : isOverHero
+                        ? 'hover:bg-white/10 hover:text-on-dark'
+                        : 'hover:bg-surface hover:text-ink',
+                  )}
+                >
+                  {t(item.key)}
                 </Link>
-                <Link href="/auth/register" onClick={() => setMenuOpen(false)}>
-                  {t("register")}
-                </Link>
-              </>
-            ) : (
-              <Link href="/profile" onClick={() => setMenuOpen(false)}>
-                {user.name}
-              </Link>
-            )}
+              );
+            })}
           </nav>
+
+          <div className="flex shrink-0 items-center justify-end gap-2 justify-self-end sm:gap-2.5">
+            <LocaleSwitcher tone={isOverHero ? 'dark' : 'light'} />
+            {showAuthLoading ? (
+              <span className="hidden text-sm opacity-70 sm:inline">{t('loading')}</span>
+            ) : user ? (
+              <div className="hidden items-center gap-2 sm:flex">
+                <Link
+                  href={settingsHref}
+                  className={cn(
+                    'max-w-28 truncate text-sm font-medium',
+                    isOverHero ? 'text-on-dark hover:opacity-80' : 'text-ink hover:text-brand',
+                  )}
+                >
+                  {user.name}
+                </Link>
+                <LogoutButton
+                  className={cn(isOverHero && 'border-transparent text-on-dark hover:bg-white/10')}
+                />
+              </div>
+            ) : (
+              <div className="hidden items-center gap-1.5 sm:flex">
+                <Link
+                  href="/auth/login"
+                  className={cn(
+                    'inline-flex h-9 items-center px-3 text-sm font-medium tracking-tight',
+                    'transition-opacity duration-[var(--duration-fast)] hover:opacity-80',
+                    isOverHero ? 'text-on-dark' : 'text-ink-secondary hover:text-ink',
+                  )}
+                >
+                  {t('login')}
+                </Link>
+                <Link href="/auth/register">
+                  <Button
+                    size="sm"
+                    variant={isOverHero ? 'outline' : 'secondary'}
+                    className={cn(
+                      'rounded-sm shadow-none',
+                      isOverHero &&
+                        'border-transparent bg-on-dark text-ink hover:bg-on-dark/90 hover:shadow-none',
+                    )}
+                  >
+                    {t('register')}
+                  </Button>
+                </Link>
+              </div>
+            )}
+
+            <IconButton
+              label={t('menu')}
+              className={cn(
+                'lg:hidden',
+                isOverHero && 'border-white/30 bg-white/10 text-on-dark hover:bg-white/15',
+              )}
+              variant="outline"
+              size="sm"
+              aria-expanded={menuOpen}
+              aria-controls="mobile-nav"
+              onClick={() => setMenuOpen((open) => !open)}
+            >
+              {menuOpen ? (
+                <X className="size-4" aria-hidden />
+              ) : (
+                <Menu className="size-4" aria-hidden />
+              )}
+            </IconButton>
+          </div>
         </div>
+
+        {menuOpen ? (
+          <div
+            id="mobile-nav"
+            className="border-t border-border/50 bg-surface-elevated px-4 py-4 text-ink shadow-md sm:px-6 lg:hidden"
+          >
+            <nav className="flex flex-col gap-1 text-sm" aria-label={t('main')}>
+              {NAV_HREFS.map((item) => {
+                const active = isNavActive(pathname, item.href);
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                      'rounded-sm px-3 py-3 font-medium transition-colors',
+                      active ? 'bg-brand-soft text-brand' : 'text-ink hover:bg-surface',
+                    )}
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    {t(item.key)}
+                  </Link>
+                );
+              })}
+              {!user ? (
+                <>
+                  <Link
+                    href="/auth/login"
+                    className="rounded-sm px-3 py-3 font-medium text-ink hover:bg-surface"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    {t('login')}
+                  </Link>
+                  <Link
+                    href="/auth/register"
+                    className="rounded-sm px-3 py-3 font-medium text-brand hover:bg-brand-soft"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    {t('register')}
+                  </Link>
+                </>
+              ) : (
+                <Link
+                  href={settingsHref}
+                  className="rounded-sm px-3 py-3 font-medium text-ink hover:bg-surface"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {user.name}
+                </Link>
+              )}
+            </nav>
+          </div>
+        ) : null}
+      </header>
+
+      {needsSpacer ? (
+        <div className="h-[calc(0.75rem+3.75rem)] sm:h-[calc(0.75rem+4rem)]" aria-hidden />
       ) : null}
-    </header>
+    </>
   );
+};
+
+const isNavActive = (pathname: string, href: (typeof NAV_HREFS)[number]['href']): boolean => {
+  if (href === '/projects') {
+    return pathname.startsWith('/projects');
+  }
+  return pathname.startsWith(href);
 };

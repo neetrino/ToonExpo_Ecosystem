@@ -1,0 +1,109 @@
+'use client';
+
+import { type CSSProperties, type ReactNode, useEffect, useRef, useState } from 'react';
+
+import { cn } from '@/shared/ui/cn';
+
+const REVEAL_DISTANCE_PX = 16;
+const REVEAL_DISTANCE_MOBILE_PX = 10;
+const DEFAULT_DURATION_MS = 420;
+const MOBILE_BREAKPOINT_PX = 768;
+
+type RevealProps = {
+  children: ReactNode;
+  className?: string | undefined;
+  /** Delay before animation starts (ms). */
+  delayMs?: number | undefined;
+  /** Animation duration (ms). */
+  durationMs?: number | undefined;
+  /** When true, only fade (no translate). */
+  fadeOnly?: boolean | undefined;
+  /** IntersectionObserver rootMargin. */
+  rootMargin?: string | undefined;
+  as?: 'div' | 'section' | 'article' | 'li' | undefined;
+};
+
+/**
+ * Viewport reveal: opacity + slight translateY.
+ * Respects prefers-reduced-motion; uses smaller travel on mobile.
+ */
+export const Reveal = ({
+  children,
+  className,
+  delayMs = 0,
+  durationMs = DEFAULT_DURATION_MS,
+  fadeOnly = false,
+  rootMargin = '0px 0px -8% 0px',
+  as: Tag = 'div',
+}: RevealProps) => {
+  const ref = useRef<HTMLElement | null>(null);
+  const [visible, setVisible] = useState(false);
+  const [reduceMotion, setReduceMotion] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const widthQuery = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT_PX - 1}px)`);
+
+    const sync = () => {
+      setReduceMotion(motionQuery.matches);
+      setIsMobile(widthQuery.matches);
+    };
+    sync();
+
+    motionQuery.addEventListener('change', sync);
+    widthQuery.addEventListener('change', sync);
+    return () => {
+      motionQuery.removeEventListener('change', sync);
+      widthQuery.removeEventListener('change', sync);
+    };
+  }, []);
+
+  useEffect(() => {
+    const node = ref.current;
+    if (!node) {
+      return;
+    }
+    if (reduceMotion) {
+      setVisible(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin, threshold: 0.12 },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [reduceMotion, rootMargin]);
+
+  const distance = fadeOnly ? 0 : isMobile ? REVEAL_DISTANCE_MOBILE_PX : REVEAL_DISTANCE_PX;
+
+  const style: CSSProperties | undefined = reduceMotion
+    ? undefined
+    : {
+        opacity: visible ? 1 : 0,
+        transform: visible ? 'translate3d(0,0,0)' : `translate3d(0,${distance}px,0)`,
+        transitionProperty: 'opacity, transform',
+        transitionDuration: `${durationMs}ms`,
+        transitionTimingFunction: 'var(--ease-out-premium)',
+        transitionDelay: visible ? `${delayMs}ms` : '0ms',
+        willChange: visible ? 'auto' : 'opacity, transform',
+      };
+
+  return (
+    <Tag
+      ref={ref as never}
+      className={cn(className)}
+      style={style}
+      data-revealed={visible ? 'true' : 'false'}
+    >
+      {children}
+    </Tag>
+  );
+};

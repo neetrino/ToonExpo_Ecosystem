@@ -1,30 +1,24 @@
-"use client";
+'use client';
 
-import type {
-  ReadinessAssessmentTargetType,
-  ReadinessScoreStatus,
-} from "@toonexpo/contracts";
-import { useTranslations } from "next-intl";
+import type { ReadinessAssessmentTargetType, ReadinessScoreStatus } from '@toonexpo/contracts';
+import { useTranslations } from 'next-intl';
 
-import {
-  READINESS_SCORE_STATUSES,
-  READINESS_TARGET_TYPES,
-} from "@/features/readiness/constants";
+import { READINESS_SCORE_STATUSES, READINESS_TARGET_TYPES } from '@/features/readiness/constants';
+import { selectFieldClassName } from '@/shared/ui/select';
 
 type ReadinessAssessmentFiltersProps = {
   companyId: string;
-  targetType: ReadinessAssessmentTargetType | "";
-  status: ReadinessScoreStatus | "";
+  targetType: ReadinessAssessmentTargetType | '';
+  status: ReadinessScoreStatus | '';
   companyOptions: { id: string; name: string }[];
   onChange: (next: {
     companyId: string;
-    targetType: ReadinessAssessmentTargetType | "";
-    status: ReadinessScoreStatus | "";
+    targetType: ReadinessAssessmentTargetType | '';
+    status: ReadinessScoreStatus | '';
   }) => void;
 };
 
-const selectClassName =
-  "h-10 rounded-sm border border-border bg-background px-3 text-sm text-ink";
+const selectClassName = `${selectFieldClassName} h-10`;
 
 /**
  * Filter row for admin readiness assessments list.
@@ -36,12 +30,12 @@ export const ReadinessAssessmentFilters = ({
   companyOptions,
   onChange,
 }: ReadinessAssessmentFiltersProps) => {
-  const t = useTranslations("Admin.readiness.assessments.filters");
+  const t = useTranslations('Admin.readiness.assessments.filters');
 
   return (
     <div className="flex flex-wrap gap-3">
       <label className="flex flex-col gap-1 text-xs text-ink-muted">
-        {t("company")}
+        {t('company')}
         <select
           className={selectClassName}
           value={companyId}
@@ -53,7 +47,7 @@ export const ReadinessAssessmentFilters = ({
             });
           }}
         >
-          <option value="">{t("allCompanies")}</option>
+          <option value="">{t('allCompanies')}</option>
           {companyOptions.map((company) => (
             <option key={company.id} value={company.id}>
               {company.name}
@@ -63,19 +57,19 @@ export const ReadinessAssessmentFilters = ({
       </label>
 
       <label className="flex flex-col gap-1 text-xs text-ink-muted">
-        {t("targetType")}
+        {t('targetType')}
         <select
           className={selectClassName}
           value={targetType}
           onChange={(event) => {
             onChange({
               companyId,
-              targetType: event.target.value as ReadinessAssessmentTargetType | "",
+              targetType: event.target.value as ReadinessAssessmentTargetType | '',
               status,
             });
           }}
         >
-          <option value="">{t("allTargets")}</option>
+          <option value="">{t('allTargets')}</option>
           {READINESS_TARGET_TYPES.map((type) => (
             <option key={type} value={type}>
               {t(`targetTypes.${type}`)}
@@ -85,7 +79,7 @@ export const ReadinessAssessmentFilters = ({
       </label>
 
       <label className="flex flex-col gap-1 text-xs text-ink-muted">
-        {t("status")}
+        {t('status')}
         <select
           className={selectClassName}
           value={status}
@@ -93,11 +87,11 @@ export const ReadinessAssessmentFilters = ({
             onChange({
               companyId,
               targetType,
-              status: event.target.value as ReadinessScoreStatus | "",
+              status: event.target.value as ReadinessScoreStatus | '',
             });
           }}
         >
-          <option value="">{t("allStatuses")}</option>
+          <option value="">{t('allStatuses')}</option>
           {READINESS_SCORE_STATUSES.map((item) => (
             <option key={item} value={item}>
               {t(`statuses.${item}`)}

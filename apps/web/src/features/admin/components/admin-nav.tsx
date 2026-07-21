@@ -1,52 +1,135 @@
 'use client';
 
+import {
+  Building2,
+  CalendarDays,
+  ClipboardCheck,
+  Handshake,
+  Landmark,
+  LayoutList,
+  LineChart,
+  ScanLine,
+  Settings,
+  Tags,
+  Workflow,
+} from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { BrandLogo } from '@/shared/ui/brand-logo';
 import { Link, usePathname } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 
-const NAV_ITEMS = [
-  { href: '/admin/analytics', key: 'analytics' as const },
-  { href: '/admin/companies', key: 'companies' as const },
-  { href: '/checkin', key: 'checkin' as const },
-  { href: '/admin/partners', key: 'partners' as const },
-  { href: '/admin/bank-offers', key: 'bankOffers' as const },
-  { href: '/admin/service-providers', key: 'serviceProviders' as const },
-  { href: '/admin/readiness', key: 'readiness' as const },
-  { href: '/admin/readiness/categories', key: 'readinessCategories' as const },
-  { href: '/admin/integrations/bos', key: 'bos' as const },
-  { href: '/admin/events', key: 'events' as const },
+type NavItem = {
+  href: string;
+  key:
+    | 'analytics'
+    | 'companies'
+    | 'checkin'
+    | 'partners'
+    | 'bankOffers'
+    | 'serviceProviders'
+    | 'readiness'
+    | 'readinessCategories'
+    | 'bos'
+    | 'events'
+    | 'settings';
+  icon: LucideIcon;
+};
+
+const PRIMARY_NAV_ITEMS: NavItem[] = [
+  { href: '/admin/analytics', key: 'analytics', icon: LineChart },
+  { href: '/admin/companies', key: 'companies', icon: Building2 },
+  { href: '/admin/checkin', key: 'checkin', icon: ScanLine },
+  { href: '/admin/partners', key: 'partners', icon: Handshake },
+  { href: '/admin/bank-offers', key: 'bankOffers', icon: Landmark },
+  {
+    href: '/admin/service-providers',
+    key: 'serviceProviders',
+    icon: LayoutList,
+  },
+  { href: '/admin/readiness', key: 'readiness', icon: ClipboardCheck },
+  {
+    href: '/admin/readiness/categories',
+    key: 'readinessCategories',
+    icon: Tags,
+  },
+  { href: '/admin/integrations/bos', key: 'bos', icon: Workflow },
+  { href: '/admin/events', key: 'events', icon: CalendarDays },
 ];
 
+const SETTINGS_NAV_ITEM: NavItem = {
+  href: '/admin/settings',
+  key: 'settings',
+  icon: Settings,
+};
+
+const ALL_NAV_ITEMS: NavItem[] = [...PRIMARY_NAV_ITEMS, SETTINGS_NAV_ITEM];
+
+const NAV_ICON_CLASS = 'size-5 shrink-0 opacity-90';
+
+const navLinkClassName = (active: boolean): string =>
+  cn(
+    'flex items-center gap-3 rounded-pill px-3.5 py-2.5 text-base font-medium tracking-wide transition-colors',
+    active
+      ? 'bg-surface-elevated text-brand-secondary shadow-xs'
+      : 'text-on-dark/85 hover:bg-on-dark/10 hover:text-on-dark',
+  );
+
 /**
- * Compact sidebar nav for the platform admin area.
+ * Compact sidebar nav for the platform admin rail.
  */
 export const AdminNav = () => {
   const t = useTranslations('Admin.nav');
   const pathname = usePathname();
 
+  const isItemActive = (href: string): boolean => {
+    if (pathname === href) {
+      return true;
+    }
+    if (!pathname.startsWith(`${href}/`)) {
+      return false;
+    }
+    // Prefer a more specific nav item (e.g. Categories over Readiness).
+    return !ALL_NAV_ITEMS.some(
+      (item) =>
+        item.href !== href &&
+        item.href.startsWith(`${href}/`) &&
+        (pathname === item.href || pathname.startsWith(`${item.href}/`)),
+    );
+  };
+
   return (
-    <nav aria-label={t('label')} className="flex flex-col gap-1">
-      <p className="mb-2 px-3 text-xs font-medium uppercase tracking-wide text-ink-muted">
-        {t('section')}
-      </p>
-      {NAV_ITEMS.map((item) => {
-        const active = pathname.startsWith(item.href);
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={cn(
-              'rounded-sm px-3 py-2 text-sm font-medium transition-colors',
-              active
-                ? 'bg-surface text-brand'
-                : 'text-ink-secondary hover:bg-surface hover:text-ink',
-            )}
-          >
-            {t(item.key)}
-          </Link>
-        );
-      })}
+    <nav aria-label={t('label')} className="flex h-full flex-col gap-1">
+      <div className="mb-5 hidden px-2 md:block">
+        <BrandLogo href="/admin" size="sm" inverted />
+        <p className="mt-2 px-0.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-on-dark/65">
+          {t('portalLabel')}
+        </p>
+      </div>
+
+      <div className="flex flex-1 flex-col gap-1">
+        {PRIMARY_NAV_ITEMS.map((item) => {
+          const active = isItemActive(item.href);
+          const Icon = item.icon;
+          return (
+            <Link key={item.href} href={item.href} className={navLinkClassName(active)}>
+              <Icon className={NAV_ICON_CLASS} aria-hidden />
+              {t(item.key)}
+            </Link>
+          );
+        })}
+      </div>
+
+      <div className="mt-auto border-t border-on-dark/15 pt-3">
+        <Link
+          href={SETTINGS_NAV_ITEM.href}
+          className={navLinkClassName(isItemActive(SETTINGS_NAV_ITEM.href))}
+        >
+          <Settings className={NAV_ICON_CLASS} aria-hidden />
+          {t(SETTINGS_NAV_ITEM.key)}
+        </Link>
+      </div>
     </nav>
   );
 };
