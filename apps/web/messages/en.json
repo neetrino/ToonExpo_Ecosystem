@@ -362,7 +362,11 @@
       "submitting": "Signing in…",
       "forgotPassword": "Forgot password?",
       "noAccount": "No account yet?",
-      "registerLink": "Create one"
+      "registerLink": "Create one",
+      "placeholders": {
+        "email": "john.doe@example.com",
+        "password": "********"
+      }
     },
     "forgotPassword": {
       "title": "Forgot password",
@@ -378,7 +382,15 @@
       "submit": "Create account",
       "submitting": "Creating account…",
       "hasAccount": "Already registered?",
-      "loginLink": "Sign in"
+      "loginLink": "Sign in",
+      "placeholders": {
+        "firstName": "John",
+        "surname": "Doe",
+        "phone": "37491111222",
+        "email": "john.doe@example.com",
+        "password": "********",
+        "confirmPassword": "********"
+      }
     },
     "setPassword": {
       "title": "Set your password",

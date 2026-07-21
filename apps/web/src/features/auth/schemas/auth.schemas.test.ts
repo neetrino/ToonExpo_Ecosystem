@@ -76,6 +76,19 @@ describe('registerSchema', () => {
     expect(result.success).toBe(false);
   });
 
+  it('rejects phone without leading plus', () => {
+    const result = registerSchema.safeParse({
+      firstName: 'Ani',
+      surname: 'Hakobyan',
+      email: 'ani@example.com',
+      phone: '37491111222',
+      password: 'password123',
+      confirmPassword: 'password123',
+    });
+
+    expect(result.success).toBe(false);
+  });
+
   it('rejects empty first name', () => {
     const result = registerSchema.safeParse({
       firstName: '   ',

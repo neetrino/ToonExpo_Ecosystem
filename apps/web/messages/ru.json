@@ -362,7 +362,11 @@
       "submitting": "Вход…",
       "forgotPassword": "Забыли пароль?",
       "noAccount": "Ещё нет аккаунта?",
-      "registerLink": "Зарегистрироваться"
+      "registerLink": "Зарегистрироваться",
+      "placeholders": {
+        "email": "john.doe@example.com",
+        "password": "********"
+      }
     },
     "forgotPassword": {
       "title": "Восстановление пароля",
@@ -378,7 +382,15 @@
       "submit": "Создать аккаунт",
       "submitting": "Создание…",
       "hasAccount": "Уже зарегистрированы?",
-      "loginLink": "Войти"
+      "loginLink": "Войти",
+      "placeholders": {
+        "firstName": "John",
+        "surname": "Doe",
+        "phone": "37491111222",
+        "email": "john.doe@example.com",
+        "password": "********",
+        "confirmPassword": "********"
+      }
     },
     "setPassword": {
       "title": "Установите пароль",

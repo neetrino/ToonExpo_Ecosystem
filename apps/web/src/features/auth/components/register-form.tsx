@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 
 import { useRegisterMutation } from '@/features/auth/hooks/use-auth';
 import {
@@ -17,6 +17,7 @@ import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
 import { PasswordInput } from '@/shared/ui/password-input';
+import { PhoneInput } from '@/shared/ui/phone-input';
 
 /**
  * Buyer self-registration form with NestJS-backed session cookie.
@@ -29,6 +30,7 @@ export const RegisterForm = () => {
 
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<RegisterFormValues>({
@@ -66,6 +68,7 @@ export const RegisterForm = () => {
           <Input
             id="register-first-name"
             autoComplete="given-name"
+            placeholder={t('register.placeholders.firstName')}
             aria-invalid={Boolean(errors.firstName)}
             className="bg-surface-input"
             {...register('firstName')}
@@ -80,6 +83,7 @@ export const RegisterForm = () => {
           <Input
             id="register-surname"
             autoComplete="family-name"
+            placeholder={t('register.placeholders.surname')}
             aria-invalid={Boolean(errors.surname)}
             className="bg-surface-input"
             {...register('surname')}
@@ -92,14 +96,22 @@ export const RegisterForm = () => {
         label={t('fields.phone')}
         error={errors.phone ? t('validation.phone') : undefined}
       >
-        <Input
-          id="register-phone"
-          type="tel"
-          autoComplete="tel"
-          placeholder="+374 …"
-          aria-invalid={Boolean(errors.phone)}
-          className="bg-surface-input"
-          {...register('phone')}
+        <Controller
+          name="phone"
+          control={control}
+          render={({ field }) => (
+            <PhoneInput
+              id="register-phone"
+              name={field.name}
+              value={field.value}
+              onBlur={field.onBlur}
+              ref={field.ref}
+              placeholder={t('register.placeholders.phone')}
+              aria-invalid={Boolean(errors.phone)}
+              className="bg-surface-input"
+              onChange={field.onChange}
+            />
+          )}
         />
       </FormField>
 
@@ -112,7 +124,7 @@ export const RegisterForm = () => {
           id="register-email"
           type="email"
           autoComplete="email"
-          placeholder="name@example.com"
+          placeholder={t('register.placeholders.email')}
           aria-invalid={Boolean(errors.email)}
           className="bg-surface-input"
           {...register('email')}
@@ -127,6 +139,7 @@ export const RegisterForm = () => {
         <PasswordInput
           id="register-password"
           autoComplete="new-password"
+          placeholder={t('register.placeholders.password')}
           aria-invalid={Boolean(errors.password)}
           className="bg-surface-input"
           revealLabel={t('fields.showPassword')}
@@ -143,6 +156,7 @@ export const RegisterForm = () => {
         <PasswordInput
           id="register-confirm-password"
           autoComplete="new-password"
+          placeholder={t('register.placeholders.confirmPassword')}
           aria-invalid={Boolean(errors.confirmPassword)}
           className="bg-surface-input"
           revealLabel={t('fields.showPassword')}

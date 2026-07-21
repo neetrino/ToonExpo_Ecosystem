@@ -62,7 +62,7 @@ export const LoginForm = ({ returnUrl }: LoginFormProps) => {
           id="login-email"
           type="email"
           autoComplete="email"
-          placeholder="name@example.com"
+          placeholder={t('login.placeholders.email')}
           aria-invalid={Boolean(errors.email)}
           className="bg-surface-input"
           {...register('email')}
@@ -77,6 +77,7 @@ export const LoginForm = ({ returnUrl }: LoginFormProps) => {
         <PasswordInput
           id="login-password"
           autoComplete="current-password"
+          placeholder={t('login.placeholders.password')}
           aria-invalid={Boolean(errors.password)}
           className="bg-surface-input"
           revealLabel={t('fields.showPassword')}

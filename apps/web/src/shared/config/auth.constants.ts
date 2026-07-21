@@ -9,5 +9,8 @@ export const EMAIL_MAX_LENGTH = 254;
 /** Digits plus optional phone punctuation (matches NestJS RegisterDto). */
 export const PHONE_PATTERN = /^[+0-9()\-\s]+$/;
 
+/** Register/login phone: leading "+" then digits only. */
+export const PHONE_E164_LIKE_PATTERN = /^\+[0-9]+$/;
+
 /** TanStack Query key for the authenticated user. */
-export const AUTH_ME_QUERY_KEY = ["auth", "me"] as const;
+export const AUTH_ME_QUERY_KEY = ['auth', 'me'] as const;
