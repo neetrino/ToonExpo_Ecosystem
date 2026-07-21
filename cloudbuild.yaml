@@ -1,0 +1,32 @@
+steps:
+  - id: "Build API image"
+    name: "gcr.io/cloud-builders/docker"
+    args:
+      - "build"
+      - "-f"
+      - "apps/api/Dockerfile"
+      - "-t"
+      - "europe-west1-docker.pkg.dev/$PROJECT_ID/toonexpo/api:$COMMIT_SHA"
+      - "."
+
+  - id: "Push API image"
+    name: "gcr.io/cloud-builders/docker"
+    args:
+      - "push"
+      - "europe-west1-docker.pkg.dev/$PROJECT_ID/toonexpo/api:$COMMIT_SHA"
+
+  - id: "Deploy API to Cloud Run"
+    name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: "gcloud"
+    args:
+      - "run"
+      - "services"
+      - "update"
+      - "toonexpo-api"
+      - "--image=europe-west1-docker.pkg.dev/$PROJECT_ID/toonexpo/api:$COMMIT_SHA"
+      - "--region=europe-west1"
+      - "--project=$PROJECT_ID"
+      - "--quiet"
+
+options:
+  logging: CLOUD_LOGGING_ONLY
