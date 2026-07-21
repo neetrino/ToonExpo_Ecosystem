@@ -18,7 +18,6 @@ import {
   pickPrimaryVisualCanvas,
 } from '@/features/visual-map/utils/public-visual-map';
 import { Link } from '@/i18n/navigation';
-import { SiteHeader } from '@/shared/ui/site-header';
 
 type ProjectPageProps = {
   params: Promise<{ locale: string; id: string }>;
@@ -58,7 +57,6 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
   return (
     <div className="min-h-screen bg-background">
-      <SiteHeader />
       <ProjectPricesOverlayScope projectId={project.id}>
         <main>
           <section className="relative isolate h-[min(58vh,520px)] w-full overflow-hidden bg-surface">

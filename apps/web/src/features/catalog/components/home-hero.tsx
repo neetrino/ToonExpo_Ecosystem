@@ -7,7 +7,7 @@ import { Button } from '@/shared/ui/button';
 
 /**
  * Premium full-bleed hero with search and primary CTAs.
- * Header is rendered at page level (fixed) so it is never trapped under sections.
+ * Header is fixed in PublicChrome so it is never trapped under sections.
  */
 export const HomeHero = async () => {
   const t = await getTranslations('HomePage');

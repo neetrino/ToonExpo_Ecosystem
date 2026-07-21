@@ -6,6 +6,7 @@ import { notFound } from 'next/navigation';
 
 import { routing } from '@/i18n/routing';
 import { QueryProvider } from '@/shared/providers/query-provider';
+import { PublicChrome } from '@/shared/ui/public-chrome';
 
 import './globals.css';
 
@@ -68,7 +69,9 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
     >
       <body className="min-h-screen font-ui antialiased">
         <NextIntlClientProvider messages={messages}>
-          <QueryProvider>{children}</QueryProvider>
+          <QueryProvider>
+            <PublicChrome>{children}</PublicChrome>
+          </QueryProvider>
         </NextIntlClientProvider>
       </body>
     </html>

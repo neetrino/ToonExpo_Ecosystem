@@ -11,7 +11,6 @@ import {
   parsePartnerFilters,
 } from '@/features/catalog/utils/partner-filters';
 import { PARTNER_COMPANY_TYPES } from '@/features/partners/constants';
-import { SiteHeader } from '@/shared/ui/site-header';
 
 type PartnersPageProps = {
   params: Promise<{ locale: string }>;
@@ -56,7 +55,6 @@ export default async function PartnersPage({ params, searchParams }: PartnersPag
 
   return (
     <div className="min-h-screen bg-background">
-      <SiteHeader />
       <main className="page-container section-pad">
         <header className="mb-8 flex flex-col gap-2">
           <h1 className="text-page-title text-ink">{t('partnersPage.title')}</h1>

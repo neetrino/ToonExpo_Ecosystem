@@ -118,9 +118,21 @@
   }
 }
 
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 @layer base {
   html {
-    scroll-behavior: smooth;
+    scrollbar-gutter: stable;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -254,6 +266,10 @@
 }
 
 @layer utilities {
+  .page-enter {
+    animation: page-enter var(--duration-slow) var(--ease-out-premium) both;
+  }
+
   .page-container {
     margin-inline: auto;
     width: 100%;

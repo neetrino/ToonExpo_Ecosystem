@@ -3,7 +3,6 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { MortgagePageContent } from '@/features/mortgage/components/mortgage-page-content';
 import { SiteFooter } from '@/features/catalog/components/site-footer';
-import { SiteHeader } from '@/shared/ui/site-header';
 
 type MortgagePageProps = {
   params: Promise<{ locale: string }>;
@@ -25,7 +24,6 @@ export default async function MortgagePage({ params }: MortgagePageProps) {
 
   return (
     <div className="min-h-screen bg-background">
-      <SiteHeader />
       <main className="page-container section-pad">
         <MortgagePageContent />
       </main>

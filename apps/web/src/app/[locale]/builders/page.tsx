@@ -4,7 +4,6 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { listBuilders } from '@/features/catalog/api/catalog-api';
 import { BuilderCard } from '@/features/catalog/components/builder-card';
 import { SiteFooter } from '@/features/catalog/components/site-footer';
-import { SiteHeader } from '@/shared/ui/site-header';
 
 type BuildersPageProps = {
   params: Promise<{ locale: string }>;
@@ -29,7 +28,6 @@ export default async function BuildersPage({ params }: BuildersPageProps) {
 
   return (
     <div className="min-h-screen bg-background">
-      <SiteHeader />
       <main className="page-container section-pad">
         <header className="mb-8 flex flex-col gap-2">
           <h1 className="text-page-title text-ink">{t('buildersPage.title')}</h1>

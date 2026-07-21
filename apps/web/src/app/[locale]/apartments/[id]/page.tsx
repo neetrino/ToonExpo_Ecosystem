@@ -12,7 +12,6 @@ import { RequestPriceButton } from '@/features/catalog/components/request-price-
 import { SiteFooter } from '@/features/catalog/components/site-footer';
 import { Link } from '@/i18n/navigation';
 import { Badge } from '@/shared/ui/badge';
-import { SiteHeader } from '@/shared/ui/site-header';
 
 type ApartmentPageProps = {
   params: Promise<{ locale: string; id: string }>;
@@ -66,7 +65,6 @@ export default async function ApartmentPage({ params }: ApartmentPageProps) {
 
   return (
     <div className="min-h-screen bg-background">
-      <SiteHeader />
       <ProjectPricesOverlayScope projectId={apartment.project.id}>
         <main className="page-container section-pad">
           <nav className="mb-6 text-sm text-ink-secondary">

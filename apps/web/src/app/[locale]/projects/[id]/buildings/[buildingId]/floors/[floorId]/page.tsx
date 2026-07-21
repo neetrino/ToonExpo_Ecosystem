@@ -15,7 +15,6 @@ import {
   pickPrimaryVisualCanvas,
 } from '@/features/visual-map/utils/public-visual-map';
 import { Link } from '@/i18n/navigation';
-import { SiteHeader } from '@/shared/ui/site-header';
 
 type FloorPageProps = {
   params: Promise<{
@@ -62,7 +61,6 @@ export default async function FloorPage({ params }: FloorPageProps) {
 
   return (
     <div className="min-h-screen bg-background">
-      <SiteHeader />
       <main className="page-container section-pad">
         <div className="mb-6 flex flex-col gap-2">
           <Link

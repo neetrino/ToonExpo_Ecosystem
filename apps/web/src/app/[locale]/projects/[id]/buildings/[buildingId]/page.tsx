@@ -14,7 +14,6 @@ import {
   pickPrimaryVisualCanvas,
 } from '@/features/visual-map/utils/public-visual-map';
 import { Link } from '@/i18n/navigation';
-import { SiteHeader } from '@/shared/ui/site-header';
 import { SiteFooter } from '@/features/catalog/components/site-footer';
 
 type BuildingPageProps = {
@@ -55,7 +54,6 @@ export default async function BuildingPage({ params }: BuildingPageProps) {
 
   return (
     <div className="min-h-screen bg-background">
-      <SiteHeader />
       <main>
         {building.cover ? (
           <section className="relative isolate h-[min(40vh,320px)] w-full overflow-hidden bg-surface">

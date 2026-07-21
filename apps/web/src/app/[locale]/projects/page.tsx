@@ -13,7 +13,6 @@ import {
   parseProjectFilters,
   toListProjectsQuery,
 } from '@/features/catalog/utils/project-filters';
-import { SiteHeader } from '@/shared/ui/site-header';
 
 type ProjectsPageProps = {
   params: Promise<{ locale: string }>;
@@ -46,7 +45,6 @@ export default async function ProjectsPage({ params, searchParams }: ProjectsPag
 
   return (
     <div className="min-h-screen bg-background">
-      <SiteHeader />
       <main className="page-container section-pad">
         <header className="mb-8 flex flex-col gap-2">
           <h1 className="text-page-title text-ink">{t('projects.title')}</h1>
