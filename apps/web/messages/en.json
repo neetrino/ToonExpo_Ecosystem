@@ -116,6 +116,7 @@
     "expoMap": "Expo map",
     "login": "Sign in",
     "register": "Register",
+    "profile": "Profile",
     "loading": "…"
   },
   "Footer": {
@@ -320,6 +321,13 @@
     "home": "Back to home"
   },
   "Auth": {
+    "shell": {
+      "eyebrow": "Armenia real estate exhibition",
+      "panelTitle": "Your gateway to new developments",
+      "loginBody": "Sign in to manage favorites, requests, and your exhibition profile.",
+      "registerBody": "Create a free buyer account to save homes, send requests, and check in at the expo.",
+      "backHome": "Back to home"
+    },
     "fields": {
       "name": "Full name",
       "email": "Email",

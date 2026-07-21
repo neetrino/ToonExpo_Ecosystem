@@ -54,6 +54,7 @@ export const RegisterForm = () => {
           id="register-name"
           autoComplete="name"
           aria-invalid={Boolean(errors.name)}
+          className="bg-surface-input"
           {...register('name')}
         />
       </FormField>
@@ -67,7 +68,9 @@ export const RegisterForm = () => {
           id="register-email"
           type="email"
           autoComplete="email"
+          placeholder="name@example.com"
           aria-invalid={Boolean(errors.email)}
+          className="bg-surface-input"
           {...register('email')}
         />
       </FormField>
@@ -81,7 +84,9 @@ export const RegisterForm = () => {
           id="register-phone"
           type="tel"
           autoComplete="tel"
+          placeholder="+374 …"
           aria-invalid={Boolean(errors.phone)}
+          className="bg-surface-input"
           {...register('phone')}
         />
       </FormField>
@@ -96,26 +101,33 @@ export const RegisterForm = () => {
           type="password"
           autoComplete="new-password"
           aria-invalid={Boolean(errors.password)}
+          className="bg-surface-input"
           {...register('password')}
         />
       </FormField>
 
       {formError ? (
-        <p role="alert" className="rounded-sm bg-danger-soft px-3 py-2 text-sm text-danger">
+        <p role="alert" className="rounded-sm bg-danger-soft px-3 py-2.5 text-sm text-danger">
           {formError}
         </p>
       ) : null}
 
-      <Button type="submit" variant="secondary" disabled={busy} className="w-full">
+      <Button type="submit" variant="secondary" size="lg" disabled={busy} className="mt-1 w-full">
         {busy ? t('register.submitting') : t('register.submit')}
       </Button>
 
-      <p className="text-center text-sm text-ink-secondary">
-        {t('register.hasAccount')}{' '}
-        <Link href="/auth/login" className="font-medium text-brand hover:underline">
-          {t('register.loginLink')}
-        </Link>
-      </p>
+      <div className="relative py-1">
+        <div className="absolute inset-x-0 top-1/2 h-px bg-border" aria-hidden />
+        <p className="relative mx-auto w-fit bg-surface-elevated px-3 text-center text-sm text-ink-secondary">
+          {t('register.hasAccount')}{' '}
+          <Link
+            href="/auth/login"
+            className="font-semibold text-brand transition-colors hover:text-brand-hover"
+          >
+            {t('register.loginLink')}
+          </Link>
+        </p>
+      </div>
     </form>
   );
 };

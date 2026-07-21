@@ -16,13 +16,18 @@ const isPortalRoute = (pathname: string): boolean => {
   return PORTAL_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
 };
 
+const isAuthRoute = (pathname: string): boolean => {
+  return pathname === '/auth' || pathname.startsWith('/auth/');
+};
+
 /**
  * Persistent public chrome — keeps SiteHeader mounted across navigations
  * so the bar does not remount/jump when switching Projects / Builders / etc.
+ * Auth routes use AuthPageShell instead of the public header.
  */
 export const PublicChrome = ({ children }: PublicChromeProps) => {
   const pathname = usePathname();
-  const showPublicHeader = !isPortalRoute(pathname);
+  const showPublicHeader = !isPortalRoute(pathname) && !isAuthRoute(pathname);
   const headerVariant = pathname === '/' ? 'transparent' : 'solid';
 
   return (
