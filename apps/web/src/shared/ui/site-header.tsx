@@ -28,6 +28,8 @@ const NAV_HREFS = [
 ];
 
 const SCROLL_SOLID_OFFSET_PX = 24;
+const HEADER_BAR_CLASS =
+  'page-container grid grid-cols-[minmax(0,auto)_minmax(0,1fr)] items-center gap-3 py-3 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:gap-6 lg:py-3.5';
 
 /**
  * Fixed public header — always visible while scrolling on every page.
@@ -92,33 +94,39 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
           'fixed z-[var(--z-header)]',
           'transition-[top,left,right,border-radius,background-color,border-color,box-shadow,color,backdrop-filter] duration-[var(--duration-base)] ease-[var(--ease-out-premium)]',
           isFloating
-            ? 'top-3 inset-x-3 overflow-hidden rounded-lg border border-border/80 bg-surface-elevated/90 text-ink shadow-xs backdrop-blur-xl sm:inset-x-4'
+            ? 'top-3 inset-x-3 overflow-hidden rounded-md border border-border/70 bg-surface-elevated/92 text-ink shadow-sm backdrop-blur-xl sm:inset-x-5 lg:inset-x-6'
             : 'inset-x-0 top-0 w-full rounded-none border-b border-transparent bg-transparent text-on-dark',
           className,
         )}
       >
-        <div className="page-container flex items-center justify-between gap-4 py-3.5 sm:py-4">
-          <BrandLogo inverted={isOverHero} />
+        <div className={HEADER_BAR_CLASS}>
+          <div className="justify-self-start">
+            <BrandLogo inverted={isOverHero} />
+          </div>
 
           <nav
             className={cn(
-              'hidden items-center gap-7 text-[13px] font-medium md:flex',
-              isOverHero ? 'text-on-dark/90' : 'text-ink-secondary',
+              'hidden items-center justify-center gap-1 lg:flex',
+              isOverHero ? 'text-on-dark/80' : 'text-ink-secondary',
             )}
             aria-label={t('main')}
           >
             {NAV_HREFS.map((item) => {
-              const active =
-                item.href === '/projects'
-                  ? pathname.startsWith('/projects')
-                  : pathname.startsWith(item.href);
+              const active = isNavActive(pathname, item.href);
               return (
                 <Link
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    'transition-opacity hover:opacity-100',
-                    active ? (isOverHero ? 'text-on-dark' : 'text-ink') : 'opacity-80',
+                    'relative whitespace-nowrap rounded-sm px-3 py-2 text-[13px] font-medium tracking-[-0.01em]',
+                    'transition-[color,background-color] duration-[var(--duration-fast)]',
+                    active
+                      ? isOverHero
+                        ? 'bg-white/12 text-on-dark'
+                        : 'bg-brand-soft text-brand'
+                      : isOverHero
+                        ? 'hover:bg-white/10 hover:text-on-dark'
+                        : 'hover:bg-surface hover:text-ink',
                   )}
                 >
                   {t(item.key)}
@@ -127,42 +135,45 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
             })}
           </nav>
 
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex shrink-0 items-center justify-end gap-2 justify-self-end sm:gap-2.5">
             <LocaleSwitcher tone={isOverHero ? 'dark' : 'light'} />
             {showAuthLoading ? (
-              <span className="text-sm opacity-70">{t('loading')}</span>
+              <span className="hidden text-sm opacity-70 sm:inline">{t('loading')}</span>
             ) : user ? (
-              <div className="flex items-center gap-2">
+              <div className="hidden items-center gap-2 sm:flex">
                 <Link
                   href="/profile"
                   className={cn(
-                    'hidden max-w-32 truncate text-sm font-medium sm:inline',
+                    'max-w-28 truncate text-sm font-medium',
                     isOverHero ? 'text-on-dark hover:opacity-80' : 'text-ink hover:text-brand',
                   )}
                 >
                   {user.name}
                 </Link>
-                <LogoutButton />
+                <LogoutButton
+                  className={cn(isOverHero && 'border-transparent text-on-dark hover:bg-white/10')}
+                />
               </div>
             ) : (
-              <div className="hidden items-center gap-2 sm:flex">
-                <Link href="/auth/login">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className={cn(
-                      isOverHero && 'border-transparent text-on-dark hover:bg-white/10',
-                    )}
-                  >
-                    {t('login')}
-                  </Button>
+              <div className="hidden items-center gap-1.5 sm:flex">
+                <Link
+                  href="/auth/login"
+                  className={cn(
+                    'inline-flex h-9 items-center px-3 text-sm font-medium tracking-tight',
+                    'transition-opacity duration-[var(--duration-fast)] hover:opacity-80',
+                    isOverHero ? 'text-on-dark' : 'text-ink-secondary hover:text-ink',
+                  )}
+                >
+                  {t('login')}
                 </Link>
                 <Link href="/auth/register">
                   <Button
                     size="sm"
                     variant={isOverHero ? 'outline' : 'secondary'}
                     className={cn(
-                      isOverHero && 'border-transparent bg-on-dark text-ink hover:bg-on-dark/90',
+                      'rounded-sm shadow-none',
+                      isOverHero &&
+                        'border-transparent bg-on-dark text-ink hover:bg-on-dark/90 hover:shadow-none',
                     )}
                   >
                     {t('register')}
@@ -174,8 +185,8 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
             <IconButton
               label={t('menu')}
               className={cn(
-                'md:hidden',
-                isOverHero && 'border-white/35 text-on-dark hover:bg-white/10',
+                'lg:hidden',
+                isOverHero && 'border-white/30 bg-white/10 text-on-dark hover:bg-white/15',
               )}
               variant="outline"
               size="sm"
@@ -195,19 +206,25 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
         {menuOpen ? (
           <div
             id="mobile-nav"
-            className="border-t border-border/40 bg-surface-elevated px-6 py-5 text-ink shadow-md md:hidden"
+            className="border-t border-border/50 bg-surface-elevated px-4 py-4 text-ink shadow-md sm:px-6 lg:hidden"
           >
             <nav className="flex flex-col gap-1 text-sm" aria-label={t('main')}>
-              {NAV_HREFS.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="rounded-sm px-3 py-3 font-medium text-ink hover:bg-surface"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  {t(item.key)}
-                </Link>
-              ))}
+              {NAV_HREFS.map((item) => {
+                const active = isNavActive(pathname, item.href);
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                      'rounded-sm px-3 py-3 font-medium transition-colors',
+                      active ? 'bg-brand-soft text-brand' : 'text-ink hover:bg-surface',
+                    )}
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    {t(item.key)}
+                  </Link>
+                );
+              })}
               {!user ? (
                 <>
                   <Link
@@ -240,8 +257,15 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
       </header>
 
       {needsSpacer ? (
-        <div className="h-[calc(0.75rem+4.25rem)] sm:h-[calc(0.75rem+4.5rem)]" aria-hidden />
+        <div className="h-[calc(0.75rem+3.75rem)] sm:h-[calc(0.75rem+4rem)]" aria-hidden />
       ) : null}
     </>
   );
+};
+
+const isNavActive = (pathname: string, href: (typeof NAV_HREFS)[number]['href']): boolean => {
+  if (href === '/projects') {
+    return pathname.startsWith('/projects');
+  }
+  return pathname.startsWith(href);
 };

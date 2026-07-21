@@ -30,7 +30,7 @@ export const BrandLogo = ({
     <Link
       href={href}
       className={cn(
-        'font-brand font-extrabold tracking-[-0.04em]',
+        'inline-flex items-baseline gap-0 font-brand font-extrabold tracking-[-0.045em]',
         sizeClassName[size],
         inverted ? 'text-on-dark' : 'text-ink',
         className,
@@ -41,7 +41,7 @@ export const BrandLogo = ({
       {badge ? (
         <span
           className={cn(
-            'ml-2 text-[10px] font-semibold uppercase tracking-[0.14em]',
+            'ml-2 self-center text-[10px] font-semibold uppercase tracking-[0.14em]',
             inverted ? 'text-on-dark/70' : 'text-ink-muted',
           )}
         >
