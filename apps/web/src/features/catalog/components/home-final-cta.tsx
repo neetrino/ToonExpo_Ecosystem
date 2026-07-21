@@ -24,7 +24,7 @@ export const HomeFinalCta = async () => {
               <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-on-dark/55">
                 {t('finalCta.eyebrow')}
               </p>
-              <h2 className="mt-3 text-[clamp(1.5rem,3.5vw,2.25rem)] font-semibold tracking-tight">
+              <h2 className="mt-3 text-[clamp(1.5rem,3.5vw,2.25rem)] font-semibold tracking-tight text-on-dark">
                 {t('finalCta.title')}
               </h2>
               <p className="mt-3 text-sm leading-relaxed text-on-dark/70 sm:text-base">
