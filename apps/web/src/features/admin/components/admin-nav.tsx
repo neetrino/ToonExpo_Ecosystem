@@ -38,7 +38,7 @@ type NavItem = {
 const NAV_ITEMS: NavItem[] = [
   { href: '/admin/analytics', key: 'analytics', icon: LineChart },
   { href: '/admin/companies', key: 'companies', icon: Building2 },
-  { href: '/checkin', key: 'checkin', icon: ScanLine },
+  { href: '/admin/checkin', key: 'checkin', icon: ScanLine },
   { href: '/admin/partners', key: 'partners', icon: Handshake },
   { href: '/admin/bank-offers', key: 'bankOffers', icon: Landmark },
   {
@@ -61,7 +61,6 @@ const NAV_ITEMS: NavItem[] = [
  */
 export const AdminNav = () => {
   const t = useTranslations('Admin.nav');
-  const tAdmin = useTranslations('Admin');
   const pathname = usePathname();
 
   return (
@@ -69,7 +68,7 @@ export const AdminNav = () => {
       <div className="mb-5 hidden px-2 md:block">
         <BrandLogo href="/admin" size="sm" inverted />
         <p className="mt-2 px-0.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-on-dark/65">
-          {tAdmin('badge')} · {t('section')}
+          {t('portalLabel')}
         </p>
       </div>
 

@@ -37,14 +37,21 @@ const SCROLL_SOLID_OFFSET_PX = 24;
 export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) => {
   const t = useTranslations('Nav');
   const pathname = usePathname();
-  const { data: user, isLoading } = useMeQuery();
+  const { data: user, isLoading, isFetching } = useMeQuery();
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  /** Avoid auth SSR/client mismatch until the session hint is readable. */
+  const [authReady, setAuthReady] = useState(false);
   const isTransparentStart = variant === 'transparent';
   const isOverHero = isTransparentStart && !scrolled && !menuOpen;
   /** Solid chrome is always the same floating rounded bar on every page. */
   const isFloating = !isOverHero;
   const needsSpacer = !isTransparentStart;
+  const showAuthLoading = !authReady || isLoading || (isFetching && !user);
+
+  useEffect(() => {
+    setAuthReady(true);
+  }, []);
 
   useEffect(() => {
     setMenuOpen(false);
@@ -122,7 +129,7 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
 
           <div className="flex items-center gap-2 sm:gap-3">
             <LocaleSwitcher tone={isOverHero ? 'dark' : 'light'} />
-            {isLoading ? (
+            {showAuthLoading ? (
               <span className="text-sm opacity-70">{t('loading')}</span>
             ) : user ? (
               <div className="flex items-center gap-2">

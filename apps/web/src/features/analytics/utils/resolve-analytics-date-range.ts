@@ -3,7 +3,7 @@ import {
   ANALYTICS_PRESET_DAYS,
   ANALYTICS_RANGE_PRESETS,
   type AnalyticsRangePreset,
-} from "@/features/analytics/constants";
+} from '@/features/analytics/constants';
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -13,11 +13,8 @@ export type ResolvedAnalyticsDateRange = {
   to: string;
 };
 
-const isAnalyticsRangePreset = (
-  value: string | null,
-): value is AnalyticsRangePreset =>
-  value !== null &&
-  (ANALYTICS_RANGE_PRESETS as readonly string[]).includes(value);
+const isAnalyticsRangePreset = (value: string | null): value is AnalyticsRangePreset =>
+  value !== null && (ANALYTICS_RANGE_PRESETS as readonly string[]).includes(value);
 
 const startOfLocalDay = (date: Date): Date => {
   const next = new Date(date);
@@ -25,14 +22,24 @@ const startOfLocalDay = (date: Date): Date => {
   return next;
 };
 
+/**
+ * Floors to local minute so repeated resolves in the same minute share ISO bounds.
+ * Prevents React Query key thrash (`new Date()` every render → infinite refetch).
+ */
+export const startOfLocalMinute = (date: Date): Date => {
+  const next = new Date(date);
+  next.setSeconds(0, 0);
+  return next;
+};
+
 /** Maps a preset to inclusive ISO from/to bounds for analytics API queries. */
 export const resolveAnalyticsDateRangeFromPreset = (
   preset: AnalyticsRangePreset,
-  now: Date = new Date(),
+  now: Date = startOfLocalMinute(new Date()),
 ): { from: string; to: string } => {
   const to = now;
 
-  if (preset === "today") {
+  if (preset === 'today') {
     return {
       from: startOfLocalDay(now).toISOString(),
       to: to.toISOString(),
@@ -49,11 +56,9 @@ export const resolveAnalyticsDateRangeFromPreset = (
 /** Reads preset from URL search params with a default 30-day window. */
 export const resolveAnalyticsDateRange = (
   presetParam: string | null,
-  now: Date = new Date(),
+  now: Date = startOfLocalMinute(new Date()),
 ): ResolvedAnalyticsDateRange => {
-  const preset = isAnalyticsRangePreset(presetParam)
-    ? presetParam
-    : ANALYTICS_DEFAULT_PRESET;
+  const preset = isAnalyticsRangePreset(presetParam) ? presetParam : ANALYTICS_DEFAULT_PRESET;
 
   return {
     preset,

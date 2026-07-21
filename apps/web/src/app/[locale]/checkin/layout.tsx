@@ -1,35 +1,32 @@
-import { headers } from "next/headers";
-import { notFound } from "next/navigation";
-import { getTranslations, setRequestLocale } from "next-intl/server";
-import type { ReactNode } from "react";
+import { headers } from 'next/headers';
+import { notFound } from 'next/navigation';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
+import type { ReactNode } from 'react';
 
-import { getMeOrNull } from "@/features/auth/api/auth-api";
-import { Link, redirect } from "@/i18n/navigation";
-import { LocaleSwitcher } from "@/shared/ui/locale-switcher";
+import { getMeOrNull } from '@/features/auth/api/auth-api';
+import { Link, redirect } from '@/i18n/navigation';
+import { LocaleSwitcher } from '@/shared/ui/locale-switcher';
 
 type CheckinLayoutProps = {
   children: ReactNode;
   params: Promise<{ locale: string }>;
 };
 
-const CHECKIN_ACCOUNT_TYPES = new Set(["entrance_staff", "platform_admin"]);
+const CHECKIN_ACCOUNT_TYPES = new Set(['entrance_staff', 'platform_admin']);
 
 /**
  * Server-gated check-in shell for entrance staff and platform admins.
  */
-export default async function CheckinLayout({
-  children,
-  params,
-}: CheckinLayoutProps) {
+export default async function CheckinLayout({ children, params }: CheckinLayoutProps) {
   const { locale } = await params;
   setRequestLocale(locale);
 
   const headerStore = await headers();
-  const cookieHeader = headerStore.get("cookie") ?? undefined;
+  const cookieHeader = headerStore.get('cookie') ?? undefined;
   const user = await getMeOrNull(cookieHeader);
 
   if (!user) {
-    redirect({ href: "/auth/login?returnUrl=%2Fcheckin", locale });
+    redirect({ href: '/auth/login?returnUrl=%2Fcheckin', locale });
     return null;
   }
 
@@ -37,7 +34,13 @@ export default async function CheckinLayout({
     notFound();
   }
 
-  const t = await getTranslations("Checkin");
+  // Platform admins use the admin shell; keep /checkin for entrance staff only.
+  if (user.accountType === 'platform_admin') {
+    redirect({ href: '/admin/checkin', locale });
+    return null;
+  }
+
+  const t = await getTranslations('Checkin');
 
   return (
     <div className="min-h-screen bg-background">
@@ -50,19 +53,14 @@ export default async function CheckinLayout({
             <span>TOON</span>
             <span className="text-brand">EXPO</span>
             <span className="ml-2 text-xs font-medium uppercase tracking-wide text-ink-muted">
-              {t("badge")}
+              {t('badge')}
             </span>
           </Link>
           <div className="flex items-center gap-3">
-            <span className="hidden text-sm text-ink-secondary sm:inline">
-              {user.email}
-            </span>
+            <span className="hidden text-sm text-ink-secondary sm:inline">{user.email}</span>
             <LocaleSwitcher />
-            <Link
-              href="/profile"
-              className="text-sm font-medium text-ink-secondary hover:text-ink"
-            >
-              {t("profileLink")}
+            <Link href="/profile" className="text-sm font-medium text-ink-secondary hover:text-ink">
+              {t('profileLink')}
             </Link>
           </div>
         </div>

@@ -5,6 +5,7 @@ import type {
   UserResponse,
 } from '@toonexpo/contracts';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useSyncExternalStore } from 'react';
 
 import {
   changePassword,
@@ -20,12 +21,17 @@ import type { RegisterFormValues } from '@/features/auth/schemas/register.schema
 import { hasClientSessionHint } from '@/features/auth/utils/session-hint';
 import { AUTH_ME_QUERY_KEY } from '@/shared/config/auth.constants';
 
+const subscribeToNothing = (): (() => void) => () => undefined;
+
 /**
  * Client query for the current session user (`null` when logged out).
  * Guests (no CSRF session hint) do not hit `/auth/me`.
+ *
+ * Session hint is read via `useSyncExternalStore` so SSR and hydration
+ * both see `false`, then the client updates after hydrate — avoiding mismatches.
  */
 export const useMeQuery = () => {
-  const hasHint = typeof window !== 'undefined' && hasClientSessionHint();
+  const hasHint = useSyncExternalStore(subscribeToNothing, hasClientSessionHint, () => false);
 
   return useQuery<UserResponse | null>({
     queryKey: AUTH_ME_QUERY_KEY,

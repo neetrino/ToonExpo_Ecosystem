@@ -563,6 +563,7 @@
     "nav": {
       "label": "Admin navigation",
       "section": "Manage",
+      "portalLabel": "Management portal",
       "analytics": "Analytics",
       "companies": "Companies",
       "partners": "Partners",

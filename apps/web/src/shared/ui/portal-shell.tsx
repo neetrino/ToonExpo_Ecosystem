@@ -26,9 +26,10 @@ type PortalShellProps = {
   variant?: 'default' | 'rail';
 };
 
-/** Matches SiteHeader solid spacer (`top-3` + bar height). */
-const SITE_HEADER_OFFSET_CLASS = 'top-[5.25rem]';
-const SITE_HEADER_RAIL_HEIGHT_CLASS = 'h-[calc(100vh-5.25rem)]';
+/** Matches SiteHeader solid spacer (`top-3` + bar) plus a small gap below the header. */
+const SITE_HEADER_OFFSET_CLASS = 'top-[6.25rem]';
+const SITE_HEADER_RAIL_HEIGHT_CLASS = 'h-[calc(100vh-6.25rem)]';
+const SITE_HEADER_RAIL_TOP_GAP_CLASS = 'mt-4';
 
 /**
  * Shared portal chrome: top bar + desktop sidebar + mobile drawer.
@@ -122,6 +123,7 @@ export const PortalShell = ({
             <div
               className={cn(
                 'sticky flex flex-col rounded-tr-[2.5rem] bg-brand-secondary p-4 shadow-md',
+                SITE_HEADER_RAIL_TOP_GAP_CLASS,
                 SITE_HEADER_OFFSET_CLASS,
                 SITE_HEADER_RAIL_HEIGHT_CLASS,
               )}

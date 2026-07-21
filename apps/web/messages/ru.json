@@ -563,6 +563,7 @@
     "nav": {
       "label": "Навигация админки",
       "section": "Управление",
+      "portalLabel": "Management portal",
       "analytics": "Аналитика",
       "companies": "Компании",
       "readiness": "Готовность",
