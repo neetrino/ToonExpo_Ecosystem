@@ -14,7 +14,7 @@ import { mapSetPasswordError } from '@/features/auth/utils/map-auth-error';
 import { useRouter } from '@/i18n/navigation';
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
-import { Input } from '@/shared/ui/input';
+import { PasswordInput } from '@/shared/ui/password-input';
 
 type SetPasswordFormProps = {
   token: string;
@@ -60,11 +60,12 @@ export const SetPasswordForm = ({ token }: SetPasswordFormProps) => {
         label={t('fields.password')}
         error={errors.password ? t('validation.password') : undefined}
       >
-        <Input
+        <PasswordInput
           id="set-password"
-          type="password"
           autoComplete="new-password"
           aria-invalid={Boolean(errors.password)}
+          revealLabel={t('fields.showPassword')}
+          hideLabel={t('fields.hidePassword')}
           {...register('password')}
         />
       </FormField>
@@ -74,11 +75,12 @@ export const SetPasswordForm = ({ token }: SetPasswordFormProps) => {
         label={t('fields.confirmPassword')}
         error={errors.confirmPassword ? t('validation.confirmPassword') : undefined}
       >
-        <Input
+        <PasswordInput
           id="set-password-confirm"
-          type="password"
           autoComplete="new-password"
           aria-invalid={Boolean(errors.confirmPassword)}
+          revealLabel={t('fields.showPassword')}
+          hideLabel={t('fields.hidePassword')}
           {...register('confirmPassword')}
         />
       </FormField>

@@ -329,13 +329,19 @@
       "backHome": "На главную"
     },
     "fields": {
+      "firstName": "Имя",
+      "surname": "Фамилия",
       "name": "Имя и фамилия",
       "email": "Email",
       "phone": "Телефон",
       "password": "Пароль",
-      "confirmPassword": "Подтвердите пароль"
+      "confirmPassword": "Подтвердите пароль",
+      "showPassword": "Показать пароль",
+      "hidePassword": "Скрыть пароль"
     },
     "validation": {
+      "firstName": "Укажите имя",
+      "surname": "Укажите фамилию",
       "name": "Укажите имя",
       "email": "Укажите корректный email",
       "phone": "Укажите корректный телефон",

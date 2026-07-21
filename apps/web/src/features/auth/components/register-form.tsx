@@ -6,12 +6,17 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { useRegisterMutation } from '@/features/auth/hooks/use-auth';
-import { registerSchema, type RegisterFormValues } from '@/features/auth/schemas/register.schema';
+import {
+  registerSchema,
+  toRegisterRequest,
+  type RegisterFormValues,
+} from '@/features/auth/schemas/register.schema';
 import { mapAuthError } from '@/features/auth/utils/map-auth-error';
 import { Link, useRouter } from '@/i18n/navigation';
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
+import { PasswordInput } from '@/shared/ui/password-input';
 
 /**
  * Buyer self-registration form with NestJS-backed session cookie.
@@ -28,13 +33,20 @@ export const RegisterForm = () => {
     formState: { errors, isSubmitting },
   } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
-    defaultValues: { name: '', email: '', phone: '', password: '' },
+    defaultValues: {
+      firstName: '',
+      surname: '',
+      phone: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+    },
   });
 
   const onSubmit = handleSubmit(async (values) => {
     setFormError(null);
     try {
-      await registerMutation.mutateAsync(values);
+      await registerMutation.mutateAsync(toRegisterRequest(values));
       router.push('/settings');
     } catch (error) {
       setFormError(t(`errors.${mapAuthError(error)}`));
@@ -45,17 +57,49 @@ export const RegisterForm = () => {
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-5" noValidate>
+      <div className="grid gap-5 sm:grid-cols-2">
+        <FormField
+          id="register-first-name"
+          label={t('fields.firstName')}
+          error={errors.firstName ? t('validation.firstName') : undefined}
+        >
+          <Input
+            id="register-first-name"
+            autoComplete="given-name"
+            aria-invalid={Boolean(errors.firstName)}
+            className="bg-surface-input"
+            {...register('firstName')}
+          />
+        </FormField>
+
+        <FormField
+          id="register-surname"
+          label={t('fields.surname')}
+          error={errors.surname ? t('validation.surname') : undefined}
+        >
+          <Input
+            id="register-surname"
+            autoComplete="family-name"
+            aria-invalid={Boolean(errors.surname)}
+            className="bg-surface-input"
+            {...register('surname')}
+          />
+        </FormField>
+      </div>
+
       <FormField
-        id="register-name"
-        label={t('fields.name')}
-        error={errors.name ? t('validation.name') : undefined}
+        id="register-phone"
+        label={t('fields.phone')}
+        error={errors.phone ? t('validation.phone') : undefined}
       >
         <Input
-          id="register-name"
-          autoComplete="name"
-          aria-invalid={Boolean(errors.name)}
+          id="register-phone"
+          type="tel"
+          autoComplete="tel"
+          placeholder="+374 …"
+          aria-invalid={Boolean(errors.phone)}
           className="bg-surface-input"
-          {...register('name')}
+          {...register('phone')}
         />
       </FormField>
 
@@ -76,33 +120,34 @@ export const RegisterForm = () => {
       </FormField>
 
       <FormField
-        id="register-phone"
-        label={t('fields.phone')}
-        error={errors.phone ? t('validation.phone') : undefined}
-      >
-        <Input
-          id="register-phone"
-          type="tel"
-          autoComplete="tel"
-          placeholder="+374 …"
-          aria-invalid={Boolean(errors.phone)}
-          className="bg-surface-input"
-          {...register('phone')}
-        />
-      </FormField>
-
-      <FormField
         id="register-password"
         label={t('fields.password')}
         error={errors.password ? t('validation.password') : undefined}
       >
-        <Input
+        <PasswordInput
           id="register-password"
-          type="password"
           autoComplete="new-password"
           aria-invalid={Boolean(errors.password)}
           className="bg-surface-input"
+          revealLabel={t('fields.showPassword')}
+          hideLabel={t('fields.hidePassword')}
           {...register('password')}
+        />
+      </FormField>
+
+      <FormField
+        id="register-confirm-password"
+        label={t('fields.confirmPassword')}
+        error={errors.confirmPassword ? t('validation.confirmPassword') : undefined}
+      >
+        <PasswordInput
+          id="register-confirm-password"
+          autoComplete="new-password"
+          aria-invalid={Boolean(errors.confirmPassword)}
+          className="bg-surface-input"
+          revealLabel={t('fields.showPassword')}
+          hideLabel={t('fields.hidePassword')}
+          {...register('confirmPassword')}
         />
       </FormField>
 

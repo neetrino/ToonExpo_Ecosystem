@@ -14,6 +14,7 @@ import { Link, useRouter } from '@/i18n/navigation';
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
+import { PasswordInput } from '@/shared/ui/password-input';
 
 type LoginFormProps = {
   returnUrl?: string | undefined;
@@ -73,12 +74,13 @@ export const LoginForm = ({ returnUrl }: LoginFormProps) => {
         label={t('fields.password')}
         error={errors.password ? t('validation.password') : undefined}
       >
-        <Input
+        <PasswordInput
           id="login-password"
-          type="password"
           autoComplete="current-password"
           aria-invalid={Boolean(errors.password)}
           className="bg-surface-input"
+          revealLabel={t('fields.showPassword')}
+          hideLabel={t('fields.hidePassword')}
           {...register('password')}
         />
       </FormField>

@@ -329,13 +329,19 @@
       "backHome": "Back to home"
     },
     "fields": {
+      "firstName": "Name",
+      "surname": "Surname",
       "name": "Full name",
       "email": "Email",
       "phone": "Phone",
       "password": "Password",
-      "confirmPassword": "Confirm password"
+      "confirmPassword": "Confirm password",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password"
     },
     "validation": {
+      "firstName": "Enter your name",
+      "surname": "Enter your surname",
       "name": "Enter your name",
       "email": "Enter a valid email",
       "phone": "Enter a valid phone number",
