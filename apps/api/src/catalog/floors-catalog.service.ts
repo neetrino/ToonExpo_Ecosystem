@@ -1,18 +1,15 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
-import type { FloorDetail } from "@toonexpo/contracts";
-import { PublicationStatus } from "@toonexpo/db";
+import { Injectable, NotFoundException } from '@nestjs/common';
+import type { FloorDetail } from '@toonexpo/contracts';
+import { PublicationStatus } from '@toonexpo/db';
 
-import { AnalyticsService } from "../analytics/analytics.service.js";
-import { PrismaService } from "../prisma/prisma.service.js";
-import { PUBLIC_PUBLICATION_STATUS } from "./catalog.constants.js";
-import type { CatalogViewerContext } from "./projects.service.js";
-import { publishedApartmentWhere } from "./mappers/catalog.mapper.js";
-import { mapFloorDetail } from "./mappers/inventory.mapper.js";
-import { loadTranslations } from "./utils/load-translations.js";
-import {
-  resolveCatalogLocale,
-  TRANSLATION_ENTITY,
-} from "./utils/resolve-translation.js";
+import { AnalyticsService } from '../analytics/analytics.service.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { PUBLIC_PUBLICATION_STATUS } from './catalog.constants.js';
+import type { CatalogViewerContext } from './projects.service.js';
+import { publishedApartmentWhere } from './mappers/catalog.mapper.js';
+import { mapFloorDetail } from './mappers/inventory.mapper.js';
+import { loadTranslations } from './utils/load-translations.js';
+import { resolveCatalogLocale, TRANSLATION_ENTITY } from './utils/resolve-translation.js';
 
 @Injectable()
 export class FloorsCatalogService {
@@ -21,10 +18,7 @@ export class FloorsCatalogService {
     private readonly analytics: AnalyticsService,
   ) {}
 
-  async getFloorById(
-    floorId: string,
-    viewer: CatalogViewerContext,
-  ): Promise<FloorDetail> {
+  async getFloorById(floorId: string, viewer: CatalogViewerContext): Promise<FloorDetail> {
     const locale = resolveCatalogLocale(viewer.locale);
     const floor = await this.prisma.db.floor.findFirst({
       where: {
@@ -36,6 +30,14 @@ export class FloorsCatalogService {
         },
       },
       include: {
+        floorplanMedia: {
+          select: {
+            id: true,
+            fileUrl: true,
+            thumbnailUrl: true,
+            altText: true,
+          },
+        },
         building: {
           select: {
             id: true,
@@ -46,7 +48,7 @@ export class FloorsCatalogService {
         },
         apartments: {
           where: publishedApartmentWhere(),
-          orderBy: [{ number: "asc" }],
+          orderBy: [{ number: 'asc' }],
           select: {
             id: true,
             number: true,
@@ -62,17 +64,15 @@ export class FloorsCatalogService {
     });
 
     if (!floor) {
-      throw new NotFoundException("Floor not found");
+      throw new NotFoundException('Floor not found');
     }
 
-    const translations = await loadTranslations(
-      this.prisma.db,
-      TRANSLATION_ENTITY.project,
-      [floor.building.project.id],
-    );
+    const translations = await loadTranslations(this.prisma.db, TRANSLATION_ENTITY.project, [
+      floor.building.project.id,
+    ]);
 
     this.analytics.track({
-      eventType: "floor_view",
+      eventType: 'floor_view',
       floorId: floor.id,
       buildingId: floor.buildingId,
       projectId: floor.building.projectId,

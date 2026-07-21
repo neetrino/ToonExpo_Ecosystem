@@ -2,7 +2,7 @@
  * Mortgage / Bank Offers contracts (admin, portal, public).
  */
 
-import type { PublicationStatus } from "./catalog.js";
+import type { PublicationStatus } from './catalog.js';
 
 export type BankOfferListItem = {
   id: string;
@@ -61,19 +61,17 @@ export type UpdateBankOfferBody = {
 
 export type PortalCreateBankOfferBody = Omit<
   CreateBankOfferBody,
-  "partnerCompanyId" | "publicationStatus"
+  'partnerCompanyId' | 'publicationStatus'
 >;
 
-export type PortalUpdateBankOfferBody = Omit<
-  UpdateBankOfferBody,
-  "publicationStatus"
->;
+export type PortalUpdateBankOfferBody = Omit<UpdateBankOfferBody, 'publicationStatus'>;
 
 export type PublicMortgageBankSummary = {
   id: string;
   name: string;
   slug: string;
   logoMediaId: string | null;
+  logoUrl: string | null;
 };
 
 export type PublicMortgageOfferItem = {

@@ -1,21 +1,58 @@
 'use client';
 
+import {
+  Building2,
+  CalendarDays,
+  ClipboardCheck,
+  Handshake,
+  Landmark,
+  LayoutList,
+  LineChart,
+  ScanLine,
+  Tags,
+  Workflow,
+} from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { Link, usePathname } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 
-const NAV_ITEMS = [
-  { href: '/admin/analytics', key: 'analytics' as const },
-  { href: '/admin/companies', key: 'companies' as const },
-  { href: '/checkin', key: 'checkin' as const },
-  { href: '/admin/partners', key: 'partners' as const },
-  { href: '/admin/bank-offers', key: 'bankOffers' as const },
-  { href: '/admin/service-providers', key: 'serviceProviders' as const },
-  { href: '/admin/readiness', key: 'readiness' as const },
-  { href: '/admin/readiness/categories', key: 'readinessCategories' as const },
-  { href: '/admin/integrations/bos', key: 'bos' as const },
-  { href: '/admin/events', key: 'events' as const },
+type NavItem = {
+  href: string;
+  key:
+    | 'analytics'
+    | 'companies'
+    | 'checkin'
+    | 'partners'
+    | 'bankOffers'
+    | 'serviceProviders'
+    | 'readiness'
+    | 'readinessCategories'
+    | 'bos'
+    | 'events';
+  icon: LucideIcon;
+};
+
+const NAV_ITEMS: NavItem[] = [
+  { href: '/admin/analytics', key: 'analytics', icon: LineChart },
+  { href: '/admin/companies', key: 'companies', icon: Building2 },
+  { href: '/checkin', key: 'checkin', icon: ScanLine },
+  { href: '/admin/partners', key: 'partners', icon: Handshake },
+  { href: '/admin/bank-offers', key: 'bankOffers', icon: Landmark },
+  {
+    href: '/admin/service-providers',
+    key: 'serviceProviders',
+    icon: LayoutList,
+  },
+  { href: '/admin/readiness', key: 'readiness', icon: ClipboardCheck },
+  {
+    href: '/admin/readiness/categories',
+    key: 'readinessCategories',
+    icon: Tags,
+  },
+  { href: '/admin/integrations/bos', key: 'bos', icon: Workflow },
+  { href: '/admin/events', key: 'events', icon: CalendarDays },
 ];
 
 /**
@@ -27,22 +64,24 @@ export const AdminNav = () => {
 
   return (
     <nav aria-label={t('label')} className="flex flex-col gap-1">
-      <p className="mb-2 px-3 text-xs font-medium uppercase tracking-wide text-ink-muted">
+      <p className="mb-2 px-3 text-[10px] font-bold uppercase tracking-widest text-ink-muted">
         {t('section')}
       </p>
       {NAV_ITEMS.map((item) => {
         const active = pathname.startsWith(item.href);
+        const Icon = item.icon;
         return (
           <Link
             key={item.href}
             href={item.href}
             className={cn(
-              'rounded-sm px-3 py-2 text-sm font-medium transition-colors',
+              'flex items-center gap-2.5 rounded-sm px-3 py-2.5 text-sm font-medium transition-colors',
               active
-                ? 'bg-surface text-brand'
+                ? 'bg-brand-soft text-brand'
                 : 'text-ink-secondary hover:bg-surface hover:text-ink',
             )}
           >
+            <Icon className="size-4 shrink-0 opacity-80" aria-hidden />
             {t(item.key)}
           </Link>
         );

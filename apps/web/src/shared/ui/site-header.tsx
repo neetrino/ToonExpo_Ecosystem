@@ -1,94 +1,110 @@
-"use client";
+'use client';
 
-import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { Menu, X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { useEffect, useState } from 'react';
 
-import { LogoutButton } from "@/features/auth/components/logout-button";
-import { useMeQuery } from "@/features/auth/hooks/use-auth";
-import { Link } from "@/i18n/navigation";
-import { Button } from "@/shared/ui/button";
-import { LocaleSwitcher } from "@/shared/ui/locale-switcher";
-import { cn } from "@/shared/ui/cn";
+import { LogoutButton } from '@/features/auth/components/logout-button';
+import { useMeQuery } from '@/features/auth/hooks/use-auth';
+import { Link, usePathname } from '@/i18n/navigation';
+import { BrandLogo } from '@/shared/ui/brand-logo';
+import { Button } from '@/shared/ui/button';
+import { IconButton } from '@/shared/ui/icon-button';
+import { LocaleSwitcher } from '@/shared/ui/locale-switcher';
+import { cn } from '@/shared/ui/cn';
 
 type SiteHeaderProps = {
   className?: string | undefined;
-  /** Transparent over hero imagery (Variant A). */
-  variant?: "solid" | "transparent" | undefined;
+  /** Transparent over hero imagery. */
+  variant?: 'solid' | 'transparent' | undefined;
 };
+
+const NAV_HREFS = [
+  { href: '/projects' as const, key: 'projects' as const },
+  { href: '/builders' as const, key: 'builders' as const },
+  { href: '/partners' as const, key: 'partners' as const },
+  { href: '/mortgage' as const, key: 'mortgage' as const },
+  { href: '/expo' as const, key: 'expoMap' as const },
+];
 
 /**
  * Shared top nav: logo, catalog links, locale switcher, auth actions.
  */
-export const SiteHeader = ({
-  className,
-  variant = "solid",
-}: SiteHeaderProps) => {
-  const t = useTranslations("Nav");
+export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) => {
+  const t = useTranslations('Nav');
+  const pathname = usePathname();
   const { data: user, isLoading } = useMeQuery();
   const [menuOpen, setMenuOpen] = useState(false);
-  const isTransparent = variant === "transparent";
+  const isTransparent = variant === 'transparent';
+
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!menuOpen) {
+      return;
+    }
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [menuOpen]);
 
   return (
     <header
       className={cn(
-        "relative z-20 w-full",
+        'relative z-[var(--z-header)] w-full',
         isTransparent
-          ? "bg-transparent text-on-dark"
-          : "border-b border-border bg-background text-ink",
+          ? 'bg-transparent text-on-dark'
+          : 'border-b border-border bg-surface-elevated/95 text-ink backdrop-blur-md',
         className,
       )}
     >
-      <div className="mx-auto flex w-full max-w-content items-center justify-between gap-4 px-6 py-4">
-        <Link
-          href="/"
-          className={cn(
-            "font-brand text-lg font-extrabold tracking-tight",
-            isTransparent ? "text-on-dark" : "text-ink",
-          )}
-        >
-          <span>TOON</span>
-          <span className="text-brand">EXPO</span>
-        </Link>
+      <div className="page-container flex items-center justify-between gap-4 py-3.5 sm:py-4">
+        <BrandLogo inverted={isTransparent} />
 
         <nav
           className={cn(
-            "hidden items-center gap-7 text-[13px] md:flex",
-            isTransparent ? "text-on-dark" : "text-ink",
+            'hidden items-center gap-7 text-[13px] font-medium md:flex',
+            isTransparent ? 'text-on-dark/90' : 'text-ink-secondary',
           )}
-          aria-label={t("main")}
+          aria-label={t('main')}
         >
-          <Link href="/projects" className="hover:opacity-80">
-            {t("projects")}
-          </Link>
-          <Link href="/builders" className="hover:opacity-80">
-            {t("builders")}
-          </Link>
-          <Link href="/partners" className="hover:opacity-80">
-            {t("partners")}
-          </Link>
-          <Link href="/mortgage" className="hover:opacity-80">
-            {t("mortgage")}
-          </Link>
-          <Link href="/expo" className="hover:opacity-80">
-            {t("expoMap")}
-          </Link>
+          {NAV_HREFS.map((item) => {
+            const active =
+              item.href === '/projects'
+                ? pathname.startsWith('/projects')
+                : pathname.startsWith(item.href);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  'transition-opacity hover:opacity-100',
+                  active ? (isTransparent ? 'text-on-dark' : 'text-ink') : 'opacity-80',
+                )}
+              >
+                {t(item.key)}
+              </Link>
+            );
+          })}
         </nav>
 
         <div className="flex items-center gap-2 sm:gap-3">
-          <div className={cn(isTransparent && "[&_button]:text-on-dark")}>
+          <div className={cn(isTransparent && '[&_button]:text-on-dark')}>
             <LocaleSwitcher />
           </div>
           {isLoading ? (
-            <span className="text-sm opacity-70">{t("loading")}</span>
+            <span className="text-sm opacity-70">{t('loading')}</span>
           ) : user ? (
             <div className="flex items-center gap-2">
               <Link
                 href="/profile"
                 className={cn(
-                  "hidden max-w-32 truncate text-sm font-medium sm:inline",
-                  isTransparent
-                    ? "text-on-dark hover:opacity-80"
-                    : "text-ink hover:text-brand",
+                  'hidden max-w-32 truncate text-sm font-medium sm:inline',
+                  isTransparent ? 'text-on-dark hover:opacity-80' : 'text-ink hover:text-brand',
                 )}
               >
                 {user.name}
@@ -102,81 +118,86 @@ export const SiteHeader = ({
                   variant="ghost"
                   size="sm"
                   className={cn(
-                    isTransparent &&
-                      "border-transparent text-on-dark hover:bg-white/10",
+                    isTransparent && 'border-transparent text-on-dark hover:bg-white/10',
                   )}
                 >
-                  {t("login")}
+                  {t('login')}
                 </Button>
               </Link>
               <Link href="/auth/register">
                 <Button
                   size="sm"
+                  variant={isTransparent ? 'outline' : 'secondary'}
                   className={cn(
-                    "rounded-sm",
-                    isTransparent
-                      ? "bg-on-dark text-ink hover:bg-on-dark/90"
-                      : "bg-background text-ink border border-border-strong hover:bg-surface",
+                    isTransparent && 'border-transparent bg-on-dark text-ink hover:bg-on-dark/90',
                   )}
                 >
-                  {t("register")}
+                  {t('register')}
                 </Button>
               </Link>
             </div>
           )}
 
-          <button
-            type="button"
+          <IconButton
+            label={t('menu')}
             className={cn(
-              "inline-flex h-9 w-9 items-center justify-center rounded-sm border text-sm md:hidden",
-              isTransparent
-                ? "border-white/40 text-on-dark"
-                : "border-border text-ink",
+              'md:hidden',
+              isTransparent && 'border-white/35 text-on-dark hover:bg-white/10',
             )}
+            variant="outline"
+            size="sm"
             aria-expanded={menuOpen}
             aria-controls="mobile-nav"
-            onClick={() => {
-              setMenuOpen((open) => !open);
-            }}
+            onClick={() => setMenuOpen((open) => !open)}
           >
-            <span className="sr-only">{t("menu")}</span>
-            {menuOpen ? "✕" : "☰"}
-          </button>
+            {menuOpen ? (
+              <X className="size-4" aria-hidden />
+            ) : (
+              <Menu className="size-4" aria-hidden />
+            )}
+          </IconButton>
         </div>
       </div>
 
       {menuOpen ? (
         <div
           id="mobile-nav"
-          className="border-t border-border/40 bg-background px-6 py-4 text-ink md:hidden"
+          className="border-t border-border/40 bg-surface-elevated px-6 py-5 text-ink shadow-md md:hidden"
         >
-          <nav className="flex flex-col gap-3 text-sm" aria-label={t("main")}>
-            <Link href="/projects" onClick={() => setMenuOpen(false)}>
-              {t("projects")}
-            </Link>
-            <Link href="/builders" onClick={() => setMenuOpen(false)}>
-              {t("builders")}
-            </Link>
-            <Link href="/partners" onClick={() => setMenuOpen(false)}>
-              {t("partners")}
-            </Link>
-            <Link href="/mortgage" onClick={() => setMenuOpen(false)}>
-              {t("mortgage")}
-            </Link>
-            <Link href="/expo" onClick={() => setMenuOpen(false)}>
-              {t("expoMap")}
-            </Link>
+          <nav className="flex flex-col gap-1 text-sm" aria-label={t('main')}>
+            {NAV_HREFS.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="rounded-sm px-3 py-3 font-medium text-ink hover:bg-surface"
+                onClick={() => setMenuOpen(false)}
+              >
+                {t(item.key)}
+              </Link>
+            ))}
             {!user ? (
               <>
-                <Link href="/auth/login" onClick={() => setMenuOpen(false)}>
-                  {t("login")}
+                <Link
+                  href="/auth/login"
+                  className="rounded-sm px-3 py-3 font-medium text-ink hover:bg-surface"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {t('login')}
                 </Link>
-                <Link href="/auth/register" onClick={() => setMenuOpen(false)}>
-                  {t("register")}
+                <Link
+                  href="/auth/register"
+                  className="rounded-sm px-3 py-3 font-medium text-brand hover:bg-brand-soft"
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {t('register')}
                 </Link>
               </>
             ) : (
-              <Link href="/profile" onClick={() => setMenuOpen(false)}>
+              <Link
+                href="/profile"
+                className="rounded-sm px-3 py-3 font-medium text-ink hover:bg-surface"
+                onClick={() => setMenuOpen(false)}
+              >
                 {user.name}
               </Link>
             )}

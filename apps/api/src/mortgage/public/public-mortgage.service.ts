@@ -1,20 +1,20 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, NotFoundException } from '@nestjs/common';
 import type {
   MortgageCalculatorResult,
   PublicMortgageOfferListResponse,
-} from "@toonexpo/contracts";
+} from '@toonexpo/contracts';
 import {
   PartnerCompanyStatus,
   PartnerCompanyType,
   PublicationStatus,
   type Prisma,
-} from "@toonexpo/db";
+} from '@toonexpo/db';
 
-import { PrismaService } from "../../prisma/prisma.service.js";
-import { AnalyticsService } from "../../analytics/analytics.service.js";
-import { calculateMortgagePayment } from "../calculator/mortgage-calculator.util.js";
-import { toPublicMortgageOfferItem } from "../mappers/bank-offer.mapper.js";
-import type { MortgageCalculatorDto } from "./dto/mortgage-calculator.dto.js";
+import { PrismaService } from '../../prisma/prisma.service.js';
+import { AnalyticsService } from '../../analytics/analytics.service.js';
+import { calculateMortgagePayment } from '../calculator/mortgage-calculator.util.js';
+import { toPublicMortgageOfferItem } from '../mappers/bank-offer.mapper.js';
+import type { MortgageCalculatorDto } from './dto/mortgage-calculator.dto.js';
 
 const publicOfferInclude = {
   partnerCompany: {
@@ -25,6 +25,11 @@ const publicOfferInclude = {
       logoMediaId: true,
       status: true,
       publicationStatus: true,
+      logoMedia: {
+        select: {
+          fileUrl: true,
+        },
+      },
     },
   },
 } satisfies Prisma.BankOfferInclude;
@@ -47,14 +52,10 @@ export class PublicMortgageService {
         },
       },
       include: publicOfferInclude,
-      orderBy: [
-        { featured: "desc" },
-        { sortOrder: "asc" },
-        { createdAt: "desc" },
-      ],
+      orderBy: [{ featured: 'desc' }, { sortOrder: 'asc' }, { createdAt: 'desc' }],
     });
 
-    this.analytics.track({ eventType: "mortgage_page_view" });
+    this.analytics.track({ eventType: 'mortgage_page_view' });
 
     return { data: offers.map(toPublicMortgageOfferItem) };
   }
@@ -76,11 +77,11 @@ export class PublicMortgageService {
     });
 
     if (!offer) {
-      throw new NotFoundException("Bank offer not found");
+      throw new NotFoundException('Bank offer not found');
     }
 
     this.analytics.track({
-      eventType: "bank_offer_selected",
+      eventType: 'bank_offer_selected',
       companyId: offer.partnerCompanyId,
       metadata: { offerId: offer.id },
     });

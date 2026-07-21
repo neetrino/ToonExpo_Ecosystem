@@ -2,14 +2,11 @@
  * Shared catalog types for public project / apartment / builder APIs.
  */
 
-export type PublicationStatus = "draft" | "published" | "archived";
+export type PublicationStatus = 'draft' | 'published' | 'archived';
 
-export type ApartmentSalesStatus = "available" | "reserved" | "sold";
+export type ApartmentSalesStatus = 'available' | 'reserved' | 'sold';
 
-export type PriceVisibility =
-  | "public"
-  | "by_request"
-  | "visible_after_login";
+export type PriceVisibility = 'public' | 'by_request' | 'visible_after_login';
 
 /**
  * Offset pagination envelope used by public list endpoints.
@@ -59,6 +56,7 @@ export type FloorDetail = FloorSummary & {
     id: string;
     name: string;
   };
+  floorplan: MediaAssetSummary | null;
 };
 
 export type ApartmentAvailabilitySummary = {

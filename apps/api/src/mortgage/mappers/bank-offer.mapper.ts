@@ -1,18 +1,12 @@
-import type {
-  BankOfferListItem,
-  PublicMortgageOfferItem,
-} from "@toonexpo/contracts";
-import type { Prisma } from "@toonexpo/db";
+import type { BankOfferListItem, PublicMortgageOfferItem } from '@toonexpo/contracts';
+import type { Prisma } from '@toonexpo/db';
 
 const toIso = (value: Date): string => value.toISOString();
 
-export const decimalToRequiredString = (
-  value: Prisma.Decimal,
-): string => value.toString();
+export const decimalToRequiredString = (value: Prisma.Decimal): string => value.toString();
 
-export const decimalToOptionalString = (
-  value: Prisma.Decimal | null,
-): string | null => (value == null ? null : value.toString());
+export const decimalToOptionalString = (value: Prisma.Decimal | null): string | null =>
+  value == null ? null : value.toString();
 
 type BankOfferRecord = Prisma.BankOfferGetPayload<object>;
 
@@ -24,6 +18,11 @@ type BankOfferWithPartner = Prisma.BankOfferGetPayload<{
         name: true;
         slug: true;
         logoMediaId: true;
+        logoMedia: {
+          select: {
+            fileUrl: true;
+          };
+        };
       };
     };
   };
@@ -73,5 +72,6 @@ export const toPublicMortgageOfferItem = (
     name: offer.partnerCompany.name,
     slug: offer.partnerCompany.slug,
     logoMediaId: offer.partnerCompany.logoMediaId,
+    logoUrl: offer.partnerCompany.logoMedia?.fileUrl ?? null,
   },
 });
