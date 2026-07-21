@@ -44,29 +44,30 @@ export const HomeStats = async ({ projects, builderCount, projectTotal }: HomeSt
   ];
 
   return (
-    <div className="relative z-10 mx-auto -mt-16 w-full max-w-content px-6">
+    <div className="relative z-10 mx-auto -mt-14 w-full max-w-content px-6 sm:-mt-16">
       <Reveal>
-        <div className="rounded-lg border border-border/60 bg-surface-elevated/95 px-5 py-6 shadow-card backdrop-blur-sm sm:px-8">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-center">
-            <span className="shrink-0 rounded-pill border border-accent/30 bg-accent-soft px-4 py-1.5 text-xs font-medium tracking-wide text-ink-label">
-              {t('stats.badge')}
-            </span>
-            <div className="grid flex-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {stats.map((stat) => (
-                <div
-                  key={stat.label}
-                  className="border-border sm:border-r sm:pr-4 sm:last:border-r-0"
-                >
-                  <p className="text-center text-[10px] font-bold uppercase tracking-widest text-ink-muted">
-                    {stat.label}
-                  </p>
-                  <p className="mt-1 text-center font-brand text-2xl font-bold text-ink">
-                    <AnimatedCounter value={stat.value} />
-                  </p>
-                  <p className="mt-0.5 text-center text-xs font-medium text-success">{stat.hint}</p>
-                </div>
-              ))}
-            </div>
+        <div className="border border-border/50 bg-surface-elevated/95 px-5 py-7 shadow-lg backdrop-blur-md sm:px-10">
+          <div className="mb-6 flex items-baseline justify-between gap-4 border-b border-border/60 pb-4">
+            <p className="text-eyebrow mb-0">{t('stats.badge')}</p>
+            <span className="hidden h-px flex-1 bg-border/80 sm:block" aria-hidden />
+          </div>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-0">
+            {stats.map((stat, index) => (
+              <div
+                key={stat.label}
+                className={
+                  index === 0 ? 'lg:pr-8' : 'border-border lg:border-l lg:px-8 lg:last:pr-0'
+                }
+              >
+                <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-ink-muted">
+                  {stat.label}
+                </p>
+                <p className="mt-2 font-display text-[1.85rem] font-semibold tracking-tight text-ink">
+                  <AnimatedCounter value={stat.value} />
+                </p>
+                <p className="mt-1 text-xs text-ink-secondary">{stat.hint}</p>
+              </div>
+            ))}
           </div>
         </div>
       </Reveal>

@@ -1,6 +1,7 @@
 import type {
   ChangePasswordRequest,
   ForgotPasswordRequest,
+  RegisterRequest,
   SetPasswordRequest,
   UserResponse,
 } from '@toonexpo/contracts';
@@ -17,7 +18,6 @@ import {
   setPassword,
 } from '@/features/auth/api/auth-api';
 import type { LoginFormValues } from '@/features/auth/schemas/login.schema';
-import type { RegisterFormValues } from '@/features/auth/schemas/register.schema';
 import { hasClientSessionHint } from '@/features/auth/utils/session-hint';
 import { AUTH_ME_QUERY_KEY } from '@/shared/config/auth.constants';
 
@@ -62,7 +62,7 @@ export const useRegisterMutation = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (values: RegisterFormValues) => registerUser(values),
+    mutationFn: (values: RegisterRequest) => registerUser(values),
     onSuccess: (data) => {
       queryClient.setQueryData(AUTH_ME_QUERY_KEY, data.user);
     },

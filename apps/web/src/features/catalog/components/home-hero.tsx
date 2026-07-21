@@ -6,7 +6,7 @@ import { Link } from '@/i18n/navigation';
 import { Button } from '@/shared/ui/button';
 
 /**
- * Premium full-bleed hero with search and primary CTAs.
+ * Premium full-bleed hero with cinematic drifting media and primary CTAs.
  * Header is fixed in PublicChrome so it is never trapped under sections.
  */
 export const HomeHero = async () => {
@@ -14,18 +14,23 @@ export const HomeHero = async () => {
 
   return (
     <section className="relative min-h-[min(100svh,820px)] overflow-hidden">
-      <div className="absolute inset-0 isolate">
-        <Image
-          src="/images/hero-variant-a.png"
-          alt=""
-          fill
-          priority
-          className="object-cover object-[center_35%]"
-          sizes="100vw"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-ink/40 to-ink/55" />
-        <div className="absolute inset-0 bg-gradient-to-br from-brand/20 via-transparent to-accent/15" />
-        <div className="absolute inset-0 bg-ink/15" />
+      <div className="absolute inset-0 isolate overflow-hidden" aria-hidden>
+        <div className="hero-cinematic-frame absolute inset-0">
+          <div className="hero-cinematic-media absolute inset-[-12%]">
+            <Image
+              src="/images/hero-variant-a.png"
+              alt=""
+              fill
+              priority
+              className="object-cover object-[center_38%]"
+              sizes="100vw"
+            />
+          </div>
+        </div>
+        <div className="hero-cinematic-haze pointer-events-none absolute inset-0" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-ink/42 to-ink/58" />
+        <div className="absolute inset-0 bg-gradient-to-br from-brand/18 via-transparent to-accent/12" />
+        <div className="absolute inset-0 bg-ink/12" />
       </div>
 
       <div className="relative flex min-h-[min(100svh,820px)] flex-col pt-[4.25rem] sm:pt-[4.5rem]">

@@ -1,6 +1,6 @@
 'use client';
 
-import { Menu, X } from 'lucide-react';
+import { Menu, UserRound, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
@@ -8,7 +8,6 @@ import { LogoutButton } from '@/features/auth/components/logout-button';
 import { useMeQuery } from '@/features/auth/hooks/use-auth';
 import { Link, usePathname } from '@/i18n/navigation';
 import { BrandLogo } from '@/shared/ui/brand-logo';
-import { Button } from '@/shared/ui/button';
 import { IconButton } from '@/shared/ui/icon-button';
 import { LocaleSwitcher } from '@/shared/ui/locale-switcher';
 import { cn } from '@/shared/ui/cn';
@@ -88,6 +87,15 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
   }, [menuOpen]);
 
   const settingsHref = user?.accountType === 'platform_admin' ? '/admin/settings' : '/settings';
+  const profileHref = user ? settingsHref : '/auth/login';
+  const profileIconClassName = cn(
+    'inline-flex size-9 items-center justify-center rounded-sm border',
+    'transition-colors duration-[var(--duration-fast)]',
+    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30',
+    isOverHero
+      ? 'border-white/30 bg-white/10 text-on-dark hover:bg-white/15'
+      : 'border-border bg-surface-elevated text-ink hover:border-border-strong hover:bg-surface',
+  );
 
   return (
     <>
@@ -140,47 +148,25 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
           <div className="flex shrink-0 items-center justify-end gap-2 justify-self-end sm:gap-2.5">
             <LocaleSwitcher tone={isOverHero ? 'dark' : 'light'} />
             {showAuthLoading ? (
-              <span className="hidden text-sm opacity-70 sm:inline">{t('loading')}</span>
-            ) : user ? (
-              <div className="hidden items-center gap-2 sm:flex">
-                <Link
-                  href={settingsHref}
-                  className={cn(
-                    'max-w-28 truncate text-sm font-medium',
-                    isOverHero ? 'text-on-dark hover:opacity-80' : 'text-ink hover:text-brand',
-                  )}
-                >
-                  {user.name}
-                </Link>
-                <LogoutButton
-                  className={cn(isOverHero && 'border-transparent text-on-dark hover:bg-white/10')}
-                />
-              </div>
+              <span className="size-9 animate-pulse rounded-sm bg-current/10" aria-hidden />
             ) : (
-              <div className="hidden items-center gap-1.5 sm:flex">
+              <div className="flex items-center gap-2">
                 <Link
-                  href="/auth/login"
-                  className={cn(
-                    'inline-flex h-9 items-center px-3 text-sm font-medium tracking-tight',
-                    'transition-opacity duration-[var(--duration-fast)] hover:opacity-80',
-                    isOverHero ? 'text-on-dark' : 'text-ink-secondary hover:text-ink',
-                  )}
+                  href={profileHref}
+                  aria-label={t('profile')}
+                  title={t('profile')}
+                  className={profileIconClassName}
                 >
-                  {t('login')}
+                  <UserRound className="size-4" aria-hidden />
                 </Link>
-                <Link href="/auth/register">
-                  <Button
-                    size="sm"
-                    variant={isOverHero ? 'outline' : 'secondary'}
+                {user ? (
+                  <LogoutButton
                     className={cn(
-                      'rounded-sm shadow-none',
-                      isOverHero &&
-                        'border-transparent bg-on-dark text-ink hover:bg-on-dark/90 hover:shadow-none',
+                      'hidden sm:inline-flex',
+                      isOverHero && 'border-transparent text-on-dark hover:bg-white/10',
                     )}
-                  >
-                    {t('register')}
-                  </Button>
-                </Link>
+                  />
+                ) : null}
               </div>
             )}
 

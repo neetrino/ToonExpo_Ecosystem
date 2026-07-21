@@ -1,6 +1,6 @@
 'use client';
 
-import { Check, ChevronDown, Languages } from 'lucide-react';
+import { Check, ChevronDown } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useEffect, useId, useRef, useState } from 'react';
 
@@ -91,7 +91,6 @@ export const LocaleSwitcher = ({ tone = 'light' }: LocaleSwitcherProps) => {
         aria-controls={listId}
         onClick={() => setOpen((value) => !value)}
       >
-        <Languages className="size-3.5 shrink-0 opacity-70" aria-hidden />
         <span>{LOCALE_SHORT[locale] ?? locale}</span>
         <ChevronDown
           className={cn(

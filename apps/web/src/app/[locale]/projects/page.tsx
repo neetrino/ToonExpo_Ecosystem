@@ -13,6 +13,7 @@ import {
   parseProjectFilters,
   toListProjectsQuery,
 } from '@/features/catalog/utils/project-filters';
+import { MarketingPageIntro } from '@/shared/ui/marketing-page-intro';
 
 type ProjectsPageProps = {
   params: Promise<{ locale: string }>;
@@ -46,12 +47,11 @@ export default async function ProjectsPage({ params, searchParams }: ProjectsPag
   return (
     <div className="min-h-screen bg-background">
       <main className="page-container section-pad">
-        <header className="mb-8 flex flex-col gap-2">
-          <h1 className="text-page-title text-ink">{t('projects.title')}</h1>
-          <p className="text-sm text-ink-secondary">
-            {t('projects.subtitle', { count: response.meta.total })}
-          </p>
-        </header>
+        <MarketingPageIntro
+          title={t('projects.title')}
+          description={t('projects.subtitle', { count: response.meta.total })}
+          imageSrc="/demo/cascade-view.jpg"
+        />
 
         <ProjectFiltersForm filters={filters} />
 

@@ -2,6 +2,7 @@
 
 import { type ReactNode, useEffect, useId, useRef } from 'react';
 import { X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 import { IconButton } from '@/shared/ui/icon-button';
 import { cn } from '@/shared/ui/cn';
@@ -28,8 +29,10 @@ export const Dialog = ({
   children,
   footer,
   className,
-  closeLabel = 'Close',
+  closeLabel,
 }: DialogProps) => {
+  const t = useTranslations('Common');
+  const resolvedCloseLabel = closeLabel ?? t('close');
   const titleId = useId();
   const panelRef = useRef<HTMLDivElement | null>(null);
 
@@ -66,7 +69,7 @@ export const Dialog = ({
     <div className="fixed inset-0 z-[var(--z-modal)] flex items-end justify-center p-4 sm:items-center">
       <button
         type="button"
-        aria-label={closeLabel}
+        aria-label={resolvedCloseLabel}
         className="absolute inset-0 bg-ink/45 backdrop-blur-[2px]"
         onClick={onClose}
       />
@@ -88,7 +91,7 @@ export const Dialog = ({
             </h2>
             {description ? <p className="mt-1 text-sm text-ink-secondary">{description}</p> : null}
           </div>
-          <IconButton label={closeLabel} onClick={onClose} size="sm">
+          <IconButton label={resolvedCloseLabel} onClick={onClose} size="sm">
             <X className="size-4" aria-hidden />
           </IconButton>
         </header>

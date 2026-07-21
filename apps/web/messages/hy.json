@@ -1,4 +1,7 @@
 {
+  "Common": {
+    "close": "Փակել"
+  },
   "HomePage": {
     "brand": "ToonExpo",
     "tagline": "Անշարժ գույքի ցուցահանդեսային հարթակ Հայաստանի համար",
@@ -113,6 +116,7 @@
     "expoMap": "Expo քարտեզ",
     "login": "Մուտք",
     "register": "Գրանցում",
+    "profile": "Պրոֆիլ",
     "loading": "…"
   },
   "Footer": {
@@ -317,14 +321,29 @@
     "home": "Գլխավոր էջ"
   },
   "Auth": {
+    "shell": {
+      "eyebrow": "Հայաստանի անշարժ գույքի ցուցահանդես",
+      "panelTitle": "Ձեր մուտքը դեպի նոր շինություններ",
+      "loginBody": "Մուտք գործեք՝ կառավարելու ընտրվածները, հայտերը և ցուցահանդեսի պրոֆիլը։",
+      "registerBody": "Ստեղծեք անվճար գնորդի հաշիվ՝ պահպանելու բնակարաններ, ուղարկելու հայտեր և check-in անելու համար։",
+      "loginEyebrow": "Բարի վերադարձ",
+      "registerEyebrow": "Անձնական մուտք",
+      "backHome": "Գլխավոր էջ"
+    },
     "fields": {
+      "firstName": "Անուն",
+      "surname": "Ազգանուն",
       "name": "Անուն ազգանուն",
       "email": "Էլ․ փոստ",
       "phone": "Հեռախոս",
       "password": "Գաղտնաբառ",
-      "confirmPassword": "Հաստատել գաղտնաբառը"
+      "confirmPassword": "Հաստատել գաղտնաբառը",
+      "showPassword": "Ցույց տալ գաղտնաբառը",
+      "hidePassword": "Թաքցնել գաղտնաբառը"
     },
     "validation": {
+      "firstName": "Մուտքագրեք ձեր անունը",
+      "surname": "Մուտքագրեք ձեր ազգանունը",
       "name": "Մուտքագրեք ձեր անունը",
       "email": "Մուտքագրեք վավեր էլ․ փոստ",
       "phone": "Մուտքագրեք վավեր հեռախոսահամար",
@@ -345,7 +364,11 @@
       "submitting": "Մուտք…",
       "forgotPassword": "Մոռացե՞լ եք գաղտնաբառը",
       "noAccount": "Դեռ հաշիվ չունե՞ք",
-      "registerLink": "Գրանցվել"
+      "registerLink": "Գրանցվել",
+      "placeholders": {
+        "email": "john.doe@example.com",
+        "password": "********"
+      }
     },
     "forgotPassword": {
       "title": "Գաղտնաբառի վերականգնում",
@@ -361,7 +384,15 @@
       "submit": "Ստեղծել հաշիվ",
       "submitting": "Ստեղծում…",
       "hasAccount": "Արդեն գրանցվա՞ծ եք",
-      "loginLink": "Մուտք"
+      "loginLink": "Մուտք",
+      "placeholders": {
+        "firstName": "John",
+        "surname": "Doe",
+        "phone": "37491111222",
+        "email": "john.doe@example.com",
+        "password": "********",
+        "confirmPassword": "********"
+      }
     },
     "setPassword": {
       "title": "Սահմանեք գաղտնաբառ",
@@ -393,7 +424,7 @@
       "profile": "Պրոֆիլ",
       "password": "Գաղտնաբառ",
       "favorites": "Ընտրյալներ",
-      "checkin": "Check-in",
+      "checkin": "Գրանցում",
       "qr": "Իմ QR",
       "requests": "Իմ հայտերը"
     },
@@ -563,7 +594,7 @@
     "nav": {
       "label": "Ադմին նավիգացիա",
       "section": "Կառավարում",
-      "portalLabel": "Management portal",
+      "portalLabel": "Կառավարման պորտալ",
       "analytics": "Վերլուծություն",
       "companies": "Ընկերություններ",
       "partners": "Գործընկերներ",

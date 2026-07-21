@@ -13,7 +13,7 @@ import {
 import { mapChangePasswordError } from '@/features/auth/utils/map-auth-error';
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
-import { Input } from '@/shared/ui/input';
+import { PasswordInput } from '@/shared/ui/password-input';
 
 /**
  * Authenticated change-password form with success toast and reset.
@@ -63,11 +63,12 @@ export const ChangePasswordForm = () => {
         label={t('fields.currentPassword')}
         error={errors.currentPassword ? t('validation.currentPassword') : undefined}
       >
-        <Input
+        <PasswordInput
           id="change-password-current"
-          type="password"
           autoComplete="current-password"
           aria-invalid={Boolean(errors.currentPassword)}
+          revealLabel={tAuth('fields.showPassword')}
+          hideLabel={tAuth('fields.hidePassword')}
           {...register('currentPassword')}
         />
       </FormField>
@@ -77,11 +78,12 @@ export const ChangePasswordForm = () => {
         label={t('fields.newPassword')}
         error={errors.newPassword ? tAuth('validation.password') : undefined}
       >
-        <Input
+        <PasswordInput
           id="change-password-new"
-          type="password"
           autoComplete="new-password"
           aria-invalid={Boolean(errors.newPassword)}
+          revealLabel={tAuth('fields.showPassword')}
+          hideLabel={tAuth('fields.hidePassword')}
           {...register('newPassword')}
         />
       </FormField>
@@ -91,11 +93,12 @@ export const ChangePasswordForm = () => {
         label={t('fields.confirmPassword')}
         error={errors.confirmPassword ? tAuth('validation.confirmPassword') : undefined}
       >
-        <Input
+        <PasswordInput
           id="change-password-confirm"
-          type="password"
           autoComplete="new-password"
           aria-invalid={Boolean(errors.confirmPassword)}
+          revealLabel={tAuth('fields.showPassword')}
+          hideLabel={tAuth('fields.hidePassword')}
           {...register('confirmPassword')}
         />
       </FormField>

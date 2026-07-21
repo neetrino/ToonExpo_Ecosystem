@@ -11,6 +11,7 @@ import {
   parsePartnerFilters,
 } from '@/features/catalog/utils/partner-filters';
 import { PARTNER_COMPANY_TYPES } from '@/features/partners/constants';
+import { MarketingPageIntro } from '@/shared/ui/marketing-page-intro';
 
 type PartnersPageProps = {
   params: Promise<{ locale: string }>;
@@ -56,12 +57,11 @@ export default async function PartnersPage({ params, searchParams }: PartnersPag
   return (
     <div className="min-h-screen bg-background">
       <main className="page-container section-pad">
-        <header className="mb-8 flex flex-col gap-2">
-          <h1 className="text-page-title text-ink">{t('partnersPage.title')}</h1>
-          <p className="text-sm text-ink-secondary">
-            {t('partnersPage.subtitle', { count: response.meta.total })}
-          </p>
-        </header>
+        <MarketingPageIntro
+          title={t('partnersPage.title')}
+          description={t('partnersPage.subtitle', { count: response.meta.total })}
+          imageSrc="/demo/partner-cover.jpg"
+        />
 
         <PartnerFiltersForm
           filters={filters}

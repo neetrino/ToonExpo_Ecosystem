@@ -1,4 +1,7 @@
 {
+  "Common": {
+    "close": "Close"
+  },
   "HomePage": {
     "brand": "ToonExpo",
     "tagline": "Real estate exhibition platform for Armenia",
@@ -113,6 +116,7 @@
     "expoMap": "Expo map",
     "login": "Sign in",
     "register": "Register",
+    "profile": "Profile",
     "loading": "…"
   },
   "Footer": {
@@ -317,14 +321,29 @@
     "home": "Back to home"
   },
   "Auth": {
+    "shell": {
+      "eyebrow": "Armenia real estate exhibition",
+      "panelTitle": "Your gateway to new developments",
+      "loginBody": "Sign in to manage favorites, requests, and your exhibition profile.",
+      "registerBody": "Create a free buyer account to save homes, send requests, and check in at the expo.",
+      "loginEyebrow": "Welcome back",
+      "registerEyebrow": "Private access",
+      "backHome": "Back to home"
+    },
     "fields": {
+      "firstName": "Name",
+      "surname": "Surname",
       "name": "Full name",
       "email": "Email",
       "phone": "Phone",
       "password": "Password",
-      "confirmPassword": "Confirm password"
+      "confirmPassword": "Confirm password",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password"
     },
     "validation": {
+      "firstName": "Enter your name",
+      "surname": "Enter your surname",
       "name": "Enter your name",
       "email": "Enter a valid email",
       "phone": "Enter a valid phone number",
@@ -345,7 +364,11 @@
       "submitting": "Signing in…",
       "forgotPassword": "Forgot password?",
       "noAccount": "No account yet?",
-      "registerLink": "Create one"
+      "registerLink": "Create one",
+      "placeholders": {
+        "email": "john.doe@example.com",
+        "password": "********"
+      }
     },
     "forgotPassword": {
       "title": "Forgot password",
@@ -361,7 +384,15 @@
       "submit": "Create account",
       "submitting": "Creating account…",
       "hasAccount": "Already registered?",
-      "loginLink": "Sign in"
+      "loginLink": "Sign in",
+      "placeholders": {
+        "firstName": "John",
+        "surname": "Doe",
+        "phone": "37491111222",
+        "email": "john.doe@example.com",
+        "password": "********",
+        "confirmPassword": "********"
+      }
     },
     "setPassword": {
       "title": "Set your password",
