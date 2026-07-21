@@ -122,7 +122,7 @@ export const PortalShell = ({
           <aside className="hidden w-72 shrink-0 self-stretch md:block">
             <div
               className={cn(
-                'sticky flex flex-col rounded-tr-[2.5rem] bg-brand-secondary p-4 shadow-md',
+                'sticky flex flex-col rounded-tr-[2.5rem] rounded-br-[2.5rem] bg-brand-secondary p-4 shadow-md',
                 SITE_HEADER_RAIL_TOP_GAP_CLASS,
                 SITE_HEADER_OFFSET_CLASS,
                 SITE_HEADER_RAIL_HEIGHT_CLASS,
