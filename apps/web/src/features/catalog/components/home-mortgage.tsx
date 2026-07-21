@@ -1,4 +1,5 @@
-import { Calculator, Landmark } from 'lucide-react';
+import Image from 'next/image';
+import { Calculator } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
 import { Link } from '@/i18n/navigation';
@@ -6,16 +7,22 @@ import { Button } from '@/shared/ui/button';
 import { Reveal } from '@/shared/ui/motion/reveal';
 
 /**
- * Mortgage / financing preview with CTA to the calculator page.
+ * Mortgage / financing preview — photo-led split with calculator CTA.
  */
 export const HomeMortgage = async () => {
   const t = await getTranslations('HomePage');
+
+  const bullets = [
+    t('mortgage.bullets.rates'),
+    t('mortgage.bullets.terms'),
+    t('mortgage.bullets.compare'),
+  ] as const;
 
   return (
     <section className="section-pad">
       <div className="page-container">
         <Reveal>
-          <div className="overflow-hidden rounded-lg border border-border bg-surface-elevated shadow-card">
+          <div className="overflow-hidden rounded-lg border border-border/70 bg-surface-elevated shadow-card">
             <div className="grid lg:grid-cols-2">
               <div className="flex flex-col justify-center p-8 sm:p-10 lg:p-12">
                 <p className="text-eyebrow mb-3">{t('mortgage.eyebrow')}</p>
@@ -23,6 +30,17 @@ export const HomeMortgage = async () => {
                 <p className="mt-3 max-w-md text-sm leading-relaxed text-ink-secondary">
                   {t('mortgage.description')}
                 </p>
+                <ul className="mt-6 space-y-2.5">
+                  {bullets.map((bullet) => (
+                    <li
+                      key={bullet}
+                      className="flex items-start gap-2.5 text-sm text-ink-secondary"
+                    >
+                      <span className="mt-2 size-1.5 shrink-0 rounded-full bg-brand" aria-hidden />
+                      {bullet}
+                    </li>
+                  ))}
+                </ul>
                 <div className="mt-8 flex flex-wrap gap-3">
                   <Link href="/mortgage">
                     <Button variant="secondary" size="lg">
@@ -37,29 +55,23 @@ export const HomeMortgage = async () => {
                   </Link>
                 </div>
               </div>
-              <div className="relative flex min-h-56 items-center justify-center bg-gradient-to-br from-brand-soft via-surface to-info-soft p-8 lg:min-h-full">
-                <div className="w-full max-w-sm rounded-md border border-border bg-surface-elevated p-6 shadow-md">
-                  <div className="mb-4 flex size-11 items-center justify-center rounded-sm bg-brand-soft text-brand">
-                    <Landmark className="size-5" aria-hidden />
-                  </div>
-                  <p className="text-sm font-semibold text-ink">{t('mortgage.cardTitle')}</p>
-                  <p className="mt-2 text-sm leading-relaxed text-ink-secondary">
+
+              <div className="relative min-h-64 lg:min-h-full">
+                <Image
+                  src="/demo/mortgage-hero.jpg"
+                  alt=""
+                  fill
+                  className="banner-media-drift object-cover object-[center_30%]"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-ink/55 via-ink/10 to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 p-6 sm:p-8">
+                  <p className="max-w-xs text-sm font-medium leading-snug text-on-dark">
+                    {t('mortgage.cardTitle')}
+                  </p>
+                  <p className="mt-1.5 max-w-sm text-sm leading-relaxed text-on-dark/75">
                     {t('mortgage.cardBody')}
                   </p>
-                  <ul className="mt-4 space-y-2 text-sm text-ink-secondary">
-                    <li className="flex items-center gap-2">
-                      <span className="size-1.5 rounded-full bg-brand" aria-hidden />
-                      {t('mortgage.bullets.rates')}
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="size-1.5 rounded-full bg-brand" aria-hidden />
-                      {t('mortgage.bullets.terms')}
-                    </li>
-                    <li className="flex items-center gap-2">
-                      <span className="size-1.5 rounded-full bg-brand" aria-hidden />
-                      {t('mortgage.bullets.compare')}
-                    </li>
-                  </ul>
                 </div>
               </div>
             </div>

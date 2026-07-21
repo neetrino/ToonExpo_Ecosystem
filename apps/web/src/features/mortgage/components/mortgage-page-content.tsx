@@ -38,25 +38,26 @@ export const MortgagePageContent = () => {
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="relative overflow-hidden rounded-lg border border-border/80 bg-surface-elevated shadow-card">
+      <div className="relative overflow-hidden rounded-lg">
         <div className="grid lg:grid-cols-2">
-          <div className="flex flex-col justify-center p-6 sm:p-8 lg:p-10">
+          <div className="relative z-10 flex flex-col justify-center bg-surface-elevated p-6 sm:p-8 lg:p-10">
             <p className="text-eyebrow mb-2">ToonExpo</p>
             <h1 className="text-page-title text-ink">{t('title')}</h1>
             <p className="mt-3 max-w-md text-sm leading-relaxed text-ink-secondary">
               {t('subtitle')}
             </p>
           </div>
-          <div className="relative min-h-44 lg:min-h-full">
+          <div className="relative min-h-52 lg:min-h-[17.5rem]">
             <Image
               src="/demo/mortgage-hero.jpg"
               alt=""
               fill
-              className="object-cover"
+              className="banner-media-drift object-cover object-[center_28%]"
               sizes="(max-width: 1024px) 100vw, 50vw"
               priority
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-surface-elevated via-transparent to-transparent max-lg:from-transparent max-lg:via-transparent max-lg:to-transparent max-lg:bg-ink/10" />
+            <div className="absolute inset-0 bg-gradient-to-r from-surface-elevated via-surface-elevated/40 to-transparent max-lg:hidden" />
+            <div className="absolute inset-0 bg-ink/20 lg:hidden" />
           </div>
         </div>
       </div>
