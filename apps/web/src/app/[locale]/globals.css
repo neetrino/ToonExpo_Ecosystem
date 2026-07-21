@@ -455,6 +455,41 @@
     mix-blend-mode: soft-light;
   }
 
+  /**
+   * Auth split seam — lightning-inspired jagged edge where the visual panel
+   * meets the form column (desktop only).
+   */
+  .auth-panel-seam {
+    clip-path: polygon(
+      0% 0%,
+      97% 0%,
+      99.2% 3.5%,
+      96% 8%,
+      99.5% 13%,
+      95.5% 19%,
+      99% 25.5%,
+      95% 33%,
+      99.6% 41%,
+      96% 49%,
+      99.2% 57%,
+      94.8% 66%,
+      98.8% 74%,
+      95.5% 82%,
+      99.4% 90%,
+      96.5% 100%,
+      0% 100%
+    );
+    filter: drop-shadow(10px 0 18px rgb(14 15 20 / 0.28));
+  }
+
+  .auth-seam-stroke {
+    stroke: color-mix(in srgb, var(--color-accent) 72%, white);
+    stroke-width: 1.25;
+    fill: none;
+    vector-effect: non-scaling-stroke;
+    filter: drop-shadow(0 0 6px color-mix(in srgb, var(--color-accent) 45%, transparent));
+  }
+
   @media (prefers-reduced-motion: no-preference) {
     .banner-media-drift {
       animation: banner-media-drift 22s var(--ease-in-out-premium) infinite alternate;
@@ -466,6 +501,24 @@
 
     .hero-cinematic-haze {
       animation: hero-haze-drift 28s var(--ease-in-out-premium) infinite;
+    }
+
+    .auth-seam-stroke {
+      stroke-dasharray: 4 7;
+      animation: auth-seam-spark 7s var(--ease-in-out-premium) infinite;
+    }
+  }
+
+  @keyframes auth-seam-spark {
+    0%,
+    100% {
+      stroke-opacity: 0.45;
+      stroke-dashoffset: 0;
+    }
+
+    50% {
+      stroke-opacity: 0.9;
+      stroke-dashoffset: -28;
     }
   }
 

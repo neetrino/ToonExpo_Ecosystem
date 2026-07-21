@@ -26,7 +26,7 @@ type ShellCopy = {
 };
 
 /**
- * Branded auth layout — cinematic panel + focused luxury form column.
+ * Branded auth layout — cinematic panel with lightning seam + luxury form column.
  */
 export const AuthPageShell = async ({ title, subtitle, children, variant }: AuthPageShellProps) => {
   const t = await getTranslations('Auth.shell');
@@ -39,7 +39,7 @@ export const AuthPageShell = async ({ title, subtitle, children, variant }: Auth
   };
 
   return (
-    <div className="relative min-h-svh bg-background lg:grid lg:grid-cols-2">
+    <div className="relative min-h-svh bg-background">
       <AuthVisualPanel copy={copy} />
       <AuthFormColumn
         title={title}
@@ -57,8 +57,9 @@ const AuthVisualPanel = ({ copy }: { copy: ShellCopy }) => {
   return (
     <aside
       className={cn(
-        'relative isolate hidden overflow-hidden lg:flex lg:min-h-svh lg:flex-col',
-        'lg:justify-between lg:p-10 xl:p-14',
+        'auth-panel-seam pointer-events-none absolute inset-y-0 left-0 z-10 hidden',
+        'w-[52%] flex-col justify-between p-10 xl:w-[53%] xl:p-14',
+        'lg:pointer-events-auto lg:flex',
       )}
     >
       <div className="absolute inset-0" aria-hidden>
@@ -70,14 +71,14 @@ const AuthVisualPanel = ({ copy }: { copy: ShellCopy }) => {
               fill
               priority
               className="object-cover object-center"
-              sizes="50vw"
+              sizes="54vw"
             />
           </div>
         </div>
         <div className="hero-cinematic-haze pointer-events-none absolute inset-0" />
         <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/60 to-ink/35" />
         <div className="absolute inset-0 bg-gradient-to-br from-brand/30 via-transparent to-accent/20" />
-        <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-accent/50 to-transparent" />
+        <AuthSeamStroke />
       </div>
 
       <BrandLogo inverted size="lg" className="relative" />
@@ -93,6 +94,23 @@ const AuthVisualPanel = ({ copy }: { copy: ShellCopy }) => {
         <p className="mt-5 text-[0.975rem] leading-relaxed text-on-dark/78">{copy.panelBody}</p>
       </div>
     </aside>
+  );
+};
+
+/** Champagne accent path tracing the jagged seam. */
+const AuthSeamStroke = () => {
+  return (
+    <svg
+      className="pointer-events-none absolute inset-0 size-full"
+      viewBox="0 0 100 100"
+      preserveAspectRatio="none"
+      aria-hidden
+    >
+      <path
+        className="auth-seam-stroke"
+        d="M97 0 L99.2 3.5 L96 8 L99.5 13 L95.5 19 L99 25.5 L95 33 L99.6 41 L96 49 L99.2 57 L94.8 66 L98.8 74 L95.5 82 L99.4 90 L96.5 100"
+      />
+    </svg>
   );
 };
 
@@ -112,11 +130,10 @@ const AuthFormColumn = ({
   children,
 }: AuthFormColumnProps) => {
   return (
-    <div className="relative flex min-h-svh flex-col overflow-hidden">
+    <div className="relative z-0 flex min-h-svh flex-col overflow-hidden lg:pl-[50%]">
       <div className="pointer-events-none absolute inset-0" aria-hidden>
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_55%_at_70%_-5%,rgb(184_149_108_/_0.12),transparent_55%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_45%_at_10%_100%,rgb(26_143_152_/_0.08),transparent_50%)]" />
-        <div className="absolute inset-x-8 top-24 hidden h-px bg-gradient-to-r from-transparent via-accent/25 to-transparent lg:block" />
       </div>
 
       <header className="relative z-[1] flex items-center justify-between gap-3 px-5 py-4 sm:px-8 sm:py-5 lg:justify-end lg:px-12">
