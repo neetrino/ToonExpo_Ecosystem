@@ -1,6 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
-  <g transform="translate(16 16) scale(1.48) translate(-14 -14)">
-    <path d="M3.5 15.75L14 5.25L19.25 9.625V6.125H22.75V12.25L24.5 14V15.75H3.5Z" fill="#2A667B"/>
-    <path d="M6.125 15.75H21.875V22.75H6.125V15.75Z" fill="#092B44"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 28 28" fill="none">
+  <!-- Same house mark as BrandLogo / navbar, scaled up to fill the favicon. -->
+  <g transform="translate(14 14) scale(1.35) translate(-14 -14)">
+    <path
+      d="M3.5 15.75L14 5.25L19.25 9.625V6.125H22.75V12.25L24.5 14V15.75H3.5Z"
+      fill="#2BA8B0"
+    />
+    <path d="M6.125 15.75H21.875V22.75H6.125V15.75Z" fill="#092B44" />
   </g>
 </svg>
