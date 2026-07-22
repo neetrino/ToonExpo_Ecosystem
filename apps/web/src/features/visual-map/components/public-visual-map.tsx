@@ -1,6 +1,6 @@
 'use client';
 
-import type { PublicVisualCanvasItem } from '@toonexpo/contracts';
+import type { PublicVisualCanvasItem, PublicVisualHotspotItem } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
@@ -34,8 +34,6 @@ export const PublicVisualMap = ({ canvas, linkContext }: PublicVisualMapProps) =
   const hasHotspots = canvas.hotspots.length > 0;
   const selectedHotspot =
     canvas.hotspots.find((hotspot) => hotspot.id === selectedHotspotId) ?? null;
-  const selectedTargetHref =
-    selectedHotspot != null ? (targetHrefByHotspotId[selectedHotspot.id] ?? null) : null;
 
   const markers = canvas.hotspots.map((hotspot) => ({
     id: hotspot.id,
@@ -68,7 +66,7 @@ export const PublicVisualMap = ({ canvas, linkContext }: PublicVisualMapProps) =
           ) : null}
         </div>
       </div>
-      {selectedHotspot && selectedTargetHref ? (
+      {selectedHotspot ? (
         <PublicVisualHotspotSheet
           hotspot={selectedHotspot}
           targetHref={resolveTargetHref(linkContext, selectedHotspot)}
