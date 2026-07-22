@@ -57,8 +57,10 @@ export const SiteHeaderMobileNav = ({
               key={item.href}
               href={item.href}
               className={cn(
-                'rounded-sm px-3 py-3 font-medium transition-colors',
-                active ? 'bg-brand-soft text-brand-deep' : 'text-ink hover:bg-surface',
+                'rounded-sm px-3 py-3 transition-colors',
+                active
+                  ? 'bg-brand-soft font-bold text-brand'
+                  : 'font-medium text-ink hover:bg-surface hover:text-brand',
               )}
               onClick={onClose}
             >

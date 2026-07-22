@@ -147,54 +147,52 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
           />
 
           <div
-            className={cn(
-              'relative z-10 flex items-center justify-between gap-4 sm:gap-6',
-              HEADER_HEIGHT_CLASS,
-            )}
+            className={cn('relative z-10 flex items-center gap-4 sm:gap-6', HEADER_HEIGHT_CLASS)}
           >
             <div
-              className="flex min-w-0 items-center gap-8 transition-transform ease-out lg:gap-10"
+              className="flex shrink-0 items-center transition-transform ease-out"
               style={contentInsetStyle}
             >
               <BrandLogo inverted={isOverHero} onHomeClick={() => setMenuOpen(false)} />
-
-              <nav
-                className={cn(
-                  'hidden items-center gap-6 lg:flex xl:gap-7',
-                  'transition-colors ease-out',
-                  isOverHero ? 'text-on-dark/80' : 'text-header-muted',
-                )}
-                style={{ transitionDuration: `${PILL_APPEAR_MS}ms` }}
-                aria-label={t('main')}
-              >
-                {NAV_HREFS.map((item) => {
-                  const active = isNavActive(pathname, item.href);
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className={cn(
-                        'whitespace-nowrap text-sm font-medium leading-5',
-                        'transition-colors ease-out',
-                        active
-                          ? isOverHero
-                            ? 'text-on-dark'
-                            : 'text-brand-deep'
-                          : isOverHero
-                            ? 'hover:text-on-dark'
-                            : 'hover:text-brand-deep',
-                      )}
-                      style={{ transitionDuration: `${PILL_APPEAR_MS}ms` }}
-                    >
-                      {t(item.key)}
-                    </Link>
-                  );
-                })}
-              </nav>
             </div>
 
+            <nav
+              className={cn(
+                'hidden min-w-0 flex-1 items-center justify-center gap-6 lg:flex xl:gap-7',
+                'transition-colors ease-out',
+                isOverHero ? 'text-on-dark/80' : 'text-header-muted',
+              )}
+              style={{ transitionDuration: `${PILL_APPEAR_MS}ms` }}
+              aria-label={t('main')}
+            >
+              {NAV_HREFS.map((item) => {
+                const active = isNavActive(pathname, item.href);
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                      'whitespace-nowrap text-sm leading-5',
+                      'transition-colors ease-out',
+                      active
+                        ? isOverHero
+                          ? 'font-bold text-on-dark'
+                          : 'font-bold text-brand'
+                        : cn(
+                            'font-medium',
+                            isOverHero ? 'hover:text-brand-logo' : 'hover:text-brand',
+                          ),
+                    )}
+                    style={{ transitionDuration: `${PILL_APPEAR_MS}ms` }}
+                  >
+                    {t(item.key)}
+                  </Link>
+                );
+              })}
+            </nav>
+
             <div
-              className="flex shrink-0 items-center gap-2.5 transition-transform ease-out sm:gap-3"
+              className="ml-auto flex shrink-0 items-center gap-2.5 transition-transform ease-out sm:gap-3 lg:ml-0"
               style={actionsInsetStyle}
             >
               <LocaleSwitcher tone={isOverHero ? 'dark' : 'light'} />
