@@ -39,18 +39,39 @@ const main = async (): Promise<void> => {
     connectionString: resolveConnectionString(),
   });
 
+  const maxAttempts = 3;
+  let lastError: unknown;
+
   try {
-    await clearSeedRuntimeDependents(prisma);
-    await upsertSeedBuilders(prisma);
-    const apartmentCount = await upsertSeedProjects(prisma);
-    const translations = await upsertSeedTranslations(prisma);
-    await seedAuthAccounts(prisma, (password) => argon2.hash(password, { type: argon2.argon2id }));
-    await upsertSeedMortgageOffer(prisma);
-    await upsertSeedExhibition(prisma);
-    const visualMaps = await upsertSeedVisualMaps(prisma);
-    console.info(
-      `Seed complete: ${SEED_BUILDERS.length} builders, ${SEED_PROJECTS.length} published projects, ${apartmentCount} apartments, ${translations.length} translations, ${visualMaps} visual maps, auth + mortgage + exhibition ready`,
-    );
+    for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+      try {
+        await clearSeedRuntimeDependents(prisma);
+        await upsertSeedBuilders(prisma);
+        const apartmentCount = await upsertSeedProjects(prisma);
+        const translations = await upsertSeedTranslations(prisma);
+        await seedAuthAccounts(prisma, (password) =>
+          argon2.hash(password, { type: argon2.argon2id }),
+        );
+        await upsertSeedMortgageOffer(prisma);
+        await upsertSeedExhibition(prisma);
+        const visualMaps = await upsertSeedVisualMaps(prisma);
+        console.info(
+          `Seed complete: ${SEED_BUILDERS.length} builders, ${SEED_PROJECTS.length} published projects, ${apartmentCount} apartments, ${translations.length} translations, ${visualMaps} visual maps, auth + mortgage + exhibition ready`,
+        );
+        return;
+      } catch (error: unknown) {
+        lastError = error;
+        console.warn(
+          `[seed] Attempt ${attempt}/${maxAttempts} failed: ${error instanceof Error ? error.message : String(error)}`,
+        );
+        if (attempt < maxAttempts) {
+          await new Promise((resolve) => {
+            setTimeout(resolve, 1_000 * attempt);
+          });
+        }
+      }
+    }
+    throw lastError instanceof Error ? lastError : new Error(String(lastError));
   } finally {
     await prisma.$disconnect();
   }

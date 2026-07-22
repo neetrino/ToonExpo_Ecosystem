@@ -1,101 +1,118 @@
+import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
 
 import { Link } from '@/i18n/navigation';
 import { BrandLogo } from '@/shared/ui/brand-logo';
-import { LocaleSwitcher } from '@/shared/ui/locale-switcher';
 
 /**
- * Public site footer with marketplace, company, and contact columns.
+ * Public site footer — light marketplace chrome matching Figma `81:459`.
  */
 export const SiteFooter = async () => {
   const t = await getTranslations('Footer');
 
   return (
-    <footer className="border-t border-border/80 bg-surface-inverse text-on-dark">
-      <div className="page-container grid gap-10 py-14 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="flex flex-col gap-3 lg:col-span-2">
-          <BrandLogo inverted />
-          <p className="max-w-sm text-sm leading-relaxed text-on-dark/70">{t('tagline')}</p>
-          <div className="pt-2">
-            <LocaleSwitcher tone="dark" />
-          </div>
-        </div>
-
-        <div>
-          <p className="text-[10px] font-bold uppercase tracking-widest text-accent">
-            {t('marketplace')}
-          </p>
-          <ul className="mt-4 flex flex-col gap-3 text-sm text-on-dark/70">
-            <li>
-              <Link href="/projects" className="transition-colors hover:text-on-dark">
-                {t('links.projects')}
-              </Link>
-            </li>
-            <li>
-              <Link href="/builders" className="transition-colors hover:text-on-dark">
-                {t('links.builders')}
-              </Link>
-            </li>
-            <li>
-              <Link href="/partners" className="transition-colors hover:text-on-dark">
-                {t('links.partners')}
-              </Link>
-            </li>
-            <li>
-              <Link href="/mortgage" className="transition-colors hover:text-on-dark">
-                {t('links.mortgage')}
-              </Link>
-            </li>
-            <li>
-              <Link href="/expo" className="transition-colors hover:text-on-dark">
-                {t('links.expo')}
-              </Link>
-            </li>
-          </ul>
-        </div>
-
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-1 lg:gap-8">
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-accent">
-              {t('company')}
+    <footer className="border-t border-header-border bg-canvas">
+      <div className="page-container pt-12 pb-4">
+        <div className="mb-16 grid grid-cols-1 gap-12 md:grid-cols-4">
+          <div className="md:col-span-2">
+            <BrandLogo />
+            <p className="mt-8 max-w-md text-sm leading-[1.625] text-header-muted">
+              {t('tagline')}
             </p>
-            <ul className="mt-4 flex flex-col gap-3 text-sm text-on-dark/70">
+          </div>
+
+          <div>
+            <p className="font-brand text-xs font-bold tracking-[0.1em] text-ink-navy uppercase">
+              {t('marketplace')}
+            </p>
+            <ul className="mt-9 flex flex-col gap-3 text-sm text-header-muted">
               <li>
-                <Link href="/auth/register" className="transition-colors hover:text-on-dark">
-                  {t('links.register')}
+                <Link href="/projects" className="transition-colors hover:text-brand-deep">
+                  {t('links.allListings')}
                 </Link>
               </li>
               <li>
-                <Link href="/auth/login" className="transition-colors hover:text-on-dark">
-                  {t('links.login')}
+                <Link href="/builders" className="transition-colors hover:text-brand-deep">
+                  {t('links.newDevelopments')}
+                </Link>
+              </li>
+              <li>
+                <Link href="/mortgage" className="transition-colors hover:text-brand-deep">
+                  {t('links.marketReports')}
+                </Link>
+              </li>
+              <li>
+                <Link href="/partners" className="transition-colors hover:text-brand-deep">
+                  {t('links.partnerBanks')}
                 </Link>
               </li>
             </ul>
           </div>
+
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-accent">
-              {t('contact')}
+            <p className="font-brand text-xs font-bold tracking-[0.1em] text-ink-navy uppercase">
+              {t('company')}
             </p>
-            <ul className="mt-4 flex flex-col gap-3 text-sm text-on-dark/70">
+            <ul className="mt-9 flex flex-col gap-3 text-sm text-header-muted">
+              <li>
+                <Link href="/" className="transition-colors hover:text-brand-deep">
+                  {t('links.about')}
+                </Link>
+              </li>
               <li>
                 <a
                   href={`mailto:${t('contactEmail')}`}
-                  className="transition-colors hover:text-on-dark"
+                  className="transition-colors hover:text-brand-deep"
                 >
-                  {t('contactEmail')}
+                  {t('links.press')}
+                </a>
+              </li>
+              <li>
+                <a
+                  href={`mailto:${t('contactEmail')}`}
+                  className="transition-colors hover:text-brand-deep"
+                >
+                  {t('links.contact')}
+                </a>
+              </li>
+              <li>
+                <a
+                  href={`mailto:${t('contactEmail')}`}
+                  className="transition-colors hover:text-brand-deep"
+                >
+                  {t('privacy')}
                 </a>
               </li>
             </ul>
           </div>
         </div>
-      </div>
 
-      <div className="border-t border-white/10">
-        <div className="page-container flex flex-col gap-2 py-6 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-xs text-on-dark/50">{t('trust')}</p>
-          <p className="text-[10px] font-medium uppercase tracking-widest text-on-dark/45">
-            {t('copyright')}
+        <div className="flex flex-wrap items-center justify-between gap-6 border-t border-header-border pt-8 pb-2">
+          <p className="text-[10px] tracking-widest text-header-muted uppercase">
+            {t('copyrightPrefix')}{' '}
+            <a
+              href="https://neetrino.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-bold text-brand transition-colors hover:text-brand-hover"
+            >
+              {t('copyrightCompany')}
+            </a>
+            . {t('copyrightSuffix')}
           </p>
+          <div className="flex items-center gap-3 text-xs font-medium text-header-muted">
+            <span className="inline-flex size-4 items-center justify-center rounded-pill bg-brand-secondary/10">
+              <Image
+                src="/brand/footer-check.svg"
+                alt=""
+                width={10}
+                height={10}
+                className="size-2.5"
+                unoptimized
+              />
+            </span>
+            <p>{t('trust')}</p>
+          </div>
         </div>
       </div>
     </footer>

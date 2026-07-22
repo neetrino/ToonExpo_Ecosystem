@@ -27,12 +27,12 @@ type PortalShellProps = {
 };
 
 /**
- * SiteHeader solid spacer is `top-3` + bar (~4.75rem on sm+).
+ * SiteHeader pill chrome is ~4.5rem (top inset + h-16).
  * Rail sits one gap below that and fills the rest of the viewport.
  */
-const SITE_HEADER_RAIL_TOP_CLASS = 'top-[6.25rem]';
-const SITE_HEADER_RAIL_HEIGHT_CLASS = 'h-[calc(100dvh-6.25rem)]';
-const SITE_HEADER_RAIL_ROW_GAP_CLASS = 'md:pt-6';
+const SITE_HEADER_RAIL_TOP_CLASS = 'top-[5.5rem]';
+const SITE_HEADER_RAIL_HEIGHT_CLASS = 'h-[calc(100dvh-5.5rem)]';
+const SITE_HEADER_RAIL_ROW_GAP_CLASS = 'md:pt-4';
 
 /**
  * Shared portal chrome: top bar + desktop sidebar + mobile drawer.

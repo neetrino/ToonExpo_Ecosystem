@@ -1,17 +1,20 @@
 'use client';
 
 import { Check, ChevronDown } from 'lucide-react';
-import { useLocale, useTranslations } from 'next-intl';
-import { useEffect, useId, useRef, useState } from 'react';
+import { useLocale, useTranslations, type Locale } from 'next-intl';
+import { useParams, useSearchParams } from 'next/navigation';
+import { Suspense, useEffect, useId, useOptimistic, useRef, useState, useTransition } from 'react';
 
 import { usePathname, useRouter } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
 import { cn } from '@/shared/ui/cn';
+import { DropdownPortal } from '@/shared/ui/dropdown-portal';
 
-const LOCALE_SHORT: Record<string, string> = {
-  hy: 'Հայ',
-  ru: 'Рус',
-  en: 'Eng',
+/** Figma header trigger — uppercase 2-letter codes (`EN`). */
+const LOCALE_CODE: Record<string, string> = {
+  hy: 'HY',
+  ru: 'RU',
+  en: 'EN',
 };
 
 const LOCALE_FULL: Record<string, string> = {
@@ -20,27 +23,91 @@ const LOCALE_FULL: Record<string, string> = {
   en: 'English',
 };
 
+/** Keeps the menu open while the pointer moves from trigger to panel. */
+const HOVER_CLOSE_DELAY_MS = 120;
+
 type LocaleSwitcherProps = {
   /** Visual tone for light surfaces vs dark chrome (footer / hero). */
   tone?: 'light' | 'dark' | undefined;
 };
 
 /**
- * Compact language dropdown — opens below the trigger with full locale names.
+ * Compact language control — Figma header: plain `EN` + chevron (no pill).
+ * Opens on hover (desktop); click still toggles for touch / keyboard.
+ * Menu portals above page chrome.
+ * Wrapped in Suspense for `useSearchParams` during static prerender.
  */
-export const LocaleSwitcher = ({ tone = 'light' }: LocaleSwitcherProps) => {
+export const LocaleSwitcher = (props: LocaleSwitcherProps) => (
+  <Suspense fallback={<LocaleSwitcherFallback tone={props.tone} />}>
+    <LocaleSwitcherInner {...props} />
+  </Suspense>
+);
+
+const LocaleSwitcherFallback = ({ tone = 'light' }: LocaleSwitcherProps) => {
+  const locale = useLocale();
+  const isDark = tone === 'dark';
+
+  return (
+    <span
+      className={cn(
+        'inline-flex items-center gap-1 text-sm font-medium leading-5',
+        isDark ? 'text-on-dark' : 'text-header-muted',
+      )}
+      aria-hidden
+    >
+      <span>{LOCALE_CODE[locale] ?? locale.toUpperCase()}</span>
+      <ChevronDown className="size-3.5 shrink-0 opacity-80" />
+    </span>
+  );
+};
+
+const LocaleSwitcherInner = ({ tone = 'light' }: LocaleSwitcherProps) => {
   const t = useTranslations('HomePage');
   const locale = useLocale();
   const pathname = usePathname();
+  const params = useParams();
+  const searchParams = useSearchParams();
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [isPending, startTransition] = useTransition();
+  const [optimisticLocale, setOptimisticLocale] = useOptimistic(locale);
   const rootRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLUListElement>(null);
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const listId = useId();
   const isDark = tone === 'dark';
+  const displayLocale = optimisticLocale;
+
+  const clearCloseTimer = (): void => {
+    if (closeTimerRef.current == null) {
+      return;
+    }
+    clearTimeout(closeTimerRef.current);
+    closeTimerRef.current = null;
+  };
+
+  const openMenu = (): void => {
+    clearCloseTimer();
+    setOpen(true);
+  };
+
+  const scheduleCloseMenu = (): void => {
+    clearCloseTimer();
+    closeTimerRef.current = setTimeout(() => {
+      setOpen(false);
+      closeTimerRef.current = null;
+    }, HOVER_CLOSE_DELAY_MS);
+  };
 
   useEffect(() => {
     setOpen(false);
+    clearCloseTimer();
   }, [pathname, locale]);
+
+  useEffect(() => {
+    return () => clearCloseTimer();
+  }, []);
 
   useEffect(() => {
     if (!open) {
@@ -48,9 +115,11 @@ export const LocaleSwitcher = ({ tone = 'light' }: LocaleSwitcherProps) => {
     }
 
     const onPointerDown = (event: MouseEvent): void => {
-      if (!rootRef.current?.contains(event.target as Node)) {
-        setOpen(false);
+      const target = event.target as Node;
+      if (rootRef.current?.contains(target) || menuRef.current?.contains(target)) {
+        return;
       }
+      setOpen(false);
     };
 
     const onKeyDown = (event: KeyboardEvent): void => {
@@ -67,98 +136,106 @@ export const LocaleSwitcher = ({ tone = 'light' }: LocaleSwitcherProps) => {
     };
   }, [open]);
 
+  const switchLocale = (nextLocale: string): void => {
+    if (nextLocale === locale || isPending) {
+      setOpen(false);
+      return;
+    }
+
+    setOpen(false);
+    const query = Object.fromEntries(searchParams.entries());
+
+    startTransition(() => {
+      setOptimisticLocale(nextLocale);
+      router.replace(
+        // Params always match the active route; next-intl resolves the localized href.
+        { pathname, params, query } as never,
+        { locale: nextLocale as Locale, scroll: false },
+      );
+    });
+  };
+
   return (
-    <div ref={rootRef} className="relative">
+    <div
+      ref={rootRef}
+      className="relative"
+      onMouseEnter={openMenu}
+      onMouseLeave={scheduleCloseMenu}
+    >
       <button
+        ref={buttonRef}
         type="button"
         className={cn(
-          'inline-flex h-9 items-center gap-1.5 rounded-sm px-2.5',
-          'text-xs font-semibold tracking-wide transition-[border-color,background-color,box-shadow,color]',
-          'duration-[var(--duration-fast)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/25',
-          isDark
-            ? cn(
-                'border border-white/25 bg-white/10 text-on-dark hover:border-white/40 hover:bg-white/15',
-                open && 'border-white/45 bg-white/15',
-              )
-            : cn(
-                'border border-border/80 bg-surface-elevated/90 text-ink hover:border-brand/35 hover:shadow-xs',
-                open && 'border-brand/40 shadow-xs',
-              ),
+          'inline-flex items-center gap-1 text-sm font-medium leading-5',
+          'transition-colors duration-[var(--duration-fast)]',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/25',
+          isDark ? 'text-on-dark hover:text-on-dark/85' : 'text-header-muted hover:text-brand-deep',
         )}
         aria-label={t('languageLabel')}
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-controls={listId}
-        onClick={() => setOpen((value) => !value)}
+        aria-busy={isPending}
+        disabled={isPending}
+        onClick={() => {
+          // Hover/focus may already open the menu; a following click must not
+          // toggle it closed (Playwright and real pointer users both hit this).
+          clearCloseTimer();
+          setOpen(true);
+        }}
+        onFocus={openMenu}
       >
-        <span>{LOCALE_SHORT[locale] ?? locale}</span>
+        <span>{LOCALE_CODE[displayLocale] ?? displayLocale.toUpperCase()}</span>
         <ChevronDown
           className={cn(
-            'size-3.5 shrink-0 opacity-60 transition-transform duration-[var(--duration-fast)]',
+            'size-3.5 shrink-0 opacity-80 transition-transform duration-[var(--duration-fast)]',
             open && 'rotate-180',
           )}
           aria-hidden
         />
       </button>
 
-      {open ? (
+      <DropdownPortal open={open} anchorRef={buttonRef} align="end">
         <ul
+          ref={menuRef}
           id={listId}
           role="listbox"
           aria-label={t('languageLabel')}
           className={cn(
-            'absolute top-[calc(100%+0.4rem)] right-0 z-[var(--z-dropdown)] min-w-[11rem] overflow-hidden',
-            'rounded-sm border py-1.5 shadow-md',
+            'w-max overflow-hidden',
+            'rounded-[12px] border border-header-border bg-surface-elevated py-1.5 text-ink shadow-md',
             'animate-[locale-dropdown-in_var(--duration-base)_var(--ease-out-premium)]',
-            isDark
-              ? 'border-white/15 bg-surface-inverse text-on-dark'
-              : 'border-border/80 bg-surface-elevated text-ink',
           )}
+          onMouseEnter={openMenu}
+          onMouseLeave={scheduleCloseMenu}
         >
           {routing.locales.map((code) => {
-            const active = code === locale;
+            const active = code === displayLocale;
             return (
-              <li key={code} role="option" aria-selected={active}>
+              <li key={code} role="none">
                 <button
                   type="button"
+                  role="option"
+                  aria-selected={active}
                   className={cn(
-                    'flex w-full items-center justify-between gap-3 px-3.5 py-2.5 text-left text-sm',
+                    'flex w-full items-center justify-between gap-3 px-3 py-2 text-left text-sm whitespace-nowrap',
                     'transition-colors duration-[var(--duration-fast)]',
                     active
-                      ? isDark
-                        ? 'bg-white/10 font-semibold text-brand'
-                        : 'bg-brand-soft font-semibold text-brand'
-                      : isDark
-                        ? 'font-medium text-on-dark/85 hover:bg-white/8'
-                        : 'font-medium text-ink hover:bg-surface',
+                      ? 'bg-brand-soft font-semibold text-brand-deep'
+                      : 'font-medium text-ink hover:bg-surface',
                   )}
-                  onClick={() => {
-                    setOpen(false);
-                    if (!active) {
-                      router.replace(pathname, { locale: code });
-                    }
-                  }}
+                  onClick={() => switchLocale(code)}
                 >
-                  <span className="flex flex-col gap-0.5">
-                    <span className="leading-none tracking-[-0.01em]">
-                      {LOCALE_FULL[code] ?? code}
-                    </span>
-                    <span
-                      className={cn(
-                        'text-[10px] font-semibold uppercase tracking-[0.12em]',
-                        isDark ? 'text-on-dark/45' : 'text-ink-muted',
-                      )}
-                    >
-                      {LOCALE_SHORT[code] ?? code}
-                    </span>
-                  </span>
-                  {active ? <Check className="size-3.5 shrink-0 text-brand" aria-hidden /> : null}
+                  <span>{LOCALE_FULL[code] ?? code}</span>
+                  {active ? (
+                    <Check className="size-3.5 shrink-0 text-brand-logo" aria-hidden />
+                  ) : null}
                 </button>
               </li>
             );
           })}
         </ul>
-      ) : null}
+      </DropdownPortal>
     </div>
   );
 };

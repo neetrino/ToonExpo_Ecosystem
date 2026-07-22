@@ -14,17 +14,49 @@
       "description": "Public catalog of new developments, apartments and builders in Armenia."
     },
     "hero": {
-      "eyebrow": "Armenia real estate exhibition",
-      "title": "Toon Expo",
+      "eyebrow": "The marketplace · 14,802 verified listings",
+      "title": "Find the address that defines your next chapter.",
+      "subtitle": "Search homes, compare developments, and finance with partner banks — transparently, in one place.",
       "findProject": "Find your next home with confidence",
       "searchLabel": "Search projects",
       "searchPlaceholder": "Project, builder, or city…",
-      "search": "Search",
+      "search": "Search homes",
       "explore": "Explore projects",
-      "register": "Register free"
+      "register": "Register free",
+      "tabsLabel": "Search mode",
+      "tabs": {
+        "buy": "Buy",
+        "rent": "Rent",
+        "newBuilds": "New Builds"
+      },
+      "locationLabel": "Location",
+      "locationPlaceholder": "City, district, or building name",
+      "priceLabel": "Price",
+      "priceUnder250k": "Under $250k",
+      "price250to500": "$250k – $500k",
+      "price500to2m": "$500k – $2M",
+      "priceOver2m": "$2M+",
+      "bedsLabel": "Beds",
+      "bedsValue": "{count}+",
+      "popular": "Popular:",
+      "popularCities": {
+        "yerevan": "Yerevan",
+        "gyumri": "Gyumri",
+        "vanadzor": "Vanadzor",
+        "dilijan": "Dilijan",
+        "tsaghkadzor": "Tsaghkadzor"
+      }
     },
     "stats": {
       "badge": "Market pulse",
+      "avgSqft": "Avg. $ / sqft",
+      "avgSqftHint": "+4.2% YoY",
+      "activeListings": "Active listings",
+      "activeListingsHint": "+312 this week",
+      "mortgageRate": "30-yr fixed",
+      "mortgageRateHint": "–0.08 wk/wk",
+      "medianDays": "Median days on market",
+      "medianDaysHint": "Stable",
       "projects": "Projects",
       "projectsHint": "Published now",
       "listings": "Listings",
@@ -35,10 +67,33 @@
       "citiesHint": "Coverage"
     },
     "featured": {
-      "eyebrow": "Featured",
-      "title": "Developments to watch",
-      "viewAll": "View all",
+      "eyebrow": "Newest for sale",
+      "title": "Hand-picked, verified, ready to tour.",
+      "viewAll": "View all listings →",
       "empty": "No published projects yet."
+    },
+    "developments": {
+      "eyebrow": "Under construction",
+      "title": "New developments to watch.",
+      "viewAll": "All projects →",
+      "empty": "No developments to show yet.",
+      "soldPercent": "% sold",
+      "soldProgressLabel": "{percent}% sold",
+      "completionTba": "Completion TBA",
+      "completionTbaShort": "TBA",
+      "mapEyebrow": "Map view",
+      "mapTitle": "Every new development on one map.",
+      "browseList": "Browse the list →",
+      "mapPlaceholder": "Interactive map coming soon — browse projects by city for now.",
+      "allDevelopments": "All developments",
+      "units": "Units",
+      "sold": "Sold",
+      "done": "Done",
+      "badges": {
+        "preSale": "Pre-sale",
+        "selling": "Selling",
+        "underConstruction": "Under Construction"
+      }
     },
     "builders": {
       "eyebrow": "Builders",
@@ -77,17 +132,23 @@
       }
     },
     "mortgage": {
-      "eyebrow": "Financing",
-      "title": "Plan your mortgage with bank partners",
-      "description": "Compare published bank offers and estimate monthly payments before you visit the exhibition.",
-      "cta": "Open calculator",
-      "partnersCta": "View partners",
+      "eyebrow": "Mortgage marketplace",
+      "title": "Compare real offers from partner banks in under a minute.",
+      "description": "Live rates from twelve lenders, instant qualification estimates, and zero hidden fees — all integrated with the listing you're already viewing.",
+      "cta": "Launch calculator",
+      "partnersCta": "View rate trends",
       "cardTitle": "Bank offers in one place",
       "cardBody": "Transparent rates and terms from ToonExpo bank partners.",
       "bullets": {
         "rates": "Published rate ranges",
         "terms": "Term and down-payment guidance",
         "compare": "Side-by-side comparison"
+      },
+      "preview": {
+        "propertyPrice": "Property price",
+        "downPayment": "Down 20%",
+        "term": "Term",
+        "estimatedMonthly": "Estimated monthly"
       }
     },
     "partners": {
@@ -109,6 +170,9 @@
   "Nav": {
     "main": "Main navigation",
     "menu": "Open menu",
+    "buy": "Buy",
+    "newDevelopments": "New Developments",
+    "marketInsights": "Market Insights",
     "projects": "Projects",
     "builders": "Builders",
     "partners": "Partners",
@@ -116,14 +180,22 @@
     "expoMap": "Expo map",
     "login": "Sign in",
     "register": "Register",
+    "listProperty": "List property",
     "profile": "Profile",
     "loading": "…"
   },
   "Footer": {
-    "tagline": "ToonExpo connects buyers with verified new developments across Armenia.",
+    "tagline": "The marketplace for verified homes, new developments, and partner bank offers — built for buyers, brokers, and developers in one transparent platform.",
     "marketplace": "Marketplace",
     "company": "Company",
     "links": {
+      "allListings": "All listings",
+      "newDevelopments": "New developments",
+      "marketReports": "Market reports",
+      "partnerBanks": "Partner banks",
+      "about": "About",
+      "press": "Press",
+      "contact": "Contact",
       "projects": "Projects",
       "builders": "Builders",
       "register": "Register",
@@ -132,8 +204,10 @@
       "mortgage": "Mortgage",
       "expo": "Expo map"
     },
-    "trust": "Verified listings · GDPR-ready · Encrypted in transit",
-    "copyright": "© 2026 Toon Expo",
+    "trust": "100% verified listings · GDPR compliant · Data encrypted in transit",
+    "copyrightPrefix": "Copyright © 2026",
+    "copyrightCompany": "Neetrino IT Company",
+    "copyrightSuffix": "All Rights Reserved.",
     "legal": "Legal",
     "contact": "Contact",
     "contactEmail": "hello@toonexpo.am",
@@ -157,7 +231,13 @@
       "reserved": "Reserved",
       "sold": "Sold",
       "summary": "Availability",
-      "availableCount": "{count} free"
+      "availableCount": "{count} free",
+      "availShort": "Avail",
+      "unitsShort": "Units",
+      "soldShort": "Sold"
+    },
+    "badges": {
+      "verified": "Verified"
     },
     "actions": {
       "details": "Details",

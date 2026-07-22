@@ -12,7 +12,7 @@ import {
   PARTNER_COMPANY_TYPES,
   PARTNER_PUBLICATION_STATUSES,
 } from '@/features/partners/constants';
-import { selectFieldClassName } from '@/shared/ui/select';
+import { selectFieldClassName, Select } from '@/shared/ui/select';
 
 type PartnerFiltersProps = {
   type: PartnerCompanyType | '';
@@ -27,7 +27,7 @@ type PartnerFiltersProps = {
   }) => void;
 };
 
-const selectClassName = `${selectFieldClassName} h-10`;
+const fieldClassName = 'h-10';
 
 /**
  * Filter row for admin partners list.
@@ -47,7 +47,7 @@ export const PartnerFilters = ({
         {t('search')}
         <input
           type="search"
-          className={selectClassName}
+          className={`${selectFieldClassName} h-10`}
           value={search}
           placeholder={t('searchPlaceholder')}
           onChange={(event) => {
@@ -58,9 +58,10 @@ export const PartnerFilters = ({
 
       <label className="flex flex-col gap-1 text-xs text-ink-muted">
         {t('type')}
-        <select
-          className={selectClassName}
+        <Select
+          className={fieldClassName}
           value={type}
+          aria-label={t('type')}
           onChange={(event) => {
             onChange({
               type: event.target.value as PartnerCompanyType | '',
@@ -76,14 +77,15 @@ export const PartnerFilters = ({
               {t(`types.${item}`)}
             </option>
           ))}
-        </select>
+        </Select>
       </label>
 
       <label className="flex flex-col gap-1 text-xs text-ink-muted">
         {t('status')}
-        <select
-          className={selectClassName}
+        <Select
+          className={fieldClassName}
           value={status}
+          aria-label={t('status')}
           onChange={(event) => {
             onChange({
               type,
@@ -99,14 +101,15 @@ export const PartnerFilters = ({
               {t(`statuses.${item}`)}
             </option>
           ))}
-        </select>
+        </Select>
       </label>
 
       <label className="flex flex-col gap-1 text-xs text-ink-muted">
         {t('publication')}
-        <select
-          className={selectClassName}
+        <Select
+          className={fieldClassName}
           value={publicationStatus}
+          aria-label={t('publication')}
           onChange={(event) => {
             onChange({
               type,
@@ -122,7 +125,7 @@ export const PartnerFilters = ({
               {t(`publicationStatuses.${item}`)}
             </option>
           ))}
-        </select>
+        </Select>
       </label>
     </div>
   );

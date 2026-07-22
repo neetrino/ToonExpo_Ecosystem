@@ -44,10 +44,9 @@ test.describe('smoke', () => {
   test('public home (hy) shows featured projects', async ({ page }) => {
     await page.goto('/hy');
     await expect(
-      page.getByRole('heading', { name: 'Նախագծեր, որոնց արժե ուշադրություն դարձնել' }),
+      page.getByRole('heading', { name: 'Ընտրված, ստուգված, պատրաստ շրջայցի։' }),
     ).toBeVisible();
-    // Prefer named CTA: cover overlay `<a class="absolute inset-0">` is hidden to Playwright.
-    await expect(page.getByRole('link', { name: 'Մանրամասն' }).first()).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Բոլոր հայտարարությունները →' })).toBeVisible();
   });
 
   test('projects catalog drill-down to apartment', async ({ page }) => {
@@ -261,11 +260,13 @@ test.describe('smoke', () => {
 
   test('language switch hy → ru', async ({ page }) => {
     await page.goto('/hy');
-    await page.getByRole('button', { name: 'Լեզու' }).first().click();
-    await page.getByRole('option', { name: /Русский/ }).click();
+    const languageButton = page.getByRole('button', { name: 'Լեզու' }).first();
+    await languageButton.hover();
+    await expect(page.getByRole('listbox', { name: 'Լեզու' })).toBeVisible();
+    await page.getByRole('option', { name: 'Русский' }).click();
     await expect(page).toHaveURL(/\/ru(\/|$)/);
     await expect(
-      page.getByRole('heading', { name: 'Проекты, на которые стоит обратить внимание' }),
+      page.getByRole('heading', { name: 'Отобранные, проверенные, готовые к просмотру.' }),
     ).toBeVisible();
   });
 

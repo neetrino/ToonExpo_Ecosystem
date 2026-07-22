@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import type { PartnerOfferItem } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 
 import { TranslationTabs } from '@/features/builder/components/translation-tabs';
 import { PARTNER_PUBLICATION_STATUSES } from '@/features/partners/constants';
@@ -224,13 +224,28 @@ const PartnerOfferForm = ({
 
       <div className="grid gap-4 sm:grid-cols-2">
         <FormField id="offerPublication" label={t('fields.publication')}>
-          <Select id="offerPublication" {...form.register('publicationStatus')}>
-            {PARTNER_PUBLICATION_STATUSES.map((status) => (
-              <option key={status} value={status}>
-                {t(`publication.${status}`)}
-              </option>
-            ))}
-          </Select>
+          <Controller
+            name="publicationStatus"
+            control={form.control}
+            render={({ field }) => (
+              <Select
+                id="offerPublication"
+                name={field.name}
+                value={field.value}
+                aria-label={t('fields.publication')}
+                onBlur={field.onBlur}
+                onChange={(event) => {
+                  field.onChange(event.target.value);
+                }}
+              >
+                {PARTNER_PUBLICATION_STATUSES.map((status) => (
+                  <option key={status} value={status}>
+                    {t(`publication.${status}`)}
+                  </option>
+                ))}
+              </Select>
+            )}
+          />
         </FormField>
         <FormField id="offerSort" label={t('fields.sortOrder')}>
           <Input

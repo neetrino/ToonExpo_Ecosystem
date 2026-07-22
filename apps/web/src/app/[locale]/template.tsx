@@ -1,13 +1,15 @@
 import type { ReactNode } from 'react';
 
+import { PageEnter } from '@/shared/ui/motion/page-enter';
+
 type LocaleTemplateProps = {
   children: ReactNode;
 };
 
 /**
- * Remounts on each navigation so public pages enter with a short fade/slide.
- * Layout chrome (header) stays outside this template and does not jump.
+ * Remounts on navigation. Enter animation runs for real route changes only —
+ * locale switches skip it so the page does not jump.
  */
 export default function LocaleTemplate({ children }: LocaleTemplateProps) {
-  return <div className="page-enter">{children}</div>;
+  return <PageEnter>{children}</PageEnter>;
 }

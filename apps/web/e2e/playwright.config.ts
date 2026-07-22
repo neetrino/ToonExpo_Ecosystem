@@ -15,7 +15,9 @@ const apiPort = new URL(API_ORIGIN).port || '4000';
 
 /**
  * Chromium-only smoke suite. Starts built API + Next.js servers unless already up.
- * Run `pnpm e2e:build` first (or `pnpm e2e`, which builds then tests).
+ * Database seed runs in `scripts/e2e-with-seed.mjs` before this config loads
+ * (Playwright would otherwise start webServer before any globalSetup seed).
+ * Run `pnpm e2e:build` first (or root `pnpm e2e`, which builds then tests).
  */
 export default defineConfig({
   testDir: path.join(packageRoot, 'src'),
@@ -26,7 +28,6 @@ export default defineConfig({
   reporter: process.env['CI'] ? [['github'], ['list']] : 'list',
   timeout: 60_000,
   expect: { timeout: 15_000 },
-  globalSetup: path.join(packageRoot, 'global-setup.ts'),
   use: {
     baseURL: WEB_ORIGIN,
     trace: 'on-first-retry',

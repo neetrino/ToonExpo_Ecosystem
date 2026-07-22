@@ -5,7 +5,16 @@
   --color-brand: #1a8f98;
   --color-brand-hover: #157a82;
   --color-brand-soft: #e6f4f5;
-  --color-brand-secondary: #1e4f5f;
+  --color-brand-secondary: #2a667b;
+  --color-brand-deep: #092b44;
+  /* Figma header mark / EXPO on hero (`81:607`) */
+  --color-brand-logo: #2ba8b0;
+  --color-ink-navy: #0b2230;
+  --color-canvas: #fafcfd;
+  --color-band-mist: #daf0f7;
+  --color-header-bg: rgb(250 252 253 / 0.85);
+  --color-header-border: #dde6eb;
+  --color-header-muted: #536672;
 
   /* Champagne accent — subtle luxury highlight */
   --color-accent: #b8956c;
@@ -37,6 +46,8 @@
   /* Status */
   --color-success: #0d9f6e;
   --color-success-soft: #e6f7f0;
+  --color-stat-positive: #5ee9b5;
+  --color-stat-caution: #ffd230;
   --color-warning: #c47d1a;
   --color-warning-soft: #fef6e8;
   --color-danger: #c53d3d;
@@ -84,7 +95,10 @@
   --max-width-content: 1280px;
   --max-width-narrow: 720px;
   --max-width-wide: 1440px;
-  --page-gutter: 1.5rem;
+  /* Public desktop canvas — same idea as ma-marie.vercel.app */
+  --desktop-layout-design-width: 1440px;
+  --desktop-layout-scale: 1;
+  --page-gutter: clamp(1rem, 0.6rem + 2vw, 1.5rem);
   --section-space: 4.5rem;
   --section-space-lg: 6.5rem;
 
@@ -95,15 +109,15 @@
   --duration-base: 240ms;
   --duration-slow: 400ms;
 
-  /* Z-index scale */
+  /* Z-index scale — portaled dropdowns sit above chrome/modals, under toasts */
   --z-base: 0;
   --z-sticky: 30;
   --z-header: 100;
-  --z-dropdown: 110;
   --z-overlay: 120;
   --z-sheet: 130;
   --z-modal: 140;
-  --z-toast: 150;
+  --z-dropdown: 160;
+  --z-toast: 170;
 }
 
 @keyframes locale-dropdown-in {
@@ -120,13 +134,11 @@
 
 @keyframes page-enter {
   from {
-    opacity: 0;
-    transform: translateY(0.75rem);
+    opacity: 0.96;
   }
 
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
@@ -182,7 +194,19 @@
 
 @layer base {
   html {
+    height: 100%;
+    overflow-x: clip;
     scrollbar-gutter: stable;
+  }
+
+  /**
+   * Desktop fluid scale (ma-marie pattern): design at 1440px, zoom to viewport.
+   * Mobile keeps scale=1 so svh math and native layout stay correct.
+   */
+  @media (min-width: 1024px) {
+    :root {
+      --desktop-layout-scale: calc(100vw / var(--desktop-layout-design-width));
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -201,6 +225,8 @@
   }
 
   body {
+    min-height: 100%;
+    overflow-x: clip;
     background:
       radial-gradient(ellipse 120% 60% at 50% -10%, rgb(26 143 152 / 0.05), transparent 55%),
       var(--color-background);
@@ -262,6 +288,42 @@
     text-underline-offset: 0.18em;
   }
 
+  /**
+   * Clickable controls — pointer everywhere interactive (buttons often default to arrow).
+   */
+  a,
+  button,
+  summary,
+  label[for],
+  select,
+  input[type='button'],
+  input[type='submit'],
+  input[type='reset'],
+  input[type='checkbox'],
+  input[type='radio'],
+  input[type='file'],
+  input[type='image'],
+  [role='button'],
+  [role='link'],
+  [role='tab'],
+  [role='option'],
+  [role='menuitem'],
+  [role='menuitemcheckbox'],
+  [role='menuitemradio'],
+  [role='switch'],
+  [role='checkbox'],
+  [role='radio'] {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  select:disabled,
+  input:disabled,
+  [aria-disabled='true'],
+  [aria-busy='true'] {
+    cursor: not-allowed;
+  }
+
   :focus-visible {
     outline: 2px solid var(--color-brand);
     outline-offset: 2px;
@@ -317,13 +379,42 @@
 
 @layer utilities {
   .page-enter {
-    animation: page-enter var(--duration-slow) var(--ease-out-premium) both;
+    animation: page-enter var(--duration-base) var(--ease-out-premium) both;
+  }
+
+  .desktop-fluid-frame {
+    width: 100%;
+  }
+
+  .desktop-fluid-stage {
+    width: 100%;
+    min-width: 0;
+  }
+
+  @media (min-width: 1024px) {
+    .desktop-fluid-frame {
+      display: flex;
+      justify-content: center;
+      align-items: stretch;
+    }
+
+    .desktop-fluid-stage {
+      width: var(--desktop-layout-design-width);
+      flex-shrink: 0;
+      zoom: var(--desktop-layout-scale);
+    }
+  }
+
+  /** Full viewport height after desktop zoom (layout px ÷ scale = visual svh). */
+  .min-h-fluid-screen {
+    min-height: calc(100svh / var(--desktop-layout-scale));
   }
 
   .page-container {
     margin-inline: auto;
     width: 100%;
     max-width: var(--max-width-content);
+    min-width: 0;
     padding-inline: var(--page-gutter);
   }
 
@@ -358,11 +449,12 @@
   }
 
   .text-section-title {
-    font-family: var(--font-display);
-    font-size: clamp(1.45rem, 2.4vw, 2rem);
-    font-weight: 650;
-    letter-spacing: -0.03em;
-    line-height: 1.18;
+    font-family: var(--font-brand);
+    font-size: clamp(1.75rem, 3.2vw, 2.25rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    color: var(--color-ink-navy);
   }
 
   .text-card-title {
@@ -391,9 +483,9 @@
     font-family: var(--font-ui);
     font-size: 0.6875rem;
     font-weight: 700;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: var(--color-accent);
+    color: var(--color-brand-secondary);
   }
 
   .text-caption {

@@ -1,22 +1,32 @@
 'use client';
 
-import type { PublicVisualCanvasItem } from '@toonexpo/contracts';
+import type { PublicVisualCanvasItem, PublicVisualHotspotItem } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 import { PercentMapMarkers } from '@/features/visual-map/components/percent-map-markers';
 import { PublicVisualHotspotSheet } from '@/features/visual-map/components/public-visual-hotspot-sheet';
+import {
+  buildBuildingFloorHref,
+  buildFloorApartmentHref,
+  buildProjectBuildingHref,
+} from '@/features/visual-map/utils/public-visual-map';
+
+/** Serializable link context — do not pass functions from RSC parents. */
+export type PublicVisualMapLinkContext =
+  | { kind: 'projectBuilding'; projectId: string }
+  | { kind: 'buildingFloor'; projectId: string; buildingId: string }
+  | { kind: 'floorApartment' };
 
 type PublicVisualMapProps = {
   canvas: PublicVisualCanvasItem;
-  /** Precomputed on the server — functions cannot be passed to Client Components. */
-  targetHrefByHotspotId: Record<string, string>;
+  linkContext: PublicVisualMapLinkContext;
 };
 
 /**
  * Public visual map with tappable SVG markers and optional bottom sheet.
  */
-export const PublicVisualMap = ({ canvas, targetHrefByHotspotId }: PublicVisualMapProps) => {
+export const PublicVisualMap = ({ canvas, linkContext }: PublicVisualMapProps) => {
   const t = useTranslations('Catalog.visualMap');
   const [selectedHotspotId, setSelectedHotspotId] = useState<string | null>(null);
 
@@ -24,8 +34,6 @@ export const PublicVisualMap = ({ canvas, targetHrefByHotspotId }: PublicVisualM
   const hasHotspots = canvas.hotspots.length > 0;
   const selectedHotspot =
     canvas.hotspots.find((hotspot) => hotspot.id === selectedHotspotId) ?? null;
-  const selectedTargetHref =
-    selectedHotspot != null ? (targetHrefByHotspotId[selectedHotspot.id] ?? null) : null;
 
   const markers = canvas.hotspots.map((hotspot) => ({
     id: hotspot.id,
@@ -58,13 +66,27 @@ export const PublicVisualMap = ({ canvas, targetHrefByHotspotId }: PublicVisualM
           ) : null}
         </div>
       </div>
-      {selectedHotspot && selectedTargetHref ? (
+      {selectedHotspot ? (
         <PublicVisualHotspotSheet
           hotspot={selectedHotspot}
-          targetHref={selectedTargetHref}
+          targetHref={resolveTargetHref(linkContext, selectedHotspot)}
           onClose={() => setSelectedHotspotId(null)}
         />
       ) : null}
     </section>
   );
+};
+
+const resolveTargetHref = (
+  linkContext: PublicVisualMapLinkContext,
+  hotspot: PublicVisualHotspotItem,
+): string => {
+  switch (linkContext.kind) {
+    case 'projectBuilding':
+      return buildProjectBuildingHref(linkContext.projectId, hotspot);
+    case 'buildingFloor':
+      return buildBuildingFloorHref(linkContext.projectId, linkContext.buildingId, hotspot);
+    case 'floorApartment':
+      return buildFloorApartmentHref(hotspot);
+  }
 };
