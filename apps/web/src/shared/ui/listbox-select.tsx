@@ -174,9 +174,11 @@ export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
             {options.map((option) => {
               const active = option.value === value;
               return (
-                <li key={option.value} role="option" aria-selected={active}>
+                <li key={option.value} role="none">
                   <button
                     type="button"
+                    role="option"
+                    aria-selected={active}
                     className={cn(
                       'flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left text-sm whitespace-nowrap',
                       'transition-colors duration-[var(--duration-base)] ease-[var(--ease-out-premium)]',

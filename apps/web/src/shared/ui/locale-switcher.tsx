@@ -207,9 +207,11 @@ const LocaleSwitcherInner = ({ tone = 'light' }: LocaleSwitcherProps) => {
           {routing.locales.map((code) => {
             const active = code === displayLocale;
             return (
-              <li key={code} role="option" aria-selected={active}>
+              <li key={code} role="none">
                 <button
                   type="button"
+                  role="option"
+                  aria-selected={active}
                   className={cn(
                     'flex w-full items-center justify-between gap-3 px-3 py-2 text-left text-sm whitespace-nowrap',
                     'transition-colors duration-[var(--duration-fast)]',
