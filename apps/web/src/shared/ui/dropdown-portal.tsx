@@ -13,6 +13,7 @@ import { createPortal } from 'react-dom';
 import { cn } from '@/shared/ui/cn';
 
 const MENU_GAP_PX = 8;
+const VIEWPORT_EDGE_PAD_PX = 8;
 
 type DropdownPortalProps = {
   open: boolean;
@@ -28,6 +29,7 @@ type DropdownPortalProps = {
 type MenuCoords = {
   top: number;
   left: number;
+  right: number;
   width: number;
   align: 'start' | 'end';
 };
@@ -35,6 +37,9 @@ type MenuCoords = {
 /**
  * Renders a menu in `document.body` with fixed coords so it stacks above
  * overflow-clipped parents, cards, and the header.
+ *
+ * Applies the same desktop fluid scale as `.desktop-fluid-stage` so the panel
+ * matches trigger size across viewport widths (portals escape CSS `zoom`).
  */
 export const DropdownPortal = ({
   open,
@@ -65,8 +70,10 @@ export const DropdownPortal = ({
       const rect = anchor.getBoundingClientRect();
       setCoords({
         top: rect.bottom + MENU_GAP_PX,
-        left: align === 'end' ? rect.right : rect.left,
-        width: rect.width,
+        left: Math.max(VIEWPORT_EDGE_PAD_PX, rect.left),
+        right: Math.max(VIEWPORT_EDGE_PAD_PX, window.innerWidth - rect.right),
+        /** Layout width — scaled by `--desktop-layout-scale` on the portal. */
+        width: anchor.offsetWidth,
         align,
       });
     };
@@ -86,10 +93,10 @@ export const DropdownPortal = ({
 
   const style: CSSProperties = {
     top: coords.top,
-    ...(coords.align === 'end'
-      ? { right: `calc(100vw - ${coords.left}px)` }
-      : { left: coords.left }),
+    ...(coords.align === 'end' ? { right: coords.right } : { left: coords.left }),
     ...(matchWidth ? { minWidth: coords.width } : {}),
+    transform: 'scale(var(--desktop-layout-scale))',
+    transformOrigin: coords.align === 'end' ? 'top right' : 'top left',
   };
 
   return createPortal(

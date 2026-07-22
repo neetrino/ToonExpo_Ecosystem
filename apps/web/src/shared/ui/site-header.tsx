@@ -251,7 +251,7 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
             <SiteHeaderMobileNav
               navItems={NAV_HREFS}
               pathname={pathname}
-              user={user}
+              user={user ?? undefined}
               settingsHref={settingsHref}
               listPropertyHref={listPropertyHref}
               logoutPending={logoutMutation.isPending}
