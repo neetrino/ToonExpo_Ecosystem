@@ -18,9 +18,15 @@ const PRICE_INPUT_MIN_SIZE = 3;
 /** Extra slot so the caret never sits flush against the edge. */
 const PRICE_INPUT_CARET_ROOM = 1;
 
+/** Same vertical chrome as header “List property” (`h-9` + pill). */
+const filterControlClassName = cn(
+  'h-9 rounded-full border border-header-border bg-surface-elevated px-4',
+  'text-sm font-medium leading-5',
+);
+
 /**
  * Compact filter bar — Figma `103:1437` buy chrome.
- * Dropdowns use shared `Select` (ListboxSelect), same as catalog / admin filters.
+ * Controls match header List property height / pill shape.
  */
 export const BuyApartmentsFilters = ({ filters, cities }: BuyApartmentsFiltersProps) => {
   const t = useTranslations('BuyPage');
@@ -39,7 +45,7 @@ export const BuyApartmentsFilters = ({ filters, cities }: BuyApartmentsFiltersPr
             name="city"
             size="fit"
             defaultValue={filters.city ?? ''}
-            className="min-w-[9.5rem] bg-band-mist/60"
+            className={cn(filterControlClassName, 'min-w-[9.5rem] bg-band-mist/60')}
             aria-label={t('filters.location')}
           >
             <option value="">{t('filters.allCities')}</option>
@@ -52,12 +58,7 @@ export const BuyApartmentsFilters = ({ filters, cities }: BuyApartmentsFiltersPr
         </FilterField>
 
         <FilterField label={t('filters.price')} shrink={false}>
-          <div
-            className={cn(
-              'flex h-11 w-fit shrink-0 items-center gap-2 rounded-sm border border-border',
-              'bg-surface-elevated px-4',
-            )}
-          >
+          <div className={cn(filterControlClassName, 'flex w-fit shrink-0 items-center gap-2')}>
             <GrowingPriceInput
               name="minPrice"
               defaultValue={filters.minPrice}
@@ -81,7 +82,7 @@ export const BuyApartmentsFilters = ({ filters, cities }: BuyApartmentsFiltersPr
             name="rooms"
             size="fit"
             defaultValue={filters.rooms != null ? String(filters.rooms) : ''}
-            className="min-w-[5.5rem]"
+            className={cn(filterControlClassName, 'min-w-[5.5rem]')}
             aria-label={t('filters.beds')}
           >
             <option value="">{catalogT('filters.any')}</option>
@@ -97,7 +98,7 @@ export const BuyApartmentsFilters = ({ filters, cities }: BuyApartmentsFiltersPr
             name="salesStatus"
             size="fit"
             defaultValue={filters.salesStatus ?? 'available'}
-            className="min-w-[8.5rem]"
+            className={cn(filterControlClassName, 'min-w-[8.5rem]')}
             aria-label={t('filters.status')}
           >
             <option value="available">{catalogT('status.available')}</option>
@@ -109,8 +110,10 @@ export const BuyApartmentsFilters = ({ filters, cities }: BuyApartmentsFiltersPr
         <button
           type="submit"
           className={cn(
-            'inline-flex h-11 shrink-0 items-center justify-center rounded-sm',
-            'bg-brand-deep px-4 text-sm font-semibold whitespace-nowrap text-on-dark',
+            'inline-flex h-9 shrink-0 items-center justify-center rounded-full px-4',
+            'bg-brand-deep text-sm font-semibold leading-5 whitespace-nowrap text-on-dark',
+            'transition-[background-color,color] hover:bg-brand-deep/90',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-deep/30',
             'lg:ml-auto',
           )}
         >
