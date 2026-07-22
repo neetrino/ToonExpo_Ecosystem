@@ -117,6 +117,7 @@
     "login": "Sign in",
     "register": "Register",
     "profile": "Profile",
+    "profileMenu": "Account menu",
     "loading": "…"
   },
   "Footer": {

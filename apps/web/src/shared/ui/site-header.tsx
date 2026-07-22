@@ -1,16 +1,16 @@
 'use client';
 
-import { Menu, UserRound, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
-import { LogoutButton } from '@/features/auth/components/logout-button';
-import { useMeQuery } from '@/features/auth/hooks/use-auth';
-import { Link, usePathname } from '@/i18n/navigation';
+import { useLogoutMutation, useMeQuery } from '@/features/auth/hooks/use-auth';
+import { Link, usePathname, useRouter } from '@/i18n/navigation';
 import { BrandLogo } from '@/shared/ui/brand-logo';
+import { cn } from '@/shared/ui/cn';
 import { IconButton } from '@/shared/ui/icon-button';
 import { LocaleSwitcher } from '@/shared/ui/locale-switcher';
-import { cn } from '@/shared/ui/cn';
+import { ProfileMenu } from '@/shared/ui/profile-menu';
 
 type SiteHeaderProps = {
   className?: string | undefined;
@@ -37,8 +37,11 @@ const HEADER_BAR_CLASS =
  */
 export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) => {
   const t = useTranslations('Nav');
+  const tAuth = useTranslations('Auth');
   const pathname = usePathname();
+  const router = useRouter();
   const { data: user, isLoading, isFetching } = useMeQuery();
+  const logoutMutation = useLogoutMutation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   /** Avoid auth SSR/client mismatch until the session hint is readable. */
@@ -86,16 +89,7 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
     };
   }, [menuOpen]);
 
-  const settingsHref = user?.accountType === 'platform_admin' ? '/admin/settings' : '/dashboard';
-  const profileHref = user ? settingsHref : '/auth/login';
-  const profileIconClassName = cn(
-    'inline-flex size-9 items-center justify-center rounded-sm border',
-    'transition-colors duration-[var(--duration-fast)]',
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30',
-    isOverHero
-      ? 'border-white/30 bg-white/10 text-on-dark hover:bg-white/15'
-      : 'border-border bg-surface-elevated text-ink hover:border-border-strong hover:bg-surface',
-  );
+  const accountHref = user?.accountType === 'platform_admin' ? '/admin/settings' : '/dashboard';
 
   return (
     <>
@@ -104,7 +98,7 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
           'fixed z-[var(--z-header)]',
           'transition-[top,left,right,border-radius,background-color,border-color,box-shadow,color,backdrop-filter] duration-[var(--duration-base)] ease-[var(--ease-out-premium)]',
           isFloating
-            ? 'top-3 inset-x-3 overflow-hidden rounded-md border border-border/70 bg-surface-elevated/92 text-ink shadow-sm backdrop-blur-xl sm:inset-x-5 lg:inset-x-6'
+            ? 'top-3 inset-x-3 rounded-md border border-border/70 bg-surface-elevated/92 text-ink shadow-sm backdrop-blur-xl sm:inset-x-5 lg:inset-x-6'
             : 'inset-x-0 top-0 w-full rounded-none border-b border-transparent bg-transparent text-on-dark',
           className,
         )}
@@ -150,24 +144,12 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
             {showAuthLoading ? (
               <span className="size-9 animate-pulse rounded-sm bg-current/10" aria-hidden />
             ) : (
-              <div className="flex items-center gap-2">
-                <Link
-                  href={profileHref}
-                  aria-label={t('profile')}
-                  title={t('profile')}
-                  className={profileIconClassName}
-                >
-                  <UserRound className="size-4" aria-hidden />
-                </Link>
-                {user ? (
-                  <LogoutButton
-                    className={cn(
-                      'hidden sm:inline-flex',
-                      isOverHero && 'border-transparent text-on-dark hover:bg-white/10',
-                    )}
-                  />
-                ) : null}
-              </div>
+              <ProfileMenu
+                accountHref={accountHref}
+                userName={user?.name}
+                userEmail={user?.email}
+                tone={isOverHero ? 'dark' : 'light'}
+              />
             )}
 
             <IconButton
@@ -231,13 +213,28 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
                   </Link>
                 </>
               ) : (
-                <Link
-                  href={settingsHref}
-                  className="rounded-sm px-3 py-3 font-medium text-ink hover:bg-surface"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  {user.name}
-                </Link>
+                <>
+                  <Link
+                    href={accountHref}
+                    className="rounded-sm px-3 py-3 font-medium text-ink hover:bg-surface"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    {user.name}
+                  </Link>
+                  <button
+                    type="button"
+                    className="rounded-sm px-3 py-3 text-left font-medium text-danger hover:bg-danger-soft disabled:opacity-50"
+                    disabled={logoutMutation.isPending}
+                    onClick={() => {
+                      void logoutMutation.mutateAsync().then(() => {
+                        setMenuOpen(false);
+                        router.push('/auth/login');
+                      });
+                    }}
+                  >
+                    {logoutMutation.isPending ? tAuth('logout.submitting') : tAuth('logout.submit')}
+                  </button>
+                </>
               )}
             </nav>
           </div>
