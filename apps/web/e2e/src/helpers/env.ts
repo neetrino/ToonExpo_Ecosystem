@@ -2,6 +2,21 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { config as loadEnv } from 'dotenv';
+import {
+  DEV_SEED_ADMIN_PASSWORD,
+  SEED_APARTMENT_NUMBER,
+  SEED_APARTMENT_VISIBLE_AFTER_LOGIN_ID,
+  SEED_BUILDER_COMPANY_ID,
+  SEED_BUILDING_ID,
+  SEED_BUILDING_NAME,
+  SEED_BUYER_EMAIL,
+  SEED_COMPANY_ADMIN_EMAIL,
+  SEED_FLOOR_ID,
+  SEED_FLOOR_LABEL,
+  SEED_PLATFORM_ADMIN_EMAIL,
+  SEED_PROJECT_ID,
+  SEED_PROJECT_NAME,
+} from '@toonexpo/shared';
 
 const packageRoot = path.dirname(fileURLToPath(import.meta.url));
 /** `apps/web/e2e/src/helpers` → monorepo root (5 levels up). */
@@ -11,7 +26,7 @@ loadEnv({ path: path.join(MONOREPO_ROOT, '.env') });
 
 export const DEFAULT_WEB_PORT = 3000;
 export const DEFAULT_API_PORT = 4000;
-export const DEFAULT_SEED_PASSWORD = 'ChangeMeAdmin123!';
+export const DEFAULT_SEED_PASSWORD = DEV_SEED_ADMIN_PASSWORD;
 
 export const WEB_ORIGIN =
   process.env['PLAYWRIGHT_BASE_URL']?.trim() ||
@@ -30,17 +45,18 @@ export const SEED_PASSWORD =
     ? process.env['SEED_ADMIN_PASSWORD'].trim()
     : DEFAULT_SEED_PASSWORD;
 
-export const SEED_BUYER_EMAIL = 'buyer@toonexpo.local';
-export const SEED_BUILDER_ADMIN_EMAIL = 'builder.admin@toonexpo.local';
-export const SEED_PLATFORM_ADMIN_EMAIL = 'admin@toonexpo.local';
-export const SEED_BUILDER_COMPANY_ID = 'seed_company_glendale';
+export {
+  SEED_APARTMENT_NUMBER,
+  SEED_APARTMENT_VISIBLE_AFTER_LOGIN_ID,
+  SEED_BUILDER_COMPANY_ID,
+  SEED_BUILDING_ID,
+  SEED_BUILDING_NAME,
+  SEED_BUYER_EMAIL,
+  SEED_FLOOR_ID,
+  SEED_FLOOR_LABEL,
+  SEED_PLATFORM_ADMIN_EMAIL,
+  SEED_PROJECT_ID,
+  SEED_PROJECT_NAME,
+};
 
-export const SEED_PROJECT_NAME = 'Northern Avenue Residences';
-export const SEED_PROJECT_ID = 'seed_project_northern_avenue';
-export const SEED_BUILDING_ID = 'seed_building_northern_a';
-export const SEED_BUILDING_NAME = 'Building A';
-export const SEED_FLOOR_ID = 'seed_floor_seed_building_northern_a_n3';
-export const SEED_FLOOR_LABEL = 'Floor 3';
-export const SEED_APARTMENT_VISIBLE_AFTER_LOGIN_ID =
-  'seed_apt_northern-avenue-residences_building_a_f3_1';
-export const SEED_APARTMENT_NUMBER = '301';
+export const SEED_BUILDER_ADMIN_EMAIL = SEED_COMPANY_ADMIN_EMAIL;

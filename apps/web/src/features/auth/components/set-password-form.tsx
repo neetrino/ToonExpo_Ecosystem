@@ -45,7 +45,7 @@ export const SetPasswordForm = ({ token }: SetPasswordFormProps) => {
         token,
         password: values.password,
       });
-      router.push('/settings');
+      router.push('/dashboard');
     } catch (error) {
       setFormError(t(`errors.${mapSetPasswordError(error)}`));
     }

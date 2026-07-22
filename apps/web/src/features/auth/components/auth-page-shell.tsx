@@ -3,6 +3,7 @@ import { ArrowLeft } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import type { ReactNode } from 'react';
 
+import { AuthFitStage } from '@/features/auth/components/auth-fit-stage';
 import { Link } from '@/i18n/navigation';
 import { BrandLogo } from '@/shared/ui/brand-logo';
 import { cn } from '@/shared/ui/cn';
@@ -27,6 +28,7 @@ type ShellCopy = {
 
 /**
  * Branded auth layout — cinematic panel with lightning seam + luxury form column.
+ * Form column fits the viewport (scale-to-fit) so login/register do not page-scroll.
  */
 export const AuthPageShell = async ({ title, subtitle, children, variant }: AuthPageShellProps) => {
   const t = await getTranslations('Auth.shell');
@@ -39,13 +41,14 @@ export const AuthPageShell = async ({ title, subtitle, children, variant }: Auth
   };
 
   return (
-    <div className="relative min-h-svh bg-background">
+    <div className="relative h-dvh overflow-hidden bg-background">
       <AuthVisualPanel copy={copy} />
       <AuthFormColumn
         title={title}
         subtitle={subtitle}
         formEyebrow={copy.formEyebrow}
         backHomeLabel={copy.backHome}
+        compact={variant === 'register'}
       >
         {children}
       </AuthFormColumn>
@@ -81,17 +84,19 @@ const AuthVisualPanel = ({ copy }: { copy: ShellCopy }) => {
         <AuthSeamStroke />
       </div>
 
-      <BrandLogo inverted size="lg" className="relative" />
+      <BrandLogo inverted size="lg" className="relative shrink-0" />
 
       <div className="relative max-w-md animate-[page-enter_0.55s_var(--ease-out-premium)_both]">
         <div className="mb-5 h-px w-12 bg-accent" aria-hidden />
         <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.32em] text-accent">
           {copy.eyebrow}
         </p>
-        <h2 className="font-display text-[clamp(2.15rem,3.4vw,3rem)] font-semibold leading-[1.02] tracking-[-0.045em] text-on-dark">
+        <h2 className="font-display text-[clamp(1.75rem,3vw,3rem)] font-semibold leading-[1.02] tracking-[-0.045em] text-on-dark">
           {copy.panelTitle}
         </h2>
-        <p className="mt-5 text-[0.975rem] leading-relaxed text-on-dark/78">{copy.panelBody}</p>
+        <p className="mt-4 text-[0.9rem] leading-relaxed text-on-dark/78 xl:mt-5 xl:text-[0.975rem]">
+          {copy.panelBody}
+        </p>
       </div>
     </aside>
   );
@@ -119,6 +124,7 @@ type AuthFormColumnProps = {
   subtitle: string;
   formEyebrow: string;
   backHomeLabel: string;
+  compact: boolean;
   children: ReactNode;
 };
 
@@ -127,16 +133,22 @@ const AuthFormColumn = ({
   subtitle,
   formEyebrow,
   backHomeLabel,
+  compact,
   children,
 }: AuthFormColumnProps) => {
   return (
-    <div className="relative z-0 flex min-h-svh flex-col overflow-hidden lg:pl-[50%]">
+    <div className="relative z-0 flex h-dvh flex-col overflow-hidden lg:pl-[50%]">
       <div className="pointer-events-none absolute inset-0" aria-hidden>
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_55%_at_70%_-5%,rgb(184_149_108_/_0.12),transparent_55%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_45%_at_10%_100%,rgb(26_143_152_/_0.08),transparent_50%)]" />
       </div>
 
-      <header className="relative z-[1] flex items-center justify-between gap-3 px-5 py-4 sm:px-8 sm:py-5 lg:justify-end lg:px-12">
+      <header
+        className={cn(
+          'relative z-[1] flex shrink-0 items-center justify-between gap-3 px-5 lg:justify-end lg:px-12',
+          compact ? 'py-3 sm:py-3.5' : 'py-4 sm:py-5',
+        )}
+      >
         <BrandLogo size="md" className="lg:hidden" />
         <div className="flex items-center gap-2.5">
           <LocaleSwitcher tone="light" />
@@ -161,21 +173,33 @@ const AuthFormColumn = ({
         </div>
       </header>
 
-      <main className="relative z-[1] flex flex-1 flex-col justify-center px-5 pb-14 pt-2 sm:px-8 sm:pb-16 lg:px-12">
-        <div
-          className={cn(
-            'mx-auto w-full max-w-[28rem]',
-            'animate-[page-enter_0.5s_var(--ease-out-premium)_both]',
-          )}
-        >
-          <div className="mb-8 flex flex-col items-center gap-3 text-center sm:mb-9 sm:items-start sm:text-left">
+      <AuthFitStage className="relative z-[1] px-5 pb-4 sm:px-8 lg:px-12">
+        <div className="animate-[page-enter_0.5s_var(--ease-out-premium)_both]">
+          <div
+            className={cn(
+              'flex flex-col items-center gap-2 text-center sm:items-start sm:text-left',
+              compact ? 'mb-4 sm:mb-5' : 'mb-6 sm:mb-8',
+            )}
+          >
             <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-accent">
               {formEyebrow}
             </p>
-            <h1 className="font-display text-[clamp(1.85rem,3.2vw,2.55rem)] font-semibold leading-[1.08] tracking-[-0.04em] text-ink">
+            <h1
+              className={cn(
+                'font-display font-semibold leading-[1.08] tracking-[-0.04em] text-ink',
+                compact
+                  ? 'text-[clamp(1.55rem,2.8vw,2.15rem)]'
+                  : 'text-[clamp(1.85rem,3.2vw,2.55rem)]',
+              )}
+            >
               {title}
             </h1>
-            <p className="max-w-sm text-sm leading-relaxed text-ink-secondary sm:text-[0.95rem]">
+            <p
+              className={cn(
+                'max-w-sm leading-relaxed text-ink-secondary',
+                compact ? 'text-xs sm:text-sm' : 'text-sm sm:text-[0.95rem]',
+              )}
+            >
               {subtitle}
             </p>
           </div>
@@ -183,8 +207,9 @@ const AuthFormColumn = ({
           <div
             className={cn(
               'relative overflow-hidden rounded-lg border border-border/50',
-              'bg-surface-elevated/90 p-6 shadow-lg backdrop-blur-xl sm:p-8',
+              'bg-surface-elevated/90 backdrop-blur-xl',
               'ring-1 ring-accent/10',
+              compact ? 'p-4 sm:p-5' : 'p-6 sm:p-8',
             )}
           >
             <div
@@ -194,7 +219,7 @@ const AuthFormColumn = ({
             {children}
           </div>
         </div>
-      </main>
+      </AuthFitStage>
     </div>
   );
 };

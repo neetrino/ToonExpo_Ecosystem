@@ -1,6 +1,20 @@
 /**
  * Auth account seed helpers (platform_admin + company_admin + seed buyer with QR).
+ * Upserts by stable seed IDs so exhibition/visual-map FKs never drift on dirty DBs.
  */
+import {
+  DEV_SEED_ADMIN_PASSWORD,
+  SEED_BUYER_EMAIL,
+  SEED_BUYER_ID,
+  SEED_BUYER_PROFILE_ID,
+  SEED_BUYER_QR_ID,
+  SEED_COMPANY_ADMIN_EMAIL,
+  SEED_COMPANY_ADMIN_ID,
+  SEED_COMPANY_MEMBER_ID,
+  SEED_PLATFORM_ADMIN_EMAIL,
+  SEED_PLATFORM_ADMIN_ID,
+} from '@toonexpo/shared';
+
 import {
   AccountType,
   CompanyMemberRole,
@@ -11,32 +25,24 @@ import {
   encryptQrToken,
   hashQrToken,
   type PrismaClient,
-} from "../src/index.js";
-import { SEED_BUILDERS, SEED_ID_PREFIX } from "./seed-data.js";
+} from '../src/index.js';
+import { SEED_BUILDERS } from './seed-data.js';
 
-/** Dev-only fallback when SEED_ADMIN_PASSWORD is unset. Never use in production. */
-export const DEV_SEED_ADMIN_PASSWORD = "ChangeMeAdmin123!";
-
-export const SEED_PLATFORM_ADMIN_EMAIL = "admin@toonexpo.local";
-
-export const SEED_COMPANY_ADMIN_EMAIL = "builder.admin@toonexpo.local";
-
-export const SEED_BUYER_EMAIL = "buyer@toonexpo.local";
-
-export const SEED_PLATFORM_ADMIN_ID = `${SEED_ID_PREFIX}user_platform_admin`;
-
-export const SEED_COMPANY_ADMIN_ID = `${SEED_ID_PREFIX}user_company_admin`;
-
-export const SEED_BUYER_ID = `${SEED_ID_PREFIX}user_buyer`;
-
-export const SEED_BUYER_PROFILE_ID = `${SEED_ID_PREFIX}buyer_profile`;
-
-export const SEED_BUYER_QR_ID = `${SEED_ID_PREFIX}qr_buyer`;
-
-export const SEED_COMPANY_MEMBER_ID = `${SEED_ID_PREFIX}member_company_admin`;
+export {
+  DEV_SEED_ADMIN_PASSWORD,
+  SEED_BUYER_EMAIL,
+  SEED_BUYER_ID,
+  SEED_BUYER_PROFILE_ID,
+  SEED_BUYER_QR_ID,
+  SEED_COMPANY_ADMIN_EMAIL,
+  SEED_COMPANY_ADMIN_ID,
+  SEED_COMPANY_MEMBER_ID,
+  SEED_PLATFORM_ADMIN_EMAIL,
+  SEED_PLATFORM_ADMIN_ID,
+};
 
 const resolveSeedPassword = (): string => {
-  const fromEnv = process.env["SEED_ADMIN_PASSWORD"]?.trim();
+  const fromEnv = process.env['SEED_ADMIN_PASSWORD']?.trim();
   if (fromEnv && fromEnv.length >= 8) {
     return fromEnv;
   }
@@ -44,13 +50,42 @@ const resolveSeedPassword = (): string => {
 };
 
 const resolveQrPepper = (): string => {
-  const pepper = process.env["SESSION_TOKEN_PEPPER"]?.trim();
+  const pepper = process.env['SESSION_TOKEN_PEPPER']?.trim();
   if (!pepper || pepper.length < 32) {
-    throw new Error(
-      "SESSION_TOKEN_PEPPER (≥32 chars) is required to seed buyer QR codes",
-    );
+    throw new Error('SESSION_TOKEN_PEPPER (≥32 chars) is required to seed buyer QR codes');
   }
   return pepper;
+};
+
+/**
+ * Frees a seed email held by a non-stable user id so upsert-by-id can claim it.
+ */
+const freeSeedEmailIfWrongId = async (
+  prisma: PrismaClient,
+  email: string,
+  expectedId: string,
+): Promise<void> => {
+  const existing = await prisma.user.findUnique({
+    where: { email },
+    select: { id: true },
+  });
+  if (!existing || existing.id === expectedId) {
+    return;
+  }
+
+  await prisma.session.deleteMany({ where: { userId: existing.id } });
+  await prisma.user.update({
+    where: { id: existing.id },
+    data: { email: `orphaned.${existing.id}@toonexpo.invalid` },
+  });
+
+  try {
+    await prisma.user.delete({ where: { id: existing.id } });
+  } catch {
+    console.warn(
+      `[seed] Left orphaned user ${existing.id} (FK references); email freed for ${expectedId}`,
+    );
+  }
 };
 
 /**
@@ -64,34 +99,38 @@ export const seedAuthAccounts = async (
   const builderCompanyId = SEED_BUILDERS[0]!.id;
   const pepper = resolveQrPepper();
 
+  await freeSeedEmailIfWrongId(prisma, SEED_PLATFORM_ADMIN_EMAIL, SEED_PLATFORM_ADMIN_ID);
   await prisma.user.upsert({
-    where: { email: SEED_PLATFORM_ADMIN_EMAIL },
+    where: { id: SEED_PLATFORM_ADMIN_ID },
     create: {
       id: SEED_PLATFORM_ADMIN_ID,
-      name: "Platform Admin",
+      name: 'Platform Admin',
       email: SEED_PLATFORM_ADMIN_EMAIL,
       passwordHash,
       accountType: AccountType.platform_admin,
       status: UserStatus.active,
     },
     update: {
+      email: SEED_PLATFORM_ADMIN_EMAIL,
       passwordHash,
       accountType: AccountType.platform_admin,
       status: UserStatus.active,
     },
   });
 
-  const companyAdmin = await prisma.user.upsert({
-    where: { email: SEED_COMPANY_ADMIN_EMAIL },
+  await freeSeedEmailIfWrongId(prisma, SEED_COMPANY_ADMIN_EMAIL, SEED_COMPANY_ADMIN_ID);
+  await prisma.user.upsert({
+    where: { id: SEED_COMPANY_ADMIN_ID },
     create: {
       id: SEED_COMPANY_ADMIN_ID,
-      name: "Seed Builder Admin",
+      name: 'Seed Builder Admin',
       email: SEED_COMPANY_ADMIN_EMAIL,
       passwordHash,
       accountType: AccountType.company_member,
       status: UserStatus.active,
     },
     update: {
+      email: SEED_COMPANY_ADMIN_EMAIL,
       passwordHash,
       accountType: AccountType.company_member,
       status: UserStatus.active,
@@ -99,11 +138,11 @@ export const seedAuthAccounts = async (
   });
 
   await prisma.companyMember.upsert({
-    where: { userId: companyAdmin.id },
+    where: { userId: SEED_COMPANY_ADMIN_ID },
     create: {
       id: SEED_COMPANY_MEMBER_ID,
       companyId: builderCompanyId,
-      userId: companyAdmin.id,
+      userId: SEED_COMPANY_ADMIN_ID,
       role: CompanyMemberRole.company_admin,
       status: CompanyMemberStatus.active,
       joinedAt: new Date(),
@@ -123,30 +162,32 @@ const seedBuyerWithQr = async (
   passwordHash: string,
   pepper: string,
 ): Promise<void> => {
+  await freeSeedEmailIfWrongId(prisma, SEED_BUYER_EMAIL, SEED_BUYER_ID);
   await prisma.user.upsert({
-    where: { email: SEED_BUYER_EMAIL },
+    where: { id: SEED_BUYER_ID },
     create: {
       id: SEED_BUYER_ID,
-      name: "Seed Buyer",
+      name: 'Seed Buyer',
       email: SEED_BUYER_EMAIL,
-      phone: "+37491110000",
+      phone: '+37491110000',
       passwordHash,
       accountType: AccountType.buyer,
       status: UserStatus.active,
       buyerProfile: {
         create: {
           id: SEED_BUYER_PROFILE_ID,
-          name: "Seed Buyer",
-          phone: "+37491110000",
+          name: 'Seed Buyer',
+          phone: '+37491110000',
           email: SEED_BUYER_EMAIL,
         },
       },
     },
     update: {
+      email: SEED_BUYER_EMAIL,
       passwordHash,
       accountType: AccountType.buyer,
       status: UserStatus.active,
-      phone: "+37491110000",
+      phone: '+37491110000',
     },
   });
 
@@ -155,13 +196,13 @@ const seedBuyerWithQr = async (
     create: {
       id: SEED_BUYER_PROFILE_ID,
       userId: SEED_BUYER_ID,
-      name: "Seed Buyer",
-      phone: "+37491110000",
+      name: 'Seed Buyer',
+      phone: '+37491110000',
       email: SEED_BUYER_EMAIL,
     },
     update: {
-      name: "Seed Buyer",
-      phone: "+37491110000",
+      name: 'Seed Buyer',
+      phone: '+37491110000',
       email: SEED_BUYER_EMAIL,
     },
   });
@@ -171,6 +212,10 @@ const seedBuyerWithQr = async (
   });
 
   if (existingQr) {
+    await prisma.qrCode.update({
+      where: { id: existingQr.id },
+      data: { status: QrCodeStatus.active },
+    });
     return;
   }
 
@@ -185,4 +230,3 @@ const seedBuyerWithQr = async (
     },
   });
 };
-

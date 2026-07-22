@@ -3,6 +3,7 @@ import type {
   ForgotPasswordRequest,
   RegisterRequest,
   SetPasswordRequest,
+  UpdateProfileRequest,
   UserResponse,
 } from '@toonexpo/contracts';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -16,6 +17,7 @@ import {
   logoutUser,
   registerUser,
   setPassword,
+  updateProfile,
 } from '@/features/auth/api/auth-api';
 import type { LoginFormValues } from '@/features/auth/schemas/login.schema';
 import {
@@ -104,6 +106,20 @@ export const useChangePasswordMutation = () =>
   useMutation({
     mutationFn: (body: ChangePasswordRequest) => changePassword(body),
   });
+
+/**
+ * Profile update mutation — refreshes the cached `me` user.
+ */
+export const useUpdateProfileMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (body: UpdateProfileRequest) => updateProfile(body),
+    onSuccess: (user) => {
+      queryClient.setQueryData(AUTH_ME_QUERY_KEY, user);
+    },
+  });
+};
 
 /**
  * Logout mutation — invalidates the `me` query after cookie clear.

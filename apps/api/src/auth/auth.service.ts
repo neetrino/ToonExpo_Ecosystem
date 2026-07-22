@@ -141,6 +141,44 @@ export class AuthService {
     return this.userResponses.build(user);
   }
 
+  /**
+   * Updates display name and optional phone; syncs buyer profile when present.
+   */
+  async updateProfile(
+    user: AuthenticatedUser,
+    input: { name: string; phone?: string },
+  ): Promise<UserResponse> {
+    const name = input.name.trim();
+    const phoneRaw = input.phone?.trim() ?? '';
+    const phone = phoneRaw.length > 0 ? phoneRaw : null;
+
+    const updated = await this.prisma.db.$transaction(async (tx) => {
+      const nextUser = await tx.user.update({
+        where: { id: user.id },
+        data: { name, phone },
+      });
+
+      const buyerProfile = await tx.buyerProfile.findUnique({
+        where: { userId: user.id },
+        select: { id: true, phone: true },
+      });
+
+      if (buyerProfile) {
+        await tx.buyerProfile.update({
+          where: { id: buyerProfile.id },
+          data: {
+            name,
+            phone: phone ?? buyerProfile.phone,
+          },
+        });
+      }
+
+      return nextUser;
+    });
+
+    return this.userResponses.build(updated);
+  }
+
   getCsrfToken(request: Request): CsrfTokenResponse {
     const sessionCookieName = this.configService.get('SESSION_COOKIE_NAME', {
       infer: true,

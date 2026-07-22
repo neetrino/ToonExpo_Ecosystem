@@ -102,8 +102,8 @@ test.describe('smoke', () => {
     });
     await page.getByRole('button', { name: 'Ստեղծել հաշիվ' }).click();
 
-    await expect(page).toHaveURL(/\/hy\/settings/);
-    await expect(page.getByRole('heading', { name: 'Իմ պրոֆիլը' })).toBeVisible();
+    await expect(page).toHaveURL(/\/hy\/dashboard/);
+    await expect(page.getByRole('heading', { name: /Բարև,/ })).toBeVisible();
   });
 
   test('buyer can change password and re-login', async ({ page }) => {
@@ -121,9 +121,9 @@ test.describe('smoke', () => {
       password: initialPassword,
     });
     await page.getByRole('button', { name: 'Ստեղծել հաշիվ' }).click();
-    await expect(page).toHaveURL(/\/hy\/settings/);
+    await expect(page).toHaveURL(/\/hy\/dashboard/);
 
-    await page.goto('/hy/settings/password');
+    await page.goto('/hy/settings');
     await page.getByLabel('Ընթացիկ գաղտնաբառ', { exact: true }).fill(initialPassword);
     await page.getByLabel('Նոր գաղտնաբառ', { exact: true }).fill(nextPassword);
     await page.getByLabel('Հաստատել նոր գաղտնաբառը', { exact: true }).fill(nextPassword);
@@ -138,8 +138,11 @@ test.describe('smoke', () => {
     await changeResponse;
     await expect(page.getByText('Գաղտնաբառը հաջողությամբ թարմացվեց։')).toBeVisible();
 
-    await page.goto('/hy/settings');
-    await page.locator('button.w-full').filter({ hasText: 'Ելք' }).click();
+    await page.goto('/hy/dashboard');
+    await page
+      .getByRole('navigation', { name: 'Կաբինետի նավիգացիա' })
+      .getByRole('button', { name: 'Ելք' })
+      .click();
     await page.waitForURL(/\/hy(\/|$)|\/auth\/login/);
 
     await page.goto('/hy/auth/login');
@@ -147,12 +150,12 @@ test.describe('smoke', () => {
     await page.getByLabel('Գաղտնաբառ', { exact: true }).fill(nextPassword);
     await page.locator('form').getByRole('button', { name: 'Մուտք' }).click();
     await page.waitForURL((url) => !url.pathname.includes('/auth/login'));
-    await expect(page).toHaveURL(/\/hy\/settings/);
+    await expect(page).toHaveURL(/\/hy\/dashboard/);
   });
 
   test('buyer login shows QR on profile', async ({ page }) => {
     await loginAs(page, SEED_BUYER_EMAIL);
-    await page.goto('/hy/settings/qr');
+    await page.goto('/hy/qr');
     await expect(page.getByRole('heading', { name: 'Իմ QR' })).toBeVisible();
     await expect(page.getByRole('img', { name: /QR/ })).toBeVisible();
   });
@@ -190,7 +193,7 @@ test.describe('smoke', () => {
     await addResponse;
     await expect(removeButton).toBeVisible();
 
-    await page.goto('/hy/settings/favorites');
+    await page.goto('/hy/favorites');
     await expect(page.getByRole('heading', { name: 'Իմ ընտրյալները' })).toBeVisible();
     const favoriteLink = page
       .getByRole('link', { name: new RegExp(SEED_APARTMENT_NUMBER) })

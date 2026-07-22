@@ -182,6 +182,7 @@
     "register": "Register",
     "listProperty": "List property",
     "profile": "Profile",
+    "profileMenu": "Account menu",
     "loading": "…"
   },
   "Footer": {
@@ -496,17 +497,57 @@
   },
   "Profile": {
     "cabinetTitle": "My account",
-    "cabinetSubtitle": "Profile, favorites, check-in, QR and requests",
+    "cabinetSubtitle": "Manage your profile, QR, favorites, check-in and requests",
+    "badge": "Account",
     "title": "My profile",
     "subtitle": "Your ToonExpo account details",
     "nav": {
-      "label": "Account sections",
+      "label": "Account navigation",
+      "portalLabel": "Account portal",
+      "dashboard": "Dashboard",
       "profile": "Profile",
-      "password": "Password",
+      "password": "Settings",
       "favorites": "Favorites",
       "checkin": "Check-in",
       "qr": "My QR",
       "requests": "My requests"
+    },
+    "settings": {
+      "title": "Settings",
+      "subtitle": "Your account details and sign-in security"
+    },
+    "editProfile": {
+      "edit": "Edit profile",
+      "title": "Edit profile",
+      "subtitle": "Update your name and phone number. Email cannot be changed here.",
+      "emailReadOnly": "Email is managed by your account and cannot be edited.",
+      "cancel": "Cancel",
+      "submit": "Save changes",
+      "submitting": "Saving…",
+      "errors": {
+        "generic": "Could not update profile. Please try again."
+      }
+    },
+    "dashboard": {
+      "welcome": "Welcome, {name}",
+      "qrLabel": "My QR",
+      "qrReady": "Ready",
+      "scansHint": "{count, plural, =0 {No scans yet} one {# scan} other {# scans}}",
+      "favoritesLabel": "Favorites",
+      "favoritesHint": "Saved from catalog",
+      "requestsLabel": "Requests",
+      "requestsHint": "Builder conversations",
+      "checkinLabel": "Check-in",
+      "checkinCheckedIn": "Checked in",
+      "checkinPending": "Not yet",
+      "checkinNone": "No event",
+      "settingsHint": "Manage your profile details and password in Settings."
+    },
+    "accountTypes": {
+      "buyer": "Buyer / visitor",
+      "company_member": "Company member",
+      "entrance_staff": "Entrance staff",
+      "platform_admin": "Platform admin"
     },
     "fields": {
       "name": "Name",
@@ -538,8 +579,9 @@
     },
     "qr": {
       "title": "My QR",
-      "subtitle": "Show this code to a builder at the exhibition",
+      "subtitle": "Show this permanent code to builders and entrance staff at the exhibition",
       "hint": "Hold your phone steady so the staff can scan the code.",
+      "secureBadge": "Secure permanent QR",
       "codeTitle": "QR code for {name}",
       "fullscreen": "Enlarge fullscreen",
       "exitFullscreen": "Exit fullscreen",
@@ -549,6 +591,7 @@
         "title": "Scan history",
         "loading": "Loading scans…",
         "error": "Could not load scan history.",
+        "emptyTitle": "No scans yet",
         "empty": "No scans yet. Show your QR to a builder to get started.",
         "unknownCompany": "Unknown company",
         "context": {
@@ -564,6 +607,7 @@
       "subtitle": "Saved projects and apartments from the catalog",
       "loading": "Loading favorites…",
       "error": "Could not load favorites. Try again.",
+      "emptyTitle": "No favorites yet",
       "empty": "You have not saved any favorites yet.",
       "browseCatalog": "Browse projects",
       "removeButton": "Remove from favorites"
@@ -573,6 +617,7 @@
       "subtitle": "See whether you are checked in to the active exhibition",
       "loading": "Loading check-in status…",
       "error": "Could not load check-in status. Try again.",
+      "emptyTitle": "No check-ins yet",
       "empty": "You have not checked in to any exhibition yet.",
       "openQr": "Open my QR",
       "noActiveEvent": "There is no active exhibition right now.",
@@ -593,9 +638,12 @@
       "subtitle": "Interest and contact history with builders",
       "loading": "Loading requests…",
       "error": "Could not load requests. Try again.",
+      "emptyTitle": "No requests yet",
       "empty": "You have not sent any requests yet.",
       "browseCatalog": "Browse projects",
       "apartmentLinked": "Includes apartment interest",
+      "createdLabel": "Created",
+      "updatedLabel": "Updated",
       "status": {
         "request_sent": "Request sent",
         "builder_received": "Builder received",

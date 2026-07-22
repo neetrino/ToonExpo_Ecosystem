@@ -53,6 +53,8 @@ const r2RemotePattern = resolveR2RemotePattern();
 
 const nextConfig: NextConfig = {
   transpilePackages: ['@toonexpo/contracts', '@toonexpo/shared'],
+  // Allow Next.js dev assets/HMR when opening the app via LAN IP (not only localhost).
+  allowedDevOrigins: ['192.168.15.116'],
   images: {
     remotePatterns: [PLACEHOLD_REMOTE_PATTERN, ...(r2RemotePattern ? [r2RemotePattern] : [])],
     // Dev seed uses local SVG architecture placeholders under /public/demo.
@@ -64,13 +66,63 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/:locale/profile',
+        destination: '/:locale/dashboard',
+        permanent: true,
+      },
+      {
+        source: '/:locale/profile/password',
         destination: '/:locale/settings',
+        permanent: true,
+      },
+      {
+        source: '/:locale/profile/qr',
+        destination: '/:locale/qr',
+        permanent: true,
+      },
+      {
+        source: '/:locale/profile/favorites',
+        destination: '/:locale/favorites',
+        permanent: true,
+      },
+      {
+        source: '/:locale/profile/requests',
+        destination: '/:locale/requests',
+        permanent: true,
+      },
+      {
+        source: '/:locale/profile/checkin',
+        destination: '/:locale/checkin',
         permanent: true,
       },
       {
         source: '/:locale/profile/:path*',
         destination: '/:locale/settings/:path*',
         permanent: true,
+      },
+      {
+        source: '/:locale/settings/password',
+        destination: '/:locale/settings',
+        permanent: false,
+      },
+      {
+        source: '/:locale/settings/qr',
+        destination: '/:locale/qr',
+        permanent: false,
+      },
+      {
+        source: '/:locale/settings/favorites',
+        destination: '/:locale/favorites',
+        permanent: false,
+      },
+      {
+        source: '/:locale/settings/requests',
+        destination: '/:locale/requests',
+        permanent: false,
+      },
+      {
+        source: '/:locale/settings/checkin',
+        destination: '/:locale/checkin',
+        permanent: false,
       },
     ];
   },

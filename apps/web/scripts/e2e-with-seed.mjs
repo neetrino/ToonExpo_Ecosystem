@@ -1,33 +1,58 @@
 #!/usr/bin/env node
 /**
- * Seeds the DB, then runs Playwright.
+ * Seeds the DB (unless SKIP_E2E_SEED=1), then runs Playwright.
  * Seed must happen before Playwright boots webServers (API holds DB connections).
  * Playwright starts webServer before globalSetup — seeding there races the API.
+ * Retries live in the database package seed script only (do not nest another retry loop here).
  */
 import { spawn } from 'node:child_process';
 import console from 'node:console';
 import path from 'node:path';
 import process from 'node:process';
-import { setTimeout as delay } from 'node:timers/promises';
 import { fileURLToPath } from 'node:url';
-
-const SEED_MAX_ATTEMPTS = 3;
-const SEED_RETRY_DELAY_MS = 1_500;
 
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const webRoot = path.resolve(scriptDir, '..');
 const monorepoRoot = path.resolve(webRoot, '../..');
 
-const sleep = (ms) => delay(ms);
+const shouldSkipSeed = () => {
+  if (process.argv.includes('--skip-seed')) {
+    return true;
+  }
+  const raw = process.env['SKIP_E2E_SEED']?.trim().toLowerCase();
+  return raw === '1' || raw === 'true' || raw === 'yes';
+};
+
+const playwrightArgv = process.argv.slice(2).filter((arg) => arg !== '--skip-seed');
+
+const isWindows = process.platform === 'win32';
+
+/** Quote for cmd.exe when `shell: true` (pipes/spaces in Playwright --grep). */
+const escapeCmdArg = (arg) => {
+  if (arg.length === 0) {
+    return '""';
+  }
+  if (!/[\s"&<>|^%]/.test(arg)) {
+    return arg;
+  }
+  return `"${arg.replace(/"/g, '""')}"`;
+};
 
 const runCommand = (command, args, cwd) =>
   new Promise((resolve, reject) => {
-    const child = spawn(command, args, {
-      cwd,
-      env: process.env,
-      stdio: 'inherit',
-      shell: process.platform === 'win32',
-    });
+    const child = isWindows
+      ? spawn([command, ...args].map(escapeCmdArg).join(' '), {
+          cwd,
+          env: process.env,
+          stdio: 'inherit',
+          shell: true,
+        })
+      : spawn(command, args, {
+          cwd,
+          env: process.env,
+          stdio: 'inherit',
+          shell: false,
+        });
     child.on('error', reject);
     child.on('exit', (code, signal) => {
       if (signal) {
@@ -42,29 +67,14 @@ const runCommand = (command, args, cwd) =>
     });
   });
 
-const runSeedWithRetry = async () => {
-  let lastError;
-  for (let attempt = 1; attempt <= SEED_MAX_ATTEMPTS; attempt += 1) {
-    try {
-      console.info(`[web/e2e] Running database seed (attempt ${attempt}/${SEED_MAX_ATTEMPTS})…`);
-      await runCommand('pnpm', ['run', 'db:seed'], monorepoRoot);
-      console.info('[web/e2e] Seed complete.');
-      return;
-    } catch (error) {
-      lastError = error;
-      console.warn(`[web/e2e] Seed attempt ${attempt} failed: ${error instanceof Error ? error.message : error}`);
-      if (attempt < SEED_MAX_ATTEMPTS) {
-        await sleep(SEED_RETRY_DELAY_MS * attempt);
-      }
-    }
-  }
-  throw lastError instanceof Error
-    ? lastError
-    : new Error(`[web/e2e] Database seed failed after ${SEED_MAX_ATTEMPTS} attempts`);
-};
-
 const main = async () => {
-  await runSeedWithRetry();
+  if (shouldSkipSeed()) {
+    console.info('[web/e2e] SKIP_E2E_SEED set — skipping database seed.');
+  } else {
+    console.info('[web/e2e] Running database seed…');
+    await runCommand('pnpm', ['run', 'db:seed'], monorepoRoot);
+    console.info('[web/e2e] Seed complete.');
+  }
 
   const playwrightArgs = [
     'exec',
@@ -72,7 +82,7 @@ const main = async () => {
     'test',
     '-c',
     'e2e/playwright.config.ts',
-    ...process.argv.slice(2),
+    ...playwrightArgv,
   ];
 
   await runCommand('pnpm', playwrightArgs, webRoot);

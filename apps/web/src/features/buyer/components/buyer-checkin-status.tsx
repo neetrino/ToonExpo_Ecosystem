@@ -1,13 +1,18 @@
 'use client';
 
 import type { BuyerCheckInStatusResponse } from '@toonexpo/contracts';
+import { CalendarCheck, QrCode, ScanLine } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 
+import { AccountEmptyState } from '@/features/buyer/components/account/account-empty-state';
+import { AccountStatusBadge } from '@/features/buyer/components/account/account-status-badge';
 import { useBuyerCheckInQuery } from '@/features/buyer/hooks/use-buyer-checkin';
 import { formatBuyerDateTime } from '@/features/buyer/utils/format-datetime';
 import { Link } from '@/i18n/navigation';
 import { Card } from '@/shared/ui/card';
 import { cn } from '@/shared/ui/cn';
+import { Reveal } from '@/shared/ui/motion/reveal';
+import { Skeleton } from '@/shared/ui/skeleton';
 
 type CheckInHistoryListProps = {
   items: BuyerCheckInStatusResponse['history'];
@@ -23,15 +28,24 @@ const CheckInHistoryList = ({ items }: CheckInHistoryListProps) => {
 
   return (
     <ul className="flex flex-col gap-3">
-      {items.map((item) => (
-        <li key={`${item.eventId}-${item.checkedInAt}`}>
-          <Card className="flex flex-col gap-1 !p-4 shadow-none">
-            <p className="text-sm font-medium text-ink">{item.eventName}</p>
-            <p className="text-xs text-ink-muted">
-              {formatBuyerDateTime(item.checkedInAt, locale)}
-            </p>
+      {items.map((item, index) => (
+        <Reveal
+          key={`${item.eventId}-${item.checkedInAt}`}
+          delayMs={Math.min(index, 6) * 40}
+          as="li"
+        >
+          <Card variant="elevated" padding="sm" className="flex items-start gap-3">
+            <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-sm bg-brand-soft text-brand">
+              <CalendarCheck className="size-4" aria-hidden />
+            </span>
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-ink">{item.eventName}</p>
+              <p className="mt-0.5 text-xs text-ink-muted">
+                {formatBuyerDateTime(item.checkedInAt, locale)}
+              </p>
+            </div>
           </Card>
-        </li>
+        </Reveal>
       ))}
     </ul>
   );
@@ -46,12 +60,20 @@ export const BuyerCheckInStatus = () => {
   const query = useBuyerCheckInQuery();
 
   if (query.isLoading) {
-    return <p className="text-sm text-ink-secondary">{t('loading')}</p>;
+    return (
+      <div className="flex flex-col gap-4" aria-busy="true" aria-live="polite">
+        <Skeleton className="h-36 w-full" />
+        <Skeleton className="h-24 w-full" />
+      </div>
+    );
   }
 
   if (query.isError || !query.data) {
     return (
-      <p role="alert" className="text-sm text-danger">
+      <p
+        role="alert"
+        className="rounded-md border border-danger/20 bg-danger-soft px-4 py-3 text-sm text-danger"
+      >
         {t('error')}
       </p>
     );
@@ -62,57 +84,73 @@ export const BuyerCheckInStatus = () => {
 
   if (!hasAnyData) {
     return (
-      <div className="flex flex-col gap-4 rounded-md bg-surface p-6 text-center">
-        <p className="text-sm text-ink-secondary">{t('empty')}</p>
-        <Link href="/settings/qr" className="text-sm font-semibold text-brand hover:underline">
-          {t('openQr')}
-        </Link>
-      </div>
+      <AccountEmptyState
+        icon={ScanLine}
+        title={t('emptyTitle')}
+        description={t('empty')}
+        action={
+          <Link
+            href="/qr"
+            className={cn(
+              'inline-flex h-9 items-center justify-center gap-2 rounded-sm bg-brand-soft px-4',
+              'text-sm font-medium text-brand transition-colors hover:bg-brand/15',
+            )}
+          >
+            <QrCode className="size-4" aria-hidden />
+            {t('openQr')}
+          </Link>
+        }
+      />
     );
   }
 
   return (
     <div className="flex flex-col gap-8">
       {current ? (
-        <section className="flex flex-col gap-3">
-          <h3 className="text-base font-semibold text-ink">{t('current.title')}</h3>
-          <Card
-            className={cn(
-              'flex flex-col gap-2 !p-5 shadow-none',
-              current.checkedIn ? 'border-success/30 bg-success/5' : 'border-border bg-surface',
-            )}
-          >
-            <p
+        <Reveal>
+          <section className="flex flex-col gap-3" aria-labelledby="checkin-current-heading">
+            <h2 id="checkin-current-heading" className="text-base font-semibold text-ink">
+              {t('current.title')}
+            </h2>
+            <Card
+              variant="elevated"
               className={cn(
-                'text-base font-semibold',
-                current.checkedIn ? 'text-success' : 'text-ink',
+                'flex flex-col gap-3',
+                current.checkedIn ? 'border-success/25 bg-success/5' : undefined,
               )}
             >
-              {current.checkedIn ? t('current.checkedIn') : t('current.notCheckedIn')}
-            </p>
-            <p className="text-sm text-ink-secondary">{current.eventName}</p>
-            {current.checkedIn && current.checkedInAt ? (
-              <p className="text-sm text-ink-muted">
-                {t('current.checkedInAt', {
-                  time: formatBuyerDateTime(current.checkedInAt, locale),
-                })}
-              </p>
-            ) : (
-              <p className="text-sm text-ink-secondary">
-                {t('current.showQrHint')}{' '}
-                <Link href="/settings/qr" className="font-semibold text-brand hover:underline">
-                  {t('openQr')}
-                </Link>
-              </p>
-            )}
-          </Card>
-        </section>
+              <div className="flex flex-wrap items-center gap-2">
+                <AccountStatusBadge
+                  label={current.checkedIn ? t('current.checkedIn') : t('current.notCheckedIn')}
+                  tone={current.checkedIn ? 'success' : 'warning'}
+                />
+              </div>
+              <p className="text-sm font-medium text-ink">{current.eventName}</p>
+              {current.checkedIn && current.checkedInAt ? (
+                <p className="text-sm text-ink-muted">
+                  {t('current.checkedInAt', {
+                    time: formatBuyerDateTime(current.checkedInAt, locale),
+                  })}
+                </p>
+              ) : (
+                <p className="text-sm text-ink-secondary">
+                  {t('current.showQrHint')}{' '}
+                  <Link href="/qr" className="font-semibold text-brand hover:underline">
+                    {t('openQr')}
+                  </Link>
+                </p>
+              )}
+            </Card>
+          </section>
+        </Reveal>
       ) : (
         <p className="text-sm text-ink-secondary">{t('noActiveEvent')}</p>
       )}
 
-      <section className="flex flex-col gap-3">
-        <h3 className="text-base font-semibold text-ink">{t('history.title')}</h3>
+      <section className="flex flex-col gap-3" aria-labelledby="checkin-history-heading">
+        <h2 id="checkin-history-heading" className="text-base font-semibold text-ink">
+          {t('history.title')}
+        </h2>
         <CheckInHistoryList items={history} />
       </section>
     </div>

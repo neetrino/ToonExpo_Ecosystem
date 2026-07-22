@@ -1,12 +1,15 @@
 'use client';
 
 import { QRCodeSVG } from 'qrcode.react';
+import { Maximize2, Minimize2, ShieldCheck } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import { QR_DISPLAY_SIZE_PX, QR_FULLSCREEN_SIZE_PX } from '@/features/buyer/constants';
 import { Button } from '@/shared/ui/button';
+import { Card } from '@/shared/ui/card';
 import { cn } from '@/shared/ui/cn';
+import { Reveal } from '@/shared/ui/motion/reveal';
 
 type BuyerQrCodeProps = {
   payloadUrl: string;
@@ -15,6 +18,7 @@ type BuyerQrCodeProps = {
 
 /**
  * Large centered buyer QR with optional fullscreen exhibition mode.
+ * The QR itself is never animated or overlaid.
  */
 export const BuyerQrCode = ({ payloadUrl, buyerName }: BuyerQrCodeProps) => {
   const t = useTranslations('Profile.qr');
@@ -53,36 +57,64 @@ export const BuyerQrCode = ({ payloadUrl, buyerName }: BuyerQrCodeProps) => {
   const size = isFullscreen ? QR_FULLSCREEN_SIZE_PX : QR_DISPLAY_SIZE_PX;
 
   return (
-    <div
-      ref={containerRef}
-      className={cn(
-        'flex flex-col items-center gap-5 rounded-md border border-border/60 bg-surface p-6 sm:p-8',
-        isFullscreen && 'fixed inset-0 z-50 justify-center border-0 bg-background px-6 py-10',
-      )}
-    >
-      <div className="rounded-md border border-border bg-white p-5 shadow-md">
-        <QRCodeSVG
-          value={payloadUrl}
-          size={size}
-          level="M"
-          marginSize={2}
-          title={t('codeTitle', { name: buyerName })}
-        />
-      </div>
-      <p className="text-center font-brand text-xl font-bold tracking-tight text-ink">
-        {buyerName}
-      </p>
-      <p className="max-w-xs text-center text-sm leading-relaxed text-ink-secondary">{t('hint')}</p>
-      <Button
-        type="button"
-        variant="ghost"
-        className="w-full max-w-xs"
-        onClick={() => {
-          void toggleFullscreen();
-        }}
+    <Reveal>
+      <div
+        ref={containerRef}
+        className={cn(
+          isFullscreen &&
+            'fixed inset-0 z-50 flex items-center justify-center bg-background px-6 py-10',
+        )}
       >
-        {isFullscreen ? t('exitFullscreen') : t('fullscreen')}
-      </Button>
-    </div>
+        <Card
+          variant="elevated"
+          padding="lg"
+          className={cn(
+            'mx-auto flex w-full max-w-md flex-col items-center gap-5',
+            isFullscreen && 'max-w-lg border-0 shadow-none',
+          )}
+        >
+          <div className="flex items-center gap-2 rounded-pill bg-success-soft px-3 py-1.5 text-xs font-semibold text-success">
+            <ShieldCheck className="size-3.5" aria-hidden />
+            {t('secureBadge')}
+          </div>
+
+          <div className="rounded-md border border-border bg-white p-5 shadow-xs">
+            <QRCodeSVG
+              value={payloadUrl}
+              size={size}
+              level="M"
+              marginSize={2}
+              title={t('codeTitle', { name: buyerName })}
+            />
+          </div>
+
+          <div className="flex flex-col items-center gap-1 text-center">
+            <p className="font-brand text-xl font-bold tracking-tight text-ink">{buyerName}</p>
+            <p className="max-w-xs text-sm leading-relaxed text-ink-secondary">{t('hint')}</p>
+          </div>
+
+          <Button
+            type="button"
+            variant="outline"
+            className="w-full max-w-xs"
+            onClick={() => {
+              void toggleFullscreen();
+            }}
+          >
+            {isFullscreen ? (
+              <>
+                <Minimize2 className="size-4" aria-hidden />
+                {t('exitFullscreen')}
+              </>
+            ) : (
+              <>
+                <Maximize2 className="size-4" aria-hidden />
+                {t('fullscreen')}
+              </>
+            )}
+          </Button>
+        </Card>
+      </div>
+    </Reveal>
   );
 };

@@ -7,6 +7,7 @@ import type {
   LoginRequest,
   RegisterRequest,
   SetPasswordRequest,
+  UpdateProfileRequest,
   UserResponse,
 } from '@toonexpo/contracts';
 
@@ -89,6 +90,18 @@ export const changePassword = (body: ChangePasswordRequest): Promise<ChangePassw
   apiFetch({
     path: '/auth/change-password',
     method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+
+/**
+ * Updates the authenticated user's name and optional phone (CSRF-protected).
+ */
+export const updateProfile = (body: UpdateProfileRequest): Promise<UserResponse> =>
+  apiFetch({
+    path: '/auth/me',
+    method: 'PATCH',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),

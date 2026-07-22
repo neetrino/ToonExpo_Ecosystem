@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
+import { AuthFormSwitch } from '@/features/auth/components/auth-form-switch';
 import {
   AUTH_CONTROL_CLASS,
   AUTH_LABEL_CLASS,
@@ -118,21 +119,11 @@ export const LoginForm = ({ returnUrl }: LoginFormProps) => {
         {busy ? t('login.submitting') : t('login.submit')}
       </Button>
 
-      <div className="relative pt-1">
-        <div
-          className="absolute inset-x-0 top-1/2 h-px bg-gradient-to-r from-transparent via-border to-transparent"
-          aria-hidden
-        />
-        <p className="relative mx-auto w-fit bg-surface-elevated px-4 text-center text-sm text-ink-secondary">
-          {t('login.noAccount')}{' '}
-          <Link
-            href="/auth/register"
-            className="font-semibold text-brand transition-colors hover:text-brand-hover"
-          >
-            {t('login.registerLink')}
-          </Link>
-        </p>
-      </div>
+      <AuthFormSwitch
+        prompt={t('login.noAccount')}
+        href="/auth/register"
+        linkLabel={t('login.registerLink')}
+      />
     </form>
   );
 };

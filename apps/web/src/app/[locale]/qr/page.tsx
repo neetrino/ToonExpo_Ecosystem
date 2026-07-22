@@ -1,16 +1,22 @@
 import { headers } from 'next/headers';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
+import { AccountPageEnter } from '@/features/buyer/components/account/account-page-enter';
+import { AccountPageHeader } from '@/features/buyer/components/account/account-page-header';
+import { AccountShell } from '@/features/buyer/components/account/account-shell';
 import { BuyerQrPageContent } from '@/features/buyer/components/buyer-qr-page-content';
 import { isBuyerAccount } from '@/features/buyer/utils/is-buyer-account';
 import { getMeOrNull } from '@/features/auth/api/auth-api';
 import { redirect } from '@/i18n/navigation';
 
-type ProfileQrPageProps = {
+type MyQrPageProps = {
   params: Promise<{ locale: string }>;
 };
 
-export default async function ProfileQrPage({ params }: ProfileQrPageProps) {
+/**
+ * Buyer My QR page at `/qr` (public token resolve stays at `/qr/[token]`).
+ */
+export default async function MyQrPage({ params }: MyQrPageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
 
@@ -19,24 +25,23 @@ export default async function ProfileQrPage({ params }: ProfileQrPageProps) {
   const user = await getMeOrNull(cookieHeader);
 
   if (!user) {
-    redirect({ href: '/auth/login?returnUrl=%2Fsettings%2Fqr', locale });
+    redirect({ href: '/auth/login?returnUrl=%2Fqr', locale });
     return null;
   }
 
   if (!isBuyerAccount(user)) {
-    redirect({ href: '/settings', locale });
+    redirect({ href: '/dashboard', locale });
     return null;
   }
 
   const t = await getTranslations('Profile.qr');
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-1">
-        <h2 className="text-lg font-semibold text-ink">{t('title')}</h2>
-        <p className="text-sm text-ink-secondary">{t('subtitle')}</p>
-      </div>
-      <BuyerQrPageContent buyerName={user.name} />
-    </div>
+    <AccountShell locale={locale}>
+      <AccountPageEnter>
+        <AccountPageHeader title={t('title')} subtitle={t('subtitle')} />
+        <BuyerQrPageContent buyerName={user.name} />
+      </AccountPageEnter>
+    </AccountShell>
   );
 }

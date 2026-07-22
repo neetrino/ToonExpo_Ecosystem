@@ -13,6 +13,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "e2e": "node scripts/e2e-with-seed.mjs",
+    "e2e:playwright": "node scripts/e2e-with-seed.mjs --skip-seed",
     "e2e:ui": "node scripts/e2e-with-seed.mjs --ui",
     "e2e:install": "playwright install chromium"
   },

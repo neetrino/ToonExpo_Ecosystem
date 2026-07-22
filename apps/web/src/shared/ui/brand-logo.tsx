@@ -6,7 +6,7 @@ import { Link, usePathname } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 
 type BrandLogoProps = {
-  href?: '/' | '/builder' | '/admin' | '/partner' | '/settings' | undefined;
+  href?: '/' | '/builder' | '/admin' | '/partner' | '/settings' | '/dashboard' | undefined;
   className?: string | undefined;
   badge?: string | undefined;
   /** Light text over imagery (hero header). */

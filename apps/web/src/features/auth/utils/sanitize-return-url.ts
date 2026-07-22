@@ -3,7 +3,7 @@
  */
 export const sanitizeReturnUrl = (
   value: string | null | undefined,
-  fallback = '/settings',
+  fallback = '/dashboard',
 ): string => {
   if (!value) {
     return fallback;

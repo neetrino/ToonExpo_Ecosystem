@@ -18,8 +18,11 @@ export {
   CSRF_HEADER_NAME,
   PASSWORD_MAX_LENGTH,
   PASSWORD_MIN_LENGTH,
+  PROFILE_NAME_MAX_LENGTH,
+  PROFILE_PHONE_MAX_LENGTH,
   changePasswordRequestSchema,
   passwordFieldSchema,
+  updateProfileRequestSchema,
 } from './auth.js';
 
 export type {
@@ -36,6 +39,7 @@ export type {
   ForgotPasswordResponse,
   LoginRequest,
   RegisterRequest,
+  UpdateProfileRequest,
   UserResponse,
   UserStatus,
 } from './auth.js';

@@ -1,16 +1,18 @@
 import { headers } from 'next/headers';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
-import { BuyerCheckInStatus } from '@/features/buyer/components/buyer-checkin-status';
+import { AccountPageEnter } from '@/features/buyer/components/account/account-page-enter';
+import { AccountPageHeader } from '@/features/buyer/components/account/account-page-header';
+import { BuyerRequestsList } from '@/features/buyer/components/buyer-requests-list';
 import { isBuyerAccount } from '@/features/buyer/utils/is-buyer-account';
 import { getMeOrNull } from '@/features/auth/api/auth-api';
 import { redirect } from '@/i18n/navigation';
 
-type ProfileCheckInPageProps = {
+type RequestsPageProps = {
   params: Promise<{ locale: string }>;
 };
 
-export default async function ProfileCheckInPage({ params }: ProfileCheckInPageProps) {
+export default async function RequestsPage({ params }: RequestsPageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
 
@@ -20,26 +22,23 @@ export default async function ProfileCheckInPage({ params }: ProfileCheckInPageP
 
   if (!user) {
     redirect({
-      href: '/auth/login?returnUrl=%2Fsettings%2Fcheckin',
+      href: '/auth/login?returnUrl=%2Frequests',
       locale,
     });
     return null;
   }
 
   if (!isBuyerAccount(user)) {
-    redirect({ href: '/settings', locale });
+    redirect({ href: '/dashboard', locale });
     return null;
   }
 
-  const t = await getTranslations('Profile.checkin');
+  const t = await getTranslations('Profile.requests');
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-1">
-        <h2 className="text-lg font-semibold text-ink">{t('title')}</h2>
-        <p className="text-sm text-ink-secondary">{t('subtitle')}</p>
-      </div>
-      <BuyerCheckInStatus />
-    </div>
+    <AccountPageEnter>
+      <AccountPageHeader title={t('title')} subtitle={t('subtitle')} />
+      <BuyerRequestsList />
+    </AccountPageEnter>
   );
 }

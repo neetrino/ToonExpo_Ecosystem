@@ -118,6 +118,30 @@ export type UserResponse = {
   updatedAt: string;
 };
 
+/** Max length for display name on profile update (matches Nest DTO). */
+export const PROFILE_NAME_MAX_LENGTH = 120;
+
+/** Max length for phone on profile update (matches Nest DTO). */
+export const PROFILE_PHONE_MAX_LENGTH = 32;
+
+/**
+ * Authenticated self-service profile update (`PATCH /auth/me`).
+ * Email and account type are not editable here.
+ */
+export const updateProfileRequestSchema = z.object({
+  name: z.string().trim().min(1).max(PROFILE_NAME_MAX_LENGTH),
+  phone: z
+    .string()
+    .trim()
+    .max(PROFILE_PHONE_MAX_LENGTH)
+    .regex(/^[+0-9()\-\s]*$/, {
+      message: 'phone must contain digits and optional phone punctuation',
+    })
+    .optional(),
+});
+
+export type UpdateProfileRequest = z.infer<typeof updateProfileRequestSchema>;
+
 /**
  * Cookie name for the non-httpOnly double-submit CSRF token (readable by JS when same-origin).
  */

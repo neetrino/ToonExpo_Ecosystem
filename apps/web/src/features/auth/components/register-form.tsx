@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
+import { AuthFormSwitch } from '@/features/auth/components/auth-form-switch';
 import {
   AUTH_CONTROL_CLASS,
   AUTH_LABEL_CLASS,
@@ -18,7 +19,7 @@ import {
   type RegisterFormValues,
 } from '@/features/auth/schemas/register.schema';
 import { mapAuthError } from '@/features/auth/utils/map-auth-error';
-import { Link, useRouter } from '@/i18n/navigation';
+import { useRouter } from '@/i18n/navigation';
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
@@ -55,7 +56,7 @@ export const RegisterForm = () => {
     setFormError(null);
     try {
       await registerMutation.mutateAsync(toRegisterRequest(values));
-      router.push('/settings');
+      router.push('/dashboard');
     } catch (error) {
       setFormError(t(`errors.${mapAuthError(error)}`));
     }
@@ -64,8 +65,8 @@ export const RegisterForm = () => {
   const busy = isSubmitting || registerMutation.isPending;
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-5 sm:gap-6" noValidate>
-      <div className="grid gap-5 sm:grid-cols-2 sm:gap-4">
+    <form onSubmit={onSubmit} className="flex flex-col gap-3.5 sm:gap-4" noValidate>
+      <div className="grid gap-3.5 sm:grid-cols-2 sm:gap-3">
         <FormField
           id="register-first-name"
           label={t('fields.firstName')}
@@ -141,41 +142,43 @@ export const RegisterForm = () => {
         />
       </FormField>
 
-      <FormField
-        id="register-password"
-        label={t('fields.password')}
-        labelClassName={AUTH_LABEL_CLASS}
-        error={errors.password ? t('validation.password') : undefined}
-      >
-        <PasswordInput
+      <div className="grid gap-3.5 sm:grid-cols-2 sm:gap-3">
+        <FormField
           id="register-password"
-          autoComplete="new-password"
-          placeholder={t('register.placeholders.password')}
-          aria-invalid={Boolean(errors.password)}
-          className={AUTH_CONTROL_CLASS}
-          revealLabel={t('fields.showPassword')}
-          hideLabel={t('fields.hidePassword')}
-          {...register('password')}
-        />
-      </FormField>
+          label={t('fields.password')}
+          labelClassName={AUTH_LABEL_CLASS}
+          error={errors.password ? t('validation.password') : undefined}
+        >
+          <PasswordInput
+            id="register-password"
+            autoComplete="new-password"
+            placeholder={t('register.placeholders.password')}
+            aria-invalid={Boolean(errors.password)}
+            className={AUTH_CONTROL_CLASS}
+            revealLabel={t('fields.showPassword')}
+            hideLabel={t('fields.hidePassword')}
+            {...register('password')}
+          />
+        </FormField>
 
-      <FormField
-        id="register-confirm-password"
-        label={t('fields.confirmPassword')}
-        labelClassName={AUTH_LABEL_CLASS}
-        error={errors.confirmPassword ? t('validation.confirmPassword') : undefined}
-      >
-        <PasswordInput
+        <FormField
           id="register-confirm-password"
-          autoComplete="new-password"
-          placeholder={t('register.placeholders.confirmPassword')}
-          aria-invalid={Boolean(errors.confirmPassword)}
-          className={AUTH_CONTROL_CLASS}
-          revealLabel={t('fields.showPassword')}
-          hideLabel={t('fields.hidePassword')}
-          {...register('confirmPassword')}
-        />
-      </FormField>
+          label={t('fields.confirmPassword')}
+          labelClassName={AUTH_LABEL_CLASS}
+          error={errors.confirmPassword ? t('validation.confirmPassword') : undefined}
+        >
+          <PasswordInput
+            id="register-confirm-password"
+            autoComplete="new-password"
+            placeholder={t('register.placeholders.confirmPassword')}
+            aria-invalid={Boolean(errors.confirmPassword)}
+            className={AUTH_CONTROL_CLASS}
+            revealLabel={t('fields.showPassword')}
+            hideLabel={t('fields.hidePassword')}
+            {...register('confirmPassword')}
+          />
+        </FormField>
+      </div>
 
       {formError ? (
         <p role="alert" className="rounded-md bg-danger-soft px-3.5 py-2.5 text-sm text-danger">
@@ -193,21 +196,11 @@ export const RegisterForm = () => {
         {busy ? t('register.submitting') : t('register.submit')}
       </Button>
 
-      <div className="relative pt-1">
-        <div
-          className="absolute inset-x-0 top-1/2 h-px bg-gradient-to-r from-transparent via-border to-transparent"
-          aria-hidden
-        />
-        <p className="relative mx-auto w-fit bg-surface-elevated px-4 text-center text-sm text-ink-secondary">
-          {t('register.hasAccount')}{' '}
-          <Link
-            href="/auth/login"
-            className="font-semibold text-brand transition-colors hover:text-brand-hover"
-          >
-            {t('register.loginLink')}
-          </Link>
-        </p>
-      </div>
+      <AuthFormSwitch
+        prompt={t('register.hasAccount')}
+        href="/auth/login"
+        linkLabel={t('register.loginLink')}
+      />
     </form>
   );
 };

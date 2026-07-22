@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, Res } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Patch, Post, Req, Res } from '@nestjs/common';
 import {
   ApiCreatedResponse,
   ApiNoContentResponse,
@@ -32,6 +32,7 @@ import { ChangePasswordDto } from './dto/change-password.dto.js';
 import { LoginDto } from './dto/login.dto.js';
 import { RegisterDto } from './dto/register.dto.js';
 import { SetPasswordDto } from './dto/set-password.dto.js';
+import { UpdateProfileDto } from './dto/update-profile.dto.js';
 import type { AuthenticatedUser } from './types/authenticated-user.js';
 
 @ApiTags('auth')
@@ -136,6 +137,18 @@ export class AuthController {
     }
 
     return this.authService.getMe(user);
+  }
+
+  @Patch('me')
+  @HttpCode(HttpStatus.OK)
+  @Throttle({ default: { limit: AUTH_RATE_LIMIT_LIMIT, ttl: AUTH_RATE_LIMIT_TTL_MS } })
+  @ApiOperation({ summary: 'Update the authenticated user profile (name, phone)' })
+  @ApiOkResponse({ description: 'Updated user without sensitive fields' })
+  updateMe(
+    @CurrentUser() user: AuthenticatedUser,
+    @Body() body: UpdateProfileDto,
+  ): Promise<UserResponse> {
+    return this.authService.updateProfile(user, body);
   }
 
   @Get('csrf')

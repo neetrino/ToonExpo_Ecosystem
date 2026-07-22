@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import type { ReactNode } from 'react';
 
+import { AccountShell } from '@/features/buyer/components/account/account-shell';
+import { isBuyerAccount } from '@/features/buyer/utils/is-buyer-account';
 import { getMeOrNull } from '@/features/auth/api/auth-api';
 import { Link, redirect } from '@/i18n/navigation';
 import { LocaleSwitcher } from '@/shared/ui/locale-switcher';
@@ -12,10 +14,11 @@ type CheckinLayoutProps = {
   params: Promise<{ locale: string }>;
 };
 
-const CHECKIN_ACCOUNT_TYPES = new Set(['entrance_staff', 'platform_admin']);
-
 /**
- * Server-gated check-in shell for entrance staff and platform admins.
+ * `/checkin` shell:
+ * - buyers → account rail (status page)
+ * - entrance staff → staff scanner chrome
+ * - platform admins → `/admin/checkin`
  */
 export default async function CheckinLayout({ children, params }: CheckinLayoutProps) {
   const { locale } = await params;
@@ -30,14 +33,17 @@ export default async function CheckinLayout({ children, params }: CheckinLayoutP
     return null;
   }
 
-  if (!CHECKIN_ACCOUNT_TYPES.has(user.accountType)) {
-    notFound();
-  }
-
-  // Platform admins use the admin shell; keep /checkin for entrance staff only.
   if (user.accountType === 'platform_admin') {
     redirect({ href: '/admin/checkin', locale });
     return null;
+  }
+
+  if (isBuyerAccount(user)) {
+    return <AccountShell locale={locale}>{children}</AccountShell>;
+  }
+
+  if (user.accountType !== 'entrance_staff') {
+    notFound();
   }
 
   const t = await getTranslations('Checkin');
@@ -60,7 +66,7 @@ export default async function CheckinLayout({ children, params }: CheckinLayoutP
             <span className="hidden text-sm text-ink-secondary sm:inline">{user.email}</span>
             <LocaleSwitcher />
             <Link
-              href="/settings"
+              href="/dashboard"
               className="text-sm font-medium text-ink-secondary hover:text-ink"
             >
               {t('profileLink')}

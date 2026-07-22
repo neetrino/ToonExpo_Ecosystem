@@ -8,9 +8,9 @@ import { LogoutButton } from '@/features/auth/components/logout-button';
 import { useMeQuery } from '@/features/auth/hooks/use-auth';
 import { Link, usePathname } from '@/i18n/navigation';
 import { BrandLogo } from '@/shared/ui/brand-logo';
+import { cn } from '@/shared/ui/cn';
 import { IconButton } from '@/shared/ui/icon-button';
 import { LocaleSwitcher } from '@/shared/ui/locale-switcher';
-import { cn } from '@/shared/ui/cn';
 
 type SiteHeaderProps = {
   className?: string | undefined;
