@@ -1,4 +1,8 @@
-import { Link } from '@/i18n/navigation';
+'use client';
+
+import type { MouseEvent } from 'react';
+
+import { Link, usePathname } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 
 type BrandLogoProps = {
@@ -10,6 +14,8 @@ type BrandLogoProps = {
   size?: 'sm' | 'md' | 'lg' | undefined;
   /** Hide the house mark (compact portal rails). */
   showMark?: boolean | undefined;
+  /** Fired when logo scrolls to top while already on home. */
+  onHomeClick?: (() => void) | undefined;
 };
 
 const wordmarkClassName = {
@@ -33,6 +39,7 @@ const SOLID_HOUSE_BODY = 'var(--color-brand-deep)';
 
 /**
  * TOON + EXPO wordmark with house mark — matches public header brand lockup.
+ * On the home page, clicking the logo scrolls smoothly to the top.
  */
 export const BrandLogo = ({
   href = '/',
@@ -41,13 +48,28 @@ export const BrandLogo = ({
   inverted = false,
   size = 'md',
   showMark = true,
+  onHomeClick,
 }: BrandLogoProps) => {
+  const pathname = usePathname();
   const roofFill = inverted ? HERO_HOUSE_ROOF : SOLID_HOUSE_ROOF;
   const bodyFill = inverted ? HERO_HOUSE_BODY : SOLID_HOUSE_BODY;
+
+  const onClick = (event: MouseEvent<HTMLAnchorElement>): void => {
+    if (href !== '/') {
+      return;
+    }
+    if (pathname !== '/' && pathname !== '') {
+      return;
+    }
+    event.preventDefault();
+    onHomeClick?.();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
   return (
     <Link
       href={href}
+      onClick={onClick}
       className={cn(
         'inline-flex items-center gap-2 font-brand font-extrabold tracking-[-0.025em]',
         wordmarkClassName[size],

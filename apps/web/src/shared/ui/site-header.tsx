@@ -108,7 +108,7 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
           )}
         >
           <div className="flex min-w-0 items-center gap-10">
-            <BrandLogo inverted={isOverHero} />
+            <BrandLogo inverted={isOverHero} onHomeClick={() => setMenuOpen(false)} />
 
             <nav
               className={cn(
