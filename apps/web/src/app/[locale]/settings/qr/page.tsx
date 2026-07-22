@@ -26,7 +26,7 @@ export default async function ProfileQrPage({ params }: ProfileQrPageProps) {
   }
 
   if (!isBuyerAccount(user)) {
-    redirect({ href: '/settings', locale });
+    redirect({ href: '/dashboard', locale });
     return null;
   }
 

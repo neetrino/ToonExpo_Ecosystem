@@ -1,32 +1,19 @@
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { setRequestLocale } from 'next-intl/server';
 
-import { AccountContentPanel } from '@/features/buyer/components/account/account-content-panel';
-import { AccountPageEnter } from '@/features/buyer/components/account/account-page-enter';
-import { AccountPageHeader } from '@/features/buyer/components/account/account-page-header';
-import { ChangePasswordForm } from '@/features/auth/components/change-password-form';
-import { Reveal } from '@/shared/ui/motion/reveal';
+import { redirect } from '@/i18n/navigation';
 
-type ChangePasswordPageProps = {
+type SettingsPasswordRedirectPageProps = {
   params: Promise<{ locale: string }>;
 };
 
 /**
- * Account settings: self-service password change.
+ * Legacy password route — redirects to the unified Settings page.
  */
-export default async function ChangePasswordPage({ params }: ChangePasswordPageProps) {
+export default async function SettingsPasswordRedirectPage({
+  params,
+}: SettingsPasswordRedirectPageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
-
-  const t = await getTranslations('Profile.changePassword');
-
-  return (
-    <AccountPageEnter>
-      <AccountPageHeader title={t('title')} subtitle={t('subtitle')} />
-      <Reveal>
-        <AccountContentPanel className="max-w-xl">
-          <ChangePasswordForm />
-        </AccountContentPanel>
-      </Reveal>
-    </AccountPageEnter>
-  );
+  redirect({ href: '/settings', locale });
+  return null;
 }

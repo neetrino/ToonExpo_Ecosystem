@@ -66,6 +66,11 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/:locale/profile',
+        destination: '/:locale/dashboard',
+        permanent: true,
+      },
+      {
+        source: '/:locale/profile/password',
         destination: '/:locale/settings',
         permanent: true,
       },
@@ -73,6 +78,11 @@ const nextConfig: NextConfig = {
         source: '/:locale/profile/:path*',
         destination: '/:locale/settings/:path*',
         permanent: true,
+      },
+      {
+        source: '/:locale/settings/password',
+        destination: '/:locale/settings',
+        permanent: false,
       },
     ];
   },

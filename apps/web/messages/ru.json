@@ -423,15 +423,19 @@
     "nav": {
       "label": "Навигация кабинета",
       "portalLabel": "Мой кабинет",
-      "overview": "Обзор",
+      "dashboard": "Dashboard",
       "profile": "Профиль",
-      "password": "Настройки аккаунта",
+      "password": "Настройки",
       "favorites": "Избранное",
       "checkin": "Регистрация",
       "qr": "Мой QR",
       "requests": "Мои заявки"
     },
-    "overview": {
+    "settings": {
+      "title": "Настройки",
+      "subtitle": "Данные аккаунта и безопасность входа"
+    },
+    "dashboard": {
       "welcome": "Здравствуйте, {name}",
       "qrLabel": "Мой QR",
       "qrReady": "Готов",
@@ -443,7 +447,8 @@
       "checkinLabel": "Check-in",
       "checkinCheckedIn": "Пройден",
       "checkinPending": "Ещё нет",
-      "checkinNone": "Нет события"
+      "checkinNone": "Нет события",
+      "settingsHint": "Данные профиля и пароль можно изменить в Настройках."
     },
     "accountTypes": {
       "buyer": "Покупатель / посетитель",

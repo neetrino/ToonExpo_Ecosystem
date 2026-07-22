@@ -4,12 +4,9 @@ import { useTranslations } from 'next-intl';
 
 import { usePathname } from '@/i18n/navigation';
 
-type NavKey = 'overview' | 'password' | 'qr' | 'requests' | 'favorites' | 'checkin';
+type NavKey = 'dashboard' | 'password' | 'qr' | 'requests' | 'favorites' | 'checkin';
 
 const resolveNavKey = (pathname: string): NavKey => {
-  if (pathname.startsWith('/settings/password')) {
-    return 'password';
-  }
   if (pathname.startsWith('/settings/qr')) {
     return 'qr';
   }
@@ -22,7 +19,10 @@ const resolveNavKey = (pathname: string): NavKey => {
   if (pathname.startsWith('/settings/checkin')) {
     return 'checkin';
   }
-  return 'overview';
+  if (pathname === '/settings' || pathname.startsWith('/settings/password')) {
+    return 'password';
+  }
+  return 'dashboard';
 };
 
 /**

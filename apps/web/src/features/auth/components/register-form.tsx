@@ -56,7 +56,7 @@ export const RegisterForm = () => {
     setFormError(null);
     try {
       await registerMutation.mutateAsync(toRegisterRequest(values));
-      router.push('/settings');
+      router.push('/dashboard');
     } catch (error) {
       setFormError(t(`errors.${mapAuthError(error)}`));
     }

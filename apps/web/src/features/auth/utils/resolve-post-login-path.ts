@@ -22,6 +22,6 @@ export const resolvePostLoginPath = (user: UserResponse, returnUrl?: string | nu
       }
       return '/builder';
     default:
-      return '/settings';
+      return '/dashboard';
   }
 };

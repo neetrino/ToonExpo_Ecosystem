@@ -60,7 +60,7 @@ export default async function CheckinLayout({ children, params }: CheckinLayoutP
             <span className="hidden text-sm text-ink-secondary sm:inline">{user.email}</span>
             <LocaleSwitcher />
             <Link
-              href="/settings"
+              href="/dashboard"
               className="text-sm font-medium text-ink-secondary hover:text-ink"
             >
               {t('profileLink')}

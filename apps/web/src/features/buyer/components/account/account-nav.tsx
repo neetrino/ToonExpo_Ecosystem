@@ -1,6 +1,6 @@
 'use client';
 
-import { Heart, Inbox, KeyRound, LayoutDashboard, LogOut, QrCode, ScanLine } from 'lucide-react';
+import { Heart, Inbox, LayoutDashboard, LogOut, QrCode, ScanLine, Settings } from 'lucide-react';
 import type { AccountType } from '@toonexpo/contracts';
 import type { LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -10,12 +10,12 @@ import { useLogoutMutation } from '@/features/auth/hooks/use-auth';
 import { Link, usePathname, useRouter } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 
-type NavKey = 'overview' | 'password' | 'qr' | 'requests' | 'favorites' | 'checkin';
+type NavKey = 'dashboard' | 'password' | 'qr' | 'requests' | 'favorites' | 'checkin';
 
 type NavItem = {
   href:
+    | '/dashboard'
     | '/settings'
-    | '/settings/password'
     | '/settings/qr'
     | '/settings/requests'
     | '/settings/favorites'
@@ -26,7 +26,7 @@ type NavItem = {
 };
 
 const PRIMARY_NAV_ITEMS: NavItem[] = [
-  { href: '/settings', key: 'overview', buyerOnly: false, icon: LayoutDashboard },
+  { href: '/dashboard', key: 'dashboard', buyerOnly: false, icon: LayoutDashboard },
   { href: '/settings/qr', key: 'qr', buyerOnly: true, icon: QrCode },
   { href: '/settings/favorites', key: 'favorites', buyerOnly: true, icon: Heart },
   { href: '/settings/requests', key: 'requests', buyerOnly: true, icon: Inbox },
@@ -34,10 +34,10 @@ const PRIMARY_NAV_ITEMS: NavItem[] = [
 ];
 
 const SETTINGS_NAV_ITEM: NavItem = {
-  href: '/settings/password',
+  href: '/settings',
   key: 'password',
   buyerOnly: false,
-  icon: KeyRound,
+  icon: Settings,
 };
 
 const NAV_ICON_CLASS = 'size-5 shrink-0 opacity-90';
@@ -51,8 +51,8 @@ const navLinkClassName = (active: boolean): string =>
   );
 
 const isActive = (pathname: string, href: string): boolean => {
-  if (href === '/settings') {
-    return pathname === '/settings';
+  if (href === '/dashboard' || href === '/settings') {
+    return pathname === href;
   }
   return pathname === href || pathname.startsWith(`${href}/`);
 };
@@ -107,7 +107,7 @@ export const AccountNav = ({ name, email, accountType }: AccountNavProps) => {
           href={SETTINGS_NAV_ITEM.href}
           className={navLinkClassName(isActive(pathname, SETTINGS_NAV_ITEM.href))}
         >
-          <KeyRound className={NAV_ICON_CLASS} aria-hidden />
+          <Settings className={NAV_ICON_CLASS} aria-hidden />
           {t(SETTINGS_NAV_ITEM.key)}
         </Link>
         <button

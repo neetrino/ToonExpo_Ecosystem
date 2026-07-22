@@ -29,7 +29,7 @@ export default async function ProfileFavoritesPage({ params }: ProfileFavoritesP
   }
 
   if (!isBuyerAccount(user)) {
-    redirect({ href: '/settings', locale });
+    redirect({ href: '/dashboard', locale });
     return null;
   }
 

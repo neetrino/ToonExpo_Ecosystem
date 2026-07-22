@@ -2,24 +2,22 @@ import { headers } from 'next/headers';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { AccountContentPanel } from '@/features/buyer/components/account/account-content-panel';
-import { AccountOverviewStats } from '@/features/buyer/components/account/account-overview-stats';
 import { AccountPageEnter } from '@/features/buyer/components/account/account-page-enter';
 import { AccountPageHeader } from '@/features/buyer/components/account/account-page-header';
 import { AccountProfileField } from '@/features/buyer/components/account/account-profile-field';
+import { ChangePasswordForm } from '@/features/auth/components/change-password-form';
 import { getMeOrNull } from '@/features/auth/api/auth-api';
-import { getCompanyProfile } from '@/features/builder/api/company-profile-api';
-import { isBuyerAccount } from '@/features/buyer/utils/is-buyer-account';
-import { getPortalPartner } from '@/features/partner/api/portal-partner-api';
-import { isPartnerCompatibleCompany } from '@/features/partners/utils/is-partner-compatible-company';
 import { redirect } from '@/i18n/navigation';
-import { isApiErrorStatus } from '@/shared/api/errors';
 import { Reveal } from '@/shared/ui/motion/reveal';
 
-type ProfilePageProps = {
+type AccountSettingsPageProps = {
   params: Promise<{ locale: string }>;
 };
 
-export default async function ProfilePage({ params }: ProfilePageProps) {
+/**
+ * Account settings: personal information (read-only) + password change.
+ */
+export default async function AccountSettingsPage({ params }: AccountSettingsPageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
 
@@ -28,39 +26,19 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
   const user = await getMeOrNull(cookieHeader);
 
   if (!user) {
-    redirect({ href: '/auth/login', locale });
+    redirect({ href: '/auth/login?returnUrl=%2Fsettings', locale });
     return null;
   }
 
-  if (user.accountType === 'company_member') {
-    const company = await loadCompanyProfile(cookieHeader);
-    if (company && isPartnerCompatibleCompany(company.type)) {
-      const partner = await loadPartnerProfile(cookieHeader);
-      if (partner) {
-        redirect({ href: '/partner', locale });
-        return null;
-      }
-    }
-  }
-
   const t = await getTranslations('Profile');
-  const showBuyerOverview = isBuyerAccount(user);
+  const tPassword = await getTranslations('Profile.changePassword');
 
   return (
     <AccountPageEnter>
-      <AccountPageHeader
-        title={t('overview.welcome', { name: user.name })}
-        subtitle={t('cabinetSubtitle')}
-      />
+      <AccountPageHeader title={t('settings.title')} subtitle={t('settings.subtitle')} />
 
-      {showBuyerOverview ? (
-        <Reveal fadeOnly>
-          <AccountOverviewStats />
-        </Reveal>
-      ) : null}
-
-      <Reveal delayMs={60}>
-        <AccountContentPanel>
+      <Reveal>
+        <AccountContentPanel className="max-w-xl">
           <div className="flex flex-col gap-1">
             <h2 className="text-lg font-semibold text-ink">{t('title')}</h2>
             <p className="text-sm text-ink-secondary">{t('subtitle')}</p>
@@ -80,25 +58,16 @@ export default async function ProfilePage({ params }: ProfilePageProps) {
           </dl>
         </AccountContentPanel>
       </Reveal>
+
+      <Reveal delayMs={60}>
+        <AccountContentPanel className="max-w-xl">
+          <div className="flex flex-col gap-1">
+            <h2 className="text-lg font-semibold text-ink">{tPassword('title')}</h2>
+            <p className="text-sm text-ink-secondary">{tPassword('subtitle')}</p>
+          </div>
+          <ChangePasswordForm />
+        </AccountContentPanel>
+      </Reveal>
     </AccountPageEnter>
   );
 }
-
-const loadCompanyProfile = async (cookieHeader: string | undefined) => {
-  try {
-    return await getCompanyProfile({ cookieHeader });
-  } catch {
-    return null;
-  }
-};
-
-const loadPartnerProfile = async (cookieHeader: string | undefined) => {
-  try {
-    return await getPortalPartner({ cookieHeader });
-  } catch (error) {
-    if (isApiErrorStatus(error, 404)) {
-      return null;
-    }
-    return null;
-  }
-};

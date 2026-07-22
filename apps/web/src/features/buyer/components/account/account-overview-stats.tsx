@@ -13,7 +13,7 @@ import { Skeleton } from '@/shared/ui/skeleton';
  * Buyer overview quick stats using live account APIs.
  */
 export const AccountOverviewStats = () => {
-  const t = useTranslations('Profile.overview');
+  const t = useTranslations('Profile.dashboard');
   const locale = useLocale();
   const favoritesQuery = useBuyerFavoritesQuery(locale);
   const requestsQuery = useBuyerRequestsQuery(1);

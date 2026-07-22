@@ -423,15 +423,19 @@
     "nav": {
       "label": "Account navigation",
       "portalLabel": "My account",
-      "overview": "Overview",
+      "dashboard": "Dashboard",
       "profile": "Profile",
-      "password": "Account settings",
+      "password": "Settings",
       "favorites": "Favorites",
       "checkin": "Check-in",
       "qr": "My QR",
       "requests": "My requests"
     },
-    "overview": {
+    "settings": {
+      "title": "Settings",
+      "subtitle": "Your account details and sign-in security"
+    },
+    "dashboard": {
       "welcome": "Welcome, {name}",
       "qrLabel": "My QR",
       "qrReady": "Ready",
@@ -443,7 +447,8 @@
       "checkinLabel": "Check-in",
       "checkinCheckedIn": "Checked in",
       "checkinPending": "Not yet",
-      "checkinNone": "No event"
+      "checkinNone": "No event",
+      "settingsHint": "Manage your profile details and password in Settings."
     },
     "accountTypes": {
       "buyer": "Buyer / visitor",

@@ -29,7 +29,7 @@ export default async function ProfileCheckInPage({ params }: ProfileCheckInPageP
   }
 
   if (!isBuyerAccount(user)) {
-    redirect({ href: '/settings', locale });
+    redirect({ href: '/dashboard', locale });
     return null;
   }
 

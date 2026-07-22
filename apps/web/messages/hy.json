@@ -423,15 +423,19 @@
     "nav": {
       "label": "Կաբինետի նավիգացիա",
       "portalLabel": "Իմ կաբինետը",
-      "overview": "Ակնարկ",
+      "dashboard": "Dashboard",
       "profile": "Պրոֆիլ",
-      "password": "Հաշվի կարգավորումներ",
+      "password": "Կարգավորումներ",
       "favorites": "Ընտրյալներ",
       "checkin": "Գրանցում",
       "qr": "Իմ QR",
       "requests": "Իմ հայտերը"
     },
-    "overview": {
+    "settings": {
+      "title": "Կարգավորումներ",
+      "subtitle": "Ձեր հաշվի տվյալները և մուտքի անվտանգությունը"
+    },
+    "dashboard": {
       "welcome": "Բարև, {name}",
       "qrLabel": "Իմ QR",
       "qrReady": "Պատրաստ է",
@@ -443,7 +447,8 @@
       "checkinLabel": "Գրանցում",
       "checkinCheckedIn": "Գրանցված եք",
       "checkinPending": "Դեռ ոչ",
-      "checkinNone": "Միջոցառում չկա"
+      "checkinNone": "Միջոցառում չկա",
+      "settingsHint": "Պրոֆիլի տվյալները և գաղտնաբառը կառավարեք Կարգավորումներում։"
     },
     "accountTypes": {
       "buyer": "Գնորդ / այցելու",

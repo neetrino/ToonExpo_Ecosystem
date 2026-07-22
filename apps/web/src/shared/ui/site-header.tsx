@@ -86,7 +86,7 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
     };
   }, [menuOpen]);
 
-  const settingsHref = user?.accountType === 'platform_admin' ? '/admin/settings' : '/settings';
+  const settingsHref = user?.accountType === 'platform_admin' ? '/admin/settings' : '/dashboard';
   const profileHref = user ? settingsHref : '/auth/login';
   const profileIconClassName = cn(
     'inline-flex size-9 items-center justify-center rounded-sm border',

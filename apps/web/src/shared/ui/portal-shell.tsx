@@ -12,7 +12,7 @@ import { Link, usePathname } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 
 type PortalShellProps = {
-  brandHref: '/builder' | '/admin' | '/partner' | '/settings';
+  brandHref: '/builder' | '/admin' | '/partner' | '/settings' | '/dashboard';
   badge: string;
   userEmail: string;
   profileLabel: string;
@@ -101,7 +101,7 @@ export const PortalShell = ({
               </span>
               <LocaleSwitcher />
               <Link
-                href="/settings"
+                href="/dashboard"
                 className="text-sm font-medium text-ink-secondary transition-colors hover:text-ink"
               >
                 {profileLabel}

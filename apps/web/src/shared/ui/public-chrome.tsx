@@ -10,7 +10,14 @@ type PublicChromeProps = {
 };
 
 /** Route prefixes that render their own shell (no public SiteHeader). */
-const PORTAL_PREFIXES = ['/admin', '/builder', '/partner', '/checkin', '/settings'] as const;
+const PORTAL_PREFIXES = [
+  '/admin',
+  '/builder',
+  '/partner',
+  '/checkin',
+  '/settings',
+  '/dashboard',
+] as const;
 
 const isPortalRoute = (pathname: string): boolean => {
   return PORTAL_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
