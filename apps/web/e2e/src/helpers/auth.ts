@@ -29,7 +29,7 @@ export const loginAs = async (
  * Clears the session via the profile logout control when present.
  */
 export const logoutIfPossible = async (page: Page): Promise<void> => {
-  const logout = page.locator('button.w-full').filter({ hasText: /Ելք|Log out|Выйти/i });
+  const logout = page.getByRole('button', { name: /Ելք|Log out|Выйти/i }).first();
   if (await logout.isVisible().catch(() => false)) {
     await logout.click();
     await page.waitForURL(/\/hy(\/|$)|\/auth\/login/);

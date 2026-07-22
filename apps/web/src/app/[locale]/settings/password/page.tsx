@@ -1,14 +1,17 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
+import { AccountContentPanel } from '@/features/buyer/components/account/account-content-panel';
+import { AccountPageEnter } from '@/features/buyer/components/account/account-page-enter';
+import { AccountPageHeader } from '@/features/buyer/components/account/account-page-header';
 import { ChangePasswordForm } from '@/features/auth/components/change-password-form';
-import { Card } from '@/shared/ui/card';
+import { Reveal } from '@/shared/ui/motion/reveal';
 
 type ChangePasswordPageProps = {
   params: Promise<{ locale: string }>;
 };
 
 /**
- * Profile section for self-service password change (all account types).
+ * Account settings: self-service password change.
  */
 export default async function ChangePasswordPage({ params }: ChangePasswordPageProps) {
   const { locale } = await params;
@@ -17,15 +20,13 @@ export default async function ChangePasswordPage({ params }: ChangePasswordPageP
   const t = await getTranslations('Profile.changePassword');
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-1">
-        <h2 className="text-lg font-semibold text-ink">{t('title')}</h2>
-        <p className="text-sm text-ink-secondary">{t('subtitle')}</p>
-      </div>
-
-      <Card>
-        <ChangePasswordForm />
-      </Card>
-    </div>
+    <AccountPageEnter>
+      <AccountPageHeader title={t('title')} subtitle={t('subtitle')} />
+      <Reveal>
+        <AccountContentPanel className="max-w-xl">
+          <ChangePasswordForm />
+        </AccountContentPanel>
+      </Reveal>
+    </AccountPageEnter>
   );
 }

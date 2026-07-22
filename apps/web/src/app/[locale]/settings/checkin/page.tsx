@@ -1,6 +1,8 @@
 import { headers } from 'next/headers';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
+import { AccountPageEnter } from '@/features/buyer/components/account/account-page-enter';
+import { AccountPageHeader } from '@/features/buyer/components/account/account-page-header';
 import { BuyerCheckInStatus } from '@/features/buyer/components/buyer-checkin-status';
 import { isBuyerAccount } from '@/features/buyer/utils/is-buyer-account';
 import { getMeOrNull } from '@/features/auth/api/auth-api';
@@ -34,12 +36,9 @@ export default async function ProfileCheckInPage({ params }: ProfileCheckInPageP
   const t = await getTranslations('Profile.checkin');
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-1">
-        <h2 className="text-lg font-semibold text-ink">{t('title')}</h2>
-        <p className="text-sm text-ink-secondary">{t('subtitle')}</p>
-      </div>
+    <AccountPageEnter>
+      <AccountPageHeader title={t('title')} subtitle={t('subtitle')} />
       <BuyerCheckInStatus />
-    </div>
+    </AccountPageEnter>
   );
 }

@@ -2,9 +2,11 @@ import type { ReactNode } from 'react';
 import { headers } from 'next/headers';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
-import { ProfileNav } from '@/features/buyer/components/profile-nav';
+import { AccountMobileSectionTitle } from '@/features/buyer/components/account/account-mobile-section-title';
+import { AccountNav } from '@/features/buyer/components/account/account-nav';
 import { getMeOrNull } from '@/features/auth/api/auth-api';
 import { redirect } from '@/i18n/navigation';
+import { PortalShell } from '@/shared/ui/portal-shell';
 
 type SettingsLayoutProps = {
   children: ReactNode;
@@ -12,7 +14,7 @@ type SettingsLayoutProps = {
 };
 
 /**
- * Authenticated account settings shell with mobile-first section tabs.
+ * Authenticated account shell with rail sidebar and mobile drawer.
  */
 export default async function SettingsLayout({ children, params }: SettingsLayoutProps) {
   const { locale } = await params;
@@ -38,18 +40,17 @@ export default async function SettingsLayout({ children, params }: SettingsLayou
   const t = await getTranslations('Profile');
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="mx-auto flex w-full max-w-lg flex-col gap-6 px-4 py-8 sm:px-6 sm:py-12">
-        <div className="flex flex-col gap-2">
-          <p className="text-eyebrow">{t('cabinetTitle')}</p>
-          <h1 className="text-page-title text-ink">{user.name}</h1>
-          <p className="text-sm text-ink-secondary">{t('cabinetSubtitle')}</p>
-        </div>
-        <ProfileNav />
-        <div className="rounded-md border border-border/80 bg-surface-elevated p-4 shadow-xs sm:p-6">
-          {children}
-        </div>
-      </main>
-    </div>
+    <PortalShell
+      brandHref="/settings"
+      badge={t('badge')}
+      userEmail={user.email}
+      profileLabel={t('nav.overview')}
+      navLabel={t('nav.label')}
+      variant="rail"
+      mobileHeader={<AccountMobileSectionTitle />}
+      sidebar={<AccountNav name={user.name} email={user.email} accountType={user.accountType} />}
+    >
+      {children}
+    </PortalShell>
   );
 }

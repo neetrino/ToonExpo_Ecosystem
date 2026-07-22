@@ -12,7 +12,7 @@ import { Link, usePathname } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 
 type PortalShellProps = {
-  brandHref: '/builder' | '/admin' | '/partner';
+  brandHref: '/builder' | '/admin' | '/partner' | '/settings';
   badge: string;
   userEmail: string;
   profileLabel: string;
@@ -20,10 +20,12 @@ type PortalShellProps = {
   children: ReactNode;
   sidebar: ReactNode;
   /**
-   * `rail` — floating dark sidebar + public SiteHeader (admin).
+   * `rail` — floating dark sidebar + public SiteHeader (admin / account).
    * Default keeps the light portal card chrome.
    */
   variant?: 'default' | 'rail';
+  /** Optional label shown beside the mobile menu control (rail). */
+  mobileHeader?: ReactNode;
 };
 
 /**
@@ -46,6 +48,7 @@ export const PortalShell = ({
   children,
   sidebar,
   variant = 'default',
+  mobileHeader,
 }: PortalShellProps) => {
   const t = useTranslations('Nav');
   const pathname = usePathname();
@@ -115,7 +118,7 @@ export const PortalShell = ({
             SITE_HEADER_RAIL_ROW_GAP_CLASS,
           )}
         >
-          <div className="page-container flex items-center md:hidden">
+          <div className="page-container flex items-center gap-3 md:hidden">
             <IconButton
               label={navLabel}
               variant="outline"
@@ -126,6 +129,7 @@ export const PortalShell = ({
             >
               <Menu className="size-4" aria-hidden />
             </IconButton>
+            {mobileHeader}
           </div>
           <aside className="hidden w-72 shrink-0 self-stretch md:block">
             <div
@@ -164,6 +168,7 @@ export const PortalShell = ({
             aria-label={navLabel}
             className={cn(
               'absolute inset-y-0 left-0 flex w-[min(100%,20rem)] flex-col p-4 shadow-lg',
+              'animate-[portal-drawer-in_var(--duration-base)_var(--ease-out-premium)]',
               isRail ? 'bg-brand-secondary' : 'border-r border-border bg-surface-elevated',
             )}
           >

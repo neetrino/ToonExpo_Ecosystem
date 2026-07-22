@@ -1,6 +1,8 @@
 import { headers } from 'next/headers';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
+import { AccountPageEnter } from '@/features/buyer/components/account/account-page-enter';
+import { AccountPageHeader } from '@/features/buyer/components/account/account-page-header';
 import { BuyerQrPageContent } from '@/features/buyer/components/buyer-qr-page-content';
 import { isBuyerAccount } from '@/features/buyer/utils/is-buyer-account';
 import { getMeOrNull } from '@/features/auth/api/auth-api';
@@ -31,12 +33,9 @@ export default async function ProfileQrPage({ params }: ProfileQrPageProps) {
   const t = await getTranslations('Profile.qr');
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-1">
-        <h2 className="text-lg font-semibold text-ink">{t('title')}</h2>
-        <p className="text-sm text-ink-secondary">{t('subtitle')}</p>
-      </div>
+    <AccountPageEnter>
+      <AccountPageHeader title={t('title')} subtitle={t('subtitle')} />
       <BuyerQrPageContent buyerName={user.name} />
-    </div>
+    </AccountPageEnter>
   );
 }

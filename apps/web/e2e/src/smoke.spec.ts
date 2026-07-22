@@ -140,7 +140,10 @@ test.describe('smoke', () => {
     await expect(page.getByText('Գաղտնաբառը հաջողությամբ թարմացվեց։')).toBeVisible();
 
     await page.goto('/hy/settings');
-    await page.locator('button.w-full').filter({ hasText: 'Ելք' }).click();
+    await page
+      .getByRole('navigation', { name: 'Կաբինետի նավիգացիա' })
+      .getByRole('button', { name: 'Ելք' })
+      .click();
     await page.waitForURL(/\/hy(\/|$)|\/auth\/login/);
 
     await page.goto('/hy/auth/login');
