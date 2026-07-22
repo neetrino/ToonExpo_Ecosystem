@@ -17,7 +17,7 @@ type AccountSettingsPageProps = {
 };
 
 /**
- * Account settings: unified profile banner + password change.
+ * Account settings: profile + password inside one shared white panel.
  */
 export default async function AccountSettingsPage({ params }: AccountSettingsPageProps) {
   const { locale } = await params;
@@ -39,23 +39,23 @@ export default async function AccountSettingsPage({ params }: AccountSettingsPag
     <AccountPageEnter>
       <AccountPageHeader title={t('settings.title')} subtitle={t('settings.subtitle')} />
 
-      <div className="grid gap-6 xl:grid-cols-2 xl:items-start">
-        <Reveal>
+      <Reveal>
+        <AccountContentPanel className="max-w-4xl gap-8">
           <AccountProfileBanner user={user} />
-        </Reveal>
 
-        <Reveal delayMs={60}>
-          <AccountContentPanel>
+          <div className="border-t border-border/70 pt-8">
             <AccountSectionHeading
               icon={KeyRound}
               title={tPassword('title')}
               subtitle={tPassword('subtitle')}
               headingId="account-password-heading"
             />
-            <ChangePasswordForm />
-          </AccountContentPanel>
-        </Reveal>
-      </div>
+            <div className="mt-5 max-w-md">
+              <ChangePasswordForm />
+            </div>
+          </div>
+        </AccountContentPanel>
+      </Reveal>
     </AccountPageEnter>
   );
 }

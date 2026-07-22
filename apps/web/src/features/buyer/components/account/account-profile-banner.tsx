@@ -152,14 +152,11 @@ export const AccountProfileBanner = ({ user, className }: AccountProfileBannerPr
 
   return (
     <section
-      className={cn(
-        'overflow-hidden rounded-md border border-border/70 bg-surface-elevated shadow-sm',
-        className,
-      )}
+      className={cn('flex flex-col gap-6', className)}
       aria-labelledby="account-profile-banner-heading"
     >
-      <form onSubmit={onSubmit} noValidate>
-        <div className="flex items-start gap-4 bg-surface px-5 py-5 sm:px-6">
+      <form onSubmit={onSubmit} className="flex flex-col gap-6" noValidate>
+        <div className="flex items-start gap-4">
           <span
             className="flex size-16 shrink-0 items-center justify-center rounded-full bg-brand text-lg font-semibold tracking-wide text-on-brand shadow-xs"
             aria-hidden
@@ -198,7 +195,7 @@ export const AccountProfileBanner = ({ user, className }: AccountProfileBannerPr
           </div>
         </div>
 
-        <div className="grid gap-4 border-t border-border/70 px-5 py-5 sm:grid-cols-2 sm:px-6">
+        <div className="grid gap-4 sm:grid-cols-2">
           <BannerDetail icon={UserRound} label={t('fields.name')}>
             {isEditing ? (
               <>
@@ -256,10 +253,7 @@ export const AccountProfileBanner = ({ user, className }: AccountProfileBannerPr
         </div>
 
         {formError ? (
-          <p
-            role="alert"
-            className="border-t border-border/70 px-5 py-3 text-sm text-danger sm:px-6"
-          >
+          <p role="alert" className="text-sm text-danger">
             {formError}
           </p>
         ) : null}
