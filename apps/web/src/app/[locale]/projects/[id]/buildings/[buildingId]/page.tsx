@@ -11,6 +11,7 @@ import { listBuildingVisualCanvases } from '@/features/visual-map/api/public-vis
 import { PublicVisualMap } from '@/features/visual-map/components/public-visual-map';
 import {
   buildBuildingFloorHref,
+  buildHotspotTargetHrefs,
   pickPrimaryVisualCanvas,
 } from '@/features/visual-map/utils/public-visual-map';
 import { Link } from '@/i18n/navigation';
@@ -97,9 +98,9 @@ export default async function BuildingPage({ params }: BuildingPageProps) {
             <div className="mb-8">
               <PublicVisualMap
                 canvas={visualCanvas}
-                buildTargetHref={(hotspot) =>
-                  buildBuildingFloorHref(building.project.id, building.id, hotspot)
-                }
+                targetHrefByHotspotId={buildHotspotTargetHrefs(visualCanvas.hotspots, (hotspot) =>
+                  buildBuildingFloorHref(building.project.id, building.id, hotspot),
+                )}
               />
             </div>
           ) : null}

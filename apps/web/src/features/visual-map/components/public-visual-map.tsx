@@ -1,6 +1,6 @@
 'use client';
 
-import type { PublicVisualCanvasItem, PublicVisualHotspotItem } from '@toonexpo/contracts';
+import type { PublicVisualCanvasItem } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
@@ -9,13 +9,14 @@ import { PublicVisualHotspotSheet } from '@/features/visual-map/components/publi
 
 type PublicVisualMapProps = {
   canvas: PublicVisualCanvasItem;
-  buildTargetHref: (hotspot: PublicVisualHotspotItem) => string;
+  /** Precomputed on the server — functions cannot be passed to Client Components. */
+  targetHrefByHotspotId: Record<string, string>;
 };
 
 /**
  * Public visual map with tappable SVG markers and optional bottom sheet.
  */
-export const PublicVisualMap = ({ canvas, buildTargetHref }: PublicVisualMapProps) => {
+export const PublicVisualMap = ({ canvas, targetHrefByHotspotId }: PublicVisualMapProps) => {
   const t = useTranslations('Catalog.visualMap');
   const [selectedHotspotId, setSelectedHotspotId] = useState<string | null>(null);
 
@@ -23,6 +24,8 @@ export const PublicVisualMap = ({ canvas, buildTargetHref }: PublicVisualMapProp
   const hasHotspots = canvas.hotspots.length > 0;
   const selectedHotspot =
     canvas.hotspots.find((hotspot) => hotspot.id === selectedHotspotId) ?? null;
+  const selectedTargetHref =
+    selectedHotspot != null ? (targetHrefByHotspotId[selectedHotspot.id] ?? null) : null;
 
   const markers = canvas.hotspots.map((hotspot) => ({
     id: hotspot.id,
@@ -55,10 +58,10 @@ export const PublicVisualMap = ({ canvas, buildTargetHref }: PublicVisualMapProp
           ) : null}
         </div>
       </div>
-      {selectedHotspot ? (
+      {selectedHotspot && selectedTargetHref ? (
         <PublicVisualHotspotSheet
           hotspot={selectedHotspot}
-          targetHref={buildTargetHref(selectedHotspot)}
+          targetHref={selectedTargetHref}
           onClose={() => setSelectedHotspotId(null)}
         />
       ) : null}
