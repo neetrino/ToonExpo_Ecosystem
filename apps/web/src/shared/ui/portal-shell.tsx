@@ -30,11 +30,13 @@ type PortalShellProps = {
 
 /**
  * SiteHeader solid spacer is `top-3` + bar (~4.75rem on sm+).
- * Rail chrome (mask + sidebar) starts one gap below that.
+ * Sidebar starts one gap below that; content mask extends a bit lower so
+ * scrolled main content begins disappearing under the header earlier.
  */
 const RAIL_CHROME_TOP_CLASS = 'top-[6.25rem]';
 const RAIL_CHROME_HEIGHT_CLASS = 'h-[calc(100dvh-6.25rem)]';
-const RAIL_HEADER_MASK_HEIGHT_CLASS = 'h-[6.25rem]';
+/** Header band + light extra clip so content vanishes just below the header edge. */
+const RAIL_CONTENT_MASK_HEIGHT_CLASS = 'h-[6.875rem]';
 const RAIL_SIDEBAR_WIDTH_CLASS = 'w-72';
 const RAIL_ROW_GAP_CLASS = 'md:pt-6';
 
@@ -79,13 +81,22 @@ export const PortalShell = ({
       {isRail ? (
         <>
           {/*
-            Opaque band behind the floating SiteHeader so scrolled main content
-            disappears under the header and cannot pass above the sidebar.
+            Full-width band under the floating header (stops at sidebar top),
+            plus a slightly lower main-column clip so content starts vanishing
+            below the header edge — never over the sidebar.
           */}
           <div
             className={cn(
               'pointer-events-none fixed inset-x-0 top-0 z-[var(--z-sticky)] bg-background',
-              RAIL_HEADER_MASK_HEIGHT_CLASS,
+              'h-[6.25rem]',
+            )}
+            aria-hidden
+          />
+          <div
+            className={cn(
+              'pointer-events-none fixed top-0 right-0 z-[var(--z-sticky)] bg-background',
+              'left-0 md:left-72',
+              RAIL_CONTENT_MASK_HEIGHT_CLASS,
             )}
             aria-hidden
           />
