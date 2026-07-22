@@ -7,13 +7,13 @@ import { CatalogPagination } from '@/features/catalog/components/catalog-paginat
 import { ProjectCard } from '@/features/catalog/components/project-card';
 import { ProjectPriceRangesOverlayScope } from '@/features/catalog/components/price-overlay-scope';
 import { ProjectFiltersForm } from '@/features/catalog/components/project-filters-form';
+import { ProjectsPageHero } from '@/features/catalog/components/projects-page-hero';
 import { SiteFooter } from '@/features/catalog/components/site-footer';
 import {
   buildProjectSearchParams,
   parseProjectFilters,
   toListProjectsQuery,
 } from '@/features/catalog/utils/project-filters';
-import { MarketingPageIntro } from '@/shared/ui/marketing-page-intro';
 
 type ProjectsPageProps = {
   params: Promise<{ locale: string }>;
@@ -45,41 +45,44 @@ export default async function ProjectsPage({ params, searchParams }: ProjectsPag
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="page-container section-pad">
-        <MarketingPageIntro
+    <div className="min-h-screen bg-canvas">
+      <main>
+        <ProjectsPageHero
           title={t('projects.title')}
           description={t('projects.subtitle', { count: response.meta.total })}
-          imageSrc="/demo/cascade-view.webp"
         />
 
-        <ProjectFiltersForm filters={filters} />
+        <div className="page-container section-pad pt-8 sm:pt-10">
+          <ProjectFiltersForm filters={filters} />
 
-        {response.data.length === 0 ? (
-          <p className="mt-10 rounded-md border border-dashed border-border bg-surface/50 px-6 py-12 text-center text-sm text-ink-secondary">
-            {t('projects.empty')}
-          </p>
-        ) : (
-          <CatalogFavoritesScope projects={response.data}>
-            <ProjectPriceRangesOverlayScope projectIds={response.data.map((project) => project.id)}>
-              <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {response.data.map((project) => (
-                  <ProjectCard key={project.id} project={project} showFavorite />
-                ))}
-              </div>
-            </ProjectPriceRangesOverlayScope>
-          </CatalogFavoritesScope>
-        )}
+          {response.data.length === 0 ? (
+            <p className="mt-10 rounded-[20px] border border-dashed border-header-border bg-surface-elevated px-6 py-12 text-center text-sm text-header-muted">
+              {t('projects.empty')}
+            </p>
+          ) : (
+            <CatalogFavoritesScope projects={response.data}>
+              <ProjectPriceRangesOverlayScope
+                projectIds={response.data.map((project) => project.id)}
+              >
+                <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  {response.data.map((project) => (
+                    <ProjectCard key={project.id} project={project} showFavorite />
+                  ))}
+                </div>
+              </ProjectPriceRangesOverlayScope>
+            </CatalogFavoritesScope>
+          )}
 
-        <CatalogPagination
-          className="mt-10"
-          page={response.meta.page}
-          totalPages={response.meta.totalPages}
-          buildHref={buildHref}
-          previousLabel={t('pagination.previous')}
-          nextLabel={t('pagination.next')}
-          ariaLabel={t('pagination.ariaLabel')}
-        />
+          <CatalogPagination
+            className="mt-10"
+            page={response.meta.page}
+            totalPages={response.meta.totalPages}
+            buildHref={buildHref}
+            previousLabel={t('pagination.previous')}
+            nextLabel={t('pagination.next')}
+            ariaLabel={t('pagination.ariaLabel')}
+          />
+        </div>
       </main>
       <SiteFooter />
     </div>
