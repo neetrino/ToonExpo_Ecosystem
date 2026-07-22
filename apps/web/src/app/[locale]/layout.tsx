@@ -67,7 +67,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
       lang={locale}
       className={`${manrope.variable} ${notoSans.variable} ${notoSansArmenian.variable} ${outfit.variable}`}
     >
-      <body className="min-h-screen font-ui antialiased">
+      <body className="min-h-full font-ui antialiased">
         <NextIntlClientProvider messages={messages}>
           <QueryProvider>
             <PublicChrome>{children}</PublicChrome>

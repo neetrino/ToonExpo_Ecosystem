@@ -3,6 +3,7 @@
 import type { ReactNode } from 'react';
 
 import { usePathname } from '@/i18n/navigation';
+import { DesktopFluidFrame } from '@/shared/ui/desktop-fluid-frame';
 import { SiteHeader } from '@/shared/ui/site-header';
 
 type PublicChromeProps = {
@@ -28,17 +29,22 @@ const isHomeRoute = (pathname: string): boolean => {
  * Persistent public chrome — keeps SiteHeader mounted across navigations
  * so the bar does not remount/jump when switching Projects / Builders / etc.
  * Auth routes use AuthPageShell instead of the public header.
- * Home uses a transparent header so the hero photo sits under the bar (Figma −75px crop).
+ * Home uses a transparent header so the hero photo sits under the bar.
+ * Public pages use DesktopFluidFrame so desktop composition scales like ma-marie.
  */
 export const PublicChrome = ({ children }: PublicChromeProps) => {
   const pathname = usePathname();
   const showPublicHeader = !isPortalRoute(pathname) && !isAuthRoute(pathname);
   const headerVariant = isHomeRoute(pathname) ? 'transparent' : 'solid';
 
+  if (!showPublicHeader) {
+    return children;
+  }
+
   return (
-    <>
-      {showPublicHeader ? <SiteHeader variant={headerVariant} /> : null}
+    <DesktopFluidFrame>
+      <SiteHeader variant={headerVariant} />
       {children}
-    </>
+    </DesktopFluidFrame>
   );
 };

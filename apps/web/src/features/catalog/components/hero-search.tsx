@@ -31,6 +31,7 @@ const TAB_KEYS: readonly HeroSearchTab[] = ['buy', 'rent', 'newBuilds'];
 
 /**
  * Marketplace search card — Buy / Rent / New Builds tabs with location filters.
+ * Stacks cleanly on small screens; desktop keeps the Figma horizontal row.
  */
 export const HeroSearch = ({ className }: HeroSearchProps) => {
   const t = useTranslations('HomePage.hero');
@@ -46,7 +47,7 @@ export const HeroSearch = ({ className }: HeroSearchProps) => {
   };
 
   return (
-    <div className={cn('w-full', className)}>
+    <div className={cn('w-full min-w-0', className)}>
       <form
         onSubmit={onSubmit}
         className={cn(
@@ -56,7 +57,7 @@ export const HeroSearch = ({ className }: HeroSearchProps) => {
         )}
       >
         <div
-          className="flex border-b border-header-border"
+          className="flex overflow-x-auto border-b border-header-border [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
           role="tablist"
           aria-label={t('tabsLabel')}
         >
@@ -70,7 +71,7 @@ export const HeroSearch = ({ className }: HeroSearchProps) => {
                 aria-selected={isActive}
                 onClick={() => setTab(key)}
                 className={cn(
-                  'px-5 py-3 text-sm font-semibold transition-colors duration-[var(--duration-fast)]',
+                  'shrink-0 px-[clamp(0.85rem,0.6rem+0.8vw,1.25rem)] py-3 text-sm font-semibold transition-colors duration-[var(--duration-fast)]',
                   isActive
                     ? 'border-b-2 border-brand-secondary text-brand-deep'
                     : 'border-b-2 border-transparent text-header-muted hover:text-brand-deep',
@@ -82,7 +83,7 @@ export const HeroSearch = ({ className }: HeroSearchProps) => {
           })}
         </div>
 
-        <div className="grid grid-cols-1 gap-2 p-3 sm:grid-cols-[1.5fr_1fr_1fr_auto] sm:items-center">
+        <div className="grid grid-cols-1 gap-2 p-3 lg:grid-cols-[1.5fr_1fr_1fr_auto] lg:items-center">
           <label className="flex min-w-0 flex-col gap-1 px-3 py-2">
             <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-header-muted">
               {t('locationLabel')}
@@ -93,11 +94,11 @@ export const HeroSearch = ({ className }: HeroSearchProps) => {
               value={location}
               onChange={(event) => setLocation(event.target.value)}
               placeholder={t('locationPlaceholder')}
-              className="w-full border-none bg-transparent p-0 text-sm font-medium text-ink-navy outline-none placeholder:text-ink-muted"
+              className="w-full min-w-0 border-none bg-transparent p-0 text-sm font-medium text-ink-navy outline-none placeholder:text-ink-muted"
             />
           </label>
 
-          <label className="flex flex-col gap-1 border-t border-header-border px-3 py-2 sm:border-t-0 sm:border-l">
+          <label className="flex min-w-0 flex-col gap-1 border-t border-header-border px-3 py-2 lg:border-t-0 lg:border-l">
             <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-header-muted">
               {t('priceLabel')}
             </span>
@@ -105,7 +106,7 @@ export const HeroSearch = ({ className }: HeroSearchProps) => {
               name="price"
               value={priceKey}
               onChange={(event) => setPriceKey(event.target.value)}
-              className="w-full cursor-pointer appearance-none border-none bg-transparent p-0 text-sm font-medium text-ink-navy outline-none"
+              className="w-full min-w-0 cursor-pointer appearance-none border-none bg-transparent p-0 text-sm font-medium text-ink-navy outline-none"
             >
               {PRICE_OPTIONS.map((option) => (
                 <option key={option.labelKey} value={option.labelKey}>
@@ -115,7 +116,7 @@ export const HeroSearch = ({ className }: HeroSearchProps) => {
             </select>
           </label>
 
-          <label className="flex flex-col gap-1 border-t border-header-border px-3 py-2 sm:border-t-0 sm:border-l">
+          <label className="flex min-w-0 flex-col gap-1 border-t border-header-border px-3 py-2 lg:border-t-0 lg:border-l">
             <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-header-muted">
               {t('bedsLabel')}
             </span>
@@ -123,7 +124,7 @@ export const HeroSearch = ({ className }: HeroSearchProps) => {
               name="rooms"
               value={rooms}
               onChange={(event) => setRooms(Number.parseInt(event.target.value, 10))}
-              className="w-full cursor-pointer appearance-none border-none bg-transparent p-0 text-sm font-medium text-ink-navy outline-none"
+              className="w-full min-w-0 cursor-pointer appearance-none border-none bg-transparent p-0 text-sm font-medium text-ink-navy outline-none"
             >
               {BED_OPTIONS.map((count) => (
                 <option key={count} value={count}>
@@ -136,9 +137,10 @@ export const HeroSearch = ({ className }: HeroSearchProps) => {
           <button
             type="submit"
             className={cn(
-              'inline-flex h-[51px] items-center justify-center rounded-[16px] bg-brand-deep px-6',
+              'inline-flex h-[51px] w-full items-center justify-center rounded-[16px] bg-brand-deep px-6',
               'text-sm font-semibold text-on-dark transition-colors duration-[var(--duration-fast)]',
               'hover:bg-brand-deep/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-deep/30',
+              'lg:w-auto',
             )}
           >
             {t('search')}
@@ -147,7 +149,7 @@ export const HeroSearch = ({ className }: HeroSearchProps) => {
       </form>
 
       <div className="mt-4 flex flex-wrap items-center gap-2">
-        <span className="text-xs font-normal leading-4 text-on-dark">{t('popular')}</span>
+        <span className="shrink-0 text-xs font-normal leading-4 text-on-dark">{t('popular')}</span>
         {POPULAR_CITY_KEYS.map((key) => {
           const city = t(`popularCities.${key}`);
           return (
@@ -155,11 +157,11 @@ export const HeroSearch = ({ className }: HeroSearchProps) => {
               key={key}
               href={`/projects?city=${encodeURIComponent(city)}`}
               className={cn(
-                'inline-flex h-7 items-center rounded-pill px-3',
-                'bg-surface-elevated/80 text-xs font-medium leading-4 text-ink-navy',
+                'inline-flex h-7 cursor-pointer items-center rounded-pill px-3',
+                'bg-white/80 text-xs font-medium leading-4 text-ink-navy',
                 'ring-1 ring-header-border backdrop-blur-[6px]',
                 'transition-colors duration-[var(--duration-fast)]',
-                'hover:bg-surface-elevated hover:ring-brand/30',
+                'hover:bg-white hover:ring-brand/30',
               )}
             >
               {city}

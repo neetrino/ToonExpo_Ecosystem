@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 
 import {
   isEntranceMotionSettled,
@@ -28,6 +28,7 @@ type AnimatedCounterProps = {
 /**
  * Counts up when first visible. On soft navigations (locale switch) shows the
  * final value immediately so only formatted text changes.
+ * Mount state is hydration-safe (no module flags during render).
  */
 export const AnimatedCounter = ({
   value,
@@ -37,10 +38,19 @@ export const AnimatedCounter = ({
   locale = 'en',
 }: AnimatedCounterProps) => {
   const ref = useRef<HTMLSpanElement | null>(null);
-  const settledOnMount = isEntranceMotionSettled();
-  const [display, setDisplay] = useState(settledOnMount ? value : 0);
-  const [started, setStarted] = useState(settledOnMount);
+  const [display, setDisplay] = useState(0);
+  const [started, setStarted] = useState(false);
+  const [settledOnMount, setSettledOnMount] = useState(false);
   const format = createFormatter(formatStyle, locale);
+
+  useLayoutEffect(() => {
+    if (!isEntranceMotionSettled()) {
+      return;
+    }
+    setSettledOnMount(true);
+    setDisplay(value);
+    setStarted(true);
+  }, [value]);
 
   useEffect(() => {
     if (settledOnMount) {

@@ -1,6 +1,13 @@
 'use client';
 
-import { type CSSProperties, type ReactNode, useEffect, useRef, useState } from 'react';
+import {
+  type CSSProperties,
+  type ReactNode,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 
 import {
   isEntranceMotionSettled,
@@ -30,6 +37,7 @@ type RevealProps = {
 /**
  * Viewport reveal: opacity + slight translateY.
  * Skips re-entrance after soft navigations (e.g. locale switch) so only text updates.
+ * Initial visibility is always false on SSR; settle/skip runs after mount.
  */
 export const Reveal = ({
   children,
@@ -41,9 +49,18 @@ export const Reveal = ({
   as: Tag = 'div',
 }: RevealProps) => {
   const ref = useRef<HTMLElement | null>(null);
-  const [visible, setVisible] = useState(() => isEntranceMotionSettled());
+  const [visible, setVisible] = useState(false);
+  const [skipTransition, setSkipTransition] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+
+  useLayoutEffect(() => {
+    if (!isEntranceMotionSettled()) {
+      return;
+    }
+    setVisible(true);
+    setSkipTransition(true);
+  }, []);
 
   useEffect(() => {
     const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -94,7 +111,6 @@ export const Reveal = ({
   }, [reduceMotion, rootMargin, visible]);
 
   const distance = fadeOnly ? 0 : isMobile ? REVEAL_DISTANCE_MOBILE_PX : REVEAL_DISTANCE_PX;
-  const skipTransition = visible && isEntranceMotionSettled();
 
   const style: CSSProperties | undefined = reduceMotion
     ? undefined

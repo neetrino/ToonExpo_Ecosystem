@@ -95,7 +95,10 @@
   --max-width-content: 1280px;
   --max-width-narrow: 720px;
   --max-width-wide: 1440px;
-  --page-gutter: 1.5rem;
+  /* Public desktop canvas — same idea as ma-marie.vercel.app */
+  --desktop-layout-design-width: 1440px;
+  --desktop-layout-scale: 1;
+  --page-gutter: clamp(1rem, 0.6rem + 2vw, 1.5rem);
   --section-space: 4.5rem;
   --section-space-lg: 6.5rem;
 
@@ -191,7 +194,19 @@
 
 @layer base {
   html {
+    height: 100%;
+    overflow-x: clip;
     scrollbar-gutter: stable;
+  }
+
+  /**
+   * Desktop fluid scale (ma-marie pattern): design at 1440px, zoom to viewport.
+   * Mobile keeps scale=1 so svh math and native layout stay correct.
+   */
+  @media (min-width: 1024px) {
+    :root {
+      --desktop-layout-scale: calc(100vw / var(--desktop-layout-design-width));
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -210,6 +225,8 @@
   }
 
   body {
+    min-height: 100%;
+    overflow-x: clip;
     background:
       radial-gradient(ellipse 120% 60% at 50% -10%, rgb(26 143 152 / 0.05), transparent 55%),
       var(--color-background);
@@ -365,10 +382,40 @@
     animation: page-enter var(--duration-base) var(--ease-out-premium) both;
   }
 
+  .desktop-fluid-frame {
+    width: 100%;
+  }
+
+  .desktop-fluid-stage {
+    width: 100%;
+    min-width: 0;
+  }
+
+  @media (min-width: 1024px) {
+    .desktop-fluid-frame {
+      display: flex;
+      justify-content: center;
+      align-items: stretch;
+      overflow-x: clip;
+    }
+
+    .desktop-fluid-stage {
+      width: var(--desktop-layout-design-width);
+      flex-shrink: 0;
+      zoom: var(--desktop-layout-scale);
+    }
+  }
+
+  /** Full viewport height after desktop zoom (layout px ÷ scale = visual svh). */
+  .min-h-fluid-screen {
+    min-height: calc(100svh / var(--desktop-layout-scale));
+  }
+
   .page-container {
     margin-inline: auto;
     width: 100%;
     max-width: var(--max-width-content);
+    min-width: 0;
     padding-inline: var(--page-gutter);
   }
 

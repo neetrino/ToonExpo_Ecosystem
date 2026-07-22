@@ -1,7 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { useRef } from 'react';
+import { useEffect, useState } from 'react';
 
 import { usePathname } from '@/i18n/navigation';
 import { shouldPlayPageEnter } from '@/shared/ui/motion/motion-session';
@@ -12,16 +12,16 @@ type PageEnterProps = {
 };
 
 /**
- * Plays enter motion on real route changes. Skips it on locale-only switches
- * so content stays put and only translated text updates.
+ * Plays enter motion on real route changes. Skips it on locale-only switches.
+ * Decision runs only after mount to avoid SSR/client hydration mismatches.
  */
 export const PageEnter = ({ children }: PageEnterProps) => {
   const pathname = usePathname();
-  const playEnterRef = useRef<boolean | null>(null);
+  const [playEnter, setPlayEnter] = useState(false);
 
-  if (playEnterRef.current === null) {
-    playEnterRef.current = shouldPlayPageEnter(pathname);
-  }
+  useEffect(() => {
+    setPlayEnter(shouldPlayPageEnter(pathname));
+  }, [pathname]);
 
-  return <div className={cn(playEnterRef.current && 'page-enter')}>{children}</div>;
+  return <div className={cn(playEnter && 'page-enter')}>{children}</div>;
 };
