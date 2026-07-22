@@ -17,9 +17,14 @@ const PORTAL_PREFIXES = [
   '/checkin',
   '/settings',
   '/dashboard',
+  '/favorites',
+  '/requests',
 ] as const;
 
 const isPortalRoute = (pathname: string): boolean => {
+  if (pathname === '/qr') {
+    return true;
+  }
   return PORTAL_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
 };
 

@@ -4,7 +4,7 @@ import { sanitizeReturnUrl } from './sanitize-return-url';
 
 describe('sanitizeReturnUrl', () => {
   it('accepts relative app paths', () => {
-    expect(sanitizeReturnUrl('/settings/qr')).toBe('/settings/qr');
+    expect(sanitizeReturnUrl('/qr')).toBe('/qr');
     expect(sanitizeReturnUrl('/projects/abc')).toBe('/projects/abc');
   });
 

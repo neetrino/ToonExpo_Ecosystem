@@ -3,16 +3,16 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { AccountPageEnter } from '@/features/buyer/components/account/account-page-enter';
 import { AccountPageHeader } from '@/features/buyer/components/account/account-page-header';
-import { BuyerQrPageContent } from '@/features/buyer/components/buyer-qr-page-content';
+import { BuyerFavoritesList } from '@/features/buyer/components/buyer-favorites-list';
 import { isBuyerAccount } from '@/features/buyer/utils/is-buyer-account';
 import { getMeOrNull } from '@/features/auth/api/auth-api';
 import { redirect } from '@/i18n/navigation';
 
-type ProfileQrPageProps = {
+type FavoritesPageProps = {
   params: Promise<{ locale: string }>;
 };
 
-export default async function ProfileQrPage({ params }: ProfileQrPageProps) {
+export default async function FavoritesPage({ params }: FavoritesPageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
 
@@ -21,7 +21,10 @@ export default async function ProfileQrPage({ params }: ProfileQrPageProps) {
   const user = await getMeOrNull(cookieHeader);
 
   if (!user) {
-    redirect({ href: '/auth/login?returnUrl=%2Fsettings%2Fqr', locale });
+    redirect({
+      href: '/auth/login?returnUrl=%2Ffavorites',
+      locale,
+    });
     return null;
   }
 
@@ -30,12 +33,12 @@ export default async function ProfileQrPage({ params }: ProfileQrPageProps) {
     return null;
   }
 
-  const t = await getTranslations('Profile.qr');
+  const t = await getTranslations('Profile.favorites');
 
   return (
     <AccountPageEnter>
       <AccountPageHeader title={t('title')} subtitle={t('subtitle')} />
-      <BuyerQrPageContent buyerName={user.name} />
+      <BuyerFavoritesList />
     </AccountPageEnter>
   );
 }

@@ -3,16 +3,20 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { AccountPageEnter } from '@/features/buyer/components/account/account-page-enter';
 import { AccountPageHeader } from '@/features/buyer/components/account/account-page-header';
-import { BuyerRequestsList } from '@/features/buyer/components/buyer-requests-list';
+import { AccountShell } from '@/features/buyer/components/account/account-shell';
+import { BuyerQrPageContent } from '@/features/buyer/components/buyer-qr-page-content';
 import { isBuyerAccount } from '@/features/buyer/utils/is-buyer-account';
 import { getMeOrNull } from '@/features/auth/api/auth-api';
 import { redirect } from '@/i18n/navigation';
 
-type ProfileRequestsPageProps = {
+type MyQrPageProps = {
   params: Promise<{ locale: string }>;
 };
 
-export default async function ProfileRequestsPage({ params }: ProfileRequestsPageProps) {
+/**
+ * Buyer My QR page at `/qr` (public token resolve stays at `/qr/[token]`).
+ */
+export default async function MyQrPage({ params }: MyQrPageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
 
@@ -21,10 +25,7 @@ export default async function ProfileRequestsPage({ params }: ProfileRequestsPag
   const user = await getMeOrNull(cookieHeader);
 
   if (!user) {
-    redirect({
-      href: '/auth/login?returnUrl=%2Fsettings%2Frequests',
-      locale,
-    });
+    redirect({ href: '/auth/login?returnUrl=%2Fqr', locale });
     return null;
   }
 
@@ -33,12 +34,14 @@ export default async function ProfileRequestsPage({ params }: ProfileRequestsPag
     return null;
   }
 
-  const t = await getTranslations('Profile.requests');
+  const t = await getTranslations('Profile.qr');
 
   return (
-    <AccountPageEnter>
-      <AccountPageHeader title={t('title')} subtitle={t('subtitle')} />
-      <BuyerRequestsList />
-    </AccountPageEnter>
+    <AccountShell locale={locale}>
+      <AccountPageEnter>
+        <AccountPageHeader title={t('title')} subtitle={t('subtitle')} />
+        <BuyerQrPageContent buyerName={user.name} />
+      </AccountPageEnter>
+    </AccountShell>
   );
 }

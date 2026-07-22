@@ -7,19 +7,19 @@ import { usePathname } from '@/i18n/navigation';
 type NavKey = 'dashboard' | 'password' | 'qr' | 'requests' | 'favorites' | 'checkin';
 
 const resolveNavKey = (pathname: string): NavKey => {
-  if (pathname.startsWith('/settings/qr')) {
+  if (pathname === '/qr') {
     return 'qr';
   }
-  if (pathname.startsWith('/settings/requests')) {
+  if (pathname === '/requests' || pathname.startsWith('/requests/')) {
     return 'requests';
   }
-  if (pathname.startsWith('/settings/favorites')) {
+  if (pathname === '/favorites' || pathname.startsWith('/favorites/')) {
     return 'favorites';
   }
-  if (pathname.startsWith('/settings/checkin')) {
+  if (pathname === '/checkin') {
     return 'checkin';
   }
-  if (pathname === '/settings' || pathname.startsWith('/settings/password')) {
+  if (pathname === '/settings' || pathname.startsWith('/settings/')) {
     return 'password';
   }
   return 'dashboard';

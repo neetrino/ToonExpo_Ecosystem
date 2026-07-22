@@ -75,6 +75,26 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       {
+        source: '/:locale/profile/qr',
+        destination: '/:locale/qr',
+        permanent: true,
+      },
+      {
+        source: '/:locale/profile/favorites',
+        destination: '/:locale/favorites',
+        permanent: true,
+      },
+      {
+        source: '/:locale/profile/requests',
+        destination: '/:locale/requests',
+        permanent: true,
+      },
+      {
+        source: '/:locale/profile/checkin',
+        destination: '/:locale/checkin',
+        permanent: true,
+      },
+      {
         source: '/:locale/profile/:path*',
         destination: '/:locale/settings/:path*',
         permanent: true,
@@ -82,6 +102,26 @@ const nextConfig: NextConfig = {
       {
         source: '/:locale/settings/password',
         destination: '/:locale/settings',
+        permanent: false,
+      },
+      {
+        source: '/:locale/settings/qr',
+        destination: '/:locale/qr',
+        permanent: false,
+      },
+      {
+        source: '/:locale/settings/favorites',
+        destination: '/:locale/favorites',
+        permanent: false,
+      },
+      {
+        source: '/:locale/settings/requests',
+        destination: '/:locale/requests',
+        permanent: false,
+      },
+      {
+        source: '/:locale/settings/checkin',
+        destination: '/:locale/checkin',
         permanent: false,
       },
     ];

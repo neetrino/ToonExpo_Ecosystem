@@ -90,7 +90,7 @@ export const BuyerCheckInStatus = () => {
         description={t('empty')}
         action={
           <Link
-            href="/settings/qr"
+            href="/qr"
             className={cn(
               'inline-flex h-9 items-center justify-center gap-2 rounded-sm bg-brand-soft px-4',
               'text-sm font-medium text-brand transition-colors hover:bg-brand/15',
@@ -135,7 +135,7 @@ export const BuyerCheckInStatus = () => {
               ) : (
                 <p className="text-sm text-ink-secondary">
                   {t('current.showQrHint')}{' '}
-                  <Link href="/settings/qr" className="font-semibold text-brand hover:underline">
+                  <Link href="/qr" className="font-semibold text-brand hover:underline">
                     {t('openQr')}
                   </Link>
                 </p>

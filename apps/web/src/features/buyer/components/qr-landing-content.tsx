@@ -34,7 +34,7 @@ export const QrLandingContent = ({ token }: QrLandingContentProps) => {
           return;
         }
         if (data.kind === 'owner_profile') {
-          router.replace('/settings/qr');
+          router.replace('/qr');
         }
         setState({ status: 'ready', data });
       } catch {

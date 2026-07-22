@@ -21,7 +21,7 @@ const user = (
 
 describe('resolvePostLoginPath', () => {
   it('returns explicit return URL when provided', () => {
-    expect(resolvePostLoginPath(user('buyer'), '/settings/qr')).toBe('/settings/qr');
+    expect(resolvePostLoginPath(user('buyer'), '/qr')).toBe('/qr');
   });
 
   it('sends buyers to dashboard by default', () => {

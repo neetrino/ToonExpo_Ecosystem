@@ -13,13 +13,7 @@ import { cn } from '@/shared/ui/cn';
 type NavKey = 'dashboard' | 'password' | 'qr' | 'requests' | 'favorites' | 'checkin';
 
 type NavItem = {
-  href:
-    | '/dashboard'
-    | '/settings'
-    | '/settings/qr'
-    | '/settings/requests'
-    | '/settings/favorites'
-    | '/settings/checkin';
+  href: '/dashboard' | '/settings' | '/qr' | '/requests' | '/favorites' | '/checkin';
   key: NavKey;
   buyerOnly: boolean;
   icon: LucideIcon;
@@ -27,10 +21,10 @@ type NavItem = {
 
 const PRIMARY_NAV_ITEMS: NavItem[] = [
   { href: '/dashboard', key: 'dashboard', buyerOnly: false, icon: LayoutDashboard },
-  { href: '/settings/qr', key: 'qr', buyerOnly: true, icon: QrCode },
-  { href: '/settings/favorites', key: 'favorites', buyerOnly: true, icon: Heart },
-  { href: '/settings/requests', key: 'requests', buyerOnly: true, icon: Inbox },
-  { href: '/settings/checkin', key: 'checkin', buyerOnly: true, icon: ScanLine },
+  { href: '/qr', key: 'qr', buyerOnly: true, icon: QrCode },
+  { href: '/favorites', key: 'favorites', buyerOnly: true, icon: Heart },
+  { href: '/requests', key: 'requests', buyerOnly: true, icon: Inbox },
+  { href: '/checkin', key: 'checkin', buyerOnly: true, icon: ScanLine },
 ];
 
 const SETTINGS_NAV_ITEM: NavItem = {
@@ -42,6 +36,8 @@ const SETTINGS_NAV_ITEM: NavItem = {
 
 const NAV_ICON_CLASS = 'size-5 shrink-0 opacity-90';
 
+const EXACT_MATCH_HREFS = new Set(['/dashboard', '/settings', '/qr', '/checkin']);
+
 const navLinkClassName = (active: boolean): string =>
   cn(
     'flex items-center gap-3 rounded-pill px-3.5 py-2.5 text-base font-medium tracking-wide transition-colors',
@@ -51,7 +47,7 @@ const navLinkClassName = (active: boolean): string =>
   );
 
 const isActive = (pathname: string, href: string): boolean => {
-  if (href === '/dashboard' || href === '/settings') {
+  if (EXACT_MATCH_HREFS.has(href)) {
     return pathname === href;
   }
   return pathname === href || pathname.startsWith(`${href}/`);

@@ -156,7 +156,7 @@ test.describe('smoke', () => {
 
   test('buyer login shows QR on profile', async ({ page }) => {
     await loginAs(page, SEED_BUYER_EMAIL);
-    await page.goto('/hy/settings/qr');
+    await page.goto('/hy/qr');
     await expect(page.getByRole('heading', { name: 'Իմ QR' })).toBeVisible();
     await expect(page.getByRole('img', { name: /QR/ })).toBeVisible();
   });
@@ -194,7 +194,7 @@ test.describe('smoke', () => {
     await addResponse;
     await expect(removeButton).toBeVisible();
 
-    await page.goto('/hy/settings/favorites');
+    await page.goto('/hy/favorites');
     await expect(page.getByRole('heading', { name: 'Իմ ընտրյալները' })).toBeVisible();
     const favoriteLink = page
       .getByRole('link', { name: new RegExp(SEED_APARTMENT_NUMBER) })

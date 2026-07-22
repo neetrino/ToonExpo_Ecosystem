@@ -3,16 +3,16 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { AccountPageEnter } from '@/features/buyer/components/account/account-page-enter';
 import { AccountPageHeader } from '@/features/buyer/components/account/account-page-header';
-import { BuyerCheckInStatus } from '@/features/buyer/components/buyer-checkin-status';
+import { BuyerRequestsList } from '@/features/buyer/components/buyer-requests-list';
 import { isBuyerAccount } from '@/features/buyer/utils/is-buyer-account';
 import { getMeOrNull } from '@/features/auth/api/auth-api';
 import { redirect } from '@/i18n/navigation';
 
-type ProfileCheckInPageProps = {
+type RequestsPageProps = {
   params: Promise<{ locale: string }>;
 };
 
-export default async function ProfileCheckInPage({ params }: ProfileCheckInPageProps) {
+export default async function RequestsPage({ params }: RequestsPageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
 
@@ -22,7 +22,7 @@ export default async function ProfileCheckInPage({ params }: ProfileCheckInPageP
 
   if (!user) {
     redirect({
-      href: '/auth/login?returnUrl=%2Fsettings%2Fcheckin',
+      href: '/auth/login?returnUrl=%2Frequests',
       locale,
     });
     return null;
@@ -33,12 +33,12 @@ export default async function ProfileCheckInPage({ params }: ProfileCheckInPageP
     return null;
   }
 
-  const t = await getTranslations('Profile.checkin');
+  const t = await getTranslations('Profile.requests');
 
   return (
     <AccountPageEnter>
       <AccountPageHeader title={t('title')} subtitle={t('subtitle')} />
-      <BuyerCheckInStatus />
+      <BuyerRequestsList />
     </AccountPageEnter>
   );
 }

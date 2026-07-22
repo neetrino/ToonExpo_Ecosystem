@@ -49,28 +49,28 @@ export const AccountOverviewStats = () => {
   return (
     <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
       <AccountStatCard
-        href="/settings/qr"
+        href="/qr"
         icon={QrCode}
         label={t('qrLabel')}
         value={t('qrReady')}
         hint={t('scansHint', { count: scansCount })}
       />
       <AccountStatCard
-        href="/settings/favorites"
+        href="/favorites"
         icon={Heart}
         label={t('favoritesLabel')}
         value={String(favoritesCount)}
         hint={t('favoritesHint')}
       />
       <AccountStatCard
-        href="/settings/requests"
+        href="/requests"
         icon={Inbox}
         label={t('requestsLabel')}
         value={String(requestsCount)}
         hint={t('requestsHint')}
       />
       <AccountStatCard
-        href="/settings/checkin"
+        href="/checkin"
         icon={ScanLine}
         label={t('checkinLabel')}
         value={checkInValue}
