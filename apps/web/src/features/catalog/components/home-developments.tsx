@@ -25,7 +25,7 @@ export const HomeDevelopments = async ({ projects }: HomeDevelopmentsProps) => {
   const mapProjects = projects.slice(0, MAP_LIST_COUNT);
 
   return (
-    <section className="border-y border-header-border bg-brand-soft/30">
+    <section className="border-y border-header-border bg-band-mist/30">
       <div className="page-container section-pad">
         <Reveal>
           <SectionHeader
