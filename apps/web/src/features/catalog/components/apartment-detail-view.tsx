@@ -123,7 +123,7 @@ export const ApartmentDetailView = async ({
             {locationLine ?? `${apartment.building.name} · ${title}`}
           </p>
 
-          <div className="mt-8 flex flex-wrap items-baseline gap-x-6 gap-y-4 border-y border-header-border py-6">
+          <div className="mt-8 grid grid-cols-2 gap-y-4 border-y border-header-border py-6 sm:grid-cols-3 lg:grid-cols-5">
             <StatBlock label={t('apartment.priceLabel')}>
               <ApartmentDetailPrice
                 apartmentId={apartment.id}
@@ -227,7 +227,7 @@ export const ApartmentDetailView = async ({
 };
 
 const StatBlock = ({ label, children }: { label: string; children: ReactNode }) => (
-  <div className="min-w-[4.5rem]">
+  <div className="flex flex-col items-center text-center">
     <p className="text-[10px] font-bold tracking-widest text-header-muted uppercase">{label}</p>
     <div className="mt-1">{children}</div>
   </div>
