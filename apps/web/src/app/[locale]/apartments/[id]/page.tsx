@@ -5,8 +5,10 @@ import { cache } from 'react';
 
 import { getApartment, getProject } from '@/features/catalog/api/catalog-api';
 import { ApartmentDetailView } from '@/features/catalog/components/apartment-detail-view';
+import { ComparableHomesSection } from '@/features/catalog/components/comparable-homes-section';
 import { ProjectPricesOverlayScope } from '@/features/catalog/components/price-overlay-scope';
 import { SiteFooter } from '@/features/catalog/components/site-footer';
+import { loadComparableHomes } from '@/features/catalog/utils/load-comparable-homes';
 
 type ApartmentPageProps = {
   params: Promise<{ locale: string; id: string }>;
@@ -69,6 +71,16 @@ export default async function ApartmentPage({ params }: ApartmentPageProps) {
       : null,
   ].filter((image): image is { src: string; alt: string } => image != null);
 
+  const comparableHomes =
+    project != null
+      ? await loadComparableHomes({
+          project,
+          currentApartmentId: apartment.id,
+          locale,
+          locationLine,
+        })
+      : [];
+
   return (
     <div className="min-h-screen bg-background">
       <ProjectPricesOverlayScope projectId={apartment.project.id}>
@@ -80,6 +92,7 @@ export default async function ApartmentPage({ params }: ApartmentPageProps) {
             yearBuilt={extractYear(project?.completionDate)}
             projectType={project?.projectType ?? null}
           />
+          <ComparableHomesSection homes={comparableHomes} />
         </main>
       </ProjectPricesOverlayScope>
       <SiteFooter />
