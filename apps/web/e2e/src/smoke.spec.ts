@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 
 import { loginAs } from './helpers/auth.js';
 import {
@@ -17,20 +17,41 @@ import {
 /** hy-locale seed translation for Northern Avenue Residences. */
 const SEED_PROJECT_NAME_HY = 'Հյուսիսային պողոտայի նստավայրեր';
 
+/** Catalog page size large enough to include Northern Avenue among expanded seed data. */
+const CATALOG_SMOKE_PAGE_SIZE = 50;
+
+type BuyerRegistrationValues = {
+  firstName: string;
+  surname: string;
+  email: string;
+  phone: string;
+  password: string;
+};
+
+const fillBuyerRegistration = async (
+  page: Page,
+  values: BuyerRegistrationValues,
+): Promise<void> => {
+  await page.getByLabel('Անուն', { exact: true }).fill(values.firstName);
+  await page.getByLabel('Ազգանուն', { exact: true }).fill(values.surname);
+  await page.getByLabel('Էլ․ փոստ').fill(values.email);
+  await page.getByLabel('Հեռախոս').fill(values.phone);
+  await page.getByLabel('Գաղտնաբառ', { exact: true }).fill(values.password);
+  await page.getByLabel('Հաստատել գաղտնաբառը', { exact: true }).fill(values.password);
+};
+
 test.describe('smoke', () => {
   test('public home (hy) shows featured projects', async ({ page }) => {
     await page.goto('/hy');
-    await expect(page.getByRole('heading', { name: 'Նախագծեր, որոնք արժե հետևել։' })).toBeVisible();
     await expect(
-      page
-        .getByRole('link', { name: SEED_PROJECT_NAME_HY })
-        .or(page.getByRole('link', { name: SEED_PROJECT_NAME }))
-        .first(),
+      page.getByRole('heading', { name: 'Նախագծեր, որոնց արժե ուշադրություն դարձնել' }),
     ).toBeVisible();
+    // Prefer named CTA: cover overlay `<a class="absolute inset-0">` is hidden to Playwright.
+    await expect(page.getByRole('link', { name: 'Մանրամասն' }).first()).toBeVisible();
   });
 
   test('projects catalog drill-down to apartment', async ({ page }) => {
-    await page.goto('/hy/projects');
+    await page.goto(`/hy/projects?pageSize=${CATALOG_SMOKE_PAGE_SIZE}`);
     await expect(page.getByRole('heading', { name: 'Նախագծեր', level: 1 })).toBeVisible();
     await expect(
       page
@@ -40,7 +61,8 @@ test.describe('smoke', () => {
     ).toBeVisible();
 
     await page.goto(`/hy/projects/${SEED_PROJECT_ID}`);
-    await page.getByRole('link', { name: SEED_BUILDING_NAME }).click();
+    // Cover + title both expose the building name; either navigates to the same URL.
+    await page.getByRole('link', { name: SEED_BUILDING_NAME }).first().click();
     await expect(page).toHaveURL(/\/buildings\//);
 
     await page.getByRole('link', { name: SEED_FLOOR_LABEL }).click();
@@ -72,10 +94,13 @@ test.describe('smoke', () => {
     const email = `e2e.buyer.${stamp}@toonexpo.local`;
 
     await page.goto('/hy/auth/register');
-    await page.getByLabel('Անուն ազգանուն').fill(`E2E Buyer ${stamp}`);
-    await page.getByLabel('Էլ․ փոստ').fill(email);
-    await page.getByLabel('Հեռախոս').fill(`+3749${String(stamp).slice(-7)}`);
-    await page.getByLabel('Գաղտնաբառ').fill('E2eBuyerPass123!');
+    await fillBuyerRegistration(page, {
+      firstName: 'E2E',
+      surname: `Buyer ${stamp}`,
+      email,
+      phone: `+3749${String(stamp).slice(-7)}`,
+      password: 'E2eBuyerPass123!',
+    });
     await page.getByRole('button', { name: 'Ստեղծել հաշիվ' }).click();
 
     await expect(page).toHaveURL(/\/hy\/settings/);
@@ -89,10 +114,13 @@ test.describe('smoke', () => {
     const nextPassword = 'E2eNewPass456!';
 
     await page.goto('/hy/auth/register');
-    await page.getByLabel('Անուն ազգանուն').fill(`E2E Pwd ${stamp}`);
-    await page.getByLabel('Էլ․ փոստ').fill(email);
-    await page.getByLabel('Հեռախոս').fill(`+3749${String(stamp).slice(-7)}`);
-    await page.getByLabel('Գաղտնաբառ').fill(initialPassword);
+    await fillBuyerRegistration(page, {
+      firstName: 'E2E',
+      surname: `Pwd ${stamp}`,
+      email,
+      phone: `+3749${String(stamp).slice(-7)}`,
+      password: initialPassword,
+    });
     await page.getByRole('button', { name: 'Ստեղծել հաշիվ' }).click();
     await expect(page).toHaveURL(/\/hy\/settings/);
 
@@ -117,7 +145,7 @@ test.describe('smoke', () => {
 
     await page.goto('/hy/auth/login');
     await page.getByLabel('Էլ․ փոստ').fill(email);
-    await page.getByLabel('Գաղտնաբառ').fill(nextPassword);
+    await page.getByLabel('Գաղտնաբառ', { exact: true }).fill(nextPassword);
     await page.locator('form').getByRole('button', { name: 'Մուտք' }).click();
     await page.waitForURL((url) => !url.pathname.includes('/auth/login'));
     await expect(page).toHaveURL(/\/hy\/settings/);
@@ -193,7 +221,9 @@ test.describe('smoke', () => {
 
     await loginAs(page, SEED_BUYER_EMAIL);
     await page.goto(apartmentPath);
-    await expect(page.getByRole('link', { name: signInCta })).toHaveCount(0);
+    await expect(page.getByRole('link', { name: signInCta })).toHaveCount(0, {
+      timeout: 20_000,
+    });
     await expect(page.locator('p.font-brand').filter({ hasText: /\d/ }).first()).toBeVisible({
       timeout: 20_000,
     });
@@ -231,10 +261,11 @@ test.describe('smoke', () => {
 
   test('language switch hy → ru', async ({ page }) => {
     await page.goto('/hy');
-    await page.getByRole('group', { name: 'Լեզու' }).getByRole('button', { name: 'Рус' }).click();
+    await page.getByRole('button', { name: 'Լեզու' }).first().click();
+    await page.getByRole('option', { name: /Русский/ }).click();
     await expect(page).toHaveURL(/\/ru(\/|$)/);
     await expect(
-      page.getByRole('heading', { name: 'Проекты, на которые стоит смотреть.' }),
+      page.getByRole('heading', { name: 'Проекты, на которые стоит обратить внимание' }),
     ).toBeVisible();
   });
 

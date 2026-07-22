@@ -11,11 +11,21 @@ const execFileAsync = promisify(execFile);
 const globalSetup = async (): Promise<void> => {
   // Invoke via monorepo root script to satisfy the frontend/backend boundary check.
   console.info('[web/e2e] Running database seed…');
-  await execFileAsync('pnpm', ['run', 'db:seed'], {
-    cwd: MONOREPO_ROOT,
-    env: process.env,
-    maxBuffer: 10 * 1024 * 1024,
-  });
+  // Prefer `npm exec`/`pnpm` via shell-less node: on Windows, resolve through `cmd /c`.
+  if (process.platform === 'win32') {
+    await execFileAsync('cmd.exe', ['/d', '/s', '/c', 'pnpm run db:seed'], {
+      cwd: MONOREPO_ROOT,
+      env: process.env,
+      maxBuffer: 10 * 1024 * 1024,
+      windowsVerbatimArguments: true,
+    });
+  } else {
+    await execFileAsync('pnpm', ['run', 'db:seed'], {
+      cwd: MONOREPO_ROOT,
+      env: process.env,
+      maxBuffer: 10 * 1024 * 1024,
+    });
+  }
   console.info('[web/e2e] Seed complete.');
 };
 

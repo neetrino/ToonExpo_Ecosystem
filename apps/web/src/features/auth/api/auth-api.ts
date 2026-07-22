@@ -14,7 +14,12 @@ import { apiFetch } from '@/shared/api/client';
 import { clearCsrfTokenCache, setCsrfTokenCache } from '@/shared/api/csrf';
 import { ApiError, isApiErrorStatus } from '@/shared/api/errors';
 
-import { hasClientSessionHint, hasSessionCookieInHeader } from '@/features/auth/utils/session-hint';
+import {
+  clearClientSessionHint,
+  hasClientSessionHint,
+  hasSessionCookieInHeader,
+  markClientSessionHint,
+} from '@/features/auth/utils/session-hint';
 
 const jsonCredentials = {
   credentials: 'include' as const,
@@ -32,6 +37,7 @@ export const registerUser = async (body: RegisterRequest): Promise<AuthSessionRe
     body: JSON.stringify(body),
   });
   setCsrfTokenCache(result.csrfToken);
+  markClientSessionHint();
   return result;
 };
 
@@ -46,6 +52,7 @@ export const loginUser = async (body: LoginRequest): Promise<AuthSessionResponse
     body: JSON.stringify(body),
   });
   setCsrfTokenCache(result.csrfToken);
+  markClientSessionHint();
   return result;
 };
 
@@ -71,6 +78,7 @@ export const setPassword = async (body: SetPasswordRequest): Promise<AuthSession
     body: JSON.stringify(body),
   });
   setCsrfTokenCache(result.csrfToken);
+  markClientSessionHint();
   return result;
 };
 
@@ -96,6 +104,7 @@ export const logoutUser = async (): Promise<void> => {
     credentials: 'include',
   });
   clearCsrfTokenCache();
+  clearClientSessionHint();
 };
 
 /**
