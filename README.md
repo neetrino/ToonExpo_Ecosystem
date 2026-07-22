@@ -126,7 +126,9 @@ pnpm build
 
 Chromium-only smoke suite in `apps/web/e2e`. Not part of the default turbo `build` / `test` pipeline.
 
-Prerequisites: root `.env` with `DATABASE_URL` / `DIRECT_URL`, `SESSION_TOKEN_PEPPER`, `CSRF_SECRET`, and optional `SEED_ADMIN_PASSWORD` (fallback `ChangeMeAdmin123!`).
+Prerequisites: root `.env` with `DATABASE_URL` / `DIRECT_URL`, `SESSION_TOKEN_PEPPER`, `CSRF_SECRET`, and optional `SEED_ADMIN_PASSWORD` (fallback `ChangeMeAdmin123!` from `@toonexpo/shared` seed contract).
+
+Stable seed emails / catalog IDs used by smoke live in `packages/shared/src/seed-contract.ts` (imported by `db` seed and e2e helpers). Do not hardcode divergent IDs in tests.
 
 ```bash
 # Builds API + web, seeds DB (before Playwright), starts both servers if needed, runs smoke tests
@@ -134,6 +136,10 @@ pnpm e2e
 
 # Or after an existing build / with servers already on :3000 and :4000:
 pnpm --filter @toonexpo/web e2e
+
+# DB already seeded (e.g. CI after explicit seed + e2e:build):
+pnpm --filter @toonexpo/web e2e:playwright
+# or: SKIP_E2E_SEED=1 pnpm --filter @toonexpo/web e2e
 ```
 
 Install browsers once (CI and first local run):
@@ -142,7 +148,7 @@ Install browsers once (CI and first local run):
 pnpm --filter @toonexpo/web e2e:install
 ```
 
-CI runs a separate `e2e` job with a Postgres service (migrations + seed) in parallel with the quality job.
+CI `e2e` job: migrate → build shared → **seed once** → `e2e:build` → Playwright with `SKIP_E2E_SEED=1` (no second seed). Local `pnpm e2e` seeds inside `apps/web/scripts/e2e-with-seed.mjs` before Playwright starts webServers.
 
 ## Docker (API image)
 

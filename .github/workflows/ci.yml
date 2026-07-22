@@ -65,6 +65,9 @@ jobs:
       - name: Apply migrations
         run: pnpm --filter @toonexpo/db db:migrate:deploy
 
+      - name: Build shared (seed contract)
+        run: pnpm --filter @toonexpo/shared build
+
       - name: Architecture boundary check
         run: |
           set -euo pipefail
@@ -153,6 +156,9 @@ jobs:
       - name: Apply migrations
         run: pnpm --filter @toonexpo/db db:migrate:deploy
 
+      - name: Build shared (seed contract)
+        run: pnpm --filter @toonexpo/shared build
+
       - name: Seed database
         run: pnpm --filter @toonexpo/db db:seed
 
@@ -172,4 +178,6 @@ jobs:
           done
 
       - name: Run smoke e2e
+        env:
+          SKIP_E2E_SEED: "1"
         run: pnpm --filter @toonexpo/web e2e
