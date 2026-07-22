@@ -1,6 +1,8 @@
 {
   "Common": {
-    "close": "Close"
+    "close": "Close",
+    "cancel": "Cancel",
+    "delete": "Delete"
   },
   "HomePage": {
     "brand": "ToonExpo",
@@ -1154,6 +1156,8 @@
       "editTitle": "Edit {title}",
       "edit": "Edit",
       "delete": "Delete",
+      "deleteConfirmTitle": "Delete",
+      "deleteConfirmMessage": "Are you sure you want to delete \"{title}\"?",
       "filters": {
         "allBanks": "All banks",
         "allPublication": "All publication states",

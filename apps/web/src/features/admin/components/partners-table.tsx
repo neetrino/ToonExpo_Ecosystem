@@ -39,17 +39,17 @@ export const PartnersTable = ({ partners, onSelectPartner }: PartnersTableProps)
       <table className="w-full min-w-[48rem] border-collapse text-left text-sm">
         <thead className="bg-surface text-xs uppercase tracking-wide text-ink-muted">
           <tr>
-            <th className="px-3 py-2 font-medium">{t('columns.name')}</th>
-            <th className="px-3 py-2 font-medium">{t('columns.type')}</th>
-            <th className="px-3 py-2 font-medium">{t('columns.status')}</th>
-            <th className="px-3 py-2 font-medium">{t('columns.publication')}</th>
-            <th className="px-3 py-2 font-medium">{t('columns.updatedAt')}</th>
+            <th className="px-3 py-2 text-left font-medium">{t('columns.name')}</th>
+            <th className="px-3 py-2 text-center font-medium">{t('columns.type')}</th>
+            <th className="px-3 py-2 text-center font-medium">{t('columns.status')}</th>
+            <th className="px-3 py-2 text-center font-medium">{t('columns.publication')}</th>
+            <th className="px-3 py-2 text-center font-medium">{t('columns.updatedAt')}</th>
           </tr>
         </thead>
         <tbody>
           {partners.map((partner) => (
             <tr key={partner.id} className="border-t border-border hover:bg-surface/60">
-              <td className="px-3 py-2.5">
+              <td className="px-3 py-2.5 text-left">
                 <div className="flex flex-wrap items-center gap-2">
                   <button
                     type="button"
@@ -61,16 +61,20 @@ export const PartnersTable = ({ partners, onSelectPartner }: PartnersTableProps)
                   <FeaturedBadge featured={partner.featured} />
                 </div>
               </td>
-              <td className="px-3 py-2.5 text-ink-secondary">
+              <td className="px-3 py-2.5 text-center text-ink-secondary">
                 <PartnerTypeLabel type={partner.type} />
               </td>
               <td className="px-3 py-2.5">
-                <PartnerStatusBadge status={partner.status} />
+                <div className="flex justify-center">
+                  <PartnerStatusBadge status={partner.status} />
+                </div>
               </td>
               <td className="px-3 py-2.5">
-                <PublicationStatusBadge status={partner.publicationStatus} />
+                <div className="flex justify-center">
+                  <PublicationStatusBadge status={partner.publicationStatus} />
+                </div>
               </td>
-              <td className="px-3 py-2.5 text-ink-secondary">
+              <td className="px-3 py-2.5 text-center text-ink-secondary">
                 {formatDate(partner.updatedAt, locale)}
               </td>
             </tr>

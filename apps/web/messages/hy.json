@@ -1,6 +1,8 @@
 {
   "Common": {
-    "close": "Փակել"
+    "close": "Փակել",
+    "cancel": "Չեղարկել",
+    "delete": "Ջնջել"
   },
   "HomePage": {
     "brand": "ToonExpo",
@@ -1154,6 +1156,8 @@
       "editTitle": "Խմբագրել {title}",
       "edit": "Խմբագրել",
       "delete": "Ջնջել",
+      "deleteConfirmTitle": "Ջնջել",
+      "deleteConfirmMessage": "Ջնջե՞լ «{title}» առաջարկը։",
       "filters": {
         "allBanks": "Բոլոր բանկերը",
         "allPublication": "Բոլոր կարգավիճակները",

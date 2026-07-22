@@ -17,11 +17,12 @@ import { ADMIN_COMPANIES_MAX_PAGE_SIZE } from '@/features/admin/constants';
 import { useAdminCompaniesQuery } from '@/features/admin/hooks/use-admin-companies';
 import { PARTNERS_DEFAULT_PAGE_SIZE } from '@/features/partners/constants';
 import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
+import { AdminCreateSheet } from '@/shared/ui/admin-create-sheet';
+import { AdminDeleteModal } from '@/shared/ui/admin-delete-modal';
+import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { Button } from '@/shared/ui/button';
 import { IconButton } from '@/shared/ui/icon-button';
 import { Select } from '@/shared/ui/select';
-import { AddActionLabel } from '@/shared/ui/add-action-label';
-import { AdminCreateSheet } from '@/shared/ui/admin-create-sheet';
 
 /**
  * Admin bank offers list with filters, create/edit, and publish controls.
@@ -32,6 +33,7 @@ export const BankOffersListPage = () => {
   const [publicationFilter, setPublicationFilter] = useState<PublicationStatus | ''>('');
   const [editing, setEditing] = useState<BankOfferListItem | null>(null);
   const [creating, setCreating] = useState(false);
+  const [pendingDelete, setPendingDelete] = useState<BankOfferListItem | null>(null);
 
   const offersQuery = useAdminBankOffersQuery(
     partnerFilter ? { partnerCompanyId: partnerFilter } : {},
@@ -186,26 +188,28 @@ export const BankOffersListPage = () => {
           <table className="w-full min-w-[48rem] border-collapse text-left text-sm">
             <thead className="bg-surface text-xs uppercase tracking-wide text-ink-muted">
               <tr>
-                <th className="px-3 py-2 font-medium">{t('columns.title')}</th>
-                <th className="px-3 py-2 font-medium">{t('columns.bank')}</th>
-                <th className="px-3 py-2 font-medium">{t('columns.rate')}</th>
-                <th className="px-3 py-2 font-medium">{t('columns.publication')}</th>
-                <th className="px-3 py-2 font-medium">{t('columns.actions')}</th>
+                <th className="px-3 py-2 text-left font-medium">{t('columns.title')}</th>
+                <th className="px-3 py-2 text-center font-medium">{t('columns.bank')}</th>
+                <th className="px-3 py-2 text-center font-medium">{t('columns.rate')}</th>
+                <th className="px-3 py-2 text-center font-medium">{t('columns.publication')}</th>
+                <th className="px-3 py-2 text-center font-medium">{t('columns.actions')}</th>
               </tr>
             </thead>
             <tbody>
               {filteredOffers.map((offer) => (
                 <tr key={offer.id} className="border-t border-border">
-                  <td className="px-3 py-2.5 font-medium text-ink">{offer.title}</td>
-                  <td className="px-3 py-2.5 text-ink-secondary">
+                  <td className="px-3 py-2.5 text-left font-medium text-ink">{offer.title}</td>
+                  <td className="px-3 py-2.5 text-center text-ink-secondary">
                     {offer.partnerCompanyName ?? '—'}
                   </td>
-                  <td className="px-3 py-2.5 text-ink-secondary">{offer.rate}%</td>
+                  <td className="px-3 py-2.5 text-center text-ink-secondary">{offer.rate}%</td>
                   <td className="px-3 py-2.5">
-                    <PublicationStatusBadge status={offer.publicationStatus} />
+                    <div className="flex justify-center">
+                      <PublicationStatusBadge status={offer.publicationStatus} />
+                    </div>
                   </td>
                   <td className="px-3 py-2.5">
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center justify-center gap-1">
                       <IconButton
                         label={t('edit')}
                         size="sm"
@@ -223,7 +227,7 @@ export const BankOffersListPage = () => {
                         className="text-danger hover:bg-danger-soft"
                         disabled={busy}
                         onClick={() => {
-                          void deleteMutation.mutateAsync(offer.id);
+                          setPendingDelete(offer);
                         }}
                       >
                         <Trash2 className="size-4" strokeWidth={1.75} aria-hidden />
@@ -236,6 +240,26 @@ export const BankOffersListPage = () => {
           </table>
         </div>
       )}
+
+      <AdminDeleteModal
+        open={pendingDelete != null}
+        title={t('deleteConfirmTitle')}
+        message={pendingDelete ? t('deleteConfirmMessage', { title: pendingDelete.title }) : ''}
+        confirming={deleteMutation.isPending}
+        onCancel={() => {
+          if (!deleteMutation.isPending) {
+            setPendingDelete(null);
+          }
+        }}
+        onConfirm={() => {
+          if (!pendingDelete) {
+            return;
+          }
+          void deleteMutation.mutateAsync(pendingDelete.id).then(() => {
+            setPendingDelete(null);
+          });
+        }}
+      />
     </div>
   );
 };

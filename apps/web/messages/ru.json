@@ -1,6 +1,8 @@
 {
   "Common": {
-    "close": "Закрыть"
+    "close": "Закрыть",
+    "cancel": "Отмена",
+    "delete": "Удалить"
   },
   "HomePage": {
     "brand": "ToonExpo",
@@ -1493,6 +1495,8 @@
       "editTitle": "Редактировать {title}",
       "edit": "Редактировать",
       "delete": "Удалить",
+      "deleteConfirmTitle": "Удалить",
+      "deleteConfirmMessage": "Удалить предложение «{title}»?",
       "filters": {
         "allBanks": "Все банки",
         "allPublication": "Все статусы публикации",
