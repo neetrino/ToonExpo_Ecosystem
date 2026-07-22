@@ -1,6 +1,6 @@
 'use client';
 
-import { Menu, UserRound, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
@@ -19,21 +19,19 @@ type SiteHeaderProps = {
 };
 
 const NAV_HREFS = [
-  { href: '/projects' as const, key: 'projects' as const },
-  { href: '/builders' as const, key: 'builders' as const },
-  { href: '/partners' as const, key: 'partners' as const },
+  { href: '/projects' as const, key: 'buy' as const },
+  { href: '/builders' as const, key: 'newDevelopments' as const },
+  { href: '/partners' as const, key: 'marketInsights' as const },
   { href: '/mortgage' as const, key: 'mortgage' as const },
-  { href: '/expo' as const, key: 'expoMap' as const },
 ];
 
 const SCROLL_SOLID_OFFSET_PX = 24;
-const HEADER_BAR_CLASS =
-  'page-container grid grid-cols-[minmax(0,auto)_minmax(0,1fr)] items-center gap-3 py-3 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:gap-6 lg:py-3.5';
+const HEADER_HEIGHT_CLASS = 'h-16';
+const HEADER_SPACER_CLASS = 'h-16';
 
 /**
- * Fixed public header — always visible while scrolling on every page.
- * Transparent hero variant is full-bleed over imagery, then matches the solid
- * floating rounded chrome used on every other page.
+ * Fixed public header — full-bleed frosted bar matching the Figma Header.
+ * Transparent over the home hero, then solid after scroll / on other pages.
  */
 export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) => {
   const t = useTranslations('Nav');
@@ -45,8 +43,6 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
   const [authReady, setAuthReady] = useState(false);
   const isTransparentStart = variant === 'transparent';
   const isOverHero = isTransparentStart && !scrolled && !menuOpen;
-  /** Solid chrome is always the same floating rounded bar on every page. */
-  const isFloating = !isOverHero;
   const needsSpacer = !isTransparentStart;
   const showAuthLoading = !authReady || isLoading || (isFetching && !user);
 
@@ -87,88 +83,117 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
   }, [menuOpen]);
 
   const settingsHref = user?.accountType === 'platform_admin' ? '/admin/settings' : '/settings';
-  const profileHref = user ? settingsHref : '/auth/login';
-  const profileIconClassName = cn(
-    'inline-flex size-9 items-center justify-center rounded-sm border',
-    'transition-colors duration-[var(--duration-fast)]',
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30',
-    isOverHero
-      ? 'border-white/30 bg-white/10 text-on-dark hover:bg-white/15'
-      : 'border-border bg-surface-elevated text-ink hover:border-border-strong hover:bg-surface',
-  );
+  const listPropertyHref =
+    user?.accountType === 'company_member' && user.companyType === 'builder'
+      ? ('/builder' as const)
+      : ('/auth/register' as const);
+  const signInHref = user ? settingsHref : '/auth/login';
 
   return (
     <>
       <header
         className={cn(
-          'fixed z-[var(--z-header)]',
-          'transition-[top,left,right,border-radius,background-color,border-color,box-shadow,color,backdrop-filter] duration-[var(--duration-base)] ease-[var(--ease-out-premium)]',
-          isFloating
-            ? 'top-3 inset-x-3 overflow-hidden rounded-md border border-border/70 bg-surface-elevated/92 text-ink shadow-sm backdrop-blur-xl sm:inset-x-5 lg:inset-x-6'
-            : 'inset-x-0 top-0 w-full rounded-none border-b border-transparent bg-transparent text-on-dark',
+          'fixed inset-x-0 top-0 z-[var(--z-header)] border-b',
+          'transition-[background-color,border-color,color,backdrop-filter] duration-[var(--duration-base)] ease-[var(--ease-out-premium)]',
+          isOverHero
+            ? 'border-transparent bg-transparent text-on-dark backdrop-blur-0'
+            : 'border-header-border bg-header-bg text-ink backdrop-blur-[6px]',
           className,
         )}
       >
-        <div className={HEADER_BAR_CLASS}>
-          <div className="justify-self-start">
+        <div
+          className={cn(
+            'page-container flex items-center justify-between gap-6',
+            HEADER_HEIGHT_CLASS,
+          )}
+        >
+          <div className="flex min-w-0 items-center gap-10">
             <BrandLogo inverted={isOverHero} />
+
+            <nav
+              className={cn(
+                'hidden items-center gap-7 lg:flex',
+                isOverHero ? 'text-on-dark/80' : 'text-header-muted',
+              )}
+              aria-label={t('main')}
+            >
+              {NAV_HREFS.map((item) => {
+                const active = isNavActive(pathname, item.href);
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={cn(
+                      'whitespace-nowrap text-sm font-medium leading-5',
+                      'transition-colors duration-[var(--duration-fast)]',
+                      active
+                        ? isOverHero
+                          ? 'text-on-dark'
+                          : 'text-brand-deep'
+                        : isOverHero
+                          ? 'hover:text-on-dark'
+                          : 'hover:text-brand-deep',
+                    )}
+                  >
+                    {t(item.key)}
+                  </Link>
+                );
+              })}
+            </nav>
           </div>
 
-          <nav
-            className={cn(
-              'hidden items-center justify-center gap-1 lg:flex',
-              isOverHero ? 'text-on-dark/80' : 'text-ink-secondary',
-            )}
-            aria-label={t('main')}
-          >
-            {NAV_HREFS.map((item) => {
-              const active = isNavActive(pathname, item.href);
-              return (
+          <div className="flex shrink-0 items-center gap-3">
+            <LocaleSwitcher tone={isOverHero ? 'dark' : 'light'} />
+
+            {showAuthLoading ? (
+              <span
+                className="hidden h-5 w-14 animate-pulse rounded-sm bg-current/10 sm:inline-block"
+                aria-hidden
+              />
+            ) : user ? (
+              <div className="hidden items-center gap-3 sm:flex">
                 <Link
-                  key={item.href}
-                  href={item.href}
+                  href={settingsHref}
                   className={cn(
-                    'relative whitespace-nowrap rounded-sm px-3 py-2 text-[13px] font-medium tracking-[-0.01em]',
-                    'transition-[color,background-color] duration-[var(--duration-fast)]',
-                    active
-                      ? isOverHero
-                        ? 'bg-white/12 text-on-dark'
-                        : 'bg-brand-soft text-brand'
-                      : isOverHero
-                        ? 'hover:bg-white/10 hover:text-on-dark'
-                        : 'hover:bg-surface hover:text-ink',
+                    'max-w-36 truncate text-sm font-medium leading-5',
+                    'transition-colors duration-[var(--duration-fast)]',
+                    isOverHero
+                      ? 'text-on-dark/80 hover:text-on-dark'
+                      : 'text-header-muted hover:text-brand-deep',
                   )}
                 >
-                  {t(item.key)}
+                  {user.name}
                 </Link>
-              );
-            })}
-          </nav>
-
-          <div className="flex shrink-0 items-center justify-end gap-2 justify-self-end sm:gap-2.5">
-            <LocaleSwitcher tone={isOverHero ? 'dark' : 'light'} />
-            {showAuthLoading ? (
-              <span className="size-9 animate-pulse rounded-sm bg-current/10" aria-hidden />
-            ) : (
-              <div className="flex items-center gap-2">
-                <Link
-                  href={profileHref}
-                  aria-label={t('profile')}
-                  title={t('profile')}
-                  className={profileIconClassName}
-                >
-                  <UserRound className="size-4" aria-hidden />
-                </Link>
-                {user ? (
-                  <LogoutButton
-                    className={cn(
-                      'hidden sm:inline-flex',
-                      isOverHero && 'border-transparent text-on-dark hover:bg-white/10',
-                    )}
-                  />
-                ) : null}
+                <LogoutButton
+                  className={cn(isOverHero && 'border-transparent text-on-dark hover:bg-white/10')}
+                />
               </div>
+            ) : (
+              <Link
+                href={signInHref}
+                className={cn(
+                  'hidden text-sm font-medium leading-5 sm:inline',
+                  'transition-colors duration-[var(--duration-fast)]',
+                  isOverHero
+                    ? 'text-on-dark/80 hover:text-on-dark'
+                    : 'text-header-muted hover:text-brand-deep',
+                )}
+              >
+                {t('login')}
+              </Link>
             )}
+
+            <Link
+              href={listPropertyHref}
+              className={cn(
+                'hidden h-9 items-center rounded-sm bg-brand-deep px-4 text-sm font-semibold leading-5 text-on-dark',
+                'transition-colors duration-[var(--duration-fast)] hover:bg-brand-deep/90',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-deep/30 sm:inline-flex',
+                isOverHero && 'bg-on-dark text-ink hover:bg-on-dark/90',
+              )}
+            >
+              {t('listProperty')}
+            </Link>
 
             <IconButton
               label={t('menu')}
@@ -194,7 +219,7 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
         {menuOpen ? (
           <div
             id="mobile-nav"
-            className="border-t border-border/50 bg-surface-elevated px-4 py-4 text-ink shadow-md sm:px-6 lg:hidden"
+            className="border-t border-header-border bg-header-bg px-4 py-4 text-ink shadow-md backdrop-blur-[6px] sm:px-6 lg:hidden"
           >
             <nav className="flex flex-col gap-1 text-sm" aria-label={t('main')}>
               {NAV_HREFS.map((item) => {
@@ -205,7 +230,7 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
                     href={item.href}
                     className={cn(
                       'rounded-sm px-3 py-3 font-medium transition-colors',
-                      active ? 'bg-brand-soft text-brand' : 'text-ink hover:bg-surface',
+                      active ? 'bg-brand-soft text-brand-deep' : 'text-ink hover:bg-surface',
                     )}
                     onClick={() => setMenuOpen(false)}
                   >
@@ -224,36 +249,43 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
                   </Link>
                   <Link
                     href="/auth/register"
-                    className="rounded-sm px-3 py-3 font-medium text-brand hover:bg-brand-soft"
+                    className="rounded-sm px-3 py-3 font-medium text-brand-deep hover:bg-brand-soft"
                     onClick={() => setMenuOpen(false)}
                   >
-                    {t('register')}
+                    {t('listProperty')}
                   </Link>
                 </>
               ) : (
-                <Link
-                  href={settingsHref}
-                  className="rounded-sm px-3 py-3 font-medium text-ink hover:bg-surface"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  {user.name}
-                </Link>
+                <>
+                  <Link
+                    href={settingsHref}
+                    className="rounded-sm px-3 py-3 font-medium text-ink hover:bg-surface"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    {user.name}
+                  </Link>
+                  <Link
+                    href={listPropertyHref}
+                    className="rounded-sm px-3 py-3 font-medium text-brand-deep hover:bg-brand-soft"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    {t('listProperty')}
+                  </Link>
+                </>
               )}
             </nav>
           </div>
         ) : null}
       </header>
 
-      {needsSpacer ? (
-        <div className="h-[calc(0.75rem+3.75rem)] sm:h-[calc(0.75rem+4rem)]" aria-hidden />
-      ) : null}
+      {needsSpacer ? <div className={HEADER_SPACER_CLASS} aria-hidden /> : null}
     </>
   );
 };
 
 const isNavActive = (pathname: string, href: (typeof NAV_HREFS)[number]['href']): boolean => {
   if (href === '/projects') {
-    return pathname.startsWith('/projects');
+    return pathname.startsWith('/projects') || pathname.startsWith('/apartments');
   }
   return pathname.startsWith(href);
 };

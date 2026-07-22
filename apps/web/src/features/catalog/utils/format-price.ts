@@ -138,7 +138,8 @@ export const formatCompactPrice = (options: {
   }
 
   const currencyPart = currency ? ` ${currency}` : '';
-  return `${fromLabel} ${compact}${currencyPart}`;
+  const amountLabel = `${compact}${currencyPart}`.trim();
+  return fromLabel.length > 0 ? `${fromLabel} ${amountLabel}` : amountLabel;
 };
 
 /**

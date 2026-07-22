@@ -6,6 +6,7 @@ import { listBuilders, listProjects } from '@/features/catalog/api/catalog-api';
 import { listPublicPartners } from '@/features/catalog/api/partners-api';
 import { FeaturedProjects } from '@/features/catalog/components/featured-projects';
 import { HomeBuilders } from '@/features/catalog/components/home-builders';
+import { HomeDevelopments } from '@/features/catalog/components/home-developments';
 import { HomeExhibition } from '@/features/catalog/components/home-exhibition';
 import { HomeExplore } from '@/features/catalog/components/home-explore';
 import { HomeFinalCta } from '@/features/catalog/components/home-final-cta';
@@ -80,6 +81,7 @@ export default async function HomePage({ params }: HomePageProps) {
         projectTotal={projectsResponse.meta.total}
       />
       <FeaturedProjects projects={projectsResponse.data} />
+      <HomeDevelopments projects={exploreProjects} />
       <HomeExplore projects={exploreProjects} />
       <HomeBuilders builders={builders} />
       <HomeExhibition />

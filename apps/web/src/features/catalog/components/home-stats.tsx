@@ -1,71 +1,117 @@
 import type { ProjectListItem } from '@toonexpo/contracts';
-import { getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 
-import { AnimatedCounter } from '@/shared/ui/motion/animated-counter';
+import {
+  AnimatedCounter,
+  type AnimatedCounterFormatStyle,
+} from '@/shared/ui/motion/animated-counter';
 import { Reveal } from '@/shared/ui/motion/reveal';
+import { cn } from '@/shared/ui/cn';
 
 type HomeStatsProps = {
   projects: ProjectListItem[];
-  builderCount: number;
-  /** Total published projects when list is a page slice. */
+  /** Kept for call-site compatibility; market pulse no longer surfaces builder count. */
+  builderCount?: number | undefined;
   projectTotal?: number | undefined;
 };
 
-/**
- * Floating market-pulse stats bar under the hero.
- */
-export const HomeStats = async ({ projects, builderCount, projectTotal }: HomeStatsProps) => {
-  const t = await getTranslations('HomePage');
-  const listingCount = projects.reduce((sum, project) => sum + project.availability.total, 0);
-  const availableCount = projects.reduce((sum, project) => sum + project.availability.available, 0);
-  const cities = new Set(projects.map((project) => project.city).filter(Boolean)).size;
+type StatTone = 'positive' | 'caution';
 
-  const stats = [
+type MarketStat = {
+  id: string;
+  label: string;
+  hint: string;
+  tone: StatTone;
+  display: string;
+  numericValue?: number;
+  formatStyle?: AnimatedCounterFormatStyle;
+};
+
+/** Illustrative market metrics until a dedicated pulse API exists. */
+const MARKET_AVG_SQFT_USD = 1420;
+const MARKET_MORTGAGE_RATE = 5.92;
+const MARKET_MEDIAN_DAYS = 42;
+
+/**
+ * Brand-deep market pulse bar under the hero — Figma node `81:152`.
+ */
+export const HomeStats = async ({ projects }: HomeStatsProps) => {
+  const t = await getTranslations('HomePage.stats');
+  const locale = await getLocale();
+  const listingCount = projects.reduce((sum, project) => sum + project.availability.total, 0);
+  const activeListings = listingCount > 0 ? listingCount : 14_802;
+
+  const stats: MarketStat[] = [
     {
-      label: t('stats.projects'),
-      value: projectTotal ?? projects.length,
-      hint: t('stats.projectsHint'),
+      id: 'avgSqft',
+      label: t('avgSqft'),
+      hint: t('avgSqftHint'),
+      tone: 'positive',
+      display: String(MARKET_AVG_SQFT_USD),
+      numericValue: MARKET_AVG_SQFT_USD,
+      formatStyle: 'currencyUsd',
     },
     {
-      label: t('stats.listings'),
-      value: listingCount,
-      hint: t('stats.availableHint', { count: availableCount }),
+      id: 'listings',
+      label: t('activeListings'),
+      hint: t('activeListingsHint'),
+      tone: 'positive',
+      display: String(activeListings),
+      numericValue: activeListings,
+      formatStyle: 'integer',
     },
     {
-      label: t('stats.builders'),
-      value: builderCount,
-      hint: t('stats.buildersHint'),
+      id: 'mortgage',
+      label: t('mortgageRate'),
+      hint: t('mortgageRateHint'),
+      tone: 'caution',
+      display: `${MARKET_MORTGAGE_RATE.toFixed(2)}%`,
     },
     {
-      label: t('stats.cities'),
-      value: cities || 1,
-      hint: t('stats.citiesHint'),
+      id: 'days',
+      label: t('medianDays'),
+      hint: t('medianDaysHint'),
+      tone: 'positive',
+      display: String(MARKET_MEDIAN_DAYS),
+      numericValue: MARKET_MEDIAN_DAYS,
+      formatStyle: 'integer',
     },
   ];
 
   return (
     <div className="relative z-10 mx-auto -mt-14 w-full max-w-content px-6 sm:-mt-16">
       <Reveal>
-        <div className="border border-border/50 bg-surface-elevated/95 px-5 py-7 shadow-lg backdrop-blur-md sm:px-10">
-          <div className="mb-6 flex items-baseline justify-between gap-4 border-b border-border/60 pb-4">
-            <p className="text-eyebrow mb-0">{t('stats.badge')}</p>
-            <span className="hidden h-px flex-1 bg-border/80 sm:block" aria-hidden />
-          </div>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-0">
-            {stats.map((stat, index) => (
-              <div
-                key={stat.label}
-                className={
-                  index === 0 ? 'lg:pr-8' : 'border-border lg:border-l lg:px-8 lg:last:pr-0'
-                }
-              >
-                <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-ink-muted">
+        <div
+          className={cn(
+            'rounded-[20px] bg-brand-deep p-8 text-canvas',
+            'shadow-[0_20px_25px_-5px_rgb(9_43_68/0.1),0_8px_10px_-6px_rgb(9_43_68/0.1)]',
+          )}
+        >
+          <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
+            {stats.map((stat) => (
+              <div key={stat.id}>
+                <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-canvas/50">
                   {stat.label}
                 </p>
-                <p className="mt-2 font-display text-[1.85rem] font-semibold tracking-tight text-ink">
-                  <AnimatedCounter value={stat.value} />
+                <p className="mt-1.5 font-brand text-[1.875rem] font-bold leading-9 tracking-tight text-canvas">
+                  {stat.numericValue != null && stat.formatStyle ? (
+                    <AnimatedCounter
+                      value={stat.numericValue}
+                      formatStyle={stat.formatStyle}
+                      locale={locale}
+                    />
+                  ) : (
+                    stat.display
+                  )}
                 </p>
-                <p className="mt-1 text-xs text-ink-secondary">{stat.hint}</p>
+                <p
+                  className={cn(
+                    'mt-1 text-xs font-medium leading-4',
+                    stat.tone === 'positive' ? 'text-stat-positive' : 'text-stat-caution',
+                  )}
+                >
+                  {stat.hint}
+                </p>
               </div>
             ))}
           </div>

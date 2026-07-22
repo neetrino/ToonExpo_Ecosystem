@@ -8,18 +8,18 @@ import { FavoriteToggleButton } from '@/features/buyer/components/favorite-toggl
 import { usePriceOverlay } from '@/features/catalog/components/price-overlay-scope';
 import { formatCompactPrice, formatPriceRange } from '@/features/catalog/utils/format-price';
 import { Link } from '@/i18n/navigation';
-import { Badge } from '@/shared/ui/badge';
 import { cn } from '@/shared/ui/cn';
 
 type ProjectCardProps = {
   project: ProjectListItem;
   className?: string | undefined;
+  /** Compact marketplace price (e.g. 1.2M AMD) instead of full range. */
   featured?: boolean | undefined;
   showFavorite?: boolean | undefined;
 };
 
 /**
- * Catalog project card: cover, name, city, price range, availability.
+ * Marketplace project card — Figma listing grid (`81:176` / `81:177`).
  */
 export const ProjectCard = ({
   project,
@@ -29,15 +29,16 @@ export const ProjectCard = ({
 }: ProjectCardProps) => {
   const t = useTranslations('Catalog');
   const locale = useLocale();
-  const location =
-    project.locationText ?? [project.district, project.city].filter(Boolean).join(', ');
+  const district = project.district?.trim() || null;
+  const city = project.city?.trim() || null;
+  const locationFallback = project.locationText?.trim() || null;
   const range = usePriceOverlay().getProjectRange(project.id) ?? project;
   const priceLabel = featured
     ? formatCompactPrice({
         amount: range.minPrice,
         currency: range.priceCurrency,
         locale,
-        fromLabel: t('price.from'),
+        fromLabel: '',
         onRequestLabel: t('price.onRequest'),
       })
     : formatPriceRange({
@@ -51,11 +52,13 @@ export const ProjectCard = ({
   return (
     <article
       className={cn(
-        'group flex flex-col overflow-hidden rounded-md border border-border/60 bg-surface-elevated shadow-sm transition-[box-shadow,transform,border-color] duration-[var(--duration-base)] ease-[var(--ease-out-premium)] hover:-translate-y-1 hover:border-brand/25 hover:shadow-card',
+        'group flex flex-col overflow-hidden rounded-[20px] bg-surface-elevated p-2',
+        'ring-1 ring-header-border transition-all duration-[var(--duration-base)]',
+        'hover:shadow-lg hover:shadow-brand/5 hover:ring-brand/40',
         className,
       )}
     >
-      <div className="relative aspect-[4/3] overflow-hidden">
+      <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-surface">
         <Link href={`/projects/${project.id}`} className="absolute inset-0 block">
           {project.cover ? (
             <Image
@@ -66,16 +69,21 @@ export const ProjectCard = ({
               sizes="(max-width: 768px) 100vw, 33vw"
             />
           ) : (
-            <div className="flex size-full items-center justify-center bg-surface text-sm text-ink-muted">
+            <div className="flex size-full items-center justify-center bg-surface text-sm text-header-muted">
               {project.name}
             </div>
           )}
         </Link>
-        <Badge className="absolute top-3 left-3 border-white/60 bg-white/90 text-ink backdrop-blur-sm">
-          {t('availability.availableCount', {
-            count: project.availability.available,
-          })}
-        </Badge>
+
+        <span
+          className={cn(
+            'pointer-events-none absolute top-3 left-3 rounded-sm bg-canvas/95 px-2 py-1',
+            'text-[10px] font-bold tracking-widest text-brand-deep uppercase',
+          )}
+        >
+          {t('badges.verified')}
+        </span>
+
         {showFavorite ? (
           <FavoriteToggleButton
             targetType="project"
@@ -85,61 +93,53 @@ export const ProjectCard = ({
         ) : null}
       </div>
 
-      <div className="flex flex-1 flex-col gap-2 p-4 sm:p-5">
-        <div className="flex items-start justify-between gap-2">
-          <h3 className="text-card-title text-ink">
-            <Link href={`/projects/${project.id}`} className="transition-colors hover:text-brand">
+      <div className="flex flex-1 flex-col px-3 pt-4 pb-3">
+        <div className="mb-1 flex items-start justify-between gap-3">
+          <h3 className="min-w-0 truncate font-brand text-base font-semibold tracking-[-0.02em] text-ink-navy">
+            <Link
+              href={`/projects/${project.id}`}
+              className="transition-colors hover:text-brand-deep"
+            >
               {project.name}
             </Link>
           </h3>
-          <p className="shrink-0 text-xs font-semibold text-ink">{priceLabel}</p>
-        </div>
-        <div className="flex items-center gap-2">
-          {project.builder.logoUrl ? (
-            <span className="relative size-6 shrink-0 overflow-hidden rounded-sm bg-surface">
-              <Image
-                src={project.builder.logoUrl}
-                alt={project.builder.name}
-                fill
-                className="object-cover"
-                sizes="24px"
-              />
-            </span>
-          ) : null}
-          <p className="min-w-0 text-[11px] text-ink-muted">
-            {project.builder.name}
-            {location ? ` · ${location}` : null}
+          <p className="shrink-0 font-brand text-lg font-bold leading-7 text-brand-deep">
+            {priceLabel}
           </p>
         </div>
-        {project.shortDescription ? (
-          <p className="line-clamp-2 text-xs leading-relaxed text-ink-secondary">
-            {project.shortDescription}
-          </p>
-        ) : null}
-        <div className="mt-auto grid grid-cols-3 gap-2 pt-2">
-          <AvailabilityTile label={t('availability.total')} value={project.availability.total} />
-          <AvailabilityTile
-            label={t('availability.available')}
-            value={project.availability.available}
-          />
-          <AvailabilityTile label={t('availability.sold')} value={project.availability.sold} />
-        </div>
-        <Link
-          href={`/projects/${project.id}`}
-          className="mt-3 inline-flex h-9 items-center justify-center rounded-sm bg-cta-dark text-sm font-medium text-on-dark transition-colors hover:bg-cta-dark/90"
+
+        <p className="mb-4 text-xs leading-4 text-header-muted">
+          {district && city ? (
+            <>
+              <span>{district}</span>
+              <span>{' · '}</span>
+              <span>{city}</span>
+            </>
+          ) : (
+            (locationFallback ?? city ?? district ?? project.builder.name)
+          )}
+        </p>
+
+        <div
+          className={cn(
+            'mt-auto flex flex-wrap items-center gap-4 border-t border-header-border pt-3',
+            'text-[11px] font-medium tracking-tight text-header-muted uppercase',
+          )}
         >
-          {t('actions.details')}
-        </Link>
+          <SpecStat value={project.availability.available} label={t('availability.availShort')} />
+          <SpecStat value={project.availability.total} label={t('availability.unitsShort')} />
+          <SpecStat value={project.availability.sold} label={t('availability.soldShort')} />
+        </div>
       </div>
     </article>
   );
 };
 
-const AvailabilityTile = ({ label, value }: { label: string; value: number }) => {
+const SpecStat = ({ value, label }: { value: number; label: string }) => {
   return (
-    <div className="rounded-xs bg-surface px-1 py-2 text-center">
-      <p className="text-[9px] font-bold uppercase tracking-wider text-ink-muted">{label}</p>
-      <p className="mt-0.5 text-sm font-semibold text-ink">{value}</p>
-    </div>
+    <span className="inline-flex items-baseline gap-1">
+      <span>{value}</span>
+      <span>{label}</span>
+    </span>
   );
 };

@@ -13,10 +13,7 @@ import { RequestPriceButton } from '@/features/catalog/components/request-price-
 import { SiteFooter } from '@/features/catalog/components/site-footer';
 import { listProjectVisualCanvases } from '@/features/visual-map/api/public-visual-map-api';
 import { PublicVisualMap } from '@/features/visual-map/components/public-visual-map';
-import {
-  buildProjectBuildingHref,
-  pickPrimaryVisualCanvas,
-} from '@/features/visual-map/utils/public-visual-map';
+import { pickPrimaryVisualCanvas } from '@/features/visual-map/utils/public-visual-map';
 import { Link } from '@/i18n/navigation';
 
 type ProjectPageProps = {
@@ -149,7 +146,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             {visualCanvas ? (
               <PublicVisualMap
                 canvas={visualCanvas}
-                buildTargetHref={(hotspot) => buildProjectBuildingHref(project.id, hotspot)}
+                linkContext={{ kind: 'projectBuilding', projectId: project.id }}
               />
             ) : null}
 

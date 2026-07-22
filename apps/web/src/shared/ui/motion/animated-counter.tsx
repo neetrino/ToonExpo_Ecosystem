@@ -6,12 +6,19 @@ import { cn } from '@/shared/ui/cn';
 
 const DEFAULT_DURATION_MS = 900;
 
+export type AnimatedCounterFormatStyle = 'integer' | 'currencyUsd';
+
 type AnimatedCounterProps = {
   value: number;
   className?: string | undefined;
   durationMs?: number | undefined;
-  /** Optional formatter (locale-aware). */
-  format?: ((n: number) => string) | undefined;
+  /**
+   * Serializable format kind for Server → Client boundaries.
+   * Prefer this over a function formatter from RSC parents.
+   */
+  formatStyle?: AnimatedCounterFormatStyle | undefined;
+  /** BCP 47 locale used with `formatStyle`. */
+  locale?: string | undefined;
 };
 
 /**
@@ -21,11 +28,13 @@ export const AnimatedCounter = ({
   value,
   className,
   durationMs = DEFAULT_DURATION_MS,
-  format = (n) => String(Math.round(n)),
+  formatStyle = 'integer',
+  locale = 'en',
 }: AnimatedCounterProps) => {
   const ref = useRef<HTMLSpanElement | null>(null);
   const [display, setDisplay] = useState(0);
   const [started, setStarted] = useState(false);
+  const format = createFormatter(formatStyle, locale);
 
   useEffect(() => {
     const node = ref.current;
@@ -88,4 +97,21 @@ export const AnimatedCounter = ({
       {format(display)}
     </span>
   );
+};
+
+const createFormatter = (
+  formatStyle: AnimatedCounterFormatStyle,
+  locale: string,
+): ((n: number) => string) => {
+  if (formatStyle === 'currencyUsd') {
+    const formatter = new Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 0,
+    });
+    return (n) => formatter.format(Math.round(n));
+  }
+
+  const formatter = new Intl.NumberFormat(locale);
+  return (n) => formatter.format(Math.round(n));
 };

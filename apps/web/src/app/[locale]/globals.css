@@ -5,7 +5,13 @@
   --color-brand: #1a8f98;
   --color-brand-hover: #157a82;
   --color-brand-soft: #e6f4f5;
-  --color-brand-secondary: #1e4f5f;
+  --color-brand-secondary: #2a667b;
+  --color-brand-deep: #092b44;
+  --color-ink-navy: #0b2230;
+  --color-canvas: #fafcfd;
+  --color-header-bg: rgb(250 252 253 / 0.85);
+  --color-header-border: #dde6eb;
+  --color-header-muted: #536672;
 
   /* Champagne accent — subtle luxury highlight */
   --color-accent: #b8956c;
@@ -37,6 +43,8 @@
   /* Status */
   --color-success: #0d9f6e;
   --color-success-soft: #e6f7f0;
+  --color-stat-positive: #5ee9b5;
+  --color-stat-caution: #ffd230;
   --color-warning: #c47d1a;
   --color-warning-soft: #fef6e8;
   --color-danger: #c53d3d;
@@ -358,11 +366,12 @@
   }
 
   .text-section-title {
-    font-family: var(--font-display);
-    font-size: clamp(1.45rem, 2.4vw, 2rem);
-    font-weight: 650;
-    letter-spacing: -0.03em;
-    line-height: 1.18;
+    font-family: var(--font-brand);
+    font-size: clamp(1.75rem, 3.2vw, 2.25rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    color: var(--color-ink-navy);
   }
 
   .text-card-title {
@@ -391,9 +400,9 @@
     font-family: var(--font-ui);
     font-size: 0.6875rem;
     font-weight: 700;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: var(--color-accent);
+    color: var(--color-brand-secondary);
   }
 
   .text-caption {

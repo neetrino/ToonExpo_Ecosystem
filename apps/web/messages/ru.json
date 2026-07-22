@@ -14,17 +14,49 @@
       "description": "Публичный каталог новостроек, квартир и застройщиков в Армении."
     },
     "hero": {
-      "eyebrow": "Выставка недвижимости Армении",
-      "title": "Toon Expo",
+      "eyebrow": "Маркетплейс · 14 802 проверенных объявления",
+      "title": "Найдите адрес, который определит вашу следующую главу.",
+      "subtitle": "Ищите дома, сравнивайте новостройки и оформляйте финансирование с банками-партнёрами — прозрачно, в одном месте.",
       "findProject": "Найдите следующий дом с уверенностью",
       "searchLabel": "Поиск проектов",
       "searchPlaceholder": "Проект, застройщик или город…",
-      "search": "Найти",
+      "search": "Искать дома",
       "explore": "Смотреть проекты",
-      "register": "Бесплатная регистрация"
+      "register": "Бесплатная регистрация",
+      "tabsLabel": "Режим поиска",
+      "tabs": {
+        "buy": "Купить",
+        "rent": "Аренда",
+        "newBuilds": "Новостройки"
+      },
+      "locationLabel": "Локация",
+      "locationPlaceholder": "Город, район или название здания",
+      "priceLabel": "Цена",
+      "priceUnder250k": "До $250k",
+      "price250to500": "$250k – $500k",
+      "price500to2m": "$500k – $2M",
+      "priceOver2m": "$2M+",
+      "bedsLabel": "Спальни",
+      "bedsValue": "{count}+",
+      "popular": "Популярное:",
+      "popularCities": {
+        "yerevan": "Ереван",
+        "gyumri": "Гюмри",
+        "vanadzor": "Ванадзор",
+        "dilijan": "Дилижан",
+        "tsaghkadzor": "Цахкадзор"
+      }
     },
     "stats": {
       "badge": "Пульс рынка",
+      "avgSqft": "Ср. $ / кв.фт",
+      "avgSqftHint": "+4.2% г/г",
+      "activeListings": "Активные объявления",
+      "activeListingsHint": "+312 за неделю",
+      "mortgageRate": "30-летняя фикс.",
+      "mortgageRateHint": "–0.08 нед/нед",
+      "medianDays": "Медиана дней на рынке",
+      "medianDaysHint": "Стабильно",
       "projects": "Проекты",
       "projectsHint": "Опубликовано",
       "listings": "Объекты",
@@ -35,10 +67,33 @@
       "citiesHint": "Покрытие"
     },
     "featured": {
-      "eyebrow": "Избранное",
-      "title": "Проекты, на которые стоит обратить внимание",
-      "viewAll": "Все проекты",
+      "eyebrow": "Новое в продаже",
+      "title": "Отобранные, проверенные, готовые к просмотру.",
+      "viewAll": "Все объявления →",
       "empty": "Пока нет опубликованных проектов."
+    },
+    "developments": {
+      "eyebrow": "Строится",
+      "title": "Новостройки, за которыми стоит следить.",
+      "viewAll": "Все проекты →",
+      "empty": "Пока нет новостроек.",
+      "soldPercent": "% продано",
+      "soldProgressLabel": "{percent}% продано",
+      "completionTba": "Сдача уточняется",
+      "completionTbaShort": "Скоро",
+      "mapEyebrow": "Карта",
+      "mapTitle": "Все новостройки на одной карте.",
+      "browseList": "Смотреть список →",
+      "mapPlaceholder": "Интерактивная карта скоро — пока смотрите проекты по городам.",
+      "allDevelopments": "Все объекты",
+      "units": "Юниты",
+      "sold": "Продано",
+      "done": "Сдача",
+      "badges": {
+        "preSale": "Предпродажа",
+        "selling": "В продаже",
+        "underConstruction": "Строится"
+      }
     },
     "builders": {
       "eyebrow": "Застройщики",
@@ -109,10 +164,14 @@
   "Nav": {
     "main": "Основная навигация",
     "menu": "Открыть меню",
+    "buy": "Купить",
+    "newDevelopments": "Новостройки",
+    "marketInsights": "Аналитика рынка",
     "projects": "Проекты",
     "builders": "Застройщики",
     "login": "Войти",
     "register": "Регистрация",
+    "listProperty": "Разместить объект",
     "profile": "Профиль",
     "loading": "…",
     "partners": "Партнёры",
@@ -157,7 +216,13 @@
       "reserved": "Бронь",
       "sold": "Продано",
       "summary": "Наличие",
-      "availableCount": "{count} своб."
+      "availableCount": "{count} своб.",
+      "availShort": "Своб.",
+      "unitsShort": "Юниты",
+      "soldShort": "Прод."
+    },
+    "badges": {
+      "verified": "Проверено"
     },
     "actions": {
       "details": "Подробнее",

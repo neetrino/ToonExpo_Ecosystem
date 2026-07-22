@@ -6,16 +6,27 @@ import { useState } from 'react';
 
 import { PercentMapMarkers } from '@/features/visual-map/components/percent-map-markers';
 import { PublicVisualHotspotSheet } from '@/features/visual-map/components/public-visual-hotspot-sheet';
+import {
+  buildBuildingFloorHref,
+  buildFloorApartmentHref,
+  buildProjectBuildingHref,
+} from '@/features/visual-map/utils/public-visual-map';
+
+/** Serializable link context — do not pass functions from RSC parents. */
+export type PublicVisualMapLinkContext =
+  | { kind: 'projectBuilding'; projectId: string }
+  | { kind: 'buildingFloor'; projectId: string; buildingId: string }
+  | { kind: 'floorApartment' };
 
 type PublicVisualMapProps = {
   canvas: PublicVisualCanvasItem;
-  buildTargetHref: (hotspot: PublicVisualHotspotItem) => string;
+  linkContext: PublicVisualMapLinkContext;
 };
 
 /**
  * Public visual map with tappable SVG markers and optional bottom sheet.
  */
-export const PublicVisualMap = ({ canvas, buildTargetHref }: PublicVisualMapProps) => {
+export const PublicVisualMap = ({ canvas, linkContext }: PublicVisualMapProps) => {
   const t = useTranslations('Catalog.visualMap');
   const [selectedHotspotId, setSelectedHotspotId] = useState<string | null>(null);
 
@@ -58,10 +69,24 @@ export const PublicVisualMap = ({ canvas, buildTargetHref }: PublicVisualMapProp
       {selectedHotspot ? (
         <PublicVisualHotspotSheet
           hotspot={selectedHotspot}
-          targetHref={buildTargetHref(selectedHotspot)}
+          targetHref={resolveTargetHref(linkContext, selectedHotspot)}
           onClose={() => setSelectedHotspotId(null)}
         />
       ) : null}
     </section>
   );
+};
+
+const resolveTargetHref = (
+  linkContext: PublicVisualMapLinkContext,
+  hotspot: PublicVisualHotspotItem,
+): string => {
+  switch (linkContext.kind) {
+    case 'projectBuilding':
+      return buildProjectBuildingHref(linkContext.projectId, hotspot);
+    case 'buildingFloor':
+      return buildBuildingFloorHref(linkContext.projectId, linkContext.buildingId, hotspot);
+    case 'floorApartment':
+      return buildFloorApartmentHref(hotspot);
+  }
 };

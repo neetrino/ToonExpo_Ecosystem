@@ -28,11 +28,10 @@ const isAuthRoute = (pathname: string): boolean => {
 export const PublicChrome = ({ children }: PublicChromeProps) => {
   const pathname = usePathname();
   const showPublicHeader = !isPortalRoute(pathname) && !isAuthRoute(pathname);
-  const headerVariant = pathname === '/' ? 'transparent' : 'solid';
 
   return (
     <>
-      {showPublicHeader ? <SiteHeader variant={headerVariant} /> : null}
+      {showPublicHeader ? <SiteHeader variant="solid" /> : null}
       {children}
     </>
   );

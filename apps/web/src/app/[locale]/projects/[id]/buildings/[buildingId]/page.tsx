@@ -9,10 +9,7 @@ import { ProjectPricesOverlayScope } from '@/features/catalog/components/price-o
 import { getBuilding } from '@/features/catalog/api/catalog-api';
 import { listBuildingVisualCanvases } from '@/features/visual-map/api/public-visual-map-api';
 import { PublicVisualMap } from '@/features/visual-map/components/public-visual-map';
-import {
-  buildBuildingFloorHref,
-  pickPrimaryVisualCanvas,
-} from '@/features/visual-map/utils/public-visual-map';
+import { pickPrimaryVisualCanvas } from '@/features/visual-map/utils/public-visual-map';
 import { Link } from '@/i18n/navigation';
 import { SiteFooter } from '@/features/catalog/components/site-footer';
 
@@ -97,9 +94,11 @@ export default async function BuildingPage({ params }: BuildingPageProps) {
             <div className="mb-8">
               <PublicVisualMap
                 canvas={visualCanvas}
-                buildTargetHref={(hotspot) =>
-                  buildBuildingFloorHref(building.project.id, building.id, hotspot)
-                }
+                linkContext={{
+                  kind: 'buildingFloor',
+                  projectId: building.project.id,
+                  buildingId: building.id,
+                }}
               />
             </div>
           ) : null}
