@@ -30,11 +30,17 @@ type PortalShellProps = {
 
 /**
  * SiteHeader pill chrome is ~4.5rem (top inset + h-16).
- * Rail sits one gap below that and fills the rest of the viewport.
+ * Sidebar starts one gap below that; content mask extends a bit lower so
+ * scrolled main content begins disappearing under the header earlier.
  */
-const SITE_HEADER_RAIL_TOP_CLASS = 'top-[5.5rem]';
-const SITE_HEADER_RAIL_HEIGHT_CLASS = 'h-[calc(100dvh-5.5rem)]';
-const SITE_HEADER_RAIL_ROW_GAP_CLASS = 'md:pt-4';
+const RAIL_CHROME_TOP_CLASS = 'top-[5.5rem]';
+const RAIL_CHROME_HEIGHT_CLASS = 'h-[calc(100dvh-5.5rem)]';
+/** Header spacer band under the fixed pill. */
+const RAIL_HEADER_BAND_HEIGHT_CLASS = 'h-[4.5rem]';
+/** Header band + light extra clip so content vanishes just below the header edge. */
+const RAIL_CONTENT_MASK_HEIGHT_CLASS = 'h-[5.125rem]';
+const RAIL_SIDEBAR_WIDTH_CLASS = 'w-72';
+const RAIL_ROW_GAP_CLASS = 'md:pt-4';
 
 /**
  * Shared portal chrome: top bar + desktop sidebar + mobile drawer.
@@ -84,7 +90,7 @@ export const PortalShell = ({
           <div
             className={cn(
               'pointer-events-none fixed inset-x-0 top-0 z-[var(--z-sticky)] bg-background',
-              'h-[6.25rem]',
+              RAIL_HEADER_BAND_HEIGHT_CLASS,
             )}
             aria-hidden
           />

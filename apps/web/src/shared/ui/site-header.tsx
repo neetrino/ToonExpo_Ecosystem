@@ -4,13 +4,13 @@ import { Menu, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
-import { useLogoutMutation, useMeQuery } from '@/features/auth/hooks/use-auth';
-import { Link, usePathname, useRouter } from '@/i18n/navigation';
+import { LogoutButton } from '@/features/auth/components/logout-button';
+import { useMeQuery } from '@/features/auth/hooks/use-auth';
+import { Link, usePathname } from '@/i18n/navigation';
 import { BrandLogo } from '@/shared/ui/brand-logo';
 import { cn } from '@/shared/ui/cn';
 import { IconButton } from '@/shared/ui/icon-button';
 import { LocaleSwitcher } from '@/shared/ui/locale-switcher';
-import { ProfileMenu } from '@/shared/ui/profile-menu';
 
 type SiteHeaderProps = {
   className?: string | undefined;
@@ -45,11 +45,8 @@ const HEADER_SPACER_CLASS = 'h-[4.5rem]';
  */
 export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) => {
   const t = useTranslations('Nav');
-  const tAuth = useTranslations('Auth');
   const pathname = usePathname();
-  const router = useRouter();
   const { data: user, isLoading, isFetching } = useMeQuery();
-  const logoutMutation = useLogoutMutation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [showPill, setShowPill] = useState(false);
   const [authReady, setAuthReady] = useState(false);
