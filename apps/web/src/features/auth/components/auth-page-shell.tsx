@@ -26,7 +26,7 @@ type ShellCopy = {
 };
 
 /**
- * Branded auth layout — cinematic panel with lightning seam + luxury form column.
+ * Branded auth layout — cinematic panel + luxury form column.
  * Form column fits the viewport (scale-to-fit) so login/register do not page-scroll.
  */
 export const AuthPageShell = async ({ title, subtitle, children, variant }: AuthPageShellProps) => {
@@ -80,7 +80,6 @@ const AuthVisualPanel = ({ copy }: { copy: ShellCopy }) => {
         <div className="hero-cinematic-haze pointer-events-none absolute inset-0" />
         <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/60 to-ink/35" />
         <div className="absolute inset-0 bg-gradient-to-br from-brand/30 via-transparent to-accent/20" />
-        <AuthSeamStroke />
       </div>
 
       <BrandLogo inverted size="lg" className="relative shrink-0" />
@@ -98,23 +97,6 @@ const AuthVisualPanel = ({ copy }: { copy: ShellCopy }) => {
         </p>
       </div>
     </aside>
-  );
-};
-
-/** Champagne accent path tracing the jagged seam. */
-const AuthSeamStroke = () => {
-  return (
-    <svg
-      className="pointer-events-none absolute inset-0 size-full"
-      viewBox="0 0 100 100"
-      preserveAspectRatio="none"
-      aria-hidden
-    >
-      <path
-        className="auth-seam-stroke"
-        d="M97 0 L99.2 3.5 L96 8 L99.5 13 L95.5 19 L99 25.5 L95 33 L99.6 41 L96 49 L99.2 57 L94.8 66 L98.8 74 L95.5 82 L99.4 90 L96.5 100"
-      />
-    </svg>
   );
 };
 
