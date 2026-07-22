@@ -47,16 +47,19 @@ const isProjectDetailRoute = (pathname: string): boolean => {
  * Auth routes use AuthPageShell instead of the public header.
  * Home and project detail use a transparent header so the hero sits under the bar;
  * other public pages use the same floating pill chrome as home-after-scroll.
- * Public pages use DesktopFluidFrame so desktop composition scales like ma-marie.
+ * Public + portal pages use DesktopFluidFrame so desktop composition scales like ma-marie.
  */
 export const PublicChrome = ({ children }: PublicChromeProps) => {
   const pathname = usePathname();
-  const showPublicHeader = !isPortalRoute(pathname) && !isAuthRoute(pathname);
   const headerVariant =
     isHomeRoute(pathname) || isProjectDetailRoute(pathname) ? 'transparent' : 'solid';
 
-  if (!showPublicHeader) {
+  if (isAuthRoute(pathname)) {
     return children;
+  }
+
+  if (isPortalRoute(pathname)) {
+    return <DesktopFluidFrame>{children}</DesktopFluidFrame>;
   }
 
   return (
