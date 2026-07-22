@@ -177,7 +177,12 @@ const LocaleSwitcherInner = ({ tone = 'light' }: LocaleSwitcherProps) => {
         aria-controls={listId}
         aria-busy={isPending}
         disabled={isPending}
-        onClick={() => setOpen((value) => !value)}
+        onClick={() => {
+          // Hover/focus may already open the menu; a following click must not
+          // toggle it closed (Playwright and real pointer users both hit this).
+          clearCloseTimer();
+          setOpen(true);
+        }}
         onFocus={openMenu}
       >
         <span>{LOCALE_CODE[displayLocale] ?? displayLocale.toUpperCase()}</span>

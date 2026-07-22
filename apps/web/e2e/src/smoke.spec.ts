@@ -46,7 +46,7 @@ test.describe('smoke', () => {
     await expect(
       page.getByRole('heading', { name: 'Ընտրված, ստուգված, պատրաստ շրջայցի։' }),
     ).toBeVisible();
-    await expect(page.getByRole('link', { name: /Բոլոր հայտարարությունները/ })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Բոլոր հայտարարությունները →' })).toBeVisible();
   });
 
   test('projects catalog drill-down to apartment', async ({ page }) => {
@@ -260,7 +260,8 @@ test.describe('smoke', () => {
 
   test('language switch hy → ru', async ({ page }) => {
     await page.goto('/hy');
-    await page.getByRole('button', { name: 'Լեզու' }).first().click();
+    const languageButton = page.getByRole('button', { name: 'Լեզու' }).first();
+    await languageButton.hover();
     await expect(page.getByRole('listbox', { name: 'Լեզու' })).toBeVisible();
     await page.getByRole('option', { name: 'Русский' }).click();
     await expect(page).toHaveURL(/\/ru(\/|$)/);
