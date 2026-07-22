@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
+import { convertAmdToDisplayAmount, displayCurrencyForLocale } from './display-currency';
 import {
   formatCatalogPrice,
   formatCompactPrice,
@@ -43,6 +44,22 @@ describe('resolveHiddenPriceLabel', () => {
   });
 });
 
+describe('displayCurrencyForLocale', () => {
+  it('maps locales to display currencies', () => {
+    expect(displayCurrencyForLocale('hy')).toBe('AMD');
+    expect(displayCurrencyForLocale('en')).toBe('USD');
+    expect(displayCurrencyForLocale('ru')).toBe('RUB');
+  });
+});
+
+describe('convertAmdToDisplayAmount', () => {
+  it('converts with default FX rates', () => {
+    expect(convertAmdToDisplayAmount(39_000_000, 'USD')).toBe(100_000);
+    expect(convertAmdToDisplayAmount(40_000_000, 'RUB')).toBe(10_000_000);
+    expect(convertAmdToDisplayAmount(61_500_000, 'AMD')).toBe(61_500_000);
+  });
+});
+
 describe('formatCatalogPrice', () => {
   it('returns sign-in label when visible_after_login and amount missing', () => {
     expect(
@@ -70,43 +87,54 @@ describe('formatCatalogPrice', () => {
     ).toBe('Price on request');
   });
 
-  it('formats public AMD amounts', () => {
+  it('formats public AMD amounts in dram for hy', () => {
     const formatted = formatCatalogPrice({
       amount: '61500000',
       currency: 'AMD',
-      locale: 'en',
+      locale: 'hy',
       priceVisibility: 'public',
       onRequestLabel: 'Price on request',
     });
+    expect(formatted).toContain('֏');
     expect(formatted).toContain('61');
-    expect(formatted.length).toBeGreaterThan(3);
   });
 });
 
 describe('formatCompactPrice', () => {
-  it('formats millions with from label', () => {
+  it('keeps AMD dram for Armenian', () => {
     expect(
       formatCompactPrice({
-        amount: '61500000',
+        amount: '39000000',
+        currency: 'AMD',
+        locale: 'hy',
+        fromLabel: 'սկսած',
+        onRequestLabel: 'Price on request',
+      }),
+    ).toBe(`սկսած 39${'\u00a0'}000${'\u00a0'}000 ֏`);
+  });
+
+  it('converts to USD for English', () => {
+    expect(
+      formatCompactPrice({
+        amount: '39000000',
         currency: 'AMD',
         locale: 'en',
         fromLabel: 'from',
         onRequestLabel: 'Price on request',
       }),
-    ).toBe('from 61.5M AMD');
+    ).toBe('from $100,000');
   });
 
-  it('uses the same decimal separator for every locale (hydration-safe)', () => {
-    const options = {
-      amount: '51500000',
-      currency: 'AMD',
-      fromLabel: 'սկսած',
-      onRequestLabel: 'Price on request',
-    } as const;
-
-    expect(formatCompactPrice({ ...options, locale: 'hy' })).toBe('սկսած 51.5M AMD');
-    expect(formatCompactPrice({ ...options, locale: 'ru' })).toBe('սկսած 51.5M AMD');
-    expect(formatCompactPrice({ ...options, locale: 'en' })).toBe('սկսած 51.5M AMD');
+  it('converts to RUB for Russian', () => {
+    expect(
+      formatCompactPrice({
+        amount: '40000000',
+        currency: 'AMD',
+        locale: 'ru',
+        fromLabel: 'от',
+        onRequestLabel: 'Price on request',
+      }),
+    ).toBe(`от 10${'\u00a0'}000${'\u00a0'}000 ₽`);
   });
 
   it('returns on-request when amount missing', () => {

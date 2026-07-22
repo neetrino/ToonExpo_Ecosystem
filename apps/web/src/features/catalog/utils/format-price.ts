@@ -1,7 +1,10 @@
 import type { PriceVisibility } from '@toonexpo/contracts';
 
-const COMPACT_MILLION = 1_000_000;
-const COMPACT_THOUSAND = 1_000;
+import {
+  convertAmdToDisplayAmount,
+  displayCurrencyForLocale,
+  type DisplayCurrency,
+} from '@/features/catalog/utils/display-currency';
 
 export type FormatPriceOptions = {
   amount: string | number | null | undefined;
@@ -68,26 +71,43 @@ const formatInvariantDecimal = (value: number, maxFractionDigits: number): strin
 };
 
 /**
- * SSR/client-safe currency amount (fixed en-US + Latin digits).
+ * Groups an integer with a fixed separator (hydration-safe across Node/browser ICU).
  */
-const formatInvariantCurrency = (value: number, currencyCode: string): string => {
-  try {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currencyCode,
-      maximumFractionDigits: 0,
-      numberingSystem: 'latn',
-    }).format(value);
-  } catch {
-    return `${formatInvariantDecimal(value, 0)} ${currencyCode}`.trim();
+const formatGroupedInteger = (value: number, groupSeparator: string): string => {
+  const digits = formatInvariantDecimal(value, 0);
+  return digits.replace(/\B(?=(\d{3})+(?!\d))/g, groupSeparator);
+};
+
+const formatDisplayAmount = (value: number, displayCurrency: DisplayCurrency): string => {
+  if (displayCurrency === 'USD') {
+    return `$${formatGroupedInteger(value, ',')}`;
   }
+  if (displayCurrency === 'RUB') {
+    return `${formatGroupedInteger(value, '\u00a0')} ₽`;
+  }
+  return `${formatGroupedInteger(value, '\u00a0')} ֏`;
+};
+
+/**
+ * Formats a stored catalog amount for the active UI locale.
+ * AMD prices convert to USD (en) or RUB (ru); hy stays AMD.
+ */
+const formatLocaleCurrency = (value: number, currencyCode: string, locale: string): string => {
+  if (currencyCode === 'AMD') {
+    const displayCurrency = displayCurrencyForLocale(locale);
+    const displayAmount = convertAmdToDisplayAmount(value, displayCurrency);
+    return formatDisplayAmount(displayAmount, displayCurrency);
+  }
+
+  const groupSeparator = displayCurrencyForLocale(locale) === 'USD' ? ',' : '\u00a0';
+  return `${formatGroupedInteger(value, groupSeparator)} ${currencyCode}`;
 };
 
 /**
  * Formats a catalog price for display, or returns the hidden-price label.
  */
 export const formatCatalogPrice = (options: FormatPriceOptions): string => {
-  const { amount, currency, priceVisibility, onRequestLabel, signInLabel } = options;
+  const { amount, currency, locale, priceVisibility, onRequestLabel, signInLabel } = options;
 
   if (isPriceHidden(priceVisibility, amount) || amount == null) {
     return resolveHiddenPriceLabel({
@@ -103,12 +123,11 @@ export const formatCatalogPrice = (options: FormatPriceOptions): string => {
   }
 
   const currencyCode = currency && currency.length === 3 ? currency : 'AMD';
-  return formatInvariantCurrency(value, currencyCode);
+  return formatLocaleCurrency(value, currencyCode, locale);
 };
 
 /**
- * Formats a compact “from …” price for project cards (e.g. 61.5M AMD).
- * Magnitude uses invariant decimals so SSR and the browser always match.
+ * Formats a “from …” price for project cards with locale currency conversion.
  */
 export const formatCompactPrice = (options: {
   amount: string | number | null | undefined;
@@ -117,7 +136,7 @@ export const formatCompactPrice = (options: {
   fromLabel: string;
   onRequestLabel: string;
 }): string => {
-  const { amount, currency, fromLabel, onRequestLabel } = options;
+  const { amount, currency, locale, fromLabel, onRequestLabel } = options;
 
   if (amount == null || amount === '') {
     return onRequestLabel;
@@ -128,17 +147,8 @@ export const formatCompactPrice = (options: {
     return onRequestLabel;
   }
 
-  let compact: string;
-  if (value >= COMPACT_MILLION) {
-    compact = `${formatInvariantDecimal(value / COMPACT_MILLION, 1)}M`;
-  } else if (value >= COMPACT_THOUSAND) {
-    compact = `${formatInvariantDecimal(value / COMPACT_THOUSAND, 0)}K`;
-  } else {
-    compact = formatInvariantDecimal(value, 0);
-  }
-
-  const currencyPart = currency ? ` ${currency}` : '';
-  const amountLabel = `${compact}${currencyPart}`.trim();
+  const currencyCode = currency && currency.length === 3 ? currency : 'AMD';
+  const amountLabel = formatLocaleCurrency(value, currencyCode, locale);
   return fromLabel.length > 0 ? `${fromLabel} ${amountLabel}` : amountLabel;
 };
 
