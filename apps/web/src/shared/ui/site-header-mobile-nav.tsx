@@ -12,7 +12,7 @@ type NavHref = '/apartments' | '/developments' | '/partners' | '/mortgage';
 type SiteHeaderMobileNavProps = {
   navItems: ReadonlyArray<{
     href: NavHref;
-    key: 'buy' | 'newDevelopments' | 'marketInsights' | 'mortgage';
+    key: 'buy' | 'newDevelopments' | 'partners' | 'mortgage';
   }>;
   pathname: string;
   user: UserResponse | undefined;
