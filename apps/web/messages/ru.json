@@ -186,6 +186,32 @@
     "mortgage": "Ипотека",
     "expoMap": "Карта выставки"
   },
+  "BuyPage": {
+    "title": "Квартиры в продаже",
+    "results": "{count} результатов",
+    "empty": "По этим фильтрам квартир нет.",
+    "homesInView": "{count} квартир в зоне",
+    "badgeVerified": "Проверено",
+    "badgeNew": "Новое",
+    "unitTitle": "Кв. {number} · {project}",
+    "specBed": "{count} комн.",
+    "specArea": "{area} м²",
+    "saveSearchHint": "Сохраните поиск, чтобы получать уведомления о новых подходящих объектах.",
+    "saveSearch": "Сохранить поиск",
+    "filters": {
+      "location": "Локация",
+      "allCities": "Все города",
+      "price": "Цена",
+      "min": "От",
+      "max": "До",
+      "beds": "Комнаты",
+      "status": "Статус"
+    },
+    "meta": {
+      "title": "Квартиры в продаже — ToonExpo",
+      "description": "Смотрите проверенные квартиры с фильтрами и картой."
+    }
+  },
   "DevelopmentsPage": {
     "eyebrow": "Новостройки",
     "title": "Небосвод формируется — с живой доступностью квартир.",

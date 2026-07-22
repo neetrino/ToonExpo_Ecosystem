@@ -27,7 +27,7 @@ export const SiteFooter = async () => {
             </p>
             <ul className="mt-9 flex flex-col gap-3 text-sm text-header-muted">
               <li>
-                <Link href="/projects" className="transition-colors hover:text-brand-deep">
+                <Link href="/apartments" className="transition-colors hover:text-brand-deep">
                   {t('links.allListings')}
                 </Link>
               </li>

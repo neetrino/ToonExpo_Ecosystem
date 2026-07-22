@@ -186,6 +186,32 @@
     "admin": "Admin",
     "loading": "…"
   },
+  "BuyPage": {
+    "title": "Homes for sale",
+    "results": "{count} results",
+    "empty": "No homes match these filters yet.",
+    "homesInView": "{count} homes in view",
+    "badgeVerified": "Verified",
+    "badgeNew": "New",
+    "unitTitle": "Apt. {number} · {project}",
+    "specBed": "{count} Bed",
+    "specArea": "{area} m²",
+    "saveSearchHint": "Save this search to get email alerts when new homes match.",
+    "saveSearch": "Save search",
+    "filters": {
+      "location": "Location",
+      "allCities": "All cities",
+      "price": "Price",
+      "min": "Min",
+      "max": "Max",
+      "beds": "Beds",
+      "status": "Status"
+    },
+    "meta": {
+      "title": "Apartments for sale — ToonExpo",
+      "description": "Browse verified apartments with live availability, filters, and map view."
+    }
+  },
   "DevelopmentsPage": {
     "eyebrow": "New developments",
     "title": "The skyline taking shape, with live unit availability.",

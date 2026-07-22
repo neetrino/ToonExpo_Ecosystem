@@ -20,7 +20,7 @@ type SiteHeaderProps = {
 };
 
 const NAV_HREFS = [
-  { href: '/projects' as const, key: 'buy' as const },
+  { href: '/apartments' as const, key: 'buy' as const },
   { href: '/developments' as const, key: 'newDevelopments' as const },
   { href: '/partners' as const, key: 'marketInsights' as const },
   { href: '/mortgage' as const, key: 'mortgage' as const },
@@ -269,8 +269,8 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
 };
 
 const isNavActive = (pathname: string, href: (typeof NAV_HREFS)[number]['href']): boolean => {
-  if (href === '/projects') {
-    return pathname.startsWith('/projects') || pathname.startsWith('/apartments');
+  if (href === '/apartments') {
+    return pathname === '/apartments' || pathname.startsWith('/apartments/');
   }
   return pathname.startsWith(href);
 };
