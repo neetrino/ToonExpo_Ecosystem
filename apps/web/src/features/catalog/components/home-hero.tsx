@@ -14,7 +14,7 @@ export const HomeHero = async () => {
   const t = await getTranslations('HomePage');
 
   return (
-    <section className="relative isolate min-h-[min(100svh,829px)] overflow-hidden">
+    <section className="relative isolate min-h-[min(100svh,829px)] overflow-hidden bg-canvas">
       <div className="absolute inset-0 -z-10" aria-hidden>
         <Image
           src={HERO_IMAGE_SRC}
@@ -24,7 +24,7 @@ export const HomeHero = async () => {
           className="scale-110 object-cover object-[center_50%] opacity-90 -translate-y-[4.7%]"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-canvas via-canvas/40 to-canvas" />
+        <div className="hero-skyline-wash absolute inset-0" />
       </div>
 
       <div

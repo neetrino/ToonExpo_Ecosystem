@@ -72,7 +72,7 @@ export const LocaleSwitcher = ({ tone = 'light' }: LocaleSwitcherProps) => {
       <button
         type="button"
         className={cn(
-          'inline-flex h-9 items-center gap-1.5 rounded-sm px-2.5',
+          'inline-flex h-9 items-center gap-1.5 rounded-full px-3',
           'text-xs font-semibold tracking-wide transition-[border-color,background-color,box-shadow,color]',
           'duration-[var(--duration-fast)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/25',
           isDark
@@ -108,7 +108,7 @@ export const LocaleSwitcher = ({ tone = 'light' }: LocaleSwitcherProps) => {
           aria-label={t('languageLabel')}
           className={cn(
             'absolute top-[calc(100%+0.4rem)] right-0 z-[var(--z-dropdown)] min-w-[11rem] overflow-hidden',
-            'rounded-sm border py-1.5 shadow-md',
+            'rounded-xl border py-1.5 shadow-md',
             'animate-[locale-dropdown-in_var(--duration-base)_var(--ease-out-premium)]',
             isDark
               ? 'border-white/15 bg-surface-inverse text-on-dark'
