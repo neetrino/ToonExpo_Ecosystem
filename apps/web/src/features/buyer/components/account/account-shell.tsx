@@ -47,7 +47,7 @@ export const AccountShell = async ({ children, locale }: AccountShellProps) => {
       navLabel={t('nav.label')}
       variant="rail"
       mobileHeader={<AccountMobileSectionTitle />}
-      sidebar={<AccountNav name={user.name} email={user.email} accountType={user.accountType} />}
+      sidebar={<AccountNav accountType={user.accountType} />}
     >
       {children}
     </PortalShell>

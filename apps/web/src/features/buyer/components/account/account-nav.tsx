@@ -5,9 +5,9 @@ import type { AccountType } from '@toonexpo/contracts';
 import type { LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { AccountUserSummary } from '@/features/buyer/components/account/account-user-summary';
 import { useLogoutMutation } from '@/features/auth/hooks/use-auth';
 import { Link, usePathname, useRouter } from '@/i18n/navigation';
+import { BrandLogo } from '@/shared/ui/brand-logo';
 import { cn } from '@/shared/ui/cn';
 
 type NavKey = 'dashboard' | 'password' | 'qr' | 'requests' | 'favorites' | 'checkin';
@@ -54,15 +54,13 @@ const isActive = (pathname: string, href: string): boolean => {
 };
 
 type AccountNavProps = {
-  name: string;
-  email: string;
   accountType: AccountType;
 };
 
 /**
- * Dark-rail account navigation for buyers and other non-admin accounts.
+ * Dark-rail account navigation — same chrome pattern as AdminNav, buyer-focused items.
  */
-export const AccountNav = ({ name, email, accountType }: AccountNavProps) => {
+export const AccountNav = ({ accountType }: AccountNavProps) => {
   const t = useTranslations('Profile.nav');
   const tAuth = useTranslations('Auth');
   const pathname = usePathname();
@@ -74,15 +72,11 @@ export const AccountNav = ({ name, email, accountType }: AccountNavProps) => {
 
   return (
     <nav aria-label={t('label')} className="flex h-full flex-col gap-1">
-      <div className="mb-4 hidden md:block">
-        <p className="mb-3 px-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-on-dark/65">
+      <div className="mb-5 hidden px-2 md:block">
+        <BrandLogo href="/dashboard" size="sm" inverted />
+        <p className="mt-2 px-0.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-on-dark/65">
           {t('portalLabel')}
         </p>
-        <AccountUserSummary name={name} email={email} accountType={accountType} />
-      </div>
-
-      <div className="mb-4 border-b border-on-dark/15 pb-4 md:hidden">
-        <AccountUserSummary name={name} email={email} accountType={accountType} />
       </div>
 
       <div className="flex flex-1 flex-col gap-1">
