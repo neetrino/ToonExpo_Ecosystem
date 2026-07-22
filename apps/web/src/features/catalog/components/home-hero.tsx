@@ -30,7 +30,7 @@ export const HomeHero = async () => {
       <div
         className={cn(
           'page-container relative flex w-full flex-1 flex-col justify-center',
-          'pt-[clamp(5.5rem,4rem+3vw,8rem)] pb-[clamp(3rem,2rem+3vw,6rem)]',
+          'pt-[clamp(6.25rem,4.75rem+3.5vw,9.5rem)] pb-[clamp(3rem,2rem+3vw,6rem)]',
         )}
       >
         <div className="flex max-w-3xl flex-col gap-[clamp(0.75rem,0.4rem+1.2vw,1.5rem)]">

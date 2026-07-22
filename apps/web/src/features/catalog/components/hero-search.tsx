@@ -129,27 +129,29 @@ export const HeroSearch = ({ className }: HeroSearchProps) => {
         </div>
       </form>
 
-      <div className="mt-4 flex flex-wrap items-center gap-2">
-        <span className="shrink-0 text-xs font-normal leading-4 text-on-dark">{t('popular')}</span>
-        {POPULAR_CITY_KEYS.map((key) => {
-          const city = t(`popularCities.${key}`);
-          return (
-            <Link
-              key={key}
-              href={`/projects?city=${encodeURIComponent(city)}`}
-              className={cn(
-                'inline-flex h-7 cursor-pointer items-center rounded-pill px-3',
-                'bg-white/80 text-xs font-medium leading-4 text-ink-navy',
-                'ring-1 ring-header-border backdrop-blur-[6px]',
-                'transition-[background-color,color,box-shadow,transform] duration-[var(--duration-slow)] ease-[var(--ease-out-premium)]',
-                'hover:bg-white hover:text-brand-deep hover:shadow-[0_0_0_1px_rgb(26_143_152/0.35),0_2px_8px_rgb(14_15_20/0.06)]',
-                'active:scale-[0.98]',
-              )}
-            >
-              {city}
-            </Link>
-          );
-        })}
+      <div className="mt-8 flex flex-col gap-2">
+        <span className="text-sm font-medium leading-5 text-on-dark">{t('popular')}</span>
+        <div className="flex flex-wrap gap-2">
+          {POPULAR_CITY_KEYS.map((key) => {
+            const city = t(`popularCities.${key}`);
+            return (
+              <Link
+                key={key}
+                href={`/projects?city=${encodeURIComponent(city)}`}
+                className={cn(
+                  'inline-flex h-7 cursor-pointer items-center rounded-pill px-3',
+                  'bg-white/80 text-xs font-medium leading-4 text-ink-navy',
+                  'ring-1 ring-header-border backdrop-blur-[6px]',
+                  'transition-[background-color,color,box-shadow,transform] duration-[var(--duration-slow)] ease-[var(--ease-out-premium)]',
+                  'hover:bg-white hover:text-brand-deep hover:shadow-[0_0_0_1px_rgb(26_143_152/0.35),0_2px_8px_rgb(14_15_20/0.06)]',
+                  'active:scale-[0.98]',
+                )}
+              >
+                {city}
+              </Link>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
