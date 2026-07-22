@@ -9,7 +9,7 @@ import { BrandLogo } from '@/shared/ui/brand-logo';
 import { cn } from '@/shared/ui/cn';
 import { LocaleSwitcher } from '@/shared/ui/locale-switcher';
 
-const AUTH_PANEL_IMAGE = '/demo/northern-avenue.jpg';
+const AUTH_PANEL_IMAGE = '/demo/northern-avenue.webp';
 
 type AuthPageShellProps = {
   title: string;

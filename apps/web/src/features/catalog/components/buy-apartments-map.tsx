@@ -8,7 +8,7 @@ import { formatCatalogPrice } from '@/features/catalog/utils/format-price';
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 
-const BUY_MAP_SRC = '/images/buy-map.jpg';
+const BUY_MAP_SRC = '/images/buy-map.webp';
 
 type BuyApartmentsMapProps = {
   listings: BuyApartmentListing[];

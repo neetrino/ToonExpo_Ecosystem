@@ -50,7 +50,7 @@ export default async function ProjectsPage({ params, searchParams }: ProjectsPag
         <MarketingPageIntro
           title={t('projects.title')}
           description={t('projects.subtitle', { count: response.meta.total })}
-          imageSrc="/demo/cascade-view.jpg"
+          imageSrc="/demo/cascade-view.webp"
         />
 
         <ProjectFiltersForm filters={filters} />

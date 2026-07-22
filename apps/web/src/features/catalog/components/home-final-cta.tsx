@@ -16,7 +16,7 @@ export const HomeFinalCta = async () => {
     <section className="relative isolate overflow-hidden">
       <div className="absolute inset-0">
         <Image
-          src="/demo/expo-venue.jpg"
+          src="/demo/expo-venue.webp"
           alt=""
           fill
           className="banner-media-drift object-cover object-center"

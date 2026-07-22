@@ -60,7 +60,7 @@ export default async function PartnersPage({ params, searchParams }: PartnersPag
         <MarketingPageIntro
           title={t('partnersPage.title')}
           description={t('partnersPage.subtitle', { count: response.meta.total })}
-          imageSrc="/demo/partner-cover.jpg"
+          imageSrc="/demo/partner-cover.webp"
         />
 
         <PartnerFiltersForm

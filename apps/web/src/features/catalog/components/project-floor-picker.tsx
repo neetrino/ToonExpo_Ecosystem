@@ -6,7 +6,7 @@ import { Link } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 
 /** Figma `89:1281` axonometric building visual for the floor picker panel. */
-const FLOOR_PICKER_VISUAL_SRC = '/images/project-floor-axonometric.png';
+const FLOOR_PICKER_VISUAL_SRC = '/images/project-floor-axonometric.webp';
 
 type ProjectFloorPickerProps = {
   project: ProjectDetail;
