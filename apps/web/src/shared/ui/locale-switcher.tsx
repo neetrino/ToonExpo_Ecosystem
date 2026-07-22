@@ -100,12 +100,9 @@ export const LocaleSwitcher = ({ tone = 'light' }: LocaleSwitcherProps) => {
           role="listbox"
           aria-label={t('languageLabel')}
           className={cn(
-            'absolute top-[calc(100%+0.4rem)] right-0 z-[var(--z-dropdown)] min-w-[10rem] overflow-hidden',
-            'rounded-[12px] border py-1.5 shadow-md',
+            'absolute top-[calc(100%+0.4rem)] right-0 z-[var(--z-dropdown)] w-max overflow-hidden',
+            'rounded-[12px] border border-header-border bg-surface-elevated py-1.5 text-ink shadow-md',
             'animate-[locale-dropdown-in_var(--duration-base)_var(--ease-out-premium)]',
-            isDark
-              ? 'border-white/15 bg-surface-inverse text-on-dark'
-              : 'border-header-border bg-surface-elevated text-ink',
           )}
         >
           {routing.locales.map((code) => {
@@ -115,15 +112,11 @@ export const LocaleSwitcher = ({ tone = 'light' }: LocaleSwitcherProps) => {
                 <button
                   type="button"
                   className={cn(
-                    'flex w-full items-center justify-between gap-3 px-3.5 py-2.5 text-left text-sm',
+                    'flex w-full items-center justify-between gap-3 px-3 py-2 text-left text-sm whitespace-nowrap',
                     'transition-colors duration-[var(--duration-fast)]',
                     active
-                      ? isDark
-                        ? 'bg-white/10 font-semibold text-brand-logo'
-                        : 'bg-brand-soft font-semibold text-brand-deep'
-                      : isDark
-                        ? 'font-medium text-on-dark/85 hover:bg-white/8'
-                        : 'font-medium text-ink hover:bg-surface',
+                      ? 'bg-brand-soft font-semibold text-brand-deep'
+                      : 'font-medium text-ink hover:bg-surface',
                   )}
                   onClick={() => {
                     setOpen(false);
@@ -132,19 +125,7 @@ export const LocaleSwitcher = ({ tone = 'light' }: LocaleSwitcherProps) => {
                     }
                   }}
                 >
-                  <span className="flex flex-col gap-0.5">
-                    <span className="leading-none tracking-[-0.01em]">
-                      {LOCALE_FULL[code] ?? code}
-                    </span>
-                    <span
-                      className={cn(
-                        'text-[10px] font-semibold uppercase tracking-[0.12em]',
-                        isDark ? 'text-on-dark/45' : 'text-ink-muted',
-                      )}
-                    >
-                      {LOCALE_CODE[code] ?? code.toUpperCase()}
-                    </span>
-                  </span>
+                  <span>{LOCALE_FULL[code] ?? code}</span>
                   {active ? (
                     <Check className="size-3.5 shrink-0 text-brand-logo" aria-hidden />
                   ) : null}
