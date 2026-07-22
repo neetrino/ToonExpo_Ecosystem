@@ -186,6 +186,21 @@
     "admin": "Admin",
     "loading": "…"
   },
+  "DevelopmentsPage": {
+    "eyebrow": "New developments",
+    "title": "The skyline taking shape, with live unit availability.",
+    "subtitle": "Track inventory, pricing, and construction progress on the most anticipated residential projects — directly from developers.",
+    "empty": "No developments to show yet.",
+    "statFrom": "From",
+    "statUnits": "Units",
+    "statSold": "Sold",
+    "unitsLeft": "{count} units left",
+    "completionTba": "Completion TBA",
+    "meta": {
+      "title": "New developments — ToonExpo",
+      "description": "Track inventory, pricing, and construction progress on residential projects from developers."
+    }
+  },
   "Footer": {
     "tagline": "The marketplace for verified homes, new developments, and partner bank offers — built for buyers, brokers, and developers in one transparent platform.",
     "marketplace": "Marketplace",

@@ -21,7 +21,7 @@ type SiteHeaderProps = {
 
 const NAV_HREFS = [
   { href: '/projects' as const, key: 'buy' as const },
-  { href: '/builders' as const, key: 'newDevelopments' as const },
+  { href: '/developments' as const, key: 'newDevelopments' as const },
   { href: '/partners' as const, key: 'marketInsights' as const },
   { href: '/mortgage' as const, key: 'mortgage' as const },
 ];

@@ -7,7 +7,7 @@ import type { UserResponse } from '@toonexpo/contracts';
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 
-type NavHref = '/projects' | '/builders' | '/partners' | '/mortgage';
+type NavHref = '/projects' | '/developments' | '/partners' | '/mortgage';
 
 type SiteHeaderMobileNavProps = {
   navItems: ReadonlyArray<{

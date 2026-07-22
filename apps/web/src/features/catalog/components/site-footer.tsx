@@ -32,7 +32,7 @@ export const SiteFooter = async () => {
                 </Link>
               </li>
               <li>
-                <Link href="/builders" className="transition-colors hover:text-brand-deep">
+                <Link href="/developments" className="transition-colors hover:text-brand-deep">
                   {t('links.newDevelopments')}
                 </Link>
               </li>

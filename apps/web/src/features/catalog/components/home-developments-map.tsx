@@ -57,7 +57,7 @@ export const HomeDevelopmentsMap = ({ projects }: HomeDevelopmentsMapProps) => {
         <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-canvas/90 to-transparent p-6">
           <p className="text-sm font-medium text-ink-navy">{t('mapPlaceholder')}</p>
           <Link
-            href="/projects"
+            href="/developments"
             className="mt-2 inline-flex text-sm font-semibold text-brand-deep hover:text-brand-deep/80"
           >
             {t('browseList')}
