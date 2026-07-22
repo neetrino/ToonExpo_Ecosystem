@@ -2,6 +2,10 @@
 
 import { type CSSProperties, type ReactNode, useEffect, useRef, useState } from 'react';
 
+import {
+  isEntranceMotionSettled,
+  markEntranceMotionSettled,
+} from '@/shared/ui/motion/motion-session';
 import { cn } from '@/shared/ui/cn';
 
 const REVEAL_DISTANCE_PX = 16;
@@ -25,7 +29,7 @@ type RevealProps = {
 
 /**
  * Viewport reveal: opacity + slight translateY.
- * Respects prefers-reduced-motion; uses smaller travel on mobile.
+ * Skips re-entrance after soft navigations (e.g. locale switch) so only text updates.
  */
 export const Reveal = ({
   children,
@@ -37,7 +41,7 @@ export const Reveal = ({
   as: Tag = 'div',
 }: RevealProps) => {
   const ref = useRef<HTMLElement | null>(null);
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(() => isEntranceMotionSettled());
   const [reduceMotion, setReduceMotion] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -60,12 +64,18 @@ export const Reveal = ({
   }, []);
 
   useEffect(() => {
+    if (visible) {
+      markEntranceMotionSettled();
+      return;
+    }
+
     const node = ref.current;
     if (!node) {
       return;
     }
     if (reduceMotion) {
       setVisible(true);
+      markEntranceMotionSettled();
       return;
     }
 
@@ -73,6 +83,7 @@ export const Reveal = ({
       ([entry]) => {
         if (entry?.isIntersecting) {
           setVisible(true);
+          markEntranceMotionSettled();
           observer.disconnect();
         }
       },
@@ -80,19 +91,20 @@ export const Reveal = ({
     );
     observer.observe(node);
     return () => observer.disconnect();
-  }, [reduceMotion, rootMargin]);
+  }, [reduceMotion, rootMargin, visible]);
 
   const distance = fadeOnly ? 0 : isMobile ? REVEAL_DISTANCE_MOBILE_PX : REVEAL_DISTANCE_PX;
+  const skipTransition = visible && isEntranceMotionSettled();
 
   const style: CSSProperties | undefined = reduceMotion
     ? undefined
     : {
         opacity: visible ? 1 : 0,
         transform: visible ? 'translate3d(0,0,0)' : `translate3d(0,${distance}px,0)`,
-        transitionProperty: 'opacity, transform',
+        transitionProperty: skipTransition ? 'none' : 'opacity, transform',
         transitionDuration: `${durationMs}ms`,
         transitionTimingFunction: 'var(--ease-out-premium)',
-        transitionDelay: visible ? `${delayMs}ms` : '0ms',
+        transitionDelay: visible && !skipTransition ? `${delayMs}ms` : '0ms',
         willChange: visible ? 'auto' : 'opacity, transform',
       };
 
