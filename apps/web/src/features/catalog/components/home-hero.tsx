@@ -21,7 +21,7 @@ export const HomeHero = async () => {
           alt=""
           fill
           priority
-          className="object-cover opacity-90"
+          className="scale-110 object-cover object-[center_50%] opacity-90 -translate-y-[4.7%]"
           sizes="100vw"
         />
         <div className="absolute inset-0 bg-gradient-to-b from-canvas via-canvas/40 to-canvas" />
