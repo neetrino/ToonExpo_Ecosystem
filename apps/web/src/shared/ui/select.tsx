@@ -15,8 +15,10 @@ import {
 import { cn } from '@/shared/ui/cn';
 import { ListboxSelect, type ListboxOption } from '@/shared/ui/listbox-select';
 
-export type SelectProps = Omit<SelectHTMLAttributes<HTMLSelectElement>, 'children'> & {
+export type SelectProps = Omit<SelectHTMLAttributes<HTMLSelectElement>, 'children' | 'size'> & {
   children: ReactNode;
+  /** `full` stretches; `fit` hugs the selected label. */
+  size?: 'full' | 'fit' | undefined;
 };
 
 /** Shared field chrome for legacy native selects (search inputs, etc.). */
@@ -52,6 +54,7 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(function Select
     name,
     id,
     disabled,
+    size = 'full',
     'aria-label': ariaLabel,
   },
   ref,
@@ -78,6 +81,7 @@ export const Select = forwardRef<HTMLButtonElement, SelectProps>(function Select
     <ListboxSelect
       ref={ref}
       variant="field"
+      size={size}
       id={id}
       name={name}
       disabled={disabled}

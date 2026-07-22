@@ -31,6 +31,8 @@ export type ListboxSelectProps = {
   disabled?: boolean | undefined;
   /** `plain` = hero search; `field` = bordered form control. Menu chrome matches home. */
   variant?: 'plain' | 'field' | undefined;
+  /** `full` stretches; `fit` hugs the selected label width. */
+  size?: 'full' | 'fit' | undefined;
   onBlur?: FocusEventHandler<HTMLButtonElement> | undefined;
 };
 
@@ -50,6 +52,7 @@ export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
       id,
       disabled = false,
       variant = 'plain',
+      size = 'full',
       onBlur,
     },
     ref,
@@ -60,6 +63,7 @@ export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
     const menuRef = useRef<HTMLUListElement>(null);
     const listId = useId();
     const isField = variant === 'field';
+    const isFit = size === 'fit';
     const selected = options.find((option) => option.value === value) ?? options[0];
 
     useImperativeHandle(ref, () => buttonRef.current as HTMLButtonElement);
@@ -102,7 +106,11 @@ export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
     return (
       <div
         ref={rootRef}
-        className={cn('relative min-w-0', isField && 'w-full', !isField && className)}
+        className={cn(
+          'relative min-w-0',
+          isField && (isFit ? 'w-fit max-w-full' : 'w-full'),
+          !isField && className,
+        )}
       >
         {name ? <input type="hidden" name={name} value={value} disabled={disabled} /> : null}
         <button
@@ -111,7 +119,8 @@ export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
           type="button"
           disabled={disabled}
           className={cn(
-            'flex w-full min-w-0 items-center justify-between gap-2 text-left',
+            'flex min-w-0 items-center justify-between gap-2 text-left',
+            isFit ? 'w-auto' : 'w-full',
             'transition-colors duration-[var(--duration-fast)]',
             'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/25',
             'disabled:cursor-not-allowed disabled:opacity-50',
@@ -138,7 +147,7 @@ export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
             setOpen((current) => !current);
           }}
         >
-          <span className="truncate">{selected?.label}</span>
+          <span className={cn(isFit ? 'whitespace-nowrap' : 'truncate')}>{selected?.label}</span>
           <ChevronDown
             className={cn(
               'size-4 shrink-0 transition-transform duration-[var(--duration-base)] ease-[var(--ease-out-premium)]',
@@ -157,7 +166,7 @@ export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
             role="listbox"
             aria-label={ariaLabel}
             className={cn(
-              'min-w-full overflow-hidden',
+              'w-max max-w-[min(100vw-2rem,24rem)] overflow-hidden',
               'rounded-[12px] border border-header-border bg-surface-elevated py-1.5 shadow-md',
               'animate-[locale-dropdown-in_var(--duration-base)_var(--ease-out-premium)]',
             )}
