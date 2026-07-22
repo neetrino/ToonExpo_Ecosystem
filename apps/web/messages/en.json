@@ -436,6 +436,18 @@
       "title": "Settings",
       "subtitle": "Your account details and sign-in security"
     },
+    "editProfile": {
+      "edit": "Edit profile",
+      "title": "Edit profile",
+      "subtitle": "Update your name and phone number. Email cannot be changed here.",
+      "emailReadOnly": "Email is managed by your account and cannot be edited.",
+      "cancel": "Cancel",
+      "submit": "Save changes",
+      "submitting": "Saving…",
+      "errors": {
+        "generic": "Could not update profile. Please try again."
+      }
+    },
     "dashboard": {
       "welcome": "Welcome, {name}",
       "qrLabel": "My QR",

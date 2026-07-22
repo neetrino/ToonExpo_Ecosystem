@@ -1,12 +1,11 @@
 'use client';
 
-import { Heart, Inbox, LayoutDashboard, LogOut, QrCode, ScanLine, Settings } from 'lucide-react';
+import { Heart, Inbox, LayoutDashboard, QrCode, ScanLine, Settings } from 'lucide-react';
 import type { AccountType } from '@toonexpo/contracts';
 import type { LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { useLogoutMutation } from '@/features/auth/hooks/use-auth';
-import { Link, usePathname, useRouter } from '@/i18n/navigation';
+import { Link, usePathname } from '@/i18n/navigation';
 import { BrandLogo } from '@/shared/ui/brand-logo';
 import { cn } from '@/shared/ui/cn';
 
@@ -62,10 +61,7 @@ type AccountNavProps = {
  */
 export const AccountNav = ({ accountType }: AccountNavProps) => {
   const t = useTranslations('Profile.nav');
-  const tAuth = useTranslations('Auth');
   const pathname = usePathname();
-  const router = useRouter();
-  const logoutMutation = useLogoutMutation();
   const showBuyerTabs = accountType === 'buyer';
 
   const primaryItems = PRIMARY_NAV_ITEMS.filter((item) => !item.buyerOnly || showBuyerTabs);
@@ -92,7 +88,7 @@ export const AccountNav = ({ accountType }: AccountNavProps) => {
         })}
       </div>
 
-      <div className="mt-auto flex flex-col gap-1 border-t border-on-dark/15 pt-3">
+      <div className="mt-auto border-t border-on-dark/15 pt-3">
         <Link
           href={SETTINGS_NAV_ITEM.href}
           className={navLinkClassName(isActive(pathname, SETTINGS_NAV_ITEM.href))}
@@ -100,22 +96,6 @@ export const AccountNav = ({ accountType }: AccountNavProps) => {
           <Settings className={NAV_ICON_CLASS} aria-hidden />
           {t(SETTINGS_NAV_ITEM.key)}
         </Link>
-        <button
-          type="button"
-          className={cn(
-            navLinkClassName(false),
-            'w-full text-left disabled:pointer-events-none disabled:opacity-50',
-          )}
-          disabled={logoutMutation.isPending}
-          onClick={() => {
-            void logoutMutation.mutateAsync().then(() => {
-              router.push('/auth/login');
-            });
-          }}
-        >
-          <LogOut className={NAV_ICON_CLASS} aria-hidden />
-          {logoutMutation.isPending ? tAuth('logout.submitting') : tAuth('logout.submit')}
-        </button>
       </div>
     </nav>
   );

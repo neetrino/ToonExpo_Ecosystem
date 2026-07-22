@@ -115,7 +115,7 @@ export const ChangePasswordForm = () => {
         </p>
       ) : null}
 
-      <Button type="submit" variant="secondary" disabled={busy} className="w-full">
+      <Button type="submit" variant="primary" disabled={busy} className="w-full sm:w-auto">
         {busy ? t('submitting') : t('submit')}
       </Button>
     </form>

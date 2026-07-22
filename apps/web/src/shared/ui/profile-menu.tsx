@@ -7,6 +7,7 @@ import { createPortal } from 'react-dom';
 
 import { useLogoutMutation } from '@/features/auth/hooks/use-auth';
 import { Link, usePathname, useRouter } from '@/i18n/navigation';
+import { getAccountInitials } from '@/shared/lib/account-initials';
 import { cn } from '@/shared/ui/cn';
 import { useAnchoredDropdownCoords } from '@/shared/ui/use-anchored-dropdown-coords';
 
@@ -35,6 +36,7 @@ export const ProfileMenu = ({ userName, userEmail, tone = 'light' }: ProfileMenu
   const isDark = tone === 'dark';
   const isSignedIn = Boolean(userName || userEmail);
   const coords = useAnchoredDropdownCoords(open, rootRef);
+  const initials = getAccountInitials(userName?.trim() || userEmail?.trim() || '?');
 
   useEffect(() => {
     setMounted(true);
@@ -174,14 +176,19 @@ export const ProfileMenu = ({ userName, userEmail, tone = 'light' }: ProfileMenu
     <div ref={rootRef} className="relative">
       <button
         type="button"
-        className={triggerClassName}
+        className={cn(
+          triggerClassName,
+          'overflow-hidden bg-brand p-0 text-[11px] font-semibold tracking-wide text-on-brand',
+          'hover:bg-brand-hover',
+          isDark && 'border-white/35',
+        )}
         aria-label={t('profileMenu')}
         aria-haspopup="menu"
         aria-expanded={open}
         aria-controls={menuId}
         onClick={() => setOpen((value) => !value)}
       >
-        <UserRound className="size-4" aria-hidden />
+        <span aria-hidden>{initials}</span>
       </button>
       {menu}
     </div>
