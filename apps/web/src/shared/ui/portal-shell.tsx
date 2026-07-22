@@ -131,7 +131,7 @@ export const PortalShell = ({
             </IconButton>
             {mobileHeader}
           </div>
-          <aside className="hidden w-72 shrink-0 self-stretch md:block">
+          <aside className="relative z-[var(--z-sticky)] hidden w-72 shrink-0 self-stretch md:block">
             <div
               className={cn(
                 'sticky flex flex-col rounded-tr-[2.5rem] rounded-br-[2.5rem] bg-brand-secondary p-4 shadow-md',

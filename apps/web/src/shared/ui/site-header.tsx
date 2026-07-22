@@ -145,7 +145,6 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
               <span className="size-9 animate-pulse rounded-sm bg-current/10" aria-hidden />
             ) : (
               <ProfileMenu
-                accountHref={accountHref}
                 userName={user?.name}
                 userEmail={user?.email}
                 tone={isOverHero ? 'dark' : 'light'}

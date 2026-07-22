@@ -3,14 +3,14 @@
 import { LogOut, UserRound } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useId, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 import { useLogoutMutation } from '@/features/auth/hooks/use-auth';
 import { Link, usePathname, useRouter } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
+import { useAnchoredDropdownCoords } from '@/shared/ui/use-anchored-dropdown-coords';
 
 type ProfileMenuProps = {
-  /** Dashboard / account destination when signed in. */
-  accountHref: '/dashboard' | '/admin/settings';
   userName?: string | undefined;
   userEmail?: string | undefined;
   /** Visual tone for light surfaces vs dark hero chrome. */
@@ -19,23 +19,26 @@ type ProfileMenuProps = {
 
 /**
  * Header profile control — guest links to login; signed-in opens account dropdown + logout.
+ * Menu is portaled so account rails / page layers cannot cover it.
  */
-export const ProfileMenu = ({
-  accountHref,
-  userName,
-  userEmail,
-  tone = 'light',
-}: ProfileMenuProps) => {
+export const ProfileMenu = ({ userName, userEmail, tone = 'light' }: ProfileMenuProps) => {
   const t = useTranslations('Nav');
   const tAuth = useTranslations('Auth');
   const pathname = usePathname();
   const router = useRouter();
   const logoutMutation = useLogoutMutation();
   const [open, setOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
   const menuId = useId();
   const isDark = tone === 'dark';
   const isSignedIn = Boolean(userName || userEmail);
+  const coords = useAnchoredDropdownCoords(open, rootRef);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     setOpen(false);
@@ -47,9 +50,11 @@ export const ProfileMenu = ({
     }
 
     const onPointerDown = (event: MouseEvent): void => {
-      if (!rootRef.current?.contains(event.target as Node)) {
-        setOpen(false);
+      const target = event.target as Node;
+      if (rootRef.current?.contains(target) || menuRef.current?.contains(target)) {
+        return;
       }
+      setOpen(false);
     };
 
     const onKeyDown = (event: KeyboardEvent): void => {
@@ -94,6 +99,77 @@ export const ProfileMenu = ({
     );
   }
 
+  const menu =
+    open && coords && mounted
+      ? createPortal(
+          <div
+            ref={menuRef}
+            id={menuId}
+            role="menu"
+            aria-label={t('profileMenu')}
+            style={{ top: coords.top, right: coords.right }}
+            className={cn(
+              'fixed z-[var(--z-dropdown)] w-[15.5rem] overflow-hidden',
+              'rounded-sm border py-1.5 shadow-md',
+              'animate-[locale-dropdown-in_var(--duration-base)_var(--ease-out-premium)]',
+              isDark
+                ? 'border-white/15 bg-surface-inverse text-on-dark'
+                : 'border-border/80 bg-surface-elevated text-ink',
+            )}
+          >
+            <div
+              className={cn(
+                'border-b px-3.5 py-2.5',
+                isDark ? 'border-white/10' : 'border-border/60',
+              )}
+            >
+              {userName ? (
+                <p
+                  className={cn(
+                    'truncate text-sm font-semibold tracking-tight',
+                    isDark ? 'text-on-dark' : 'text-ink',
+                  )}
+                >
+                  {userName}
+                </p>
+              ) : null}
+              {userEmail ? (
+                <p
+                  className={cn(
+                    'mt-0.5 truncate text-xs',
+                    isDark ? 'text-on-dark/65' : 'text-ink-secondary',
+                  )}
+                >
+                  {userEmail}
+                </p>
+              ) : null}
+            </div>
+
+            <button
+              type="button"
+              role="menuitem"
+              className={cn(
+                'flex w-full items-center gap-2.5 px-3.5 py-2.5 text-left text-sm font-medium',
+                'transition-colors duration-[var(--duration-fast)]',
+                'text-danger hover:bg-danger-soft',
+                'disabled:pointer-events-none disabled:opacity-50',
+              )}
+              disabled={logoutMutation.isPending}
+              onClick={() => {
+                void logoutMutation.mutateAsync().then(() => {
+                  setOpen(false);
+                  router.push('/auth/login');
+                });
+              }}
+            >
+              <LogOut className="size-4 shrink-0 opacity-80" aria-hidden />
+              {logoutMutation.isPending ? tAuth('logout.submitting') : tAuth('logout.submit')}
+            </button>
+          </div>,
+          document.body,
+        )
+      : null;
+
   return (
     <div ref={rootRef} className="relative">
       <button
@@ -107,85 +183,7 @@ export const ProfileMenu = ({
       >
         <UserRound className="size-4" aria-hidden />
       </button>
-
-      {open ? (
-        <div
-          id={menuId}
-          role="menu"
-          aria-label={t('profileMenu')}
-          className={cn(
-            'absolute top-[calc(100%+0.4rem)] right-0 z-[var(--z-dropdown)] w-[15.5rem] overflow-hidden',
-            'rounded-sm border py-1.5 shadow-md',
-            'animate-[locale-dropdown-in_var(--duration-base)_var(--ease-out-premium)]',
-            isDark
-              ? 'border-white/15 bg-surface-inverse text-on-dark'
-              : 'border-border/80 bg-surface-elevated text-ink',
-          )}
-        >
-          <div
-            className={cn(
-              'border-b px-3.5 py-2.5',
-              isDark ? 'border-white/10' : 'border-border/60',
-            )}
-          >
-            {userName ? (
-              <p
-                className={cn(
-                  'truncate text-sm font-semibold tracking-tight',
-                  isDark ? 'text-on-dark' : 'text-ink',
-                )}
-              >
-                {userName}
-              </p>
-            ) : null}
-            {userEmail ? (
-              <p
-                className={cn(
-                  'mt-0.5 truncate text-xs',
-                  isDark ? 'text-on-dark/65' : 'text-ink-secondary',
-                )}
-              >
-                {userEmail}
-              </p>
-            ) : null}
-          </div>
-
-          <Link
-            href={accountHref}
-            role="menuitem"
-            className={cn(
-              'flex w-full items-center gap-2.5 px-3.5 py-2.5 text-left text-sm font-medium',
-              'transition-colors duration-[var(--duration-fast)]',
-              isDark ? 'text-on-dark/90 hover:bg-white/8' : 'text-ink hover:bg-surface',
-            )}
-            onClick={() => setOpen(false)}
-          >
-            <UserRound className="size-4 shrink-0 opacity-80" aria-hidden />
-            {t('profile')}
-          </Link>
-
-          <button
-            type="button"
-            role="menuitem"
-            className={cn(
-              'flex w-full items-center gap-2.5 px-3.5 py-2.5 text-left text-sm font-medium',
-              'transition-colors duration-[var(--duration-fast)]',
-              'text-danger hover:bg-danger-soft',
-              'disabled:pointer-events-none disabled:opacity-50',
-            )}
-            disabled={logoutMutation.isPending}
-            onClick={() => {
-              void logoutMutation.mutateAsync().then(() => {
-                setOpen(false);
-                router.push('/auth/login');
-              });
-            }}
-          >
-            <LogOut className="size-4 shrink-0 opacity-80" aria-hidden />
-            {logoutMutation.isPending ? tAuth('logout.submitting') : tAuth('logout.submit')}
-          </button>
-        </div>
-      ) : null}
+      {menu}
     </div>
   );
 };
