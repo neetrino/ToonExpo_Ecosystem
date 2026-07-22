@@ -58,7 +58,7 @@ export const ProjectCard = ({
         className,
       )}
     >
-      <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-surface">
+      <div className="relative aspect-[4/3] overflow-hidden rounded-[15px] bg-surface">
         <Link href={`/projects/${project.id}`} className="absolute inset-0 block">
           {project.cover ? (
             <Image
