@@ -147,7 +147,7 @@ export const HeroSearch = ({ className }: HeroSearchProps) => {
       </form>
 
       <div className="mt-4 flex flex-wrap items-center gap-2">
-        <span className="text-xs text-on-dark">{t('popular')}</span>
+        <span className="text-xs font-normal leading-4 text-on-dark">{t('popular')}</span>
         {POPULAR_CITY_KEYS.map((key) => {
           const city = t(`popularCities.${key}`);
           return (
@@ -155,7 +155,8 @@ export const HeroSearch = ({ className }: HeroSearchProps) => {
               key={key}
               href={`/projects?city=${encodeURIComponent(city)}`}
               className={cn(
-                'rounded-pill bg-surface-elevated/80 px-3 py-1.5 text-xs font-medium text-ink-navy',
+                'inline-flex h-7 items-center rounded-pill px-3',
+                'bg-surface-elevated/80 text-xs font-medium leading-4 text-ink-navy',
                 'ring-1 ring-header-border backdrop-blur-[6px]',
                 'transition-colors duration-[var(--duration-fast)]',
                 'hover:bg-surface-elevated hover:ring-brand/30',

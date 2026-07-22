@@ -8,10 +8,11 @@ import { usePathname, useRouter } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
 import { cn } from '@/shared/ui/cn';
 
-const LOCALE_SHORT: Record<string, string> = {
-  hy: 'Հայ',
-  ru: 'Рус',
-  en: 'Eng',
+/** Figma header trigger — uppercase 2-letter codes (`EN`). */
+const LOCALE_CODE: Record<string, string> = {
+  hy: 'HY',
+  ru: 'RU',
+  en: 'EN',
 };
 
 const LOCALE_FULL: Record<string, string> = {
@@ -26,7 +27,7 @@ type LocaleSwitcherProps = {
 };
 
 /**
- * Compact language dropdown — opens below the trigger with full locale names.
+ * Compact language control — Figma header: plain `EN` + chevron (no pill).
  */
 export const LocaleSwitcher = ({ tone = 'light' }: LocaleSwitcherProps) => {
   const t = useTranslations('HomePage');
@@ -72,18 +73,10 @@ export const LocaleSwitcher = ({ tone = 'light' }: LocaleSwitcherProps) => {
       <button
         type="button"
         className={cn(
-          'inline-flex h-9 items-center gap-1.5 rounded-full px-3',
-          'text-xs font-semibold tracking-wide transition-[border-color,background-color,box-shadow,color]',
-          'duration-[var(--duration-fast)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/25',
-          isDark
-            ? cn(
-                'border border-white/25 bg-white/10 text-on-dark hover:border-white/40 hover:bg-white/15',
-                open && 'border-white/45 bg-white/15',
-              )
-            : cn(
-                'border border-border/80 bg-surface-elevated/90 text-ink hover:border-brand/35 hover:shadow-xs',
-                open && 'border-brand/40 shadow-xs',
-              ),
+          'inline-flex items-center gap-1 text-sm font-medium leading-5',
+          'transition-colors duration-[var(--duration-fast)]',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/25',
+          isDark ? 'text-on-dark hover:text-on-dark/85' : 'text-header-muted hover:text-brand-deep',
         )}
         aria-label={t('languageLabel')}
         aria-haspopup="listbox"
@@ -91,10 +84,10 @@ export const LocaleSwitcher = ({ tone = 'light' }: LocaleSwitcherProps) => {
         aria-controls={listId}
         onClick={() => setOpen((value) => !value)}
       >
-        <span>{LOCALE_SHORT[locale] ?? locale}</span>
+        <span>{LOCALE_CODE[locale] ?? locale.toUpperCase()}</span>
         <ChevronDown
           className={cn(
-            'size-3.5 shrink-0 opacity-60 transition-transform duration-[var(--duration-fast)]',
+            'size-3.5 shrink-0 opacity-80 transition-transform duration-[var(--duration-fast)]',
             open && 'rotate-180',
           )}
           aria-hidden
@@ -107,12 +100,12 @@ export const LocaleSwitcher = ({ tone = 'light' }: LocaleSwitcherProps) => {
           role="listbox"
           aria-label={t('languageLabel')}
           className={cn(
-            'absolute top-[calc(100%+0.4rem)] right-0 z-[var(--z-dropdown)] min-w-[11rem] overflow-hidden',
-            'rounded-xl border py-1.5 shadow-md',
+            'absolute top-[calc(100%+0.4rem)] right-0 z-[var(--z-dropdown)] min-w-[10rem] overflow-hidden',
+            'rounded-[12px] border py-1.5 shadow-md',
             'animate-[locale-dropdown-in_var(--duration-base)_var(--ease-out-premium)]',
             isDark
               ? 'border-white/15 bg-surface-inverse text-on-dark'
-              : 'border-border/80 bg-surface-elevated text-ink',
+              : 'border-header-border bg-surface-elevated text-ink',
           )}
         >
           {routing.locales.map((code) => {
@@ -126,8 +119,8 @@ export const LocaleSwitcher = ({ tone = 'light' }: LocaleSwitcherProps) => {
                     'transition-colors duration-[var(--duration-fast)]',
                     active
                       ? isDark
-                        ? 'bg-white/10 font-semibold text-brand'
-                        : 'bg-brand-soft font-semibold text-brand'
+                        ? 'bg-white/10 font-semibold text-brand-logo'
+                        : 'bg-brand-soft font-semibold text-brand-deep'
                       : isDark
                         ? 'font-medium text-on-dark/85 hover:bg-white/8'
                         : 'font-medium text-ink hover:bg-surface',
@@ -149,10 +142,12 @@ export const LocaleSwitcher = ({ tone = 'light' }: LocaleSwitcherProps) => {
                         isDark ? 'text-on-dark/45' : 'text-ink-muted',
                       )}
                     >
-                      {LOCALE_SHORT[code] ?? code}
+                      {LOCALE_CODE[code] ?? code.toUpperCase()}
                     </span>
                   </span>
-                  {active ? <Check className="size-3.5 shrink-0 text-brand" aria-hidden /> : null}
+                  {active ? (
+                    <Check className="size-3.5 shrink-0 text-brand-logo" aria-hidden />
+                  ) : null}
                 </button>
               </li>
             );
