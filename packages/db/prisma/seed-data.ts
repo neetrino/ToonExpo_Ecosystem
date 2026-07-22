@@ -176,7 +176,7 @@ export const DEMO_BUILDING_COVER_A = '/demo/building-a.webp';
 export const DEMO_BUILDING_COVER_B = '/demo/building-b.webp';
 export const DEMO_PARTNER_BANK_LOGO = '/demo/partner-bank.webp';
 export const DEMO_PARTNER_COVER = '/demo/partner-cover.webp';
-export const DEMO_PARTNER_IT_LOGO = '/demo/partner-it.webp';
+export const DEMO_PARTNER_IT_LOGO = '/demo/partner-facade.webp';
 export const DEMO_VENUE_MAP_URL = '/demo/venue-map.webp';
 export const DEMO_VISUAL_MAP_URL = '/demo/visual-map.webp';
 
