@@ -13,6 +13,7 @@ type SectionHeaderProps = {
 
 /**
  * Section heading used on marketing and catalog bands.
+ * Layout matches Figma `81:171` (eyebrow + title left, action bottom-aligned right).
  */
 export const SectionHeader = ({
   title,
@@ -23,12 +24,12 @@ export const SectionHeader = ({
   as: Tag = 'h2',
 }: SectionHeaderProps) => {
   return (
-    <div className={cn('mb-9 flex flex-wrap items-end justify-between gap-4', className)}>
-      <div className="min-w-0 max-w-2xl">
-        {eyebrow ? <p className="text-eyebrow mb-2.5">{eyebrow}</p> : null}
-        <Tag className="text-section-title text-ink">{title}</Tag>
+    <div className={cn('mb-10 flex flex-wrap items-end justify-between gap-4', className)}>
+      <div className="min-w-0 max-w-3xl">
+        {eyebrow ? <p className="text-eyebrow mb-2">{eyebrow}</p> : null}
+        <Tag className="text-section-title">{title}</Tag>
         {description ? (
-          <p className="text-body-sm mt-2.5 text-ink-secondary">{description}</p>
+          <p className="text-body-sm mt-2.5 text-header-muted">{description}</p>
         ) : null}
       </div>
       {action}

@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useLocale, useTranslations } from 'next-intl';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 
 import { COMPANY_MEMBER_ROLES } from '@/features/builder/constants';
 import { useInviteMemberMutation } from '@/features/builder/hooks/use-company-members';
@@ -15,7 +15,7 @@ import { ApiError } from '@/shared/api/errors';
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
-import { selectFieldClassName } from '@/shared/ui/select';
+import { Select } from '@/shared/ui/select';
 
 type InviteMemberFormProps = {
   onSuccess: (email: string) => void;
@@ -39,6 +39,7 @@ export const InviteMemberForm = ({ onSuccess }: InviteMemberFormProps) => {
 
   const {
     register,
+    control,
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
@@ -70,7 +71,6 @@ export const InviteMemberForm = ({ onSuccess }: InviteMemberFormProps) => {
   });
 
   const busy = isSubmitting || mutation.isPending;
-  const selectClassName = selectFieldClassName;
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
@@ -96,13 +96,28 @@ export const InviteMemberForm = ({ onSuccess }: InviteMemberFormProps) => {
         <Input id="invite-phone" type="tel" {...register('phone')} />
       </FormField>
       <FormField id="invite-role" label={t('form.role')}>
-        <select id="invite-role" className={selectClassName} {...register('role')}>
-          {COMPANY_MEMBER_ROLES.map((role) => (
-            <option key={role} value={role}>
-              {t(`roles.${role}`)}
-            </option>
-          ))}
-        </select>
+        <Controller
+          name="role"
+          control={control}
+          render={({ field }) => (
+            <Select
+              id="invite-role"
+              name={field.name}
+              value={field.value}
+              aria-label={t('form.role')}
+              onBlur={field.onBlur}
+              onChange={(event) => {
+                field.onChange(event.target.value);
+              }}
+            >
+              {COMPANY_MEMBER_ROLES.map((role) => (
+                <option key={role} value={role}>
+                  {t(`roles.${role}`)}
+                </option>
+              ))}
+            </Select>
+          )}
+        />
       </FormField>
       {formError ? (
         <p role="alert" className="rounded-sm bg-danger-soft px-3 py-2 text-sm text-danger">

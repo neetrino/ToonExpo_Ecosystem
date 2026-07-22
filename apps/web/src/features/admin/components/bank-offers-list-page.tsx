@@ -1,31 +1,32 @@
-"use client";
+'use client';
 
-import type { BankOfferListItem, PublicationStatus } from "@toonexpo/contracts";
-import { useTranslations } from "next-intl";
-import { useMemo, useState } from "react";
+import type { BankOfferListItem, PublicationStatus } from '@toonexpo/contracts';
+import { useTranslations } from 'next-intl';
+import { useMemo, useState } from 'react';
 
-import { BankOfferForm } from "@/features/admin/components/bank-offer-form";
+import { BankOfferForm } from '@/features/admin/components/bank-offer-form';
 import {
   useAdminBankOffersQuery,
   useCreateBankOfferMutation,
   useDeleteBankOfferMutation,
   useUpdateBankOfferMutation,
-} from "@/features/admin/hooks/use-admin-bank-offers";
-import { useAdminPartnersQuery } from "@/features/admin/hooks/use-admin-partners";
-import { ADMIN_COMPANIES_MAX_PAGE_SIZE } from "@/features/admin/constants";
-import { useAdminCompaniesQuery } from "@/features/admin/hooks/use-admin-companies";
-import { PARTNERS_DEFAULT_PAGE_SIZE } from "@/features/partners/constants";
-import { PublicationStatusBadge } from "@/features/partners/components/partner-badges";
-import { Button } from "@/shared/ui/button";
-import { Card } from "@/shared/ui/card";
+} from '@/features/admin/hooks/use-admin-bank-offers';
+import { useAdminPartnersQuery } from '@/features/admin/hooks/use-admin-partners';
+import { ADMIN_COMPANIES_MAX_PAGE_SIZE } from '@/features/admin/constants';
+import { useAdminCompaniesQuery } from '@/features/admin/hooks/use-admin-companies';
+import { PARTNERS_DEFAULT_PAGE_SIZE } from '@/features/partners/constants';
+import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
+import { Button } from '@/shared/ui/button';
+import { Card } from '@/shared/ui/card';
+import { Select } from '@/shared/ui/select';
 
 /**
  * Admin bank offers list with filters, create/edit, and publish controls.
  */
 export const BankOffersListPage = () => {
-  const t = useTranslations("Admin.bankOffers");
-  const [partnerFilter, setPartnerFilter] = useState("");
-  const [publicationFilter, setPublicationFilter] = useState<PublicationStatus | "">("");
+  const t = useTranslations('Admin.bankOffers');
+  const [partnerFilter, setPartnerFilter] = useState('');
+  const [publicationFilter, setPublicationFilter] = useState<PublicationStatus | ''>('');
   const [editing, setEditing] = useState<BankOfferListItem | null>(null);
   const [creating, setCreating] = useState(false);
 
@@ -35,7 +36,7 @@ export const BankOffersListPage = () => {
   const partnersQuery = useAdminPartnersQuery({
     page: 1,
     pageSize: PARTNERS_DEFAULT_PAGE_SIZE,
-    type: "bank",
+    type: 'bank',
   });
   const companiesQuery = useAdminCompaniesQuery(1, ADMIN_COMPANIES_MAX_PAGE_SIZE);
 
@@ -47,7 +48,7 @@ export const BankOffersListPage = () => {
     const companies = companiesQuery.data?.data ?? [];
     const partners = partnersQuery.data?.data ?? [];
     return partners
-      .filter((partner) => partner.type === "bank")
+      .filter((partner) => partner.type === 'bank')
       .map((partner) => ({
         companyId: partner.companyId,
         name: partner.name,
@@ -63,19 +64,16 @@ export const BankOffersListPage = () => {
     return offers.filter((offer) => offer.publicationStatus === publicationFilter);
   }, [offersQuery.data, publicationFilter]);
 
-  const busy =
-    createMutation.isPending ||
-    updateMutation.isPending ||
-    deleteMutation.isPending;
+  const busy = createMutation.isPending || updateMutation.isPending || deleteMutation.isPending;
 
   if (offersQuery.isLoading || partnersQuery.isLoading) {
-    return <p className="text-sm text-ink-secondary">{t("loading")}</p>;
+    return <p className="text-sm text-ink-secondary">{t('loading')}</p>;
   }
 
   if (offersQuery.isError || !offersQuery.data) {
     return (
       <p role="alert" className="text-sm text-danger">
-        {t("error")}
+        {t('error')}
       </p>
     );
   }
@@ -84,8 +82,8 @@ export const BankOffersListPage = () => {
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-col gap-1">
-          <h1 className="text-xl font-semibold text-ink">{t("title")}</h1>
-          <p className="text-sm text-ink-secondary">{t("subtitle")}</p>
+          <h1 className="text-xl font-semibold text-ink">{t('title')}</h1>
+          <p className="text-sm text-ink-secondary">{t('subtitle')}</p>
         </div>
         <Button
           type="button"
@@ -96,42 +94,46 @@ export const BankOffersListPage = () => {
             setEditing(null);
           }}
         >
-          {t("newOffer")}
+          {t('newOffer')}
         </Button>
       </div>
 
       <div className="flex flex-wrap gap-3">
-        <select
-          className="h-10 rounded-sm border border-border bg-background px-3 text-sm"
+        <Select
+          size="fit"
+          className="h-10"
           value={partnerFilter}
+          aria-label={t('filters.allBanks')}
           onChange={(event) => {
             setPartnerFilter(event.target.value);
           }}
         >
-          <option value="">{t("filters.allBanks")}</option>
+          <option value="">{t('filters.allBanks')}</option>
           {bankPartners.map((partner) => (
             <option key={partner.companyId} value={partner.companyId}>
               {partner.name}
             </option>
           ))}
-        </select>
-        <select
-          className="h-10 rounded-sm border border-border bg-background px-3 text-sm"
+        </Select>
+        <Select
+          size="fit"
+          className="h-10"
           value={publicationFilter}
+          aria-label={t('filters.allPublication')}
           onChange={(event) => {
-            setPublicationFilter(event.target.value as PublicationStatus | "");
+            setPublicationFilter(event.target.value as PublicationStatus | '');
           }}
         >
-          <option value="">{t("filters.allPublication")}</option>
-          <option value="draft">{t("filters.draft")}</option>
-          <option value="published">{t("filters.published")}</option>
-          <option value="archived">{t("filters.archived")}</option>
-        </select>
+          <option value="">{t('filters.allPublication')}</option>
+          <option value="draft">{t('filters.draft')}</option>
+          <option value="published">{t('filters.published')}</option>
+          <option value="archived">{t('filters.archived')}</option>
+        </Select>
       </div>
 
       {creating ? (
         <Card className="max-w-2xl">
-          <h2 className="mb-4 text-base font-semibold text-ink">{t("createTitle")}</h2>
+          <h2 className="mb-4 text-base font-semibold text-ink">{t('createTitle')}</h2>
           <BankOfferForm
             bankPartners={bankPartners}
             isBusy={busy}
@@ -149,7 +151,7 @@ export const BankOffersListPage = () => {
       {editing ? (
         <Card className="max-w-2xl">
           <h2 className="mb-4 text-base font-semibold text-ink">
-            {t("editTitle", { title: editing.title })}
+            {t('editTitle', { title: editing.title })}
           </h2>
           <BankOfferForm
             bankPartners={bankPartners}
@@ -167,17 +169,17 @@ export const BankOffersListPage = () => {
       ) : null}
 
       {filteredOffers.length === 0 ? (
-        <p className="text-sm text-ink-secondary">{t("empty")}</p>
+        <p className="text-sm text-ink-secondary">{t('empty')}</p>
       ) : (
         <div className="overflow-x-auto rounded-sm border border-border">
           <table className="w-full min-w-[48rem] border-collapse text-left text-sm">
             <thead className="bg-surface text-xs uppercase tracking-wide text-ink-muted">
               <tr>
-                <th className="px-3 py-2 font-medium">{t("columns.title")}</th>
-                <th className="px-3 py-2 font-medium">{t("columns.bank")}</th>
-                <th className="px-3 py-2 font-medium">{t("columns.rate")}</th>
-                <th className="px-3 py-2 font-medium">{t("columns.publication")}</th>
-                <th className="px-3 py-2 font-medium">{t("columns.actions")}</th>
+                <th className="px-3 py-2 font-medium">{t('columns.title')}</th>
+                <th className="px-3 py-2 font-medium">{t('columns.bank')}</th>
+                <th className="px-3 py-2 font-medium">{t('columns.rate')}</th>
+                <th className="px-3 py-2 font-medium">{t('columns.publication')}</th>
+                <th className="px-3 py-2 font-medium">{t('columns.actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -185,7 +187,7 @@ export const BankOffersListPage = () => {
                 <tr key={offer.id} className="border-t border-border">
                   <td className="px-3 py-2.5 font-medium text-ink">{offer.title}</td>
                   <td className="px-3 py-2.5 text-ink-secondary">
-                    {offer.partnerCompanyName ?? "—"}
+                    {offer.partnerCompanyName ?? '—'}
                   </td>
                   <td className="px-3 py-2.5 text-ink-secondary">{offer.rate}%</td>
                   <td className="px-3 py-2.5">
@@ -201,7 +203,7 @@ export const BankOffersListPage = () => {
                           setCreating(false);
                         }}
                       >
-                        {t("edit")}
+                        {t('edit')}
                       </button>
                       <button
                         type="button"
@@ -211,7 +213,7 @@ export const BankOffersListPage = () => {
                           void deleteMutation.mutateAsync(offer.id);
                         }}
                       >
-                        {t("delete")}
+                        {t('delete')}
                       </button>
                     </div>
                   </td>

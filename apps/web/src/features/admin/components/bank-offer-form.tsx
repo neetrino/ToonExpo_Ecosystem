@@ -1,25 +1,26 @@
-"use client";
+'use client';
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import type { BankOfferListItem } from "@toonexpo/contracts";
-import { useTranslations } from "next-intl";
-import { useForm } from "react-hook-form";
+import { zodResolver } from '@hookform/resolvers/zod';
+import type { BankOfferListItem } from '@toonexpo/contracts';
+import { useTranslations } from 'next-intl';
+import { Controller, useForm } from 'react-hook-form';
 
 import {
   bankOfferFormSchema,
   termOptionsToField,
   type BankOfferFormInput,
   type BankOfferFormValues,
-} from "@/features/admin/schemas/bank-offer.schema";
+} from '@/features/admin/schemas/bank-offer.schema';
 import {
   toCreateBankOfferBody,
   toUpdateBankOfferBody,
-} from "@/features/admin/utils/bank-offer-mappers";
-import { PARTNER_PUBLICATION_STATUSES } from "@/features/partners/constants";
-import { Button } from "@/shared/ui/button";
-import { FormField } from "@/shared/ui/form-field";
-import { Input } from "@/shared/ui/input";
-import { Textarea } from "@/shared/ui/textarea";
+} from '@/features/admin/utils/bank-offer-mappers';
+import { PARTNER_PUBLICATION_STATUSES } from '@/features/partners/constants';
+import { Button } from '@/shared/ui/button';
+import { FormField } from '@/shared/ui/form-field';
+import { Input } from '@/shared/ui/input';
+import { Select } from '@/shared/ui/select';
+import { Textarea } from '@/shared/ui/textarea';
 
 type BankPartnerOption = {
   companyId: string;
@@ -46,7 +47,7 @@ export const BankOfferForm = ({
   onCancel,
   isBusy,
 }: BankOfferFormProps) => {
-  const t = useTranslations("Admin.bankOffers.form");
+  const t = useTranslations('Admin.bankOffers.form');
   const isEdit = initial != null;
 
   const form = useForm<BankOfferFormInput, unknown, BankOfferFormValues>({
@@ -55,29 +56,29 @@ export const BankOfferForm = ({
       ? {
           partnerCompanyId: initial.partnerCompanyId,
           title: initial.title,
-          shortDescription: initial.shortDescription ?? "",
+          shortDescription: initial.shortDescription ?? '',
           rate: Number(initial.rate),
           apr: initial.apr != null ? Number(initial.apr) : undefined,
           minDownPaymentPercent: Number(initial.minDownPaymentPercent),
           termOptionsYears: termOptionsToField(initial.termOptionsYears),
-          fees: initial.fees ?? "",
-          calculationNotes: initial.calculationNotes ?? "",
+          fees: initial.fees ?? '',
+          calculationNotes: initial.calculationNotes ?? '',
           featured: initial.featured,
           sortOrder: initial.sortOrder,
           publicationStatus: initial.publicationStatus,
         }
       : {
-          partnerCompanyId: bankPartners[0]?.companyId ?? "",
-          title: "",
-          shortDescription: "",
+          partnerCompanyId: bankPartners[0]?.companyId ?? '',
+          title: '',
+          shortDescription: '',
           rate: 0,
           minDownPaymentPercent: 10,
-          termOptionsYears: "15, 20, 30",
-          fees: "",
-          calculationNotes: "",
+          termOptionsYears: '15, 20, 30',
+          fees: '',
+          calculationNotes: '',
           featured: false,
           sortOrder: 0,
-          publicationStatus: "draft",
+          publicationStatus: 'draft',
         },
   });
 
@@ -106,87 +107,123 @@ export const BankOfferForm = ({
   return (
     <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
       {!isEdit ? (
-        <FormField id="partnerCompanyId" label={t("bankPartner")}>
-          <select
-            id="partnerCompanyId"
-            className="h-11 w-full rounded-sm border border-border bg-background px-3 text-sm text-ink"
-            {...form.register("partnerCompanyId")}
-          >
-            {bankPartners.map((partner) => (
-              <option key={partner.companyId} value={partner.companyId}>
-                {partner.name}
-              </option>
-            ))}
-          </select>
+        <FormField id="partnerCompanyId" label={t('bankPartner')}>
+          <Controller
+            name="partnerCompanyId"
+            control={form.control}
+            render={({ field }) => (
+              <Select
+                id="partnerCompanyId"
+                name={field.name}
+                value={field.value}
+                aria-label={t('bankPartner')}
+                onBlur={field.onBlur}
+                onChange={(event) => {
+                  field.onChange(event.target.value);
+                }}
+              >
+                {bankPartners.map((partner) => (
+                  <option key={partner.companyId} value={partner.companyId}>
+                    {partner.name}
+                  </option>
+                ))}
+              </Select>
+            )}
+          />
         </FormField>
       ) : null}
 
-      <FormField id="title" label={t("title")}>
-        <Input id="title" {...form.register("title")} />
+      <FormField id="title" label={t('title')}>
+        <Input id="title" {...form.register('title')} />
       </FormField>
 
-      <FormField id="shortDescription" label={t("shortDescription")}>
-        <Textarea id="shortDescription" rows={3} {...form.register("shortDescription")} />
+      <FormField id="shortDescription" label={t('shortDescription')}>
+        <Textarea id="shortDescription" rows={3} {...form.register('shortDescription')} />
       </FormField>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <FormField id="rate" label={t("rate")}>
-          <Input id="rate" type="number" step="0.01" {...form.register("rate", { valueAsNumber: true })} />
+        <FormField id="rate" label={t('rate')}>
+          <Input
+            id="rate"
+            type="number"
+            step="0.01"
+            {...form.register('rate', { valueAsNumber: true })}
+          />
         </FormField>
-        <FormField id="apr" label={t("apr")}>
-          <Input id="apr" type="number" step="0.01" {...form.register("apr", { valueAsNumber: true })} />
+        <FormField id="apr" label={t('apr')}>
+          <Input
+            id="apr"
+            type="number"
+            step="0.01"
+            {...form.register('apr', { valueAsNumber: true })}
+          />
         </FormField>
-        <FormField id="minDownPaymentPercent" label={t("minDownPayment")}>
+        <FormField id="minDownPaymentPercent" label={t('minDownPayment')}>
           <Input
             id="minDownPaymentPercent"
             type="number"
             step="0.01"
-            {...form.register("minDownPaymentPercent", { valueAsNumber: true })}
+            {...form.register('minDownPaymentPercent', { valueAsNumber: true })}
           />
         </FormField>
-        <FormField id="termOptionsYears" label={t("termOptions")}>
-          <Input id="termOptionsYears" {...form.register("termOptionsYears")} />
+        <FormField id="termOptionsYears" label={t('termOptions')}>
+          <Input id="termOptionsYears" {...form.register('termOptionsYears')} />
         </FormField>
       </div>
 
-      <FormField id="fees" label={t("fees")}>
-        <Textarea id="fees" rows={2} {...form.register("fees")} />
+      <FormField id="fees" label={t('fees')}>
+        <Textarea id="fees" rows={2} {...form.register('fees')} />
       </FormField>
 
-      <FormField id="calculationNotes" label={t("calculationNotes")}>
-        <Textarea id="calculationNotes" rows={2} {...form.register("calculationNotes")} />
+      <FormField id="calculationNotes" label={t('calculationNotes')}>
+        <Textarea id="calculationNotes" rows={2} {...form.register('calculationNotes')} />
       </FormField>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <FormField id="publicationStatus" label={t("publication")}>
-          <select
-            id="publicationStatus"
-            className="h-11 w-full rounded-sm border border-border bg-background px-3 text-sm text-ink"
-            {...form.register("publicationStatus")}
-          >
-            {PARTNER_PUBLICATION_STATUSES.map((status) => (
-              <option key={status} value={status}>
-                {t(`publicationStatuses.${status}`)}
-              </option>
-            ))}
-          </select>
+        <FormField id="publicationStatus" label={t('publication')}>
+          <Controller
+            name="publicationStatus"
+            control={form.control}
+            render={({ field }) => (
+              <Select
+                id="publicationStatus"
+                name={field.name}
+                value={field.value}
+                aria-label={t('publication')}
+                onBlur={field.onBlur}
+                onChange={(event) => {
+                  field.onChange(event.target.value);
+                }}
+              >
+                {PARTNER_PUBLICATION_STATUSES.map((status) => (
+                  <option key={status} value={status}>
+                    {t(`publicationStatuses.${status}`)}
+                  </option>
+                ))}
+              </Select>
+            )}
+          />
         </FormField>
-        <FormField id="sortOrder" label={t("sortOrder")}>
-          <Input id="sortOrder" type="number" {...form.register("sortOrder", { valueAsNumber: true })} />
+        <FormField id="sortOrder" label={t('sortOrder')}>
+          <Input
+            id="sortOrder"
+            type="number"
+            {...form.register('sortOrder', { valueAsNumber: true })}
+          />
         </FormField>
       </div>
 
       <label className="flex items-center gap-2 text-sm text-ink">
-        <input type="checkbox" {...form.register("featured")} />
-        {t("featured")}
+        <input type="checkbox" {...form.register('featured')} />
+        {t('featured')}
       </label>
 
       <div className="flex flex-wrap gap-2">
         <Button type="submit" size="sm" disabled={isBusy || form.formState.isSubmitting}>
-          {isEdit ? t("save") : t("create")}
+          {isEdit ? t('save') : t('create')}
         </Button>
         <Button type="button" size="sm" variant="ghost" onClick={onCancel}>
-          {t("cancel")}
+          {t('cancel')}
         </Button>
       </div>
     </form>

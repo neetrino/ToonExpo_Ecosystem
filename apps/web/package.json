@@ -12,8 +12,8 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "e2e": "playwright test -c e2e/playwright.config.ts",
-    "e2e:ui": "playwright test --ui -c e2e/playwright.config.ts",
+    "e2e": "node scripts/e2e-with-seed.mjs",
+    "e2e:ui": "node scripts/e2e-with-seed.mjs --ui",
     "e2e:install": "playwright install chromium"
   },
   "dependencies": {

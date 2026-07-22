@@ -14,26 +14,34 @@ import { ProfileMenu } from '@/shared/ui/profile-menu';
 
 type SiteHeaderProps = {
   className?: string | undefined;
-  /** Transparent over hero imagery; becomes solid after scroll. */
+  /** Transparent at top of home; white pill appears after scroll (ma-marie pattern). */
   variant?: 'solid' | 'transparent' | undefined;
 };
 
 const NAV_HREFS = [
-  { href: '/projects' as const, key: 'projects' as const },
-  { href: '/builders' as const, key: 'builders' as const },
-  { href: '/partners' as const, key: 'partners' as const },
+  { href: '/projects' as const, key: 'buy' as const },
+  { href: '/builders' as const, key: 'newDevelopments' as const },
+  { href: '/partners' as const, key: 'marketInsights' as const },
   { href: '/mortgage' as const, key: 'mortgage' as const },
-  { href: '/expo' as const, key: 'expoMap' as const },
 ];
 
-const SCROLL_SOLID_OFFSET_PX = 24;
-const HEADER_BAR_CLASS =
-  'page-container grid grid-cols-[minmax(0,auto)_minmax(0,1fr)] items-center gap-3 py-3 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:gap-6 lg:py-3.5';
+/** ma-marie `HEADER_HOME_SCROLL_THRESHOLD_PX`. */
+const SCROLL_PILL_THRESHOLD_PX = 12;
+/** ma-marie `HEADER_PILL_APPEAR_DURATION_MS`. */
+const PILL_APPEAR_MS = 500;
+/** Inward nudge of logo / actions once the pill is visible. */
+const PILL_CONTENT_INSET_PX = 22;
+/** How far the pill pulls in from page-container edges. */
+const PILL_EDGE_INSET_CLASS = 'left-4 right-4 sm:left-5 sm:right-5 lg:left-6 lg:right-6';
+/** Float gap above the pill — keeps pill height = navbar (h-16). */
+const PILL_TOP_OFFSET_CLASS = 'top-2';
+const HEADER_HEIGHT_CLASS = 'h-16';
+/** Spacer under fixed pill chrome (top inset + bar). */
+const HEADER_SPACER_CLASS = 'h-[4.5rem]';
 
 /**
- * Fixed public header — always visible while scrolling on every page.
- * Transparent hero variant is full-bleed over imagery, then matches the solid
- * floating rounded chrome used on every other page.
+ * Public header — ma-marie style: full-bleed over home hero, frosted pill
+ * on scroll (home) or always (other public pages).
  */
 export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) => {
   const t = useTranslations('Nav');
@@ -43,13 +51,12 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
   const { data: user, isLoading, isFetching } = useMeQuery();
   const logoutMutation = useLogoutMutation();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  /** Avoid auth SSR/client mismatch until the session hint is readable. */
+  const [showPill, setShowPill] = useState(false);
   const [authReady, setAuthReady] = useState(false);
   const isTransparentStart = variant === 'transparent';
-  const isOverHero = isTransparentStart && !scrolled && !menuOpen;
-  /** Solid chrome is always the same floating rounded bar on every page. */
-  const isFloating = !isOverHero;
+  /** Solid pages always use the home pill chrome; home reveals it on scroll. */
+  const pillVisible = !isTransparentStart || showPill || menuOpen;
+  const isOverHero = isTransparentStart && !pillVisible;
   const needsSpacer = !isTransparentStart;
   const showAuthLoading = !authReady || isLoading || (isFetching && !user);
 
@@ -63,19 +70,17 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
 
   useEffect(() => {
     if (!isTransparentStart) {
-      setScrolled(false);
+      setShowPill(false);
       return;
     }
 
-    const updateScrolled = (): void => {
-      setScrolled(window.scrollY > SCROLL_SOLID_OFFSET_PX);
+    const update = (): void => {
+      setShowPill(window.scrollY > SCROLL_PILL_THRESHOLD_PX);
     };
 
-    updateScrolled();
-    window.addEventListener('scroll', updateScrolled, { passive: true });
-    return () => {
-      window.removeEventListener('scroll', updateScrolled);
-    };
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+    return () => window.removeEventListener('scroll', update);
   }, [isTransparentStart]);
 
   useEffect(() => {
@@ -89,167 +94,259 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
     };
   }, [menuOpen]);
 
-  const accountHref = user?.accountType === 'platform_admin' ? '/admin/settings' : '/dashboard';
+  const settingsHref = user?.accountType === 'platform_admin' ? '/admin/settings' : '/settings';
+  const listPropertyHref =
+    user?.accountType === 'company_member' && user.companyType === 'builder'
+      ? ('/builder' as const)
+      : ('/auth/register' as const);
+  const signInHref = user ? settingsHref : '/auth/login';
+  const contentInsetStyle = {
+    transform: pillVisible ? `translateX(${PILL_CONTENT_INSET_PX}px)` : 'translateX(0)',
+    transitionDuration: `${PILL_APPEAR_MS}ms`,
+  };
+  const actionsInsetStyle = {
+    transform: pillVisible ? `translateX(-${PILL_CONTENT_INSET_PX}px)` : 'translateX(0)',
+    transitionDuration: `${PILL_APPEAR_MS}ms`,
+  };
 
   return (
     <>
       <header
         className={cn(
-          'fixed z-[var(--z-header)]',
-          'transition-[top,left,right,border-radius,background-color,border-color,box-shadow,color,backdrop-filter] duration-[var(--duration-base)] ease-[var(--ease-out-premium)]',
-          isFloating
-            ? 'top-3 inset-x-3 rounded-md border border-border/70 bg-surface-elevated/92 text-ink shadow-sm backdrop-blur-xl sm:inset-x-5 lg:inset-x-6'
-            : 'inset-x-0 top-0 w-full rounded-none border-b border-transparent bg-transparent text-on-dark',
+          'fixed inset-x-0 top-0 z-[var(--z-header)]',
+          isOverHero ? 'text-on-dark' : 'text-ink',
           className,
         )}
       >
-        <div className={HEADER_BAR_CLASS}>
-          <div className="justify-self-start">
-            <BrandLogo inverted={isOverHero} />
-          </div>
-
-          <nav
-            className={cn(
-              'hidden items-center justify-center gap-1 lg:flex',
-              isOverHero ? 'text-on-dark/80' : 'text-ink-secondary',
-            )}
-            aria-label={t('main')}
-          >
-            {NAV_HREFS.map((item) => {
-              const active = isNavActive(pathname, item.href);
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    'relative whitespace-nowrap rounded-sm px-3 py-2 text-[13px] font-medium tracking-[-0.01em]',
-                    'transition-[color,background-color] duration-[var(--duration-fast)]',
-                    active
-                      ? isOverHero
-                        ? 'bg-white/12 text-on-dark'
-                        : 'bg-brand-soft text-brand'
-                      : isOverHero
-                        ? 'hover:bg-white/10 hover:text-on-dark'
-                        : 'hover:bg-surface hover:text-ink',
-                  )}
-                >
-                  {t(item.key)}
-                </Link>
-              );
-            })}
-          </nav>
-
-          <div className="flex shrink-0 items-center justify-end gap-2 justify-self-end sm:gap-2.5">
-            <LocaleSwitcher tone={isOverHero ? 'dark' : 'light'} />
-            {showAuthLoading ? (
-              <span className="size-9 animate-pulse rounded-sm bg-current/10" aria-hidden />
-            ) : (
-              <ProfileMenu
-                userName={user?.name}
-                userEmail={user?.email}
-                tone={isOverHero ? 'dark' : 'light'}
-              />
-            )}
-
-            <IconButton
-              label={t('menu')}
-              className={cn(
-                'lg:hidden',
-                isOverHero && 'border-white/30 bg-white/10 text-on-dark hover:bg-white/15',
-              )}
-              variant="outline"
-              size="sm"
-              aria-expanded={menuOpen}
-              aria-controls="mobile-nav"
-              onClick={() => setMenuOpen((open) => !open)}
-            >
-              {menuOpen ? (
-                <X className="size-4" aria-hidden />
-              ) : (
-                <Menu className="size-4" aria-hidden />
-              )}
-            </IconButton>
-          </div>
-        </div>
-
-        {menuOpen ? (
+        <div
+          className={cn(
+            'page-container relative transition-[padding] ease-out',
+            pillVisible && 'pt-2',
+          )}
+          style={{ transitionDuration: `${PILL_APPEAR_MS}ms` }}
+        >
           <div
-            id="mobile-nav"
-            className="border-t border-border/50 bg-surface-elevated px-4 py-4 text-ink shadow-md sm:px-6 lg:hidden"
+            aria-hidden
+            className={cn(
+              'pointer-events-none absolute h-16 rounded-full bg-surface-elevated',
+              PILL_TOP_OFFSET_CLASS,
+              PILL_EDGE_INSET_CLASS,
+              'shadow-[0_4px_24px_rgb(9_43_68/0.1)]',
+              'transition-opacity ease-out',
+            )}
+            style={{
+              opacity: pillVisible ? 1 : 0,
+              transitionDuration: `${PILL_APPEAR_MS}ms`,
+            }}
+          />
+
+          <div
+            className={cn(
+              'relative z-10 flex items-center justify-between gap-4 sm:gap-6',
+              HEADER_HEIGHT_CLASS,
+            )}
           >
-            <nav className="flex flex-col gap-1 text-sm" aria-label={t('main')}>
-              {NAV_HREFS.map((item) => {
-                const active = isNavActive(pathname, item.href);
-                return (
+            <div
+              className="flex min-w-0 items-center gap-8 transition-transform ease-out lg:gap-10"
+              style={contentInsetStyle}
+            >
+              <BrandLogo inverted={isOverHero} onHomeClick={() => setMenuOpen(false)} />
+
+              <nav
+                className={cn(
+                  'hidden items-center gap-6 lg:flex xl:gap-7',
+                  'transition-colors ease-out',
+                  isOverHero ? 'text-on-dark/80' : 'text-header-muted',
+                )}
+                style={{ transitionDuration: `${PILL_APPEAR_MS}ms` }}
+                aria-label={t('main')}
+              >
+                {NAV_HREFS.map((item) => {
+                  const active = isNavActive(pathname, item.href);
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={cn(
+                        'whitespace-nowrap text-sm font-medium leading-5',
+                        'transition-colors ease-out',
+                        active
+                          ? isOverHero
+                            ? 'text-on-dark'
+                            : 'text-brand-deep'
+                          : isOverHero
+                            ? 'hover:text-on-dark'
+                            : 'hover:text-brand-deep',
+                      )}
+                      style={{ transitionDuration: `${PILL_APPEAR_MS}ms` }}
+                    >
+                      {t(item.key)}
+                    </Link>
+                  );
+                })}
+              </nav>
+            </div>
+
+            <div
+              className="flex shrink-0 items-center gap-2.5 transition-transform ease-out sm:gap-3"
+              style={actionsInsetStyle}
+            >
+              <LocaleSwitcher tone={isOverHero ? 'dark' : 'light'} />
+
+              {showAuthLoading ? (
+                <span
+                  className="hidden h-5 w-14 animate-pulse rounded-sm bg-current/10 sm:inline-block"
+                  aria-hidden
+                />
+              ) : user ? (
+                <div className="hidden items-center gap-3 sm:flex">
                   <Link
-                    key={item.href}
-                    href={item.href}
+                    href={settingsHref}
                     className={cn(
-                      'rounded-sm px-3 py-3 font-medium transition-colors',
-                      active ? 'bg-brand-soft text-brand' : 'text-ink hover:bg-surface',
+                      'max-w-36 truncate text-sm font-medium leading-5',
+                      'transition-colors ease-out',
+                      isOverHero
+                        ? 'text-on-dark/80 hover:text-on-dark'
+                        : 'text-header-muted hover:text-brand-deep',
                     )}
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    {t(item.key)}
-                  </Link>
-                );
-              })}
-              {!user ? (
-                <>
-                  <Link
-                    href="/auth/login"
-                    className="rounded-sm px-3 py-3 font-medium text-ink hover:bg-surface"
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    {t('login')}
-                  </Link>
-                  <Link
-                    href="/auth/register"
-                    className="rounded-sm px-3 py-3 font-medium text-brand hover:bg-brand-soft"
-                    onClick={() => setMenuOpen(false)}
-                  >
-                    {t('register')}
-                  </Link>
-                </>
-              ) : (
-                <>
-                  <Link
-                    href={accountHref}
-                    className="rounded-sm px-3 py-3 font-medium text-ink hover:bg-surface"
-                    onClick={() => setMenuOpen(false)}
+                    style={{ transitionDuration: `${PILL_APPEAR_MS}ms` }}
                   >
                     {user.name}
                   </Link>
-                  <button
-                    type="button"
-                    className="rounded-sm px-3 py-3 text-left font-medium text-danger hover:bg-danger-soft disabled:opacity-50"
-                    disabled={logoutMutation.isPending}
-                    onClick={() => {
-                      void logoutMutation.mutateAsync().then(() => {
-                        setMenuOpen(false);
-                        router.push('/auth/login');
-                      });
-                    }}
-                  >
-                    {logoutMutation.isPending ? tAuth('logout.submitting') : tAuth('logout.submit')}
-                  </button>
-                </>
+                  <LogoutButton
+                    className={cn(
+                      'rounded-full',
+                      isOverHero && 'border-transparent text-on-dark hover:bg-white/10',
+                    )}
+                  />
+                </div>
+              ) : (
+                <Link
+                  href={signInHref}
+                  className={cn(
+                    'hidden text-sm font-medium leading-5 sm:inline',
+                    'transition-colors ease-out',
+                    isOverHero
+                      ? 'text-on-dark/80 hover:text-on-dark'
+                      : 'text-header-muted hover:text-brand-deep',
+                  )}
+                  style={{ transitionDuration: `${PILL_APPEAR_MS}ms` }}
+                >
+                  {t('login')}
+                </Link>
               )}
-            </nav>
+
+              <Link
+                href={listPropertyHref}
+                className={cn(
+                  'hidden h-9 items-center rounded-full px-4 text-sm font-semibold leading-5',
+                  'transition-[background-color,color] ease-out',
+                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-deep/30 sm:inline-flex',
+                  isOverHero
+                    ? 'bg-on-dark text-ink hover:bg-on-dark/90'
+                    : 'bg-brand-deep text-on-dark hover:bg-brand-deep/90',
+                )}
+                style={{ transitionDuration: `${PILL_APPEAR_MS}ms` }}
+              >
+                {t('listProperty')}
+              </Link>
+
+              <IconButton
+                label={t('menu')}
+                className={cn(
+                  'lg:hidden transition-[background-color,border-color,color] ease-out',
+                  isOverHero && 'border-white/30 bg-white/10 text-on-dark hover:bg-white/15',
+                )}
+                style={{ transitionDuration: `${PILL_APPEAR_MS}ms` }}
+                variant="outline"
+                size="sm"
+                aria-expanded={menuOpen}
+                aria-controls="mobile-nav"
+                onClick={() => setMenuOpen((open) => !open)}
+              >
+                {menuOpen ? (
+                  <X className="size-4" aria-hidden />
+                ) : (
+                  <Menu className="size-4" aria-hidden />
+                )}
+              </IconButton>
+            </div>
           </div>
-        ) : null}
+
+          {menuOpen ? (
+            <div
+              id="mobile-nav"
+              className={cn(
+                'relative z-10 mt-1 rounded-[1.25rem] border border-header-border',
+                'bg-surface-elevated px-1 py-3 text-ink shadow-md lg:hidden',
+              )}
+            >
+              <nav className="flex flex-col gap-1 text-sm" aria-label={t('main')}>
+                {NAV_HREFS.map((item) => {
+                  const active = isNavActive(pathname, item.href);
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={cn(
+                        'rounded-sm px-3 py-3 font-medium transition-colors',
+                        active ? 'bg-brand-soft text-brand-deep' : 'text-ink hover:bg-surface',
+                      )}
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      {t(item.key)}
+                    </Link>
+                  );
+                })}
+                {!user ? (
+                  <>
+                    <Link
+                      href="/auth/login"
+                      className="rounded-sm px-3 py-3 font-medium text-ink hover:bg-surface"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      {t('login')}
+                    </Link>
+                    <Link
+                      href="/auth/register"
+                      className="rounded-sm px-3 py-3 font-medium text-brand-deep hover:bg-brand-soft"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      {t('listProperty')}
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <Link
+                      href={settingsHref}
+                      className="rounded-sm px-3 py-3 font-medium text-ink hover:bg-surface"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      {user.name}
+                    </Link>
+                    <Link
+                      href={listPropertyHref}
+                      className="rounded-sm px-3 py-3 font-medium text-brand-deep hover:bg-brand-soft"
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      {t('listProperty')}
+                    </Link>
+                  </>
+                )}
+              </nav>
+            </div>
+          ) : null}
+        </div>
       </header>
 
-      {needsSpacer ? (
-        <div className="h-[calc(0.75rem+3.75rem)] sm:h-[calc(0.75rem+4rem)]" aria-hidden />
-      ) : null}
+      {needsSpacer ? <div className={HEADER_SPACER_CLASS} aria-hidden /> : null}
     </>
   );
 };
 
 const isNavActive = (pathname: string, href: (typeof NAV_HREFS)[number]['href']): boolean => {
   if (href === '/projects') {
-    return pathname.startsWith('/projects');
+    return pathname.startsWith('/projects') || pathname.startsWith('/apartments');
   }
   return pathname.startsWith(href);
 };

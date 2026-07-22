@@ -15,14 +15,13 @@ type FeaturedProjectsProps = {
 };
 
 /**
- * Home featured projects band.
+ * Home featured listings grid — Figma section `81:170` / grid `81:176`.
  */
 export const FeaturedProjects = async ({ projects }: FeaturedProjectsProps) => {
   const t = await getTranslations('HomePage');
-  const [featured, ...rest] = projects;
 
   return (
-    <section className="section-pad">
+    <section className="bg-canvas pt-10 pb-[clamp(2.75rem,5.5vw,4.5rem)] md:pt-12">
       <div className="page-container">
         <Reveal>
           <SectionHeader
@@ -31,7 +30,7 @@ export const FeaturedProjects = async ({ projects }: FeaturedProjectsProps) => {
             action={
               <Link
                 href="/projects"
-                className="text-sm font-semibold text-ink transition-colors hover:text-brand"
+                className="shrink-0 pb-1 text-sm font-semibold text-brand-deep transition-colors hover:text-brand-deep/80"
               >
                 {t('featured.viewAll')}
               </Link>
@@ -39,25 +38,17 @@ export const FeaturedProjects = async ({ projects }: FeaturedProjectsProps) => {
           />
         </Reveal>
 
-        {featured ? (
+        {projects.length > 0 ? (
           <CatalogFavoritesScope projects={projects}>
             <ProjectPriceRangesOverlayScope projectIds={projects.map((project) => project.id)}>
-              <Reveal delayMs={60}>
-                <div className="mb-4">
-                  <ProjectCard project={featured} featured className="sm:flex-row" showFavorite />
-                </div>
-              </Reveal>
-
-              {rest.length > 0 ? (
-                <StaggerGroup
-                  className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
-                  baseDelayMs={100}
-                >
-                  {rest.map((project) => (
-                    <ProjectCard key={project.id} project={project} featured showFavorite />
-                  ))}
-                </StaggerGroup>
-              ) : null}
+              <StaggerGroup
+                className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+                baseDelayMs={80}
+              >
+                {projects.map((project) => (
+                  <ProjectCard key={project.id} project={project} featured showFavorite />
+                ))}
+              </StaggerGroup>
             </ProjectPriceRangesOverlayScope>
           </CatalogFavoritesScope>
         ) : (

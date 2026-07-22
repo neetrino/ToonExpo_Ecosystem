@@ -1,14 +1,15 @@
 import type { ReactNode } from 'react';
 
+import { PageEnter } from '@/shared/ui/motion/page-enter';
+
 type LocaleTemplateProps = {
   children: ReactNode;
 };
 
 /**
- * Remounts on each navigation so pages enter with a short fade.
- * Must not apply `transform`/`filter` here — that would trap `fixed`/`sticky`
- * headers rendered by role portals (admin / account / builder / partner).
+ * Remounts on navigation. Enter animation runs for real route changes only —
+ * locale switches skip it so the page does not jump.
  */
 export default function LocaleTemplate({ children }: LocaleTemplateProps) {
-  return <div className="page-enter">{children}</div>;
+  return <PageEnter>{children}</PageEnter>;
 }

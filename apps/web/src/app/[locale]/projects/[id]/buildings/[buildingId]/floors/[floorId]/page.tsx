@@ -10,11 +10,7 @@ import { getFloor } from '@/features/catalog/api/catalog-api';
 import { SiteFooter } from '@/features/catalog/components/site-footer';
 import { listFloorVisualCanvases } from '@/features/visual-map/api/public-visual-map-api';
 import { PublicVisualMap } from '@/features/visual-map/components/public-visual-map';
-import {
-  buildFloorApartmentHref,
-  buildHotspotTargetHrefs,
-  pickPrimaryVisualCanvas,
-} from '@/features/visual-map/utils/public-visual-map';
+import { pickPrimaryVisualCanvas } from '@/features/visual-map/utils/public-visual-map';
 import { Link } from '@/i18n/navigation';
 
 type FloorPageProps = {
@@ -95,13 +91,7 @@ export default async function FloorPage({ params }: FloorPageProps) {
 
         {visualCanvas ? (
           <div className="mb-8">
-            <PublicVisualMap
-              canvas={visualCanvas}
-              targetHrefByHotspotId={buildHotspotTargetHrefs(
-                visualCanvas.hotspots,
-                buildFloorApartmentHref,
-              )}
-            />
+            <PublicVisualMap canvas={visualCanvas} linkContext={{ kind: 'floorApartment' }} />
           </div>
         ) : null}
 

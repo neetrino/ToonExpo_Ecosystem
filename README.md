@@ -129,7 +129,7 @@ Chromium-only smoke suite in `apps/web/e2e`. Not part of the default turbo `buil
 Prerequisites: root `.env` with `DATABASE_URL` / `DIRECT_URL`, `SESSION_TOKEN_PEPPER`, `CSRF_SECRET`, and optional `SEED_ADMIN_PASSWORD` (fallback `ChangeMeAdmin123!`).
 
 ```bash
-# Builds API + web, seeds DB (globalSetup), starts both servers if needed, runs smoke tests
+# Builds API + web, seeds DB (before Playwright), starts both servers if needed, runs smoke tests
 pnpm e2e
 
 # Or after an existing build / with servers already on :3000 and :4000:
