@@ -85,9 +85,9 @@ export default async function HomePage({ params }: HomePageProps) {
       <HomeExplore projects={exploreProjects} />
       <HomeBuilders builders={builders} />
       <HomeExhibition />
-      <HomeMortgage />
       <HomePartners partners={partnersResponse.data} />
       <HomeFinalCta />
+      <HomeMortgage />
       <SiteFooter />
     </div>
   );

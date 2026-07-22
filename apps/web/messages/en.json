@@ -132,17 +132,23 @@
       }
     },
     "mortgage": {
-      "eyebrow": "Financing",
-      "title": "Plan your mortgage with bank partners",
-      "description": "Compare published bank offers and estimate monthly payments before you visit the exhibition.",
-      "cta": "Open calculator",
-      "partnersCta": "View partners",
+      "eyebrow": "Mortgage marketplace",
+      "title": "Compare real offers from partner banks in under a minute.",
+      "description": "Live rates from twelve lenders, instant qualification estimates, and zero hidden fees — all integrated with the listing you're already viewing.",
+      "cta": "Launch calculator",
+      "partnersCta": "View rate trends",
       "cardTitle": "Bank offers in one place",
       "cardBody": "Transparent rates and terms from ToonExpo bank partners.",
       "bullets": {
         "rates": "Published rate ranges",
         "terms": "Term and down-payment guidance",
         "compare": "Side-by-side comparison"
+      },
+      "preview": {
+        "propertyPrice": "Property price",
+        "downPayment": "Down 20%",
+        "term": "Term",
+        "estimatedMonthly": "Estimated monthly"
       }
     },
     "partners": {
@@ -179,10 +185,17 @@
     "loading": "…"
   },
   "Footer": {
-    "tagline": "ToonExpo connects buyers with verified new developments across Armenia.",
+    "tagline": "The marketplace for verified homes, new developments, and partner bank offers — built for buyers, brokers, and developers in one transparent platform.",
     "marketplace": "Marketplace",
     "company": "Company",
     "links": {
+      "allListings": "All listings",
+      "newDevelopments": "New developments",
+      "marketReports": "Market reports",
+      "partnerBanks": "Partner banks",
+      "about": "About",
+      "press": "Press",
+      "contact": "Contact",
       "projects": "Projects",
       "builders": "Builders",
       "register": "Register",
@@ -191,8 +204,10 @@
       "mortgage": "Mortgage",
       "expo": "Expo map"
     },
-    "trust": "Verified listings · GDPR-ready · Encrypted in transit",
-    "copyright": "© 2026 Toon Expo",
+    "trust": "100% verified listings · GDPR compliant · Data encrypted in transit",
+    "copyrightPrefix": "Copyright © 2026",
+    "copyrightCompany": "Neetrino IT Company",
+    "copyrightSuffix": "All Rights Reserved.",
     "legal": "Legal",
     "contact": "Contact",
     "contactEmail": "hello@toonexpo.am",
