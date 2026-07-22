@@ -20,18 +20,24 @@ const isAuthRoute = (pathname: string): boolean => {
   return pathname === '/auth' || pathname.startsWith('/auth/');
 };
 
+const isHomeRoute = (pathname: string): boolean => {
+  return pathname === '/' || pathname === '';
+};
+
 /**
  * Persistent public chrome — keeps SiteHeader mounted across navigations
  * so the bar does not remount/jump when switching Projects / Builders / etc.
  * Auth routes use AuthPageShell instead of the public header.
+ * Home uses a transparent header so the hero photo sits under the bar (Figma −75px crop).
  */
 export const PublicChrome = ({ children }: PublicChromeProps) => {
   const pathname = usePathname();
   const showPublicHeader = !isPortalRoute(pathname) && !isAuthRoute(pathname);
+  const headerVariant = isHomeRoute(pathname) ? 'transparent' : 'solid';
 
   return (
     <>
-      {showPublicHeader ? <SiteHeader variant="solid" /> : null}
+      {showPublicHeader ? <SiteHeader variant={headerVariant} /> : null}
       {children}
     </>
   );

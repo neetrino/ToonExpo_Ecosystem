@@ -1,5 +1,3 @@
-import Image from 'next/image';
-
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 
@@ -7,7 +5,7 @@ type BrandLogoProps = {
   href?: '/' | '/builder' | '/admin' | '/partner' | '/settings' | undefined;
   className?: string | undefined;
   badge?: string | undefined;
-  /** Light text over imagery. */
+  /** Light text over imagery (hero header). */
   inverted?: boolean | undefined;
   size?: 'sm' | 'md' | 'lg' | undefined;
   /** Hide the house mark (compact portal rails). */
@@ -26,11 +24,12 @@ const markClassName = {
   lg: 'size-8',
 } as const;
 
-const markPx = {
-  sm: 22,
-  md: 28,
-  lg: 32,
-} as const;
+/** Figma header lockup on hero — roof brand-logo, body white (`81:607`). */
+const HERO_HOUSE_ROOF = 'var(--color-brand-logo)';
+const HERO_HOUSE_BODY = 'var(--color-on-dark)';
+/** Solid surfaces — roof brand-logo, body brand-deep. */
+const SOLID_HOUSE_ROOF = 'var(--color-brand-logo)';
+const SOLID_HOUSE_BODY = 'var(--color-brand-deep)';
 
 /**
  * TOON + EXPO wordmark with house mark — matches public header brand lockup.
@@ -43,6 +42,9 @@ export const BrandLogo = ({
   size = 'md',
   showMark = true,
 }: BrandLogoProps) => {
+  const roofFill = inverted ? HERO_HOUSE_ROOF : SOLID_HOUSE_ROOF;
+  const bodyFill = inverted ? HERO_HOUSE_BODY : SOLID_HOUSE_BODY;
+
   return (
     <Link
       href={href}
@@ -53,26 +55,13 @@ export const BrandLogo = ({
       )}
     >
       {showMark ? (
-        <span
-          className={cn(
-            'relative shrink-0 overflow-hidden',
-            markClassName[size],
-            inverted && 'brightness-0 invert',
-          )}
-        >
-          <Image
-            src="/brand/toon-house.svg"
-            alt=""
-            width={markPx[size]}
-            height={markPx[size]}
-            className="size-full"
-            unoptimized
-          />
+        <span className={cn('relative shrink-0', markClassName[size])} aria-hidden>
+          <HouseMark roofFill={roofFill} bodyFill={bodyFill} />
         </span>
       ) : null}
       <span className="inline-flex whitespace-nowrap">
         <span className={inverted ? 'text-on-dark' : 'text-brand-deep'}>TOON</span>
-        <span className={inverted ? 'text-on-dark/80' : 'text-brand-secondary'}>EXPO</span>
+        <span className={inverted ? 'text-brand-logo' : 'text-brand-secondary'}>EXPO</span>
       </span>
       {badge ? (
         <span
@@ -85,5 +74,23 @@ export const BrandLogo = ({
         </span>
       ) : null}
     </Link>
+  );
+};
+
+type HouseMarkProps = {
+  roofFill: string;
+  bodyFill: string;
+};
+
+/** House mark paths from Figma node `81:607` (28×28). */
+const HouseMark = ({ roofFill, bodyFill }: HouseMarkProps) => {
+  return (
+    <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" className="size-full">
+      <path
+        d="M3.5 15.75L14 5.25L19.25 9.625V6.125H22.75V12.25L24.5 14V15.75H3.5Z"
+        fill={roofFill}
+      />
+      <path d="M6.125 15.75H21.875V22.75H6.125V15.75Z" fill={bodyFill} />
+    </svg>
   );
 };

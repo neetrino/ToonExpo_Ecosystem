@@ -93,11 +93,11 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
     <>
       <header
         className={cn(
-          'fixed inset-x-0 top-0 z-[var(--z-header)] border-b',
+          'fixed inset-x-0 top-0 z-[var(--z-header)]',
           'transition-[background-color,border-color,color,backdrop-filter] duration-[var(--duration-base)] ease-[var(--ease-out-premium)]',
           isOverHero
-            ? 'border-transparent bg-transparent text-on-dark backdrop-blur-0'
-            : 'border-header-border bg-header-bg text-ink backdrop-blur-[6px]',
+            ? 'bg-gradient-to-b from-black/35 via-black/10 to-transparent text-on-dark backdrop-blur-0'
+            : 'bg-header-bg text-ink backdrop-blur-[6px]',
           className,
         )}
       >

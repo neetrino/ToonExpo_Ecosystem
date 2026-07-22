@@ -4,18 +4,26 @@ import { getTranslations } from 'next-intl/server';
 import { HeroSearch } from '@/features/catalog/components/hero-search';
 import { cn } from '@/shared/ui/cn';
 
-const HERO_IMAGE_SRC = '/images/hero-skyline.jpg';
+/** Figma photo node `89:1399`. */
+const HERO_IMAGE_SRC = '/images/hero-building.jpg';
+
+/**
+ * Figma `81:495`: section 829px; photo 803px at top −75 → covers 0…728,
+ * leaving a light canvas band at the bottom where the market pulse sits.
+ */
+const HERO_HEIGHT_CLASS = 'min-h-[100svh] md:min-h-0 md:h-[829px]';
+const HERO_IMAGE_FRAME_CLASS = 'absolute inset-x-0 -top-[75px] -z-10 h-[803px]';
 
 /**
  * Public home hero — full-bleed skyline with marketplace search.
- * Matches Figma section `81:495` (photo node `89:1399`, top offset −75px).
+ * Matches Figma section `81:495` (photo node `89:1399`).
  */
 export const HomeHero = async () => {
   const t = await getTranslations('HomePage');
 
   return (
-    <section className="relative isolate min-h-[min(100svh,829px)] overflow-hidden bg-canvas">
-      <div className="absolute inset-x-0 -top-[75px] bottom-0 -z-10" aria-hidden>
+    <section className={cn('relative isolate overflow-hidden bg-canvas', HERO_HEIGHT_CLASS)}>
+      <div className={HERO_IMAGE_FRAME_CLASS} aria-hidden>
         <Image
           src={HERO_IMAGE_SRC}
           alt=""
@@ -28,8 +36,8 @@ export const HomeHero = async () => {
 
       <div
         className={cn(
-          'page-container flex flex-col justify-center',
-          'pt-24 pb-28 md:pt-32 md:pb-32',
+          'page-container relative flex h-full flex-col',
+          'pt-24 pb-36 md:pt-32 md:pb-40',
         )}
       >
         <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-on-dark">

@@ -21,7 +21,7 @@ export const FeaturedProjects = async ({ projects }: FeaturedProjectsProps) => {
   const t = await getTranslations('HomePage');
 
   return (
-    <section className="section-pad">
+    <section className="bg-canvas pt-10 pb-[clamp(2.75rem,5.5vw,4.5rem)] md:pt-12">
       <div className="page-container">
         <Reveal>
           <SectionHeader
