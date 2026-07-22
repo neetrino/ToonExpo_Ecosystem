@@ -1105,6 +1105,7 @@
         "loading": "Loading partner…",
         "notFound": "Partner not found",
         "back": "← Partners",
+        "sheetTitle": "Partner",
         "save": "Save changes",
         "saving": "Saving…",
         "saveSuccess": "Partner updated",

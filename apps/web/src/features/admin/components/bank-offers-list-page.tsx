@@ -1,6 +1,7 @@
 'use client';
 
 import type { BankOfferListItem, PublicationStatus } from '@toonexpo/contracts';
+import { SquarePen, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 
@@ -17,6 +18,7 @@ import { useAdminCompaniesQuery } from '@/features/admin/hooks/use-admin-compani
 import { PARTNERS_DEFAULT_PAGE_SIZE } from '@/features/partners/constants';
 import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
 import { Button } from '@/shared/ui/button';
+import { IconButton } from '@/shared/ui/icon-button';
 import { Select } from '@/shared/ui/select';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { AdminCreateSheet } from '@/shared/ui/admin-create-sheet';
@@ -203,27 +205,29 @@ export const BankOffersListPage = () => {
                     <PublicationStatusBadge status={offer.publicationStatus} />
                   </td>
                   <td className="px-3 py-2.5">
-                    <div className="flex flex-wrap gap-2">
-                      <button
-                        type="button"
-                        className="text-sm font-medium text-brand hover:underline"
+                    <div className="flex items-center gap-1">
+                      <IconButton
+                        label={t('edit')}
+                        size="sm"
+                        className="text-cta-dark hover:bg-cta-dark/5"
                         onClick={() => {
                           setEditing(offer);
                           setCreating(false);
                         }}
                       >
-                        {t('edit')}
-                      </button>
-                      <button
-                        type="button"
-                        className="text-sm font-medium text-danger hover:underline"
+                        <SquarePen className="size-4" strokeWidth={1.75} aria-hidden />
+                      </IconButton>
+                      <IconButton
+                        label={t('delete')}
+                        size="sm"
+                        className="text-danger hover:bg-danger-soft"
                         disabled={busy}
                         onClick={() => {
                           void deleteMutation.mutateAsync(offer.id);
                         }}
                       >
-                        {t('delete')}
-                      </button>
+                        <Trash2 className="size-4" strokeWidth={1.75} aria-hidden />
+                      </IconButton>
                     </div>
                   </td>
                 </tr>

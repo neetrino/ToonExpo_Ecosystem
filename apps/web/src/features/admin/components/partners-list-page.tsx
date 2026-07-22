@@ -10,6 +10,7 @@ import type {
 } from '@toonexpo/contracts';
 
 import { CreatePartnerSheet } from '@/features/admin/components/create-partner-sheet';
+import { PartnerDetailSheet } from '@/features/admin/components/partner-detail-sheet';
 import { PartnerFilters } from '@/features/admin/components/partner-filters';
 import { PartnersTable } from '@/features/admin/components/partners-table';
 import { ADMIN_COMPANIES_MAX_PAGE_SIZE } from '@/features/admin/constants';
@@ -29,13 +30,14 @@ const parsePage = (raw: string | null): number => {
 };
 
 /**
- * Admin partners list with filters, pagination, and create side sheet.
+ * Admin partners list with filters, pagination, create sheet, and detail sheet.
  */
 export const PartnersListPage = () => {
   const t = useTranslations('Admin.partners');
   const searchParams = useSearchParams();
   const page = parsePage(searchParams.get('page'));
   const [showCreate, setShowCreate] = useState(false);
+  const [selectedPartnerId, setSelectedPartnerId] = useState<string | null>(null);
   const [filters, setFilters] = useState<{
     type: PartnerCompanyType | '';
     status: PartnerCompanyStatus | '';
@@ -52,6 +54,11 @@ export const PartnersListPage = () => {
     ...(filters.publicationStatus ? { publicationStatus: filters.publicationStatus } : {}),
     ...(filters.search.trim() ? { search: filters.search.trim() } : {}),
   });
+
+  const handleSelectPartner = (partnerId: string): void => {
+    setShowCreate(false);
+    setSelectedPartnerId(partnerId);
+  };
 
   if (partnersQuery.isLoading || companiesQuery.isLoading) {
     return <p className="text-sm text-ink-secondary">{t('loading')}</p>;
@@ -81,6 +88,7 @@ export const PartnersListPage = () => {
           size="sm"
           variant="secondary"
           onClick={() => {
+            setSelectedPartnerId(null);
             setShowCreate(true);
           }}
         >
@@ -99,7 +107,7 @@ export const PartnersListPage = () => {
       {response.data.length === 0 ? (
         <p className="text-sm text-ink-secondary">{t('empty')}</p>
       ) : (
-        <PartnersTable partners={response.data} />
+        <PartnersTable partners={response.data} onSelectPartner={handleSelectPartner} />
       )}
 
       <CatalogPagination
@@ -119,6 +127,11 @@ export const PartnersListPage = () => {
         onClose={() => {
           setShowCreate(false);
         }}
+      />
+      <PartnerDetailSheet
+        partnerId={selectedPartnerId}
+        open={selectedPartnerId != null}
+        onClose={() => setSelectedPartnerId(null)}
       />
     </div>
   );

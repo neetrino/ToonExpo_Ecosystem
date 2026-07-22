@@ -1,26 +1,26 @@
-"use client";
+'use client';
 
-import type { AdminPartnerListItem } from "@toonexpo/contracts";
-import { useLocale, useTranslations } from "next-intl";
+import type { AdminPartnerListItem } from '@toonexpo/contracts';
+import { useLocale, useTranslations } from 'next-intl';
 
 import {
   FeaturedBadge,
   PartnerStatusBadge,
   PublicationStatusBadge,
-} from "@/features/partners/components/partner-badges";
-import { PartnerTypeLabel } from "@/features/partners/components/partner-type-label";
-import { Link } from "@/i18n/navigation";
+} from '@/features/partners/components/partner-badges';
+import { PartnerTypeLabel } from '@/features/partners/components/partner-type-label';
 
 type PartnersTableProps = {
   partners: AdminPartnerListItem[];
+  onSelectPartner: (partnerId: string) => void;
 };
 
 const formatDate = (iso: string, locale: string): string => {
   try {
     return new Intl.DateTimeFormat(locale, {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
     }).format(new Date(iso));
   } catch {
     return iso.slice(0, 10);
@@ -30,8 +30,8 @@ const formatDate = (iso: string, locale: string): string => {
 /**
  * Dense partners table for the platform admin list.
  */
-export const PartnersTable = ({ partners }: PartnersTableProps) => {
-  const t = useTranslations("Admin.partners");
+export const PartnersTable = ({ partners, onSelectPartner }: PartnersTableProps) => {
+  const t = useTranslations('Admin.partners');
   const locale = useLocale();
 
   return (
@@ -39,27 +39,25 @@ export const PartnersTable = ({ partners }: PartnersTableProps) => {
       <table className="w-full min-w-[48rem] border-collapse text-left text-sm">
         <thead className="bg-surface text-xs uppercase tracking-wide text-ink-muted">
           <tr>
-            <th className="px-3 py-2 font-medium">{t("columns.name")}</th>
-            <th className="px-3 py-2 font-medium">{t("columns.type")}</th>
-            <th className="px-3 py-2 font-medium">{t("columns.status")}</th>
-            <th className="px-3 py-2 font-medium">{t("columns.publication")}</th>
-            <th className="px-3 py-2 font-medium">{t("columns.updatedAt")}</th>
+            <th className="px-3 py-2 font-medium">{t('columns.name')}</th>
+            <th className="px-3 py-2 font-medium">{t('columns.type')}</th>
+            <th className="px-3 py-2 font-medium">{t('columns.status')}</th>
+            <th className="px-3 py-2 font-medium">{t('columns.publication')}</th>
+            <th className="px-3 py-2 font-medium">{t('columns.updatedAt')}</th>
           </tr>
         </thead>
         <tbody>
           {partners.map((partner) => (
-            <tr
-              key={partner.id}
-              className="border-t border-border hover:bg-surface/60"
-            >
+            <tr key={partner.id} className="border-t border-border hover:bg-surface/60">
               <td className="px-3 py-2.5">
                 <div className="flex flex-wrap items-center gap-2">
-                  <Link
-                    href={`/admin/partners/${partner.id}`}
+                  <button
+                    type="button"
                     className="font-medium text-brand hover:underline"
+                    onClick={() => onSelectPartner(partner.id)}
                   >
                     {partner.name}
-                  </Link>
+                  </button>
                   <FeaturedBadge featured={partner.featured} />
                 </div>
               </td>
