@@ -30,11 +30,13 @@ type PortalShellProps = {
 
 /**
  * SiteHeader solid spacer is `top-3` + bar (~4.75rem on sm+).
- * Rail sits one gap below that and fills the rest of the viewport.
+ * Rail chrome (mask + sidebar) starts one gap below that.
  */
-const SITE_HEADER_RAIL_TOP_CLASS = 'top-[6.25rem]';
-const SITE_HEADER_RAIL_HEIGHT_CLASS = 'h-[calc(100dvh-6.25rem)]';
-const SITE_HEADER_RAIL_ROW_GAP_CLASS = 'md:pt-6';
+const RAIL_CHROME_TOP_CLASS = 'top-[6.25rem]';
+const RAIL_CHROME_HEIGHT_CLASS = 'h-[calc(100dvh-6.25rem)]';
+const RAIL_HEADER_MASK_HEIGHT_CLASS = 'h-[6.25rem]';
+const RAIL_SIDEBAR_WIDTH_CLASS = 'w-72';
+const RAIL_ROW_GAP_CLASS = 'md:pt-6';
 
 /**
  * Shared portal chrome: top bar + desktop sidebar + mobile drawer.
@@ -74,6 +76,39 @@ export const PortalShell = ({
     <div className="min-h-screen bg-background">
       {isRail ? <SiteHeader /> : null}
 
+      {isRail ? (
+        <>
+          {/*
+            Opaque band behind the floating SiteHeader so scrolled main content
+            disappears under the header and cannot pass above the sidebar.
+          */}
+          <div
+            className={cn(
+              'pointer-events-none fixed inset-x-0 top-0 z-[var(--z-sticky)] bg-background',
+              RAIL_HEADER_MASK_HEIGHT_CLASS,
+            )}
+            aria-hidden
+          />
+          <aside
+            className={cn(
+              'fixed bottom-0 left-0 z-[var(--z-sticky)] hidden',
+              RAIL_CHROME_TOP_CLASS,
+              RAIL_SIDEBAR_WIDTH_CLASS,
+              'md:block',
+            )}
+          >
+            <div
+              className={cn(
+                'flex h-full flex-col rounded-tr-[2.5rem] rounded-br-[2.5rem] bg-brand-secondary p-4 shadow-md',
+                RAIL_CHROME_HEIGHT_CLASS,
+              )}
+            >
+              {sidebar}
+            </div>
+          </aside>
+        </>
+      ) : null}
+
       {!isRail ? (
         <header className="sticky top-0 z-[var(--z-header)] border-b border-border bg-surface-elevated/95 backdrop-blur-md">
           <div className="page-container flex items-center justify-between gap-3 py-3">
@@ -112,12 +147,7 @@ export const PortalShell = ({
       ) : null}
 
       {isRail ? (
-        <div
-          className={cn(
-            'flex flex-col gap-8 md:flex-row md:gap-8 md:py-0',
-            SITE_HEADER_RAIL_ROW_GAP_CLASS,
-          )}
-        >
+        <div className={cn('flex flex-col gap-8 md:flex-row md:gap-8 md:py-0', RAIL_ROW_GAP_CLASS)}>
           <div className="page-container flex items-center gap-3 md:hidden">
             <IconButton
               label={navLabel}
@@ -131,18 +161,10 @@ export const PortalShell = ({
             </IconButton>
             {mobileHeader}
           </div>
-          <aside className="relative z-[var(--z-sticky)] hidden w-72 shrink-0 self-stretch md:block">
-            <div
-              className={cn(
-                'sticky flex flex-col rounded-tr-[2.5rem] rounded-br-[2.5rem] bg-brand-secondary p-4 shadow-md',
-                SITE_HEADER_RAIL_TOP_CLASS,
-                SITE_HEADER_RAIL_HEIGHT_CLASS,
-              )}
-            >
-              {sidebar}
-            </div>
-          </aside>
-          <main className="page-container min-w-0 flex-1 py-6 md:py-8">{children}</main>
+          <div className={cn('hidden shrink-0 md:block', RAIL_SIDEBAR_WIDTH_CLASS)} aria-hidden />
+          <main className="relative z-[var(--z-base)] page-container min-w-0 flex-1 py-6 md:py-8">
+            {children}
+          </main>
         </div>
       ) : (
         <div className="page-container flex flex-col gap-8 py-6 md:flex-row md:py-8">
