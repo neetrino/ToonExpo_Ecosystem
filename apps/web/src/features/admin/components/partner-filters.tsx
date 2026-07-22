@@ -5,6 +5,7 @@ import type {
   PartnerCompanyType,
   PublicationStatus,
 } from '@toonexpo/contracts';
+import { Search } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import {
@@ -12,7 +13,8 @@ import {
   PARTNER_COMPANY_TYPES,
   PARTNER_PUBLICATION_STATUSES,
 } from '@/features/partners/constants';
-import { selectFieldClassName, Select } from '@/shared/ui/select';
+import { Input } from '@/shared/ui/input';
+import { Select } from '@/shared/ui/select';
 
 type PartnerFiltersProps = {
   type: PartnerCompanyType | '';
@@ -45,15 +47,21 @@ export const PartnerFilters = ({
     <div className="flex flex-wrap gap-3">
       <label className="flex min-w-[10rem] flex-1 flex-col gap-1 text-xs text-ink-muted">
         {t('search')}
-        <input
-          type="search"
-          className={`${selectFieldClassName} h-10`}
-          value={search}
-          placeholder={t('searchPlaceholder')}
-          onChange={(event) => {
-            onChange({ type, status, publicationStatus, search: event.target.value });
-          }}
-        />
+        <span className="relative block">
+          <Search
+            aria-hidden
+            className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-ink-muted"
+          />
+          <Input
+            type="search"
+            className="h-10 pl-9"
+            value={search}
+            placeholder={t('searchPlaceholder')}
+            onChange={(event) => {
+              onChange({ type, status, publicationStatus, search: event.target.value });
+            }}
+          />
+        </span>
       </label>
 
       <label className="flex flex-col gap-1 text-xs text-ink-muted">
