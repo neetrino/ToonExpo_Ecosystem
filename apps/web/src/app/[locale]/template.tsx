@@ -5,8 +5,9 @@ type LocaleTemplateProps = {
 };
 
 /**
- * Remounts on each navigation so public pages enter with a short fade/slide.
- * Layout chrome (header) stays outside this template and does not jump.
+ * Remounts on each navigation so pages enter with a short fade.
+ * Must not apply `transform`/`filter` here — that would trap `fixed`/`sticky`
+ * headers rendered by role portals (admin / account / builder / partner).
  */
 export default function LocaleTemplate({ children }: LocaleTemplateProps) {
   return <div className="page-enter">{children}</div>;

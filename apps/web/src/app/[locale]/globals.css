@@ -118,15 +118,17 @@
   }
 }
 
+/**
+ * Opacity-only: any non-none `transform` on this wrapper becomes a containing
+ * block and breaks `position: fixed|sticky` for role portal headers inside it.
+ */
 @keyframes page-enter {
   from {
     opacity: 0;
-    transform: translateY(0.75rem);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
