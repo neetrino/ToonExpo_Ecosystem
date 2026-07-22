@@ -3,7 +3,7 @@
 import { Check, ChevronDown } from 'lucide-react';
 import { useLocale, useTranslations, type Locale } from 'next-intl';
 import { useParams, useSearchParams } from 'next/navigation';
-import { useEffect, useId, useOptimistic, useRef, useState, useTransition } from 'react';
+import { Suspense, useEffect, useId, useOptimistic, useRef, useState, useTransition } from 'react';
 
 import { usePathname, useRouter } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
@@ -35,8 +35,33 @@ type LocaleSwitcherProps = {
  * Compact language control — Figma header: plain `EN` + chevron (no pill).
  * Opens on hover (desktop); click still toggles for touch / keyboard.
  * Menu portals above page chrome.
+ * Wrapped in Suspense for `useSearchParams` during static prerender.
  */
-export const LocaleSwitcher = ({ tone = 'light' }: LocaleSwitcherProps) => {
+export const LocaleSwitcher = (props: LocaleSwitcherProps) => (
+  <Suspense fallback={<LocaleSwitcherFallback tone={props.tone} />}>
+    <LocaleSwitcherInner {...props} />
+  </Suspense>
+);
+
+const LocaleSwitcherFallback = ({ tone = 'light' }: LocaleSwitcherProps) => {
+  const locale = useLocale();
+  const isDark = tone === 'dark';
+
+  return (
+    <span
+      className={cn(
+        'inline-flex items-center gap-1 text-sm font-medium leading-5',
+        isDark ? 'text-on-dark' : 'text-header-muted',
+      )}
+      aria-hidden
+    >
+      <span>{LOCALE_CODE[locale] ?? locale.toUpperCase()}</span>
+      <ChevronDown className="size-3.5 shrink-0 opacity-80" />
+    </span>
+  );
+};
+
+const LocaleSwitcherInner = ({ tone = 'light' }: LocaleSwitcherProps) => {
   const t = useTranslations('HomePage');
   const locale = useLocale();
   const pathname = usePathname();
