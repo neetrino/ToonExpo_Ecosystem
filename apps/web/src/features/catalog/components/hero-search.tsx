@@ -136,7 +136,7 @@ export const HeroSearch = ({ className }: HeroSearchProps) => {
           <button
             type="submit"
             className={cn(
-              'inline-flex h-[51px] items-center justify-center rounded-md bg-brand-deep px-6',
+              'inline-flex h-[51px] items-center justify-center rounded-[16px] bg-brand-deep px-6',
               'text-sm font-semibold text-on-dark transition-colors duration-[var(--duration-fast)]',
               'hover:bg-brand-deep/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-deep/30',
             )}
@@ -147,7 +147,7 @@ export const HeroSearch = ({ className }: HeroSearchProps) => {
       </form>
 
       <div className="mt-4 flex flex-wrap items-center gap-2">
-        <span className="text-xs text-header-muted">{t('popular')}</span>
+        <span className="text-xs text-on-dark">{t('popular')}</span>
         {POPULAR_CITY_KEYS.map((key) => {
           const city = t(`popularCities.${key}`);
           return (

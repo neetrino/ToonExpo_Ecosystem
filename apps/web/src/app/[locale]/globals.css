@@ -466,19 +466,6 @@
   }
 
   /**
-   * Home skyline wash — Figma `81:498`:
-   * linear-gradient(180deg, #fafcfd, rgba(250, 252, 253, 0.4) 50%, #fafcfd)
-   */
-  .hero-skyline-wash {
-    background: linear-gradient(
-      180deg,
-      var(--color-canvas),
-      color-mix(in srgb, var(--color-canvas) 40%, transparent) 50%,
-      var(--color-canvas)
-    );
-  }
-
-  /**
    * Auth split seam — lightning-inspired jagged edge where the visual panel
    * meets the form column (desktop only).
    */
