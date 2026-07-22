@@ -414,6 +414,10 @@
     min-height: calc(100svh / var(--desktop-layout-scale));
   }
 
+  .h-fluid-screen {
+    height: calc(100svh / var(--desktop-layout-scale));
+  }
+
   .page-container {
     margin-inline: auto;
     width: 100%;

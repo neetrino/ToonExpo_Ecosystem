@@ -7,7 +7,6 @@ import { AuthFitStage } from '@/features/auth/components/auth-fit-stage';
 import { Link } from '@/i18n/navigation';
 import { BrandLogo } from '@/shared/ui/brand-logo';
 import { cn } from '@/shared/ui/cn';
-import { LocaleSwitcher } from '@/shared/ui/locale-switcher';
 
 const AUTH_PANEL_IMAGE = '/demo/northern-avenue.webp';
 
@@ -41,7 +40,7 @@ export const AuthPageShell = async ({ title, subtitle, children, variant }: Auth
   };
 
   return (
-    <div className="relative h-dvh overflow-hidden bg-background">
+    <div className="relative h-fluid-screen overflow-hidden bg-background">
       <AuthVisualPanel copy={copy} />
       <AuthFormColumn
         title={title}
@@ -137,7 +136,7 @@ const AuthFormColumn = ({
   children,
 }: AuthFormColumnProps) => {
   return (
-    <div className="relative z-0 flex h-dvh flex-col overflow-hidden lg:pl-[50%]">
+    <div className="relative z-0 flex h-fluid-screen flex-col overflow-hidden lg:pl-[50%]">
       <div className="pointer-events-none absolute inset-0" aria-hidden>
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_90%_55%_at_70%_-5%,rgb(184_149_108_/_0.12),transparent_55%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_45%_at_10%_100%,rgb(26_143_152_/_0.08),transparent_50%)]" />
@@ -150,27 +149,24 @@ const AuthFormColumn = ({
         )}
       >
         <BrandLogo size="md" className="lg:hidden" />
-        <div className="flex items-center gap-2.5">
-          <LocaleSwitcher tone="light" />
-          <Link
-            href="/"
-            className={cn(
-              'group inline-flex h-9 items-center gap-2 rounded-sm border border-border/80',
-              'bg-surface-elevated/90 px-3 text-xs font-semibold tracking-wide text-ink',
-              'shadow-xs transition-[border-color,background-color,box-shadow,color,transform]',
-              'duration-[var(--duration-fast)] ease-[var(--ease-out-premium)]',
-              'hover:border-accent/40 hover:bg-accent-soft/50 hover:text-ink hover:shadow-sm',
-              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/25',
-              'active:scale-[0.98]',
-            )}
-          >
-            <ArrowLeft
-              className="size-3.5 shrink-0 text-accent transition-transform duration-[var(--duration-fast)] group-hover:-translate-x-0.5"
-              aria-hidden
-            />
-            <span>{backHomeLabel}</span>
-          </Link>
-        </div>
+        <Link
+          href="/"
+          className={cn(
+            'group inline-flex h-9 items-center gap-2 rounded-sm border border-border/80',
+            'bg-surface-elevated/90 px-3 text-xs font-semibold tracking-wide text-ink',
+            'shadow-xs transition-[border-color,background-color,box-shadow,color,transform]',
+            'duration-[var(--duration-fast)] ease-[var(--ease-out-premium)]',
+            'hover:border-accent/40 hover:bg-accent-soft/50 hover:text-ink hover:shadow-sm',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/25',
+            'active:scale-[0.98]',
+          )}
+        >
+          <ArrowLeft
+            className="size-3.5 shrink-0 text-accent transition-transform duration-[var(--duration-fast)] group-hover:-translate-x-0.5"
+            aria-hidden
+          />
+          <span>{backHomeLabel}</span>
+        </Link>
       </header>
 
       <AuthFitStage className="relative z-[1] px-5 pb-4 sm:px-8 lg:px-12">
