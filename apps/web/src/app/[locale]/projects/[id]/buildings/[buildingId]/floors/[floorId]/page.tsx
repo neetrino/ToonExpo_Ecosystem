@@ -12,6 +12,7 @@ import { listFloorVisualCanvases } from '@/features/visual-map/api/public-visual
 import { PublicVisualMap } from '@/features/visual-map/components/public-visual-map';
 import {
   buildFloorApartmentHref,
+  buildHotspotTargetHrefs,
   pickPrimaryVisualCanvas,
 } from '@/features/visual-map/utils/public-visual-map';
 import { Link } from '@/i18n/navigation';
@@ -94,7 +95,13 @@ export default async function FloorPage({ params }: FloorPageProps) {
 
         {visualCanvas ? (
           <div className="mb-8">
-            <PublicVisualMap canvas={visualCanvas} buildTargetHref={buildFloorApartmentHref} />
+            <PublicVisualMap
+              canvas={visualCanvas}
+              targetHrefByHotspotId={buildHotspotTargetHrefs(
+                visualCanvas.hotspots,
+                buildFloorApartmentHref,
+              )}
+            />
           </div>
         ) : null}
 

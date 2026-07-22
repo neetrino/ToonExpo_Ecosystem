@@ -18,26 +18,32 @@ import {
   setPassword,
 } from '@/features/auth/api/auth-api';
 import type { LoginFormValues } from '@/features/auth/schemas/login.schema';
-import { hasClientSessionHint } from '@/features/auth/utils/session-hint';
+import {
+  hasClientSessionHint,
+  subscribeClientSessionHint,
+} from '@/features/auth/utils/session-hint';
 import { AUTH_ME_QUERY_KEY } from '@/shared/config/auth.constants';
-
-const subscribeToNothing = (): (() => void) => () => undefined;
 
 /**
  * Client query for the current session user (`null` when logged out).
- * Guests (no CSRF session hint) do not hit `/auth/me`.
+ * Guests (no session hint) do not hit `/auth/me`.
  *
  * Session hint is read via `useSyncExternalStore` so SSR and hydration
  * both see `false`, then the client updates after hydrate — avoiding mismatches.
+ * Login/register also set a same-origin sessionStorage flag so Client Components
+ * keep working after full navigations in cross-origin API mode.
  */
 export const useMeQuery = () => {
-  const hasHint = useSyncExternalStore(subscribeToNothing, hasClientSessionHint, () => false);
+  const hasHint = useSyncExternalStore(
+    subscribeClientSessionHint,
+    hasClientSessionHint,
+    () => false,
+  );
 
   return useQuery<UserResponse | null>({
     queryKey: AUTH_ME_QUERY_KEY,
     queryFn: () => getMeOrNull(),
     enabled: hasHint,
-    ...(hasHint ? {} : { initialData: null }),
   });
 };
 

@@ -14,6 +14,7 @@ import { SiteFooter } from '@/features/catalog/components/site-footer';
 import { listProjectVisualCanvases } from '@/features/visual-map/api/public-visual-map-api';
 import { PublicVisualMap } from '@/features/visual-map/components/public-visual-map';
 import {
+  buildHotspotTargetHrefs,
   buildProjectBuildingHref,
   pickPrimaryVisualCanvas,
 } from '@/features/visual-map/utils/public-visual-map';
@@ -149,7 +150,9 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
             {visualCanvas ? (
               <PublicVisualMap
                 canvas={visualCanvas}
-                buildTargetHref={(hotspot) => buildProjectBuildingHref(project.id, hotspot)}
+                targetHrefByHotspotId={buildHotspotTargetHrefs(visualCanvas.hotspots, (hotspot) =>
+                  buildProjectBuildingHref(project.id, hotspot),
+                )}
               />
             ) : null}
 

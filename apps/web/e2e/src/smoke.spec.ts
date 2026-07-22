@@ -46,7 +46,8 @@ test.describe('smoke', () => {
     await expect(
       page.getByRole('heading', { name: 'Նախագծեր, որոնց արժե ուշադրություն դարձնել' }),
     ).toBeVisible();
-    await expect(page.locator('a[href*="/projects/"]').first()).toBeVisible();
+    // Prefer named CTA: cover overlay `<a class="absolute inset-0">` is hidden to Playwright.
+    await expect(page.getByRole('link', { name: 'Մանրամասն' }).first()).toBeVisible();
   });
 
   test('projects catalog drill-down to apartment', async ({ page }) => {
@@ -60,7 +61,8 @@ test.describe('smoke', () => {
     ).toBeVisible();
 
     await page.goto(`/hy/projects/${SEED_PROJECT_ID}`);
-    await page.getByRole('link', { name: SEED_BUILDING_NAME }).click();
+    // Cover + title both expose the building name; either navigates to the same URL.
+    await page.getByRole('link', { name: SEED_BUILDING_NAME }).first().click();
     await expect(page).toHaveURL(/\/buildings\//);
 
     await page.getByRole('link', { name: SEED_FLOOR_LABEL }).click();
@@ -219,7 +221,9 @@ test.describe('smoke', () => {
 
     await loginAs(page, SEED_BUYER_EMAIL);
     await page.goto(apartmentPath);
-    await expect(page.getByRole('link', { name: signInCta })).toHaveCount(0);
+    await expect(page.getByRole('link', { name: signInCta })).toHaveCount(0, {
+      timeout: 20_000,
+    });
     await expect(page.locator('p.font-brand').filter({ hasText: /\d/ }).first()).toBeVisible({
       timeout: 20_000,
     });
