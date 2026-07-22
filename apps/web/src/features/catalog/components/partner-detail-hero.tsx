@@ -2,6 +2,7 @@ import type { PublicPartnerDetail } from '@toonexpo/contracts';
 import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
 
+import { PARTNER_DEMO_PHOTO_SRC } from '@/features/catalog/constants/partner-media';
 import { PartnerTypeLabel } from '@/features/partners/components/partner-type-label';
 import { cn } from '@/shared/ui/cn';
 
@@ -10,59 +11,73 @@ type PartnerDetailHeroProps = {
 };
 
 /**
- * Full-bleed partner media + overlapping summary card — matches project detail hero.
+ * Full-bleed partner hero — Figma photo treatment with existing partner copy.
  */
 export const PartnerDetailHero = async ({ partner }: PartnerDetailHeroProps) => {
   const t = await getTranslations('Partners');
   const tCatalog = await getTranslations('Catalog.partnersPage');
-  const heroImageUrl = partner.logoUrl ?? partner.coverUrl;
+  const heroImageUrl = partner.logoUrl ?? partner.coverUrl ?? PARTNER_DEMO_PHOTO_SRC;
 
   return (
-    <section className="relative">
-      <div className="relative h-[min(72vh,48rem)] w-full overflow-hidden bg-surface">
-        {heroImageUrl ? (
-          <Image
-            src={heroImageUrl}
-            alt={partner.name}
-            fill
-            priority
-            className="object-cover"
-            sizes="100vw"
-          />
-        ) : (
-          <div className="flex size-full items-center justify-center bg-band-mist font-brand text-6xl font-bold text-brand-deep">
-            {partner.name.slice(0, 2).toUpperCase()}
-          </div>
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-ink/50 via-transparent to-ink/20" />
+    <section className="relative isolate flex min-h-[min(72vh,42rem)] flex-col bg-canvas">
+      <div className="absolute inset-0 -z-10 overflow-hidden" aria-hidden>
+        <Image
+          src={heroImageUrl}
+          alt=""
+          fill
+          priority
+          className="object-cover object-center"
+          sizes="100vw"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-ink/55 via-ink/15 to-ink/25" />
       </div>
 
-      <div className="page-container relative z-[1] -mt-24 pb-4 sm:-mt-28">
-        <div
-          className={cn(
-            'rounded-[24px] bg-surface-elevated p-6 ring-1 ring-header-border sm:p-8',
-            'shadow-lg shadow-brand/5',
-          )}
-        >
-          <p className="text-[11px] font-bold tracking-[0.2em] text-brand-secondary uppercase">
+      <div
+        className={cn(
+          'page-container relative flex w-full flex-1 flex-col justify-end',
+          'pt-[clamp(6.25rem,4.75rem+3.5vw,9.5rem)] pb-[clamp(2.5rem,2rem+2vw,4rem)]',
+        )}
+      >
+        <div className="flex max-w-3xl flex-col gap-[clamp(0.75rem,0.4rem+1.2vw,1.25rem)]">
+          <p
+            className={cn(
+              'font-bold uppercase text-on-dark',
+              'text-[clamp(0.625rem,0.55rem+0.2vw,0.6875rem)]',
+              'tracking-[0.2em] leading-none',
+            )}
+          >
             <PartnerTypeLabel type={partner.type} />
           </p>
-          <div className="mt-2 flex flex-wrap items-center gap-3">
-            <h1 className="font-brand text-[clamp(2rem,5vw,3.75rem)] font-bold leading-[1.15] tracking-[-0.03em] text-ink-navy">
-              {partner.name}
-            </h1>
+
+          <h1
+            className={cn(
+              'inline-flex flex-wrap items-center gap-3',
+              'font-brand font-bold text-on-dark',
+              'text-[clamp(2rem,1.05rem+3.8vw,3.75rem)]',
+              'leading-none tracking-[-0.025em]',
+            )}
+          >
+            <span className="text-balance">{partner.name}</span>
             {partner.featured ? (
               <span
                 className={cn(
-                  'rounded-[10px] bg-band-mist px-2 py-1',
+                  'inline-flex shrink-0 items-center rounded-[10px] bg-canvas/95 px-2 py-1',
                   'text-[10px] font-bold tracking-widest text-brand-deep uppercase',
                 )}
               >
                 {t('featured')}
               </span>
             ) : null}
-          </div>
-          <p className="mt-3 max-w-2xl text-lg leading-6 text-header-muted">
+          </h1>
+
+          <p
+            className={cn(
+              'max-w-xl text-on-dark/95',
+              'text-[clamp(0.9375rem,0.82rem+0.45vw,1.125rem)]',
+              'leading-[1.55]',
+              'text-pretty',
+            )}
+          >
             {partner.shortDescription ?? tCatalog('metaFallback', { name: partner.name })}
           </p>
         </div>

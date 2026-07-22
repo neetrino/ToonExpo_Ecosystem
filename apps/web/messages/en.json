@@ -514,7 +514,7 @@
       }
     },
     "partnersPage": {
-      "title": "Partners & participants",
+      "title": "Partners & Participants",
       "subtitle": "{count, plural, =0 {No partners} one {# partner} other {# partners}}",
       "empty": "No published partners yet.",
       "notFoundTitle": "Partner not found",

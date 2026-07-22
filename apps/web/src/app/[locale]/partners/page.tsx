@@ -5,13 +5,13 @@ import { listPublicPartners } from '@/features/catalog/api/partners-api';
 import { PartnerCard } from '@/features/catalog/components/partner-card';
 import { PartnerFiltersForm } from '@/features/catalog/components/partner-filters-form';
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
+import { PartnersPageHero } from '@/features/catalog/components/partners-page-hero';
 import { SiteFooter } from '@/features/catalog/components/site-footer';
 import {
   buildPartnerSearchParams,
   parsePartnerFilters,
 } from '@/features/catalog/utils/partner-filters';
 import { PARTNER_COMPANY_TYPES } from '@/features/partners/constants';
-import { MarketingPageIntro } from '@/shared/ui/marketing-page-intro';
 
 type PartnersPageProps = {
   params: Promise<{ locale: string }>;
@@ -55,46 +55,47 @@ export default async function PartnersPage({ params, searchParams }: PartnersPag
   ) as Record<(typeof PARTNER_COMPANY_TYPES)[number], string>;
 
   return (
-    <div className="min-h-screen bg-background">
-      <main className="page-container section-pad">
-        <MarketingPageIntro
+    <div className="min-h-screen bg-canvas">
+      <main>
+        <PartnersPageHero
           title={t('partnersPage.title')}
           description={t('partnersPage.subtitle', { count: response.meta.total })}
-          imageSrc="/demo/partner-cover.webp"
         />
 
-        <PartnerFiltersForm
-          filters={filters}
-          labels={{
-            type: t('partnersPage.filters.type'),
-            allTypes: t('partnersPage.filters.allTypes'),
-            types: typeLabels,
-            apply: t('partnersPage.filters.apply'),
-            reset: t('partnersPage.filters.reset'),
-          }}
-        />
+        <div className="page-container section-pad pt-8 sm:pt-10">
+          <PartnerFiltersForm
+            filters={filters}
+            labels={{
+              type: t('partnersPage.filters.type'),
+              allTypes: t('partnersPage.filters.allTypes'),
+              types: typeLabels,
+              apply: t('partnersPage.filters.apply'),
+              reset: t('partnersPage.filters.reset'),
+            }}
+          />
 
-        {response.data.length === 0 ? (
-          <p className="mt-10 rounded-md border border-dashed border-border bg-surface/50 px-6 py-12 text-center text-sm text-ink-secondary">
-            {t('partnersPage.empty')}
-          </p>
-        ) : (
-          <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {response.data.map((partner) => (
-              <PartnerCard key={partner.id} partner={partner} />
-            ))}
-          </div>
-        )}
+          {response.data.length === 0 ? (
+            <p className="mt-10 rounded-[20px] border border-dashed border-header-border bg-surface-elevated px-6 py-12 text-center text-sm text-header-muted">
+              {t('partnersPage.empty')}
+            </p>
+          ) : (
+            <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {response.data.map((partner) => (
+                <PartnerCard key={partner.id} partner={partner} />
+              ))}
+            </div>
+          )}
 
-        <CatalogPagination
-          className="mt-10"
-          page={response.meta.page}
-          totalPages={response.meta.totalPages}
-          buildHref={buildHref}
-          previousLabel={t('pagination.previous')}
-          nextLabel={t('pagination.next')}
-          ariaLabel={t('pagination.ariaLabel')}
-        />
+          <CatalogPagination
+            className="mt-10"
+            page={response.meta.page}
+            totalPages={response.meta.totalPages}
+            buildHref={buildHref}
+            previousLabel={t('pagination.previous')}
+            nextLabel={t('pagination.next')}
+            ariaLabel={t('pagination.ariaLabel')}
+          />
+        </div>
       </main>
       <SiteFooter />
     </div>
