@@ -1,16 +1,16 @@
-import { setRequestLocale } from "next-intl/server";
+import { setRequestLocale } from 'next-intl/server';
 
-import { AdminNewEventPage } from "@/features/exhibition/components/admin/admin-new-event-page";
+import { redirect } from '@/i18n/navigation';
 
 type AdminNewEventPageProps = {
   params: Promise<{ locale: string }>;
 };
 
-export default async function AdminNewEventRoutePage({
-  params,
-}: AdminNewEventPageProps) {
+/**
+ * Legacy `/admin/events/new` → list with create sheet open.
+ */
+export default async function AdminNewEventRoutePage({ params }: AdminNewEventPageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
-
-  return <AdminNewEventPage />;
+  redirect({ href: '/admin/events?create=1', locale });
 }

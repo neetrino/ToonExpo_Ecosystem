@@ -25,6 +25,7 @@ import { Button } from '@/shared/ui/button';
 import { Card } from '@/shared/ui/card';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
+import { AddActionLabel } from '@/shared/ui/add-action-label';
 
 type PortalVisualCanvasesSectionProps = {
   project: PortalProjectDetail;
@@ -55,7 +56,7 @@ export const PortalVisualCanvasesSection = ({ project }: PortalVisualCanvasesSec
           variant="secondary"
           onClick={() => setShowCreate((open) => !open)}
         >
-          {showCreate ? t('cancelCreate') : t('newCanvas')}
+          {showCreate ? t('cancelCreate') : <AddActionLabel>{t('newCanvas')}</AddActionLabel>}
         </Button>
       </div>
 

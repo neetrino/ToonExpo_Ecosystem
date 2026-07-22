@@ -17,8 +17,9 @@ import { useAdminCompaniesQuery } from '@/features/admin/hooks/use-admin-compani
 import { PARTNERS_DEFAULT_PAGE_SIZE } from '@/features/partners/constants';
 import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
 import { Button } from '@/shared/ui/button';
-import { Card } from '@/shared/ui/card';
 import { Select } from '@/shared/ui/select';
+import { AddActionLabel } from '@/shared/ui/add-action-label';
+import { AdminCreateSheet } from '@/shared/ui/admin-create-sheet';
 
 /**
  * Admin bank offers list with filters, create/edit, and publish controls.
@@ -94,7 +95,7 @@ export const BankOffersListPage = () => {
             setEditing(null);
           }}
         >
-          {t('newOffer')}
+          <AddActionLabel>{t('newOffer')}</AddActionLabel>
         </Button>
       </div>
 
@@ -131,29 +132,37 @@ export const BankOffersListPage = () => {
         </Select>
       </div>
 
-      {creating ? (
-        <Card className="max-w-2xl">
-          <h2 className="mb-4 text-base font-semibold text-ink">{t('createTitle')}</h2>
-          <BankOfferForm
-            bankPartners={bankPartners}
-            isBusy={busy}
-            onCancel={() => {
-              setCreating(false);
-            }}
-            onCreate={async (body) => {
-              await createMutation.mutateAsync(body);
-              setCreating(false);
-            }}
-          />
-        </Card>
-      ) : null}
+      <AdminCreateSheet
+        open={creating}
+        onClose={() => {
+          setCreating(false);
+        }}
+        title={t('createTitle')}
+      >
+        <BankOfferForm
+          key="create"
+          bankPartners={bankPartners}
+          isBusy={busy}
+          onCancel={() => {
+            setCreating(false);
+          }}
+          onCreate={async (body) => {
+            await createMutation.mutateAsync(body);
+            setCreating(false);
+          }}
+        />
+      </AdminCreateSheet>
 
-      {editing ? (
-        <Card className="max-w-2xl">
-          <h2 className="mb-4 text-base font-semibold text-ink">
-            {t('editTitle', { title: editing.title })}
-          </h2>
+      <AdminCreateSheet
+        open={editing != null}
+        onClose={() => {
+          setEditing(null);
+        }}
+        title={editing ? t('editTitle', { title: editing.title }) : ''}
+      >
+        {editing ? (
           <BankOfferForm
+            key={editing.id}
             bankPartners={bankPartners}
             initial={editing}
             isBusy={busy}
@@ -165,8 +174,8 @@ export const BankOffersListPage = () => {
               setEditing(null);
             }}
           />
-        </Card>
-      ) : null}
+        ) : null}
+      </AdminCreateSheet>
 
       {filteredOffers.length === 0 ? (
         <p className="text-sm text-ink-secondary">{t('empty')}</p>

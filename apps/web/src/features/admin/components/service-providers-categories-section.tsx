@@ -1,11 +1,12 @@
-"use client";
+'use client';
 
-import type { ServiceProviderCategoryItem } from "@toonexpo/contracts";
-import { useTranslations } from "next-intl";
+import type { ServiceProviderCategoryItem } from '@toonexpo/contracts';
+import { useTranslations } from 'next-intl';
 
-import { ServiceProviderCategoryForm } from "@/features/admin/components/service-provider-category-form";
-import { Button } from "@/shared/ui/button";
-import { Card } from "@/shared/ui/card";
+import { ServiceProviderCategoryForm } from '@/features/admin/components/service-provider-category-form';
+import { Button } from '@/shared/ui/button';
+import { AddActionLabel } from '@/shared/ui/add-action-label';
+import { AdminCreateSheet } from '@/shared/ui/admin-create-sheet';
 
 export type ServiceProvidersCategoriesSectionProps = {
   categories: ServiceProviderCategoryItem[];
@@ -28,40 +29,36 @@ export const ServiceProvidersCategoriesSection = ({
   onDone,
   busy,
 }: ServiceProvidersCategoriesSectionProps) => {
-  const t = useTranslations("Admin.serviceProviders.categories");
+  const t = useTranslations('Admin.serviceProviders.categories');
 
   return (
     <section className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-base font-semibold text-ink">{t("title")}</h2>
+        <h2 className="text-base font-semibold text-ink">{t('title')}</h2>
         <Button type="button" size="sm" variant="secondary" onClick={onCreate}>
-          {t("newCategory")}
+          <AddActionLabel>{t('newCategory')}</AddActionLabel>
         </Button>
       </div>
 
-      {creating ? (
-        <Card className="max-w-xl">
-          <ServiceProviderCategoryForm onDone={onDone} />
-        </Card>
-      ) : null}
+      <AdminCreateSheet open={creating} onClose={onDone} title={t('newCategory')}>
+        <ServiceProviderCategoryForm onDone={onDone} />
+      </AdminCreateSheet>
 
-      {editing ? (
-        <Card className="max-w-xl">
-          <ServiceProviderCategoryForm category={editing} onDone={onDone} />
-        </Card>
-      ) : null}
+      <AdminCreateSheet open={editing != null} onClose={onDone} title={editing ? editing.name : ''}>
+        {editing ? <ServiceProviderCategoryForm category={editing} onDone={onDone} /> : null}
+      </AdminCreateSheet>
 
       {categories.length === 0 ? (
-        <p className="text-sm text-ink-secondary">{t("empty")}</p>
+        <p className="text-sm text-ink-secondary">{t('empty')}</p>
       ) : (
         <div className="overflow-x-auto rounded-sm border border-border">
           <table className="w-full min-w-[36rem] border-collapse text-left text-sm">
             <thead className="bg-surface text-xs uppercase tracking-wide text-ink-muted">
               <tr>
-                <th className="px-3 py-2 font-medium">{t("columns.name")}</th>
-                <th className="px-3 py-2 font-medium">{t("columns.sort")}</th>
-                <th className="px-3 py-2 font-medium">{t("columns.active")}</th>
-                <th className="px-3 py-2 font-medium">{t("columns.actions")}</th>
+                <th className="px-3 py-2 font-medium">{t('columns.name')}</th>
+                <th className="px-3 py-2 font-medium">{t('columns.sort')}</th>
+                <th className="px-3 py-2 font-medium">{t('columns.active')}</th>
+                <th className="px-3 py-2 font-medium">{t('columns.actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -70,7 +67,7 @@ export const ServiceProvidersCategoriesSection = ({
                   <td className="px-3 py-2.5 font-medium text-ink">{category.name}</td>
                   <td className="px-3 py-2.5 text-ink-secondary">{category.sortOrder}</td>
                   <td className="px-3 py-2.5 text-ink-secondary">
-                    {category.active ? t("activeYes") : t("activeNo")}
+                    {category.active ? t('activeYes') : t('activeNo')}
                   </td>
                   <td className="px-3 py-2.5">
                     <div className="flex gap-2">
@@ -81,7 +78,7 @@ export const ServiceProvidersCategoriesSection = ({
                           onEdit(category);
                         }}
                       >
-                        {t("edit")}
+                        {t('edit')}
                       </button>
                       <button
                         type="button"
@@ -91,7 +88,7 @@ export const ServiceProvidersCategoriesSection = ({
                           onDelete(category.id);
                         }}
                       >
-                        {t("delete")}
+                        {t('delete')}
                       </button>
                     </div>
                   </td>

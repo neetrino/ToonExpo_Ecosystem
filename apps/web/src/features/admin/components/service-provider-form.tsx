@@ -27,7 +27,7 @@ type ServiceProviderFormProps = {
 };
 
 /**
- * Admin create/edit form for service providers.
+ * Admin create/edit form for service providers (side sheet).
  */
 export const ServiceProviderForm = ({
   categories,
@@ -45,8 +45,9 @@ export const ServiceProviderForm = ({
   });
 
   const selectedCategoryIds = form.watch('categoryIds');
+  const busy = isBusy || form.formState.isSubmitting;
 
-  const toggleCategory = (categoryId: string) => {
+  const toggleCategory = (categoryId: string): void => {
     const current = form.getValues('categoryIds');
     if (current.includes(categoryId)) {
       form.setValue(
@@ -64,99 +65,109 @@ export const ServiceProviderForm = ({
   });
 
   return (
-    <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-      <FormField id="providerName" label={t('name')}>
-        <Input id="providerName" {...form.register('name')} />
-      </FormField>
-
-      <FormField id="providerType" label={t('providerType')}>
-        <Controller
-          name="providerType"
-          control={form.control}
-          render={({ field }) => (
-            <Select
-              id="providerType"
-              name={field.name}
-              value={field.value}
-              aria-label={t('providerType')}
-              onBlur={field.onBlur}
-              onChange={(event) => {
-                field.onChange(event.target.value);
-              }}
-            >
-              {SERVICE_PROVIDER_TYPES.map((type) => (
-                <option key={type} value={type}>
-                  {t(`types.${type}`)}
-                </option>
-              ))}
-            </Select>
-          )}
-        />
-      </FormField>
-
-      <FormField id="providerDescription" label={t('description')}>
-        <Textarea id="providerDescription" rows={3} {...form.register('description')} />
-      </FormField>
-
-      <FormField id="providerServices" label={t('services')}>
-        <Textarea id="providerServices" rows={2} {...form.register('services')} />
-      </FormField>
-
-      <div className="grid gap-4 sm:grid-cols-2">
-        <FormField id="providerPhone" label={t('phone')}>
-          <Input id="providerPhone" {...form.register('phone')} />
-        </FormField>
-        <FormField id="providerEmail" label={t('email')}>
-          <Input id="providerEmail" type="email" {...form.register('email')} />
-        </FormField>
-      </div>
-
-      <FormField id="providerWebsite" label={t('website')}>
-        <Input id="providerWebsite" {...form.register('website')} />
-      </FormField>
-
-      <div className="grid gap-4 sm:grid-cols-3">
-        <FormField id="socialFacebook" label={t('socialFacebook')}>
-          <Input id="socialFacebook" {...form.register('socialFacebook')} />
-        </FormField>
-        <FormField id="socialInstagram" label={t('socialInstagram')}>
-          <Input id="socialInstagram" {...form.register('socialInstagram')} />
-        </FormField>
-        <FormField id="socialLinkedin" label={t('socialLinkedin')}>
-          <Input id="socialLinkedin" {...form.register('socialLinkedin')} />
-        </FormField>
-      </div>
-
-      <fieldset className="flex flex-col gap-2">
-        <legend className="text-sm font-medium text-ink">{t('categories')}</legend>
-        <div className="flex flex-wrap gap-2">
-          {categories.map((category) => {
-            const checked = selectedCategoryIds.includes(category.id);
-            return (
-              <label
-                key={category.id}
-                className="inline-flex items-center gap-2 rounded-sm border border-border px-3 py-1.5 text-sm"
-              >
-                <input
-                  type="checkbox"
-                  checked={checked}
-                  onChange={() => {
-                    toggleCategory(category.id);
+    <form className="flex flex-col gap-4" onSubmit={handleSubmit} noValidate>
+      <fieldset className="flex flex-col gap-3">
+        <legend className="mb-2.5 text-xs font-semibold tracking-wide text-ink-muted uppercase">
+          {t('sections.provider')}
+        </legend>
+        <div className="grid grid-cols-2 items-end gap-3">
+          <FormField id="providerName" label={t('name')}>
+            <Input id="providerName" {...form.register('name')} />
+          </FormField>
+          <FormField id="providerType" label={t('providerType')}>
+            <Controller
+              name="providerType"
+              control={form.control}
+              render={({ field }) => (
+                <Select
+                  id="providerType"
+                  name={field.name}
+                  value={field.value}
+                  aria-label={t('providerType')}
+                  onBlur={field.onBlur}
+                  onChange={(event) => {
+                    field.onChange(event.target.value);
                   }}
-                />
-                {category.name}
-              </label>
-            );
-          })}
+                >
+                  {SERVICE_PROVIDER_TYPES.map((type) => (
+                    <option key={type} value={type}>
+                      {t(`types.${type}`)}
+                    </option>
+                  ))}
+                </Select>
+              )}
+            />
+          </FormField>
+        </div>
+        <FormField id="providerDescription" label={t('description')}>
+          <Textarea id="providerDescription" rows={2} {...form.register('description')} />
+        </FormField>
+        <FormField id="providerServices" label={t('services')}>
+          <Textarea id="providerServices" rows={2} {...form.register('services')} />
+        </FormField>
+        <fieldset className="flex flex-col gap-2">
+          <legend className="text-sm font-medium text-ink">{t('categories')}</legend>
+          <div className="flex flex-wrap gap-2">
+            {categories.map((category) => {
+              const checked = selectedCategoryIds.includes(category.id);
+              return (
+                <label
+                  key={category.id}
+                  className="inline-flex items-center gap-2 rounded-sm border border-border px-3 py-1.5 text-sm"
+                >
+                  <input
+                    type="checkbox"
+                    checked={checked}
+                    onChange={() => {
+                      toggleCategory(category.id);
+                    }}
+                  />
+                  {category.name}
+                </label>
+              );
+            })}
+          </div>
+        </fieldset>
+      </fieldset>
+
+      <fieldset className="mt-2 flex flex-col gap-3">
+        <legend className="mb-2.5 text-xs font-semibold tracking-wide text-ink-muted uppercase">
+          {t('sections.contact')}
+        </legend>
+        <div className="grid grid-cols-2 items-end gap-3">
+          <FormField id="providerPhone" label={t('phone')}>
+            <Input id="providerPhone" {...form.register('phone')} />
+          </FormField>
+          <FormField id="providerEmail" label={t('email')}>
+            <Input id="providerEmail" type="email" {...form.register('email')} />
+          </FormField>
+        </div>
+        <div className="grid grid-cols-2 items-end gap-3">
+          <FormField id="providerWebsite" label={t('website')}>
+            <Input id="providerWebsite" {...form.register('website')} />
+          </FormField>
+          <FormField id="socialLinkedin" label={t('socialLinkedin')}>
+            <Input id="socialLinkedin" {...form.register('socialLinkedin')} />
+          </FormField>
+        </div>
+        <div className="grid grid-cols-2 items-end gap-3">
+          <FormField id="socialFacebook" label={t('socialFacebook')}>
+            <Input id="socialFacebook" {...form.register('socialFacebook')} />
+          </FormField>
+          <FormField id="socialInstagram" label={t('socialInstagram')}>
+            <Input id="socialInstagram" {...form.register('socialInstagram')} />
+          </FormField>
         </div>
       </fieldset>
 
-      <FormField id="internalNotes" label={t('internalNotes')}>
-        <Textarea id="internalNotes" rows={3} {...form.register('internalNotes')} />
-        <p className="mt-1 text-xs text-ink-muted">{t('internalNotesHint')}</p>
-      </FormField>
-
-      <div className="grid gap-4 sm:grid-cols-2">
+      <fieldset className="mt-2 flex flex-col gap-3">
+        <legend className="mb-2.5 text-xs font-semibold tracking-wide text-ink-muted uppercase">
+          {t('sections.publishing')}
+        </legend>
+        <FormField id="internalNotes" label={t('internalNotes')}>
+          <Textarea id="internalNotes" rows={2} {...form.register('internalNotes')} />
+          <p className="mt-1 text-xs text-ink-muted">{t('internalNotesHint')}</p>
+        </FormField>
         <FormField id="publicationStatus" label={t('publication')}>
           <Controller
             name="publicationStatus"
@@ -182,19 +193,17 @@ export const ServiceProviderForm = ({
             )}
           />
         </FormField>
-        <div className="flex items-end">
-          <label className="flex items-center gap-2 text-sm text-ink">
-            <input type="checkbox" {...form.register('active')} />
-            {t('active')}
-          </label>
-        </div>
-      </div>
+        <label className="flex items-center gap-2 text-sm text-ink">
+          <input type="checkbox" {...form.register('active')} />
+          {t('active')}
+        </label>
+      </fieldset>
 
       <div className="flex flex-wrap gap-2">
-        <Button type="submit" size="sm" disabled={isBusy || form.formState.isSubmitting}>
-          {submitLabel}
+        <Button type="submit" variant="primary" disabled={busy} className="flex-1">
+          {busy ? t('saving') : submitLabel}
         </Button>
-        <Button type="button" size="sm" variant="ghost" onClick={onCancel}>
+        <Button type="button" variant="ghost" disabled={busy} className="flex-1" onClick={onCancel}>
           {t('cancel')}
         </Button>
       </div>

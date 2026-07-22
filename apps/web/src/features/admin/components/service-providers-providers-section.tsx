@@ -7,8 +7,9 @@ import { ServiceProviderForm } from '@/features/admin/components/service-provide
 import type { ServiceProviderFormValues } from '@/features/admin/schemas/service-provider.schema';
 import { toServiceProviderFormValues } from '@/features/admin/utils/service-provider-mappers';
 import { Button } from '@/shared/ui/button';
-import { Card } from '@/shared/ui/card';
 import { Select } from '@/shared/ui/select';
+import { AddActionLabel } from '@/shared/ui/add-action-label';
+import { AdminCreateSheet } from '@/shared/ui/admin-create-sheet';
 
 export type ServiceProviderFilters = {
   search: string;
@@ -70,7 +71,7 @@ export const ServiceProvidersProvidersSection = ({
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 className="text-base font-semibold text-ink">{t('title')}</h2>
         <Button type="button" size="sm" variant="secondary" onClick={onCreate}>
-          {t('newProvider')}
+          <AddActionLabel>{t('newProvider')}</AddActionLabel>
         </Button>
       </div>
 
@@ -117,25 +118,35 @@ export const ServiceProvidersProvidersSection = ({
         </Select>
       </div>
 
-      {creating ? (
-        <Card className="max-w-2xl">
-          <ServiceProviderForm
-            categories={categories}
-            defaultValues={EMPTY_PROVIDER_DEFAULTS}
-            submitLabel={t('create')}
-            isBusy={busy}
-            onCancel={onDone}
-            onSubmit={async (values) => {
-              await onCreateSubmit(values);
-              onDone();
-            }}
-          />
-        </Card>
-      ) : null}
+      <AdminCreateSheet
+        open={creating}
+        onClose={onDone}
+        title={t('newProvider')}
+        size="comfortable"
+      >
+        <ServiceProviderForm
+          key="create"
+          categories={categories}
+          defaultValues={EMPTY_PROVIDER_DEFAULTS}
+          submitLabel={t('create')}
+          isBusy={busy}
+          onCancel={onDone}
+          onSubmit={async (values) => {
+            await onCreateSubmit(values);
+            onDone();
+          }}
+        />
+      </AdminCreateSheet>
 
-      {editing ? (
-        <Card className="max-w-2xl">
+      <AdminCreateSheet
+        open={editing != null}
+        onClose={onDone}
+        title={editing?.name ?? ''}
+        size="comfortable"
+      >
+        {editing ? (
           <ServiceProviderForm
+            key={editing.id}
             categories={categories}
             defaultValues={toServiceProviderFormValues(editing)}
             submitLabel={t('save')}
@@ -146,8 +157,8 @@ export const ServiceProvidersProvidersSection = ({
               onDone();
             }}
           />
-        </Card>
-      ) : null}
+        ) : null}
+      </AdminCreateSheet>
 
       {providers.length === 0 ? (
         <p className="text-sm text-ink-secondary">{t('empty')}</p>

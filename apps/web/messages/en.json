@@ -938,7 +938,7 @@
       "empty": "No companies yet. Create the first one.",
       "loading": "Loading companies…",
       "error": "Could not load companies. Try again.",
-      "newCompany": "New company",
+      "newCompany": "+ New Company",
       "pagination": {
         "previous": "Previous",
         "next": "Next",
@@ -1027,7 +1027,7 @@
       "empty": "No partner profiles yet. Create the first one.",
       "loading": "Loading partners…",
       "error": "Could not load partners. Try again.",
-      "newPartner": "New partner",
+      "newPartner": "+ New Partner",
       "pagination": {
         "previous": "Previous",
         "next": "Next",
@@ -1147,7 +1147,7 @@
       "loading": "Loading bank offers…",
       "error": "Could not load bank offers. Try again.",
       "empty": "No bank offers yet.",
-      "newOffer": "New offer",
+      "newOffer": "+ New Offer",
       "createTitle": "New bank offer",
       "editTitle": "Edit {title}",
       "edit": "Edit",
@@ -1186,7 +1186,13 @@
           "draft": "Draft",
           "published": "Published",
           "archived": "Archived"
-        }
+        },
+        "sections": {
+          "offer": "Offer",
+          "terms": "Terms",
+          "publishing": "Publishing"
+        },
+        "saving": "Saving…"
       }
     },
     "serviceProviders": {
@@ -1196,7 +1202,7 @@
       "error": "Could not load service providers. Try again.",
       "categories": {
         "title": "Categories",
-        "newCategory": "New category",
+        "newCategory": "+ New Category",
         "empty": "No categories yet.",
         "edit": "Edit",
         "delete": "Delete",
@@ -1220,7 +1226,7 @@
       },
       "providers": {
         "title": "Providers",
-        "newProvider": "New provider",
+        "newProvider": "+ New Provider",
         "empty": "No providers match these filters.",
         "edit": "Edit",
         "delete": "Delete",
@@ -1270,7 +1276,13 @@
             "draft": "Draft",
             "published": "Published",
             "archived": "Archived"
-          }
+          },
+          "sections": {
+            "provider": "Provider",
+            "contact": "Contact",
+            "publishing": "Publishing"
+          },
+          "saving": "Saving…"
         }
       }
     },
@@ -1378,7 +1390,7 @@
         "loading": "Loading categories…",
         "error": "Could not load categories. Try again.",
         "empty": "No categories yet. Create the first one.",
-        "newCategory": "New category",
+        "newCategory": "+ New Category",
         "createTitle": "New category",
         "editTitle": "Edit {name}",
         "edit": "Edit",
@@ -1415,7 +1427,7 @@
         "loading": "Loading assessments…",
         "error": "Could not load assessments. Try again.",
         "empty": "No assessments yet. Create one to start evaluating.",
-        "newAssessment": "New assessment",
+        "newAssessment": "+ New Assessment",
         "categoriesLink": "Manage categories",
         "overridden": "overridden",
         "pagination": {
@@ -1543,7 +1555,7 @@
         "recommendations": {
           "title": "Recommendations",
           "addTitle": "Add recommendation",
-          "add": "Add recommendation",
+          "add": "+ Add Recommendation",
           "adding": "Adding…",
           "delete": "Delete",
           "deleteConfirm": "Delete this recommendation?",
@@ -1567,7 +1579,7 @@
         "requiredActions": {
           "title": "Required actions",
           "addTitle": "Add required action",
-          "add": "Add action",
+          "add": "+ Add Action",
           "adding": "Adding…",
           "delete": "Delete",
           "deleteConfirm": "Delete this required action?",
@@ -1600,7 +1612,7 @@
           "title": "Internal notes",
           "subtitle": "BigProjects admin only — builders never see these notes.",
           "addLabel": "New internal note",
-          "add": "Add note",
+          "add": "+ Add Note",
           "adding": "Adding…",
           "delete": "Delete",
           "deleteConfirm": "Delete this internal note?",
@@ -1619,7 +1631,7 @@
       "empty": "No events yet. Create the first one.",
       "loading": "Loading events…",
       "error": "Could not load events. Try again.",
-      "newEvent": "New event",
+      "newEvent": "+ New Event",
       "columns": {
         "name": "Name",
         "code": "Code",
@@ -1675,7 +1687,7 @@
       },
       "venueMaps": {
         "title": "Venue maps",
-        "newMap": "New map",
+        "newMap": "+ New Map",
         "cancelCreate": "Cancel",
         "empty": "No venue maps yet.",
         "loading": "Loading maps…",
@@ -1699,7 +1711,7 @@
       },
       "booths": {
         "title": "Booths",
-        "newBooth": "New booth",
+        "newBooth": "+ New Booth",
         "loading": "Loading booths…",
         "empty": "No booths on this map yet.",
         "selectHint": "Select a booth or create a new one.",
@@ -1746,7 +1758,7 @@
           "noProject": "No project",
           "label": "Label",
           "active": "Active",
-          "add": "Add assignment",
+          "add": "+ Add Assignment",
           "adding": "Adding…",
           "remove": "Remove",
           "edit": "Edit",
@@ -1759,8 +1771,8 @@
         "title": "Route graph",
         "nodes": "Nodes",
         "edges": "Edges",
-        "addNode": "Add node",
-        "addEdge": "Add edge",
+        "addNode": "+ Add Node",
+        "addEdge": "+ Add Edge",
         "code": "Code",
         "label": "Label",
         "type": "Type",
@@ -1831,7 +1843,7 @@
       "title": "Offers & services",
       "pageTitle": "Offers",
       "empty": "No offers yet.",
-      "add": "Add offer",
+      "add": "+ Add Offer",
       "edit": "Edit",
       "delete": "Delete",
       "create": "Create offer",
@@ -1952,7 +1964,7 @@
       "subtitle": "Manage your bank's mortgage offer drafts.",
       "publicationNote": "Publication is managed by the ToonExpo platform team.",
       "empty": "No mortgage offers yet.",
-      "add": "Add offer",
+      "add": "+ Add Offer",
       "edit": "Edit",
       "delete": "Delete",
       "create": "Create offer",
@@ -2040,7 +2052,7 @@
       },
       "links": {
         "projects": "All projects",
-        "newProject": "New project",
+        "newProject": "+ New Project",
         "team": "Team",
         "crm": "CRM",
         "scanner": "Scanner"
@@ -2061,7 +2073,7 @@
       "empty": "No projects yet. Create the first one.",
       "loading": "Loading projects…",
       "error": "Could not load projects. Try again.",
-      "newProject": "New project",
+      "newProject": "+ New Project",
       "pagination": {
         "previous": "Previous",
         "next": "Next",
@@ -2134,9 +2146,9 @@
       "loading": "Loading apartments…",
       "noBuildings": "No buildings yet. Add the first building below.",
       "noFloors": "No floors yet.",
-      "addBuilding": "Add building",
-      "addFloor": "Add floor",
-      "addApartments": "Add apartments",
+      "addBuilding": "+ Add Building",
+      "addFloor": "+ Add Floor",
+      "addApartments": "+ Add Apartments",
       "createApartments": "Create apartments",
       "cancel": "Cancel",
       "adding": "Saving…",
@@ -2181,7 +2193,7 @@
       "subtitle": "Site renders, building maps, and floorplans with navigation hotspots",
       "loading": "Loading visual maps…",
       "empty": "No visual canvases yet. Create one to add hotspots.",
-      "newCanvas": "New canvas",
+      "newCanvas": "+ New Canvas",
       "cancelCreate": "Cancel",
       "untitled": "Untitled canvas",
       "primaryYes": "Primary",
@@ -2428,7 +2440,7 @@
         "event_interaction": "Event"
       },
       "newDeal": {
-        "cta": "New deal",
+        "cta": "+ New Deal",
         "title": "New deal",
         "contactName": "Name",
         "contactPhone": "Phone",
@@ -2471,12 +2483,12 @@
         "notesTitle": "Notes",
         "notesEmpty": "No notes yet",
         "notePlaceholder": "Add an internal note…",
-        "addNote": "Add note",
+        "addNote": "+ Add Note",
         "activitiesTitle": "Activities",
         "activitiesEmpty": "No follow-up activity yet",
         "activityType": "Type",
         "activityDue": "Due",
-        "addActivity": "Add activity",
+        "addActivity": "+ Add Activity",
         "markDone": "Mark done",
         "activityTypes": {
           "call": "Call",

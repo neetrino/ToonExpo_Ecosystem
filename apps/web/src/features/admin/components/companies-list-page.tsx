@@ -1,13 +1,16 @@
-"use client";
+'use client';
 
-import { useTranslations } from "next-intl";
-import { useSearchParams } from "next/navigation";
+import { useTranslations } from 'next-intl';
+import { useSearchParams } from 'next/navigation';
+import { useCallback, useEffect, useState } from 'react';
 
-import { CompaniesTable } from "@/features/admin/components/companies-table";
-import { ADMIN_COMPANIES_DEFAULT_PAGE_SIZE } from "@/features/admin/constants";
-import { useAdminCompaniesQuery } from "@/features/admin/hooks/use-admin-companies";
-import { CatalogPagination } from "@/features/catalog/components/catalog-pagination";
-import { Link } from "@/i18n/navigation";
+import { CompaniesTable } from '@/features/admin/components/companies-table';
+import { CreateCompanySheet } from '@/features/admin/components/create-company-sheet';
+import { ADMIN_COMPANIES_DEFAULT_PAGE_SIZE } from '@/features/admin/constants';
+import { useAdminCompaniesQuery } from '@/features/admin/hooks/use-admin-companies';
+import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
+import { usePathname, useRouter } from '@/i18n/navigation';
+import { AddActionLabel } from '@/shared/ui/add-action-label';
 
 const parsePage = (raw: string | null): number => {
   const parsed = Number(raw);
@@ -18,23 +21,47 @@ const parsePage = (raw: string | null): number => {
 };
 
 /**
- * Admin companies list with pagination, loading, error, and empty states.
+ * Admin companies list with pagination and New company side sheet.
  */
 export const CompaniesListPage = () => {
-  const t = useTranslations("Admin.companies");
+  const t = useTranslations('Admin.companies');
   const searchParams = useSearchParams();
-  const page = parsePage(searchParams.get("page"));
+  const router = useRouter();
+  const pathname = usePathname();
+  const page = parsePage(searchParams.get('page'));
   const pageSize = ADMIN_COMPANIES_DEFAULT_PAGE_SIZE;
   const query = useAdminCompaniesQuery(page, pageSize);
+  const [sheetOpen, setSheetOpen] = useState(false);
+
+  const clearCreateParam = useCallback((): void => {
+    if (searchParams.get('create') !== '1') {
+      return;
+    }
+    const next = new URLSearchParams(searchParams.toString());
+    next.delete('create');
+    const queryString = next.toString();
+    router.replace(queryString.length > 0 ? `${pathname}?${queryString}` : pathname);
+  }, [pathname, router, searchParams]);
+
+  useEffect(() => {
+    if (searchParams.get('create') === '1') {
+      setSheetOpen(true);
+    }
+  }, [searchParams]);
+
+  const handleCloseSheet = (): void => {
+    setSheetOpen(false);
+    clearCreateParam();
+  };
 
   if (query.isLoading) {
-    return <p className="text-sm text-ink-secondary">{t("loading")}</p>;
+    return <p className="text-sm text-ink-secondary">{t('loading')}</p>;
   }
 
   if (query.isError) {
     return (
       <p role="alert" className="text-sm text-danger">
-        {t("error")}
+        {t('error')}
       </p>
     );
   }
@@ -48,21 +75,22 @@ export const CompaniesListPage = () => {
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-col gap-1">
-          <h1 className="text-xl font-semibold text-ink">{t("title")}</h1>
+          <h1 className="text-xl font-semibold text-ink">{t('title')}</h1>
           <p className="text-sm text-ink-secondary">
-            {t("subtitle", { count: response.meta.total })}
+            {t('subtitle', { count: response.meta.total })}
           </p>
         </div>
-        <Link
-          href="/admin/companies/new"
+        <button
+          type="button"
           className="inline-flex h-9 items-center justify-center rounded-pill bg-cta-dark px-4 text-sm font-medium text-on-dark hover:bg-cta-dark/90"
+          onClick={() => setSheetOpen(true)}
         >
-          {t("newCompany")}
-        </Link>
+          <AddActionLabel>{t('newCompany')}</AddActionLabel>
+        </button>
       </div>
 
       {response.data.length === 0 ? (
-        <p className="text-sm text-ink-secondary">{t("empty")}</p>
+        <p className="text-sm text-ink-secondary">{t('empty')}</p>
       ) : (
         <CompaniesTable companies={response.data} />
       )}
@@ -71,14 +99,14 @@ export const CompaniesListPage = () => {
         page={response.meta.page}
         totalPages={response.meta.totalPages}
         buildHref={(nextPage) =>
-          nextPage <= 1
-            ? "/admin/companies"
-            : `/admin/companies?page=${nextPage}`
+          nextPage <= 1 ? '/admin/companies' : `/admin/companies?page=${nextPage}`
         }
-        previousLabel={t("pagination.previous")}
-        nextLabel={t("pagination.next")}
-        ariaLabel={t("pagination.ariaLabel")}
+        previousLabel={t('pagination.previous')}
+        nextLabel={t('pagination.next')}
+        ariaLabel={t('pagination.ariaLabel')}
       />
+
+      <CreateCompanySheet open={sheetOpen} onClose={handleCloseSheet} />
     </div>
   );
 };
