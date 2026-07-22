@@ -66,6 +66,7 @@ export const ChangePasswordForm = () => {
         <PasswordInput
           id="change-password-current"
           autoComplete="current-password"
+          placeholder="********"
           aria-invalid={Boolean(errors.currentPassword)}
           revealLabel={tAuth('fields.showPassword')}
           hideLabel={tAuth('fields.hidePassword')}
@@ -81,6 +82,7 @@ export const ChangePasswordForm = () => {
         <PasswordInput
           id="change-password-new"
           autoComplete="new-password"
+          placeholder="********"
           aria-invalid={Boolean(errors.newPassword)}
           revealLabel={tAuth('fields.showPassword')}
           hideLabel={tAuth('fields.hidePassword')}
@@ -96,6 +98,7 @@ export const ChangePasswordForm = () => {
         <PasswordInput
           id="change-password-confirm"
           autoComplete="new-password"
+          placeholder="********"
           aria-invalid={Boolean(errors.confirmPassword)}
           revealLabel={tAuth('fields.showPassword')}
           hideLabel={tAuth('fields.hidePassword')}
