@@ -36,11 +36,12 @@ const PILL_EDGE_INSET_CLASS = 'left-4 right-4 sm:left-5 sm:right-5 lg:left-6 lg:
 /** Float gap above the pill — keeps pill height = navbar (h-16). */
 const PILL_TOP_OFFSET_CLASS = 'top-2';
 const HEADER_HEIGHT_CLASS = 'h-16';
-const HEADER_SPACER_CLASS = 'h-16';
+/** Spacer under fixed pill chrome (top inset + bar). */
+const HEADER_SPACER_CLASS = 'h-[4.5rem]';
 
 /**
- * Public header — ma-marie style: full-bleed at rest, frosted pill on scroll
- * with a small equal inset so the bar stays centered and even.
+ * Public header — ma-marie style: full-bleed over home hero, frosted pill
+ * on scroll (home) or always (other public pages).
  */
 export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) => {
   const t = useTranslations('Nav');
@@ -50,7 +51,8 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
   const [showPill, setShowPill] = useState(false);
   const [authReady, setAuthReady] = useState(false);
   const isTransparentStart = variant === 'transparent';
-  const pillVisible = isTransparentStart && (showPill || menuOpen);
+  /** Solid pages always use the home pill chrome; home reveals it on scroll. */
+  const pillVisible = !isTransparentStart || showPill || menuOpen;
   const isOverHero = isTransparentStart && !pillVisible;
   const needsSpacer = !isTransparentStart;
   const showAuthLoading = !authReady || isLoading || (isFetching && !user);
@@ -109,35 +111,31 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
       <header
         className={cn(
           'fixed inset-x-0 top-0 z-[var(--z-header)]',
-          !isTransparentStart && 'bg-header-bg text-ink backdrop-blur-[6px]',
-          isTransparentStart && (isOverHero ? 'text-on-dark' : 'text-ink'),
+          isOverHero ? 'text-on-dark' : 'text-ink',
           className,
         )}
       >
         <div
           className={cn(
-            'page-container relative',
-            isTransparentStart && 'transition-[padding] ease-out',
-            isTransparentStart && pillVisible && 'pt-2',
+            'page-container relative transition-[padding] ease-out',
+            pillVisible && 'pt-2',
           )}
-          style={isTransparentStart ? { transitionDuration: `${PILL_APPEAR_MS}ms` } : undefined}
+          style={{ transitionDuration: `${PILL_APPEAR_MS}ms` }}
         >
-          {isTransparentStart ? (
-            <div
-              aria-hidden
-              className={cn(
-                'pointer-events-none absolute h-16 rounded-full bg-surface-elevated',
-                PILL_TOP_OFFSET_CLASS,
-                PILL_EDGE_INSET_CLASS,
-                'shadow-[0_4px_24px_rgb(9_43_68/0.1)]',
-                'transition-opacity ease-out',
-              )}
-              style={{
-                opacity: pillVisible ? 1 : 0,
-                transitionDuration: `${PILL_APPEAR_MS}ms`,
-              }}
-            />
-          ) : null}
+          <div
+            aria-hidden
+            className={cn(
+              'pointer-events-none absolute h-16 rounded-full bg-surface-elevated',
+              PILL_TOP_OFFSET_CLASS,
+              PILL_EDGE_INSET_CLASS,
+              'shadow-[0_4px_24px_rgb(9_43_68/0.1)]',
+              'transition-opacity ease-out',
+            )}
+            style={{
+              opacity: pillVisible ? 1 : 0,
+              transitionDuration: `${PILL_APPEAR_MS}ms`,
+            }}
+          />
 
           <div
             className={cn(
@@ -147,7 +145,7 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
           >
             <div
               className="flex min-w-0 items-center gap-8 transition-transform ease-out lg:gap-10"
-              style={isTransparentStart ? contentInsetStyle : undefined}
+              style={contentInsetStyle}
             >
               <BrandLogo inverted={isOverHero} onHomeClick={() => setMenuOpen(false)} />
 
@@ -188,7 +186,7 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
 
             <div
               className="flex shrink-0 items-center gap-2.5 transition-transform ease-out sm:gap-3"
-              style={isTransparentStart ? actionsInsetStyle : undefined}
+              style={actionsInsetStyle}
             >
               <LocaleSwitcher tone={isOverHero ? 'dark' : 'light'} />
 
@@ -276,8 +274,8 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
             <div
               id="mobile-nav"
               className={cn(
-                'relative z-10 mt-1 border-t border-header-border px-1 py-3 text-ink lg:hidden',
-                !isTransparentStart && 'bg-header-bg',
+                'relative z-10 mt-1 rounded-[1.25rem] border border-header-border',
+                'bg-surface-elevated px-1 py-3 text-ink shadow-md lg:hidden',
               )}
             >
               <nav className="flex flex-col gap-1 text-sm" aria-label={t('main')}>

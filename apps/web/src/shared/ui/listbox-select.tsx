@@ -1,16 +1,25 @@
 'use client';
 
 import { Check, ChevronDown } from 'lucide-react';
-import { useEffect, useId, useRef, useState } from 'react';
+import {
+  forwardRef,
+  useEffect,
+  useId,
+  useImperativeHandle,
+  useRef,
+  useState,
+  type FocusEventHandler,
+} from 'react';
 
 import { cn } from '@/shared/ui/cn';
+import { DropdownPortal } from '@/shared/ui/dropdown-portal';
 
 export type ListboxOption = {
   value: string;
   label: string;
 };
 
-type ListboxSelectProps = {
+export type ListboxSelectProps = {
   value: string;
   options: readonly ListboxOption[];
   onChange: (value: string) => void;
@@ -18,118 +27,167 @@ type ListboxSelectProps = {
   'aria-label': string;
   className?: string | undefined;
   name?: string | undefined;
+  id?: string | undefined;
+  disabled?: boolean | undefined;
+  /** `plain` = hero search; `field` = bordered form control. Menu chrome matches home. */
+  variant?: 'plain' | 'field' | undefined;
+  onBlur?: FocusEventHandler<HTMLButtonElement> | undefined;
 };
 
 /**
  * Custom listbox — soft panel + check, same family as LocaleSwitcher / ma-marie menus.
- * Replaces native select so the open menu is not OS-default.
+ * Menu portals to `document.body` so it stacks above page chrome.
  */
-export const ListboxSelect = ({
-  value,
-  options,
-  onChange,
-  'aria-label': ariaLabel,
-  className,
-  name,
-}: ListboxSelectProps) => {
-  const [open, setOpen] = useState(false);
-  const rootRef = useRef<HTMLDivElement>(null);
-  const listId = useId();
-  const selected = options.find((option) => option.value === value) ?? options[0];
+export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
+  function ListboxSelect(
+    {
+      value,
+      options,
+      onChange,
+      'aria-label': ariaLabel,
+      className,
+      name,
+      id,
+      disabled = false,
+      variant = 'plain',
+      onBlur,
+    },
+    ref,
+  ) {
+    const [open, setOpen] = useState(false);
+    const rootRef = useRef<HTMLDivElement>(null);
+    const buttonRef = useRef<HTMLButtonElement>(null);
+    const menuRef = useRef<HTMLUListElement>(null);
+    const listId = useId();
+    const isField = variant === 'field';
+    const selected = options.find((option) => option.value === value) ?? options[0];
 
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
+    useImperativeHandle(ref, () => buttonRef.current as HTMLButtonElement);
 
-    const onPointerDown = (event: MouseEvent): void => {
-      if (!rootRef.current?.contains(event.target as Node)) {
-        setOpen(false);
+    useEffect(() => {
+      if (!open) {
+        return;
       }
-    };
 
-    const onKeyDown = (event: KeyboardEvent): void => {
-      if (event.key === 'Escape') {
+      const onPointerDown = (event: MouseEvent): void => {
+        const target = event.target as Node;
+        if (rootRef.current?.contains(target) || menuRef.current?.contains(target)) {
+          return;
+        }
         setOpen(false);
+      };
+
+      const onKeyDown = (event: KeyboardEvent): void => {
+        if (event.key === 'Escape') {
+          setOpen(false);
+        }
+      };
+
+      document.addEventListener('mousedown', onPointerDown);
+      document.addEventListener('keydown', onKeyDown);
+      return () => {
+        document.removeEventListener('mousedown', onPointerDown);
+        document.removeEventListener('keydown', onKeyDown);
+      };
+    }, [open]);
+
+    const pick = (next: string): void => {
+      if (disabled) {
+        return;
       }
+      onChange(next);
+      setOpen(false);
     };
 
-    document.addEventListener('mousedown', onPointerDown);
-    document.addEventListener('keydown', onKeyDown);
-    return () => {
-      document.removeEventListener('mousedown', onPointerDown);
-      document.removeEventListener('keydown', onKeyDown);
-    };
-  }, [open]);
-
-  const pick = (next: string): void => {
-    onChange(next);
-    setOpen(false);
-  };
-
-  return (
-    <div ref={rootRef} className={cn('relative min-w-0', className)}>
-      {name ? <input type="hidden" name={name} value={value} /> : null}
-      <button
-        type="button"
-        className={cn(
-          'flex w-full min-w-0 items-center justify-between gap-2 bg-transparent p-0 text-left',
-          'text-sm font-medium text-ink-navy',
-          'transition-colors duration-[var(--duration-fast)]',
-          'hover:text-brand-deep focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/25',
-        )}
-        aria-label={ariaLabel}
-        aria-haspopup="listbox"
-        aria-expanded={open}
-        aria-controls={listId}
-        onClick={() => setOpen((current) => !current)}
+    return (
+      <div
+        ref={rootRef}
+        className={cn('relative min-w-0', isField && 'w-full', !isField && className)}
       >
-        <span className="truncate">{selected?.label}</span>
-        <ChevronDown
+        {name ? <input type="hidden" name={name} value={value} disabled={disabled} /> : null}
+        <button
+          ref={buttonRef}
+          id={id}
+          type="button"
+          disabled={disabled}
           className={cn(
-            'size-4 shrink-0 text-header-muted transition-transform duration-[var(--duration-base)] ease-[var(--ease-out-premium)]',
-            open && 'rotate-180 text-brand-deep',
+            'flex w-full min-w-0 items-center justify-between gap-2 text-left',
+            'transition-colors duration-[var(--duration-fast)]',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/25',
+            'disabled:cursor-not-allowed disabled:opacity-50',
+            isField
+              ? cn(
+                  'h-11 rounded-sm border border-border bg-surface-elevated px-4',
+                  'text-base text-ink sm:text-sm',
+                  'transition-[border-color,box-shadow,background-color] duration-[var(--duration-fast)]',
+                  'hover:border-border-strong focus-visible:border-brand focus-visible:ring-brand/20',
+                  className,
+                )
+              : cn('bg-transparent p-0 text-sm font-medium text-ink-navy', 'hover:text-brand-deep'),
+            !isField && open && 'text-brand-deep',
           )}
-          aria-hidden
-        />
-      </button>
-
-      {open ? (
-        <ul
-          id={listId}
-          role="listbox"
           aria-label={ariaLabel}
-          className={cn(
-            'absolute top-[calc(100%+0.55rem)] left-0 z-[var(--z-dropdown)] min-w-full overflow-hidden',
-            'rounded-[12px] border border-header-border bg-surface-elevated py-1.5 shadow-md',
-            'animate-[locale-dropdown-in_var(--duration-base)_var(--ease-out-premium)]',
-          )}
+          aria-haspopup="listbox"
+          aria-expanded={open}
+          aria-controls={listId}
+          onBlur={onBlur}
+          onClick={() => {
+            if (disabled) {
+              return;
+            }
+            setOpen((current) => !current);
+          }}
         >
-          {options.map((option) => {
-            const active = option.value === value;
-            return (
-              <li key={option.value} role="option" aria-selected={active}>
-                <button
-                  type="button"
-                  className={cn(
-                    'flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left text-sm whitespace-nowrap',
-                    'transition-colors duration-[var(--duration-base)] ease-[var(--ease-out-premium)]',
-                    active
-                      ? 'bg-brand-soft font-semibold text-brand-deep'
-                      : 'font-medium text-ink hover:bg-surface',
-                  )}
-                  onClick={() => pick(option.value)}
-                >
-                  <span>{option.label}</span>
-                  {active ? (
-                    <Check className="size-3.5 shrink-0 text-brand-logo" aria-hidden />
-                  ) : null}
-                </button>
-              </li>
-            );
-          })}
-        </ul>
-      ) : null}
-    </div>
-  );
-};
+          <span className="truncate">{selected?.label}</span>
+          <ChevronDown
+            className={cn(
+              'size-4 shrink-0 transition-transform duration-[var(--duration-base)] ease-[var(--ease-out-premium)]',
+              isField ? 'text-brand' : 'text-header-muted',
+              open && 'rotate-180',
+              open && !isField && 'text-brand-deep',
+            )}
+            aria-hidden
+          />
+        </button>
+
+        <DropdownPortal open={open && !disabled} anchorRef={buttonRef} matchWidth>
+          <ul
+            ref={menuRef}
+            id={listId}
+            role="listbox"
+            aria-label={ariaLabel}
+            className={cn(
+              'min-w-full overflow-hidden',
+              'rounded-[12px] border border-header-border bg-surface-elevated py-1.5 shadow-md',
+              'animate-[locale-dropdown-in_var(--duration-base)_var(--ease-out-premium)]',
+            )}
+          >
+            {options.map((option) => {
+              const active = option.value === value;
+              return (
+                <li key={option.value} role="option" aria-selected={active}>
+                  <button
+                    type="button"
+                    className={cn(
+                      'flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left text-sm whitespace-nowrap',
+                      'transition-colors duration-[var(--duration-base)] ease-[var(--ease-out-premium)]',
+                      active
+                        ? 'bg-brand-soft font-semibold text-brand-deep'
+                        : 'font-medium text-ink hover:bg-surface',
+                    )}
+                    onClick={() => pick(option.value)}
+                  >
+                    <span>{option.label}</span>
+                    {active ? (
+                      <Check className="size-3.5 shrink-0 text-brand-logo" aria-hidden />
+                    ) : null}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </DropdownPortal>
+      </div>
+    );
+  },
+);

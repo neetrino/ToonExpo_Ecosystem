@@ -27,11 +27,11 @@ type PortalShellProps = {
 };
 
 /**
- * SiteHeader solid bar is `h-16` (4rem) flush to the top.
+ * SiteHeader pill chrome is ~4.5rem (top inset + h-16).
  * Rail sits one gap below that and fills the rest of the viewport.
  */
-const SITE_HEADER_RAIL_TOP_CLASS = 'top-20';
-const SITE_HEADER_RAIL_HEIGHT_CLASS = 'h-[calc(100dvh-5rem)]';
+const SITE_HEADER_RAIL_TOP_CLASS = 'top-[5.5rem]';
+const SITE_HEADER_RAIL_HEIGHT_CLASS = 'h-[calc(100dvh-5.5rem)]';
 const SITE_HEADER_RAIL_ROW_GAP_CLASS = 'md:pt-4';
 
 /**

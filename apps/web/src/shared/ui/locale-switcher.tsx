@@ -8,6 +8,7 @@ import { useEffect, useId, useOptimistic, useRef, useState, useTransition } from
 import { usePathname, useRouter } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
 import { cn } from '@/shared/ui/cn';
+import { DropdownPortal } from '@/shared/ui/dropdown-portal';
 
 /** Figma header trigger — uppercase 2-letter codes (`EN`). */
 const LOCALE_CODE: Record<string, string> = {
@@ -33,6 +34,7 @@ type LocaleSwitcherProps = {
 /**
  * Compact language control — Figma header: plain `EN` + chevron (no pill).
  * Opens on hover (desktop); click still toggles for touch / keyboard.
+ * Menu portals above page chrome.
  */
 export const LocaleSwitcher = ({ tone = 'light' }: LocaleSwitcherProps) => {
   const t = useTranslations('HomePage');
@@ -45,6 +47,8 @@ export const LocaleSwitcher = ({ tone = 'light' }: LocaleSwitcherProps) => {
   const [isPending, startTransition] = useTransition();
   const [optimisticLocale, setOptimisticLocale] = useOptimistic(locale);
   const rootRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLUListElement>(null);
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const listId = useId();
   const isDark = tone === 'dark';
@@ -86,9 +90,11 @@ export const LocaleSwitcher = ({ tone = 'light' }: LocaleSwitcherProps) => {
     }
 
     const onPointerDown = (event: MouseEvent): void => {
-      if (!rootRef.current?.contains(event.target as Node)) {
-        setOpen(false);
+      const target = event.target as Node;
+      if (rootRef.current?.contains(target) || menuRef.current?.contains(target)) {
+        return;
       }
+      setOpen(false);
     };
 
     const onKeyDown = (event: KeyboardEvent): void => {
@@ -132,6 +138,7 @@ export const LocaleSwitcher = ({ tone = 'light' }: LocaleSwitcherProps) => {
       onMouseLeave={scheduleCloseMenu}
     >
       <button
+        ref={buttonRef}
         type="button"
         className={cn(
           'inline-flex items-center gap-1 text-sm font-medium leading-5',
@@ -158,16 +165,19 @@ export const LocaleSwitcher = ({ tone = 'light' }: LocaleSwitcherProps) => {
         />
       </button>
 
-      {open ? (
+      <DropdownPortal open={open} anchorRef={buttonRef} align="end">
         <ul
+          ref={menuRef}
           id={listId}
           role="listbox"
           aria-label={t('languageLabel')}
           className={cn(
-            'absolute top-[calc(100%+0.4rem)] right-0 z-[var(--z-dropdown)] w-max overflow-hidden',
+            'w-max overflow-hidden',
             'rounded-[12px] border border-header-border bg-surface-elevated py-1.5 text-ink shadow-md',
             'animate-[locale-dropdown-in_var(--duration-base)_var(--ease-out-premium)]',
           )}
+          onMouseEnter={openMenu}
+          onMouseLeave={scheduleCloseMenu}
         >
           {routing.locales.map((code) => {
             const active = code === displayLocale;
@@ -193,7 +203,7 @@ export const LocaleSwitcher = ({ tone = 'light' }: LocaleSwitcherProps) => {
             );
           })}
         </ul>
-      ) : null}
+      </DropdownPortal>
     </div>
   );
 };

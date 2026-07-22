@@ -23,7 +23,7 @@ import {
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
-import { selectFieldClassName } from '@/shared/ui/select';
+import { Select } from '@/shared/ui/select';
 
 type EditApartmentFormProps = {
   apartment: PortalApartmentDetail;
@@ -123,7 +123,6 @@ export const EditApartmentForm = ({ apartment }: EditApartmentFormProps) => {
   });
 
   const busy = isSubmitting || mutation.isPending;
-  const selectClassName = selectFieldClassName;
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-5" noValidate>
@@ -157,22 +156,52 @@ export const EditApartmentForm = ({ apartment }: EditApartmentFormProps) => {
           <Input id="apt-price" {...register('price')} />
         </FormField>
         <FormField id="apt-price-vis" label={t('form.priceVisibility')}>
-          <select id="apt-price-vis" className={selectClassName} {...register('priceVisibility')}>
-            {PRICE_VISIBILITY_OPTIONS.map((option) => (
-              <option key={option} value={option}>
-                {t(`priceVisibility.${option}`)}
-              </option>
-            ))}
-          </select>
+          <Controller
+            name="priceVisibility"
+            control={control}
+            render={({ field }) => (
+              <Select
+                id="apt-price-vis"
+                name={field.name}
+                value={field.value}
+                aria-label={t('form.priceVisibility')}
+                onBlur={field.onBlur}
+                onChange={(event) => {
+                  field.onChange(event.target.value);
+                }}
+              >
+                {PRICE_VISIBILITY_OPTIONS.map((option) => (
+                  <option key={option} value={option}>
+                    {t(`priceVisibility.${option}`)}
+                  </option>
+                ))}
+              </Select>
+            )}
+          />
         </FormField>
         <FormField id="apt-sales" label={t('form.salesStatus')}>
-          <select id="apt-sales" className={selectClassName} {...register('salesStatus')}>
-            {APARTMENT_SALES_STATUSES.map((status) => (
-              <option key={status} value={status}>
-                {t(`salesStatus.${status}`)}
-              </option>
-            ))}
-          </select>
+          <Controller
+            name="salesStatus"
+            control={control}
+            render={({ field }) => (
+              <Select
+                id="apt-sales"
+                name={field.name}
+                value={field.value}
+                aria-label={t('form.salesStatus')}
+                onBlur={field.onBlur}
+                onChange={(event) => {
+                  field.onChange(event.target.value);
+                }}
+              >
+                {APARTMENT_SALES_STATUSES.map((status) => (
+                  <option key={status} value={status}>
+                    {t(`salesStatus.${status}`)}
+                  </option>
+                ))}
+              </Select>
+            )}
+          />
         </FormField>
         <FormField id="apt-reason" label={t('form.statusChangeReason')}>
           <Input id="apt-reason" {...register('statusChangeReason')} />

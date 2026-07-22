@@ -4,7 +4,7 @@ import type { ReadinessAssessmentTargetType, ReadinessScoreStatus } from '@toone
 import { useTranslations } from 'next-intl';
 
 import { READINESS_SCORE_STATUSES, READINESS_TARGET_TYPES } from '@/features/readiness/constants';
-import { selectFieldClassName } from '@/shared/ui/select';
+import { Select } from '@/shared/ui/select';
 
 type ReadinessAssessmentFiltersProps = {
   companyId: string;
@@ -18,7 +18,7 @@ type ReadinessAssessmentFiltersProps = {
   }) => void;
 };
 
-const selectClassName = `${selectFieldClassName} h-10`;
+const fieldClassName = 'h-10';
 
 /**
  * Filter row for admin readiness assessments list.
@@ -36,9 +36,10 @@ export const ReadinessAssessmentFilters = ({
     <div className="flex flex-wrap gap-3">
       <label className="flex flex-col gap-1 text-xs text-ink-muted">
         {t('company')}
-        <select
-          className={selectClassName}
+        <Select
+          className={fieldClassName}
           value={companyId}
+          aria-label={t('company')}
           onChange={(event) => {
             onChange({
               companyId: event.target.value,
@@ -53,14 +54,15 @@ export const ReadinessAssessmentFilters = ({
               {company.name}
             </option>
           ))}
-        </select>
+        </Select>
       </label>
 
       <label className="flex flex-col gap-1 text-xs text-ink-muted">
         {t('targetType')}
-        <select
-          className={selectClassName}
+        <Select
+          className={fieldClassName}
           value={targetType}
+          aria-label={t('targetType')}
           onChange={(event) => {
             onChange({
               companyId,
@@ -75,14 +77,15 @@ export const ReadinessAssessmentFilters = ({
               {t(`targetTypes.${type}`)}
             </option>
           ))}
-        </select>
+        </Select>
       </label>
 
       <label className="flex flex-col gap-1 text-xs text-ink-muted">
         {t('status')}
-        <select
-          className={selectClassName}
+        <Select
+          className={fieldClassName}
           value={status}
+          aria-label={t('status')}
           onChange={(event) => {
             onChange({
               companyId,
@@ -97,7 +100,7 @@ export const ReadinessAssessmentFilters = ({
               {t(`statuses.${item}`)}
             </option>
           ))}
-        </select>
+        </Select>
       </label>
     </div>
   );

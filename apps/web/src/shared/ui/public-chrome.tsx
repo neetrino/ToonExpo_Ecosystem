@@ -29,7 +29,8 @@ const isHomeRoute = (pathname: string): boolean => {
  * Persistent public chrome — keeps SiteHeader mounted across navigations
  * so the bar does not remount/jump when switching Projects / Builders / etc.
  * Auth routes use AuthPageShell instead of the public header.
- * Home uses a transparent header so the hero photo sits under the bar.
+ * Home uses a transparent header so the hero photo sits under the bar;
+ * other public pages use the same floating pill chrome as home-after-scroll.
  * Public pages use DesktopFluidFrame so desktop composition scales like ma-marie.
  */
 export const PublicChrome = ({ children }: PublicChromeProps) => {

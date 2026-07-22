@@ -4,14 +4,12 @@ import type { BosProvisioningStatus } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 
 import { BOS_PROVISIONING_STATUSES } from '@/features/admin/constants';
-import { selectFieldClassName } from '@/shared/ui/select';
+import { Select } from '@/shared/ui/select';
 
 type BosProvisioningFiltersProps = {
   status: BosProvisioningStatus | '';
   onChange: (status: BosProvisioningStatus | '') => void;
 };
-
-const selectClassName = `${selectFieldClassName} h-10`;
 
 /**
  * Status filter for admin BOS provisioning list.
@@ -23,9 +21,10 @@ export const BosProvisioningFilters = ({ status, onChange }: BosProvisioningFilt
     <div className="flex flex-wrap gap-3">
       <label className="flex min-w-[12rem] flex-col gap-1 text-xs text-ink-muted">
         {t('status')}
-        <select
-          className={selectClassName}
+        <Select
+          className="h-10"
           value={status}
+          aria-label={t('status')}
           onChange={(event) => {
             onChange(event.target.value as BosProvisioningStatus | '');
           }}
@@ -36,7 +35,7 @@ export const BosProvisioningFilters = ({ status, onChange }: BosProvisioningFilt
               {t(`statuses.${item}`)}
             </option>
           ))}
-        </select>
+        </Select>
       </label>
     </div>
   );
