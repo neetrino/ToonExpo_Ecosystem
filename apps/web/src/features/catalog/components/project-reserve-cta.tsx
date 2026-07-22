@@ -93,7 +93,7 @@ export const ProjectReserveCta = ({ projectId, projectName }: ProjectReserveCtaP
     <section className="page-container py-16">
       <div className="grid grid-cols-1 gap-8 overflow-hidden rounded-[24px] bg-brand-deep p-6 text-on-dark sm:p-10 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
         <div>
-          <h2 className="font-brand text-[clamp(1.75rem,3vw,2.25rem)] font-bold tracking-[-0.02em] leading-tight">
+          <h2 className="font-brand text-[clamp(1.75rem,3vw,2.25rem)] font-bold leading-tight tracking-[-0.02em] text-on-dark">
             {t('reserveTitle', { project: projectName })}
           </h2>
           <p className="mt-3 max-w-md text-base leading-6 text-on-dark/70">
