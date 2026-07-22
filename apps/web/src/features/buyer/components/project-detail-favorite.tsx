@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { FavoriteToggleButton } from "@/features/buyer/components/favorite-toggle-button";
+import { FavoriteToggleButton } from '@/features/buyer/components/favorite-toggle-button';
 
 type ProjectDetailFavoriteProps = {
   projectId: string;
@@ -13,6 +13,6 @@ export const ProjectDetailFavorite = ({ projectId }: ProjectDetailFavoriteProps)
   <FavoriteToggleButton
     targetType="project"
     targetId={projectId}
-    className="absolute right-6 top-6"
+    className="absolute top-24 right-6 z-10 sm:top-28"
   />
 );

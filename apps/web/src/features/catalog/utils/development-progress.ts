@@ -1,11 +1,11 @@
-import type { ProjectListItem } from '@toonexpo/contracts';
-
 export type DevelopmentBadge = 'preSale' | 'selling' | 'underConstruction';
 
 /**
  * Sold share from availability counts (0–100).
  */
-export const computeSoldPercent = (project: ProjectListItem): number => {
+export const computeSoldPercent = (project: {
+  availability: { total: number; sold: number };
+}): number => {
   const total = project.availability.total;
   if (total <= 0) {
     return 0;
