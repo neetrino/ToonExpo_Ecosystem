@@ -82,8 +82,22 @@ export const BrandLogo = ({
         </span>
       ) : null}
       <span className="inline-flex whitespace-nowrap">
-        <span className={inverted ? 'text-on-dark' : 'text-brand-deep'}>TOON</span>
-        <span className={inverted ? 'text-brand-logo' : 'text-brand-secondary'}>EXPO</span>
+        <span
+          className={cn(
+            'transition-colors duration-[520ms] ease-[var(--ease-out-premium)]',
+            inverted ? 'text-on-dark' : 'text-brand-deep',
+          )}
+        >
+          TOON
+        </span>
+        <span
+          className={cn(
+            'transition-colors duration-[520ms] ease-[var(--ease-out-premium)]',
+            inverted ? 'text-brand-logo' : 'text-brand-secondary',
+          )}
+        >
+          EXPO
+        </span>
       </span>
       {badge ? (
         <span
