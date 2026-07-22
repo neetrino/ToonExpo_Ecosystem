@@ -5,7 +5,10 @@
  * Playwright starts webServer before globalSetup — seeding there races the API.
  */
 import { spawn } from 'node:child_process';
+import console from 'node:console';
 import path from 'node:path';
+import process from 'node:process';
+import { setTimeout as delay } from 'node:timers/promises';
 import { fileURLToPath } from 'node:url';
 
 const SEED_MAX_ATTEMPTS = 3;
@@ -15,7 +18,7 @@ const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const webRoot = path.resolve(scriptDir, '..');
 const monorepoRoot = path.resolve(webRoot, '../..');
 
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const sleep = (ms) => delay(ms);
 
 const runCommand = (command, args, cwd) =>
   new Promise((resolve, reject) => {
