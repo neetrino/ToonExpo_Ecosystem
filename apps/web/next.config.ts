@@ -53,6 +53,8 @@ const r2RemotePattern = resolveR2RemotePattern();
 
 const nextConfig: NextConfig = {
   transpilePackages: ['@toonexpo/contracts', '@toonexpo/shared'],
+  // Allow Next.js dev assets/HMR when opening the app via LAN IP (not only localhost).
+  allowedDevOrigins: ['192.168.15.116'],
   images: {
     remotePatterns: [PLACEHOLD_REMOTE_PATTERN, ...(r2RemotePattern ? [r2RemotePattern] : [])],
     // Dev seed uses local SVG architecture placeholders under /public/demo.

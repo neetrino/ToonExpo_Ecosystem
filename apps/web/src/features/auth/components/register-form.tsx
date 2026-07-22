@@ -64,8 +64,8 @@ export const RegisterForm = () => {
   const busy = isSubmitting || registerMutation.isPending;
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-5 sm:gap-6" noValidate>
-      <div className="grid gap-5 sm:grid-cols-2 sm:gap-4">
+    <form onSubmit={onSubmit} className="flex flex-col gap-3.5 sm:gap-4" noValidate>
+      <div className="grid gap-3.5 sm:grid-cols-2 sm:gap-3">
         <FormField
           id="register-first-name"
           label={t('fields.firstName')}
@@ -141,41 +141,43 @@ export const RegisterForm = () => {
         />
       </FormField>
 
-      <FormField
-        id="register-password"
-        label={t('fields.password')}
-        labelClassName={AUTH_LABEL_CLASS}
-        error={errors.password ? t('validation.password') : undefined}
-      >
-        <PasswordInput
+      <div className="grid gap-3.5 sm:grid-cols-2 sm:gap-3">
+        <FormField
           id="register-password"
-          autoComplete="new-password"
-          placeholder={t('register.placeholders.password')}
-          aria-invalid={Boolean(errors.password)}
-          className={AUTH_CONTROL_CLASS}
-          revealLabel={t('fields.showPassword')}
-          hideLabel={t('fields.hidePassword')}
-          {...register('password')}
-        />
-      </FormField>
+          label={t('fields.password')}
+          labelClassName={AUTH_LABEL_CLASS}
+          error={errors.password ? t('validation.password') : undefined}
+        >
+          <PasswordInput
+            id="register-password"
+            autoComplete="new-password"
+            placeholder={t('register.placeholders.password')}
+            aria-invalid={Boolean(errors.password)}
+            className={AUTH_CONTROL_CLASS}
+            revealLabel={t('fields.showPassword')}
+            hideLabel={t('fields.hidePassword')}
+            {...register('password')}
+          />
+        </FormField>
 
-      <FormField
-        id="register-confirm-password"
-        label={t('fields.confirmPassword')}
-        labelClassName={AUTH_LABEL_CLASS}
-        error={errors.confirmPassword ? t('validation.confirmPassword') : undefined}
-      >
-        <PasswordInput
+        <FormField
           id="register-confirm-password"
-          autoComplete="new-password"
-          placeholder={t('register.placeholders.confirmPassword')}
-          aria-invalid={Boolean(errors.confirmPassword)}
-          className={AUTH_CONTROL_CLASS}
-          revealLabel={t('fields.showPassword')}
-          hideLabel={t('fields.hidePassword')}
-          {...register('confirmPassword')}
-        />
-      </FormField>
+          label={t('fields.confirmPassword')}
+          labelClassName={AUTH_LABEL_CLASS}
+          error={errors.confirmPassword ? t('validation.confirmPassword') : undefined}
+        >
+          <PasswordInput
+            id="register-confirm-password"
+            autoComplete="new-password"
+            placeholder={t('register.placeholders.confirmPassword')}
+            aria-invalid={Boolean(errors.confirmPassword)}
+            className={AUTH_CONTROL_CLASS}
+            revealLabel={t('fields.showPassword')}
+            hideLabel={t('fields.hidePassword')}
+            {...register('confirmPassword')}
+          />
+        </FormField>
+      </div>
 
       {formError ? (
         <p role="alert" className="rounded-md bg-danger-soft px-3.5 py-2.5 text-sm text-danger">
