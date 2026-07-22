@@ -1000,6 +1000,7 @@
       },
       "detail": {
         "back": "← Companies",
+        "sheetTitle": "Company",
         "typeLabel": "Type",
         "save": "Save changes",
         "saving": "Saving…",

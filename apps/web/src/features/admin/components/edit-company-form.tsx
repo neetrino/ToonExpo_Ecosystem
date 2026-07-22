@@ -1,22 +1,23 @@
-"use client";
+'use client';
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import type { CompanyResponse } from "@toonexpo/contracts";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from '@hookform/resolvers/zod';
+import type { CompanyResponse } from '@toonexpo/contracts';
+import { useTranslations } from 'next-intl';
+import { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 
-import { COMPANY_STATUSES } from "@/features/admin/constants";
-import { useUpdateAdminCompanyMutation } from "@/features/admin/hooks/use-admin-companies";
+import { COMPANY_STATUSES } from '@/features/admin/constants';
+import { useUpdateAdminCompanyMutation } from '@/features/admin/hooks/use-admin-companies';
 import {
   updateCompanySchema,
   type UpdateCompanyFormValues,
-} from "@/features/admin/schemas/update-company.schema";
-import { MediaUploadField } from "@/features/media/components/media-upload-field";
-import { toNullableMediaId } from "@/features/media/schemas/media-fields.schema";
-import { Button } from "@/shared/ui/button";
-import { FormField } from "@/shared/ui/form-field";
-import { Input } from "@/shared/ui/input";
+} from '@/features/admin/schemas/update-company.schema';
+import { MediaUploadField } from '@/features/media/components/media-upload-field';
+import { toNullableMediaId } from '@/features/media/schemas/media-fields.schema';
+import { Button } from '@/shared/ui/button';
+import { FormField } from '@/shared/ui/form-field';
+import { Input } from '@/shared/ui/input';
+import { Select } from '@/shared/ui/select';
 
 type EditCompanyFormProps = {
   company: CompanyResponse;
@@ -26,7 +27,7 @@ type EditCompanyFormProps = {
  * Inline PATCH form for company name, description, and status.
  */
 export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
-  const t = useTranslations("Admin.companies");
+  const t = useTranslations('Admin.companies');
   const updateMutation = useUpdateAdminCompanyMutation(company.id);
   const [formError, setFormError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -40,9 +41,9 @@ export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
     resolver: zodResolver(updateCompanySchema),
     defaultValues: {
       name: company.name,
-      description: company.description ?? "",
+      description: company.description ?? '',
       status: company.status,
-      logoMediaId: company.logoMediaId ?? "",
+      logoMediaId: company.logoMediaId ?? '',
     },
   });
 
@@ -58,7 +59,7 @@ export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
       });
       setSuccess(true);
     } catch {
-      setFormError(t("errors.generic"));
+      setFormError(t('errors.generic'));
     }
   });
 
@@ -68,48 +69,53 @@ export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
     <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
       <FormField
         id="edit-company-name"
-        label={t("form.name")}
-        error={errors.name ? t("validation.name") : undefined}
+        label={t('form.name')}
+        error={errors.name ? t('validation.name') : undefined}
       >
-        <Input
-          id="edit-company-name"
-          aria-invalid={Boolean(errors.name)}
-          {...register("name")}
-        />
+        <Input id="edit-company-name" aria-invalid={Boolean(errors.name)} {...register('name')} />
       </FormField>
 
       <FormField
         id="edit-company-description"
-        label={t("form.description")}
-        error={
-          errors.description ? t("validation.description") : undefined
-        }
+        label={t('form.description')}
+        error={errors.description ? t('validation.description') : undefined}
       >
         <textarea
           id="edit-company-description"
           rows={3}
           className="w-full rounded-sm border border-border bg-background px-4 py-3 text-sm text-ink focus-visible:border-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/20"
-          {...register("description")}
+          {...register('description')}
         />
       </FormField>
 
       <FormField
         id="edit-company-status"
-        label={t("form.status")}
-        error={errors.status ? t("validation.status") : undefined}
+        label={t('form.status')}
+        error={errors.status ? t('validation.status') : undefined}
       >
-        <select
-          id="edit-company-status"
-          className="h-11 w-full rounded-sm border border-border bg-background px-4 text-sm text-ink focus-visible:border-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/20"
-          aria-invalid={Boolean(errors.status)}
-          {...register("status")}
-        >
-          {COMPANY_STATUSES.map((status) => (
-            <option key={status} value={status}>
-              {t(`statuses.${status}`)}
-            </option>
-          ))}
-        </select>
+        <Controller
+          name="status"
+          control={control}
+          render={({ field }) => (
+            <Select
+              id="edit-company-status"
+              name={field.name}
+              value={field.value}
+              aria-label={t('form.status')}
+              aria-invalid={Boolean(errors.status)}
+              onBlur={field.onBlur}
+              onChange={(event) => {
+                field.onChange(event.target.value);
+              }}
+            >
+              {COMPANY_STATUSES.map((status) => (
+                <option key={status} value={status}>
+                  {t(`statuses.${status}`)}
+                </option>
+              ))}
+            </Select>
+          )}
+        />
       </FormField>
 
       <Controller
@@ -118,7 +124,7 @@ export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
         render={({ field, fieldState }) => (
           <MediaUploadField
             id="edit-company-logo"
-            label={t("form.logoMedia")}
+            label={t('form.logoMedia')}
             context="admin"
             value={field.value}
             onChange={field.onChange}
@@ -129,7 +135,7 @@ export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
       />
 
       <p className="text-sm text-ink-secondary">
-        {t("detail.typeLabel")}: {t(`types.${company.type}`)}
+        {t('detail.typeLabel')}: {t(`types.${company.type}`)}
       </p>
 
       {formError ? (
@@ -140,12 +146,12 @@ export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
 
       {success ? (
         <p role="status" className="rounded-sm bg-surface px-3 py-2 text-sm text-success">
-          {t("detail.saveSuccess")}
+          {t('detail.saveSuccess')}
         </p>
       ) : null}
 
       <Button type="submit" variant="secondary" disabled={busy || !isDirty}>
-        {busy ? t("detail.saving") : t("detail.save")}
+        {busy ? t('detail.saving') : t('detail.save')}
       </Button>
     </form>
   );

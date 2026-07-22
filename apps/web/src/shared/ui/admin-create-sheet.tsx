@@ -10,6 +10,7 @@ type AdminCreateSheetProps = {
   title: string;
   description?: string | undefined;
   children: ReactNode;
+  headerActions?: ReactNode | undefined;
   /** `compact` ≈ 420px; `comfortable` ≈ 500px; `default` ≈ 50vw. */
   size?: 'compact' | 'comfortable' | 'default' | undefined;
 };
@@ -26,6 +27,7 @@ export const AdminCreateSheet = ({
   title,
   description,
   children,
+  headerActions,
   size = 'compact',
 }: AdminCreateSheetProps) => {
   return (
@@ -35,6 +37,7 @@ export const AdminCreateSheet = ({
       size={size}
       title={title.replace(LEADING_PLUS, '')}
       description={description}
+      headerActions={headerActions}
     >
       {children}
     </SideSheet>

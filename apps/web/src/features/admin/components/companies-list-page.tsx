@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 
 import { CompaniesTable } from '@/features/admin/components/companies-table';
+import { CompanyDetailSheet } from '@/features/admin/components/company-detail-sheet';
 import { CreateCompanySheet } from '@/features/admin/components/create-company-sheet';
 import { ADMIN_COMPANIES_DEFAULT_PAGE_SIZE } from '@/features/admin/constants';
 import { useAdminCompaniesQuery } from '@/features/admin/hooks/use-admin-companies';
@@ -21,7 +22,7 @@ const parsePage = (raw: string | null): number => {
 };
 
 /**
- * Admin companies list with pagination and New company side sheet.
+ * Admin companies list with pagination, create sheet, and company detail sheet.
  */
 export const CompaniesListPage = () => {
   const t = useTranslations('Admin.companies');
@@ -31,7 +32,8 @@ export const CompaniesListPage = () => {
   const page = parsePage(searchParams.get('page'));
   const pageSize = ADMIN_COMPANIES_DEFAULT_PAGE_SIZE;
   const query = useAdminCompaniesQuery(page, pageSize);
-  const [sheetOpen, setSheetOpen] = useState(false);
+  const [createSheetOpen, setCreateSheetOpen] = useState(false);
+  const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(null);
 
   const clearCreateParam = useCallback((): void => {
     if (searchParams.get('create') !== '1') {
@@ -45,13 +47,20 @@ export const CompaniesListPage = () => {
 
   useEffect(() => {
     if (searchParams.get('create') === '1') {
-      setSheetOpen(true);
+      setSelectedCompanyId(null);
+      setCreateSheetOpen(true);
     }
   }, [searchParams]);
 
-  const handleCloseSheet = (): void => {
-    setSheetOpen(false);
+  const handleCloseCreateSheet = (): void => {
+    setCreateSheetOpen(false);
     clearCreateParam();
+  };
+
+  const handleSelectCompany = (companyId: string): void => {
+    setCreateSheetOpen(false);
+    clearCreateParam();
+    setSelectedCompanyId(companyId);
   };
 
   if (query.isLoading) {
@@ -83,7 +92,10 @@ export const CompaniesListPage = () => {
         <button
           type="button"
           className="inline-flex h-9 items-center justify-center rounded-pill bg-cta-dark px-4 text-sm font-medium text-on-dark hover:bg-cta-dark/90"
-          onClick={() => setSheetOpen(true)}
+          onClick={() => {
+            setSelectedCompanyId(null);
+            setCreateSheetOpen(true);
+          }}
         >
           <AddActionLabel>{t('newCompany')}</AddActionLabel>
         </button>
@@ -92,7 +104,7 @@ export const CompaniesListPage = () => {
       {response.data.length === 0 ? (
         <p className="text-sm text-ink-secondary">{t('empty')}</p>
       ) : (
-        <CompaniesTable companies={response.data} />
+        <CompaniesTable companies={response.data} onSelectCompany={handleSelectCompany} />
       )}
 
       <CatalogPagination
@@ -106,7 +118,12 @@ export const CompaniesListPage = () => {
         ariaLabel={t('pagination.ariaLabel')}
       />
 
-      <CreateCompanySheet open={sheetOpen} onClose={handleCloseSheet} />
+      <CreateCompanySheet open={createSheetOpen} onClose={handleCloseCreateSheet} />
+      <CompanyDetailSheet
+        companyId={selectedCompanyId}
+        open={selectedCompanyId != null}
+        onClose={() => setSelectedCompanyId(null)}
+      />
     </div>
   );
 };
