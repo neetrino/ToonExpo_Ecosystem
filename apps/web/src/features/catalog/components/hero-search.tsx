@@ -3,10 +3,9 @@
 import { useTranslations } from 'next-intl';
 import { useState, type FormEvent } from 'react';
 
+import { HeroSearchTabs, type HeroSearchTab } from '@/features/catalog/components/hero-search-tabs';
 import { Link, useRouter } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
-
-type HeroSearchTab = 'buy' | 'rent' | 'newBuilds';
 
 type HeroSearchProps = {
   className?: string | undefined;
@@ -26,8 +25,6 @@ const PRICE_OPTIONS = [
 const BED_OPTIONS = [1, 2, 3, 4] as const;
 
 const POPULAR_CITY_KEYS = ['yerevan', 'gyumri', 'vanadzor', 'dilijan', 'tsaghkadzor'] as const;
-
-const TAB_KEYS: readonly HeroSearchTab[] = ['buy', 'rent', 'newBuilds'];
 
 /**
  * Marketplace search card — Buy / Rent / New Builds tabs with location filters.
@@ -56,32 +53,16 @@ export const HeroSearch = ({ className }: HeroSearchProps) => {
           'ring-1 ring-header-border',
         )}
       >
-        <div
-          className="flex overflow-x-auto border-b border-header-border [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-          role="tablist"
-          aria-label={t('tabsLabel')}
-        >
-          {TAB_KEYS.map((key) => {
-            const isActive = tab === key;
-            return (
-              <button
-                key={key}
-                type="button"
-                role="tab"
-                aria-selected={isActive}
-                onClick={() => setTab(key)}
-                className={cn(
-                  'shrink-0 px-[clamp(0.85rem,0.6rem+0.8vw,1.25rem)] py-3 text-sm font-semibold transition-colors duration-[var(--duration-fast)]',
-                  isActive
-                    ? 'border-b-2 border-brand-secondary text-brand-deep'
-                    : 'border-b-2 border-transparent text-header-muted hover:text-brand-deep',
-                )}
-              >
-                {t(`tabs.${key}`)}
-              </button>
-            );
-          })}
-        </div>
+        <HeroSearchTabs
+          activeTab={tab}
+          listLabel={t('tabsLabel')}
+          labels={{
+            buy: t('tabs.buy'),
+            rent: t('tabs.rent'),
+            newBuilds: t('tabs.newBuilds'),
+          }}
+          onChange={setTab}
+        />
 
         <div className="grid grid-cols-1 gap-2 p-3 lg:grid-cols-[1.5fr_1fr_1fr_auto] lg:items-center">
           <label className="flex min-w-0 flex-col gap-1 px-3 py-2">
@@ -160,8 +141,9 @@ export const HeroSearch = ({ className }: HeroSearchProps) => {
                 'inline-flex h-7 cursor-pointer items-center rounded-pill px-3',
                 'bg-white/80 text-xs font-medium leading-4 text-ink-navy',
                 'ring-1 ring-header-border backdrop-blur-[6px]',
-                'transition-colors duration-[var(--duration-fast)]',
-                'hover:bg-white hover:ring-brand/30',
+                'transition-[background-color,color,box-shadow,transform] duration-[var(--duration-slow)] ease-[var(--ease-out-premium)]',
+                'hover:bg-white hover:text-brand-deep hover:shadow-[0_0_0_1px_rgb(26_143_152/0.35),0_2px_8px_rgb(14_15_20/0.06)]',
+                'active:scale-[0.98]',
               )}
             >
               {city}
