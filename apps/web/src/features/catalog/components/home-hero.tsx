@@ -15,8 +15,8 @@ export const HomeHero = async () => {
   const t = await getTranslations('HomePage');
 
   return (
-    <section className="relative isolate flex min-h-fluid-screen flex-col overflow-x-clip bg-canvas">
-      <div className="absolute inset-0 -z-10" aria-hidden>
+    <section className="relative isolate flex min-h-fluid-screen flex-col bg-canvas">
+      <div className="absolute inset-0 -z-10 overflow-x-clip" aria-hidden>
         <Image
           src={HERO_IMAGE_SRC}
           alt=""

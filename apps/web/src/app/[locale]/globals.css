@@ -396,7 +396,6 @@
       display: flex;
       justify-content: center;
       align-items: stretch;
-      overflow-x: clip;
     }
 
     .desktop-fluid-stage {

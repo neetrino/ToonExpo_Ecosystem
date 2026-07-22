@@ -22,6 +22,9 @@ const LOCALE_FULL: Record<string, string> = {
   en: 'English',
 };
 
+/** Keeps the menu open while the pointer moves from trigger to panel. */
+const HOVER_CLOSE_DELAY_MS = 120;
+
 type LocaleSwitcherProps = {
   /** Visual tone for light surfaces vs dark chrome (footer / hero). */
   tone?: 'light' | 'dark' | undefined;
@@ -29,7 +32,7 @@ type LocaleSwitcherProps = {
 
 /**
  * Compact language control — Figma header: plain `EN` + chevron (no pill).
- * Locale changes via soft client navigation (no full document refresh).
+ * Opens on hover (desktop); click still toggles for touch / keyboard.
  */
 export const LocaleSwitcher = ({ tone = 'light' }: LocaleSwitcherProps) => {
   const t = useTranslations('HomePage');
@@ -42,13 +45,40 @@ export const LocaleSwitcher = ({ tone = 'light' }: LocaleSwitcherProps) => {
   const [isPending, startTransition] = useTransition();
   const [optimisticLocale, setOptimisticLocale] = useOptimistic(locale);
   const rootRef = useRef<HTMLDivElement>(null);
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const listId = useId();
   const isDark = tone === 'dark';
   const displayLocale = optimisticLocale;
 
+  const clearCloseTimer = (): void => {
+    if (closeTimerRef.current == null) {
+      return;
+    }
+    clearTimeout(closeTimerRef.current);
+    closeTimerRef.current = null;
+  };
+
+  const openMenu = (): void => {
+    clearCloseTimer();
+    setOpen(true);
+  };
+
+  const scheduleCloseMenu = (): void => {
+    clearCloseTimer();
+    closeTimerRef.current = setTimeout(() => {
+      setOpen(false);
+      closeTimerRef.current = null;
+    }, HOVER_CLOSE_DELAY_MS);
+  };
+
   useEffect(() => {
     setOpen(false);
+    clearCloseTimer();
   }, [pathname, locale]);
+
+  useEffect(() => {
+    return () => clearCloseTimer();
+  }, []);
 
   useEffect(() => {
     if (!open) {
@@ -95,7 +125,12 @@ export const LocaleSwitcher = ({ tone = 'light' }: LocaleSwitcherProps) => {
   };
 
   return (
-    <div ref={rootRef} className="relative">
+    <div
+      ref={rootRef}
+      className="relative"
+      onMouseEnter={openMenu}
+      onMouseLeave={scheduleCloseMenu}
+    >
       <button
         type="button"
         className={cn(
@@ -111,6 +146,7 @@ export const LocaleSwitcher = ({ tone = 'light' }: LocaleSwitcherProps) => {
         aria-busy={isPending}
         disabled={isPending}
         onClick={() => setOpen((value) => !value)}
+        onFocus={openMenu}
       >
         <span>{LOCALE_CODE[displayLocale] ?? displayLocale.toUpperCase()}</span>
         <ChevronDown

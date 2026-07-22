@@ -6,6 +6,7 @@ import { useState, type FormEvent } from 'react';
 import { HeroSearchTabs, type HeroSearchTab } from '@/features/catalog/components/hero-search-tabs';
 import { Link, useRouter } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
+import { ListboxSelect } from '@/shared/ui/listbox-select';
 
 type HeroSearchProps = {
   className?: string | undefined;
@@ -38,6 +39,16 @@ export const HeroSearch = ({ className }: HeroSearchProps) => {
   const [priceKey, setPriceKey] = useState<string>('price500to2m');
   const [rooms, setRooms] = useState(DEFAULT_ROOMS);
 
+  const priceOptions = PRICE_OPTIONS.map((option) => ({
+    value: option.labelKey,
+    label: t(option.labelKey),
+  }));
+
+  const bedOptions = BED_OPTIONS.map((count) => ({
+    value: String(count),
+    label: t('bedsValue', { count }),
+  }));
+
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     router.push(buildProjectsHref(location, priceKey, rooms, tab));
@@ -48,7 +59,7 @@ export const HeroSearch = ({ className }: HeroSearchProps) => {
       <form
         onSubmit={onSubmit}
         className={cn(
-          'overflow-hidden rounded-[20px] bg-surface-elevated p-2',
+          'rounded-[20px] bg-surface-elevated p-2',
           'shadow-[0_20px_25px_-5px_rgb(9_43_68/0.05),0_8px_10px_-6px_rgb(9_43_68/0.05)]',
           'ring-1 ring-header-border',
         )}
@@ -79,41 +90,31 @@ export const HeroSearch = ({ className }: HeroSearchProps) => {
             />
           </label>
 
-          <label className="flex min-w-0 flex-col gap-1 border-t border-header-border px-3 py-2 lg:border-t-0 lg:border-l">
+          <div className="flex min-w-0 flex-col gap-1 border-t border-header-border px-3 py-2 lg:border-t-0 lg:border-l">
             <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-header-muted">
               {t('priceLabel')}
             </span>
-            <select
+            <ListboxSelect
               name="price"
+              aria-label={t('priceLabel')}
               value={priceKey}
-              onChange={(event) => setPriceKey(event.target.value)}
-              className="w-full min-w-0 cursor-pointer appearance-none border-none bg-transparent p-0 text-sm font-medium text-ink-navy outline-none"
-            >
-              {PRICE_OPTIONS.map((option) => (
-                <option key={option.labelKey} value={option.labelKey}>
-                  {t(option.labelKey)}
-                </option>
-              ))}
-            </select>
-          </label>
+              options={priceOptions}
+              onChange={setPriceKey}
+            />
+          </div>
 
-          <label className="flex min-w-0 flex-col gap-1 border-t border-header-border px-3 py-2 lg:border-t-0 lg:border-l">
+          <div className="flex min-w-0 flex-col gap-1 border-t border-header-border px-3 py-2 lg:border-t-0 lg:border-l">
             <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-header-muted">
               {t('bedsLabel')}
             </span>
-            <select
+            <ListboxSelect
               name="rooms"
-              value={rooms}
-              onChange={(event) => setRooms(Number.parseInt(event.target.value, 10))}
-              className="w-full min-w-0 cursor-pointer appearance-none border-none bg-transparent p-0 text-sm font-medium text-ink-navy outline-none"
-            >
-              {BED_OPTIONS.map((count) => (
-                <option key={count} value={count}>
-                  {t('bedsValue', { count })}
-                </option>
-              ))}
-            </select>
-          </label>
+              aria-label={t('bedsLabel')}
+              value={String(rooms)}
+              options={bedOptions}
+              onChange={(next) => setRooms(Number.parseInt(next, 10))}
+            />
+          </div>
 
           <button
             type="submit"
