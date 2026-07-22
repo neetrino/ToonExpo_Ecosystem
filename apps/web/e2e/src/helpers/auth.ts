@@ -12,7 +12,7 @@ export const loginAs = async (
 ): Promise<void> => {
   await page.goto('/hy/auth/login');
   await page.getByLabel('Էլ․ փոստ').fill(email);
-  await page.getByLabel('Գաղտնաբառ').fill(password);
+  await page.getByLabel('Գաղտնաբառ', { exact: true }).fill(password);
   await page.locator('form').getByRole('button', { name: 'Մուտք' }).click();
   await page.waitForURL((url) => !url.pathname.includes('/auth/login'));
 };
