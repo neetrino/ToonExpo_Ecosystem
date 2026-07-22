@@ -4,13 +4,14 @@ import { Menu, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
-import { LogoutButton } from '@/features/auth/components/logout-button';
-import { useMeQuery } from '@/features/auth/hooks/use-auth';
-import { Link, usePathname } from '@/i18n/navigation';
+import { useLogoutMutation, useMeQuery } from '@/features/auth/hooks/use-auth';
+import { Link, usePathname, useRouter } from '@/i18n/navigation';
 import { BrandLogo } from '@/shared/ui/brand-logo';
 import { cn } from '@/shared/ui/cn';
 import { IconButton } from '@/shared/ui/icon-button';
 import { LocaleSwitcher } from '@/shared/ui/locale-switcher';
+import { ProfileMenu } from '@/shared/ui/profile-menu';
+import { SiteHeaderMobileNav } from '@/shared/ui/site-header-mobile-nav';
 
 type SiteHeaderProps = {
   className?: string | undefined;
@@ -46,7 +47,9 @@ const HEADER_SPACER_CLASS = 'h-[4.5rem]';
 export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) => {
   const t = useTranslations('Nav');
   const pathname = usePathname();
+  const router = useRouter();
   const { data: user, isLoading, isFetching } = useMeQuery();
+  const logoutMutation = useLogoutMutation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [showPill, setShowPill] = useState(false);
   const [authReady, setAuthReady] = useState(false);
@@ -96,7 +99,6 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
     user?.accountType === 'company_member' && user.companyType === 'builder'
       ? ('/builder' as const)
       : ('/auth/register' as const);
-  const signInHref = user ? settingsHref : '/auth/login';
   const contentInsetStyle = {
     transform: pillVisible ? `translateX(${PILL_CONTENT_INSET_PX}px)` : 'translateX(0)',
     transitionDuration: `${PILL_APPEAR_MS}ms`,
@@ -104,6 +106,13 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
   const actionsInsetStyle = {
     transform: pillVisible ? `translateX(-${PILL_CONTENT_INSET_PX}px)` : 'translateX(0)',
     transitionDuration: `${PILL_APPEAR_MS}ms`,
+  };
+
+  const handleMobileLogout = (): void => {
+    void logoutMutation.mutateAsync().then(() => {
+      setMenuOpen(false);
+      router.push('/auth/login');
+    });
   };
 
   return (
@@ -190,49 +199,6 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
             >
               <LocaleSwitcher tone={isOverHero ? 'dark' : 'light'} />
 
-              {showAuthLoading ? (
-                <span
-                  className="hidden h-5 w-14 animate-pulse rounded-sm bg-current/10 sm:inline-block"
-                  aria-hidden
-                />
-              ) : user ? (
-                <div className="hidden items-center gap-3 sm:flex">
-                  <Link
-                    href={settingsHref}
-                    className={cn(
-                      'max-w-36 truncate text-sm font-medium leading-5',
-                      'transition-colors ease-out',
-                      isOverHero
-                        ? 'text-on-dark/80 hover:text-on-dark'
-                        : 'text-header-muted hover:text-brand-deep',
-                    )}
-                    style={{ transitionDuration: `${PILL_APPEAR_MS}ms` }}
-                  >
-                    {user.name}
-                  </Link>
-                  <LogoutButton
-                    className={cn(
-                      'rounded-full',
-                      isOverHero && 'border-transparent text-on-dark hover:bg-white/10',
-                    )}
-                  />
-                </div>
-              ) : (
-                <Link
-                  href={signInHref}
-                  className={cn(
-                    'hidden text-sm font-medium leading-5 sm:inline',
-                    'transition-colors ease-out',
-                    isOverHero
-                      ? 'text-on-dark/80 hover:text-on-dark'
-                      : 'text-header-muted hover:text-brand-deep',
-                  )}
-                  style={{ transitionDuration: `${PILL_APPEAR_MS}ms` }}
-                >
-                  {t('login')}
-                </Link>
-              )}
-
               <Link
                 href={listPropertyHref}
                 className={cn(
@@ -247,6 +213,17 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
               >
                 {t('listProperty')}
               </Link>
+
+              {showAuthLoading ? (
+                <span className="size-10 animate-pulse rounded-full bg-current/10" aria-hidden />
+              ) : (
+                <ProfileMenu
+                  userName={user?.name}
+                  userEmail={user?.email}
+                  accountType={user?.accountType}
+                  tone={isOverHero ? 'dark' : 'light'}
+                />
+              )}
 
               <IconButton
                 label={t('menu')}
@@ -271,67 +248,17 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
           </div>
 
           {menuOpen ? (
-            <div
-              id="mobile-nav"
-              className={cn(
-                'relative z-10 mt-1 rounded-[1.25rem] border border-header-border',
-                'bg-surface-elevated px-1 py-3 text-ink shadow-md lg:hidden',
-              )}
-            >
-              <nav className="flex flex-col gap-1 text-sm" aria-label={t('main')}>
-                {NAV_HREFS.map((item) => {
-                  const active = isNavActive(pathname, item.href);
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      className={cn(
-                        'rounded-sm px-3 py-3 font-medium transition-colors',
-                        active ? 'bg-brand-soft text-brand-deep' : 'text-ink hover:bg-surface',
-                      )}
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      {t(item.key)}
-                    </Link>
-                  );
-                })}
-                {!user ? (
-                  <>
-                    <Link
-                      href="/auth/login"
-                      className="rounded-sm px-3 py-3 font-medium text-ink hover:bg-surface"
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      {t('login')}
-                    </Link>
-                    <Link
-                      href="/auth/register"
-                      className="rounded-sm px-3 py-3 font-medium text-brand-deep hover:bg-brand-soft"
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      {t('listProperty')}
-                    </Link>
-                  </>
-                ) : (
-                  <>
-                    <Link
-                      href={settingsHref}
-                      className="rounded-sm px-3 py-3 font-medium text-ink hover:bg-surface"
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      {user.name}
-                    </Link>
-                    <Link
-                      href={listPropertyHref}
-                      className="rounded-sm px-3 py-3 font-medium text-brand-deep hover:bg-brand-soft"
-                      onClick={() => setMenuOpen(false)}
-                    >
-                      {t('listProperty')}
-                    </Link>
-                  </>
-                )}
-              </nav>
-            </div>
+            <SiteHeaderMobileNav
+              navItems={NAV_HREFS}
+              pathname={pathname}
+              user={user}
+              settingsHref={settingsHref}
+              listPropertyHref={listPropertyHref}
+              logoutPending={logoutMutation.isPending}
+              onClose={() => setMenuOpen(false)}
+              onLogout={handleMobileLogout}
+              isNavActive={isNavActive}
+            />
           ) : null}
         </div>
       </header>
