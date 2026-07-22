@@ -3,7 +3,7 @@
  * Seeds the DB (unless SKIP_E2E_SEED=1), then runs Playwright.
  * Seed must happen before Playwright boots webServers (API holds DB connections).
  * Playwright starts webServer before globalSetup — seeding there races the API.
- * Retries live in `packages/db/prisma/seed.ts` only (do not nest another retry loop here).
+ * Retries live in the database package seed script only (do not nest another retry loop here).
  */
 import { spawn } from 'node:child_process';
 import console from 'node:console';

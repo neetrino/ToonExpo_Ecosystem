@@ -1,6 +1,6 @@
 /**
- * Stable local/dev seed contract shared by `packages/db` seed and Playwright smoke.
- * Keep IDs/emails in sync with catalog plans in `packages/db/prisma/seed-data.ts`.
+ * Stable local/dev seed contract shared by database seed and Playwright smoke.
+ * Keep IDs/emails in sync with the catalog plans in the db package seed-data module.
  */
 
 /** Dev-only fallback when `SEED_ADMIN_PASSWORD` is unset. Never use in production. */
