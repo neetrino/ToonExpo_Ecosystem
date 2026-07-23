@@ -877,6 +877,9 @@
       "analytics": "Analytics",
       "companies": "Companies",
       "projects": "Projects",
+      "buildings": "Building",
+      "floors": "Floor",
+      "apartments": "Apartment",
       "partners": "Partners",
       "bankOffers": "Bank offers",
       "serviceProviders": "Service providers",
@@ -1058,6 +1061,42 @@
         "previous": "Previous",
         "next": "Next",
         "ariaLabel": "Pagination"
+      }
+    },
+    "buildings": {
+      "title": "Buildings",
+      "subtitle": "{count, plural, =0 {No buildings} one {# building} other {# buildings}}",
+      "empty": "No buildings yet.",
+      "loading": "Loading buildings…",
+      "error": "Could not load buildings. Try again.",
+      "columns": {
+        "floors": "Floors",
+        "apartments": "Apartments"
+      }
+    },
+    "floors": {
+      "title": "Floors",
+      "subtitle": "{count, plural, =0 {No floors} one {# floor} other {# floors}}",
+      "empty": "No floors yet.",
+      "loading": "Loading floors…",
+      "error": "Could not load floors. Try again.",
+      "floorNumber": "Floor {number}",
+      "columns": {
+        "apartments": "Apartments"
+      }
+    },
+    "apartments": {
+      "title": "Apartments",
+      "subtitle": "{count, plural, =0 {No apartments} one {# apartment} other {# apartments}}",
+      "empty": "No apartments yet.",
+      "loading": "Loading apartments…",
+      "error": "Could not load apartments. Try again.",
+      "unit": "Apt {number}",
+      "floorNumber": "Floor {number}",
+      "sales": {
+        "available": "Available",
+        "reserved": "Reserved",
+        "sold": "Sold"
       }
     },
     "partners": {

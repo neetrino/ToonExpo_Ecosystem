@@ -877,6 +877,9 @@
       "analytics": "Վերլուծություն",
       "companies": "Ընկերություններ",
       "projects": "Նախագծեր",
+      "buildings": "Շենք",
+      "floors": "Հարկ",
+      "apartments": "Բնակարան",
       "partners": "Գործընկերներ",
       "bankOffers": "Բանկային առաջարկներ",
       "serviceProviders": "Ծառայություն մատուցողներ",
@@ -1058,6 +1061,42 @@
         "previous": "Նախորդ",
         "next": "Հաջորդ",
         "ariaLabel": "Էջավորում"
+      }
+    },
+    "buildings": {
+      "title": "Շենքեր",
+      "subtitle": "{count, plural, =0 {Շենքեր չկան} one {# շենք} other {# շենք}}",
+      "empty": "Դեռ շենքեր չկան։",
+      "loading": "Բեռնվում է…",
+      "error": "Չհաջողվեց բեռնել շենքերը։ Կրկին փորձեք։",
+      "columns": {
+        "floors": "Հարկեր",
+        "apartments": "Բնակարաններ"
+      }
+    },
+    "floors": {
+      "title": "Հարկեր",
+      "subtitle": "{count, plural, =0 {Հարկեր չկան} one {# հարկ} other {# հարկ}}",
+      "empty": "Դեռ հարկեր չկան։",
+      "loading": "Բեռնվում է…",
+      "error": "Չհաջողվեց բեռնել հարկերը։ Կրկին փորձեք։",
+      "floorNumber": "Հարկ {number}",
+      "columns": {
+        "apartments": "Բնակարաններ"
+      }
+    },
+    "apartments": {
+      "title": "Բնակարաններ",
+      "subtitle": "{count, plural, =0 {Բնակարաններ չկան} one {# բնակարան} other {# բնակարան}}",
+      "empty": "Դեռ բնակարաններ չկան։",
+      "loading": "Բեռնվում է…",
+      "error": "Չհաջողվեց բեռնել բնակարանները։ Կրկին փորձեք։",
+      "unit": "Բն. {number}",
+      "floorNumber": "Հարկ {number}",
+      "sales": {
+        "available": "Հասանելի",
+        "reserved": "Ամրագրված",
+        "sold": "Վաճառված"
       }
     },
     "partners": {

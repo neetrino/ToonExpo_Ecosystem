@@ -3,7 +3,7 @@
  */
 
 import type { CompanyMemberRole, CompanyMemberStatus, CompanyType, UserResponse } from './auth.js';
-import type { PaginatedResponse, PublicationStatus } from './catalog.js';
+import type { ApartmentSalesStatus, PaginatedResponse, PublicationStatus } from './catalog.js';
 
 export type CompanyStatus = 'active' | 'inactive' | 'pending';
 
@@ -160,5 +160,65 @@ export type AdminProjectListResponse = PaginatedResponse<AdminProjectListItem>;
 export type AdminProjectScope = {
   builderCompanyId: string;
 };
+
+/**
+ * Cross-company building row for the admin buildings hub.
+ */
+export type AdminBuildingListItem = {
+  id: string;
+  name: string;
+  publicationStatus: PublicationStatus;
+  createdAt: string;
+  projectId: string;
+  projectName: string;
+  builderCompanyId: string;
+  companyName: string;
+  floorsCount: number;
+  apartmentsCount: number;
+};
+
+export type AdminBuildingListResponse = PaginatedResponse<AdminBuildingListItem>;
+
+/**
+ * Cross-company floor row for the admin floors hub.
+ */
+export type AdminFloorListItem = {
+  id: string;
+  number: number;
+  name: string | null;
+  displayLabel: string | null;
+  publicationStatus: PublicationStatus;
+  createdAt: string;
+  buildingId: string;
+  buildingName: string;
+  projectId: string;
+  projectName: string;
+  builderCompanyId: string;
+  companyName: string;
+  apartmentsCount: number;
+};
+
+export type AdminFloorListResponse = PaginatedResponse<AdminFloorListItem>;
+
+/**
+ * Cross-company apartment row for the admin apartments hub.
+ */
+export type AdminApartmentListItem = {
+  id: string;
+  number: string;
+  publicationStatus: PublicationStatus;
+  salesStatus: ApartmentSalesStatus;
+  createdAt: string;
+  floorId: string;
+  floorNumber: number;
+  buildingId: string;
+  buildingName: string;
+  projectId: string;
+  projectName: string;
+  builderCompanyId: string;
+  companyName: string;
+};
+
+export type AdminApartmentListResponse = PaginatedResponse<AdminApartmentListItem>;
 
 export type CompanyMemberListResponse = PaginatedResponse<CompanyMemberResponse>;

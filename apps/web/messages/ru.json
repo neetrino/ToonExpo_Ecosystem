@@ -877,6 +877,9 @@
       "analytics": "Аналитика",
       "companies": "Компании",
       "projects": "Проекты",
+      "buildings": "Здание",
+      "floors": "Этаж",
+      "apartments": "Квартира",
       "readiness": "Готовность",
       "readinessCategories": "Категории",
       "partners": "Партнёры",
@@ -1058,6 +1061,42 @@
         "previous": "Назад",
         "next": "Вперёд",
         "ariaLabel": "Пагинация"
+      }
+    },
+    "buildings": {
+      "title": "Здания",
+      "subtitle": "{count, plural, =0 {Нет зданий} one {# здание} few {# здания} other {# зданий}}",
+      "empty": "Зданий пока нет.",
+      "loading": "Загрузка зданий…",
+      "error": "Не удалось загрузить здания. Попробуйте ещё раз.",
+      "columns": {
+        "floors": "Этажи",
+        "apartments": "Квартиры"
+      }
+    },
+    "floors": {
+      "title": "Этажи",
+      "subtitle": "{count, plural, =0 {Нет этажей} one {# этаж} few {# этажа} other {# этажей}}",
+      "empty": "Этажей пока нет.",
+      "loading": "Загрузка этажей…",
+      "error": "Не удалось загрузить этажи. Попробуйте ещё раз.",
+      "floorNumber": "Этаж {number}",
+      "columns": {
+        "apartments": "Квартиры"
+      }
+    },
+    "apartments": {
+      "title": "Квартиры",
+      "subtitle": "{count, plural, =0 {Нет квартир} one {# квартира} few {# квартиры} other {# квартир}}",
+      "empty": "Квартир пока нет.",
+      "loading": "Загрузка квартир…",
+      "error": "Не удалось загрузить квартиры. Попробуйте ещё раз.",
+      "unit": "Кв. {number}",
+      "floorNumber": "Этаж {number}",
+      "sales": {
+        "available": "Доступна",
+        "reserved": "Зарезервирована",
+        "sold": "Продана"
       }
     },
     "readiness": {

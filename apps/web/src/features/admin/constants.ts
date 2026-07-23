@@ -27,6 +27,28 @@ export const adminProjectsQueryKey = (params: {
 export const adminProjectScopeQueryKey = (projectId: string) =>
   [...ADMIN_PROJECTS_QUERY_KEY, projectId, 'scope'] as const;
 
+export const ADMIN_BUILDINGS_QUERY_KEY = ['admin', 'buildings'] as const;
+export const ADMIN_FLOORS_QUERY_KEY = ['admin', 'floors'] as const;
+export const ADMIN_APARTMENTS_QUERY_KEY = ['admin', 'apartments'] as const;
+
+export const adminBuildingsQueryKey = (params: {
+  page: number;
+  pageSize: number;
+  companyId?: string;
+}) => [...ADMIN_BUILDINGS_QUERY_KEY, params] as const;
+
+export const adminFloorsQueryKey = (params: {
+  page: number;
+  pageSize: number;
+  companyId?: string;
+}) => [...ADMIN_FLOORS_QUERY_KEY, params] as const;
+
+export const adminApartmentsQueryKey = (params: {
+  page: number;
+  pageSize: number;
+  companyId?: string;
+}) => [...ADMIN_APARTMENTS_QUERY_KEY, params] as const;
+
 export const ADMIN_READINESS_CATEGORIES_QUERY_KEY = ['admin', 'readiness', 'categories'] as const;
 
 export const ADMIN_READINESS_ASSESSMENTS_QUERY_KEY = ['admin', 'readiness', 'assessments'] as const;
