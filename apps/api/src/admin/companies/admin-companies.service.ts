@@ -1,13 +1,10 @@
-import {
-  Injectable,
-  NotFoundException,
-} from "@nestjs/common";
+import { Injectable, NotFoundException } from '@nestjs/common';
 import type {
   AdminCompanyProjectListResponse,
   CompanyListResponse,
   CompanyResponse,
   ProvisionCompanyResponse,
-} from "@toonexpo/contracts";
+} from '@toonexpo/contracts';
 import {
   CompanyMemberRole,
   CompanyMemberStatus,
@@ -15,13 +12,13 @@ import {
   CompanyStatus,
   CompanyType,
   UserStatus,
-} from "@toonexpo/db";
+} from '@toonexpo/db';
 
-import { resolveOptionalCompanyLogoMediaId } from "../../media/utils/media-ownership.js";
-import { toUserResponse } from "../../auth/mappers/user.mapper.js";
-import { toCompanyResponse } from "../../companies/mappers/company.mapper.js";
-import { CompanyProvisioningService } from "../../company/provisioning/company-provisioning.service.js";
-import { PrismaService } from "../../prisma/prisma.service.js";
+import { resolveOptionalCompanyLogoMediaId } from '../../media/utils/media-ownership.js';
+import { toUserResponse } from '../../auth/mappers/user.mapper.js';
+import { toCompanyResponse } from '../../companies/mappers/company.mapper.js';
+import { CompanyProvisioningService } from '../../company/provisioning/company-provisioning.service.js';
+import { PrismaService } from '../../prisma/prisma.service.js';
 
 type CreateCompanyInput = {
   name: string;
@@ -81,9 +78,10 @@ export class AdminCompaniesService {
     const [total, rows] = await this.prisma.db.$transaction([
       this.prisma.db.company.count(),
       this.prisma.db.company.findMany({
-        orderBy: { createdAt: "desc" },
+        orderBy: { createdAt: 'desc' },
         skip,
         take: pageSize,
+        include: { logoMedia: { select: { id: true, fileUrl: true } } },
       }),
     ]);
 
@@ -104,7 +102,7 @@ export class AdminCompaniesService {
       include: { logoMedia: { select: { id: true, fileUrl: true } } },
     });
     if (!company) {
-      throw new NotFoundException("Company not found");
+      throw new NotFoundException('Company not found');
     }
     return toCompanyResponse(company);
   }
@@ -114,7 +112,7 @@ export class AdminCompaniesService {
 
     const projects = await this.prisma.db.project.findMany({
       where: { builderCompanyId: companyId },
-      orderBy: [{ updatedAt: "desc" }],
+      orderBy: [{ updatedAt: 'desc' }],
       select: {
         id: true,
         name: true,
@@ -135,11 +133,7 @@ export class AdminCompaniesService {
 
   async update(id: string, input: UpdateCompanyInput): Promise<CompanyResponse> {
     await this.getById(id);
-    const logoMediaId = await resolveOptionalCompanyLogoMediaId(
-      this.prisma,
-      input.logoMediaId,
-      id,
-    );
+    const logoMediaId = await resolveOptionalCompanyLogoMediaId(this.prisma, input.logoMediaId, id);
     const company = await this.prisma.db.company.update({
       where: { id },
       data: {
@@ -164,11 +158,11 @@ export class AdminCompaniesService {
         user: { status: UserStatus.invited },
       },
       include: { user: true },
-      orderBy: { createdAt: "asc" },
+      orderBy: { createdAt: 'asc' },
     });
 
     if (!membership) {
-      throw new NotFoundException("No invited company admin found");
+      throw new NotFoundException('No invited company admin found');
     }
 
     await this.provisioning.sendSetPasswordInvite({

@@ -7,7 +7,6 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { useLogoutMutation } from '@/features/auth/hooks/use-auth';
 import { Link, usePathname, useRouter } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
-import { DropdownPortal } from '@/shared/ui/dropdown-portal';
 
 /** Keeps the menu open while the pointer moves from trigger to panel. */
 const HOVER_CLOSE_DELAY_MS = 120;
@@ -26,6 +25,7 @@ type ProfileMenuProps = {
 /**
  * Header account control — Figma circular trigger.
  * Guests go to login; signed-in opens role links / Log out on hover (click on touch).
+ * Menu is `absolute` under the trigger so it inherits desktop `zoom` (Safari-safe).
  */
 export const ProfileMenu = ({
   userName,
@@ -42,7 +42,6 @@ export const ProfileMenu = ({
   const logoutMutation = useLogoutMutation();
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const menuId = useId();
@@ -127,6 +126,7 @@ export const ProfileMenu = ({
     return (
       <Link
         href="/auth/login"
+        prefetch
         aria-label={t('login')}
         title={t('login')}
         className={triggerClassName}
@@ -144,7 +144,6 @@ export const ProfileMenu = ({
       onMouseLeave={scheduleCloseMenu}
     >
       <button
-        ref={buttonRef}
         type="button"
         className={triggerClassName}
         aria-label={t('profileMenu')}
@@ -160,19 +159,16 @@ export const ProfileMenu = ({
         <LogIn className="size-5" aria-hidden />
       </button>
 
-      <DropdownPortal open={open} anchorRef={buttonRef} align="end">
+      {open ? (
         <div
           ref={menuRef}
           id={menuId}
           role="menu"
           aria-label={t('profileMenu')}
           className={cn(
-            'w-44 overflow-hidden rounded-[12px] border border-header-border',
-            'bg-surface-elevated py-1.5 text-ink shadow-md',
-            'animate-[locale-dropdown-in_var(--duration-base)_var(--ease-out-premium)]',
+            'absolute top-[calc(100%+8px)] right-0 z-[var(--z-dropdown)] w-44 overflow-hidden',
+            'rounded-[12px] border border-header-border bg-surface-elevated py-1.5 text-ink shadow-md',
           )}
-          onMouseEnter={openMenu}
-          onMouseLeave={scheduleCloseMenu}
         >
           {showAdmin ? (
             <Link
@@ -219,7 +215,7 @@ export const ProfileMenu = ({
             {logoutMutation.isPending ? tAuth('logout.submitting') : tAuth('logout.submit')}
           </button>
         </div>
-      </DropdownPortal>
+      ) : null}
     </div>
   );
 };

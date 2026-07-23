@@ -1,34 +1,24 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from "@nestjs/common";
-import type {
-  AdminPartnerDetail,
-  AdminPartnerListResponse,
-} from "@toonexpo/contracts";
-import {
-  PartnerCompanyStatus,
-  PublicationStatus,
-  type Prisma,
-} from "@toonexpo/db";
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import type { AdminPartnerDetail, AdminPartnerListResponse } from '@toonexpo/contracts';
+import { PartnerCompanyStatus, PublicationStatus, type Prisma } from '@toonexpo/db';
 
-import { WebRevalidationService } from "../../common/web-revalidation/web-revalidation.service.js";
-import { PrismaService } from "../../prisma/prisma.service.js";
-import { toAdminPartnerDetail, toAdminPartnerListItem } from "../mappers/partner.mapper.js";
+import { WebRevalidationService } from '../../common/web-revalidation/web-revalidation.service.js';
+import { PrismaService } from '../../prisma/prisma.service.js';
+import { toAdminPartnerDetail, toAdminPartnerListItem } from '../mappers/partner.mapper.js';
 import {
   assertPartnerCompatibleCompany,
   loadPartnerTranslationRows,
   partnerNotFound,
   resolvePartnerSlug,
-} from "../utils/partner-access.js";
-import { upsertPartnerProfileTranslations } from "../utils/partner-translations.util.js";
-import type { CreateAdminPartnerDto } from "./dto/admin-partner.dto.js";
-import type { ListAdminPartnersQueryDto } from "./dto/admin-partner.dto.js";
-import type { UpdateAdminPartnerDto } from "./dto/admin-partner.dto.js";
+} from '../utils/partner-access.js';
+import { upsertPartnerProfileTranslations } from '../utils/partner-translations.util.js';
+import type { CreateAdminPartnerDto } from './dto/admin-partner.dto.js';
+import type { ListAdminPartnersQueryDto } from './dto/admin-partner.dto.js';
+import type { UpdateAdminPartnerDto } from './dto/admin-partner.dto.js';
 
 const partnerOffersInclude = {
-  offers: { orderBy: [{ sortOrder: "asc" as const }, { createdAt: "asc" as const }] },
+  logoMedia: { select: { fileUrl: true } },
+  offers: { orderBy: [{ sortOrder: 'asc' as const }, { createdAt: 'asc' as const }] },
 } satisfies Prisma.PartnerCompanyInclude;
 
 @Injectable()
@@ -46,9 +36,10 @@ export class AdminPartnersService {
       this.prisma.db.partnerCompany.count({ where }),
       this.prisma.db.partnerCompany.findMany({
         where,
-        orderBy: [{ updatedAt: "desc" }],
+        orderBy: [{ updatedAt: 'desc' }],
         skip,
         take: query.pageSize,
+        include: { logoMedia: { select: { fileUrl: true } } },
       }),
     ]);
 
@@ -76,7 +67,7 @@ export class AdminPartnersService {
       where.publicationStatus = query.publicationStatus;
     }
     if (query.search?.trim()) {
-      where.name = { contains: query.search.trim(), mode: "insensitive" };
+      where.name = { contains: query.search.trim(), mode: 'insensitive' };
     }
 
     return where;
@@ -100,24 +91,17 @@ export class AdminPartnersService {
     return toAdminPartnerDetail(partner, partner.offers, translationRows);
   }
 
-  async create(
-    userId: string,
-    dto: CreateAdminPartnerDto,
-  ): Promise<AdminPartnerDetail> {
+  async create(userId: string, dto: CreateAdminPartnerDto): Promise<AdminPartnerDetail> {
     await assertPartnerCompatibleCompany(this.prisma.db, dto.companyId);
 
     const existing = await this.prisma.db.partnerCompany.findUnique({
       where: { companyId: dto.companyId },
     });
     if (existing) {
-      throw new ConflictException("Partner profile already exists for company");
+      throw new ConflictException('Partner profile already exists for company');
     }
 
-    const slug = await resolvePartnerSlug(
-      this.prisma.db,
-      dto.name,
-      dto.slug,
-    );
+    const slug = await resolvePartnerSlug(this.prisma.db, dto.name, dto.slug);
 
     const partner = await this.prisma.db.partnerCompany.create({
       data: {
@@ -130,15 +114,9 @@ export class AdminPartnersService {
         featured: dto.featured ?? false,
         ...(dto.logoMediaId !== undefined ? { logoMediaId: dto.logoMediaId } : {}),
         ...(dto.coverMediaId !== undefined ? { coverMediaId: dto.coverMediaId } : {}),
-        ...(dto.shortDescription !== undefined
-          ? { shortDescription: dto.shortDescription }
-          : {}),
-        ...(dto.fullDescription !== undefined
-          ? { fullDescription: dto.fullDescription }
-          : {}),
-        ...(dto.contacts !== undefined
-          ? { contacts: dto.contacts as Prisma.InputJsonValue }
-          : {}),
+        ...(dto.shortDescription !== undefined ? { shortDescription: dto.shortDescription } : {}),
+        ...(dto.fullDescription !== undefined ? { fullDescription: dto.fullDescription } : {}),
+        ...(dto.contacts !== undefined ? { contacts: dto.contacts as Prisma.InputJsonValue } : {}),
         ...(dto.website !== undefined ? { website: dto.website } : {}),
         ...(dto.socialLinks !== undefined
           ? { socialLinks: dto.socialLinks as Prisma.InputJsonValue }
@@ -147,17 +125,9 @@ export class AdminPartnersService {
       include: partnerOffersInclude,
     });
 
-    await upsertPartnerProfileTranslations(
-      this.prisma.db,
-      partner.id,
-      userId,
-      dto.translations,
-    );
+    await upsertPartnerProfileTranslations(this.prisma.db, partner.id, userId, dto.translations);
 
-    if (
-      (dto.publicationStatus ?? PublicationStatus.draft) ===
-      PublicationStatus.published
-    ) {
+    if ((dto.publicationStatus ?? PublicationStatus.draft) === PublicationStatus.published) {
       this.webRevalidation.revalidatePartners();
     }
 
@@ -173,7 +143,7 @@ export class AdminPartnersService {
 
     const slug =
       dto.slug !== undefined
-        ? await resolvePartnerSlug(this.prisma.db, dto.name ?? "partner", dto.slug, id)
+        ? await resolvePartnerSlug(this.prisma.db, dto.name ?? 'partner', dto.slug, id)
         : undefined;
 
     await this.prisma.db.partnerCompany.update({
@@ -184,15 +154,9 @@ export class AdminPartnersService {
         ...(slug !== undefined ? { slug } : {}),
         ...(dto.logoMediaId !== undefined ? { logoMediaId: dto.logoMediaId } : {}),
         ...(dto.coverMediaId !== undefined ? { coverMediaId: dto.coverMediaId } : {}),
-        ...(dto.shortDescription !== undefined
-          ? { shortDescription: dto.shortDescription }
-          : {}),
-        ...(dto.fullDescription !== undefined
-          ? { fullDescription: dto.fullDescription }
-          : {}),
-        ...(dto.contacts !== undefined
-          ? { contacts: dto.contacts as Prisma.InputJsonValue }
-          : {}),
+        ...(dto.shortDescription !== undefined ? { shortDescription: dto.shortDescription } : {}),
+        ...(dto.fullDescription !== undefined ? { fullDescription: dto.fullDescription } : {}),
+        ...(dto.contacts !== undefined ? { contacts: dto.contacts as Prisma.InputJsonValue } : {}),
         ...(dto.website !== undefined ? { website: dto.website } : {}),
         ...(dto.socialLinks !== undefined
           ? { socialLinks: dto.socialLinks as Prisma.InputJsonValue }
@@ -205,12 +169,7 @@ export class AdminPartnersService {
       },
     });
 
-    await upsertPartnerProfileTranslations(
-      this.prisma.db,
-      id,
-      userId,
-      dto.translations,
-    );
+    await upsertPartnerProfileTranslations(this.prisma.db, id, userId, dto.translations);
 
     if (dto.publicationStatus !== undefined) {
       this.webRevalidation.revalidatePartners();
@@ -224,7 +183,7 @@ export class AdminPartnersService {
       where: { id },
     });
     if (!partner) {
-      throw new NotFoundException("Partner profile not found");
+      throw new NotFoundException('Partner profile not found');
     }
     return partner;
   }

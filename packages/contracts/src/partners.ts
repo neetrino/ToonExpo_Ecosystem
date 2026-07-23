@@ -2,21 +2,21 @@
  * Partners / Participants contracts (admin, portal, public).
  */
 
-import type { PaginatedResponse, PublicationStatus } from "./catalog.js";
-import type { LocaleTextMap } from "./portal.js";
+import type { PaginatedResponse, PublicationStatus } from './catalog.js';
+import type { LocaleTextMap } from './portal.js';
 
 export type PartnerCompanyType =
-  | "bank"
-  | "it_company"
-  | "sponsor"
-  | "supplier"
-  | "insurance"
-  | "legal"
-  | "design_furniture"
-  | "service_company"
-  | "other";
+  | 'bank'
+  | 'it_company'
+  | 'sponsor'
+  | 'supplier'
+  | 'insurance'
+  | 'legal'
+  | 'design_furniture'
+  | 'service_company'
+  | 'other';
 
-export type PartnerCompanyStatus = "active" | "inactive";
+export type PartnerCompanyStatus = 'active' | 'inactive';
 
 export type PartnerContacts = {
   phone?: string;
@@ -56,6 +56,7 @@ export type AdminPartnerListItem = {
   status: PartnerCompanyStatus;
   publicationStatus: PublicationStatus;
   featured: boolean;
+  logoUrl: string | null;
   createdAt: string;
   updatedAt: string;
 };

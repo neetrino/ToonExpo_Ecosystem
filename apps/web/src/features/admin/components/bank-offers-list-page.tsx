@@ -1,10 +1,11 @@
 'use client';
 
 import type { BankOfferListItem, PublicationStatus } from '@toonexpo/contracts';
-import { SquarePen, Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 
+import { BankOffersCollection } from '@/features/admin/components/bank-offers-collection';
 import { BankOfferForm } from '@/features/admin/components/bank-offer-form';
 import {
   useAdminBankOffersQuery,
@@ -13,16 +14,17 @@ import {
   useUpdateBankOfferMutation,
 } from '@/features/admin/hooks/use-admin-bank-offers';
 import { useAdminPartnersQuery } from '@/features/admin/hooks/use-admin-partners';
-import { ADMIN_COMPANIES_MAX_PAGE_SIZE } from '@/features/admin/constants';
+import { ADMIN_COMPANIES_MAX_PAGE_SIZE, ADMIN_VIEW_MODE_KEYS } from '@/features/admin/constants';
 import { useAdminCompaniesQuery } from '@/features/admin/hooks/use-admin-companies';
 import { PARTNERS_DEFAULT_PAGE_SIZE } from '@/features/partners/constants';
-import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
+import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { AdminCreateSheet } from '@/shared/ui/admin-create-sheet';
 import { AdminDeleteModal } from '@/shared/ui/admin-delete-modal';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { Button } from '@/shared/ui/button';
 import { IconButton } from '@/shared/ui/icon-button';
 import { Select } from '@/shared/ui/select';
+import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
 /**
  * Admin bank offers list with filters, create/edit, and publish controls.
@@ -34,6 +36,7 @@ export const BankOffersListPage = () => {
   const [editing, setEditing] = useState<BankOfferListItem | null>(null);
   const [creating, setCreating] = useState(false);
   const [pendingDelete, setPendingDelete] = useState<BankOfferListItem | null>(null);
+  const { viewMode, setViewMode } = usePersistedViewMode(ADMIN_VIEW_MODE_KEYS.bankOffers);
 
   const offersQuery = useAdminBankOffersQuery(
     partnerFilter ? { partnerCompanyId: partnerFilter } : {},
@@ -90,17 +93,20 @@ export const BankOffersListPage = () => {
           <h1 className="text-xl font-semibold text-ink">{t('title')}</h1>
           <p className="text-sm text-ink-secondary">{t('subtitle')}</p>
         </div>
-        <Button
-          type="button"
-          size="sm"
-          variant="secondary"
-          onClick={() => {
-            setCreating(true);
-            setEditing(null);
-          }}
-        >
-          <AddActionLabel>{t('newOffer')}</AddActionLabel>
-        </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          <ViewModeToggle value={viewMode} onChange={setViewMode} />
+          <Button
+            type="button"
+            size="sm"
+            variant="secondary"
+            onClick={() => {
+              setCreating(true);
+              setEditing(null);
+            }}
+          >
+            <AddActionLabel>{t('newOffer')}</AddActionLabel>
+          </Button>
+        </div>
       </div>
 
       <div className="flex flex-wrap gap-3">
@@ -163,6 +169,21 @@ export const BankOffersListPage = () => {
           setEditing(null);
         }}
         title={editing ? t('editTitle', { title: editing.title }) : ''}
+        headerActions={
+          editing ? (
+            <IconButton
+              label={t('delete')}
+              size="sm"
+              className="text-danger hover:bg-danger-soft"
+              disabled={busy}
+              onClick={() => {
+                setPendingDelete(editing);
+              }}
+            >
+              <Trash2 className="size-4" strokeWidth={1.75} aria-hidden />
+            </IconButton>
+          ) : undefined
+        }
       >
         {editing ? (
           <BankOfferForm
@@ -184,61 +205,18 @@ export const BankOffersListPage = () => {
       {filteredOffers.length === 0 ? (
         <p className="text-sm text-ink-secondary">{t('empty')}</p>
       ) : (
-        <div className="overflow-x-auto rounded-sm border border-border">
-          <table className="w-full min-w-[48rem] border-collapse text-left text-sm">
-            <thead className="bg-surface text-xs uppercase tracking-wide text-ink-muted">
-              <tr>
-                <th className="px-3 py-2 text-left font-medium">{t('columns.title')}</th>
-                <th className="px-3 py-2 text-center font-medium">{t('columns.bank')}</th>
-                <th className="px-3 py-2 text-center font-medium">{t('columns.rate')}</th>
-                <th className="px-3 py-2 text-center font-medium">{t('columns.publication')}</th>
-                <th className="px-3 py-2 text-center font-medium">{t('columns.actions')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredOffers.map((offer) => (
-                <tr key={offer.id} className="border-t border-border">
-                  <td className="px-3 py-2.5 text-left font-medium text-ink">{offer.title}</td>
-                  <td className="px-3 py-2.5 text-center text-ink-secondary">
-                    {offer.partnerCompanyName ?? '—'}
-                  </td>
-                  <td className="px-3 py-2.5 text-center text-ink-secondary">{offer.rate}%</td>
-                  <td className="px-3 py-2.5">
-                    <div className="flex justify-center">
-                      <PublicationStatusBadge status={offer.publicationStatus} />
-                    </div>
-                  </td>
-                  <td className="px-3 py-2.5">
-                    <div className="flex items-center justify-center gap-1">
-                      <IconButton
-                        label={t('edit')}
-                        size="sm"
-                        className="text-cta-dark hover:bg-cta-dark/5"
-                        onClick={() => {
-                          setEditing(offer);
-                          setCreating(false);
-                        }}
-                      >
-                        <SquarePen className="size-4" strokeWidth={1.75} aria-hidden />
-                      </IconButton>
-                      <IconButton
-                        label={t('delete')}
-                        size="sm"
-                        className="text-danger hover:bg-danger-soft"
-                        disabled={busy}
-                        onClick={() => {
-                          setPendingDelete(offer);
-                        }}
-                      >
-                        <Trash2 className="size-4" strokeWidth={1.75} aria-hidden />
-                      </IconButton>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <BankOffersCollection
+          offers={filteredOffers}
+          viewMode={viewMode}
+          busy={busy}
+          onEdit={(offer) => {
+            setEditing(offer);
+            setCreating(false);
+          }}
+          onDelete={(offer) => {
+            setPendingDelete(offer);
+          }}
+        />
       )}
 
       <AdminDeleteModal
@@ -257,6 +235,7 @@ export const BankOffersListPage = () => {
           }
           void deleteMutation.mutateAsync(pendingDelete.id).then(() => {
             setPendingDelete(null);
+            setEditing(null);
           });
         }}
       />

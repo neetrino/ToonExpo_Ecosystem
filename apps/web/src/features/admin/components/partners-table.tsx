@@ -9,10 +9,14 @@ import {
   PublicationStatusBadge,
 } from '@/features/partners/components/partner-badges';
 import { PartnerTypeLabel } from '@/features/partners/components/partner-type-label';
+import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
+import { AdminListCardLogo } from '@/shared/ui/admin-list-card-logo';
+import { VIEW_MODE_CARDS, type ViewMode } from '@/shared/ui/view-mode';
 
 type PartnersTableProps = {
   partners: AdminPartnerListItem[];
   onSelectPartner: (partnerId: string) => void;
+  viewMode?: ViewMode | undefined;
 };
 
 const formatDate = (iso: string, locale: string): string => {
@@ -28,11 +32,42 @@ const formatDate = (iso: string, locale: string): string => {
 };
 
 /**
- * Dense partners table for the platform admin list.
+ * Partners collection as dense table or card grid for platform admin.
  */
-export const PartnersTable = ({ partners, onSelectPartner }: PartnersTableProps) => {
+export const PartnersTable = ({
+  partners,
+  onSelectPartner,
+  viewMode = VIEW_MODE_CARDS,
+}: PartnersTableProps) => {
   const t = useTranslations('Admin.partners');
   const locale = useLocale();
+
+  if (viewMode === VIEW_MODE_CARDS) {
+    return (
+      <AdminListCardGrid>
+        {partners.map((partner) => (
+          <button
+            key={partner.id}
+            type="button"
+            className="flex items-stretch gap-3 rounded-sm border border-border bg-background p-3 text-left transition-colors hover:bg-surface/60"
+            onClick={() => onSelectPartner(partner.id)}
+          >
+            <AdminListCardLogo name={partner.name} logoUrl={partner.logoUrl} size="match" />
+            <div className="flex min-w-0 flex-1 flex-col justify-center gap-1.5">
+              <span className="truncate font-medium text-ink">{partner.name}</span>
+              <PartnerTypeLabel type={partner.type} />
+              <p className="text-xs text-ink-muted">{formatDate(partner.updatedAt, locale)}</p>
+            </div>
+            <div className="flex shrink-0 flex-col items-end justify-center gap-1.5">
+              <FeaturedBadge featured={partner.featured} />
+              <PartnerStatusBadge status={partner.status} />
+              <PublicationStatusBadge status={partner.publicationStatus} />
+            </div>
+          </button>
+        ))}
+      </AdminListCardGrid>
+    );
+  }
 
   return (
     <div className="overflow-x-auto rounded-sm border border-border">
@@ -50,15 +85,18 @@ export const PartnersTable = ({ partners, onSelectPartner }: PartnersTableProps)
           {partners.map((partner) => (
             <tr key={partner.id} className="border-t border-border hover:bg-surface/60">
               <td className="px-3 py-2.5 text-left">
-                <div className="flex flex-wrap items-center gap-2">
-                  <button
-                    type="button"
-                    className="font-medium text-brand hover:underline"
-                    onClick={() => onSelectPartner(partner.id)}
-                  >
-                    {partner.name}
-                  </button>
-                  <FeaturedBadge featured={partner.featured} />
+                <div className="flex items-center gap-3">
+                  <AdminListCardLogo name={partner.name} logoUrl={partner.logoUrl} shape="circle" />
+                  <div className="flex min-w-0 flex-wrap items-center gap-2">
+                    <button
+                      type="button"
+                      className="font-medium text-brand hover:underline"
+                      onClick={() => onSelectPartner(partner.id)}
+                    >
+                      {partner.name}
+                    </button>
+                    <FeaturedBadge featured={partner.featured} />
+                  </div>
                 </div>
               </td>
               <td className="px-3 py-2.5 text-center text-ink-secondary">

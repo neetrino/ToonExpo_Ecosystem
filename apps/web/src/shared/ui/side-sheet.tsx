@@ -141,7 +141,7 @@ const SideSheetPanel = ({
           onClick={(event) => event.stopPropagation()}
         >
           <header className="shrink-0 border-b border-border px-5 py-4">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div className="min-w-0 flex-1">
                 <h2 id={titleId} className="text-lg font-semibold leading-tight text-ink">
                   {title}
@@ -150,7 +150,9 @@ const SideSheetPanel = ({
                   <p className="mt-1 text-sm text-ink-secondary">{description}</p>
                 ) : null}
               </div>
-              {headerActions ? <div className="shrink-0 sm:self-start">{headerActions}</div> : null}
+              {headerActions ? (
+                <div className="shrink-0 sm:self-center">{headerActions}</div>
+              ) : null}
             </div>
           </header>
 

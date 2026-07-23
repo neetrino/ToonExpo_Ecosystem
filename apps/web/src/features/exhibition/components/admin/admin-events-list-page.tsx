@@ -11,10 +11,13 @@ import {
   useCreateAdminEventMutation,
 } from '@/features/exhibition/hooks/use-exhibition';
 import type { EventFormValues } from '@/features/exhibition/schemas/exhibition.schema';
+import { ADMIN_VIEW_MODE_KEYS } from '@/features/admin/constants';
 import { usePathname, useRouter } from '@/i18n/navigation';
+import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { AdminCreateSheet } from '@/shared/ui/admin-create-sheet';
 import { Button } from '@/shared/ui/button';
+import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
 /**
  * Admin exhibition events list with create side sheet.
@@ -27,6 +30,7 @@ export const AdminEventsListPage = () => {
   const router = useRouter();
   const pathname = usePathname();
   const [sheetOpen, setSheetOpen] = useState(false);
+  const { viewMode, setViewMode } = usePersistedViewMode(ADMIN_VIEW_MODE_KEYS.events);
 
   const clearCreateParam = useCallback((): void => {
     if (searchParams.get('create') !== '1') {
@@ -83,21 +87,24 @@ export const AdminEventsListPage = () => {
           <h1 className="text-xl font-semibold text-ink">{t('title')}</h1>
           <p className="text-sm text-ink-secondary">{t('subtitle', { count: events.length })}</p>
         </div>
-        <Button
-          type="button"
-          size="sm"
-          variant="secondary"
-          onClick={() => {
-            setSheetOpen(true);
-          }}
-        >
-          <AddActionLabel>{t('newEvent')}</AddActionLabel>
-        </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          <ViewModeToggle value={viewMode} onChange={setViewMode} />
+          <Button
+            type="button"
+            size="sm"
+            variant="secondary"
+            onClick={() => {
+              setSheetOpen(true);
+            }}
+          >
+            <AddActionLabel>{t('newEvent')}</AddActionLabel>
+          </Button>
+        </div>
       </div>
       {events.length === 0 ? (
         <p className="text-sm text-ink-secondary">{t('empty')}</p>
       ) : (
-        <AdminEventsTable events={events} />
+        <AdminEventsTable events={events} viewMode={viewMode} />
       )}
 
       <AdminCreateSheet open={sheetOpen} onClose={handleCloseSheet} title={t('new.title')}>

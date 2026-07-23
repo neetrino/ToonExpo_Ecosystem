@@ -58,51 +58,65 @@ const SETTINGS_NAV_ITEM: NavItem = {
   icon: Settings,
 };
 
+const NAV_ICON_CLASS = 'size-5 shrink-0 opacity-90';
+
+const navLinkClassName = (active: boolean): string =>
+  cn(
+    'flex items-center gap-3 rounded-pill px-3.5 py-2.5 text-base font-medium tracking-wide transition-colors',
+    active
+      ? 'bg-surface-elevated text-brand-secondary shadow-xs'
+      : 'text-on-dark/85 hover:bg-on-dark/10 hover:text-on-dark',
+  );
+
 type BuilderNavProps = {
   companyName: string | null;
 };
 
 /**
- * Sidebar navigation for the builder portal shell.
+ * Dark-rail builder navigation — same chrome pattern as AdminNav.
  */
 export const BuilderNav = ({ companyName }: BuilderNavProps) => {
   const t = useTranslations('Builder.nav');
   const pathname = usePathname();
 
-  const linkClassName = (active: boolean): string =>
-    cn(
-      'flex items-center gap-2.5 rounded-sm px-3 py-2.5 text-sm font-medium transition-colors',
-      active ? 'bg-brand-soft text-brand' : 'text-ink-secondary hover:bg-surface hover:text-ink',
-    );
+  const isItemActive = (href: string): boolean => {
+    if (href === '/builder') {
+      return pathname === '/builder';
+    }
+    return pathname === href || pathname.startsWith(`${href}/`);
+  };
 
   return (
     <nav aria-label={t('label')} className="flex h-full flex-col gap-1">
-      {companyName ? (
-        <p className="mb-3 truncate px-3 text-sm font-semibold text-ink">{companyName}</p>
-      ) : null}
-      <p className="mb-2 px-3 text-[10px] font-bold uppercase tracking-widest text-ink-muted">
-        {t('section')}
-      </p>
+      <div className="mb-4 hidden px-3.5 pt-1 md:block">
+        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-on-dark/65">
+          {t('portalLabel')}
+        </p>
+        {companyName ? (
+          <p className="mt-1 truncate text-sm font-medium text-on-dark">{companyName}</p>
+        ) : null}
+      </div>
+
       <div className="flex flex-1 flex-col gap-1">
         {PRIMARY_NAV_ITEMS.map((item) => {
-          const active =
-            item.href === '/builder' ? pathname === '/builder' : pathname.startsWith(item.href);
+          const active = isItemActive(item.href);
           const Icon = item.icon;
 
           return (
-            <Link key={item.href} href={item.href} className={linkClassName(active)}>
-              <Icon className="size-4 shrink-0 opacity-80" aria-hidden />
+            <Link key={item.href} href={item.href} className={navLinkClassName(active)}>
+              <Icon className={NAV_ICON_CLASS} aria-hidden />
               {t(item.key)}
             </Link>
           );
         })}
       </div>
-      <div className="mt-auto border-t border-border pt-3">
+
+      <div className="mt-auto border-t border-on-dark/15 pt-3">
         <Link
           href={SETTINGS_NAV_ITEM.href}
-          className={linkClassName(pathname.startsWith(SETTINGS_NAV_ITEM.href))}
+          className={navLinkClassName(isItemActive(SETTINGS_NAV_ITEM.href))}
         >
-          <Settings className="size-4 shrink-0 opacity-80" aria-hidden />
+          <Settings className={NAV_ICON_CLASS} aria-hidden />
           {t(SETTINGS_NAV_ITEM.key)}
         </Link>
       </div>

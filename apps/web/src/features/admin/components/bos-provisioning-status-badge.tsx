@@ -4,6 +4,7 @@ import type { BosProvisioningStatus } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 
 import { cn } from '@/shared/ui/cn';
+import { LIST_STATUS_BADGE_CLASS } from '@/shared/ui/list-status-badge';
 
 type BosProvisioningStatusBadgeProps = {
   status: BosProvisioningStatus;
@@ -22,14 +23,5 @@ const STATUS_CLASS: Record<BosProvisioningStatus, string> = {
 export const BosProvisioningStatusBadge = ({ status }: BosProvisioningStatusBadgeProps) => {
   const t = useTranslations('Admin.bos.statuses');
 
-  return (
-    <span
-      className={cn(
-        'inline-flex rounded-pill px-2 py-0.5 text-xs font-medium',
-        STATUS_CLASS[status],
-      )}
-    >
-      {t(status)}
-    </span>
-  );
+  return <span className={cn(LIST_STATUS_BADGE_CLASS, STATUS_CLASS[status])}>{t(status)}</span>;
 };

@@ -47,3 +47,16 @@ export const BOS_PROVISIONING_STATUSES = [
   'failed',
   'partial',
 ] as const;
+
+/** localStorage keys for admin list/cards view preference. */
+export const ADMIN_VIEW_MODE_KEYS = {
+  companies: 'admin-companies',
+  partners: 'admin-partners',
+  bankOffers: 'admin-bank-offers',
+  serviceProviderCategories: 'admin-service-provider-categories',
+  serviceProviders: 'admin-service-providers',
+  readinessAssessments: 'admin-readiness-assessments',
+  readinessCategories: 'admin-readiness-categories',
+  events: 'admin-events',
+  bos: 'admin-bos-provisioning',
+} as const;

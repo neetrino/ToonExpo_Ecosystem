@@ -13,13 +13,15 @@ import { CreatePartnerSheet } from '@/features/admin/components/create-partner-s
 import { PartnerDetailSheet } from '@/features/admin/components/partner-detail-sheet';
 import { PartnerFilters } from '@/features/admin/components/partner-filters';
 import { PartnersTable } from '@/features/admin/components/partners-table';
-import { ADMIN_COMPANIES_MAX_PAGE_SIZE } from '@/features/admin/constants';
+import { ADMIN_COMPANIES_MAX_PAGE_SIZE, ADMIN_VIEW_MODE_KEYS } from '@/features/admin/constants';
 import { useAdminCompaniesQuery } from '@/features/admin/hooks/use-admin-companies';
 import { useAdminPartnersQuery } from '@/features/admin/hooks/use-admin-partners';
 import { PARTNERS_DEFAULT_PAGE_SIZE } from '@/features/partners/constants';
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
+import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { Button } from '@/shared/ui/button';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
+import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
 const parsePage = (raw: string | null): number => {
   const parsed = Number(raw);
@@ -38,6 +40,7 @@ export const PartnersListPage = () => {
   const page = parsePage(searchParams.get('page'));
   const [showCreate, setShowCreate] = useState(false);
   const [selectedPartnerId, setSelectedPartnerId] = useState<string | null>(null);
+  const { viewMode, setViewMode } = usePersistedViewMode(ADMIN_VIEW_MODE_KEYS.partners);
   const [filters, setFilters] = useState<{
     type: PartnerCompanyType | '';
     status: PartnerCompanyStatus | '';
@@ -83,17 +86,20 @@ export const PartnersListPage = () => {
             {t('subtitle', { count: response.meta.total })}
           </p>
         </div>
-        <Button
-          type="button"
-          size="sm"
-          variant="secondary"
-          onClick={() => {
-            setSelectedPartnerId(null);
-            setShowCreate(true);
-          }}
-        >
-          <AddActionLabel>{t('newPartner')}</AddActionLabel>
-        </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          <ViewModeToggle value={viewMode} onChange={setViewMode} />
+          <Button
+            type="button"
+            size="sm"
+            variant="secondary"
+            onClick={() => {
+              setSelectedPartnerId(null);
+              setShowCreate(true);
+            }}
+          >
+            <AddActionLabel>{t('newPartner')}</AddActionLabel>
+          </Button>
+        </div>
       </div>
 
       <PartnerFilters
@@ -107,7 +113,11 @@ export const PartnersListPage = () => {
       {response.data.length === 0 ? (
         <p className="text-sm text-ink-secondary">{t('empty')}</p>
       ) : (
-        <PartnersTable partners={response.data} onSelectPartner={handleSelectPartner} />
+        <PartnersTable
+          partners={response.data}
+          onSelectPartner={handleSelectPartner}
+          viewMode={viewMode}
+        />
       )}
 
       <CatalogPagination

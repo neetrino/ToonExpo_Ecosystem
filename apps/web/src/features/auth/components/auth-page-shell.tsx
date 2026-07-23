@@ -85,7 +85,7 @@ const AuthVisualPanel = ({ copy }: { copy: ShellCopy }) => {
 
       <BrandLogo inverted size="lg" className="relative shrink-0" />
 
-      <div className="relative max-w-md animate-[page-enter_0.55s_var(--ease-out-premium)_both]">
+      <div className="relative max-w-md animate-[page-enter_var(--duration-base)_var(--ease-out-premium)_both]">
         <div className="mb-5 h-px w-12 bg-accent" aria-hidden />
         <p className="mb-4 text-[10px] font-bold uppercase tracking-[0.32em] text-accent">
           {copy.eyebrow}
@@ -153,7 +153,7 @@ const AuthFormColumn = ({
       </header>
 
       <AuthFitStage className="relative z-[1] px-5 pb-4 sm:px-8 lg:px-12">
-        <div className="animate-[page-enter_0.5s_var(--ease-out-premium)_both]">
+        <div className="animate-[page-enter_var(--duration-base)_var(--ease-out-premium)_both]">
           <div
             className={cn(
               'flex flex-col items-center gap-2 text-center sm:items-start sm:text-left',
