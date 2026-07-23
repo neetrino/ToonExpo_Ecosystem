@@ -1,25 +1,17 @@
 import { setRequestLocale } from 'next-intl/server';
-import { Suspense } from 'react';
 
-import { AdminCompanyCatalogShell } from '@/features/admin/components/admin-company-catalog-shell';
-import { ProjectsListPage } from '@/features/builder/components/projects-list-page';
+import { redirect } from '@/i18n/navigation';
 
 type PageProps = {
   params: Promise<{ locale: string; id: string }>;
 };
 
 /**
- * Admin company catalog projects list.
+ * Legacy company catalog projects list → admin Projects hub.
  */
-export default async function AdminCompanyCatalogProjectsPage({ params }: PageProps) {
+export default async function AdminCompanyCatalogProjectsRedirect({ params }: PageProps) {
   const { locale, id } = await params;
   setRequestLocale(locale);
-
-  return (
-    <AdminCompanyCatalogShell companyId={id}>
-      <Suspense fallback={<p className="text-sm text-ink-secondary">…</p>}>
-        <ProjectsListPage />
-      </Suspense>
-    </AdminCompanyCatalogShell>
-  );
+  redirect({ href: `/admin/projects?companyId=${encodeURIComponent(id)}`, locale });
+  return null;
 }

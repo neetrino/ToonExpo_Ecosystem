@@ -6,6 +6,7 @@ import type { CreateCompanyRequest, UpdateCompanyRequest } from '@toonexpo/contr
 import {
   createAdminCompany,
   getAdminCompany,
+  getAdminProjectScope,
   listAdminCompanies,
   listAdminCompanyProjects,
   listAdminProjects,
@@ -17,6 +18,7 @@ import {
   ADMIN_PROJECTS_QUERY_KEY,
   adminCompanyProjectsQueryKey,
   adminCompanyQueryKey,
+  adminProjectScopeQueryKey,
   adminProjectsQueryKey,
 } from '@/features/admin/constants';
 
@@ -65,6 +67,16 @@ export const useAdminProjectsQuery = (page: number, pageSize: number, companyId?
         pageSize,
         ...(companyId ? { companyId } : {}),
       }),
+  });
+
+/**
+ * Resolves builder company id for admin project detail routes.
+ */
+export const useAdminProjectScopeQuery = (projectId: string) =>
+  useQuery({
+    queryKey: adminProjectScopeQueryKey(projectId),
+    queryFn: () => getAdminProjectScope(projectId),
+    enabled: projectId.length > 0,
   });
 
 /**

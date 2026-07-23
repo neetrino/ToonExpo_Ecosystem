@@ -1,6 +1,7 @@
 import type {
   AdminCompanyProjectListResponse,
   AdminProjectListResponse,
+  AdminProjectScope,
   CompanyListResponse,
   CompanyResponse,
   CreateCompanyRequest,
@@ -129,6 +130,25 @@ export const listAdminProjects = (
     ),
   );
 };
+
+/**
+ * Resolves builder company id for an admin project UI route.
+ */
+export const getAdminProjectScope = (
+  projectId: string,
+  options: AdminRequestOptions = {},
+): Promise<AdminProjectScope> =>
+  apiFetch<AdminProjectScope>(
+    withCookie(
+      {
+        path: `/admin/projects/${encodeURIComponent(projectId)}/scope`,
+        method: 'GET',
+        credentials: 'include',
+        cache: 'no-store',
+      },
+      options.cookieHeader,
+    ),
+  );
 
 /**
  * Provisions a company with the first company_admin invite.

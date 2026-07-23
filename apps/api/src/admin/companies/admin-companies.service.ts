@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import type {
   AdminCompanyProjectListResponse,
   AdminProjectListResponse,
+  AdminProjectScope,
   CompanyListResponse,
   CompanyResponse,
   ProvisionCompanyResponse,
@@ -186,6 +187,20 @@ export class AdminCompaniesService {
         totalPages: total === 0 ? 0 : Math.ceil(total / pageSize),
       },
     };
+  }
+
+  /**
+   * Resolves the builder company for an admin project UI route.
+   */
+  async getProjectScope(projectId: string): Promise<AdminProjectScope> {
+    const project = await this.prisma.db.project.findUnique({
+      where: { id: projectId },
+      select: { builderCompanyId: true },
+    });
+    if (!project) {
+      throw new NotFoundException('Project not found');
+    }
+    return { builderCompanyId: project.builderCompanyId };
   }
 
   async update(id: string, input: UpdateCompanyInput): Promise<CompanyResponse> {

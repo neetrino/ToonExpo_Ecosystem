@@ -115,7 +115,7 @@ export const PortalShell = ({
               'md:block',
             )}
           >
-            <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-tr-[2.5rem] rounded-br-[2.5rem] bg-brand-secondary p-4 shadow-md">
+            <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-tr-[2.5rem] rounded-br-[2.5rem] bg-brand-secondary p-4">
               {sidebar}
             </div>
           </aside>

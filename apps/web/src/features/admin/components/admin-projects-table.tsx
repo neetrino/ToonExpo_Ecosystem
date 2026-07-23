@@ -14,8 +14,7 @@ type AdminProjectsTableProps = {
   viewMode?: ViewMode | undefined;
 };
 
-const projectHref = (project: AdminProjectListItem): string =>
-  `/admin/companies/${project.builderCompanyId}/catalog/projects/${project.id}`;
+const projectHref = (project: AdminProjectListItem): string => `/admin/projects/${project.id}`;
 
 /**
  * Admin cross-company projects collection as cards or table.

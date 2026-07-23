@@ -24,6 +24,9 @@ export const adminProjectsQueryKey = (params: {
   companyId?: string;
 }) => [...ADMIN_PROJECTS_QUERY_KEY, params] as const;
 
+export const adminProjectScopeQueryKey = (projectId: string) =>
+  [...ADMIN_PROJECTS_QUERY_KEY, projectId, 'scope'] as const;
+
 export const ADMIN_READINESS_CATEGORIES_QUERY_KEY = ['admin', 'readiness', 'categories'] as const;
 
 export const ADMIN_READINESS_ASSESSMENTS_QUERY_KEY = ['admin', 'readiness', 'assessments'] as const;

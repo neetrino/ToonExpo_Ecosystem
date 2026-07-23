@@ -154,4 +154,11 @@ export type AdminProjectListItem = {
 
 export type AdminProjectListResponse = PaginatedResponse<AdminProjectListItem>;
 
+/**
+ * Scope payload so admin project UI can bind company catalog APIs.
+ */
+export type AdminProjectScope = {
+  builderCompanyId: string;
+};
+
 export type CompanyMemberListResponse = PaginatedResponse<CompanyMemberResponse>;
