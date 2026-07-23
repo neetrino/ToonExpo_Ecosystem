@@ -38,7 +38,7 @@ export const DrawerCloseTab = ({ edge, onClose, closeLabel }: DrawerCloseTabProp
       type="button"
       onClick={onClose}
       className={cn(
-        isStartEdge ? styles.closeTabStart : styles.closeTabEnd,
+        isStartEdge ? styles['closeTabStart'] : styles['closeTabEnd'],
         'absolute flex items-center justify-center bg-brand text-on-brand',
       )}
       style={{
