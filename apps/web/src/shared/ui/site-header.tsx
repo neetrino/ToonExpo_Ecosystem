@@ -94,7 +94,7 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
     };
   }, [menuOpen]);
 
-  const settingsHref = user?.accountType === 'platform_admin' ? '/admin/settings' : '/settings';
+  const settingsHref = user ? getAccountSettingsHref(user) : '/settings';
   const listPropertyHref =
     user?.accountType === 'company_member' && user.companyType === 'builder'
       ? ('/builder' as const)

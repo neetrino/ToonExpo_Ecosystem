@@ -55,6 +55,7 @@ export default async function PartnerLayout({ children, params }: PartnerLayoutP
       badge={t('badge')}
       userEmail={user.email}
       profileLabel={t('profileLink')}
+      profileHref="/partner/settings"
       navLabel={t('nav.label')}
       sidebar={
         <PartnerNav
