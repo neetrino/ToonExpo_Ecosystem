@@ -1,5 +1,5 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "installCommand": "cd ../.. && corepack enable && pnpm install --frozen-lockfile",
+  "installCommand": "cd ../.. && corepack enable && HUSKY=0 pnpm install --frozen-lockfile --filter=@toonexpo/web... --filter=toonexpo-ecosystem",
   "buildCommand": "cd ../.. && pnpm turbo run build --filter=@toonexpo/web"
 }
