@@ -52,18 +52,18 @@ export const PartnersTable = ({
             className="flex items-center gap-3 rounded-sm border border-border bg-background p-3 text-left transition-colors hover:bg-surface/60"
             onClick={() => onSelectPartner(partner.id)}
           >
-            <AdminListCardLogo name={partner.name} logoUrl={partner.logoUrl} />
-            <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-              <div className="flex flex-wrap items-center gap-2">
+            <div className="flex min-w-0 flex-1 items-stretch gap-3">
+              <AdminListCardLogo name={partner.name} logoUrl={partner.logoUrl} size="match" />
+              <div className="flex min-w-0 flex-1 flex-col justify-center gap-1.5">
                 <span className="truncate font-medium text-ink">{partner.name}</span>
-                <FeaturedBadge featured={partner.featured} />
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
                 <PartnerTypeLabel type={partner.type} />
-                <PartnerStatusBadge status={partner.status} />
-                <PublicationStatusBadge status={partner.publicationStatus} />
+                <p className="text-xs text-ink-muted">{formatDate(partner.updatedAt, locale)}</p>
               </div>
-              <p className="text-xs text-ink-muted">{formatDate(partner.updatedAt, locale)}</p>
+            </div>
+            <div className="flex shrink-0 flex-col items-end gap-1.5">
+              <FeaturedBadge featured={partner.featured} />
+              <PartnerStatusBadge status={partner.status} />
+              <PublicationStatusBadge status={partner.publicationStatus} />
             </div>
           </button>
         ))}
@@ -87,15 +87,18 @@ export const PartnersTable = ({
           {partners.map((partner) => (
             <tr key={partner.id} className="border-t border-border hover:bg-surface/60">
               <td className="px-3 py-2.5 text-left">
-                <div className="flex flex-wrap items-center gap-2">
-                  <button
-                    type="button"
-                    className="font-medium text-brand hover:underline"
-                    onClick={() => onSelectPartner(partner.id)}
-                  >
-                    {partner.name}
-                  </button>
-                  <FeaturedBadge featured={partner.featured} />
+                <div className="flex items-center gap-3">
+                  <AdminListCardLogo name={partner.name} logoUrl={partner.logoUrl} shape="circle" />
+                  <div className="flex min-w-0 flex-wrap items-center gap-2">
+                    <button
+                      type="button"
+                      className="font-medium text-brand hover:underline"
+                      onClick={() => onSelectPartner(partner.id)}
+                    >
+                      {partner.name}
+                    </button>
+                    <FeaturedBadge featured={partner.featured} />
+                  </div>
                 </div>
               </td>
               <td className="px-3 py-2.5 text-center text-ink-secondary">

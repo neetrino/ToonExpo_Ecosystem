@@ -43,11 +43,11 @@ export const CompaniesTable = ({
           <button
             key={company.id}
             type="button"
-            className="flex items-center gap-3 rounded-sm border border-border bg-background p-3 text-left transition-colors hover:bg-surface/60"
+            className="flex items-stretch gap-3 rounded-sm border border-border bg-background p-3 text-left transition-colors hover:bg-surface/60"
             onClick={() => onSelectCompany(company.id)}
           >
-            <AdminListCardLogo name={company.name} logoUrl={company.logoUrl} />
-            <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+            <AdminListCardLogo name={company.name} logoUrl={company.logoUrl} size="match" />
+            <div className="flex min-w-0 flex-1 flex-col justify-center gap-1.5">
               <span className="truncate font-medium text-ink">{company.name}</span>
               <div className="flex flex-wrap items-center gap-2 text-xs text-ink-muted">
                 <span>{t(`types.${company.type}`)}</span>
@@ -78,13 +78,16 @@ export const CompaniesTable = ({
           {companies.map((company) => (
             <tr key={company.id} className="border-t border-border hover:bg-surface/60">
               <td className="px-3 py-2.5">
-                <button
-                  type="button"
-                  className="font-medium text-brand hover:underline"
-                  onClick={() => onSelectCompany(company.id)}
-                >
-                  {company.name}
-                </button>
+                <div className="flex items-center gap-3">
+                  <AdminListCardLogo name={company.name} logoUrl={company.logoUrl} shape="circle" />
+                  <button
+                    type="button"
+                    className="font-medium text-brand hover:underline"
+                    onClick={() => onSelectCompany(company.id)}
+                  >
+                    {company.name}
+                  </button>
+                </div>
               </td>
               <td className="px-3 py-2.5 text-ink-secondary">{t(`types.${company.type}`)}</td>
               <td className="px-3 py-2.5 text-ink-secondary">{t(`statuses.${company.status}`)}</td>

@@ -1,16 +1,25 @@
 'use client';
 
-import type { EventSummary } from '@toonexpo/contracts';
+import type { EventStatus, EventSummary } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 
 import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
 import { Link } from '@/i18n/navigation';
 import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
+import { cn } from '@/shared/ui/cn';
 import { VIEW_MODE_CARDS, type ViewMode } from '@/shared/ui/view-mode';
 
 type AdminEventsTableProps = {
   events: EventSummary[];
   viewMode?: ViewMode | undefined;
+};
+
+const EVENT_STATUS_CLASS: Record<EventStatus, string> = {
+  planning: 'bg-surface text-ink-muted',
+  active: 'bg-success/10 text-success',
+  completed: 'bg-brand/10 text-brand',
+  archived: 'bg-warning/10 text-warning',
+  cancelled: 'bg-danger-soft text-danger',
 };
 
 /**
@@ -28,13 +37,21 @@ export const AdminEventsTable = ({ events, viewMode = VIEW_MODE_CARDS }: AdminEv
             href={`/admin/events/${event.id}`}
             className="flex flex-col gap-2 rounded-sm border border-border bg-background p-3 transition-colors hover:bg-surface/60"
           >
-            <span className="font-medium text-ink">{event.name}</span>
-            <div className="flex flex-wrap items-center gap-2 text-xs text-ink-muted">
-              <span className="font-mono">{event.code}</span>
-              <span aria-hidden>·</span>
-              <span>{t(`statuses.${event.status}`)}</span>
+            <div className="flex items-start justify-between gap-3">
+              <span className="min-w-0 truncate font-medium text-ink">{event.name}</span>
+              <div className="flex shrink-0 flex-col items-end gap-1">
+                <span
+                  className={cn(
+                    'inline-flex w-fit rounded-pill px-2.5 py-0.5 text-xs font-medium',
+                    EVENT_STATUS_CLASS[event.status],
+                  )}
+                >
+                  {t(`statuses.${event.status}`)}
+                </span>
+                <PublicationStatusBadge status={event.publicationStatus} />
+              </div>
             </div>
-            <PublicationStatusBadge status={event.publicationStatus} />
+            <span className="font-mono text-xs text-ink-muted">{event.code}</span>
           </Link>
         ))}
       </AdminListCardGrid>
