@@ -18,6 +18,7 @@ type SiteHeaderMobileNavProps = {
   user: UserResponse | undefined;
   settingsHref: '/admin/settings' | '/settings';
   listPropertyHref: '/builder' | '/auth/register';
+  showBuilder: boolean;
   logoutPending: boolean;
   onClose: () => void;
   onLogout: () => void;
@@ -33,6 +34,7 @@ export const SiteHeaderMobileNav = ({
   user,
   settingsHref,
   listPropertyHref,
+  showBuilder,
   logoutPending,
   onClose,
   onLogout,
@@ -94,6 +96,14 @@ export const SiteHeaderMobileNav = ({
                 onClick={onClose}
               >
                 {t('admin')}
+              </Link>
+            ) : showBuilder ? (
+              <Link
+                href="/builder"
+                className="rounded-sm px-3 py-3 font-medium text-ink hover:bg-surface"
+                onClick={onClose}
+              >
+                {t('builder')}
               </Link>
             ) : (
               <Link

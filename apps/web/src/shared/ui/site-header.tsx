@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 
 import { useLogoutMutation, useMeQuery } from '@/features/auth/hooks/use-auth';
 import { Link, usePathname, useRouter } from '@/i18n/navigation';
+import { isPartnerCompatibleCompany } from '@/features/partners/utils/is-partner-compatible-company';
 import { BrandLogo } from '@/shared/ui/brand-logo';
 import { cn } from '@/shared/ui/cn';
 import { IconButton } from '@/shared/ui/icon-button';
@@ -95,10 +96,12 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
   }, [menuOpen]);
 
   const settingsHref = user?.accountType === 'platform_admin' ? '/admin/settings' : '/settings';
-  const listPropertyHref =
-    user?.accountType === 'company_member' && user.companyType === 'builder'
-      ? ('/builder' as const)
-      : ('/auth/register' as const);
+  const isBuilderMember =
+    user?.accountType === 'company_member' &&
+    (user.companyType == null ||
+      user.companyType === 'builder' ||
+      !isPartnerCompatibleCompany(user.companyType));
+  const listPropertyHref = isBuilderMember ? ('/builder' as const) : ('/auth/register' as const);
   const contentInsetStyle = {
     transform: pillVisible ? `translateX(${PILL_CONTENT_INSET_PX}px)` : 'translateX(0)',
     transitionDuration: `${PILL_APPEAR_MS}ms`,
@@ -219,6 +222,8 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
                   userName={user?.name}
                   userEmail={user?.email}
                   accountType={user?.accountType}
+                  companyType={user?.companyType}
+                  showBuilder={isBuilderMember}
                   tone={isOverHero ? 'dark' : 'light'}
                 />
               )}
@@ -252,6 +257,7 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
               user={user ?? undefined}
               settingsHref={settingsHref}
               listPropertyHref={listPropertyHref}
+              showBuilder={isBuilderMember}
               logoutPending={logoutMutation.isPending}
               onClose={() => setMenuOpen(false)}
               onLogout={handleMobileLogout}

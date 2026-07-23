@@ -1,6 +1,6 @@
 'use client';
 
-import { LogIn, LogOut, Shield } from 'lucide-react';
+import { Building2, LogIn, LogOut, Shield } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useId, useRef, useState } from 'react';
 
@@ -16,18 +16,23 @@ type ProfileMenuProps = {
   userName?: string | undefined;
   userEmail?: string | undefined;
   accountType?: string | undefined;
+  companyType?: string | null | undefined;
+  /** When true, show Builder portal link above Log out. */
+  showBuilder?: boolean | undefined;
   /** Visual tone for light surfaces vs dark hero chrome. */
   tone?: 'light' | 'dark' | undefined;
 };
 
 /**
  * Header account control — Figma circular trigger.
- * Guests go to login; signed-in opens Admin / Log out on hover (click on touch).
+ * Guests go to login; signed-in opens role links / Log out on hover (click on touch).
  */
 export const ProfileMenu = ({
   userName,
   userEmail,
   accountType,
+  companyType,
+  showBuilder: showBuilderProp,
   tone = 'light',
 }: ProfileMenuProps) => {
   const t = useTranslations('Nav');
@@ -44,6 +49,9 @@ export const ProfileMenu = ({
   const isDark = tone === 'dark';
   const isSignedIn = Boolean(userName || userEmail);
   const showAdmin = accountType === 'platform_admin';
+  const showBuilder =
+    showBuilderProp ??
+    (accountType === 'company_member' && (companyType == null || companyType === 'builder'));
 
   const clearCloseTimer = (): void => {
     if (closeTimerRef.current == null) {
@@ -109,6 +117,12 @@ export const ProfileMenu = ({
     isDark ? 'bg-on-dark text-ink' : 'bg-brand-deep text-on-dark',
   );
 
+  const menuItemClassName = cn(
+    'flex w-full items-center gap-2.5 px-3.5 py-2.5 text-left text-sm font-medium',
+    'transition-colors duration-[var(--duration-fast)]',
+    'text-ink hover:bg-surface',
+  );
+
   if (!isSignedIn) {
     return (
       <Link
@@ -164,15 +178,23 @@ export const ProfileMenu = ({
             <Link
               href="/admin"
               role="menuitem"
-              className={cn(
-                'flex w-full items-center gap-2.5 px-3.5 py-2.5 text-left text-sm font-medium',
-                'transition-colors duration-[var(--duration-fast)]',
-                'text-ink hover:bg-surface',
-              )}
+              className={menuItemClassName}
               onClick={() => setOpen(false)}
             >
               <Shield className="size-4 shrink-0 opacity-80" aria-hidden />
               {t('admin')}
+            </Link>
+          ) : null}
+
+          {showBuilder ? (
+            <Link
+              href="/builder"
+              role="menuitem"
+              className={menuItemClassName}
+              onClick={() => setOpen(false)}
+            >
+              <Building2 className="size-4 shrink-0 opacity-80" aria-hidden />
+              {t('builder')}
             </Link>
           ) : null}
 
