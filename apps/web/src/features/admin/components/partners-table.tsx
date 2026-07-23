@@ -49,18 +49,16 @@ export const PartnersTable = ({
           <button
             key={partner.id}
             type="button"
-            className="flex items-center gap-3 rounded-sm border border-border bg-background p-3 text-left transition-colors hover:bg-surface/60"
+            className="flex items-stretch gap-3 rounded-sm border border-border bg-background p-3 text-left transition-colors hover:bg-surface/60"
             onClick={() => onSelectPartner(partner.id)}
           >
-            <div className="flex min-w-0 flex-1 items-stretch gap-3">
-              <AdminListCardLogo name={partner.name} logoUrl={partner.logoUrl} size="match" />
-              <div className="flex min-w-0 flex-1 flex-col justify-center gap-1.5">
-                <span className="truncate font-medium text-ink">{partner.name}</span>
-                <PartnerTypeLabel type={partner.type} />
-                <p className="text-xs text-ink-muted">{formatDate(partner.updatedAt, locale)}</p>
-              </div>
+            <AdminListCardLogo name={partner.name} logoUrl={partner.logoUrl} size="match" />
+            <div className="flex min-w-0 flex-1 flex-col justify-center gap-1.5">
+              <span className="truncate font-medium text-ink">{partner.name}</span>
+              <PartnerTypeLabel type={partner.type} />
+              <p className="text-xs text-ink-muted">{formatDate(partner.updatedAt, locale)}</p>
             </div>
-            <div className="flex shrink-0 flex-col items-end gap-1.5">
+            <div className="flex shrink-0 flex-col items-end justify-center gap-1.5">
               <FeaturedBadge featured={partner.featured} />
               <PartnerStatusBadge status={partner.status} />
               <PublicationStatusBadge status={partner.publicationStatus} />
