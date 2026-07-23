@@ -1,6 +1,6 @@
 'use client';
 
-import { Building2, Landmark, LayoutDashboard, Tag } from 'lucide-react';
+import { Building2, Landmark, LayoutDashboard, Settings, Tag } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import type { PartnerCompanyType } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
@@ -15,8 +15,8 @@ type PartnerNavProps = {
 };
 
 type NavItem = {
-  href: '/partner' | '/partner/offers' | '/partner/bank-offers';
-  key: 'profile' | 'offers' | 'bankOffers';
+  href: '/partner' | '/partner/offers' | '/partner/bank-offers' | '/partner/settings';
+  key: 'profile' | 'offers' | 'bankOffers' | 'settings';
   icon: LucideIcon;
 };
 
@@ -31,6 +31,12 @@ const BANK_NAV_ITEM: NavItem = {
   icon: Landmark,
 };
 
+const SETTINGS_NAV_ITEM: NavItem = {
+  href: '/partner/settings',
+  key: 'settings',
+  icon: Settings,
+};
+
 /**
  * Sidebar navigation for the partner portal shell.
  */
@@ -40,8 +46,14 @@ export const PartnerNav = ({ companyName, partnerName, partnerType }: PartnerNav
 
   const navItems = partnerType === 'bank' ? [...BASE_NAV_ITEMS, BANK_NAV_ITEM] : BASE_NAV_ITEMS;
 
+  const linkClassName = (active: boolean): string =>
+    cn(
+      'flex items-center gap-2.5 rounded-sm px-3 py-2.5 text-sm font-medium transition-colors',
+      active ? 'bg-brand-soft text-brand' : 'text-ink-secondary hover:bg-surface hover:text-ink',
+    );
+
   return (
-    <nav aria-label={t('label')} className="flex flex-col gap-1">
+    <nav aria-label={t('label')} className="flex h-full flex-col gap-1">
       {companyName ? (
         <p className="mb-1 flex items-center gap-2 truncate px-3 text-sm font-semibold text-ink">
           <Building2 className="size-3.5 shrink-0 text-ink-muted" aria-hidden />
@@ -54,27 +66,29 @@ export const PartnerNav = ({ companyName, partnerName, partnerType }: PartnerNav
       <p className="mb-2 px-3 text-[10px] font-bold uppercase tracking-widest text-ink-muted">
         {t('section')}
       </p>
-      {navItems.map((item) => {
-        const active =
-          item.href === '/partner' ? pathname === '/partner' : pathname.startsWith(item.href);
-        const Icon = item.icon;
+      <div className="flex flex-1 flex-col gap-1">
+        {navItems.map((item) => {
+          const active =
+            item.href === '/partner' ? pathname === '/partner' : pathname.startsWith(item.href);
+          const Icon = item.icon;
 
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={cn(
-              'flex items-center gap-2.5 rounded-sm px-3 py-2.5 text-sm font-medium transition-colors',
-              active
-                ? 'bg-brand-soft text-brand'
-                : 'text-ink-secondary hover:bg-surface hover:text-ink',
-            )}
-          >
-            <Icon className="size-4 shrink-0 opacity-80" aria-hidden />
-            {t(item.key)}
-          </Link>
-        );
-      })}
+          return (
+            <Link key={item.href} href={item.href} className={linkClassName(active)}>
+              <Icon className="size-4 shrink-0 opacity-80" aria-hidden />
+              {t(item.key)}
+            </Link>
+          );
+        })}
+      </div>
+      <div className="mt-auto border-t border-border pt-3">
+        <Link
+          href={SETTINGS_NAV_ITEM.href}
+          className={linkClassName(pathname.startsWith(SETTINGS_NAV_ITEM.href))}
+        >
+          <Settings className="size-4 shrink-0 opacity-80" aria-hidden />
+          {t(SETTINGS_NAV_ITEM.key)}
+        </Link>
+      </div>
     </nav>
   );
 };

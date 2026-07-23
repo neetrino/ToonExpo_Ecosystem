@@ -1,33 +1,19 @@
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { setRequestLocale } from 'next-intl/server';
 
-import { ChangePasswordForm } from '@/features/auth/components/change-password-form';
-import { Card } from '@/shared/ui/card';
+import { redirect } from '@/i18n/navigation';
 
-type AdminSettingsPasswordRouteProps = {
+type AdminSettingsPasswordRedirectPageProps = {
   params: Promise<{ locale: string }>;
 };
 
 /**
- * Platform admin self-service password change inside the admin shell.
+ * Legacy password route — redirects to the unified admin Settings page.
  */
-export default async function AdminSettingsPasswordRoute({
+export default async function AdminSettingsPasswordRedirectPage({
   params,
-}: AdminSettingsPasswordRouteProps) {
+}: AdminSettingsPasswordRedirectPageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
-
-  const t = await getTranslations('Profile.changePassword');
-
-  return (
-    <div className="flex max-w-lg flex-col gap-6">
-      <div className="flex flex-col gap-1">
-        <h2 className="text-lg font-semibold text-ink">{t('title')}</h2>
-        <p className="text-sm text-ink-secondary">{t('subtitle')}</p>
-      </div>
-
-      <Card>
-        <ChangePasswordForm />
-      </Card>
-    </div>
-  );
+  redirect({ href: '/admin/settings', locale });
+  return null;
 }

@@ -1945,7 +1945,12 @@
       "section": "Manage",
       "profile": "Profile",
       "offers": "Offers",
-      "bankOffers": "Mortgage offers"
+      "bankOffers": "Mortgage offers",
+      "settings": "Settings"
+    },
+    "settings": {
+      "title": "Settings",
+      "subtitle": "Your account details and sign-in security"
     },
     "profile": {
       "loading": "Loading profile…",
@@ -2014,7 +2019,12 @@
       "analytics": "Analytics",
       "company": "Company",
       "inventory": "Inventory",
+      "settings": "Settings",
       "comingSoon": "Coming soon"
+    },
+    "settings": {
+      "title": "Settings",
+      "subtitle": "Your account details and sign-in security"
     },
     "analytics": {
       "title": "Analytics",
