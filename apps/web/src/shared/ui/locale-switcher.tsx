@@ -8,7 +8,6 @@ import { Suspense, useEffect, useId, useOptimistic, useRef, useState, useTransit
 import { usePathname, useRouter } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
 import { cn } from '@/shared/ui/cn';
-import { DropdownPortal } from '@/shared/ui/dropdown-portal';
 
 /** Figma header trigger — uppercase 2-letter codes (`EN`). */
 const LOCALE_CODE: Record<string, string> = {
@@ -34,7 +33,8 @@ type LocaleSwitcherProps = {
 /**
  * Compact language control — Figma header: plain `EN` + chevron (no pill).
  * Opens on hover (desktop); click still toggles for touch / keyboard.
- * Menu portals above page chrome.
+ * Menu stays `absolute` under the trigger so it inherits desktop `zoom`
+ * (Safari-safe — no body portal + getBoundingClientRect).
  * Wrapped in Suspense for `useSearchParams` during static prerender.
  */
 export const LocaleSwitcher = (props: LocaleSwitcherProps) => (
@@ -72,7 +72,6 @@ const LocaleSwitcherInner = ({ tone = 'light' }: LocaleSwitcherProps) => {
   const [isPending, startTransition] = useTransition();
   const [optimisticLocale, setOptimisticLocale] = useOptimistic(locale);
   const rootRef = useRef<HTMLDivElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLUListElement>(null);
   const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const listId = useId();
@@ -163,7 +162,6 @@ const LocaleSwitcherInner = ({ tone = 'light' }: LocaleSwitcherProps) => {
       onMouseLeave={scheduleCloseMenu}
     >
       <button
-        ref={buttonRef}
         type="button"
         className={cn(
           'inline-flex items-center gap-1 text-sm font-medium leading-5',
@@ -197,19 +195,17 @@ const LocaleSwitcherInner = ({ tone = 'light' }: LocaleSwitcherProps) => {
         />
       </button>
 
-      <DropdownPortal open={open} anchorRef={buttonRef} align="end">
+      {open ? (
         <ul
           ref={menuRef}
           id={listId}
           role="listbox"
           aria-label={t('languageLabel')}
           className={cn(
-            'w-max overflow-hidden',
+            'absolute top-[calc(100%+8px)] right-0 z-[var(--z-dropdown)] w-max overflow-hidden',
             'rounded-[12px] border border-header-border bg-surface-elevated py-1.5 text-ink shadow-md',
             'animate-[locale-dropdown-in_var(--duration-base)_var(--ease-out-premium)]',
           )}
-          onMouseEnter={openMenu}
-          onMouseLeave={scheduleCloseMenu}
         >
           {routing.locales.map((code) => {
             const active = code === displayLocale;
@@ -237,7 +233,7 @@ const LocaleSwitcherInner = ({ tone = 'light' }: LocaleSwitcherProps) => {
             );
           })}
         </ul>
-      </DropdownPortal>
+      ) : null}
     </div>
   );
 };

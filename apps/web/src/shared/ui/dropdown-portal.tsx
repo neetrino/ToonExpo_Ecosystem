@@ -15,8 +15,8 @@ import { cn } from '@/shared/ui/cn';
 
 const MENU_GAP_PX = 8;
 const VIEWPORT_EDGE_PAD_PX = 8;
-/** Used before the menu has been measured. */
 const MENU_HEIGHT_ESTIMATE_PX = 240;
+const STAGE_SELECTOR = '.desktop-fluid-stage';
 
 type DropdownPortalProps = {
   open: boolean;
@@ -29,17 +29,15 @@ type DropdownPortalProps = {
   matchWidth?: boolean | undefined;
 };
 
+type Align = 'start' | 'end';
+
 type MenuCoords = {
-  left: number;
-  right: number;
-  width: number;
-  align: 'start' | 'end';
-  placement: 'bottom' | 'top';
-  /** Distance from viewport top (bottom placement) or unused. */
+  position: 'absolute' | 'fixed';
   top: number;
-  /** Distance from viewport bottom (top placement). */
-  bottom: number;
+  left: number;
+  width: number;
   maxHeight: number;
+  placement: 'bottom' | 'top';
 };
 
 const shouldOpenUpward = (spaceBelow: number, spaceAbove: number, menuHeight: number): boolean => {
@@ -50,12 +48,122 @@ const shouldOpenUpward = (spaceBelow: number, spaceAbove: number, menuHeight: nu
   return spaceAbove > spaceBelow;
 };
 
+const findStage = (anchor: HTMLElement): HTMLElement | null => {
+  return anchor.closest(STAGE_SELECTOR);
+};
+
+/** True when the anchor lives under `position: fixed|sticky` chrome (header). */
+const hasFixedAncestor = (anchor: HTMLElement, stopAt: HTMLElement | null): boolean => {
+  let current: HTMLElement | null = anchor.parentElement;
+  while (current && current !== stopAt && current !== document.body) {
+    const { position } = getComputedStyle(current);
+    if (position === 'fixed' || position === 'sticky') {
+      return true;
+    }
+    current = current.parentElement;
+  }
+  return false;
+};
+
 /**
- * Renders a menu in `document.body` with fixed coords so it stacks above
- * overflow-clipped parents, cards, and the header.
+ * Convert a visual/layout rect pair into stage-local design coordinates.
+ * Uses the stage's own width ratio so Safari (pre-26.4) and Chrome agree:
+ * both anchor and stage rects are in the same coordinate space.
+ */
+const toStageLocal = (
+  stage: HTMLElement,
+  stageRect: DOMRect,
+  anchorRect: DOMRect,
+): { left: number; top: number; bottom: number; right: number; scale: number } => {
+  const layoutWidth = stage.offsetWidth;
+  const scale = layoutWidth > 0 ? stageRect.width / layoutWidth : 1;
+  const safeScale = Number.isFinite(scale) && scale > 0.01 ? scale : 1;
+  return {
+    scale: safeScale,
+    left: (anchorRect.left - stageRect.left) / safeScale,
+    right: (anchorRect.right - stageRect.left) / safeScale,
+    top: (anchorRect.top - stageRect.top) / safeScale,
+    bottom: (anchorRect.bottom - stageRect.top) / safeScale,
+  };
+};
+
+const computeMenuCoords = (
+  anchor: HTMLElement,
+  menu: HTMLDivElement | null,
+  align: Align,
+): { host: HTMLElement; coords: MenuCoords } | null => {
+  const stage = findStage(anchor);
+  const anchorRect = anchor.getBoundingClientRect();
+  const menuWidth = menu?.offsetWidth ?? 0;
+  const menuHeight = menu?.offsetHeight ?? 0;
+
+  // In-flow triggers: portal into the zoomed stage in design px — no transform:scale.
+  if (stage && !hasFixedAncestor(anchor, stage)) {
+    const stageRect = stage.getBoundingClientRect();
+    const local = toStageLocal(stage, stageRect, anchorRect);
+    const spaceBelow =
+      (stageRect.bottom - anchorRect.bottom) / local.scale - MENU_GAP_PX - VIEWPORT_EDGE_PAD_PX;
+    const spaceAbove =
+      (anchorRect.top - stageRect.top) / local.scale - MENU_GAP_PX - VIEWPORT_EDGE_PAD_PX;
+    const openUp = shouldOpenUpward(spaceBelow, spaceAbove, menuHeight);
+    const maxHeight = Math.max(120, openUp ? spaceAbove : spaceBelow);
+    const width = menuWidth;
+    let left = align === 'end' ? local.right - width : local.left;
+    const stageLayoutWidth = stage.offsetWidth;
+    left = Math.max(
+      VIEWPORT_EDGE_PAD_PX,
+      Math.min(left, stageLayoutWidth - VIEWPORT_EDGE_PAD_PX - width),
+    );
+    const top = openUp
+      ? local.top - MENU_GAP_PX - Math.min(menuHeight || MENU_HEIGHT_ESTIMATE_PX, maxHeight)
+      : local.bottom + MENU_GAP_PX;
+
+    return {
+      host: stage,
+      coords: {
+        position: 'absolute',
+        top,
+        left,
+        width: anchor.offsetWidth,
+        maxHeight,
+        placement: openUp ? 'top' : 'bottom',
+      },
+    };
+  }
+
+  // Mobile / no stage / fixed chrome fallback: viewport fixed, no zoom scale.
+  const viewH = document.documentElement.clientHeight || window.innerHeight;
+  const viewW = document.documentElement.clientWidth || window.innerWidth;
+  const spaceBelow = viewH - anchorRect.bottom - MENU_GAP_PX - VIEWPORT_EDGE_PAD_PX;
+  const spaceAbove = anchorRect.top - MENU_GAP_PX - VIEWPORT_EDGE_PAD_PX;
+  const openUp = shouldOpenUpward(spaceBelow, spaceAbove, menuHeight);
+  const maxHeight = Math.max(120, openUp ? spaceAbove : spaceBelow);
+  let left = align === 'end' ? anchorRect.right - menuWidth : anchorRect.left;
+  left = Math.max(VIEWPORT_EDGE_PAD_PX, Math.min(left, viewW - VIEWPORT_EDGE_PAD_PX - menuWidth));
+  const top = openUp
+    ? anchorRect.top - MENU_GAP_PX - Math.min(menuHeight || MENU_HEIGHT_ESTIMATE_PX, maxHeight)
+    : anchorRect.bottom + MENU_GAP_PX;
+
+  return {
+    host: document.body,
+    coords: {
+      position: 'fixed',
+      top,
+      left,
+      width: anchor.offsetWidth,
+      maxHeight,
+      placement: openUp ? 'top' : 'bottom',
+    },
+  };
+};
+
+/**
+ * Renders a menu above overflow-clipped ancestors.
  *
- * Opens upward when there is not enough room below the trigger.
- * Applies the same desktop fluid scale as `.desktop-fluid-stage`.
+ * Prefer portaling into `.desktop-fluid-stage` with `position: absolute` in
+ * design coordinates so CSS `zoom` is inherited (Safari-safe). Fixed header
+ * triggers should keep menus local (`absolute` under a `relative` root) —
+ * this portal falls back to unscaled `fixed` on `document.body`.
  */
 export const DropdownPortal = ({
   open,
@@ -66,7 +174,9 @@ export const DropdownPortal = ({
   matchWidth = false,
 }: DropdownPortalProps) => {
   const [mounted, setMounted] = useState(false);
-  const [coords, setCoords] = useState<MenuCoords | null>(null);
+  const [placement, setPlacement] = useState<{ host: HTMLElement; coords: MenuCoords } | null>(
+    null,
+  );
   const portalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -75,7 +185,7 @@ export const DropdownPortal = ({
 
   useLayoutEffect(() => {
     if (!open) {
-      setCoords(null);
+      setPlacement(null);
       return;
     }
 
@@ -84,24 +194,10 @@ export const DropdownPortal = ({
       if (!anchor) {
         return;
       }
-
-      const rect = anchor.getBoundingClientRect();
-      const spaceBelow = window.innerHeight - rect.bottom - MENU_GAP_PX - VIEWPORT_EDGE_PAD_PX;
-      const spaceAbove = rect.top - MENU_GAP_PX - VIEWPORT_EDGE_PAD_PX;
-      const measuredHeight = portalRef.current?.offsetHeight ?? 0;
-      const openUp = shouldOpenUpward(spaceBelow, spaceAbove, measuredHeight);
-      const maxHeight = Math.max(120, openUp ? spaceAbove : spaceBelow);
-
-      setCoords({
-        placement: openUp ? 'top' : 'bottom',
-        top: rect.bottom + MENU_GAP_PX,
-        bottom: window.innerHeight - rect.top + MENU_GAP_PX,
-        left: Math.max(VIEWPORT_EDGE_PAD_PX, rect.left),
-        right: Math.max(VIEWPORT_EDGE_PAD_PX, window.innerWidth - rect.right),
-        width: anchor.offsetWidth,
-        align,
-        maxHeight,
-      });
+      const next = computeMenuCoords(anchor, portalRef.current, align);
+      if (next) {
+        setPlacement(next);
+      }
     };
 
     update();
@@ -115,32 +211,29 @@ export const DropdownPortal = ({
     };
   }, [open, anchorRef, align]);
 
-  if (!mounted || !open || coords == null) {
+  if (!mounted || !open || placement == null) {
     return null;
   }
 
-  const originX = coords.align === 'end' ? 'right' : 'left';
-  const originY = coords.placement === 'top' ? 'bottom' : 'top';
-
+  const { host, coords } = placement;
   const style: CSSProperties = {
-    ...(coords.placement === 'bottom' ? { top: coords.top } : { bottom: coords.bottom }),
-    ...(coords.align === 'end' ? { right: coords.right } : { left: coords.left }),
+    position: coords.position,
+    top: coords.top,
+    left: coords.left,
     ...(matchWidth ? { minWidth: coords.width } : {}),
     maxHeight: coords.maxHeight,
-    transform: 'scale(var(--desktop-layout-scale))',
-    transformOrigin: `${originY} ${originX}`,
   };
 
   return createPortal(
     <div
       ref={portalRef}
-      className={cn('fixed z-[var(--z-dropdown)] overflow-y-auto', className)}
+      className={cn('z-[var(--z-dropdown)] overflow-y-auto', className)}
       style={style}
       data-dropdown-portal
       data-placement={coords.placement}
     >
       {children}
     </div>,
-    document.body,
+    host,
   );
 };

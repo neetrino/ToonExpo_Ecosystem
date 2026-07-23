@@ -53,17 +53,13 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
   const logoutMutation = useLogoutMutation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [showPill, setShowPill] = useState(false);
-  const [authReady, setAuthReady] = useState(false);
   const isTransparentStart = variant === 'transparent';
   /** Solid pages always use the home pill chrome; home reveals it on scroll. */
   const pillVisible = !isTransparentStart || showPill || menuOpen;
   const isOverHero = isTransparentStart && !pillVisible;
   const needsSpacer = !isTransparentStart;
-  const showAuthLoading = !authReady || isLoading || (isFetching && !user);
-
-  useEffect(() => {
-    setAuthReady(true);
-  }, []);
+  /** Only while a real `/auth/me` request is in flight — guests render the login icon immediately. */
+  const showAuthLoading = isLoading || (isFetching && !user);
 
   useEffect(() => {
     setMenuOpen(false);

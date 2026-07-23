@@ -16,6 +16,7 @@ type AuthFitStageProps = {
 type FitMetrics = {
   scale: number;
   heightPx: number;
+  ready: boolean;
 };
 
 /**
@@ -24,7 +25,7 @@ type FitMetrics = {
 export const AuthFitStage = ({ children, className }: AuthFitStageProps) => {
   const frameRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
-  const [fit, setFit] = useState<FitMetrics>({ scale: 1, heightPx: 0 });
+  const [fit, setFit] = useState<FitMetrics>({ scale: 1, heightPx: 0, ready: false });
 
   useLayoutEffect(() => {
     const frame = frameRef.current;
@@ -49,9 +50,9 @@ export const AuthFitStage = ({ children, className }: AuthFitStageProps) => {
       const scale = Math.max(AUTH_FIT_MIN_SCALE, Number.isFinite(nextScale) ? nextScale : 1);
       const heightPx = Math.round(naturalHeight * scale);
       setFit((prev) =>
-        Math.abs(prev.scale - scale) < 0.005 && prev.heightPx === heightPx
+        prev.ready && Math.abs(prev.scale - scale) < 0.005 && prev.heightPx === heightPx
           ? prev
-          : { scale, heightPx },
+          : { scale, heightPx, ready: true },
       );
       stage.style.setProperty('--auth-fit-scale', String(scale));
     };
@@ -78,7 +79,13 @@ export const AuthFitStage = ({ children, className }: AuthFitStageProps) => {
         className,
       )}
     >
-      <div className="relative w-full max-w-[28rem] overflow-hidden" style={slotStyle}>
+      <div
+        className={cn(
+          'relative w-full max-w-[28rem] overflow-hidden',
+          fit.ready ? 'opacity-100' : 'opacity-0',
+        )}
+        style={slotStyle}
+      >
         <div
           ref={stageRef}
           className="w-full origin-top [transform:scale(var(--auth-fit-scale,1))]"
