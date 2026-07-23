@@ -4,6 +4,12 @@ export const COMPANY_DESCRIPTION_MAX_LENGTH = 4000;
 export const ADMIN_COMPANIES_DEFAULT_PAGE_SIZE = 20;
 export const ADMIN_COMPANIES_MAX_PAGE_SIZE = 50;
 
+/**
+ * Card grids use 2–3 columns; keep page size divisible by both so full pages
+ * do not leave an empty trailing slot before the next page.
+ */
+export const ADMIN_INVENTORY_DEFAULT_PAGE_SIZE = 18;
+
 export const COMPANY_TYPES = ['builder', 'partner', 'bank', 'service'] as const;
 
 export const COMPANY_STATUSES = ['active', 'inactive', 'pending'] as const;

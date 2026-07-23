@@ -7,7 +7,7 @@ type PageProps = {
 };
 
 /**
- * Legacy company catalog project detail → admin Projects hub.
+ * Legacy company catalog project detail → Projects hub.
  */
 export default async function AdminCompanyCatalogProjectDetailRedirect({ params }: PageProps) {
   const { locale, projectId } = await params;

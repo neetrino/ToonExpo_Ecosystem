@@ -6,8 +6,8 @@ import { useMemo } from 'react';
 
 import { AdminProjectsTable } from '@/features/admin/components/admin-projects-table';
 import {
-  ADMIN_COMPANIES_DEFAULT_PAGE_SIZE,
   ADMIN_COMPANIES_MAX_PAGE_SIZE,
+  ADMIN_INVENTORY_DEFAULT_PAGE_SIZE,
   ADMIN_VIEW_MODE_KEYS,
 } from '@/features/admin/constants';
 import {
@@ -38,7 +38,7 @@ export const AdminProjectsListPage = () => {
   const pathname = usePathname();
   const page = parsePage(searchParams.get('page'));
   const companyId = searchParams.get('companyId')?.trim() || undefined;
-  const pageSize = ADMIN_COMPANIES_DEFAULT_PAGE_SIZE;
+  const pageSize = ADMIN_INVENTORY_DEFAULT_PAGE_SIZE;
   const { viewMode, setViewMode } = usePersistedViewMode(ADMIN_VIEW_MODE_KEYS.projects);
 
   const projectsQuery = useAdminProjectsQuery(page, pageSize, companyId);

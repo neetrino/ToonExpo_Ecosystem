@@ -6,8 +6,8 @@ import { useSearchParams } from 'next/navigation';
 import { useMemo } from 'react';
 
 import {
-  ADMIN_COMPANIES_DEFAULT_PAGE_SIZE,
   ADMIN_COMPANIES_MAX_PAGE_SIZE,
+  ADMIN_INVENTORY_DEFAULT_PAGE_SIZE,
 } from '@/features/admin/constants';
 import { useAdminCompaniesQuery } from '@/features/admin/hooks/use-admin-companies';
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
@@ -139,7 +139,7 @@ export const useAdminInventoryListParams = (): {
   const companyId = searchParams.get('companyId')?.trim() || undefined;
   return {
     page: parsePage(searchParams.get('page')),
-    pageSize: ADMIN_COMPANIES_DEFAULT_PAGE_SIZE,
+    pageSize: ADMIN_INVENTORY_DEFAULT_PAGE_SIZE,
     ...(companyId ? { companyId } : {}),
   };
 };
