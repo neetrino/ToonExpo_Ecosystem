@@ -5,7 +5,7 @@ import { HeroSearch } from '@/features/catalog/components/hero-search';
 import { cn } from '@/shared/ui/cn';
 
 /** Figma photo node `89:1399`. */
-const HERO_IMAGE_SRC = '/images/hero-building.jpg';
+const HERO_IMAGE_SRC = '/images/hero-building.webp';
 
 /**
  * Public home hero — full-bleed skyline with marketplace search.

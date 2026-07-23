@@ -16,7 +16,6 @@ import {
 import type { LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { BrandLogo } from '@/shared/ui/brand-logo';
 import { Link, usePathname } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 
@@ -101,9 +100,8 @@ export const AdminNav = () => {
 
   return (
     <nav aria-label={t('label')} className="flex h-full flex-col gap-1">
-      <div className="mb-5 hidden px-2 md:block">
-        <BrandLogo href="/admin" size="sm" inverted />
-        <p className="mt-2 px-0.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-on-dark/65">
+      <div className="mb-4 hidden px-3.5 pt-1 md:block">
+        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-on-dark/65">
           {t('portalLabel')}
         </p>
       </div>

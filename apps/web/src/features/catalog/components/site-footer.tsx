@@ -9,6 +9,7 @@ import { BrandLogo } from '@/shared/ui/brand-logo';
  */
 export const SiteFooter = async () => {
   const t = await getTranslations('Footer');
+  const tNav = await getTranslations('Nav');
 
   return (
     <footer className="border-t border-header-border bg-canvas">
@@ -27,23 +28,23 @@ export const SiteFooter = async () => {
             </p>
             <ul className="mt-9 flex flex-col gap-3 text-sm text-header-muted">
               <li>
-                <Link href="/projects" className="transition-colors hover:text-brand-deep">
-                  {t('links.allListings')}
+                <Link href="/apartments" className="transition-colors hover:text-brand-deep">
+                  {tNav('buy')}
                 </Link>
               </li>
               <li>
-                <Link href="/builders" className="transition-colors hover:text-brand-deep">
-                  {t('links.newDevelopments')}
-                </Link>
-              </li>
-              <li>
-                <Link href="/mortgage" className="transition-colors hover:text-brand-deep">
-                  {t('links.marketReports')}
+                <Link href="/developments" className="transition-colors hover:text-brand-deep">
+                  {tNav('newDevelopments')}
                 </Link>
               </li>
               <li>
                 <Link href="/partners" className="transition-colors hover:text-brand-deep">
-                  {t('links.partnerBanks')}
+                  {tNav('partners')}
+                </Link>
+              </li>
+              <li>
+                <Link href="/mortgage" className="transition-colors hover:text-brand-deep">
+                  {tNav('mortgage')}
                 </Link>
               </li>
             </ul>

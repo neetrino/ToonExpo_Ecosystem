@@ -1,6 +1,8 @@
 {
   "Common": {
-    "close": "Закрыть"
+    "close": "Закрыть",
+    "cancel": "Отмена",
+    "delete": "Удалить"
   },
   "HomePage": {
     "brand": "ToonExpo",
@@ -170,7 +172,7 @@
   "Nav": {
     "main": "Основная навигация",
     "menu": "Открыть меню",
-    "buy": "Купить",
+    "buy": "Квартиры",
     "newDevelopments": "Новостройки",
     "marketInsights": "Аналитика рынка",
     "projects": "Проекты",
@@ -180,10 +182,52 @@
     "listProperty": "Разместить объект",
     "profile": "Профиль",
     "profileMenu": "Меню аккаунта",
+    "admin": "Админ",
     "loading": "…",
     "partners": "Партнёры",
     "mortgage": "Ипотека",
     "expoMap": "Карта выставки"
+  },
+  "BuyPage": {
+    "title": "Квартиры в продаже",
+    "results": "{count} результатов",
+    "empty": "По этим фильтрам квартир нет.",
+    "homesInView": "{count} квартир в зоне",
+    "badgeVerified": "Проверено",
+    "badgeNew": "Новое",
+    "unitTitle": "Кв. {number} · {project}",
+    "specBed": "{count} комн.",
+    "specArea": "{area} м²",
+    "saveSearchHint": "Сохраните поиск, чтобы получать уведомления о новых подходящих объектах.",
+    "saveSearch": "Сохранить поиск",
+    "filters": {
+      "location": "Локация",
+      "allCities": "Все города",
+      "price": "Цена",
+      "min": "От",
+      "max": "До",
+      "beds": "Комнаты",
+      "status": "Статус"
+    },
+    "meta": {
+      "title": "Квартиры в продаже — ToonExpo",
+      "description": "Смотрите проверенные квартиры с фильтрами и картой."
+    }
+  },
+  "DevelopmentsPage": {
+    "eyebrow": "Новостройки",
+    "title": "Небосвод формируется — с живой доступностью квартир.",
+    "subtitle": "Следите за остатками, ценами и ходом строительства самых ожидаемых жилых проектов — напрямую от застройщиков.",
+    "empty": "Пока нет проектов для показа.",
+    "statFrom": "От",
+    "statUnits": "Квартир",
+    "statSold": "Продано",
+    "unitsLeft": "Осталось {count}",
+    "completionTba": "Срок сдачи уточняется",
+    "meta": {
+      "title": "Новостройки — ToonExpo",
+      "description": "Следите за остатками, ценами и ходом строительства жилых проектов от застройщиков."
+    }
   },
   "Footer": {
     "tagline": "Маркетплейс проверенных домов, новостроек и предложений банков-партнёров — для покупателей, брокеров и застройщиков на одной прозрачной платформе.",
@@ -302,6 +346,52 @@
       "notFoundTitle": "Проект не найден",
       "metaFallback": "{name} — карточка проекта на ToonExpo"
     },
+    "projectDetail": {
+      "statStatus": "Статус",
+      "statCompletion": "Сдача",
+      "statFrom": "От",
+      "statTotalUnits": "Всего",
+      "statSold": "Продано",
+      "completionTba": "Уточняется",
+      "timelineTitle": "График строительства",
+      "timelineStageIndex": "Этап {number}",
+      "timelineStages": {
+        "preSale": "Предпродажа",
+        "foundation": "Фундамент",
+        "structure": "Каркас",
+        "facade": "Фасад",
+        "handover": "Сдача"
+      },
+      "timelineStatus": {
+        "complete": "Готово",
+        "inProgress": "В процессе",
+        "upcoming": "Скоро"
+      },
+      "floorsTitle": "Выберите этаж",
+      "floorsSubtitle": "Выберите уровень, чтобы увидеть планировку и доступные квартиры.",
+      "floorsEmpty": "Пока нет опубликованных этажей.",
+      "buildingStack": "Этажи здания",
+      "floorLabel": "Этаж {number}",
+      "availCount": "{count} своб.",
+      "unitsCount": "{count} кв.",
+      "legendAvailable": "Свободно",
+      "legendReserved": "Бронь",
+      "legendSold": "Продано",
+      "floorVisualAlt": "Аксонометрия проекта {project}",
+      "reserveTitle": "Забронируйте квартиру в {project}",
+      "reserveSubtitle": "Скачайте брошюру, запишитесь на показ или свяжитесь с отделом продаж застройщика.",
+      "downloadBrochure": "Скачать брошюру",
+      "scheduleVisit": "Записаться на визит",
+      "reserveName": "Имя и фамилия",
+      "reserveEmail": "Email",
+      "reservePhone": "Телефон",
+      "reserveSubmit": "Заказать звонок",
+      "reserveSubmitting": "Отправка…",
+      "reserveLoginHint": "Войдите как покупатель, чтобы отправить запрос.",
+      "reserveLoginLink": "Войти",
+      "reserveStaffBlocked": "Служебные аккаунты не могут отправлять запросы покупателя.",
+      "reserveNotePrefix": "Обратный звонок"
+    },
     "building": {
       "floors": "Этажи",
       "noFloors": "Пока нет опубликованных этажей.",
@@ -340,6 +430,61 @@
       "areaLabel": "Площадь",
       "bedroomsLabel": "Спальни",
       "bathroomsLabel": "Санузлы",
+      "bedsLabel": "Спальни",
+      "bathsLabel": "Санузлы",
+      "priceLabel": "Цена",
+      "pricePerAreaLabel": "Цена / м²",
+      "typeLabel": "Тип",
+      "typeFallback": "Квартира",
+      "developerLabel": "Застройщик",
+      "verifiedLabel": "Проверено",
+      "verifiedYes": "Да",
+      "verifiedBadge": "Проверено",
+      "unitIdLabel": "Номер",
+      "floorLabel": "Этаж",
+      "livingAreaLabel": "Жилая площадь",
+      "yearBuiltLabel": "Год постройки",
+      "aboutTitle": "Об этом доме",
+      "aboutEmpty": "Подробности об этом доме появятся здесь позже.",
+      "detailsTitle": "Детали объекта",
+      "neighborhoodTitle": "Район",
+      "neighborhood": {
+        "walkScore": "Пешая доступность",
+        "transit": "Транспорт",
+        "schools": "Школы",
+        "crime": "Безопасность"
+      },
+      "priceHistoryTitle": "История цены",
+      "priceHistory": {
+        "listed": "В продаже",
+        "priceChange": "Изменение цены"
+      },
+      "breadcrumb": "Навигация",
+      "breadcrumbHome": "Главная",
+      "breadcrumbSearch": "Поиск",
+      "inquireTitle": "Запрос по этому дому",
+      "inquireSubtitle": "Мы свяжем вас с застройщиком.",
+      "inquireAgentRole": "Партнёр ToonExpo",
+      "inquireAgentMeta": "Проверенный агент · отвечает за 1 час",
+      "inquireNamePlaceholder": "Ваше имя",
+      "inquireEmailPlaceholder": "Email",
+      "inquirePhonePlaceholder": "Телефон",
+      "inquireMessagePlaceholder": "Ваше сообщение",
+      "inquireMessageDefault": "Хочу записаться на просмотр: {project}.",
+      "inquireSubmit": "Запросить просмотр",
+      "inquireSubmitting": "Отправка…",
+      "inquireMortgage": "Предварительное одобрение ипотеки",
+      "inquireLoginHint": "Войдите как покупатель, чтобы отправить запрос.",
+      "inquireLoginLink": "Войти",
+      "inquireStaffBlocked": "Служебные аккаунты не могут отправлять запросы на просмотр.",
+      "mortgageEstimateLabel": "Оценка в месяц",
+      "mortgageEstimateMonthly": "{amount}/мес",
+      "mortgageEstimateTerms": "5.92% APR · 20% взнос · 30 лет",
+      "mortgageEstimateCta": "Открыть калькулятор →",
+      "comparableTitle": "Похожие квартиры",
+      "comparableBed": "{count} спальни",
+      "comparableBath": "{count} ванные",
+      "comparableArea": "{area} м²",
       "noPlan": "Планировка скоро",
       "matterportTour": "Виртуальный тур Matterport",
       "external3dTour": "3D-тур",
@@ -795,7 +940,7 @@
       "empty": "Компаний пока нет. Создайте первую.",
       "loading": "Загрузка компаний…",
       "error": "Не удалось загрузить компании. Попробуйте ещё раз.",
-      "newCompany": "Новая компания",
+      "newCompany": "+ Новая компания",
       "pagination": {
         "previous": "Назад",
         "next": "Вперёд",
@@ -857,6 +1002,7 @@
       },
       "detail": {
         "back": "← Компании",
+        "sheetTitle": "Компания",
         "typeLabel": "Тип",
         "save": "Сохранить",
         "saving": "Сохранение…",
@@ -896,7 +1042,7 @@
         "loading": "Загрузка категорий…",
         "error": "Не удалось загрузить категории. Попробуйте снова.",
         "empty": "Категорий пока нет. Создайте первую.",
-        "newCategory": "Новая категория",
+        "newCategory": "+ Новая категория",
         "createTitle": "Новая категория",
         "editTitle": "Редактировать {name}",
         "edit": "Редактировать",
@@ -933,7 +1079,7 @@
         "loading": "Загрузка оценок…",
         "error": "Не удалось загрузить оценки. Попробуйте снова.",
         "empty": "Оценок пока нет. Создайте первую для начала работы.",
-        "newAssessment": "Новая оценка",
+        "newAssessment": "+ Новая оценка",
         "categoriesLink": "Категории",
         "overridden": "переопределено",
         "pagination": {
@@ -1061,7 +1207,7 @@
         "recommendations": {
           "title": "Рекомендации",
           "addTitle": "Добавить рекомендацию",
-          "add": "Добавить",
+          "add": "+ Добавить",
           "adding": "Добавление…",
           "delete": "Удалить",
           "deleteConfirm": "Удалить эту рекомендацию?",
@@ -1085,7 +1231,7 @@
         "requiredActions": {
           "title": "Обязательные действия",
           "addTitle": "Добавить действие",
-          "add": "Добавить",
+          "add": "+ Добавить",
           "adding": "Добавление…",
           "delete": "Удалить",
           "deleteConfirm": "Удалить это действие?",
@@ -1118,7 +1264,7 @@
           "title": "Внутренние заметки",
           "subtitle": "Только для админов BigProjects — застройщики их не видят.",
           "addLabel": "Новая внутренняя заметка",
-          "add": "Добавить",
+          "add": "+ Добавить",
           "adding": "Добавление…",
           "delete": "Удалить",
           "deleteConfirm": "Удалить эту заметку?",
@@ -1137,7 +1283,7 @@
       "empty": "Профилей партнёров пока нет. Создайте первый.",
       "loading": "Загрузка…",
       "error": "Не удалось загрузить партнёров.",
-      "newPartner": "Новый партнёр",
+      "newPartner": "+ Новый партнёр",
       "pagination": {
         "previous": "Назад",
         "next": "Далее",
@@ -1214,6 +1360,7 @@
         "loading": "Загрузка…",
         "notFound": "Партнёр не найден",
         "back": "← Партнёры",
+        "sheetTitle": "Партнёр",
         "save": "Сохранить",
         "saving": "Сохранение…",
         "saveSuccess": "Партнёр обновлён",
@@ -1343,11 +1490,13 @@
       "loading": "Загрузка…",
       "error": "Не удалось загрузить предложения.",
       "empty": "Предложений пока нет.",
-      "newOffer": "Новое предложение",
+      "newOffer": "+ Новое предложение",
       "createTitle": "Новое банковское предложение",
       "editTitle": "Редактировать {title}",
       "edit": "Редактировать",
       "delete": "Удалить",
+      "deleteConfirmTitle": "Удалить",
+      "deleteConfirmMessage": "Удалить предложение «{title}»?",
       "filters": {
         "allBanks": "Все банки",
         "allPublication": "Все статусы публикации",
@@ -1382,7 +1531,13 @@
           "draft": "Черновик",
           "published": "Опубликовано",
           "archived": "В архиве"
-        }
+        },
+        "sections": {
+          "offer": "Предложение",
+          "terms": "Условия",
+          "publishing": "Публикация"
+        },
+        "saving": "Сохранение…"
       }
     },
     "serviceProviders": {
@@ -1392,7 +1547,7 @@
       "error": "Не удалось загрузить данные.",
       "categories": {
         "title": "Категории",
-        "newCategory": "Новая категория",
+        "newCategory": "+ Новая категория",
         "empty": "Категорий пока нет.",
         "edit": "Редактировать",
         "delete": "Удалить",
@@ -1416,7 +1571,7 @@
       },
       "providers": {
         "title": "Поставщики",
-        "newProvider": "Новый поставщик",
+        "newProvider": "+ Новый поставщик",
         "empty": "Нет поставщиков по этим фильтрам.",
         "edit": "Редактировать",
         "delete": "Удалить",
@@ -1466,7 +1621,13 @@
             "draft": "Черновик",
             "published": "Опубликовано",
             "archived": "В архиве"
-          }
+          },
+          "sections": {
+            "provider": "Провайдер",
+            "contact": "Контакты",
+            "publishing": "Публикация"
+          },
+          "saving": "Сохранение…"
         }
       }
     },
@@ -1476,7 +1637,7 @@
       "empty": "Событий пока нет. Создайте первое.",
       "loading": "Загрузка событий…",
       "error": "Не удалось загрузить события. Попробуйте ещё раз.",
-      "newEvent": "Новое событие",
+      "newEvent": "+ Новое событие",
       "columns": {
         "name": "Название",
         "code": "Код",
@@ -1532,7 +1693,7 @@
       },
       "venueMaps": {
         "title": "Карты площадки",
-        "newMap": "Новая карта",
+        "newMap": "+ Новая карта",
         "cancelCreate": "Отмена",
         "empty": "Карт площадки пока нет.",
         "loading": "Загрузка карт…",
@@ -1556,7 +1717,7 @@
       },
       "booths": {
         "title": "Стенды",
-        "newBooth": "Новый стенд",
+        "newBooth": "+ Новый стенд",
         "loading": "Загрузка стендов…",
         "empty": "На этой карте стендов пока нет.",
         "selectHint": "Выберите стенд или создайте новый.",
@@ -1603,7 +1764,7 @@
           "noProject": "Без проекта",
           "label": "Метка",
           "active": "Активно",
-          "add": "Добавить назначение",
+          "add": "+ Добавить назначение",
           "adding": "Добавление…",
           "remove": "Удалить",
           "edit": "Изменить",
@@ -1616,8 +1777,8 @@
         "title": "Граф маршрутов",
         "nodes": "Узлы",
         "edges": "Рёбра",
-        "addNode": "Добавить узел",
-        "addEdge": "Добавить ребро",
+        "addNode": "+ Добавить узел",
+        "addEdge": "+ Добавить ребро",
         "code": "Код",
         "label": "Метка",
         "type": "Тип",
@@ -1707,7 +1868,7 @@
       },
       "links": {
         "projects": "Все проекты",
-        "newProject": "Новый проект",
+        "newProject": "+ Новый проект",
         "team": "Команда",
         "crm": "CRM",
         "scanner": "Сканер"
@@ -1728,7 +1889,7 @@
       "empty": "Проектов пока нет. Создайте первый.",
       "loading": "Загрузка проектов…",
       "error": "Не удалось загрузить проекты. Попробуйте ещё раз.",
-      "newProject": "Новый проект",
+      "newProject": "+ Новый проект",
       "pagination": {
         "previous": "Назад",
         "next": "Вперёд",
@@ -1801,9 +1962,9 @@
       "loading": "Загрузка…",
       "noBuildings": "Зданий пока нет. Добавьте первое ниже.",
       "noFloors": "Этажей пока нет.",
-      "addBuilding": "Добавить здание",
-      "addFloor": "Добавить этаж",
-      "addApartments": "Добавить квартиры",
+      "addBuilding": "+ Добавить здание",
+      "addFloor": "+ Добавить этаж",
+      "addApartments": "+ Добавить квартиры",
       "createApartments": "Создать квартиры",
       "cancel": "Отмена",
       "adding": "Сохранение…",
@@ -1848,7 +2009,7 @@
       "subtitle": "Рендеры проекта, карты корпусов и поэтажные планы с навигационными точками",
       "loading": "Загрузка визуальных карт…",
       "empty": "Визуальных canvas пока нет. Создайте и добавьте точки.",
-      "newCanvas": "Новый canvas",
+      "newCanvas": "+ Новый canvas",
       "cancelCreate": "Отмена",
       "untitled": "Canvas без названия",
       "primaryYes": "Основной",
@@ -2095,7 +2256,7 @@
         "event_interaction": "Мероприятие"
       },
       "newDeal": {
-        "cta": "Новая сделка",
+        "cta": "+ Новая сделка",
         "title": "Новая сделка",
         "contactName": "Имя",
         "contactPhone": "Телефон",
@@ -2138,12 +2299,12 @@
         "notesTitle": "Заметки",
         "notesEmpty": "Заметок пока нет",
         "notePlaceholder": "Внутренняя заметка…",
-        "addNote": "Добавить заметку",
+        "addNote": "+ Добавить заметку",
         "activitiesTitle": "Активности",
         "activitiesEmpty": "Активностей пока нет",
         "activityType": "Тип",
         "activityDue": "Срок",
-        "addActivity": "Добавить активность",
+        "addActivity": "+ Добавить активность",
         "markDone": "Отметить выполненной",
         "activityTypes": {
           "call": "Звонок",
@@ -2304,7 +2465,7 @@
       "title": "Предложения и услуги",
       "pageTitle": "Предложения",
       "empty": "Предложений пока нет.",
-      "add": "Добавить предложение",
+      "add": "+ Добавить предложение",
       "edit": "Изменить",
       "delete": "Удалить",
       "create": "Создать предложение",
@@ -2328,8 +2489,11 @@
     }
   },
   "Mortgage": {
+    "eyebrow": "Недвижимость и финансирование",
     "title": "Ипотечный калькулятор",
-    "subtitle": "Сравните банковские предложения и оцените ежемесячный платёж",
+    "titleLine1": "Рассчитайте. Сравните.",
+    "titleLine2": "Получите предварительное одобрение.",
+    "subtitle": "Актуальные предложения банков-партнёров. Меняйте параметры и сразу видьте ежемесячный платёж по каждому банку.",
     "loading": "Загрузка…",
     "error": "Не удалось загрузить ипотечные предложения.",
     "empty": "Опубликованных ипотечных предложений пока нет.",
@@ -2338,28 +2502,39 @@
       "description": "Сравнение банковских ипотечных предложений и расчёт ежемесячного платежа в AMD."
     },
     "offers": {
-      "featured": "Избранное",
+      "featured": "Рекомендуем",
+      "lowestRate": "Лучшая ставка",
       "rate": "Ставка",
       "apr": "APR",
+      "minDown": "Мин. взнос",
       "minDownPayment": "Мин. первый взнос",
+      "monthly": "В месяц",
       "terms": "Сроки",
       "years": "лет",
       "estimatedMonthly": "≈ {amount}/мес"
     },
+    "prequalify": {
+      "title": "Предварительное одобрение в {bank}",
+      "subtitle": "Мягкая проверка · не влияет на рейтинг · форма за 2 минуты.",
+      "cta": "Начать заявку"
+    },
     "calculator": {
-      "inputsTitle": "Ваши параметры",
-      "offersTitle": "Банковские предложения",
-      "propertyPrice": "Стоимость недвижимости (AMD)",
+      "inputsTitle": "Ваш кредит",
+      "offersTitle": "Предложения банков-партнёров",
+      "propertyPrice": "Стоимость объекта",
       "propertyPricePlaceholder": "напр. 45000000",
+      "downPayment": "Первый взнос",
       "downPaymentPercent": "Первый взнос (%)",
-      "downPaymentAmount": "Первый взнос (AMD)",
-      "loanTerm": "Срок кредита",
+      "downPaymentAmount": "Сумма первого взноса",
+      "loanTerm": "Срок",
       "termYears": "{years} лет",
+      "termShort": "{years} лет",
       "termAdjusted": "Срок изменён на {years} лет для этого предложения",
       "resultsTitle": "Оценка",
       "monthlyPayment": "Ежемесячный платёж",
+      "monthlyPaymentWithBank": "Ежемесячный платёж · {bank}",
       "loanAmount": "Сумма кредита",
-      "downPayment": "Первый взнос",
+      "downPaymentAmountLabel": "Первый взнос",
       "totalPayment": "Общая сумма выплат",
       "totalInterest": "Сумма процентов",
       "selectedBank": "Банк",
@@ -2411,7 +2586,7 @@
       "subtitle": "Управляйте черновиками ипотечных предложений вашего банка.",
       "publicationNote": "Публикацию выполняет команда платформы ToonExpo.",
       "empty": "Ипотечных предложений пока нет.",
-      "add": "Добавить предложение",
+      "add": "+ Добавить предложение",
       "edit": "Редактировать",
       "delete": "Удалить",
       "create": "Создать",

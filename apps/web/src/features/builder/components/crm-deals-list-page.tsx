@@ -14,6 +14,7 @@ import { useCompanyMembersQuery } from '@/features/builder/hooks/use-company-mem
 import { usePortalProjectsQuery } from '@/features/builder/hooks/use-portal-projects';
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
 import { Button } from '@/shared/ui/button';
+import { AddActionLabel } from '@/shared/ui/add-action-label';
 
 const parsePage = (raw: string | null): number => {
   const parsed = Number(raw);
@@ -116,7 +117,7 @@ export const CrmDealsListPage = () => {
             setShowNew(true);
           }}
         >
-          {t('newDeal.cta')}
+          <AddActionLabel>{t('newDeal.cta')}</AddActionLabel>
         </Button>
       </div>
 

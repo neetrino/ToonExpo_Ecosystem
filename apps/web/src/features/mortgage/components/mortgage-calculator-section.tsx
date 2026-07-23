@@ -2,20 +2,20 @@
 
 import type { PublicMortgageOfferItem } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
+import { useMemo, type ReactNode } from 'react';
 
 import { MortgageOfferCard } from '@/features/mortgage/components/mortgage-offer-card';
+import { MortgagePrequalifyCta } from '@/features/mortgage/components/mortgage-prequalify-cta';
 import { MortgageResultsPanel } from '@/features/mortgage/components/mortgage-results-panel';
 import { useMortgageCalculator } from '@/features/mortgage/hooks/use-mortgage-calculator';
-import { FormField } from '@/shared/ui/form-field';
-import { Input } from '@/shared/ui/input';
-import { Select } from '@/shared/ui/select';
+import { cn } from '@/shared/ui/cn';
 
 type MortgageCalculatorSectionProps = {
   offers: PublicMortgageOfferItem[];
 };
 
 /**
- * Interactive mortgage calculator with synced down payment fields and debounced API.
+ * Two-column loan card + partner offers — Figma `105:2573`.
  */
 export const MortgageCalculatorSection = ({ offers }: MortgageCalculatorSectionProps) => {
   const t = useTranslations('Mortgage.calculator');
@@ -39,104 +39,168 @@ export const MortgageCalculatorSection = ({ offers }: MortgageCalculatorSectionP
     setTermAdjustedHint,
   } = useMortgageCalculator({ offers });
 
+  const lowestRateOfferId = useMemo(() => {
+    let bestId: string | null = null;
+    let bestRate = Number.POSITIVE_INFINITY;
+    for (const offer of offers) {
+      const rate = Number(offer.rate);
+      if (Number.isFinite(rate) && rate < bestRate) {
+        bestRate = rate;
+        bestId = offer.id;
+      }
+    }
+    return bestId;
+  }, [offers]);
+
   if (!selectedOffer) {
     return null;
   }
 
-  const resultsPanel = (
-    <MortgageResultsPanel
-      result={calculationResult}
-      selectedTermYears={loanTermYears}
-      isCalculating={isCalculating}
-      hasValidationError={validationMessage != null}
-    />
-  );
-
   return (
-    <div className="flex flex-col gap-8 lg:grid lg:grid-cols-[minmax(0,22rem)_1fr] lg:items-start">
-      <div className="order-1 lg:hidden">{resultsPanel}</div>
+    <div className="grid gap-10 lg:grid-cols-[minmax(0,25rem)_minmax(0,1fr)] lg:items-start lg:gap-12">
+      <aside className="rounded-[24px] bg-surface-elevated p-8 shadow-[0_0_0_1px_var(--color-header-border)]">
+        <h2 className="font-brand text-xl font-bold tracking-tight text-ink-navy">
+          {t('inputsTitle')}
+        </h2>
 
-      <section className="order-2 flex flex-col gap-4 lg:order-1">
-        <h2 className="text-base font-semibold text-ink">{t('inputsTitle')}</h2>
-
-        <FormField id="propertyPrice" label={t('propertyPrice')}>
-          <Input
+        <LoanRow label={t('propertyPrice')} htmlFor="propertyPrice">
+          <input
             id="propertyPrice"
             inputMode="numeric"
             value={propertyPrice}
+            placeholder={t('propertyPricePlaceholder')}
             onChange={(event) => {
               handlePropertyPriceChange(event.target.value);
             }}
-            placeholder={t('propertyPricePlaceholder')}
+            className={valueInputClassName}
           />
-        </FormField>
+        </LoanRow>
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          <FormField
-            id="downPaymentPercent"
-            label={t('downPaymentPercent')}
-            error={validationMessage ?? undefined}
-          >
-            <Input
+        <LoanRow label={t('downPayment')} htmlFor="downPaymentPercent">
+          <div className="flex items-center justify-end gap-2">
+            <input
               id="downPaymentPercent"
               inputMode="decimal"
               value={downPaymentPercent}
               onChange={(event) => {
                 handleDownPaymentPercentChange(event.target.value);
               }}
+              className={cn(valueInputClassName, 'w-14')}
+              aria-label={t('downPaymentPercent')}
             />
-          </FormField>
-          <FormField id="downPaymentAmount" label={t('downPaymentAmount')}>
-            <Input
+            <span className="font-brand text-lg font-bold text-ink-navy">%</span>
+            <span className="text-header-muted" aria-hidden>
+              ·
+            </span>
+            <input
               id="downPaymentAmount"
               inputMode="numeric"
               value={downPaymentAmount}
               onChange={(event) => {
                 handleDownPaymentAmountChange(event.target.value);
               }}
+              className={cn(valueInputClassName, 'w-[7.5rem]')}
+              aria-label={t('downPaymentAmount')}
             />
-          </FormField>
+          </div>
+        </LoanRow>
+        {validationMessage ? <p className="mt-1 text-xs text-danger">{validationMessage}</p> : null}
+
+        <LoanRow label={t('loanTerm')}>
+          <span className="font-brand text-lg font-bold text-ink-navy">
+            {loanTermYears != null ? t('termYears', { years: loanTermYears }) : '—'}
+          </span>
+        </LoanRow>
+
+        <div className="mt-3 grid grid-cols-3 gap-2">
+          {selectedOffer.termOptionsYears.map((years) => {
+            const active = loanTermYears === years;
+            return (
+              <button
+                key={years}
+                type="button"
+                onClick={() => {
+                  setTermAdjustedHint(null);
+                  setLoanTermYears(years);
+                }}
+                className={cn(
+                  'inline-flex h-9 items-center justify-center rounded-[15px] text-sm font-semibold',
+                  'transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-deep/30',
+                  active
+                    ? 'bg-brand-deep text-on-dark'
+                    : 'bg-band-mist text-ink-navy hover:bg-band-mist/80',
+                )}
+              >
+                {t('termShort', { years })}
+              </button>
+            );
+          })}
         </div>
+        {termAdjustedHint ? <p className="mt-2 text-xs text-warning">{termAdjustedHint}</p> : null}
 
-        <FormField id="loanTermYears" label={t('loanTerm')}>
-          <Select
-            id="loanTermYears"
-            value={loanTermYears ?? ''}
-            onChange={(event) => {
-              setTermAdjustedHint(null);
-              setLoanTermYears(Number(event.target.value));
-            }}
-          >
-            {selectedOffer.termOptionsYears.map((term) => (
-              <option key={term} value={term}>
-                {t('termYears', { years: term })}
-              </option>
-            ))}
-          </Select>
-          {termAdjustedHint ? (
-            <p className="mt-1 text-xs text-warning">{termAdjustedHint}</p>
-          ) : null}
-        </FormField>
+        <div className="mt-8">
+          <MortgageResultsPanel
+            result={calculationResult}
+            bankName={selectedOffer.bank.name}
+            isCalculating={isCalculating}
+            hasValidationError={validationMessage != null}
+          />
+        </div>
+      </aside>
 
-        <div className="hidden lg:block">{resultsPanel}</div>
-      </section>
-
-      <section className="order-3 flex flex-col gap-3 lg:order-2">
-        <h2 className="text-base font-semibold text-ink">{t('offersTitle')}</h2>
-        <div className="flex flex-col gap-3">
+      <div className="flex min-w-0 flex-col gap-4">
+        <h2 className="font-brand text-2xl font-bold tracking-tight text-ink-navy">
+          {t('offersTitle')}
+        </h2>
+        <div className="flex flex-col gap-4">
           {offers.map((offer) => (
             <MortgageOfferCard
               key={offer.id}
               offer={offer}
               selected={offer.id === selectedOfferId}
               monthlyPayment={monthlyPaymentByOffer.get(offer.id) ?? null}
+              showLowestRateBadge={offer.id === lowestRateOfferId}
               onSelect={() => {
                 handleSelectOffer(offer.id);
               }}
             />
           ))}
         </div>
-      </section>
+        <MortgagePrequalifyCta bankName={selectedOffer.bank.name} />
+      </div>
     </div>
   );
 };
+
+const valueInputClassName = cn(
+  'min-w-0 border-0 bg-transparent p-0 text-right',
+  'font-brand text-lg font-bold text-ink-navy tabular-nums',
+  'placeholder:font-medium placeholder:text-header-muted',
+  'focus-visible:outline-none',
+);
+
+const LoanRow = ({
+  label,
+  htmlFor,
+  children,
+}: {
+  label: string;
+  htmlFor?: string;
+  children: ReactNode;
+}) => (
+  <div className="mt-7 flex items-center justify-between gap-4 border-b border-header-border/60 pb-4">
+    {htmlFor ? (
+      <label
+        htmlFor={htmlFor}
+        className="shrink-0 text-[10px] font-bold tracking-widest text-header-muted uppercase"
+      >
+        {label}
+      </label>
+    ) : (
+      <span className="shrink-0 text-[10px] font-bold tracking-widest text-header-muted uppercase">
+        {label}
+      </span>
+    )}
+    <div className="min-w-0 flex-1">{children}</div>
+  </div>
+);

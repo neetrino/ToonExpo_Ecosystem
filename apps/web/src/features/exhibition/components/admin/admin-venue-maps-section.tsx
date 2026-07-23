@@ -1,32 +1,33 @@
-"use client";
+'use client';
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import type { VenueMapSummary } from "@toonexpo/contracts";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from '@hookform/resolvers/zod';
+import type { VenueMapSummary } from '@toonexpo/contracts';
+import { useTranslations } from 'next-intl';
+import { useState } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 
-import { MediaUploadField } from "@/features/media/components/media-upload-field";
+import { MediaUploadField } from '@/features/media/components/media-upload-field';
 
-import { AdminBoothsSection } from "@/features/exhibition/components/admin/admin-booths-section";
-import { EXHIBITION_PUBLICATION_STATUSES } from "@/features/exhibition/constants";
+import { AdminBoothsSection } from '@/features/exhibition/components/admin/admin-booths-section';
+import { EXHIBITION_PUBLICATION_STATUSES } from '@/features/exhibition/constants';
 import {
   useAdminEventVenueMapsQuery,
   useCreateAdminVenueMapMutation,
   useDeleteAdminVenueMapMutation,
   useUpdateAdminVenueMapMutation,
-} from "@/features/exhibition/hooks/use-exhibition";
+} from '@/features/exhibition/hooks/use-exhibition';
 import {
   venueMapFormSchema,
   type VenueMapFormInput,
   type VenueMapFormValues,
-} from "@/features/exhibition/schemas/exhibition.schema";
-import { PublicationStatusBadge } from "@/features/partners/components/partner-badges";
-import { Button } from "@/shared/ui/button";
-import { Card } from "@/shared/ui/card";
-import { FormField } from "@/shared/ui/form-field";
-import { Input } from "@/shared/ui/input";
-import { cn } from "@/shared/ui/cn";
+} from '@/features/exhibition/schemas/exhibition.schema';
+import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
+import { Button } from '@/shared/ui/button';
+import { Card } from '@/shared/ui/card';
+import { FormField } from '@/shared/ui/form-field';
+import { Input } from '@/shared/ui/input';
+import { cn } from '@/shared/ui/cn';
+import { AddActionLabel } from '@/shared/ui/add-action-label';
 
 type AdminVenueMapsSectionProps = {
   eventId: string;
@@ -36,7 +37,7 @@ type AdminVenueMapsSectionProps = {
  * Venue maps CRUD and nested booth management for an event.
  */
 export const AdminVenueMapsSection = ({ eventId }: AdminVenueMapsSectionProps) => {
-  const t = useTranslations("Admin.events.venueMaps");
+  const t = useTranslations('Admin.events.venueMaps');
   const mapsQuery = useAdminEventVenueMapsQuery(eventId);
   const createMutation = useCreateAdminVenueMapMutation(eventId);
   const updateMutation = useUpdateAdminVenueMapMutation(eventId);
@@ -56,23 +57,23 @@ export const AdminVenueMapsSection = ({ eventId }: AdminVenueMapsSectionProps) =
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-sm font-semibold text-ink">{t("title")}</h2>
+        <h2 className="text-sm font-semibold text-ink">{t('title')}</h2>
         <Button
           type="button"
           size="sm"
           variant="secondary"
           onClick={() => setShowCreate((open) => !open)}
         >
-          {showCreate ? t("cancelCreate") : t("newMap")}
+          {showCreate ? t('cancelCreate') : <AddActionLabel>{t('newMap')}</AddActionLabel>}
         </Button>
       </div>
       {showCreate ? (
         <VenueMapCreateForm onSubmit={onCreate} isBusy={createMutation.isPending} />
       ) : null}
       {mapsQuery.isLoading ? (
-        <p className="text-sm text-ink-secondary">{t("loading")}</p>
+        <p className="text-sm text-ink-secondary">{t('loading')}</p>
       ) : maps.length === 0 ? (
-        <p className="text-sm text-ink-secondary">{t("empty")}</p>
+        <p className="text-sm text-ink-secondary">{t('empty')}</p>
       ) : (
         <>
           <div className="flex flex-wrap gap-2">
@@ -81,10 +82,10 @@ export const AdminVenueMapsSection = ({ eventId }: AdminVenueMapsSectionProps) =
                 key={map.id}
                 type="button"
                 className={cn(
-                  "rounded-sm border px-3 py-2 text-sm",
+                  'rounded-sm border px-3 py-2 text-sm',
                   selectedMap?.id === map.id
-                    ? "border-brand bg-surface text-brand"
-                    : "border-border text-ink-secondary hover:bg-surface",
+                    ? 'border-brand bg-surface text-brand'
+                    : 'border-border text-ink-secondary hover:bg-surface',
                 )}
                 onClick={() => setSelectedMapId(map.id)}
               >
@@ -123,15 +124,15 @@ type VenueMapCreateFormProps = {
 };
 
 const VenueMapCreateForm = ({ onSubmit, isBusy }: VenueMapCreateFormProps) => {
-  const t = useTranslations("Admin.events.venueMaps.form");
+  const t = useTranslations('Admin.events.venueMaps.form');
   const form = useForm<VenueMapFormInput, unknown, VenueMapFormValues>({
     resolver: zodResolver(venueMapFormSchema),
     defaultValues: {
-      title: "",
-      mediaAssetId: "",
-      publicationStatus: "draft",
-      width: "",
-      height: "",
+      title: '',
+      mediaAssetId: '',
+      publicationStatus: 'draft',
+      width: '',
+      height: '',
     },
   });
 
@@ -144,7 +145,7 @@ const VenueMapCreateForm = ({ onSubmit, isBusy }: VenueMapCreateFormProps) => {
         disabled={isBusy}
         onClick={form.handleSubmit(async (values) => onSubmit(values))}
       >
-        {isBusy ? t("creating") : t("create")}
+        {isBusy ? t('creating') : t('create')}
       </Button>
     </Card>
   );
@@ -157,21 +158,16 @@ type VenueMapEditCardProps = {
   onDelete: () => Promise<void>;
 };
 
-const VenueMapEditCard = ({
-  map,
-  isBusy,
-  onSave,
-  onDelete,
-}: VenueMapEditCardProps) => {
-  const t = useTranslations("Admin.events.venueMaps.form");
+const VenueMapEditCard = ({ map, isBusy, onSave, onDelete }: VenueMapEditCardProps) => {
+  const t = useTranslations('Admin.events.venueMaps.form');
   const form = useForm<VenueMapFormInput, unknown, VenueMapFormValues>({
     resolver: zodResolver(venueMapFormSchema),
     defaultValues: {
       title: map.title,
       mediaAssetId: map.mediaAssetId,
       publicationStatus: map.publicationStatus,
-      width: map.width ?? "",
-      height: map.height ?? "",
+      width: map.width ?? '',
+      height: map.height ?? '',
     },
   });
 
@@ -188,10 +184,10 @@ const VenueMapEditCard = ({
           disabled={isBusy}
           onClick={form.handleSubmit(async (values) => onSave(values))}
         >
-          {isBusy ? t("saving") : t("save")}
+          {isBusy ? t('saving') : t('save')}
         </Button>
         <Button type="button" variant="ghost" disabled={isBusy} onClick={() => void onDelete()}>
-          {t("delete")}
+          {t('delete')}
         </Button>
       </div>
     </Card>
@@ -204,12 +200,12 @@ type VenueMapFieldsProps = {
 };
 
 const VenueMapFields = ({ form, previewUrl }: VenueMapFieldsProps) => {
-  const t = useTranslations("Admin.events.venueMaps.form");
+  const t = useTranslations('Admin.events.venueMaps.form');
 
   return (
     <>
-      <FormField id="map-title" label={t("title")}>
-        <Input id="map-title" {...form.register("title")} />
+      <FormField id="map-title" label={t('title')}>
+        <Input id="map-title" {...form.register('title')} />
       </FormField>
       <Controller
         control={form.control}
@@ -217,7 +213,7 @@ const VenueMapFields = ({ form, previewUrl }: VenueMapFieldsProps) => {
         render={({ field, fieldState }) => (
           <MediaUploadField
             id="map-media"
-            label={t("mediaAssetId")}
+            label={t('mediaAssetId')}
             context="admin"
             value={field.value}
             onChange={field.onChange}
@@ -227,18 +223,18 @@ const VenueMapFields = ({ form, previewUrl }: VenueMapFieldsProps) => {
         )}
       />
       <div className="grid gap-3 sm:grid-cols-2">
-        <FormField id="map-width" label={t("width")}>
-          <Input id="map-width" type="number" {...form.register("width")} />
+        <FormField id="map-width" label={t('width')}>
+          <Input id="map-width" type="number" {...form.register('width')} />
         </FormField>
-        <FormField id="map-height" label={t("height")}>
-          <Input id="map-height" type="number" {...form.register("height")} />
+        <FormField id="map-height" label={t('height')}>
+          <Input id="map-height" type="number" {...form.register('height')} />
         </FormField>
       </div>
-      <FormField id="map-publication" label={t("publication")}>
+      <FormField id="map-publication" label={t('publication')}>
         <select
           id="map-publication"
           className="h-10 w-full rounded-sm border border-border bg-background px-3 text-sm"
-          {...form.register("publicationStatus")}
+          {...form.register('publicationStatus')}
         >
           {EXHIBITION_PUBLICATION_STATUSES.map((status) => (
             <option key={status} value={status}>

@@ -13,7 +13,7 @@ import { cn } from '@/shared/ui/cn';
 type ProjectCardProps = {
   project: ProjectListItem;
   className?: string | undefined;
-  /** Compact marketplace price (e.g. 1.2M AMD) instead of full range. */
+  /** Marketplace “from” price (full amount) instead of min–max range. */
   featured?: boolean | undefined;
   showFavorite?: boolean | undefined;
 };

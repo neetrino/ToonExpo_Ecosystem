@@ -40,8 +40,8 @@
   --color-border-strong: #cdc9c0;
   --color-border-focus: #1a8f98;
 
-  /* CTA */
-  --color-cta-dark: #0e0f14;
+  /* CTA — same deep navy as property list / public browse CTAs */
+  --color-cta-dark: #092b44;
 
   /* Status */
   --color-success: #0d9f6e;
@@ -412,6 +412,10 @@
   /** Full viewport height after desktop zoom (layout px ÷ scale = visual svh). */
   .min-h-fluid-screen {
     min-height: calc(100svh / var(--desktop-layout-scale));
+  }
+
+  .h-fluid-screen {
+    height: calc(100svh / var(--desktop-layout-scale));
   }
 
   .page-container {

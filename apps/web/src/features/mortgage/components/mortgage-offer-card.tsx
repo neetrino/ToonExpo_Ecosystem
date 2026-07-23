@@ -1,7 +1,6 @@
 'use client';
 
 import type { PublicMortgageOfferItem } from '@toonexpo/contracts';
-import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
 
 import { formatMortgageAmount } from '@/features/mortgage/utils/format-mortgage-amount';
@@ -11,16 +10,18 @@ type MortgageOfferCardProps = {
   offer: PublicMortgageOfferItem;
   selected: boolean;
   monthlyPayment?: number | null;
+  showLowestRateBadge?: boolean;
   onSelect: () => void;
 };
 
 /**
- * Public bank offer card for comparison and selection.
+ * Horizontal partner bank offer row — Figma `105:2598`.
  */
 export const MortgageOfferCard = ({
   offer,
   selected,
   monthlyPayment,
+  showLowestRateBadge = false,
   onSelect,
 }: MortgageOfferCardProps) => {
   const t = useTranslations('Mortgage.offers');
@@ -31,77 +32,69 @@ export const MortgageOfferCard = ({
       type="button"
       onClick={onSelect}
       className={cn(
-        'flex w-full flex-col gap-3 rounded-sm border p-4 text-left transition-colors',
+        'flex w-full flex-col gap-4 rounded-[20px] bg-surface-elevated p-5 text-left',
+        'transition-[box-shadow,background-color] duration-[var(--duration-fast)]',
+        'sm:flex-row sm:items-center sm:justify-between sm:gap-6',
         selected
-          ? 'border-brand bg-brand/5 ring-1 ring-brand'
-          : 'border-border bg-surface hover:border-border-strong',
+          ? 'shadow-[0_0_0_2px_var(--color-brand-secondary),0_10px_15px_-3px_rgba(42,102,123,0.1)]'
+          : 'shadow-[0_0_0_1px_var(--color-header-border)] hover:shadow-[0_0_0_1px_var(--color-brand-secondary)/40]',
       )}
     >
-      <div className="flex flex-wrap items-start justify-between gap-2">
-        <div className="flex min-w-0 items-start gap-3">
-          <div className="relative size-12 shrink-0 overflow-hidden rounded-sm bg-surface-elevated">
-            {offer.bank.logoUrl ? (
-              <Image
-                src={offer.bank.logoUrl}
-                alt={offer.bank.name}
-                fill
-                className="object-cover"
-                sizes="48px"
-              />
-            ) : (
-              <span className="flex size-full items-center justify-center text-xs font-semibold text-ink-muted">
-                {offer.bank.name.slice(0, 2).toUpperCase()}
-              </span>
-            )}
-          </div>
-          <div className="min-w-0">
-            <p className="text-xs font-medium uppercase tracking-wide text-ink-muted">
-              {offer.bank.name}
-            </p>
-            <h3 className="text-base font-semibold text-ink">{offer.title}</h3>
-          </div>
+      <div className="min-w-0 flex-1">
+        <div className="flex flex-wrap items-center gap-2">
+          <h3 className="font-brand text-lg font-bold tracking-tight text-ink-navy">
+            {offer.bank.name}
+          </h3>
+          {offer.featured ? (
+            <span className="rounded-[10px] bg-band-mist px-2 py-0.5 text-[10px] font-bold tracking-widest text-brand-deep uppercase">
+              {t('featured')}
+            </span>
+          ) : null}
+          {showLowestRateBadge && !offer.featured ? (
+            <span className="rounded-[10px] bg-band-mist px-2 py-0.5 text-[10px] font-bold tracking-widest text-brand-deep uppercase">
+              {t('lowestRate')}
+            </span>
+          ) : null}
         </div>
-        {offer.featured ? (
-          <span className="rounded-pill bg-cta-dark/10 px-2.5 py-0.5 text-xs font-medium text-cta-dark">
-            {t('featured')}
-          </span>
-        ) : null}
+        {offer.shortDescription ? (
+          <p className="mt-1 text-sm leading-5 text-header-muted">{offer.shortDescription}</p>
+        ) : (
+          <p className="mt-1 text-sm leading-5 text-header-muted">{offer.title}</p>
+        )}
       </div>
 
-      {offer.shortDescription ? (
-        <p className="text-sm text-ink-secondary">{offer.shortDescription}</p>
-      ) : null}
-
-      <dl className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-        <div>
-          <dt className="text-ink-muted">{t('rate')}</dt>
-          <dd className="font-medium text-ink">{offer.rate}%</dd>
-        </div>
-        {offer.apr ? (
-          <div>
-            <dt className="text-ink-muted">{t('apr')}</dt>
-            <dd className="font-medium text-ink">{offer.apr}%</dd>
-          </div>
-        ) : null}
-        <div>
-          <dt className="text-ink-muted">{t('minDownPayment')}</dt>
-          <dd className="font-medium text-ink">{offer.minDownPaymentPercent}%</dd>
-        </div>
-        <div>
-          <dt className="text-ink-muted">{t('terms')}</dt>
-          <dd className="font-medium text-ink">
-            {offer.termOptionsYears.join(', ')} {t('years')}
-          </dd>
-        </div>
+      <dl className="grid shrink-0 grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-4 sm:gap-x-8">
+        <Metric label={t('rate')} value={`${offer.rate}%`} />
+        <Metric label={t('apr')} value={offer.apr != null ? `${offer.apr}%` : '—'} />
+        <Metric label={t('minDown')} value={`${offer.minDownPaymentPercent}%`} />
+        <Metric
+          label={t('monthly')}
+          value={monthlyPayment != null ? formatMortgageAmount(monthlyPayment, locale) : '—'}
+          emphasize
+        />
       </dl>
-
-      {monthlyPayment != null ? (
-        <p className="text-sm font-semibold text-brand">
-          {t('estimatedMonthly', {
-            amount: formatMortgageAmount(monthlyPayment, locale),
-          })}
-        </p>
-      ) : null}
     </button>
   );
 };
+
+const Metric = ({
+  label,
+  value,
+  emphasize = false,
+}: {
+  label: string;
+  value: string;
+  emphasize?: boolean;
+}) => (
+  <div>
+    <dt className="text-[10px] font-bold tracking-widest text-header-muted uppercase">{label}</dt>
+    <dd
+      className={cn(
+        'mt-0.5 font-brand text-lg font-bold leading-7',
+        emphasize ? 'text-brand-deep' : 'text-ink-navy',
+      )}
+    >
+      {value}
+    </dd>
+  </div>
+);

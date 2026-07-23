@@ -1,6 +1,8 @@
 {
   "Common": {
-    "close": "Փակել"
+    "close": "Փակել",
+    "cancel": "Չեղարկել",
+    "delete": "Ջնջել"
   },
   "HomePage": {
     "brand": "ToonExpo",
@@ -170,7 +172,7 @@
   "Nav": {
     "main": "Հիմնական նավիգացիա",
     "menu": "Բացել մենյուն",
-    "buy": "Գնել",
+    "buy": "Բնակարաններ",
     "newDevelopments": "Նոր շինություններ",
     "marketInsights": "Շուկայի վերլուծություն",
     "projects": "Նախագծեր",
@@ -183,7 +185,49 @@
     "listProperty": "Տեղադրել գույք",
     "profile": "Պրոֆիլ",
     "profileMenu": "Հաշվի ընտրացանկ",
+    "admin": "Ադմին",
     "loading": "…"
+  },
+  "BuyPage": {
+    "title": "Բնակարաններ վաճառքի",
+    "results": "{count} արդյունք",
+    "empty": "Այս ֆիլտրերով բնակարաններ չկան։",
+    "homesInView": "{count} բնակարան տեսադաշտում",
+    "badgeVerified": "Վավերացված",
+    "badgeNew": "Նոր",
+    "unitTitle": "Բնակ. {number} · {project}",
+    "specBed": "{count} սենյակ",
+    "specArea": "{area} մ²",
+    "saveSearchHint": "Պահպանեք որոնումը՝ նոր համընկնումների մասին ծանուցումներ ստանալու համար։",
+    "saveSearch": "Պահպանել որոնումը",
+    "filters": {
+      "location": "Վայր",
+      "allCities": "Բոլոր քաղաքները",
+      "price": "Գին",
+      "min": "Նվազ.",
+      "max": "Առավել.",
+      "beds": "Սենյակ",
+      "status": "Կարգավիճակ"
+    },
+    "meta": {
+      "title": "Բնակարաններ վաճառքի — ToonExpo",
+      "description": "Դիտեք վավերացված բնակարանները՝ ֆիլտրերով և քարտեզով։"
+    }
+  },
+  "DevelopmentsPage": {
+    "eyebrow": "Նոր շինություններ",
+    "title": "Երկինքը ձևավորվում է՝ առկա բնակարանների կենդանի հասանելիությամբ։",
+    "subtitle": "Հետևեք պաշարին, գներին և շինարարության ընթացքին ամենասպասված բնակելի նախագծերում՝ անմիջապես կառուցապատողներից։",
+    "empty": "Դեռևս չկան ցուցադրվող շինություններ։",
+    "statFrom": "Սկսած",
+    "statUnits": "Բնակարաններ",
+    "statSold": "Վաճառված",
+    "unitsLeft": "{count} մնացել է",
+    "completionTba": "Ավարտ՝ շուտով",
+    "meta": {
+      "title": "Նոր շինություններ — ToonExpo",
+      "description": "Հետևեք պաշարին, գներին և շինարարության ընթացքին բնակելի նախագծերում։"
+    }
   },
   "Footer": {
     "tagline": "Ստուգված տների, նոր շինությունների և գործընկեր բանկերի առաջարկների շուկա՝ գնորդների, միջնորդների և կառուցապատողների համար մեկ թափանցիկ հարթակում։",
@@ -302,6 +346,52 @@
       "notFoundTitle": "Նախագիծը չի գտնվել",
       "metaFallback": "{name} — նախագծի էջ ToonExpo-ում"
     },
+    "projectDetail": {
+      "statStatus": "Կարգավիճակ",
+      "statCompletion": "Ավարտ",
+      "statFrom": "Սկսած",
+      "statTotalUnits": "Ընդամենը",
+      "statSold": "Վաճառված",
+      "completionTba": "Շուտով",
+      "timelineTitle": "Շինարարության ժամանակացույց",
+      "timelineStageIndex": "Փուլ {number}",
+      "timelineStages": {
+        "preSale": "Նախավաճառք",
+        "foundation": "Հիմք",
+        "structure": "Կարկաս",
+        "facade": "Ճակատ",
+        "handover": "Հանձնում"
+      },
+      "timelineStatus": {
+        "complete": "Ավարտված",
+        "inProgress": "Ընթացքում",
+        "upcoming": "Սպասվող"
+      },
+      "floorsTitle": "Ընտրեք հարկը",
+      "floorsSubtitle": "Ընտրեք մակարդակը՝ հատակագիծը և առկա բնակարանները տեսնելու համար։",
+      "floorsEmpty": "Դեռ հրապարակված հարկեր չկան։",
+      "buildingStack": "Շենքի հարկեր",
+      "floorLabel": "Հարկ {number}",
+      "availCount": "{count} ազատ",
+      "unitsCount": "{count} բնակ.",
+      "legendAvailable": "Ազատ",
+      "legendReserved": "Ամրագրված",
+      "legendSold": "Վաճառված",
+      "floorVisualAlt": "Աքսոնոմետրիկ տեսք՝ {project}",
+      "reserveTitle": "Ամրագրեք բնակարան {project}-ում",
+      "reserveSubtitle": "Ներբեռնեք բրոշյուրը, պլանավորեք այց կամ խոսեք կառուցապատողի վաճառքի թիմի հետ։",
+      "downloadBrochure": "Ներբեռնել բրոշյուրը",
+      "scheduleVisit": "Պլանավորել այց",
+      "reserveName": "Անուն Ազգանուն",
+      "reserveEmail": "Էլ. փոստ",
+      "reservePhone": "Հեռախոս",
+      "reserveSubmit": "Խնդրել զանգ",
+      "reserveSubmitting": "Ուղարկվում է…",
+      "reserveLoginHint": "Մուտք գործեք որպես գնորդ՝ հարցում ուղարկելու համար։",
+      "reserveLoginLink": "Մուտք",
+      "reserveStaffBlocked": "Աշխատակիցների հաշիվները չեն կարող ուղարկել գնորդի հարցում։",
+      "reserveNotePrefix": "Հետադարձ զանգ"
+    },
     "building": {
       "floors": "Հարկեր",
       "noFloors": "Դեռ հրապարակված հարկեր չկան։",
@@ -340,6 +430,61 @@
       "areaLabel": "Մակերես",
       "bedroomsLabel": "Ննջասենյակներ",
       "bathroomsLabel": "Սանհանգույցներ",
+      "bedsLabel": "Ննջ.",
+      "bathsLabel": "Սան.",
+      "priceLabel": "Գին",
+      "pricePerAreaLabel": "Գին / մ²",
+      "typeLabel": "Տեսակ",
+      "typeFallback": "Բնակարան",
+      "developerLabel": "Կառուցապատող",
+      "verifiedLabel": "Ստուգված",
+      "verifiedYes": "Այո",
+      "verifiedBadge": "Ստուգված",
+      "unitIdLabel": "Միավոր",
+      "floorLabel": "Հարկ",
+      "livingAreaLabel": "Բնակելի մակերես",
+      "yearBuiltLabel": "Կառուցման տարի",
+      "aboutTitle": "Տան մասին",
+      "aboutEmpty": "Այս տան մանրամասները շուտով կհայտնվեն այստեղ։",
+      "detailsTitle": "Մանրամասներ",
+      "neighborhoodTitle": "Թաղամաս",
+      "neighborhood": {
+        "walkScore": "Քայլելու գնահատական",
+        "transit": "Տրանսպորտ",
+        "schools": "Դպրոցներ",
+        "crime": "Անվտանգություն"
+      },
+      "priceHistoryTitle": "Գնի պատմություն",
+      "priceHistory": {
+        "listed": "Ցուցադրված",
+        "priceChange": "Գնի փոփոխություն"
+      },
+      "breadcrumb": "Նավիգացիա",
+      "breadcrumbHome": "Գլխավոր",
+      "breadcrumbSearch": "Որոնում",
+      "inquireTitle": "Հարցում այս տան համար",
+      "inquireSubtitle": "Մենք կկապենք ձեզ կառուցապատողի հետ։",
+      "inquireAgentRole": "ToonExpo գործընկեր",
+      "inquireAgentMeta": "Ստուգված գործակալ · պատասխանում է 1 ժամում",
+      "inquireNamePlaceholder": "Ձեր անունը",
+      "inquireEmailPlaceholder": "Էլ․ փոստ",
+      "inquirePhonePlaceholder": "Հեռախոս",
+      "inquireMessagePlaceholder": "Ձեր հաղորդագրությունը",
+      "inquireMessageDefault": "Ցանկանում եմ դիտում նշանակել՝ {project}։",
+      "inquireSubmit": "Խնդրել դիտում",
+      "inquireSubmitting": "Ուղարկվում է…",
+      "inquireMortgage": "Հիփոթեքի նախնական որակավորում",
+      "inquireLoginHint": "Հարցում ուղարկելու համար մուտք գործեք որպես գնորդ։",
+      "inquireLoginLink": "Մուտք",
+      "inquireStaffBlocked": "Աշխատակիցների հաշիվները չեն կարող ուղարկել գնորդի դիտման հարցում։",
+      "mortgageEstimateLabel": "Ամսական գնահատական",
+      "mortgageEstimateMonthly": "{amount}/ամիս",
+      "mortgageEstimateTerms": "5.92% APR · 20% կանխավճար · 30 տարի",
+      "mortgageEstimateCta": "Բացել հաշվիչը →",
+      "comparableTitle": "Նմանատիպ բնակարաններ",
+      "comparableBed": "{count} ննջ.",
+      "comparableBath": "{count} սան.",
+      "comparableArea": "{area} մ²",
       "noPlan": "Հատակագիծը շուտով",
       "matterportTour": "Matterport վիրտուալ տուր",
       "external3dTour": "3D տուր",
@@ -795,7 +940,7 @@
       "empty": "Դեռ ընկերություններ չկան։ Ստեղծեք առաջինը։",
       "loading": "Բեռնվում է…",
       "error": "Չհաջողվեց բեռնել ընկերությունները։ Կրկին փորձեք։",
-      "newCompany": "Նոր ընկերություն",
+      "newCompany": "+ Նոր ընկերություն",
       "pagination": {
         "previous": "Նախորդ",
         "next": "Հաջորդ",
@@ -857,6 +1002,7 @@
       },
       "detail": {
         "back": "← Ընկերություններ",
+        "sheetTitle": "Ընկերություն",
         "typeLabel": "Տեսակ",
         "save": "Պահպանել",
         "saving": "Պահպանում…",
@@ -884,7 +1030,7 @@
       "empty": "Դեռ գործընկերների պրոֆիլներ չկան։ Ստեղծեք առաջինը։",
       "loading": "Բեռնում…",
       "error": "Չհաջողվեց բեռնել գործընկերներին։",
-      "newPartner": "Նոր գործընկեր",
+      "newPartner": "+ Նոր գործընկեր",
       "pagination": {
         "previous": "Նախորդ",
         "next": "Հաջորդ",
@@ -961,6 +1107,7 @@
         "loading": "Բեռնում…",
         "notFound": "Գործընկերը չի գտնվել",
         "back": "← Գործընկերներ",
+        "sheetTitle": "Գործընկեր",
         "save": "Պահպանել",
         "saving": "Պահպանում…",
         "saveSuccess": "Գործընկերը թարմացվել է",
@@ -1004,11 +1151,13 @@
       "loading": "Բեռնվում է…",
       "error": "Չհաջողվեց բեռնել բանկային առաջարկները։",
       "empty": "Դեռ բանկային առաջարկներ չկան։",
-      "newOffer": "Նոր առաջարկ",
+      "newOffer": "+ Նոր առաջարկ",
       "createTitle": "Նոր բանկային առաջարկ",
       "editTitle": "Խմբագրել {title}",
       "edit": "Խմբագրել",
       "delete": "Ջնջել",
+      "deleteConfirmTitle": "Ջնջել",
+      "deleteConfirmMessage": "Ջնջե՞լ «{title}» առաջարկը։",
       "filters": {
         "allBanks": "Բոլոր բանկերը",
         "allPublication": "Բոլոր կարգավիճակները",
@@ -1043,7 +1192,13 @@
           "draft": "Սևագիր",
           "published": "Հրապարակված",
           "archived": "Արխիվացված"
-        }
+        },
+        "sections": {
+          "offer": "Առաջարկ",
+          "terms": "Պայմաններ",
+          "publishing": "Հրապարակում"
+        },
+        "saving": "Պահպանում…"
       }
     },
     "serviceProviders": {
@@ -1053,7 +1208,7 @@
       "error": "Չհաջողվեց բեռնել տվյալները։",
       "categories": {
         "title": "Կատեգորիաներ",
-        "newCategory": "Նոր կատեգորիա",
+        "newCategory": "+ Նոր կատեգորիա",
         "empty": "Կատեգորիաներ դեռ չկան։",
         "edit": "Խմբագրել",
         "delete": "Ջնջել",
@@ -1077,7 +1232,7 @@
       },
       "providers": {
         "title": "Մատակարարներ",
-        "newProvider": "Նոր մատակարար",
+        "newProvider": "+ Նոր մատակարար",
         "empty": "Ֆիլտրերին համապատասխան մատակարարներ չկան։",
         "edit": "Խմբագրել",
         "delete": "Ջնջել",
@@ -1127,7 +1282,13 @@
             "draft": "Սևագիր",
             "published": "Հրապարակված",
             "archived": "Արխիվացված"
-          }
+          },
+          "sections": {
+            "provider": "Մատակարար",
+            "contact": "Կապ",
+            "publishing": "Հրապարակում"
+          },
+          "saving": "Պահպանում…"
         }
       }
     },
@@ -1235,7 +1396,7 @@
         "loading": "Բեռնվում է…",
         "error": "Չհաջողվեց բեռնել կատեգորիաները։ Կրկին փորձեք։",
         "empty": "Դեռ կատեգորիաներ չկան։ Ստեղծեք առաջինը։",
-        "newCategory": "Նոր կատեգորիա",
+        "newCategory": "+ Նոր կատեգորիա",
         "createTitle": "Նոր կատեգորիա",
         "editTitle": "Խմբագրել {name}",
         "edit": "Խմբագրել",
@@ -1272,7 +1433,7 @@
         "loading": "Բեռնվում է…",
         "error": "Չհաջողվեց բեռնել գնահատումները։ Կրկին փորձեք։",
         "empty": "Դեռ գնահատումներ չկան։ Ստեղծեք առաջինը։",
-        "newAssessment": "Նոր գնահատում",
+        "newAssessment": "+ Նոր գնահատում",
         "categoriesLink": "Կատեգորիաներ",
         "overridden": "վերագրավված",
         "pagination": {
@@ -1400,7 +1561,7 @@
         "recommendations": {
           "title": "Խորհուրդներ",
           "addTitle": "Ավելացնել խորհուրդ",
-          "add": "Ավելացնել",
+          "add": "+ Ավելացնել",
           "adding": "Ավելացվում է…",
           "delete": "Ջնջել",
           "deleteConfirm": "Ջնջե՞լ այս խորհուրդը։",
@@ -1424,7 +1585,7 @@
         "requiredActions": {
           "title": "Պարտադիր գործողություններ",
           "addTitle": "Ավելացնել գործողություն",
-          "add": "Ավելացնել",
+          "add": "+ Ավելացնել",
           "adding": "Ավելացվում է…",
           "delete": "Ջնջել",
           "deleteConfirm": "Ջնջե՞լ այս գործողությունը։",
@@ -1457,7 +1618,7 @@
           "title": "Ներքին նշումներ",
           "subtitle": "Միայն BigProjects ադմինի համար — կառուցապատողները երբեք չեն տեսնի։",
           "addLabel": "Նոր ներքին նշում",
-          "add": "Ավելացնել",
+          "add": "+ Ավելացնել",
           "adding": "Ավելացվում է…",
           "delete": "Ջնջել",
           "deleteConfirm": "Ջնջե՞լ այս նշումը։",
@@ -1476,7 +1637,7 @@
       "empty": "Դեռ միջոցառումներ չկան։ Ստեղծեք առաջինը։",
       "loading": "Բեռնվում է…",
       "error": "Չհաջողվեց բեռնել միջոցառումները։ Կրկին փորձեք։",
-      "newEvent": "Նոր միջոցառում",
+      "newEvent": "+ Նոր միջոցառում",
       "columns": {
         "name": "Անուն",
         "code": "Կոդ",
@@ -1532,7 +1693,7 @@
       },
       "venueMaps": {
         "title": "Վայրի քարտեզներ",
-        "newMap": "Նոր քարտեզ",
+        "newMap": "+ Նոր քարտեզ",
         "cancelCreate": "Չեղարկել",
         "empty": "Դեռ վայրի քարտեզներ չկան։",
         "loading": "Քարտեզները բեռնվում են…",
@@ -1556,7 +1717,7 @@
       },
       "booths": {
         "title": "Կիոսկներ",
-        "newBooth": "Նոր կիոսկ",
+        "newBooth": "+ Նոր կիոսկ",
         "loading": "Կիոսկները բեռնվում են…",
         "empty": "Այս քարտեզում դեռ կիոսկներ չկան։",
         "selectHint": "Ընտրեք կիոսկ կամ ստեղծեք նորը։",
@@ -1603,7 +1764,7 @@
           "noProject": "Նախագիծ չկա",
           "label": "Պիտակ",
           "active": "Ակտիվ",
-          "add": "Ավելացնել կցում",
+          "add": "+ Ավելացնել կցում",
           "adding": "Ավելացվում է…",
           "remove": "Հեռացնել",
           "edit": "Խմբագրել",
@@ -1616,8 +1777,8 @@
         "title": "Երթուղային գրաֆ",
         "nodes": "Հանգույցներ",
         "edges": "Կապեր",
-        "addNode": "Ավելացնել հանգույց",
-        "addEdge": "Ավելացնել կապ",
+        "addNode": "+ Ավելացնել հանգույց",
+        "addEdge": "+ Ավելացնել կապ",
         "code": "Կոդ",
         "label": "Պիտակ",
         "type": "Տեսակ",
@@ -1707,7 +1868,7 @@
       },
       "links": {
         "projects": "Բոլոր նախագծերը",
-        "newProject": "Նոր նախագիծ",
+        "newProject": "+ Նոր նախագիծ",
         "team": "Թիմ",
         "crm": "CRM",
         "scanner": "Սկաներ"
@@ -1728,7 +1889,7 @@
       "empty": "Դեռ նախագծեր չկան։ Ստեղծեք առաջինը։",
       "loading": "Բեռնվում է…",
       "error": "Չհաջողվեց բեռնել նախագծերը։ Կրկին փորձեք։",
-      "newProject": "Նոր նախագիծ",
+      "newProject": "+ Նոր նախագիծ",
       "pagination": {
         "previous": "Նախորդ",
         "next": "Հաջորդ",
@@ -1801,9 +1962,9 @@
       "loading": "Բեռնվում է…",
       "noBuildings": "Դեռ շենքեր չկան։ Ավելացրեք առաջինը ներքևում։",
       "noFloors": "Դեռ հարկեր չկան։",
-      "addBuilding": "Ավելացնել շենք",
-      "addFloor": "Ավելացնել հարկ",
-      "addApartments": "Ավելացնել բնակարաններ",
+      "addBuilding": "+ Ավելացնել շենք",
+      "addFloor": "+ Ավելացնել հարկ",
+      "addApartments": "+ Ավելացնել բնակարաններ",
       "createApartments": "Ստեղծել բնակարաններ",
       "cancel": "Չեղարկել",
       "adding": "Պահպանում…",
@@ -1848,7 +2009,7 @@
       "subtitle": "Նախագծի ռենդերներ, շենքերի քարտեզներ և հատակագծեր՝ հղման կետերով",
       "loading": "Բեռնվում են տեսական քարտեզները…",
       "empty": "Դեռ տեսական canvas չկա։ Ստեղծեք և ավելացրեք կետեր։",
-      "newCanvas": "Նոր canvas",
+      "newCanvas": "+ Նոր canvas",
       "cancelCreate": "Չեղարկել",
       "untitled": "Անվերնագիր canvas",
       "primaryYes": "Հիմնական",
@@ -2095,7 +2256,7 @@
         "event_interaction": "Միջոցառում"
       },
       "newDeal": {
-        "cta": "Նոր գործարք",
+        "cta": "+ Նոր գործարք",
         "title": "Նոր գործարք",
         "contactName": "Անուն",
         "contactPhone": "Հեռախոս",
@@ -2138,12 +2299,12 @@
         "notesTitle": "Նշումներ",
         "notesEmpty": "Նշումներ դեռ չկան",
         "notePlaceholder": "Ներքին նշում…",
-        "addNote": "Ավելացնել նշում",
+        "addNote": "+ Ավելացնել նշում",
         "activitiesTitle": "Գործողություններ",
         "activitiesEmpty": "Գործողություններ դեռ չկան",
         "activityType": "Տեսակ",
         "activityDue": "Ժամկետ",
-        "addActivity": "Ավելացնել գործողություն",
+        "addActivity": "+ Ավելացնել գործողություն",
         "markDone": "Նշել կատարված",
         "activityTypes": {
           "call": "Զանգ",
@@ -2304,7 +2465,7 @@
       "title": "Առաջարկներ և ծառայություններ",
       "pageTitle": "Առաջարկներ",
       "empty": "Դեռ առաջարկներ չկան։",
-      "add": "Ավելացնել առաջարկ",
+      "add": "+ Ավելացնել առաջարկ",
       "edit": "Խմբագրել",
       "delete": "Ջնջել",
       "create": "Ստեղծել առաջարկ",
@@ -2328,8 +2489,11 @@
     }
   },
   "Mortgage": {
+    "eyebrow": "Անշարժ գույքի ֆինանսավորում",
     "title": "Հիփոթեքային հաշվիչ",
-    "subtitle": "Համեմատեք բանկային առաջարկները և գնահատեք ամսական վճարումը",
+    "titleLine1": "Հաշվարկիր. Համեմատիր.",
+    "titleLine2": "Ստացիր նախնական հաստատում.",
+    "subtitle": "Գործընկեր բանկերի ակտուալ առաջարկներ։ Փոխիր պարամետրերը և տես ամսական վճարը յուրաքանչյուր վարկատուի համար։",
     "loading": "Բեռնվում է…",
     "error": "Չհաջողվեց բեռնել հիփոթեքային առաջարկները։",
     "empty": "Դեռ հրապարակված հիփոթեքային առաջարկներ չկան։",
@@ -2338,28 +2502,39 @@
       "description": "Համեմատեք բանկային հիփոթեքային առաջարկները և գնահատեք ամսական վճարումը դրամով։"
     },
     "offers": {
-      "featured": "Առանցքային",
+      "featured": "Առաջարկվող",
+      "lowestRate": "Ամենացածր տոկոս",
       "rate": "Տոկոս",
       "apr": "APR",
+      "minDown": "Նվազ. կանխավճար",
       "minDownPayment": "Նվազ. կանխավճար",
+      "monthly": "Ամսական",
       "terms": "Ժամկետներ",
       "years": "տարի",
       "estimatedMonthly": "մոտ. {amount}/ամիս"
     },
+    "prequalify": {
+      "title": "Նախնական հաստատում {bank}-ում",
+      "subtitle": "Փափուկ ստուգում · չի ազդում վարկային պատմության վրա · 2 րոպեի ձև.",
+      "cta": "Սկսել հայտը"
+    },
     "calculator": {
-      "inputsTitle": "Ձեր տվյալները",
-      "offersTitle": "Բանկային առաջարկներ",
-      "propertyPrice": "Գույքի արժեք (դրամ)",
+      "inputsTitle": "Ձեր վարկը",
+      "offersTitle": "Գործընկեր բանկերի առաջարկներ",
+      "propertyPrice": "Գույքի արժեք",
       "propertyPricePlaceholder": "օր. 45000000",
+      "downPayment": "Կանխավճար",
       "downPaymentPercent": "Կանխավճար (%)",
-      "downPaymentAmount": "Կանխավճար (դրամ)",
-      "loanTerm": "Վարկի ժամկետ",
+      "downPaymentAmount": "Կանխավճարի գումար",
+      "loanTerm": "Ժամկետ",
       "termYears": "{years} տարի",
+      "termShort": "{years} տ.",
       "termAdjusted": "Ժամկետը փոխվել է {years} տարվայի այս առաջարկի համար",
       "resultsTitle": "Գնահատական",
       "monthlyPayment": "Ամսական վճար",
+      "monthlyPaymentWithBank": "Ամսական վճար · {bank}",
       "loanAmount": "Վարկի գումար",
-      "downPayment": "Կանխավճար",
+      "downPaymentAmountLabel": "Կանխավճար",
       "totalPayment": "Ընդամենը վճարում",
       "totalInterest": "Տոկոսագումար",
       "selectedBank": "Բանկ",
@@ -2411,7 +2586,7 @@
       "subtitle": "Կառավարեք ձեր բանկի հիփոթեքային առաջարկների սևագրերը։",
       "publicationNote": "Հրապարակումը կատարում է ToonExpo հարթակի թիմը։",
       "empty": "Դեռ հիփոթեքային առաջարկներ չկան։",
-      "add": "Ավելացնել առաջարկ",
+      "add": "+ Ավելացնել առաջարկ",
       "edit": "Խմբագրել",
       "delete": "Ջնջել",
       "create": "Ստեղծել",

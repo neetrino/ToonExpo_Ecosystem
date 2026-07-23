@@ -89,7 +89,7 @@ export const HomeStats = async ({ projects }: HomeStatsProps) => {
         >
           <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
             {stats.map((stat) => (
-              <div key={stat.id}>
+              <div key={stat.id} className="text-center">
                 <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-canvas/50">
                   {stat.label}
                 </p>

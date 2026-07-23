@@ -1,20 +1,19 @@
-"use client";
+'use client';
 
-import type { CompanyResponse } from "@toonexpo/contracts";
-import { useLocale, useTranslations } from "next-intl";
-
-import { Link } from "@/i18n/navigation";
+import type { CompanyResponse } from '@toonexpo/contracts';
+import { useLocale, useTranslations } from 'next-intl';
 
 type CompaniesTableProps = {
   companies: CompanyResponse[];
+  onSelectCompany: (companyId: string) => void;
 };
 
 const formatDate = (iso: string, locale: string): string => {
   try {
     return new Intl.DateTimeFormat(locale, {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
     }).format(new Date(iso));
   } catch {
     return iso.slice(0, 10);
@@ -24,8 +23,8 @@ const formatDate = (iso: string, locale: string): string => {
 /**
  * Dense companies table for the platform admin list.
  */
-export const CompaniesTable = ({ companies }: CompaniesTableProps) => {
-  const t = useTranslations("Admin.companies");
+export const CompaniesTable = ({ companies, onSelectCompany }: CompaniesTableProps) => {
+  const t = useTranslations('Admin.companies');
   const locale = useLocale();
 
   return (
@@ -33,32 +32,26 @@ export const CompaniesTable = ({ companies }: CompaniesTableProps) => {
       <table className="w-full min-w-[40rem] border-collapse text-left text-sm">
         <thead className="bg-surface text-xs uppercase tracking-wide text-ink-muted">
           <tr>
-            <th className="px-3 py-2 font-medium">{t("columns.name")}</th>
-            <th className="px-3 py-2 font-medium">{t("columns.type")}</th>
-            <th className="px-3 py-2 font-medium">{t("columns.status")}</th>
-            <th className="px-3 py-2 font-medium">{t("columns.createdAt")}</th>
+            <th className="px-3 py-2 font-medium">{t('columns.name')}</th>
+            <th className="px-3 py-2 font-medium">{t('columns.type')}</th>
+            <th className="px-3 py-2 font-medium">{t('columns.status')}</th>
+            <th className="px-3 py-2 font-medium">{t('columns.createdAt')}</th>
           </tr>
         </thead>
         <tbody>
           {companies.map((company) => (
-            <tr
-              key={company.id}
-              className="border-t border-border hover:bg-surface/60"
-            >
+            <tr key={company.id} className="border-t border-border hover:bg-surface/60">
               <td className="px-3 py-2.5">
-                <Link
-                  href={`/admin/companies/${company.id}`}
+                <button
+                  type="button"
                   className="font-medium text-brand hover:underline"
+                  onClick={() => onSelectCompany(company.id)}
                 >
                   {company.name}
-                </Link>
+                </button>
               </td>
-              <td className="px-3 py-2.5 text-ink-secondary">
-                {t(`types.${company.type}`)}
-              </td>
-              <td className="px-3 py-2.5 text-ink-secondary">
-                {t(`statuses.${company.status}`)}
-              </td>
+              <td className="px-3 py-2.5 text-ink-secondary">{t(`types.${company.type}`)}</td>
+              <td className="px-3 py-2.5 text-ink-secondary">{t(`statuses.${company.status}`)}</td>
               <td className="px-3 py-2.5 text-ink-secondary">
                 {formatDate(company.createdAt, locale)}
               </td>

@@ -1,11 +1,12 @@
-"use client";
+'use client';
 
-import type { PriceVisibility } from "@toonexpo/contracts";
-import { useLocale, useTranslations } from "next-intl";
+import type { PriceVisibility } from '@toonexpo/contracts';
+import { useLocale, useTranslations } from 'next-intl';
 
-import { usePriceOverlay } from "@/features/catalog/components/price-overlay-scope";
-import { formatCatalogPrice } from "@/features/catalog/utils/format-price";
-import { Link } from "@/i18n/navigation";
+import { usePriceOverlay } from '@/features/catalog/components/price-overlay-scope';
+import { formatCatalogPrice } from '@/features/catalog/utils/format-price';
+import { Link } from '@/i18n/navigation';
+import { cn } from '@/shared/ui/cn';
 
 type ApartmentPriceProps = {
   apartmentId: string;
@@ -20,7 +21,7 @@ const useApartmentPriceLabel = ({
   currency,
   priceVisibility,
 }: ApartmentPriceProps): { label: string; revealed: boolean } => {
-  const t = useTranslations("Catalog");
+  const t = useTranslations('Catalog');
   const locale = useLocale();
   const overlay = usePriceOverlay().getApartmentPrice(apartmentId);
   const effectiveAmount = amount ?? overlay?.price ?? null;
@@ -31,8 +32,8 @@ const useApartmentPriceLabel = ({
       currency: overlay?.priceCurrency ?? currency,
       locale,
       priceVisibility,
-      onRequestLabel: t("price.onRequest"),
-      signInLabel: t("price.signInToSee"),
+      onRequestLabel: t('price.onRequest'),
+      signInLabel: t('price.signInToSee'),
     }),
     revealed: effectiveAmount != null,
   };
@@ -51,14 +52,16 @@ export const ApartmentPriceLabel = (props: ApartmentPriceProps) => {
  * Apartment detail price heading: sign-in CTA for hidden
  * `visible_after_login` prices, plain amount once revealed.
  */
-export const ApartmentDetailPrice = (props: ApartmentPriceProps) => {
+export const ApartmentDetailPrice = ({
+  className,
+  ...props
+}: ApartmentPriceProps & { className?: string | undefined }) => {
   const { label, revealed } = useApartmentPriceLabel(props);
-  const needsSignIn =
-    props.priceVisibility === "visible_after_login" && !revealed;
+  const needsSignIn = props.priceVisibility === 'visible_after_login' && !revealed;
 
   if (needsSignIn) {
     return (
-      <p className="font-brand text-2xl font-bold text-ink">
+      <p className={cn('font-brand text-3xl font-bold text-brand-deep', className)}>
         <Link href="/auth/login" className="underline-offset-4 hover:underline">
           {label}
         </Link>
@@ -66,5 +69,5 @@ export const ApartmentDetailPrice = (props: ApartmentPriceProps) => {
     );
   }
 
-  return <p className="font-brand text-3xl font-bold text-ink">{label}</p>;
+  return <p className={cn('font-brand text-3xl font-bold text-brand-deep', className)}>{label}</p>;
 };

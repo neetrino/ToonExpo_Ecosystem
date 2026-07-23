@@ -37,7 +37,7 @@ type BankOfferFormProps = {
 };
 
 /**
- * Admin create/edit form for bank mortgage offers.
+ * Admin create/edit form for bank mortgage offers (side sheet).
  */
 export const BankOfferForm = ({
   bankPartners,
@@ -104,125 +104,137 @@ export const BankOfferForm = ({
     await onCreate?.(toCreateBankOfferBody(values));
   });
 
+  const busy = isBusy || form.formState.isSubmitting;
+
   return (
-    <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-      {!isEdit ? (
-        <FormField id="partnerCompanyId" label={t('bankPartner')}>
-          <Controller
-            name="partnerCompanyId"
-            control={form.control}
-            render={({ field }) => (
-              <Select
-                id="partnerCompanyId"
-                name={field.name}
-                value={field.value}
-                aria-label={t('bankPartner')}
-                onBlur={field.onBlur}
-                onChange={(event) => {
-                  field.onChange(event.target.value);
-                }}
-              >
-                {bankPartners.map((partner) => (
-                  <option key={partner.companyId} value={partner.companyId}>
-                    {partner.name}
-                  </option>
-                ))}
-              </Select>
-            )}
-          />
+    <form className="flex flex-col gap-4" onSubmit={handleSubmit} noValidate>
+      <fieldset className="flex flex-col gap-3">
+        <legend className="mb-2.5 text-xs font-semibold tracking-wide text-ink-muted uppercase">
+          {t('sections.offer')}
+        </legend>
+        {!isEdit ? (
+          <FormField id="partnerCompanyId" label={t('bankPartner')}>
+            <Controller
+              name="partnerCompanyId"
+              control={form.control}
+              render={({ field }) => (
+                <Select
+                  id="partnerCompanyId"
+                  name={field.name}
+                  value={field.value}
+                  aria-label={t('bankPartner')}
+                  onBlur={field.onBlur}
+                  onChange={(event) => {
+                    field.onChange(event.target.value);
+                  }}
+                >
+                  {bankPartners.map((partner) => (
+                    <option key={partner.companyId} value={partner.companyId}>
+                      {partner.name}
+                    </option>
+                  ))}
+                </Select>
+              )}
+            />
+          </FormField>
+        ) : null}
+        <FormField id="title" label={t('title')}>
+          <Input id="title" {...form.register('title')} />
         </FormField>
-      ) : null}
+        <FormField id="shortDescription" label={t('shortDescription')}>
+          <Textarea id="shortDescription" rows={2} {...form.register('shortDescription')} />
+        </FormField>
+      </fieldset>
 
-      <FormField id="title" label={t('title')}>
-        <Input id="title" {...form.register('title')} />
-      </FormField>
-
-      <FormField id="shortDescription" label={t('shortDescription')}>
-        <Textarea id="shortDescription" rows={3} {...form.register('shortDescription')} />
-      </FormField>
-
-      <div className="grid gap-4 sm:grid-cols-2">
-        <FormField id="rate" label={t('rate')}>
-          <Input
-            id="rate"
-            type="number"
-            step="0.01"
-            {...form.register('rate', { valueAsNumber: true })}
-          />
-        </FormField>
-        <FormField id="apr" label={t('apr')}>
-          <Input
-            id="apr"
-            type="number"
-            step="0.01"
-            {...form.register('apr', { valueAsNumber: true })}
-          />
-        </FormField>
-        <FormField id="minDownPaymentPercent" label={t('minDownPayment')}>
-          <Input
-            id="minDownPaymentPercent"
-            type="number"
-            step="0.01"
-            {...form.register('minDownPaymentPercent', { valueAsNumber: true })}
-          />
-        </FormField>
+      <fieldset className="mt-2 flex flex-col gap-3">
+        <legend className="mb-2.5 text-xs font-semibold tracking-wide text-ink-muted uppercase">
+          {t('sections.terms')}
+        </legend>
+        <div className="grid grid-cols-3 items-end gap-3">
+          <FormField id="rate" label={t('rate')}>
+            <Input
+              id="rate"
+              type="number"
+              step="0.01"
+              {...form.register('rate', { valueAsNumber: true })}
+            />
+          </FormField>
+          <FormField id="apr" label={t('apr')}>
+            <Input
+              id="apr"
+              type="number"
+              step="0.01"
+              {...form.register('apr', { valueAsNumber: true })}
+            />
+          </FormField>
+          <FormField id="minDownPaymentPercent" label={t('minDownPayment')}>
+            <Input
+              id="minDownPaymentPercent"
+              type="number"
+              step="0.01"
+              {...form.register('minDownPaymentPercent', { valueAsNumber: true })}
+            />
+          </FormField>
+        </div>
         <FormField id="termOptionsYears" label={t('termOptions')}>
           <Input id="termOptionsYears" {...form.register('termOptionsYears')} />
         </FormField>
-      </div>
-
-      <FormField id="fees" label={t('fees')}>
-        <Textarea id="fees" rows={2} {...form.register('fees')} />
-      </FormField>
-
-      <FormField id="calculationNotes" label={t('calculationNotes')}>
-        <Textarea id="calculationNotes" rows={2} {...form.register('calculationNotes')} />
-      </FormField>
-
-      <div className="grid gap-4 sm:grid-cols-2">
-        <FormField id="publicationStatus" label={t('publication')}>
-          <Controller
-            name="publicationStatus"
-            control={form.control}
-            render={({ field }) => (
-              <Select
-                id="publicationStatus"
-                name={field.name}
-                value={field.value}
-                aria-label={t('publication')}
-                onBlur={field.onBlur}
-                onChange={(event) => {
-                  field.onChange(event.target.value);
-                }}
-              >
-                {PARTNER_PUBLICATION_STATUSES.map((status) => (
-                  <option key={status} value={status}>
-                    {t(`publicationStatuses.${status}`)}
-                  </option>
-                ))}
-              </Select>
-            )}
-          />
+        <FormField id="fees" label={t('fees')}>
+          <Textarea id="fees" rows={2} {...form.register('fees')} />
         </FormField>
-        <FormField id="sortOrder" label={t('sortOrder')}>
-          <Input
-            id="sortOrder"
-            type="number"
-            {...form.register('sortOrder', { valueAsNumber: true })}
-          />
+        <FormField id="calculationNotes" label={t('calculationNotes')}>
+          <Textarea id="calculationNotes" rows={2} {...form.register('calculationNotes')} />
         </FormField>
-      </div>
+      </fieldset>
 
-      <label className="flex items-center gap-2 text-sm text-ink">
-        <input type="checkbox" {...form.register('featured')} />
-        {t('featured')}
-      </label>
+      <fieldset className="mt-2 flex flex-col gap-3">
+        <legend className="mb-2.5 text-xs font-semibold tracking-wide text-ink-muted uppercase">
+          {t('sections.publishing')}
+        </legend>
+        <div className="grid grid-cols-2 items-end gap-3">
+          <FormField id="publicationStatus" label={t('publication')}>
+            <Controller
+              name="publicationStatus"
+              control={form.control}
+              render={({ field }) => (
+                <Select
+                  id="publicationStatus"
+                  name={field.name}
+                  value={field.value}
+                  aria-label={t('publication')}
+                  onBlur={field.onBlur}
+                  onChange={(event) => {
+                    field.onChange(event.target.value);
+                  }}
+                >
+                  {PARTNER_PUBLICATION_STATUSES.map((status) => (
+                    <option key={status} value={status}>
+                      {t(`publicationStatuses.${status}`)}
+                    </option>
+                  ))}
+                </Select>
+              )}
+            />
+          </FormField>
+          <FormField id="sortOrder" label={t('sortOrder')}>
+            <Input
+              id="sortOrder"
+              type="number"
+              {...form.register('sortOrder', { valueAsNumber: true })}
+            />
+          </FormField>
+        </div>
+        <label className="flex items-center gap-2 text-sm text-ink">
+          <input type="checkbox" {...form.register('featured')} />
+          {t('featured')}
+        </label>
+      </fieldset>
 
       <div className="flex flex-wrap gap-2">
-        <Button type="submit" size="sm" disabled={isBusy || form.formState.isSubmitting}>
-          {isEdit ? t('save') : t('create')}
+        <Button type="submit" variant="primary" disabled={busy} className="flex-1">
+          {busy ? t('saving') : isEdit ? t('save') : t('create')}
         </Button>
-        <Button type="button" size="sm" variant="ghost" onClick={onCancel}>
+        <Button type="button" variant="ghost" disabled={busy} className="flex-1" onClick={onCancel}>
           {t('cancel')}
         </Button>
       </div>

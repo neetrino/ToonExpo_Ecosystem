@@ -23,7 +23,7 @@ export const HomeExhibition = async () => {
       <div className="grid lg:grid-cols-12 lg:min-h-[34rem]">
         <div className="relative min-h-72 lg:col-span-5 lg:min-h-full">
           <Image
-            src="/demo/venue-map.jpg"
+            src="/demo/venue-map.webp"
             alt=""
             fill
             className="banner-media-drift object-cover object-[center_40%]"
