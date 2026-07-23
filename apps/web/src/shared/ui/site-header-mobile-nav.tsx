@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 
 import type { UserResponse } from '@toonexpo/contracts';
 
+import type { AccountSettingsHref } from '@/features/auth/utils/get-account-settings-href';
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 
@@ -16,7 +17,7 @@ type SiteHeaderMobileNavProps = {
   }>;
   pathname: string;
   user: UserResponse | undefined;
-  settingsHref: '/admin/settings' | '/settings';
+  settingsHref: AccountSettingsHref;
   listPropertyHref: '/builder' | '/auth/register';
   logoutPending: boolean;
   onClose: () => void;
