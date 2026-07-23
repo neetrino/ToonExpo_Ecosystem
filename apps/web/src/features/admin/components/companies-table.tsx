@@ -3,6 +3,7 @@
 import type { CompanyResponse } from '@toonexpo/contracts';
 import { useLocale, useTranslations } from 'next-intl';
 
+import { CompanyStatusBadge } from '@/features/admin/components/company-status-badge';
 import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
 import { AdminListCardLogo } from '@/shared/ui/admin-list-card-logo';
 import { VIEW_MODE_CARDS, type ViewMode } from '@/shared/ui/view-mode';
@@ -48,11 +49,15 @@ export const CompaniesTable = ({
           >
             <AdminListCardLogo name={company.name} logoUrl={company.logoUrl} size="match" />
             <div className="flex min-w-0 flex-1 flex-col justify-center gap-1.5">
-              <span className="truncate font-medium text-ink">{company.name}</span>
+              <div className="flex items-center justify-between gap-2">
+                <span className="min-w-0 truncate font-medium text-ink">{company.name}</span>
+                <CompanyStatusBadge
+                  status={company.status}
+                  className="h-5 shrink-0 items-center px-2.5 py-0 text-[0.6875rem] leading-none"
+                />
+              </div>
               <div className="flex flex-wrap items-center gap-2 text-xs text-ink-muted">
                 <span>{t(`types.${company.type}`)}</span>
-                <span aria-hidden>·</span>
-                <span>{t(`statuses.${company.status}`)}</span>
                 <span aria-hidden>·</span>
                 <span>{formatDate(company.createdAt, locale)}</span>
               </div>
@@ -65,19 +70,19 @@ export const CompaniesTable = ({
 
   return (
     <div className="overflow-x-auto rounded-sm border border-border">
-      <table className="w-full min-w-[40rem] border-collapse text-left text-sm">
+      <table className="w-full min-w-[40rem] border-collapse text-sm">
         <thead className="bg-surface text-xs uppercase tracking-wide text-ink-muted">
           <tr>
-            <th className="px-3 py-2 font-medium">{t('columns.name')}</th>
-            <th className="px-3 py-2 font-medium">{t('columns.type')}</th>
-            <th className="px-3 py-2 font-medium">{t('columns.status')}</th>
-            <th className="px-3 py-2 font-medium">{t('columns.createdAt')}</th>
+            <th className="px-3 py-2.5 text-left font-medium">{t('columns.name')}</th>
+            <th className="px-3 py-2.5 text-center font-medium">{t('columns.type')}</th>
+            <th className="px-3 py-2.5 text-center font-medium">{t('columns.status')}</th>
+            <th className="px-3 py-2.5 text-center font-medium">{t('columns.createdAt')}</th>
           </tr>
         </thead>
         <tbody>
           {companies.map((company) => (
             <tr key={company.id} className="border-t border-border hover:bg-surface/60">
-              <td className="px-3 py-2.5">
+              <td className="px-3 py-2.5 align-middle">
                 <div className="flex items-center gap-3">
                   <AdminListCardLogo name={company.name} logoUrl={company.logoUrl} shape="circle" />
                   <button
@@ -89,9 +94,18 @@ export const CompaniesTable = ({
                   </button>
                 </div>
               </td>
-              <td className="px-3 py-2.5 text-ink-secondary">{t(`types.${company.type}`)}</td>
-              <td className="px-3 py-2.5 text-ink-secondary">{t(`statuses.${company.status}`)}</td>
-              <td className="px-3 py-2.5 text-ink-secondary">
+              <td className="px-3 py-2.5 align-middle text-center text-ink-secondary">
+                {t(`types.${company.type}`)}
+              </td>
+              <td className="px-3 py-2.5 align-middle">
+                <div className="flex justify-center">
+                  <CompanyStatusBadge
+                    status={company.status}
+                    className="h-5 items-center px-2.5 py-0 text-[0.6875rem] leading-none"
+                  />
+                </div>
+              </td>
+              <td className="px-3 py-2.5 align-middle text-center text-ink-secondary">
                 {formatDate(company.createdAt, locale)}
               </td>
             </tr>
