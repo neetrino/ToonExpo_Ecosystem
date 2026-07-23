@@ -146,6 +146,51 @@
   }
 }
 
+/* MaMarie delete confirmation modal — enter/exit */
+@keyframes admin-delete-modal-backdrop-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes admin-delete-modal-backdrop-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes admin-delete-modal-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes admin-delete-modal-panel-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+}
+
 @keyframes banner-media-drift {
   from {
     transform: scale(1.04) translate3d(0, 0, 0);
@@ -384,6 +429,32 @@
 @layer utilities {
   .page-enter {
     animation: page-enter var(--duration-base) var(--ease-out-premium) both;
+  }
+
+  .animate-admin-delete-modal-backdrop-in {
+    animation: admin-delete-modal-backdrop-in 0.32s var(--ease-out-premium);
+  }
+
+  .animate-admin-delete-modal-backdrop-out {
+    animation: admin-delete-modal-backdrop-out 0.28s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  .animate-admin-delete-modal-panel-in {
+    animation: admin-delete-modal-panel-in 0.32s var(--ease-out-premium) forwards;
+  }
+
+  .animate-admin-delete-modal-panel-out {
+    animation: admin-delete-modal-panel-out 0.28s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-admin-delete-modal-backdrop-in,
+    .animate-admin-delete-modal-backdrop-out,
+    .animate-admin-delete-modal-panel-in,
+    .animate-admin-delete-modal-panel-out {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+    }
   }
 
   .desktop-fluid-frame {
