@@ -2,7 +2,12 @@
   "Common": {
     "close": "Close",
     "cancel": "Cancel",
-    "delete": "Delete"
+    "delete": "Delete",
+    "viewMode": {
+      "label": "View mode",
+      "list": "List",
+      "cards": "Cards"
+    }
   },
   "HomePage": {
     "brand": "ToonExpo",

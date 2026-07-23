@@ -4,12 +4,17 @@ import type { AdminServiceProviderItem, ServiceProviderCategoryItem } from '@too
 import { useTranslations } from 'next-intl';
 
 import { ServiceProviderForm } from '@/features/admin/components/service-provider-form';
+import { ADMIN_VIEW_MODE_KEYS } from '@/features/admin/constants';
 import type { ServiceProviderFormValues } from '@/features/admin/schemas/service-provider.schema';
 import { toServiceProviderFormValues } from '@/features/admin/utils/service-provider-mappers';
+import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { Button } from '@/shared/ui/button';
 import { Select } from '@/shared/ui/select';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { AdminCreateSheet } from '@/shared/ui/admin-create-sheet';
+import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
+import { VIEW_MODE_CARDS } from '@/shared/ui/view-mode';
+import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
 export type ServiceProviderFilters = {
   search: string;
@@ -65,14 +70,18 @@ export const ServiceProvidersProvidersSection = ({
   busy,
 }: ServiceProvidersProvidersSectionProps) => {
   const t = useTranslations('Admin.serviceProviders.providers');
+  const { viewMode, setViewMode } = usePersistedViewMode(ADMIN_VIEW_MODE_KEYS.serviceProviders);
 
   return (
     <section className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 className="text-base font-semibold text-ink">{t('title')}</h2>
-        <Button type="button" size="sm" variant="secondary" onClick={onCreate}>
-          <AddActionLabel>{t('newProvider')}</AddActionLabel>
-        </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          <ViewModeToggle value={viewMode} onChange={setViewMode} />
+          <Button type="button" size="sm" variant="secondary" onClick={onCreate}>
+            <AddActionLabel>{t('newProvider')}</AddActionLabel>
+          </Button>
+        </div>
       </div>
 
       <div className="flex flex-wrap gap-3">
@@ -162,6 +171,48 @@ export const ServiceProvidersProvidersSection = ({
 
       {providers.length === 0 ? (
         <p className="text-sm text-ink-secondary">{t('empty')}</p>
+      ) : viewMode === VIEW_MODE_CARDS ? (
+        <AdminListCardGrid>
+          {providers.map((provider) => (
+            <div
+              key={provider.id}
+              className="flex flex-col gap-2 rounded-sm border border-border bg-background p-3"
+            >
+              <div className="flex items-start justify-between gap-2">
+                <span className="font-medium text-ink">{provider.name}</span>
+                <div className="flex shrink-0 gap-2">
+                  <button
+                    type="button"
+                    className="text-sm font-medium text-brand hover:underline"
+                    onClick={() => {
+                      onEdit(provider);
+                    }}
+                  >
+                    {t('edit')}
+                  </button>
+                  <button
+                    type="button"
+                    className="text-sm font-medium text-danger hover:underline"
+                    disabled={busy}
+                    onClick={() => {
+                      onDelete(provider.id);
+                    }}
+                  >
+                    {t('delete')}
+                  </button>
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-2 text-xs text-ink-muted">
+                <span>{t(`form.types.${provider.providerType}`)}</span>
+                <span aria-hidden>·</span>
+                <span>{provider.active ? t('activeYes') : t('activeNo')}</span>
+              </div>
+              <p className="text-xs text-ink-secondary">
+                {provider.categories.map((c) => c.name).join(', ') || '—'}
+              </p>
+            </div>
+          ))}
+        </AdminListCardGrid>
       ) : (
         <div className="overflow-x-auto rounded-sm border border-border">
           <table className="w-full min-w-[48rem] border-collapse text-left text-sm">

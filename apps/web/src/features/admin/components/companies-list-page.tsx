@@ -7,11 +7,16 @@ import { useCallback, useEffect, useState } from 'react';
 import { CompaniesTable } from '@/features/admin/components/companies-table';
 import { CompanyDetailSheet } from '@/features/admin/components/company-detail-sheet';
 import { CreateCompanySheet } from '@/features/admin/components/create-company-sheet';
-import { ADMIN_COMPANIES_DEFAULT_PAGE_SIZE } from '@/features/admin/constants';
+import {
+  ADMIN_COMPANIES_DEFAULT_PAGE_SIZE,
+  ADMIN_VIEW_MODE_KEYS,
+} from '@/features/admin/constants';
 import { useAdminCompaniesQuery } from '@/features/admin/hooks/use-admin-companies';
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
 import { usePathname, useRouter } from '@/i18n/navigation';
+import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
+import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
 const parsePage = (raw: string | null): number => {
   const parsed = Number(raw);
@@ -34,6 +39,7 @@ export const CompaniesListPage = () => {
   const query = useAdminCompaniesQuery(page, pageSize);
   const [createSheetOpen, setCreateSheetOpen] = useState(false);
   const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(null);
+  const { viewMode, setViewMode } = usePersistedViewMode(ADMIN_VIEW_MODE_KEYS.companies);
 
   const clearCreateParam = useCallback((): void => {
     if (searchParams.get('create') !== '1') {
@@ -89,22 +95,29 @@ export const CompaniesListPage = () => {
             {t('subtitle', { count: response.meta.total })}
           </p>
         </div>
-        <button
-          type="button"
-          className="inline-flex h-9 items-center justify-center rounded-pill bg-cta-dark px-4 text-sm font-medium text-on-dark hover:bg-cta-dark/90"
-          onClick={() => {
-            setSelectedCompanyId(null);
-            setCreateSheetOpen(true);
-          }}
-        >
-          <AddActionLabel>{t('newCompany')}</AddActionLabel>
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          <ViewModeToggle value={viewMode} onChange={setViewMode} />
+          <button
+            type="button"
+            className="inline-flex h-9 items-center justify-center rounded-pill bg-cta-dark px-4 text-sm font-medium text-on-dark hover:bg-cta-dark/90"
+            onClick={() => {
+              setSelectedCompanyId(null);
+              setCreateSheetOpen(true);
+            }}
+          >
+            <AddActionLabel>{t('newCompany')}</AddActionLabel>
+          </button>
+        </div>
       </div>
 
       {response.data.length === 0 ? (
         <p className="text-sm text-ink-secondary">{t('empty')}</p>
       ) : (
-        <CompaniesTable companies={response.data} onSelectCompany={handleSelectCompany} />
+        <CompaniesTable
+          companies={response.data}
+          onSelectCompany={handleSelectCompany}
+          viewMode={viewMode}
+        />
       )}
 
       <CatalogPagination

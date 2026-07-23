@@ -2,7 +2,12 @@
   "Common": {
     "close": "Закрыть",
     "cancel": "Отмена",
-    "delete": "Удалить"
+    "delete": "Удалить",
+    "viewMode": {
+      "label": "Вид",
+      "list": "Список",
+      "cards": "Карточки"
+    }
   },
   "HomePage": {
     "brand": "ToonExpo",

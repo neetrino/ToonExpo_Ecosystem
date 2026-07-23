@@ -6,10 +6,13 @@ import { useTranslations } from 'next-intl';
 import { catalogProjectDetailHref } from '@/features/builder/catalog-scope';
 import { useCatalogScope } from '@/features/builder/catalog-scope-context';
 import { Link } from '@/i18n/navigation';
+import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
 import { cn } from '@/shared/ui/cn';
+import { VIEW_MODE_CARDS, type ViewMode } from '@/shared/ui/view-mode';
 
 type ProjectsTableProps = {
   projects: PortalProjectListItem[];
+  viewMode?: ViewMode | undefined;
 };
 
 const statusClassName: Record<PortalProjectListItem['publicationStatus'], string> = {
@@ -19,11 +22,48 @@ const statusClassName: Record<PortalProjectListItem['publicationStatus'], string
 };
 
 /**
- * Projects table for the builder portal list.
+ * Projects collection as table or card grid for portal lists.
  */
-export const ProjectsTable = ({ projects }: ProjectsTableProps) => {
+export const ProjectsTable = ({ projects, viewMode = 'list' }: ProjectsTableProps) => {
   const t = useTranslations('Builder.projects');
   const scope = useCatalogScope();
+
+  if (viewMode === VIEW_MODE_CARDS) {
+    return (
+      <AdminListCardGrid>
+        {projects.map((project) => (
+          <Link
+            key={project.id}
+            href={catalogProjectDetailHref(scope, project.id)}
+            className="flex flex-col gap-2 rounded-sm border border-border bg-background p-3 transition-colors hover:bg-surface/60"
+          >
+            <div className="flex flex-wrap items-start justify-between gap-2">
+              <span className="font-medium text-ink">{project.name}</span>
+              <span
+                className={cn(
+                  'inline-flex rounded-sm px-2 py-0.5 text-xs font-medium',
+                  statusClassName[project.publicationStatus],
+                )}
+              >
+                {t(`publication.${project.publicationStatus}`)}
+              </span>
+            </div>
+            <div className="flex flex-wrap gap-2 text-xs text-ink-muted">
+              <span>{project.city ?? '—'}</span>
+              <span aria-hidden>·</span>
+              <span>
+                {t('columns.buildings')}: {project.buildingsCount}
+              </span>
+              <span aria-hidden>·</span>
+              <span>
+                {t('columns.apartments')}: {project.apartmentsCount}
+              </span>
+            </div>
+          </Link>
+        ))}
+      </AdminListCardGrid>
+    );
+  }
 
   return (
     <div className="overflow-x-auto rounded-sm border border-border">

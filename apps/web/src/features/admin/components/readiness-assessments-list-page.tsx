@@ -8,14 +8,16 @@ import type { ReadinessAssessmentTargetType, ReadinessScoreStatus } from '@toone
 import { ReadinessAssessmentFilters } from '@/features/admin/components/readiness-assessment-filters';
 import { ReadinessAssessmentsTable } from '@/features/admin/components/readiness-assessments-table';
 import { ReadinessCreateAssessmentSheet } from '@/features/admin/components/readiness-create-assessment-sheet';
-import { ADMIN_COMPANIES_MAX_PAGE_SIZE } from '@/features/admin/constants';
+import { ADMIN_COMPANIES_MAX_PAGE_SIZE, ADMIN_VIEW_MODE_KEYS } from '@/features/admin/constants';
 import { useAdminCompaniesQuery } from '@/features/admin/hooks/use-admin-companies';
 import { useAdminReadinessAssessmentsQuery } from '@/features/admin/hooks/use-admin-readiness';
 import { READINESS_DEFAULT_PAGE_SIZE } from '@/features/readiness/constants';
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
 import { Link } from '@/i18n/navigation';
+import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { Button } from '@/shared/ui/button';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
+import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
 const parsePage = (raw: string | null): number => {
   const parsed = Number(raw);
@@ -33,6 +35,7 @@ export const ReadinessAssessmentsListPage = () => {
   const searchParams = useSearchParams();
   const page = parsePage(searchParams.get('page'));
   const [showCreate, setShowCreate] = useState(false);
+  const { viewMode, setViewMode } = usePersistedViewMode(ADMIN_VIEW_MODE_KEYS.readinessAssessments);
   const [filters, setFilters] = useState<{
     companyId: string;
     targetType: ReadinessAssessmentTargetType | '';
@@ -96,7 +99,8 @@ export const ReadinessAssessmentsListPage = () => {
             {t('subtitle', { count: response.meta.total })}
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <ViewModeToggle value={viewMode} onChange={setViewMode} />
           <Link
             href="/admin/readiness/categories"
             className="inline-flex h-9 items-center justify-center rounded-pill border border-border-strong px-4 text-sm font-medium text-ink hover:bg-surface"
@@ -127,7 +131,11 @@ export const ReadinessAssessmentsListPage = () => {
       {response.data.length === 0 ? (
         <p className="text-sm text-ink-secondary">{t('empty')}</p>
       ) : (
-        <ReadinessAssessmentsTable assessments={response.data} companyLookup={companyLookup} />
+        <ReadinessAssessmentsTable
+          assessments={response.data}
+          companyLookup={companyLookup}
+          viewMode={viewMode}
+        />
       )}
 
       <CatalogPagination

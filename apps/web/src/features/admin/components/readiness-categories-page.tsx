@@ -5,10 +5,15 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 import { ReadinessCategoryForm } from '@/features/admin/components/readiness-category-form';
+import { ADMIN_VIEW_MODE_KEYS } from '@/features/admin/constants';
 import { useAdminReadinessCategoriesQuery } from '@/features/admin/hooks/use-admin-readiness';
+import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { Button } from '@/shared/ui/button';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { AdminCreateSheet } from '@/shared/ui/admin-create-sheet';
+import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
+import { VIEW_MODE_CARDS } from '@/shared/ui/view-mode';
+import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
 /**
  * Admin readiness categories list with inline create/edit panel.
@@ -18,6 +23,7 @@ export const ReadinessCategoriesPage = () => {
   const query = useAdminReadinessCategoriesQuery();
   const [editing, setEditing] = useState<ReadinessCategoryItem | null>(null);
   const [creating, setCreating] = useState(false);
+  const { viewMode, setViewMode } = usePersistedViewMode(ADMIN_VIEW_MODE_KEYS.readinessCategories);
 
   if (query.isLoading) {
     return <p className="text-sm text-ink-secondary">{t('loading')}</p>;
@@ -40,17 +46,20 @@ export const ReadinessCategoriesPage = () => {
           <h1 className="text-xl font-semibold text-ink">{t('title')}</h1>
           <p className="text-sm text-ink-secondary">{t('subtitle')}</p>
         </div>
-        <Button
-          type="button"
-          size="sm"
-          variant="secondary"
-          onClick={() => {
-            setCreating(true);
-            setEditing(null);
-          }}
-        >
-          <AddActionLabel>{t('newCategory')}</AddActionLabel>
-        </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          <ViewModeToggle value={viewMode} onChange={setViewMode} />
+          <Button
+            type="button"
+            size="sm"
+            variant="secondary"
+            onClick={() => {
+              setCreating(true);
+              setEditing(null);
+            }}
+          >
+            <AddActionLabel>{t('newCategory')}</AddActionLabel>
+          </Button>
+        </div>
       </div>
 
       <AdminCreateSheet
@@ -86,6 +95,45 @@ export const ReadinessCategoriesPage = () => {
 
       {categories.length === 0 ? (
         <p className="text-sm text-ink-secondary">{t('empty')}</p>
+      ) : viewMode === VIEW_MODE_CARDS ? (
+        <AdminListCardGrid>
+          {categories.map((category) => (
+            <div
+              key={category.id}
+              className="flex flex-col gap-2 rounded-sm border border-border bg-background p-3"
+            >
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="font-medium text-ink">{category.name}</p>
+                  {category.description ? (
+                    <p className="mt-0.5 text-xs text-ink-muted">{category.description}</p>
+                  ) : null}
+                </div>
+                <button
+                  type="button"
+                  className="shrink-0 text-sm font-medium text-brand hover:underline"
+                  onClick={() => {
+                    setEditing(category);
+                    setCreating(false);
+                  }}
+                >
+                  {t('edit')}
+                </button>
+              </div>
+              <div className="flex flex-wrap gap-2 text-xs text-ink-muted">
+                <span>
+                  {t('columns.weight')}: {category.weight ?? '—'}
+                </span>
+                <span aria-hidden>·</span>
+                <span>
+                  {t('columns.sort')}: {category.sortOrder}
+                </span>
+                <span aria-hidden>·</span>
+                <span>{category.active ? t('activeYes') : t('activeNo')}</span>
+              </div>
+            </div>
+          ))}
+        </AdminListCardGrid>
       ) : (
         <div className="overflow-x-auto rounded-sm border border-border">
           <table className="w-full min-w-[36rem] border-collapse text-left text-sm">

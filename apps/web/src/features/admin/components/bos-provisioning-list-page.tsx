@@ -7,9 +7,14 @@ import { useState } from 'react';
 
 import { BosProvisioningFilters } from '@/features/admin/components/bos-provisioning-filters';
 import { BosProvisioningTable } from '@/features/admin/components/bos-provisioning-table';
-import { ADMIN_BOS_PROVISIONING_DEFAULT_PAGE_SIZE } from '@/features/admin/constants';
+import {
+  ADMIN_BOS_PROVISIONING_DEFAULT_PAGE_SIZE,
+  ADMIN_VIEW_MODE_KEYS,
+} from '@/features/admin/constants';
 import { useAdminBosProvisioningListQuery } from '@/features/admin/hooks/use-admin-bos-provisioning';
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
+import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
+import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
 const parsePage = (raw: string | null): number => {
   const parsed = Number(raw);
@@ -27,6 +32,7 @@ export const BosProvisioningListPage = () => {
   const searchParams = useSearchParams();
   const page = parsePage(searchParams.get('page'));
   const [statusFilter, setStatusFilter] = useState<BosProvisioningStatus | ''>('');
+  const { viewMode, setViewMode } = usePersistedViewMode(ADMIN_VIEW_MODE_KEYS.bos);
 
   const listQuery = useAdminBosProvisioningListQuery({
     page,
@@ -50,11 +56,14 @@ export const BosProvisioningListPage = () => {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-xl font-semibold text-ink">{t('title')}</h1>
-        <p className="text-sm text-ink-secondary">
-          {t('subtitle', { count: response.meta.total })}
-        </p>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-col gap-1">
+          <h1 className="text-xl font-semibold text-ink">{t('title')}</h1>
+          <p className="text-sm text-ink-secondary">
+            {t('subtitle', { count: response.meta.total })}
+          </p>
+        </div>
+        <ViewModeToggle value={viewMode} onChange={setViewMode} />
       </div>
 
       <BosProvisioningFilters status={statusFilter} onChange={setStatusFilter} />
@@ -62,7 +71,7 @@ export const BosProvisioningListPage = () => {
       {response.data.length === 0 ? (
         <p className="text-sm text-ink-secondary">{t('empty')}</p>
       ) : (
-        <BosProvisioningTable requests={response.data} />
+        <BosProvisioningTable requests={response.data} viewMode={viewMode} />
       )}
 
       <CatalogPagination

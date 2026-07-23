@@ -9,10 +9,13 @@ import {
   PublicationStatusBadge,
 } from '@/features/partners/components/partner-badges';
 import { PartnerTypeLabel } from '@/features/partners/components/partner-type-label';
+import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
+import { VIEW_MODE_CARDS, type ViewMode } from '@/shared/ui/view-mode';
 
 type PartnersTableProps = {
   partners: AdminPartnerListItem[];
   onSelectPartner: (partnerId: string) => void;
+  viewMode?: ViewMode | undefined;
 };
 
 const formatDate = (iso: string, locale: string): string => {
@@ -28,11 +31,41 @@ const formatDate = (iso: string, locale: string): string => {
 };
 
 /**
- * Dense partners table for the platform admin list.
+ * Partners collection as dense table or card grid for platform admin.
  */
-export const PartnersTable = ({ partners, onSelectPartner }: PartnersTableProps) => {
+export const PartnersTable = ({
+  partners,
+  onSelectPartner,
+  viewMode = 'list',
+}: PartnersTableProps) => {
   const t = useTranslations('Admin.partners');
   const locale = useLocale();
+
+  if (viewMode === VIEW_MODE_CARDS) {
+    return (
+      <AdminListCardGrid>
+        {partners.map((partner) => (
+          <button
+            key={partner.id}
+            type="button"
+            className="flex flex-col gap-2 rounded-sm border border-border bg-background p-3 text-left transition-colors hover:bg-surface/60"
+            onClick={() => onSelectPartner(partner.id)}
+          >
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="font-medium text-ink">{partner.name}</span>
+              <FeaturedBadge featured={partner.featured} />
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <PartnerTypeLabel type={partner.type} />
+              <PartnerStatusBadge status={partner.status} />
+              <PublicationStatusBadge status={partner.publicationStatus} />
+            </div>
+            <p className="text-xs text-ink-muted">{formatDate(partner.updatedAt, locale)}</p>
+          </button>
+        ))}
+      </AdminListCardGrid>
+    );
+  }
 
   return (
     <div className="overflow-x-auto rounded-sm border border-border">

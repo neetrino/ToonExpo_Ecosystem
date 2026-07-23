@@ -5,9 +5,12 @@ import { useLocale, useTranslations } from 'next-intl';
 
 import { BosProvisioningStatusBadge } from '@/features/admin/components/bos-provisioning-status-badge';
 import { Link } from '@/i18n/navigation';
+import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
+import { VIEW_MODE_CARDS, type ViewMode } from '@/shared/ui/view-mode';
 
 type BosProvisioningTableProps = {
   requests: AdminBosProvisioningListItem[];
+  viewMode?: ViewMode | undefined;
 };
 
 const formatDateTime = (iso: string, locale: string): string => {
@@ -25,11 +28,43 @@ const formatDateTime = (iso: string, locale: string): string => {
 };
 
 /**
- * Dense BOS provisioning requests table for platform admin.
+ * BOS provisioning collection as table or card grid for platform admin.
  */
-export const BosProvisioningTable = ({ requests }: BosProvisioningTableProps) => {
+export const BosProvisioningTable = ({
+  requests,
+  viewMode = 'list',
+}: BosProvisioningTableProps) => {
   const t = useTranslations('Admin.bos');
   const locale = useLocale();
+
+  if (viewMode === VIEW_MODE_CARDS) {
+    return (
+      <AdminListCardGrid>
+        {requests.map((item) => (
+          <Link
+            key={item.id}
+            href={`/admin/integrations/bos/${item.id}`}
+            className="flex flex-col gap-2 rounded-sm border border-border bg-background p-3 transition-colors hover:bg-surface/60"
+          >
+            <div className="flex flex-wrap items-start justify-between gap-2">
+              <span className="font-medium text-ink">{item.companyName}</span>
+              <BosProvisioningStatusBadge status={item.status} />
+            </div>
+            <span className="font-mono text-xs text-brand">{item.requestId}</span>
+            <div className="flex flex-wrap gap-2 text-xs text-ink-muted">
+              <span>{formatDateTime(item.createdAt, locale)}</span>
+              {(item.status === 'failed' || item.status === 'partial') && item.errorMessage ? (
+                <>
+                  <span aria-hidden>·</span>
+                  <span className="line-clamp-1 text-danger">{item.errorMessage}</span>
+                </>
+              ) : null}
+            </div>
+          </Link>
+        ))}
+      </AdminListCardGrid>
+    );
+  }
 
   return (
     <div className="overflow-x-auto rounded-sm border border-border">

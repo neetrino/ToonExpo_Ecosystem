@@ -2,7 +2,12 @@
   "Common": {
     "close": "Փակել",
     "cancel": "Չեղարկել",
-    "delete": "Ջնջել"
+    "delete": "Ջնջել",
+    "viewMode": {
+      "label": "Տեսք",
+      "list": "Ցանկ",
+      "cards": "Քարտեր"
+    }
   },
   "HomePage": {
     "brand": "ToonExpo",
