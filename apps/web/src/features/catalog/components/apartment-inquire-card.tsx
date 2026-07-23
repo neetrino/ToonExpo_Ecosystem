@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 import { useMeQuery } from '@/features/auth/hooks/use-auth';
+import { ApartmentDetailFavorite } from '@/features/buyer/components/apartment-detail-favorite';
 import { useCreateBuyerRequestMutation } from '@/features/buyer/hooks/use-buyer';
 import { isNonBuyerStaff } from '@/features/buyer/utils/is-buyer-account';
 import { getAccountInitials } from '@/shared/lib/account-initials';
@@ -122,26 +123,29 @@ export const ApartmentInquireCard = ({
         className,
       )}
     >
-      <div className="mb-4 flex items-center gap-3">
-        {builderLogoUrl ? (
-          <span className="relative size-12 shrink-0 overflow-hidden rounded-full bg-brand-deep">
-            <Image
-              src={builderLogoUrl}
-              alt={builderName}
-              fill
-              className="object-cover"
-              sizes="48px"
-            />
-          </span>
-        ) : (
-          <span className="grid size-12 place-items-center rounded-full bg-brand-deep font-brand text-lg font-bold text-on-dark">
-            {initials}
-          </span>
-        )}
-        <div className="min-w-0">
-          <p className="truncate text-base font-semibold text-ink-navy">{builderName}</p>
-          <p className="text-xs text-header-muted">{t('inquireAgentMeta')}</p>
+      <div className="mb-4 flex items-start justify-between gap-3">
+        <div className="flex min-w-0 items-center gap-3">
+          {builderLogoUrl ? (
+            <span className="relative size-12 shrink-0 overflow-hidden rounded-full bg-brand-deep">
+              <Image
+                src={builderLogoUrl}
+                alt={builderName}
+                fill
+                className="object-cover"
+                sizes="48px"
+              />
+            </span>
+          ) : (
+            <span className="grid size-12 place-items-center rounded-full bg-brand-deep font-brand text-lg font-bold text-on-dark">
+              {initials}
+            </span>
+          )}
+          <div className="min-w-0">
+            <p className="truncate text-base font-semibold text-ink-navy">{builderName}</p>
+            <p className="text-xs text-header-muted">{t('inquireAgentMeta')}</p>
+          </div>
         </div>
+        <ApartmentDetailFavorite apartmentId={apartmentId} />
       </div>
 
       {success ? (

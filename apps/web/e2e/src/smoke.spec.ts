@@ -6,7 +6,6 @@ import {
   SEED_APARTMENT_VISIBLE_AFTER_LOGIN_ID,
   SEED_BUILDER_ADMIN_EMAIL,
   SEED_BUILDER_COMPANY_ID,
-  SEED_BUILDING_NAME,
   SEED_BUYER_EMAIL,
   SEED_FLOOR_LABEL,
   SEED_PLATFORM_ADMIN_EMAIL,
@@ -60,12 +59,9 @@ test.describe('smoke', () => {
     ).toBeVisible();
 
     await page.goto(`/hy/projects/${SEED_PROJECT_ID}`);
-    // Cover + title both expose the building name; either navigates to the same URL.
-    await page.getByRole('link', { name: SEED_BUILDING_NAME }).first().click();
-    await expect(page).toHaveURL(/\/buildings\//);
-
+    // Floor picker links straight to floors (no intermediate building step).
     await page.getByRole('link', { name: SEED_FLOOR_LABEL }).click();
-    await expect(page).toHaveURL(/\/floors\//);
+    await expect(page).toHaveURL(/\/buildings\/.+\/floors\//);
 
     await page.getByRole('link', { name: new RegExp(`Բն\\.\\s*${SEED_APARTMENT_NUMBER}`) }).click();
     await expect(page).toHaveURL(
@@ -248,8 +244,9 @@ test.describe('smoke', () => {
 
   test('mortgage calculator shows monthly payment', async ({ page }) => {
     await page.goto('/hy/mortgage');
-    await page.getByRole('button', { name: /Standard residential mortgage/ }).click();
-    await page.getByLabel('Գույքի արժեք (դրամ)').fill('45000000');
+    // Offer cards surface bank name + shortDescription (not English title).
+    await page.getByRole('button', { name: /Ameriabank/ }).click();
+    await page.getByLabel('Գույքի արժեք').fill('45000000');
     await expect(page.getByRole('heading', { name: 'Գնահատական' }).first()).toBeVisible({
       timeout: 20_000,
     });
