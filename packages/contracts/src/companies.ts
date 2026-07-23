@@ -2,17 +2,12 @@
  * Admin company provisioning and company-member invite contracts.
  */
 
-import type {
-  CompanyMemberRole,
-  CompanyMemberStatus,
-  CompanyType,
-  UserResponse,
-} from "./auth.js";
-import type { PaginatedResponse, PublicationStatus } from "./catalog.js";
+import type { CompanyMemberRole, CompanyMemberStatus, CompanyType, UserResponse } from './auth.js';
+import type { PaginatedResponse, PublicationStatus } from './catalog.js';
 
-export type CompanyStatus = "active" | "inactive" | "pending";
+export type CompanyStatus = 'active' | 'inactive' | 'pending';
 
-export type CompanySource = "self_registered" | "admin" | "bos";
+export type CompanySource = 'self_registered' | 'admin' | 'bos';
 
 /**
  * Public company projection for admin and company portal APIs.
@@ -141,5 +136,22 @@ export type AdminCompanyProjectListItem = {
 export type AdminCompanyProjectListResponse = {
   data: AdminCompanyProjectListItem[];
 };
+
+/**
+ * Cross-company project row for the admin projects list.
+ */
+export type AdminProjectListItem = {
+  id: string;
+  name: string;
+  publicationStatus: PublicationStatus;
+  createdAt: string;
+  city: string | null;
+  builderCompanyId: string;
+  companyName: string;
+  buildingsCount: number;
+  apartmentsCount: number;
+};
+
+export type AdminProjectListResponse = PaginatedResponse<AdminProjectListItem>;
 
 export type CompanyMemberListResponse = PaginatedResponse<CompanyMemberResponse>;

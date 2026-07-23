@@ -72,6 +72,8 @@ export type {
 export type {
   AdminCompanyProjectListItem,
   AdminCompanyProjectListResponse,
+  AdminProjectListItem,
+  AdminProjectListResponse,
   CompanyListResponse,
   CompanyMemberListResponse,
   CompanyMemberResponse,

@@ -1,27 +1,25 @@
 import type {
   AdminCompanyProjectListResponse,
+  AdminProjectListResponse,
   CompanyListResponse,
   CompanyResponse,
   CreateCompanyRequest,
   ProvisionCompanyResponse,
   UpdateCompanyRequest,
-} from "@toonexpo/contracts";
+} from '@toonexpo/contracts';
 
-import { apiFetch, type ApiFetchOptions } from "@/shared/api/client";
+import { apiFetch, type ApiFetchOptions } from '@/shared/api/client';
 
 const jsonCredentials = {
-  credentials: "include" as const,
-  headers: { "Content-Type": "application/json" },
+  credentials: 'include' as const,
+  headers: { 'Content-Type': 'application/json' },
 };
 
 export type AdminRequestOptions = {
   cookieHeader?: string | undefined;
 };
 
-const withCookie = (
-  options: ApiFetchOptions,
-  cookieHeader?: string,
-): ApiFetchOptions => {
+const withCookie = (options: ApiFetchOptions, cookieHeader?: string): ApiFetchOptions => {
   if (!cookieHeader) {
     return options;
   }
@@ -51,9 +49,9 @@ export const listAdminCompanies = (
     withCookie(
       {
         path: `/admin/companies?${params.toString()}`,
-        method: "GET",
-        credentials: "include",
-        cache: "no-store",
+        method: 'GET',
+        credentials: 'include',
+        cache: 'no-store',
       },
       options.cookieHeader,
     ),
@@ -71,9 +69,9 @@ export const getAdminCompany = (
     withCookie(
       {
         path: `/admin/companies/${encodeURIComponent(id)}`,
-        method: "GET",
-        credentials: "include",
-        cache: "no-store",
+        method: 'GET',
+        credentials: 'include',
+        cache: 'no-store',
       },
       options.cookieHeader,
     ),
@@ -90,23 +88,55 @@ export const listAdminCompanyProjects = (
     withCookie(
       {
         path: `/admin/companies/${encodeURIComponent(companyId)}/projects`,
-        method: "GET",
-        credentials: "include",
-        cache: "no-store",
+        method: 'GET',
+        credentials: 'include',
+        cache: 'no-store',
       },
       options.cookieHeader,
     ),
   );
 
+export type ListAdminProjectsParams = {
+  page: number;
+  pageSize: number;
+  companyId?: string;
+};
+
+/**
+ * Lists projects across companies for the admin projects page.
+ */
+export const listAdminProjects = (
+  params: ListAdminProjectsParams,
+  options: AdminRequestOptions = {},
+): Promise<AdminProjectListResponse> => {
+  const search = new URLSearchParams({
+    page: String(params.page),
+    pageSize: String(params.pageSize),
+  });
+  if (params.companyId) {
+    search.set('companyId', params.companyId);
+  }
+
+  return apiFetch<AdminProjectListResponse>(
+    withCookie(
+      {
+        path: `/admin/projects?${search.toString()}`,
+        method: 'GET',
+        credentials: 'include',
+        cache: 'no-store',
+      },
+      options.cookieHeader,
+    ),
+  );
+};
+
 /**
  * Provisions a company with the first company_admin invite.
  */
-export const createAdminCompany = (
-  body: CreateCompanyRequest,
-): Promise<ProvisionCompanyResponse> =>
+export const createAdminCompany = (body: CreateCompanyRequest): Promise<ProvisionCompanyResponse> =>
   apiFetch<ProvisionCompanyResponse>({
-    path: "/admin/companies",
-    method: "POST",
+    path: '/admin/companies',
+    method: 'POST',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
@@ -120,7 +150,7 @@ export const updateAdminCompany = (
 ): Promise<CompanyResponse> =>
   apiFetch<CompanyResponse>({
     path: `/admin/companies/${encodeURIComponent(id)}`,
-    method: "PATCH",
+    method: 'PATCH',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
@@ -131,6 +161,6 @@ export const updateAdminCompany = (
 export const resendAdminCompanyInvite = (id: string): Promise<void> =>
   apiFetch<void>({
     path: `/admin/companies/${encodeURIComponent(id)}/resend-invite`,
-    method: "POST",
-    credentials: "include",
+    method: 'POST',
+    credentials: 'include',
   });

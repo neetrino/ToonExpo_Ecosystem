@@ -16,6 +16,14 @@ export const adminCompanyQueryKey = (id: string) => [...ADMIN_COMPANIES_QUERY_KE
 export const adminCompanyProjectsQueryKey = (companyId: string) =>
   [...ADMIN_COMPANIES_QUERY_KEY, companyId, 'projects'] as const;
 
+export const ADMIN_PROJECTS_QUERY_KEY = ['admin', 'projects'] as const;
+
+export const adminProjectsQueryKey = (params: {
+  page: number;
+  pageSize: number;
+  companyId?: string;
+}) => [...ADMIN_PROJECTS_QUERY_KEY, params] as const;
+
 export const ADMIN_READINESS_CATEGORIES_QUERY_KEY = ['admin', 'readiness', 'categories'] as const;
 
 export const ADMIN_READINESS_ASSESSMENTS_QUERY_KEY = ['admin', 'readiness', 'assessments'] as const;
@@ -51,6 +59,7 @@ export const BOS_PROVISIONING_STATUSES = [
 /** localStorage keys for admin list/cards view preference. */
 export const ADMIN_VIEW_MODE_KEYS = {
   companies: 'admin-companies',
+  projects: 'admin-projects',
   partners: 'admin-partners',
   bankOffers: 'admin-bank-offers',
   serviceProviderCategories: 'admin-service-provider-categories',

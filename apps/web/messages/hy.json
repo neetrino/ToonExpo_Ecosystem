@@ -876,6 +876,7 @@
       "portalLabel": "Կառավարման պորտալ",
       "analytics": "Վերլուծություն",
       "companies": "Ընկերություններ",
+      "projects": "Նախագծեր",
       "partners": "Գործընկերներ",
       "bankOffers": "Բանկային առաջարկներ",
       "serviceProviders": "Ծառայություն մատուցողներ",
@@ -1028,6 +1029,30 @@
         "breadcrumbCompanies": "Ընկերություններ",
         "breadcrumbCatalog": "Կատալոգ",
         "companyFallback": "Ընկերություն"
+      }
+    },
+    "projects": {
+      "title": "Նախագծեր",
+      "subtitle": "{count, plural, =0 {Նախագծեր չկան} one {# նախագիծ} other {# նախագիծ}}",
+      "empty": "Դեռ նախագծեր չկան։",
+      "loading": "Բեռնվում է…",
+      "error": "Չհաջողվեց բեռնել նախագծերը։ Կրկին փորձեք։",
+      "filters": {
+        "company": "Ընկերություն",
+        "allCompanies": "Բոլոր ընկերությունները"
+      },
+      "columns": {
+        "name": "Անուն",
+        "company": "Ընկերություն",
+        "status": "Կարգավիճակ",
+        "city": "Քաղաք",
+        "buildings": "Շենքեր",
+        "apartments": "Բնակարաններ"
+      },
+      "pagination": {
+        "previous": "Նախորդ",
+        "next": "Հաջորդ",
+        "ariaLabel": "Էջավորում"
       }
     },
     "partners": {

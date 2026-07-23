@@ -876,6 +876,7 @@
       "portalLabel": "Management portal",
       "analytics": "Analytics",
       "companies": "Companies",
+      "projects": "Projects",
       "partners": "Partners",
       "bankOffers": "Bank offers",
       "serviceProviders": "Service providers",
@@ -1028,6 +1029,30 @@
         "breadcrumbCompanies": "Companies",
         "breadcrumbCatalog": "Catalog",
         "companyFallback": "Company"
+      }
+    },
+    "projects": {
+      "title": "Projects",
+      "subtitle": "{count, plural, =0 {No projects} one {# project} other {# projects}}",
+      "empty": "No projects yet.",
+      "loading": "Loading projects…",
+      "error": "Could not load projects. Try again.",
+      "filters": {
+        "company": "Company",
+        "allCompanies": "All companies"
+      },
+      "columns": {
+        "name": "Name",
+        "company": "Company",
+        "status": "Status",
+        "city": "City",
+        "buildings": "Buildings",
+        "apartments": "Apartments"
+      },
+      "pagination": {
+        "previous": "Previous",
+        "next": "Next",
+        "ariaLabel": "Pagination"
       }
     },
     "partners": {

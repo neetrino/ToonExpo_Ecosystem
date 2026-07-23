@@ -4,6 +4,7 @@ import {
   Building2,
   CalendarDays,
   ClipboardCheck,
+  FolderKanban,
   Handshake,
   Landmark,
   LayoutList,
@@ -24,6 +25,7 @@ type NavItem = {
   key:
     | 'analytics'
     | 'companies'
+    | 'projects'
     | 'checkin'
     | 'partners'
     | 'bankOffers'
@@ -39,6 +41,7 @@ type NavItem = {
 const PRIMARY_NAV_ITEMS: NavItem[] = [
   { href: '/admin/analytics', key: 'analytics', icon: LineChart },
   { href: '/admin/companies', key: 'companies', icon: Building2 },
+  { href: '/admin/projects', key: 'projects', icon: FolderKanban },
   { href: '/admin/checkin', key: 'checkin', icon: ScanLine },
   { href: '/admin/partners', key: 'partners', icon: Handshake },
   { href: '/admin/bank-offers', key: 'bankOffers', icon: Landmark },

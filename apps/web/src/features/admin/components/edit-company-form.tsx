@@ -67,13 +67,46 @@ export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
-      <FormField
-        id="edit-company-name"
-        label={t('form.name')}
-        error={errors.name ? t('validation.name') : undefined}
-      >
-        <Input id="edit-company-name" aria-invalid={Boolean(errors.name)} {...register('name')} />
-      </FormField>
+      <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start">
+        <FormField
+          id="edit-company-name"
+          label={t('form.name')}
+          error={errors.name ? t('validation.name') : undefined}
+        >
+          <Input id="edit-company-name" aria-invalid={Boolean(errors.name)} {...register('name')} />
+        </FormField>
+
+        <FormField
+          id="edit-company-status"
+          label={t('form.status')}
+          error={errors.status ? t('validation.status') : undefined}
+        >
+          <Controller
+            name="status"
+            control={control}
+            render={({ field }) => (
+              <Select
+                id="edit-company-status"
+                name={field.name}
+                value={field.value}
+                size="fit"
+                aria-label={t('form.status')}
+                aria-invalid={Boolean(errors.status)}
+                onBlur={field.onBlur}
+                onChange={(event) => {
+                  field.onChange(event.target.value);
+                }}
+              >
+                {COMPANY_STATUSES.map((status) => (
+                  <option key={status} value={status}>
+                    {t(`statuses.${status}`)}
+                  </option>
+                ))}
+              </Select>
+            )}
+          />
+        </FormField>
+      </div>
 
       <FormField
         id="edit-company-description"
@@ -85,36 +118,6 @@ export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
           rows={3}
           className="w-full rounded-sm border border-border bg-background px-4 py-3 text-sm text-ink focus-visible:border-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/20"
           {...register('description')}
-        />
-      </FormField>
-
-      <FormField
-        id="edit-company-status"
-        label={t('form.status')}
-        error={errors.status ? t('validation.status') : undefined}
-      >
-        <Controller
-          name="status"
-          control={control}
-          render={({ field }) => (
-            <Select
-              id="edit-company-status"
-              name={field.name}
-              value={field.value}
-              aria-label={t('form.status')}
-              aria-invalid={Boolean(errors.status)}
-              onBlur={field.onBlur}
-              onChange={(event) => {
-                field.onChange(event.target.value);
-              }}
-            >
-              {COMPANY_STATUSES.map((status) => (
-                <option key={status} value={status}>
-                  {t(`statuses.${status}`)}
-                </option>
-              ))}
-            </Select>
-          )}
         />
       </FormField>
 
@@ -134,10 +137,6 @@ export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
         )}
       />
 
-      <p className="text-sm text-ink-secondary">
-        {t('detail.typeLabel')}: {t(`types.${company.type}`)}
-      </p>
-
       {formError ? (
         <p role="alert" className="rounded-sm bg-danger-soft px-3 py-2 text-sm text-danger">
           {formError}
@@ -150,7 +149,7 @@ export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
         </p>
       ) : null}
 
-      <Button type="submit" variant="secondary" disabled={busy || !isDirty}>
+      <Button type="submit" variant="primary" disabled={busy || !isDirty}>
         {busy ? t('detail.saving') : t('detail.save')}
       </Button>
     </form>
