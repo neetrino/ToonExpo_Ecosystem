@@ -9,14 +9,14 @@ import type {
   PublicPartnerDetail,
   PublicPartnerListItem,
   PublicPartnerOfferItem,
-} from "@toonexpo/contracts";
-import type { Prisma } from "@toonexpo/db";
+} from '@toonexpo/contracts';
+import type { Prisma } from '@toonexpo/db';
 
-import type { TranslationRow } from "../../catalog/utils/resolve-translation.js";
+import type { TranslationRow } from '../../catalog/utils/resolve-translation.js';
 import {
   groupPartnerOfferTranslations,
   groupPartnerProfileTranslations,
-} from "../utils/group-partner-translations.js";
+} from '../utils/group-partner-translations.js';
 
 type PartnerCompanyRow = Prisma.PartnerCompanyGetPayload<object>;
 type PartnerOfferRow = Prisma.PartnerOfferGetPayload<object>;
@@ -26,9 +26,7 @@ type PartnerWithMedia = PartnerCompanyRow & {
   coverMedia?: { fileUrl: string } | null;
 };
 
-export const toAdminPartnerListItem = (
-  partner: PartnerCompanyRow,
-): AdminPartnerListItem => ({
+export const toAdminPartnerListItem = (partner: PartnerWithMedia): AdminPartnerListItem => ({
   id: partner.id,
   companyId: partner.companyId,
   type: partner.type,
@@ -37,6 +35,7 @@ export const toAdminPartnerListItem = (
   status: partner.status,
   publicationStatus: partner.publicationStatus,
   featured: partner.featured,
+  logoUrl: partner.logoMedia?.fileUrl ?? null,
   createdAt: partner.createdAt.toISOString(),
   updatedAt: partner.updatedAt.toISOString(),
 });
@@ -73,9 +72,7 @@ export const toAdminPartnerDetail = (
     website: partner.website,
     socialLinks: parseSocialLinks(partner.socialLinks),
     translations: groupPartnerProfileTranslations(translationRows),
-    offers: offers.map((offer) =>
-      toPartnerOfferItem(offer, offerTranslations.get(offer.id)),
-    ),
+    offers: offers.map((offer) => toPartnerOfferItem(offer, offerTranslations.get(offer.id))),
   };
 };
 
@@ -96,9 +93,7 @@ export const toPortalPartnerDetail = (
     website: partner.website,
     socialLinks: parseSocialLinks(partner.socialLinks),
     translations: groupPartnerProfileTranslations(translationRows),
-    offers: offers.map((offer) =>
-      toPartnerOfferItem(offer, offerTranslations.get(offer.id)),
-    ),
+    offers: offers.map((offer) => toPartnerOfferItem(offer, offerTranslations.get(offer.id))),
   };
 };
 
@@ -170,15 +165,13 @@ const groupOfferTranslationsById = (
 };
 
 export const parseContacts = (value: Prisma.JsonValue): PartnerContacts | null => {
-  if (!value || typeof value !== "object" || Array.isArray(value)) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
     return null;
   }
 
   const record = value as Record<string, unknown>;
-  const phone =
-    typeof record["phone"] === "string" ? record["phone"] : undefined;
-  const email =
-    typeof record["email"] === "string" ? record["email"] : undefined;
+  const phone = typeof record['phone'] === 'string' ? record['phone'] : undefined;
+  const email = typeof record['email'] === 'string' ? record['email'] : undefined;
 
   if (!phone && !email) {
     return null;
@@ -187,15 +180,13 @@ export const parseContacts = (value: Prisma.JsonValue): PartnerContacts | null =
   return { ...(phone ? { phone } : {}), ...(email ? { email } : {}) };
 };
 
-export const parseSocialLinks = (
-  value: Prisma.JsonValue,
-): PartnerSocialLinks | null => {
-  if (!value || typeof value !== "object" || Array.isArray(value)) {
+export const parseSocialLinks = (value: Prisma.JsonValue): PartnerSocialLinks | null => {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
     return null;
   }
 
   const entries = Object.entries(value as Record<string, unknown>).filter(
-    (entry): entry is [string, string] => typeof entry[1] === "string",
+    (entry): entry is [string, string] => typeof entry[1] === 'string',
   );
 
   return entries.length > 0 ? Object.fromEntries(entries) : null;

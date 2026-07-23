@@ -16,7 +16,7 @@ type AdminEventsTableProps = {
 /**
  * Admin events collection as table or card grid.
  */
-export const AdminEventsTable = ({ events, viewMode = 'list' }: AdminEventsTableProps) => {
+export const AdminEventsTable = ({ events, viewMode = VIEW_MODE_CARDS }: AdminEventsTableProps) => {
   const t = useTranslations('Admin.events');
 
   if (viewMode === VIEW_MODE_CARDS) {

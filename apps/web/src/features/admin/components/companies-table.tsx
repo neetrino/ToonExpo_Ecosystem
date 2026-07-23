@@ -4,6 +4,7 @@ import type { CompanyResponse } from '@toonexpo/contracts';
 import { useLocale, useTranslations } from 'next-intl';
 
 import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
+import { AdminListCardLogo } from '@/shared/ui/admin-list-card-logo';
 import { VIEW_MODE_CARDS, type ViewMode } from '@/shared/ui/view-mode';
 
 type CompaniesTableProps = {
@@ -30,7 +31,7 @@ const formatDate = (iso: string, locale: string): string => {
 export const CompaniesTable = ({
   companies,
   onSelectCompany,
-  viewMode = 'list',
+  viewMode = VIEW_MODE_CARDS,
 }: CompaniesTableProps) => {
   const t = useTranslations('Admin.companies');
   const locale = useLocale();
@@ -42,16 +43,19 @@ export const CompaniesTable = ({
           <button
             key={company.id}
             type="button"
-            className="flex flex-col gap-2 rounded-sm border border-border bg-background p-3 text-left transition-colors hover:bg-surface/60"
+            className="flex items-center gap-3 rounded-sm border border-border bg-background p-3 text-left transition-colors hover:bg-surface/60"
             onClick={() => onSelectCompany(company.id)}
           >
-            <span className="font-medium text-ink">{company.name}</span>
-            <div className="flex flex-wrap items-center gap-2 text-xs text-ink-muted">
-              <span>{t(`types.${company.type}`)}</span>
-              <span aria-hidden>·</span>
-              <span>{t(`statuses.${company.status}`)}</span>
-              <span aria-hidden>·</span>
-              <span>{formatDate(company.createdAt, locale)}</span>
+            <AdminListCardLogo name={company.name} logoUrl={company.logoUrl} />
+            <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+              <span className="truncate font-medium text-ink">{company.name}</span>
+              <div className="flex flex-wrap items-center gap-2 text-xs text-ink-muted">
+                <span>{t(`types.${company.type}`)}</span>
+                <span aria-hidden>·</span>
+                <span>{t(`statuses.${company.status}`)}</span>
+                <span aria-hidden>·</span>
+                <span>{formatDate(company.createdAt, locale)}</span>
+              </div>
             </div>
           </button>
         ))}

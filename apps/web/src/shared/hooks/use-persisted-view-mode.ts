@@ -2,9 +2,9 @@
 
 import { useCallback, useEffect, useState } from 'react';
 
-import { isViewMode, VIEW_MODE_LIST, type ViewMode } from '@/shared/ui/view-mode';
+import { isViewMode, VIEW_MODE_CARDS, type ViewMode } from '@/shared/ui/view-mode';
 
-const STORAGE_PREFIX = 'toonexpo.view-mode.';
+const STORAGE_PREFIX = 'toonexpo.view-mode.v2.';
 
 type UsePersistedViewModeResult = {
   viewMode: ViewMode;
@@ -13,10 +13,11 @@ type UsePersistedViewModeResult = {
 
 /**
  * Persists list/cards preference in localStorage for a named surface.
+ * Defaults to cards when no preference is stored.
  */
 export const usePersistedViewMode = (
   storageKey: string,
-  defaultMode: ViewMode = VIEW_MODE_LIST,
+  defaultMode: ViewMode = VIEW_MODE_CARDS,
 ): UsePersistedViewModeResult => {
   const [viewMode, setViewModeState] = useState<ViewMode>(defaultMode);
 

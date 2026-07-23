@@ -10,6 +10,7 @@ import {
 } from '@/features/partners/components/partner-badges';
 import { PartnerTypeLabel } from '@/features/partners/components/partner-type-label';
 import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
+import { AdminListCardLogo } from '@/shared/ui/admin-list-card-logo';
 import { VIEW_MODE_CARDS, type ViewMode } from '@/shared/ui/view-mode';
 
 type PartnersTableProps = {
@@ -36,7 +37,7 @@ const formatDate = (iso: string, locale: string): string => {
 export const PartnersTable = ({
   partners,
   onSelectPartner,
-  viewMode = 'list',
+  viewMode = VIEW_MODE_CARDS,
 }: PartnersTableProps) => {
   const t = useTranslations('Admin.partners');
   const locale = useLocale();
@@ -48,19 +49,22 @@ export const PartnersTable = ({
           <button
             key={partner.id}
             type="button"
-            className="flex flex-col gap-2 rounded-sm border border-border bg-background p-3 text-left transition-colors hover:bg-surface/60"
+            className="flex items-center gap-3 rounded-sm border border-border bg-background p-3 text-left transition-colors hover:bg-surface/60"
             onClick={() => onSelectPartner(partner.id)}
           >
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="font-medium text-ink">{partner.name}</span>
-              <FeaturedBadge featured={partner.featured} />
+            <AdminListCardLogo name={partner.name} logoUrl={partner.logoUrl} />
+            <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="truncate font-medium text-ink">{partner.name}</span>
+                <FeaturedBadge featured={partner.featured} />
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <PartnerTypeLabel type={partner.type} />
+                <PartnerStatusBadge status={partner.status} />
+                <PublicationStatusBadge status={partner.publicationStatus} />
+              </div>
+              <p className="text-xs text-ink-muted">{formatDate(partner.updatedAt, locale)}</p>
             </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <PartnerTypeLabel type={partner.type} />
-              <PartnerStatusBadge status={partner.status} />
-              <PublicationStatusBadge status={partner.publicationStatus} />
-            </div>
-            <p className="text-xs text-ink-muted">{formatDate(partner.updatedAt, locale)}</p>
           </button>
         ))}
       </AdminListCardGrid>

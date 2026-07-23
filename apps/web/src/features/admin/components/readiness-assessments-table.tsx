@@ -27,7 +27,7 @@ type ReadinessAssessmentsTableProps = {
 export const ReadinessAssessmentsTable = ({
   assessments,
   companyLookup,
-  viewMode = 'list',
+  viewMode = VIEW_MODE_CARDS,
 }: ReadinessAssessmentsTableProps) => {
   const t = useTranslations('Admin.readiness.assessments');
   const locale = useLocale();

@@ -24,7 +24,7 @@ const statusClassName: Record<PortalProjectListItem['publicationStatus'], string
 /**
  * Projects collection as table or card grid for portal lists.
  */
-export const ProjectsTable = ({ projects, viewMode = 'list' }: ProjectsTableProps) => {
+export const ProjectsTable = ({ projects, viewMode = VIEW_MODE_CARDS }: ProjectsTableProps) => {
   const t = useTranslations('Builder.projects');
   const scope = useCatalogScope();
 

@@ -32,7 +32,7 @@ const formatDateTime = (iso: string, locale: string): string => {
  */
 export const BosProvisioningTable = ({
   requests,
-  viewMode = 'list',
+  viewMode = VIEW_MODE_CARDS,
 }: BosProvisioningTableProps) => {
   const t = useTranslations('Admin.bos');
   const locale = useLocale();
