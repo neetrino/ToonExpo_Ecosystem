@@ -67,10 +67,15 @@ test.describe('smoke', () => {
     await expect(page).toHaveURL(
       new RegExp(`/hy/apartments/${SEED_APARTMENT_VISIBLE_AFTER_LOGIN_ID}`),
     );
+    // Detail hero title is the project name; unit number remains in breadcrumb/meta.
     await expect(
-      page.getByRole('heading', {
-        name: new RegExp(`Բն\\.\\s*${SEED_APARTMENT_NUMBER}`),
-      }),
+      page
+        .getByRole('heading', { name: SEED_PROJECT_NAME_HY, level: 1 })
+        .or(page.getByRole('heading', { name: SEED_PROJECT_NAME, level: 1 }))
+        .first(),
+    ).toBeVisible();
+    await expect(
+      page.getByText(new RegExp(`Բն\\.\\s*${SEED_APARTMENT_NUMBER}`)).first(),
     ).toBeVisible();
   });
 
@@ -246,16 +251,19 @@ test.describe('smoke', () => {
     await page.goto('/hy/mortgage');
     // Offer cards surface bank name + shortDescription (not English title).
     await page.getByRole('button', { name: /Ameriabank/ }).click();
+    const calcResponse = page.waitForResponse(
+      (response) =>
+        response.url().includes('/mortgage/calculate') &&
+        response.request().method() === 'POST' &&
+        response.ok(),
+    );
     await page.getByLabel('Գույքի արժեք').fill('45000000');
-    await expect(page.getByRole('heading', { name: 'Գնահատական' }).first()).toBeVisible({
+    await calcResponse;
+    // Results panel uses “monthly payment · bank” label (no resultsTitle heading).
+    await expect(page.getByText(/Ամսական վճար ·/).first()).toBeVisible({
       timeout: 20_000,
     });
-    await expect(
-      page
-        .getByText(/\/ ամիս/)
-        .filter({ visible: true })
-        .first(),
-    ).toBeVisible();
+    await expect(page.getByText('Վարկի գումար').first()).toBeVisible();
   });
 
   test('language switch hy → ru', async ({ page }) => {
