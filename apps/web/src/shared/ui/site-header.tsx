@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 import { useLogoutMutation, useMeQuery } from '@/features/auth/hooks/use-auth';
+import { getAccountSettingsHref } from '@/features/auth/utils/get-account-settings-href';
 import { Link, usePathname, useRouter } from '@/i18n/navigation';
 import { isPartnerCompatibleCompany } from '@/features/partners/utils/is-partner-compatible-company';
 import { BrandLogo } from '@/shared/ui/brand-logo';
