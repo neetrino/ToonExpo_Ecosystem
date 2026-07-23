@@ -237,10 +237,10 @@ Create a Vercel project from this repo:
 
 `apps/web/vercel.json` configures monorepo install/build from the repo root:
 
-- **Install:** `cd ../.. && corepack enable && pnpm install --frozen-lockfile`
+- **Install:** `cd ../.. && corepack enable && HUSKY=0 pnpm install --frozen-lockfile --filter=@toonexpo/web... --filter=toonexpo-ecosystem`
 - **Build:** `cd ../.. && pnpm turbo run build --filter=@toonexpo/web`
 
-Turbo builds `@toonexpo/contracts` and `@toonexpo/shared` first (`dependsOn: ["^build"]` in `turbo.json`).
+The install filter pulls only the web app graph (`@toonexpo/web` + workspace deps + root for Turbo) and skips `@toonexpo/api` / `@toonexpo/db` (Nest, Prisma, argon2, etc.). Turbo still builds `@toonexpo/contracts` and `@toonexpo/shared` first (`dependsOn: ["^build"]` in `turbo.json`).
 
 ### 4.2 Vercel environment variables
 
