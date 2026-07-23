@@ -71,15 +71,15 @@ export const AccountNav = ({ accountType }: AccountNavProps) => {
   const primaryItems = PRIMARY_NAV_ITEMS.filter((item) => !item.buyerOnly || showBuyerTabs);
 
   return (
-    <nav aria-label={t('label')} className="flex h-full flex-col gap-1">
-      <div className="mb-5 hidden px-2 md:block">
+    <nav aria-label={t('label')} className="flex h-full min-h-0 flex-col gap-1">
+      <div className="mb-5 hidden shrink-0 px-2 md:block">
         <BrandLogo href="/dashboard" size="sm" inverted />
         <p className="mt-2 px-0.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-on-dark/65">
           {t('portalLabel')}
         </p>
       </div>
 
-      <div className="flex flex-1 flex-col gap-1">
+      <div className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto overscroll-contain">
         {primaryItems.map((item) => {
           const active = isActive(pathname, item.href);
           const Icon = item.icon;
@@ -92,7 +92,7 @@ export const AccountNav = ({ accountType }: AccountNavProps) => {
         })}
       </div>
 
-      <div className="mt-auto flex flex-col gap-1 border-t border-on-dark/15 pt-3">
+      <div className="mt-auto flex shrink-0 flex-col gap-1 border-t border-on-dark/15 pt-3">
         <Link
           href={SETTINGS_NAV_ITEM.href}
           className={navLinkClassName(isActive(pathname, SETTINGS_NAV_ITEM.href))}

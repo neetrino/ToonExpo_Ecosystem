@@ -32,11 +32,12 @@ type PortalShellProps = {
 
 /**
  * SiteHeader pill chrome is ~4.5rem (top inset + h-16).
- * Sidebar starts one gap below that; content mask extends a bit lower so
- * scrolled main content begins disappearing under the header earlier.
+ * Sidebar is pinned with top + bottom (not a fixed vh height) so the full
+ * rail stays inside the visual viewport at any zoom / short screen.
+ * Content mask extends a bit lower so scrolled main vanishes under the header.
  */
 const RAIL_CHROME_TOP_CLASS = 'top-[5.5rem]';
-const RAIL_CHROME_HEIGHT_CLASS = 'h-[calc(100dvh-5.5rem)]';
+const RAIL_CHROME_BOTTOM_CLASS = 'bottom-0';
 /** Header spacer band under the fixed pill. */
 const RAIL_HEADER_BAND_HEIGHT_CLASS = 'h-[4.5rem]';
 /** Header band + light extra clip so content vanishes just below the header edge. */
@@ -107,18 +108,14 @@ export const PortalShell = ({
           />
           <aside
             className={cn(
-              'fixed bottom-0 left-0 z-[var(--z-sticky)] hidden',
+              'fixed left-0 z-[var(--z-sticky)] hidden overflow-hidden',
               RAIL_CHROME_TOP_CLASS,
+              RAIL_CHROME_BOTTOM_CLASS,
               RAIL_SIDEBAR_WIDTH_CLASS,
               'md:block',
             )}
           >
-            <div
-              className={cn(
-                'flex h-full flex-col rounded-tr-[2.5rem] rounded-br-[2.5rem] bg-brand-secondary p-4 shadow-md',
-                RAIL_CHROME_HEIGHT_CLASS,
-              )}
-            >
+            <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-tr-[2.5rem] rounded-br-[2.5rem] bg-brand-secondary p-4 shadow-md">
               {sidebar}
             </div>
           </aside>

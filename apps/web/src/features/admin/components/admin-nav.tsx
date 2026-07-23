@@ -99,14 +99,14 @@ export const AdminNav = () => {
   };
 
   return (
-    <nav aria-label={t('label')} className="flex h-full flex-col gap-1">
-      <div className="mb-4 hidden px-3.5 pt-1 md:block">
+    <nav aria-label={t('label')} className="flex h-full min-h-0 flex-col gap-1">
+      <div className="mb-4 hidden shrink-0 px-3.5 pt-1 md:block">
         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-on-dark/65">
           {t('portalLabel')}
         </p>
       </div>
 
-      <div className="flex flex-1 flex-col gap-1">
+      <div className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto overscroll-contain">
         {PRIMARY_NAV_ITEMS.map((item) => {
           const active = isItemActive(item.href);
           const Icon = item.icon;
@@ -119,7 +119,7 @@ export const AdminNav = () => {
         })}
       </div>
 
-      <div className="mt-auto border-t border-on-dark/15 pt-3">
+      <div className="mt-auto shrink-0 border-t border-on-dark/15 pt-3">
         <Link
           href={SETTINGS_NAV_ITEM.href}
           className={navLinkClassName(isItemActive(SETTINGS_NAV_ITEM.href))}
