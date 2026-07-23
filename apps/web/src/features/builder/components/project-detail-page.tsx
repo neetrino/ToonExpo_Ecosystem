@@ -52,7 +52,7 @@ export const ProjectDetailPage = ({ projectId }: ProjectDetailPageProps) => {
           <Link href={listHref} className="text-sm text-ink-secondary hover:text-ink">
             {t('detail.back')}
           </Link>
-          <h1 className="text-xl font-semibold text-ink">{project.name}</h1>
+          <h1 className="text-page-title text-ink">{project.name}</h1>
           <p className="text-sm text-ink-secondary">
             {t(`publication.${project.publicationStatus}`)}
           </p>

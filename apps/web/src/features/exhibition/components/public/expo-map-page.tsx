@@ -1,27 +1,30 @@
-"use client";
+'use client';
 
-import type { PublicEntranceNode } from "@toonexpo/contracts";
-import { useLocale, useTranslations } from "next-intl";
-import { useEffect, useMemo, useState } from "react";
+import type { PublicEntranceNode } from '@toonexpo/contracts';
+import { useLocale, useTranslations } from 'next-intl';
+import { useEffect, useMemo, useState } from 'react';
 
-import { getPublicBooth } from "@/features/exhibition/api/public-exhibition-api";
+import { getPublicBooth } from '@/features/exhibition/api/public-exhibition-api';
 
-import { ExpoBoothList, ExpoSearchResults } from "@/features/exhibition/components/public/expo-search-results";
-import { ExpoBoothSheet } from "@/features/exhibition/components/public/expo-booth-sheet";
-import { ExpoMapView } from "@/features/exhibition/components/public/expo-map-view";
-import { EXPO_SEARCH_DEBOUNCE_MS } from "@/features/exhibition/constants";
+import {
+  ExpoBoothList,
+  ExpoSearchResults,
+} from '@/features/exhibition/components/public/expo-search-results';
+import { ExpoBoothSheet } from '@/features/exhibition/components/public/expo-booth-sheet';
+import { ExpoMapView } from '@/features/exhibition/components/public/expo-map-view';
+import { EXPO_SEARCH_DEBOUNCE_MS } from '@/features/exhibition/constants';
 import {
   usePublicCurrentEventQuery,
   usePublicVenueMapBoothsQuery,
   usePublicVenueMapEntranceNodesQuery,
   usePublicVenueMapRouteQuery,
   usePublicVenueMapSearchQuery,
-} from "@/features/exhibition/hooks/use-exhibition";
-import { formatEventDateRange } from "@/features/exhibition/utils/format-event-dates";
-import { useDebouncedValue } from "@/shared/hooks/use-debounced-value";
-import { Button } from "@/shared/ui/button";
-import { Card } from "@/shared/ui/card";
-import { Input } from "@/shared/ui/input";
+} from '@/features/exhibition/hooks/use-exhibition';
+import { formatEventDateRange } from '@/features/exhibition/utils/format-event-dates';
+import { useDebouncedValue } from '@/shared/hooks/use-debounced-value';
+import { Button } from '@/shared/ui/button';
+import { Card } from '@/shared/ui/card';
+import { Input } from '@/shared/ui/input';
 
 const resolveEntranceLabel = (node: PublicEntranceNode): string =>
   node.label ?? node.code ?? node.id.slice(0, 8);
@@ -30,10 +33,10 @@ const resolveEntranceLabel = (node: PublicEntranceNode): string =>
  * Public mobile-first expo venue map page content.
  */
 export const ExpoMapPage = () => {
-  const t = useTranslations("Expo");
+  const t = useTranslations('Expo');
   const locale = useLocale();
   const eventQuery = usePublicCurrentEventQuery();
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
   const [selectedMapIndex, setSelectedMapIndex] = useState(0);
   const [selectedBoothId, setSelectedBoothId] = useState<string | null>(null);
   const [routeRequested, setRouteRequested] = useState(false);
@@ -43,24 +46,22 @@ export const ExpoMapPage = () => {
 
   const event = eventQuery.data ?? null;
   const venueMap = event?.venueMaps[selectedMapIndex] ?? event?.venueMaps[0] ?? null;
-  const boothsQuery = usePublicVenueMapBoothsQuery(venueMap?.id ?? "");
-  const searchQuery = usePublicVenueMapSearchQuery(venueMap?.id ?? "", debouncedSearch);
-  const entranceNodesQuery = usePublicVenueMapEntranceNodesQuery(venueMap?.id ?? "");
+  const boothsQuery = usePublicVenueMapBoothsQuery(venueMap?.id ?? '');
+  const searchQuery = usePublicVenueMapSearchQuery(venueMap?.id ?? '', debouncedSearch);
+  const entranceNodesQuery = usePublicVenueMapEntranceNodesQuery(venueMap?.id ?? '');
 
   const booths = boothsQuery.data?.data ?? [];
   const selectedBooth = booths.find((booth) => booth.id === selectedBoothId) ?? null;
   const entranceNodes = entranceNodesQuery.data?.data ?? [];
 
   const routeQuery = usePublicVenueMapRouteQuery(
-    venueMap?.id ?? "",
+    venueMap?.id ?? '',
     fromNodeId,
     selectedBoothId,
     routeRequested,
   );
 
-  const dates = event
-    ? formatEventDateRange(event.startDate, event.endDate, locale)
-    : null;
+  const dates = event ? formatEventDateRange(event.startDate, event.endDate, locale) : null;
 
   const routeNodes = useMemo(() => {
     if (!routeRequested || !routeQuery.data?.routeAvailable) {
@@ -100,7 +101,7 @@ export const ExpoMapPage = () => {
     }
 
     if (entranceNodes.length === 1) {
-      startRoute(entranceNodes[0]?.id ?? "");
+      startRoute(entranceNodes[0]?.id ?? '');
       return;
     }
 
@@ -108,13 +109,13 @@ export const ExpoMapPage = () => {
   };
 
   if (eventQuery.isLoading) {
-    return <p className="text-sm text-ink-secondary">{t("loading")}</p>;
+    return <p className="text-sm text-ink-secondary">{t('loading')}</p>;
   }
 
   if (eventQuery.isError) {
     return (
       <p role="alert" className="text-sm text-danger">
-        {t("error")}
+        {t('error')}
       </p>
     );
   }
@@ -122,8 +123,8 @@ export const ExpoMapPage = () => {
   if (!event || !venueMap) {
     return (
       <Card className="px-4 py-10 text-center">
-        <h1 className="text-lg font-semibold text-ink">{t("noEvent.title")}</h1>
-        <p className="mt-2 text-sm text-ink-secondary">{t("noEvent.message")}</p>
+        <h1 className="text-lg font-semibold text-ink">{t('noEvent.title')}</h1>
+        <p className="mt-2 text-sm text-ink-secondary">{t('noEvent.message')}</p>
       </Card>
     );
   }
@@ -131,7 +132,7 @@ export const ExpoMapPage = () => {
   return (
     <div className="mx-auto flex w-full max-w-content flex-col gap-4 px-6 py-6">
       <div className="flex flex-col gap-1">
-        <h1 className="text-xl font-semibold text-ink">{event.name}</h1>
+        <h1 className="text-page-title text-ink">{event.name}</h1>
         {dates ? <p className="text-sm text-ink-secondary">{dates}</p> : null}
       </div>
 
@@ -142,7 +143,7 @@ export const ExpoMapPage = () => {
               key={map.id}
               type="button"
               size="sm"
-              variant={selectedMapIndex === index ? "secondary" : "ghost"}
+              variant={selectedMapIndex === index ? 'secondary' : 'ghost'}
               onClick={() => {
                 setSelectedMapIndex(index);
                 setSelectedBoothId(null);
@@ -157,9 +158,9 @@ export const ExpoMapPage = () => {
 
       <Input
         value={search}
-        placeholder={t("search.placeholder")}
+        placeholder={t('search.placeholder')}
         onChange={(event) => setSearch(event.target.value)}
-        aria-label={t("search.label")}
+        aria-label={t('search.label')}
       />
 
       <ExpoSearchResults
@@ -187,8 +188,8 @@ export const ExpoMapPage = () => {
       {showEntrancePicker ? (
         <Card className="flex flex-col gap-3 px-4 py-4">
           <div>
-            <h2 className="text-sm font-semibold text-ink">{t("route.pickEntrance")}</h2>
-            <p className="mt-1 text-xs text-ink-muted">{t("route.pickEntranceHint")}</p>
+            <h2 className="text-sm font-semibold text-ink">{t('route.pickEntrance')}</h2>
+            <p className="mt-1 text-xs text-ink-muted">{t('route.pickEntranceHint')}</p>
           </div>
           <div className="flex flex-wrap gap-2">
             {entranceNodes.map((node) => (
@@ -199,22 +200,22 @@ export const ExpoMapPage = () => {
                 variant="secondary"
                 onClick={() => startRoute(node.id)}
               >
-                {t("route.entranceOption", { label: resolveEntranceLabel(node) })}
+                {t('route.entranceOption', { label: resolveEntranceLabel(node) })}
               </Button>
             ))}
           </div>
           <Button type="button" variant="ghost" size="sm" onClick={resetRoute}>
-            {t("route.cancel")}
+            {t('route.cancel')}
           </Button>
         </Card>
       ) : null}
 
       {routeRequested && !routeAvailable ? (
-        <p className="text-sm text-ink-secondary">{t("route.noEntranceNodes")}</p>
+        <p className="text-sm text-ink-secondary">{t('route.noEntranceNodes')}</p>
       ) : null}
 
       {routeRequested && routeAvailable && routeQuery.data && !routeQuery.data.routeAvailable ? (
-        <p className="text-sm text-ink-secondary">{t("route.unavailable")}</p>
+        <p className="text-sm text-ink-secondary">{t('route.unavailable')}</p>
       ) : null}
 
       {selectedBooth ? (
@@ -240,7 +241,7 @@ export const ExpoMapPage = () => {
 
       {routeRequested ? (
         <Button type="button" variant="ghost" size="sm" onClick={resetRoute}>
-          {t("route.reset")}
+          {t('route.reset')}
         </Button>
       ) : null}
     </div>

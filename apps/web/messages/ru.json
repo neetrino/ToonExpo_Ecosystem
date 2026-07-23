@@ -1049,6 +1049,11 @@
         "buildings": "Здания",
         "apartments": "Квартиры"
       },
+      "publication": {
+        "draft": "Черновик",
+        "published": "Опубликован",
+        "archived": "В архиве"
+      },
       "pagination": {
         "previous": "Назад",
         "next": "Вперёд",

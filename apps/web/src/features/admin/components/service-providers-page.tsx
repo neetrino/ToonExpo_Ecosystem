@@ -1,17 +1,14 @@
-"use client";
+'use client';
 
-import type {
-  AdminServiceProviderItem,
-  ServiceProviderCategoryItem,
-} from "@toonexpo/contracts";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
+import type { AdminServiceProviderItem, ServiceProviderCategoryItem } from '@toonexpo/contracts';
+import { useTranslations } from 'next-intl';
+import { useState } from 'react';
 
-import { ServiceProvidersCategoriesSection } from "@/features/admin/components/service-providers-categories-section";
+import { ServiceProvidersCategoriesSection } from '@/features/admin/components/service-providers-categories-section';
 import {
   ServiceProvidersProvidersSection,
   type ServiceProviderFilters,
-} from "@/features/admin/components/service-providers-providers-section";
+} from '@/features/admin/components/service-providers-providers-section';
 import {
   useAdminServiceProviderCategoriesQuery,
   useAdminServiceProvidersQuery,
@@ -19,36 +16,34 @@ import {
   useDeleteServiceProviderCategoryMutation,
   useDeleteServiceProviderMutation,
   useUpdateServiceProviderMutation,
-} from "@/features/admin/hooks/use-admin-service-providers";
+} from '@/features/admin/hooks/use-admin-service-providers';
 import {
   toCreateServiceProviderBody,
   toUpdateServiceProviderBody,
-} from "@/features/admin/utils/service-provider-mappers";
+} from '@/features/admin/utils/service-provider-mappers';
 
 /**
  * Admin service provider directory: categories + providers CRUD.
  */
 export const ServiceProvidersPage = () => {
-  const t = useTranslations("Admin.serviceProviders");
+  const t = useTranslations('Admin.serviceProviders');
   const categoriesQuery = useAdminServiceProviderCategoriesQuery();
-  const [providerFilters, setProviderFilters] = useState<ServiceProviderFilters>(
-    { search: "", active: "", categoryId: "" },
-  );
+  const [providerFilters, setProviderFilters] = useState<ServiceProviderFilters>({
+    search: '',
+    active: '',
+    categoryId: '',
+  });
 
   const providersQuery = useAdminServiceProvidersQuery({
     ...(providerFilters.search ? { search: providerFilters.search } : {}),
-    ...(providerFilters.categoryId
-      ? { categoryId: providerFilters.categoryId }
-      : {}),
-    ...(providerFilters.active === "true" ? { active: true } : {}),
-    ...(providerFilters.active === "false" ? { active: false } : {}),
+    ...(providerFilters.categoryId ? { categoryId: providerFilters.categoryId } : {}),
+    ...(providerFilters.active === 'true' ? { active: true } : {}),
+    ...(providerFilters.active === 'false' ? { active: false } : {}),
   });
 
-  const [editingCategory, setEditingCategory] =
-    useState<ServiceProviderCategoryItem | null>(null);
+  const [editingCategory, setEditingCategory] = useState<ServiceProviderCategoryItem | null>(null);
   const [creatingCategory, setCreatingCategory] = useState(false);
-  const [editingProvider, setEditingProvider] =
-    useState<AdminServiceProviderItem | null>(null);
+  const [editingProvider, setEditingProvider] = useState<AdminServiceProviderItem | null>(null);
   const [creatingProvider, setCreatingProvider] = useState(false);
 
   const createProviderMutation = useCreateServiceProviderMutation();
@@ -57,7 +52,7 @@ export const ServiceProvidersPage = () => {
   const deleteCategoryMutation = useDeleteServiceProviderCategoryMutation();
 
   if (categoriesQuery.isLoading || providersQuery.isLoading) {
-    return <p className="text-sm text-ink-secondary">{t("loading")}</p>;
+    return <p className="text-sm text-ink-secondary">{t('loading')}</p>;
   }
 
   if (
@@ -68,7 +63,7 @@ export const ServiceProvidersPage = () => {
   ) {
     return (
       <p role="alert" className="text-sm text-danger">
-        {t("error")}
+        {t('error')}
       </p>
     );
   }
@@ -84,8 +79,8 @@ export const ServiceProvidersPage = () => {
   return (
     <div className="flex flex-col gap-10">
       <header className="flex flex-col gap-1">
-        <h1 className="text-xl font-semibold text-ink">{t("title")}</h1>
-        <p className="text-sm text-ink-secondary">{t("subtitle")}</p>
+        <h1 className="text-page-title text-ink">{t('title')}</h1>
+        <p className="text-sm text-ink-secondary">{t('subtitle')}</p>
       </header>
 
       <ServiceProvidersCategoriesSection

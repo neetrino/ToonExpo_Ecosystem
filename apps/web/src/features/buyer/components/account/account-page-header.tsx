@@ -28,9 +28,7 @@ export const AccountPageHeader = ({
       className={cn('flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between', className)}
     >
       <div className="flex min-w-0 flex-col gap-1">
-        <HeadingTag className="text-xl font-semibold tracking-tight text-ink sm:text-2xl">
-          {title}
-        </HeadingTag>
+        <HeadingTag className="text-page-title text-ink">{title}</HeadingTag>
         {subtitle ? (
           <p className="max-w-2xl text-sm leading-relaxed text-ink-secondary">{subtitle}</p>
         ) : null}

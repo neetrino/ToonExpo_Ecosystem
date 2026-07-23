@@ -57,7 +57,7 @@ export const QrLandingContent = ({ token }: QrLandingContentProps) => {
   if (state.status === 'error') {
     return (
       <Card className="flex flex-col gap-4 text-center">
-        <h1 className="text-xl font-semibold text-ink">{t('denied.title')}</h1>
+        <h1 className="text-page-title text-ink">{t('denied.title')}</h1>
         <p className="text-sm text-ink-secondary">{t('denied.description')}</p>
         <Link
           href={`/auth/login?returnUrl=${encodeURIComponent(`/qr/${token}`)}`}
@@ -78,7 +78,7 @@ export const QrLandingContent = ({ token }: QrLandingContentProps) => {
   if (data.kind === 'entrance_checkin') {
     return (
       <Card className="flex flex-col gap-3 text-center">
-        <h1 className="text-xl font-semibold text-ink">{t('checkin.title')}</h1>
+        <h1 className="text-page-title text-ink">{t('checkin.title')}</h1>
         <p className="text-sm text-ink-secondary">{t('checkin.description')}</p>
         <p className="text-sm font-medium text-ink">{data.name}</p>
       </Card>

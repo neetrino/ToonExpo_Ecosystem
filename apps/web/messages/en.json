@@ -1049,6 +1049,11 @@
         "buildings": "Buildings",
         "apartments": "Apartments"
       },
+      "publication": {
+        "draft": "Draft",
+        "published": "Published",
+        "archived": "Archived"
+      },
       "pagination": {
         "previous": "Previous",
         "next": "Next",

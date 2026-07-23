@@ -47,7 +47,7 @@ export const BuilderDashboardPage = () => {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-1">
-        <h1 className="text-xl font-semibold text-ink">{t('title')}</h1>
+        <h1 className="text-page-title text-ink">{t('title')}</h1>
         <p className="text-sm text-ink-secondary">{t('subtitle')}</p>
       </div>
 

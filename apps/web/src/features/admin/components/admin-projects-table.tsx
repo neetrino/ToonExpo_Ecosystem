@@ -3,9 +3,9 @@
 import type { AdminProjectListItem } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 
+import { AdminProjectCard } from '@/features/admin/components/admin-project-card';
 import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
 import { Link } from '@/i18n/navigation';
-import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
 import { LIST_STATUS_BADGE_COMPACT_CLASS } from '@/shared/ui/list-status-badge';
 import { VIEW_MODE_CARDS, type ViewMode } from '@/shared/ui/view-mode';
 
@@ -27,36 +27,11 @@ export const AdminProjectsTable = ({
 
   if (viewMode === VIEW_MODE_CARDS) {
     return (
-      <AdminListCardGrid>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {projects.map((project) => (
-          <Link
-            key={project.id}
-            href={projectHref(project)}
-            className="flex flex-col gap-2 rounded-sm border border-border bg-background p-3 transition-colors hover:bg-surface/60"
-          >
-            <div className="flex items-center justify-between gap-2">
-              <span className="min-w-0 truncate font-medium text-ink">{project.name}</span>
-              <PublicationStatusBadge
-                status={project.publicationStatus}
-                className={LIST_STATUS_BADGE_COMPACT_CLASS}
-              />
-            </div>
-            <div className="flex flex-wrap items-center gap-2 text-xs text-ink-muted">
-              <span className="truncate">{project.companyName}</span>
-              <span aria-hidden>·</span>
-              <span>{project.city ?? '—'}</span>
-              <span aria-hidden>·</span>
-              <span>
-                {t('columns.buildings')}: {project.buildingsCount}
-              </span>
-              <span aria-hidden>·</span>
-              <span>
-                {t('columns.apartments')}: {project.apartmentsCount}
-              </span>
-            </div>
-          </Link>
+          <AdminProjectCard key={project.id} project={project} />
         ))}
-      </AdminListCardGrid>
+      </div>
     );
   }
 
