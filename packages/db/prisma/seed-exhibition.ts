@@ -9,7 +9,7 @@ import {
   type PrismaClient,
 } from '../src/index.js';
 import { SEED_PLATFORM_ADMIN_ID } from './seed-auth.js';
-import { DEMO_VENUE_MAP_URL, SEED_ID_PREFIX, SEED_PROJECTS } from './seed-data.js';
+import { DEMO_VENUE_MAP_URL, SEED_ID_PREFIX, SEED_PROJECTS, toSeedMediaUrl } from './seed-data.js';
 import { SEED_BANK_COMPANY_ID } from './seed-mortgage.js';
 
 export const SEED_EVENT_ID = `${SEED_ID_PREFIX}event_toonexpo_2026`;
@@ -37,12 +37,12 @@ export const upsertSeedExhibition = async (prisma: PrismaClient): Promise<void> 
       id: SEED_VENUE_MEDIA_ID,
       ownerCompanyId: null,
       type: MediaAssetType.image,
-      fileUrl: DEMO_VENUE_MAP_URL,
+      fileUrl: toSeedMediaUrl(DEMO_VENUE_MAP_URL),
       title: 'ToonExpo venue map',
       altText: 'Exhibition venue map',
     },
     update: {
-      fileUrl: DEMO_VENUE_MAP_URL,
+      fileUrl: toSeedMediaUrl(DEMO_VENUE_MAP_URL),
       title: 'ToonExpo venue map',
       altText: 'Exhibition venue map',
     },

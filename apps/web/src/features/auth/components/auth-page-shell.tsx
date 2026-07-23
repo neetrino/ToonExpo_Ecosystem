@@ -5,10 +5,11 @@ import type { ReactNode } from 'react';
 
 import { AuthFitStage } from '@/features/auth/components/auth-fit-stage';
 import { Link } from '@/i18n/navigation';
+import { staticAssetUrl } from '@/shared/lib/static-asset-url';
 import { BrandLogo } from '@/shared/ui/brand-logo';
 import { cn } from '@/shared/ui/cn';
 
-const AUTH_PANEL_IMAGE = '/demo/northern-avenue.webp';
+const AUTH_PANEL_IMAGE = staticAssetUrl('/demo/northern-avenue.webp');
 
 type AuthPageShellProps = {
   title: string;

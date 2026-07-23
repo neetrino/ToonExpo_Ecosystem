@@ -7,7 +7,25 @@ export const SEED_DRAFT_PROJECT_ID = `${SEED_ID_PREFIX}project_draft_hidden`;
 export const DEFAULT_PRICE_CURRENCY = 'AMD';
 export const PLACEHOLDER_IMAGE_BASE = 'https://placehold.co';
 
-/** Local demo covers served by apps/web/public/demo (dev seed only). */
+/**
+ * Maps local `/demo/...` (or `/images/...`) paths to R2 public URLs when
+ * `R2_PUBLIC_URL` is set. Absolute http(s) URLs are returned unchanged.
+ */
+export const toSeedMediaUrl = (pathOrUrl: string): string => {
+  if (pathOrUrl.startsWith('http://') || pathOrUrl.startsWith('https://')) {
+    return pathOrUrl;
+  }
+
+  const base = process.env['R2_PUBLIC_URL']?.trim().replace(/\/$/, '');
+  if (!base) {
+    return pathOrUrl;
+  }
+
+  const normalized = pathOrUrl.startsWith('/') ? pathOrUrl : `/${pathOrUrl}`;
+  return `${base}${normalized}`;
+};
+
+/** Local demo covers under apps/web/public/demo (uploaded to R2 as `demo/*`). */
 export const DEMO_COVER_BY_PROJECT: Record<string, string> = {
   [`${SEED_ID_PREFIX}project_northern_avenue`]: '/demo/northern-avenue.webp',
   [`${SEED_ID_PREFIX}project_cascade_view`]: '/demo/cascade-view.webp',
@@ -165,18 +183,18 @@ export const imageUrl = (label: string): string =>
   `${PLACEHOLDER_IMAGE_BASE}/1200x800/1a1a1a/f5f5f5/png?text=${encodeURIComponent(label)}`;
 
 export const demoCoverUrl = (projectId: string, label: string): string =>
-  DEMO_COVER_BY_PROJECT[projectId] ?? imageUrl(label);
+  toSeedMediaUrl(DEMO_COVER_BY_PROJECT[projectId] ?? imageUrl(label));
 
 export const demoLogoUrl = (builderId: string, label: string): string =>
-  DEMO_LOGO_BY_BUILDER[builderId] ?? imageUrl(label);
+  toSeedMediaUrl(DEMO_LOGO_BY_BUILDER[builderId] ?? imageUrl(label));
 
 export const DEMO_APARTMENT_PLAN_URL = '/demo/apartment-plan.webp';
 export const DEMO_FLOOR_PLAN_URL = '/demo/floor-plan.webp';
 export const DEMO_BUILDING_COVER_A = '/demo/building-a.webp';
 export const DEMO_BUILDING_COVER_B = '/demo/building-b.webp';
 export const DEMO_PARTNER_BANK_LOGO = '/demo/partner-bank.webp';
-export const DEMO_PARTNER_COVER = '/demo/partner-bank.webp';
-export const DEMO_PARTNER_IT_LOGO = '/demo/partner-bank.webp';
+export const DEMO_PARTNER_COVER = '/demo/partner-cover.webp';
+export const DEMO_PARTNER_IT_LOGO = '/demo/partner-it.webp';
 export const DEMO_VENUE_MAP_URL = '/demo/venue-map.webp';
 export const DEMO_VISUAL_MAP_URL = '/demo/visual-map.webp';
 

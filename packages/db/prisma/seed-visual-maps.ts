@@ -10,7 +10,7 @@ import {
   type PrismaClient,
 } from '../src/index.js';
 import { SEED_PLATFORM_ADMIN_ID } from './seed-auth.js';
-import { DEMO_VISUAL_MAP_URL, SEED_ID_PREFIX } from './seed-data.js';
+import { DEMO_VISUAL_MAP_URL, SEED_ID_PREFIX, toSeedMediaUrl } from './seed-data.js';
 import { ALL_SEED_PROJECTS as SEED_PROJECTS } from './seed-entities.js';
 
 /**
@@ -29,14 +29,14 @@ export const upsertSeedVisualMaps = async (prisma: PrismaClient): Promise<number
         id: mediaId,
         ownerCompanyId: project.builderId,
         type: MediaAssetType.image,
-        fileUrl: DEMO_VISUAL_MAP_URL,
+        fileUrl: toSeedMediaUrl(DEMO_VISUAL_MAP_URL),
         title: `${project.name} visual map`,
         altText: `${project.name} site plan`,
         relatedEntityType: 'project',
         relatedEntityId: project.id,
       },
       update: {
-        fileUrl: DEMO_VISUAL_MAP_URL,
+        fileUrl: toSeedMediaUrl(DEMO_VISUAL_MAP_URL),
         title: `${project.name} visual map`,
         altText: `${project.name} site plan`,
       },

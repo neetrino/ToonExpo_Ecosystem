@@ -1,7 +1,8 @@
 import { CatalogListHero } from '@/features/catalog/components/catalog-list-hero';
+import { staticAssetUrl } from '@/shared/lib/static-asset-url';
 
 /** Figma photo node `1:643`. */
-const PARTNERS_HERO_IMAGE_SRC = '/demo/partner-facade.webp';
+const PARTNERS_HERO_IMAGE_SRC = staticAssetUrl('/demo/partner-facade.webp');
 
 type PartnersPageHeroProps = {
   title: string;

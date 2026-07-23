@@ -3,10 +3,11 @@ import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
 
 import { Link } from '@/i18n/navigation';
+import { staticAssetUrl } from '@/shared/lib/static-asset-url';
 import { cn } from '@/shared/ui/cn';
 
 /** Figma `89:1281` axonometric building visual for the floor picker panel. */
-const FLOOR_PICKER_VISUAL_SRC = '/images/project-floor-axonometric.webp';
+const FLOOR_PICKER_VISUAL_SRC = staticAssetUrl('/images/project-floor-axonometric.webp');
 
 type ProjectFloorPickerProps = {
   project: ProjectDetail;
