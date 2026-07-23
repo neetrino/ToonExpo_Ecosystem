@@ -21,6 +21,7 @@
     "db:seed": "pnpm --filter @toonexpo/shared build && pnpm --filter @toonexpo/db run db:seed",
     "e2e:build": "bash scripts/e2e-build.sh",
     "e2e": "pnpm run e2e:build && pnpm --filter @toonexpo/web e2e",
+    "media:upload-static": "node --env-file=.env scripts/upload-static-media-to-r2.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "prepare": "husky"

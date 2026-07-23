@@ -3,6 +3,7 @@ import { ArrowRight } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
 import { Link } from '@/i18n/navigation';
+import { staticAssetUrl } from '@/shared/lib/static-asset-url';
 import { Button } from '@/shared/ui/button';
 import { Reveal } from '@/shared/ui/motion/reveal';
 
@@ -16,7 +17,7 @@ export const HomeFinalCta = async () => {
     <section className="relative isolate overflow-hidden">
       <div className="absolute inset-0">
         <Image
-          src="/demo/expo-venue.webp"
+          src={staticAssetUrl('/demo/expo-venue.webp')}
           alt=""
           fill
           className="banner-media-drift object-cover object-center"

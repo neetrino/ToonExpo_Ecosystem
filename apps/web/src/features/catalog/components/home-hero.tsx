@@ -2,10 +2,11 @@ import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
 
 import { HeroSearch } from '@/features/catalog/components/hero-search';
+import { staticAssetUrl } from '@/shared/lib/static-asset-url';
 import { cn } from '@/shared/ui/cn';
 
 /** Figma photo node `89:1399`. */
-const HERO_IMAGE_SRC = '/images/hero-building.webp';
+const HERO_IMAGE_SRC = staticAssetUrl('/images/hero-building.webp');
 
 /**
  * Public home hero — full-bleed skyline with marketplace search.

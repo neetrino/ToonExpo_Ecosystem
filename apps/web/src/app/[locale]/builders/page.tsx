@@ -4,6 +4,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { listBuilders } from '@/features/catalog/api/catalog-api';
 import { BuilderCard } from '@/features/catalog/components/builder-card';
 import { SiteFooter } from '@/features/catalog/components/site-footer';
+import { staticAssetUrl } from '@/shared/lib/static-asset-url';
 import { MarketingPageIntro } from '@/shared/ui/marketing-page-intro';
 
 type BuildersPageProps = {
@@ -34,7 +35,7 @@ export default async function BuildersPage({ params }: BuildersPageProps) {
         <MarketingPageIntro
           title={t('buildersPage.title')}
           description={t('buildersPage.subtitle', { count: builders.length })}
-          imageSrc="/demo/building-a.webp"
+          imageSrc={staticAssetUrl('/demo/building-a.webp')}
         />
 
         {builders.length === 0 ? (

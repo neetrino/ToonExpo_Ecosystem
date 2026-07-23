@@ -19,6 +19,7 @@ import {
   demoLogoUrl,
   SEED_DRAFT_PROJECT_ID,
   SEED_ID_PREFIX,
+  toSeedMediaUrl,
 } from './seed-data.js';
 import { ALL_SEED_BUILDERS, ALL_SEED_PROJECTS } from './seed-entities.js';
 import { buildSeedTranslations, type SeedTranslation } from './seed-translations.js';
@@ -102,14 +103,14 @@ const ensureOrphanBuilderDemoLogos = async (prisma: PrismaClient): Promise<void>
         id: logoId,
         ownerCompanyId: orphan.id,
         type: MediaAssetType.image,
-        fileUrl: DEMO_ORPHAN_BUILDER_LOGO,
+        fileUrl: toSeedMediaUrl(DEMO_ORPHAN_BUILDER_LOGO),
         title: `${orphan.name} logo`,
         altText: orphan.name,
       },
       update: {
         ownerCompanyId: orphan.id,
         type: MediaAssetType.image,
-        fileUrl: DEMO_ORPHAN_BUILDER_LOGO,
+        fileUrl: toSeedMediaUrl(DEMO_ORPHAN_BUILDER_LOGO),
         title: `${orphan.name} logo`,
         altText: orphan.name,
       },
@@ -129,8 +130,9 @@ const upsertSeedBuildings = async (
 
   for (const [buildingIndex, building] of project.buildings.entries()) {
     const buildingCoverId = `${SEED_ID_PREFIX}media_building_cover_${building.id}`;
-    const buildingCoverUrl =
-      buildingIndex % 2 === 0 ? DEMO_BUILDING_COVER_A : DEMO_BUILDING_COVER_B;
+    const buildingCoverUrl = toSeedMediaUrl(
+      buildingIndex % 2 === 0 ? DEMO_BUILDING_COVER_A : DEMO_BUILDING_COVER_B,
+    );
 
     await prisma.mediaAsset.upsert({
       where: { id: buildingCoverId },
@@ -181,14 +183,14 @@ const upsertSeedBuildings = async (
           id: floorPlanId,
           ownerCompanyId: project.builderId,
           type: MediaAssetType.image,
-          fileUrl: DEMO_FLOOR_PLAN_URL,
+          fileUrl: toSeedMediaUrl(DEMO_FLOOR_PLAN_URL),
           title: `${building.name} floor ${floorNumber} plan`,
           altText: `Floor ${floorNumber} plan`,
           relatedEntityType: 'floor',
           relatedEntityId: floorId,
         },
         update: {
-          fileUrl: DEMO_FLOOR_PLAN_URL,
+          fileUrl: toSeedMediaUrl(DEMO_FLOOR_PLAN_URL),
           title: `${building.name} floor ${floorNumber} plan`,
           altText: `Floor ${floorNumber} plan`,
         },
@@ -230,14 +232,14 @@ const upsertSeedBuildings = async (
             id: apartment.planMediaId,
             ownerCompanyId: project.builderId,
             type: MediaAssetType.image,
-            fileUrl: DEMO_APARTMENT_PLAN_URL,
+            fileUrl: toSeedMediaUrl(DEMO_APARTMENT_PLAN_URL),
             title: `Apartment ${apartment.number} plan`,
             altText: `Unit ${apartment.number} plan`,
             relatedEntityType: 'apartment',
             relatedEntityId: apartment.id,
           },
           update: {
-            fileUrl: DEMO_APARTMENT_PLAN_URL,
+            fileUrl: toSeedMediaUrl(DEMO_APARTMENT_PLAN_URL),
             title: `Apartment ${apartment.number} plan`,
             altText: `Unit ${apartment.number} plan`,
           },

@@ -6,9 +6,10 @@ import { useLocale, useTranslations } from 'next-intl';
 import type { BuyApartmentListing } from '@/features/catalog/utils/load-buy-apartments';
 import { formatCatalogPrice } from '@/features/catalog/utils/format-price';
 import { Link } from '@/i18n/navigation';
+import { staticAssetUrl } from '@/shared/lib/static-asset-url';
 import { cn } from '@/shared/ui/cn';
 
-const BUY_MAP_SRC = '/images/buy-map.webp';
+const BUY_MAP_SRC = staticAssetUrl('/images/buy-map.webp');
 
 type BuyApartmentsMapProps = {
   listings: BuyApartmentListing[];
