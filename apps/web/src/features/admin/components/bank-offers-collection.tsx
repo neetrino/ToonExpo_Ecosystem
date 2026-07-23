@@ -19,6 +19,7 @@ type BankOffersCollectionProps = {
 
 /**
  * Bank offers as dense table or card grid.
+ * Card view: whole card opens edit; delete lives in the edit sheet header.
  */
 export const BankOffersCollection = ({
   offers,
@@ -33,43 +34,27 @@ export const BankOffersCollection = ({
     return (
       <AdminListCardGrid>
         {offers.map((offer) => (
-          <div
+          <button
             key={offer.id}
-            className="flex flex-col gap-2 rounded-sm border border-border bg-background p-3"
+            type="button"
+            className="flex flex-col gap-2 rounded-sm border border-border bg-background p-3 text-left transition-colors hover:bg-surface/60"
+            onClick={() => {
+              onEdit(offer);
+            }}
           >
-            <div className="flex items-start justify-between gap-2">
-              <span className="font-medium text-ink">{offer.title}</span>
-              <div className="flex shrink-0 items-center gap-1">
-                <IconButton
-                  label={t('edit')}
-                  size="sm"
-                  className="text-cta-dark hover:bg-cta-dark/5"
-                  onClick={() => {
-                    onEdit(offer);
-                  }}
-                >
-                  <SquarePen className="size-4" strokeWidth={1.75} aria-hidden />
-                </IconButton>
-                <IconButton
-                  label={t('delete')}
-                  size="sm"
-                  className="text-danger hover:bg-danger-soft"
-                  disabled={busy}
-                  onClick={() => {
-                    onDelete(offer);
-                  }}
-                >
-                  <Trash2 className="size-4" strokeWidth={1.75} aria-hidden />
-                </IconButton>
-              </div>
+            <div className="flex items-center justify-between gap-2">
+              <span className="min-w-0 truncate font-medium text-ink">{offer.title}</span>
+              <PublicationStatusBadge
+                status={offer.publicationStatus}
+                className="h-5 shrink-0 items-center px-2.5 py-0 text-[0.6875rem] leading-none"
+              />
             </div>
             <div className="flex flex-wrap items-center gap-2 text-xs text-ink-muted">
               <span>{offer.partnerCompanyName ?? '—'}</span>
               <span aria-hidden>·</span>
               <span>{offer.rate}%</span>
             </div>
-            <PublicationStatusBadge status={offer.publicationStatus} />
-          </div>
+          </button>
         ))}
       </AdminListCardGrid>
     );

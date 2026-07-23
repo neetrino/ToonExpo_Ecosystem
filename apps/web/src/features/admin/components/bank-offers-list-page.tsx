@@ -1,6 +1,7 @@
 'use client';
 
 import type { BankOfferListItem, PublicationStatus } from '@toonexpo/contracts';
+import { Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 
@@ -21,6 +22,7 @@ import { AdminCreateSheet } from '@/shared/ui/admin-create-sheet';
 import { AdminDeleteModal } from '@/shared/ui/admin-delete-modal';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { Button } from '@/shared/ui/button';
+import { IconButton } from '@/shared/ui/icon-button';
 import { Select } from '@/shared/ui/select';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
@@ -167,6 +169,21 @@ export const BankOffersListPage = () => {
           setEditing(null);
         }}
         title={editing ? t('editTitle', { title: editing.title }) : ''}
+        headerActions={
+          editing ? (
+            <IconButton
+              label={t('delete')}
+              size="sm"
+              className="text-danger hover:bg-danger-soft"
+              disabled={busy}
+              onClick={() => {
+                setPendingDelete(editing);
+              }}
+            >
+              <Trash2 className="size-4" strokeWidth={1.75} aria-hidden />
+            </IconButton>
+          ) : undefined
+        }
       >
         {editing ? (
           <BankOfferForm
@@ -218,6 +235,7 @@ export const BankOffersListPage = () => {
           }
           void deleteMutation.mutateAsync(pendingDelete.id).then(() => {
             setPendingDelete(null);
+            setEditing(null);
           });
         }}
       />
