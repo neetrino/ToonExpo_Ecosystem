@@ -9,20 +9,20 @@ export const PLACEHOLDER_IMAGE_BASE = 'https://placehold.co';
 
 /** Local demo covers served by apps/web/public/demo (dev seed only). */
 export const DEMO_COVER_BY_PROJECT: Record<string, string> = {
-  [`${SEED_ID_PREFIX}project_northern_avenue`]: '/demo/northern-avenue.jpg',
-  [`${SEED_ID_PREFIX}project_cascade_view`]: '/demo/cascade-view.jpg',
-  [`${SEED_ID_PREFIX}project_arabkir_park`]: '/demo/arabkir-park.jpg',
-  [`${SEED_ID_PREFIX}project_davtashen_sky`]: '/demo/davtashen-sky.jpg',
+  [`${SEED_ID_PREFIX}project_northern_avenue`]: '/demo/northern-avenue.webp',
+  [`${SEED_ID_PREFIX}project_cascade_view`]: '/demo/cascade-view.webp',
+  [`${SEED_ID_PREFIX}project_arabkir_park`]: '/demo/arabkir-park.webp',
+  [`${SEED_ID_PREFIX}project_davtashen_sky`]: '/demo/davtashen-sky.webp',
 };
 
 export const DEMO_LOGO_BY_BUILDER: Record<string, string> = {
-  [`${SEED_ID_PREFIX}company_glendale`]: '/demo/builder-glendale.jpg',
-  [`${SEED_ID_PREFIX}company_cascade`]: '/demo/builder-cascade.jpg',
-  [`${SEED_ID_PREFIX}company_yerevan_city`]: '/demo/builder-ycb.jpg',
+  [`${SEED_ID_PREFIX}company_glendale`]: '/demo/builder-glendale.webp',
+  [`${SEED_ID_PREFIX}company_cascade`]: '/demo/builder-cascade.webp',
+  [`${SEED_ID_PREFIX}company_yerevan_city`]: '/demo/builder-ycb.webp',
 };
 
 /** Fallback logo for non-seed builders missing logoMediaId (local demo only). */
-export const DEMO_ORPHAN_BUILDER_LOGO = '/demo/builder-cascade.jpg';
+export const DEMO_ORPHAN_BUILDER_LOGO = '/demo/builder-cascade.webp';
 
 export type SeedBuilder = {
   id: string;
@@ -170,15 +170,15 @@ export const demoCoverUrl = (projectId: string, label: string): string =>
 export const demoLogoUrl = (builderId: string, label: string): string =>
   DEMO_LOGO_BY_BUILDER[builderId] ?? imageUrl(label);
 
-export const DEMO_APARTMENT_PLAN_URL = '/demo/apartment-plan.jpg';
-export const DEMO_FLOOR_PLAN_URL = '/demo/floor-plan.jpg';
-export const DEMO_BUILDING_COVER_A = '/demo/building-a.jpg';
-export const DEMO_BUILDING_COVER_B = '/demo/building-b.jpg';
-export const DEMO_PARTNER_BANK_LOGO = '/demo/partner-bank.jpg';
-export const DEMO_PARTNER_COVER = '/demo/partner-cover.jpg';
-export const DEMO_PARTNER_IT_LOGO = '/demo/partner-it.jpg';
-export const DEMO_VENUE_MAP_URL = '/demo/venue-map.jpg';
-export const DEMO_VISUAL_MAP_URL = '/demo/visual-map.jpg';
+export const DEMO_APARTMENT_PLAN_URL = '/demo/apartment-plan.webp';
+export const DEMO_FLOOR_PLAN_URL = '/demo/floor-plan.webp';
+export const DEMO_BUILDING_COVER_A = '/demo/building-a.webp';
+export const DEMO_BUILDING_COVER_B = '/demo/building-b.webp';
+export const DEMO_PARTNER_BANK_LOGO = '/demo/partner-bank.webp';
+export const DEMO_PARTNER_COVER = '/demo/partner-bank.webp';
+export const DEMO_PARTNER_IT_LOGO = '/demo/partner-bank.webp';
+export const DEMO_VENUE_MAP_URL = '/demo/venue-map.webp';
+export const DEMO_VISUAL_MAP_URL = '/demo/visual-map.webp';
 
 export const buildApartments = (
   projectKey: string,

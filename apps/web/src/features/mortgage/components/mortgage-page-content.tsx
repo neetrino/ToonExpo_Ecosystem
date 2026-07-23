@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 
 import { MortgageCalculatorSection } from '@/features/mortgage/components/mortgage-calculator-section';
@@ -8,67 +7,55 @@ import { usePublicMortgageOffersQuery } from '@/features/mortgage/hooks/use-publ
 import { Skeleton } from '@/shared/ui/skeleton';
 
 /**
- * Public mortgage page content: offers list and calculator.
+ * Public mortgage page — mist hero under nav + calculator (Figma `105:2567`).
  */
 export const MortgagePageContent = () => {
   const t = useTranslations('Mortgage');
   const query = usePublicMortgageOffersQuery();
 
-  if (query.isLoading) {
-    return (
-      <div className="flex flex-col gap-6">
-        <Skeleton className="h-10 w-64" />
-        <Skeleton className="h-48 w-full" />
-      </div>
-    );
-  }
-
-  if (query.isError || !query.data) {
-    return (
-      <p
-        role="alert"
-        className="rounded-md border border-danger/20 bg-danger-soft px-4 py-3 text-sm text-danger"
-      >
-        {t('error')}
-      </p>
-    );
-  }
-
-  const offers = query.data.data;
-
   return (
-    <div className="flex flex-col gap-8">
-      <div className="relative overflow-hidden rounded-lg">
-        <div className="grid lg:grid-cols-2">
-          <div className="relative z-10 flex flex-col justify-center bg-surface-elevated p-6 sm:p-8 lg:p-10">
-            <p className="text-eyebrow mb-2">ToonExpo</p>
-            <h1 className="text-page-title text-ink">{t('title')}</h1>
-            <p className="mt-3 max-w-md text-sm leading-relaxed text-ink-secondary">
-              {t('subtitle')}
-            </p>
-          </div>
-          <div className="relative min-h-52 lg:min-h-[17.5rem]">
-            <Image
-              src="/demo/mortgage-hero.jpg"
-              alt=""
-              fill
-              className="banner-media-drift object-cover object-[center_28%]"
-              sizes="(max-width: 1024px) 100vw, 50vw"
-              priority
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-surface-elevated via-surface-elevated/40 to-transparent max-lg:hidden" />
-            <div className="absolute inset-0 bg-ink/20 lg:hidden" />
-          </div>
+    <>
+      <section className="-mt-[4.5rem] border-b border-header-border bg-band-mist/30 pt-[4.5rem]">
+        <div className="page-container pt-[clamp(3.5rem,8vw,5rem)] pb-[clamp(3.5rem,8vw,5.5rem)]">
+          <p className="text-[11px] font-bold tracking-[0.2em] text-brand-secondary uppercase">
+            {t('eyebrow')}
+          </p>
+          <h1 className="mt-3 max-w-3xl font-brand text-[clamp(2.25rem,5.5vw,3.75rem)] font-bold leading-[1.15] tracking-[-0.03em] text-ink-navy">
+            {t('titleLine1')}
+            <br />
+            {t('titleLine2')}
+          </h1>
+          <p className="mt-5 max-w-xl text-lg leading-7 text-header-muted">{t('subtitle')}</p>
         </div>
-      </div>
+      </section>
 
-      {offers.length === 0 ? (
-        <p className="rounded-md border border-dashed border-border bg-surface/50 px-6 py-12 text-center text-sm text-ink-secondary">
-          {t('empty')}
-        </p>
-      ) : (
-        <MortgageCalculatorSection offers={offers} />
-      )}
-    </div>
+      <section className="page-container py-12 pb-24 sm:py-16">
+        {query.isLoading ? (
+          <div className="flex flex-col gap-6">
+            <Skeleton className="h-72 w-full max-w-md rounded-[24px]" />
+            <Skeleton className="h-24 w-full rounded-[20px]" />
+          </div>
+        ) : null}
+
+        {query.isError || (!query.isLoading && !query.data) ? (
+          <p
+            role="alert"
+            className="rounded-[20px] border border-danger/20 bg-danger-soft px-4 py-3 text-sm text-danger"
+          >
+            {t('error')}
+          </p>
+        ) : null}
+
+        {query.data && query.data.data.length === 0 ? (
+          <p className="rounded-[20px] border border-dashed border-header-border bg-surface-elevated px-6 py-12 text-center text-sm text-header-muted">
+            {t('empty')}
+          </p>
+        ) : null}
+
+        {query.data && query.data.data.length > 0 ? (
+          <MortgageCalculatorSection offers={query.data.data} />
+        ) : null}
+      </section>
+    </>
   );
 };

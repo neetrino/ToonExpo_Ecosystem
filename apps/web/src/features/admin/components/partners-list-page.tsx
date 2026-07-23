@@ -1,25 +1,25 @@
-"use client";
+'use client';
 
-import { useTranslations } from "next-intl";
-import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useTranslations } from 'next-intl';
+import { useSearchParams } from 'next/navigation';
+import { useState } from 'react';
 import type {
   PartnerCompanyStatus,
   PartnerCompanyType,
   PublicationStatus,
-} from "@toonexpo/contracts";
+} from '@toonexpo/contracts';
 
-import { CreatePartnerPanel } from "@/features/admin/components/create-partner-panel";
-import { PartnerFilters } from "@/features/admin/components/partner-filters";
-import { PartnersTable } from "@/features/admin/components/partners-table";
-import {
-  ADMIN_COMPANIES_MAX_PAGE_SIZE,
-} from "@/features/admin/constants";
-import { useAdminCompaniesQuery } from "@/features/admin/hooks/use-admin-companies";
-import { useAdminPartnersQuery } from "@/features/admin/hooks/use-admin-partners";
-import { PARTNERS_DEFAULT_PAGE_SIZE } from "@/features/partners/constants";
-import { CatalogPagination } from "@/features/catalog/components/catalog-pagination";
-import { Button } from "@/shared/ui/button";
+import { CreatePartnerSheet } from '@/features/admin/components/create-partner-sheet';
+import { PartnerDetailSheet } from '@/features/admin/components/partner-detail-sheet';
+import { PartnerFilters } from '@/features/admin/components/partner-filters';
+import { PartnersTable } from '@/features/admin/components/partners-table';
+import { ADMIN_COMPANIES_MAX_PAGE_SIZE } from '@/features/admin/constants';
+import { useAdminCompaniesQuery } from '@/features/admin/hooks/use-admin-companies';
+import { useAdminPartnersQuery } from '@/features/admin/hooks/use-admin-partners';
+import { PARTNERS_DEFAULT_PAGE_SIZE } from '@/features/partners/constants';
+import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
+import { Button } from '@/shared/ui/button';
+import { AddActionLabel } from '@/shared/ui/add-action-label';
 
 const parsePage = (raw: string | null): number => {
   const parsed = Number(raw);
@@ -30,19 +30,20 @@ const parsePage = (raw: string | null): number => {
 };
 
 /**
- * Admin partners list with filters, pagination, and create dialog.
+ * Admin partners list with filters, pagination, create sheet, and detail sheet.
  */
 export const PartnersListPage = () => {
-  const t = useTranslations("Admin.partners");
+  const t = useTranslations('Admin.partners');
   const searchParams = useSearchParams();
-  const page = parsePage(searchParams.get("page"));
+  const page = parsePage(searchParams.get('page'));
   const [showCreate, setShowCreate] = useState(false);
+  const [selectedPartnerId, setSelectedPartnerId] = useState<string | null>(null);
   const [filters, setFilters] = useState<{
-    type: PartnerCompanyType | "";
-    status: PartnerCompanyStatus | "";
-    publicationStatus: PublicationStatus | "";
+    type: PartnerCompanyType | '';
+    status: PartnerCompanyStatus | '';
+    publicationStatus: PublicationStatus | '';
     search: string;
-  }>({ type: "", status: "", publicationStatus: "", search: "" });
+  }>({ type: '', status: '', publicationStatus: '', search: '' });
 
   const companiesQuery = useAdminCompaniesQuery(1, ADMIN_COMPANIES_MAX_PAGE_SIZE);
   const partnersQuery = useAdminPartnersQuery({
@@ -50,20 +51,23 @@ export const PartnersListPage = () => {
     pageSize: PARTNERS_DEFAULT_PAGE_SIZE,
     ...(filters.type ? { type: filters.type } : {}),
     ...(filters.status ? { status: filters.status } : {}),
-    ...(filters.publicationStatus
-      ? { publicationStatus: filters.publicationStatus }
-      : {}),
+    ...(filters.publicationStatus ? { publicationStatus: filters.publicationStatus } : {}),
     ...(filters.search.trim() ? { search: filters.search.trim() } : {}),
   });
 
+  const handleSelectPartner = (partnerId: string): void => {
+    setShowCreate(false);
+    setSelectedPartnerId(partnerId);
+  };
+
   if (partnersQuery.isLoading || companiesQuery.isLoading) {
-    return <p className="text-sm text-ink-secondary">{t("loading")}</p>;
+    return <p className="text-sm text-ink-secondary">{t('loading')}</p>;
   }
 
   if (partnersQuery.isError || !partnersQuery.data) {
     return (
       <p role="alert" className="text-sm text-danger">
-        {t("error")}
+        {t('error')}
       </p>
     );
   }
@@ -74,9 +78,9 @@ export const PartnersListPage = () => {
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-col gap-1">
-          <h1 className="text-xl font-semibold text-ink">{t("title")}</h1>
+          <h1 className="text-xl font-semibold text-ink">{t('title')}</h1>
           <p className="text-sm text-ink-secondary">
-            {t("subtitle", { count: response.meta.total })}
+            {t('subtitle', { count: response.meta.total })}
           </p>
         </div>
         <Button
@@ -84,10 +88,11 @@ export const PartnersListPage = () => {
           size="sm"
           variant="secondary"
           onClick={() => {
+            setSelectedPartnerId(null);
             setShowCreate(true);
           }}
         >
-          {t("newPartner")}
+          <AddActionLabel>{t('newPartner')}</AddActionLabel>
         </Button>
       </div>
 
@@ -100,30 +105,34 @@ export const PartnersListPage = () => {
       />
 
       {response.data.length === 0 ? (
-        <p className="text-sm text-ink-secondary">{t("empty")}</p>
+        <p className="text-sm text-ink-secondary">{t('empty')}</p>
       ) : (
-        <PartnersTable partners={response.data} />
+        <PartnersTable partners={response.data} onSelectPartner={handleSelectPartner} />
       )}
 
       <CatalogPagination
         page={response.meta.page}
         totalPages={response.meta.totalPages}
         buildHref={(nextPage) =>
-          nextPage <= 1 ? "/admin/partners" : `/admin/partners?page=${nextPage}`
+          nextPage <= 1 ? '/admin/partners' : `/admin/partners?page=${nextPage}`
         }
-        previousLabel={t("pagination.previous")}
-        nextLabel={t("pagination.next")}
-        ariaLabel={t("pagination.ariaLabel")}
+        previousLabel={t('pagination.previous')}
+        nextLabel={t('pagination.next')}
+        ariaLabel={t('pagination.ariaLabel')}
       />
 
-      {showCreate && companiesQuery.data ? (
-        <CreatePartnerPanel
-          companies={companiesQuery.data.data}
-          onClose={() => {
-            setShowCreate(false);
-          }}
-        />
-      ) : null}
+      <CreatePartnerSheet
+        open={showCreate}
+        companies={companiesQuery.data?.data ?? []}
+        onClose={() => {
+          setShowCreate(false);
+        }}
+      />
+      <PartnerDetailSheet
+        partnerId={selectedPartnerId}
+        open={selectedPartnerId != null}
+        onClose={() => setSelectedPartnerId(null)}
+      />
     </div>
   );
 };

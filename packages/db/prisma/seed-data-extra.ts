@@ -33,20 +33,20 @@ type ExtraProjectInput = {
 };
 
 const DEMO_COVER_CYCLE = [
-  '/demo/northern-avenue.jpg',
-  '/demo/cascade-view.jpg',
-  '/demo/arabkir-park.jpg',
-  '/demo/davtashen-sky.jpg',
-  '/demo/building-a.jpg',
-  '/demo/building-b.jpg',
-  '/demo/mortgage-hero.jpg',
-  '/demo/expo-venue.jpg',
+  '/demo/northern-avenue.webp',
+  '/demo/cascade-view.webp',
+  '/demo/arabkir-park.webp',
+  '/demo/davtashen-sky.webp',
+  '/demo/building-a.webp',
+  '/demo/building-b.webp',
+  '/demo/mortgage-hero.webp',
+  '/demo/expo-venue.webp',
 ] as const;
 
 const DEMO_LOGO_CYCLE = [
-  '/demo/builder-glendale.jpg',
-  '/demo/builder-cascade.jpg',
-  '/demo/builder-ycb.jpg',
+  '/demo/builder-glendale.webp',
+  '/demo/builder-cascade.webp',
+  '/demo/builder-ycb.webp',
 ] as const;
 
 const B = {

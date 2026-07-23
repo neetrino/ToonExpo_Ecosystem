@@ -37,21 +37,45 @@ const isHomeRoute = (pathname: string): boolean => {
   return pathname === '/' || pathname === '';
 };
 
+const isProjectDetailRoute = (pathname: string): boolean => {
+  return /^\/projects\/[^/]+$/.test(pathname);
+};
+
+const isPartnerDetailRoute = (pathname: string): boolean => {
+  return /^\/partners\/[^/]+$/.test(pathname);
+};
+
+const isPartnersListRoute = (pathname: string): boolean => {
+  return pathname === '/partners';
+};
+
+const isProjectsListRoute = (pathname: string): boolean => {
+  return pathname === '/projects';
+};
+
 /**
  * Persistent public chrome — keeps SiteHeader mounted across navigations
  * so the bar does not remount/jump when switching Projects / Builders / etc.
  * Auth routes use AuthPageShell instead of the public header.
- * Home uses a transparent header so the hero photo sits under the bar;
- * other public pages use the same floating pill chrome as home-after-scroll.
- * Public pages use DesktopFluidFrame so desktop composition scales like ma-marie.
+ * Home, partners/projects list+detail use a transparent header so the hero
+ * sits under the bar; other public pages use the same floating pill chrome
+ * as home-after-scroll.
+ * Public, portal, and auth pages use DesktopFluidFrame so desktop composition
+ * scales like ma-marie. Auth keeps AuthPageShell (no public SiteHeader).
  */
 export const PublicChrome = ({ children }: PublicChromeProps) => {
   const pathname = usePathname();
-  const showPublicHeader = !isPortalRoute(pathname) && !isAuthRoute(pathname);
-  const headerVariant = isHomeRoute(pathname) ? 'transparent' : 'solid';
+  const headerVariant =
+    isHomeRoute(pathname) ||
+    isProjectDetailRoute(pathname) ||
+    isPartnerDetailRoute(pathname) ||
+    isPartnersListRoute(pathname) ||
+    isProjectsListRoute(pathname)
+      ? 'transparent'
+      : 'solid';
 
-  if (!showPublicHeader) {
-    return children;
+  if (isAuthRoute(pathname) || isPortalRoute(pathname)) {
+    return <DesktopFluidFrame>{children}</DesktopFluidFrame>;
   }
 
   return (

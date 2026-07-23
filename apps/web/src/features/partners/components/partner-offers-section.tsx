@@ -23,6 +23,7 @@ import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
 import { Select } from '@/shared/ui/select';
 import { Textarea } from '@/shared/ui/textarea';
+import { AddActionLabel } from '@/shared/ui/add-action-label';
 
 type PartnerOffersSectionProps = {
   offers: PartnerOfferItem[];
@@ -59,7 +60,7 @@ export const PartnerOffersSection = ({
             setShowCreate(true);
           }}
         >
-          {t('add')}
+          <AddActionLabel>{t('add')}</AddActionLabel>
         </Button>
       </div>
 

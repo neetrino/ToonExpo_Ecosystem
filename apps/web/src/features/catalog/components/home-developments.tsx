@@ -33,7 +33,7 @@ export const HomeDevelopments = async ({ projects }: HomeDevelopmentsProps) => {
             title={t('title')}
             action={
               <Link
-                href="/projects"
+                href="/developments"
                 className="shrink-0 pb-1 text-sm font-semibold text-brand-deep transition-colors hover:text-brand-deep/80"
               >
                 {t('viewAll')}
@@ -61,7 +61,7 @@ export const HomeDevelopments = async ({ projects }: HomeDevelopmentsProps) => {
                 title={t('mapTitle')}
                 action={
                   <Link
-                    href="/projects"
+                    href="/developments"
                     className="shrink-0 pb-1 text-sm font-semibold text-brand-deep transition-colors hover:text-brand-deep/80"
                   >
                     {t('browseList')}

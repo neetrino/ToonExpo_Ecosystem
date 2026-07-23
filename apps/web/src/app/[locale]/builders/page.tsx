@@ -34,7 +34,7 @@ export default async function BuildersPage({ params }: BuildersPageProps) {
         <MarketingPageIntro
           title={t('buildersPage.title')}
           description={t('buildersPage.subtitle', { count: builders.length })}
-          imageSrc="/demo/building-a.jpg"
+          imageSrc="/demo/building-a.webp"
         />
 
         {builders.length === 0 ? (

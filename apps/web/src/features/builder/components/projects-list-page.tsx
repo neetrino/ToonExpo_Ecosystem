@@ -10,6 +10,7 @@ import { PORTAL_DEFAULT_PAGE_SIZE } from '@/features/builder/constants';
 import { usePortalProjectsQuery } from '@/features/builder/hooks/use-portal-projects';
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
 import { Link } from '@/i18n/navigation';
+import { AddActionLabel } from '@/shared/ui/add-action-label';
 
 const parsePage = (raw: string | null): number => {
   const parsed = Number(raw);
@@ -58,7 +59,7 @@ export const ProjectsListPage = () => {
           href={catalogNewProjectHref(scope)}
           className="inline-flex h-9 items-center justify-center rounded-pill bg-cta-dark px-4 text-sm font-medium text-on-dark hover:bg-cta-dark/90"
         >
-          {t('newProject')}
+          <AddActionLabel>{t('newProject')}</AddActionLabel>
         </Link>
       </div>
 

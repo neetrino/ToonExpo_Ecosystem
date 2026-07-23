@@ -1,0 +1,36 @@
+.closeTabStart {
+  transform: translateX(-50%);
+  transition: transform var(--drawer-close-tab-transition-ms) ease-out;
+}
+
+.closeTabStart:hover,
+.closeTabStart:focus-visible {
+  transform: translateX(-50%) scale(var(--drawer-close-tab-hover-scale));
+}
+
+.closeTabEnd {
+  transform: translateX(50%);
+  transition: transform var(--drawer-close-tab-transition-ms) ease-out;
+}
+
+.closeTabEnd:hover,
+.closeTabEnd:focus-visible {
+  transform: translateX(50%) scale(var(--drawer-close-tab-hover-scale));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .closeTabStart,
+  .closeTabEnd {
+    transition: none;
+  }
+
+  .closeTabStart:hover,
+  .closeTabStart:focus-visible {
+    transform: translateX(-50%);
+  }
+
+  .closeTabEnd:hover,
+  .closeTabEnd:focus-visible {
+    transform: translateX(50%);
+  }
+}

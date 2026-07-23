@@ -1,23 +1,24 @@
-"use client";
+'use client';
 
-import type { BoothSummary, VenueMapSummary } from "@toonexpo/contracts";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
+import type { BoothSummary, VenueMapSummary } from '@toonexpo/contracts';
+import { useTranslations } from 'next-intl';
+import { useState } from 'react';
 
-import { AdminBoothAssignmentsPanel } from "@/features/exhibition/components/admin/admin-booth-assignments-panel";
-import { AdminBoothForm } from "@/features/exhibition/components/admin/admin-booth-form";
-import { AdminBoothMapPicker } from "@/features/exhibition/components/admin/admin-booth-map-picker";
-import { AdminRouteGraphEditor } from "@/features/exhibition/components/admin/admin-route-graph-editor";
+import { AdminBoothAssignmentsPanel } from '@/features/exhibition/components/admin/admin-booth-assignments-panel';
+import { AdminBoothForm } from '@/features/exhibition/components/admin/admin-booth-form';
+import { AdminBoothMapPicker } from '@/features/exhibition/components/admin/admin-booth-map-picker';
+import { AdminRouteGraphEditor } from '@/features/exhibition/components/admin/admin-route-graph-editor';
 import {
   useAdminVenueMapBoothsQuery,
   useAdminVenueMapRouteGraphQuery,
   useCreateAdminBoothMutation,
   useDeleteAdminBoothMutation,
   useUpdateAdminBoothMutation,
-} from "@/features/exhibition/hooks/use-exhibition";
-import type { BoothFormValues } from "@/features/exhibition/schemas/exhibition.schema";
-import { Card } from "@/shared/ui/card";
-import { cn } from "@/shared/ui/cn";
+} from '@/features/exhibition/hooks/use-exhibition';
+import type { BoothFormValues } from '@/features/exhibition/schemas/exhibition.schema';
+import { Card } from '@/shared/ui/card';
+import { cn } from '@/shared/ui/cn';
+import { AddActionLabel } from '@/shared/ui/add-action-label';
 
 type AdminBoothsSectionProps = {
   map: VenueMapSummary;
@@ -27,7 +28,7 @@ type AdminBoothsSectionProps = {
  * Booth list, form, map picker, assignments, and route graph for one venue map.
  */
 export const AdminBoothsSection = ({ map }: AdminBoothsSectionProps) => {
-  const t = useTranslations("Admin.events.booths");
+  const t = useTranslations('Admin.events.booths');
   const boothsQuery = useAdminVenueMapBoothsQuery(map.id);
   const routeGraphQuery = useAdminVenueMapRouteGraphQuery(map.id);
   const createMutation = useCreateAdminBoothMutation(map.id);
@@ -72,7 +73,7 @@ export const AdminBoothsSection = ({ map }: AdminBoothsSectionProps) => {
   return (
     <Card className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h3 className="text-sm font-semibold text-ink">{t("title")}</h3>
+        <h3 className="text-sm font-semibold text-ink">{t('title')}</h3>
         <button
           type="button"
           className="text-sm font-medium text-brand hover:underline"
@@ -81,11 +82,11 @@ export const AdminBoothsSection = ({ map }: AdminBoothsSectionProps) => {
             setSelectedBoothId(null);
           }}
         >
-          {t("newBooth")}
+          <AddActionLabel>{t('newBooth')}</AddActionLabel>
         </button>
       </div>
       {boothsQuery.isLoading ? (
-        <p className="text-sm text-ink-secondary">{t("loading")}</p>
+        <p className="text-sm text-ink-secondary">{t('loading')}</p>
       ) : (
         <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
           <div className="flex flex-col gap-4">
@@ -111,19 +112,15 @@ export const AdminBoothsSection = ({ map }: AdminBoothsSectionProps) => {
                 initial={selectedBooth ?? undefined}
                 pickedCoordinates={pickedCoordinates}
                 isBusy={
-                  createMutation.isPending ||
-                  updateMutation.isPending ||
-                  deleteMutation.isPending
+                  createMutation.isPending || updateMutation.isPending || deleteMutation.isPending
                 }
                 onSubmit={selectedBooth ? onUpdate : onCreate}
                 onDelete={selectedBooth ? onDelete : undefined}
               />
             ) : (
-              <p className="text-sm text-ink-secondary">{t("selectHint")}</p>
+              <p className="text-sm text-ink-secondary">{t('selectHint')}</p>
             )}
-            {selectedBooth ? (
-              <AdminBoothAssignmentsPanel boothId={selectedBooth.id} />
-            ) : null}
+            {selectedBooth ? <AdminBoothAssignmentsPanel boothId={selectedBooth.id} /> : null}
           </div>
         </div>
       )}
@@ -149,10 +146,10 @@ type BoothListProps = {
 };
 
 const BoothList = ({ booths, selectedBoothId, onSelect }: BoothListProps) => {
-  const t = useTranslations("Admin.events.booths");
+  const t = useTranslations('Admin.events.booths');
 
   if (booths.length === 0) {
-    return <p className="text-sm text-ink-secondary">{t("empty")}</p>;
+    return <p className="text-sm text-ink-secondary">{t('empty')}</p>;
   }
 
   return (
@@ -162,13 +159,13 @@ const BoothList = ({ booths, selectedBoothId, onSelect }: BoothListProps) => {
           <button
             type="button"
             className={cn(
-              "w-full rounded-sm px-3 py-2 text-left text-sm hover:bg-surface",
-              selectedBoothId === booth.id && "bg-surface font-medium text-brand",
+              'w-full rounded-sm px-3 py-2 text-left text-sm hover:bg-surface',
+              selectedBoothId === booth.id && 'bg-surface font-medium text-brand',
             )}
             onClick={() => onSelect(booth.id)}
           >
             {booth.code}
-            {booth.name ? ` · ${booth.name}` : ""}
+            {booth.name ? ` · ${booth.name}` : ''}
           </button>
         </li>
       ))}

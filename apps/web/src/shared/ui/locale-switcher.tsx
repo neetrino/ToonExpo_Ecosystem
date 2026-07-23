@@ -51,7 +51,7 @@ const LocaleSwitcherFallback = ({ tone = 'light' }: LocaleSwitcherProps) => {
     <span
       className={cn(
         'inline-flex items-center gap-1 text-sm font-medium leading-5',
-        isDark ? 'text-on-dark' : 'text-header-muted',
+        isDark ? 'text-on-dark' : 'text-brand-deep',
       )}
       aria-hidden
     >
@@ -168,8 +168,10 @@ const LocaleSwitcherInner = ({ tone = 'light' }: LocaleSwitcherProps) => {
         className={cn(
           'inline-flex items-center gap-1 text-sm font-medium leading-5',
           'transition-colors duration-[var(--duration-fast)]',
-          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/25',
-          isDark ? 'text-on-dark hover:text-on-dark/85' : 'text-header-muted hover:text-brand-deep',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-deep/30',
+          isDark
+            ? 'text-on-dark hover:text-on-dark/90'
+            : 'text-brand-deep hover:text-brand-deep/90',
         )}
         aria-label={t('languageLabel')}
         aria-haspopup="listbox"
