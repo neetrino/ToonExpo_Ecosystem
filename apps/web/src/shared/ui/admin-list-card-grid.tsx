@@ -8,7 +8,7 @@ type AdminListCardGridProps = {
 };
 
 /**
- * Responsive card grid for admin collection views.
+ * Responsive card grid for portal collection views (admin + builder).
  */
 export const AdminListCardGrid = ({ children, className }: AdminListCardGridProps) => {
   return (

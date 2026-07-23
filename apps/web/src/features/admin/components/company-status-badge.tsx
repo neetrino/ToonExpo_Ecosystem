@@ -4,6 +4,7 @@ import type { CompanyStatus } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 
 import { cn } from '@/shared/ui/cn';
+import { LIST_STATUS_BADGE_CLASS } from '@/shared/ui/list-status-badge';
 
 type CompanyStatusBadgeProps = {
   status: CompanyStatus;
@@ -23,13 +24,7 @@ export const CompanyStatusBadge = ({ status, className }: CompanyStatusBadgeProp
   const t = useTranslations('Admin.companies');
 
   return (
-    <span
-      className={cn(
-        'inline-flex rounded-pill px-2.5 py-0.5 text-xs font-medium',
-        statusClassName[status],
-        className,
-      )}
-    >
+    <span className={cn(LIST_STATUS_BADGE_CLASS, statusClassName[status], className)}>
       {t(`statuses.${status}`)}
     </span>
   );

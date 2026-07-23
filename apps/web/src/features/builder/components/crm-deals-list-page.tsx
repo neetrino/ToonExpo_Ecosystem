@@ -140,16 +140,16 @@ export const CrmDealsListPage = () => {
             ))}
           </div>
 
-          <div className="hidden overflow-x-auto rounded-md border border-border bg-surface-elevated shadow-xs md:block">
-            <table className="w-full min-w-[44rem] border-collapse text-left text-sm">
-              <thead className="bg-surface text-[10px] font-bold uppercase tracking-widest text-ink-muted">
+          <div className="hidden overflow-x-auto rounded-sm border border-border md:block">
+            <table className="w-full min-w-[44rem] border-collapse text-sm">
+              <thead className="bg-surface text-xs uppercase tracking-wide text-ink-muted">
                 <tr>
-                  <th className="px-4 py-3 font-bold">{t('columns.buyer')}</th>
-                  <th className="px-4 py-3 font-bold">{t('columns.project')}</th>
-                  <th className="px-4 py-3 font-bold">{t('columns.status')}</th>
-                  <th className="px-4 py-3 font-bold">{t('columns.source')}</th>
-                  <th className="px-4 py-3 font-bold">{t('columns.assignee')}</th>
-                  <th className="px-4 py-3 font-bold">{t('columns.updated')}</th>
+                  <th className="px-3 py-2.5 text-left font-medium">{t('columns.buyer')}</th>
+                  <th className="px-3 py-2.5 text-center font-medium">{t('columns.project')}</th>
+                  <th className="px-3 py-2.5 text-center font-medium">{t('columns.status')}</th>
+                  <th className="px-3 py-2.5 text-center font-medium">{t('columns.source')}</th>
+                  <th className="px-3 py-2.5 text-center font-medium">{t('columns.assignee')}</th>
+                  <th className="px-3 py-2.5 text-center font-medium">{t('columns.updated')}</th>
                 </tr>
               </thead>
               <tbody>

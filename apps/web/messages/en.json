@@ -2014,6 +2014,7 @@
     "nav": {
       "label": "Builder navigation",
       "section": "Workspace",
+      "portalLabel": "Builder portal",
       "dashboard": "Dashboard",
       "projects": "Projects",
       "team": "Team",

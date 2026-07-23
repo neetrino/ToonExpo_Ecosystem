@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
 import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
 import { IconButton } from '@/shared/ui/icon-button';
+import { LIST_STATUS_BADGE_COMPACT_CLASS } from '@/shared/ui/list-status-badge';
 import { VIEW_MODE_CARDS, type ViewMode } from '@/shared/ui/view-mode';
 
 type BankOffersCollectionProps = {
@@ -46,7 +47,7 @@ export const BankOffersCollection = ({
               <span className="min-w-0 truncate font-medium text-ink">{offer.title}</span>
               <PublicationStatusBadge
                 status={offer.publicationStatus}
-                className="h-5 shrink-0 items-center px-2.5 py-0 text-[0.6875rem] leading-none"
+                className={LIST_STATUS_BADGE_COMPACT_CLASS}
               />
             </div>
             <div className="flex flex-wrap items-center gap-2 text-xs text-ink-muted">

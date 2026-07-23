@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { CompanyStatusBadge } from '@/features/admin/components/company-status-badge';
 import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
 import { AdminListCardLogo } from '@/shared/ui/admin-list-card-logo';
+import { LIST_STATUS_BADGE_COMPACT_CLASS } from '@/shared/ui/list-status-badge';
 import { VIEW_MODE_CARDS, type ViewMode } from '@/shared/ui/view-mode';
 
 type CompaniesTableProps = {
@@ -53,7 +54,7 @@ export const CompaniesTable = ({
                 <span className="min-w-0 truncate font-medium text-ink">{company.name}</span>
                 <CompanyStatusBadge
                   status={company.status}
-                  className="h-5 shrink-0 items-center px-2.5 py-0 text-[0.6875rem] leading-none"
+                  className={LIST_STATUS_BADGE_COMPACT_CLASS}
                 />
               </div>
               <div className="flex flex-wrap items-center gap-2 text-xs text-ink-muted">
@@ -99,10 +100,7 @@ export const CompaniesTable = ({
               </td>
               <td className="px-3 py-2.5 align-middle">
                 <div className="flex justify-center">
-                  <CompanyStatusBadge
-                    status={company.status}
-                    className="h-5 items-center px-2.5 py-0 text-[0.6875rem] leading-none"
-                  />
+                  <CompanyStatusBadge status={company.status} />
                 </div>
               </td>
               <td className="px-3 py-2.5 align-middle text-center text-ink-secondary">

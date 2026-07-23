@@ -45,6 +45,7 @@ export default async function BuilderLayout({ children, params }: BuilderLayoutP
       profileLabel={t('profileLink')}
       profileHref="/builder/settings"
       navLabel={t('nav.label')}
+      variant="rail"
       sidebar={<BuilderNav companyName={companyName} />}
     >
       {children}

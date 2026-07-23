@@ -22,7 +22,7 @@ type PortalShellProps = {
   children: ReactNode;
   sidebar: ReactNode;
   /**
-   * `rail` — floating dark sidebar + public SiteHeader (admin / account).
+   * `rail` — floating dark sidebar + public SiteHeader (admin / account / builder).
    * Default keeps the light portal card chrome.
    */
   variant?: 'default' | 'rail';

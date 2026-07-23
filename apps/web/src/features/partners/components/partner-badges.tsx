@@ -2,6 +2,7 @@ import type { PartnerCompanyStatus, PublicationStatus } from '@toonexpo/contract
 import { useTranslations } from 'next-intl';
 
 import { cn } from '@/shared/ui/cn';
+import { LIST_STATUS_BADGE_CLASS } from '@/shared/ui/list-status-badge';
 
 type PartnerStatusBadgeProps = {
   status: PartnerCompanyStatus;
@@ -19,12 +20,7 @@ export const PartnerStatusBadge = ({ status }: PartnerStatusBadgeProps) => {
   const t = useTranslations('Partners');
 
   return (
-    <span
-      className={cn(
-        'inline-flex rounded-pill px-2.5 py-0.5 text-xs font-medium',
-        statusClassName[status],
-      )}
-    >
+    <span className={cn(LIST_STATUS_BADGE_CLASS, statusClassName[status])}>
       {t(`companyStatus.${status}`)}
     </span>
   );
@@ -48,13 +44,7 @@ export const PublicationStatusBadge = ({ status, className }: PublicationStatusB
   const t = useTranslations('Partners');
 
   return (
-    <span
-      className={cn(
-        'inline-flex rounded-pill px-2.5 py-0.5 text-xs font-medium',
-        publicationClassName[status],
-        className,
-      )}
-    >
+    <span className={cn(LIST_STATUS_BADGE_CLASS, publicationClassName[status], className)}>
       {t(`publication.${status}`)}
     </span>
   );
@@ -75,7 +65,7 @@ export const FeaturedBadge = ({ featured }: FeaturedBadgeProps) => {
   }
 
   return (
-    <span className="inline-flex rounded-pill bg-cta-dark/10 px-2.5 py-0.5 text-xs font-medium text-cta-dark">
+    <span className={cn(LIST_STATUS_BADGE_CLASS, 'bg-cta-dark/10 text-cta-dark')}>
       {t('featured')}
     </span>
   );
