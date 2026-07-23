@@ -244,18 +244,22 @@ Turbo builds `@toonexpo/contracts` and `@toonexpo/shared` first (`dependsOn: ["^
 
 ### 4.2 Vercel environment variables
 
-| Variable                 | Required                   | Notes                                                                                                                                          |
-| ------------------------ | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `API_PROXY_TARGET`       | **Staging / initial prod** | Cloud Run origin, e.g. `https://toonexpo-api-xxxxx-ew.a.run.app`. Enables same-origin `/api/v1/*` rewrites; keep the Run URL server-side only. |
-| `NEXT_PUBLIC_API_URL`    | **Direct mode only**       | When `API_PROXY_TARGET` is unset, set to `https://api.toonexpo.com` (or the Run URL for debugging). **Leave empty** when the proxy is enabled. |
-| `NEXT_PUBLIC_SENTRY_DSN` | Optional                   | Browser Sentry                                                                                                                                 |
-| `SENTRY_AUTH_TOKEN`      | Optional                   | CI/sourcemap upload only; not needed at runtime                                                                                                |
+| Variable                    | Required                   | Notes                                                                                                                                          |
+| --------------------------- | -------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `API_PROXY_TARGET`          | **Staging / initial prod** | Cloud Run origin, e.g. `https://toonexpo-api-xxxxx-ew.a.run.app`. Enables same-origin `/api/v1/*` rewrites; keep the Run URL server-side only. |
+| `NEXT_PUBLIC_API_URL`       | **Direct mode only**       | When `API_PROXY_TARGET` is unset, set to `https://api.toonexpo.com` (or the Run URL for debugging). **Leave empty** when the proxy is enabled. |
+| `R2_PUBLIC_URL`             | **Yes if media uses R2**   | Same public base as Cloud Run (e.g. `https://pub-….r2.dev`). Needed at **build** for `next/image` `remotePatterns` + Turbo cache busting.      |
+| `NEXT_PUBLIC_R2_PUBLIC_URL` | **Yes if media uses R2**   | Same value as `R2_PUBLIC_URL` — static/demo assets via `staticAssetUrl()`. Safe to expose.                                                     |
+| `NEXT_PUBLIC_SENTRY_DSN`    | Optional                   | Browser Sentry                                                                                                                                 |
+| `SENTRY_AUTH_TOKEN`         | Optional                   | CI/sourcemap upload only; not needed at runtime                                                                                                |
 
 **Default posture (staging + first production deploy):** set `API_PROXY_TARGET` to the Cloud Run URL; leave `NEXT_PUBLIC_API_URL` empty. The browser never sees the Run hostname.
 
 **Later direct mode:** unset `API_PROXY_TARGET`; set `NEXT_PUBLIC_API_URL=https://api.toonexpo.com`. No code changes.
 
-**Not on Vercel:** API secrets (`DATABASE_URL`, `SESSION_*`, `RESEND_*`, R2, BOS, etc.) — those live on Cloud Run only.
+**Not on Vercel:** API secrets (`DATABASE_URL`, `SESSION_*`, `RESEND_*`, `R2_ACCOUNT_ID` / keys / bucket, BOS, etc.) — those live on Cloud Run only. Public R2 base URL **is** needed on Vercel (above).
+
+After changing `R2_PUBLIC_URL` / `NEXT_PUBLIC_R2_PUBLIC_URL`, redeploy with **cache disabled** once (Vercel → Redeploy → uncheck “Use existing Build Cache”), so Turbo does not reuse an old `.next` without the R2 host in `images.remotePatterns`.
 
 ### 4.3 Sentry sourcemaps
 

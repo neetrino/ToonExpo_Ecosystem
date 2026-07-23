@@ -6,6 +6,9 @@
     "APP_URL",
     "CORS_ORIGINS",
     "NEXT_PUBLIC_API_URL",
+    "NEXT_PUBLIC_R2_PUBLIC_URL",
+    "NEXT_PUBLIC_SENTRY_DSN",
+    "R2_PUBLIC_URL",
     "DATABASE_URL",
     "DIRECT_URL",
     "SESSION_TOKEN_PEPPER",
@@ -17,7 +20,13 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "env": ["API_PROXY_TARGET"],
+      "env": [
+        "API_PROXY_TARGET",
+        "R2_PUBLIC_URL",
+        "NEXT_PUBLIC_R2_PUBLIC_URL",
+        "NEXT_PUBLIC_API_URL",
+        "NEXT_PUBLIC_SENTRY_DSN"
+      ],
       "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
     },
     "lint": {

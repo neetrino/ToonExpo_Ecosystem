@@ -26,9 +26,23 @@ const PLACEHOLD_REMOTE_PATTERN = {
   hostname: 'placehold.co',
 };
 
-const resolveR2RemotePattern = ():
-  { protocol: 'https' | 'http'; hostname: string; pathname?: string } | undefined => {
-  const raw = process.env['R2_PUBLIC_URL']?.trim();
+/** Allow any Cloudflare R2 public-dev host (`pub-*.r2.dev`) without relying on build env. */
+const R2_DEV_REMOTE_PATTERN = {
+  protocol: 'https' as const,
+  hostname: '*.r2.dev',
+  pathname: '/**',
+};
+
+type ImageRemotePattern = {
+  protocol: 'https' | 'http';
+  hostname: string;
+  pathname?: string;
+};
+
+const resolveConfiguredRemotePattern = (
+  rawUrl: string | undefined,
+): ImageRemotePattern | undefined => {
+  const raw = rawUrl?.trim();
   if (!raw) {
     return undefined;
   }
@@ -49,14 +63,33 @@ const resolveR2RemotePattern = ():
   }
 };
 
-const r2RemotePattern = resolveR2RemotePattern();
+/**
+ * R2 / CDN hosts for `next/image`. Prefer env (`R2_PUBLIC_URL` / `NEXT_PUBLIC_R2_PUBLIC_URL`)
+ * for custom domains; always allow `*.r2.dev` so Turbo cache misses do not break prod images.
+ */
+const resolveImageRemotePatterns = (): ImageRemotePattern[] => {
+  const fromEnv =
+    resolveConfiguredRemotePattern(process.env['R2_PUBLIC_URL']) ??
+    resolveConfiguredRemotePattern(process.env['NEXT_PUBLIC_R2_PUBLIC_URL']);
+
+  const patterns: ImageRemotePattern[] = [PLACEHOLD_REMOTE_PATTERN, R2_DEV_REMOTE_PATTERN];
+  if (
+    fromEnv &&
+    fromEnv.hostname !== R2_DEV_REMOTE_PATTERN.hostname &&
+    !fromEnv.hostname.endsWith('.r2.dev')
+  ) {
+    patterns.push(fromEnv);
+  }
+
+  return patterns;
+};
 
 const nextConfig: NextConfig = {
   transpilePackages: ['@toonexpo/contracts', '@toonexpo/shared'],
   // Allow Next.js dev assets/HMR when opening the app via LAN IP (not only localhost).
   allowedDevOrigins: ['192.168.15.116'],
   images: {
-    remotePatterns: [PLACEHOLD_REMOTE_PATTERN, ...(r2RemotePattern ? [r2RemotePattern] : [])],
+    remotePatterns: resolveImageRemotePatterns(),
     // Dev seed uses local SVG architecture placeholders under /public/demo.
     dangerouslyAllowSVG: true,
     contentDispositionType: 'attachment',
