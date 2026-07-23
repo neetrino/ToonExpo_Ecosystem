@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 
 import { LogoutButton } from '@/features/auth/components/logout-button';
 import { useMeQuery } from '@/features/auth/hooks/use-auth';
+import { getAccountSettingsHref } from '@/features/auth/utils/get-account-settings-href';
 import { Link, usePathname } from '@/i18n/navigation';
 import { BrandLogo } from '@/shared/ui/brand-logo';
 import { cn } from '@/shared/ui/cn';
@@ -91,7 +92,7 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
     };
   }, [menuOpen]);
 
-  const settingsHref = user?.accountType === 'platform_admin' ? '/admin/settings' : '/settings';
+  const settingsHref = user ? getAccountSettingsHref(user) : '/settings';
   const listPropertyHref =
     user?.accountType === 'company_member' && user.companyType === 'builder'
       ? ('/builder' as const)

@@ -7,6 +7,7 @@ import {
   FolderKanban,
   LayoutDashboard,
   QrCode,
+  Settings,
   Users,
   Briefcase,
 } from 'lucide-react';
@@ -25,13 +26,22 @@ type NavItem = {
     | '/builder/crm'
     | '/builder/scanner'
     | '/builder/readiness'
-    | '/builder/analytics';
+    | '/builder/analytics'
+    | '/builder/settings';
   key:
-    'dashboard' | 'projects' | 'team' | 'company' | 'crm' | 'scanner' | 'readiness' | 'analytics';
+    | 'dashboard'
+    | 'projects'
+    | 'team'
+    | 'company'
+    | 'crm'
+    | 'scanner'
+    | 'readiness'
+    | 'analytics'
+    | 'settings';
   icon: LucideIcon;
 };
 
-const NAV_ITEMS: NavItem[] = [
+const PRIMARY_NAV_ITEMS: NavItem[] = [
   { href: '/builder', key: 'dashboard', icon: LayoutDashboard },
   { href: '/builder/projects', key: 'projects', icon: FolderKanban },
   { href: '/builder/team', key: 'team', icon: Users },
@@ -41,6 +51,12 @@ const NAV_ITEMS: NavItem[] = [
   { href: '/builder/readiness', key: 'readiness', icon: ClipboardCheck },
   { href: '/builder/analytics', key: 'analytics', icon: BarChart3 },
 ];
+
+const SETTINGS_NAV_ITEM: NavItem = {
+  href: '/builder/settings',
+  key: 'settings',
+  icon: Settings,
+};
 
 type BuilderNavProps = {
   companyName: string | null;
@@ -53,35 +69,43 @@ export const BuilderNav = ({ companyName }: BuilderNavProps) => {
   const t = useTranslations('Builder.nav');
   const pathname = usePathname();
 
+  const linkClassName = (active: boolean): string =>
+    cn(
+      'flex items-center gap-2.5 rounded-sm px-3 py-2.5 text-sm font-medium transition-colors',
+      active ? 'bg-brand-soft text-brand' : 'text-ink-secondary hover:bg-surface hover:text-ink',
+    );
+
   return (
-    <nav aria-label={t('label')} className="flex flex-col gap-1">
+    <nav aria-label={t('label')} className="flex h-full flex-col gap-1">
       {companyName ? (
         <p className="mb-3 truncate px-3 text-sm font-semibold text-ink">{companyName}</p>
       ) : null}
       <p className="mb-2 px-3 text-[10px] font-bold uppercase tracking-widest text-ink-muted">
         {t('section')}
       </p>
-      {NAV_ITEMS.map((item) => {
-        const active =
-          item.href === '/builder' ? pathname === '/builder' : pathname.startsWith(item.href);
-        const Icon = item.icon;
+      <div className="flex flex-1 flex-col gap-1">
+        {PRIMARY_NAV_ITEMS.map((item) => {
+          const active =
+            item.href === '/builder' ? pathname === '/builder' : pathname.startsWith(item.href);
+          const Icon = item.icon;
 
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={cn(
-              'flex items-center gap-2.5 rounded-sm px-3 py-2.5 text-sm font-medium transition-colors',
-              active
-                ? 'bg-brand-soft text-brand'
-                : 'text-ink-secondary hover:bg-surface hover:text-ink',
-            )}
-          >
-            <Icon className="size-4 shrink-0 opacity-80" aria-hidden />
-            {t(item.key)}
-          </Link>
-        );
-      })}
+          return (
+            <Link key={item.href} href={item.href} className={linkClassName(active)}>
+              <Icon className="size-4 shrink-0 opacity-80" aria-hidden />
+              {t(item.key)}
+            </Link>
+          );
+        })}
+      </div>
+      <div className="mt-auto border-t border-border pt-3">
+        <Link
+          href={SETTINGS_NAV_ITEM.href}
+          className={linkClassName(pathname.startsWith(SETTINGS_NAV_ITEM.href))}
+        >
+          <Settings className="size-4 shrink-0 opacity-80" aria-hidden />
+          {t(SETTINGS_NAV_ITEM.key)}
+        </Link>
+      </div>
     </nav>
   );
 };

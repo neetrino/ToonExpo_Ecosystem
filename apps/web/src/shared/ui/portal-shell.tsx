@@ -16,6 +16,8 @@ type PortalShellProps = {
   badge: string;
   userEmail: string;
   profileLabel: string;
+  /** Account / settings destination in the light portal header. */
+  profileHref?: '/dashboard' | '/builder/settings' | '/partner/settings' | '/admin/settings';
   navLabel: string;
   children: ReactNode;
   sidebar: ReactNode;
@@ -50,6 +52,7 @@ export const PortalShell = ({
   badge,
   userEmail,
   profileLabel,
+  profileHref = '/dashboard',
   navLabel,
   children,
   sidebar,
@@ -149,7 +152,7 @@ export const PortalShell = ({
               </span>
               <LocaleSwitcher />
               <Link
-                href="/dashboard"
+                href={profileHref}
                 className="text-sm font-medium text-ink-secondary transition-colors hover:text-ink"
               >
                 {profileLabel}

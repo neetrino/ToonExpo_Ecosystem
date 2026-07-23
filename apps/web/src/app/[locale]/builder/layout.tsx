@@ -43,6 +43,7 @@ export default async function BuilderLayout({ children, params }: BuilderLayoutP
       badge={t('badge')}
       userEmail={user.email}
       profileLabel={t('profileLink')}
+      profileHref="/builder/settings"
       navLabel={t('nav.label')}
       sidebar={<BuilderNav companyName={companyName} />}
     >
