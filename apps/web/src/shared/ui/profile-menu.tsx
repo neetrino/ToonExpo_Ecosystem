@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useId, useRef, useState } from 'react';
 
 import { useLogoutMutation } from '@/features/auth/hooks/use-auth';
-import { Link, usePathname, useRouter } from '@/i18n/navigation';
+import { Link, usePathname } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 
 /** Keeps the menu open while the pointer moves from trigger to panel. */
@@ -38,7 +38,6 @@ export const ProfileMenu = ({
   const t = useTranslations('Nav');
   const tAuth = useTranslations('Auth');
   const pathname = usePathname();
-  const router = useRouter();
   const logoutMutation = useLogoutMutation();
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -207,7 +206,6 @@ export const ProfileMenu = ({
             onClick={() => {
               void logoutMutation.mutateAsync().then(() => {
                 setOpen(false);
-                router.push('/auth/login');
               });
             }}
           >

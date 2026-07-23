@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 import { useLogoutMutation, useMeQuery } from '@/features/auth/hooks/use-auth';
-import { Link, usePathname, useRouter } from '@/i18n/navigation';
+import { Link, usePathname } from '@/i18n/navigation';
 import { isPartnerCompatibleCompany } from '@/features/partners/utils/is-partner-compatible-company';
 import { BrandLogo } from '@/shared/ui/brand-logo';
 import { cn } from '@/shared/ui/cn';
@@ -48,7 +48,6 @@ const HEADER_SPACER_CLASS = 'h-[4.5rem]';
 export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) => {
   const t = useTranslations('Nav');
   const pathname = usePathname();
-  const router = useRouter();
   const { data: user, isLoading, isFetching } = useMeQuery();
   const logoutMutation = useLogoutMutation();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -97,7 +96,6 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
     (user.companyType == null ||
       user.companyType === 'builder' ||
       !isPartnerCompatibleCompany(user.companyType));
-  const listPropertyHref = isBuilderMember ? ('/builder' as const) : ('/auth/register' as const);
   const contentInsetStyle = {
     transform: pillVisible ? `translateX(${PILL_CONTENT_INSET_PX}px)` : 'translateX(0)',
     transitionDuration: `${PILL_APPEAR_MS}ms`,
@@ -110,7 +108,6 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
   const handleMobileLogout = (): void => {
     void logoutMutation.mutateAsync().then(() => {
       setMenuOpen(false);
-      router.push('/auth/login');
     });
   };
 
@@ -196,21 +193,6 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
             >
               <LocaleSwitcher tone={isOverHero ? 'dark' : 'light'} />
 
-              <Link
-                href={listPropertyHref}
-                className={cn(
-                  'hidden h-9 items-center rounded-full px-4 text-sm font-semibold leading-5',
-                  'transition-[background-color,color] ease-out',
-                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-deep/30 sm:inline-flex',
-                  isOverHero
-                    ? 'bg-on-dark text-ink hover:bg-on-dark/90'
-                    : 'bg-brand-deep text-on-dark hover:bg-brand-deep/90',
-                )}
-                style={{ transitionDuration: `${PILL_APPEAR_MS}ms` }}
-              >
-                {t('listProperty')}
-              </Link>
-
               {showAuthLoading ? (
                 <span className="size-10 animate-pulse rounded-full bg-current/10" aria-hidden />
               ) : (
@@ -252,7 +234,6 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
               pathname={pathname}
               user={user ?? undefined}
               settingsHref={settingsHref}
-              listPropertyHref={listPropertyHref}
               showBuilder={isBuilderMember}
               logoutPending={logoutMutation.isPending}
               onClose={() => setMenuOpen(false)}
