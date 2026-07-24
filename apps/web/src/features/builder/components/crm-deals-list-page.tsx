@@ -30,6 +30,7 @@ import { CrmDealSheet, CrmKanbanBoard } from '@/features/crm-board';
 import { CRM_BOARD_SEARCH_DEBOUNCE_MS } from '@/features/crm-board/constants';
 import { CrmNewColumnCreateButton } from '@/features/crm-board/crm-new-column-create-button';
 import { filterCrmDealsBySearch } from '@/features/crm-board/filter-crm-deals-by-search';
+import { CrmSearchResultsBadge } from '@/features/crm-board/crm-search-results-badge';
 import { useCrmDealSheetUrl } from '@/features/crm-board/use-crm-deal-sheet-url';
 import { useCrmNewLeadUrl } from '@/features/crm-board/use-crm-new-lead-url';
 import { useDebouncedValue } from '@/shared/hooks/use-debounced-value';
@@ -160,15 +161,8 @@ export const CrmDealsListPage = () => {
       </div>
 
       <label className="flex max-w-xl shrink-0 flex-col gap-1.5">
-        <span className="flex items-baseline justify-between gap-2">
-          <span className="text-xs font-medium uppercase tracking-wide text-ink-muted">
-            {tBoard('searchLabel')}
-          </span>
-          {search.trim() ? (
-            <span className="text-xs font-medium text-ink-secondary" aria-live="polite">
-              {tBoard('searchResultsCount', { count: deals.length })}
-            </span>
-          ) : null}
+        <span className="text-xs font-medium uppercase tracking-wide text-ink-muted">
+          {tBoard('searchLabel')}
         </span>
         <Input
           value={search}
@@ -177,6 +171,7 @@ export const CrmDealsListPage = () => {
             setSearch(event.target.value);
           }}
         />
+        {search.trim() ? <CrmSearchResultsBadge count={deals.length} /> : null}
       </label>
 
       <div className="shrink-0">

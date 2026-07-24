@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useEffect, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { useCreateAdminManualDealMutation } from '@/features/admin/hooks/use-admin-crm';
@@ -19,6 +19,7 @@ import {
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
+import { Select } from '@/shared/ui/select';
 
 const adminCreateDealSchema = z.object({
   companyId: z.string().trim().min(1),
@@ -155,18 +156,29 @@ export const AdminCrmNewDealPanel = ({
             label={t('company')}
             error={form.formState.errors.companyId ? t('validation.company') : undefined}
           >
-            <select
-              id="companyId"
-              className="h-11 w-full rounded-sm border border-border bg-background px-3 text-sm text-ink"
-              {...form.register('companyId')}
-            >
-              <option value="">{t('companyPlaceholder')}</option>
-              {companies.map((company) => (
-                <option key={company.id} value={company.id}>
-                  {company.name}
-                </option>
-              ))}
-            </select>
+            <Controller
+              name="companyId"
+              control={form.control}
+              render={({ field }) => (
+                <Select
+                  id="companyId"
+                  name={field.name}
+                  value={field.value}
+                  aria-label={t('company')}
+                  onBlur={field.onBlur}
+                  onChange={(event) => {
+                    field.onChange(event.target.value);
+                  }}
+                >
+                  <option value="">{t('companyPlaceholder')}</option>
+                  {companies.map((company) => (
+                    <option key={company.id} value={company.id}>
+                      {company.name}
+                    </option>
+                  ))}
+                </Select>
+              )}
+            />
           </FormField>
 
           <FormField
@@ -174,7 +186,12 @@ export const AdminCrmNewDealPanel = ({
             label={t('contactName')}
             error={form.formState.errors.contactName ? t('validation.contactName') : undefined}
           >
-            <Input id="contactName" {...form.register('contactName')} />
+            <Input
+              id="contactName"
+              placeholder={t('contactNamePlaceholder')}
+              autoComplete="name"
+              {...form.register('contactName')}
+            />
           </FormField>
 
           <FormField
@@ -182,7 +199,13 @@ export const AdminCrmNewDealPanel = ({
             label={t('contactPhone')}
             error={form.formState.errors.contactPhone ? t('validation.phone') : undefined}
           >
-            <Input id="contactPhone" type="tel" {...form.register('contactPhone')} />
+            <Input
+              id="contactPhone"
+              type="tel"
+              placeholder={t('contactPhonePlaceholder')}
+              autoComplete="tel"
+              {...form.register('contactPhone')}
+            />
           </FormField>
 
           <FormField
@@ -190,23 +213,40 @@ export const AdminCrmNewDealPanel = ({
             label={t('contactEmail')}
             error={form.formState.errors.contactEmail ? t('validation.email') : undefined}
           >
-            <Input id="contactEmail" type="email" {...form.register('contactEmail')} />
+            <Input
+              id="contactEmail"
+              type="email"
+              placeholder={t('contactEmailPlaceholder')}
+              autoComplete="email"
+              {...form.register('contactEmail')}
+            />
           </FormField>
 
           <FormField id="projectId" label={t('project')}>
-            <select
-              id="projectId"
-              className="h-11 w-full rounded-sm border border-border bg-background px-3 text-sm text-ink"
-              disabled={!selectedCompanyId}
-              {...form.register('projectId')}
-            >
-              <option value="">{t('projectOptional')}</option>
-              {projects.map((project) => (
-                <option key={project.id} value={project.id}>
-                  {project.name}
-                </option>
-              ))}
-            </select>
+            <Controller
+              name="projectId"
+              control={form.control}
+              render={({ field }) => (
+                <Select
+                  id="projectId"
+                  name={field.name}
+                  value={field.value ?? ''}
+                  aria-label={t('project')}
+                  disabled={!selectedCompanyId}
+                  onBlur={field.onBlur}
+                  onChange={(event) => {
+                    field.onChange(event.target.value);
+                  }}
+                >
+                  <option value="">{t('projectOptional')}</option>
+                  {projects.map((project) => (
+                    <option key={project.id} value={project.id}>
+                      {project.name}
+                    </option>
+                  ))}
+                </Select>
+              )}
+            />
           </FormField>
 
           {form.formState.errors.root?.message ? (

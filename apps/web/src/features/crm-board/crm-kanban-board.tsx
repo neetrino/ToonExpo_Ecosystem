@@ -200,7 +200,11 @@ const CrmKanbanColumn = ({
       </header>
 
       <div className="crm-kanban-column-body luxury-scrollbar">
-        {newColumnAction ? <div className="shrink-0">{newColumnAction}</div> : null}
+        {newColumnAction ? (
+          <div className="crm-kanban-column__action-slot">{newColumnAction}</div>
+        ) : deals.length === 0 ? (
+          <div className="crm-kanban-column__action-slot" aria-hidden />
+        ) : null}
 
         {deals.length === 0 ? (
           <p className="crm-kanban-column__empty">{emptyLabel}</p>

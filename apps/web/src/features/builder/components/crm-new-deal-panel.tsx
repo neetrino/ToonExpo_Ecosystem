@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 
 import { useCreateManualDealMutation } from '@/features/builder/hooks/use-portal-crm';
 import {
@@ -15,6 +15,7 @@ import { useRouter } from '@/i18n/navigation';
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
+import { Select } from '@/shared/ui/select';
 import { Textarea } from '@/shared/ui/textarea';
 
 type ProjectOption = { id: string; name: string };
@@ -106,7 +107,12 @@ export const CrmNewDealPanel = ({ projects, onClose, onCreated }: CrmNewDealPane
             label={t('newDeal.contactName')}
             error={form.formState.errors.contactName ? t('validation.contactName') : undefined}
           >
-            <Input id="contactName" {...form.register('contactName')} />
+            <Input
+              id="contactName"
+              placeholder={t('newDeal.contactNamePlaceholder')}
+              autoComplete="name"
+              {...form.register('contactName')}
+            />
           </FormField>
 
           <FormField
@@ -114,7 +120,13 @@ export const CrmNewDealPanel = ({ projects, onClose, onCreated }: CrmNewDealPane
             label={t('newDeal.contactPhone')}
             error={form.formState.errors.contactPhone ? t('validation.phone') : undefined}
           >
-            <Input id="contactPhone" type="tel" {...form.register('contactPhone')} />
+            <Input
+              id="contactPhone"
+              type="tel"
+              placeholder={t('newDeal.contactPhonePlaceholder')}
+              autoComplete="tel"
+              {...form.register('contactPhone')}
+            />
           </FormField>
 
           <FormField
@@ -122,22 +134,39 @@ export const CrmNewDealPanel = ({ projects, onClose, onCreated }: CrmNewDealPane
             label={t('newDeal.contactEmail')}
             error={form.formState.errors.contactEmail ? t('validation.email') : undefined}
           >
-            <Input id="contactEmail" type="email" {...form.register('contactEmail')} />
+            <Input
+              id="contactEmail"
+              type="email"
+              placeholder={t('newDeal.contactEmailPlaceholder')}
+              autoComplete="email"
+              {...form.register('contactEmail')}
+            />
           </FormField>
 
           <FormField id="projectId" label={t('newDeal.project')}>
-            <select
-              id="projectId"
-              className="h-11 w-full rounded-sm border border-border bg-background px-3 text-sm text-ink"
-              {...form.register('projectId')}
-            >
-              <option value="">{t('newDeal.projectOptional')}</option>
-              {projects.map((project) => (
-                <option key={project.id} value={project.id}>
-                  {project.name}
-                </option>
-              ))}
-            </select>
+            <Controller
+              name="projectId"
+              control={form.control}
+              render={({ field }) => (
+                <Select
+                  id="projectId"
+                  name={field.name}
+                  value={field.value ?? ''}
+                  aria-label={t('newDeal.project')}
+                  onBlur={field.onBlur}
+                  onChange={(event) => {
+                    field.onChange(event.target.value);
+                  }}
+                >
+                  <option value="">{t('newDeal.projectOptional')}</option>
+                  {projects.map((project) => (
+                    <option key={project.id} value={project.id}>
+                      {project.name}
+                    </option>
+                  ))}
+                </Select>
+              )}
+            />
           </FormField>
 
           <FormField id="note" label={t('newDeal.note')}>
