@@ -13,7 +13,6 @@ import {
   SIDE_SHEET_COMPACT_MAX_WIDTH_PX,
   SIDE_SHEET_PANEL_TRANSITION_MS,
   SIDE_SHEET_PANEL_Z_INDEX,
-  SIDE_SHEET_STACK_OFFSET_PX,
   SIDE_SHEET_STACK_Z_STEP,
   SIDE_SHEET_WIDTH_PERCENT,
   SIDE_SHEET_Z_INDEX,
@@ -72,7 +71,6 @@ const SideSheetPanel = ({
   children,
 }: SideSheetPanelProps) => {
   const zIndex = SIDE_SHEET_Z_INDEX + stackLevel * SIDE_SHEET_STACK_Z_STEP;
-  const stackShiftPx = stackLevel * SIDE_SHEET_STACK_OFFSET_PX;
   const isFixedMax = size === 'compact' || size === 'comfortable';
   const compactMaxPx =
     size === 'comfortable' ? SIDE_SHEET_COMFORTABLE_MAX_WIDTH_PX : SIDE_SHEET_COMPACT_MAX_WIDTH_PX;
@@ -119,11 +117,6 @@ const SideSheetPanel = ({
           ['--side-sheet-width' as string]: `${SIDE_SHEET_WIDTH_PERCENT}%`,
           ['--side-sheet-compact-max' as string]: `${compactMaxPx}px`,
           ['--side-sheet-panel-ms' as string]: `${SIDE_SHEET_PANEL_TRANSITION_MS}ms`,
-          ...(stackLevel > 0
-            ? {
-                transform: visible ? `translateX(-${stackShiftPx}px)` : 'translateX(100%)',
-              }
-            : {}),
         }}
       >
         <DrawerCloseTab edge="start" onClose={onClose} closeLabel={closeLabel} />

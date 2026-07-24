@@ -243,6 +243,7 @@ export type AdminBuildingInventoryFloor = {
 export type AdminBuildingInventoryGlance = {
   id: string;
   name: string;
+  publicationStatus: PublicationStatus;
   projectId: string;
   projectName: string;
   builderCompanyId: string;

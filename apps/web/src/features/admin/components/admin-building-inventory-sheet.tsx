@@ -1,11 +1,13 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 
 import { AdminBuildingInventoryGlanceCard } from '@/features/admin/components/admin-building-inventory-glance';
 import { AdminFloorApartmentsSheet } from '@/features/admin/components/admin-floor-apartments-sheet';
 import { useAdminBuildingInventoryGlanceQuery } from '@/features/admin/hooks/use-admin-inventory';
+import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
+import { LIST_STATUS_BADGE_COMPACT_CLASS } from '@/shared/ui/list-status-badge';
 import { SideSheet } from '@/shared/ui/side-sheet';
 
 type AdminBuildingInventorySheetProps = {
@@ -16,8 +18,13 @@ type AdminBuildingInventorySheetProps = {
   onCloseFloor: () => void;
 };
 
+type FloorSheetSnapshot = {
+  floorId: string;
+  floorLabel: string;
+};
+
 /**
- * Buildings & inventory sheet: glance card + nested floor apartments sheet.
+ * Building inventory sheet: name + status header, glance card, nested floor sheet.
  */
 export const AdminBuildingInventorySheet = ({
   buildingId,
@@ -29,6 +36,7 @@ export const AdminBuildingInventorySheet = ({
   const t = useTranslations('Admin.buildings.inventory');
   const query = useAdminBuildingInventoryGlanceQuery(buildingId ?? '');
   const glance = query.data;
+  const floorSnapshotRef = useRef<FloorSheetSnapshot | null>(null);
 
   const selectedFloor = useMemo(() => {
     if (!floorId || !glance) {
@@ -37,20 +45,39 @@ export const AdminBuildingInventorySheet = ({
     return glance.floors.find((floor) => floor.id === floorId) ?? null;
   }, [floorId, glance]);
 
-  const floorLabel = selectedFloor
-    ? selectedFloor.displayLabel?.trim() ||
-      selectedFloor.name?.trim() ||
-      t('floorCode', { number: selectedFloor.number })
-    : t('floorFallback');
+  if (selectedFloor) {
+    floorSnapshotRef.current = {
+      floorId: selectedFloor.id,
+      floorLabel:
+        selectedFloor.displayLabel?.trim() ||
+        selectedFloor.name?.trim() ||
+        t('floorCode', { number: selectedFloor.number }),
+    };
+  }
+
+  const floorSheetOpen = floorId != null && selectedFloor != null;
+  const floorSheetFloorId = selectedFloor?.id ?? floorSnapshotRef.current?.floorId ?? '';
+  const floorSheetLabel = floorSnapshotRef.current?.floorLabel ?? t('floorFallback');
+
+  const title = glance?.name ?? t('sheetTitle');
+  const description = glance ? glance.projectName : undefined;
 
   return (
     <>
       <SideSheet
         open={buildingId != null}
         onClose={onClose}
-        title={t('sheetTitle')}
-        description={glance ? `${glance.name} · ${glance.projectName}` : undefined}
+        title={title}
+        description={description}
         size="default"
+        headerActions={
+          glance ? (
+            <PublicationStatusBadge
+              status={glance.publicationStatus}
+              className={LIST_STATUS_BADGE_COMPACT_CLASS}
+            />
+          ) : undefined
+        }
       >
         {!buildingId || query.isLoading ? (
           <p className="text-sm text-ink-secondary">{t('loading')}</p>
@@ -67,12 +94,12 @@ export const AdminBuildingInventorySheet = ({
         ) : null}
       </SideSheet>
 
-      {glance && floorId && selectedFloor ? (
+      {glance ? (
         <AdminFloorApartmentsSheet
-          open
+          open={floorSheetOpen}
           companyId={glance.builderCompanyId}
-          floorId={floorId}
-          floorLabel={floorLabel}
+          floorId={floorSheetFloorId}
+          floorLabel={floorSheetLabel}
           onClose={onCloseFloor}
         />
       ) : null}

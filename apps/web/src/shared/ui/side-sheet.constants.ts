@@ -51,8 +51,8 @@ export const SIDE_SHEET_CLOSE_TAB_HOVER_SCALE = 1.06;
 /** Close tab hover transition (ms). */
 export const SIDE_SHEET_CLOSE_TAB_TRANSITION_MS = 200;
 
-/** Nested sheet horizontal inset (px). */
-export const SIDE_SHEET_STACK_OFFSET_PX = 12;
+/** Nested sheet horizontal inset (px). Flush to the right edge. */
+export const SIDE_SHEET_STACK_OFFSET_PX = 0;
 
 /** Nested sheet z-index step. */
 export const SIDE_SHEET_STACK_Z_STEP = 5;

@@ -219,6 +219,7 @@ export class AdminInventoryService {
       select: {
         id: true,
         name: true,
+        publicationStatus: true,
         projectId: true,
         project: {
           select: {
@@ -247,6 +248,7 @@ export class AdminInventoryService {
     return {
       id: building.id,
       name: building.name,
+      publicationStatus: building.publicationStatus,
       projectId: building.projectId,
       projectName: building.project.name,
       builderCompanyId: building.project.builderCompanyId,
