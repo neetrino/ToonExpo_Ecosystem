@@ -50,7 +50,7 @@ export const MultiListboxSelect = ({
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const menuRef = useRef<HTMLUListElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
   const listId = useId();
   const isAll = values.length === 0;
 
@@ -156,72 +156,76 @@ export const MultiListboxSelect = ({
       </button>
 
       <DropdownPortal open={open && !disabled} anchorRef={buttonRef} matchWidth>
-        <ul
+        <div
           ref={menuRef}
-          id={listId}
-          role="listbox"
-          aria-multiselectable="true"
-          aria-label={ariaLabel}
           className={cn(
-            'luxury-scrollbar max-h-64 w-full overflow-y-auto',
-            'rounded-[12px] border border-header-border bg-surface-elevated py-1.5 shadow-md',
+            'overflow-hidden rounded-[12px] border border-header-border shadow-md',
             'animate-[locale-dropdown-in_var(--duration-base)_var(--ease-out-premium)]',
+            isAll ? 'bg-brand-soft' : 'bg-surface-elevated',
           )}
         >
-          <li role="none">
-            <button
-              type="button"
-              role="option"
-              aria-selected={isAll}
-              className={cn(
-                'flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm',
-                'transition-colors duration-[var(--duration-base)]',
-                isAll
-                  ? 'bg-brand-soft font-semibold text-brand-deep'
-                  : 'font-medium text-ink hover:bg-surface',
-              )}
-              onMouseDown={(event) => {
-                event.preventDefault();
-              }}
-              onClick={(event) => {
-                event.stopPropagation();
-                toggleAll();
-              }}
-            >
-              <SelectionMark checked={isAll} />
-              <span className="min-w-0 flex-1 truncate">{allLabel}</span>
-            </button>
-          </li>
-          {options.map((option) => {
-            const active = isAll || values.includes(option.value);
-            return (
-              <li key={option.value} role="none">
-                <button
-                  type="button"
-                  role="option"
-                  aria-selected={active}
-                  className={cn(
-                    'flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm',
-                    'transition-colors duration-[var(--duration-base)]',
-                    active
-                      ? 'bg-brand-soft font-semibold text-brand-deep'
-                      : 'font-medium text-ink hover:bg-surface',
-                  )}
-                  onMouseDown={(event) => {
-                    event.preventDefault();
-                  }}
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    toggleOption(option.value);
-                  }}
-                >
-                  <SelectionMark checked={active} />
-                  <span className="min-w-0 flex-1 truncate">{option.label}</span>
-                </button>
-              </li>
-            );
-          })}
-        </ul>
+          <ul
+            id={listId}
+            role="listbox"
+            aria-multiselectable="true"
+            aria-label={ariaLabel}
+            className="luxury-scrollbar max-h-64 w-full overflow-y-auto"
+          >
+            <li role="none">
+              <button
+                type="button"
+                role="option"
+                aria-selected={isAll}
+                className={cn(
+                  'flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm',
+                  'transition-colors duration-[var(--duration-base)]',
+                  isAll
+                    ? 'bg-brand-soft font-semibold text-brand-deep'
+                    : 'font-medium text-ink hover:bg-surface',
+                )}
+                onMouseDown={(event) => {
+                  event.preventDefault();
+                }}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  toggleAll();
+                }}
+              >
+                <SelectionMark checked={isAll} />
+                <span className="min-w-0 flex-1 truncate">{allLabel}</span>
+              </button>
+            </li>
+            {options.map((option) => {
+              const active = isAll || values.includes(option.value);
+              return (
+                <li key={option.value} role="none">
+                  <button
+                    type="button"
+                    role="option"
+                    aria-selected={active}
+                    className={cn(
+                      'flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm',
+                      'transition-colors duration-[var(--duration-base)]',
+                      active
+                        ? 'bg-brand-soft font-semibold text-brand-deep'
+                        : 'font-medium text-ink hover:bg-surface',
+                    )}
+                    onMouseDown={(event) => {
+                      event.preventDefault();
+                    }}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      toggleOption(option.value);
+                    }}
+                  >
+                    <SelectionMark checked={active} />
+                    <span className="min-w-0 flex-1 truncate">{option.label}</span>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       </DropdownPortal>
     </div>
   );

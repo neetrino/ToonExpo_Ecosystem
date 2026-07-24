@@ -207,7 +207,9 @@ const CrmKanbanColumn = ({
         ) : null}
 
         {deals.length === 0 ? (
-          <p className="crm-kanban-column__empty">{emptyLabel}</p>
+          <div className="crm-kanban-column__empty-wrap">
+            <p className="crm-kanban-column__empty">{emptyLabel}</p>
+          </div>
         ) : (
           deals.map((deal) => (
             <CrmDraggableKanbanCard
