@@ -1,6 +1,6 @@
 'use client';
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { CreateAdminManualDealBody } from '@toonexpo/contracts';
 
 import {
@@ -18,6 +18,7 @@ export const useAdminCrmDealsQuery = (params: ListAdminCrmDealsParams) =>
   useQuery({
     queryKey: [...ADMIN_CRM_DEALS_QUERY_KEY, params],
     queryFn: () => listAdminCrmDeals(params),
+    placeholderData: keepPreviousData,
   });
 
 /**

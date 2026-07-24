@@ -19,9 +19,15 @@ import {
   isCrmStatusTransitionAllowed,
 } from '@/features/builder/utils/crm-status-transitions';
 import { CrmDealSheet, CrmKanbanBoard } from '@/features/crm-board';
-import { CRM_BOARD_REQUEST_SOURCES } from '@/features/crm-board/constants';
+import {
+  CRM_BOARD_REQUEST_SOURCES,
+  CRM_BOARD_SEARCH_DEBOUNCE_MS,
+} from '@/features/crm-board/constants';
 import { CrmNewColumnCreateButton } from '@/features/crm-board/crm-new-column-create-button';
+import { filterCrmDealsBySearch } from '@/features/crm-board/filter-crm-deals-by-search';
 import { useCrmDealSheetUrl } from '@/features/crm-board/use-crm-deal-sheet-url';
+import { useCrmNewLeadUrl } from '@/features/crm-board/use-crm-new-lead-url';
+import { useDebouncedValue } from '@/shared/hooks/use-debounced-value';
 import { Input } from '@/shared/ui/input';
 import { MultiListboxSelect } from '@/shared/ui/multi-listbox-select';
 
@@ -32,13 +38,14 @@ export const AdminCrmBoardPage = () => {
   const t = useTranslations('Admin.crm');
   const tBoard = useTranslations('CrmBoard');
   const queryClient = useQueryClient();
-  const [showNew, setShowNew] = useState(false);
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebouncedValue(search.trim(), CRM_BOARD_SEARCH_DEBOUNCE_MS);
   /** Empty = All builders (default). */
   const [companyIds, setCompanyIds] = useState<string[]>([]);
   /** Empty = All sources (default). */
   const [sources, setSources] = useState<RequestSource[]>([]);
   const [boardError, setBoardError] = useState<string | null>(null);
+  const { isNewLeadOpen, openNewLead, closeNewLead } = useCrmNewLeadUrl();
 
   const companiesQuery = useAdminCompaniesQuery(1, ADMIN_COMPANIES_MAX_PAGE_SIZE);
   const dealsQuery = useAdminCrmDealsQuery({
@@ -46,9 +53,12 @@ export const AdminCrmBoardPage = () => {
     pageSize: ADMIN_CRM_BOARD_PAGE_SIZE,
     ...(companyIds.length > 0 ? { companyIds } : {}),
     ...(sources.length > 0 ? { sources } : {}),
-    ...(search.trim() ? { q: search.trim() } : {}),
+    ...(debouncedSearch ? { q: debouncedSearch } : {}),
   });
-  const deals = dealsQuery.data?.data ?? [];
+  const deals = useMemo(
+    () => filterCrmDealsBySearch(dealsQuery.data?.data ?? [], search),
+    [dealsQuery.data?.data, search],
+  );
   const { selectedDealId, openDeal, closeDeal } = useCrmDealSheetUrl(deals);
   const dealQuery = useAdminCrmDealQuery(selectedDealId ?? '');
 
@@ -101,7 +111,7 @@ export const AdminCrmBoardPage = () => {
     }
   };
 
-  if (dealsQuery.isLoading) {
+  if (dealsQuery.isLoading && !dealsQuery.data) {
     return (
       <div className="flex flex-col gap-4">
         <div className="h-8 w-48 animate-pulse rounded-sm bg-border/70" />
@@ -110,7 +120,7 @@ export const AdminCrmBoardPage = () => {
     );
   }
 
-  if (dealsQuery.isError || !dealsQuery.data) {
+  if (dealsQuery.isError && !dealsQuery.data) {
     return (
       <p
         role="alert"
@@ -121,16 +131,15 @@ export const AdminCrmBoardPage = () => {
     );
   }
 
+  const totalCount = dealsQuery.data?.meta.total ?? deals.length;
   return (
     <div className="flex flex-col gap-5">
-      <div className="flex flex-col gap-1">
+      <div className="flex shrink-0 flex-col gap-1">
         <h1 className="text-page-title text-ink">{t('title')}</h1>
-        <p className="text-sm text-ink-secondary">
-          {t('subtitle', { count: dealsQuery.data.meta.total })}
-        </p>
+        <p className="text-sm text-ink-secondary">{t('subtitle', { count: totalCount })}</p>
       </div>
 
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+      <div className="flex shrink-0 flex-col gap-3 sm:flex-row sm:items-end">
         <label className="flex min-w-0 flex-1 flex-col gap-1.5">
           <span className="text-xs font-medium uppercase tracking-wide text-ink-muted">
             {tBoard('searchLabel')}
@@ -178,7 +187,7 @@ export const AdminCrmBoardPage = () => {
       </div>
 
       {boardError ? (
-        <p role="alert" className="text-sm text-danger">
+        <p role="alert" className="shrink-0 text-sm text-danger">
           {boardError}
         </p>
       ) : null}
@@ -191,13 +200,13 @@ export const AdminCrmBoardPage = () => {
         newColumnAction={
           <CrmNewColumnCreateButton
             onClick={() => {
-              setShowNew(true);
+              openNewLead();
             }}
           />
         }
       />
 
-      {showNew ? (
+      {isNewLeadOpen ? (
         <AdminCrmNewDealPanel
           companies={builderCompanies.map((company) => ({
             id: company.id,
@@ -205,7 +214,7 @@ export const AdminCrmBoardPage = () => {
           }))}
           defaultCompanyId={companyIds[0] ?? ''}
           onClose={() => {
-            setShowNew(false);
+            closeNewLead();
           }}
           onCreated={(dealId) => {
             openDeal(dealId);

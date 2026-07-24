@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import {
   CRM_DEAL_URL_PARAM,
+  CRM_VIEW_URL_PARAM,
   findCrmDealByUrlName,
   getCrmDealUrlName,
 } from '@/features/crm-board/crm-deal-url';
@@ -27,14 +28,10 @@ export const useCrmDealSheetUrl = (deals: readonly CrmDealListItem[]): UseCrmDea
   const [selectedDealId, setSelectedDealId] = useState<string | null>(null);
   const dealParam = searchParams.get(CRM_DEAL_URL_PARAM)?.trim() || null;
 
-  const replaceDealParam = useCallback(
-    (name: string | null): void => {
+  const replaceParams = useCallback(
+    (mutate: (params: URLSearchParams) => void): void => {
       const next = new URLSearchParams(searchParams.toString());
-      if (name) {
-        next.set(CRM_DEAL_URL_PARAM, name);
-      } else {
-        next.delete(CRM_DEAL_URL_PARAM);
-      }
+      mutate(next);
       const query = next.toString();
       const href = query.length > 0 ? `${pathname}?${query}` : pathname;
       router.replace(href, { scroll: false });
@@ -59,25 +56,33 @@ export const useCrmDealSheetUrl = (deals: readonly CrmDealListItem[]): UseCrmDea
     }
     const deal = deals.find((item) => item.id === selectedDealId);
     if (deal) {
-      replaceDealParam(getCrmDealUrlName(deal));
+      replaceParams((params) => {
+        params.delete(CRM_VIEW_URL_PARAM);
+        params.set(CRM_DEAL_URL_PARAM, getCrmDealUrlName(deal));
+      });
     }
-  }, [selectedDealId, dealParam, deals, replaceDealParam]);
+  }, [selectedDealId, dealParam, deals, replaceParams]);
 
   const openDeal = useCallback(
     (dealId: string): void => {
       setSelectedDealId(dealId);
       const deal = deals.find((item) => item.id === dealId);
       if (deal) {
-        replaceDealParam(getCrmDealUrlName(deal));
+        replaceParams((params) => {
+          params.delete(CRM_VIEW_URL_PARAM);
+          params.set(CRM_DEAL_URL_PARAM, getCrmDealUrlName(deal));
+        });
       }
     },
-    [deals, replaceDealParam],
+    [deals, replaceParams],
   );
 
   const closeDeal = useCallback((): void => {
     setSelectedDealId(null);
-    replaceDealParam(null);
-  }, [replaceDealParam]);
+    replaceParams((params) => {
+      params.delete(CRM_DEAL_URL_PARAM);
+    });
+  }, [replaceParams]);
 
   return { selectedDealId, openDeal, closeDeal };
 };

@@ -34,3 +34,14 @@ export const CRM_KANBAN_COLUMN_ACCENT: Record<CrmDealStatus, string> = {
 };
 
 export type CrmBoardMode = 'edit' | 'readonly';
+
+/**
+ * Fixed Kanban frame height — stretches columns to the viewport bottom.
+ * Offset covers portal header + CRM title/filters roughly; prefer slightly
+ * tall (page may scroll a little) over short columns.
+ */
+export const CRM_BOARD_FRAME_HEIGHT_CLASS =
+  'h-[calc(100dvh-14rem)] min-h-[24rem] max-h-[calc(100dvh-14rem)]';
+
+/** Debounce for CRM lead search before hitting the API. */
+export const CRM_BOARD_SEARCH_DEBOUNCE_MS = 300;

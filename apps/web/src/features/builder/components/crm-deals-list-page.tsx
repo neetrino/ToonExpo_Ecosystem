@@ -27,8 +27,12 @@ import {
   isCrmStatusTransitionAllowed,
 } from '@/features/builder/utils/crm-status-transitions';
 import { CrmDealSheet, CrmKanbanBoard } from '@/features/crm-board';
+import { CRM_BOARD_SEARCH_DEBOUNCE_MS } from '@/features/crm-board/constants';
 import { CrmNewColumnCreateButton } from '@/features/crm-board/crm-new-column-create-button';
+import { filterCrmDealsBySearch } from '@/features/crm-board/filter-crm-deals-by-search';
 import { useCrmDealSheetUrl } from '@/features/crm-board/use-crm-deal-sheet-url';
+import { useCrmNewLeadUrl } from '@/features/crm-board/use-crm-new-lead-url';
+import { useDebouncedValue } from '@/shared/hooks/use-debounced-value';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
@@ -40,9 +44,10 @@ export const CrmDealsListPage = () => {
   const t = useTranslations('Builder.crm');
   const tBoard = useTranslations('CrmBoard');
   const queryClient = useQueryClient();
-  const [showNew, setShowNew] = useState(false);
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebouncedValue(search.trim(), CRM_BOARD_SEARCH_DEBOUNCE_MS);
   const [boardError, setBoardError] = useState<string | null>(null);
+  const { isNewLeadOpen, openNewLead, closeNewLead } = useCrmNewLeadUrl();
   const [filters, setFilters] = useState<{
     status: CrmDealStatus | '';
     source: RequestSource | '';
@@ -59,10 +64,13 @@ export const CrmDealsListPage = () => {
     ...(filters.source ? { source: filters.source } : {}),
     ...(filters.projectId ? { projectId: filters.projectId } : {}),
     ...(filters.assignedUserId ? { assignedUserId: filters.assignedUserId } : {}),
-    ...(search.trim() ? { q: search.trim() } : {}),
+    ...(debouncedSearch ? { q: debouncedSearch } : {}),
   });
 
-  const deals = dealsQuery.data?.data ?? [];
+  const deals = useMemo(
+    () => filterCrmDealsBySearch(dealsQuery.data?.data ?? [], search),
+    [dealsQuery.data?.data, search],
+  );
   const { selectedDealId, openDeal, closeDeal } = useCrmDealSheetUrl(deals);
   const dealQuery = useCrmDealQuery(selectedDealId ?? '');
 
@@ -109,7 +117,7 @@ export const CrmDealsListPage = () => {
     }
   };
 
-  if (dealsQuery.isLoading) {
+  if (dealsQuery.isLoading && !dealsQuery.data) {
     return (
       <div className="flex flex-col gap-4">
         <div className="h-8 w-48 animate-pulse rounded-sm bg-border/70" />
@@ -119,7 +127,7 @@ export const CrmDealsListPage = () => {
     );
   }
 
-  if (dealsQuery.isError || !dealsQuery.data) {
+  if (dealsQuery.isError && !dealsQuery.data) {
     return (
       <p
         role="alert"
@@ -130,27 +138,27 @@ export const CrmDealsListPage = () => {
     );
   }
 
+  const totalCount = dealsQuery.data?.meta.total ?? deals.length;
+
   return (
     <div className="flex flex-col gap-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex shrink-0 flex-wrap items-center justify-between gap-3">
         <div className="flex flex-col gap-1">
           <h1 className="text-page-title text-ink">{t('title')}</h1>
-          <p className="text-sm text-ink-secondary">
-            {t('subtitle', { count: dealsQuery.data.meta.total })}
-          </p>
+          <p className="text-sm text-ink-secondary">{t('subtitle', { count: totalCount })}</p>
         </div>
         <Button
           type="button"
           size="sm"
           onClick={() => {
-            setShowNew(true);
+            openNewLead();
           }}
         >
           <AddActionLabel>{t('newDeal.cta')}</AddActionLabel>
         </Button>
       </div>
 
-      <label className="flex max-w-xl flex-col gap-1.5">
+      <label className="flex max-w-xl shrink-0 flex-col gap-1.5">
         <span className="sr-only">{tBoard('searchLabel')}</span>
         <Input
           value={search}
@@ -161,15 +169,17 @@ export const CrmDealsListPage = () => {
         />
       </label>
 
-      <CrmDealFilters
-        value={filters}
-        projects={projects}
-        assignees={assignees}
-        onChange={setFilters}
-      />
+      <div className="shrink-0">
+        <CrmDealFilters
+          value={filters}
+          projects={projects}
+          assignees={assignees}
+          onChange={setFilters}
+        />
+      </div>
 
       {boardError ? (
-        <p role="alert" className="text-sm text-danger">
+        <p role="alert" className="shrink-0 text-sm text-danger">
           {boardError}
         </p>
       ) : null}
@@ -182,17 +192,17 @@ export const CrmDealsListPage = () => {
         newColumnAction={
           <CrmNewColumnCreateButton
             onClick={() => {
-              setShowNew(true);
+              openNewLead();
             }}
           />
         }
       />
 
-      {showNew ? (
+      {isNewLeadOpen ? (
         <CrmNewDealPanel
           projects={projects}
           onClose={() => {
-            setShowNew(false);
+            closeNewLead();
           }}
           onCreated={(dealId) => {
             openDeal(dealId);

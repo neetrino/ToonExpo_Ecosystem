@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type {
   AttachCrmDealApartmentBody,
   CreateCrmActivityBody,
@@ -9,7 +9,7 @@ import type {
   CreateManualDealBody,
   UpdateCrmActivityBody,
   UpdateCrmDealBody,
-} from "@toonexpo/contracts";
+} from '@toonexpo/contracts';
 
 import {
   addCrmActivity,
@@ -23,11 +23,8 @@ import {
   updateCrmActivity,
   updateCrmDeal,
   type ListCrmDealsParams,
-} from "@/features/builder/api/portal-crm-api";
-import {
-  PORTAL_CRM_DEALS_QUERY_KEY,
-  portalCrmDealQueryKey,
-} from "@/features/builder/constants";
+} from '@/features/builder/api/portal-crm-api';
+import { PORTAL_CRM_DEALS_QUERY_KEY, portalCrmDealQueryKey } from '@/features/builder/constants';
 
 /**
  * Paginated CRM deals with optional filters.
@@ -36,6 +33,7 @@ export const useCrmDealsQuery = (params: ListCrmDealsParams) =>
   useQuery({
     queryKey: [...PORTAL_CRM_DEALS_QUERY_KEY, params],
     queryFn: () => listCrmDeals(params),
+    placeholderData: keepPreviousData,
   });
 
 /**
@@ -98,8 +96,7 @@ export const useUpdateCrmDealMutation = (dealId: string) => {
 export const useAttachDealApartmentMutation = (dealId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (body: AttachCrmDealApartmentBody) =>
-      attachCrmDealApartment(dealId, body),
+    mutationFn: (body: AttachCrmDealApartmentBody) => attachCrmDealApartment(dealId, body),
     onSuccess: () => {
       void queryClient.invalidateQueries({
         queryKey: portalCrmDealQueryKey(dealId),
@@ -115,8 +112,7 @@ export const useAttachDealApartmentMutation = (dealId: string) => {
 export const useDetachDealApartmentMutation = (dealId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (apartmentId: string) =>
-      detachCrmDealApartment(dealId, apartmentId),
+    mutationFn: (apartmentId: string) => detachCrmDealApartment(dealId, apartmentId),
     onSuccess: () => {
       void queryClient.invalidateQueries({
         queryKey: portalCrmDealQueryKey(dealId),
@@ -164,13 +160,8 @@ export const useAddCrmActivityMutation = (dealId: string) => {
 export const useUpdateCrmActivityMutation = (dealId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({
-      activityId,
-      body,
-    }: {
-      activityId: string;
-      body: UpdateCrmActivityBody;
-    }) => updateCrmActivity(dealId, activityId, body),
+    mutationFn: ({ activityId, body }: { activityId: string; body: UpdateCrmActivityBody }) =>
+      updateCrmActivity(dealId, activityId, body),
     onSuccess: () => {
       void queryClient.invalidateQueries({
         queryKey: portalCrmDealQueryKey(dealId),

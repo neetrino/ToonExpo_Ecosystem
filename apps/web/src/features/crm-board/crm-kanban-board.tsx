@@ -21,6 +21,7 @@ import { CrmKanbanCard } from '@/features/crm-board/crm-kanban-card';
 import {
   CRM_KANBAN_COLUMN_ACCENT,
   CRM_KANBAN_STATUSES,
+  CRM_BOARD_FRAME_HEIGHT_CLASS,
   type CrmBoardMode,
 } from '@/features/crm-board/constants';
 import { groupDealsByStatus } from '@/features/crm-board/group-deals-by-status';
@@ -143,52 +144,54 @@ export const CrmKanbanBoard = ({
   };
 
   return (
-    <DndContext
-      sensors={sensors}
-      collisionDetection={closestCorners}
-      onDragStart={onDragStart}
-      onDragOver={onDragOver}
-      onDragEnd={onDragEnd}
-      onDragCancel={onDragCancel}
-    >
-      <div className="flex w-full gap-1.5 pb-3">
-        {CRM_KANBAN_STATUSES.map((status) => (
-          <CrmKanbanColumn
-            key={status}
-            status={status}
-            title={tStatuses(status)}
-            deals={grouped[status]}
-            isOver={overColumn === status && canDrag}
-            canDrag={canDrag}
-            showCompany={mode === 'readonly'}
-            emptyLabel={t('emptyColumn')}
-            unnamedLabel={t('unnamedBuyer')}
-            noProjectLabel={t('noProject')}
-            sourceLabel={(source) => tSources(source)}
-            onOpenDeal={onOpenDeal}
-            newColumnAction={status === 'new_request' ? newColumnAction : undefined}
-            activeId={activeId}
-          />
-        ))}
-      </div>
-
-      <DragOverlay dropAnimation={{ duration: 220, easing: 'cubic-bezier(0.2, 0, 0, 1)' }}>
-        {activeDeal ? (
-          <div style={activeWidthPx != null ? { width: activeWidthPx } : undefined}>
-            <CrmKanbanCard
-              deal={activeDeal}
-              canDrag
+    <div className={cn('flex min-h-0 w-full flex-1 flex-col', CRM_BOARD_FRAME_HEIGHT_CLASS)}>
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCorners}
+        onDragStart={onDragStart}
+        onDragOver={onDragOver}
+        onDragEnd={onDragEnd}
+        onDragCancel={onDragCancel}
+      >
+        <div className="flex h-full min-h-0 w-full flex-1 items-stretch gap-1.5">
+          {CRM_KANBAN_STATUSES.map((status) => (
+            <CrmKanbanColumn
+              key={status}
+              status={status}
+              title={tStatuses(status)}
+              deals={grouped[status]}
+              isOver={overColumn === status && canDrag}
+              canDrag={canDrag}
               showCompany={mode === 'readonly'}
-              onOpen={onOpenDeal}
-              sourceLabel={tSources(activeDeal.source)}
+              emptyLabel={t('emptyColumn')}
               unnamedLabel={t('unnamedBuyer')}
               noProjectLabel={t('noProject')}
-              isOverlay
+              sourceLabel={(source) => tSources(source)}
+              onOpenDeal={onOpenDeal}
+              newColumnAction={status === 'new_request' ? newColumnAction : undefined}
+              activeId={activeId}
             />
-          </div>
-        ) : null}
-      </DragOverlay>
-    </DndContext>
+          ))}
+        </div>
+
+        <DragOverlay dropAnimation={{ duration: 220, easing: 'cubic-bezier(0.2, 0, 0, 1)' }}>
+          {activeDeal ? (
+            <div style={activeWidthPx != null ? { width: activeWidthPx } : undefined}>
+              <CrmKanbanCard
+                deal={activeDeal}
+                canDrag
+                showCompany={mode === 'readonly'}
+                onOpen={onOpenDeal}
+                sourceLabel={tSources(activeDeal.source)}
+                unnamedLabel={t('unnamedBuyer')}
+                noProjectLabel={t('noProject')}
+                isOverlay
+              />
+            </div>
+          ) : null}
+        </DragOverlay>
+      </DndContext>
+    </div>
   );
 };
 
@@ -233,12 +236,12 @@ const CrmKanbanColumn = ({
     <section
       ref={setNodeRef}
       className={cn(
-        'flex min-w-0 flex-1 flex-col rounded-sm border border-border bg-surface/50',
+        'flex h-full min-h-0 min-w-0 flex-1 flex-col rounded-sm border border-border bg-surface/50',
         'transition-[box-shadow,background-color,border-color] duration-200',
         highlighted ? 'border-brand/40 bg-brand/5 ring-2 ring-brand/25' : undefined,
       )}
     >
-      <header className="border-b border-border px-2 pb-1.5 pt-2">
+      <header className="shrink-0 border-b border-border px-2 pb-1.5 pt-2">
         <div className={cn('mb-1.5 h-0.5 w-full rounded-pill', CRM_KANBAN_COLUMN_ACCENT[status])} />
         <div className="flex items-center justify-between gap-1">
           <h2 className="truncate text-xs font-semibold text-ink">{title}</h2>
@@ -248,7 +251,7 @@ const CrmKanbanColumn = ({
         </div>
       </header>
 
-      <div className="flex max-h-[70vh] flex-1 flex-col gap-1.5 overflow-y-auto p-1.5">
+      <div className="flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto p-1.5">
         {newColumnAction ? <div className="shrink-0">{newColumnAction}</div> : null}
 
         {deals.length === 0 ? (

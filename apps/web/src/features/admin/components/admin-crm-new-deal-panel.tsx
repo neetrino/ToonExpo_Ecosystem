@@ -137,7 +137,7 @@ export const AdminCrmNewDealPanel = ({
       role="dialog"
       aria-modal="true"
       aria-labelledby="admin-crm-new-deal-title"
-      className="fixed inset-0 z-[var(--z-modal)] flex items-end justify-center bg-ink/40 p-0 sm:items-center sm:p-6"
+      className="fixed inset-0 z-[var(--z-modal)] flex items-end justify-center bg-ink/70 p-0 sm:items-center sm:p-6"
     >
       <div className="flex max-h-[90vh] w-full max-w-lg flex-col overflow-y-auto rounded-t-lg bg-background p-5 shadow-lg sm:rounded-sm">
         <div className="mb-4 flex items-start justify-between gap-3">
