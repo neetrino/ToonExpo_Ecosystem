@@ -1,5 +1,6 @@
 import type {
   AdminApartmentListResponse,
+  AdminBuildingInventoryGlance,
   AdminBuildingListResponse,
   AdminFloorListResponse,
 } from '@toonexpo/contracts';
@@ -30,6 +31,9 @@ const toSearch = (params: ListAdminProjectsParams): string => {
   });
   if (params.companyId) {
     search.set('companyId', params.companyId);
+  }
+  if (params.buildingId) {
+    search.set('buildingId', params.buildingId);
   }
   return search.toString();
 };
@@ -83,6 +87,25 @@ export const listAdminApartments = (
     withCookie(
       {
         path: `/admin/apartments?${toSearch(params)}`,
+        method: 'GET',
+        credentials: 'include',
+        cache: 'no-store',
+      },
+      options.cookieHeader,
+    ),
+  );
+
+/**
+ * Inventory-at-a-glance for one building (admin Buildings hub sheet).
+ */
+export const getAdminBuildingInventoryGlance = (
+  buildingId: string,
+  options: AdminRequestOptions = {},
+): Promise<AdminBuildingInventoryGlance> =>
+  apiFetch<AdminBuildingInventoryGlance>(
+    withCookie(
+      {
+        path: `/admin/buildings/${encodeURIComponent(buildingId)}/inventory-glance`,
         method: 'GET',
         credentials: 'include',
         cache: 'no-store',

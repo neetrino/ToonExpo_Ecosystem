@@ -36,4 +36,10 @@ export class ListAdminProjectsQueryDto {
   @IsString()
   @MinLength(1)
   companyId?: string;
+
+  @ApiPropertyOptional({ description: 'Filter floors/apartments by building id' })
+  @IsOptional()
+  @IsString()
+  @MinLength(1)
+  buildingId?: string;
 }

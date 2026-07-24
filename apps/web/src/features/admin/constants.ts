@@ -37,6 +37,9 @@ export const ADMIN_BUILDINGS_QUERY_KEY = ['admin', 'buildings'] as const;
 export const ADMIN_FLOORS_QUERY_KEY = ['admin', 'floors'] as const;
 export const ADMIN_APARTMENTS_QUERY_KEY = ['admin', 'apartments'] as const;
 
+export const adminBuildingInventoryGlanceQueryKey = (buildingId: string) =>
+  [...ADMIN_BUILDINGS_QUERY_KEY, buildingId, 'inventory-glance'] as const;
+
 export const adminBuildingsQueryKey = (params: {
   page: number;
   pageSize: number;
@@ -47,12 +50,14 @@ export const adminFloorsQueryKey = (params: {
   page: number;
   pageSize: number;
   companyId?: string;
+  buildingId?: string;
 }) => [...ADMIN_FLOORS_QUERY_KEY, params] as const;
 
 export const adminApartmentsQueryKey = (params: {
   page: number;
   pageSize: number;
   companyId?: string;
+  buildingId?: string;
 }) => [...ADMIN_APARTMENTS_QUERY_KEY, params] as const;
 
 export const ADMIN_READINESS_CATEGORIES_QUERY_KEY = ['admin', 'readiness', 'categories'] as const;

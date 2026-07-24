@@ -3,7 +3,12 @@
  */
 
 import type { CompanyMemberRole, CompanyMemberStatus, CompanyType, UserResponse } from './auth.js';
-import type { ApartmentSalesStatus, PaginatedResponse, PublicationStatus } from './catalog.js';
+import type {
+  ApartmentAvailabilitySummary,
+  ApartmentSalesStatus,
+  PaginatedResponse,
+  PublicationStatus,
+} from './catalog.js';
 
 export type CompanyStatus = 'active' | 'inactive' | 'pending';
 
@@ -220,5 +225,29 @@ export type AdminApartmentListItem = {
 };
 
 export type AdminApartmentListResponse = PaginatedResponse<AdminApartmentListItem>;
+
+/**
+ * Floor row for the admin building inventory glance sheet.
+ */
+export type AdminBuildingInventoryFloor = {
+  id: string;
+  number: number;
+  name: string | null;
+  displayLabel: string | null;
+  availability: ApartmentAvailabilitySummary;
+};
+
+/**
+ * Building inventory glance (available / reserved / sold + per-floor bars).
+ */
+export type AdminBuildingInventoryGlance = {
+  id: string;
+  name: string;
+  projectId: string;
+  projectName: string;
+  builderCompanyId: string;
+  availability: ApartmentAvailabilitySummary;
+  floors: AdminBuildingInventoryFloor[];
+};
 
 export type CompanyMemberListResponse = PaginatedResponse<CompanyMemberResponse>;

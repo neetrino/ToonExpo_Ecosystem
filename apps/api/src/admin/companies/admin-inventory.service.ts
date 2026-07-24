@@ -1,11 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import type {
   AdminApartmentListResponse,
+  AdminBuildingInventoryGlance,
   AdminBuildingListResponse,
   AdminFloorListResponse,
 } from '@toonexpo/contracts';
 import type { Prisma } from '@toonexpo/db';
 
+import { summarizeSalesStatuses } from '../../catalog/mappers/catalog.mapper.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 
 /**
@@ -74,14 +76,19 @@ export class AdminInventoryService {
     page: number,
     pageSize: number,
     companyId?: string,
+    buildingId?: string,
   ): Promise<AdminFloorListResponse> {
     if (companyId) {
       await this.assertCompanyExists(companyId);
     }
+    if (buildingId) {
+      await this.assertBuildingInScope(buildingId, companyId);
+    }
 
-    const where: Prisma.FloorWhereInput = companyId
-      ? { building: { project: { builderCompanyId: companyId } } }
-      : {};
+    const where: Prisma.FloorWhereInput = {
+      ...(companyId ? { building: { project: { builderCompanyId: companyId } } } : {}),
+      ...(buildingId ? { buildingId } : {}),
+    };
 
     const [total, floors] = await Promise.all([
       this.prisma.db.floor.count({ where }),
@@ -140,14 +147,19 @@ export class AdminInventoryService {
     page: number,
     pageSize: number,
     companyId?: string,
+    buildingId?: string,
   ): Promise<AdminApartmentListResponse> {
     if (companyId) {
       await this.assertCompanyExists(companyId);
     }
+    if (buildingId) {
+      await this.assertBuildingInScope(buildingId, companyId);
+    }
 
-    const where: Prisma.ApartmentWhereInput = companyId
-      ? { project: { builderCompanyId: companyId } }
-      : {};
+    const where: Prisma.ApartmentWhereInput = {
+      ...(companyId ? { project: { builderCompanyId: companyId } } : {}),
+      ...(buildingId ? { buildingId } : {}),
+    };
 
     const [total, apartments] = await Promise.all([
       this.prisma.db.apartment.count({ where }),
@@ -198,6 +210,61 @@ export class AdminInventoryService {
     };
   }
 
+  /**
+   * Inventory-at-a-glance for one building (totals + per-floor sales bars).
+   */
+  async getBuildingInventoryGlance(buildingId: string): Promise<AdminBuildingInventoryGlance> {
+    const building = await this.prisma.db.building.findUnique({
+      where: { id: buildingId },
+      select: {
+        id: true,
+        name: true,
+        projectId: true,
+        project: {
+          select: {
+            name: true,
+            builderCompanyId: true,
+          },
+        },
+        floors: {
+          orderBy: [{ number: 'desc' }, { displayOrder: 'asc' }],
+          select: {
+            id: true,
+            number: true,
+            name: true,
+            displayLabel: true,
+            apartments: { select: { salesStatus: true } },
+          },
+        },
+        apartments: { select: { salesStatus: true } },
+      },
+    });
+
+    if (!building) {
+      throw new NotFoundException('Building not found');
+    }
+
+    return {
+      id: building.id,
+      name: building.name,
+      projectId: building.projectId,
+      projectName: building.project.name,
+      builderCompanyId: building.project.builderCompanyId,
+      availability: summarizeSalesStatuses(
+        building.apartments.map((apartment) => apartment.salesStatus),
+      ),
+      floors: building.floors.map((floor) => ({
+        id: floor.id,
+        number: floor.number,
+        name: floor.name,
+        displayLabel: floor.displayLabel,
+        availability: summarizeSalesStatuses(
+          floor.apartments.map((apartment) => apartment.salesStatus),
+        ),
+      })),
+    };
+  }
+
   private async assertCompanyExists(companyId: string): Promise<void> {
     const company = await this.prisma.db.company.findUnique({
       where: { id: companyId },
@@ -205,6 +272,22 @@ export class AdminInventoryService {
     });
     if (!company) {
       throw new NotFoundException('Company not found');
+    }
+  }
+
+  private async assertBuildingInScope(buildingId: string, companyId?: string): Promise<void> {
+    const building = await this.prisma.db.building.findUnique({
+      where: { id: buildingId },
+      select: {
+        id: true,
+        project: { select: { builderCompanyId: true } },
+      },
+    });
+    if (!building) {
+      throw new NotFoundException('Building not found');
+    }
+    if (companyId && building.project.builderCompanyId !== companyId) {
+      throw new NotFoundException('Building not found');
     }
   }
 

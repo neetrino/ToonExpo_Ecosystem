@@ -16,7 +16,7 @@ export default async function AdminProjectDetailPage({ params }: PageProps) {
 
   return (
     <AdminProjectScopeShell projectId={projectId}>
-      <ProjectDetailPage projectId={projectId} />
+      <ProjectDetailPage projectId={projectId} showInventory={false} />
     </AdminProjectScopeShell>
   );
 }

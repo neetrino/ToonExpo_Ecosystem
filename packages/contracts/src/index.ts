@@ -81,6 +81,8 @@ export type {
   AdminFloorListResponse,
   AdminApartmentListItem,
   AdminApartmentListResponse,
+  AdminBuildingInventoryFloor,
+  AdminBuildingInventoryGlance,
   CompanyListResponse,
   CompanyMemberListResponse,
   CompanyMemberResponse,

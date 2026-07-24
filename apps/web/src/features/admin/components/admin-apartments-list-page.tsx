@@ -2,7 +2,9 @@
 
 import type { AdminApartmentListItem, ApartmentSalesStatus } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
+import { useState } from 'react';
 
+import { AdminCreateApartmentSheet } from '@/features/admin/components/admin-create-apartment-sheet';
 import {
   AdminInventoryListShell,
   useAdminInventoryListParams,
@@ -10,6 +12,8 @@ import {
 import { useAdminApartmentsQuery } from '@/features/admin/hooks/use-admin-inventory';
 import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
 import { Link } from '@/i18n/navigation';
+import { AddActionLabel } from '@/shared/ui/add-action-label';
+import { Button } from '@/shared/ui/button';
 import { LIST_STATUS_BADGE_COMPACT_CLASS } from '@/shared/ui/list-status-badge';
 
 /**
@@ -17,25 +21,50 @@ import { LIST_STATUS_BADGE_COMPACT_CLASS } from '@/shared/ui/list-status-badge';
  */
 export const AdminApartmentsListPage = () => {
   const t = useTranslations('Admin.apartments');
-  const { page, pageSize, companyId } = useAdminInventoryListParams();
-  const query = useAdminApartmentsQuery(page, pageSize, companyId);
+  const { page, pageSize, companyId, buildingId } = useAdminInventoryListParams();
+  const query = useAdminApartmentsQuery(page, pageSize, companyId, buildingId);
   const response = query.data;
+  const [showCreate, setShowCreate] = useState(false);
 
   return (
-    <AdminInventoryListShell
-      title={t('title')}
-      subtitle={t('subtitle', { count: response?.meta.total ?? 0 })}
-      empty={t('empty')}
-      loading={t('loading')}
-      error={t('error')}
-      isLoading={query.isLoading}
-      isError={query.isError || !response}
-      total={response?.meta.total ?? 0}
-      page={response?.meta.page ?? page}
-      totalPages={response?.meta.totalPages ?? 0}
-    >
-      {response ? <ApartmentsTable apartments={response.data} /> : null}
-    </AdminInventoryListShell>
+    <>
+      <AdminInventoryListShell
+        title={t('title')}
+        subtitle={t('subtitle', { count: response?.meta.total ?? 0 })}
+        empty={t('empty')}
+        loading={t('loading')}
+        error={t('error')}
+        isLoading={query.isLoading}
+        isError={query.isError || !response}
+        total={response?.meta.total ?? 0}
+        page={response?.meta.page ?? page}
+        totalPages={response?.meta.totalPages ?? 0}
+        showBuildingFilter
+        headerActions={
+          <Button
+            type="button"
+            size="sm"
+            variant="secondary"
+            onClick={() => {
+              setShowCreate(true);
+            }}
+          >
+            <AddActionLabel>{t('create.cta')}</AddActionLabel>
+          </Button>
+        }
+      >
+        {response ? <ApartmentsTable apartments={response.data} /> : null}
+      </AdminInventoryListShell>
+
+      <AdminCreateApartmentSheet
+        open={showCreate}
+        onClose={() => {
+          setShowCreate(false);
+        }}
+        defaultCompanyId={companyId}
+        defaultBuildingId={buildingId}
+      />
+    </>
   );
 };
 

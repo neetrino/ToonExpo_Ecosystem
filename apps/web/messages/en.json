@@ -1042,7 +1042,9 @@
       "error": "Could not load projects. Try again.",
       "filters": {
         "company": "Company",
-        "allCompanies": "All companies"
+        "allCompanies": "All companies",
+        "building": "Building",
+        "allBuildings": "All buildings"
       },
       "columns": {
         "name": "Name",
@@ -1072,6 +1074,39 @@
       "columns": {
         "floors": "Floors",
         "apartments": "Apartments"
+      },
+      "create": {
+        "cta": "+ Add Building",
+        "title": "Add Building",
+        "company": "Company",
+        "selectCompany": "Select company",
+        "project": "Project",
+        "selectProject": "Select project",
+        "pickProject": "Select a company and project.",
+        "submit": "Create building"
+      },
+      "inventory": {
+        "sheetTitle": "Buildings & inventory",
+        "glanceTitle": "Inventory at a glance",
+        "available": "Available",
+        "reserved": "Reserved",
+        "sold": "Sold",
+        "noFloors": "No floors in this building yet.",
+        "floorCode": "F{number}",
+        "availableOfTotal": "{available}/{total}",
+        "loading": "Loading inventory…",
+        "error": "Could not load building inventory. Try again.",
+        "floorSheetSubtitle": "Apartments on this floor",
+        "floorFallback": "Floor",
+        "loadingApartments": "Loading apartments…",
+        "apartmentsError": "Could not load apartments. Try again.",
+        "noApartments": "No apartments on this floor yet.",
+        "apartmentUnit": "Apt {number}",
+        "sales": {
+          "available": "Available",
+          "reserved": "Reserved",
+          "sold": "Sold"
+        }
       }
     },
     "floors": {
@@ -1083,6 +1118,16 @@
       "floorNumber": "Floor {number}",
       "columns": {
         "apartments": "Apartments"
+      },
+      "create": {
+        "cta": "+ Add Floor",
+        "title": "Add Floor",
+        "company": "Company",
+        "selectCompany": "Select company",
+        "building": "Building",
+        "selectBuilding": "Select building",
+        "pickBuilding": "Select a company and building.",
+        "submit": "Create floor"
       }
     },
     "apartments": {
@@ -1097,6 +1142,18 @@
         "available": "Available",
         "reserved": "Reserved",
         "sold": "Sold"
+      },
+      "create": {
+        "cta": "+ Add Apartments",
+        "title": "Add Apartments",
+        "company": "Company",
+        "selectCompany": "Select company",
+        "building": "Building",
+        "selectBuilding": "Select building",
+        "floor": "Floor",
+        "selectFloor": "Select floor",
+        "pickFloor": "Select a floor.",
+        "submit": "Create apartments"
       }
     },
     "partners": {
