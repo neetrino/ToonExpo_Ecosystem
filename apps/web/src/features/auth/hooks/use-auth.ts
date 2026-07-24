@@ -24,6 +24,7 @@ import {
   hasClientSessionHint,
   subscribeClientSessionHint,
 } from '@/features/auth/utils/session-hint';
+import { useRouter } from '@/i18n/navigation';
 import { AUTH_ME_QUERY_KEY } from '@/shared/config/auth.constants';
 
 /**
@@ -122,16 +123,18 @@ export const useUpdateProfileMutation = () => {
 };
 
 /**
- * Logout mutation — invalidates the `me` query after cookie clear.
+ * Logout mutation — clears session, invalidates `me`, then navigates home.
  */
 export const useLogoutMutation = () => {
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   return useMutation({
     mutationFn: () => logoutUser(),
     onSuccess: () => {
       queryClient.setQueryData(AUTH_ME_QUERY_KEY, null);
       void queryClient.invalidateQueries({ queryKey: AUTH_ME_QUERY_KEY });
+      router.push('/');
     },
   });
 };

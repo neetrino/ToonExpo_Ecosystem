@@ -6,7 +6,7 @@ import type { LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { useLogoutMutation } from '@/features/auth/hooks/use-auth';
-import { Link, usePathname, useRouter } from '@/i18n/navigation';
+import { Link, usePathname } from '@/i18n/navigation';
 import { BrandLogo } from '@/shared/ui/brand-logo';
 import { cn } from '@/shared/ui/cn';
 
@@ -64,7 +64,6 @@ export const AccountNav = ({ accountType }: AccountNavProps) => {
   const t = useTranslations('Profile.nav');
   const tAuth = useTranslations('Auth');
   const pathname = usePathname();
-  const router = useRouter();
   const logoutMutation = useLogoutMutation();
   const showBuyerTabs = accountType === 'buyer';
 
@@ -108,9 +107,7 @@ export const AccountNav = ({ accountType }: AccountNavProps) => {
           )}
           disabled={logoutMutation.isPending}
           onClick={() => {
-            void logoutMutation.mutateAsync().then(() => {
-              router.push('/auth/login');
-            });
+            void logoutMutation.mutateAsync();
           }}
         >
           <LogOut className={NAV_ICON_CLASS} aria-hidden />

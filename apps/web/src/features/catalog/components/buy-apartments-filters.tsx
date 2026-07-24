@@ -18,7 +18,7 @@ const PRICE_INPUT_MIN_SIZE = 3;
 /** Extra slot so the caret never sits flush against the edge. */
 const PRICE_INPUT_CARET_ROOM = 1;
 
-/** Same vertical chrome as header “List property” (`h-9` + pill). */
+/** Shared filter control chrome (`h-9` + pill). */
 const filterControlClassName = cn(
   'h-9 rounded-full border border-header-border bg-surface-elevated px-4',
   'text-sm font-medium leading-5',
@@ -26,7 +26,7 @@ const filterControlClassName = cn(
 
 /**
  * Compact filter bar — Figma `103:1437` buy chrome.
- * Controls match header List property height / pill shape.
+ * Controls use `h-9` pill shape for a compact toolbar.
  */
 export const BuyApartmentsFilters = ({ filters, cities }: BuyApartmentsFiltersProps) => {
   const t = useTranslations('BuyPage');

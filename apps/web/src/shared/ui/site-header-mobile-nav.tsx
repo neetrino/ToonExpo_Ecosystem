@@ -18,7 +18,6 @@ type SiteHeaderMobileNavProps = {
   pathname: string;
   user: UserResponse | undefined;
   settingsHref: AccountSettingsHref;
-  listPropertyHref: '/builder' | '/auth/register';
   showBuilder: boolean;
   logoutPending: boolean;
   onClose: () => void;
@@ -34,7 +33,6 @@ export const SiteHeaderMobileNav = ({
   pathname,
   user,
   settingsHref,
-  listPropertyHref,
   showBuilder,
   logoutPending,
   onClose,
@@ -72,22 +70,13 @@ export const SiteHeaderMobileNav = ({
           );
         })}
         {!user ? (
-          <>
-            <Link
-              href="/auth/login"
-              className="rounded-sm px-3 py-3 font-medium text-ink hover:bg-surface"
-              onClick={onClose}
-            >
-              {t('login')}
-            </Link>
-            <Link
-              href="/auth/register"
-              className="rounded-sm px-3 py-3 font-medium text-brand-deep hover:bg-brand-soft"
-              onClick={onClose}
-            >
-              {t('listProperty')}
-            </Link>
-          </>
+          <Link
+            href="/auth/login"
+            className="rounded-sm px-3 py-3 font-medium text-ink hover:bg-surface"
+            onClick={onClose}
+          >
+            {t('login')}
+          </Link>
         ) : (
           <>
             {user.accountType === 'platform_admin' ? (
@@ -115,13 +104,6 @@ export const SiteHeaderMobileNav = ({
                 {t('profile')}
               </Link>
             )}
-            <Link
-              href={listPropertyHref}
-              className="rounded-sm px-3 py-3 font-medium text-brand-deep hover:bg-brand-soft"
-              onClick={onClose}
-            >
-              {t('listProperty')}
-            </Link>
             <button
               type="button"
               className="rounded-sm px-3 py-3 text-left font-medium text-danger hover:bg-danger-soft disabled:opacity-50"
