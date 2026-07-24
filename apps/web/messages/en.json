@@ -452,6 +452,7 @@
       "aboutTitle": "About this home",
       "aboutEmpty": "Details for this home will appear here soon.",
       "detailsTitle": "Property details",
+      "detailsSubtitle": "All key information about this property",
       "criteria": {
         "neighborhood": "Neighborhood",
         "building": "Building",

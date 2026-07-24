@@ -452,6 +452,7 @@
       "aboutTitle": "Об этом доме",
       "aboutEmpty": "Подробности об этом доме появятся здесь позже.",
       "detailsTitle": "Детали объекта",
+      "detailsSubtitle": "Вся ключевая информация об этом объекте",
       "criteria": {
         "neighborhood": "Квартал",
         "building": "Корпус",

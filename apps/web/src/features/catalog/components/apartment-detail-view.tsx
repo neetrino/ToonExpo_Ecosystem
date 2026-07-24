@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import type { ApartmentDetail } from '@toonexpo/contracts';
 import { getTranslations } from 'next-intl/server';
 
+import { ApartmentDetailCriteriaPanel } from '@/features/catalog/components/apartment-detail-criteria-panel';
 import { ApartmentDetailPrice } from '@/features/catalog/components/apartment-price-label';
 import { ApartmentInquireCard } from '@/features/catalog/components/apartment-inquire-card';
 import { ApartmentMortgageEstimate } from '@/features/catalog/components/apartment-mortgage-estimate';
@@ -161,27 +162,11 @@ export const ApartmentDetailView = async ({
           </div>
 
           <section className="py-10">
-            <h2 className="font-brand text-2xl font-bold tracking-tight text-ink-navy">
-              {t('apartment.detailsTitle')}
-            </h2>
-            <dl className="mt-8 grid grid-cols-2 gap-x-8 gap-y-4 md:grid-cols-3">
-              {detailRows.map((row) => (
-                <div
-                  key={row.label}
-                  className={cn(
-                    'border-b border-header-border pb-2',
-                    row.wide && 'col-span-2 md:col-span-3',
-                  )}
-                >
-                  <dt className="text-[10px] font-bold tracking-widest text-header-muted uppercase">
-                    {row.label}
-                  </dt>
-                  <dd className="mt-[7px] whitespace-pre-line text-sm font-medium text-ink-navy">
-                    {row.value}
-                  </dd>
-                </div>
-              ))}
-            </dl>
+            <ApartmentDetailCriteriaPanel
+              title={t('apartment.detailsTitle')}
+              subtitle={t('apartment.detailsSubtitle')}
+              rows={detailRows}
+            />
           </section>
 
           <ApartmentNeighborhood

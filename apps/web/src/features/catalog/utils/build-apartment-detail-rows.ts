@@ -1,29 +1,34 @@
-import type { ApartmentDetail } from '@toonexpo/contracts';
+import type { ApartmentDetail, ApartmentSalesStatus } from '@toonexpo/contracts';
 
 import {
   parseApartmentFeatureExtras,
   type ApartmentFeatureExtras,
 } from '@/features/catalog/utils/apartment-features';
 
+export type ApartmentDetailCriterionId =
+  | 'neighborhood'
+  | 'building'
+  | 'floor'
+  | 'unitNumber'
+  | 'status'
+  | 'windows'
+  | 'balconies'
+  | 'ceilingHeight'
+  | 'finishingStatus'
+  | 'generalDescription'
+  | 'handoverDescription';
+
 export type ApartmentDetailRow = {
+  id: ApartmentDetailCriterionId;
   label: string;
   value: string;
+  /** Full-width list row under the card grid (descriptions). */
   wide?: boolean;
+  /** When set, value renders as a sales-status pill. */
+  salesStatus?: ApartmentSalesStatus;
 };
 
-type DetailLabels = {
-  neighborhood: string;
-  building: string;
-  floor: string;
-  unitNumber: string;
-  status: string;
-  windows: string;
-  handoverDescription: string;
-  balconies: string;
-  generalDescription: string;
-  ceilingHeight: string;
-  finishingStatus: string;
-};
+type DetailLabels = Record<ApartmentDetailCriterionId, string>;
 
 type BuildApartmentDetailRowsOptions = {
   apartment: ApartmentDetail;
@@ -36,53 +41,58 @@ type BuildApartmentDetailRowsOptions = {
 const EMPTY_VALUE = '—';
 
 /**
- * Builds the public apartment criteria rows for the property details grid.
- * Price, beds, baths, area, and price/m² live in the hero stats strip — omit them here.
+ * Builds property-details rows: compact cards first (3 per row), descriptions last.
  */
 export const buildApartmentDetailRows = (
   options: BuildApartmentDetailRowsOptions,
 ): ApartmentDetailRow[] => {
   const { apartment, district, labels } = options;
   const extras = parseApartmentFeatureExtras(apartment.features);
-  const floorLabel =
-    apartment.floor.displayLabel?.trim() ||
-    (apartment.floor.number != null ? String(apartment.floor.number) : EMPTY_VALUE);
+  const floorLabel = apartment.floor.number != null ? String(apartment.floor.number) : EMPTY_VALUE;
   const neighborhoodLabel = district?.trim() || apartment.project.name.trim() || EMPTY_VALUE;
 
   return [
-    { label: labels.neighborhood, value: neighborhoodLabel },
-    { label: labels.building, value: apartment.building.name || EMPTY_VALUE },
-    { label: labels.floor, value: floorLabel },
-    { label: labels.unitNumber, value: apartment.number || EMPTY_VALUE },
+    { id: 'neighborhood', label: labels.neighborhood, value: neighborhoodLabel },
+    { id: 'building', label: labels.building, value: apartment.building.name || EMPTY_VALUE },
+    { id: 'floor', label: labels.floor, value: floorLabel },
+    { id: 'unitNumber', label: labels.unitNumber, value: apartment.number || EMPTY_VALUE },
     {
+      id: 'status',
       label: labels.status,
       value: options.formatStatus(apartment.salesStatus),
+      salesStatus: apartment.salesStatus,
     },
     {
+      id: 'windows',
       label: labels.windows,
       value: formatOptionalCount(extras.windowsCount),
     },
     {
-      label: labels.handoverDescription,
-      value: extras.handoverDescription ?? EMPTY_VALUE,
-      wide: true,
-    },
-    {
+      id: 'balconies',
       label: labels.balconies,
       value: formatOptionalCount(extras.balconiesCount),
     },
     {
+      id: 'ceilingHeight',
+      label: labels.ceilingHeight,
+      value: formatCeiling(extras, options.formatCeilingHeight),
+    },
+    {
+      id: 'finishingStatus',
+      label: labels.finishingStatus,
+      value: extras.finishingStatus ?? EMPTY_VALUE,
+    },
+    {
+      id: 'generalDescription',
       label: labels.generalDescription,
       value: apartment.description?.trim() || EMPTY_VALUE,
       wide: true,
     },
     {
-      label: labels.ceilingHeight,
-      value: formatCeiling(extras, options.formatCeilingHeight),
-    },
-    {
-      label: labels.finishingStatus,
-      value: extras.finishingStatus ?? EMPTY_VALUE,
+      id: 'handoverDescription',
+      label: labels.handoverDescription,
+      value: extras.handoverDescription ?? EMPTY_VALUE,
+      wide: true,
     },
   ];
 };
