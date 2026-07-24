@@ -80,15 +80,29 @@ export const ProjectCatalogSection = async ({ project }: ProjectCatalogSectionPr
   return (
     <ProjectCatalogDetailsPanel
       title={t('catalog.title')}
-      subtitle={t('catalog.subtitle')}
       aboutTitle={t('catalog.about')}
       aboutText={project.fullDescription}
       factsTitle={t('catalog.facts')}
       amenitiesTitle={t('catalog.amenities')}
       nearbyTitle={t('catalog.nearby')}
+      linksTitle={t('catalog.links')}
+      linkLabels={{
+        exteriorRenders: t('catalog.linkExteriorRenders'),
+        interiorRenders: t('catalog.linkInteriorRenders'),
+        typicalInteractiveTour: t('catalog.linkTypicalInteractiveTour'),
+        video: t('catalog.linkVideo'),
+        exteriorInteractiveTour: t('catalog.linkExteriorInteractiveTour'),
+        floorPlans2d: t('catalog.linkFloorPlans2d'),
+        floorPlans3d: t('catalog.linkFloorPlans3d'),
+        logoBranding: t('catalog.linkLogoBranding'),
+        website: t('catalog.linkWebsite'),
+        facebook: t('catalog.linkFacebook'),
+        instagram: t('catalog.linkInstagram'),
+      }}
       rows={rows}
       amenityLabels={catalog.amenityLabels}
       nearbyPlaces={catalog.nearbyPlaces}
+      links={catalog.links}
     />
   );
 };

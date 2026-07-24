@@ -22,7 +22,6 @@ import { cn } from '@/shared/ui/cn';
 
 type ApartmentDetailCriteriaPanelProps = {
   title: string;
-  subtitle: string;
   rows: ApartmentDetailRow[];
 };
 
@@ -45,7 +44,6 @@ const CRITERION_ICON: Record<ApartmentDetailCriterionId, LucideIcon> = {
  */
 export const ApartmentDetailCriteriaPanel = ({
   title,
-  subtitle,
   rows,
 }: ApartmentDetailCriteriaPanelProps) => {
   const cardRows = rows.filter((row) => !row.wide);
@@ -54,7 +52,6 @@ export const ApartmentDetailCriteriaPanel = ({
   return (
     <section>
       <h2 className="font-brand text-2xl font-bold tracking-tight text-ink-navy">{title}</h2>
-      <p className="mt-1 text-sm text-header-muted">{subtitle}</p>
 
       <dl className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {cardRows.map((row) => (
@@ -109,8 +106,8 @@ const CriterionListRow = ({ row }: { row: ApartmentDetailRow }) => {
   const Icon = CRITERION_ICON[row.id];
 
   return (
-    <div className="flex items-start gap-3 border-b border-header-border py-4 last:border-b-0">
-      <Icon className="mt-0.5 size-4 shrink-0 text-brand-deep" strokeWidth={2} aria-hidden />
+    <div className="flex items-center gap-3 border-b border-header-border py-4 last:border-b-0">
+      <Icon className="size-4 shrink-0 text-brand-deep" strokeWidth={2} aria-hidden />
       <dt className="shrink-0 text-[10px] font-bold tracking-widest text-header-muted uppercase">
         {row.label}
       </dt>

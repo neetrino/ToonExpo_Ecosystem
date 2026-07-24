@@ -3,6 +3,17 @@
  * Supports legacy string[] / plain-string values and localized `{ hy, ru, en }` payloads.
  */
 
+import {
+  parseProjectCatalogLinks,
+  type ProjectCatalogLink,
+} from '@/features/catalog/utils/project-catalog-links';
+
+export type {
+  ProjectCatalogLink,
+  ProjectCatalogLinkId,
+} from '@/features/catalog/utils/project-catalog-links';
+export { PROJECT_CATALOG_LINK_IDS } from '@/features/catalog/utils/project-catalog-links';
+
 export type CatalogContentLocale = 'hy' | 'ru' | 'en';
 
 export type ProjectCatalogDetails = {
@@ -55,6 +66,7 @@ export type ParsedProjectCatalog = {
   amenityLabels: string[];
   nearbyPlaces: string[];
   details: ProjectCatalogDetails;
+  links: ProjectCatalogLink[];
 };
 
 const EMPTY_DETAILS: ProjectCatalogDetails = {
@@ -187,16 +199,17 @@ const parseDetailsRecord = (
 export const parseProjectAmenities = (
   amenities: unknown,
   locale: CatalogContentLocale,
-): { labels: string[]; details: ProjectCatalogDetails } => {
+): { labels: string[]; details: ProjectCatalogDetails; links: ProjectCatalogLink[] } => {
   if (Array.isArray(amenities)) {
     return {
       labels: asLocalizedStringList(amenities, locale),
       details: { ...EMPTY_DETAILS },
+      links: [],
     };
   }
 
   if (amenities == null || typeof amenities !== 'object') {
-    return { labels: [], details: { ...EMPTY_DETAILS } };
+    return { labels: [], details: { ...EMPTY_DETAILS }, links: [] };
   }
 
   const record = amenities as Record<string, unknown>;
@@ -209,6 +222,7 @@ export const parseProjectAmenities = (
   return {
     labels,
     details: parseDetailsRecord(detailsSource, locale),
+    links: parseProjectCatalogLinks(record.links),
   };
 };
 
@@ -252,6 +266,7 @@ export const parseProjectCatalog = (
     amenityLabels: parsedAmenities.labels,
     nearbyPlaces: parseProjectNearbyPlaces(nearbyPlaces, contentLocale),
     details: parsedAmenities.details,
+    links: parsedAmenities.links,
   };
 };
 

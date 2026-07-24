@@ -125,6 +125,21 @@ export const CATALOG_DEMO_NEARBY_PLACES: CatalogLocaleList = {
   en: ['Aragats', 'Myler ski slopes'],
 };
 
+/** Demo marketing / media URLs (spreadsheet «հղում» columns). */
+export const CATALOG_DEMO_LINKS: Record<string, string> = {
+  exteriorRenders: 'https://example.com/exterior-renders',
+  interiorRenders: 'https://example.com/interior-renders',
+  typicalInteractiveTour: 'https://example.com/typical-tour',
+  video: 'https://example.com/video',
+  exteriorInteractiveTour: 'https://example.com/exterior-tour',
+  floorPlans2d: 'https://example.com/floor-plans-2d',
+  floorPlans3d: 'https://example.com/floor-plans-3d',
+  logoBranding: 'https://example.com/logo-branding',
+  website: 'https://example.com',
+  facebook: 'https://facebook.com',
+  instagram: 'https://instagram.com',
+};
+
 /**
  * Builds amenities JSON for a seed project (localized demo spreadsheet fields).
  * Keeps hy/ru/en value maps intact — do not overwrite with English-only project fields.
@@ -132,9 +147,11 @@ export const CATALOG_DEMO_NEARBY_PLACES: CatalogLocaleList = {
 export const buildCatalogDemoAmenities = (): {
   labels: CatalogLocaleList;
   details: Record<string, CatalogLocaleText | string>;
+  links: Record<string, string>;
 } => ({
   labels: CATALOG_DEMO_AMENITY_LABELS,
   details: { ...CATALOG_DEMO_DETAILS },
+  links: { ...CATALOG_DEMO_LINKS },
 });
 
 export const CATALOG_DEMO_NEARBY = {

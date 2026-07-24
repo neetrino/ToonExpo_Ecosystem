@@ -162,11 +162,7 @@ export const ApartmentDetailView = async ({
           </div>
 
           <section className="py-10">
-            <ApartmentDetailCriteriaPanel
-              title={t('apartment.detailsTitle')}
-              subtitle={t('apartment.detailsSubtitle')}
-              rows={detailRows}
-            />
+            <ApartmentDetailCriteriaPanel title={t('apartment.detailsTitle')} rows={detailRows} />
           </section>
 
           <ApartmentNeighborhood

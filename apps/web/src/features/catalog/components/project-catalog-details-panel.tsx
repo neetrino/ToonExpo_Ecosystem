@@ -3,16 +3,21 @@ import {
   ArrowUpFromLine,
   Banknote,
   Building2,
+  CalendarRange,
   Car,
   ClipboardList,
+  Droplets,
   Factory,
+  FileBadge,
   Flame,
   Fuel,
   Hash,
   Home,
+  Landmark,
   Layers,
   MapPin,
   MoveVertical,
+  Navigation,
   Paintbrush,
   ParkingCircle,
   Percent,
@@ -21,30 +26,30 @@ import {
   ShieldCheck,
   Store,
   Warehouse,
-  Droplets,
-  CalendarRange,
-  FileBadge,
-  Landmark,
-  Navigation,
 } from 'lucide-react';
 
+import { ProjectCatalogCollapsible } from '@/features/catalog/components/project-catalog-collapsible';
+import { ProjectCatalogLinksSection } from '@/features/catalog/components/project-catalog-links-section';
 import type {
   ProjectCatalogCriterionId,
   ProjectCatalogRow,
 } from '@/features/catalog/utils/build-project-catalog-rows';
+import type { ProjectCatalogLink } from '@/features/catalog/utils/project-catalog-details';
 import { cn } from '@/shared/ui/cn';
 
 type ProjectCatalogDetailsPanelProps = {
   title: string;
-  subtitle: string;
   aboutTitle: string;
   aboutText: string | null;
   factsTitle: string;
   amenitiesTitle: string;
   nearbyTitle: string;
+  linksTitle: string;
+  linkLabels: Record<ProjectCatalogLink['id'], string>;
   rows: ProjectCatalogRow[];
   amenityLabels: string[];
   nearbyPlaces: string[];
+  links: ProjectCatalogLink[];
 };
 
 const CRITERION_ICON: Record<ProjectCatalogCriterionId, LucideIcon> = {
@@ -91,19 +96,22 @@ const CRITERION_ICON: Record<ProjectCatalogCriterionId, LucideIcon> = {
 };
 
 /**
- * Project catalog block: about, fact cards, amenities, nearby places.
+ * Project catalog block: about, fact cards, amenities, nearby places, links.
+ * Dense blocks collapse behind a chevron so the page stays scannable.
  */
 export const ProjectCatalogDetailsPanel = ({
   title,
-  subtitle,
   aboutTitle,
   aboutText,
   factsTitle,
   amenitiesTitle,
   nearbyTitle,
+  linksTitle,
+  linkLabels,
   rows,
   amenityLabels,
   nearbyPlaces,
+  links,
 }: ProjectCatalogDetailsPanelProps) => {
   const cardRows = rows.filter((row) => !row.wide);
   const listRows = rows.filter((row) => row.wide);
@@ -111,36 +119,30 @@ export const ProjectCatalogDetailsPanel = ({
   const hasFacts = rows.length > 0;
   const hasAmenities = amenityLabels.length > 0;
   const hasNearby = nearbyPlaces.length > 0;
+  const hasLinks = links.length > 0;
 
-  if (!hasAbout && !hasFacts && !hasAmenities && !hasNearby) {
+  if (!hasAbout && !hasFacts && !hasAmenities && !hasNearby && !hasLinks) {
     return null;
   }
 
   return (
     <section className="page-container py-12 sm:py-16">
-      <h2 className="font-brand text-2xl font-bold tracking-tight text-ink-navy sm:text-3xl">
+      <h2 className="font-brand text-3xl font-bold tracking-tight text-ink-navy sm:text-4xl">
         {title}
       </h2>
-      <p className="mt-1 text-sm text-header-muted">{subtitle}</p>
 
-      <div className="mt-8 space-y-10">
+      <div className="mt-8 space-y-6">
         {hasAbout ? (
-          <div>
-            <h3 className="text-[11px] font-bold tracking-[0.2em] text-brand-secondary uppercase">
-              {aboutTitle}
-            </h3>
-            <p className="mt-3 max-w-3xl whitespace-pre-line text-base leading-7 text-ink-navy">
+          <ProjectCatalogCollapsible title={aboutTitle} defaultOpen>
+            <p className="max-w-3xl whitespace-pre-line text-base leading-7 text-ink-navy">
               {aboutText}
             </p>
-          </div>
+          </ProjectCatalogCollapsible>
         ) : null}
 
         {hasFacts ? (
-          <div>
-            <h3 className="text-[11px] font-bold tracking-[0.2em] text-brand-secondary uppercase">
-              {factsTitle}
-            </h3>
-            <dl className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <ProjectCatalogCollapsible title={factsTitle}>
+            <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
               {cardRows.map((row) => (
                 <FactCard key={row.id} row={row} />
               ))}
@@ -152,12 +154,26 @@ export const ProjectCatalogDetailsPanel = ({
                 ))}
               </dl>
             ) : null}
-          </div>
+          </ProjectCatalogCollapsible>
         ) : null}
 
-        {hasAmenities ? <TagSection title={amenitiesTitle} items={amenityLabels} /> : null}
+        {hasAmenities ? (
+          <ProjectCatalogCollapsible title={amenitiesTitle}>
+            <TagList items={amenityLabels} />
+          </ProjectCatalogCollapsible>
+        ) : null}
 
-        {hasNearby ? <TagSection title={nearbyTitle} items={nearbyPlaces} /> : null}
+        {hasNearby ? (
+          <ProjectCatalogCollapsible title={nearbyTitle}>
+            <TagList items={nearbyPlaces} />
+          </ProjectCatalogCollapsible>
+        ) : null}
+
+        {hasLinks ? (
+          <ProjectCatalogCollapsible title={linksTitle}>
+            <ProjectCatalogLinksSection links={links} labels={linkLabels} />
+          </ProjectCatalogCollapsible>
+        ) : null}
       </div>
     </section>
   );
@@ -209,20 +225,15 @@ const FactListRow = ({ row }: { row: ProjectCatalogRow }) => {
   );
 };
 
-const TagSection = ({ title, items }: { title: string; items: string[] }) => (
-  <div>
-    <h3 className="text-[11px] font-bold tracking-[0.2em] text-brand-secondary uppercase">
-      {title}
-    </h3>
-    <ul className="mt-4 flex flex-wrap gap-2">
-      {items.map((item) => (
-        <li
-          key={item}
-          className="rounded-full border border-header-border bg-canvas px-3.5 py-1.5 text-sm font-medium text-ink-navy"
-        >
-          {item}
-        </li>
-      ))}
-    </ul>
-  </div>
+const TagList = ({ items }: { items: string[] }) => (
+  <ul className="flex flex-wrap gap-2">
+    {items.map((item) => (
+      <li
+        key={item}
+        className="rounded-full border border-header-border bg-canvas px-3.5 py-1.5 text-sm font-medium text-ink-navy"
+      >
+        {item}
+      </li>
+    ))}
+  </ul>
 );
