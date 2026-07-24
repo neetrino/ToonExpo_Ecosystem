@@ -47,10 +47,6 @@ docs
 AGENTS.md
 LICENSE
 
-# Web app source (API image does not need it; keep package.json for workspace graph)
-apps/web/**
-!apps/web/package.json
-
 # Tests (not needed in production image)
 **/test
 **/*.spec.ts

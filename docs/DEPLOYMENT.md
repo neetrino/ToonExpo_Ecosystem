@@ -116,15 +116,14 @@ gcloud artifacts repositories create toonexpo \
 
 **Option A — Cloud Build (recommended, no local Docker required)**
 
-From the monorepo root (uses `cloudbuild.yaml`: BuildKit registry cache `:buildcache` with `mode=max` for multi-stage layers, `E2_HIGHCPU_8`, then Cloud Run update):
+From the monorepo root:
 
 ```bash
-gcloud builds submit --config=cloudbuild.yaml \
-  --substitutions=COMMIT_SHA=$(git rev-parse --short HEAD) \
+gcloud builds submit \
+  --tag europe-west1-docker.pkg.dev/PROJECT_ID/toonexpo/api:latest \
+  -f apps/api/Dockerfile \
   .
 ```
-
-Cold builds are often ~6–10 minutes; cached rebuilds (unchanged lockfile) are typically much faster. The first build after enabling cache still writes `:buildcache`; later builds reuse `pnpm install` / compile layers. `.gcloudignore` keeps the source upload small (mirrors heavy exclusions from `.dockerignore`, including `apps/web` sources).
 
 **Option B — Local Docker build and push**
 
@@ -144,7 +143,7 @@ docker push europe-west1-docker.pkg.dev/PROJECT_ID/toonexpo/api:latest
 | -------- | --------------------------------------------------------------------------------- |
 | `base`   | Node 24 (Debian slim), Corepack, pnpm 11.14                                       |
 | `prune`  | `turbo prune @toonexpo/api --docker` — minimal build context                      |
-| `build`  | Cached `pnpm install` (lockfile layer), then generate + turbo build + prod deploy |
+| `build`  | `pnpm install`, `prisma generate`, `turbo build`, `pnpm deploy` production bundle |
 | `runner` | Non-root user `nestjs`, `NODE_ENV=production`, `CMD node dist/main.js`            |
 
 Prisma 7 uses the **library engine** with `@prisma/adapter-pg`; Debian slim is used (not Alpine) for native deps (`argon2`, `pg`).
