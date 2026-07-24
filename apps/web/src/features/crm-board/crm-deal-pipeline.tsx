@@ -18,7 +18,7 @@ export const CrmDealPipeline = ({ status }: CrmDealPipelineProps) => {
   const activeIndex = CRM_KANBAN_STATUSES.indexOf(status);
 
   return (
-    <ol className="flex gap-1 overflow-x-auto pb-1" aria-label={t(status)}>
+    <ol className="flex flex-wrap gap-1.5" aria-label={t(status)}>
       {CRM_KANBAN_STATUSES.map((item, index) => {
         const isActive = item === status;
         const isPast = index < activeIndex;
@@ -26,7 +26,7 @@ export const CrmDealPipeline = ({ status }: CrmDealPipelineProps) => {
           <li
             key={item}
             className={cn(
-              'shrink-0 rounded-pill px-2.5 py-1 text-[10px] font-medium uppercase tracking-wide',
+              'rounded-pill px-2 py-1 text-[10px] font-medium uppercase tracking-wide',
               isActive
                 ? 'bg-cta-dark text-on-dark'
                 : isPast

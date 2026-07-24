@@ -72,9 +72,11 @@ export const AdminCrmBoardPage = () => {
         </p>
       </div>
 
-      <div className="flex flex-col gap-3 lg:flex-row">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
         <label className="flex min-w-0 flex-1 flex-col gap-1.5">
-          <span className="sr-only">{tBoard('searchLabel')}</span>
+          <span className="text-xs font-medium uppercase tracking-wide text-ink-muted">
+            {tBoard('searchLabel')}
+          </span>
           <Input
             value={search}
             placeholder={tBoard('searchPlaceholder')}

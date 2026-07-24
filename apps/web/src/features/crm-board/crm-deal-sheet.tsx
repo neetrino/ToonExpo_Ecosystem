@@ -48,7 +48,7 @@ export const CrmDealSheet = ({
       onClose={onClose}
       title={title}
       description={mode === 'readonly' ? t('readonlyHint') : undefined}
-      size="comfortable"
+      size="default"
     >
       {isLoading ? <p className="text-sm text-ink-secondary">{t('loadingDeal')}</p> : null}
 
