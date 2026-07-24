@@ -141,7 +141,7 @@ export const CrmDealsListPage = () => {
   const totalCount = dealsQuery.data?.meta.total ?? deals.length;
 
   return (
-    <div className="flex flex-col gap-5">
+    <div className="crm-board-page">
       <div className="flex shrink-0 flex-wrap items-center justify-between gap-3">
         <div className="flex flex-col gap-1">
           <h1 className="text-page-title text-ink">{t('title')}</h1>
