@@ -36,6 +36,8 @@ type SideSheetProps = {
   size?: SideSheetSize | undefined;
   className?: string | undefined;
   closeLabel?: string | undefined;
+  /** When false, Escape does not close the sheet (e.g. nested confirm open). */
+  escapeEnabled?: boolean | undefined;
 };
 
 type SideSheetPanelProps = {
@@ -181,6 +183,7 @@ export const SideSheet = ({
   size = 'default',
   className,
   closeLabel,
+  escapeEnabled = true,
 }: SideSheetProps) => {
   const t = useTranslations('Common');
   const resolvedCloseLabel = closeLabel ?? t('close');
@@ -189,6 +192,8 @@ export const SideSheet = ({
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
+  const escapeEnabledRef = useRef(escapeEnabled);
+  escapeEnabledRef.current = escapeEnabled;
   const { rendered, visible } = useDrawerTransition(open, SIDE_SHEET_PANEL_TRANSITION_MS);
 
   useEffect(() => {
@@ -210,6 +215,9 @@ export const SideSheet = ({
     const unregister = registerSideSheetLevel(stackLevel);
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== 'Escape' || event.defaultPrevented) {
+        return;
+      }
+      if (!escapeEnabledRef.current) {
         return;
       }
       if (!isTopSideSheetLevel(stackLevel)) {

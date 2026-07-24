@@ -24,6 +24,8 @@
     "loadingDeal": "Loading deal…",
     "dealNotFound": "Deal not found.",
     "deleteConfirm": "Delete this lead? This cannot be undone.",
+    "deleteConfirmTitle": "Delete lead",
+    "deleteConfirmMessage": "Are you sure you want to delete \"{name}\"? This cannot be undone.",
     "deleting": "Deleting…",
     "deleteError": "Could not delete this lead. Please try again.",
     "company": "Builder",

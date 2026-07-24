@@ -24,6 +24,8 @@
     "loadingDeal": "Բեռնվում է…",
     "dealNotFound": "Deal-ը չի գտնվել։",
     "deleteConfirm": "Ջնջե՞լ այս lead-ը։ Սա հնարավոր չէ հետարկել։",
+    "deleteConfirmTitle": "Ջնջել lead-ը",
+    "deleteConfirmMessage": "Համոզվա՞ծ եք, որ ուզում եք ջնջել «{name}»-ը։ Սա հնարավոր չէ հետարկել։",
     "deleting": "Ջնջվում է…",
     "deleteError": "Lead-ը չհաջողվեց ջնջել։ Փորձեք նորից։",
     "company": "Կառուցապատող",
