@@ -10,7 +10,7 @@ type CrmSearchResultsBadgeProps = {
 };
 
 /**
- * Visible search-hit summary under the CRM leads search field.
+ * Quiet search-hit hint — sits beside the search label, no layout shift.
  */
 export const CrmSearchResultsBadge = ({ count, className }: CrmSearchResultsBadgeProps) => {
   const t = useTranslations('CrmBoard');
@@ -20,25 +20,12 @@ export const CrmSearchResultsBadge = ({ count, className }: CrmSearchResultsBadg
       role="status"
       aria-live="polite"
       className={cn(
-        'inline-flex w-fit max-w-full items-center gap-2 rounded-pill',
-        'px-3 py-1.5 text-sm font-semibold shadow-xs ring-1',
-        count === 0
-          ? 'bg-surface text-ink-secondary ring-border'
-          : 'bg-brand-soft text-brand-deep ring-brand/20',
+        'm-0 truncate text-[11px] font-medium tracking-wide normal-case',
+        count === 0 ? 'font-semibold text-warning' : 'text-brand',
         className,
       )}
     >
-      {count > 0 ? (
-        <span
-          className="inline-flex min-w-6 items-center justify-center rounded-pill bg-brand px-1.5 py-0.5 text-xs font-bold text-white"
-          aria-hidden
-        >
-          {count}
-        </span>
-      ) : null}
-      <span className="truncate">
-        {count === 0 ? t('searchResultsCount', { count: 0 }) : t('searchResultsLabel', { count })}
-      </span>
+      {t('searchResultsCount', { count })}
     </p>
   );
 };
