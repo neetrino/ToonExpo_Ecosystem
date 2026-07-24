@@ -9,6 +9,66 @@
       "cards": "Cards"
     }
   },
+  "CrmBoard": {
+    "unnamedBuyer": "Unnamed contact",
+    "noProject": "No project",
+    "unassigned": "Unassigned",
+    "emptyColumn": "No leads",
+    "quickLead": "Quick Lead",
+    "searchLabel": "Search leads",
+    "searchPlaceholder": "Search leads by name, email, phone…",
+    "searchResultsCount": "{count, plural, =0 {No leads found} one {# lead found} other {# leads found}}",
+    "searchResultsLabel": "{count, plural, =0 {No matches} one {lead found} other {leads found}}",
+    "dealSheetTitle": "Lead",
+    "readonlyHint": "Platform overview — view only",
+    "loadingDeal": "Loading deal…",
+    "dealNotFound": "Deal not found.",
+    "deleteConfirm": "Delete this lead? This cannot be undone.",
+    "deleteConfirmTitle": "Delete lead",
+    "deleteConfirmMessage": "Are you sure you want to delete \"{name}\"? This cannot be undone.",
+    "deleting": "Deleting…",
+    "deleteError": "Could not delete this lead. Please try again.",
+    "company": "Builder",
+    "invalidTransition": "That status change is not allowed.",
+    "openSheetForStatus": "Open the deal to complete this status change.",
+    "apartmentsTitle": "Apartments",
+    "apartmentsEmpty": "No linked apartments.",
+    "notesTitle": "Notes",
+    "notesEmpty": "No notes yet.",
+    "activitiesTitle": "Activities",
+    "activitiesEmpty": "No activities yet.",
+    "fields": {
+      "phone": "Phone",
+      "email": "Email",
+      "source": "Source",
+      "project": "Project",
+      "assignee": "Assignee",
+      "created": "Created",
+      "description": "Description"
+    },
+    "filters": {
+      "source": "Source",
+      "allSources": "All sources",
+      "selectedCount": "{count} selected"
+    },
+    "statuses": {
+      "new_request": "New",
+      "assigned": "Assigned",
+      "contacted": "Contacted",
+      "follow_up_needed": "Follow-up",
+      "apartment_selected": "Apartment",
+      "reserved": "Reserved",
+      "converted": "Won",
+      "closed": "Closed",
+      "lost": "Lost"
+    },
+    "sources": {
+      "buyer_project_request": "Buyer request",
+      "builder_buyer_qr_scan": "QR scan",
+      "manual_builder_entry": "Manual",
+      "event_interaction": "Event"
+    }
+  },
   "HomePage": {
     "brand": "ToonExpo",
     "tagline": "Real estate exhibition platform for Armenia",
@@ -879,6 +939,7 @@
       "buildings": "Building",
       "floors": "Floor",
       "apartments": "Apartment",
+      "crm": "CRM",
       "partners": "Partners",
       "bankOffers": "Bank offers",
       "serviceProviders": "Service providers",
@@ -898,6 +959,42 @@
         "label": "Settings sections",
         "profile": "Profile",
         "password": "Password"
+      }
+    },
+    "crm": {
+      "title": "CRM",
+      "eyebrow": "Pipeline",
+      "subtitle": "{count, plural, =0 {No deals across builders} one {# deal across builders} other {# deals across builders}}",
+      "error": "Could not load CRM deals. Try again.",
+      "filters": {
+        "company": "Builder",
+        "allCompanies": "All builders",
+        "selectedCount": "{count} selected"
+      },
+      "newDeal": {
+        "title": "New lead",
+        "cancel": "Cancel",
+        "company": "Builder",
+        "companyPlaceholder": "Select builder",
+        "contactName": "Full name",
+        "contactNamePlaceholder": "John Doe",
+        "contactPhone": "Phone",
+        "contactPhonePlaceholder": "37491111222",
+        "contactEmail": "Email",
+        "contactEmailPlaceholder": "john.doe@example.com",
+        "project": "Project",
+        "projectOptional": "No project",
+        "note": "Note",
+        "submitting": "Creating…",
+        "validation": {
+          "company": "Select a builder",
+          "contactName": "Enter a name",
+          "phone": "Enter a valid phone number",
+          "email": "Enter a valid email"
+        },
+        "errors": {
+          "generic": "Something went wrong. Please try again."
+        }
       }
     },
     "analytics": {
@@ -2566,6 +2663,7 @@
     },
     "crm": {
       "title": "CRM",
+      "eyebrow": "Pipeline",
       "subtitle": "{count, plural, =0 {No deals} one {# deal} other {# deals}}",
       "loading": "Loading deals…",
       "error": "Could not load deals. Try again.",
@@ -2615,9 +2713,12 @@
       "newDeal": {
         "cta": "+ New Deal",
         "title": "New deal",
-        "contactName": "Name",
+        "contactName": "Full name",
+        "contactNamePlaceholder": "John Doe",
         "contactPhone": "Phone",
+        "contactPhonePlaceholder": "37491111222",
         "contactEmail": "Email",
+        "contactEmailPlaceholder": "john.doe@example.com",
         "project": "Project",
         "projectOptional": "No project",
         "note": "Note",

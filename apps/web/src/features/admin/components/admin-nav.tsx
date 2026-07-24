@@ -3,6 +3,7 @@
 import {
   Building,
   Building2,
+  Briefcase,
   CalendarDays,
   ChevronDown,
   ClipboardCheck,
@@ -35,6 +36,7 @@ type NavItem = {
     | 'floors'
     | 'apartments'
     | 'checkin'
+    | 'crm'
     | 'partners'
     | 'bankOffers'
     | 'serviceProviders'
@@ -64,6 +66,7 @@ const PRIMARY_NAV_ITEMS: NavItem[] = [
     icon: FolderKanban,
     children: PROJECT_CHILD_NAV_ITEMS,
   },
+  { href: '/admin/crm', key: 'crm', icon: Briefcase },
   { href: '/admin/checkin', key: 'checkin', icon: ScanLine },
   { href: '/admin/partners', key: 'partners', icon: Handshake },
   { href: '/admin/bank-offers', key: 'bankOffers', icon: Landmark },
@@ -93,7 +96,7 @@ const ALL_NAV_ITEMS: NavItem[] = [
   SETTINGS_NAV_ITEM,
 ];
 
-const NAV_ICON_CLASS = 'size-5 shrink-0 opacity-90';
+const NAV_ICON_CLASS = 'size-[1.125rem] shrink-0 opacity-90';
 const NAV_CHILD_ICON_CLASS = 'size-4 shrink-0 opacity-90';
 
 const isProjectsSectionPath = (pathname: string): boolean =>
@@ -101,8 +104,8 @@ const isProjectsSectionPath = (pathname: string): boolean =>
 
 const navLinkClassName = (active: boolean, nested = false): string =>
   cn(
-    'flex items-center gap-3 rounded-pill font-medium tracking-wide transition-colors',
-    nested ? 'gap-2.5 px-3.5 py-2 text-sm' : 'px-3.5 py-2.5 text-base',
+    'flex items-center gap-2.5 rounded-pill font-medium tracking-wide transition-colors',
+    nested ? 'gap-2.5 px-3.5 py-1.5 text-sm' : 'px-3.5 py-2 text-[0.9375rem]',
     active
       ? 'bg-surface-elevated text-brand-secondary shadow-xs'
       : 'text-on-dark/85 hover:bg-on-dark/10 hover:text-on-dark',
@@ -137,13 +140,13 @@ export const AdminNav = () => {
 
   return (
     <nav aria-label={t('label')} className="flex h-full min-h-0 flex-col gap-1">
-      <div className="mb-4 hidden shrink-0 px-3.5 pt-1 md:block">
+      <div className="mb-3 hidden shrink-0 px-3.5 pt-1 md:block">
         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-on-dark/65">
           {t('portalLabel')}
         </p>
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto overscroll-contain">
+      <div className="flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto overscroll-contain">
         {PRIMARY_NAV_ITEMS.map((item) => {
           const active = isItemActive(item.href);
           const Icon = item.icon;
@@ -163,7 +166,7 @@ export const AdminNav = () => {
               <div className={cn(navLinkClassName(active), 'pr-2')}>
                 <Link
                   href={item.href}
-                  className="flex min-w-0 flex-1 items-center gap-3 text-inherit"
+                  className="flex min-w-0 flex-1 items-center gap-2.5 text-inherit"
                 >
                   <Icon className={NAV_ICON_CLASS} aria-hidden />
                   <span className="truncate">{t(item.key)}</span>
@@ -211,7 +214,7 @@ export const AdminNav = () => {
         })}
       </div>
 
-      <div className="mt-auto shrink-0 border-t border-on-dark/15 pt-3">
+      <div className="mt-auto shrink-0 border-t border-on-dark/15 pt-2.5">
         <Link
           href={SETTINGS_NAV_ITEM.href}
           className={navLinkClassName(isItemActive(SETTINGS_NAV_ITEM.href))}

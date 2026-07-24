@@ -12,6 +12,8 @@ export const PORTAL_STATUS_REASON_MAX_LENGTH = 500;
 
 export const PORTAL_DEFAULT_PAGE_SIZE = 20;
 export const PORTAL_MAX_PAGE_SIZE = 50;
+/** Kanban board fetch size (mirrors API CRM_BOARD_PAGE_SIZE). */
+export const PORTAL_CRM_BOARD_PAGE_SIZE = 100;
 
 export const PUBLICATION_STATUSES = ['draft', 'published', 'archived'] as const;
 

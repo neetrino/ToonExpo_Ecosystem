@@ -7,10 +7,10 @@ import type {
   CrmDealListItem,
   CrmNoteItem,
   CrmRequestHistoryItem,
-} from "@toonexpo/contracts";
-import type { CrmDealStatus, RequestSource } from "@toonexpo/db";
+} from '@toonexpo/contracts';
+import type { CrmDealStatus, RequestSource } from '@toonexpo/db';
 
-import { mapDealStatusToBuyerFacing } from "../status/deal-status.transitions.js";
+import { mapDealStatusToBuyerFacing } from '../status/deal-status.transitions.js';
 
 const toIso = (value: Date | null | undefined): string | null =>
   value == null ? null : value.toISOString();
@@ -56,6 +56,8 @@ type DealListRow = {
   nextFollowUpAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
+  companyId?: string;
+  company?: { id: string; name: string } | null;
 };
 
 export const mapDealListItem = (row: DealListRow): CrmDealListItem => ({
@@ -71,6 +73,11 @@ export const mapDealListItem = (row: DealListRow): CrmDealListItem => ({
   nextFollowUpAt: toIso(row.nextFollowUpAt),
   createdAt: row.createdAt.toISOString(),
   updatedAt: row.updatedAt.toISOString(),
+  ...(row.company
+    ? { companyId: row.company.id, companyName: row.company.name }
+    : row.companyId
+      ? { companyId: row.companyId }
+      : {}),
 });
 
 export const mapRequestHistoryItem = (row: {
@@ -94,7 +101,7 @@ export const mapRequestHistoryItem = (row: {
 export const mapApartmentLinkItem = (row: {
   id: string;
   apartmentId: string;
-  linkType: CrmApartmentLinkItem["linkType"];
+  linkType: CrmApartmentLinkItem['linkType'];
   isPrimary: boolean;
   createdAt: Date;
   apartment: { number: string } | null;
@@ -110,7 +117,7 @@ export const mapApartmentLinkItem = (row: {
 export const mapNoteItem = (row: {
   id: string;
   body: string;
-  visibility: CrmNoteItem["visibility"];
+  visibility: CrmNoteItem['visibility'];
   authorUserId: string;
   createdAt: Date;
   updatedAt: Date;
@@ -127,11 +134,11 @@ export const mapNoteItem = (row: {
 
 export const mapActivityItem = (row: {
   id: string;
-  type: CrmActivityItem["type"];
+  type: CrmActivityItem['type'];
   title: string;
   description: string | null;
   dueAt: Date | null;
-  status: CrmActivityItem["status"];
+  status: CrmActivityItem['status'];
   assignedUserId: string | null;
   completedAt: Date | null;
   createdByUserId: string;
@@ -187,9 +194,7 @@ export const mapBuyerRequestItem = (row: {
   requestId: row.id,
   dealId: row.crmDeal?.id ?? null,
   source: row.source,
-  buyerStatus: mapDealStatusToBuyerFacing(
-    row.crmDeal?.status ?? ("new_request" as CrmDealStatus),
-  ),
+  buyerStatus: mapDealStatusToBuyerFacing(row.crmDeal?.status ?? ('new_request' as CrmDealStatus)),
   builderCompanyId: row.builderCompany.id,
   builderCompanyName: row.builderCompany.name,
   projectId: row.projectId,

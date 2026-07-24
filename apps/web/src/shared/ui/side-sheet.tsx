@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 import { lockBodyScroll, unlockBodyScroll } from '@/shared/ui/body-scroll-lock';
 import { DrawerCloseTab } from '@/shared/ui/drawer-close-tab';
 import { cn } from '@/shared/ui/cn';
+import { MODAL_BACKDROP_CLASS_NAME } from '@/shared/ui/modal-backdrop';
 import { isTopSideSheetLevel, registerSideSheetLevel } from '@/shared/ui/side-sheet-escape-stack';
 import {
   SIDE_SHEET_BACKDROP_TRANSITION_MS,
@@ -36,6 +37,8 @@ type SideSheetProps = {
   size?: SideSheetSize | undefined;
   className?: string | undefined;
   closeLabel?: string | undefined;
+  /** When false, Escape does not close the sheet (e.g. nested confirm open). */
+  escapeEnabled?: boolean | undefined;
 };
 
 type SideSheetPanelProps = {
@@ -89,7 +92,8 @@ const SideSheetPanel = ({
         aria-hidden={!visible}
         aria-label={closeLabel}
         className={cn(
-          'absolute inset-0 bg-ink/45 backdrop-blur-[2px]',
+          'absolute inset-0',
+          MODAL_BACKDROP_CLASS_NAME,
           'transition-opacity duration-[var(--side-sheet-backdrop-ms)] ease-[var(--ease-out-premium)]',
           'motion-reduce:transition-none',
           visible ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0',
@@ -181,6 +185,7 @@ export const SideSheet = ({
   size = 'default',
   className,
   closeLabel,
+  escapeEnabled = true,
 }: SideSheetProps) => {
   const t = useTranslations('Common');
   const resolvedCloseLabel = closeLabel ?? t('close');
@@ -189,6 +194,8 @@ export const SideSheet = ({
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const onCloseRef = useRef(onClose);
   onCloseRef.current = onClose;
+  const escapeEnabledRef = useRef(escapeEnabled);
+  escapeEnabledRef.current = escapeEnabled;
   const { rendered, visible } = useDrawerTransition(open, SIDE_SHEET_PANEL_TRANSITION_MS);
 
   useEffect(() => {
@@ -210,6 +217,9 @@ export const SideSheet = ({
     const unregister = registerSideSheetLevel(stackLevel);
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== 'Escape' || event.defaultPrevented) {
+        return;
+      }
+      if (!escapeEnabledRef.current) {
         return;
       }
       if (!isTopSideSheetLevel(stackLevel)) {
