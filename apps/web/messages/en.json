@@ -9,6 +9,58 @@
       "cards": "Cards"
     }
   },
+  "CrmBoard": {
+    "unnamedBuyer": "Unnamed contact",
+    "noProject": "No project",
+    "unassigned": "Unassigned",
+    "emptyColumn": "No leads",
+    "quickLead": "+ Quick Lead",
+    "searchLabel": "Search leads",
+    "searchPlaceholder": "Search leads by name, email, phone…",
+    "dealSheetTitle": "Lead",
+    "readonlyHint": "Platform overview — view only",
+    "loadingDeal": "Loading deal…",
+    "dealNotFound": "Deal not found.",
+    "company": "Builder",
+    "invalidTransition": "That status change is not allowed.",
+    "openSheetForStatus": "Open the deal to complete this status change.",
+    "apartmentsTitle": "Apartments",
+    "apartmentsEmpty": "No linked apartments.",
+    "notesTitle": "Notes",
+    "notesEmpty": "No notes yet.",
+    "activitiesTitle": "Activities",
+    "activitiesEmpty": "No activities yet.",
+    "fields": {
+      "phone": "Phone",
+      "email": "Email",
+      "source": "Source",
+      "project": "Project",
+      "assignee": "Assignee",
+      "created": "Created",
+      "description": "Description"
+    },
+    "filters": {
+      "source": "Source",
+      "allSources": "All sources"
+    },
+    "statuses": {
+      "new_request": "New",
+      "assigned": "Assigned",
+      "contacted": "Contacted",
+      "follow_up_needed": "Follow-up",
+      "apartment_selected": "Apartment",
+      "reserved": "Reserved",
+      "converted": "Won",
+      "closed": "Closed",
+      "lost": "Lost"
+    },
+    "sources": {
+      "buyer_project_request": "Buyer request",
+      "builder_buyer_qr_scan": "QR scan",
+      "manual_builder_entry": "Manual",
+      "event_interaction": "Event"
+    }
+  },
   "HomePage": {
     "brand": "ToonExpo",
     "tagline": "Real estate exhibition platform for Armenia",
@@ -879,6 +931,7 @@
       "buildings": "Building",
       "floors": "Floor",
       "apartments": "Apartment",
+      "crm": "CRM",
       "partners": "Partners",
       "bankOffers": "Bank offers",
       "serviceProviders": "Service providers",
@@ -898,6 +951,15 @@
         "label": "Settings sections",
         "profile": "Profile",
         "password": "Password"
+      }
+    },
+    "crm": {
+      "title": "CRM",
+      "subtitle": "{count, plural, =0 {No deals across builders} one {# deal across builders} other {# deals across builders}}",
+      "error": "Could not load CRM deals. Try again.",
+      "filters": {
+        "company": "Builder",
+        "allCompanies": "All builders"
       }
     },
     "analytics": {

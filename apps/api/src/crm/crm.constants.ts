@@ -3,13 +3,19 @@
  * ADAPTIVE VALUES — confirm with owner before production tuning.
  */
 
-import { CrmDealStatus } from "@toonexpo/db";
+import { CrmDealStatus } from '@toonexpo/db';
 
 /** Default page size for CRM deal lists. */
 export const CRM_DEFAULT_PAGE_SIZE = 20;
 
-/** Maximum page size for CRM deal lists. */
-export const CRM_MAX_PAGE_SIZE = 50;
+/** Maximum page size for CRM deal lists / Kanban board fetch. */
+export const CRM_MAX_PAGE_SIZE = 100;
+
+/** Default page size when loading a full Kanban board. */
+export const CRM_BOARD_PAGE_SIZE = 100;
+
+/** Max length for CRM list free-text search. */
+export const CRM_SEARCH_QUERY_MAX_LENGTH = 100;
 
 export const CRM_MIN_PAGE = 1;
 

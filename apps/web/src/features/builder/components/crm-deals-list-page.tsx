@@ -1,37 +1,47 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
-import { useSearchParams } from 'next/navigation';
-import { useMemo, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import type { CrmDealStatus, RequestSource } from '@toonexpo/contracts';
+import { useTranslations } from 'next-intl';
+import { useMemo, useState } from 'react';
 
+import { updateCrmDeal } from '@/features/builder/api/portal-crm-api';
+import { CrmDealActivitiesSection } from '@/features/builder/components/crm-deal-activities-section';
+import { CrmDealApartmentsSection } from '@/features/builder/components/crm-deal-apartments-section';
+import { CrmDealAssigneeControl } from '@/features/builder/components/crm-deal-assignee-control';
 import { CrmDealFilters } from '@/features/builder/components/crm-deal-filters';
-import { CrmDealListItemView } from '@/features/builder/components/crm-deal-list-item';
+import { CrmDealNotesSection } from '@/features/builder/components/crm-deal-notes-section';
+import { CrmDealRequestsSection } from '@/features/builder/components/crm-deal-requests-section';
+import { CrmDealStatusControl } from '@/features/builder/components/crm-deal-status-control';
 import { CrmNewDealPanel } from '@/features/builder/components/crm-new-deal-panel';
-import { PORTAL_DEFAULT_PAGE_SIZE, PORTAL_MAX_PAGE_SIZE } from '@/features/builder/constants';
-import { useCrmDealsQuery } from '@/features/builder/hooks/use-portal-crm';
+import {
+  PORTAL_CRM_BOARD_PAGE_SIZE,
+  PORTAL_CRM_DEALS_QUERY_KEY,
+  PORTAL_MAX_PAGE_SIZE,
+} from '@/features/builder/constants';
+import { useCrmDealQuery, useCrmDealsQuery } from '@/features/builder/hooks/use-portal-crm';
 import { useCompanyMembersQuery } from '@/features/builder/hooks/use-company-members';
 import { usePortalProjectsQuery } from '@/features/builder/hooks/use-portal-projects';
-import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
+import {
+  crmStatusRequiresApartment,
+  isCrmStatusTransitionAllowed,
+} from '@/features/builder/utils/crm-status-transitions';
+import { CrmDealSheet, CrmKanbanBoard } from '@/features/crm-board';
 import { Button } from '@/shared/ui/button';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
-
-const parsePage = (raw: string | null): number => {
-  const parsed = Number(raw);
-  if (!Number.isFinite(parsed) || parsed < 1) {
-    return 1;
-  }
-  return Math.floor(parsed);
-};
+import { Input } from '@/shared/ui/input';
 
 /**
- * Builder CRM deals list: filters, table/cards, new deal CTA.
+ * Builder CRM Kanban workspace with deal SideSheet and new-deal flow.
  */
 export const CrmDealsListPage = () => {
   const t = useTranslations('Builder.crm');
-  const searchParams = useSearchParams();
-  const page = parsePage(searchParams.get('page'));
+  const tBoard = useTranslations('CrmBoard');
+  const queryClient = useQueryClient();
   const [showNew, setShowNew] = useState(false);
+  const [selectedDealId, setSelectedDealId] = useState<string | null>(null);
+  const [search, setSearch] = useState('');
+  const [boardError, setBoardError] = useState<string | null>(null);
   const [filters, setFilters] = useState<{
     status: CrmDealStatus | '';
     source: RequestSource | '';
@@ -42,13 +52,16 @@ export const CrmDealsListPage = () => {
   const projectsQuery = usePortalProjectsQuery(1, PORTAL_MAX_PAGE_SIZE);
   const membersQuery = useCompanyMembersQuery(1, PORTAL_MAX_PAGE_SIZE);
   const dealsQuery = useCrmDealsQuery({
-    page,
-    pageSize: PORTAL_DEFAULT_PAGE_SIZE,
+    page: 1,
+    pageSize: PORTAL_CRM_BOARD_PAGE_SIZE,
     ...(filters.status ? { status: filters.status } : {}),
     ...(filters.source ? { source: filters.source } : {}),
     ...(filters.projectId ? { projectId: filters.projectId } : {}),
     ...(filters.assignedUserId ? { assignedUserId: filters.assignedUserId } : {}),
+    ...(search.trim() ? { q: search.trim() } : {}),
   });
+
+  const dealQuery = useCrmDealQuery(selectedDealId ?? '');
 
   const projects = useMemo(
     () =>
@@ -70,12 +83,37 @@ export const CrmDealsListPage = () => {
     [membersQuery.data],
   );
 
+  const deals = dealsQuery.data?.data ?? [];
+
+  const onStatusDrop = async (dealId: string, status: CrmDealStatus) => {
+    setBoardError(null);
+    const deal = deals.find((item) => item.id === dealId);
+    if (!deal || deal.status === status) {
+      return;
+    }
+    if (!isCrmStatusTransitionAllowed(deal.status, status)) {
+      setBoardError(tBoard('invalidTransition'));
+      return;
+    }
+    if (crmStatusRequiresApartment(status) || status === 'lost') {
+      setSelectedDealId(dealId);
+      setBoardError(tBoard('openSheetForStatus'));
+      return;
+    }
+    try {
+      await updateCrmDeal(dealId, { status });
+      await queryClient.invalidateQueries({ queryKey: PORTAL_CRM_DEALS_QUERY_KEY });
+    } catch {
+      setBoardError(t('errors.generic'));
+    }
+  };
+
   if (dealsQuery.isLoading) {
     return (
       <div className="flex flex-col gap-4">
         <div className="h-8 w-48 animate-pulse rounded-sm bg-border/70" />
         <div className="h-24 animate-pulse rounded-md bg-border/50" />
-        <div className="h-40 animate-pulse rounded-md bg-border/40" />
+        <div className="h-64 animate-pulse rounded-md bg-border/40" />
       </div>
     );
   }
@@ -91,23 +129,13 @@ export const CrmDealsListPage = () => {
     );
   }
 
-  const response = dealsQuery.data;
-  const buildHref = (nextPage: number): string => {
-    const params = new URLSearchParams();
-    if (nextPage > 1) {
-      params.set('page', String(nextPage));
-    }
-    const query = params.toString();
-    return query ? `/builder/crm?${query}` : '/builder/crm';
-  };
-
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-col gap-1">
           <h1 className="text-page-title text-ink">{t('title')}</h1>
           <p className="text-sm text-ink-secondary">
-            {t('subtitle', { count: response.meta.total })}
+            {t('subtitle', { count: dealsQuery.data.meta.total })}
           </p>
         </div>
         <Button
@@ -121,6 +149,17 @@ export const CrmDealsListPage = () => {
         </Button>
       </div>
 
+      <label className="flex max-w-xl flex-col gap-1.5">
+        <span className="sr-only">{tBoard('searchLabel')}</span>
+        <Input
+          value={search}
+          placeholder={tBoard('searchPlaceholder')}
+          onChange={(event) => {
+            setSearch(event.target.value);
+          }}
+        />
+      </label>
+
       <CrmDealFilters
         value={filters}
         projects={projects}
@@ -128,47 +167,29 @@ export const CrmDealsListPage = () => {
         onChange={setFilters}
       />
 
-      {response.data.length === 0 ? (
-        <p className="rounded-md border border-dashed border-border bg-surface/50 px-6 py-12 text-center text-sm text-ink-secondary">
-          {t('empty')}
+      {boardError ? (
+        <p role="alert" className="text-sm text-danger">
+          {boardError}
         </p>
-      ) : (
-        <>
-          <div className="flex flex-col gap-3 md:hidden">
-            {response.data.map((deal) => (
-              <CrmDealListItemView key={deal.id} deal={deal} variant="card" />
-            ))}
-          </div>
+      ) : null}
 
-          <div className="hidden overflow-x-auto rounded-sm border border-border md:block">
-            <table className="w-full min-w-[44rem] border-collapse text-sm">
-              <thead className="bg-surface text-xs uppercase tracking-wide text-ink-muted">
-                <tr>
-                  <th className="px-3 py-2.5 text-left font-medium">{t('columns.buyer')}</th>
-                  <th className="px-3 py-2.5 text-center font-medium">{t('columns.project')}</th>
-                  <th className="px-3 py-2.5 text-center font-medium">{t('columns.status')}</th>
-                  <th className="px-3 py-2.5 text-center font-medium">{t('columns.source')}</th>
-                  <th className="px-3 py-2.5 text-center font-medium">{t('columns.assignee')}</th>
-                  <th className="px-3 py-2.5 text-center font-medium">{t('columns.updated')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {response.data.map((deal) => (
-                  <CrmDealListItemView key={deal.id} deal={deal} variant="row" />
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </>
-      )}
-
-      <CatalogPagination
-        page={response.meta.page}
-        totalPages={response.meta.totalPages}
-        buildHref={buildHref}
-        previousLabel={t('pagination.previous')}
-        nextLabel={t('pagination.next')}
-        ariaLabel={t('pagination.ariaLabel')}
+      <CrmKanbanBoard
+        deals={deals}
+        mode="edit"
+        onOpenDeal={setSelectedDealId}
+        onStatusDrop={onStatusDrop}
+        newColumnAction={
+          <Button
+            type="button"
+            size="sm"
+            className="w-full"
+            onClick={() => {
+              setShowNew(true);
+            }}
+          >
+            {tBoard('quickLead')}
+          </Button>
+        }
       />
 
       {showNew ? (
@@ -177,8 +198,37 @@ export const CrmDealsListPage = () => {
           onClose={() => {
             setShowNew(false);
           }}
+          onCreated={(dealId) => {
+            setSelectedDealId(dealId);
+          }}
         />
       ) : null}
+
+      <CrmDealSheet
+        open={selectedDealId !== null}
+        onClose={() => {
+          setSelectedDealId(null);
+          setBoardError(null);
+        }}
+        deal={dealQuery.data ?? null}
+        isLoading={Boolean(selectedDealId) && dealQuery.isLoading}
+        isError={Boolean(selectedDealId) && dealQuery.isError}
+        mode="edit"
+        editSections={
+          dealQuery.data ? (
+            <div className="flex flex-col gap-4">
+              <div className="grid gap-4">
+                <CrmDealStatusControl deal={dealQuery.data} />
+                <CrmDealAssigneeControl deal={dealQuery.data} />
+              </div>
+              <CrmDealApartmentsSection deal={dealQuery.data} />
+              <CrmDealNotesSection deal={dealQuery.data} />
+              <CrmDealActivitiesSection deal={dealQuery.data} />
+              <CrmDealRequestsSection deal={dealQuery.data} />
+            </div>
+          ) : null
+        }
+      />
     </div>
   );
 };

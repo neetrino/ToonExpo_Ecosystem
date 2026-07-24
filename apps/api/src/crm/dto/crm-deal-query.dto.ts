@@ -1,5 +1,5 @@
-import { ApiPropertyOptional } from "@nestjs/swagger";
-import { Type } from "class-transformer";
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   IsEnum,
   IsInt,
@@ -10,33 +10,34 @@ import {
   Min,
   MinLength,
   ValidateIf,
-} from "class-validator";
-import { CrmDealStatus, RequestSource } from "@toonexpo/db";
+} from 'class-validator';
+import { CrmDealStatus, RequestSource } from '@toonexpo/db';
 
 import {
   CRM_DEFAULT_PAGE_SIZE,
   CRM_LOST_REASON_MAX_LENGTH,
   CRM_MAX_PAGE_SIZE,
   CRM_MIN_PAGE,
-} from "../crm.constants.js";
+  CRM_SEARCH_QUERY_MAX_LENGTH,
+} from '../crm.constants.js';
 
 enum CrmDealStatusDto {
-  new_request = "new_request",
-  assigned = "assigned",
-  contacted = "contacted",
-  follow_up_needed = "follow_up_needed",
-  apartment_selected = "apartment_selected",
-  reserved = "reserved",
-  converted = "converted",
-  closed = "closed",
-  lost = "lost",
+  new_request = 'new_request',
+  assigned = 'assigned',
+  contacted = 'contacted',
+  follow_up_needed = 'follow_up_needed',
+  apartment_selected = 'apartment_selected',
+  reserved = 'reserved',
+  converted = 'converted',
+  closed = 'closed',
+  lost = 'lost',
 }
 
 enum RequestSourceDto {
-  buyer_project_request = "buyer_project_request",
-  builder_buyer_qr_scan = "builder_buyer_qr_scan",
-  manual_builder_entry = "manual_builder_entry",
-  event_interaction = "event_interaction",
+  buyer_project_request = 'buyer_project_request',
+  builder_buyer_qr_scan = 'builder_buyer_qr_scan',
+  manual_builder_entry = 'manual_builder_entry',
+  event_interaction = 'event_interaction',
 }
 
 export class ListCrmDealsQueryDto {
@@ -76,6 +77,23 @@ export class ListCrmDealsQueryDto {
   @IsString()
   @MinLength(1)
   assignedUserId?: string;
+
+  @ApiPropertyOptional({
+    description: 'Search contact name, phone, or email',
+  })
+  @IsOptional()
+  @IsString()
+  @MinLength(1)
+  @MaxLength(CRM_SEARCH_QUERY_MAX_LENGTH)
+  q?: string;
+}
+
+export class ListAdminCrmDealsQueryDto extends ListCrmDealsQueryDto {
+  @ApiPropertyOptional({ description: 'Filter by builder company id' })
+  @IsOptional()
+  @IsString()
+  @MinLength(1)
+  companyId?: string;
 }
 
 export class UpdateCrmDealDto {

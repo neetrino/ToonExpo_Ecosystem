@@ -156,6 +156,7 @@ export type {
   CrmDealApartmentLinkType,
   CrmDealDetail,
   CrmDealListItem,
+  ListCrmDealsQuery,
   CrmDealListResponse,
   CrmDealStatus,
   CrmNoteItem,

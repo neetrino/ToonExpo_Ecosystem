@@ -2,58 +2,45 @@
  * CRM Lead Intake + Constructor CRM contracts.
  */
 
-import type { PaginatedResponse } from "./catalog.js";
+import type { PaginatedResponse } from './catalog.js';
 
 /** Canonical unified intake sources (DECISIONS + Status Enums). */
 export type RequestSource =
-  | "buyer_project_request"
-  | "builder_buyer_qr_scan"
-  | "manual_builder_entry"
-  | "event_interaction";
+  'buyer_project_request' | 'builder_buyer_qr_scan' | 'manual_builder_entry' | 'event_interaction';
 
 /** Intake request lifecycle (deal owns the sales pipeline). */
-export type RequestStatus = "submitted" | "attached" | "cancelled";
+export type RequestStatus = 'submitted' | 'attached' | 'cancelled';
 
 /** Constructor CRM pipeline status. */
 export type CrmDealStatus =
-  | "new_request"
-  | "assigned"
-  | "contacted"
-  | "follow_up_needed"
-  | "apartment_selected"
-  | "reserved"
-  | "converted"
-  | "closed"
-  | "lost";
+  | 'new_request'
+  | 'assigned'
+  | 'contacted'
+  | 'follow_up_needed'
+  | 'apartment_selected'
+  | 'reserved'
+  | 'converted'
+  | 'closed'
+  | 'lost';
 
 /** Buyer-facing status (mapped from CrmDealStatus; no internal CRM details). */
 export type BuyerFacingRequestStatus =
-  | "request_sent"
-  | "builder_received"
-  | "in_contact"
-  | "apartment_selected"
-  | "reserved"
-  | "closed"
-  | "cancelled";
+  | 'request_sent'
+  | 'builder_received'
+  | 'in_contact'
+  | 'apartment_selected'
+  | 'reserved'
+  | 'closed'
+  | 'cancelled';
 
-export type CrmDealApartmentLinkType =
-  | "interest"
-  | "selected"
-  | "reserved"
-  | "sold";
+export type CrmDealApartmentLinkType = 'interest' | 'selected' | 'reserved' | 'sold';
 
-export type CrmNoteVisibility = "internal";
+export type CrmNoteVisibility = 'internal';
 
 export type CrmActivityType =
-  | "call"
-  | "email"
-  | "meeting"
-  | "send_offer"
-  | "follow_up"
-  | "status_update"
-  | "other";
+  'call' | 'email' | 'meeting' | 'send_offer' | 'follow_up' | 'status_update' | 'other';
 
-export type CrmActivityStatus = "planned" | "done" | "cancelled";
+export type CrmActivityStatus = 'planned' | 'done' | 'cancelled';
 
 export type CreateBuyerRequestBody = {
   projectId: string;
@@ -105,9 +92,27 @@ export type CrmDealListItem = {
   nextFollowUpAt: string | null;
   createdAt: string;
   updatedAt: string;
+  /** Present on admin CRM responses (cross-company overview). */
+  companyId?: string;
+  /** Present on admin CRM responses (cross-company overview). */
+  companyName?: string;
 };
 
 export type CrmDealListResponse = PaginatedResponse<CrmDealListItem>;
+
+/** Shared list filters for portal + admin CRM boards. */
+export type ListCrmDealsQuery = {
+  page?: number;
+  pageSize?: number;
+  status?: CrmDealStatus;
+  source?: RequestSource;
+  projectId?: string;
+  assignedUserId?: string;
+  /** Free-text search over contact name / phone / email. */
+  q?: string;
+  /** Admin-only: filter by builder company. */
+  companyId?: string;
+};
 
 export type CrmRequestHistoryItem = {
   id: string;

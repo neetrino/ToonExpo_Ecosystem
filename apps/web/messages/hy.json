@@ -9,6 +9,58 @@
       "cards": "Քարտեր"
     }
   },
+  "CrmBoard": {
+    "unnamedBuyer": "Անանուն կոնտակտ",
+    "noProject": "Առանց նախագծի",
+    "unassigned": "Չնշանակված",
+    "emptyColumn": "Lead չկա",
+    "quickLead": "+ Արագ lead",
+    "searchLabel": "Որոնել lead-եր",
+    "searchPlaceholder": "Որոնել անունով, email-ով, հեռախոսով…",
+    "dealSheetTitle": "Lead",
+    "readonlyHint": "Հարթակի overview — միայն դիտում",
+    "loadingDeal": "Բեռնվում է…",
+    "dealNotFound": "Deal-ը չի գտնվել։",
+    "company": "Կառուցապատող",
+    "invalidTransition": "Այդ կարգավիճակի փոփոխությունը թույլատրված չէ։",
+    "openSheetForStatus": "Բացեք deal-ը՝ այս կարգավիճակը լրացնելու համար։",
+    "apartmentsTitle": "Բնակարաններ",
+    "apartmentsEmpty": "Կապակցված բնակարան չկա։",
+    "notesTitle": "Նշումներ",
+    "notesEmpty": "Նշումներ դեռ չկան։",
+    "activitiesTitle": "Գործողություններ",
+    "activitiesEmpty": "Գործողություններ դեռ չկան։",
+    "fields": {
+      "phone": "Հեռախոս",
+      "email": "Email",
+      "source": "Աղբյուր",
+      "project": "Նախագիծ",
+      "assignee": "Պատասխանատու",
+      "created": "Ստեղծված",
+      "description": "Նկարագրություն"
+    },
+    "filters": {
+      "source": "Աղբյուր",
+      "allSources": "Բոլոր աղբյուրները"
+    },
+    "statuses": {
+      "new_request": "Նոր",
+      "assigned": "Նշանակված",
+      "contacted": "Կապ",
+      "follow_up_needed": "Հետևում",
+      "apartment_selected": "Բնակարան",
+      "reserved": "Ամրագրված",
+      "converted": "Հաղթանակ",
+      "closed": "Փակված",
+      "lost": "Կորած"
+    },
+    "sources": {
+      "buyer_project_request": "Գնորդի հայտ",
+      "builder_buyer_qr_scan": "QR սկան",
+      "manual_builder_entry": "Ձեռքով",
+      "event_interaction": "Միջոցառում"
+    }
+  },
   "HomePage": {
     "brand": "ToonExpo",
     "tagline": "Անշարժ գույքի ցուցահանդեսային հարթակ Հայաստանի համար",
@@ -879,6 +931,7 @@
       "buildings": "Շենք",
       "floors": "Հարկ",
       "apartments": "Բնակարան",
+      "crm": "CRM",
       "partners": "Գործընկերներ",
       "bankOffers": "Բանկային առաջարկներ",
       "serviceProviders": "Ծառայություն մատուցողներ",
@@ -898,6 +951,15 @@
         "label": "Կարգավորումների բաժիններ",
         "profile": "Պրոֆիլ",
         "password": "Գաղտնաբառ"
+      }
+    },
+    "crm": {
+      "title": "CRM",
+      "subtitle": "{count, plural, =0 {Deal չկա} one {# deal կառուցապատողներից} other {# deal կառուցապատողներից}}",
+      "error": "Չհաջողվեց բեռնել CRM deal-երը։ Փորձեք նորից։",
+      "filters": {
+        "company": "Կառուցապատող",
+        "allCompanies": "Բոլոր կառուցապատողները"
       }
     },
     "analytics": {
