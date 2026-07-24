@@ -3,27 +3,31 @@ import type { CrmDealListItem } from '@toonexpo/contracts';
 
 import { filterCrmDealsBySearch } from '@/features/crm-board/filter-crm-deals-by-search';
 
-const deal = (overrides: Partial<CrmDealListItem> & { id: string }): CrmDealListItem => ({
-  id: overrides.id,
-  status: 'new_request',
-  source: 'manual_builder_entry',
-  projectId: null,
-  projectName: null,
-  buyer: {
-    buyerProfileId: null,
-    name: null,
-    phone: null,
-    email: null,
-    ...overrides.buyer,
-  },
-  assignedUserId: null,
-  assignedUserName: null,
-  lastActivityAt: null,
-  nextFollowUpAt: null,
-  createdAt: '2026-07-24T00:00:00.000Z',
-  updatedAt: '2026-07-24T00:00:00.000Z',
-  ...overrides,
-});
+const deal = (
+  overrides: Partial<CrmDealListItem> & Pick<CrmDealListItem, 'id'>,
+): CrmDealListItem => {
+  const { buyer: buyerOverride, ...rest } = overrides;
+  return {
+    status: 'new_request',
+    source: 'manual_builder_entry',
+    projectId: null,
+    projectName: null,
+    assignedUserId: null,
+    assignedUserName: null,
+    lastActivityAt: null,
+    nextFollowUpAt: null,
+    createdAt: '2026-07-24T00:00:00.000Z',
+    updatedAt: '2026-07-24T00:00:00.000Z',
+    ...rest,
+    buyer: {
+      buyerProfileId: null,
+      name: null,
+      phone: null,
+      email: null,
+      ...buyerOverride,
+    },
+  };
+};
 
 describe('filterCrmDealsBySearch', () => {
   const deals = [
