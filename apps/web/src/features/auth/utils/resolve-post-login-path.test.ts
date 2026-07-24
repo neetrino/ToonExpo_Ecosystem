@@ -40,4 +40,8 @@ describe('resolvePostLoginPath', () => {
     expect(resolvePostLoginPath(user('company_member', 'partner'), null)).toBe('/partner');
     expect(resolvePostLoginPath(user('company_member', 'bank'), null)).toBe('/partner');
   });
+
+  it('sends company members without a company type to the buyer dashboard', () => {
+    expect(resolvePostLoginPath(user('company_member'), null)).toBe('/dashboard');
+  });
 });
