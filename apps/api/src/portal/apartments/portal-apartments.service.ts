@@ -33,6 +33,38 @@ export class PortalApartmentsService {
     const apartments = await this.prisma.db.apartment.findMany({
       where: { floorId },
       orderBy: [{ number: 'asc' }],
+      include: {
+        planMedia: {
+          select: {
+            id: true,
+            fileUrl: true,
+            thumbnailUrl: true,
+            altText: true,
+          },
+        },
+        floor: {
+          select: {
+            number: true,
+            displayLabel: true,
+            building: {
+              select: {
+                name: true,
+                project: {
+                  select: {
+                    name: true,
+                    builderCompany: {
+                      select: {
+                        id: true,
+                        name: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
     return apartments.map((apartment) => mapPortalApartment(apartment));
   }
@@ -182,6 +214,28 @@ export class PortalApartmentsService {
             fileUrl: true,
             thumbnailUrl: true,
             altText: true,
+          },
+        },
+        floor: {
+          select: {
+            number: true,
+            displayLabel: true,
+            building: {
+              select: {
+                name: true,
+                project: {
+                  select: {
+                    name: true,
+                    builderCompany: {
+                      select: {
+                        id: true,
+                        name: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
           },
         },
       },

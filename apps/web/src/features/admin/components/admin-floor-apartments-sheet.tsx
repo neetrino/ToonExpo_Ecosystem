@@ -12,6 +12,7 @@ import { catalogApartmentDetailHref } from '@/features/builder/catalog-scope';
 import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
 import { Link, usePathname } from '@/i18n/navigation';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
+import { ApartmentSalesStatusBadge } from '@/shared/ui/apartment-sales-status-badge';
 import { Button } from '@/shared/ui/button';
 import { LIST_STATUS_BADGE_COMPACT_CLASS } from '@/shared/ui/list-status-badge';
 import { SideSheet } from '@/shared/ui/side-sheet';
@@ -142,9 +143,11 @@ export const AdminFloorApartmentsSheet = ({
                         {t('apartmentUnit', { number: apartment.number })}
                       </span>
                       <span className="flex shrink-0 items-center gap-2">
-                        <span className="text-xs text-ink-secondary">
-                          {t(`sales.${apartment.salesStatus as ApartmentSalesStatus}`)}
-                        </span>
+                        <ApartmentSalesStatusBadge
+                          status={apartment.salesStatus as ApartmentSalesStatus}
+                          label={t(`sales.${apartment.salesStatus as ApartmentSalesStatus}`)}
+                          className={LIST_STATUS_BADGE_COMPACT_CLASS}
+                        />
                         <PublicationStatusBadge
                           status={apartment.publicationStatus}
                           className={LIST_STATUS_BADGE_COMPACT_CLASS}

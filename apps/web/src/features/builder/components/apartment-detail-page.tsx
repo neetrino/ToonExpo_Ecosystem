@@ -9,6 +9,7 @@ import { useCatalogScope } from '@/features/builder/catalog-scope-context';
 import { EditApartmentForm } from '@/features/builder/components/edit-apartment-form';
 import { usePortalApartmentQuery } from '@/features/builder/hooks/use-portal-inventory';
 import { Link } from '@/i18n/navigation';
+import { ApartmentSalesStatusBadge } from '@/shared/ui/apartment-sales-status-badge';
 import { Card } from '@/shared/ui/card';
 import { ImageLightbox } from '@/shared/ui/image-lightbox';
 
@@ -53,11 +54,28 @@ export const ApartmentDetailPage = ({ apartmentId }: ApartmentDetailPageProps) =
         <Link href={backHref} className="text-sm text-ink-secondary hover:text-ink">
           {t('back')}
         </Link>
-        <h1 className="text-page-title text-ink">{t('title', { number: apartment.number })}</h1>
-        <p className="text-sm text-ink-secondary">
-          {t(`salesStatus.${apartment.salesStatus}`)} ·{' '}
-          {t(`publication.${apartment.publicationStatus}`)}
-        </p>
+        <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
+          <h1 className="text-page-title text-ink">{t('title', { number: apartment.number })}</h1>
+          <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-ink-secondary sm:justify-end">
+            <span>{apartment.companyName}</span>
+            <span aria-hidden="true">·</span>
+            <span>{apartment.buildingName}</span>
+            <span aria-hidden="true">·</span>
+            <span>
+              {apartment.floorLabel
+                ? t('meta.floorNamed', {
+                    number: apartment.floorNumber,
+                    name: apartment.floorLabel,
+                  })
+                : t('meta.floorNumber', { number: apartment.floorNumber })}
+            </span>
+            <span aria-hidden="true">·</span>
+            <ApartmentSalesStatusBadge
+              status={apartment.salesStatus}
+              label={t(`salesStatus.${apartment.salesStatus}`)}
+            />
+          </p>
+        </div>
       </div>
 
       {apartment.plan ? (

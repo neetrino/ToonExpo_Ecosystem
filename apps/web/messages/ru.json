@@ -2178,6 +2178,17 @@
       "back": "← К проекту",
       "loading": "Загрузка…",
       "notFound": "Квартира не найдена",
+      "planTitle": "Планировка квартиры",
+      "planAlt": "Планировка квартиры",
+      "planViewHint": "Открыть планировку на весь экран",
+      "meta": {
+        "company": "Компания",
+        "building": "Здание",
+        "floor": "Этаж",
+        "floorNumber": "Этаж {number}",
+        "floorNamed": "Этаж {number} · {name}",
+        "status": "Статус"
+      },
       "save": "Сохранить",
       "saving": "Сохранение…",
       "saveSuccess": "Квартира обновлена",

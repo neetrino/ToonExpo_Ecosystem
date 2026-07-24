@@ -103,8 +103,14 @@ export type PortalFloorSummary = {
 export type PortalApartmentDetail = {
   id: string;
   projectId: string;
+  projectName: string;
+  companyId: string;
+  companyName: string;
   buildingId: string;
+  buildingName: string;
   floorId: string;
+  floorNumber: number;
+  floorLabel: string | null;
   number: string;
   salesStatus: ApartmentSalesStatus;
   publicationStatus: PublicationStatus;

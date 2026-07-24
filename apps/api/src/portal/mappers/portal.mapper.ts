@@ -112,6 +112,20 @@ type ApartmentRow = {
     thumbnailUrl: string | null;
     altText: string | null;
   } | null;
+  floor: {
+    number: number;
+    displayLabel: string | null;
+    building: {
+      name: string;
+      project: {
+        name: string;
+        builderCompany: {
+          id: string;
+          name: string;
+        };
+      };
+    };
+  };
   createdAt: Date;
   updatedAt: Date;
 };
@@ -195,8 +209,14 @@ export const mapPortalApartment = (
 ): PortalApartmentDetail => ({
   id: apartment.id,
   projectId: apartment.projectId,
+  projectName: apartment.floor.building.project.name,
+  companyId: apartment.floor.building.project.builderCompany.id,
+  companyName: apartment.floor.building.project.builderCompany.name,
   buildingId: apartment.buildingId,
+  buildingName: apartment.floor.building.name,
   floorId: apartment.floorId,
+  floorNumber: apartment.floor.number,
+  floorLabel: apartment.floor.displayLabel,
   number: apartment.number,
   salesStatus: apartment.salesStatus,
   publicationStatus: apartment.publicationStatus,

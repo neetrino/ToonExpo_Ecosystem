@@ -15,6 +15,7 @@ import { catalogApartmentDetailHref } from '@/features/builder/catalog-scope';
 import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
 import { Link, usePathname } from '@/i18n/navigation';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
+import { ApartmentSalesStatusBadge } from '@/shared/ui/apartment-sales-status-badge';
 import { Button } from '@/shared/ui/button';
 import { LIST_STATUS_BADGE_COMPACT_CLASS } from '@/shared/ui/list-status-badge';
 
@@ -111,9 +112,11 @@ const ApartmentsTable = ({ apartments, returnTo }: ApartmentsTableProps) => {
           <p className="truncate text-sm text-ink-muted">
             {apartment.projectName} · {apartment.companyName}
           </p>
-          <p className="text-sm text-ink-secondary">
-            {t(`sales.${apartment.salesStatus as ApartmentSalesStatus}`)}
-          </p>
+          <ApartmentSalesStatusBadge
+            status={apartment.salesStatus as ApartmentSalesStatus}
+            label={t(`sales.${apartment.salesStatus as ApartmentSalesStatus}`)}
+            className={LIST_STATUS_BADGE_COMPACT_CLASS}
+          />
         </Link>
       ))}
     </div>

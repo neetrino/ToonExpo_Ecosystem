@@ -2270,6 +2270,14 @@
       "planTitle": "Բնակարանի պլան",
       "planAlt": "Բնակարանի պլան",
       "planViewHint": "Դիտել բնակարանի պլանը ամբողջ էկրանով",
+      "meta": {
+        "company": "Ընկերություն",
+        "building": "Շենք",
+        "floor": "Հարկ",
+        "floorNumber": "Հարկ {number}",
+        "floorNamed": "Հարկ {number} · {name}",
+        "status": "Կարգավիճակ"
+      },
       "save": "Պահպանել",
       "saving": "Պահպանում…",
       "saveSuccess": "Բնակարանը թարմացված է",

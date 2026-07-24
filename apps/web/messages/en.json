@@ -2465,6 +2465,14 @@
       "planTitle": "Apartment plan",
       "planAlt": "Apartment plan",
       "planViewHint": "View apartment plan fullscreen",
+      "meta": {
+        "company": "Company",
+        "building": "Building",
+        "floor": "Floor",
+        "floorNumber": "Floor {number}",
+        "floorNamed": "Floor {number} · {name}",
+        "status": "Status"
+      },
       "save": "Save changes",
       "saving": "Saving…",
       "saveSuccess": "Apartment updated",
