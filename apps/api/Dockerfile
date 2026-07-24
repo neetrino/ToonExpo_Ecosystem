@@ -26,6 +26,8 @@ COPY . .
 RUN pnpm dlx turbo@${TURBO_VERSION} prune ${API_PACKAGE} --docker
 
 # Stage 2 — install deps and build api + workspace packages
+# Layer order: lockfile + package.json install first so Cloud Build --cache-from
+# can reuse node_modules when only application source changes.
 FROM base AS build
 ARG API_PACKAGE
 COPY --from=prune /app/out/json/ .
@@ -33,11 +35,12 @@ COPY --from=prune /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
 RUN pnpm install --frozen-lockfile --ignore-scripts
 COPY --from=prune /app/out/full/ .
 # Turbo and prisma.config.ts load DATABASE_URL from the monorepo root .env at build time (no DB connection).
-RUN printf 'DATABASE_URL=postgresql://build:build@127.0.0.1:5432/build\n' > .env
-RUN pnpm install --frozen-lockfile \
+# Second install re-links workspace packages after full sources are present; usually fast when lockfile is unchanged.
+RUN printf 'DATABASE_URL=postgresql://build:build@127.0.0.1:5432/build\n' > .env \
+  && pnpm install --frozen-lockfile \
   && pnpm --filter @toonexpo/db exec prisma generate \
-  && pnpm turbo run build --filter=${API_PACKAGE}
-RUN pnpm --filter ${API_PACKAGE} --prod deploy --legacy /app/deploy --config.ignore-scripts=true
+  && pnpm turbo run build --filter=${API_PACKAGE} \
+  && pnpm --filter ${API_PACKAGE} --prod deploy --legacy /app/deploy --config.ignore-scripts=true
 
 # Stage 3 — slim runtime (Debian slim: Prisma 7 library engine + argon2 native bindings)
 FROM node:${NODE_VERSION} AS runner
