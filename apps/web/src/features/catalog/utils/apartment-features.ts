@@ -48,16 +48,20 @@ export const parseApartmentFeatureExtras = (features: unknown): ApartmentFeature
   const record = features as Record<string, unknown>;
 
   return {
-    windowsCount: asFiniteNumber(record.windowsCount ?? record.windows ?? record.windowCount),
-    balconiesCount: asFiniteNumber(
-      record.balconiesCount ?? record.balconies ?? record.balconyCount,
+    windowsCount: asFiniteNumber(
+      record['windowsCount'] ?? record['windows'] ?? record['windowCount'],
     ),
-    ceilingHeightM: asFiniteNumber(record.ceilingHeightM ?? record.ceilingHeight ?? record.ceiling),
+    balconiesCount: asFiniteNumber(
+      record['balconiesCount'] ?? record['balconies'] ?? record['balconyCount'],
+    ),
+    ceilingHeightM: asFiniteNumber(
+      record['ceilingHeightM'] ?? record['ceilingHeight'] ?? record['ceiling'],
+    ),
     finishingStatus: asNonEmptyString(
-      record.finishingStatus ?? record.finishStatus ?? record.finishing,
+      record['finishingStatus'] ?? record['finishStatus'] ?? record['finishing'],
     ),
     handoverDescription: asNonEmptyString(
-      record.handoverDescription ?? record.handover ?? record.deliveryDescription,
+      record['handoverDescription'] ?? record['handover'] ?? record['deliveryDescription'],
     ),
   };
 };

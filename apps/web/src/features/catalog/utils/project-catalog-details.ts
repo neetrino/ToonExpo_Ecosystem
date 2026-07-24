@@ -213,16 +213,20 @@ export const parseProjectAmenities = (
   }
 
   const record = amenities as Record<string, unknown>;
-  const labels = asLocalizedStringList(record.labels ?? record.items ?? record.amenities, locale);
+  const labels = asLocalizedStringList(
+    record['labels'] ?? record['items'] ?? record['amenities'],
+    locale,
+  );
+  const detailsValue = record['details'];
   const detailsSource =
-    record.details != null && typeof record.details === 'object' && !Array.isArray(record.details)
-      ? (record.details as Record<string, unknown>)
+    detailsValue != null && typeof detailsValue === 'object' && !Array.isArray(detailsValue)
+      ? (detailsValue as Record<string, unknown>)
       : record;
 
   return {
     labels,
     details: parseDetailsRecord(detailsSource, locale),
-    links: parseProjectCatalogLinks(record.links),
+    links: parseProjectCatalogLinks(record['links']),
   };
 };
 
@@ -242,7 +246,7 @@ export const parseProjectNearbyPlaces = (
   }
 
   const record = nearbyPlaces as Record<string, unknown>;
-  return asLocalizedStringList(record.places ?? record.items ?? record.nearby, locale);
+  return asLocalizedStringList(record['places'] ?? record['items'] ?? record['nearby'], locale);
 };
 
 const toCatalogLocale = (locale: string): CatalogContentLocale => {
