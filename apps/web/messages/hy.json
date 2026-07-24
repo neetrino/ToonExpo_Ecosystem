@@ -1106,6 +1106,8 @@
         "floorplanReplaceMessage": "Ներկայիս հարկի պլանը կփոխարինվի նոր պատկերով։",
         "floorplanReplaceConfirm": "Փոխարինել",
         "floorplanViewHint": "Դիտել հարկի պլանը ամբողջ էկրանով",
+        "floorplanEdit": "Խմբագրել",
+        "floorplanSaving": "Պահպանում…",
         "noFloorplan": "Հարկի պլան դեռ չի վերբեռնվել։",
         "apartmentsTitle": "Բնակարաններ",
         "loadingApartments": "Բնակարանները բեռնվում են…",

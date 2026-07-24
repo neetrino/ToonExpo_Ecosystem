@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import { AdminFloorAddApartmentsSheet } from '@/features/admin/components/admin-floor-add-apartments-sheet';
+import { FloorPlanGlanceIcon } from '@/features/admin/components/floor-plan-glance-icon';
 import { FloorPlanLightbox } from '@/features/admin/components/floor-plan-lightbox';
 import { useAdminFloorApartmentsQuery } from '@/features/admin/hooks/use-admin-inventory';
 import { catalogApartmentDetailHref } from '@/features/builder/catalog-scope';
@@ -86,15 +87,12 @@ export const AdminFloorApartmentsSheet = ({
         }
       >
         <div className="flex flex-col gap-6">
-          {floorplan ? (
-            <section className="overflow-hidden rounded-lg bg-surface">
-              <div className="border-b border-border px-3 py-2">
-                <h2 className="text-sm font-semibold text-ink">{t('floorplanTitle')}</h2>
-              </div>
-              <div className="bg-surface-elevated p-3">
+          <div className="flex items-center justify-between gap-3">
+            <div className="flex min-w-0 items-center gap-3">
+              {floorplan ? (
                 <button
                   type="button"
-                  className="block w-full cursor-zoom-in outline-none focus-visible:ring-2 focus-visible:ring-brand/30"
+                  className="relative size-12 shrink-0 cursor-zoom-in overflow-hidden rounded-full bg-surface ring-1 ring-border outline-none focus-visible:ring-2 focus-visible:ring-brand/30"
                   aria-label={t('floorplanViewHint')}
                   onClick={() => {
                     setLightboxOpen(true);
@@ -103,14 +101,25 @@ export const AdminFloorApartmentsSheet = ({
                   <img
                     src={floorplan.fileUrl}
                     alt={floorplan.altText ?? t('floorplanAlt')}
-                    className="mx-auto max-h-72 w-full object-contain"
+                    className="size-full object-cover"
                   />
                 </button>
+              ) : null}
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-ink">{t('floorplanTitle')}</p>
+                {!floorplan ? (
+                  <p className="text-xs text-ink-secondary">{t('noFloorplan')}</p>
+                ) : null}
               </div>
-            </section>
-          ) : (
-            <p className="text-sm text-ink-secondary">{t('noFloorplan')}</p>
-          )}
+            </div>
+            <FloorPlanGlanceIcon
+              hasFloorplan={Boolean(floorplan)}
+              companyId={companyId}
+              buildingId={buildingId}
+              floorId={floorId}
+              variant="edit"
+            />
+          </div>
 
           <section className="flex flex-col gap-3">
             <h2 className="text-sm font-semibold text-ink">{t('apartmentsTitle')}</h2>

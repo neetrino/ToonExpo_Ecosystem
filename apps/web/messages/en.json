@@ -1106,6 +1106,8 @@
         "floorplanReplaceMessage": "The current floor plan will be replaced with a new image.",
         "floorplanReplaceConfirm": "Replace",
         "floorplanViewHint": "View floor plan fullscreen",
+        "floorplanEdit": "Edit",
+        "floorplanSaving": "Saving…",
         "noFloorplan": "No floor plan uploaded yet.",
         "apartmentsTitle": "Apartments",
         "loadingApartments": "Loading apartments…",

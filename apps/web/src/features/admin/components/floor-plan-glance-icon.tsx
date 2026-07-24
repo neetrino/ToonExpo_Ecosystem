@@ -9,6 +9,7 @@ import { catalogMediaContext } from '@/features/builder/catalog-scope';
 import { uploadMediaAsset } from '@/features/media/api/media-api';
 import { isAllowedMediaMimeType, MEDIA_UPLOAD_MAX_BYTES } from '@/features/media/constants';
 import { AdminDeleteModal } from '@/shared/ui/admin-delete-modal';
+import { Button } from '@/shared/ui/button';
 import { cn } from '@/shared/ui/cn';
 
 const FLOOR_PLAN_ICON_SIZE_PX = 14;
@@ -18,16 +19,19 @@ type FloorPlanGlanceIconProps = {
   companyId: string;
   buildingId: string;
   floorId: string;
+  /** `icon` — glance row marker; `edit` — labeled Edit button. */
+  variant?: 'icon' | 'edit' | undefined;
 };
 
 /**
- * End-of-row plan marker: gray uploads; brand asks confirmation then replaces plan.
+ * Upload / replace floor plan — icon in glance, Edit button beside plan avatar.
  */
 export const FloorPlanGlanceIcon = ({
   hasFloorplan,
   companyId,
   buildingId,
   floorId,
+  variant = 'icon',
 }: FloorPlanGlanceIconProps) => {
   const t = useTranslations('Admin.buildings.inventory');
   const commonT = useTranslations('Common');
@@ -63,6 +67,14 @@ export const FloorPlanGlanceIcon = ({
     inputRef.current?.click();
   };
 
+  const startReplaceOrUpload = (): void => {
+    if (hasFloorplan) {
+      setConfirmOpen(true);
+      return;
+    }
+    openFilePicker();
+  };
+
   const iconControlClassName = cn(
     'inline-flex size-7 items-center justify-center rounded-md',
     'transition-colors',
@@ -71,7 +83,18 @@ export const FloorPlanGlanceIcon = ({
 
   return (
     <>
-      {hasFloorplan ? (
+      {variant === 'edit' ? (
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          disabled={busy}
+          aria-label={hasFloorplan ? t('floorplanReplaceHint') : t('floorplanUploadHint')}
+          onClick={startReplaceOrUpload}
+        >
+          {busy ? t('floorplanSaving') : t('floorplanEdit')}
+        </Button>
+      ) : hasFloorplan ? (
         <button
           type="button"
           title={t('floorplanReplaceHint')}
