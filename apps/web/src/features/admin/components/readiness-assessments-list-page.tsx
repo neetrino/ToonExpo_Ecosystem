@@ -92,13 +92,22 @@ export const ReadinessAssessmentsListPage = () => {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-page-title text-ink">{t('title')}</h1>
-          <p className="text-sm text-ink-secondary">
-            {t('subtitle', { count: response.meta.total })}
-          </p>
-        </div>
+      <div className="flex flex-col gap-1">
+        <h1 className="text-page-title text-ink">{t('title')}</h1>
+        <p className="text-sm text-ink-secondary">
+          {t('subtitle', { count: response.meta.total })}
+        </p>
+      </div>
+
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <ReadinessAssessmentFilters
+          companyId={filters.companyId}
+          targetType={filters.targetType}
+          status={filters.status}
+          companyOptions={companyOptions}
+          onChange={setFilters}
+        />
+
         <div className="flex flex-wrap items-center gap-2">
           <ViewModeToggle value={viewMode} onChange={setViewMode} />
           <Link
@@ -119,14 +128,6 @@ export const ReadinessAssessmentsListPage = () => {
           </Button>
         </div>
       </div>
-
-      <ReadinessAssessmentFilters
-        companyId={filters.companyId}
-        targetType={filters.targetType}
-        status={filters.status}
-        companyOptions={companyOptions}
-        onChange={setFilters}
-      />
 
       {response.data.length === 0 ? (
         <p className="text-sm text-ink-secondary">{t('empty')}</p>
