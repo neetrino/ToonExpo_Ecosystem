@@ -11,7 +11,7 @@ import {
   Min,
   MinLength,
 } from 'class-validator';
-import { PartnerCompanyStatus, PublicationStatus } from '@toonexpo/db';
+import { PartnerCompanyStatus, PartnerCompanyType, PublicationStatus } from '@toonexpo/db';
 
 import {
   PARTNERS_DEFAULT_PAGE_SIZE,
@@ -63,17 +63,17 @@ export class ListAdminPartnersQueryDto {
   @ApiPropertyOptional({ enum: PartnerCompanyTypeDto })
   @IsOptional()
   @IsEnum(PartnerCompanyTypeDto)
-  type?: PartnerCompanyTypeDto;
+  type?: PartnerCompanyType;
 
   @ApiPropertyOptional({ enum: PartnerCompanyStatusDto })
   @IsOptional()
   @IsEnum(PartnerCompanyStatusDto)
-  status?: PartnerCompanyStatusDto;
+  status?: PartnerCompanyStatus;
 
   @ApiPropertyOptional({ enum: PublicationStatusDto })
   @IsOptional()
   @IsEnum(PublicationStatusDto)
-  publicationStatus?: PublicationStatusDto;
+  publicationStatus?: PublicationStatus;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -117,7 +117,7 @@ export class CreateAdminPartnerDto {
 
   @ApiPropertyOptional({ enum: PartnerCompanyTypeDto })
   @IsEnum(PartnerCompanyTypeDto)
-  type!: PartnerCompanyTypeDto;
+  type!: PartnerCompanyType;
 
   @ApiPropertyOptional()
   @IsString()
@@ -172,12 +172,12 @@ export class CreateAdminPartnerDto {
   @ApiPropertyOptional({ enum: PartnerCompanyStatusDto })
   @IsOptional()
   @IsEnum(PartnerCompanyStatusDto)
-  status?: PartnerCompanyStatusDto;
+  status?: PartnerCompanyStatus;
 
   @ApiPropertyOptional({ enum: PublicationStatusDto })
   @IsOptional()
   @IsEnum(PublicationStatusDto)
-  publicationStatus?: PublicationStatusDto;
+  publicationStatus?: PublicationStatus;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -194,7 +194,7 @@ export class UpdateAdminPartnerDto {
   @ApiPropertyOptional({ enum: PartnerCompanyTypeDto })
   @IsOptional()
   @IsEnum(PartnerCompanyTypeDto)
-  type?: PartnerCompanyTypeDto;
+  type?: PartnerCompanyType;
 
   @ApiPropertyOptional()
   @IsOptional()
