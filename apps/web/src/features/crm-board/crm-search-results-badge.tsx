@@ -10,7 +10,7 @@ type CrmSearchResultsBadgeProps = {
 };
 
 /**
- * Quiet search-hit hint — sits beside the search label, no layout shift.
+ * Search-hit hint overlaid on the search field — out of document flow so CRM chrome does not shift.
  */
 export const CrmSearchResultsBadge = ({ count, className }: CrmSearchResultsBadgeProps) => {
   const t = useTranslations('CrmBoard');
@@ -20,7 +20,7 @@ export const CrmSearchResultsBadge = ({ count, className }: CrmSearchResultsBadg
       role="status"
       aria-live="polite"
       className={cn(
-        'm-0 truncate text-[11px] font-medium tracking-wide normal-case',
+        'm-0 truncate whitespace-nowrap text-[11px] font-medium tracking-wide normal-case',
         count === 0 ? 'font-semibold text-warning' : 'text-brand',
         className,
       )}

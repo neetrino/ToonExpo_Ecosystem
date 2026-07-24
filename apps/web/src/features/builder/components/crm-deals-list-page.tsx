@@ -160,12 +160,9 @@ export const CrmDealsListPage = () => {
         </Button>
       </div>
 
-      <label className="flex max-w-xl shrink-0 flex-col gap-1.5">
-        <span className="flex min-w-0 items-baseline justify-between gap-2">
-          <span className="text-xs font-medium uppercase tracking-wide text-ink-muted">
-            {tBoard('searchLabel')}
-          </span>
-          {search.trim() ? <CrmSearchResultsBadge count={deals.length} /> : null}
+      <label className="relative flex max-w-xl shrink-0 flex-col gap-1.5">
+        <span className="text-xs font-medium uppercase tracking-wide text-ink-muted">
+          {tBoard('searchLabel')}
         </span>
         <Input
           value={search}
@@ -174,6 +171,12 @@ export const CrmDealsListPage = () => {
             setSearch(event.target.value);
           }}
         />
+        {search.trim() ? (
+          <CrmSearchResultsBadge
+            count={deals.length}
+            className="pointer-events-none absolute right-0 top-0 max-w-[min(100%,14rem)]"
+          />
+        ) : null}
       </label>
 
       <div className="shrink-0">
