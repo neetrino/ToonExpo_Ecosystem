@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import type { ApartmentDetail } from '@toonexpo/contracts';
-import { getLocale, getTranslations } from 'next-intl/server';
+import { getTranslations } from 'next-intl/server';
 
 import { ApartmentDetailPrice } from '@/features/catalog/components/apartment-price-label';
 import { ApartmentInquireCard } from '@/features/catalog/components/apartment-inquire-card';
@@ -35,7 +35,6 @@ export const ApartmentDetailView = async ({
   district,
 }: ApartmentDetailViewProps) => {
   const t = await getTranslations('Catalog');
-  const locale = await getLocale();
   const title = t('apartment.unit', { number: apartment.number });
   const typeLabel = projectType?.trim()
     ? projectType
@@ -46,10 +45,6 @@ export const ApartmentDetailView = async ({
   const detailRows = buildApartmentDetailRows({
     apartment,
     district,
-    locale,
-    onRequestLabel: t('price.onRequest'),
-    signInLabel: t('price.signInToSee'),
-    formatArea: (area) => t('apartment.area', { area }),
     formatCeilingHeight: (height) => t('apartment.criteria.ceilingHeightValue', { height }),
     formatStatus: (status) => t(`status.${status}`),
     labels: {
@@ -57,13 +52,8 @@ export const ApartmentDetailView = async ({
       building: t('apartment.criteria.building'),
       floor: t('apartment.criteria.floor'),
       unitNumber: t('apartment.criteria.unitNumber'),
-      area: t('apartment.criteria.area'),
-      bedrooms: t('apartment.criteria.bedrooms'),
-      pricePerArea: t('apartment.criteria.pricePerArea'),
-      totalPrice: t('apartment.criteria.totalPrice'),
       status: t('apartment.criteria.status'),
       windows: t('apartment.criteria.windows'),
-      bathrooms: t('apartment.criteria.bathrooms'),
       handoverDescription: t('apartment.criteria.handoverDescription'),
       balconies: t('apartment.criteria.balconies'),
       generalDescription: t('apartment.criteria.generalDescription'),
@@ -132,14 +122,14 @@ export const ApartmentDetailView = async ({
             {locationLine ?? `${apartment.building.name} · ${title}`}
           </p>
 
-          <div className="mt-8 grid grid-cols-2 gap-y-4 border-y border-header-border py-6 sm:grid-cols-3 lg:grid-cols-5">
+          <div className="mt-8 flex flex-wrap items-start justify-between gap-y-4 border-y border-header-border py-6">
             <StatBlock label={t('apartment.priceLabel')}>
               <ApartmentDetailPrice
                 apartmentId={apartment.id}
                 amount={apartment.price}
                 currency={apartment.priceCurrency}
                 priceVisibility={apartment.priceVisibility}
-                className="text-[1.875rem] leading-[1.25]"
+                className="whitespace-nowrap text-[1.875rem] leading-[1.25]"
               />
             </StatBlock>
             <StatBlock label={t('apartment.bedsLabel')}>
@@ -235,7 +225,7 @@ export const ApartmentDetailView = async ({
 };
 
 const StatBlock = ({ label, children }: { label: string; children: ReactNode }) => (
-  <div className="flex flex-col items-center text-center">
+  <div className="flex shrink-0 flex-col items-center text-center">
     <p className="text-[10px] font-bold tracking-widest text-header-muted uppercase">{label}</p>
     <div className="mt-1">{children}</div>
   </div>
