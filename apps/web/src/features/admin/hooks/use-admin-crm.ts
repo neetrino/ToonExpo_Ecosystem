@@ -1,8 +1,10 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import type { CreateAdminManualDealBody } from '@toonexpo/contracts';
 
 import {
+  createAdminManualCrmDeal,
   getAdminCrmDeal,
   listAdminCrmDeals,
   type ListAdminCrmDealsParams,
@@ -19,7 +21,7 @@ export const useAdminCrmDealsQuery = (params: ListAdminCrmDealsParams) =>
   });
 
 /**
- * Single admin CRM deal detail (read-only).
+ * Single admin CRM deal detail.
  */
 export const useAdminCrmDealQuery = (id: string) =>
   useQuery({
@@ -27,3 +29,16 @@ export const useAdminCrmDealQuery = (id: string) =>
     queryFn: () => getAdminCrmDeal(id),
     enabled: id.length > 0,
   });
+
+/**
+ * Creates a manual CRM deal for a builder company.
+ */
+export const useCreateAdminManualDealMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (body: CreateAdminManualDealBody) => createAdminManualCrmDeal(body),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ADMIN_CRM_DEALS_QUERY_KEY });
+    },
+  });
+};

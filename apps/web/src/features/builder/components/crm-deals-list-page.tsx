@@ -27,8 +27,9 @@ import {
   isCrmStatusTransitionAllowed,
 } from '@/features/builder/utils/crm-status-transitions';
 import { CrmDealSheet, CrmKanbanBoard } from '@/features/crm-board';
-import { Button } from '@/shared/ui/button';
+import { CrmNewColumnCreateButton } from '@/features/crm-board/crm-new-column-create-button';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
+import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 
 /**
@@ -179,16 +180,11 @@ export const CrmDealsListPage = () => {
         onOpenDeal={setSelectedDealId}
         onStatusDrop={onStatusDrop}
         newColumnAction={
-          <Button
-            type="button"
-            size="sm"
-            className="w-full"
+          <CrmNewColumnCreateButton
             onClick={() => {
               setShowNew(true);
             }}
-          >
-            {tBoard('quickLead')}
-          </Button>
+          />
         }
       />
 

@@ -148,6 +148,7 @@ export type {
   CreateCrmNoteBody,
   CreateDealFromScanBody,
   CreateManualDealBody,
+  CreateAdminManualDealBody,
   CrmActivityItem,
   CrmActivityStatus,
   CrmActivityType,

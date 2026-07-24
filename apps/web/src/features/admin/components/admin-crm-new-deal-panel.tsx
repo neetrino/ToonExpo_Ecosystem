@@ -1,0 +1,216 @@
+'use client';
+
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
+import { useEffect, useMemo } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+
+import { useCreateAdminManualDealMutation } from '@/features/admin/hooks/use-admin-crm';
+import { useAdminCompanyProjectsQuery } from '@/features/admin/hooks/use-admin-companies';
+import {
+  CRM_CONTACT_NAME_MAX_LENGTH,
+  CRM_NOTE_MAX_LENGTH,
+} from '@/features/builder/schemas/crm.schema';
+import {
+  EMAIL_MAX_LENGTH,
+  PHONE_MAX_LENGTH,
+  PHONE_MIN_LENGTH,
+  PHONE_PATTERN,
+} from '@/shared/config/auth.constants';
+import { Button } from '@/shared/ui/button';
+import { FormField } from '@/shared/ui/form-field';
+import { Input } from '@/shared/ui/input';
+import { Textarea } from '@/shared/ui/textarea';
+
+const adminCreateDealSchema = z.object({
+  companyId: z.string().trim().min(1),
+  contactName: z.string().trim().min(1).max(CRM_CONTACT_NAME_MAX_LENGTH),
+  contactPhone: z
+    .string()
+    .trim()
+    .refine(
+      (value) =>
+        value.length === 0 ||
+        (value.length >= PHONE_MIN_LENGTH &&
+          value.length <= PHONE_MAX_LENGTH &&
+          PHONE_PATTERN.test(value)),
+      { message: 'phone' },
+    ),
+  contactEmail: z
+    .string()
+    .trim()
+    .refine(
+      (value) => value.length === 0 || (value.includes('@') && value.length <= EMAIL_MAX_LENGTH),
+      { message: 'email' },
+    ),
+  projectId: z.string().trim().optional(),
+  note: z.string().trim().max(CRM_NOTE_MAX_LENGTH).optional(),
+});
+
+type AdminCreateDealFormValues = z.infer<typeof adminCreateDealSchema>;
+
+type CompanyOption = { id: string; name: string };
+
+type AdminCrmNewDealPanelProps = {
+  companies: CompanyOption[];
+  defaultCompanyId?: string;
+  onClose: () => void;
+  onCreated: (dealId: string) => void;
+};
+
+/**
+ * Admin quick-create lead modal — builder + contact fields.
+ */
+export const AdminCrmNewDealPanel = ({
+  companies,
+  defaultCompanyId = '',
+  onClose,
+  onCreated,
+}: AdminCrmNewDealPanelProps) => {
+  const t = useTranslations('Admin.crm.newDeal');
+  const tBoard = useTranslations('CrmBoard');
+  const mutation = useCreateAdminManualDealMutation();
+  const form = useForm<AdminCreateDealFormValues>({
+    resolver: zodResolver(adminCreateDealSchema),
+    defaultValues: {
+      companyId: defaultCompanyId,
+      contactName: '',
+      contactPhone: '',
+      contactEmail: '',
+      projectId: '',
+      note: '',
+    },
+  });
+
+  const selectedCompanyId = form.watch('companyId');
+  const projectsQuery = useAdminCompanyProjectsQuery(
+    selectedCompanyId,
+    selectedCompanyId.length > 0,
+  );
+
+  const projects = useMemo(
+    () =>
+      (projectsQuery.data?.data ?? []).map((project) => ({
+        id: project.id,
+        name: project.name,
+      })),
+    [projectsQuery.data],
+  );
+
+  useEffect(() => {
+    form.setValue('projectId', '');
+  }, [selectedCompanyId, form]);
+
+  const onSubmit = form.handleSubmit(async (values) => {
+    try {
+      const result = await mutation.mutateAsync({
+        companyId: values.companyId,
+        contactName: values.contactName,
+        ...(values.contactPhone ? { contactPhone: values.contactPhone } : {}),
+        ...(values.contactEmail ? { contactEmail: values.contactEmail } : {}),
+        ...(values.projectId ? { projectId: values.projectId } : {}),
+        ...(values.note ? { note: values.note } : {}),
+      });
+      onClose();
+      onCreated(result.dealId);
+    } catch {
+      form.setError('root', { message: t('errors.generic') });
+    }
+  });
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="admin-crm-new-deal-title"
+      className="fixed inset-0 z-40 flex items-end justify-center bg-ink/40 p-0 sm:items-center sm:p-6"
+    >
+      <div className="flex max-h-[90vh] w-full max-w-lg flex-col overflow-y-auto rounded-t-lg bg-background p-5 shadow-lg sm:rounded-sm">
+        <div className="mb-4 flex items-start justify-between gap-3">
+          <h2 id="admin-crm-new-deal-title" className="text-lg font-semibold text-ink">
+            {t('title')}
+          </h2>
+          <button type="button" className="text-sm text-ink-muted hover:text-ink" onClick={onClose}>
+            {t('cancel')}
+          </button>
+        </div>
+
+        <form className="flex flex-col gap-4" onSubmit={onSubmit}>
+          <FormField
+            id="companyId"
+            label={t('company')}
+            error={form.formState.errors.companyId ? t('validation.company') : undefined}
+          >
+            <select
+              id="companyId"
+              className="h-11 w-full rounded-sm border border-border bg-background px-3 text-sm text-ink"
+              {...form.register('companyId')}
+            >
+              <option value="">{t('companyPlaceholder')}</option>
+              {companies.map((company) => (
+                <option key={company.id} value={company.id}>
+                  {company.name}
+                </option>
+              ))}
+            </select>
+          </FormField>
+
+          <FormField
+            id="contactName"
+            label={t('contactName')}
+            error={form.formState.errors.contactName ? t('validation.contactName') : undefined}
+          >
+            <Input id="contactName" {...form.register('contactName')} />
+          </FormField>
+
+          <FormField
+            id="contactPhone"
+            label={t('contactPhone')}
+            error={form.formState.errors.contactPhone ? t('validation.phone') : undefined}
+          >
+            <Input id="contactPhone" type="tel" {...form.register('contactPhone')} />
+          </FormField>
+
+          <FormField
+            id="contactEmail"
+            label={t('contactEmail')}
+            error={form.formState.errors.contactEmail ? t('validation.email') : undefined}
+          >
+            <Input id="contactEmail" type="email" {...form.register('contactEmail')} />
+          </FormField>
+
+          <FormField id="projectId" label={t('project')}>
+            <select
+              id="projectId"
+              className="h-11 w-full rounded-sm border border-border bg-background px-3 text-sm text-ink"
+              disabled={!selectedCompanyId}
+              {...form.register('projectId')}
+            >
+              <option value="">{t('projectOptional')}</option>
+              {projects.map((project) => (
+                <option key={project.id} value={project.id}>
+                  {project.name}
+                </option>
+              ))}
+            </select>
+          </FormField>
+
+          <FormField id="note" label={t('note')}>
+            <Textarea id="note" rows={3} {...form.register('note')} />
+          </FormField>
+
+          {form.formState.errors.root?.message ? (
+            <p role="alert" className="text-sm text-danger">
+              {form.formState.errors.root.message}
+            </p>
+          ) : null}
+
+          <Button type="submit" disabled={mutation.isPending} className="w-full">
+            {mutation.isPending ? t('submitting') : tBoard('quickLead')}
+          </Button>
+        </form>
+      </div>
+    </div>
+  );
+};

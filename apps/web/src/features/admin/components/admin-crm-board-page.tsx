@@ -4,6 +4,7 @@ import type { RequestSource } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 
+import { AdminCrmNewDealPanel } from '@/features/admin/components/admin-crm-new-deal-panel';
 import {
   ADMIN_COMPANIES_MAX_PAGE_SIZE,
   ADMIN_CRM_BOARD_PAGE_SIZE,
@@ -12,16 +13,18 @@ import { useAdminCrmDealQuery, useAdminCrmDealsQuery } from '@/features/admin/ho
 import { useAdminCompaniesQuery } from '@/features/admin/hooks/use-admin-companies';
 import { CrmDealSheet, CrmKanbanBoard } from '@/features/crm-board';
 import { CRM_BOARD_REQUEST_SOURCES } from '@/features/crm-board/constants';
+import { CrmNewColumnCreateButton } from '@/features/crm-board/crm-new-column-create-button';
 import { Input } from '@/shared/ui/input';
 import { Select } from '@/shared/ui/select';
 
 /**
- * Platform admin CRM Kanban — cross-company, read-only overview.
+ * Platform admin CRM Kanban — overview + quick lead create.
  */
 export const AdminCrmBoardPage = () => {
   const t = useTranslations('Admin.crm');
   const tBoard = useTranslations('CrmBoard');
   const [selectedDealId, setSelectedDealId] = useState<string | null>(null);
+  const [showNew, setShowNew] = useState(false);
   const [search, setSearch] = useState('');
   const [companyId, setCompanyId] = useState('');
   const [source, setSource] = useState<RequestSource | ''>('');
@@ -127,7 +130,34 @@ export const AdminCrmBoardPage = () => {
         </label>
       </div>
 
-      <CrmKanbanBoard deals={deals} mode="readonly" onOpenDeal={setSelectedDealId} />
+      <CrmKanbanBoard
+        deals={deals}
+        mode="readonly"
+        onOpenDeal={setSelectedDealId}
+        newColumnAction={
+          <CrmNewColumnCreateButton
+            onClick={() => {
+              setShowNew(true);
+            }}
+          />
+        }
+      />
+
+      {showNew ? (
+        <AdminCrmNewDealPanel
+          companies={builderCompanies.map((company) => ({
+            id: company.id,
+            name: company.name,
+          }))}
+          defaultCompanyId={companyId}
+          onClose={() => {
+            setShowNew(false);
+          }}
+          onCreated={(dealId) => {
+            setSelectedDealId(dealId);
+          }}
+        />
+      ) : null}
 
       <CrmDealSheet
         open={selectedDealId !== null}

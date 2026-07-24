@@ -64,6 +64,11 @@ export type CreateManualDealBody = {
   note?: string;
 };
 
+/** Platform admin creates a manual deal for a builder company. */
+export type CreateAdminManualDealBody = CreateManualDealBody & {
+  companyId: string;
+};
+
 export type IntakeCreateResult = {
   requestId: string;
   dealId: string;

@@ -1,7 +1,9 @@
 import type {
+  CreateAdminManualDealBody,
   CrmDealDetail,
   CrmDealListResponse,
   CrmDealStatus,
+  IntakeCreateResult,
   RequestSource,
 } from '@toonexpo/contracts';
 
@@ -52,7 +54,7 @@ export const listAdminCrmDeals = (
 };
 
 /**
- * GET /admin/crm/deals/:id — read-only deal detail.
+ * GET /admin/crm/deals/:id — deal detail.
  */
 export const getAdminCrmDeal = (id: string): Promise<CrmDealDetail> =>
   apiFetch({
@@ -60,4 +62,18 @@ export const getAdminCrmDeal = (id: string): Promise<CrmDealDetail> =>
     method: 'GET',
     credentials: 'include',
     cache: 'no-store',
+  });
+
+/**
+ * POST /admin/crm/deals — create manual deal for a builder.
+ */
+export const createAdminManualCrmDeal = (
+  body: CreateAdminManualDealBody,
+): Promise<IntakeCreateResult> =>
+  apiFetch({
+    path: '/admin/crm/deals',
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
   });

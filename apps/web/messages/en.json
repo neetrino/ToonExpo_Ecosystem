@@ -960,6 +960,28 @@
       "filters": {
         "company": "Builder",
         "allCompanies": "All builders"
+      },
+      "newDeal": {
+        "title": "New lead",
+        "cancel": "Cancel",
+        "company": "Builder",
+        "companyPlaceholder": "Select builder",
+        "contactName": "Name",
+        "contactPhone": "Phone",
+        "contactEmail": "Email",
+        "project": "Project",
+        "projectOptional": "No project",
+        "note": "Note",
+        "submitting": "Creating…",
+        "validation": {
+          "company": "Select a builder",
+          "contactName": "Enter a name",
+          "phone": "Enter a valid phone number",
+          "email": "Enter a valid email"
+        },
+        "errors": {
+          "generic": "Something went wrong. Please try again."
+        }
       }
     },
     "analytics": {

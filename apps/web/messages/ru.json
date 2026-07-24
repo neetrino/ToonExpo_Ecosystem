@@ -960,6 +960,28 @@
       "filters": {
         "company": "Застройщик",
         "allCompanies": "Все застройщики"
+      },
+      "newDeal": {
+        "title": "Новый лид",
+        "cancel": "Отмена",
+        "company": "Застройщик",
+        "companyPlaceholder": "Выберите застройщика",
+        "contactName": "Имя",
+        "contactPhone": "Телефон",
+        "contactEmail": "Email",
+        "project": "Проект",
+        "projectOptional": "Без проекта",
+        "note": "Заметка",
+        "submitting": "Создание…",
+        "validation": {
+          "company": "Выберите застройщика",
+          "contactName": "Введите имя",
+          "phone": "Введите корректный телефон",
+          "email": "Введите корректный email"
+        },
+        "errors": {
+          "generic": "Что-то пошло не так. Попробуйте снова."
+        }
       }
     },
     "analytics": {

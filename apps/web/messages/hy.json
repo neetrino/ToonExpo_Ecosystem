@@ -960,6 +960,28 @@
       "filters": {
         "company": "Կառուցապատող",
         "allCompanies": "Բոլոր կառուցապատողները"
+      },
+      "newDeal": {
+        "title": "Նոր lead",
+        "cancel": "Չեղարկել",
+        "company": "Կառուցապատող",
+        "companyPlaceholder": "Ընտրեք կառուցապատող",
+        "contactName": "Անուն",
+        "contactPhone": "Հեռախոս",
+        "contactEmail": "Email",
+        "project": "Նախագիծ",
+        "projectOptional": "Առանց նախագծի",
+        "note": "Նշում",
+        "submitting": "Ստեղծվում է…",
+        "validation": {
+          "company": "Ընտրեք կառուցապատող",
+          "contactName": "Մուտքագրեք անուն",
+          "phone": "Մուտքագրեք վավեր հեռախոս",
+          "email": "Մուտքագրեք վավեր email"
+        },
+        "errors": {
+          "generic": "Ինչ-որ սխալ տեղի ունեցավ։ Փորձեք նորից։"
+        }
       }
     },
     "analytics": {

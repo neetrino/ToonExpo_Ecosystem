@@ -1,11 +1,17 @@
-import { Injectable } from '@nestjs/common';
-import type { CrmDealDetail, CrmDealListResponse } from '@toonexpo/contracts';
-import type { CrmDealStatus, RequestSource } from '@toonexpo/db';
+import { BadRequestException, Injectable } from '@nestjs/common';
+import type {
+  CreateAdminManualDealBody,
+  CrmDealDetail,
+  CrmDealListResponse,
+  IntakeCreateResult,
+} from '@toonexpo/contracts';
+import { CompanyType, RequestSource, type CrmDealStatus } from '@toonexpo/db';
 
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { entityNotFound } from '../../portal/utils/access.js';
 import { CRM_DEFAULT_PAGE_SIZE, CRM_MIN_PAGE } from '../crm.constants.js';
 import { buildCrmDealSearchWhere } from '../crm-deal-search.js';
+import { RequestIntakeService } from '../intake/request-intake.service.js';
 import { mapDealDetail, mapDealListItem } from '../mappers/crm.mapper.js';
 
 export type ListAdminDealsQuery = {
@@ -20,11 +26,14 @@ export type ListAdminDealsQuery = {
 };
 
 /**
- * Platform-admin CRM overview (read-only, cross-company).
+ * Platform-admin CRM overview + manual lead intake for builders.
  */
 @Injectable()
 export class AdminCrmDealsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly intake: RequestIntakeService,
+  ) {}
 
   async list(query: ListAdminDealsQuery): Promise<CrmDealListResponse> {
     const page = query.page ?? CRM_MIN_PAGE;
@@ -94,5 +103,42 @@ export class AdminCrmDealsService {
       throw entityNotFound('Deal');
     }
     return mapDealDetail(row);
+  }
+
+  async createManual(
+    actorUserId: string,
+    body: CreateAdminManualDealBody,
+  ): Promise<IntakeCreateResult> {
+    const company = await this.prisma.db.company.findFirst({
+      where: { id: body.companyId, type: CompanyType.builder },
+      select: { id: true },
+    });
+    if (!company) {
+      throw new BadRequestException('Company must be an active builder');
+    }
+
+    let buyerProfileId: string | null = null;
+    if (body.contactEmail?.trim()) {
+      const profile = await this.prisma.db.buyerProfile.findFirst({
+        where: {
+          email: { equals: body.contactEmail.trim(), mode: 'insensitive' },
+        },
+        select: { id: true },
+      });
+      buyerProfileId = profile?.id ?? null;
+    }
+
+    return this.intake.create({
+      source: RequestSource.manual_builder_entry,
+      builderCompanyId: company.id,
+      buyerProfileId,
+      projectId: body.projectId ?? null,
+      apartmentId: null,
+      note: body.note ?? null,
+      createdByUserId: actorUserId,
+      contactName: body.contactName.trim(),
+      contactPhone: body.contactPhone?.trim() ?? null,
+      contactEmail: body.contactEmail?.trim() ?? null,
+    });
   }
 }
