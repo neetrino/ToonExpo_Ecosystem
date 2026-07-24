@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import type { PaginatedResponse, ProjectListItem } from '@toonexpo/contracts';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { listProjects } from '@/features/catalog/api/catalog-api';
@@ -20,6 +21,11 @@ type ProjectsPageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
+const emptyProjectPage = (pageSize: number): PaginatedResponse<ProjectListItem> => ({
+  data: [],
+  meta: { page: 1, pageSize, total: 0, totalPages: 0 },
+});
+
 export const generateMetadata = async ({ params }: ProjectsPageProps): Promise<Metadata> => {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'Catalog' });
@@ -30,6 +36,9 @@ export const generateMetadata = async ({ params }: ProjectsPageProps): Promise<M
   };
 };
 
+/**
+ * Soft-fails catalog fetch so `next build` can prerender when Nest is offline.
+ */
 export default async function ProjectsPage({ params, searchParams }: ProjectsPageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
@@ -37,7 +46,10 @@ export default async function ProjectsPage({ params, searchParams }: ProjectsPag
   const t = await getTranslations('Catalog');
   const rawParams = await searchParams;
   const filters = parseProjectFilters(rawParams);
-  const response = await listProjects(toListProjectsQuery(filters), { locale });
+  const query = toListProjectsQuery(filters);
+  const response = await listProjects(query, { locale }).catch(() =>
+    emptyProjectPage(query.pageSize ?? 1),
+  );
 
   const buildHref = (page: number): string => {
     const query = new URLSearchParams(buildProjectSearchParams(filters, page)).toString();

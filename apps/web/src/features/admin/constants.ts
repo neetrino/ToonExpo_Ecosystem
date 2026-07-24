@@ -17,6 +17,13 @@ export const COMPANY_STATUSES = ['active', 'inactive', 'pending'] as const;
 /** TanStack Query keys for platform admin companies. */
 export const ADMIN_COMPANIES_QUERY_KEY = ['admin', 'companies'] as const;
 
+export const ADMIN_CRM_DEALS_QUERY_KEY = ['admin', 'crm', 'deals'] as const;
+
+export const adminCrmDealQueryKey = (id: string) => [...ADMIN_CRM_DEALS_QUERY_KEY, id] as const;
+
+/** Kanban board page size for admin CRM overview. */
+export const ADMIN_CRM_BOARD_PAGE_SIZE = 100;
+
 export const adminCompanyQueryKey = (id: string) => [...ADMIN_COMPANIES_QUERY_KEY, id] as const;
 
 export const adminCompanyProjectsQueryKey = (companyId: string) =>

@@ -1,25 +1,20 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable } from '@nestjs/common';
 import type {
   CrmDealDetail,
   CrmDealListResponse,
   IntakeCreateResult,
   UpdateCrmDealBody,
-} from "@toonexpo/contracts";
-import {
-  RequestSource,
-  type CrmDealStatus,
-} from "@toonexpo/db";
+} from '@toonexpo/contracts';
+import { RequestSource, type CrmDealStatus } from '@toonexpo/db';
 
-import type { CompanyMemberContext } from "../../company/types/company-member-context.js";
-import { PrismaService } from "../../prisma/prisma.service.js";
-import { entityNotFound } from "../../portal/utils/access.js";
-import {
-  CRM_DEFAULT_PAGE_SIZE,
-  CRM_MIN_PAGE,
-} from "../crm.constants.js";
-import { RequestIntakeService } from "../intake/request-intake.service.js";
-import { mapDealDetail, mapDealListItem } from "../mappers/crm.mapper.js";
-import { DealStatusService } from "../status/deal-status.service.js";
+import type { CompanyMemberContext } from '../../company/types/company-member-context.js';
+import { PrismaService } from '../../prisma/prisma.service.js';
+import { entityNotFound } from '../../portal/utils/access.js';
+import { CRM_DEFAULT_PAGE_SIZE, CRM_MIN_PAGE } from '../crm.constants.js';
+import { buildCrmDealSearchWhere } from '../crm-deal-search.js';
+import { RequestIntakeService } from '../intake/request-intake.service.js';
+import { mapDealDetail, mapDealListItem } from '../mappers/crm.mapper.js';
+import { DealStatusService } from '../status/deal-status.service.js';
 
 export type ListDealsQuery = {
   page?: number;
@@ -28,6 +23,7 @@ export type ListDealsQuery = {
   source?: RequestSource;
   projectId?: string;
   assignedUserId?: string;
+  q?: string;
 };
 
 /**
@@ -41,27 +37,24 @@ export class PortalCrmDealsService {
     private readonly dealStatus: DealStatusService,
   ) {}
 
-  async list(
-    member: CompanyMemberContext,
-    query: ListDealsQuery,
-  ): Promise<CrmDealListResponse> {
+  async list(member: CompanyMemberContext, query: ListDealsQuery): Promise<CrmDealListResponse> {
     const page = query.page ?? CRM_MIN_PAGE;
     const pageSize = query.pageSize ?? CRM_DEFAULT_PAGE_SIZE;
+    const searchWhere = buildCrmDealSearchWhere(query.q);
     const where = {
       companyId: member.companyId,
       ...(query.status ? { status: query.status } : {}),
       ...(query.source ? { source: query.source } : {}),
       ...(query.projectId ? { projectId: query.projectId } : {}),
-      ...(query.assignedUserId
-        ? { assignedUserId: query.assignedUserId }
-        : {}),
+      ...(query.assignedUserId ? { assignedUserId: query.assignedUserId } : {}),
+      ...(searchWhere ?? {}),
     };
 
     const [total, rows] = await this.prisma.db.$transaction([
       this.prisma.db.crmDeal.count({ where }),
       this.prisma.db.crmDeal.findMany({
         where,
-        orderBy: { updatedAt: "desc" },
+        orderBy: { updatedAt: 'desc' },
         skip: (page - 1) * pageSize,
         take: pageSize,
         include: {
@@ -85,10 +78,7 @@ export class PortalCrmDealsService {
     };
   }
 
-  async getById(
-    member: CompanyMemberContext,
-    dealId: string,
-  ): Promise<CrmDealDetail> {
+  async getById(member: CompanyMemberContext, dealId: string): Promise<CrmDealDetail> {
     const row = await this.loadDealOrThrow(member.companyId, dealId);
     return mapDealDetail(row);
   }
@@ -104,14 +94,11 @@ export class PortalCrmDealsService {
       select: { id: true, status: true },
     });
     if (!deal) {
-      throw entityNotFound("Deal");
+      throw entityNotFound('Deal');
     }
 
     if (body.assignedUserId !== undefined && body.assignedUserId !== null) {
-      await this.dealStatus.assertAssigneeInCompany(
-        member.companyId,
-        body.assignedUserId,
-      );
+      await this.dealStatus.assertAssigneeInCompany(member.companyId, body.assignedUserId);
     }
 
     if (body.status !== undefined && body.status !== deal.status) {
@@ -128,9 +115,7 @@ export class PortalCrmDealsService {
     await this.prisma.db.crmDeal.update({
       where: { id: deal.id },
       data: {
-        ...(body.assignedUserId !== undefined
-          ? { assignedUserId: body.assignedUserId }
-          : {}),
+        ...(body.assignedUserId !== undefined ? { assignedUserId: body.assignedUserId } : {}),
         ...(body.projectId !== undefined ? { projectId: body.projectId } : {}),
         ...(body.status === undefined && body.lostReason !== undefined
           ? { lostReason: body.lostReason }
@@ -139,6 +124,27 @@ export class PortalCrmDealsService {
     });
 
     return this.getById(member, dealId);
+  }
+
+  /**
+   * Permanently deletes a company CRM deal (notes / activities / apartment links cascade).
+   */
+  async delete(member: CompanyMemberContext, dealId: string): Promise<void> {
+    const deal = await this.prisma.db.crmDeal.findFirst({
+      where: { id: dealId, companyId: member.companyId },
+      select: { id: true },
+    });
+    if (!deal) {
+      throw entityNotFound('Deal');
+    }
+
+    await this.prisma.db.$transaction([
+      this.prisma.db.apartment.updateMany({
+        where: { activeCrmDealId: deal.id },
+        data: { activeCrmDealId: null },
+      }),
+      this.prisma.db.crmDeal.delete({ where: { id: deal.id } }),
+    ]);
   }
 
   async createFromScan(
@@ -159,7 +165,7 @@ export class PortalCrmDealsService {
       select: { id: true, buyerProfileId: true },
     });
     if (!scan) {
-      throw entityNotFound("Scan event");
+      throw entityNotFound('Scan event');
     }
 
     return this.intake.create({
@@ -190,7 +196,7 @@ export class PortalCrmDealsService {
     if (body.contactEmail?.trim()) {
       const profile = await this.prisma.db.buyerProfile.findFirst({
         where: {
-          email: { equals: body.contactEmail.trim(), mode: "insensitive" },
+          email: { equals: body.contactEmail.trim(), mode: 'insensitive' },
         },
         select: { id: true },
       });
@@ -220,20 +226,20 @@ export class PortalCrmDealsService {
           select: { id: true, name: true, phone: true, email: true },
         },
         assignedUser: { select: { id: true, name: true } },
-        requests: { orderBy: { createdAt: "asc" } },
+        requests: { orderBy: { createdAt: 'asc' } },
         apartmentLinks: {
           include: { apartment: { select: { number: true } } },
-          orderBy: { createdAt: "asc" },
+          orderBy: { createdAt: 'asc' },
         },
         notes: {
           include: { author: { select: { name: true } } },
-          orderBy: { createdAt: "desc" },
+          orderBy: { createdAt: 'desc' },
         },
-        activities: { orderBy: { createdAt: "desc" } },
+        activities: { orderBy: { createdAt: 'desc' } },
       },
     });
     if (!row) {
-      throw entityNotFound("Deal");
+      throw entityNotFound('Deal');
     }
     return row;
   }

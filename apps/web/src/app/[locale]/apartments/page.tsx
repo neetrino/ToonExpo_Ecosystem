@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import type { PaginatedResponse, ProjectListItem } from '@toonexpo/contracts';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { listProjects } from '@/features/catalog/api/catalog-api';
@@ -8,10 +9,17 @@ import { SiteFooter } from '@/features/catalog/components/site-footer';
 import { loadBuyApartmentListings } from '@/features/catalog/utils/load-buy-apartments';
 import { parseProjectFilters } from '@/features/catalog/utils/project-filters';
 
+const CITY_PROJECTS_PAGE_SIZE = 50;
+
 type ApartmentsIndexPageProps = {
   params: Promise<{ locale: string }>;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
+
+const emptyProjectPage = (pageSize: number): PaginatedResponse<ProjectListItem> => ({
+  data: [],
+  meta: { page: 1, pageSize, total: 0, totalPages: 0 },
+});
 
 export const generateMetadata = async ({ params }: ApartmentsIndexPageProps): Promise<Metadata> => {
   const { locale } = await params;
@@ -25,6 +33,7 @@ export const generateMetadata = async ({ params }: ApartmentsIndexPageProps): Pr
 
 /**
  * Public Buy / apartments browse — Figma `103:1437`.
+ * Soft-fails catalog fetches so `next build` can prerender when Nest is offline.
  */
 export default async function ApartmentsIndexPage({
   params,
@@ -40,8 +49,10 @@ export default async function ApartmentsIndexPage({
   }
 
   const [listings, projectsForCities] = await Promise.all([
-    loadBuyApartmentListings({ locale, filters }),
-    listProjects({ page: 1, pageSize: 50, locale }, { locale }),
+    loadBuyApartmentListings({ locale, filters }).catch(() => []),
+    listProjects({ page: 1, pageSize: CITY_PROJECTS_PAGE_SIZE, locale }, { locale }).catch(() =>
+      emptyProjectPage(CITY_PROJECTS_PAGE_SIZE),
+    ),
   ]);
 
   const cities = [

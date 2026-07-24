@@ -14,11 +14,11 @@ import type {
   RequestSource,
   UpdateCrmActivityBody,
   UpdateCrmDealBody,
-} from "@toonexpo/contracts";
+} from '@toonexpo/contracts';
 
-import { apiFetch } from "@/shared/api/client";
+import { apiFetch } from '@/shared/api/client';
 
-import { jsonCredentials } from "./portal-request";
+import { jsonCredentials } from './portal-request';
 
 export type ListCrmDealsParams = {
   page: number;
@@ -27,36 +27,38 @@ export type ListCrmDealsParams = {
   source?: RequestSource;
   projectId?: string;
   assignedUserId?: string;
+  q?: string;
 };
 
 /**
  * GET /portal/crm/deals — paginated company deals.
  */
-export const listCrmDeals = (
-  params: ListCrmDealsParams,
-): Promise<CrmDealListResponse> => {
+export const listCrmDeals = (params: ListCrmDealsParams): Promise<CrmDealListResponse> => {
   const search = new URLSearchParams({
     page: String(params.page),
     pageSize: String(params.pageSize),
   });
   if (params.status) {
-    search.set("status", params.status);
+    search.set('status', params.status);
   }
   if (params.source) {
-    search.set("source", params.source);
+    search.set('source', params.source);
   }
   if (params.projectId) {
-    search.set("projectId", params.projectId);
+    search.set('projectId', params.projectId);
   }
   if (params.assignedUserId) {
-    search.set("assignedUserId", params.assignedUserId);
+    search.set('assignedUserId', params.assignedUserId);
+  }
+  if (params.q) {
+    search.set('q', params.q);
   }
 
   return apiFetch({
     path: `/portal/crm/deals?${search.toString()}`,
-    method: "GET",
-    credentials: "include",
-    cache: "no-store",
+    method: 'GET',
+    credentials: 'include',
+    cache: 'no-store',
   });
 };
 
@@ -66,34 +68,39 @@ export const listCrmDeals = (
 export const getCrmDeal = (id: string): Promise<CrmDealDetail> =>
   apiFetch({
     path: `/portal/crm/deals/${encodeURIComponent(id)}`,
-    method: "GET",
-    credentials: "include",
-    cache: "no-store",
+    method: 'GET',
+    credentials: 'include',
+    cache: 'no-store',
   });
 
 /**
  * PATCH /portal/crm/deals/:id
  */
-export const updateCrmDeal = (
-  id: string,
-  body: UpdateCrmDealBody,
-): Promise<CrmDealDetail> =>
+export const updateCrmDeal = (id: string, body: UpdateCrmDealBody): Promise<CrmDealDetail> =>
   apiFetch({
     path: `/portal/crm/deals/${encodeURIComponent(id)}`,
-    method: "PATCH",
+    method: 'PATCH',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
 
 /**
+ * DELETE /portal/crm/deals/:id
+ */
+export const deleteCrmDeal = (id: string): Promise<void> =>
+  apiFetch({
+    path: `/portal/crm/deals/${encodeURIComponent(id)}`,
+    method: 'DELETE',
+    ...jsonCredentials,
+  });
+
+/**
  * POST /portal/crm/deals — manual contact intake.
  */
-export const createManualCrmDeal = (
-  body: CreateManualDealBody,
-): Promise<IntakeCreateResult> =>
+export const createManualCrmDeal = (body: CreateManualDealBody): Promise<IntakeCreateResult> =>
   apiFetch({
-    path: "/portal/crm/deals",
-    method: "POST",
+    path: '/portal/crm/deals',
+    method: 'POST',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
@@ -101,12 +108,10 @@ export const createManualCrmDeal = (
 /**
  * POST /portal/crm/deals/from-scan
  */
-export const createCrmDealFromScan = (
-  body: CreateDealFromScanBody,
-): Promise<IntakeCreateResult> =>
+export const createCrmDealFromScan = (body: CreateDealFromScanBody): Promise<IntakeCreateResult> =>
   apiFetch({
-    path: "/portal/crm/deals/from-scan",
-    method: "POST",
+    path: '/portal/crm/deals/from-scan',
+    method: 'POST',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
@@ -114,13 +119,10 @@ export const createCrmDealFromScan = (
 /**
  * POST /portal/crm/deals/:id/notes
  */
-export const addCrmNote = (
-  dealId: string,
-  body: CreateCrmNoteBody,
-): Promise<CrmNoteItem> =>
+export const addCrmNote = (dealId: string, body: CreateCrmNoteBody): Promise<CrmNoteItem> =>
   apiFetch({
     path: `/portal/crm/deals/${encodeURIComponent(dealId)}/notes`,
-    method: "POST",
+    method: 'POST',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
@@ -134,7 +136,7 @@ export const attachCrmDealApartment = (
 ): Promise<CrmApartmentLinkItem> =>
   apiFetch({
     path: `/portal/crm/deals/${encodeURIComponent(dealId)}/apartments`,
-    method: "POST",
+    method: 'POST',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
@@ -142,13 +144,10 @@ export const attachCrmDealApartment = (
 /**
  * DELETE /portal/crm/deals/:id/apartments/:apartmentId
  */
-export const detachCrmDealApartment = (
-  dealId: string,
-  apartmentId: string,
-): Promise<void> =>
+export const detachCrmDealApartment = (dealId: string, apartmentId: string): Promise<void> =>
   apiFetch({
     path: `/portal/crm/deals/${encodeURIComponent(dealId)}/apartments/${encodeURIComponent(apartmentId)}`,
-    method: "DELETE",
+    method: 'DELETE',
     ...jsonCredentials,
   });
 
@@ -161,7 +160,7 @@ export const addCrmActivity = (
 ): Promise<CrmActivityItem> =>
   apiFetch({
     path: `/portal/crm/deals/${encodeURIComponent(dealId)}/activities`,
-    method: "POST",
+    method: 'POST',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
@@ -176,7 +175,7 @@ export const updateCrmActivity = (
 ): Promise<CrmActivityItem> =>
   apiFetch({
     path: `/portal/crm/deals/${encodeURIComponent(dealId)}/activities/${encodeURIComponent(activityId)}`,
-    method: "PATCH",
+    method: 'PATCH',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });

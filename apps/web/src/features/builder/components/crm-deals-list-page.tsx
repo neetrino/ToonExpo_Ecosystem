@@ -1,37 +1,58 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
-import { useSearchParams } from 'next/navigation';
-import { useMemo, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import type { CrmDealStatus, RequestSource } from '@toonexpo/contracts';
+import { useTranslations } from 'next-intl';
+import { useMemo, useState } from 'react';
 
+import { updateCrmDeal } from '@/features/builder/api/portal-crm-api';
+import { CrmDealActivitiesSection } from '@/features/builder/components/crm-deal-activities-section';
+import { CrmDealApartmentsSection } from '@/features/builder/components/crm-deal-apartments-section';
+import { CrmDealAssigneeControl } from '@/features/builder/components/crm-deal-assignee-control';
 import { CrmDealFilters } from '@/features/builder/components/crm-deal-filters';
-import { CrmDealListItemView } from '@/features/builder/components/crm-deal-list-item';
+import { CrmDealNotesSection } from '@/features/builder/components/crm-deal-notes-section';
+import { CrmDealRequestsSection } from '@/features/builder/components/crm-deal-requests-section';
+import { CrmDealStatusControl } from '@/features/builder/components/crm-deal-status-control';
 import { CrmNewDealPanel } from '@/features/builder/components/crm-new-deal-panel';
-import { PORTAL_DEFAULT_PAGE_SIZE, PORTAL_MAX_PAGE_SIZE } from '@/features/builder/constants';
-import { useCrmDealsQuery } from '@/features/builder/hooks/use-portal-crm';
+import {
+  PORTAL_CRM_BOARD_PAGE_SIZE,
+  PORTAL_CRM_DEALS_QUERY_KEY,
+  PORTAL_MAX_PAGE_SIZE,
+} from '@/features/builder/constants';
+import {
+  useCrmDealQuery,
+  useCrmDealsQuery,
+  useDeleteCrmDealMutation,
+} from '@/features/builder/hooks/use-portal-crm';
 import { useCompanyMembersQuery } from '@/features/builder/hooks/use-company-members';
 import { usePortalProjectsQuery } from '@/features/builder/hooks/use-portal-projects';
-import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
-import { Button } from '@/shared/ui/button';
+import {
+  crmStatusRequiresApartment,
+  isCrmStatusTransitionAllowed,
+} from '@/features/builder/utils/crm-status-transitions';
+import { CrmDealSheet, CrmKanbanBoard } from '@/features/crm-board';
+import { CRM_BOARD_SEARCH_DEBOUNCE_MS } from '@/features/crm-board/constants';
+import { CrmNewColumnCreateButton } from '@/features/crm-board/crm-new-column-create-button';
+import { filterCrmDealsBySearch } from '@/features/crm-board/filter-crm-deals-by-search';
+import { CrmSearchResultsBadge } from '@/features/crm-board/crm-search-results-badge';
+import { useCrmDealSheetUrl } from '@/features/crm-board/use-crm-deal-sheet-url';
+import { useCrmNewLeadUrl } from '@/features/crm-board/use-crm-new-lead-url';
+import { useDebouncedValue } from '@/shared/hooks/use-debounced-value';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
-
-const parsePage = (raw: string | null): number => {
-  const parsed = Number(raw);
-  if (!Number.isFinite(parsed) || parsed < 1) {
-    return 1;
-  }
-  return Math.floor(parsed);
-};
+import { Button } from '@/shared/ui/button';
+import { Input } from '@/shared/ui/input';
 
 /**
- * Builder CRM deals list: filters, table/cards, new deal CTA.
+ * Builder CRM Kanban workspace with deal SideSheet and new-deal flow.
  */
 export const CrmDealsListPage = () => {
   const t = useTranslations('Builder.crm');
-  const searchParams = useSearchParams();
-  const page = parsePage(searchParams.get('page'));
-  const [showNew, setShowNew] = useState(false);
+  const tBoard = useTranslations('CrmBoard');
+  const queryClient = useQueryClient();
+  const [search, setSearch] = useState('');
+  const debouncedSearch = useDebouncedValue(search.trim(), CRM_BOARD_SEARCH_DEBOUNCE_MS);
+  const [boardError, setBoardError] = useState<string | null>(null);
+  const { isNewLeadOpen, openNewLead, closeNewLead } = useCrmNewLeadUrl();
   const [filters, setFilters] = useState<{
     status: CrmDealStatus | '';
     source: RequestSource | '';
@@ -42,13 +63,22 @@ export const CrmDealsListPage = () => {
   const projectsQuery = usePortalProjectsQuery(1, PORTAL_MAX_PAGE_SIZE);
   const membersQuery = useCompanyMembersQuery(1, PORTAL_MAX_PAGE_SIZE);
   const dealsQuery = useCrmDealsQuery({
-    page,
-    pageSize: PORTAL_DEFAULT_PAGE_SIZE,
+    page: 1,
+    pageSize: PORTAL_CRM_BOARD_PAGE_SIZE,
     ...(filters.status ? { status: filters.status } : {}),
     ...(filters.source ? { source: filters.source } : {}),
     ...(filters.projectId ? { projectId: filters.projectId } : {}),
     ...(filters.assignedUserId ? { assignedUserId: filters.assignedUserId } : {}),
+    ...(debouncedSearch ? { q: debouncedSearch } : {}),
   });
+
+  const deals = useMemo(
+    () => filterCrmDealsBySearch(dealsQuery.data?.data ?? [], search),
+    [dealsQuery.data?.data, search],
+  );
+  const { selectedDealId, openDeal, closeDeal } = useCrmDealSheetUrl(deals);
+  const dealQuery = useCrmDealQuery(selectedDealId ?? '');
+  const deleteDealMutation = useDeleteCrmDealMutation();
 
   const projects = useMemo(
     () =>
@@ -70,17 +100,40 @@ export const CrmDealsListPage = () => {
     [membersQuery.data],
   );
 
-  if (dealsQuery.isLoading) {
+  const onStatusDrop = async (dealId: string, status: CrmDealStatus) => {
+    setBoardError(null);
+    const deal = deals.find((item) => item.id === dealId);
+    if (!deal || deal.status === status) {
+      return;
+    }
+    if (!isCrmStatusTransitionAllowed(deal.status, status)) {
+      setBoardError(tBoard('invalidTransition'));
+      return;
+    }
+    if (crmStatusRequiresApartment(status) || status === 'lost') {
+      openDeal(dealId);
+      setBoardError(tBoard('openSheetForStatus'));
+      return;
+    }
+    try {
+      await updateCrmDeal(dealId, { status });
+      await queryClient.invalidateQueries({ queryKey: PORTAL_CRM_DEALS_QUERY_KEY });
+    } catch {
+      setBoardError(t('errors.generic'));
+    }
+  };
+
+  if (dealsQuery.isLoading && !dealsQuery.data) {
     return (
       <div className="flex flex-col gap-4">
         <div className="h-8 w-48 animate-pulse rounded-sm bg-border/70" />
         <div className="h-24 animate-pulse rounded-md bg-border/50" />
-        <div className="h-40 animate-pulse rounded-md bg-border/40" />
+        <div className="h-64 animate-pulse rounded-md bg-border/40" />
       </div>
     );
   }
 
-  if (dealsQuery.isError || !dealsQuery.data) {
+  if (dealsQuery.isError && !dealsQuery.data) {
     return (
       <p
         role="alert"
@@ -91,94 +144,128 @@ export const CrmDealsListPage = () => {
     );
   }
 
-  const response = dealsQuery.data;
-  const buildHref = (nextPage: number): string => {
-    const params = new URLSearchParams();
-    if (nextPage > 1) {
-      params.set('page', String(nextPage));
-    }
-    const query = params.toString();
-    return query ? `/builder/crm?${query}` : '/builder/crm';
-  };
+  const totalCount = dealsQuery.data?.meta.total ?? deals.length;
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+    <div className="crm-board-page">
+      <div className="flex shrink-0 flex-wrap items-center justify-between gap-3">
         <div className="flex flex-col gap-1">
+          <p className="crm-board-page__eyebrow">{t('eyebrow')}</p>
           <h1 className="text-page-title text-ink">{t('title')}</h1>
-          <p className="text-sm text-ink-secondary">
-            {t('subtitle', { count: response.meta.total })}
-          </p>
+          <p className="text-sm text-ink-secondary">{t('subtitle', { count: totalCount })}</p>
         </div>
         <Button
           type="button"
           size="sm"
           onClick={() => {
-            setShowNew(true);
+            openNewLead();
           }}
         >
           <AddActionLabel>{t('newDeal.cta')}</AddActionLabel>
         </Button>
       </div>
 
-      <CrmDealFilters
-        value={filters}
-        projects={projects}
-        assignees={assignees}
-        onChange={setFilters}
-      />
+      <label className="relative flex max-w-xl shrink-0 flex-col gap-1.5">
+        <span className="text-xs font-medium uppercase tracking-wide text-ink-muted">
+          {tBoard('searchLabel')}
+        </span>
+        <Input
+          value={search}
+          placeholder={tBoard('searchPlaceholder')}
+          onChange={(event) => {
+            setSearch(event.target.value);
+          }}
+        />
+        {search.trim() ? (
+          <CrmSearchResultsBadge
+            count={deals.length}
+            className="pointer-events-none absolute right-0 top-0 max-w-[min(100%,14rem)]"
+          />
+        ) : null}
+      </label>
 
-      {response.data.length === 0 ? (
-        <p className="rounded-md border border-dashed border-border bg-surface/50 px-6 py-12 text-center text-sm text-ink-secondary">
-          {t('empty')}
+      <div className="shrink-0">
+        <CrmDealFilters
+          value={filters}
+          projects={projects}
+          assignees={assignees}
+          onChange={setFilters}
+        />
+      </div>
+
+      {boardError ? (
+        <p role="alert" className="shrink-0 text-sm text-danger">
+          {boardError}
         </p>
-      ) : (
-        <>
-          <div className="flex flex-col gap-3 md:hidden">
-            {response.data.map((deal) => (
-              <CrmDealListItemView key={deal.id} deal={deal} variant="card" />
-            ))}
-          </div>
+      ) : null}
 
-          <div className="hidden overflow-x-auto rounded-sm border border-border md:block">
-            <table className="w-full min-w-[44rem] border-collapse text-sm">
-              <thead className="bg-surface text-xs uppercase tracking-wide text-ink-muted">
-                <tr>
-                  <th className="px-3 py-2.5 text-left font-medium">{t('columns.buyer')}</th>
-                  <th className="px-3 py-2.5 text-center font-medium">{t('columns.project')}</th>
-                  <th className="px-3 py-2.5 text-center font-medium">{t('columns.status')}</th>
-                  <th className="px-3 py-2.5 text-center font-medium">{t('columns.source')}</th>
-                  <th className="px-3 py-2.5 text-center font-medium">{t('columns.assignee')}</th>
-                  <th className="px-3 py-2.5 text-center font-medium">{t('columns.updated')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {response.data.map((deal) => (
-                  <CrmDealListItemView key={deal.id} deal={deal} variant="row" />
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </>
-      )}
-
-      <CatalogPagination
-        page={response.meta.page}
-        totalPages={response.meta.totalPages}
-        buildHref={buildHref}
-        previousLabel={t('pagination.previous')}
-        nextLabel={t('pagination.next')}
-        ariaLabel={t('pagination.ariaLabel')}
+      <CrmKanbanBoard
+        deals={deals}
+        mode="edit"
+        onOpenDeal={openDeal}
+        onStatusDrop={onStatusDrop}
+        newColumnAction={
+          <CrmNewColumnCreateButton
+            onClick={() => {
+              openNewLead();
+            }}
+          />
+        }
       />
 
-      {showNew ? (
+      {isNewLeadOpen ? (
         <CrmNewDealPanel
           projects={projects}
           onClose={() => {
-            setShowNew(false);
+            closeNewLead();
+          }}
+          onCreated={(dealId) => {
+            openDeal(dealId);
           }}
         />
       ) : null}
+
+      <CrmDealSheet
+        open={selectedDealId !== null}
+        onClose={() => {
+          closeDeal();
+          setBoardError(null);
+        }}
+        deal={dealQuery.data ?? null}
+        isLoading={Boolean(selectedDealId) && dealQuery.isLoading}
+        isError={Boolean(selectedDealId) && dealQuery.isError}
+        mode="edit"
+        isDeleting={deleteDealMutation.isPending}
+        onDelete={
+          selectedDealId
+            ? () => {
+                void deleteDealMutation
+                  .mutateAsync(selectedDealId)
+                  .then(() => {
+                    closeDeal();
+                    setBoardError(null);
+                  })
+                  .catch(() => {
+                    setBoardError(tBoard('deleteError'));
+                  });
+              }
+            : undefined
+        }
+        editSections={
+          dealQuery.data ? (
+            <div className="flex flex-col gap-4">
+              <div className="grid gap-4">
+                <CrmDealStatusControl deal={dealQuery.data} />
+                <CrmDealAssigneeControl deal={dealQuery.data} />
+              </div>
+              <CrmDealApartmentsSection deal={dealQuery.data} />
+              <CrmDealNotesSection deal={dealQuery.data} />
+              <CrmDealActivitiesSection deal={dealQuery.data} />
+              <CrmDealRequestsSection deal={dealQuery.data} />
+            </div>
+          ) : null
+        }
+      />
     </div>
   );
 };

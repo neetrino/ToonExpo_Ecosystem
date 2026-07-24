@@ -9,6 +9,66 @@
       "cards": "Карточки"
     }
   },
+  "CrmBoard": {
+    "unnamedBuyer": "Без имени",
+    "noProject": "Без проекта",
+    "unassigned": "Не назначен",
+    "emptyColumn": "Нет лидов",
+    "quickLead": "Быстрый лид",
+    "searchLabel": "Поиск лидов",
+    "searchPlaceholder": "Поиск по имени, email, телефону…",
+    "searchResultsCount": "{count, plural, =0 {Ничего не найдено} one {Найден # лид} few {Найдено # лида} many {Найдено # лидов} other {Найдено # лида}}",
+    "searchResultsLabel": "{count, plural, =0 {ничего не найдено} one {лид найден} few {лида найдено} many {лидов найдено} other {лида найдено}}",
+    "dealSheetTitle": "Лид",
+    "readonlyHint": "Обзор платформы — только просмотр",
+    "loadingDeal": "Загрузка сделки…",
+    "dealNotFound": "Сделка не найдена.",
+    "deleteConfirm": "Удалить этот лид? Это действие нельзя отменить.",
+    "deleteConfirmTitle": "Удалить лид",
+    "deleteConfirmMessage": "Вы уверены, что хотите удалить «{name}»? Это действие нельзя отменить.",
+    "deleting": "Удаление…",
+    "deleteError": "Не удалось удалить лид. Попробуйте ещё раз.",
+    "company": "Застройщик",
+    "invalidTransition": "Такой переход статуса недоступен.",
+    "openSheetForStatus": "Откройте сделку, чтобы завершить смену статуса.",
+    "apartmentsTitle": "Квартиры",
+    "apartmentsEmpty": "Нет связанных квартир.",
+    "notesTitle": "Заметки",
+    "notesEmpty": "Заметок пока нет.",
+    "activitiesTitle": "Активности",
+    "activitiesEmpty": "Активностей пока нет.",
+    "fields": {
+      "phone": "Телефон",
+      "email": "Email",
+      "source": "Источник",
+      "project": "Проект",
+      "assignee": "Ответственный",
+      "created": "Создано",
+      "description": "Описание"
+    },
+    "filters": {
+      "source": "Источник",
+      "allSources": "Все источники",
+      "selectedCount": "{count} выбрано"
+    },
+    "statuses": {
+      "new_request": "Новый",
+      "assigned": "Назначен",
+      "contacted": "Контакт",
+      "follow_up_needed": "Follow-up",
+      "apartment_selected": "Квартира",
+      "reserved": "Бронь",
+      "converted": "Выигран",
+      "closed": "Закрыт",
+      "lost": "Потерян"
+    },
+    "sources": {
+      "buyer_project_request": "Заявка покупателя",
+      "builder_buyer_qr_scan": "QR-скан",
+      "manual_builder_entry": "Вручную",
+      "event_interaction": "Событие"
+    }
+  },
   "HomePage": {
     "brand": "ToonExpo",
     "tagline": "Платформа недвижимости для выставок в Армении",
@@ -966,6 +1026,7 @@
       "buildings": "Здание",
       "floors": "Этаж",
       "apartments": "Квартира",
+      "crm": "CRM",
       "readiness": "Готовность",
       "readinessCategories": "Категории",
       "partners": "Партнёры",
@@ -985,6 +1046,42 @@
         "label": "Разделы настроек",
         "profile": "Профиль",
         "password": "Пароль"
+      }
+    },
+    "crm": {
+      "title": "CRM",
+      "eyebrow": "Воронка",
+      "subtitle": "{count, plural, =0 {Нет сделок} one {# сделка по застройщикам} few {# сделки по застройщикам} other {# сделок по застройщикам}}",
+      "error": "Не удалось загрузить CRM. Попробуйте снова.",
+      "filters": {
+        "company": "Застройщик",
+        "allCompanies": "Все застройщики",
+        "selectedCount": "{count} выбрано"
+      },
+      "newDeal": {
+        "title": "Новый лид",
+        "cancel": "Отмена",
+        "company": "Застройщик",
+        "companyPlaceholder": "Выберите застройщика",
+        "contactName": "Полное имя",
+        "contactNamePlaceholder": "John Doe",
+        "contactPhone": "Телефон",
+        "contactPhonePlaceholder": "37491111222",
+        "contactEmail": "Email",
+        "contactEmailPlaceholder": "john.doe@example.com",
+        "project": "Проект",
+        "projectOptional": "Без проекта",
+        "note": "Заметка",
+        "submitting": "Создание…",
+        "validation": {
+          "company": "Выберите застройщика",
+          "contactName": "Введите имя",
+          "phone": "Введите корректный телефон",
+          "email": "Введите корректный email"
+        },
+        "errors": {
+          "generic": "Что-то пошло не так. Попробуйте снова."
+        }
       }
     },
     "analytics": {
@@ -2390,6 +2487,7 @@
     },
     "crm": {
       "title": "CRM",
+      "eyebrow": "Воронка",
       "subtitle": "{count, plural, =0 {Нет сделок} one {# сделка} few {# сделки} other {# сделок}}",
       "loading": "Загрузка сделок…",
       "error": "Не удалось загрузить сделки. Попробуйте ещё раз.",
@@ -2439,9 +2537,12 @@
       "newDeal": {
         "cta": "+ Новая сделка",
         "title": "Новая сделка",
-        "contactName": "Имя",
+        "contactName": "Полное имя",
+        "contactNamePlaceholder": "John Doe",
         "contactPhone": "Телефон",
+        "contactPhonePlaceholder": "37491111222",
         "contactEmail": "Email",
+        "contactEmailPlaceholder": "john.doe@example.com",
         "project": "Проект",
         "projectOptional": "Без проекта",
         "note": "Заметка",

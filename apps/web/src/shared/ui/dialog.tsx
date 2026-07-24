@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 import { IconButton } from '@/shared/ui/icon-button';
 import { blurActiveElementAfterEscClose } from '@/shared/ui/blur-active-element';
 import { cn } from '@/shared/ui/cn';
+import { MODAL_BACKDROP_CLASS_NAME } from '@/shared/ui/modal-backdrop';
 
 type DialogProps = {
   open: boolean;
@@ -72,7 +73,7 @@ export const Dialog = ({
       <button
         type="button"
         aria-label={resolvedCloseLabel}
-        className="absolute inset-0 bg-ink/45 backdrop-blur-[2px]"
+        className={cn('absolute inset-0', MODAL_BACKDROP_CLASS_NAME)}
         onClick={onClose}
       />
       <div

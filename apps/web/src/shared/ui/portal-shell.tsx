@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 import { BrandLogo } from '@/shared/ui/brand-logo';
 import { IconButton } from '@/shared/ui/icon-button';
 import { LocaleSwitcher } from '@/shared/ui/locale-switcher';
+import { MODAL_BACKDROP_CLASS_NAME } from '@/shared/ui/modal-backdrop';
 import { SiteHeader } from '@/shared/ui/site-header';
 import { Link, usePathname } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
@@ -194,7 +195,7 @@ export const PortalShell = ({
         <div className="fixed inset-0 z-[var(--z-overlay)] md:hidden">
           <button
             type="button"
-            className="absolute inset-0 bg-ink/40"
+            className={cn('absolute inset-0', MODAL_BACKDROP_CLASS_NAME)}
             aria-label={t('menu')}
             onClick={() => setDrawerOpen(false)}
           />
