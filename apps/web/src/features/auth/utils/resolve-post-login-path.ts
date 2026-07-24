@@ -20,7 +20,10 @@ export const resolvePostLoginPath = (user: UserResponse, returnUrl?: string | nu
       if (user.companyType != null && isPartnerCompatibleCompany(user.companyType)) {
         return '/partner';
       }
-      return '/builder';
+      if (user.companyType === 'builder') {
+        return '/builder';
+      }
+      return '/dashboard';
     default:
       return '/dashboard';
   }

@@ -15,7 +15,7 @@ type BuilderLayoutProps = {
 };
 
 /**
- * Server-gated builder portal shell. Non-members get a generic 404.
+ * Server-gated builder portal shell. Non-builder members get a generic 404.
  */
 export default async function BuilderLayout({ children, params }: BuilderLayoutProps) {
   const { locale } = await params;
@@ -34,7 +34,11 @@ export default async function BuilderLayout({ children, params }: BuilderLayoutP
     notFound();
   }
 
-  const companyName = await loadCompanyName(cookieHeader);
+  const company = await loadCompanyProfile(cookieHeader);
+  if (!company || company.type !== 'builder') {
+    notFound();
+  }
+
   const t = await getTranslations('Builder');
 
   return (
@@ -46,17 +50,16 @@ export default async function BuilderLayout({ children, params }: BuilderLayoutP
       profileHref="/builder/settings"
       navLabel={t('nav.label')}
       variant="rail"
-      sidebar={<BuilderNav companyName={companyName} />}
+      sidebar={<BuilderNav companyName={company.name} />}
     >
       {children}
     </PortalShell>
   );
 }
 
-const loadCompanyName = async (cookieHeader: string | undefined): Promise<string | null> => {
+const loadCompanyProfile = async (cookieHeader: string | undefined) => {
   try {
-    const profile = await getCompanyProfile({ cookieHeader });
-    return profile.name;
+    return await getCompanyProfile({ cookieHeader });
   } catch {
     return null;
   }

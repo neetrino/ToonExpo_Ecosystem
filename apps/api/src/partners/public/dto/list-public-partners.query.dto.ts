@@ -1,6 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsBoolean, IsEnum, IsInt, IsOptional, Max, Min } from 'class-validator';
+import { PartnerCompanyType } from '@toonexpo/db';
 
 import { CatalogLocaleQueryDto } from '../../../catalog/dto/catalog-locale.query.dto.js';
 import {
@@ -41,7 +42,7 @@ export class ListPublicPartnersQueryDto extends CatalogLocaleQueryDto {
   @ApiPropertyOptional({ enum: PartnerCompanyTypeDto })
   @IsOptional()
   @IsEnum(PartnerCompanyTypeDto)
-  type?: PartnerCompanyTypeDto;
+  type?: PartnerCompanyType;
 
   @ApiPropertyOptional()
   @IsOptional()
