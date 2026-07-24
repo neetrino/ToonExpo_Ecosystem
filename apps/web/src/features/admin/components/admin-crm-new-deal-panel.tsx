@@ -8,10 +8,7 @@ import { z } from 'zod';
 
 import { useCreateAdminManualDealMutation } from '@/features/admin/hooks/use-admin-crm';
 import { useAdminCompanyProjectsQuery } from '@/features/admin/hooks/use-admin-companies';
-import {
-  CRM_CONTACT_NAME_MAX_LENGTH,
-  CRM_NOTE_MAX_LENGTH,
-} from '@/features/builder/schemas/crm.schema';
+import { CRM_CONTACT_NAME_MAX_LENGTH } from '@/features/builder/schemas/crm.schema';
 import {
   EMAIL_MAX_LENGTH,
   PHONE_MAX_LENGTH,
@@ -21,7 +18,6 @@ import {
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
-import { Textarea } from '@/shared/ui/textarea';
 
 const adminCreateDealSchema = z.object({
   companyId: z.string().trim().min(1),
@@ -45,7 +41,6 @@ const adminCreateDealSchema = z.object({
       { message: 'email' },
     ),
   projectId: z.string().trim().optional(),
-  note: z.string().trim().max(CRM_NOTE_MAX_LENGTH).optional(),
 });
 
 type AdminCreateDealFormValues = z.infer<typeof adminCreateDealSchema>;
@@ -79,7 +74,6 @@ export const AdminCrmNewDealPanel = ({
       contactPhone: '',
       contactEmail: '',
       projectId: '',
-      note: '',
     },
   });
 
@@ -110,7 +104,6 @@ export const AdminCrmNewDealPanel = ({
         ...(values.contactPhone ? { contactPhone: values.contactPhone } : {}),
         ...(values.contactEmail ? { contactEmail: values.contactEmail } : {}),
         ...(values.projectId ? { projectId: values.projectId } : {}),
-        ...(values.note ? { note: values.note } : {}),
       });
       onClose();
       onCreated(result.dealId);
@@ -124,7 +117,7 @@ export const AdminCrmNewDealPanel = ({
       role="dialog"
       aria-modal="true"
       aria-labelledby="admin-crm-new-deal-title"
-      className="fixed inset-0 z-40 flex items-end justify-center bg-ink/40 p-0 sm:items-center sm:p-6"
+      className="fixed inset-0 z-[var(--z-modal)] flex items-end justify-center bg-ink/40 p-0 sm:items-center sm:p-6"
     >
       <div className="flex max-h-[90vh] w-full max-w-lg flex-col overflow-y-auto rounded-t-lg bg-background p-5 shadow-lg sm:rounded-sm">
         <div className="mb-4 flex items-start justify-between gap-3">
@@ -194,10 +187,6 @@ export const AdminCrmNewDealPanel = ({
                 </option>
               ))}
             </select>
-          </FormField>
-
-          <FormField id="note" label={t('note')}>
-            <Textarea id="note" rows={3} {...form.register('note')} />
           </FormField>
 
           {form.formState.errors.root?.message ? (

@@ -146,7 +146,7 @@ export const CrmKanbanBoard = ({
       onDragEnd={onDragEnd}
       onDragCancel={onDragCancel}
     >
-      <div className="-mx-1 flex gap-3 overflow-x-auto px-1 pb-4 pt-1">
+      <div className="flex w-full gap-1.5 pb-3">
         {CRM_KANBAN_STATUSES.map((status) => (
           <CrmKanbanColumn
             key={status}
@@ -169,16 +169,18 @@ export const CrmKanbanBoard = ({
 
       <DragOverlay dropAnimation={{ duration: 220, easing: 'cubic-bezier(0.2, 0, 0, 1)' }}>
         {activeDeal ? (
-          <CrmKanbanCard
-            deal={activeDeal}
-            canDrag
-            showCompany={mode === 'readonly'}
-            onOpen={onOpenDeal}
-            sourceLabel={tSources(activeDeal.source)}
-            unnamedLabel={t('unnamedBuyer')}
-            noProjectLabel={t('noProject')}
-            isOverlay
-          />
+          <div className="w-56">
+            <CrmKanbanCard
+              deal={activeDeal}
+              canDrag
+              showCompany={mode === 'readonly'}
+              onOpen={onOpenDeal}
+              sourceLabel={tSources(activeDeal.source)}
+              unnamedLabel={t('unnamedBuyer')}
+              noProjectLabel={t('noProject')}
+              isOverlay
+            />
+          </div>
         ) : null}
       </DragOverlay>
     </DndContext>
@@ -226,26 +228,26 @@ const CrmKanbanColumn = ({
     <section
       ref={setNodeRef}
       className={cn(
-        'flex w-72 shrink-0 flex-col rounded-sm border border-border bg-surface/50',
+        'flex min-w-0 flex-1 flex-col rounded-sm border border-border bg-surface/50',
         'transition-[box-shadow,background-color,border-color] duration-200',
         highlighted ? 'border-brand/40 bg-brand/5 ring-2 ring-brand/25' : undefined,
       )}
     >
-      <header className="border-b border-border px-3 pb-2 pt-3">
-        <div className={cn('mb-2 h-1 w-full rounded-pill', CRM_KANBAN_COLUMN_ACCENT[status])} />
-        <div className="flex items-center justify-between gap-2">
-          <h2 className="text-sm font-semibold text-ink">{title}</h2>
-          <span className="rounded-pill bg-background px-2 py-0.5 text-xs font-medium text-ink-muted">
+      <header className="border-b border-border px-2 pb-1.5 pt-2">
+        <div className={cn('mb-1.5 h-0.5 w-full rounded-pill', CRM_KANBAN_COLUMN_ACCENT[status])} />
+        <div className="flex items-center justify-between gap-1">
+          <h2 className="truncate text-xs font-semibold text-ink">{title}</h2>
+          <span className="shrink-0 rounded-pill bg-background px-1.5 py-0.5 text-[10px] font-medium text-ink-muted">
             {deals.length}
           </span>
         </div>
       </header>
 
-      <div className="flex max-h-[70vh] flex-1 flex-col gap-2 overflow-y-auto p-2">
+      <div className="flex max-h-[70vh] flex-1 flex-col gap-1.5 overflow-y-auto p-1.5">
         {newColumnAction ? <div className="shrink-0">{newColumnAction}</div> : null}
 
         {deals.length === 0 ? (
-          <p className="px-1 py-6 text-center text-xs text-ink-muted">{emptyLabel}</p>
+          <p className="px-0.5 py-4 text-center text-[10px] text-ink-muted">{emptyLabel}</p>
         ) : (
           deals.map((deal) => (
             <CrmDraggableKanbanCard
