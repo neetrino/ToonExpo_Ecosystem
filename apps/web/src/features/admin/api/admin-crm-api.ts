@@ -5,6 +5,7 @@ import type {
   CrmDealStatus,
   IntakeCreateResult,
   RequestSource,
+  UpdateCrmDealBody,
 } from '@toonexpo/contracts';
 
 import { apiFetch } from '@/shared/api/client';
@@ -73,6 +74,18 @@ export const createAdminManualCrmDeal = (
   apiFetch({
     path: '/admin/crm/deals',
     method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+
+/**
+ * PATCH /admin/crm/deals/:id — Kanban status move.
+ */
+export const updateAdminCrmDeal = (id: string, body: UpdateCrmDealBody): Promise<CrmDealDetail> =>
+  apiFetch({
+    path: `/admin/crm/deals/${encodeURIComponent(id)}`,
+    method: 'PATCH',
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),

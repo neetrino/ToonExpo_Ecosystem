@@ -1,11 +1,21 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import type { CrmDealDetail, CrmDealListResponse, IntakeCreateResult } from '@toonexpo/contracts';
 
 import { AccountTypes } from '../../auth/decorators/account-types.decorator.js';
 import { CurrentUser } from '../../auth/decorators/current-user.decorator.js';
 import type { AuthenticatedUser } from '../../auth/types/authenticated-user.js';
-import { ListAdminCrmDealsQueryDto } from '../dto/crm-deal-query.dto.js';
+import { ListAdminCrmDealsQueryDto, UpdateCrmDealDto } from '../dto/crm-deal-query.dto.js';
 import { AdminCrmDealsService } from './admin-crm-deals.service.js';
 import { CreateAdminManualDealDto } from './dto/create-admin-manual-deal.dto.js';
 
@@ -34,9 +44,26 @@ export class AdminCrmDealsController {
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get CRM deal detail (read-only for edits)' })
+  @ApiOperation({ summary: 'Get CRM deal detail' })
   @ApiOkResponse({ description: 'Deal detail' })
   getById(@Param('id') id: string): Promise<CrmDealDetail> {
     return this.deals.getById(id);
+  }
+
+  @Patch(':id')
+  @ApiOperation({ summary: 'Update CRM deal status (Kanban move)' })
+  @ApiOkResponse({ description: 'Updated deal' })
+  updateStatus(
+    @CurrentUser() user: AuthenticatedUser,
+    @Param('id') id: string,
+    @Body() body: UpdateCrmDealDto,
+  ): Promise<CrmDealDetail> {
+    if (!body.status) {
+      return this.deals.getById(id);
+    }
+    return this.deals.updateStatus(user.id, id, {
+      status: body.status,
+      ...(body.lostReason ? { lostReason: body.lostReason } : {}),
+    });
   }
 }

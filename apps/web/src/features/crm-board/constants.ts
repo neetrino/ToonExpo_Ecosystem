@@ -33,6 +33,4 @@ export const CRM_KANBAN_COLUMN_ACCENT: Record<CrmDealStatus, string> = {
   lost: 'bg-danger',
 };
 
-export const CRM_KANBAN_DND_MIME = 'application/x-toonexpo-crm-deal';
-
 export type CrmBoardMode = 'edit' | 'readonly';

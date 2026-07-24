@@ -13,6 +13,7 @@ import { CRM_DEFAULT_PAGE_SIZE, CRM_MIN_PAGE } from '../crm.constants.js';
 import { buildCrmDealSearchWhere } from '../crm-deal-search.js';
 import { RequestIntakeService } from '../intake/request-intake.service.js';
 import { mapDealDetail, mapDealListItem } from '../mappers/crm.mapper.js';
+import { DealStatusService } from '../status/deal-status.service.js';
 
 export type ListAdminDealsQuery = {
   page?: number;
@@ -33,6 +34,7 @@ export class AdminCrmDealsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly intake: RequestIntakeService,
+    private readonly dealStatus: DealStatusService,
   ) {}
 
   async list(query: ListAdminDealsQuery): Promise<CrmDealListResponse> {
@@ -140,5 +142,32 @@ export class AdminCrmDealsService {
       contactPhone: body.contactPhone?.trim() ?? null,
       contactEmail: body.contactEmail?.trim() ?? null,
     });
+  }
+
+  async updateStatus(
+    actorUserId: string,
+    dealId: string,
+    body: { status: CrmDealStatus; lostReason?: string },
+  ): Promise<CrmDealDetail> {
+    const deal = await this.prisma.db.crmDeal.findFirst({
+      where: { id: dealId },
+      select: { id: true, companyId: true, status: true },
+    });
+    if (!deal) {
+      throw entityNotFound('Deal');
+    }
+
+    if (body.status !== deal.status) {
+      await this.dealStatus.applyStatusChange({
+        dealId: deal.id,
+        companyId: deal.companyId,
+        from: deal.status,
+        to: body.status,
+        lostReason: body.lostReason ?? null,
+        actorUserId,
+      });
+    }
+
+    return this.getById(dealId);
   }
 }

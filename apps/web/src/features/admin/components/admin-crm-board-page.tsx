@@ -1,16 +1,23 @@
 'use client';
 
-import type { RequestSource } from '@toonexpo/contracts';
+import { useQueryClient } from '@tanstack/react-query';
+import type { CrmDealStatus, RequestSource } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 
+import { updateAdminCrmDeal } from '@/features/admin/api/admin-crm-api';
 import { AdminCrmNewDealPanel } from '@/features/admin/components/admin-crm-new-deal-panel';
 import {
   ADMIN_COMPANIES_MAX_PAGE_SIZE,
   ADMIN_CRM_BOARD_PAGE_SIZE,
+  ADMIN_CRM_DEALS_QUERY_KEY,
 } from '@/features/admin/constants';
 import { useAdminCrmDealQuery, useAdminCrmDealsQuery } from '@/features/admin/hooks/use-admin-crm';
 import { useAdminCompaniesQuery } from '@/features/admin/hooks/use-admin-companies';
+import {
+  crmStatusRequiresApartment,
+  isCrmStatusTransitionAllowed,
+} from '@/features/builder/utils/crm-status-transitions';
 import { CrmDealSheet, CrmKanbanBoard } from '@/features/crm-board';
 import { CRM_BOARD_REQUEST_SOURCES } from '@/features/crm-board/constants';
 import { CrmNewColumnCreateButton } from '@/features/crm-board/crm-new-column-create-button';
@@ -18,16 +25,18 @@ import { Input } from '@/shared/ui/input';
 import { Select } from '@/shared/ui/select';
 
 /**
- * Platform admin CRM Kanban — overview + quick lead create.
+ * Platform admin CRM Kanban — overview, create, animated status drag.
  */
 export const AdminCrmBoardPage = () => {
   const t = useTranslations('Admin.crm');
   const tBoard = useTranslations('CrmBoard');
+  const queryClient = useQueryClient();
   const [selectedDealId, setSelectedDealId] = useState<string | null>(null);
   const [showNew, setShowNew] = useState(false);
   const [search, setSearch] = useState('');
   const [companyId, setCompanyId] = useState('');
   const [source, setSource] = useState<RequestSource | ''>('');
+  const [boardError, setBoardError] = useState<string | null>(null);
 
   const companiesQuery = useAdminCompaniesQuery(1, ADMIN_COMPANIES_MAX_PAGE_SIZE);
   const dealsQuery = useAdminCrmDealsQuery({
@@ -45,6 +54,32 @@ export const AdminCrmBoardPage = () => {
   );
 
   const deals = dealsQuery.data?.data ?? [];
+
+  const onStatusDrop = async (dealId: string, status: CrmDealStatus) => {
+    setBoardError(null);
+    const deal = deals.find((item) => item.id === dealId);
+    if (!deal || deal.status === status) {
+      return;
+    }
+    if (!isCrmStatusTransitionAllowed(deal.status, status)) {
+      setBoardError(tBoard('invalidTransition'));
+      await queryClient.invalidateQueries({ queryKey: ADMIN_CRM_DEALS_QUERY_KEY });
+      return;
+    }
+    if (crmStatusRequiresApartment(status) || status === 'lost') {
+      setSelectedDealId(dealId);
+      setBoardError(tBoard('openSheetForStatus'));
+      await queryClient.invalidateQueries({ queryKey: ADMIN_CRM_DEALS_QUERY_KEY });
+      return;
+    }
+    try {
+      await updateAdminCrmDeal(dealId, { status });
+      await queryClient.invalidateQueries({ queryKey: ADMIN_CRM_DEALS_QUERY_KEY });
+    } catch {
+      setBoardError(t('error'));
+      await queryClient.invalidateQueries({ queryKey: ADMIN_CRM_DEALS_QUERY_KEY });
+    }
+  };
 
   if (dealsQuery.isLoading) {
     return (
@@ -130,10 +165,17 @@ export const AdminCrmBoardPage = () => {
         </label>
       </div>
 
+      {boardError ? (
+        <p role="alert" className="text-sm text-danger">
+          {boardError}
+        </p>
+      ) : null}
+
       <CrmKanbanBoard
         deals={deals}
         mode="readonly"
         onOpenDeal={setSelectedDealId}
+        onStatusDrop={onStatusDrop}
         newColumnAction={
           <CrmNewColumnCreateButton
             onClick={() => {
@@ -163,6 +205,7 @@ export const AdminCrmBoardPage = () => {
         open={selectedDealId !== null}
         onClose={() => {
           setSelectedDealId(null);
+          setBoardError(null);
         }}
         deal={dealQuery.data ?? null}
         isLoading={Boolean(selectedDealId) && dealQuery.isLoading}
