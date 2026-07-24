@@ -5,7 +5,6 @@ import type {
   PartnerCompanyType,
   PublicationStatus,
 } from '@toonexpo/contracts';
-import { Search } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import {
@@ -13,7 +12,7 @@ import {
   PARTNER_COMPANY_TYPES,
   PARTNER_PUBLICATION_STATUSES,
 } from '@/features/partners/constants';
-import { Input } from '@/shared/ui/input';
+import { SearchField } from '@/shared/ui/search-field';
 import { Select } from '@/shared/ui/select';
 
 type PartnerFiltersProps = {
@@ -45,22 +44,15 @@ export const PartnerFilters = ({
 
   return (
     <div className="flex min-w-0 flex-1 flex-wrap items-center gap-3">
-      <div className="relative min-w-[16rem] flex-[2] basis-[16rem] sm:min-w-[22rem]">
-        <Search
-          aria-hidden
-          className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-ink-muted"
-        />
-        <Input
-          type="search"
-          className="h-10 w-full pl-9"
-          value={search}
-          placeholder={t('searchPlaceholder')}
-          aria-label={t('search')}
-          onChange={(event) => {
-            onChange({ type, status, publicationStatus, search: event.target.value });
-          }}
-        />
-      </div>
+      <SearchField
+        className="min-w-[16rem] flex-[2] basis-[16rem] sm:min-w-[22rem]"
+        value={search}
+        placeholder={t('searchPlaceholder')}
+        aria-label={t('search')}
+        onChange={(event) => {
+          onChange({ type, status, publicationStatus, search: event.target.value });
+        }}
+      />
 
       <Select
         size="fit"

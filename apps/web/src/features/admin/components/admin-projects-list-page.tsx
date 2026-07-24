@@ -88,25 +88,29 @@ export const AdminProjectsListPage = () => {
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <Select
-          size="fit"
-          className="h-10"
-          value={companyId ?? ''}
-          aria-label={t('filters.company')}
-          onChange={(event) => {
-            const nextCompanyId = event.target.value || undefined;
-            router.replace(buildListHref(1, nextCompanyId));
-          }}
-        >
-          <option value="">{t('filters.allCompanies')}</option>
-          {builderCompanies.map((company) => (
-            <option key={company.id} value={company.id}>
-              {company.name}
-            </option>
-          ))}
-        </Select>
+        <div className="flex min-w-0 flex-1 flex-wrap items-center gap-3">
+          <Select
+            size="fit"
+            className="h-10"
+            value={companyId ?? ''}
+            aria-label={t('filters.company')}
+            onChange={(event) => {
+              const nextCompanyId = event.target.value || undefined;
+              router.replace(buildListHref(1, nextCompanyId));
+            }}
+          >
+            <option value="">{t('filters.allCompanies')}</option>
+            {builderCompanies.map((company) => (
+              <option key={company.id} value={company.id}>
+                {company.name}
+              </option>
+            ))}
+          </Select>
+        </div>
 
-        <ViewModeToggle value={viewMode} onChange={setViewMode} />
+        <div className="flex shrink-0 items-center">
+          <ViewModeToggle value={viewMode} onChange={setViewMode} />
+        </div>
       </div>
 
       {response.data.length === 0 ? (

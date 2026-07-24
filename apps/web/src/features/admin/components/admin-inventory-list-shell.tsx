@@ -181,7 +181,7 @@ export const AdminInventoryListShell = ({
           ) : null}
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
           {viewMode && onViewModeChange ? (
             <ViewModeToggle value={viewMode} onChange={onViewModeChange} />
           ) : null}

@@ -88,12 +88,46 @@ export const BankOffersListPage = () => {
 
   return (
     <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-1">
+        <h1 className="text-page-title text-ink">{t('title')}</h1>
+        <p className="text-sm text-ink-secondary">{t('subtitle')}</p>
+      </div>
+
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-page-title text-ink">{t('title')}</h1>
-          <p className="text-sm text-ink-secondary">{t('subtitle')}</p>
+        <div className="flex min-w-0 flex-1 flex-wrap items-center gap-3">
+          <Select
+            size="fit"
+            className="h-10"
+            value={partnerFilter}
+            aria-label={t('filters.allBanks')}
+            onChange={(event) => {
+              setPartnerFilter(event.target.value);
+            }}
+          >
+            <option value="">{t('filters.allBanks')}</option>
+            {bankPartners.map((partner) => (
+              <option key={partner.companyId} value={partner.companyId}>
+                {partner.name}
+              </option>
+            ))}
+          </Select>
+          <Select
+            size="fit"
+            className="h-10"
+            value={publicationFilter}
+            aria-label={t('filters.allPublication')}
+            onChange={(event) => {
+              setPublicationFilter(event.target.value as PublicationStatus | '');
+            }}
+          >
+            <option value="">{t('filters.allPublication')}</option>
+            <option value="draft">{t('filters.draft')}</option>
+            <option value="published">{t('filters.published')}</option>
+            <option value="archived">{t('filters.archived')}</option>
+          </Select>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
+
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
           <ViewModeToggle value={viewMode} onChange={setViewMode} />
           <Button
             type="button"
@@ -107,39 +141,6 @@ export const BankOffersListPage = () => {
             <AddActionLabel>{t('newOffer')}</AddActionLabel>
           </Button>
         </div>
-      </div>
-
-      <div className="flex flex-wrap gap-3">
-        <Select
-          size="fit"
-          className="h-10"
-          value={partnerFilter}
-          aria-label={t('filters.allBanks')}
-          onChange={(event) => {
-            setPartnerFilter(event.target.value);
-          }}
-        >
-          <option value="">{t('filters.allBanks')}</option>
-          {bankPartners.map((partner) => (
-            <option key={partner.companyId} value={partner.companyId}>
-              {partner.name}
-            </option>
-          ))}
-        </Select>
-        <Select
-          size="fit"
-          className="h-10"
-          value={publicationFilter}
-          aria-label={t('filters.allPublication')}
-          onChange={(event) => {
-            setPublicationFilter(event.target.value as PublicationStatus | '');
-          }}
-        >
-          <option value="">{t('filters.allPublication')}</option>
-          <option value="draft">{t('filters.draft')}</option>
-          <option value="published">{t('filters.published')}</option>
-          <option value="archived">{t('filters.archived')}</option>
-        </Select>
       </div>
 
       <AdminCreateSheet
