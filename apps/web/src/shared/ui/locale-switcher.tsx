@@ -25,6 +25,8 @@ const LOCALE_FULL: Record<string, string> = {
 
 /** Keeps the menu open while the pointer moves from trigger to panel. */
 const HOVER_CLOSE_DELAY_MS = 120;
+/** Invisible bridge under the trigger so the 8px gap does not fire mouseleave. */
+const MENU_HOVER_BRIDGE_CLASS = 'absolute top-full right-0 z-[var(--z-dropdown)] pt-2';
 
 type LocaleSwitcherProps = {
   /** Visual tone for light surfaces vs dark chrome (footer / hero). */
@@ -198,43 +200,45 @@ const LocaleSwitcherInner = ({ tone = 'light' }: LocaleSwitcherProps) => {
       </button>
 
       {open ? (
-        <ul
-          ref={menuRef}
-          id={listId}
-          role="listbox"
-          aria-label={t('languageLabel')}
-          className={cn(
-            'absolute top-[calc(100%+8px)] right-0 z-[var(--z-dropdown)] w-max overflow-hidden',
-            'rounded-[12px] border border-header-border bg-surface-elevated py-1.5 text-ink shadow-md',
-            'animate-[locale-dropdown-in_var(--duration-base)_var(--ease-out-premium)]',
-          )}
-        >
-          {routing.locales.map((code) => {
-            const active = code === displayLocale;
-            return (
-              <li key={code} role="none">
-                <button
-                  type="button"
-                  role="option"
-                  aria-selected={active}
-                  className={cn(
-                    'flex w-full items-center justify-between gap-3 px-3 py-2 text-left text-sm whitespace-nowrap',
-                    'transition-colors duration-[var(--duration-fast)]',
-                    active
-                      ? 'bg-brand-soft font-semibold text-brand-deep'
-                      : 'font-medium text-ink hover:bg-surface',
-                  )}
-                  onClick={() => switchLocale(code)}
-                >
-                  <span>{LOCALE_FULL[code] ?? code}</span>
-                  {active ? (
-                    <Check className="size-3.5 shrink-0 text-brand-logo" aria-hidden />
-                  ) : null}
-                </button>
-              </li>
-            );
-          })}
-        </ul>
+        <div className={MENU_HOVER_BRIDGE_CLASS}>
+          <ul
+            ref={menuRef}
+            id={listId}
+            role="listbox"
+            aria-label={t('languageLabel')}
+            className={cn(
+              'w-max overflow-hidden rounded-[12px] border border-header-border',
+              'bg-surface-elevated py-1.5 text-ink shadow-md',
+              'animate-[locale-dropdown-in_var(--duration-base)_var(--ease-out-premium)]',
+            )}
+          >
+            {routing.locales.map((code) => {
+              const active = code === displayLocale;
+              return (
+                <li key={code} role="none">
+                  <button
+                    type="button"
+                    role="option"
+                    aria-selected={active}
+                    className={cn(
+                      'flex w-full items-center justify-between gap-3 px-3 py-2 text-left text-sm whitespace-nowrap',
+                      'transition-colors duration-[var(--duration-fast)]',
+                      active
+                        ? 'bg-brand-soft font-semibold text-brand-deep'
+                        : 'font-medium text-ink hover:bg-surface',
+                    )}
+                    onClick={() => switchLocale(code)}
+                  >
+                    <span>{LOCALE_FULL[code] ?? code}</span>
+                    {active ? (
+                      <Check className="size-3.5 shrink-0 text-brand-logo" aria-hidden />
+                    ) : null}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       ) : null}
     </div>
   );
