@@ -220,6 +220,7 @@ export class AdminInventoryService {
         id: true,
         name: true,
         publicationStatus: true,
+        floorsCount: true,
         projectId: true,
         project: {
           select: {
@@ -234,6 +235,15 @@ export class AdminInventoryService {
             number: true,
             name: true,
             displayLabel: true,
+            floorplanMediaId: true,
+            floorplanMedia: {
+              select: {
+                id: true,
+                fileUrl: true,
+                thumbnailUrl: true,
+                altText: true,
+              },
+            },
             apartments: { select: { salesStatus: true } },
           },
         },
@@ -249,6 +259,7 @@ export class AdminInventoryService {
       id: building.id,
       name: building.name,
       publicationStatus: building.publicationStatus,
+      floorsCount: building.floorsCount,
       projectId: building.projectId,
       projectName: building.project.name,
       builderCompanyId: building.project.builderCompanyId,
@@ -260,6 +271,15 @@ export class AdminInventoryService {
         number: floor.number,
         name: floor.name,
         displayLabel: floor.displayLabel,
+        floorplanMediaId: floor.floorplanMediaId,
+        floorplan: floor.floorplanMedia
+          ? {
+              id: floor.floorplanMedia.id,
+              fileUrl: floor.floorplanMedia.fileUrl,
+              thumbnailUrl: floor.floorplanMedia.thumbnailUrl,
+              altText: floor.floorplanMedia.altText,
+            }
+          : null,
         availability: summarizeSalesStatuses(
           floor.apartments.map((apartment) => apartment.salesStatus),
         ),

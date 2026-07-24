@@ -1,8 +1,10 @@
 'use client';
 
+import type { MediaAssetSummary } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 import { useMemo, useRef } from 'react';
 
+import { AdminBuildingFloorPlansForm } from '@/features/admin/components/admin-building-floor-plans-form';
 import { AdminBuildingInventoryGlanceCard } from '@/features/admin/components/admin-building-inventory-glance';
 import { AdminFloorApartmentsSheet } from '@/features/admin/components/admin-floor-apartments-sheet';
 import { useAdminBuildingInventoryGlanceQuery } from '@/features/admin/hooks/use-admin-inventory';
@@ -21,6 +23,7 @@ type AdminBuildingInventorySheetProps = {
 type FloorSheetSnapshot = {
   floorId: string;
   floorLabel: string;
+  floorplan: MediaAssetSummary | null;
 };
 
 /**
@@ -52,12 +55,21 @@ export const AdminBuildingInventorySheet = ({
         selectedFloor.displayLabel?.trim() ||
         selectedFloor.name?.trim() ||
         t('floorCode', { number: selectedFloor.number }),
+      floorplan: selectedFloor.floorplan,
     };
   }
 
-  const floorSheetOpen = floorId != null && selectedFloor != null;
-  const floorSheetFloorId = selectedFloor?.id ?? floorSnapshotRef.current?.floorId ?? '';
-  const floorSheetLabel = floorSnapshotRef.current?.floorLabel ?? t('floorFallback');
+  const floorSheetOpen = floorId != null;
+  const floorSheetFloorId = selectedFloor?.id ?? floorSnapshotRef.current?.floorId ?? floorId ?? '';
+  const floorSheetLabel =
+    (selectedFloor
+      ? selectedFloor.displayLabel?.trim() ||
+        selectedFloor.name?.trim() ||
+        t('floorCode', { number: selectedFloor.number })
+      : null) ??
+    floorSnapshotRef.current?.floorLabel ??
+    t('floorFallback');
+  const floorSheetPlan = selectedFloor?.floorplan ?? floorSnapshotRef.current?.floorplan ?? null;
 
   const title = glance?.name ?? t('sheetTitle');
   const description = glance ? glance.projectName : undefined;
@@ -90,7 +102,10 @@ export const AdminBuildingInventorySheet = ({
         ) : null}
 
         {glance ? (
-          <AdminBuildingInventoryGlanceCard glance={glance} onSelectFloor={onSelectFloor} />
+          <div className="flex flex-col gap-2">
+            <AdminBuildingInventoryGlanceCard glance={glance} onSelectFloor={onSelectFloor} />
+            <AdminBuildingFloorPlansForm glance={glance} />
+          </div>
         ) : null}
       </SideSheet>
 
@@ -100,6 +115,7 @@ export const AdminBuildingInventorySheet = ({
           companyId={glance.builderCompanyId}
           floorId={floorSheetFloorId}
           floorLabel={floorSheetLabel}
+          floorplan={floorSheetPlan}
           onClose={onCloseFloor}
         />
       ) : null}

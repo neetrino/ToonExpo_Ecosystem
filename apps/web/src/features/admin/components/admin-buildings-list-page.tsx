@@ -3,7 +3,7 @@
 import type { AdminBuildingListItem } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { AdminBuildingInventorySheet } from '@/features/admin/components/admin-building-inventory-sheet';
 import { AdminCreateBuildingSheet } from '@/features/admin/components/admin-create-building-sheet';
@@ -30,21 +30,28 @@ export const AdminBuildingsListPage = () => {
   const router = useRouter();
   const pathname = usePathname();
   const [showCreate, setShowCreate] = useState(false);
+  const [sheetFloorId, setSheetFloorId] = useState<string | null>(null);
 
   const buildingId = searchParams.get('buildingId')?.trim() || null;
-  const floorId = searchParams.get('floorId')?.trim() || null;
+
+  useEffect(() => {
+    setSheetFloorId(null);
+  }, [buildingId]);
+
+  const currentHref = (() => {
+    const queryString = searchParams.toString();
+    return queryString.length > 0 ? `${pathname}?${queryString}` : pathname;
+  })();
 
   const buildHref = (next: {
     page?: number;
     companyId?: string;
     buildingId?: string | null;
-    floorId?: string | null;
   }): string => {
     const params = new URLSearchParams();
     const nextCompanyId = next.companyId ?? companyId;
     const nextPage = next.page ?? page;
     const nextBuildingId = next.buildingId === undefined ? buildingId : next.buildingId;
-    const nextFloorId = next.floorId === undefined ? floorId : next.floorId;
 
     if (nextCompanyId) {
       params.set('companyId', nextCompanyId);
@@ -55,12 +62,16 @@ export const AdminBuildingsListPage = () => {
     if (nextBuildingId) {
       params.set('buildingId', nextBuildingId);
     }
-    if (nextFloorId) {
-      params.set('floorId', nextFloorId);
-    }
 
     const queryString = params.toString();
     return queryString.length > 0 ? `${pathname}?${queryString}` : pathname;
+  };
+
+  const replaceHref = (href: string): void => {
+    if (href === currentHref) {
+      return;
+    }
+    router.replace(href);
   };
 
   return (
@@ -93,7 +104,8 @@ export const AdminBuildingsListPage = () => {
           <BuildingsTable
             buildings={response.data}
             onSelectBuilding={(id) => {
-              router.replace(buildHref({ buildingId: id, floorId: null }));
+              setSheetFloorId(null);
+              replaceHref(buildHref({ buildingId: id }));
             }}
           />
         ) : null}
@@ -109,15 +121,14 @@ export const AdminBuildingsListPage = () => {
 
       <AdminBuildingInventorySheet
         buildingId={buildingId}
-        floorId={floorId}
+        floorId={sheetFloorId}
         onClose={() => {
-          router.replace(buildHref({ buildingId: null, floorId: null }));
+          setSheetFloorId(null);
+          replaceHref(buildHref({ buildingId: null }));
         }}
-        onSelectFloor={(id) => {
-          router.replace(buildHref({ floorId: id }));
-        }}
+        onSelectFloor={setSheetFloorId}
         onCloseFloor={() => {
-          router.replace(buildHref({ floorId: null }));
+          setSheetFloorId(null);
         }}
       />
     </>

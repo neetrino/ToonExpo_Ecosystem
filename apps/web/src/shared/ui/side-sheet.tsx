@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 import { lockBodyScroll, unlockBodyScroll } from '@/shared/ui/body-scroll-lock';
 import { DrawerCloseTab } from '@/shared/ui/drawer-close-tab';
 import { cn } from '@/shared/ui/cn';
+import { isTopSideSheetLevel, registerSideSheetLevel } from '@/shared/ui/side-sheet-escape-stack';
 import {
   SIDE_SHEET_BACKDROP_TRANSITION_MS,
   SIDE_SHEET_COMFORTABLE_MAX_WIDTH_PX,
@@ -186,6 +187,8 @@ export const SideSheet = ({
   const titleId = useId();
   const panelRef = useRef<HTMLDivElement | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
   const { rendered, visible } = useDrawerTransition(open, SIDE_SHEET_PANEL_TRANSITION_MS);
 
   useEffect(() => {
@@ -204,17 +207,25 @@ export const SideSheet = ({
       return;
     }
 
+    const unregister = registerSideSheetLevel(stackLevel);
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        onClose();
+      if (event.key !== 'Escape' || event.defaultPrevented) {
+        return;
       }
+      if (!isTopSideSheetLevel(stackLevel)) {
+        return;
+      }
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      onCloseRef.current();
     };
-    window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('keydown', onKeyDown, true);
 
     return () => {
-      window.removeEventListener('keydown', onKeyDown);
+      unregister();
+      window.removeEventListener('keydown', onKeyDown, true);
     };
-  }, [rendered, onClose]);
+  }, [rendered, stackLevel]);
 
   if (!rendered || typeof document === 'undefined') {
     return null;

@@ -5,6 +5,8 @@ import type {
   BulkCreatePortalApartmentsRequest,
   CreatePortalBuildingRequest,
   CreatePortalFloorRequest,
+  UpdatePortalBuildingRequest,
+  UpdatePortalFloorRequest,
 } from '@toonexpo/contracts';
 
 import type { ListAdminProjectsParams } from '@/features/admin/api/admin-companies-api';
@@ -27,8 +29,15 @@ import {
   bulkCreatePortalApartments,
   listPortalApartments,
 } from '@/features/builder/api/portal-apartments-api';
-import { createPortalBuilding } from '@/features/builder/api/portal-buildings-api';
-import { createPortalFloor, listPortalFloors } from '@/features/builder/api/portal-floors-api';
+import {
+  createPortalBuilding,
+  updatePortalBuilding,
+} from '@/features/builder/api/portal-buildings-api';
+import {
+  createPortalFloor,
+  listPortalFloors,
+  updatePortalFloor,
+} from '@/features/builder/api/portal-floors-api';
 import type { CatalogScope } from '@/features/builder/catalog-scope';
 
 const toListParams = (
@@ -189,6 +198,55 @@ export const useAdminBulkCreateApartmentsMutation = () => {
       }),
     onSuccess: () => {
       invalidateAdminInventory(queryClient);
+    },
+  });
+};
+
+/**
+ * Updates building fields (admin catalog) — e.g. floorsCount.
+ */
+export const useAdminUpdateBuildingMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (input: {
+      companyId: string;
+      buildingId: string;
+      body: UpdatePortalBuildingRequest;
+    }) =>
+      updatePortalBuilding(input.buildingId, input.body, {
+        scope: adminCatalogScope(input.companyId),
+      }),
+    onSuccess: (_building, input) => {
+      invalidateAdminInventory(queryClient);
+      void queryClient.invalidateQueries({
+        queryKey: adminBuildingInventoryGlanceQueryKey(input.buildingId),
+      });
+    },
+  });
+};
+
+/**
+ * Updates a floor (admin catalog) — e.g. floorplan media.
+ */
+export const useAdminUpdateFloorMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (input: {
+      companyId: string;
+      buildingId: string;
+      floorId: string;
+      body: UpdatePortalFloorRequest;
+    }) =>
+      updatePortalFloor(input.floorId, input.body, {
+        scope: adminCatalogScope(input.companyId),
+      }),
+    onSuccess: (_floor, input) => {
+      invalidateAdminInventory(queryClient);
+      void queryClient.invalidateQueries({
+        queryKey: adminBuildingInventoryGlanceQueryKey(input.buildingId),
+      });
     },
   });
 };

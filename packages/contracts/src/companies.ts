@@ -6,6 +6,7 @@ import type { CompanyMemberRole, CompanyMemberStatus, CompanyType, UserResponse 
 import type {
   ApartmentAvailabilitySummary,
   ApartmentSalesStatus,
+  MediaAssetSummary,
   PaginatedResponse,
   PublicationStatus,
 } from './catalog.js';
@@ -234,6 +235,8 @@ export type AdminBuildingInventoryFloor = {
   number: number;
   name: string | null;
   displayLabel: string | null;
+  floorplanMediaId: string | null;
+  floorplan: MediaAssetSummary | null;
   availability: ApartmentAvailabilitySummary;
 };
 
@@ -244,6 +247,7 @@ export type AdminBuildingInventoryGlance = {
   id: string;
   name: string;
   publicationStatus: PublicationStatus;
+  floorsCount: number | null;
   projectId: string;
   projectName: string;
   builderCompanyId: string;
