@@ -1071,6 +1071,10 @@
       "loading": "Loading buildings…",
       "error": "Could not load buildings. Try again.",
       "columns": {
+        "name": "Name",
+        "company": "Company",
+        "project": "Project",
+        "status": "Status",
         "floors": "Floors",
         "apartments": "Apartments"
       },
@@ -1150,6 +1154,11 @@
       "error": "Could not load floors. Try again.",
       "floorNumber": "Floor {number}",
       "columns": {
+        "name": "Floor",
+        "building": "Building",
+        "company": "Company",
+        "project": "Project",
+        "status": "Status",
         "apartments": "Apartments"
       },
       "create": {
@@ -1171,6 +1180,15 @@
       "error": "Could not load apartments. Try again.",
       "unit": "Apt {number}",
       "floorNumber": "Floor {number}",
+      "columns": {
+        "unit": "Apartment",
+        "building": "Building",
+        "floor": "Floor",
+        "company": "Company",
+        "project": "Project",
+        "status": "Status",
+        "sales": "Sales"
+      },
       "sales": {
         "available": "Available",
         "reserved": "Reserved",

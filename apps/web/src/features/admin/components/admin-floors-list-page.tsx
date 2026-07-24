@@ -6,21 +6,22 @@ import { useMemo, useState } from 'react';
 
 import { AdminCreateFloorSheet } from '@/features/admin/components/admin-create-floor-sheet';
 import { AdminFloorApartmentsSheet } from '@/features/admin/components/admin-floor-apartments-sheet';
+import { AdminFloorsTable } from '@/features/admin/components/admin-floors-table';
 import {
   AdminInventoryListShell,
   useAdminInventoryListParams,
 } from '@/features/admin/components/admin-inventory-list-shell';
+import { ADMIN_VIEW_MODE_KEYS } from '@/features/admin/constants';
 import {
   useAdminBuildingInventoryGlanceQuery,
   useAdminFloorsQuery,
 } from '@/features/admin/hooks/use-admin-inventory';
-import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
+import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { Button } from '@/shared/ui/button';
-import { LIST_STATUS_BADGE_COMPACT_CLASS } from '@/shared/ui/list-status-badge';
 
 /**
- * Admin floors hub — card opens a single floor apartments sheet.
+ * Admin floors hub — card/list opens a single floor apartments sheet.
  */
 export const AdminFloorsListPage = () => {
   const t = useTranslations('Admin.floors');
@@ -30,6 +31,7 @@ export const AdminFloorsListPage = () => {
   const response = query.data;
   const [showCreate, setShowCreate] = useState(false);
   const [selectedFloor, setSelectedFloor] = useState<AdminFloorListItem | null>(null);
+  const { viewMode, setViewMode } = usePersistedViewMode(ADMIN_VIEW_MODE_KEYS.floors);
 
   const glanceQuery = useAdminBuildingInventoryGlanceQuery(selectedFloor?.buildingId ?? '');
   const floorplan = useMemo(() => {
@@ -61,6 +63,8 @@ export const AdminFloorsListPage = () => {
         page={response?.meta.page ?? page}
         totalPages={response?.meta.totalPages ?? 0}
         showBuildingFilter
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
         headerActions={
           <Button
             type="button"
@@ -75,8 +79,9 @@ export const AdminFloorsListPage = () => {
         }
       >
         {response ? (
-          <FloorsTable
+          <AdminFloorsTable
             floors={response.data}
+            viewMode={viewMode}
             onSelectFloor={(floor) => {
               setSelectedFloor(floor);
             }}
@@ -108,51 +113,5 @@ export const AdminFloorsListPage = () => {
         />
       ) : null}
     </>
-  );
-};
-
-type FloorsTableProps = {
-  floors: AdminFloorListItem[];
-  onSelectFloor: (floor: AdminFloorListItem) => void;
-};
-
-const FloorsTable = ({ floors, onSelectFloor }: FloorsTableProps) => {
-  const t = useTranslations('Admin.floors');
-
-  return (
-    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
-      {floors.map((floor) => {
-        const label =
-          floor.displayLabel?.trim() ||
-          floor.name?.trim() ||
-          t('floorNumber', { number: floor.number });
-
-        return (
-          <button
-            key={floor.id}
-            type="button"
-            onClick={() => {
-              onSelectFloor(floor);
-            }}
-            className="flex flex-col gap-2 rounded-lg bg-surface-elevated p-4 text-left shadow-xs transition-[box-shadow] hover:shadow-sm"
-          >
-            <div className="flex items-start justify-between gap-2">
-              <span className="min-w-0 truncate font-semibold text-ink">{label}</span>
-              <PublicationStatusBadge
-                status={floor.publicationStatus}
-                className={LIST_STATUS_BADGE_COMPACT_CLASS}
-              />
-            </div>
-            <p className="truncate text-sm text-ink-secondary">{floor.buildingName}</p>
-            <p className="truncate text-sm text-ink-muted">
-              {floor.projectName} · {floor.companyName}
-            </p>
-            <p className="text-sm text-ink-secondary">
-              {t('columns.apartments')}: {floor.apartmentsCount}
-            </p>
-          </button>
-        );
-      })}
-    </div>
   );
 };

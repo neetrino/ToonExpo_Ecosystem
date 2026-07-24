@@ -14,6 +14,8 @@ import { useAdminBuildingsQuery } from '@/features/admin/hooks/use-admin-invento
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
 import { usePathname, useRouter } from '@/i18n/navigation';
 import { Select } from '@/shared/ui/select';
+import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
+import type { ViewMode } from '@/shared/ui/view-mode';
 
 type AdminInventoryListShellProps = {
   title: string;
@@ -30,6 +32,8 @@ type AdminInventoryListShellProps = {
   /** Floors / apartments hubs: company + building cascading filters. */
   showBuildingFilter?: boolean | undefined;
   headerActions?: ReactNode | undefined;
+  viewMode?: ViewMode | undefined;
+  onViewModeChange?: ((mode: ViewMode) => void) | undefined;
 };
 
 const parsePage = (raw: string | null): number => {
@@ -57,6 +61,8 @@ export const AdminInventoryListShell = ({
   children,
   showBuildingFilter = false,
   headerActions,
+  viewMode,
+  onViewModeChange,
 }: AdminInventoryListShellProps) => {
   const t = useTranslations('Admin.projects');
   const searchParams = useSearchParams();
@@ -127,52 +133,60 @@ export const AdminInventoryListShell = ({
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-page-title text-ink">{title}</h1>
-          <p className="text-sm text-ink-secondary">{subtitle}</p>
-        </div>
-        {headerActions}
+      <div className="flex flex-col gap-1">
+        <h1 className="text-page-title text-ink">{title}</h1>
+        <p className="text-sm text-ink-secondary">{subtitle}</p>
       </div>
 
-      <div className="flex flex-wrap gap-3">
-        <Select
-          size="fit"
-          className="h-10"
-          value={companyId ?? ''}
-          aria-label={t('filters.company')}
-          onChange={(event) => {
-            const nextCompanyId = event.target.value || null;
-            router.replace(buildListHref({ page: 1, companyId: nextCompanyId, buildingId: null }));
-          }}
-        >
-          <option value="">{t('filters.allCompanies')}</option>
-          {builderCompanies.map((company) => (
-            <option key={company.id} value={company.id}>
-              {company.name}
-            </option>
-          ))}
-        </Select>
-
-        {showBuildingFilter ? (
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap gap-3">
           <Select
             size="fit"
             className="h-10"
-            value={buildingId ?? ''}
-            aria-label={t('filters.building')}
+            value={companyId ?? ''}
+            aria-label={t('filters.company')}
             onChange={(event) => {
-              const nextBuildingId = event.target.value || null;
-              router.replace(buildListHref({ page: 1, buildingId: nextBuildingId }));
+              const nextCompanyId = event.target.value || null;
+              router.replace(
+                buildListHref({ page: 1, companyId: nextCompanyId, buildingId: null }),
+              );
             }}
           >
-            <option value="">{t('filters.allBuildings')}</option>
-            {buildingOptions.map((building) => (
-              <option key={building.id} value={building.id}>
-                {building.name} · {building.projectName}
+            <option value="">{t('filters.allCompanies')}</option>
+            {builderCompanies.map((company) => (
+              <option key={company.id} value={company.id}>
+                {company.name}
               </option>
             ))}
           </Select>
-        ) : null}
+
+          {showBuildingFilter ? (
+            <Select
+              size="fit"
+              className="h-10"
+              value={buildingId ?? ''}
+              aria-label={t('filters.building')}
+              onChange={(event) => {
+                const nextBuildingId = event.target.value || null;
+                router.replace(buildListHref({ page: 1, buildingId: nextBuildingId }));
+              }}
+            >
+              <option value="">{t('filters.allBuildings')}</option>
+              {buildingOptions.map((building) => (
+                <option key={building.id} value={building.id}>
+                  {building.name} · {building.projectName}
+                </option>
+              ))}
+            </Select>
+          ) : null}
+        </div>
+
+        <div className="flex flex-wrap items-center gap-2">
+          {viewMode && onViewModeChange ? (
+            <ViewModeToggle value={viewMode} onChange={onViewModeChange} />
+          ) : null}
+          {headerActions}
+        </div>
       </div>
 
       {total === 0 ? <p className="text-sm text-ink-secondary">{empty}</p> : children}
