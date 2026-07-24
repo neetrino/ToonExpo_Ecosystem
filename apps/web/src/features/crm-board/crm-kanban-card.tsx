@@ -65,9 +65,12 @@ export const CrmKanbanCard = forwardRef<HTMLElement, CrmKanbanCardProps>(
           'flex flex-col gap-1.5 rounded-sm border border-border bg-background p-2 shadow-xs',
           isOverlay
             ? 'border-brand/40 shadow-lg ring-2 ring-brand/20'
-            : 'transition-[box-shadow,opacity,border-color] duration-200 ease-out hover:border-border-strong hover:bg-surface/40',
+            : 'hover:border-border-strong hover:bg-surface/40',
+          !isOverlay && !isDragging
+            ? 'transition-[box-shadow,opacity,border-color] duration-200 ease-out'
+            : undefined,
           canDrag ? 'cursor-grab active:cursor-grabbing touch-none' : 'cursor-pointer',
-          isDragging && !isOverlay ? 'opacity-40' : undefined,
+          isDragging && !isOverlay ? 'pointer-events-none' : undefined,
           className,
         )}
         {...rest}

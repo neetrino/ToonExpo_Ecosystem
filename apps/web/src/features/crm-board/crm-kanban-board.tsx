@@ -2,7 +2,6 @@
 
 import {
   DndContext,
-  DragOverlay,
   PointerSensor,
   closestCorners,
   useDraggable,
@@ -13,6 +12,7 @@ import {
   type DragOverEvent,
   type DragStartEvent,
 } from '@dnd-kit/core';
+import { CSS } from '@dnd-kit/utilities';
 import type { CrmDealListItem, CrmDealStatus } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
@@ -45,7 +45,7 @@ type CrmKanbanBoardProps = {
 };
 
 /**
- * Animated Kanban board with @dnd-kit drag overlay.
+ * Kanban board — card follows the pointer from the exact grab point.
  */
 export const CrmKanbanBoard = ({
   deals,
@@ -60,7 +60,6 @@ export const CrmKanbanBoard = ({
   const canDrag = Boolean(onStatusDrop);
   const [items, setItems] = useState(deals);
   const [activeId, setActiveId] = useState<string | null>(null);
-  const [activeWidthPx, setActiveWidthPx] = useState<number | null>(null);
   const [overColumn, setOverColumn] = useState<CrmDealStatus | null>(null);
 
   useEffect(() => {
@@ -74,12 +73,9 @@ export const CrmKanbanBoard = ({
   );
 
   const grouped = useMemo(() => groupDealsByStatus(items), [items]);
-  const activeDeal = activeId ? (items.find((deal) => deal.id === activeId) ?? null) : null;
 
   const onDragStart = (event: DragStartEvent) => {
     setActiveId(String(event.active.id));
-    const initialWidth = event.active.rect.current.initial?.width;
-    setActiveWidthPx(typeof initialWidth === 'number' ? initialWidth : null);
   };
 
   const onDragOver = (event: DragOverEvent) => {
@@ -88,18 +84,6 @@ export const CrmKanbanBoard = ({
       parseColumnStatus(overId) ??
       (overId ? (items.find((deal) => deal.id === overId)?.status ?? null) : null);
     setOverColumn(column);
-
-    if (!activeId || !column) {
-      return;
-    }
-
-    setItems((prev) => {
-      const deal = prev.find((item) => item.id === activeId);
-      if (!deal || deal.status === column) {
-        return prev;
-      }
-      return prev.map((item) => (item.id === activeId ? { ...item, status: column } : item));
-    });
   };
 
   const onDragEnd = (event: DragEndEvent) => {
@@ -110,40 +94,28 @@ export const CrmKanbanBoard = ({
       (overId ? (items.find((deal) => deal.id === overId)?.status ?? null) : null);
 
     setActiveId(null);
-    setActiveWidthPx(null);
     setOverColumn(null);
 
     const original = deals.find((deal) => deal.id === dealId);
-    const current = items.find((deal) => deal.id === dealId);
-    const nextStatus = targetStatus ?? current?.status ?? null;
-
-    if (!original || !nextStatus || !onStatusDrop) {
-      setItems(deals);
-      return;
-    }
-
-    if (original.status === nextStatus) {
-      setItems(deals);
+    if (!original || !targetStatus || !onStatusDrop || original.status === targetStatus) {
       return;
     }
 
     setItems((prev) =>
-      prev.map((item) => (item.id === dealId ? { ...item, status: nextStatus } : item)),
+      prev.map((item) => (item.id === dealId ? { ...item, status: targetStatus } : item)),
     );
-    void Promise.resolve(onStatusDrop(dealId, nextStatus)).catch(() => {
+    void Promise.resolve(onStatusDrop(dealId, targetStatus)).catch(() => {
       setItems(deals);
     });
   };
 
   const onDragCancel = () => {
     setActiveId(null);
-    setActiveWidthPx(null);
     setOverColumn(null);
-    setItems(deals);
   };
 
   return (
-    <div className="crm-kanban-board">
+    <div className={cn('crm-kanban-board', activeId ? 'crm-kanban-board--dragging' : undefined)}>
       <DndContext
         sensors={sensors}
         collisionDetection={closestCorners}
@@ -172,23 +144,6 @@ export const CrmKanbanBoard = ({
             />
           ))}
         </div>
-
-        <DragOverlay dropAnimation={{ duration: 220, easing: 'cubic-bezier(0.2, 0, 0, 1)' }}>
-          {activeDeal ? (
-            <div style={activeWidthPx != null ? { width: activeWidthPx } : undefined}>
-              <CrmKanbanCard
-                deal={activeDeal}
-                canDrag
-                showCompany={mode === 'readonly'}
-                onOpen={onOpenDeal}
-                sourceLabel={tSources(activeDeal.source)}
-                unnamedLabel={t('unnamedBuyer')}
-                noProjectLabel={t('noProject')}
-                isOverlay
-              />
-            </div>
-          ) : null}
-        </DragOverlay>
       </DndContext>
     </div>
   );
@@ -300,12 +255,15 @@ const CrmDraggableKanbanCard = ({
     attributes,
     listeners,
     setNodeRef,
+    transform,
     isDragging: dndDragging,
   } = useDraggable({
     id: deal.id,
     disabled: !canDrag,
     data: { status: deal.status },
   });
+
+  const dragging = isDragging || dndDragging;
 
   return (
     <CrmKanbanCard
@@ -317,7 +275,12 @@ const CrmDraggableKanbanCard = ({
       sourceLabel={sourceLabel}
       unnamedLabel={unnamedLabel}
       noProjectLabel={noProjectLabel}
-      isDragging={isDragging || dndDragging}
+      isDragging={dragging}
+      className={dragging ? 'relative z-50 shadow-lg' : undefined}
+      style={{
+        transform: CSS.Translate.toString(transform),
+        touchAction: 'none',
+      }}
       {...attributes}
       {...listeners}
     />
