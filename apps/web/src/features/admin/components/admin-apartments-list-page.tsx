@@ -101,10 +101,17 @@ const ApartmentsTable = ({ apartments, returnTo }: ApartmentsTableProps) => {
             <span className="min-w-0 truncate font-semibold text-ink">
               {t('unit', { number: apartment.number })}
             </span>
-            <PublicationStatusBadge
-              status={apartment.publicationStatus}
-              className={LIST_STATUS_BADGE_COMPACT_CLASS}
-            />
+            <span className="flex shrink-0 flex-col items-end gap-1">
+              <PublicationStatusBadge
+                status={apartment.publicationStatus}
+                className={LIST_STATUS_BADGE_COMPACT_CLASS}
+              />
+              <ApartmentSalesStatusBadge
+                status={apartment.salesStatus as ApartmentSalesStatus}
+                label={t(`sales.${apartment.salesStatus as ApartmentSalesStatus}`)}
+                className={LIST_STATUS_BADGE_COMPACT_CLASS}
+              />
+            </span>
           </div>
           <p className="truncate text-sm text-ink-secondary">
             {apartment.buildingName} · {t('floorNumber', { number: apartment.floorNumber })}
@@ -112,11 +119,6 @@ const ApartmentsTable = ({ apartments, returnTo }: ApartmentsTableProps) => {
           <p className="truncate text-sm text-ink-muted">
             {apartment.projectName} · {apartment.companyName}
           </p>
-          <ApartmentSalesStatusBadge
-            status={apartment.salesStatus as ApartmentSalesStatus}
-            label={t(`sales.${apartment.salesStatus as ApartmentSalesStatus}`)}
-            className={LIST_STATUS_BADGE_COMPACT_CLASS}
-          />
         </Link>
       ))}
     </div>

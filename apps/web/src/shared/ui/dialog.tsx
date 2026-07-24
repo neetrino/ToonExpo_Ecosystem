@@ -5,6 +5,7 @@ import { X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { IconButton } from '@/shared/ui/icon-button';
+import { blurActiveElementAfterEscClose } from '@/shared/ui/blur-active-element';
 import { cn } from '@/shared/ui/cn';
 
 type DialogProps = {
@@ -46,6 +47,7 @@ export const Dialog = ({
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         onClose();
+        blurActiveElementAfterEscClose();
       }
     };
     window.addEventListener('keydown', onKeyDown);

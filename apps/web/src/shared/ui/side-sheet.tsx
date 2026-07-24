@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import { useTranslations } from 'next-intl';
 
 import { lockBodyScroll, unlockBodyScroll } from '@/shared/ui/body-scroll-lock';
+import { blurActiveElementAfterEscClose } from '@/shared/ui/blur-active-element';
 import { isFloorPlanLightboxOpen } from '@/shared/ui/floor-plan-lightbox-stack';
 import { DrawerCloseTab } from '@/shared/ui/drawer-close-tab';
 import { cn } from '@/shared/ui/cn';
@@ -222,6 +223,7 @@ export const SideSheet = ({
       event.preventDefault();
       event.stopImmediatePropagation();
       onCloseRef.current();
+      blurActiveElementAfterEscClose();
     };
     window.addEventListener('keydown', onKeyDown, true);
 

@@ -7,6 +7,7 @@ import { Suspense, useEffect, useId, useOptimistic, useRef, useState, useTransit
 
 import { usePathname, useRouter } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
+import { blurActiveElementAfterEscClose } from '@/shared/ui/blur-active-element';
 import { cn } from '@/shared/ui/cn';
 
 /** Figma header trigger — uppercase 2-letter codes (`EN`). */
@@ -124,6 +125,7 @@ const LocaleSwitcherInner = ({ tone = 'light' }: LocaleSwitcherProps) => {
     const onKeyDown = (event: KeyboardEvent): void => {
       if (event.key === 'Escape') {
         setOpen(false);
+        blurActiveElementAfterEscClose();
       }
     };
 

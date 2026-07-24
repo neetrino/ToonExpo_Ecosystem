@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
 import { lockBodyScroll, unlockBodyScroll } from '@/shared/ui/body-scroll-lock';
+import { blurActiveElementAfterEscClose } from '@/shared/ui/blur-active-element';
 import { registerFloorPlanLightbox } from '@/shared/ui/floor-plan-lightbox-stack';
 import { IconButton } from '@/shared/ui/icon-button';
 
@@ -40,13 +41,7 @@ export const ImageLightbox = ({ open, imageUrl, alt, onClose }: ImageLightboxPro
       event.preventDefault();
       event.stopImmediatePropagation();
       onClose();
-      // Esc restores focus to the trigger and paints a focus ring — clear it.
-      window.requestAnimationFrame(() => {
-        const active = document.activeElement;
-        if (active instanceof HTMLElement) {
-          active.blur();
-        }
-      });
+      blurActiveElementAfterEscClose();
     };
     window.addEventListener('keydown', onKeyDown, true);
 

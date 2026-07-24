@@ -6,6 +6,7 @@ import { useEffect, useId, useRef, useState } from 'react';
 
 import { useLogoutMutation } from '@/features/auth/hooks/use-auth';
 import { Link, usePathname } from '@/i18n/navigation';
+import { blurActiveElementAfterEscClose } from '@/shared/ui/blur-active-element';
 import { cn } from '@/shared/ui/cn';
 
 /** Keeps the menu open while the pointer moves from trigger to panel. */
@@ -97,6 +98,7 @@ export const ProfileMenu = ({
     const onKeyDown = (event: KeyboardEvent): void => {
       if (event.key === 'Escape') {
         setOpen(false);
+        blurActiveElementAfterEscClose();
       }
     };
 

@@ -11,6 +11,7 @@ import {
   type FocusEventHandler,
 } from 'react';
 
+import { blurActiveElementAfterEscClose } from '@/shared/ui/blur-active-element';
 import { cn } from '@/shared/ui/cn';
 import { DropdownPortal } from '@/shared/ui/dropdown-portal';
 
@@ -84,6 +85,7 @@ export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
       const onKeyDown = (event: KeyboardEvent): void => {
         if (event.key === 'Escape') {
           setOpen(false);
+          blurActiveElementAfterEscClose();
         }
       };
 
