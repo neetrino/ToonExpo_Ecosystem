@@ -1,12 +1,15 @@
 'use client';
 
 import type { CrmDealDetail } from '@toonexpo/contracts';
+import { Trash2 } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import type { ReactNode } from 'react';
 
-import { CrmDealPipeline } from '@/features/crm-board/crm-deal-pipeline';
-import type { CrmBoardMode } from '@/features/crm-board/constants';
 import { formatBuyerDateTime } from '@/features/buyer/utils/format-datetime';
+import type { CrmBoardMode } from '@/features/crm-board/constants';
+import { CrmDealPipeline } from '@/features/crm-board/crm-deal-pipeline';
+import { CrmDealReadonlyExtras } from '@/features/crm-board/crm-deal-readonly-extras';
+import { Button } from '@/shared/ui/button';
 import { SideSheet } from '@/shared/ui/side-sheet';
 
 type CrmDealSheetProps = {
@@ -18,6 +21,8 @@ type CrmDealSheetProps = {
   mode: CrmBoardMode;
   /** Edit-mode action sections (status, assignee, apartments, notes, …). */
   editSections?: ReactNode;
+  onDelete?: (() => void) | undefined;
+  isDeleting?: boolean | undefined;
 };
 
 /**
@@ -31,8 +36,11 @@ export const CrmDealSheet = ({
   isError,
   mode,
   editSections,
+  onDelete,
+  isDeleting = false,
 }: CrmDealSheetProps) => {
   const t = useTranslations('CrmBoard');
+  const tCommon = useTranslations('Common');
   const tSources = useTranslations('CrmBoard.sources');
   const locale = useLocale();
 
@@ -42,6 +50,16 @@ export const CrmDealSheet = ({
     deal?.buyer.email?.trim() ||
     t('dealSheetTitle');
 
+  const handleDelete = (): void => {
+    if (!onDelete || !deal) {
+      return;
+    }
+    if (!window.confirm(t('deleteConfirm'))) {
+      return;
+    }
+    onDelete();
+  };
+
   return (
     <SideSheet
       open={open}
@@ -49,6 +67,21 @@ export const CrmDealSheet = ({
       title={title}
       description={mode === 'readonly' ? t('readonlyHint') : undefined}
       size="default"
+      footer={
+        deal && onDelete ? (
+          <Button
+            type="button"
+            variant="danger"
+            size="sm"
+            className="w-full sm:w-auto"
+            disabled={isDeleting}
+            onClick={handleDelete}
+          >
+            <Trash2 className="size-4 shrink-0" aria-hidden />
+            {isDeleting ? t('deleting') : tCommon('delete')}
+          </Button>
+        ) : undefined
+      }
     >
       {isLoading ? <p className="text-sm text-ink-secondary">{t('loadingDeal')}</p> : null}
 
@@ -122,67 +155,5 @@ export const CrmDealSheet = ({
         </div>
       ) : null}
     </SideSheet>
-  );
-};
-
-type CrmDealReadonlyExtrasProps = {
-  deal: CrmDealDetail;
-};
-
-const CrmDealReadonlyExtras = ({ deal }: CrmDealReadonlyExtrasProps) => {
-  const t = useTranslations('CrmBoard');
-  const locale = useLocale();
-
-  return (
-    <div className="flex flex-col gap-4">
-      <section className="rounded-sm border border-border p-3">
-        <h3 className="mb-2 text-sm font-semibold text-ink">{t('apartmentsTitle')}</h3>
-        {deal.apartments.length === 0 ? (
-          <p className="text-sm text-ink-muted">{t('apartmentsEmpty')}</p>
-        ) : (
-          <ul className="flex flex-col gap-1 text-sm text-ink">
-            {deal.apartments.map((link) => (
-              <li key={link.id}>
-                #{link.apartmentNumber ?? link.apartmentId} · {link.linkType}
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-
-      <section className="rounded-sm border border-border p-3">
-        <h3 className="mb-2 text-sm font-semibold text-ink">{t('notesTitle')}</h3>
-        {deal.notes.length === 0 ? (
-          <p className="text-sm text-ink-muted">{t('notesEmpty')}</p>
-        ) : (
-          <ul className="flex flex-col gap-2">
-            {deal.notes.map((note) => (
-              <li key={note.id} className="rounded-sm bg-surface px-3 py-2 text-sm">
-                <p className="whitespace-pre-wrap text-ink">{note.body}</p>
-                <p className="mt-1 text-xs text-ink-muted">
-                  {note.authorName} · {formatBuyerDateTime(note.createdAt, locale)}
-                </p>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-
-      <section className="rounded-sm border border-border p-3">
-        <h3 className="mb-2 text-sm font-semibold text-ink">{t('activitiesTitle')}</h3>
-        {deal.activities.length === 0 ? (
-          <p className="text-sm text-ink-muted">{t('activitiesEmpty')}</p>
-        ) : (
-          <ul className="flex flex-col gap-2 text-sm text-ink">
-            {deal.activities.map((activity) => (
-              <li key={activity.id}>
-                {activity.title}
-                <span className="text-ink-muted"> · {activity.status}</span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-    </div>
   );
 };

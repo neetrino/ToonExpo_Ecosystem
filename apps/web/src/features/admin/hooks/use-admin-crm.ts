@@ -5,6 +5,7 @@ import type { CreateAdminManualDealBody } from '@toonexpo/contracts';
 
 import {
   createAdminManualCrmDeal,
+  deleteAdminCrmDeal,
   getAdminCrmDeal,
   listAdminCrmDeals,
   type ListAdminCrmDealsParams,
@@ -39,6 +40,20 @@ export const useCreateAdminManualDealMutation = () => {
   return useMutation({
     mutationFn: (body: CreateAdminManualDealBody) => createAdminManualCrmDeal(body),
     onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ADMIN_CRM_DEALS_QUERY_KEY });
+    },
+  });
+};
+
+/**
+ * Deletes a CRM deal permanently (platform admin).
+ */
+export const useDeleteAdminCrmDealMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (dealId: string) => deleteAdminCrmDeal(dealId),
+    onSuccess: (_result, dealId) => {
+      queryClient.removeQueries({ queryKey: adminCrmDealQueryKey(dealId) });
       void queryClient.invalidateQueries({ queryKey: ADMIN_CRM_DEALS_QUERY_KEY });
     },
   });

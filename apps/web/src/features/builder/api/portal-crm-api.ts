@@ -85,6 +85,16 @@ export const updateCrmDeal = (id: string, body: UpdateCrmDealBody): Promise<CrmD
   });
 
 /**
+ * DELETE /portal/crm/deals/:id
+ */
+export const deleteCrmDeal = (id: string): Promise<void> =>
+  apiFetch({
+    path: `/portal/crm/deals/${encodeURIComponent(id)}`,
+    method: 'DELETE',
+    ...jsonCredentials,
+  });
+
+/**
  * POST /portal/crm/deals — manual contact intake.
  */
 export const createManualCrmDeal = (body: CreateManualDealBody): Promise<IntakeCreateResult> =>

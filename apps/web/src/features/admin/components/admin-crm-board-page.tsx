@@ -12,7 +12,11 @@ import {
   ADMIN_CRM_BOARD_PAGE_SIZE,
   ADMIN_CRM_DEALS_QUERY_KEY,
 } from '@/features/admin/constants';
-import { useAdminCrmDealQuery, useAdminCrmDealsQuery } from '@/features/admin/hooks/use-admin-crm';
+import {
+  useAdminCrmDealQuery,
+  useAdminCrmDealsQuery,
+  useDeleteAdminCrmDealMutation,
+} from '@/features/admin/hooks/use-admin-crm';
 import { useAdminCompaniesQuery } from '@/features/admin/hooks/use-admin-companies';
 import {
   crmStatusRequiresApartment,
@@ -62,6 +66,7 @@ export const AdminCrmBoardPage = () => {
   );
   const { selectedDealId, openDeal, closeDeal } = useCrmDealSheetUrl(deals);
   const dealQuery = useAdminCrmDealQuery(selectedDealId ?? '');
+  const deleteDealMutation = useDeleteAdminCrmDealMutation();
 
   const builderCompanies = useMemo(
     () => (companiesQuery.data?.data ?? []).filter((company) => company.type === 'builder'),
@@ -240,6 +245,22 @@ export const AdminCrmBoardPage = () => {
         isLoading={Boolean(selectedDealId) && dealQuery.isLoading}
         isError={Boolean(selectedDealId) && dealQuery.isError}
         mode="readonly"
+        isDeleting={deleteDealMutation.isPending}
+        onDelete={
+          selectedDealId
+            ? () => {
+                void deleteDealMutation
+                  .mutateAsync(selectedDealId)
+                  .then(() => {
+                    closeDeal();
+                    setBoardError(null);
+                  })
+                  .catch(() => {
+                    setBoardError(tBoard('deleteError'));
+                  });
+              }
+            : undefined
+        }
       />
     </div>
   );

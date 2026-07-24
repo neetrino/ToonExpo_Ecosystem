@@ -19,6 +19,7 @@ import {
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
+import { PhoneInput } from '@/shared/ui/phone-input';
 import { Select } from '@/shared/ui/select';
 
 const adminCreateDealSchema = z.object({
@@ -199,12 +200,20 @@ export const AdminCrmNewDealPanel = ({
             label={t('contactPhone')}
             error={form.formState.errors.contactPhone ? t('validation.phone') : undefined}
           >
-            <Input
-              id="contactPhone"
-              type="tel"
-              placeholder={t('contactPhonePlaceholder')}
-              autoComplete="tel"
-              {...form.register('contactPhone')}
+            <Controller
+              name="contactPhone"
+              control={form.control}
+              render={({ field }) => (
+                <PhoneInput
+                  id="contactPhone"
+                  name={field.name}
+                  value={field.value}
+                  onBlur={field.onBlur}
+                  ref={field.ref}
+                  placeholder={t('contactPhonePlaceholder')}
+                  onChange={field.onChange}
+                />
+              )}
             />
           </FormField>
 

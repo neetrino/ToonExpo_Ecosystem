@@ -96,3 +96,13 @@ export const updateAdminCrmDeal = (id: string, body: UpdateCrmDealBody): Promise
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   });
+
+/**
+ * DELETE /admin/crm/deals/:id
+ */
+export const deleteAdminCrmDeal = (id: string): Promise<void> =>
+  apiFetch({
+    path: `/admin/crm/deals/${encodeURIComponent(id)}`,
+    method: 'DELETE',
+    credentials: 'include',
+  });

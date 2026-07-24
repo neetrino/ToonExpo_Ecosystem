@@ -17,6 +17,7 @@ import {
   attachCrmDealApartment,
   createCrmDealFromScan,
   createManualCrmDeal,
+  deleteCrmDeal,
   detachCrmDealApartment,
   getCrmDeal,
   listCrmDeals,
@@ -85,6 +86,20 @@ export const useUpdateCrmDealMutation = (dealId: string) => {
     mutationFn: (body: UpdateCrmDealBody) => updateCrmDeal(dealId, body),
     onSuccess: (deal) => {
       queryClient.setQueryData(portalCrmDealQueryKey(dealId), deal);
+      invalidateCrmLists(queryClient);
+    },
+  });
+};
+
+/**
+ * Deletes a CRM deal permanently.
+ */
+export const useDeleteCrmDealMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (dealId: string) => deleteCrmDeal(dealId),
+    onSuccess: (_result, dealId) => {
+      queryClient.removeQueries({ queryKey: portalCrmDealQueryKey(dealId) });
       invalidateCrmLists(queryClient);
     },
   });

@@ -201,4 +201,25 @@ export class AdminCrmDealsService {
 
     return this.getById(dealId);
   }
+
+  /**
+   * Permanently deletes a CRM deal across builders (notes / activities / links cascade).
+   */
+  async delete(dealId: string): Promise<void> {
+    const deal = await this.prisma.db.crmDeal.findFirst({
+      where: { id: dealId },
+      select: { id: true },
+    });
+    if (!deal) {
+      throw entityNotFound('Deal');
+    }
+
+    await this.prisma.db.$transaction([
+      this.prisma.db.apartment.updateMany({
+        where: { activeCrmDealId: deal.id },
+        data: { activeCrmDealId: null },
+      }),
+      this.prisma.db.crmDeal.delete({ where: { id: deal.id } }),
+    ]);
+  }
 }

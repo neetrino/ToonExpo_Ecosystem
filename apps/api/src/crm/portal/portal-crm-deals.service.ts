@@ -126,6 +126,27 @@ export class PortalCrmDealsService {
     return this.getById(member, dealId);
   }
 
+  /**
+   * Permanently deletes a company CRM deal (notes / activities / apartment links cascade).
+   */
+  async delete(member: CompanyMemberContext, dealId: string): Promise<void> {
+    const deal = await this.prisma.db.crmDeal.findFirst({
+      where: { id: dealId, companyId: member.companyId },
+      select: { id: true },
+    });
+    if (!deal) {
+      throw entityNotFound('Deal');
+    }
+
+    await this.prisma.db.$transaction([
+      this.prisma.db.apartment.updateMany({
+        where: { activeCrmDealId: deal.id },
+        data: { activeCrmDealId: null },
+      }),
+      this.prisma.db.crmDeal.delete({ where: { id: deal.id } }),
+    ]);
+  }
+
   async createFromScan(
     member: CompanyMemberContext,
     actorUserId: string,

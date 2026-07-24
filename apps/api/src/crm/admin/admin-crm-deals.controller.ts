@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -9,7 +10,13 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { ApiCreatedResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiCreatedResponse,
+  ApiNoContentResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
 import type { CrmDealDetail, CrmDealListResponse, IntakeCreateResult } from '@toonexpo/contracts';
 
 import { AccountTypes } from '../../auth/decorators/account-types.decorator.js';
@@ -65,5 +72,13 @@ export class AdminCrmDealsController {
       status: body.status,
       ...(body.lostReason ? { lostReason: body.lostReason } : {}),
     });
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete CRM deal' })
+  @ApiNoContentResponse({ description: 'Deal deleted' })
+  async remove(@Param('id') id: string): Promise<void> {
+    await this.deals.delete(id);
   }
 }

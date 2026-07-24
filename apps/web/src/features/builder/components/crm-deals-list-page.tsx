@@ -19,7 +19,11 @@ import {
   PORTAL_CRM_DEALS_QUERY_KEY,
   PORTAL_MAX_PAGE_SIZE,
 } from '@/features/builder/constants';
-import { useCrmDealQuery, useCrmDealsQuery } from '@/features/builder/hooks/use-portal-crm';
+import {
+  useCrmDealQuery,
+  useCrmDealsQuery,
+  useDeleteCrmDealMutation,
+} from '@/features/builder/hooks/use-portal-crm';
 import { useCompanyMembersQuery } from '@/features/builder/hooks/use-company-members';
 import { usePortalProjectsQuery } from '@/features/builder/hooks/use-portal-projects';
 import {
@@ -74,6 +78,7 @@ export const CrmDealsListPage = () => {
   );
   const { selectedDealId, openDeal, closeDeal } = useCrmDealSheetUrl(deals);
   const dealQuery = useCrmDealQuery(selectedDealId ?? '');
+  const deleteDealMutation = useDeleteCrmDealMutation();
 
   const projects = useMemo(
     () =>
@@ -230,6 +235,22 @@ export const CrmDealsListPage = () => {
         isLoading={Boolean(selectedDealId) && dealQuery.isLoading}
         isError={Boolean(selectedDealId) && dealQuery.isError}
         mode="edit"
+        isDeleting={deleteDealMutation.isPending}
+        onDelete={
+          selectedDealId
+            ? () => {
+                void deleteDealMutation
+                  .mutateAsync(selectedDealId)
+                  .then(() => {
+                    closeDeal();
+                    setBoardError(null);
+                  })
+                  .catch(() => {
+                    setBoardError(tBoard('deleteError'));
+                  });
+              }
+            : undefined
+        }
         editSections={
           dealQuery.data ? (
             <div className="flex flex-col gap-4">
