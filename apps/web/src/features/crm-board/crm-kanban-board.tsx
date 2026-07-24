@@ -21,7 +21,6 @@ import { CrmKanbanCard } from '@/features/crm-board/crm-kanban-card';
 import {
   CRM_KANBAN_COLUMN_ACCENT,
   CRM_KANBAN_STATUSES,
-  CRM_BOARD_FRAME_HEIGHT_CLASS,
   type CrmBoardMode,
 } from '@/features/crm-board/constants';
 import { groupDealsByStatus } from '@/features/crm-board/group-deals-by-status';
@@ -144,7 +143,7 @@ export const CrmKanbanBoard = ({
   };
 
   return (
-    <div className={cn('flex min-h-0 w-full flex-1 flex-col', CRM_BOARD_FRAME_HEIGHT_CLASS)}>
+    <div className="crm-kanban-board">
       <DndContext
         sensors={sensors}
         collisionDetection={closestCorners}
@@ -153,7 +152,7 @@ export const CrmKanbanBoard = ({
         onDragEnd={onDragEnd}
         onDragCancel={onDragCancel}
       >
-        <div className="flex h-full min-h-0 w-full flex-1 items-stretch gap-1.5">
+        <div className="crm-kanban-board-columns">
           {CRM_KANBAN_STATUSES.map((status) => (
             <CrmKanbanColumn
               key={status}
@@ -236,7 +235,7 @@ const CrmKanbanColumn = ({
     <section
       ref={setNodeRef}
       className={cn(
-        'flex h-full min-h-0 min-w-0 flex-1 flex-col rounded-sm border border-border bg-surface/50',
+        'crm-kanban-column rounded-sm border border-border bg-surface/50',
         'transition-[box-shadow,background-color,border-color] duration-200',
         highlighted ? 'border-brand/40 bg-brand/5 ring-2 ring-brand/25' : undefined,
       )}
@@ -251,7 +250,7 @@ const CrmKanbanColumn = ({
         </div>
       </header>
 
-      <div className="flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto p-1.5">
+      <div className="crm-kanban-column-body">
         {newColumnAction ? <div className="shrink-0">{newColumnAction}</div> : null}
 
         {deals.length === 0 ? (
