@@ -6,6 +6,7 @@ import type {
   PartnerOfferTranslationsInput,
   PartnerSocialLinks,
   PortalPartnerDetail,
+  PublicPartnerBankOfferItem,
   PublicPartnerDetail,
   PublicPartnerListItem,
   PublicPartnerOfferItem,
@@ -20,6 +21,7 @@ import {
 
 type PartnerCompanyRow = Prisma.PartnerCompanyGetPayload<object>;
 type PartnerOfferRow = Prisma.PartnerOfferGetPayload<object>;
+type BankOfferRow = Prisma.BankOfferGetPayload<object>;
 
 type PartnerWithMedia = PartnerCompanyRow & {
   logoMedia?: { fileUrl: string } | null;
@@ -118,22 +120,44 @@ export const toPublicPartnerDetail = (
     fullDescription: string | null;
     offerTexts: Map<string, { title: string; description: string | null }>;
   },
-): PublicPartnerDetail => ({
-  id: partner.id,
-  type: partner.type,
-  name: partner.name,
-  slug: partner.slug,
-  shortDescription: localized.shortDescription,
-  fullDescription: localized.fullDescription,
-  contacts: parseContacts(partner.contacts),
-  website: partner.website,
-  socialLinks: parseSocialLinks(partner.socialLinks),
-  logoUrl: partner.logoMedia?.fileUrl ?? null,
-  coverUrl: partner.coverMedia?.fileUrl ?? null,
-  featured: partner.featured,
-  offers: offers.map((offer) =>
-    toPublicPartnerOfferItem(offer, localized.offerTexts.get(offer.id)),
-  ),
+  bankOffers: BankOfferRow[] = [],
+): PublicPartnerDetail => {
+  const mappedBankOffers =
+    partner.type === 'bank' ? bankOffers.map(toPublicPartnerBankOfferItem) : [];
+
+  return {
+    id: partner.id,
+    type: partner.type,
+    name: partner.name,
+    slug: partner.slug,
+    shortDescription: localized.shortDescription,
+    fullDescription: localized.fullDescription,
+    contacts: parseContacts(partner.contacts),
+    website: partner.website,
+    socialLinks: parseSocialLinks(partner.socialLinks),
+    logoUrl: partner.logoMedia?.fileUrl ?? null,
+    coverUrl: partner.coverMedia?.fileUrl ?? null,
+    featured: partner.featured,
+    offers: offers.map((offer) =>
+      toPublicPartnerOfferItem(offer, localized.offerTexts.get(offer.id)),
+    ),
+    bankOffers: mappedBankOffers,
+    mortgageRate: mappedBankOffers[0]?.rate ?? null,
+  };
+};
+
+const toPublicPartnerBankOfferItem = (offer: BankOfferRow): PublicPartnerBankOfferItem => ({
+  id: offer.id,
+  title: offer.title,
+  shortDescription: offer.shortDescription,
+  rate: offer.rate.toString(),
+  apr: offer.apr == null ? null : offer.apr.toString(),
+  minDownPaymentPercent: offer.minDownPaymentPercent.toString(),
+  termOptionsYears: offer.termOptionsYears,
+  fees: offer.fees,
+  calculationNotes: offer.calculationNotes,
+  featured: offer.featured,
+  sortOrder: offer.sortOrder,
 });
 
 const toPublicPartnerOfferItem = (

@@ -103,6 +103,9 @@ export const BOS_PROVISIONING_STATUSES = [
 export const ADMIN_VIEW_MODE_KEYS = {
   companies: 'admin-companies',
   projects: 'admin-projects',
+  buildings: 'admin-buildings',
+  floors: 'admin-floors',
+  apartments: 'admin-apartments',
   partners: 'admin-partners',
   bankOffers: 'admin-bank-offers',
   serviceProviderCategories: 'admin-service-provider-categories',

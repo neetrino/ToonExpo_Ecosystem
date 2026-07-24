@@ -6,10 +6,13 @@ import { useEffect, useId, useRef, useState } from 'react';
 
 import { useLogoutMutation } from '@/features/auth/hooks/use-auth';
 import { Link, usePathname } from '@/i18n/navigation';
+import { blurActiveElementAfterEscClose } from '@/shared/ui/blur-active-element';
 import { cn } from '@/shared/ui/cn';
 
 /** Keeps the menu open while the pointer moves from trigger to panel. */
 const HOVER_CLOSE_DELAY_MS = 120;
+/** Invisible bridge under the trigger so the 8px gap does not fire mouseleave. */
+const MENU_HOVER_BRIDGE_CLASS = 'absolute top-full right-0 z-[var(--z-dropdown)] pt-2';
 
 type ProfileMenuProps = {
   userName?: string | undefined;
@@ -97,6 +100,7 @@ export const ProfileMenu = ({
     const onKeyDown = (event: KeyboardEvent): void => {
       if (event.key === 'Escape') {
         setOpen(false);
+        blurActiveElementAfterEscClose();
       }
     };
 
@@ -159,59 +163,61 @@ export const ProfileMenu = ({
       </button>
 
       {open ? (
-        <div
-          ref={menuRef}
-          id={menuId}
-          role="menu"
-          aria-label={t('profileMenu')}
-          className={cn(
-            'absolute top-[calc(100%+8px)] right-0 z-[var(--z-dropdown)] w-44 overflow-hidden',
-            'rounded-[12px] border border-header-border bg-surface-elevated py-1.5 text-ink shadow-md',
-          )}
-        >
-          {showAdmin ? (
-            <Link
-              href="/admin"
-              role="menuitem"
-              className={menuItemClassName}
-              onClick={() => setOpen(false)}
-            >
-              <Shield className="size-4 shrink-0 opacity-80" aria-hidden />
-              {t('admin')}
-            </Link>
-          ) : null}
-
-          {showBuilder ? (
-            <Link
-              href="/builder"
-              role="menuitem"
-              className={menuItemClassName}
-              onClick={() => setOpen(false)}
-            >
-              <Building2 className="size-4 shrink-0 opacity-80" aria-hidden />
-              {t('builder')}
-            </Link>
-          ) : null}
-
-          <button
-            type="button"
-            role="menuitem"
+        <div className={MENU_HOVER_BRIDGE_CLASS}>
+          <div
+            ref={menuRef}
+            id={menuId}
+            role="menu"
+            aria-label={t('profileMenu')}
             className={cn(
-              'flex w-full items-center gap-2.5 px-3.5 py-2.5 text-left text-sm font-medium',
-              'transition-colors duration-[var(--duration-fast)]',
-              'text-danger hover:bg-danger-soft',
-              'disabled:pointer-events-none disabled:opacity-50',
+              'w-44 overflow-hidden rounded-[12px] border border-header-border',
+              'bg-surface-elevated py-1.5 text-ink shadow-md',
             )}
-            disabled={logoutMutation.isPending}
-            onClick={() => {
-              void logoutMutation.mutateAsync().then(() => {
-                setOpen(false);
-              });
-            }}
           >
-            <LogOut className="size-4 shrink-0 opacity-80" aria-hidden />
-            {logoutMutation.isPending ? tAuth('logout.submitting') : tAuth('logout.submit')}
-          </button>
+            {showAdmin ? (
+              <Link
+                href="/admin"
+                role="menuitem"
+                className={menuItemClassName}
+                onClick={() => setOpen(false)}
+              >
+                <Shield className="size-4 shrink-0 opacity-80" aria-hidden />
+                {t('admin')}
+              </Link>
+            ) : null}
+
+            {showBuilder ? (
+              <Link
+                href="/builder"
+                role="menuitem"
+                className={menuItemClassName}
+                onClick={() => setOpen(false)}
+              >
+                <Building2 className="size-4 shrink-0 opacity-80" aria-hidden />
+                {t('builder')}
+              </Link>
+            ) : null}
+
+            <button
+              type="button"
+              role="menuitem"
+              className={cn(
+                'flex w-full items-center gap-2.5 px-3.5 py-2.5 text-left text-sm font-medium',
+                'transition-colors duration-[var(--duration-fast)]',
+                'text-danger hover:bg-danger-soft',
+                'disabled:pointer-events-none disabled:opacity-50',
+              )}
+              disabled={logoutMutation.isPending}
+              onClick={() => {
+                void logoutMutation.mutateAsync().then(() => {
+                  setOpen(false);
+                });
+              }}
+            >
+              <LogOut className="size-4 shrink-0 opacity-80" aria-hidden />
+              {logoutMutation.isPending ? tAuth('logout.submitting') : tAuth('logout.submit')}
+            </button>
+          </div>
         </div>
       ) : null}
     </div>

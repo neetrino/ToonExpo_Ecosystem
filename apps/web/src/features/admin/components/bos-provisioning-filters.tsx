@@ -18,25 +18,21 @@ export const BosProvisioningFilters = ({ status, onChange }: BosProvisioningFilt
   const t = useTranslations('Admin.bos.filters');
 
   return (
-    <div className="flex flex-wrap gap-3">
-      <label className="flex min-w-[12rem] flex-col gap-1 text-xs text-ink-muted">
-        {t('status')}
-        <Select
-          className="h-10"
-          value={status}
-          aria-label={t('status')}
-          onChange={(event) => {
-            onChange(event.target.value as BosProvisioningStatus | '');
-          }}
-        >
-          <option value="">{t('allStatuses')}</option>
-          {BOS_PROVISIONING_STATUSES.map((item) => (
-            <option key={item} value={item}>
-              {t(`statuses.${item}`)}
-            </option>
-          ))}
-        </Select>
-      </label>
-    </div>
+    <Select
+      size="fit"
+      className="h-10"
+      value={status}
+      aria-label={t('status')}
+      onChange={(event) => {
+        onChange(event.target.value as BosProvisioningStatus | '');
+      }}
+    >
+      <option value="">{t('allStatuses')}</option>
+      {BOS_PROVISIONING_STATUSES.map((item) => (
+        <option key={item} value={item}>
+          {t(`statuses.${item}`)}
+        </option>
+      ))}
+    </Select>
   );
 };

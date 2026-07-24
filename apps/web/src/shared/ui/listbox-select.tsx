@@ -6,11 +6,13 @@ import {
   useEffect,
   useId,
   useImperativeHandle,
+  useLayoutEffect,
   useRef,
   useState,
   type FocusEventHandler,
 } from 'react';
 
+import { blurActiveElementAfterEscClose } from '@/shared/ui/blur-active-element';
 import { cn } from '@/shared/ui/cn';
 import { DropdownPortal } from '@/shared/ui/dropdown-portal';
 
@@ -31,7 +33,7 @@ export type ListboxSelectProps = {
   disabled?: boolean | undefined;
   /** `plain` = hero search; `field` = bordered form control. Menu chrome matches home. */
   variant?: 'plain' | 'field' | undefined;
-  /** `full` stretches; `fit` hugs the selected label width. */
+  /** `full` stretches; `fit` matches dropdown width (chevron on the menu’s right edge). */
   size?: 'full' | 'fit' | undefined;
   onBlur?: FocusEventHandler<HTMLButtonElement> | undefined;
 };
@@ -58,15 +60,29 @@ export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
     ref,
   ) {
     const [open, setOpen] = useState(false);
+    const [fitWidthPx, setFitWidthPx] = useState<number | null>(null);
     const rootRef = useRef<HTMLDivElement>(null);
     const buttonRef = useRef<HTMLButtonElement>(null);
     const menuRef = useRef<HTMLUListElement>(null);
+    const measureRef = useRef<HTMLUListElement>(null);
     const listId = useId();
     const isField = variant === 'field';
     const isFit = size === 'fit';
     const selected = options.find((option) => option.value === value) ?? options[0];
 
     useImperativeHandle(ref, () => buttonRef.current as HTMLButtonElement);
+
+    useLayoutEffect(() => {
+      if (!isFit) {
+        setFitWidthPx(null);
+        return;
+      }
+      const node = measureRef.current;
+      if (!node) {
+        return;
+      }
+      setFitWidthPx(Math.ceil(node.getBoundingClientRect().width));
+    }, [isFit, options]);
 
     useEffect(() => {
       if (!open) {
@@ -84,14 +100,26 @@ export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
       const onKeyDown = (event: KeyboardEvent): void => {
         if (event.key === 'Escape') {
           setOpen(false);
+          blurActiveElementAfterEscClose();
         }
+      };
+
+      const onScroll = (event: Event): void => {
+        const target = event.target;
+        if (target instanceof Node && menuRef.current?.contains(target)) {
+          return;
+        }
+        setOpen(false);
+        blurActiveElementAfterEscClose();
       };
 
       document.addEventListener('mousedown', onPointerDown);
       document.addEventListener('keydown', onKeyDown);
+      window.addEventListener('scroll', onScroll, true);
       return () => {
         document.removeEventListener('mousedown', onPointerDown);
         document.removeEventListener('keydown', onKeyDown);
+        window.removeEventListener('scroll', onScroll, true);
       };
     }, [open]);
 
@@ -113,14 +141,31 @@ export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
         )}
       >
         {name ? <input type="hidden" name={name} value={value} disabled={disabled} /> : null}
+        {isFit ? (
+          <ul
+            ref={measureRef}
+            aria-hidden
+            className="pointer-events-none invisible absolute left-0 top-0 -z-10 w-max py-1.5"
+          >
+            {options.map((option) => (
+              <li key={option.value}>
+                <span className="flex items-center justify-between gap-3 px-3 py-2.5 text-sm font-semibold whitespace-nowrap">
+                  <span>{option.label}</span>
+                  <Check className="size-3.5 shrink-0" aria-hidden />
+                </span>
+              </li>
+            ))}
+          </ul>
+        ) : null}
         <button
           ref={buttonRef}
           id={id}
           type="button"
           disabled={disabled}
+          style={isFit && fitWidthPx != null ? { width: fitWidthPx } : undefined}
           className={cn(
             'flex min-w-0 items-center justify-between gap-2 text-left',
-            isFit ? 'w-auto' : 'w-full',
+            isFit ? 'w-max max-w-full' : 'w-full',
             'transition-colors duration-[var(--duration-fast)]',
             'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/25',
             'disabled:cursor-not-allowed disabled:opacity-50',
@@ -166,7 +211,7 @@ export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
             role="listbox"
             aria-label={ariaLabel}
             className={cn(
-              'w-max max-w-[min(100vw-2rem,24rem)] overflow-hidden',
+              'w-full overflow-hidden',
               'rounded-[12px] border border-header-border bg-surface-elevated py-1.5 shadow-md',
               'animate-[locale-dropdown-in_var(--duration-base)_var(--ease-out-premium)]',
             )}

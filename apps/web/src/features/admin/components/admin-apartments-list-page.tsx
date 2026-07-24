@@ -1,20 +1,21 @@
 'use client';
 
-import type { AdminApartmentListItem, ApartmentSalesStatus } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
+import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 
+import { AdminApartmentsTable } from '@/features/admin/components/admin-apartments-table';
 import { AdminCreateApartmentSheet } from '@/features/admin/components/admin-create-apartment-sheet';
 import {
   AdminInventoryListShell,
   useAdminInventoryListParams,
 } from '@/features/admin/components/admin-inventory-list-shell';
+import { ADMIN_VIEW_MODE_KEYS } from '@/features/admin/constants';
 import { useAdminApartmentsQuery } from '@/features/admin/hooks/use-admin-inventory';
-import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
-import { Link } from '@/i18n/navigation';
+import { usePathname } from '@/i18n/navigation';
+import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { Button } from '@/shared/ui/button';
-import { LIST_STATUS_BADGE_COMPACT_CLASS } from '@/shared/ui/list-status-badge';
 
 /**
  * Admin apartments hub list.
@@ -25,6 +26,13 @@ export const AdminApartmentsListPage = () => {
   const query = useAdminApartmentsQuery(page, pageSize, companyId, buildingId);
   const response = query.data;
   const [showCreate, setShowCreate] = useState(false);
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const { viewMode, setViewMode } = usePersistedViewMode(ADMIN_VIEW_MODE_KEYS.apartments);
+  const returnTo = (() => {
+    const queryString = searchParams.toString();
+    return queryString.length > 0 ? `${pathname}?${queryString}` : pathname;
+  })();
 
   return (
     <>
@@ -40,6 +48,8 @@ export const AdminApartmentsListPage = () => {
         page={response?.meta.page ?? page}
         totalPages={response?.meta.totalPages ?? 0}
         showBuildingFilter
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
         headerActions={
           <Button
             type="button"
@@ -53,7 +63,13 @@ export const AdminApartmentsListPage = () => {
           </Button>
         }
       >
-        {response ? <ApartmentsTable apartments={response.data} /> : null}
+        {response ? (
+          <AdminApartmentsTable
+            apartments={response.data}
+            returnTo={returnTo}
+            viewMode={viewMode}
+          />
+        ) : null}
       </AdminInventoryListShell>
 
       <AdminCreateApartmentSheet
@@ -65,44 +81,5 @@ export const AdminApartmentsListPage = () => {
         defaultBuildingId={buildingId}
       />
     </>
-  );
-};
-
-type ApartmentsTableProps = {
-  apartments: AdminApartmentListItem[];
-};
-
-const ApartmentsTable = ({ apartments }: ApartmentsTableProps) => {
-  const t = useTranslations('Admin.apartments');
-
-  return (
-    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
-      {apartments.map((apartment) => (
-        <Link
-          key={apartment.id}
-          href={`/admin/projects/apartments/${apartment.id}?companyId=${encodeURIComponent(apartment.builderCompanyId)}`}
-          className="flex flex-col gap-2 rounded-lg bg-surface-elevated p-4 shadow-xs transition-[box-shadow] hover:shadow-sm"
-        >
-          <div className="flex items-start justify-between gap-2">
-            <span className="min-w-0 truncate font-semibold text-ink">
-              {t('unit', { number: apartment.number })}
-            </span>
-            <PublicationStatusBadge
-              status={apartment.publicationStatus}
-              className={LIST_STATUS_BADGE_COMPACT_CLASS}
-            />
-          </div>
-          <p className="truncate text-sm text-ink-secondary">
-            {apartment.buildingName} · {t('floorNumber', { number: apartment.floorNumber })}
-          </p>
-          <p className="truncate text-sm text-ink-muted">
-            {apartment.projectName} · {apartment.companyName}
-          </p>
-          <p className="text-sm text-ink-secondary">
-            {t(`sales.${apartment.salesStatus as ApartmentSalesStatus}`)}
-          </p>
-        </Link>
-      ))}
-    </div>
   );
 };

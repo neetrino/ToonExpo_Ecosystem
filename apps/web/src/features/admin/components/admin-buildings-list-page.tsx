@@ -1,22 +1,22 @@
 'use client';
 
-import type { AdminBuildingListItem } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import { AdminBuildingInventorySheet } from '@/features/admin/components/admin-building-inventory-sheet';
+import { AdminBuildingsTable } from '@/features/admin/components/admin-buildings-table';
 import { AdminCreateBuildingSheet } from '@/features/admin/components/admin-create-building-sheet';
 import {
   AdminInventoryListShell,
   useAdminInventoryListParams,
 } from '@/features/admin/components/admin-inventory-list-shell';
+import { ADMIN_VIEW_MODE_KEYS } from '@/features/admin/constants';
 import { useAdminBuildingsQuery } from '@/features/admin/hooks/use-admin-inventory';
-import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
 import { usePathname, useRouter } from '@/i18n/navigation';
+import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { Button } from '@/shared/ui/button';
-import { LIST_STATUS_BADGE_COMPACT_CLASS } from '@/shared/ui/list-status-badge';
 
 /**
  * Admin buildings hub list with inventory glance sheet.
@@ -31,6 +31,7 @@ export const AdminBuildingsListPage = () => {
   const pathname = usePathname();
   const [showCreate, setShowCreate] = useState(false);
   const [sheetFloorId, setSheetFloorId] = useState<string | null>(null);
+  const { viewMode, setViewMode } = usePersistedViewMode(ADMIN_VIEW_MODE_KEYS.buildings);
 
   const buildingId = searchParams.get('buildingId')?.trim() || null;
 
@@ -87,6 +88,8 @@ export const AdminBuildingsListPage = () => {
         total={response?.meta.total ?? 0}
         page={response?.meta.page ?? page}
         totalPages={response?.meta.totalPages ?? 0}
+        viewMode={viewMode}
+        onViewModeChange={setViewMode}
         headerActions={
           <Button
             type="button"
@@ -101,8 +104,9 @@ export const AdminBuildingsListPage = () => {
         }
       >
         {response ? (
-          <BuildingsTable
+          <AdminBuildingsTable
             buildings={response.data}
+            viewMode={viewMode}
             onSelectBuilding={(id) => {
               setSheetFloorId(null);
               replaceHref(buildHref({ buildingId: id }));
@@ -132,47 +136,5 @@ export const AdminBuildingsListPage = () => {
         }}
       />
     </>
-  );
-};
-
-type BuildingsTableProps = {
-  buildings: AdminBuildingListItem[];
-  onSelectBuilding: (buildingId: string) => void;
-};
-
-const BuildingsTable = ({ buildings, onSelectBuilding }: BuildingsTableProps) => {
-  const t = useTranslations('Admin.buildings');
-
-  return (
-    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
-      {buildings.map((building) => (
-        <button
-          key={building.id}
-          type="button"
-          onClick={() => {
-            onSelectBuilding(building.id);
-          }}
-          className="flex flex-col gap-2 rounded-lg bg-surface-elevated p-4 text-left shadow-xs transition-[box-shadow] hover:shadow-sm"
-        >
-          <div className="flex items-start justify-between gap-2">
-            <span className="min-w-0 truncate font-semibold text-ink">{building.name}</span>
-            <PublicationStatusBadge
-              status={building.publicationStatus}
-              className={LIST_STATUS_BADGE_COMPACT_CLASS}
-            />
-          </div>
-          <p className="truncate text-sm text-ink-secondary">{building.projectName}</p>
-          <p className="truncate text-sm text-ink-muted">{building.companyName}</p>
-          <div className="flex flex-wrap gap-3 text-sm text-ink-secondary">
-            <span>
-              {t('columns.floors')}: {building.floorsCount}
-            </span>
-            <span>
-              {t('columns.apartments')}: {building.apartmentsCount}
-            </span>
-          </div>
-        </button>
-      ))}
-    </div>
   );
 };

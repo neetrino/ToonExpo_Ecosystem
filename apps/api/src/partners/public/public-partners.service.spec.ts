@@ -1,14 +1,11 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import {
-  PartnerCompanyStatus,
-  PublicationStatus,
-} from "@toonexpo/db";
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { PartnerCompanyStatus, PublicationStatus } from '@toonexpo/db';
 
-import type { PrismaService } from "../../prisma/prisma.service.js";
-import { ListPublicPartnersQueryDto } from "./dto/list-public-partners.query.dto.js";
-import { PublicPartnersService } from "./public-partners.service.js";
+import type { PrismaService } from '../../prisma/prisma.service.js';
+import { ListPublicPartnersQueryDto } from './dto/list-public-partners.query.dto.js';
+import { PublicPartnersService } from './public-partners.service.js';
 
-describe("PublicPartnersService visibility rules", () => {
+describe('PublicPartnersService visibility rules', () => {
   const partnerCompanyCount = vi.fn();
   const partnerCompanyFindMany = vi.fn();
   const partnerCompanyFindFirst = vi.fn();
@@ -36,7 +33,7 @@ describe("PublicPartnersService visibility rules", () => {
     partnerCompanyFindMany.mockResolvedValue([]);
   });
 
-  it("lists only active published partners", () => {
+  it('lists only active published partners', () => {
     const where = service.buildPublicWhere(new ListPublicPartnersQueryDto());
 
     expect(where).toEqual({
@@ -45,29 +42,27 @@ describe("PublicPartnersService visibility rules", () => {
     });
   });
 
-  it("adds type and featured filters when provided", () => {
+  it('adds type and featured filters when provided', () => {
     const query = Object.assign(new ListPublicPartnersQueryDto(), {
-      type: "bank",
+      type: 'bank',
       featured: true,
     });
 
     const where = service.buildPublicWhere(query);
 
-    expect(where.type).toBe("bank");
+    expect(where.type).toBe('bank');
     expect(where.featured).toBe(true);
   });
 
-  it("queries public detail with active+published gate and published offers only", async () => {
+  it('queries public detail with active+published gate and published offers only', async () => {
     partnerCompanyFindFirst.mockResolvedValue(null);
 
-    await expect(service.getBySlug("draft-partner")).rejects.toThrow(
-      "Partner not found",
-    );
+    await expect(service.getBySlug('draft-partner')).rejects.toThrow('Partner not found');
 
     expect(partnerCompanyFindFirst).toHaveBeenCalledWith(
       expect.objectContaining({
         where: {
-          slug: "draft-partner",
+          slug: 'draft-partner',
           status: PartnerCompanyStatus.active,
           publicationStatus: PublicationStatus.published,
         },
@@ -75,19 +70,22 @@ describe("PublicPartnersService visibility rules", () => {
           offers: expect.objectContaining({
             where: { publicationStatus: PublicationStatus.published },
           }),
+          bankOffers: expect.objectContaining({
+            where: { publicationStatus: PublicationStatus.published },
+          }),
         }),
       }),
     );
   });
 
-  it("returns only published offers in public detail mapping", async () => {
+  it('returns only published offers in public detail mapping', async () => {
     partnerCompanyFindFirst.mockResolvedValue({
-      id: "pc_1",
-      type: "bank",
-      name: "Acme Bank",
-      slug: "acme-bank",
-      shortDescription: "Hy short",
-      fullDescription: "Hy full",
+      id: 'pc_1',
+      type: 'bank',
+      name: 'Acme Bank',
+      slug: 'acme-bank',
+      shortDescription: 'Hy short',
+      fullDescription: 'Hy full',
       contacts: null,
       website: null,
       socialLinks: null,
@@ -96,18 +94,75 @@ describe("PublicPartnersService visibility rules", () => {
       coverMedia: null,
       offers: [
         {
-          id: "offer_pub",
-          title: "Published",
-          description: "Visible",
-          type: "loan",
+          id: 'offer_pub',
+          title: 'Published',
+          description: 'Visible',
+          type: 'loan',
+          sortOrder: 0,
+        },
+      ],
+      bankOffers: [
+        {
+          id: 'bo_1',
+          title: 'Seed offer',
+          shortDescription: 'Public calculator',
+          rate: { toString: () => '12.5' },
+          apr: { toString: () => '13' },
+          minDownPaymentPercent: { toString: () => '20' },
+          termOptionsYears: [15, 20, 30],
+          fees: null,
+          calculationNotes: null,
+          featured: true,
           sortOrder: 0,
         },
       ],
     });
 
-    const result = await service.getBySlug("acme-bank", "en");
+    const result = await service.getBySlug('acme-bank', 'en');
 
     expect(result.offers).toHaveLength(1);
-    expect(result.offers[0]?.id).toBe("offer_pub");
+    expect(result.offers[0]?.id).toBe('offer_pub');
+    expect(result.mortgageRate).toBe('12.5');
+    expect(result.bankOffers).toHaveLength(1);
+    expect(result.bankOffers[0]?.rate).toBe('12.5');
+    expect(result.bankOffers[0]?.apr).toBe('13');
+  });
+
+  it('exposes null mortgageRate for non-bank partners', async () => {
+    partnerCompanyFindFirst.mockResolvedValue({
+      id: 'pc_2',
+      type: 'sponsor',
+      name: 'Acme Sponsor',
+      slug: 'acme-sponsor',
+      shortDescription: null,
+      fullDescription: null,
+      contacts: null,
+      website: null,
+      socialLinks: null,
+      featured: false,
+      logoMedia: null,
+      coverMedia: null,
+      offers: [],
+      bankOffers: [
+        {
+          id: 'bo_ignored',
+          title: 'Ignored',
+          shortDescription: null,
+          rate: { toString: () => '9.9' },
+          apr: null,
+          minDownPaymentPercent: { toString: () => '10' },
+          termOptionsYears: [20],
+          fees: null,
+          calculationNotes: null,
+          featured: false,
+          sortOrder: 0,
+        },
+      ],
+    });
+
+    const result = await service.getBySlug('acme-sponsor', 'en');
+
+    expect(result.mortgageRate).toBeNull();
+    expect(result.bankOffers).toEqual([]);
   });
 });

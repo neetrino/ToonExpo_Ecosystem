@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import type { ApartmentDetail } from '@toonexpo/contracts';
 import { getTranslations } from 'next-intl/server';
 
+import { ApartmentDetailCriteriaPanel } from '@/features/catalog/components/apartment-detail-criteria-panel';
 import { ApartmentDetailPrice } from '@/features/catalog/components/apartment-price-label';
 import { ApartmentInquireCard } from '@/features/catalog/components/apartment-inquire-card';
 import { ApartmentMortgageEstimate } from '@/features/catalog/components/apartment-mortgage-estimate';
@@ -9,6 +10,7 @@ import { ApartmentNeighborhood } from '@/features/catalog/components/apartment-n
 import { ApartmentPhotoGallery } from '@/features/catalog/components/apartment-photo-gallery';
 import { ApartmentPriceHistory } from '@/features/catalog/components/apartment-price-history';
 import { ApartmentPricePerArea } from '@/features/catalog/components/apartment-price-per-area';
+import { buildApartmentDetailRows } from '@/features/catalog/utils/build-apartment-detail-rows';
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 
@@ -16,10 +18,12 @@ type ApartmentDetailViewProps = {
   apartment: ApartmentDetail;
   locationLine: string | null;
   galleryImages: Array<{ src: string; alt: string }>;
-  /** Project completion year when known (Figma “Year built”). */
-  yearBuilt: string | null;
   projectType: string | null;
+  /** Geographic district when set on the project. */
+  district: string | null;
 };
+
+const EMPTY_VALUE = '—';
 
 /**
  * Public apartment detail — Figma frame `89:646` content + gallery/inquire chrome.
@@ -28,8 +32,8 @@ export const ApartmentDetailView = async ({
   apartment,
   locationLine,
   galleryImages,
-  yearBuilt,
   projectType,
+  district,
 }: ApartmentDetailViewProps) => {
   const t = await getTranslations('Catalog');
   const title = t('apartment.unit', { number: apartment.number });
@@ -39,35 +43,31 @@ export const ApartmentDetailView = async ({
       ? t('apartment.rooms', { count: apartment.rooms })
       : t('apartment.typeFallback');
 
-  const detailRows: Array<{ label: string; value: string }> = [
-    { label: t('apartment.yearBuiltLabel'), value: yearBuilt ?? '—' },
-    { label: t('apartment.typeLabel'), value: typeLabel },
-    {
-      label: t('apartment.statusLabel'),
-      value: t(`status.${apartment.salesStatus}`),
+  const detailRows = buildApartmentDetailRows({
+    apartment,
+    district,
+    formatCeilingHeight: (height) => t('apartment.criteria.ceilingHeightValue', { height }),
+    formatStatus: (status) => t(`status.${status}`),
+    labels: {
+      neighborhood: t('apartment.criteria.neighborhood'),
+      building: t('apartment.criteria.building'),
+      floor: t('apartment.criteria.floor'),
+      unitNumber: t('apartment.criteria.unitNumber'),
+      status: t('apartment.criteria.status'),
+      windows: t('apartment.criteria.windows'),
+      handoverDescription: t('apartment.criteria.handoverDescription'),
+      balconies: t('apartment.criteria.balconies'),
+      generalDescription: t('apartment.criteria.generalDescription'),
+      ceilingHeight: t('apartment.criteria.ceilingHeight'),
+      finishingStatus: t('apartment.criteria.finishingStatus'),
     },
-    {
-      label: t('apartment.bedsLabel'),
-      value: apartment.bedrooms != null ? String(apartment.bedrooms) : '—',
-    },
-    {
-      label: t('apartment.bathsLabel'),
-      value: apartment.bathrooms != null ? String(apartment.bathrooms) : '—',
-    },
-    {
-      label: t('apartment.livingAreaLabel'),
-      value: apartment.areaTotal != null ? t('apartment.area', { area: apartment.areaTotal }) : '—',
-    },
-    { label: t('apartment.developerLabel'), value: apartment.builder.name || '—' },
-    { label: t('apartment.verifiedLabel'), value: t('apartment.verifiedYes') },
-    { label: t('apartment.unitIdLabel'), value: apartment.number },
-  ];
+  });
 
   const neighborhoodStats = [
-    { label: t('apartment.neighborhood.walkScore'), value: '—' },
-    { label: t('apartment.neighborhood.transit'), value: '—' },
-    { label: t('apartment.neighborhood.schools'), value: '—' },
-    { label: t('apartment.neighborhood.crime'), value: '—' },
+    { label: t('apartment.neighborhood.walkScore'), value: EMPTY_VALUE },
+    { label: t('apartment.neighborhood.transit'), value: EMPTY_VALUE },
+    { label: t('apartment.neighborhood.schools'), value: EMPTY_VALUE },
+    { label: t('apartment.neighborhood.crime'), value: EMPTY_VALUE },
   ];
 
   const priceHistoryRows = [
@@ -123,31 +123,31 @@ export const ApartmentDetailView = async ({
             {locationLine ?? `${apartment.building.name} · ${title}`}
           </p>
 
-          <div className="mt-8 grid grid-cols-2 gap-y-4 border-y border-header-border py-6 sm:grid-cols-3 lg:grid-cols-5">
+          <div className="mt-8 flex flex-wrap items-start justify-between gap-y-4 border-y border-header-border py-6">
             <StatBlock label={t('apartment.priceLabel')}>
               <ApartmentDetailPrice
                 apartmentId={apartment.id}
                 amount={apartment.price}
                 currency={apartment.priceCurrency}
                 priceVisibility={apartment.priceVisibility}
-                className="text-[1.875rem] leading-[1.25]"
+                className="whitespace-nowrap text-[1.875rem] leading-[1.25]"
               />
             </StatBlock>
             <StatBlock label={t('apartment.bedsLabel')}>
               <p className="font-brand text-2xl font-bold text-ink-navy">
-                {apartment.bedrooms ?? '—'}
+                {apartment.bedrooms ?? EMPTY_VALUE}
               </p>
             </StatBlock>
             <StatBlock label={t('apartment.bathsLabel')}>
               <p className="font-brand text-2xl font-bold text-ink-navy">
-                {apartment.bathrooms ?? '—'}
+                {apartment.bathrooms ?? EMPTY_VALUE}
               </p>
             </StatBlock>
             <StatBlock label={t('apartment.areaLabel')}>
               <p className="font-brand text-2xl font-bold text-ink-navy">
                 {apartment.areaTotal != null
                   ? t('apartment.area', { area: apartment.areaTotal })
-                  : '—'}
+                  : EMPTY_VALUE}
               </p>
             </StatBlock>
             <StatBlock label={t('apartment.pricePerAreaLabel')}>
@@ -162,28 +162,7 @@ export const ApartmentDetailView = async ({
           </div>
 
           <section className="py-10">
-            <h2 className="font-brand text-2xl font-bold tracking-tight text-ink-navy">
-              {t('apartment.aboutTitle')}
-            </h2>
-            <p className="mt-5 text-base leading-[1.625] text-ink-navy/80">
-              {apartment.description?.trim() ? apartment.description : t('apartment.aboutEmpty')}
-            </p>
-          </section>
-
-          <section className="py-10">
-            <h2 className="font-brand text-2xl font-bold tracking-tight text-ink-navy">
-              {t('apartment.detailsTitle')}
-            </h2>
-            <dl className="mt-8 grid grid-cols-2 gap-x-8 gap-y-4 md:grid-cols-3">
-              {detailRows.map((row) => (
-                <div key={row.label} className="border-b border-header-border pb-2">
-                  <dt className="text-[10px] font-bold tracking-widest text-header-muted uppercase">
-                    {row.label}
-                  </dt>
-                  <dd className="mt-[7px] text-sm font-medium text-ink-navy">{row.value}</dd>
-                </div>
-              ))}
-            </dl>
+            <ApartmentDetailCriteriaPanel title={t('apartment.detailsTitle')} rows={detailRows} />
           </section>
 
           <ApartmentNeighborhood
@@ -227,7 +206,7 @@ export const ApartmentDetailView = async ({
 };
 
 const StatBlock = ({ label, children }: { label: string; children: ReactNode }) => (
-  <div className="flex flex-col items-center text-center">
+  <div className="flex shrink-0 flex-col items-center text-center">
     <p className="text-[10px] font-bold tracking-widest text-header-muted uppercase">{label}</p>
     <div className="mt-1">{children}</div>
   </div>

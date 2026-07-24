@@ -33,6 +33,38 @@ export class PortalApartmentsService {
     const apartments = await this.prisma.db.apartment.findMany({
       where: { floorId },
       orderBy: [{ number: 'asc' }],
+      include: {
+        planMedia: {
+          select: {
+            id: true,
+            fileUrl: true,
+            thumbnailUrl: true,
+            altText: true,
+          },
+        },
+        floor: {
+          select: {
+            number: true,
+            displayLabel: true,
+            building: {
+              select: {
+                name: true,
+                project: {
+                  select: {
+                    name: true,
+                    builderCompany: {
+                      select: {
+                        id: true,
+                        name: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
     return apartments.map((apartment) => mapPortalApartment(apartment));
   }
@@ -172,13 +204,44 @@ export class PortalApartmentsService {
     await this.prisma.db.apartment.delete({ where: { id: apartmentId } });
   }
 
-  private async toApartmentDetail(
-    apartment: Parameters<typeof mapPortalApartment>[0],
-  ): Promise<PortalApartmentDetail> {
-    const rows = await loadTranslations(this.prisma.db, TRANSLATION_ENTITY.apartment, [
-      apartment.id,
-    ]);
+  private async toApartmentDetail(apartment: { id: string }): Promise<PortalApartmentDetail> {
+    const full = await this.prisma.db.apartment.findUniqueOrThrow({
+      where: { id: apartment.id },
+      include: {
+        planMedia: {
+          select: {
+            id: true,
+            fileUrl: true,
+            thumbnailUrl: true,
+            altText: true,
+          },
+        },
+        floor: {
+          select: {
+            number: true,
+            displayLabel: true,
+            building: {
+              select: {
+                name: true,
+                project: {
+                  select: {
+                    name: true,
+                    builderCompany: {
+                      select: {
+                        id: true,
+                        name: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+    const rows = await loadTranslations(this.prisma.db, TRANSLATION_ENTITY.apartment, [full.id]);
     const translations = groupPortalTranslations(rows, APARTMENT_TRANSLATION_FIELDS);
-    return mapPortalApartment(apartment, translations);
+    return mapPortalApartment(full, translations);
   }
 }

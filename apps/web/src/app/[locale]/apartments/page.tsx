@@ -64,14 +64,21 @@ export default async function ApartmentsIndexPage({
   ].sort((a, b) => a.localeCompare(b));
 
   return (
-    <div className="min-h-screen bg-canvas">
-      {/* Opaque shield so list/map never show through the frosted header. */}
-      <div className="fixed inset-x-0 top-0 z-[var(--z-sticky)] h-[4.5rem] bg-canvas" aria-hidden />
-      <main className="bg-canvas">
-        <BuyApartmentsFilters filters={filters} cities={cities} />
-        <BuyApartmentsBrowse listings={listings} />
-      </main>
-      <SiteFooter />
+    <div className="relative min-h-screen">
+      {/* Continuous canvas under the whole viewport (incl. overscroll). */}
+      <div className="pointer-events-none fixed inset-0 bg-canvas" aria-hidden />
+      {/* Opaque band under the navbar so listing cards never scroll through. */}
+      <div
+        className="pointer-events-none fixed inset-x-0 top-0 z-[var(--z-sticky)] h-[4.5rem] bg-canvas"
+        aria-hidden
+      />
+      <div className="relative">
+        <main>
+          <BuyApartmentsFilters filters={filters} cities={cities} />
+          <BuyApartmentsBrowse listings={listings} />
+        </main>
+        <SiteFooter />
+      </div>
     </div>
   );
 }

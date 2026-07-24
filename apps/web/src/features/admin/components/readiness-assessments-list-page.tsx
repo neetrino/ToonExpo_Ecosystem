@@ -92,18 +92,27 @@ export const ReadinessAssessmentsListPage = () => {
 
   return (
     <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-1">
+        <h1 className="text-page-title text-ink">{t('title')}</h1>
+        <p className="text-sm text-ink-secondary">
+          {t('subtitle', { count: response.meta.total })}
+        </p>
+      </div>
+
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-page-title text-ink">{t('title')}</h1>
-          <p className="text-sm text-ink-secondary">
-            {t('subtitle', { count: response.meta.total })}
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
+        <ReadinessAssessmentFilters
+          companyId={filters.companyId}
+          targetType={filters.targetType}
+          status={filters.status}
+          companyOptions={companyOptions}
+          onChange={setFilters}
+        />
+
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
           <ViewModeToggle value={viewMode} onChange={setViewMode} />
           <Link
             href="/admin/readiness/categories"
-            className="inline-flex h-9 items-center justify-center rounded-pill border border-border-strong px-4 text-sm font-medium text-ink hover:bg-surface"
+            className="inline-flex h-9 items-center justify-center rounded-[15px] border border-border-strong px-4 text-sm font-medium text-ink hover:bg-surface"
           >
             {t('categoriesLink')}
           </Link>
@@ -119,14 +128,6 @@ export const ReadinessAssessmentsListPage = () => {
           </Button>
         </div>
       </div>
-
-      <ReadinessAssessmentFilters
-        companyId={filters.companyId}
-        targetType={filters.targetType}
-        status={filters.status}
-        companyOptions={companyOptions}
-        onChange={setFilters}
-      />
 
       {response.data.length === 0 ? (
         <p className="text-sm text-ink-secondary">{t('empty')}</p>

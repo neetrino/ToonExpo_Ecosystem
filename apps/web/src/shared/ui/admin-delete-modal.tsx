@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import { useTranslations } from 'next-intl';
 
 import { Button } from '@/shared/ui/button';
+import { blurActiveElementAfterEscClose } from '@/shared/ui/blur-active-element';
 import { cn } from '@/shared/ui/cn';
 import { MODAL_BACKDROP_CLASS_NAME } from '@/shared/ui/modal-backdrop';
 import { useModalEnterExit } from '@/shared/ui/use-modal-enter-exit';
@@ -74,6 +75,7 @@ export const AdminDeleteModal = ({
     const onKeyDown = (event: KeyboardEvent): void => {
       if (event.key === 'Escape') {
         onCancel();
+        blurActiveElementAfterEscClose();
       }
     };
     window.addEventListener('keydown', onKeyDown);

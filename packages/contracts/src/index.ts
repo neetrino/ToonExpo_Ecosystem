@@ -218,6 +218,7 @@ export type {
   PublicPartnerDetail,
   PublicPartnerListItem,
   PublicPartnerListResponse,
+  PublicPartnerBankOfferItem,
   PublicPartnerOfferItem,
   UpdateAdminPartnerBody,
   UpdatePartnerOfferBody,

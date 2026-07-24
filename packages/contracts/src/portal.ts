@@ -4,10 +4,11 @@
 
 import type {
   ApartmentSalesStatus,
+  MediaAssetSummary,
   PaginatedResponse,
   PriceVisibility,
   PublicationStatus,
-} from "./catalog.js";
+} from './catalog.js';
 
 /** Per-locale string map for catalog content fields. */
 export type LocaleTextMap = {
@@ -102,8 +103,14 @@ export type PortalFloorSummary = {
 export type PortalApartmentDetail = {
   id: string;
   projectId: string;
+  projectName: string;
+  companyId: string;
+  companyName: string;
   buildingId: string;
+  buildingName: string;
   floorId: string;
+  floorNumber: number;
+  floorLabel: string | null;
   number: string;
   salesStatus: ApartmentSalesStatus;
   publicationStatus: PublicationStatus;
@@ -123,6 +130,7 @@ export type PortalApartmentDetail = {
   viewType: string | null;
   features: unknown;
   planMediaId: string | null;
+  plan: MediaAssetSummary | null;
   createdAt: string;
   updatedAt: string;
   /** Existing Translation rows grouped by field → locale (portal edit prefills). */

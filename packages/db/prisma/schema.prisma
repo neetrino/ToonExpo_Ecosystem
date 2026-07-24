@@ -944,6 +944,7 @@ model ReadinessInternalNote {
 
 /// Partner profile type (display category on public partner pages).
 enum PartnerCompanyType {
+  builder
   bank
   it_company
   sponsor

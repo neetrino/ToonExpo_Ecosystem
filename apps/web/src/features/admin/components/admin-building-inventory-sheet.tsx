@@ -51,10 +51,7 @@ export const AdminBuildingInventorySheet = ({
   if (selectedFloor) {
     floorSnapshotRef.current = {
       floorId: selectedFloor.id,
-      floorLabel:
-        selectedFloor.displayLabel?.trim() ||
-        selectedFloor.name?.trim() ||
-        t('floorCode', { number: selectedFloor.number }),
+      floorLabel: t('floorCode', { number: selectedFloor.number }),
       floorplan: selectedFloor.floorplan,
     };
   }
@@ -62,11 +59,7 @@ export const AdminBuildingInventorySheet = ({
   const floorSheetOpen = floorId != null;
   const floorSheetFloorId = selectedFloor?.id ?? floorSnapshotRef.current?.floorId ?? floorId ?? '';
   const floorSheetLabel =
-    (selectedFloor
-      ? selectedFloor.displayLabel?.trim() ||
-        selectedFloor.name?.trim() ||
-        t('floorCode', { number: selectedFloor.number })
-      : null) ??
+    (selectedFloor ? t('floorCode', { number: selectedFloor.number }) : null) ??
     floorSnapshotRef.current?.floorLabel ??
     t('floorFallback');
   const floorSheetPlan = selectedFloor?.floorplan ?? floorSnapshotRef.current?.floorplan ?? null;
@@ -113,6 +106,7 @@ export const AdminBuildingInventorySheet = ({
         <AdminFloorApartmentsSheet
           open={floorSheetOpen}
           companyId={glance.builderCompanyId}
+          buildingId={glance.id}
           floorId={floorSheetFloorId}
           floorLabel={floorSheetLabel}
           floorplan={floorSheetPlan}

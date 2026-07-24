@@ -13,6 +13,7 @@ import { Select } from '@/shared/ui/select';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { AdminCreateSheet } from '@/shared/ui/admin-create-sheet';
 import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
+import { SearchField } from '@/shared/ui/search-field';
 import { VIEW_MODE_CARDS } from '@/shared/ui/view-mode';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
@@ -74,57 +75,59 @@ export const ServiceProvidersProvidersSection = ({
 
   return (
     <section className="flex flex-col gap-4">
+      <h2 className="text-base font-semibold text-ink">{t('title')}</h2>
+
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-base font-semibold text-ink">{t('title')}</h2>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex min-w-0 flex-1 flex-wrap items-center gap-3">
+          <SearchField
+            className="min-w-[12rem] flex-1 sm:min-w-[16rem]"
+            value={filters.search}
+            placeholder={t('filters.searchPlaceholder')}
+            aria-label={t('filters.searchPlaceholder')}
+            onChange={(event) => {
+              onFiltersChange({ ...filters, search: event.target.value });
+            }}
+          />
+          <Select
+            size="fit"
+            className="h-10"
+            value={filters.categoryId}
+            aria-label={t('filters.allCategories')}
+            onChange={(event) => {
+              onFiltersChange({ ...filters, categoryId: event.target.value });
+            }}
+          >
+            <option value="">{t('filters.allCategories')}</option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </Select>
+          <Select
+            size="fit"
+            className="h-10"
+            value={filters.active}
+            aria-label={t('filters.allActive')}
+            onChange={(event) => {
+              onFiltersChange({
+                ...filters,
+                active: event.target.value as '' | 'true' | 'false',
+              });
+            }}
+          >
+            <option value="">{t('filters.allActive')}</option>
+            <option value="true">{t('filters.active')}</option>
+            <option value="false">{t('filters.inactive')}</option>
+          </Select>
+        </div>
+
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
           <ViewModeToggle value={viewMode} onChange={setViewMode} />
           <Button type="button" size="sm" variant="secondary" onClick={onCreate}>
             <AddActionLabel>{t('newProvider')}</AddActionLabel>
           </Button>
         </div>
-      </div>
-
-      <div className="flex flex-wrap gap-3">
-        <input
-          className="h-10 rounded-sm border border-border bg-background px-3 text-sm"
-          placeholder={t('filters.searchPlaceholder')}
-          value={filters.search}
-          onChange={(event) => {
-            onFiltersChange({ ...filters, search: event.target.value });
-          }}
-        />
-        <Select
-          size="fit"
-          className="h-10"
-          value={filters.categoryId}
-          aria-label={t('filters.allCategories')}
-          onChange={(event) => {
-            onFiltersChange({ ...filters, categoryId: event.target.value });
-          }}
-        >
-          <option value="">{t('filters.allCategories')}</option>
-          {categories.map((category) => (
-            <option key={category.id} value={category.id}>
-              {category.name}
-            </option>
-          ))}
-        </Select>
-        <Select
-          size="fit"
-          className="h-10"
-          value={filters.active}
-          aria-label={t('filters.allActive')}
-          onChange={(event) => {
-            onFiltersChange({
-              ...filters,
-              active: event.target.value as '' | 'true' | 'false',
-            });
-          }}
-        >
-          <option value="">{t('filters.allActive')}</option>
-          <option value="true">{t('filters.active')}</option>
-          <option value="false">{t('filters.inactive')}</option>
-        </Select>
       </div>
 
       <AdminCreateSheet

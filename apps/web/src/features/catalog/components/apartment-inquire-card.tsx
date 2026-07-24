@@ -212,8 +212,8 @@ export const ApartmentInquireCard = ({
             disabled={mutation.isPending}
             className={cn(
               'flex h-11 w-full items-center justify-center rounded-[12px]',
-              'bg-brand-deep text-sm font-semibold text-on-dark',
-              'transition-colors hover:bg-brand-deep/90',
+              'bg-brand text-sm font-semibold text-on-brand',
+              'transition-colors hover:bg-brand-hover',
               'disabled:pointer-events-none disabled:opacity-50',
             )}
           >

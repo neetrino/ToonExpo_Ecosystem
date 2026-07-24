@@ -13,6 +13,8 @@ type AdminCreateSheetProps = {
   headerActions?: ReactNode | undefined;
   /** `compact` ≈ 420px; `comfortable` ≈ 500px; `default` ≈ 50vw. */
   size?: 'compact' | 'comfortable' | 'default' | undefined;
+  /** Nested sheet level (0 = base). */
+  stackLevel?: number | undefined;
 };
 
 const LEADING_PLUS = /^\+\s*/;
@@ -29,6 +31,7 @@ export const AdminCreateSheet = ({
   children,
   headerActions,
   size = 'compact',
+  stackLevel,
 }: AdminCreateSheetProps) => {
   return (
     <SideSheet
@@ -38,6 +41,7 @@ export const AdminCreateSheet = ({
       title={title.replace(LEADING_PLUS, '')}
       description={description}
       headerActions={headerActions}
+      stackLevel={stackLevel}
     >
       {children}
     </SideSheet>
