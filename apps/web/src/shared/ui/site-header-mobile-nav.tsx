@@ -8,12 +8,12 @@ import type { AccountSettingsHref } from '@/features/auth/utils/get-account-sett
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 
-type NavHref = '/apartments' | '/developments' | '/partners' | '/mortgage';
+type NavHref = '/apartments' | '/projects' | '/developments' | '/partners' | '/mortgage';
 
 type SiteHeaderMobileNavProps = {
   navItems: ReadonlyArray<{
     href: NavHref;
-    key: 'buy' | 'newDevelopments' | 'partners' | 'mortgage';
+    key: 'buy' | 'projects' | 'newDevelopments' | 'partners' | 'mortgage';
   }>;
   pathname: string;
   user: UserResponse | undefined;
