@@ -89,11 +89,22 @@ export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
         }
       };
 
+      const onScroll = (event: Event): void => {
+        const target = event.target;
+        if (target instanceof Node && menuRef.current?.contains(target)) {
+          return;
+        }
+        setOpen(false);
+        blurActiveElementAfterEscClose();
+      };
+
       document.addEventListener('mousedown', onPointerDown);
       document.addEventListener('keydown', onKeyDown);
+      window.addEventListener('scroll', onScroll, true);
       return () => {
         document.removeEventListener('mousedown', onPointerDown);
         document.removeEventListener('keydown', onKeyDown);
+        window.removeEventListener('scroll', onScroll, true);
       };
     }, [open]);
 
