@@ -7,13 +7,13 @@ import { useTranslations } from 'next-intl';
 import { lockBodyScroll, unlockBodyScroll } from '@/shared/ui/body-scroll-lock';
 import { DrawerCloseTab } from '@/shared/ui/drawer-close-tab';
 import { cn } from '@/shared/ui/cn';
+import { isTopSideSheetLevel, registerSideSheetLevel } from '@/shared/ui/side-sheet-escape-stack';
 import {
   SIDE_SHEET_BACKDROP_TRANSITION_MS,
   SIDE_SHEET_COMFORTABLE_MAX_WIDTH_PX,
   SIDE_SHEET_COMPACT_MAX_WIDTH_PX,
   SIDE_SHEET_PANEL_TRANSITION_MS,
   SIDE_SHEET_PANEL_Z_INDEX,
-  SIDE_SHEET_STACK_OFFSET_PX,
   SIDE_SHEET_STACK_Z_STEP,
   SIDE_SHEET_WIDTH_PERCENT,
   SIDE_SHEET_Z_INDEX,
@@ -72,7 +72,6 @@ const SideSheetPanel = ({
   children,
 }: SideSheetPanelProps) => {
   const zIndex = SIDE_SHEET_Z_INDEX + stackLevel * SIDE_SHEET_STACK_Z_STEP;
-  const stackShiftPx = stackLevel * SIDE_SHEET_STACK_OFFSET_PX;
   const isFixedMax = size === 'compact' || size === 'comfortable';
   const compactMaxPx =
     size === 'comfortable' ? SIDE_SHEET_COMFORTABLE_MAX_WIDTH_PX : SIDE_SHEET_COMPACT_MAX_WIDTH_PX;
@@ -119,11 +118,6 @@ const SideSheetPanel = ({
           ['--side-sheet-width' as string]: `${SIDE_SHEET_WIDTH_PERCENT}%`,
           ['--side-sheet-compact-max' as string]: `${compactMaxPx}px`,
           ['--side-sheet-panel-ms' as string]: `${SIDE_SHEET_PANEL_TRANSITION_MS}ms`,
-          ...(stackLevel > 0
-            ? {
-                transform: visible ? `translateX(-${stackShiftPx}px)` : 'translateX(100%)',
-              }
-            : {}),
         }}
       >
         <DrawerCloseTab edge="start" onClose={onClose} closeLabel={closeLabel} />
@@ -193,6 +187,8 @@ export const SideSheet = ({
   const titleId = useId();
   const panelRef = useRef<HTMLDivElement | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
   const { rendered, visible } = useDrawerTransition(open, SIDE_SHEET_PANEL_TRANSITION_MS);
 
   useEffect(() => {
@@ -211,17 +207,25 @@ export const SideSheet = ({
       return;
     }
 
+    const unregister = registerSideSheetLevel(stackLevel);
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        onClose();
+      if (event.key !== 'Escape' || event.defaultPrevented) {
+        return;
       }
+      if (!isTopSideSheetLevel(stackLevel)) {
+        return;
+      }
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      onCloseRef.current();
     };
-    window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('keydown', onKeyDown, true);
 
     return () => {
-      window.removeEventListener('keydown', onKeyDown);
+      unregister();
+      window.removeEventListener('keydown', onKeyDown, true);
     };
-  }, [rendered, onClose]);
+  }, [rendered, stackLevel]);
 
   if (!rendered || typeof document === 'undefined') {
     return null;

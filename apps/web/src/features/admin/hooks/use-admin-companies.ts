@@ -1,24 +1,26 @@
-"use client";
+'use client';
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import type {
-  CreateCompanyRequest,
-  UpdateCompanyRequest,
-} from "@toonexpo/contracts";
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import type { CreateCompanyRequest, UpdateCompanyRequest } from '@toonexpo/contracts';
 
 import {
   createAdminCompany,
   getAdminCompany,
+  getAdminProjectScope,
   listAdminCompanies,
   listAdminCompanyProjects,
+  listAdminProjects,
   resendAdminCompanyInvite,
   updateAdminCompany,
-} from "@/features/admin/api/admin-companies-api";
+} from '@/features/admin/api/admin-companies-api';
 import {
   ADMIN_COMPANIES_QUERY_KEY,
+  ADMIN_PROJECTS_QUERY_KEY,
   adminCompanyProjectsQueryKey,
   adminCompanyQueryKey,
-} from "@/features/admin/constants";
+  adminProjectScopeQueryKey,
+  adminProjectsQueryKey,
+} from '@/features/admin/constants';
 
 /**
  * Paginated company list for the admin companies table.
@@ -42,14 +44,39 @@ export const useAdminCompanyQuery = (id: string) =>
 /**
  * Lists all projects for a company (readiness and other admin pickers).
  */
-export const useAdminCompanyProjectsQuery = (
-  companyId: string,
-  enabled = true,
-) =>
+export const useAdminCompanyProjectsQuery = (companyId: string, enabled = true) =>
   useQuery({
     queryKey: adminCompanyProjectsQueryKey(companyId),
     queryFn: () => listAdminCompanyProjects(companyId),
     enabled: enabled && companyId.length > 0,
+  });
+
+/**
+ * Paginated cross-company projects list for the admin projects page.
+ */
+export const useAdminProjectsQuery = (page: number, pageSize: number, companyId?: string) =>
+  useQuery({
+    queryKey: adminProjectsQueryKey({
+      page,
+      pageSize,
+      ...(companyId ? { companyId } : {}),
+    }),
+    queryFn: () =>
+      listAdminProjects({
+        page,
+        pageSize,
+        ...(companyId ? { companyId } : {}),
+      }),
+  });
+
+/**
+ * Resolves builder company id for admin project detail routes.
+ */
+export const useAdminProjectScopeQuery = (projectId: string) =>
+  useQuery({
+    queryKey: adminProjectScopeQueryKey(projectId),
+    queryFn: () => getAdminProjectScope(projectId),
+    enabled: projectId.length > 0,
   });
 
 /**
@@ -62,6 +89,7 @@ export const useCreateAdminCompanyMutation = () => {
     mutationFn: (body: CreateCompanyRequest) => createAdminCompany(body),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ADMIN_COMPANIES_QUERY_KEY });
+      void queryClient.invalidateQueries({ queryKey: ADMIN_PROJECTS_QUERY_KEY });
     },
   });
 };

@@ -17,24 +17,20 @@ export const toCatalogApiPath = (scope: CatalogScope, portalPath: string): strin
  * Builder/admin UI href for the projects list.
  */
 export const catalogProjectsListHref = (scope: CatalogScope): string =>
-  scope.mode === 'admin'
-    ? `/admin/companies/${scope.companyId}/catalog/projects`
-    : '/builder/projects';
+  scope.mode === 'admin' ? '/admin/projects' : '/builder/projects';
 
 /**
  * Builder/admin UI href for a project detail page.
  */
 export const catalogProjectDetailHref = (scope: CatalogScope, projectId: string): string =>
-  scope.mode === 'admin'
-    ? `/admin/companies/${scope.companyId}/catalog/projects/${projectId}`
-    : `/builder/projects/${projectId}`;
+  scope.mode === 'admin' ? `/admin/projects/${projectId}` : `/builder/projects/${projectId}`;
 
 /**
  * Builder/admin UI href for creating a project.
  */
 export const catalogNewProjectHref = (scope: CatalogScope): string =>
   scope.mode === 'admin'
-    ? `/admin/companies/${scope.companyId}/catalog/projects/new`
+    ? `/admin/projects/new?companyId=${encodeURIComponent(scope.companyId)}`
     : '/builder/projects/new';
 
 /**
@@ -42,7 +38,7 @@ export const catalogNewProjectHref = (scope: CatalogScope): string =>
  */
 export const catalogApartmentDetailHref = (scope: CatalogScope, apartmentId: string): string =>
   scope.mode === 'admin'
-    ? `/admin/companies/${scope.companyId}/catalog/apartments/${apartmentId}`
+    ? `/admin/projects/apartments/${apartmentId}?companyId=${encodeURIComponent(scope.companyId)}`
     : `/builder/apartments/${apartmentId}`;
 
 /**
@@ -54,7 +50,7 @@ export const catalogVisualMapHref = (
   canvasId: string,
 ): string =>
   scope.mode === 'admin'
-    ? `/admin/companies/${scope.companyId}/catalog/projects/${projectId}/visual-maps/${canvasId}`
+    ? `/admin/projects/${projectId}/visual-maps/${canvasId}`
     : `/builder/projects/${projectId}/visual-maps/${canvasId}`;
 
 /**

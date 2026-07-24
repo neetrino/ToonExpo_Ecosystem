@@ -15,12 +15,14 @@ import { Card } from '@/shared/ui/card';
 
 type ProjectDetailPageProps = {
   projectId: string;
+  /** Builder keeps inventory on the project page; admin uses the Buildings hub sheets. */
+  showInventory?: boolean | undefined;
 };
 
 /**
  * Project edit shell with publication actions and inventory hierarchy.
  */
-export const ProjectDetailPage = ({ projectId }: ProjectDetailPageProps) => {
+export const ProjectDetailPage = ({ projectId, showInventory = true }: ProjectDetailPageProps) => {
   const t = useTranslations('Builder.projects');
   const scope = useCatalogScope();
   const query = usePortalProjectQuery(projectId);
@@ -52,7 +54,7 @@ export const ProjectDetailPage = ({ projectId }: ProjectDetailPageProps) => {
           <Link href={listHref} className="text-sm text-ink-secondary hover:text-ink">
             {t('detail.back')}
           </Link>
-          <h1 className="text-xl font-semibold text-ink">{project.name}</h1>
+          <h1 className="text-page-title text-ink">{project.name}</h1>
           <p className="text-sm text-ink-secondary">
             {t(`publication.${project.publicationStatus}`)}
           </p>
@@ -68,7 +70,7 @@ export const ProjectDetailPage = ({ projectId }: ProjectDetailPageProps) => {
 
       <PortalVisualCanvasesSection project={project} />
 
-      <ProjectInventorySection project={project} />
+      {showInventory ? <ProjectInventorySection project={project} /> : null}
     </div>
   );
 };

@@ -44,9 +44,7 @@ export const ApartmentDetailPage = ({ apartmentId }: ApartmentDetailPageProps) =
         >
           {t('back')}
         </Link>
-        <h1 className="text-xl font-semibold text-ink">
-          {t('title', { number: apartment.number })}
-        </h1>
+        <h1 className="text-page-title text-ink">{t('title', { number: apartment.number })}</h1>
         <p className="text-sm text-ink-secondary">
           {t(`salesStatus.${apartment.salesStatus}`)} ·{' '}
           {t(`publication.${apartment.publicationStatus}`)}

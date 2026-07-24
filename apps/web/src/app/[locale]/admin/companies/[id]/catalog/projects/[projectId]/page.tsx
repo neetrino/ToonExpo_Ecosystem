@@ -1,22 +1,17 @@
 import { setRequestLocale } from 'next-intl/server';
 
-import { AdminCompanyCatalogShell } from '@/features/admin/components/admin-company-catalog-shell';
-import { ProjectDetailPage } from '@/features/builder/components/project-detail-page';
+import { redirect } from '@/i18n/navigation';
 
 type PageProps = {
   params: Promise<{ locale: string; id: string; projectId: string }>;
 };
 
 /**
- * Admin project detail / inventory for a company.
+ * Legacy company catalog project detail → Projects hub.
  */
-export default async function AdminCompanyCatalogProjectDetailPage({ params }: PageProps) {
-  const { locale, id, projectId } = await params;
+export default async function AdminCompanyCatalogProjectDetailRedirect({ params }: PageProps) {
+  const { locale, projectId } = await params;
   setRequestLocale(locale);
-
-  return (
-    <AdminCompanyCatalogShell companyId={id}>
-      <ProjectDetailPage projectId={projectId} />
-    </AdminCompanyCatalogShell>
-  );
+  redirect({ href: `/admin/projects/${projectId}`, locale });
+  return null;
 }

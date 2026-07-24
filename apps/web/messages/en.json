@@ -875,6 +875,10 @@
       "portalLabel": "Management portal",
       "analytics": "Analytics",
       "companies": "Companies",
+      "projects": "Projects",
+      "buildings": "Building",
+      "floors": "Floor",
+      "apartments": "Apartment",
       "partners": "Partners",
       "bankOffers": "Bank offers",
       "serviceProviders": "Service providers",
@@ -1027,6 +1031,153 @@
         "breadcrumbCompanies": "Companies",
         "breadcrumbCatalog": "Catalog",
         "companyFallback": "Company"
+      }
+    },
+    "projects": {
+      "title": "Projects",
+      "subtitle": "{count, plural, =0 {No projects} one {# project} other {# projects}}",
+      "empty": "No projects yet.",
+      "loading": "Loading projects…",
+      "error": "Could not load projects. Try again.",
+      "filters": {
+        "company": "Company",
+        "allCompanies": "All companies",
+        "building": "Building",
+        "allBuildings": "All buildings"
+      },
+      "columns": {
+        "name": "Name",
+        "company": "Company",
+        "status": "Status",
+        "city": "City",
+        "buildings": "Buildings",
+        "apartments": "Apartments"
+      },
+      "publication": {
+        "draft": "Draft",
+        "published": "Published",
+        "archived": "Archived"
+      },
+      "pagination": {
+        "previous": "Previous",
+        "next": "Next",
+        "ariaLabel": "Pagination"
+      }
+    },
+    "buildings": {
+      "title": "Buildings",
+      "subtitle": "{count, plural, =0 {No buildings} one {# building} other {# buildings}}",
+      "empty": "No buildings yet.",
+      "loading": "Loading buildings…",
+      "error": "Could not load buildings. Try again.",
+      "columns": {
+        "floors": "Floors",
+        "apartments": "Apartments"
+      },
+      "create": {
+        "cta": "+ Add Building",
+        "title": "Add Building",
+        "company": "Company",
+        "selectCompany": "Select company",
+        "project": "Project",
+        "selectProject": "Select project",
+        "pickProject": "Select a company and project.",
+        "submit": "Create building"
+      },
+      "inventory": {
+        "sheetTitle": "Buildings & inventory",
+        "glanceTitle": "Inventory at a glance",
+        "available": "Available",
+        "reserved": "Reserved",
+        "sold": "Sold",
+        "noFloors": "No floors in this building yet.",
+        "floorCode": "F{number}",
+        "availableOfTotal": "{available}/{total}",
+        "loading": "Loading inventory…",
+        "error": "Could not load building inventory. Try again.",
+        "floorSheetSubtitle": "Floor plan and apartments",
+        "floorFallback": "Floor",
+        "floorplanTitle": "Floor plan",
+        "floorplanAlt": "Floor plan",
+        "noFloorplan": "No floor plan uploaded yet.",
+        "apartmentsTitle": "Apartments",
+        "loadingApartments": "Loading apartments…",
+        "apartmentsError": "Could not load apartments. Try again.",
+        "noApartments": "No apartments on this floor yet.",
+        "apartmentUnit": "Apt {number}",
+        "sales": {
+          "available": "Available",
+          "reserved": "Reserved",
+          "sold": "Sold"
+        },
+        "floorPlans": {
+          "countLabel": "Number of floors",
+          "countPlaceholder": "e.g. 5",
+          "countHint": "Enter how many floors to create. Plan upload slots appear for each floor.",
+          "plansTitle": "Floor plans (for Floor view)",
+          "floorLabel": "Floor {number}",
+          "uploadPlan": "Upload plan",
+          "planSelected": "Plan selected",
+          "uploading": "Uploading…",
+          "uploadFailed": "Upload failed. Try again.",
+          "uploadTypeError": "Use JPEG, PNG, WebP, or AVIF.",
+          "uploadSizeError": "File is too large.",
+          "uploadNotConfigured": "Media upload is not configured.",
+          "noFloors": "No floors yet. Add a floor to attach plans.",
+          "addFloor": "+ Add floor",
+          "cancel": "Cancel",
+          "save": "Save",
+          "saving": "Saving…",
+          "invalidCount": "Enter a valid number of floors.",
+          "error": "Could not save. Try again."
+        }
+      }
+    },
+    "floors": {
+      "title": "Floors",
+      "subtitle": "{count, plural, =0 {No floors} one {# floor} other {# floors}}",
+      "empty": "No floors yet.",
+      "loading": "Loading floors…",
+      "error": "Could not load floors. Try again.",
+      "floorNumber": "Floor {number}",
+      "columns": {
+        "apartments": "Apartments"
+      },
+      "create": {
+        "cta": "+ Add Floor",
+        "title": "Add Floor",
+        "company": "Company",
+        "selectCompany": "Select company",
+        "building": "Building",
+        "selectBuilding": "Select building",
+        "pickBuilding": "Select a company and building.",
+        "submit": "Create floor"
+      }
+    },
+    "apartments": {
+      "title": "Apartments",
+      "subtitle": "{count, plural, =0 {No apartments} one {# apartment} other {# apartments}}",
+      "empty": "No apartments yet.",
+      "loading": "Loading apartments…",
+      "error": "Could not load apartments. Try again.",
+      "unit": "Apt {number}",
+      "floorNumber": "Floor {number}",
+      "sales": {
+        "available": "Available",
+        "reserved": "Reserved",
+        "sold": "Sold"
+      },
+      "create": {
+        "cta": "+ Add Apartments",
+        "title": "Add Apartments",
+        "company": "Company",
+        "selectCompany": "Select company",
+        "building": "Building",
+        "selectBuilding": "Select building",
+        "floor": "Floor",
+        "selectFloor": "Select floor",
+        "pickFloor": "Select a floor.",
+        "submit": "Create apartments"
       }
     },
     "partners": {

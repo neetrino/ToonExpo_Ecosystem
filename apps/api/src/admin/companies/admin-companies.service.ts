@@ -1,6 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import type {
   AdminCompanyProjectListResponse,
+  AdminProjectListResponse,
+  AdminProjectScope,
   CompanyListResponse,
   CompanyResponse,
   ProvisionCompanyResponse,
@@ -12,6 +14,7 @@ import {
   CompanyStatus,
   CompanyType,
   UserStatus,
+  type Prisma,
 } from '@toonexpo/db';
 
 import { resolveOptionalCompanyLogoMediaId } from '../../media/utils/media-ownership.js';
@@ -129,6 +132,75 @@ export class AdminCompaniesService {
         createdAt: project.createdAt.toISOString(),
       })),
     };
+  }
+
+  /**
+   * Lists projects across builder companies, optionally filtered by company.
+   */
+  async listAllProjects(
+    page: number,
+    pageSize: number,
+    companyId?: string,
+  ): Promise<AdminProjectListResponse> {
+    if (companyId) {
+      await this.getById(companyId);
+    }
+
+    const where: Prisma.ProjectWhereInput = companyId ? { builderCompanyId: companyId } : {};
+
+    const [total, projects] = await Promise.all([
+      this.prisma.db.project.count({ where }),
+      this.prisma.db.project.findMany({
+        where,
+        orderBy: [{ updatedAt: 'desc' }],
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+        select: {
+          id: true,
+          name: true,
+          publicationStatus: true,
+          createdAt: true,
+          city: true,
+          builderCompanyId: true,
+          builderCompany: { select: { name: true } },
+          _count: { select: { buildings: true, apartments: true } },
+        },
+      }),
+    ]);
+
+    return {
+      data: projects.map((project) => ({
+        id: project.id,
+        name: project.name,
+        publicationStatus: project.publicationStatus,
+        createdAt: project.createdAt.toISOString(),
+        city: project.city,
+        builderCompanyId: project.builderCompanyId,
+        companyName: project.builderCompany.name,
+        buildingsCount: project._count.buildings,
+        apartmentsCount: project._count.apartments,
+      })),
+      meta: {
+        page,
+        pageSize,
+        total,
+        totalPages: total === 0 ? 0 : Math.ceil(total / pageSize),
+      },
+    };
+  }
+
+  /**
+   * Resolves the builder company for an admin project UI route.
+   */
+  async getProjectScope(projectId: string): Promise<AdminProjectScope> {
+    const project = await this.prisma.db.project.findUnique({
+      where: { id: projectId },
+      select: { builderCompanyId: true },
+    });
+    if (!project) {
+      throw new NotFoundException('Project not found');
+    }
+    return { builderCompanyId: project.builderCompanyId };
   }
 
   async update(id: string, input: UpdateCompanyInput): Promise<CompanyResponse> {

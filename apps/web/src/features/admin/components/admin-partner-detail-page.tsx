@@ -49,7 +49,7 @@ export const AdminPartnerDetailPage = ({ partnerId }: AdminPartnerDetailPageProp
           {t('back')}
         </Link>
         <div className="flex flex-wrap items-center gap-3">
-          <h1 className="text-xl font-semibold text-ink">{partner.name}</h1>
+          <h1 className="text-page-title text-ink">{partner.name}</h1>
           <PartnerTypeLabel type={partner.type} className="text-sm text-ink-secondary" />
           <PartnerStatusBadge status={partner.status} />
           <PublicationStatusBadge status={partner.publicationStatus} />

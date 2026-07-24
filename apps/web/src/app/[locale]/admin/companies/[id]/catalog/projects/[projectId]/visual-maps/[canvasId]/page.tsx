@@ -1,7 +1,6 @@
 import { setRequestLocale } from 'next-intl/server';
 
-import { AdminCompanyCatalogShell } from '@/features/admin/components/admin-company-catalog-shell';
-import { PortalCanvasEditorShell } from '@/features/visual-map/components/portal-canvas-editor-shell';
+import { redirect } from '@/i18n/navigation';
 
 type PageProps = {
   params: Promise<{
@@ -13,15 +12,14 @@ type PageProps = {
 };
 
 /**
- * Admin visual map editor for a company project.
+ * Legacy company catalog visual map → admin Projects hub.
  */
-export default async function AdminCompanyCatalogVisualMapPage({ params }: PageProps) {
-  const { locale, id, projectId, canvasId } = await params;
+export default async function AdminCompanyCatalogVisualMapRedirect({ params }: PageProps) {
+  const { locale, projectId, canvasId } = await params;
   setRequestLocale(locale);
-
-  return (
-    <AdminCompanyCatalogShell companyId={id}>
-      <PortalCanvasEditorShell projectId={projectId} canvasId={canvasId} />
-    </AdminCompanyCatalogShell>
-  );
+  redirect({
+    href: `/admin/projects/${projectId}/visual-maps/${canvasId}`,
+    locale,
+  });
+  return null;
 }

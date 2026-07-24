@@ -2,17 +2,18 @@
  * Admin company provisioning and company-member invite contracts.
  */
 
+import type { CompanyMemberRole, CompanyMemberStatus, CompanyType, UserResponse } from './auth.js';
 import type {
-  CompanyMemberRole,
-  CompanyMemberStatus,
-  CompanyType,
-  UserResponse,
-} from "./auth.js";
-import type { PaginatedResponse, PublicationStatus } from "./catalog.js";
+  ApartmentAvailabilitySummary,
+  ApartmentSalesStatus,
+  MediaAssetSummary,
+  PaginatedResponse,
+  PublicationStatus,
+} from './catalog.js';
 
-export type CompanyStatus = "active" | "inactive" | "pending";
+export type CompanyStatus = 'active' | 'inactive' | 'pending';
 
-export type CompanySource = "self_registered" | "admin" | "bos";
+export type CompanySource = 'self_registered' | 'admin' | 'bos';
 
 /**
  * Public company projection for admin and company portal APIs.
@@ -140,6 +141,118 @@ export type AdminCompanyProjectListItem = {
 
 export type AdminCompanyProjectListResponse = {
   data: AdminCompanyProjectListItem[];
+};
+
+/**
+ * Cross-company project row for the admin projects list.
+ */
+export type AdminProjectListItem = {
+  id: string;
+  name: string;
+  publicationStatus: PublicationStatus;
+  createdAt: string;
+  city: string | null;
+  builderCompanyId: string;
+  companyName: string;
+  buildingsCount: number;
+  apartmentsCount: number;
+};
+
+export type AdminProjectListResponse = PaginatedResponse<AdminProjectListItem>;
+
+/**
+ * Scope payload so admin project UI can bind company catalog APIs.
+ */
+export type AdminProjectScope = {
+  builderCompanyId: string;
+};
+
+/**
+ * Cross-company building row for the admin buildings hub.
+ */
+export type AdminBuildingListItem = {
+  id: string;
+  name: string;
+  publicationStatus: PublicationStatus;
+  createdAt: string;
+  projectId: string;
+  projectName: string;
+  builderCompanyId: string;
+  companyName: string;
+  floorsCount: number;
+  apartmentsCount: number;
+};
+
+export type AdminBuildingListResponse = PaginatedResponse<AdminBuildingListItem>;
+
+/**
+ * Cross-company floor row for the admin floors hub.
+ */
+export type AdminFloorListItem = {
+  id: string;
+  number: number;
+  name: string | null;
+  displayLabel: string | null;
+  publicationStatus: PublicationStatus;
+  createdAt: string;
+  buildingId: string;
+  buildingName: string;
+  projectId: string;
+  projectName: string;
+  builderCompanyId: string;
+  companyName: string;
+  apartmentsCount: number;
+};
+
+export type AdminFloorListResponse = PaginatedResponse<AdminFloorListItem>;
+
+/**
+ * Cross-company apartment row for the admin apartments hub.
+ */
+export type AdminApartmentListItem = {
+  id: string;
+  number: string;
+  publicationStatus: PublicationStatus;
+  salesStatus: ApartmentSalesStatus;
+  createdAt: string;
+  floorId: string;
+  floorNumber: number;
+  buildingId: string;
+  buildingName: string;
+  projectId: string;
+  projectName: string;
+  builderCompanyId: string;
+  companyName: string;
+};
+
+export type AdminApartmentListResponse = PaginatedResponse<AdminApartmentListItem>;
+
+/**
+ * Floor row for the admin building inventory glance sheet.
+ */
+export type AdminBuildingInventoryFloor = {
+  id: string;
+  number: number;
+  name: string | null;
+  displayLabel: string | null;
+  floorplanMediaId: string | null;
+  floorplan: MediaAssetSummary | null;
+  availability: ApartmentAvailabilitySummary;
+};
+
+/**
+ * Building inventory glance (available / reserved / sold + per-floor bars).
+ */
+export type AdminBuildingInventoryGlance = {
+  id: string;
+  name: string;
+  publicationStatus: PublicationStatus;
+  floorsCount: number | null;
+  projectId: string;
+  projectName: string;
+  builderCompanyId: string;
+  availability: ApartmentAvailabilitySummary;
+  floors: AdminBuildingInventoryFloor[];
 };
 
 export type CompanyMemberListResponse = PaginatedResponse<CompanyMemberResponse>;

@@ -49,7 +49,7 @@ export const PartnerBankOffersSection = ({
     <div className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-col gap-1">
-          <h1 className="text-xl font-semibold text-ink">{t('pageTitle')}</h1>
+          <h1 className="text-page-title text-ink">{t('pageTitle')}</h1>
           <p className="text-sm text-ink-secondary">{t('subtitle')}</p>
           <p className="text-xs text-ink-muted">{t('publicationNote')}</p>
         </div>

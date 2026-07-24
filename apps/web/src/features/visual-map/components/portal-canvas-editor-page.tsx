@@ -92,7 +92,7 @@ export const PortalCanvasEditorPage = ({ project, canvasId }: PortalCanvasEditor
           >
             {t('back')}
           </Link>
-          <h1 className="text-xl font-semibold text-ink">{canvas.title ?? t('untitled')}</h1>
+          <h1 className="text-page-title text-ink">{canvas.title ?? t('untitled')}</h1>
           <PublicationStatusBadge status={canvas.publicationStatus} />
         </div>
         <div className="flex flex-wrap gap-2">
