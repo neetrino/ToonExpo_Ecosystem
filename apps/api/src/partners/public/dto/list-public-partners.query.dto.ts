@@ -1,31 +1,25 @@
-import { ApiPropertyOptional } from "@nestjs/swagger";
-import { Type } from "class-transformer";
-import {
-  IsBoolean,
-  IsEnum,
-  IsInt,
-  IsOptional,
-  Max,
-  Min,
-} from "class-validator";
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { IsBoolean, IsEnum, IsInt, IsOptional, Max, Min } from 'class-validator';
 
-import { CatalogLocaleQueryDto } from "../../../catalog/dto/catalog-locale.query.dto.js";
+import { CatalogLocaleQueryDto } from '../../../catalog/dto/catalog-locale.query.dto.js';
 import {
   PARTNERS_DEFAULT_PAGE_SIZE,
   PARTNERS_MAX_PAGE_SIZE,
   PARTNERS_MIN_PAGE,
-} from "../../partners.constants.js";
+} from '../../partners.constants.js';
 
 enum PartnerCompanyTypeDto {
-  bank = "bank",
-  it_company = "it_company",
-  sponsor = "sponsor",
-  supplier = "supplier",
-  insurance = "insurance",
-  legal = "legal",
-  design_furniture = "design_furniture",
-  service_company = "service_company",
-  other = "other",
+  builder = 'builder',
+  bank = 'bank',
+  it_company = 'it_company',
+  sponsor = 'sponsor',
+  supplier = 'supplier',
+  insurance = 'insurance',
+  legal = 'legal',
+  design_furniture = 'design_furniture',
+  service_company = 'service_company',
+  other = 'other',
 }
 
 export class ListPublicPartnersQueryDto extends CatalogLocaleQueryDto {

@@ -1463,6 +1463,7 @@
         "publication": "Публикация",
         "allPublication": "Все статусы публикации",
         "types": {
+          "builder": "Застройщик",
           "bank": "Банк",
           "it_company": "IT-компания",
           "sponsor": "Спонсор",
@@ -1495,6 +1496,7 @@
         "submitting": "Создание…",
         "cancel": "Отмена",
         "types": {
+          "builder": "Застройщик",
           "bank": "Банк",
           "it_company": "IT-компания",
           "sponsor": "Спонсор",
@@ -1534,6 +1536,7 @@
           "featuredLabel": "Показывать в избранном на публичном списке"
         },
         "types": {
+          "builder": "Застройщик",
           "bank": "Банк",
           "it_company": "IT-компания",
           "sponsor": "Спонсор",
@@ -2594,6 +2597,7 @@
   "Partners": {
     "featured": "Избранное",
     "types": {
+      "builder": "Застройщик",
       "bank": "Банк",
       "it_company": "IT-компания",
       "sponsor": "Спонсор",

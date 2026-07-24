@@ -6,6 +6,7 @@ import type { PaginatedResponse, PublicationStatus } from './catalog.js';
 import type { LocaleTextMap } from './portal.js';
 
 export type PartnerCompanyType =
+  | 'builder'
   | 'bank'
   | 'it_company'
   | 'sponsor'

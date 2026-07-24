@@ -1319,6 +1319,7 @@
         "publication": "Publication",
         "allPublication": "All publication states",
         "types": {
+          "builder": "Builder",
           "bank": "Bank",
           "it_company": "IT company",
           "sponsor": "Sponsor",
@@ -1351,6 +1352,7 @@
         "submitting": "Creating…",
         "cancel": "Cancel",
         "types": {
+          "builder": "Builder",
           "bank": "Bank",
           "it_company": "IT company",
           "sponsor": "Sponsor",
@@ -1390,6 +1392,7 @@
           "featuredLabel": "Show as featured on public list"
         },
         "types": {
+          "builder": "Builder",
           "bank": "Bank",
           "it_company": "IT company",
           "sponsor": "Sponsor",
@@ -2070,6 +2073,7 @@
   "Partners": {
     "featured": "Featured",
     "types": {
+      "builder": "Builder",
       "bank": "Bank",
       "it_company": "IT company",
       "sponsor": "Sponsor",
