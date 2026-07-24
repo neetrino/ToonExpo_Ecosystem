@@ -2,6 +2,11 @@ import {
   ALL_SEED_BUILDERS as SEED_BUILDERS,
   ALL_SEED_PROJECTS as SEED_PROJECTS,
 } from './seed-entities.js';
+import {
+  CATALOG_DEMO_FULL_DESCRIPTION_EN,
+  CATALOG_DEMO_FULL_DESCRIPTION_HY,
+  CATALOG_DEMO_FULL_DESCRIPTION_RU,
+} from './seed-catalog-demo.js';
 
 export type SeedTranslation = {
   id: string;
@@ -129,24 +134,24 @@ const projectShort: Record<string, Record<SeedLocale, string>> = {
 
 const projectFull: Record<string, Record<SeedLocale, string>> = {
   [SEED_PROJECTS[0]!.id]: {
-    hy: 'Հյուսիսային պողոտայի նստավայրերը բնակելի համալիր է Կենտրոնում՝ հարմարավետ բնակարաններով և սպասարկմամբ։',
-    ru: 'Резиденции на Северном проспекте — жилой комплекс в Центре с комфортными квартирами и сервисом.',
-    en: 'Northern Avenue Residences is a residential development in Kentron with comfortable apartments and services.',
+    hy: CATALOG_DEMO_FULL_DESCRIPTION_HY,
+    ru: CATALOG_DEMO_FULL_DESCRIPTION_RU,
+    en: CATALOG_DEMO_FULL_DESCRIPTION_EN,
   },
   [SEED_PROJECTS[1]!.id]: {
-    hy: 'Քասքեյդ Վյուն առաջարկում է ժամանակակից բնակարաններ բաց տեսարաններով դեպի քաղաք։',
-    ru: 'Каскейд Вью предлагает современные квартиры с открытыми видами на город.',
-    en: 'Cascade View offers modern apartments with open city views.',
+    hy: CATALOG_DEMO_FULL_DESCRIPTION_HY,
+    ru: CATALOG_DEMO_FULL_DESCRIPTION_RU,
+    en: CATALOG_DEMO_FULL_DESCRIPTION_EN,
   },
   [SEED_PROJECTS[2]!.id]: {
-    hy: 'Արաբկիր Պարկ Հոումսը ընտանեկան համալիր է այգիներով և խաղահրապարակներով։',
-    ru: 'Арабкир Парк Хоумс — семейный комплекс с парками и игровыми площадками.',
-    en: 'Arabkir Park Homes is a family complex with parks and playgrounds.',
+    hy: CATALOG_DEMO_FULL_DESCRIPTION_HY,
+    ru: CATALOG_DEMO_FULL_DESCRIPTION_RU,
+    en: CATALOG_DEMO_FULL_DESCRIPTION_EN,
   },
   [SEED_PROJECTS[3]!.id]: {
-    hy: 'Դավթաշեն Սքայլայնը բարձրահարկ համալիր է հարմար տրանսպորտային հասանելիությամբ։',
-    ru: 'Давташен Скайлайн — высотный комплекс с удобной транспортной доступностью.',
-    en: 'Davtashen Skyline is a high-rise complex with convenient transport access.',
+    hy: CATALOG_DEMO_FULL_DESCRIPTION_HY,
+    ru: CATALOG_DEMO_FULL_DESCRIPTION_RU,
+    en: CATALOG_DEMO_FULL_DESCRIPTION_EN,
   },
 };
 
@@ -221,9 +226,9 @@ export const buildSeedTranslations = (): SeedTranslation[] => {
       en: `${project.district} · ${project.name}`,
     };
     const fulls = projectFull[project.id] ?? {
-      hy: `${project.name}-ը բնակելի համալիր է ${project.district}-ում՝ ${project.address} հասցեով։`,
-      ru: `${project.name} — жилой комплекс в районе ${project.district}, ${project.address}.`,
-      en: `${project.name} is a residential development in ${project.district} at ${project.address}.`,
+      hy: CATALOG_DEMO_FULL_DESCRIPTION_HY,
+      ru: CATALOG_DEMO_FULL_DESCRIPTION_RU,
+      en: CATALOG_DEMO_FULL_DESCRIPTION_EN,
     };
     const locations = projectLocation[project.id] ?? {
       hy: `${project.district}, Երևան`,

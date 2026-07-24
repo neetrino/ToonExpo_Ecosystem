@@ -56,6 +56,16 @@ export type SeedBuildingPlan = {
   basePrice: number;
 };
 
+export type SeedApartmentDefaults = {
+  areaBase: number;
+  areaPerRoom: number;
+  pricePerRoom?: number;
+  pricePerIndex?: number;
+  ceilingHeightM?: number;
+  finishingStatus?: string;
+  handoverDescription?: string;
+};
+
 export type SeedProjectPlan = {
   id: string;
   builderId: string;
@@ -65,6 +75,16 @@ export type SeedProjectPlan = {
   district: string;
   coverId: string;
   buildings: SeedBuildingPlan[];
+  city?: string;
+  locationText?: string;
+  shortDescription?: string;
+  fullDescription?: string;
+  projectType?: string;
+  constructionStatus?: string;
+  completionDate?: string;
+  amenities?: string[] | Record<string, unknown>;
+  nearbyPlaces?: string[] | Record<string, unknown>;
+  apartmentDefaults?: SeedApartmentDefaults;
 };
 
 export type SeedApartment = {
@@ -198,12 +218,18 @@ export const DEMO_PARTNER_IT_LOGO = '/demo/partner-it.webp';
 export const DEMO_VENUE_MAP_URL = '/demo/venue-map.webp';
 export const DEMO_VISUAL_MAP_URL = '/demo/visual-map.webp';
 
+const DEFAULT_AREA_BASE = 42;
+const DEFAULT_AREA_PER_ROOM = 18;
+const DEFAULT_PRICE_PER_ROOM = 12_000_000;
+const DEFAULT_PRICE_PER_INDEX = 500_000;
+
 export const buildApartments = (
   projectKey: string,
   buildingKey: string,
   floorNumber: number,
   count: number,
   basePrice: number,
+  apartmentDefaults?: SeedApartmentDefaults,
 ): SeedApartment[] => {
   const apartments: SeedApartment[] = [];
   const statuses = [
@@ -212,6 +238,10 @@ export const buildApartments = (
     ApartmentSalesStatus.sold,
     ApartmentSalesStatus.available,
   ];
+  const areaBase = apartmentDefaults?.areaBase ?? DEFAULT_AREA_BASE;
+  const areaPerRoom = apartmentDefaults?.areaPerRoom ?? DEFAULT_AREA_PER_ROOM;
+  const pricePerRoom = apartmentDefaults?.pricePerRoom ?? DEFAULT_PRICE_PER_ROOM;
+  const pricePerIndex = apartmentDefaults?.pricePerIndex ?? DEFAULT_PRICE_PER_INDEX;
 
   for (let index = 1; index <= count; index += 1) {
     const rooms = (index % 3) + 1;
@@ -221,8 +251,8 @@ export const buildApartments = (
       number: `${floorNumber}${String(index).padStart(2, '0')}`,
       rooms,
       bedrooms: rooms,
-      areaTotal: 42 + rooms * 18 + index,
-      price: basePrice + rooms * 12_000_000 + index * 500_000,
+      areaTotal: areaBase + rooms * areaPerRoom + index,
+      price: basePrice + rooms * pricePerRoom + index * pricePerIndex,
       salesStatus: statuses[(index - 1) % statuses.length] ?? ApartmentSalesStatus.available,
       priceVisibility:
         index === 1

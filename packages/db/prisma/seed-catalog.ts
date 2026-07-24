@@ -21,6 +21,11 @@ import {
   SEED_ID_PREFIX,
   toSeedMediaUrl,
 } from './seed-data.js';
+import {
+  buildCatalogDemoAmenities,
+  CATALOG_DEMO_FULL_DESCRIPTION_HY,
+  CATALOG_DEMO_NEARBY,
+} from './seed-catalog-demo.js';
 import { ALL_SEED_BUILDERS, ALL_SEED_PROJECTS } from './seed-entities.js';
 import { buildSeedTranslations, type SeedTranslation } from './seed-translations.js';
 
@@ -223,6 +228,7 @@ const upsertSeedBuildings = async (
         floorNumber,
         building.aptsPerFloor,
         building.basePrice,
+        project.apartmentDefaults,
       );
 
       for (const apartment of apartments) {
@@ -245,6 +251,20 @@ const upsertSeedBuildings = async (
           },
         });
 
+        const features = project.apartmentDefaults
+          ? {
+              ...(project.apartmentDefaults.ceilingHeightM !== undefined
+                ? { ceilingHeightM: project.apartmentDefaults.ceilingHeightM }
+                : {}),
+              ...(project.apartmentDefaults.finishingStatus !== undefined
+                ? { finishingStatus: project.apartmentDefaults.finishingStatus }
+                : {}),
+              ...(project.apartmentDefaults.handoverDescription !== undefined
+                ? { handoverDescription: project.apartmentDefaults.handoverDescription }
+                : {}),
+            }
+          : undefined;
+
         await prisma.apartment.upsert({
           where: { id: apartment.id },
           create: {
@@ -264,6 +284,7 @@ const upsertSeedBuildings = async (
             priceCurrency: DEFAULT_PRICE_CURRENCY,
             priceVisibility: apartment.priceVisibility,
             planMediaId: apartment.planMediaId,
+            ...(features !== undefined && Object.keys(features).length > 0 ? { features } : {}),
             crmStatusSource: CrmStatusSource.manual,
             lastStatusChangedAt: new Date(),
           },
@@ -283,6 +304,7 @@ const upsertSeedBuildings = async (
             priceCurrency: DEFAULT_PRICE_CURRENCY,
             priceVisibility: apartment.priceVisibility,
             planMediaId: apartment.planMediaId,
+            ...(features !== undefined && Object.keys(features).length > 0 ? { features } : {}),
             crmStatusSource: CrmStatusSource.manual,
           },
         });
@@ -321,6 +343,20 @@ export const upsertSeedProjects = async (prisma: PrismaClient): Promise<number> 
       },
     });
 
+    const demoAmenities = buildCatalogDemoAmenities({
+      city: project.city ?? 'Yerevan',
+      address: project.address,
+      district: project.district,
+    });
+    const amenities = project.amenities ?? demoAmenities;
+    const nearbyPlaces = project.nearbyPlaces ?? CATALOG_DEMO_NEARBY;
+    const fullDescription = project.fullDescription ?? CATALOG_DEMO_FULL_DESCRIPTION_HY;
+    const constructionStatus = project.constructionStatus ?? 'design_phase';
+    const completionDate =
+      project.completionDate !== undefined
+        ? new Date(project.completionDate)
+        : new Date('2027-12-01');
+
     await prisma.project.upsert({
       where: { id: project.id },
       create: {
@@ -329,32 +365,36 @@ export const upsertSeedProjects = async (prisma: PrismaClient): Promise<number> 
         name: project.name,
         slug: project.slug,
         publicationStatus: PublicationStatus.published,
-        shortDescription: `${project.name} in Yerevan`,
-        fullDescription: `${project.name} is a residential development in ${project.district}, Yerevan.`,
-        locationText: `${project.district}, Yerevan`,
+        shortDescription: project.shortDescription ?? `${project.name} in Yerevan`,
+        fullDescription,
+        locationText: project.locationText ?? `${project.district}, Yerevan`,
         address: project.address,
-        city: 'Yerevan',
+        city: project.city ?? 'Yerevan',
         district: project.district,
         coverMediaId: project.coverId,
-        projectType: 'residential',
-        constructionStatus: 'under_construction',
-        amenities: ['parking', 'playground', 'concierge'],
+        projectType: project.projectType ?? 'residential',
+        constructionStatus,
+        completionDate,
+        amenities,
+        nearbyPlaces,
       },
       update: {
         builderCompanyId: project.builderId,
         name: project.name,
         slug: project.slug,
         publicationStatus: PublicationStatus.published,
-        shortDescription: `${project.name} in Yerevan`,
-        fullDescription: `${project.name} is a residential development in ${project.district}, Yerevan.`,
-        locationText: `${project.district}, Yerevan`,
+        shortDescription: project.shortDescription ?? `${project.name} in Yerevan`,
+        fullDescription,
+        locationText: project.locationText ?? `${project.district}, Yerevan`,
         address: project.address,
-        city: 'Yerevan',
+        city: project.city ?? 'Yerevan',
         district: project.district,
         coverMediaId: project.coverId,
-        projectType: 'residential',
-        constructionStatus: 'under_construction',
-        amenities: ['parking', 'playground', 'concierge'],
+        projectType: project.projectType ?? 'residential',
+        constructionStatus,
+        completionDate,
+        amenities,
+        nearbyPlaces,
       },
     });
 
