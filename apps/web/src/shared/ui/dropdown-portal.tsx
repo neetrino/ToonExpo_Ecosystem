@@ -227,7 +227,7 @@ export const DropdownPortal = ({
   return createPortal(
     <div
       ref={portalRef}
-      className={cn('z-[var(--z-dropdown)] overflow-y-auto', className)}
+      className={cn('z-[var(--z-dropdown)] overflow-y-auto luxury-scrollbar', className)}
       style={style}
       data-dropdown-portal
       data-placement={coords.placement}

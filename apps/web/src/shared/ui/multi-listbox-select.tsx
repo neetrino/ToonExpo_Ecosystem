@@ -163,7 +163,7 @@ export const MultiListboxSelect = ({
           aria-multiselectable="true"
           aria-label={ariaLabel}
           className={cn(
-            'max-h-64 w-full overflow-y-auto',
+            'luxury-scrollbar max-h-64 w-full overflow-y-auto',
             'rounded-[12px] border border-header-border bg-surface-elevated py-1.5 shadow-md',
             'animate-[locale-dropdown-in_var(--duration-base)_var(--ease-out-premium)]',
           )}

@@ -26,11 +26,12 @@ export const CrmDealPipeline = ({ status }: CrmDealPipelineProps) => {
           <li
             key={item}
             className={cn(
-              'rounded-pill px-2 py-1 text-[10px] font-medium uppercase tracking-wide',
+              'rounded-pill px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.06em]',
+              'transition-colors duration-200',
               isActive
-                ? 'bg-cta-dark text-on-dark'
+                ? 'bg-cta-dark text-on-dark shadow-xs'
                 : isPast
-                  ? 'bg-brand/15 text-brand'
+                  ? 'bg-brand/12 text-brand'
                   : 'bg-surface text-ink-muted',
             )}
           >

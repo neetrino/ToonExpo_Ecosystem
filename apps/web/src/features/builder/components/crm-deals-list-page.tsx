@@ -144,6 +144,7 @@ export const CrmDealsListPage = () => {
     <div className="crm-board-page">
       <div className="flex shrink-0 flex-wrap items-center justify-between gap-3">
         <div className="flex flex-col gap-1">
+          <p className="crm-board-page__eyebrow">{t('eyebrow')}</p>
           <h1 className="text-page-title text-ink">{t('title')}</h1>
           <p className="text-sm text-ink-secondary">{t('subtitle', { count: totalCount })}</p>
         </div>

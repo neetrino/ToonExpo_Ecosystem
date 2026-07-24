@@ -189,27 +189,21 @@ const CrmKanbanColumn = ({
   return (
     <section
       ref={setNodeRef}
-      className={cn(
-        'crm-kanban-column rounded-sm border border-border bg-surface/50',
-        'transition-[box-shadow,background-color,border-color] duration-200',
-        highlighted ? 'border-brand/40 bg-brand/5 ring-2 ring-brand/25' : undefined,
-      )}
+      className={cn('crm-kanban-column', highlighted && 'crm-kanban-column--active')}
     >
-      <header className="shrink-0 border-b border-border px-2 pb-1.5 pt-2">
-        <div className={cn('mb-1.5 h-0.5 w-full rounded-pill', CRM_KANBAN_COLUMN_ACCENT[status])} />
-        <div className="flex items-center justify-between gap-1">
-          <h2 className="truncate text-xs font-semibold text-ink">{title}</h2>
-          <span className="shrink-0 rounded-pill bg-background px-1.5 py-0.5 text-[10px] font-medium text-ink-muted">
-            {deals.length}
-          </span>
+      <header className="crm-kanban-column__header">
+        <div className={cn('crm-kanban-column__accent', CRM_KANBAN_COLUMN_ACCENT[status])} />
+        <div className="flex items-center justify-between gap-1.5">
+          <h2 className="crm-kanban-column__title">{title}</h2>
+          <span className="crm-kanban-column__count">{deals.length}</span>
         </div>
       </header>
 
-      <div className="crm-kanban-column-body">
+      <div className="crm-kanban-column-body luxury-scrollbar">
         {newColumnAction ? <div className="shrink-0">{newColumnAction}</div> : null}
 
         {deals.length === 0 ? (
-          <p className="px-0.5 py-4 text-center text-[10px] text-ink-muted">{emptyLabel}</p>
+          <p className="crm-kanban-column__empty">{emptyLabel}</p>
         ) : (
           deals.map((deal) => (
             <CrmDraggableKanbanCard

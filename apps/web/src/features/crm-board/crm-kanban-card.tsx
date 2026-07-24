@@ -10,8 +10,8 @@ import { cn } from '@/shared/ui/cn';
 
 const SOURCE_BADGE: Record<RequestSource, string> = {
   buyer_project_request: 'bg-brand/10 text-brand',
-  builder_buyer_qr_scan: 'bg-brand-secondary/10 text-brand-secondary',
-  manual_builder_entry: 'bg-surface text-ink-secondary',
+  builder_buyer_qr_scan: 'bg-brand-secondary/12 text-brand-secondary',
+  manual_builder_entry: 'bg-brand-deep/5 text-brand-deep/80',
   event_interaction: 'bg-accent-soft text-ink',
 };
 
@@ -62,12 +62,12 @@ export const CrmKanbanCard = forwardRef<HTMLElement, CrmKanbanCardProps>(
         ref={ref}
         style={style}
         className={cn(
-          'flex flex-col gap-1.5 rounded-sm border border-border bg-background p-2 shadow-xs',
+          'flex flex-col rounded-md border border-border/80 bg-surface-elevated p-2.5 shadow-xs',
           isOverlay
-            ? 'border-brand/40 shadow-lg ring-2 ring-brand/20'
-            : 'hover:border-border-strong hover:bg-surface/40',
+            ? 'border-brand/35 shadow-md ring-1 ring-brand/15'
+            : 'hover:-translate-y-px hover:border-brand/25 hover:shadow-sm',
           !isOverlay && !isDragging
-            ? 'transition-[box-shadow,opacity,border-color] duration-200 ease-out'
+            ? 'transition-[transform,box-shadow,border-color,background-color] duration-200 ease-[var(--ease-out-premium)]'
             : undefined,
           canDrag ? 'cursor-grab active:cursor-grabbing touch-none' : 'cursor-pointer',
           isDragging && !isOverlay ? 'pointer-events-none' : undefined,
@@ -77,7 +77,7 @@ export const CrmKanbanCard = forwardRef<HTMLElement, CrmKanbanCardProps>(
       >
         <button
           type="button"
-          className="flex w-full flex-col gap-1 text-left"
+          className="flex w-full flex-col gap-1.5 text-left"
           onClick={() => {
             if (isOverlay || isDragging) {
               return;
@@ -85,11 +85,13 @@ export const CrmKanbanCard = forwardRef<HTMLElement, CrmKanbanCardProps>(
             onOpen(deal.id);
           }}
         >
-          <div className="flex items-start justify-between gap-1">
-            <span className="min-w-0 truncate text-xs font-semibold text-ink">{buyerLabel}</span>
+          <div className="flex items-start justify-between gap-1.5">
+            <span className="min-w-0 truncate text-[13px] font-semibold tracking-tight text-brand-deep">
+              {buyerLabel}
+            </span>
             <span
               className={cn(
-                'max-w-[45%] shrink-0 truncate rounded-pill px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-wide',
+                'max-w-[42%] shrink-0 truncate rounded-pill px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-[0.06em]',
                 SOURCE_BADGE[deal.source],
               )}
             >
@@ -98,25 +100,27 @@ export const CrmKanbanCard = forwardRef<HTMLElement, CrmKanbanCardProps>(
           </div>
 
           {deal.buyer.phone ? (
-            <p className="truncate text-[10px] text-ink-secondary">{deal.buyer.phone}</p>
+            <p className="truncate text-[11px] text-ink-secondary">{deal.buyer.phone}</p>
           ) : null}
 
           {showCompany && deal.companyName ? (
-            <p className="truncate text-[10px] font-medium text-ink-muted">{deal.companyName}</p>
+            <p className="truncate text-[11px] font-medium text-brand-secondary/90">
+              {deal.companyName}
+            </p>
           ) : null}
 
-          <p className="truncate text-[10px] text-ink-muted">
+          <p className="truncate text-[11px] text-ink-muted">
             {deal.projectName ?? noProjectLabel}
           </p>
 
-          <div className="mt-0.5 flex items-center justify-between gap-1">
+          <div className="mt-0.5 flex items-center justify-between gap-1 border-t border-border/60 pt-1.5">
             <span
-              className="inline-flex size-5 items-center justify-center rounded-full bg-surface text-[9px] font-semibold text-ink-secondary"
+              className="inline-flex size-6 items-center justify-center rounded-full bg-brand-soft text-[9px] font-semibold text-brand-deep"
               title={deal.assignedUserName ?? tBoard('unassigned')}
             >
               {assigneeInitials(deal.assignedUserName)}
             </span>
-            <time className="truncate text-[9px] text-ink-muted" dateTime={deal.updatedAt}>
+            <time className="truncate text-[10px] text-ink-muted" dateTime={deal.updatedAt}>
               {formatBuyerDateTime(deal.updatedAt, locale)}
             </time>
           </div>
