@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 
 import { Button } from '@/shared/ui/button';
 import { cn } from '@/shared/ui/cn';
+import { MODAL_BACKDROP_CLASS_NAME } from '@/shared/ui/modal-backdrop';
 import { useModalEnterExit } from '@/shared/ui/use-modal-enter-exit';
 
 type AdminDeleteModalProps = {
@@ -95,7 +96,8 @@ export const AdminDeleteModal = ({
         tabIndex={-1}
         aria-label={resolvedCancel}
         className={cn(
-          'absolute inset-0 cursor-default rounded-none bg-ink/70 backdrop-blur-[2px]',
+          'absolute inset-0 cursor-default rounded-none',
+          MODAL_BACKDROP_CLASS_NAME,
           backdropMotionClass,
         )}
         disabled={actionsDisabled}

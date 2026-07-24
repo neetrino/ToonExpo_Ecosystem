@@ -19,8 +19,10 @@ import {
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
+import { MODAL_BACKDROP_CLASS_NAME } from '@/shared/ui/modal-backdrop';
 import { PhoneInput } from '@/shared/ui/phone-input';
 import { Select } from '@/shared/ui/select';
+import { cn } from '@/shared/ui/cn';
 
 const adminCreateDealSchema = z.object({
   companyId: z.string().trim().min(1),
@@ -139,7 +141,10 @@ export const AdminCrmNewDealPanel = ({
       role="dialog"
       aria-modal="true"
       aria-labelledby="admin-crm-new-deal-title"
-      className="fixed inset-0 z-[var(--z-modal)] flex items-end justify-center bg-ink/70 p-0 sm:items-center sm:p-6"
+      className={cn(
+        'fixed inset-0 z-[var(--z-modal)] flex items-end justify-center p-0 sm:items-center sm:p-6',
+        MODAL_BACKDROP_CLASS_NAME,
+      )}
     >
       <div className="flex max-h-[90vh] w-full max-w-lg flex-col overflow-y-auto rounded-t-lg bg-background p-5 shadow-lg sm:rounded-sm">
         <div className="mb-4 flex items-start justify-between gap-3">
