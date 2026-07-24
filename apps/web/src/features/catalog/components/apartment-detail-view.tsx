@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import type { ApartmentDetail } from '@toonexpo/contracts';
-import { getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 
 import { ApartmentDetailPrice } from '@/features/catalog/components/apartment-price-label';
 import { ApartmentInquireCard } from '@/features/catalog/components/apartment-inquire-card';
@@ -9,6 +9,7 @@ import { ApartmentNeighborhood } from '@/features/catalog/components/apartment-n
 import { ApartmentPhotoGallery } from '@/features/catalog/components/apartment-photo-gallery';
 import { ApartmentPriceHistory } from '@/features/catalog/components/apartment-price-history';
 import { ApartmentPricePerArea } from '@/features/catalog/components/apartment-price-per-area';
+import { buildApartmentDetailRows } from '@/features/catalog/utils/build-apartment-detail-rows';
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 
@@ -16,10 +17,12 @@ type ApartmentDetailViewProps = {
   apartment: ApartmentDetail;
   locationLine: string | null;
   galleryImages: Array<{ src: string; alt: string }>;
-  /** Project completion year when known (Figma “Year built”). */
-  yearBuilt: string | null;
   projectType: string | null;
+  /** Geographic district when set on the project. */
+  district: string | null;
 };
+
+const EMPTY_VALUE = '—';
 
 /**
  * Public apartment detail — Figma frame `89:646` content + gallery/inquire chrome.
@@ -28,10 +31,11 @@ export const ApartmentDetailView = async ({
   apartment,
   locationLine,
   galleryImages,
-  yearBuilt,
   projectType,
+  district,
 }: ApartmentDetailViewProps) => {
   const t = await getTranslations('Catalog');
+  const locale = await getLocale();
   const title = t('apartment.unit', { number: apartment.number });
   const typeLabel = projectType?.trim()
     ? projectType
@@ -39,35 +43,40 @@ export const ApartmentDetailView = async ({
       ? t('apartment.rooms', { count: apartment.rooms })
       : t('apartment.typeFallback');
 
-  const detailRows: Array<{ label: string; value: string }> = [
-    { label: t('apartment.yearBuiltLabel'), value: yearBuilt ?? '—' },
-    { label: t('apartment.typeLabel'), value: typeLabel },
-    {
-      label: t('apartment.statusLabel'),
-      value: t(`status.${apartment.salesStatus}`),
+  const detailRows = buildApartmentDetailRows({
+    apartment,
+    district,
+    locale,
+    onRequestLabel: t('price.onRequest'),
+    signInLabel: t('price.signInToSee'),
+    formatArea: (area) => t('apartment.area', { area }),
+    formatCeilingHeight: (height) => t('apartment.criteria.ceilingHeightValue', { height }),
+    formatStatus: (status) => t(`status.${status}`),
+    labels: {
+      neighborhood: t('apartment.criteria.neighborhood'),
+      building: t('apartment.criteria.building'),
+      floor: t('apartment.criteria.floor'),
+      unitNumber: t('apartment.criteria.unitNumber'),
+      area: t('apartment.criteria.area'),
+      bedrooms: t('apartment.criteria.bedrooms'),
+      pricePerArea: t('apartment.criteria.pricePerArea'),
+      totalPrice: t('apartment.criteria.totalPrice'),
+      status: t('apartment.criteria.status'),
+      windows: t('apartment.criteria.windows'),
+      bathrooms: t('apartment.criteria.bathrooms'),
+      handoverDescription: t('apartment.criteria.handoverDescription'),
+      balconies: t('apartment.criteria.balconies'),
+      generalDescription: t('apartment.criteria.generalDescription'),
+      ceilingHeight: t('apartment.criteria.ceilingHeight'),
+      finishingStatus: t('apartment.criteria.finishingStatus'),
     },
-    {
-      label: t('apartment.bedsLabel'),
-      value: apartment.bedrooms != null ? String(apartment.bedrooms) : '—',
-    },
-    {
-      label: t('apartment.bathsLabel'),
-      value: apartment.bathrooms != null ? String(apartment.bathrooms) : '—',
-    },
-    {
-      label: t('apartment.livingAreaLabel'),
-      value: apartment.areaTotal != null ? t('apartment.area', { area: apartment.areaTotal }) : '—',
-    },
-    { label: t('apartment.developerLabel'), value: apartment.builder.name || '—' },
-    { label: t('apartment.verifiedLabel'), value: t('apartment.verifiedYes') },
-    { label: t('apartment.unitIdLabel'), value: apartment.number },
-  ];
+  });
 
   const neighborhoodStats = [
-    { label: t('apartment.neighborhood.walkScore'), value: '—' },
-    { label: t('apartment.neighborhood.transit'), value: '—' },
-    { label: t('apartment.neighborhood.schools'), value: '—' },
-    { label: t('apartment.neighborhood.crime'), value: '—' },
+    { label: t('apartment.neighborhood.walkScore'), value: EMPTY_VALUE },
+    { label: t('apartment.neighborhood.transit'), value: EMPTY_VALUE },
+    { label: t('apartment.neighborhood.schools'), value: EMPTY_VALUE },
+    { label: t('apartment.neighborhood.crime'), value: EMPTY_VALUE },
   ];
 
   const priceHistoryRows = [
@@ -135,19 +144,19 @@ export const ApartmentDetailView = async ({
             </StatBlock>
             <StatBlock label={t('apartment.bedsLabel')}>
               <p className="font-brand text-2xl font-bold text-ink-navy">
-                {apartment.bedrooms ?? '—'}
+                {apartment.bedrooms ?? EMPTY_VALUE}
               </p>
             </StatBlock>
             <StatBlock label={t('apartment.bathsLabel')}>
               <p className="font-brand text-2xl font-bold text-ink-navy">
-                {apartment.bathrooms ?? '—'}
+                {apartment.bathrooms ?? EMPTY_VALUE}
               </p>
             </StatBlock>
             <StatBlock label={t('apartment.areaLabel')}>
               <p className="font-brand text-2xl font-bold text-ink-navy">
                 {apartment.areaTotal != null
                   ? t('apartment.area', { area: apartment.areaTotal })
-                  : '—'}
+                  : EMPTY_VALUE}
               </p>
             </StatBlock>
             <StatBlock label={t('apartment.pricePerAreaLabel')}>
@@ -163,24 +172,23 @@ export const ApartmentDetailView = async ({
 
           <section className="py-10">
             <h2 className="font-brand text-2xl font-bold tracking-tight text-ink-navy">
-              {t('apartment.aboutTitle')}
-            </h2>
-            <p className="mt-5 text-base leading-[1.625] text-ink-navy/80">
-              {apartment.description?.trim() ? apartment.description : t('apartment.aboutEmpty')}
-            </p>
-          </section>
-
-          <section className="py-10">
-            <h2 className="font-brand text-2xl font-bold tracking-tight text-ink-navy">
               {t('apartment.detailsTitle')}
             </h2>
             <dl className="mt-8 grid grid-cols-2 gap-x-8 gap-y-4 md:grid-cols-3">
               {detailRows.map((row) => (
-                <div key={row.label} className="border-b border-header-border pb-2">
+                <div
+                  key={row.label}
+                  className={cn(
+                    'border-b border-header-border pb-2',
+                    row.wide && 'col-span-2 md:col-span-3',
+                  )}
+                >
                   <dt className="text-[10px] font-bold tracking-widest text-header-muted uppercase">
                     {row.label}
                   </dt>
-                  <dd className="mt-[7px] text-sm font-medium text-ink-navy">{row.value}</dd>
+                  <dd className="mt-[7px] whitespace-pre-line text-sm font-medium text-ink-navy">
+                    {row.value}
+                  </dd>
                 </div>
               ))}
             </dl>

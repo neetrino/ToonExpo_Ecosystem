@@ -89,8 +89,8 @@ export default async function ApartmentPage({ params }: ApartmentPageProps) {
             apartment={apartment}
             locationLine={locationLine}
             galleryImages={galleryImages}
-            yearBuilt={extractYear(project?.completionDate)}
             projectType={project?.projectType ?? null}
+            district={project?.district ?? null}
           />
           <ComparableHomesSection homes={comparableHomes} />
         </main>
@@ -114,12 +114,4 @@ const buildLocationLine = (
   }
   const parts = [district, city].filter((part): part is string => Boolean(part));
   return parts.length > 0 ? parts.join(' · ') : null;
-};
-
-const extractYear = (completionDate: string | null | undefined): string | null => {
-  if (completionDate == null || completionDate.length < 4) {
-    return null;
-  }
-  const year = completionDate.slice(0, 4);
-  return /^\d{4}$/.test(year) ? year : null;
 };
