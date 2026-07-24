@@ -2,6 +2,7 @@
 
 import type { ApartmentSalesStatus, MediaAssetSummary } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
+import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import { AdminFloorAddApartmentsSheet } from '@/features/admin/components/admin-floor-add-apartments-sheet';
@@ -9,7 +10,7 @@ import { FloorPlanLightbox } from '@/features/admin/components/floor-plan-lightb
 import { useAdminFloorApartmentsQuery } from '@/features/admin/hooks/use-admin-inventory';
 import { catalogApartmentDetailHref } from '@/features/builder/catalog-scope';
 import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
-import { Link } from '@/i18n/navigation';
+import { Link, usePathname } from '@/i18n/navigation';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { Button } from '@/shared/ui/button';
 import { LIST_STATUS_BADGE_COMPACT_CLASS } from '@/shared/ui/list-status-badge';
@@ -23,10 +24,12 @@ type AdminFloorApartmentsSheetProps = {
   floorLabel: string;
   floorplan: MediaAssetSummary | null;
   onClose: () => void;
+  /** Nested under building sheet = 1; standalone from floors hub = 0. */
+  stackLevel?: number | undefined;
 };
 
 /**
- * Nested sheet: floor plan (if uploaded) then apartments on that floor.
+ * Floor plan (if uploaded) then apartments on that floor.
  */
 export const AdminFloorApartmentsSheet = ({
   open,
@@ -36,13 +39,21 @@ export const AdminFloorApartmentsSheet = ({
   floorLabel,
   floorplan,
   onClose,
+  stackLevel = 1,
 }: AdminFloorApartmentsSheetProps) => {
   const t = useTranslations('Admin.buildings.inventory');
   const createT = useTranslations('Admin.apartments.create');
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const query = useAdminFloorApartmentsQuery(companyId, floorId);
   const apartments = query.data ?? [];
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
+
+  const returnTo = (() => {
+    const queryString = searchParams.toString();
+    return queryString.length > 0 ? `${pathname}?${queryString}` : pathname;
+  })();
 
   useEffect(() => {
     if (!open) {
@@ -59,7 +70,7 @@ export const AdminFloorApartmentsSheet = ({
         title={floorLabel}
         description={t('floorSheetSubtitle')}
         size="comfortable"
-        stackLevel={1}
+        stackLevel={stackLevel}
         headerActions={
           <Button
             type="button"
@@ -82,7 +93,7 @@ export const AdminFloorApartmentsSheet = ({
               <div className="bg-surface-elevated p-3">
                 <button
                   type="button"
-                  className="block w-full cursor-zoom-in"
+                  className="block w-full cursor-zoom-in outline-none focus-visible:ring-2 focus-visible:ring-brand/30"
                   aria-label={t('floorplanViewHint')}
                   onClick={() => {
                     setLightboxOpen(true);
@@ -122,7 +133,9 @@ export const AdminFloorApartmentsSheet = ({
                 {apartments.map((apartment) => (
                   <li key={apartment.id}>
                     <Link
-                      href={catalogApartmentDetailHref({ mode: 'admin', companyId }, apartment.id)}
+                      href={catalogApartmentDetailHref({ mode: 'admin', companyId }, apartment.id, {
+                        returnTo,
+                      })}
                       className="flex items-center justify-between gap-3 rounded-lg bg-surface px-3 py-2.5 transition-colors hover:bg-brand-soft/40"
                     >
                       <span className="min-w-0 truncate text-sm font-medium text-ink">

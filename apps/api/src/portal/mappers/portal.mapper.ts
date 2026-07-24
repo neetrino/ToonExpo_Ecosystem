@@ -5,12 +5,11 @@ import type {
   PortalProjectDetail,
   PortalProjectListItem,
   PortalTranslationsInput,
-} from "@toonexpo/contracts";
-import type { Prisma } from "@toonexpo/db";
+} from '@toonexpo/contracts';
+import type { Prisma } from '@toonexpo/db';
 
-const decimalToString = (
-  value: Prisma.Decimal | null | undefined,
-): string | null => (value == null ? null : value.toString());
+const decimalToString = (value: Prisma.Decimal | null | undefined): string | null =>
+  value == null ? null : value.toString();
 
 const dateToIsoDate = (value: Date | null | undefined): string | null =>
   value == null ? null : value.toISOString().slice(0, 10);
@@ -19,7 +18,7 @@ type ProjectListRow = {
   id: string;
   name: string;
   slug: string;
-  publicationStatus: PortalProjectListItem["publicationStatus"];
+  publicationStatus: PortalProjectListItem['publicationStatus'];
   shortDescription: string | null;
   locationText: string | null;
   city: string | null;
@@ -33,7 +32,7 @@ type FloorRow = {
   id: string;
   buildingId: string;
   number: number;
-  publicationStatus: PortalFloorSummary["publicationStatus"];
+  publicationStatus: PortalFloorSummary['publicationStatus'];
   name: string | null;
   displayLabel: string | null;
   displayOrder: number;
@@ -48,7 +47,7 @@ type BuildingRow = {
   id: string;
   projectId: string;
   name: string;
-  publicationStatus: PortalBuildingSummary["publicationStatus"];
+  publicationStatus: PortalBuildingSummary['publicationStatus'];
   description: string | null;
   displayOrder: number;
   floorsCount: number | null;
@@ -63,7 +62,7 @@ type ProjectDetailRow = {
   builderCompanyId: string;
   name: string;
   slug: string;
-  publicationStatus: PortalProjectDetail["publicationStatus"];
+  publicationStatus: PortalProjectDetail['publicationStatus'];
   shortDescription: string | null;
   fullDescription: string | null;
   locationText: string | null;
@@ -89,8 +88,8 @@ type ApartmentRow = {
   buildingId: string;
   floorId: string;
   number: string;
-  salesStatus: PortalApartmentDetail["salesStatus"];
-  publicationStatus: PortalApartmentDetail["publicationStatus"];
+  salesStatus: PortalApartmentDetail['salesStatus'];
+  publicationStatus: PortalApartmentDetail['publicationStatus'];
   rooms: number | null;
   bedrooms: number | null;
   bathrooms: number | null;
@@ -99,7 +98,7 @@ type ApartmentRow = {
   balconyArea: Prisma.Decimal | null;
   price: Prisma.Decimal | null;
   priceCurrency: string;
-  priceVisibility: PortalApartmentDetail["priceVisibility"];
+  priceVisibility: PortalApartmentDetail['priceVisibility'];
   description: string | null;
   matterportUrl: string | null;
   external3dUrl: string | null;
@@ -107,13 +106,17 @@ type ApartmentRow = {
   viewType: string | null;
   features: Prisma.JsonValue;
   planMediaId: string | null;
+  planMedia?: {
+    id: string;
+    fileUrl: string;
+    thumbnailUrl: string | null;
+    altText: string | null;
+  } | null;
   createdAt: Date;
   updatedAt: Date;
 };
 
-export const mapPortalProjectListItem = (
-  project: ProjectListRow,
-): PortalProjectListItem => ({
+export const mapPortalProjectListItem = (project: ProjectListRow): PortalProjectListItem => ({
   id: project.id,
   name: project.name,
   slug: project.slug,
@@ -143,9 +146,7 @@ export const mapPortalFloor = (floor: FloorRow): PortalFloorSummary => ({
   updatedAt: floor.updatedAt.toISOString(),
 });
 
-export const mapPortalBuilding = (
-  building: BuildingRow,
-): PortalBuildingSummary => ({
+export const mapPortalBuilding = (building: BuildingRow): PortalBuildingSummary => ({
   id: building.id,
   projectId: building.projectId,
   name: building.name,
@@ -185,9 +186,7 @@ export const mapPortalProjectDetail = (
   createdAt: project.createdAt.toISOString(),
   updatedAt: project.updatedAt.toISOString(),
   buildings: project.buildings.map(mapPortalBuilding),
-  ...(translations && Object.keys(translations).length > 0
-    ? { translations }
-    : {}),
+  ...(translations && Object.keys(translations).length > 0 ? { translations } : {}),
 });
 
 export const mapPortalApartment = (
@@ -217,9 +216,15 @@ export const mapPortalApartment = (
   viewType: apartment.viewType,
   features: apartment.features,
   planMediaId: apartment.planMediaId,
+  plan: apartment.planMedia
+    ? {
+        id: apartment.planMedia.id,
+        fileUrl: apartment.planMedia.fileUrl,
+        thumbnailUrl: apartment.planMedia.thumbnailUrl,
+        altText: apartment.planMedia.altText,
+      }
+    : null,
   createdAt: apartment.createdAt.toISOString(),
   updatedAt: apartment.updatedAt.toISOString(),
-  ...(translations && Object.keys(translations).length > 0
-    ? { translations }
-    : {}),
+  ...(translations && Object.keys(translations).length > 0 ? { translations } : {}),
 });

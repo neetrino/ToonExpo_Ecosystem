@@ -1,6 +1,12 @@
 export type CatalogScope = { mode: 'portal' } | { mode: 'admin'; companyId: string };
 
 /**
+ * True for same-origin app paths only (blocks protocol-relative open redirects).
+ */
+export const isSafeAppReturnPath = (value: string): boolean =>
+  value.startsWith('/') && !value.startsWith('//');
+
+/**
  * Maps a portal API path to the admin company catalog path when scoped.
  */
 export const toCatalogApiPath = (scope: CatalogScope, portalPath: string): string => {
@@ -33,14 +39,36 @@ export const catalogNewProjectHref = (scope: CatalogScope): string =>
     ? `/admin/projects/new?companyId=${encodeURIComponent(scope.companyId)}`
     : '/builder/projects/new';
 
+type CatalogApartmentDetailHrefOptions = {
+  /** Path (+ query) to return to from apartment detail. */
+  returnTo?: string;
+};
+
 /**
  * Builder/admin UI href for an apartment detail page.
  */
-export const catalogApartmentDetailHref = (scope: CatalogScope, apartmentId: string): string =>
-  scope.mode === 'admin'
-    ? `/admin/projects/apartments/${apartmentId}?companyId=${encodeURIComponent(scope.companyId)}`
-    : `/builder/apartments/${apartmentId}`;
+export const catalogApartmentDetailHref = (
+  scope: CatalogScope,
+  apartmentId: string,
+  options: CatalogApartmentDetailHrefOptions = {},
+): string => {
+  if (scope.mode === 'admin') {
+    const params = new URLSearchParams({
+      companyId: scope.companyId,
+    });
+    if (options.returnTo && isSafeAppReturnPath(options.returnTo)) {
+      params.set('returnTo', options.returnTo);
+    }
+    return `/admin/projects/apartments/${encodeURIComponent(apartmentId)}?${params.toString()}`;
+  }
 
+  if (options.returnTo && isSafeAppReturnPath(options.returnTo)) {
+    const params = new URLSearchParams({ returnTo: options.returnTo });
+    return `/builder/apartments/${encodeURIComponent(apartmentId)}?${params.toString()}`;
+  }
+
+  return `/builder/apartments/${encodeURIComponent(apartmentId)}`;
+};
 /**
  * Builder/admin UI href for a visual map editor page.
  */

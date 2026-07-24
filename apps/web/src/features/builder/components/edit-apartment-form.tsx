@@ -237,6 +237,7 @@ export const EditApartmentForm = ({ apartment }: EditApartmentFormProps) => {
             context={mediaContext}
             value={field.value}
             onChange={field.onChange}
+            previewUrl={apartment.plan?.fileUrl}
             error={fieldState.error?.message}
           />
         )}

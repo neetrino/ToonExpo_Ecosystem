@@ -2,31 +2,50 @@
 
 import type { AdminFloorListItem } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
-import { AdminBuildingInventorySheet } from '@/features/admin/components/admin-building-inventory-sheet';
 import { AdminCreateFloorSheet } from '@/features/admin/components/admin-create-floor-sheet';
+import { AdminFloorApartmentsSheet } from '@/features/admin/components/admin-floor-apartments-sheet';
 import {
   AdminInventoryListShell,
   useAdminInventoryListParams,
 } from '@/features/admin/components/admin-inventory-list-shell';
-import { useAdminFloorsQuery } from '@/features/admin/hooks/use-admin-inventory';
+import {
+  useAdminBuildingInventoryGlanceQuery,
+  useAdminFloorsQuery,
+} from '@/features/admin/hooks/use-admin-inventory';
 import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { Button } from '@/shared/ui/button';
 import { LIST_STATUS_BADGE_COMPACT_CLASS } from '@/shared/ui/list-status-badge';
 
 /**
- * Admin floors hub list — card opens the same building inventory sheet.
+ * Admin floors hub — card opens a single floor apartments sheet.
  */
 export const AdminFloorsListPage = () => {
   const t = useTranslations('Admin.floors');
+  const inventoryT = useTranslations('Admin.buildings.inventory');
   const { page, pageSize, companyId, buildingId } = useAdminInventoryListParams();
   const query = useAdminFloorsQuery(page, pageSize, companyId, buildingId);
   const response = query.data;
   const [showCreate, setShowCreate] = useState(false);
-  const [sheetBuildingId, setSheetBuildingId] = useState<string | null>(null);
-  const [sheetFloorId, setSheetFloorId] = useState<string | null>(null);
+  const [selectedFloor, setSelectedFloor] = useState<AdminFloorListItem | null>(null);
+
+  const glanceQuery = useAdminBuildingInventoryGlanceQuery(selectedFloor?.buildingId ?? '');
+  const floorplan = useMemo(() => {
+    if (!selectedFloor || !glanceQuery.data) {
+      return null;
+    }
+    return (
+      glanceQuery.data.floors.find((floor) => floor.id === selectedFloor.id)?.floorplan ?? null
+    );
+  }, [selectedFloor, glanceQuery.data]);
+
+  const floorLabel = selectedFloor
+    ? selectedFloor.displayLabel?.trim() ||
+      selectedFloor.name?.trim() ||
+      inventoryT('floorCode', { number: selectedFloor.number })
+    : inventoryT('floorFallback');
 
   return (
     <>
@@ -59,8 +78,7 @@ export const AdminFloorsListPage = () => {
           <FloorsTable
             floors={response.data}
             onSelectFloor={(floor) => {
-              setSheetBuildingId(floor.buildingId);
-              setSheetFloorId(null);
+              setSelectedFloor(floor);
             }}
           />
         ) : null}
@@ -75,20 +93,20 @@ export const AdminFloorsListPage = () => {
         defaultBuildingId={buildingId}
       />
 
-      <AdminBuildingInventorySheet
-        buildingId={sheetBuildingId}
-        floorId={sheetFloorId}
-        onClose={() => {
-          setSheetBuildingId(null);
-          setSheetFloorId(null);
-        }}
-        onSelectFloor={(id) => {
-          setSheetFloorId(id);
-        }}
-        onCloseFloor={() => {
-          setSheetFloorId(null);
-        }}
-      />
+      {selectedFloor ? (
+        <AdminFloorApartmentsSheet
+          open
+          stackLevel={0}
+          companyId={selectedFloor.builderCompanyId}
+          buildingId={selectedFloor.buildingId}
+          floorId={selectedFloor.id}
+          floorLabel={floorLabel}
+          floorplan={floorplan}
+          onClose={() => {
+            setSelectedFloor(null);
+          }}
+        />
+      ) : null}
     </>
   );
 };

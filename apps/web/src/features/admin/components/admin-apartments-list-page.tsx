@@ -2,6 +2,7 @@
 
 import type { AdminApartmentListItem, ApartmentSalesStatus } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
+import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 
 import { AdminCreateApartmentSheet } from '@/features/admin/components/admin-create-apartment-sheet';
@@ -10,8 +11,9 @@ import {
   useAdminInventoryListParams,
 } from '@/features/admin/components/admin-inventory-list-shell';
 import { useAdminApartmentsQuery } from '@/features/admin/hooks/use-admin-inventory';
+import { catalogApartmentDetailHref } from '@/features/builder/catalog-scope';
 import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
-import { Link } from '@/i18n/navigation';
+import { Link, usePathname } from '@/i18n/navigation';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { Button } from '@/shared/ui/button';
 import { LIST_STATUS_BADGE_COMPACT_CLASS } from '@/shared/ui/list-status-badge';
@@ -25,6 +27,12 @@ export const AdminApartmentsListPage = () => {
   const query = useAdminApartmentsQuery(page, pageSize, companyId, buildingId);
   const response = query.data;
   const [showCreate, setShowCreate] = useState(false);
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const returnTo = (() => {
+    const queryString = searchParams.toString();
+    return queryString.length > 0 ? `${pathname}?${queryString}` : pathname;
+  })();
 
   return (
     <>
@@ -53,7 +61,7 @@ export const AdminApartmentsListPage = () => {
           </Button>
         }
       >
-        {response ? <ApartmentsTable apartments={response.data} /> : null}
+        {response ? <ApartmentsTable apartments={response.data} returnTo={returnTo} /> : null}
       </AdminInventoryListShell>
 
       <AdminCreateApartmentSheet
@@ -70,9 +78,10 @@ export const AdminApartmentsListPage = () => {
 
 type ApartmentsTableProps = {
   apartments: AdminApartmentListItem[];
+  returnTo: string;
 };
 
-const ApartmentsTable = ({ apartments }: ApartmentsTableProps) => {
+const ApartmentsTable = ({ apartments, returnTo }: ApartmentsTableProps) => {
   const t = useTranslations('Admin.apartments');
 
   return (
@@ -80,7 +89,11 @@ const ApartmentsTable = ({ apartments }: ApartmentsTableProps) => {
       {apartments.map((apartment) => (
         <Link
           key={apartment.id}
-          href={`/admin/projects/apartments/${apartment.id}?companyId=${encodeURIComponent(apartment.builderCompanyId)}`}
+          href={catalogApartmentDetailHref(
+            { mode: 'admin', companyId: apartment.builderCompanyId },
+            apartment.id,
+            { returnTo },
+          )}
           className="flex flex-col gap-2 rounded-lg bg-surface-elevated p-4 shadow-xs transition-[box-shadow] hover:shadow-sm"
         >
           <div className="flex items-start justify-between gap-2">
