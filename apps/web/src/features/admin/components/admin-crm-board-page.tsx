@@ -21,6 +21,7 @@ import {
 import { CrmDealSheet, CrmKanbanBoard } from '@/features/crm-board';
 import { CRM_BOARD_REQUEST_SOURCES } from '@/features/crm-board/constants';
 import { CrmNewColumnCreateButton } from '@/features/crm-board/crm-new-column-create-button';
+import { useCrmDealSheetUrl } from '@/features/crm-board/use-crm-deal-sheet-url';
 import { Input } from '@/shared/ui/input';
 import { MultiListboxSelect } from '@/shared/ui/multi-listbox-select';
 
@@ -31,7 +32,6 @@ export const AdminCrmBoardPage = () => {
   const t = useTranslations('Admin.crm');
   const tBoard = useTranslations('CrmBoard');
   const queryClient = useQueryClient();
-  const [selectedDealId, setSelectedDealId] = useState<string | null>(null);
   const [showNew, setShowNew] = useState(false);
   const [search, setSearch] = useState('');
   /** Empty = All builders (default). */
@@ -48,6 +48,8 @@ export const AdminCrmBoardPage = () => {
     ...(sources.length > 0 ? { sources } : {}),
     ...(search.trim() ? { q: search.trim() } : {}),
   });
+  const deals = dealsQuery.data?.data ?? [];
+  const { selectedDealId, openDeal, closeDeal } = useCrmDealSheetUrl(deals);
   const dealQuery = useAdminCrmDealQuery(selectedDealId ?? '');
 
   const builderCompanies = useMemo(
@@ -73,8 +75,6 @@ export const AdminCrmBoardPage = () => {
     [tBoard],
   );
 
-  const deals = dealsQuery.data?.data ?? [];
-
   const onStatusDrop = async (dealId: string, status: CrmDealStatus) => {
     setBoardError(null);
     const deal = deals.find((item) => item.id === dealId);
@@ -87,7 +87,7 @@ export const AdminCrmBoardPage = () => {
       return;
     }
     if (crmStatusRequiresApartment(status) || status === 'lost') {
-      setSelectedDealId(dealId);
+      openDeal(dealId);
       setBoardError(tBoard('openSheetForStatus'));
       await queryClient.invalidateQueries({ queryKey: ADMIN_CRM_DEALS_QUERY_KEY });
       return;
@@ -186,7 +186,7 @@ export const AdminCrmBoardPage = () => {
       <CrmKanbanBoard
         deals={deals}
         mode="readonly"
-        onOpenDeal={setSelectedDealId}
+        onOpenDeal={openDeal}
         onStatusDrop={onStatusDrop}
         newColumnAction={
           <CrmNewColumnCreateButton
@@ -208,7 +208,7 @@ export const AdminCrmBoardPage = () => {
             setShowNew(false);
           }}
           onCreated={(dealId) => {
-            setSelectedDealId(dealId);
+            openDeal(dealId);
           }}
         />
       ) : null}
@@ -216,7 +216,7 @@ export const AdminCrmBoardPage = () => {
       <CrmDealSheet
         open={selectedDealId !== null}
         onClose={() => {
-          setSelectedDealId(null);
+          closeDeal();
           setBoardError(null);
         }}
         deal={dealQuery.data ?? null}

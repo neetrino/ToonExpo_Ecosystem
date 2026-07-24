@@ -28,6 +28,7 @@ import {
 } from '@/features/builder/utils/crm-status-transitions';
 import { CrmDealSheet, CrmKanbanBoard } from '@/features/crm-board';
 import { CrmNewColumnCreateButton } from '@/features/crm-board/crm-new-column-create-button';
+import { useCrmDealSheetUrl } from '@/features/crm-board/use-crm-deal-sheet-url';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
@@ -40,7 +41,6 @@ export const CrmDealsListPage = () => {
   const tBoard = useTranslations('CrmBoard');
   const queryClient = useQueryClient();
   const [showNew, setShowNew] = useState(false);
-  const [selectedDealId, setSelectedDealId] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [boardError, setBoardError] = useState<string | null>(null);
   const [filters, setFilters] = useState<{
@@ -62,6 +62,8 @@ export const CrmDealsListPage = () => {
     ...(search.trim() ? { q: search.trim() } : {}),
   });
 
+  const deals = dealsQuery.data?.data ?? [];
+  const { selectedDealId, openDeal, closeDeal } = useCrmDealSheetUrl(deals);
   const dealQuery = useCrmDealQuery(selectedDealId ?? '');
 
   const projects = useMemo(
@@ -84,8 +86,6 @@ export const CrmDealsListPage = () => {
     [membersQuery.data],
   );
 
-  const deals = dealsQuery.data?.data ?? [];
-
   const onStatusDrop = async (dealId: string, status: CrmDealStatus) => {
     setBoardError(null);
     const deal = deals.find((item) => item.id === dealId);
@@ -97,7 +97,7 @@ export const CrmDealsListPage = () => {
       return;
     }
     if (crmStatusRequiresApartment(status) || status === 'lost') {
-      setSelectedDealId(dealId);
+      openDeal(dealId);
       setBoardError(tBoard('openSheetForStatus'));
       return;
     }
@@ -177,7 +177,7 @@ export const CrmDealsListPage = () => {
       <CrmKanbanBoard
         deals={deals}
         mode="edit"
-        onOpenDeal={setSelectedDealId}
+        onOpenDeal={openDeal}
         onStatusDrop={onStatusDrop}
         newColumnAction={
           <CrmNewColumnCreateButton
@@ -195,7 +195,7 @@ export const CrmDealsListPage = () => {
             setShowNew(false);
           }}
           onCreated={(dealId) => {
-            setSelectedDealId(dealId);
+            openDeal(dealId);
           }}
         />
       ) : null}
@@ -203,7 +203,7 @@ export const CrmDealsListPage = () => {
       <CrmDealSheet
         open={selectedDealId !== null}
         onClose={() => {
-          setSelectedDealId(null);
+          closeDeal();
           setBoardError(null);
         }}
         deal={dealQuery.data ?? null}

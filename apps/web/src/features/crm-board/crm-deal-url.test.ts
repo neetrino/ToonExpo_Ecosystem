@@ -10,7 +10,7 @@ const deal = (overrides: Partial<CrmDealListItem> & { id: string }): CrmDealList
   projectId: null,
   projectName: null,
   buyer: {
-    id: 'buyer-1',
+    buyerProfileId: null,
     name: null,
     phone: null,
     email: null,
@@ -31,7 +31,7 @@ describe('crm-deal-url', () => {
       getCrmDealUrlName(
         deal({
           id: '1',
-          buyer: { id: 'b', name: 'sdfgbdf', phone: '123', email: 'a@b.c' },
+          buyer: { buyerProfileId: null, name: 'sdfgbdf', phone: '123', email: 'a@b.c' },
         }),
       ),
     ).toBe('sdfgbdf');
@@ -40,12 +40,18 @@ describe('crm-deal-url', () => {
   it('falls back to phone then email then unnamed', () => {
     expect(
       getCrmDealUrlName(
-        deal({ id: '1', buyer: { id: 'b', name: null, phone: '+1', email: null } }),
+        deal({
+          id: '1',
+          buyer: { buyerProfileId: null, name: null, phone: '+1', email: null },
+        }),
       ),
     ).toBe('+1');
     expect(
       getCrmDealUrlName(
-        deal({ id: '2', buyer: { id: 'b', name: null, phone: null, email: 'a@b.c' } }),
+        deal({
+          id: '2',
+          buyer: { buyerProfileId: null, name: null, phone: null, email: 'a@b.c' },
+        }),
       ),
     ).toBe('a@b.c');
     expect(getCrmDealUrlName(deal({ id: '3' }))).toBe('unnamed');
@@ -53,8 +59,14 @@ describe('crm-deal-url', () => {
 
   it('finds deal by URL name case-insensitively', () => {
     const deals = [
-      deal({ id: '1', buyer: { id: 'b', name: 'Anna', phone: null, email: null } }),
-      deal({ id: '2', buyer: { id: 'b', name: 'Bob', phone: null, email: null } }),
+      deal({
+        id: '1',
+        buyer: { buyerProfileId: null, name: 'Anna', phone: null, email: null },
+      }),
+      deal({
+        id: '2',
+        buyer: { buyerProfileId: null, name: 'Bob', phone: null, email: null },
+      }),
     ];
     expect(findCrmDealByUrlName(deals, 'anna')?.id).toBe('1');
   });
