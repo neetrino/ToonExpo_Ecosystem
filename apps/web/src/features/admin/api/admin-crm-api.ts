@@ -15,8 +15,10 @@ export type ListAdminCrmDealsParams = {
   pageSize: number;
   status?: CrmDealStatus;
   source?: RequestSource;
+  sources?: RequestSource[];
   projectId?: string;
   companyId?: string;
+  companyIds?: string[];
   q?: string;
 };
 
@@ -33,13 +35,17 @@ export const listAdminCrmDeals = (
   if (params.status) {
     search.set('status', params.status);
   }
-  if (params.source) {
+  if (params.sources && params.sources.length > 0) {
+    search.set('sources', params.sources.join(','));
+  } else if (params.source) {
     search.set('source', params.source);
   }
   if (params.projectId) {
     search.set('projectId', params.projectId);
   }
-  if (params.companyId) {
+  if (params.companyIds && params.companyIds.length > 0) {
+    search.set('companyIds', params.companyIds.join(','));
+  } else if (params.companyId) {
     search.set('companyId', params.companyId);
   }
   if (params.q) {

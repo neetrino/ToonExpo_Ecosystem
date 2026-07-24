@@ -22,7 +22,7 @@ import { CrmDealSheet, CrmKanbanBoard } from '@/features/crm-board';
 import { CRM_BOARD_REQUEST_SOURCES } from '@/features/crm-board/constants';
 import { CrmNewColumnCreateButton } from '@/features/crm-board/crm-new-column-create-button';
 import { Input } from '@/shared/ui/input';
-import { Select } from '@/shared/ui/select';
+import { MultiListboxSelect } from '@/shared/ui/multi-listbox-select';
 
 /**
  * Platform admin CRM Kanban — overview, create, animated status drag.
@@ -34,16 +34,18 @@ export const AdminCrmBoardPage = () => {
   const [selectedDealId, setSelectedDealId] = useState<string | null>(null);
   const [showNew, setShowNew] = useState(false);
   const [search, setSearch] = useState('');
-  const [companyId, setCompanyId] = useState('');
-  const [source, setSource] = useState<RequestSource | ''>('');
+  /** Empty = All builders (default). */
+  const [companyIds, setCompanyIds] = useState<string[]>([]);
+  /** Empty = All sources (default). */
+  const [sources, setSources] = useState<RequestSource[]>([]);
   const [boardError, setBoardError] = useState<string | null>(null);
 
   const companiesQuery = useAdminCompaniesQuery(1, ADMIN_COMPANIES_MAX_PAGE_SIZE);
   const dealsQuery = useAdminCrmDealsQuery({
     page: 1,
     pageSize: ADMIN_CRM_BOARD_PAGE_SIZE,
-    ...(companyId ? { companyId } : {}),
-    ...(source ? { source } : {}),
+    ...(companyIds.length > 0 ? { companyIds } : {}),
+    ...(sources.length > 0 ? { sources } : {}),
     ...(search.trim() ? { q: search.trim() } : {}),
   });
   const dealQuery = useAdminCrmDealQuery(selectedDealId ?? '');
@@ -51,6 +53,24 @@ export const AdminCrmBoardPage = () => {
   const builderCompanies = useMemo(
     () => (companiesQuery.data?.data ?? []).filter((company) => company.type === 'builder'),
     [companiesQuery.data],
+  );
+
+  const builderOptions = useMemo(
+    () =>
+      builderCompanies.map((company) => ({
+        value: company.id,
+        label: company.name,
+      })),
+    [builderCompanies],
+  );
+
+  const sourceOptions = useMemo(
+    () =>
+      CRM_BOARD_REQUEST_SOURCES.map((item) => ({
+        value: item,
+        label: tBoard(`sources.${item}`),
+      })),
+    [tBoard],
   );
 
   const deals = dealsQuery.data?.data ?? [];
@@ -128,40 +148,32 @@ export const AdminCrmBoardPage = () => {
           <span className="text-xs font-medium uppercase tracking-wide text-ink-muted">
             {t('filters.company')}
           </span>
-          <Select
-            className="h-11"
-            value={companyId}
-            onChange={(event) => {
-              setCompanyId(event.target.value);
-            }}
-          >
-            <option value="">{t('filters.allCompanies')}</option>
-            {builderCompanies.map((company) => (
-              <option key={company.id} value={company.id}>
-                {company.name}
-              </option>
-            ))}
-          </Select>
+          <MultiListboxSelect
+            id="admin-crm-builders"
+            aria-label={t('filters.company')}
+            values={companyIds}
+            options={builderOptions}
+            allLabel={t('filters.allCompanies')}
+            selectedCountLabel={(count) => t('filters.selectedCount', { count })}
+            onChange={setCompanyIds}
+          />
         </label>
 
         <label className="flex min-w-0 flex-1 flex-col gap-1.5">
           <span className="text-xs font-medium uppercase tracking-wide text-ink-muted">
             {tBoard('filters.source')}
           </span>
-          <Select
-            className="h-11"
-            value={source}
-            onChange={(event) => {
-              setSource(event.target.value as RequestSource | '');
+          <MultiListboxSelect
+            id="admin-crm-sources"
+            aria-label={tBoard('filters.source')}
+            values={sources}
+            options={sourceOptions}
+            allLabel={tBoard('filters.allSources')}
+            selectedCountLabel={(count) => tBoard('filters.selectedCount', { count })}
+            onChange={(next) => {
+              setSources(next as RequestSource[]);
             }}
-          >
-            <option value="">{tBoard('filters.allSources')}</option>
-            {CRM_BOARD_REQUEST_SOURCES.map((item) => (
-              <option key={item} value={item}>
-                {tBoard(`sources.${item}`)}
-              </option>
-            ))}
-          </Select>
+          />
         </label>
       </div>
 
@@ -191,7 +203,7 @@ export const AdminCrmBoardPage = () => {
             id: company.id,
             name: company.name,
           }))}
-          defaultCompanyId={companyId}
+          defaultCompanyId={companyIds[0] ?? ''}
           onClose={() => {
             setShowNew(false);
           }}

@@ -41,7 +41,8 @@
     },
     "filters": {
       "source": "Source",
-      "allSources": "All sources"
+      "allSources": "All sources",
+      "selectedCount": "{count} selected"
     },
     "statuses": {
       "new_request": "New",
@@ -959,7 +960,8 @@
       "error": "Could not load CRM deals. Try again.",
       "filters": {
         "company": "Builder",
-        "allCompanies": "All builders"
+        "allCompanies": "All builders",
+        "selectedCount": "{count} selected"
       },
       "newDeal": {
         "title": "New lead",

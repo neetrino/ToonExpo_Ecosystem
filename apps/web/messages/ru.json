@@ -41,7 +41,8 @@
     },
     "filters": {
       "source": "Источник",
-      "allSources": "Все источники"
+      "allSources": "Все источники",
+      "selectedCount": "{count} выбрано"
     },
     "statuses": {
       "new_request": "Новый",
@@ -959,7 +960,8 @@
       "error": "Не удалось загрузить CRM. Попробуйте снова.",
       "filters": {
         "company": "Застройщик",
-        "allCompanies": "Все застройщики"
+        "allCompanies": "Все застройщики",
+        "selectedCount": "{count} выбрано"
       },
       "newDeal": {
         "title": "Новый лид",

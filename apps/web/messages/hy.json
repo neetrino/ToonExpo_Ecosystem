@@ -41,7 +41,8 @@
     },
     "filters": {
       "source": "Աղբյուր",
-      "allSources": "Բոլոր աղբյուրները"
+      "allSources": "Բոլոր աղբյուրները",
+      "selectedCount": "{count} ընտրված"
     },
     "statuses": {
       "new_request": "Նոր",
@@ -959,7 +960,8 @@
       "error": "Չհաջողվեց բեռնել CRM deal-երը։ Փորձեք նորից։",
       "filters": {
         "company": "Կառուցապատող",
-        "allCompanies": "Բոլոր կառուցապատողները"
+        "allCompanies": "Բոլոր կառուցապատողները",
+        "selectedCount": "{count} ընտրված"
       },
       "newDeal": {
         "title": "Նոր lead",

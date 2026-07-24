@@ -3,6 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useEffect, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -96,6 +97,21 @@ export const AdminCrmNewDealPanel = ({
     form.setValue('projectId', '');
   }, [selectedCompanyId, form]);
 
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const onKeyDown = (event: KeyboardEvent): void => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, [onClose]);
+
   const onSubmit = form.handleSubmit(async (values) => {
     try {
       const result = await mutation.mutateAsync({
@@ -112,7 +128,11 @@ export const AdminCrmNewDealPanel = ({
     }
   });
 
-  return (
+  if (typeof document === 'undefined') {
+    return null;
+  }
+
+  return createPortal(
     <div
       role="dialog"
       aria-modal="true"
@@ -200,6 +220,7 @@ export const AdminCrmNewDealPanel = ({
           </Button>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 };

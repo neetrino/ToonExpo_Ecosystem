@@ -5,7 +5,7 @@ import type {
   CrmDealListResponse,
   IntakeCreateResult,
 } from '@toonexpo/contracts';
-import { CompanyType, RequestSource, type CrmDealStatus } from '@toonexpo/db';
+import { CompanyType, RequestSource, type CrmDealStatus, type Prisma } from '@toonexpo/db';
 
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { entityNotFound } from '../../portal/utils/access.js';
@@ -20,9 +20,11 @@ export type ListAdminDealsQuery = {
   pageSize?: number;
   status?: CrmDealStatus;
   source?: RequestSource;
+  sources?: RequestSource[];
   projectId?: string;
   assignedUserId?: string;
   companyId?: string;
+  companyIds?: string[];
   q?: string;
 };
 
@@ -41,14 +43,43 @@ export class AdminCrmDealsService {
     const page = query.page ?? CRM_MIN_PAGE;
     const pageSize = query.pageSize ?? CRM_DEFAULT_PAGE_SIZE;
     const searchWhere = buildCrmDealSearchWhere(query.q);
-    const where = {
-      ...(query.companyId ? { companyId: query.companyId } : {}),
-      ...(query.status ? { status: query.status } : {}),
-      ...(query.source ? { source: query.source } : {}),
-      ...(query.projectId ? { projectId: query.projectId } : {}),
-      ...(query.assignedUserId ? { assignedUserId: query.assignedUserId } : {}),
-      ...(searchWhere ?? {}),
-    };
+    const companyIds =
+      query.companyIds && query.companyIds.length > 0
+        ? query.companyIds
+        : query.companyId
+          ? [query.companyId]
+          : [];
+    const sources =
+      query.sources && query.sources.length > 0
+        ? query.sources
+        : query.source
+          ? [query.source]
+          : [];
+
+    const where: Prisma.CrmDealWhereInput = {};
+
+    if (companyIds.length === 1) {
+      where.companyId = companyIds[0]!;
+    } else if (companyIds.length > 1) {
+      where.companyId = { in: companyIds };
+    }
+    if (query.status) {
+      where.status = query.status;
+    }
+    if (sources.length === 1) {
+      where.source = sources[0]!;
+    } else if (sources.length > 1) {
+      where.source = { in: sources };
+    }
+    if (query.projectId) {
+      where.projectId = query.projectId;
+    }
+    if (query.assignedUserId) {
+      where.assignedUserId = query.assignedUserId;
+    }
+    if (searchWhere) {
+      Object.assign(where, searchWhere);
+    }
 
     const [total, rows] = await this.prisma.db.$transaction([
       this.prisma.db.crmDeal.count({ where }),

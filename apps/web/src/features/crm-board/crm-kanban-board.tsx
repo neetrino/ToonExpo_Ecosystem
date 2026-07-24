@@ -60,6 +60,7 @@ export const CrmKanbanBoard = ({
   const canDrag = Boolean(onStatusDrop);
   const [items, setItems] = useState(deals);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [activeWidthPx, setActiveWidthPx] = useState<number | null>(null);
   const [overColumn, setOverColumn] = useState<CrmDealStatus | null>(null);
 
   useEffect(() => {
@@ -77,6 +78,8 @@ export const CrmKanbanBoard = ({
 
   const onDragStart = (event: DragStartEvent) => {
     setActiveId(String(event.active.id));
+    const initialWidth = event.active.rect.current.initial?.width;
+    setActiveWidthPx(typeof initialWidth === 'number' ? initialWidth : null);
   };
 
   const onDragOver = (event: DragOverEvent) => {
@@ -107,6 +110,7 @@ export const CrmKanbanBoard = ({
       (overId ? (items.find((deal) => deal.id === overId)?.status ?? null) : null);
 
     setActiveId(null);
+    setActiveWidthPx(null);
     setOverColumn(null);
 
     const original = deals.find((deal) => deal.id === dealId);
@@ -133,6 +137,7 @@ export const CrmKanbanBoard = ({
 
   const onDragCancel = () => {
     setActiveId(null);
+    setActiveWidthPx(null);
     setOverColumn(null);
     setItems(deals);
   };
@@ -169,7 +174,7 @@ export const CrmKanbanBoard = ({
 
       <DragOverlay dropAnimation={{ duration: 220, easing: 'cubic-bezier(0.2, 0, 0, 1)' }}>
         {activeDeal ? (
-          <div className="w-56">
+          <div style={activeWidthPx != null ? { width: activeWidthPx } : undefined}>
             <CrmKanbanCard
               deal={activeDeal}
               canDrag

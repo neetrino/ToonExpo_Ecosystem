@@ -1,6 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import {
+  IsArray,
   IsEnum,
   IsInt,
   IsOptional,
@@ -39,6 +40,22 @@ enum RequestSourceDto {
   manual_builder_entry = 'manual_builder_entry',
   event_interaction = 'event_interaction',
 }
+
+const toStringArray = (value: unknown): string[] | undefined => {
+  if (value == null || value === '') {
+    return undefined;
+  }
+  if (Array.isArray(value)) {
+    return value
+      .map(String)
+      .map((item) => item.trim())
+      .filter(Boolean);
+  }
+  return String(value)
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean);
+};
 
 export class ListCrmDealsQueryDto {
   @ApiPropertyOptional({ default: CRM_MIN_PAGE })
@@ -94,6 +111,27 @@ export class ListAdminCrmDealsQueryDto extends ListCrmDealsQueryDto {
   @IsString()
   @MinLength(1)
   companyId?: string;
+
+  @ApiPropertyOptional({
+    description: 'Filter by one or more builder company ids (comma-separated or repeated)',
+    type: [String],
+  })
+  @IsOptional()
+  @Transform(({ value }) => toStringArray(value))
+  @IsArray()
+  @IsString({ each: true })
+  companyIds?: string[];
+
+  @ApiPropertyOptional({
+    description: 'Filter by one or more request sources (comma-separated or repeated)',
+    enum: RequestSourceDto,
+    isArray: true,
+  })
+  @IsOptional()
+  @Transform(({ value }) => toStringArray(value))
+  @IsArray()
+  @IsEnum(RequestSourceDto, { each: true })
+  sources?: RequestSource[];
 }
 
 export class UpdateCrmDealDto {
