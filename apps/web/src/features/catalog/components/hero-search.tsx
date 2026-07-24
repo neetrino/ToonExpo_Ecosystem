@@ -59,7 +59,7 @@ export const HeroSearch = ({ className }: HeroSearchProps) => {
       <form
         onSubmit={onSubmit}
         className={cn(
-          'rounded-[20px] bg-surface-elevated p-2',
+          'w-full rounded-[20px] bg-surface-elevated p-2 lg:w-fit',
           'shadow-[0_20px_25px_-5px_rgb(9_43_68/0.05),0_8px_10px_-6px_rgb(9_43_68/0.05)]',
           'ring-1 ring-header-border',
         )}
@@ -75,7 +75,7 @@ export const HeroSearch = ({ className }: HeroSearchProps) => {
           onChange={setTab}
         />
 
-        <div className="grid grid-cols-1 gap-2 p-3 lg:grid-cols-[1.5fr_1fr_1fr_auto] lg:items-center">
+        <div className="grid grid-cols-1 gap-2 p-3 lg:grid-cols-[minmax(11rem,15rem)_auto_auto_auto] lg:items-center">
           <label className="flex min-w-0 flex-col gap-1 px-3 py-2">
             <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-header-muted">
               {t('locationLabel')}
@@ -99,6 +99,7 @@ export const HeroSearch = ({ className }: HeroSearchProps) => {
               aria-label={t('priceLabel')}
               value={priceKey}
               options={priceOptions}
+              size="fit"
               onChange={setPriceKey}
             />
           </div>
@@ -112,6 +113,7 @@ export const HeroSearch = ({ className }: HeroSearchProps) => {
               aria-label={t('bedsLabel')}
               value={String(rooms)}
               options={bedOptions}
+              size="fit"
               onChange={(next) => setRooms(Number.parseInt(next, 10))}
             />
           </div>

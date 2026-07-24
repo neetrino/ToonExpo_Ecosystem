@@ -66,7 +66,7 @@ export const HomeHero = async () => {
           </p>
         </div>
 
-        <div className="mt-[clamp(1.5rem,1rem+2vw,2.5rem)] w-full max-w-4xl">
+        <div className="mt-[clamp(1.5rem,1rem+2vw,2.5rem)] w-full">
           <HeroSearch />
         </div>
       </div>
