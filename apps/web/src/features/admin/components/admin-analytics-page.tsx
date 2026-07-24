@@ -181,9 +181,21 @@ export const AdminAnalyticsPage = () => {
 
       <AnalyticsSectionCard title={t('sections.checkIns')}>
         <div className="grid gap-3 sm:grid-cols-3">
-          <AnalyticsStatCard label={t('checkIns.allowed')} value={data.checkIns.allowed} />
-          <AnalyticsStatCard label={t('checkIns.duplicate')} value={data.checkIns.duplicate} />
-          <AnalyticsStatCard label={t('checkIns.denied')} value={data.checkIns.denied} />
+          <AnalyticsStatCard
+            label={t('checkIns.allowed')}
+            value={data.checkIns.allowed}
+            className="bg-surface-elevated"
+          />
+          <AnalyticsStatCard
+            label={t('checkIns.duplicate')}
+            value={data.checkIns.duplicate}
+            className="bg-surface-elevated"
+          />
+          <AnalyticsStatCard
+            label={t('checkIns.denied')}
+            value={data.checkIns.denied}
+            className="bg-surface-elevated"
+          />
         </div>
       </AnalyticsSectionCard>
 
