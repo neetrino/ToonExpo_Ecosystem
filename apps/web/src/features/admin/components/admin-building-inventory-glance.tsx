@@ -32,11 +32,7 @@ export const AdminBuildingInventoryGlanceCard = ({
 
   return (
     <div className="rounded-2xl bg-surface-elevated px-6 pb-6 pt-4 shadow-xs ring-1 ring-border">
-      <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-ink-muted">
-        {t('glanceTitle')}
-      </p>
-
-      <div className="mt-3 grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-4">
         <AvailabilityStat
           value={glance.availability.available}
           label={t('available')}
