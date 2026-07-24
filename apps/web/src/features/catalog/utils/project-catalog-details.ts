@@ -1,7 +1,9 @@
 /**
  * Optional project catalog extras stored in `Project.amenities` / `nearbyPlaces` JSON.
- * Supports legacy string[] payloads and the structured object shape used for rich catalog pages.
+ * Supports legacy string[] / plain-string values and localized `{ hy, ru, en }` payloads.
  */
+
+export type CatalogContentLocale = 'hy' | 'ru' | 'en';
 
 export type ProjectCatalogDetails = {
   propertyType: string | null;
@@ -103,6 +105,8 @@ const EMPTY_DETAILS: ProjectCatalogDetails = {
 
 const DETAIL_KEYS = Object.keys(EMPTY_DETAILS) as Array<keyof ProjectCatalogDetails>;
 
+const LOCALE_FALLBACK: CatalogContentLocale[] = ['hy', 'en', 'ru'];
+
 const asNonEmptyString = (value: unknown): string | null => {
   if (typeof value !== 'string') {
     return null;
@@ -111,19 +115,68 @@ const asNonEmptyString = (value: unknown): string | null => {
   return trimmed.length > 0 ? trimmed : null;
 };
 
-const asStringList = (value: unknown): string[] => {
-  if (!Array.isArray(value)) {
-    return [];
+const resolveLocaleText = (value: unknown, locale: CatalogContentLocale): string | null => {
+  const plain = asNonEmptyString(value);
+  if (plain != null) {
+    return plain;
   }
-  return value
-    .map((item) => (typeof item === 'string' ? item.trim() : ''))
-    .filter((item) => item.length > 0);
+
+  if (value == null || typeof value !== 'object' || Array.isArray(value)) {
+    return null;
+  }
+
+  const record = value as Record<string, unknown>;
+  const preferred = asNonEmptyString(record[locale]);
+  if (preferred != null) {
+    return preferred;
+  }
+
+  for (const fallback of LOCALE_FALLBACK) {
+    const next = asNonEmptyString(record[fallback]);
+    if (next != null) {
+      return next;
+    }
+  }
+
+  return null;
 };
 
-const parseDetailsRecord = (record: Record<string, unknown>): ProjectCatalogDetails => {
+const asLocalizedStringList = (value: unknown, locale: CatalogContentLocale): string[] => {
+  if (Array.isArray(value)) {
+    return value
+      .map((item) => resolveLocaleText(item, locale))
+      .filter((item): item is string => item != null);
+  }
+
+  if (value != null && typeof value === 'object') {
+    const record = value as Record<string, unknown>;
+    const localeList = record[locale];
+    if (Array.isArray(localeList)) {
+      return localeList
+        .map((item) => asNonEmptyString(item))
+        .filter((item): item is string => item != null);
+    }
+
+    for (const fallback of LOCALE_FALLBACK) {
+      const list = record[fallback];
+      if (Array.isArray(list)) {
+        return list
+          .map((item) => asNonEmptyString(item))
+          .filter((item): item is string => item != null);
+      }
+    }
+  }
+
+  return [];
+};
+
+const parseDetailsRecord = (
+  record: Record<string, unknown>,
+  locale: CatalogContentLocale,
+): ProjectCatalogDetails => {
   const details = { ...EMPTY_DETAILS };
   for (const key of DETAIL_KEYS) {
-    details[key] = asNonEmptyString(record[key]);
+    details[key] = resolveLocaleText(record[key], locale);
   }
   return details;
 };
@@ -133,9 +186,13 @@ const parseDetailsRecord = (record: Record<string, unknown>): ProjectCatalogDeta
  */
 export const parseProjectAmenities = (
   amenities: unknown,
+  locale: CatalogContentLocale,
 ): { labels: string[]; details: ProjectCatalogDetails } => {
   if (Array.isArray(amenities)) {
-    return { labels: asStringList(amenities), details: { ...EMPTY_DETAILS } };
+    return {
+      labels: asLocalizedStringList(amenities, locale),
+      details: { ...EMPTY_DETAILS },
+    };
   }
 
   if (amenities == null || typeof amenities !== 'object') {
@@ -143,7 +200,7 @@ export const parseProjectAmenities = (
   }
 
   const record = amenities as Record<string, unknown>;
-  const labels = asStringList(record.labels ?? record.items ?? record.amenities);
+  const labels = asLocalizedStringList(record.labels ?? record.items ?? record.amenities, locale);
   const detailsSource =
     record.details != null && typeof record.details === 'object' && !Array.isArray(record.details)
       ? (record.details as Record<string, unknown>)
@@ -151,16 +208,19 @@ export const parseProjectAmenities = (
 
   return {
     labels,
-    details: parseDetailsRecord(detailsSource),
+    details: parseDetailsRecord(detailsSource, locale),
   };
 };
 
 /**
  * Reads nearby place labels from `Project.nearbyPlaces`.
  */
-export const parseProjectNearbyPlaces = (nearbyPlaces: unknown): string[] => {
+export const parseProjectNearbyPlaces = (
+  nearbyPlaces: unknown,
+  locale: CatalogContentLocale,
+): string[] => {
   if (Array.isArray(nearbyPlaces)) {
-    return asStringList(nearbyPlaces);
+    return asLocalizedStringList(nearbyPlaces, locale);
   }
 
   if (nearbyPlaces == null || typeof nearbyPlaces !== 'object') {
@@ -168,7 +228,14 @@ export const parseProjectNearbyPlaces = (nearbyPlaces: unknown): string[] => {
   }
 
   const record = nearbyPlaces as Record<string, unknown>;
-  return asStringList(record.places ?? record.items ?? record.nearby);
+  return asLocalizedStringList(record.places ?? record.items ?? record.nearby, locale);
+};
+
+const toCatalogLocale = (locale: string): CatalogContentLocale => {
+  if (locale === 'ru' || locale === 'en' || locale === 'hy') {
+    return locale;
+  }
+  return 'hy';
 };
 
 /**
@@ -177,11 +244,13 @@ export const parseProjectNearbyPlaces = (nearbyPlaces: unknown): string[] => {
 export const parseProjectCatalog = (
   amenities: unknown,
   nearbyPlaces: unknown,
+  locale: string,
 ): ParsedProjectCatalog => {
-  const parsedAmenities = parseProjectAmenities(amenities);
+  const contentLocale = toCatalogLocale(locale);
+  const parsedAmenities = parseProjectAmenities(amenities, contentLocale);
   return {
     amenityLabels: parsedAmenities.labels,
-    nearbyPlaces: parseProjectNearbyPlaces(nearbyPlaces),
+    nearbyPlaces: parseProjectNearbyPlaces(nearbyPlaces, contentLocale),
     details: parsedAmenities.details,
   };
 };

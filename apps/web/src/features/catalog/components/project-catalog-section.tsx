@@ -1,5 +1,5 @@
 import type { ProjectDetail } from '@toonexpo/contracts';
-import { getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 
 import { ProjectCatalogDetailsPanel } from '@/features/catalog/components/project-catalog-details-panel';
 import { buildProjectCatalogRows } from '@/features/catalog/utils/build-project-catalog-rows';
@@ -13,15 +13,12 @@ type ProjectCatalogSectionProps = {
  * Server section that parses catalog JSON and renders the project facts panel.
  */
 export const ProjectCatalogSection = async ({ project }: ProjectCatalogSectionProps) => {
+  const locale = await getLocale();
   const t = await getTranslations('Catalog.projectDetail');
-  const catalog = parseProjectCatalog(project.amenities, project.nearbyPlaces);
-  const details = {
-    ...catalog.details,
-    propertyType: catalog.details.propertyType ?? project.projectType,
-    city: catalog.details.city ?? project.city,
-    address: catalog.details.address ?? project.address ?? project.locationText,
-    constructionStatus: catalog.details.constructionStatus ?? project.constructionStatus,
-  };
+  const catalog = parseProjectCatalog(project.amenities, project.nearbyPlaces, locale);
+  // Prefer localized catalog JSON only — do not fall back to English DB fields
+  // (city/address/status enums) that would break hy/ru pages.
+  const details = { ...catalog.details };
 
   const rows = buildProjectCatalogRows({
     details,

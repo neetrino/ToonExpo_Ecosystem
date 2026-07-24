@@ -343,13 +343,9 @@ export const upsertSeedProjects = async (prisma: PrismaClient): Promise<number> 
       },
     });
 
-    const demoAmenities = buildCatalogDemoAmenities({
-      city: project.city ?? 'Yerevan',
-      address: project.address,
-      district: project.district,
-    });
-    const amenities = project.amenities ?? demoAmenities;
-    const nearbyPlaces = project.nearbyPlaces ?? CATALOG_DEMO_NEARBY;
+    const demoAmenities = buildCatalogDemoAmenities();
+    const amenities = demoAmenities;
+    const nearbyPlaces = CATALOG_DEMO_NEARBY;
     const fullDescription = project.fullDescription ?? CATALOG_DEMO_FULL_DESCRIPTION_HY;
     const constructionStatus = project.constructionStatus ?? 'design_phase';
     const completionDate =
