@@ -86,7 +86,7 @@ export const PartnersListPage = () => {
         </p>
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-nowrap items-center justify-between gap-3 overflow-x-auto">
         <PartnerFilters
           type={filters.type}
           status={filters.status}
@@ -95,7 +95,7 @@ export const PartnersListPage = () => {
           onChange={setFilters}
         />
 
-        <div className="flex shrink-0 flex-wrap items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
           <ViewModeToggle value={viewMode} onChange={setViewMode} />
           <Button
             type="button"

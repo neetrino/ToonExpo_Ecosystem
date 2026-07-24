@@ -14,6 +14,7 @@ import {
 } from '@/features/partners/constants';
 import { SearchField } from '@/shared/ui/search-field';
 import { Select } from '@/shared/ui/select';
+import { cn } from '@/shared/ui/cn';
 
 type PartnerFiltersProps = {
   type: PartnerCompanyType | '';
@@ -43,9 +44,9 @@ export const PartnerFilters = ({
   const t = useTranslations('Admin.partners.filters');
 
   return (
-    <div className="flex min-w-0 flex-1 flex-wrap items-center gap-3">
+    <div className="flex min-w-0 flex-1 flex-nowrap items-center gap-2">
       <SearchField
-        className="min-w-[16rem] flex-[2] basis-[16rem] sm:min-w-[22rem]"
+        className="min-w-[10rem] flex-1"
         value={search}
         placeholder={t('searchPlaceholder')}
         aria-label={t('search')}
@@ -56,7 +57,7 @@ export const PartnerFilters = ({
 
       <Select
         size="fit"
-        className={fieldClassName}
+        className={cn(fieldClassName, 'shrink-0')}
         value={type}
         aria-label={t('type')}
         onChange={(event) => {
@@ -78,7 +79,7 @@ export const PartnerFilters = ({
 
       <Select
         size="fit"
-        className={fieldClassName}
+        className={cn(fieldClassName, 'shrink-0')}
         value={status}
         aria-label={t('status')}
         onChange={(event) => {
@@ -100,7 +101,7 @@ export const PartnerFilters = ({
 
       <Select
         size="fit"
-        className={fieldClassName}
+        className={cn(fieldClassName, 'shrink-0')}
         value={publicationStatus}
         aria-label={t('publication')}
         onChange={(event) => {
