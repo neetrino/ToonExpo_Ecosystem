@@ -159,7 +159,16 @@ export const CrmDealsListPage = () => {
       </div>
 
       <label className="flex max-w-xl shrink-0 flex-col gap-1.5">
-        <span className="sr-only">{tBoard('searchLabel')}</span>
+        <span className="flex items-baseline justify-between gap-2">
+          <span className="text-xs font-medium uppercase tracking-wide text-ink-muted">
+            {tBoard('searchLabel')}
+          </span>
+          {search.trim() ? (
+            <span className="text-xs font-medium text-ink-secondary" aria-live="polite">
+              {tBoard('searchResultsCount', { count: deals.length })}
+            </span>
+          ) : null}
+        </span>
         <Input
           value={search}
           placeholder={tBoard('searchPlaceholder')}

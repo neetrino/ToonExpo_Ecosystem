@@ -17,6 +17,7 @@
     "quickLead": "Արագ lead",
     "searchLabel": "Որոնել lead-եր",
     "searchPlaceholder": "Որոնել անունով, email-ով, հեռախոսով…",
+    "searchResultsCount": "{count, plural, =0 {Ոչինչ չի գտնվել} one {Գտնվել է # lead} other {Գտնվել է # lead}}",
     "dealSheetTitle": "Lead",
     "readonlyHint": "Հարթակի overview — միայն դիտում",
     "loadingDeal": "Բեռնվում է…",

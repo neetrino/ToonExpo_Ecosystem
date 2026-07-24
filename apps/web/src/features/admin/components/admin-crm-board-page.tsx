@@ -141,8 +141,15 @@ export const AdminCrmBoardPage = () => {
 
       <div className="flex shrink-0 flex-col gap-3 sm:flex-row sm:items-end">
         <label className="flex min-w-0 flex-1 flex-col gap-1.5">
-          <span className="text-xs font-medium uppercase tracking-wide text-ink-muted">
-            {tBoard('searchLabel')}
+          <span className="flex items-baseline justify-between gap-2">
+            <span className="text-xs font-medium uppercase tracking-wide text-ink-muted">
+              {tBoard('searchLabel')}
+            </span>
+            {search.trim() ? (
+              <span className="text-xs font-medium text-ink-secondary" aria-live="polite">
+                {tBoard('searchResultsCount', { count: deals.length })}
+              </span>
+            ) : null}
           </span>
           <Input
             value={search}

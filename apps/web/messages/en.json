@@ -17,6 +17,7 @@
     "quickLead": "Quick Lead",
     "searchLabel": "Search leads",
     "searchPlaceholder": "Search leads by name, email, phone…",
+    "searchResultsCount": "{count, plural, =0 {No leads found} one {# lead found} other {# leads found}}",
     "dealSheetTitle": "Lead",
     "readonlyHint": "Platform overview — view only",
     "loadingDeal": "Loading deal…",

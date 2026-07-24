@@ -20,8 +20,21 @@ type MultiListboxSelectProps = {
   disabled?: boolean | undefined;
 };
 
+const SelectionMark = ({ checked }: { checked: boolean }) => (
+  <span
+    className={cn(
+      'inline-flex size-4 shrink-0 items-center justify-center rounded-[4px] border',
+      checked ? 'border-brand bg-brand text-white' : 'border-border bg-surface-elevated',
+    )}
+    aria-hidden
+  >
+    {checked ? <Check className="size-3" strokeWidth={3} /> : null}
+  </span>
+);
+
 /**
  * Multi-select listbox — empty selection means "All".
+ * Menu stays open while toggling options so several can be picked at once.
  */
 export const MultiListboxSelect = ({
   values,
@@ -47,8 +60,14 @@ export const MultiListboxSelect = ({
     }
 
     const onPointerDown = (event: MouseEvent): void => {
-      const target = event.target as Node;
+      const target = event.target;
+      if (!(target instanceof Node)) {
+        return;
+      }
       if (rootRef.current?.contains(target) || menuRef.current?.contains(target)) {
+        return;
+      }
+      if (target instanceof Element && target.closest('[data-dropdown-portal]')) {
         return;
       }
       setOpen(false);
@@ -84,7 +103,7 @@ export const MultiListboxSelect = ({
 
   const toggleOption = (value: string): void => {
     if (isAll) {
-      onChange([value]);
+      onChange(options.map((option) => option.value).filter((item) => item !== value));
       return;
     }
     if (values.includes(value)) {
@@ -155,20 +174,26 @@ export const MultiListboxSelect = ({
               role="option"
               aria-selected={isAll}
               className={cn(
-                'flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left text-sm',
+                'flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm',
                 'transition-colors duration-[var(--duration-base)]',
                 isAll
                   ? 'bg-brand-soft font-semibold text-brand-deep'
                   : 'font-medium text-ink hover:bg-surface',
               )}
-              onClick={toggleAll}
+              onMouseDown={(event) => {
+                event.preventDefault();
+              }}
+              onClick={(event) => {
+                event.stopPropagation();
+                toggleAll();
+              }}
             >
-              <span>{allLabel}</span>
-              {isAll ? <Check className="size-3.5 shrink-0 text-brand-logo" aria-hidden /> : null}
+              <SelectionMark checked={isAll} />
+              <span className="min-w-0 flex-1 truncate">{allLabel}</span>
             </button>
           </li>
           {options.map((option) => {
-            const active = !isAll && values.includes(option.value);
+            const active = isAll || values.includes(option.value);
             return (
               <li key={option.value} role="none">
                 <button
@@ -176,20 +201,22 @@ export const MultiListboxSelect = ({
                   role="option"
                   aria-selected={active}
                   className={cn(
-                    'flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left text-sm',
+                    'flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm',
                     'transition-colors duration-[var(--duration-base)]',
                     active
                       ? 'bg-brand-soft font-semibold text-brand-deep'
                       : 'font-medium text-ink hover:bg-surface',
                   )}
-                  onClick={() => {
+                  onMouseDown={(event) => {
+                    event.preventDefault();
+                  }}
+                  onClick={(event) => {
+                    event.stopPropagation();
                     toggleOption(option.value);
                   }}
                 >
-                  <span className="truncate">{option.label}</span>
-                  {active ? (
-                    <Check className="size-3.5 shrink-0 text-brand-logo" aria-hidden />
-                  ) : null}
+                  <SelectionMark checked={active} />
+                  <span className="min-w-0 flex-1 truncate">{option.label}</span>
                 </button>
               </li>
             );
