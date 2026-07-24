@@ -23,7 +23,7 @@ import { Select } from '@/shared/ui/select';
 import { Textarea } from '@/shared/ui/textarea';
 
 type BankPartnerOption = {
-  companyId: string;
+  partnerCompanyId: string;
   name: string;
 };
 
@@ -68,7 +68,7 @@ export const BankOfferForm = ({
           publicationStatus: initial.publicationStatus,
         }
       : {
-          partnerCompanyId: bankPartners[0]?.companyId ?? '',
+          partnerCompanyId: bankPartners[0]?.partnerCompanyId ?? '',
           title: '',
           shortDescription: '',
           rate: 0,
@@ -129,7 +129,7 @@ export const BankOfferForm = ({
                   }}
                 >
                   {bankPartners.map((partner) => (
-                    <option key={partner.companyId} value={partner.companyId}>
+                    <option key={partner.partnerCompanyId} value={partner.partnerCompanyId}>
                       {partner.name}
                     </option>
                   ))}

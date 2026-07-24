@@ -1,6 +1,7 @@
 import type { PublicPartnerDetail } from '@toonexpo/contracts';
 import { getTranslations } from 'next-intl/server';
 
+import { PartnerBankOffersSection } from '@/features/catalog/components/partner-bank-offers-section';
 import { cn } from '@/shared/ui/cn';
 
 type PartnerDetailContentProps = {
@@ -18,6 +19,7 @@ export const PartnerDetailContent = async ({ partner }: PartnerDetailContentProp
     Boolean(partner.contacts?.email) ||
     Boolean(partner.website) ||
     socialEntries.length > 0;
+  const showBankOffers = partner.type === 'bank' && partner.bankOffers.length > 0;
 
   return (
     <div
@@ -31,6 +33,10 @@ export const PartnerDetailContent = async ({ partner }: PartnerDetailContentProp
           <div className="whitespace-pre-wrap text-base leading-relaxed text-ink-navy">
             {partner.fullDescription}
           </div>
+        ) : null}
+
+        {showBankOffers ? (
+          <PartnerBankOffersSection partnerName={partner.name} offers={partner.bankOffers} />
         ) : null}
 
         {partner.offers.length > 0 ? (

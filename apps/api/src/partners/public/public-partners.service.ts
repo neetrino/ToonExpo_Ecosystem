@@ -1,26 +1,24 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
-import type {
-  PublicPartnerDetail,
-  PublicPartnerListResponse,
-} from "@toonexpo/contracts";
+import { Injectable, NotFoundException } from '@nestjs/common';
+import type { PublicPartnerDetail, PublicPartnerListResponse } from '@toonexpo/contracts';
 import {
   PartnerCompanyStatus,
+  PartnerCompanyType,
   PublicationStatus,
   type Prisma,
-} from "@toonexpo/db";
-import type { SupportedLocale } from "@toonexpo/shared";
+} from '@toonexpo/db';
+import type { SupportedLocale } from '@toonexpo/shared';
 
-import { loadTranslations } from "../../catalog/utils/load-translations.js";
+import { loadTranslations } from '../../catalog/utils/load-translations.js';
 import {
   resolveCatalogLocale,
   resolveTranslatedValue,
   TRANSLATION_ENTITY,
   TRANSLATION_FIELD,
-} from "../../catalog/utils/resolve-translation.js";
-import { PrismaService } from "../../prisma/prisma.service.js";
-import { AnalyticsService } from "../../analytics/analytics.service.js";
-import { toPublicPartnerDetail, toPublicPartnerListItem } from "../mappers/partner.mapper.js";
-import type { ListPublicPartnersQueryDto } from "./dto/list-public-partners.query.dto.js";
+} from '../../catalog/utils/resolve-translation.js';
+import { PrismaService } from '../../prisma/prisma.service.js';
+import { AnalyticsService } from '../../analytics/analytics.service.js';
+import { toPublicPartnerDetail, toPublicPartnerListItem } from '../mappers/partner.mapper.js';
+import type { ListPublicPartnersQueryDto } from './dto/list-public-partners.query.dto.js';
 
 const publicPartnerInclude = {
   logoMedia: { select: { fileUrl: true } },
@@ -34,9 +32,7 @@ export class PublicPartnersService {
     private readonly analytics: AnalyticsService,
   ) {}
 
-  buildPublicWhere(
-    query: ListPublicPartnersQueryDto,
-  ): Prisma.PartnerCompanyWhereInput {
+  buildPublicWhere(query: ListPublicPartnersQueryDto): Prisma.PartnerCompanyWhereInput {
     const where: Prisma.PartnerCompanyWhereInput = {
       status: PartnerCompanyStatus.active,
       publicationStatus: PublicationStatus.published,
@@ -61,7 +57,7 @@ export class PublicPartnersService {
       this.prisma.db.partnerCompany.count({ where }),
       this.prisma.db.partnerCompany.findMany({
         where,
-        orderBy: [{ featured: "desc" }, { name: "asc" }],
+        orderBy: [{ featured: 'desc' }, { name: 'asc' }],
         skip,
         take: query.pageSize,
         include: publicPartnerInclude,
@@ -110,56 +106,59 @@ export class PublicPartnersService {
         ...publicPartnerInclude,
         offers: {
           where: { publicationStatus: PublicationStatus.published },
-          orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+          orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
+        },
+        bankOffers: {
+          where: { publicationStatus: PublicationStatus.published },
+          orderBy: [{ featured: 'desc' }, { sortOrder: 'asc' }, { rate: 'asc' }],
         },
       },
     });
 
     if (!partner) {
-      throw new NotFoundException("Partner not found");
+      throw new NotFoundException('Partner not found');
     }
 
-    const partnerRows = await loadTranslations(
-      this.prisma.db,
-      TRANSLATION_ENTITY.partnerCompany,
-      [partner.id],
-    );
+    const partnerRows = await loadTranslations(this.prisma.db, TRANSLATION_ENTITY.partnerCompany, [
+      partner.id,
+    ]);
     const offerRows = await loadTranslations(
       this.prisma.db,
       TRANSLATION_ENTITY.partnerOffer,
       partner.offers.map((offer) => offer.id),
     );
 
-    const localizedOffers = this.localizeOffers(
-      partner.offers,
-      offerRows,
-      locale,
-    );
+    const localizedOffers = this.localizeOffers(partner.offers, offerRows, locale);
 
     this.analytics.track({
-      eventType: "partner_profile_view",
+      eventType: 'partner_profile_view',
       companyId: partner.id,
     });
 
-    return toPublicPartnerDetail(partner, partner.offers, {
-      shortDescription: resolveTranslatedValue(
-        partnerRows,
-        TRANSLATION_ENTITY.partnerCompany,
-        partner.id,
-        TRANSLATION_FIELD.shortDescription,
-        locale,
-        partner.shortDescription,
-      ),
-      fullDescription: resolveTranslatedValue(
-        partnerRows,
-        TRANSLATION_ENTITY.partnerCompany,
-        partner.id,
-        TRANSLATION_FIELD.fullDescription,
-        locale,
-        partner.fullDescription,
-      ),
-      offerTexts: localizedOffers,
-    });
+    return toPublicPartnerDetail(
+      partner,
+      partner.offers,
+      {
+        shortDescription: resolveTranslatedValue(
+          partnerRows,
+          TRANSLATION_ENTITY.partnerCompany,
+          partner.id,
+          TRANSLATION_FIELD.shortDescription,
+          locale,
+          partner.shortDescription,
+        ),
+        fullDescription: resolveTranslatedValue(
+          partnerRows,
+          TRANSLATION_ENTITY.partnerCompany,
+          partner.id,
+          TRANSLATION_FIELD.fullDescription,
+          locale,
+          partner.fullDescription,
+        ),
+        offerTexts: localizedOffers,
+      },
+      partner.type === PartnerCompanyType.bank ? partner.bankOffers : [],
+    );
   }
 
   private localizeOffers(

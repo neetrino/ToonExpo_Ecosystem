@@ -17,6 +17,7 @@ export const PartnerDetailHero = async ({ partner }: PartnerDetailHeroProps) => 
   const t = await getTranslations('Partners');
   const tCatalog = await getTranslations('Catalog.partnersPage');
   const heroImageUrl = partner.logoUrl ?? partner.coverUrl ?? PARTNER_DEMO_PHOTO_SRC;
+  const showMortgageRate = partner.type === 'bank' && partner.mortgageRate != null;
 
   return (
     <section className="relative isolate flex min-h-[min(72vh,42rem)] flex-col bg-canvas">
@@ -69,6 +70,19 @@ export const PartnerDetailHero = async ({ partner }: PartnerDetailHeroProps) => 
               </span>
             ) : null}
           </h1>
+
+          {showMortgageRate ? (
+            <p
+              aria-label={tCatalog('detail.mortgageRate')}
+              className={cn(
+                'font-brand font-bold text-on-dark',
+                'text-[clamp(1.5rem,1.1rem+1.6vw,2.25rem)]',
+                'leading-none tracking-[-0.02em]',
+              )}
+            >
+              {tCatalog('detail.mortgageRateValue', { rate: partner.mortgageRate })}
+            </p>
+          ) : null}
 
           <p
             className={cn(

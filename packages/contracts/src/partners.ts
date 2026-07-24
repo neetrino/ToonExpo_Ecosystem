@@ -180,6 +180,21 @@ export type PublicPartnerOfferItem = {
   sortOrder: number;
 };
 
+/** Published mortgage terms for a bank partner profile. */
+export type PublicPartnerBankOfferItem = {
+  id: string;
+  title: string;
+  shortDescription: string | null;
+  rate: string;
+  apr: string | null;
+  minDownPaymentPercent: string;
+  termOptionsYears: number[];
+  fees: string | null;
+  calculationNotes: string | null;
+  featured: boolean;
+  sortOrder: number;
+};
+
 export type PublicPartnerDetail = {
   id: string;
   type: PartnerCompanyType;
@@ -194,4 +209,13 @@ export type PublicPartnerDetail = {
   coverUrl: string | null;
   featured: boolean;
   offers: PublicPartnerOfferItem[];
+  /**
+   * Published BankOffer rows for bank partners; empty for other types.
+   */
+  bankOffers: PublicPartnerBankOfferItem[];
+  /**
+   * Primary published mortgage rate (%) for bank partners; otherwise null.
+   * Sourced from BankOffer (mortgage module), not PartnerOffer.
+   */
+  mortgageRate: string | null;
 };

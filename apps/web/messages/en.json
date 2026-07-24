@@ -625,7 +625,11 @@
         "contactsTitle": "Contacts",
         "phone": "Phone",
         "email": "Email",
-        "website": "Website"
+        "website": "Website",
+        "mortgageRate": "Mortgage rate",
+        "mortgageRateValue": "{rate}%",
+        "bankOffersTitle": "Mortgage offers",
+        "mortgageCalculatorCta": "Open calculator →"
       }
     }
   },

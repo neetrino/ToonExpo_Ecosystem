@@ -625,7 +625,11 @@
         "contactsTitle": "Կոնտակտներ",
         "phone": "Հեռախոս",
         "email": "Էլ․ փոստ",
-        "website": "Կայք"
+        "website": "Կայք",
+        "mortgageRate": "Հիփոթեքի տոկոսադրույք",
+        "mortgageRateValue": "{rate}%",
+        "bankOffersTitle": "Հիփոթեքային առաջարկներ",
+        "mortgageCalculatorCta": "Բացել հաշվիչը →"
       }
     }
   },

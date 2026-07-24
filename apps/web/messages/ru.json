@@ -625,7 +625,11 @@
         "contactsTitle": "Контакты",
         "phone": "Телефон",
         "email": "Email",
-        "website": "Сайт"
+        "website": "Сайт",
+        "mortgageRate": "Ипотечная ставка",
+        "mortgageRateValue": "{rate}%",
+        "bankOffersTitle": "Ипотечные предложения",
+        "mortgageCalculatorCta": "Открыть калькулятор →"
       }
     }
   },

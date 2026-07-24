@@ -57,11 +57,11 @@ export const BankOffersListPage = () => {
     const partners = partnersQuery.data?.data ?? [];
     return partners
       .filter((partner) => partner.type === 'bank')
+      .filter((partner) => companies.some((company) => company.id === partner.companyId))
       .map((partner) => ({
-        companyId: partner.companyId,
+        partnerCompanyId: partner.id,
         name: partner.name,
-      }))
-      .filter((item) => companies.some((company) => company.id === item.companyId));
+      }));
   }, [companiesQuery.data, partnersQuery.data]);
 
   const filteredOffers = useMemo(() => {
@@ -106,7 +106,7 @@ export const BankOffersListPage = () => {
           >
             <option value="">{t('filters.allBanks')}</option>
             {bankPartners.map((partner) => (
-              <option key={partner.companyId} value={partner.companyId}>
+              <option key={partner.partnerCompanyId} value={partner.partnerCompanyId}>
                 {partner.name}
               </option>
             ))}
