@@ -95,7 +95,7 @@ export const AdminDeleteModal = ({
         tabIndex={-1}
         aria-label={resolvedCancel}
         className={cn(
-          'absolute inset-0 cursor-default rounded-none bg-ink/40',
+          'absolute inset-0 cursor-default rounded-none bg-ink/70 backdrop-blur-[2px]',
           backdropMotionClass,
         )}
         disabled={actionsDisabled}
