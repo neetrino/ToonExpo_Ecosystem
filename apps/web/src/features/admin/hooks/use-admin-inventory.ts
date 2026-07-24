@@ -191,13 +191,22 @@ export const useAdminBulkCreateApartmentsMutation = () => {
     mutationFn: (input: {
       companyId: string;
       floorId: string;
+      buildingId?: string;
       body: BulkCreatePortalApartmentsRequest;
     }) =>
       bulkCreatePortalApartments(input.floorId, input.body, {
         scope: adminCatalogScope(input.companyId),
       }),
-    onSuccess: () => {
+    onSuccess: (_result, input) => {
       invalidateAdminInventory(queryClient);
+      void queryClient.invalidateQueries({
+        queryKey: ['admin', 'floors', input.floorId, 'apartments'],
+      });
+      if (input.buildingId) {
+        void queryClient.invalidateQueries({
+          queryKey: adminBuildingInventoryGlanceQueryKey(input.buildingId),
+        });
+      }
     },
   });
 };

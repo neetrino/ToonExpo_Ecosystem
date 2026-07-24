@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import { useTranslations } from 'next-intl';
 
 import { lockBodyScroll, unlockBodyScroll } from '@/shared/ui/body-scroll-lock';
+import { isFloorPlanLightboxOpen } from '@/shared/ui/floor-plan-lightbox-stack';
 import { DrawerCloseTab } from '@/shared/ui/drawer-close-tab';
 import { cn } from '@/shared/ui/cn';
 import { isTopSideSheetLevel, registerSideSheetLevel } from '@/shared/ui/side-sheet-escape-stack';
@@ -210,6 +211,9 @@ export const SideSheet = ({
     const unregister = registerSideSheetLevel(stackLevel);
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== 'Escape' || event.defaultPrevented) {
+        return;
+      }
+      if (isFloorPlanLightboxOpen()) {
         return;
       }
       if (!isTopSideSheetLevel(stackLevel)) {

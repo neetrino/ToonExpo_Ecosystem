@@ -1,22 +1,17 @@
 'use client';
 
 import type {
-  AdminBuildingInventoryFloor,
   AdminBuildingInventoryGlance,
   ApartmentAvailabilitySummary,
 } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 
+import { FloorPlanGlanceIcon } from '@/features/admin/components/floor-plan-glance-icon';
 import { cn } from '@/shared/ui/cn';
 
 type AdminBuildingInventoryGlanceProps = {
   glance: AdminBuildingInventoryGlance;
   onSelectFloor: (floorId: string) => void;
-};
-
-const floorLabel = (floor: AdminBuildingInventoryFloor, fallback: string): string => {
-  const named = floor.displayLabel?.trim() || floor.name?.trim();
-  return named || fallback;
 };
 
 const segmentPercent = (count: number, total: number): number => {
@@ -63,31 +58,44 @@ export const AdminBuildingInventoryGlanceCard = ({
         <p className="mt-6 text-sm text-ink-secondary">{t('noFloors')}</p>
       ) : (
         <ul className="mt-6 flex flex-col gap-1.5">
-          {glance.floors.map((floor) => (
-            <li key={floor.id}>
-              <button
-                type="button"
-                className={cn(
-                  'flex w-full items-center gap-3 rounded-md px-2 py-1.5 text-left',
-                  'transition-colors hover:bg-brand-soft/40',
-                )}
-                onClick={() => {
-                  onSelectFloor(floor.id);
-                }}
-              >
-                <span className="shrink-0 whitespace-nowrap text-xs font-bold text-ink-muted">
-                  {floorLabel(floor, t('floorCode', { number: floor.number }))}
-                </span>
-                <FloorSalesBar availability={floor.availability} />
-                <span className="w-10 shrink-0 text-right text-xs text-ink-muted">
-                  {t('availableOfTotal', {
-                    available: floor.availability.available,
-                    total: floor.availability.total,
-                  })}
-                </span>
-              </button>
-            </li>
-          ))}
+          {glance.floors.map((floor) => {
+            const hasFloorplan = Boolean(floor.floorplanMediaId ?? floor.floorplan);
+            return (
+              <li key={floor.id}>
+                <div className="flex w-full items-center gap-1.5">
+                  <button
+                    type="button"
+                    className={cn(
+                      'flex min-w-0 flex-1 items-center gap-3 rounded-md px-2 py-1.5 text-left',
+                      'transition-colors hover:bg-brand-soft/40',
+                    )}
+                    onClick={() => {
+                      onSelectFloor(floor.id);
+                    }}
+                  >
+                    <span className="min-w-20 shrink-0 whitespace-nowrap text-xs font-bold text-ink-muted">
+                      {t('floorCode', { number: floor.number })}
+                    </span>
+                    <FloorSalesBar availability={floor.availability} />
+                    <span className="w-10 shrink-0 text-right text-xs text-ink-muted">
+                      {t('availableOfTotal', {
+                        available: floor.availability.available,
+                        total: floor.availability.total,
+                      })}
+                    </span>
+                  </button>
+                  <span className="inline-flex shrink-0 items-center justify-center pr-1">
+                    <FloorPlanGlanceIcon
+                      hasFloorplan={hasFloorplan}
+                      companyId={glance.builderCompanyId}
+                      buildingId={glance.id}
+                      floorId={floor.id}
+                    />
+                  </span>
+                </div>
+              </li>
+            );
+          })}
         </ul>
       )}
     </div>
