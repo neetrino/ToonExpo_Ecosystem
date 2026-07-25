@@ -97,7 +97,10 @@
         "newBuilds": "Նոր շինություններ"
       },
       "locationLabel": "Վայր",
-      "locationPlaceholder": "Քաղաք, թաղամաս կամ շենքի անուն",
+      "locationPlaceholder": "Ընտրել քաղաք",
+      "locationAny": "Ցանկացած վայր",
+      "locationSearch": "Որոնել քաղաք…",
+      "locationEmpty": "Քաղաք չի գտնվել",
       "priceLabel": "Գին",
       "priceAny": "Ցանկացած գին",
       "priceMin": "Նվազագույն",

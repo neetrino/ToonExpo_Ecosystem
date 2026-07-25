@@ -97,7 +97,10 @@
         "newBuilds": "New Builds"
       },
       "locationLabel": "Location",
-      "locationPlaceholder": "City, district, or building name",
+      "locationPlaceholder": "Select a city",
+      "locationAny": "Any location",
+      "locationSearch": "Search city…",
+      "locationEmpty": "No cities found",
       "priceLabel": "Price",
       "priceAny": "Any price",
       "priceMin": "Minimum",

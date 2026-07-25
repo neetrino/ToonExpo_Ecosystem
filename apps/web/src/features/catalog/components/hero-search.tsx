@@ -4,13 +4,17 @@ import { useTranslations } from 'next-intl';
 import { useState, type FormEvent } from 'react';
 
 import { HeroSearchTabs, type HeroSearchTab } from '@/features/catalog/components/hero-search-tabs';
+import { LocationSearchSelect } from '@/features/catalog/components/location-search-select';
 import { PriceRangeSelect } from '@/features/catalog/components/price-range-select';
+import { mergeLocationOptions } from '@/features/catalog/utils/location-options';
 import { Link, useRouter } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 import { MultiListboxSelect } from '@/shared/ui/multi-listbox-select';
 
 type HeroSearchProps = {
   className?: string | undefined;
+  /** Cities from published catalog projects. */
+  locations?: readonly string[] | undefined;
 };
 
 const BED_OPTIONS = [1, 2, 3, 4] as const;
@@ -21,7 +25,7 @@ const POPULAR_CITY_KEYS = ['yerevan', 'gyumri', 'vanadzor', 'dilijan', 'tsaghkad
  * Marketplace search card — Buy / Rent / New Builds tabs with location filters.
  * Stacks cleanly on small screens; desktop keeps the Figma horizontal row.
  */
-export const HeroSearch = ({ className }: HeroSearchProps) => {
+export const HeroSearch = ({ className, locations = [] }: HeroSearchProps) => {
   const t = useTranslations('HomePage.hero');
   const router = useRouter();
   const [tab, setTab] = useState<HeroSearchTab>('buy');
@@ -29,6 +33,9 @@ export const HeroSearch = ({ className }: HeroSearchProps) => {
   const [minPrice, setMinPrice] = useState<number | null>(null);
   const [maxPrice, setMaxPrice] = useState<number | null>(null);
   const [rooms, setRooms] = useState<string[]>([]);
+
+  const popularCities = POPULAR_CITY_KEYS.map((key) => t(`popularCities.${key}`));
+  const locationOptions = mergeLocationOptions(locations, popularCities);
 
   const bedOptions = BED_OPTIONS.map((count) => ({
     value: String(count),
@@ -68,19 +75,23 @@ export const HeroSearch = ({ className }: HeroSearchProps) => {
         />
 
         <div className="grid grid-cols-1 gap-2 p-3 lg:grid-cols-[minmax(11rem,15rem)_auto_auto_auto] lg:items-center">
-          <label className="flex min-w-0 flex-col gap-1 px-3 py-2">
+          <div className="flex min-w-0 flex-col gap-1 px-3 py-2">
             <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-header-muted">
               {t('locationLabel')}
             </span>
-            <input
-              type="search"
-              name="city"
+            <LocationSearchSelect
               value={location}
-              onChange={(event) => setLocation(event.target.value)}
-              placeholder={t('locationPlaceholder')}
-              className="w-full min-w-0 border-none bg-transparent p-0 text-sm font-medium text-ink-navy outline-none placeholder:text-ink-muted"
+              options={locationOptions}
+              aria-label={t('locationLabel')}
+              labels={{
+                any: t('locationAny'),
+                placeholder: t('locationPlaceholder'),
+                search: t('locationSearch'),
+                empty: t('locationEmpty'),
+              }}
+              onChange={setLocation}
             />
-          </label>
+          </div>
 
           <div className="flex min-w-0 flex-col gap-1 border-t border-header-border px-3 py-2 lg:border-t-0 lg:border-l">
             <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-header-muted">

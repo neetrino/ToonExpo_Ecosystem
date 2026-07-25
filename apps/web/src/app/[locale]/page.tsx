@@ -9,6 +9,7 @@ import { HomeHero } from '@/features/catalog/components/home-hero';
 import { HomeMortgage } from '@/features/catalog/components/home-mortgage';
 import { HomeStats } from '@/features/catalog/components/home-stats';
 import { SiteFooter } from '@/features/catalog/components/site-footer';
+import { collectProjectCities } from '@/features/catalog/utils/location-options';
 
 type HomePageProps = {
   params: Promise<{ locale: string }>;
@@ -56,9 +57,11 @@ export default async function HomePage({ params }: HomePageProps) {
           )
         ).data;
 
+  const locations = collectProjectCities([...projectsResponse.data, ...exploreProjects]);
+
   return (
     <div className="min-h-screen bg-canvas">
-      <HomeHero />
+      <HomeHero locations={locations} />
       <HomeStats
         projects={projectsResponse.data}
         builderCount={builders.length}

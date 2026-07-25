@@ -97,7 +97,10 @@
         "newBuilds": "Новостройки"
       },
       "locationLabel": "Локация",
-      "locationPlaceholder": "Город, район или название здания",
+      "locationPlaceholder": "Выберите город",
+      "locationAny": "Любая локация",
+      "locationSearch": "Поиск города…",
+      "locationEmpty": "Город не найден",
       "priceLabel": "Цена",
       "priceAny": "Любая цена",
       "priceMin": "Минимальная",
