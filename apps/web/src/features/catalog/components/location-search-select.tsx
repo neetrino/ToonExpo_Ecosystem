@@ -85,7 +85,7 @@ export const LocationSearchSelect = ({
   const displayLabel = value.length > 0 ? value : labels.placeholder;
 
   return (
-    <div ref={rootRef} className="relative min-w-0">
+    <div ref={rootRef} className="relative w-full min-w-0">
       <button
         ref={buttonRef}
         type="button"
@@ -117,11 +117,11 @@ export const LocationSearchSelect = ({
         />
       </button>
 
-      <DropdownPortal open={open} anchorRef={buttonRef} matchWidth>
+      <DropdownPortal open={open} anchorRef={rootRef} exactWidth>
         <div
           ref={panelRef}
           className={cn(
-            'w-[min(20rem,calc(100vw-2rem))] overflow-hidden',
+            'w-full overflow-hidden',
             'rounded-[12px] border border-header-border bg-surface-elevated shadow-md',
             'animate-[locale-dropdown-in_var(--duration-base)_var(--ease-out-premium)]',
           )}

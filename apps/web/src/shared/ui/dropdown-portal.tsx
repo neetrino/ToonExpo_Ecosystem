@@ -27,6 +27,8 @@ type DropdownPortalProps = {
   align?: 'start' | 'end' | undefined;
   /** Match trigger width at minimum (field selects). */
   matchWidth?: boolean | undefined;
+  /** Force menu width to equal the trigger (no wider overflow). */
+  exactWidth?: boolean | undefined;
 };
 
 type Align = 'start' | 'end';
@@ -108,10 +110,12 @@ const computeMenuCoords = (
   anchor: HTMLElement,
   menu: HTMLDivElement | null,
   align: Align,
+  lockWidthToAnchor: boolean,
 ): { host: HTMLElement; coords: MenuCoords } | null => {
   const stage = findStage(anchor);
   const anchorRect = anchor.getBoundingClientRect();
-  const menuWidth = menu?.offsetWidth ?? 0;
+  const anchorWidth = anchor.offsetWidth;
+  const menuWidth = lockWidthToAnchor ? anchorWidth : (menu?.offsetWidth ?? 0);
   const menuHeight = measureMenuHeight(menu);
 
   // In-flow triggers: portal into the zoomed stage in design px — no transform:scale.
@@ -131,13 +135,14 @@ const computeMenuCoords = (
     const spaceAbove = Math.min(spaceAboveStage, spaceAboveViewport);
     const openUp = shouldOpenUpward(spaceBelow, spaceAbove, menuHeight);
     const maxHeight = Math.max(120, openUp ? spaceAbove : spaceBelow);
-    const width = menuWidth;
-    let left = align === 'end' ? local.right - width : local.left;
-    const stageLayoutWidth = stage.offsetWidth;
-    left = Math.max(
-      VIEWPORT_EDGE_PAD_PX,
-      Math.min(left, stageLayoutWidth - VIEWPORT_EDGE_PAD_PX - width),
-    );
+    let left = align === 'end' ? local.right - menuWidth : local.left;
+    if (!lockWidthToAnchor) {
+      const stageLayoutWidth = stage.offsetWidth;
+      left = Math.max(
+        VIEWPORT_EDGE_PAD_PX,
+        Math.min(left, stageLayoutWidth - VIEWPORT_EDGE_PAD_PX - menuWidth),
+      );
+    }
     const top = openUp
       ? local.top - MENU_GAP_PX - Math.min(menuHeight || MENU_HEIGHT_ESTIMATE_PX, maxHeight)
       : local.bottom + MENU_GAP_PX;
@@ -148,7 +153,7 @@ const computeMenuCoords = (
         position: 'absolute',
         top,
         left,
-        width: anchor.offsetWidth,
+        width: anchorWidth,
         maxHeight,
         placement: openUp ? 'top' : 'bottom',
       },
@@ -163,7 +168,9 @@ const computeMenuCoords = (
   const openUp = shouldOpenUpward(spaceBelow, spaceAbove, menuHeight);
   const maxHeight = Math.max(120, openUp ? spaceAbove : spaceBelow);
   let left = align === 'end' ? anchorRect.right - menuWidth : anchorRect.left;
-  left = Math.max(VIEWPORT_EDGE_PAD_PX, Math.min(left, viewW - VIEWPORT_EDGE_PAD_PX - menuWidth));
+  if (!lockWidthToAnchor) {
+    left = Math.max(VIEWPORT_EDGE_PAD_PX, Math.min(left, viewW - VIEWPORT_EDGE_PAD_PX - menuWidth));
+  }
   const top = openUp
     ? anchorRect.top - MENU_GAP_PX - Math.min(menuHeight || MENU_HEIGHT_ESTIMATE_PX, maxHeight)
     : anchorRect.bottom + MENU_GAP_PX;
@@ -174,7 +181,7 @@ const computeMenuCoords = (
       position: 'fixed',
       top,
       left,
-      width: anchor.offsetWidth,
+      width: anchorWidth,
       maxHeight,
       placement: openUp ? 'top' : 'bottom',
     },
@@ -210,6 +217,7 @@ export const DropdownPortal = ({
   className,
   align = 'start',
   matchWidth = false,
+  exactWidth = false,
 }: DropdownPortalProps) => {
   const [mounted, setMounted] = useState(false);
   const [placement, setPlacement] = useState<{ host: HTMLElement; coords: MenuCoords } | null>(
@@ -232,7 +240,7 @@ export const DropdownPortal = ({
       if (!anchor) {
         return;
       }
-      const next = computeMenuCoords(anchor, portalRef.current, align);
+      const next = computeMenuCoords(anchor, portalRef.current, align, exactWidth);
       if (!next) {
         return;
       }
@@ -247,6 +255,9 @@ export const DropdownPortal = ({
     if (portalRef.current) {
       resizeObserver.observe(portalRef.current);
     }
+    if (anchorRef.current) {
+      resizeObserver.observe(anchorRef.current);
+    }
     window.addEventListener('scroll', update, true);
     window.addEventListener('resize', update);
     return () => {
@@ -255,7 +266,7 @@ export const DropdownPortal = ({
       window.removeEventListener('scroll', update, true);
       window.removeEventListener('resize', update);
     };
-  }, [open, anchorRef, align]);
+  }, [open, anchorRef, align, exactWidth]);
 
   if (!mounted || !open) {
     return null;
@@ -273,7 +284,11 @@ export const DropdownPortal = ({
         position: coords.position,
         top: coords.top,
         left: coords.left,
-        ...(matchWidth ? { minWidth: coords.width } : {}),
+        ...(exactWidth
+          ? { width: coords.width, maxWidth: coords.width }
+          : matchWidth
+            ? { minWidth: coords.width }
+            : {}),
         maxHeight: coords.maxHeight,
       }
     : {
