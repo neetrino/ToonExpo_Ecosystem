@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import { useState, type FormEvent } from 'react';
 
 import { HeroSearchTabs, type HeroSearchTab } from '@/features/catalog/components/hero-search-tabs';
+import { PriceRangeSelect } from '@/features/catalog/components/price-range-select';
 import { Link, useRouter } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 import { ListboxSelect } from '@/shared/ui/listbox-select';
@@ -12,17 +13,7 @@ type HeroSearchProps = {
   className?: string | undefined;
 };
 
-/** Hero price buckets in AMD (matches catalog storage currency). */
-const DEFAULT_MIN_PRICE = 100_000_000;
-const DEFAULT_MAX_PRICE = 200_000_000;
 const DEFAULT_ROOMS = 2;
-
-const PRICE_OPTIONS = [
-  { min: 0, max: 50_000_000, labelKey: 'priceUnder50m' as const },
-  { min: 50_000_000, max: 100_000_000, labelKey: 'price50to100m' as const },
-  { min: 100_000_000, max: 200_000_000, labelKey: 'price100to200m' as const },
-  { min: 200_000_000, max: undefined, labelKey: 'priceOver200m' as const },
-] as const;
 
 const BED_OPTIONS = [1, 2, 3, 4] as const;
 
@@ -37,13 +28,9 @@ export const HeroSearch = ({ className }: HeroSearchProps) => {
   const router = useRouter();
   const [tab, setTab] = useState<HeroSearchTab>('buy');
   const [location, setLocation] = useState('');
-  const [priceKey, setPriceKey] = useState<string>('price100to200m');
+  const [minPrice, setMinPrice] = useState<number | null>(null);
+  const [maxPrice, setMaxPrice] = useState<number | null>(null);
   const [rooms, setRooms] = useState(DEFAULT_ROOMS);
-
-  const priceOptions = PRICE_OPTIONS.map((option) => ({
-    value: option.labelKey,
-    label: t(option.labelKey),
-  }));
 
   const bedOptions = BED_OPTIONS.map((count) => ({
     value: String(count),
@@ -52,7 +39,13 @@ export const HeroSearch = ({ className }: HeroSearchProps) => {
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    router.push(buildProjectsHref(location, priceKey, rooms, tab));
+    router.push(buildProjectsHref(location, minPrice, maxPrice, rooms, tab));
+  };
+
+  const applyPriceRange = (nextMin: number | null, nextMax: number | null): void => {
+    setMinPrice(nextMin);
+    setMaxPrice(nextMax);
+    router.push(buildProjectsHref(location, nextMin, nextMax, rooms, tab));
   };
 
   return (
@@ -95,13 +88,17 @@ export const HeroSearch = ({ className }: HeroSearchProps) => {
             <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-header-muted">
               {t('priceLabel')}
             </span>
-            <ListboxSelect
-              name="price"
-              aria-label={t('priceLabel')}
-              value={priceKey}
-              options={priceOptions}
-              size="fit"
-              onChange={setPriceKey}
+            <PriceRangeSelect
+              minPrice={minPrice}
+              maxPrice={maxPrice}
+              labels={{
+                any: t('priceAny'),
+                min: t('priceMin'),
+                max: t('priceMax'),
+                save: t('priceSave'),
+                invalidRange: t('priceInvalidRange'),
+              }}
+              onApply={applyPriceRange}
             />
           </div>
 
@@ -163,7 +160,8 @@ export const HeroSearch = ({ className }: HeroSearchProps) => {
 
 const buildProjectsHref = (
   location: string,
-  priceKey: string,
+  minPrice: number | null,
+  maxPrice: number | null,
   rooms: number,
   tab: HeroSearchTab,
 ): string => {
@@ -173,17 +171,11 @@ const buildProjectsHref = (
     params.set('city', trimmed);
   }
 
-  const price = PRICE_OPTIONS.find((option) => option.labelKey === priceKey);
-  if (price) {
-    if (price.min > 0) {
-      params.set('minPrice', String(price.min));
-    }
-    if (price.max != null) {
-      params.set('maxPrice', String(price.max));
-    }
-  } else {
-    params.set('minPrice', String(DEFAULT_MIN_PRICE));
-    params.set('maxPrice', String(DEFAULT_MAX_PRICE));
+  if (minPrice != null) {
+    params.set('minPrice', String(minPrice));
+  }
+  if (maxPrice != null) {
+    params.set('maxPrice', String(maxPrice));
   }
 
   if (rooms > 0) {
