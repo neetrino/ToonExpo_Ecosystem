@@ -30,12 +30,26 @@ export const ProjectFiltersForm = ({ filters }: ProjectFiltersFormProps) => {
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
         <label className="flex flex-col gap-1.5 text-xs font-medium text-ink-secondary">
           {t('filters.rooms')}
-          <Select name="rooms" defaultValue={filters.rooms != null ? String(filters.rooms) : ''}>
+          <Select
+            name="rooms"
+            defaultValue={
+              filters.rooms != null && filters.rooms.length === 1
+                ? String(filters.rooms[0])
+                : filters.rooms != null && filters.rooms.length > 1
+                  ? filters.rooms.join(',')
+                  : ''
+            }
+          >
             <option value="">{t('filters.any')}</option>
             <option value="1">1</option>
             <option value="2">2</option>
             <option value="3">3</option>
             <option value="4">4+</option>
+            {filters.rooms != null && filters.rooms.length > 1 ? (
+              <option value={filters.rooms.join(',')}>
+                {filters.rooms.map((count) => (count >= 4 ? '4+' : String(count))).join(', ')}
+              </option>
+            ) : null}
           </Select>
         </label>
 

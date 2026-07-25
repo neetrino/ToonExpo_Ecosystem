@@ -1,8 +1,9 @@
 'use client';
 
 import { Check, ChevronDown } from 'lucide-react';
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 
+import { blurActiveElementAfterEscClose } from '@/shared/ui/blur-active-element';
 import { cn } from '@/shared/ui/cn';
 import { DropdownPortal } from '@/shared/ui/dropdown-portal';
 import type { ListboxOption } from '@/shared/ui/listbox-select';
@@ -18,6 +19,10 @@ type MultiListboxSelectProps = {
   className?: string | undefined;
   id?: string | undefined;
   disabled?: boolean | undefined;
+  /** `plain` = hero search; `field` = bordered form control. */
+  variant?: 'plain' | 'field' | undefined;
+  /** `full` stretches; `fit` matches content width. */
+  size?: 'full' | 'fit' | undefined;
 };
 
 const SelectionMark = ({ checked }: { checked: boolean }) => (
@@ -46,13 +51,31 @@ export const MultiListboxSelect = ({
   className,
   id,
   disabled = false,
+  variant = 'field',
+  size = 'full',
 }: MultiListboxSelectProps) => {
   const [open, setOpen] = useState(false);
+  const [fitWidthPx, setFitWidthPx] = useState<number | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const measureRef = useRef<HTMLUListElement>(null);
   const listId = useId();
   const isAll = values.length === 0;
+  const isField = variant === 'field';
+  const isFit = size === 'fit';
+
+  useLayoutEffect(() => {
+    if (!isFit) {
+      setFitWidthPx(null);
+      return;
+    }
+    const node = measureRef.current;
+    if (!node) {
+      return;
+    }
+    setFitWidthPx(Math.ceil(node.getBoundingClientRect().width));
+  }, [isFit, options, allLabel, values]);
 
   useEffect(() => {
     if (!open) {
@@ -76,6 +99,7 @@ export const MultiListboxSelect = ({
     const onKeyDown = (event: KeyboardEvent): void => {
       if (event.key === 'Escape') {
         setOpen(false);
+        blurActiveElementAfterEscClose();
       }
     };
 
@@ -94,6 +118,12 @@ export const MultiListboxSelect = ({
     if (values.length === 1) {
       return options.find((option) => option.value === values[0])?.label ?? selectedCountLabel(1);
     }
+    const labels = values
+      .map((value) => options.find((option) => option.value === value)?.label)
+      .filter((label): label is string => label != null);
+    if (labels.length > 0 && labels.length <= 3) {
+      return labels.join(', ');
+    }
     return selectedCountLabel(values.length);
   })();
 
@@ -107,8 +137,7 @@ export const MultiListboxSelect = ({
       return;
     }
     if (values.includes(value)) {
-      const next = values.filter((item) => item !== value);
-      onChange(next);
+      onChange(values.filter((item) => item !== value));
       return;
     }
     const next = [...values, value];
@@ -120,19 +149,58 @@ export const MultiListboxSelect = ({
   };
 
   return (
-    <div ref={rootRef} className={cn('relative w-full min-w-0', className)}>
+    <div
+      ref={rootRef}
+      className={cn(
+        'relative min-w-0',
+        isField && (isFit ? 'w-fit max-w-full' : 'w-full'),
+        !isField && className,
+      )}
+    >
+      {isFit ? (
+        <ul
+          ref={measureRef}
+          aria-hidden
+          className="pointer-events-none invisible absolute left-0 top-0 -z-10 w-max py-1.5"
+        >
+          <li>
+            <span className="flex items-center gap-3 px-3 py-2.5 text-sm font-semibold whitespace-nowrap">
+              <SelectionMark checked />
+              <span>{allLabel}</span>
+            </span>
+          </li>
+          {options.map((option) => (
+            <li key={option.value}>
+              <span className="flex items-center gap-3 px-3 py-2.5 text-sm font-semibold whitespace-nowrap">
+                <SelectionMark checked />
+                <span>{option.label}</span>
+              </span>
+            </li>
+          ))}
+        </ul>
+      ) : null}
       <button
         ref={buttonRef}
         id={id}
         type="button"
         disabled={disabled}
+        style={isFit && fitWidthPx != null ? { width: fitWidthPx } : undefined}
         className={cn(
-          'flex h-11 w-full items-center justify-between gap-2 rounded-sm border border-border',
-          'bg-surface-elevated px-4 text-left text-base text-ink sm:text-sm',
-          'transition-[border-color,box-shadow,background-color] duration-[var(--duration-fast)]',
-          'hover:border-border-strong focus-visible:border-brand focus-visible:outline-none',
-          'focus-visible:ring-2 focus-visible:ring-brand/20',
+          'flex min-w-0 items-center justify-between gap-2 text-left',
+          isFit ? 'w-max max-w-full' : 'w-full',
+          'transition-colors duration-[var(--duration-fast)]',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/25',
           'disabled:cursor-not-allowed disabled:opacity-50',
+          isField
+            ? cn(
+                'h-11 rounded-sm border border-border bg-surface-elevated px-4',
+                'text-base text-ink sm:text-sm',
+                'transition-[border-color,box-shadow,background-color] duration-[var(--duration-fast)]',
+                'hover:border-border-strong focus-visible:border-brand focus-visible:ring-brand/20',
+                className,
+              )
+            : cn('bg-transparent p-0 text-sm font-medium text-ink-navy', 'hover:text-brand-deep'),
+          !isField && open && 'text-brand-deep',
         )}
         aria-label={ariaLabel}
         aria-haspopup="listbox"
@@ -145,11 +213,13 @@ export const MultiListboxSelect = ({
           setOpen((current) => !current);
         }}
       >
-        <span className="truncate">{displayLabel}</span>
+        <span className={cn(isFit ? 'whitespace-nowrap' : 'truncate')}>{displayLabel}</span>
         <ChevronDown
           className={cn(
-            'size-4 shrink-0 text-brand transition-transform duration-[var(--duration-base)]',
+            'size-4 shrink-0 transition-transform duration-[var(--duration-base)] ease-[var(--ease-out-premium)]',
+            isField ? 'text-brand' : 'text-header-muted',
             open && 'rotate-180',
+            open && !isField && 'text-brand-deep',
           )}
           aria-hidden
         />

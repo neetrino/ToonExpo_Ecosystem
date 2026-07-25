@@ -237,7 +237,7 @@ export type ListProjectsQuery = {
   salesStatus?: ApartmentSalesStatus;
   minPrice?: number;
   maxPrice?: number;
-  rooms?: number;
+  rooms?: number[];
   city?: string;
   builderId?: string;
   /** Catalog content locale (`hy` | `ru` | `en`). Falls back to Armenian. */

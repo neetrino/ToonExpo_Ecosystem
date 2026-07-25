@@ -81,7 +81,13 @@ export const BuyApartmentsFilters = ({ filters, cities }: BuyApartmentsFiltersPr
           <Select
             name="rooms"
             size="fit"
-            defaultValue={filters.rooms != null ? String(filters.rooms) : ''}
+            defaultValue={
+              filters.rooms != null && filters.rooms.length === 1
+                ? String(filters.rooms[0])
+                : filters.rooms != null && filters.rooms.length > 1
+                  ? filters.rooms.join(',')
+                  : ''
+            }
             className={cn(filterControlClassName, 'min-w-[5.5rem]')}
             aria-label={t('filters.beds')}
           >
@@ -90,6 +96,11 @@ export const BuyApartmentsFilters = ({ filters, cities }: BuyApartmentsFiltersPr
             <option value="2">2</option>
             <option value="3">3</option>
             <option value="4">4+</option>
+            {filters.rooms != null && filters.rooms.length > 1 ? (
+              <option value={filters.rooms.join(',')}>
+                {filters.rooms.map((count) => (count >= 4 ? '4+' : String(count))).join(', ')}
+              </option>
+            ) : null}
           </Select>
         </FilterField>
 

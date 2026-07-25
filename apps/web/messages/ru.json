@@ -105,7 +105,10 @@
       "priceSave": "Сохранить и показать",
       "priceInvalidRange": "Минимальная цена не может превышать максимальную",
       "bedsLabel": "Спальни",
-      "bedsValue": "{count}+",
+      "bedsAny": "Любое",
+      "bedsValue": "{count}",
+      "bedsFourPlus": "4+",
+      "bedsSelectedCount": "{count} выбрано",
       "popular": "Популярное:",
       "popularCities": {
         "yerevan": "Ереван",

@@ -105,7 +105,10 @@
       "priceSave": "Պահպանել և ցուցադրել",
       "priceInvalidRange": "Նվազագույն գինը չի կարող գերազանցել առավելագույնը",
       "bedsLabel": "Սենյակներ",
-      "bedsValue": "{count}+",
+      "bedsAny": "Ցանկացած",
+      "bedsValue": "{count}",
+      "bedsFourPlus": "4+",
+      "bedsSelectedCount": "{count} ընտրված",
       "popular": "Հանրաճանաչ՝",
       "popularCities": {
         "yerevan": "Երևան",

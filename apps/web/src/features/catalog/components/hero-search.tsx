@@ -7,13 +7,11 @@ import { HeroSearchTabs, type HeroSearchTab } from '@/features/catalog/component
 import { PriceRangeSelect } from '@/features/catalog/components/price-range-select';
 import { Link, useRouter } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
-import { ListboxSelect } from '@/shared/ui/listbox-select';
+import { MultiListboxSelect } from '@/shared/ui/multi-listbox-select';
 
 type HeroSearchProps = {
   className?: string | undefined;
 };
-
-const DEFAULT_ROOMS = 2;
 
 const BED_OPTIONS = [1, 2, 3, 4] as const;
 
@@ -30,11 +28,11 @@ export const HeroSearch = ({ className }: HeroSearchProps) => {
   const [location, setLocation] = useState('');
   const [minPrice, setMinPrice] = useState<number | null>(null);
   const [maxPrice, setMaxPrice] = useState<number | null>(null);
-  const [rooms, setRooms] = useState(DEFAULT_ROOMS);
+  const [rooms, setRooms] = useState<string[]>([]);
 
   const bedOptions = BED_OPTIONS.map((count) => ({
     value: String(count),
-    label: t('bedsValue', { count }),
+    label: count >= 4 ? t('bedsFourPlus') : t('bedsValue', { count }),
   }));
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -106,13 +104,15 @@ export const HeroSearch = ({ className }: HeroSearchProps) => {
             <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-header-muted">
               {t('bedsLabel')}
             </span>
-            <ListboxSelect
-              name="rooms"
+            <MultiListboxSelect
               aria-label={t('bedsLabel')}
-              value={String(rooms)}
+              values={rooms}
               options={bedOptions}
+              allLabel={t('bedsAny')}
+              selectedCountLabel={(count) => t('bedsSelectedCount', { count })}
+              variant="plain"
               size="fit"
-              onChange={(next) => setRooms(Number.parseInt(next, 10))}
+              onChange={setRooms}
             />
           </div>
 
@@ -162,7 +162,7 @@ const buildProjectsHref = (
   location: string,
   minPrice: number | null,
   maxPrice: number | null,
-  rooms: number,
+  rooms: readonly string[],
   tab: HeroSearchTab,
 ): string => {
   const params = new URLSearchParams();
@@ -178,8 +178,8 @@ const buildProjectsHref = (
     params.set('maxPrice', String(maxPrice));
   }
 
-  if (rooms > 0) {
-    params.set('rooms', String(rooms));
+  if (rooms.length > 0) {
+    params.set('rooms', rooms.join(','));
   }
 
   if (tab === 'newBuilds') {

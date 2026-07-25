@@ -59,15 +59,11 @@ export const loadBuyApartmentListings = async (options: {
           if (!filters.salesStatus && apartment.salesStatus !== 'available') {
             continue;
           }
-          if (filters.rooms != null) {
+          if (filters.rooms != null && filters.rooms.length > 0) {
             if (apartment.rooms == null) {
               continue;
             }
-            if (filters.rooms >= 4) {
-              if (apartment.rooms < 4) {
-                continue;
-              }
-            } else if (apartment.rooms !== filters.rooms) {
+            if (!matchesRoomsFilter(apartment.rooms, filters.rooms)) {
               continue;
             }
           }
@@ -134,4 +130,15 @@ const toCoord = (value: string | null): number | null => {
   }
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : null;
+};
+
+const FOUR_PLUS_ROOMS = 4;
+
+const matchesRoomsFilter = (apartmentRooms: number, selected: number[]): boolean => {
+  const exact = selected.filter((count) => count < FOUR_PLUS_ROOMS);
+  const includeFourPlus = selected.includes(FOUR_PLUS_ROOMS);
+  if (exact.includes(apartmentRooms)) {
+    return true;
+  }
+  return includeFourPlus && apartmentRooms >= FOUR_PLUS_ROOMS;
 };

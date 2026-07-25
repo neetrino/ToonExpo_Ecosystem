@@ -105,7 +105,10 @@
       "priceSave": "Save and show",
       "priceInvalidRange": "Minimum price cannot exceed maximum price",
       "bedsLabel": "Beds",
-      "bedsValue": "{count}+",
+      "bedsAny": "Any",
+      "bedsValue": "{count}",
+      "bedsFourPlus": "4+",
+      "bedsSelectedCount": "{count} selected",
       "popular": "Popular:",
       "popularCities": {
         "yerevan": "Yerevan",
