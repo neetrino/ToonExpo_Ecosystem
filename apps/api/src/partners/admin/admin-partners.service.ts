@@ -32,7 +32,7 @@ export class AdminPartnersService {
     const where = this.buildListWhere(query);
     const skip = (query.page - 1) * query.pageSize;
 
-    const [total, rows] = await this.prisma.db.$transaction([
+    const [total, rows] = await Promise.all([
       this.prisma.db.partnerCompany.count({ where }),
       this.prisma.db.partnerCompany.findMany({
         where,

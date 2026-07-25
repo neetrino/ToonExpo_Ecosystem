@@ -1,15 +1,15 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, NotFoundException } from '@nestjs/common';
 import type {
   AdminBosProvisioningDetail,
   AdminBosProvisioningListResponse,
-} from "@toonexpo/contracts";
-import type { BosProvisioningStatus, Prisma } from "@toonexpo/db";
+} from '@toonexpo/contracts';
+import type { BosProvisioningStatus, Prisma } from '@toonexpo/db';
 
-import { PrismaService } from "../../prisma/prisma.service.js";
+import { PrismaService } from '../../prisma/prisma.service.js';
 import {
   toAdminBosProvisioningDetail,
   toAdminBosProvisioningListItem,
-} from "../bos/bos-provisioning.mapper.js";
+} from '../bos/bos-provisioning.mapper.js';
 
 @Injectable()
 export class AdminBosProvisioningService {
@@ -20,16 +20,14 @@ export class AdminBosProvisioningService {
     pageSize: number,
     status?: BosProvisioningStatus,
   ): Promise<AdminBosProvisioningListResponse> {
-    const where: Prisma.BosProvisioningRequestWhereInput = status
-      ? { status }
-      : {};
+    const where: Prisma.BosProvisioningRequestWhereInput = status ? { status } : {};
     const skip = (page - 1) * pageSize;
 
-    const [total, rows] = await this.prisma.db.$transaction([
+    const [total, rows] = await Promise.all([
       this.prisma.db.bosProvisioningRequest.count({ where }),
       this.prisma.db.bosProvisioningRequest.findMany({
         where,
-        orderBy: { createdAt: "desc" },
+        orderBy: { createdAt: 'desc' },
         skip,
         take: pageSize,
       }),
@@ -51,12 +49,12 @@ export class AdminBosProvisioningService {
       where: { id },
     });
     if (!record) {
-      throw new NotFoundException("BOS provisioning request not found");
+      throw new NotFoundException('BOS provisioning request not found');
     }
 
     const auditLogs = await this.prisma.db.integrationAuditLog.findMany({
       where: { provisioningRequestId: id },
-      orderBy: { createdAt: "asc" },
+      orderBy: { createdAt: 'asc' },
     });
 
     return toAdminBosProvisioningDetail(record, auditLogs);

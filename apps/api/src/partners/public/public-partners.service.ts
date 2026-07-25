@@ -53,7 +53,7 @@ export class PublicPartnersService {
     const where = this.buildPublicWhere(query);
     const skip = (query.page - 1) * query.pageSize;
 
-    const [total, partners] = await this.prisma.db.$transaction([
+    const [total, partners] = await Promise.all([
       this.prisma.db.partnerCompany.count({ where }),
       this.prisma.db.partnerCompany.findMany({
         where,

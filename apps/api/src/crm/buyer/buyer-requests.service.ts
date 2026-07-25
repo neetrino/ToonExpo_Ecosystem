@@ -1,18 +1,12 @@
-import { Injectable } from "@nestjs/common";
-import type {
-  BuyerRequestListResponse,
-  IntakeCreateResult,
-} from "@toonexpo/contracts";
-import { PublicationStatus, RequestSource } from "@toonexpo/db";
+import { Injectable } from '@nestjs/common';
+import type { BuyerRequestListResponse, IntakeCreateResult } from '@toonexpo/contracts';
+import { PublicationStatus, RequestSource } from '@toonexpo/db';
 
-import { PrismaService } from "../../prisma/prisma.service.js";
-import { entityNotFound } from "../../portal/utils/access.js";
-import {
-  CRM_DEFAULT_PAGE_SIZE,
-  CRM_MIN_PAGE,
-} from "../crm.constants.js";
-import { RequestIntakeService } from "../intake/request-intake.service.js";
-import { mapBuyerRequestItem } from "../mappers/crm.mapper.js";
+import { PrismaService } from '../../prisma/prisma.service.js';
+import { entityNotFound } from '../../portal/utils/access.js';
+import { CRM_DEFAULT_PAGE_SIZE, CRM_MIN_PAGE } from '../crm.constants.js';
+import { RequestIntakeService } from '../intake/request-intake.service.js';
+import { mapBuyerRequestItem } from '../mappers/crm.mapper.js';
 
 /**
  * Buyer-facing request creation and history (no internal CRM notes).
@@ -33,7 +27,7 @@ export class BuyerRequestsService {
       select: { id: true },
     });
     if (!profile) {
-      throw entityNotFound("Buyer profile");
+      throw entityNotFound('Buyer profile');
     }
 
     const project = await this.prisma.db.project.findFirst({
@@ -44,7 +38,7 @@ export class BuyerRequestsService {
       select: { id: true, builderCompanyId: true },
     });
     if (!project) {
-      throw entityNotFound("Project");
+      throw entityNotFound('Project');
     }
 
     if (body.apartmentId) {
@@ -57,7 +51,7 @@ export class BuyerRequestsService {
         select: { id: true },
       });
       if (!apartment) {
-        throw entityNotFound("Apartment");
+        throw entityNotFound('Apartment');
       }
     }
 
@@ -82,15 +76,15 @@ export class BuyerRequestsService {
       select: { id: true },
     });
     if (!profile) {
-      throw entityNotFound("Buyer profile");
+      throw entityNotFound('Buyer profile');
     }
 
     const where = { buyerProfileId: profile.id };
-    const [total, rows] = await this.prisma.db.$transaction([
+    const [total, rows] = await Promise.all([
       this.prisma.db.request.count({ where }),
       this.prisma.db.request.findMany({
         where,
-        orderBy: { createdAt: "desc" },
+        orderBy: { createdAt: 'desc' },
         skip: (page - 1) * pageSize,
         take: pageSize,
         include: {
