@@ -26,8 +26,8 @@ type MarketStat = {
   formatStyle?: AnimatedCounterFormatStyle;
 };
 
-/** Illustrative market metrics until a dedicated pulse API exists. */
-const MARKET_AVG_SQFT_USD = 1420;
+/** Illustrative market metrics until a dedicated pulse API exists (AMD / m²). */
+const MARKET_AVG_SQM_AMD = 550_000;
 const MARKET_MORTGAGE_RATE = 5.92;
 const MARKET_MEDIAN_DAYS = 42;
 
@@ -43,13 +43,13 @@ export const HomeStats = async ({ projects }: HomeStatsProps) => {
 
   const stats: MarketStat[] = [
     {
-      id: 'avgSqft',
-      label: t('avgSqft'),
-      hint: t('avgSqftHint'),
+      id: 'avgSqm',
+      label: t('avgSqm'),
+      hint: t('avgSqmHint'),
       tone: 'positive',
-      display: String(MARKET_AVG_SQFT_USD),
-      numericValue: MARKET_AVG_SQFT_USD,
-      formatStyle: 'currencyUsd',
+      display: String(MARKET_AVG_SQM_AMD),
+      numericValue: MARKET_AVG_SQM_AMD,
+      formatStyle: 'currencyAmd',
     },
     {
       id: 'listings',

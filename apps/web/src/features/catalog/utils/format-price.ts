@@ -1,9 +1,9 @@
 import type { PriceVisibility } from '@toonexpo/contracts';
 
 import {
+  AMD_CURRENCY_CODE,
+  AMD_CURRENCY_SYMBOL,
   convertAmdToDisplayAmount,
-  displayCurrencyForLocale,
-  type DisplayCurrency,
 } from '@/features/catalog/utils/display-currency';
 
 export type FormatPriceOptions = {
@@ -78,36 +78,30 @@ const formatGroupedInteger = (value: number, groupSeparator: string): string => 
   return digits.replace(/\B(?=(\d{3})+(?!\d))/g, groupSeparator);
 };
 
-const formatDisplayAmount = (value: number, displayCurrency: DisplayCurrency): string => {
-  if (displayCurrency === 'USD') {
-    return `$${formatGroupedInteger(value, ',')}`;
-  }
-  if (displayCurrency === 'RUB') {
-    return `${formatGroupedInteger(value, '\u00a0')} ₽`;
-  }
-  return `${formatGroupedInteger(value, '\u00a0')} ֏`;
-};
+const GROUP_SEPARATOR = '\u00a0';
 
 /**
- * Formats a stored catalog amount for the active UI locale.
- * AMD prices convert to USD (en) or RUB (ru); hy stays AMD.
+ * Formats an AMD amount with the dram sign (֏).
  */
-const formatLocaleCurrency = (value: number, currencyCode: string, locale: string): string => {
-  if (currencyCode === 'AMD') {
-    const displayCurrency = displayCurrencyForLocale(locale);
-    const displayAmount = convertAmdToDisplayAmount(value, displayCurrency);
-    return formatDisplayAmount(displayAmount, displayCurrency);
+const formatAmdAmount = (value: number): string =>
+  `${formatGroupedInteger(convertAmdToDisplayAmount(value), GROUP_SEPARATOR)} ${AMD_CURRENCY_SYMBOL}`;
+
+/**
+ * Formats a stored catalog amount. Non-AMD codes fall back to a plain code suffix.
+ */
+const formatLocaleCurrency = (value: number, currencyCode: string): string => {
+  if (currencyCode === AMD_CURRENCY_CODE) {
+    return formatAmdAmount(value);
   }
 
-  const groupSeparator = displayCurrencyForLocale(locale) === 'USD' ? ',' : '\u00a0';
-  return `${formatGroupedInteger(value, groupSeparator)} ${currencyCode}`;
+  return `${formatGroupedInteger(value, GROUP_SEPARATOR)} ${currencyCode}`;
 };
 
 /**
  * Formats a catalog price for display, or returns the hidden-price label.
  */
 export const formatCatalogPrice = (options: FormatPriceOptions): string => {
-  const { amount, currency, locale, priceVisibility, onRequestLabel, signInLabel } = options;
+  const { amount, currency, priceVisibility, onRequestLabel, signInLabel } = options;
 
   if (isPriceHidden(priceVisibility, amount) || amount == null) {
     return resolveHiddenPriceLabel({
@@ -122,12 +116,12 @@ export const formatCatalogPrice = (options: FormatPriceOptions): string => {
     return onRequestLabel;
   }
 
-  const currencyCode = currency && currency.length === 3 ? currency : 'AMD';
-  return formatLocaleCurrency(value, currencyCode, locale);
+  const currencyCode = currency && currency.length === 3 ? currency : AMD_CURRENCY_CODE;
+  return formatLocaleCurrency(value, currencyCode);
 };
 
 /**
- * Formats a “from …” price for project cards with locale currency conversion.
+ * Formats a “from …” price for project cards.
  */
 export const formatCompactPrice = (options: {
   amount: string | number | null | undefined;
@@ -136,7 +130,7 @@ export const formatCompactPrice = (options: {
   fromLabel: string;
   onRequestLabel: string;
 }): string => {
-  const { amount, currency, locale, fromLabel, onRequestLabel } = options;
+  const { amount, currency, fromLabel, onRequestLabel } = options;
 
   if (amount == null || amount === '') {
     return onRequestLabel;
@@ -147,8 +141,8 @@ export const formatCompactPrice = (options: {
     return onRequestLabel;
   }
 
-  const currencyCode = currency && currency.length === 3 ? currency : 'AMD';
-  const amountLabel = formatLocaleCurrency(value, currencyCode, locale);
+  const currencyCode = currency && currency.length === 3 ? currency : AMD_CURRENCY_CODE;
+  const amountLabel = formatLocaleCurrency(value, currencyCode);
   return fromLabel.length > 0 ? `${fromLabel} ${amountLabel}` : amountLabel;
 };
 

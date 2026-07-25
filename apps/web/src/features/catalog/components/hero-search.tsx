@@ -12,15 +12,16 @@ type HeroSearchProps = {
   className?: string | undefined;
 };
 
-const DEFAULT_MIN_PRICE = 500_000;
-const DEFAULT_MAX_PRICE = 2_000_000;
+/** Hero price buckets in AMD (matches catalog storage currency). */
+const DEFAULT_MIN_PRICE = 100_000_000;
+const DEFAULT_MAX_PRICE = 200_000_000;
 const DEFAULT_ROOMS = 2;
 
 const PRICE_OPTIONS = [
-  { min: 0, max: 250_000, labelKey: 'priceUnder250k' as const },
-  { min: 250_000, max: 500_000, labelKey: 'price250to500' as const },
-  { min: 500_000, max: 2_000_000, labelKey: 'price500to2m' as const },
-  { min: 2_000_000, max: undefined, labelKey: 'priceOver2m' as const },
+  { min: 0, max: 50_000_000, labelKey: 'priceUnder50m' as const },
+  { min: 50_000_000, max: 100_000_000, labelKey: 'price50to100m' as const },
+  { min: 100_000_000, max: 200_000_000, labelKey: 'price100to200m' as const },
+  { min: 200_000_000, max: undefined, labelKey: 'priceOver200m' as const },
 ] as const;
 
 const BED_OPTIONS = [1, 2, 3, 4] as const;
@@ -36,7 +37,7 @@ export const HeroSearch = ({ className }: HeroSearchProps) => {
   const router = useRouter();
   const [tab, setTab] = useState<HeroSearchTab>('buy');
   const [location, setLocation] = useState('');
-  const [priceKey, setPriceKey] = useState<string>('price500to2m');
+  const [priceKey, setPriceKey] = useState<string>('price100to200m');
   const [rooms, setRooms] = useState(DEFAULT_ROOMS);
 
   const priceOptions = PRICE_OPTIONS.map((option) => ({

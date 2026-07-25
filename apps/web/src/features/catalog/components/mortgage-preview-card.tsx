@@ -2,11 +2,11 @@ import { getTranslations } from 'next-intl/server';
 
 import { cn } from '@/shared/ui/cn';
 
-/** Illustrative preview values until live calculator inputs drive this card. */
-const PREVIEW_PROPERTY_PRICE = '$1,240,000';
-const PREVIEW_DOWN_AMOUNT = '$248,000';
+/** Illustrative preview values until live calculator inputs drive this card (AMD). */
+const PREVIEW_PROPERTY_PRICE = `65${'\u00a0'}000${'\u00a0'}000 ֏`;
+const PREVIEW_DOWN_AMOUNT = `13${'\u00a0'}000${'\u00a0'}000 ֏`;
 const PREVIEW_TERM = '30 yr · 5.92%';
-const PREVIEW_MONTHLY = '$5,842.12';
+const PREVIEW_MONTHLY = `348${'\u00a0'}000 ֏`;
 const PREVIEW_PRICE_PROGRESS = 67;
 
 /**

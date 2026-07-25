@@ -1,65 +1,24 @@
 /**
- * Display FX for locale-based catalog prices.
- * Source of truth in DB remains AMD; UI converts for en→USD and ru→RUB.
- *
- * Override via env (AMD per 1 foreign unit):
- * - NEXT_PUBLIC_FX_AMD_PER_USD
- * - NEXT_PUBLIC_FX_AMD_PER_RUB
+ * Catalog prices are stored and displayed in AMD (Armenian dram).
+ * Symbol: ֏ (U+058F ARMENIAN DRAM SIGN).
  */
 
-/** Approximate AMD per 1 USD — display-only until live FX is wired. */
-const DEFAULT_AMD_PER_USD = 390;
+export const AMD_CURRENCY_CODE = 'AMD' as const;
 
-/** Approximate AMD per 1 RUB — display-only until live FX is wired. */
-const DEFAULT_AMD_PER_RUB = 4;
+/** Armenian dram sign used in all public price labels. */
+export const AMD_CURRENCY_SYMBOL = '֏';
 
-export type DisplayCurrency = 'AMD' | 'USD' | 'RUB';
-
-const resolveBaseLocale = (locale: string): string => {
-  const base = locale.split('-')[0];
-  return base && base.length > 0 ? base : 'hy';
-};
+export type DisplayCurrency = typeof AMD_CURRENCY_CODE;
 
 /**
- * Maps UI locale to the currency shown to the visitor.
+ * Catalog UI always shows AMD regardless of locale.
  */
-export const displayCurrencyForLocale = (locale: string): DisplayCurrency => {
-  const base = resolveBaseLocale(locale);
-  if (base === 'en') {
-    return 'USD';
-  }
-  if (base === 'ru') {
-    return 'RUB';
-  }
-  return 'AMD';
-};
-
-const readPositiveRate = (raw: string | undefined, fallback: number): number => {
-  if (raw == null || raw.trim() === '') {
-    return fallback;
-  }
-  const parsed = Number(raw);
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
-};
-
-export const getAmdPerUsd = (): number =>
-  readPositiveRate(process.env['NEXT_PUBLIC_FX_AMD_PER_USD'], DEFAULT_AMD_PER_USD);
-
-export const getAmdPerRub = (): number =>
-  readPositiveRate(process.env['NEXT_PUBLIC_FX_AMD_PER_RUB'], DEFAULT_AMD_PER_RUB);
+export const displayCurrencyForLocale = (_locale: string): DisplayCurrency => AMD_CURRENCY_CODE;
 
 /**
- * Converts a stored AMD major-unit amount into the locale display currency.
+ * Rounds a stored AMD major-unit amount for display (no FX conversion).
  */
 export const convertAmdToDisplayAmount = (
   amdAmount: number,
-  displayCurrency: DisplayCurrency,
-): number => {
-  if (displayCurrency === 'USD') {
-    return Math.round(amdAmount / getAmdPerUsd());
-  }
-  if (displayCurrency === 'RUB') {
-    return Math.round(amdAmount / getAmdPerRub());
-  }
-  return Math.round(amdAmount);
-};
+  _displayCurrency: DisplayCurrency = AMD_CURRENCY_CODE,
+): number => Math.round(amdAmount);

@@ -39,7 +39,7 @@ export const ApartmentMortgageEstimate = ({
   }
 
   const monthlyAmd = estimateMonthlyPaymentAmd(price);
-  // Monthly is computed from AMD listing price; locale FX runs inside formatCatalogPrice.
+  // Monthly is computed from AMD listing price; formatCatalogPrice shows ֏.
   const monthlyLabel = formatCatalogPrice({
     amount: monthlyAmd,
     currency: 'AMD',
