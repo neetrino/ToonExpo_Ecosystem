@@ -12,13 +12,21 @@ export type DisplayCurrency = typeof AMD_CURRENCY_CODE;
 
 /**
  * Catalog UI always shows AMD regardless of locale.
+ * Locale argument is accepted for call-site compatibility and ignored.
  */
-export const displayCurrencyForLocale = (_locale: string): DisplayCurrency => AMD_CURRENCY_CODE;
+export const displayCurrencyForLocale = (_locale: string): DisplayCurrency => {
+  void _locale;
+  return AMD_CURRENCY_CODE;
+};
 
 /**
  * Rounds a stored AMD major-unit amount for display (no FX conversion).
+ * Display-currency argument is accepted for call-site compatibility and ignored.
  */
 export const convertAmdToDisplayAmount = (
   amdAmount: number,
   _displayCurrency: DisplayCurrency = AMD_CURRENCY_CODE,
-): number => Math.round(amdAmount);
+): number => {
+  void _displayCurrency;
+  return Math.round(amdAmount);
+};
