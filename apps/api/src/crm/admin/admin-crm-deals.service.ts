@@ -81,7 +81,7 @@ export class AdminCrmDealsService {
       Object.assign(where, searchWhere);
     }
 
-    const [total, rows] = await this.prisma.db.$transaction([
+    const [total, rows] = await Promise.all([
       this.prisma.db.crmDeal.count({ where }),
       this.prisma.db.crmDeal.findMany({
         where,
@@ -214,12 +214,12 @@ export class AdminCrmDealsService {
       throw entityNotFound('Deal');
     }
 
-    await this.prisma.db.$transaction([
-      this.prisma.db.apartment.updateMany({
+    await this.prisma.db.$transaction(async (tx) => {
+      await tx.apartment.updateMany({
         where: { activeCrmDealId: deal.id },
         data: { activeCrmDealId: null },
-      }),
-      this.prisma.db.crmDeal.delete({ where: { id: deal.id } }),
-    ]);
+      });
+      await tx.crmDeal.delete({ where: { id: deal.id } });
+    });
   }
 }

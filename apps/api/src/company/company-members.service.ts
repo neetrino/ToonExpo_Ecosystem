@@ -4,23 +4,15 @@ import {
   ForbiddenException,
   Injectable,
   NotFoundException,
-} from "@nestjs/common";
-import type {
-  CompanyMemberListResponse,
-  CompanyMemberResponse,
-} from "@toonexpo/contracts";
-import {
-  AccountType,
-  CompanyMemberRole,
-  CompanyMemberStatus,
-  UserStatus,
-} from "@toonexpo/db";
+} from '@nestjs/common';
+import type { CompanyMemberListResponse, CompanyMemberResponse } from '@toonexpo/contracts';
+import { AccountType, CompanyMemberRole, CompanyMemberStatus, UserStatus } from '@toonexpo/db';
 
-import { InviteMailerService } from "../access-tokens/invite-mailer.service.js";
-import { normalizeEmail } from "../auth/mappers/user.mapper.js";
-import { toCompanyMemberResponse } from "../companies/mappers/company-member.mapper.js";
-import { PrismaService } from "../prisma/prisma.service.js";
-import type { CompanyAdminContext } from "./types/company-admin-context.js";
+import { InviteMailerService } from '../access-tokens/invite-mailer.service.js';
+import { normalizeEmail } from '../auth/mappers/user.mapper.js';
+import { toCompanyMemberResponse } from '../companies/mappers/company-member.mapper.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import type { CompanyAdminContext } from './types/company-admin-context.js';
 
 type InviteInput = {
   name: string;
@@ -83,7 +75,7 @@ export class CompanyMembersService {
 
       const membership = user.companyMembership;
       if (!membership) {
-        throw new Error("Company membership missing after invite create");
+        throw new Error('Company membership missing after invite create');
       }
 
       return { ...membership, user };
@@ -109,12 +101,12 @@ export class CompanyMembersService {
       status: { not: CompanyMemberStatus.removed },
     };
     const skip = (page - 1) * pageSize;
-    const [total, rows] = await this.prisma.db.$transaction([
+    const [total, rows] = await Promise.all([
       this.prisma.db.companyMember.count({ where }),
       this.prisma.db.companyMember.findMany({
         where,
         include: { user: true },
-        orderBy: { createdAt: "asc" },
+        orderBy: { createdAt: 'asc' },
         skip,
         take: pageSize,
       }),
@@ -143,7 +135,7 @@ export class CompanyMembersService {
     });
 
     if (!member || member.status === CompanyMemberStatus.removed) {
-      throw new NotFoundException("Company member not found");
+      throw new NotFoundException('Company member not found');
     }
 
     this.assertNotSelfDeactivation(actorUserId, member.userId, input.status);
@@ -178,10 +170,9 @@ export class CompanyMembersService {
   ): void {
     if (
       actorUserId === targetUserId &&
-      (status === CompanyMemberStatus.inactive ||
-        status === CompanyMemberStatus.removed)
+      (status === CompanyMemberStatus.inactive || status === CompanyMemberStatus.removed)
     ) {
-      throw new ForbiddenException("Cannot deactivate your own membership");
+      throw new ForbiddenException('Cannot deactivate your own membership');
     }
   }
 
@@ -191,10 +182,8 @@ export class CompanyMembersService {
   ): Promise<void> {
     const losesAdminRole =
       member.role === CompanyMemberRole.company_admin &&
-      ((input.role !== undefined &&
-        input.role !== CompanyMemberRole.company_admin) ||
-        (input.status !== undefined &&
-          input.status !== CompanyMemberStatus.active));
+      ((input.role !== undefined && input.role !== CompanyMemberRole.company_admin) ||
+        (input.status !== undefined && input.status !== CompanyMemberStatus.active));
 
     if (!losesAdminRole) {
       return;
@@ -209,14 +198,14 @@ export class CompanyMembersService {
     });
 
     if (activeAdminCount <= 1) {
-      throw new BadRequestException("Cannot remove the last company admin");
+      throw new BadRequestException('Cannot remove the last company admin');
     }
   }
 
   private async assertEmailAvailable(email: string): Promise<void> {
     const existing = await this.prisma.db.user.findUnique({ where: { email } });
     if (existing) {
-      throw new ConflictException("Email is already registered");
+      throw new ConflictException('Email is already registered');
     }
   }
 }

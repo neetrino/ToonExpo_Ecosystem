@@ -4,24 +4,18 @@ import { useTranslations } from 'next-intl';
 import { useState, type FormEvent } from 'react';
 
 import { HeroSearchTabs, type HeroSearchTab } from '@/features/catalog/components/hero-search-tabs';
+import { LocationSearchSelect } from '@/features/catalog/components/location-search-select';
+import { PriceRangeSelect } from '@/features/catalog/components/price-range-select';
+import { mergeLocationOptions } from '@/features/catalog/utils/location-options';
 import { Link, useRouter } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
-import { ListboxSelect } from '@/shared/ui/listbox-select';
+import { MultiListboxSelect } from '@/shared/ui/multi-listbox-select';
 
 type HeroSearchProps = {
   className?: string | undefined;
+  /** Cities from published catalog projects. */
+  locations?: readonly string[] | undefined;
 };
-
-const DEFAULT_MIN_PRICE = 500_000;
-const DEFAULT_MAX_PRICE = 2_000_000;
-const DEFAULT_ROOMS = 2;
-
-const PRICE_OPTIONS = [
-  { min: 0, max: 250_000, labelKey: 'priceUnder250k' as const },
-  { min: 250_000, max: 500_000, labelKey: 'price250to500' as const },
-  { min: 500_000, max: 2_000_000, labelKey: 'price500to2m' as const },
-  { min: 2_000_000, max: undefined, labelKey: 'priceOver2m' as const },
-] as const;
 
 const BED_OPTIONS = [1, 2, 3, 4] as const;
 
@@ -31,27 +25,32 @@ const POPULAR_CITY_KEYS = ['yerevan', 'gyumri', 'vanadzor', 'dilijan', 'tsaghkad
  * Marketplace search card — Buy / Rent / New Builds tabs with location filters.
  * Stacks cleanly on small screens; desktop keeps the Figma horizontal row.
  */
-export const HeroSearch = ({ className }: HeroSearchProps) => {
+export const HeroSearch = ({ className, locations = [] }: HeroSearchProps) => {
   const t = useTranslations('HomePage.hero');
   const router = useRouter();
   const [tab, setTab] = useState<HeroSearchTab>('buy');
   const [location, setLocation] = useState('');
-  const [priceKey, setPriceKey] = useState<string>('price500to2m');
-  const [rooms, setRooms] = useState(DEFAULT_ROOMS);
+  const [minPrice, setMinPrice] = useState<number | null>(null);
+  const [maxPrice, setMaxPrice] = useState<number | null>(null);
+  const [rooms, setRooms] = useState<string[]>([]);
 
-  const priceOptions = PRICE_OPTIONS.map((option) => ({
-    value: option.labelKey,
-    label: t(option.labelKey),
-  }));
+  const popularCities = POPULAR_CITY_KEYS.map((key) => t(`popularCities.${key}`));
+  const locationOptions = mergeLocationOptions(locations, popularCities);
 
   const bedOptions = BED_OPTIONS.map((count) => ({
     value: String(count),
-    label: t('bedsValue', { count }),
+    label: count >= 4 ? t('bedsFourPlus') : t('bedsValue', { count }),
   }));
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    router.push(buildProjectsHref(location, priceKey, rooms, tab));
+    router.push(buildProjectsHref(location, minPrice, maxPrice, rooms, tab));
+  };
+
+  const applyPriceRange = (nextMin: number | null, nextMax: number | null): void => {
+    setMinPrice(nextMin);
+    setMaxPrice(nextMax);
+    router.push(buildProjectsHref(location, nextMin, nextMax, rooms, tab));
   };
 
   return (
@@ -76,31 +75,39 @@ export const HeroSearch = ({ className }: HeroSearchProps) => {
         />
 
         <div className="grid grid-cols-1 gap-2 p-3 lg:grid-cols-[minmax(11rem,15rem)_auto_auto_auto] lg:items-center">
-          <label className="flex min-w-0 flex-col gap-1 px-3 py-2">
+          <div className="flex min-w-0 flex-col gap-1 px-3 py-2">
             <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-header-muted">
               {t('locationLabel')}
             </span>
-            <input
-              type="search"
-              name="city"
+            <LocationSearchSelect
               value={location}
-              onChange={(event) => setLocation(event.target.value)}
-              placeholder={t('locationPlaceholder')}
-              className="w-full min-w-0 border-none bg-transparent p-0 text-sm font-medium text-ink-navy outline-none placeholder:text-ink-muted"
+              options={locationOptions}
+              aria-label={t('locationLabel')}
+              labels={{
+                any: t('locationAny'),
+                placeholder: t('locationPlaceholder'),
+                search: t('locationSearch'),
+                empty: t('locationEmpty'),
+              }}
+              onChange={setLocation}
             />
-          </label>
+          </div>
 
           <div className="flex min-w-0 flex-col gap-1 border-t border-header-border px-3 py-2 lg:border-t-0 lg:border-l">
             <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-header-muted">
               {t('priceLabel')}
             </span>
-            <ListboxSelect
-              name="price"
-              aria-label={t('priceLabel')}
-              value={priceKey}
-              options={priceOptions}
-              size="fit"
-              onChange={setPriceKey}
+            <PriceRangeSelect
+              minPrice={minPrice}
+              maxPrice={maxPrice}
+              labels={{
+                any: t('priceAny'),
+                min: t('priceMin'),
+                max: t('priceMax'),
+                save: t('priceSave'),
+                invalidRange: t('priceInvalidRange'),
+              }}
+              onApply={applyPriceRange}
             />
           </div>
 
@@ -108,13 +115,15 @@ export const HeroSearch = ({ className }: HeroSearchProps) => {
             <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-header-muted">
               {t('bedsLabel')}
             </span>
-            <ListboxSelect
-              name="rooms"
+            <MultiListboxSelect
               aria-label={t('bedsLabel')}
-              value={String(rooms)}
+              values={rooms}
               options={bedOptions}
+              allLabel={t('bedsAny')}
+              selectedCountLabel={(count) => t('bedsSelectedCount', { count })}
+              variant="plain"
               size="fit"
-              onChange={(next) => setRooms(Number.parseInt(next, 10))}
+              onChange={setRooms}
             />
           </div>
 
@@ -162,8 +171,9 @@ export const HeroSearch = ({ className }: HeroSearchProps) => {
 
 const buildProjectsHref = (
   location: string,
-  priceKey: string,
-  rooms: number,
+  minPrice: number | null,
+  maxPrice: number | null,
+  rooms: readonly string[],
   tab: HeroSearchTab,
 ): string => {
   const params = new URLSearchParams();
@@ -172,21 +182,15 @@ const buildProjectsHref = (
     params.set('city', trimmed);
   }
 
-  const price = PRICE_OPTIONS.find((option) => option.labelKey === priceKey);
-  if (price) {
-    if (price.min > 0) {
-      params.set('minPrice', String(price.min));
-    }
-    if (price.max != null) {
-      params.set('maxPrice', String(price.max));
-    }
-  } else {
-    params.set('minPrice', String(DEFAULT_MIN_PRICE));
-    params.set('maxPrice', String(DEFAULT_MAX_PRICE));
+  if (minPrice != null) {
+    params.set('minPrice', String(minPrice));
+  }
+  if (maxPrice != null) {
+    params.set('maxPrice', String(maxPrice));
   }
 
-  if (rooms > 0) {
-    params.set('rooms', String(rooms));
+  if (rooms.length > 0) {
+    params.set('rooms', rooms.join(','));
   }
 
   if (tab === 'newBuilds') {

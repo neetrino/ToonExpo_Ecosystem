@@ -49,7 +49,7 @@ const HEADER_SPACER_CLASS = 'h-[4.5rem]';
 export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) => {
   const t = useTranslations('Nav');
   const pathname = usePathname();
-  const { data: user, isLoading, isFetching } = useMeQuery();
+  const { data: user } = useMeQuery();
   const logoutMutation = useLogoutMutation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [showPill, setShowPill] = useState(false);
@@ -58,8 +58,6 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
   const pillVisible = !isTransparentStart || showPill || menuOpen;
   const isOverHero = isTransparentStart && !pillVisible;
   const needsSpacer = !isTransparentStart;
-  /** Only while a real `/auth/me` request is in flight — guests render the login icon immediately. */
-  const showAuthLoading = isLoading || (isFetching && !user);
 
   useEffect(() => {
     setMenuOpen(false);
@@ -194,18 +192,14 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
             >
               <LocaleSwitcher tone={isOverHero ? 'dark' : 'light'} />
 
-              {showAuthLoading ? (
-                <span className="size-10 animate-pulse rounded-full bg-current/10" aria-hidden />
-              ) : (
-                <ProfileMenu
-                  userName={user?.name}
-                  userEmail={user?.email}
-                  accountType={user?.accountType}
-                  companyType={user?.companyType}
-                  showBuilder={isBuilderMember}
-                  tone={isOverHero ? 'dark' : 'light'}
-                />
-              )}
+              <ProfileMenu
+                userName={user?.name}
+                userEmail={user?.email}
+                accountType={user?.accountType}
+                companyType={user?.companyType}
+                showBuilder={isBuilderMember}
+                tone={isOverHero ? 'dark' : 'light'}
+              />
 
               <IconButton
                 label={t('menu')}

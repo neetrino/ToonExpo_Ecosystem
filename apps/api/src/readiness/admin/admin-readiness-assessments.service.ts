@@ -1,32 +1,25 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import type {
   ReadinessAssessmentDetail,
   ReadinessAssessmentListResponse,
   ReadinessScoreItem,
-} from "@toonexpo/contracts";
-import {
-  ReadinessAssessmentTargetType,
-  ReadinessScoreStatus,
-} from "@toonexpo/db";
+} from '@toonexpo/contracts';
+import { ReadinessAssessmentTargetType, ReadinessScoreStatus } from '@toonexpo/db';
 
-import { PrismaService } from "../../prisma/prisma.service.js";
-import { AnalyticsService } from "../../analytics/analytics.service.js";
+import { PrismaService } from '../../prisma/prisma.service.js';
+import { AnalyticsService } from '../../analytics/analytics.service.js';
 import {
   assessmentDetailInclude,
   toReadinessAssessmentDetail,
   toReadinessAssessmentListItem,
   toReadinessScoreItem,
-} from "../mappers/readiness.mapper.js";
-import { deriveStatusFromScore } from "../utils/score-status.util.js";
-import { ReadinessAssessmentSupportService } from "./readiness-assessment-support.service.js";
-import type { CreateReadinessAssessmentDto } from "./dto/readiness-assessment.dto.js";
-import type { ListReadinessAssessmentsQueryDto } from "./dto/readiness-assessment.dto.js";
-import type { UpdateReadinessAssessmentDto } from "./dto/readiness-assessment.dto.js";
-import type { UpsertReadinessScoreDto } from "./dto/readiness-assessment.dto.js";
+} from '../mappers/readiness.mapper.js';
+import { deriveStatusFromScore } from '../utils/score-status.util.js';
+import { ReadinessAssessmentSupportService } from './readiness-assessment-support.service.js';
+import type { CreateReadinessAssessmentDto } from './dto/readiness-assessment.dto.js';
+import type { ListReadinessAssessmentsQueryDto } from './dto/readiness-assessment.dto.js';
+import type { UpdateReadinessAssessmentDto } from './dto/readiness-assessment.dto.js';
+import type { UpsertReadinessScoreDto } from './dto/readiness-assessment.dto.js';
 
 @Injectable()
 export class AdminReadinessAssessmentsService {
@@ -36,17 +29,15 @@ export class AdminReadinessAssessmentsService {
     private readonly analytics: AnalyticsService,
   ) {}
 
-  async list(
-    query: ListReadinessAssessmentsQueryDto,
-  ): Promise<ReadinessAssessmentListResponse> {
+  async list(query: ListReadinessAssessmentsQueryDto): Promise<ReadinessAssessmentListResponse> {
     const where = this.support.buildListWhere(query);
     const skip = (query.page - 1) * query.pageSize;
 
-    const [total, rows] = await this.prisma.db.$transaction([
+    const [total, rows] = await Promise.all([
       this.prisma.db.readinessAssessment.count({ where }),
       this.prisma.db.readinessAssessment.findMany({
         where,
-        orderBy: { createdAt: "desc" },
+        orderBy: { createdAt: 'desc' },
         skip,
         take: query.pageSize,
       }),
@@ -69,7 +60,7 @@ export class AdminReadinessAssessmentsService {
       include: assessmentDetailInclude,
     });
     if (!assessment) {
-      throw new NotFoundException("Readiness assessment not found");
+      throw new NotFoundException('Readiness assessment not found');
     }
     return toReadinessAssessmentDetail(assessment);
   }
@@ -79,19 +70,16 @@ export class AdminReadinessAssessmentsService {
 
     if (body.targetType === ReadinessAssessmentTargetType.project) {
       if (!body.projectId) {
-        throw new BadRequestException("projectId is required for project assessments");
+        throw new BadRequestException('projectId is required for project assessments');
       }
-      await this.support.assertProjectBelongsToCompany(
-        body.projectId,
-        body.builderCompanyId,
-      );
+      await this.support.assertProjectBelongsToCompany(body.projectId, body.builderCompanyId);
     } else if (body.projectId) {
-      throw new BadRequestException("projectId must be omitted for company assessments");
+      throw new BadRequestException('projectId must be omitted for company assessments');
     }
 
     const activeCategories = await this.prisma.db.readinessCategory.findMany({
       where: { active: true },
-      orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+      orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
     });
 
     const assessment = await this.prisma.db.$transaction(async (tx) => {
@@ -127,10 +115,7 @@ export class AdminReadinessAssessmentsService {
     return toReadinessAssessmentDetail(assessment);
   }
 
-  async update(
-    id: string,
-    body: UpdateReadinessAssessmentDto,
-  ): Promise<ReadinessAssessmentDetail> {
+  async update(id: string, body: UpdateReadinessAssessmentDto): Promise<ReadinessAssessmentDetail> {
     const existing = await this.support.getAssessmentOrThrow(id);
 
     const assessment = await this.prisma.db.readinessAssessment.update({
@@ -175,7 +160,7 @@ export class AdminReadinessAssessmentsService {
       where: { id: categoryId },
     });
     if (!category) {
-      throw new NotFoundException("Readiness category not found");
+      throw new NotFoundException('Readiness category not found');
     }
 
     const evaluatedAt = new Date();
@@ -248,7 +233,7 @@ export class AdminReadinessAssessmentsService {
     newScore: number | null;
   }): void {
     this.analytics.track({
-      eventType: "readiness_status_changed",
+      eventType: 'readiness_status_changed',
       companyId: input.companyId,
       projectId: input.projectId,
       metadata: {

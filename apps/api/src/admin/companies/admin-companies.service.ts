@@ -78,7 +78,7 @@ export class AdminCompaniesService {
 
   async list(page: number, pageSize: number): Promise<CompanyListResponse> {
     const skip = (page - 1) * pageSize;
-    const [total, rows] = await this.prisma.db.$transaction([
+    const [total, rows] = await Promise.all([
       this.prisma.db.company.count(),
       this.prisma.db.company.findMany({
         orderBy: { createdAt: 'desc' },

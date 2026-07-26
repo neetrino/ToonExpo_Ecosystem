@@ -1,10 +1,10 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { PrismaService } from "../prisma/prisma.service.js";
-import { ListProjectsQueryDto } from "./dto/list-projects.query.dto.js";
-import { ProjectsService } from "./projects.service.js";
+import type { PrismaService } from '../prisma/prisma.service.js';
+import { ListProjectsQueryDto } from './dto/list-projects.query.dto.js';
+import { ProjectsService } from './projects.service.js';
 
-describe("ProjectsService filters and pagination", () => {
+describe('ProjectsService filters and pagination', () => {
   const projectCount = vi.fn();
   const projectFindMany = vi.fn();
   let service: ProjectsService;
@@ -28,38 +28,49 @@ describe("ProjectsService filters and pagination", () => {
     service = new ProjectsService(prisma, { track: vi.fn() } as never);
   });
 
-  it("builds where for published projects only by default", () => {
+  it('builds where for published projects only by default', () => {
     const where = service.buildListWhere(new ListProjectsQueryDto());
 
-    expect(where).toEqual({ publicationStatus: "published" });
+    expect(where).toEqual({ publicationStatus: 'published' });
   });
 
-  it("adds apartment filters for sales status, rooms and price range", () => {
+  it('adds apartment filters for sales status, rooms and price range', () => {
     const query = Object.assign(new ListProjectsQueryDto(), {
-      salesStatus: "available",
-      rooms: 2,
+      salesStatus: 'available',
+      rooms: [2],
       minPrice: 40_000_000,
       maxPrice: 80_000_000,
-      city: "Yerevan",
-      builderId: "builder_1",
+      city: 'Yerevan',
+      builderId: 'builder_1',
     });
 
     const where = service.buildListWhere(query);
 
-    expect(where.city).toEqual({ equals: "Yerevan", mode: "insensitive" });
-    expect(where.builderCompanyId).toBe("builder_1");
+    expect(where.city).toEqual({ equals: 'Yerevan', mode: 'insensitive' });
+    expect(where.builderCompanyId).toBe('builder_1');
     expect(where.apartments).toEqual({
       some: {
-        publicationStatus: "published",
-        salesStatus: "available",
-        rooms: 2,
+        publicationStatus: 'published',
+        salesStatus: 'available',
+        rooms: { in: [2] },
         price: { gte: 40_000_000, lte: 80_000_000 },
-        priceVisibility: "public",
+        priceVisibility: 'public',
       },
     });
   });
 
-  it("paginates with skip/take derived from page and pageSize", async () => {
+  it('supports multi rooms with 4+ semantics', () => {
+    const query = Object.assign(new ListProjectsQueryDto(), {
+      rooms: [1, 4],
+    });
+
+    expect(service.buildApartmentFilter(query)).toEqual({
+      publicationStatus: 'published',
+      OR: [{ rooms: { in: [1] } }, { rooms: { gte: 4 } }],
+    });
+  });
+
+  it('paginates with skip/take derived from page and pageSize', async () => {
     projectCount.mockResolvedValue(45);
     projectFindMany.mockResolvedValue([]);
 
@@ -86,7 +97,7 @@ describe("ProjectsService filters and pagination", () => {
     });
   });
 
-  it("returns totalPages 0 when there are no projects", async () => {
+  it('returns totalPages 0 when there are no projects', async () => {
     projectCount.mockResolvedValue(0);
     projectFindMany.mockResolvedValue([]);
 

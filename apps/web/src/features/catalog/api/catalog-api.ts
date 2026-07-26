@@ -8,14 +8,11 @@ import type {
   PaginatedResponse,
   ProjectDetail,
   ProjectListItem,
-} from "@toonexpo/contracts";
+} from '@toonexpo/contracts';
 
-import { apiFetch } from "@/shared/api/client";
-import { ApiError, isApiErrorStatus } from "@/shared/api/errors";
-import {
-  catalogListFetch,
-  catalogProjectFetch,
-} from "@/shared/api/public-fetch";
+import { apiFetch } from '@/shared/api/client';
+import { ApiError, isApiErrorStatus } from '@/shared/api/errors';
+import { catalogListFetch, catalogProjectFetch } from '@/shared/api/public-fetch';
 
 export type CatalogRequestOptions = {
   locale?: string | undefined;
@@ -25,40 +22,40 @@ const toSearchParams = (query: ListProjectsQuery): string => {
   const params = new URLSearchParams();
 
   if (query.page != null) {
-    params.set("page", String(query.page));
+    params.set('page', String(query.page));
   }
   if (query.pageSize != null) {
-    params.set("pageSize", String(query.pageSize));
+    params.set('pageSize', String(query.pageSize));
   }
   if (query.salesStatus) {
-    params.set("salesStatus", query.salesStatus);
+    params.set('salesStatus', query.salesStatus);
   }
   if (query.minPrice != null) {
-    params.set("minPrice", String(query.minPrice));
+    params.set('minPrice', String(query.minPrice));
   }
   if (query.maxPrice != null) {
-    params.set("maxPrice", String(query.maxPrice));
+    params.set('maxPrice', String(query.maxPrice));
   }
-  if (query.rooms != null) {
-    params.set("rooms", String(query.rooms));
+  if (query.rooms != null && query.rooms.length > 0) {
+    params.set('rooms', query.rooms.join(','));
   }
   if (query.city) {
-    params.set("city", query.city);
+    params.set('city', query.city);
   }
   if (query.builderId) {
-    params.set("builderId", query.builderId);
+    params.set('builderId', query.builderId);
   }
   if (query.locale) {
-    params.set("locale", query.locale);
+    params.set('locale', query.locale);
   }
 
   const serialized = params.toString();
-  return serialized.length > 0 ? `?${serialized}` : "";
+  return serialized.length > 0 ? `?${serialized}` : '';
 };
 
 const localeQuery = (locale?: string): string => {
   if (!locale) {
-    return "";
+    return '';
   }
   return `?locale=${encodeURIComponent(locale)}`;
 };
@@ -126,9 +123,7 @@ export const getApartment = async (
 /**
  * Lists active builders with published project counts.
  */
-export const listBuilders = (
-  options: CatalogRequestOptions = {},
-): Promise<BuilderSummary[]> => {
+export const listBuilders = (options: CatalogRequestOptions = {}): Promise<BuilderSummary[]> => {
   return apiFetch<BuilderSummary[]>({
     path: `/builders${localeQuery(options.locale)}`,
     ...catalogListFetch(),
@@ -166,9 +161,7 @@ export const getBuilding = async (
   try {
     return await apiFetch<BuildingDetail>({
       path: `/buildings/${encodeURIComponent(buildingId)}${localeQuery(options.locale)}`,
-      ...(options.projectId
-        ? catalogProjectFetch(options.projectId)
-        : catalogListFetch()),
+      ...(options.projectId ? catalogProjectFetch(options.projectId) : catalogListFetch()),
     });
   } catch (error) {
     if (isApiErrorStatus(error, 404)) {
@@ -189,9 +182,7 @@ export const getFloor = async (
   try {
     return await apiFetch<FloorDetail>({
       path: `/floors/${encodeURIComponent(floorId)}${localeQuery(options.locale)}`,
-      ...(options.projectId
-        ? catalogProjectFetch(options.projectId)
-        : catalogListFetch()),
+      ...(options.projectId ? catalogProjectFetch(options.projectId) : catalogListFetch()),
     });
   } catch (error) {
     if (isApiErrorStatus(error, 404)) {

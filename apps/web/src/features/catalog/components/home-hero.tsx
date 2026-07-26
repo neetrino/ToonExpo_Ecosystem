@@ -8,11 +8,15 @@ import { cn } from '@/shared/ui/cn';
 /** Figma photo node `89:1399`. */
 const HERO_IMAGE_SRC = staticAssetUrl('/images/hero-building.webp');
 
+type HomeHeroProps = {
+  locations?: readonly string[] | undefined;
+};
+
 /**
  * Public home hero — full-bleed skyline with marketplace search.
  * Copy + spacing scale as one fluid unit across all viewports.
  */
-export const HomeHero = async () => {
+export const HomeHero = async ({ locations = [] }: HomeHeroProps) => {
   const t = await getTranslations('HomePage');
 
   return (
@@ -67,7 +71,7 @@ export const HomeHero = async () => {
         </div>
 
         <div className="mt-[clamp(1.5rem,1rem+2vw,2.5rem)] w-full">
-          <HeroSearch />
+          <HeroSearch locations={locations} />
         </div>
       </div>
     </section>

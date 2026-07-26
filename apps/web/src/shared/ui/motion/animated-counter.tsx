@@ -10,7 +10,7 @@ import { cn } from '@/shared/ui/cn';
 
 const DEFAULT_DURATION_MS = 900;
 
-export type AnimatedCounterFormatStyle = 'integer' | 'currencyUsd';
+export type AnimatedCounterFormatStyle = 'integer' | 'currencyAmd';
 
 type AnimatedCounterProps = {
   value: number;
@@ -124,17 +124,25 @@ export const AnimatedCounter = ({
   );
 };
 
+const AMD_GROUP_SEPARATOR = '\u00a0';
+const AMD_CURRENCY_SYMBOL = '֏';
+
+/**
+ * Hydration-safe AMD formatter (fixed grouping + dram sign).
+ * Avoids ICU locale mismatches between Node and browser.
+ */
+const formatAmdCurrency = (value: number): string => {
+  const digits = String(Math.round(value));
+  const grouped = digits.replace(/\B(?=(\d{3})+(?!\d))/g, AMD_GROUP_SEPARATOR);
+  return `${grouped} ${AMD_CURRENCY_SYMBOL}`;
+};
+
 const createFormatter = (
   formatStyle: AnimatedCounterFormatStyle,
   locale: string,
 ): ((n: number) => string) => {
-  if (formatStyle === 'currencyUsd') {
-    const formatter = new Intl.NumberFormat(locale, {
-      style: 'currency',
-      currency: 'USD',
-      maximumFractionDigits: 0,
-    });
-    return (n) => formatter.format(Math.round(n));
+  if (formatStyle === 'currencyAmd') {
+    return (n) => formatAmdCurrency(n);
   }
 
   const formatter = new Intl.NumberFormat(locale);
