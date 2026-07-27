@@ -1,7 +1,7 @@
 'use client';
 
 import { useQueryClient } from '@tanstack/react-query';
-import type { CrmDealStatus, RequestSource } from '@toonexpo/contracts';
+import type { CrmDealStatus } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 
@@ -9,7 +9,13 @@ import { updateCrmDeal } from '@/features/builder/api/portal-crm-api';
 import { CrmDealActivitiesSection } from '@/features/builder/components/crm-deal-activities-section';
 import { CrmDealApartmentsSection } from '@/features/builder/components/crm-deal-apartments-section';
 import { CrmDealAssigneeControl } from '@/features/builder/components/crm-deal-assignee-control';
-import { CrmDealFilters } from '@/features/builder/components/crm-deal-filters';
+import {
+  applyCrmDealFilterKey,
+  buildCrmDealFilterConfigs,
+  crmDealFiltersToRecord,
+  EMPTY_CRM_DEAL_FILTERS,
+  type CrmDealFiltersState,
+} from '@/features/builder/components/crm-deal-filters';
 import { CrmDealNotesSection } from '@/features/builder/components/crm-deal-notes-section';
 import { CrmDealRequestsSection } from '@/features/builder/components/crm-deal-requests-section';
 import { CrmDealStatusControl } from '@/features/builder/components/crm-deal-status-control';
@@ -40,7 +46,7 @@ import { useCrmNewLeadUrl } from '@/features/crm-board/use-crm-new-lead-url';
 import { useDebouncedValue } from '@/shared/hooks/use-debounced-value';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { Button } from '@/shared/ui/button';
-import { Input } from '@/shared/ui/input';
+import { IntegratedSearchFilters } from '@/shared/ui/integrated-search-filters';
 
 /**
  * Builder CRM Kanban workspace with deal SideSheet and new-deal flow.
@@ -53,12 +59,7 @@ export const CrmDealsListPage = () => {
   const debouncedSearch = useDebouncedValue(search.trim(), CRM_BOARD_SEARCH_DEBOUNCE_MS);
   const [boardError, setBoardError] = useState<string | null>(null);
   const { isNewLeadOpen, openNewLead, closeNewLead } = useCrmNewLeadUrl();
-  const [filters, setFilters] = useState<{
-    status: CrmDealStatus | '';
-    source: RequestSource | '';
-    projectId: string;
-    assignedUserId: string;
-  }>({ status: '', source: '', projectId: '', assignedUserId: '' });
+  const [filters, setFilters] = useState<CrmDealFiltersState>(EMPTY_CRM_DEAL_FILTERS);
 
   const projectsQuery = usePortalProjectsQuery(1, PORTAL_MAX_PAGE_SIZE);
   const membersQuery = useCompanyMembersQuery(1, PORTAL_MAX_PAGE_SIZE);
@@ -98,6 +99,27 @@ export const CrmDealsListPage = () => {
           name: member.user.name,
         })),
     [membersQuery.data],
+  );
+
+  const filterConfigs = useMemo(
+    () =>
+      buildCrmDealFilterConfigs({
+        projects,
+        assignees,
+        labels: {
+          status: t('columns.status'),
+          allStatuses: t('filters.allStatuses'),
+          source: t('filters.source'),
+          allSources: t('filters.allSources'),
+          project: t('filters.project'),
+          allProjects: t('filters.allProjects'),
+          assignee: t('filters.assignee'),
+          allAssignees: t('filters.allAssignees'),
+          statusOption: (status) => t(`statuses.${status}`),
+          sourceOption: (source) => t(`sources.${source}`),
+        },
+      }),
+    [projects, assignees, t],
   );
 
   const onStatusDrop = async (dealId: string, status: CrmDealStatus) => {
@@ -165,32 +187,32 @@ export const CrmDealsListPage = () => {
         </Button>
       </div>
 
-      <label className="relative flex max-w-xl shrink-0 flex-col gap-1.5">
-        <span className="text-xs font-medium uppercase tracking-wide text-ink-muted">
-          {tBoard('searchLabel')}
-        </span>
-        <Input
-          value={search}
-          placeholder={tBoard('searchPlaceholder')}
-          onChange={(event) => {
-            setSearch(event.target.value);
+      <div className="relative flex max-w-2xl shrink-0 flex-col gap-1.5">
+        <IntegratedSearchFilters
+          search={search}
+          searchPlaceholder={tBoard('searchPlaceholder')}
+          searchAriaLabel={tBoard('searchLabel')}
+          filters={filterConfigs}
+          filterValues={crmDealFiltersToRecord(filters)}
+          applyLabel={t('filters.apply')}
+          resetLabel={t('filters.reset')}
+          clearAllAriaLabel={t('filters.clearAll')}
+          panelAriaLabel={t('filters.panelLabel')}
+          removeChipAriaLabel={(chipLabel) => t('filters.removeChip', { label: chipLabel })}
+          onSearchChange={setSearch}
+          onFilterChange={(key, value) => {
+            setFilters((prev) => applyCrmDealFilterKey(prev, key, value));
+          }}
+          onClearAll={() => {
+            setFilters(EMPTY_CRM_DEAL_FILTERS);
           }}
         />
         {search.trim() ? (
           <CrmSearchResultsBadge
             count={deals.length}
-            className="pointer-events-none absolute right-0 top-0 max-w-[min(100%,14rem)]"
+            className="pointer-events-none absolute -top-5 right-0 max-w-[min(100%,14rem)]"
           />
         ) : null}
-      </label>
-
-      <div className="shrink-0">
-        <CrmDealFilters
-          value={filters}
-          projects={projects}
-          assignees={assignees}
-          onChange={setFilters}
-        />
       </div>
 
       {boardError ? (

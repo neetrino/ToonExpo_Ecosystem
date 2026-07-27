@@ -1,0 +1,203 @@
+'use client';
+
+import { useEffect, useMemo, useRef, useState, type RefObject } from 'react';
+
+import { IntegratedSearchBar } from '@/shared/ui/integrated-search-filters.bar';
+import { buildActiveIntegratedFilterChips } from '@/shared/ui/integrated-search-filters.build-chips';
+import {
+  INTEGRATED_SEARCH_FILTER_ALL_VALUE,
+  INTEGRATED_SEARCH_FILTER_PANEL_ALIGN_END,
+  INTEGRATED_SEARCH_FILTER_PANEL_ALIGN_START,
+  INTEGRATED_SEARCH_FILTER_PANEL_POSITION,
+  INTEGRATED_SEARCH_FILTER_PANEL_SURFACE,
+} from '@/shared/ui/integrated-search-filters.constants';
+import { IntegratedSearchFilterPanel } from '@/shared/ui/integrated-search-filters.panel';
+import type { IntegratedSearchFilterConfig } from '@/shared/ui/integrated-search-filters.types';
+import { cn } from '@/shared/ui/cn';
+
+const EMPTY_FILTER_VALUES: Record<string, string> = {};
+
+export type IntegratedSearchFiltersProps = {
+  search: string;
+  onSearchChange: (value: string) => void;
+  searchPlaceholder: string;
+  searchAriaLabel: string;
+  filters?: readonly IntegratedSearchFilterConfig[];
+  filterValues?: Record<string, string>;
+  onFilterChange?: (key: string, value: string) => void;
+  onClearAll?: () => void;
+  applyLabel: string;
+  resetLabel: string;
+  clearAllAriaLabel: string;
+  panelAriaLabel: string;
+  removeChipAriaLabel: (chipLabel: string) => string;
+  /** Panel horizontal anchor when search sits on the right. */
+  panelAlign?: 'start' | 'end' | undefined;
+  className?: string | undefined;
+};
+
+/**
+ * Search bar with filters inside — chips + focus panel (NBOS IntegratedSearchFilters pattern).
+ */
+export const IntegratedSearchFilters = ({
+  search,
+  onSearchChange,
+  searchPlaceholder,
+  searchAriaLabel,
+  filters,
+  filterValues = EMPTY_FILTER_VALUES,
+  onFilterChange,
+  onClearAll,
+  applyLabel,
+  resetLabel,
+  clearAllAriaLabel,
+  panelAriaLabel,
+  removeChipAriaLabel,
+  panelAlign = 'start',
+  className,
+}: IntegratedSearchFiltersProps) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [panelOpen, setPanelOpen] = useState(false);
+  const [draftFilters, setDraftFilters] = useState(filterValues);
+  const hasFilters = Boolean(filters?.length);
+  const chips = useMemo(
+    () => buildActiveIntegratedFilterChips(filters, filterValues),
+    [filters, filterValues],
+  );
+  const hasQuery = search.trim().length > 0 || chips.length > 0;
+
+  useOutsideClose(panelOpen, containerRef, setPanelOpen);
+
+  const handleReset = () => {
+    clearDraftToBaseline(filters, setDraftFilters);
+    onClearAll?.();
+    onSearchChange('');
+    setPanelOpen(false);
+  };
+
+  const openPanel = () => {
+    if (!hasFilters) {
+      return;
+    }
+    setDraftFilters(filterValues);
+    setPanelOpen(true);
+  };
+
+  return (
+    <div ref={containerRef} className={cn('relative w-full min-w-0', className)}>
+      <IntegratedSearchBar
+        search={search}
+        searchPlaceholder={searchPlaceholder}
+        searchAriaLabel={searchAriaLabel}
+        chips={chips}
+        hasQuery={hasQuery}
+        panelOpen={panelOpen}
+        hasFilters={hasFilters}
+        clearAllAriaLabel={clearAllAriaLabel}
+        removeChipAriaLabel={removeChipAriaLabel}
+        onSearchChange={onSearchChange}
+        onOpenPanel={openPanel}
+        onClosePanel={() => {
+          setPanelOpen(false);
+        }}
+        onRemoveChip={(key) => {
+          onFilterChange?.(key, INTEGRATED_SEARCH_FILTER_ALL_VALUE);
+        }}
+        onReset={handleReset}
+      />
+      {hasFilters && panelOpen ? (
+        <div
+          id="integrated-search-filter-panel"
+          role="dialog"
+          aria-label={panelAriaLabel}
+          className={cn(
+            INTEGRATED_SEARCH_FILTER_PANEL_POSITION,
+            panelAlign === 'end'
+              ? INTEGRATED_SEARCH_FILTER_PANEL_ALIGN_END
+              : INTEGRATED_SEARCH_FILTER_PANEL_ALIGN_START,
+            INTEGRATED_SEARCH_FILTER_PANEL_SURFACE,
+          )}
+        >
+          <IntegratedSearchFilterPanel
+            filters={filters ?? []}
+            filterValues={draftFilters}
+            onFilterChange={(key, value) => {
+              setDraftFilters((prev) => ({ ...prev, [key]: value }));
+            }}
+            onApply={() => {
+              applyDraftFilters(filters, draftFilters, filterValues, onFilterChange);
+              setPanelOpen(false);
+            }}
+            onReset={handleReset}
+            applyLabel={applyLabel}
+            resetLabel={resetLabel}
+          />
+        </div>
+      ) : null}
+    </div>
+  );
+};
+
+const applyDraftFilters = (
+  filters: readonly IntegratedSearchFilterConfig[] | undefined,
+  draftFilters: Record<string, string>,
+  filterValues: Record<string, string>,
+  onFilterChange: ((key: string, value: string) => void) | undefined,
+): void => {
+  if (!onFilterChange || !filters) {
+    return;
+  }
+  for (const filter of filters) {
+    const next = draftFilters[filter.key];
+    if (next !== undefined && next !== filterValues[filter.key]) {
+      onFilterChange(filter.key, next);
+    }
+  }
+};
+
+const clearDraftToBaseline = (
+  filters: readonly IntegratedSearchFilterConfig[] | undefined,
+  setDraftFilters: (next: Record<string, string>) => void,
+): void => {
+  const cleared: Record<string, string> = {};
+  filters?.forEach((filter) => {
+    cleared[filter.key] = INTEGRATED_SEARCH_FILTER_ALL_VALUE;
+  });
+  setDraftFilters(cleared);
+};
+
+const useOutsideClose = (
+  open: boolean,
+  containerRef: RefObject<HTMLDivElement | null>,
+  setPanelOpen: (open: boolean) => void,
+): void => {
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+    const onPointerDown = (event: PointerEvent) => {
+      const target = event.target;
+      if (!(target instanceof Element)) {
+        return;
+      }
+      if (containerRef.current?.contains(target)) {
+        return;
+      }
+      if (target.closest('[data-dropdown-portal]')) {
+        return;
+      }
+      setPanelOpen(false);
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setPanelOpen(false);
+      }
+    };
+    document.addEventListener('pointerdown', onPointerDown);
+    document.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown);
+      document.removeEventListener('keydown', onKeyDown);
+    };
+  }, [open, containerRef, setPanelOpen]);
+};

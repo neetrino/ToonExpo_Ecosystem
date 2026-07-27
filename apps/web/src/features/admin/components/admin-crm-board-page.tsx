@@ -38,10 +38,13 @@ import { useDebouncedValue } from '@/shared/hooks/use-debounced-value';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { Button } from '@/shared/ui/button';
-import { MultiListboxSelect } from '@/shared/ui/multi-listbox-select';
-import { SearchField } from '@/shared/ui/search-field';
+import { IntegratedSearchFilters } from '@/shared/ui/integrated-search-filters';
+import type { IntegratedSearchFilterConfig } from '@/shared/ui/integrated-search-filters.types';
 import { VIEW_MODE_CARDS, VIEW_MODE_LIST } from '@/shared/ui/view-mode';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
+
+const ADMIN_CRM_FILTER_COMPANY_KEY = 'companyId';
+const ADMIN_CRM_FILTER_SOURCE_KEY = 'source';
 
 /**
  * Platform admin CRM — Kanban (cards) / list table, create, animated status drag.
@@ -53,9 +56,9 @@ export const AdminCrmBoardPage = () => {
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebouncedValue(search.trim(), CRM_BOARD_SEARCH_DEBOUNCE_MS);
   /** Empty = All builders (default). */
-  const [companyIds, setCompanyIds] = useState<string[]>([]);
+  const [companyId, setCompanyId] = useState('');
   /** Empty = All sources (default). */
-  const [sources, setSources] = useState<RequestSource[]>([]);
+  const [source, setSource] = useState<RequestSource | ''>('');
   const [boardError, setBoardError] = useState<string | null>(null);
   const { isNewLeadOpen, openNewLead, closeNewLead } = useCrmNewLeadUrl();
   const { viewMode, setViewMode } = usePersistedViewMode(ADMIN_VIEW_MODE_KEYS.crm);
@@ -64,8 +67,8 @@ export const AdminCrmBoardPage = () => {
   const dealsQuery = useAdminCrmDealsQuery({
     page: 1,
     pageSize: ADMIN_CRM_BOARD_PAGE_SIZE,
-    ...(companyIds.length > 0 ? { companyIds } : {}),
-    ...(sources.length > 0 ? { sources } : {}),
+    ...(companyId ? { companyIds: [companyId] } : {}),
+    ...(source ? { sources: [source] } : {}),
     ...(debouncedSearch ? { q: debouncedSearch } : {}),
   });
   const deals = useMemo(
@@ -81,22 +84,35 @@ export const AdminCrmBoardPage = () => {
     [companiesQuery.data],
   );
 
-  const builderOptions = useMemo(
-    () =>
-      builderCompanies.map((company) => ({
-        value: company.id,
-        label: company.name,
-      })),
-    [builderCompanies],
-  );
+  const filterConfigs = useMemo((): IntegratedSearchFilterConfig[] => {
+    return [
+      {
+        key: ADMIN_CRM_FILTER_COMPANY_KEY,
+        label: t('filters.company'),
+        allOptionLabel: t('filters.allCompanies'),
+        options: builderCompanies.map((company) => ({
+          value: company.id,
+          label: company.name,
+        })),
+      },
+      {
+        key: ADMIN_CRM_FILTER_SOURCE_KEY,
+        label: tBoard('filters.source'),
+        allOptionLabel: tBoard('filters.allSources'),
+        options: CRM_BOARD_REQUEST_SOURCES.map((item) => ({
+          value: item,
+          label: tBoard(`sources.${item}`),
+        })),
+      },
+    ];
+  }, [builderCompanies, t, tBoard]);
 
-  const sourceOptions = useMemo(
-    () =>
-      CRM_BOARD_REQUEST_SOURCES.map((item) => ({
-        value: item,
-        label: tBoard(`sources.${item}`),
-      })),
-    [tBoard],
+  const filterValues = useMemo(
+    () => ({
+      [ADMIN_CRM_FILTER_COMPANY_KEY]: companyId,
+      [ADMIN_CRM_FILTER_SOURCE_KEY]: source,
+    }),
+    [companyId, source],
   );
 
   const onStatusDrop = async (dealId: string, status: CrmDealStatus) => {
@@ -150,58 +166,57 @@ export const AdminCrmBoardPage = () => {
 
   return (
     <div className={isBoardView ? 'crm-board-page' : 'flex flex-col gap-6'}>
-      <div className="flex shrink-0 flex-col gap-1">
-        <p className="crm-board-page__eyebrow">{t('eyebrow')}</p>
-        <h1 className="text-page-title text-ink">{t('title')}</h1>
-        <p className="text-sm text-ink-secondary">{t('subtitle', { count: totalCount })}</p>
-      </div>
-
-      <div className="flex shrink-0 flex-nowrap items-center justify-between gap-3 overflow-x-auto">
-        <div className="flex min-w-0 flex-1 flex-nowrap items-center gap-2">
-          <SearchField
-            className="min-w-[10rem] flex-1"
-            value={search}
-            placeholder={tBoard('searchPlaceholder')}
-            aria-label={tBoard('searchLabel')}
-            onChange={(event) => {
-              setSearch(event.target.value);
-            }}
-          />
-
-          <MultiListboxSelect
-            id="admin-crm-builders"
-            size="fit"
-            className="h-10 shrink-0"
-            aria-label={t('filters.company')}
-            values={companyIds}
-            options={builderOptions}
-            allLabel={t('filters.allCompanies')}
-            selectedCountLabel={(count) => t('filters.selectedCount', { count })}
-            onChange={setCompanyIds}
-          />
-
-          <MultiListboxSelect
-            id="admin-crm-sources"
-            size="fit"
-            className="h-10 shrink-0"
-            aria-label={tBoard('filters.source')}
-            values={sources}
-            options={sourceOptions}
-            allLabel={tBoard('filters.allSources')}
-            selectedCountLabel={(count) => tBoard('filters.selectedCount', { count })}
-            onChange={(next) => {
-              setSources(next as RequestSource[]);
-            }}
-          />
+      <div className="flex shrink-0 flex-nowrap items-center justify-between gap-3">
+        <div className="min-w-0 shrink">
+          <p className="crm-board-page__eyebrow">{t('eyebrow')}</p>
+          <h1 className="text-page-title text-ink">{t('title')}</h1>
+          <p className="truncate text-sm text-ink-secondary">
+            {t('subtitle', { count: totalCount })}
+          </p>
         </div>
 
-        <div className="flex shrink-0 items-center gap-2">
-          {search.trim() ? <CrmSearchResultsBadge count={deals.length} /> : null}
+        <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
+          <div className="relative min-w-[12rem] max-w-md flex-1">
+            <IntegratedSearchFilters
+              search={search}
+              searchPlaceholder={tBoard('searchPlaceholder')}
+              searchAriaLabel={tBoard('searchLabel')}
+              filters={filterConfigs}
+              filterValues={filterValues}
+              applyLabel={t('filters.apply')}
+              resetLabel={t('filters.reset')}
+              clearAllAriaLabel={t('filters.clearAll')}
+              panelAriaLabel={t('filters.panelLabel')}
+              removeChipAriaLabel={(chipLabel) => t('filters.removeChip', { label: chipLabel })}
+              panelAlign="end"
+              onSearchChange={setSearch}
+              onFilterChange={(key, value) => {
+                if (key === ADMIN_CRM_FILTER_COMPANY_KEY) {
+                  setCompanyId(value);
+                  return;
+                }
+                if (key === ADMIN_CRM_FILTER_SOURCE_KEY) {
+                  setSource(value as RequestSource | '');
+                }
+              }}
+              onClearAll={() => {
+                setCompanyId('');
+                setSource('');
+              }}
+            />
+            {search.trim() ? (
+              <CrmSearchResultsBadge
+                count={deals.length}
+                className="pointer-events-none absolute -top-5 right-0 max-w-[min(100%,14rem)]"
+              />
+            ) : null}
+          </div>
           <ViewModeToggle value={viewMode} onChange={setViewMode} />
           <Button
             type="button"
             size="sm"
             variant="secondary"
+            className="shrink-0"
             onClick={() => {
               openNewLead();
             }}
@@ -245,7 +260,7 @@ export const AdminCrmBoardPage = () => {
           id: company.id,
           name: company.name,
         }))}
-        defaultCompanyId={companyIds[0] ?? ''}
+        defaultCompanyId={companyId}
         onClose={() => {
           closeNewLead();
         }}

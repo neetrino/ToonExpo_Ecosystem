@@ -1063,7 +1063,12 @@
       "filters": {
         "company": "Застройщик",
         "allCompanies": "Все застройщики",
-        "selectedCount": "{count} выбрано"
+        "selectedCount": "{count} выбрано",
+        "apply": "Применить",
+        "reset": "Сбросить",
+        "clearAll": "Очистить поиск и фильтры",
+        "panelLabel": "Фильтры поиска",
+        "removeChip": "Убрать фильтр {label}"
       },
       "empty": "Нет сделок по этим фильтрам.",
       "columns": {
@@ -2527,7 +2532,12 @@
         "project": "Проект",
         "allProjects": "Все проекты",
         "assignee": "Ответственный",
-        "allAssignees": "Все ответственные"
+        "allAssignees": "Все ответственные",
+        "apply": "Применить",
+        "reset": "Сбросить",
+        "clearAll": "Очистить поиск и фильтры",
+        "panelLabel": "Фильтры поиска",
+        "removeChip": "Убрать фильтр {label}"
       },
       "pagination": {
         "previous": "Назад",

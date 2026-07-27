@@ -1063,7 +1063,12 @@
       "filters": {
         "company": "Builder",
         "allCompanies": "All builders",
-        "selectedCount": "{count} selected"
+        "selectedCount": "{count} selected",
+        "apply": "Apply",
+        "reset": "Reset",
+        "clearAll": "Clear search and filters",
+        "panelLabel": "Search filters",
+        "removeChip": "Remove filter {label}"
       },
       "empty": "No deals match these filters.",
       "columns": {
@@ -2832,7 +2837,12 @@
         "project": "Project",
         "allProjects": "All projects",
         "assignee": "Assignee",
-        "allAssignees": "All assignees"
+        "allAssignees": "All assignees",
+        "apply": "Apply",
+        "reset": "Reset",
+        "clearAll": "Clear search and filters",
+        "panelLabel": "Search filters",
+        "removeChip": "Remove filter {label}"
       },
       "pagination": {
         "previous": "Previous",

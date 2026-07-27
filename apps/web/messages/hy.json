@@ -1063,7 +1063,12 @@
       "filters": {
         "company": "Կառուցապատող",
         "allCompanies": "Բոլոր կառուցապատողները",
-        "selectedCount": "{count} ընտրված"
+        "selectedCount": "{count} ընտրված",
+        "apply": "Կիրառել",
+        "reset": "Մաքրել",
+        "clearAll": "Մաքրել որոնումը և ֆիլտրերը",
+        "panelLabel": "Որոնման ֆիլտրեր",
+        "removeChip": "Հեռացնել ֆիլտրը {label}"
       },
       "empty": "Այս ֆիլտրերով deal չկա։",
       "columns": {
@@ -2636,7 +2641,12 @@
         "project": "Նախագիծ",
         "allProjects": "Բոլոր նախագծերը",
         "assignee": "Պատասխանատու",
-        "allAssignees": "Բոլոր պատասխանատուները"
+        "allAssignees": "Բոլոր պատասխանատուները",
+        "apply": "Կիրառել",
+        "reset": "Մաքրել",
+        "clearAll": "Մաքրել որոնումը և ֆիլտրերը",
+        "panelLabel": "Որոնման ֆիլտրեր",
+        "removeChip": "Հեռացնել ֆիլտրը {label}"
       },
       "pagination": {
         "previous": "Նախորդ",

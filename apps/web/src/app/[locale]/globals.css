@@ -752,7 +752,8 @@
     gap: 1.25rem;
     height: calc(100dvh - 9.5rem);
     max-height: calc(100dvh - 9.5rem);
-    overflow: hidden;
+    /* Overflow only on the board — keeps the search filter panel visible. */
+    overflow: visible;
   }
 
   .crm-board-page__eyebrow {
@@ -769,6 +770,7 @@
     min-height: 0;
     flex: 1 1 0%;
     flex-direction: column;
+    overflow: hidden;
   }
 
   .crm-kanban-board-columns {
