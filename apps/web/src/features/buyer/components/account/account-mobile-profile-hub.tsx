@@ -15,7 +15,7 @@ import type { LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { useLogoutMutation } from '@/features/auth/hooks/use-auth';
-import { Link, usePathname } from '@/i18n/navigation';
+import { Link } from '@/i18n/navigation';
 import { getAccountInitials } from '@/shared/lib/account-initials';
 import { cn } from '@/shared/ui/cn';
 
@@ -78,15 +78,6 @@ const MENU_ITEMS: ReadonlyArray<NavItem> = [
   },
 ];
 
-const EXACT_MATCH_HREFS = new Set(['/dashboard', '/settings', '/qr', '/checkin']);
-
-const isActive = (pathname: string, href: string): boolean => {
-  if (EXACT_MATCH_HREFS.has(href)) {
-    return pathname === href;
-  }
-  return pathname === href || pathname.startsWith(`${href}/`);
-};
-
 type AccountMobileProfileHubProps = {
   name: string;
   email: string;
@@ -96,6 +87,8 @@ type AccountMobileProfileHubProps = {
 
 /**
  * MaMarie-style mobile profile hub: avatar + name, then sidebar nav as page body.
+ * No active-row highlight — this hub only mounts on `/dashboard`, so Dashboard
+ * would otherwise look permanently selected.
  */
 export const AccountMobileProfileHub = ({
   name,
@@ -105,7 +98,6 @@ export const AccountMobileProfileHub = ({
 }: AccountMobileProfileHubProps) => {
   const t = useTranslations('Profile.nav');
   const tAuth = useTranslations('Auth');
-  const pathname = usePathname();
   const logoutMutation = useLogoutMutation();
   const showBuyerTabs = accountType === 'buyer';
   const items = MENU_ITEMS.filter((item) => !item.buyerOnly || showBuyerTabs);
@@ -135,16 +127,11 @@ export const AccountMobileProfileHub = ({
         <ul className="divide-y divide-border/60">
           {items.map((item) => {
             const Icon = item.icon;
-            const active = isActive(pathname, item.href);
             return (
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  aria-current={active ? 'page' : undefined}
-                  className={cn(
-                    'flex w-full items-center justify-between px-4 py-3.5 transition-colors',
-                    active ? 'bg-brand-soft/50' : 'hover:bg-canvas',
-                  )}
+                  className="flex w-full items-center justify-between px-4 py-3.5 transition-colors hover:bg-canvas"
                 >
                   <span className="flex min-w-0 items-center gap-3">
                     <span
