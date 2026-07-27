@@ -85,9 +85,23 @@ export const ProjectDetailHero = ({ project }: ProjectDetailHeroProps) => {
           <dl className="mt-8 grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-5">
             <HeroStat label={t('statStatus')} value={homeT(`badges.${badge}`)} />
             <HeroStat label={t('statCompletion')} value={completion} />
-            <HeroStat label={t('statFrom')} value={priceLabel} />
-            <HeroStat label={t('statTotalUnits')} value={String(project.availability.total)} />
-            <HeroStat label={t('statSold')} value={`${soldPercent}%`} />
+            <HeroStat
+              label={t('statFrom')}
+              value={priceLabel}
+              className="order-5 max-sm:col-span-2 max-sm:justify-start max-sm:pl-[max(0rem,calc((100%-1.5rem)/4-2.75rem))] sm:order-3"
+              valueClassName="max-sm:whitespace-nowrap"
+            />
+            <HeroStat
+              label={t('statTotalUnits')}
+              value={String(project.availability.total)}
+              align="center"
+              className="order-4"
+            />
+            <HeroStat
+              label={t('statSold')}
+              value={`${soldPercent}%`}
+              className="order-3 sm:order-5"
+            />
           </dl>
         </div>
       </div>
@@ -95,11 +109,30 @@ export const ProjectDetailHero = ({ project }: ProjectDetailHeroProps) => {
   );
 };
 
-const HeroStat = ({ label, value }: { label: string; value: string }) => (
-  <div className="flex justify-center">
-    <div className={cn(STAT_CONTENT_MIN_CLASS, 'text-left')}>
+const HeroStat = ({
+  label,
+  value,
+  className,
+  valueClassName,
+  align = 'left',
+}: {
+  label: string;
+  value: string;
+  className?: string | undefined;
+  valueClassName?: string | undefined;
+  align?: 'left' | 'center' | undefined;
+}) => (
+  <div className={cn('flex justify-center', className)}>
+    <div className={cn(STAT_CONTENT_MIN_CLASS, align === 'center' ? 'text-center' : 'text-left')}>
       <dt className="text-[10px] font-bold tracking-widest text-header-muted uppercase">{label}</dt>
-      <dd className="mt-1.5 font-brand text-xl font-bold leading-7 text-ink-navy">{value}</dd>
+      <dd
+        className={cn(
+          'mt-1.5 font-brand text-xl font-bold leading-7 text-ink-navy',
+          valueClassName,
+        )}
+      >
+        {value}
+      </dd>
     </div>
   </div>
 );

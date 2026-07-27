@@ -13,6 +13,6 @@ export const ProjectDetailFavorite = ({ projectId }: ProjectDetailFavoriteProps)
   <FavoriteToggleButton
     targetType="project"
     targetId={projectId}
-    className="absolute top-24 right-6 z-10 sm:top-28"
+    className="absolute top-24 right-6 z-10 hidden sm:top-28 sm:block"
   />
 );
