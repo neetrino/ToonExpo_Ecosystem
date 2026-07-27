@@ -219,14 +219,16 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
                 <LocaleSwitcher tone={isOverHero ? 'dark' : 'light'} />
               </div>
 
-              <ProfileMenu
-                userName={user?.name}
-                userEmail={user?.email}
-                accountType={user?.accountType}
-                companyType={user?.companyType}
-                showBuilder={isBuilderMember}
-                tone={isOverHero ? 'dark' : 'light'}
-              />
+              <div className={cn(isAccountRoute && 'hidden md:block')}>
+                <ProfileMenu
+                  userName={user?.name}
+                  userEmail={user?.email}
+                  accountType={user?.accountType}
+                  companyType={user?.companyType}
+                  showBuilder={isBuilderMember}
+                  tone={isOverHero ? 'dark' : 'light'}
+                />
+              </div>
 
               <IconButton
                 label={t('menu')}

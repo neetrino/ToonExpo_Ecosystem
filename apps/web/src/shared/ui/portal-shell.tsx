@@ -3,17 +3,19 @@
 import { type ReactNode, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Menu, X } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 import { BrandLogo } from '@/shared/ui/brand-logo';
 import { accountMobileNavController } from '@/shared/ui/account-mobile-nav-controller';
 import { lockBodyScroll, unlockBodyScroll } from '@/shared/ui/body-scroll-lock';
+import { DrawerCloseTab } from '@/shared/ui/drawer-close-tab';
 import { IconButton } from '@/shared/ui/icon-button';
 import { LocaleSwitcher } from '@/shared/ui/locale-switcher';
 import { MODAL_BACKDROP_CLASS_NAME } from '@/shared/ui/modal-backdrop';
 import {
   SIDE_SHEET_BACKDROP_TRANSITION_MS,
   SIDE_SHEET_PANEL_TRANSITION_MS,
+  SIDE_SHEET_PANEL_Z_INDEX,
   SIDE_SHEET_Z_INDEX,
 } from '@/shared/ui/side-sheet.constants';
 import { SiteHeader } from '@/shared/ui/site-header';
@@ -68,6 +70,12 @@ const RAIL_HEADER_BAND_HEIGHT_CLASS = 'h-[calc(4.5rem+env(safe-area-inset-top,0p
 /** Header band + light extra clip so content vanishes just below the header edge. */
 const RAIL_CONTENT_MASK_HEIGHT_CLASS = 'h-[calc(5.125rem+env(safe-area-inset-top,0px))]';
 const RAIL_SIDEBAR_WIDTH_CLASS = 'w-72';
+/** Narrower than desktop rail so the drawer leaves more page visible on phones. */
+const MOBILE_DRAWER_WIDTH_CLASS = 'w-[min(72vw,14rem)]';
+/** Armenian labels need a touch more room in the mobile drawer. */
+const MOBILE_DRAWER_WIDTH_HY_CLASS = 'w-[min(78vw,15.5rem)]';
+/** Slightly below admin sheet close tab — aligns with logo block on the dark rail. */
+const MOBILE_DRAWER_CLOSE_TOP_PX = 36;
 const RAIL_ROW_GAP_CLASS = 'md:pt-4';
 /** Mobile-only top air when the public pill has no opaque header band. */
 const RAIL_ROW_GAP_PUBLIC_HEADER_MOBILE_CLASS = 'max-md:pt-4';
@@ -91,6 +99,8 @@ export const PortalShell = ({
   mobileHeader,
 }: PortalShellProps) => {
   const t = useTranslations('Nav');
+  const tCommon = useTranslations('Common');
+  const locale = useLocale();
   const pathname = usePathname();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const { rendered: drawerRendered, visible: drawerVisible } = useDrawerTransition(
@@ -100,6 +110,8 @@ export const PortalShell = ({
   const isRail = variant === 'rail';
   const renderSiteHeader = isRail && showSiteHeader;
   const renderRailHeaderMask = isRail && showRailHeaderMask;
+  const mobileDrawerWidthClass =
+    locale === 'hy' ? MOBILE_DRAWER_WIDTH_HY_CLASS : MOBILE_DRAWER_WIDTH_CLASS;
 
   useEffect(() => {
     if (mobileDrawerControlledByNavbar) {
@@ -154,39 +166,45 @@ export const PortalShell = ({
           style={{
             ['--side-sheet-backdrop-ms' as string]: `${SIDE_SHEET_BACKDROP_TRANSITION_MS}ms`,
           }}
-          aria-label={t('menu')}
+          aria-label={tCommon('close')}
           onClick={closeDrawer}
         />
-        <nav
-          id="portal-mobile-nav"
-          aria-label={navLabel}
+        <div
           className={cn(
-            'absolute inset-y-0 left-0 flex w-[min(100%,20rem)] flex-col p-4',
-            'rounded-tr-[2.5rem] rounded-br-[2.5rem] shadow-[8px_0_40px_rgb(14_15_20/0.14)]',
+            'absolute inset-y-0 left-0',
+            mobileDrawerWidthClass,
             'transition-transform duration-[var(--side-sheet-panel-ms)] ease-[var(--ease-out-premium)]',
             'motion-reduce:transition-none motion-reduce:duration-0 will-change-transform',
             drawerVisible
               ? 'pointer-events-auto translate-x-0'
               : 'pointer-events-none -translate-x-full motion-reduce:translate-x-0',
-            isRail ? 'bg-brand-secondary' : 'border-r border-border bg-surface-elevated',
           )}
           style={{
             ['--side-sheet-panel-ms' as string]: `${SIDE_SHEET_PANEL_TRANSITION_MS}ms`,
           }}
         >
-          <div className="mb-4 flex items-center justify-between">
-            <BrandLogo href={brandHref} badge={badge} size="sm" inverted={isRail} />
-            <IconButton
-              label={t('menu')}
-              size="sm"
-              className={isRail ? 'text-on-dark hover:bg-on-dark/10' : undefined}
-              onClick={closeDrawer}
-            >
-              <X className="size-4" aria-hidden />
-            </IconButton>
-          </div>
-          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">{sidebar}</div>
-        </nav>
+          <DrawerCloseTab
+            edge="end"
+            onClose={closeDrawer}
+            closeLabel={tCommon('close')}
+            topPx={MOBILE_DRAWER_CLOSE_TOP_PX}
+          />
+          <nav
+            id="portal-mobile-nav"
+            aria-label={navLabel}
+            className={cn(
+              'relative flex h-full w-full flex-col overflow-hidden p-4',
+              'rounded-tr-[2.5rem] rounded-br-[2.5rem] shadow-[8px_0_40px_rgb(14_15_20/0.14)]',
+              isRail ? 'bg-brand-secondary' : 'border-r border-border bg-surface-elevated',
+            )}
+            style={{ zIndex: SIDE_SHEET_PANEL_Z_INDEX }}
+          >
+            <div className="mb-4 shrink-0">
+              <BrandLogo href={brandHref} badge={badge} size="sm" inverted={isRail} />
+            </div>
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">{sidebar}</div>
+          </nav>
+        </div>
       </div>
     ) : null;
 
