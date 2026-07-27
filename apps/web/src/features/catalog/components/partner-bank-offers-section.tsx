@@ -63,7 +63,7 @@ export const PartnerBankOffersSection = async ({
               </p>
             </div>
 
-            <dl className="grid shrink-0 grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-3 sm:gap-x-8">
+            <dl className="grid shrink-0 grid-cols-3 gap-x-3 gap-y-3 sm:gap-x-8">
               <Metric label={tMortgage('rate')} value={`${offer.rate}%`} />
               <Metric label={tMortgage('apr')} value={offer.apr != null ? `${offer.apr}%` : '—'} />
               <Metric label={tMortgage('minDown')} value={`${offer.minDownPaymentPercent}%`} />
@@ -76,8 +76,10 @@ export const PartnerBankOffersSection = async ({
 };
 
 const Metric = ({ label, value }: { label: string; value: string }) => (
-  <div>
+  <div className="min-w-0 text-center">
     <dt className="text-[10px] font-bold tracking-widest text-header-muted uppercase">{label}</dt>
-    <dd className="mt-0.5 font-brand text-lg font-bold leading-7 text-ink-navy">{value}</dd>
+    <dd className="mt-0.5 font-brand text-lg font-bold leading-7 whitespace-nowrap text-ink-navy">
+      {value}
+    </dd>
   </div>
 );
