@@ -55,12 +55,13 @@ export const ProfileMenu = ({
     showBuilderProp ??
     (accountType === 'company_member' && (companyType == null || companyType === 'builder'));
   const showProfile = !showAdmin && !showBuilder;
+  /** Same idea as Admin → `/admin`: open the account portal (sidebar), not a deep settings page. */
   const profileHref =
     accountType === 'company_member' &&
     companyType != null &&
     isPartnerCompatibleCompany(companyType)
-      ? '/partner/settings'
-      : '/settings';
+      ? '/partner'
+      : '/dashboard';
 
   const clearCloseTimer = (): void => {
     if (closeTimerRef.current == null) {

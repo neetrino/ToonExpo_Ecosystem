@@ -6,7 +6,7 @@ import { AccountPageHeader } from '@/features/buyer/components/account/account-p
 import { AccountShell } from '@/features/buyer/components/account/account-shell';
 import { BuyerQrPageContent } from '@/features/buyer/components/buyer-qr-page-content';
 import { isBuyerAccount } from '@/features/buyer/utils/is-buyer-account';
-import { getMeOrNull } from '@/features/auth/api/auth-api';
+import { getMeOrNullCached as getMeOrNull } from '@/features/auth/api/get-me-or-null-cached';
 import { redirect } from '@/i18n/navigation';
 
 type MyQrPageProps = {

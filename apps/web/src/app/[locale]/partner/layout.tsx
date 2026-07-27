@@ -6,7 +6,7 @@ import type { ReactNode } from 'react';
 import { getCompanyProfile } from '@/features/builder/api/company-profile-api';
 import { getPortalPartner } from '@/features/partner/api/portal-partner-api';
 import { PartnerNav } from '@/features/partner/components/partner-nav';
-import { getMeOrNull } from '@/features/auth/api/auth-api';
+import { getMeOrNullCached as getMeOrNull } from '@/features/auth/api/get-me-or-null-cached';
 import { isPartnerCompatibleCompany } from '@/features/partners/utils/is-partner-compatible-company';
 import { redirect } from '@/i18n/navigation';
 import { isApiErrorStatus } from '@/shared/api/errors';

@@ -7,6 +7,10 @@ import { useEffect, useState } from 'react';
 import { useMeQuery } from '@/features/auth/hooks/use-auth';
 import { Link, usePathname } from '@/i18n/navigation';
 import { isPartnerCompatibleCompany } from '@/features/partners/utils/is-partner-compatible-company';
+import {
+  accountMobileNavController,
+  isBuyerAccountPath,
+} from '@/shared/ui/account-mobile-nav-controller';
 import { BrandLogo } from '@/shared/ui/brand-logo';
 import { lockBodyScroll, unlockBodyScroll } from '@/shared/ui/body-scroll-lock';
 import { cn } from '@/shared/ui/cn';
@@ -53,16 +57,28 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
   const pathname = usePathname();
   const { data: user } = useMeQuery();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [accountNavOpen, setAccountNavOpen] = useState(false);
   const [showPill, setShowPill] = useState(false);
   const isTransparentStart = variant === 'transparent';
+  const isAccountRoute = isBuyerAccountPath(pathname);
+  const burgerOpen = isAccountRoute ? accountNavOpen : menuOpen;
   /** Solid pages always use the home pill chrome; home reveals it on scroll. */
-  const pillVisible = !isTransparentStart || showPill || menuOpen;
+  const pillVisible = !isTransparentStart || showPill || burgerOpen;
   const isOverHero = isTransparentStart && !pillVisible;
   const needsSpacer = !isTransparentStart;
 
   useEffect(() => {
     setMenuOpen(false);
+    accountMobileNavController.setOpen(false);
   }, [pathname]);
+
+  useEffect(() => {
+    if (!isAccountRoute) {
+      accountMobileNavController.setOpen(false);
+      return;
+    }
+    return accountMobileNavController.subscribe(setAccountNavOpen);
+  }, [isAccountRoute]);
 
   useEffect(() => {
     if (!isTransparentStart) {
@@ -80,14 +96,14 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
   }, [isTransparentStart]);
 
   useEffect(() => {
-    if (!menuOpen) {
+    if (!menuOpen || isAccountRoute) {
       return;
     }
     lockBodyScroll();
     return () => {
       unlockBodyScroll();
     };
-  }, [menuOpen]);
+  }, [menuOpen, isAccountRoute]);
 
   const isBuilderMember =
     user?.accountType === 'company_member' &&
@@ -105,7 +121,7 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
 
   return (
     <>
-      {menuOpen ? (
+      {menuOpen && !isAccountRoute ? (
         <button
           type="button"
           aria-label={tCommon('close')}
@@ -150,7 +166,13 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
               className="flex shrink-0 items-center transition-transform ease-out"
               style={contentInsetStyle}
             >
-              <BrandLogo inverted={isOverHero} onHomeClick={() => setMenuOpen(false)} />
+              <BrandLogo
+                inverted={isOverHero}
+                onHomeClick={() => {
+                  setMenuOpen(false);
+                  accountMobileNavController.setOpen(false);
+                }}
+              />
             </div>
 
             <nav
@@ -208,17 +230,24 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
               <IconButton
                 label={t('menu')}
                 className={cn(
-                  'rounded-full lg:hidden transition-[background-color,border-color,color] ease-out',
+                  'rounded-full transition-[background-color,border-color,color] ease-out',
+                  isAccountRoute ? 'md:hidden' : 'lg:hidden',
                   isOverHero && 'border-white/30 bg-white/10 text-on-dark hover:bg-white/15',
                 )}
                 style={{ transitionDuration: `${PILL_APPEAR_MS}ms` }}
                 variant="outline"
                 size="md"
-                aria-expanded={menuOpen}
-                aria-controls="mobile-nav"
-                onClick={() => setMenuOpen((open) => !open)}
+                aria-expanded={burgerOpen}
+                aria-controls={isAccountRoute ? 'portal-mobile-nav' : 'mobile-nav'}
+                onClick={() => {
+                  if (isAccountRoute) {
+                    accountMobileNavController.toggle();
+                    return;
+                  }
+                  setMenuOpen((open) => !open);
+                }}
               >
-                {menuOpen ? (
+                {burgerOpen ? (
                   <X className="size-5" aria-hidden />
                 ) : (
                   <Menu className="size-5" aria-hidden />
@@ -227,7 +256,7 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
             </div>
           </div>
 
-          {menuOpen ? (
+          {menuOpen && !isAccountRoute ? (
             <SiteHeaderMobileNav
               navItems={NAV_HREFS}
               pathname={pathname}

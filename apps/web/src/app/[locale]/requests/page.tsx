@@ -5,7 +5,7 @@ import { AccountPageEnter } from '@/features/buyer/components/account/account-pa
 import { AccountPageHeader } from '@/features/buyer/components/account/account-page-header';
 import { BuyerRequestsList } from '@/features/buyer/components/buyer-requests-list';
 import { isBuyerAccount } from '@/features/buyer/utils/is-buyer-account';
-import { getMeOrNull } from '@/features/auth/api/auth-api';
+import { getMeOrNullCached as getMeOrNull } from '@/features/auth/api/get-me-or-null-cached';
 import { redirect } from '@/i18n/navigation';
 
 type RequestsPageProps = {

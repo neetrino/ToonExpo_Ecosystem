@@ -10,22 +10,13 @@ type PublicChromeProps = {
   children: ReactNode;
 };
 
-/** Route prefixes that render their own shell (no public SiteHeader). */
-const PORTAL_PREFIXES = [
-  '/admin',
-  '/builder',
-  '/partner',
-  '/checkin',
-  '/settings',
-  '/dashboard',
-  '/favorites',
-  '/requests',
-] as const;
+/**
+ * Route prefixes that render their own shell (no public SiteHeader).
+ * Buyer account routes keep the public SiteHeader via PublicChrome.
+ */
+const PORTAL_PREFIXES = ['/admin', '/builder', '/partner'] as const;
 
 const isPortalRoute = (pathname: string): boolean => {
-  if (pathname === '/qr') {
-    return true;
-  }
   return PORTAL_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
 };
 

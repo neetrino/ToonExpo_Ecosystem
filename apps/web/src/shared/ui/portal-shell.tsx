@@ -1,14 +1,23 @@
 'use client';
 
 import { type ReactNode, useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Menu, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { BrandLogo } from '@/shared/ui/brand-logo';
+import { accountMobileNavController } from '@/shared/ui/account-mobile-nav-controller';
+import { lockBodyScroll, unlockBodyScroll } from '@/shared/ui/body-scroll-lock';
 import { IconButton } from '@/shared/ui/icon-button';
 import { LocaleSwitcher } from '@/shared/ui/locale-switcher';
 import { MODAL_BACKDROP_CLASS_NAME } from '@/shared/ui/modal-backdrop';
+import {
+  SIDE_SHEET_BACKDROP_TRANSITION_MS,
+  SIDE_SHEET_PANEL_TRANSITION_MS,
+  SIDE_SHEET_Z_INDEX,
+} from '@/shared/ui/side-sheet.constants';
 import { SiteHeader } from '@/shared/ui/site-header';
+import { useDrawerTransition } from '@/shared/ui/use-drawer-transition';
 import { Link, usePathname } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 
@@ -27,6 +36,21 @@ type PortalShellProps = {
    * Default keeps the light portal card chrome.
    */
   variant?: 'default' | 'rail';
+  /**
+   * When false, skip SiteHeader (use when PublicChrome already mounts it —
+   * buyer account routes).
+   */
+  showSiteHeader?: boolean | undefined;
+  /**
+   * Opaque bands under the floating header so scrolled content vanishes.
+   * Turn off for buyer account so the pill sits like on public pages.
+   */
+  showRailHeaderMask?: boolean | undefined;
+  /**
+   * When true, the public SiteHeader burger opens this drawer (buyer account).
+   * Hides the in-page mobile menu button.
+   */
+  mobileDrawerControlledByNavbar?: boolean | undefined;
   /** Optional label shown beside the mobile menu control (rail). */
   mobileHeader?: ReactNode;
 };
@@ -38,6 +62,8 @@ type PortalShellProps = {
  * Content mask extends a bit lower so scrolled main vanishes under the header.
  */
 const RAIL_CHROME_TOP_CLASS = 'top-[5.5rem]';
+/** Sidebar top when the public pill has no opaque header band (buyer account). */
+const RAIL_CHROME_TOP_PUBLIC_HEADER_CLASS = 'top-[7.25rem]';
 const RAIL_CHROME_BOTTOM_CLASS = 'bottom-0';
 /** Header spacer band under the fixed pill. */
 const RAIL_HEADER_BAND_HEIGHT_CLASS = 'h-[4.5rem]';
@@ -45,6 +71,8 @@ const RAIL_HEADER_BAND_HEIGHT_CLASS = 'h-[4.5rem]';
 const RAIL_CONTENT_MASK_HEIGHT_CLASS = 'h-[5.125rem]';
 const RAIL_SIDEBAR_WIDTH_CLASS = 'w-72';
 const RAIL_ROW_GAP_CLASS = 'md:pt-4';
+/** Extra top air when the public pill has no opaque header band. */
+const RAIL_ROW_GAP_PUBLIC_HEADER_CLASS = 'pt-4 md:pt-10';
 
 /**
  * Shared portal chrome: top bar + desktop sidebar + mobile drawer.
@@ -59,31 +87,114 @@ export const PortalShell = ({
   children,
   sidebar,
   variant = 'default',
+  showSiteHeader = true,
+  showRailHeaderMask = true,
+  mobileDrawerControlledByNavbar = false,
   mobileHeader,
 }: PortalShellProps) => {
   const t = useTranslations('Nav');
   const pathname = usePathname();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const { rendered: drawerRendered, visible: drawerVisible } = useDrawerTransition(
+    drawerOpen,
+    SIDE_SHEET_PANEL_TRANSITION_MS,
+  );
   const isRail = variant === 'rail';
+  const renderSiteHeader = isRail && showSiteHeader;
+  const renderRailHeaderMask = isRail && showRailHeaderMask;
 
   useEffect(() => {
-    setDrawerOpen(false);
-  }, [pathname]);
-
-  useEffect(() => {
-    if (!drawerOpen) {
+    if (mobileDrawerControlledByNavbar) {
+      accountMobileNavController.setOpen(false);
       return;
     }
-    const previous = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    setDrawerOpen(false);
+  }, [pathname, mobileDrawerControlledByNavbar]);
+
+  useEffect(() => {
+    if (!mobileDrawerControlledByNavbar) {
+      return;
+    }
+    return accountMobileNavController.subscribe(setDrawerOpen);
+  }, [mobileDrawerControlledByNavbar]);
+
+  useEffect(() => {
+    if (!drawerRendered) {
+      return;
+    }
+    lockBodyScroll();
     return () => {
-      document.body.style.overflow = previous;
+      unlockBodyScroll();
     };
-  }, [drawerOpen]);
+  }, [drawerRendered]);
+
+  const closeDrawer = (): void => {
+    if (mobileDrawerControlledByNavbar) {
+      accountMobileNavController.setOpen(false);
+      return;
+    }
+    setDrawerOpen(false);
+  };
+
+  const mobileDrawer =
+    drawerRendered && typeof document !== 'undefined' ? (
+      <div
+        className={cn('fixed inset-0 md:hidden', drawerVisible ? '' : 'pointer-events-none')}
+        style={{ zIndex: SIDE_SHEET_Z_INDEX }}
+        aria-hidden={!drawerVisible}
+      >
+        <button
+          type="button"
+          tabIndex={drawerVisible ? 0 : -1}
+          className={cn(
+            'absolute inset-0',
+            MODAL_BACKDROP_CLASS_NAME,
+            'transition-opacity duration-[var(--side-sheet-backdrop-ms)] ease-[var(--ease-out-premium)]',
+            'motion-reduce:transition-none',
+            drawerVisible ? 'opacity-100' : 'opacity-0',
+          )}
+          style={{
+            ['--side-sheet-backdrop-ms' as string]: `${SIDE_SHEET_BACKDROP_TRANSITION_MS}ms`,
+          }}
+          aria-label={t('menu')}
+          onClick={closeDrawer}
+        />
+        <nav
+          id="portal-mobile-nav"
+          aria-label={navLabel}
+          className={cn(
+            'absolute inset-y-0 left-0 flex w-[min(100%,20rem)] flex-col p-4',
+            'rounded-tr-[2.5rem] rounded-br-[2.5rem] shadow-[8px_0_40px_rgb(14_15_20/0.14)]',
+            'transition-transform duration-[var(--side-sheet-panel-ms)] ease-[var(--ease-out-premium)]',
+            'motion-reduce:transition-none motion-reduce:duration-0 will-change-transform',
+            drawerVisible
+              ? 'pointer-events-auto translate-x-0'
+              : 'pointer-events-none -translate-x-full motion-reduce:translate-x-0',
+            isRail ? 'bg-brand-secondary' : 'border-r border-border bg-surface-elevated',
+          )}
+          style={{
+            ['--side-sheet-panel-ms' as string]: `${SIDE_SHEET_PANEL_TRANSITION_MS}ms`,
+          }}
+        >
+          <div className="mb-4 flex items-center justify-between">
+            <BrandLogo href={brandHref} badge={badge} size="sm" inverted={isRail} />
+            <IconButton
+              label={t('menu')}
+              size="sm"
+              className={isRail ? 'text-on-dark hover:bg-on-dark/10' : undefined}
+              onClick={closeDrawer}
+            >
+              <X className="size-4" aria-hidden />
+            </IconButton>
+          </div>
+          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">{sidebar}</div>
+        </nav>
+      </div>
+    ) : null;
 
   return (
     <div className="min-h-fluid-screen bg-background">
-      {isRail ? <SiteHeader /> : null}
+      {renderSiteHeader ? <SiteHeader /> : null}
 
       {isRail ? (
         <>
@@ -92,25 +203,29 @@ export const PortalShell = ({
             plus a slightly lower main-column clip so content starts vanishing
             below the header edge — never over the sidebar.
           */}
-          <div
-            className={cn(
-              'pointer-events-none fixed inset-x-0 top-0 z-[var(--z-sticky)] bg-background',
-              RAIL_HEADER_BAND_HEIGHT_CLASS,
-            )}
-            aria-hidden
-          />
-          <div
-            className={cn(
-              'pointer-events-none fixed top-0 right-0 z-[var(--z-sticky)] bg-background',
-              'left-0 md:left-72',
-              RAIL_CONTENT_MASK_HEIGHT_CLASS,
-            )}
-            aria-hidden
-          />
+          {renderRailHeaderMask ? (
+            <>
+              <div
+                className={cn(
+                  'pointer-events-none fixed inset-x-0 top-0 z-[var(--z-sticky)] bg-background',
+                  RAIL_HEADER_BAND_HEIGHT_CLASS,
+                )}
+                aria-hidden
+              />
+              <div
+                className={cn(
+                  'pointer-events-none fixed top-0 right-0 z-[var(--z-sticky)] bg-background',
+                  'left-0 md:left-72',
+                  RAIL_CONTENT_MASK_HEIGHT_CLASS,
+                )}
+                aria-hidden
+              />
+            </>
+          ) : null}
           <aside
             className={cn(
               'fixed left-0 z-[var(--z-sticky)] hidden overflow-hidden',
-              RAIL_CHROME_TOP_CLASS,
+              renderRailHeaderMask ? RAIL_CHROME_TOP_CLASS : RAIL_CHROME_TOP_PUBLIC_HEADER_CLASS,
               RAIL_CHROME_BOTTOM_CLASS,
               RAIL_SIDEBAR_WIDTH_CLASS,
               'md:block',
@@ -161,20 +276,31 @@ export const PortalShell = ({
       ) : null}
 
       {isRail ? (
-        <div className={cn('flex flex-col gap-8 md:flex-row md:gap-8 md:py-0', RAIL_ROW_GAP_CLASS)}>
-          <div className="page-container flex items-center gap-3 md:hidden">
-            <IconButton
-              label={navLabel}
-              variant="outline"
-              size="sm"
-              onClick={() => setDrawerOpen(true)}
-              aria-expanded={drawerOpen}
-              aria-controls="portal-mobile-nav"
-            >
-              <Menu className="size-4" aria-hidden />
-            </IconButton>
-            {mobileHeader}
-          </div>
+        <div
+          className={cn(
+            'flex flex-col gap-8 md:flex-row md:gap-8 md:py-0',
+            renderRailHeaderMask ? RAIL_ROW_GAP_CLASS : RAIL_ROW_GAP_PUBLIC_HEADER_CLASS,
+          )}
+        >
+          {mobileDrawerControlledByNavbar ? (
+            mobileHeader ? (
+              <div className="page-container md:hidden">{mobileHeader}</div>
+            ) : null
+          ) : (
+            <div className="page-container flex items-center gap-3 md:hidden">
+              <IconButton
+                label={navLabel}
+                variant="outline"
+                size="sm"
+                onClick={() => setDrawerOpen(true)}
+                aria-expanded={drawerOpen}
+                aria-controls="portal-mobile-nav"
+              >
+                <Menu className="size-4" aria-hidden />
+              </IconButton>
+              {mobileHeader}
+            </div>
+          )}
           <div className={cn('hidden shrink-0 md:block', RAIL_SIDEBAR_WIDTH_CLASS)} aria-hidden />
           <main className="relative z-[var(--z-base)] page-container min-w-0 flex-1 py-6 md:py-8">
             {children}
@@ -191,38 +317,7 @@ export const PortalShell = ({
         </div>
       )}
 
-      {drawerOpen ? (
-        <div className="fixed inset-0 z-[var(--z-overlay)] md:hidden">
-          <button
-            type="button"
-            className={cn('absolute inset-0', MODAL_BACKDROP_CLASS_NAME)}
-            aria-label={t('menu')}
-            onClick={() => setDrawerOpen(false)}
-          />
-          <nav
-            id="portal-mobile-nav"
-            aria-label={navLabel}
-            className={cn(
-              'absolute inset-y-0 left-0 flex w-[min(100%,20rem)] flex-col p-4 shadow-lg',
-              'animate-[portal-drawer-in_var(--duration-base)_var(--ease-out-premium)]',
-              isRail ? 'bg-brand-secondary' : 'border-r border-border bg-surface-elevated',
-            )}
-          >
-            <div className="mb-4 flex items-center justify-between">
-              <BrandLogo href={brandHref} badge={badge} size="sm" inverted={isRail} />
-              <IconButton
-                label={t('menu')}
-                size="sm"
-                className={isRail ? 'text-on-dark hover:bg-on-dark/10' : undefined}
-                onClick={() => setDrawerOpen(false)}
-              >
-                <X className="size-4" aria-hidden />
-              </IconButton>
-            </div>
-            <div className="min-h-0 flex-1 overflow-y-auto">{sidebar}</div>
-          </nav>
-        </div>
-      ) : null}
+      {mobileDrawer ? createPortal(mobileDrawer, document.body) : null}
     </div>
   );
 };

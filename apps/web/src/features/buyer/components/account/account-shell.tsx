@@ -2,9 +2,8 @@ import type { ReactNode } from 'react';
 import { headers } from 'next/headers';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
-import { AccountMobileSectionTitle } from '@/features/buyer/components/account/account-mobile-section-title';
+import { getMeOrNullCached } from '@/features/auth/api/get-me-or-null-cached';
 import { AccountNav } from '@/features/buyer/components/account/account-nav';
-import { getMeOrNull } from '@/features/auth/api/auth-api';
 import { redirect } from '@/i18n/navigation';
 import { PortalShell } from '@/shared/ui/portal-shell';
 
@@ -21,7 +20,7 @@ export const AccountShell = async ({ children, locale }: AccountShellProps) => {
 
   const headerStore = await headers();
   const cookieHeader = headerStore.get('cookie') ?? undefined;
-  const user = await getMeOrNull(cookieHeader);
+  const user = await getMeOrNullCached(cookieHeader);
 
   if (!user) {
     redirect({
@@ -46,7 +45,9 @@ export const AccountShell = async ({ children, locale }: AccountShellProps) => {
       profileLabel={t('nav.dashboard')}
       navLabel={t('nav.label')}
       variant="rail"
-      mobileHeader={<AccountMobileSectionTitle />}
+      showSiteHeader={false}
+      showRailHeaderMask={false}
+      mobileDrawerControlledByNavbar
       sidebar={<AccountNav accountType={user.accountType} />}
     >
       {children}

@@ -4,7 +4,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { AccountOverviewStats } from '@/features/buyer/components/account/account-overview-stats';
 import { AccountPageEnter } from '@/features/buyer/components/account/account-page-enter';
 import { AccountPageHeader } from '@/features/buyer/components/account/account-page-header';
-import { getMeOrNull } from '@/features/auth/api/auth-api';
+import { getMeOrNullCached as getMeOrNull } from '@/features/auth/api/get-me-or-null-cached';
 import { getCompanyProfile } from '@/features/builder/api/company-profile-api';
 import { isBuyerAccount } from '@/features/buyer/utils/is-buyer-account';
 import { getPortalPartner } from '@/features/partner/api/portal-partner-api';
