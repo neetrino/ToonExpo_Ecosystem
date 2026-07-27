@@ -129,7 +129,7 @@ export const ProfileMenu = ({
   );
 
   const menuItemClassName = cn(
-    'flex w-full items-center gap-2.5 px-3.5 py-2.5 text-left text-sm font-medium',
+    'flex w-full items-center gap-2 whitespace-nowrap px-3 py-2 text-left text-sm font-medium',
     'transition-colors duration-[var(--duration-fast)]',
     'text-ink hover:bg-surface',
   );
@@ -179,7 +179,7 @@ export const ProfileMenu = ({
             role="menu"
             aria-label={t('profileMenu')}
             className={cn(
-              'w-44 overflow-hidden rounded-[12px] border border-header-border',
+              'w-max min-w-0 overflow-hidden rounded-[12px] border border-header-border',
               'bg-surface-elevated py-1.5 text-ink shadow-md',
             )}
           >
@@ -223,7 +223,7 @@ export const ProfileMenu = ({
               type="button"
               role="menuitem"
               className={cn(
-                'flex w-full items-center gap-2.5 px-3.5 py-2.5 text-left text-sm font-medium',
+                'flex w-full items-center gap-2 whitespace-nowrap px-3 py-2 text-left text-sm font-medium',
                 'transition-colors duration-[var(--duration-fast)]',
                 'text-danger hover:bg-danger-soft',
                 'disabled:pointer-events-none disabled:opacity-50',
