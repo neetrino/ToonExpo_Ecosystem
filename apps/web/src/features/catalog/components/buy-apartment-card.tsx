@@ -72,16 +72,14 @@ export const BuyApartmentCard = ({
         </div>
 
         <div className="px-3 pt-4 pb-3">
-          <div className="mb-1 flex items-start justify-between gap-3">
-            <h3 className="min-w-0 flex-1 truncate font-brand text-sm font-semibold tracking-[-0.02em] text-ink-navy">
+          <div className="mb-1 flex flex-col gap-1">
+            <h3 className="min-w-0 truncate font-brand text-sm font-semibold tracking-[-0.02em] text-ink-navy">
               {t('unitTitle', {
                 number: listing.title,
                 project: listing.projectName,
               })}
             </h3>
-            <p className="shrink-0 font-brand text-base font-bold whitespace-nowrap text-brand-deep">
-              {priceLabel}
-            </p>
+            <p className="font-brand text-base font-bold text-brand-deep">{priceLabel}</p>
           </div>
           {listing.locationLine ? (
             <p className="text-xs leading-4 text-header-muted">{listing.locationLine}</p>
