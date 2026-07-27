@@ -63,7 +63,7 @@ export const MortgageOfferCard = ({
         )}
       </div>
 
-      <dl className="grid shrink-0 grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-4 sm:gap-x-8">
+      <dl className="grid shrink-0 grid-cols-3 gap-x-3 gap-y-3 sm:grid-cols-4 sm:gap-x-8">
         <Metric label={t('rate')} value={`${offer.rate}%`} />
         <Metric label={t('apr')} value={offer.apr != null ? `${offer.apr}%` : '—'} />
         <Metric label={t('minDown')} value={`${offer.minDownPaymentPercent}%`} />
@@ -81,16 +81,18 @@ const Metric = ({
   label,
   value,
   emphasize = false,
+  className,
 }: {
   label: string;
   value: string;
   emphasize?: boolean;
+  className?: string | undefined;
 }) => (
-  <div>
+  <div className={cn('min-w-0 text-center', className)}>
     <dt className="text-[10px] font-bold tracking-widest text-header-muted uppercase">{label}</dt>
     <dd
       className={cn(
-        'mt-0.5 font-brand text-lg font-bold leading-7',
+        'mt-0.5 font-brand text-lg font-bold leading-7 whitespace-nowrap',
         emphasize ? 'text-brand-deep' : 'text-ink-navy',
       )}
     >
