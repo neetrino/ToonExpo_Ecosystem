@@ -3,6 +3,7 @@
 import type { ReactNode } from 'react';
 
 import { usePathname } from '@/i18n/navigation';
+import { isBuyerAccountShellPath } from '@/shared/ui/account-mobile-nav-controller';
 import { DesktopFluidFrame } from '@/shared/ui/desktop-fluid-frame';
 import { SiteHeader } from '@/shared/ui/site-header';
 
@@ -12,7 +13,7 @@ type PublicChromeProps = {
 
 /**
  * Route prefixes that render their own shell (no public SiteHeader).
- * Buyer account routes keep the public SiteHeader via PublicChrome.
+ * Buyer AccountShell routes mount SiteHeader inside PortalShell.
  */
 const PORTAL_PREFIXES = ['/admin', '/builder', '/partner'] as const;
 
@@ -65,7 +66,7 @@ export const PublicChrome = ({ children }: PublicChromeProps) => {
       ? 'transparent'
       : 'solid';
 
-  if (isAuthRoute(pathname) || isPortalRoute(pathname)) {
+  if (isAuthRoute(pathname) || isPortalRoute(pathname) || isBuyerAccountShellPath(pathname)) {
     return <DesktopFluidFrame>{children}</DesktopFluidFrame>;
   }
 

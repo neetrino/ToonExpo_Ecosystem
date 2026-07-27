@@ -33,15 +33,27 @@ export const accountMobileNavController = {
   },
 };
 
-const BUYER_ACCOUNT_PREFIXES = [
+const BUYER_ACCOUNT_SHELL_PREFIXES = [
   '/dashboard',
   '/settings',
   '/favorites',
   '/requests',
-  '/qr',
   '/checkin',
 ] as const;
 
-/** Buyer/visitor account routes that share AccountShell + public SiteHeader. */
-export const isBuyerAccountPath = (pathname: string): boolean =>
-  BUYER_ACCOUNT_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
+/**
+ * Routes that use AccountShell (own SiteHeader via PortalShell).
+ * `/qr` is exact-only — `/qr/[token]` stays a public landing page.
+ */
+export const isBuyerAccountShellPath = (pathname: string): boolean => {
+  if (pathname === '/qr') {
+    return true;
+  }
+
+  return BUYER_ACCOUNT_SHELL_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
+};
+
+/** Buyer account paths where the navbar burger opens the account sidebar. */
+export const isBuyerAccountPath = isBuyerAccountShellPath;

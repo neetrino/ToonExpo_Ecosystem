@@ -45,7 +45,6 @@ export const AccountShell = async ({ children, locale }: AccountShellProps) => {
       profileLabel={t('nav.dashboard')}
       navLabel={t('nav.label')}
       variant="rail"
-      showSiteHeader={false}
       showRailHeaderMask={false}
       mobileDrawerControlledByNavbar
       sidebar={<AccountNav accountType={user.accountType} />}

@@ -62,8 +62,6 @@ type PortalShellProps = {
  * Content mask extends a bit lower so scrolled main vanishes under the header.
  */
 const RAIL_CHROME_TOP_CLASS = 'top-[5.5rem]';
-/** Sidebar top when the public pill has no opaque header band (buyer account). */
-const RAIL_CHROME_TOP_PUBLIC_HEADER_CLASS = 'top-[7.25rem]';
 const RAIL_CHROME_BOTTOM_CLASS = 'bottom-0';
 /** Header spacer band under the fixed pill. */
 const RAIL_HEADER_BAND_HEIGHT_CLASS = 'h-[4.5rem]';
@@ -71,8 +69,8 @@ const RAIL_HEADER_BAND_HEIGHT_CLASS = 'h-[4.5rem]';
 const RAIL_CONTENT_MASK_HEIGHT_CLASS = 'h-[5.125rem]';
 const RAIL_SIDEBAR_WIDTH_CLASS = 'w-72';
 const RAIL_ROW_GAP_CLASS = 'md:pt-4';
-/** Extra top air when the public pill has no opaque header band. */
-const RAIL_ROW_GAP_PUBLIC_HEADER_CLASS = 'pt-4 md:pt-10';
+/** Mobile-only top air when the public pill has no opaque header band. */
+const RAIL_ROW_GAP_PUBLIC_HEADER_MOBILE_CLASS = 'max-md:pt-4';
 
 /**
  * Shared portal chrome: top bar + desktop sidebar + mobile drawer.
@@ -225,7 +223,7 @@ export const PortalShell = ({
           <aside
             className={cn(
               'fixed left-0 z-[var(--z-sticky)] hidden overflow-hidden',
-              renderRailHeaderMask ? RAIL_CHROME_TOP_CLASS : RAIL_CHROME_TOP_PUBLIC_HEADER_CLASS,
+              RAIL_CHROME_TOP_CLASS,
               RAIL_CHROME_BOTTOM_CLASS,
               RAIL_SIDEBAR_WIDTH_CLASS,
               'md:block',
@@ -279,7 +277,8 @@ export const PortalShell = ({
         <div
           className={cn(
             'flex flex-col gap-8 md:flex-row md:gap-8 md:py-0',
-            renderRailHeaderMask ? RAIL_ROW_GAP_CLASS : RAIL_ROW_GAP_PUBLIC_HEADER_CLASS,
+            RAIL_ROW_GAP_CLASS,
+            !renderRailHeaderMask && RAIL_ROW_GAP_PUBLIC_HEADER_MOBILE_CLASS,
           )}
         >
           {mobileDrawerControlledByNavbar ? (

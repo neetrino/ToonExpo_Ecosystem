@@ -7,6 +7,7 @@ import { AccountShell } from '@/features/buyer/components/account/account-shell'
 import { isBuyerAccount } from '@/features/buyer/utils/is-buyer-account';
 import { getMeOrNullCached as getMeOrNull } from '@/features/auth/api/get-me-or-null-cached';
 import { redirect } from '@/i18n/navigation';
+import { SiteHeader } from '@/shared/ui/site-header';
 
 type CheckinLayoutProps = {
   children: ReactNode;
@@ -16,7 +17,7 @@ type CheckinLayoutProps = {
 /**
  * `/checkin` shell:
  * - buyers → account rail (status page)
- * - entrance staff → scanner content under public SiteHeader
+ * - entrance staff → scanner under public SiteHeader
  * - platform admins → `/admin/checkin`
  */
 export default async function CheckinLayout({ children, params }: CheckinLayoutProps) {
@@ -46,7 +47,8 @@ export default async function CheckinLayout({ children, params }: CheckinLayoutP
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-fluid-screen bg-background">
+      <SiteHeader />
       <main className="mx-auto w-full max-w-content px-6 py-8">{children}</main>
     </div>
   );
