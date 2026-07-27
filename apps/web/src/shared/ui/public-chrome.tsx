@@ -45,11 +45,23 @@ const isProjectsListRoute = (pathname: string): boolean => {
   return pathname === '/projects';
 };
 
+const isBuildersListRoute = (pathname: string): boolean => {
+  return pathname === '/builders';
+};
+
+const isBuilderDetailRoute = (pathname: string): boolean => {
+  return /^\/builders\/[^/]+$/.test(pathname);
+};
+
+const isDeveloperDetailRoute = (pathname: string): boolean => {
+  return /^\/developers\/[^/]+$/.test(pathname);
+};
+
 /**
  * Persistent public chrome — keeps SiteHeader mounted across navigations
  * so the bar does not remount/jump when switching Projects / Builders / etc.
  * Auth routes use AuthPageShell instead of the public header.
- * Home, partners/projects list+detail use a transparent header so the hero
+ * Home, partners/projects/builders list+detail use a transparent header so the hero
  * sits under the bar; other public pages use the same floating pill chrome
  * as home-after-scroll.
  * Public, portal, and auth pages use DesktopFluidFrame so desktop composition
@@ -62,7 +74,10 @@ export const PublicChrome = ({ children }: PublicChromeProps) => {
     isProjectDetailRoute(pathname) ||
     isPartnerDetailRoute(pathname) ||
     isPartnersListRoute(pathname) ||
-    isProjectsListRoute(pathname)
+    isProjectsListRoute(pathname) ||
+    isBuildersListRoute(pathname) ||
+    isBuilderDetailRoute(pathname) ||
+    isDeveloperDetailRoute(pathname)
       ? 'transparent'
       : 'solid';
 

@@ -669,14 +669,64 @@
         "title": "Builders — ToonExpo",
         "description": "Active development companies with published projects on ToonExpo."
       },
+      "actions": {
+        "details": "View profile"
+      },
+      "search": {
+        "label": "Search",
+        "placeholder": "Search builders…",
+        "apply": "Search",
+        "reset": "Reset",
+        "empty": "No builders match your search."
+      },
       "detail": {
         "back": "← All builders",
-        "projectsTitle": "Published projects",
+        "backToBuilders": "All builders",
+        "heroEyebrow": "Builder",
+        "companyTitle": "Company",
+        "companyName": "Company name",
+        "projectsTitle": "Published Projects",
         "emptyProjects": "No published projects yet.",
         "catalogLink": "View projects in catalog",
+        "contactsTitle": "Contacts",
+        "phone": "Phone",
+        "email": "Email",
+        "contactPerson": "Contact person",
+        "projectCount": "Projects",
         "metaTitle": "{name} — builder profile",
         "metaDescription": "Published projects by {name} on ToonExpo."
       }
+    },
+    "developersPage": {
+      "eyebrow": "Developer",
+      "back": "← All builders",
+      "backToBuilders": "All builders",
+      "notFoundTitle": "Developer not found",
+      "metaTitle": "{name} — developer",
+      "metaDescription": "Developer profile for {name} on ToonExpo.",
+      "projectCount": "{count, plural, =0 {No projects} one {# project} other {# projects}}",
+      "sections": {
+        "about": "Company",
+        "currentProjects": "Current Projects",
+        "contacts": "Contacts",
+        "content": "Content"
+      },
+      "fields": {
+        "companyName": "Company name",
+        "phone": "Phone",
+        "contactPerson": "Contact person",
+        "email": "Email",
+        "projectCount": "Projects",
+        "website": "Website",
+        "instagram": "Instagram",
+        "facebook": "Facebook",
+        "logo": "Logo",
+        "region": "Region",
+        "address": "Address",
+        "mediaMaterials": "Media materials",
+        "promoMaterials": "Promo materials"
+      },
+      "openProfile": "View profile"
     },
     "partnersPage": {
       "title": "Partners & Participants",

@@ -6,12 +6,13 @@ import { Link } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 import { LocaleSegmentSwitcher } from '@/shared/ui/locale-segment-switcher';
 
-type NavHref = '/apartments' | '/projects' | '/developments' | '/partners' | '/mortgage';
+type NavHref =
+  '/apartments' | '/projects' | '/developments' | '/builders' | '/partners' | '/mortgage';
 
 type SiteHeaderMobileNavProps = {
   navItems: ReadonlyArray<{
     href: NavHref;
-    key: 'buy' | 'projects' | 'newDevelopments' | 'partners' | 'mortgage';
+    key: 'buy' | 'projects' | 'newDevelopments' | 'builders' | 'partners' | 'mortgage';
   }>;
   pathname: string;
   onClose: () => void;

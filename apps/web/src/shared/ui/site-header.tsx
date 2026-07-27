@@ -29,6 +29,7 @@ const NAV_HREFS = [
   { href: '/apartments' as const, key: 'buy' as const },
   { href: '/projects' as const, key: 'projects' as const },
   { href: '/developments' as const, key: 'newDevelopments' as const },
+  { href: '/builders' as const, key: 'builders' as const },
   { href: '/partners' as const, key: 'partners' as const },
   { href: '/mortgage' as const, key: 'mortgage' as const },
 ];
@@ -281,6 +282,13 @@ const isNavActive = (pathname: string, href: (typeof NAV_HREFS)[number]['href'])
   }
   if (href === '/projects') {
     return pathname === '/projects' || pathname.startsWith('/projects/');
+  }
+  if (href === '/builders') {
+    return (
+      pathname === '/builders' ||
+      pathname.startsWith('/builders/') ||
+      pathname.startsWith('/developers/')
+    );
   }
   return pathname.startsWith(href);
 };

@@ -669,14 +669,64 @@
         "title": "Կառուցապատողներ — ToonExpo",
         "description": "Ակտիվ կառուցապատողներ՝ հրապարակված նախագծերով ToonExpo-ում։"
       },
+      "actions": {
+        "details": "Դիտել պրոֆիլը"
+      },
+      "search": {
+        "label": "Որոնում",
+        "placeholder": "Որոնել կառուցապատողներ…",
+        "apply": "Որոնել",
+        "reset": "Մաքրել",
+        "empty": "Որոնմանը համապատասխանող կառուցապատողներ չկան։"
+      },
       "detail": {
         "back": "← Բոլոր կառուցապատողները",
+        "backToBuilders": "Բոլոր կառուցապատողները",
+        "heroEyebrow": "Կառուցապատող",
+        "companyTitle": "Ընկերություն",
+        "companyName": "Ընկերության անվանում",
         "projectsTitle": "Հրապարակված նախագծեր",
         "emptyProjects": "Դեռ հրապարակված նախագծեր չկան։",
         "catalogLink": "Դիտել նախագծերը կատալոգում",
+        "contactsTitle": "Կոնտակտներ",
+        "phone": "Հեռախոսահամար",
+        "email": "Էլ. փոստ",
+        "contactPerson": "Կոնտակտային անձ",
+        "projectCount": "Նախագծերի քանակ",
         "metaTitle": "{name} — կառուցապատողի էջ",
         "metaDescription": "{name} ընկերության հրապարակված նախագծերը ToonExpo-ում։"
       }
+    },
+    "developersPage": {
+      "eyebrow": "Կառուցապատող",
+      "back": "← Բոլոր կառուցապատողները",
+      "backToBuilders": "Բոլոր կառուցապատողները",
+      "notFoundTitle": "Կառուցապատողը չի գտնվել",
+      "metaTitle": "{name} — կառուցապատող",
+      "metaDescription": "{name} ընկերության էջը ToonExpo-ում։",
+      "projectCount": "{count, plural, =0 {Նախագծեր չկան} one {# նախագիծ} other {# նախագիծ}}",
+      "sections": {
+        "about": "Ընկերություն",
+        "currentProjects": "Ընթացիկ նախագծեր",
+        "contacts": "Կոնտակտներ",
+        "content": "Բովանդակություն"
+      },
+      "fields": {
+        "companyName": "Ընկերության անվանում",
+        "phone": "Հեռախոսահամար",
+        "contactPerson": "Կոնտակտային անձ",
+        "email": "Էլ. փոստ",
+        "projectCount": "Նախագծերի քանակ",
+        "website": "Կայքի հղում",
+        "instagram": "Instagram-ի հղում",
+        "facebook": "Facebook-ի հղում",
+        "logo": "Լոգո",
+        "region": "Մարզ / Տարածաշրջան",
+        "address": "Հասցե",
+        "mediaMaterials": "Մեդիա նյութեր",
+        "promoMaterials": "Գովազդային նյութեր"
+      },
+      "openProfile": "Դիտել պրոֆիլը"
     },
     "partnersPage": {
       "title": "Գործընկերներ և մասնակիցներ",
