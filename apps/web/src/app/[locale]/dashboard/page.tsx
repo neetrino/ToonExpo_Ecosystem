@@ -1,10 +1,11 @@
 import { headers } from 'next/headers';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
+import { getMeOrNullCached as getMeOrNull } from '@/features/auth/api/get-me-or-null-cached';
+import { AccountMobileProfileHub } from '@/features/buyer/components/account/account-mobile-profile-hub';
 import { AccountOverviewStats } from '@/features/buyer/components/account/account-overview-stats';
 import { AccountPageEnter } from '@/features/buyer/components/account/account-page-enter';
 import { AccountPageHeader } from '@/features/buyer/components/account/account-page-header';
-import { getMeOrNullCached as getMeOrNull } from '@/features/auth/api/get-me-or-null-cached';
 import { getCompanyProfile } from '@/features/builder/api/company-profile-api';
 import { isBuyerAccount } from '@/features/buyer/utils/is-buyer-account';
 import { getPortalPartner } from '@/features/partner/api/portal-partner-api';
@@ -47,28 +48,37 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
 
   return (
     <AccountPageEnter>
-      <AccountPageHeader
-        title={t('dashboard.welcome', { name: user.name })}
-        subtitle={t('cabinetSubtitle')}
+      <AccountMobileProfileHub
+        name={user.name}
+        email={user.email}
+        accountType={user.accountType}
+        className="md:hidden"
       />
 
-      {showBuyerOverview ? (
-        <Reveal fadeOnly>
-          <AccountOverviewStats />
-        </Reveal>
-      ) : (
-        <Reveal>
-          <Card variant="elevated" className="max-w-xl">
-            <p className="text-sm text-ink-secondary">{t('dashboard.settingsHint')}</p>
-            <Link
-              href="/settings"
-              className="mt-3 inline-flex text-sm font-semibold text-brand hover:underline"
-            >
-              {t('nav.password')}
-            </Link>
-          </Card>
-        </Reveal>
-      )}
+      <div className="hidden md:block">
+        <AccountPageHeader
+          title={t('dashboard.welcome', { name: user.name })}
+          subtitle={t('cabinetSubtitle')}
+        />
+
+        {showBuyerOverview ? (
+          <Reveal fadeOnly>
+            <AccountOverviewStats />
+          </Reveal>
+        ) : (
+          <Reveal>
+            <Card variant="elevated" className="max-w-xl">
+              <p className="text-sm text-ink-secondary">{t('dashboard.settingsHint')}</p>
+              <Link
+                href="/settings"
+                className="mt-3 inline-flex text-sm font-semibold text-brand hover:underline"
+              >
+                {t('nav.password')}
+              </Link>
+            </Card>
+          </Reveal>
+        )}
+      </div>
     </AccountPageEnter>
   );
 }

@@ -136,6 +136,7 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
           'fixed inset-x-0 top-0 z-[var(--z-header)]',
           'pt-[env(safe-area-inset-top,0px)]',
           isOverHero ? 'text-on-dark' : 'text-ink',
+          isAccountRoute && 'max-md:hidden',
           className,
         )}
       >
@@ -271,7 +272,9 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
         </div>
       </header>
 
-      {needsSpacer ? <div className={HEADER_SPACER_CLASS} aria-hidden /> : null}
+      {needsSpacer ? (
+        <div className={cn(HEADER_SPACER_CLASS, isAccountRoute && 'max-md:hidden')} aria-hidden />
+      ) : null}
     </>
   );
 };

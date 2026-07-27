@@ -149,5 +149,8 @@ export const MobileBottomNav = () => {
 
 /** Spacer so page content clears the fixed mobile bottom nav. */
 export const MobileBottomNavSpacer = () => (
-  <div className="h-[calc(3.75rem+env(safe-area-inset-bottom,0px))] lg:hidden" aria-hidden />
+  <div
+    className="h-[calc(3.75rem+env(safe-area-inset-bottom,0px))] bg-canvas lg:hidden"
+    aria-hidden
+  />
 );

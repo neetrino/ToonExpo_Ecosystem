@@ -55,6 +55,8 @@ type PortalShellProps = {
   mobileDrawerControlledByNavbar?: boolean | undefined;
   /** Optional label shown beside the mobile menu control (rail). */
   mobileHeader?: ReactNode;
+  /** Extra classes on the shell root (e.g. `bg-canvas` for buyer account). */
+  className?: string | undefined;
 };
 
 /**
@@ -78,7 +80,8 @@ const MOBILE_DRAWER_WIDTH_HY_CLASS = 'w-[min(78vw,15.5rem)]';
 const MOBILE_DRAWER_CLOSE_TOP_PX = 36;
 const RAIL_ROW_GAP_CLASS = 'md:pt-4';
 /** Mobile-only top air when the public pill has no opaque header band. */
-const RAIL_ROW_GAP_PUBLIC_HEADER_MOBILE_CLASS = 'max-md:pt-4';
+const RAIL_ROW_GAP_PUBLIC_HEADER_MOBILE_CLASS =
+  'max-md:pt-[max(0.75rem,env(safe-area-inset-top,0px))]';
 
 /**
  * Shared portal chrome: top bar + desktop sidebar + mobile drawer.
@@ -97,6 +100,7 @@ export const PortalShell = ({
   showRailHeaderMask = true,
   mobileDrawerControlledByNavbar = false,
   mobileHeader,
+  className,
 }: PortalShellProps) => {
   const t = useTranslations('Nav');
   const tCommon = useTranslations('Common');
@@ -209,7 +213,7 @@ export const PortalShell = ({
     ) : null;
 
   return (
-    <div className="min-h-fluid-screen bg-background">
+    <div className={cn('min-h-fluid-screen bg-background', className)}>
       {renderSiteHeader ? <SiteHeader /> : null}
 
       {isRail ? (

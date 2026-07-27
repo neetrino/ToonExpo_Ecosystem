@@ -47,6 +47,7 @@ export const AccountShell = async ({ children, locale }: AccountShellProps) => {
       variant="rail"
       showRailHeaderMask={false}
       mobileDrawerControlledByNavbar
+      className="bg-canvas"
       sidebar={<AccountNav accountType={user.accountType} />}
     >
       {children}
