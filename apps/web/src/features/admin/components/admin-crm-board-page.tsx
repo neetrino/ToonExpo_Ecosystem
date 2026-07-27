@@ -165,46 +165,48 @@ export const AdminCrmBoardPage = () => {
 
   return (
     <div className={isBoardView ? 'crm-board-page' : 'flex flex-col gap-6'}>
-      <ListPageHeader
-        eyebrow={t('eyebrow')}
-        title={t('title')}
-        subtitle={t('subtitle', { count: totalCount })}
-        search={search}
-        searchPlaceholder={tBoard('searchPlaceholder')}
-        searchAriaLabel={tBoard('searchLabel')}
-        filters={filterConfigs}
-        filterValues={filterValues}
-        onSearchChange={setSearch}
-        onFilterChange={(key, value) => {
-          if (key === ADMIN_CRM_FILTER_COMPANY_KEY) {
-            setCompanyId(value);
-            return;
+      <div className={isBoardView ? 'crm-board-page__chrome' : undefined}>
+        <ListPageHeader
+          eyebrow={t('eyebrow')}
+          title={t('title')}
+          subtitle={t('subtitle', { count: totalCount })}
+          search={search}
+          searchPlaceholder={tBoard('searchPlaceholder')}
+          searchAriaLabel={tBoard('searchLabel')}
+          filters={filterConfigs}
+          filterValues={filterValues}
+          onSearchChange={setSearch}
+          onFilterChange={(key, value) => {
+            if (key === ADMIN_CRM_FILTER_COMPANY_KEY) {
+              setCompanyId(value);
+              return;
+            }
+            if (key === ADMIN_CRM_FILTER_SOURCE_KEY) {
+              setSource(value as RequestSource | '');
+            }
+          }}
+          onClearAll={() => {
+            setCompanyId('');
+            setSource('');
+          }}
+          actions={
+            <>
+              <ViewModeToggle value={viewMode} onChange={setViewMode} />
+              <Button
+                type="button"
+                size="sm"
+                variant="secondary"
+                className="shrink-0"
+                onClick={() => {
+                  openNewLead();
+                }}
+              >
+                <AddActionLabel>{t('newDeal.title')}</AddActionLabel>
+              </Button>
+            </>
           }
-          if (key === ADMIN_CRM_FILTER_SOURCE_KEY) {
-            setSource(value as RequestSource | '');
-          }
-        }}
-        onClearAll={() => {
-          setCompanyId('');
-          setSource('');
-        }}
-        actions={
-          <>
-            <ViewModeToggle value={viewMode} onChange={setViewMode} />
-            <Button
-              type="button"
-              size="sm"
-              variant="secondary"
-              className="shrink-0"
-              onClick={() => {
-                openNewLead();
-              }}
-            >
-              <AddActionLabel>{t('newDeal.title')}</AddActionLabel>
-            </Button>
-          </>
-        }
-      />
+        />
+      </div>
 
       {boardError ? (
         <p role="alert" className="shrink-0 text-sm text-danger">
@@ -219,19 +221,21 @@ export const AdminCrmBoardPage = () => {
           <AdminCrmDealsTable deals={deals} onSelectDeal={openDeal} />
         )
       ) : (
-        <CrmKanbanBoard
-          deals={deals}
-          mode="readonly"
-          onOpenDeal={openDeal}
-          onStatusDrop={onStatusDrop}
-          newColumnAction={
-            <CrmNewColumnCreateButton
-              onClick={() => {
-                openNewLead();
-              }}
-            />
-          }
-        />
+        <div className="crm-board-page__board">
+          <CrmKanbanBoard
+            deals={deals}
+            mode="readonly"
+            onOpenDeal={openDeal}
+            onStatusDrop={onStatusDrop}
+            newColumnAction={
+              <CrmNewColumnCreateButton
+                onClick={() => {
+                  openNewLead();
+                }}
+              />
+            }
+          />
+        </div>
       )}
 
       <AdminCrmNewDealSheet

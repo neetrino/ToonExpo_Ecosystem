@@ -169,35 +169,37 @@ export const CrmDealsListPage = () => {
 
   return (
     <div className="crm-board-page">
-      <ListPageHeader
-        eyebrow={t('eyebrow')}
-        title={t('title')}
-        subtitle={t('subtitle', { count: totalCount })}
-        search={search}
-        searchPlaceholder={tBoard('searchPlaceholder')}
-        searchAriaLabel={tBoard('searchLabel')}
-        filters={filterConfigs}
-        filterValues={crmDealFiltersToRecord(filters)}
-        onSearchChange={setSearch}
-        onFilterChange={(key, value) => {
-          setFilters((prev) => applyCrmDealFilterKey(prev, key, value));
-        }}
-        onClearAll={() => {
-          setFilters(EMPTY_CRM_DEAL_FILTERS);
-        }}
-        actions={
-          <Button
-            type="button"
-            size="sm"
-            className="shrink-0"
-            onClick={() => {
-              openNewLead();
-            }}
-          >
-            <AddActionLabel>{t('newDeal.cta')}</AddActionLabel>
-          </Button>
-        }
-      />
+      <div className="crm-board-page__chrome">
+        <ListPageHeader
+          eyebrow={t('eyebrow')}
+          title={t('title')}
+          subtitle={t('subtitle', { count: totalCount })}
+          search={search}
+          searchPlaceholder={tBoard('searchPlaceholder')}
+          searchAriaLabel={tBoard('searchLabel')}
+          filters={filterConfigs}
+          filterValues={crmDealFiltersToRecord(filters)}
+          onSearchChange={setSearch}
+          onFilterChange={(key, value) => {
+            setFilters((prev) => applyCrmDealFilterKey(prev, key, value));
+          }}
+          onClearAll={() => {
+            setFilters(EMPTY_CRM_DEAL_FILTERS);
+          }}
+          actions={
+            <Button
+              type="button"
+              size="sm"
+              className="shrink-0"
+              onClick={() => {
+                openNewLead();
+              }}
+            >
+              <AddActionLabel>{t('newDeal.cta')}</AddActionLabel>
+            </Button>
+          }
+        />
+      </div>
 
       {boardError ? (
         <p role="alert" className="shrink-0 text-sm text-danger">
@@ -205,20 +207,21 @@ export const CrmDealsListPage = () => {
         </p>
       ) : null}
 
-      <CrmKanbanBoard
-        deals={deals}
-        mode="edit"
-        onOpenDeal={openDeal}
-        onStatusDrop={onStatusDrop}
-        newColumnAction={
-          <CrmNewColumnCreateButton
-            onClick={() => {
-              openNewLead();
-            }}
-          />
-        }
-      />
-
+      <div className="crm-board-page__board">
+        <CrmKanbanBoard
+          deals={deals}
+          mode="edit"
+          onOpenDeal={openDeal}
+          onStatusDrop={onStatusDrop}
+          newColumnAction={
+            <CrmNewColumnCreateButton
+              onClick={() => {
+                openNewLead();
+              }}
+            />
+          }
+        />
+      </div>
       {isNewLeadOpen ? (
         <CrmNewDealPanel
           projects={projects}

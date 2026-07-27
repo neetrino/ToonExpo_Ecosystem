@@ -6,14 +6,12 @@ import { IntegratedSearchBar } from '@/shared/ui/integrated-search-filters.bar';
 import { buildActiveIntegratedFilterChips } from '@/shared/ui/integrated-search-filters.build-chips';
 import {
   INTEGRATED_SEARCH_FILTER_ALL_VALUE,
-  INTEGRATED_SEARCH_FILTER_PANEL_ALIGN_END,
-  INTEGRATED_SEARCH_FILTER_PANEL_ALIGN_START,
-  INTEGRATED_SEARCH_FILTER_PANEL_POSITION,
   INTEGRATED_SEARCH_FILTER_PANEL_SURFACE,
 } from '@/shared/ui/integrated-search-filters.constants';
 import { IntegratedSearchFilterPanel } from '@/shared/ui/integrated-search-filters.panel';
 import type { IntegratedSearchFilterConfig } from '@/shared/ui/integrated-search-filters.types';
 import { cn } from '@/shared/ui/cn';
+import { DropdownPortal } from '@/shared/ui/dropdown-portal';
 
 const EMPTY_FILTER_VALUES: Record<string, string> = {};
 
@@ -105,18 +103,12 @@ export const IntegratedSearchFilters = ({
         }}
         onReset={handleReset}
       />
-      {hasFilters && panelOpen ? (
+      <DropdownPortal open={hasFilters && panelOpen} anchorRef={containerRef} align={panelAlign}>
         <div
           id="integrated-search-filter-panel"
           role="dialog"
           aria-label={panelAriaLabel}
-          className={cn(
-            INTEGRATED_SEARCH_FILTER_PANEL_POSITION,
-            panelAlign === 'end'
-              ? INTEGRATED_SEARCH_FILTER_PANEL_ALIGN_END
-              : INTEGRATED_SEARCH_FILTER_PANEL_ALIGN_START,
-            INTEGRATED_SEARCH_FILTER_PANEL_SURFACE,
-          )}
+          className={INTEGRATED_SEARCH_FILTER_PANEL_SURFACE}
         >
           <IntegratedSearchFilterPanel
             filters={filters ?? []}
@@ -133,7 +125,7 @@ export const IntegratedSearchFilters = ({
             resetLabel={resetLabel}
           />
         </div>
-      ) : null}
+      </DropdownPortal>
     </div>
   );
 };
