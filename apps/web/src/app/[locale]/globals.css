@@ -791,6 +791,44 @@
   }
 
   /**
+   * Profile mobile sheets — thin thumb, shortened track (not full viewport).
+   */
+  .account-sheet-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--color-ink) 28%, transparent) transparent;
+  }
+
+  .account-sheet-scrollbar::-webkit-scrollbar {
+    width: 3px;
+  }
+
+  .account-sheet-scrollbar::-webkit-scrollbar-track {
+    margin-block: 9rem;
+    background: transparent;
+  }
+
+  .account-sheet-scrollbar::-webkit-scrollbar-thumb {
+    border: 0;
+    border-radius: 999px;
+    background-color: color-mix(in srgb, var(--color-ink) 28%, transparent);
+    background-clip: padding-box;
+  }
+
+  .account-sheet-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: color-mix(in srgb, var(--color-ink) 45%, transparent);
+  }
+
+  .account-sheet-scrollbar::-webkit-scrollbar-button {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+  .account-sheet-scrollbar::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  /**
    * CRM board page — fills the rail main column without page scroll.
    * Uses fluid viewport height so desktop `zoom` (iMac / wide screens) does not
    * overflow. Horizontal scroll: columns. Vertical scroll: column bodies.

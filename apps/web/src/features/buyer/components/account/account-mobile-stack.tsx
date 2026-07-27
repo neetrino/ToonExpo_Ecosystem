@@ -107,6 +107,7 @@ export const AccountMobileStack = ({
           showOverlay && [
             'max-md:fixed max-md:inset-0 max-md:z-[var(--z-overlay)]',
             'max-md:overflow-x-clip max-md:overflow-y-auto max-md:bg-canvas',
+            'max-md:account-sheet-scrollbar',
             anim === 'out' ? 'account-page-push-out' : 'account-page-push-in',
           ],
         )}
