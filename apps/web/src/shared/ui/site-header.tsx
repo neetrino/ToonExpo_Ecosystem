@@ -44,8 +44,8 @@ const PILL_EDGE_INSET_CLASS = 'left-4 right-4 sm:left-5 sm:right-5 lg:left-6 lg:
 /** Float gap above the pill — keeps pill height = navbar (h-16). */
 const PILL_TOP_OFFSET_CLASS = 'top-2';
 const HEADER_HEIGHT_CLASS = 'h-16';
-/** Spacer under fixed pill chrome (top inset + bar). */
-const HEADER_SPACER_CLASS = 'h-[4.5rem]';
+/** Spacer under fixed pill chrome (safe-area + top inset + bar). */
+const HEADER_SPACER_CLASS = 'h-[calc(4.5rem+env(safe-area-inset-top,0px))]';
 
 /**
  * Public header — ma-marie style: full-bleed over home hero, frosted pill
@@ -133,6 +133,7 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
       <header
         className={cn(
           'fixed inset-x-0 top-0 z-[var(--z-header)]',
+          'pt-[env(safe-area-inset-top,0px)]',
           isOverHero ? 'text-on-dark' : 'text-ink',
           className,
         )}

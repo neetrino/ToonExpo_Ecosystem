@@ -61,12 +61,12 @@ type PortalShellProps = {
  * rail stays inside the visual viewport at any zoom / short screen.
  * Content mask extends a bit lower so scrolled main vanishes under the header.
  */
-const RAIL_CHROME_TOP_CLASS = 'top-[5.5rem]';
+const RAIL_CHROME_TOP_CLASS = 'top-[calc(5.5rem+env(safe-area-inset-top,0px))]';
 const RAIL_CHROME_BOTTOM_CLASS = 'bottom-0';
 /** Header spacer band under the fixed pill. */
-const RAIL_HEADER_BAND_HEIGHT_CLASS = 'h-[4.5rem]';
+const RAIL_HEADER_BAND_HEIGHT_CLASS = 'h-[calc(4.5rem+env(safe-area-inset-top,0px))]';
 /** Header band + light extra clip so content vanishes just below the header edge. */
-const RAIL_CONTENT_MASK_HEIGHT_CLASS = 'h-[5.125rem]';
+const RAIL_CONTENT_MASK_HEIGHT_CLASS = 'h-[calc(5.125rem+env(safe-area-inset-top,0px))]';
 const RAIL_SIDEBAR_WIDTH_CLASS = 'w-72';
 const RAIL_ROW_GAP_CLASS = 'md:pt-4';
 /** Mobile-only top air when the public pill has no opaque header band. */
