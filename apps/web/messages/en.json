@@ -253,6 +253,8 @@
   },
   "Nav": {
     "main": "Main navigation",
+    "bottomNav": "Mobile navigation",
+    "home": "Home",
     "menu": "Open menu",
     "buy": "Apartments",
     "newDevelopments": "New Developments",

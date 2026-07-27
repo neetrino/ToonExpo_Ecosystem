@@ -2,6 +2,10 @@
 
 import type { ReactNode } from 'react';
 
+import {
+  MobileBottomNav,
+  MobileBottomNavSpacer,
+} from '@/features/catalog/components/mobile-bottom-nav';
 import { usePathname } from '@/i18n/navigation';
 import { isBuyerAccountShellPath } from '@/shared/ui/account-mobile-nav-controller';
 import { DesktopFluidFrame } from '@/shared/ui/desktop-fluid-frame';
@@ -81,14 +85,26 @@ export const PublicChrome = ({ children }: PublicChromeProps) => {
       ? 'transparent'
       : 'solid';
 
-  if (isAuthRoute(pathname) || isPortalRoute(pathname) || isBuyerAccountShellPath(pathname)) {
+  if (isAuthRoute(pathname) || isPortalRoute(pathname)) {
     return <DesktopFluidFrame>{children}</DesktopFluidFrame>;
   }
 
+  if (isBuyerAccountShellPath(pathname)) {
+    return (
+      <DesktopFluidFrame stageClassName="min-h-svh bg-canvas">
+        {children}
+        <MobileBottomNavSpacer />
+        <MobileBottomNav />
+      </DesktopFluidFrame>
+    );
+  }
+
   return (
-    <DesktopFluidFrame>
+    <DesktopFluidFrame stageClassName="min-h-svh bg-canvas">
       <SiteHeader variant={headerVariant} />
       {children}
+      <MobileBottomNavSpacer />
+      <MobileBottomNav />
     </DesktopFluidFrame>
   );
 };

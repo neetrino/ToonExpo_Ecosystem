@@ -12,7 +12,7 @@ export const SiteFooter = async () => {
   const tNav = await getTranslations('Nav');
 
   return (
-    <footer className="border-t border-header-border bg-canvas">
+    <footer className="hidden border-t border-header-border bg-canvas lg:block">
       <div className="page-container pt-12 pb-4">
         <div className="mb-16 flex flex-col gap-12 md:flex-row md:items-start md:justify-between">
           <div className="max-w-md shrink-0">
