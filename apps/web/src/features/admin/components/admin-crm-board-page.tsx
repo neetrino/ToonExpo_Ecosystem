@@ -114,29 +114,28 @@ export const AdminCrmBoardPage = () => {
     [companyId, source],
   );
 
-  const onStatusDrop = async (dealId: string, status: CrmDealStatus) => {
+  const onStatusDrop = async (dealId: string, status: CrmDealStatus): Promise<boolean> => {
     setBoardError(null);
     const deal = deals.find((item) => item.id === dealId);
     if (!deal || deal.status === status) {
-      return;
+      return false;
     }
     if (!isCrmStatusTransitionAllowed(deal.status, status)) {
       setBoardError(tBoard('invalidTransition'));
-      await queryClient.invalidateQueries({ queryKey: ADMIN_CRM_DEALS_QUERY_KEY });
-      return;
+      return false;
     }
     if (crmStatusRequiresApartment(status) || status === 'lost') {
       openDeal(dealId);
       setBoardError(tBoard('openSheetForStatus'));
-      await queryClient.invalidateQueries({ queryKey: ADMIN_CRM_DEALS_QUERY_KEY });
-      return;
+      return false;
     }
     try {
       await updateAdminCrmDeal(dealId, { status });
       await queryClient.invalidateQueries({ queryKey: ADMIN_CRM_DEALS_QUERY_KEY });
+      return true;
     } catch {
       setBoardError(t('error'));
-      await queryClient.invalidateQueries({ queryKey: ADMIN_CRM_DEALS_QUERY_KEY });
+      return false;
     }
   };
 

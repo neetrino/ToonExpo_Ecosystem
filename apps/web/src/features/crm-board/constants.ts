@@ -33,6 +33,19 @@ export const CRM_KANBAN_COLUMN_ACCENT: Record<CrmDealStatus, string> = {
   lost: 'bg-danger',
 };
 
+/** Soft status pill colors — same hue as each kanban column accent. */
+export const CRM_STATUS_BADGE: Record<CrmDealStatus, string> = {
+  new_request: 'bg-brand/10 text-brand',
+  assigned: 'bg-ink-muted/15 text-ink-muted',
+  contacted: 'bg-brand-secondary/12 text-brand-secondary',
+  follow_up_needed: 'bg-accent-soft text-accent',
+  apartment_selected: 'bg-brand/10 text-brand',
+  reserved: 'bg-brand-secondary/12 text-brand-secondary',
+  converted: 'bg-success-soft text-success',
+  closed: 'bg-ink-muted/15 text-ink-muted',
+  lost: 'bg-danger-soft text-danger',
+};
+
 export type CrmBoardMode = 'edit' | 'readonly';
 
 /** Debounce for CRM lead search before hitting the API. */

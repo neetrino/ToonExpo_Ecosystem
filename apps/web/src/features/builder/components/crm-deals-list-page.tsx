@@ -121,26 +121,28 @@ export const CrmDealsListPage = () => {
     [projects, assignees, t],
   );
 
-  const onStatusDrop = async (dealId: string, status: CrmDealStatus) => {
+  const onStatusDrop = async (dealId: string, status: CrmDealStatus): Promise<boolean> => {
     setBoardError(null);
     const deal = deals.find((item) => item.id === dealId);
     if (!deal || deal.status === status) {
-      return;
+      return false;
     }
     if (!isCrmStatusTransitionAllowed(deal.status, status)) {
       setBoardError(tBoard('invalidTransition'));
-      return;
+      return false;
     }
     if (crmStatusRequiresApartment(status) || status === 'lost') {
       openDeal(dealId);
       setBoardError(tBoard('openSheetForStatus'));
-      return;
+      return false;
     }
     try {
       await updateCrmDeal(dealId, { status });
       await queryClient.invalidateQueries({ queryKey: PORTAL_CRM_DEALS_QUERY_KEY });
+      return true;
     } catch {
       setBoardError(t('errors.generic'));
+      return false;
     }
   };
 
