@@ -1,10 +1,11 @@
 'use client';
 
-import { Building2, LogIn, LogOut, Shield } from 'lucide-react';
+import { Building2, LogIn, LogOut, Shield, User } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useId, useRef, useState } from 'react';
 
 import { useLogoutMutation } from '@/features/auth/hooks/use-auth';
+import { isPartnerCompatibleCompany } from '@/features/partners/utils/is-partner-compatible-company';
 import { Link, usePathname } from '@/i18n/navigation';
 import { blurActiveElementAfterEscClose } from '@/shared/ui/blur-active-element';
 import { cn } from '@/shared/ui/cn';
@@ -53,6 +54,13 @@ export const ProfileMenu = ({
   const showBuilder =
     showBuilderProp ??
     (accountType === 'company_member' && (companyType == null || companyType === 'builder'));
+  const showProfile = !showAdmin && !showBuilder;
+  const profileHref =
+    accountType === 'company_member' &&
+    companyType != null &&
+    isPartnerCompatibleCompany(companyType)
+      ? '/partner/settings'
+      : '/settings';
 
   const clearCloseTimer = (): void => {
     if (closeTimerRef.current == null) {
@@ -195,6 +203,18 @@ export const ProfileMenu = ({
               >
                 <Building2 className="size-4 shrink-0 opacity-80" aria-hidden />
                 {t('builder')}
+              </Link>
+            ) : null}
+
+            {showProfile ? (
+              <Link
+                href={profileHref}
+                role="menuitem"
+                className={menuItemClassName}
+                onClick={() => setOpen(false)}
+              >
+                <User className="size-4 shrink-0 opacity-80" aria-hidden />
+                {t('profile')}
               </Link>
             ) : null}
 
