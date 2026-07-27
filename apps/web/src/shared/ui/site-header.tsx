@@ -220,7 +220,7 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
                 <LocaleSwitcher tone={isOverHero ? 'dark' : 'light'} />
               </div>
 
-              <div className={cn(isAccountRoute && 'hidden md:block')}>
+              <div className="hidden lg:block">
                 <ProfileMenu
                   userName={user?.name}
                   userEmail={user?.email}
