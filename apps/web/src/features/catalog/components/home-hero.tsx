@@ -30,8 +30,6 @@ export const HomeHero = async ({ locations = [] }: HomeHeroProps) => {
           className="object-cover object-center"
           sizes="100vw"
         />
-        {/* Darken photo so white hero copy stays readable on mobile crops / slow image load. */}
-        <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/35 to-ink/25" />
       </div>
 
       <div

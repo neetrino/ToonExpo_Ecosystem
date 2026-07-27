@@ -77,13 +77,14 @@ export const HeroSearch = ({ className, locations = [] }: HeroSearchProps) => {
         />
 
         <div className="grid grid-cols-1 gap-2 p-3 lg:grid-cols-[minmax(11rem,15rem)_auto_auto_auto] lg:items-center">
-          <div className="flex min-w-0 flex-col gap-1 px-3 py-2">
-            <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-header-muted">
+          <div className="flex min-w-0 flex-col gap-1 lg:px-3 lg:py-2">
+            <span className="hidden text-[10px] font-bold tracking-[0.1em] text-header-muted uppercase lg:inline">
               {t('locationLabel')}
             </span>
             <LocationSearchSelect
               value={location}
               options={locationOptions}
+              fieldLabel={t('locationLabel')}
               aria-label={t('locationLabel')}
               labels={{
                 any: t('locationAny'),
@@ -95,13 +96,14 @@ export const HeroSearch = ({ className, locations = [] }: HeroSearchProps) => {
             />
           </div>
 
-          <div className="flex min-w-0 flex-col gap-1 border-t border-header-border px-3 py-2 lg:border-t-0 lg:border-l">
-            <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-header-muted">
+          <div className="flex min-w-0 flex-col gap-1 lg:border-l lg:border-header-border lg:px-3 lg:py-2">
+            <span className="hidden text-[10px] font-bold tracking-[0.1em] text-header-muted uppercase lg:inline">
               {t('priceLabel')}
             </span>
             <PriceRangeSelect
               minPrice={minPrice}
               maxPrice={maxPrice}
+              fieldLabel={t('priceLabel')}
               labels={{
                 any: t('priceAny'),
                 min: t('priceMin'),
@@ -113,8 +115,8 @@ export const HeroSearch = ({ className, locations = [] }: HeroSearchProps) => {
             />
           </div>
 
-          <div className="flex min-w-0 flex-col gap-1 border-t border-header-border px-3 py-2 lg:border-t-0 lg:border-l">
-            <span className="text-[10px] font-bold uppercase tracking-[0.1em] text-header-muted">
+          <div className="flex min-w-0 flex-col gap-1 lg:border-l lg:border-header-border lg:px-3 lg:py-2">
+            <span className="hidden text-[10px] font-bold tracking-[0.1em] text-header-muted uppercase lg:inline">
               {t('bedsLabel')}
             </span>
             <MultiListboxSelect
@@ -125,6 +127,7 @@ export const HeroSearch = ({ className, locations = [] }: HeroSearchProps) => {
               selectedCountLabel={(count) => t('bedsSelectedCount', { count })}
               variant="plain"
               size="fit"
+              heroBlock={{ label: t('bedsLabel') }}
               onChange={setRooms}
             />
           </div>

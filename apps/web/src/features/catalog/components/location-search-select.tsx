@@ -1,8 +1,9 @@
 'use client';
 
-import { Check, ChevronDown, Search } from 'lucide-react';
+import { Check, Search } from 'lucide-react';
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 
+import { HeroFilterTrigger } from '@/features/catalog/components/hero-filter-trigger';
 import { blurActiveElementAfterEscClose } from '@/shared/ui/blur-active-element';
 import { cn } from '@/shared/ui/cn';
 import { DropdownPortal } from '@/shared/ui/dropdown-portal';
@@ -17,6 +18,8 @@ type LocationSearchSelectProps = {
     search: string;
     empty: string;
   };
+  /** Visible field title inside the mobile block trigger. */
+  fieldLabel: string;
   'aria-label': string;
 };
 
@@ -30,6 +33,7 @@ export const LocationSearchSelect = ({
   options,
   onChange,
   labels,
+  fieldLabel,
   'aria-label': ariaLabel,
 }: LocationSearchSelectProps) => {
   const [open, setOpen] = useState(false);
@@ -86,18 +90,12 @@ export const LocationSearchSelect = ({
 
   return (
     <div ref={rootRef} className="relative w-full min-w-0">
-      <button
+      <HeroFilterTrigger
         ref={buttonRef}
-        type="button"
-        className={cn(
-          'flex w-full min-w-0 items-center justify-between gap-2 bg-transparent p-0',
-          'text-left text-sm font-medium transition-colors',
-          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/25',
-          value.length > 0
-            ? 'text-ink-navy hover:text-brand-deep'
-            : 'text-ink-muted hover:text-ink-navy',
-          open && 'text-brand-deep',
-        )}
+        label={fieldLabel}
+        value={displayLabel}
+        open={open}
+        mutedValue={value.length === 0}
         aria-label={ariaLabel}
         aria-haspopup="listbox"
         aria-expanded={open}
@@ -106,16 +104,7 @@ export const LocationSearchSelect = ({
           setQuery('');
           setOpen((current) => !current);
         }}
-      >
-        <span className="truncate">{displayLabel}</span>
-        <ChevronDown
-          className={cn(
-            'size-4 shrink-0 text-header-muted transition-transform',
-            open && 'rotate-180 text-brand-deep',
-          )}
-          aria-hidden
-        />
-      </button>
+      />
 
       <DropdownPortal open={open} anchorRef={rootRef} exactWidth>
         <div
