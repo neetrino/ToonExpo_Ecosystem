@@ -117,7 +117,7 @@ export const AccountMobileStack = ({
             className={cn(
               'flex flex-col gap-6',
               'max-md:mx-auto max-md:w-full max-md:max-w-md',
-              'max-md:px-[var(--page-gutter)] max-md:pt-6',
+              'max-md:px-[var(--page-gutter)] max-md:pt-5',
               'max-md:pb-[calc(5.5rem+env(safe-area-inset-bottom,0px))]',
             )}
           >

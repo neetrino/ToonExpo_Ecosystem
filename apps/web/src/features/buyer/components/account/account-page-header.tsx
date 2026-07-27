@@ -34,7 +34,7 @@ export const AccountPageHeader = ({
       className={cn('flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between', className)}
     >
       <div className="flex min-w-0 flex-col gap-1">
-        {onBack ? <AccountMobileBackLink onBack={onBack} className="-ml-2 md:hidden" /> : null}
+        {onBack ? <AccountMobileBackLink onBack={onBack} className="-ml-2 mb-3 md:hidden" /> : null}
         <HeadingTag className="text-page-title min-w-0 text-ink">{title}</HeadingTag>
         {subtitle ? (
           <p className="max-w-2xl text-sm leading-relaxed text-ink-secondary">{subtitle}</p>

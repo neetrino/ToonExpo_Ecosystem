@@ -9,9 +9,10 @@ import { cn } from '@/shared/ui/cn';
 
 /** Figma bar fill — no matching design token yet. */
 const BAR_SURFACE_CLASS = 'bg-[#171717]';
-const BUTTON_SIZE_CLASS = 'size-11';
+const BUTTON_SIZE_CLASS = 'size-12';
 const ITEM_GAP_CLASS = 'gap-2';
-const BAR_PAD_CLASS = 'p-1.5';
+const BAR_PAD_CLASS = 'p-2';
+const THUMB_INSET_CLASS = 'top-2 left-2';
 /** Slightly slower than base switchers so the thumb glide reads clearly. */
 const THUMB_SLIDE_DURATION_MS = 420;
 
@@ -85,7 +86,7 @@ export const MobileBottomNav = () => {
       href: '/',
       labelKey: 'home',
       iconClass:
-        'size-7 [mask-image:url(/icons/bottom-nav/home.webp)] [-webkit-mask-image:url(/icons/bottom-nav/home.webp)]',
+        'size-8 [mask-image:url(/icons/bottom-nav/home.webp)] [-webkit-mask-image:url(/icons/bottom-nav/home.webp)]',
       match: isHomePath,
     },
     {
@@ -93,7 +94,7 @@ export const MobileBottomNav = () => {
       href: '/expo',
       labelKey: 'expoMap',
       iconClass:
-        'size-[26px] [mask-image:url(/icons/bottom-nav/map.webp)] [-webkit-mask-image:url(/icons/bottom-nav/map.webp)]',
+        'size-7 [mask-image:url(/icons/bottom-nav/map.webp)] [-webkit-mask-image:url(/icons/bottom-nav/map.webp)]',
       match: isMapPath,
     },
     {
@@ -101,7 +102,7 @@ export const MobileBottomNav = () => {
       href: '/builders',
       labelKey: 'builders',
       iconClass:
-        'size-6 [mask-image:url(/icons/bottom-nav/builders.webp)] [-webkit-mask-image:url(/icons/bottom-nav/builders.webp)]',
+        'size-7 [mask-image:url(/icons/bottom-nav/builders.webp)] [-webkit-mask-image:url(/icons/bottom-nav/builders.webp)]',
       match: isBuildersPath,
     },
     {
@@ -109,7 +110,7 @@ export const MobileBottomNav = () => {
       href: me ? '/dashboard' : '/auth/login',
       labelKey: 'profile',
       iconClass:
-        'size-[22px] [mask-image:url(/icons/bottom-nav/profile.webp)] [-webkit-mask-image:url(/icons/bottom-nav/profile.webp)]',
+        'size-6 [mask-image:url(/icons/bottom-nav/profile.webp)] [-webkit-mask-image:url(/icons/bottom-nav/profile.webp)]',
       match: isProfilePath,
     },
     {
@@ -117,7 +118,7 @@ export const MobileBottomNav = () => {
       href: '/mortgage',
       labelKey: 'mortgage',
       iconClass:
-        'size-6 [mask-image:url(/icons/bottom-nav/calculator.webp)] [-webkit-mask-image:url(/icons/bottom-nav/calculator.webp)]',
+        'size-7 [mask-image:url(/icons/bottom-nav/calculator.webp)] [-webkit-mask-image:url(/icons/bottom-nav/calculator.webp)]',
       match: isMortgagePath,
     },
   ];
@@ -153,7 +154,8 @@ export const MobileBottomNav = () => {
           <span
             aria-hidden
             className={cn(
-              'pointer-events-none absolute top-1.5 left-1.5 rounded-full bg-brand-secondary',
+              'pointer-events-none absolute rounded-full bg-brand-secondary',
+              THUMB_INSET_CLASS,
               BUTTON_SIZE_CLASS,
               'transition-transform duration-[var(--bottom-nav-thumb-ms)] ease-[var(--ease-out-premium)]',
               'motion-reduce:transition-none',
@@ -198,7 +200,7 @@ export const MobileBottomNav = () => {
 /** Spacer so page content clears the fixed mobile bottom nav. */
 export const MobileBottomNavSpacer = () => (
   <div
-    className="h-[calc(3.75rem+env(safe-area-inset-bottom,0px))] bg-canvas lg:hidden"
+    className="h-[calc(4.5rem+env(safe-area-inset-bottom,0px))] bg-canvas lg:hidden"
     aria-hidden
   />
 );
