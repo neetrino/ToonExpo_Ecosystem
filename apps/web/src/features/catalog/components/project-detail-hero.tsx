@@ -23,6 +23,9 @@ const STAT_CONTENT_MIN_CLASS = 'min-w-[5.5rem]';
  */
 const TITLE_ALIGN_PL_CLASS =
   'pl-[max(0rem,calc((100%-1.5rem)/4-2.75rem))] sm:pl-[max(0rem,calc((100%-3rem)/6-2.75rem))] lg:pl-[max(0rem,calc((100%-6rem)/10-2.75rem))]';
+/** Builder mark beside the project title. */
+const BUILDER_LOGO_SIZE_CLASS = 'size-14 sm:size-16';
+const BUILDER_LOGO_IMAGE_SIZES = '64px';
 
 /**
  * Full-bleed cover + overlapping summary card — Figma `89:876` hero.
@@ -43,6 +46,7 @@ export const ProjectDetailHero = ({ project }: ProjectDetailHeroProps) => {
     fromLabel: '',
     onRequestLabel: catalogT('price.onRequest'),
   });
+  const builderInitials = project.builder.name.trim().slice(0, 2).toUpperCase() || '—';
 
   return (
     <section className="relative">
@@ -70,16 +74,44 @@ export const ProjectDetailHero = ({ project }: ProjectDetailHeroProps) => {
             'shadow-lg shadow-brand/5',
           )}
         >
-          <div className={TITLE_ALIGN_PL_CLASS}>
-            <p className="text-[11px] font-bold tracking-[0.2em] text-brand-secondary uppercase">
-              {project.builder.name}
-            </p>
-            <h1 className="mt-2 font-brand text-[clamp(2rem,5vw,3.75rem)] font-bold leading-[1.15] tracking-[-0.03em] text-ink-navy">
-              {project.name}
-            </h1>
-            <p className="mt-3 max-w-2xl text-lg leading-6 text-header-muted">
-              {project.shortDescription ?? catalogT('project.noDescription')}
-            </p>
+          <div className={cn(TITLE_ALIGN_PL_CLASS, 'flex items-start gap-4 sm:gap-5')}>
+            {project.builder.logoUrl ? (
+              <span
+                className={cn(
+                  'relative shrink-0 overflow-hidden rounded-full bg-surface ring-1 ring-header-border',
+                  BUILDER_LOGO_SIZE_CLASS,
+                )}
+              >
+                <Image
+                  src={project.builder.logoUrl}
+                  alt={project.builder.name}
+                  fill
+                  className="object-cover"
+                  sizes={BUILDER_LOGO_IMAGE_SIZES}
+                />
+              </span>
+            ) : (
+              <span
+                className={cn(
+                  'grid shrink-0 place-items-center rounded-full bg-brand-deep font-brand text-lg font-bold text-on-dark sm:text-xl',
+                  BUILDER_LOGO_SIZE_CLASS,
+                )}
+                aria-hidden
+              >
+                {builderInitials}
+              </span>
+            )}
+            <div className="min-w-0 flex-1">
+              <p className="text-[11px] font-bold tracking-[0.2em] text-brand-secondary uppercase">
+                {project.builder.name}
+              </p>
+              <h1 className="mt-2 font-brand text-[clamp(2rem,5vw,3.75rem)] font-bold leading-[1.15] tracking-[-0.03em] text-ink-navy">
+                {project.name}
+              </h1>
+              <p className="mt-3 max-w-2xl text-lg leading-6 text-header-muted">
+                {project.shortDescription ?? catalogT('project.noDescription')}
+              </p>
+            </div>
           </div>
 
           <dl className="mt-8 grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-5">
