@@ -88,7 +88,7 @@ export const SiteFooter = async () => {
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-6 border-t border-header-border pt-8 pb-2">
+        <div className="flex flex-col-reverse gap-6 border-t border-header-border pt-8 pb-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
           <p className="text-[10px] tracking-widest text-header-muted uppercase">
             {t('copyrightPrefix')}{' '}
             <a
