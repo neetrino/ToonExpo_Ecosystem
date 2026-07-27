@@ -65,21 +65,26 @@ export const CrmDealSheet = ({
         onClose={onClose}
         title={title}
         description={mode === 'readonly' ? t('readonlyHint') : undefined}
-        size="default"
+        size="comfortable"
         escapeEnabled={!confirmDeleteOpen}
         headerActions={
-          deal && onDelete ? (
-            <IconButton
-              label={isDeleting ? t('deleting') : tCommon('delete')}
-              size="sm"
-              className="text-danger hover:bg-danger-soft"
-              disabled={isDeleting}
-              onClick={() => {
-                setConfirmDeleteOpen(true);
-              }}
-            >
-              <Trash2 className="size-4" strokeWidth={1.75} aria-hidden />
-            </IconButton>
+          deal ? (
+            <div className="flex items-center gap-2">
+              <CrmDealPipeline status={deal.status} />
+              {onDelete ? (
+                <IconButton
+                  label={isDeleting ? t('deleting') : tCommon('delete')}
+                  size="sm"
+                  className="text-danger hover:bg-danger-soft"
+                  disabled={isDeleting}
+                  onClick={() => {
+                    setConfirmDeleteOpen(true);
+                  }}
+                >
+                  <Trash2 className="size-4" strokeWidth={1.75} aria-hidden />
+                </IconButton>
+              ) : null}
+            </div>
           ) : undefined
         }
       >
@@ -93,8 +98,6 @@ export const CrmDealSheet = ({
 
         {deal ? (
           <div className="flex flex-col gap-5">
-            <CrmDealPipeline status={deal.status} />
-
             {deal.companyName ? (
               <p className="text-sm font-medium text-ink-secondary">
                 {t('company')}: {deal.companyName}
