@@ -18,6 +18,7 @@ import { resolvePostLoginPath } from '@/features/auth/utils/resolve-post-login-p
 import { sanitizeReturnUrl } from '@/features/auth/utils/sanitize-return-url';
 import { Link, useRouter } from '@/i18n/navigation';
 import { Button } from '@/shared/ui/button';
+import { Form } from '@/shared/ui/form';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
 import { PasswordInput } from '@/shared/ui/password-input';
@@ -58,7 +59,7 @@ export const LoginForm = ({ returnUrl }: LoginFormProps) => {
   const busy = isSubmitting || loginMutation.isPending;
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-6" noValidate>
+    <Form onSubmit={onSubmit} className="flex flex-col gap-6" noValidate>
       <FormField
         id="login-email"
         label={t('fields.email')}
@@ -124,6 +125,6 @@ export const LoginForm = ({ returnUrl }: LoginFormProps) => {
         href="/auth/register"
         linkLabel={t('login.registerLink')}
       />
-    </form>
+    </Form>
   );
 };

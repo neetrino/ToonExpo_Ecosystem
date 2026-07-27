@@ -35,6 +35,8 @@ export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
             className,
           )}
           {...props}
+          // Chrome iOS injects `__gcruniqueid` before hydrate — false mismatch in `next dev`.
+          suppressHydrationWarning
         />
         <button
           type="button"

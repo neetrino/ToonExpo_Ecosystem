@@ -4,6 +4,7 @@ import type { ProjectListItem } from '@toonexpo/contracts';
 import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
 
+import { FavoriteToggleButton } from '@/features/buyer/components/favorite-toggle-button';
 import { usePriceOverlay } from '@/features/catalog/components/price-overlay-scope';
 import { computeSoldPercent, resolveBadge } from '@/features/catalog/utils/development-progress';
 import { formatCompactPrice } from '@/features/catalog/utils/format-price';
@@ -65,6 +66,11 @@ export const NewDevelopmentRowCard = ({
       >
         {homeT(`badges.${badge}`)}
       </span>
+      <FavoriteToggleButton
+        targetType="project"
+        targetId={project.id}
+        className="absolute top-4 right-4 z-10"
+      />
     </div>
   );
 

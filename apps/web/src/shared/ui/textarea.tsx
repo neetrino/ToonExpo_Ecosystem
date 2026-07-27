@@ -20,6 +20,8 @@ export const Textarea = ({ className, ...props }: TextareaProps) => {
         className,
       )}
       {...props}
+      // Chrome iOS injects `__gcruniqueid` before hydrate — false mismatch in `next dev`.
+      suppressHydrationWarning
     />
   );
 };

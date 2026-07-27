@@ -22,6 +22,8 @@ export const Input = ({ className, type = 'text', ...props }: InputProps) => {
         className,
       )}
       {...props}
+      // Chrome iOS injects `__gcruniqueid` before hydrate — false mismatch in `next dev`.
+      suppressHydrationWarning
     />
   );
 };

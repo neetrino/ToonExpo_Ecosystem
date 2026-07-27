@@ -8,11 +8,12 @@ type ProjectDetailFavoriteProps = {
 
 /**
  * Heart toggle for the public project detail hero.
+ * Right edge aligns with the header burger / profile control (`page-gutter`).
  */
 export const ProjectDetailFavorite = ({ projectId }: ProjectDetailFavoriteProps) => (
   <FavoriteToggleButton
     targetType="project"
     targetId={projectId}
-    className="absolute top-24 right-6 z-10 hidden sm:top-28 sm:block"
+    className="absolute top-[4.75rem] right-[var(--page-gutter)] z-10 size-10 sm:top-28"
   />
 );

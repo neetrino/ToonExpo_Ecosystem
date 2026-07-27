@@ -12,6 +12,7 @@ import {
 } from '@/features/auth/schemas/change-password.schema';
 import { mapChangePasswordError } from '@/features/auth/utils/map-auth-error';
 import { Button } from '@/shared/ui/button';
+import { Form } from '@/shared/ui/form';
 import { FormField } from '@/shared/ui/form-field';
 import { PasswordInput } from '@/shared/ui/password-input';
 
@@ -57,7 +58,7 @@ export const ChangePasswordForm = () => {
   const busy = isSubmitting || changePasswordMutation.isPending;
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-5" noValidate>
+    <Form onSubmit={onSubmit} className="flex flex-col gap-5" noValidate>
       <FormField
         id="change-password-current"
         label={t('fields.currentPassword')}
@@ -121,6 +122,6 @@ export const ChangePasswordForm = () => {
       <Button type="submit" variant="primary" disabled={busy} className="w-full sm:w-auto">
         {busy ? t('submitting') : t('submit')}
       </Button>
-    </form>
+    </Form>
   );
 };
