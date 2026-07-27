@@ -10,7 +10,7 @@ import type { CrmBoardMode } from '@/features/crm-board/constants';
 import { CrmDealPipeline } from '@/features/crm-board/crm-deal-pipeline';
 import { CrmDealReadonlyExtras } from '@/features/crm-board/crm-deal-readonly-extras';
 import { AdminDeleteModal } from '@/shared/ui/admin-delete-modal';
-import { Button } from '@/shared/ui/button';
+import { IconButton } from '@/shared/ui/icon-button';
 import { SideSheet } from '@/shared/ui/side-sheet';
 
 type CrmDealSheetProps = {
@@ -67,21 +67,19 @@ export const CrmDealSheet = ({
         description={mode === 'readonly' ? t('readonlyHint') : undefined}
         size="default"
         escapeEnabled={!confirmDeleteOpen}
-        footer={
+        headerActions={
           deal && onDelete ? (
-            <Button
-              type="button"
-              variant="danger"
+            <IconButton
+              label={isDeleting ? t('deleting') : tCommon('delete')}
               size="sm"
-              className="w-full sm:w-auto"
+              className="text-danger hover:bg-danger-soft"
               disabled={isDeleting}
               onClick={() => {
                 setConfirmDeleteOpen(true);
               }}
             >
-              <Trash2 className="size-4 shrink-0" aria-hidden />
-              {isDeleting ? t('deleting') : tCommon('delete')}
-            </Button>
+              <Trash2 className="size-4" strokeWidth={1.75} aria-hidden />
+            </IconButton>
           ) : undefined
         }
       >

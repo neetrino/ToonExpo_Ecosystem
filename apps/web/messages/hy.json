@@ -1065,6 +1065,16 @@
         "allCompanies": "Բոլոր կառուցապատողները",
         "selectedCount": "{count} ընտրված"
       },
+      "empty": "Այս ֆիլտրերով deal չկա։",
+      "columns": {
+        "buyer": "Գնորդ",
+        "company": "Կառուցապատող",
+        "project": "Նախագիծ",
+        "status": "Կարգավիճակ",
+        "source": "Աղբյուր",
+        "assignee": "Պատասխանատու",
+        "updated": "Թարմացված"
+      },
       "newDeal": {
         "title": "Նոր lead",
         "cancel": "Չեղարկել",

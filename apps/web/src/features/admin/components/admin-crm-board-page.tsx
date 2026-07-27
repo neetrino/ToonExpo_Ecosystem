@@ -6,11 +6,13 @@ import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 
 import { updateAdminCrmDeal } from '@/features/admin/api/admin-crm-api';
-import { AdminCrmNewDealPanel } from '@/features/admin/components/admin-crm-new-deal-panel';
+import { AdminCrmDealsTable } from '@/features/admin/components/admin-crm-deals-table';
+import { AdminCrmNewDealSheet } from '@/features/admin/components/admin-crm-new-deal-sheet';
 import {
   ADMIN_COMPANIES_MAX_PAGE_SIZE,
   ADMIN_CRM_BOARD_PAGE_SIZE,
   ADMIN_CRM_DEALS_QUERY_KEY,
+  ADMIN_VIEW_MODE_KEYS,
 } from '@/features/admin/constants';
 import {
   useAdminCrmDealQuery,
@@ -33,11 +35,16 @@ import { CrmSearchResultsBadge } from '@/features/crm-board/crm-search-results-b
 import { useCrmDealSheetUrl } from '@/features/crm-board/use-crm-deal-sheet-url';
 import { useCrmNewLeadUrl } from '@/features/crm-board/use-crm-new-lead-url';
 import { useDebouncedValue } from '@/shared/hooks/use-debounced-value';
-import { Input } from '@/shared/ui/input';
+import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
+import { AddActionLabel } from '@/shared/ui/add-action-label';
+import { Button } from '@/shared/ui/button';
 import { MultiListboxSelect } from '@/shared/ui/multi-listbox-select';
+import { SearchField } from '@/shared/ui/search-field';
+import { VIEW_MODE_CARDS, VIEW_MODE_LIST } from '@/shared/ui/view-mode';
+import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
 /**
- * Platform admin CRM Kanban — overview, create, animated status drag.
+ * Platform admin CRM — Kanban (cards) / list table, create, animated status drag.
  */
 export const AdminCrmBoardPage = () => {
   const t = useTranslations('Admin.crm');
@@ -51,6 +58,7 @@ export const AdminCrmBoardPage = () => {
   const [sources, setSources] = useState<RequestSource[]>([]);
   const [boardError, setBoardError] = useState<string | null>(null);
   const { isNewLeadOpen, openNewLead, closeNewLead } = useCrmNewLeadUrl();
+  const { viewMode, setViewMode } = usePersistedViewMode(ADMIN_VIEW_MODE_KEYS.crm);
 
   const companiesQuery = useAdminCompaniesQuery(1, ADMIN_COMPANIES_MAX_PAGE_SIZE);
   const dealsQuery = useAdminCrmDealsQuery({
@@ -138,40 +146,32 @@ export const AdminCrmBoardPage = () => {
   }
 
   const totalCount = dealsQuery.data?.meta.total ?? deals.length;
+  const isBoardView = viewMode === VIEW_MODE_CARDS;
+
   return (
-    <div className="crm-board-page">
+    <div className={isBoardView ? 'crm-board-page' : 'flex flex-col gap-6'}>
       <div className="flex shrink-0 flex-col gap-1">
         <p className="crm-board-page__eyebrow">{t('eyebrow')}</p>
         <h1 className="text-page-title text-ink">{t('title')}</h1>
         <p className="text-sm text-ink-secondary">{t('subtitle', { count: totalCount })}</p>
       </div>
 
-      <div className="flex shrink-0 flex-col gap-3 sm:flex-row sm:items-end">
-        <label className="relative flex min-w-0 flex-1 flex-col gap-1.5">
-          <span className="text-xs font-medium uppercase tracking-wide text-ink-muted">
-            {tBoard('searchLabel')}
-          </span>
-          <Input
+      <div className="flex shrink-0 flex-nowrap items-center justify-between gap-3 overflow-x-auto">
+        <div className="flex min-w-0 flex-1 flex-nowrap items-center gap-2">
+          <SearchField
+            className="min-w-[10rem] flex-1"
             value={search}
             placeholder={tBoard('searchPlaceholder')}
+            aria-label={tBoard('searchLabel')}
             onChange={(event) => {
               setSearch(event.target.value);
             }}
           />
-          {search.trim() ? (
-            <CrmSearchResultsBadge
-              count={deals.length}
-              className="pointer-events-none absolute right-0 top-0 max-w-[min(100%,14rem)]"
-            />
-          ) : null}
-        </label>
 
-        <label className="flex min-w-0 flex-1 flex-col gap-1.5">
-          <span className="text-xs font-medium uppercase tracking-wide text-ink-muted">
-            {t('filters.company')}
-          </span>
           <MultiListboxSelect
             id="admin-crm-builders"
+            size="fit"
+            className="h-10 shrink-0"
             aria-label={t('filters.company')}
             values={companyIds}
             options={builderOptions}
@@ -179,14 +179,11 @@ export const AdminCrmBoardPage = () => {
             selectedCountLabel={(count) => t('filters.selectedCount', { count })}
             onChange={setCompanyIds}
           />
-        </label>
 
-        <label className="flex min-w-0 flex-1 flex-col gap-1.5">
-          <span className="text-xs font-medium uppercase tracking-wide text-ink-muted">
-            {tBoard('filters.source')}
-          </span>
           <MultiListboxSelect
             id="admin-crm-sources"
+            size="fit"
+            className="h-10 shrink-0"
             aria-label={tBoard('filters.source')}
             values={sources}
             options={sourceOptions}
@@ -196,7 +193,22 @@ export const AdminCrmBoardPage = () => {
               setSources(next as RequestSource[]);
             }}
           />
-        </label>
+        </div>
+
+        <div className="flex shrink-0 items-center gap-2">
+          {search.trim() ? <CrmSearchResultsBadge count={deals.length} /> : null}
+          <ViewModeToggle value={viewMode} onChange={setViewMode} />
+          <Button
+            type="button"
+            size="sm"
+            variant="secondary"
+            onClick={() => {
+              openNewLead();
+            }}
+          >
+            <AddActionLabel>{t('newDeal.title')}</AddActionLabel>
+          </Button>
+        </div>
       </div>
 
       {boardError ? (
@@ -205,35 +217,42 @@ export const AdminCrmBoardPage = () => {
         </p>
       ) : null}
 
-      <CrmKanbanBoard
-        deals={deals}
-        mode="readonly"
-        onOpenDeal={openDeal}
-        onStatusDrop={onStatusDrop}
-        newColumnAction={
-          <CrmNewColumnCreateButton
-            onClick={() => {
-              openNewLead();
-            }}
-          />
-        }
-      />
-
-      {isNewLeadOpen ? (
-        <AdminCrmNewDealPanel
-          companies={builderCompanies.map((company) => ({
-            id: company.id,
-            name: company.name,
-          }))}
-          defaultCompanyId={companyIds[0] ?? ''}
-          onClose={() => {
-            closeNewLead();
-          }}
-          onCreated={(dealId) => {
-            openDeal(dealId);
-          }}
+      {viewMode === VIEW_MODE_LIST ? (
+        deals.length === 0 ? (
+          <p className="text-sm text-ink-secondary">{t('empty')}</p>
+        ) : (
+          <AdminCrmDealsTable deals={deals} onSelectDeal={openDeal} />
+        )
+      ) : (
+        <CrmKanbanBoard
+          deals={deals}
+          mode="readonly"
+          onOpenDeal={openDeal}
+          onStatusDrop={onStatusDrop}
+          newColumnAction={
+            <CrmNewColumnCreateButton
+              onClick={() => {
+                openNewLead();
+              }}
+            />
+          }
         />
-      ) : null}
+      )}
+
+      <AdminCrmNewDealSheet
+        open={isNewLeadOpen}
+        companies={builderCompanies.map((company) => ({
+          id: company.id,
+          name: company.name,
+        }))}
+        defaultCompanyId={companyIds[0] ?? ''}
+        onClose={() => {
+          closeNewLead();
+        }}
+        onCreated={(dealId) => {
+          openDeal(dealId);
+        }}
+      />
 
       <CrmDealSheet
         open={selectedDealId !== null}

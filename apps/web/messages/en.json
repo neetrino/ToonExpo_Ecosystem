@@ -1065,6 +1065,16 @@
         "allCompanies": "All builders",
         "selectedCount": "{count} selected"
       },
+      "empty": "No deals match these filters.",
+      "columns": {
+        "buyer": "Buyer",
+        "company": "Builder",
+        "project": "Project",
+        "status": "Status",
+        "source": "Source",
+        "assignee": "Assignee",
+        "updated": "Updated"
+      },
       "newDeal": {
         "title": "New lead",
         "cancel": "Cancel",

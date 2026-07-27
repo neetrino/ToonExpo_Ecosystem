@@ -1065,6 +1065,16 @@
         "allCompanies": "Все застройщики",
         "selectedCount": "{count} выбрано"
       },
+      "empty": "Нет сделок по этим фильтрам.",
+      "columns": {
+        "buyer": "Покупатель",
+        "company": "Застройщик",
+        "project": "Проект",
+        "status": "Статус",
+        "source": "Источник",
+        "assignee": "Ответственный",
+        "updated": "Обновлено"
+      },
       "newDeal": {
         "title": "Новый лид",
         "cancel": "Отмена",

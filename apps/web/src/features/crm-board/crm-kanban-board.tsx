@@ -124,7 +124,7 @@ export const CrmKanbanBoard = ({
         onDragEnd={onDragEnd}
         onDragCancel={onDragCancel}
       >
-        <div className="crm-kanban-board-columns">
+        <div className="crm-kanban-board-columns luxury-scrollbar">
           {CRM_KANBAN_STATUSES.map((status) => (
             <CrmKanbanColumn
               key={status}
