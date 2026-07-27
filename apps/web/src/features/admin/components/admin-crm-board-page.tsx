@@ -191,7 +191,7 @@ export const AdminCrmBoardPage = () => {
           }}
           actions={
             <>
-              <ViewModeToggle value={viewMode} onChange={setViewMode} />
+              <ViewModeToggle value={viewMode} onChange={setViewMode} cardsAsBoard />
               <Button
                 type="button"
                 size="sm"

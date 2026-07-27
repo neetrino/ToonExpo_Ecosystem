@@ -15,7 +15,8 @@
     "viewMode": {
       "label": "Вид",
       "list": "Список",
-      "cards": "Карточки"
+      "cards": "Карточки",
+      "board": "Доска"
     }
   },
   "CrmBoard": {

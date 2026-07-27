@@ -15,7 +15,8 @@
     "viewMode": {
       "label": "Տեսք",
       "list": "Ցանկ",
-      "cards": "Քարտեր"
+      "cards": "Քարտեր",
+      "board": "Տախտակ"
     }
   },
   "CrmBoard": {

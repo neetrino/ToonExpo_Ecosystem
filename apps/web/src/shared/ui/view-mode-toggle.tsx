@@ -1,6 +1,6 @@
 'use client';
 
-import { LayoutGrid, List } from 'lucide-react';
+import { Columns3, LayoutGrid, List, type LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { cn } from '@/shared/ui/cn';
@@ -9,18 +9,24 @@ import { VIEW_MODE_CARDS, VIEW_MODE_LIST, type ViewMode } from '@/shared/ui/view
 type ViewModeToggleProps = {
   value: ViewMode;
   onChange: (mode: ViewMode) => void;
+  /**
+   * CRM kanban — column blocks icon + “board” label instead of card grid.
+   */
+  cardsAsBoard?: boolean | undefined;
 };
 
-const OPTIONS = [
-  { mode: VIEW_MODE_LIST, Icon: List, labelKey: 'list' as const },
-  { mode: VIEW_MODE_CARDS, Icon: LayoutGrid, labelKey: 'cards' as const },
-] as const;
-
 /**
- * Pill switcher for list/cards collection views with a sliding thumb.
+ * Pill switcher for list/cards (or list/board) collection views with a sliding thumb.
  */
-export const ViewModeToggle = ({ value, onChange }: ViewModeToggleProps) => {
+export const ViewModeToggle = ({ value, onChange, cardsAsBoard = false }: ViewModeToggleProps) => {
   const t = useTranslations('Common.viewMode');
+  const cardsIcon: LucideIcon = cardsAsBoard ? Columns3 : LayoutGrid;
+  const cardsLabelKey = cardsAsBoard ? ('board' as const) : ('cards' as const);
+
+  const options = [
+    { mode: VIEW_MODE_LIST, Icon: List, labelKey: 'list' as const },
+    { mode: VIEW_MODE_CARDS, Icon: cardsIcon, labelKey: cardsLabelKey },
+  ] as const;
 
   return (
     <div
@@ -37,7 +43,7 @@ export const ViewModeToggle = ({ value, onChange }: ViewModeToggleProps) => {
           value === VIEW_MODE_CARDS && 'translate-x-[calc(100%+0.125rem)]',
         )}
       />
-      {OPTIONS.map(({ mode, Icon, labelKey }) => {
+      {options.map(({ mode, Icon, labelKey }) => {
         const active = value === mode;
         return (
           <button
