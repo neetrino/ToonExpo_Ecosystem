@@ -35,8 +35,6 @@ import { useCrmDealSheetUrl } from '@/features/crm-board/use-crm-deal-sheet-url'
 import { useCrmNewLeadUrl } from '@/features/crm-board/use-crm-new-lead-url';
 import { useDebouncedValue } from '@/shared/hooks/use-debounced-value';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
-import { AddActionLabel } from '@/shared/ui/add-action-label';
-import { Button } from '@/shared/ui/button';
 import type { IntegratedSearchFilterConfig } from '@/shared/ui/integrated-search-filters.types';
 import { ListPageHeader } from '@/shared/ui/list-page-header';
 import { VIEW_MODE_CARDS, VIEW_MODE_LIST } from '@/shared/ui/view-mode';
@@ -188,22 +186,7 @@ export const AdminCrmBoardPage = () => {
             setCompanyId('');
             setSource('');
           }}
-          actions={
-            <>
-              <ViewModeToggle value={viewMode} onChange={setViewMode} cardsAsBoard />
-              <Button
-                type="button"
-                size="sm"
-                variant="secondary"
-                className="shrink-0"
-                onClick={() => {
-                  openNewLead();
-                }}
-              >
-                <AddActionLabel>{t('newDeal.title')}</AddActionLabel>
-              </Button>
-            </>
-          }
+          actions={<ViewModeToggle value={viewMode} onChange={setViewMode} cardsAsBoard />}
         />
       </div>
 

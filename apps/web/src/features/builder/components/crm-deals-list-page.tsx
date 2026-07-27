@@ -43,8 +43,6 @@ import { filterCrmDealsBySearch } from '@/features/crm-board/filter-crm-deals-by
 import { useCrmDealSheetUrl } from '@/features/crm-board/use-crm-deal-sheet-url';
 import { useCrmNewLeadUrl } from '@/features/crm-board/use-crm-new-lead-url';
 import { useDebouncedValue } from '@/shared/hooks/use-debounced-value';
-import { AddActionLabel } from '@/shared/ui/add-action-label';
-import { Button } from '@/shared/ui/button';
 import { ListPageHeader } from '@/shared/ui/list-page-header';
 
 /**
@@ -188,18 +186,6 @@ export const CrmDealsListPage = () => {
           onClearAll={() => {
             setFilters(EMPTY_CRM_DEAL_FILTERS);
           }}
-          actions={
-            <Button
-              type="button"
-              size="sm"
-              className="shrink-0"
-              onClick={() => {
-                openNewLead();
-              }}
-            >
-              <AddActionLabel>{t('newDeal.cta')}</AddActionLabel>
-            </Button>
-          }
         />
       </div>
 

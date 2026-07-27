@@ -4,6 +4,7 @@ import type { CrmDealListItem } from '@toonexpo/contracts';
 import { useLocale, useTranslations } from 'next-intl';
 
 import { formatBuyerDateTime } from '@/features/buyer/utils/format-datetime';
+import { CrmDealPipeline } from '@/features/crm-board/crm-deal-pipeline';
 
 type AdminCrmDealsTableProps = {
   deals: CrmDealListItem[];
@@ -38,17 +39,24 @@ export const AdminCrmDealsTable = ({ deals, onSelectDeal }: AdminCrmDealsTablePr
           </thead>
           <tbody>
             {deals.map((deal) => (
-              <tr key={deal.id} className="border-t border-border hover:bg-surface/60">
+              <tr
+                key={deal.id}
+                tabIndex={0}
+                className="cursor-pointer border-t border-border hover:bg-surface/60 focus-visible:bg-surface/60 focus-visible:outline-none"
+                onClick={() => {
+                  onSelectDeal(deal.id);
+                }}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    onSelectDeal(deal.id);
+                  }
+                }}
+              >
                 <td className="px-3 py-2.5 text-left">
-                  <button
-                    type="button"
-                    className="font-medium text-brand hover:underline"
-                    onClick={() => {
-                      onSelectDeal(deal.id);
-                    }}
-                  >
+                  <span className="font-medium text-brand">
                     {dealLabel(deal, tBoard('unnamedBuyer'))}
-                  </button>
+                  </span>
                   {deal.buyer.phone ? (
                     <p className="mt-0.5 text-xs text-ink-muted">{deal.buyer.phone}</p>
                   ) : null}
@@ -59,8 +67,10 @@ export const AdminCrmDealsTable = ({ deals, onSelectDeal }: AdminCrmDealsTablePr
                 <td className="px-3 py-2.5 text-center text-ink-secondary">
                   {deal.projectName ?? tBoard('noProject')}
                 </td>
-                <td className="px-3 py-2.5 text-center text-ink-secondary">
-                  {tBoard(`statuses.${deal.status}`)}
+                <td className="px-3 py-2.5 text-center">
+                  <div className="flex justify-center">
+                    <CrmDealPipeline status={deal.status} />
+                  </div>
                 </td>
                 <td className="px-3 py-2.5 text-center text-ink-secondary">
                   {tBoard(`sources.${deal.source}`)}
