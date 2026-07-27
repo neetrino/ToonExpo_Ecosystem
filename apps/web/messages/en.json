@@ -3,6 +3,15 @@
     "close": "Close",
     "cancel": "Cancel",
     "delete": "Delete",
+    "integratedSearch": {
+      "apply": "Apply",
+      "reset": "Reset",
+      "clearAll": "Clear search and filters",
+      "panelLabel": "Search filters",
+      "removeChip": "Remove filter {label}",
+      "searchPlaceholder": "Search…",
+      "searchLabel": "Search"
+    },
     "viewMode": {
       "label": "View mode",
       "list": "List",

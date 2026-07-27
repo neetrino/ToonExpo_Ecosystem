@@ -40,13 +40,12 @@ import { CrmDealSheet, CrmKanbanBoard } from '@/features/crm-board';
 import { CRM_BOARD_SEARCH_DEBOUNCE_MS } from '@/features/crm-board/constants';
 import { CrmNewColumnCreateButton } from '@/features/crm-board/crm-new-column-create-button';
 import { filterCrmDealsBySearch } from '@/features/crm-board/filter-crm-deals-by-search';
-import { CrmSearchResultsBadge } from '@/features/crm-board/crm-search-results-badge';
 import { useCrmDealSheetUrl } from '@/features/crm-board/use-crm-deal-sheet-url';
 import { useCrmNewLeadUrl } from '@/features/crm-board/use-crm-new-lead-url';
 import { useDebouncedValue } from '@/shared/hooks/use-debounced-value';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { Button } from '@/shared/ui/button';
-import { IntegratedSearchFilters } from '@/shared/ui/integrated-search-filters';
+import { ListPageHeader } from '@/shared/ui/list-page-header';
 
 /**
  * Builder CRM Kanban workspace with deal SideSheet and new-deal flow.
@@ -170,50 +169,35 @@ export const CrmDealsListPage = () => {
 
   return (
     <div className="crm-board-page">
-      <div className="flex shrink-0 flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-col gap-1">
-          <p className="crm-board-page__eyebrow">{t('eyebrow')}</p>
-          <h1 className="text-page-title text-ink">{t('title')}</h1>
-          <p className="text-sm text-ink-secondary">{t('subtitle', { count: totalCount })}</p>
-        </div>
-        <Button
-          type="button"
-          size="sm"
-          onClick={() => {
-            openNewLead();
-          }}
-        >
-          <AddActionLabel>{t('newDeal.cta')}</AddActionLabel>
-        </Button>
-      </div>
-
-      <div className="relative flex max-w-2xl shrink-0 flex-col gap-1.5">
-        <IntegratedSearchFilters
-          search={search}
-          searchPlaceholder={tBoard('searchPlaceholder')}
-          searchAriaLabel={tBoard('searchLabel')}
-          filters={filterConfigs}
-          filterValues={crmDealFiltersToRecord(filters)}
-          applyLabel={t('filters.apply')}
-          resetLabel={t('filters.reset')}
-          clearAllAriaLabel={t('filters.clearAll')}
-          panelAriaLabel={t('filters.panelLabel')}
-          removeChipAriaLabel={(chipLabel) => t('filters.removeChip', { label: chipLabel })}
-          onSearchChange={setSearch}
-          onFilterChange={(key, value) => {
-            setFilters((prev) => applyCrmDealFilterKey(prev, key, value));
-          }}
-          onClearAll={() => {
-            setFilters(EMPTY_CRM_DEAL_FILTERS);
-          }}
-        />
-        {search.trim() ? (
-          <CrmSearchResultsBadge
-            count={deals.length}
-            className="pointer-events-none absolute -top-5 right-0 max-w-[min(100%,14rem)]"
-          />
-        ) : null}
-      </div>
+      <ListPageHeader
+        eyebrow={t('eyebrow')}
+        title={t('title')}
+        subtitle={t('subtitle', { count: totalCount })}
+        search={search}
+        searchPlaceholder={tBoard('searchPlaceholder')}
+        searchAriaLabel={tBoard('searchLabel')}
+        filters={filterConfigs}
+        filterValues={crmDealFiltersToRecord(filters)}
+        onSearchChange={setSearch}
+        onFilterChange={(key, value) => {
+          setFilters((prev) => applyCrmDealFilterKey(prev, key, value));
+        }}
+        onClearAll={() => {
+          setFilters(EMPTY_CRM_DEAL_FILTERS);
+        }}
+        actions={
+          <Button
+            type="button"
+            size="sm"
+            className="shrink-0"
+            onClick={() => {
+              openNewLead();
+            }}
+          >
+            <AddActionLabel>{t('newDeal.cta')}</AddActionLabel>
+          </Button>
+        }
+      />
 
       {boardError ? (
         <p role="alert" className="shrink-0 text-sm text-danger">

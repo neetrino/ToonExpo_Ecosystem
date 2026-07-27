@@ -65,7 +65,7 @@ const FilterField = ({ filter, value, onFilterChange }: FilterFieldProps) => {
   ];
 
   return (
-    <label className="flex min-w-0 flex-col gap-1.5">
+    <label className="flex w-[11rem] shrink-0 flex-col gap-1.5">
       <span className="text-xs font-medium uppercase tracking-wide text-ink-muted">
         {filter.label}
       </span>

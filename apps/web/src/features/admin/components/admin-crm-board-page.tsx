@@ -31,15 +31,14 @@ import {
 } from '@/features/crm-board/constants';
 import { CrmNewColumnCreateButton } from '@/features/crm-board/crm-new-column-create-button';
 import { filterCrmDealsBySearch } from '@/features/crm-board/filter-crm-deals-by-search';
-import { CrmSearchResultsBadge } from '@/features/crm-board/crm-search-results-badge';
 import { useCrmDealSheetUrl } from '@/features/crm-board/use-crm-deal-sheet-url';
 import { useCrmNewLeadUrl } from '@/features/crm-board/use-crm-new-lead-url';
 import { useDebouncedValue } from '@/shared/hooks/use-debounced-value';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { Button } from '@/shared/ui/button';
-import { IntegratedSearchFilters } from '@/shared/ui/integrated-search-filters';
 import type { IntegratedSearchFilterConfig } from '@/shared/ui/integrated-search-filters.types';
+import { ListPageHeader } from '@/shared/ui/list-page-header';
 import { VIEW_MODE_CARDS, VIEW_MODE_LIST } from '@/shared/ui/view-mode';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
@@ -166,65 +165,46 @@ export const AdminCrmBoardPage = () => {
 
   return (
     <div className={isBoardView ? 'crm-board-page' : 'flex flex-col gap-6'}>
-      <div className="flex shrink-0 flex-nowrap items-center justify-between gap-3">
-        <div className="min-w-0 shrink">
-          <p className="crm-board-page__eyebrow">{t('eyebrow')}</p>
-          <h1 className="text-page-title text-ink">{t('title')}</h1>
-          <p className="truncate text-sm text-ink-secondary">
-            {t('subtitle', { count: totalCount })}
-          </p>
-        </div>
-
-        <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
-          <div className="relative min-w-[12rem] max-w-md flex-1">
-            <IntegratedSearchFilters
-              search={search}
-              searchPlaceholder={tBoard('searchPlaceholder')}
-              searchAriaLabel={tBoard('searchLabel')}
-              filters={filterConfigs}
-              filterValues={filterValues}
-              applyLabel={t('filters.apply')}
-              resetLabel={t('filters.reset')}
-              clearAllAriaLabel={t('filters.clearAll')}
-              panelAriaLabel={t('filters.panelLabel')}
-              removeChipAriaLabel={(chipLabel) => t('filters.removeChip', { label: chipLabel })}
-              panelAlign="end"
-              onSearchChange={setSearch}
-              onFilterChange={(key, value) => {
-                if (key === ADMIN_CRM_FILTER_COMPANY_KEY) {
-                  setCompanyId(value);
-                  return;
-                }
-                if (key === ADMIN_CRM_FILTER_SOURCE_KEY) {
-                  setSource(value as RequestSource | '');
-                }
+      <ListPageHeader
+        eyebrow={t('eyebrow')}
+        title={t('title')}
+        subtitle={t('subtitle', { count: totalCount })}
+        search={search}
+        searchPlaceholder={tBoard('searchPlaceholder')}
+        searchAriaLabel={tBoard('searchLabel')}
+        filters={filterConfigs}
+        filterValues={filterValues}
+        onSearchChange={setSearch}
+        onFilterChange={(key, value) => {
+          if (key === ADMIN_CRM_FILTER_COMPANY_KEY) {
+            setCompanyId(value);
+            return;
+          }
+          if (key === ADMIN_CRM_FILTER_SOURCE_KEY) {
+            setSource(value as RequestSource | '');
+          }
+        }}
+        onClearAll={() => {
+          setCompanyId('');
+          setSource('');
+        }}
+        actions={
+          <>
+            <ViewModeToggle value={viewMode} onChange={setViewMode} />
+            <Button
+              type="button"
+              size="sm"
+              variant="secondary"
+              className="shrink-0"
+              onClick={() => {
+                openNewLead();
               }}
-              onClearAll={() => {
-                setCompanyId('');
-                setSource('');
-              }}
-            />
-            {search.trim() ? (
-              <CrmSearchResultsBadge
-                count={deals.length}
-                className="pointer-events-none absolute -top-5 right-0 max-w-[min(100%,14rem)]"
-              />
-            ) : null}
-          </div>
-          <ViewModeToggle value={viewMode} onChange={setViewMode} />
-          <Button
-            type="button"
-            size="sm"
-            variant="secondary"
-            className="shrink-0"
-            onClick={() => {
-              openNewLead();
-            }}
-          >
-            <AddActionLabel>{t('newDeal.title')}</AddActionLabel>
-          </Button>
-        </div>
-      </div>
+            >
+              <AddActionLabel>{t('newDeal.title')}</AddActionLabel>
+            </Button>
+          </>
+        }
+      />
 
       {boardError ? (
         <p role="alert" className="shrink-0 text-sm text-danger">

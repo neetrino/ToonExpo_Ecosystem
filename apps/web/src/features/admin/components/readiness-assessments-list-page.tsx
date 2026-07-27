@@ -3,10 +3,14 @@
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
-import type { ReadinessAssessmentTargetType, ReadinessScoreStatus } from '@toonexpo/contracts';
 
-import { ReadinessAssessmentFilters } from '@/features/admin/components/readiness-assessment-filters';
 import { ReadinessAssessmentsTable } from '@/features/admin/components/readiness-assessments-table';
+import {
+  applyReadinessAssessmentFilterKey,
+  buildReadinessAssessmentFilterConfigs,
+  EMPTY_READINESS_ASSESSMENT_FILTERS,
+  readinessAssessmentFiltersToRecord,
+} from '@/features/admin/components/readiness-assessment-filters';
 import { ReadinessCreateAssessmentSheet } from '@/features/admin/components/readiness-create-assessment-sheet';
 import { ADMIN_COMPANIES_MAX_PAGE_SIZE, ADMIN_VIEW_MODE_KEYS } from '@/features/admin/constants';
 import { useAdminCompaniesQuery } from '@/features/admin/hooks/use-admin-companies';
@@ -17,6 +21,7 @@ import { Link } from '@/i18n/navigation';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { Button } from '@/shared/ui/button';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
+import { ListPageHeader } from '@/shared/ui/list-page-header';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
 const parsePage = (raw: string | null): number => {
@@ -32,15 +37,13 @@ const parsePage = (raw: string | null): number => {
  */
 export const ReadinessAssessmentsListPage = () => {
   const t = useTranslations('Admin.readiness.assessments');
+  const tCommon = useTranslations('Common.integratedSearch');
   const searchParams = useSearchParams();
   const page = parsePage(searchParams.get('page'));
   const [showCreate, setShowCreate] = useState(false);
   const { viewMode, setViewMode } = usePersistedViewMode(ADMIN_VIEW_MODE_KEYS.readinessAssessments);
-  const [filters, setFilters] = useState<{
-    companyId: string;
-    targetType: ReadinessAssessmentTargetType | '';
-    status: ReadinessScoreStatus | '';
-  }>({ companyId: '', targetType: '', status: '' });
+  const [search, setSearch] = useState('');
+  const [filters, setFilters] = useState(EMPTY_READINESS_ASSESSMENT_FILTERS);
 
   const companiesQuery = useAdminCompaniesQuery(1, ADMIN_COMPANIES_MAX_PAGE_SIZE);
   const assessmentsQuery = useAdminReadinessAssessmentsQuery({
@@ -68,6 +71,21 @@ export const ReadinessAssessmentsListPage = () => {
     [companiesQuery.data],
   );
 
+  const filterConfigs = useMemo(
+    () =>
+      buildReadinessAssessmentFilterConfigs(companyOptions, {
+        company: t('filters.company'),
+        allCompanies: t('filters.allCompanies'),
+        targetType: t('filters.targetType'),
+        allTargets: t('filters.allTargets'),
+        status: t('filters.status'),
+        allStatuses: t('filters.allStatuses'),
+        targetTypeOption: (type) => t(`filters.targetTypes.${type}`),
+        statusOption: (status) => t(`filters.statuses.${status}`),
+      }),
+    [companyOptions, t],
+  );
+
   if (assessmentsQuery.isLoading || companiesQuery.isLoading) {
     return <p className="text-sm text-ink-secondary">{t('loading')}</p>;
   }
@@ -92,42 +110,45 @@ export const ReadinessAssessmentsListPage = () => {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-page-title text-ink">{t('title')}</h1>
-        <p className="text-sm text-ink-secondary">
-          {t('subtitle', { count: response.meta.total })}
-        </p>
-      </div>
-
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <ReadinessAssessmentFilters
-          companyId={filters.companyId}
-          targetType={filters.targetType}
-          status={filters.status}
-          companyOptions={companyOptions}
-          onChange={setFilters}
-        />
-
-        <div className="flex shrink-0 flex-wrap items-center gap-2">
-          <ViewModeToggle value={viewMode} onChange={setViewMode} />
-          <Link
-            href="/admin/readiness/categories"
-            className="inline-flex h-9 items-center justify-center rounded-[15px] border border-border-strong px-4 text-sm font-medium text-ink hover:bg-surface"
-          >
-            {t('categoriesLink')}
-          </Link>
-          <Button
-            type="button"
-            size="sm"
-            variant="secondary"
-            onClick={() => {
-              setShowCreate(true);
-            }}
-          >
-            <AddActionLabel>{t('newAssessment')}</AddActionLabel>
-          </Button>
-        </div>
-      </div>
+      <ListPageHeader
+        title={t('title')}
+        subtitle={t('subtitle', { count: response.meta.total })}
+        search={search}
+        searchPlaceholder={tCommon('searchPlaceholder')}
+        searchAriaLabel={tCommon('searchLabel')}
+        searchClassName="min-w-[10rem] max-w-[14rem] flex-none"
+        filters={filterConfigs}
+        filterValues={readinessAssessmentFiltersToRecord(filters)}
+        onSearchChange={setSearch}
+        onFilterChange={(key, value) => {
+          setFilters((prev) => applyReadinessAssessmentFilterKey(prev, key, value));
+        }}
+        onClearAll={() => {
+          setFilters(EMPTY_READINESS_ASSESSMENT_FILTERS);
+        }}
+        actions={
+          <>
+            <ViewModeToggle value={viewMode} onChange={setViewMode} />
+            <Link
+              href="/admin/readiness/categories"
+              className="inline-flex h-9 items-center justify-center rounded-[15px] border border-border-strong px-4 text-sm font-medium text-ink hover:bg-surface"
+            >
+              {t('categoriesLink')}
+            </Link>
+            <Button
+              type="button"
+              size="sm"
+              variant="secondary"
+              className="shrink-0"
+              onClick={() => {
+                setShowCreate(true);
+              }}
+            >
+              <AddActionLabel>{t('newAssessment')}</AddActionLabel>
+            </Button>
+          </>
+        }
+      />
 
       {response.data.length === 0 ? (
         <p className="text-sm text-ink-secondary">{t('empty')}</p>

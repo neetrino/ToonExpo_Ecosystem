@@ -22,10 +22,10 @@ export type IntegratedSearchFiltersProps = {
   onSearchChange: (value: string) => void;
   searchPlaceholder: string;
   searchAriaLabel: string;
-  filters?: readonly IntegratedSearchFilterConfig[];
-  filterValues?: Record<string, string>;
-  onFilterChange?: (key: string, value: string) => void;
-  onClearAll?: () => void;
+  filters?: readonly IntegratedSearchFilterConfig[] | undefined;
+  filterValues?: Record<string, string> | undefined;
+  onFilterChange?: ((key: string, value: string) => void) | undefined;
+  onClearAll?: (() => void) | undefined;
   applyLabel: string;
   resetLabel: string;
   clearAllAriaLabel: string;

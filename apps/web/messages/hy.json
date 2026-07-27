@@ -3,6 +3,15 @@
     "close": "Փակել",
     "cancel": "Չեղարկել",
     "delete": "Ջնջել",
+    "integratedSearch": {
+      "apply": "Կիրառել",
+      "reset": "Մաքրել",
+      "clearAll": "Մաքրել որոնումը և ֆիլտրերը",
+      "panelLabel": "Որոնման ֆիլտրեր",
+      "removeChip": "Հեռացնել ֆիլտրը {label}",
+      "searchPlaceholder": "Որոնել…",
+      "searchLabel": "Որոնում"
+    },
     "viewMode": {
       "label": "Տեսք",
       "list": "Ցանկ",

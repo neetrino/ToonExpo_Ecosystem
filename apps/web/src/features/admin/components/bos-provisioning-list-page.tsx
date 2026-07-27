@@ -3,9 +3,12 @@
 import type { BosProvisioningStatus } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
-import { BosProvisioningFilters } from '@/features/admin/components/bos-provisioning-filters';
+import {
+  BOS_PROVISIONING_FILTER_STATUS_KEY,
+  buildBosProvisioningFilterConfigs,
+} from '@/features/admin/components/bos-provisioning-filters';
 import { BosProvisioningTable } from '@/features/admin/components/bos-provisioning-table';
 import {
   ADMIN_BOS_PROVISIONING_DEFAULT_PAGE_SIZE,
@@ -14,6 +17,7 @@ import {
 import { useAdminBosProvisioningListQuery } from '@/features/admin/hooks/use-admin-bos-provisioning';
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
+import { ListPageHeader } from '@/shared/ui/list-page-header';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
 const parsePage = (raw: string | null): number => {
@@ -29,8 +33,10 @@ const parsePage = (raw: string | null): number => {
  */
 export const BosProvisioningListPage = () => {
   const t = useTranslations('Admin.bos');
+  const tCommon = useTranslations('Common.integratedSearch');
   const searchParams = useSearchParams();
   const page = parsePage(searchParams.get('page'));
+  const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<BosProvisioningStatus | ''>('');
   const { viewMode, setViewMode } = usePersistedViewMode(ADMIN_VIEW_MODE_KEYS.bos);
 
@@ -39,6 +45,16 @@ export const BosProvisioningListPage = () => {
     pageSize: ADMIN_BOS_PROVISIONING_DEFAULT_PAGE_SIZE,
     ...(statusFilter ? { status: statusFilter } : {}),
   });
+
+  const filterConfigs = useMemo(
+    () =>
+      buildBosProvisioningFilterConfigs({
+        status: t('filters.status'),
+        allStatuses: t('filters.allStatuses'),
+        statusOption: (status) => t(`filters.statuses.${status}`),
+      }),
+    [t],
+  );
 
   if (listQuery.isLoading) {
     return <p className="text-sm text-ink-secondary">{t('loading')}</p>;
@@ -56,17 +72,25 @@ export const BosProvisioningListPage = () => {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-page-title text-ink">{t('title')}</h1>
-        <p className="text-sm text-ink-secondary">
-          {t('subtitle', { count: response.meta.total })}
-        </p>
-      </div>
-
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <BosProvisioningFilters status={statusFilter} onChange={setStatusFilter} />
-        <ViewModeToggle value={viewMode} onChange={setViewMode} />
-      </div>
+      <ListPageHeader
+        title={t('title')}
+        subtitle={t('subtitle', { count: response.meta.total })}
+        search={search}
+        searchPlaceholder={tCommon('searchPlaceholder')}
+        searchAriaLabel={tCommon('searchLabel')}
+        filters={filterConfigs}
+        filterValues={{ [BOS_PROVISIONING_FILTER_STATUS_KEY]: statusFilter }}
+        onSearchChange={setSearch}
+        onFilterChange={(key, value) => {
+          if (key === BOS_PROVISIONING_FILTER_STATUS_KEY) {
+            setStatusFilter(value as BosProvisioningStatus | '');
+          }
+        }}
+        onClearAll={() => {
+          setStatusFilter('');
+        }}
+        actions={<ViewModeToggle value={viewMode} onChange={setViewMode} />}
+      />
 
       {response.data.length === 0 ? (
         <p className="text-sm text-ink-secondary">{t('empty')}</p>

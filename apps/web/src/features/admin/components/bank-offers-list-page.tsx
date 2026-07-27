@@ -23,14 +23,20 @@ import { AdminDeleteModal } from '@/shared/ui/admin-delete-modal';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { Button } from '@/shared/ui/button';
 import { IconButton } from '@/shared/ui/icon-button';
-import { Select } from '@/shared/ui/select';
+import type { IntegratedSearchFilterConfig } from '@/shared/ui/integrated-search-filters.types';
+import { ListPageHeader } from '@/shared/ui/list-page-header';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
+
+const BANK_OFFERS_FILTER_PARTNER_KEY = 'partnerFilter';
+const BANK_OFFERS_FILTER_PUBLICATION_KEY = 'publicationFilter';
 
 /**
  * Admin bank offers list with filters, create/edit, and publish controls.
  */
 export const BankOffersListPage = () => {
   const t = useTranslations('Admin.bankOffers');
+  const tCommon = useTranslations('Common.integratedSearch');
+  const [search, setSearch] = useState('');
   const [partnerFilter, setPartnerFilter] = useState('');
   const [publicationFilter, setPublicationFilter] = useState<PublicationStatus | ''>('');
   const [editing, setEditing] = useState<BankOfferListItem | null>(null);
@@ -66,11 +72,39 @@ export const BankOffersListPage = () => {
 
   const filteredOffers = useMemo(() => {
     const offers = offersQuery.data?.data ?? [];
+    const bySearch = search.trim()
+      ? offers.filter((offer) => offer.title.toLowerCase().includes(search.trim().toLowerCase()))
+      : offers;
     if (!publicationFilter) {
-      return offers;
+      return bySearch;
     }
-    return offers.filter((offer) => offer.publicationStatus === publicationFilter);
-  }, [offersQuery.data, publicationFilter]);
+    return bySearch.filter((offer) => offer.publicationStatus === publicationFilter);
+  }, [offersQuery.data, publicationFilter, search]);
+
+  const filterConfigs = useMemo(
+    (): IntegratedSearchFilterConfig[] => [
+      {
+        key: BANK_OFFERS_FILTER_PARTNER_KEY,
+        label: t('columns.bank'),
+        allOptionLabel: t('filters.allBanks'),
+        options: bankPartners.map((partner) => ({
+          value: partner.partnerCompanyId,
+          label: partner.name,
+        })),
+      },
+      {
+        key: BANK_OFFERS_FILTER_PUBLICATION_KEY,
+        label: t('columns.publication'),
+        allOptionLabel: t('filters.allPublication'),
+        options: [
+          { value: 'draft', label: t('filters.draft') },
+          { value: 'published', label: t('filters.published') },
+          { value: 'archived', label: t('filters.archived') },
+        ],
+      },
+    ],
+    [bankPartners, t],
+  );
 
   const busy = createMutation.isPending || updateMutation.isPending || deleteMutation.isPending;
 
@@ -88,60 +122,49 @@ export const BankOffersListPage = () => {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-page-title text-ink">{t('title')}</h1>
-        <p className="text-sm text-ink-secondary">{t('subtitle')}</p>
-      </div>
-
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex min-w-0 flex-1 flex-wrap items-center gap-3">
-          <Select
-            size="fit"
-            className="h-10"
-            value={partnerFilter}
-            aria-label={t('filters.allBanks')}
-            onChange={(event) => {
-              setPartnerFilter(event.target.value);
-            }}
-          >
-            <option value="">{t('filters.allBanks')}</option>
-            {bankPartners.map((partner) => (
-              <option key={partner.partnerCompanyId} value={partner.partnerCompanyId}>
-                {partner.name}
-              </option>
-            ))}
-          </Select>
-          <Select
-            size="fit"
-            className="h-10"
-            value={publicationFilter}
-            aria-label={t('filters.allPublication')}
-            onChange={(event) => {
-              setPublicationFilter(event.target.value as PublicationStatus | '');
-            }}
-          >
-            <option value="">{t('filters.allPublication')}</option>
-            <option value="draft">{t('filters.draft')}</option>
-            <option value="published">{t('filters.published')}</option>
-            <option value="archived">{t('filters.archived')}</option>
-          </Select>
-        </div>
-
-        <div className="flex shrink-0 flex-wrap items-center gap-2">
-          <ViewModeToggle value={viewMode} onChange={setViewMode} />
-          <Button
-            type="button"
-            size="sm"
-            variant="secondary"
-            onClick={() => {
-              setCreating(true);
-              setEditing(null);
-            }}
-          >
-            <AddActionLabel>{t('newOffer')}</AddActionLabel>
-          </Button>
-        </div>
-      </div>
+      <ListPageHeader
+        title={t('title')}
+        subtitle={t('subtitle')}
+        search={search}
+        searchPlaceholder={tCommon('searchPlaceholder')}
+        searchAriaLabel={tCommon('searchLabel')}
+        filters={filterConfigs}
+        filterValues={{
+          [BANK_OFFERS_FILTER_PARTNER_KEY]: partnerFilter,
+          [BANK_OFFERS_FILTER_PUBLICATION_KEY]: publicationFilter,
+        }}
+        onSearchChange={setSearch}
+        onFilterChange={(key, value) => {
+          if (key === BANK_OFFERS_FILTER_PARTNER_KEY) {
+            setPartnerFilter(value);
+            return;
+          }
+          if (key === BANK_OFFERS_FILTER_PUBLICATION_KEY) {
+            setPublicationFilter(value as PublicationStatus | '');
+          }
+        }}
+        onClearAll={() => {
+          setPartnerFilter('');
+          setPublicationFilter('');
+        }}
+        actions={
+          <>
+            <ViewModeToggle value={viewMode} onChange={setViewMode} />
+            <Button
+              type="button"
+              size="sm"
+              variant="secondary"
+              className="shrink-0"
+              onClick={() => {
+                setCreating(true);
+                setEditing(null);
+              }}
+            >
+              <AddActionLabel>{t('newOffer')}</AddActionLabel>
+            </Button>
+          </>
+        }
+      />
 
       <AdminCreateSheet
         open={creating}

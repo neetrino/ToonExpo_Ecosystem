@@ -2,7 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 import { AdminProjectsTable } from '@/features/admin/components/admin-projects-table';
 import {
@@ -17,8 +17,11 @@ import {
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
 import { usePathname, useRouter } from '@/i18n/navigation';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
-import { Select } from '@/shared/ui/select';
+import type { IntegratedSearchFilterConfig } from '@/shared/ui/integrated-search-filters.types';
+import { ListPageHeader } from '@/shared/ui/list-page-header';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
+
+const ADMIN_PROJECTS_FILTER_COMPANY_KEY = 'companyId';
 
 const parsePage = (raw: string | null): number => {
   const parsed = Number(raw);
@@ -33,6 +36,7 @@ const parsePage = (raw: string | null): number => {
  */
 export const AdminProjectsListPage = () => {
   const t = useTranslations('Admin.projects');
+  const tCommon = useTranslations('Common.integratedSearch');
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -40,6 +44,7 @@ export const AdminProjectsListPage = () => {
   const companyId = searchParams.get('companyId')?.trim() || undefined;
   const pageSize = ADMIN_INVENTORY_DEFAULT_PAGE_SIZE;
   const { viewMode, setViewMode } = usePersistedViewMode(ADMIN_VIEW_MODE_KEYS.projects);
+  const [search, setSearch] = useState('');
 
   const projectsQuery = useAdminProjectsQuery(page, pageSize, companyId);
   const companiesQuery = useAdminCompaniesQuery(1, ADMIN_COMPANIES_MAX_PAGE_SIZE);
@@ -64,6 +69,21 @@ export const AdminProjectsListPage = () => {
     return query.length > 0 ? `${pathname}?${query}` : pathname;
   };
 
+  const filterConfigs = useMemo(
+    (): IntegratedSearchFilterConfig[] => [
+      {
+        key: ADMIN_PROJECTS_FILTER_COMPANY_KEY,
+        label: t('filters.company'),
+        allOptionLabel: t('filters.allCompanies'),
+        options: builderCompanies.map((company) => ({
+          value: company.id,
+          label: company.name,
+        })),
+      },
+    ],
+    [builderCompanies, t],
+  );
+
   if (projectsQuery.isLoading || companiesQuery.isLoading) {
     return <p className="text-sm text-ink-secondary">{t('loading')}</p>;
   }
@@ -80,38 +100,26 @@ export const AdminProjectsListPage = () => {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-page-title text-ink">{t('title')}</h1>
-        <p className="text-sm text-ink-secondary">
-          {t('subtitle', { count: response.meta.total })}
-        </p>
-      </div>
-
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex min-w-0 flex-1 flex-wrap items-center gap-3">
-          <Select
-            size="fit"
-            className="h-10"
-            value={companyId ?? ''}
-            aria-label={t('filters.company')}
-            onChange={(event) => {
-              const nextCompanyId = event.target.value || undefined;
-              router.replace(buildListHref(1, nextCompanyId));
-            }}
-          >
-            <option value="">{t('filters.allCompanies')}</option>
-            {builderCompanies.map((company) => (
-              <option key={company.id} value={company.id}>
-                {company.name}
-              </option>
-            ))}
-          </Select>
-        </div>
-
-        <div className="flex shrink-0 items-center">
-          <ViewModeToggle value={viewMode} onChange={setViewMode} />
-        </div>
-      </div>
+      <ListPageHeader
+        title={t('title')}
+        subtitle={t('subtitle', { count: response.meta.total })}
+        search={search}
+        searchPlaceholder={tCommon('searchPlaceholder')}
+        searchAriaLabel={tCommon('searchLabel')}
+        filters={filterConfigs}
+        filterValues={{ [ADMIN_PROJECTS_FILTER_COMPANY_KEY]: companyId ?? '' }}
+        onSearchChange={setSearch}
+        onFilterChange={(key, value) => {
+          if (key === ADMIN_PROJECTS_FILTER_COMPANY_KEY) {
+            router.replace(buildListHref(1, value || undefined));
+          }
+        }}
+        onClearAll={() => {
+          setSearch('');
+          router.replace(buildListHref(1, undefined));
+        }}
+        actions={<ViewModeToggle value={viewMode} onChange={setViewMode} />}
+      />
 
       {response.data.length === 0 ? (
         <p className="text-sm text-ink-secondary">{t('empty')}</p>

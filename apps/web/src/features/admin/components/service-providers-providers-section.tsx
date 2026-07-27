@@ -2,20 +2,24 @@
 
 import type { AdminServiceProviderItem, ServiceProviderCategoryItem } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
+import { useMemo } from 'react';
 
 import { ServiceProviderForm } from '@/features/admin/components/service-provider-form';
 import { ADMIN_VIEW_MODE_KEYS } from '@/features/admin/constants';
 import type { ServiceProviderFormValues } from '@/features/admin/schemas/service-provider.schema';
 import { toServiceProviderFormValues } from '@/features/admin/utils/service-provider-mappers';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
-import { Button } from '@/shared/ui/button';
-import { Select } from '@/shared/ui/select';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { AdminCreateSheet } from '@/shared/ui/admin-create-sheet';
 import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
-import { SearchField } from '@/shared/ui/search-field';
+import { Button } from '@/shared/ui/button';
+import type { IntegratedSearchFilterConfig } from '@/shared/ui/integrated-search-filters.types';
+import { ListPageHeader } from '@/shared/ui/list-page-header';
 import { VIEW_MODE_CARDS } from '@/shared/ui/view-mode';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
+
+const SERVICE_PROVIDER_FILTER_CATEGORY_KEY = 'categoryId';
+const SERVICE_PROVIDER_FILTER_ACTIVE_KEY = 'active';
 
 export type ServiceProviderFilters = {
   search: string;
@@ -73,62 +77,63 @@ export const ServiceProvidersProvidersSection = ({
   const t = useTranslations('Admin.serviceProviders.providers');
   const { viewMode, setViewMode } = usePersistedViewMode(ADMIN_VIEW_MODE_KEYS.serviceProviders);
 
+  const filterConfigs = useMemo(
+    (): IntegratedSearchFilterConfig[] => [
+      {
+        key: SERVICE_PROVIDER_FILTER_CATEGORY_KEY,
+        label: t('columns.categories'),
+        allOptionLabel: t('filters.allCategories'),
+        options: categories.map((category) => ({ value: category.id, label: category.name })),
+      },
+      {
+        key: SERVICE_PROVIDER_FILTER_ACTIVE_KEY,
+        label: t('columns.active'),
+        allOptionLabel: t('filters.allActive'),
+        options: [
+          { value: 'true', label: t('filters.active') },
+          { value: 'false', label: t('filters.inactive') },
+        ],
+      },
+    ],
+    [categories, t],
+  );
+
   return (
     <section className="flex flex-col gap-4">
-      <h2 className="text-base font-semibold text-ink">{t('title')}</h2>
-
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex min-w-0 flex-1 flex-wrap items-center gap-3">
-          <SearchField
-            className="min-w-[12rem] flex-1 sm:min-w-[16rem]"
-            value={filters.search}
-            placeholder={t('filters.searchPlaceholder')}
-            aria-label={t('filters.searchPlaceholder')}
-            onChange={(event) => {
-              onFiltersChange({ ...filters, search: event.target.value });
-            }}
-          />
-          <Select
-            size="fit"
-            className="h-10"
-            value={filters.categoryId}
-            aria-label={t('filters.allCategories')}
-            onChange={(event) => {
-              onFiltersChange({ ...filters, categoryId: event.target.value });
-            }}
-          >
-            <option value="">{t('filters.allCategories')}</option>
-            {categories.map((category) => (
-              <option key={category.id} value={category.id}>
-                {category.name}
-              </option>
-            ))}
-          </Select>
-          <Select
-            size="fit"
-            className="h-10"
-            value={filters.active}
-            aria-label={t('filters.allActive')}
-            onChange={(event) => {
-              onFiltersChange({
-                ...filters,
-                active: event.target.value as '' | 'true' | 'false',
-              });
-            }}
-          >
-            <option value="">{t('filters.allActive')}</option>
-            <option value="true">{t('filters.active')}</option>
-            <option value="false">{t('filters.inactive')}</option>
-          </Select>
-        </div>
-
-        <div className="flex shrink-0 flex-wrap items-center gap-2">
-          <ViewModeToggle value={viewMode} onChange={setViewMode} />
-          <Button type="button" size="sm" variant="secondary" onClick={onCreate}>
-            <AddActionLabel>{t('newProvider')}</AddActionLabel>
-          </Button>
-        </div>
-      </div>
+      <ListPageHeader
+        title={t('title')}
+        search={filters.search}
+        searchPlaceholder={t('filters.searchPlaceholder')}
+        searchAriaLabel={t('filters.searchPlaceholder')}
+        filters={filterConfigs}
+        filterValues={{
+          [SERVICE_PROVIDER_FILTER_CATEGORY_KEY]: filters.categoryId,
+          [SERVICE_PROVIDER_FILTER_ACTIVE_KEY]: filters.active,
+        }}
+        onSearchChange={(value) => {
+          onFiltersChange({ ...filters, search: value });
+        }}
+        onFilterChange={(key, value) => {
+          if (key === SERVICE_PROVIDER_FILTER_CATEGORY_KEY) {
+            onFiltersChange({ ...filters, categoryId: value });
+            return;
+          }
+          if (key === SERVICE_PROVIDER_FILTER_ACTIVE_KEY) {
+            onFiltersChange({ ...filters, active: value as '' | 'true' | 'false' });
+          }
+        }}
+        onClearAll={() => {
+          onFiltersChange({ ...filters, categoryId: '', active: '' });
+        }}
+        actions={
+          <>
+            <ViewModeToggle value={viewMode} onChange={setViewMode} />
+            <Button type="button" size="sm" variant="secondary" onClick={onCreate}>
+              <AddActionLabel>{t('newProvider')}</AddActionLabel>
+            </Button>
+          </>
+        }
+      />
 
       <AdminCreateSheet
         open={creating}

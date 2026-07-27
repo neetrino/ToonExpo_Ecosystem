@@ -3,6 +3,15 @@
     "close": "Закрыть",
     "cancel": "Отмена",
     "delete": "Удалить",
+    "integratedSearch": {
+      "apply": "Применить",
+      "reset": "Сбросить",
+      "clearAll": "Очистить поиск и фильтры",
+      "panelLabel": "Фильтры поиска",
+      "removeChip": "Убрать фильтр {label}",
+      "searchPlaceholder": "Поиск…",
+      "searchLabel": "Поиск"
+    },
     "viewMode": {
       "label": "Вид",
       "list": "Список",
