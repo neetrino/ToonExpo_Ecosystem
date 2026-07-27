@@ -4,10 +4,11 @@ import { Menu, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
-import { useLogoutMutation, useMeQuery } from '@/features/auth/hooks/use-auth';
+import { useMeQuery } from '@/features/auth/hooks/use-auth';
 import { Link, usePathname } from '@/i18n/navigation';
 import { isPartnerCompatibleCompany } from '@/features/partners/utils/is-partner-compatible-company';
 import { BrandLogo } from '@/shared/ui/brand-logo';
+import { lockBodyScroll, unlockBodyScroll } from '@/shared/ui/body-scroll-lock';
 import { cn } from '@/shared/ui/cn';
 import { IconButton } from '@/shared/ui/icon-button';
 import { LocaleSwitcher } from '@/shared/ui/locale-switcher';
@@ -48,9 +49,9 @@ const HEADER_SPACER_CLASS = 'h-[4.5rem]';
  */
 export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) => {
   const t = useTranslations('Nav');
+  const tCommon = useTranslations('Common');
   const pathname = usePathname();
   const { data: user } = useMeQuery();
-  const logoutMutation = useLogoutMutation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [showPill, setShowPill] = useState(false);
   const isTransparentStart = variant === 'transparent';
@@ -82,14 +83,12 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
     if (!menuOpen) {
       return;
     }
-    const previous = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    lockBodyScroll();
     return () => {
-      document.body.style.overflow = previous;
+      unlockBodyScroll();
     };
   }, [menuOpen]);
 
-  const settingsHref = user?.accountType === 'platform_admin' ? '/admin/settings' : '/settings';
   const isBuilderMember =
     user?.accountType === 'company_member' &&
     (user.companyType == null ||
@@ -104,14 +103,17 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
     transitionDuration: `${PILL_APPEAR_MS}ms`,
   };
 
-  const handleMobileLogout = (): void => {
-    void logoutMutation.mutateAsync().then(() => {
-      setMenuOpen(false);
-    });
-  };
-
   return (
     <>
+      {menuOpen ? (
+        <button
+          type="button"
+          aria-label={tCommon('close')}
+          className="fixed inset-0 z-[calc(var(--z-header)-1)] cursor-default bg-ink/25 lg:hidden"
+          onClick={() => setMenuOpen(false)}
+        />
+      ) : null}
+
       <header
         className={cn(
           'fixed inset-x-0 top-0 z-[var(--z-header)]',
@@ -190,7 +192,9 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
               className="ml-auto flex shrink-0 items-center gap-2.5 transition-transform ease-out sm:gap-3 lg:ml-0"
               style={actionsInsetStyle}
             >
-              <LocaleSwitcher tone={isOverHero ? 'dark' : 'light'} />
+              <div className="hidden lg:block">
+                <LocaleSwitcher tone={isOverHero ? 'dark' : 'light'} />
+              </div>
 
               <ProfileMenu
                 userName={user?.name}
@@ -204,20 +208,20 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
               <IconButton
                 label={t('menu')}
                 className={cn(
-                  'lg:hidden transition-[background-color,border-color,color] ease-out',
+                  'rounded-full lg:hidden transition-[background-color,border-color,color] ease-out',
                   isOverHero && 'border-white/30 bg-white/10 text-on-dark hover:bg-white/15',
                 )}
                 style={{ transitionDuration: `${PILL_APPEAR_MS}ms` }}
                 variant="outline"
-                size="sm"
+                size="md"
                 aria-expanded={menuOpen}
                 aria-controls="mobile-nav"
                 onClick={() => setMenuOpen((open) => !open)}
               >
                 {menuOpen ? (
-                  <X className="size-4" aria-hidden />
+                  <X className="size-5" aria-hidden />
                 ) : (
-                  <Menu className="size-4" aria-hidden />
+                  <Menu className="size-5" aria-hidden />
                 )}
               </IconButton>
             </div>
@@ -227,12 +231,7 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
             <SiteHeaderMobileNav
               navItems={NAV_HREFS}
               pathname={pathname}
-              user={user ?? undefined}
-              settingsHref={settingsHref}
-              showBuilder={isBuilderMember}
-              logoutPending={logoutMutation.isPending}
               onClose={() => setMenuOpen(false)}
-              onLogout={handleMobileLogout}
               isNavActive={isNavActive}
             />
           ) : null}

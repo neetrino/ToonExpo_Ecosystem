@@ -66,8 +66,10 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
     <html
       lang={locale}
       className={`${manrope.variable} ${notoSans.variable} ${notoSansArmenian.variable} ${outfit.variable}`}
+      // Chrome iOS injects autofill attrs (`__gcr*`) before hydrate — false mismatch in `next dev`.
+      suppressHydrationWarning
     >
-      <body className="min-h-full font-ui antialiased">
+      <body className="min-h-full font-ui antialiased" suppressHydrationWarning>
         <NextIntlClientProvider messages={messages}>
           <QueryProvider>
             <PublicChrome>{children}</PublicChrome>

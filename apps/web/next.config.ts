@@ -84,10 +84,27 @@ const resolveImageRemotePatterns = (): ImageRemotePattern[] => {
   return patterns;
 };
 
+/**
+ * LAN hosts for `next dev` on a phone (not DevTools). IP changes with Wi‑Fi —
+ * override via `ALLOWED_DEV_ORIGINS=192.168.x.x,other` in `.env.local`.
+ */
+const resolveAllowedDevOrigins = (): string[] => {
+  const fromEnv = process.env['ALLOWED_DEV_ORIGINS']
+    ?.split(',')
+    .map((origin) => origin.trim())
+    .filter((origin) => origin.length > 0);
+
+  if (fromEnv && fromEnv.length > 0) {
+    return fromEnv;
+  }
+
+  return ['192.168.15.126'];
+};
+
 const nextConfig: NextConfig = {
   transpilePackages: ['@toonexpo/contracts', '@toonexpo/shared'],
   // Allow Next.js dev assets/HMR when opening the app via LAN IP (not only localhost).
-  allowedDevOrigins: ['192.168.15.116'],
+  allowedDevOrigins: resolveAllowedDevOrigins(),
   images: {
     remotePatterns: resolveImageRemotePatterns(),
     // Dev seed uses local SVG architecture placeholders under /public/demo.

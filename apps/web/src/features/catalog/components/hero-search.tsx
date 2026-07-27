@@ -57,6 +57,8 @@ export const HeroSearch = ({ className, locations = [] }: HeroSearchProps) => {
     <div className={cn('w-full min-w-0', className)}>
       <form
         onSubmit={onSubmit}
+        // Chrome iOS autofill injects `__gcruniqueid` on forms before React hydrates.
+        suppressHydrationWarning
         className={cn(
           'w-full rounded-[20px] bg-surface-elevated p-2 lg:w-fit',
           'shadow-[0_20px_25px_-5px_rgb(9_43_68/0.05),0_8px_10px_-6px_rgb(9_43_68/0.05)]',
