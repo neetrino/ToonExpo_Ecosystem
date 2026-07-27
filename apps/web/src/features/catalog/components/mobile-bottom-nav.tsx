@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { useEffect, useState } from 'react';
 
 import { useMeQuery } from '@/features/auth/hooks/use-auth';
 import { Link, usePathname } from '@/i18n/navigation';
@@ -10,16 +11,31 @@ import { cn } from '@/shared/ui/cn';
 const BAR_SURFACE_CLASS = 'bg-[#171717]';
 const BUTTON_SIZE_CLASS = 'size-11';
 const ITEM_GAP_CLASS = 'gap-2';
-const BAR_PAD_CLASS = 'px-1.5 py-1.5';
+const BAR_PAD_CLASS = 'p-1.5';
+/** Slightly slower than base switchers so the thumb glide reads clearly. */
+const THUMB_SLIDE_DURATION_MS = 420;
 
 const ICON_MASK_BASE =
   'block shrink-0 bg-current [mask-size:contain] [mask-repeat:no-repeat] [mask-position:center] [-webkit-mask-size:contain] [-webkit-mask-repeat:no-repeat] [-webkit-mask-position:center]';
 
+/**
+ * Sliding thumb offsets — same pattern as ViewModeToggle / AnalyticsDateRangeFilter.
+ * Step = thumb width (100%) + gap-2 (0.5rem).
+ */
+const THUMB_TRANSLATE_BY_INDEX = [
+  'translate-x-0',
+  'translate-x-[calc(100%+0.5rem)]',
+  'translate-x-[calc(200%+1rem)]',
+  'translate-x-[calc(300%+1.5rem)]',
+  'translate-x-[calc(400%+2rem)]',
+] as const;
+
+type BottomNavId = 'home' | 'map' | 'builders' | 'profile' | 'mortgage';
+
 type BottomNavItem = {
-  id: 'home' | 'map' | 'builders' | 'profile' | 'mortgage';
+  id: BottomNavId;
   href: string;
   labelKey: 'home' | 'expoMap' | 'builders' | 'profile' | 'mortgage';
-  /** Outer icon box + Figma asset mask (leaf sizes from node 134:119). */
   iconClass: string;
   match: (pathname: string) => boolean;
 };
@@ -55,11 +71,13 @@ const isMortgagePath = (pathname: string): boolean =>
 
 /**
  * Mobile-only floating bottom navigation (Figma node 134:119).
+ * Active pill slides like ViewModeToggle / segment switchers.
  */
 export const MobileBottomNav = () => {
   const t = useTranslations('Nav');
   const pathname = usePathname();
   const { data: me } = useMeQuery();
+  const [pendingId, setPendingId] = useState<BottomNavId | null>(null);
 
   const items: BottomNavItem[] = [
     {
@@ -104,6 +122,15 @@ export const MobileBottomNav = () => {
     },
   ];
 
+  const routeActiveIndex = items.findIndex((item) => item.match(pathname));
+  const pendingIndex = pendingId ? items.findIndex((item) => item.id === pendingId) : -1;
+  const activeIndex = pendingIndex >= 0 ? pendingIndex : routeActiveIndex;
+  const hasActive = activeIndex >= 0;
+
+  useEffect(() => {
+    setPendingId(null);
+  }, [pathname]);
+
   return (
     <nav
       aria-label={t('bottomNav')}
@@ -115,15 +142,31 @@ export const MobileBottomNav = () => {
     >
       <div
         className={cn(
-          'pointer-events-auto flex w-fit max-w-[calc(100%-1.5rem)] items-center',
+          'pointer-events-auto relative flex w-fit max-w-[calc(100%-1.5rem)] items-center',
           ITEM_GAP_CLASS,
           BAR_PAD_CLASS,
           'rounded-full',
           BAR_SURFACE_CLASS,
         )}
       >
-        {items.map((item) => {
-          const isActive = item.match(pathname);
+        {hasActive ? (
+          <span
+            aria-hidden
+            className={cn(
+              'pointer-events-none absolute top-1.5 left-1.5 rounded-full bg-brand-secondary',
+              BUTTON_SIZE_CLASS,
+              'transition-transform duration-[var(--bottom-nav-thumb-ms)] ease-[var(--ease-out-premium)]',
+              'motion-reduce:transition-none',
+              THUMB_TRANSLATE_BY_INDEX[activeIndex],
+            )}
+            style={{
+              ['--bottom-nav-thumb-ms' as string]: `${THUMB_SLIDE_DURATION_MS}ms`,
+            }}
+          />
+        ) : null}
+
+        {items.map((item, index) => {
+          const isActive = index === activeIndex;
           const label = t(item.labelKey);
 
           return (
@@ -132,10 +175,15 @@ export const MobileBottomNav = () => {
               href={item.href}
               aria-label={label}
               aria-current={isActive ? 'page' : undefined}
+              onClick={() => {
+                setPendingId(item.id);
+              }}
               className={cn(
-                'inline-flex shrink-0 items-center justify-center rounded-full transition-colors',
+                'relative z-10 inline-flex shrink-0 items-center justify-center rounded-full',
+                'transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out-premium)]',
+                'motion-reduce:transition-none',
                 BUTTON_SIZE_CLASS,
-                isActive ? 'bg-brand-secondary text-white' : 'bg-white text-brand-secondary',
+                isActive ? 'text-white' : 'bg-white text-brand-secondary',
               )}
             >
               <span aria-hidden className={cn(ICON_MASK_BASE, item.iconClass)} />
