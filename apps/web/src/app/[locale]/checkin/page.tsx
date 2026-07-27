@@ -48,7 +48,7 @@ export default async function CheckinRoutePage({ params }: CheckinRoutePageProps
   if (isBuyerAccount(user)) {
     const t = await getTranslations('Profile.checkin');
     return (
-      <AccountPageEnter>
+      <AccountPageEnter mobilePush>
         <AccountPageHeader title={t('title')} subtitle={t('subtitle')} />
         <BuyerCheckInStatus />
       </AccountPageEnter>

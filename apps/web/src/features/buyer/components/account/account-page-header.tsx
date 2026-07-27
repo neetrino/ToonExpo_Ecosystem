@@ -1,5 +1,9 @@
+'use client';
+
 import type { ReactNode } from 'react';
 
+import { AccountMobileBackLink } from '@/features/buyer/components/account/account-mobile-back-link';
+import { useAccountMobileStackBack } from '@/features/buyer/components/account/account-mobile-stack-context';
 import { cn } from '@/shared/ui/cn';
 
 type AccountPageHeaderProps = {
@@ -13,6 +17,7 @@ type AccountPageHeaderProps = {
 
 /**
  * Consistent page title block for account cabinet sections.
+ * On mobile sheets, back arrow sits above the title.
  */
 export const AccountPageHeader = ({
   title,
@@ -22,13 +27,15 @@ export const AccountPageHeader = ({
   headingLevel = 'h1',
 }: AccountPageHeaderProps) => {
   const HeadingTag = headingLevel;
+  const onBack = useAccountMobileStackBack();
 
   return (
     <div
       className={cn('flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between', className)}
     >
       <div className="flex min-w-0 flex-col gap-1">
-        <HeadingTag className="text-page-title text-ink">{title}</HeadingTag>
+        {onBack ? <AccountMobileBackLink onBack={onBack} className="-ml-2 md:hidden" /> : null}
+        <HeadingTag className="text-page-title min-w-0 text-ink">{title}</HeadingTag>
         {subtitle ? (
           <p className="max-w-2xl text-sm leading-relaxed text-ink-secondary">{subtitle}</p>
         ) : null}

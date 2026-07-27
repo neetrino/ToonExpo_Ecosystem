@@ -146,6 +146,32 @@
   }
 }
 
+/** Mobile account sub-pages: push in from the right (hub → detail). */
+@keyframes account-page-push-in {
+  from {
+    opacity: 0.92;
+    transform: translate3d(100%, 0, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/** Mobile account sub-pages: reverse exit to the right (detail → hub). */
+@keyframes account-page-push-out {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    opacity: 0.92;
+    transform: translate3d(100%, 0, 0);
+  }
+}
+
 /* MaMarie delete confirmation modal — enter/exit */
 @keyframes admin-delete-modal-backdrop-in {
   from {
@@ -429,6 +455,28 @@
 @layer utilities {
   .page-enter {
     animation: page-enter var(--duration-base) var(--ease-out-premium) both;
+  }
+
+  .account-page-push-in {
+    animation: account-page-push-in var(--duration-slow) var(--ease-out-premium) both;
+  }
+
+  .account-page-push-out {
+    animation: account-page-push-out var(--duration-slow) var(--ease-out-premium) both;
+  }
+
+  @media (min-width: 768px) {
+    .account-page-push-in,
+    .account-page-push-out {
+      animation: page-enter var(--duration-base) var(--ease-out-premium) both;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .account-page-push-in,
+    .account-page-push-out {
+      animation: page-enter var(--duration-base) var(--ease-out-premium) both;
+    }
   }
 
   .animate-admin-delete-modal-backdrop-in {

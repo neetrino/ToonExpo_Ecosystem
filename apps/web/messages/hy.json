@@ -870,6 +870,7 @@
     "nav": {
       "label": "Կաբինետի նավիգացիա",
       "portalLabel": "Հաշվի պորտալ",
+      "back": "Հետ",
       "dashboard": "Dashboard",
       "profile": "Պրոֆիլ",
       "password": "Կարգավորումներ",

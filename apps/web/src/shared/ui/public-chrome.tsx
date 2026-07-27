@@ -9,6 +9,7 @@ import {
 import { usePathname } from '@/i18n/navigation';
 import { isBuyerAccountShellPath } from '@/shared/ui/account-mobile-nav-controller';
 import { DesktopFluidFrame } from '@/shared/ui/desktop-fluid-frame';
+import { PageEnter } from '@/shared/ui/motion/page-enter';
 import { SiteHeader } from '@/shared/ui/site-header';
 
 type PublicChromeProps = {
@@ -102,7 +103,7 @@ export const PublicChrome = ({ children }: PublicChromeProps) => {
   return (
     <DesktopFluidFrame stageClassName="min-h-svh bg-canvas">
       <SiteHeader variant={headerVariant} />
-      {children}
+      <PageEnter>{children}</PageEnter>
       <MobileBottomNavSpacer />
       <MobileBottomNav />
     </DesktopFluidFrame>

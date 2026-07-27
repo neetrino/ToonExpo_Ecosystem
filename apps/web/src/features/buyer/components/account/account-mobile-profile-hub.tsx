@@ -1,16 +1,7 @@
 'use client';
 
 import type { AccountType } from '@toonexpo/contracts';
-import {
-  ChevronRight,
-  Heart,
-  Inbox,
-  LayoutDashboard,
-  LogOut,
-  QrCode,
-  ScanLine,
-  Settings,
-} from 'lucide-react';
+import { ChevronRight, Heart, Inbox, LogOut, QrCode, ScanLine, Settings } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
@@ -23,10 +14,10 @@ const AVATAR_SIZE_CLASS = 'size-16';
 const ICON_BOX_CLASS = 'size-10 rounded-xl';
 const CARD_CLASS = 'rounded-[15px] bg-surface-elevated shadow-xs ring-1 ring-border/70';
 
-type NavKey = 'dashboard' | 'password' | 'qr' | 'requests' | 'favorites' | 'checkin';
+type NavKey = 'password' | 'qr' | 'requests' | 'favorites' | 'checkin';
 
 type NavItem = {
-  href: '/dashboard' | '/settings' | '/qr' | '/requests' | '/favorites' | '/checkin';
+  href: '/settings' | '/qr' | '/requests' | '/favorites' | '/checkin';
   key: NavKey;
   buyerOnly: boolean;
   icon: LucideIcon;
@@ -34,13 +25,6 @@ type NavItem = {
 };
 
 const MENU_ITEMS: ReadonlyArray<NavItem> = [
-  {
-    href: '/dashboard',
-    key: 'dashboard',
-    buyerOnly: false,
-    icon: LayoutDashboard,
-    iconTone: 'bg-brand-soft text-brand',
-  },
   {
     href: '/qr',
     key: 'qr',
@@ -86,9 +70,8 @@ type AccountMobileProfileHubProps = {
 };
 
 /**
- * MaMarie-style mobile profile hub: avatar + name, then sidebar nav as page body.
- * No active-row highlight — this hub only mounts on `/dashboard`, so Dashboard
- * would otherwise look permanently selected.
+ * MaMarie-style mobile profile hub: avatar + name, then destinations as page body.
+ * Sub-pages slide over this hub via AccountMobileStack.
  */
 export const AccountMobileProfileHub = ({
   name,
@@ -131,6 +114,7 @@ export const AccountMobileProfileHub = ({
               <li key={item.href}>
                 <Link
                   href={item.href}
+                  prefetch
                   className="flex w-full items-center justify-between px-4 py-3.5 transition-colors hover:bg-canvas"
                 >
                   <span className="flex min-w-0 items-center gap-3">

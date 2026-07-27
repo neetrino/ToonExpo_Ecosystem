@@ -33,5 +33,5 @@ export default async function AccountSettingsPage({ params }: AccountSettingsPag
     return null;
   }
 
-  return <AccountSettingsView user={user} titleNamespace="Profile.settings" />;
+  return <AccountSettingsView user={user} titleNamespace="Profile.settings" mobilePush />;
 }

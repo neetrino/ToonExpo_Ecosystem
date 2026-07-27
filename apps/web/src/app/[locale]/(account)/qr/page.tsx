@@ -1,12 +1,11 @@
 import { headers } from 'next/headers';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
+import { getMeOrNullCached as getMeOrNull } from '@/features/auth/api/get-me-or-null-cached';
 import { AccountPageEnter } from '@/features/buyer/components/account/account-page-enter';
 import { AccountPageHeader } from '@/features/buyer/components/account/account-page-header';
-import { AccountShell } from '@/features/buyer/components/account/account-shell';
 import { BuyerQrPageContent } from '@/features/buyer/components/buyer-qr-page-content';
 import { isBuyerAccount } from '@/features/buyer/utils/is-buyer-account';
-import { getMeOrNullCached as getMeOrNull } from '@/features/auth/api/get-me-or-null-cached';
 import { redirect } from '@/i18n/navigation';
 
 type MyQrPageProps = {
@@ -37,11 +36,9 @@ export default async function MyQrPage({ params }: MyQrPageProps) {
   const t = await getTranslations('Profile.qr');
 
   return (
-    <AccountShell locale={locale}>
-      <AccountPageEnter>
-        <AccountPageHeader title={t('title')} subtitle={t('subtitle')} />
-        <BuyerQrPageContent buyerName={user.name} />
-      </AccountPageEnter>
-    </AccountShell>
+    <AccountPageEnter mobilePush>
+      <AccountPageHeader title={t('title')} subtitle={t('subtitle')} />
+      <BuyerQrPageContent buyerName={user.name} />
+    </AccountPageEnter>
   );
 }

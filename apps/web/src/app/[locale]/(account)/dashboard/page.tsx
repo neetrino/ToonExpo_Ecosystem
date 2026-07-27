@@ -2,7 +2,6 @@ import { headers } from 'next/headers';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { getMeOrNullCached as getMeOrNull } from '@/features/auth/api/get-me-or-null-cached';
-import { AccountMobileProfileHub } from '@/features/buyer/components/account/account-mobile-profile-hub';
 import { AccountOverviewStats } from '@/features/buyer/components/account/account-overview-stats';
 import { AccountPageEnter } from '@/features/buyer/components/account/account-page-enter';
 import { AccountPageHeader } from '@/features/buyer/components/account/account-page-header';
@@ -48,13 +47,6 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
 
   return (
     <AccountPageEnter>
-      <AccountMobileProfileHub
-        name={user.name}
-        email={user.email}
-        accountType={user.accountType}
-        className="md:hidden"
-      />
-
       <div className="hidden md:block">
         <AccountPageHeader
           title={t('dashboard.welcome', { name: user.name })}

@@ -3,16 +3,16 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { AccountPageEnter } from '@/features/buyer/components/account/account-page-enter';
 import { AccountPageHeader } from '@/features/buyer/components/account/account-page-header';
-import { BuyerFavoritesList } from '@/features/buyer/components/buyer-favorites-list';
+import { BuyerRequestsList } from '@/features/buyer/components/buyer-requests-list';
 import { isBuyerAccount } from '@/features/buyer/utils/is-buyer-account';
 import { getMeOrNullCached as getMeOrNull } from '@/features/auth/api/get-me-or-null-cached';
 import { redirect } from '@/i18n/navigation';
 
-type FavoritesPageProps = {
+type RequestsPageProps = {
   params: Promise<{ locale: string }>;
 };
 
-export default async function FavoritesPage({ params }: FavoritesPageProps) {
+export default async function RequestsPage({ params }: RequestsPageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
 
@@ -22,7 +22,7 @@ export default async function FavoritesPage({ params }: FavoritesPageProps) {
 
   if (!user) {
     redirect({
-      href: '/auth/login?returnUrl=%2Ffavorites',
+      href: '/auth/login?returnUrl=%2Frequests',
       locale,
     });
     return null;
@@ -33,12 +33,12 @@ export default async function FavoritesPage({ params }: FavoritesPageProps) {
     return null;
   }
 
-  const t = await getTranslations('Profile.favorites');
+  const t = await getTranslations('Profile.requests');
 
   return (
-    <AccountPageEnter>
+    <AccountPageEnter mobilePush>
       <AccountPageHeader title={t('title')} subtitle={t('subtitle')} />
-      <BuyerFavoritesList />
+      <BuyerRequestsList />
     </AccountPageEnter>
   );
 }
