@@ -1,25 +1,19 @@
 'use client';
 
-import type { AdminProjectListItem, PublicationStatus } from '@toonexpo/contracts';
-import {
-  Building,
-  Building2,
-  CheckCircle2,
-  CircleDashed,
-  Home,
-  MapPin,
-  QrCode,
-} from 'lucide-react';
+import type { PortalProjectListItem, PublicationStatus } from '@toonexpo/contracts';
+import { Building, CheckCircle2, CircleDashed, Home, MapPin, QrCode } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
+import { catalogProjectDetailHref } from '@/features/builder/catalog-scope';
+import { useCatalogScope } from '@/features/builder/catalog-scope-context';
 import { ProjectQrDialog } from '@/features/builder/components/project-qr-dialog';
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 import { IconButton } from '@/shared/ui/icon-button';
 
-type AdminProjectCardProps = {
-  project: AdminProjectListItem;
+type BuilderProjectCardProps = {
+  project: PortalProjectListItem;
 };
 
 const STATUS_BADGE_CLASS: Record<PublicationStatus, string> = {
@@ -29,11 +23,12 @@ const STATUS_BADGE_CLASS: Record<PublicationStatus, string> = {
 };
 
 /**
- * Wide project card for the admin projects hub.
+ * Project card for the builder projects hub — same layout as admin project cards.
  */
-export const AdminProjectCard = ({ project }: AdminProjectCardProps) => {
-  const t = useTranslations('Admin.projects');
+export const BuilderProjectCard = ({ project }: BuilderProjectCardProps) => {
+  const t = useTranslations('Builder.projects');
   const tQr = useTranslations('Builder.projects.qr');
+  const scope = useCatalogScope();
   const StatusIcon = project.publicationStatus === 'published' ? CheckCircle2 : CircleDashed;
   const [qrOpen, setQrOpen] = useState(false);
 
@@ -48,15 +43,11 @@ export const AdminProjectCard = ({ project }: AdminProjectCardProps) => {
       >
         <div className="flex flex-1 gap-2 p-4">
           <Link
-            href={`/admin/projects/${project.id}`}
+            href={catalogProjectDetailHref(scope, project.id)}
             className="flex min-w-0 flex-1 flex-col active:scale-[0.995]"
           >
             <h2 className="text-base font-semibold tracking-tight text-ink">{project.name}</h2>
             <div className="mt-2 flex flex-col gap-1 text-sm text-ink-secondary">
-              <span className="inline-flex min-w-0 items-center gap-1.5">
-                <Building2 className="size-3.5 shrink-0 opacity-70" aria-hidden />
-                <span className="truncate">{project.companyName}</span>
-              </span>
               <span className="inline-flex min-w-0 items-center gap-1.5">
                 <MapPin className="size-3.5 shrink-0 opacity-70" aria-hidden />
                 <span className="truncate">{project.city ?? '—'}</span>
@@ -122,7 +113,7 @@ export const AdminProjectCard = ({ project }: AdminProjectCardProps) => {
         }}
         projectId={project.id}
         projectName={project.name}
-        scope={{ mode: 'admin', companyId: project.builderCompanyId }}
+        scope={scope}
       />
     </>
   );

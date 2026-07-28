@@ -2531,6 +2531,7 @@
       "qr": {
         "title": "Project QR",
         "subtitle": "Print this QR for exhibition stands — buyers land on the public project page.",
+        "open": "Open project QR",
         "loading": "Loading QR…",
         "error": "Could not load project QR.",
         "codeTitle": "Project QR for {name}",

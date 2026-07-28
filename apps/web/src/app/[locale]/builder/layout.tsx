@@ -4,6 +4,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import type { ReactNode } from 'react';
 
 import { getCompanyProfile } from '@/features/builder/api/company-profile-api';
+import { BuilderMobileStack } from '@/features/builder/components/builder-mobile-stack';
 import { BuilderNav } from '@/features/builder/components/builder-nav';
 import { getMeOrNullCached as getMeOrNull } from '@/features/auth/api/get-me-or-null-cached';
 import { redirect } from '@/i18n/navigation';
@@ -50,9 +51,14 @@ export default async function BuilderLayout({ children, params }: BuilderLayoutP
       profileHref="/builder/settings"
       navLabel={t('nav.label')}
       variant="rail"
+      showRailHeaderMask={false}
+      mobileDrawerControlledByNavbar
+      className="bg-canvas"
       sidebar={<BuilderNav companyName={company.name} />}
     >
-      {children}
+      <BuilderMobileStack name={user.name} email={user.email} companyName={company.name}>
+        {children}
+      </BuilderMobileStack>
     </PortalShell>
   );
 }

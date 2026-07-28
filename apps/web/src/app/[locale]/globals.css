@@ -217,6 +217,19 @@
   }
 }
 
+/** Project QR content fade/rise after load (mobile + desktop overlay). */
+@keyframes project-qr-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
 @keyframes banner-media-drift {
   from {
     transform: scale(1.04) translate3d(0, 0, 0);
@@ -495,11 +508,16 @@
     animation: admin-delete-modal-panel-out 0.28s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   }
 
+  .animate-project-qr-in {
+    animation: project-qr-in var(--duration-slow) var(--ease-out-premium) both;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .animate-admin-delete-modal-backdrop-in,
     .animate-admin-delete-modal-backdrop-out,
     .animate-admin-delete-modal-panel-in,
-    .animate-admin-delete-modal-panel-out {
+    .animate-admin-delete-modal-panel-out,
+    .animate-project-qr-in {
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
     }
