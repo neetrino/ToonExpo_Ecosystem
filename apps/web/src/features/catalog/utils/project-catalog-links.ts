@@ -6,9 +6,6 @@ export type ProjectCatalogLinkId =
   | 'typicalInteractiveTour'
   | 'video'
   | 'exteriorInteractiveTour'
-  | 'floorPlans2d'
-  | 'floorPlans3d'
-  | 'logoBranding'
   | 'website'
   | 'facebook'
   | 'instagram';
@@ -24,13 +21,51 @@ export const PROJECT_CATALOG_LINK_IDS: readonly ProjectCatalogLinkId[] = [
   'typicalInteractiveTour',
   'video',
   'exteriorInteractiveTour',
-  'floorPlans2d',
-  'floorPlans3d',
-  'logoBranding',
   'website',
   'facebook',
   'instagram',
 ] as const;
+
+/** Website + social profiles — rendered in a separate Socials card. */
+export const PROJECT_CATALOG_SOCIAL_LINK_IDS = ['website', 'facebook', 'instagram'] as const;
+
+export type ProjectCatalogSocialLinkId = (typeof PROJECT_CATALOG_SOCIAL_LINK_IDS)[number];
+
+export const isProjectCatalogSocialLink = (
+  id: ProjectCatalogLinkId,
+): id is ProjectCatalogSocialLinkId => {
+  return (PROJECT_CATALOG_SOCIAL_LINK_IDS as readonly string[]).includes(id);
+};
+
+export const splitProjectCatalogLinks = (
+  links: readonly ProjectCatalogLink[],
+): {
+  media: ProjectCatalogLink[];
+  social: ProjectCatalogLink[];
+  video: ProjectCatalogLink | null;
+  typicalTour: ProjectCatalogLink | null;
+  exteriorTour: ProjectCatalogLink | null;
+} => {
+  const media: ProjectCatalogLink[] = [];
+  const social: ProjectCatalogLink[] = [];
+  let video: ProjectCatalogLink | null = null;
+  let typicalTour: ProjectCatalogLink | null = null;
+  let exteriorTour: ProjectCatalogLink | null = null;
+  for (const link of links) {
+    if (link.id === 'video') {
+      video = link;
+    } else if (link.id === 'typicalInteractiveTour') {
+      typicalTour = link;
+    } else if (link.id === 'exteriorInteractiveTour') {
+      exteriorTour = link;
+    } else if (isProjectCatalogSocialLink(link.id)) {
+      social.push(link);
+    } else {
+      media.push(link);
+    }
+  }
+  return { media, social, video, typicalTour, exteriorTour };
+};
 
 const asNonEmptyString = (value: unknown): string | null => {
   if (typeof value !== 'string') {

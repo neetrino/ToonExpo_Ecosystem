@@ -82,19 +82,20 @@ export const ProjectCatalogSection = async ({ project }: ProjectCatalogSectionPr
       title={t('catalog.title')}
       aboutTitle={t('catalog.about')}
       aboutText={project.fullDescription}
-      factsTitle={t('catalog.facts')}
+      overviewTitle={t('catalog.overview')}
+      detailsTitle={t('catalog.details')}
       amenitiesTitle={t('catalog.amenities')}
       nearbyTitle={t('catalog.nearby')}
       linksTitle={t('catalog.links')}
+      socialsTitle={t('catalog.socials')}
+      videoTitle={t('catalog.video')}
+      videoOpenLabel={t('catalog.videoOpen')}
       linkLabels={{
         exteriorRenders: t('catalog.linkExteriorRenders'),
         interiorRenders: t('catalog.linkInteriorRenders'),
         typicalInteractiveTour: t('catalog.linkTypicalInteractiveTour'),
         video: t('catalog.linkVideo'),
         exteriorInteractiveTour: t('catalog.linkExteriorInteractiveTour'),
-        floorPlans2d: t('catalog.linkFloorPlans2d'),
-        floorPlans3d: t('catalog.linkFloorPlans3d'),
-        logoBranding: t('catalog.linkLogoBranding'),
         website: t('catalog.linkWebsite'),
         facebook: t('catalog.linkFacebook'),
         instagram: t('catalog.linkInstagram'),
