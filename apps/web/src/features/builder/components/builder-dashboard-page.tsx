@@ -73,40 +73,42 @@ export const BuilderDashboardPage = () => {
         </Card>
       </div>
 
-      <div className="flex flex-wrap gap-3">
-        <Link
-          href="/builder/projects"
-          className="inline-flex h-9 items-center rounded-pill bg-cta-dark px-4 text-sm font-medium text-on-dark hover:bg-cta-dark/90"
-        >
-          {t('links.projects')}
-        </Link>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap gap-3">
+          <Link
+            href="/builder/projects"
+            className="inline-flex h-9 items-center rounded-pill border border-border-strong px-4 text-sm font-medium text-ink hover:bg-surface"
+          >
+            {t('links.projects')}
+          </Link>
+          <Link
+            href="/builder/team"
+            className="inline-flex h-9 items-center rounded-pill border border-border-strong px-4 text-sm font-medium text-ink hover:bg-surface"
+          >
+            {t('links.team')}
+          </Link>
+          <Link
+            href="/builder/crm"
+            className="inline-flex h-9 items-center rounded-pill border border-border-strong px-4 text-sm font-medium text-ink hover:bg-surface"
+          >
+            {t('links.crm')}
+          </Link>
+          <Link
+            href="/builder/scanner"
+            className="inline-flex h-9 items-center rounded-pill border border-border-strong px-4 text-sm font-medium text-ink hover:bg-surface"
+          >
+            {t('links.scanner')}
+          </Link>
+        </div>
         <button
           type="button"
-          className="inline-flex h-9 items-center rounded-pill border border-border-strong px-4 text-sm font-medium text-ink hover:bg-surface"
+          className="inline-flex h-9 items-center rounded-pill bg-cta-dark px-4 text-sm font-medium text-on-dark hover:bg-cta-dark/90"
           onClick={() => {
             setCreateOpen(true);
           }}
         >
           <AddActionLabel>{t('links.newProject')}</AddActionLabel>
         </button>
-        <Link
-          href="/builder/team"
-          className="inline-flex h-9 items-center rounded-pill border border-border-strong px-4 text-sm font-medium text-ink hover:bg-surface"
-        >
-          {t('links.team')}
-        </Link>
-        <Link
-          href="/builder/crm"
-          className="inline-flex h-9 items-center rounded-pill border border-border-strong px-4 text-sm font-medium text-ink hover:bg-surface"
-        >
-          {t('links.crm')}
-        </Link>
-        <Link
-          href="/builder/scanner"
-          className="inline-flex h-9 items-center rounded-pill border border-border-strong px-4 text-sm font-medium text-ink hover:bg-surface"
-        >
-          {t('links.scanner')}
-        </Link>
       </div>
 
       <CrmDashboardWidget />
