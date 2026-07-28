@@ -67,6 +67,9 @@ const isProfilePath = (pathname: string): boolean =>
   pathname.startsWith('/checkin/') ||
   pathname.startsWith('/account');
 
+const isBuilderPortalPath = (pathname: string): boolean =>
+  pathname === '/builder' || pathname.startsWith('/builder/');
+
 const isMortgagePath = (pathname: string): boolean =>
   pathname === '/mortgage' || pathname.startsWith('/mortgage/');
 
@@ -79,6 +82,9 @@ export const MobileBottomNav = () => {
   const pathname = usePathname();
   const { data: me } = useMeQuery();
   const [pendingId, setPendingId] = useState<BottomNavId | null>(null);
+  const isBuilder = me?.companyType === 'builder';
+  const profileHref = isBuilder ? '/builder' : me ? '/dashboard' : '/auth/login';
+  const isProfileActive = isBuilder ? isBuilderPortalPath(pathname) : isProfilePath(pathname);
 
   const items: BottomNavItem[] = [
     {
@@ -107,11 +113,11 @@ export const MobileBottomNav = () => {
     },
     {
       id: 'profile',
-      href: me ? '/dashboard' : '/auth/login',
+      href: profileHref,
       labelKey: 'profile',
       iconClass:
         'size-6 [mask-image:url(/icons/bottom-nav/profile.webp)] [-webkit-mask-image:url(/icons/bottom-nav/profile.webp)]',
-      match: isProfilePath,
+      match: () => isProfileActive,
     },
     {
       id: 'mortgage',

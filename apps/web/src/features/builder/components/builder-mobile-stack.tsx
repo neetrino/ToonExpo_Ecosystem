@@ -10,6 +10,10 @@ import {
 import { useAccountSheetEdgeSwipe } from '@/features/buyer/components/account/use-account-sheet-edge-swipe';
 import { BuilderMobileHub } from '@/features/builder/components/builder-mobile-hub';
 import { BuilderMobileStackProvider } from '@/features/builder/components/builder-mobile-stack-context';
+import {
+  MobileBottomNav,
+  MobileBottomNavSpacer,
+} from '@/features/catalog/components/mobile-bottom-nav';
 import { usePathname, useRouter } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 
@@ -167,6 +171,7 @@ export const BuilderMobileStack = ({
     <BuilderMobileStackProvider value={{ onBack: showOverlay ? goBack : null }}>
       <div className="md:hidden">
         <BuilderMobileHub name={name} email={email} companyName={companyName} />
+        <MobileBottomNavSpacer />
       </div>
 
       <div
@@ -188,7 +193,7 @@ export const BuilderMobileStack = ({
             showOverlay && [
               'max-md:mx-auto max-md:w-full max-md:max-w-md',
               'max-md:px-[var(--page-gutter)] max-md:pt-5',
-              'max-md:pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))]',
+              'max-md:pb-[calc(4.5rem+env(safe-area-inset-bottom,0px))]',
             ],
           )}
         >
@@ -197,6 +202,10 @@ export const BuilderMobileStack = ({
           ) : null}
           {children}
         </div>
+      </div>
+
+      <div className="relative z-[var(--z-sheet)] md:hidden">
+        <MobileBottomNav />
       </div>
     </BuilderMobileStackProvider>
   );

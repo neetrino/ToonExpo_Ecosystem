@@ -16,6 +16,7 @@ import {
   SIDE_SHEET_BACKDROP_TRANSITION_MS,
   SIDE_SHEET_COMFORTABLE_MAX_WIDTH_PX,
   SIDE_SHEET_COMPACT_MAX_WIDTH_PX,
+  SIDE_SHEET_MOBILE_WIDTH_PERCENT,
   SIDE_SHEET_PANEL_TRANSITION_MS,
   SIDE_SHEET_PANEL_Z_INDEX,
   SIDE_SHEET_STACK_Z_STEP,
@@ -115,9 +116,10 @@ const SideSheetPanel = ({
         ref={panelRef}
         className={cn(
           'absolute top-0 right-0 h-fluid-screen max-h-fluid-screen',
+          'w-[var(--side-sheet-mobile-width)]',
           isFixedMax
-            ? 'w-full max-w-[var(--side-sheet-compact-max)]'
-            : 'w-full max-md:max-w-none md:w-[var(--side-sheet-width)]',
+            ? 'md:w-full md:max-w-[var(--side-sheet-compact-max)]'
+            : 'md:w-[var(--side-sheet-width)]',
           'transition-transform duration-[var(--side-sheet-panel-ms)] ease-[var(--ease-out-premium)]',
           'motion-reduce:transition-none motion-reduce:duration-0',
           'will-change-transform',
@@ -126,6 +128,7 @@ const SideSheetPanel = ({
             : 'pointer-events-none translate-x-full motion-reduce:translate-x-0',
         )}
         style={{
+          ['--side-sheet-mobile-width' as string]: `${SIDE_SHEET_MOBILE_WIDTH_PERCENT}%`,
           ['--side-sheet-width' as string]: `${SIDE_SHEET_WIDTH_PERCENT}%`,
           ['--side-sheet-compact-max' as string]: `${compactMaxPx}px`,
           ['--side-sheet-panel-ms' as string]: `${SIDE_SHEET_PANEL_TRANSITION_MS}ms`,

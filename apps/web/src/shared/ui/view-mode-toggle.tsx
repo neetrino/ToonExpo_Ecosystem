@@ -13,12 +13,18 @@ type ViewModeToggleProps = {
    * CRM kanban — column blocks icon + “board” label instead of card grid.
    */
   cardsAsBoard?: boolean | undefined;
+  className?: string | undefined;
 };
 
 /**
  * Pill switcher for list/cards (or list/board) collection views with a sliding thumb.
  */
-export const ViewModeToggle = ({ value, onChange, cardsAsBoard = false }: ViewModeToggleProps) => {
+export const ViewModeToggle = ({
+  value,
+  onChange,
+  cardsAsBoard = false,
+  className,
+}: ViewModeToggleProps) => {
   const t = useTranslations('Common.viewMode');
   const cardsIcon: LucideIcon = cardsAsBoard ? Columns3 : LayoutGrid;
   const cardsLabelKey = cardsAsBoard ? ('board' as const) : ('cards' as const);
@@ -32,7 +38,10 @@ export const ViewModeToggle = ({ value, onChange, cardsAsBoard = false }: ViewMo
     <div
       role="group"
       aria-label={t('label')}
-      className="relative inline-flex h-9 items-center gap-0.5 rounded-pill bg-surface p-0.5 ring-1 ring-border"
+      className={cn(
+        'relative inline-flex h-9 items-center gap-0.5 rounded-pill bg-surface p-0.5 ring-1 ring-border',
+        className,
+      )}
     >
       <span
         aria-hidden

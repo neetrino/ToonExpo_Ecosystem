@@ -19,10 +19,14 @@ const navLinkClassName = (active: boolean): string =>
       : 'text-on-dark/85 hover:bg-on-dark/10 hover:text-on-dark',
   );
 
+type BuilderNavProps = {
+  companyName: string | null;
+};
+
 /**
  * Dark-rail builder navigation — same chrome pattern as AdminNav.
  */
-export const BuilderNav = () => {
+export const BuilderNav = ({ companyName }: BuilderNavProps) => {
   const t = useTranslations('Builder.nav');
   const pathname = usePathname();
   const SettingsIcon = BUILDER_SETTINGS_NAV_ITEM.icon;
@@ -40,6 +44,9 @@ export const BuilderNav = () => {
         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-on-dark/65">
           {t('portalLabel')}
         </p>
+        {companyName ? (
+          <p className="mt-1 truncate text-sm font-medium text-on-dark">{companyName}</p>
+        ) : null}
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto overscroll-contain">

@@ -11,7 +11,9 @@ import { useCompanyMembersQuery } from '@/features/builder/hooks/use-company-mem
 import { useIsCompanyAdmin } from '@/features/builder/hooks/use-company-profile';
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
+import { useMinWidth } from '@/shared/hooks/use-min-width';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
+import { VIEW_MODE_CARDS } from '@/shared/ui/view-mode';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
 const parsePage = (raw: string | null): number => {
@@ -33,6 +35,8 @@ export const TeamPage = () => {
   const canManage = useIsCompanyAdmin();
   const membersQuery = useCompanyMembersQuery(page, pageSize);
   const { viewMode, setViewMode } = usePersistedViewMode(TEAM_VIEW_MODE_KEY);
+  const isDesktop = useMinWidth();
+  const effectiveViewMode = isDesktop ? viewMode : VIEW_MODE_CARDS;
   const [inviteEmail, setInviteEmail] = useState<string | null>(null);
   const [inviteOpen, setInviteOpen] = useState(false);
 
@@ -61,7 +65,11 @@ export const TeamPage = () => {
           {!canManage ? <p className="text-sm text-ink-muted">{t('readOnlyNotice')}</p> : null}
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <ViewModeToggle value={viewMode} onChange={setViewMode} />
+          <ViewModeToggle
+            className="hidden md:inline-flex"
+            value={viewMode}
+            onChange={setViewMode}
+          />
           {canManage ? (
             <button
               type="button"
@@ -86,7 +94,7 @@ export const TeamPage = () => {
       {response.data.length === 0 ? (
         <p className="text-sm text-ink-secondary">{t('empty')}</p>
       ) : (
-        <TeamTable members={response.data} canManage={canManage} viewMode={viewMode} />
+        <TeamTable members={response.data} canManage={canManage} viewMode={effectiveViewMode} />
       )}
 
       <CatalogPagination
