@@ -171,20 +171,6 @@ export const FloorPhasePage = ({ projectId, floorId }: FloorPhasePageProps) => {
         }}
       />
 
-      <CreateEntityInlineForm
-        title={t('forms.createApartment')}
-        submitLabel={t('forms.createApartment')}
-        pendingLabel={t('forms.saving')}
-        nameLabel={t('forms.apartmentNumber')}
-        namePlaceholder={t('forms.apartmentPlaceholder')}
-        onSubmit={async (number) => {
-          await createPortalApartment(floorId, { number }, { scope });
-          void queryClient.invalidateQueries({
-            queryKey: interactiveMappingProjectQueryKey(projectId),
-          });
-        }}
-      />
-
       {error ? (
         <p role="alert" className="text-sm text-danger">
           {error}
@@ -202,6 +188,21 @@ export const FloorPhasePage = ({ projectId, floorId }: FloorPhasePageProps) => {
           viewBoxHeight={height}
           apartments={apartments}
           hotspots={canvas.hotspots}
+          createForm={
+            <CreateEntityInlineForm
+              title={t('forms.createApartment')}
+              submitLabel={t('forms.createApartment')}
+              pendingLabel={t('forms.saving')}
+              nameLabel={t('forms.apartmentNumber')}
+              namePlaceholder={t('forms.apartmentPlaceholder')}
+              onSubmit={async (number) => {
+                await createPortalApartment(floorId, { number }, { scope });
+                void queryClient.invalidateQueries({
+                  queryKey: interactiveMappingProjectQueryKey(projectId),
+                });
+              }}
+            />
+          }
           onAfterSave={() => {
             void queryClient.invalidateQueries({
               queryKey: interactiveMappingProjectQueryKey(projectId),

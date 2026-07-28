@@ -631,7 +631,13 @@ export const MappingCanvas = forwardRef<MappingCanvasHandle, MappingCanvasProps>
         return `Ավտո հարկեր · 4 կտտոց՝ TL → TR → BR → BL (${entities.length} հարկ)։`;
       }
       if (mode === 'edit-polygon') {
-        return 'Եզրի բաց/մանուշակագույն կետը քաշիր՝ կլորացնելու համար։ Alt+click՝ ուղղել։';
+        return 'Նարնջագույն կետերը քաշիր։ Եզրի + · նոր կետ ավելացնել։ Delete՝ ջնջել ընտրվածը։';
+      }
+      if (entities.length === 0) {
+        return 'Նախ ստեղծիր/ընտրիր միավորը ձախ ցանկում, հետո Polygon գործիքով գծիր։';
+      }
+      if (!selectedId) {
+        return 'Ընտրիր միավորը ձախ ցանկից, հետո սեղմիր Polygon և գծիր կետեր։';
       }
       if (toolPreset === 'floors') {
         return 'Արագ՝ Ավտո / Գոտի։ Խմբագրել · քաշել՝ ձևը ադապտացնելու համար։';
@@ -647,21 +653,28 @@ export const MappingCanvas = forwardRef<MappingCanvasHandle, MappingCanvasProps>
     return (
       <div className="space-y-3">
         <div className="flex flex-wrap gap-2" role="toolbar" aria-label="Mapping tools">
-          {[...basicTools, ...floorTools].map(([value, label, Icon]) => (
-            <button
-              key={value}
-              type="button"
-              title={label}
-              aria-label={label}
-              className={`inline-flex items-center gap-1.5 border px-2.5 py-1.5 text-xs uppercase tracking-[0.14em] ${
-                mode === value ? 'border-foreground bg-foreground text-background' : 'border-border'
-              }`}
-              onClick={() => changeMode(value)}
-            >
-              <Icon />
-              <span className="hidden sm:inline">{label}</span>
-            </button>
-          ))}
+          {[...basicTools, ...floorTools].map(([value, label, Icon]) => {
+            const needsSelection = value === 'draw-polygon' || value === 'place-marker';
+            const disabled = needsSelection && !selectedId;
+            return (
+              <button
+                key={value}
+                type="button"
+                title={disabled ? 'Նախ ընտրիր միավորը ձախ ցանկից' : label}
+                aria-label={label}
+                disabled={disabled}
+                className={`inline-flex items-center gap-1.5 border px-2.5 py-1.5 text-xs uppercase tracking-[0.14em] disabled:cursor-not-allowed disabled:opacity-40 ${
+                  mode === value
+                    ? 'border-foreground bg-foreground text-background'
+                    : 'border-border'
+                }`}
+                onClick={() => changeMode(value)}
+              >
+                <Icon />
+                <span className="hidden sm:inline">{label}</span>
+              </button>
+            );
+          })}
           {selected?.svgPath ? (
             <>
               <button

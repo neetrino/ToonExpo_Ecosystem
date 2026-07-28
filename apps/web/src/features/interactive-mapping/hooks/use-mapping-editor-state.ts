@@ -1,7 +1,7 @@
 'use client';
 
 import type { PortalVisualHotspotItem, VisualHotspotTargetType } from '@toonexpo/contracts';
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import {
   createAdminVisualHotspot,
@@ -48,12 +48,46 @@ export const useMappingEditorState = ({
   onAfterSave,
 }: UseMappingEditorStateArgs) => {
   const entitiesRef = useRef(initialEntities);
+  const dirtyIdsRef = useRef(new Set<string>());
   const [entities, setEntities] = useState(initialEntities);
   const [selectedId, setSelectedId] = useState<string | null>(initialEntities[0]?.id ?? null);
   const [dirtyIds, setDirtyIds] = useState<Set<string>>(new Set());
   const [pending, setPending] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
   entitiesRef.current = entities;
+  dirtyIdsRef.current = dirtyIds;
+
+  useEffect(() => {
+    setEntities((prev) => {
+      const prevById = new Map(prev.map((item) => [item.id, item]));
+      const dirty = dirtyIdsRef.current;
+      return initialEntities.map((incoming) => {
+        const existing = prevById.get(incoming.id);
+        if (!existing || !dirty.has(incoming.id)) {
+          return incoming;
+        }
+        return {
+          ...incoming,
+          markerX: existing.markerX,
+          markerY: existing.markerY,
+          svgPath: existing.svgPath,
+          label: existing.label,
+          hotspotId: existing.hotspotId ?? incoming.hotspotId,
+        };
+      });
+    });
+    setSelectedId((current) => {
+      if (current && initialEntities.some((item) => item.id === current)) {
+        return current;
+      }
+      return initialEntities[0]?.id ?? null;
+    });
+    setDirtyIds((prev) => {
+      const validIds = new Set(initialEntities.map((item) => item.id));
+      const next = new Set([...prev].filter((id) => validIds.has(id)));
+      return next.size === prev.size ? prev : next;
+    });
+  }, [initialEntities]);
 
   const selected = entities.find((item) => item.id === selectedId) ?? null;
 

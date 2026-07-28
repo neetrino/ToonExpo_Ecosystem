@@ -2,7 +2,7 @@
 
 import type { VisualHotspotTargetType } from '@toonexpo/contracts';
 import { Maximize2 } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 
 import { Button } from '@/shared/ui/button';
 
@@ -25,6 +25,8 @@ export type MappingEditorShellProps = {
   initialEntities: MappingEditorEntity[];
   listTitle: string;
   toolPreset?: 'basic' | 'floors';
+  emptyHint?: string;
+  sidebarFooter?: ReactNode;
   onAfterSave?: (() => void) | undefined;
 };
 
@@ -50,6 +52,8 @@ export const MappingEditorShell = ({
   initialEntities,
   listTitle,
   toolPreset = 'basic',
+  emptyHint,
+  sidebarFooter,
   onAfterSave,
 }: MappingEditorShellProps) => {
   const canvasRef = useRef<MappingCanvasHandle>(null);
@@ -113,6 +117,8 @@ export const MappingEditorShell = ({
       dirtyIds={editor.dirtyIds}
       pending={editor.pending}
       message={editor.message}
+      emptyHint={emptyHint}
+      footer={sidebarFooter}
       onSelect={editor.setSelectedId}
       onLabelChange={editor.onLabelChange}
       onSave={() => {

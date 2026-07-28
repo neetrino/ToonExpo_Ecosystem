@@ -1,6 +1,7 @@
 'use client';
 
 import type { PortalVisualHotspotItem } from '@toonexpo/contracts';
+import type { ReactNode } from 'react';
 
 import { MappingEditorShell, type MappingEditorEntity } from './mapping-editor-shell';
 
@@ -14,6 +15,7 @@ export type FloorApartmentMappingEditorProps = {
   viewBoxHeight: number;
   apartments: { id: string; number: string; label?: string }[];
   hotspots: PortalVisualHotspotItem[];
+  createForm?: ReactNode;
   onAfterSave?: () => void;
 };
 
@@ -49,6 +51,7 @@ export const FloorApartmentMappingEditor = ({
   viewBoxHeight,
   apartments,
   hotspots,
+  createForm,
   onAfterSave,
 }: FloorApartmentMappingEditorProps) => (
   <MappingEditorShell
@@ -57,6 +60,8 @@ export const FloorApartmentMappingEditor = ({
     targetType="apartment"
     toolPreset="basic"
     listTitle="Apartments"
+    emptyHint="Այս հարկում բնակարան չկա։ Ստեղծիր առնվազն մեկը, ընտրիր ցանկից, հետո գծիր Polygon։"
+    sidebarFooter={createForm}
     imageUrl={imageUrl}
     imageWidth={imageWidth}
     imageHeight={imageHeight}
