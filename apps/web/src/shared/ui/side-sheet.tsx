@@ -9,6 +9,7 @@ import { blurActiveElementAfterEscClose } from '@/shared/ui/blur-active-element'
 import { isFloorPlanLightboxOpen } from '@/shared/ui/floor-plan-lightbox-stack';
 import { DrawerCloseTab } from '@/shared/ui/drawer-close-tab';
 import { cn } from '@/shared/ui/cn';
+import { MOBILE_BOTTOM_NAV_SHEET_PB_CLASS } from '@/shared/ui/mobile-bottom-nav-clearance';
 import { MODAL_BACKDROP_CLASS_NAME } from '@/shared/ui/modal-backdrop';
 import { getOverlayPortalHost } from '@/shared/ui/overlay-portal-host';
 import { isTopSideSheetLevel, registerSideSheetLevel } from '@/shared/ui/side-sheet-escape-stack';
@@ -149,7 +150,7 @@ const SideSheetPanel = ({
           onClick={(event) => event.stopPropagation()}
         >
           <header className="shrink-0 border-b border-border px-5 py-4">
-            <div className="flex items-center justify-between gap-3">
+            <div className="flex flex-col gap-2.5 md:flex-row md:items-center md:justify-between md:gap-3">
               <div className="min-w-0 flex-1">
                 <h2 id={titleId} className="truncate text-lg font-semibold leading-tight text-ink">
                   {title}
@@ -159,7 +160,7 @@ const SideSheetPanel = ({
                 ) : null}
               </div>
               {headerActions || titleLeading ? (
-                <div className="flex shrink-0 items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2 md:shrink-0 md:justify-end">
                   {titleLeading}
                   {headerActions}
                 </div>
@@ -169,7 +170,10 @@ const SideSheetPanel = ({
 
           <div
             ref={scrollRef}
-            className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-4"
+            className={cn(
+              'min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-4',
+              MOBILE_BOTTOM_NAV_SHEET_PB_CLASS,
+            )}
           >
             {children}
           </div>

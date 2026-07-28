@@ -66,7 +66,7 @@ const AdminAnalyticsContent = ({ data }: AdminAnalyticsContentProps) => {
 
       <section className="flex flex-col gap-3">
         <h2 className="text-sm font-semibold text-ink">{t('sections.platformActivity')}</h2>
-        <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
+        <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-3">
           <AnalyticsStatCard
             label={t('platformActivity.totalUsers')}
             value={data.platformActivity.totalUsers}

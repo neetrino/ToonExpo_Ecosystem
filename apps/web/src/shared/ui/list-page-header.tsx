@@ -52,7 +52,7 @@ export const ListPageHeader = ({
       {eyebrow ? <p className="crm-board-page__eyebrow">{eyebrow}</p> : null}
       <div className="flex flex-col gap-3 md:flex-row md:flex-nowrap md:items-center md:justify-between">
         <h1 className="min-w-0 shrink text-page-title text-ink">{title}</h1>
-        <div className="flex w-full min-w-0 flex-wrap items-center gap-2 md:flex-1 md:flex-nowrap md:justify-end">
+        <div className="flex w-full min-w-0 items-center gap-2 md:flex-1 md:justify-end max-md:flex-wrap">
           <div
             className={cn(
               'relative w-full min-w-0 md:min-w-[12rem] md:max-w-md md:flex-1',

@@ -45,7 +45,6 @@ export default async function AdminLayout({ children, params }: AdminLayoutProps
       profileHref="/admin/settings"
       navLabel={t('nav.label')}
       variant="rail"
-      showRailHeaderMask={false}
       mobileDrawerControlledByNavbar
       className="bg-canvas"
       sidebar={<AdminNav />}

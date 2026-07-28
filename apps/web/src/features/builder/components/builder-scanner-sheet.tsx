@@ -10,6 +10,7 @@ import { blurActiveElementAfterEscClose } from '@/shared/ui/blur-active-element'
 import { lockBodyScroll, unlockBodyScroll } from '@/shared/ui/body-scroll-lock';
 import { cn } from '@/shared/ui/cn';
 import { IconButton } from '@/shared/ui/icon-button';
+import { MOBILE_BOTTOM_NAV_SHEET_PB_CLASS } from '@/shared/ui/mobile-bottom-nav-clearance';
 import { MODAL_BACKDROP_CLASS_NAME } from '@/shared/ui/modal-backdrop';
 import { getOverlayPortalHost } from '@/shared/ui/overlay-portal-host';
 import {
@@ -122,7 +123,12 @@ export const BuilderScannerSheet = ({ open, onClose }: BuilderScannerSheetProps)
               <X className="size-4" aria-hidden />
             </IconButton>
           </header>
-          <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4 pb-[calc(5.5rem+env(safe-area-inset-bottom,0px))]">
+          <div
+            className={cn(
+              'min-h-0 flex-1 overflow-y-auto px-5 py-4',
+              MOBILE_BOTTOM_NAV_SHEET_PB_CLASS,
+            )}
+          >
             {open ? <ScannerWorkspace /> : null}
           </div>
         </div>
