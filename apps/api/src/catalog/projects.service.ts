@@ -163,8 +163,9 @@ export class ProjectsService {
         .split(',')
         .map((city) => city.trim())
         .filter((city) => city.length > 0);
-      if (cities.length === 1) {
-        where.city = { equals: cities[0], mode: 'insensitive' };
+      const [firstCity] = cities;
+      if (cities.length === 1 && firstCity != null) {
+        where.city = { equals: firstCity, mode: 'insensitive' };
       } else if (cities.length > 1) {
         where.OR = cities.map((city) => ({
           city: { equals: city, mode: 'insensitive' as const },
