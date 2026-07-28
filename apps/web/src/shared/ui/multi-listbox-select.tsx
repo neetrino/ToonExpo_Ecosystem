@@ -166,7 +166,8 @@ export const MultiListboxSelect = ({
       className={cn(
         'relative min-w-0',
         isField && (isFit ? 'w-fit max-w-full' : 'w-full'),
-        useHeroBlock && 'w-full lg:w-auto',
+        useHeroBlock && 'flex w-full flex-col gap-1',
+        !isField && !useHeroBlock && (isFit ? 'w-fit max-w-full' : 'w-full'),
         !isField && className,
       )}
     >
@@ -193,26 +194,30 @@ export const MultiListboxSelect = ({
         </ul>
       ) : null}
       {useHeroBlock && heroBlock ? (
-        <HeroFilterTrigger
-          ref={buttonRef}
-          id={id}
-          label={heroBlock.label}
-          value={displayLabel}
-          open={open}
-          mutedValue={isAll}
-          disabled={disabled}
-          className="lg:w-auto"
-          aria-label={ariaLabel}
-          aria-haspopup="listbox"
-          aria-expanded={open}
-          aria-controls={listId}
-          onClick={() => {
-            if (disabled) {
-              return;
-            }
-            setOpen((current) => !current);
-          }}
-        />
+        <>
+          <span className="hidden text-[10px] font-bold tracking-[0.1em] text-header-muted uppercase lg:inline">
+            {heroBlock.label}
+          </span>
+          <HeroFilterTrigger
+            ref={buttonRef}
+            id={id}
+            label={heroBlock.label}
+            value={displayLabel}
+            open={open}
+            mutedValue={isAll}
+            disabled={disabled}
+            aria-label={ariaLabel}
+            aria-haspopup="listbox"
+            aria-expanded={open}
+            aria-controls={listId}
+            onClick={() => {
+              if (disabled) {
+                return;
+              }
+              setOpen((current) => !current);
+            }}
+          />
+        </>
       ) : (
         <button
           ref={buttonRef}
@@ -261,13 +266,17 @@ export const MultiListboxSelect = ({
         </button>
       )}
 
-      <DropdownPortal open={open && !disabled} anchorRef={buttonRef} matchWidth>
+      <DropdownPortal
+        open={open && !disabled}
+        anchorRef={useHeroBlock ? rootRef : buttonRef}
+        exactWidth={useHeroBlock}
+        matchWidth={!useHeroBlock}
+      >
         <div
           ref={menuRef}
           className={cn(
-            'overflow-hidden rounded-[12px] border border-header-border shadow-md',
+            'w-full overflow-hidden rounded-[16px] border border-header-border bg-surface-elevated shadow-lg',
             'animate-[locale-dropdown-in_var(--duration-base)_var(--ease-out-premium)]',
-            isAll ? 'bg-brand-soft' : 'bg-surface-elevated',
           )}
         >
           <ul

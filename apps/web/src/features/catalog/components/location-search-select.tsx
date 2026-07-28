@@ -21,6 +21,8 @@ type LocationSearchSelectProps = {
   /** Visible field title inside the mobile block trigger. */
   fieldLabel: string;
   'aria-label': string;
+  /** Section chrome (padding / borders) — root is the portal width anchor. */
+  className?: string | undefined;
 };
 
 const normalize = (value: string): string => value.trim().toLocaleLowerCase();
@@ -35,6 +37,7 @@ export const LocationSearchSelect = ({
   labels,
   fieldLabel,
   'aria-label': ariaLabel,
+  className,
 }: LocationSearchSelectProps) => {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -89,7 +92,10 @@ export const LocationSearchSelect = ({
   const displayLabel = value.length > 0 ? value : labels.placeholder;
 
   return (
-    <div ref={rootRef} className="relative w-full min-w-0">
+    <div ref={rootRef} className={cn('relative flex w-full min-w-0 flex-col gap-1', className)}>
+      <span className="hidden text-[10px] font-bold tracking-[0.1em] text-header-muted uppercase lg:inline">
+        {fieldLabel}
+      </span>
       <HeroFilterTrigger
         ref={buttonRef}
         label={fieldLabel}
@@ -110,12 +116,11 @@ export const LocationSearchSelect = ({
         <div
           ref={panelRef}
           className={cn(
-            'w-full overflow-hidden',
-            'rounded-[12px] border border-header-border bg-surface-elevated shadow-md',
+            'w-full overflow-hidden rounded-[16px] border border-header-border bg-surface-elevated shadow-lg',
             'animate-[locale-dropdown-in_var(--duration-base)_var(--ease-out-premium)]',
           )}
         >
-          <div className="border-b border-header-border p-2">
+          <div className="border-b border-header-border p-2.5">
             <div className="relative">
               <Search
                 className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-ink-muted"
@@ -128,7 +133,7 @@ export const LocationSearchSelect = ({
                 placeholder={labels.search}
                 aria-label={labels.search}
                 className={cn(
-                  'h-10 w-full rounded-sm border border-border bg-surface-elevated pl-9 pr-3',
+                  'h-10 w-full rounded-[12px] border border-border bg-surface pl-9 pr-3',
                   'text-sm text-ink outline-none placeholder:text-ink-muted',
                   'focus-visible:border-brand focus-visible:ring-2 focus-visible:ring-brand/20',
                 )}
