@@ -99,6 +99,8 @@ export type {
   UpdateCompanyRequest,
 } from './companies.js';
 
+export type { AdminUserListItem, AdminUserListResponse } from './admin-users.js';
+
 export type {
   BulkCreatePortalApartmentsRequest,
   CreatePortalApartmentRequest,

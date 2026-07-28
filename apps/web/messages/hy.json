@@ -1116,6 +1116,7 @@
       "portalLabel": "Կառավարման պորտալ",
       "analytics": "Վերլուծություն",
       "companies": "Ընկերություններ",
+      "users": "Օգտատերեր",
       "projects": "Նախագծեր",
       "buildings": "Շենք",
       "floors": "Հարկ",
@@ -1272,6 +1273,45 @@
         "breadcrumbCompanies": "Ընկերություններ",
         "breadcrumbCatalog": "Կատալոգ",
         "companyFallback": "Ընկերություն"
+      }
+    },
+    "users": {
+      "title": "Օգտատերեր",
+      "subtitle": "{count, plural, =0 {Օգտատերեր չկան} one {# օգտատեր} other {# օգտատեր}}",
+      "empty": "Այս ֆիլտրերով օգտատերեր չկան։",
+      "loading": "Բեռնվում է…",
+      "error": "Չհաջողվեց բեռնել օգտատերերին։ Կրկին փորձեք։",
+      "filters": {
+        "accountType": "Հաշվի տեսակ",
+        "allAccountTypes": "Բոլոր տեսակները",
+        "status": "Կարգավիճակ",
+        "allStatuses": "Բոլոր կարգավիճակները",
+        "searchPlaceholder": "Որոնել անունով, email-ով կամ հեռախոսով"
+      },
+      "columns": {
+        "name": "Անուն",
+        "email": "Email",
+        "accountType": "Տեսակ",
+        "company": "Ընկերություն",
+        "status": "Կարգավիճակ",
+        "createdAt": "Ստեղծված"
+      },
+      "accountTypes": {
+        "buyer": "Գնորդ",
+        "platform_admin": "Պլատֆորմի ադմին",
+        "entrance_staff": "Մուտքի աշխատակից",
+        "company_member": "Ընկերության անդամ"
+      },
+      "statuses": {
+        "invited": "Հրավիրված",
+        "active": "Ակտիվ",
+        "inactive": "Ոչ ակտիվ",
+        "blocked": "Արգելափակված"
+      },
+      "pagination": {
+        "previous": "Նախորդ",
+        "next": "Հաջորդ",
+        "ariaLabel": "Էջավորում"
       }
     },
     "projects": {

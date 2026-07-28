@@ -16,6 +16,7 @@ import {
   ScanLine,
   Settings,
   Tags,
+  Users,
   Workflow,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
@@ -28,6 +29,7 @@ import { cn } from '@/shared/ui/cn';
 type NavItemKey =
   | 'analytics'
   | 'companies'
+  | 'users'
   | 'projects'
   | 'buildings'
   | 'floors'
@@ -70,6 +72,7 @@ const SETTINGS_CHILD_NAV_ITEMS: NavItem[] = [{ href: BOS_HREF, key: 'bos', icon:
 const PRIMARY_NAV_ITEMS: NavItem[] = [
   { href: '/admin/analytics', key: 'analytics', icon: LineChart },
   { href: '/admin/companies', key: 'companies', icon: Building2 },
+  { href: '/admin/users', key: 'users', icon: Users },
   {
     href: PROJECTS_HREF,
     key: 'projects',

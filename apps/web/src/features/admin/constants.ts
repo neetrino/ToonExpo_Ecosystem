@@ -17,6 +17,16 @@ export const COMPANY_STATUSES = ['active', 'inactive', 'pending'] as const;
 /** TanStack Query keys for platform admin companies. */
 export const ADMIN_COMPANIES_QUERY_KEY = ['admin', 'companies'] as const;
 
+export const ADMIN_USERS_QUERY_KEY = ['admin', 'users'] as const;
+
+export const adminUsersQueryKey = (params: {
+  page: number;
+  pageSize: number;
+  accountType?: string;
+  status?: string;
+  search?: string;
+}) => [...ADMIN_USERS_QUERY_KEY, params] as const;
+
 export const ADMIN_CRM_DEALS_QUERY_KEY = ['admin', 'crm', 'deals'] as const;
 
 export const adminCrmDealQueryKey = (id: string) => [...ADMIN_CRM_DEALS_QUERY_KEY, id] as const;
@@ -102,6 +112,7 @@ export const BOS_PROVISIONING_STATUSES = [
 /** localStorage keys for admin list/cards view preference. */
 export const ADMIN_VIEW_MODE_KEYS = {
   companies: 'admin-companies',
+  users: 'admin-users',
   projects: 'admin-projects',
   buildings: 'admin-buildings',
   floors: 'admin-floors',

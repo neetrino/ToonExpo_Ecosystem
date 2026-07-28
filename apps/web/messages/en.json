@@ -1116,6 +1116,7 @@
       "portalLabel": "Management portal",
       "analytics": "Analytics",
       "companies": "Companies",
+      "users": "Users",
       "projects": "Projects",
       "buildings": "Building",
       "floors": "Floor",
@@ -1272,6 +1273,45 @@
         "breadcrumbCompanies": "Companies",
         "breadcrumbCatalog": "Catalog",
         "companyFallback": "Company"
+      }
+    },
+    "users": {
+      "title": "Users",
+      "subtitle": "{count, plural, =0 {No users} one {# user} other {# users}}",
+      "empty": "No users match these filters.",
+      "loading": "Loading users…",
+      "error": "Could not load users. Try again.",
+      "filters": {
+        "accountType": "Account type",
+        "allAccountTypes": "All types",
+        "status": "Status",
+        "allStatuses": "All statuses",
+        "searchPlaceholder": "Search by name, email, or phone"
+      },
+      "columns": {
+        "name": "Name",
+        "email": "Email",
+        "accountType": "Type",
+        "company": "Company",
+        "status": "Status",
+        "createdAt": "Created"
+      },
+      "accountTypes": {
+        "buyer": "Buyer",
+        "platform_admin": "Platform admin",
+        "entrance_staff": "Entrance staff",
+        "company_member": "Company member"
+      },
+      "statuses": {
+        "invited": "Invited",
+        "active": "Active",
+        "inactive": "Inactive",
+        "blocked": "Blocked"
+      },
+      "pagination": {
+        "previous": "Previous",
+        "next": "Next",
+        "ariaLabel": "Pagination"
       }
     },
     "projects": {
