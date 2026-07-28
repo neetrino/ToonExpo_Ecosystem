@@ -109,7 +109,7 @@
   --duration-base: 240ms;
   --duration-slow: 400ms;
 
-  /* Z-index scale — portaled dropdowns sit above chrome/modals, under toasts */
+  /* Z-index scale — bottom nav sits above all overlays; toasts under nav */
   --z-base: 0;
   --z-sticky: 30;
   --z-header: 100;
@@ -118,6 +118,7 @@
   --z-modal: 140;
   --z-dropdown: 160;
   --z-toast: 170;
+  --z-bottom-nav: 180;
 }
 
 @keyframes locale-dropdown-in {

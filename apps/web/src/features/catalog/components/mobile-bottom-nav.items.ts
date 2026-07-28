@@ -1,4 +1,13 @@
-import { FolderKanban, ScanLine, type LucideIcon } from 'lucide-react';
+import {
+  Building2,
+  Calculator,
+  FolderKanban,
+  Home,
+  Map,
+  ScanLine,
+  UserRound,
+  type LucideIcon,
+} from 'lucide-react';
 
 import { isBuilderPortalPath } from '@/shared/ui/account-mobile-nav-controller';
 
@@ -11,8 +20,7 @@ export type BottomNavItem = {
   id: BottomNavId;
   href: string;
   labelKey: BottomNavLabelKey;
-  iconClass?: string;
-  Icon?: LucideIcon;
+  Icon: LucideIcon;
   match: (pathname: string) => boolean;
   /** Opens overlay instead of navigating (builder scanner). */
   opensSheet?: boolean;
@@ -56,9 +64,6 @@ const isBuilderProductPath = (pathname: string): boolean =>
 const isBuilderProfilePath = (pathname: string): boolean =>
   isBuilderPortalPath(pathname) && !isBuilderScannerPath(pathname);
 
-const maskIcon = (file: string, sizeClass: string): string =>
-  `${sizeClass} [mask-image:url(/icons/bottom-nav/${file})] [-webkit-mask-image:url(/icons/bottom-nav/${file})]`;
-
 export const buildPublicNavItems = (
   profileHref: string,
   isProfileActive: boolean,
@@ -67,35 +72,35 @@ export const buildPublicNavItems = (
     id: 'home',
     href: '/',
     labelKey: 'home',
-    iconClass: maskIcon('home.webp', 'size-8'),
+    Icon: Home,
     match: isHomePath,
   },
   {
     id: 'expoMap',
     href: '/expo',
     labelKey: 'expoMap',
-    iconClass: maskIcon('map.webp', 'size-7'),
+    Icon: Map,
     match: isMapPath,
   },
   {
     id: 'builders',
     href: '/builders',
     labelKey: 'builders',
-    iconClass: maskIcon('builders.webp', 'size-7'),
+    Icon: Building2,
     match: isBuildersPath,
   },
   {
     id: 'profile',
     href: profileHref,
     labelKey: 'profile',
-    iconClass: maskIcon('profile.webp', 'size-6'),
+    Icon: UserRound,
     match: () => isProfileActive,
   },
   {
     id: 'mortgage',
     href: '/mortgage',
     labelKey: 'mortgage',
-    iconClass: maskIcon('calculator.webp', 'size-7'),
+    Icon: Calculator,
     match: isMortgagePath,
   },
 ];
@@ -105,7 +110,7 @@ export const BUILDER_NAV_ITEMS: BottomNavItem[] = [
     id: 'home',
     href: '/',
     labelKey: 'home',
-    iconClass: maskIcon('home.webp', 'size-8'),
+    Icon: Home,
     match: isHomePath,
   },
   {
@@ -127,7 +132,7 @@ export const BUILDER_NAV_ITEMS: BottomNavItem[] = [
     id: 'profile',
     href: '/builder',
     labelKey: 'profile',
-    iconClass: maskIcon('profile.webp', 'size-6'),
+    Icon: UserRound,
     match: isBuilderProfilePath,
   },
 ];

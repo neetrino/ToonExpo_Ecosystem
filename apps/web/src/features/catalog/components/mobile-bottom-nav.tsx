@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 import { useMeQuery } from '@/features/auth/hooks/use-auth';
 import { BuilderScannerSheet } from '@/features/builder/components/builder-scanner-sheet';
@@ -15,6 +16,7 @@ import {
 import { Link, usePathname } from '@/i18n/navigation';
 import { isBuilderPortalPath } from '@/shared/ui/account-mobile-nav-controller';
 import { cn } from '@/shared/ui/cn';
+import { getOverlayPortalHost } from '@/shared/ui/overlay-portal-host';
 
 /** Figma bar fill — no matching design token yet. */
 const BAR_SURFACE_CLASS = 'bg-[#171717]';
@@ -24,9 +26,6 @@ const BAR_PAD_CLASS = 'p-2';
 const THUMB_INSET_CLASS = 'top-2 left-2';
 /** Slightly slower than base switchers so the thumb glide reads clearly. */
 const THUMB_SLIDE_DURATION_MS = 420;
-
-const ICON_MASK_BASE =
-  'block shrink-0 bg-current [mask-size:contain] [mask-repeat:no-repeat] [mask-position:center] [-webkit-mask-size:contain] [-webkit-mask-repeat:no-repeat] [-webkit-mask-position:center]';
 
 /**
  * Sliding thumb offsets — same pattern as ViewModeToggle / AnalyticsDateRangeFilter.
@@ -53,16 +52,12 @@ type NavItemIconProps = {
 
 const NavItemIcon = ({ item }: NavItemIconProps) => {
   const Icon = item.Icon;
-  if (Icon) {
-    return <Icon className="size-6" strokeWidth={1.75} aria-hidden />;
-  }
-  return <span aria-hidden className={cn(ICON_MASK_BASE, item.iconClass)} />;
+  return <Icon className="size-6" strokeWidth={1.75} aria-hidden />;
 };
 
 /**
  * Mobile-only floating bottom navigation (Figma node 134:119).
- * Builder accounts: Home / Scanner / Product / Profile (all pages).
- * Scanner opens a bottom sheet; nav stays above it (`--z-sheet` > `--z-overlay`).
+ * Portaled at `--z-bottom-nav` so it stays above sheets, modals, and overlays.
  */
 export const MobileBottomNav = () => {
   const t = useTranslations('Nav');
@@ -70,6 +65,7 @@ export const MobileBottomNav = () => {
   const { data: me } = useMeQuery();
   const [pendingId, setPendingId] = useState<BottomNavId | null>(null);
   const [scannerOpen, setScannerOpen] = useState(false);
+  const [host, setHost] = useState<HTMLElement | null>(null);
   const isBuilder = me?.companyType === 'builder';
   const profileHref = isBuilder ? '/builder' : me ? '/dashboard' : '/auth/login';
   const isProfileActive = isBuilder
@@ -89,6 +85,10 @@ export const MobileBottomNav = () => {
   const hasActive = activeIndex >= 0;
 
   useEffect(() => {
+    setHost(getOverlayPortalHost());
+  }, []);
+
+  useEffect(() => {
     setPendingId(null);
     setScannerOpen(false);
   }, [pathname]);
@@ -98,84 +98,87 @@ export const MobileBottomNav = () => {
     setPendingId(null);
   };
 
-  return (
-    <>
-      <nav
-        aria-label={t('bottomNav')}
+  const nav = (
+    <nav
+      aria-label={t('bottomNav')}
+      className={cn(
+        'pointer-events-none fixed inset-x-0 bottom-0 z-[var(--z-bottom-nav)] lg:hidden',
+        'flex justify-center',
+        'pb-[max(0.5rem,env(safe-area-inset-bottom,0px))] pt-2',
+      )}
+    >
+      <div
         className={cn(
-          'pointer-events-none fixed inset-x-0 bottom-0 z-[var(--z-sheet)] lg:hidden',
-          'flex justify-center',
-          'pb-[max(0.5rem,env(safe-area-inset-bottom,0px))] pt-2',
+          'pointer-events-auto relative flex w-fit max-w-[calc(100%-1.5rem)] items-center',
+          ITEM_GAP_CLASS,
+          BAR_PAD_CLASS,
+          'rounded-full',
+          BAR_SURFACE_CLASS,
         )}
       >
-        <div
-          className={cn(
-            'pointer-events-auto relative flex w-fit max-w-[calc(100%-1.5rem)] items-center',
-            ITEM_GAP_CLASS,
-            BAR_PAD_CLASS,
-            'rounded-full',
-            BAR_SURFACE_CLASS,
-          )}
-        >
-          {hasActive ? (
-            <span
-              aria-hidden
-              className={cn(
-                'pointer-events-none absolute rounded-full bg-brand-secondary',
-                THUMB_INSET_CLASS,
-                BUTTON_SIZE_CLASS,
-                'transition-transform duration-[var(--bottom-nav-thumb-ms)] ease-[var(--ease-out-premium)]',
-                'motion-reduce:transition-none',
-                THUMB_TRANSLATE_BY_INDEX[activeIndex],
-              )}
-              style={{
-                ['--bottom-nav-thumb-ms' as string]: `${THUMB_SLIDE_DURATION_MS}ms`,
-              }}
-            />
-          ) : null}
+        {hasActive ? (
+          <span
+            aria-hidden
+            className={cn(
+              'pointer-events-none absolute rounded-full bg-brand-secondary',
+              THUMB_INSET_CLASS,
+              BUTTON_SIZE_CLASS,
+              'transition-transform duration-[var(--bottom-nav-thumb-ms)] ease-[var(--ease-out-premium)]',
+              'motion-reduce:transition-none',
+              THUMB_TRANSLATE_BY_INDEX[activeIndex],
+            )}
+            style={{
+              ['--bottom-nav-thumb-ms' as string]: `${THUMB_SLIDE_DURATION_MS}ms`,
+            }}
+          />
+        ) : null}
 
-          {items.map((item, index) => {
-            const isActive = index === activeIndex;
-            const label = t(item.labelKey);
-            const activeClass = isActive ? 'text-white' : 'bg-white text-brand-secondary';
+        {items.map((item, index) => {
+          const isActive = index === activeIndex;
+          const label = t(item.labelKey);
+          const activeClass = isActive ? 'text-white' : 'bg-white text-brand-secondary';
 
-            if (item.opensSheet) {
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  aria-label={label}
-                  aria-expanded={scannerOpen}
-                  onClick={() => {
-                    setPendingId(item.id);
-                    setScannerOpen((open) => !open);
-                  }}
-                  className={cn(NAV_BUTTON_CLASS, activeClass)}
-                >
-                  <NavItemIcon item={item} />
-                </button>
-              );
-            }
-
+          if (item.opensSheet) {
             return (
-              <Link
+              <button
                 key={item.id}
-                href={item.href}
+                type="button"
                 aria-label={label}
-                aria-current={isActive ? 'page' : undefined}
+                aria-expanded={scannerOpen}
                 onClick={() => {
-                  setScannerOpen(false);
                   setPendingId(item.id);
+                  setScannerOpen((open) => !open);
                 }}
                 className={cn(NAV_BUTTON_CLASS, activeClass)}
               >
                 <NavItemIcon item={item} />
-              </Link>
+              </button>
             );
-          })}
-        </div>
-      </nav>
+          }
 
+          return (
+            <Link
+              key={item.id}
+              href={item.href}
+              aria-label={label}
+              aria-current={isActive ? 'page' : undefined}
+              onClick={() => {
+                setScannerOpen(false);
+                setPendingId(item.id);
+              }}
+              className={cn(NAV_BUTTON_CLASS, activeClass)}
+            >
+              <NavItemIcon item={item} />
+            </Link>
+          );
+        })}
+      </div>
+    </nav>
+  );
+
+  return (
+    <>
+      {host ? createPortal(nav, host) : null}
       {isBuilder ? <BuilderScannerSheet open={scannerOpen} onClose={closeScanner} /> : null}
     </>
   );

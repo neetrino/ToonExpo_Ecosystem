@@ -204,7 +204,7 @@ export const BuilderMobileStack = ({
         </div>
       </div>
 
-      <div className="relative z-[var(--z-sheet)] md:hidden">
+      <div className="md:hidden">
         <MobileBottomNav />
       </div>
     </BuilderMobileStackProvider>

@@ -24,7 +24,7 @@ type BuilderScannerSheetProps = {
 };
 
 /**
- * Bottom sheet QR scanner — sits under the mobile bottom nav (`--z-overlay`).
+ * Bottom sheet QR scanner — sits under the mobile bottom nav (`--z-bottom-nav`).
  */
 export const BuilderScannerSheet = ({ open, onClose }: BuilderScannerSheetProps) => {
   const t = useTranslations('Builder.scanner');
