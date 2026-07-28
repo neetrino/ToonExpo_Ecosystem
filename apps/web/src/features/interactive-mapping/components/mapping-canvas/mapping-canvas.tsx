@@ -85,6 +85,8 @@ type MappingCanvasProps = {
   toolPreset?: 'basic' | 'floors';
   /** Auto-stack assigns paths to all entities (index 0 = bottom floor). */
   onBulkPaths?: (updates: MappingBulkPathUpdate[]) => void;
+  /** Override default viewport box classes (e.g. fullscreen editor). */
+  viewportClassName?: string;
 };
 
 export const MappingCanvas = forwardRef<MappingCanvasHandle, MappingCanvasProps>(
@@ -102,6 +104,7 @@ export const MappingCanvas = forwardRef<MappingCanvasHandle, MappingCanvasProps>
       onPolygonClosed,
       onPolygonDeleted,
       toolPreset = 'basic',
+      viewportClassName,
       onBulkPaths,
     },
     ref,
@@ -773,7 +776,10 @@ export const MappingCanvas = forwardRef<MappingCanvasHandle, MappingCanvasProps>
 
         <div
           ref={viewportRef}
-          className="relative h-[min(70dvh,720px)] w-full cursor-crosshair touch-none select-none overflow-hidden border border-border bg-[hsl(var(--muted))]"
+          className={
+            viewportClassName ??
+            'relative h-[min(70dvh,720px)] w-full cursor-crosshair touch-none select-none overflow-hidden border border-border bg-[hsl(var(--muted))]'
+          }
           onClick={onCanvasClick}
           onDragStart={(event) => event.preventDefault()}
           onPointerMove={(event) => {

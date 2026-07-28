@@ -1,25 +1,15 @@
 'use client';
 
-import type { PortalVisualHotspotItem, VisualHotspotTargetType } from '@toonexpo/contracts';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import type { VisualHotspotTargetType } from '@toonexpo/contracts';
+import { Maximize2 } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
 
-import {
-  createAdminVisualHotspot,
-  deleteAdminVisualHotspot,
-  updateAdminVisualHotspot,
-} from '../../api/interactive-mapping-api';
-import {
-  hotspotToMappingCoords,
-  toCreateHotspotBody,
-  toUpdateHotspotBody,
-} from '../../utils/hotspot-geometry';
-import {
-  MappingCanvas,
-  type MappingBulkPathUpdate,
-  type MappingCanvasHandle,
-  type MappingEntity,
-} from '../mapping-canvas/mapping-canvas';
+import { Button } from '@/shared/ui/button';
+
+import { useMappingEditorState } from '../../hooks/use-mapping-editor-state';
+import { MappingCanvas, type MappingCanvasHandle } from '../mapping-canvas/mapping-canvas';
 import { MappingEntitySidebar, type MappingEditorEntity } from './mapping-entity-sidebar';
+import { MappingFullscreenWorkspace } from './mapping-fullscreen-workspace';
 
 export type { MappingEditorEntity };
 
@@ -38,18 +28,15 @@ export type MappingEditorShellProps = {
   onAfterSave?: (() => void) | undefined;
 };
 
-const mergeHotspot = (
-  entity: MappingEditorEntity,
-  hotspot: PortalVisualHotspotItem,
-): MappingEditorEntity => ({
-  ...entity,
-  hotspotId: hotspot.id,
-  ...hotspotToMappingCoords(hotspot),
-  label: hotspot.label || entity.label,
-});
+const DEFAULT_VIEWPORT_CLASS =
+  'relative h-[min(70dvh,720px)] w-full cursor-crosshair touch-none select-none overflow-hidden border border-border bg-muted';
+
+const FULLSCREEN_VIEWPORT_CLASS =
+  'relative h-[calc(100dvh-5.5rem)] w-full cursor-crosshair touch-none select-none overflow-hidden border border-border bg-muted';
 
 /**
  * Shared MappingCanvas + entity list with Nest hotspot persistence.
+ * Fullscreen mode hides admin chrome; Save still persists to Nest.
  */
 export const MappingEditorShell = ({
   companyId,
@@ -66,201 +53,116 @@ export const MappingEditorShell = ({
   onAfterSave,
 }: MappingEditorShellProps) => {
   const canvasRef = useRef<MappingCanvasHandle>(null);
-  const entitiesRef = useRef(initialEntities);
-  const [entities, setEntities] = useState(initialEntities);
-  const [selectedId, setSelectedId] = useState<string | null>(initialEntities[0]?.id ?? null);
-  const [dirtyIds, setDirtyIds] = useState<Set<string>>(new Set());
-  const [pending, setPending] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
-  entitiesRef.current = entities;
+  const [fullscreen, setFullscreen] = useState(false);
+  const [portalReady, setPortalReady] = useState(false);
+  const editor = useMappingEditorState({
+    companyId,
+    canvasId,
+    targetType,
+    initialEntities,
+    onAfterSave,
+  });
 
-  const selected = useMemo(
-    () => entities.find((item) => item.id === selectedId) ?? null,
-    [entities, selectedId],
+  useEffect(() => {
+    setPortalReady(true);
+  }, []);
+
+  useEffect(() => {
+    if (!fullscreen) {
+      return;
+    }
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setFullscreen(false);
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, [fullscreen]);
+
+  const canvas = (
+    <MappingCanvas
+      ref={canvasRef}
+      toolPreset={toolPreset}
+      imageUrl={imageUrl}
+      imageWidth={imageWidth}
+      imageHeight={imageHeight}
+      viewBoxWidth={viewBoxWidth}
+      viewBoxHeight={viewBoxHeight}
+      entities={editor.entities}
+      selectedId={editor.selectedId}
+      onSelect={editor.setSelectedId}
+      onChangeEntity={editor.onChangeEntity}
+      onPolygonClosed={editor.onPolygonClosed}
+      onPolygonDeleted={editor.onPolygonDeleted}
+      viewportClassName={fullscreen ? FULLSCREEN_VIEWPORT_CLASS : DEFAULT_VIEWPORT_CLASS}
+      {...(toolPreset === 'floors' ? { onBulkPaths: editor.onBulkPaths } : {})}
+    />
   );
 
-  const persistEntity = useCallback(
-    async (item: MappingEditorEntity, note: string) => {
-      setPending(true);
-      setMessage(null);
-      try {
-        const geometry = {
-          markerX: item.markerX,
-          markerY: item.markerY,
-          svgPath: item.svgPath,
-        };
-        const hotspot = item.hotspotId
-          ? await updateAdminVisualHotspot(
-              companyId,
-              canvasId,
-              item.hotspotId,
-              toUpdateHotspotBody(geometry, item.label),
-            )
-          : await createAdminVisualHotspot(
-              companyId,
-              canvasId,
-              toCreateHotspotBody({
-                targetType,
-                targetId: item.id,
-                label: item.label || item.title,
-                geometry,
-              }),
-            );
-        const merged = mergeHotspot(item, hotspot);
-        setEntities((prev) => prev.map((row) => (row.id === item.id ? merged : row)));
-        setDirtyIds((prev) => {
-          const next = new Set(prev);
-          next.delete(item.id);
-          return next;
-        });
-        setMessage(note);
-        onAfterSave?.();
-      } catch (error) {
-        setMessage(error instanceof Error ? error.message : 'Save failed');
-      } finally {
-        setPending(false);
-      }
-    },
-    [canvasId, companyId, onAfterSave, targetType],
+  const sidebar = (
+    <MappingEntitySidebar
+      listTitle={listTitle}
+      entities={editor.entities}
+      selectedId={editor.selectedId}
+      dirtyIds={editor.dirtyIds}
+      pending={editor.pending}
+      message={editor.message}
+      onSelect={editor.setSelectedId}
+      onLabelChange={editor.onLabelChange}
+      onSave={() => {
+        void editor.onSave(
+          () => canvasRef.current?.flushPolygonDraft() ?? null,
+          () => canvasRef.current?.hasOpenDraft() ?? false,
+        );
+      }}
+      onClear={() => {
+        void editor.onClear();
+      }}
+    />
   );
-
-  const onChangeEntity = (
-    id: string,
-    patch: Partial<Pick<MappingEntity, 'markerX' | 'markerY' | 'svgPath'>>,
-  ) => {
-    setEntities((prev) => prev.map((item) => (item.id === id ? { ...item, ...patch } : item)));
-    setDirtyIds((prev) => new Set(prev).add(id));
-  };
-
-  const onPolygonClosed = (id: string, svgPath: string) => {
-    const current = entitiesRef.current.find((item) => item.id === id);
-    if (!current) {
-      return;
-    }
-    const next = { ...current, svgPath };
-    setEntities((prev) => prev.map((item) => (item.id === id ? next : item)));
-    void persistEntity(next, 'Saved');
-  };
-
-  const onPolygonDeleted = (id: string) => {
-    const current = entitiesRef.current.find((item) => item.id === id);
-    if (!current) {
-      return;
-    }
-    const next = { ...current, svgPath: null };
-    setEntities((prev) => prev.map((item) => (item.id === id ? next : item)));
-    void persistEntity(next, 'Polygon cleared');
-  };
-
-  const onBulkPaths = (updates: MappingBulkPathUpdate[]) => {
-    const byId = new Map(updates.map((item) => [item.id, item]));
-    const nextEntities = entitiesRef.current.map((item) => {
-      const update = byId.get(item.id);
-      if (!update) {
-        return item;
-      }
-      return {
-        ...item,
-        svgPath: update.svgPath,
-        markerX: update.markerX,
-        markerY: update.markerY,
-      };
-    });
-    setEntities(nextEntities);
-    setDirtyIds(new Set());
-    void (async () => {
-      setPending(true);
-      try {
-        for (const item of nextEntities) {
-          if (byId.has(item.id)) {
-            await persistEntity(item, '');
-          }
-        }
-        setMessage(`Saved ${updates.length}`);
-        onAfterSave?.();
-      } finally {
-        setPending(false);
-      }
-    })();
-  };
-
-  const onSave = async () => {
-    if (!selected) {
-      return;
-    }
-    if (canvasRef.current?.hasOpenDraft()) {
-      const flushed = canvasRef.current.flushPolygonDraft();
-      if (flushed) {
-        return;
-      }
-      setMessage('Draw at least one point first');
-      return;
-    }
-    const latest = entitiesRef.current.find((item) => item.id === selected.id) ?? selected;
-    await persistEntity(latest, 'Saved');
-  };
-
-  const onClear = async () => {
-    if (!selected?.hotspotId || !window.confirm('Remove mapping for this entity?')) {
-      return;
-    }
-    setPending(true);
-    try {
-      await deleteAdminVisualHotspot(companyId, canvasId, selected.hotspotId);
-      const cleared = {
-        ...selected,
-        hotspotId: null,
-        markerX: null,
-        markerY: null,
-        svgPath: null,
-      };
-      setEntities((prev) => prev.map((item) => (item.id === selected.id ? cleared : item)));
-      setMessage('Cleared');
-      onAfterSave?.();
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'Delete failed');
-    } finally {
-      setPending(false);
-    }
-  };
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
-      <MappingEntitySidebar
-        listTitle={listTitle}
-        entities={entities}
-        selectedId={selectedId}
-        dirtyIds={dirtyIds}
-        pending={pending}
-        message={message}
-        onSelect={setSelectedId}
-        onLabelChange={(id, label) => {
-          setEntities((prev) => prev.map((item) => (item.id === id ? { ...item, label } : item)));
-          setDirtyIds((prev) => new Set(prev).add(id));
-        }}
-        onSave={() => {
-          void onSave();
-        }}
-        onClear={() => {
-          void onClear();
-        }}
+    <>
+      <div className="mb-3 flex flex-wrap items-center justify-end gap-2">
+        <Button type="button" size="sm" variant="secondary" onClick={() => setFullscreen(true)}>
+          <Maximize2 className="size-4" aria-hidden />
+          Open fullscreen map
+        </Button>
+      </div>
+      {!fullscreen ? (
+        <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
+          {sidebar}
+          <div className="relative min-w-0 space-y-2">
+            <button
+              type="button"
+              className="absolute right-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-sm border border-border bg-background/95 px-2.5 py-1.5 text-xs text-ink shadow-sm hover:bg-surface"
+              onClick={() => setFullscreen(true)}
+            >
+              <Maximize2 className="size-3.5" aria-hidden />
+              Fullscreen
+            </button>
+            {canvas}
+          </div>
+        </div>
+      ) : (
+        <p className="rounded-sm border border-border bg-surface px-3 py-2 text-sm text-ink-muted">
+          Mapping workspace is open in fullscreen. Close it to return here — saves already
+          persisted.
+        </p>
+      )}
+      <MappingFullscreenWorkspace
+        open={fullscreen}
+        portalReady={portalReady}
+        sidebar={sidebar}
+        canvas={canvas}
+        onClose={() => setFullscreen(false)}
       />
-      <MappingCanvas
-        ref={canvasRef}
-        toolPreset={toolPreset}
-        imageUrl={imageUrl}
-        imageWidth={imageWidth}
-        imageHeight={imageHeight}
-        viewBoxWidth={viewBoxWidth}
-        viewBoxHeight={viewBoxHeight}
-        entities={entities}
-        selectedId={selectedId}
-        onSelect={setSelectedId}
-        onChangeEntity={onChangeEntity}
-        onPolygonClosed={onPolygonClosed}
-        onPolygonDeleted={onPolygonDeleted}
-        {...(toolPreset === 'floors' ? { onBulkPaths } : {})}
-      />
-    </div>
+    </>
   );
 };

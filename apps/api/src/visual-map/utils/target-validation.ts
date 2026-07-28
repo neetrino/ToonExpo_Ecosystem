@@ -48,11 +48,18 @@ export const validateHotspotTarget = async (
         id: input.targetId,
         projectId: input.projectId,
         project: { builderCompanyId: input.companyId },
-        ...(input.contextType === 'district' ? { districtId: input.contextId } : {}),
       },
-      select: { publicationStatus: true },
+      select: { publicationStatus: true, districtId: true },
     });
     if (!building) {
+      throw entityNotFound('Building');
+    }
+    // District canvases: allow unassigned buildings (auto-linked on save) or same district.
+    if (
+      input.contextType === 'district' &&
+      building.districtId != null &&
+      building.districtId !== input.contextId
+    ) {
       throw entityNotFound('Building');
     }
     return building;

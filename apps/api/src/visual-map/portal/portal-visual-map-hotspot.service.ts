@@ -42,6 +42,17 @@ export class PortalVisualMapHotspotService {
       targetId: dto.targetId,
     });
 
+    if (canvas.contextType === 'district' && dto.targetType === 'building') {
+      await this.prisma.db.building.updateMany({
+        where: {
+          id: dto.targetId,
+          projectId: canvas.projectId,
+          districtId: null,
+        },
+        data: { districtId: canvas.contextId },
+      });
+    }
+
     const hotspot = await this.prisma.db.visualHotspot.create({
       data: {
         canvasId,
@@ -103,6 +114,17 @@ export class PortalVisualMapHotspotService {
         targetType: nextTargetType,
         targetId: nextTargetId,
       });
+
+      if (canvas.contextType === 'district' && nextTargetType === 'building') {
+        await this.prisma.db.building.updateMany({
+          where: {
+            id: nextTargetId,
+            projectId: canvas.projectId,
+            districtId: null,
+          },
+          data: { districtId: canvas.contextId },
+        });
+      }
     }
 
     const hotspot = await this.prisma.db.visualHotspot.update({

@@ -151,7 +151,11 @@ export const PhaseWizardPage = ({ projectId }: PhaseWizardPageProps) => {
               nameLabel={t('forms.name')}
               namePlaceholder={t('forms.buildingPlaceholder')}
               onSubmit={async (name) => {
-                await createPortalBuilding(project.id, { name }, { scope });
+                await createPortalBuilding(
+                  project.id,
+                  { name, districtId: primaryDistrict.id },
+                  { scope },
+                );
                 invalidate();
               }}
             />
