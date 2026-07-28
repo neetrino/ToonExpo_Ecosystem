@@ -4,6 +4,13 @@ import { Check, Search } from 'lucide-react';
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 
 import { HeroFilterTrigger } from '@/features/catalog/components/hero-filter-trigger';
+import {
+  HERO_FILTER_CHECK_CLASS,
+  HERO_FILTER_OPTION_BASE_CLASS,
+  HERO_FILTER_PANEL_CLASS,
+  HERO_FILTER_SEARCH_INPUT_CLASS,
+  heroFilterOptionStateClass,
+} from '@/features/catalog/components/hero-filter-menu-styles';
 import { blurActiveElementAfterEscClose } from '@/shared/ui/blur-active-element';
 import { cn } from '@/shared/ui/cn';
 import { DropdownPortal } from '@/shared/ui/dropdown-portal';
@@ -32,8 +39,8 @@ const normalize = (value: string): string => value.trim().toLocaleLowerCase();
 const SelectionMark = ({ checked }: { checked: boolean }) => (
   <span
     className={cn(
-      'inline-flex size-4 shrink-0 items-center justify-center rounded-[4px] border',
-      checked ? 'border-brand bg-brand text-white' : 'border-border bg-surface-elevated',
+      HERO_FILTER_CHECK_CLASS.box,
+      checked ? HERO_FILTER_CHECK_CLASS.checked : HERO_FILTER_CHECK_CLASS.unchecked,
     )}
     aria-hidden
   >
@@ -165,14 +172,14 @@ export const LocationSearchSelect = ({
         <div
           ref={panelRef}
           className={cn(
-            'w-full overflow-hidden rounded-[16px] border border-header-border bg-surface-elevated shadow-lg',
+            HERO_FILTER_PANEL_CLASS,
             'animate-[locale-dropdown-in_var(--duration-base)_var(--ease-out-premium)]',
           )}
         >
-          <div className="border-b border-header-border p-2.5">
+          <div className="border-b border-header-border bg-canvas/80 p-2.5">
             <div className="relative">
               <Search
-                className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-ink-muted"
+                className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-header-muted"
                 aria-hidden
               />
               <input
@@ -181,11 +188,7 @@ export const LocationSearchSelect = ({
                 value={query}
                 placeholder={labels.search}
                 aria-label={labels.search}
-                className={cn(
-                  'h-10 w-full rounded-[12px] border border-border bg-surface pl-9 pr-3',
-                  'text-sm text-ink outline-none placeholder:text-ink-muted',
-                  'focus-visible:border-brand focus-visible:ring-2 focus-visible:ring-brand/20',
-                )}
+                className={HERO_FILTER_SEARCH_INPUT_CLASS}
                 onChange={(event) => setQuery(event.target.value)}
                 onKeyDown={(event) => {
                   if (event.key === 'Enter') {
@@ -209,13 +212,7 @@ export const LocationSearchSelect = ({
                 type="button"
                 role="option"
                 aria-selected={isAny}
-                className={cn(
-                  'flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm',
-                  'transition-colors duration-[var(--duration-base)]',
-                  isAny
-                    ? 'bg-brand-soft font-semibold text-brand-deep'
-                    : 'font-medium text-ink hover:bg-surface',
-                )}
+                className={cn(HERO_FILTER_OPTION_BASE_CLASS, heroFilterOptionStateClass(isAny))}
                 onMouseDown={(event) => {
                   event.preventDefault();
                 }}
@@ -237,11 +234,8 @@ export const LocationSearchSelect = ({
                     role="option"
                     aria-selected={active}
                     className={cn(
-                      'flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm',
-                      'transition-colors duration-[var(--duration-base)]',
-                      active
-                        ? 'bg-brand-soft font-semibold text-brand-deep'
-                        : 'font-medium text-ink hover:bg-surface',
+                      HERO_FILTER_OPTION_BASE_CLASS,
+                      heroFilterOptionStateClass(active),
                     )}
                     onMouseDown={(event) => {
                       event.preventDefault();
@@ -258,7 +252,7 @@ export const LocationSearchSelect = ({
               );
             })}
             {filtered.length === 0 ? (
-              <li className="px-3 py-2.5 text-sm text-ink-muted">{labels.empty}</li>
+              <li className="px-3 py-2.5 text-sm text-header-muted">{labels.empty}</li>
             ) : null}
           </ul>
         </div>

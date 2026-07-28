@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
 
 import { HeroFilterTrigger } from '@/features/catalog/components/hero-filter-trigger';
+import { HERO_FILTER_PANEL_CLASS } from '@/features/catalog/components/hero-filter-menu-styles';
 import { cn } from '@/shared/ui/cn';
 import { DropdownPortal } from '@/shared/ui/dropdown-portal';
 import { Input } from '@/shared/ui/input';
@@ -146,7 +147,8 @@ export const PriceRangeSelect = ({
           role="dialog"
           aria-label={labels.save}
           className={cn(
-            'w-full overflow-hidden rounded-[16px] border border-header-border bg-surface-elevated p-3 shadow-lg',
+            HERO_FILTER_PANEL_CLASS,
+            'p-3.5',
             'animate-[locale-dropdown-in_var(--duration-base)_var(--ease-out-premium)]',
           )}
         >
@@ -182,7 +184,7 @@ export const PriceRangeSelect = ({
           <button
             type="button"
             className={cn(
-              'mt-3 h-10 w-full rounded-[12px] bg-brand-deep px-4 text-sm font-semibold text-on-dark',
+              'mt-3.5 h-10 w-full rounded-[12px] bg-brand-deep px-4 text-sm font-semibold text-on-dark',
               'transition-colors hover:bg-brand-deep/90 focus-visible:outline-none',
               'focus-visible:ring-2 focus-visible:ring-brand-deep/30',
             )}
