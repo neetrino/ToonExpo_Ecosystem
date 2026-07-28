@@ -1,6 +1,6 @@
 'use client';
 
-import { type ReactNode, type RefObject, useEffect, useId, useRef } from 'react';
+import { type ReactNode, type RefObject, useEffect, useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslations } from 'next-intl';
 
@@ -10,6 +10,7 @@ import { isFloorPlanLightboxOpen } from '@/shared/ui/floor-plan-lightbox-stack';
 import { DrawerCloseTab } from '@/shared/ui/drawer-close-tab';
 import { cn } from '@/shared/ui/cn';
 import { MODAL_BACKDROP_CLASS_NAME } from '@/shared/ui/modal-backdrop';
+import { getOverlayPortalHost } from '@/shared/ui/overlay-portal-host';
 import { isTopSideSheetLevel, registerSideSheetLevel } from '@/shared/ui/side-sheet-escape-stack';
 import {
   SIDE_SHEET_BACKDROP_TRANSITION_MS,
@@ -87,7 +88,7 @@ const SideSheetPanel = ({
 
   return (
     <div
-      className={cn('fixed inset-0', visible ? '' : 'pointer-events-none')}
+      className={cn('fixed inset-x-0 top-0 h-fluid-screen', visible ? '' : 'pointer-events-none')}
       style={{ zIndex }}
       aria-hidden={!visible}
       role="presentation"
@@ -113,7 +114,7 @@ const SideSheetPanel = ({
       <div
         ref={panelRef}
         className={cn(
-          'fixed top-0 right-0 h-dvh max-h-dvh',
+          'absolute top-0 right-0 h-fluid-screen max-h-fluid-screen',
           isFixedMax
             ? 'w-full max-w-[var(--side-sheet-compact-max)]'
             : 'w-full max-md:max-w-none md:w-[var(--side-sheet-width)]',
@@ -180,7 +181,8 @@ const SideSheetPanel = ({
 };
 
 /**
- * Full-viewport overlay sheet — does not resize page content; slides over everything.
+ * Full-viewport overlay sheet — portals into `.desktop-fluid-stage` so desktop
+ * zoom matches the page (dropdowns / date pickers stay aligned).
  */
 export const SideSheet = ({
   open,
@@ -206,7 +208,12 @@ export const SideSheet = ({
   onCloseRef.current = onClose;
   const escapeEnabledRef = useRef(escapeEnabled);
   escapeEnabledRef.current = escapeEnabled;
+  const [host, setHost] = useState<HTMLElement | null>(null);
   const { rendered, visible } = useDrawerTransition(open, SIDE_SHEET_PANEL_TRANSITION_MS);
+
+  useEffect(() => {
+    setHost(getOverlayPortalHost());
+  }, []);
 
   useEffect(() => {
     if (!rendered) {
@@ -229,6 +236,9 @@ export const SideSheet = ({
       if (event.key !== 'Escape' || event.defaultPrevented) {
         return;
       }
+      if (!escapeEnabledRef.current) {
+        return;
+      }
       if (isFloorPlanLightboxOpen()) {
         return;
       }
@@ -248,7 +258,7 @@ export const SideSheet = ({
     };
   }, [rendered, stackLevel]);
 
-  if (!rendered || typeof document === 'undefined') {
+  if (!rendered || !host) {
     return null;
   }
 
@@ -271,6 +281,6 @@ export const SideSheet = ({
     >
       {children}
     </SideSheetPanel>,
-    document.body,
+    host,
   );
 };

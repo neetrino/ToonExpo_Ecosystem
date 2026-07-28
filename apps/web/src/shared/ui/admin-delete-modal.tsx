@@ -8,6 +8,7 @@ import { Button } from '@/shared/ui/button';
 import { blurActiveElementAfterEscClose } from '@/shared/ui/blur-active-element';
 import { cn } from '@/shared/ui/cn';
 import { MODAL_BACKDROP_CLASS_NAME } from '@/shared/ui/modal-backdrop';
+import { getOverlayPortalHost } from '@/shared/ui/overlay-portal-host';
 import { useModalEnterExit } from '@/shared/ui/use-modal-enter-exit';
 
 type AdminDeleteModalProps = {
@@ -90,7 +91,7 @@ export const AdminDeleteModal = ({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center px-4"
+      className="fixed inset-x-0 top-0 z-[var(--z-modal)] flex h-fluid-screen items-center justify-center px-4"
       role="presentation"
     >
       <button
@@ -125,7 +126,7 @@ export const AdminDeleteModal = ({
         onAnimationEnd={handlePanelAnimationEnd}
       />
     </div>,
-    document.body,
+    getOverlayPortalHost(),
   );
 };
 
