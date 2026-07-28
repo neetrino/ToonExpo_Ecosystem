@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { headers } from 'next/headers';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { CompanyProfileForm } from '@/features/builder/components/company-profile-form';
@@ -12,7 +13,9 @@ export default async function BuilderCompanyPage({ params }: CompanyPageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations('Builder.company');
-  const profile = await getCompanyProfile();
+  const headerStore = await headers();
+  const cookieHeader = headerStore.get('cookie') ?? undefined;
+  const profile = await getCompanyProfile({ cookieHeader });
 
   return (
     <CompanyPageShell title={t('title')} subtitle={t('subtitle')}>
