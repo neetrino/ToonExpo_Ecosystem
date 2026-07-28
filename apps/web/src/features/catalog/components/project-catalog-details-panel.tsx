@@ -97,7 +97,7 @@ const CRITERION_ICON: Record<ProjectCatalogCriterionId, LucideIcon> = {
 
 /**
  * Project catalog block: about, fact cards, amenities, nearby places, links.
- * Dense blocks collapse behind a chevron so the page stays scannable.
+ * Sections stay expanded so all catalog content is visible at once.
  */
 export const ProjectCatalogDetailsPanel = ({
   title,
@@ -133,7 +133,7 @@ export const ProjectCatalogDetailsPanel = ({
 
       <div className="mt-8 space-y-6">
         {hasAbout ? (
-          <ProjectCatalogCollapsible title={aboutTitle} defaultOpen>
+          <ProjectCatalogCollapsible title={aboutTitle}>
             <p className="max-w-3xl whitespace-pre-line text-base leading-7 text-ink-navy">
               {aboutText}
             </p>
