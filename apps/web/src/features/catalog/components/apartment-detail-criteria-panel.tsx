@@ -77,7 +77,7 @@ const CriterionCard = ({ row }: { row: ApartmentDetailRow }) => {
     <div
       className={cn(
         'flex min-h-[4.5rem] items-center gap-3 rounded-[15px] border border-header-border',
-        'bg-canvas px-4 py-3.5 transition-[transform,box-shadow] duration-200',
+        'bg-surface-elevated px-4 py-3.5 transition-[transform,box-shadow] duration-200',
         'hover:-translate-y-0.5 hover:shadow-sm',
       )}
     >

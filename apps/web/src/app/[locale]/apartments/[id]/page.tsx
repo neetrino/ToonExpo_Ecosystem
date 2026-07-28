@@ -82,7 +82,7 @@ export default async function ApartmentPage({ params }: ApartmentPageProps) {
       : [];
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-canvas">
       <ProjectPricesOverlayScope projectId={apartment.project.id}>
         <main>
           <ApartmentDetailView
