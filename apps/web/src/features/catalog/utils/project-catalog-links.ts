@@ -6,6 +6,10 @@ export type ProjectCatalogLinkId =
   | 'typicalInteractiveTour'
   | 'video'
   | 'exteriorInteractiveTour'
+  | 'floorPlans2d'
+  | 'floorPlans3d'
+  | 'logoBranding'
+  | 'map'
   | 'website'
   | 'facebook'
   | 'instagram';
@@ -21,6 +25,10 @@ export const PROJECT_CATALOG_LINK_IDS: readonly ProjectCatalogLinkId[] = [
   'typicalInteractiveTour',
   'video',
   'exteriorInteractiveTour',
+  'floorPlans2d',
+  'floorPlans3d',
+  'logoBranding',
+  'map',
   'website',
   'facebook',
   'instagram',
