@@ -273,7 +273,18 @@
     "builder": "Builder",
     "scanner": "Scanner",
     "product": "Product",
+    "discover": "Discover",
+    "qr": "QR",
+    "map": "Map",
     "loading": "…"
+  },
+  "Discover": {
+    "meta": {
+      "title": "Discover projects",
+      "description": "Swipe through exhibition projects and find homes you like."
+    },
+    "title": "Discover",
+    "subtitle": "Swipe through projects coming soon — save the ones you love."
   },
   "BuyPage": {
     "title": "Homes for sale",
@@ -975,6 +986,11 @@
       "codeTitle": "QR code for {name}",
       "loading": "Loading your QR…",
       "error": "Could not load your QR. Try again.",
+      "sheet": {
+        "loginHint": "Sign in to show your permanent exhibition QR.",
+        "login": "Sign in",
+        "buyerOnly": "My QR is available for buyer accounts."
+      },
       "scanner": {
         "open": "Scanner",
         "title": "QR scanner",

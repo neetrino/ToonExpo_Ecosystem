@@ -1,9 +1,9 @@
 import {
-  Building2,
-  Calculator,
   FolderKanban,
+  Heart,
   Home,
   Map,
+  QrCode,
   ScanLine,
   UserRound,
   type LucideIcon,
@@ -12,7 +12,16 @@ import {
 import { isBuilderPortalPath } from '@/shared/ui/account-mobile-nav-controller';
 
 export type BottomNavLabelKey =
-  'home' | 'expoMap' | 'builders' | 'profile' | 'mortgage' | 'scanner' | 'product';
+  | 'home'
+  | 'discover'
+  | 'qr'
+  | 'map'
+  | 'expoMap'
+  | 'builders'
+  | 'profile'
+  | 'mortgage'
+  | 'scanner'
+  | 'product';
 
 export type BottomNavId = BottomNavLabelKey;
 
@@ -28,14 +37,13 @@ export type BottomNavItem = {
 
 const isHomePath = (pathname: string): boolean => pathname === '/';
 
+const isDiscoverPath = (pathname: string): boolean =>
+  pathname === '/discover' || pathname.startsWith('/discover/');
+
+const isQrPath = (pathname: string): boolean => pathname === '/qr' || pathname.startsWith('/qr/');
+
 const isMapPath = (pathname: string): boolean =>
   pathname === '/expo' || pathname.startsWith('/expo/');
-
-const isBuildersPath = (pathname: string): boolean =>
-  pathname === '/builders' ||
-  pathname.startsWith('/builders/') ||
-  pathname === '/developers' ||
-  pathname.startsWith('/developers/');
 
 const isProfilePath = (pathname: string): boolean =>
   pathname === '/dashboard' ||
@@ -46,14 +54,9 @@ const isProfilePath = (pathname: string): boolean =>
   pathname.startsWith('/favorites/') ||
   pathname === '/requests' ||
   pathname.startsWith('/requests/') ||
-  pathname === '/qr' ||
-  pathname.startsWith('/qr/') ||
   pathname === '/checkin' ||
   pathname.startsWith('/checkin/') ||
   pathname.startsWith('/account');
-
-const isMortgagePath = (pathname: string): boolean =>
-  pathname === '/mortgage' || pathname.startsWith('/mortgage/');
 
 const isBuilderScannerPath = (pathname: string): boolean =>
   pathname === '/builder/scanner' || pathname.startsWith('/builder/scanner/');
@@ -64,6 +67,9 @@ const isBuilderProductPath = (pathname: string): boolean =>
 const isBuilderProfilePath = (pathname: string): boolean =>
   isBuilderPortalPath(pathname) && !isBuilderScannerPath(pathname);
 
+/**
+ * Buyer / guest bottom nav: Home · Discover · QR · Map · Profile.
+ */
 export const buildPublicNavItems = (
   profileHref: string,
   isProfileActive: boolean,
@@ -76,18 +82,26 @@ export const buildPublicNavItems = (
     match: isHomePath,
   },
   {
-    id: 'expoMap',
-    href: '/expo',
-    labelKey: 'expoMap',
-    Icon: Map,
-    match: isMapPath,
+    id: 'discover',
+    href: '/discover',
+    labelKey: 'discover',
+    Icon: Heart,
+    match: isDiscoverPath,
   },
   {
-    id: 'builders',
-    href: '/builders',
-    labelKey: 'builders',
-    Icon: Building2,
-    match: isBuildersPath,
+    id: 'qr',
+    href: '/qr',
+    labelKey: 'qr',
+    Icon: QrCode,
+    match: isQrPath,
+    opensSheet: true,
+  },
+  {
+    id: 'map',
+    href: '/expo',
+    labelKey: 'map',
+    Icon: Map,
+    match: isMapPath,
   },
   {
     id: 'profile',
@@ -95,13 +109,6 @@ export const buildPublicNavItems = (
     labelKey: 'profile',
     Icon: UserRound,
     match: () => isProfileActive,
-  },
-  {
-    id: 'mortgage',
-    href: '/mortgage',
-    labelKey: 'mortgage',
-    Icon: Calculator,
-    match: isMortgagePath,
   },
 ];
 

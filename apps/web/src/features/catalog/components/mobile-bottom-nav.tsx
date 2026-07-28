@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import { useMeQuery } from '@/features/auth/hooks/use-auth';
+import { BuyerQrSheet } from '@/features/buyer/components/buyer-qr-sheet';
 import { BuilderScannerSheet } from '@/features/builder/components/builder-scanner-sheet';
 import {
   BUILDER_NAV_ITEMS,
@@ -64,7 +65,7 @@ export const MobileBottomNav = () => {
   const pathname = usePathname();
   const { data: me } = useMeQuery();
   const [pendingId, setPendingId] = useState<BottomNavId | null>(null);
-  const [scannerOpen, setScannerOpen] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
   const [host, setHost] = useState<HTMLElement | null>(null);
   const isBuilder = me?.companyType === 'builder';
   const isAdmin = me?.accountType === 'platform_admin';
@@ -85,12 +86,8 @@ export const MobileBottomNav = () => {
 
   const routeActiveIndex = items.findIndex((item) => item.match(pathname));
   const pendingIndex = pendingId ? items.findIndex((item) => item.id === pendingId) : -1;
-  const scannerIndex = items.findIndex((item) => item.id === 'scanner');
-  const activeIndex = scannerOpen
-    ? scannerIndex
-    : pendingIndex >= 0
-      ? pendingIndex
-      : routeActiveIndex;
+  const sheetIndex = items.findIndex((item) => item.opensSheet);
+  const activeIndex = sheetOpen ? sheetIndex : pendingIndex >= 0 ? pendingIndex : routeActiveIndex;
   const hasActive = activeIndex >= 0;
 
   useEffect(() => {
@@ -99,11 +96,11 @@ export const MobileBottomNav = () => {
 
   useEffect(() => {
     setPendingId(null);
-    setScannerOpen(false);
+    setSheetOpen(false);
   }, [pathname]);
 
-  const closeScanner = (): void => {
-    setScannerOpen(false);
+  const closeSheet = (): void => {
+    setSheetOpen(false);
     setPendingId(null);
   };
 
@@ -153,10 +150,10 @@ export const MobileBottomNav = () => {
                 key={item.id}
                 type="button"
                 aria-label={label}
-                aria-expanded={scannerOpen}
+                aria-expanded={sheetOpen}
                 onClick={() => {
                   setPendingId(item.id);
-                  setScannerOpen((open) => !open);
+                  setSheetOpen((open) => !open);
                 }}
                 className={cn(NAV_BUTTON_CLASS, activeClass)}
               >
@@ -172,7 +169,7 @@ export const MobileBottomNav = () => {
               aria-label={label}
               aria-current={isActive ? 'page' : undefined}
               onClick={() => {
-                setScannerOpen(false);
+                setSheetOpen(false);
                 setPendingId(item.id);
               }}
               className={cn(NAV_BUTTON_CLASS, activeClass)}
@@ -188,7 +185,11 @@ export const MobileBottomNav = () => {
   return (
     <>
       {host ? createPortal(nav, host) : null}
-      {isBuilder ? <BuilderScannerSheet open={scannerOpen} onClose={closeScanner} /> : null}
+      {isBuilder ? (
+        <BuilderScannerSheet open={sheetOpen} onClose={closeSheet} />
+      ) : (
+        <BuyerQrSheet open={sheetOpen} onClose={closeSheet} />
+      )}
     </>
   );
 };
