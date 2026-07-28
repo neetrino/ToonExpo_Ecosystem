@@ -140,7 +140,7 @@ export const PriceRangeSelect = ({
           ref={panelRef}
           role="dialog"
           aria-label={labels.save}
-          className="w-[20rem] rounded-[12px] border border-header-border bg-surface-elevated p-4 shadow-md"
+          className="w-[20rem] rounded-[12px] border border-header-border bg-surface-elevated p-4"
         >
           <div className="grid grid-cols-2 gap-3">
             <label className="space-y-1.5">

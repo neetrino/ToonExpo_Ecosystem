@@ -257,7 +257,7 @@ export const MultiListboxSelect = ({
         <div
           ref={menuRef}
           className={cn(
-            'overflow-hidden rounded-[12px] border border-header-border shadow-md',
+            'overflow-hidden rounded-[12px] border border-header-border',
             'animate-[locale-dropdown-in_var(--duration-base)_var(--ease-out-premium)]',
             isAll ? 'bg-brand-soft' : 'bg-surface-elevated',
           )}

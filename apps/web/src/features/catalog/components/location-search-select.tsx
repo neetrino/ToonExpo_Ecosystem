@@ -111,7 +111,7 @@ export const LocationSearchSelect = ({
           ref={panelRef}
           className={cn(
             'w-full overflow-hidden',
-            'rounded-[12px] border border-header-border bg-surface-elevated shadow-md',
+            'rounded-[12px] border border-header-border bg-surface-elevated',
             'animate-[locale-dropdown-in_var(--duration-base)_var(--ease-out-premium)]',
           )}
         >
