@@ -1,5 +1,6 @@
 'use client';
 
+import type { CompanyType } from '@toonexpo/contracts';
 import { Building2, LogIn, LogOut, Shield, User } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useId, useRef, useState } from 'react';
@@ -19,7 +20,7 @@ type ProfileMenuProps = {
   userName?: string | undefined;
   userEmail?: string | undefined;
   accountType?: string | undefined;
-  companyType?: string | null | undefined;
+  companyType?: CompanyType | null | undefined;
   /** When true, show Builder portal link above Log out. */
   showBuilder?: boolean | undefined;
   /** Visual tone for light surfaces vs dark hero chrome. */
