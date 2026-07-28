@@ -1,6 +1,6 @@
 'use client';
 
-import { FolderKanban, QrCode, type LucideIcon } from 'lucide-react';
+import { FolderKanban, ScanLine, type LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
@@ -138,7 +138,7 @@ const BUILDER_NAV_ITEMS: BottomNavItem[] = [
     id: 'scanner',
     href: '/builder/scanner',
     labelKey: 'scanner',
-    Icon: QrCode,
+    Icon: ScanLine,
     match: isBuilderScannerPath,
   },
   {
