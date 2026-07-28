@@ -5,8 +5,6 @@ import {
   DragOverlay,
   PointerSensor,
   closestCorners,
-  useDraggable,
-  useDroppable,
   useSensor,
   useSensors,
   type DragEndEvent,
@@ -16,17 +14,14 @@ import {
 import type { CrmDealListItem, CrmDealStatus } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 
 import { CrmKanbanCard } from '@/features/crm-board/crm-kanban-card';
-import {
-  CRM_KANBAN_COLUMN_ACCENT,
-  CRM_KANBAN_STATUSES,
-  type CrmBoardMode,
-} from '@/features/crm-board/constants';
+import { CrmKanbanColumn } from '@/features/crm-board/crm-kanban-column';
+import { CRM_KANBAN_STATUSES, type CrmBoardMode } from '@/features/crm-board/constants';
 import { groupDealsByStatus } from '@/features/crm-board/group-deals-by-status';
 import { cn } from '@/shared/ui/cn';
-
-const columnDropId = (status: CrmDealStatus): string => `column:${status}`;
+import { useDesktopFluidStageScale } from '@/shared/ui/desktop-fluid-stage-scale';
 
 const parseColumnStatus = (id: string | undefined | null): CrmDealStatus | null => {
   if (!id?.startsWith('column:')) {
@@ -46,7 +41,8 @@ type CrmKanbanBoardProps = {
 };
 
 /**
- * Kanban board — drag uses a portal overlay so cards escape column overflow clipping.
+ * Kanban board — drag overlay portals to `document.body` (stable pointer coords
+ * under desktop CSS zoom). Inner card is scaled to match board visual size.
  */
 export const CrmKanbanBoard = ({
   deals,
@@ -59,6 +55,8 @@ export const CrmKanbanBoard = ({
   const tStatuses = useTranslations('CrmBoard.statuses');
   const tSources = useTranslations('CrmBoard.sources');
   const canDrag = Boolean(onStatusDrop);
+  const stageScale = useDesktopFluidStageScale();
+  const [portalReady, setPortalReady] = useState(false);
   const [items, setItems] = useState(deals);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [overColumn, setOverColumn] = useState<CrmDealStatus | null>(null);
@@ -66,6 +64,10 @@ export const CrmKanbanBoard = ({
   useEffect(() => {
     setItems(deals);
   }, [deals]);
+
+  useEffect(() => {
+    setPortalReady(true);
+  }, []);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -122,6 +124,41 @@ export const CrmKanbanBoard = ({
     setOverColumn(null);
   };
 
+  const overlay = (
+    <DragOverlay dropAnimation={null} zIndex={1200}>
+      {activeDeal ? (
+        <div
+          className="h-full w-full"
+          style={
+            stageScale === 1
+              ? undefined
+              : {
+                  // Overlay box is already visual-sized; render design-sized card
+                  // then scale up so fonts/padding match the zoomed board.
+                  width: `${100 / stageScale}%`,
+                  height: `${100 / stageScale}%`,
+                  transform: `scale(${stageScale})`,
+                  transformOrigin: 'top left',
+                }
+          }
+        >
+          <CrmKanbanCard
+            deal={activeDeal}
+            canDrag={canDrag}
+            showCompany={mode === 'readonly'}
+            onOpen={onOpenDeal}
+            sourceLabel={tSources(activeDeal.source)}
+            unnamedLabel={t('unnamedBuyer')}
+            noProjectLabel={t('noProject')}
+            isDragging
+            isOverlay
+            className="h-full w-full"
+          />
+        </div>
+      ) : null}
+    </DragOverlay>
+  );
+
   return (
     <div className={cn('crm-kanban-board', activeId ? 'crm-kanban-board--dragging' : undefined)}>
       <DndContext
@@ -153,156 +190,8 @@ export const CrmKanbanBoard = ({
           ))}
         </div>
 
-        <DragOverlay dropAnimation={null}>
-          {activeDeal ? (
-            <CrmKanbanCard
-              deal={activeDeal}
-              canDrag={canDrag}
-              showCompany={mode === 'readonly'}
-              onOpen={onOpenDeal}
-              sourceLabel={tSources(activeDeal.source)}
-              unnamedLabel={t('unnamedBuyer')}
-              noProjectLabel={t('noProject')}
-              isDragging
-              isOverlay
-            />
-          ) : null}
-        </DragOverlay>
+        {portalReady ? createPortal(overlay, document.body) : overlay}
       </DndContext>
     </div>
-  );
-};
-
-type CrmKanbanColumnProps = {
-  status: CrmDealStatus;
-  title: string;
-  deals: CrmDealListItem[];
-  isOver: boolean;
-  canDrag: boolean;
-  showCompany: boolean;
-  emptyLabel: string;
-  unnamedLabel: string;
-  noProjectLabel: string;
-  sourceLabel: (source: CrmDealListItem['source']) => string;
-  onOpenDeal: (dealId: string) => void;
-  newColumnAction?: ReactNode;
-  activeId: string | null;
-};
-
-const CrmKanbanColumn = ({
-  status,
-  title,
-  deals,
-  isOver,
-  canDrag,
-  showCompany,
-  emptyLabel,
-  unnamedLabel,
-  noProjectLabel,
-  sourceLabel,
-  onOpenDeal,
-  newColumnAction,
-  activeId,
-}: CrmKanbanColumnProps) => {
-  const { setNodeRef, isOver: isDroppableOver } = useDroppable({
-    id: columnDropId(status),
-    disabled: !canDrag,
-  });
-  const highlighted = isOver || isDroppableOver;
-
-  return (
-    <section
-      ref={setNodeRef}
-      className={cn('crm-kanban-column', highlighted && 'crm-kanban-column--active')}
-    >
-      <header className="crm-kanban-column__header">
-        <div className={cn('crm-kanban-column__accent', CRM_KANBAN_COLUMN_ACCENT[status])} />
-        <div className="flex items-center justify-between gap-1.5">
-          <h2 className="crm-kanban-column__title">{title}</h2>
-          <span className="crm-kanban-column__count">{deals.length}</span>
-        </div>
-      </header>
-
-      <div className="crm-kanban-column-body luxury-scrollbar">
-        {newColumnAction ? (
-          <div className="crm-kanban-column__action-slot">{newColumnAction}</div>
-        ) : deals.length === 0 ? (
-          <div className="crm-kanban-column__action-slot" aria-hidden />
-        ) : null}
-
-        {deals.length === 0 ? (
-          <div className="crm-kanban-column__empty-wrap">
-            <p className="crm-kanban-column__empty">{emptyLabel}</p>
-          </div>
-        ) : (
-          deals.map((deal) => (
-            <CrmDraggableKanbanCard
-              key={deal.id}
-              deal={deal}
-              canDrag={canDrag}
-              showCompany={showCompany}
-              onOpen={onOpenDeal}
-              sourceLabel={sourceLabel(deal.source)}
-              unnamedLabel={unnamedLabel}
-              noProjectLabel={noProjectLabel}
-              isDragging={activeId === deal.id}
-            />
-          ))
-        )}
-      </div>
-    </section>
-  );
-};
-
-type CrmDraggableKanbanCardProps = {
-  deal: CrmDealListItem;
-  canDrag: boolean;
-  showCompany: boolean;
-  onOpen: (dealId: string) => void;
-  sourceLabel: string;
-  unnamedLabel: string;
-  noProjectLabel: string;
-  isDragging: boolean;
-};
-
-const CrmDraggableKanbanCard = ({
-  deal,
-  canDrag,
-  showCompany,
-  onOpen,
-  sourceLabel,
-  unnamedLabel,
-  noProjectLabel,
-  isDragging,
-}: CrmDraggableKanbanCardProps) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    isDragging: dndDragging,
-  } = useDraggable({
-    id: deal.id,
-    disabled: !canDrag,
-    data: { status: deal.status },
-  });
-
-  const dragging = isDragging || dndDragging;
-
-  return (
-    <CrmKanbanCard
-      ref={setNodeRef}
-      deal={deal}
-      canDrag={canDrag}
-      showCompany={showCompany}
-      onOpen={onOpen}
-      sourceLabel={sourceLabel}
-      unnamedLabel={unnamedLabel}
-      noProjectLabel={noProjectLabel}
-      isDragging={dragging}
-      className={dragging ? 'opacity-40' : undefined}
-      style={{ touchAction: 'none' }}
-      {...attributes}
-      {...listeners}
-    />
   );
 };
