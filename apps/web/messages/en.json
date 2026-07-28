@@ -971,13 +971,18 @@
     "qr": {
       "title": "My QR",
       "subtitle": "Show this permanent code to builders and entrance staff at the exhibition",
-      "hint": "Hold your phone steady so the staff can scan the code.",
       "secureBadge": "Secure permanent QR",
       "codeTitle": "QR code for {name}",
-      "fullscreen": "Enlarge fullscreen",
-      "exitFullscreen": "Exit fullscreen",
       "loading": "Loading your QR…",
       "error": "Could not load your QR. Try again.",
+      "scanner": {
+        "open": "Scanner",
+        "title": "QR scanner",
+        "subtitle": "Scan a project QR at the exhibition to open its page",
+        "errors": {
+          "invalid": "Could not read a ToonExpo QR code."
+        }
+      },
       "scans": {
         "title": "Scan history",
         "loading": "Loading scans…",

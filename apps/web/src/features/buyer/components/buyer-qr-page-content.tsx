@@ -1,10 +1,14 @@
 'use client';
 
+import { ScanLine } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { useState } from 'react';
 
 import { BuyerQrCode } from '@/features/buyer/components/buyer-qr-code';
+import { BuyerScannerSheet } from '@/features/buyer/components/buyer-scanner-sheet';
 import { ScanHistoryList } from '@/features/buyer/components/scan-history-list';
 import { useBuyerQrQuery, useBuyerQrScansQuery } from '@/features/buyer/hooks/use-buyer';
+import { Button } from '@/shared/ui/button';
 import { Skeleton } from '@/shared/ui/skeleton';
 
 type BuyerQrPageContentProps = {
@@ -12,12 +16,13 @@ type BuyerQrPageContentProps = {
 };
 
 /**
- * Client shell for My QR: code + scan history.
+ * Client shell for My QR: code + scanner + scan history.
  */
 export const BuyerQrPageContent = ({ buyerName }: BuyerQrPageContentProps) => {
   const t = useTranslations('Profile.qr');
   const qrQuery = useBuyerQrQuery();
   const scansQuery = useBuyerQrScansQuery();
+  const [scannerOpen, setScannerOpen] = useState(false);
 
   if (qrQuery.isLoading) {
     return (
@@ -41,7 +46,28 @@ export const BuyerQrPageContent = ({ buyerName }: BuyerQrPageContentProps) => {
 
   return (
     <div className="flex flex-col gap-8">
-      <BuyerQrCode payloadUrl={qrQuery.data.payloadUrl} buyerName={buyerName} />
+      <div className="flex flex-col gap-4">
+        <BuyerQrCode payloadUrl={qrQuery.data.payloadUrl} buyerName={buyerName} />
+        <Button
+          type="button"
+          variant="secondary"
+          className="mx-auto w-full max-w-md"
+          onClick={() => {
+            setScannerOpen(true);
+          }}
+        >
+          <ScanLine className="size-4" aria-hidden />
+          {t('scanner.open')}
+        </Button>
+      </div>
+
+      <BuyerScannerSheet
+        open={scannerOpen}
+        onClose={() => {
+          setScannerOpen(false);
+        }}
+      />
+
       <section className="flex flex-col gap-4" aria-labelledby="scan-history-heading">
         <h2 id="scan-history-heading" className="text-lg font-semibold text-ink">
           {t('scans.title')}
