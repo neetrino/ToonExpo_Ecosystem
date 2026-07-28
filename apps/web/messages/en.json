@@ -277,6 +277,8 @@
     "profileMenu": "Account menu",
     "admin": "Admin",
     "builder": "Builder",
+    "scanner": "Scanner",
+    "product": "Product",
     "loading": "…"
   },
   "BuyPage": {

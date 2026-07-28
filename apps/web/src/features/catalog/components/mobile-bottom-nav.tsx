@@ -1,9 +1,11 @@
 'use client';
 
+import { FolderKanban, QrCode, type LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 import { useMeQuery } from '@/features/auth/hooks/use-auth';
+import { isBuilderPortalPath } from '@/shared/ui/account-mobile-nav-controller';
 import { Link, usePathname } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 
@@ -31,13 +33,17 @@ const THUMB_TRANSLATE_BY_INDEX = [
   'translate-x-[calc(400%+2rem)]',
 ] as const;
 
-type BottomNavId = 'home' | 'map' | 'builders' | 'profile' | 'mortgage';
+type BottomNavLabelKey =
+  'home' | 'expoMap' | 'builders' | 'profile' | 'mortgage' | 'scanner' | 'product';
+
+type BottomNavId = BottomNavLabelKey;
 
 type BottomNavItem = {
   id: BottomNavId;
   href: string;
-  labelKey: 'home' | 'expoMap' | 'builders' | 'profile' | 'mortgage';
-  iconClass: string;
+  labelKey: BottomNavLabelKey;
+  iconClass?: string;
+  Icon?: LucideIcon;
   match: (pathname: string) => boolean;
 };
 
@@ -67,15 +73,94 @@ const isProfilePath = (pathname: string): boolean =>
   pathname.startsWith('/checkin/') ||
   pathname.startsWith('/account');
 
-const isBuilderPortalPath = (pathname: string): boolean =>
-  pathname === '/builder' || pathname.startsWith('/builder/');
-
 const isMortgagePath = (pathname: string): boolean =>
   pathname === '/mortgage' || pathname.startsWith('/mortgage/');
 
+const isBuilderScannerPath = (pathname: string): boolean =>
+  pathname === '/builder/scanner' || pathname.startsWith('/builder/scanner/');
+
+const isBuilderProductPath = (pathname: string): boolean =>
+  pathname === '/projects' || pathname.startsWith('/projects/');
+
+const isBuilderProfilePath = (pathname: string): boolean =>
+  isBuilderPortalPath(pathname) && !isBuilderScannerPath(pathname);
+
+const maskIcon = (file: string, sizeClass: string): string =>
+  `${sizeClass} [mask-image:url(/icons/bottom-nav/${file})] [-webkit-mask-image:url(/icons/bottom-nav/${file})]`;
+
+const PUBLIC_NAV_ITEMS = (profileHref: string, isProfileActive: boolean): BottomNavItem[] => [
+  {
+    id: 'home',
+    href: '/',
+    labelKey: 'home',
+    iconClass: maskIcon('home.webp', 'size-8'),
+    match: isHomePath,
+  },
+  {
+    id: 'expoMap',
+    href: '/expo',
+    labelKey: 'expoMap',
+    iconClass: maskIcon('map.webp', 'size-7'),
+    match: isMapPath,
+  },
+  {
+    id: 'builders',
+    href: '/builders',
+    labelKey: 'builders',
+    iconClass: maskIcon('builders.webp', 'size-7'),
+    match: isBuildersPath,
+  },
+  {
+    id: 'profile',
+    href: profileHref,
+    labelKey: 'profile',
+    iconClass: maskIcon('profile.webp', 'size-6'),
+    match: () => isProfileActive,
+  },
+  {
+    id: 'mortgage',
+    href: '/mortgage',
+    labelKey: 'mortgage',
+    iconClass: maskIcon('calculator.webp', 'size-7'),
+    match: isMortgagePath,
+  },
+];
+
+const BUILDER_NAV_ITEMS: BottomNavItem[] = [
+  {
+    id: 'home',
+    href: '/',
+    labelKey: 'home',
+    iconClass: maskIcon('home.webp', 'size-8'),
+    match: isHomePath,
+  },
+  {
+    id: 'scanner',
+    href: '/builder/scanner',
+    labelKey: 'scanner',
+    Icon: QrCode,
+    match: isBuilderScannerPath,
+  },
+  {
+    id: 'product',
+    href: '/projects',
+    labelKey: 'product',
+    Icon: FolderKanban,
+    match: isBuilderProductPath,
+  },
+  {
+    id: 'profile',
+    href: '/builder',
+    labelKey: 'profile',
+    iconClass: maskIcon('profile.webp', 'size-6'),
+    match: isBuilderProfilePath,
+  },
+];
+
 /**
  * Mobile-only floating bottom navigation (Figma node 134:119).
- * Active pill slides like ViewModeToggle / segment switchers.
+ * Builder accounts: Home / Scanner / Product / Profile (all pages).
+ * Everyone else: Home / Map / Builders / Profile / Mortgage.
  */
 export const MobileBottomNav = () => {
   const t = useTranslations('Nav');
@@ -86,48 +171,7 @@ export const MobileBottomNav = () => {
   const profileHref = isBuilder ? '/builder' : me ? '/dashboard' : '/auth/login';
   const isProfileActive = isBuilder ? isBuilderPortalPath(pathname) : isProfilePath(pathname);
 
-  const items: BottomNavItem[] = [
-    {
-      id: 'home',
-      href: '/',
-      labelKey: 'home',
-      iconClass:
-        'size-8 [mask-image:url(/icons/bottom-nav/home.webp)] [-webkit-mask-image:url(/icons/bottom-nav/home.webp)]',
-      match: isHomePath,
-    },
-    {
-      id: 'map',
-      href: '/expo',
-      labelKey: 'expoMap',
-      iconClass:
-        'size-7 [mask-image:url(/icons/bottom-nav/map.webp)] [-webkit-mask-image:url(/icons/bottom-nav/map.webp)]',
-      match: isMapPath,
-    },
-    {
-      id: 'builders',
-      href: '/builders',
-      labelKey: 'builders',
-      iconClass:
-        'size-7 [mask-image:url(/icons/bottom-nav/builders.webp)] [-webkit-mask-image:url(/icons/bottom-nav/builders.webp)]',
-      match: isBuildersPath,
-    },
-    {
-      id: 'profile',
-      href: profileHref,
-      labelKey: 'profile',
-      iconClass:
-        'size-6 [mask-image:url(/icons/bottom-nav/profile.webp)] [-webkit-mask-image:url(/icons/bottom-nav/profile.webp)]',
-      match: () => isProfileActive,
-    },
-    {
-      id: 'mortgage',
-      href: '/mortgage',
-      labelKey: 'mortgage',
-      iconClass:
-        'size-7 [mask-image:url(/icons/bottom-nav/calculator.webp)] [-webkit-mask-image:url(/icons/bottom-nav/calculator.webp)]',
-      match: isMortgagePath,
-    },
-  ];
+  const items = isBuilder ? BUILDER_NAV_ITEMS : PUBLIC_NAV_ITEMS(profileHref, isProfileActive);
 
   const routeActiveIndex = items.findIndex((item) => item.match(pathname));
   const pendingIndex = pendingId ? items.findIndex((item) => item.id === pendingId) : -1;
@@ -176,6 +220,7 @@ export const MobileBottomNav = () => {
         {items.map((item, index) => {
           const isActive = index === activeIndex;
           const label = t(item.labelKey);
+          const Icon = item.Icon;
 
           return (
             <Link
@@ -194,7 +239,11 @@ export const MobileBottomNav = () => {
                 isActive ? 'text-white' : 'bg-white text-brand-secondary',
               )}
             >
-              <span aria-hidden className={cn(ICON_MASK_BASE, item.iconClass)} />
+              {Icon ? (
+                <Icon className="size-6" strokeWidth={1.75} aria-hidden />
+              ) : (
+                <span aria-hidden className={cn(ICON_MASK_BASE, item.iconClass)} />
+              )}
             </Link>
           );
         })}
