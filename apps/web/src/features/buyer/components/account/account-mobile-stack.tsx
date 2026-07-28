@@ -12,6 +12,9 @@ import {
 import { usePathname, useRouter } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 
+/** Lets the profile hub paint before a cold-opened sheet slides over it. */
+const HUB_FIRST_PAINT_MS = 80;
+
 type AccountMobileStackProps = {
   name: string;
   email: string;
@@ -21,9 +24,15 @@ type AccountMobileStackProps = {
 
 type PanelAnim = 'in' | 'out';
 
+const scrollWindowToTop = (): void => {
+  window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  document.documentElement.scrollTop = 0;
+  document.body.scrollTop = 0;
+};
+
 /**
- * Mobile profile stack: hub stays underneath; sub-pages slide over as a full-screen panel.
- * Overlay mounts only after client hydration so a blank panel cannot cover the hub forever.
+ * Mobile profile stack: hub always shows first; sub-pages slide over it.
+ * Scroll position resets on every hub/sheet open so pages start from the top.
  */
 export const AccountMobileStack = ({
   name,
@@ -35,10 +44,14 @@ export const AccountMobileStack = ({
   const router = useRouter();
   const isHub = pathname === '/dashboard';
   const [mounted, setMounted] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
   const [anim, setAnim] = useState<PanelAnim>('in');
   const exitingRef = useRef(false);
   const prevPathRef = useRef(pathname);
+  const sawHubRef = useRef(pathname === '/dashboard');
   const exitTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hubFirstTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const sheetScrollRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -49,6 +62,9 @@ export const AccountMobileStack = ({
       if (exitTimerRef.current !== null) {
         clearTimeout(exitTimerRef.current);
       }
+      if (hubFirstTimerRef.current !== null) {
+        clearTimeout(hubFirstTimerRef.current);
+      }
     };
   }, []);
 
@@ -57,30 +73,72 @@ export const AccountMobileStack = ({
       return;
     }
 
+    if (hubFirstTimerRef.current !== null) {
+      clearTimeout(hubFirstTimerRef.current);
+      hubFirstTimerRef.current = null;
+    }
+
     if (exitingRef.current) {
       if (isHub) {
         exitingRef.current = false;
+        setSheetOpen(false);
+        sawHubRef.current = true;
         prevPathRef.current = pathname;
+        scrollWindowToTop();
       }
       return;
     }
 
     if (isHub) {
+      setSheetOpen(false);
+      sawHubRef.current = true;
+      prevPathRef.current = pathname;
+      scrollWindowToTop();
+      return;
+    }
+
+    const openSheet = (): void => {
+      setAnim('in');
+      setSheetOpen(true);
+      scrollWindowToTop();
+      requestAnimationFrame(() => {
+        if (sheetScrollRef.current) {
+          sheetScrollRef.current.scrollTop = 0;
+        }
+      });
+    };
+
+    if (sawHubRef.current) {
+      openSheet();
       prevPathRef.current = pathname;
       return;
     }
 
-    if (prevPathRef.current !== pathname) {
-      setAnim('in');
-    }
+    setSheetOpen(false);
+    scrollWindowToTop();
+    hubFirstTimerRef.current = setTimeout(() => {
+      sawHubRef.current = true;
+      openSheet();
+      hubFirstTimerRef.current = null;
+    }, HUB_FIRST_PAINT_MS);
     prevPathRef.current = pathname;
   }, [isHub, mounted, pathname]);
 
+  useEffect(() => {
+    if (!sheetOpen) {
+      return;
+    }
+    if (sheetScrollRef.current) {
+      sheetScrollRef.current.scrollTop = 0;
+    }
+  }, [pathname, sheetOpen]);
+
   const goBack = (): void => {
-    if (exitingRef.current || isHub) {
+    if (exitingRef.current || isHub || !sheetOpen) {
       return;
     }
     exitingRef.current = true;
+    scrollWindowToTop();
 
     if (prefersReducedMotion()) {
       router.replace('/dashboard');
@@ -93,7 +151,7 @@ export const AccountMobileStack = ({
     }, ACCOUNT_PAGE_PUSH_MS);
   };
 
-  const showOverlay = mounted && !isHub;
+  const showOverlay = mounted && !isHub && sheetOpen;
 
   return (
     <AccountMobileStackProvider value={{ onBack: showOverlay ? goBack : null }}>
@@ -102,6 +160,7 @@ export const AccountMobileStack = ({
       </div>
 
       <div
+        ref={sheetScrollRef}
         className={cn(
           !showOverlay && 'hidden md:block',
           showOverlay && [
