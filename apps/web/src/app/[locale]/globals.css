@@ -774,6 +774,18 @@
   }
 
   /**
+   * Hide scrollbar while keeping overflow scroll (sidebars, nested panels).
+   */
+  .scrollbar-none {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+
+  /**
    * Thin brand scrollbar — dropdowns, CRM columns, soft panels.
    * No arrow buttons; thumb uses brand-secondary / brand on hover.
    */

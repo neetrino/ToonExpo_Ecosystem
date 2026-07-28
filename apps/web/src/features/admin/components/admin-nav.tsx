@@ -143,7 +143,7 @@ export const AdminNav = () => {
         </p>
       </div>
 
-      <div className="flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto overscroll-contain">
+      <div className="scrollbar-none flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto overscroll-contain">
         {PRIMARY_NAV_ITEMS.map((item) => {
           const active = isItemActive(item.href);
           const Icon = item.icon;
