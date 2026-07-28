@@ -93,7 +93,12 @@ export const HomeStats = async ({ projects }: HomeStatsProps) => {
                 <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-canvas/50">
                   {stat.label}
                 </p>
-                <p className="mt-1.5 font-brand text-[30px] font-bold leading-9 tracking-tight text-canvas">
+                <p
+                  className={cn(
+                    'mt-1.5 whitespace-nowrap font-brand font-bold tracking-tight text-canvas',
+                    'text-[clamp(1.25rem,0.9rem+3.2vw,1.875rem)] leading-none',
+                  )}
+                >
                   {stat.numericValue != null && stat.formatStyle ? (
                     <AnimatedCounter
                       value={stat.numericValue}

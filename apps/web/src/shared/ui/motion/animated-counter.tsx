@@ -134,7 +134,7 @@ const AMD_CURRENCY_SYMBOL = '֏';
 const formatAmdCurrency = (value: number): string => {
   const digits = String(Math.round(value));
   const grouped = digits.replace(/\B(?=(\d{3})+(?!\d))/g, AMD_GROUP_SEPARATOR);
-  return `${grouped} ${AMD_CURRENCY_SYMBOL}`;
+  return `${grouped}${AMD_GROUP_SEPARATOR}${AMD_CURRENCY_SYMBOL}`;
 };
 
 const createFormatter = (
