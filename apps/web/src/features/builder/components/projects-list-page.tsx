@@ -12,9 +12,7 @@ import { PORTAL_DEFAULT_PAGE_SIZE, PROJECTS_VIEW_MODE_KEY } from '@/features/bui
 import { usePortalProjectsQuery } from '@/features/builder/hooks/use-portal-projects';
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
-import { useMinWidth } from '@/shared/hooks/use-min-width';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
-import { VIEW_MODE_CARDS } from '@/shared/ui/view-mode';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
 const parsePage = (raw: string | null): number => {
@@ -36,9 +34,7 @@ export const ProjectsListPage = () => {
   const pageSize = PORTAL_DEFAULT_PAGE_SIZE;
   const query = usePortalProjectsQuery(page, pageSize);
   const listHref = catalogProjectsListHref(scope);
-  const { viewMode, setViewMode } = usePersistedViewMode(PROJECTS_VIEW_MODE_KEY);
-  const isDesktop = useMinWidth();
-  const effectiveViewMode = isDesktop ? viewMode : VIEW_MODE_CARDS;
+  const { viewMode, effectiveViewMode, setViewMode } = usePersistedViewMode(PROJECTS_VIEW_MODE_KEY);
   const [createOpen, setCreateOpen] = useState(false);
 
   if (query.isLoading) {
@@ -65,11 +61,7 @@ export const ProjectsListPage = () => {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <ViewModeToggle
-            className="hidden md:inline-flex"
-            value={viewMode}
-            onChange={setViewMode}
-          />
+          <ViewModeToggle value={viewMode} onChange={setViewMode} />
           <button
             type="button"
             className="inline-flex h-9 items-center justify-center rounded-pill bg-cta-dark px-4 text-sm font-medium text-on-dark hover:bg-cta-dark/90"

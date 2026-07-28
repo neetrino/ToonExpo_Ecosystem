@@ -14,7 +14,7 @@ import {
   type BottomNavItem,
 } from '@/features/catalog/components/mobile-bottom-nav.items';
 import { Link, usePathname } from '@/i18n/navigation';
-import { isBuilderPortalPath } from '@/shared/ui/account-mobile-nav-controller';
+import { isAdminPortalPath, isBuilderPortalPath } from '@/shared/ui/account-mobile-nav-controller';
 import { cn } from '@/shared/ui/cn';
 import { getOverlayPortalHost } from '@/shared/ui/overlay-portal-host';
 
@@ -67,10 +67,19 @@ export const MobileBottomNav = () => {
   const [scannerOpen, setScannerOpen] = useState(false);
   const [host, setHost] = useState<HTMLElement | null>(null);
   const isBuilder = me?.companyType === 'builder';
-  const profileHref = isBuilder ? '/builder' : me ? '/dashboard' : '/auth/login';
+  const isAdmin = me?.accountType === 'platform_admin';
+  const profileHref = isBuilder
+    ? '/builder'
+    : isAdmin
+      ? '/admin'
+      : me
+        ? '/dashboard'
+        : '/auth/login';
   const isProfileActive = isBuilder
     ? isBuilderPortalPath(pathname)
-    : resolveBuyerProfileActive(pathname);
+    : isAdmin
+      ? isAdminPortalPath(pathname)
+      : resolveBuyerProfileActive(pathname);
 
   const items = isBuilder ? BUILDER_NAV_ITEMS : buildPublicNavItems(profileHref, isProfileActive);
 

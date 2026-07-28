@@ -1,114 +1,24 @@
 'use client';
 
-import {
-  Building,
-  Building2,
-  CalendarDays,
-  ChevronDown,
-  ClipboardCheck,
-  FolderKanban,
-  Handshake,
-  Home,
-  Landmark,
-  Layers,
-  LayoutList,
-  LineChart,
-  ScanLine,
-  Settings,
-  Tags,
-  Users,
-  Workflow,
-} from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
+import {
+  ADMIN_ALL_NAV_ITEMS,
+  ADMIN_PRIMARY_NAV_ITEMS,
+  ADMIN_SECTION_NAV_ITEMS,
+  ADMIN_SETTINGS_NAV_ITEM,
+  type AdminNavItem,
+  type AdminNavItemKey,
+} from '@/features/admin/admin-nav-items';
 import { Link, usePathname } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
-
-type NavItemKey =
-  | 'analytics'
-  | 'companies'
-  | 'users'
-  | 'projects'
-  | 'buildings'
-  | 'floors'
-  | 'apartments'
-  | 'checkin'
-  | 'partners'
-  | 'bankOffers'
-  | 'serviceProviders'
-  | 'readiness'
-  | 'readinessCategories'
-  | 'bos'
-  | 'events'
-  | 'settings';
-
-type NavItem = {
-  href: string;
-  key: NavItemKey;
-  icon: LucideIcon;
-  children?: NavItem[];
-};
-
-const PROJECTS_HREF = '/admin/projects';
-const READINESS_HREF = '/admin/readiness';
-const SERVICE_PROVIDERS_HREF = '/admin/service-providers';
-const BOS_HREF = '/admin/integrations/bos';
-
-const PROJECT_CHILD_NAV_ITEMS: NavItem[] = [
-  { href: '/admin/projects/buildings', key: 'buildings', icon: Building },
-  { href: '/admin/projects/floors', key: 'floors', icon: Layers },
-  { href: '/admin/projects/apartments', key: 'apartments', icon: Home },
-];
-
-const READINESS_CHILD_NAV_ITEMS: NavItem[] = [
-  { href: SERVICE_PROVIDERS_HREF, key: 'serviceProviders', icon: LayoutList },
-  { href: '/admin/readiness/categories', key: 'readinessCategories', icon: Tags },
-];
-
-const SETTINGS_CHILD_NAV_ITEMS: NavItem[] = [{ href: BOS_HREF, key: 'bos', icon: Workflow }];
-
-const PRIMARY_NAV_ITEMS: NavItem[] = [
-  { href: '/admin/analytics', key: 'analytics', icon: LineChart },
-  { href: '/admin/companies', key: 'companies', icon: Building2 },
-  { href: '/admin/users', key: 'users', icon: Users },
-  {
-    href: PROJECTS_HREF,
-    key: 'projects',
-    icon: FolderKanban,
-    children: PROJECT_CHILD_NAV_ITEMS,
-  },
-  { href: '/admin/checkin', key: 'checkin', icon: ScanLine },
-  { href: '/admin/partners', key: 'partners', icon: Handshake },
-  { href: '/admin/bank-offers', key: 'bankOffers', icon: Landmark },
-  {
-    href: READINESS_HREF,
-    key: 'readiness',
-    icon: ClipboardCheck,
-    children: READINESS_CHILD_NAV_ITEMS,
-  },
-  { href: '/admin/events', key: 'events', icon: CalendarDays },
-];
-
-const SETTINGS_NAV_ITEM: NavItem = {
-  href: '/admin/settings',
-  key: 'settings',
-  icon: Settings,
-  children: SETTINGS_CHILD_NAV_ITEMS,
-};
-
-const SECTION_NAV_ITEMS: NavItem[] = [...PRIMARY_NAV_ITEMS, SETTINGS_NAV_ITEM];
-
-const ALL_NAV_ITEMS: NavItem[] = SECTION_NAV_ITEMS.flatMap((item) => [
-  item,
-  ...(item.children ?? []),
-]);
 
 const NAV_ICON_CLASS = 'size-[1.125rem] shrink-0 opacity-90';
 const NAV_CHILD_ICON_CLASS = 'size-4 shrink-0 opacity-90';
 
-const isPathInSection = (pathname: string, item: NavItem): boolean => {
+const isPathInSection = (pathname: string, item: AdminNavItem): boolean => {
   if (pathname === item.href || pathname.startsWith(`${item.href}/`)) {
     return true;
   }
@@ -119,7 +29,7 @@ const isPathInSection = (pathname: string, item: NavItem): boolean => {
 
 const initialOpenSections = (pathname: string): Record<string, boolean> => {
   const open: Record<string, boolean> = {};
-  for (const item of SECTION_NAV_ITEMS) {
+  for (const item of ADMIN_SECTION_NAV_ITEMS) {
     if (item.children?.length) {
       open[item.key] = isPathInSection(pathname, item);
     }
@@ -147,7 +57,7 @@ export const AdminNav = () => {
   useEffect(() => {
     setOpenSections((prev) => {
       const next = { ...prev };
-      for (const item of SECTION_NAV_ITEMS) {
+      for (const item of ADMIN_SECTION_NAV_ITEMS) {
         if (item.children?.length && isPathInSection(pathname, item)) {
           next[item.key] = true;
         }
@@ -163,7 +73,7 @@ export const AdminNav = () => {
     if (!pathname.startsWith(`${href}/`)) {
       return false;
     }
-    return !ALL_NAV_ITEMS.some(
+    return !ADMIN_ALL_NAV_ITEMS.some(
       (item) =>
         item.href !== href &&
         item.href.startsWith(`${href}/`) &&
@@ -171,11 +81,11 @@ export const AdminNav = () => {
     );
   };
 
-  const toggleSection = (key: NavItemKey): void => {
+  const toggleSection = (key: AdminNavItemKey): void => {
     setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const renderNavItem = (item: NavItem) => {
+  const renderNavItem = (item: AdminNavItem) => {
     const active = isItemActive(item.href);
     const Icon = item.icon;
     const hasChildren = Boolean(item.children?.length);
@@ -263,11 +173,11 @@ export const AdminNav = () => {
       </div>
 
       <div className="scrollbar-none flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto overscroll-contain">
-        {PRIMARY_NAV_ITEMS.map(renderNavItem)}
+        {ADMIN_PRIMARY_NAV_ITEMS.map(renderNavItem)}
       </div>
 
       <div className="mt-auto shrink-0 border-t border-on-dark/15 pt-2.5">
-        {renderNavItem(SETTINGS_NAV_ITEM)}
+        {renderNavItem(ADMIN_SETTINGS_NAV_ITEM)}
       </div>
     </nav>
   );

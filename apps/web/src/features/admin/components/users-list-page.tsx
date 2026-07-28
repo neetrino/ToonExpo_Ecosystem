@@ -65,7 +65,9 @@ export const UsersListPage = () => {
   const accountType = parseAccountType(searchParams.get(FILTER_ACCOUNT_TYPE_KEY));
   const status = parseStatus(searchParams.get(FILTER_STATUS_KEY));
   const pageSize = ADMIN_INVENTORY_DEFAULT_PAGE_SIZE;
-  const { viewMode, setViewMode } = usePersistedViewMode(ADMIN_VIEW_MODE_KEYS.users);
+  const { viewMode, effectiveViewMode, setViewMode } = usePersistedViewMode(
+    ADMIN_VIEW_MODE_KEYS.users,
+  );
   const [search, setSearch] = useState('');
 
   const usersQuery = useAdminUsersQuery({
@@ -174,7 +176,7 @@ export const UsersListPage = () => {
       {response.data.length === 0 ? (
         <p className="text-sm text-ink-secondary">{t('empty')}</p>
       ) : (
-        <UsersTable users={response.data} viewMode={viewMode} />
+        <UsersTable users={response.data} viewMode={effectiveViewMode} />
       )}
 
       <CatalogPagination

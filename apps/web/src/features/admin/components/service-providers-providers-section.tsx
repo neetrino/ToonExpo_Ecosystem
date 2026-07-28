@@ -75,7 +75,9 @@ export const ServiceProvidersProvidersSection = ({
   busy,
 }: ServiceProvidersProvidersSectionProps) => {
   const t = useTranslations('Admin.serviceProviders.providers');
-  const { viewMode, setViewMode } = usePersistedViewMode(ADMIN_VIEW_MODE_KEYS.serviceProviders);
+  const { viewMode, effectiveViewMode, setViewMode } = usePersistedViewMode(
+    ADMIN_VIEW_MODE_KEYS.serviceProviders,
+  );
 
   const filterConfigs = useMemo(
     (): IntegratedSearchFilterConfig[] => [
@@ -179,7 +181,7 @@ export const ServiceProvidersProvidersSection = ({
 
       {providers.length === 0 ? (
         <p className="text-sm text-ink-secondary">{t('empty')}</p>
-      ) : viewMode === VIEW_MODE_CARDS ? (
+      ) : effectiveViewMode === VIEW_MODE_CARDS ? (
         <AdminListCardGrid>
           {providers.map((provider) => (
             <div

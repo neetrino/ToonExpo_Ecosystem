@@ -18,6 +18,7 @@ type ViewModeToggleProps = {
 
 /**
  * Pill switcher for list/cards (or list/board) collection views with a sliding thumb.
+ * Hidden below `md` — mobile collections always use cards.
  */
 export const ViewModeToggle = ({
   value,
@@ -39,7 +40,7 @@ export const ViewModeToggle = ({
       role="group"
       aria-label={t('label')}
       className={cn(
-        'relative inline-flex h-9 items-center gap-0.5 rounded-pill bg-surface p-0.5 ring-1 ring-border',
+        'relative hidden h-9 items-center gap-0.5 rounded-pill bg-surface p-0.5 ring-1 ring-border md:inline-flex',
         className,
       )}
     >

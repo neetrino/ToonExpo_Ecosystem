@@ -39,7 +39,9 @@ export const CompaniesListPage = () => {
   const query = useAdminCompaniesQuery(page, pageSize);
   const [createSheetOpen, setCreateSheetOpen] = useState(false);
   const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(null);
-  const { viewMode, setViewMode } = usePersistedViewMode(ADMIN_VIEW_MODE_KEYS.companies);
+  const { viewMode, effectiveViewMode, setViewMode } = usePersistedViewMode(
+    ADMIN_VIEW_MODE_KEYS.companies,
+  );
 
   const clearCreateParam = useCallback((): void => {
     if (searchParams.get('create') !== '1') {
@@ -116,7 +118,7 @@ export const CompaniesListPage = () => {
         <CompaniesTable
           companies={response.data}
           onSelectCompany={handleSelectCompany}
-          viewMode={viewMode}
+          viewMode={effectiveViewMode}
         />
       )}
 

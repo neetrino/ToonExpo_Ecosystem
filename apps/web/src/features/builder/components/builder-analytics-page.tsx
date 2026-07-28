@@ -19,24 +19,38 @@ const maxCount = (values: number[]): number => (values.length > 0 ? Math.max(...
 export const BuilderAnalyticsPage = () => {
   const t = useTranslations('Builder.analytics');
   const tCommon = useTranslations('Analytics.common');
+  const query = usePortalAnalyticsOverviewQuery();
+
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="flex min-w-0 flex-col gap-1">
+        <h1 className="text-page-title text-ink">{t('title')}</h1>
+        <p className="text-sm text-ink-secondary">{t('subtitle')}</p>
+      </div>
+
+      {query.isLoading ? (
+        <p className="text-sm text-ink-secondary">{tCommon('loading')}</p>
+      ) : query.isError || !query.data ? (
+        <p role="alert" className="text-sm text-danger">
+          {tCommon('error')}
+        </p>
+      ) : (
+        <BuilderAnalyticsContent data={query.data} />
+      )}
+    </div>
+  );
+};
+
+type BuilderAnalyticsContentProps = {
+  data: NonNullable<ReturnType<typeof usePortalAnalyticsOverviewQuery>['data']>;
+};
+
+const BuilderAnalyticsContent = ({ data }: BuilderAnalyticsContentProps) => {
+  const t = useTranslations('Builder.analytics');
+  const tCommon = useTranslations('Analytics.common');
   const tCrm = useTranslations('Analytics.crmStatuses');
   const tSources = useTranslations('Analytics.requestSources');
   const tSales = useTranslations('Analytics.apartmentSales');
-  const query = usePortalAnalyticsOverviewQuery();
-
-  if (query.isLoading) {
-    return <p className="text-sm text-ink-secondary">{tCommon('loading')}</p>;
-  }
-
-  if (query.isError || !query.data) {
-    return (
-      <p role="alert" className="text-sm text-danger">
-        {tCommon('error')}
-      </p>
-    );
-  }
-
-  const data = query.data;
   const requestMax = maxCount([
     data.requests.total,
     ...data.requests.bySource.map((item) => item.count),
@@ -49,12 +63,7 @@ export const BuilderAnalyticsPage = () => {
   ]);
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-page-title text-ink">{t('title')}</h1>
-        <p className="text-sm text-ink-secondary">{t('subtitle')}</p>
-      </div>
-
+    <>
       <AnalyticsDateRangeFilter />
 
       <AnalyticsSectionCard
@@ -184,7 +193,7 @@ export const BuilderAnalyticsPage = () => {
           />
         </div>
       </AnalyticsSectionCard>
-    </div>
+    </>
   );
 };
 

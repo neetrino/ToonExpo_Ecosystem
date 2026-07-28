@@ -1110,6 +1110,10 @@
   "Admin": {
     "badge": "Admin",
     "profileLink": "Profile",
+    "home": {
+      "title": "Admin",
+      "subtitle": "Choose a section from the sidebar to manage the platform."
+    },
     "nav": {
       "label": "Admin navigation",
       "section": "Manage",

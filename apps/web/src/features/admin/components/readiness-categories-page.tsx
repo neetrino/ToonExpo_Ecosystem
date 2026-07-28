@@ -23,7 +23,9 @@ export const ReadinessCategoriesPage = () => {
   const query = useAdminReadinessCategoriesQuery();
   const [editing, setEditing] = useState<ReadinessCategoryItem | null>(null);
   const [creating, setCreating] = useState(false);
-  const { viewMode, setViewMode } = usePersistedViewMode(ADMIN_VIEW_MODE_KEYS.readinessCategories);
+  const { viewMode, effectiveViewMode, setViewMode } = usePersistedViewMode(
+    ADMIN_VIEW_MODE_KEYS.readinessCategories,
+  );
 
   if (query.isLoading) {
     return <p className="text-sm text-ink-secondary">{t('loading')}</p>;
@@ -95,7 +97,7 @@ export const ReadinessCategoriesPage = () => {
 
       {categories.length === 0 ? (
         <p className="text-sm text-ink-secondary">{t('empty')}</p>
-      ) : viewMode === VIEW_MODE_CARDS ? (
+      ) : effectiveViewMode === VIEW_MODE_CARDS ? (
         <AdminListCardGrid>
           {categories.map((category) => (
             <div

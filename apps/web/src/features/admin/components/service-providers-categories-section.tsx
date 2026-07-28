@@ -35,7 +35,7 @@ export const ServiceProvidersCategoriesSection = ({
   busy,
 }: ServiceProvidersCategoriesSectionProps) => {
   const t = useTranslations('Admin.serviceProviders.categories');
-  const { viewMode, setViewMode } = usePersistedViewMode(
+  const { viewMode, effectiveViewMode, setViewMode } = usePersistedViewMode(
     ADMIN_VIEW_MODE_KEYS.serviceProviderCategories,
   );
 
@@ -61,7 +61,7 @@ export const ServiceProvidersCategoriesSection = ({
 
       {categories.length === 0 ? (
         <p className="text-sm text-ink-secondary">{t('empty')}</p>
-      ) : viewMode === VIEW_MODE_CARDS ? (
+      ) : effectiveViewMode === VIEW_MODE_CARDS ? (
         <AdminListCardGrid>
           {categories.map((category) => (
             <div

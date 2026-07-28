@@ -46,7 +46,9 @@ export const AdminProjectsListPage = () => {
   const page = parsePage(searchParams.get('page'));
   const companyId = searchParams.get('companyId')?.trim() || undefined;
   const pageSize = ADMIN_INVENTORY_DEFAULT_PAGE_SIZE;
-  const { viewMode, setViewMode } = usePersistedViewMode(ADMIN_VIEW_MODE_KEYS.projects);
+  const { viewMode, effectiveViewMode, setViewMode } = usePersistedViewMode(
+    ADMIN_VIEW_MODE_KEYS.projects,
+  );
   const [search, setSearch] = useState('');
   const [createOpen, setCreateOpen] = useState(false);
 
@@ -143,7 +145,7 @@ export const AdminProjectsListPage = () => {
       {response.data.length === 0 ? (
         <p className="text-sm text-ink-secondary">{t('empty')}</p>
       ) : (
-        <AdminProjectsTable projects={response.data} viewMode={viewMode} />
+        <AdminProjectsTable projects={response.data} viewMode={effectiveViewMode} />
       )}
 
       <CatalogPagination
