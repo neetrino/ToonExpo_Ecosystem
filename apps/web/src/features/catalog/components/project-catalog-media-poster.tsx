@@ -6,19 +6,19 @@ import { cn } from '@/shared/ui/cn';
 type ProjectCatalogMediaPosterProps = {
   title: string;
   imageSrc: string;
+  href?: string;
 };
 
 /**
  * Aspect-video poster with play affordance (video / interactive tour placeholders).
  */
-export const ProjectCatalogMediaPoster = ({ title, imageSrc }: ProjectCatalogMediaPosterProps) => {
-  return (
-    <div
-      className={cn(
-        'relative aspect-video overflow-hidden rounded-xl bg-ink',
-        'ring-1 ring-header-border',
-      )}
-    >
+export const ProjectCatalogMediaPoster = ({
+  title,
+  imageSrc,
+  href,
+}: ProjectCatalogMediaPosterProps) => {
+  const content = (
+    <>
       <Image
         src={imageSrc}
         alt={title}
@@ -37,6 +37,29 @@ export const ProjectCatalogMediaPoster = ({ title, imageSrc }: ProjectCatalogMed
       >
         <Play className="size-6 fill-current" strokeWidth={0} />
       </span>
-    </div>
+    </>
   );
+
+  const frameClassName = cn(
+    'relative aspect-video overflow-hidden rounded-xl bg-ink',
+    'ring-1 ring-header-border',
+  );
+
+  if (href != null) {
+    return (
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={cn(
+          frameClassName,
+          'block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/25',
+        )}
+      >
+        {content}
+      </a>
+    );
+  }
+
+  return <div className={frameClassName}>{content}</div>;
 };

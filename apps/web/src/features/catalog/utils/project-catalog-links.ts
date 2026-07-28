@@ -6,9 +6,6 @@ export type ProjectCatalogLinkId =
   | 'typicalInteractiveTour'
   | 'video'
   | 'exteriorInteractiveTour'
-  | 'floorPlans2d'
-  | 'floorPlans3d'
-  | 'logoBranding'
   | 'map'
   | 'website'
   | 'facebook'
@@ -25,9 +22,6 @@ export const PROJECT_CATALOG_LINK_IDS: readonly ProjectCatalogLinkId[] = [
   'typicalInteractiveTour',
   'video',
   'exteriorInteractiveTour',
-  'floorPlans2d',
-  'floorPlans3d',
-  'logoBranding',
   'map',
   'website',
   'facebook',
@@ -53,12 +47,14 @@ export const splitProjectCatalogLinks = (
   video: ProjectCatalogLink | null;
   typicalTour: ProjectCatalogLink | null;
   exteriorTour: ProjectCatalogLink | null;
+  map: ProjectCatalogLink | null;
 } => {
   const media: ProjectCatalogLink[] = [];
   const social: ProjectCatalogLink[] = [];
   let video: ProjectCatalogLink | null = null;
   let typicalTour: ProjectCatalogLink | null = null;
   let exteriorTour: ProjectCatalogLink | null = null;
+  let map: ProjectCatalogLink | null = null;
   for (const link of links) {
     if (link.id === 'video') {
       video = link;
@@ -66,13 +62,15 @@ export const splitProjectCatalogLinks = (
       typicalTour = link;
     } else if (link.id === 'exteriorInteractiveTour') {
       exteriorTour = link;
+    } else if (link.id === 'map') {
+      map = link;
     } else if (isProjectCatalogSocialLink(link.id)) {
       social.push(link);
     } else {
       media.push(link);
     }
   }
-  return { media, social, video, typicalTour, exteriorTour };
+  return { media, social, video, typicalTour, exteriorTour, map };
 };
 
 const asNonEmptyString = (value: unknown): string | null => {

@@ -40,10 +40,11 @@ type ProjectCatalogDetailsPanelProps = {
 const OVERVIEW_MAX_ITEMS = 6;
 const TYPICAL_TOUR_POSTER_SRC = staticAssetUrl('/images/project-floor-axonometric.webp');
 const EXTERIOR_TOUR_POSTER_SRC = staticAssetUrl('/images/hero-variant-a.webp');
+const MAP_POSTER_SRC = staticAssetUrl('/images/buy-map.webp');
 
 /**
  * Project catalog — Houzez-style stacked white cards (Description / Overview /
- * Details / Finance / Features / Nearby / Video / Tours / Links / Socials).
+ * Details / Finance / Features / Nearby / Video / Tours / Map / Links / Socials).
  */
 export const ProjectCatalogDetailsPanel = ({
   title,
@@ -77,6 +78,7 @@ export const ProjectCatalogDetailsPanel = ({
     video: videoLink,
     typicalTour: typicalTourLink,
     exteriorTour: exteriorTourLink,
+    map: mapLink,
   } = splitProjectCatalogLinks(links);
   const hasAbout = aboutText != null && aboutText.trim().length > 0;
   const hasOverview = overviewRows.length > 0;
@@ -87,6 +89,7 @@ export const ProjectCatalogDetailsPanel = ({
   const hasVideo = videoLink != null;
   const hasTypicalTour = typicalTourLink != null;
   const hasExteriorTour = exteriorTourLink != null;
+  const hasMap = mapLink != null;
   const hasMediaLinks = mediaLinks.length > 0;
   const hasSocialLinks = socialLinks.length > 0;
 
@@ -100,6 +103,7 @@ export const ProjectCatalogDetailsPanel = ({
     !hasVideo &&
     !hasTypicalTour &&
     !hasExteriorTour &&
+    !hasMap &&
     !hasMediaLinks &&
     !hasSocialLinks
   ) {
@@ -186,6 +190,16 @@ export const ProjectCatalogDetailsPanel = ({
             <ProjectCatalogMediaPoster
               title={linkLabels.exteriorInteractiveTour}
               imageSrc={EXTERIOR_TOUR_POSTER_SRC}
+            />
+          </ProjectCatalogSectionCard>
+        ) : null}
+
+        {hasMap && mapLink ? (
+          <ProjectCatalogSectionCard title={linkLabels.map}>
+            <ProjectCatalogMediaPoster
+              title={linkLabels.map}
+              imageSrc={MAP_POSTER_SRC}
+              href={mapLink.url}
             />
           </ProjectCatalogSectionCard>
         ) : null}
