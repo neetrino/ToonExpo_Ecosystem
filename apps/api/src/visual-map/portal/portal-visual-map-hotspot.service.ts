@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import type { PortalVisualHotspotItem } from '@toonexpo/contracts';
-import { PublicationStatus } from '@toonexpo/db';
+import { Prisma, PublicationStatus } from '@toonexpo/db';
 
 import { WebRevalidationService } from '../../common/web-revalidation/web-revalidation.service.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
@@ -50,6 +50,12 @@ export class PortalVisualMapHotspotService {
         label: dto.label,
         xPercent: dto.xPercent,
         yPercent: dto.yPercent,
+        shapeType: dto.shapeType ?? 'point',
+        interactionType:
+          dto.interactionType ??
+          (dto.shapeType === 'polygon' ? 'polygon' : dto.svgPath ? 'both' : 'marker'),
+        svgPath: dto.svgPath ?? null,
+        ...(dto.points !== undefined ? { points: dto.points as Prisma.InputJsonValue } : {}),
         publicationStatus:
           (dto.publicationStatus as PublicationStatus | undefined) ?? PublicationStatus.draft,
         createdByUserId: userId,
@@ -107,6 +113,10 @@ export class PortalVisualMapHotspotService {
         ...(dto.label !== undefined ? { label: dto.label } : {}),
         ...(dto.xPercent !== undefined ? { xPercent: dto.xPercent } : {}),
         ...(dto.yPercent !== undefined ? { yPercent: dto.yPercent } : {}),
+        ...(dto.shapeType !== undefined ? { shapeType: dto.shapeType } : {}),
+        ...(dto.interactionType !== undefined ? { interactionType: dto.interactionType } : {}),
+        ...(dto.svgPath !== undefined ? { svgPath: dto.svgPath } : {}),
+        ...(dto.points !== undefined ? { points: dto.points as Prisma.InputJsonValue } : {}),
         ...(dto.markerStyle !== undefined ? { markerStyle: dto.markerStyle } : {}),
         ...(dto.publicationStatus !== undefined
           ? { publicationStatus: dto.publicationStatus as PublicationStatus }

@@ -2,7 +2,7 @@
  * Builds a create-canvas body omitting unset optional fields (exactOptionalPropertyTypes).
  */
 export const toCreateCanvasBody = (values: {
-  contextType: "project" | "building" | "floor";
+  contextType: 'project' | 'district' | 'building' | 'floor';
   contextId: string;
   mediaAssetId: string;
   title?: string | undefined;
@@ -10,7 +10,7 @@ export const toCreateCanvasBody = (values: {
   isPrimary?: boolean | undefined;
 }) => {
   const body: {
-    contextType: "project" | "building" | "floor";
+    contextType: 'project' | 'district' | 'building' | 'floor';
     contextId: string;
     mediaAssetId: string;
     title?: string;
@@ -39,22 +39,22 @@ export const toCreateCanvasBody = (values: {
  * Builds a hotspot create/update body omitting unset optional fields.
  */
 export const toHotspotBody = (values: {
-  targetType: "building" | "floor" | "apartment";
+  targetType: 'district' | 'building' | 'floor' | 'apartment';
   targetId: string;
   label: string;
   xPercent: number;
   yPercent: number;
   markerStyle?: string | undefined;
-  publicationStatus?: "draft" | "published" | "archived" | undefined;
+  publicationStatus?: 'draft' | 'published' | 'archived' | undefined;
 }) => {
   const body: {
-    targetType: "building" | "floor" | "apartment";
+    targetType: 'district' | 'building' | 'floor' | 'apartment';
     targetId: string;
     label: string;
     xPercent: number;
     yPercent: number;
     markerStyle?: string;
-    publicationStatus?: "draft" | "published" | "archived";
+    publicationStatus?: 'draft' | 'published' | 'archived';
   } = {
     targetType: values.targetType,
     targetId: values.targetId,

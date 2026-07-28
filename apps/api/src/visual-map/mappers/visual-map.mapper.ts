@@ -5,15 +5,12 @@ import type {
   PublicVisualCanvasItem,
   PublicVisualHotspotItem,
   VisualHotspotTargetType,
-} from "@toonexpo/contracts";
-import type { Prisma } from "@toonexpo/db";
+} from '@toonexpo/contracts';
+import type { Prisma } from '@toonexpo/db';
 
-import { toPortalMediaSummary } from "../../media/media.mapper.js";
-import {
-  formatFloorDisplayName,
-  resolveTargetStatus,
-} from "../utils/target-status.js";
-import type { LoadedTargetEntities } from "../utils/target-validation.js";
+import { toPortalMediaSummary } from '../../media/media.mapper.js';
+import { formatFloorDisplayName, resolveTargetStatus } from '../utils/target-status.js';
+import type { LoadedTargetEntities } from '../utils/target-validation.js';
 
 type CanvasWithCounts = Prisma.VisualMapCanvasGetPayload<{
   include: { _count: { select: { hotspots: true } } };
@@ -23,14 +20,11 @@ type CanvasWithHotspots = Prisma.VisualMapCanvasGetPayload<{
   include: { hotspots: true; mediaAsset: true };
 }>;
 
-type HotspotRow = CanvasWithHotspots["hotspots"][number];
+type HotspotRow = CanvasWithHotspots['hotspots'][number];
 
-const decimalToString = (value: { toString(): string }): string =>
-  value.toString();
+const decimalToString = (value: { toString(): string }): string => value.toString();
 
-export const mapPortalCanvasListItem = (
-  canvas: CanvasWithCounts,
-): PortalVisualCanvasListItem => ({
+export const mapPortalCanvasListItem = (canvas: CanvasWithCounts): PortalVisualCanvasListItem => ({
   id: canvas.id,
   projectId: canvas.projectId,
   contextType: canvas.contextType,
@@ -61,6 +55,10 @@ export const mapPortalHotspot = (
     label: hotspot.label,
     xPercent: decimalToString(hotspot.xPercent),
     yPercent: decimalToString(hotspot.yPercent),
+    shapeType: hotspot.shapeType,
+    interactionType: hotspot.interactionType,
+    svgPath: hotspot.svgPath,
+    points: hotspot.points ?? null,
     markerStyle: hotspot.markerStyle,
     publicationStatus: hotspot.publicationStatus,
     sortOrder: hotspot.sortOrder,
@@ -106,6 +104,8 @@ export const mapPublicCanvas = (
     thumbnailUrl: canvas.mediaAsset.thumbnailUrl,
     altText: canvas.mediaAsset.altText,
     title: canvas.mediaAsset.title,
+    width: canvas.mediaAsset.width,
+    height: canvas.mediaAsset.height,
   },
   hotspots: canvas.hotspots
     .map((hotspot) => mapPublicHotspot(hotspot, entities))
@@ -127,6 +127,9 @@ const mapPublicHotspot = (
     label: hotspot.label,
     xPercent: decimalToString(hotspot.xPercent),
     yPercent: decimalToString(hotspot.yPercent),
+    shapeType: hotspot.shapeType,
+    interactionType: hotspot.interactionType,
+    svgPath: hotspot.svgPath,
     markerStyle: hotspot.markerStyle,
     sortOrder: hotspot.sortOrder,
     target: {
@@ -142,24 +145,32 @@ const resolvePublicDisplayName = (
   entities: LoadedTargetEntities,
   targetId: string,
 ): string | null => {
-  if (targetType === "building") {
+  if (targetType === 'district') {
+    const district = entities.districts.get(targetId);
+    if (resolveTargetStatus(district) !== 'ok' || !district) {
+      return null;
+    }
+    return district.name;
+  }
+
+  if (targetType === 'building') {
     const building = entities.buildings.get(targetId);
-    if (resolveTargetStatus(building) !== "ok" || !building) {
+    if (resolveTargetStatus(building) !== 'ok' || !building) {
       return null;
     }
     return building.name;
   }
 
-  if (targetType === "floor") {
+  if (targetType === 'floor') {
     const floor = entities.floors.get(targetId);
-    if (resolveTargetStatus(floor) !== "ok" || !floor) {
+    if (resolveTargetStatus(floor) !== 'ok' || !floor) {
       return null;
     }
     return formatFloorDisplayName(floor);
   }
 
   const apartment = entities.apartments.get(targetId);
-  if (resolveTargetStatus(apartment) !== "ok" || !apartment) {
+  if (resolveTargetStatus(apartment) !== 'ok' || !apartment) {
     return null;
   }
   return apartment.number;
@@ -170,10 +181,13 @@ const lookupEditorEntity = (
   targetType: VisualHotspotTargetType,
   targetId: string,
 ) => {
-  if (targetType === "building") {
+  if (targetType === 'district') {
+    return entities.districts.get(targetId);
+  }
+  if (targetType === 'building') {
     return entities.buildings.get(targetId);
   }
-  if (targetType === "floor") {
+  if (targetType === 'floor') {
     return entities.floors.get(targetId);
   }
   return entities.apartments.get(targetId);

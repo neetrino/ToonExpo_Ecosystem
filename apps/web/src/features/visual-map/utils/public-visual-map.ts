@@ -17,7 +17,12 @@ export const pickPrimaryVisualCanvas = (
 export const buildProjectBuildingHref = (
   projectId: string,
   hotspot: PublicVisualHotspotItem,
-): string => `/projects/${projectId}/buildings/${hotspot.target.id}`;
+): string => {
+  if (hotspot.target.type === 'district') {
+    return `/projects/${projectId}`;
+  }
+  return `/projects/${projectId}/buildings/${hotspot.target.id}`;
+};
 
 export const buildBuildingFloorHref = (
   projectId: string,

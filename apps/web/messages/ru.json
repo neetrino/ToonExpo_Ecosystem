@@ -1118,6 +1118,7 @@
       "buildings": "Здание",
       "floors": "Этаж",
       "apartments": "Квартира",
+      "interactiveMapping": "Интерактивная карта",
       "crm": "CRM",
       "readiness": "Готовность",
       "readinessCategories": "Категории",
@@ -1128,6 +1129,83 @@
       "checkin": "Сканер check-in",
       "bos": "BOS",
       "settings": "Настройки"
+    },
+    "interactiveMapping": {
+      "title": "Интерактивная карта",
+      "subtitle": "Районы, здания, этажи и квартиры — в четыре фазы.",
+      "loading": "Загрузка…",
+      "error": "Не удалось загрузить данные интерактивной карты.",
+      "empty": "Проектов пока нет. Создайте проект, чтобы начать.",
+      "existing": "Проекты",
+      "createProject": "Создать проект",
+      "open": "Открыть",
+      "continuePhase": "Фаза {phase} →",
+      "projectMeta": "{districts} районов · {buildings} зданий · фаза {phase}",
+      "labLink": "Mapping lab (QA)",
+      "backToProjects": "← Проекты",
+      "backToWizard": "← Мастер",
+      "activePhase": "Сейчас фаза {phase}",
+      "allPhasesDone": "Все фазы завершены",
+      "status": {
+        "locked": "Заблокировано",
+        "active": "Сделайте это сейчас",
+        "done": "Готово"
+      },
+      "phases": {
+        "districts": "Районы",
+        "buildings": "Здания",
+        "floors": "Этажи",
+        "apartments": "Квартиры"
+      },
+      "hints": {
+        "districts": "Создайте район, загрузите masterplan и разместите маркеры или полигоны.",
+        "buildings": "Создайте здания и разместите их на плане района.",
+        "floors": "Укажите число этажей, загрузите рендер и нарисуйте этажи.",
+        "apartments": "Создайте квартиры и нарисуйте их на плане этажа.",
+        "setupFloors": "Укажите число этажей, затем откройте страницу разметки."
+      },
+      "progress": {
+        "districts": "{done}/{total} районов",
+        "buildings": "{done}/{total} зданий",
+        "floors": "{done}/{total} этажей",
+        "apartments": "{done}/{total} квартир"
+      },
+      "cta": {
+        "mapDistricts": "Разметить районы",
+        "mapBuildings": "Разметить здания",
+        "mapFloors": "Разметить этажи",
+        "mapApartments": "Разметить квартиры",
+        "edit": "Смотреть / править",
+        "locked": "Заблокировано",
+        "other": "Другое"
+      },
+      "forms": {
+        "name": "Название",
+        "createDistrict": "Создать район",
+        "createBuilding": "Создать здание",
+        "createApartment": "Создать квартиру",
+        "apartmentNumber": "Номер",
+        "districtPlaceholder": "напр. Район A",
+        "buildingPlaceholder": "напр. Building 01",
+        "apartmentPlaceholder": "101",
+        "saving": "Сохранение…",
+        "setupFloors": "Начать разметку этажей",
+        "floorCount": "Число этажей",
+        "masterplanImage": "Изображение masterplan",
+        "districtPlanImage": "План района",
+        "buildingRenderImage": "Рендер здания",
+        "floorPlanImage": "План этажа",
+        "uploadFirst": "Сначала загрузите изображение.",
+        "uploadAndSetupFloors": "Сначала загрузите рендер и настройте этажи.",
+        "pickFloor": "Этажи",
+        "noFloors": "Этажей пока нет."
+      },
+      "pages": {
+        "masterplan": "Masterplan · районы",
+        "district": "Район · {name}",
+        "buildingRender": "Здание · {name}",
+        "floor": "Этаж · {name}"
+      }
     },
     "settings": {
       "title": "Настройки",

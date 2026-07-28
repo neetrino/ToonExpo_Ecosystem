@@ -1,14 +1,21 @@
 /**
  * Visual map / hotspot contracts (builder portal editor + public navigation).
+ *
+ * Coordinate contract: pointer → normalized 0…1 relative to object-fit:contain
+ * content box. Markers: xPercent/yPercent 0–100. Polygons: svgPath in viewBox px.
  */
 
-import type { MediaAssetSummary, PublicationStatus } from "./catalog.js";
+import type { MediaAssetSummary, PublicationStatus } from './catalog.js';
 
-export type VisualMapContextType = "project" | "building" | "floor";
+export type VisualMapContextType = 'project' | 'district' | 'building' | 'floor';
 
-export type VisualHotspotTargetType = "building" | "floor" | "apartment";
+export type VisualHotspotTargetType = 'district' | 'building' | 'floor' | 'apartment';
 
-export type VisualHotspotTargetStatus = "ok" | "unpublished" | "missing";
+export type VisualHotspotShapeType = 'point' | 'polygon';
+
+export type VisualHotspotInteractionType = 'marker' | 'polygon' | 'both';
+
+export type VisualHotspotTargetStatus = 'ok' | 'unpublished' | 'missing';
 
 export type PortalVisualCanvasListItem = {
   id: string;
@@ -57,6 +64,10 @@ export type PortalVisualHotspotItem = {
   label: string;
   xPercent: string;
   yPercent: string;
+  shapeType: VisualHotspotShapeType;
+  interactionType: VisualHotspotInteractionType;
+  svgPath: string | null;
+  points: unknown | null;
   markerStyle: string | null;
   publicationStatus: PublicationStatus;
   sortOrder: number | null;
@@ -92,6 +103,10 @@ export type CreatePortalVisualHotspotRequest = {
   label: string;
   xPercent: number;
   yPercent: number;
+  shapeType?: VisualHotspotShapeType;
+  interactionType?: VisualHotspotInteractionType;
+  svgPath?: string | null;
+  points?: unknown;
   markerStyle?: string;
   publicationStatus?: PublicationStatus;
   sortOrder?: number;
@@ -103,6 +118,10 @@ export type UpdatePortalVisualHotspotRequest = {
   label?: string;
   xPercent?: number;
   yPercent?: number;
+  shapeType?: VisualHotspotShapeType;
+  interactionType?: VisualHotspotInteractionType;
+  svgPath?: string | null;
+  points?: unknown;
   markerStyle?: string;
   publicationStatus?: PublicationStatus;
   sortOrder?: number;
@@ -110,6 +129,8 @@ export type UpdatePortalVisualHotspotRequest = {
 
 export type PublicVisualMapMedia = MediaAssetSummary & {
   title: string | null;
+  width: number | null;
+  height: number | null;
 };
 
 export type PublicVisualHotspotItem = {
@@ -117,6 +138,9 @@ export type PublicVisualHotspotItem = {
   label: string;
   xPercent: string;
   yPercent: string;
+  shapeType: VisualHotspotShapeType;
+  interactionType: VisualHotspotInteractionType;
+  svgPath: string | null;
   markerStyle: string | null;
   sortOrder: number | null;
   target: {

@@ -1,9 +1,9 @@
-import type { VisualHotspotTargetType, VisualMapContextType } from "@toonexpo/contracts";
-import { PublicationStatus } from "@toonexpo/db";
+import type { VisualHotspotTargetType, VisualMapContextType } from '@toonexpo/contracts';
+import { PublicationStatus } from '@toonexpo/db';
 
-import type { PrismaService } from "../../prisma/prisma.service.js";
-import { entityNotFound } from "../../portal/utils/access.js";
-import { assertTargetTypeMatchesContext, toDbTargetType } from "./target-type.js";
+import type { PrismaService } from '../../prisma/prisma.service.js';
+import { entityNotFound } from '../../portal/utils/access.js';
+import { assertTargetTypeMatchesContext, toDbTargetType } from './target-type.js';
 
 type TargetValidationInput = {
   contextType: VisualMapContextType;
@@ -27,8 +27,8 @@ export const validateHotspotTarget = async (
 ): Promise<TargetEntity> => {
   assertTargetTypeMatchesContext(input.contextType, input.targetType);
 
-  if (input.targetType === "building") {
-    const building = await prisma.db.building.findFirst({
+  if (input.targetType === 'district') {
+    const district = await prisma.db.district.findFirst({
       where: {
         id: input.targetId,
         projectId: input.projectId,
@@ -36,13 +36,29 @@ export const validateHotspotTarget = async (
       },
       select: { publicationStatus: true },
     });
+    if (!district) {
+      throw entityNotFound('District');
+    }
+    return district;
+  }
+
+  if (input.targetType === 'building') {
+    const building = await prisma.db.building.findFirst({
+      where: {
+        id: input.targetId,
+        projectId: input.projectId,
+        project: { builderCompanyId: input.companyId },
+        ...(input.contextType === 'district' ? { districtId: input.contextId } : {}),
+      },
+      select: { publicationStatus: true },
+    });
     if (!building) {
-      throw entityNotFound("Building");
+      throw entityNotFound('Building');
     }
     return building;
   }
 
-  if (input.targetType === "floor") {
+  if (input.targetType === 'floor') {
     const floor = await prisma.db.floor.findFirst({
       where: {
         id: input.targetId,
@@ -55,7 +71,7 @@ export const validateHotspotTarget = async (
       select: { publicationStatus: true },
     });
     if (!floor) {
-      throw entityNotFound("Floor");
+      throw entityNotFound('Floor');
     }
     return floor;
   }
@@ -70,12 +86,13 @@ export const validateHotspotTarget = async (
     select: { publicationStatus: true },
   });
   if (!apartment) {
-    throw entityNotFound("Apartment");
+    throw entityNotFound('Apartment');
   }
   return apartment;
 };
 
 export type LoadedTargetEntities = {
+  districts: Map<string, { name: string; publicationStatus: PublicationStatus }>;
   buildings: Map<string, { name: string; publicationStatus: PublicationStatus }>;
   floors: Map<
     string,
@@ -96,17 +113,26 @@ export const loadTargetEntities = async (
   prisma: PrismaService,
   hotspots: Array<{ targetType: VisualHotspotTargetType; targetId: string }>,
 ): Promise<LoadedTargetEntities> => {
+  const districtIds = hotspots
+    .filter((hotspot) => hotspot.targetType === 'district')
+    .map((hotspot) => hotspot.targetId);
   const buildingIds = hotspots
-    .filter((hotspot) => hotspot.targetType === "building")
+    .filter((hotspot) => hotspot.targetType === 'building')
     .map((hotspot) => hotspot.targetId);
   const floorIds = hotspots
-    .filter((hotspot) => hotspot.targetType === "floor")
+    .filter((hotspot) => hotspot.targetType === 'floor')
     .map((hotspot) => hotspot.targetId);
   const apartmentIds = hotspots
-    .filter((hotspot) => hotspot.targetType === "apartment")
+    .filter((hotspot) => hotspot.targetType === 'apartment')
     .map((hotspot) => hotspot.targetId);
 
-  const [buildings, floors, apartments] = await Promise.all([
+  const [districts, buildings, floors, apartments] = await Promise.all([
+    districtIds.length
+      ? prisma.db.district.findMany({
+          where: { id: { in: districtIds } },
+          select: { id: true, name: true, publicationStatus: true },
+        })
+      : [],
     buildingIds.length
       ? prisma.db.building.findMany({
           where: { id: { in: buildingIds } },
@@ -134,6 +160,7 @@ export const loadTargetEntities = async (
   ]);
 
   return {
+    districts: new Map(districts.map((row) => [row.id, row])),
     buildings: new Map(buildings.map((row) => [row.id, row])),
     floors: new Map(floors.map((row) => [row.id, row])),
     apartments: new Map(apartments.map((row) => [row.id, row])),
@@ -145,10 +172,13 @@ export const lookupTargetEntity = (
   targetType: VisualHotspotTargetType,
   targetId: string,
 ): TargetEntity | undefined => {
-  if (targetType === "building") {
+  if (targetType === 'district') {
+    return entities.districts.get(targetId);
+  }
+  if (targetType === 'building') {
     return entities.buildings.get(targetId);
   }
-  if (targetType === "floor") {
+  if (targetType === 'floor') {
     return entities.floors.get(targetId);
   }
   return entities.apartments.get(targetId);

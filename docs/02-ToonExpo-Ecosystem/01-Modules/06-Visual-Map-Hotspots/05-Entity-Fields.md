@@ -34,19 +34,24 @@ v1 values:
 
 ```text
 project
+district
 building
 floor
 ```
 
+`district` was added for Interactive Mapping (4-phase Admin wizard).
+Legacy project canvases may still target `building` hotspots.
+
 Meaning:
 
-- project canvas targets buildings;
+- project canvas targets districts (or legacy buildings);
+- district canvas targets buildings;
 - building canvas targets floors;
 - floor canvas targets apartments.
 
 ## VisualHotspot
 
-Represents one clickable marker on a visual canvas.
+Represents one clickable marker and/or polygon region on a visual canvas.
 
 Fields:
 
@@ -57,6 +62,10 @@ Fields:
 - label;
 - x_percent;
 - y_percent;
+- shape_type (`point` | `polygon`);
+- interaction_type (`marker` | `polygon` | `both`);
+- svg_path optional (viewBox pixel `d`);
+- points optional (JSON editor points);
 - marker_style optional;
 - publication_status;
 - sort_order optional;
@@ -70,6 +79,7 @@ Fields:
 v1 values:
 
 ```text
+district
 building
 floor
 apartment
@@ -141,4 +151,3 @@ shape_data: json
 ```
 
 Do not add complex shape data to v1 unless needed after testing real visuals.
-

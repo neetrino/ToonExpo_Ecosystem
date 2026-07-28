@@ -53,6 +53,15 @@ export class PortalBuildingsService {
     dto: CreatePortalBuildingDto,
   ): Promise<PortalBuildingSummary> {
     await requireOwnedProject(this.prisma, projectId, companyId);
+    if (dto.districtId) {
+      const district = await this.prisma.db.district.findFirst({
+        where: { id: dto.districtId, projectId },
+        select: { id: true },
+      });
+      if (!district) {
+        throw new BadRequestException('District not found in this project');
+      }
+    }
     const building = await this.prisma.db.building.create({
       data: {
         projectId,
@@ -65,6 +74,7 @@ export class PortalBuildingsService {
         ...(dto.floorsCount !== undefined ? { floorsCount: dto.floorsCount } : {}),
         ...(dto.coverMediaId !== undefined ? { coverMediaId: dto.coverMediaId } : {}),
         ...(dto.internalCode !== undefined ? { internalCode: dto.internalCode } : {}),
+        ...(dto.districtId !== undefined ? { districtId: dto.districtId } : {}),
       },
       include: buildingInclude,
     });

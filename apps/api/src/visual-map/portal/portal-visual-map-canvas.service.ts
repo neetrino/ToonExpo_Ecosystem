@@ -83,6 +83,7 @@ export class PortalVisualMapCanvasService {
     });
 
     return mapPortalCanvasDetail(canvas, {
+      districts: new Map(),
       buildings: new Map(),
       floors: new Map(),
       apartments: new Map(),

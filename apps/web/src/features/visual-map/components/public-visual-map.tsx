@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 import { PercentMapMarkers } from '@/features/visual-map/components/percent-map-markers';
+import { PolygonHotspotOverlay } from '@/features/visual-map/components/polygon-hotspot-overlay';
 import { PublicVisualHotspotSheet } from '@/features/visual-map/components/public-visual-hotspot-sheet';
 import {
   buildBuildingFloorHref,
@@ -24,7 +25,7 @@ type PublicVisualMapProps = {
 };
 
 /**
- * Public visual map with tappable SVG markers and optional bottom sheet.
+ * Public visual map with tappable markers and polygon overlays.
  */
 export const PublicVisualMap = ({ canvas, linkContext }: PublicVisualMapProps) => {
   const t = useTranslations('Catalog.visualMap');
@@ -35,13 +36,33 @@ export const PublicVisualMap = ({ canvas, linkContext }: PublicVisualMapProps) =
   const selectedHotspot =
     canvas.hotspots.find((hotspot) => hotspot.id === selectedHotspotId) ?? null;
 
-  const markers = canvas.hotspots.map((hotspot) => ({
-    id: hotspot.id,
-    label: hotspot.label,
-    xPercent: hotspot.xPercent,
-    yPercent: hotspot.yPercent,
-    selected: selectedHotspotId === hotspot.id,
-  }));
+  const pointMarkers = canvas.hotspots
+    .filter(
+      (hotspot) =>
+        hotspot.shapeType === 'point' ||
+        hotspot.interactionType === 'marker' ||
+        hotspot.interactionType === 'both' ||
+        !hotspot.svgPath,
+    )
+    .map((hotspot) => ({
+      id: hotspot.id,
+      label: hotspot.label,
+      xPercent: hotspot.xPercent,
+      yPercent: hotspot.yPercent,
+      selected: selectedHotspotId === hotspot.id,
+    }));
+
+  const polygonItems = canvas.hotspots
+    .filter((hotspot) => hotspot.svgPath != null && hotspot.svgPath.length > 0)
+    .map((hotspot) => ({
+      id: hotspot.id,
+      label: hotspot.label,
+      svgPath: hotspot.svgPath as string,
+      selected: selectedHotspotId === hotspot.id,
+    }));
+
+  const viewBoxWidth = canvas.media.width ?? 1000;
+  const viewBoxHeight = canvas.media.height ?? 1000;
 
   return (
     <section className="mb-8 flex flex-col gap-3">
@@ -56,9 +77,18 @@ export const PublicVisualMap = ({ canvas, linkContext }: PublicVisualMapProps) =
             alt={canvas.media.altText ?? canvas.title ?? t('alt')}
             className="h-auto w-full"
           />
-          {hasHotspots ? (
+          {polygonItems.length > 0 ? (
+            <PolygonHotspotOverlay
+              items={polygonItems}
+              viewBoxWidth={viewBoxWidth}
+              viewBoxHeight={viewBoxHeight}
+              interactive
+              onSelect={setSelectedHotspotId}
+            />
+          ) : null}
+          {pointMarkers.length > 0 ? (
             <PercentMapMarkers
-              markers={markers}
+              markers={pointMarkers}
               interactive
               showLabels
               onSelectMarker={setSelectedHotspotId}

@@ -1,5 +1,5 @@
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { Type } from "class-transformer";
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   IsBoolean,
   IsEnum,
@@ -9,29 +9,39 @@ import {
   Max,
   Min,
   MinLength,
-} from "class-validator";
+} from 'class-validator';
 
-import {
-  VISUAL_MAP_COORD_MAX,
-  VISUAL_MAP_COORD_MIN,
-} from "../../visual-map.constants.js";
+import { VISUAL_MAP_COORD_MAX, VISUAL_MAP_COORD_MIN } from '../../visual-map.constants.js';
 
 enum VisualMapContextTypeDto {
-  project = "project",
-  building = "building",
-  floor = "floor",
+  project = 'project',
+  district = 'district',
+  building = 'building',
+  floor = 'floor',
 }
 
 enum VisualHotspotTargetTypeDto {
-  building = "building",
-  floor = "floor",
-  apartment = "apartment",
+  district = 'district',
+  building = 'building',
+  floor = 'floor',
+  apartment = 'apartment',
+}
+
+enum VisualHotspotShapeTypeDto {
+  point = 'point',
+  polygon = 'polygon',
+}
+
+enum VisualHotspotInteractionTypeDto {
+  marker = 'marker',
+  polygon = 'polygon',
+  both = 'both',
 }
 
 enum PublicationStatusDto {
-  draft = "draft",
-  published = "published",
-  archived = "archived",
+  draft = 'draft',
+  published = 'published',
+  archived = 'archived',
 }
 
 export class CreatePortalVisualCanvasDto {
@@ -131,6 +141,25 @@ export class CreatePortalVisualHotspotDto {
   @Max(VISUAL_MAP_COORD_MAX)
   yPercent!: number;
 
+  @ApiPropertyOptional({ enum: VisualHotspotShapeTypeDto })
+  @IsOptional()
+  @IsEnum(VisualHotspotShapeTypeDto)
+  shapeType?: VisualHotspotShapeTypeDto;
+
+  @ApiPropertyOptional({ enum: VisualHotspotInteractionTypeDto })
+  @IsOptional()
+  @IsEnum(VisualHotspotInteractionTypeDto)
+  interactionType?: VisualHotspotInteractionTypeDto;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  svgPath?: string | null;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  points?: unknown;
+
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()
@@ -177,6 +206,25 @@ export class UpdatePortalVisualHotspotDto {
   @Min(VISUAL_MAP_COORD_MIN)
   @Max(VISUAL_MAP_COORD_MAX)
   yPercent?: number;
+
+  @ApiPropertyOptional({ enum: VisualHotspotShapeTypeDto })
+  @IsOptional()
+  @IsEnum(VisualHotspotShapeTypeDto)
+  shapeType?: VisualHotspotShapeTypeDto;
+
+  @ApiPropertyOptional({ enum: VisualHotspotInteractionTypeDto })
+  @IsOptional()
+  @IsEnum(VisualHotspotInteractionTypeDto)
+  interactionType?: VisualHotspotInteractionTypeDto;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  svgPath?: string | null;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  points?: unknown;
 
   @ApiPropertyOptional()
   @IsOptional()
