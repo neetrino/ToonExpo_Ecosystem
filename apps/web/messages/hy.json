@@ -1117,7 +1117,6 @@
       "buildings": "Շենք",
       "floors": "Հարկ",
       "apartments": "Բնակարան",
-      "crm": "CRM",
       "partners": "Գործընկերներ",
       "bankOffers": "Բանկային առաջարկներ",
       "serviceProviders": "Ծառայություն մատուցողներ",
@@ -1137,57 +1136,6 @@
         "label": "Կարգավորումների բաժիններ",
         "profile": "Պրոֆիլ",
         "password": "Գաղտնաբառ"
-      }
-    },
-    "crm": {
-      "title": "CRM",
-      "eyebrow": "Խողովակ",
-      "subtitle": "{count, plural, =0 {Deal չկա} one {# deal կառուցապատողներից} other {# deal կառուցապատողներից}}",
-      "error": "Չհաջողվեց բեռնել CRM deal-երը։ Փորձեք նորից։",
-      "filters": {
-        "company": "Կառուցապատող",
-        "allCompanies": "Բոլոր կառուցապատողները",
-        "selectedCount": "{count} ընտրված",
-        "apply": "Կիրառել",
-        "reset": "Մաքրել",
-        "clearAll": "Մաքրել որոնումը և ֆիլտրերը",
-        "panelLabel": "Որոնման ֆիլտրեր",
-        "removeChip": "Հեռացնել ֆիլտրը {label}"
-      },
-      "empty": "Այս ֆիլտրերով deal չկա։",
-      "columns": {
-        "buyer": "Գնորդ",
-        "company": "Կառուցապատող",
-        "project": "Նախագիծ",
-        "status": "Կարգավիճակ",
-        "source": "Աղբյուր",
-        "assignee": "Պատասխանատու",
-        "updated": "Թարմացված"
-      },
-      "newDeal": {
-        "title": "Նոր lead",
-        "cancel": "Չեղարկել",
-        "company": "Կառուցապատող",
-        "companyPlaceholder": "Ընտրեք կառուցապատող",
-        "contactName": "Ամբողջական անուն",
-        "contactNamePlaceholder": "John Doe",
-        "contactPhone": "Հեռախոս",
-        "contactPhonePlaceholder": "37491111222",
-        "contactEmail": "Email",
-        "contactEmailPlaceholder": "john.doe@example.com",
-        "project": "Նախագիծ",
-        "projectOptional": "Առանց նախագծի",
-        "note": "Նշում",
-        "submitting": "Ստեղծվում է…",
-        "validation": {
-          "company": "Ընտրեք կառուցապատող",
-          "contactName": "Մուտքագրեք անուն",
-          "phone": "Մուտքագրեք վավեր հեռախոս",
-          "email": "Մուտքագրեք վավեր email"
-        },
-        "errors": {
-          "generic": "Ինչ-որ սխալ տեղի ունեցավ։ Փորձեք նորից։"
-        }
       }
     },
     "analytics": {

@@ -3,7 +3,6 @@
 import {
   Building,
   Building2,
-  Briefcase,
   CalendarDays,
   ChevronDown,
   ClipboardCheck,
@@ -36,7 +35,6 @@ type NavItem = {
     | 'floors'
     | 'apartments'
     | 'checkin'
-    | 'crm'
     | 'partners'
     | 'bankOffers'
     | 'serviceProviders'
@@ -66,7 +64,6 @@ const PRIMARY_NAV_ITEMS: NavItem[] = [
     icon: FolderKanban,
     children: PROJECT_CHILD_NAV_ITEMS,
   },
-  { href: '/admin/crm', key: 'crm', icon: Briefcase },
   { href: '/admin/checkin', key: 'checkin', icon: ScanLine },
   { href: '/admin/partners', key: 'partners', icon: Handshake },
   { href: '/admin/bank-offers', key: 'bankOffers', icon: Landmark },

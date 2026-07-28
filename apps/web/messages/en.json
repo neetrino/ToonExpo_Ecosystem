@@ -1117,7 +1117,6 @@
       "buildings": "Building",
       "floors": "Floor",
       "apartments": "Apartment",
-      "crm": "CRM",
       "partners": "Partners",
       "bankOffers": "Bank offers",
       "serviceProviders": "Service providers",
@@ -1137,57 +1136,6 @@
         "label": "Settings sections",
         "profile": "Profile",
         "password": "Password"
-      }
-    },
-    "crm": {
-      "title": "CRM",
-      "eyebrow": "Pipeline",
-      "subtitle": "{count, plural, =0 {No deals across builders} one {# deal across builders} other {# deals across builders}}",
-      "error": "Could not load CRM deals. Try again.",
-      "filters": {
-        "company": "Builder",
-        "allCompanies": "All builders",
-        "selectedCount": "{count} selected",
-        "apply": "Apply",
-        "reset": "Reset",
-        "clearAll": "Clear search and filters",
-        "panelLabel": "Search filters",
-        "removeChip": "Remove filter {label}"
-      },
-      "empty": "No deals match these filters.",
-      "columns": {
-        "buyer": "Buyer",
-        "company": "Builder",
-        "project": "Project",
-        "status": "Status",
-        "source": "Source",
-        "assignee": "Assignee",
-        "updated": "Updated"
-      },
-      "newDeal": {
-        "title": "New lead",
-        "cancel": "Cancel",
-        "company": "Builder",
-        "companyPlaceholder": "Select builder",
-        "contactName": "Full name",
-        "contactNamePlaceholder": "John Doe",
-        "contactPhone": "Phone",
-        "contactPhonePlaceholder": "37491111222",
-        "contactEmail": "Email",
-        "contactEmailPlaceholder": "john.doe@example.com",
-        "project": "Project",
-        "projectOptional": "No project",
-        "note": "Note",
-        "submitting": "Creating…",
-        "validation": {
-          "company": "Select a builder",
-          "contactName": "Enter a name",
-          "phone": "Enter a valid phone number",
-          "email": "Enter a valid email"
-        },
-        "errors": {
-          "generic": "Something went wrong. Please try again."
-        }
       }
     },
     "analytics": {

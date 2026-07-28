@@ -1117,7 +1117,6 @@
       "buildings": "Здание",
       "floors": "Этаж",
       "apartments": "Квартира",
-      "crm": "CRM",
       "readiness": "Готовность",
       "readinessCategories": "Категории",
       "partners": "Партнёры",
@@ -1137,57 +1136,6 @@
         "label": "Разделы настроек",
         "profile": "Профиль",
         "password": "Пароль"
-      }
-    },
-    "crm": {
-      "title": "CRM",
-      "eyebrow": "Воронка",
-      "subtitle": "{count, plural, =0 {Нет сделок} one {# сделка по застройщикам} few {# сделки по застройщикам} other {# сделок по застройщикам}}",
-      "error": "Не удалось загрузить CRM. Попробуйте снова.",
-      "filters": {
-        "company": "Застройщик",
-        "allCompanies": "Все застройщики",
-        "selectedCount": "{count} выбрано",
-        "apply": "Применить",
-        "reset": "Сбросить",
-        "clearAll": "Очистить поиск и фильтры",
-        "panelLabel": "Фильтры поиска",
-        "removeChip": "Убрать фильтр {label}"
-      },
-      "empty": "Нет сделок по этим фильтрам.",
-      "columns": {
-        "buyer": "Покупатель",
-        "company": "Застройщик",
-        "project": "Проект",
-        "status": "Статус",
-        "source": "Источник",
-        "assignee": "Ответственный",
-        "updated": "Обновлено"
-      },
-      "newDeal": {
-        "title": "Новый лид",
-        "cancel": "Отмена",
-        "company": "Застройщик",
-        "companyPlaceholder": "Выберите застройщика",
-        "contactName": "Полное имя",
-        "contactNamePlaceholder": "John Doe",
-        "contactPhone": "Телефон",
-        "contactPhonePlaceholder": "37491111222",
-        "contactEmail": "Email",
-        "contactEmailPlaceholder": "john.doe@example.com",
-        "project": "Проект",
-        "projectOptional": "Без проекта",
-        "note": "Заметка",
-        "submitting": "Создание…",
-        "validation": {
-          "company": "Выберите застройщика",
-          "contactName": "Введите имя",
-          "phone": "Введите корректный телефон",
-          "email": "Введите корректный email"
-        },
-        "errors": {
-          "generic": "Что-то пошло не так. Попробуйте снова."
-        }
       }
     },
     "analytics": {
