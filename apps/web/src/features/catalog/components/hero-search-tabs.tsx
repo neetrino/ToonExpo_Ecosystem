@@ -115,7 +115,7 @@ export const HeroSearchTabs = ({ activeTab, labels, listLabel, onChange }: HeroS
       <span
         aria-hidden
         className={cn(
-          'pointer-events-none absolute bottom-0 left-0 z-20 h-0.5 bg-brand-secondary will-change-[transform,width]',
+          'pointer-events-none absolute bottom-0 left-0 z-20 h-px bg-brand-secondary will-change-[transform,width]',
           indicatorReady &&
             !reduceMotion &&
             'transition-[transform,width] ease-[var(--ease-out-premium)]',
