@@ -71,7 +71,8 @@ export const BrandLogo = ({
       href={href}
       onClick={onClick}
       className={cn(
-        'inline-flex items-center gap-2 font-brand font-extrabold tracking-[-0.025em]',
+        'inline-flex gap-2 font-brand font-extrabold tracking-[-0.025em]',
+        badge ? 'items-start' : 'items-center',
         wordmarkClassName[size],
         className,
       )}
@@ -81,34 +82,36 @@ export const BrandLogo = ({
           <HouseMark roofFill={roofFill} bodyFill={bodyFill} />
         </span>
       ) : null}
-      <span className="inline-flex whitespace-nowrap">
-        <span
-          className={cn(
-            'transition-colors duration-[520ms] ease-[var(--ease-out-premium)]',
-            inverted ? 'text-on-dark' : 'text-brand-deep',
-          )}
-        >
-          TOON
+      <span className="inline-flex flex-col items-start gap-1">
+        <span className="inline-flex whitespace-nowrap">
+          <span
+            className={cn(
+              'transition-colors duration-[520ms] ease-[var(--ease-out-premium)]',
+              inverted ? 'text-on-dark' : 'text-brand-deep',
+            )}
+          >
+            TOON
+          </span>
+          <span
+            className={cn(
+              'transition-colors duration-[520ms] ease-[var(--ease-out-premium)]',
+              inverted ? 'text-brand-logo' : 'text-brand-secondary',
+            )}
+          >
+            EXPO
+          </span>
         </span>
-        <span
-          className={cn(
-            'transition-colors duration-[520ms] ease-[var(--ease-out-premium)]',
-            inverted ? 'text-brand-logo' : 'text-brand-secondary',
-          )}
-        >
-          EXPO
-        </span>
+        {badge ? (
+          <span
+            className={cn(
+              'text-[10px] font-semibold uppercase tracking-[0.14em]',
+              inverted ? 'text-on-dark/70' : 'text-ink-muted',
+            )}
+          >
+            {badge}
+          </span>
+        ) : null}
       </span>
-      {badge ? (
-        <span
-          className={cn(
-            'ml-1 self-center text-[10px] font-semibold uppercase tracking-[0.14em]',
-            inverted ? 'text-on-dark/70' : 'text-ink-muted',
-          )}
-        >
-          {badge}
-        </span>
-      ) : null}
     </Link>
   );
 };

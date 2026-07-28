@@ -9,6 +9,7 @@ import { useCreateBuyerRequestMutation } from '@/features/buyer/hooks/use-buyer'
 import { isNonBuyerStaff } from '@/features/buyer/utils/is-buyer-account';
 import { Link, usePathname } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
+import { Form } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
 
 type ProjectReserveCtaProps = {
@@ -125,7 +126,7 @@ export const ProjectReserveCta = ({ projectId, projectName }: ProjectReserveCtaP
               {tRequest('success.created')}
             </p>
           ) : (
-            <form className="space-y-3" onSubmit={(event) => void onSubmit(event)} noValidate>
+            <Form className="space-y-3" onSubmit={(event) => void onSubmit(event)} noValidate>
               <Input
                 name="name"
                 autoComplete="name"
@@ -174,7 +175,7 @@ export const ProjectReserveCta = ({ projectId, projectName }: ProjectReserveCtaP
               >
                 {mutation.isPending ? t('reserveSubmitting') : t('reserveSubmit')}
               </button>
-            </form>
+            </Form>
           )}
         </div>
       </div>

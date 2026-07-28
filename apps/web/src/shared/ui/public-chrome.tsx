@@ -2,30 +2,27 @@
 
 import type { ReactNode } from 'react';
 
+import {
+  MobileBottomNav,
+  MobileBottomNavSpacer,
+} from '@/features/catalog/components/mobile-bottom-nav';
 import { usePathname } from '@/i18n/navigation';
+import { isBuyerAccountShellPath } from '@/shared/ui/account-mobile-nav-controller';
 import { DesktopFluidFrame } from '@/shared/ui/desktop-fluid-frame';
+import { PageEnter } from '@/shared/ui/motion/page-enter';
 import { SiteHeader } from '@/shared/ui/site-header';
 
 type PublicChromeProps = {
   children: ReactNode;
 };
 
-/** Route prefixes that render their own shell (no public SiteHeader). */
-const PORTAL_PREFIXES = [
-  '/admin',
-  '/builder',
-  '/partner',
-  '/checkin',
-  '/settings',
-  '/dashboard',
-  '/favorites',
-  '/requests',
-] as const;
+/**
+ * Route prefixes that render their own shell (no public SiteHeader).
+ * Buyer AccountShell routes mount SiteHeader inside PortalShell.
+ */
+const PORTAL_PREFIXES = ['/admin', '/builder', '/partner'] as const;
 
 const isPortalRoute = (pathname: string): boolean => {
-  if (pathname === '/qr') {
-    return true;
-  }
   return PORTAL_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
 };
 
@@ -53,13 +50,30 @@ const isProjectsListRoute = (pathname: string): boolean => {
   return pathname === '/projects';
 };
 
+const isBuildersListRoute = (pathname: string): boolean => {
+  return pathname === '/builders';
+};
+
+const isBuilderDetailRoute = (pathname: string): boolean => {
+  return /^\/builders\/[^/]+$/.test(pathname);
+};
+
+const isDeveloperDetailRoute = (pathname: string): boolean => {
+  return /^\/developers\/[^/]+$/.test(pathname);
+};
+
+/** Building detail (`/projects/:id/buildings/:buildingId`) — cover under transparent header. */
+const isBuildingDetailRoute = (pathname: string): boolean => {
+  return /^\/projects\/[^/]+\/buildings\/[^/]+$/.test(pathname);
+};
+
 /**
  * Persistent public chrome — keeps SiteHeader mounted across navigations
  * so the bar does not remount/jump when switching Projects / Builders / etc.
  * Auth routes use AuthPageShell instead of the public header.
- * Home, partners/projects list+detail use a transparent header so the hero
- * sits under the bar; other public pages use the same floating pill chrome
- * as home-after-scroll.
+ * Home, partners/projects/builders list+detail, and building detail use a
+ * transparent header so the hero sits under the bar; other public pages use the
+ * same floating pill chrome as home-after-scroll.
  * Public, portal, and auth pages use DesktopFluidFrame so desktop composition
  * scales like ma-marie. Auth keeps AuthPageShell (no public SiteHeader).
  */
@@ -70,7 +84,11 @@ export const PublicChrome = ({ children }: PublicChromeProps) => {
     isProjectDetailRoute(pathname) ||
     isPartnerDetailRoute(pathname) ||
     isPartnersListRoute(pathname) ||
-    isProjectsListRoute(pathname)
+    isProjectsListRoute(pathname) ||
+    isBuildersListRoute(pathname) ||
+    isBuilderDetailRoute(pathname) ||
+    isDeveloperDetailRoute(pathname) ||
+    isBuildingDetailRoute(pathname)
       ? 'transparent'
       : 'solid';
 
@@ -78,10 +96,22 @@ export const PublicChrome = ({ children }: PublicChromeProps) => {
     return <DesktopFluidFrame>{children}</DesktopFluidFrame>;
   }
 
+  if (isBuyerAccountShellPath(pathname)) {
+    return (
+      <DesktopFluidFrame stageClassName="min-h-svh bg-canvas">
+        {children}
+        <MobileBottomNavSpacer />
+        <MobileBottomNav />
+      </DesktopFluidFrame>
+    );
+  }
+
   return (
-    <DesktopFluidFrame>
+    <DesktopFluidFrame stageClassName="min-h-svh bg-canvas">
       <SiteHeader variant={headerVariant} />
-      {children}
+      <PageEnter>{children}</PageEnter>
+      <MobileBottomNavSpacer />
+      <MobileBottomNav />
     </DesktopFluidFrame>
   );
 };

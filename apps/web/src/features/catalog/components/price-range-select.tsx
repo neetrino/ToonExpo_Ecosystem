@@ -1,8 +1,8 @@
 'use client';
 
-import { ChevronDown } from 'lucide-react';
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
 
+import { HeroFilterTrigger } from '@/features/catalog/components/hero-filter-trigger';
 import { cn } from '@/shared/ui/cn';
 import { DropdownPortal } from '@/shared/ui/dropdown-portal';
 import { Input } from '@/shared/ui/input';
@@ -20,6 +20,8 @@ type PriceRangeSelectProps = {
     save: string;
     invalidRange: string;
   };
+  /** Visible field title inside the mobile block trigger. */
+  fieldLabel: string;
   onApply: (minPrice: number | null, maxPrice: number | null) => void;
 };
 
@@ -58,6 +60,7 @@ export const PriceRangeSelect = ({
   minPrice,
   maxPrice,
   labels,
+  fieldLabel,
   onApply,
 }: PriceRangeSelectProps) => {
   const [open, setOpen] = useState(false);
@@ -67,6 +70,7 @@ export const PriceRangeSelect = ({
   const rootRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  const isAny = minPrice == null && maxPrice == null;
 
   useEffect(() => {
     if (!open) {
@@ -113,15 +117,14 @@ export const PriceRangeSelect = ({
   };
 
   return (
-    <div ref={rootRef} className="relative min-w-0">
-      <button
+    <div ref={rootRef} className="relative min-w-0 w-full lg:w-auto">
+      <HeroFilterTrigger
         ref={buttonRef}
-        type="button"
-        className={cn(
-          'flex min-w-[11rem] items-center justify-between gap-2 bg-transparent p-0',
-          'text-left text-sm font-medium text-ink-navy transition-colors',
-          'hover:text-brand-deep focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/25',
-        )}
+        label={fieldLabel}
+        value={formatRangeLabel(minPrice, maxPrice, labels.any)}
+        open={open}
+        mutedValue={isAny}
+        className="lg:min-w-[11rem]"
         aria-haspopup="dialog"
         aria-expanded={open}
         onClick={() => {
@@ -130,18 +133,7 @@ export const PriceRangeSelect = ({
           setError(null);
           setOpen((current) => !current);
         }}
-      >
-        <span className="whitespace-nowrap">
-          {formatRangeLabel(minPrice, maxPrice, labels.any)}
-        </span>
-        <ChevronDown
-          className={cn(
-            'size-4 shrink-0 text-header-muted transition-transform',
-            open && 'rotate-180',
-          )}
-          aria-hidden
-        />
-      </button>
+      />
 
       <DropdownPortal open={open} anchorRef={buttonRef} matchWidth>
         <div

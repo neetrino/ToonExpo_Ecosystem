@@ -21,18 +21,23 @@ export type ProjectCatalogDetails = {
   country: string | null;
   city: string | null;
   address: string | null;
+  zipCode: string | null;
   brandName: string | null;
+  designer: string | null;
+  contractor: string | null;
   permitNumber: string | null;
   constructionStart: string | null;
   constructionEnd: string | null;
   constructionStatus: string | null;
   partnerBank: string | null;
+  bedroomsCount: string | null;
   pricePerSqmMin: string | null;
   pricePerSqmMax: string | null;
   areaMinSqm: string | null;
   areaMaxSqm: string | null;
   unitPriceMin: string | null;
   unitPriceMax: string | null;
+  parkingPrice: string | null;
   managementFee: string | null;
   services: string | null;
   paymentTypes: string | null;
@@ -41,16 +46,27 @@ export type ProjectCatalogDetails = {
   parkingAvailable: string | null;
   storageAvailable: string | null;
   elevator: string | null;
+  elevatorsCount: string | null;
+  specialTermsAvailable: string | null;
   specialTerms: string | null;
+  incomeTaxRefund: string | null;
   constructionType: string | null;
   facadeMaterials: string | null;
+  thermalSoundInsulation: string | null;
   seismicStandard: string | null;
+  totalLandArea: string | null;
+  totalResidentialArea: string | null;
   buildingsCount: string | null;
   apartmentsCount: string | null;
+  availableApartmentsCount: string | null;
   parkingSpaces: string | null;
+  openParkingSpaces: string | null;
+  closedParkingSpaces: string | null;
+  parkingStandardSizes: string | null;
   ceilingHeightM: string | null;
   floorsCount: string | null;
   heating: string | null;
+  cooling: string | null;
   hotWater: string | null;
   gas: string | null;
   schoolDistance: string | null;
@@ -58,6 +74,7 @@ export type ProjectCatalogDetails = {
   commercialAreaSqm: string | null;
   distanceExtra: string | null;
   economicZone: string | null;
+  subsidizedPrograms: string | null;
   finishingStatus: string | null;
   handoverDescription: string | null;
 };
@@ -74,18 +91,23 @@ const EMPTY_DETAILS: ProjectCatalogDetails = {
   country: null,
   city: null,
   address: null,
+  zipCode: null,
   brandName: null,
+  designer: null,
+  contractor: null,
   permitNumber: null,
   constructionStart: null,
   constructionEnd: null,
   constructionStatus: null,
   partnerBank: null,
+  bedroomsCount: null,
   pricePerSqmMin: null,
   pricePerSqmMax: null,
   areaMinSqm: null,
   areaMaxSqm: null,
   unitPriceMin: null,
   unitPriceMax: null,
+  parkingPrice: null,
   managementFee: null,
   services: null,
   paymentTypes: null,
@@ -94,16 +116,27 @@ const EMPTY_DETAILS: ProjectCatalogDetails = {
   parkingAvailable: null,
   storageAvailable: null,
   elevator: null,
+  elevatorsCount: null,
+  specialTermsAvailable: null,
   specialTerms: null,
+  incomeTaxRefund: null,
   constructionType: null,
   facadeMaterials: null,
+  thermalSoundInsulation: null,
   seismicStandard: null,
+  totalLandArea: null,
+  totalResidentialArea: null,
   buildingsCount: null,
   apartmentsCount: null,
+  availableApartmentsCount: null,
   parkingSpaces: null,
+  openParkingSpaces: null,
+  closedParkingSpaces: null,
+  parkingStandardSizes: null,
   ceilingHeightM: null,
   floorsCount: null,
   heating: null,
+  cooling: null,
   hotWater: null,
   gas: null,
   schoolDistance: null,
@@ -111,6 +144,7 @@ const EMPTY_DETAILS: ProjectCatalogDetails = {
   commercialAreaSqm: null,
   distanceExtra: null,
   economicZone: null,
+  subsidizedPrograms: null,
   finishingStatus: null,
   handoverDescription: null,
 };

@@ -4,6 +4,7 @@ import type { ProjectListItem } from '@toonexpo/contracts';
 import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
 
+import { FavoriteToggleButton } from '@/features/buyer/components/favorite-toggle-button';
 import { usePriceOverlay } from '@/features/catalog/components/price-overlay-scope';
 import { computeSoldPercent, resolveBadge } from '@/features/catalog/utils/development-progress';
 import { formatCompactPrice } from '@/features/catalog/utils/format-price';
@@ -65,6 +66,11 @@ export const NewDevelopmentRowCard = ({
       >
         {homeT(`badges.${badge}`)}
       </span>
+      <FavoriteToggleButton
+        targetType="project"
+        targetId={project.id}
+        className="absolute top-4 right-4 z-10"
+      />
     </div>
   );
 
@@ -85,10 +91,17 @@ export const NewDevelopmentRowCard = ({
         </p>
       ) : null}
 
-      <div className="mt-auto grid grid-cols-3 gap-4 pt-8">
-        <Stat label={t('statFrom')} value={priceLabel} accent />
-        <Stat label={t('statUnits')} value={String(project.availability.total)} />
-        <Stat label={t('statSold')} value={String(project.availability.sold)} />
+      <div className="mt-auto flex items-start gap-4 pt-4 lg:grid lg:grid-cols-3 lg:pt-6">
+        <Stat
+          label={t('statFrom')}
+          value={priceLabel}
+          accent
+          className="min-w-0 flex-1 lg:flex-none"
+        />
+        <div className="flex shrink-0 gap-4 lg:contents">
+          <Stat label={t('statUnits')} value={String(project.availability.total)} />
+          <Stat label={t('statSold')} value={String(project.availability.sold)} />
+        </div>
       </div>
 
       <div className="mt-6 space-y-2">
@@ -141,17 +154,19 @@ const Stat = ({
   label,
   value,
   accent = false,
+  className,
 }: {
   label: string;
   value: string;
   accent?: boolean;
+  className?: string | undefined;
 }) => (
-  <div>
+  <div className={cn(accent ? 'text-left lg:text-center' : 'text-center', className)}>
     <p className="text-[10px] font-bold tracking-widest text-header-muted uppercase">{label}</p>
     <p
       className={cn(
         'mt-1 font-brand text-lg font-bold leading-7',
-        accent ? 'text-brand-deep' : 'text-ink-navy',
+        accent ? 'text-brand-deep' : 'whitespace-nowrap text-ink-navy',
       )}
     >
       {value}

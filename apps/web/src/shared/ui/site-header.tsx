@@ -4,10 +4,15 @@ import { Menu, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
-import { useLogoutMutation, useMeQuery } from '@/features/auth/hooks/use-auth';
+import { useMeQuery } from '@/features/auth/hooks/use-auth';
 import { Link, usePathname } from '@/i18n/navigation';
 import { isPartnerCompatibleCompany } from '@/features/partners/utils/is-partner-compatible-company';
+import {
+  accountMobileNavController,
+  isBuyerAccountPath,
+} from '@/shared/ui/account-mobile-nav-controller';
 import { BrandLogo } from '@/shared/ui/brand-logo';
+import { lockBodyScroll, unlockBodyScroll } from '@/shared/ui/body-scroll-lock';
 import { cn } from '@/shared/ui/cn';
 import { IconButton } from '@/shared/ui/icon-button';
 import { LocaleSwitcher } from '@/shared/ui/locale-switcher';
@@ -24,6 +29,7 @@ const NAV_HREFS = [
   { href: '/apartments' as const, key: 'buy' as const },
   { href: '/projects' as const, key: 'projects' as const },
   { href: '/developments' as const, key: 'newDevelopments' as const },
+  { href: '/builders' as const, key: 'builders' as const },
   { href: '/partners' as const, key: 'partners' as const },
   { href: '/mortgage' as const, key: 'mortgage' as const },
 ];
@@ -39,8 +45,8 @@ const PILL_EDGE_INSET_CLASS = 'left-4 right-4 sm:left-5 sm:right-5 lg:left-6 lg:
 /** Float gap above the pill — keeps pill height = navbar (h-16). */
 const PILL_TOP_OFFSET_CLASS = 'top-2';
 const HEADER_HEIGHT_CLASS = 'h-16';
-/** Spacer under fixed pill chrome (top inset + bar). */
-const HEADER_SPACER_CLASS = 'h-[4.5rem]';
+/** Spacer under fixed pill chrome (safe-area + top inset + bar). */
+const HEADER_SPACER_CLASS = 'h-[calc(4.5rem+env(safe-area-inset-top,0px))]';
 
 /**
  * Public header — ma-marie style: full-bleed over home hero, frosted pill
@@ -48,20 +54,32 @@ const HEADER_SPACER_CLASS = 'h-[4.5rem]';
  */
 export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) => {
   const t = useTranslations('Nav');
+  const tCommon = useTranslations('Common');
   const pathname = usePathname();
   const { data: user } = useMeQuery();
-  const logoutMutation = useLogoutMutation();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [accountNavOpen, setAccountNavOpen] = useState(false);
   const [showPill, setShowPill] = useState(false);
   const isTransparentStart = variant === 'transparent';
+  const isAccountRoute = isBuyerAccountPath(pathname);
+  const burgerOpen = isAccountRoute ? accountNavOpen : menuOpen;
   /** Solid pages always use the home pill chrome; home reveals it on scroll. */
-  const pillVisible = !isTransparentStart || showPill || menuOpen;
+  const pillVisible = !isTransparentStart || showPill || burgerOpen;
   const isOverHero = isTransparentStart && !pillVisible;
   const needsSpacer = !isTransparentStart;
 
   useEffect(() => {
     setMenuOpen(false);
+    accountMobileNavController.setOpen(false);
   }, [pathname]);
+
+  useEffect(() => {
+    if (!isAccountRoute) {
+      accountMobileNavController.setOpen(false);
+      return;
+    }
+    return accountMobileNavController.subscribe(setAccountNavOpen);
+  }, [isAccountRoute]);
 
   useEffect(() => {
     if (!isTransparentStart) {
@@ -79,17 +97,15 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
   }, [isTransparentStart]);
 
   useEffect(() => {
-    if (!menuOpen) {
+    if (!menuOpen || isAccountRoute) {
       return;
     }
-    const previous = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    lockBodyScroll();
     return () => {
-      document.body.style.overflow = previous;
+      unlockBodyScroll();
     };
-  }, [menuOpen]);
+  }, [menuOpen, isAccountRoute]);
 
-  const settingsHref = user?.accountType === 'platform_admin' ? '/admin/settings' : '/settings';
   const isBuilderMember =
     user?.accountType === 'company_member' &&
     (user.companyType == null ||
@@ -104,18 +120,23 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
     transitionDuration: `${PILL_APPEAR_MS}ms`,
   };
 
-  const handleMobileLogout = (): void => {
-    void logoutMutation.mutateAsync().then(() => {
-      setMenuOpen(false);
-    });
-  };
-
   return (
     <>
+      {menuOpen && !isAccountRoute ? (
+        <button
+          type="button"
+          aria-label={tCommon('close')}
+          className="fixed inset-0 z-[calc(var(--z-header)-1)] cursor-default bg-ink/25 lg:hidden"
+          onClick={() => setMenuOpen(false)}
+        />
+      ) : null}
+
       <header
         className={cn(
           'fixed inset-x-0 top-0 z-[var(--z-header)]',
+          'pt-[env(safe-area-inset-top,0px)]',
           isOverHero ? 'text-on-dark' : 'text-ink',
+          isAccountRoute && 'max-md:hidden',
           className,
         )}
       >
@@ -148,7 +169,13 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
               className="flex shrink-0 items-center transition-transform ease-out"
               style={contentInsetStyle}
             >
-              <BrandLogo inverted={isOverHero} onHomeClick={() => setMenuOpen(false)} />
+              <BrandLogo
+                inverted={isOverHero}
+                onHomeClick={() => {
+                  setMenuOpen(false);
+                  accountMobileNavController.setOpen(false);
+                }}
+              />
             </div>
 
             <nav
@@ -190,56 +217,64 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
               className="ml-auto flex shrink-0 items-center gap-2.5 transition-transform ease-out sm:gap-3 lg:ml-0"
               style={actionsInsetStyle}
             >
-              <LocaleSwitcher tone={isOverHero ? 'dark' : 'light'} />
+              <div className="hidden lg:block">
+                <LocaleSwitcher tone={isOverHero ? 'dark' : 'light'} />
+              </div>
 
-              <ProfileMenu
-                userName={user?.name}
-                userEmail={user?.email}
-                accountType={user?.accountType}
-                companyType={user?.companyType}
-                showBuilder={isBuilderMember}
-                tone={isOverHero ? 'dark' : 'light'}
-              />
+              <div className="hidden lg:block">
+                <ProfileMenu
+                  userName={user?.name}
+                  userEmail={user?.email}
+                  accountType={user?.accountType}
+                  companyType={user?.companyType}
+                  showBuilder={isBuilderMember}
+                  tone={isOverHero ? 'dark' : 'light'}
+                />
+              </div>
 
               <IconButton
                 label={t('menu')}
                 className={cn(
-                  'lg:hidden transition-[background-color,border-color,color] ease-out',
+                  'rounded-full transition-[background-color,border-color,color] ease-out',
+                  isAccountRoute ? 'md:hidden' : 'lg:hidden',
                   isOverHero && 'border-white/30 bg-white/10 text-on-dark hover:bg-white/15',
                 )}
                 style={{ transitionDuration: `${PILL_APPEAR_MS}ms` }}
                 variant="outline"
-                size="sm"
-                aria-expanded={menuOpen}
-                aria-controls="mobile-nav"
-                onClick={() => setMenuOpen((open) => !open)}
+                size="md"
+                aria-expanded={burgerOpen}
+                aria-controls={isAccountRoute ? 'portal-mobile-nav' : 'mobile-nav'}
+                onClick={() => {
+                  if (isAccountRoute) {
+                    accountMobileNavController.toggle();
+                    return;
+                  }
+                  setMenuOpen((open) => !open);
+                }}
               >
-                {menuOpen ? (
-                  <X className="size-4" aria-hidden />
+                {burgerOpen ? (
+                  <X className="size-5" aria-hidden />
                 ) : (
-                  <Menu className="size-4" aria-hidden />
+                  <Menu className="size-5" aria-hidden />
                 )}
               </IconButton>
             </div>
           </div>
 
-          {menuOpen ? (
+          {menuOpen && !isAccountRoute ? (
             <SiteHeaderMobileNav
               navItems={NAV_HREFS}
               pathname={pathname}
-              user={user ?? undefined}
-              settingsHref={settingsHref}
-              showBuilder={isBuilderMember}
-              logoutPending={logoutMutation.isPending}
               onClose={() => setMenuOpen(false)}
-              onLogout={handleMobileLogout}
               isNavActive={isNavActive}
             />
           ) : null}
         </div>
       </header>
 
-      {needsSpacer ? <div className={HEADER_SPACER_CLASS} aria-hidden /> : null}
+      {needsSpacer ? (
+        <div className={cn(HEADER_SPACER_CLASS, isAccountRoute && 'max-md:hidden')} aria-hidden />
+      ) : null}
     </>
   );
 };
@@ -250,6 +285,13 @@ const isNavActive = (pathname: string, href: (typeof NAV_HREFS)[number]['href'])
   }
   if (href === '/projects') {
     return pathname === '/projects' || pathname.startsWith('/projects/');
+  }
+  if (href === '/builders') {
+    return (
+      pathname === '/builders' ||
+      pathname.startsWith('/builders/') ||
+      pathname.startsWith('/developers/')
+    );
   }
   return pathname.startsWith(href);
 };

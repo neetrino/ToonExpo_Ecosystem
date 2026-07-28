@@ -2,7 +2,7 @@ import { headers } from 'next/headers';
 import { setRequestLocale } from 'next-intl/server';
 
 import { AdminSettingsPage } from '@/features/admin/components/admin-settings-page';
-import { getMeOrNull } from '@/features/auth/api/auth-api';
+import { getMeOrNullCached as getMeOrNull } from '@/features/auth/api/get-me-or-null-cached';
 import { redirect } from '@/i18n/navigation';
 
 type AdminSettingsRouteProps = {

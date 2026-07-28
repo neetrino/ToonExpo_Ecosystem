@@ -112,7 +112,7 @@ Implementation: `next.config.ts` rewrites when `API_PROXY_TARGET` is set; `apps/
 
 ## Default Locale
 
-Armenian (`hy`) is the hardcoded platform default for UI routing and catalog content fallbacks. Shared constant: `DEFAULT_LOCALE` in `@toonexpo/shared` (re-exported in web as `WEB_DEFAULT_LOCALE`). Supported locales: `hy`, `ru`, `en`. The former `DEFAULT_LOCALE` environment variable was removed.
+English (`en`) is the hardcoded platform default for UI routing (first open / unprefixed redirects). Catalog content fallbacks remain Armenian (`hy`) via `CATALOG_CONTENT_FALLBACK_LOCALE`. Shared constant: `DEFAULT_LOCALE` in `@toonexpo/shared` (re-exported in web as `WEB_DEFAULT_LOCALE`). Supported locales: `hy`, `ru`, `en`. Locale detection from `Accept-Language` is disabled.
 
 ## Frontend - `apps/web`
 

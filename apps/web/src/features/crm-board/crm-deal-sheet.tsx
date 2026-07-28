@@ -1,7 +1,16 @@
 'use client';
 
 import type { CrmDealDetail } from '@toonexpo/contracts';
-import { Trash2 } from 'lucide-react';
+import {
+  Building2,
+  CalendarClock,
+  Mail,
+  Phone,
+  Share2,
+  Trash2,
+  UserRound,
+  type LucideIcon,
+} from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useEffect, useState, type ReactNode } from 'react';
 
@@ -10,8 +19,26 @@ import type { CrmBoardMode } from '@/features/crm-board/constants';
 import { CrmDealPipeline } from '@/features/crm-board/crm-deal-pipeline';
 import { CrmDealReadonlyExtras } from '@/features/crm-board/crm-deal-readonly-extras';
 import { AdminDeleteModal } from '@/shared/ui/admin-delete-modal';
-import { Button } from '@/shared/ui/button';
+import { IconButton } from '@/shared/ui/icon-button';
 import { SideSheet } from '@/shared/ui/side-sheet';
+
+type SheetFieldProps = {
+  icon: LucideIcon;
+  label: string;
+  children: ReactNode;
+};
+
+const SheetField = ({ icon: Icon, label, children }: SheetFieldProps) => (
+  <div className="flex min-w-0 items-start gap-2.5">
+    <span className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-sm bg-surface text-ink-muted">
+      <Icon className="size-3.5" strokeWidth={1.75} aria-hidden />
+    </span>
+    <div className="min-w-0">
+      <dt className="text-xs uppercase tracking-wide text-ink-muted">{label}</dt>
+      <dd className="text-sm text-ink">{children}</dd>
+    </div>
+  </div>
+);
 
 type CrmDealSheetProps = {
   open: boolean;
@@ -65,23 +92,26 @@ export const CrmDealSheet = ({
         onClose={onClose}
         title={title}
         description={mode === 'readonly' ? t('readonlyHint') : undefined}
-        size="default"
+        size="comfortable"
         escapeEnabled={!confirmDeleteOpen}
-        footer={
-          deal && onDelete ? (
-            <Button
-              type="button"
-              variant="danger"
-              size="sm"
-              className="w-full sm:w-auto"
-              disabled={isDeleting}
-              onClick={() => {
-                setConfirmDeleteOpen(true);
-              }}
-            >
-              <Trash2 className="size-4 shrink-0" aria-hidden />
-              {isDeleting ? t('deleting') : tCommon('delete')}
-            </Button>
+        headerActions={
+          deal ? (
+            <div className="flex items-center gap-2">
+              <CrmDealPipeline status={deal.status} />
+              {onDelete ? (
+                <IconButton
+                  label={isDeleting ? t('deleting') : tCommon('delete')}
+                  size="sm"
+                  className="text-danger hover:bg-danger-soft"
+                  disabled={isDeleting}
+                  onClick={() => {
+                    setConfirmDeleteOpen(true);
+                  }}
+                >
+                  <Trash2 className="size-4" strokeWidth={1.75} aria-hidden />
+                </IconButton>
+              ) : null}
+            </div>
           ) : undefined
         }
       >
@@ -95,8 +125,6 @@ export const CrmDealSheet = ({
 
         {deal ? (
           <div className="flex flex-col gap-5">
-            <CrmDealPipeline status={deal.status} />
-
             {deal.companyName ? (
               <p className="text-sm font-medium text-ink-secondary">
                 {t('company')}: {deal.companyName}
@@ -104,42 +132,24 @@ export const CrmDealSheet = ({
             ) : null}
 
             <dl className="grid gap-3 sm:grid-cols-2">
-              <div>
-                <dt className="text-xs uppercase tracking-wide text-ink-muted">
-                  {t('fields.phone')}
-                </dt>
-                <dd className="text-sm text-ink">{deal.buyer.phone ?? '—'}</dd>
-              </div>
-              <div>
-                <dt className="text-xs uppercase tracking-wide text-ink-muted">
-                  {t('fields.email')}
-                </dt>
-                <dd className="text-sm text-ink">{deal.buyer.email ?? '—'}</dd>
-              </div>
-              <div>
-                <dt className="text-xs uppercase tracking-wide text-ink-muted">
-                  {t('fields.source')}
-                </dt>
-                <dd className="text-sm text-ink">{tSources(deal.source)}</dd>
-              </div>
-              <div>
-                <dt className="text-xs uppercase tracking-wide text-ink-muted">
-                  {t('fields.project')}
-                </dt>
-                <dd className="text-sm text-ink">{deal.projectName ?? t('noProject')}</dd>
-              </div>
-              <div>
-                <dt className="text-xs uppercase tracking-wide text-ink-muted">
-                  {t('fields.assignee')}
-                </dt>
-                <dd className="text-sm text-ink">{deal.assignedUserName ?? t('unassigned')}</dd>
-              </div>
-              <div>
-                <dt className="text-xs uppercase tracking-wide text-ink-muted">
-                  {t('fields.created')}
-                </dt>
-                <dd className="text-sm text-ink">{formatBuyerDateTime(deal.createdAt, locale)}</dd>
-              </div>
+              <SheetField icon={Phone} label={t('fields.phone')}>
+                {deal.buyer.phone ?? '—'}
+              </SheetField>
+              <SheetField icon={Mail} label={t('fields.email')}>
+                {deal.buyer.email ?? '—'}
+              </SheetField>
+              <SheetField icon={Share2} label={t('fields.source')}>
+                {tSources(deal.source)}
+              </SheetField>
+              <SheetField icon={Building2} label={t('fields.project')}>
+                {deal.projectName ?? t('noProject')}
+              </SheetField>
+              <SheetField icon={UserRound} label={t('fields.assignee')}>
+                {deal.assignedUserName ?? t('unassigned')}
+              </SheetField>
+              <SheetField icon={CalendarClock} label={t('fields.created')}>
+                {formatBuyerDateTime(deal.createdAt, locale)}
+              </SheetField>
             </dl>
 
             {deal.message ? (

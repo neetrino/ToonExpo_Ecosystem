@@ -23,7 +23,7 @@ export default async function ExpoRoutePage({ params }: ExpoPageProps) {
   setRequestLocale(locale);
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
+    <div className="flex min-h-screen flex-col bg-canvas">
       <ExpoMapPage />
       <SiteFooter />
     </div>

@@ -1,35 +1,30 @@
-"use client";
+'use client';
 
-import type { FavoriteTargetType } from "@toonexpo/contracts";
-import { useTranslations } from "next-intl";
-import { useMemo, useState } from "react";
+import type { FavoriteTargetType } from '@toonexpo/contracts';
+import { useTranslations } from 'next-intl';
+import { useMemo, useState } from 'react';
 
-import { useMeQuery } from "@/features/auth/hooks/use-auth";
-import { FavoriteHeartIcon } from "@/features/buyer/components/favorite-heart-icon";
-import { useFavoritesStatusContext } from "@/features/buyer/components/favorites-status-provider";
+import { useMeQuery } from '@/features/auth/hooks/use-auth';
+import { FavoriteHeartIcon } from '@/features/buyer/components/favorite-heart-icon';
+import { useFavoritesStatusContext } from '@/features/buyer/components/favorites-status-provider';
 import {
   useFavoritesStatusQuery,
   useToggleFavoriteMutation,
-} from "@/features/buyer/hooks/use-favorites";
-import {
-  isBuyerAccount,
-  isNonBuyerStaff,
-} from "@/features/buyer/utils/is-buyer-account";
-import { Link, usePathname } from "@/i18n/navigation";
-import { cn } from "@/shared/ui/cn";
+} from '@/features/buyer/hooks/use-favorites';
+import { isBuyerAccount, isNonBuyerStaff } from '@/features/buyer/utils/is-buyer-account';
+import { Link, usePathname } from '@/i18n/navigation';
+import { cn } from '@/shared/ui/cn';
 
 type FavoriteToggleButtonProps = {
   targetType: FavoriteTargetType;
   targetId: string;
   className?: string | undefined;
-  variant?: "overlay" | "surface" | undefined;
+  variant?: 'overlay' | 'surface' | undefined;
 };
 
 const variantClassNames = {
-  overlay:
-    "border-white/50 bg-white/85 text-ink shadow-sm hover:bg-white",
-  surface:
-    "border-border bg-surface text-ink shadow-none hover:bg-background",
+  overlay: 'border-white/50 bg-white/85 text-ink shadow-sm hover:bg-white',
+  surface: 'border-border bg-surface text-ink shadow-none hover:bg-background',
 } as const;
 
 /**
@@ -39,9 +34,9 @@ export const FavoriteToggleButton = ({
   targetType,
   targetId,
   className,
-  variant = "overlay",
+  variant = 'overlay',
 }: FavoriteToggleButtonProps) => {
-  const t = useTranslations("Favorites");
+  const t = useTranslations('Favorites');
   const pathname = usePathname();
   const { data: user, isLoading: authLoading } = useMeQuery();
   const batchContext = useFavoritesStatusContext();
@@ -69,9 +64,9 @@ export const FavoriteToggleButton = ({
   }
 
   const favorited = pending ?? serverFavorited;
-  const label = favorited ? t("removeLabel") : t("addLabel");
+  const label = favorited ? t('removeLabel') : t('addLabel');
   const buttonClassName = cn(
-    "inline-flex size-9 items-center justify-center rounded-pill border transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand",
+    'inline-flex size-9 items-center justify-center rounded-pill border transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand',
     variantClassNames[variant],
     className,
   );
@@ -82,7 +77,7 @@ export const FavoriteToggleButton = ({
       <Link
         href={`/auth/login?returnUrl=${returnUrl}`}
         className={buttonClassName}
-        aria-label={t("loginToSave")}
+        aria-label={t('loginToSave')}
       >
         <FavoriteHeartIcon filled={false} />
       </Link>

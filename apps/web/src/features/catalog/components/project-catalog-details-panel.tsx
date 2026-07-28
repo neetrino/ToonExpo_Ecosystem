@@ -1,50 +1,34 @@
-import type { LucideIcon } from 'lucide-react';
 import {
-  ArrowUpFromLine,
-  Banknote,
-  Building2,
-  CalendarRange,
-  Car,
-  ClipboardList,
-  Droplets,
-  Factory,
-  FileBadge,
-  Flame,
-  Fuel,
-  Hash,
-  Home,
-  Landmark,
-  Layers,
-  MapPin,
-  MoveVertical,
-  Navigation,
-  Paintbrush,
-  ParkingCircle,
-  Percent,
-  Ruler,
-  Shield,
-  ShieldCheck,
-  Store,
-  Warehouse,
-} from 'lucide-react';
-
-import { ProjectCatalogCollapsible } from '@/features/catalog/components/project-catalog-collapsible';
+  ProjectCatalogCheckList,
+  ProjectCatalogDetailsList,
+  ProjectCatalogOverviewStat,
+} from '@/features/catalog/components/project-catalog-details-bits';
+import { ProjectCatalogSectionCard } from '@/features/catalog/components/project-catalog-section-card';
 import { ProjectCatalogLinksSection } from '@/features/catalog/components/project-catalog-links-section';
-import type {
-  ProjectCatalogCriterionId,
-  ProjectCatalogRow,
+import { ProjectCatalogMediaPoster } from '@/features/catalog/components/project-catalog-media-poster';
+import { ProjectCatalogVideoSection } from '@/features/catalog/components/project-catalog-video-section';
+import {
+  splitProjectCatalogRowsByFinance,
+  type ProjectCatalogRow,
 } from '@/features/catalog/utils/build-project-catalog-rows';
 import type { ProjectCatalogLink } from '@/features/catalog/utils/project-catalog-details';
+import { splitProjectCatalogLinks } from '@/features/catalog/utils/project-catalog-links';
+import { staticAssetUrl } from '@/shared/lib/static-asset-url';
 import { cn } from '@/shared/ui/cn';
 
 type ProjectCatalogDetailsPanelProps = {
   title: string;
   aboutTitle: string;
   aboutText: string | null;
-  factsTitle: string;
+  overviewTitle: string;
+  detailsTitle: string;
+  financeTitle: string;
   amenitiesTitle: string;
   nearbyTitle: string;
   linksTitle: string;
+  socialsTitle: string;
+  videoTitle: string;
+  videoOpenLabel: string;
   linkLabels: Record<ProjectCatalogLink['id'], string>;
   rows: ProjectCatalogRow[];
   amenityLabels: string[];
@@ -52,76 +36,77 @@ type ProjectCatalogDetailsPanelProps = {
   links: ProjectCatalogLink[];
 };
 
-const CRITERION_ICON: Record<ProjectCatalogCriterionId, LucideIcon> = {
-  propertyType: Building2,
-  country: MapPin,
-  city: Home,
-  address: Navigation,
-  brandName: Landmark,
-  permitNumber: FileBadge,
-  constructionStart: CalendarRange,
-  constructionEnd: CalendarRange,
-  constructionStatus: ClipboardList,
-  partnerBank: Banknote,
-  pricePerSqm: Percent,
-  areaRange: Ruler,
-  unitPriceRange: Banknote,
-  managementFee: Banknote,
-  parkingAvailable: Car,
-  storageAvailable: Warehouse,
-  elevator: ArrowUpFromLine,
-  constructionType: Factory,
-  facadeMaterials: Paintbrush,
-  seismicStandard: Shield,
-  buildingsCount: Building2,
-  apartmentsCount: Hash,
-  parkingSpaces: ParkingCircle,
-  ceilingHeight: MoveVertical,
-  floorsCount: Layers,
-  heating: Flame,
-  hotWater: Droplets,
-  gas: Fuel,
-  schoolDistance: MapPin,
-  kindergartenDistance: MapPin,
-  commercialAreaSqm: Ruler,
-  distanceExtra: MapPin,
-  economicZone: Store,
-  finishingStatus: Paintbrush,
-  services: ClipboardList,
-  paymentTypes: Banknote,
-  installmentTerms: ClipboardList,
-  mortgageTerms: Banknote,
-  specialTerms: ShieldCheck,
-  handoverDescription: ClipboardList,
-};
+/** Prefer compact icon stats in Overview; long text stays in Details. */
+const OVERVIEW_MAX_ITEMS = 6;
+const TYPICAL_TOUR_POSTER_SRC = staticAssetUrl('/images/project-floor-axonometric.webp');
+const EXTERIOR_TOUR_POSTER_SRC = staticAssetUrl('/images/hero-variant-a.webp');
+const MAP_POSTER_SRC = staticAssetUrl('/images/buy-map.webp');
 
 /**
- * Project catalog block: about, fact cards, amenities, nearby places, links.
- * Dense blocks collapse behind a chevron so the page stays scannable.
+ * Project catalog — Houzez-style stacked white cards (Description / Overview /
+ * Details / Finance / Features / Nearby / Video / Tours / Map / Links / Socials).
  */
 export const ProjectCatalogDetailsPanel = ({
   title,
   aboutTitle,
   aboutText,
-  factsTitle,
+  overviewTitle,
+  detailsTitle,
+  financeTitle,
   amenitiesTitle,
   nearbyTitle,
   linksTitle,
+  socialsTitle,
+  videoTitle,
+  videoOpenLabel,
   linkLabels,
   rows,
   amenityLabels,
   nearbyPlaces,
   links,
 }: ProjectCatalogDetailsPanelProps) => {
-  const cardRows = rows.filter((row) => !row.wide);
-  const listRows = rows.filter((row) => row.wide);
+  const { general: generalRows, finance: financeRows } = splitProjectCatalogRowsByFinance(rows);
+  const overviewRows = generalRows.filter((row) => !row.wide).slice(0, OVERVIEW_MAX_ITEMS);
+  const overviewIds = new Set(overviewRows.map((row) => row.id));
+  const detailRows =
+    overviewRows.length > 0
+      ? generalRows.filter((row) => row.wide || !overviewIds.has(row.id))
+      : generalRows;
+  const {
+    media: mediaLinks,
+    social: socialLinks,
+    video: videoLink,
+    typicalTour: typicalTourLink,
+    exteriorTour: exteriorTourLink,
+    map: mapLink,
+  } = splitProjectCatalogLinks(links);
   const hasAbout = aboutText != null && aboutText.trim().length > 0;
-  const hasFacts = rows.length > 0;
+  const hasOverview = overviewRows.length > 0;
+  const hasDetails = detailRows.length > 0;
+  const hasFinance = financeRows.length > 0;
   const hasAmenities = amenityLabels.length > 0;
   const hasNearby = nearbyPlaces.length > 0;
-  const hasLinks = links.length > 0;
+  const hasVideo = videoLink != null;
+  const hasTypicalTour = typicalTourLink != null;
+  const hasExteriorTour = exteriorTourLink != null;
+  const hasMap = mapLink != null;
+  const hasMediaLinks = mediaLinks.length > 0;
+  const hasSocialLinks = socialLinks.length > 0;
 
-  if (!hasAbout && !hasFacts && !hasAmenities && !hasNearby && !hasLinks) {
+  if (
+    !hasAbout &&
+    !hasOverview &&
+    !hasDetails &&
+    !hasFinance &&
+    !hasAmenities &&
+    !hasNearby &&
+    !hasVideo &&
+    !hasTypicalTour &&
+    !hasExteriorTour &&
+    !hasMap &&
+    !hasMediaLinks &&
+    !hasSocialLinks
+  ) {
     return null;
   }
 
@@ -131,109 +116,106 @@ export const ProjectCatalogDetailsPanel = ({
         {title}
       </h2>
 
-      <div className="mt-8 space-y-6">
+      <div className="mt-8 space-y-5 sm:space-y-6">
         {hasAbout ? (
-          <ProjectCatalogCollapsible title={aboutTitle} defaultOpen>
-            <p className="max-w-3xl whitespace-pre-line text-base leading-7 text-ink-navy">
+          <ProjectCatalogSectionCard title={aboutTitle}>
+            <p className="max-w-3xl whitespace-pre-line text-[15px] leading-7 text-ink-secondary">
               {aboutText}
             </p>
-          </ProjectCatalogCollapsible>
+          </ProjectCatalogSectionCard>
         ) : null}
 
-        {hasFacts ? (
-          <ProjectCatalogCollapsible title={factsTitle}>
-            <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              {cardRows.map((row) => (
-                <FactCard key={row.id} row={row} />
+        {hasOverview ? (
+          <ProjectCatalogSectionCard title={overviewTitle}>
+            <dl
+              className={cn(
+                'grid gap-6',
+                overviewRows.length <= 3 && 'grid-cols-2 sm:grid-cols-3',
+                overviewRows.length === 4 && 'grid-cols-2 sm:grid-cols-4',
+                overviewRows.length >= 5 && 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-6',
+              )}
+            >
+              {overviewRows.map((row) => (
+                <ProjectCatalogOverviewStat key={row.id} row={row} />
               ))}
             </dl>
-            {listRows.length > 0 ? (
-              <dl className="mt-6 border-t border-header-border">
-                {listRows.map((row) => (
-                  <FactListRow key={row.id} row={row} />
-                ))}
-              </dl>
-            ) : null}
-          </ProjectCatalogCollapsible>
+          </ProjectCatalogSectionCard>
+        ) : null}
+
+        {hasDetails ? (
+          <ProjectCatalogSectionCard title={detailsTitle}>
+            <ProjectCatalogDetailsList rows={detailRows} />
+          </ProjectCatalogSectionCard>
+        ) : null}
+
+        {hasFinance ? (
+          <ProjectCatalogSectionCard title={financeTitle}>
+            <ProjectCatalogDetailsList rows={financeRows} />
+          </ProjectCatalogSectionCard>
         ) : null}
 
         {hasAmenities ? (
-          <ProjectCatalogCollapsible title={amenitiesTitle}>
-            <TagList items={amenityLabels} />
-          </ProjectCatalogCollapsible>
+          <ProjectCatalogSectionCard title={amenitiesTitle}>
+            <ProjectCatalogCheckList items={amenityLabels} />
+          </ProjectCatalogSectionCard>
         ) : null}
 
         {hasNearby ? (
-          <ProjectCatalogCollapsible title={nearbyTitle}>
-            <TagList items={nearbyPlaces} />
-          </ProjectCatalogCollapsible>
+          <ProjectCatalogSectionCard title={nearbyTitle}>
+            <ProjectCatalogCheckList items={nearbyPlaces} />
+          </ProjectCatalogSectionCard>
         ) : null}
 
-        {hasLinks ? (
-          <ProjectCatalogCollapsible title={linksTitle}>
-            <ProjectCatalogLinksSection links={links} labels={linkLabels} />
-          </ProjectCatalogCollapsible>
+        {hasVideo && videoLink ? (
+          <ProjectCatalogSectionCard title={videoTitle}>
+            <ProjectCatalogVideoSection
+              url={videoLink.url}
+              title={videoTitle}
+              openLabel={videoOpenLabel}
+            />
+          </ProjectCatalogSectionCard>
+        ) : null}
+
+        {hasTypicalTour ? (
+          <ProjectCatalogSectionCard title={linkLabels.typicalInteractiveTour}>
+            <ProjectCatalogMediaPoster
+              title={linkLabels.typicalInteractiveTour}
+              imageSrc={TYPICAL_TOUR_POSTER_SRC}
+            />
+          </ProjectCatalogSectionCard>
+        ) : null}
+
+        {hasExteriorTour ? (
+          <ProjectCatalogSectionCard title={linkLabels.exteriorInteractiveTour}>
+            <ProjectCatalogMediaPoster
+              title={linkLabels.exteriorInteractiveTour}
+              imageSrc={EXTERIOR_TOUR_POSTER_SRC}
+            />
+          </ProjectCatalogSectionCard>
+        ) : null}
+
+        {hasMap && mapLink ? (
+          <ProjectCatalogSectionCard title={linkLabels.map}>
+            <ProjectCatalogMediaPoster
+              title={linkLabels.map}
+              imageSrc={MAP_POSTER_SRC}
+              href={mapLink.url}
+            />
+          </ProjectCatalogSectionCard>
+        ) : null}
+
+        {hasMediaLinks ? (
+          <ProjectCatalogSectionCard title={linksTitle}>
+            <ProjectCatalogLinksSection links={mediaLinks} labels={linkLabels} />
+          </ProjectCatalogSectionCard>
+        ) : null}
+
+        {hasSocialLinks ? (
+          <ProjectCatalogSectionCard title={socialsTitle}>
+            <ProjectCatalogLinksSection links={socialLinks} labels={linkLabels} />
+          </ProjectCatalogSectionCard>
         ) : null}
       </div>
     </section>
   );
 };
-
-const FactCard = ({ row }: { row: ProjectCatalogRow }) => {
-  const Icon = CRITERION_ICON[row.id];
-
-  return (
-    <div
-      className={cn(
-        'flex min-h-[4.5rem] items-center gap-3 rounded-[15px] border border-header-border',
-        'bg-canvas px-4 py-3.5 transition-[transform,box-shadow] duration-200',
-        'hover:-translate-y-0.5 hover:shadow-sm',
-      )}
-    >
-      <span
-        className={cn(
-          'flex size-10 shrink-0 items-center justify-center rounded-lg',
-          'bg-band-mist text-brand-deep',
-        )}
-        aria-hidden
-      >
-        <Icon className="size-4" strokeWidth={2} />
-      </span>
-      <div className="min-w-0">
-        <dt className="text-[10px] font-bold tracking-widest text-header-muted uppercase">
-          {row.label}
-        </dt>
-        <dd className="mt-1 truncate text-sm font-bold text-ink-navy">{row.value}</dd>
-      </div>
-    </div>
-  );
-};
-
-const FactListRow = ({ row }: { row: ProjectCatalogRow }) => {
-  const Icon = CRITERION_ICON[row.id];
-
-  return (
-    <div className="flex items-center gap-3 border-b border-header-border py-4 last:border-b-0">
-      <Icon className="size-4 shrink-0 text-brand-deep" strokeWidth={2} aria-hidden />
-      <dt className="w-36 shrink-0 text-[10px] font-bold tracking-widest text-header-muted uppercase sm:w-44">
-        {row.label}
-      </dt>
-      <dd className="min-w-0 flex-1 text-sm font-semibold whitespace-pre-line text-ink-navy">
-        {row.value}
-      </dd>
-    </div>
-  );
-};
-
-const TagList = ({ items }: { items: string[] }) => (
-  <ul className="flex flex-wrap gap-2">
-    {items.map((item) => (
-      <li
-        key={item}
-        className="rounded-full border border-header-border bg-canvas px-3.5 py-1.5 text-sm font-medium text-ink-navy"
-      >
-        {item}
-      </li>
-    ))}
-  </ul>
-);

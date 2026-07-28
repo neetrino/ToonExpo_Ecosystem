@@ -12,83 +12,83 @@ export const SiteFooter = async () => {
   const tNav = await getTranslations('Nav');
 
   return (
-    <footer className="border-t border-header-border bg-canvas">
+    <footer className="hidden border-t border-header-border bg-canvas lg:block">
       <div className="page-container pt-12 pb-4">
-        <div className="mb-16 grid grid-cols-1 gap-12 md:grid-cols-4">
-          <div className="md:col-span-2">
+        <div className="mb-16 flex flex-col gap-12 md:flex-row md:items-start md:justify-between">
+          <div className="max-w-md shrink-0">
             <BrandLogo />
-            <p className="mt-8 max-w-md text-sm leading-[1.625] text-header-muted">
-              {t('tagline')}
-            </p>
+            <p className="mt-8 text-sm leading-[1.625] text-header-muted">{t('tagline')}</p>
           </div>
 
-          <div>
-            <p className="font-brand text-xs font-bold tracking-[0.1em] text-ink-navy uppercase">
-              {t('marketplace')}
-            </p>
-            <ul className="mt-9 flex flex-col gap-3 text-sm text-header-muted">
-              <li>
-                <Link href="/apartments" className="transition-colors hover:text-brand-deep">
-                  {tNav('buy')}
-                </Link>
-              </li>
-              <li>
-                <Link href="/developments" className="transition-colors hover:text-brand-deep">
-                  {tNav('newDevelopments')}
-                </Link>
-              </li>
-              <li>
-                <Link href="/partners" className="transition-colors hover:text-brand-deep">
-                  {tNav('partners')}
-                </Link>
-              </li>
-              <li>
-                <Link href="/mortgage" className="transition-colors hover:text-brand-deep">
-                  {tNav('mortgage')}
-                </Link>
-              </li>
-            </ul>
-          </div>
+          <div className="flex flex-wrap gap-12 sm:gap-16 md:gap-20 lg:gap-24 md:justify-end md:text-right">
+            <div>
+              <p className="font-brand text-xs font-bold tracking-[0.1em] text-ink-navy uppercase">
+                {t('marketplace')}
+              </p>
+              <ul className="mt-9 flex flex-col gap-3 text-sm text-header-muted">
+                <li>
+                  <Link href="/apartments" className="transition-colors hover:text-brand-deep">
+                    {tNav('buy')}
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/developments" className="transition-colors hover:text-brand-deep">
+                    {tNav('newDevelopments')}
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/partners" className="transition-colors hover:text-brand-deep">
+                    {tNav('partners')}
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/mortgage" className="transition-colors hover:text-brand-deep">
+                    {tNav('mortgage')}
+                  </Link>
+                </li>
+              </ul>
+            </div>
 
-          <div>
-            <p className="font-brand text-xs font-bold tracking-[0.1em] text-ink-navy uppercase">
-              {t('company')}
-            </p>
-            <ul className="mt-9 flex flex-col gap-3 text-sm text-header-muted">
-              <li>
-                <Link href="/" className="transition-colors hover:text-brand-deep">
-                  {t('links.about')}
-                </Link>
-              </li>
-              <li>
-                <a
-                  href={`mailto:${t('contactEmail')}`}
-                  className="transition-colors hover:text-brand-deep"
-                >
-                  {t('links.press')}
-                </a>
-              </li>
-              <li>
-                <a
-                  href={`mailto:${t('contactEmail')}`}
-                  className="transition-colors hover:text-brand-deep"
-                >
-                  {t('links.contact')}
-                </a>
-              </li>
-              <li>
-                <a
-                  href={`mailto:${t('contactEmail')}`}
-                  className="transition-colors hover:text-brand-deep"
-                >
-                  {t('privacy')}
-                </a>
-              </li>
-            </ul>
+            <div>
+              <p className="font-brand text-xs font-bold tracking-[0.1em] text-ink-navy uppercase">
+                {t('company')}
+              </p>
+              <ul className="mt-9 flex flex-col gap-3 text-sm text-header-muted">
+                <li>
+                  <Link href="/" className="transition-colors hover:text-brand-deep">
+                    {t('links.about')}
+                  </Link>
+                </li>
+                <li>
+                  <a
+                    href={`mailto:${t('contactEmail')}`}
+                    className="transition-colors hover:text-brand-deep"
+                  >
+                    {t('links.press')}
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href={`mailto:${t('contactEmail')}`}
+                    className="transition-colors hover:text-brand-deep"
+                  >
+                    {t('links.contact')}
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href={`mailto:${t('contactEmail')}`}
+                    className="transition-colors hover:text-brand-deep"
+                  >
+                    {t('privacy')}
+                  </a>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-6 border-t border-header-border pt-8 pb-2">
+        <div className="flex flex-col-reverse gap-6 border-t border-header-border pt-8 pb-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
           <p className="text-[10px] tracking-widest text-header-muted uppercase">
             {t('copyrightPrefix')}{' '}
             <a

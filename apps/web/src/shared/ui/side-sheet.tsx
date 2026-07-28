@@ -33,6 +33,8 @@ type SideSheetProps = {
   children: ReactNode;
   footer?: ReactNode | undefined;
   headerActions?: ReactNode | undefined;
+  /** Content rendered immediately before the title (e.g. status badge). */
+  titleLeading?: ReactNode | undefined;
   /** Stacking level for nested sheets (0 = base). */
   stackLevel?: number | undefined;
   /** `compact` ≈ 420px; `comfortable` ≈ 500px; `default` ≈ 50vw. */
@@ -48,6 +50,7 @@ type SideSheetPanelProps = {
   title: string;
   description?: string | undefined;
   headerActions?: ReactNode | undefined;
+  titleLeading?: ReactNode | undefined;
   footer?: ReactNode | undefined;
   closeLabel: string;
   onClose: () => void;
@@ -65,6 +68,7 @@ const SideSheetPanel = ({
   title,
   description,
   headerActions,
+  titleLeading,
   footer,
   closeLabel,
   onClose,
@@ -143,15 +147,18 @@ const SideSheetPanel = ({
           <header className="shrink-0 border-b border-border px-5 py-4">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div className="min-w-0 flex-1">
-                <h2 id={titleId} className="text-lg font-semibold leading-tight text-ink">
+                <h2 id={titleId} className="truncate text-lg font-semibold leading-tight text-ink">
                   {title}
                 </h2>
                 {description ? (
                   <p className="mt-1 text-sm text-ink-secondary">{description}</p>
                 ) : null}
               </div>
-              {headerActions ? (
-                <div className="shrink-0 sm:self-center">{headerActions}</div>
+              {headerActions || titleLeading ? (
+                <div className="flex shrink-0 items-center gap-2 sm:self-center">
+                  {titleLeading}
+                  {headerActions}
+                </div>
               ) : null}
             </div>
           </header>
@@ -183,6 +190,7 @@ export const SideSheet = ({
   children,
   footer,
   headerActions,
+  titleLeading,
   stackLevel = 0,
   size = 'default',
   className,
@@ -250,6 +258,7 @@ export const SideSheet = ({
       title={title}
       description={description}
       headerActions={headerActions}
+      titleLeading={titleLeading}
       footer={footer}
       closeLabel={resolvedCloseLabel}
       onClose={onClose}

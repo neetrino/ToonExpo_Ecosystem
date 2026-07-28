@@ -27,28 +27,42 @@ export const ProjectCatalogSection = async ({ project }: ProjectCatalogSectionPr
       country: t('catalog.country'),
       city: t('catalog.city'),
       address: t('catalog.address'),
+      zipCode: t('catalog.zipCode'),
       brandName: t('catalog.brandName'),
+      designer: t('catalog.designer'),
+      contractor: t('catalog.contractor'),
       permitNumber: t('catalog.permitNumber'),
       constructionStart: t('catalog.constructionStart'),
       constructionEnd: t('catalog.constructionEnd'),
       constructionStatus: t('catalog.constructionStatus'),
       partnerBank: t('catalog.partnerBank'),
+      bedroomsCount: t('catalog.bedroomsCount'),
       pricePerSqm: t('catalog.pricePerSqm'),
       areaRange: t('catalog.areaRange'),
       unitPriceRange: t('catalog.unitPriceRange'),
+      parkingPrice: t('catalog.parkingPrice'),
       managementFee: t('catalog.managementFee'),
       parkingAvailable: t('catalog.parkingAvailable'),
       storageAvailable: t('catalog.storageAvailable'),
       elevator: t('catalog.elevator'),
+      elevatorsCount: t('catalog.elevatorsCount'),
       constructionType: t('catalog.constructionType'),
       facadeMaterials: t('catalog.facadeMaterials'),
+      thermalSoundInsulation: t('catalog.thermalSoundInsulation'),
       seismicStandard: t('catalog.seismicStandard'),
+      totalLandArea: t('catalog.totalLandArea'),
+      totalResidentialArea: t('catalog.totalResidentialArea'),
       buildingsCount: t('catalog.buildingsCount'),
       apartmentsCount: t('catalog.apartmentsCount'),
+      availableApartmentsCount: t('catalog.availableApartmentsCount'),
       parkingSpaces: t('catalog.parkingSpaces'),
+      openParkingSpaces: t('catalog.openParkingSpaces'),
+      closedParkingSpaces: t('catalog.closedParkingSpaces'),
+      parkingStandardSizes: t('catalog.parkingStandardSizes'),
       ceilingHeight: t('catalog.ceilingHeight'),
       floorsCount: t('catalog.floorsCount'),
       heating: t('catalog.heating'),
+      cooling: t('catalog.cooling'),
       hotWater: t('catalog.hotWater'),
       gas: t('catalog.gas'),
       schoolDistance: t('catalog.schoolDistance'),
@@ -56,12 +70,15 @@ export const ProjectCatalogSection = async ({ project }: ProjectCatalogSectionPr
       commercialAreaSqm: t('catalog.commercialAreaSqm'),
       distanceExtra: t('catalog.distanceExtra'),
       economicZone: t('catalog.economicZone'),
+      subsidizedPrograms: t('catalog.subsidizedPrograms'),
       finishingStatus: t('catalog.finishingStatus'),
       services: t('catalog.services'),
       paymentTypes: t('catalog.paymentTypes'),
       installmentTerms: t('catalog.installmentTerms'),
       mortgageTerms: t('catalog.mortgageTerms'),
+      specialTermsAvailable: t('catalog.specialTermsAvailable'),
       specialTerms: t('catalog.specialTerms'),
+      incomeTaxRefund: t('catalog.incomeTaxRefund'),
       handoverDescription: t('catalog.handoverDescription'),
     },
     formatCeilingHeight: (height) => t('catalog.ceilingHeightValue', { height }),
@@ -82,19 +99,22 @@ export const ProjectCatalogSection = async ({ project }: ProjectCatalogSectionPr
       title={t('catalog.title')}
       aboutTitle={t('catalog.about')}
       aboutText={project.fullDescription}
-      factsTitle={t('catalog.facts')}
+      overviewTitle={t('catalog.overview')}
+      detailsTitle={t('catalog.details')}
+      financeTitle={t('catalog.finance')}
       amenitiesTitle={t('catalog.amenities')}
       nearbyTitle={t('catalog.nearby')}
       linksTitle={t('catalog.links')}
+      socialsTitle={t('catalog.socials')}
+      videoTitle={t('catalog.video')}
+      videoOpenLabel={t('catalog.videoOpen')}
       linkLabels={{
         exteriorRenders: t('catalog.linkExteriorRenders'),
         interiorRenders: t('catalog.linkInteriorRenders'),
         typicalInteractiveTour: t('catalog.linkTypicalInteractiveTour'),
         video: t('catalog.linkVideo'),
         exteriorInteractiveTour: t('catalog.linkExteriorInteractiveTour'),
-        floorPlans2d: t('catalog.linkFloorPlans2d'),
-        floorPlans3d: t('catalog.linkFloorPlans3d'),
-        logoBranding: t('catalog.linkLogoBranding'),
+        map: t('catalog.linkMap'),
         website: t('catalog.linkWebsite'),
         facebook: t('catalog.linkFacebook'),
         instagram: t('catalog.linkInstagram'),

@@ -2,45 +2,35 @@
 
 import { useTranslations } from 'next-intl';
 
-import type { UserResponse } from '@toonexpo/contracts';
-
-import type { AccountSettingsHref } from '@/features/auth/utils/get-account-settings-href';
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
+import { LocaleSegmentSwitcher } from '@/shared/ui/locale-segment-switcher';
 
-type NavHref = '/apartments' | '/projects' | '/developments' | '/partners' | '/mortgage';
+type NavHref =
+  '/apartments' | '/projects' | '/developments' | '/builders' | '/partners' | '/mortgage';
 
 type SiteHeaderMobileNavProps = {
   navItems: ReadonlyArray<{
     href: NavHref;
-    key: 'buy' | 'projects' | 'newDevelopments' | 'partners' | 'mortgage';
+    key: 'buy' | 'projects' | 'newDevelopments' | 'builders' | 'partners' | 'mortgage';
   }>;
   pathname: string;
-  user: UserResponse | undefined;
-  settingsHref: AccountSettingsHref;
-  showBuilder: boolean;
-  logoutPending: boolean;
   onClose: () => void;
-  onLogout: () => void;
   isNavActive: (pathname: string, href: NavHref) => boolean;
 };
 
 /**
  * Collapsible public header drawer for viewports below `lg`.
+ * Only marketplace nav + language — account/portal links live in ProfileMenu.
  */
 export const SiteHeaderMobileNav = ({
   navItems,
   pathname,
-  user,
-  settingsHref,
-  showBuilder,
-  logoutPending,
   onClose,
-  onLogout,
   isNavActive,
 }: SiteHeaderMobileNavProps) => {
   const t = useTranslations('Nav');
-  const tAuth = useTranslations('Auth');
+  const tHome = useTranslations('HomePage');
 
   return (
     <div
@@ -69,52 +59,14 @@ export const SiteHeaderMobileNav = ({
             </Link>
           );
         })}
-        {!user ? (
-          <Link
-            href="/auth/login"
-            className="rounded-sm px-3 py-3 font-medium text-ink hover:bg-surface"
-            onClick={onClose}
-          >
-            {t('login')}
-          </Link>
-        ) : (
-          <>
-            {user.accountType === 'platform_admin' ? (
-              <Link
-                href="/admin"
-                className="rounded-sm px-3 py-3 font-medium text-ink hover:bg-surface"
-                onClick={onClose}
-              >
-                {t('admin')}
-              </Link>
-            ) : showBuilder ? (
-              <Link
-                href="/builder"
-                className="rounded-sm px-3 py-3 font-medium text-ink hover:bg-surface"
-                onClick={onClose}
-              >
-                {t('builder')}
-              </Link>
-            ) : (
-              <Link
-                href={settingsHref}
-                className="rounded-sm px-3 py-3 font-medium text-ink hover:bg-surface"
-                onClick={onClose}
-              >
-                {t('profile')}
-              </Link>
-            )}
-            <button
-              type="button"
-              className="rounded-sm px-3 py-3 text-left font-medium text-danger hover:bg-danger-soft disabled:opacity-50"
-              disabled={logoutPending}
-              onClick={onLogout}
-            >
-              {logoutPending ? tAuth('logout.submitting') : tAuth('logout.submit')}
-            </button>
-          </>
-        )}
       </nav>
+
+      <div className="mt-3 border-t border-header-border px-2 pt-3 pb-1">
+        <p className="mb-2 px-1 text-[10px] font-bold tracking-[0.1em] text-header-muted uppercase">
+          {tHome('languageLabel')}
+        </p>
+        <LocaleSegmentSwitcher onLocaleChange={onClose} />
+      </div>
     </div>
   );
 };

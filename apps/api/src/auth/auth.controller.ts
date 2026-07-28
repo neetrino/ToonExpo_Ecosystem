@@ -6,7 +6,7 @@ import {
   ApiOperation,
   ApiTags,
 } from '@nestjs/swagger';
-import { Throttle } from '@nestjs/throttler';
+import { Throttle, SkipThrottle } from '@nestjs/throttler';
 import type {
   AuthSessionResponse,
   ChangePasswordResponse,
@@ -122,6 +122,7 @@ export class AuthController {
   }
 
   @OptionalAuth()
+  @SkipThrottle()
   @Get('me')
   @ApiOperation({ summary: 'Return the authenticated user, or 204 when anonymous' })
   @ApiOkResponse({ description: 'Current user without sensitive fields' })
@@ -151,6 +152,7 @@ export class AuthController {
     return this.authService.updateProfile(user, body);
   }
 
+  @SkipThrottle()
   @Get('csrf')
   @ApiOperation({ summary: 'Return the CSRF token for the current session' })
   @ApiOkResponse({ description: 'Session-bound CSRF token' })

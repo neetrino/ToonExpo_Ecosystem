@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import { Badge, Box, Globe, Images, LayoutGrid, MapPinned, Sofa, Video, View } from 'lucide-react';
+import { Globe, Images, Sofa } from 'lucide-react';
 import Image from 'next/image';
 
 import type {
@@ -17,12 +17,6 @@ type ProjectCatalogLinksSectionProps = {
 const LINK_ICON: Partial<Record<ProjectCatalogLinkId, LucideIcon>> = {
   exteriorRenders: Images,
   interiorRenders: Sofa,
-  typicalInteractiveTour: View,
-  video: Video,
-  exteriorInteractiveTour: MapPinned,
-  floorPlans2d: LayoutGrid,
-  floorPlans3d: Box,
-  logoBranding: Badge,
   website: Globe,
 };
 
@@ -41,7 +35,7 @@ export const ProjectCatalogLinksSection = ({ links, labels }: ProjectCatalogLink
   }
 
   return (
-    <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+    <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
       {links.map((link) => {
         const LucideIcon = LINK_ICON[link.id];
         const socialSrc = SOCIAL_ICON_SRC[link.id];
@@ -53,7 +47,7 @@ export const ProjectCatalogLinksSection = ({ links, labels }: ProjectCatalogLink
               target="_blank"
               rel="noopener noreferrer"
               className={cn(
-                'flex min-h-[4.5rem] items-center gap-3 rounded-[15px] border border-header-border',
+                'flex min-h-[4.5rem] items-center gap-3 rounded-[16px] border border-header-border',
                 'bg-canvas px-4 py-3.5 transition-[transform,box-shadow,border-color] duration-200',
                 'hover:-translate-y-0.5 hover:border-brand/30 hover:shadow-sm',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/25',
@@ -78,7 +72,9 @@ export const ProjectCatalogLinksSection = ({ links, labels }: ProjectCatalogLink
                   <LucideIcon className="size-4" strokeWidth={2} />
                 ) : null}
               </span>
-              <span className="min-w-0 text-sm font-bold text-ink-navy">{labels[link.id]}</span>
+              <span className="min-w-0 truncate whitespace-nowrap text-sm font-bold text-ink-navy">
+                {labels[link.id]}
+              </span>
             </a>
           </li>
         );

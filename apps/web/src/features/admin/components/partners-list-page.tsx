@@ -2,16 +2,16 @@
 
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
-import { useState } from 'react';
-import type {
-  PartnerCompanyStatus,
-  PartnerCompanyType,
-  PublicationStatus,
-} from '@toonexpo/contracts';
+import { useMemo, useState } from 'react';
 
 import { CreatePartnerSheet } from '@/features/admin/components/create-partner-sheet';
+import {
+  applyPartnerListFilterKey,
+  buildPartnerFilterConfigs,
+  EMPTY_PARTNER_LIST_FILTERS,
+  partnerListFiltersToRecord,
+} from '@/features/admin/components/partner-filters';
 import { PartnerDetailSheet } from '@/features/admin/components/partner-detail-sheet';
-import { PartnerFilters } from '@/features/admin/components/partner-filters';
 import { PartnersTable } from '@/features/admin/components/partners-table';
 import { ADMIN_COMPANIES_MAX_PAGE_SIZE, ADMIN_VIEW_MODE_KEYS } from '@/features/admin/constants';
 import { useAdminCompaniesQuery } from '@/features/admin/hooks/use-admin-companies';
@@ -19,8 +19,9 @@ import { useAdminPartnersQuery } from '@/features/admin/hooks/use-admin-partners
 import { PARTNERS_DEFAULT_PAGE_SIZE } from '@/features/partners/constants';
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
-import { Button } from '@/shared/ui/button';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
+import { Button } from '@/shared/ui/button';
+import { ListPageHeader } from '@/shared/ui/list-page-header';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
 const parsePage = (raw: string | null): number => {
@@ -36,17 +37,14 @@ const parsePage = (raw: string | null): number => {
  */
 export const PartnersListPage = () => {
   const t = useTranslations('Admin.partners');
+  const tFilters = useTranslations('Admin.partners.filters');
   const searchParams = useSearchParams();
   const page = parsePage(searchParams.get('page'));
   const [showCreate, setShowCreate] = useState(false);
   const [selectedPartnerId, setSelectedPartnerId] = useState<string | null>(null);
   const { viewMode, setViewMode } = usePersistedViewMode(ADMIN_VIEW_MODE_KEYS.partners);
-  const [filters, setFilters] = useState<{
-    type: PartnerCompanyType | '';
-    status: PartnerCompanyStatus | '';
-    publicationStatus: PublicationStatus | '';
-    search: string;
-  }>({ type: '', status: '', publicationStatus: '', search: '' });
+  const [search, setSearch] = useState('');
+  const [filters, setFilters] = useState(EMPTY_PARTNER_LIST_FILTERS);
 
   const companiesQuery = useAdminCompaniesQuery(1, ADMIN_COMPANIES_MAX_PAGE_SIZE);
   const partnersQuery = useAdminPartnersQuery({
@@ -55,8 +53,24 @@ export const PartnersListPage = () => {
     ...(filters.type ? { type: filters.type } : {}),
     ...(filters.status ? { status: filters.status } : {}),
     ...(filters.publicationStatus ? { publicationStatus: filters.publicationStatus } : {}),
-    ...(filters.search.trim() ? { search: filters.search.trim() } : {}),
+    ...(search.trim() ? { search: search.trim() } : {}),
   });
+
+  const filterConfigs = useMemo(
+    () =>
+      buildPartnerFilterConfigs({
+        type: tFilters('type'),
+        allTypes: tFilters('allTypes'),
+        status: tFilters('status'),
+        allStatuses: tFilters('allStatuses'),
+        publication: tFilters('publication'),
+        allPublication: tFilters('allPublication'),
+        typeOption: (type) => tFilters(`types.${type}`),
+        statusOption: (status) => tFilters(`statuses.${status}`),
+        publicationOption: (status) => tFilters(`publicationStatuses.${status}`),
+      }),
+    [tFilters],
+  );
 
   const handleSelectPartner = (partnerId: string): void => {
     setShowCreate(false);
@@ -79,37 +93,39 @@ export const PartnersListPage = () => {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-page-title text-ink">{t('title')}</h1>
-        <p className="text-sm text-ink-secondary">
-          {t('subtitle', { count: response.meta.total })}
-        </p>
-      </div>
-
-      <div className="flex flex-nowrap items-center justify-between gap-3 overflow-x-auto">
-        <PartnerFilters
-          type={filters.type}
-          status={filters.status}
-          publicationStatus={filters.publicationStatus}
-          search={filters.search}
-          onChange={setFilters}
-        />
-
-        <div className="flex shrink-0 items-center gap-2">
-          <ViewModeToggle value={viewMode} onChange={setViewMode} />
-          <Button
-            type="button"
-            size="sm"
-            variant="secondary"
-            onClick={() => {
-              setSelectedPartnerId(null);
-              setShowCreate(true);
-            }}
-          >
-            <AddActionLabel>{t('newPartner')}</AddActionLabel>
-          </Button>
-        </div>
-      </div>
+      <ListPageHeader
+        title={t('title')}
+        subtitle={t('subtitle', { count: response.meta.total })}
+        search={search}
+        searchPlaceholder={tFilters('searchPlaceholder')}
+        searchAriaLabel={tFilters('search')}
+        filters={filterConfigs}
+        filterValues={partnerListFiltersToRecord(filters)}
+        onSearchChange={setSearch}
+        onFilterChange={(key, value) => {
+          setFilters((prev) => applyPartnerListFilterKey(prev, key, value));
+        }}
+        onClearAll={() => {
+          setFilters(EMPTY_PARTNER_LIST_FILTERS);
+        }}
+        actions={
+          <>
+            <ViewModeToggle value={viewMode} onChange={setViewMode} />
+            <Button
+              type="button"
+              size="sm"
+              variant="secondary"
+              className="shrink-0"
+              onClick={() => {
+                setSelectedPartnerId(null);
+                setShowCreate(true);
+              }}
+            >
+              <AddActionLabel>{t('newPartner')}</AddActionLabel>
+            </Button>
+          </>
+        }
+      />
 
       {response.data.length === 0 ? (
         <p className="text-sm text-ink-secondary">{t('empty')}</p>

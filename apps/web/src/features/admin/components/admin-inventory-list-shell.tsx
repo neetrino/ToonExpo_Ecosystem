@@ -3,7 +3,7 @@
 import type { ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 import {
   ADMIN_COMPANIES_MAX_PAGE_SIZE,
@@ -13,9 +13,13 @@ import { useAdminCompaniesQuery } from '@/features/admin/hooks/use-admin-compani
 import { useAdminBuildingsQuery } from '@/features/admin/hooks/use-admin-inventory';
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
 import { usePathname, useRouter } from '@/i18n/navigation';
-import { Select } from '@/shared/ui/select';
-import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
+import type { IntegratedSearchFilterConfig } from '@/shared/ui/integrated-search-filters.types';
+import { ListPageHeader } from '@/shared/ui/list-page-header';
 import type { ViewMode } from '@/shared/ui/view-mode';
+import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
+
+const ADMIN_INVENTORY_FILTER_COMPANY_KEY = 'companyId';
+const ADMIN_INVENTORY_FILTER_BUILDING_KEY = 'buildingId';
 
 type AdminInventoryListShellProps = {
   title: string;
@@ -65,11 +69,13 @@ export const AdminInventoryListShell = ({
   onViewModeChange,
 }: AdminInventoryListShellProps) => {
   const t = useTranslations('Admin.projects');
+  const tCommon = useTranslations('Common.integratedSearch');
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
   const companyId = searchParams.get('companyId')?.trim() || undefined;
   const buildingId = searchParams.get('buildingId')?.trim() || undefined;
+  const [search, setSearch] = useState('');
   const companiesQuery = useAdminCompaniesQuery(1, ADMIN_COMPANIES_MAX_PAGE_SIZE);
   const buildingsQuery = useAdminBuildingsQuery(1, ADMIN_COMPANIES_MAX_PAGE_SIZE, companyId);
 
@@ -116,6 +122,32 @@ export const AdminInventoryListShell = ({
     return query.length > 0 ? `${pathname}?${query}` : pathname;
   };
 
+  const filterConfigs = useMemo((): IntegratedSearchFilterConfig[] => {
+    const configs: IntegratedSearchFilterConfig[] = [
+      {
+        key: ADMIN_INVENTORY_FILTER_COMPANY_KEY,
+        label: t('filters.company'),
+        allOptionLabel: t('filters.allCompanies'),
+        options: builderCompanies.map((company) => ({
+          value: company.id,
+          label: company.name,
+        })),
+      },
+    ];
+    if (showBuildingFilter) {
+      configs.push({
+        key: ADMIN_INVENTORY_FILTER_BUILDING_KEY,
+        label: t('filters.building'),
+        allOptionLabel: t('filters.allBuildings'),
+        options: buildingOptions.map((building) => ({
+          value: building.id,
+          label: `${building.name} · ${building.projectName}`,
+        })),
+      });
+    }
+    return configs;
+  }, [builderCompanies, buildingOptions, showBuildingFilter, t]);
+
   const filtersLoading =
     companiesQuery.isLoading || (showBuildingFilter && buildingsQuery.isLoading);
 
@@ -133,61 +165,40 @@ export const AdminInventoryListShell = ({
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-page-title text-ink">{title}</h1>
-        <p className="text-sm text-ink-secondary">{subtitle}</p>
-      </div>
-
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-wrap gap-3">
-          <Select
-            size="fit"
-            className="h-10"
-            value={companyId ?? ''}
-            aria-label={t('filters.company')}
-            onChange={(event) => {
-              const nextCompanyId = event.target.value || null;
-              router.replace(
-                buildListHref({ page: 1, companyId: nextCompanyId, buildingId: null }),
-              );
-            }}
-          >
-            <option value="">{t('filters.allCompanies')}</option>
-            {builderCompanies.map((company) => (
-              <option key={company.id} value={company.id}>
-                {company.name}
-              </option>
-            ))}
-          </Select>
-
-          {showBuildingFilter ? (
-            <Select
-              size="fit"
-              className="h-10"
-              value={buildingId ?? ''}
-              aria-label={t('filters.building')}
-              onChange={(event) => {
-                const nextBuildingId = event.target.value || null;
-                router.replace(buildListHref({ page: 1, buildingId: nextBuildingId }));
-              }}
-            >
-              <option value="">{t('filters.allBuildings')}</option>
-              {buildingOptions.map((building) => (
-                <option key={building.id} value={building.id}>
-                  {building.name} · {building.projectName}
-                </option>
-              ))}
-            </Select>
-          ) : null}
-        </div>
-
-        <div className="flex shrink-0 flex-wrap items-center gap-2">
-          {viewMode && onViewModeChange ? (
-            <ViewModeToggle value={viewMode} onChange={onViewModeChange} />
-          ) : null}
-          {headerActions}
-        </div>
-      </div>
+      <ListPageHeader
+        title={title}
+        subtitle={subtitle}
+        search={search}
+        searchPlaceholder={tCommon('searchPlaceholder')}
+        searchAriaLabel={tCommon('searchLabel')}
+        filters={filterConfigs}
+        filterValues={{
+          [ADMIN_INVENTORY_FILTER_COMPANY_KEY]: companyId ?? '',
+          [ADMIN_INVENTORY_FILTER_BUILDING_KEY]: buildingId ?? '',
+        }}
+        onSearchChange={setSearch}
+        onFilterChange={(key, value) => {
+          if (key === ADMIN_INVENTORY_FILTER_COMPANY_KEY) {
+            router.replace(buildListHref({ page: 1, companyId: value || null, buildingId: null }));
+            return;
+          }
+          if (key === ADMIN_INVENTORY_FILTER_BUILDING_KEY) {
+            router.replace(buildListHref({ page: 1, buildingId: value || null }));
+          }
+        }}
+        onClearAll={() => {
+          setSearch('');
+          router.replace(buildListHref({ page: 1, companyId: null, buildingId: null }));
+        }}
+        actions={
+          <>
+            {viewMode && onViewModeChange ? (
+              <ViewModeToggle value={viewMode} onChange={onViewModeChange} />
+            ) : null}
+            {headerActions}
+          </>
+        }
+      />
 
       {total === 0 ? <p className="text-sm text-ink-secondary">{empty}</p> : children}
 

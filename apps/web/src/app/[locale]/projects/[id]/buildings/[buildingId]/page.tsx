@@ -50,10 +50,10 @@ export default async function BuildingPage({ params }: BuildingPageProps) {
   const visualCanvas = pickPrimaryVisualCanvas(visualResponse?.data ?? []);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-canvas">
       <main>
         {building.cover ? (
-          <section className="relative isolate h-[min(40vh,320px)] w-full overflow-hidden bg-surface">
+          <section className="relative isolate h-[min(52vh,28rem)] w-full overflow-hidden bg-surface">
             <Image
               src={building.cover.fileUrl}
               alt={building.cover.altText ?? building.name}
@@ -77,7 +77,7 @@ export default async function BuildingPage({ params }: BuildingPageProps) {
             </div>
           </section>
         ) : (
-          <div className="page-container pt-10">
+          <div className="page-container pt-[calc(5.5rem+env(safe-area-inset-top,0px))]">
             <Link
               href={`/projects/${building.project.id}`}
               className="text-sm text-ink-secondary hover:text-ink"

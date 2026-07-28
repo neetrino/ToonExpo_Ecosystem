@@ -12,6 +12,7 @@ import { isNonBuyerStaff } from '@/features/buyer/utils/is-buyer-account';
 import { getAccountInitials } from '@/shared/lib/account-initials';
 import { Link, usePathname } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
+import { Form } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
 import { Textarea } from '@/shared/ui/textarea';
 
@@ -153,7 +154,7 @@ export const ApartmentInquireCard = ({
           {tRequest('success.created')}
         </p>
       ) : (
-        <form className="space-y-3" onSubmit={(event) => void onSubmit(event)} noValidate>
+        <Form className="space-y-3" onSubmit={(event) => void onSubmit(event)} noValidate>
           <Input
             name="name"
             autoComplete="name"
@@ -230,7 +231,7 @@ export const ApartmentInquireCard = ({
           >
             {t('inquireMortgage')}
           </Link>
-        </form>
+        </Form>
       )}
     </aside>
   );

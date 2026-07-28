@@ -3,6 +3,7 @@
 import { Check, ChevronDown } from 'lucide-react';
 import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 
+import { HeroFilterTrigger } from '@/features/catalog/components/hero-filter-trigger';
 import { blurActiveElementAfterEscClose } from '@/shared/ui/blur-active-element';
 import { cn } from '@/shared/ui/cn';
 import { DropdownPortal } from '@/shared/ui/dropdown-portal';
@@ -23,6 +24,15 @@ type MultiListboxSelectProps = {
   variant?: 'plain' | 'field' | undefined;
   /** `full` stretches; `fit` matches content width. */
   size?: 'full' | 'fit' | undefined;
+  /**
+   * When set with `variant="plain"`, renders the mobile hero filter block
+   * (label + value) and collapses to the plain trigger on `lg+`.
+   */
+  heroBlock?:
+    | {
+        label: string;
+      }
+    | undefined;
 };
 
 const SelectionMark = ({ checked }: { checked: boolean }) => (
@@ -53,6 +63,7 @@ export const MultiListboxSelect = ({
   disabled = false,
   variant = 'field',
   size = 'full',
+  heroBlock,
 }: MultiListboxSelectProps) => {
   const [open, setOpen] = useState(false);
   const [fitWidthPx, setFitWidthPx] = useState<number | null>(null);
@@ -64,6 +75,7 @@ export const MultiListboxSelect = ({
   const isAll = values.length === 0;
   const isField = variant === 'field';
   const isFit = size === 'fit';
+  const useHeroBlock = !isField && heroBlock != null;
 
   useLayoutEffect(() => {
     if (!isFit) {
@@ -154,6 +166,7 @@ export const MultiListboxSelect = ({
       className={cn(
         'relative min-w-0',
         isField && (isFit ? 'w-fit max-w-full' : 'w-full'),
+        useHeroBlock && 'w-full lg:w-auto',
         !isField && className,
       )}
     >
@@ -179,51 +192,74 @@ export const MultiListboxSelect = ({
           ))}
         </ul>
       ) : null}
-      <button
-        ref={buttonRef}
-        id={id}
-        type="button"
-        disabled={disabled}
-        style={isFit && fitWidthPx != null ? { width: fitWidthPx } : undefined}
-        className={cn(
-          'flex min-w-0 items-center justify-between gap-2 text-left',
-          isFit ? 'w-max max-w-full' : 'w-full',
-          'transition-colors duration-[var(--duration-fast)]',
-          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/25',
-          'disabled:cursor-not-allowed disabled:opacity-50',
-          isField
-            ? cn(
-                'h-11 rounded-sm border border-border bg-surface-elevated px-4',
-                'text-base text-ink sm:text-sm',
-                'transition-[border-color,box-shadow,background-color] duration-[var(--duration-fast)]',
-                'hover:border-border-strong focus-visible:border-brand focus-visible:ring-brand/20',
-                className,
-              )
-            : cn('bg-transparent p-0 text-sm font-medium text-ink-navy', 'hover:text-brand-deep'),
-          !isField && open && 'text-brand-deep',
-        )}
-        aria-label={ariaLabel}
-        aria-haspopup="listbox"
-        aria-expanded={open}
-        aria-controls={listId}
-        onClick={() => {
-          if (disabled) {
-            return;
-          }
-          setOpen((current) => !current);
-        }}
-      >
-        <span className={cn(isFit ? 'whitespace-nowrap' : 'truncate')}>{displayLabel}</span>
-        <ChevronDown
-          className={cn(
-            'size-4 shrink-0 transition-transform duration-[var(--duration-base)] ease-[var(--ease-out-premium)]',
-            isField ? 'text-brand' : 'text-header-muted',
-            open && 'rotate-180',
-            open && !isField && 'text-brand-deep',
-          )}
-          aria-hidden
+      {useHeroBlock && heroBlock ? (
+        <HeroFilterTrigger
+          ref={buttonRef}
+          id={id}
+          label={heroBlock.label}
+          value={displayLabel}
+          open={open}
+          mutedValue={isAll}
+          disabled={disabled}
+          className="lg:w-auto"
+          aria-label={ariaLabel}
+          aria-haspopup="listbox"
+          aria-expanded={open}
+          aria-controls={listId}
+          onClick={() => {
+            if (disabled) {
+              return;
+            }
+            setOpen((current) => !current);
+          }}
         />
-      </button>
+      ) : (
+        <button
+          ref={buttonRef}
+          id={id}
+          type="button"
+          disabled={disabled}
+          style={isFit && fitWidthPx != null ? { width: fitWidthPx } : undefined}
+          className={cn(
+            'flex min-w-0 items-center justify-between gap-2 text-left',
+            isFit ? 'w-max max-w-full' : 'w-full',
+            'transition-colors duration-[var(--duration-fast)]',
+            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/25',
+            'disabled:cursor-not-allowed disabled:opacity-50',
+            isField
+              ? cn(
+                  'h-11 rounded-sm border border-border bg-surface-elevated px-4',
+                  'text-base text-ink sm:text-sm',
+                  'transition-[border-color,box-shadow,background-color] duration-[var(--duration-fast)]',
+                  'hover:border-border-strong focus-visible:border-brand focus-visible:ring-brand/20',
+                  className,
+                )
+              : cn('bg-transparent p-0 text-sm font-medium text-ink-navy', 'hover:text-brand-deep'),
+            !isField && open && 'text-brand-deep',
+          )}
+          aria-label={ariaLabel}
+          aria-haspopup="listbox"
+          aria-expanded={open}
+          aria-controls={listId}
+          onClick={() => {
+            if (disabled) {
+              return;
+            }
+            setOpen((current) => !current);
+          }}
+        >
+          <span className={cn(isFit ? 'whitespace-nowrap' : 'truncate')}>{displayLabel}</span>
+          <ChevronDown
+            className={cn(
+              'size-4 shrink-0 transition-transform duration-[var(--duration-base)] ease-[var(--ease-out-premium)]',
+              isField ? 'text-brand' : 'text-header-muted',
+              open && 'rotate-180',
+              open && !isField && 'text-brand-deep',
+            )}
+            aria-hidden
+          />
+        </button>
+      )}
 
       <DropdownPortal open={open && !disabled} anchorRef={buttonRef} matchWidth>
         <div

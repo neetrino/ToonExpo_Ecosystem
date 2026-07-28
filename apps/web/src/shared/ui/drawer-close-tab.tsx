@@ -20,12 +20,19 @@ type DrawerCloseTabProps = {
   edge: DrawerCloseTabEdge;
   onClose: () => void;
   closeLabel: string;
+  /** Offset from the drawer top edge in px. Defaults to the admin sheet value. */
+  topPx?: number | undefined;
 };
 
 /**
  * Side-tab close control — tucks under drawer edge (MaMarie cart/admin sheet pattern).
  */
-export const DrawerCloseTab = ({ edge, onClose, closeLabel }: DrawerCloseTabProps) => {
+export const DrawerCloseTab = ({
+  edge,
+  onClose,
+  closeLabel,
+  topPx = SIDE_SHEET_CLOSE_BUTTON_TOP_PX,
+}: DrawerCloseTabProps) => {
   const isStartEdge = edge === 'start';
   const tabRadiusPx = SIDE_SHEET_CLOSE_TAB_HEIGHT_PX / 2;
   const tabHalfWidthPx = SIDE_SHEET_CLOSE_TAB_WIDTH_PX / 2;
@@ -42,7 +49,7 @@ export const DrawerCloseTab = ({ edge, onClose, closeLabel }: DrawerCloseTabProp
         'absolute flex items-center justify-center bg-brand text-on-brand',
       )}
       style={{
-        top: SIDE_SHEET_CLOSE_BUTTON_TOP_PX,
+        top: topPx,
         ...(isStartEdge ? { left: 0 } : { right: 0 }),
         zIndex: SIDE_SHEET_CLOSE_TAB_Z_INDEX,
         width: SIDE_SHEET_CLOSE_TAB_WIDTH_PX,

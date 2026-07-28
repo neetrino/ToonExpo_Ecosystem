@@ -1,10 +1,12 @@
 'use client';
 
-import { Building2, LogIn, LogOut, Shield } from 'lucide-react';
+import type { CompanyType } from '@toonexpo/contracts';
+import { Building2, LogIn, LogOut, Shield, User } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useId, useRef, useState } from 'react';
 
 import { useLogoutMutation } from '@/features/auth/hooks/use-auth';
+import { isPartnerCompatibleCompany } from '@/features/partners/utils/is-partner-compatible-company';
 import { Link, usePathname } from '@/i18n/navigation';
 import { blurActiveElementAfterEscClose } from '@/shared/ui/blur-active-element';
 import { cn } from '@/shared/ui/cn';
@@ -18,7 +20,7 @@ type ProfileMenuProps = {
   userName?: string | undefined;
   userEmail?: string | undefined;
   accountType?: string | undefined;
-  companyType?: string | null | undefined;
+  companyType?: CompanyType | null | undefined;
   /** When true, show Builder portal link above Log out. */
   showBuilder?: boolean | undefined;
   /** Visual tone for light surfaces vs dark hero chrome. */
@@ -53,6 +55,14 @@ export const ProfileMenu = ({
   const showBuilder =
     showBuilderProp ??
     (accountType === 'company_member' && (companyType == null || companyType === 'builder'));
+  const showProfile = !showAdmin && !showBuilder;
+  /** Same idea as Admin → `/admin`: open the account portal (sidebar), not a deep settings page. */
+  const profileHref =
+    accountType === 'company_member' &&
+    companyType != null &&
+    isPartnerCompatibleCompany(companyType)
+      ? '/partner'
+      : '/dashboard';
 
   const clearCloseTimer = (): void => {
     if (closeTimerRef.current == null) {
@@ -120,7 +130,7 @@ export const ProfileMenu = ({
   );
 
   const menuItemClassName = cn(
-    'flex w-full items-center gap-2.5 px-3.5 py-2.5 text-left text-sm font-medium',
+    'flex w-full items-center gap-2 whitespace-nowrap px-3 py-2 text-left text-sm font-medium',
     'transition-colors duration-[var(--duration-fast)]',
     'text-ink hover:bg-surface',
   );
@@ -170,7 +180,7 @@ export const ProfileMenu = ({
             role="menu"
             aria-label={t('profileMenu')}
             className={cn(
-              'w-44 overflow-hidden rounded-[12px] border border-header-border',
+              'w-max min-w-0 overflow-hidden rounded-[12px] border border-header-border',
               'bg-surface-elevated py-1.5 text-ink shadow-md',
             )}
           >
@@ -198,11 +208,23 @@ export const ProfileMenu = ({
               </Link>
             ) : null}
 
+            {showProfile ? (
+              <Link
+                href={profileHref}
+                role="menuitem"
+                className={menuItemClassName}
+                onClick={() => setOpen(false)}
+              >
+                <User className="size-4 shrink-0 opacity-80" aria-hidden />
+                {t('profile')}
+              </Link>
+            ) : null}
+
             <button
               type="button"
               role="menuitem"
               className={cn(
-                'flex w-full items-center gap-2.5 px-3.5 py-2.5 text-left text-sm font-medium',
+                'flex w-full items-center gap-2 whitespace-nowrap px-3 py-2 text-left text-sm font-medium',
                 'transition-colors duration-[var(--duration-fast)]',
                 'text-danger hover:bg-danger-soft',
                 'disabled:pointer-events-none disabled:opacity-50',

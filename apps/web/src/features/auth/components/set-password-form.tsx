@@ -13,6 +13,7 @@ import {
 import { mapSetPasswordError } from '@/features/auth/utils/map-auth-error';
 import { useRouter } from '@/i18n/navigation';
 import { Button } from '@/shared/ui/button';
+import { Form } from '@/shared/ui/form';
 import { FormField } from '@/shared/ui/form-field';
 import { PasswordInput } from '@/shared/ui/password-input';
 
@@ -54,7 +55,7 @@ export const SetPasswordForm = ({ token }: SetPasswordFormProps) => {
   const busy = isSubmitting || setPasswordMutation.isPending;
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-5" noValidate>
+    <Form onSubmit={onSubmit} className="flex flex-col gap-5" noValidate>
       <FormField
         id="set-password"
         label={t('fields.password')}
@@ -98,6 +99,6 @@ export const SetPasswordForm = ({ token }: SetPasswordFormProps) => {
       <Button type="submit" variant="secondary" disabled={busy} className="w-full">
         {busy ? t('setPassword.submitting') : t('setPassword.submit')}
       </Button>
-    </form>
+    </Form>
   );
 };

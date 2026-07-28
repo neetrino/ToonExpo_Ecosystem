@@ -94,8 +94,8 @@ export const ProjectCard = ({
       </div>
 
       <div className="flex flex-1 flex-col px-3 pt-4 pb-3">
-        <div className="mb-1 flex items-start justify-between gap-3">
-          <h3 className="min-w-0 truncate font-brand text-base font-semibold tracking-[-0.02em] text-ink-navy">
+        <div className="mb-1 flex flex-col gap-1 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between sm:gap-x-3 sm:gap-y-1">
+          <h3 className="min-w-0 truncate font-brand text-base font-semibold tracking-[-0.02em] text-ink-navy sm:min-w-[min(100%,10rem)] sm:flex-1 sm:basis-[10rem]">
             <Link
               href={`/projects/${project.id}`}
               className="transition-colors hover:text-brand-deep"
@@ -103,7 +103,7 @@ export const ProjectCard = ({
               {project.name}
             </Link>
           </h3>
-          <p className="shrink-0 font-brand text-lg font-bold leading-7 text-brand-deep">
+          <p className="font-brand text-lg font-bold leading-7 text-brand-deep sm:shrink-0">
             {priceLabel}
           </p>
         </div>

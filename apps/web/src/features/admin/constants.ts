@@ -114,4 +114,5 @@ export const ADMIN_VIEW_MODE_KEYS = {
   readinessCategories: 'admin-readiness-categories',
   events: 'admin-events',
   bos: 'admin-bos-provisioning',
+  crm: 'admin-crm',
 } as const;

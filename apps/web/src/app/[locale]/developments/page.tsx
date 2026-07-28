@@ -6,6 +6,7 @@ import { listProjects } from '@/features/catalog/api/catalog-api';
 import { NewDevelopmentsView } from '@/features/catalog/components/new-developments-view';
 import { ProjectPriceRangesOverlayScope } from '@/features/catalog/components/price-overlay-scope';
 import { SiteFooter } from '@/features/catalog/components/site-footer';
+import { CatalogFavoritesScope } from '@/features/buyer/components/catalog-favorites-scope';
 
 const DEVELOPMENTS_PAGE_SIZE = 12;
 
@@ -44,9 +45,11 @@ export default async function DevelopmentsPage({ params }: DevelopmentsPageProps
   return (
     <div className="min-h-screen bg-canvas">
       <main>
-        <ProjectPriceRangesOverlayScope projectIds={response.data.map((project) => project.id)}>
-          <NewDevelopmentsView projects={response.data} />
-        </ProjectPriceRangesOverlayScope>
+        <CatalogFavoritesScope projects={response.data}>
+          <ProjectPriceRangesOverlayScope projectIds={response.data.map((project) => project.id)}>
+            <NewDevelopmentsView projects={response.data} />
+          </ProjectPriceRangesOverlayScope>
+        </CatalogFavoritesScope>
       </main>
       <SiteFooter />
     </div>

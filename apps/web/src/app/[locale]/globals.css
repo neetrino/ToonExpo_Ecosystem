@@ -146,6 +146,32 @@
   }
 }
 
+/** Mobile account sub-pages: push in from the right (hub → detail). */
+@keyframes account-page-push-in {
+  from {
+    opacity: 0.92;
+    transform: translate3d(100%, 0, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/** Mobile account sub-pages: reverse exit to the right (detail → hub). */
+@keyframes account-page-push-out {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    opacity: 0.92;
+    transform: translate3d(100%, 0, 0);
+  }
+}
+
 /* MaMarie delete confirmation modal — enter/exit */
 @keyframes admin-delete-modal-backdrop-in {
   from {
@@ -431,6 +457,28 @@
     animation: page-enter var(--duration-base) var(--ease-out-premium) both;
   }
 
+  .account-page-push-in {
+    animation: account-page-push-in var(--duration-slow) var(--ease-out-premium) both;
+  }
+
+  .account-page-push-out {
+    animation: account-page-push-out var(--duration-slow) var(--ease-out-premium) both;
+  }
+
+  @media (min-width: 768px) {
+    .account-page-push-in,
+    .account-page-push-out {
+      animation: page-enter var(--duration-base) var(--ease-out-premium) both;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .account-page-push-in,
+    .account-page-push-out {
+      animation: page-enter var(--duration-base) var(--ease-out-premium) both;
+    }
+  }
+
   .animate-admin-delete-modal-backdrop-in {
     animation: admin-delete-modal-backdrop-in 0.32s var(--ease-out-premium);
   }
@@ -712,17 +760,17 @@
   }
 
   .luxury-scrollbar::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 3px;
+    height: 3px;
   }
 
   .luxury-scrollbar::-webkit-scrollbar-track {
-    margin-block: 0.5rem;
+    margin-block: 0.25rem;
     background: transparent;
   }
 
   .luxury-scrollbar::-webkit-scrollbar-thumb {
-    border: 2px solid transparent;
+    border: 0;
     border-radius: 999px;
     background-color: color-mix(in srgb, var(--color-brand-secondary) 38%, transparent);
     background-clip: padding-box;
@@ -743,15 +791,84 @@
   }
 
   /**
-   * CRM board page — fills viewport under portal chrome without page scroll.
-   * Extra cards scroll inside columns (`.crm-kanban-column-body`).
+   * Profile mobile sheets — thin thumb, shortened track (not full viewport).
+   */
+  .account-sheet-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in srgb, var(--color-ink) 28%, transparent) transparent;
+  }
+
+  .account-sheet-scrollbar::-webkit-scrollbar {
+    width: 3px;
+  }
+
+  .account-sheet-scrollbar::-webkit-scrollbar-track {
+    margin-block: 9rem;
+    background: transparent;
+  }
+
+  .account-sheet-scrollbar::-webkit-scrollbar-thumb {
+    border: 0;
+    border-radius: 999px;
+    background-color: color-mix(in srgb, var(--color-ink) 28%, transparent);
+    background-clip: padding-box;
+  }
+
+  .account-sheet-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: color-mix(in srgb, var(--color-ink) 45%, transparent);
+  }
+
+  .account-sheet-scrollbar::-webkit-scrollbar-button {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+
+  .account-sheet-scrollbar::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  /**
+   * CRM board page — fills the rail main column without page scroll.
+   * Uses fluid viewport height so desktop `zoom` (iMac / wide screens) does not
+   * overflow. Horizontal scroll: columns. Vertical scroll: column bodies.
+   *
+   * Cancels portal `main` vertical padding; chrome offset ≈ rail mask (shorter
+   * than full mask+pt so the board runs a bit taller).
    */
   .crm-board-page {
     display: flex;
+    box-sizing: border-box;
     flex-direction: column;
-    gap: 1.25rem;
-    height: calc(100dvh - 9.5rem);
-    max-height: calc(100dvh - 9.5rem);
+    gap: 1rem;
+    min-height: 0;
+    overflow: hidden;
+    margin-top: -1.5rem;
+    margin-bottom: -1.5rem;
+    padding-top: 1.25rem;
+    padding-bottom: 0.75rem;
+    height: calc(100svh / var(--desktop-layout-scale) - 5.5rem);
+    max-height: calc(100svh / var(--desktop-layout-scale) - 5.5rem);
+  }
+
+  @media (min-width: 768px) {
+    .crm-board-page {
+      margin-top: -2rem;
+      margin-bottom: -2rem;
+      padding-top: 1.5rem;
+      padding-bottom: 1rem;
+    }
+  }
+
+  .crm-board-page__chrome {
+    flex-shrink: 0;
+  }
+
+  .crm-board-page__board {
+    display: flex;
+    min-height: 0;
+    flex: 1 1 0%;
+    flex-direction: column;
     overflow: hidden;
   }
 
@@ -769,6 +886,7 @@
     min-height: 0;
     flex: 1 1 0%;
     flex-direction: column;
+    overflow: hidden;
   }
 
   .crm-kanban-board-columns {
@@ -777,15 +895,26 @@
     min-height: 0;
     width: 100%;
     align-items: stretch;
-    gap: 0.5rem;
+    gap: 0.75rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 0.25rem;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .crm-kanban-board-columns::-webkit-scrollbar {
+    display: none;
   }
 
   .crm-kanban-column {
     display: flex;
     height: 100%;
     min-height: 0;
-    min-width: 0;
-    flex: 1 1 0%;
+    width: 12.5rem;
+    min-width: 12.5rem;
+    max-width: 12.5rem;
+    flex: 0 0 12.5rem;
     flex-direction: column;
     overflow: hidden;
     border: 1px solid color-mix(in srgb, var(--color-border) 88%, transparent);
@@ -856,6 +985,12 @@
     overflow-x: hidden;
     overflow-y: auto;
     padding: 0.5rem;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .crm-kanban-column-body::-webkit-scrollbar {
+    display: none;
   }
 
   .crm-kanban-column__action-slot {

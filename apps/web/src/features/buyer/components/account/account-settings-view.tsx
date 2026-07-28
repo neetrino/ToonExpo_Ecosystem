@@ -15,6 +15,8 @@ type AccountSettingsViewProps = {
   /** i18n namespace for page title/subtitle, e.g. `Profile.settings` or `Admin.settings`. */
   titleNamespace: 'Profile.settings' | 'Admin.settings' | 'Builder.settings' | 'Partner.settings';
   passwordHeadingId?: string | undefined;
+  /** Buyer mobile hub → settings push transition + back control. */
+  mobilePush?: boolean | undefined;
 };
 
 /**
@@ -24,12 +26,13 @@ export const AccountSettingsView = async ({
   user,
   titleNamespace,
   passwordHeadingId = 'account-password-heading',
+  mobilePush = false,
 }: AccountSettingsViewProps) => {
   const t = await getTranslations(titleNamespace);
   const tPassword = await getTranslations('Profile.changePassword');
 
   return (
-    <AccountPageEnter>
+    <AccountPageEnter mobilePush={mobilePush}>
       <AccountPageHeader title={t('title')} subtitle={t('subtitle')} />
 
       <Reveal>

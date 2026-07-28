@@ -6,7 +6,7 @@ import { AccountPageEnter } from '@/features/buyer/components/account/account-pa
 import { AccountPageHeader } from '@/features/buyer/components/account/account-page-header';
 import { BuyerCheckInStatus } from '@/features/buyer/components/buyer-checkin-status';
 import { isBuyerAccount } from '@/features/buyer/utils/is-buyer-account';
-import { getMeOrNull } from '@/features/auth/api/auth-api';
+import { getMeOrNullCached as getMeOrNull } from '@/features/auth/api/get-me-or-null-cached';
 import { CheckinPage } from '@/features/exhibition/components/checkin/checkin-page';
 
 type CheckinRoutePageProps = {
@@ -48,7 +48,7 @@ export default async function CheckinRoutePage({ params }: CheckinRoutePageProps
   if (isBuyerAccount(user)) {
     const t = await getTranslations('Profile.checkin');
     return (
-      <AccountPageEnter>
+      <AccountPageEnter mobilePush>
         <AccountPageHeader title={t('title')} subtitle={t('subtitle')} />
         <BuyerCheckInStatus />
       </AccountPageEnter>

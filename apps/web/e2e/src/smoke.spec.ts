@@ -125,18 +125,18 @@ test.describe('smoke', () => {
     await expect(page).toHaveURL(/\/hy\/dashboard/);
 
     await page.goto('/hy/settings');
+    await expect(page.getByRole('button', { name: 'Պահպանել նոր գաղտնաբառը' })).toBeVisible();
     await page.getByLabel('Ընթացիկ գաղտնաբառ', { exact: true }).fill(initialPassword);
     await page.getByLabel('Նոր գաղտնաբառ', { exact: true }).fill(nextPassword);
     await page.getByLabel('Հաստատել նոր գաղտնաբառը', { exact: true }).fill(nextPassword);
 
     const changeResponse = page.waitForResponse(
       (response) =>
-        response.url().includes('/auth/change-password') &&
-        response.request().method() === 'POST' &&
-        response.ok(),
+        response.url().includes('/auth/change-password') && response.request().method() === 'POST',
     );
     await page.getByRole('button', { name: 'Պահպանել նոր գաղտնաբառը' }).click();
-    await changeResponse;
+    const changeResult = await changeResponse;
+    expect(changeResult.ok()).toBeTruthy();
     await expect(page.getByText('Գաղտնաբառը հաջողությամբ թարմացվեց։')).toBeVisible();
 
     await page.goto('/hy/dashboard');

@@ -1,27 +1,23 @@
-"use client";
+'use client';
 
-import type { BuyerFavoritesStatusResponse } from "@toonexpo/contracts";
-import {
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import type { BuyerFavoritesStatusResponse } from '@toonexpo/contracts';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 import {
   addBuyerFavorite,
   getBuyerFavoritesStatus,
   listBuyerFavorites,
   removeBuyerFavorite,
-} from "@/features/buyer/api/buyer-favorites-api";
+} from '@/features/buyer/api/buyer-favorites-api';
 import {
   BUYER_FAVORITES_QUERY_KEY,
   BUYER_FAVORITES_STATUS_QUERY_KEY,
-} from "@/features/buyer/constants";
+} from '@/features/buyer/constants';
 import {
   buildFavoriteTargetKey,
   serializeFavoriteTargets,
-} from "@/features/buyer/utils/favorite-target-key";
-import type { FavoriteTarget } from "@/features/buyer/utils/favorite-target-key";
+} from '@/features/buyer/utils/favorite-target-key';
+import type { FavoriteTarget } from '@/features/buyer/utils/favorite-target-key';
 
 export const buildFavoritesStatusQueryKey = (targets: FavoriteTarget[]) =>
   [...BUYER_FAVORITES_STATUS_QUERY_KEY, serializeFavoriteTargets(targets)] as const;
@@ -55,10 +51,7 @@ const patchStatusCaches = (
 /**
  * Batch favorite status for catalog heart icons (buyer session only).
  */
-export const useFavoritesStatusQuery = (
-  targets: FavoriteTarget[],
-  enabled = true,
-) =>
+export const useFavoritesStatusQuery = (targets: FavoriteTarget[], enabled = true) =>
   useQuery({
     queryKey: buildFavoritesStatusQueryKey(targets),
     queryFn: () => getBuyerFavoritesStatus(targets),
@@ -96,9 +89,9 @@ export const useToggleFavoriteMutation = () => {
         queryKey: BUYER_FAVORITES_STATUS_QUERY_KEY,
       });
 
-      const snapshots = queryClient.getQueriesData<BuyerFavoritesStatusResponse>(
-        { queryKey: BUYER_FAVORITES_STATUS_QUERY_KEY },
-      );
+      const snapshots = queryClient.getQueriesData<BuyerFavoritesStatusResponse>({
+        queryKey: BUYER_FAVORITES_STATUS_QUERY_KEY,
+      });
 
       patchStatusCaches(queryClient, targetKey, !favorited);
 
@@ -114,26 +107,6 @@ export const useToggleFavoriteMutation = () => {
         queryKey: BUYER_FAVORITES_STATUS_QUERY_KEY,
       });
       void queryClient.invalidateQueries({ queryKey: BUYER_FAVORITES_QUERY_KEY });
-    },
-  });
-};
-
-/**
- * Remove favorite from the profile list (no optimistic status needed).
- */
-export const useRemoveFavoriteMutation = () => {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: ({ targetType, targetId }: FavoriteTarget) =>
-      removeBuyerFavorite(targetType, targetId),
-    onSuccess: (_data, { targetType, targetId }) => {
-      const targetKey = buildFavoriteTargetKey(targetType, targetId);
-      patchStatusCaches(queryClient, targetKey, false);
-      void queryClient.invalidateQueries({ queryKey: BUYER_FAVORITES_QUERY_KEY });
-      void queryClient.invalidateQueries({
-        queryKey: BUYER_FAVORITES_STATUS_QUERY_KEY,
-      });
     },
   });
 };

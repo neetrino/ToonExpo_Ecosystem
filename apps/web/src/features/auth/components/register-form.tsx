@@ -21,6 +21,7 @@ import {
 import { mapAuthError } from '@/features/auth/utils/map-auth-error';
 import { useRouter } from '@/i18n/navigation';
 import { Button } from '@/shared/ui/button';
+import { Form } from '@/shared/ui/form';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
 import { PasswordInput } from '@/shared/ui/password-input';
@@ -65,7 +66,7 @@ export const RegisterForm = () => {
   const busy = isSubmitting || registerMutation.isPending;
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-3.5 sm:gap-4" noValidate>
+    <Form onSubmit={onSubmit} className="flex flex-col gap-3.5 sm:gap-4" noValidate>
       <div className="grid gap-3.5 sm:grid-cols-2 sm:gap-3">
         <FormField
           id="register-first-name"
@@ -201,6 +202,6 @@ export const RegisterForm = () => {
         href="/auth/login"
         linkLabel={t('register.loginLink')}
       />
-    </form>
+    </Form>
   );
 };
