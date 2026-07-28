@@ -57,7 +57,7 @@ export default async function FloorPage({ params }: FloorPageProps) {
   const floorLabel = floor.displayLabel ?? t('project.floor', { number: floor.number });
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-canvas">
       <main className="page-container section-pad">
         <div className="mb-6 flex flex-col gap-2">
           <Link
