@@ -7,7 +7,10 @@ import { ProjectCatalogSectionCard } from '@/features/catalog/components/project
 import { ProjectCatalogLinksSection } from '@/features/catalog/components/project-catalog-links-section';
 import { ProjectCatalogMediaPoster } from '@/features/catalog/components/project-catalog-media-poster';
 import { ProjectCatalogVideoSection } from '@/features/catalog/components/project-catalog-video-section';
-import type { ProjectCatalogRow } from '@/features/catalog/utils/build-project-catalog-rows';
+import {
+  splitProjectCatalogRowsByFinance,
+  type ProjectCatalogRow,
+} from '@/features/catalog/utils/build-project-catalog-rows';
 import type { ProjectCatalogLink } from '@/features/catalog/utils/project-catalog-details';
 import { splitProjectCatalogLinks } from '@/features/catalog/utils/project-catalog-links';
 import { staticAssetUrl } from '@/shared/lib/static-asset-url';
@@ -19,6 +22,7 @@ type ProjectCatalogDetailsPanelProps = {
   aboutText: string | null;
   overviewTitle: string;
   detailsTitle: string;
+  financeTitle: string;
   amenitiesTitle: string;
   nearbyTitle: string;
   linksTitle: string;
@@ -39,7 +43,7 @@ const EXTERIOR_TOUR_POSTER_SRC = staticAssetUrl('/images/hero-variant-a.webp');
 
 /**
  * Project catalog — Houzez-style stacked white cards (Description / Overview /
- * Details / Features / Nearby / Video / Tours / Links / Socials).
+ * Details / Finance / Features / Nearby / Video / Tours / Links / Socials).
  */
 export const ProjectCatalogDetailsPanel = ({
   title,
@@ -47,6 +51,7 @@ export const ProjectCatalogDetailsPanel = ({
   aboutText,
   overviewTitle,
   detailsTitle,
+  financeTitle,
   amenitiesTitle,
   nearbyTitle,
   linksTitle,
@@ -59,10 +64,13 @@ export const ProjectCatalogDetailsPanel = ({
   nearbyPlaces,
   links,
 }: ProjectCatalogDetailsPanelProps) => {
-  const overviewRows = rows.filter((row) => !row.wide).slice(0, OVERVIEW_MAX_ITEMS);
+  const { general: generalRows, finance: financeRows } = splitProjectCatalogRowsByFinance(rows);
+  const overviewRows = generalRows.filter((row) => !row.wide).slice(0, OVERVIEW_MAX_ITEMS);
   const overviewIds = new Set(overviewRows.map((row) => row.id));
   const detailRows =
-    overviewRows.length > 0 ? rows.filter((row) => row.wide || !overviewIds.has(row.id)) : rows;
+    overviewRows.length > 0
+      ? generalRows.filter((row) => row.wide || !overviewIds.has(row.id))
+      : generalRows;
   const {
     media: mediaLinks,
     social: socialLinks,
@@ -73,6 +81,7 @@ export const ProjectCatalogDetailsPanel = ({
   const hasAbout = aboutText != null && aboutText.trim().length > 0;
   const hasOverview = overviewRows.length > 0;
   const hasDetails = detailRows.length > 0;
+  const hasFinance = financeRows.length > 0;
   const hasAmenities = amenityLabels.length > 0;
   const hasNearby = nearbyPlaces.length > 0;
   const hasVideo = videoLink != null;
@@ -85,6 +94,7 @@ export const ProjectCatalogDetailsPanel = ({
     !hasAbout &&
     !hasOverview &&
     !hasDetails &&
+    !hasFinance &&
     !hasAmenities &&
     !hasNearby &&
     !hasVideo &&
@@ -131,6 +141,12 @@ export const ProjectCatalogDetailsPanel = ({
         {hasDetails ? (
           <ProjectCatalogSectionCard title={detailsTitle}>
             <ProjectCatalogDetailsList rows={detailRows} />
+          </ProjectCatalogSectionCard>
+        ) : null}
+
+        {hasFinance ? (
+          <ProjectCatalogSectionCard title={financeTitle}>
+            <ProjectCatalogDetailsList rows={financeRows} />
           </ProjectCatalogSectionCard>
         ) : null}
 

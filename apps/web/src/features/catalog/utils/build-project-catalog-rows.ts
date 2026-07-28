@@ -50,6 +50,42 @@ export type ProjectCatalogRow = {
   wide?: boolean;
 };
 
+/** Banks, prices, fees, payment / mortgage / installment terms. */
+export const PROJECT_CATALOG_FINANCE_CRITERION_IDS = [
+  'partnerBank',
+  'pricePerSqm',
+  'unitPriceRange',
+  'managementFee',
+  'paymentTypes',
+  'installmentTerms',
+  'mortgageTerms',
+  'specialTerms',
+] as const satisfies readonly ProjectCatalogCriterionId[];
+
+export type ProjectCatalogFinanceCriterionId =
+  (typeof PROJECT_CATALOG_FINANCE_CRITERION_IDS)[number];
+
+export const isProjectCatalogFinanceCriterion = (
+  id: ProjectCatalogCriterionId,
+): id is ProjectCatalogFinanceCriterionId => {
+  return (PROJECT_CATALOG_FINANCE_CRITERION_IDS as readonly string[]).includes(id);
+};
+
+export const splitProjectCatalogRowsByFinance = (
+  rows: readonly ProjectCatalogRow[],
+): { general: ProjectCatalogRow[]; finance: ProjectCatalogRow[] } => {
+  const general: ProjectCatalogRow[] = [];
+  const finance: ProjectCatalogRow[] = [];
+  for (const row of rows) {
+    if (isProjectCatalogFinanceCriterion(row.id)) {
+      finance.push(row);
+    } else {
+      general.push(row);
+    }
+  }
+  return { general, finance };
+};
+
 type DetailLabels = Record<ProjectCatalogCriterionId, string>;
 
 type BuildProjectCatalogRowsOptions = {
