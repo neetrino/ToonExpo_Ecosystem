@@ -3,7 +3,6 @@
 import { useTranslations } from 'next-intl';
 import { useState, type FormEvent } from 'react';
 
-import { HeroSearchTabs, type HeroSearchTab } from '@/features/catalog/components/hero-search-tabs';
 import { LocationSearchSelect } from '@/features/catalog/components/location-search-select';
 import { PriceRangeSelect } from '@/features/catalog/components/price-range-select';
 import { mergeLocationOptions } from '@/features/catalog/utils/location-options';
@@ -22,13 +21,12 @@ const BED_OPTIONS = [1, 2, 3, 4] as const;
 const POPULAR_CITY_KEYS = ['yerevan', 'gyumri', 'vanadzor', 'dilijan', 'tsaghkadzor'] as const;
 
 /**
- * Marketplace search card — Buy / Rent / New Builds tabs with location filters.
+ * Marketplace search card — location, price, and beds filters.
  * Stacks cleanly on small screens; desktop keeps the Figma horizontal row.
  */
 export const HeroSearch = ({ className, locations = [] }: HeroSearchProps) => {
   const t = useTranslations('HomePage.hero');
   const router = useRouter();
-  const [tab, setTab] = useState<HeroSearchTab>('buy');
   const [location, setLocation] = useState('');
   const [minPrice, setMinPrice] = useState<number | null>(null);
   const [maxPrice, setMaxPrice] = useState<number | null>(null);
@@ -44,13 +42,13 @@ export const HeroSearch = ({ className, locations = [] }: HeroSearchProps) => {
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    router.push(buildProjectsHref(location, minPrice, maxPrice, rooms, tab));
+    router.push(buildProjectsHref(location, minPrice, maxPrice, rooms));
   };
 
   const applyPriceRange = (nextMin: number | null, nextMax: number | null): void => {
     setMinPrice(nextMin);
     setMaxPrice(nextMax);
-    router.push(buildProjectsHref(location, nextMin, nextMax, rooms, tab));
+    router.push(buildProjectsHref(location, nextMin, nextMax, rooms));
   };
 
   return (
@@ -65,17 +63,6 @@ export const HeroSearch = ({ className, locations = [] }: HeroSearchProps) => {
           'ring-1 ring-header-border',
         )}
       >
-        <HeroSearchTabs
-          activeTab={tab}
-          listLabel={t('tabsLabel')}
-          labels={{
-            buy: t('tabs.buy'),
-            rent: t('tabs.rent'),
-            newBuilds: t('tabs.newBuilds'),
-          }}
-          onChange={setTab}
-        />
-
         <div className="grid grid-cols-1 gap-2 p-3 lg:grid-cols-[minmax(11rem,15rem)_auto_auto_auto] lg:items-center">
           <div className="flex min-w-0 flex-col gap-1 lg:px-3 lg:py-2">
             <span className="hidden text-[10px] font-bold tracking-[0.1em] text-header-muted uppercase lg:inline">
@@ -179,7 +166,6 @@ const buildProjectsHref = (
   minPrice: number | null,
   maxPrice: number | null,
   rooms: readonly string[],
-  tab: HeroSearchTab,
 ): string => {
   const params = new URLSearchParams();
   const trimmed = location.trim();
@@ -196,10 +182,6 @@ const buildProjectsHref = (
 
   if (rooms.length > 0) {
     params.set('rooms', rooms.join(','));
-  }
-
-  if (tab === 'newBuilds') {
-    params.set('salesStatus', 'available');
   }
 
   const query = params.toString();

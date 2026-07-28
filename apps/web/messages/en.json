@@ -107,12 +107,6 @@
       "search": "Search homes",
       "explore": "Explore projects",
       "register": "Register free",
-      "tabsLabel": "Search mode",
-      "tabs": {
-        "buy": "Buy",
-        "rent": "Rent",
-        "newBuilds": "New Builds"
-      },
       "locationLabel": "Location",
       "locationPlaceholder": "Select a city",
       "locationAny": "Any location",

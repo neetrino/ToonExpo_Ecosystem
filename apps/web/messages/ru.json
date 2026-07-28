@@ -107,12 +107,6 @@
       "search": "Искать дома",
       "explore": "Смотреть проекты",
       "register": "Бесплатная регистрация",
-      "tabsLabel": "Режим поиска",
-      "tabs": {
-        "buy": "Купить",
-        "rent": "Аренда",
-        "newBuilds": "Новостройки"
-      },
       "locationLabel": "Локация",
       "locationPlaceholder": "Выберите город",
       "locationAny": "Любая локация",

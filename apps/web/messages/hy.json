@@ -107,12 +107,6 @@
       "search": "Որոնել տներ",
       "explore": "Դիտել նախագծերը",
       "register": "Անվճար գրանցում",
-      "tabsLabel": "Որոնման ռեժիմ",
-      "tabs": {
-        "buy": "Գնել",
-        "rent": "Վարձակալել",
-        "newBuilds": "Նոր շինություններ"
-      },
       "locationLabel": "Վայր",
       "locationPlaceholder": "Ընտրել քաղաք",
       "locationAny": "Ցանկացած վայր",
