@@ -111,6 +111,7 @@
       "locationAny": "Any location",
       "locationSearch": "Search city…",
       "locationEmpty": "No cities found",
+      "locationSelectedCount": "{count} selected",
       "priceLabel": "Price",
       "priceAny": "Any price",
       "priceMin": "Minimum",

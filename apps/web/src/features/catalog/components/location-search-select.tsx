@@ -9,14 +9,16 @@ import { cn } from '@/shared/ui/cn';
 import { DropdownPortal } from '@/shared/ui/dropdown-portal';
 
 type LocationSearchSelectProps = {
-  value: string;
+  /** Empty array = any location (no city filter). */
+  values: readonly string[];
   options: readonly string[];
-  onChange: (value: string) => void;
+  onChange: (values: string[]) => void;
   labels: {
     any: string;
     placeholder: string;
     search: string;
     empty: string;
+    selectedCount: (count: number) => string;
   };
   /** Visible field title inside the mobile block trigger. */
   fieldLabel: string;
@@ -27,11 +29,24 @@ type LocationSearchSelectProps = {
 
 const normalize = (value: string): string => value.trim().toLocaleLowerCase();
 
+const SelectionMark = ({ checked }: { checked: boolean }) => (
+  <span
+    className={cn(
+      'inline-flex size-4 shrink-0 items-center justify-center rounded-[4px] border',
+      checked ? 'border-brand bg-brand text-white' : 'border-border bg-surface-elevated',
+    )}
+    aria-hidden
+  >
+    {checked ? <Check className="size-3" strokeWidth={3} /> : null}
+  </span>
+);
+
 /**
- * Hero location picker — searchable single-select over catalog cities.
+ * Hero location picker — searchable multi-select over catalog cities.
+ * Empty selection means "Any location". Menu stays open while toggling.
  */
 export const LocationSearchSelect = ({
-  value,
+  values,
   options,
   onChange,
   labels,
@@ -46,6 +61,7 @@ export const LocationSearchSelect = ({
   const panelRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
   const listId = useId();
+  const isAny = values.length === 0;
 
   const filtered = useMemo(() => {
     const needle = normalize(query);
@@ -83,13 +99,46 @@ export const LocationSearchSelect = ({
     };
   }, [open]);
 
-  const pick = (next: string): void => {
-    onChange(next);
-    setQuery('');
-    setOpen(false);
+  const displayLabel = (() => {
+    if (isAny) {
+      return labels.placeholder;
+    }
+    if (values.length === 1) {
+      return values[0] ?? labels.placeholder;
+    }
+    if (values.length <= 3) {
+      return values.join(', ');
+    }
+    return labels.selectedCount(values.length);
+  })();
+
+  const clearAll = (): void => {
+    onChange([]);
   };
 
-  const displayLabel = value.length > 0 ? value : labels.placeholder;
+  const toggleOption = (option: string): void => {
+    if (isAny) {
+      onChange(options.filter((item) => item !== option));
+      return;
+    }
+    if (values.includes(option)) {
+      onChange(values.filter((item) => item !== option));
+      return;
+    }
+    const next = [...values, option];
+    if (next.length >= options.length) {
+      onChange([]);
+      return;
+    }
+    onChange(next);
+  };
+
+  const toggleFirstFiltered = (): void => {
+    const first = filtered[0];
+    if (first) {
+      toggleOption(first);
+    }
+  };
 
   return (
     <div ref={rootRef} className={cn('relative flex w-full min-w-0 flex-col gap-1', className)}>
@@ -101,7 +150,7 @@ export const LocationSearchSelect = ({
         label={fieldLabel}
         value={displayLabel}
         open={open}
-        mutedValue={value.length === 0}
+        mutedValue={isAny}
         aria-label={ariaLabel}
         aria-haspopup="listbox"
         aria-expanded={open}
@@ -141,10 +190,7 @@ export const LocationSearchSelect = ({
                 onKeyDown={(event) => {
                   if (event.key === 'Enter') {
                     event.preventDefault();
-                    const first = filtered[0];
-                    if (first) {
-                      pick(first);
-                    }
+                    toggleFirstFiltered();
                   }
                 }}
               />
@@ -154,6 +200,7 @@ export const LocationSearchSelect = ({
           <ul
             id={listId}
             role="listbox"
+            aria-multiselectable="true"
             aria-label={ariaLabel}
             className="luxury-scrollbar max-h-56 overflow-y-auto py-1.5"
           >
@@ -161,23 +208,28 @@ export const LocationSearchSelect = ({
               <button
                 type="button"
                 role="option"
-                aria-selected={value.length === 0}
+                aria-selected={isAny}
                 className={cn(
-                  'flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left text-sm',
-                  value.length === 0
+                  'flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm',
+                  'transition-colors duration-[var(--duration-base)]',
+                  isAny
                     ? 'bg-brand-soft font-semibold text-brand-deep'
                     : 'font-medium text-ink hover:bg-surface',
                 )}
-                onClick={() => pick('')}
+                onMouseDown={(event) => {
+                  event.preventDefault();
+                }}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  clearAll();
+                }}
               >
-                <span>{labels.any}</span>
-                {value.length === 0 ? (
-                  <Check className="size-3.5 shrink-0 text-brand-logo" aria-hidden />
-                ) : null}
+                <SelectionMark checked={isAny} />
+                <span className="min-w-0 flex-1 truncate">{labels.any}</span>
               </button>
             </li>
             {filtered.map((option) => {
-              const active = option === value;
+              const active = isAny || values.includes(option);
               return (
                 <li key={option} role="none">
                   <button
@@ -185,17 +237,22 @@ export const LocationSearchSelect = ({
                     role="option"
                     aria-selected={active}
                     className={cn(
-                      'flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left text-sm',
+                      'flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm',
+                      'transition-colors duration-[var(--duration-base)]',
                       active
                         ? 'bg-brand-soft font-semibold text-brand-deep'
                         : 'font-medium text-ink hover:bg-surface',
                     )}
-                    onClick={() => pick(option)}
+                    onMouseDown={(event) => {
+                      event.preventDefault();
+                    }}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      toggleOption(option);
+                    }}
                   >
-                    <span className="truncate">{option}</span>
-                    {active ? (
-                      <Check className="size-3.5 shrink-0 text-brand-logo" aria-hidden />
-                    ) : null}
+                    <SelectionMark checked={active} />
+                    <span className="min-w-0 flex-1 truncate">{option}</span>
                   </button>
                 </li>
               );

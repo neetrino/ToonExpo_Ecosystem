@@ -29,7 +29,7 @@ export const HeroSearch = ({ className, locations = [] }: HeroSearchProps) => {
   const t = useTranslations('HomePage.hero');
   const router = useRouter();
   const [tab, setTab] = useState<HeroSearchTab>('buy');
-  const [location, setLocation] = useState('');
+  const [locationsSelected, setLocationsSelected] = useState<string[]>([]);
   const [minPrice, setMinPrice] = useState<number | null>(null);
   const [maxPrice, setMaxPrice] = useState<number | null>(null);
   const [rooms, setRooms] = useState<string[]>([]);
@@ -44,13 +44,13 @@ export const HeroSearch = ({ className, locations = [] }: HeroSearchProps) => {
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    router.push(buildProjectsHref(location, minPrice, maxPrice, rooms, tab));
+    router.push(buildProjectsHref(locationsSelected, minPrice, maxPrice, rooms, tab));
   };
 
   const applyPriceRange = (nextMin: number | null, nextMax: number | null): void => {
     setMinPrice(nextMin);
     setMaxPrice(nextMax);
-    router.push(buildProjectsHref(location, nextMin, nextMax, rooms, tab));
+    router.push(buildProjectsHref(locationsSelected, nextMin, nextMax, rooms, tab));
   };
 
   return (
@@ -79,7 +79,7 @@ export const HeroSearch = ({ className, locations = [] }: HeroSearchProps) => {
         <div className="grid grid-cols-1 gap-2 p-3 lg:grid-cols-[minmax(12rem,15rem)_minmax(11rem,13rem)_minmax(8rem,10rem)_auto] lg:items-center">
           <LocationSearchSelect
             className="lg:px-3 lg:py-2"
-            value={location}
+            values={locationsSelected}
             options={locationOptions}
             fieldLabel={t('locationLabel')}
             aria-label={t('locationLabel')}
@@ -88,8 +88,9 @@ export const HeroSearch = ({ className, locations = [] }: HeroSearchProps) => {
               placeholder: t('locationPlaceholder'),
               search: t('locationSearch'),
               empty: t('locationEmpty'),
+              selectedCount: (count) => t('locationSelectedCount', { count }),
             }}
-            onChange={setLocation}
+            onChange={setLocationsSelected}
           />
 
           <PriceRangeSelect
@@ -163,16 +164,15 @@ export const HeroSearch = ({ className, locations = [] }: HeroSearchProps) => {
 };
 
 const buildProjectsHref = (
-  location: string,
+  cities: readonly string[],
   minPrice: number | null,
   maxPrice: number | null,
   rooms: readonly string[],
   tab: HeroSearchTab,
 ): string => {
   const params = new URLSearchParams();
-  const trimmed = location.trim();
-  if (trimmed.length > 0) {
-    params.set('city', trimmed);
+  if (cities.length > 0) {
+    params.set('city', cities.join(','));
   }
 
   if (minPrice != null) {

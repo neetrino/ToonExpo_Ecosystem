@@ -111,6 +111,7 @@
       "locationAny": "Любая локация",
       "locationSearch": "Поиск города…",
       "locationEmpty": "Город не найден",
+      "locationSelectedCount": "{count} выбрано",
       "priceLabel": "Цена",
       "priceAny": "Любая цена",
       "priceMin": "Минимальная",

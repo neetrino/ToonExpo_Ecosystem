@@ -111,6 +111,7 @@
       "locationAny": "Ցանկացած վայր",
       "locationSearch": "Որոնել քաղաք…",
       "locationEmpty": "Քաղաք չի գտնվել",
+      "locationSelectedCount": "{count} ընտրված",
       "priceLabel": "Գին",
       "priceAny": "Ցանկացած գին",
       "priceMin": "Նվազագույն",
