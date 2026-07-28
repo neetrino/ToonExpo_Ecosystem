@@ -2492,11 +2492,21 @@
       "empty": "Участников пока нет.",
       "loading": "Загрузка…",
       "error": "Не удалось загрузить команду. Попробуйте ещё раз.",
-      "inviteMember": "Пригласить участника",
+      "inviteMember": "+ Пригласить участника",
+      "inviteSheetTitle": "Пригласить участника",
       "readOnlyNotice": "Вы можете просматривать команду. Приглашать и менять роли могут только админы компании.",
       "inviteSuccess": "Приглашение отправлено на {email}",
       "updateSuccess": "Участник обновлён",
       "deactivate": "Деактивировать",
+      "activate": "Снова активировать",
+      "activeToggle": "Участник активен",
+      "deactivateConfirmTitle": "Деактивировать участника",
+      "deactivateConfirmMessage": "Вы уверены, что хотите деактивировать «{name}»? Доступ будет закрыт до повторной активации.",
+      "activateConfirmTitle": "Снова активировать участника",
+      "activateConfirmMessage": "Вы уверены, что хотите снова активировать «{name}»?",
+      "roleConfirmTitle": "Изменить роль",
+      "roleConfirmMessage": "Вы уверены, что хотите изменить роль «{name}» на {role}?",
+      "roleConfirmAction": "Изменить роль",
       "pagination": {
         "previous": "Назад",
         "next": "Вперёд",
@@ -2520,7 +2530,8 @@
       },
       "confirm": {
         "role": "Изменить роль {name} на {role}?",
-        "deactivate": "Деактивировать {name}?"
+        "deactivate": "Деактивировать {name}?",
+        "activate": "Снова активировать {name}?"
       },
       "form": {
         "name": "Имя",

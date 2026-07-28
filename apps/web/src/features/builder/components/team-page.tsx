@@ -4,13 +4,15 @@ import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 
-import { InviteMemberForm } from '@/features/builder/components/invite-member-form';
+import { InviteMemberSheet } from '@/features/builder/components/invite-member-sheet';
 import { TeamTable } from '@/features/builder/components/team-table';
-import { PORTAL_DEFAULT_PAGE_SIZE } from '@/features/builder/constants';
+import { PORTAL_DEFAULT_PAGE_SIZE, TEAM_VIEW_MODE_KEY } from '@/features/builder/constants';
 import { useCompanyMembersQuery } from '@/features/builder/hooks/use-company-members';
 import { useIsCompanyAdmin } from '@/features/builder/hooks/use-company-profile';
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
-import { Card } from '@/shared/ui/card';
+import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
+import { AddActionLabel } from '@/shared/ui/add-action-label';
+import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
 const parsePage = (raw: string | null): number => {
   const parsed = Number(raw);
@@ -30,8 +32,9 @@ export const TeamPage = () => {
   const pageSize = PORTAL_DEFAULT_PAGE_SIZE;
   const canManage = useIsCompanyAdmin();
   const membersQuery = useCompanyMembersQuery(page, pageSize);
+  const { viewMode, setViewMode } = usePersistedViewMode(TEAM_VIEW_MODE_KEY);
   const [inviteEmail, setInviteEmail] = useState<string | null>(null);
-  const [showInvite, setShowInvite] = useState(false);
+  const [inviteOpen, setInviteOpen] = useState(false);
 
   if (membersQuery.isLoading) {
     return <p className="text-sm text-ink-secondary">{t('loading')}</p>;
@@ -57,18 +60,21 @@ export const TeamPage = () => {
           </p>
           {!canManage ? <p className="text-sm text-ink-muted">{t('readOnlyNotice')}</p> : null}
         </div>
-        {canManage ? (
-          <button
-            type="button"
-            className="inline-flex h-9 items-center rounded-pill bg-cta-dark px-4 text-sm font-medium text-on-dark hover:bg-cta-dark/90"
-            onClick={() => {
-              setShowInvite((value) => !value);
-              setInviteEmail(null);
-            }}
-          >
-            {t('inviteMember')}
-          </button>
-        ) : null}
+        <div className="flex flex-wrap items-center gap-2">
+          <ViewModeToggle value={viewMode} onChange={setViewMode} />
+          {canManage ? (
+            <button
+              type="button"
+              className="inline-flex h-9 items-center justify-center rounded-pill bg-cta-dark px-4 text-sm font-medium text-on-dark hover:bg-cta-dark/90"
+              onClick={() => {
+                setInviteOpen(true);
+                setInviteEmail(null);
+              }}
+            >
+              <AddActionLabel>{t('inviteMember')}</AddActionLabel>
+            </button>
+          ) : null}
+        </div>
       </div>
 
       {inviteEmail ? (
@@ -77,21 +83,10 @@ export const TeamPage = () => {
         </p>
       ) : null}
 
-      {canManage && showInvite ? (
-        <Card className="max-w-lg">
-          <InviteMemberForm
-            onSuccess={(email) => {
-              setInviteEmail(email);
-              setShowInvite(false);
-            }}
-          />
-        </Card>
-      ) : null}
-
       {response.data.length === 0 ? (
         <p className="text-sm text-ink-secondary">{t('empty')}</p>
       ) : (
-        <TeamTable members={response.data} canManage={canManage} />
+        <TeamTable members={response.data} canManage={canManage} viewMode={viewMode} />
       )}
 
       <CatalogPagination
@@ -104,6 +99,18 @@ export const TeamPage = () => {
         nextLabel={t('pagination.next')}
         ariaLabel={t('pagination.ariaLabel')}
       />
+
+      {canManage ? (
+        <InviteMemberSheet
+          open={inviteOpen}
+          onClose={() => {
+            setInviteOpen(false);
+          }}
+          onSuccess={(email) => {
+            setInviteEmail(email);
+          }}
+        />
+      ) : null}
     </div>
   );
 };

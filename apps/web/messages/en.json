@@ -2797,11 +2797,21 @@
       "empty": "No members yet.",
       "loading": "Loading team…",
       "error": "Could not load team. Try again.",
-      "inviteMember": "Invite member",
+      "inviteMember": "+ Invite a member",
+      "inviteSheetTitle": "Invite a member",
       "readOnlyNotice": "You can view the team. Only company admins can invite members or change roles.",
       "inviteSuccess": "Invite sent to {email}",
       "updateSuccess": "Member updated",
       "deactivate": "Deactivate",
+      "activate": "Reactivate",
+      "activeToggle": "Member active",
+      "deactivateConfirmTitle": "Deactivate member",
+      "deactivateConfirmMessage": "Are you sure you want to deactivate \"{name}\"? They will lose access until reactivated.",
+      "activateConfirmTitle": "Reactivate member",
+      "activateConfirmMessage": "Are you sure you want to reactivate \"{name}\"?",
+      "roleConfirmTitle": "Change role",
+      "roleConfirmMessage": "Are you sure you want to change the role of \"{name}\" to {role}?",
+      "roleConfirmAction": "Change role",
       "pagination": {
         "previous": "Previous",
         "next": "Next",
@@ -2825,7 +2835,8 @@
       },
       "confirm": {
         "role": "Change role of {name} to {role}?",
-        "deactivate": "Deactivate {name}?"
+        "deactivate": "Deactivate {name}?",
+        "activate": "Reactivate {name}?"
       },
       "form": {
         "name": "Name",

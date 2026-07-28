@@ -3,7 +3,7 @@ import { headers } from 'next/headers';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { CompanyProfileForm } from '@/features/builder/components/company-profile-form';
-import { getCompanyProfile } from '@/features/builder/api/company-profile-api';
+import { getCompanyProfileCached as getCompanyProfile } from '@/features/builder/api/get-company-profile-cached';
 
 type CompanyPageProps = {
   params: Promise<{ locale: string }>;
@@ -15,7 +15,7 @@ export default async function BuilderCompanyPage({ params }: CompanyPageProps) {
   const t = await getTranslations('Builder.company');
   const headerStore = await headers();
   const cookieHeader = headerStore.get('cookie') ?? undefined;
-  const profile = await getCompanyProfile({ cookieHeader });
+  const profile = await getCompanyProfile(cookieHeader);
 
   return (
     <CompanyPageShell title={t('title')} subtitle={t('subtitle')}>

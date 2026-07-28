@@ -56,3 +56,6 @@ export const portalAnalyticsQueryKey = (from: string, to: string) =>
 
 /** localStorage key for projects list/cards view preference. */
 export const PROJECTS_VIEW_MODE_KEY = 'portal-projects';
+
+/** localStorage key for team list/cards view preference. */
+export const TEAM_VIEW_MODE_KEY = 'portal-team';

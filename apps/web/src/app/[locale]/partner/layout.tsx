@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import type { ReactNode } from 'react';
 
-import { getCompanyProfile } from '@/features/builder/api/company-profile-api';
+import { getCompanyProfileCached as getCompanyProfile } from '@/features/builder/api/get-company-profile-cached';
 import { getPortalPartner } from '@/features/partner/api/portal-partner-api';
 import { PartnerNav } from '@/features/partner/components/partner-nav';
 import { getMeOrNullCached as getMeOrNull } from '@/features/auth/api/get-me-or-null-cached';
@@ -72,9 +72,12 @@ export default async function PartnerLayout({ children, params }: PartnerLayoutP
 
 const loadCompanyProfile = async (cookieHeader: string | undefined) => {
   try {
-    return await getCompanyProfile({ cookieHeader });
-  } catch {
-    return null;
+    return await getCompanyProfile(cookieHeader);
+  } catch (error) {
+    if (isApiErrorStatus(error, 401) || isApiErrorStatus(error, 403)) {
+      return null;
+    }
+    throw error;
   }
 };
 
