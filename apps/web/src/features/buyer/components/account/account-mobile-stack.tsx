@@ -188,20 +188,19 @@ export const AccountMobileStack = ({
           ],
         )}
       >
-        {showOverlay ? (
-          <div
-            className={cn(
-              'flex flex-col gap-6',
+        {/* Keep a stable children tree — toggling showOverlay must not remount forms. */}
+        <div
+          className={cn(
+            'flex flex-col gap-6',
+            showOverlay && [
               'max-md:mx-auto max-md:w-full max-md:max-w-md',
               'max-md:px-[var(--page-gutter)] max-md:pt-5',
               'max-md:pb-[calc(5.5rem+env(safe-area-inset-bottom,0px))]',
-            )}
-          >
-            {children}
-          </div>
-        ) : (
-          children
-        )}
+            ],
+          )}
+        >
+          {children}
+        </div>
       </div>
     </AccountMobileStackProvider>
   );
