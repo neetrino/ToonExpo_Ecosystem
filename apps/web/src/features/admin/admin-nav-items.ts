@@ -11,7 +11,6 @@ import {
   Layers,
   LayoutList,
   LineChart,
-  ScanLine,
   Settings,
   Tags,
   Users,
@@ -26,7 +25,6 @@ export type AdminNavItemKey =
   | 'buildings'
   | 'floors'
   | 'apartments'
-  | 'checkin'
   | 'partners'
   | 'bankOffers'
   | 'serviceProviders'
@@ -73,7 +71,6 @@ export const ADMIN_PRIMARY_NAV_ITEMS: AdminNavItem[] = [
     icon: FolderKanban,
     children: ADMIN_PROJECT_CHILD_NAV_ITEMS,
   },
-  { href: '/admin/checkin', key: 'checkin', icon: ScanLine },
   { href: '/admin/partners', key: 'partners', icon: Handshake },
   { href: '/admin/bank-offers', key: 'bankOffers', icon: Landmark },
   {
@@ -102,8 +99,8 @@ export const ADMIN_ALL_NAV_ITEMS: AdminNavItem[] = ADMIN_SECTION_NAV_ITEMS.flatM
   ...(item.children ?? []),
 ]);
 
-/** Top-level destinations for the mobile profile hub (no nested children / check-in). */
+/** Top-level destinations for the mobile profile hub (no nested children). */
 export const ADMIN_MOBILE_HUB_NAV_ITEMS: AdminNavItem[] = [
-  ...ADMIN_PRIMARY_NAV_ITEMS.filter((item) => item.key !== 'checkin'),
+  ...ADMIN_PRIMARY_NAV_ITEMS,
   ADMIN_SETTINGS_NAV_ITEM,
 ];

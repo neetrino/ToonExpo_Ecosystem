@@ -114,6 +114,10 @@ export const PortalShell = ({
   const isRail = variant === 'rail';
   const renderSiteHeader = isRail && showSiteHeader;
   const renderRailHeaderMask = isRail && showRailHeaderMask;
+  /** Keep under-header clip the same fill as the shell (e.g. admin `bg-canvas`). */
+  const railMaskFillClass = className?.split(/\s+/).includes('bg-canvas')
+    ? 'bg-canvas'
+    : 'bg-background';
   const mobileDrawerWidthClass =
     locale === 'hy' ? MOBILE_DRAWER_WIDTH_HY_CLASS : MOBILE_DRAWER_WIDTH_CLASS;
 
@@ -227,15 +231,17 @@ export const PortalShell = ({
             <>
               <div
                 className={cn(
-                  'pointer-events-none fixed inset-x-0 top-0 z-[var(--z-sticky)] hidden bg-background md:block',
+                  'pointer-events-none fixed inset-x-0 top-0 z-[var(--z-sticky)] hidden md:block',
+                  railMaskFillClass,
                   RAIL_HEADER_BAND_HEIGHT_CLASS,
                 )}
                 aria-hidden
               />
               <div
                 className={cn(
-                  'pointer-events-none fixed top-0 right-0 z-[var(--z-sticky)] hidden bg-background md:block',
+                  'pointer-events-none fixed top-0 right-0 z-[var(--z-sticky)] hidden md:block',
                   'left-0 md:left-72',
+                  railMaskFillClass,
                   RAIL_CONTENT_MASK_HEIGHT_CLASS,
                 )}
                 aria-hidden
