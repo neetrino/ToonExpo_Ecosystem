@@ -11,6 +11,7 @@ import { Link } from '@/i18n/navigation';
 import { Button } from '@/shared/ui/button';
 import { Card } from '@/shared/ui/card';
 import { FormField } from '@/shared/ui/form-field';
+import { Select } from '@/shared/ui/select';
 
 type ScannerBuyerResultProps = {
   payload: QrBuyerActionPayload;
@@ -80,10 +81,10 @@ export const ScannerBuyerResult = ({ payload, onReset }: ScannerBuyerResultProps
       </dl>
 
       <FormField id="scan-project" label={t('projectOptional')}>
-        <select
+        <Select
           id="scan-project"
-          className="h-10 w-full rounded-sm border border-border bg-background px-3 text-sm text-ink"
           value={projectId}
+          aria-label={t('projectOptional')}
           onChange={(event) => {
             setProjectId(event.target.value);
           }}
@@ -94,7 +95,7 @@ export const ScannerBuyerResult = ({ payload, onReset }: ScannerBuyerResultProps
               {project.name}
             </option>
           ))}
-        </select>
+        </Select>
       </FormField>
 
       {error ? (

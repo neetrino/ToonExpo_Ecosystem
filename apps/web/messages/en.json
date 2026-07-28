@@ -17,6 +17,13 @@
       "list": "List",
       "cards": "Cards",
       "board": "Board"
+    },
+    "datePicker": {
+      "placeholder": "Select date",
+      "clear": "Clear",
+      "today": "Today",
+      "previousMonth": "Previous month",
+      "nextMonth": "Next month"
     }
   },
   "CrmBoard": {

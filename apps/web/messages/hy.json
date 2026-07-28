@@ -17,6 +17,13 @@
       "list": "Ցանկ",
       "cards": "Քարտեր",
       "board": "Տախտակ"
+    },
+    "datePicker": {
+      "placeholder": "Ընտրել ամսաթիվ",
+      "clear": "Մաքրել",
+      "today": "Այսօր",
+      "previousMonth": "Նախորդ ամիս",
+      "nextMonth": "Հաջորդ ամիս"
     }
   },
   "CrmBoard": {

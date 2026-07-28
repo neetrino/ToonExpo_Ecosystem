@@ -1,7 +1,7 @@
 'use client';
 
 import { Check, ChevronDown } from 'lucide-react';
-import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 
 import { HeroFilterTrigger } from '@/features/catalog/components/hero-filter-trigger';
 import { blurActiveElementAfterEscClose } from '@/shared/ui/blur-active-element';
@@ -66,28 +66,14 @@ export const MultiListboxSelect = ({
   heroBlock,
 }: MultiListboxSelectProps) => {
   const [open, setOpen] = useState(false);
-  const [fitWidthPx, setFitWidthPx] = useState<number | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
-  const measureRef = useRef<HTMLUListElement>(null);
   const listId = useId();
   const isAll = values.length === 0;
   const isField = variant === 'field';
   const isFit = size === 'fit';
   const useHeroBlock = !isField && heroBlock != null;
-
-  useLayoutEffect(() => {
-    if (!isFit) {
-      setFitWidthPx(null);
-      return;
-    }
-    const node = measureRef.current;
-    if (!node) {
-      return;
-    }
-    setFitWidthPx(Math.ceil(node.getBoundingClientRect().width));
-  }, [isFit, options, allLabel, values]);
 
   useEffect(() => {
     if (!open) {
@@ -165,28 +151,35 @@ export const MultiListboxSelect = ({
       ref={rootRef}
       className={cn(
         'relative min-w-0',
-        isField && (isFit ? 'w-fit max-w-full' : 'w-full'),
+        isField && (isFit ? 'inline-grid max-w-full' : 'block w-full'),
+        !isField && isFit && !useHeroBlock && 'inline-grid max-w-full',
         useHeroBlock && 'w-full lg:w-auto',
         !isField && className,
       )}
     >
-      {isFit ? (
-        <ul
-          ref={measureRef}
-          aria-hidden
-          className="pointer-events-none invisible absolute left-0 top-0 -z-10 w-max py-1.5"
-        >
+      {isFit && !useHeroBlock ? (
+        <ul aria-hidden className="invisible col-start-1 row-start-1 h-0 overflow-hidden">
           <li>
-            <span className="flex items-center gap-3 px-3 py-2.5 text-sm font-semibold whitespace-nowrap">
-              <SelectionMark checked />
+            <span
+              className={cn(
+                'flex items-center justify-between gap-2 whitespace-nowrap',
+                isField ? 'px-4 text-base sm:text-sm' : 'text-sm font-medium',
+              )}
+            >
               <span>{allLabel}</span>
+              <ChevronDown className="size-4 shrink-0" aria-hidden />
             </span>
           </li>
           {options.map((option) => (
             <li key={option.value}>
-              <span className="flex items-center gap-3 px-3 py-2.5 text-sm font-semibold whitespace-nowrap">
-                <SelectionMark checked />
+              <span
+                className={cn(
+                  'flex items-center justify-between gap-2 whitespace-nowrap',
+                  isField ? 'px-4 text-base sm:text-sm' : 'text-sm font-medium',
+                )}
+              >
                 <span>{option.label}</span>
+                <ChevronDown className="size-4 shrink-0" aria-hidden />
               </span>
             </li>
           ))}
@@ -219,10 +212,9 @@ export const MultiListboxSelect = ({
           id={id}
           type="button"
           disabled={disabled}
-          style={isFit && fitWidthPx != null ? { width: fitWidthPx } : undefined}
           className={cn(
-            'flex min-w-0 items-center justify-between gap-2 text-left',
-            isFit ? 'w-max max-w-full' : 'w-full',
+            'col-start-1 row-start-1 flex min-w-0 items-center justify-between gap-2 text-left',
+            'w-full',
             'transition-colors duration-[var(--duration-fast)]',
             'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/25',
             'disabled:cursor-not-allowed disabled:opacity-50',

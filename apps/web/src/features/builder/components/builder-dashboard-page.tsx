@@ -2,13 +2,15 @@
 
 import type { PublicationStatus } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
+import { useState } from 'react';
 
+import { CreateProjectSheet } from '@/features/builder/components/create-project-sheet';
 import { CrmDashboardWidget } from '@/features/builder/components/crm-dashboard-widget';
 import { PORTAL_MAX_PAGE_SIZE } from '@/features/builder/constants';
 import { usePortalProjectsQuery } from '@/features/builder/hooks/use-portal-projects';
 import { Link } from '@/i18n/navigation';
-import { Card } from '@/shared/ui/card';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
+import { Card } from '@/shared/ui/card';
 
 type StatusCounts = Record<PublicationStatus, number>;
 
@@ -24,6 +26,7 @@ const emptyCounts = (): StatusCounts => ({
 export const BuilderDashboardPage = () => {
   const t = useTranslations('Builder.dashboard');
   const query = usePortalProjectsQuery(1, PORTAL_MAX_PAGE_SIZE);
+  const [createOpen, setCreateOpen] = useState(false);
 
   if (query.isLoading) {
     return <p className="text-sm text-ink-secondary">{t('loading')}</p>;
@@ -77,12 +80,15 @@ export const BuilderDashboardPage = () => {
         >
           {t('links.projects')}
         </Link>
-        <Link
-          href="/builder/projects/new"
+        <button
+          type="button"
           className="inline-flex h-9 items-center rounded-pill border border-border-strong px-4 text-sm font-medium text-ink hover:bg-surface"
+          onClick={() => {
+            setCreateOpen(true);
+          }}
         >
           <AddActionLabel>{t('links.newProject')}</AddActionLabel>
-        </Link>
+        </button>
         <Link
           href="/builder/team"
           className="inline-flex h-9 items-center rounded-pill border border-border-strong px-4 text-sm font-medium text-ink hover:bg-surface"
@@ -104,6 +110,13 @@ export const BuilderDashboardPage = () => {
       </div>
 
       <CrmDashboardWidget />
+
+      <CreateProjectSheet
+        open={createOpen}
+        onClose={() => {
+          setCreateOpen(false);
+        }}
+      />
     </div>
   );
 };

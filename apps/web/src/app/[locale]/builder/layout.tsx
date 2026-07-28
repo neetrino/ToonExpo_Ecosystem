@@ -55,7 +55,7 @@ export default async function BuilderLayout({ children, params }: BuilderLayoutP
       showRailHeaderMask={false}
       mobileDrawerControlledByNavbar
       className="bg-canvas"
-      sidebar={<BuilderNav companyName={company.name} />}
+      sidebar={<BuilderNav />}
     >
       <BuilderMobileStack name={user.name} email={user.email} companyName={company.name}>
         {children}

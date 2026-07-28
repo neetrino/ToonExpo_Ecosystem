@@ -17,6 +17,13 @@
       "list": "Список",
       "cards": "Карточки",
       "board": "Доска"
+    },
+    "datePicker": {
+      "placeholder": "Выберите дату",
+      "clear": "Удалить",
+      "today": "Сегодня",
+      "previousMonth": "Предыдущий месяц",
+      "nextMonth": "Следующий месяц"
     }
   },
   "CrmBoard": {

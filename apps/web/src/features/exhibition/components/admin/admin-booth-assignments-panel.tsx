@@ -1,37 +1,36 @@
-"use client";
+'use client';
 
-import type { BoothAssignmentDetail } from "@toonexpo/contracts";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useTranslations } from "next-intl";
-import { useForm } from "react-hook-form";
+import type { BoothAssignmentDetail } from '@toonexpo/contracts';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
+import { Controller, useForm } from 'react-hook-form';
 
-import { ADMIN_COMPANIES_DEFAULT_PAGE_SIZE } from "@/features/admin/constants";
+import { ADMIN_COMPANIES_DEFAULT_PAGE_SIZE } from '@/features/admin/constants';
 import {
   useAdminCompaniesQuery,
   useAdminCompanyProjectsQuery,
-} from "@/features/admin/hooks/use-admin-companies";
-import { AdminBoothAssignmentRow } from "@/features/exhibition/components/admin/admin-booth-assignment-row";
+} from '@/features/admin/hooks/use-admin-companies';
+import { AdminBoothAssignmentRow } from '@/features/exhibition/components/admin/admin-booth-assignment-row';
 import {
   useAdminBoothAssignmentsQuery,
   useCreateAdminBoothAssignmentMutation,
   useDeleteAdminBoothAssignmentMutation,
-} from "@/features/exhibition/hooks/use-exhibition";
+} from '@/features/exhibition/hooks/use-exhibition';
 import {
   boothAssignmentFormSchema,
   type BoothAssignmentFormInput,
   type BoothAssignmentFormValues,
-} from "@/features/exhibition/schemas/exhibition.schema";
-import { Button } from "@/shared/ui/button";
-import { FormField } from "@/shared/ui/form-field";
-import { Input } from "@/shared/ui/input";
+} from '@/features/exhibition/schemas/exhibition.schema';
+import { Button } from '@/shared/ui/button';
+import { FormField } from '@/shared/ui/form-field';
+import { Input } from '@/shared/ui/input';
+import { Select } from '@/shared/ui/select';
 
 type AdminBoothAssignmentsPanelProps = {
   boothId: string;
 };
 
-const resolveAssignmentDisplayName = (
-  assignment: BoothAssignmentDetail,
-): string =>
+const resolveAssignmentDisplayName = (assignment: BoothAssignmentDetail): string =>
   assignment.assignmentLabel ??
   assignment.projectName ??
   assignment.companyName ??
@@ -40,10 +39,8 @@ const resolveAssignmentDisplayName = (
 /**
  * Booth assignment create/list panel.
  */
-export const AdminBoothAssignmentsPanel = ({
-  boothId,
-}: AdminBoothAssignmentsPanelProps) => {
-  const t = useTranslations("Admin.events.booths.assignments");
+export const AdminBoothAssignmentsPanel = ({ boothId }: AdminBoothAssignmentsPanelProps) => {
+  const t = useTranslations('Admin.events.booths.assignments');
   const assignmentsQuery = useAdminBoothAssignmentsQuery(boothId);
   const createMutation = useCreateAdminBoothAssignmentMutation(boothId);
   const deleteMutation = useDeleteAdminBoothAssignmentMutation(boothId);
@@ -52,14 +49,14 @@ export const AdminBoothAssignmentsPanel = ({
   const form = useForm<BoothAssignmentFormInput, unknown, BoothAssignmentFormValues>({
     resolver: zodResolver(boothAssignmentFormSchema),
     defaultValues: {
-      companyId: "",
-      projectId: "",
-      assignmentLabel: "",
+      companyId: '',
+      projectId: '',
+      assignmentLabel: '',
       active: true,
     },
   });
 
-  const companyId = form.watch("companyId") ?? "";
+  const companyId = form.watch('companyId') ?? '';
   const projectsQuery = useAdminCompanyProjectsQuery(companyId, companyId.length > 0);
   const assignments = assignmentsQuery.data?.data ?? [];
 
@@ -70,7 +67,7 @@ export const AdminBoothAssignmentsPanel = ({
       ...(values.assignmentLabel ? { assignmentLabel: values.assignmentLabel } : {}),
       active: values.active,
     });
-    form.reset({ companyId: "", projectId: "", assignmentLabel: "", active: true });
+    form.reset({ companyId: '', projectId: '', assignmentLabel: '', active: true });
   });
 
   const onRemove = async (assignmentId: string) => {
@@ -80,10 +77,10 @@ export const AdminBoothAssignmentsPanel = ({
   return (
     <div className="flex flex-col gap-4 rounded-sm border border-border p-4">
       <div>
-        <h4 className="text-sm font-semibold text-ink">{t("title")}</h4>
+        <h4 className="text-sm font-semibold text-ink">{t('title')}</h4>
       </div>
       {assignmentsQuery.isLoading ? (
-        <p className="text-sm text-ink-secondary">{t("loading")}</p>
+        <p className="text-sm text-ink-secondary">{t('loading')}</p>
       ) : assignments.length > 0 ? (
         <ul className="flex flex-col gap-2 text-sm">
           {assignments.map((assignment) => (
@@ -98,47 +95,70 @@ export const AdminBoothAssignmentsPanel = ({
           ))}
         </ul>
       ) : (
-        <p className="text-sm text-ink-secondary">{t("empty")}</p>
+        <p className="text-sm text-ink-secondary">{t('empty')}</p>
       )}
       <form className="flex flex-col gap-3" onSubmit={onSubmit} noValidate>
-        <FormField id="assignment-company" label={t("company")}>
-          <select
-            id="assignment-company"
-            className="h-10 w-full rounded-sm border border-border bg-background px-3 text-sm"
-            {...form.register("companyId")}
-          >
-            <option value="">{t("noCompany")}</option>
-            {(companiesQuery.data?.data ?? []).map((company) => (
-              <option key={company.id} value={company.id}>
-                {company.name}
-              </option>
-            ))}
-          </select>
+        <FormField id="assignment-company" label={t('company')}>
+          <Controller
+            name="companyId"
+            control={form.control}
+            render={({ field }) => (
+              <Select
+                id="assignment-company"
+                name={field.name}
+                value={field.value}
+                aria-label={t('company')}
+                onBlur={field.onBlur}
+                onChange={(event) => {
+                  field.onChange(event.target.value);
+                  form.setValue('projectId', '');
+                }}
+              >
+                <option value="">{t('noCompany')}</option>
+                {(companiesQuery.data?.data ?? []).map((company) => (
+                  <option key={company.id} value={company.id}>
+                    {company.name}
+                  </option>
+                ))}
+              </Select>
+            )}
+          />
         </FormField>
-        <FormField id="assignment-project" label={t("project")}>
-          <select
-            id="assignment-project"
-            className="h-10 w-full rounded-sm border border-border bg-background px-3 text-sm"
-            {...form.register("projectId")}
-            disabled={!companyId}
-          >
-            <option value="">{t("noProject")}</option>
-            {(projectsQuery.data?.data ?? []).map((project) => (
-              <option key={project.id} value={project.id}>
-                {project.name}
-              </option>
-            ))}
-          </select>
+        <FormField id="assignment-project" label={t('project')}>
+          <Controller
+            name="projectId"
+            control={form.control}
+            render={({ field }) => (
+              <Select
+                id="assignment-project"
+                name={field.name}
+                value={field.value}
+                aria-label={t('project')}
+                disabled={!companyId}
+                onBlur={field.onBlur}
+                onChange={(event) => {
+                  field.onChange(event.target.value);
+                }}
+              >
+                <option value="">{t('noProject')}</option>
+                {(projectsQuery.data?.data ?? []).map((project) => (
+                  <option key={project.id} value={project.id}>
+                    {project.name}
+                  </option>
+                ))}
+              </Select>
+            )}
+          />
         </FormField>
-        <FormField id="assignment-label" label={t("label")}>
-          <Input id="assignment-label" {...form.register("assignmentLabel")} />
+        <FormField id="assignment-label" label={t('label')}>
+          <Input id="assignment-label" {...form.register('assignmentLabel')} />
         </FormField>
         <label className="flex items-center gap-2 text-sm">
-          <input type="checkbox" {...form.register("active")} />
-          {t("active")}
+          <input type="checkbox" {...form.register('active')} />
+          {t('active')}
         </label>
         <Button type="submit" size="sm" variant="secondary" disabled={createMutation.isPending}>
-          {createMutation.isPending ? t("adding") : t("add")}
+          {createMutation.isPending ? t('adding') : t('add')}
         </Button>
       </form>
     </div>

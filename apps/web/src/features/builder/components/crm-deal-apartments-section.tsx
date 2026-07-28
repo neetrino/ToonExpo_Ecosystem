@@ -1,21 +1,22 @@
-"use client";
+'use client';
 
-import type { CrmDealDetail } from "@toonexpo/contracts";
-import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import type { CrmDealDetail } from '@toonexpo/contracts';
+import { useTranslations } from 'next-intl';
+import { useEffect, useState } from 'react';
 
-import { listPortalApartments } from "@/features/builder/api/portal-apartments-api";
-import { PORTAL_MAX_PAGE_SIZE } from "@/features/builder/constants";
+import { listPortalApartments } from '@/features/builder/api/portal-apartments-api';
+import { PORTAL_MAX_PAGE_SIZE } from '@/features/builder/constants';
 import {
   useAttachDealApartmentMutation,
   useDetachDealApartmentMutation,
-} from "@/features/builder/hooks/use-portal-crm";
+} from '@/features/builder/hooks/use-portal-crm';
 import {
   usePortalProjectQuery,
   usePortalProjectsQuery,
-} from "@/features/builder/hooks/use-portal-projects";
-import { Button } from "@/shared/ui/button";
-import { FormField } from "@/shared/ui/form-field";
+} from '@/features/builder/hooks/use-portal-projects';
+import { Button } from '@/shared/ui/button';
+import { FormField } from '@/shared/ui/form-field';
+import { Select } from '@/shared/ui/select';
 
 type CrmDealApartmentsSectionProps = {
   deal: CrmDealDetail;
@@ -26,15 +27,13 @@ type ApartmentOption = { id: string; label: string };
 /**
  * Linked apartments with attach/detach via dedicated deal apartment endpoints.
  */
-export const CrmDealApartmentsSection = ({
-  deal,
-}: CrmDealApartmentsSectionProps) => {
-  const t = useTranslations("Builder.crm.detail");
+export const CrmDealApartmentsSection = ({ deal }: CrmDealApartmentsSectionProps) => {
+  const t = useTranslations('Builder.crm.detail');
   const projectsQuery = usePortalProjectsQuery(1, PORTAL_MAX_PAGE_SIZE);
   const attachMutation = useAttachDealApartmentMutation(deal.id);
   const detachMutation = useDetachDealApartmentMutation(deal.id);
-  const [projectId, setProjectId] = useState(deal.projectId ?? "");
-  const [apartmentId, setApartmentId] = useState("");
+  const [projectId, setProjectId] = useState(deal.projectId ?? '');
+  const [apartmentId, setApartmentId] = useState('');
   const [apartments, setApartments] = useState<ApartmentOption[]>([]);
   const [loadingApartments, setLoadingApartments] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -60,9 +59,7 @@ export const CrmDealApartmentsSection = ({
     setLoadingApartments(true);
     void (async () => {
       try {
-        const lists = await Promise.all(
-          floorIds.map((floorId) => listPortalApartments(floorId)),
-        );
+        const lists = await Promise.all(floorIds.map((floorId) => listPortalApartments(floorId)));
         if (cancelled) {
           return;
         }
@@ -91,29 +88,29 @@ export const CrmDealApartmentsSection = ({
     setError(null);
     setMessage(null);
     if (!apartmentId) {
-      setError(t("selectApartment"));
+      setError(t('selectApartment'));
       return;
     }
     try {
       await attachMutation.mutateAsync({ apartmentId });
-      setMessage(t("linkSuccess"));
-      setApartmentId("");
+      setMessage(t('linkSuccess'));
+      setApartmentId('');
     } catch {
-      setError(t("errors.generic"));
+      setError(t('errors.generic'));
     }
   };
 
   const onUnlink = async (linkedApartmentId: string, label: string) => {
     setError(null);
     setMessage(null);
-    if (!window.confirm(t("unlinkConfirm", { apartment: label }))) {
+    if (!window.confirm(t('unlinkConfirm', { apartment: label }))) {
       return;
     }
     try {
       await detachMutation.mutateAsync(linkedApartmentId);
-      setMessage(t("unlinkSuccess"));
+      setMessage(t('unlinkSuccess'));
     } catch {
-      setError(t("errors.unlinkBlocked"));
+      setError(t('errors.unlinkBlocked'));
     }
   };
 
@@ -121,10 +118,10 @@ export const CrmDealApartmentsSection = ({
 
   return (
     <section className="flex flex-col gap-3 rounded-sm border border-border p-4">
-      <h2 className="text-sm font-semibold text-ink">{t("apartmentsTitle")}</h2>
+      <h2 className="text-sm font-semibold text-ink">{t('apartmentsTitle')}</h2>
 
       {deal.apartments.length === 0 ? (
-        <p className="text-sm text-ink-muted">{t("apartmentsEmpty")}</p>
+        <p className="text-sm text-ink-muted">{t('apartmentsEmpty')}</p>
       ) : (
         <ul className="flex flex-col gap-2">
           {deal.apartments.map((link) => {
@@ -138,7 +135,7 @@ export const CrmDealApartmentsSection = ({
                   {label}
                   <span className="ml-2 text-xs font-normal text-ink-muted">
                     {t(`linkTypes.${link.linkType}`)}
-                    {link.isPrimary ? ` · ${t("primary")}` : null}
+                    {link.isPrimary ? ` · ${t('primary')}` : null}
                   </span>
                 </span>
                 <Button
@@ -150,7 +147,7 @@ export const CrmDealApartmentsSection = ({
                     void onUnlink(link.apartmentId, label);
                   }}
                 >
-                  {t("unlinkApartment")}
+                  {t('unlinkApartment')}
                 </Button>
               </li>
             );
@@ -158,44 +155,44 @@ export const CrmDealApartmentsSection = ({
         </ul>
       )}
 
-      <FormField id="link-project" label={t("linkProject")}>
-        <select
+      <FormField id="link-project" label={t('linkProject')}>
+        <Select
           id="link-project"
-          className="h-10 w-full rounded-sm border border-border bg-background px-3 text-sm text-ink"
           value={projectId}
+          aria-label={t('linkProject')}
           onChange={(event) => {
             setProjectId(event.target.value);
-            setApartmentId("");
+            setApartmentId('');
           }}
         >
-          <option value="">{t("selectProject")}</option>
+          <option value="">{t('selectProject')}</option>
           {(projectsQuery.data?.data ?? []).map((project) => (
             <option key={project.id} value={project.id}>
               {project.name}
             </option>
           ))}
-        </select>
+        </Select>
       </FormField>
 
-      <FormField id="link-apartment" label={t("linkApartment")}>
-        <select
+      <FormField id="link-apartment" label={t('linkApartment')}>
+        <Select
           id="link-apartment"
-          className="h-10 w-full rounded-sm border border-border bg-background px-3 text-sm text-ink"
           value={apartmentId}
           disabled={!projectId || loadingApartments}
+          aria-label={t('linkApartment')}
           onChange={(event) => {
             setApartmentId(event.target.value);
           }}
         >
           <option value="">
-            {loadingApartments ? t("loadingApartments") : t("selectApartment")}
+            {loadingApartments ? t('loadingApartments') : t('selectApartment')}
           </option>
           {apartments.map((apartment) => (
             <option key={apartment.id} value={apartment.id}>
               {apartment.label}
             </option>
           ))}
-        </select>
+        </Select>
       </FormField>
 
       {error ? (
@@ -217,7 +214,7 @@ export const CrmDealApartmentsSection = ({
           void onLink();
         }}
       >
-        {attachMutation.isPending ? t("saving") : t("linkApartmentAction")}
+        {attachMutation.isPending ? t('saving') : t('linkApartmentAction')}
       </Button>
     </section>
   );
