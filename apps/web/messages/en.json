@@ -1303,6 +1303,13 @@
         "previous": "Previous",
         "next": "Next",
         "ariaLabel": "Pagination"
+      },
+      "create": {
+        "cta": "+ Add Project",
+        "title": "Add Project",
+        "company": "Company",
+        "selectCompany": "Select company",
+        "pickCompany": "Select a company to continue."
       }
     },
     "buildings": {
