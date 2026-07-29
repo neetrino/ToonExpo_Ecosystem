@@ -12,11 +12,10 @@ import { useBuyerQrQuery } from '@/features/buyer/hooks/use-buyer';
 import { isBuyerAccount } from '@/features/buyer/utils/is-buyer-account';
 import { Link } from '@/i18n/navigation';
 import { blurActiveElementAfterEscClose } from '@/shared/ui/blur-active-element';
-import { lockBodyScroll, unlockBodyScroll } from '@/shared/ui/body-scroll-lock';
 import { Button } from '@/shared/ui/button';
 import { cn } from '@/shared/ui/cn';
 import { MOBILE_BOTTOM_NAV_SHEET_PB_CLASS } from '@/shared/ui/mobile-bottom-nav-clearance';
-import { MODAL_BACKDROP_CLASS_NAME } from '@/shared/ui/modal-backdrop';
+import { SHEET_BACKDROP_CLASS_NAME } from '@/shared/ui/modal-backdrop';
 import { getOverlayPortalHost } from '@/shared/ui/overlay-portal-host';
 import {
   SIDE_SHEET_BACKDROP_TRANSITION_MS,
@@ -141,16 +140,6 @@ export const BuyerQrSheet = ({ open, onClose }: BuyerQrSheetProps) => {
     if (!rendered) {
       return;
     }
-    lockBodyScroll();
-    return () => {
-      unlockBodyScroll();
-    };
-  }, [rendered]);
-
-  useEffect(() => {
-    if (!rendered) {
-      return;
-    }
     const onKeyDown = (event: KeyboardEvent): void => {
       if (event.key === 'Escape') {
         if (mode === 'scanner') {
@@ -179,7 +168,7 @@ export const BuyerQrSheet = ({ open, onClose }: BuyerQrSheetProps) => {
   return createPortal(
     <div
       className={cn(
-        'fixed inset-0 z-[var(--z-overlay)] lg:hidden',
+        'fixed inset-0 z-[var(--z-overlay)] touch-none overscroll-none lg:hidden',
         visible ? '' : 'pointer-events-none',
       )}
       aria-hidden={!visible}
@@ -192,7 +181,7 @@ export const BuyerQrSheet = ({ open, onClose }: BuyerQrSheetProps) => {
         aria-label={tCommon('close')}
         className={cn(
           'absolute inset-0',
-          MODAL_BACKDROP_CLASS_NAME,
+          SHEET_BACKDROP_CLASS_NAME,
           'transition-opacity duration-[var(--scanner-sheet-backdrop-ms)] ease-[var(--ease-out-premium)]',
           'motion-reduce:transition-none',
           isInteracting ? 'transition-none' : null,
@@ -210,7 +199,7 @@ export const BuyerQrSheet = ({ open, onClose }: BuyerQrSheetProps) => {
           aria-modal="true"
           {...(isScanner ? { 'aria-labelledby': titleId } : { 'aria-label': title })}
           className={cn(
-            'pointer-events-auto flex w-full max-w-lg flex-col',
+            'pointer-events-auto touch-auto flex w-full max-w-lg flex-col',
             'rounded-t-[15px] border border-border bg-surface-elevated shadow-lg',
             'will-change-transform',
             !isInteracting && [
@@ -243,17 +232,15 @@ export const BuyerQrSheet = ({ open, onClose }: BuyerQrSheetProps) => {
               isScanner ? 'min-h-0 overflow-y-auto' : 'overflow-hidden',
             )}
           >
-            {open ? (
-              isScanner ? (
-                <BuyerScannerWorkspace onNavigated={onClose} />
-              ) : (
-                <BuyerQrSheetBody
-                  onOpenScanner={() => {
-                    setMode('scanner');
-                  }}
-                />
-              )
-            ) : null}
+            {isScanner ? (
+              <BuyerScannerWorkspace onNavigated={onClose} />
+            ) : (
+              <BuyerQrSheetBody
+                onOpenScanner={() => {
+                  setMode('scanner');
+                }}
+              />
+            )}
           </div>
         </div>
       </div>

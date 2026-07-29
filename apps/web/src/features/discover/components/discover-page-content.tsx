@@ -5,21 +5,22 @@ import { useEffect } from 'react';
 
 import { DiscoverSwipeDeck } from '@/features/discover/components/discover-swipe-deck';
 import { useDiscoverApartmentsQuery } from '@/features/discover/hooks/use-discover-apartments-query';
-import { lockBodyScroll, unlockBodyScroll } from '@/shared/ui/body-scroll-lock';
+import { lockBodyScrollSoft, unlockBodyScrollSoft } from '@/shared/ui/body-scroll-lock';
 import { Skeleton } from '@/shared/ui/skeleton';
 
 /**
  * Mobile discover / Tinder-style apartment swipe surface.
- * Fills the parent viewport strip between top and bottom nav; page scroll locked.
+ * Fills the parent viewport strip between top and bottom nav; page scroll locked
+ * via overflow-only (no position:fixed — avoids paint flash with overlays).
  */
 export const DiscoverPageContent = () => {
   const t = useTranslations('Discover');
   const apartmentsQuery = useDiscoverApartmentsQuery();
 
   useEffect(() => {
-    lockBodyScroll();
+    lockBodyScrollSoft();
     return () => {
-      unlockBodyScroll();
+      unlockBodyScrollSoft();
     };
   }, []);
 

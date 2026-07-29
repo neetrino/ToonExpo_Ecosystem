@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import { useMeQuery } from '@/features/auth/hooks/use-auth';
@@ -18,7 +18,6 @@ import { Link, usePathname } from '@/i18n/navigation';
 import { isAdminPortalPath, isBuilderPortalPath } from '@/shared/ui/account-mobile-nav-controller';
 import { cn } from '@/shared/ui/cn';
 import { getOverlayPortalHost } from '@/shared/ui/overlay-portal-host';
-import { SIDE_SHEET_PANEL_TRANSITION_MS } from '@/shared/ui/side-sheet.constants';
 
 /** Figma 134:119 bar fill — no matching design token yet. */
 const BAR_SURFACE_CLASS = 'bg-[#171717]';
@@ -28,10 +27,10 @@ const BUTTON_SIZE_CLASS = 'size-14';
 const ITEM_GAP_CLASS = 'gap-4';
 /** Figma bar vertical padding (safe-area replaces bottom when larger). */
 const BAR_PAD_CLASS = 'pt-[13px] pb-[max(7px,env(safe-area-inset-bottom,0px))]';
-/** Matches sheet exit so the thumb glide does not feel abrupt. */
-const THUMB_SLIDE_DURATION_MS = 520;
-/** Icon fill/color follows the thumb (not the fast press feedback). */
-const NAV_ICON_TRANSITION_MS = 520;
+/** Thumb glide when switching routes. */
+const THUMB_SLIDE_DURATION_MS = 400;
+/** Icon color follows the thumb. */
+const NAV_ICON_TRANSITION_MS = 400;
 
 /**
  * Sliding thumb offsets — same pattern as ViewModeToggle / AnalyticsDateRangeFilter.
@@ -64,6 +63,7 @@ const NavItemIcon = ({ item }: NavItemIconProps) => {
 /**
  * Mobile-only bottom navigation (Figma node 134:119).
  * Full-bleed dark bar with rounded top corners; portaled at `--z-bottom-nav`.
+ * Sheet actions (QR / scanner) do not steal the route thumb — avoids post-close color flash.
  */
 export const MobileBottomNav = () => {
   const t = useTranslations('Nav');
@@ -71,10 +71,7 @@ export const MobileBottomNav = () => {
   const { data: me } = useMeQuery();
   const [pendingId, setPendingId] = useState<BottomNavId | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
-  /** Keeps QR/scanner thumb until the sheet exit animation finishes. */
-  const [sheetHighlight, setSheetHighlight] = useState(false);
   const [host, setHost] = useState<HTMLElement | null>(null);
-  const sheetExitTimerRef = useRef<number | null>(null);
   const isBuilder = me?.companyType === 'builder';
   const isAdmin = me?.accountType === 'platform_admin';
   const profileHref = isBuilder
@@ -94,52 +91,23 @@ export const MobileBottomNav = () => {
 
   const routeActiveIndex = items.findIndex((item) => item.match(pathname));
   const pendingIndex = pendingId ? items.findIndex((item) => item.id === pendingId) : -1;
-  const sheetIndex = items.findIndex((item) => item.opensSheet);
-  const activeIndex = sheetHighlight
-    ? sheetIndex
-    : pendingIndex >= 0
-      ? pendingIndex
-      : routeActiveIndex;
+  const activeIndex = pendingIndex >= 0 ? pendingIndex : routeActiveIndex;
   const hasActive = activeIndex >= 0;
-
-  const clearSheetExitTimer = (): void => {
-    if (sheetExitTimerRef.current !== null) {
-      window.clearTimeout(sheetExitTimerRef.current);
-      sheetExitTimerRef.current = null;
-    }
-  };
 
   useEffect(() => {
     setHost(getOverlayPortalHost());
   }, []);
 
   useEffect(() => {
-    return () => {
-      clearSheetExitTimer();
-    };
-  }, []);
-
-  useEffect(() => {
-    clearSheetExitTimer();
     setPendingId(null);
     setSheetOpen(false);
-    setSheetHighlight(false);
   }, [pathname]);
 
   const closeSheet = (): void => {
     setSheetOpen(false);
-    clearSheetExitTimer();
-    sheetExitTimerRef.current = window.setTimeout(() => {
-      setSheetHighlight(false);
-      setPendingId(null);
-      sheetExitTimerRef.current = null;
-    }, SIDE_SHEET_PANEL_TRANSITION_MS);
   };
 
-  const openSheet = (id: BottomNavId): void => {
-    clearSheetExitTimer();
-    setPendingId(id);
-    setSheetHighlight(true);
+  const openSheet = (): void => {
     setSheetOpen(true);
   };
 
@@ -195,7 +163,7 @@ export const MobileBottomNav = () => {
                       closeSheet();
                       return;
                     }
-                    openSheet(item.id);
+                    openSheet();
                   }}
                   className={cn(NAV_BUTTON_CLASS, activeClass)}
                 >
@@ -211,9 +179,7 @@ export const MobileBottomNav = () => {
                 aria-label={label}
                 aria-current={isActive ? 'page' : undefined}
                 onClick={() => {
-                  clearSheetExitTimer();
                   setSheetOpen(false);
-                  setSheetHighlight(false);
                   setPendingId(item.id);
                 }}
                 className={cn(NAV_BUTTON_CLASS, activeClass)}

@@ -78,16 +78,16 @@ export const useBottomSheetSwipeDismiss = ({
     if (prefersReducedMotion()) {
       onDismiss();
       dismissPendingRef.current = false;
-      resetVisual();
       return;
     }
 
     window.setTimeout(() => {
       onDismiss();
       dismissPendingRef.current = false;
-      resetVisual();
+      // Keep translateY off-screen until the drawer unmounts.
+      // Resetting here snaps the sheet back open for 1–2 frames (page flash).
     }, SIDE_SHEET_PANEL_TRANSITION_MS);
-  }, [onDismiss, resetVisual, sheetRef]);
+  }, [onDismiss, sheetRef]);
 
   const snapBack = useCallback((): void => {
     setIsDragging(false);
