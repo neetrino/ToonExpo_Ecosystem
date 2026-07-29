@@ -1,21 +1,18 @@
-import type {
-  FavoriteApartmentCard,
-  PriceVisibility,
-} from "@toonexpo/contracts";
-import type { ApartmentSalesStatus, Prisma } from "@toonexpo/db";
-import type { SupportedLocale } from "@toonexpo/shared";
+import type { FavoriteApartmentCard, PriceVisibility } from '@toonexpo/contracts';
+import type { ApartmentSalesStatus, Prisma } from '@toonexpo/db';
+import type { SupportedLocale } from '@toonexpo/shared';
 
 import {
   decimalToString,
   shouldRevealPrice,
   toMediaSummary,
-} from "../../catalog/mappers/catalog.mapper.js";
+} from '../../catalog/mappers/catalog.mapper.js';
 import {
   resolveTranslatedValue,
   TRANSLATION_ENTITY,
   TRANSLATION_FIELD,
   type TranslationRow,
-} from "../../catalog/utils/resolve-translation.js";
+} from '../../catalog/utils/resolve-translation.js';
 
 type ApartmentFavoriteSource = {
   id: string;
@@ -30,6 +27,10 @@ type ApartmentFavoriteSource = {
     id: string;
     name: string;
     slug: string;
+    city: string | null;
+    district: string | null;
+    locationText: string | null;
+    coverMedia: Parameters<typeof toMediaSummary>[0];
     builderCompany: {
       id: string;
       name: string;
@@ -48,10 +49,7 @@ export const mapFavoriteApartmentCard = (
   apartment: ApartmentFavoriteSource,
   ctx: MapApartmentContext,
 ): FavoriteApartmentCard => {
-  const revealPrice = shouldRevealPrice(
-    apartment.priceVisibility,
-    ctx.isAuthenticated,
-  );
+  const revealPrice = shouldRevealPrice(apartment.priceVisibility, ctx.isAuthenticated);
 
   const projectName =
     resolveTranslatedValue(
@@ -82,6 +80,10 @@ export const mapFavoriteApartmentCard = (
     price: revealPrice ? decimalToString(apartment.price) : null,
     priceCurrency: apartment.priceCurrency,
     priceVisibility: apartment.priceVisibility as PriceVisibility,
+    cover: toMediaSummary(apartment.project.coverMedia),
+    city: apartment.project.city,
+    district: apartment.project.district,
+    locationText: apartment.project.locationText,
     project: {
       id: apartment.project.id,
       name: projectName,
