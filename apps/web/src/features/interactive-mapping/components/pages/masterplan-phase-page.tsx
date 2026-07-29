@@ -98,6 +98,7 @@ export const MasterplanPhasePage = ({ projectId }: MasterplanPhasePageProps) => 
       if (canvas) {
         const updated = await updateAdminVisualCanvas(companyId, canvas.id, {
           mediaAssetId: asset.id,
+          publicationStatus: 'published',
         });
         setCanvas(updated);
       } else {
@@ -107,6 +108,7 @@ export const MasterplanPhasePage = ({ projectId }: MasterplanPhasePageProps) => 
           mediaAssetId: asset.id,
           title: `${project.name} masterplan`,
           isPrimary: true,
+          publicationStatus: 'published',
         });
         setCanvas(created);
       }

@@ -113,7 +113,12 @@ export const FloorPhasePage = ({ projectId, floorId }: FloorPhasePageProps) => {
     setMediaId(asset.id);
     try {
       if (canvas) {
-        setCanvas(await updateAdminVisualCanvas(companyId, canvas.id, { mediaAssetId: asset.id }));
+        setCanvas(
+          await updateAdminVisualCanvas(companyId, canvas.id, {
+            mediaAssetId: asset.id,
+            publicationStatus: 'published',
+          }),
+        );
       } else {
         setCanvas(
           await createAdminVisualCanvas(companyId, projectId, {
@@ -122,6 +127,7 @@ export const FloorPhasePage = ({ projectId, floorId }: FloorPhasePageProps) => {
             mediaAssetId: asset.id,
             title: floor.name ?? `Floor ${floor.number}`,
             isPrimary: true,
+            publicationStatus: 'published',
           }),
         );
       }

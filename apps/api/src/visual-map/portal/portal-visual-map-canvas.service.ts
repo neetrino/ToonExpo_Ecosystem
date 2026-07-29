@@ -71,7 +71,8 @@ export class PortalVisualMapCanvasService {
         contextType: toDbContextType(dto.contextType),
         contextId: dto.contextId,
         mediaAssetId: dto.mediaAssetId,
-        publicationStatus: PublicationStatus.draft,
+        publicationStatus:
+          (dto.publicationStatus as PublicationStatus | undefined) ?? PublicationStatus.draft,
         isPrimary: dto.isPrimary ?? false,
         sortOrder: dto.sortOrder ?? 0,
         createdByUserId: userId,
@@ -81,6 +82,13 @@ export class PortalVisualMapCanvasService {
       },
       include: canvasInclude,
     });
+
+    if (
+      ((dto.publicationStatus as PublicationStatus | undefined) ?? PublicationStatus.draft) ===
+      PublicationStatus.published
+    ) {
+      this.webRevalidation.revalidateVisualMap();
+    }
 
     return mapPortalCanvasDetail(canvas, {
       districts: new Map(),

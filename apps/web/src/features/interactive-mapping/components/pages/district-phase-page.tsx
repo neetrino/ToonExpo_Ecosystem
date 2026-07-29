@@ -106,7 +106,12 @@ export const DistrictPhasePage = ({ projectId, districtId }: DistrictPhasePagePr
     setMediaId(asset.id);
     try {
       if (canvas) {
-        setCanvas(await updateAdminVisualCanvas(companyId, canvas.id, { mediaAssetId: asset.id }));
+        setCanvas(
+          await updateAdminVisualCanvas(companyId, canvas.id, {
+            mediaAssetId: asset.id,
+            publicationStatus: 'published',
+          }),
+        );
       } else {
         setCanvas(
           await createAdminVisualCanvas(companyId, projectId, {
@@ -115,6 +120,7 @@ export const DistrictPhasePage = ({ projectId, districtId }: DistrictPhasePagePr
             mediaAssetId: asset.id,
             title: `${district.name} plan`,
             isPrimary: true,
+            publicationStatus: 'published',
           }),
         );
       }

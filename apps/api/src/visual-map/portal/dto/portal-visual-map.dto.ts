@@ -79,6 +79,11 @@ export class CreatePortalVisualCanvasDto {
   @Type(() => Number)
   @IsInt()
   sortOrder?: number;
+
+  @ApiPropertyOptional({ enum: PublicationStatusDto })
+  @IsOptional()
+  @IsEnum(PublicationStatusDto)
+  publicationStatus?: PublicationStatusDto;
 }
 
 export class UpdatePortalVisualCanvasDto {

@@ -45,6 +45,7 @@ export type CreatePortalVisualCanvasRequest = {
   description?: string;
   isPrimary?: boolean;
   sortOrder?: number;
+  publicationStatus?: PublicationStatus;
 };
 
 export type UpdatePortalVisualCanvasRequest = {

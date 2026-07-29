@@ -112,7 +112,12 @@ export const BuildingRenderPhasePage = ({
     setMediaId(asset.id);
     try {
       if (canvas) {
-        setCanvas(await updateAdminVisualCanvas(companyId, canvas.id, { mediaAssetId: asset.id }));
+        setCanvas(
+          await updateAdminVisualCanvas(companyId, canvas.id, {
+            mediaAssetId: asset.id,
+            publicationStatus: 'published',
+          }),
+        );
       } else {
         setCanvas(
           await createAdminVisualCanvas(companyId, projectId, {
@@ -121,6 +126,7 @@ export const BuildingRenderPhasePage = ({
             mediaAssetId: asset.id,
             title: `${building.name} render`,
             isPrimary: true,
+            publicationStatus: 'published',
           }),
         );
       }
