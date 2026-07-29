@@ -1036,7 +1036,7 @@
     --map-hotspot-fade-ms: 300ms;
     --map-hotspot-exit-ms: 160ms;
     cursor: pointer;
-    fill: var(--color-map-hotspot);
+    fill: var(--color-map-hotspot-active);
     fill-opacity: 0;
     stroke: none;
     transition: fill-opacity var(--map-hotspot-exit-ms) ease;
@@ -1044,13 +1044,13 @@
 
   .map-hotspot-path:hover,
   .map-hotspot-path:focus-visible {
-    fill-opacity: 0.28;
+    fill-opacity: 0.42;
     outline: none;
     transition: fill-opacity var(--map-hotspot-fade-ms) ease;
   }
 
   .map-hotspot-path[data-selected='true'] {
-    fill-opacity: 0.35;
+    fill-opacity: 0.5;
   }
 
   @media (prefers-reduced-motion: reduce) {
