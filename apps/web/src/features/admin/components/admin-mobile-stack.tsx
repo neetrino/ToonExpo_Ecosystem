@@ -171,7 +171,7 @@ export const AdminMobileStack = ({ name, email, children }: AdminMobileStackProp
           showOverlay && [
             'max-md:fixed max-md:inset-0 max-md:z-[var(--z-overlay)]',
             'max-md:overflow-x-clip max-md:overflow-y-auto max-md:bg-canvas',
-            'max-md:account-sheet-scrollbar',
+            'max-md:account-sheet-scrollbar max-md:touch-pan-y',
             !isInteracting && (anim === 'out' ? 'account-page-push-out' : 'account-page-push-in'),
           ],
         )}
