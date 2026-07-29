@@ -145,7 +145,8 @@ export class InteractiveMappingService {
         name: dto.name,
         slug,
         displayOrder: dto.displayOrder ?? 0,
-        publicationStatus: (dto.publicationStatus as PublicationStatus) ?? PublicationStatus.draft,
+        publicationStatus:
+          (dto.publicationStatus as PublicationStatus) ?? PublicationStatus.published,
         createdByUserId: userId,
         updatedByUserId: userId,
       },

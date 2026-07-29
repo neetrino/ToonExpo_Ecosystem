@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import type { PortalVisualHotspotItem } from '@toonexpo/contracts';
+import type { PortalVisualHotspotItem, VisualHotspotTargetType } from '@toonexpo/contracts';
 import { Prisma, PublicationStatus } from '@toonexpo/db';
 
 import { WebRevalidationService } from '../../common/web-revalidation/web-revalidation.service.js';
@@ -16,7 +16,52 @@ import type {
   CreatePortalVisualHotspotDto,
   UpdatePortalVisualHotspotDto,
 } from './dto/portal-visual-map.dto.js';
-import { requireOwnedCanvas } from './portal-visual-map.shared.js';
+import { requireOwnedCanvas, type OwnedCanvas } from './portal-visual-map.shared.js';
+
+/**
+ * Defaults hotspot publication to match a published parent canvas (public map readiness).
+ */
+const resolveHotspotPublicationStatus = (
+  canvas: OwnedCanvas,
+  requested: PublicationStatus | undefined,
+): PublicationStatus => {
+  if (requested !== undefined) {
+    return requested;
+  }
+  return canvas.publicationStatus === PublicationStatus.published
+    ? PublicationStatus.published
+    : PublicationStatus.draft;
+};
+
+/**
+ * Publishes hotspot targets so public map filtering does not drop Admin-drawn polygons.
+ */
+const ensurePublishedHotspotTarget = async (
+  prisma: PrismaService,
+  targetType: VisualHotspotTargetType,
+  targetId: string,
+): Promise<void> => {
+  if (targetType === 'district') {
+    await prisma.db.district.updateMany({
+      where: {
+        id: targetId,
+        publicationStatus: { not: PublicationStatus.published },
+      },
+      data: { publicationStatus: PublicationStatus.published },
+    });
+    return;
+  }
+
+  if (targetType === 'building') {
+    await prisma.db.building.updateMany({
+      where: {
+        id: targetId,
+        publicationStatus: { not: PublicationStatus.published },
+      },
+      data: { publicationStatus: PublicationStatus.published },
+    });
+  }
+};
 
 @Injectable()
 export class PortalVisualMapHotspotService {
@@ -53,6 +98,15 @@ export class PortalVisualMapHotspotService {
       });
     }
 
+    const publicationStatus = resolveHotspotPublicationStatus(
+      canvas,
+      dto.publicationStatus as PublicationStatus | undefined,
+    );
+
+    if (publicationStatus === PublicationStatus.published) {
+      await ensurePublishedHotspotTarget(this.prisma, dto.targetType, dto.targetId);
+    }
+
     const hotspot = await this.prisma.db.visualHotspot.create({
       data: {
         canvasId,
@@ -67,8 +121,7 @@ export class PortalVisualMapHotspotService {
           (dto.shapeType === 'polygon' ? 'polygon' : dto.svgPath ? 'both' : 'marker'),
         svgPath: dto.svgPath ?? null,
         ...(dto.points !== undefined ? { points: dto.points as Prisma.InputJsonValue } : {}),
-        publicationStatus:
-          (dto.publicationStatus as PublicationStatus | undefined) ?? PublicationStatus.draft,
+        publicationStatus,
         createdByUserId: userId,
         updatedByUserId: userId,
         ...(dto.markerStyle !== undefined ? { markerStyle: dto.markerStyle } : {}),
@@ -77,10 +130,7 @@ export class PortalVisualMapHotspotService {
     });
 
     const entities = await loadTargetEntities(this.prisma, [hotspot]);
-    if (
-      ((dto.publicationStatus as PublicationStatus | undefined) ?? PublicationStatus.draft) ===
-      PublicationStatus.published
-    ) {
+    if (publicationStatus === PublicationStatus.published) {
       this.webRevalidation.revalidateVisualMap();
     }
     return mapPortalHotspot(hotspot, entities);
@@ -127,6 +177,22 @@ export class PortalVisualMapHotspotService {
       }
     }
 
+    const publicationStatus =
+      dto.publicationStatus !== undefined
+        ? (dto.publicationStatus as PublicationStatus)
+        : canvas.publicationStatus === PublicationStatus.published &&
+            existing.publicationStatus !== PublicationStatus.published
+          ? PublicationStatus.published
+          : undefined;
+
+    if ((publicationStatus ?? existing.publicationStatus) === PublicationStatus.published) {
+      await ensurePublishedHotspotTarget(
+        this.prisma,
+        nextTargetType as VisualHotspotTargetType,
+        nextTargetId,
+      );
+    }
+
     const hotspot = await this.prisma.db.visualHotspot.update({
       where: { id: hotspotId },
       data: {
@@ -140,16 +206,14 @@ export class PortalVisualMapHotspotService {
         ...(dto.svgPath !== undefined ? { svgPath: dto.svgPath } : {}),
         ...(dto.points !== undefined ? { points: dto.points as Prisma.InputJsonValue } : {}),
         ...(dto.markerStyle !== undefined ? { markerStyle: dto.markerStyle } : {}),
-        ...(dto.publicationStatus !== undefined
-          ? { publicationStatus: dto.publicationStatus as PublicationStatus }
-          : {}),
+        ...(publicationStatus !== undefined ? { publicationStatus } : {}),
         ...(dto.sortOrder !== undefined ? { sortOrder: dto.sortOrder } : {}),
         updatedByUserId: userId,
       },
     });
 
     const entities = await loadTargetEntities(this.prisma, [hotspot]);
-    if (dto.publicationStatus !== undefined) {
+    if (publicationStatus !== undefined || dto.svgPath !== undefined) {
       this.webRevalidation.revalidateVisualMap();
     }
     return mapPortalHotspot(hotspot, entities);

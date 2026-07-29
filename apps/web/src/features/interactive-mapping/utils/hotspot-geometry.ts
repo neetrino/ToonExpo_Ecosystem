@@ -63,6 +63,8 @@ export const toCreateHotspotBody = (params: {
     shapeType: geometry.shapeType,
     interactionType: geometry.interactionType,
     svgPath: geometry.svgPath ?? null,
+    /** Interactive Mapping draws for the public site — persist as published. */
+    publicationStatus: 'published',
   };
 };
 
@@ -77,6 +79,7 @@ export const toUpdateHotspotBody = (
     shapeType: mapped.shapeType,
     interactionType: mapped.interactionType,
     svgPath: mapped.svgPath ?? null,
+    publicationStatus: 'published',
   };
   if (label !== undefined) {
     body.label = label;

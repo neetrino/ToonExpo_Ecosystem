@@ -1,8 +1,8 @@
-import type { PublicVisualCanvasListResponse } from "@toonexpo/contracts";
+import type { PublicVisualCanvasListResponse } from '@toonexpo/contracts';
 
-import { apiFetch } from "@/shared/api/client";
-import { ApiError, isApiErrorStatus } from "@/shared/api/errors";
-import { visualMapFetch } from "@/shared/api/public-fetch";
+import { apiFetch } from '@/shared/api/client';
+import { ApiError, isApiErrorStatus } from '@/shared/api/errors';
+import { visualMapFetch } from '@/shared/api/public-fetch';
 
 const fetchVisualCanvases = async (
   path: string,
@@ -23,22 +23,21 @@ const fetchVisualCanvases = async (
 export const listProjectVisualCanvases = (
   projectId: string,
 ): Promise<PublicVisualCanvasListResponse | null> =>
-  fetchVisualCanvases(
-    `/projects/${encodeURIComponent(projectId)}/visual-canvases`,
-  );
+  fetchVisualCanvases(`/projects/${encodeURIComponent(projectId)}/visual-canvases`);
+
+export const listDistrictVisualCanvases = (
+  districtId: string,
+): Promise<PublicVisualCanvasListResponse | null> =>
+  fetchVisualCanvases(`/districts/${encodeURIComponent(districtId)}/visual-canvases`);
 
 export const listBuildingVisualCanvases = (
   buildingId: string,
 ): Promise<PublicVisualCanvasListResponse | null> =>
-  fetchVisualCanvases(
-    `/buildings/${encodeURIComponent(buildingId)}/visual-canvases`,
-  );
+  fetchVisualCanvases(`/buildings/${encodeURIComponent(buildingId)}/visual-canvases`);
 
 export const listFloorVisualCanvases = (
   floorId: string,
 ): Promise<PublicVisualCanvasListResponse | null> =>
-  fetchVisualCanvases(
-    `/floors/${encodeURIComponent(floorId)}/visual-canvases`,
-  );
+  fetchVisualCanvases(`/floors/${encodeURIComponent(floorId)}/visual-canvases`);
 
 export { ApiError };

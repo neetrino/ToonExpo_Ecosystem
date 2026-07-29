@@ -7,16 +7,19 @@ import { PublicVisualMapService } from './public-visual-map.service.js';
 
 describe('PublicVisualMapService', () => {
   const projectFindFirst = vi.fn();
+  const districtFindFirst = vi.fn();
   const visualMapCanvasFindMany = vi.fn();
   const buildingFindMany = vi.fn();
   const floorFindMany = vi.fn();
   const apartmentFindMany = vi.fn();
+  const districtFindMany = vi.fn();
 
   let service: PublicVisualMapService;
 
   beforeEach(() => {
     vi.clearAllMocks();
     projectFindFirst.mockResolvedValue({ id: 'proj_1' });
+    districtFindFirst.mockResolvedValue({ id: 'dist_1', projectId: 'proj_1' });
     visualMapCanvasFindMany.mockResolvedValue([
       {
         id: 'canvas_1',
@@ -92,10 +95,12 @@ describe('PublicVisualMapService', () => {
         publicationStatus: PublicationStatus.draft,
       },
     ]);
+    districtFindMany.mockResolvedValue([]);
 
     const prisma = {
       db: {
         project: { findFirst: projectFindFirst },
+        district: { findFirst: districtFindFirst, findMany: districtFindMany },
         building: { findFirst: vi.fn(), findMany: buildingFindMany },
         floor: { findFirst: vi.fn(), findMany: floorFindMany },
         apartment: { findMany: apartmentFindMany },
@@ -121,6 +126,22 @@ describe('PublicVisualMapService', () => {
           hotspots: expect.objectContaining({
             where: { publicationStatus: PublicationStatus.published },
           }),
+        }),
+      }),
+    );
+  });
+
+  it('queries published primary canvases for a published district', async () => {
+    await service.listForDistrict('dist_1');
+
+    expect(districtFindFirst).toHaveBeenCalled();
+    expect(visualMapCanvasFindMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          contextType: 'district',
+          contextId: 'dist_1',
+          isPrimary: true,
+          publicationStatus: 'published',
         }),
       }),
     );

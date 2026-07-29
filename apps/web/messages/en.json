@@ -579,10 +579,16 @@
       "title": "Site map",
       "alt": "Project visual map",
       "viewAsList": "View as list below",
+      "back": "Back",
+      "loadingStage": "Opening map…",
+      "finalStage": "End of interactive map for this area.",
+      "stageUnavailable": "This area has no published interactive map yet.",
+      "stageLoadError": "Could not load the next map stage. Try again.",
       "hotspot": {
         "close": "Close",
         "openTarget": "Open details",
         "targetTypes": {
+          "district": "District",
           "building": "Building",
           "floor": "Floor",
           "apartment": "Apartment"

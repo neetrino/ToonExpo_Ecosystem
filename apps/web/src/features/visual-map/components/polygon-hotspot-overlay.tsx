@@ -16,7 +16,8 @@ type PolygonHotspotOverlayProps = {
 };
 
 /**
- * SVG overlay for published polygon hotspots (Defense viewBox pixel `d` paths).
+ * SVG overlay for published polygon hotspots (Admin viewBox pixel `d` paths).
+ * Scales with the image via matching viewBox + absolute inset overlay.
  */
 export const PolygonHotspotOverlay = ({
   items,
@@ -32,7 +33,7 @@ export const PolygonHotspotOverlay = ({
   return (
     <svg
       viewBox={`0 0 ${viewBoxWidth} ${viewBoxHeight}`}
-      preserveAspectRatio="xMidYMid meet"
+      preserveAspectRatio="none"
       className="pointer-events-none absolute inset-0 h-full w-full"
       aria-hidden={!interactive}
     >
@@ -42,11 +43,8 @@ export const PolygonHotspotOverlay = ({
           <path
             key={item.id}
             d={item.svgPath}
-            className={
-              selected
-                ? 'fill-brand/35 stroke-brand stroke-2'
-                : 'fill-brand/20 stroke-brand stroke-[1.5]'
-            }
+            className="map-hotspot-path"
+            data-selected={selected ? 'true' : undefined}
             pointerEvents={interactive ? 'auto' : 'none'}
             role={interactive ? 'button' : undefined}
             tabIndex={interactive ? 0 : undefined}
@@ -56,6 +54,17 @@ export const PolygonHotspotOverlay = ({
                 ? (event) => {
                     event.stopPropagation();
                     onSelect?.(item.id);
+                  }
+                : undefined
+            }
+            onKeyDown={
+              interactive
+                ? (event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      onSelect?.(item.id);
+                    }
                   }
                 : undefined
             }

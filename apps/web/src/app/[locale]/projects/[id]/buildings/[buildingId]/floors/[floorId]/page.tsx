@@ -91,7 +91,7 @@ export default async function FloorPage({ params }: FloorPageProps) {
 
         {visualCanvas ? (
           <div className="mb-8">
-            <PublicVisualMap canvas={visualCanvas} linkContext={{ kind: 'floorApartment' }} />
+            <PublicVisualMap canvas={visualCanvas} projectId={floor.project.id} />
           </div>
         ) : null}
 
