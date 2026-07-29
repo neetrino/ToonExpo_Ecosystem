@@ -4,6 +4,7 @@ export { API_V1_PREFIX } from './health.js';
 export * from './auth.js';
 export * from './catalog.js';
 export * from './companies.js';
+export * from './admin-users.js';
 export * from './portal.js';
 export * from './qr.js';
 export * from './crm.js';
