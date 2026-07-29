@@ -1,6 +1,6 @@
 'use client';
 
-import { Heart, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Heart, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -17,7 +17,7 @@ import {
 } from '@/features/discover/hooks/use-discover-swipe-card';
 import type { DiscoverApartmentCard } from '@/features/discover/utils/load-discover-apartments';
 import { Button } from '@/shared/ui/button';
-import { IconButton } from '@/shared/ui/icon-button';
+import { cn } from '@/shared/ui/cn';
 
 type DiscoverSwipeDeckProps = {
   apartments: DiscoverApartmentCard[];
@@ -77,7 +77,6 @@ export const DiscoverSwipeDeck = ({ apartments }: DiscoverSwipeDeckProps) => {
     onPointerMove,
     onPointerUp,
     onPointerCancel,
-    triggerExit,
   } = useDiscoverSwipeCard({
     enabled: actionsEnabled,
     onCommit: handleCommit,
@@ -160,28 +159,29 @@ export const DiscoverSwipeDeck = ({ apartments }: DiscoverSwipeDeckProps) => {
         ) : null}
       </div>
 
-      <div className="flex shrink-0 items-center justify-center gap-8 pb-1">
-        <IconButton
-          label={t('actions.skip')}
-          variant="outline"
-          size="lg"
-          disabled={!actionsEnabled}
-          className="size-14 rounded-full border-danger/40 text-danger hover:border-danger hover:bg-danger/10"
-          onClick={() => triggerExit('left')}
+      <div className="flex shrink-0 items-center justify-center gap-5 pb-1" aria-hidden>
+        <span
+          className={cn(
+            'inline-flex size-14 items-center justify-center rounded-full',
+            'border border-danger/40 text-danger',
+          )}
         >
-          <X className="size-7" strokeWidth={2.5} aria-hidden />
-        </IconButton>
+          <X className="size-7" strokeWidth={2.5} />
+        </span>
 
-        <IconButton
-          label={t('actions.like')}
-          variant="outline"
-          size="lg"
-          disabled={!actionsEnabled}
-          className="size-14 rounded-full border-success/40 text-success hover:border-success hover:bg-success/10"
-          onClick={() => triggerExit('right')}
+        <span className="inline-flex items-center gap-5 text-ink-muted">
+          <ArrowLeft className="size-6" strokeWidth={2.25} />
+          <ArrowRight className="size-6" strokeWidth={2.25} />
+        </span>
+
+        <span
+          className={cn(
+            'inline-flex size-14 items-center justify-center rounded-full',
+            'border border-success/40 text-success',
+          )}
         >
-          <Heart className="size-7 fill-current" strokeWidth={2.5} aria-hidden />
-        </IconButton>
+          <Heart className="size-7 fill-current" strokeWidth={2.5} />
+        </span>
       </div>
     </div>
   );
