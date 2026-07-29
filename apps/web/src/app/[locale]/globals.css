@@ -1030,66 +1030,34 @@
     overflow: visible;
   }
 
-  /* Public interactive map polygon hotspots (Admin-aligned orange).
-     Inactive: invisible; hover draws the outline then fades fill in. */
+  /* Public site map hotspots only (not admin MappingCanvas).
+     Inactive: invisible; hover/selected: translucent orange fill, no stroke. */
   .map-hotspot-path {
-    --map-hotspot-draw-ms: 520ms;
     --map-hotspot-fade-ms: 300ms;
     --map-hotspot-exit-ms: 160ms;
     cursor: pointer;
     fill: var(--color-map-hotspot);
     fill-opacity: 0;
-    stroke: var(--color-map-hotspot-active);
-    stroke-opacity: 0;
-    stroke-width: 1.5;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    stroke-dasharray: 1;
-    stroke-dashoffset: 1;
-    transition:
-      fill-opacity var(--map-hotspot-exit-ms) ease,
-      stroke-opacity var(--map-hotspot-exit-ms) ease,
-      stroke-dashoffset var(--map-hotspot-exit-ms) ease,
-      stroke-width var(--map-hotspot-exit-ms) ease;
+    stroke: none;
+    transition: fill-opacity var(--map-hotspot-exit-ms) ease;
   }
 
   .map-hotspot-path:hover,
   .map-hotspot-path:focus-visible {
     fill-opacity: 0.28;
-    stroke-opacity: 1;
-    stroke-dashoffset: 0;
-    stroke-width: 2.5;
     outline: none;
-    transition:
-      fill-opacity var(--map-hotspot-fade-ms) ease 80ms,
-      stroke-opacity 180ms ease,
-      stroke-dashoffset var(--map-hotspot-draw-ms) cubic-bezier(0.22, 1, 0.36, 1),
-      stroke-width 280ms ease;
+    transition: fill-opacity var(--map-hotspot-fade-ms) ease;
   }
 
   .map-hotspot-path[data-selected='true'] {
     fill-opacity: 0.35;
-    stroke-opacity: 1;
-    stroke-dashoffset: 0;
-    stroke-width: 3;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .map-hotspot-path {
-      stroke-dasharray: none;
-      stroke-dashoffset: 0;
-      transition:
-        fill-opacity 120ms ease,
-        stroke-opacity 120ms ease,
-        stroke-width 120ms ease;
-    }
-
+    .map-hotspot-path,
     .map-hotspot-path:hover,
     .map-hotspot-path:focus-visible {
-      transition:
-        fill-opacity 120ms ease,
-        stroke-opacity 120ms ease,
-        stroke-width 120ms ease;
+      transition: fill-opacity 120ms ease;
     }
   }
 }

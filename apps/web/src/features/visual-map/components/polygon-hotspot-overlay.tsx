@@ -43,7 +43,6 @@ export const PolygonHotspotOverlay = ({
           <path
             key={item.id}
             d={item.svgPath}
-            pathLength={1}
             className="map-hotspot-path"
             data-selected={selected ? 'true' : undefined}
             /* `fill` keeps hit-testing when fill-opacity is 0 (inactive). */
