@@ -18,6 +18,7 @@ import { IconButton } from '@/shared/ui/icon-button';
 import { LocaleSwitcher } from '@/shared/ui/locale-switcher';
 import { ProfileMenu } from '@/shared/ui/profile-menu';
 import { SiteHeaderMobileNav } from '@/shared/ui/site-header-mobile-nav';
+import { useDrawerTransition } from '@/shared/ui/use-drawer-transition';
 
 type SiteHeaderProps = {
   className?: string | undefined;
@@ -38,6 +39,8 @@ const NAV_HREFS = [
 const SCROLL_PILL_THRESHOLD_PX = 12;
 /** ma-marie `HEADER_PILL_APPEAR_DURATION_MS`. */
 const PILL_APPEAR_MS = 500;
+/** Burger menu open/close — synced with pill appear. */
+const BURGER_MENU_TRANSITION_MS = PILL_APPEAR_MS;
 /** Inward nudge of logo / actions once the pill is visible. */
 const PILL_CONTENT_INSET_PX = 22;
 /** How far the pill pulls in from page-container edges. */
@@ -63,8 +66,12 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
   const isTransparentStart = variant === 'transparent';
   const isAccountRoute = isNavbarControlledPortalPath(pathname);
   const burgerOpen = isAccountRoute ? accountNavOpen : menuOpen;
+  const { rendered: menuRendered, visible: menuVisible } = useDrawerTransition(
+    menuOpen && !isAccountRoute,
+    BURGER_MENU_TRANSITION_MS,
+  );
   /** Solid pages always use the home pill chrome; home reveals it on scroll. */
-  const pillVisible = !isTransparentStart || showPill || burgerOpen;
+  const pillVisible = !isTransparentStart || showPill || burgerOpen || menuRendered;
   const isOverHero = isTransparentStart && !pillVisible;
   const needsSpacer = !isTransparentStart;
 
@@ -97,14 +104,14 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
   }, [isTransparentStart]);
 
   useEffect(() => {
-    if (!menuOpen || isAccountRoute) {
+    if (!menuRendered || isAccountRoute) {
       return;
     }
     lockBodyScroll();
     return () => {
       unlockBodyScroll();
     };
-  }, [menuOpen, isAccountRoute]);
+  }, [menuRendered, isAccountRoute]);
 
   const isBuilderMember =
     user?.accountType === 'company_member' &&
@@ -119,14 +126,24 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
     transform: pillVisible ? `translateX(-${PILL_CONTENT_INSET_PX}px)` : 'translateX(0)',
     transitionDuration: `${PILL_APPEAR_MS}ms`,
   };
+  const burgerMotionStyle = {
+    ['--burger-menu-ms' as string]: `${BURGER_MENU_TRANSITION_MS}ms`,
+  };
 
   return (
     <>
-      {menuOpen && !isAccountRoute ? (
+      {menuRendered ? (
         <button
           type="button"
           aria-label={tCommon('close')}
-          className="fixed inset-0 z-[calc(var(--z-header)-1)] cursor-default bg-ink/25 lg:hidden"
+          className={cn(
+            'fixed inset-0 z-[calc(var(--z-header)-1)] cursor-default bg-ink/25 lg:hidden',
+            'transition-opacity ease-[var(--ease-out-premium)] motion-reduce:transition-none',
+            menuVisible ? 'opacity-100' : 'opacity-0',
+          )}
+          style={{
+            transitionDuration: `${BURGER_MENU_TRANSITION_MS}ms`,
+          }}
           onClick={() => setMenuOpen(false)}
         />
       ) : null}
@@ -242,7 +259,7 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
                 style={{ transitionDuration: `${PILL_APPEAR_MS}ms` }}
                 variant="outline"
                 size="md"
-                aria-expanded={burgerOpen}
+                aria-expanded={burgerOpen || menuRendered}
                 aria-controls={isAccountRoute ? 'portal-mobile-nav' : 'mobile-nav'}
                 onClick={() => {
                   if (isAccountRoute) {
@@ -252,7 +269,7 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
                   setMenuOpen((open) => !open);
                 }}
               >
-                {burgerOpen ? (
+                {burgerOpen || menuRendered ? (
                   <X className="size-5" aria-hidden />
                 ) : (
                   <Menu className="size-5" aria-hidden />
@@ -261,13 +278,17 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
             </div>
           </div>
 
-          {menuOpen && !isAccountRoute ? (
-            <SiteHeaderMobileNav
-              navItems={NAV_HREFS}
-              pathname={pathname}
-              onClose={() => setMenuOpen(false)}
-              isNavActive={isNavActive}
-            />
+          {menuRendered ? (
+            <div style={burgerMotionStyle}>
+              <SiteHeaderMobileNav
+                navItems={NAV_HREFS}
+                pathname={pathname}
+                onClose={() => setMenuOpen(false)}
+                isNavActive={isNavActive}
+                visible={menuVisible}
+                className="duration-[var(--burger-menu-ms)]"
+              />
+            </div>
           ) : null}
         </div>
       </header>

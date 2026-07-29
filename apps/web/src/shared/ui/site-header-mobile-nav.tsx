@@ -17,6 +17,9 @@ type SiteHeaderMobileNavProps = {
   pathname: string;
   onClose: () => void;
   isNavActive: (pathname: string, href: NavHref) => boolean;
+  /** Enter/exit motion — driven by parent `useDrawerTransition`. */
+  visible?: boolean | undefined;
+  className?: string | undefined;
 };
 
 /**
@@ -28,6 +31,8 @@ export const SiteHeaderMobileNav = ({
   pathname,
   onClose,
   isNavActive,
+  visible = true,
+  className,
 }: SiteHeaderMobileNavProps) => {
   const t = useTranslations('Nav');
   const tHome = useTranslations('HomePage');
@@ -36,8 +41,14 @@ export const SiteHeaderMobileNav = ({
     <div
       id="mobile-nav"
       className={cn(
-        'relative z-10 mt-1 rounded-[1.25rem] border border-header-border',
+        'relative z-10 mt-1 origin-top rounded-[1.25rem] border border-header-border',
         'bg-surface-elevated px-1 py-3 text-ink shadow-md lg:hidden',
+        'transition-[opacity,transform] ease-[var(--ease-out-premium)]',
+        'motion-reduce:transition-none',
+        visible
+          ? 'translate-y-0 scale-100 opacity-100'
+          : 'pointer-events-none -translate-y-2 scale-[0.98] opacity-0',
+        className,
       )}
     >
       <nav className="flex flex-col gap-1 text-sm" aria-label={t('main')}>

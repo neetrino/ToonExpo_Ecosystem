@@ -102,6 +102,40 @@ export const buildPublicNavItems = (
 ];
 
 /**
+ * Admin bottom nav — Home · Discover · Map · Profile (no QR / scanner).
+ */
+export const buildAdminNavItems = (isProfileActive: boolean): BottomNavItem[] => [
+  {
+    id: 'home',
+    href: '/',
+    labelKey: 'home',
+    Icon: Home,
+    match: isHomePath,
+  },
+  {
+    id: 'discover',
+    href: '/discover',
+    labelKey: 'discover',
+    Icon: Heart,
+    match: isDiscoverPath,
+  },
+  {
+    id: 'map',
+    href: '/expo',
+    labelKey: 'map',
+    Icon: Map,
+    match: isMapPath,
+  },
+  {
+    id: 'profile',
+    href: '/admin',
+    labelKey: 'profile',
+    Icon: UserRound,
+    match: () => isProfileActive,
+  },
+];
+
+/**
  * Builder bottom nav — same layout as user profile; center opens scanner sheet.
  */
 export const BUILDER_NAV_ITEMS: BottomNavItem[] = [

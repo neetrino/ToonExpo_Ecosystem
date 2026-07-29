@@ -9,6 +9,7 @@ import { BuyerQrSheet } from '@/features/buyer/components/buyer-qr-sheet';
 import { BuilderScannerSheet } from '@/features/builder/components/builder-scanner-sheet';
 import {
   BUILDER_NAV_ITEMS,
+  buildAdminNavItems,
   buildPublicNavItems,
   resolveBuyerProfileActive,
   type BottomNavId,
@@ -96,7 +97,11 @@ export const MobileBottomNav = () => {
       ? isAdminPortalPath(pathname)
       : resolveBuyerProfileActive(pathname);
 
-  const items = isBuilder ? BUILDER_NAV_ITEMS : buildPublicNavItems(profileHref, isProfileActive);
+  const items = isBuilder
+    ? BUILDER_NAV_ITEMS
+    : isAdmin
+      ? buildAdminNavItems(isProfileActive)
+      : buildPublicNavItems(profileHref, isProfileActive);
 
   const routeActiveIndex = items.findIndex((item) => item.match(pathname));
   const pendingIndex = pendingId ? items.findIndex((item) => item.id === pendingId) : -1;
@@ -217,7 +222,7 @@ export const MobileBottomNav = () => {
     <>
       {isBuilder ? (
         <BuilderScannerSheet open={sheetOpen} onClose={closeSheet} />
-      ) : (
+      ) : isAdmin ? null : (
         <BuyerQrSheet open={sheetOpen} onClose={closeSheet} />
       )}
       {/* Portal nav after sheets so DOM order matches z-index (nav above sheets). */}
