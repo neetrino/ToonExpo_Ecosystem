@@ -18,14 +18,25 @@ export type ProjectListRow = Prisma.ProjectGetPayload<{
 }>;
 
 /**
+ * Trim leading/trailing `-` without regex (avoids CodeQL ReDoS on `-+`).
+ */
+const trimEdgeDashes = (value: string): string => {
+  let start = 0;
+  let end = value.length;
+  while (start < end && value[start] === '-') {
+    start += 1;
+  }
+  while (end > start && value[end - 1] === '-') {
+    end -= 1;
+  }
+  return value.slice(start, end);
+};
+
+/**
  * Simple slugify: lowercase, non-alnum → `-`, trim edges.
  */
 export const slugifyDistrictName = (name: string): string => {
-  const slug = name
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+/, '')
-    .replace(/-+$/, '');
+  const slug = trimEdgeDashes(name.toLowerCase().replace(/[^a-z0-9]+/g, '-'));
   return slug.length > 0 ? slug : 'district';
 };
 
