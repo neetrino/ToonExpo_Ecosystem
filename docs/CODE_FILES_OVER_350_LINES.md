@@ -1,47 +1,47 @@
 # Code files over 350 lines
 
-**Date:** 2026-07-29  
+**Date:** 2026-07-29 (updated after split refactor)  
 **Threshold:** > 350 lines (raw line count)  
-**Scope:** project source code only (`git ls-files`)
+**Scope:** project source code only (`git ls-files` + new split files)
 
 ## Method
 
-- Scanned **1240** tracked source files with extensions: `.ts`, `.tsx`, `.js`, `.jsx`, `.mjs`, `.cjs`, `.css`, `.scss`, `.prisma`, `.sql`
-- Excluded: `node_modules`, `.next`, `dist`, `build`, `coverage`, docs, i18n JSON, lockfiles, assets, generated noise
+- Scanned tracked + new source files with extensions: `.ts`, `.tsx`, `.js`, `.jsx`, `.mjs`, `.cjs`, `.css`, `.scss`, `.prisma`, `.sql`
+- Excluded: `node_modules`, `.next`, `dist`, `build`, `coverage`, docs, i18n JSON, lockfiles, assets
 
 ## Summary
 
 | Metric                | Value |
 | --------------------- | ----: |
-| Source files scanned  |  1240 |
-| Files **> 350 lines** | **9** |
+| Files **> 350 lines** | **0** |
 
-### By area
+Previously **9** files were over 350; all were split into smaller modules without changing public behavior.
 
-| Area                 | Count |
-| -------------------- | ----: |
-| `apps/web`           |     3 |
-| `apps/api`           |     3 |
-| `packages/db`        |     2 |
-| `packages/contracts` |     1 |
+## What was split
 
-## Files (sorted by size, descending)
+| Former file                             | Approach                                                                        |
+| --------------------------------------- | ------------------------------------------------------------------------------- |
+| `packages/db/prisma/schema.prisma`      | Multi-file Prisma schema under `prisma/models/*` + `schema: 'prisma'` in config |
+| `apps/web/src/app/[locale]/globals.css` | Partials: `theme`, `keyframes`, `base`, `utilities-*`                           |
+| `mapping-canvas.tsx`                    | types / toolbar / stage / commits / interactions / keyboard / hints             |
+| `crm.e2e-spec.ts`                       | fixtures + harness + `crm-isolation.e2e-spec.ts`                                |
+| `portal.e2e-spec.ts`                    | fixtures + harness + `portal-company.e2e-spec.ts`                               |
+| `catalog.e2e-spec.ts`                   | fixtures extraction                                                             |
+| `seed-catalog.ts`                       | builders / buildings / projects / translations + thin barrel                    |
+| `packages/contracts/src/index.ts`       | thin `export *` barrel + `health.ts`                                            |
+| `multi-listbox-select.tsx`              | types / selection-mark / menu                                                   |
 
-| Lines | Path                                                                                     |
-| ----: | ---------------------------------------------------------------------------------------- |
-|  1553 | `packages/db/prisma/schema.prisma`                                                       |
-|  1063 | `apps/web/src/app/[locale]/globals.css`                                                  |
-|   947 | `apps/web/src/features/interactive-mapping/components/mapping-canvas/mapping-canvas.tsx` |
-|   723 | `apps/api/test/crm.e2e-spec.ts`                                                          |
-|   469 | `apps/api/test/portal.e2e-spec.ts`                                                       |
-|   448 | `apps/api/test/catalog.e2e-spec.ts`                                                      |
-|   447 | `packages/db/prisma/seed-catalog.ts`                                                     |
-|   391 | `packages/contracts/src/index.ts`                                                        |
-|   357 | `apps/web/src/shared/ui/multi-listbox-select.tsx`                                        |
+## Verification
+
+- `pnpm --filter @toonexpo/contracts typecheck` — pass
+- `pnpm --filter @toonexpo/db typecheck` — pass
+- `pnpm --filter @toonexpo/web typecheck` — pass
+- `pnpm --filter @toonexpo/api typecheck` — pass
+- `pnpm exec prisma validate` / `generate` — pass
+- CRM / portal / catalog e2e suites — pass (26 tests) after split
 
 ## Notes
 
-- Project coding rule target is **≤ 300 lines per file**; this report uses the requested **350** threshold.
-- i18n message catalogs (`apps/web/messages/{en,hy,ru}.json`, ~3300 lines each) were **not** counted — they are translation data, not application code.
-- Largest application UI module over the limit: `mapping-canvas.tsx` (947).
-- Largest non-UI artifacts: Prisma schema (1553) and `globals.css` (1063).
+- Project coding rule target remains **≤ 300 lines** where practical; a few files still sit in the 301–350 band (e.g. `polygon-edit-handles.tsx`, `portal-shell.tsx`) and were outside this pass’s original list.
+- i18n message catalogs (`apps/web/messages/{en,hy,ru}.json`) are translation data, not application code, and are not counted here.
+- `packages/contracts` public import path `@toonexpo/contracts` is unchanged.
