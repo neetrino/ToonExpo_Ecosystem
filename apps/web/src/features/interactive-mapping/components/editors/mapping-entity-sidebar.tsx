@@ -18,8 +18,8 @@ export type MappingEntitySidebarProps = {
   dirtyIds: Set<string>;
   pending: boolean;
   message: string | null;
-  emptyHint?: string;
-  footer?: ReactNode;
+  emptyHint?: string | undefined;
+  footer?: ReactNode | undefined;
   onSelect: (id: string) => void;
   onLabelChange: (id: string, label: string) => void;
   onSave: () => void;

@@ -815,7 +815,6 @@ export const MappingCanvas = forwardRef<MappingCanvasHandle, MappingCanvasProps>
             }}
             onDragStart={(event) => event.preventDefault()}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={imageUrl}
               alt="Mapping canvas"

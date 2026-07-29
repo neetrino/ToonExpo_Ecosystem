@@ -24,9 +24,9 @@ export type MappingEditorShellProps = {
   viewBoxHeight: number;
   initialEntities: MappingEditorEntity[];
   listTitle: string;
-  toolPreset?: 'basic' | 'floors';
-  emptyHint?: string;
-  sidebarFooter?: ReactNode;
+  toolPreset?: 'basic' | 'floors' | undefined;
+  emptyHint?: string | undefined;
+  sidebarFooter?: ReactNode | undefined;
   onAfterSave?: (() => void) | undefined;
 };
 
