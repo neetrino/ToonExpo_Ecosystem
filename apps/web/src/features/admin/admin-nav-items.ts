@@ -11,6 +11,7 @@ import {
   Layers,
   LayoutList,
   LineChart,
+  Map,
   Settings,
   Tags,
   Users,
@@ -25,6 +26,7 @@ export type AdminNavItemKey =
   | 'buildings'
   | 'floors'
   | 'apartments'
+  | 'interactiveMapping'
   | 'partners'
   | 'bankOffers'
   | 'serviceProviders'
@@ -71,6 +73,7 @@ export const ADMIN_PRIMARY_NAV_ITEMS: AdminNavItem[] = [
     icon: FolderKanban,
     children: ADMIN_PROJECT_CHILD_NAV_ITEMS,
   },
+  { href: '/admin/interactive-mapping', key: 'interactiveMapping', icon: Map },
   { href: '/admin/partners', key: 'partners', icon: Handshake },
   { href: '/admin/bank-offers', key: 'bankOffers', icon: Landmark },
   {

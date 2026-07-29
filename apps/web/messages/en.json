@@ -1174,6 +1174,7 @@
       "buildings": "Building",
       "floors": "Floor",
       "apartments": "Apartment",
+      "interactiveMapping": "Interactive mapping",
       "partners": "Partners",
       "bankOffers": "Bank offers",
       "serviceProviders": "Service providers",
