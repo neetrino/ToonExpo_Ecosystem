@@ -1,6 +1,5 @@
 'use client';
 
-import { Menu, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
@@ -12,11 +11,27 @@ import {
   isNavbarControlledPortalPath,
 } from '@/shared/ui/account-mobile-nav-controller';
 import { BrandLogo } from '@/shared/ui/brand-logo';
-import { lockBodyScroll, unlockBodyScroll } from '@/shared/ui/body-scroll-lock';
+import { BurgerMenuIcon } from '@/shared/ui/burger-menu-icon';
+import { lockBodyScrollSoft, unlockBodyScrollSoft } from '@/shared/ui/body-scroll-lock';
 import { cn } from '@/shared/ui/cn';
 import { IconButton } from '@/shared/ui/icon-button';
 import { LocaleSwitcher } from '@/shared/ui/locale-switcher';
 import { ProfileMenu } from '@/shared/ui/profile-menu';
+import {
+  BURGER_BACKDROP_ENTER_MS,
+  BURGER_BACKDROP_EXIT_MS,
+  BURGER_MENU_ENTER_MS,
+  BURGER_MENU_EXIT_MS,
+  HEADER_HEIGHT_CLASS,
+  HEADER_SPACER_CLASS,
+  isSiteHeaderNavActive,
+  PILL_APPEAR_MS,
+  PILL_CONTENT_INSET_PX,
+  PILL_EDGE_INSET_CLASS,
+  PILL_TOP_OFFSET_CLASS,
+  SCROLL_PILL_THRESHOLD_PX,
+  SITE_HEADER_NAV_HREFS,
+} from '@/shared/ui/site-header.constants';
 import { SiteHeaderMobileNav } from '@/shared/ui/site-header-mobile-nav';
 import { useDrawerTransition } from '@/shared/ui/use-drawer-transition';
 
@@ -26,34 +41,8 @@ type SiteHeaderProps = {
   variant?: 'solid' | 'transparent' | undefined;
 };
 
-const NAV_HREFS = [
-  { href: '/apartments' as const, key: 'buy' as const },
-  { href: '/projects' as const, key: 'projects' as const },
-  { href: '/developments' as const, key: 'newDevelopments' as const },
-  { href: '/builders' as const, key: 'builders' as const },
-  { href: '/partners' as const, key: 'partners' as const },
-  { href: '/mortgage' as const, key: 'mortgage' as const },
-];
-
-/** ma-marie `HEADER_HOME_SCROLL_THRESHOLD_PX`. */
-const SCROLL_PILL_THRESHOLD_PX = 12;
-/** ma-marie `HEADER_PILL_APPEAR_DURATION_MS`. */
-const PILL_APPEAR_MS = 500;
-/** Burger menu open/close — synced with pill appear. */
-const BURGER_MENU_TRANSITION_MS = PILL_APPEAR_MS;
-/** Inward nudge of logo / actions once the pill is visible. */
-const PILL_CONTENT_INSET_PX = 22;
-/** How far the pill pulls in from page-container edges. */
-const PILL_EDGE_INSET_CLASS = 'left-4 right-4 sm:left-5 sm:right-5 lg:left-6 lg:right-6';
-/** Float gap above the pill — keeps pill height = navbar (h-16). */
-const PILL_TOP_OFFSET_CLASS = 'top-2';
-const HEADER_HEIGHT_CLASS = 'h-16';
-/** Spacer under fixed pill chrome (safe-area + top inset + bar). */
-const HEADER_SPACER_CLASS = 'h-[calc(4.5rem+env(safe-area-inset-top,0px))]';
-
 /**
- * Public header — ma-marie style: full-bleed over home hero, frosted pill
- * on scroll (home) or always (other public pages).
+ * Public header — ma-marie style pill on scroll; burger motion is decoupled from pill chrome.
  */
 export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) => {
   const t = useTranslations('Nav');
@@ -66,12 +55,13 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
   const isTransparentStart = variant === 'transparent';
   const isAccountRoute = isNavbarControlledPortalPath(pathname);
   const burgerOpen = isAccountRoute ? accountNavOpen : menuOpen;
+  const publicMenuOpen = menuOpen && !isAccountRoute;
   const { rendered: menuRendered, visible: menuVisible } = useDrawerTransition(
-    menuOpen && !isAccountRoute,
-    BURGER_MENU_TRANSITION_MS,
+    publicMenuOpen,
+    BURGER_MENU_EXIT_MS,
   );
-  /** Solid pages always use the home pill chrome; home reveals it on scroll. */
-  const pillVisible = !isTransparentStart || showPill || burgerOpen || menuRendered;
+  /** Pill follows scroll / solid pages only — never the burger. */
+  const pillVisible = !isTransparentStart || showPill;
   const isOverHero = isTransparentStart && !pillVisible;
   const needsSpacer = !isTransparentStart;
 
@@ -95,21 +85,27 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
     }
 
     const update = (): void => {
+      // Hard/soft locks can report scrollY=0 — don’t collapse an already-open pill
+      // while the burger menu is showing.
+      if (menuOpen && !isAccountRoute) {
+        return;
+      }
       setShowPill(window.scrollY > SCROLL_PILL_THRESHOLD_PX);
     };
 
     update();
     window.addEventListener('scroll', update, { passive: true });
     return () => window.removeEventListener('scroll', update);
-  }, [isTransparentStart]);
+  }, [isTransparentStart, menuOpen, isAccountRoute]);
 
   useEffect(() => {
     if (!menuRendered || isAccountRoute) {
       return;
     }
-    lockBodyScroll();
+    // Soft lock keeps window.scrollY stable so the pill doesn’t flicker closed.
+    lockBodyScrollSoft();
     return () => {
-      unlockBodyScroll();
+      unlockBodyScrollSoft();
     };
   }, [menuRendered, isAccountRoute]);
 
@@ -126,9 +122,6 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
     transform: pillVisible ? `translateX(-${PILL_CONTENT_INSET_PX}px)` : 'translateX(0)',
     transitionDuration: `${PILL_APPEAR_MS}ms`,
   };
-  const burgerMotionStyle = {
-    ['--burger-menu-ms' as string]: `${BURGER_MENU_TRANSITION_MS}ms`,
-  };
 
   return (
     <>
@@ -137,12 +130,14 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
           type="button"
           aria-label={tCommon('close')}
           className={cn(
-            'fixed inset-0 z-[calc(var(--z-header)-1)] cursor-default bg-ink/25 lg:hidden',
-            'transition-opacity ease-[var(--ease-out-premium)] motion-reduce:transition-none',
+            'fixed inset-0 z-[calc(var(--z-header)-1)] cursor-default lg:hidden',
+            'bg-ink/35 backdrop-blur-[2px]',
+            'transition-[opacity,backdrop-filter] ease-[var(--ease-out-premium)]',
+            'motion-reduce:transition-none motion-reduce:backdrop-blur-none',
             menuVisible ? 'opacity-100' : 'opacity-0',
           )}
           style={{
-            transitionDuration: `${BURGER_MENU_TRANSITION_MS}ms`,
+            transitionDuration: `${menuVisible ? BURGER_BACKDROP_ENTER_MS : BURGER_BACKDROP_EXIT_MS}ms`,
           }}
           onClick={() => setMenuOpen(false)}
         />
@@ -159,7 +154,8 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
       >
         <div
           className={cn(
-            'page-container relative transition-[padding] ease-out',
+            'page-container relative transition-[padding] ease-[var(--ease-out-premium)]',
+            'motion-reduce:transition-none',
             pillVisible && 'pt-2',
           )}
           style={{ transitionDuration: `${PILL_APPEAR_MS}ms` }}
@@ -171,7 +167,7 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
               PILL_TOP_OFFSET_CLASS,
               PILL_EDGE_INSET_CLASS,
               'shadow-[0_4px_24px_rgb(9_43_68/0.1)]',
-              'transition-opacity ease-out',
+              'transition-opacity ease-[var(--ease-out-premium)] motion-reduce:transition-none',
             )}
             style={{
               opacity: pillVisible ? 1 : 0,
@@ -183,7 +179,7 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
             className={cn('relative z-10 flex items-center gap-4 sm:gap-6', HEADER_HEIGHT_CLASS)}
           >
             <div
-              className="flex shrink-0 items-center transition-transform ease-out"
+              className="flex shrink-0 items-center transition-transform ease-[var(--ease-out-premium)] motion-reduce:transition-none"
               style={contentInsetStyle}
             >
               <BrandLogo
@@ -198,21 +194,21 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
             <nav
               className={cn(
                 'hidden min-w-0 flex-1 items-center justify-center gap-6 lg:flex xl:gap-7',
-                'transition-colors ease-out',
+                'transition-colors ease-[var(--ease-out-premium)]',
                 isOverHero ? 'text-on-dark/80' : 'text-header-muted',
               )}
               style={{ transitionDuration: `${PILL_APPEAR_MS}ms` }}
               aria-label={t('main')}
             >
-              {NAV_HREFS.map((item) => {
-                const active = isNavActive(pathname, item.href);
+              {SITE_HEADER_NAV_HREFS.map((item) => {
+                const active = isSiteHeaderNavActive(pathname, item.href);
                 return (
                   <Link
                     key={item.href}
                     href={item.href}
                     className={cn(
                       'whitespace-nowrap text-sm leading-5',
-                      'transition-colors ease-out',
+                      'transition-colors ease-[var(--ease-out-premium)]',
                       active
                         ? isOverHero
                           ? 'font-bold text-on-dark'
@@ -231,7 +227,7 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
             </nav>
 
             <div
-              className="ml-auto flex shrink-0 items-center gap-2.5 transition-transform ease-out sm:gap-3 lg:ml-0"
+              className="ml-auto flex shrink-0 items-center gap-2.5 transition-transform ease-[var(--ease-out-premium)] motion-reduce:transition-none sm:gap-3 lg:ml-0"
               style={actionsInsetStyle}
             >
               <div className="hidden lg:block">
@@ -252,11 +248,15 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
               <IconButton
                 label={t('menu')}
                 className={cn(
-                  'rounded-full transition-[background-color,border-color,color] ease-out',
+                  'rounded-full transition-[background-color,border-color,color,transform]',
+                  'ease-[var(--ease-out-premium)] active:scale-95',
                   isAccountRoute ? 'md:hidden' : 'lg:hidden',
                   isOverHero && 'border-white/30 bg-white/10 text-on-dark hover:bg-white/15',
                 )}
-                style={{ transitionDuration: `${PILL_APPEAR_MS}ms` }}
+                style={{
+                  transitionDuration: `${PILL_APPEAR_MS}ms`,
+                  ['--burger-icon-ms' as string]: `${burgerOpen ? BURGER_MENU_ENTER_MS : BURGER_MENU_EXIT_MS}ms`,
+                }}
                 variant="outline"
                 size="md"
                 aria-expanded={burgerOpen || menuRendered}
@@ -269,24 +269,25 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
                   setMenuOpen((open) => !open);
                 }}
               >
-                {burgerOpen || menuRendered ? (
-                  <X className="size-5" aria-hidden />
-                ) : (
-                  <Menu className="size-5" aria-hidden />
-                )}
+                {/* Follow open intent immediately — don’t wait for menu exit unmount. */}
+                <BurgerMenuIcon open={burgerOpen} />
               </IconButton>
             </div>
           </div>
 
           {menuRendered ? (
-            <div style={burgerMotionStyle}>
+            <div
+              className={cn('absolute top-full z-10 mt-2 lg:hidden', PILL_EDGE_INSET_CLASS)}
+              style={{
+                ['--burger-menu-ms' as string]: `${menuVisible ? BURGER_MENU_ENTER_MS : BURGER_MENU_EXIT_MS}ms`,
+              }}
+            >
               <SiteHeaderMobileNav
-                navItems={NAV_HREFS}
+                navItems={SITE_HEADER_NAV_HREFS}
                 pathname={pathname}
                 onClose={() => setMenuOpen(false)}
-                isNavActive={isNavActive}
+                isNavActive={isSiteHeaderNavActive}
                 visible={menuVisible}
-                className="duration-[var(--burger-menu-ms)]"
               />
             </div>
           ) : null}
@@ -298,21 +299,4 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
       ) : null}
     </>
   );
-};
-
-const isNavActive = (pathname: string, href: (typeof NAV_HREFS)[number]['href']): boolean => {
-  if (href === '/apartments') {
-    return pathname === '/apartments' || pathname.startsWith('/apartments/');
-  }
-  if (href === '/projects') {
-    return pathname === '/projects' || pathname.startsWith('/projects/');
-  }
-  if (href === '/builders') {
-    return (
-      pathname === '/builders' ||
-      pathname.startsWith('/builders/') ||
-      pathname.startsWith('/developers/')
-    );
-  }
-  return pathname.startsWith(href);
 };
