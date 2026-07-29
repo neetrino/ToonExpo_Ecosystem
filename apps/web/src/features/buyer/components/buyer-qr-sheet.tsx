@@ -2,7 +2,7 @@
 
 import { ScanLine } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import { useMeQuery } from '@/features/auth/hooks/use-auth';
@@ -115,7 +115,6 @@ export const BuyerQrSheet = ({ open, onClose }: BuyerQrSheetProps) => {
   const t = useTranslations('Profile.qr');
   const tScanner = useTranslations('Profile.qr.scanner');
   const tCommon = useTranslations('Common');
-  const titleId = useId();
   const panelRef = useRef<HTMLDivElement>(null);
   const { rendered, visible } = useDrawerTransition(open, SIDE_SHEET_PANEL_TRANSITION_MS);
   const [host, setHost] = useState<HTMLElement | null>(null);
@@ -161,8 +160,7 @@ export const BuyerQrSheet = ({ open, onClose }: BuyerQrSheetProps) => {
   }
 
   const isScanner = mode === 'scanner';
-  const title = isScanner ? tScanner('title') : t('title');
-  const subtitle = isScanner ? tScanner('subtitle') : null;
+  const ariaLabel = isScanner ? tScanner('title') : t('title');
   const backdropOpacity = visible ? Math.max(0, 1 - dragY / 320) : 0;
 
   return createPortal(
@@ -197,7 +195,7 @@ export const BuyerQrSheet = ({ open, onClose }: BuyerQrSheetProps) => {
           ref={panelRef}
           role="dialog"
           aria-modal="true"
-          {...(isScanner ? { 'aria-labelledby': titleId } : { 'aria-label': title })}
+          aria-label={ariaLabel}
           className={cn(
             'pointer-events-auto touch-auto flex w-full max-w-lg flex-col',
             'rounded-t-[15px] border border-border bg-surface-elevated shadow-lg',
@@ -216,14 +214,6 @@ export const BuyerQrSheet = ({ open, onClose }: BuyerQrSheetProps) => {
           <div className="flex shrink-0 justify-center pt-2.5" aria-hidden>
             <span className="h-1 w-10 rounded-full bg-border-strong" />
           </div>
-          {isScanner ? (
-            <header className="shrink-0 px-5 pb-3 pt-2">
-              <h2 id={titleId} className="text-lg font-semibold text-ink">
-                {title}
-              </h2>
-              {subtitle ? <p className="mt-1 text-sm text-ink-secondary">{subtitle}</p> : null}
-            </header>
-          ) : null}
           <div
             className={cn(
               'px-5',

@@ -77,8 +77,8 @@ const isBuildingDetailRoute = (pathname: string): boolean => {
  * Public, portal, and auth pages use DesktopFluidFrame so desktop composition
  * scales like ma-marie. Auth keeps AuthPageShell (no public SiteHeader).
  *
- * Buyer account + public routes share one MobileBottomNav instance so the
- * selected thumb can glide when leaving Profile (no remount snap).
+ * One MobileBottomNav for public + buyer + builder + admin profiles so the
+ * selected thumb can glide (no remount snap) — same bar as user profile.
  */
 export const PublicChrome = ({ children }: PublicChromeProps) => {
   const pathname = usePathname();
@@ -95,15 +95,16 @@ export const PublicChrome = ({ children }: PublicChromeProps) => {
       ? 'transparent'
       : 'solid';
 
-  if (isAuthRoute(pathname) || isPortalRoute(pathname)) {
+  if (isAuthRoute(pathname)) {
     return <DesktopFluidFrame>{children}</DesktopFluidFrame>;
   }
 
+  const isPortal = isPortalRoute(pathname);
   const isAccountShell = isBuyerAccountShellPath(pathname);
 
   return (
-    <DesktopFluidFrame stageClassName="min-h-svh bg-canvas">
-      {isAccountShell ? (
+    <DesktopFluidFrame stageClassName={isPortal ? undefined : 'min-h-svh bg-canvas'}>
+      {isPortal || isAccountShell ? (
         children
       ) : (
         <>

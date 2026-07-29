@@ -215,12 +215,13 @@ export const MobileBottomNav = () => {
 
   return (
     <>
-      {host ? createPortal(nav, host) : null}
       {isBuilder ? (
         <BuilderScannerSheet open={sheetOpen} onClose={closeSheet} />
       ) : (
         <BuyerQrSheet open={sheetOpen} onClose={closeSheet} />
       )}
+      {/* Portal nav after sheets so DOM order matches z-index (nav above sheets). */}
+      {host ? createPortal(nav, host) : null}
     </>
   );
 };

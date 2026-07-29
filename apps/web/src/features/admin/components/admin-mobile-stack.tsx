@@ -10,10 +10,6 @@ import {
   prefersReducedMotion,
 } from '@/features/buyer/components/account/account-page-push';
 import { useAccountSheetEdgeSwipe } from '@/features/buyer/components/account/use-account-sheet-edge-swipe';
-import {
-  MobileBottomNav,
-  MobileBottomNavSpacer,
-} from '@/features/catalog/components/mobile-bottom-nav';
 import { usePathname, useRouter } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 import { MOBILE_BOTTOM_NAV_SHEET_PB_CLASS } from '@/shared/ui/mobile-bottom-nav-clearance';
@@ -165,7 +161,6 @@ export const AdminMobileStack = ({ name, email, children }: AdminMobileStackProp
     <AdminMobileStackProvider value={{ onBack: showOverlay ? goBack : null }}>
       <div className="md:hidden">
         <AdminMobileHub name={name} email={email} />
-        <MobileBottomNavSpacer />
       </div>
 
       <div
@@ -196,10 +191,6 @@ export const AdminMobileStack = ({ name, email, children }: AdminMobileStackProp
           ) : null}
           {children}
         </div>
-      </div>
-
-      <div className="md:hidden">
-        <MobileBottomNav />
       </div>
     </AdminMobileStackProvider>
   );
