@@ -1,0 +1,184 @@
+@layer base {
+  html {
+    height: 100%;
+    overflow-x: clip;
+    scrollbar-gutter: stable;
+  }
+
+  /**
+   * Desktop fluid scale (ma-marie pattern): design at 1440px, zoom to viewport.
+   * Mobile keeps scale=1 so svh math and native layout stay correct.
+   */
+  @media (min-width: 1024px) {
+    :root {
+      --desktop-layout-scale: calc(100vw / var(--desktop-layout-design-width));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  body {
+    min-height: 100%;
+    overflow-x: clip;
+    background:
+      radial-gradient(ellipse 120% 60% at 50% -10%, rgb(26 143 152 / 0.05), transparent 55%),
+      var(--color-background);
+    color: var(--color-ink);
+    font-family: var(--font-ui);
+    font-size: 0.96875rem;
+    font-weight: 400;
+    letter-spacing: -0.011em;
+    line-height: 1.65;
+    font-feature-settings:
+      'kern' 1,
+      'liga' 1,
+      'calt' 1;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display);
+    font-weight: 650;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    color: var(--color-ink);
+    text-wrap: balance;
+  }
+
+  h1 {
+    font-size: clamp(2rem, 4.2vw, 3rem);
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+  }
+
+  h2 {
+    font-size: clamp(1.5rem, 2.8vw, 2rem);
+    letter-spacing: -0.032em;
+  }
+
+  h3 {
+    font-size: clamp(1.2rem, 2vw, 1.45rem);
+    letter-spacing: -0.025em;
+  }
+
+  h4 {
+    font-size: 1.0625rem;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  a {
+    text-underline-offset: 0.18em;
+  }
+
+  /**
+   * Clickable controls — pointer everywhere interactive (buttons often default to arrow).
+   */
+  a,
+  button,
+  summary,
+  label[for],
+  select,
+  input[type='button'],
+  input[type='submit'],
+  input[type='reset'],
+  input[type='checkbox'],
+  input[type='radio'],
+  input[type='file'],
+  input[type='image'],
+  [role='button'],
+  [role='link'],
+  [role='tab'],
+  [role='option'],
+  [role='menuitem'],
+  [role='menuitemcheckbox'],
+  [role='menuitemradio'],
+  [role='switch'],
+  [role='checkbox'],
+  [role='radio'] {
+    cursor: pointer;
+  }
+
+  button:disabled,
+  select:disabled,
+  input:disabled,
+  [aria-disabled='true'],
+  [aria-busy='true'] {
+    cursor: not-allowed;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--color-brand) 28%, white);
+    color: var(--color-ink);
+  }
+
+  /* Luxury native selects site-wide */
+  select {
+    appearance: none;
+    background-color: var(--color-surface-elevated);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23555c68' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.85rem center;
+    background-size: 0.9rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    color: var(--color-ink);
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: inherit;
+    padding-inline-end: 2.5rem;
+    transition:
+      border-color var(--duration-fast) var(--ease-out-premium),
+      box-shadow var(--duration-fast) var(--ease-out-premium),
+      background-color var(--duration-fast) var(--ease-out-premium);
+  }
+
+  select:hover:not(:disabled) {
+    border-color: var(--color-border-strong);
+    background-color: var(--color-surface-elevated);
+  }
+
+  select:focus-visible {
+    border-color: var(--color-brand);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-brand) 20%, transparent);
+    outline: none;
+  }
+
+  select:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  select option {
+    background: var(--color-surface-elevated);
+    color: var(--color-ink);
+  }
+}

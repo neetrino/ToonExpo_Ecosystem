@@ -1,0 +1,146 @@
+@keyframes locale-dropdown-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.35rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/**
+ * Opacity-only: any non-none `transform` on this wrapper becomes a containing
+ * block and breaks `position: fixed|sticky` for role portal headers inside it.
+ */
+@keyframes page-enter {
+  from {
+    opacity: 0.96;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/** Mobile account sub-pages: push in from the right (hub → detail). */
+@keyframes account-page-push-in {
+  from {
+    opacity: 0.92;
+    transform: translate3d(100%, 0, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+/** Mobile account sub-pages: reverse exit to the right (detail → hub). */
+@keyframes account-page-push-out {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+
+  to {
+    opacity: 0.92;
+    transform: translate3d(100%, 0, 0);
+  }
+}
+
+/* MaMarie delete confirmation modal — enter/exit */
+@keyframes admin-delete-modal-backdrop-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes admin-delete-modal-backdrop-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes admin-delete-modal-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes admin-delete-modal-panel-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+}
+
+@keyframes banner-media-drift {
+  from {
+    transform: scale(1.04) translate3d(0, 0, 0);
+  }
+
+  to {
+    transform: scale(1.1) translate3d(-1.2%, -0.6%, 0);
+  }
+}
+
+/* Slow cinematic camera path — continuous, video-like hero motion */
+@keyframes hero-cinematic {
+  0% {
+    transform: scale(1.12) translate3d(-3.2%, 1.4%, 0);
+  }
+
+  20% {
+    transform: scale(1.18) translate3d(1.1%, -2.2%, 0);
+  }
+
+  40% {
+    transform: scale(1.15) translate3d(3.4%, 0.6%, 0);
+  }
+
+  60% {
+    transform: scale(1.2) translate3d(0.4%, -1.8%, 0);
+  }
+
+  80% {
+    transform: scale(1.14) translate3d(-2.6%, -0.4%, 0);
+  }
+
+  100% {
+    transform: scale(1.12) translate3d(-3.2%, 1.4%, 0);
+  }
+}
+
+@keyframes hero-haze-drift {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: translate3d(-6%, 0, 0) scale(1.05);
+  }
+
+  50% {
+    opacity: 0.55;
+    transform: translate3d(8%, -2%, 0) scale(1.12);
+  }
+}

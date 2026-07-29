@@ -1,0 +1,231 @@
+/// Exclusive platform account type (one user = one type).
+enum AccountType {
+  buyer
+  platform_admin
+  entrance_staff
+  company_member
+}
+
+enum UserStatus {
+  invited
+  active
+  inactive
+  blocked
+}
+
+/// Business organization type (not a user account type).
+enum CompanyType {
+  builder
+  partner
+  bank
+  service
+}
+
+enum CompanyStatus {
+  active
+  inactive
+  pending
+}
+
+enum CompanySource {
+  self_registered
+  admin
+  bos
+}
+
+/// Role inside a company (v1). Applies when accountType = company_member.
+enum CompanyMemberRole {
+  company_admin
+  member
+}
+
+enum CompanyMemberStatus {
+  active
+  inactive
+  removed
+}
+
+/// Purpose of a one-time account access token (set-password / invite / reset).
+enum AccountAccessTokenPurpose {
+  set_password
+  invite
+  password_reset
+}
+
+model User {
+  id            String      @id @default(cuid())
+  name          String
+  email         String      @unique
+  phone         String?
+  /// Null until set-password (provisioned / invited users).
+  passwordHash  String?     @map("password_hash")
+  /// Exclusive account type used by NestJS RBAC.
+  accountType   AccountType @default(buyer) @map("account_type")
+  status        UserStatus  @default(active)
+  defaultLocale String?     @map("default_locale")
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+
+  sessions           Session[]
+  buyerProfile       BuyerProfile?
+  companyMembership  CompanyMember?
+  invitedMemberships CompanyMember[]      @relation("CompanyMemberInviter")
+  accessTokens       AccountAccessToken[]
+  createdRequests    Request[]            @relation("RequestCreatedBy")
+  assignedCrmDeals   CrmDeal[]            @relation("CrmDealAssignee")
+  createdCrmDeals    CrmDeal[]            @relation("CrmDealCreatedBy")
+  crmNotes           CrmNote[]
+  createdCrmActivities CrmFollowUpActivity[] @relation("CrmActivityCreatedBy")
+  assignedCrmActivities CrmFollowUpActivity[] @relation("CrmActivityAssignee")
+  createdApartmentLinks CrmDealApartmentLink[] @relation("CrmApartmentLinkCreatedBy")
+  evaluatedReadinessAssessments ReadinessAssessment[] @relation("ReadinessAssessmentEvaluator")
+  evaluatedReadinessScores      ReadinessScore[]      @relation("ReadinessScoreEvaluator")
+  createdReadinessRecommendations ReadinessRecommendation[] @relation("ReadinessRecommendationCreator")
+  createdReadinessRequiredActions ReadinessRequiredAction[] @relation("ReadinessRequiredActionCreator")
+  authoredReadinessInternalNotes  ReadinessInternalNote[]   @relation("ReadinessInternalNoteAuthor")
+  createdBankOffers               BankOffer[]               @relation("BankOfferCreator")
+  updatedBankOffers               BankOffer[]               @relation("BankOfferUpdater")
+  createdServiceProviders         ServiceProvider[]         @relation("ServiceProviderCreator")
+  updatedServiceProviders         ServiceProvider[]         @relation("ServiceProviderUpdater")
+  createdVenueMaps                VenueMap[]                @relation("VenueMapCreator")
+  updatedVenueMaps                VenueMap[]                @relation("VenueMapUpdater")
+  createdVisualMapCanvases        VisualMapCanvas[]         @relation("VisualMapCanvasCreator")
+  updatedVisualMapCanvases        VisualMapCanvas[]         @relation("VisualMapCanvasUpdater")
+  createdVisualHotspots           VisualHotspot[]           @relation("VisualHotspotCreator")
+  updatedVisualHotspots           VisualHotspot[]           @relation("VisualHotspotUpdater")
+  checkInRecords                  CheckInRecord[]           @relation("CheckInStaff")
+
+  @@index([accountType])
+  @@map("users")
+}
+
+model Session {
+  id                String    @id @default(cuid())
+  userId            String    @map("user_id")
+  tokenHash         String    @unique @map("token_hash")
+  idleExpiresAt     DateTime  @map("idle_expires_at")
+  absoluteExpiresAt DateTime  @map("absolute_expires_at")
+  lastSeenAt        DateTime? @map("last_seen_at")
+  revokedAt         DateTime? @map("revoked_at")
+  ipAddress         String?   @map("ip_address")
+  userAgent         String?   @map("user_agent")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([idleExpiresAt])
+  @@index([absoluteExpiresAt])
+  @@map("sessions")
+}
+
+model BuyerProfile {
+  id        String   @id @default(cuid())
+  userId    String   @unique @map("user_id")
+  name      String
+  phone     String
+  email     String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  qrCode         QrCode?
+  requests       Request[]
+  crmDeals       CrmDeal[]
+  checkInRecords CheckInRecord[]
+  favorites      BuyerFavorite[]
+
+  @@map("buyer_profiles")
+}
+
+/// Polymorphic favorite target (v1: project | apartment).
+enum FavoriteTargetType {
+  project
+  apartment
+
+  @@map("favorite_target_type")
+}
+
+/// Buyer-saved project or apartment. targetId has no FK so domain deletes are not blocked.
+model BuyerFavorite {
+  id             String             @id @default(cuid())
+  buyerProfileId String             @map("buyer_profile_id")
+  targetType     FavoriteTargetType @map("target_type")
+  targetId       String             @map("target_id")
+  createdAt      DateTime           @default(now()) @map("created_at")
+
+  buyerProfile BuyerProfile @relation(fields: [buyerProfileId], references: [id], onDelete: Cascade)
+
+  @@unique([buyerProfileId, targetType, targetId])
+  @@index([buyerProfileId, createdAt])
+  @@map("buyer_favorites")
+}
+
+model Company {
+  id           String        @id @default(cuid())
+  name         String
+  /// Public builder/company blurb (Armenian canonical; localized via Translation).
+  description  String?
+  type         CompanyType
+  status       CompanyStatus @default(pending)
+  source       CompanySource
+  bosCompanyId String?       @map("bos_company_id")
+  /// Optional public logo (MediaAsset URL metadata only in this sprint).
+  logoMediaId  String?       @map("logo_media_id")
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @updatedAt @map("updated_at")
+
+  members     CompanyMember[]
+  logoMedia   MediaAsset?     @relation("CompanyLogo", fields: [logoMediaId], references: [id], onDelete: SetNull)
+  ownedMedia       MediaAsset[]      @relation("MediaOwnerCompany")
+  visualMapCanvases VisualMapCanvas[]
+  projects    Project[]
+  requests             Request[]
+  crmDeals             CrmDeal[]
+  readinessAssessments ReadinessAssessment[]
+  partnerCompany       PartnerCompany?
+  boothAssignments     BoothAssignment[]
+
+  @@unique([bosCompanyId])
+  @@index([type])
+  @@index([status])
+  @@map("companies")
+}
+
+model CompanyMember {
+  id              String              @id @default(cuid())
+  companyId       String              @map("company_id")
+  userId          String              @unique @map("user_id")
+  role            CompanyMemberRole
+  status          CompanyMemberStatus @default(active)
+  invitedByUserId String?             @map("invited_by_user_id")
+  joinedAt        DateTime?           @map("joined_at")
+  createdAt       DateTime            @default(now()) @map("created_at")
+  updatedAt       DateTime            @updatedAt @map("updated_at")
+
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  invitedBy User?   @relation("CompanyMemberInviter", fields: [invitedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([companyId])
+  @@index([role])
+  @@map("company_members")
+}
+
+/// One-time set-password / invite tokens (schema only; issue/accept in provisioning sprint).
+model AccountAccessToken {
+  id        String                     @id @default(cuid())
+  userId    String                     @map("user_id")
+  purpose   AccountAccessTokenPurpose
+  tokenHash String                     @unique @map("token_hash")
+  expiresAt DateTime                   @map("expires_at")
+  usedAt    DateTime?                  @map("used_at")
+  createdAt DateTime                   @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("account_access_tokens")
+}

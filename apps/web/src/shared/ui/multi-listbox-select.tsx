@@ -1,57 +1,13 @@
 'use client';
 
-import { Check, ChevronDown } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { useEffect, useId, useRef, useState } from 'react';
 
 import { HeroFilterTrigger } from '@/features/catalog/components/hero-filter-trigger';
-import {
-  HERO_FILTER_CHECK_CLASS,
-  HERO_FILTER_OPTION_BASE_CLASS,
-  HERO_FILTER_PANEL_CLASS,
-  heroFilterOptionStateClass,
-} from '@/features/catalog/components/hero-filter-menu-styles';
 import { blurActiveElementAfterEscClose } from '@/shared/ui/blur-active-element';
 import { cn } from '@/shared/ui/cn';
-import { DropdownPortal } from '@/shared/ui/dropdown-portal';
-import type { ListboxOption } from '@/shared/ui/listbox-select';
-
-type MultiListboxSelectProps = {
-  /** Empty array = All (no filter). */
-  values: readonly string[];
-  options: readonly ListboxOption[];
-  onChange: (values: string[]) => void;
-  allLabel: string;
-  selectedCountLabel: (count: number) => string;
-  'aria-label': string;
-  className?: string | undefined;
-  id?: string | undefined;
-  disabled?: boolean | undefined;
-  /** `plain` = hero search; `field` = bordered form control. */
-  variant?: 'plain' | 'field' | undefined;
-  /** `full` stretches; `fit` matches content width. */
-  size?: 'full' | 'fit' | undefined;
-  /**
-   * When set with `variant="plain"`, renders the mobile hero filter block
-   * (label + value) and collapses to the plain trigger on `lg+`.
-   */
-  heroBlock?:
-    | {
-        label: string;
-      }
-    | undefined;
-};
-
-const SelectionMark = ({ checked }: { checked: boolean }) => (
-  <span
-    className={cn(
-      HERO_FILTER_CHECK_CLASS.box,
-      checked ? HERO_FILTER_CHECK_CLASS.checked : HERO_FILTER_CHECK_CLASS.unchecked,
-    )}
-    aria-hidden
-  >
-    {checked ? <Check className="size-3" strokeWidth={3} /> : null}
-  </span>
-);
+import { MultiListboxMenu } from '@/shared/ui/multi-listbox-menu';
+import type { MultiListboxSelectProps } from '@/shared/ui/multi-listbox-select.types';
 
 /**
  * Multi-select listbox — empty selection means "All".
@@ -263,86 +219,21 @@ export const MultiListboxSelect = ({
         </button>
       )}
 
-      <DropdownPortal
-        open={open && !disabled}
+      <MultiListboxMenu
+        open={open}
+        disabled={disabled}
+        useHeroBlock={useHeroBlock}
         anchorRef={useHeroBlock ? rootRef : buttonRef}
-        exactWidth={useHeroBlock}
-        matchWidth={!useHeroBlock}
-      >
-        <div
-          ref={menuRef}
-          className={cn(
-            useHeroBlock
-              ? HERO_FILTER_PANEL_CLASS
-              : 'w-full overflow-hidden rounded-[16px] border border-header-border bg-surface-elevated shadow-lg',
-            'animate-[locale-dropdown-in_var(--duration-base)_var(--ease-out-premium)]',
-          )}
-        >
-          <ul
-            id={listId}
-            role="listbox"
-            aria-multiselectable="true"
-            aria-label={ariaLabel}
-            className="luxury-scrollbar max-h-64 w-full overflow-y-auto py-1.5"
-          >
-            <li role="none">
-              <button
-                type="button"
-                role="option"
-                aria-selected={isAll}
-                className={cn(
-                  HERO_FILTER_OPTION_BASE_CLASS,
-                  useHeroBlock
-                    ? heroFilterOptionStateClass(isAll)
-                    : isAll
-                      ? 'bg-brand-soft font-semibold text-brand-deep'
-                      : 'font-medium text-ink hover:bg-surface',
-                )}
-                onMouseDown={(event) => {
-                  event.preventDefault();
-                }}
-                onClick={(event) => {
-                  event.stopPropagation();
-                  toggleAll();
-                }}
-              >
-                <SelectionMark checked={isAll} />
-                <span className="min-w-0 flex-1 truncate">{allLabel}</span>
-              </button>
-            </li>
-            {options.map((option) => {
-              const active = isAll || values.includes(option.value);
-              return (
-                <li key={option.value} role="none">
-                  <button
-                    type="button"
-                    role="option"
-                    aria-selected={active}
-                    className={cn(
-                      HERO_FILTER_OPTION_BASE_CLASS,
-                      useHeroBlock
-                        ? heroFilterOptionStateClass(active)
-                        : active
-                          ? 'bg-brand-soft font-semibold text-brand-deep'
-                          : 'font-medium text-ink hover:bg-surface',
-                    )}
-                    onMouseDown={(event) => {
-                      event.preventDefault();
-                    }}
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      toggleOption(option.value);
-                    }}
-                  >
-                    <SelectionMark checked={active} />
-                    <span className="min-w-0 flex-1 truncate">{option.label}</span>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      </DropdownPortal>
+        menuRef={menuRef}
+        listId={listId}
+        ariaLabel={ariaLabel}
+        isAll={isAll}
+        allLabel={allLabel}
+        options={options}
+        values={values}
+        onToggleAll={toggleAll}
+        onToggleOption={toggleOption}
+      />
     </div>
   );
 };

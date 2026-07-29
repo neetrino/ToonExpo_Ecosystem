@@ -1,0 +1,94 @@
+/// Visual map canvas context (project / district / building / floor layer).
+enum VisualMapContextType {
+  project
+  district
+  building
+  floor
+}
+
+/// Hotspot navigation target on a visual map canvas.
+enum VisualHotspotTargetType {
+  district
+  building
+  floor
+  apartment
+}
+
+/// Point marker vs closed polygon region on a visual map.
+enum VisualHotspotShapeType {
+  point
+  polygon
+}
+
+/// How the hotspot can be interacted with on the public map.
+enum VisualHotspotInteractionType {
+  marker
+  polygon
+  both
+}
+
+/// Image canvas with clickable hotspots for real-estate navigation.
+model VisualMapCanvas {
+  id                String               @id @default(cuid())
+  ownerCompanyId    String               @map("owner_company_id")
+  projectId         String               @map("project_id")
+  contextType       VisualMapContextType @map("context_type")
+  /// Polymorphic reference: Project.id, District.id, Building.id, or Floor.id per contextType.
+  contextId         String               @map("context_id")
+  mediaAssetId      String               @map("media_asset_id")
+  title             String?
+  description       String?
+  publicationStatus PublicationStatus    @default(draft) @map("publication_status")
+  /// Only one primary canvas per (contextType, contextId) — enforced in service layer.
+  isPrimary         Boolean              @default(false) @map("is_primary")
+  sortOrder         Int                  @default(0) @map("sort_order")
+  createdByUserId   String               @map("created_by_user_id")
+  updatedByUserId   String?              @map("updated_by_user_id")
+  createdAt         DateTime             @default(now()) @map("created_at")
+  updatedAt         DateTime             @updatedAt @map("updated_at")
+
+  ownerCompany Company         @relation(fields: [ownerCompanyId], references: [id], onDelete: Restrict)
+  project      Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  mediaAsset   MediaAsset      @relation(fields: [mediaAssetId], references: [id], onDelete: Restrict)
+  createdBy    User            @relation("VisualMapCanvasCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  updatedBy    User?           @relation("VisualMapCanvasUpdater", fields: [updatedByUserId], references: [id], onDelete: SetNull)
+  hotspots     VisualHotspot[]
+
+  @@index([projectId, contextType, contextId])
+  @@index([ownerCompanyId])
+  @@index([publicationStatus])
+  @@map("visual_map_canvases")
+}
+
+/// Clickable marker and/or polygon region on a visual map canvas.
+model VisualHotspot {
+  id                String                        @id @default(cuid())
+  canvasId          String                        @map("canvas_id")
+  targetType        VisualHotspotTargetType       @map("target_type")
+  targetId          String                        @map("target_id")
+  label             String
+  /// Label/marker anchor in percent of contain-box (0–100). Also used for point hotspots.
+  xPercent          Decimal                       @map("x_percent") @db.Decimal(6, 3)
+  yPercent          Decimal                       @map("y_percent") @db.Decimal(6, 3)
+  shapeType         VisualHotspotShapeType        @default(point) @map("shape_type")
+  interactionType   VisualHotspotInteractionType  @default(marker) @map("interaction_type")
+  /// SVG path `d` in canvas media viewBox pixel space (Defense parity).
+  svgPath           String?                       @map("svg_path")
+  /// Optional structured editor points (normalized 0–1); svgPath remains persistence primary.
+  points            Json?
+  markerStyle       String?                       @map("marker_style")
+  publicationStatus PublicationStatus             @default(draft) @map("publication_status")
+  sortOrder         Int?                          @map("sort_order")
+  createdByUserId   String                        @map("created_by_user_id")
+  updatedByUserId   String?                       @map("updated_by_user_id")
+  createdAt         DateTime                      @default(now()) @map("created_at")
+  updatedAt         DateTime                      @updatedAt @map("updated_at")
+
+  canvas    VisualMapCanvas @relation(fields: [canvasId], references: [id], onDelete: Cascade)
+  createdBy User            @relation("VisualHotspotCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  updatedBy User?           @relation("VisualHotspotUpdater", fields: [updatedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([canvasId])
+  @@index([publicationStatus])
+  @@map("visual_hotspots")
+}

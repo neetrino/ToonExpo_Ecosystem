@@ -33,7 +33,7 @@ const resolveDatabaseUrl = (): string => {
  * Prefer DIRECT_URL (owner, non-pooled) for migrations when set.
  */
 export default defineConfig({
-  schema: 'prisma/schema.prisma',
+  schema: 'prisma',
   migrations: {
     path: 'prisma/migrations',
   },

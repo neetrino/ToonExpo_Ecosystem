@@ -45,7 +45,8 @@ export const PolygonHotspotOverlay = ({
             d={item.svgPath}
             className="map-hotspot-path"
             data-selected={selected ? 'true' : undefined}
-            pointerEvents={interactive ? 'auto' : 'none'}
+            /* `fill` keeps hit-testing when fill-opacity is 0 (inactive). */
+            pointerEvents={interactive ? 'fill' : 'none'}
             role={interactive ? 'button' : undefined}
             tabIndex={interactive ? 0 : undefined}
             aria-label={interactive ? item.label : undefined}
