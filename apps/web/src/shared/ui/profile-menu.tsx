@@ -1,7 +1,7 @@
 'use client';
 
 import type { CompanyType } from '@toonexpo/contracts';
-import { Building2, LogIn, LogOut, Shield, User } from 'lucide-react';
+import { Building2, LogOut, Shield, User, UserRound } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useId, useRef, useState } from 'react';
 
@@ -144,7 +144,7 @@ export const ProfileMenu = ({
         title={t('login')}
         className={triggerClassName}
       >
-        <LogIn className="size-5" aria-hidden />
+        <UserRound className="size-5" aria-hidden />
       </Link>
     );
   }
@@ -169,7 +169,7 @@ export const ProfileMenu = ({
         }}
         onFocus={openMenu}
       >
-        <LogIn className="size-5" aria-hidden />
+        <UserRound className="size-5" aria-hidden />
       </button>
 
       {open ? (

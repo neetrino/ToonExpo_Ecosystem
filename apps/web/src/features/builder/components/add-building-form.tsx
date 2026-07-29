@@ -20,12 +20,13 @@ import { Input } from '@/shared/ui/input';
 
 type AddBuildingFormProps = {
   projectId: string;
+  onSuccess?: (() => void) | undefined;
 };
 
 /**
- * Inline form to add a building to a project.
+ * Form to add a building to a project.
  */
-export const AddBuildingForm = ({ projectId }: AddBuildingFormProps) => {
+export const AddBuildingForm = ({ projectId, onSuccess }: AddBuildingFormProps) => {
   const scope = useCatalogScope();
   const mediaContext = catalogMediaContext(scope);
   const t = useTranslations('Builder.inventory');
@@ -51,6 +52,7 @@ export const AddBuildingForm = ({ projectId }: AddBuildingFormProps) => {
         ...(toOptionalMediaId(values.coverMediaId) ? { coverMediaId: values.coverMediaId } : {}),
       });
       reset();
+      onSuccess?.();
     } catch {
       setError(t('errors.generic'));
     }
@@ -59,12 +61,7 @@ export const AddBuildingForm = ({ projectId }: AddBuildingFormProps) => {
   const busy = isSubmitting || mutation.isPending;
 
   return (
-    <form
-      onSubmit={onSubmit}
-      className="flex flex-col gap-3 rounded-sm border border-border p-3"
-      noValidate
-    >
-      <p className="text-sm font-medium text-ink">{t('addBuilding')}</p>
+    <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
       <FormField
         id="building-name"
         label={t('buildingName')}
@@ -94,7 +91,7 @@ export const AddBuildingForm = ({ projectId }: AddBuildingFormProps) => {
           {error}
         </p>
       ) : null}
-      <Button type="submit" size="sm" variant="ghost" disabled={busy}>
+      <Button type="submit" variant="secondary" disabled={busy}>
         {busy ? t('adding') : t('addBuilding')}
       </Button>
     </form>

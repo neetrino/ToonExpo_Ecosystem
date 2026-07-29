@@ -15,6 +15,7 @@ import {
   type EventFormValues,
 } from '@/features/exhibition/schemas/exhibition.schema';
 import { Button } from '@/shared/ui/button';
+import { DatePicker } from '@/shared/ui/date-picker';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
 import { Select } from '@/shared/ui/select';
@@ -69,10 +70,36 @@ export const AdminEventForm = ({ initial, onSubmit, isBusy }: AdminEventFormProp
       </FormField>
       <div className="grid gap-4 sm:grid-cols-2">
         <FormField id="event-start" label={t('startDate')}>
-          <Input id="event-start" type="date" {...form.register('startDate')} />
+          <Controller
+            name="startDate"
+            control={form.control}
+            render={({ field }) => (
+              <DatePicker
+                id="event-start"
+                name={field.name}
+                value={field.value ?? ''}
+                aria-label={t('startDate')}
+                onBlur={field.onBlur}
+                onChange={field.onChange}
+              />
+            )}
+          />
         </FormField>
         <FormField id="event-end" label={t('endDate')}>
-          <Input id="event-end" type="date" {...form.register('endDate')} />
+          <Controller
+            name="endDate"
+            control={form.control}
+            render={({ field }) => (
+              <DatePicker
+                id="event-end"
+                name={field.name}
+                value={field.value ?? ''}
+                aria-label={t('endDate')}
+                onBlur={field.onBlur}
+                onChange={field.onChange}
+              />
+            )}
+          />
         </FormField>
       </div>
       <FormField id="event-status" label={t('status')}>

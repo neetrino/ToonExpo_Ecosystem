@@ -3,10 +3,12 @@ import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import type { ReactNode } from 'react';
 
-import { getCompanyProfile } from '@/features/builder/api/company-profile-api';
-import { BuilderNav } from '@/features/builder/components/builder-nav';
 import { getMeOrNullCached as getMeOrNull } from '@/features/auth/api/get-me-or-null-cached';
+import { getCompanyProfileCached as getCompanyProfile } from '@/features/builder/api/get-company-profile-cached';
+import { BuilderMobileStack } from '@/features/builder/components/builder-mobile-stack';
+import { BuilderNav } from '@/features/builder/components/builder-nav';
 import { redirect } from '@/i18n/navigation';
+import { isApiErrorStatus } from '@/shared/api/errors';
 import { PortalShell } from '@/shared/ui/portal-shell';
 
 type BuilderLayoutProps = {
@@ -50,17 +52,28 @@ export default async function BuilderLayout({ children, params }: BuilderLayoutP
       profileHref="/builder/settings"
       navLabel={t('nav.label')}
       variant="rail"
+      showRailHeaderMask={false}
+      mobileDrawerControlledByNavbar
+      className="bg-canvas"
       sidebar={<BuilderNav companyName={company.name} />}
     >
-      {children}
+      <BuilderMobileStack name={user.name} email={user.email} companyName={company.name}>
+        {children}
+      </BuilderMobileStack>
     </PortalShell>
   );
 }
 
+/**
+ * Auth denials → null (layout 404). Transient API failures (429/5xx) rethrow.
+ */
 const loadCompanyProfile = async (cookieHeader: string | undefined) => {
   try {
-    return await getCompanyProfile({ cookieHeader });
-  } catch {
-    return null;
+    return await getCompanyProfile(cookieHeader);
+  } catch (error) {
+    if (isApiErrorStatus(error, 401) || isApiErrorStatus(error, 403)) {
+      return null;
+    }
+    throw error;
   }
 };

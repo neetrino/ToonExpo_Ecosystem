@@ -9,7 +9,7 @@ import { Link, usePathname } from '@/i18n/navigation';
 import { isPartnerCompatibleCompany } from '@/features/partners/utils/is-partner-compatible-company';
 import {
   accountMobileNavController,
-  isBuyerAccountPath,
+  isNavbarControlledPortalPath,
 } from '@/shared/ui/account-mobile-nav-controller';
 import { BrandLogo } from '@/shared/ui/brand-logo';
 import { lockBodyScroll, unlockBodyScroll } from '@/shared/ui/body-scroll-lock';
@@ -61,7 +61,7 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
   const [accountNavOpen, setAccountNavOpen] = useState(false);
   const [showPill, setShowPill] = useState(false);
   const isTransparentStart = variant === 'transparent';
-  const isAccountRoute = isBuyerAccountPath(pathname);
+  const isAccountRoute = isNavbarControlledPortalPath(pathname);
   const burgerOpen = isAccountRoute ? accountNavOpen : menuOpen;
   /** Solid pages always use the home pill chrome; home reveals it on scroll. */
   const pillVisible = !isTransparentStart || showPill || burgerOpen;

@@ -26,6 +26,7 @@ import { Button } from '@/shared/ui/button';
 import { Card } from '@/shared/ui/card';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
+import { Select } from '@/shared/ui/select';
 import { cn } from '@/shared/ui/cn';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 
@@ -231,17 +232,28 @@ const VenueMapFields = ({ form, previewUrl }: VenueMapFieldsProps) => {
         </FormField>
       </div>
       <FormField id="map-publication" label={t('publication')}>
-        <select
-          id="map-publication"
-          className="h-10 w-full rounded-sm border border-border bg-background px-3 text-sm"
-          {...form.register('publicationStatus')}
-        >
-          {EXHIBITION_PUBLICATION_STATUSES.map((status) => (
-            <option key={status} value={status}>
-              {t(`publicationStatuses.${status}`)}
-            </option>
-          ))}
-        </select>
+        <Controller
+          name="publicationStatus"
+          control={form.control}
+          render={({ field }) => (
+            <Select
+              id="map-publication"
+              name={field.name}
+              value={field.value}
+              aria-label={t('publication')}
+              onBlur={field.onBlur}
+              onChange={(event) => {
+                field.onChange(event.target.value);
+              }}
+            >
+              {EXHIBITION_PUBLICATION_STATUSES.map((status) => (
+                <option key={status} value={status}>
+                  {t(`publicationStatuses.${status}`)}
+                </option>
+              ))}
+            </Select>
+          )}
+        />
       </FormField>
     </>
   );

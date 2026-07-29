@@ -23,5 +23,5 @@ export const PageEnter = ({ children }: PageEnterProps) => {
     setPlayEnter(shouldPlayPageEnter(pathname));
   }, [pathname]);
 
-  return <div className={cn(playEnter && 'page-enter')}>{children}</div>;
+  return <div className={cn('min-h-0', playEnter && 'page-enter')}>{children}</div>;
 };

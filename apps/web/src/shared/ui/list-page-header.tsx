@@ -26,7 +26,8 @@ export type ListPageHeaderProps = {
 };
 
 /**
- * One-row list chrome: title left, integrated search + actions right (NBOS / Admin CRM).
+ * List chrome: title + search. Mobile stacks search under the title;
+ * `md+` keeps title left and search/actions right.
  */
 export const ListPageHeader = ({
   title,
@@ -49,10 +50,15 @@ export const ListPageHeader = ({
   return (
     <div className={cn('flex shrink-0 flex-col gap-1', className)}>
       {eyebrow ? <p className="crm-board-page__eyebrow">{eyebrow}</p> : null}
-      <div className="flex flex-nowrap items-center justify-between gap-3">
+      <div className="flex flex-col gap-3 md:flex-row md:flex-nowrap md:items-center md:justify-between">
         <h1 className="min-w-0 shrink text-page-title text-ink">{title}</h1>
-        <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
-          <div className={cn('relative min-w-[12rem] max-w-md flex-1', searchClassName)}>
+        <div className="flex w-full min-w-0 items-center gap-2 md:flex-1 md:justify-end max-md:flex-wrap">
+          <div
+            className={cn(
+              'relative w-full min-w-0 md:min-w-[12rem] md:max-w-md md:flex-1',
+              searchClassName,
+            )}
+          >
             <IntegratedSearchFilters
               search={search}
               searchPlaceholder={searchPlaceholder}

@@ -31,7 +31,9 @@ export const AdminFloorsListPage = () => {
   const response = query.data;
   const [showCreate, setShowCreate] = useState(false);
   const [selectedFloor, setSelectedFloor] = useState<AdminFloorListItem | null>(null);
-  const { viewMode, setViewMode } = usePersistedViewMode(ADMIN_VIEW_MODE_KEYS.floors);
+  const { viewMode, effectiveViewMode, setViewMode } = usePersistedViewMode(
+    ADMIN_VIEW_MODE_KEYS.floors,
+  );
 
   const glanceQuery = useAdminBuildingInventoryGlanceQuery(selectedFloor?.buildingId ?? '');
   const floorplan = useMemo(() => {
@@ -81,7 +83,7 @@ export const AdminFloorsListPage = () => {
         {response ? (
           <AdminFloorsTable
             floors={response.data}
-            viewMode={viewMode}
+            viewMode={effectiveViewMode}
             onSelectFloor={(floor) => {
               setSelectedFloor(floor);
             }}

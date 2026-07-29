@@ -31,7 +31,9 @@ export const AdminBuildingsListPage = () => {
   const pathname = usePathname();
   const [showCreate, setShowCreate] = useState(false);
   const [sheetFloorId, setSheetFloorId] = useState<string | null>(null);
-  const { viewMode, setViewMode } = usePersistedViewMode(ADMIN_VIEW_MODE_KEYS.buildings);
+  const { viewMode, effectiveViewMode, setViewMode } = usePersistedViewMode(
+    ADMIN_VIEW_MODE_KEYS.buildings,
+  );
 
   const buildingId = searchParams.get('buildingId')?.trim() || null;
 
@@ -106,7 +108,7 @@ export const AdminBuildingsListPage = () => {
         {response ? (
           <AdminBuildingsTable
             buildings={response.data}
-            viewMode={viewMode}
+            viewMode={effectiveViewMode}
             onSelectBuilding={(id) => {
               setSheetFloorId(null);
               replaceHref(buildHref({ buildingId: id }));

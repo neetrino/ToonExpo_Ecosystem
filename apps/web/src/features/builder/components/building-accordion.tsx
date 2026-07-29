@@ -1,12 +1,13 @@
-"use client";
+'use client';
 
-import type { PortalBuildingSummary } from "@toonexpo/contracts";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
+import type { PortalBuildingSummary } from '@toonexpo/contracts';
+import { useTranslations } from 'next-intl';
+import { useState } from 'react';
 
-import { AddFloorForm } from "@/features/builder/components/add-floor-form";
-import { EditBuildingMediaForm } from "@/features/builder/components/edit-building-media-form";
-import { FloorInventoryRow } from "@/features/builder/components/floor-inventory-row";
+import { AddFloorSheet } from '@/features/builder/components/add-floor-sheet';
+import { EditBuildingMediaForm } from '@/features/builder/components/edit-building-media-form';
+import { FloorInventoryRow } from '@/features/builder/components/floor-inventory-row';
+import { AddActionLabel } from '@/shared/ui/add-action-label';
 
 type BuildingAccordionProps = {
   projectId: string;
@@ -16,12 +17,10 @@ type BuildingAccordionProps = {
 /**
  * Accordion section for a building and its floors.
  */
-export const BuildingAccordion = ({
-  projectId,
-  building,
-}: BuildingAccordionProps) => {
-  const t = useTranslations("Builder.inventory");
+export const BuildingAccordion = ({ projectId, building }: BuildingAccordionProps) => {
+  const t = useTranslations('Builder.inventory');
   const [open, setOpen] = useState(true);
+  const [addFloorOpen, setAddFloorOpen] = useState(false);
 
   return (
     <section className="rounded-sm border border-border">
@@ -34,36 +33,49 @@ export const BuildingAccordion = ({
         }}
       >
         <span>
-          <span className="block text-sm font-semibold text-ink">
-            {building.name}
-          </span>
+          <span className="block text-sm font-semibold text-ink">{building.name}</span>
           <span className="block text-xs text-ink-muted">
-            {t("floorsCount", { count: building.floors.length })} ·{" "}
+            {t('floorsCount', { count: building.floors.length })} ·{' '}
             {t(`publication.${building.publicationStatus}`)}
           </span>
         </span>
         <span className="text-ink-muted" aria-hidden>
-          {open ? "−" : "+"}
+          {open ? '−' : '+'}
         </span>
       </button>
 
       {open ? (
         <div className="flex flex-col gap-3 border-t border-border px-4 py-3">
           {building.floors.length === 0 ? (
-            <p className="text-sm text-ink-secondary">{t("noFloors")}</p>
+            <p className="text-sm text-ink-secondary">{t('noFloors')}</p>
           ) : (
             building.floors.map((floor) => (
-              <FloorInventoryRow
-                key={floor.id}
-                projectId={projectId}
-                floor={floor}
-              />
+              <FloorInventoryRow key={floor.id} projectId={projectId} floor={floor} />
             ))
           )}
           <EditBuildingMediaForm projectId={projectId} building={building} />
-          <AddFloorForm projectId={projectId} buildingId={building.id} />
+          <div className="flex justify-end">
+            <button
+              type="button"
+              className="inline-flex h-9 items-center justify-center rounded-pill border border-border-strong px-4 text-sm font-medium text-ink hover:bg-surface"
+              onClick={() => {
+                setAddFloorOpen(true);
+              }}
+            >
+              <AddActionLabel>{t('addFloor')}</AddActionLabel>
+            </button>
+          </div>
         </div>
       ) : null}
+
+      <AddFloorSheet
+        open={addFloorOpen}
+        onClose={() => {
+          setAddFloorOpen(false);
+        }}
+        projectId={projectId}
+        buildingId={building.id}
+      />
     </section>
   );
 };

@@ -35,7 +35,7 @@ export const PartnerDetailSheet = ({ partnerId, open, onClose }: PartnerDetailSh
       title={title}
       headerActions={
         partner ? (
-          <div className="flex flex-wrap items-center justify-end gap-2">
+          <div className="flex w-full flex-wrap items-center gap-2 md:w-auto md:justify-end">
             <PartnerTypeLabel type={partner.type} className="text-sm text-ink-secondary" />
             <PartnerStatusBadge status={partner.status} />
             <PublicationStatusBadge status={partner.publicationStatus} />

@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
 
+import { AdminCreateProjectSheet } from '@/features/admin/components/admin-create-project-sheet';
 import { AdminProjectsTable } from '@/features/admin/components/admin-projects-table';
 import {
   ADMIN_COMPANIES_MAX_PAGE_SIZE,
@@ -17,6 +18,8 @@ import {
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
 import { usePathname, useRouter } from '@/i18n/navigation';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
+import { AddActionLabel } from '@/shared/ui/add-action-label';
+import { Button } from '@/shared/ui/button';
 import type { IntegratedSearchFilterConfig } from '@/shared/ui/integrated-search-filters.types';
 import { ListPageHeader } from '@/shared/ui/list-page-header';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
@@ -43,8 +46,11 @@ export const AdminProjectsListPage = () => {
   const page = parsePage(searchParams.get('page'));
   const companyId = searchParams.get('companyId')?.trim() || undefined;
   const pageSize = ADMIN_INVENTORY_DEFAULT_PAGE_SIZE;
-  const { viewMode, setViewMode } = usePersistedViewMode(ADMIN_VIEW_MODE_KEYS.projects);
+  const { viewMode, effectiveViewMode, setViewMode } = usePersistedViewMode(
+    ADMIN_VIEW_MODE_KEYS.projects,
+  );
   const [search, setSearch] = useState('');
+  const [createOpen, setCreateOpen] = useState(false);
 
   const projectsQuery = useAdminProjectsQuery(page, pageSize, companyId);
   const companiesQuery = useAdminCompaniesQuery(1, ADMIN_COMPANIES_MAX_PAGE_SIZE);
@@ -118,13 +124,28 @@ export const AdminProjectsListPage = () => {
           setSearch('');
           router.replace(buildListHref(1, undefined));
         }}
-        actions={<ViewModeToggle value={viewMode} onChange={setViewMode} />}
+        actions={
+          <>
+            <ViewModeToggle value={viewMode} onChange={setViewMode} />
+            <Button
+              type="button"
+              size="sm"
+              variant="secondary"
+              className="shrink-0"
+              onClick={() => {
+                setCreateOpen(true);
+              }}
+            >
+              <AddActionLabel>{t('create.cta')}</AddActionLabel>
+            </Button>
+          </>
+        }
       />
 
       {response.data.length === 0 ? (
         <p className="text-sm text-ink-secondary">{t('empty')}</p>
       ) : (
-        <AdminProjectsTable projects={response.data} viewMode={viewMode} />
+        <AdminProjectsTable projects={response.data} viewMode={effectiveViewMode} />
       )}
 
       <CatalogPagination
@@ -134,6 +155,14 @@ export const AdminProjectsListPage = () => {
         previousLabel={t('pagination.previous')}
         nextLabel={t('pagination.next')}
         ariaLabel={t('pagination.ariaLabel')}
+      />
+
+      <AdminCreateProjectSheet
+        open={createOpen}
+        onClose={() => {
+          setCreateOpen(false);
+        }}
+        defaultCompanyId={companyId}
       />
     </div>
   );

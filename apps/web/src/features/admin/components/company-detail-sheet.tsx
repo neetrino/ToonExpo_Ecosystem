@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 
+import { CompanyProjectsSection } from '@/features/admin/components/company-projects-section';
 import { EditCompanyForm } from '@/features/admin/components/edit-company-form';
 import { ResendInviteButton } from '@/features/admin/components/resend-invite-button';
 import { useAdminCompanyQuery } from '@/features/admin/hooks/use-admin-companies';
@@ -14,7 +15,7 @@ type CompanyDetailSheetProps = {
 };
 
 /**
- * Right-side sheet with company edit form and invite resend.
+ * Right-side sheet with company edit form, projects, and invite resend.
  */
 export const CompanyDetailSheet = ({ companyId, open, onClose }: CompanyDetailSheetProps) => {
   const t = useTranslations('Admin.companies');
@@ -44,7 +45,12 @@ export const CompanyDetailSheet = ({ companyId, open, onClose }: CompanyDetailSh
         </p>
       ) : null}
 
-      {company ? <EditCompanyForm key={company.id} company={company} /> : null}
+      {company ? (
+        <div className="flex flex-col gap-8">
+          <EditCompanyForm key={company.id} company={company} />
+          {company.type === 'builder' ? <CompanyProjectsSection companyId={company.id} /> : null}
+        </div>
+      ) : null}
     </AdminCreateSheet>
   );
 };

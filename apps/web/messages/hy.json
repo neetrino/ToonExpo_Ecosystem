@@ -17,6 +17,13 @@
       "list": "Ցանկ",
       "cards": "Քարտեր",
       "board": "Տախտակ"
+    },
+    "datePicker": {
+      "placeholder": "Ընտրել ամսաթիվ",
+      "clear": "Մաքրել",
+      "today": "Այսօր",
+      "previousMonth": "Նախորդ ամիս",
+      "nextMonth": "Հաջորդ ամիս"
     }
   },
   "CrmBoard": {
@@ -100,12 +107,6 @@
       "search": "Որոնել տներ",
       "explore": "Դիտել նախագծերը",
       "register": "Անվճար գրանցում",
-      "tabsLabel": "Որոնման ռեժիմ",
-      "tabs": {
-        "buy": "Գնել",
-        "rent": "Վարձակալել",
-        "newBuilds": "Նոր շինություններ"
-      },
       "locationLabel": "Վայր",
       "locationPlaceholder": "Ընտրել քաղաք",
       "locationAny": "Ցանկացած վայր",
@@ -271,7 +272,42 @@
     "profileMenu": "Հաշվի ընտրացանկ",
     "admin": "Ադմին",
     "builder": "Կառուցապատող",
+    "scanner": "Սկաներ",
+    "product": "Պրոդուկտ",
+    "discover": "Բացահայտել",
+    "qr": "QR",
+    "map": "Քարտեզ",
     "loading": "…"
+  },
+  "Discover": {
+    "meta": {
+      "title": "Բացահայտել բնակարաններ",
+      "description": "Թերթեք հասանելի բնակարանները և պահեք այն, ինչ ձեզ դուր է գալիս։"
+    },
+    "title": "Բացահայտել",
+    "subtitle": "Աջ՝ like, ձախ՝ հաջորդը",
+    "hint": "Քաշեք քարտը կամ օգտագործեք կոճակները",
+    "loginHint": "Մուտք գործեք՝ պահելու համար այն բնակարանները, որոնք like եք անում։",
+    "loginCta": "Մուտք",
+    "error": "Չհաջողվեց բեռնել բնակարանները։ Կրկին փորձեք։",
+    "stamp": {
+      "like": "Like",
+      "skip": "Բաց թողնել"
+    },
+    "actions": {
+      "like": "Like բնակարանը",
+      "skip": "Բաց թողնել բնակարանը"
+    },
+    "card": {
+      "from": "Սկսած",
+      "unitTitle": "Բն. {number} · {project}"
+    },
+    "empty": {
+      "title": "Ամեն ինչ դիտված է",
+      "body": "Այս տախտակում այլևս բնակարաններ չկան։ Սկսեք նորից կամ բացեք կատալոգը։",
+      "none": "Դեռ հասանելի բնակարաններ չկան։",
+      "restart": "Սկսել նորից"
+    }
   },
   "BuyPage": {
     "title": "Բնակարաններ վաճառքի",
@@ -891,7 +927,6 @@
   },
   "Profile": {
     "cabinetTitle": "Իմ կաբինետը",
-    "cabinetSubtitle": "Կառավարեք պրոֆիլը, QR-ը, ընտրյալները, գրանցումը և հայտերը",
     "badge": "Կաբինետ",
     "title": "Իմ պրոֆիլը",
     "subtitle": "Ձեր ToonExpo հաշվի տվյալները",
@@ -975,13 +1010,23 @@
     "qr": {
       "title": "Իմ QR",
       "subtitle": "Ցույց տվեք այս մշտական կոդը կառուցապատողներին և մուտքի աշխատակիցներին",
-      "hint": "Պահեք հեռախոսը կայուն, որպեսզի հեշտ լինի սկանավորել։",
       "secureBadge": "Անվտանգ մշտական QR",
       "codeTitle": "QR կոդ՝ {name}",
-      "fullscreen": "Մեծացնել ամբողջ էկրանով",
-      "exitFullscreen": "Դուրս գալ ամբողջ էկրանից",
       "loading": "QR-ը բեռնվում է…",
       "error": "Չհաջողվեց բեռնել QR-ը։ Կրկին փորձեք։",
+      "sheet": {
+        "loginHint": "Մուտք գործեք՝ ցուցահանդեսի մշտական QR-ը ցույց տալու համար։",
+        "login": "Մուտք",
+        "buyerOnly": "Իմ QR-ը հասանելի է միայն գնորդի հաշիվների համար։"
+      },
+      "scanner": {
+        "open": "Սկաներ",
+        "title": "QR սկաներ",
+        "subtitle": "Սկանավորեք նախագծի QR-ը ցուցահանդեսում՝ էջը բացելու համար",
+        "errors": {
+          "invalid": "Չհաջողվեց կարդալ ToonExpo QR կոդը։"
+        }
+      },
       "scans": {
         "title": "Սկանավորման պատմություն",
         "loading": "Պատմությունը բեռնվում է…",
@@ -1114,18 +1159,21 @@
   "Admin": {
     "badge": "Ադմին",
     "profileLink": "Պրոֆիլ",
+    "home": {
+      "title": "Ադմին",
+      "subtitle": "Ընտրեք բաժին կողային մենյուից՝ հարթակը կառավարելու համար։"
+    },
     "nav": {
       "label": "Ադմին նավիգացիա",
       "section": "Կառավարում",
       "portalLabel": "Կառավարման պորտալ",
       "analytics": "Վերլուծություն",
       "companies": "Ընկերություններ",
+      "users": "Օգտատերեր",
       "projects": "Նախագծեր",
       "buildings": "Շենք",
       "floors": "Հարկ",
       "apartments": "Բնակարան",
-      "interactiveMapping": "Ինտերակտիվ քարտեզ",
-      "crm": "CRM",
       "partners": "Գործընկերներ",
       "bankOffers": "Բանկային առաջարկներ",
       "serviceProviders": "Ծառայություն մատուցողներ",
@@ -1222,57 +1270,6 @@
         "label": "Կարգավորումների բաժիններ",
         "profile": "Պրոֆիլ",
         "password": "Գաղտնաբառ"
-      }
-    },
-    "crm": {
-      "title": "CRM",
-      "eyebrow": "Խողովակ",
-      "subtitle": "{count, plural, =0 {Deal չկա} one {# deal կառուցապատողներից} other {# deal կառուցապատողներից}}",
-      "error": "Չհաջողվեց բեռնել CRM deal-երը։ Փորձեք նորից։",
-      "filters": {
-        "company": "Կառուցապատող",
-        "allCompanies": "Բոլոր կառուցապատողները",
-        "selectedCount": "{count} ընտրված",
-        "apply": "Կիրառել",
-        "reset": "Մաքրել",
-        "clearAll": "Մաքրել որոնումը և ֆիլտրերը",
-        "panelLabel": "Որոնման ֆիլտրեր",
-        "removeChip": "Հեռացնել ֆիլտրը {label}"
-      },
-      "empty": "Այս ֆիլտրերով deal չկա։",
-      "columns": {
-        "buyer": "Գնորդ",
-        "company": "Կառուցապատող",
-        "project": "Նախագիծ",
-        "status": "Կարգավիճակ",
-        "source": "Աղբյուր",
-        "assignee": "Պատասխանատու",
-        "updated": "Թարմացված"
-      },
-      "newDeal": {
-        "title": "Նոր lead",
-        "cancel": "Չեղարկել",
-        "company": "Կառուցապատող",
-        "companyPlaceholder": "Ընտրեք կառուցապատող",
-        "contactName": "Ամբողջական անուն",
-        "contactNamePlaceholder": "John Doe",
-        "contactPhone": "Հեռախոս",
-        "contactPhonePlaceholder": "37491111222",
-        "contactEmail": "Email",
-        "contactEmailPlaceholder": "john.doe@example.com",
-        "project": "Նախագիծ",
-        "projectOptional": "Առանց նախագծի",
-        "note": "Նշում",
-        "submitting": "Ստեղծվում է…",
-        "validation": {
-          "company": "Ընտրեք կառուցապատող",
-          "contactName": "Մուտքագրեք անուն",
-          "phone": "Մուտքագրեք վավեր հեռախոս",
-          "email": "Մուտքագրեք վավեր email"
-        },
-        "errors": {
-          "generic": "Ինչ-որ սխալ տեղի ունեցավ։ Փորձեք նորից։"
-        }
       }
     },
     "analytics": {
@@ -1396,7 +1393,13 @@
         "resendConfirm": "Կրկին ուղարկե՞լ գաղտնաբառի հրավերի նամակը հրավիրված ադմինին։",
         "resendSubmitting": "Ուղարկում…",
         "resendSuccess": "Հրավերն կրկին ուղարկված է",
-        "resendNotFound": "Այս ընկերության համար հրավիրված ադմին չկա"
+        "resendNotFound": "Այս ընկերության համար հրավիրված ադմին չկա",
+        "projects": {
+          "title": "Նախագծեր",
+          "count": "{count, plural, =0 {Նախագծեր չկան} one {# նախագիծ} other {# նախագիծ}}",
+          "empty": "Այս ընկերությունը դեռ նախագծեր չունի։",
+          "error": "Չհաջողվեց բեռնել նախագծերը։ Կրկին փորձեք։"
+        }
       },
       "catalog": {
         "title": "Կատալոգ",
@@ -1406,6 +1409,45 @@
         "breadcrumbCompanies": "Ընկերություններ",
         "breadcrumbCatalog": "Կատալոգ",
         "companyFallback": "Ընկերություն"
+      }
+    },
+    "users": {
+      "title": "Օգտատերեր",
+      "subtitle": "{count, plural, =0 {Օգտատերեր չկան} one {# օգտատեր} other {# օգտատեր}}",
+      "empty": "Այս ֆիլտրերով օգտատերեր չկան։",
+      "loading": "Բեռնվում է…",
+      "error": "Չհաջողվեց բեռնել օգտատերերին։ Կրկին փորձեք։",
+      "filters": {
+        "accountType": "Հաշվի տեսակ",
+        "allAccountTypes": "Բոլոր տեսակները",
+        "status": "Կարգավիճակ",
+        "allStatuses": "Բոլոր կարգավիճակները",
+        "searchPlaceholder": "Որոնել անունով, email-ով կամ հեռախոսով"
+      },
+      "columns": {
+        "name": "Անուն",
+        "email": "Email",
+        "accountType": "Տեսակ",
+        "company": "Ընկերություն",
+        "status": "Կարգավիճակ",
+        "createdAt": "Ստեղծված"
+      },
+      "accountTypes": {
+        "buyer": "Գնորդ",
+        "platform_admin": "Պլատֆորմի ադմին",
+        "entrance_staff": "Մուտքի աշխատակից",
+        "company_member": "Ընկերության անդամ"
+      },
+      "statuses": {
+        "invited": "Հրավիրված",
+        "active": "Ակտիվ",
+        "inactive": "Ոչ ակտիվ",
+        "blocked": "Արգելափակված"
+      },
+      "pagination": {
+        "previous": "Նախորդ",
+        "next": "Հաջորդ",
+        "ariaLabel": "Էջավորում"
       }
     },
     "projects": {
@@ -1437,6 +1479,13 @@
         "previous": "Նախորդ",
         "next": "Հաջորդ",
         "ariaLabel": "Էջավորում"
+      },
+      "create": {
+        "cta": "+ Ավելացնել նախագիծ",
+        "title": "Ավելացնել նախագիծ",
+        "company": "Ընկերություն",
+        "selectCompany": "Ընտրեք ընկերություն",
+        "pickCompany": "Շարունակելու համար ընտրեք ընկերություն։"
       }
     },
     "buildings": {
@@ -2472,6 +2521,7 @@
       "qr": {
         "title": "Նախագծի QR",
         "subtitle": "Տպեք այս QR-ը ցուցահանդեսի համար — գնորդները կանցնեն հրապարակային նախագծի էջ։",
+        "open": "Բացել նախագծի QR-ը",
         "loading": "QR-ը բեռնվում է…",
         "error": "Չհաջողվեց բեռնել նախագծի QR-ը։",
         "codeTitle": "{name} նախագծի QR",
@@ -2737,11 +2787,21 @@
       "empty": "Դեռ անդամներ չկան։",
       "loading": "Բեռնվում է…",
       "error": "Չհաջողվեց բեռնել թիմը։ Կրկին փորձեք։",
-      "inviteMember": "Հրավիրել անդամ",
+      "inviteMember": "+ Հրավիրել անդամ",
+      "inviteSheetTitle": "Հրավիրել անդամ",
       "readOnlyNotice": "Դուք կարող եք տեսնել թիմը։ Միայն ընկերության ադմինները կարող են հրավիրել կամ փոխել դերերը։",
       "inviteSuccess": "Հրավերն ուղարկվել է {email} հասցեին",
       "updateSuccess": "Անդամը թարմացված է",
       "deactivate": "Ապաակտիվացնել",
+      "activate": "Կրկին ակտիվացնել",
+      "activeToggle": "Անդամը ակտիվ է",
+      "deactivateConfirmTitle": "Ապաակտիվացնել անդամին",
+      "deactivateConfirmMessage": "Համոզվա՞ծ եք, որ ցանկանում եք ապաակտիվացնել «{name}»-ին։ Նա կկորցնի մուտքը մինչև կրկին ակտիվացումը։",
+      "activateConfirmTitle": "Կրկին ակտիվացնել անդամին",
+      "activateConfirmMessage": "Համոզվա՞ծ եք, որ ցանկանում եք կրկին ակտիվացնել «{name}»-ին։",
+      "roleConfirmTitle": "Փոխել դերը",
+      "roleConfirmMessage": "Համոզվա՞ծ եք, որ ցանկանում եք փոխել «{name}»-ի դերը՝ {role}։",
+      "roleConfirmAction": "Փոխել դերը",
       "pagination": {
         "previous": "Նախորդ",
         "next": "Հաջորդ",
@@ -2765,7 +2825,8 @@
       },
       "confirm": {
         "role": "Փոխե՞լ {name}-ի դերը՝ {role}։",
-        "deactivate": "Ապաակտիվացնե՞լ {name}-ին։"
+        "deactivate": "Ապաակտիվացնե՞լ {name}-ին։",
+        "activate": "Կրկին ակտիվացնե՞լ {name}-ին։"
       },
       "form": {
         "name": "Անուն",

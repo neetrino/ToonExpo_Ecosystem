@@ -16,7 +16,7 @@ import { Reveal } from '@/shared/ui/motion/reveal';
 import { Skeleton } from '@/shared/ui/skeleton';
 
 /**
- * Buyer favorites list with project cards and compact apartment rows.
+ * Buyer favorites list with project and apartment marketplace cards.
  * Hearts toggle remove — same control as catalog.
  */
 export const BuyerFavoritesList = () => {

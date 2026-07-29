@@ -1,147 +1,227 @@
-"use client";
+'use client';
 
-import type { CompanyMemberResponse } from "@toonexpo/contracts";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
+import type { CompanyMemberResponse, CompanyMemberStatus } from '@toonexpo/contracts';
+import { useTranslations } from 'next-intl';
+import { useState } from 'react';
 
-import { COMPANY_MEMBER_ROLES } from "@/features/builder/constants";
-import { useUpdateMemberMutation } from "@/features/builder/hooks/use-company-members";
-import { Button } from "@/shared/ui/button";
+import { BuilderTeamMemberCard } from '@/features/builder/components/builder-team-member-card';
+import { COMPANY_MEMBER_ROLES } from '@/features/builder/constants';
+import { useUpdateMemberMutation } from '@/features/builder/hooks/use-company-members';
+import { AdminDeleteModal } from '@/shared/ui/admin-delete-modal';
+import { Select } from '@/shared/ui/select';
+import { Switch } from '@/shared/ui/switch';
+import { VIEW_MODE_CARDS, type ViewMode } from '@/shared/ui/view-mode';
 
 type TeamTableProps = {
   members: CompanyMemberResponse[];
   canManage: boolean;
+  viewMode?: ViewMode | undefined;
 };
 
-/**
- * Company members table with role change and deactivate actions.
- */
-export const TeamTable = ({ members, canManage }: TeamTableProps) => {
-  const t = useTranslations("Builder.team");
-  const updateMutation = useUpdateMemberMutation();
-  const [toast, setToast] = useState<"success" | "error" | null>(null);
+type PendingAction =
+  | {
+      type: 'status';
+      member: CompanyMemberResponse;
+      nextStatus: Extract<CompanyMemberStatus, 'active' | 'inactive'>;
+    }
+  | {
+      type: 'role';
+      member: CompanyMemberResponse;
+      nextRole: CompanyMemberResponse['role'];
+    };
 
-  const changeRole = async (
+/**
+ * Company members as cards (projects-matching) or table with role/deactivate actions.
+ */
+export const TeamTable = ({ members, canManage, viewMode = VIEW_MODE_CARDS }: TeamTableProps) => {
+  const t = useTranslations('Builder.team');
+  const updateMutation = useUpdateMemberMutation();
+  const [toast, setToast] = useState<'success' | 'error' | null>(null);
+  const [pendingAction, setPendingAction] = useState<PendingAction | null>(null);
+
+  const requestRoleChange = (
     member: CompanyMemberResponse,
-    role: CompanyMemberResponse["role"],
-  ) => {
+    role: CompanyMemberResponse['role'],
+  ): void => {
     if (role === member.role) {
       return;
     }
-    if (!window.confirm(t("confirm.role", { name: member.user.name, role }))) {
+    setPendingAction({ type: 'role', member, nextRole: role });
+  };
+
+  const requestStatusChange = (
+    member: CompanyMemberResponse,
+    nextStatus: Extract<CompanyMemberStatus, 'active' | 'inactive'>,
+  ): void => {
+    if (member.status === nextStatus) {
+      return;
+    }
+    setPendingAction({ type: 'status', member, nextStatus });
+  };
+
+  const confirmPendingAction = async (): Promise<void> => {
+    if (!pendingAction) {
       return;
     }
     setToast(null);
     try {
-      await updateMutation.mutateAsync({ id: member.id, body: { role } });
-      setToast("success");
+      if (pendingAction.type === 'role') {
+        await updateMutation.mutateAsync({
+          id: pendingAction.member.id,
+          body: { role: pendingAction.nextRole },
+        });
+      } else {
+        await updateMutation.mutateAsync({
+          id: pendingAction.member.id,
+          body: { status: pendingAction.nextStatus },
+        });
+      }
+      setPendingAction(null);
+      setToast('success');
     } catch {
-      setToast("error");
+      setToast('error');
     }
   };
 
-  const deactivate = async (member: CompanyMemberResponse) => {
-    if (!window.confirm(t("confirm.deactivate", { name: member.user.name }))) {
-      return;
-    }
-    setToast(null);
-    try {
-      await updateMutation.mutateAsync({
-        id: member.id,
-        body: { status: "inactive" },
+  const isRolePending = pendingAction?.type === 'role';
+  const isActivating = pendingAction?.type === 'status' && pendingAction.nextStatus === 'active';
+  const pendingName = pendingAction?.member.user.name ?? '';
+  const pendingRoleLabel =
+    pendingAction?.type === 'role' ? t(`roles.${pendingAction.nextRole}`) : '';
+
+  const confirmTitle = isRolePending
+    ? t('roleConfirmTitle')
+    : t(isActivating ? 'activateConfirmTitle' : 'deactivateConfirmTitle');
+  const confirmMessage = isRolePending
+    ? t('roleConfirmMessage', { name: pendingName, role: pendingRoleLabel })
+    : t(isActivating ? 'activateConfirmMessage' : 'deactivateConfirmMessage', {
+        name: pendingName,
       });
-      setToast("success");
-    } catch {
-      setToast("error");
-    }
-  };
+  const confirmLabel = isRolePending
+    ? t('roleConfirmAction')
+    : t(isActivating ? 'activate' : 'deactivate');
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="overflow-x-auto rounded-sm border border-border">
-        <table className="w-full min-w-[40rem] border-collapse text-left text-sm">
-          <thead className="bg-surface text-xs uppercase tracking-wide text-ink-muted">
-            <tr>
-              <th className="px-3 py-2 font-medium">{t("columns.name")}</th>
-              <th className="px-3 py-2 font-medium">{t("columns.email")}</th>
-              <th className="px-3 py-2 font-medium">{t("columns.role")}</th>
-              <th className="px-3 py-2 font-medium">{t("columns.status")}</th>
-              {canManage ? (
-                <th className="px-3 py-2 font-medium">{t("columns.actions")}</th>
-              ) : null}
-            </tr>
-          </thead>
-          <tbody>
-            {members.map((member) => (
-              <tr key={member.id} className="border-t border-border">
-                <td className="px-3 py-2.5 font-medium text-ink">
-                  {member.user.name}
-                </td>
-                <td className="px-3 py-2.5 text-ink-secondary">
-                  {member.user.email}
-                </td>
-                <td className="px-3 py-2.5">
-                  {canManage ? (
-                    <select
-                      className="h-9 rounded-sm border border-border bg-background px-2 text-sm"
-                      value={member.role}
-                      disabled={updateMutation.isPending}
-                      onChange={(event) => {
-                        void changeRole(
-                          member,
-                          event.target.value as CompanyMemberResponse["role"],
-                        );
-                      }}
-                    >
-                      {COMPANY_MEMBER_ROLES.map((role) => (
-                        <option key={role} value={role}>
-                          {t(`roles.${role}`)}
-                        </option>
-                      ))}
-                    </select>
-                  ) : (
-                    <span className="text-ink-secondary">
-                      {t(`roles.${member.role}`)}
-                    </span>
-                  )}
-                </td>
-                <td className="px-3 py-2.5 text-ink-secondary">
-                  {t(`statuses.${member.status}`)}
-                </td>
+      {viewMode === VIEW_MODE_CARDS ? (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {members.map((member) => (
+            <BuilderTeamMemberCard
+              key={member.id}
+              member={member}
+              canManage={canManage}
+              isPending={updateMutation.isPending}
+              onRoleChange={requestRoleChange}
+              onActiveChange={(nextMember, active) => {
+                requestStatusChange(nextMember, active ? 'active' : 'inactive');
+              }}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="overflow-x-auto rounded-sm border border-border">
+          <table className="w-full min-w-[40rem] border-collapse text-sm">
+            <thead className="bg-surface text-xs uppercase tracking-wide text-ink-muted">
+              <tr>
+                <th className="px-3 py-2.5 text-left font-medium">{t('columns.name')}</th>
+                <th className="px-3 py-2.5 text-left font-medium">{t('columns.email')}</th>
+                <th className="px-3 py-2.5 text-center font-medium">{t('columns.role')}</th>
+                <th className="px-3 py-2.5 text-center font-medium">{t('columns.status')}</th>
                 {canManage ? (
-                  <td className="px-3 py-2.5">
-                    {member.status === "active" ? (
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="ghost"
-                        disabled={updateMutation.isPending}
-                        onClick={() => {
-                          void deactivate(member);
-                        }}
-                      >
-                        {t("deactivate")}
-                      </Button>
-                    ) : (
-                      "—"
-                    )}
-                  </td>
+                  <th className="px-3 py-2.5 text-center font-medium">{t('columns.actions')}</th>
                 ) : null}
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      {toast === "success" ? (
+            </thead>
+            <tbody>
+              {members.map((member) => (
+                <tr key={member.id} className="border-t border-border hover:bg-surface/60">
+                  <td className="px-3 py-2.5 align-middle font-medium text-ink">
+                    {member.user.name}
+                  </td>
+                  <td className="px-3 py-2.5 align-middle text-ink-secondary">
+                    {member.user.email}
+                  </td>
+                  <td className="px-3 py-2.5 align-middle">
+                    <div className="flex justify-center">
+                      {canManage ? (
+                        <Select
+                          size="fit"
+                          className="h-9 px-3 text-sm"
+                          value={member.role}
+                          disabled={updateMutation.isPending}
+                          aria-label={t('columns.role')}
+                          onChange={(event) => {
+                            requestRoleChange(
+                              member,
+                              event.target.value as CompanyMemberResponse['role'],
+                            );
+                          }}
+                        >
+                          {COMPANY_MEMBER_ROLES.map((role) => (
+                            <option key={role} value={role}>
+                              {t(`roles.${role}`)}
+                            </option>
+                          ))}
+                        </Select>
+                      ) : (
+                        <span className="text-ink-secondary">{t(`roles.${member.role}`)}</span>
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-3 py-2.5 align-middle text-center text-ink-secondary">
+                    {t(`statuses.${member.status}`)}
+                  </td>
+                  {canManage ? (
+                    <td className="px-3 py-2.5 align-middle">
+                      <div className="flex justify-center">
+                        {member.status !== 'removed' ? (
+                          <Switch
+                            size="md"
+                            checked={member.status === 'active'}
+                            disabled={updateMutation.isPending}
+                            aria-label={t('activeToggle')}
+                            onCheckedChange={(active) => {
+                              requestStatusChange(member, active ? 'active' : 'inactive');
+                            }}
+                          />
+                        ) : (
+                          <span className="text-ink-muted">—</span>
+                        )}
+                      </div>
+                    </td>
+                  ) : null}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+      {toast === 'success' ? (
         <p role="status" className="text-sm text-success">
-          {t("updateSuccess")}
+          {t('updateSuccess')}
         </p>
       ) : null}
-      {toast === "error" ? (
+      {toast === 'error' ? (
         <p role="alert" className="text-sm text-danger">
-          {t("errors.generic")}
+          {t('errors.generic')}
         </p>
       ) : null}
+
+      <AdminDeleteModal
+        open={pendingAction != null}
+        title={confirmTitle}
+        message={confirmMessage}
+        confirmLabel={confirmLabel}
+        confirming={updateMutation.isPending}
+        onCancel={() => {
+          if (!updateMutation.isPending) {
+            setPendingAction(null);
+          }
+        }}
+        onConfirm={() => {
+          void confirmPendingAction();
+        }}
+      />
     </div>
   );
 };

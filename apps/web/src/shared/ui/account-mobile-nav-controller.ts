@@ -10,7 +10,8 @@ const emit = (): void => {
 };
 
 /**
- * Bridges SiteHeader burger ↔ buyer account PortalShell drawer on mobile.
+ * Bridges SiteHeader burger ↔ PortalShell drawer on mobile
+ * (buyer account + builder + admin portals).
  */
 export const accountMobileNavController = {
   subscribe(listener: AccountMobileNavListener): () => void {
@@ -55,5 +56,20 @@ export const isBuyerAccountShellPath = (pathname: string): boolean => {
   );
 };
 
-/** Buyer account paths where the navbar burger opens the account sidebar. */
-export const isBuyerAccountPath = isBuyerAccountShellPath;
+/** Builder portal paths (own SiteHeader via PortalShell). */
+export const isBuilderPortalPath = (pathname: string): boolean =>
+  pathname === '/builder' || pathname.startsWith('/builder/');
+
+/** Admin portal paths (own SiteHeader via PortalShell). */
+export const isAdminPortalPath = (pathname: string): boolean =>
+  pathname === '/admin' || pathname.startsWith('/admin/');
+
+/**
+ * Paths where the navbar burger opens the PortalShell drawer
+ * (buyer account + builder + admin) instead of the public mobile nav.
+ */
+export const isNavbarControlledPortalPath = (pathname: string): boolean =>
+  isBuyerAccountShellPath(pathname) || isBuilderPortalPath(pathname) || isAdminPortalPath(pathname);
+
+/** @deprecated Prefer `isNavbarControlledPortalPath` — kept for existing imports. */
+export const isBuyerAccountPath = isNavbarControlledPortalPath;

@@ -76,6 +76,9 @@ const isBuildingDetailRoute = (pathname: string): boolean => {
  * same floating pill chrome as home-after-scroll.
  * Public, portal, and auth pages use DesktopFluidFrame so desktop composition
  * scales like ma-marie. Auth keeps AuthPageShell (no public SiteHeader).
+ *
+ * Buyer account + public routes share one MobileBottomNav instance so the
+ * selected thumb can glide when leaving Profile (no remount snap).
  */
 export const PublicChrome = ({ children }: PublicChromeProps) => {
   const pathname = usePathname();
@@ -96,20 +99,18 @@ export const PublicChrome = ({ children }: PublicChromeProps) => {
     return <DesktopFluidFrame>{children}</DesktopFluidFrame>;
   }
 
-  if (isBuyerAccountShellPath(pathname)) {
-    return (
-      <DesktopFluidFrame stageClassName="min-h-svh bg-canvas">
-        {children}
-        <MobileBottomNavSpacer />
-        <MobileBottomNav />
-      </DesktopFluidFrame>
-    );
-  }
+  const isAccountShell = isBuyerAccountShellPath(pathname);
 
   return (
     <DesktopFluidFrame stageClassName="min-h-svh bg-canvas">
-      <SiteHeader variant={headerVariant} />
-      <PageEnter>{children}</PageEnter>
+      {isAccountShell ? (
+        children
+      ) : (
+        <>
+          <SiteHeader variant={headerVariant} />
+          <PageEnter>{children}</PageEnter>
+        </>
+      )}
       <MobileBottomNavSpacer />
       <MobileBottomNav />
     </DesktopFluidFrame>

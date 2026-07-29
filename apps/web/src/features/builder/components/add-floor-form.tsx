@@ -21,12 +21,13 @@ import { Input } from '@/shared/ui/input';
 type AddFloorFormProps = {
   projectId: string;
   buildingId: string;
+  onSuccess?: (() => void) | undefined;
 };
 
 /**
- * Inline form to add a floor to a building.
+ * Form to add a floor to a building.
  */
-export const AddFloorForm = ({ projectId, buildingId }: AddFloorFormProps) => {
+export const AddFloorForm = ({ projectId, buildingId, onSuccess }: AddFloorFormProps) => {
   const scope = useCatalogScope();
   const mediaContext = catalogMediaContext(scope);
   const t = useTranslations('Builder.inventory');
@@ -66,6 +67,7 @@ export const AddFloorForm = ({ projectId, buildingId }: AddFloorFormProps) => {
         displayLabel: '',
         floorplanMediaId: '',
       });
+      onSuccess?.();
     } catch {
       setError(t('errors.generic'));
     }
@@ -74,13 +76,8 @@ export const AddFloorForm = ({ projectId, buildingId }: AddFloorFormProps) => {
   const busy = isSubmitting || mutation.isPending;
 
   return (
-    <form
-      onSubmit={onSubmit}
-      className="mt-2 flex flex-col gap-2 rounded-sm bg-background p-2"
-      noValidate
-    >
-      <p className="text-xs font-medium text-ink-secondary">{t('addFloor')}</p>
-      <div className="grid gap-2 sm:grid-cols-3">
+    <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
+      <div className="grid gap-4 sm:grid-cols-3">
         <FormField
           id={`floor-number-${buildingId}`}
           label={t('floorNumber')}
@@ -114,7 +111,7 @@ export const AddFloorForm = ({ projectId, buildingId }: AddFloorFormProps) => {
           {error}
         </p>
       ) : null}
-      <Button type="submit" size="sm" variant="ghost" disabled={busy}>
+      <Button type="submit" variant="secondary" disabled={busy}>
         {busy ? t('adding') : t('addFloor')}
       </Button>
     </form>

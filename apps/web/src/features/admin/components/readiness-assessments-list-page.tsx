@@ -41,7 +41,9 @@ export const ReadinessAssessmentsListPage = () => {
   const searchParams = useSearchParams();
   const page = parsePage(searchParams.get('page'));
   const [showCreate, setShowCreate] = useState(false);
-  const { viewMode, setViewMode } = usePersistedViewMode(ADMIN_VIEW_MODE_KEYS.readinessAssessments);
+  const { viewMode, effectiveViewMode, setViewMode } = usePersistedViewMode(
+    ADMIN_VIEW_MODE_KEYS.readinessAssessments,
+  );
   const [search, setSearch] = useState('');
   const [filters, setFilters] = useState(EMPTY_READINESS_ASSESSMENT_FILTERS);
 
@@ -116,7 +118,7 @@ export const ReadinessAssessmentsListPage = () => {
         search={search}
         searchPlaceholder={tCommon('searchPlaceholder')}
         searchAriaLabel={tCommon('searchLabel')}
-        searchClassName="min-w-[10rem] max-w-[14rem] flex-none"
+        searchClassName="w-full max-w-none md:min-w-[10rem] md:max-w-[14rem] md:flex-none md:w-auto"
         filters={filterConfigs}
         filterValues={readinessAssessmentFiltersToRecord(filters)}
         onSearchChange={setSearch}
@@ -127,11 +129,11 @@ export const ReadinessAssessmentsListPage = () => {
           setFilters(EMPTY_READINESS_ASSESSMENT_FILTERS);
         }}
         actions={
-          <>
+          <div className="flex w-full basis-full items-center gap-2 md:w-auto md:basis-auto">
             <ViewModeToggle value={viewMode} onChange={setViewMode} />
             <Link
               href="/admin/readiness/categories"
-              className="inline-flex h-9 items-center justify-center rounded-[15px] border border-border-strong px-4 text-sm font-medium text-ink hover:bg-surface"
+              className="inline-flex h-9 flex-1 items-center justify-center rounded-[15px] border border-border-strong px-4 text-sm font-medium text-ink hover:bg-surface md:flex-none"
             >
               {t('categoriesLink')}
             </Link>
@@ -146,7 +148,7 @@ export const ReadinessAssessmentsListPage = () => {
             >
               <AddActionLabel>{t('newAssessment')}</AddActionLabel>
             </Button>
-          </>
+          </div>
         }
       />
 
@@ -156,7 +158,7 @@ export const ReadinessAssessmentsListPage = () => {
         <ReadinessAssessmentsTable
           assessments={response.data}
           companyLookup={companyLookup}
-          viewMode={viewMode}
+          viewMode={effectiveViewMode}
         />
       )}
 

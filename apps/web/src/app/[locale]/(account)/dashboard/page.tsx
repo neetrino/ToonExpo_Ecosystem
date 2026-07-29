@@ -47,11 +47,8 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
 
   return (
     <AccountPageEnter>
-      <div className="hidden md:block">
-        <AccountPageHeader
-          title={t('dashboard.welcome', { name: user.name })}
-          subtitle={t('cabinetSubtitle')}
-        />
+      <div className="hidden flex-col gap-15 md:flex">
+        <AccountPageHeader title={t('dashboard.welcome', { name: user.name })} />
 
         {showBuyerOverview ? (
           <Reveal fadeOnly>

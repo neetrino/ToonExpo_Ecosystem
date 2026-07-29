@@ -1,16 +1,16 @@
 'use client';
 
-import { catalogApartmentDetailHref } from '@/features/builder/catalog-scope';
-import { useCatalogScope } from '@/features/builder/catalog-scope-context';
 import type { PortalFloorSummary } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
-import { BulkApartmentsForm } from '@/features/builder/components/bulk-apartments-form';
+import { catalogApartmentDetailHref } from '@/features/builder/catalog-scope';
+import { useCatalogScope } from '@/features/builder/catalog-scope-context';
+import { AddApartmentsSheet } from '@/features/builder/components/add-apartments-sheet';
 import { EditFloorMediaForm } from '@/features/builder/components/edit-floor-media-form';
 import { usePortalFloorApartmentsQuery } from '@/features/builder/hooks/use-portal-inventory';
 import { Link } from '@/i18n/navigation';
-import { Button } from '@/shared/ui/button';
+import { AddActionLabel } from '@/shared/ui/add-action-label';
 
 type FloorInventoryRowProps = {
   projectId: string;
@@ -18,12 +18,12 @@ type FloorInventoryRowProps = {
 };
 
 /**
- * Floor row with apartment list and bulk-add toggle.
+ * Floor row with apartment list and bulk-add sheet.
  */
 export const FloorInventoryRow = ({ projectId, floor }: FloorInventoryRowProps) => {
   const scope = useCatalogScope();
   const t = useTranslations('Builder.inventory');
-  const [showBulk, setShowBulk] = useState(false);
+  const [addOpen, setAddOpen] = useState(false);
   const apartmentsQuery = usePortalFloorApartmentsQuery(floor.id);
 
   return (
@@ -43,16 +43,15 @@ export const FloorInventoryRow = ({ projectId, floor }: FloorInventoryRowProps) 
             {t(`publication.${floor.publicationStatus}`)}
           </p>
         </div>
-        <Button
+        <button
           type="button"
-          size="sm"
-          variant="ghost"
+          className="inline-flex h-9 items-center justify-center rounded-pill border border-border-strong px-3 text-sm font-medium text-ink hover:bg-surface"
           onClick={() => {
-            setShowBulk((value) => !value);
+            setAddOpen(true);
           }}
         >
-          {showBulk ? t('cancel') : t('addApartments')}
-        </Button>
+          <AddActionLabel>{t('addApartments')}</AddActionLabel>
+        </button>
       </div>
 
       {apartmentsQuery.isLoading ? (
@@ -79,15 +78,14 @@ export const FloorInventoryRow = ({ projectId, floor }: FloorInventoryRowProps) 
 
       <EditFloorMediaForm projectId={projectId} floor={floor} />
 
-      {showBulk ? (
-        <BulkApartmentsForm
-          projectId={projectId}
-          floorId={floor.id}
-          onDone={() => {
-            setShowBulk(false);
-          }}
-        />
-      ) : null}
+      <AddApartmentsSheet
+        open={addOpen}
+        onClose={() => {
+          setAddOpen(false);
+        }}
+        projectId={projectId}
+        floorId={floor.id}
+      />
     </div>
   );
 };

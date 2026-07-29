@@ -1,17 +1,18 @@
-"use client";
+'use client';
 
-import type { CrmDealDetail, CrmDealStatus } from "@toonexpo/contracts";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
+import type { CrmDealDetail, CrmDealStatus } from '@toonexpo/contracts';
+import { useTranslations } from 'next-intl';
+import { useState } from 'react';
 
-import { useUpdateCrmDealMutation } from "@/features/builder/hooks/use-portal-crm";
+import { useUpdateCrmDealMutation } from '@/features/builder/hooks/use-portal-crm';
 import {
   crmStatusRequiresApartment,
   getCrmStatusSelectOptions,
-} from "@/features/builder/utils/crm-status-transitions";
-import { Button } from "@/shared/ui/button";
-import { FormField } from "@/shared/ui/form-field";
-import { Input } from "@/shared/ui/input";
+} from '@/features/builder/utils/crm-status-transitions';
+import { Button } from '@/shared/ui/button';
+import { FormField } from '@/shared/ui/form-field';
+import { Input } from '@/shared/ui/input';
+import { Select } from '@/shared/ui/select';
 
 type CrmDealStatusControlProps = {
   deal: CrmDealDetail;
@@ -21,27 +22,26 @@ type CrmDealStatusControlProps = {
  * Status select with lost-reason gate and apartment-link hint.
  */
 export const CrmDealStatusControl = ({ deal }: CrmDealStatusControlProps) => {
-  const t = useTranslations("Builder.crm.detail");
-  const tCrm = useTranslations("Builder.crm");
+  const t = useTranslations('Builder.crm.detail');
+  const tCrm = useTranslations('Builder.crm');
   const mutation = useUpdateCrmDealMutation(deal.id);
   const [status, setStatus] = useState<CrmDealStatus>(deal.status);
-  const [lostReason, setLostReason] = useState(deal.lostReason ?? "");
+  const [lostReason, setLostReason] = useState(deal.lostReason ?? '');
   const [error, setError] = useState<string | null>(null);
 
   const options = getCrmStatusSelectOptions(deal.status);
-  const needsApartment =
-    crmStatusRequiresApartment(status) && deal.apartments.length === 0;
-  const showLostReason = status === "lost";
+  const needsApartment = crmStatusRequiresApartment(status) && deal.apartments.length === 0;
+  const showLostReason = status === 'lost';
   const dirty = status !== deal.status || (showLostReason && lostReason.trim());
 
   const onSave = async () => {
     setError(null);
     if (showLostReason && !lostReason.trim()) {
-      setError(t("lostReasonRequired"));
+      setError(t('lostReasonRequired'));
       return;
     }
     if (needsApartment) {
-      setError(t("apartmentRequired"));
+      setError(t('apartmentRequired'));
       return;
     }
     try {
@@ -50,19 +50,19 @@ export const CrmDealStatusControl = ({ deal }: CrmDealStatusControlProps) => {
         ...(showLostReason ? { lostReason: lostReason.trim() } : {}),
       });
     } catch {
-      setError(t("errors.generic"));
+      setError(t('errors.generic'));
     }
   };
 
   return (
     <div className="flex flex-col gap-3 rounded-sm border border-border p-4">
-      <h2 className="text-sm font-semibold text-ink">{t("statusTitle")}</h2>
-      <FormField id="deal-status" label={t("status")}>
-        <select
+      <h2 className="text-sm font-semibold text-ink">{t('statusTitle')}</h2>
+      <FormField id="deal-status" label={t('status')}>
+        <Select
           id="deal-status"
-          className="h-10 w-full rounded-sm border border-border bg-background px-3 text-sm text-ink"
           value={status}
           disabled={options.length <= 1 || mutation.isPending}
+          aria-label={t('status')}
           onChange={(event) => {
             setStatus(event.target.value as CrmDealStatus);
           }}
@@ -72,11 +72,11 @@ export const CrmDealStatusControl = ({ deal }: CrmDealStatusControlProps) => {
               {tCrm(`statuses.${option}`)}
             </option>
           ))}
-        </select>
+        </Select>
       </FormField>
 
       {showLostReason ? (
-        <FormField id="lost-reason" label={t("lostReason")}>
+        <FormField id="lost-reason" label={t('lostReason')}>
           <Input
             id="lost-reason"
             value={lostReason}
@@ -87,9 +87,7 @@ export const CrmDealStatusControl = ({ deal }: CrmDealStatusControlProps) => {
         </FormField>
       ) : null}
 
-      {needsApartment ? (
-        <p className="text-sm text-ink-muted">{t("apartmentHint")}</p>
-      ) : null}
+      {needsApartment ? <p className="text-sm text-ink-muted">{t('apartmentHint')}</p> : null}
 
       {error ? (
         <p role="alert" className="text-sm text-danger">
@@ -105,7 +103,7 @@ export const CrmDealStatusControl = ({ deal }: CrmDealStatusControlProps) => {
           void onSave();
         }}
       >
-        {mutation.isPending ? t("saving") : t("saveStatus")}
+        {mutation.isPending ? t('saving') : t('saveStatus')}
       </Button>
     </div>
   );

@@ -1,22 +1,18 @@
-import type {
-  FavoriteApartmentCard,
-  FavoriteListItem,
-  ProjectListItem,
-} from "@toonexpo/contracts";
-import type { FavoriteTargetType as DbFavoriteTargetType } from "@toonexpo/db";
+import type { FavoriteApartmentCard, FavoriteListItem, ProjectListItem } from '@toonexpo/contracts';
+import type { FavoriteTargetType as DbFavoriteTargetType } from '@toonexpo/db';
 
-import type { CatalogViewerContext } from "../../catalog/projects.service.js";
-import { publishedApartmentWhere } from "../../catalog/mappers/catalog.mapper.js";
-import { mapProjectListItem } from "../../catalog/mappers/project.mapper.js";
-import { PUBLIC_PUBLICATION_STATUS } from "../../catalog/catalog.constants.js";
-import { loadTranslations } from "../../catalog/utils/load-translations.js";
+import type { CatalogViewerContext } from '../../catalog/projects.service.js';
+import { publishedApartmentWhere } from '../../catalog/mappers/catalog.mapper.js';
+import { mapProjectListItem } from '../../catalog/mappers/project.mapper.js';
+import { PUBLIC_PUBLICATION_STATUS } from '../../catalog/catalog.constants.js';
+import { loadTranslations } from '../../catalog/utils/load-translations.js';
 import {
   resolveCatalogLocale,
   TRANSLATION_ENTITY,
-} from "../../catalog/utils/resolve-translation.js";
-import type { PrismaService } from "../../prisma/prisma.service.js";
-import { fromDbFavoriteTargetType } from "../utils/favorite-target.js";
-import { mapFavoriteApartmentCard } from "../mappers/favorite-apartment.mapper.js";
+} from '../../catalog/utils/resolve-translation.js';
+import type { PrismaService } from '../../prisma/prisma.service.js';
+import { fromDbFavoriteTargetType } from '../utils/favorite-target.js';
+import { mapFavoriteApartmentCard } from '../mappers/favorite-apartment.mapper.js';
 
 type FavoriteRow = {
   id: string;
@@ -40,10 +36,10 @@ export const resolveFavoriteListItems = async (
 
   const locale = resolveCatalogLocale(viewer.locale);
   const projectIds = favorites
-    .filter((row) => row.targetType === "project")
+    .filter((row) => row.targetType === 'project')
     .map((row) => row.targetId);
   const apartmentIds = favorites
-    .filter((row) => row.targetType === "apartment")
+    .filter((row) => row.targetType === 'apartment')
     .map((row) => row.targetId);
 
   const [projectCards, apartmentCards] = await Promise.all([
@@ -56,7 +52,7 @@ export const resolveFavoriteListItems = async (
   for (const favorite of favorites) {
     const targetType = fromDbFavoriteTargetType(favorite.targetType);
 
-    if (targetType === "project") {
+    if (targetType === 'project') {
       const project = projectCards.get(favorite.targetId);
       if (!project) {
         continue;
@@ -120,9 +116,7 @@ const loadProjectCards = async (
   });
 
   const projectIdList = [...new Set(projects.map((project) => project.id))];
-  const builderIds = [
-    ...new Set(projects.map((project) => project.builderCompany.id)),
-  ];
+  const builderIds = [...new Set(projects.map((project) => project.builderCompany.id))];
 
   const [projectRows, companyRows] = await Promise.all([
     loadTranslations(prisma.db, TRANSLATION_ENTITY.project, projectIdList),
@@ -163,6 +157,7 @@ const loadApartmentCards = async (
     include: {
       project: {
         include: {
+          coverMedia: true,
           builderCompany: { include: { logoMedia: true } },
         },
       },
@@ -171,9 +166,7 @@ const loadApartmentCards = async (
 
   const projectIds = [...new Set(apartments.map((apartment) => apartment.project.id))];
   const builderIds = [
-    ...new Set(
-      apartments.map((apartment) => apartment.project.builderCompany.id),
-    ),
+    ...new Set(apartments.map((apartment) => apartment.project.builderCompany.id)),
   ];
 
   const [projectRows, companyRows] = await Promise.all([

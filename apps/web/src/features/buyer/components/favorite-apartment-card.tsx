@@ -1,38 +1,31 @@
 'use client';
 
 import type { FavoriteApartmentCard } from '@toonexpo/contracts';
+import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
 
-import { AccountStatusBadge } from '@/features/buyer/components/account/account-status-badge';
 import { FavoriteToggleButton } from '@/features/buyer/components/favorite-toggle-button';
 import { formatCatalogPrice } from '@/features/catalog/utils/format-price';
 import { Link } from '@/i18n/navigation';
-import { Card } from '@/shared/ui/card';
+import { cn } from '@/shared/ui/cn';
 
 type FavoriteApartmentCardProps = {
   apartment: FavoriteApartmentCard;
 };
 
-const salesStatusTone = (
-  status: FavoriteApartmentCard['salesStatus'],
-): 'success' | 'warning' | 'neutral' => {
-  if (status === 'available') {
-    return 'success';
-  }
-  if (status === 'reserved') {
-    return 'warning';
-  }
-  return 'neutral';
-};
-
 /**
- * Compact apartment card for the buyer favorites grid.
+ * Marketplace-style apartment card for the buyer favorites grid.
+ * Matches ProjectCard chrome on `/favorites`.
  */
 export const FavoriteApartmentCardView = ({ apartment }: FavoriteApartmentCardProps) => {
   const t = useTranslations('Favorites');
+  const tBuy = useTranslations('BuyPage');
   const tCatalog = useTranslations('Catalog');
   const locale = useLocale();
-  const price = formatCatalogPrice({
+  const district = apartment.district?.trim() || null;
+  const city = apartment.city?.trim() || null;
+  const locationFallback = apartment.locationText?.trim() || null;
+  const priceLabel = formatCatalogPrice({
     amount: apartment.price,
     currency: apartment.priceCurrency,
     locale,
@@ -42,65 +35,91 @@ export const FavoriteApartmentCardView = ({ apartment }: FavoriteApartmentCardPr
   });
 
   return (
-    <Card variant="elevated" padding="sm" className="relative flex h-full flex-col gap-4">
-      <div className="absolute top-3 right-3 z-10">
-        <FavoriteToggleButton targetType="apartment" targetId={apartment.id} variant="surface" />
-      </div>
+    <article
+      className={cn(
+        'group flex h-full flex-col overflow-hidden rounded-[20px] bg-surface-elevated p-2',
+        'ring-1 ring-header-border transition-all duration-[var(--duration-base)]',
+        'hover:shadow-lg hover:shadow-brand/5 hover:ring-brand/40',
+      )}
+    >
+      <div className="relative aspect-[4/3] overflow-hidden rounded-[15px] bg-surface">
+        <Link href={`/apartments/${apartment.id}`} className="absolute inset-0 block">
+          {apartment.cover ? (
+            <Image
+              src={apartment.cover.fileUrl}
+              alt={apartment.cover.altText ?? apartment.project.name}
+              fill
+              className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+              sizes="(max-width: 768px) 100vw, 33vw"
+            />
+          ) : (
+            <div className="flex size-full items-center justify-center bg-surface px-4 text-center text-sm text-header-muted">
+              {t('apartmentTitle', {
+                number: apartment.number,
+                project: apartment.project.name,
+              })}
+            </div>
+          )}
+        </Link>
 
-      <div className="flex items-start justify-between gap-3 pr-11">
-        <div className="flex min-w-0 flex-col gap-1">
-          <Link
-            href={`/apartments/${apartment.id}`}
-            className="text-sm font-semibold text-ink transition-colors hover:text-brand"
-          >
-            {t('apartmentTitle', {
-              number: apartment.number,
-              project: apartment.project.name,
-            })}
-          </Link>
-          <p className="text-xs text-ink-secondary">{apartment.builder.name}</p>
-        </div>
-        <AccountStatusBadge
-          label={tCatalog(`status.${apartment.salesStatus}`)}
-          tone={salesStatusTone(apartment.salesStatus)}
+        <span
+          className={cn(
+            'pointer-events-none absolute top-3 left-3 rounded-sm bg-canvas/95 px-2 py-1',
+            'text-[10px] font-bold tracking-widest text-brand-deep uppercase',
+          )}
+        >
+          {tCatalog('badges.verified')}
+        </span>
+
+        <FavoriteToggleButton
+          targetType="apartment"
+          targetId={apartment.id}
+          className="absolute top-3 right-3 z-10"
         />
       </div>
 
-      <dl className="grid grid-cols-2 gap-3 text-xs text-ink-secondary sm:grid-cols-3">
-        {apartment.rooms != null ? (
-          <div>
-            <dt className="text-[10px] font-bold tracking-widest text-ink-muted uppercase">
-              {tCatalog('apartment.roomsLabel')}
-            </dt>
-            <dd className="mt-0.5 font-medium text-ink">{apartment.rooms}</dd>
-          </div>
-        ) : null}
-        {apartment.areaTotal != null ? (
-          <div>
-            <dt className="text-[10px] font-bold tracking-widest text-ink-muted uppercase">
-              {tCatalog('apartment.areaLabel')}
-            </dt>
-            <dd className="mt-0.5 font-medium text-ink">
-              {tCatalog('apartment.area', { area: apartment.areaTotal })}
-            </dd>
-          </div>
-        ) : null}
-        <div>
-          <dt className="text-[10px] font-bold tracking-widest text-ink-muted uppercase">
-            {t('priceLabel')}
-          </dt>
-          <dd className="mt-0.5 font-medium text-ink">{price}</dd>
+      <div className="flex flex-1 flex-col px-3 pt-4 pb-3">
+        <div className="mb-1 flex flex-col gap-1 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between sm:gap-x-3 sm:gap-y-1">
+          <h3 className="min-w-0 truncate font-brand text-base font-semibold tracking-[-0.02em] text-ink-navy sm:min-w-[min(100%,10rem)] sm:flex-1 sm:basis-[10rem]">
+            <Link
+              href={`/apartments/${apartment.id}`}
+              className="transition-colors hover:text-brand-deep"
+            >
+              {t('apartmentTitle', {
+                number: apartment.number,
+                project: apartment.project.name,
+              })}
+            </Link>
+          </h3>
+          <p className="font-brand text-lg font-bold leading-7 text-brand-deep sm:shrink-0">
+            {priceLabel}
+          </p>
         </div>
-      </dl>
 
-      <div className="mt-auto border-t border-border/60 pt-3">
-        <Link
-          href={`/projects/${apartment.project.id}`}
-          className="text-xs font-semibold text-brand hover:underline"
+        <p className="mb-4 text-xs leading-4 text-header-muted">
+          {district && city ? (
+            <>
+              <span>{district}</span>
+              <span>{' · '}</span>
+              <span>{city}</span>
+            </>
+          ) : (
+            (locationFallback ?? city ?? district ?? apartment.builder.name)
+          )}
+        </p>
+
+        <div
+          className={cn(
+            'mt-auto flex flex-wrap items-center gap-4 border-t border-header-border pt-3',
+            'text-[11px] font-medium tracking-tight text-header-muted uppercase',
+          )}
         >
-          {tCatalog('actions.viewProject')}
-        </Link>
+          <span>{apartment.rooms != null ? tBuy('specBed', { count: apartment.rooms }) : '—'}</span>
+          <span>
+            {apartment.areaTotal != null ? tBuy('specArea', { area: apartment.areaTotal }) : '—'}
+          </span>
+        </div>
       </div>
-    </Card>
+    </article>
   );
 };

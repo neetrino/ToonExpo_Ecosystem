@@ -42,7 +42,9 @@ export const BankOffersListPage = () => {
   const [editing, setEditing] = useState<BankOfferListItem | null>(null);
   const [creating, setCreating] = useState(false);
   const [pendingDelete, setPendingDelete] = useState<BankOfferListItem | null>(null);
-  const { viewMode, setViewMode } = usePersistedViewMode(ADMIN_VIEW_MODE_KEYS.bankOffers);
+  const { viewMode, effectiveViewMode, setViewMode } = usePersistedViewMode(
+    ADMIN_VIEW_MODE_KEYS.bankOffers,
+  );
 
   const offersQuery = useAdminBankOffersQuery(
     partnerFilter ? { partnerCompanyId: partnerFilter } : {},
@@ -231,7 +233,7 @@ export const BankOffersListPage = () => {
       ) : (
         <BankOffersCollection
           offers={filteredOffers}
-          viewMode={viewMode}
+          viewMode={effectiveViewMode}
           busy={busy}
           onEdit={(offer) => {
             setEditing(offer);

@@ -1,11 +1,12 @@
-"use client";
+'use client';
 
-import { useTranslations } from "next-intl";
+import { useTranslations } from 'next-intl';
 
-import { EXHIBITION_ROUTE_NODE_TYPES } from "@/features/exhibition/constants";
-import type { EditableRouteNode } from "@/features/exhibition/components/admin/admin-route-graph-types";
-import { Button } from "@/shared/ui/button";
-import { Input } from "@/shared/ui/input";
+import { EXHIBITION_ROUTE_NODE_TYPES } from '@/features/exhibition/constants';
+import type { EditableRouteNode } from '@/features/exhibition/components/admin/admin-route-graph-types';
+import { Button } from '@/shared/ui/button';
+import { Input } from '@/shared/ui/input';
+import { Select } from '@/shared/ui/select';
 
 type AdminRouteGraphNodesTableProps = {
   nodes: EditableRouteNode[];
@@ -21,12 +22,12 @@ export const AdminRouteGraphNodesTable = ({
   boothOptions,
   onChange,
 }: AdminRouteGraphNodesTableProps) => {
-  const t = useTranslations("Admin.events.routeGraph");
+  const t = useTranslations('Admin.events.routeGraph');
 
   return (
     <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between">
-        <p className="text-xs font-medium uppercase text-ink-muted">{t("nodes")}</p>
+        <p className="text-xs font-medium uppercase text-ink-muted">{t('nodes')}</p>
         <Button
           type="button"
           size="sm"
@@ -36,29 +37,29 @@ export const AdminRouteGraphNodesTable = ({
               ...nodes,
               {
                 localId: `new-${Date.now()}`,
-                code: "",
-                label: "",
-                type: "entrance",
+                code: '',
+                label: '',
+                type: 'entrance',
                 xPercent: 50,
                 yPercent: 50,
-                boothId: "",
+                boothId: '',
               },
             ]);
           }}
         >
-          {t("addNode")}
+          {t('addNode')}
         </Button>
       </div>
       <div className="overflow-x-auto">
         <table className="min-w-full text-left text-xs">
           <thead>
             <tr className="border-b border-border text-ink-muted">
-              <th className="px-2 py-2">{t("code")}</th>
-              <th className="px-2 py-2">{t("label")}</th>
-              <th className="px-2 py-2">{t("type")}</th>
+              <th className="px-2 py-2">{t('code')}</th>
+              <th className="px-2 py-2">{t('label')}</th>
+              <th className="px-2 py-2">{t('type')}</th>
               <th className="px-2 py-2">X</th>
               <th className="px-2 py-2">Y</th>
-              <th className="px-2 py-2">{t("booth")}</th>
+              <th className="px-2 py-2">{t('booth')}</th>
             </tr>
           </thead>
           <tbody>
@@ -85,14 +86,14 @@ export const AdminRouteGraphNodesTable = ({
                   />
                 </td>
                 <td className="px-2 py-2">
-                  <select
-                    className="h-10 w-full rounded-sm border border-border bg-background px-2"
+                  <Select
                     value={node.type}
+                    aria-label={t('type')}
                     onChange={(event) => {
                       const next = [...nodes];
                       next[index] = {
                         ...node,
-                        type: event.target.value as EditableRouteNode["type"],
+                        type: event.target.value as EditableRouteNode['type'],
                       };
                       onChange(next);
                     }}
@@ -102,7 +103,7 @@ export const AdminRouteGraphNodesTable = ({
                         {t(`nodeTypes.${type}`)}
                       </option>
                     ))}
-                  </select>
+                  </Select>
                 </td>
                 <td className="px-2 py-2">
                   <Input
@@ -137,22 +138,22 @@ export const AdminRouteGraphNodesTable = ({
                   />
                 </td>
                 <td className="px-2 py-2">
-                  <select
-                    className="h-10 w-full rounded-sm border border-border bg-background px-2"
+                  <Select
                     value={node.boothId}
+                    aria-label={t('booth')}
                     onChange={(event) => {
                       const next = [...nodes];
                       next[index] = { ...node, boothId: event.target.value };
                       onChange(next);
                     }}
                   >
-                    <option value="">{t("noBooth")}</option>
+                    <option value="">{t('noBooth')}</option>
                     {boothOptions.map((booth) => (
                       <option key={booth.id} value={booth.id}>
                         {booth.code}
                       </option>
                     ))}
-                  </select>
+                  </Select>
                 </td>
               </tr>
             ))}

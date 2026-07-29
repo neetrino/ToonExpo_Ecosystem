@@ -17,6 +17,13 @@
       "list": "Список",
       "cards": "Карточки",
       "board": "Доска"
+    },
+    "datePicker": {
+      "placeholder": "Выберите дату",
+      "clear": "Удалить",
+      "today": "Сегодня",
+      "previousMonth": "Предыдущий месяц",
+      "nextMonth": "Следующий месяц"
     }
   },
   "CrmBoard": {
@@ -100,12 +107,6 @@
       "search": "Искать дома",
       "explore": "Смотреть проекты",
       "register": "Бесплатная регистрация",
-      "tabsLabel": "Режим поиска",
-      "tabs": {
-        "buy": "Купить",
-        "rent": "Аренда",
-        "newBuilds": "Новостройки"
-      },
       "locationLabel": "Локация",
       "locationPlaceholder": "Выберите город",
       "locationAny": "Любая локация",
@@ -268,10 +269,45 @@
     "profileMenu": "Меню аккаунта",
     "admin": "Админ",
     "builder": "Застройщик",
+    "scanner": "Сканер",
+    "product": "Продукт",
     "loading": "…",
     "partners": "Партнёры",
     "mortgage": "Ипотека",
-    "expoMap": "Карта выставки"
+    "expoMap": "Карта выставки",
+    "discover": "Подборка",
+    "qr": "QR",
+    "map": "Карта"
+  },
+  "Discover": {
+    "meta": {
+      "title": "Подборка квартир",
+      "description": "Листайте доступные квартиры и сохраняйте те, что нравятся."
+    },
+    "title": "Подборка",
+    "subtitle": "Вправо — лайк, влево — следующий",
+    "hint": "Тяните карточку или нажимайте кнопки",
+    "loginHint": "Войдите, чтобы сохранять понравившиеся квартиры.",
+    "loginCta": "Войти",
+    "error": "Не удалось загрузить квартиры. Попробуйте ещё раз.",
+    "stamp": {
+      "like": "Лайк",
+      "skip": "Пропуск"
+    },
+    "actions": {
+      "like": "Лайкнуть квартиру",
+      "skip": "Пропустить квартиру"
+    },
+    "card": {
+      "from": "От",
+      "unitTitle": "Кв. {number} · {project}"
+    },
+    "empty": {
+      "title": "На этом пока всё",
+      "body": "В колоде больше нет квартир. Начните снова или откройте каталог.",
+      "none": "Пока нет доступных квартир.",
+      "restart": "Начать снова"
+    }
   },
   "BuyPage": {
     "title": "Квартиры в продаже",
@@ -891,7 +927,6 @@
   },
   "Profile": {
     "cabinetTitle": "Мой кабинет",
-    "cabinetSubtitle": "Управляйте профилем, QR, избранным, check-in и заявками",
     "badge": "Кабинет",
     "title": "Мой профиль",
     "subtitle": "Данные вашего аккаунта ToonExpo",
@@ -975,13 +1010,23 @@
     "qr": {
       "title": "Мой QR",
       "subtitle": "Покажите этот постоянный код застройщикам и сотрудникам входа на выставке",
-      "hint": "Держите телефон ровно, чтобы код удобно сканировали.",
       "secureBadge": "Безопасный постоянный QR",
       "codeTitle": "QR-код для {name}",
-      "fullscreen": "Увеличить на весь экран",
-      "exitFullscreen": "Выйти из полноэкранного режима",
       "loading": "Загрузка QR…",
       "error": "Не удалось загрузить QR. Попробуйте ещё раз.",
+      "sheet": {
+        "loginHint": "Войдите, чтобы показать постоянный QR на выставке.",
+        "login": "Войти",
+        "buyerOnly": "Мой QR доступен только для аккаунтов покупателей."
+      },
+      "scanner": {
+        "open": "Сканер",
+        "title": "QR-сканер",
+        "subtitle": "Отсканируйте QR проекта на выставке, чтобы открыть его страницу",
+        "errors": {
+          "invalid": "Не удалось прочитать QR-код ToonExpo."
+        }
+      },
       "scans": {
         "title": "История сканирований",
         "loading": "Загрузка истории…",
@@ -1114,18 +1159,21 @@
   "Admin": {
     "badge": "Админ",
     "profileLink": "Профиль",
+    "home": {
+      "title": "Админ",
+      "subtitle": "Выберите раздел в боковом меню, чтобы управлять платформой."
+    },
     "nav": {
       "label": "Навигация админки",
       "section": "Управление",
       "portalLabel": "Портал управления",
       "analytics": "Аналитика",
       "companies": "Компании",
+      "users": "Пользователи",
       "projects": "Проекты",
       "buildings": "Здание",
       "floors": "Этаж",
       "apartments": "Квартира",
-      "interactiveMapping": "Интерактивная карта",
-      "crm": "CRM",
       "readiness": "Готовность",
       "readinessCategories": "Категории",
       "partners": "Партнёры",
@@ -1222,57 +1270,6 @@
         "label": "Разделы настроек",
         "profile": "Профиль",
         "password": "Пароль"
-      }
-    },
-    "crm": {
-      "title": "CRM",
-      "eyebrow": "Воронка",
-      "subtitle": "{count, plural, =0 {Нет сделок} one {# сделка по застройщикам} few {# сделки по застройщикам} other {# сделок по застройщикам}}",
-      "error": "Не удалось загрузить CRM. Попробуйте снова.",
-      "filters": {
-        "company": "Застройщик",
-        "allCompanies": "Все застройщики",
-        "selectedCount": "{count} выбрано",
-        "apply": "Применить",
-        "reset": "Сбросить",
-        "clearAll": "Очистить поиск и фильтры",
-        "panelLabel": "Фильтры поиска",
-        "removeChip": "Убрать фильтр {label}"
-      },
-      "empty": "Нет сделок по этим фильтрам.",
-      "columns": {
-        "buyer": "Покупатель",
-        "company": "Застройщик",
-        "project": "Проект",
-        "status": "Статус",
-        "source": "Источник",
-        "assignee": "Ответственный",
-        "updated": "Обновлено"
-      },
-      "newDeal": {
-        "title": "Новый лид",
-        "cancel": "Отмена",
-        "company": "Застройщик",
-        "companyPlaceholder": "Выберите застройщика",
-        "contactName": "Полное имя",
-        "contactNamePlaceholder": "John Doe",
-        "contactPhone": "Телефон",
-        "contactPhonePlaceholder": "37491111222",
-        "contactEmail": "Email",
-        "contactEmailPlaceholder": "john.doe@example.com",
-        "project": "Проект",
-        "projectOptional": "Без проекта",
-        "note": "Заметка",
-        "submitting": "Создание…",
-        "validation": {
-          "company": "Выберите застройщика",
-          "contactName": "Введите имя",
-          "phone": "Введите корректный телефон",
-          "email": "Введите корректный email"
-        },
-        "errors": {
-          "generic": "Что-то пошло не так. Попробуйте снова."
-        }
       }
     },
     "analytics": {
@@ -1396,7 +1393,13 @@
         "resendConfirm": "Повторно отправить письмо с установкой пароля приглашённому админу?",
         "resendSubmitting": "Отправка…",
         "resendSuccess": "Приглашение отправлено повторно",
-        "resendNotFound": "У этой компании нет приглашённого администратора"
+        "resendNotFound": "У этой компании нет приглашённого администратора",
+        "projects": {
+          "title": "Проекты",
+          "count": "{count, plural, =0 {Нет проектов} one {# проект} few {# проекта} many {# проектов} other {# проекта}}",
+          "empty": "У этой компании пока нет проектов.",
+          "error": "Не удалось загрузить проекты. Попробуйте ещё раз."
+        }
       },
       "catalog": {
         "title": "Каталог",
@@ -1406,6 +1409,45 @@
         "breadcrumbCompanies": "Компании",
         "breadcrumbCatalog": "Каталог",
         "companyFallback": "Компания"
+      }
+    },
+    "users": {
+      "title": "Пользователи",
+      "subtitle": "{count, plural, =0 {Нет пользователей} one {# пользователь} few {# пользователя} other {# пользователей}}",
+      "empty": "Нет пользователей по этим фильтрам.",
+      "loading": "Загрузка пользователей…",
+      "error": "Не удалось загрузить пользователей. Попробуйте ещё раз.",
+      "filters": {
+        "accountType": "Тип аккаунта",
+        "allAccountTypes": "Все типы",
+        "status": "Статус",
+        "allStatuses": "Все статусы",
+        "searchPlaceholder": "Поиск по имени, email или телефону"
+      },
+      "columns": {
+        "name": "Имя",
+        "email": "Email",
+        "accountType": "Тип",
+        "company": "Компания",
+        "status": "Статус",
+        "createdAt": "Создан"
+      },
+      "accountTypes": {
+        "buyer": "Покупатель",
+        "platform_admin": "Админ платформы",
+        "entrance_staff": "Сотрудник входа",
+        "company_member": "Участник компании"
+      },
+      "statuses": {
+        "invited": "Приглашён",
+        "active": "Активен",
+        "inactive": "Неактивен",
+        "blocked": "Заблокирован"
+      },
+      "pagination": {
+        "previous": "Назад",
+        "next": "Вперёд",
+        "ariaLabel": "Пагинация"
       }
     },
     "projects": {
@@ -1435,6 +1477,13 @@
         "previous": "Назад",
         "next": "Вперёд",
         "ariaLabel": "Пагинация"
+      },
+      "create": {
+        "cta": "+ Добавить проект",
+        "title": "Добавить проект",
+        "company": "Компания",
+        "selectCompany": "Выберите компанию",
+        "pickCompany": "Выберите компанию, чтобы продолжить."
       }
     },
     "buildings": {
@@ -2363,6 +2412,7 @@
       "qr": {
         "title": "QR проекта",
         "subtitle": "Распечатайте этот QR для стенда — покупатели попадут на публичную страницу проекта.",
+        "open": "Открыть QR проекта",
         "loading": "Загрузка QR…",
         "error": "Не удалось загрузить QR проекта.",
         "codeTitle": "QR проекта {name}",
@@ -2628,11 +2678,21 @@
       "empty": "Участников пока нет.",
       "loading": "Загрузка…",
       "error": "Не удалось загрузить команду. Попробуйте ещё раз.",
-      "inviteMember": "Пригласить участника",
+      "inviteMember": "+ Пригласить участника",
+      "inviteSheetTitle": "Пригласить участника",
       "readOnlyNotice": "Вы можете просматривать команду. Приглашать и менять роли могут только админы компании.",
       "inviteSuccess": "Приглашение отправлено на {email}",
       "updateSuccess": "Участник обновлён",
       "deactivate": "Деактивировать",
+      "activate": "Снова активировать",
+      "activeToggle": "Участник активен",
+      "deactivateConfirmTitle": "Деактивировать участника",
+      "deactivateConfirmMessage": "Вы уверены, что хотите деактивировать «{name}»? Доступ будет закрыт до повторной активации.",
+      "activateConfirmTitle": "Снова активировать участника",
+      "activateConfirmMessage": "Вы уверены, что хотите снова активировать «{name}»?",
+      "roleConfirmTitle": "Изменить роль",
+      "roleConfirmMessage": "Вы уверены, что хотите изменить роль «{name}» на {role}?",
+      "roleConfirmAction": "Изменить роль",
       "pagination": {
         "previous": "Назад",
         "next": "Вперёд",
@@ -2656,7 +2716,8 @@
       },
       "confirm": {
         "role": "Изменить роль {name} на {role}?",
-        "deactivate": "Деактивировать {name}?"
+        "deactivate": "Деактивировать {name}?",
+        "activate": "Снова активировать {name}?"
       },
       "form": {
         "name": "Имя",

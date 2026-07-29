@@ -28,7 +28,9 @@ export const AdminApartmentsListPage = () => {
   const [showCreate, setShowCreate] = useState(false);
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { viewMode, setViewMode } = usePersistedViewMode(ADMIN_VIEW_MODE_KEYS.apartments);
+  const { viewMode, effectiveViewMode, setViewMode } = usePersistedViewMode(
+    ADMIN_VIEW_MODE_KEYS.apartments,
+  );
   const returnTo = (() => {
     const queryString = searchParams.toString();
     return queryString.length > 0 ? `${pathname}?${queryString}` : pathname;
@@ -67,7 +69,7 @@ export const AdminApartmentsListPage = () => {
           <AdminApartmentsTable
             apartments={response.data}
             returnTo={returnTo}
-            viewMode={viewMode}
+            viewMode={effectiveViewMode}
           />
         ) : null}
       </AdminInventoryListShell>

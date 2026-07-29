@@ -17,6 +17,7 @@ import { toCreateProjectRequest } from '@/features/builder/utils/project-mappers
 import { MediaUploadField } from '@/features/media/components/media-upload-field';
 import { useRouter } from '@/i18n/navigation';
 import { Button } from '@/shared/ui/button';
+import { DatePicker } from '@/shared/ui/date-picker';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
 
@@ -43,10 +44,15 @@ const emptyValues = (): CreateProjectFormValues => ({
   coverMediaId: '',
 });
 
+type CreateProjectFormProps = {
+  /** When set, called after create instead of navigating (sheet flow). */
+  onCreated?: ((projectId: string) => void) | undefined;
+};
+
 /**
  * Form to create a draft portal project with multilingual fields.
  */
-export const CreateProjectForm = () => {
+export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) => {
   const scope = useCatalogScope();
   const mediaContext = catalogMediaContext(scope);
   const t = useTranslations('Builder.projects');
@@ -68,6 +74,10 @@ export const CreateProjectForm = () => {
     setFormError(null);
     try {
       const project = await createMutation.mutateAsync(toCreateProjectRequest(values));
+      if (onCreated) {
+        onCreated(project.id);
+        return;
+      }
       router.push(catalogProjectDetailHref(scope, project.id));
     } catch {
       setFormError(t('errors.generic'));
@@ -77,7 +87,7 @@ export const CreateProjectForm = () => {
   const busy = isSubmitting || createMutation.isPending;
 
   return (
-    <form onSubmit={onSubmit} className="flex max-w-2xl flex-col gap-5" noValidate>
+    <form onSubmit={onSubmit} className="flex flex-col gap-5" noValidate>
       <TranslationTabs>
         {(locale) => (
           <div className="flex flex-col gap-4">
@@ -161,7 +171,20 @@ export const CreateProjectForm = () => {
           </FormField>
         </div>
         <FormField id="completionDate" label={t('form.completionDate')}>
-          <Input id="completionDate" type="date" {...register('completionDate')} />
+          <Controller
+            name="completionDate"
+            control={control}
+            render={({ field }) => (
+              <DatePicker
+                id="completionDate"
+                name={field.name}
+                value={field.value ?? ''}
+                aria-label={t('form.completionDate')}
+                onBlur={field.onBlur}
+                onChange={field.onChange}
+              />
+            )}
+          />
         </FormField>
       </fieldset>
 

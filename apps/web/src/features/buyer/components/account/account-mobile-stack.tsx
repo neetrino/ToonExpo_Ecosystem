@@ -12,6 +12,7 @@ import {
 import { useAccountSheetEdgeSwipe } from '@/features/buyer/components/account/use-account-sheet-edge-swipe';
 import { usePathname, useRouter } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
+import { MOBILE_BOTTOM_NAV_SHEET_PB_CLASS } from '@/shared/ui/mobile-bottom-nav-clearance';
 
 /** Lets the profile hub paint before a cold-opened sheet slides over it. */
 const HUB_FIRST_PAINT_MS = 80;
@@ -158,7 +159,6 @@ export const AccountMobileStack = ({
       return;
     }
     exitingRef.current = true;
-    scrollWindowToTop();
     router.replace('/dashboard');
   }, [isHub, router, sheetOpen]);
 
@@ -195,7 +195,7 @@ export const AccountMobileStack = ({
             showOverlay && [
               'max-md:mx-auto max-md:w-full max-md:max-w-md',
               'max-md:px-[var(--page-gutter)] max-md:pt-5',
-              'max-md:pb-[calc(5.5rem+env(safe-area-inset-bottom,0px))]',
+              MOBILE_BOTTOM_NAV_SHEET_PB_CLASS,
             ],
           )}
         >
