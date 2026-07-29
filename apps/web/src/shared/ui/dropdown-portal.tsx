@@ -65,25 +65,8 @@ const findStage = (anchor: HTMLElement): HTMLElement | null => {
   return anchor.closest(STAGE_SELECTOR);
 };
 
-/** True when the anchor lives under fixed/sticky chrome (header). */
-const hasFixedAncestor = (anchor: HTMLElement, stopAt: HTMLElement | null): boolean => {
-  let current: HTMLElement | null = anchor.parentElement;
-  while (current && current !== stopAt && current !== document.body) {
-    const { position } = getComputedStyle(current);
-    if (position === 'fixed' || position === 'sticky') {
-      return true;
-    }
-    current = current.parentElement;
-  }
-  return false;
-};
-
 const resolveHost = (anchor: HTMLElement): HTMLElement => {
-  const stage = findStage(anchor);
-  if (stage && !hasFixedAncestor(anchor, stage)) {
-    return stage;
-  }
-  return document.body;
+  return findStage(anchor) ?? document.body;
 };
 
 /**
@@ -118,8 +101,10 @@ const computeMenuCoords = (
   const menuWidth = lockWidthToAnchor ? anchorWidth : (menu?.offsetWidth ?? 0);
   const menuHeight = measureMenuHeight(menu);
 
-  // In-flow triggers: portal into the zoomed stage in design px — no transform:scale.
-  if (stage && !hasFixedAncestor(anchor, stage)) {
+  // In-flow / sheet triggers: portal into the zoomed stage in design px.
+  // Keep stage coords even when the trigger sits under fixed sheet chrome so
+  // dropdowns/date pickers stay aligned at every desktop fluid scale.
+  if (stage) {
     const stageRect = stage.getBoundingClientRect();
     const local = toStageLocal(stage, stageRect, anchorRect);
     const viewH = document.documentElement.clientHeight || window.innerHeight;

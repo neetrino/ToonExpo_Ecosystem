@@ -4,13 +4,14 @@
 
 import type {
   ApartmentSalesStatus,
+  MediaAssetSummary,
   PriceVisibility,
   ProjectListItem,
-} from "./catalog.js";
+} from './catalog.js';
 
-export type FavoriteTargetType = "project" | "apartment";
+export type FavoriteTargetType = 'project' | 'apartment';
 
-/** Compact apartment card for favorites list (reuses catalog card fields). */
+/** Apartment card for favorites list — same marketplace card chrome as projects. */
 export type FavoriteApartmentCard = {
   id: string;
   number: string;
@@ -20,6 +21,10 @@ export type FavoriteApartmentCard = {
   price: string | null;
   priceCurrency: string;
   priceVisibility: PriceVisibility;
+  cover: MediaAssetSummary | null;
+  city: string | null;
+  district: string | null;
+  locationText: string | null;
   project: {
     id: string;
     name: string;
@@ -34,7 +39,7 @@ export type FavoriteApartmentCard = {
 
 export type FavoriteProjectListItem = {
   id: string;
-  targetType: "project";
+  targetType: 'project';
   targetId: string;
   savedAt: string;
   project: ProjectListItem;
@@ -42,15 +47,13 @@ export type FavoriteProjectListItem = {
 
 export type FavoriteApartmentListItem = {
   id: string;
-  targetType: "apartment";
+  targetType: 'apartment';
   targetId: string;
   savedAt: string;
   apartment: FavoriteApartmentCard;
 };
 
-export type FavoriteListItem =
-  | FavoriteProjectListItem
-  | FavoriteApartmentListItem;
+export type FavoriteListItem = FavoriteProjectListItem | FavoriteApartmentListItem;
 
 export type BuyerFavoritesListResponse = {
   items: FavoriteListItem[];

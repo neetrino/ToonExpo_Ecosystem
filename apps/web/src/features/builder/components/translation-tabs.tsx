@@ -17,6 +17,9 @@ type IndicatorMetrics = {
   width: number;
 };
 
+/** Active tab underline — 1 layout px (same at every fluid scale). */
+const TAB_UNDERLINE_CLASS = 'h-px';
+
 /**
  * hy / ru / en tab switcher with a sliding underline and soft panel fade.
  */
@@ -35,17 +38,21 @@ export const TranslationTabs = ({ children }: TranslationTabsProps) => {
       if (!list || !tab) {
         return;
       }
-      const listBox = list.getBoundingClientRect();
-      const tabBox = tab.getBoundingClientRect();
       setIndicator({
-        left: tabBox.left - listBox.left + list.scrollLeft,
-        width: tabBox.width,
+        left: tab.offsetLeft - list.scrollLeft,
+        width: tab.offsetWidth,
       });
     };
 
     updateIndicator();
+    const list = listRef.current;
+    const resizeObserver = list ? new ResizeObserver(updateIndicator) : null;
+    if (list) {
+      resizeObserver?.observe(list);
+    }
     window.addEventListener('resize', updateIndicator);
     return () => {
+      resizeObserver?.disconnect();
       window.removeEventListener('resize', updateIndicator);
     };
   }, [active]);
@@ -69,7 +76,8 @@ export const TranslationTabs = ({ children }: TranslationTabsProps) => {
         <span
           aria-hidden
           className={cn(
-            'pointer-events-none absolute bottom-0 h-0.5 rounded-full bg-brand',
+            'pointer-events-none absolute bottom-0 bg-brand',
+            TAB_UNDERLINE_CLASS,
             'transition-[transform,width] duration-[var(--duration-base)] ease-[var(--ease-out-premium)]',
             'motion-reduce:transition-none',
           )}

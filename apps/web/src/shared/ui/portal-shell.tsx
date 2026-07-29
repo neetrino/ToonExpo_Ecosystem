@@ -114,6 +114,10 @@ export const PortalShell = ({
   const isRail = variant === 'rail';
   const renderSiteHeader = isRail && showSiteHeader;
   const renderRailHeaderMask = isRail && showRailHeaderMask;
+  /** Keep under-header clip the same fill as the shell (e.g. admin `bg-canvas`). */
+  const railMaskFillClass = className?.split(/\s+/).includes('bg-canvas')
+    ? 'bg-canvas'
+    : 'bg-background';
   const mobileDrawerWidthClass =
     locale === 'hy' ? MOBILE_DRAWER_WIDTH_HY_CLASS : MOBILE_DRAWER_WIDTH_CLASS;
 
@@ -227,15 +231,17 @@ export const PortalShell = ({
             <>
               <div
                 className={cn(
-                  'pointer-events-none fixed inset-x-0 top-0 z-[var(--z-sticky)] bg-background',
+                  'pointer-events-none fixed inset-x-0 top-0 z-[var(--z-sticky)] hidden md:block',
+                  railMaskFillClass,
                   RAIL_HEADER_BAND_HEIGHT_CLASS,
                 )}
                 aria-hidden
               />
               <div
                 className={cn(
-                  'pointer-events-none fixed top-0 right-0 z-[var(--z-sticky)] bg-background',
+                  'pointer-events-none fixed top-0 right-0 z-[var(--z-sticky)] hidden md:block',
                   'left-0 md:left-72',
+                  railMaskFillClass,
                   RAIL_CONTENT_MASK_HEIGHT_CLASS,
                 )}
                 aria-hidden
@@ -300,7 +306,9 @@ export const PortalShell = ({
           className={cn(
             'flex flex-col gap-8 md:flex-row md:gap-8 md:py-0',
             RAIL_ROW_GAP_CLASS,
-            !renderRailHeaderMask && RAIL_ROW_GAP_PUBLIC_HEADER_MOBILE_CLASS,
+            // Mobile profile hubs hide SiteHeader — keep top safe-area air without the desktop mask.
+            (!renderRailHeaderMask || mobileDrawerControlledByNavbar) &&
+              RAIL_ROW_GAP_PUBLIC_HEADER_MOBILE_CLASS,
           )}
         >
           {mobileDrawerControlledByNavbar ? (

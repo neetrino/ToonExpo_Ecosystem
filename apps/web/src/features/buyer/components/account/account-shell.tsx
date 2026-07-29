@@ -32,7 +32,7 @@ export const AccountShell = async ({ children, locale }: AccountShellProps) => {
   }
 
   if (user.accountType === 'platform_admin') {
-    redirect({ href: '/admin/settings', locale });
+    redirect({ href: '/admin', locale });
     return null;
   }
 

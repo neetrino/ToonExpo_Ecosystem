@@ -1,10 +1,9 @@
 /** Empty select value = no filter (NBOS “all”). */
 export const INTEGRATED_SEARCH_FILTER_ALL_VALUE = '';
 
-/** Portaled filter panel surface — position comes from DropdownPortal. */
+/** Portaled filter panel surface — fixed width so end-aligned portals don’t clip. */
 export const INTEGRATED_SEARCH_FILTER_PANEL_SURFACE =
-  'w-max min-w-[min(100%,20rem)] max-w-[min(48rem,calc(100vw-2rem))] rounded-xl border border-border bg-surface-elevated p-4 shadow-xl ring-1 ring-border/40';
+  'box-border w-80 rounded-xl border border-border bg-surface-elevated p-4 sm:w-[26rem]';
 
-/** Filters in one horizontal row (side by side). */
-export const INTEGRATED_SEARCH_FILTER_PANEL_GRID =
-  'flex flex-nowrap items-end gap-3 overflow-x-auto pb-0.5';
+/** Filter fields wrap so every control stays inside the panel. */
+export const INTEGRATED_SEARCH_FILTER_PANEL_GRID = 'grid grid-cols-1 gap-3 sm:grid-cols-2';

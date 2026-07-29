@@ -1,23 +1,24 @@
-"use client";
+'use client';
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import type { BoothSummary } from "@toonexpo/contracts";
-import { useTranslations } from "next-intl";
-import { useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { zodResolver } from '@hookform/resolvers/zod';
+import type { BoothSummary } from '@toonexpo/contracts';
+import { useTranslations } from 'next-intl';
+import { useEffect } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 
 import {
   EXHIBITION_BOOTH_TYPES,
   EXHIBITION_PUBLICATION_STATUSES,
-} from "@/features/exhibition/constants";
+} from '@/features/exhibition/constants';
 import {
   boothFormSchema,
   type BoothFormInput,
   type BoothFormValues,
-} from "@/features/exhibition/schemas/exhibition.schema";
-import { Button } from "@/shared/ui/button";
-import { FormField } from "@/shared/ui/form-field";
-import { Input } from "@/shared/ui/input";
+} from '@/features/exhibition/schemas/exhibition.schema';
+import { Button } from '@/shared/ui/button';
+import { FormField } from '@/shared/ui/form-field';
+import { Input } from '@/shared/ui/input';
+import { Select } from '@/shared/ui/select';
 
 type AdminBoothFormProps = {
   initial?: BoothSummary | undefined;
@@ -37,7 +38,7 @@ export const AdminBoothForm = ({
   onDelete,
   isBusy,
 }: AdminBoothFormProps) => {
-  const t = useTranslations("Admin.events.booths.form");
+  const t = useTranslations('Admin.events.booths.form');
   const isEdit = initial != null;
 
   const form = useForm<BoothFormInput, unknown, BoothFormValues>({
@@ -45,21 +46,21 @@ export const AdminBoothForm = ({
     defaultValues: initial
       ? {
           code: initial.code,
-          name: initial.name ?? "",
+          name: initial.name ?? '',
           type: initial.type,
           xPercent: Number(initial.xPercent),
           yPercent: Number(initial.yPercent),
-          locationText: initial.locationText ?? "",
+          locationText: initial.locationText ?? '',
           publicationStatus: initial.publicationStatus,
         }
       : {
-          code: "",
-          name: "",
-          type: "builder",
+          code: '',
+          name: '',
+          type: 'builder',
           xPercent: 50,
           yPercent: 50,
-          locationText: "",
-          publicationStatus: "draft",
+          locationText: '',
+          publicationStatus: 'draft',
         },
   });
 
@@ -67,8 +68,8 @@ export const AdminBoothForm = ({
     if (!pickedCoordinates) {
       return;
     }
-    form.setValue("xPercent", pickedCoordinates.xPercent);
-    form.setValue("yPercent", pickedCoordinates.yPercent);
+    form.setValue('xPercent', pickedCoordinates.xPercent);
+    form.setValue('yPercent', pickedCoordinates.yPercent);
   }, [pickedCoordinates, form]);
 
   return (
@@ -79,62 +80,74 @@ export const AdminBoothForm = ({
       })}
       noValidate
     >
-      <FormField id="booth-code" label={t("code")}>
-        <Input id="booth-code" {...form.register("code")} />
+      <FormField id="booth-code" label={t('code')}>
+        <Input id="booth-code" {...form.register('code')} />
       </FormField>
-      <FormField id="booth-name" label={t("name")}>
-        <Input id="booth-name" {...form.register("name")} />
+      <FormField id="booth-name" label={t('name')}>
+        <Input id="booth-name" {...form.register('name')} />
       </FormField>
-      <FormField id="booth-type" label={t("type")}>
-        <select
-          id="booth-type"
-          className="h-10 w-full rounded-sm border border-border bg-background px-3 text-sm"
-          {...form.register("type")}
-        >
-          {EXHIBITION_BOOTH_TYPES.map((type) => (
-            <option key={type} value={type}>
-              {t(`types.${type}`)}
-            </option>
-          ))}
-        </select>
+      <FormField id="booth-type" label={t('type')}>
+        <Controller
+          name="type"
+          control={form.control}
+          render={({ field }) => (
+            <Select
+              id="booth-type"
+              name={field.name}
+              value={field.value}
+              aria-label={t('type')}
+              onBlur={field.onBlur}
+              onChange={(event) => {
+                field.onChange(event.target.value);
+              }}
+            >
+              {EXHIBITION_BOOTH_TYPES.map((type) => (
+                <option key={type} value={type}>
+                  {t(`types.${type}`)}
+                </option>
+              ))}
+            </Select>
+          )}
+        />
       </FormField>
       <div className="grid grid-cols-2 gap-3">
-        <FormField id="booth-x" label={t("xPercent")}>
-          <Input
-            id="booth-x"
-            type="number"
-            step="0.01"
-            {...form.register("xPercent")}
-          />
+        <FormField id="booth-x" label={t('xPercent')}>
+          <Input id="booth-x" type="number" step="0.01" {...form.register('xPercent')} />
         </FormField>
-        <FormField id="booth-y" label={t("yPercent")}>
-          <Input
-            id="booth-y"
-            type="number"
-            step="0.01"
-            {...form.register("yPercent")}
-          />
+        <FormField id="booth-y" label={t('yPercent')}>
+          <Input id="booth-y" type="number" step="0.01" {...form.register('yPercent')} />
         </FormField>
       </div>
-      <FormField id="booth-location" label={t("locationText")}>
-        <Input id="booth-location" {...form.register("locationText")} />
+      <FormField id="booth-location" label={t('locationText')}>
+        <Input id="booth-location" {...form.register('locationText')} />
       </FormField>
-      <FormField id="booth-publication" label={t("publication")}>
-        <select
-          id="booth-publication"
-          className="h-10 w-full rounded-sm border border-border bg-background px-3 text-sm"
-          {...form.register("publicationStatus")}
-        >
-          {EXHIBITION_PUBLICATION_STATUSES.map((status) => (
-            <option key={status} value={status}>
-              {t(`publicationStatuses.${status}`)}
-            </option>
-          ))}
-        </select>
+      <FormField id="booth-publication" label={t('publication')}>
+        <Controller
+          name="publicationStatus"
+          control={form.control}
+          render={({ field }) => (
+            <Select
+              id="booth-publication"
+              name={field.name}
+              value={field.value}
+              aria-label={t('publication')}
+              onBlur={field.onBlur}
+              onChange={(event) => {
+                field.onChange(event.target.value);
+              }}
+            >
+              {EXHIBITION_PUBLICATION_STATUSES.map((status) => (
+                <option key={status} value={status}>
+                  {t(`publicationStatuses.${status}`)}
+                </option>
+              ))}
+            </Select>
+          )}
+        />
       </FormField>
       <div className="flex flex-wrap gap-2">
         <Button type="submit" variant="secondary" disabled={isBusy}>
-          {isBusy ? t("saving") : isEdit ? t("save") : t("create")}
+          {isBusy ? t('saving') : isEdit ? t('save') : t('create')}
         </Button>
         {onDelete ? (
           <Button
@@ -145,7 +158,7 @@ export const AdminBoothForm = ({
               void onDelete();
             }}
           >
-            {t("delete")}
+            {t('delete')}
           </Button>
         ) : null}
       </div>

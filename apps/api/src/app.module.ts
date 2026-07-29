@@ -7,6 +7,7 @@ import { LoggerModule } from 'nestjs-pino';
 
 import { AdminCatalogModule } from './admin/catalog/admin-catalog.module.js';
 import { AdminCompaniesModule } from './admin/companies/admin-companies.module.js';
+import { AdminUsersModule } from './admin/users/admin-users.module.js';
 import { AnalyticsModule } from './analytics/analytics.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { AccountTypesGuard } from './auth/guards/account-types.guard.js';
@@ -58,6 +59,7 @@ import { VisualMapModule } from './visual-map/visual-map.module.js';
     AnalyticsModule,
     AuthModule,
     AdminCompaniesModule,
+    AdminUsersModule,
     AdminCatalogModule,
     CompanyMembersModule,
     CatalogModule,

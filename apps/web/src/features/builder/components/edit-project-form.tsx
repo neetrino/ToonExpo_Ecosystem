@@ -17,6 +17,7 @@ import {
 import { toUpdateProjectRequest } from '@/features/builder/utils/project-mappers';
 import { MediaUploadField } from '@/features/media/components/media-upload-field';
 import { Button } from '@/shared/ui/button';
+import { DatePicker } from '@/shared/ui/date-picker';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
 
@@ -160,7 +161,20 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
           <Input id="edit-status" {...register('constructionStatus')} />
         </FormField>
         <FormField id="edit-completion" label={t('form.completionDate')}>
-          <Input id="edit-completion" type="date" {...register('completionDate')} />
+          <Controller
+            name="completionDate"
+            control={control}
+            render={({ field }) => (
+              <DatePicker
+                id="edit-completion"
+                name={field.name}
+                value={field.value ?? ''}
+                aria-label={t('form.completionDate')}
+                onBlur={field.onBlur}
+                onChange={field.onChange}
+              />
+            )}
+          />
         </FormField>
       </div>
 

@@ -1,62 +1,13 @@
 'use client';
 
-import {
-  BarChart3,
-  Building2,
-  ClipboardCheck,
-  FolderKanban,
-  LayoutDashboard,
-  QrCode,
-  Settings,
-  Users,
-  Briefcase,
-} from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import type { LucideIcon } from 'lucide-react';
 
+import {
+  BUILDER_PRIMARY_NAV_ITEMS,
+  BUILDER_SETTINGS_NAV_ITEM,
+} from '@/features/builder/builder-nav-items';
 import { Link, usePathname } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
-
-type NavItem = {
-  href:
-    | '/builder'
-    | '/builder/projects'
-    | '/builder/team'
-    | '/builder/company'
-    | '/builder/crm'
-    | '/builder/scanner'
-    | '/builder/readiness'
-    | '/builder/analytics'
-    | '/builder/settings';
-  key:
-    | 'dashboard'
-    | 'projects'
-    | 'team'
-    | 'company'
-    | 'crm'
-    | 'scanner'
-    | 'readiness'
-    | 'analytics'
-    | 'settings';
-  icon: LucideIcon;
-};
-
-const PRIMARY_NAV_ITEMS: NavItem[] = [
-  { href: '/builder', key: 'dashboard', icon: LayoutDashboard },
-  { href: '/builder/projects', key: 'projects', icon: FolderKanban },
-  { href: '/builder/team', key: 'team', icon: Users },
-  { href: '/builder/company', key: 'company', icon: Building2 },
-  { href: '/builder/crm', key: 'crm', icon: Briefcase },
-  { href: '/builder/scanner', key: 'scanner', icon: QrCode },
-  { href: '/builder/readiness', key: 'readiness', icon: ClipboardCheck },
-  { href: '/builder/analytics', key: 'analytics', icon: BarChart3 },
-];
-
-const SETTINGS_NAV_ITEM: NavItem = {
-  href: '/builder/settings',
-  key: 'settings',
-  icon: Settings,
-};
 
 const NAV_ICON_CLASS = 'size-5 shrink-0 opacity-90';
 
@@ -78,6 +29,7 @@ type BuilderNavProps = {
 export const BuilderNav = ({ companyName }: BuilderNavProps) => {
   const t = useTranslations('Builder.nav');
   const pathname = usePathname();
+  const SettingsIcon = BUILDER_SETTINGS_NAV_ITEM.icon;
 
   const isItemActive = (href: string): boolean => {
     if (href === '/builder') {
@@ -98,7 +50,7 @@ export const BuilderNav = ({ companyName }: BuilderNavProps) => {
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto overscroll-contain">
-        {PRIMARY_NAV_ITEMS.map((item) => {
+        {BUILDER_PRIMARY_NAV_ITEMS.map((item) => {
           const active = isItemActive(item.href);
           const Icon = item.icon;
 
@@ -113,11 +65,11 @@ export const BuilderNav = ({ companyName }: BuilderNavProps) => {
 
       <div className="mt-auto shrink-0 border-t border-on-dark/15 pt-3">
         <Link
-          href={SETTINGS_NAV_ITEM.href}
-          className={navLinkClassName(isItemActive(SETTINGS_NAV_ITEM.href))}
+          href={BUILDER_SETTINGS_NAV_ITEM.href}
+          className={navLinkClassName(isItemActive(BUILDER_SETTINGS_NAV_ITEM.href))}
         >
-          <Settings className={NAV_ICON_CLASS} aria-hidden />
-          {t(SETTINGS_NAV_ITEM.key)}
+          <SettingsIcon className={NAV_ICON_CLASS} aria-hidden />
+          {t(BUILDER_SETTINGS_NAV_ITEM.key)}
         </Link>
       </div>
     </nav>

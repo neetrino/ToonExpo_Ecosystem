@@ -115,7 +115,7 @@
   --duration-base: 240ms;
   --duration-slow: 400ms;
 
-  /* Z-index scale — portaled dropdowns sit above chrome/modals, under toasts */
+  /* Z-index scale — bottom nav sits above all overlays; toasts under nav */
   --z-base: 0;
   --z-sticky: 30;
   --z-header: 100;
@@ -124,6 +124,7 @@
   --z-modal: 140;
   --z-dropdown: 160;
   --z-toast: 170;
+  --z-bottom-nav: 180;
 }
 
 @keyframes locale-dropdown-in {
@@ -220,6 +221,19 @@
   to {
     opacity: 0;
     transform: translateY(12px) scale(0.98);
+  }
+}
+
+/** Project QR content fade/rise after load (mobile + desktop overlay). */
+@keyframes project-qr-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
   }
 }
 
@@ -501,11 +515,16 @@
     animation: admin-delete-modal-panel-out 0.28s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   }
 
+  .animate-project-qr-in {
+    animation: project-qr-in var(--duration-slow) var(--ease-out-premium) both;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .animate-admin-delete-modal-backdrop-in,
     .animate-admin-delete-modal-backdrop-out,
     .animate-admin-delete-modal-panel-in,
-    .animate-admin-delete-modal-panel-out {
+    .animate-admin-delete-modal-panel-out,
+    .animate-project-qr-in {
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
     }
@@ -542,6 +561,10 @@
 
   .h-fluid-screen {
     height: calc(100svh / var(--desktop-layout-scale));
+  }
+
+  .max-h-fluid-screen {
+    max-height: calc(100svh / var(--desktop-layout-scale));
   }
 
   .page-container {
@@ -757,6 +780,18 @@
   }
 
   /**
+   * Hide scrollbar while keeping overflow scroll (sidebars, nested panels).
+   */
+  .scrollbar-none {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+
+  /**
    * Thin brand scrollbar — dropdowns, CRM columns, soft panels.
    * No arrow buttons; thumb uses brand-secondary / brand on hover.
    */
@@ -849,12 +884,13 @@
     gap: 1rem;
     min-height: 0;
     overflow: hidden;
-    margin-top: -1.5rem;
-    margin-bottom: -1.5rem;
-    padding-top: 1.25rem;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 0;
     padding-bottom: 0.75rem;
-    height: calc(100svh / var(--desktop-layout-scale) - 5.5rem);
-    max-height: calc(100svh / var(--desktop-layout-scale) - 5.5rem);
+    /* Sheet chrome (back + pt) + bottom nav clearance on mobile overlay. */
+    height: calc(100svh - 10.5rem - env(safe-area-inset-bottom, 0px));
+    max-height: calc(100svh - 10.5rem - env(safe-area-inset-bottom, 0px));
   }
 
   @media (min-width: 768px) {
@@ -863,6 +899,8 @@
       margin-bottom: -2rem;
       padding-top: 1.5rem;
       padding-bottom: 1rem;
+      height: calc(100svh / var(--desktop-layout-scale) - 5.5rem);
+      max-height: calc(100svh / var(--desktop-layout-scale) - 5.5rem);
     }
   }
 

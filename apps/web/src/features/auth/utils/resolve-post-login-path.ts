@@ -15,7 +15,7 @@ export const resolvePostLoginPath = (user: UserResponse, returnUrl?: string | nu
     case 'entrance_staff':
       return '/checkin';
     case 'platform_admin':
-      return '/admin/companies';
+      return '/admin';
     case 'company_member':
       if (user.companyType != null && isPartnerCompatibleCompany(user.companyType)) {
         return '/partner';

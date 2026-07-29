@@ -6,7 +6,6 @@ import {
   useEffect,
   useId,
   useImperativeHandle,
-  useLayoutEffect,
   useRef,
   useState,
   type FocusEventHandler,
@@ -41,6 +40,7 @@ export type ListboxSelectProps = {
 /**
  * Custom listbox — soft panel + check, same family as LocaleSwitcher / ma-marie menus.
  * Menu portals to `document.body` so it stacks above page chrome.
+ * Fit width uses CSS grid (no inline width styles).
  */
 export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
   function ListboxSelect(
@@ -60,29 +60,15 @@ export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
     ref,
   ) {
     const [open, setOpen] = useState(false);
-    const [fitWidthPx, setFitWidthPx] = useState<number | null>(null);
     const rootRef = useRef<HTMLDivElement>(null);
     const buttonRef = useRef<HTMLButtonElement>(null);
     const menuRef = useRef<HTMLUListElement>(null);
-    const measureRef = useRef<HTMLUListElement>(null);
     const listId = useId();
     const isField = variant === 'field';
     const isFit = size === 'fit';
     const selected = options.find((option) => option.value === value) ?? options[0];
 
     useImperativeHandle(ref, () => buttonRef.current as HTMLButtonElement);
-
-    useLayoutEffect(() => {
-      if (!isFit) {
-        setFitWidthPx(null);
-        return;
-      }
-      const node = measureRef.current;
-      if (!node) {
-        return;
-      }
-      setFitWidthPx(Math.ceil(node.getBoundingClientRect().width));
-    }, [isFit, options]);
 
     useEffect(() => {
       if (!open) {
@@ -136,22 +122,25 @@ export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
         ref={rootRef}
         className={cn(
           'relative min-w-0',
-          isField && (isFit ? 'w-fit max-w-full' : 'w-full'),
+          isField && (isFit ? 'inline-grid max-w-full' : 'block w-full'),
+          !isField && isFit && 'inline-grid max-w-full',
+          !isField && !isFit && 'block',
           !isField && className,
         )}
       >
         {name ? <input type="hidden" name={name} value={value} disabled={disabled} /> : null}
         {isFit ? (
-          <ul
-            ref={measureRef}
-            aria-hidden
-            className="pointer-events-none invisible absolute left-0 top-0 -z-10 w-max py-1.5"
-          >
+          <ul aria-hidden className="invisible col-start-1 row-start-1 h-0 overflow-hidden">
             {options.map((option) => (
               <li key={option.value}>
-                <span className="flex items-center justify-between gap-3 px-3 py-2.5 text-sm font-semibold whitespace-nowrap">
+                <span
+                  className={cn(
+                    'flex items-center justify-between gap-2 whitespace-nowrap',
+                    isField ? 'px-4 text-base sm:text-sm' : 'text-sm font-medium',
+                  )}
+                >
                   <span>{option.label}</span>
-                  <Check className="size-3.5 shrink-0" aria-hidden />
+                  <ChevronDown className="size-4 shrink-0" aria-hidden />
                 </span>
               </li>
             ))}
@@ -162,10 +151,8 @@ export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
           id={id}
           type="button"
           disabled={disabled}
-          style={isFit && fitWidthPx != null ? { width: fitWidthPx } : undefined}
           className={cn(
-            'flex min-w-0 items-center justify-between gap-2 text-left',
-            isFit ? 'w-max max-w-full' : 'w-full',
+            'col-start-1 row-start-1 flex min-w-0 w-full items-center justify-between gap-2 text-left',
             'transition-colors duration-[var(--duration-fast)]',
             'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/25',
             'disabled:cursor-not-allowed disabled:opacity-50',

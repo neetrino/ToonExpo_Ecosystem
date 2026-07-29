@@ -6,6 +6,9 @@
 /** Desktop/mobile panel width as % of viewport (default size). */
 export const SIDE_SHEET_WIDTH_PERCENT = 50;
 
+/** Mobile panel width — leaves a strip of backdrop so the sheet can be dismissed. */
+export const SIDE_SHEET_MOBILE_WIDTH_PERCENT = 85;
+
 /** Compact sheet max width (px) — forms like New Company. */
 export const SIDE_SHEET_COMPACT_MAX_WIDTH_PX = 420;
 

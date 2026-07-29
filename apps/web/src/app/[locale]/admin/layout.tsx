@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import type { ReactNode } from 'react';
 
+import { AdminMobileStack } from '@/features/admin/components/admin-mobile-stack';
 import { AdminNav } from '@/features/admin/components/admin-nav';
 import { getMeOrNullCached as getMeOrNull } from '@/features/auth/api/get-me-or-null-cached';
 import { redirect } from '@/i18n/navigation';
@@ -41,11 +42,16 @@ export default async function AdminLayout({ children, params }: AdminLayoutProps
       badge={t('badge')}
       userEmail={user.email}
       profileLabel={t('profileLink')}
+      profileHref="/admin/settings"
       navLabel={t('nav.label')}
       variant="rail"
+      mobileDrawerControlledByNavbar
+      className="bg-canvas"
       sidebar={<AdminNav />}
     >
-      {children}
+      <AdminMobileStack name={user.name} email={user.email}>
+        {children}
+      </AdminMobileStack>
     </PortalShell>
   );
 }

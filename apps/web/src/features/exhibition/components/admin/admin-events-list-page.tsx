@@ -30,7 +30,9 @@ export const AdminEventsListPage = () => {
   const router = useRouter();
   const pathname = usePathname();
   const [sheetOpen, setSheetOpen] = useState(false);
-  const { viewMode, setViewMode } = usePersistedViewMode(ADMIN_VIEW_MODE_KEYS.events);
+  const { viewMode, effectiveViewMode, setViewMode } = usePersistedViewMode(
+    ADMIN_VIEW_MODE_KEYS.events,
+  );
 
   const clearCreateParam = useCallback((): void => {
     if (searchParams.get('create') !== '1') {
@@ -104,7 +106,7 @@ export const AdminEventsListPage = () => {
       {events.length === 0 ? (
         <p className="text-sm text-ink-secondary">{t('empty')}</p>
       ) : (
-        <AdminEventsTable events={events} viewMode={viewMode} />
+        <AdminEventsTable events={events} viewMode={effectiveViewMode} />
       )}
 
       <AdminCreateSheet open={sheetOpen} onClose={handleCloseSheet} title={t('new.title')}>

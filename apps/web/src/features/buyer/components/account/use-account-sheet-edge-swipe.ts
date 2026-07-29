@@ -81,16 +81,16 @@ export const useAccountSheetEdgeSwipe = ({
     if (prefersReducedMotion()) {
       onDismiss();
       dismissPendingRef.current = false;
-      resetVisual();
       return;
     }
 
     window.setTimeout(() => {
       onDismiss();
       dismissPendingRef.current = false;
-      resetVisual();
+      // Keep translateX off-screen until the sheet unmounts / disables.
+      // Resetting here snaps the panel back for 1–2 frames (swipe lag / flash).
     }, ACCOUNT_PAGE_PUSH_MS);
-  }, [onDismiss, resetVisual]);
+  }, [onDismiss]);
 
   const snapBack = useCallback((): void => {
     setIsDragging(false);
@@ -105,6 +105,7 @@ export const useAccountSheetEdgeSwipe = ({
   useEffect(() => {
     if (!enabled) {
       activeRef.current = false;
+      dismissPendingRef.current = false;
       resetVisual();
       return;
     }
@@ -225,9 +226,8 @@ export const useAccountSheetEdgeSwipe = ({
   const sheetStyle: CSSProperties | undefined = isInteracting
     ? {
         transform: `translate3d(${dragX}px, 0, 0)`,
-        opacity: Math.max(0.88, 1 - dragX / 600),
         transition: isSnapping
-          ? `transform ${ACCOUNT_PAGE_PUSH_MS}ms var(--ease-out-premium), opacity ${ACCOUNT_PAGE_PUSH_MS}ms var(--ease-out-premium)`
+          ? `transform ${ACCOUNT_PAGE_PUSH_MS}ms var(--ease-out-premium)`
           : 'none',
         touchAction: isDragging ? 'none' : undefined,
       }

@@ -38,7 +38,9 @@ export const BosProvisioningListPage = () => {
   const page = parsePage(searchParams.get('page'));
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<BosProvisioningStatus | ''>('');
-  const { viewMode, setViewMode } = usePersistedViewMode(ADMIN_VIEW_MODE_KEYS.bos);
+  const { viewMode, effectiveViewMode, setViewMode } = usePersistedViewMode(
+    ADMIN_VIEW_MODE_KEYS.bos,
+  );
 
   const listQuery = useAdminBosProvisioningListQuery({
     page,
@@ -95,7 +97,7 @@ export const BosProvisioningListPage = () => {
       {response.data.length === 0 ? (
         <p className="text-sm text-ink-secondary">{t('empty')}</p>
       ) : (
-        <BosProvisioningTable requests={response.data} viewMode={viewMode} />
+        <BosProvisioningTable requests={response.data} viewMode={effectiveViewMode} />
       )}
 
       <CatalogPagination

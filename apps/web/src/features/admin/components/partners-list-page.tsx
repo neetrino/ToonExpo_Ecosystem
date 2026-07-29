@@ -42,7 +42,9 @@ export const PartnersListPage = () => {
   const page = parsePage(searchParams.get('page'));
   const [showCreate, setShowCreate] = useState(false);
   const [selectedPartnerId, setSelectedPartnerId] = useState<string | null>(null);
-  const { viewMode, setViewMode } = usePersistedViewMode(ADMIN_VIEW_MODE_KEYS.partners);
+  const { viewMode, effectiveViewMode, setViewMode } = usePersistedViewMode(
+    ADMIN_VIEW_MODE_KEYS.partners,
+  );
   const [search, setSearch] = useState('');
   const [filters, setFilters] = useState(EMPTY_PARTNER_LIST_FILTERS);
 
@@ -133,7 +135,7 @@ export const PartnersListPage = () => {
         <PartnersTable
           partners={response.data}
           onSelectPartner={handleSelectPartner}
-          viewMode={viewMode}
+          viewMode={effectiveViewMode}
         />
       )}
 

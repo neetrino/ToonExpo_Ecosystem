@@ -1,17 +1,17 @@
-import { setRequestLocale } from "next-intl/server";
+import { setRequestLocale } from 'next-intl/server';
 
-import { redirect } from "@/i18n/navigation";
+import { AdminHomePage } from '@/features/admin/components/admin-home-page';
 
 type AdminIndexPageProps = {
   params: Promise<{ locale: string }>;
 };
 
 /**
- * Admin root redirects to the companies section.
+ * Admin portal hub — mobile profile stack; desktop sidebar landing.
  */
 export default async function AdminIndexPage({ params }: AdminIndexPageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
-  redirect({ href: "/admin/companies", locale });
-  return null;
+
+  return <AdminHomePage />;
 }

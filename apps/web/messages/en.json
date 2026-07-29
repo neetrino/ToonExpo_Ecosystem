@@ -17,6 +17,13 @@
       "list": "List",
       "cards": "Cards",
       "board": "Board"
+    },
+    "datePicker": {
+      "placeholder": "Select date",
+      "clear": "Clear",
+      "today": "Today",
+      "previousMonth": "Previous month",
+      "nextMonth": "Next month"
     }
   },
   "CrmBoard": {
@@ -100,12 +107,6 @@
       "search": "Search homes",
       "explore": "Explore projects",
       "register": "Register free",
-      "tabsLabel": "Search mode",
-      "tabs": {
-        "buy": "Buy",
-        "rent": "Rent",
-        "newBuilds": "New Builds"
-      },
       "locationLabel": "Location",
       "locationPlaceholder": "Select a city",
       "locationAny": "Any location",
@@ -271,7 +272,42 @@
     "profileMenu": "Account menu",
     "admin": "Admin",
     "builder": "Builder",
+    "scanner": "Scanner",
+    "product": "Product",
+    "discover": "Discover",
+    "qr": "QR",
+    "map": "Map",
     "loading": "…"
+  },
+  "Discover": {
+    "meta": {
+      "title": "Discover apartments",
+      "description": "Swipe through available apartments and save the homes you like."
+    },
+    "title": "Discover",
+    "subtitle": "Swipe right to like, left to skip",
+    "hint": "Drag the card or use the buttons",
+    "loginHint": "Sign in to save apartments you like.",
+    "loginCta": "Sign in",
+    "error": "Could not load apartments. Try again.",
+    "stamp": {
+      "like": "Like",
+      "skip": "Skip"
+    },
+    "actions": {
+      "like": "Like apartment",
+      "skip": "Skip apartment"
+    },
+    "card": {
+      "from": "From",
+      "unitTitle": "Apt. {number} · {project}"
+    },
+    "empty": {
+      "title": "You're all caught up",
+      "body": "No more apartments in this deck. Start again or browse the catalog.",
+      "none": "No available apartments to discover yet.",
+      "restart": "Start again"
+    }
   },
   "BuyPage": {
     "title": "Homes for sale",
@@ -891,7 +927,6 @@
   },
   "Profile": {
     "cabinetTitle": "My account",
-    "cabinetSubtitle": "Manage your profile, QR, favorites, check-in and requests",
     "badge": "Account",
     "title": "My profile",
     "subtitle": "Your ToonExpo account details",
@@ -975,13 +1010,23 @@
     "qr": {
       "title": "My QR",
       "subtitle": "Show this permanent code to builders and entrance staff at the exhibition",
-      "hint": "Hold your phone steady so the staff can scan the code.",
       "secureBadge": "Secure permanent QR",
       "codeTitle": "QR code for {name}",
-      "fullscreen": "Enlarge fullscreen",
-      "exitFullscreen": "Exit fullscreen",
       "loading": "Loading your QR…",
       "error": "Could not load your QR. Try again.",
+      "sheet": {
+        "loginHint": "Sign in to show your permanent exhibition QR.",
+        "login": "Sign in",
+        "buyerOnly": "My QR is available for buyer accounts."
+      },
+      "scanner": {
+        "open": "Scanner",
+        "title": "QR scanner",
+        "subtitle": "Scan a project QR at the exhibition to open its page",
+        "errors": {
+          "invalid": "Could not read a ToonExpo QR code."
+        }
+      },
       "scans": {
         "title": "Scan history",
         "loading": "Loading scans…",
@@ -1114,18 +1159,21 @@
   "Admin": {
     "badge": "Admin",
     "profileLink": "Profile",
+    "home": {
+      "title": "Admin",
+      "subtitle": "Choose a section from the sidebar to manage the platform."
+    },
     "nav": {
       "label": "Admin navigation",
       "section": "Manage",
       "portalLabel": "Management portal",
       "analytics": "Analytics",
       "companies": "Companies",
+      "users": "Users",
       "projects": "Projects",
       "buildings": "Building",
       "floors": "Floor",
       "apartments": "Apartment",
-      "interactiveMapping": "Interactive mapping",
-      "crm": "CRM",
       "partners": "Partners",
       "bankOffers": "Bank offers",
       "serviceProviders": "Service providers",
@@ -1222,57 +1270,6 @@
         "label": "Settings sections",
         "profile": "Profile",
         "password": "Password"
-      }
-    },
-    "crm": {
-      "title": "CRM",
-      "eyebrow": "Pipeline",
-      "subtitle": "{count, plural, =0 {No deals across builders} one {# deal across builders} other {# deals across builders}}",
-      "error": "Could not load CRM deals. Try again.",
-      "filters": {
-        "company": "Builder",
-        "allCompanies": "All builders",
-        "selectedCount": "{count} selected",
-        "apply": "Apply",
-        "reset": "Reset",
-        "clearAll": "Clear search and filters",
-        "panelLabel": "Search filters",
-        "removeChip": "Remove filter {label}"
-      },
-      "empty": "No deals match these filters.",
-      "columns": {
-        "buyer": "Buyer",
-        "company": "Builder",
-        "project": "Project",
-        "status": "Status",
-        "source": "Source",
-        "assignee": "Assignee",
-        "updated": "Updated"
-      },
-      "newDeal": {
-        "title": "New lead",
-        "cancel": "Cancel",
-        "company": "Builder",
-        "companyPlaceholder": "Select builder",
-        "contactName": "Full name",
-        "contactNamePlaceholder": "John Doe",
-        "contactPhone": "Phone",
-        "contactPhonePlaceholder": "37491111222",
-        "contactEmail": "Email",
-        "contactEmailPlaceholder": "john.doe@example.com",
-        "project": "Project",
-        "projectOptional": "No project",
-        "note": "Note",
-        "submitting": "Creating…",
-        "validation": {
-          "company": "Select a builder",
-          "contactName": "Enter a name",
-          "phone": "Enter a valid phone number",
-          "email": "Enter a valid email"
-        },
-        "errors": {
-          "generic": "Something went wrong. Please try again."
-        }
       }
     },
     "analytics": {
@@ -1396,7 +1393,13 @@
         "resendConfirm": "Resend the set-password invite email to the invited admin?",
         "resendSubmitting": "Sending…",
         "resendSuccess": "Invite resent successfully",
-        "resendNotFound": "No invited admin found for this company"
+        "resendNotFound": "No invited admin found for this company",
+        "projects": {
+          "title": "Projects",
+          "count": "{count, plural, =0 {No projects} one {# project} other {# projects}}",
+          "empty": "This company has no projects yet.",
+          "error": "Could not load projects. Try again."
+        }
       },
       "catalog": {
         "title": "Catalog",
@@ -1406,6 +1409,45 @@
         "breadcrumbCompanies": "Companies",
         "breadcrumbCatalog": "Catalog",
         "companyFallback": "Company"
+      }
+    },
+    "users": {
+      "title": "Users",
+      "subtitle": "{count, plural, =0 {No users} one {# user} other {# users}}",
+      "empty": "No users match these filters.",
+      "loading": "Loading users…",
+      "error": "Could not load users. Try again.",
+      "filters": {
+        "accountType": "Account type",
+        "allAccountTypes": "All types",
+        "status": "Status",
+        "allStatuses": "All statuses",
+        "searchPlaceholder": "Search by name, email, or phone"
+      },
+      "columns": {
+        "name": "Name",
+        "email": "Email",
+        "accountType": "Type",
+        "company": "Company",
+        "status": "Status",
+        "createdAt": "Created"
+      },
+      "accountTypes": {
+        "buyer": "Buyer",
+        "platform_admin": "Platform admin",
+        "entrance_staff": "Entrance staff",
+        "company_member": "Company member"
+      },
+      "statuses": {
+        "invited": "Invited",
+        "active": "Active",
+        "inactive": "Inactive",
+        "blocked": "Blocked"
+      },
+      "pagination": {
+        "previous": "Previous",
+        "next": "Next",
+        "ariaLabel": "Pagination"
       }
     },
     "projects": {
@@ -1437,6 +1479,13 @@
         "previous": "Previous",
         "next": "Next",
         "ariaLabel": "Pagination"
+      },
+      "create": {
+        "cta": "+ Add Project",
+        "title": "Add Project",
+        "company": "Company",
+        "selectCompany": "Select company",
+        "pickCompany": "Select a company to continue."
       }
     },
     "buildings": {
@@ -2668,6 +2717,7 @@
       "qr": {
         "title": "Project QR",
         "subtitle": "Print this QR for exhibition stands — buyers land on the public project page.",
+        "open": "Open project QR",
         "loading": "Loading QR…",
         "error": "Could not load project QR.",
         "codeTitle": "Project QR for {name}",
@@ -2933,11 +2983,21 @@
       "empty": "No members yet.",
       "loading": "Loading team…",
       "error": "Could not load team. Try again.",
-      "inviteMember": "Invite member",
+      "inviteMember": "+ Invite a member",
+      "inviteSheetTitle": "Invite a member",
       "readOnlyNotice": "You can view the team. Only company admins can invite members or change roles.",
       "inviteSuccess": "Invite sent to {email}",
       "updateSuccess": "Member updated",
       "deactivate": "Deactivate",
+      "activate": "Reactivate",
+      "activeToggle": "Member active",
+      "deactivateConfirmTitle": "Deactivate member",
+      "deactivateConfirmMessage": "Are you sure you want to deactivate \"{name}\"? They will lose access until reactivated.",
+      "activateConfirmTitle": "Reactivate member",
+      "activateConfirmMessage": "Are you sure you want to reactivate \"{name}\"?",
+      "roleConfirmTitle": "Change role",
+      "roleConfirmMessage": "Are you sure you want to change the role of \"{name}\" to {role}?",
+      "roleConfirmAction": "Change role",
       "pagination": {
         "previous": "Previous",
         "next": "Next",
@@ -2961,7 +3021,8 @@
       },
       "confirm": {
         "role": "Change role of {name} to {role}?",
-        "deactivate": "Deactivate {name}?"
+        "deactivate": "Deactivate {name}?",
+        "activate": "Reactivate {name}?"
       },
       "form": {
         "name": "Name",

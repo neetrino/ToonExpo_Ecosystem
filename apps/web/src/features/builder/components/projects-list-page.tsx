@@ -2,14 +2,15 @@
 
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
+import { useState } from 'react';
 
+import { CreateProjectSheet } from '@/features/builder/components/create-project-sheet';
 import { ProjectsTable } from '@/features/builder/components/projects-table';
-import { catalogNewProjectHref, catalogProjectsListHref } from '@/features/builder/catalog-scope';
+import { catalogProjectsListHref } from '@/features/builder/catalog-scope';
 import { useCatalogScope } from '@/features/builder/catalog-scope-context';
 import { PORTAL_DEFAULT_PAGE_SIZE, PROJECTS_VIEW_MODE_KEY } from '@/features/builder/constants';
 import { usePortalProjectsQuery } from '@/features/builder/hooks/use-portal-projects';
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
-import { Link } from '@/i18n/navigation';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
@@ -33,7 +34,8 @@ export const ProjectsListPage = () => {
   const pageSize = PORTAL_DEFAULT_PAGE_SIZE;
   const query = usePortalProjectsQuery(page, pageSize);
   const listHref = catalogProjectsListHref(scope);
-  const { viewMode, setViewMode } = usePersistedViewMode(PROJECTS_VIEW_MODE_KEY);
+  const { viewMode, effectiveViewMode, setViewMode } = usePersistedViewMode(PROJECTS_VIEW_MODE_KEY);
+  const [createOpen, setCreateOpen] = useState(false);
 
   if (query.isLoading) {
     return <p className="text-sm text-ink-secondary">{t('loading')}</p>;
@@ -60,19 +62,22 @@ export const ProjectsListPage = () => {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <ViewModeToggle value={viewMode} onChange={setViewMode} />
-          <Link
-            href={catalogNewProjectHref(scope)}
+          <button
+            type="button"
             className="inline-flex h-9 items-center justify-center rounded-pill bg-cta-dark px-4 text-sm font-medium text-on-dark hover:bg-cta-dark/90"
+            onClick={() => {
+              setCreateOpen(true);
+            }}
           >
             <AddActionLabel>{t('newProject')}</AddActionLabel>
-          </Link>
+          </button>
         </div>
       </div>
 
       {response.data.length === 0 ? (
         <p className="text-sm text-ink-secondary">{t('empty')}</p>
       ) : (
-        <ProjectsTable projects={response.data} viewMode={viewMode} />
+        <ProjectsTable projects={response.data} viewMode={effectiveViewMode} />
       )}
 
       <CatalogPagination
@@ -82,6 +87,13 @@ export const ProjectsListPage = () => {
         previousLabel={t('pagination.previous')}
         nextLabel={t('pagination.next')}
         ariaLabel={t('pagination.ariaLabel')}
+      />
+
+      <CreateProjectSheet
+        open={createOpen}
+        onClose={() => {
+          setCreateOpen(false);
+        }}
       />
     </div>
   );

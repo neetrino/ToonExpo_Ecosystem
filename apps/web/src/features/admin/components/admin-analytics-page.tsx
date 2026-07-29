@@ -20,24 +20,38 @@ const maxCount = (values: number[]): number => (values.length > 0 ? Math.max(...
 export const AdminAnalyticsPage = () => {
   const t = useTranslations('Admin.analytics');
   const tCommon = useTranslations('Analytics.common');
+  const query = useAdminAnalyticsOverviewQuery();
+
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="flex min-w-0 flex-col gap-1">
+        <h1 className="text-page-title text-ink">{t('title')}</h1>
+        <p className="text-sm text-ink-secondary">{t('subtitle')}</p>
+      </div>
+
+      {query.isLoading ? (
+        <p className="text-sm text-ink-secondary">{tCommon('loading')}</p>
+      ) : query.isError || !query.data ? (
+        <p role="alert" className="text-sm text-danger">
+          {tCommon('error')}
+        </p>
+      ) : (
+        <AdminAnalyticsContent data={query.data} />
+      )}
+    </div>
+  );
+};
+
+type AdminAnalyticsContentProps = {
+  data: NonNullable<ReturnType<typeof useAdminAnalyticsOverviewQuery>['data']>;
+};
+
+const AdminAnalyticsContent = ({ data }: AdminAnalyticsContentProps) => {
+  const t = useTranslations('Admin.analytics');
+  const tCommon = useTranslations('Analytics.common');
   const tCrm = useTranslations('Analytics.crmStatuses');
   const tSources = useTranslations('Analytics.requestSources');
   const tReadiness = useTranslations('Admin.readiness');
-  const query = useAdminAnalyticsOverviewQuery();
-
-  if (query.isLoading) {
-    return <p className="text-sm text-ink-secondary">{tCommon('loading')}</p>;
-  }
-
-  if (query.isError || !query.data) {
-    return (
-      <p role="alert" className="text-sm text-danger">
-        {tCommon('error')}
-      </p>
-    );
-  }
-
-  const data = query.data;
   const requestMax = maxCount([
     data.requests.total,
     ...data.requests.bySource.map((item) => item.count),
@@ -47,17 +61,12 @@ export const AdminAnalyticsPage = () => {
   const readinessMax = maxCount(data.readiness.assessmentsByStatus.map((item) => item.count));
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-page-title text-ink">{t('title')}</h1>
-        <p className="text-sm text-ink-secondary">{t('subtitle')}</p>
-      </div>
-
+    <>
       <AnalyticsDateRangeFilter />
 
       <section className="flex flex-col gap-3">
         <h2 className="text-sm font-semibold text-ink">{t('sections.platformActivity')}</h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-2 gap-3 md:gap-4 lg:grid-cols-3">
           <AnalyticsStatCard
             label={t('platformActivity.totalUsers')}
             value={data.platformActivity.totalUsers}
@@ -245,6 +254,6 @@ export const AdminAnalyticsPage = () => {
           </div>
         </div>
       </AnalyticsSectionCard>
-    </div>
+    </>
   );
 };
