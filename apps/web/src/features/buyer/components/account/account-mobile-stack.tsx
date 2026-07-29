@@ -159,7 +159,6 @@ export const AccountMobileStack = ({
       return;
     }
     exitingRef.current = true;
-    scrollWindowToTop();
     router.replace('/dashboard');
   }, [isHub, router, sheetOpen]);
 

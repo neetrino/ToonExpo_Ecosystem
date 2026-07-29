@@ -7,11 +7,10 @@ import { createPortal } from 'react-dom';
 
 import { BuyerScannerWorkspace } from '@/features/buyer/components/buyer-scanner-workspace';
 import { blurActiveElementAfterEscClose } from '@/shared/ui/blur-active-element';
-import { lockBodyScroll, unlockBodyScroll } from '@/shared/ui/body-scroll-lock';
 import { cn } from '@/shared/ui/cn';
 import { IconButton } from '@/shared/ui/icon-button';
 import { MOBILE_BOTTOM_NAV_SHEET_PB_CLASS } from '@/shared/ui/mobile-bottom-nav-clearance';
-import { MODAL_BACKDROP_CLASS_NAME } from '@/shared/ui/modal-backdrop';
+import { SHEET_BACKDROP_CLASS_NAME } from '@/shared/ui/modal-backdrop';
 import { getOverlayPortalHost } from '@/shared/ui/overlay-portal-host';
 import {
   SIDE_SHEET_BACKDROP_TRANSITION_MS,
@@ -42,16 +41,6 @@ export const BuyerScannerSheet = ({ open, onClose }: BuyerScannerSheetProps) => 
     if (!rendered) {
       return;
     }
-    lockBodyScroll();
-    return () => {
-      unlockBodyScroll();
-    };
-  }, [rendered]);
-
-  useEffect(() => {
-    if (!rendered) {
-      return;
-    }
     const onKeyDown = (event: KeyboardEvent): void => {
       if (event.key === 'Escape') {
         onClose();
@@ -70,7 +59,10 @@ export const BuyerScannerSheet = ({ open, onClose }: BuyerScannerSheetProps) => 
 
   return createPortal(
     <div
-      className={cn('fixed inset-0 z-[var(--z-overlay)]', visible ? '' : 'pointer-events-none')}
+      className={cn(
+        'fixed inset-0 z-[var(--z-overlay)] touch-none overscroll-none',
+        visible ? '' : 'pointer-events-none',
+      )}
       aria-hidden={!visible}
       role="presentation"
     >
@@ -81,7 +73,7 @@ export const BuyerScannerSheet = ({ open, onClose }: BuyerScannerSheetProps) => 
         aria-label={tCommon('close')}
         className={cn(
           'absolute inset-0',
-          MODAL_BACKDROP_CLASS_NAME,
+          SHEET_BACKDROP_CLASS_NAME,
           'transition-opacity duration-[var(--scanner-sheet-backdrop-ms)] ease-[var(--ease-out-premium)]',
           'motion-reduce:transition-none',
           visible ? 'opacity-100' : 'opacity-0',
@@ -97,7 +89,7 @@ export const BuyerScannerSheet = ({ open, onClose }: BuyerScannerSheetProps) => 
           aria-modal="true"
           aria-labelledby={titleId}
           className={cn(
-            'pointer-events-auto flex w-full max-w-lg flex-col',
+            'pointer-events-auto touch-auto flex w-full max-w-lg flex-col',
             'max-h-[min(88dvh,720px)]',
             'rounded-t-[15px] border border-border bg-surface-elevated shadow-lg',
             'transition-transform duration-[var(--scanner-sheet-panel-ms)] ease-[var(--ease-out-premium)]',
@@ -126,7 +118,7 @@ export const BuyerScannerSheet = ({ open, onClose }: BuyerScannerSheetProps) => 
               MOBILE_BOTTOM_NAV_SHEET_PB_CLASS,
             )}
           >
-            {open ? <BuyerScannerWorkspace onNavigated={onClose} /> : null}
+            <BuyerScannerWorkspace onNavigated={onClose} />
           </div>
         </div>
       </div>

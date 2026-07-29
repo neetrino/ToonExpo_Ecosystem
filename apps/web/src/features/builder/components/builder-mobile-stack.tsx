@@ -157,7 +157,6 @@ export const BuilderMobileStack = ({
       return;
     }
     exitingRef.current = true;
-    scrollWindowToTop();
     router.replace(BUILDER_HUB_HREF);
   }, [isHub, router, sheetOpen]);
 

@@ -151,7 +151,6 @@ export const AdminMobileStack = ({ name, email, children }: AdminMobileStackProp
       return;
     }
     exitingRef.current = true;
-    scrollWindowToTop();
     router.replace(ADMIN_HUB_HREF);
   }, [isHub, router, sheetOpen]);
 
