@@ -1,14 +1,13 @@
 'use client';
 
 import { ChevronDown } from 'lucide-react';
-import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 
 import { HeroFilterTrigger } from '@/features/catalog/components/hero-filter-trigger';
 import { blurActiveElementAfterEscClose } from '@/shared/ui/blur-active-element';
 import { cn } from '@/shared/ui/cn';
 import { MultiListboxMenu } from '@/shared/ui/multi-listbox-menu';
 import type { MultiListboxSelectProps } from '@/shared/ui/multi-listbox-select.types';
-import { SelectionMark } from '@/shared/ui/multi-listbox-selection-mark';
 
 /**
  * Multi-select listbox — empty selection means "All".

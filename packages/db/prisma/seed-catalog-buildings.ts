@@ -14,13 +14,11 @@ import {
   SEED_ID_PREFIX,
   toSeedMediaUrl,
 } from './seed-data.js';
-import { ALL_SEED_PROJECTS } from './seed-entities.js';
-
-const SEED_PROJECTS = ALL_SEED_PROJECTS;
+import type { ALL_SEED_PROJECTS } from './seed-entities.js';
 
 export const upsertSeedBuildings = async (
   prisma: PrismaClient,
-  project: (typeof SEED_PROJECTS)[number],
+  project: (typeof ALL_SEED_PROJECTS)[number],
 ): Promise<number> => {
   let apartmentCount = 0;
 
