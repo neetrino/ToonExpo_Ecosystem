@@ -1,6 +1,26 @@
 'use client';
 
-import { ChevronDown } from 'lucide-react';
+import {
+  Building,
+  Building2,
+  Briefcase,
+  CalendarDays,
+  ChevronDown,
+  ClipboardCheck,
+  FolderKanban,
+  Handshake,
+  Home,
+  Landmark,
+  Layers,
+  LayoutList,
+  LineChart,
+  Map,
+  ScanLine,
+  Settings,
+  Tags,
+  Workflow,
+} from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
@@ -14,6 +34,78 @@ import {
 } from '@/features/admin/admin-nav-items';
 import { Link, usePathname } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
+
+type NavItem = {
+  href: string;
+  key:
+    | 'analytics'
+    | 'companies'
+    | 'projects'
+    | 'buildings'
+    | 'floors'
+    | 'apartments'
+    | 'interactiveMapping'
+    | 'checkin'
+    | 'crm'
+    | 'partners'
+    | 'bankOffers'
+    | 'serviceProviders'
+    | 'readiness'
+    | 'readinessCategories'
+    | 'bos'
+    | 'events'
+    | 'settings';
+  icon: LucideIcon;
+  children?: NavItem[];
+};
+
+const PROJECTS_HREF = '/admin/projects';
+
+const PROJECT_CHILD_NAV_ITEMS: NavItem[] = [
+  { href: '/admin/projects/buildings', key: 'buildings', icon: Building },
+  { href: '/admin/projects/floors', key: 'floors', icon: Layers },
+  { href: '/admin/projects/apartments', key: 'apartments', icon: Home },
+];
+
+const PRIMARY_NAV_ITEMS: NavItem[] = [
+  { href: '/admin/analytics', key: 'analytics', icon: LineChart },
+  { href: '/admin/companies', key: 'companies', icon: Building2 },
+  {
+    href: PROJECTS_HREF,
+    key: 'projects',
+    icon: FolderKanban,
+    children: PROJECT_CHILD_NAV_ITEMS,
+  },
+  { href: '/admin/interactive-mapping', key: 'interactiveMapping', icon: Map },
+  { href: '/admin/crm', key: 'crm', icon: Briefcase },
+  { href: '/admin/checkin', key: 'checkin', icon: ScanLine },
+  { href: '/admin/partners', key: 'partners', icon: Handshake },
+  { href: '/admin/bank-offers', key: 'bankOffers', icon: Landmark },
+  {
+    href: '/admin/service-providers',
+    key: 'serviceProviders',
+    icon: LayoutList,
+  },
+  { href: '/admin/readiness', key: 'readiness', icon: ClipboardCheck },
+  {
+    href: '/admin/readiness/categories',
+    key: 'readinessCategories',
+    icon: Tags,
+  },
+  { href: '/admin/integrations/bos', key: 'bos', icon: Workflow },
+  { href: '/admin/events', key: 'events', icon: CalendarDays },
+];
+
+const SETTINGS_NAV_ITEM: NavItem = {
+  href: '/admin/settings',
+  key: 'settings',
+  icon: Settings,
+};
+
+const ALL_NAV_ITEMS: NavItem[] = [
+  ...PRIMARY_NAV_ITEMS.flatMap((item) => [item, ...(item.children ?? [])]),
+  SETTINGS_NAV_ITEM,
+];
 
 const NAV_ICON_CLASS = 'size-[1.125rem] shrink-0 opacity-90';
 const NAV_CHILD_ICON_CLASS = 'size-4 shrink-0 opacity-90';

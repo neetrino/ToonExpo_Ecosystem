@@ -59,6 +59,19 @@ describe('ProjectsService filters and pagination', () => {
     });
   });
 
+  it('supports comma-separated multi-city filter', () => {
+    const query = Object.assign(new ListProjectsQueryDto(), {
+      city: 'Yerevan, Gyumri',
+    });
+
+    const where = service.buildListWhere(query);
+
+    expect(where.OR).toEqual([
+      { city: { equals: 'Yerevan', mode: 'insensitive' } },
+      { city: { equals: 'Gyumri', mode: 'insensitive' } },
+    ]);
+  });
+
   it('supports multi rooms with 4+ semantics', () => {
     const query = Object.assign(new ListProjectsQueryDto(), {
       rooms: [1, 4],

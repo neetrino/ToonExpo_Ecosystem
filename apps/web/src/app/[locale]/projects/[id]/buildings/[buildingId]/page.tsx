@@ -92,14 +92,7 @@ export default async function BuildingPage({ params }: BuildingPageProps) {
         <div className="page-container section-pad">
           {visualCanvas ? (
             <div className="mb-8">
-              <PublicVisualMap
-                canvas={visualCanvas}
-                linkContext={{
-                  kind: 'buildingFloor',
-                  projectId: building.project.id,
-                  buildingId: building.id,
-                }}
-              />
+              <PublicVisualMap canvas={visualCanvas} projectId={building.project.id} />
             </div>
           ) : null}
 

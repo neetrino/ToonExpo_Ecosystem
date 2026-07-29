@@ -287,7 +287,13 @@ export const DropdownPortal = ({
   return createPortal(
     <div
       ref={portalRef}
-      className={cn('z-[var(--z-dropdown)] overflow-y-auto luxury-scrollbar', className)}
+      className={cn(
+        'z-[var(--z-dropdown)] overflow-x-hidden overflow-y-auto luxury-scrollbar',
+        // Overflow must share the panel radius — otherwise the scroll layer
+        // paints square corners behind rounded panel chrome.
+        'rounded-[16px]',
+        className,
+      )}
       style={style}
       data-dropdown-portal
       data-placement={coords?.placement ?? 'bottom'}

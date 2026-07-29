@@ -112,6 +112,7 @@
       "locationAny": "Ցանկացած վայր",
       "locationSearch": "Որոնել քաղաք…",
       "locationEmpty": "Քաղաք չի գտնվել",
+      "locationSelectedCount": "{count} ընտրված",
       "priceLabel": "Գին",
       "priceAny": "Ցանկացած գին",
       "priceMin": "Նվազագույն",
@@ -614,10 +615,16 @@
       "title": "Տեսական քարտեզ",
       "alt": "Նախագծի տեսական քարտեզ",
       "viewAsList": "Դիտել ցանկով ստորև",
+      "back": "Հետ",
+      "loadingStage": "Քարտեզը բացվում է…",
+      "finalStage": "Այս տարածքի ինտերակտիվ քարտեզն ավարտված է։",
+      "stageUnavailable": "Այս տարածքի համար դեռ հրապարակված ինտերակտիվ քարտեզ չկա։",
+      "stageLoadError": "Հաջորդ քարտեզի փուլը չհաջողվեց բեռնել։ Փորձեք կրկին։",
       "hotspot": {
         "close": "Փակել",
         "openTarget": "Բացել մանրամասները",
         "targetTypes": {
+          "district": "Թաղամաս",
           "building": "Շենք",
           "floor": "Հարկ",
           "apartment": "Բնակարան"
@@ -1176,6 +1183,83 @@
       "checkin": "Գրանցման սկաներ",
       "bos": "BOS",
       "settings": "Կարգավորումներ"
+    },
+    "interactiveMapping": {
+      "title": "Ինտերակտիվ քարտեզ",
+      "subtitle": "Թաղամասեր, շենքեր, հարկեր և բնակարաններ՝ 4 փուլով։",
+      "loading": "Բեռնում…",
+      "error": "Չհաջողվեց բեռնել ինտերակտիվ քարտեզի տվյալները։",
+      "empty": "Նախագիծ դեռ չկա։ Ստեղծիր մեկը՝ սկսելու համար։",
+      "existing": "Նախագծեր",
+      "createProject": "Ստեղծել նախագիծ",
+      "open": "Բացել",
+      "continuePhase": "Փուլ {phase} →",
+      "projectMeta": "{districts} թաղամաս · {buildings} շենք · փուլ {phase}",
+      "labLink": "Mapping lab (QA)",
+      "backToProjects": "← Նախագծեր",
+      "backToWizard": "← Փուլեր",
+      "activePhase": "Հիմա Փուլ {phase}",
+      "allPhasesDone": "Բոլոր փուլերը պատրաստ են",
+      "status": {
+        "locked": "Կողպված",
+        "active": "Հիմա արա սա",
+        "done": "Պատրաստ է"
+      },
+      "phases": {
+        "districts": "Թաղամասեր",
+        "buildings": "Շենքեր",
+        "floors": "Հարկեր",
+        "apartments": "Բնակարաններ"
+      },
+      "hints": {
+        "districts": "Ստեղծիր թաղամաս, upload արա masterplan, հետո տեղադրիր marker/polygon։",
+        "buildings": "Ստեղծիր շենքեր և տեղադրիր թաղամասի պլանի վրա։",
+        "floors": "Նշիր հարկերի քանակը, upload արա շենքի նկարը, հետո գծիր հարկերը։",
+        "apartments": "Ստեղծիր բնակարաններ և գծիր հատակագծի վրա։",
+        "setupFloors": "Գրիր հարկերի քանակը, հետո բացիր գծելու էջը։"
+      },
+      "progress": {
+        "districts": "{done}/{total} թաղամաս",
+        "buildings": "{done}/{total} շենք",
+        "floors": "{done}/{total} հարկ",
+        "apartments": "{done}/{total} բնակարան"
+      },
+      "cta": {
+        "mapDistricts": "Map · թաղամասեր",
+        "mapBuildings": "Map · շենքեր",
+        "mapFloors": "Map · հարկեր",
+        "mapApartments": "Map · բնակարաններ",
+        "edit": "Դիտել / խմբագրել",
+        "locked": "Կողպված",
+        "other": "Այլ"
+      },
+      "forms": {
+        "name": "Անուն",
+        "createDistrict": "Ստեղծել թաղամաս",
+        "createBuilding": "Ստեղծել շենք",
+        "createApartment": "Ստեղծել բնակարան",
+        "apartmentNumber": "Համար",
+        "districtPlaceholder": "օր. Թաղամաս Ա",
+        "buildingPlaceholder": "օր. Building 01",
+        "apartmentPlaceholder": "101",
+        "saving": "Պահպանվում…",
+        "setupFloors": "Սկսել հարկեր map",
+        "floorCount": "Հարկերի քանակ",
+        "masterplanImage": "Masterplan նկար",
+        "districtPlanImage": "Թաղամասի պլան",
+        "buildingRenderImage": "Շենքի նկար",
+        "floorPlanImage": "Հատակագիծ",
+        "uploadFirst": "Նախ upload արա նկարը։",
+        "uploadAndSetupFloors": "Նախ upload արա նկարը և setup արա հարկերը։",
+        "pickFloor": "Հարկեր",
+        "noFloors": "Հարկեր դեռ չկան։"
+      },
+      "pages": {
+        "masterplan": "Masterplan · թաղամասեր",
+        "district": "Թաղամաս · {name}",
+        "buildingRender": "Շենք · {name}",
+        "floor": "Հարկ · {name}"
+      }
     },
     "settings": {
       "title": "Կարգավորումներ",

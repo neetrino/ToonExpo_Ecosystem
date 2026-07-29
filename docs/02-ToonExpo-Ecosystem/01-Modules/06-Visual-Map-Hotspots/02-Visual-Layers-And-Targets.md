@@ -29,11 +29,24 @@ Visual examples:
 
 Hotspot targets:
 
+- district (Interactive Mapping phase 1);
+- building (legacy project maps and district plans).
+
+### District Layer
+
+Context:
+
+```text
+District
+```
+
+Visual examples:
+
+- district aerial / plan image.
+
+Hotspot targets:
+
 - building.
-
-Optional later target:
-
-- floor if the project has no separate building layer.
 
 ### Building Layer
 
@@ -155,4 +168,3 @@ Every visual layer needs a list fallback:
 - project -> buildings list;
 - building -> floors list;
 - floor -> apartments list.
-

@@ -159,7 +159,18 @@ export class ProjectsService {
     };
 
     if (query.city) {
-      where.city = { equals: query.city, mode: 'insensitive' };
+      const cities = query.city
+        .split(',')
+        .map((city) => city.trim())
+        .filter((city) => city.length > 0);
+      const [firstCity] = cities;
+      if (cities.length === 1 && firstCity != null) {
+        where.city = { equals: firstCity, mode: 'insensitive' };
+      } else if (cities.length > 1) {
+        where.OR = cities.map((city) => ({
+          city: { equals: city, mode: 'insensitive' as const },
+        }));
+      }
     }
 
     if (query.builderId) {

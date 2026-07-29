@@ -57,6 +57,12 @@
 
   /* Maps / charts */
   --color-map-canvas: #d8e2ec;
+  /* Interactive mapping hotspots — match Admin MappingCanvas orange */
+  --color-map-hotspot: #d4894a;
+  --color-map-hotspot-active: #c45c26;
+  --color-map-hotspot-fill: rgb(232 140 72 / 0.16);
+  --color-map-hotspot-fill-hover: rgb(232 140 72 / 0.28);
+  --color-map-hotspot-fill-active: rgb(232 140 72 / 0.35);
   --color-chart-1: #1a8f98;
   --color-chart-2: #1e4f5f;
   --color-chart-3: #0d9f6e;
@@ -1060,5 +1066,31 @@
 
   .crm-kanban-board--dragging .crm-kanban-column {
     overflow: visible;
+  }
+
+  /* Public interactive map polygon hotspots (Admin-aligned orange). */
+  .map-hotspot-path {
+    cursor: pointer;
+    fill: var(--color-map-hotspot-fill);
+    stroke: var(--color-map-hotspot);
+    stroke-width: 1.5;
+    transition:
+      fill 150ms ease,
+      stroke 150ms ease,
+      stroke-width 150ms ease;
+  }
+
+  .map-hotspot-path:hover,
+  .map-hotspot-path:focus-visible {
+    fill: var(--color-map-hotspot-fill-hover);
+    stroke: var(--color-map-hotspot-active);
+    stroke-width: 2.5;
+    outline: none;
+  }
+
+  .map-hotspot-path[data-selected='true'] {
+    fill: var(--color-map-hotspot-fill-active);
+    stroke: var(--color-map-hotspot-active);
+    stroke-width: 3;
   }
 }

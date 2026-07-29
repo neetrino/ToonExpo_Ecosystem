@@ -414,6 +414,7 @@ model Project {
   readinessAssessments ReadinessAssessment[]
   boothAssignments     BoothAssignment[]
   visualMapCanvases    VisualMapCanvas[]
+  districts            District[]
 
   @@index([builderCompanyId])
   @@index([publicationStatus])
@@ -421,9 +422,33 @@ model Project {
   @@map("projects")
 }
 
+/// Spatial district / quarter under a project (interactive mapping phase 1–2).
+/// Distinct from Project.district free-text address label.
+model District {
+  id                String            @id @default(cuid())
+  projectId         String            @map("project_id")
+  name              String
+  slug              String
+  publicationStatus PublicationStatus @default(draft) @map("publication_status")
+  displayOrder      Int               @default(0) @map("display_order")
+  createdByUserId   String?           @map("created_by_user_id")
+  updatedByUserId   String?           @map("updated_by_user_id")
+  createdAt         DateTime          @default(now()) @map("created_at")
+  updatedAt         DateTime          @updatedAt @map("updated_at")
+
+  project  Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  buildings Building[]
+
+  @@unique([projectId, slug])
+  @@index([projectId])
+  @@index([publicationStatus])
+  @@map("districts")
+}
+
 model Building {
   id                String            @id @default(cuid())
   projectId         String            @map("project_id")
+  districtId        String?           @map("district_id")
   name              String
   publicationStatus PublicationStatus @default(draft) @map("publication_status")
   description       String?
@@ -437,12 +462,14 @@ model Building {
   updatedAt         DateTime          @updatedAt @map("updated_at")
 
   project    Project     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  district   District?   @relation(fields: [districtId], references: [id], onDelete: SetNull)
   coverMedia MediaAsset? @relation("BuildingCover", fields: [coverMediaId], references: [id], onDelete: SetNull)
   floors     Floor[]
   apartments Apartment[]
 
   @@unique([projectId, name])
   @@index([projectId])
+  @@index([districtId])
   @@index([publicationStatus])
   @@map("buildings")
 }
@@ -1430,18 +1457,33 @@ model IntegrationAuditLog {
   @@map("integration_audit_logs")
 }
 
-/// Visual map canvas context (project / building / floor layer).
+/// Visual map canvas context (project / district / building / floor layer).
 enum VisualMapContextType {
   project
+  district
   building
   floor
 }
 
 /// Hotspot navigation target on a visual map canvas.
 enum VisualHotspotTargetType {
+  district
   building
   floor
   apartment
+}
+
+/// Point marker vs closed polygon region on a visual map.
+enum VisualHotspotShapeType {
+  point
+  polygon
+}
+
+/// How the hotspot can be interacted with on the public map.
+enum VisualHotspotInteractionType {
+  marker
+  polygon
+  both
 }
 
 /// Image canvas with clickable hotspots for real-estate navigation.
@@ -1450,7 +1492,7 @@ model VisualMapCanvas {
   ownerCompanyId    String               @map("owner_company_id")
   projectId         String               @map("project_id")
   contextType       VisualMapContextType @map("context_type")
-  /// Polymorphic reference: contextId points to Project.id, Building.id, or Floor.id per contextType.
+  /// Polymorphic reference: Project.id, District.id, Building.id, or Floor.id per contextType.
   contextId         String               @map("context_id")
   mediaAssetId      String               @map("media_asset_id")
   title             String?
@@ -1477,22 +1519,29 @@ model VisualMapCanvas {
   @@map("visual_map_canvases")
 }
 
-/// Clickable marker on a visual map canvas.
+/// Clickable marker and/or polygon region on a visual map canvas.
 model VisualHotspot {
-  id                String                  @id @default(cuid())
-  canvasId          String                  @map("canvas_id")
-  targetType        VisualHotspotTargetType @map("target_type")
-  targetId          String                  @map("target_id")
+  id                String                        @id @default(cuid())
+  canvasId          String                        @map("canvas_id")
+  targetType        VisualHotspotTargetType       @map("target_type")
+  targetId          String                        @map("target_id")
   label             String
-  xPercent          Decimal                 @map("x_percent") @db.Decimal(6, 3)
-  yPercent          Decimal                 @map("y_percent") @db.Decimal(6, 3)
-  markerStyle       String?                 @map("marker_style")
-  publicationStatus PublicationStatus       @default(draft) @map("publication_status")
-  sortOrder         Int?                    @map("sort_order")
-  createdByUserId   String                  @map("created_by_user_id")
-  updatedByUserId   String?                 @map("updated_by_user_id")
-  createdAt         DateTime                @default(now()) @map("created_at")
-  updatedAt         DateTime                @updatedAt @map("updated_at")
+  /// Label/marker anchor in percent of contain-box (0–100). Also used for point hotspots.
+  xPercent          Decimal                       @map("x_percent") @db.Decimal(6, 3)
+  yPercent          Decimal                       @map("y_percent") @db.Decimal(6, 3)
+  shapeType         VisualHotspotShapeType        @default(point) @map("shape_type")
+  interactionType   VisualHotspotInteractionType  @default(marker) @map("interaction_type")
+  /// SVG path `d` in canvas media viewBox pixel space (Defense parity).
+  svgPath           String?                       @map("svg_path")
+  /// Optional structured editor points (normalized 0–1); svgPath remains persistence primary.
+  points            Json?
+  markerStyle       String?                       @map("marker_style")
+  publicationStatus PublicationStatus             @default(draft) @map("publication_status")
+  sortOrder         Int?                          @map("sort_order")
+  createdByUserId   String                        @map("created_by_user_id")
+  updatedByUserId   String?                       @map("updated_by_user_id")
+  createdAt         DateTime                      @default(now()) @map("created_at")
+  updatedAt         DateTime                      @updatedAt @map("updated_at")
 
   canvas    VisualMapCanvas @relation(fields: [canvasId], references: [id], onDelete: Cascade)
   createdBy User            @relation("VisualHotspotCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
