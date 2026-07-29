@@ -1,7 +1,6 @@
 'use client';
 
 import { QRCodeSVG } from 'qrcode.react';
-import { ShieldCheck } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { QR_DISPLAY_SIZE_PX } from '@/features/buyer/constants';
@@ -26,11 +25,6 @@ export const BuyerQrCode = ({ payloadUrl, buyerName }: BuyerQrCodeProps) => {
         padding="lg"
         className="mx-auto flex w-full max-w-md flex-col items-center gap-5"
       >
-        <div className="flex items-center gap-2 rounded-pill bg-success-soft px-3 py-1.5 text-xs font-semibold text-success">
-          <ShieldCheck className="size-3.5" aria-hidden />
-          {t('secureBadge')}
-        </div>
-
         <div className="rounded-md border border-border bg-white p-5 shadow-xs">
           <QRCodeSVG
             value={payloadUrl}
