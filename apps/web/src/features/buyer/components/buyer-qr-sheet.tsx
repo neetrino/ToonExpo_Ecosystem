@@ -173,7 +173,7 @@ export const BuyerQrSheet = ({ open, onClose }: BuyerQrSheetProps) => {
 
   const isScanner = mode === 'scanner';
   const title = isScanner ? tScanner('title') : t('title');
-  const subtitle = isScanner ? tScanner('subtitle') : t('subtitle');
+  const subtitle = isScanner ? tScanner('subtitle') : null;
   const backdropOpacity = visible ? Math.max(0, 1 - dragY / 320) : 0;
 
   return createPortal(
@@ -208,7 +208,7 @@ export const BuyerQrSheet = ({ open, onClose }: BuyerQrSheetProps) => {
           ref={panelRef}
           role="dialog"
           aria-modal="true"
-          aria-labelledby={titleId}
+          {...(isScanner ? { 'aria-labelledby': titleId } : { 'aria-label': title })}
           className={cn(
             'pointer-events-auto flex w-full max-w-lg flex-col',
             'rounded-t-[15px] border border-border bg-surface-elevated shadow-lg',
@@ -227,15 +227,18 @@ export const BuyerQrSheet = ({ open, onClose }: BuyerQrSheetProps) => {
           <div className="flex shrink-0 justify-center pt-2.5" aria-hidden>
             <span className="h-1 w-10 rounded-full bg-border-strong" />
           </div>
-          <header className="shrink-0 px-5 pb-3 pt-2">
-            <h2 id={titleId} className="text-lg font-semibold text-ink">
-              {title}
-            </h2>
-            <p className="mt-1 text-sm text-ink-secondary">{subtitle}</p>
-          </header>
+          {isScanner ? (
+            <header className="shrink-0 px-5 pb-3 pt-2">
+              <h2 id={titleId} className="text-lg font-semibold text-ink">
+                {title}
+              </h2>
+              {subtitle ? <p className="mt-1 text-sm text-ink-secondary">{subtitle}</p> : null}
+            </header>
+          ) : null}
           <div
             className={cn(
-              'px-5 pt-1',
+              'px-5',
+              isScanner ? 'pt-1' : 'pt-3',
               MOBILE_BOTTOM_NAV_SHEET_PB_CLASS,
               isScanner ? 'min-h-0 overflow-y-auto' : 'overflow-hidden',
             )}
