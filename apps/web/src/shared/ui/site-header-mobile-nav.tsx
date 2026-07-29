@@ -16,29 +16,23 @@ type SiteHeaderMobileNavProps = {
   onClose: () => void;
   isNavActive: (pathname: string, href: SiteHeaderNavHref) => boolean;
   /** Enter/exit motion — driven by parent `useDrawerTransition`. */
-  visible?: boolean | undefined;
+  visible: boolean;
+  /** Open/close duration in ms (same curve both ways). */
+  durationMs: number;
   className?: string | undefined;
 };
 
-/** Stagger between nav rows on open (ms). */
-const ITEM_STAGGER_MS = 38;
-/** Base delay before first row (ms). */
-const ITEM_STAGGER_BASE_MS = 55;
-/** Row travel / fade on open (ms). */
-const ITEM_ENTER_MS = 340;
-/** Row fade on close — must finish before panel unmount (~260ms). */
-const ITEM_EXIT_MS = 200;
-
 /**
  * Collapsible public header drawer for viewports below `lg`.
- * Only marketplace nav + language — account/portal links live in ProfileMenu.
+ * Panel-only motion (no row stagger) so open and close stay smooth.
  */
 export const SiteHeaderMobileNav = ({
   navItems,
   pathname,
   onClose,
   isNavActive,
-  visible = true,
+  visible,
+  durationMs,
   className,
 }: SiteHeaderMobileNavProps) => {
   const t = useTranslations('Nav');
@@ -50,35 +44,33 @@ export const SiteHeaderMobileNav = ({
       className={cn(
         'origin-top rounded-[1.25rem] border border-header-border',
         'bg-surface-elevated px-1 py-3 text-ink shadow-[0_12px_40px_rgb(9_43_68/0.14)]',
-        'transition-[opacity,transform] duration-[var(--burger-menu-ms,420ms)]',
-        'ease-[var(--ease-out-premium)] will-change-transform',
-        'motion-reduce:transition-none motion-reduce:duration-0 motion-reduce:will-change-auto',
-        visible
-          ? 'translate-y-0 scale-100 opacity-100'
-          : 'pointer-events-none -translate-y-2 scale-[0.98] opacity-0',
+        'will-change-transform motion-reduce:will-change-auto',
+        !visible && 'pointer-events-none',
         className,
       )}
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible
+          ? 'translate3d(0, 0, 0) scale(1)'
+          : 'translate3d(0, -12px, 0) scale(0.98)',
+        transitionProperty: 'opacity, transform',
+        transitionDuration: `${durationMs}ms`,
+        transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)',
+      }}
     >
       <nav className="flex flex-col gap-1 text-sm" aria-label={t('main')}>
-        {navItems.map((item, index) => {
+        {navItems.map((item) => {
           const active = isNavActive(pathname, item.href);
-          const delayMs = visible ? ITEM_STAGGER_BASE_MS + index * ITEM_STAGGER_MS : 0;
           return (
             <Link
               key={item.href}
               href={item.href}
               className={cn(
-                'rounded-sm px-3 py-3 transition-[color,background-color,opacity,transform]',
-                'ease-[var(--ease-out-premium)] motion-reduce:transition-colors motion-reduce:delay-0',
+                'rounded-sm px-3 py-3 transition-colors',
                 active
                   ? 'bg-brand-soft font-bold text-brand'
                   : 'font-medium text-ink hover:bg-surface hover:text-brand',
-                visible ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0',
               )}
-              style={{
-                transitionDuration: `${visible ? ITEM_ENTER_MS : ITEM_EXIT_MS}ms`,
-                transitionDelay: `${delayMs}ms`,
-              }}
               onClick={onClose}
             >
               {t(item.key)}
@@ -87,20 +79,7 @@ export const SiteHeaderMobileNav = ({
         })}
       </nav>
 
-      <div
-        className={cn(
-          'mt-3 border-t border-header-border px-2 pt-3 pb-1',
-          'transition-[opacity,transform] ease-[var(--ease-out-premium)]',
-          'motion-reduce:transition-none motion-reduce:delay-0',
-          visible ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0',
-        )}
-        style={{
-          transitionDuration: `${visible ? ITEM_ENTER_MS : ITEM_EXIT_MS}ms`,
-          transitionDelay: visible
-            ? `${ITEM_STAGGER_BASE_MS + navItems.length * ITEM_STAGGER_MS}ms`
-            : '0ms',
-        }}
-      >
+      <div className="mt-3 border-t border-header-border px-2 pt-3 pb-1">
         <p className="mb-2 px-1 text-[10px] font-bold tracking-[0.1em] text-header-muted uppercase">
           {tHome('languageLabel')}
         </p>

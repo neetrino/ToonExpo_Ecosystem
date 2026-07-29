@@ -18,10 +18,8 @@ import { IconButton } from '@/shared/ui/icon-button';
 import { LocaleSwitcher } from '@/shared/ui/locale-switcher';
 import { ProfileMenu } from '@/shared/ui/profile-menu';
 import {
-  BURGER_BACKDROP_ENTER_MS,
-  BURGER_BACKDROP_EXIT_MS,
-  BURGER_MENU_ENTER_MS,
-  BURGER_MENU_EXIT_MS,
+  BURGER_BACKDROP_MS,
+  BURGER_MENU_MS,
   HEADER_HEIGHT_CLASS,
   HEADER_SPACER_CLASS,
   isSiteHeaderNavActive,
@@ -58,7 +56,7 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
   const publicMenuOpen = menuOpen && !isAccountRoute;
   const { rendered: menuRendered, visible: menuVisible } = useDrawerTransition(
     publicMenuOpen,
-    BURGER_MENU_EXIT_MS,
+    BURGER_MENU_MS,
   );
   /** Pill follows scroll / solid pages only — never the burger. */
   const pillVisible = !isTransparentStart || showPill;
@@ -132,12 +130,13 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
           className={cn(
             'fixed inset-0 z-[calc(var(--z-header)-1)] cursor-default lg:hidden',
             'bg-ink/35 backdrop-blur-[2px]',
-            'transition-[opacity,backdrop-filter] ease-[var(--ease-out-premium)]',
-            'motion-reduce:transition-none motion-reduce:backdrop-blur-none',
+            'motion-reduce:backdrop-blur-none',
             menuVisible ? 'opacity-100' : 'opacity-0',
           )}
           style={{
-            transitionDuration: `${menuVisible ? BURGER_BACKDROP_ENTER_MS : BURGER_BACKDROP_EXIT_MS}ms`,
+            transitionProperty: 'opacity, backdrop-filter',
+            transitionDuration: `${BURGER_BACKDROP_MS}ms`,
+            transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)',
           }}
           onClick={() => setMenuOpen(false)}
         />
@@ -255,7 +254,7 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
                 )}
                 style={{
                   transitionDuration: `${PILL_APPEAR_MS}ms`,
-                  ['--burger-icon-ms' as string]: `${burgerOpen ? BURGER_MENU_ENTER_MS : BURGER_MENU_EXIT_MS}ms`,
+                  ['--burger-icon-ms' as string]: `${BURGER_MENU_MS}ms`,
                 }}
                 variant="outline"
                 size="md"
@@ -276,18 +275,14 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
           </div>
 
           {menuRendered ? (
-            <div
-              className={cn('absolute top-full z-10 mt-2 lg:hidden', PILL_EDGE_INSET_CLASS)}
-              style={{
-                ['--burger-menu-ms' as string]: `${menuVisible ? BURGER_MENU_ENTER_MS : BURGER_MENU_EXIT_MS}ms`,
-              }}
-            >
+            <div className={cn('absolute top-full z-10 mt-2 lg:hidden', PILL_EDGE_INSET_CLASS)}>
               <SiteHeaderMobileNav
                 navItems={SITE_HEADER_NAV_HREFS}
                 pathname={pathname}
                 onClose={() => setMenuOpen(false)}
                 isNavActive={isSiteHeaderNavActive}
                 visible={menuVisible}
+                durationMs={BURGER_MENU_MS}
               />
             </div>
           ) : null}

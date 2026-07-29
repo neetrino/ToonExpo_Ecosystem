@@ -2,14 +2,10 @@
 export const SCROLL_PILL_THRESHOLD_PX = 12;
 /** ma-marie `HEADER_PILL_APPEAR_DURATION_MS`. */
 export const PILL_APPEAR_MS = 500;
-/** Burger panel enter — soft glide with room for staggered rows. */
-export const BURGER_MENU_ENTER_MS = 420;
-/** Burger panel exit — snappier so close doesn’t feel late. */
-export const BURGER_MENU_EXIT_MS = 260;
-/** Backdrop enter. */
-export const BURGER_BACKDROP_ENTER_MS = 360;
-/** Backdrop exit — tracks panel close. */
-export const BURGER_BACKDROP_EXIT_MS = 220;
+/** Burger dropdown open/close — one duration both ways for a even glide. */
+export const BURGER_MENU_MS = 380;
+/** Backdrop tracks the dropdown. */
+export const BURGER_BACKDROP_MS = 320;
 /** Inward nudge of logo / actions once the pill is visible. */
 export const PILL_CONTENT_INSET_PX = 22;
 /** How far the pill pulls in from page-container edges. */
