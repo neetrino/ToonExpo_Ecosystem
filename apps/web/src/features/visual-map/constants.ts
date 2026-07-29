@@ -33,3 +33,12 @@ export const VISUAL_MAP_MARKER_HIT_RADIUS = 4;
 
 /** Visible marker radius in viewBox units. */
 export const VISUAL_MAP_MARKER_VISIBLE_RADIUS = 2;
+
+/**
+ * Max height for tall building/floor stage images on public drill-down
+ * (aligned with Admin MappingCanvas `min(70dvh, 720px)`).
+ */
+export const PUBLIC_VISUAL_MAP_CONTAINED_MAX_HEIGHT_CLASS = 'max-h-[min(70dvh,720px)]';
+
+/** Context types that use contained (not full-bleed width) stage framing. */
+export const PUBLIC_VISUAL_MAP_CONTAINED_CONTEXT_TYPES = ['building', 'floor'] as const;

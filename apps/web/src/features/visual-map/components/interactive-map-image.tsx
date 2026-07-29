@@ -1,14 +1,23 @@
 'use client';
 
-import type { PublicVisualCanvasItem } from '@toonexpo/contracts';
+import type { PublicVisualCanvasItem, VisualMapContextType } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState, type SyntheticEvent } from 'react';
 
 import { PercentMapMarkers } from '@/features/visual-map/components/percent-map-markers';
 import { PolygonHotspotOverlay } from '@/features/visual-map/components/polygon-hotspot-overlay';
+import {
+  PUBLIC_VISUAL_MAP_CONTAINED_CONTEXT_TYPES,
+  PUBLIC_VISUAL_MAP_CONTAINED_MAX_HEIGHT_CLASS,
+} from '@/features/visual-map/constants';
 
 const FALLBACK_VIEWBOX_WIDTH = 1000;
 const FALLBACK_VIEWBOX_HEIGHT = 1000;
+
+const isContainedStageContext = (contextType: VisualMapContextType): boolean =>
+  (PUBLIC_VISUAL_MAP_CONTAINED_CONTEXT_TYPES as readonly VisualMapContextType[]).includes(
+    contextType,
+  );
 
 type InteractiveMapImageProps = {
   canvas: PublicVisualCanvasItem;
@@ -94,33 +103,47 @@ export const InteractiveMapImage = ({
     }
   };
 
+  const useContainedFrame = isContainedStageContext(canvas.contextType);
+
   return (
-    <div className="relative min-w-[280px]">
-      <img
-        key={canvas.id}
-        src={imageUrl}
-        alt={canvas.media.altText ?? canvas.title ?? t('alt')}
-        className="relative z-0 h-auto w-full select-none"
-        draggable={false}
-        onLoad={onImageLoad}
-      />
-      {polygonItems.length > 0 ? (
-        <PolygonHotspotOverlay
-          items={polygonItems}
-          viewBoxWidth={viewBox.width}
-          viewBoxHeight={viewBox.height}
-          interactive={interactive}
-          onSelect={onSelectHotspot}
+    <div className={useContainedFrame ? 'flex w-full justify-center' : 'w-full'}>
+      <div
+        className={
+          useContainedFrame
+            ? `relative w-fit max-w-full min-w-0 ${PUBLIC_VISUAL_MAP_CONTAINED_MAX_HEIGHT_CLASS}`
+            : 'relative min-w-[280px] w-full'
+        }
+      >
+        <img
+          key={canvas.id}
+          src={imageUrl}
+          alt={canvas.media.altText ?? canvas.title ?? t('alt')}
+          className={
+            useContainedFrame
+              ? `relative z-0 block h-auto w-auto max-w-full select-none ${PUBLIC_VISUAL_MAP_CONTAINED_MAX_HEIGHT_CLASS}`
+              : 'relative z-0 h-auto w-full select-none'
+          }
+          draggable={false}
+          onLoad={onImageLoad}
         />
-      ) : null}
-      {pointMarkers.length > 0 ? (
-        <PercentMapMarkers
-          markers={pointMarkers}
-          interactive={interactive}
-          showLabels={false}
-          onSelectMarker={onSelectHotspot}
-        />
-      ) : null}
+        {polygonItems.length > 0 ? (
+          <PolygonHotspotOverlay
+            items={polygonItems}
+            viewBoxWidth={viewBox.width}
+            viewBoxHeight={viewBox.height}
+            interactive={interactive}
+            onSelect={onSelectHotspot}
+          />
+        ) : null}
+        {pointMarkers.length > 0 ? (
+          <PercentMapMarkers
+            markers={pointMarkers}
+            interactive={interactive}
+            showLabels={false}
+            onSelectMarker={onSelectHotspot}
+          />
+        ) : null}
+      </div>
     </div>
   );
 };
