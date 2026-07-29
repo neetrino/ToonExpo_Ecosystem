@@ -280,11 +280,33 @@
   },
   "Discover": {
     "meta": {
-      "title": "Discover projects",
-      "description": "Swipe through exhibition projects and find homes you like."
+      "title": "Discover apartments",
+      "description": "Swipe through available apartments and save the homes you like."
     },
     "title": "Discover",
-    "subtitle": "Swipe through projects coming soon — save the ones you love."
+    "subtitle": "Swipe right to like, left to skip",
+    "hint": "Drag the card or use the buttons",
+    "loginHint": "Sign in to save apartments you like.",
+    "loginCta": "Sign in",
+    "error": "Could not load apartments. Try again.",
+    "stamp": {
+      "like": "Like",
+      "skip": "Skip"
+    },
+    "actions": {
+      "like": "Like apartment",
+      "skip": "Skip apartment"
+    },
+    "card": {
+      "from": "From",
+      "unitTitle": "Apt. {number} · {project}"
+    },
+    "empty": {
+      "title": "You're all caught up",
+      "body": "No more apartments in this deck. Start again or browse the catalog.",
+      "none": "No available apartments to discover yet.",
+      "restart": "Start again"
+    }
   },
   "BuyPage": {
     "title": "Homes for sale",

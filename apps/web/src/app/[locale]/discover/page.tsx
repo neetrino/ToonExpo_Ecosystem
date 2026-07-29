@@ -2,7 +2,8 @@ import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { DiscoverPageContent } from '@/features/discover/components/discover-page-content';
-import { SiteFooter } from '@/features/catalog/components/site-footer';
+import { DISCOVER_VIEWPORT_HEIGHT_CLASS } from '@/features/discover/constants';
+import { cn } from '@/shared/ui/cn';
 
 type DiscoverPageProps = {
   params: Promise<{ locale: string }>;
@@ -19,16 +20,21 @@ export const generateMetadata = async ({ params }: DiscoverPageProps): Promise<M
 };
 
 /**
- * Buyer discover / swipe surface for projects (bottom-nav heart tab).
+ * Buyer discover / swipe surface for apartments (bottom-nav heart tab).
+ * Height fills exactly between top header and bottom nav — no page scroll.
  */
 export default async function DiscoverPage({ params }: DiscoverPageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
 
   return (
-    <div className="min-h-screen bg-canvas">
+    <div
+      className={cn(
+        'flex flex-col overflow-hidden overscroll-none bg-canvas',
+        DISCOVER_VIEWPORT_HEIGHT_CLASS,
+      )}
+    >
       <DiscoverPageContent />
-      <SiteFooter />
     </div>
   );
 }
