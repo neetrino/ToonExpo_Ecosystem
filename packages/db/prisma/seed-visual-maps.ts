@@ -1,11 +1,12 @@
 /**
  * Idempotent public visual map canvases for seed projects (dev only).
  * Recreated after cleanup which deletes company visual maps.
+ *
+ * Hotspots are owned by Admin Interactive Mapping — seed only provides the canvas shell.
  */
 import {
   MediaAssetType,
   PublicationStatus,
-  VisualHotspotTargetType,
   VisualMapContextType,
   type PrismaClient,
 } from '../src/index.js';
@@ -14,7 +15,7 @@ import { DEMO_VISUAL_MAP_URL, SEED_ID_PREFIX, toSeedMediaUrl } from './seed-data
 import { ALL_SEED_PROJECTS as SEED_PROJECTS } from './seed-entities.js';
 
 /**
- * Upserts one published primary project canvas per seed project with building hotspots.
+ * Upserts one published primary project canvas per seed project (no default hotspots).
  */
 export const upsertSeedVisualMaps = async (prisma: PrismaClient): Promise<number> => {
   let canvasCount = 0;
@@ -74,39 +75,13 @@ export const upsertSeedVisualMaps = async (prisma: PrismaClient): Promise<number
       },
     });
 
-    for (const [buildingIndex, building] of project.buildings.entries()) {
-      const hotspotId = `${SEED_ID_PREFIX}hotspot_${building.id}`;
-      const xPercent = 25 + buildingIndex * 28;
-      const yPercent = 40 + (projectIndex % 2) * 15;
-
-      await prisma.visualHotspot.upsert({
-        where: { id: hotspotId },
-        create: {
-          id: hotspotId,
-          canvasId,
-          label: building.name,
-          targetType: VisualHotspotTargetType.building,
-          targetId: building.id,
-          xPercent,
-          yPercent,
-          sortOrder: buildingIndex,
-          publicationStatus: PublicationStatus.published,
-          createdByUserId: SEED_PLATFORM_ADMIN_ID,
-          updatedByUserId: SEED_PLATFORM_ADMIN_ID,
-        },
-        update: {
-          canvasId,
-          label: building.name,
-          targetType: VisualHotspotTargetType.building,
-          targetId: building.id,
-          xPercent,
-          yPercent,
-          sortOrder: buildingIndex,
-          publicationStatus: PublicationStatus.published,
-          updatedByUserId: SEED_PLATFORM_ADMIN_ID,
-        },
-      });
-    }
+    // Remove legacy seed point markers — Admin Interactive Mapping owns hotspots.
+    await prisma.visualHotspot.deleteMany({
+      where: {
+        canvasId,
+        id: { startsWith: `${SEED_ID_PREFIX}hotspot_` },
+      },
+    });
 
     canvasCount += 1;
   }

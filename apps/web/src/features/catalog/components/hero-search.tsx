@@ -29,7 +29,7 @@ export const HeroSearch = ({ className, locations = [] }: HeroSearchProps) => {
   const t = useTranslations('HomePage.hero');
   const router = useRouter();
   const [tab, setTab] = useState<HeroSearchTab>('buy');
-  const [location, setLocation] = useState('');
+  const [locationsSelected, setLocationsSelected] = useState<string[]>([]);
   const [minPrice, setMinPrice] = useState<number | null>(null);
   const [maxPrice, setMaxPrice] = useState<number | null>(null);
   const [rooms, setRooms] = useState<string[]>([]);
@@ -44,13 +44,13 @@ export const HeroSearch = ({ className, locations = [] }: HeroSearchProps) => {
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    router.push(buildProjectsHref(location, minPrice, maxPrice, rooms, tab));
+    router.push(buildProjectsHref(locationsSelected, minPrice, maxPrice, rooms, tab));
   };
 
   const applyPriceRange = (nextMin: number | null, nextMax: number | null): void => {
     setMinPrice(nextMin);
     setMaxPrice(nextMax);
-    router.push(buildProjectsHref(location, nextMin, nextMax, rooms, tab));
+    router.push(buildProjectsHref(locationsSelected, nextMin, nextMax, rooms, tab));
   };
 
   return (
@@ -76,61 +76,50 @@ export const HeroSearch = ({ className, locations = [] }: HeroSearchProps) => {
           onChange={setTab}
         />
 
-        <div className="grid grid-cols-1 gap-2 p-3 lg:grid-cols-[minmax(11rem,15rem)_auto_auto_auto] lg:items-center">
-          <div className="flex min-w-0 flex-col gap-1 lg:px-3 lg:py-2">
-            <span className="hidden text-[10px] font-bold tracking-[0.1em] text-header-muted uppercase lg:inline">
-              {t('locationLabel')}
-            </span>
-            <LocationSearchSelect
-              value={location}
-              options={locationOptions}
-              fieldLabel={t('locationLabel')}
-              aria-label={t('locationLabel')}
-              labels={{
-                any: t('locationAny'),
-                placeholder: t('locationPlaceholder'),
-                search: t('locationSearch'),
-                empty: t('locationEmpty'),
-              }}
-              onChange={setLocation}
-            />
-          </div>
+        <div className="grid grid-cols-1 gap-2 p-3 lg:grid-cols-[minmax(12rem,15rem)_minmax(11rem,13rem)_minmax(8rem,10rem)_auto] lg:items-center">
+          <LocationSearchSelect
+            className="lg:px-3 lg:py-2"
+            values={locationsSelected}
+            options={locationOptions}
+            fieldLabel={t('locationLabel')}
+            aria-label={t('locationLabel')}
+            labels={{
+              any: t('locationAny'),
+              placeholder: t('locationPlaceholder'),
+              search: t('locationSearch'),
+              empty: t('locationEmpty'),
+              selectedCount: (count) => t('locationSelectedCount', { count }),
+            }}
+            onChange={setLocationsSelected}
+          />
 
-          <div className="flex min-w-0 flex-col gap-1 lg:border-l lg:border-header-border lg:px-3 lg:py-2">
-            <span className="hidden text-[10px] font-bold tracking-[0.1em] text-header-muted uppercase lg:inline">
-              {t('priceLabel')}
-            </span>
-            <PriceRangeSelect
-              minPrice={minPrice}
-              maxPrice={maxPrice}
-              fieldLabel={t('priceLabel')}
-              labels={{
-                any: t('priceAny'),
-                min: t('priceMin'),
-                max: t('priceMax'),
-                save: t('priceSave'),
-                invalidRange: t('priceInvalidRange'),
-              }}
-              onApply={applyPriceRange}
-            />
-          </div>
+          <PriceRangeSelect
+            className="lg:border-l lg:border-header-border lg:px-3 lg:py-2"
+            minPrice={minPrice}
+            maxPrice={maxPrice}
+            fieldLabel={t('priceLabel')}
+            labels={{
+              any: t('priceAny'),
+              min: t('priceMin'),
+              max: t('priceMax'),
+              save: t('priceSave'),
+              invalidRange: t('priceInvalidRange'),
+            }}
+            onApply={applyPriceRange}
+          />
 
-          <div className="flex min-w-0 flex-col gap-1 lg:border-l lg:border-header-border lg:px-3 lg:py-2">
-            <span className="hidden text-[10px] font-bold tracking-[0.1em] text-header-muted uppercase lg:inline">
-              {t('bedsLabel')}
-            </span>
-            <MultiListboxSelect
-              aria-label={t('bedsLabel')}
-              values={rooms}
-              options={bedOptions}
-              allLabel={t('bedsAny')}
-              selectedCountLabel={(count) => t('bedsSelectedCount', { count })}
-              variant="plain"
-              size="fit"
-              heroBlock={{ label: t('bedsLabel') }}
-              onChange={setRooms}
-            />
-          </div>
+          <MultiListboxSelect
+            className="lg:border-l lg:border-header-border lg:px-3 lg:py-2"
+            aria-label={t('bedsLabel')}
+            values={rooms}
+            options={bedOptions}
+            allLabel={t('bedsAny')}
+            selectedCountLabel={(count) => t('bedsSelectedCount', { count })}
+            variant="plain"
+            size="full"
+            heroBlock={{ label: t('bedsLabel') }}
+            onChange={setRooms}
+          />
 
           <button
             type="submit"
@@ -175,16 +164,15 @@ export const HeroSearch = ({ className, locations = [] }: HeroSearchProps) => {
 };
 
 const buildProjectsHref = (
-  location: string,
+  cities: readonly string[],
   minPrice: number | null,
   maxPrice: number | null,
   rooms: readonly string[],
   tab: HeroSearchTab,
 ): string => {
   const params = new URLSearchParams();
-  const trimmed = location.trim();
-  if (trimmed.length > 0) {
-    params.set('city', trimmed);
+  if (cities.length > 0) {
+    params.set('city', cities.join(','));
   }
 
   if (minPrice != null) {

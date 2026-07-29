@@ -198,6 +198,7 @@ export type CreatePortalBuildingRequest = {
   floorsCount?: number;
   coverMediaId?: string;
   internalCode?: string;
+  districtId?: string;
 };
 
 export type UpdatePortalBuildingRequest = {

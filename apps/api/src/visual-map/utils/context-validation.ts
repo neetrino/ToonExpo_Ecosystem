@@ -1,10 +1,10 @@
-import { BadRequestException } from "@nestjs/common";
-import type { VisualMapContextType } from "@toonexpo/contracts";
-import { VisualMapContextType as DbContextType } from "@toonexpo/db";
+import { BadRequestException } from '@nestjs/common';
+import type { VisualMapContextType } from '@toonexpo/contracts';
+import { VisualMapContextType as DbContextType } from '@toonexpo/db';
 
-import type { PrismaService } from "../../prisma/prisma.service.js";
-import { entityNotFound } from "../../portal/utils/access.js";
-import { assertProjectContextId } from "./target-status.js";
+import type { PrismaService } from '../../prisma/prisma.service.js';
+import { entityNotFound } from '../../portal/utils/access.js';
+import { assertProjectContextId } from './target-status.js';
 
 type ContextValidationInput = {
   contextType: VisualMapContextType;
@@ -22,12 +22,27 @@ export const validateCanvasContext = async (
 ): Promise<void> => {
   const { contextType, contextId, projectId, companyId } = input;
 
-  if (contextType === "project") {
+  if (contextType === 'project') {
     assertProjectContextId(projectId, contextId);
     return;
   }
 
-  if (contextType === "building") {
+  if (contextType === 'district') {
+    const district = await prisma.db.district.findFirst({
+      where: {
+        id: contextId,
+        projectId,
+        project: { builderCompanyId: companyId },
+      },
+      select: { id: true },
+    });
+    if (!district) {
+      throw entityNotFound('District');
+    }
+    return;
+  }
+
+  if (contextType === 'building') {
     const building = await prisma.db.building.findFirst({
       where: {
         id: contextId,
@@ -37,7 +52,7 @@ export const validateCanvasContext = async (
       select: { id: true },
     });
     if (!building) {
-      throw entityNotFound("Building");
+      throw entityNotFound('Building');
     }
     return;
   }
@@ -53,13 +68,12 @@ export const validateCanvasContext = async (
     select: { id: true },
   });
   if (!floor) {
-    throw entityNotFound("Floor");
+    throw entityNotFound('Floor');
   }
 };
 
-export const toDbContextType = (
-  contextType: VisualMapContextType,
-): DbContextType => contextType as DbContextType;
+export const toDbContextType = (contextType: VisualMapContextType): DbContextType =>
+  contextType as DbContextType;
 
 /**
  * Ensures a media asset exists and belongs to the company when ownership is set.
@@ -74,10 +88,10 @@ export const requireCompanyMediaAsset = async (
     select: { id: true, ownerCompanyId: true },
   });
   if (!asset) {
-    throw entityNotFound("Media asset");
+    throw entityNotFound('Media asset');
   }
   if (asset.ownerCompanyId != null && asset.ownerCompanyId !== companyId) {
-    throw entityNotFound("Media asset");
+    throw entityNotFound('Media asset');
   }
 };
 
@@ -99,9 +113,7 @@ export const clearPrimaryForContext = async (
       contextType: toDbContextType(input.contextType),
       contextId: input.contextId,
       isPrimary: true,
-      ...(input.excludeCanvasId
-        ? { id: { not: input.excludeCanvasId } }
-        : {}),
+      ...(input.excludeCanvasId ? { id: { not: input.excludeCanvasId } } : {}),
     },
     data: { isPrimary: false },
   });
@@ -111,7 +123,7 @@ export const clearPrimaryForContext = async (
  * Ensures only draft canvases are hard-deleted.
  */
 export const assertDraftCanvasDeletable = (publicationStatus: string): void => {
-  if (publicationStatus !== "draft") {
-    throw new BadRequestException("Only draft visual canvases can be deleted");
+  if (publicationStatus !== 'draft') {
+    throw new BadRequestException('Only draft visual canvases can be deleted');
   }
 };

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from 'react';
 
 import { HeroFilterTrigger } from '@/features/catalog/components/hero-filter-trigger';
+import { HERO_FILTER_PANEL_CLASS } from '@/features/catalog/components/hero-filter-menu-styles';
 import { cn } from '@/shared/ui/cn';
 import { DropdownPortal } from '@/shared/ui/dropdown-portal';
 import { Input } from '@/shared/ui/input';
@@ -23,6 +24,8 @@ type PriceRangeSelectProps = {
   /** Visible field title inside the mobile block trigger. */
   fieldLabel: string;
   onApply: (minPrice: number | null, maxPrice: number | null) => void;
+  /** Section chrome (padding / borders) — root is the portal width anchor. */
+  className?: string | undefined;
 };
 
 const formatInputValue = (value: string): string =>
@@ -62,6 +65,7 @@ export const PriceRangeSelect = ({
   labels,
   fieldLabel,
   onApply,
+  className,
 }: PriceRangeSelectProps) => {
   const [open, setOpen] = useState(false);
   const [draftMin, setDraftMin] = useState(() => toInputValue(minPrice));
@@ -117,14 +121,16 @@ export const PriceRangeSelect = ({
   };
 
   return (
-    <div ref={rootRef} className="relative min-w-0 w-full lg:w-auto">
+    <div ref={rootRef} className={cn('relative flex w-full min-w-0 flex-col gap-1', className)}>
+      <span className="hidden text-[10px] font-bold tracking-[0.1em] text-header-muted uppercase lg:inline">
+        {fieldLabel}
+      </span>
       <HeroFilterTrigger
         ref={buttonRef}
         label={fieldLabel}
         value={formatRangeLabel(minPrice, maxPrice, labels.any)}
         open={open}
         mutedValue={isAny}
-        className="lg:min-w-[11rem]"
         aria-haspopup="dialog"
         aria-expanded={open}
         onClick={() => {
@@ -135,16 +141,22 @@ export const PriceRangeSelect = ({
         }}
       />
 
-      <DropdownPortal open={open} anchorRef={buttonRef} matchWidth>
+      <DropdownPortal open={open} anchorRef={rootRef} exactWidth>
         <div
           ref={panelRef}
           role="dialog"
           aria-label={labels.save}
-          className="w-[20rem] rounded-[12px] border border-header-border bg-surface-elevated p-4 shadow-md"
+          className={cn(
+            HERO_FILTER_PANEL_CLASS,
+            'p-3.5',
+            'animate-[locale-dropdown-in_var(--duration-base)_var(--ease-out-premium)]',
+          )}
         >
-          <div className="grid grid-cols-2 gap-3">
+          <div className="flex flex-col gap-3">
             <label className="space-y-1.5">
-              <span className="text-xs font-semibold text-header-muted">{labels.min}</span>
+              <span className="text-[10px] font-bold tracking-[0.1em] text-header-muted uppercase">
+                {labels.min}
+              </span>
               <Input
                 value={draftMin}
                 inputMode="numeric"
@@ -155,7 +167,9 @@ export const PriceRangeSelect = ({
               />
             </label>
             <label className="space-y-1.5">
-              <span className="text-xs font-semibold text-header-muted">{labels.max}</span>
+              <span className="text-[10px] font-bold tracking-[0.1em] text-header-muted uppercase">
+                {labels.max}
+              </span>
               <Input
                 value={draftMax}
                 inputMode="numeric"
@@ -170,7 +184,7 @@ export const PriceRangeSelect = ({
           <button
             type="button"
             className={cn(
-              'mt-4 h-10 w-full rounded-sm bg-brand-deep px-4 text-sm font-semibold text-on-dark',
+              'mt-3.5 h-10 w-full rounded-[12px] bg-brand-deep px-4 text-sm font-semibold text-on-dark',
               'transition-colors hover:bg-brand-deep/90 focus-visible:outline-none',
               'focus-visible:ring-2 focus-visible:ring-brand-deep/30',
             )}

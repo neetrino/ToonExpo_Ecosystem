@@ -1,67 +1,82 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { PublicationStatus } from "@toonexpo/db";
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { PublicationStatus } from '@toonexpo/db';
 
-import type { PrismaService } from "../../prisma/prisma.service.js";
-import { mapPublicCanvas } from "../mappers/visual-map.mapper.js";
-import { PublicVisualMapService } from "./public-visual-map.service.js";
+import type { PrismaService } from '../../prisma/prisma.service.js';
+import { mapPublicCanvas } from '../mappers/visual-map.mapper.js';
+import { PublicVisualMapService } from './public-visual-map.service.js';
 
-describe("PublicVisualMapService", () => {
+describe('PublicVisualMapService', () => {
   const projectFindFirst = vi.fn();
+  const districtFindFirst = vi.fn();
   const visualMapCanvasFindMany = vi.fn();
   const buildingFindMany = vi.fn();
   const floorFindMany = vi.fn();
   const apartmentFindMany = vi.fn();
+  const districtFindMany = vi.fn();
 
   let service: PublicVisualMapService;
 
   beforeEach(() => {
     vi.clearAllMocks();
-    projectFindFirst.mockResolvedValue({ id: "proj_1" });
+    projectFindFirst.mockResolvedValue({ id: 'proj_1' });
+    districtFindFirst.mockResolvedValue({ id: 'dist_1', projectId: 'proj_1' });
     visualMapCanvasFindMany.mockResolvedValue([
       {
-        id: "canvas_1",
-        contextType: "project",
-        contextId: "proj_1",
-        title: "Site plan",
+        id: 'canvas_1',
+        contextType: 'project',
+        contextId: 'proj_1',
+        title: 'Site plan',
         description: null,
         mediaAsset: {
-          id: "media_1",
-          fileUrl: "https://cdn.example/site.jpg",
+          id: 'media_1',
+          fileUrl: 'https://cdn.example/site.jpg',
           thumbnailUrl: null,
           altText: null,
           title: null,
         },
         hotspots: [
           {
-            id: "hs_ok",
-            targetType: "building",
-            targetId: "bld_ok",
-            label: "Published",
-            xPercent: { toString: () => "10" },
-            yPercent: { toString: () => "20" },
+            id: 'hs_ok',
+            targetType: 'building',
+            targetId: 'bld_ok',
+            label: 'Published',
+            xPercent: { toString: () => '10' },
+            yPercent: { toString: () => '20' },
             markerStyle: null,
+            shapeType: 'point' as const,
+            interactionType: 'marker' as const,
+            svgPath: null,
+            points: null,
             sortOrder: 0,
             publicationStatus: PublicationStatus.published,
           },
           {
-            id: "hs_unpub",
-            targetType: "building",
-            targetId: "bld_draft",
-            label: "Unpublished target",
-            xPercent: { toString: () => "50" },
-            yPercent: { toString: () => "60" },
+            id: 'hs_unpub',
+            targetType: 'building',
+            targetId: 'bld_draft',
+            label: 'Unpublished target',
+            xPercent: { toString: () => '50' },
+            yPercent: { toString: () => '60' },
             markerStyle: null,
+            shapeType: 'point' as const,
+            interactionType: 'marker' as const,
+            svgPath: null,
+            points: null,
             sortOrder: 2,
             publicationStatus: PublicationStatus.published,
           },
           {
-            id: "hs_missing",
-            targetType: "building",
-            targetId: "bld_missing",
-            label: "Missing target",
-            xPercent: { toString: () => "70" },
-            yPercent: { toString: () => "80" },
+            id: 'hs_missing',
+            targetType: 'building',
+            targetId: 'bld_missing',
+            label: 'Missing target',
+            xPercent: { toString: () => '70' },
+            yPercent: { toString: () => '80' },
             markerStyle: null,
+            shapeType: 'point' as const,
+            interactionType: 'marker' as const,
+            svgPath: null,
+            points: null,
             sortOrder: 3,
             publicationStatus: PublicationStatus.published,
           },
@@ -70,20 +85,22 @@ describe("PublicVisualMapService", () => {
     ]);
     buildingFindMany.mockResolvedValue([
       {
-        id: "bld_ok",
-        name: "Tower A",
+        id: 'bld_ok',
+        name: 'Tower A',
         publicationStatus: PublicationStatus.published,
       },
       {
-        id: "bld_draft",
-        name: "Tower B",
+        id: 'bld_draft',
+        name: 'Tower B',
         publicationStatus: PublicationStatus.draft,
       },
     ]);
+    districtFindMany.mockResolvedValue([]);
 
     const prisma = {
       db: {
         project: { findFirst: projectFindFirst },
+        district: { findFirst: districtFindFirst, findMany: districtFindMany },
         building: { findFirst: vi.fn(), findMany: buildingFindMany },
         floor: { findFirst: vi.fn(), findMany: floorFindMany },
         apartment: { findMany: apartmentFindMany },
@@ -94,16 +111,16 @@ describe("PublicVisualMapService", () => {
     service = new PublicVisualMapService(prisma);
   });
 
-  it("queries only published primary canvases for a published project", async () => {
-    await service.listForProject("proj_1");
+  it('queries only published primary canvases for a published project', async () => {
+    await service.listForProject('proj_1');
 
     expect(visualMapCanvasFindMany).toHaveBeenCalledWith(
       expect.objectContaining({
         where: expect.objectContaining({
-          contextType: "project",
-          contextId: "proj_1",
+          contextType: 'project',
+          contextId: 'proj_1',
           isPrimary: true,
-          publicationStatus: "published",
+          publicationStatus: 'published',
         }),
         include: expect.objectContaining({
           hotspots: expect.objectContaining({
@@ -114,68 +131,90 @@ describe("PublicVisualMapService", () => {
     );
   });
 
-  it("excludes broken targets from public payload (draft hotspots filtered in query)", async () => {
-    const response = await service.listForProject("proj_1");
+  it('queries published primary canvases for a published district', async () => {
+    await service.listForDistrict('dist_1');
+
+    expect(districtFindFirst).toHaveBeenCalled();
+    expect(visualMapCanvasFindMany).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: expect.objectContaining({
+          contextType: 'district',
+          contextId: 'dist_1',
+          isPrimary: true,
+          publicationStatus: 'published',
+        }),
+      }),
+    );
+  });
+
+  it('excludes broken targets from public payload (draft hotspots filtered in query)', async () => {
+    const response = await service.listForProject('proj_1');
     const canvas = response.data[0];
 
     expect(canvas?.hotspots).toHaveLength(1);
     expect(canvas?.hotspots[0]).toMatchObject({
-      id: "hs_ok",
+      id: 'hs_ok',
       target: {
-        type: "building",
-        id: "bld_ok",
-        displayName: "Tower A",
+        type: 'building',
+        id: 'bld_ok',
+        displayName: 'Tower A',
       },
     });
   });
 });
 
-describe("mapPublicCanvas target filtering", () => {
-  it("returns targetStatus-driven exclusions consistently in mapper", () => {
+describe('mapPublicCanvas target filtering', () => {
+  it('returns targetStatus-driven exclusions consistently in mapper', () => {
     const entities = {
+      districts: new Map(),
       buildings: new Map([
-        [
-          "bld_ok",
-          { name: "Tower A", publicationStatus: PublicationStatus.published },
-        ],
+        ['bld_ok', { name: 'Tower A', publicationStatus: PublicationStatus.published }],
       ]),
       floors: new Map(),
       apartments: new Map(),
     };
 
     const canvas = {
-      id: "canvas_1",
-      contextType: "project" as const,
-      contextId: "proj_1",
+      id: 'canvas_1',
+      contextType: 'project' as const,
+      contextId: 'proj_1',
       title: null,
       description: null,
       mediaAsset: {
-        id: "media_1",
-        fileUrl: "https://cdn.example/site.jpg",
+        id: 'media_1',
+        fileUrl: 'https://cdn.example/site.jpg',
         thumbnailUrl: null,
         altText: null,
         title: null,
       },
       hotspots: [
         {
-          id: "hs_ok",
-          targetType: "building" as const,
-          targetId: "bld_ok",
-          label: "OK",
-          xPercent: { toString: () => "1" },
-          yPercent: { toString: () => "2" },
+          id: 'hs_ok',
+          targetType: 'building' as const,
+          targetId: 'bld_ok',
+          label: 'OK',
+          xPercent: { toString: () => '1' },
+          yPercent: { toString: () => '2' },
           markerStyle: null,
+          shapeType: 'point' as const,
+          interactionType: 'marker' as const,
+          svgPath: null,
+          points: null,
           sortOrder: 0,
           publicationStatus: PublicationStatus.published,
         },
         {
-          id: "hs_missing",
-          targetType: "building" as const,
-          targetId: "bld_missing",
-          label: "Missing",
-          xPercent: { toString: () => "3" },
-          yPercent: { toString: () => "4" },
+          id: 'hs_missing',
+          targetType: 'building' as const,
+          targetId: 'bld_missing',
+          label: 'Missing',
+          xPercent: { toString: () => '3' },
+          yPercent: { toString: () => '4' },
           markerStyle: null,
+          shapeType: 'point' as const,
+          interactionType: 'marker' as const,
+          svgPath: null,
+          points: null,
           sortOrder: 1,
           publicationStatus: PublicationStatus.published,
         },
@@ -184,19 +223,17 @@ describe("mapPublicCanvas target filtering", () => {
 
     const mapped = mapPublicCanvas(canvas, entities);
     expect(mapped.hotspots).toHaveLength(1);
-    expect(mapped.hotspots[0]?.id).toBe("hs_ok");
+    expect(mapped.hotspots[0]?.id).toBe('hs_ok');
   });
 });
 
-describe("Portal editor targetStatus flags", () => {
-  it("marks missing and unpublished targets for editor warnings", async () => {
-    const { mapPortalHotspot } = await import("../mappers/visual-map.mapper.js");
+describe('Portal editor targetStatus flags', () => {
+  it('marks missing and unpublished targets for editor warnings', async () => {
+    const { mapPortalHotspot } = await import('../mappers/visual-map.mapper.js');
     const entities = {
+      districts: new Map(),
       buildings: new Map([
-        [
-          "bld_draft",
-          { name: "Draft", publicationStatus: PublicationStatus.draft },
-        ],
+        ['bld_draft', { name: 'Draft', publicationStatus: PublicationStatus.draft }],
       ]),
       floors: new Map(),
       apartments: new Map(),
@@ -204,40 +241,48 @@ describe("Portal editor targetStatus flags", () => {
 
     const draftHotspot = mapPortalHotspot(
       {
-        id: "hs_1",
-        canvasId: "canvas_1",
-        targetType: "building",
-        targetId: "bld_draft",
-        label: "Draft tower",
-        xPercent: { toString: () => "10" },
-        yPercent: { toString: () => "20" },
+        id: 'hs_1',
+        canvasId: 'canvas_1',
+        targetType: 'building',
+        targetId: 'bld_draft',
+        label: 'Draft tower',
+        xPercent: { toString: () => '10' },
+        yPercent: { toString: () => '20' },
+        shapeType: 'point' as const,
+        interactionType: 'marker' as const,
+        svgPath: null,
+        points: null,
         markerStyle: null,
         publicationStatus: PublicationStatus.published,
         sortOrder: null,
-        createdAt: new Date("2026-07-18T10:00:00.000Z"),
-        updatedAt: new Date("2026-07-18T10:00:00.000Z"),
+        createdAt: new Date('2026-07-18T10:00:00.000Z'),
+        updatedAt: new Date('2026-07-18T10:00:00.000Z'),
       },
       entities,
     );
     const missingHotspot = mapPortalHotspot(
       {
-        id: "hs_2",
-        canvasId: "canvas_1",
-        targetType: "building",
-        targetId: "bld_missing",
-        label: "Missing tower",
-        xPercent: { toString: () => "10" },
-        yPercent: { toString: () => "20" },
+        id: 'hs_2',
+        canvasId: 'canvas_1',
+        targetType: 'building',
+        targetId: 'bld_missing',
+        label: 'Missing tower',
+        xPercent: { toString: () => '10' },
+        yPercent: { toString: () => '20' },
+        shapeType: 'point' as const,
+        interactionType: 'marker' as const,
+        svgPath: null,
+        points: null,
         markerStyle: null,
         publicationStatus: PublicationStatus.published,
         sortOrder: null,
-        createdAt: new Date("2026-07-18T10:00:00.000Z"),
-        updatedAt: new Date("2026-07-18T10:00:00.000Z"),
+        createdAt: new Date('2026-07-18T10:00:00.000Z'),
+        updatedAt: new Date('2026-07-18T10:00:00.000Z'),
       },
       entities,
     );
 
-    expect(draftHotspot.targetStatus).toBe("unpublished");
-    expect(missingHotspot.targetStatus).toBe("missing");
+    expect(draftHotspot.targetStatus).toBe('unpublished');
+    expect(missingHotspot.targetStatus).toBe('missing');
   });
 });

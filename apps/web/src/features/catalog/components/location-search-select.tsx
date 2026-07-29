@@ -4,37 +4,62 @@ import { Check, Search } from 'lucide-react';
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
 
 import { HeroFilterTrigger } from '@/features/catalog/components/hero-filter-trigger';
+import {
+  HERO_FILTER_CHECK_CLASS,
+  HERO_FILTER_OPTION_BASE_CLASS,
+  HERO_FILTER_PANEL_CLASS,
+  HERO_FILTER_SEARCH_INPUT_CLASS,
+  heroFilterOptionStateClass,
+} from '@/features/catalog/components/hero-filter-menu-styles';
 import { blurActiveElementAfterEscClose } from '@/shared/ui/blur-active-element';
 import { cn } from '@/shared/ui/cn';
 import { DropdownPortal } from '@/shared/ui/dropdown-portal';
 
 type LocationSearchSelectProps = {
-  value: string;
+  /** Empty array = any location (no city filter). */
+  values: readonly string[];
   options: readonly string[];
-  onChange: (value: string) => void;
+  onChange: (values: string[]) => void;
   labels: {
     any: string;
     placeholder: string;
     search: string;
     empty: string;
+    selectedCount: (count: number) => string;
   };
   /** Visible field title inside the mobile block trigger. */
   fieldLabel: string;
   'aria-label': string;
+  /** Section chrome (padding / borders) — root is the portal width anchor. */
+  className?: string | undefined;
 };
 
 const normalize = (value: string): string => value.trim().toLocaleLowerCase();
 
+const SelectionMark = ({ checked }: { checked: boolean }) => (
+  <span
+    className={cn(
+      HERO_FILTER_CHECK_CLASS.box,
+      checked ? HERO_FILTER_CHECK_CLASS.checked : HERO_FILTER_CHECK_CLASS.unchecked,
+    )}
+    aria-hidden
+  >
+    {checked ? <Check className="size-3" strokeWidth={3} /> : null}
+  </span>
+);
+
 /**
- * Hero location picker — searchable single-select over catalog cities.
+ * Hero location picker — searchable multi-select over catalog cities.
+ * Empty selection means "Any location". Menu stays open while toggling.
  */
 export const LocationSearchSelect = ({
-  value,
+  values,
   options,
   onChange,
   labels,
   fieldLabel,
   'aria-label': ariaLabel,
+  className,
 }: LocationSearchSelectProps) => {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -43,6 +68,7 @@ export const LocationSearchSelect = ({
   const panelRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
   const listId = useId();
+  const isAny = values.length === 0;
 
   const filtered = useMemo(() => {
     const needle = normalize(query);
@@ -80,22 +106,58 @@ export const LocationSearchSelect = ({
     };
   }, [open]);
 
-  const pick = (next: string): void => {
-    onChange(next);
-    setQuery('');
-    setOpen(false);
+  const displayLabel = (() => {
+    if (isAny) {
+      return labels.placeholder;
+    }
+    if (values.length === 1) {
+      return values[0] ?? labels.placeholder;
+    }
+    if (values.length <= 3) {
+      return values.join(', ');
+    }
+    return labels.selectedCount(values.length);
+  })();
+
+  const clearAll = (): void => {
+    onChange([]);
   };
 
-  const displayLabel = value.length > 0 ? value : labels.placeholder;
+  const toggleOption = (option: string): void => {
+    if (isAny) {
+      onChange(options.filter((item) => item !== option));
+      return;
+    }
+    if (values.includes(option)) {
+      onChange(values.filter((item) => item !== option));
+      return;
+    }
+    const next = [...values, option];
+    if (next.length >= options.length) {
+      onChange([]);
+      return;
+    }
+    onChange(next);
+  };
+
+  const toggleFirstFiltered = (): void => {
+    const first = filtered[0];
+    if (first) {
+      toggleOption(first);
+    }
+  };
 
   return (
-    <div ref={rootRef} className="relative w-full min-w-0">
+    <div ref={rootRef} className={cn('relative flex w-full min-w-0 flex-col gap-1', className)}>
+      <span className="hidden text-[10px] font-bold tracking-[0.1em] text-header-muted uppercase lg:inline">
+        {fieldLabel}
+      </span>
       <HeroFilterTrigger
         ref={buttonRef}
         label={fieldLabel}
         value={displayLabel}
         open={open}
-        mutedValue={value.length === 0}
+        mutedValue={isAny}
         aria-label={ariaLabel}
         aria-haspopup="listbox"
         aria-expanded={open}
@@ -110,15 +172,14 @@ export const LocationSearchSelect = ({
         <div
           ref={panelRef}
           className={cn(
-            'w-full overflow-hidden',
-            'rounded-[12px] border border-header-border bg-surface-elevated shadow-md',
+            HERO_FILTER_PANEL_CLASS,
             'animate-[locale-dropdown-in_var(--duration-base)_var(--ease-out-premium)]',
           )}
         >
-          <div className="border-b border-header-border p-2">
+          <div className="border-b border-header-border bg-canvas/80 p-2.5">
             <div className="relative">
               <Search
-                className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-ink-muted"
+                className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-header-muted"
                 aria-hidden
               />
               <input
@@ -127,19 +188,12 @@ export const LocationSearchSelect = ({
                 value={query}
                 placeholder={labels.search}
                 aria-label={labels.search}
-                className={cn(
-                  'h-10 w-full rounded-sm border border-border bg-surface-elevated pl-9 pr-3',
-                  'text-sm text-ink outline-none placeholder:text-ink-muted',
-                  'focus-visible:border-brand focus-visible:ring-2 focus-visible:ring-brand/20',
-                )}
+                className={HERO_FILTER_SEARCH_INPUT_CLASS}
                 onChange={(event) => setQuery(event.target.value)}
                 onKeyDown={(event) => {
                   if (event.key === 'Enter') {
                     event.preventDefault();
-                    const first = filtered[0];
-                    if (first) {
-                      pick(first);
-                    }
+                    toggleFirstFiltered();
                   }
                 }}
               />
@@ -149,6 +203,7 @@ export const LocationSearchSelect = ({
           <ul
             id={listId}
             role="listbox"
+            aria-multiselectable="true"
             aria-label={ariaLabel}
             className="luxury-scrollbar max-h-56 overflow-y-auto py-1.5"
           >
@@ -156,23 +211,22 @@ export const LocationSearchSelect = ({
               <button
                 type="button"
                 role="option"
-                aria-selected={value.length === 0}
-                className={cn(
-                  'flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left text-sm',
-                  value.length === 0
-                    ? 'bg-brand-soft font-semibold text-brand-deep'
-                    : 'font-medium text-ink hover:bg-surface',
-                )}
-                onClick={() => pick('')}
+                aria-selected={isAny}
+                className={cn(HERO_FILTER_OPTION_BASE_CLASS, heroFilterOptionStateClass(isAny))}
+                onMouseDown={(event) => {
+                  event.preventDefault();
+                }}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  clearAll();
+                }}
               >
-                <span>{labels.any}</span>
-                {value.length === 0 ? (
-                  <Check className="size-3.5 shrink-0 text-brand-logo" aria-hidden />
-                ) : null}
+                <SelectionMark checked={isAny} />
+                <span className="min-w-0 flex-1 truncate">{labels.any}</span>
               </button>
             </li>
             {filtered.map((option) => {
-              const active = option === value;
+              const active = isAny || values.includes(option);
               return (
                 <li key={option} role="none">
                   <button
@@ -180,23 +234,25 @@ export const LocationSearchSelect = ({
                     role="option"
                     aria-selected={active}
                     className={cn(
-                      'flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left text-sm',
-                      active
-                        ? 'bg-brand-soft font-semibold text-brand-deep'
-                        : 'font-medium text-ink hover:bg-surface',
+                      HERO_FILTER_OPTION_BASE_CLASS,
+                      heroFilterOptionStateClass(active),
                     )}
-                    onClick={() => pick(option)}
+                    onMouseDown={(event) => {
+                      event.preventDefault();
+                    }}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      toggleOption(option);
+                    }}
                   >
-                    <span className="truncate">{option}</span>
-                    {active ? (
-                      <Check className="size-3.5 shrink-0 text-brand-logo" aria-hidden />
-                    ) : null}
+                    <SelectionMark checked={active} />
+                    <span className="min-w-0 flex-1 truncate">{option}</span>
                   </button>
                 </li>
               );
             })}
             {filtered.length === 0 ? (
-              <li className="px-3 py-2.5 text-sm text-ink-muted">{labels.empty}</li>
+              <li className="px-3 py-2.5 text-sm text-header-muted">{labels.empty}</li>
             ) : null}
           </ul>
         </div>

@@ -1,7 +1,17 @@
-import type { PublicVisualCanvasItem, PublicVisualHotspotItem } from '@toonexpo/contracts';
+import type {
+  PublicVisualCanvasItem,
+  PublicVisualHotspotItem,
+  VisualHotspotTargetType,
+} from '@toonexpo/contracts';
+
+import {
+  listBuildingVisualCanvases,
+  listDistrictVisualCanvases,
+  listFloorVisualCanvases,
+} from '@/features/visual-map/api/public-visual-map-api';
 
 /**
- * Returns the primary published canvas when hotspots exist, otherwise null.
+ * Returns the primary published canvas. Prefers canvases with hotspots when present.
  */
 export const pickPrimaryVisualCanvas = (
   canvases: PublicVisualCanvasItem[],
@@ -10,29 +20,46 @@ export const pickPrimaryVisualCanvas = (
     return null;
   }
 
-  const primary = canvases.find((canvas) => canvas.hotspots.length > 0);
-  return primary ?? null;
+  const withHotspots = canvases.find((canvas) => canvas.hotspots.length > 0);
+  return withHotspots ?? canvases[0] ?? null;
 };
 
-export const buildProjectBuildingHref = (
-  projectId: string,
-  hotspot: PublicVisualHotspotItem,
-): string => `/projects/${projectId}/buildings/${hotspot.target.id}`;
-
-export const buildBuildingFloorHref = (
-  projectId: string,
-  buildingId: string,
-  hotspot: PublicVisualHotspotItem,
-): string => `/projects/${projectId}/buildings/${buildingId}/floors/${hotspot.target.id}`;
-
-export const buildFloorApartmentHref = (hotspot: PublicVisualHotspotItem): string =>
-  `/apartments/${hotspot.target.id}`;
+const STAGE_TARGET_TYPES = new Set<VisualHotspotTargetType>(['district', 'building', 'floor']);
 
 /**
- * Precomputes hotspot → href map so Client Components receive serializable props only.
+ * Whether a hotspot target can open another map stage (vs final apartment page).
  */
-export const buildHotspotTargetHrefs = (
-  hotspots: PublicVisualHotspotItem[],
-  buildHref: (hotspot: PublicVisualHotspotItem) => string,
-): Record<string, string> =>
-  Object.fromEntries(hotspots.map((hotspot) => [hotspot.id, buildHref(hotspot)]));
+export const isDrillDownTargetType = (targetType: VisualHotspotTargetType): boolean =>
+  STAGE_TARGET_TYPES.has(targetType);
+
+/**
+ * Loads the published primary canvas for a hotspot map-stage target.
+ * Returns null when the destination has no published interactive map.
+ */
+export const fetchCanvasForHotspotTarget = async (
+  hotspot: PublicVisualHotspotItem,
+): Promise<PublicVisualCanvasItem | null> => {
+  const { type, id } = hotspot.target;
+
+  if (type === 'district') {
+    const response = await listDistrictVisualCanvases(id);
+    return pickPrimaryVisualCanvas(response?.data ?? []);
+  }
+
+  if (type === 'building') {
+    const response = await listBuildingVisualCanvases(id);
+    return pickPrimaryVisualCanvas(response?.data ?? []);
+  }
+
+  if (type === 'floor') {
+    const response = await listFloorVisualCanvases(id);
+    return pickPrimaryVisualCanvas(response?.data ?? []);
+  }
+
+  return null;
+};
+
+export const buildApartmentHref = (apartmentId: string): string => `/apartments/${apartmentId}`;
+
+export const buildBuildingFallbackHref = (projectId: string, buildingId: string): string =>
+  `/projects/${projectId}/buildings/${buildingId}`;

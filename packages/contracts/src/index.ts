@@ -362,9 +362,30 @@ export type {
   PublicVisualMapMedia,
   UpdatePortalVisualCanvasRequest,
   UpdatePortalVisualHotspotRequest,
+  VisualHotspotInteractionType,
+  VisualHotspotShapeType,
   VisualHotspotTargetStatus,
   VisualHotspotTargetType,
   VisualMapContextType,
 } from './visual-map.js';
+
+export type {
+  CreateDistrictRequest,
+  InteractiveMappingApartmentSummary,
+  InteractiveMappingBuildingSummary,
+  InteractiveMappingCanvasSummary,
+  InteractiveMappingDistrictSummary,
+  InteractiveMappingFloorSummary,
+  InteractiveMappingPhaseId,
+  InteractiveMappingPhaseProgress,
+  InteractiveMappingPhaseStatus,
+  InteractiveMappingProjectDetail,
+  InteractiveMappingProjectListResponse,
+  InteractiveMappingProjectSummary,
+  MappingHotspotGeometry,
+  SetupBuildingFloorsRequest,
+  SetupBuildingFloorsResponse,
+  UpdateDistrictRequest,
+} from './interactive-mapping.js';
 
 export type { ListMediaQuery, MediaAssetItem, MediaListResponse } from './media.js';

@@ -14,6 +14,7 @@ import {
   Layers,
   LayoutList,
   LineChart,
+  Map,
   ScanLine,
   Settings,
   Tags,
@@ -35,6 +36,7 @@ type NavItem = {
     | 'buildings'
     | 'floors'
     | 'apartments'
+    | 'interactiveMapping'
     | 'checkin'
     | 'crm'
     | 'partners'
@@ -66,6 +68,7 @@ const PRIMARY_NAV_ITEMS: NavItem[] = [
     icon: FolderKanban,
     children: PROJECT_CHILD_NAV_ITEMS,
   },
+  { href: '/admin/interactive-mapping', key: 'interactiveMapping', icon: Map },
   { href: '/admin/crm', key: 'crm', icon: Briefcase },
   { href: '/admin/checkin', key: 'checkin', icon: ScanLine },
   { href: '/admin/partners', key: 'partners', icon: Handshake },

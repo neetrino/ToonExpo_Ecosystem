@@ -4,6 +4,12 @@ import { Check, ChevronDown } from 'lucide-react';
 import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 
 import { HeroFilterTrigger } from '@/features/catalog/components/hero-filter-trigger';
+import {
+  HERO_FILTER_CHECK_CLASS,
+  HERO_FILTER_OPTION_BASE_CLASS,
+  HERO_FILTER_PANEL_CLASS,
+  heroFilterOptionStateClass,
+} from '@/features/catalog/components/hero-filter-menu-styles';
 import { blurActiveElementAfterEscClose } from '@/shared/ui/blur-active-element';
 import { cn } from '@/shared/ui/cn';
 import { DropdownPortal } from '@/shared/ui/dropdown-portal';
@@ -38,8 +44,8 @@ type MultiListboxSelectProps = {
 const SelectionMark = ({ checked }: { checked: boolean }) => (
   <span
     className={cn(
-      'inline-flex size-4 shrink-0 items-center justify-center rounded-[4px] border',
-      checked ? 'border-brand bg-brand text-white' : 'border-border bg-surface-elevated',
+      HERO_FILTER_CHECK_CLASS.box,
+      checked ? HERO_FILTER_CHECK_CLASS.checked : HERO_FILTER_CHECK_CLASS.unchecked,
     )}
     aria-hidden
   >
@@ -166,7 +172,8 @@ export const MultiListboxSelect = ({
       className={cn(
         'relative min-w-0',
         isField && (isFit ? 'w-fit max-w-full' : 'w-full'),
-        useHeroBlock && 'w-full lg:w-auto',
+        useHeroBlock && 'flex w-full flex-col gap-1',
+        !isField && !useHeroBlock && (isFit ? 'w-fit max-w-full' : 'w-full'),
         !isField && className,
       )}
     >
@@ -193,26 +200,30 @@ export const MultiListboxSelect = ({
         </ul>
       ) : null}
       {useHeroBlock && heroBlock ? (
-        <HeroFilterTrigger
-          ref={buttonRef}
-          id={id}
-          label={heroBlock.label}
-          value={displayLabel}
-          open={open}
-          mutedValue={isAll}
-          disabled={disabled}
-          className="lg:w-auto"
-          aria-label={ariaLabel}
-          aria-haspopup="listbox"
-          aria-expanded={open}
-          aria-controls={listId}
-          onClick={() => {
-            if (disabled) {
-              return;
-            }
-            setOpen((current) => !current);
-          }}
-        />
+        <>
+          <span className="hidden text-[10px] font-bold tracking-[0.1em] text-header-muted uppercase lg:inline">
+            {heroBlock.label}
+          </span>
+          <HeroFilterTrigger
+            ref={buttonRef}
+            id={id}
+            label={heroBlock.label}
+            value={displayLabel}
+            open={open}
+            mutedValue={isAll}
+            disabled={disabled}
+            aria-label={ariaLabel}
+            aria-haspopup="listbox"
+            aria-expanded={open}
+            aria-controls={listId}
+            onClick={() => {
+              if (disabled) {
+                return;
+              }
+              setOpen((current) => !current);
+            }}
+          />
+        </>
       ) : (
         <button
           ref={buttonRef}
@@ -261,13 +272,19 @@ export const MultiListboxSelect = ({
         </button>
       )}
 
-      <DropdownPortal open={open && !disabled} anchorRef={buttonRef} matchWidth>
+      <DropdownPortal
+        open={open && !disabled}
+        anchorRef={useHeroBlock ? rootRef : buttonRef}
+        exactWidth={useHeroBlock}
+        matchWidth={!useHeroBlock}
+      >
         <div
           ref={menuRef}
           className={cn(
-            'overflow-hidden rounded-[12px] border border-header-border shadow-md',
+            useHeroBlock
+              ? HERO_FILTER_PANEL_CLASS
+              : 'w-full overflow-hidden rounded-[16px] border border-header-border bg-surface-elevated shadow-lg',
             'animate-[locale-dropdown-in_var(--duration-base)_var(--ease-out-premium)]',
-            isAll ? 'bg-brand-soft' : 'bg-surface-elevated',
           )}
         >
           <ul
@@ -275,7 +292,7 @@ export const MultiListboxSelect = ({
             role="listbox"
             aria-multiselectable="true"
             aria-label={ariaLabel}
-            className="luxury-scrollbar max-h-64 w-full overflow-y-auto"
+            className="luxury-scrollbar max-h-64 w-full overflow-y-auto py-1.5"
           >
             <li role="none">
               <button
@@ -283,11 +300,12 @@ export const MultiListboxSelect = ({
                 role="option"
                 aria-selected={isAll}
                 className={cn(
-                  'flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm',
-                  'transition-colors duration-[var(--duration-base)]',
-                  isAll
-                    ? 'bg-brand-soft font-semibold text-brand-deep'
-                    : 'font-medium text-ink hover:bg-surface',
+                  HERO_FILTER_OPTION_BASE_CLASS,
+                  useHeroBlock
+                    ? heroFilterOptionStateClass(isAll)
+                    : isAll
+                      ? 'bg-brand-soft font-semibold text-brand-deep'
+                      : 'font-medium text-ink hover:bg-surface',
                 )}
                 onMouseDown={(event) => {
                   event.preventDefault();
@@ -310,11 +328,12 @@ export const MultiListboxSelect = ({
                     role="option"
                     aria-selected={active}
                     className={cn(
-                      'flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm',
-                      'transition-colors duration-[var(--duration-base)]',
-                      active
-                        ? 'bg-brand-soft font-semibold text-brand-deep'
-                        : 'font-medium text-ink hover:bg-surface',
+                      HERO_FILTER_OPTION_BASE_CLASS,
+                      useHeroBlock
+                        ? heroFilterOptionStateClass(active)
+                        : active
+                          ? 'bg-brand-soft font-semibold text-brand-deep'
+                          : 'font-medium text-ink hover:bg-surface',
                     )}
                     onMouseDown={(event) => {
                       event.preventDefault();

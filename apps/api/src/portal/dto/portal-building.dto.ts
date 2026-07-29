@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsInt,
   IsOptional,
@@ -7,15 +7,15 @@ import {
   Min,
   MinLength,
   ValidateIf,
-} from "class-validator";
+} from 'class-validator';
 
 import {
   PORTAL_BUILDING_NAME_MAX_LENGTH,
   PORTAL_DESCRIPTION_MAX_LENGTH,
-} from "../portal.constants.js";
+} from '../portal.constants.js';
 
 export class CreatePortalBuildingDto {
-  @ApiProperty({ example: "Building A" })
+  @ApiProperty({ example: 'Building A' })
   @IsString()
   @MinLength(1)
   @MaxLength(PORTAL_BUILDING_NAME_MAX_LENGTH)
@@ -49,6 +49,12 @@ export class CreatePortalBuildingDto {
   @IsString()
   @MaxLength(64)
   internalCode?: string;
+
+  @ApiPropertyOptional({ description: 'Optional district within the project' })
+  @IsOptional()
+  @IsString()
+  @MinLength(1)
+  districtId?: string;
 }
 
 export class UpdatePortalBuildingDto {

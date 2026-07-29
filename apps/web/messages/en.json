@@ -111,6 +111,7 @@
       "locationAny": "Any location",
       "locationSearch": "Search city…",
       "locationEmpty": "No cities found",
+      "locationSelectedCount": "{count} selected",
       "priceLabel": "Price",
       "priceAny": "Any price",
       "priceMin": "Minimum",
@@ -578,10 +579,16 @@
       "title": "Site map",
       "alt": "Project visual map",
       "viewAsList": "View as list below",
+      "back": "Back",
+      "loadingStage": "Opening map…",
+      "finalStage": "End of interactive map for this area.",
+      "stageUnavailable": "This area has no published interactive map yet.",
+      "stageLoadError": "Could not load the next map stage. Try again.",
       "hotspot": {
         "close": "Close",
         "openTarget": "Open details",
         "targetTypes": {
+          "district": "District",
           "building": "Building",
           "floor": "Floor",
           "apartment": "Apartment"
@@ -1117,6 +1124,7 @@
       "buildings": "Building",
       "floors": "Floor",
       "apartments": "Apartment",
+      "interactiveMapping": "Interactive mapping",
       "crm": "CRM",
       "partners": "Partners",
       "bankOffers": "Bank offers",
@@ -1127,6 +1135,83 @@
       "checkin": "Check-in scanner",
       "bos": "BOS",
       "settings": "Settings"
+    },
+    "interactiveMapping": {
+      "title": "Interactive mapping",
+      "subtitle": "Map districts, buildings, floors, and apartments in four phases.",
+      "loading": "Loading…",
+      "error": "Could not load interactive mapping data.",
+      "empty": "No projects yet. Create one to start mapping.",
+      "existing": "Projects",
+      "createProject": "Create project",
+      "open": "Open",
+      "continuePhase": "Phase {phase} →",
+      "projectMeta": "{districts} districts · {buildings} buildings · phase {phase}",
+      "labLink": "Mapping lab (QA)",
+      "backToProjects": "← Projects",
+      "backToWizard": "← Wizard",
+      "activePhase": "Continue with phase {phase}",
+      "allPhasesDone": "All phases are complete",
+      "status": {
+        "locked": "Locked",
+        "active": "Do this now",
+        "done": "Done"
+      },
+      "phases": {
+        "districts": "Districts",
+        "buildings": "Buildings",
+        "floors": "Floors",
+        "apartments": "Apartments"
+      },
+      "hints": {
+        "districts": "Create at least one district, upload a masterplan, then place markers or polygons.",
+        "buildings": "Create buildings and place them on the district plan.",
+        "floors": "Set floor count, upload a building render, then draw floor bands.",
+        "apartments": "Create apartments and draw them on the floor plan.",
+        "setupFloors": "Enter floor count, then open the render mapping page."
+      },
+      "progress": {
+        "districts": "{done}/{total} districts",
+        "buildings": "{done}/{total} buildings",
+        "floors": "{done}/{total} floors",
+        "apartments": "{done}/{total} apartments"
+      },
+      "cta": {
+        "mapDistricts": "Map districts",
+        "mapBuildings": "Map buildings",
+        "mapFloors": "Map floors",
+        "mapApartments": "Map apartments",
+        "edit": "View / edit",
+        "locked": "Locked",
+        "other": "Other"
+      },
+      "forms": {
+        "name": "Name",
+        "createDistrict": "Create district",
+        "createBuilding": "Create building",
+        "createApartment": "Create apartment",
+        "apartmentNumber": "Number",
+        "districtPlaceholder": "e.g. District A",
+        "buildingPlaceholder": "e.g. Building 01",
+        "apartmentPlaceholder": "101",
+        "saving": "Saving…",
+        "setupFloors": "Start floor mapping",
+        "floorCount": "Floor count",
+        "masterplanImage": "Masterplan image",
+        "districtPlanImage": "District plan image",
+        "buildingRenderImage": "Building render image",
+        "floorPlanImage": "Floor plan image",
+        "uploadFirst": "Upload an image to start mapping.",
+        "uploadAndSetupFloors": "Upload a render and set up floors first.",
+        "pickFloor": "Floors",
+        "noFloors": "No floors yet."
+      },
+      "pages": {
+        "masterplan": "Masterplan · districts",
+        "district": "District · {name}",
+        "buildingRender": "Building render · {name}",
+        "floor": "Floor · {name}"
+      }
     },
     "settings": {
       "title": "Settings",
