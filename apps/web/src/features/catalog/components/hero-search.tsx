@@ -27,7 +27,6 @@ const POPULAR_CITY_KEYS = ['yerevan', 'gyumri', 'vanadzor', 'dilijan', 'tsaghkad
 export const HeroSearch = ({ className, locations = [] }: HeroSearchProps) => {
   const t = useTranslations('HomePage.hero');
   const router = useRouter();
-  const [tab, setTab] = useState<HeroSearchTab>('buy');
   const [locationsSelected, setLocationsSelected] = useState<string[]>([]);
   const [minPrice, setMinPrice] = useState<number | null>(null);
   const [maxPrice, setMaxPrice] = useState<number | null>(null);
@@ -43,13 +42,13 @@ export const HeroSearch = ({ className, locations = [] }: HeroSearchProps) => {
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    router.push(buildProjectsHref(locationsSelected, minPrice, maxPrice, rooms, tab));
+    router.push(buildProjectsHref(locationsSelected, minPrice, maxPrice, rooms));
   };
 
   const applyPriceRange = (nextMin: number | null, nextMax: number | null): void => {
     setMinPrice(nextMin);
     setMaxPrice(nextMax);
-    router.push(buildProjectsHref(locationsSelected, nextMin, nextMax, rooms, tab));
+    router.push(buildProjectsHref(locationsSelected, nextMin, nextMax, rooms));
   };
 
   return (
@@ -64,17 +63,6 @@ export const HeroSearch = ({ className, locations = [] }: HeroSearchProps) => {
           'ring-1 ring-header-border',
         )}
       >
-        <HeroSearchTabs
-          activeTab={tab}
-          listLabel={t('tabsLabel')}
-          labels={{
-            buy: t('tabs.buy'),
-            rent: t('tabs.rent'),
-            newBuilds: t('tabs.newBuilds'),
-          }}
-          onChange={setTab}
-        />
-
         <div className="grid grid-cols-1 gap-2 p-3 lg:grid-cols-[minmax(12rem,15rem)_minmax(11rem,13rem)_minmax(8rem,10rem)_auto] lg:items-center">
           <LocationSearchSelect
             className="lg:px-3 lg:py-2"
