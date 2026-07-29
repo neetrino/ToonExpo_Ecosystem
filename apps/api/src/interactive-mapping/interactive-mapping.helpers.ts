@@ -24,7 +24,8 @@ export const slugifyDistrictName = (name: string): string => {
   const slug = name
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
+    .replace(/^-+/, '')
+    .replace(/-+$/, '');
   return slug.length > 0 ? slug : 'district';
 };
 
