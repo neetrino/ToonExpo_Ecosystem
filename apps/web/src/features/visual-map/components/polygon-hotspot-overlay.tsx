@@ -34,7 +34,7 @@ export const PolygonHotspotOverlay = ({
     <svg
       viewBox={`0 0 ${viewBoxWidth} ${viewBoxHeight}`}
       preserveAspectRatio="none"
-      className="pointer-events-none absolute inset-0 h-full w-full"
+      className="pointer-events-none absolute inset-0 z-10 h-full w-full"
       aria-hidden={!interactive}
     >
       {items.map((item) => {

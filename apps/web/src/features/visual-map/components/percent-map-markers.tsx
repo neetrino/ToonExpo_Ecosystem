@@ -31,7 +31,7 @@ export const PercentMapMarkers = ({
     <svg
       viewBox="0 0 100 100"
       preserveAspectRatio="none"
-      className="absolute inset-0 h-full w-full"
+      className="pointer-events-none absolute inset-0 z-10 h-full w-full"
       aria-hidden={!interactive}
     >
       {markers.map((marker) => {
@@ -47,7 +47,7 @@ export const PercentMapMarkers = ({
                 cx={x}
                 cy={y}
                 r={4}
-                className="cursor-pointer fill-transparent"
+                className="pointer-events-auto cursor-pointer fill-transparent"
                 onClick={(event) => {
                   event.stopPropagation();
                   onSelectMarker?.(marker.id);
@@ -60,10 +60,10 @@ export const PercentMapMarkers = ({
               r={selected ? 2.8 : 2.2}
               className={
                 warning
-                  ? "fill-warning stroke-background stroke-[0.35]"
+                  ? 'fill-warning stroke-background stroke-[0.35]'
                   : selected
-                    ? "fill-brand stroke-background stroke-[0.45]"
-                    : "fill-brand stroke-background stroke-[0.35]"
+                    ? 'fill-brand stroke-background stroke-[0.45]'
+                    : 'fill-brand stroke-background stroke-[0.35]'
               }
               pointerEvents="none"
             />

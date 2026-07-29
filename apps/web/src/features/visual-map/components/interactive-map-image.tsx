@@ -51,9 +51,9 @@ export const InteractiveMapImage = ({
 
   const pointMarkers = canvas.hotspots
     .filter((hotspot) => {
+      // Polygons own the hit target — never stack a marker overlay on top of them.
       if (hotspot.svgPath != null && hotspot.svgPath.length > 0) {
-        // Polygon overlays own the hit target; do not also draw a marker.
-        return hotspot.interactionType === 'both' || hotspot.interactionType === 'marker';
+        return false;
       }
       return (
         hotspot.shapeType === 'point' ||
@@ -100,7 +100,7 @@ export const InteractiveMapImage = ({
         key={canvas.id}
         src={imageUrl}
         alt={canvas.media.altText ?? canvas.title ?? t('alt')}
-        className="h-auto w-full select-none"
+        className="relative z-0 h-auto w-full select-none"
         draggable={false}
         onLoad={onImageLoad}
       />
