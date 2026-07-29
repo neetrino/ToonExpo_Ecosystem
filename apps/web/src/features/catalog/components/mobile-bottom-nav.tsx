@@ -20,12 +20,14 @@ import { cn } from '@/shared/ui/cn';
 import { getOverlayPortalHost } from '@/shared/ui/overlay-portal-host';
 import { SIDE_SHEET_PANEL_TRANSITION_MS } from '@/shared/ui/side-sheet.constants';
 
-/** Figma bar fill — no matching design token yet. */
+/** Figma 134:119 bar fill — no matching design token yet. */
 const BAR_SURFACE_CLASS = 'bg-[#171717]';
-const BUTTON_SIZE_CLASS = 'size-12';
-const ITEM_GAP_CLASS = 'gap-2';
-const BAR_PAD_CLASS = 'p-2';
-const THUMB_INSET_CLASS = 'top-2 left-2';
+/** Figma button diameter — 56px. */
+const BUTTON_SIZE_CLASS = 'size-14';
+/** Figma Buttons gap — 16px. */
+const ITEM_GAP_CLASS = 'gap-4';
+/** Figma bar vertical padding (safe-area replaces bottom when larger). */
+const BAR_PAD_CLASS = 'pt-[13px] pb-[max(7px,env(safe-area-inset-bottom,0px))]';
 /** Matches sheet exit so the thumb glide does not feel abrupt. */
 const THUMB_SLIDE_DURATION_MS = 520;
 /** Icon fill/color follows the thumb (not the fast press feedback). */
@@ -33,14 +35,14 @@ const NAV_ICON_TRANSITION_MS = 520;
 
 /**
  * Sliding thumb offsets — same pattern as ViewModeToggle / AnalyticsDateRangeFilter.
- * Step = thumb width (100%) + gap-2 (0.5rem).
+ * Step = thumb width (100%) + gap-4 (1rem).
  */
 const THUMB_TRANSLATE_BY_INDEX = [
   'translate-x-0',
-  'translate-x-[calc(100%+0.5rem)]',
-  'translate-x-[calc(200%+1rem)]',
-  'translate-x-[calc(300%+1.5rem)]',
-  'translate-x-[calc(400%+2rem)]',
+  'translate-x-[calc(100%+1rem)]',
+  'translate-x-[calc(200%+2rem)]',
+  'translate-x-[calc(300%+3rem)]',
+  'translate-x-[calc(400%+4rem)]',
 ] as const;
 
 const NAV_BUTTON_CLASS = cn(
@@ -56,12 +58,12 @@ type NavItemIconProps = {
 
 const NavItemIcon = ({ item }: NavItemIconProps) => {
   const Icon = item.Icon;
-  return <Icon className="size-6" strokeWidth={1.75} aria-hidden />;
+  return <Icon className="size-7" strokeWidth={1.75} aria-hidden />;
 };
 
 /**
- * Mobile-only floating bottom navigation (Figma node 134:119).
- * Portaled at `--z-bottom-nav` so it stays above sheets, modals, and overlays.
+ * Mobile-only bottom navigation (Figma node 134:119).
+ * Full-bleed dark bar with rounded top corners; portaled at `--z-bottom-nav`.
  */
 export const MobileBottomNav = () => {
   const t = useTranslations('Nav');
@@ -146,83 +148,81 @@ export const MobileBottomNav = () => {
       aria-label={t('bottomNav')}
       className={cn(
         'pointer-events-none fixed inset-x-0 bottom-0 z-[var(--z-bottom-nav)] lg:hidden',
-        'flex justify-center',
-        'pb-[max(0.5rem,env(safe-area-inset-bottom,0px))] pt-2',
       )}
     >
       <div
         className={cn(
-          'pointer-events-auto relative flex w-fit max-w-[calc(100%-1.5rem)] items-center',
-          ITEM_GAP_CLASS,
+          'pointer-events-auto flex w-full justify-center',
           BAR_PAD_CLASS,
-          'rounded-full',
+          'rounded-t-[40px]',
           BAR_SURFACE_CLASS,
         )}
         style={{
           ['--bottom-nav-icon-ms' as string]: `${NAV_ICON_TRANSITION_MS}ms`,
         }}
       >
-        {hasActive ? (
-          <span
-            aria-hidden
-            className={cn(
-              'pointer-events-none absolute rounded-full bg-brand-secondary',
-              THUMB_INSET_CLASS,
-              BUTTON_SIZE_CLASS,
-              'transition-transform duration-[var(--bottom-nav-thumb-ms)] ease-[var(--ease-out-premium)]',
-              'motion-reduce:transition-none',
-              THUMB_TRANSLATE_BY_INDEX[activeIndex],
-            )}
-            style={{
-              ['--bottom-nav-thumb-ms' as string]: `${THUMB_SLIDE_DURATION_MS}ms`,
-            }}
-          />
-        ) : null}
+        <div className={cn('relative flex items-center', ITEM_GAP_CLASS)}>
+          {hasActive ? (
+            <span
+              aria-hidden
+              className={cn(
+                'pointer-events-none absolute top-0 left-0 rounded-full bg-brand-secondary',
+                BUTTON_SIZE_CLASS,
+                'transition-transform duration-[var(--bottom-nav-thumb-ms)] ease-[var(--ease-out-premium)]',
+                'motion-reduce:transition-none',
+                THUMB_TRANSLATE_BY_INDEX[activeIndex],
+              )}
+              style={{
+                ['--bottom-nav-thumb-ms' as string]: `${THUMB_SLIDE_DURATION_MS}ms`,
+              }}
+            />
+          ) : null}
 
-        {items.map((item, index) => {
-          const isActive = index === activeIndex;
-          const label = t(item.labelKey);
-          const activeClass = isActive ? 'text-white' : 'bg-white text-brand-secondary';
+          {items.map((item, index) => {
+            const isActive = index === activeIndex;
+            const label = t(item.labelKey);
+            const activeClass = isActive ? 'text-white' : 'bg-white text-brand-secondary';
 
-          if (item.opensSheet) {
+            if (item.opensSheet) {
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  aria-label={label}
+                  aria-expanded={sheetOpen}
+                  onClick={() => {
+                    if (sheetOpen) {
+                      closeSheet();
+                      return;
+                    }
+                    openSheet(item.id);
+                  }}
+                  className={cn(NAV_BUTTON_CLASS, activeClass)}
+                >
+                  <NavItemIcon item={item} />
+                </button>
+              );
+            }
+
             return (
-              <button
+              <Link
                 key={item.id}
-                type="button"
+                href={item.href}
                 aria-label={label}
-                aria-expanded={sheetOpen}
+                aria-current={isActive ? 'page' : undefined}
                 onClick={() => {
-                  if (sheetOpen) {
-                    closeSheet();
-                    return;
-                  }
-                  openSheet(item.id);
+                  clearSheetExitTimer();
+                  setSheetOpen(false);
+                  setSheetHighlight(false);
+                  setPendingId(item.id);
                 }}
                 className={cn(NAV_BUTTON_CLASS, activeClass)}
               >
                 <NavItemIcon item={item} />
-              </button>
+              </Link>
             );
-          }
-
-          return (
-            <Link
-              key={item.id}
-              href={item.href}
-              aria-label={label}
-              aria-current={isActive ? 'page' : undefined}
-              onClick={() => {
-                clearSheetExitTimer();
-                setSheetOpen(false);
-                setSheetHighlight(false);
-                setPendingId(item.id);
-              }}
-              className={cn(NAV_BUTTON_CLASS, activeClass)}
-            >
-              <NavItemIcon item={item} />
-            </Link>
-          );
-        })}
+          })}
+        </div>
       </div>
     </nav>
   );
@@ -239,10 +239,13 @@ export const MobileBottomNav = () => {
   );
 };
 
-/** Spacer so page content clears the fixed mobile bottom nav. */
+/**
+ * Spacer so page content clears the fixed mobile bottom nav.
+ * Matches Figma 134:119: 13px + 56px + max(7px, safe-area).
+ */
 export const MobileBottomNavSpacer = () => (
   <div
-    className="h-[calc(5.5rem+env(safe-area-inset-bottom,0px))] bg-canvas lg:hidden"
+    className="h-[calc(4.3125rem+max(0.4375rem,env(safe-area-inset-bottom,0px)))] bg-canvas lg:hidden"
     aria-hidden
   />
 );

@@ -21,7 +21,7 @@ export const DISCOVER_SWIPE_EXIT_MS = 280;
 
 /**
  * Viewport height between SiteHeader spacer and MobileBottomNavSpacer.
- * Matches header spacer (4.5rem + safe-top) and bottom nav spacer (5.5rem + safe-bottom).
+ * Matches header spacer (4.5rem + safe-top) and bottom nav (4.3125rem + max(7px, safe-bottom)).
  */
 export const DISCOVER_VIEWPORT_HEIGHT_CLASS =
-  'h-[calc(100dvh-4.5rem-5.5rem-env(safe-area-inset-top,0px)-env(safe-area-inset-bottom,0px))] lg:h-[calc(100dvh-4.5rem-env(safe-area-inset-top,0px))]';
+  'h-[calc(100dvh-4.5rem-4.3125rem-env(safe-area-inset-top,0px)-max(0.4375rem,env(safe-area-inset-bottom,0px)))] lg:h-[calc(100dvh-4.5rem-env(safe-area-inset-top,0px))]';
