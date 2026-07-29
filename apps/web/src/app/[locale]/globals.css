@@ -1030,11 +1030,12 @@
     overflow: visible;
   }
 
-  /* Public interactive map polygon hotspots (Admin-aligned orange). */
+  /* Public interactive map polygon hotspots (Admin-aligned orange).
+     Inactive: invisible; hover / focus / selected: orange outline + fill. */
   .map-hotspot-path {
     cursor: pointer;
-    fill: var(--color-map-hotspot-fill);
-    stroke: var(--color-map-hotspot);
+    fill: none;
+    stroke: none;
     stroke-width: 1.5;
     transition:
       fill 150ms ease,
