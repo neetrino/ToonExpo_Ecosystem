@@ -114,7 +114,9 @@ export const MobileBottomNav = () => {
 
   const routeActiveIndex = items.findIndex((item) => item.match(pathname));
   const pendingIndex = pendingId ? items.findIndex((item) => item.id === pendingId) : -1;
-  const activeIndex = pendingIndex >= 0 ? pendingIndex : routeActiveIndex;
+  const sheetIndex = items.findIndex((item) => item.opensSheet);
+  const activeIndex =
+    sheetOpen && sheetIndex >= 0 ? sheetIndex : pendingIndex >= 0 ? pendingIndex : routeActiveIndex;
   const hasActive = activeIndex >= 0;
 
   useEffect(() => {

@@ -31,11 +31,13 @@ const isHomePath = (pathname: string): boolean => pathname === '/';
 const isDiscoverPath = (pathname: string): boolean =>
   pathname === '/discover' || pathname.startsWith('/discover/');
 
-const isQrPath = (pathname: string): boolean => pathname === '/qr' || pathname.startsWith('/qr/');
-
 const isMapPath = (pathname: string): boolean =>
   pathname === '/expo' || pathname.startsWith('/expo/');
 
+/**
+ * Buyer account / profile shell routes for bottom-nav Profile highlight.
+ * Exact `/qr` is the in-profile My QR page (not `/qr/[token]` public landing).
+ */
 const isProfilePath = (pathname: string): boolean =>
   pathname === '/dashboard' ||
   pathname.startsWith('/dashboard/') ||
@@ -47,7 +49,8 @@ const isProfilePath = (pathname: string): boolean =>
   pathname.startsWith('/requests/') ||
   pathname === '/checkin' ||
   pathname.startsWith('/checkin/') ||
-  pathname.startsWith('/account');
+  pathname.startsWith('/account') ||
+  pathname === '/qr';
 
 const isBuilderScannerPath = (pathname: string): boolean =>
   pathname === '/builder/scanner' || pathname.startsWith('/builder/scanner/');
@@ -82,7 +85,8 @@ export const buildPublicNavItems = (
     href: '/qr',
     labelKey: 'qr',
     Icon: QrCode,
-    match: isQrPath,
+    // Highlight only when the bottom-nav sheet is open — not on `/qr` from Profile.
+    match: () => false,
     opensSheet: true,
   },
   {
