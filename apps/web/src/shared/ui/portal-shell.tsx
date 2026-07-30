@@ -22,6 +22,7 @@ import { SiteHeader } from '@/shared/ui/site-header';
 import { useDrawerTransition } from '@/shared/ui/use-drawer-transition';
 import { Link, usePathname } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
+import { MOBILE_BOTTOM_NAV_CONTENT_PB_CLASS } from '@/shared/ui/mobile-bottom-nav-clearance';
 
 type PortalShellProps = {
   brandHref: '/builder' | '/admin' | '/partner' | '/settings' | '/dashboard';
@@ -63,6 +64,7 @@ type PortalShellProps = {
  * SiteHeader pill chrome is ~4.5rem (top inset + h-16).
  * Sidebar is pinned with top + bottom (not a fixed vh height) so the full
  * rail stays inside the visual viewport at any zoom / short screen.
+ * Rail chrome runs under the bottom nav (lower z-index); inner padding keeps labels clear.
  * Content mask extends a bit lower so scrolled main vanishes under the header.
  */
 const RAIL_CHROME_TOP_CLASS = 'top-[calc(5.5rem+env(safe-area-inset-top,0px))]';
@@ -257,7 +259,12 @@ export const PortalShell = ({
               'md:block',
             )}
           >
-            <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-tr-[2.5rem] rounded-br-[2.5rem] bg-brand-secondary p-4">
+            <div
+              className={cn(
+                'flex h-full min-h-0 flex-col overflow-hidden rounded-tr-[2.5rem] rounded-br-[2.5rem] bg-brand-secondary p-4',
+                MOBILE_BOTTOM_NAV_CONTENT_PB_CLASS,
+              )}
+            >
               {sidebar}
             </div>
           </aside>

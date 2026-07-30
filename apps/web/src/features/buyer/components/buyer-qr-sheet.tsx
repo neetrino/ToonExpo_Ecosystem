@@ -57,7 +57,7 @@ const BuyerQrSheetBody = ({ onOpenScanner }: BuyerQrSheetBodyProps) => {
   if (meLoading || (isBuyer && qrQuery.isLoading)) {
     return (
       <div className="flex flex-col gap-3">
-        <Skeleton className="mx-auto h-80 w-full max-w-sm" />
+        <Skeleton className="mx-auto aspect-square w-full max-w-[min(100%,clamp(12.5rem,72vw,17.5rem))]" />
         {scannerButton}
       </div>
     );
