@@ -1,7 +1,7 @@
 import { setRequestLocale } from 'next-intl/server';
 import { Suspense } from 'react';
 
-import { MasterplanPhasePage } from '@/features/interactive-mapping';
+import { PhaseWizardPage } from '@/features/interactive-mapping';
 import { InteractiveMappingScopeRoot } from '@/features/interactive-mapping/components/interactive-mapping-scope-root';
 
 type PageProps = {
@@ -9,16 +9,16 @@ type PageProps = {
 };
 
 /**
- * Phase 1 — masterplan district mapping.
+ * Builder 4-phase mapping wizard for an owned project.
  */
-export default async function AdminMasterplanMappingPage({ params }: PageProps) {
+export default async function BuilderInteractiveMappingProjectPage({ params }: PageProps) {
   const { locale, projectId } = await params;
   setRequestLocale(locale);
 
   return (
-    <InteractiveMappingScopeRoot mode="admin">
+    <InteractiveMappingScopeRoot mode="portal">
       <Suspense fallback={<p className="text-sm text-ink-secondary">…</p>}>
-        <MasterplanPhasePage projectId={projectId} />
+        <PhaseWizardPage projectId={projectId} />
       </Suspense>
     </InteractiveMappingScopeRoot>
   );

@@ -9,14 +9,14 @@ type PageProps = {
 };
 
 /**
- * Phase 2 — district plan building mapping.
+ * Builder phase 2 — district building mapping.
  */
-export default async function AdminDistrictMappingPage({ params }: PageProps) {
+export default async function BuilderDistrictMappingPage({ params }: PageProps) {
   const { locale, projectId, districtId } = await params;
   setRequestLocale(locale);
 
   return (
-    <InteractiveMappingScopeRoot mode="admin">
+    <InteractiveMappingScopeRoot mode="portal">
       <Suspense fallback={<p className="text-sm text-ink-secondary">…</p>}>
         <DistrictPhasePage projectId={projectId} districtId={districtId} />
       </Suspense>

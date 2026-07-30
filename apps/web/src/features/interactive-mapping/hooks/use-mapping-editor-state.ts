@@ -4,9 +4,9 @@ import type { PortalVisualHotspotItem, VisualHotspotTargetType } from '@toonexpo
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import {
-  createAdminVisualHotspot,
-  deleteAdminVisualHotspot,
-  updateAdminVisualHotspot,
+  createVisualHotspot,
+  deleteVisualHotspot,
+  updateVisualHotspot,
 } from '../api/interactive-mapping-api';
 import {
   hotspotToMappingCoords,
@@ -18,6 +18,10 @@ import type {
   MappingEntity,
 } from '../components/mapping-canvas/mapping-canvas';
 import type { MappingEditorEntity } from '../components/editors/mapping-entity-sidebar';
+import {
+  resolveMappingCatalogScope,
+  useInteractiveMappingScope,
+} from '../scope/interactive-mapping-scope';
 
 const mergeHotspot = (
   entity: MappingEditorEntity,
@@ -47,6 +51,8 @@ export const useMappingEditorState = ({
   initialEntities,
   onAfterSave,
 }: UseMappingEditorStateArgs) => {
+  const mappingScope = useInteractiveMappingScope();
+  const catalogScope = resolveMappingCatalogScope(mappingScope, companyId);
   const entitiesRef = useRef(initialEntities);
   const dirtyIdsRef = useRef(new Set<string>());
   const [entities, setEntities] = useState(initialEntities);
@@ -102,14 +108,14 @@ export const useMappingEditorState = ({
           svgPath: item.svgPath,
         };
         const hotspot = item.hotspotId
-          ? await updateAdminVisualHotspot(
-              companyId,
+          ? await updateVisualHotspot(
+              catalogScope,
               canvasId,
               item.hotspotId,
               toUpdateHotspotBody(geometry, item.label),
             )
-          : await createAdminVisualHotspot(
-              companyId,
+          : await createVisualHotspot(
+              catalogScope,
               canvasId,
               toCreateHotspotBody({
                 targetType,
@@ -133,7 +139,7 @@ export const useMappingEditorState = ({
         setPending(false);
       }
     },
-    [canvasId, companyId, onAfterSave, targetType],
+    [canvasId, catalogScope, onAfterSave, targetType],
   );
 
   const onChangeEntity = (
@@ -218,7 +224,7 @@ export const useMappingEditorState = ({
     }
     setPending(true);
     try {
-      await deleteAdminVisualHotspot(companyId, canvasId, selected.hotspotId);
+      await deleteVisualHotspot(catalogScope, canvasId, selected.hotspotId);
       const cleared = {
         ...selected,
         hotspotId: null,

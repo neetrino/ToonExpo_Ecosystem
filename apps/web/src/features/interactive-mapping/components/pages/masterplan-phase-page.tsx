@@ -8,13 +8,14 @@ import { useEffect, useState } from 'react';
 import { Link } from '@/i18n/navigation';
 
 import {
-  createAdminVisualCanvas,
-  getAdminVisualCanvas,
-  listAdminProjectVisualCanvases,
-  updateAdminVisualCanvas,
+  createVisualCanvas,
+  getVisualCanvas,
+  listProjectVisualCanvases,
+  updateVisualCanvas,
 } from '../../api/interactive-mapping-api';
-import { INTERACTIVE_MAPPING_BASE_PATH, interactiveMappingProjectQueryKey } from '../../constants';
+import { interactiveMappingProjectQueryKey } from '../../constants';
 import { useInteractiveMappingProjectQuery } from '../../hooks/use-interactive-mapping';
+import { useMappingCatalog } from '../../hooks/use-mapping-catalog';
 import { MasterplanMappingEditor } from '../editors/masterplan-mapping-editor';
 import { MappingImageUploader } from '../media/mapping-image-uploader';
 
@@ -35,16 +36,18 @@ export const MasterplanPhasePage = ({ projectId }: MasterplanPhasePageProps) => 
   const [error, setError] = useState<string | null>(null);
 
   const companyId = detailQuery.data?.project.builderCompanyId;
+  const catalog = useMappingCatalog(companyId);
 
   useEffect(() => {
-    if (!companyId) {
+    if (!catalog) {
       return;
     }
+    const { catalogScope } = catalog;
     let cancelled = false;
     const load = async () => {
       setLoadingCanvas(true);
       try {
-        const list = await listAdminProjectVisualCanvases(companyId, projectId);
+        const list = await listProjectVisualCanvases(catalogScope, projectId);
         const projectCanvas =
           list.data.find(
             (item) => item.contextType === 'project' && item.contextId === projectId,
@@ -55,7 +58,7 @@ export const MasterplanPhasePage = ({ projectId }: MasterplanPhasePageProps) => 
           }
           return;
         }
-        const detail = await getAdminVisualCanvas(companyId, projectCanvas.id);
+        const detail = await getVisualCanvas(catalogScope, projectCanvas.id);
         if (!cancelled) {
           setCanvas(detail);
           setMediaId(detail.mediaAssetId);
@@ -74,13 +77,13 @@ export const MasterplanPhasePage = ({ projectId }: MasterplanPhasePageProps) => 
     return () => {
       cancelled = true;
     };
-  }, [companyId, projectId, t]);
+  }, [catalog, projectId, t]);
 
   if (detailQuery.isLoading || loadingCanvas) {
     return <p className="text-sm text-ink-muted">{t('loading')}</p>;
   }
 
-  if (detailQuery.isError || !detailQuery.data || !companyId) {
+  if (detailQuery.isError || !detailQuery.data || !catalog) {
     return (
       <p role="alert" className="text-sm text-danger">
         {t('error')}
@@ -89,20 +92,20 @@ export const MasterplanPhasePage = ({ projectId }: MasterplanPhasePageProps) => 
   }
 
   const { project, districts } = detailQuery.data;
-  const mediaContext = { companyId };
+  const { catalogScope, mediaContext, basePath, mode } = catalog;
 
   const attachMedia = async (asset: MediaAssetItem) => {
     setError(null);
     setMediaId(asset.id);
     try {
       if (canvas) {
-        const updated = await updateAdminVisualCanvas(companyId, canvas.id, {
+        const updated = await updateVisualCanvas(catalogScope, canvas.id, {
           mediaAssetId: asset.id,
           publicationStatus: 'published',
         });
         setCanvas(updated);
       } else {
-        const created = await createAdminVisualCanvas(companyId, projectId, {
+        const created = await createVisualCanvas(catalogScope, projectId, {
           contextType: 'project',
           contextId: projectId,
           mediaAssetId: asset.id,
@@ -113,7 +116,7 @@ export const MasterplanPhasePage = ({ projectId }: MasterplanPhasePageProps) => 
         setCanvas(created);
       }
       void queryClient.invalidateQueries({
-        queryKey: interactiveMappingProjectQueryKey(projectId),
+        queryKey: interactiveMappingProjectQueryKey(projectId, mode),
       });
     } catch (attachError) {
       setError(attachError instanceof Error ? attachError.message : t('error'));
@@ -127,7 +130,7 @@ export const MasterplanPhasePage = ({ projectId }: MasterplanPhasePageProps) => 
     <div className="space-y-6">
       <div>
         <Link
-          href={`${INTERACTIVE_MAPPING_BASE_PATH}/${projectId}`}
+          href={`${basePath}/${projectId}`}
           className="text-xs uppercase tracking-[0.14em] text-ink-muted underline-offset-4 hover:underline"
         >
           {t('backToWizard')}
@@ -154,7 +157,7 @@ export const MasterplanPhasePage = ({ projectId }: MasterplanPhasePageProps) => 
 
       {canvas ? (
         <MasterplanMappingEditor
-          companyId={companyId}
+          companyId={companyId!}
           canvasId={canvas.id}
           imageUrl={canvas.media.fileUrl}
           imageWidth={width}
@@ -165,7 +168,7 @@ export const MasterplanPhasePage = ({ projectId }: MasterplanPhasePageProps) => 
           hotspots={canvas.hotspots}
           onAfterSave={() => {
             void queryClient.invalidateQueries({
-              queryKey: interactiveMappingProjectQueryKey(projectId),
+              queryKey: interactiveMappingProjectQueryKey(projectId, mode),
             });
           }}
         />

@@ -1,15 +1,21 @@
-/** Interactive mapping Admin feature constants. */
+/** Interactive mapping Admin / Builder feature constants. */
 
-export const INTERACTIVE_MAPPING_BASE_PATH = '/admin/interactive-mapping' as const;
+export const INTERACTIVE_MAPPING_ADMIN_BASE_PATH = '/admin/interactive-mapping' as const;
+export const INTERACTIVE_MAPPING_BUILDER_BASE_PATH = '/builder/interactive-mapping' as const;
 
-export const INTERACTIVE_MAPPING_PROJECTS_QUERY_KEY = [
-  'admin',
-  'interactive-mapping',
-  'projects',
-] as const;
+/** @deprecated Use INTERACTIVE_MAPPING_ADMIN_BASE_PATH or scope.basePath */
+export const INTERACTIVE_MAPPING_BASE_PATH = INTERACTIVE_MAPPING_ADMIN_BASE_PATH;
 
-export const interactiveMappingProjectQueryKey = (projectId: string) =>
-  [...INTERACTIVE_MAPPING_PROJECTS_QUERY_KEY, projectId] as const;
+export const INTERACTIVE_MAPPING_ADMIN_API_PREFIX = '/admin/interactive-mapping' as const;
+export const INTERACTIVE_MAPPING_PORTAL_API_PREFIX = '/portal/interactive-mapping' as const;
+
+export const INTERACTIVE_MAPPING_PROJECTS_QUERY_KEY = ['interactive-mapping', 'projects'] as const;
+
+export const interactiveMappingProjectQueryKey = (projectId: string, mode: 'admin' | 'portal') =>
+  [...INTERACTIVE_MAPPING_PROJECTS_QUERY_KEY, mode, projectId] as const;
+
+export const interactiveMappingProjectsQueryKey = (mode: 'admin' | 'portal') =>
+  [...INTERACTIVE_MAPPING_PROJECTS_QUERY_KEY, mode] as const;
 
 export const MIN_FLOOR_COUNT = 1;
 export const MAX_FLOOR_COUNT = 60;

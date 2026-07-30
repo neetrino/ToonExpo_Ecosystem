@@ -9,14 +9,14 @@ import { createPortalApartment } from '@/features/builder/api/portal-apartments-
 import { Link, useRouter } from '@/i18n/navigation';
 
 import {
-  adminCatalogScope,
-  createAdminVisualCanvas,
-  getAdminVisualCanvas,
-  listAdminProjectVisualCanvases,
-  updateAdminVisualCanvas,
+  createVisualCanvas,
+  getVisualCanvas,
+  listProjectVisualCanvases,
+  updateVisualCanvas,
 } from '../../api/interactive-mapping-api';
-import { INTERACTIVE_MAPPING_BASE_PATH, interactiveMappingProjectQueryKey } from '../../constants';
+import { interactiveMappingProjectQueryKey } from '../../constants';
 import { useInteractiveMappingProjectQuery } from '../../hooks/use-interactive-mapping';
+import { useMappingCatalog } from '../../hooks/use-mapping-catalog';
 import { FloorApartmentMappingEditor } from '../editors/floor-apartment-mapping-editor';
 import { FloorPlanUploadPicker } from '../floor-plan-upload-picker';
 import { CreateEntityInlineForm } from '../forms/create-entity-inline-form';
@@ -41,16 +41,18 @@ export const FloorPhasePage = ({ projectId, floorId }: FloorPhasePageProps) => {
   const [error, setError] = useState<string | null>(null);
 
   const companyId = detailQuery.data?.project.builderCompanyId;
+  const catalog = useMappingCatalog(companyId);
 
   useEffect(() => {
-    if (!companyId) {
+    if (!catalog) {
       return;
     }
+    const { catalogScope } = catalog;
     let cancelled = false;
     const load = async () => {
       setLoadingCanvas(true);
       try {
-        const list = await listAdminProjectVisualCanvases(companyId, projectId);
+        const list = await listProjectVisualCanvases(catalogScope, projectId);
         const match = list.data.find(
           (item) => item.contextType === 'floor' && item.contextId === floorId,
         );
@@ -60,7 +62,7 @@ export const FloorPhasePage = ({ projectId, floorId }: FloorPhasePageProps) => {
           }
           return;
         }
-        const detail = await getAdminVisualCanvas(companyId, match.id);
+        const detail = await getVisualCanvas(catalogScope, match.id);
         if (!cancelled) {
           setCanvas(detail);
           setMediaId(detail.mediaAssetId);
@@ -79,13 +81,13 @@ export const FloorPhasePage = ({ projectId, floorId }: FloorPhasePageProps) => {
     return () => {
       cancelled = true;
     };
-  }, [companyId, floorId, projectId, t]);
+  }, [catalog, floorId, projectId, t]);
 
   if (detailQuery.isLoading || loadingCanvas) {
     return <p className="text-sm text-ink-muted">{t('loading')}</p>;
   }
 
-  if (detailQuery.isError || !detailQuery.data || !companyId) {
+  if (detailQuery.isError || !detailQuery.data || !catalog || !companyId) {
     return (
       <p role="alert" className="text-sm text-danger">
         {t('error')}
@@ -106,7 +108,7 @@ export const FloorPhasePage = ({ projectId, floorId }: FloorPhasePageProps) => {
     (item) => item.buildingId === floor.buildingId,
   );
   const apartments = detailQuery.data.apartments.filter((item) => item.floorId === floorId);
-  const scope = adminCatalogScope(companyId);
+  const { catalogScope, mediaContext, basePath, mode } = catalog;
 
   const attachMedia = async (asset: MediaAssetItem) => {
     setError(null);
@@ -114,14 +116,14 @@ export const FloorPhasePage = ({ projectId, floorId }: FloorPhasePageProps) => {
     try {
       if (canvas) {
         setCanvas(
-          await updateAdminVisualCanvas(companyId, canvas.id, {
+          await updateVisualCanvas(catalogScope, canvas.id, {
             mediaAssetId: asset.id,
             publicationStatus: 'published',
           }),
         );
       } else {
         setCanvas(
-          await createAdminVisualCanvas(companyId, projectId, {
+          await createVisualCanvas(catalogScope, projectId, {
             contextType: 'floor',
             contextId: floorId,
             mediaAssetId: asset.id,
@@ -132,7 +134,7 @@ export const FloorPhasePage = ({ projectId, floorId }: FloorPhasePageProps) => {
         );
       }
       void queryClient.invalidateQueries({
-        queryKey: interactiveMappingProjectQueryKey(projectId),
+        queryKey: interactiveMappingProjectQueryKey(projectId, mode),
       });
     } catch (attachError) {
       setError(attachError instanceof Error ? attachError.message : t('error'));
@@ -146,7 +148,7 @@ export const FloorPhasePage = ({ projectId, floorId }: FloorPhasePageProps) => {
     <div className="space-y-6">
       <div>
         <Link
-          href={`${INTERACTIVE_MAPPING_BASE_PATH}/${projectId}`}
+          href={`${basePath}/${projectId}`}
           className="text-xs uppercase tracking-[0.14em] text-ink-muted underline-offset-4 hover:underline"
         >
           {t('backToWizard')}
@@ -162,14 +164,14 @@ export const FloorPhasePage = ({ projectId, floorId }: FloorPhasePageProps) => {
         title={t('forms.pickFloor')}
         emptyLabel={t('forms.noFloors')}
         onSelectFloor={(nextFloorId) => {
-          router.push(`${INTERACTIVE_MAPPING_BASE_PATH}/${projectId}/floors/${nextFloorId}`);
+          router.push(`${basePath}/${projectId}/floors/${nextFloorId}`);
         }}
       />
 
       <MappingImageUploader
         id="floor-plan-image"
         label={t('forms.floorPlanImage')}
-        context={{ companyId }}
+        context={mediaContext}
         value={mediaId}
         previewUrl={canvas?.media.fileUrl}
         onChange={(asset) => {
@@ -202,16 +204,16 @@ export const FloorPhasePage = ({ projectId, floorId }: FloorPhasePageProps) => {
               nameLabel={t('forms.apartmentNumber')}
               namePlaceholder={t('forms.apartmentPlaceholder')}
               onSubmit={async (number) => {
-                await createPortalApartment(floorId, { number }, { scope });
+                await createPortalApartment(floorId, { number }, { scope: catalogScope });
                 void queryClient.invalidateQueries({
-                  queryKey: interactiveMappingProjectQueryKey(projectId),
+                  queryKey: interactiveMappingProjectQueryKey(projectId, mode),
                 });
               }}
             />
           }
           onAfterSave={() => {
             void queryClient.invalidateQueries({
-              queryKey: interactiveMappingProjectQueryKey(projectId),
+              queryKey: interactiveMappingProjectQueryKey(projectId, mode),
             });
           }}
         />

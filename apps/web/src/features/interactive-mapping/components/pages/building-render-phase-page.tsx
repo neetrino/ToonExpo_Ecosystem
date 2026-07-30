@@ -8,16 +8,17 @@ import { useEffect, useState } from 'react';
 import { Link } from '@/i18n/navigation';
 
 import {
-  createAdminVisualCanvas,
-  getAdminVisualCanvas,
-  listAdminProjectVisualCanvases,
-  updateAdminVisualCanvas,
+  createVisualCanvas,
+  getVisualCanvas,
+  listProjectVisualCanvases,
+  updateVisualCanvas,
 } from '../../api/interactive-mapping-api';
-import { INTERACTIVE_MAPPING_BASE_PATH, interactiveMappingProjectQueryKey } from '../../constants';
+import { interactiveMappingProjectQueryKey } from '../../constants';
 import {
   useInteractiveMappingProjectQuery,
   useSetupBuildingFloorsMutation,
 } from '../../hooks/use-interactive-mapping';
+import { useMappingCatalog } from '../../hooks/use-mapping-catalog';
 import { BuildingFloorSetupForm } from '../building-floor-setup-form';
 import { BuildingFloorMappingEditor } from '../editors/building-floor-mapping-editor';
 import { MappingImageUploader } from '../media/mapping-image-uploader';
@@ -44,16 +45,18 @@ export const BuildingRenderPhasePage = ({
   const [error, setError] = useState<string | null>(null);
 
   const companyId = detailQuery.data?.project.builderCompanyId;
+  const catalog = useMappingCatalog(companyId);
 
   useEffect(() => {
-    if (!companyId) {
+    if (!catalog) {
       return;
     }
+    const { catalogScope } = catalog;
     let cancelled = false;
     const load = async () => {
       setLoadingCanvas(true);
       try {
-        const list = await listAdminProjectVisualCanvases(companyId, projectId);
+        const list = await listProjectVisualCanvases(catalogScope, projectId);
         const match = list.data.find(
           (item) => item.contextType === 'building' && item.contextId === buildingId,
         );
@@ -63,7 +66,7 @@ export const BuildingRenderPhasePage = ({
           }
           return;
         }
-        const detail = await getAdminVisualCanvas(companyId, match.id);
+        const detail = await getVisualCanvas(catalogScope, match.id);
         if (!cancelled) {
           setCanvas(detail);
           setMediaId(detail.mediaAssetId);
@@ -82,13 +85,13 @@ export const BuildingRenderPhasePage = ({
     return () => {
       cancelled = true;
     };
-  }, [buildingId, companyId, projectId, t]);
+  }, [buildingId, catalog, projectId, t]);
 
   if (detailQuery.isLoading || loadingCanvas) {
     return <p className="text-sm text-ink-muted">{t('loading')}</p>;
   }
 
-  if (detailQuery.isError || !detailQuery.data || !companyId) {
+  if (detailQuery.isError || !detailQuery.data || !catalog || !companyId) {
     return (
       <p role="alert" className="text-sm text-danger">
         {t('error')}
@@ -98,6 +101,7 @@ export const BuildingRenderPhasePage = ({
 
   const building = detailQuery.data.buildings.find((item) => item.id === buildingId);
   const floors = detailQuery.data.floors.filter((item) => item.buildingId === buildingId);
+  const { catalogScope, mediaContext, basePath, mode } = catalog;
 
   if (!building) {
     return (
@@ -113,14 +117,14 @@ export const BuildingRenderPhasePage = ({
     try {
       if (canvas) {
         setCanvas(
-          await updateAdminVisualCanvas(companyId, canvas.id, {
+          await updateVisualCanvas(catalogScope, canvas.id, {
             mediaAssetId: asset.id,
             publicationStatus: 'published',
           }),
         );
       } else {
         setCanvas(
-          await createAdminVisualCanvas(companyId, projectId, {
+          await createVisualCanvas(catalogScope, projectId, {
             contextType: 'building',
             contextId: buildingId,
             mediaAssetId: asset.id,
@@ -131,7 +135,7 @@ export const BuildingRenderPhasePage = ({
         );
       }
       void queryClient.invalidateQueries({
-        queryKey: interactiveMappingProjectQueryKey(projectId),
+        queryKey: interactiveMappingProjectQueryKey(projectId, mode),
       });
     } catch (attachError) {
       setError(attachError instanceof Error ? attachError.message : t('error'));
@@ -145,7 +149,7 @@ export const BuildingRenderPhasePage = ({
     <div className="space-y-6">
       <div>
         <Link
-          href={`${INTERACTIVE_MAPPING_BASE_PATH}/${projectId}`}
+          href={`${basePath}/${projectId}`}
           className="text-xs uppercase tracking-[0.14em] text-ink-muted underline-offset-4 hover:underline"
         >
           {t('backToWizard')}
@@ -176,7 +180,7 @@ export const BuildingRenderPhasePage = ({
       <MappingImageUploader
         id="building-render-image"
         label={t('forms.buildingRenderImage')}
-        context={{ companyId }}
+        context={mediaContext}
         value={mediaId}
         previewUrl={canvas?.media.fileUrl}
         onChange={(asset) => {
@@ -207,7 +211,7 @@ export const BuildingRenderPhasePage = ({
           hotspots={canvas.hotspots}
           onAfterSave={() => {
             void queryClient.invalidateQueries({
-              queryKey: interactiveMappingProjectQueryKey(projectId),
+              queryKey: interactiveMappingProjectQueryKey(projectId, mode),
             });
           }}
         />

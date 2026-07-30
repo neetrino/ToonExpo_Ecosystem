@@ -9,14 +9,14 @@ type PageProps = {
 };
 
 /**
- * Phase 4 — floor plan apartment mapping.
+ * Builder phase 4 — floor plan + apartment mapping.
  */
-export default async function AdminFloorMappingPage({ params }: PageProps) {
+export default async function BuilderFloorMappingPage({ params }: PageProps) {
   const { locale, projectId, floorId } = await params;
   setRequestLocale(locale);
 
   return (
-    <InteractiveMappingScopeRoot mode="admin">
+    <InteractiveMappingScopeRoot mode="portal">
       <Suspense fallback={<p className="text-sm text-ink-secondary">…</p>}>
         <FloorPhasePage projectId={projectId} floorId={floorId} />
       </Suspense>

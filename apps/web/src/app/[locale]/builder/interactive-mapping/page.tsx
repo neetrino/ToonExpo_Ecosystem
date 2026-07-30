@@ -1,24 +1,24 @@
 import { setRequestLocale } from 'next-intl/server';
 import { Suspense } from 'react';
 
-import { MasterplanPhasePage } from '@/features/interactive-mapping';
+import { InteractiveMappingProjectsPage } from '@/features/interactive-mapping';
 import { InteractiveMappingScopeRoot } from '@/features/interactive-mapping/components/interactive-mapping-scope-root';
 
 type PageProps = {
-  params: Promise<{ locale: string; projectId: string }>;
+  params: Promise<{ locale: string }>;
 };
 
 /**
- * Phase 1 — masterplan district mapping.
+ * Builder interactive mapping — own company projects only.
  */
-export default async function AdminMasterplanMappingPage({ params }: PageProps) {
-  const { locale, projectId } = await params;
+export default async function BuilderInteractiveMappingPage({ params }: PageProps) {
+  const { locale } = await params;
   setRequestLocale(locale);
 
   return (
-    <InteractiveMappingScopeRoot mode="admin">
+    <InteractiveMappingScopeRoot mode="portal">
       <Suspense fallback={<p className="text-sm text-ink-secondary">…</p>}>
-        <MasterplanPhasePage projectId={projectId} />
+        <InteractiveMappingProjectsPage />
       </Suspense>
     </InteractiveMappingScopeRoot>
   );
