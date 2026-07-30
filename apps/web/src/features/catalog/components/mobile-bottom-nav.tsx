@@ -28,6 +28,12 @@ const BUTTON_SIZE_CLASS = 'size-14';
 const ITEM_GAP_CLASS = 'gap-4';
 /** Figma bar vertical padding (safe-area replaces bottom when larger). */
 const BAR_PAD_CLASS = 'pt-[13px] pb-[max(7px,env(safe-area-inset-bottom,0px))]';
+/**
+ * Natural width of Figma slots: n×56 + (n−1)×16.
+ * Used to scale the cluster on ultra-narrow cover screens.
+ */
+const navClusterNaturalWidthPx = (slotCount: number): number =>
+  slotCount * 56 + Math.max(0, slotCount - 1) * 16;
 /** Soft glide between selected tabs. */
 const THUMB_SLIDE_DURATION_MS = 720;
 /** Icon color / scale follows the thumb. */
@@ -61,7 +67,9 @@ const NavItemIcon = ({ item, active }: NavItemIconProps) => {
   return (
     <Icon
       className={cn(
-        'size-7 transition-[color,transform] duration-[var(--bottom-nav-icon-ms)] ease-[var(--bottom-nav-ease)]',
+        // Slightly larger glyph on cover/narrow so icons fill the pad.
+        'size-7 max-[22.5rem]:size-8',
+        'transition-[color,transform] duration-[var(--bottom-nav-icon-ms)] ease-[var(--bottom-nav-ease)]',
         'motion-reduce:transition-none motion-reduce:delay-0',
         active ? 'scale-105 text-white' : 'scale-100 text-brand-secondary',
       )}
@@ -74,6 +82,7 @@ const NavItemIcon = ({ item, active }: NavItemIconProps) => {
 /**
  * Mobile-only bottom navigation (Figma node 134:119).
  * Full-bleed dark bar; white pads stay put, teal thumb glides between them.
+ * Ultra-narrow screens scale the whole cluster so thumb + icons stay aligned.
  */
 export const MobileBottomNav = () => {
   const t = useTranslations('Nav');
@@ -129,6 +138,7 @@ export const MobileBottomNav = () => {
     ['--bottom-nav-icon-ms' as string]: `${NAV_ICON_TRANSITION_MS}ms`,
     ['--bottom-nav-thumb-ms' as string]: `${THUMB_SLIDE_DURATION_MS}ms`,
     ['--bottom-nav-ease' as string]: THUMB_EASE,
+    ['--bottom-nav-natural-width' as string]: `${navClusterNaturalWidthPx(items.length)}px`,
   };
 
   const nav = (
@@ -147,7 +157,14 @@ export const MobileBottomNav = () => {
         )}
         style={navVars}
       >
-        <div className={cn('relative flex items-center', ITEM_GAP_CLASS)}>
+        <div
+          className={cn(
+            'relative flex origin-bottom items-center',
+            ITEM_GAP_CLASS,
+            // Scale the whole row on cover screens so thumb stays locked to every slot.
+            'max-[22.5rem]:scale-[min(1,calc((100vw-0.75rem)/var(--bottom-nav-natural-width)))]',
+          )}
+        >
           {/* Static white pads — never mount/unmount with selection (no pop). */}
           {items.map((item) => (
             <span
