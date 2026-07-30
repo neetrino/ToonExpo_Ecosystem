@@ -12,6 +12,7 @@ import { useIsCompanyAdmin } from '@/features/builder/hooks/use-company-profile'
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
+import { Button } from '@/shared/ui/button';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
 const parsePage = (raw: string | null): number => {
@@ -63,16 +64,18 @@ export const TeamPage = () => {
         <div className="flex flex-wrap items-center gap-2">
           <ViewModeToggle value={viewMode} onChange={setViewMode} />
           {canManage ? (
-            <button
+            <Button
               type="button"
-              className="inline-flex h-9 items-center justify-center rounded-pill bg-cta-dark px-4 text-sm font-medium text-on-dark hover:bg-cta-dark/90"
+              size="sm"
+              variant="secondary"
+              className="shrink-0"
               onClick={() => {
                 setInviteOpen(true);
                 setInviteEmail(null);
               }}
             >
               <AddActionLabel>{t('inviteMember')}</AddActionLabel>
-            </button>
+            </Button>
           ) : null}
         </div>
       </div>

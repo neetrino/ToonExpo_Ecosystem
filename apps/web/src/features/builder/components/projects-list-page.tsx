@@ -13,6 +13,7 @@ import { usePortalProjectsQuery } from '@/features/builder/hooks/use-portal-proj
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
+import { Button } from '@/shared/ui/button';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
 const parsePage = (raw: string | null): number => {
@@ -62,15 +63,17 @@ export const ProjectsListPage = () => {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <ViewModeToggle value={viewMode} onChange={setViewMode} />
-          <button
+          <Button
             type="button"
-            className="inline-flex h-9 items-center justify-center rounded-pill bg-cta-dark px-4 text-sm font-medium text-on-dark hover:bg-cta-dark/90"
+            size="sm"
+            variant="secondary"
+            className="shrink-0"
             onClick={() => {
               setCreateOpen(true);
             }}
           >
             <AddActionLabel>{t('newProject')}</AddActionLabel>
-          </button>
+          </Button>
         </div>
       </div>
 

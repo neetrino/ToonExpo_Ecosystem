@@ -11,6 +11,7 @@ import { EditFloorMediaForm } from '@/features/builder/components/edit-floor-med
 import { usePortalFloorApartmentsQuery } from '@/features/builder/hooks/use-portal-inventory';
 import { Link } from '@/i18n/navigation';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
+import { Button } from '@/shared/ui/button';
 
 type FloorInventoryRowProps = {
   projectId: string;
@@ -43,15 +44,16 @@ export const FloorInventoryRow = ({ projectId, floor }: FloorInventoryRowProps) 
             {t(`publication.${floor.publicationStatus}`)}
           </p>
         </div>
-        <button
+        <Button
           type="button"
-          className="inline-flex h-9 items-center justify-center rounded-pill border border-border-strong px-3 text-sm font-medium text-ink hover:bg-surface"
+          size="sm"
+          variant="ghost"
           onClick={() => {
             setAddOpen(true);
           }}
         >
           <AddActionLabel>{t('addApartments')}</AddActionLabel>
-        </button>
+        </Button>
       </div>
 
       {apartmentsQuery.isLoading ? (

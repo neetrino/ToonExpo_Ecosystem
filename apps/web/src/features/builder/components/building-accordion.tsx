@@ -8,6 +8,7 @@ import { AddFloorSheet } from '@/features/builder/components/add-floor-sheet';
 import { EditBuildingMediaForm } from '@/features/builder/components/edit-building-media-form';
 import { FloorInventoryRow } from '@/features/builder/components/floor-inventory-row';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
+import { Button } from '@/shared/ui/button';
 
 type BuildingAccordionProps = {
   projectId: string;
@@ -55,15 +56,16 @@ export const BuildingAccordion = ({ projectId, building }: BuildingAccordionProp
           )}
           <EditBuildingMediaForm projectId={projectId} building={building} />
           <div className="flex justify-end">
-            <button
+            <Button
               type="button"
-              className="inline-flex h-9 items-center justify-center rounded-pill border border-border-strong px-4 text-sm font-medium text-ink hover:bg-surface"
+              size="sm"
+              variant="ghost"
               onClick={() => {
                 setAddFloorOpen(true);
               }}
             >
               <AddActionLabel>{t('addFloor')}</AddActionLabel>
-            </button>
+            </Button>
           </div>
         </div>
       ) : null}
