@@ -2,7 +2,10 @@ import { describe, expect, it } from 'vitest';
 
 import {
   filterCityMapPlacementsByQuery,
+  isCityMapProjectPinId,
   mergeHomeMapPoses,
+  mergeMapPosesWithProjectPins,
+  parseCityMapProjectPinId,
   toAdminModelPose,
   toProjectPinPose,
   toPublicModelPose,
@@ -160,6 +163,61 @@ describe('city-map constants helpers', () => {
     );
     expect(merged).toHaveLength(2);
     expect(merged.some((item) => item.id === 'pl1')).toBe(true);
+    expect(merged.some((item) => item.id === 'project:p2')).toBe(true);
+  });
+
+  it('parses project pin ids and merges admin placement poses', () => {
+    expect(isCityMapProjectPinId('project:p1')).toBe(true);
+    expect(parseCityMapProjectPinId('project:p1')).toBe('p1');
+    expect(parseCityMapProjectPinId('pl1')).toBeNull();
+
+    const availability = {
+      total: 1,
+      available: 1,
+      reserved: 0,
+      sold: 0,
+    };
+    const merged = mergeMapPosesWithProjectPins(
+      [
+        {
+          id: 'p2',
+          name: 'Arabkir Park',
+          slug: 'arabkir',
+          shortDescription: null,
+          locationText: null,
+          address: null,
+          city: 'Yerevan',
+          district: 'Arabkir',
+          latitude: '40.205',
+          longitude: '44.52',
+          cover: null,
+          builder: { id: 'c', name: 'B', logoUrl: null },
+          availability,
+          minPrice: null,
+          maxPrice: null,
+          priceCurrency: null,
+        },
+      ],
+      [
+        {
+          id: 'pl1',
+          projectId: 'p1',
+          buildingId: 'b1',
+          glbUrl: 'https://cdn.example.com/a.glb',
+          longitude: 44.47,
+          latitude: 40.2,
+          altitude: 0,
+          rotationX: 90,
+          rotationY: 0,
+          rotationZ: 0,
+          scale: 1,
+          minZoom: 13,
+          label: 'B1',
+          publicationStatus: 'draft',
+        },
+      ],
+    );
+    expect(merged).toHaveLength(2);
     expect(merged.some((item) => item.id === 'project:p2')).toBe(true);
   });
 });

@@ -107,15 +107,16 @@ export const toProjectPinPose = (
 };
 
 /**
- * Placement GLBs + project pins for projects without a placement (so the list
- * locations are visible on the homepage map).
+ * Placement poses + catalog project pins for projects that do not yet have a
+ * city-map placement (homepage + admin context pins).
  */
-export const mergeHomeMapPoses = (
+export const mergeMapPosesWithProjectPins = (
   projects: ProjectListItem[],
-  placements: PublicCityMapPlacement[],
+  placementPoses: CityMapModelPose[],
 ): CityMapModelPose[] => {
-  const placementPoses = placements.map(toPublicModelPose);
-  const placedProjectIds = new Set(placements.map((item) => item.projectId));
+  const placedProjectIds = new Set(
+    placementPoses.map((item) => item.projectId).filter((id) => id.length > 0),
+  );
   const projectPins = projects
     .filter((project) => !placedProjectIds.has(project.id))
     .map(toProjectPinPose)
@@ -123,8 +124,28 @@ export const mergeHomeMapPoses = (
   return [...placementPoses, ...projectPins];
 };
 
+/**
+ * Placement GLBs + project pins for projects without a placement (so the list
+ * locations are visible on the homepage map).
+ */
+export const mergeHomeMapPoses = (
+  projects: ProjectListItem[],
+  placements: PublicCityMapPlacement[],
+): CityMapModelPose[] => mergeMapPosesWithProjectPins(projects, placements.map(toPublicModelPose));
+
 export const projectPinId = (projectId: string): string =>
   `${CITY_MAP_PROJECT_PIN_PREFIX}${projectId}`;
+
+export const isCityMapProjectPinId = (id: string): boolean =>
+  id.startsWith(CITY_MAP_PROJECT_PIN_PREFIX);
+
+export const parseCityMapProjectPinId = (id: string): string | null => {
+  if (!isCityMapProjectPinId(id)) {
+    return null;
+  }
+  const projectId = id.slice(CITY_MAP_PROJECT_PIN_PREFIX.length);
+  return projectId.length > 0 ? projectId : null;
+};
 
 export const degToRad = (degrees: number): number => (degrees * Math.PI) / 180;
 

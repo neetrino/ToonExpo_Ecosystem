@@ -11,6 +11,7 @@ import { cn } from '@/shared/ui/cn';
 
 import {
   CITY_MAP_DEFAULT_CONFIG,
+  CITY_MAP_DRAFT_PREVIEW_ID,
   CITY_MAP_MAPLIBRE_WORKER_URL,
   CITY_MAP_PIN_LAYER_ID,
   type CityMapModelPose,
@@ -115,9 +116,10 @@ export const CityMapView = ({
         ensureCityMapPinLayers(map);
         layerRef.current.setModels(modelsRef.current);
         setCityMapPins(map, modelsRef.current);
-        if (mode === 'view' && modelsRef.current.length > 0 && !didFitPinsRef.current) {
+        const fitPoses = modelsRef.current.filter((pose) => pose.id !== CITY_MAP_DRAFT_PREVIEW_ID);
+        if (fitPoses.length > 0 && !didFitPinsRef.current) {
           const bounds = new maplibregl.LngLatBounds();
-          for (const pose of modelsRef.current) {
+          for (const pose of fitPoses) {
             bounds.extend([pose.longitude, pose.latitude]);
           }
           if (!bounds.isEmpty()) {
@@ -188,11 +190,15 @@ export const CityMapView = ({
     layerRef.current?.setModels(models);
     setCityMapPins(map, models);
 
-    if (mode !== 'view' || models.length === 0 || didFitPinsRef.current) {
+    if (didFitPinsRef.current) {
+      return;
+    }
+    const fitPoses = models.filter((pose) => pose.id !== CITY_MAP_DRAFT_PREVIEW_ID);
+    if (fitPoses.length === 0) {
       return;
     }
     const bounds = new maplibregl.LngLatBounds();
-    for (const pose of models) {
+    for (const pose of fitPoses) {
       bounds.extend([pose.longitude, pose.latitude]);
     }
     if (bounds.isEmpty()) {
@@ -205,7 +211,7 @@ export const CityMapView = ({
       duration: 900,
       pitch: 45,
     });
-  }, [models, mode]);
+  }, [models]);
 
   useEffect(() => {
     const map = mapRef.current;

@@ -1,9 +1,14 @@
 'use client';
 
-import type { CityMapBuildingOption, CityMapPlacementItem } from '@toonexpo/contracts';
-import { useTranslations } from 'next-intl';
+import type {
+  CityMapBuildingOption,
+  CityMapPlacementItem,
+  ProjectListItem,
+} from '@toonexpo/contracts';
+import { useLocale, useTranslations } from 'next-intl';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
+import { listProjects } from '@/features/catalog/api/catalog-api';
 import {
   createAdminCityMapPlacement,
   deleteAdminCityMapPlacement,
@@ -23,6 +28,8 @@ import {
   CITY_MAP_DEFAULT_CONFIG,
   CITY_MAP_DRAFT_PREVIEW_ID,
   filterCityMapPlacementsByQuery,
+  isCityMapProjectPinId,
+  mergeMapPosesWithProjectPins,
   toAdminModelPose,
   type CityMapModelPose,
 } from '@/features/city-map/constants';
@@ -38,9 +45,13 @@ const EMPTY_TRANSFORM: AdminCityMapTransform = {
   minZoom: 13,
 };
 
+const ADMIN_MAP_PROJECTS_PAGE_SIZE = 48;
+
 export const AdminCityMapPage = () => {
   const t = useTranslations('Admin.cityMap');
+  const locale = useLocale();
   const [placements, setPlacements] = useState<CityMapPlacementItem[]>([]);
+  const [projects, setProjects] = useState<ProjectListItem[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [buildingQuery, setBuildingQuery] = useState('');
   const [buildingOptions, setBuildingOptions] = useState<CityMapBuildingOption[]>([]);
@@ -56,7 +67,7 @@ export const AdminCityMapPage = () => {
 
   const selected = placements.find((item) => item.id === selectedId) ?? null;
   const models = useMemo((): CityMapModelPose[] => {
-    const poses = placements.map((item) => {
+    const placementPoses = placements.map((item) => {
       const pose = toAdminModelPose(item);
       if (item.id !== selectedId) {
         return pose;
@@ -73,6 +84,7 @@ export const AdminCityMapPage = () => {
         minZoom: transform.minZoom,
       };
     });
+    const poses = mergeMapPosesWithProjectPins(projects, placementPoses);
     if (!selectedId) {
       poses.push({
         id: CITY_MAP_DRAFT_PREVIEW_ID,
@@ -92,20 +104,26 @@ export const AdminCityMapPage = () => {
       });
     }
     return poses;
-  }, [placements, selectedBuilding, selectedId, t, transform]);
+  }, [placements, projects, selectedBuilding, selectedId, t, transform]);
 
   const refresh = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const response = await listAdminCityMapPlacements();
-      setPlacements(response.data);
+      const [placementResponse, projectResponse] = await Promise.all([
+        listAdminCityMapPlacements(),
+        listProjects({ page: 1, pageSize: ADMIN_MAP_PROJECTS_PAGE_SIZE }, { locale }).catch(() => ({
+          data: [] as ProjectListItem[],
+        })),
+      ]);
+      setPlacements(placementResponse.data);
+      setProjects(projectResponse.data);
     } catch {
       setError(t('errorLoad'));
     } finally {
       setLoading(false);
     }
-  }, [t]);
+  }, [locale, t]);
 
   useEffect(() => {
     void refresh();
@@ -150,6 +168,29 @@ export const AdminCityMapPage = () => {
       latitude: option.latitude ?? EMPTY_TRANSFORM.latitude,
     });
     setFlyToId(CITY_MAP_DRAFT_PREVIEW_ID);
+  };
+
+  const onSelectMapPin = (placementId: string, projectId: string): void => {
+    if (placementId === CITY_MAP_DRAFT_PREVIEW_ID) {
+      return;
+    }
+    if (isCityMapProjectPinId(placementId)) {
+      const project = projects.find((item) => item.id === projectId);
+      setSelectedId(null);
+      setSelectedBuilding(null);
+      setGlbMediaAssetId(null);
+      setGlbLabel(null);
+      setBuildingQuery(project?.name ?? '');
+      setTransform({
+        ...EMPTY_TRANSFORM,
+        longitude: project?.longitude ? Number(project.longitude) : EMPTY_TRANSFORM.longitude,
+        latitude: project?.latitude ? Number(project.latitude) : EMPTY_TRANSFORM.latitude,
+      });
+      setFlyToId(CITY_MAP_DRAFT_PREVIEW_ID);
+      return;
+    }
+    setSelectedId(placementId);
+    setFlyToId(placementId);
   };
 
   const onUpload = async (file: File | null): Promise<void> => {
@@ -253,13 +294,7 @@ export const AdminCityMapPage = () => {
             models={models}
             selectedPlacementId={selectedId ?? CITY_MAP_DRAFT_PREVIEW_ID}
             flyToPlacementId={flyToId}
-            onSelectPlacement={(placementId) => {
-              if (placementId === CITY_MAP_DRAFT_PREVIEW_ID) {
-                return;
-              }
-              setSelectedId(placementId);
-              setFlyToId(placementId);
-            }}
+            onSelectPlacement={onSelectMapPin}
             onMapClick={(lng, lat) => {
               setTransform((prev) => ({ ...prev, longitude: lng, latitude: lat }));
               if (!selectedId) {
