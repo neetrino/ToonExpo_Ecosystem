@@ -21,8 +21,10 @@ import {
 } from '@/features/city-map/components/admin-city-map-sidebar';
 import {
   CITY_MAP_DEFAULT_CONFIG,
+  CITY_MAP_DRAFT_PREVIEW_ID,
   filterCityMapPlacementsByQuery,
   toAdminModelPose,
+  type CityMapModelPose,
 } from '@/features/city-map/constants';
 
 const EMPTY_TRANSFORM: AdminCityMapTransform = {
@@ -53,7 +55,44 @@ export const AdminCityMapPage = () => {
   const [error, setError] = useState<string | null>(null);
 
   const selected = placements.find((item) => item.id === selectedId) ?? null;
-  const models = useMemo(() => placements.map(toAdminModelPose), [placements]);
+  const models = useMemo((): CityMapModelPose[] => {
+    const poses = placements.map((item) => {
+      const pose = toAdminModelPose(item);
+      if (item.id !== selectedId) {
+        return pose;
+      }
+      return {
+        ...pose,
+        longitude: transform.longitude,
+        latitude: transform.latitude,
+        altitude: transform.altitude,
+        rotationX: transform.rotationX,
+        rotationY: transform.rotationY,
+        rotationZ: transform.rotationZ,
+        scale: transform.scale,
+        minZoom: transform.minZoom,
+      };
+    });
+    if (!selectedId) {
+      poses.push({
+        id: CITY_MAP_DRAFT_PREVIEW_ID,
+        projectId: selectedBuilding?.projectId ?? '',
+        buildingId: selectedBuilding?.buildingId ?? '',
+        glbUrl: '',
+        longitude: transform.longitude,
+        latitude: transform.latitude,
+        altitude: transform.altitude,
+        rotationX: transform.rotationX,
+        rotationY: transform.rotationY,
+        rotationZ: transform.rotationZ,
+        scale: transform.scale,
+        minZoom: transform.minZoom,
+        label: selectedBuilding?.buildingName ?? t('draftPinLabel'),
+        publicationStatus: 'draft',
+      });
+    }
+    return poses;
+  }, [placements, selectedBuilding, selectedId, t, transform]);
 
   const refresh = useCallback(async () => {
     setLoading(true);
@@ -110,6 +149,7 @@ export const AdminCityMapPage = () => {
       longitude: option.longitude ?? EMPTY_TRANSFORM.longitude,
       latitude: option.latitude ?? EMPTY_TRANSFORM.latitude,
     });
+    setFlyToId(CITY_MAP_DRAFT_PREVIEW_ID);
   };
 
   const onUpload = async (file: File | null): Promise<void> => {
@@ -211,14 +251,20 @@ export const AdminCityMapPage = () => {
             mode="edit"
             className="min-h-[32rem]"
             models={models}
-            selectedPlacementId={selectedId}
+            selectedPlacementId={selectedId ?? CITY_MAP_DRAFT_PREVIEW_ID}
             flyToPlacementId={flyToId}
             onSelectPlacement={(placementId) => {
+              if (placementId === CITY_MAP_DRAFT_PREVIEW_ID) {
+                return;
+              }
               setSelectedId(placementId);
               setFlyToId(placementId);
             }}
             onMapClick={(lng, lat) => {
               setTransform((prev) => ({ ...prev, longitude: lng, latitude: lat }));
+              if (!selectedId) {
+                setFlyToId(CITY_MAP_DRAFT_PREVIEW_ID);
+              }
             }}
             onError={() => setError(t('errorMap'))}
           />

@@ -9,6 +9,7 @@ import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
 import { useEffect, useMemo, useState } from 'react';
 
+import { listProjects } from '@/features/catalog/api/catalog-api';
 import { computeSoldPercent, resolveBadge } from '@/features/catalog/utils/development-progress';
 import { formatCompactPrice } from '@/features/catalog/utils/format-price';
 import {
@@ -16,13 +17,18 @@ import {
   listPublicCityMapPlacements,
 } from '@/features/city-map/api/city-map-api';
 import { CityMapView } from '@/features/city-map/components/city-map-view';
-import { toPublicModelPose } from '@/features/city-map/constants';
+import { mergeHomeMapPoses, projectPinId } from '@/features/city-map/constants';
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 
 type HomeDevelopmentsMapProps = {
   projects: ProjectListItem[];
 };
+
+const LIVE_PROJECTS_PAGE_SIZE = 48;
+
+const projectHasCoords = (project: ProjectListItem): boolean =>
+  Boolean(project.latitude && project.longitude);
 
 /**
  * Map-view panel: live city map + selected project card + developments list.
@@ -32,6 +38,7 @@ export const HomeDevelopmentsMap = ({ projects }: HomeDevelopmentsMapProps) => {
   const catalogT = useTranslations('Catalog');
   const locale = useLocale();
   const [selectedId, setSelectedId] = useState(projects[0]?.id ?? '');
+  const [pinProjects, setPinProjects] = useState(projects);
   const [placements, setPlacements] = useState<PublicCityMapPlacement[]>([]);
   const [config, setConfig] = useState<PublicCityMapConfig | null>(null);
   const [mapError, setMapError] = useState<string | null>(null);
@@ -42,45 +49,76 @@ export const HomeDevelopmentsMap = ({ projects }: HomeDevelopmentsMapProps) => {
   const selected = projects.find((project) => project.id === selectedId) ?? projects[0];
 
   useEffect(() => {
+    setPinProjects(projects);
+  }, [projects]);
+
+  /**
+   * Next Data Cache can serve a stale project list without lat/lng after schema
+   * additions. Browser fetch hits the API proxy directly and always has coords.
+   */
+  useEffect(() => {
     let cancelled = false;
-    void Promise.all([listPublicCityMapPlacements(), getPublicCityMapConfig()])
-      .then(([placementResponse, mapConfig]) => {
-        if (cancelled) {
+    void listProjects({ page: 1, pageSize: LIVE_PROJECTS_PAGE_SIZE }, { locale })
+      .then((response) => {
+        if (cancelled || response.data.length === 0) {
           return;
         }
-        setPlacements(placementResponse.data);
-        setConfig(mapConfig);
+        const byId = new Map(response.data.map((item) => [item.id, item]));
+        const enriched = projects.map((project) => byId.get(project.id) ?? project);
+        if (enriched.some(projectHasCoords)) {
+          setPinProjects(enriched);
+          return;
+        }
+        setPinProjects(response.data.filter(projectHasCoords).slice(0, projects.length));
       })
       .catch(() => {
-        if (!cancelled) {
-          setMapError(t('mapLoadError'));
-        }
+        /* keep SSR props */
       });
     return () => {
       cancelled = true;
     };
-  }, [t]);
+  }, [locale, projects]);
 
-  const models = useMemo(() => placements.map(toPublicModelPose), [placements]);
+  useEffect(() => {
+    let cancelled = false;
+    void listPublicCityMapPlacements()
+      .then((response) => {
+        if (!cancelled) {
+          setPlacements(response.data);
+        }
+      })
+      .catch(() => {
+        /* Project pins still render without placements. */
+      });
+    void getPublicCityMapConfig()
+      .then((mapConfig) => {
+        if (!cancelled) {
+          setConfig(mapConfig);
+        }
+      })
+      .catch(() => {
+        /* CityMapView falls back to CITY_MAP_DEFAULT_CONFIG. */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const models = useMemo(
+    () => mergeHomeMapPoses(pinProjects, placements),
+    [pinProjects, placements],
+  );
 
   const searchHits = useMemo(() => {
     const q = search.trim().toLowerCase();
     if (!q) {
       return [];
     }
-    return placements.filter((item) => {
-      const haystack = [
-        item.label,
-        item.buildingName,
-        item.projectName,
-        item.address ?? '',
-        item.city ?? '',
-      ]
-        .join(' ')
-        .toLowerCase();
+    return models.filter((item) => {
+      const haystack = [item.label, item.projectId].join(' ').toLowerCase();
       return haystack.includes(q);
     });
-  }, [placements, search]);
+  }, [models, search]);
 
   if (!selected) {
     return null;
@@ -98,15 +136,16 @@ export const HomeDevelopmentsMap = ({ projects }: HomeDevelopmentsMapProps) => {
     onRequestLabel: catalogT('price.onRequest'),
   });
 
+  const resolveFlyTarget = (projectId: string): string => {
+    const placement = placements.find((item) => item.projectId === projectId);
+    return placement?.id ?? projectPinId(projectId);
+  };
+
   const selectProject = (projectId: string): void => {
     setSelectedId(projectId);
-    const first = placements.find((item) => item.projectId === projectId);
-    if (first) {
-      setSelectedPlacementId(first.id);
-      setFlyToId(first.id);
-    } else {
-      setSelectedPlacementId(null);
-    }
+    const targetId = resolveFlyTarget(projectId);
+    setSelectedPlacementId(targetId);
+    setFlyToId(targetId);
   };
 
   return (
@@ -145,12 +184,10 @@ export const HomeDevelopmentsMap = ({ projects }: HomeDevelopmentsMapProps) => {
                         className="flex w-full px-3 py-2 text-left text-sm hover:bg-band-mist/40"
                         onClick={() => {
                           setSearch('');
-                          setSelectedId(item.projectId);
-                          setSelectedPlacementId(item.id);
-                          setFlyToId(item.id);
+                          selectProject(item.projectId);
                         }}
                       >
-                        {item.label} · {item.projectName}
+                        {item.label}
                       </button>
                     </li>
                   ))}
@@ -165,10 +202,8 @@ export const HomeDevelopmentsMap = ({ projects }: HomeDevelopmentsMapProps) => {
               selectedProjectId={selectedId}
               selectedPlacementId={selectedPlacementId}
               flyToPlacementId={flyToId}
-              onSelectPlacement={(placementId, projectId) => {
-                setSelectedPlacementId(placementId);
-                setSelectedId(projectId);
-                setFlyToId(placementId);
+              onSelectPlacement={(_placementId, projectId) => {
+                selectProject(projectId);
               }}
               onError={() => setMapError(t('mapLoadError'))}
             />

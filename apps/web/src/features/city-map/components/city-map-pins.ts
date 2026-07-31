@@ -7,10 +7,12 @@ import {
   type CityMapModelPose,
 } from '../constants';
 
-const PIN_COLOR_PUBLISHED = '#1f3a5f';
+const PIN_COLOR_PUBLISHED = '#c45c26';
 const PIN_COLOR_DRAFT = '#94a3b8';
 const PIN_COLOR_ARCHIVED = '#64748b';
-const PIN_COLOR_SELECTED = '#c45c26';
+const PIN_COLOR_SELECTED = '#1f3a5f';
+const PIN_RADIUS = 11;
+const PIN_RADIUS_SELECTED = 14;
 
 const toFeatureCollection = (
   poses: CityMapModelPose[],
@@ -53,7 +55,7 @@ export const ensureCityMapPinLayers = (map: MapLibreMap): void => {
       type: 'circle',
       source: CITY_MAP_PIN_SOURCE_ID,
       paint: {
-        'circle-radius': 7,
+        'circle-radius': PIN_RADIUS,
         'circle-color': [
           'match',
           ['get', 'publicationStatus'],
@@ -67,13 +69,15 @@ export const ensureCityMapPinLayers = (map: MapLibreMap): void => {
           'match',
           ['get', 'publicationStatus'],
           'draft',
-          0.65,
+          0.85,
           'archived',
-          0.45,
+          0.55,
           1,
         ],
-        'circle-stroke-width': 2,
+        'circle-stroke-width': 3,
         'circle-stroke-color': '#ffffff',
+        'circle-pitch-alignment': 'viewport',
+        'circle-pitch-scale': 'viewport',
       },
     });
   }
@@ -85,12 +89,22 @@ export const ensureCityMapPinLayers = (map: MapLibreMap): void => {
       source: CITY_MAP_PIN_SOURCE_ID,
       filter: ['==', ['get', 'id'], ''],
       paint: {
-        'circle-radius': 10,
+        'circle-radius': PIN_RADIUS_SELECTED,
         'circle-color': PIN_COLOR_SELECTED,
         'circle-stroke-width': 3,
         'circle-stroke-color': '#ffffff',
+        'circle-pitch-alignment': 'viewport',
+        'circle-pitch-scale': 'viewport',
       },
     });
+  }
+
+  // Keep pins above the Three.js custom layer so they stay visible.
+  if (map.getLayer(CITY_MAP_PIN_LAYER_ID)) {
+    map.moveLayer(CITY_MAP_PIN_LAYER_ID);
+  }
+  if (map.getLayer(CITY_MAP_PIN_SELECTED_LAYER_ID)) {
+    map.moveLayer(CITY_MAP_PIN_SELECTED_LAYER_ID);
   }
 };
 

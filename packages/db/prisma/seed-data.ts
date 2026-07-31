@@ -85,6 +85,55 @@ export type SeedProjectPlan = {
   amenities?: string[] | Record<string, unknown>;
   nearbyPlaces?: string[] | Record<string, unknown>;
   apartmentDefaults?: SeedApartmentDefaults;
+  /** Optional explicit WGS84; otherwise resolved from district. */
+  latitude?: number;
+  longitude?: number;
+};
+
+/** Approximate district centers in Yerevan for seed map pins. */
+const SEED_DISTRICT_COORDS: Record<string, { latitude: number; longitude: number }> = {
+  Kentron: { latitude: 40.181, longitude: 44.514 },
+  Arabkir: { latitude: 40.205, longitude: 44.52 },
+  Davtashen: { latitude: 40.22, longitude: 44.485 },
+  Ajapnyak: { latitude: 40.198, longitude: 44.468 },
+  Avan: { latitude: 40.22, longitude: 44.575 },
+  'Malatia-Sebastia': { latitude: 40.172, longitude: 44.44 },
+  Shengavit: { latitude: 40.145, longitude: 44.48 },
+  Erebuni: { latitude: 40.14, longitude: 44.53 },
+  'Nork-Marash': { latitude: 40.185, longitude: 44.55 },
+  'Kanaker-Zeytun': { latitude: 40.21, longitude: 44.545 },
+  'Nor Nork': { latitude: 40.195, longitude: 44.565 },
+  Center: { latitude: 40.181, longitude: 44.514 },
+};
+
+const DEFAULT_SEED_COORDS = { latitude: 40.1872, longitude: 44.5152 };
+
+const hashSeedOffset = (id: string): number => {
+  let hash = 0;
+  for (let index = 0; index < id.length; index += 1) {
+    hash = (hash * 31 + id.charCodeAt(index)) % 1000;
+  }
+  return (hash % 20) - 10;
+};
+
+/** Resolves map coordinates for a seed project (district center + small offset). */
+export const resolveSeedProjectCoords = (
+  project: Pick<SeedProjectPlan, 'id' | 'district' | 'latitude' | 'longitude'>,
+): { latitude: number; longitude: number } => {
+  if (
+    typeof project.latitude === 'number' &&
+    typeof project.longitude === 'number' &&
+    Number.isFinite(project.latitude) &&
+    Number.isFinite(project.longitude)
+  ) {
+    return { latitude: project.latitude, longitude: project.longitude };
+  }
+  const base = SEED_DISTRICT_COORDS[project.district] ?? DEFAULT_SEED_COORDS;
+  const offset = hashSeedOffset(project.id) * 0.001;
+  return {
+    latitude: Number((base.latitude + offset).toFixed(7)),
+    longitude: Number((base.longitude + offset * 0.7).toFixed(7)),
+  };
 };
 
 export type SeedApartment = {

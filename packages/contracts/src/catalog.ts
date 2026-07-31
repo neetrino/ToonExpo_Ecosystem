@@ -75,6 +75,9 @@ export type ProjectListItem = {
   address: string | null;
   city: string | null;
   district: string | null;
+  /** WGS84 — used by homepage city map pins when a 3D placement is absent. */
+  latitude: string | null;
+  longitude: string | null;
   cover: MediaAssetSummary | null;
   builder: {
     id: string;

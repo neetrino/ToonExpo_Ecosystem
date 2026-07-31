@@ -68,10 +68,15 @@ export const CityMapView = ({
   const modelsRef = useRef(models);
   const onSelectRef = useRef(onSelectPlacement);
   const onClickRef = useRef(onMapClick);
+  const didFitPinsRef = useRef(false);
 
   modelsRef.current = models;
   onSelectRef.current = onSelectPlacement;
   onClickRef.current = onMapClick;
+
+  useEffect(() => {
+    didFitPinsRef.current = false;
+  }, [models.length]);
 
   useEffect(() => {
     if (!containerRef.current || mapRef.current) {
@@ -106,17 +111,32 @@ export const CityMapView = ({
           return;
         }
         map.resize();
-        ensureCityMapPinLayers(map);
         layerRef.current = createCityMapGlbLayer(map);
+        ensureCityMapPinLayers(map);
         layerRef.current.setModels(modelsRef.current);
         setCityMapPins(map, modelsRef.current);
+        if (mode === 'view' && modelsRef.current.length > 0 && !didFitPinsRef.current) {
+          const bounds = new maplibregl.LngLatBounds();
+          for (const pose of modelsRef.current) {
+            bounds.extend([pose.longitude, pose.latitude]);
+          }
+          if (!bounds.isEmpty()) {
+            didFitPinsRef.current = true;
+            map.fitBounds(bounds, {
+              padding: 72,
+              maxZoom: 13.5,
+              duration: 900,
+              pitch: 45,
+            });
+          }
+        }
         onReady?.(map);
       });
 
       map.on('error', (event) => {
         const message = event.error?.message ?? 'Map failed to load';
         Sentry.captureMessage(`CityMapView: ${message}`, { level: 'warning' });
-        onError?.(message);
+        // Tile/style noise must not unmount the map — only init failures call onError.
       });
 
       map.on('click', CITY_MAP_PIN_LAYER_ID, (event) => {
@@ -167,7 +187,25 @@ export const CityMapView = ({
     }
     layerRef.current?.setModels(models);
     setCityMapPins(map, models);
-  }, [models]);
+
+    if (mode !== 'view' || models.length === 0 || didFitPinsRef.current) {
+      return;
+    }
+    const bounds = new maplibregl.LngLatBounds();
+    for (const pose of models) {
+      bounds.extend([pose.longitude, pose.latitude]);
+    }
+    if (bounds.isEmpty()) {
+      return;
+    }
+    didFitPinsRef.current = true;
+    map.fitBounds(bounds, {
+      padding: 72,
+      maxZoom: 13.5,
+      duration: 900,
+      pitch: 45,
+    });
+  }, [models, mode]);
 
   useEffect(() => {
     const map = mapRef.current;

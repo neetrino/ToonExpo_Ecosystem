@@ -1288,6 +1288,7 @@
       "list": "Placements",
       "loading": "Loading…",
       "searchPlaceholder": "Search placed buildings…",
+      "draftPinLabel": "New placement",
       "errorLoad": "Could not load placements.",
       "errorUpload": "GLB upload failed. Check R2 configuration and file size.",
       "errorSave": "Could not save placement.",

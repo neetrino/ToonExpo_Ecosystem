@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
-import { filterCityMapPlacementsByQuery, toAdminModelPose, toPublicModelPose } from './constants';
+import {
+  filterCityMapPlacementsByQuery,
+  mergeHomeMapPoses,
+  toAdminModelPose,
+  toProjectPinPose,
+  toPublicModelPose,
+} from './constants';
 
 describe('city-map constants helpers', () => {
   it('filters placements by address/name query', () => {
@@ -73,5 +79,87 @@ describe('city-map constants helpers', () => {
       city: null,
     });
     expect(pose.publicationStatus).toBe('published');
+  });
+
+  it('builds project pin and merges without duplicating placement projects', () => {
+    const pin = toProjectPinPose({
+      id: 'p1',
+      name: 'Ajapnyak Terrace',
+      latitude: '40.198',
+      longitude: '44.468',
+    });
+    expect(pin?.id).toBe('project:p1');
+    expect(pin?.glbUrl).toBe('');
+
+    const availability = {
+      total: 1,
+      available: 1,
+      reserved: 0,
+      sold: 0,
+    };
+    const merged = mergeHomeMapPoses(
+      [
+        {
+          id: 'p1',
+          name: 'Ajapnyak Terrace',
+          slug: 'ajapnyak',
+          shortDescription: null,
+          locationText: null,
+          address: null,
+          city: 'Yerevan',
+          district: 'Ajapnyak',
+          latitude: '40.198',
+          longitude: '44.468',
+          cover: null,
+          builder: { id: 'c', name: 'B', logoUrl: null },
+          availability,
+          minPrice: null,
+          maxPrice: null,
+          priceCurrency: null,
+        },
+        {
+          id: 'p2',
+          name: 'Arabkir Park',
+          slug: 'arabkir',
+          shortDescription: null,
+          locationText: null,
+          address: null,
+          city: 'Yerevan',
+          district: 'Arabkir',
+          latitude: '40.205',
+          longitude: '44.52',
+          cover: null,
+          builder: { id: 'c', name: 'B', logoUrl: null },
+          availability,
+          minPrice: null,
+          maxPrice: null,
+          priceCurrency: null,
+        },
+      ],
+      [
+        {
+          id: 'pl1',
+          buildingId: 'b1',
+          projectId: 'p1',
+          glbUrl: 'https://cdn.example.com/a.glb',
+          longitude: 44.47,
+          latitude: 40.2,
+          altitude: 0,
+          rotationX: 90,
+          rotationY: 0,
+          rotationZ: 0,
+          scale: 1,
+          minZoom: 13,
+          label: 'B1',
+          buildingName: 'B1',
+          projectName: 'Ajapnyak Terrace',
+          address: null,
+          city: null,
+        },
+      ],
+    );
+    expect(merged).toHaveLength(2);
+    expect(merged.some((item) => item.id === 'pl1')).toBe(true);
+    expect(merged.some((item) => item.id === 'project:p2')).toBe(true);
   });
 });

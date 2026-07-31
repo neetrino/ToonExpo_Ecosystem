@@ -96,6 +96,17 @@ export const createCityMapGlbLayer = (map: MapLibreMap): CityMapGlbLayerHandle =
   };
 
   const loadPose = async (pose: CityMapModelPose): Promise<void> => {
+    if (!pose.glbUrl.trim()) {
+      const existing = entries.get(pose.id);
+      if (existing) {
+        scene.remove(existing.root);
+        disposeObject(existing.root);
+        entries.delete(pose.id);
+        map.triggerRepaint();
+      }
+      return;
+    }
+
     const existing = entries.get(pose.id);
     if (existing) {
       scene.remove(existing.root);
