@@ -1,0 +1,148 @@
+import { ConflictException, NotFoundException } from '@nestjs/common';
+import type { Prisma } from '@toonexpo/db';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+
+import type { PrismaService } from '../../prisma/prisma.service.js';
+import { AdminGeoMapService } from './admin-geo-map.service.js';
+
+const decimal = (value: string): Prisma.Decimal =>
+  ({ toString: () => value }) as unknown as Prisma.Decimal;
+
+const baseRow = {
+  id: 'pmm_1',
+  projectId: 'proj_1',
+  mediaAssetId: 'media_1',
+  longitude: decimal('44.5123456'),
+  latitude: decimal('40.1812345'),
+  altitudeM: decimal('0'),
+  headingDeg: decimal('0'),
+  pitchDeg: decimal('0'),
+  rollDeg: decimal('0'),
+  scale: decimal('1'),
+  minZoom: decimal('14'),
+  isPublished: false,
+  createdByUserId: 'user_1',
+  updatedByUserId: null,
+  createdAt: new Date('2026-07-31T10:00:00.000Z'),
+  updatedAt: new Date('2026-07-31T10:00:00.000Z'),
+  project: { name: 'Demo Tower', slug: 'demo-tower' },
+  mediaAsset: { fileUrl: 'https://cdn.example.com/platform/media_1.glb' },
+};
+
+describe('AdminGeoMapService', () => {
+  const projectFindUnique = vi.fn();
+  const mediaAssetFindUnique = vi.fn();
+  const projectMapModelFindUnique = vi.fn();
+  const projectMapModelFindMany = vi.fn();
+  const projectMapModelCreate = vi.fn();
+  const projectMapModelUpdate = vi.fn();
+  const projectMapModelDelete = vi.fn();
+  let service: AdminGeoMapService;
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+
+    const prisma = {
+      db: {
+        project: { findUnique: projectFindUnique },
+        mediaAsset: { findUnique: mediaAssetFindUnique },
+        projectMapModel: {
+          findUnique: projectMapModelFindUnique,
+          findMany: projectMapModelFindMany,
+          create: projectMapModelCreate,
+          update: projectMapModelUpdate,
+          delete: projectMapModelDelete,
+        },
+      },
+    } as unknown as PrismaService;
+
+    service = new AdminGeoMapService(prisma);
+  });
+
+  it('creates a geo map model for a project', async () => {
+    projectFindUnique.mockResolvedValue({ id: 'proj_1' });
+    mediaAssetFindUnique.mockResolvedValue({ id: 'media_1' });
+    projectMapModelFindUnique.mockResolvedValue(null);
+    projectMapModelCreate.mockResolvedValue(baseRow);
+
+    const result = await service.create('user_1', {
+      projectId: 'proj_1',
+      mediaAssetId: 'media_1',
+      longitude: 44.5123456,
+      latitude: 40.1812345,
+    });
+
+    expect(projectMapModelCreate).toHaveBeenCalled();
+    expect(result.projectSlug).toBe('demo-tower');
+    expect(result.modelUrl).toContain('media_1.glb');
+    expect(result.isPublished).toBe(false);
+  });
+
+  it('rejects create when project already has a model', async () => {
+    projectFindUnique.mockResolvedValue({ id: 'proj_1' });
+    mediaAssetFindUnique.mockResolvedValue({ id: 'media_1' });
+    projectMapModelFindUnique.mockResolvedValue({ id: 'pmm_existing' });
+
+    await expect(
+      service.create('user_1', {
+        projectId: 'proj_1',
+        mediaAssetId: 'media_1',
+        longitude: 44.5,
+        latitude: 40.1,
+      }),
+    ).rejects.toBeInstanceOf(ConflictException);
+
+    expect(projectMapModelCreate).not.toHaveBeenCalled();
+  });
+
+  it('rejects create when project is missing', async () => {
+    projectFindUnique.mockResolvedValue(null);
+
+    await expect(
+      service.create('user_1', {
+        projectId: 'missing',
+        mediaAssetId: 'media_1',
+        longitude: 44.5,
+        latitude: 40.1,
+      }),
+    ).rejects.toBeInstanceOf(NotFoundException);
+  });
+
+  it('updates transform and publish flag', async () => {
+    projectMapModelFindUnique.mockResolvedValue({ id: 'pmm_1' });
+    projectMapModelUpdate.mockResolvedValue({
+      ...baseRow,
+      isPublished: true,
+      scale: decimal('1.5'),
+      headingDeg: decimal('90'),
+      updatedByUserId: 'user_1',
+    });
+
+    const result = await service.update('pmm_1', 'user_1', {
+      scale: 1.5,
+      headingDeg: 90,
+      isPublished: true,
+    });
+
+    expect(projectMapModelUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: 'pmm_1' },
+        data: expect.objectContaining({
+          scale: 1.5,
+          headingDeg: 90,
+          isPublished: true,
+        }),
+      }),
+    );
+    expect(result.isPublished).toBe(true);
+    expect(result.scale).toBe('1.5');
+  });
+
+  it('rejects update when model is missing', async () => {
+    projectMapModelFindUnique.mockResolvedValue(null);
+
+    await expect(service.update('missing', 'user_1', { isPublished: true })).rejects.toBeInstanceOf(
+      NotFoundException,
+    );
+  });
+});

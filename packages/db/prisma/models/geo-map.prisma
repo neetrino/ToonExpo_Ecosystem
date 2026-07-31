@@ -1,0 +1,31 @@
+/// 3D GLB model placement for a project on the public geo map (one model per project).
+model ProjectMapModel {
+  id              String   @id @default(cuid())
+  projectId       String   @unique @map("project_id")
+  mediaAssetId    String   @map("media_asset_id")
+  longitude       Decimal  @db.Decimal(10, 7)
+  latitude        Decimal  @db.Decimal(10, 7)
+  /// Meters above ground.
+  altitudeM       Decimal  @default(0) @map("altitude_m") @db.Decimal(10, 3)
+  /// Rotation around the vertical axis (degrees).
+  headingDeg      Decimal  @default(0) @map("heading_deg") @db.Decimal(8, 3)
+  pitchDeg        Decimal  @default(0) @map("pitch_deg") @db.Decimal(8, 3)
+  rollDeg         Decimal  @default(0) @map("roll_deg") @db.Decimal(8, 3)
+  scale           Decimal  @default(1) @db.Decimal(12, 6)
+  /// Zoom level at which the 3D model replaces the map marker.
+  minZoom         Decimal  @default(14) @map("min_zoom") @db.Decimal(4, 1)
+  isPublished     Boolean  @default(false) @map("is_published")
+  createdByUserId String   @map("created_by_user_id")
+  updatedByUserId String?  @map("updated_by_user_id")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  project    Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  mediaAsset MediaAsset @relation(fields: [mediaAssetId], references: [id], onDelete: Restrict)
+  createdBy  User       @relation("ProjectMapModelCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  updatedBy  User?      @relation("ProjectMapModelUpdater", fields: [updatedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([isPublished])
+  @@index([mediaAssetId])
+  @@map("project_map_models")
+}

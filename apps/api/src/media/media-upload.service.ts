@@ -6,25 +6,23 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import type { MediaAssetItem, MediaListResponse } from '@toonexpo/contracts';
-import { MediaAssetType } from '@toonexpo/db';
 import { imageSize } from 'image-size';
 
 import type { AppEnv } from '../config/env.validation.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import {
-  MEDIA_ALLOWED_MIME_TYPES,
   MEDIA_DEFAULT_PAGE_SIZE,
   MEDIA_MAX_PAGE_SIZE,
   MEDIA_MIN_PAGE,
-  MEDIA_MIME_TO_EXT,
-  MEDIA_UPLOAD_MAX_BYTES,
+  MEDIA_UPLOAD_KINDS,
   R2_NOT_CONFIGURED_MESSAGE,
-  type MediaAllowedMimeType,
+  type MediaUploadKind,
 } from './media.constants.js';
 import {
   buildObjectKey,
   buildPublicFileUrl,
   isR2ConfiguredFromService,
+  resolveMediaKindConfig,
   sanitizeOriginalFilename,
 } from './media.config.js';
 import { toMediaAssetItem } from './media.mapper.js';
@@ -36,6 +34,13 @@ type UploadInput = {
   originalFilename: string;
   uploadedByUserId: string;
   scope: UploadedMediaScope;
+  kind?: MediaUploadKind;
+};
+
+type ValidatedUpload = {
+  mimeType: string;
+  extension: string;
+  kind: MediaUploadKind;
 };
 
 @Injectable()
@@ -52,31 +57,67 @@ export class MediaUploadService {
     }
   }
 
-  validateUpload(buffer: Buffer, mimeType: string): MediaAllowedMimeType {
+  parseUploadKind(rawKind: string | undefined): MediaUploadKind {
+    const kind = (rawKind?.trim().toLowerCase() || 'image') as MediaUploadKind;
+    if (!MEDIA_UPLOAD_KINDS.includes(kind)) {
+      throw new BadRequestException(
+        `Unsupported media upload kind. Allowed: ${MEDIA_UPLOAD_KINDS.join(', ')}`,
+      );
+    }
+    return kind;
+  }
+
+  validateUpload(
+    buffer: Buffer,
+    mimeType: string,
+    kind: MediaUploadKind = 'image',
+    originalFilename?: string,
+  ): ValidatedUpload {
+    const config = resolveMediaKindConfig(kind);
     const normalizedMime = mimeType.trim().toLowerCase();
-    if (!MEDIA_ALLOWED_MIME_TYPES.includes(normalizedMime as MediaAllowedMimeType)) {
-      throw new BadRequestException('Only JPEG, PNG, WebP, and AVIF images are allowed');
+
+    if (!config.allowedMimeTypes.includes(normalizedMime)) {
+      throw new BadRequestException(config.mimeRejectMessage);
     }
 
-    if (buffer.byteLength > MEDIA_UPLOAD_MAX_BYTES) {
-      throw new BadRequestException('Image exceeds the 10 MB upload limit');
+    if (buffer.byteLength > config.maxBytes) {
+      throw new BadRequestException(config.sizeLimitMessage);
     }
 
-    return normalizedMime as MediaAllowedMimeType;
+    if (kind === 'model3d' && originalFilename) {
+      assertModel3dExtension(originalFilename, config.allowedExtensions);
+    }
+
+    const extension = config.mimeToExt[normalizedMime];
+    if (!extension) {
+      throw new BadRequestException(config.mimeRejectMessage);
+    }
+
+    return { mimeType: normalizedMime, extension, kind };
   }
 
   async uploadImage(input: UploadInput): Promise<MediaAssetItem> {
+    return this.upload(input);
+  }
+
+  async upload(input: UploadInput): Promise<MediaAssetItem> {
     this.assertConfigured();
 
-    const mimeType = this.validateUpload(input.buffer, input.mimeType);
-    const dimensions = readImageDimensions(input.buffer);
-    const extension = MEDIA_MIME_TO_EXT[mimeType];
+    const kind = input.kind ?? 'image';
+    const validated = this.validateUpload(
+      input.buffer,
+      input.mimeType,
+      kind,
+      input.originalFilename,
+    );
+    const kindConfig = resolveMediaKindConfig(validated.kind);
+    const dimensions = validated.kind === 'image' ? readImageDimensions(input.buffer) : null;
     const ownerCompanyId = input.scope.kind === 'company' ? input.scope.companyId : null;
 
     const draft = await this.prisma.db.mediaAsset.create({
       data: {
         ownerCompanyId,
-        type: MediaAssetType.image,
+        type: kindConfig.assetType,
         fileUrl: 'pending',
         title: sanitizeOriginalFilename(input.originalFilename),
         width: dimensions?.width ?? null,
@@ -88,7 +129,7 @@ export class MediaUploadService {
     const key = buildObjectKey(
       input.scope.kind === 'company' ? 'company' : 'platform',
       draft.id,
-      extension,
+      validated.extension,
       ownerCompanyId ?? undefined,
     );
     const publicUrl = this.configService.get('R2_PUBLIC_URL', { infer: true });
@@ -99,7 +140,7 @@ export class MediaUploadService {
     const fileUrl = buildPublicFileUrl(publicUrl, key);
 
     try {
-      await this.r2Storage!.uploadObject(key, input.buffer, mimeType);
+      await this.r2Storage!.uploadObject(key, input.buffer, validated.mimeType);
       const asset = await this.prisma.db.mediaAsset.update({
         where: { id: draft.id },
         data: { fileUrl },
@@ -158,6 +199,17 @@ export class MediaUploadService {
     };
   }
 }
+
+const assertModel3dExtension = (
+  originalFilename: string,
+  allowedExtensions: readonly string[],
+): void => {
+  const lower = originalFilename.trim().toLowerCase();
+  const hasAllowedExt = allowedExtensions.some((ext) => lower.endsWith(ext));
+  if (!hasAllowedExt) {
+    throw new BadRequestException(`3D model must use extension ${allowedExtensions.join(', ')}`);
+  }
+};
 
 const readImageDimensions = (buffer: Buffer): { width: number; height: number } | null => {
   try {
