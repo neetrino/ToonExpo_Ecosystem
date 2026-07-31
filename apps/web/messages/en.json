@@ -1175,6 +1175,7 @@
       "floors": "Floor",
       "apartments": "Apartment",
       "interactiveMapping": "Interactive mapping",
+      "geoMap": "3D Map",
       "partners": "Partners",
       "bankOffers": "Bank offers",
       "serviceProviders": "Service providers",
@@ -1184,6 +1185,72 @@
       "checkin": "Check-in scanner",
       "bos": "BOS",
       "settings": "Settings"
+    },
+    "geoMap": {
+      "title": "3D Map",
+      "subtitle": "Upload GLB models, place them on the map, and publish for visitors.",
+      "loading": "Loading…",
+      "error": "Could not load 3D map data.",
+      "labLink": "Lab",
+      "list": {
+        "title": "Models",
+        "empty": "No models yet. Create one to place a project on the map.",
+        "published": "Published",
+        "draft": "Draft"
+      },
+      "create": {
+        "new": "+ New",
+        "title": "Place a model",
+        "project": "Project",
+        "projectPlaceholder": "Select a project…",
+        "projectTaken": "{name} (already has a model)",
+        "hint": "Select a project and upload a GLB, then click the map to place it.",
+        "clickMap": "Click the map to place the model.",
+        "placing": "Placing model…"
+      },
+      "edit": {
+        "subtitle": "Drag on the map to move. Adjust transforms below, then save."
+      },
+      "upload": {
+        "label": "GLB model",
+        "browse": "Choose GLB",
+        "uploading": "Uploading…",
+        "hint": "GLB only, up to {maxMb} MB.",
+        "selected": "Uploaded: {name}",
+        "errors": {
+          "type": "Only .glb files are allowed.",
+          "size": "File must be 15 MB or smaller.",
+          "uploadFailed": "Upload failed. Try again.",
+          "notConfigured": "Media upload is not configured on the server."
+        }
+      },
+      "form": {
+        "longitude": "Longitude",
+        "latitude": "Latitude",
+        "headingDeg": "Heading (°)",
+        "scale": "Scale",
+        "altitudeM": "Altitude (m)",
+        "minZoom": "Min zoom (show 3D)",
+        "pitchDeg": "Pitch (°)",
+        "rollDeg": "Roll (°)",
+        "showAdvanced": "Advanced orientation",
+        "hideAdvanced": "Hide advanced",
+        "published": "Published",
+        "save": "Save",
+        "saving": "Saving…",
+        "saveError": "Could not save changes.",
+        "delete": "Delete"
+      },
+      "map": {
+        "hover": "Hover: {id}"
+      },
+      "deleteConfirmTitle": "Delete model",
+      "deleteConfirmMessage": "Delete the 3D model for \"{name}\"? This cannot be undone.",
+      "errors": {
+        "createFailed": "Could not place the model. Try again.",
+        "updateFailed": "Could not update the model. Try again.",
+        "deleteFailed": "Could not delete the model. Try again."
+      }
     },
     "interactiveMapping": {
       "title": "Interactive mapping",
