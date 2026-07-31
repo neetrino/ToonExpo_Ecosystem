@@ -265,6 +265,7 @@
     "builders": "Builders",
     "partners": "Partners",
     "mortgage": "Mortgage",
+    "geoMap": "3D Map",
     "expoMap": "Expo map",
     "login": "Sign in",
     "register": "Register",
@@ -3388,6 +3389,19 @@
         "uploadFailed": "Upload failed. Try again.",
         "notConfigured": "Media upload is not configured on the server."
       }
+    }
+  },
+  "GeoMap": {
+    "meta": {
+      "title": "3D Map",
+      "description": "Explore ToonExpo projects on an interactive 3D map of Yerevan."
+    },
+    "loading": "Loading 3D map…",
+    "error": "Could not load the 3D map. Try again.",
+    "retry": "Retry",
+    "empty": "No published 3D models yet. Check back soon — the map is ready when projects go live.",
+    "hover": {
+      "viewProject": "View project"
     }
   },
   "Expo": {

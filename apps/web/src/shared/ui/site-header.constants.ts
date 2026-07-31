@@ -17,10 +17,10 @@ export const HEADER_HEIGHT_CLASS = 'h-16';
 export const HEADER_SPACER_CLASS = 'h-[calc(4.5rem+env(safe-area-inset-top,0px))]';
 
 export type SiteHeaderNavHref =
-  '/apartments' | '/projects' | '/developments' | '/builders' | '/partners' | '/mortgage';
+  '/apartments' | '/projects' | '/developments' | '/builders' | '/partners' | '/mortgage' | '/map';
 
 export type SiteHeaderNavKey =
-  'buy' | 'projects' | 'newDevelopments' | 'builders' | 'partners' | 'mortgage';
+  'buy' | 'projects' | 'newDevelopments' | 'builders' | 'partners' | 'mortgage' | 'geoMap';
 
 export const SITE_HEADER_NAV_HREFS: ReadonlyArray<{
   href: SiteHeaderNavHref;
@@ -32,6 +32,7 @@ export const SITE_HEADER_NAV_HREFS: ReadonlyArray<{
   { href: '/builders', key: 'builders' },
   { href: '/partners', key: 'partners' },
   { href: '/mortgage', key: 'mortgage' },
+  { href: '/map', key: 'geoMap' },
 ];
 
 export const isSiteHeaderNavActive = (pathname: string, href: SiteHeaderNavHref): boolean => {
@@ -47,6 +48,9 @@ export const isSiteHeaderNavActive = (pathname: string, href: SiteHeaderNavHref)
       pathname.startsWith('/builders/') ||
       pathname.startsWith('/developers/')
     );
+  }
+  if (href === '/map') {
+    return pathname === '/map' || pathname.startsWith('/map/');
   }
   return pathname.startsWith(href);
 };

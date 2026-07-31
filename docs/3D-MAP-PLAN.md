@@ -96,12 +96,13 @@ MapLibre/deck.gl are client-only (`dynamic(..., { ssr: false })`).
 | 1   | DB schema + migration + `geo-map` API module + media `model3d` kind + contracts + unit tests | Grok 4.5 High     | done    |
 | 2a  | `GeoMapCanvas` core: MapLibre + deck.gl integration, marker/model zoom switch                | Sonnet 5 High     | done    |
 | 2b  | Admin editor page: panel UI, upload flow, transform controls, wiring to API                  | Grok 4.5 High     | done    |
-| 3   | Public map page (reuse `GeoMapCanvas`, read-only)                                            | Composer 2.5 Fast | pending |
+| 3   | Public map page (reuse `GeoMapCanvas`, read-only)                                            | Composer 2.5 Fast | done    |
 | 4   | Map styling (brand colors, OSM building extrusions), polish, i18n strings                    | Composer 2.5 Fast | pending |
 
 Stage rules:
 
-- Each stage ends with a **conventional commit** (no push).
+- Each stage ends with a **conventional commit** followed by an immediate
+  **push** to the current branch (`git push origin <branch>`).
 - Each stage verifies only affected packages (typecheck + lint + unit tests);
   full workspace verification is done once by the orchestrator at the end.
 - Stage 2a must expose a typed props API so 2b and 3 can consume it without

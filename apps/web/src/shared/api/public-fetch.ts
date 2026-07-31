@@ -43,3 +43,9 @@ export const visualMapFetch = (): PublicFetchInit =>
    * Tag purge still applies when WEB_REVALIDATE_* is configured; TTL 0 avoids stale polygons locally.
    */
   publicCachedGet(0, [PUBLIC_CACHE_TAG.VISUAL_MAP]);
+
+export const geoMapFetch = (): PublicFetchInit =>
+  /**
+   * Published 3D models should appear immediately after admin publish (same as visual map).
+   */
+  publicCachedGet(0, [PUBLIC_CACHE_TAG.GEO_MAP]);
