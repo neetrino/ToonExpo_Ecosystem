@@ -177,20 +177,29 @@ const nextConfig: NextConfig = {
     ];
   },
   async rewrites() {
-    const apiProxyTarget = process.env[API_PROXY_TARGET_ENV]?.trim();
+    const rewrites: { source: string; destination: string }[] = [];
 
-    if (!apiProxyTarget) {
-      return [];
+    // Same-origin proxy for R2 assets (GLBs need CORS-safe fetch for deck.gl).
+    const r2PublicUrl =
+      process.env['NEXT_PUBLIC_R2_PUBLIC_URL']?.trim() || process.env['R2_PUBLIC_URL']?.trim();
+    if (r2PublicUrl) {
+      const r2Origin = r2PublicUrl.replace(/\/$/, '');
+      rewrites.push({
+        source: '/r2-proxy/:path*',
+        destination: `${r2Origin}/:path*`,
+      });
     }
 
-    const origin = apiProxyTarget.replace(/\/$/, '');
-
-    return [
-      {
+    const apiProxyTarget = process.env[API_PROXY_TARGET_ENV]?.trim();
+    if (apiProxyTarget) {
+      const origin = apiProxyTarget.replace(/\/$/, '');
+      rewrites.push({
         source: API_PROXY_REWRITE_SOURCE,
         destination: `${origin}${API_V1_PREFIX}/:path*`,
-      },
-    ];
+      });
+    }
+
+    return rewrites;
   },
 };
 

@@ -1,6 +1,7 @@
 import type { AdminGeoMapModelItem, PublicGeoMapModelItem } from '@toonexpo/contracts';
 
 import type { GeoMapObject } from '@/features/geo-map/types';
+import { resolveModelAssetUrl } from '@/features/geo-map/utils/resolve-model-asset-url';
 
 type GeoMapDecimalFields = Pick<
   AdminGeoMapModelItem,
@@ -30,7 +31,7 @@ export const mapAdminGeoMapItemToObject = (item: AdminGeoMapModelItem): GeoMapOb
   id: item.id,
   projectId: item.projectId,
   label: item.projectName,
-  modelUrl: item.modelUrl,
+  modelUrl: resolveModelAssetUrl(item.modelUrl),
   ...toNumericTransform(item),
 });
 
@@ -46,7 +47,7 @@ export const mapPublicGeoMapItemToObject = (item: PublicGeoMapModelItem): GeoMap
   id: item.projectId,
   projectId: item.projectId,
   label: item.projectName,
-  modelUrl: item.modelUrl,
+  modelUrl: resolveModelAssetUrl(item.modelUrl),
   ...toNumericTransform(item),
 });
 

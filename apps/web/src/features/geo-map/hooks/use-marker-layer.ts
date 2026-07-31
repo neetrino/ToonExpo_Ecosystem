@@ -8,11 +8,13 @@ import {
   MARKER_ELEMENT_EDITABLE_CLASS_NAME,
 } from '@/features/geo-map/constants';
 import type { GeoMapLngLat, GeoMapObject } from '@/features/geo-map/types';
+import { computeMarkerFadeOpacity } from '@/features/geo-map/utils/zoom-fade-opacity';
 
 export type UseMarkerLayerOptions = {
   map: MapLibreMap | null;
   isMapLoaded: boolean;
   markerObjects: GeoMapObject[];
+  zoom: number;
   editable: boolean;
   onObjectClick?: ((id: string) => void) | undefined;
   onObjectHover?: ((id: string | null) => void) | undefined;
@@ -55,6 +57,7 @@ const syncMarkers = (
   map: MapLibreMap,
   markers: Map<string, Marker>,
   markerObjects: GeoMapObject[],
+  zoom: number,
   editable: boolean,
   callbacks: MarkerCallbacks,
 ): void => {
@@ -67,14 +70,17 @@ const syncMarkers = (
   }
 
   for (const object of markerObjects) {
+    const opacity = computeMarkerFadeOpacity(zoom, object.minZoom);
     const existing = markers.get(object.id);
     if (existing) {
       existing.setLngLat([object.longitude, object.latitude]);
       existing.setDraggable(editable);
+      existing.getElement().style.setProperty('opacity', String(opacity));
       continue;
     }
 
     const element = createMarkerElement(object.label, editable);
+    element.style.setProperty('opacity', String(opacity));
     const marker = new Marker({ element, draggable: editable })
       .setLngLat([object.longitude, object.latitude])
       .addTo(map);
@@ -91,6 +97,7 @@ export const useMarkerLayer = ({
   map,
   isMapLoaded,
   markerObjects,
+  zoom,
   editable,
   onObjectClick,
   onObjectHover,
@@ -102,12 +109,21 @@ export const useMarkerLayer = ({
     if (!map || !isMapLoaded) {
       return;
     }
-    syncMarkers(map, markersRef.current, markerObjects, editable, {
+    syncMarkers(map, markersRef.current, markerObjects, zoom, editable, {
       onObjectClick,
       onObjectHover,
       onObjectDragged,
     });
-  }, [map, isMapLoaded, markerObjects, editable, onObjectClick, onObjectHover, onObjectDragged]);
+  }, [
+    map,
+    isMapLoaded,
+    markerObjects,
+    zoom,
+    editable,
+    onObjectClick,
+    onObjectHover,
+    onObjectDragged,
+  ]);
 
   useEffect(() => {
     const markers = markersRef.current;

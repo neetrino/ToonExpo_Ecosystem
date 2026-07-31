@@ -6,6 +6,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 
 import { NAVIGATION_CONTROL_POSITION } from '@/features/geo-map/constants';
 import type { GeoMapLngLat } from '@/features/geo-map/types';
+import { applyBrandMapStyle } from '@/features/geo-map/utils/apply-brand-map-style';
 import { configureMaplibreWorker } from '@/features/geo-map/utils/configure-maplibre-worker';
 
 export type UseMaplibreMapOptions = {
@@ -47,9 +48,14 @@ export const useMaplibreMap = ({
       style: styleUrl,
       center: [initialCenter.longitude, initialCenter.latitude],
       zoom: initialZoom,
+      attributionControl: { compact: true },
     });
-    mapInstance.addControl(new NavigationControl(), NAVIGATION_CONTROL_POSITION);
+    mapInstance.addControl(
+      new NavigationControl({ visualizePitch: true }),
+      NAVIGATION_CONTROL_POSITION,
+    );
     mapInstance.on('load', () => {
+      applyBrandMapStyle(mapInstance);
       mapInstance.resize();
       setIsMapLoaded(true);
     });

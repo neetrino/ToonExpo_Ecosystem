@@ -91,13 +91,13 @@ MapLibre/deck.gl are client-only (`dynamic(..., { ssr: false })`).
 
 ## Stages
 
-| #   | Scope                                                                                        | Model             | Status  |
-| --- | -------------------------------------------------------------------------------------------- | ----------------- | ------- |
-| 1   | DB schema + migration + `geo-map` API module + media `model3d` kind + contracts + unit tests | Grok 4.5 High     | done    |
-| 2a  | `GeoMapCanvas` core: MapLibre + deck.gl integration, marker/model zoom switch                | Sonnet 5 High     | done    |
-| 2b  | Admin editor page: panel UI, upload flow, transform controls, wiring to API                  | Grok 4.5 High     | done    |
-| 3   | Public map page (reuse `GeoMapCanvas`, read-only)                                            | Composer 2.5 Fast | done    |
-| 4   | Map styling (brand colors, OSM building extrusions), polish, i18n strings                    | Composer 2.5 Fast | pending |
+| #   | Scope                                                                                        | Model             | Status |
+| --- | -------------------------------------------------------------------------------------------- | ----------------- | ------ |
+| 1   | DB schema + migration + `geo-map` API module + media `model3d` kind + contracts + unit tests | Grok 4.5 High     | done   |
+| 2a  | `GeoMapCanvas` core: MapLibre + deck.gl integration, marker/model zoom switch                | Sonnet 5 High     | done   |
+| 2b  | Admin editor page: panel UI, upload flow, transform controls, wiring to API                  | Grok 4.5 High     | done   |
+| 3   | Public map page (reuse `GeoMapCanvas`, read-only)                                            | Composer 2.5 Fast | done   |
+| 4   | Map styling (brand colors, OSM building extrusions), polish, i18n strings                    | Grok 4.5 High     | done   |
 
 Stage rules:
 
@@ -117,3 +117,22 @@ Stage rules:
 3. No Prisma/DB access from Next.js; all writes go through NestJS admin API.
 4. Typecheck, lint, unit tests pass across the workspace; no `any`, named
    exports, files ≤300 lines.
+
+## Stage 4 notes
+
+- Brand look is applied as **paint overrides** on OpenFreeMap liberty layer ids
+  (see `apps/web/src/features/geo-map/utils/apply-brand-map-style.ts`), not a
+  forked style JSON. Attribution remains MapLibre’s default control.
+- Liberty already ships `building-3d` fill-extrusions; Stage 4 restyles them
+  (muted gray, min zoom 15) so GLB models sit in city context.
+- **Follow-up:** filter OSM extrusions within a small radius of our model
+  coordinates to avoid double-rendering at the same footprint (not done in v1 —
+  needs a reliable per-feature filter against dynamic model positions).
+- R2 public-dev hosts often lack CORS; GLBs load via same-origin `/r2-proxy/*`
+  rewrite in `apps/web/next.config.ts`.
+- Scenegraph layers render via `MapboxOverlay` with `interleaved: false` (and
+  `_lighting: 'flat'`) so GLBs stay visible above MapLibre depth/stencil and
+  near-mirror PBR materials from authoring tools. Same-origin `/r2-proxy/*`
+  rewrite loads R2 GLBs without bucket CORS.
+- When interleaved mode is re-enabled later, use `beforeId: boundary_3` so
+  models draw above `building-3d` extrusions.
