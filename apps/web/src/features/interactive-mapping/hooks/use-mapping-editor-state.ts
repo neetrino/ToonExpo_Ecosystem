@@ -1,7 +1,7 @@
 'use client';
 
 import type { PortalVisualHotspotItem, VisualHotspotTargetType } from '@toonexpo/contracts';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import {
   createVisualHotspot,
@@ -33,6 +33,15 @@ const mergeHotspot = (
   label: hotspot.label || entity.label,
 });
 
+/** Content fingerprint so parent re-renders with a fresh array do not re-sync. */
+const entitiesSyncKey = (entities: MappingEditorEntity[]): string =>
+  entities
+    .map(
+      (item) =>
+        `${item.id}:${item.hotspotId ?? ''}:${item.markerX}:${item.markerY}:${item.svgPath ?? ''}:${item.label}`,
+    )
+    .join('|');
+
 type UseMappingEditorStateArgs = {
   companyId: string;
   canvasId: string;
@@ -52,7 +61,15 @@ export const useMappingEditorState = ({
   onAfterSave,
 }: UseMappingEditorStateArgs) => {
   const mappingScope = useInteractiveMappingScope();
-  const catalogScope = resolveMappingCatalogScope(mappingScope, companyId);
+  const catalogScope = useMemo(
+    () => resolveMappingCatalogScope(mappingScope, companyId),
+    [companyId, mappingScope],
+  );
+  const onAfterSaveRef = useRef(onAfterSave);
+  onAfterSaveRef.current = onAfterSave;
+  const initialEntitiesRef = useRef(initialEntities);
+  initialEntitiesRef.current = initialEntities;
+  const initialSyncKey = entitiesSyncKey(initialEntities);
   const entitiesRef = useRef(initialEntities);
   const dirtyIdsRef = useRef(new Set<string>());
   const [entities, setEntities] = useState(initialEntities);
@@ -64,10 +81,11 @@ export const useMappingEditorState = ({
   dirtyIdsRef.current = dirtyIds;
 
   useEffect(() => {
+    const incomingList = initialEntitiesRef.current;
     setEntities((prev) => {
       const prevById = new Map(prev.map((item) => [item.id, item]));
       const dirty = dirtyIdsRef.current;
-      return initialEntities.map((incoming) => {
+      return incomingList.map((incoming) => {
         const existing = prevById.get(incoming.id);
         if (!existing || !dirty.has(incoming.id)) {
           return incoming;
@@ -83,17 +101,17 @@ export const useMappingEditorState = ({
       });
     });
     setSelectedId((current) => {
-      if (current && initialEntities.some((item) => item.id === current)) {
+      if (current && incomingList.some((item) => item.id === current)) {
         return current;
       }
-      return initialEntities[0]?.id ?? null;
+      return incomingList[0]?.id ?? null;
     });
     setDirtyIds((prev) => {
-      const validIds = new Set(initialEntities.map((item) => item.id));
+      const validIds = new Set(incomingList.map((item) => item.id));
       const next = new Set([...prev].filter((id) => validIds.has(id)));
       return next.size === prev.size ? prev : next;
     });
-  }, [initialEntities]);
+  }, [initialSyncKey]);
 
   const selected = entities.find((item) => item.id === selectedId) ?? null;
 
@@ -132,14 +150,14 @@ export const useMappingEditorState = ({
           return next;
         });
         setMessage(note);
-        onAfterSave?.();
+        onAfterSaveRef.current?.();
       } catch (error) {
         setMessage(error instanceof Error ? error.message : 'Save failed');
       } finally {
         setPending(false);
       }
     },
-    [canvasId, catalogScope, onAfterSave, targetType],
+    [canvasId, catalogScope, targetType],
   );
 
   const onChangeEntity = (
@@ -195,7 +213,7 @@ export const useMappingEditorState = ({
           }
         }
         setMessage(`Saved ${updates.length}`);
-        onAfterSave?.();
+        onAfterSaveRef.current?.();
       } finally {
         setPending(false);
       }
@@ -234,7 +252,7 @@ export const useMappingEditorState = ({
       };
       setEntities((prev) => prev.map((item) => (item.id === selected.id ? cleared : item)));
       setMessage('Cleared');
-      onAfterSave?.();
+      onAfterSaveRef.current?.();
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Delete failed');
     } finally {

@@ -2,7 +2,7 @@
 
 import type { CrmDealDetail } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { listPortalApartments } from '@/features/builder/api/portal-apartments-api';
 import { PORTAL_MAX_PAGE_SIZE } from '@/features/builder/constants';
@@ -40,21 +40,22 @@ export const CrmDealApartmentsSection = ({ deal }: CrmDealApartmentsSectionProps
   const [message, setMessage] = useState<string | null>(null);
 
   const projectQuery = usePortalProjectQuery(projectId);
+  const floorIdsKey = useMemo(() => {
+    const project = projectQuery.data;
+    if (!project) {
+      return '';
+    }
+    return project.buildings
+      .flatMap((building) => building.floors.map((floor) => floor.id))
+      .join(',');
+  }, [projectQuery.data]);
 
   useEffect(() => {
-    const project = projectQuery.data;
-    if (!projectId || !project) {
+    if (!projectId || !floorIdsKey) {
       setApartments([]);
       return;
     }
-    const floorIds = project.buildings.flatMap((building) =>
-      building.floors.map((floor) => floor.id),
-    );
-    if (floorIds.length === 0) {
-      setApartments([]);
-      return;
-    }
-
+    const floorIds = floorIdsKey.split(',');
     let cancelled = false;
     setLoadingApartments(true);
     void (async () => {
@@ -82,7 +83,7 @@ export const CrmDealApartmentsSection = ({ deal }: CrmDealApartmentsSectionProps
     return () => {
       cancelled = true;
     };
-  }, [projectId, projectQuery.data]);
+  }, [projectId, floorIdsKey]);
 
   const onLink = async () => {
     setError(null);

@@ -73,6 +73,9 @@ export const InteractiveMappingScopeProvider = ({
 export const useInteractiveMappingScope = (): InteractiveMappingScopeValue =>
   useContext(InteractiveMappingScopeContext);
 
+/** Stable portal catalog scope — never allocate a fresh object per call. */
+const PORTAL_CATALOG_SCOPE: CatalogScope = { mode: 'portal' };
+
 /**
  * Resolves catalog scope for canvas/hotspot calls.
  * Portal mode ignores companyId (member company is implied by session).
@@ -83,7 +86,7 @@ export const resolveMappingCatalogScope = (
   companyId: string,
 ): CatalogScope => {
   if (scope.mode === 'portal') {
-    return { mode: 'portal' };
+    return PORTAL_CATALOG_SCOPE;
   }
   return { mode: 'admin', companyId };
 };

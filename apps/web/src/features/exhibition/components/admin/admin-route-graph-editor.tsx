@@ -1,24 +1,20 @@
-"use client";
+'use client';
 
-import type {
-  RouteEdgeSummary,
-  RouteGraphPayload,
-  RouteNodeSummary,
-} from "@toonexpo/contracts";
-import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import type { RouteEdgeSummary, RouteGraphPayload, RouteNodeSummary } from '@toonexpo/contracts';
+import { useTranslations } from 'next-intl';
+import { useEffect, useRef, useState } from 'react';
 
-import { AdminRouteGraphEdgesTable } from "@/features/exhibition/components/admin/admin-route-graph-edges-table";
-import { AdminRouteGraphNodesTable } from "@/features/exhibition/components/admin/admin-route-graph-nodes-table";
+import { AdminRouteGraphEdgesTable } from '@/features/exhibition/components/admin/admin-route-graph-edges-table';
+import { AdminRouteGraphNodesTable } from '@/features/exhibition/components/admin/admin-route-graph-nodes-table';
 import {
   toEditableRouteEdge,
   toEditableRouteNode,
   type EditableRouteEdge,
   type EditableRouteNode,
-} from "@/features/exhibition/components/admin/admin-route-graph-types";
-import { useReplaceAdminRouteGraphMutation } from "@/features/exhibition/hooks/use-exhibition";
-import { Button } from "@/shared/ui/button";
-import { Card } from "@/shared/ui/card";
+} from '@/features/exhibition/components/admin/admin-route-graph-types';
+import { useReplaceAdminRouteGraphMutation } from '@/features/exhibition/hooks/use-exhibition';
+import { Button } from '@/shared/ui/button';
+import { Card } from '@/shared/ui/card';
 
 type AdminRouteGraphEditorProps = {
   mapId: string;
@@ -26,6 +22,19 @@ type AdminRouteGraphEditorProps = {
   initialEdges: RouteEdgeSummary[];
   boothOptions: { id: string; code: string }[];
 };
+
+const routeGraphSyncKey = (nodes: RouteNodeSummary[], edges: RouteEdgeSummary[]): string =>
+  [
+    nodes
+      .map(
+        (node) =>
+          `${node.id}:${node.code ?? ''}:${node.label ?? ''}:${node.type}:${node.xPercent}:${node.yPercent}:${node.boothId ?? ''}`,
+      )
+      .join('|'),
+    edges
+      .map((edge) => `${edge.id}:${edge.fromNodeId}:${edge.toNodeId}:${edge.weight ?? ''}`)
+      .join('|'),
+  ].join('||');
 
 /**
  * Table-based route graph editor (nodes + edges).
@@ -36,7 +45,7 @@ export const AdminRouteGraphEditor = ({
   initialEdges,
   boothOptions,
 }: AdminRouteGraphEditorProps) => {
-  const t = useTranslations("Admin.events.routeGraph");
+  const t = useTranslations('Admin.events.routeGraph');
   const mutation = useReplaceAdminRouteGraphMutation(mapId);
   const [nodes, setNodes] = useState<EditableRouteNode[]>(() =>
     initialNodes.map(toEditableRouteNode),
@@ -45,11 +54,16 @@ export const AdminRouteGraphEditor = ({
     initialEdges.map(toEditableRouteEdge),
   );
   const [saved, setSaved] = useState(false);
+  const initialNodesRef = useRef(initialNodes);
+  const initialEdgesRef = useRef(initialEdges);
+  initialNodesRef.current = initialNodes;
+  initialEdgesRef.current = initialEdges;
+  const syncKey = routeGraphSyncKey(initialNodes, initialEdges);
 
   useEffect(() => {
-    setNodes(initialNodes.map(toEditableRouteNode));
-    setEdges(initialEdges.map(toEditableRouteEdge));
-  }, [initialNodes, initialEdges]);
+    setNodes(initialNodesRef.current.map(toEditableRouteNode));
+    setEdges(initialEdgesRef.current.map(toEditableRouteEdge));
+  }, [mapId, syncKey]);
 
   const nodeIds = nodes.map((node) => node.localId);
 
@@ -79,7 +93,7 @@ export const AdminRouteGraphEditor = ({
   return (
     <Card className="flex flex-col gap-4">
       <div className="flex items-center justify-between gap-3">
-        <h3 className="text-sm font-semibold text-ink">{t("title")}</h3>
+        <h3 className="text-sm font-semibold text-ink">{t('title')}</h3>
         <Button
           type="button"
           size="sm"
@@ -89,20 +103,12 @@ export const AdminRouteGraphEditor = ({
             void onSave();
           }}
         >
-          {mutation.isPending ? t("saving") : t("save")}
+          {mutation.isPending ? t('saving') : t('save')}
         </Button>
       </div>
-      {saved ? <p className="text-sm text-success">{t("saved")}</p> : null}
-      <AdminRouteGraphNodesTable
-        nodes={nodes}
-        boothOptions={boothOptions}
-        onChange={setNodes}
-      />
-      <AdminRouteGraphEdgesTable
-        edges={edges}
-        nodeIds={nodeIds}
-        onChange={setEdges}
-      />
+      {saved ? <p className="text-sm text-success">{t('saved')}</p> : null}
+      <AdminRouteGraphNodesTable nodes={nodes} boothOptions={boothOptions} onChange={setNodes} />
+      <AdminRouteGraphEdgesTable edges={edges} nodeIds={nodeIds} onChange={setEdges} />
     </Card>
   );
 };
