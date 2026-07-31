@@ -73,6 +73,8 @@ const AuthVisualPanel = ({ copy }: { copy: ShellCopy }) => {
               alt=""
               fill
               priority
+              loading="eager"
+              fetchPriority="high"
               className="object-cover object-center"
               sizes="54vw"
             />

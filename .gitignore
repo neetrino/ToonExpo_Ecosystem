@@ -27,6 +27,10 @@ tmp/
 temp/
 .cache/
 
+# Local staging for `pnpm media:upload-static` (bytes live in R2 only)
+media/static/**
+!media/static/README.md
+
 # Playwright
 apps/web/e2e/test-results/
 apps/web/e2e/playwright-report/

@@ -8,13 +8,13 @@ import { createPortalApartment } from '@/features/builder/api/portal-apartments-
 import { createPortalBuilding } from '@/features/builder/api/portal-buildings-api';
 import { Link } from '@/i18n/navigation';
 
-import { adminCatalogScope } from '../api/interactive-mapping-api';
-import { INTERACTIVE_MAPPING_BASE_PATH, interactiveMappingProjectQueryKey } from '../constants';
+import { interactiveMappingProjectQueryKey } from '../constants';
 import {
   useCreateDistrictMutation,
   useInteractiveMappingProjectQuery,
   useSetupBuildingFloorsMutation,
 } from '../hooks/use-interactive-mapping';
+import { useMappingCatalog } from '../hooks/use-mapping-catalog';
 import { BuildingFloorSetupForm } from './building-floor-setup-form';
 import { CreateEntityInlineForm } from './forms/create-entity-inline-form';
 import { PhaseCard } from './phase-card';
@@ -48,12 +48,14 @@ export const PhaseWizardPage = ({ projectId }: PhaseWizardPageProps) => {
   const detailQuery = useInteractiveMappingProjectQuery(projectId);
   const createDistrict = useCreateDistrictMutation(projectId);
   const setupFloors = useSetupBuildingFloorsMutation(projectId);
+  const companyId = detailQuery.data?.project.builderCompanyId;
+  const catalog = useMappingCatalog(companyId);
 
   if (detailQuery.isLoading) {
     return <p className="text-sm text-ink-muted">{t('loading')}</p>;
   }
 
-  if (detailQuery.isError || !detailQuery.data) {
+  if (detailQuery.isError || !detailQuery.data || !catalog) {
     return (
       <p role="alert" className="text-sm text-danger">
         {t('error')}
@@ -63,9 +65,8 @@ export const PhaseWizardPage = ({ projectId }: PhaseWizardPageProps) => {
 
   const detail = detailQuery.data;
   const { project, districts, buildings, floors, apartments } = detail;
-  const companyId = project.builderCompanyId;
-  const scope = adminCatalogScope(companyId);
-  const base = `${INTERACTIVE_MAPPING_BASE_PATH}/${project.id}`;
+  const { catalogScope: scope, basePath, mode } = catalog;
+  const base = `${basePath}/${project.id}`;
 
   const primaryDistrict = districts[0];
   const primaryBuilding =
@@ -74,7 +75,7 @@ export const PhaseWizardPage = ({ projectId }: PhaseWizardPageProps) => {
 
   const invalidate = () => {
     void queryClient.invalidateQueries({
-      queryKey: interactiveMappingProjectQueryKey(projectId),
+      queryKey: interactiveMappingProjectQueryKey(projectId, mode),
     });
   };
 
@@ -82,7 +83,7 @@ export const PhaseWizardPage = ({ projectId }: PhaseWizardPageProps) => {
     <div className="mx-auto max-w-3xl space-y-8">
       <div>
         <Link
-          href={INTERACTIVE_MAPPING_BASE_PATH}
+          href={basePath}
           className="text-xs uppercase tracking-[0.14em] text-ink-muted underline-offset-4 hover:underline"
         >
           {t('backToProjects')}

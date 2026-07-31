@@ -23,8 +23,16 @@ import {
 import type { CatalogScope } from '@/features/builder/catalog-scope';
 import { apiFetch, type ApiFetchOptions } from '@/shared/api/client';
 
+import {
+  INTERACTIVE_MAPPING_ADMIN_API_PREFIX,
+  INTERACTIVE_MAPPING_PORTAL_API_PREFIX,
+} from '../constants';
+
+export type InteractiveMappingApiMode = 'admin' | 'portal';
+
 export type InteractiveMappingRequestOptions = {
   cookieHeader?: string | undefined;
+  mode?: InteractiveMappingApiMode | undefined;
 };
 
 const withCookie = (options: ApiFetchOptions, cookieHeader?: string): ApiFetchOptions => {
@@ -40,25 +48,28 @@ const withCookie = (options: ApiFetchOptions, cookieHeader?: string): ApiFetchOp
   };
 };
 
+const apiPrefixFor = (mode: InteractiveMappingApiMode): string =>
+  mode === 'portal' ? INTERACTIVE_MAPPING_PORTAL_API_PREFIX : INTERACTIVE_MAPPING_ADMIN_API_PREFIX;
+
 export const adminCatalogScope = (companyId: string): CatalogScope => ({
   mode: 'admin',
   companyId,
 });
 
-const catalogOptions = (companyId: string): PortalRequestOptions => ({
-  scope: adminCatalogScope(companyId),
-});
+const catalogOptions = (scope: CatalogScope): PortalRequestOptions => ({ scope });
 
 /**
  * Lists interactive-mapping projects with phase progress.
+ * Admin: all projects. Portal: caller's company only.
  */
 export const listInteractiveMappingProjects = (
   options: InteractiveMappingRequestOptions = {},
-): Promise<InteractiveMappingProjectListResponse> =>
-  apiFetch<InteractiveMappingProjectListResponse>(
+): Promise<InteractiveMappingProjectListResponse> => {
+  const mode = options.mode ?? 'admin';
+  return apiFetch<InteractiveMappingProjectListResponse>(
     withCookie(
       {
-        path: '/admin/interactive-mapping/projects',
+        path: `${apiPrefixFor(mode)}/projects`,
         method: 'GET',
         credentials: 'include',
         cache: 'no-store',
@@ -66,6 +77,7 @@ export const listInteractiveMappingProjects = (
       options.cookieHeader,
     ),
   );
+};
 
 /**
  * Loads project detail for the 4-phase wizard.
@@ -73,11 +85,12 @@ export const listInteractiveMappingProjects = (
 export const getInteractiveMappingProject = (
   projectId: string,
   options: InteractiveMappingRequestOptions = {},
-): Promise<InteractiveMappingProjectDetail> =>
-  apiFetch<InteractiveMappingProjectDetail>(
+): Promise<InteractiveMappingProjectDetail> => {
+  const mode = options.mode ?? 'admin';
+  return apiFetch<InteractiveMappingProjectDetail>(
     withCookie(
       {
-        path: `/admin/interactive-mapping/projects/${encodeURIComponent(projectId)}`,
+        path: `${apiPrefixFor(mode)}/projects/${encodeURIComponent(projectId)}`,
         method: 'GET',
         credentials: 'include',
         cache: 'no-store',
@@ -85,13 +98,15 @@ export const getInteractiveMappingProject = (
       options.cookieHeader,
     ),
   );
+};
 
 export const createInteractiveMappingDistrict = (
   projectId: string,
   body: CreateDistrictRequest,
+  mode: InteractiveMappingApiMode = 'admin',
 ): Promise<InteractiveMappingDistrictSummary> =>
   apiFetch<InteractiveMappingDistrictSummary>({
-    path: `/admin/interactive-mapping/projects/${encodeURIComponent(projectId)}/districts`,
+    path: `${apiPrefixFor(mode)}/projects/${encodeURIComponent(projectId)}/districts`,
     method: 'POST',
     ...jsonCredentials,
     body: JSON.stringify(body),
@@ -100,17 +115,21 @@ export const createInteractiveMappingDistrict = (
 export const updateInteractiveMappingDistrict = (
   districtId: string,
   body: UpdateDistrictRequest,
+  mode: InteractiveMappingApiMode = 'admin',
 ): Promise<InteractiveMappingDistrictSummary> =>
   apiFetch<InteractiveMappingDistrictSummary>({
-    path: `/admin/interactive-mapping/districts/${encodeURIComponent(districtId)}`,
+    path: `${apiPrefixFor(mode)}/districts/${encodeURIComponent(districtId)}`,
     method: 'PATCH',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
 
-export const deleteInteractiveMappingDistrict = (districtId: string): Promise<void> =>
+export const deleteInteractiveMappingDistrict = (
+  districtId: string,
+  mode: InteractiveMappingApiMode = 'admin',
+): Promise<void> =>
   apiFetch<void>({
-    path: `/admin/interactive-mapping/districts/${encodeURIComponent(districtId)}`,
+    path: `${apiPrefixFor(mode)}/districts/${encodeURIComponent(districtId)}`,
     method: 'DELETE',
     credentials: 'include',
   });
@@ -118,91 +137,92 @@ export const deleteInteractiveMappingDistrict = (districtId: string): Promise<vo
 export const setupBuildingFloors = (
   buildingId: string,
   body: SetupBuildingFloorsRequest,
+  mode: InteractiveMappingApiMode = 'admin',
 ): Promise<SetupBuildingFloorsResponse> =>
   apiFetch<SetupBuildingFloorsResponse>({
-    path: `/admin/interactive-mapping/buildings/${encodeURIComponent(buildingId)}/setup-floors`,
+    path: `${apiPrefixFor(mode)}/buildings/${encodeURIComponent(buildingId)}/setup-floors`,
     method: 'POST',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
 
-/** Company-scoped visual canvas helpers (admin catalog paths). */
+/** Company-scoped visual canvas helpers (portal path or admin catalog rewrite). */
 
-export const listAdminProjectVisualCanvases = (
-  companyId: string,
+export const listProjectVisualCanvases = (
+  scope: CatalogScope,
   projectId: string,
 ): Promise<PortalVisualCanvasListResponse> =>
   apiFetch<PortalVisualCanvasListResponse>({
     path: catalogPath(
       `/portal/projects/${encodeURIComponent(projectId)}/visual-canvases`,
-      catalogOptions(companyId),
+      catalogOptions(scope),
     ),
     method: 'GET',
     credentials: 'include',
     cache: 'no-store',
   });
 
-export const createAdminVisualCanvas = (
-  companyId: string,
+export const createVisualCanvas = (
+  scope: CatalogScope,
   projectId: string,
   body: CreatePortalVisualCanvasRequest,
 ): Promise<PortalVisualCanvasDetail> =>
   apiFetch<PortalVisualCanvasDetail>({
     path: catalogPath(
       `/portal/projects/${encodeURIComponent(projectId)}/visual-canvases`,
-      catalogOptions(companyId),
+      catalogOptions(scope),
     ),
     method: 'POST',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
 
-export const getAdminVisualCanvas = (
-  companyId: string,
+export const getVisualCanvas = (
+  scope: CatalogScope,
   canvasId: string,
 ): Promise<PortalVisualCanvasDetail> =>
   apiFetch<PortalVisualCanvasDetail>({
     path: catalogPath(
       `/portal/visual-canvases/${encodeURIComponent(canvasId)}`,
-      catalogOptions(companyId),
+      catalogOptions(scope),
     ),
     method: 'GET',
     credentials: 'include',
     cache: 'no-store',
   });
 
-export const updateAdminVisualCanvas = (
-  companyId: string,
+export const updateVisualCanvas = (
+  scope: CatalogScope,
   canvasId: string,
   body: UpdatePortalVisualCanvasRequest,
 ): Promise<PortalVisualCanvasDetail> =>
   apiFetch<PortalVisualCanvasDetail>({
     path: catalogPath(
       `/portal/visual-canvases/${encodeURIComponent(canvasId)}`,
-      catalogOptions(companyId),
+      catalogOptions(scope),
     ),
     method: 'PATCH',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
 
-export const createAdminVisualHotspot = (
-  companyId: string,
+export const createVisualHotspot = (
+  scope: CatalogScope,
   canvasId: string,
   body: CreatePortalVisualHotspotRequest,
 ): Promise<PortalVisualHotspotItem> =>
   apiFetch<PortalVisualHotspotItem>({
     path: catalogPath(
       `/portal/visual-canvases/${encodeURIComponent(canvasId)}/hotspots`,
-      catalogOptions(companyId),
+      catalogOptions(scope),
     ),
     method: 'POST',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
 
-export const updateAdminVisualHotspot = (
-  companyId: string,
+export const updateVisualHotspot = (
+  scope: CatalogScope,
   canvasId: string,
   hotspotId: string,
   body: UpdatePortalVisualHotspotRequest,
@@ -210,23 +230,76 @@ export const updateAdminVisualHotspot = (
   apiFetch<PortalVisualHotspotItem>({
     path: catalogPath(
       `/portal/visual-canvases/${encodeURIComponent(canvasId)}/hotspots/${encodeURIComponent(hotspotId)}`,
-      catalogOptions(companyId),
+      catalogOptions(scope),
     ),
     method: 'PATCH',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
 
-export const deleteAdminVisualHotspot = (
-  companyId: string,
+export const deleteVisualHotspot = (
+  scope: CatalogScope,
   canvasId: string,
   hotspotId: string,
 ): Promise<void> =>
   apiFetch<void>({
     path: catalogPath(
       `/portal/visual-canvases/${encodeURIComponent(canvasId)}/hotspots/${encodeURIComponent(hotspotId)}`,
-      catalogOptions(companyId),
+      catalogOptions(scope),
     ),
     method: 'DELETE',
     credentials: 'include',
   });
+
+/** @deprecated Prefer listProjectVisualCanvases with CatalogScope */
+export const listAdminProjectVisualCanvases = (
+  companyId: string,
+  projectId: string,
+): Promise<PortalVisualCanvasListResponse> =>
+  listProjectVisualCanvases(adminCatalogScope(companyId), projectId);
+
+/** @deprecated Prefer createVisualCanvas with CatalogScope */
+export const createAdminVisualCanvas = (
+  companyId: string,
+  projectId: string,
+  body: CreatePortalVisualCanvasRequest,
+): Promise<PortalVisualCanvasDetail> =>
+  createVisualCanvas(adminCatalogScope(companyId), projectId, body);
+
+/** @deprecated Prefer getVisualCanvas with CatalogScope */
+export const getAdminVisualCanvas = (
+  companyId: string,
+  canvasId: string,
+): Promise<PortalVisualCanvasDetail> => getVisualCanvas(adminCatalogScope(companyId), canvasId);
+
+/** @deprecated Prefer updateVisualCanvas with CatalogScope */
+export const updateAdminVisualCanvas = (
+  companyId: string,
+  canvasId: string,
+  body: UpdatePortalVisualCanvasRequest,
+): Promise<PortalVisualCanvasDetail> =>
+  updateVisualCanvas(adminCatalogScope(companyId), canvasId, body);
+
+/** @deprecated Prefer createVisualHotspot with CatalogScope */
+export const createAdminVisualHotspot = (
+  companyId: string,
+  canvasId: string,
+  body: CreatePortalVisualHotspotRequest,
+): Promise<PortalVisualHotspotItem> =>
+  createVisualHotspot(adminCatalogScope(companyId), canvasId, body);
+
+/** @deprecated Prefer updateVisualHotspot with CatalogScope */
+export const updateAdminVisualHotspot = (
+  companyId: string,
+  canvasId: string,
+  hotspotId: string,
+  body: UpdatePortalVisualHotspotRequest,
+): Promise<PortalVisualHotspotItem> =>
+  updateVisualHotspot(adminCatalogScope(companyId), canvasId, hotspotId, body);
+
+/** @deprecated Prefer deleteVisualHotspot with CatalogScope */
+export const deleteAdminVisualHotspot = (
+  companyId: string,
+  canvasId: string,
+  hotspotId: string,
+): Promise<void> => deleteVisualHotspot(adminCatalogScope(companyId), canvasId, hotspotId);

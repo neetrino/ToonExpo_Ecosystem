@@ -5,12 +5,14 @@ import {
   CalendarDays,
   ClipboardCheck,
   FolderKanban,
+  Globe2,
   Handshake,
   Home,
   Landmark,
   Layers,
   LayoutList,
   LineChart,
+  Map,
   Settings,
   Tags,
   Users,
@@ -25,6 +27,8 @@ export type AdminNavItemKey =
   | 'buildings'
   | 'floors'
   | 'apartments'
+  | 'interactiveMapping'
+  | 'cityMap'
   | 'partners'
   | 'bankOffers'
   | 'serviceProviders'
@@ -71,6 +75,8 @@ export const ADMIN_PRIMARY_NAV_ITEMS: AdminNavItem[] = [
     icon: FolderKanban,
     children: ADMIN_PROJECT_CHILD_NAV_ITEMS,
   },
+  { href: '/admin/interactive-mapping', key: 'interactiveMapping', icon: Map },
+  { href: '/admin/city-map', key: 'cityMap', icon: Globe2 },
   { href: '/admin/partners', key: 'partners', icon: Handshake },
   { href: '/admin/bank-offers', key: 'bankOffers', icon: Landmark },
   {

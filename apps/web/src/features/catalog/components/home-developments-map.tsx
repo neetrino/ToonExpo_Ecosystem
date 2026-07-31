@@ -1,12 +1,27 @@
 'use client';
 
-import type { ProjectListItem } from '@toonexpo/contracts';
+import type {
+  ProjectListItem,
+  PublicCityMapConfig,
+  PublicCityMapPlacement,
+} from '@toonexpo/contracts';
 import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
+import { listProjects } from '@/features/catalog/api/catalog-api';
 import { computeSoldPercent, resolveBadge } from '@/features/catalog/utils/development-progress';
 import { formatCompactPrice } from '@/features/catalog/utils/format-price';
+import {
+  getPublicCityMapConfig,
+  listPublicCityMapPlacements,
+} from '@/features/city-map/api/city-map-api';
+import { CityMapView } from '@/features/city-map/components/city-map-view';
+import {
+  mergeHomeMapPoses,
+  projectPinId,
+  CITY_MAP_PROJECTS_PAGE_SIZE,
+} from '@/features/city-map/constants';
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 
@@ -14,15 +29,103 @@ type HomeDevelopmentsMapProps = {
   projects: ProjectListItem[];
 };
 
+const projectHasCoords = (project: ProjectListItem): boolean =>
+  Boolean(project.latitude && project.longitude);
+
 /**
- * Map-view panel: selected project card + developments list (Figma aside).
+ * Map-view panel: live city map + selected project card + developments list.
  */
 export const HomeDevelopmentsMap = ({ projects }: HomeDevelopmentsMapProps) => {
   const t = useTranslations('HomePage.developments');
   const catalogT = useTranslations('Catalog');
   const locale = useLocale();
   const [selectedId, setSelectedId] = useState(projects[0]?.id ?? '');
-  const selected = projects.find((project) => project.id === selectedId) ?? projects[0];
+  const [pinProjects, setPinProjects] = useState(projects);
+  const [placements, setPlacements] = useState<PublicCityMapPlacement[]>([]);
+  const [config, setConfig] = useState<PublicCityMapConfig | null>(null);
+  const [mapError, setMapError] = useState<string | null>(null);
+  const [search, setSearch] = useState('');
+  const [flyToId, setFlyToId] = useState<string | null>(null);
+  const [selectedPlacementId, setSelectedPlacementId] = useState<string | null>(null);
+
+  const selected =
+    pinProjects.find((project) => project.id === selectedId) ??
+    projects.find((project) => project.id === selectedId) ??
+    pinProjects[0] ??
+    projects[0];
+
+  useEffect(() => {
+    setPinProjects(projects);
+  }, [projects]);
+
+  /**
+   * Load the same catalog page as admin city-map so public pins match.
+   * Next Data Cache can serve a stale project list without lat/lng — browser
+   * fetch hits the API proxy and always has coords when the API is up.
+   */
+  useEffect(() => {
+    let cancelled = false;
+    void listProjects({ page: 1, pageSize: CITY_MAP_PROJECTS_PAGE_SIZE }, { locale })
+      .then((response) => {
+        if (cancelled || response.data.length === 0) {
+          return;
+        }
+        const withCoords = response.data.filter(projectHasCoords);
+        if (withCoords.length > 0) {
+          setPinProjects(withCoords);
+          return;
+        }
+        const byId = new Map(response.data.map((item) => [item.id, item]));
+        setPinProjects(projects.map((project) => byId.get(project.id) ?? project));
+      })
+      .catch(() => {
+        /* keep SSR props */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [locale, projects]);
+
+  useEffect(() => {
+    let cancelled = false;
+    void listPublicCityMapPlacements()
+      .then((response) => {
+        if (!cancelled) {
+          setPlacements(response.data);
+        }
+      })
+      .catch(() => {
+        /* Project pins still render without placements. */
+      });
+    void getPublicCityMapConfig()
+      .then((mapConfig) => {
+        if (!cancelled) {
+          setConfig(mapConfig);
+        }
+      })
+      .catch(() => {
+        /* CityMapView falls back to CITY_MAP_DEFAULT_CONFIG. */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const models = useMemo(
+    () => mergeHomeMapPoses(pinProjects, placements),
+    [pinProjects, placements],
+  );
+
+  const searchHits = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) {
+      return [];
+    }
+    return models.filter((item) => {
+      const haystack = [item.label, item.projectId].join(' ').toLowerCase();
+      return haystack.includes(q);
+    });
+  }, [models, search]);
 
   if (!selected) {
     return null;
@@ -40,6 +143,18 @@ export const HomeDevelopmentsMap = ({ projects }: HomeDevelopmentsMapProps) => {
     onRequestLabel: catalogT('price.onRequest'),
   });
 
+  const resolveFlyTarget = (projectId: string): string => {
+    const placement = placements.find((item) => item.projectId === projectId);
+    return placement?.id ?? projectPinId(projectId);
+  };
+
+  const selectProject = (projectId: string): void => {
+    setSelectedId(projectId);
+    const targetId = resolveFlyTarget(projectId);
+    setSelectedPlacementId(targetId);
+    setFlyToId(targetId);
+  };
+
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,22rem)]">
       <div
@@ -48,21 +163,59 @@ export const HomeDevelopmentsMap = ({ projects }: HomeDevelopmentsMapProps) => {
           'ring-1 ring-header-border lg:min-h-[42rem]',
         )}
       >
-        <div className="absolute inset-0 opacity-40">
-          <div className="absolute inset-[12%] rounded-[20px] border border-dashed border-brand-secondary/40" />
-          <div className="absolute top-1/3 left-1/4 size-3 rounded-pill bg-brand-deep shadow-md" />
-          <div className="absolute top-1/2 left-1/2 size-3 rounded-pill bg-brand-secondary shadow-md" />
-          <div className="absolute top-2/3 left-2/3 size-3 rounded-pill bg-brand-deep shadow-md" />
-        </div>
-        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-canvas/90 to-transparent p-6">
-          <p className="text-sm font-medium text-ink-navy">{t('mapPlaceholder')}</p>
-          <Link
-            href="/developments"
-            className="mt-2 inline-flex text-sm font-semibold text-brand-deep hover:text-brand-deep/80"
-          >
-            {t('browseList')}
-          </Link>
-        </div>
+        {mapError ? (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-6 text-center">
+            <p className="text-sm font-medium text-ink-navy">{mapError}</p>
+            <Link
+              href="/developments"
+              className="text-sm font-semibold text-brand-deep hover:text-brand-deep/80"
+            >
+              {t('browseList')}
+            </Link>
+          </div>
+        ) : (
+          <>
+            <div className="absolute top-3 left-3 z-10 w-[min(100%-1.5rem,18rem)]">
+              <input
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder={t('mapSearchPlaceholder')}
+                className="w-full rounded-md border border-header-border bg-canvas/95 px-3 py-2 text-sm shadow-sm"
+              />
+              {searchHits.length > 0 ? (
+                <ul className="mt-1 max-h-40 overflow-auto rounded-md border border-header-border bg-canvas shadow-md">
+                  {searchHits.slice(0, 8).map((item) => (
+                    <li key={item.id}>
+                      <button
+                        type="button"
+                        className="flex w-full px-3 py-2 text-left text-sm hover:bg-band-mist/40"
+                        onClick={() => {
+                          setSearch('');
+                          selectProject(item.projectId);
+                        }}
+                      >
+                        {item.label}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </div>
+            <CityMapView
+              mode="view"
+              className="min-h-80 lg:min-h-[42rem]"
+              config={config}
+              models={models}
+              selectedProjectId={selectedId}
+              selectedPlacementId={selectedPlacementId}
+              flyToPlacementId={flyToId}
+              onSelectPlacement={(_placementId, projectId) => {
+                selectProject(projectId);
+              }}
+              onError={() => setMapError(t('mapLoadError'))}
+            />
+          </>
+        )}
       </div>
 
       <aside className="flex flex-col gap-4">
@@ -128,13 +281,13 @@ export const HomeDevelopmentsMap = ({ projects }: HomeDevelopmentsMapProps) => {
             {t('allDevelopments')}
           </p>
           <ul className="mt-2 divide-y divide-header-border">
-            {projects.map((project) => {
-              const isActive = project.id === selected.id;
+            {pinProjects.map((project) => {
+              const isActive = project.id === selected?.id;
               return (
                 <li key={project.id}>
                   <button
                     type="button"
-                    onClick={() => setSelectedId(project.id)}
+                    onClick={() => selectProject(project.id)}
                     className={cn(
                       'flex w-full items-center justify-between gap-3 py-2.5 text-left text-sm',
                       'transition-colors duration-[var(--duration-fast)]',
@@ -158,11 +311,14 @@ export const HomeDevelopmentsMap = ({ projects }: HomeDevelopmentsMapProps) => {
   );
 };
 
-const StatTile = ({ label, value }: { label: string; value: string }) => {
-  return (
-    <div className="rounded-sm bg-brand-soft/40 p-2">
-      <p className="text-[9px] font-bold tracking-widest text-header-muted uppercase">{label}</p>
-      <p className="mt-0.5 text-sm font-semibold text-ink-navy">{value}</p>
-    </div>
-  );
+type StatTileProps = {
+  label: string;
+  value: string;
 };
+
+const StatTile = ({ label, value }: StatTileProps) => (
+  <div className="rounded-md bg-band-mist/40 px-2 py-2">
+    <p className="text-[10px] font-bold tracking-widest text-header-muted uppercase">{label}</p>
+    <p className="mt-1 text-sm font-semibold text-ink-navy">{value}</p>
+  </div>
+);

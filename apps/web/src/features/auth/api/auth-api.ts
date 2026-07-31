@@ -13,7 +13,7 @@ import type {
 
 import { apiFetch } from '@/shared/api/client';
 import { clearCsrfTokenCache, setCsrfTokenCache } from '@/shared/api/csrf';
-import { ApiError, isApiErrorStatus } from '@/shared/api/errors';
+import { ApiError, isApiErrorStatus, isNetworkFetchError } from '@/shared/api/errors';
 
 import {
   clearClientSessionHint,
@@ -142,6 +142,9 @@ export const getMe = (cookieHeader?: string): Promise<UserResponse | undefined> 
  * Returns the current user or `null` when unauthenticated.
  * Skips the network call when no session cookie / CSRF hint is present (guest).
  * Nest still returns 204 for cookie-less probes as a safety net.
+ *
+ * Network / 5xx failures are rethrown so portals do not treat a brief API
+ * restart as logout and bounce the user to `/auth/login`.
  */
 export const getMeOrNull = async (cookieHeader?: string): Promise<UserResponse | null> => {
   const hasHint =
@@ -164,4 +167,4 @@ export const getMeOrNull = async (cookieHeader?: string): Promise<UserResponse |
   }
 };
 
-export { ApiError, isApiErrorStatus };
+export { ApiError, isApiErrorStatus, isNetworkFetchError };

@@ -4,24 +4,24 @@ import type {
   PriceVisibility,
   ProjectDetail,
   ProjectListItem,
-} from "@toonexpo/contracts";
-import type { ApartmentSalesStatus, Prisma } from "@toonexpo/db";
-import type { SupportedLocale } from "@toonexpo/shared";
+} from '@toonexpo/contracts';
+import type { ApartmentSalesStatus, Prisma } from '@toonexpo/db';
+import type { SupportedLocale } from '@toonexpo/shared';
 
 import {
   resolveTranslatedValue,
   TRANSLATION_ENTITY,
   TRANSLATION_FIELD,
   type TranslationRow,
-} from "../utils/resolve-translation.js";
-import { aggregateVisiblePrices } from "./aggregate-prices.js";
+} from '../utils/resolve-translation.js';
+import { aggregateVisiblePrices } from './aggregate-prices.js';
 import {
   decimalToString,
   emptyAvailability,
   shouldRevealPrice,
   summarizeSalesStatuses,
   toMediaSummary,
-} from "./catalog.mapper.js";
+} from './catalog.mapper.js';
 
 type MediaRow = Parameters<typeof toMediaSummary>[0];
 
@@ -41,6 +41,8 @@ type ProjectListSource = {
   address: string | null;
   city: string | null;
   district: string | null;
+  latitude: Prisma.Decimal | null;
+  longitude: Prisma.Decimal | null;
   coverMedia: MediaRow;
   builderCompany: {
     id: string;
@@ -52,8 +54,6 @@ type ProjectListSource = {
 
 type ProjectDetailSource = ProjectListSource & {
   fullDescription: string | null;
-  latitude: Prisma.Decimal | null;
-  longitude: Prisma.Decimal | null;
   projectType: string | null;
   constructionStatus: string | null;
   completionDate: Date | null;
@@ -106,10 +106,7 @@ const mapFloorApartment = (
   },
   isAuthenticated: boolean,
 ): FloorApartmentSummary => {
-  const revealPrice = shouldRevealPrice(
-    apartment.priceVisibility,
-    isAuthenticated,
-  );
+  const revealPrice = shouldRevealPrice(apartment.priceVisibility, isAuthenticated);
 
   return {
     id: apartment.id,
@@ -197,6 +194,8 @@ export const mapProjectListItem = (
     address: project.address,
     city: project.city,
     district: project.district,
+    latitude: decimalToString(project.latitude),
+    longitude: decimalToString(project.longitude),
     cover: toMediaSummary(project.coverMedia),
     builder: {
       id: project.builderCompany.id,
@@ -212,10 +211,7 @@ export const mapProjectListItem = (
   };
 };
 
-export const mapProjectDetail = (
-  project: ProjectDetailSource,
-  ctx: MapContext,
-): ProjectDetail => {
+export const mapProjectDetail = (project: ProjectDetailSource, ctx: MapContext): ProjectDetail => {
   const listBase = mapProjectListItem(project, ctx);
   const prices = aggregateVisiblePrices(project.apartments, ctx.isAuthenticated);
   const fullDescription = resolveTranslatedValue(
@@ -230,8 +226,6 @@ export const mapProjectDetail = (
   return {
     ...listBase,
     fullDescription,
-    latitude: decimalToString(project.latitude),
-    longitude: decimalToString(project.longitude),
     projectType: project.projectType,
     constructionStatus: project.constructionStatus,
     completionDate: project.completionDate

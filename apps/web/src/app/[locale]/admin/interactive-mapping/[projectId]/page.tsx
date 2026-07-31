@@ -2,6 +2,7 @@ import { setRequestLocale } from 'next-intl/server';
 import { Suspense } from 'react';
 
 import { PhaseWizardPage } from '@/features/interactive-mapping';
+import { InteractiveMappingScopeRoot } from '@/features/interactive-mapping/components/interactive-mapping-scope-root';
 
 type PageProps = {
   params: Promise<{ locale: string; projectId: string }>;
@@ -15,8 +16,10 @@ export default async function AdminInteractiveMappingProjectPage({ params }: Pag
   setRequestLocale(locale);
 
   return (
-    <Suspense fallback={<p className="text-sm text-ink-secondary">…</p>}>
-      <PhaseWizardPage projectId={projectId} />
-    </Suspense>
+    <InteractiveMappingScopeRoot mode="admin">
+      <Suspense fallback={<p className="text-sm text-ink-secondary">…</p>}>
+        <PhaseWizardPage projectId={projectId} />
+      </Suspense>
+    </InteractiveMappingScopeRoot>
   );
 }

@@ -8,6 +8,7 @@ import type {
 import { Prisma, PublicationStatus } from '@toonexpo/db';
 
 import { entityNotFound } from '../portal/utils/access.js';
+import { requireOwnedBuilding, requireOwnedProject } from '../portal/utils/ownership.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import type {
   CreateDistrictDto,
@@ -34,8 +35,13 @@ import { setupBuildingFloors } from './setup-building-floors.js';
 export class InteractiveMappingService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async listProjects(): Promise<InteractiveMappingProjectListResponse> {
+  /**
+   * Lists projects with phase progress. When `companyId` is set, only that
+   * builder company's projects are returned.
+   */
+  async listProjects(companyId?: string): Promise<InteractiveMappingProjectListResponse> {
     const projects = await this.prisma.db.project.findMany({
+      ...(companyId ? { where: { builderCompanyId: companyId } } : {}),
       orderBy: [{ name: 'asc' }],
       select: {
         id: true,
@@ -62,7 +68,18 @@ export class InteractiveMappingService {
     };
   }
 
-  async getProject(projectId: string): Promise<InteractiveMappingProjectDetail> {
+  /**
+   * Project detail for the 4-phase wizard. When `companyId` is set, enforces
+   * builder ownership (404 if not owned).
+   */
+  async getProject(
+    projectId: string,
+    companyId?: string,
+  ): Promise<InteractiveMappingProjectDetail> {
+    if (companyId) {
+      await requireOwnedProject(this.prisma, projectId, companyId);
+    }
+
     const project = await this.prisma.db.project.findUnique({
       where: { id: projectId },
       include: {
@@ -136,8 +153,13 @@ export class InteractiveMappingService {
     projectId: string,
     userId: string,
     dto: CreateDistrictDto,
+    companyId?: string,
   ): Promise<InteractiveMappingDistrictSummary> {
-    await this.requireProject(projectId);
+    if (companyId) {
+      await requireOwnedProject(this.prisma, projectId, companyId);
+    } else {
+      await this.requireProject(projectId);
+    }
     const slug = await this.resolveUniqueSlug(projectId, dto.slug ?? slugifyDistrictName(dto.name));
     const district = await this.prisma.db.district.create({
       data: {
@@ -158,11 +180,9 @@ export class InteractiveMappingService {
     districtId: string,
     userId: string,
     dto: UpdateDistrictDto,
+    companyId?: string,
   ): Promise<InteractiveMappingDistrictSummary> {
-    const existing = await this.prisma.db.district.findUnique({ where: { id: districtId } });
-    if (!existing) {
-      throw entityNotFound('District');
-    }
+    const existing = await this.requireDistrict(districtId, companyId);
     const slug =
       dto.slug !== undefined
         ? await this.resolveUniqueSlug(existing.projectId, dto.slug, districtId)
@@ -187,14 +207,8 @@ export class InteractiveMappingService {
     }
   }
 
-  async deleteDistrict(districtId: string): Promise<void> {
-    const existing = await this.prisma.db.district.findUnique({
-      where: { id: districtId },
-      select: { id: true },
-    });
-    if (!existing) {
-      throw entityNotFound('District');
-    }
+  async deleteDistrict(districtId: string, companyId?: string): Promise<void> {
+    await this.requireDistrict(districtId, companyId);
     await this.prisma.db.district.delete({ where: { id: districtId } });
   }
 
@@ -202,7 +216,11 @@ export class InteractiveMappingService {
     buildingId: string,
     userId: string,
     dto: SetupBuildingFloorsDto,
+    companyId?: string,
   ): Promise<SetupBuildingFloorsResponse> {
+    if (companyId) {
+      await requireOwnedBuilding(this.prisma, buildingId, companyId);
+    }
     return setupBuildingFloors(this.prisma, buildingId, userId, dto);
   }
 
@@ -214,6 +232,23 @@ export class InteractiveMappingService {
     if (!project) {
       throw entityNotFound('Project');
     }
+  }
+
+  private async requireDistrict(
+    districtId: string,
+    companyId?: string,
+  ): Promise<{ id: string; projectId: string }> {
+    const existing = await this.prisma.db.district.findFirst({
+      where: {
+        id: districtId,
+        ...(companyId ? { project: { builderCompanyId: companyId } } : {}),
+      },
+      select: { id: true, projectId: true },
+    });
+    if (!existing) {
+      throw entityNotFound('District');
+    }
+    return existing;
   }
 
   private async resolveUniqueSlug(

@@ -27,6 +27,8 @@ export const HomeHero = async ({ locations = [] }: HomeHeroProps) => {
           alt=""
           fill
           priority
+          loading="eager"
+          fetchPriority="high"
           className="object-cover object-center"
           sizes="100vw"
         />

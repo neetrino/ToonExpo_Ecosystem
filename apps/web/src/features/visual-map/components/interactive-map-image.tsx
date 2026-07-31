@@ -51,10 +51,16 @@ export const InteractiveMapImage = ({
 }: InteractiveMapImageProps) => {
   const t = useTranslations('Catalog.visualMap');
   const [viewBox, setViewBox] = useState<ViewBoxSize>(() => resolveInitialViewBox(canvas));
+  const mediaWidth = canvas.media.width;
+  const mediaHeight = canvas.media.height;
 
   useEffect(() => {
-    setViewBox(resolveInitialViewBox(canvas));
-  }, [canvas]);
+    if (mediaWidth != null && mediaWidth > 0 && mediaHeight != null && mediaHeight > 0) {
+      setViewBox({ width: mediaWidth, height: mediaHeight });
+      return;
+    }
+    setViewBox({ width: FALLBACK_VIEWBOX_WIDTH, height: FALLBACK_VIEWBOX_HEIGHT });
+  }, [canvas.id, mediaWidth, mediaHeight]);
 
   const imageUrl = canvas.media.fileUrl;
 

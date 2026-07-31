@@ -28,13 +28,15 @@ export const DEFAULT_WEB_PORT = 3000;
 export const DEFAULT_API_PORT = 4000;
 export const DEFAULT_SEED_PASSWORD = DEV_SEED_ADMIN_PASSWORD;
 
+/**
+ * Prefer localhost for Playwright. Root `APP_URL` is often a LAN IP for phone
+ * testing and breaks auth cookies / CORS when e2e drives Chromium.
+ */
 export const WEB_ORIGIN =
-  process.env['PLAYWRIGHT_BASE_URL']?.trim() ||
-  process.env['APP_URL']?.trim() ||
-  `http://localhost:${DEFAULT_WEB_PORT}`;
+  process.env['PLAYWRIGHT_BASE_URL']?.trim() || `http://localhost:${DEFAULT_WEB_PORT}`;
 
 export const API_ORIGIN =
-  process.env['NEXT_PUBLIC_API_URL']?.trim() ||
+  process.env['PLAYWRIGHT_API_URL']?.trim() ||
   `http://localhost:${process.env['PORT']?.trim() || DEFAULT_API_PORT}`;
 
 export const API_HEALTH_URL = `${API_ORIGIN.replace(/\/$/, '')}/api/v1/health`;

@@ -6,6 +6,7 @@ import {
   ClipboardCheck,
   FolderKanban,
   LayoutDashboard,
+  Map,
   QrCode,
   Settings,
   Users,
@@ -17,6 +18,7 @@ export type BuilderNavItem = {
     | '/builder/projects'
     | '/builder/team'
     | '/builder/company'
+    | '/builder/interactive-mapping'
     | '/builder/crm'
     | '/builder/scanner'
     | '/builder/readiness'
@@ -27,6 +29,7 @@ export type BuilderNavItem = {
     | 'projects'
     | 'team'
     | 'company'
+    | 'interactiveMapping'
     | 'crm'
     | 'scanner'
     | 'readiness'
@@ -38,6 +41,7 @@ export type BuilderNavItem = {
 export const BUILDER_PRIMARY_NAV_ITEMS: BuilderNavItem[] = [
   { href: '/builder', key: 'dashboard', icon: LayoutDashboard },
   { href: '/builder/projects', key: 'projects', icon: FolderKanban },
+  { href: '/builder/interactive-mapping', key: 'interactiveMapping', icon: Map },
   { href: '/builder/team', key: 'team', icon: Users },
   { href: '/builder/company', key: 'company', icon: Building2 },
   { href: '/builder/crm', key: 'crm', icon: Briefcase },

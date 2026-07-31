@@ -1,7 +1,12 @@
 /**
- * Uploads apps/web/public/demo and public/images assets to Cloudflare R2.
+ * Uploads marketing static assets to Cloudflare R2.
+ * Bytes live only in R2 (not in `apps/web/public`). To add/replace assets:
+ *   1. Put files under `media/static/demo` and/or `media/static/images`
+ *   2. Run `pnpm media:upload-static`
+ *   3. Keep `media/static` out of git (see `.gitignore`)
+ *
  * Usage (from repo root):
- *   node --env-file=.env scripts/upload-static-media-to-r2.mjs
+ *   pnpm media:upload-static
  */
 import { createRequire } from 'node:module';
 import { readdir, readFile, stat } from 'node:fs/promises';
@@ -12,7 +17,8 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const require = createRequire(path.join(ROOT, 'apps/api/package.json'));
 const { PutObjectCommand, S3Client } = require('@aws-sdk/client-s3');
 
-const WEB_PUBLIC = path.join(ROOT, 'apps/web/public');
+const STAGING_ROOT = path.join(ROOT, 'media', 'static');
+const LEGACY_PUBLIC = path.join(ROOT, 'apps', 'web', 'public');
 const UPLOAD_DIRS = ['demo', 'images'];
 const ALLOWED_EXTENSIONS = new Set(['.webp', '.png', '.jpg', '.jpeg', '.avif', '.svg']);
 
@@ -89,11 +95,20 @@ const uploadFile = async ({ absolute, key, extension }) => {
   console.log(`ok  ${publicBase}/${key} (${body.byteLength} bytes)`);
 };
 
+const resolveSourceRoot = async () => {
+  const stagingInfo = await stat(STAGING_ROOT).catch(() => null);
+  if (stagingInfo?.isDirectory()) {
+    return STAGING_ROOT;
+  }
+  return LEGACY_PUBLIC;
+};
+
 const main = async () => {
+  const sourceRoot = await resolveSourceRoot();
   const allFiles = [];
 
   for (const dirName of UPLOAD_DIRS) {
-    const absoluteDir = path.join(WEB_PUBLIC, dirName);
+    const absoluteDir = path.join(sourceRoot, dirName);
     const info = await stat(absoluteDir).catch(() => null);
     if (!info?.isDirectory()) {
       console.warn(`missing directory: ${absoluteDir}`);
@@ -102,7 +117,15 @@ const main = async () => {
     allFiles.push(...(await listFilesRecursive(absoluteDir, dirName)));
   }
 
-  console.log(`Uploading ${allFiles.length} files to r2://${bucketName} …`);
+  if (allFiles.length === 0) {
+    console.error(
+      `No files found under ${path.join(sourceRoot, '{demo,images}')}.\n` +
+        'Place assets in media/static/demo and media/static/images, then re-run.',
+    );
+    process.exit(1);
+  }
+
+  console.log(`Uploading ${allFiles.length} files from ${sourceRoot} → r2://${bucketName} …`);
   for (const file of allFiles) {
     await uploadFile(file);
   }

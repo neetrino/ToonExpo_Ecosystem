@@ -1,5 +1,5 @@
 import { MediaAssetType, PublicationStatus, type PrismaClient } from '../src/index.js';
-import { demoCoverUrl, SEED_DRAFT_PROJECT_ID } from './seed-data.js';
+import { demoCoverUrl, resolveSeedProjectCoords, SEED_DRAFT_PROJECT_ID } from './seed-data.js';
 import {
   buildCatalogDemoAmenities,
   CATALOG_DEMO_FULL_DESCRIPTION_HY,
@@ -47,6 +47,7 @@ export const upsertSeedProjects = async (prisma: PrismaClient): Promise<number> 
       project.completionDate !== undefined
         ? new Date(project.completionDate)
         : new Date('2027-12-01');
+    const coords = resolveSeedProjectCoords(project);
 
     await prisma.project.upsert({
       where: { id: project.id },
@@ -62,6 +63,8 @@ export const upsertSeedProjects = async (prisma: PrismaClient): Promise<number> 
         address: project.address,
         city: project.city ?? 'Yerevan',
         district: project.district,
+        latitude: coords.latitude,
+        longitude: coords.longitude,
         coverMediaId: project.coverId,
         projectType: project.projectType ?? 'residential',
         constructionStatus,
@@ -80,6 +83,8 @@ export const upsertSeedProjects = async (prisma: PrismaClient): Promise<number> 
         address: project.address,
         city: project.city ?? 'Yerevan',
         district: project.district,
+        latitude: coords.latitude,
+        longitude: coords.longitude,
         coverMediaId: project.coverId,
         projectType: project.projectType ?? 'residential',
         constructionStatus,

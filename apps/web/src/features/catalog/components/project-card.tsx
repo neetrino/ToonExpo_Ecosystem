@@ -16,6 +16,8 @@ type ProjectCardProps = {
   /** Marketplace “from” price (full amount) instead of min–max range. */
   featured?: boolean | undefined;
   showFavorite?: boolean | undefined;
+  /** Above-the-fold cover — eager LCP (first featured card). */
+  priority?: boolean | undefined;
 };
 
 /**
@@ -26,6 +28,7 @@ export const ProjectCard = ({
   className,
   featured = false,
   showFavorite = false,
+  priority = false,
 }: ProjectCardProps) => {
   const t = useTranslations('Catalog');
   const locale = useLocale();
@@ -65,6 +68,8 @@ export const ProjectCard = ({
               src={project.cover.fileUrl}
               alt={project.cover.altText ?? project.name}
               fill
+              priority={priority}
+              loading={priority ? 'eager' : 'lazy'}
               className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
               sizes="(max-width: 768px) 100vw, 33vw"
             />

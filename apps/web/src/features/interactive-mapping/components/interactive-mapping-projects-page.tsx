@@ -4,14 +4,15 @@ import { useTranslations } from 'next-intl';
 
 import { Link } from '@/i18n/navigation';
 
-import { INTERACTIVE_MAPPING_BASE_PATH } from '../constants';
 import { useInteractiveMappingProjectsQuery } from '../hooks/use-interactive-mapping';
+import { useInteractiveMappingScope } from '../scope/interactive-mapping-scope';
 
 /**
- * Admin interactive-mapping project list with phase progress.
+ * Interactive-mapping project list with phase progress (Admin or Builder).
  */
 export const InteractiveMappingProjectsPage = () => {
   const t = useTranslations('Admin.interactiveMapping');
+  const { basePath, createProjectHref, showLabLink } = useInteractiveMappingScope();
   const projectsQuery = useInteractiveMappingProjectsQuery();
 
   if (projectsQuery.isLoading) {
@@ -36,7 +37,7 @@ export const InteractiveMappingProjectsPage = () => {
           <p className="mt-2 text-sm text-ink-muted">{t('subtitle')}</p>
         </div>
         <Link
-          href="/admin/projects/new"
+          href={createProjectHref}
           className="rounded-sm border border-ink bg-ink px-4 py-3 text-xs uppercase tracking-[0.16em] text-on-dark"
         >
           {t('createProject')}
@@ -54,7 +55,7 @@ export const InteractiveMappingProjectsPage = () => {
             {projects.map((project) => (
               <li key={project.id}>
                 <Link
-                  href={`${INTERACTIVE_MAPPING_BASE_PATH}/${project.id}`}
+                  href={`${basePath}/${project.id}`}
                   className="flex flex-wrap items-center justify-between gap-3 rounded-sm border border-border bg-background px-4 py-4 transition hover:border-border-strong"
                 >
                   <div>
@@ -79,14 +80,13 @@ export const InteractiveMappingProjectsPage = () => {
         )}
       </section>
 
-      <p className="text-xs text-ink-muted">
-        <Link
-          href={`${INTERACTIVE_MAPPING_BASE_PATH}/lab`}
-          className="underline-offset-4 hover:underline"
-        >
-          {t('labLink')}
-        </Link>
-      </p>
+      {showLabLink ? (
+        <p className="text-xs text-ink-muted">
+          <Link href={`${basePath}/lab`} className="underline-offset-4 hover:underline">
+            {t('labLink')}
+          </Link>
+        </p>
+      ) : null}
     </div>
   );
 };

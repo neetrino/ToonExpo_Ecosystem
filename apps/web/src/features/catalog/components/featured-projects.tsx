@@ -45,8 +45,14 @@ export const FeaturedProjects = async ({ projects }: FeaturedProjectsProps) => {
                 className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
                 baseDelayMs={80}
               >
-                {projects.map((project) => (
-                  <ProjectCard key={project.id} project={project} featured showFavorite />
+                {projects.map((project, index) => (
+                  <ProjectCard
+                    key={project.id}
+                    project={project}
+                    featured
+                    showFavorite
+                    priority={index === 0}
+                  />
                 ))}
               </StaggerGroup>
             </ProjectPriceRangesOverlayScope>

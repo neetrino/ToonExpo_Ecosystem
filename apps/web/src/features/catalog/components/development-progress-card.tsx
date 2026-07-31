@@ -12,13 +12,19 @@ import { cn } from '@/shared/ui/cn';
 type DevelopmentProgressCardProps = {
   project: ProjectListItem;
   className?: string | undefined;
+  /** Above-the-fold cover — eager LCP (first watch card). */
+  priority?: boolean | undefined;
 };
 
 /**
  * Development watch card — image, status badge, price, sold progress.
  * Figma cards inside section `81:297`.
  */
-export const DevelopmentProgressCard = ({ project, className }: DevelopmentProgressCardProps) => {
+export const DevelopmentProgressCard = ({
+  project,
+  className,
+  priority = false,
+}: DevelopmentProgressCardProps) => {
   const t = useTranslations('HomePage.developments');
   const catalogT = useTranslations('Catalog');
   const locale = useLocale();
@@ -51,6 +57,8 @@ export const DevelopmentProgressCard = ({ project, className }: DevelopmentProgr
             src={project.cover.fileUrl}
             alt={project.cover.altText ?? project.name}
             fill
+            priority={priority}
+            loading={priority ? 'eager' : 'lazy'}
             className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
             sizes="(max-width: 768px) 100vw, 33vw"
           />
