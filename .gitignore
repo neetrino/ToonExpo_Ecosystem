@@ -17,6 +17,9 @@ build/
 coverage/
 .turbo/
 
+# MapLibre v6 worker assets (copied by apps/web/scripts/copy-maplibre-worker.mjs)
+apps/web/public/maplibre/
+
 # Prisma generated client
 packages/db/src/generated/
 

@@ -94,7 +94,7 @@ MapLibre/deck.gl are client-only (`dynamic(..., { ssr: false })`).
 | #   | Scope                                                                                        | Model             | Status  |
 | --- | -------------------------------------------------------------------------------------------- | ----------------- | ------- |
 | 1   | DB schema + migration + `geo-map` API module + media `model3d` kind + contracts + unit tests | Grok 4.5 High     | done    |
-| 2a  | `GeoMapCanvas` core: MapLibre + deck.gl integration, marker/model zoom switch                | Sonnet 5 High     | pending |
+| 2a  | `GeoMapCanvas` core: MapLibre + deck.gl integration, marker/model zoom switch                | Sonnet 5 High     | done    |
 | 2b  | Admin editor page: panel UI, upload flow, transform controls, wiring to API                  | Grok 4.5 High     | pending |
 | 3   | Public map page (reuse `GeoMapCanvas`, read-only)                                            | Composer 2.5 Fast | pending |
 | 4   | Map styling (brand colors, OSM building extrusions), polish, i18n strings                    | Composer 2.5 Fast | pending |
