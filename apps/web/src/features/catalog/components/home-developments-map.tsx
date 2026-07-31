@@ -59,13 +59,15 @@ export const HomeDevelopmentsMap = ({ projects }: HomeDevelopmentsMapProps) => {
   }, [projects]);
 
   /**
-   * Load the same catalog page as admin city-map so public pins match.
-   * Next Data Cache can serve a stale project list without lat/lng — browser
-   * fetch hits the API proxy and always has coords when the API is up.
+   * Fresh browser fetch (no-store): Next Data Cache can serve SSR projects
+   * without lat/lng; this pass always has coordinates when the API is up.
    */
   useEffect(() => {
     let cancelled = false;
-    void listProjects({ page: 1, pageSize: CITY_MAP_PROJECTS_PAGE_SIZE }, { locale })
+    void listProjects(
+      { page: 1, pageSize: CITY_MAP_PROJECTS_PAGE_SIZE },
+      { locale, cacheMode: 'no-store' },
+    )
       .then((response) => {
         if (cancelled || response.data.length === 0) {
           return;

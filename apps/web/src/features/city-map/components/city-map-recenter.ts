@@ -81,7 +81,7 @@ export class CityMapRecenterControl implements IControl {
     this.title = options.title ?? 'Recenter map';
   }
 
-  onAdd(_map: MapLibreMap): HTMLElement {
+  onAdd(): HTMLElement {
     const container = document.createElement('div');
     container.className = 'maplibregl-ctrl maplibregl-ctrl-group';
 

@@ -69,9 +69,8 @@ export const HomeDevelopments = async ({ projects }: HomeDevelopmentsProps) => {
                 }
               />
             </Reveal>
-            <Reveal delayMs={80}>
-              <HomeDevelopmentsMap projects={mapSeed} />
-            </Reveal>
+            {/* No Reveal around the map — CSS transform/opacity breaks MapLibre WebGL pins. */}
+            <HomeDevelopmentsMap projects={mapSeed} />
           </div>
         ) : null}
       </div>

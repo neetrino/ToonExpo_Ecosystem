@@ -10,13 +10,13 @@ import { HomeMortgage } from '@/features/catalog/components/home-mortgage';
 import { HomeStats } from '@/features/catalog/components/home-stats';
 import { SiteFooter } from '@/features/catalog/components/site-footer';
 import { collectProjectCities } from '@/features/catalog/utils/location-options';
+import { CITY_MAP_PROJECTS_PAGE_SIZE } from '@/features/city-map/constants';
 
 type HomePageProps = {
   params: Promise<{ locale: string }>;
 };
 
 const HOME_FEATURED_PAGE_SIZE = 7;
-const HOME_EXPLORE_PAGE_SIZE = 24;
 
 const emptyProjectPage = (pageSize: number): PaginatedResponse<ProjectListItem> => ({
   data: [],
@@ -41,34 +41,32 @@ export default async function HomePage({ params }: HomePageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const [projectsResponse, builders] = await Promise.all([
+  const [featuredResponse, mapProjectsResponse, builders] = await Promise.all([
     listProjects({ page: 1, pageSize: HOME_FEATURED_PAGE_SIZE }, { locale }).catch(() =>
       emptyProjectPage(HOME_FEATURED_PAGE_SIZE),
+    ),
+    listProjects({ page: 1, pageSize: CITY_MAP_PROJECTS_PAGE_SIZE }, { locale }).catch(() =>
+      emptyProjectPage(CITY_MAP_PROJECTS_PAGE_SIZE),
     ),
     listBuilders({ locale }).catch(() => []),
   ]);
 
-  const exploreProjects =
-    projectsResponse.data.length > 0
-      ? projectsResponse.data
-      : (
-          await listProjects({ page: 1, pageSize: HOME_EXPLORE_PAGE_SIZE }, { locale }).catch(() =>
-            emptyProjectPage(HOME_EXPLORE_PAGE_SIZE),
-          )
-        ).data;
+  const featuredProjects = featuredResponse.data;
+  const mapProjects =
+    mapProjectsResponse.data.length > 0 ? mapProjectsResponse.data : featuredProjects;
 
-  const locations = collectProjectCities([...projectsResponse.data, ...exploreProjects]);
+  const locations = collectProjectCities([...featuredProjects, ...mapProjects]);
 
   return (
     <div className="min-h-screen bg-canvas">
       <HomeHero locations={locations} />
       <HomeStats
-        projects={projectsResponse.data}
+        projects={featuredProjects}
         builderCount={builders.length}
-        projectTotal={projectsResponse.meta.total}
+        projectTotal={featuredResponse.meta.total}
       />
-      <FeaturedProjects projects={projectsResponse.data} />
-      <HomeDevelopments projects={exploreProjects} />
+      <FeaturedProjects projects={featuredProjects} />
+      <HomeDevelopments projects={mapProjects} />
       <HomeMortgage />
       <SiteFooter />
     </div>
