@@ -17,10 +17,10 @@ import {
 
 export const CITY_MAP_PIN_HALO_LAYER_ID = 'city-map-pins-halo-layer';
 
-const PIN_ICON_SIZE = 0.52;
-const PIN_ICON_SIZE_SELECTED = 0.66;
-const PIN_HALO_RADIUS = 12;
-const PIN_HALO_OPACITY = 0.18;
+const PIN_ICON_SIZE = 0.48;
+const PIN_ICON_SIZE_SELECTED = 0.62;
+const PIN_HALO_RADIUS = 14;
+const PIN_HALO_OPACITY = 0.14;
 
 const toFeatureCollection = (
   poses: CityMapModelPose[],

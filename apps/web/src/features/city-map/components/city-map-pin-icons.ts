@@ -3,129 +3,143 @@ import type { Map as MapLibreMap } from 'maplibre-gl';
 /** Brand tokens from `theme.css` (MapLibre paint cannot read CSS vars). */
 export const CITY_MAP_PIN_BRAND = '#1a8f98';
 export const CITY_MAP_PIN_BRAND_LIGHT = '#2ba8b0';
-export const CITY_MAP_PIN_BRAND_DEEP = '#092b44';
+export const CITY_MAP_PIN_BRAND_DEEP = '#0f6b73';
+export const CITY_MAP_PIN_NAVY = '#092b44';
 export const CITY_MAP_PIN_ACCENT = '#b8956c';
-export const CITY_MAP_PIN_DRAFT = '#8aa0b2';
-export const CITY_MAP_PIN_DRAFT_LIGHT = '#a8b8c6';
+export const CITY_MAP_PIN_ACCENT_LIGHT = '#d4b896';
+export const CITY_MAP_PIN_IVORY = '#fbf8f3';
+export const CITY_MAP_PIN_DRAFT = '#7d8f9e';
 export const CITY_MAP_PIN_ARCHIVED = '#6b7c8a';
-export const CITY_MAP_PIN_ARCHIVED_LIGHT = '#8493a0';
 export const CITY_MAP_PIN_STROKE = '#ffffff';
 
-export const CITY_MAP_PIN_IMAGE_DEFAULT = 'city-map-pin-default-v2';
-export const CITY_MAP_PIN_IMAGE_SELECTED = 'city-map-pin-selected-v2';
-export const CITY_MAP_PIN_IMAGE_DRAFT = 'city-map-pin-draft-v2';
-export const CITY_MAP_PIN_IMAGE_ARCHIVED = 'city-map-pin-archived-v2';
+export const CITY_MAP_PIN_IMAGE_DEFAULT = 'city-map-pin-default-v4';
+export const CITY_MAP_PIN_IMAGE_SELECTED = 'city-map-pin-selected-v4';
+export const CITY_MAP_PIN_IMAGE_DRAFT = 'city-map-pin-draft-v4';
+export const CITY_MAP_PIN_IMAGE_ARCHIVED = 'city-map-pin-archived-v4';
 
-const PIN_CANVAS_WIDTH = 72;
-const PIN_CANVAS_HEIGHT = 92;
-const PIN_PIXEL_RATIO = 2;
+const PIN_CANVAS_WIDTH = 80;
+const PIN_CANVAS_HEIGHT = 100;
+const PIN_PIXEL_RATIO = 3;
 
 type PinPalette = {
-  fill: string;
-  fillLight: string;
-  stroke: string;
+  fillTop: string;
+  fillMid: string;
+  fillBottom: string;
+  rim: string;
+  rimInner: string;
   disc: string;
-  glyph: string;
-  glow?: string;
-  ring?: string;
+  discRing: string;
+  glyphRoof: string;
+  glyphBody: string;
+  glow: string;
+  jewel?: boolean;
 };
 
 const drawGroundShadow = (ctx: CanvasRenderingContext2D, cx: number, tipY: number): void => {
-  ctx.save();
-  ctx.fillStyle = 'rgba(11, 34, 48, 0.22)';
+  const shade = ctx.createRadialGradient(cx, tipY + 1, 1, cx, tipY + 1, 14);
+  shade.addColorStop(0, 'rgba(6, 28, 44, 0.35)');
+  shade.addColorStop(1, 'rgba(6, 28, 44, 0)');
+  ctx.fillStyle = shade;
   ctx.beginPath();
-  ctx.ellipse(cx, tipY + 1, 9, 3.2, 0, 0, Math.PI * 2);
+  ctx.ellipse(cx, tipY + 2, 12, 4, 0, 0, Math.PI * 2);
   ctx.fill();
-  ctx.restore();
 };
 
-const drawBuildingGlyph = (
+/** Brand house mark proportions (from Figma `81:607`), scaled into the pin disc. */
+const drawHouseGlyph = (
   ctx: CanvasRenderingContext2D,
   cx: number,
   cy: number,
-  color: string,
+  roof: string,
+  body: string,
 ): void => {
-  const bodyW = 11;
-  const bodyH = 12;
-  const left = cx - bodyW / 2;
-  const top = cy - bodyH / 2 + 1;
+  const s = 0.55;
+  const ox = cx - 14 * s;
+  const oy = cy - 13 * s;
 
-  ctx.fillStyle = color;
+  ctx.fillStyle = roof;
   ctx.beginPath();
-  ctx.moveTo(cx, top - 4);
-  ctx.lineTo(left - 1, top + 1);
-  ctx.lineTo(left + bodyW + 1, top + 1);
+  ctx.moveTo(ox + 3.5 * s, oy + 15.75 * s);
+  ctx.lineTo(ox + 14 * s, oy + 5.25 * s);
+  ctx.lineTo(ox + 19.25 * s, oy + 9.625 * s);
+  ctx.lineTo(ox + 19.25 * s, oy + 6.125 * s);
+  ctx.lineTo(ox + 22.75 * s, oy + 6.125 * s);
+  ctx.lineTo(ox + 22.75 * s, oy + 12.25 * s);
+  ctx.lineTo(ox + 24.5 * s, oy + 14 * s);
+  ctx.lineTo(ox + 24.5 * s, oy + 15.75 * s);
   ctx.closePath();
   ctx.fill();
 
-  ctx.fillRect(left, top + 1, bodyW, bodyH);
+  ctx.fillStyle = body;
+  ctx.fillRect(ox + 6.125 * s, oy + 15.75 * s, 15.75 * s, 7 * s);
+};
 
-  const windowFill = 'rgba(255, 255, 255, 0.92)';
-  const slots: Array<[number, number]> = [
-    [-3, 3],
-    [2, 3],
-    [-3, 7],
-    [2, 7],
-  ];
-  ctx.fillStyle = windowFill;
-  for (const [dx, dy] of slots) {
-    ctx.fillRect(cx + dx, top + dy, 2.4, 2.4);
-  }
+const tracePinPath = (
+  ctx: CanvasRenderingContext2D,
+  cx: number,
+  headCy: number,
+  radius: number,
+  tipY: number,
+): void => {
+  ctx.beginPath();
+  ctx.moveTo(cx, tipY);
+  ctx.bezierCurveTo(cx - 2.5, tipY - 14, cx - radius, headCy + 12, cx - radius, headCy);
+  ctx.arc(cx, headCy, radius, Math.PI, 0, false);
+  ctx.bezierCurveTo(cx + radius, headCy + 12, cx + 2.5, tipY - 14, cx, tipY);
+  ctx.closePath();
 };
 
 const drawMarkerPin = (ctx: CanvasRenderingContext2D, palette: PinPalette): void => {
   const cx = PIN_CANVAS_WIDTH / 2;
-  const top = 10;
-  const radius = 20;
+  const top = 12;
+  const radius = 22;
   const headCy = top + radius;
-  const tipY = PIN_CANVAS_HEIGHT - 8;
+  const tipY = PIN_CANVAS_HEIGHT - 10;
 
   drawGroundShadow(ctx, cx, tipY);
+  tracePinPath(ctx, cx, headCy, radius, tipY);
 
-  ctx.beginPath();
-  ctx.moveTo(cx, tipY);
-  ctx.bezierCurveTo(cx - 3, tipY - 12, cx - radius, headCy + 10, cx - radius, headCy);
-  ctx.arc(cx, headCy, radius, Math.PI, 0, false);
-  ctx.bezierCurveTo(cx + radius, headCy + 10, cx + 3, tipY - 12, cx, tipY);
-  ctx.closePath();
-
-  if (palette.glow) {
-    ctx.shadowColor = palette.glow;
-    ctx.shadowBlur = 14;
-    ctx.shadowOffsetY = 4;
-  }
+  ctx.shadowColor = palette.glow;
+  ctx.shadowBlur = palette.jewel ? 18 : 12;
+  ctx.shadowOffsetY = 5;
 
   const fill = ctx.createLinearGradient(cx, top, cx, tipY);
-  fill.addColorStop(0, palette.fillLight);
-  fill.addColorStop(0.55, palette.fill);
-  fill.addColorStop(1, palette.fill);
+  fill.addColorStop(0, palette.fillTop);
+  fill.addColorStop(0.42, palette.fillMid);
+  fill.addColorStop(1, palette.fillBottom);
   ctx.fillStyle = fill;
   ctx.fill();
+
   ctx.shadowColor = 'transparent';
   ctx.shadowBlur = 0;
   ctx.shadowOffsetY = 0;
 
-  if (palette.ring) {
-    ctx.lineWidth = 5;
-    ctx.strokeStyle = palette.ring;
-    ctx.stroke();
-  }
-
-  ctx.lineWidth = 3;
-  ctx.strokeStyle = palette.stroke;
+  ctx.lineWidth = 4.5;
+  ctx.strokeStyle = palette.rim;
   ctx.stroke();
 
+  ctx.lineWidth = 1.6;
+  ctx.strokeStyle = palette.rimInner;
+  ctx.stroke();
+
+  const sheen = ctx.createRadialGradient(cx - 8, headCy - 10, 1, cx - 4, headCy - 4, 18);
+  sheen.addColorStop(0, 'rgba(255, 255, 255, 0.28)');
+  sheen.addColorStop(1, 'rgba(255, 255, 255, 0)');
+  ctx.fillStyle = sheen;
   ctx.beginPath();
-  ctx.arc(cx - 6, headCy - 7, 5.5, 0, Math.PI * 2);
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.22)';
+  ctx.arc(cx, headCy, radius - 2, 0, Math.PI * 2);
   ctx.fill();
 
   ctx.beginPath();
-  ctx.arc(cx, headCy, 11, 0, Math.PI * 2);
+  ctx.arc(cx, headCy, 12.5, 0, Math.PI * 2);
   ctx.fillStyle = palette.disc;
   ctx.fill();
 
-  drawBuildingGlyph(ctx, cx, headCy, palette.glyph);
+  ctx.lineWidth = 1.8;
+  ctx.strokeStyle = palette.discRing;
+  ctx.stroke();
+
+  drawHouseGlyph(ctx, cx, headCy + 0.5, palette.glyphRoof, palette.glyphBody);
 };
 
 const createPinImageData = (
@@ -160,52 +174,68 @@ const PIN_IMAGES: Array<{ id: string; palette: PinPalette }> = [
   {
     id: CITY_MAP_PIN_IMAGE_DEFAULT,
     palette: {
-      fill: CITY_MAP_PIN_BRAND,
-      fillLight: CITY_MAP_PIN_BRAND_LIGHT,
-      stroke: CITY_MAP_PIN_STROKE,
-      disc: '#ffffff',
-      glyph: CITY_MAP_PIN_BRAND_DEEP,
-      glow: 'rgba(9, 43, 68, 0.32)',
+      fillTop: CITY_MAP_PIN_BRAND_LIGHT,
+      fillMid: CITY_MAP_PIN_BRAND,
+      fillBottom: CITY_MAP_PIN_BRAND_DEEP,
+      rim: CITY_MAP_PIN_STROKE,
+      rimInner: 'rgba(255, 255, 255, 0.45)',
+      disc: CITY_MAP_PIN_IVORY,
+      discRing: CITY_MAP_PIN_ACCENT,
+      glyphRoof: CITY_MAP_PIN_ACCENT,
+      glyphBody: CITY_MAP_PIN_NAVY,
+      glow: 'rgba(15, 107, 115, 0.4)',
     },
   },
   {
     id: CITY_MAP_PIN_IMAGE_SELECTED,
     palette: {
-      fill: CITY_MAP_PIN_BRAND_DEEP,
-      fillLight: '#134060',
-      stroke: CITY_MAP_PIN_STROKE,
-      disc: '#ffffff',
-      glyph: CITY_MAP_PIN_BRAND_DEEP,
+      fillTop: '#3bb8c0',
+      fillMid: CITY_MAP_PIN_BRAND,
+      fillBottom: CITY_MAP_PIN_NAVY,
+      rim: CITY_MAP_PIN_ACCENT_LIGHT,
+      rimInner: CITY_MAP_PIN_STROKE,
+      disc: CITY_MAP_PIN_IVORY,
+      discRing: CITY_MAP_PIN_ACCENT,
+      glyphRoof: CITY_MAP_PIN_ACCENT,
+      glyphBody: CITY_MAP_PIN_NAVY,
       glow: 'rgba(184, 149, 108, 0.55)',
-      ring: CITY_MAP_PIN_ACCENT,
+      jewel: true,
     },
   },
   {
     id: CITY_MAP_PIN_IMAGE_DRAFT,
     palette: {
-      fill: CITY_MAP_PIN_DRAFT,
-      fillLight: CITY_MAP_PIN_DRAFT_LIGHT,
-      stroke: CITY_MAP_PIN_STROKE,
-      disc: '#f8fafc',
-      glyph: '#475569',
-      glow: 'rgba(11, 34, 48, 0.18)',
+      fillTop: '#9aabba',
+      fillMid: CITY_MAP_PIN_DRAFT,
+      fillBottom: '#657787',
+      rim: '#e8eef2',
+      rimInner: 'rgba(255, 255, 255, 0.4)',
+      disc: '#f5f7f9',
+      discRing: '#c5d0d8',
+      glyphRoof: '#a8b8c6',
+      glyphBody: '#4a5c6a',
+      glow: 'rgba(11, 34, 48, 0.2)',
     },
   },
   {
     id: CITY_MAP_PIN_IMAGE_ARCHIVED,
     palette: {
-      fill: CITY_MAP_PIN_ARCHIVED,
-      fillLight: CITY_MAP_PIN_ARCHIVED_LIGHT,
-      stroke: '#e2e8f0',
-      disc: '#f8fafc',
-      glyph: '#64748b',
-      glow: 'rgba(11, 34, 48, 0.12)',
+      fillTop: '#8493a0',
+      fillMid: CITY_MAP_PIN_ARCHIVED,
+      fillBottom: '#556370',
+      rim: '#dce3e8',
+      rimInner: 'rgba(255, 255, 255, 0.3)',
+      disc: '#f1f4f6',
+      discRing: '#b0bcc6',
+      glyphRoof: '#9aa8b4',
+      glyphBody: '#5a6a76',
+      glow: 'rgba(11, 34, 48, 0.14)',
     },
   },
 ];
 
 /**
- * Registers brand-styled teardrop pin sprites on the MapLibre map (once).
+ * Registers luxury brand pin sprites (teal + champagne) on the MapLibre map.
  */
 export const ensureCityMapPinImages = (map: MapLibreMap): void => {
   for (const item of PIN_IMAGES) {
