@@ -14,7 +14,6 @@ type HomeDevelopmentsProps = {
 };
 
 const WATCH_CARD_COUNT = 3;
-const MAP_LIST_COUNT = 6;
 
 /**
  * Under-construction developments + map view — Figma section `81:297`.
@@ -22,7 +21,8 @@ const MAP_LIST_COUNT = 6;
 export const HomeDevelopments = async ({ projects }: HomeDevelopmentsProps) => {
   const t = await getTranslations('HomePage.developments');
   const watchProjects = projects.slice(0, WATCH_CARD_COUNT);
-  const mapProjects = projects.slice(0, MAP_LIST_COUNT);
+  const mapProjects = projects.filter((project) => Boolean(project.latitude && project.longitude));
+  const mapSeed = mapProjects.length > 0 ? mapProjects : projects;
 
   return (
     <section className="border-y border-header-border bg-band-mist/30">
@@ -52,7 +52,7 @@ export const HomeDevelopments = async ({ projects }: HomeDevelopmentsProps) => {
           </StaggerGroup>
         )}
 
-        {mapProjects.length > 0 ? (
+        {mapSeed.length > 0 ? (
           <div className="mt-16">
             <Reveal>
               <SectionHeader
@@ -70,7 +70,7 @@ export const HomeDevelopments = async ({ projects }: HomeDevelopmentsProps) => {
               />
             </Reveal>
             <Reveal delayMs={80}>
-              <HomeDevelopmentsMap projects={mapProjects} />
+              <HomeDevelopmentsMap projects={mapSeed} />
             </Reveal>
           </div>
         ) : null}

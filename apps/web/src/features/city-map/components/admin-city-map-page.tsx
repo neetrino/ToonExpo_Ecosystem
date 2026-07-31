@@ -27,6 +27,7 @@ import {
 import {
   CITY_MAP_DEFAULT_CONFIG,
   CITY_MAP_DRAFT_PREVIEW_ID,
+  CITY_MAP_PROJECTS_PAGE_SIZE,
   filterCityMapPlacementsByQuery,
   isCityMapProjectPinId,
   mergeMapPosesWithProjectPins,
@@ -44,8 +45,6 @@ const EMPTY_TRANSFORM: AdminCityMapTransform = {
   scale: 1,
   minZoom: 13,
 };
-
-const ADMIN_MAP_PROJECTS_PAGE_SIZE = 48;
 
 export const AdminCityMapPage = () => {
   const t = useTranslations('Admin.cityMap');
@@ -112,7 +111,7 @@ export const AdminCityMapPage = () => {
     try {
       const [placementResponse, projectResponse] = await Promise.all([
         listAdminCityMapPlacements(),
-        listProjects({ page: 1, pageSize: ADMIN_MAP_PROJECTS_PAGE_SIZE }, { locale }).catch(() => ({
+        listProjects({ page: 1, pageSize: CITY_MAP_PROJECTS_PAGE_SIZE }, { locale }).catch(() => ({
           data: [] as ProjectListItem[],
         })),
       ]);

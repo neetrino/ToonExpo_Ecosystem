@@ -13,6 +13,8 @@ export const CITY_MAP_CUSTOM_LAYER_ID = 'city-map-three-buildings';
 export const CITY_MAP_MAPLIBRE_WORKER_URL = '/maplibre/maplibre-gl-csp-worker.js';
 export const CITY_MAP_PROJECT_PIN_PREFIX = 'project:';
 export const CITY_MAP_DRAFT_PREVIEW_ID = '__draft_preview__';
+/** Shared page size for admin + public map project pins. */
+export const CITY_MAP_PROJECTS_PAGE_SIZE = 48;
 
 export const CITY_MAP_DEFAULT_CONFIG: PublicCityMapConfig = {
   styleUrl: 'https://tiles.openfreemap.org/styles/liberty',

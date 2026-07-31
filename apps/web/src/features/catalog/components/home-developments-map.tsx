@@ -17,15 +17,17 @@ import {
   listPublicCityMapPlacements,
 } from '@/features/city-map/api/city-map-api';
 import { CityMapView } from '@/features/city-map/components/city-map-view';
-import { mergeHomeMapPoses, projectPinId } from '@/features/city-map/constants';
+import {
+  mergeHomeMapPoses,
+  projectPinId,
+  CITY_MAP_PROJECTS_PAGE_SIZE,
+} from '@/features/city-map/constants';
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 
 type HomeDevelopmentsMapProps = {
   projects: ProjectListItem[];
 };
-
-const LIVE_PROJECTS_PAGE_SIZE = 48;
 
 const projectHasCoords = (project: ProjectListItem): boolean =>
   Boolean(project.latitude && project.longitude);
@@ -46,30 +48,35 @@ export const HomeDevelopmentsMap = ({ projects }: HomeDevelopmentsMapProps) => {
   const [flyToId, setFlyToId] = useState<string | null>(null);
   const [selectedPlacementId, setSelectedPlacementId] = useState<string | null>(null);
 
-  const selected = projects.find((project) => project.id === selectedId) ?? projects[0];
+  const selected =
+    pinProjects.find((project) => project.id === selectedId) ??
+    projects.find((project) => project.id === selectedId) ??
+    pinProjects[0] ??
+    projects[0];
 
   useEffect(() => {
     setPinProjects(projects);
   }, [projects]);
 
   /**
-   * Next Data Cache can serve a stale project list without lat/lng after schema
-   * additions. Browser fetch hits the API proxy directly and always has coords.
+   * Load the same catalog page as admin city-map so public pins match.
+   * Next Data Cache can serve a stale project list without lat/lng — browser
+   * fetch hits the API proxy and always has coords when the API is up.
    */
   useEffect(() => {
     let cancelled = false;
-    void listProjects({ page: 1, pageSize: LIVE_PROJECTS_PAGE_SIZE }, { locale })
+    void listProjects({ page: 1, pageSize: CITY_MAP_PROJECTS_PAGE_SIZE }, { locale })
       .then((response) => {
         if (cancelled || response.data.length === 0) {
           return;
         }
-        const byId = new Map(response.data.map((item) => [item.id, item]));
-        const enriched = projects.map((project) => byId.get(project.id) ?? project);
-        if (enriched.some(projectHasCoords)) {
-          setPinProjects(enriched);
+        const withCoords = response.data.filter(projectHasCoords);
+        if (withCoords.length > 0) {
+          setPinProjects(withCoords);
           return;
         }
-        setPinProjects(response.data.filter(projectHasCoords).slice(0, projects.length));
+        const byId = new Map(response.data.map((item) => [item.id, item]));
+        setPinProjects(projects.map((project) => byId.get(project.id) ?? project));
       })
       .catch(() => {
         /* keep SSR props */
@@ -274,8 +281,8 @@ export const HomeDevelopmentsMap = ({ projects }: HomeDevelopmentsMapProps) => {
             {t('allDevelopments')}
           </p>
           <ul className="mt-2 divide-y divide-header-border">
-            {projects.map((project) => {
-              const isActive = project.id === selected.id;
+            {pinProjects.map((project) => {
+              const isActive = project.id === selected?.id;
               return (
                 <li key={project.id}>
                   <button
