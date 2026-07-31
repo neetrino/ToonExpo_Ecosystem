@@ -328,6 +328,7 @@
     "specArea": "{area} m²",
     "saveSearchHint": "Save this search to get email alerts when new homes match.",
     "saveSearch": "Save search",
+    "showOnMap": "Show on map",
     "filters": {
       "location": "Location",
       "allCities": "All cities",

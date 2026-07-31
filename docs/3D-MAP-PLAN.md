@@ -91,15 +91,15 @@ MapLibre/deck.gl are client-only (`dynamic(..., { ssr: false })`).
 
 ## Stages
 
-| #   | Scope                                                                                        | Model             | Status  |
-| --- | -------------------------------------------------------------------------------------------- | ----------------- | ------- |
-| 1   | DB schema + migration + `geo-map` API module + media `model3d` kind + contracts + unit tests | Grok 4.5 High     | done    |
-| 2a  | `GeoMapCanvas` core: MapLibre + deck.gl integration, marker/model zoom switch                | Sonnet 5 High     | done    |
-| 2b  | Admin editor page: panel UI, upload flow, transform controls, wiring to API                  | Grok 4.5 High     | done    |
-| 3   | Public map page (reuse `GeoMapCanvas`, read-only)                                            | Composer 2.5 Fast | done    |
-| 4   | Map styling (brand colors, OSM building extrusions), polish, i18n strings                    | Grok 4.5 High     | done    |
-| 5   | Home page map: replace test map with `GeoMapCanvas` + project search                         | Grok 4.5 High     | done    |
-| 6   | Apartments page: interactive map synced with apartment selection                             | Grok 4.5 High     | pending |
+| #   | Scope                                                                                        | Model             | Status |
+| --- | -------------------------------------------------------------------------------------------- | ----------------- | ------ |
+| 1   | DB schema + migration + `geo-map` API module + media `model3d` kind + contracts + unit tests | Grok 4.5 High     | done   |
+| 2a  | `GeoMapCanvas` core: MapLibre + deck.gl integration, marker/model zoom switch                | Sonnet 5 High     | done   |
+| 2b  | Admin editor page: panel UI, upload flow, transform controls, wiring to API                  | Grok 4.5 High     | done   |
+| 3   | Public map page (reuse `GeoMapCanvas`, read-only)                                            | Composer 2.5 Fast | done   |
+| 4   | Map styling (brand colors, OSM building extrusions), polish, i18n strings                    | Grok 4.5 High     | done   |
+| 5   | Home page map: replace test map with `GeoMapCanvas` + project search                         | Grok 4.5 High     | done   |
+| 6   | Apartments page: interactive map synced with apartment selection                             | Grok 4.5 High     | done   |
 
 ### Stage 5 — Home page map
 
@@ -124,6 +124,14 @@ On `apps/web/src/app/[locale]/apartments` add/replace the map with
 the 3D model of the project the apartment belongs to (apartment → project →
 map model). Reverse direction (click model → filter apartment list) is a
 nice-to-have — confirm with the owner before implementing.
+
+**Done:** Replaced the static Buy-page map image with `GeoMapCanvasLazy`
+(published models via `usePublicGeoMapModelsQuery`). Cards keep navigating
+to the apartment on click; an explicit **Show on map** affordance (hidden
+when the project has no published model) sets `focusRequest` +
+`highlightedObjectId` for that project's model. Map marker/model click →
+project page via `buildProjectPublicHref`. Reverse list-filter deferred.
+Pure util `resolveMapObjectForProject` + unit tests.
 
 ### Production follow-up (final control stage)
 

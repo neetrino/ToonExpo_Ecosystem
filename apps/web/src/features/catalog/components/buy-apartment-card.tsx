@@ -1,5 +1,6 @@
 'use client';
 
+import { MapPin } from 'lucide-react';
 import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
 
@@ -11,15 +12,21 @@ import { cn } from '@/shared/ui/cn';
 type BuyApartmentCardProps = {
   listing: BuyApartmentListing;
   highlighted?: boolean | undefined;
+  /** When true, shows a "Show on map" control (project has a published 3D model). */
+  canShowOnMap?: boolean | undefined;
+  onShowOnMap?: (() => void) | undefined;
   className?: string | undefined;
 };
 
 /**
  * Buy-page apartment card — Figma `103:1437` listing grid.
+ * Card body navigates to the apartment; optional map affordance focuses the project on the map.
  */
 export const BuyApartmentCard = ({
   listing,
   highlighted = false,
+  canShowOnMap = false,
+  onShowOnMap,
   className,
 }: BuyApartmentCardProps) => {
   const t = useTranslations('BuyPage');
@@ -97,6 +104,27 @@ export const BuyApartmentCard = ({
           </div>
         </div>
       </Link>
+
+      {canShowOnMap && onShowOnMap ? (
+        <div className="px-3 pb-3">
+          <button
+            type="button"
+            className={cn(
+              'inline-flex h-8 items-center gap-1.5 rounded-xl px-3',
+              'text-xs font-semibold text-brand-deep',
+              'ring-1 ring-header-border transition-colors',
+              'hover:bg-brand-soft/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand',
+            )}
+            onClick={(event) => {
+              event.preventDefault();
+              onShowOnMap();
+            }}
+          >
+            <MapPin className="size-3.5 shrink-0" aria-hidden />
+            {t('showOnMap')}
+          </button>
+        </div>
+      ) : null}
     </article>
   );
 };
