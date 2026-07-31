@@ -1,6 +1,11 @@
 # 3D Map — Implementation Plan
 
-**Status:** In progress · **Owner:** Orchestrator (Fable 5) · **Created:** 2026-07-31
+**Status:** v1 complete (stages 1–6 done; final control passed 2026-08-01) ·
+**Owner:** Orchestrator (Fable 5) · **Created:** 2026-07-31
+
+Remaining production follow-ups: R2 bucket CORS (remove `/r2-proxy`),
+OSM-extrusion footprint filter under our models, reverse apartments-map sync
+(pending owner decision).
 
 ## Goal
 
