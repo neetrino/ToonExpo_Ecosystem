@@ -3,14 +3,15 @@ import {
   Inject,
   Injectable,
   ServiceUnavailableException,
-} from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import type { MediaAssetItem, MediaListResponse } from "@toonexpo/contracts";
-import { MediaAssetType } from "@toonexpo/db";
-import { imageSize } from "image-size";
+} from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import type { MediaAssetItem, MediaListResponse } from '@toonexpo/contracts';
+import { MediaAssetType } from '@toonexpo/db';
+import { imageSize } from 'image-size';
 
-import type { AppEnv } from "../config/env.validation.js";
-import { PrismaService } from "../prisma/prisma.service.js";
+import type { AppEnv } from '../config/env.validation.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { CITY_MAP_DEFAULT_MAX_GLB_BYTES } from '../city-map/city-map.constants.js';
 import {
   MEDIA_ALLOWED_MIME_TYPES,
   MEDIA_DEFAULT_PAGE_SIZE,
@@ -20,15 +21,15 @@ import {
   MEDIA_UPLOAD_MAX_BYTES,
   R2_NOT_CONFIGURED_MESSAGE,
   type MediaAllowedMimeType,
-} from "./media.constants.js";
+} from './media.constants.js';
 import {
   buildObjectKey,
   buildPublicFileUrl,
   isR2ConfiguredFromService,
   sanitizeOriginalFilename,
-} from "./media.config.js";
-import { toMediaAssetItem } from "./media.mapper.js";
-import { R2_STORAGE, type R2StorageClient, type UploadedMediaScope } from "./media.types.js";
+} from './media.config.js';
+import { toMediaAssetItem } from './media.mapper.js';
+import { R2_STORAGE, type R2StorageClient, type UploadedMediaScope } from './media.types.js';
 
 type UploadInput = {
   buffer: Buffer;
@@ -54,19 +55,43 @@ export class MediaUploadService {
 
   validateUpload(buffer: Buffer, mimeType: string): MediaAllowedMimeType {
     const normalizedMime = mimeType.trim().toLowerCase();
-    if (
-      !MEDIA_ALLOWED_MIME_TYPES.includes(normalizedMime as MediaAllowedMimeType)
-    ) {
-      throw new BadRequestException(
-        "Only JPEG, PNG, WebP, and AVIF images are allowed",
-      );
+    if (!MEDIA_ALLOWED_MIME_TYPES.includes(normalizedMime as MediaAllowedMimeType)) {
+      throw new BadRequestException('Only JPEG, PNG, WebP, and AVIF images are allowed');
     }
 
     if (buffer.byteLength > MEDIA_UPLOAD_MAX_BYTES) {
-      throw new BadRequestException("Image exceeds the 10 MB upload limit");
+      throw new BadRequestException('Image exceeds the 10 MB upload limit');
     }
 
     return normalizedMime as MediaAllowedMimeType;
+  }
+
+  validateGlbUpload(
+    buffer: Buffer,
+    mimeType: string,
+    originalFilename: string,
+  ): 'model/gltf-binary' | 'application/octet-stream' {
+    const normalizedMime = mimeType.trim().toLowerCase();
+    const lowerName = originalFilename.trim().toLowerCase();
+    const maxBytes = CITY_MAP_DEFAULT_MAX_GLB_BYTES;
+
+    if (!lowerName.endsWith('.glb')) {
+      throw new BadRequestException('Only .glb files are allowed');
+    }
+
+    if (normalizedMime !== 'model/gltf-binary' && normalizedMime !== 'application/octet-stream') {
+      throw new BadRequestException(
+        'GLB mime type must be model/gltf-binary or application/octet-stream',
+      );
+    }
+
+    if (buffer.byteLength > maxBytes) {
+      throw new BadRequestException(
+        `GLB exceeds the ${Math.floor(maxBytes / (1024 * 1024))} MB upload limit`,
+      );
+    }
+
+    return normalizedMime;
   }
 
   async uploadImage(input: UploadInput): Promise<MediaAssetItem> {
@@ -75,14 +100,13 @@ export class MediaUploadService {
     const mimeType = this.validateUpload(input.buffer, input.mimeType);
     const dimensions = readImageDimensions(input.buffer);
     const extension = MEDIA_MIME_TO_EXT[mimeType];
-    const ownerCompanyId =
-      input.scope.kind === "company" ? input.scope.companyId : null;
+    const ownerCompanyId = input.scope.kind === 'company' ? input.scope.companyId : null;
 
     const draft = await this.prisma.db.mediaAsset.create({
       data: {
         ownerCompanyId,
         type: MediaAssetType.image,
-        fileUrl: "pending",
+        fileUrl: 'pending',
         title: sanitizeOriginalFilename(input.originalFilename),
         width: dimensions?.width ?? null,
         height: dimensions?.height ?? null,
@@ -91,12 +115,54 @@ export class MediaUploadService {
     });
 
     const key = buildObjectKey(
-      input.scope.kind === "company" ? "company" : "platform",
+      input.scope.kind === 'company' ? 'company' : 'platform',
       draft.id,
       extension,
       ownerCompanyId ?? undefined,
     );
-    const publicUrl = this.configService.get("R2_PUBLIC_URL", { infer: true });
+    const publicUrl = this.configService.get('R2_PUBLIC_URL', { infer: true });
+    if (!publicUrl) {
+      throw new ServiceUnavailableException(R2_NOT_CONFIGURED_MESSAGE);
+    }
+
+    const fileUrl = buildPublicFileUrl(publicUrl, key);
+
+    try {
+      await this.r2Storage!.uploadObject(key, input.buffer, mimeType);
+      const asset = await this.prisma.db.mediaAsset.update({
+        where: { id: draft.id },
+        data: { fileUrl },
+      });
+      return toMediaAssetItem(asset);
+    } catch (error) {
+      await this.prisma.db.mediaAsset.delete({ where: { id: draft.id } });
+      throw error;
+    }
+  }
+
+  async uploadModel3d(input: UploadInput): Promise<MediaAssetItem> {
+    this.assertConfigured();
+
+    const mimeType = this.validateGlbUpload(input.buffer, input.mimeType, input.originalFilename);
+    const ownerCompanyId = input.scope.kind === 'company' ? input.scope.companyId : null;
+
+    const draft = await this.prisma.db.mediaAsset.create({
+      data: {
+        ownerCompanyId,
+        type: MediaAssetType.model3d,
+        fileUrl: 'pending',
+        title: sanitizeOriginalFilename(input.originalFilename),
+        uploadedByUserId: input.uploadedByUserId,
+      },
+    });
+
+    const key = buildObjectKey(
+      input.scope.kind === 'company' ? 'company' : 'platform',
+      draft.id,
+      'glb',
+      ownerCompanyId ?? undefined,
+    );
+    const publicUrl = this.configService.get('R2_PUBLIC_URL', { infer: true });
     if (!publicUrl) {
       throw new ServiceUnavailableException(R2_NOT_CONFIGURED_MESSAGE);
     }
@@ -124,10 +190,7 @@ export class MediaUploadService {
     return this.listMedia({ ownerCompanyId: companyId }, page, pageSize);
   }
 
-  async listPlatformMedia(
-    page: number,
-    pageSize: number,
-  ): Promise<MediaListResponse> {
+  async listPlatformMedia(page: number, pageSize: number): Promise<MediaListResponse> {
     return this.listMedia({ ownerCompanyId: null }, page, pageSize);
   }
 
@@ -149,7 +212,7 @@ export class MediaUploadService {
       this.prisma.db.mediaAsset.count({ where }),
       this.prisma.db.mediaAsset.findMany({
         where,
-        orderBy: [{ createdAt: "desc" }],
+        orderBy: [{ createdAt: 'desc' }],
         skip,
         take: pageSize,
       }),
@@ -167,9 +230,7 @@ export class MediaUploadService {
   }
 }
 
-const readImageDimensions = (
-  buffer: Buffer,
-): { width: number; height: number } | null => {
+const readImageDimensions = (buffer: Buffer): { width: number; height: number } | null => {
   try {
     const result = imageSize(buffer);
     if (result.width == null || result.height == null) {

@@ -6,6 +6,7 @@
   "description": "ToonExpo Next.js frontend",
   "scripts": {
     "dev": "next dev -p 3000",
+    "prebuild": "node scripts/copy-maplibre-worker.mjs",
     "build": "next build",
     "start": "next start -p 3000",
     "lint": "eslint .",
@@ -15,7 +16,8 @@
     "e2e": "node scripts/e2e-with-seed.mjs",
     "e2e:playwright": "node scripts/e2e-with-seed.mjs --skip-seed",
     "e2e:ui": "node scripts/e2e-with-seed.mjs --ui",
-    "e2e:install": "playwright install chromium"
+    "e2e:install": "playwright install chromium",
+    "sync:maplibre-worker": "node scripts/copy-maplibre-worker.mjs"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -29,6 +31,7 @@
     "@yudiel/react-qr-scanner": "^2.6.0",
     "clsx": "2.1.1",
     "lucide-react": "0.525.0",
+    "maplibre-gl": "5.24.0",
     "next": "16.2.10",
     "next-intl": "4.13.2",
     "qrcode.react": "^4.2.0",
@@ -36,6 +39,7 @@
     "react-dom": "19.2.7",
     "react-hook-form": "^7.81.0",
     "tailwind-merge": "3.6.0",
+    "three": "0.185.1",
     "zod": "4.4.3"
   },
   "devDependencies": {
@@ -45,6 +49,7 @@
     "@types/node": "^24.10.1",
     "@types/react": "19.2.17",
     "@types/react-dom": "19.2.3",
+    "@types/three": "0.185.1",
     "dotenv": "^17.2.3",
     "eslint": "^9.39.2",
     "eslint-config-next": "16.2.10",

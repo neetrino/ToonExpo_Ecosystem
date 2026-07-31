@@ -1,0 +1,30 @@
+/// City map: admin-placed GLB models linked to catalog buildings (geo MapLibre + Three).
+
+model CityMapPlacement {
+  id                 String            @id @default(cuid())
+  buildingId         String            @unique @map("building_id")
+  projectId          String            @map("project_id")
+  glbMediaAssetId    String            @map("glb_media_asset_id")
+  longitude          Decimal           @db.Decimal(10, 7)
+  latitude           Decimal           @db.Decimal(10, 7)
+  altitude           Float             @default(0)
+  rotationX          Float             @default(90) @map("rotation_x")
+  rotationY          Float             @default(0) @map("rotation_y")
+  rotationZ          Float             @default(0) @map("rotation_z")
+  scale              Float             @default(1)
+  minZoom            Int               @default(13) @map("min_zoom")
+  publicationStatus  PublicationStatus @default(draft) @map("publication_status")
+  labelOverride      String?           @map("label_override")
+  createdByUserId    String?           @map("created_by_user_id")
+  updatedByUserId    String?           @map("updated_by_user_id")
+  createdAt          DateTime          @default(now()) @map("created_at")
+  updatedAt          DateTime          @updatedAt @map("updated_at")
+
+  building      Building   @relation(fields: [buildingId], references: [id], onDelete: Cascade)
+  project       Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  glbMediaAsset MediaAsset @relation("CityMapGlb", fields: [glbMediaAssetId], references: [id], onDelete: Restrict)
+
+  @@index([projectId])
+  @@index([publicationStatus])
+  @@map("city_map_placements")
+}

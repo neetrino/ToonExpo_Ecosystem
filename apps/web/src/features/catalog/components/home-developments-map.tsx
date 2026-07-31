@@ -1,12 +1,22 @@
 'use client';
 
-import type { ProjectListItem } from '@toonexpo/contracts';
+import type {
+  ProjectListItem,
+  PublicCityMapConfig,
+  PublicCityMapPlacement,
+} from '@toonexpo/contracts';
 import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { computeSoldPercent, resolveBadge } from '@/features/catalog/utils/development-progress';
 import { formatCompactPrice } from '@/features/catalog/utils/format-price';
+import {
+  getPublicCityMapConfig,
+  listPublicCityMapPlacements,
+} from '@/features/city-map/api/city-map-api';
+import { CityMapView } from '@/features/city-map/components/city-map-view';
+import { toPublicModelPose } from '@/features/city-map/constants';
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 
@@ -15,14 +25,62 @@ type HomeDevelopmentsMapProps = {
 };
 
 /**
- * Map-view panel: selected project card + developments list (Figma aside).
+ * Map-view panel: live city map + selected project card + developments list.
  */
 export const HomeDevelopmentsMap = ({ projects }: HomeDevelopmentsMapProps) => {
   const t = useTranslations('HomePage.developments');
   const catalogT = useTranslations('Catalog');
   const locale = useLocale();
   const [selectedId, setSelectedId] = useState(projects[0]?.id ?? '');
+  const [placements, setPlacements] = useState<PublicCityMapPlacement[]>([]);
+  const [config, setConfig] = useState<PublicCityMapConfig | null>(null);
+  const [mapError, setMapError] = useState<string | null>(null);
+  const [search, setSearch] = useState('');
+  const [flyToId, setFlyToId] = useState<string | null>(null);
+  const [selectedPlacementId, setSelectedPlacementId] = useState<string | null>(null);
+
   const selected = projects.find((project) => project.id === selectedId) ?? projects[0];
+
+  useEffect(() => {
+    let cancelled = false;
+    void Promise.all([listPublicCityMapPlacements(), getPublicCityMapConfig()])
+      .then(([placementResponse, mapConfig]) => {
+        if (cancelled) {
+          return;
+        }
+        setPlacements(placementResponse.data);
+        setConfig(mapConfig);
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setMapError(t('mapLoadError'));
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [t]);
+
+  const models = useMemo(() => placements.map(toPublicModelPose), [placements]);
+
+  const searchHits = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) {
+      return [];
+    }
+    return placements.filter((item) => {
+      const haystack = [
+        item.label,
+        item.buildingName,
+        item.projectName,
+        item.address ?? '',
+        item.city ?? '',
+      ]
+        .join(' ')
+        .toLowerCase();
+      return haystack.includes(q);
+    });
+  }, [placements, search]);
 
   if (!selected) {
     return null;
@@ -40,6 +98,17 @@ export const HomeDevelopmentsMap = ({ projects }: HomeDevelopmentsMapProps) => {
     onRequestLabel: catalogT('price.onRequest'),
   });
 
+  const selectProject = (projectId: string): void => {
+    setSelectedId(projectId);
+    const first = placements.find((item) => item.projectId === projectId);
+    if (first) {
+      setSelectedPlacementId(first.id);
+      setFlyToId(first.id);
+    } else {
+      setSelectedPlacementId(null);
+    }
+  };
+
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,22rem)]">
       <div
@@ -48,21 +117,63 @@ export const HomeDevelopmentsMap = ({ projects }: HomeDevelopmentsMapProps) => {
           'ring-1 ring-header-border lg:min-h-[42rem]',
         )}
       >
-        <div className="absolute inset-0 opacity-40">
-          <div className="absolute inset-[12%] rounded-[20px] border border-dashed border-brand-secondary/40" />
-          <div className="absolute top-1/3 left-1/4 size-3 rounded-pill bg-brand-deep shadow-md" />
-          <div className="absolute top-1/2 left-1/2 size-3 rounded-pill bg-brand-secondary shadow-md" />
-          <div className="absolute top-2/3 left-2/3 size-3 rounded-pill bg-brand-deep shadow-md" />
-        </div>
-        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-canvas/90 to-transparent p-6">
-          <p className="text-sm font-medium text-ink-navy">{t('mapPlaceholder')}</p>
-          <Link
-            href="/developments"
-            className="mt-2 inline-flex text-sm font-semibold text-brand-deep hover:text-brand-deep/80"
-          >
-            {t('browseList')}
-          </Link>
-        </div>
+        {mapError ? (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-6 text-center">
+            <p className="text-sm font-medium text-ink-navy">{mapError}</p>
+            <Link
+              href="/developments"
+              className="text-sm font-semibold text-brand-deep hover:text-brand-deep/80"
+            >
+              {t('browseList')}
+            </Link>
+          </div>
+        ) : (
+          <>
+            <div className="absolute top-3 left-3 z-10 w-[min(100%-1.5rem,18rem)]">
+              <input
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder={t('mapSearchPlaceholder')}
+                className="w-full rounded-md border border-header-border bg-canvas/95 px-3 py-2 text-sm shadow-sm"
+              />
+              {searchHits.length > 0 ? (
+                <ul className="mt-1 max-h-40 overflow-auto rounded-md border border-header-border bg-canvas shadow-md">
+                  {searchHits.slice(0, 8).map((item) => (
+                    <li key={item.id}>
+                      <button
+                        type="button"
+                        className="flex w-full px-3 py-2 text-left text-sm hover:bg-band-mist/40"
+                        onClick={() => {
+                          setSearch('');
+                          setSelectedId(item.projectId);
+                          setSelectedPlacementId(item.id);
+                          setFlyToId(item.id);
+                        }}
+                      >
+                        {item.label} · {item.projectName}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </div>
+            <CityMapView
+              mode="view"
+              className="min-h-80 lg:min-h-[42rem]"
+              config={config}
+              models={models}
+              selectedProjectId={selectedId}
+              selectedPlacementId={selectedPlacementId}
+              flyToPlacementId={flyToId}
+              onSelectPlacement={(placementId, projectId) => {
+                setSelectedPlacementId(placementId);
+                setSelectedId(projectId);
+                setFlyToId(placementId);
+              }}
+              onError={() => setMapError(t('mapLoadError'))}
+            />
+          </>
+        )}
       </div>
 
       <aside className="flex flex-col gap-4">
@@ -134,7 +245,7 @@ export const HomeDevelopmentsMap = ({ projects }: HomeDevelopmentsMapProps) => {
                 <li key={project.id}>
                   <button
                     type="button"
-                    onClick={() => setSelectedId(project.id)}
+                    onClick={() => selectProject(project.id)}
                     className={cn(
                       'flex w-full items-center justify-between gap-3 py-2.5 text-left text-sm',
                       'transition-colors duration-[var(--duration-fast)]',
@@ -158,11 +269,14 @@ export const HomeDevelopmentsMap = ({ projects }: HomeDevelopmentsMapProps) => {
   );
 };
 
-const StatTile = ({ label, value }: { label: string; value: string }) => {
-  return (
-    <div className="rounded-sm bg-brand-soft/40 p-2">
-      <p className="text-[9px] font-bold tracking-widest text-header-muted uppercase">{label}</p>
-      <p className="mt-0.5 text-sm font-semibold text-ink-navy">{value}</p>
-    </div>
-  );
+type StatTileProps = {
+  label: string;
+  value: string;
 };
+
+const StatTile = ({ label, value }: StatTileProps) => (
+  <div className="rounded-md bg-band-mist/40 px-2 py-2">
+    <p className="text-[10px] font-bold tracking-widest text-header-muted uppercase">{label}</p>
+    <p className="mt-1 text-sm font-semibold text-ink-navy">{value}</p>
+  </div>
+);
