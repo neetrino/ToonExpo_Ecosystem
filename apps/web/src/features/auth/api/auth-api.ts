@@ -13,7 +13,7 @@ import type {
 
 import { apiFetch } from '@/shared/api/client';
 import { clearCsrfTokenCache, setCsrfTokenCache } from '@/shared/api/csrf';
-import { ApiError, isApiErrorStatus } from '@/shared/api/errors';
+import { ApiError, isApiErrorStatus, isNetworkFetchError } from '@/shared/api/errors';
 
 import {
   clearClientSessionHint,
@@ -157,11 +157,11 @@ export const getMeOrNull = async (cookieHeader?: string): Promise<UserResponse |
     const user = await getMe(cookieHeader);
     return user ?? null;
   } catch (error) {
-    if (isApiErrorStatus(error, 401)) {
+    if (isApiErrorStatus(error, 401) || isNetworkFetchError(error)) {
       return null;
     }
     throw error;
   }
 };
 
-export { ApiError, isApiErrorStatus };
+export { ApiError, isApiErrorStatus, isNetworkFetchError };

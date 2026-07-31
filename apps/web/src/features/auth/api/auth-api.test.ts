@@ -53,6 +53,12 @@ describe('getMeOrNull', () => {
     await expect(getMeOrNull('toonexpo_session=stale')).resolves.toBeNull();
   });
 
+  it('returns null when the API is unreachable', async () => {
+    mockedApiFetch.mockRejectedValueOnce(new TypeError('fetch failed'));
+
+    await expect(getMeOrNull('toonexpo_session=abc')).resolves.toBeNull();
+  });
+
   it('rethrows non-401 errors', async () => {
     mockedApiFetch.mockRejectedValueOnce(new ApiError(500, 'Server Error'));
 
