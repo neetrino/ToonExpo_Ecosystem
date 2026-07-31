@@ -1,0 +1,83 @@
+/**
+ * ToonExpo city-map toolbar — one vertical brand control stack.
+ * Scoped to [data-testid="city-map-view"].
+ */
+
+[data-testid='city-map-view'] .maplibregl-ctrl-top-right {
+  z-index: 2;
+}
+
+[data-testid='city-map-view'] .maplibregl-ctrl-top-right .maplibregl-ctrl {
+  margin: 0.75rem 0.75rem 0 0;
+}
+
+[data-testid='city-map-view'] .city-map-ctrl-toolbar {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: rgb(255 255 255 / 0.94);
+  border: 1px solid var(--color-header-border, #dde6eb);
+  border-radius: var(--radius-sm, 12px);
+  box-shadow:
+    var(--shadow-sm, 0 2px 8px rgb(14 15 20 / 0.05), 0 1px 2px rgb(14 15 20 / 0.04)),
+    0 0 0 1px rgb(26 143 152 / 0.04);
+  backdrop-filter: blur(12px);
+}
+
+[data-testid='city-map-view'] .city-map-ctrl-toolbar button {
+  width: 2.375rem;
+  height: 2.375rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  background-color: transparent;
+  border: 0;
+  border-radius: 0;
+  color: var(--color-brand-deep, #092b44);
+  cursor: pointer;
+  transition:
+    background-color var(--duration-fast, 150ms) var(--ease-out-premium, ease),
+    color var(--duration-fast, 150ms) var(--ease-out-premium, ease);
+}
+
+[data-testid='city-map-view'] .city-map-ctrl-toolbar button + button {
+  border-top: 1px solid var(--color-header-border, #dde6eb);
+}
+
+[data-testid='city-map-view'] .city-map-ctrl-toolbar button:hover {
+  background-color: var(--color-brand-soft, #e6f4f5);
+  color: var(--color-brand, #1a8f98);
+}
+
+[data-testid='city-map-view'] .city-map-ctrl-toolbar button:active {
+  background-color: rgb(26 143 152 / 0.16);
+  color: var(--color-brand-hover, #157a82);
+}
+
+[data-testid='city-map-view'] .city-map-ctrl-toolbar button:focus-visible {
+  outline: 2px solid var(--color-border-focus, #1a8f98);
+  outline-offset: -2px;
+  z-index: 1;
+}
+
+[data-testid='city-map-view'] .city-map-ctrl-toolbar button svg {
+  display: block;
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+[data-testid='city-map-view'] .city-map-ctrl-toolbar button[data-testid='city-map-recenter'] {
+  color: var(--color-brand, #1a8f98);
+}
+
+[data-testid='city-map-view'] .city-map-ctrl-toolbar button[data-testid='city-map-recenter']:hover {
+  color: var(--color-brand-deep, #092b44);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-testid='city-map-view'] .city-map-ctrl-toolbar button {
+    transition: none;
+  }
+}

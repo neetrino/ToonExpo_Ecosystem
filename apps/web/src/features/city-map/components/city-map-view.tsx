@@ -2,6 +2,7 @@
 
 import maplibregl, { type Map as MapLibreMap } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import './city-map-controls.css';
 import { useEffect, useRef } from 'react';
 import * as Sentry from '@sentry/nextjs';
 
@@ -27,11 +28,7 @@ import {
   setCityMapPins,
   setSelectedCityMapPin,
 } from './city-map-pins';
-import {
-  applyCityMapRecenter,
-  CityMapRecenterControl,
-  resolveCityMapRecenterTarget,
-} from './city-map-recenter';
+import { CityMapToolbarControl } from './city-map-toolbar-control';
 
 export type CityMapViewMode = 'edit' | 'view';
 
@@ -130,19 +127,10 @@ export const CityMapView = ({
         bearing: mapConfig.initialBearing,
         attributionControl: {},
       });
-      map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'top-right');
       map.addControl(
-        new CityMapRecenterControl({
-          onRecenter: () => {
-            const activeMap = mapRef.current;
-            if (!activeMap) {
-              return;
-            }
-            applyCityMapRecenter(
-              activeMap,
-              resolveCityMapRecenterTarget(modelsRef.current, selectedPlacementIdRef.current),
-            );
-          },
+        new CityMapToolbarControl({
+          getModels: () => modelsRef.current,
+          getSelectedPlacementId: () => selectedPlacementIdRef.current,
         }),
         'top-right',
       );
