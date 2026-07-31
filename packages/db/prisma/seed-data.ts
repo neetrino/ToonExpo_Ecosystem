@@ -8,8 +8,9 @@ export const DEFAULT_PRICE_CURRENCY = 'AMD';
 export const PLACEHOLDER_IMAGE_BASE = 'https://placehold.co';
 
 /**
- * Maps local `/demo/...` (or `/images/...`) paths to R2 public URLs when
+ * Maps `/demo/...` (or `/images/...`) paths to R2 public URLs when
  * `R2_PUBLIC_URL` is set. Absolute http(s) URLs are returned unchanged.
+ * Static marketing assets live only in R2 (`pnpm media:upload-static`).
  */
 export const toSeedMediaUrl = (pathOrUrl: string): string => {
   if (pathOrUrl.startsWith('http://') || pathOrUrl.startsWith('https://')) {
@@ -25,7 +26,7 @@ export const toSeedMediaUrl = (pathOrUrl: string): string => {
   return `${base}${normalized}`;
 };
 
-/** Local demo covers under apps/web/public/demo (uploaded to R2 as `demo/*`). */
+/** Demo covers on R2 (`demo/*` keys; see `pnpm media:upload-static`). */
 export const DEMO_COVER_BY_PROJECT: Record<string, string> = {
   [`${SEED_ID_PREFIX}project_northern_avenue`]: '/demo/northern-avenue.webp',
   [`${SEED_ID_PREFIX}project_cascade_view`]: '/demo/cascade-view.webp',
