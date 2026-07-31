@@ -17,10 +17,10 @@ import {
 
 export const CITY_MAP_PIN_HALO_LAYER_ID = 'city-map-pins-halo-layer';
 
-const PIN_ICON_SIZE = 0.55;
-const PIN_ICON_SIZE_SELECTED = 0.68;
-const PIN_HALO_RADIUS = 10;
-const PIN_HALO_OPACITY = 0.22;
+const PIN_ICON_SIZE = 0.52;
+const PIN_ICON_SIZE_SELECTED = 0.66;
+const PIN_HALO_RADIUS = 12;
+const PIN_HALO_OPACITY = 0.18;
 
 const toFeatureCollection = (
   poses: CityMapModelPose[],
@@ -80,10 +80,10 @@ export const ensureCityMapPinLayers = (map: MapLibreMap): void => {
         'circle-radius': PIN_HALO_RADIUS,
         'circle-color': CITY_MAP_PIN_BRAND,
         'circle-opacity': PIN_HALO_OPACITY,
-        'circle-blur': 0.65,
+        'circle-blur': 0.75,
         'circle-pitch-alignment': 'viewport',
         'circle-pitch-scale': 'viewport',
-        'circle-translate': [0, -6],
+        'circle-translate': [0, -8],
         'circle-translate-anchor': 'viewport',
       },
     });
