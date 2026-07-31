@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { AddBuildingSheet } from '@/features/builder/components/add-building-sheet';
 import { BuildingAccordion } from '@/features/builder/components/building-accordion';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
+import { Button } from '@/shared/ui/button';
 
 type ProjectInventorySectionProps = {
   project: PortalProjectDetail;
@@ -26,15 +27,17 @@ export const ProjectInventorySection = ({ project }: ProjectInventorySectionProp
           <h2 className="text-lg font-semibold text-ink">{t('title')}</h2>
           <p className="text-sm text-ink-secondary">{t('subtitle')}</p>
         </div>
-        <button
+        <Button
           type="button"
-          className="inline-flex h-9 items-center justify-center rounded-pill bg-cta-dark px-4 text-sm font-medium text-on-dark hover:bg-cta-dark/90"
+          size="sm"
+          variant="secondary"
+          className="shrink-0"
           onClick={() => {
             setAddBuildingOpen(true);
           }}
         >
           <AddActionLabel>{t('addBuilding')}</AddActionLabel>
-        </button>
+        </Button>
       </div>
 
       {project.buildings.length === 0 ? (

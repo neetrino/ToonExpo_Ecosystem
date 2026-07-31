@@ -14,15 +14,17 @@ import {
   prefersReducedMotion,
 } from '@/features/buyer/components/account/account-page-push';
 
-/** Browser-like back gesture: start near the left screen edge. */
-const EDGE_START_MAX_PX = 28;
+/**
+ * Left-edge hit zone — wide enough for thumbs / iOS home-indicator devices.
+ * (28px was too tight; swipe often never armed.)
+ */
+const EDGE_START_MAX_PX = 56;
 /** Minimum horizontal travel to commit dismiss. */
-const DISMISS_DISTANCE_PX = 96;
+const DISMISS_DISTANCE_PX = 72;
 /** Fast flick to the right also dismisses. */
-const DISMISS_VELOCITY_PX_PER_MS = 0.4;
-/** Require clear horizontal intent vs vertical scroll. */
-const HORIZONTAL_LOCK_RATIO = 1.15;
-const AXIS_DECIDE_PX = 8;
+const DISMISS_VELOCITY_PX_PER_MS = 0.35;
+/** Horizontal wins when dx is at least as large as dy (was stricter 1.15×). */
+const AXIS_DECIDE_PX = 6;
 
 type SwipeAxis = 'undecided' | 'horizontal' | 'vertical';
 
@@ -58,6 +60,8 @@ export const useAccountSheetEdgeSwipe = ({
   const axisRef = useRef<SwipeAxis>('undecided');
   const dragXRef = useRef(0);
   const dismissPendingRef = useRef(false);
+  const onDismissRef = useRef(onDismiss);
+  onDismissRef.current = onDismiss;
 
   const resetVisual = useCallback((): void => {
     dragXRef.current = 0;
@@ -79,18 +83,17 @@ export const useAccountSheetEdgeSwipe = ({
     setDragX(width);
 
     if (prefersReducedMotion()) {
-      onDismiss();
+      onDismissRef.current();
       dismissPendingRef.current = false;
       return;
     }
 
     window.setTimeout(() => {
-      onDismiss();
-      dismissPendingRef.current = false;
+      onDismissRef.current();
       // Keep translateX off-screen until the sheet unmounts / disables.
-      // Resetting here snaps the panel back for 1–2 frames (swipe lag / flash).
+      dismissPendingRef.current = false;
     }, ACCOUNT_PAGE_PUSH_MS);
-  }, [onDismiss]);
+  }, []);
 
   const snapBack = useCallback((): void => {
     setIsDragging(false);
@@ -110,114 +113,134 @@ export const useAccountSheetEdgeSwipe = ({
       return;
     }
 
-    const el = sheetRef.current;
-    if (!el) {
-      return;
-    }
+    let removeListeners: (() => void) | undefined;
+    let rafId = 0;
+    let cancelled = false;
 
-    const onTouchStart = (event: TouchEvent): void => {
-      if (event.touches.length !== 1 || dismissPendingRef.current) {
+    const bind = (): void => {
+      if (cancelled) {
         return;
       }
-      const touch = event.touches[0];
-      if (!touch || touch.clientX > EDGE_START_MAX_PX) {
-        activeRef.current = false;
-        return;
-      }
-      activeRef.current = true;
-      axisRef.current = 'undecided';
-      startXRef.current = touch.clientX;
-      startYRef.current = touch.clientY;
-      lastXRef.current = touch.clientX;
-      lastTRef.current = performance.now();
-      velocityRef.current = 0;
-    };
-
-    const onTouchMove = (event: TouchEvent): void => {
-      if (!activeRef.current || event.touches.length !== 1) {
-        return;
-      }
-      const touch = event.touches[0];
-      if (!touch) {
+      const el = sheetRef.current;
+      if (!el) {
+        rafId = window.requestAnimationFrame(bind);
         return;
       }
 
-      const dx = touch.clientX - startXRef.current;
-      const dy = touch.clientY - startYRef.current;
-      const now = performance.now();
-      const dt = Math.max(now - lastTRef.current, 1);
-      velocityRef.current = (touch.clientX - lastXRef.current) / dt;
-      lastXRef.current = touch.clientX;
-      lastTRef.current = now;
-
-      if (axisRef.current === 'undecided') {
-        if (Math.abs(dx) < AXIS_DECIDE_PX && Math.abs(dy) < AXIS_DECIDE_PX) {
+      const onTouchStart = (event: TouchEvent): void => {
+        if (event.touches.length !== 1 || dismissPendingRef.current) {
           return;
         }
-        const horizontal = Math.abs(dx) > Math.abs(dy) * HORIZONTAL_LOCK_RATIO && dx > 0;
-        axisRef.current = horizontal ? 'horizontal' : 'vertical';
-        if (axisRef.current === 'vertical') {
+        const touch = event.touches[0];
+        if (!touch || touch.clientX > EDGE_START_MAX_PX) {
           activeRef.current = false;
           return;
         }
-        setIsDragging(true);
-        setIsSnapping(false);
-      }
-
-      if (axisRef.current !== 'horizontal') {
-        return;
-      }
-
-      event.preventDefault();
-      const nextX = Math.max(0, dx);
-      dragXRef.current = nextX;
-      setDragX(nextX);
-    };
-
-    const onTouchEnd = (): void => {
-      if (!activeRef.current) {
-        return;
-      }
-      activeRef.current = false;
-
-      if (axisRef.current !== 'horizontal') {
+        activeRef.current = true;
         axisRef.current = 'undecided';
-        return;
-      }
-      axisRef.current = 'undecided';
+        startXRef.current = touch.clientX;
+        startYRef.current = touch.clientY;
+        lastXRef.current = touch.clientX;
+        lastTRef.current = performance.now();
+        velocityRef.current = 0;
+      };
 
-      const shouldDismiss =
-        dragXRef.current >= DISMISS_DISTANCE_PX ||
-        velocityRef.current >= DISMISS_VELOCITY_PX_PER_MS;
+      const onTouchMove = (event: TouchEvent): void => {
+        if (!activeRef.current || event.touches.length !== 1) {
+          return;
+        }
+        const touch = event.touches[0];
+        if (!touch) {
+          return;
+        }
 
-      if (shouldDismiss) {
-        finishDismiss();
-        return;
-      }
-      snapBack();
-    };
+        const dx = touch.clientX - startXRef.current;
+        const dy = touch.clientY - startYRef.current;
+        const now = performance.now();
+        const dt = Math.max(now - lastTRef.current, 1);
+        velocityRef.current = (touch.clientX - lastXRef.current) / dt;
+        lastXRef.current = touch.clientX;
+        lastTRef.current = now;
 
-    const onTouchCancel = (): void => {
-      if (!activeRef.current) {
-        return;
-      }
-      activeRef.current = false;
-      if (axisRef.current === 'horizontal') {
+        if (axisRef.current === 'undecided') {
+          if (Math.abs(dx) < AXIS_DECIDE_PX && Math.abs(dy) < AXIS_DECIDE_PX) {
+            return;
+          }
+          // Prefer back-swipe when moving right at least as much as vertically.
+          const horizontal = dx > 0 && Math.abs(dx) >= Math.abs(dy);
+          axisRef.current = horizontal ? 'horizontal' : 'vertical';
+          if (axisRef.current === 'vertical') {
+            activeRef.current = false;
+            return;
+          }
+          setIsDragging(true);
+          setIsSnapping(false);
+        }
+
+        if (axisRef.current !== 'horizontal') {
+          return;
+        }
+
+        event.preventDefault();
+        const nextX = Math.max(0, dx);
+        dragXRef.current = nextX;
+        setDragX(nextX);
+      };
+
+      const onTouchEnd = (): void => {
+        if (!activeRef.current) {
+          return;
+        }
+        activeRef.current = false;
+
+        if (axisRef.current !== 'horizontal') {
+          axisRef.current = 'undecided';
+          return;
+        }
+        axisRef.current = 'undecided';
+
+        const shouldDismiss =
+          dragXRef.current >= DISMISS_DISTANCE_PX ||
+          velocityRef.current >= DISMISS_VELOCITY_PX_PER_MS;
+
+        if (shouldDismiss) {
+          finishDismiss();
+          return;
+        }
         snapBack();
-      }
-      axisRef.current = 'undecided';
+      };
+
+      const onTouchCancel = (): void => {
+        if (!activeRef.current) {
+          return;
+        }
+        activeRef.current = false;
+        if (axisRef.current === 'horizontal') {
+          snapBack();
+        }
+        axisRef.current = 'undecided';
+      };
+
+      // Capture so we arm before nested scroll/controls steal the gesture.
+      el.addEventListener('touchstart', onTouchStart, { passive: true, capture: true });
+      el.addEventListener('touchmove', onTouchMove, { passive: false, capture: true });
+      el.addEventListener('touchend', onTouchEnd, { capture: true });
+      el.addEventListener('touchcancel', onTouchCancel, { capture: true });
+
+      removeListeners = () => {
+        el.removeEventListener('touchstart', onTouchStart, true);
+        el.removeEventListener('touchmove', onTouchMove, true);
+        el.removeEventListener('touchend', onTouchEnd, true);
+        el.removeEventListener('touchcancel', onTouchCancel, true);
+      };
     };
 
-    el.addEventListener('touchstart', onTouchStart, { passive: true });
-    el.addEventListener('touchmove', onTouchMove, { passive: false });
-    el.addEventListener('touchend', onTouchEnd);
-    el.addEventListener('touchcancel', onTouchCancel);
+    bind();
 
     return () => {
-      el.removeEventListener('touchstart', onTouchStart);
-      el.removeEventListener('touchmove', onTouchMove);
-      el.removeEventListener('touchend', onTouchEnd);
-      el.removeEventListener('touchcancel', onTouchCancel);
+      cancelled = true;
+      window.cancelAnimationFrame(rafId);
+      removeListeners?.();
     };
   }, [enabled, finishDismiss, resetVisual, sheetRef, snapBack]);
 

@@ -10,6 +10,7 @@ import { PORTAL_MAX_PAGE_SIZE } from '@/features/builder/constants';
 import { usePortalProjectsQuery } from '@/features/builder/hooks/use-portal-projects';
 import { Link } from '@/i18n/navigation';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
+import { Button } from '@/shared/ui/button';
 import { Card } from '@/shared/ui/card';
 
 type StatusCounts = Record<PublicationStatus, number>;
@@ -77,38 +78,40 @@ export const BuilderDashboardPage = () => {
         <div className="flex flex-wrap gap-3">
           <Link
             href="/builder/projects"
-            className="inline-flex h-9 items-center rounded-pill border border-border-strong px-4 text-sm font-medium text-ink hover:bg-surface"
+            className="inline-flex h-9 items-center rounded-[15px] border border-border-strong px-4 text-sm font-medium text-ink hover:bg-surface"
           >
             {t('links.projects')}
           </Link>
           <Link
             href="/builder/team"
-            className="inline-flex h-9 items-center rounded-pill border border-border-strong px-4 text-sm font-medium text-ink hover:bg-surface"
+            className="inline-flex h-9 items-center rounded-[15px] border border-border-strong px-4 text-sm font-medium text-ink hover:bg-surface"
           >
             {t('links.team')}
           </Link>
           <Link
             href="/builder/crm"
-            className="inline-flex h-9 items-center rounded-pill border border-border-strong px-4 text-sm font-medium text-ink hover:bg-surface"
+            className="inline-flex h-9 items-center rounded-[15px] border border-border-strong px-4 text-sm font-medium text-ink hover:bg-surface"
           >
             {t('links.crm')}
           </Link>
           <Link
             href="/builder/scanner"
-            className="inline-flex h-9 items-center rounded-pill border border-border-strong px-4 text-sm font-medium text-ink hover:bg-surface"
+            className="inline-flex h-9 items-center rounded-[15px] border border-border-strong px-4 text-sm font-medium text-ink hover:bg-surface"
           >
             {t('links.scanner')}
           </Link>
         </div>
-        <button
+        <Button
           type="button"
-          className="inline-flex h-9 items-center rounded-pill bg-cta-dark px-4 text-sm font-medium text-on-dark hover:bg-cta-dark/90"
+          size="sm"
+          variant="secondary"
+          className="shrink-0"
           onClick={() => {
             setCreateOpen(true);
           }}
         >
           <AddActionLabel>{t('links.newProject')}</AddActionLabel>
-        </button>
+        </Button>
       </div>
 
       <CrmDashboardWidget />

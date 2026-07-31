@@ -119,6 +119,8 @@
   --z-header: 100;
   --z-overlay: 120;
   --z-sheet: 130;
+  /* Mobile bottom nav above QR/scanner sheets so they slide out from behind it */
+  --z-bottom-nav: 135;
   --z-modal: 140;
   --z-dropdown: 160;
   --z-toast: 170;

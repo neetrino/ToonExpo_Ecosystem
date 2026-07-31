@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { Scanner } from "@yudiel/react-qr-scanner";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { Scanner } from '@yudiel/react-qr-scanner';
+import { useTranslations } from 'next-intl';
+import { useState } from 'react';
 
 type ScannerCameraProps = {
   onToken: (raw: string) => void;
@@ -13,22 +13,23 @@ type ScannerCameraProps = {
  * Camera QR scanner with permission-error fallback signal.
  */
 export const ScannerCamera = ({ onToken, paused }: ScannerCameraProps) => {
-  const t = useTranslations("Builder.scanner");
+  const t = useTranslations('Builder.scanner');
   const [cameraError, setCameraError] = useState<string | null>(null);
 
   if (cameraError) {
     return (
       <div className="rounded-sm border border-border bg-surface px-4 py-6 text-center">
-        <p className="text-sm text-ink">{t("cameraDenied")}</p>
-        <p className="mt-2 text-sm text-ink-secondary">{t("useManual")}</p>
+        <p className="text-sm text-ink">{t('cameraDenied')}</p>
+        <p className="mt-2 text-sm text-ink-secondary">{t('useManual')}</p>
       </div>
     );
   }
 
   return (
-    <div className="overflow-hidden rounded-sm border border-border">
+    // pointer-events-none: camera must not steal sheet swipe-to-dismiss touches
+    <div className="pointer-events-none touch-none overflow-hidden rounded-sm border border-border">
       <Scanner
-        formats={["qr_code"]}
+        formats={['qr_code']}
         paused={paused}
         sound={false}
         onScan={(results) => {
@@ -38,10 +39,10 @@ export const ScannerCamera = ({ onToken, paused }: ScannerCameraProps) => {
           }
         }}
         onError={() => {
-          setCameraError("denied");
+          setCameraError('denied');
         }}
         styles={{
-          container: { width: "100%" },
+          container: { width: '100%' },
         }}
       />
     </div>

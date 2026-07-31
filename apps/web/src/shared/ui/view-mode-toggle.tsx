@@ -17,7 +17,7 @@ type ViewModeToggleProps = {
 };
 
 /**
- * Pill switcher for list/cards (or list/board) collection views with a sliding thumb.
+ * List/cards (or list/board) view switcher with a sliding thumb.
  * Hidden below `md` — mobile collections always use cards.
  */
 export const ViewModeToggle = ({
@@ -40,14 +40,14 @@ export const ViewModeToggle = ({
       role="group"
       aria-label={t('label')}
       className={cn(
-        'relative hidden h-9 items-center gap-0.5 rounded-pill bg-surface p-0.5 ring-1 ring-border md:inline-flex',
+        'relative hidden h-9 items-center gap-0.5 rounded-[15px] bg-surface p-0.5 ring-1 ring-border md:inline-flex',
         className,
       )}
     >
       <span
         aria-hidden
         className={cn(
-          'pointer-events-none absolute top-0.5 left-0.5 size-8 rounded-pill bg-background shadow-xs',
+          'pointer-events-none absolute top-0.5 left-0.5 size-8 rounded-[15px] bg-background shadow-xs',
           'transition-transform duration-[var(--duration-base)] ease-[var(--ease-out-premium)]',
           'motion-reduce:transition-none',
           value === VIEW_MODE_CARDS && 'translate-x-[calc(100%+0.125rem)]',
@@ -63,7 +63,7 @@ export const ViewModeToggle = ({
             aria-pressed={active}
             title={t(labelKey)}
             className={cn(
-              'relative z-10 inline-flex size-8 items-center justify-center rounded-pill',
+              'relative z-10 inline-flex size-8 items-center justify-center rounded-[15px]',
               'text-ink-muted transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out-premium)]',
               'hover:text-ink motion-reduce:transition-none',
               'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30',

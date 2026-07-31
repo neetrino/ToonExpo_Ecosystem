@@ -1,13 +1,4 @@
-import {
-  FolderKanban,
-  Heart,
-  Home,
-  Map,
-  QrCode,
-  ScanLine,
-  UserRound,
-  type LucideIcon,
-} from 'lucide-react';
+import { Heart, Home, Map, QrCode, ScanLine, UserRound, type LucideIcon } from 'lucide-react';
 
 import { isBuilderPortalPath } from '@/shared/ui/account-mobile-nav-controller';
 
@@ -31,7 +22,7 @@ export type BottomNavItem = {
   labelKey: BottomNavLabelKey;
   Icon: LucideIcon;
   match: (pathname: string) => boolean;
-  /** Opens overlay instead of navigating (builder scanner). */
+  /** Opens overlay instead of navigating (QR / builder scanner). */
   opensSheet?: boolean;
 };
 
@@ -40,11 +31,13 @@ const isHomePath = (pathname: string): boolean => pathname === '/';
 const isDiscoverPath = (pathname: string): boolean =>
   pathname === '/discover' || pathname.startsWith('/discover/');
 
-const isQrPath = (pathname: string): boolean => pathname === '/qr' || pathname.startsWith('/qr/');
-
 const isMapPath = (pathname: string): boolean =>
   pathname === '/expo' || pathname.startsWith('/expo/');
 
+/**
+ * Buyer account / profile shell routes for bottom-nav Profile highlight.
+ * Exact `/qr` is the in-profile My QR page (not `/qr/[token]` public landing).
+ */
 const isProfilePath = (pathname: string): boolean =>
   pathname === '/dashboard' ||
   pathname.startsWith('/dashboard/') ||
@@ -56,19 +49,18 @@ const isProfilePath = (pathname: string): boolean =>
   pathname.startsWith('/requests/') ||
   pathname === '/checkin' ||
   pathname.startsWith('/checkin/') ||
-  pathname.startsWith('/account');
+  pathname.startsWith('/account') ||
+  pathname === '/qr';
 
 const isBuilderScannerPath = (pathname: string): boolean =>
   pathname === '/builder/scanner' || pathname.startsWith('/builder/scanner/');
-
-const isBuilderProductPath = (pathname: string): boolean =>
-  pathname === '/projects' || pathname.startsWith('/projects/');
 
 const isBuilderProfilePath = (pathname: string): boolean =>
   isBuilderPortalPath(pathname) && !isBuilderScannerPath(pathname);
 
 /**
- * Buyer / guest bottom nav: Home · Discover · QR · Map · Profile.
+ * Same 5 slots for every role: Home · Discover · center sheet · Map · Profile.
+ * Center is My QR (buyers/guests) or scanner (builders).
  */
 export const buildPublicNavItems = (
   profileHref: string,
@@ -93,7 +85,8 @@ export const buildPublicNavItems = (
     href: '/qr',
     labelKey: 'qr',
     Icon: QrCode,
-    match: isQrPath,
+    // Highlight only when the bottom-nav sheet is open — not on `/qr` from Profile.
+    match: () => false,
     opensSheet: true,
   },
   {
@@ -112,6 +105,43 @@ export const buildPublicNavItems = (
   },
 ];
 
+/**
+ * Admin bottom nav — Home · Discover · Map · Profile (no QR / scanner).
+ */
+export const buildAdminNavItems = (isProfileActive: boolean): BottomNavItem[] => [
+  {
+    id: 'home',
+    href: '/',
+    labelKey: 'home',
+    Icon: Home,
+    match: isHomePath,
+  },
+  {
+    id: 'discover',
+    href: '/discover',
+    labelKey: 'discover',
+    Icon: Heart,
+    match: isDiscoverPath,
+  },
+  {
+    id: 'map',
+    href: '/expo',
+    labelKey: 'map',
+    Icon: Map,
+    match: isMapPath,
+  },
+  {
+    id: 'profile',
+    href: '/admin',
+    labelKey: 'profile',
+    Icon: UserRound,
+    match: () => isProfileActive,
+  },
+];
+
+/**
+ * Builder bottom nav — same layout as user profile; center opens scanner sheet.
+ */
 export const BUILDER_NAV_ITEMS: BottomNavItem[] = [
   {
     id: 'home',
@@ -119,6 +149,13 @@ export const BUILDER_NAV_ITEMS: BottomNavItem[] = [
     labelKey: 'home',
     Icon: Home,
     match: isHomePath,
+  },
+  {
+    id: 'discover',
+    href: '/discover',
+    labelKey: 'discover',
+    Icon: Heart,
+    match: isDiscoverPath,
   },
   {
     id: 'scanner',
@@ -129,11 +166,11 @@ export const BUILDER_NAV_ITEMS: BottomNavItem[] = [
     opensSheet: true,
   },
   {
-    id: 'product',
-    href: '/projects',
-    labelKey: 'product',
-    Icon: FolderKanban,
-    match: isBuilderProductPath,
+    id: 'map',
+    href: '/expo',
+    labelKey: 'map',
+    Icon: Map,
+    match: isMapPath,
   },
   {
     id: 'profile',
