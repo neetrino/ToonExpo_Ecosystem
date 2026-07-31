@@ -148,11 +148,16 @@ export const HomeDevelopmentsMap = ({ projects }: HomeDevelopmentsMapProps) => {
     return placement?.id ?? projectPinId(projectId);
   };
 
-  const selectProject = (projectId: string): void => {
+  const selectProject = (projectId: string, placementId?: string): void => {
     setSelectedId(projectId);
-    const targetId = resolveFlyTarget(projectId);
+    const targetId = placementId ?? resolveFlyTarget(projectId);
     setSelectedPlacementId(targetId);
     setFlyToId(targetId);
+  };
+
+  const clearMapPinSelection = (): void => {
+    setSelectedPlacementId(null);
+    setFlyToId(null);
   };
 
   return (
@@ -206,12 +211,12 @@ export const HomeDevelopmentsMap = ({ projects }: HomeDevelopmentsMapProps) => {
               className="min-h-80 lg:min-h-[42rem]"
               config={config}
               models={models}
-              selectedProjectId={selectedId}
               selectedPlacementId={selectedPlacementId}
               flyToPlacementId={flyToId}
-              onSelectPlacement={(_placementId, projectId) => {
-                selectProject(projectId);
+              onSelectPlacement={(placementId, projectId) => {
+                selectProject(projectId, placementId);
               }}
+              onDeselectPlacement={clearMapPinSelection}
               onError={() => setMapError(t('mapLoadError'))}
             />
           </>

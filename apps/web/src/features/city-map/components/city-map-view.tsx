@@ -13,6 +13,7 @@ import {
   CITY_MAP_DEFAULT_CONFIG,
   CITY_MAP_DRAFT_PREVIEW_ID,
   CITY_MAP_MAPLIBRE_WORKER_URL,
+  CITY_MAP_PIN_FOCUS_ZOOM,
   CITY_MAP_PIN_LAYER_ID,
   CITY_MAP_PIN_SELECTED_LAYER_ID,
   type CityMapModelPose,
@@ -25,6 +26,11 @@ import {
   setCityMapPins,
   setSelectedCityMapPin,
 } from './city-map-pins';
+import {
+  applyCityMapRecenter,
+  CityMapRecenterControl,
+  resolveCityMapRecenterTarget,
+} from './city-map-recenter';
 
 export type CityMapViewMode = 'edit' | 'view';
 
@@ -34,9 +40,10 @@ type CityMapViewProps = {
   config?: PublicCityMapConfig | null;
   models: CityMapModelPose[];
   selectedPlacementId?: string | null;
-  selectedProjectId?: string | null;
   flyToPlacementId?: string | null;
   onSelectPlacement?: (placementId: string, projectId: string) => void;
+  /** When set, clicking the already-selected pin clears selection instead of re-selecting. */
+  onDeselectPlacement?: () => void;
   onMapClick?: (lng: number, lat: number) => void;
   onReady?: (map: MapLibreMap) => void;
   onError?: (message: string) => void;
@@ -58,9 +65,9 @@ export const CityMapView = ({
   config,
   models,
   selectedPlacementId = null,
-  selectedProjectId = null,
   flyToPlacementId = null,
   onSelectPlacement,
+  onDeselectPlacement,
   onMapClick,
   onReady,
   onError,
@@ -69,12 +76,16 @@ export const CityMapView = ({
   const mapRef = useRef<MapLibreMap | null>(null);
   const layerRef = useRef<CityMapGlbLayerHandle | null>(null);
   const modelsRef = useRef(models);
+  const selectedPlacementIdRef = useRef(selectedPlacementId);
   const onSelectRef = useRef(onSelectPlacement);
+  const onDeselectRef = useRef(onDeselectPlacement);
   const onClickRef = useRef(onMapClick);
   const didFitPinsRef = useRef(false);
 
   modelsRef.current = models;
+  selectedPlacementIdRef.current = selectedPlacementId;
   onSelectRef.current = onSelectPlacement;
+  onDeselectRef.current = onDeselectPlacement;
   onClickRef.current = onMapClick;
 
   useEffect(() => {
@@ -103,6 +114,22 @@ export const CityMapView = ({
         attributionControl: {},
       });
       map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'top-right');
+      map.addControl(
+        new CityMapRecenterControl({
+          onRecenter: () => {
+            const activeMap = mapRef.current;
+            if (!activeMap) {
+              return;
+            }
+            const target = resolveCityMapRecenterTarget(
+              modelsRef.current,
+              selectedPlacementIdRef.current,
+            );
+            applyCityMapRecenter(activeMap, target);
+          },
+        }),
+        'top-right',
+      );
       unbindMissingImages = bindCityMapMissingImageHandler(map);
       mapRef.current = map;
 
@@ -145,12 +172,20 @@ export const CityMapView = ({
         // Tile/style noise must not unmount the map — only init failures call onError.
       });
 
+      const handlePinClick = (placementId: string, projectId: string): void => {
+        if (onDeselectRef.current && selectedPlacementIdRef.current === placementId) {
+          onDeselectRef.current();
+          return;
+        }
+        onSelectRef.current?.(placementId, projectId);
+      };
+
       map.on('click', CITY_MAP_PIN_LAYER_ID, (event) => {
         const feature = event.features?.[0];
         const placementId = feature?.properties?.['id'];
         const projectId = feature?.properties?.['projectId'];
         if (typeof placementId === 'string' && typeof projectId === 'string') {
-          onSelectRef.current?.(placementId, projectId);
+          handlePinClick(placementId, projectId);
         }
       });
 
@@ -159,7 +194,7 @@ export const CityMapView = ({
         const placementId = feature?.properties?.['id'];
         const projectId = feature?.properties?.['projectId'];
         if (typeof placementId === 'string' && typeof projectId === 'string') {
-          onSelectRef.current?.(placementId, projectId);
+          handlePinClick(placementId, projectId);
         }
       });
 
@@ -243,13 +278,8 @@ export const CityMapView = ({
     if (!map) {
       return;
     }
-    let placementId = selectedPlacementId;
-    if (!placementId && selectedProjectId) {
-      const first = models.find((model) => model.projectId === selectedProjectId);
-      placementId = first?.id ?? null;
-    }
-    setSelectedCityMapPin(map, placementId);
-  }, [selectedPlacementId, selectedProjectId, models]);
+    setSelectedCityMapPin(map, selectedPlacementId);
+  }, [selectedPlacementId, models]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -262,7 +292,7 @@ export const CityMapView = ({
     }
     map.flyTo({
       center: [target.longitude, target.latitude],
-      zoom: Math.max(map.getZoom(), 16),
+      zoom: Math.max(map.getZoom(), CITY_MAP_PIN_FOCUS_ZOOM),
       essential: true,
     });
   }, [flyToPlacementId, models]);
