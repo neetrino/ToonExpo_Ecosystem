@@ -11,7 +11,6 @@ import { imageSize } from 'image-size';
 
 import type { AppEnv } from '../config/env.validation.js';
 import { PrismaService } from '../prisma/prisma.service.js';
-import { CITY_MAP_DEFAULT_MAX_GLB_BYTES } from '../city-map/city-map.constants.js';
 import {
   MEDIA_ALLOWED_MIME_TYPES,
   MEDIA_DEFAULT_PAGE_SIZE,
@@ -66,34 +65,6 @@ export class MediaUploadService {
     return normalizedMime as MediaAllowedMimeType;
   }
 
-  validateGlbUpload(
-    buffer: Buffer,
-    mimeType: string,
-    originalFilename: string,
-  ): 'model/gltf-binary' | 'application/octet-stream' {
-    const normalizedMime = mimeType.trim().toLowerCase();
-    const lowerName = originalFilename.trim().toLowerCase();
-    const maxBytes = CITY_MAP_DEFAULT_MAX_GLB_BYTES;
-
-    if (!lowerName.endsWith('.glb')) {
-      throw new BadRequestException('Only .glb files are allowed');
-    }
-
-    if (normalizedMime !== 'model/gltf-binary' && normalizedMime !== 'application/octet-stream') {
-      throw new BadRequestException(
-        'GLB mime type must be model/gltf-binary or application/octet-stream',
-      );
-    }
-
-    if (buffer.byteLength > maxBytes) {
-      throw new BadRequestException(
-        `GLB exceeds the ${Math.floor(maxBytes / (1024 * 1024))} MB upload limit`,
-      );
-    }
-
-    return normalizedMime;
-  }
-
   async uploadImage(input: UploadInput): Promise<MediaAssetItem> {
     this.assertConfigured();
 
@@ -118,48 +89,6 @@ export class MediaUploadService {
       input.scope.kind === 'company' ? 'company' : 'platform',
       draft.id,
       extension,
-      ownerCompanyId ?? undefined,
-    );
-    const publicUrl = this.configService.get('R2_PUBLIC_URL', { infer: true });
-    if (!publicUrl) {
-      throw new ServiceUnavailableException(R2_NOT_CONFIGURED_MESSAGE);
-    }
-
-    const fileUrl = buildPublicFileUrl(publicUrl, key);
-
-    try {
-      await this.r2Storage!.uploadObject(key, input.buffer, mimeType);
-      const asset = await this.prisma.db.mediaAsset.update({
-        where: { id: draft.id },
-        data: { fileUrl },
-      });
-      return toMediaAssetItem(asset);
-    } catch (error) {
-      await this.prisma.db.mediaAsset.delete({ where: { id: draft.id } });
-      throw error;
-    }
-  }
-
-  async uploadModel3d(input: UploadInput): Promise<MediaAssetItem> {
-    this.assertConfigured();
-
-    const mimeType = this.validateGlbUpload(input.buffer, input.mimeType, input.originalFilename);
-    const ownerCompanyId = input.scope.kind === 'company' ? input.scope.companyId : null;
-
-    const draft = await this.prisma.db.mediaAsset.create({
-      data: {
-        ownerCompanyId,
-        type: MediaAssetType.model3d,
-        fileUrl: 'pending',
-        title: sanitizeOriginalFilename(input.originalFilename),
-        uploadedByUserId: input.uploadedByUserId,
-      },
-    });
-
-    const key = buildObjectKey(
-      input.scope.kind === 'company' ? 'company' : 'platform',
-      draft.id,
-      'glb',
       ownerCompanyId ?? undefined,
     );
     const publicUrl = this.configService.get('R2_PUBLIC_URL', { infer: true });

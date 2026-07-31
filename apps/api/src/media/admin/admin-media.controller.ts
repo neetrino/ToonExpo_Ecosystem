@@ -26,7 +26,6 @@ import { ListMediaQueryDto } from '../dto/list-media.query.dto.js';
 import { MEDIA_UPLOAD_FIELD_NAME, MEDIA_UPLOAD_MAX_BYTES } from '../media.constants.js';
 import { MediaUploadService } from '../media-upload.service.js';
 import type { UploadedImageFile } from '../uploaded-file.type.js';
-import { CITY_MAP_DEFAULT_MAX_GLB_BYTES } from '../../city-map/city-map.constants.js';
 
 @ApiTags('admin-media')
 @AccountTypes('platform_admin')
@@ -60,33 +59,6 @@ export class AdminMediaController {
     }
 
     return this.mediaUpload.uploadImage({
-      buffer: file.buffer,
-      mimeType: file.mimetype,
-      originalFilename: file.originalname,
-      uploadedByUserId: user.id,
-      scope: { kind: 'platform' },
-    });
-  }
-
-  @Post('admin/media/models')
-  @HttpCode(HttpStatus.CREATED)
-  @ApiConsumes('multipart/form-data')
-  @ApiOperation({ summary: 'Upload a platform GLB model (city map)' })
-  @ApiCreatedResponse({ description: 'Uploaded model3d media asset' })
-  @UseInterceptors(
-    FileInterceptor(MEDIA_UPLOAD_FIELD_NAME, {
-      limits: { fileSize: CITY_MAP_DEFAULT_MAX_GLB_BYTES },
-    }),
-  )
-  uploadModel(
-    @CurrentUser() user: AuthenticatedUser,
-    @UploadedFile() file?: UploadedImageFile,
-  ): Promise<MediaAssetItem> {
-    if (!file) {
-      throw new BadRequestException('GLB file is required');
-    }
-
-    return this.mediaUpload.uploadModel3d({
       buffer: file.buffer,
       mimeType: file.mimetype,
       originalFilename: file.originalname,

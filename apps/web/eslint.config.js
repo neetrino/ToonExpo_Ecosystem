@@ -6,12 +6,6 @@ import { baseEslintConfig } from "@toonexpo/config/eslint/base";
 export default [
   ...baseEslintConfig,
   {
-    ignores: [
-      /** Vendored MapLibre CSP worker (copied from maplibre-gl dist). */
-      "**/public/maplibre/**",
-    ],
-  },
-  {
     files: ["scripts/**/*.{js,mjs,cjs}"],
     languageOptions: {
       globals: {

@@ -31,7 +31,6 @@ enum MediaAssetType {
   image
   video
   document
-  model3d
   other
 }
 
@@ -61,7 +60,6 @@ model MediaAsset {
   partnerCovers     PartnerCompany[] @relation("PartnerCover")
   venueMaps         VenueMap[]
   visualMapCanvases VisualMapCanvas[]
-  cityMapGlbs       CityMapPlacement[] @relation("CityMapGlb")
 
   @@index([ownerCompanyId])
   @@index([relatedEntityType, relatedEntityId])
@@ -103,7 +101,6 @@ model Project {
   boothAssignments     BoothAssignment[]
   visualMapCanvases    VisualMapCanvas[]
   districts            District[]
-  cityMapPlacements    CityMapPlacement[]
 
   @@index([builderCompanyId])
   @@index([publicationStatus])
@@ -155,7 +152,6 @@ model Building {
   coverMedia MediaAsset? @relation("BuildingCover", fields: [coverMediaId], references: [id], onDelete: SetNull)
   floors     Floor[]
   apartments Apartment[]
-  cityMapPlacement CityMapPlacement?
 
   @@unique([projectId, name])
   @@index([projectId])
