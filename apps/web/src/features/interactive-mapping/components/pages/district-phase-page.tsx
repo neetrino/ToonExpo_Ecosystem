@@ -38,12 +38,12 @@ export const DistrictPhasePage = ({ projectId, districtId }: DistrictPhasePagePr
 
   const companyId = detailQuery.data?.project.builderCompanyId;
   const catalog = useMappingCatalog(companyId);
+  const catalogScope = catalog?.catalogScope;
 
   useEffect(() => {
-    if (!catalog) {
+    if (!catalogScope) {
       return;
     }
-    const { catalogScope } = catalog;
     let cancelled = false;
     const load = async () => {
       setLoadingCanvas(true);
@@ -77,13 +77,13 @@ export const DistrictPhasePage = ({ projectId, districtId }: DistrictPhasePagePr
     return () => {
       cancelled = true;
     };
-  }, [catalog, districtId, projectId, t]);
+  }, [catalogScope, districtId, projectId, t]);
 
   if (detailQuery.isLoading || loadingCanvas) {
     return <p className="text-sm text-ink-muted">{t('loading')}</p>;
   }
 
-  if (detailQuery.isError || !detailQuery.data || !catalog) {
+  if (detailQuery.isError || !detailQuery.data || !catalog || !catalogScope) {
     return (
       <p role="alert" className="text-sm text-danger">
         {t('error')}
@@ -104,7 +104,7 @@ export const DistrictPhasePage = ({ projectId, districtId }: DistrictPhasePagePr
     );
   }
 
-  const { catalogScope, mediaContext, basePath, mode } = catalog;
+  const { mediaContext, basePath, mode } = catalog;
 
   const attachMedia = async (asset: MediaAssetItem) => {
     setError(null);

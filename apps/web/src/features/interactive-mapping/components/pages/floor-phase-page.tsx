@@ -42,12 +42,12 @@ export const FloorPhasePage = ({ projectId, floorId }: FloorPhasePageProps) => {
 
   const companyId = detailQuery.data?.project.builderCompanyId;
   const catalog = useMappingCatalog(companyId);
+  const catalogScope = catalog?.catalogScope;
 
   useEffect(() => {
-    if (!catalog) {
+    if (!catalogScope) {
       return;
     }
-    const { catalogScope } = catalog;
     let cancelled = false;
     const load = async () => {
       setLoadingCanvas(true);
@@ -81,13 +81,13 @@ export const FloorPhasePage = ({ projectId, floorId }: FloorPhasePageProps) => {
     return () => {
       cancelled = true;
     };
-  }, [catalog, floorId, projectId, t]);
+  }, [catalogScope, floorId, projectId, t]);
 
   if (detailQuery.isLoading || loadingCanvas) {
     return <p className="text-sm text-ink-muted">{t('loading')}</p>;
   }
 
-  if (detailQuery.isError || !detailQuery.data || !catalog || !companyId) {
+  if (detailQuery.isError || !detailQuery.data || !catalog || !catalogScope || !companyId) {
     return (
       <p role="alert" className="text-sm text-danger">
         {t('error')}
@@ -108,7 +108,7 @@ export const FloorPhasePage = ({ projectId, floorId }: FloorPhasePageProps) => {
     (item) => item.buildingId === floor.buildingId,
   );
   const apartments = detailQuery.data.apartments.filter((item) => item.floorId === floorId);
-  const { catalogScope, mediaContext, basePath, mode } = catalog;
+  const { mediaContext, basePath, mode } = catalog;
 
   const attachMedia = async (asset: MediaAssetItem) => {
     setError(null);

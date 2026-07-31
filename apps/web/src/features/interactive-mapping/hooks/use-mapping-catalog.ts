@@ -1,6 +1,8 @@
 'use client';
 
-import { catalogMediaContext } from '@/features/builder/catalog-scope';
+import { useMemo } from 'react';
+
+import { catalogMediaContext, type CatalogScope } from '@/features/builder/catalog-scope';
 import type { MediaUploadContext } from '@/features/media/api/media-api';
 
 import {
@@ -8,7 +10,6 @@ import {
   useInteractiveMappingScope,
   type InteractiveMappingScopeValue,
 } from '../scope/interactive-mapping-scope';
-import type { CatalogScope } from '@/features/builder/catalog-scope';
 
 export type MappingCatalogBundle = {
   mappingScope: InteractiveMappingScopeValue;
@@ -20,18 +21,21 @@ export type MappingCatalogBundle = {
 
 /**
  * Resolves Admin vs Builder catalog + media context for a project's companyId.
+ * Memoized so phase-page canvas load effects do not re-fire every render.
  */
 export const useMappingCatalog = (companyId: string | undefined): MappingCatalogBundle | null => {
   const mappingScope = useInteractiveMappingScope();
-  if (!companyId) {
-    return null;
-  }
-  const catalogScope = resolveMappingCatalogScope(mappingScope, companyId);
-  return {
-    mappingScope,
-    catalogScope,
-    mediaContext: catalogMediaContext(catalogScope),
-    basePath: mappingScope.basePath,
-    mode: mappingScope.mode,
-  };
+  return useMemo(() => {
+    if (!companyId) {
+      return null;
+    }
+    const catalogScope = resolveMappingCatalogScope(mappingScope, companyId);
+    return {
+      mappingScope,
+      catalogScope,
+      mediaContext: catalogMediaContext(catalogScope),
+      basePath: mappingScope.basePath,
+      mode: mappingScope.mode,
+    };
+  }, [companyId, mappingScope]);
 };
