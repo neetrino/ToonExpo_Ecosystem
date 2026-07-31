@@ -2,8 +2,8 @@ import { API_V1_PREFIX } from '@toonexpo/contracts';
 
 import { getPublicEnv, getServerApiBaseUrl } from '@/shared/config/env';
 
-import { clearCsrfTokenCache, isMutatingMethod, redirectToLogin, withCsrfHeaders } from './csrf';
-import { ApiError } from './errors';
+import { clearCsrfTokenCache, isMutatingMethod, withCsrfHeaders } from './csrf';
+import { ApiError, isCsrfForbiddenMessage } from './errors';
 
 /** Public auth mutations establish the session; CSRF is not available yet. */
 const CSRF_EXEMPT_PATHS = new Set([
@@ -68,10 +68,34 @@ const toHeaderRecord = (headers: HeadersInit | undefined): Record<string, string
   return merged;
 };
 
+type ApiErrorBody = {
+  code?: unknown;
+  message?: unknown;
+};
+
+const readApiErrorBody = async (
+  response: Response,
+): Promise<{ code?: string; message?: string }> => {
+  try {
+    const body = (await response.json()) as ApiErrorBody;
+    const code = typeof body.code === 'string' ? body.code : undefined;
+    const rawMessage = body.message;
+    const message = Array.isArray(rawMessage)
+      ? rawMessage.filter((part): part is string => typeof part === 'string').join('; ')
+      : typeof rawMessage === 'string'
+        ? rawMessage
+        : undefined;
+    return { code, message };
+  } catch {
+    return {};
+  }
+};
+
 /**
  * Typed fetch wrapper for NestJS `/api/v1` endpoints.
  * Throws {@link ApiError} on non-OK responses; callers handle domain failures.
- * Authenticated mutations attach X-CSRF-Token; one 403 CSRF refresh+retry is attempted.
+ * Authenticated mutations attach X-CSRF-Token; one CSRF-only 403 refresh+retry.
+ * Never hard-redirects to login — session loss is handled by layouts / `getMeOrNull`.
  */
 export const apiFetch = async <T>(options: ApiFetchOptions): Promise<T> => {
   const { path, csrfRetryAttempted = false, ...init } = options;
@@ -84,37 +108,24 @@ export const apiFetch = async <T>(options: ApiFetchOptions): Promise<T> => {
     headers,
   });
 
-  if (
-    response.status === 403 &&
-    requiresCsrf &&
-    !csrfRetryAttempted &&
-    typeof window !== 'undefined'
-  ) {
-    clearCsrfTokenCache();
+  if (!response.ok) {
+    const { code, message } = await readApiErrorBody(response);
 
-    try {
-      return await apiFetch<T>({
+    if (
+      response.status === 403 &&
+      requiresCsrf &&
+      !csrfRetryAttempted &&
+      typeof window !== 'undefined' &&
+      isCsrfForbiddenMessage(message)
+    ) {
+      clearCsrfTokenCache();
+      return apiFetch<T>({
         ...options,
         csrfRetryAttempted: true,
       });
-    } catch {
-      redirectToLogin();
-      throw new ApiError(response.status, response.statusText);
-    }
-  }
-
-  if (!response.ok) {
-    let code: string | undefined;
-    try {
-      const body = (await response.json()) as { code?: unknown };
-      if (typeof body.code === 'string') {
-        code = body.code;
-      }
-    } catch {
-      // Non-JSON error bodies fall back to status-only ApiError.
     }
 
-    throw new ApiError(response.status, response.statusText, undefined, code);
+    throw new ApiError(response.status, response.statusText, message, code);
   }
 
   if (isEmptyBody(response)) {

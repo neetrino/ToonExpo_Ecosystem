@@ -46,3 +46,16 @@ export const isNetworkFetchError = (error: unknown): boolean => {
 
   return false;
 };
+
+const CSRF_FORBIDDEN_MESSAGE = /csrf/i;
+
+/**
+ * Nest CSRF guards return 403 with a message containing "CSRF".
+ * Permission denials are also 403 — do not treat those as CSRF.
+ */
+export const isCsrfForbiddenMessage = (message: string | undefined): boolean => {
+  if (!message) {
+    return false;
+  }
+  return CSRF_FORBIDDEN_MESSAGE.test(message);
+};

@@ -25,7 +25,12 @@ import {
   subscribeClientSessionHint,
 } from '@/features/auth/utils/session-hint';
 import { useRouter } from '@/i18n/navigation';
+import { isNetworkFetchError } from '@/shared/api/errors';
 import { AUTH_ME_QUERY_KEY } from '@/shared/config/auth.constants';
+
+/** Brief API restarts (dev HMR) should not drop the session in the UI. */
+const ME_QUERY_NETWORK_RETRY_COUNT = 3;
+const ME_QUERY_NETWORK_RETRY_DELAY_MS = 800;
 
 /**
  * Client query for the current session user (`null` when logged out).
@@ -47,6 +52,9 @@ export const useMeQuery = () => {
     queryKey: AUTH_ME_QUERY_KEY,
     queryFn: () => getMeOrNull(),
     enabled: hasHint,
+    retry: (failureCount, error) =>
+      isNetworkFetchError(error) && failureCount < ME_QUERY_NETWORK_RETRY_COUNT,
+    retryDelay: ME_QUERY_NETWORK_RETRY_DELAY_MS,
   });
 };
 

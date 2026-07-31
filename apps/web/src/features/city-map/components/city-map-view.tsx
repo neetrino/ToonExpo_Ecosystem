@@ -14,6 +14,7 @@ import {
   CITY_MAP_DRAFT_PREVIEW_ID,
   CITY_MAP_MAPLIBRE_WORKER_URL,
   CITY_MAP_PIN_LAYER_ID,
+  CITY_MAP_PIN_SELECTED_LAYER_ID,
   type CityMapModelPose,
 } from '../constants';
 import { createCityMapGlbLayer, type CityMapGlbLayerHandle } from './city-map-glb-layer';
@@ -153,12 +154,32 @@ export const CityMapView = ({
         }
       });
 
+      map.on('click', CITY_MAP_PIN_SELECTED_LAYER_ID, (event) => {
+        const feature = event.features?.[0];
+        const placementId = feature?.properties?.['id'];
+        const projectId = feature?.properties?.['projectId'];
+        if (typeof placementId === 'string' && typeof projectId === 'string') {
+          onSelectRef.current?.(placementId, projectId);
+        }
+      });
+
+      const setPinCursor = (): void => {
+        map.getCanvas().style.cursor = 'pointer';
+      };
+      const clearPinCursor = (): void => {
+        map.getCanvas().style.cursor = '';
+      };
+      map.on('mouseenter', CITY_MAP_PIN_LAYER_ID, setPinCursor);
+      map.on('mouseleave', CITY_MAP_PIN_LAYER_ID, clearPinCursor);
+      map.on('mouseenter', CITY_MAP_PIN_SELECTED_LAYER_ID, setPinCursor);
+      map.on('mouseleave', CITY_MAP_PIN_SELECTED_LAYER_ID, clearPinCursor);
+
       map.on('click', (event) => {
         if (mode !== 'edit') {
           return;
         }
         const features = map.queryRenderedFeatures(event.point, {
-          layers: [CITY_MAP_PIN_LAYER_ID],
+          layers: [CITY_MAP_PIN_LAYER_ID, CITY_MAP_PIN_SELECTED_LAYER_ID],
         });
         if (features.length > 0) {
           return;

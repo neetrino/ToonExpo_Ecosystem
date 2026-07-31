@@ -6,13 +6,21 @@ import {
   CITY_MAP_PIN_SOURCE_ID,
   type CityMapModelPose,
 } from '../constants';
+import {
+  CITY_MAP_PIN_BRAND,
+  CITY_MAP_PIN_IMAGE_ARCHIVED,
+  CITY_MAP_PIN_IMAGE_DEFAULT,
+  CITY_MAP_PIN_IMAGE_DRAFT,
+  CITY_MAP_PIN_IMAGE_SELECTED,
+  ensureCityMapPinImages,
+} from './city-map-pin-icons';
 
-const PIN_COLOR_PUBLISHED = '#c45c26';
-const PIN_COLOR_DRAFT = '#94a3b8';
-const PIN_COLOR_ARCHIVED = '#64748b';
-const PIN_COLOR_SELECTED = '#1f3a5f';
-const PIN_RADIUS = 11;
-const PIN_RADIUS_SELECTED = 14;
+export const CITY_MAP_PIN_HALO_LAYER_ID = 'city-map-pins-halo-layer';
+
+const PIN_ICON_SIZE = 0.55;
+const PIN_ICON_SIZE_SELECTED = 0.68;
+const PIN_HALO_RADIUS = 10;
+const PIN_HALO_OPACITY = 0.22;
 
 const toFeatureCollection = (
   poses: CityMapModelPose[],
@@ -41,7 +49,21 @@ const toFeatureCollection = (
   })),
 });
 
+const movePinLayersToTop = (map: MapLibreMap): void => {
+  for (const layerId of [
+    CITY_MAP_PIN_HALO_LAYER_ID,
+    CITY_MAP_PIN_LAYER_ID,
+    CITY_MAP_PIN_SELECTED_LAYER_ID,
+  ]) {
+    if (map.getLayer(layerId)) {
+      map.moveLayer(layerId);
+    }
+  }
+};
+
 export const ensureCityMapPinLayers = (map: MapLibreMap): void => {
+  ensureCityMapPinImages(map);
+
   if (!map.getSource(CITY_MAP_PIN_SOURCE_ID)) {
     map.addSource(CITY_MAP_PIN_SOURCE_ID, {
       type: 'geojson',
@@ -49,35 +71,44 @@ export const ensureCityMapPinLayers = (map: MapLibreMap): void => {
     });
   }
 
-  if (!map.getLayer(CITY_MAP_PIN_LAYER_ID)) {
+  if (!map.getLayer(CITY_MAP_PIN_HALO_LAYER_ID)) {
     map.addLayer({
-      id: CITY_MAP_PIN_LAYER_ID,
+      id: CITY_MAP_PIN_HALO_LAYER_ID,
       type: 'circle',
       source: CITY_MAP_PIN_SOURCE_ID,
       paint: {
-        'circle-radius': PIN_RADIUS,
-        'circle-color': [
-          'match',
-          ['get', 'publicationStatus'],
-          'draft',
-          PIN_COLOR_DRAFT,
-          'archived',
-          PIN_COLOR_ARCHIVED,
-          PIN_COLOR_PUBLISHED,
-        ],
-        'circle-opacity': [
-          'match',
-          ['get', 'publicationStatus'],
-          'draft',
-          0.85,
-          'archived',
-          0.55,
-          1,
-        ],
-        'circle-stroke-width': 3,
-        'circle-stroke-color': '#ffffff',
+        'circle-radius': PIN_HALO_RADIUS,
+        'circle-color': CITY_MAP_PIN_BRAND,
+        'circle-opacity': PIN_HALO_OPACITY,
+        'circle-blur': 0.65,
         'circle-pitch-alignment': 'viewport',
         'circle-pitch-scale': 'viewport',
+        'circle-translate': [0, -6],
+        'circle-translate-anchor': 'viewport',
+      },
+    });
+  }
+
+  if (!map.getLayer(CITY_MAP_PIN_LAYER_ID)) {
+    map.addLayer({
+      id: CITY_MAP_PIN_LAYER_ID,
+      type: 'symbol',
+      source: CITY_MAP_PIN_SOURCE_ID,
+      layout: {
+        'icon-image': [
+          'match',
+          ['get', 'publicationStatus'],
+          'draft',
+          CITY_MAP_PIN_IMAGE_DRAFT,
+          'archived',
+          CITY_MAP_PIN_IMAGE_ARCHIVED,
+          CITY_MAP_PIN_IMAGE_DEFAULT,
+        ],
+        'icon-size': PIN_ICON_SIZE,
+        'icon-anchor': 'bottom',
+        'icon-allow-overlap': true,
+        'icon-ignore-placement': true,
+        'symbol-sort-key': ['match', ['get', 'publicationStatus'], 'draft', 1, 'archived', 0, 2],
       },
     });
   }
@@ -85,27 +116,20 @@ export const ensureCityMapPinLayers = (map: MapLibreMap): void => {
   if (!map.getLayer(CITY_MAP_PIN_SELECTED_LAYER_ID)) {
     map.addLayer({
       id: CITY_MAP_PIN_SELECTED_LAYER_ID,
-      type: 'circle',
+      type: 'symbol',
       source: CITY_MAP_PIN_SOURCE_ID,
       filter: ['==', ['get', 'id'], ''],
-      paint: {
-        'circle-radius': PIN_RADIUS_SELECTED,
-        'circle-color': PIN_COLOR_SELECTED,
-        'circle-stroke-width': 3,
-        'circle-stroke-color': '#ffffff',
-        'circle-pitch-alignment': 'viewport',
-        'circle-pitch-scale': 'viewport',
+      layout: {
+        'icon-image': CITY_MAP_PIN_IMAGE_SELECTED,
+        'icon-size': PIN_ICON_SIZE_SELECTED,
+        'icon-anchor': 'bottom',
+        'icon-allow-overlap': true,
+        'icon-ignore-placement': true,
       },
     });
   }
 
-  // Keep pins above the Three.js custom layer so they stay visible.
-  if (map.getLayer(CITY_MAP_PIN_LAYER_ID)) {
-    map.moveLayer(CITY_MAP_PIN_LAYER_ID);
-  }
-  if (map.getLayer(CITY_MAP_PIN_SELECTED_LAYER_ID)) {
-    map.moveLayer(CITY_MAP_PIN_SELECTED_LAYER_ID);
-  }
+  movePinLayersToTop(map);
 };
 
 export const setCityMapPins = (map: MapLibreMap, poses: CityMapModelPose[]): void => {
@@ -118,15 +142,36 @@ export const setSelectedCityMapPin = (map: MapLibreMap, placementId: string | nu
   if (!map.getLayer(CITY_MAP_PIN_SELECTED_LAYER_ID)) {
     return;
   }
-  map.setFilter(CITY_MAP_PIN_SELECTED_LAYER_ID, ['==', ['get', 'id'], placementId ?? '']);
+  const selectedId = placementId ?? '';
+  map.setFilter(CITY_MAP_PIN_SELECTED_LAYER_ID, ['==', ['get', 'id'], selectedId]);
+
+  if (selectedId) {
+    if (map.getLayer(CITY_MAP_PIN_LAYER_ID)) {
+      map.setFilter(CITY_MAP_PIN_LAYER_ID, ['!=', ['get', 'id'], selectedId]);
+    }
+    if (map.getLayer(CITY_MAP_PIN_HALO_LAYER_ID)) {
+      map.setFilter(CITY_MAP_PIN_HALO_LAYER_ID, ['!=', ['get', 'id'], selectedId]);
+    }
+    return;
+  }
+
+  if (map.getLayer(CITY_MAP_PIN_LAYER_ID)) {
+    map.setFilter(CITY_MAP_PIN_LAYER_ID, null);
+  }
+  if (map.getLayer(CITY_MAP_PIN_HALO_LAYER_ID)) {
+    map.setFilter(CITY_MAP_PIN_HALO_LAYER_ID, null);
+  }
 };
 
 export const removeCityMapPinLayers = (map: MapLibreMap): void => {
-  if (map.getLayer(CITY_MAP_PIN_SELECTED_LAYER_ID)) {
-    map.removeLayer(CITY_MAP_PIN_SELECTED_LAYER_ID);
-  }
-  if (map.getLayer(CITY_MAP_PIN_LAYER_ID)) {
-    map.removeLayer(CITY_MAP_PIN_LAYER_ID);
+  for (const layerId of [
+    CITY_MAP_PIN_SELECTED_LAYER_ID,
+    CITY_MAP_PIN_LAYER_ID,
+    CITY_MAP_PIN_HALO_LAYER_ID,
+  ]) {
+    if (map.getLayer(layerId)) {
+      map.removeLayer(layerId);
+    }
   }
   if (map.getSource(CITY_MAP_PIN_SOURCE_ID)) {
     map.removeSource(CITY_MAP_PIN_SOURCE_ID);

@@ -142,6 +142,9 @@ export const getMe = (cookieHeader?: string): Promise<UserResponse | undefined> 
  * Returns the current user or `null` when unauthenticated.
  * Skips the network call when no session cookie / CSRF hint is present (guest).
  * Nest still returns 204 for cookie-less probes as a safety net.
+ *
+ * Network / 5xx failures are rethrown so portals do not treat a brief API
+ * restart as logout and bounce the user to `/auth/login`.
  */
 export const getMeOrNull = async (cookieHeader?: string): Promise<UserResponse | null> => {
   const hasHint =
@@ -157,7 +160,7 @@ export const getMeOrNull = async (cookieHeader?: string): Promise<UserResponse |
     const user = await getMe(cookieHeader);
     return user ?? null;
   } catch (error) {
-    if (isApiErrorStatus(error, 401) || isNetworkFetchError(error)) {
+    if (isApiErrorStatus(error, 401)) {
       return null;
     }
     throw error;
