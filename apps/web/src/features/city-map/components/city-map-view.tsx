@@ -11,20 +11,27 @@ import { cn } from '@/shared/ui/cn';
 
 import {
   CITY_MAP_DEFAULT_CONFIG,
-  CITY_MAP_DRAFT_PREVIEW_ID,
   CITY_MAP_MAPLIBRE_WORKER_URL,
+  CITY_MAP_PIN_FOCUS_ZOOM,
   CITY_MAP_PIN_LAYER_ID,
   CITY_MAP_PIN_SELECTED_LAYER_ID,
   type CityMapModelPose,
 } from '../constants';
 import { createCityMapGlbLayer, type CityMapGlbLayerHandle } from './city-map-glb-layer';
+import { fitCityMapToPinPoses } from './city-map-fit-pins';
 import { bindCityMapMissingImageHandler } from './city-map-missing-images';
+import { bindCityMapPinInteractions } from './city-map-pin-interactions';
 import {
   ensureCityMapPinLayers,
   removeCityMapPinLayers,
   setCityMapPins,
   setSelectedCityMapPin,
 } from './city-map-pins';
+import {
+  applyCityMapRecenter,
+  CityMapRecenterControl,
+  resolveCityMapRecenterTarget,
+} from './city-map-recenter';
 
 export type CityMapViewMode = 'edit' | 'view';
 
@@ -34,13 +41,16 @@ type CityMapViewProps = {
   config?: PublicCityMapConfig | null;
   models: CityMapModelPose[];
   selectedPlacementId?: string | null;
-  selectedProjectId?: string | null;
   flyToPlacementId?: string | null;
   onSelectPlacement?: (placementId: string, projectId: string) => void;
+  /** When set, clicking the already-selected pin clears selection instead of re-selecting. */
+  onDeselectPlacement?: () => void;
   onMapClick?: (lng: number, lat: number) => void;
   onReady?: (map: MapLibreMap) => void;
   onError?: (message: string) => void;
 };
+
+const VIEWPORT_PIN_SYNC_THRESHOLD = 0.05;
 
 let maplibreWorkerConfigured = false;
 
@@ -58,9 +68,9 @@ export const CityMapView = ({
   config,
   models,
   selectedPlacementId = null,
-  selectedProjectId = null,
   flyToPlacementId = null,
   onSelectPlacement,
+  onDeselectPlacement,
   onMapClick,
   onReady,
   onError,
@@ -69,12 +79,16 @@ export const CityMapView = ({
   const mapRef = useRef<MapLibreMap | null>(null);
   const layerRef = useRef<CityMapGlbLayerHandle | null>(null);
   const modelsRef = useRef(models);
+  const selectedPlacementIdRef = useRef(selectedPlacementId);
   const onSelectRef = useRef(onSelectPlacement);
+  const onDeselectRef = useRef(onDeselectPlacement);
   const onClickRef = useRef(onMapClick);
   const didFitPinsRef = useRef(false);
 
   modelsRef.current = models;
+  selectedPlacementIdRef.current = selectedPlacementId;
   onSelectRef.current = onSelectPlacement;
+  onDeselectRef.current = onDeselectPlacement;
   onClickRef.current = onMapClick;
 
   useEffect(() => {
@@ -89,7 +103,21 @@ export const CityMapView = ({
     const mapConfig = config ?? CITY_MAP_DEFAULT_CONFIG;
     let cancelled = false;
     let resizeObserver: ResizeObserver | null = null;
+    let visibilityObserver: IntersectionObserver | null = null;
     let unbindMissingImages: (() => void) | null = null;
+    let unbindPinInteractions: (() => void) | null = null;
+
+    const syncPinsFromRef = (map: MapLibreMap): void => {
+      if (!map.isStyleLoaded()) {
+        return;
+      }
+      layerRef.current?.setModels(modelsRef.current);
+      setCityMapPins(map, modelsRef.current);
+      setSelectedCityMapPin(map, selectedPlacementIdRef.current);
+      if (!didFitPinsRef.current && fitCityMapToPinPoses(map, modelsRef.current)) {
+        didFitPinsRef.current = true;
+      }
+    };
 
     try {
       ensureMaplibreWorker();
@@ -103,6 +131,21 @@ export const CityMapView = ({
         attributionControl: {},
       });
       map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'top-right');
+      map.addControl(
+        new CityMapRecenterControl({
+          onRecenter: () => {
+            const activeMap = mapRef.current;
+            if (!activeMap) {
+              return;
+            }
+            applyCityMapRecenter(
+              activeMap,
+              resolveCityMapRecenterTarget(modelsRef.current, selectedPlacementIdRef.current),
+            );
+          },
+        }),
+        'top-right',
+      );
       unbindMissingImages = bindCityMapMissingImageHandler(map);
       mapRef.current = map;
 
@@ -111,6 +154,18 @@ export const CityMapView = ({
       });
       resizeObserver.observe(containerRef.current);
 
+      visibilityObserver = new IntersectionObserver(
+        (entries) => {
+          if (!entries.some((entry) => entry.isIntersecting)) {
+            return;
+          }
+          map.resize();
+          syncPinsFromRef(map);
+        },
+        { threshold: VIEWPORT_PIN_SYNC_THRESHOLD },
+      );
+      visibilityObserver.observe(containerRef.current);
+
       map.on('load', () => {
         if (cancelled) {
           return;
@@ -118,61 +173,22 @@ export const CityMapView = ({
         map.resize();
         layerRef.current = createCityMapGlbLayer(map);
         ensureCityMapPinLayers(map);
-        layerRef.current.setModels(modelsRef.current);
-        setCityMapPins(map, modelsRef.current);
-        const fitPoses = modelsRef.current.filter((pose) => pose.id !== CITY_MAP_DRAFT_PREVIEW_ID);
-        if (fitPoses.length > 0 && !didFitPinsRef.current) {
-          const bounds = new maplibregl.LngLatBounds();
-          for (const pose of fitPoses) {
-            bounds.extend([pose.longitude, pose.latitude]);
-          }
-          if (!bounds.isEmpty()) {
-            didFitPinsRef.current = true;
-            map.fitBounds(bounds, {
-              padding: 72,
-              maxZoom: 13.5,
-              duration: 900,
-              pitch: 45,
-            });
-          }
-        }
+        syncPinsFromRef(map);
         onReady?.(map);
       });
 
       map.on('error', (event) => {
         const message = event.error?.message ?? 'Map failed to load';
         Sentry.captureMessage(`CityMapView: ${message}`, { level: 'warning' });
-        // Tile/style noise must not unmount the map — only init failures call onError.
       });
 
-      map.on('click', CITY_MAP_PIN_LAYER_ID, (event) => {
-        const feature = event.features?.[0];
-        const placementId = feature?.properties?.['id'];
-        const projectId = feature?.properties?.['projectId'];
-        if (typeof placementId === 'string' && typeof projectId === 'string') {
-          onSelectRef.current?.(placementId, projectId);
+      unbindPinInteractions = bindCityMapPinInteractions(map, (placementId, projectId) => {
+        if (onDeselectRef.current && selectedPlacementIdRef.current === placementId) {
+          onDeselectRef.current();
+          return;
         }
+        onSelectRef.current?.(placementId, projectId);
       });
-
-      map.on('click', CITY_MAP_PIN_SELECTED_LAYER_ID, (event) => {
-        const feature = event.features?.[0];
-        const placementId = feature?.properties?.['id'];
-        const projectId = feature?.properties?.['projectId'];
-        if (typeof placementId === 'string' && typeof projectId === 'string') {
-          onSelectRef.current?.(placementId, projectId);
-        }
-      });
-
-      const setPinCursor = (): void => {
-        map.getCanvas().style.cursor = 'pointer';
-      };
-      const clearPinCursor = (): void => {
-        map.getCanvas().style.cursor = '';
-      };
-      map.on('mouseenter', CITY_MAP_PIN_LAYER_ID, setPinCursor);
-      map.on('mouseleave', CITY_MAP_PIN_LAYER_ID, clearPinCursor);
-      map.on('mouseenter', CITY_MAP_PIN_SELECTED_LAYER_ID, setPinCursor);
-      map.on('mouseleave', CITY_MAP_PIN_SELECTED_LAYER_ID, clearPinCursor);
 
       map.on('click', (event) => {
         if (mode !== 'edit') {
@@ -195,7 +211,9 @@ export const CityMapView = ({
     return () => {
       cancelled = true;
       unbindMissingImages?.();
+      unbindPinInteractions?.();
       resizeObserver?.disconnect();
+      visibilityObserver?.disconnect();
       layerRef.current?.destroy();
       layerRef.current = null;
       if (mapRef.current) {
@@ -204,52 +222,42 @@ export const CityMapView = ({
         mapRef.current = null;
       }
     };
-    // Map init runs once; models/style updates are handled in separate effects.
   }, []);
-
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map || !map.isStyleLoaded()) {
-      return;
-    }
-    layerRef.current?.setModels(models);
-    setCityMapPins(map, models);
-
-    if (didFitPinsRef.current) {
-      return;
-    }
-    const fitPoses = models.filter((pose) => pose.id !== CITY_MAP_DRAFT_PREVIEW_ID);
-    if (fitPoses.length === 0) {
-      return;
-    }
-    const bounds = new maplibregl.LngLatBounds();
-    for (const pose of fitPoses) {
-      bounds.extend([pose.longitude, pose.latitude]);
-    }
-    if (bounds.isEmpty()) {
-      return;
-    }
-    didFitPinsRef.current = true;
-    map.fitBounds(bounds, {
-      padding: 72,
-      maxZoom: 13.5,
-      duration: 900,
-      pitch: 45,
-    });
-  }, [models]);
 
   useEffect(() => {
     const map = mapRef.current;
     if (!map) {
       return;
     }
-    let placementId = selectedPlacementId;
-    if (!placementId && selectedProjectId) {
-      const first = models.find((model) => model.projectId === selectedProjectId);
-      placementId = first?.id ?? null;
+
+    const applyModels = (): void => {
+      if (!map.isStyleLoaded()) {
+        return;
+      }
+      layerRef.current?.setModels(models);
+      setCityMapPins(map, models);
+      if (!didFitPinsRef.current && fitCityMapToPinPoses(map, models)) {
+        didFitPinsRef.current = true;
+      }
+    };
+
+    applyModels();
+    if (map.isStyleLoaded()) {
+      return;
     }
-    setSelectedCityMapPin(map, placementId);
-  }, [selectedPlacementId, selectedProjectId, models]);
+    map.once('load', applyModels);
+    return () => {
+      map.off('load', applyModels);
+    };
+  }, [models]);
+
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !map.isStyleLoaded()) {
+      return;
+    }
+    setSelectedCityMapPin(map, selectedPlacementId);
+  }, [selectedPlacementId, models]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -262,7 +270,7 @@ export const CityMapView = ({
     }
     map.flyTo({
       center: [target.longitude, target.latitude],
-      zoom: Math.max(map.getZoom(), 16),
+      zoom: Math.max(map.getZoom(), CITY_MAP_PIN_FOCUS_ZOOM),
       essential: true,
     });
   }, [flyToPlacementId, models]);

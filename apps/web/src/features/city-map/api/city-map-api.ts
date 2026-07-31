@@ -104,7 +104,8 @@ export const uploadCityMapGlb = async (file: File): Promise<MediaAssetItem> => {
 export const listPublicCityMapPlacements = (): Promise<PublicCityMapPlacementsResponse> =>
   apiFetch<PublicCityMapPlacementsResponse>({
     path: '/public/city-map/placements',
+    cache: 'no-store',
   });
 
 export const getPublicCityMapConfig = (): Promise<PublicCityMapConfig> =>
-  apiFetch<PublicCityMapConfig>({ path: '/public/city-map/config' });
+  apiFetch<PublicCityMapConfig>({ path: '/public/city-map/config', cache: 'no-store' });

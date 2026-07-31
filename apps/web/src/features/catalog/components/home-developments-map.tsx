@@ -59,13 +59,15 @@ export const HomeDevelopmentsMap = ({ projects }: HomeDevelopmentsMapProps) => {
   }, [projects]);
 
   /**
-   * Load the same catalog page as admin city-map so public pins match.
-   * Next Data Cache can serve a stale project list without lat/lng — browser
-   * fetch hits the API proxy and always has coords when the API is up.
+   * Fresh browser fetch (no-store): Next Data Cache can serve SSR projects
+   * without lat/lng; this pass always has coordinates when the API is up.
    */
   useEffect(() => {
     let cancelled = false;
-    void listProjects({ page: 1, pageSize: CITY_MAP_PROJECTS_PAGE_SIZE }, { locale })
+    void listProjects(
+      { page: 1, pageSize: CITY_MAP_PROJECTS_PAGE_SIZE },
+      { locale, cacheMode: 'no-store' },
+    )
       .then((response) => {
         if (cancelled || response.data.length === 0) {
           return;
@@ -148,11 +150,16 @@ export const HomeDevelopmentsMap = ({ projects }: HomeDevelopmentsMapProps) => {
     return placement?.id ?? projectPinId(projectId);
   };
 
-  const selectProject = (projectId: string): void => {
+  const selectProject = (projectId: string, placementId?: string): void => {
     setSelectedId(projectId);
-    const targetId = resolveFlyTarget(projectId);
+    const targetId = placementId ?? resolveFlyTarget(projectId);
     setSelectedPlacementId(targetId);
     setFlyToId(targetId);
+  };
+
+  const clearMapPinSelection = (): void => {
+    setSelectedPlacementId(null);
+    setFlyToId(null);
   };
 
   return (
@@ -206,12 +213,12 @@ export const HomeDevelopmentsMap = ({ projects }: HomeDevelopmentsMapProps) => {
               className="min-h-80 lg:min-h-[42rem]"
               config={config}
               models={models}
-              selectedProjectId={selectedId}
               selectedPlacementId={selectedPlacementId}
               flyToPlacementId={flyToId}
-              onSelectPlacement={(_placementId, projectId) => {
-                selectProject(projectId);
+              onSelectPlacement={(placementId, projectId) => {
+                selectProject(projectId, placementId);
               }}
+              onDeselectPlacement={clearMapPinSelection}
               onError={() => setMapError(t('mapLoadError'))}
             />
           </>

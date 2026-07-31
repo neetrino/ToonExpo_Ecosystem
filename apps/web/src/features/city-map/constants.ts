@@ -25,6 +25,19 @@ export const CITY_MAP_DEFAULT_CONFIG: PublicCityMapConfig = {
   initialBearing: -20,
 };
 
+/** Approximate geographic bounds of Armenia (WGS84). */
+export const CITY_MAP_ARMENIA_BOUNDS = {
+  west: 43.45,
+  south: 38.84,
+  east: 46.63,
+  north: 41.3,
+} as const;
+
+export const CITY_MAP_ARMENIA_FIT_PADDING = 48;
+export const CITY_MAP_ARMENIA_FIT_MAX_ZOOM = 7.5;
+/** Camera zoom when flying to a selected pin / address. */
+export const CITY_MAP_PIN_FOCUS_ZOOM = 16;
+
 export type CityMapModelPose = {
   id: string;
   projectId: string;
