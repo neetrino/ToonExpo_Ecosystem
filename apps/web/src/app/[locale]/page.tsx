@@ -10,7 +10,6 @@ import { HomeMortgage } from '@/features/catalog/components/home-mortgage';
 import { HomeStats } from '@/features/catalog/components/home-stats';
 import { SiteFooter } from '@/features/catalog/components/site-footer';
 import { collectProjectCities } from '@/features/catalog/utils/location-options';
-import { CITY_MAP_PROJECTS_PAGE_SIZE } from '@/features/city-map/constants';
 
 type HomePageProps = {
   params: Promise<{ locale: string }>;
@@ -41,21 +40,15 @@ export default async function HomePage({ params }: HomePageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const [featuredResponse, mapProjectsResponse, builders] = await Promise.all([
+  const [featuredResponse, builders] = await Promise.all([
     listProjects({ page: 1, pageSize: HOME_FEATURED_PAGE_SIZE }, { locale }).catch(() =>
       emptyProjectPage(HOME_FEATURED_PAGE_SIZE),
-    ),
-    listProjects({ page: 1, pageSize: CITY_MAP_PROJECTS_PAGE_SIZE }, { locale }).catch(() =>
-      emptyProjectPage(CITY_MAP_PROJECTS_PAGE_SIZE),
     ),
     listBuilders({ locale }).catch(() => []),
   ]);
 
   const featuredProjects = featuredResponse.data;
-  const mapProjects =
-    mapProjectsResponse.data.length > 0 ? mapProjectsResponse.data : featuredProjects;
-
-  const locations = collectProjectCities([...featuredProjects, ...mapProjects]);
+  const locations = collectProjectCities(featuredProjects);
 
   return (
     <div className="min-h-screen bg-canvas">
@@ -66,7 +59,7 @@ export default async function HomePage({ params }: HomePageProps) {
         projectTotal={featuredResponse.meta.total}
       />
       <FeaturedProjects projects={featuredProjects} />
-      <HomeDevelopments projects={mapProjects} />
+      <HomeDevelopments projects={featuredProjects} />
       <HomeMortgage />
       <SiteFooter />
     </div>

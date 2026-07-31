@@ -28,7 +28,6 @@ import { ExhibitionModule } from './exhibition/exhibition.module.js';
 import { FavoritesModule } from './favorites/favorites.module.js';
 import { HealthModule } from './health/health.module.js';
 import { IntegrationsModule } from './integrations/integrations.module.js';
-import { CityMapModule } from './city-map/city-map.module.js';
 import { InteractiveMappingModule } from './interactive-mapping/interactive-mapping.module.js';
 import { MediaModule } from './media/media.module.js';
 import { MortgageModule } from './mortgage/mortgage.module.js';
@@ -75,7 +74,6 @@ import { VisualMapModule } from './visual-map/visual-map.module.js';
     FavoritesModule,
     IntegrationsModule,
     InteractiveMappingModule,
-    CityMapModule,
     VisualMapModule,
     MediaModule,
     HealthModule,
