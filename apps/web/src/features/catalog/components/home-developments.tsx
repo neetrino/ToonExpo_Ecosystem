@@ -46,8 +46,8 @@ export const HomeDevelopments = async ({ projects }: HomeDevelopmentsProps) => {
           <EmptyState title={t('empty')} />
         ) : (
           <StaggerGroup className="grid grid-cols-1 gap-6 md:grid-cols-3">
-            {watchProjects.map((project) => (
-              <DevelopmentProgressCard key={project.id} project={project} />
+            {watchProjects.map((project, index) => (
+              <DevelopmentProgressCard key={project.id} project={project} priority={index === 0} />
             ))}
           </StaggerGroup>
         )}

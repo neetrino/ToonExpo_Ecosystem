@@ -17,6 +17,7 @@ import {
   type CityMapModelPose,
 } from '../constants';
 import { createCityMapGlbLayer, type CityMapGlbLayerHandle } from './city-map-glb-layer';
+import { bindCityMapMissingImageHandler } from './city-map-missing-images';
 import {
   ensureCityMapPinLayers,
   removeCityMapPinLayers,
@@ -87,6 +88,7 @@ export const CityMapView = ({
     const mapConfig = config ?? CITY_MAP_DEFAULT_CONFIG;
     let cancelled = false;
     let resizeObserver: ResizeObserver | null = null;
+    let unbindMissingImages: (() => void) | null = null;
 
     try {
       ensureMaplibreWorker();
@@ -100,6 +102,7 @@ export const CityMapView = ({
         attributionControl: {},
       });
       map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'top-right');
+      unbindMissingImages = bindCityMapMissingImageHandler(map);
       mapRef.current = map;
 
       resizeObserver = new ResizeObserver(() => {
@@ -170,6 +173,7 @@ export const CityMapView = ({
 
     return () => {
       cancelled = true;
+      unbindMissingImages?.();
       resizeObserver?.disconnect();
       layerRef.current?.destroy();
       layerRef.current = null;
