@@ -85,7 +85,10 @@ const readApiErrorBody = async (
       : typeof rawMessage === 'string'
         ? rawMessage
         : undefined;
-    return { code, message };
+    return {
+      ...(code !== undefined ? { code } : {}),
+      ...(message !== undefined ? { message } : {}),
+    };
   } catch {
     return {};
   }

@@ -204,7 +204,7 @@ export const CityMapView = ({
         mapRef.current = null;
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- init once
+    // Map init runs once; models/style updates are handled in separate effects.
   }, []);
 
   useEffect(() => {
