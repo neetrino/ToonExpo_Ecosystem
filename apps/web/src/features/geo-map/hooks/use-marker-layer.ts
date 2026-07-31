@@ -6,6 +6,7 @@ import { useEffect, useRef } from 'react';
 import {
   MARKER_ELEMENT_CLASS_NAME,
   MARKER_ELEMENT_EDITABLE_CLASS_NAME,
+  MARKER_ELEMENT_HIGHLIGHTED_CLASS_NAME,
 } from '@/features/geo-map/constants';
 import type { GeoMapLngLat, GeoMapObject } from '@/features/geo-map/types';
 import { computeMarkerFadeOpacity } from '@/features/geo-map/utils/zoom-fade-opacity';
@@ -16,16 +17,30 @@ export type UseMarkerLayerOptions = {
   markerObjects: GeoMapObject[];
   zoom: number;
   editable: boolean;
+  highlightedObjectId?: string | null | undefined;
   onObjectClick?: ((id: string) => void) | undefined;
   onObjectHover?: ((id: string | null) => void) | undefined;
   onObjectDragged?: ((id: string, position: GeoMapLngLat) => void) | undefined;
 };
 
-const createMarkerElement = (label: string, editable: boolean): HTMLDivElement => {
+const resolveMarkerClassName = (editable: boolean, highlighted: boolean): string => {
+  const parts = [MARKER_ELEMENT_CLASS_NAME];
+  if (editable) {
+    parts.push(MARKER_ELEMENT_EDITABLE_CLASS_NAME);
+  }
+  if (highlighted) {
+    parts.push(MARKER_ELEMENT_HIGHLIGHTED_CLASS_NAME);
+  }
+  return parts.join(' ');
+};
+
+const createMarkerElement = (
+  label: string,
+  editable: boolean,
+  highlighted: boolean,
+): HTMLDivElement => {
   const element = document.createElement('div');
-  element.className = editable
-    ? `${MARKER_ELEMENT_CLASS_NAME} ${MARKER_ELEMENT_EDITABLE_CLASS_NAME}`
-    : MARKER_ELEMENT_CLASS_NAME;
+  element.className = resolveMarkerClassName(editable, highlighted);
   element.textContent = label;
   return element;
 };
@@ -59,6 +74,7 @@ const syncMarkers = (
   markerObjects: GeoMapObject[],
   zoom: number,
   editable: boolean,
+  highlightedObjectId: string | null | undefined,
   callbacks: MarkerCallbacks,
 ): void => {
   const nextIds = new Set(markerObjects.map((object) => object.id));
@@ -71,15 +87,18 @@ const syncMarkers = (
 
   for (const object of markerObjects) {
     const opacity = computeMarkerFadeOpacity(zoom, object.minZoom);
+    const highlighted = object.id === highlightedObjectId;
     const existing = markers.get(object.id);
     if (existing) {
       existing.setLngLat([object.longitude, object.latitude]);
       existing.setDraggable(editable);
-      existing.getElement().style.setProperty('opacity', String(opacity));
+      const element = existing.getElement();
+      element.className = resolveMarkerClassName(editable, highlighted);
+      element.style.setProperty('opacity', String(opacity));
       continue;
     }
 
-    const element = createMarkerElement(object.label, editable);
+    const element = createMarkerElement(object.label, editable, highlighted);
     element.style.setProperty('opacity', String(opacity));
     const marker = new Marker({ element, draggable: editable })
       .setLngLat([object.longitude, object.latitude])
@@ -99,6 +118,7 @@ export const useMarkerLayer = ({
   markerObjects,
   zoom,
   editable,
+  highlightedObjectId = null,
   onObjectClick,
   onObjectHover,
   onObjectDragged,
@@ -109,7 +129,7 @@ export const useMarkerLayer = ({
     if (!map || !isMapLoaded) {
       return;
     }
-    syncMarkers(map, markersRef.current, markerObjects, zoom, editable, {
+    syncMarkers(map, markersRef.current, markerObjects, zoom, editable, highlightedObjectId, {
       onObjectClick,
       onObjectHover,
       onObjectDragged,
@@ -120,6 +140,7 @@ export const useMarkerLayer = ({
     markerObjects,
     zoom,
     editable,
+    highlightedObjectId,
     onObjectClick,
     onObjectHover,
     onObjectDragged,

@@ -169,8 +169,14 @@
       "completionTbaShort": "TBA",
       "mapEyebrow": "Map view",
       "mapTitle": "Every new development on one map.",
+      "openFullMap": "Open full map →",
       "browseList": "Browse the list →",
       "mapPlaceholder": "Interactive map coming soon — browse projects by city for now.",
+      "search": {
+        "label": "Search projects on the map",
+        "placeholder": "Search projects…",
+        "empty": "No projects match your search."
+      },
       "allDevelopments": "All developments",
       "units": "Units",
       "sold": "Sold",

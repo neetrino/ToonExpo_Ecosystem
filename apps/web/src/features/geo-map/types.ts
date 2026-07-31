@@ -31,6 +31,17 @@ export type GeoMapObject = {
   minZoom: number;
 };
 
+/**
+ * Imperative camera focus request for `GeoMapCanvas`.
+ * Bump `token` (nonce) to re-trigger `flyTo` for the same `objectId`.
+ */
+export type GeoMapFocusRequest = {
+  objectId: string;
+  /** Optional absolute zoom; defaults to `object.minZoom + FOCUS_ZOOM_ABOVE_MIN`. */
+  zoom?: number;
+  token: number;
+};
+
 /** Props for `GeoMapCanvas`. Designed for reuse by the admin editor (Stage 2b) and the public map (Stage 3). */
 export type GeoMapCanvasProps = {
   /** Objects to render — markers below `minZoom`, GLB models at/above `minZoom`. */
@@ -48,6 +59,13 @@ export type GeoMapCanvasProps = {
   editable?: boolean;
   /** Extra class names for the map container; the caller controls sizing (e.g. `h-[600px]`). */
   className?: string;
+  /**
+   * When set (and `token` changes), smoothly flies the camera to that object's
+   * lng/lat. Backward-compatible — omit for read-only / uncontrolled consumers.
+   */
+  focusRequest?: GeoMapFocusRequest | undefined;
+  /** Optional visual highlight for a marker (cheap ring). Omit when unused. */
+  highlightedObjectId?: string | null | undefined;
   /** Fired when a marker or model is clicked. */
   onObjectClick?: ((id: string) => void) | undefined;
   /** Fired on hover start (`id`) and hover end (`null`) over a marker or model. */

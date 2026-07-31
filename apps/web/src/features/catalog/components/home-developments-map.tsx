@@ -1,177 +1,85 @@
 'use client';
 
-import type { ProjectListItem } from '@toonexpo/contracts';
-import Image from 'next/image';
-import { useLocale, useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
-import { computeSoldPercent, resolveBadge } from '@/features/catalog/utils/development-progress';
-import { formatCompactPrice } from '@/features/catalog/utils/format-price';
-import { Link } from '@/i18n/navigation';
-import { staticAssetUrl } from '@/shared/lib/static-asset-url';
+import { HOME_GEO_MAP_HEIGHT_CLASS } from '@/features/catalog/constants/home-geo-map';
+import { HomeGeoMapProjectSearch } from '@/features/catalog/components/home-geo-map-project-search';
+import { GeoMapCanvasLazy } from '@/features/geo-map/components/geo-map-canvas-lazy';
+import type { GeoMapFocusRequest, GeoMapObject } from '@/features/geo-map/types';
+import { mapPublicGeoMapItemsToObjects } from '@/features/geo-map/utils/map-object-mapper';
+import { GeoMapStatusOverlays } from '@/features/geo-map/public/components/geo-map-status-overlays';
+import { usePublicGeoMapModelsQuery } from '@/features/geo-map/public/hooks/use-public-geo-map-models';
+import { buildProjectPublicHref } from '@/features/geo-map/public/utils/build-project-public-href';
+import { resolvePublicGeoMapView } from '@/features/geo-map/public/utils/resolve-public-geo-map-view';
+import { useRouter } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 
-type HomeDevelopmentsMapProps = {
-  projects: ProjectListItem[];
-};
-
-const HOME_MAP_BANNER_SRC = staticAssetUrl('/images/buy-map.webp');
-const MAP_LIST_COUNT = 6;
+const findObjectById = (objects: GeoMapObject[], id: string): GeoMapObject | null =>
+  objects.find((object) => object.id === id) ?? null;
 
 /**
- * Default map banner (static image) until interactive city map returns.
- * Layout mirrors the pre-City-3D homepage MAP VIEW panel.
+ * Home page 3D developments map — published geo-map models + project search fly-to.
+ * Search sits above the map (not overlaid) so MapLibre/deck canvases cannot intercept clicks.
  */
-export const HomeDevelopmentsMap = ({ projects }: HomeDevelopmentsMapProps) => {
-  const t = useTranslations('HomePage.developments');
-  const catalogT = useTranslations('Catalog');
-  const locale = useLocale();
-  const listProjects = projects.slice(0, MAP_LIST_COUNT);
-  const [selectedId, setSelectedId] = useState(listProjects[0]?.id ?? '');
-  const selected = listProjects.find((project) => project.id === selectedId) ?? listProjects[0];
+export const HomeDevelopmentsMap = () => {
+  const router = useRouter();
+  const modelsQuery = usePublicGeoMapModelsQuery();
+  const [focusRequest, setFocusRequest] = useState<GeoMapFocusRequest | undefined>(undefined);
+  const [highlightedObjectId, setHighlightedObjectId] = useState<string | null>(null);
 
-  if (!selected) {
-    return null;
-  }
+  const objects = useMemo(
+    () => mapPublicGeoMapItemsToObjects(modelsQuery.data?.data ?? []),
+    [modelsQuery.data?.data],
+  );
+  const view = useMemo(() => resolvePublicGeoMapView(objects), [objects]);
+  const showEmpty = !modelsQuery.isLoading && !modelsQuery.isError && objects.length === 0;
 
-  const soldPercent = computeSoldPercent(selected);
-  const badge = resolveBadge(soldPercent);
-  const location =
-    [selected.city, selected.district].filter(Boolean).join(', ') || selected.city || '—';
-  const priceLabel = formatCompactPrice({
-    amount: selected.minPrice,
-    currency: selected.priceCurrency,
-    locale,
-    fromLabel: catalogT('price.from'),
-    onRequestLabel: catalogT('price.onRequest'),
-  });
+  const onSelectProject = (object: GeoMapObject): void => {
+    setHighlightedObjectId(object.id);
+    setFocusRequest((prev) => ({
+      objectId: object.id,
+      token: (prev?.token ?? 0) + 1,
+    }));
+  };
+
+  const onObjectClick = (id: string): void => {
+    const object = findObjectById(objects, id);
+    if (!object) {
+      return;
+    }
+    router.push(buildProjectPublicHref(object.projectId));
+  };
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,22rem)]">
-      <div
-        className={cn(
-          'relative min-h-80 overflow-hidden rounded-[20px] bg-map-canvas',
-          'ring-1 ring-header-border lg:min-h-[42rem]',
-        )}
-      >
-        <Image
-          src={HOME_MAP_BANNER_SRC}
-          alt=""
-          fill
-          className="object-cover"
-          sizes="(max-width: 1024px) 100vw, 70vw"
-          priority
-        />
-        <div className="absolute inset-0 bg-canvas/15" aria-hidden />
-        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-canvas/95 via-canvas/70 to-transparent p-6">
-          <p className="text-sm font-medium text-ink-navy">{t('mapPlaceholder')}</p>
-          <Link
-            href="/developments"
-            className="mt-2 inline-flex text-sm font-semibold text-brand-deep hover:text-brand-deep/80"
-          >
-            {t('browseList')}
-          </Link>
-        </div>
+    <div className="flex flex-col gap-3">
+      <div className="relative z-20">
+        <HomeGeoMapProjectSearch objects={objects} onSelect={onSelectProject} />
       </div>
 
-      <aside className="flex flex-col gap-4">
-        <article className="overflow-hidden rounded-[20px] bg-surface-elevated ring-1 ring-header-border">
-          <div className="relative aspect-[16/10] overflow-hidden bg-surface">
-            {selected.cover ? (
-              <Image
-                src={selected.cover.fileUrl}
-                alt={selected.cover.altText ?? selected.name}
-                fill
-                className="object-cover"
-                sizes="340px"
-              />
-            ) : null}
-            <span
-              className={cn(
-                'absolute top-3 left-3 rounded-sm bg-canvas/95 px-2 py-1',
-                'text-[10px] font-bold tracking-widest text-brand-deep uppercase',
-              )}
-            >
-              {t(`badges.${badge}`)}
-            </span>
-          </div>
+      <div
+        className={cn(
+          'relative z-0 overflow-hidden rounded-[20px] bg-map-canvas',
+          'ring-1 ring-header-border',
+          HOME_GEO_MAP_HEIGHT_CLASS,
+        )}
+      >
+        <GeoMapCanvasLazy
+          objects={objects}
+          initialCenter={view.center}
+          initialZoom={view.zoom}
+          focusRequest={focusRequest}
+          highlightedObjectId={highlightedObjectId}
+          className="absolute inset-0 h-full w-full"
+          onObjectClick={onObjectClick}
+        />
 
-          <div className="p-5">
-            <div className="flex items-start justify-between gap-3">
-              <h3 className="font-brand text-lg font-semibold tracking-[-0.02em] text-ink-navy">
-                {selected.name}
-              </h3>
-              <p className="shrink-0 text-sm font-semibold text-brand-deep">{priceLabel}</p>
-            </div>
-            <p className="mt-1 text-xs text-header-muted">
-              {selected.builder.name}
-              {' · '}
-              {location}
-            </p>
-            {selected.shortDescription ? (
-              <p className="mt-3 line-clamp-2 text-sm leading-5 text-ink-navy/80">
-                {selected.shortDescription}
-              </p>
-            ) : null}
-
-            <div className="mt-4 grid grid-cols-3 gap-3 text-center">
-              <StatTile label={t('units')} value={String(selected.availability.total)} />
-              <StatTile label={t('sold')} value={String(selected.availability.sold)} />
-              <StatTile label={t('done')} value={t('completionTbaShort')} />
-            </div>
-
-            <Link
-              href={`/projects/${selected.id}`}
-              className={cn(
-                'mt-5 flex h-10 items-center justify-center rounded-md bg-brand-deep px-4',
-                'text-sm font-semibold text-on-dark transition-colors hover:bg-brand-deep/90',
-              )}
-            >
-              {catalogT('actions.viewProject')}
-            </Link>
-          </div>
-        </article>
-
-        <div className="rounded-[20px] bg-surface-elevated p-4 ring-1 ring-header-border">
-          <p className="text-[10px] font-bold tracking-widest text-header-muted uppercase">
-            {t('allDevelopments')}
-          </p>
-          <ul className="mt-2 divide-y divide-header-border">
-            {listProjects.map((project) => {
-              const isActive = project.id === selected.id;
-              return (
-                <li key={project.id}>
-                  <button
-                    type="button"
-                    onClick={() => setSelectedId(project.id)}
-                    className={cn(
-                      'flex w-full items-center justify-between gap-3 py-2.5 text-left text-sm',
-                      'transition-colors duration-[var(--duration-fast)]',
-                      isActive
-                        ? 'font-medium text-brand-deep'
-                        : 'text-ink-navy hover:text-brand-deep',
-                    )}
-                  >
-                    <span className="truncate">{project.name}</span>
-                    <span className="shrink-0 text-xs font-normal text-header-muted">
-                      {project.city ?? '—'}
-                    </span>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-      </aside>
-    </div>
-  );
-};
-
-const StatTile = ({ label, value }: { label: string; value: string }) => {
-  return (
-    <div className="rounded-sm bg-brand-soft/40 p-2">
-      <p className="text-[9px] font-bold tracking-widest text-header-muted uppercase">{label}</p>
-      <p className="mt-0.5 text-sm font-semibold text-ink-navy">{value}</p>
+        <GeoMapStatusOverlays
+          isLoading={modelsQuery.isLoading}
+          isError={modelsQuery.isError}
+          isEmpty={showEmpty}
+          onRetry={() => void modelsQuery.refetch()}
+        />
+      </div>
     </div>
   );
 };

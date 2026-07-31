@@ -61,6 +61,22 @@ export const MARKER_ELEMENT_EDITABLE_CLASS_NAME = 'cursor-grab active:cursor-gra
 
 export const NAVIGATION_CONTROL_POSITION = 'top-right';
 
+/**
+ * Extra zoom above an object's `minZoom` when focusing so the GLB is clearly
+ * past the marker→model threshold.
+ */
+export const FOCUS_ZOOM_ABOVE_MIN = 1.25;
+
+/** MapLibre `flyTo` duration for focus requests (ms). */
+export const FOCUS_FLY_TO_DURATION_MS = 1600;
+
+/** Camera pitch applied on focus so the GLB reads in 3D (degrees). */
+export const FOCUS_PITCH_DEG = 55;
+
+/** Marker element class applied while `highlightedObjectId` matches. */
+export const MARKER_ELEMENT_HIGHLIGHTED_CLASS_NAME =
+  'ring-2 ring-brand-deep border-brand-deep shadow-md';
+
 /** MapLibre canvas gains this class while the pointer is over a pickable model. */
 export const MAP_CANVAS_HOVER_CURSOR_CLASS = 'cursor-pointer';
 

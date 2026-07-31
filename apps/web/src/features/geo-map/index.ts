@@ -13,7 +13,7 @@ export {
   MAP_STYLE_URL_ENV_VAR,
 } from './constants';
 
-export type { GeoMapCanvasProps, GeoMapLngLat, GeoMapObject } from './types';
+export type { GeoMapCanvasProps, GeoMapFocusRequest, GeoMapLngLat, GeoMapObject } from './types';
 
 export {
   mapAdminGeoMapItemToObject,
@@ -21,4 +21,6 @@ export {
   mapPublicGeoMapItemToObject,
   mapPublicGeoMapItemsToObjects,
 } from './utils/map-object-mapper';
+export { resolveFocusCamera, findFocusObject } from './utils/resolve-focus-camera';
+export { filterMapObjectsByLabel } from './utils/filter-map-objects-by-label';
 export { resolveMapStyleUrl } from './utils/resolve-map-style-url';
