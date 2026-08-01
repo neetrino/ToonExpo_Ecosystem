@@ -1,12 +1,11 @@
 'use client';
 
 import type { MapLibreMap } from 'maplibre-gl';
-import { ChevronDown, Compass, MoveVertical, ZoomIn, ZoomOut } from 'lucide-react';
+import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, ZoomIn, ZoomOut } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import {
-  DEFAULT_MAP_BEARING_DEG,
-  DEFAULT_MAP_PITCH_DEG,
+  MAP_BEARING_STEP_DEG,
   MAP_CAMERA_EASE_DURATION_MS,
   MAP_PITCH_STEP_DEG,
   MAP_ZOOM_STEP,
@@ -27,7 +26,7 @@ const BUTTON_CLASS_NAME =
 const clampMapZoom = (zoom: number): number => Math.min(MAX_MAP_ZOOM, Math.max(MIN_MAP_ZOOM, zoom));
 
 /**
- * Single stacked panel for zoom and camera pitch/bearing reset.
+ * Stacked panel: zoom in/out, then rotate (←→) and tilt (↑↓).
  * Gesture rotate/pitch (right-drag, touch) remains enabled on the map.
  */
 export const GeoMapCameraControls = ({ map }: GeoMapCameraControlsProps) => {
@@ -41,18 +40,17 @@ export const GeoMapCameraControls = ({ map }: GeoMapCameraControlsProps) => {
     });
   };
 
-  const easePitchBy = (deltaDeg: number): void => {
+  const easeBearingBy = (deltaDeg: number): void => {
     map.easeTo({
-      pitch: clampMapPitch(map.getPitch() + deltaDeg),
+      bearing: map.getBearing() + deltaDeg,
       duration: MAP_CAMERA_EASE_DURATION_MS,
       essential: true,
     });
   };
 
-  const resetView = (): void => {
+  const easePitchBy = (deltaDeg: number): void => {
     map.easeTo({
-      pitch: DEFAULT_MAP_PITCH_DEG,
-      bearing: DEFAULT_MAP_BEARING_DEG,
+      pitch: clampMapPitch(map.getPitch() + deltaDeg),
       duration: MAP_CAMERA_EASE_DURATION_MS,
       essential: true,
     });
@@ -85,11 +83,29 @@ export const GeoMapCameraControls = ({ map }: GeoMapCameraControlsProps) => {
       <button
         type="button"
         className={BUTTON_CLASS_NAME}
+        aria-label={t('rotateLeft')}
+        title={t('rotateLeft')}
+        onClick={() => easeBearingBy(-MAP_BEARING_STEP_DEG)}
+      >
+        <ArrowLeft className="h-4 w-4" aria-hidden />
+      </button>
+      <button
+        type="button"
+        className={BUTTON_CLASS_NAME}
+        aria-label={t('rotateRight')}
+        title={t('rotateRight')}
+        onClick={() => easeBearingBy(MAP_BEARING_STEP_DEG)}
+      >
+        <ArrowRight className="h-4 w-4" aria-hidden />
+      </button>
+      <button
+        type="button"
+        className={BUTTON_CLASS_NAME}
         aria-label={t('tiltUp')}
         title={t('tiltUp')}
         onClick={() => easePitchBy(MAP_PITCH_STEP_DEG)}
       >
-        <MoveVertical className="h-4 w-4" aria-hidden />
+        <ArrowUp className="h-4 w-4" aria-hidden />
       </button>
       <button
         type="button"
@@ -98,16 +114,7 @@ export const GeoMapCameraControls = ({ map }: GeoMapCameraControlsProps) => {
         title={t('tiltDown')}
         onClick={() => easePitchBy(-MAP_PITCH_STEP_DEG)}
       >
-        <ChevronDown className="h-4 w-4" aria-hidden />
-      </button>
-      <button
-        type="button"
-        className={BUTTON_CLASS_NAME}
-        aria-label={t('resetView')}
-        title={t('resetView')}
-        onClick={resetView}
-      >
-        <Compass className="h-4 w-4" aria-hidden />
+        <ArrowDown className="h-4 w-4" aria-hidden />
       </button>
     </div>
   );

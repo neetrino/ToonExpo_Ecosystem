@@ -35,7 +35,7 @@ export type UseMaplibreMapResult = {
  * Rotate / tilt (MapLibre defaults, left enabled explicitly for clarity):
  * - Desktop: right-drag or Ctrl+drag to rotate bearing and pitch around the center.
  * - Touch: two-finger rotate/zoom; two-finger drag to pitch (`touchPitch`).
- * - Zoom / pitch / reset north: `GeoMapCameraControls` in `GeoMapCanvas`.
+ * - Zoom / rotate / tilt buttons: `GeoMapCameraControls` in `GeoMapCanvas`.
  */
 export const useMaplibreMap = ({
   containerRef,

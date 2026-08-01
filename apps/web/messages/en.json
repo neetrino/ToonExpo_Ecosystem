@@ -3413,12 +3413,13 @@
       "viewProject": "View project"
     },
     "camera": {
-      "groupLabel": "Map zoom and view",
+      "groupLabel": "Map zoom, rotate and tilt",
       "zoomIn": "Zoom in",
       "zoomOut": "Zoom out",
-      "tiltUp": "Tilt view",
-      "tiltDown": "Flatten view",
-      "resetView": "Reset north and default tilt"
+      "rotateLeft": "Rotate left",
+      "rotateRight": "Rotate right",
+      "tiltUp": "Tilt up",
+      "tiltDown": "Tilt down"
     }
   },
   "Expo": {

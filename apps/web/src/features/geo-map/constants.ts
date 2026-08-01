@@ -20,10 +20,13 @@ export const DEFAULT_MAP_BEARING_DEG = 0;
  */
 export const MAX_MAP_PITCH_DEG = 85;
 
-/** Pitch step for the compact tilt + / − controls (degrees). */
+/** Pitch step for the compact tilt ↑ / ↓ controls (degrees). */
 export const MAP_PITCH_STEP_DEG = 10;
 
-/** Ease duration for tilt / reset camera control actions (ms). */
+/** Bearing step for the compact rotate ← / → controls (degrees). */
+export const MAP_BEARING_STEP_DEG = 15;
+
+/** Ease duration for zoom / rotate / tilt camera control actions (ms). */
 export const MAP_CAMERA_EASE_DURATION_MS = 300;
 
 /** Zoom level delta for map control buttons. */
