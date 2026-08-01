@@ -24,7 +24,7 @@ import { useOsmBuildingPick } from '@/features/geo-map/hooks/use-osm-building-pi
 import { useVisibleObjects } from '@/features/geo-map/hooks/use-visible-objects';
 import { useWebglSupport } from '@/features/geo-map/hooks/use-webgl-support';
 import type { GeoMapCanvasProps, GeoMapLngLat, GeoMapObject } from '@/features/geo-map/types';
-import type { ObjectPositionOverride } from '@/features/geo-map/utils/apply-position-override';
+import type { ObjectTransformOverride } from '@/features/geo-map/utils/apply-position-override';
 import { resolveMapStyleUrl } from '@/features/geo-map/utils/resolve-map-style-url';
 
 const DEFAULT_CENTER: GeoMapLngLat = {
@@ -71,6 +71,7 @@ export const GeoMapCanvas = ({
   onObjectHover,
   onMapClick,
   onObjectDragged,
+  transformOverride = null,
   selectedOsmBuilding = null,
   onOsmBuildingSelect,
   adminSelectionChrome = null,
@@ -79,7 +80,7 @@ export const GeoMapCanvas = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const [uiOverlayRoot, setUiOverlayRoot] = useState<HTMLDivElement | null>(null);
   const isWebglSupported = useWebglSupport();
-  const [dragOverride, setDragOverride] = useState<ObjectPositionOverride | null>(null);
+  const [dragOverride, setDragOverride] = useState<ObjectTransformOverride | null>(null);
   const [hoveredObjectId, setHoveredObjectId] = useState<string | null>(null);
 
   const { map, isMapLoaded } = useMaplibreMap({
@@ -91,7 +92,13 @@ export const GeoMapCanvas = ({
     initialBearing,
   });
   const { zoom, bounds } = useMapViewportState(map, isMapLoaded, initialZoom);
-  const { markerObjects, modelObjects } = useVisibleObjects(objects, dragOverride, zoom, bounds);
+  const { markerObjects, modelObjects } = useVisibleObjects(
+    objects,
+    dragOverride,
+    zoom,
+    bounds,
+    transformOverride,
+  );
 
   const activeHighlightId = hoveredObjectId ?? highlightedObjectId ?? null;
   const infoObject =

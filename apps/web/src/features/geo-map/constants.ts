@@ -184,8 +184,8 @@ export const GEO_MAP_ADMIN_CONTEXT_MENU_Z_INDEX_CLASS = 'z-[110]';
 /**
  * ScenegraphLayer `getColor` tint (RGBA 0–255) — always opaque white so GLB
  * materials stay visible. Selection is shown via pins / floating chrome / info
- * card, not a multiplicative mesh wash (`_lighting: 'flat'` would turn a warm
- * tint into a solid yellow/orange slab).
+ * card, not a multiplicative mesh wash (a warm tint under flat or PBR lighting
+ * can read as a solid yellow/orange slab).
  */
 export const SCENEGRAPH_DEFAULT_COLOR: [number, number, number, number] = [255, 255, 255, 255];
 

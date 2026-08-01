@@ -11,16 +11,26 @@ import {
   type GeoMapTransformDraft,
 } from '@/features/geo-map/admin/components/geo-map-transform-fields';
 import type { GeoMapProjectOption } from '@/features/geo-map/admin/utils/available-projects';
+import type { GeoMapLngLat } from '@/features/geo-map/types';
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Select } from '@/shared/ui/select';
 import { Switch } from '@/shared/ui/switch';
+
+/** Map-drag end → sidebar draft sync (token bumps each drag). */
+export type GeoMapDragSyncedPosition = GeoMapLngLat & {
+  token: number;
+};
 
 type GeoMapEditPanelProps = {
   model: AdminGeoMapModelItem;
   projects: GeoMapProjectOption[];
   isSaving: boolean;
   isDeleting: boolean;
+  /** Live map preview while editing; Save still persists to the API. */
+  onTransformPreview: (draft: GeoMapTransformDraft) => void;
+  /** When token bumps (drag end), patches draft lng/lat so sliders stay in sync. */
+  dragSyncedPosition: GeoMapDragSyncedPosition | null;
   onSave: (body: UpdateGeoMapModelRequest) => Promise<void>;
   onPublishChange: (isPublished: boolean) => Promise<void>;
   onReplaceModel: (mediaAssetId: string) => Promise<void>;
@@ -47,6 +57,8 @@ export const GeoMapEditPanel = ({
   projects,
   isSaving,
   isDeleting,
+  onTransformPreview,
+  dragSyncedPosition,
   onSave,
   onPublishChange,
   onReplaceModel,
@@ -65,13 +77,35 @@ export const GeoMapEditPanel = ({
   const isUnassigned = model.projectId === null;
   const freeProjects = projects.filter((project) => !project.hasModel);
 
+  const commitDraft = (next: GeoMapTransformDraft): void => {
+    setDraft(next);
+    onTransformPreview(next);
+  };
+
   useEffect(() => {
-    setDraft(toDraft(model));
+    const next = toDraft(model);
+    setDraft(next);
+    onTransformPreview(next);
     setAttachProjectId('');
     setSaveError(null);
     setAttachError(null);
     setReplaceError(null);
-  }, [model]);
+  }, [model, onTransformPreview]);
+
+  useEffect(() => {
+    if (!dragSyncedPosition) {
+      return;
+    }
+    setDraft((current) => {
+      const next = {
+        ...current,
+        longitude: dragSyncedPosition.longitude,
+        latitude: dragSyncedPosition.latitude,
+      };
+      onTransformPreview(next);
+      return next;
+    });
+  }, [dragSyncedPosition, onTransformPreview]);
 
   const handleSave = async (): Promise<void> => {
     setSaveError(null);
@@ -196,7 +230,7 @@ export const GeoMapEditPanel = ({
         {isReplacing ? <p className="text-xs text-ink-muted">{t('edit.replacing')}</p> : null}
       </div>
 
-      <GeoMapTransformFields value={draft} onChange={setDraft} disabled={busy} />
+      <GeoMapTransformFields value={draft} onChange={commitDraft} disabled={busy} />
 
       {saveError ? (
         <p role="alert" className="text-sm text-danger">

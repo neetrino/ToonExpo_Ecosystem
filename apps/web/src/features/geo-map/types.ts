@@ -1,4 +1,5 @@
 import type { SelectedOsmBuilding } from '@/features/geo-map/utils/building-identification';
+import type { ObjectTransformOverride } from '@/features/geo-map/utils/apply-position-override';
 
 /** Shared types for the `GeoMapCanvas` core and its consumers (Stage 2b, Stage 3). */
 
@@ -90,6 +91,11 @@ export type GeoMapCanvasProps = {
   onMapClick?: ((position: GeoMapLngLat) => void) | undefined;
   /** Fired once an `editable` drag ends, with the object's new position. */
   onObjectDragged?: ((id: string, position: GeoMapLngLat) => void) | undefined;
+  /**
+   * Admin-only live transform preview (sidebar sliders) before Save. Applied
+   * before drag override so an in-progress drag still wins for lng/lat.
+   */
+  transformOverride?: ObjectTransformOverride | null | undefined;
   /**
    * Admin-only: currently selected OSM building for cyan footprint highlight.
    * Ignored when `editable` is false.

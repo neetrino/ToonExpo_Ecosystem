@@ -6,6 +6,8 @@ import { useCallback, useMemo, useState } from 'react';
 
 import { GeoMapAdminSidebar } from '@/features/geo-map/admin/components/geo-map-admin-sidebar';
 import type { GeoMapCreateDraft } from '@/features/geo-map/admin/components/geo-map-create-panel';
+import type { GeoMapDragSyncedPosition } from '@/features/geo-map/admin/components/geo-map-edit-panel';
+import type { GeoMapTransformDraft } from '@/features/geo-map/admin/components/geo-map-transform-fields';
 import { GEO_MAP_DEFAULT_CREATE_VALUES } from '@/features/geo-map/admin/constants';
 import {
   useAdminGeoMapModelsQuery,
@@ -27,6 +29,7 @@ import type {
   GeoMapAdminMapSelectionChromeProps,
   SelectedOsmBuilding,
 } from '@/features/geo-map/types';
+import type { ObjectTransformOverride } from '@/features/geo-map/utils/apply-position-override';
 import { mapAdminGeoMapItemsToObjects } from '@/features/geo-map/utils/map-object-mapper';
 import {
   roundGeoMapCoordinateForApi,
@@ -39,6 +42,34 @@ const modelToLngLat = (model: AdminGeoMapModelItem): GeoMapLngLat => ({
   longitude: Number(model.longitude),
   latitude: Number(model.latitude),
 });
+
+const draftToTransformOverride = (
+  modelId: string,
+  draft: GeoMapTransformDraft,
+): ObjectTransformOverride => ({
+  id: modelId,
+  longitude: draft.longitude,
+  latitude: draft.latitude,
+  altitudeM: draft.altitudeM,
+  headingDeg: draft.headingDeg,
+  pitchDeg: draft.pitchDeg,
+  rollDeg: draft.rollDeg,
+  scale: draft.scale,
+  minZoom: draft.minZoom,
+});
+
+const resolveSelectionAnchor = (
+  model: AdminGeoMapModelItem,
+  preview: ObjectTransformOverride | null,
+): GeoMapLngLat => {
+  if (preview && preview.id === model.id) {
+    return {
+      longitude: preview.longitude ?? Number(model.longitude),
+      latitude: preview.latitude ?? Number(model.latitude),
+    };
+  }
+  return modelToLngLat(model);
+};
 
 const focusSidebarSelect = (id: string): void => {
   queueMicrotask(() => {
@@ -78,6 +109,10 @@ export const GeoMapAdminPage = () => {
   );
   const [pendingDelete, setPendingDelete] = useState<AdminGeoMapModelItem | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [transformPreview, setTransformPreview] = useState<ObjectTransformOverride | null>(null);
+  const [dragSyncedPosition, setDragSyncedPosition] = useState<GeoMapDragSyncedPosition | null>(
+    null,
+  );
 
   const models = modelsQuery.data?.data ?? [];
   const projects = useMemo(
@@ -87,11 +122,28 @@ export const GeoMapAdminPage = () => {
   const objects = useMemo(() => mapAdminGeoMapItemsToObjects(models), [models]);
   const selectedModel = models.find((model) => model.id === selectedId) ?? null;
 
+  const handleTransformPreview = useCallback(
+    (draft: GeoMapTransformDraft): void => {
+      if (!selectedId) {
+        setTransformPreview(null);
+        return;
+      }
+      setTransformPreview(draftToTransformOverride(selectedId, draft));
+    },
+    [selectedId],
+  );
+
+  const clearTransformPreview = useCallback((): void => {
+    setTransformPreview(null);
+    setDragSyncedPosition(null);
+  }, []);
+
   const selectModel = (id: string): void => {
     setSelectedId(id);
     setCreateDraft(null);
     setSelectedOsmBuilding(null);
     setActionError(null);
+    clearTransformPreview();
   };
 
   const placeModel = useCallback(
@@ -116,6 +168,8 @@ export const GeoMapAdminPage = () => {
         });
         setCreateDraft(null);
         setSelectedOsmBuilding(null);
+        setTransformPreview(null);
+        setDragSyncedPosition(null);
         setSelectedId(created.id);
       } catch {
         setActionError(t('errors.createFailed'));
@@ -167,6 +221,14 @@ export const GeoMapAdminPage = () => {
     setActionError(null);
     try {
       const { longitude, latitude } = roundGeoMapLngLatForApi(position);
+      setDragSyncedPosition((previous) => ({
+        longitude,
+        latitude,
+        token: (previous?.token ?? 0) + 1,
+      }));
+      setTransformPreview((previous) =>
+        previous && previous.id === id ? { ...previous, longitude, latitude } : previous,
+      );
       await updateMutation.mutateAsync({
         id,
         body: { longitude, latitude },
@@ -242,6 +304,8 @@ export const GeoMapAdminPage = () => {
     setCreateDraft(EMPTY_CREATE_DRAFT);
     setSelectedOsmBuilding(null);
     setActionError(null);
+    setTransformPreview(null);
+    setDragSyncedPosition(null);
   }, []);
 
   const startCreate = useCallback((): void => {
@@ -249,6 +313,8 @@ export const GeoMapAdminPage = () => {
     setCreateDraft(EMPTY_CREATE_DRAFT);
     setSelectedOsmBuilding(null);
     setActionError(null);
+    setTransformPreview(null);
+    setDragSyncedPosition(null);
   }, []);
 
   const focusCreateUpload = useCallback((): void => {
@@ -309,6 +375,8 @@ export const GeoMapAdminPage = () => {
       if (selectedId === pendingDelete.id) {
         setSelectedId(null);
         setCreateDraft(EMPTY_CREATE_DRAFT);
+        setTransformPreview(null);
+        setDragSyncedPosition(null);
       }
       setPendingDelete(null);
     } catch {
@@ -319,7 +387,7 @@ export const GeoMapAdminPage = () => {
   const adminSelectionChrome = useMemo((): GeoMapAdminMapSelectionChromeProps | null => {
     if (selectedModel && createDraft === null) {
       return {
-        anchor: modelToLngLat(selectedModel),
+        anchor: resolveSelectionAnchor(selectedModel, transformPreview),
         kind: 'model',
         title: selectedModel.projectName ?? selectedModel.mediaTitle ?? t('list.unassigned'),
         showAttachProject: !selectedModel.projectId,
@@ -357,6 +425,7 @@ export const GeoMapAdminPage = () => {
     selectedModel,
     createDraft,
     selectedOsmBuilding,
+    transformPreview,
     deleteMutation.isPending,
     t,
     clearSelection,
@@ -393,9 +462,11 @@ export const GeoMapAdminPage = () => {
           isCreating={createMutation.isPending}
           isSaving={updateMutation.isPending}
           isDeleting={deleteMutation.isPending}
+          dragSyncedPosition={dragSyncedPosition}
           onSelect={selectModel}
           onStartCreate={startCreate}
           onCreateDraftChange={handleCreateDraftChange}
+          onTransformPreview={handleTransformPreview}
           onSave={handleSave}
           onPublishChange={handlePublishChange}
           onReplaceModel={handleReplaceModel}
@@ -421,6 +492,7 @@ export const GeoMapAdminPage = () => {
           objects={objects}
           editable
           highlightedObjectId={selectedId}
+          transformOverride={transformPreview}
           selectedOsmBuilding={selectedOsmBuilding}
           adminSelectionChrome={adminSelectionChrome}
           adminOsmHideSession={adminOsmHideSession}

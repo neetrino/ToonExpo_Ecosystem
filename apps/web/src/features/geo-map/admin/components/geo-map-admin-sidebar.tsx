@@ -8,8 +8,12 @@ import {
   GeoMapCreatePanel,
   type GeoMapCreateDraft,
 } from '@/features/geo-map/admin/components/geo-map-create-panel';
-import { GeoMapEditPanel } from '@/features/geo-map/admin/components/geo-map-edit-panel';
+import {
+  GeoMapEditPanel,
+  type GeoMapDragSyncedPosition,
+} from '@/features/geo-map/admin/components/geo-map-edit-panel';
 import { GeoMapModelList } from '@/features/geo-map/admin/components/geo-map-model-list';
+import type { GeoMapTransformDraft } from '@/features/geo-map/admin/components/geo-map-transform-fields';
 import type { GeoMapProjectOption } from '@/features/geo-map/admin/utils/available-projects';
 import { Button } from '@/shared/ui/button';
 
@@ -23,9 +27,11 @@ type GeoMapAdminSidebarProps = {
   isCreating: boolean;
   isSaving: boolean;
   isDeleting: boolean;
+  dragSyncedPosition: GeoMapDragSyncedPosition | null;
   onSelect: (id: string) => void;
   onStartCreate: () => void;
   onCreateDraftChange: (draft: GeoMapCreateDraft | null) => void;
+  onTransformPreview: (draft: GeoMapTransformDraft) => void;
   onSave: (body: UpdateGeoMapModelRequest) => Promise<void>;
   onPublishChange: (isPublished: boolean) => Promise<void>;
   onReplaceModel: (mediaAssetId: string) => Promise<void>;
@@ -47,9 +53,11 @@ export const GeoMapAdminSidebar = ({
   isCreating,
   isSaving,
   isDeleting,
+  dragSyncedPosition,
   onSelect,
   onStartCreate,
   onCreateDraftChange,
+  onTransformPreview,
   onSave,
   onPublishChange,
   onReplaceModel,
@@ -98,6 +106,8 @@ export const GeoMapAdminSidebar = ({
           projects={projects}
           isSaving={isSaving}
           isDeleting={isDeleting}
+          dragSyncedPosition={dragSyncedPosition}
+          onTransformPreview={onTransformPreview}
           onSave={onSave}
           onPublishChange={onPublishChange}
           onReplaceModel={onReplaceModel}

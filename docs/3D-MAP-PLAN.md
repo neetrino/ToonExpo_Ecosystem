@@ -205,16 +205,24 @@ Stage rules:
 - **Done:** R2 bucket CORS allows direct GLB fetches from `pub-*.r2.dev`; the
   `/r2-proxy/*` rewrite was removed.
 - Scenegraph layers render via `MapboxOverlay` with `interleaved: false` (and
-  `_lighting: 'flat'`) so GLBs stay visible above MapLibre depth/stencil and
-  near-mirror PBR materials from authoring tools.
+  `_lighting: 'pbr'`) so GLBs stay visible above MapLibre depth/stencil and
+  textured materials read more realistically than flat unlit shading. If a GLB
+  still looks washed or mirror-black after PBR, escalate (authoring materials /
+  Three.js path) rather than reintroducing a warm `getColor` wash.
+- **Admin live transform preview:** Sidebar sliders (position, altitude, rotate
+  X/Y/Z, scale, minZoom) update the map immediately via an in-memory
+  `transformOverride` on `GeoMapCanvas`. **Save** PATCHes the API/DB. **Publish**
+  remains a separate flag — the public map still only lists
+  `isPublished && projectId != null`. Drag-to-move still PATCHes lng/lat on drop
+  and wins over the preview while dragging.
 - **Default model pitch 90° (POC parity):** deck.gl `ScenegraphLayer`
   `getOrientation` is `[pitch, yaw, roll]`. Typical Y-up glTF/GLB assets
   (including Map POC `Building01.glb`) need `pitchDeg: 90` to stand upright on
   MapLibre — matches POC “Rotation X = 90°”. Prisma column default stays `0`
   for schema stability; admin create + Nest create defaults send
   `GEO_MAP_DEFAULT_PITCH_DEG = 90`. Selection must not multiply mesh color
-  (warm `getColor` wash + flat lighting reads as a solid yellow slab); keep
-  opaque white `getColor` and show selection via pin / chrome / info card only.
+  (warm `getColor` wash reads as a solid yellow slab); keep opaque white
+  `getColor` and show selection via pin / chrome / info card only.
 - When interleaved mode is re-enabled later, use `beforeId: boundary_3` so
   models draw above `building-3d` extrusions.
 

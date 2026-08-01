@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useId, useState } from 'react';
+import { useId } from 'react';
 
 import {
   GEO_MAP_ALTITUDE_MAX_M,
@@ -94,6 +94,7 @@ const NumberField = ({
 
 /**
  * Numeric + slider transform controls for a selected map model.
+ * Rotate X/Y/Z labels match the Map Three.js POC (Pitch / Heading / Roll).
  */
 export const GeoMapTransformFields = ({
   value,
@@ -102,7 +103,6 @@ export const GeoMapTransformFields = ({
 }: GeoMapTransformFieldsProps) => {
   const t = useTranslations('Admin.geoMap.form');
   const baseId = useId();
-  const [advancedOpen, setAdvancedOpen] = useState(false);
 
   const patch = (partial: Partial<GeoMapTransformDraft>): void => {
     onChange({ ...value, ...partial });
@@ -134,6 +134,17 @@ export const GeoMapTransformFields = ({
       </div>
 
       <NumberField
+        id={`${baseId}-pitch`}
+        label={t('pitchDeg')}
+        value={value.pitchDeg}
+        min={GEO_MAP_PITCH_MIN_DEG}
+        max={GEO_MAP_PITCH_MAX_DEG}
+        step={1}
+        disabled={disabled}
+        showSlider
+        onChange={(pitchDeg) => patch({ pitchDeg })}
+      />
+      <NumberField
         id={`${baseId}-heading`}
         label={t('headingDeg')}
         value={value.headingDeg}
@@ -145,15 +156,15 @@ export const GeoMapTransformFields = ({
         onChange={(headingDeg) => patch({ headingDeg })}
       />
       <NumberField
-        id={`${baseId}-pitch`}
-        label={t('pitchDeg')}
-        value={value.pitchDeg}
-        min={GEO_MAP_PITCH_MIN_DEG}
-        max={GEO_MAP_PITCH_MAX_DEG}
+        id={`${baseId}-roll`}
+        label={t('rollDeg')}
+        value={value.rollDeg}
+        min={GEO_MAP_ROLL_MIN_DEG}
+        max={GEO_MAP_ROLL_MAX_DEG}
         step={1}
         disabled={disabled}
         showSlider
-        onChange={(pitchDeg) => patch({ pitchDeg })}
+        onChange={(rollDeg) => patch({ rollDeg })}
       />
       <NumberField
         id={`${baseId}-scale`}
@@ -188,31 +199,6 @@ export const GeoMapTransformFields = ({
         showSlider
         onChange={(minZoom) => patch({ minZoom })}
       />
-
-      <div className="border-t border-border pt-2">
-        <button
-          type="button"
-          className="text-xs uppercase tracking-[0.14em] text-ink-muted hover:text-ink"
-          onClick={() => setAdvancedOpen((open) => !open)}
-        >
-          {advancedOpen ? t('hideAdvanced') : t('showAdvanced')}
-        </button>
-        {advancedOpen ? (
-          <div className="mt-3 space-y-3">
-            <NumberField
-              id={`${baseId}-roll`}
-              label={t('rollDeg')}
-              value={value.rollDeg}
-              min={GEO_MAP_ROLL_MIN_DEG}
-              max={GEO_MAP_ROLL_MAX_DEG}
-              step={1}
-              disabled={disabled}
-              showSlider
-              onChange={(rollDeg) => patch({ rollDeg })}
-            />
-          </div>
-        ) : null}
-      </div>
     </div>
   );
 };

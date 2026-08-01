@@ -3,8 +3,8 @@
 import { useMemo } from 'react';
 
 import type { GeoMapObject } from '@/features/geo-map/types';
-import type { ObjectPositionOverride } from '@/features/geo-map/utils/apply-position-override';
-import { applyPositionOverride } from '@/features/geo-map/utils/apply-position-override';
+import type { ObjectTransformOverride } from '@/features/geo-map/utils/apply-position-override';
+import { applyTransformOverride } from '@/features/geo-map/utils/apply-position-override';
 import type { LngLatBounds } from '@/features/geo-map/utils/geo-bounds';
 import {
   splitObjectsByVisibility,
@@ -12,19 +12,20 @@ import {
 } from '@/features/geo-map/utils/object-visibility';
 
 /**
- * Applies any in-progress drag override to `objects`, then splits the result
- * into markers (below `minZoom`) vs. models (at/above `minZoom`, in viewport).
+ * Applies admin transform preview then any in-progress drag override (drag wins
+ * for lng/lat), then splits into markers vs. models by zoom/viewport.
  */
 export const useVisibleObjects = (
   objects: GeoMapObject[],
-  dragOverride: ObjectPositionOverride | null,
+  dragOverride: ObjectTransformOverride | null,
   zoom: number,
   bounds: LngLatBounds | null,
+  transformOverride: ObjectTransformOverride | null = null,
 ): ObjectVisibilitySplit => {
-  const effectiveObjects = useMemo(
-    () => applyPositionOverride(objects, dragOverride),
-    [objects, dragOverride],
-  );
+  const effectiveObjects = useMemo(() => {
+    const withPreview = applyTransformOverride(objects, transformOverride);
+    return applyTransformOverride(withPreview, dragOverride);
+  }, [objects, transformOverride, dragOverride]);
 
   return useMemo(
     () => splitObjectsByVisibility(effectiveObjects, zoom, bounds),

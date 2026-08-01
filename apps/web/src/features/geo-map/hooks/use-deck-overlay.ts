@@ -96,7 +96,7 @@ const buildScenegraphLayers = (
         data: group.data,
         scenegraph: group.modelUrl,
         loaders: [GLTFLoader],
-        _lighting: 'flat',
+        _lighting: 'pbr',
         pickable: true,
         autoHighlight: true,
         highlightColor: SCENEGRAPH_HOVER_HIGHLIGHT_COLOR,
