@@ -97,7 +97,7 @@ export type GeoMapCanvasProps = {
   selectedOsmBuilding?: SelectedOsmBuilding | null | undefined;
   /** Admin-only: OSM `building-3d` click (after cyan highlight update). */
   onOsmBuildingSelect?: ((building: SelectedOsmBuilding) => void) | undefined;
-  /** Admin-only: map-anchored selection toolbar (editable maps). */
+  /** Admin-only: top-right selection toolbar (editable maps). */
   adminSelectionChrome?: GeoMapAdminMapSelectionChromeProps | null | undefined;
   /** Admin-only: session OSM building hides merged into the building-3d filter. */
   adminOsmHideSession?: AdminOsmHideSession | null | undefined;

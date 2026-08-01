@@ -167,18 +167,11 @@ export const GeoMapCanvas = ({
     <div className={`relative h-full w-full ${className ?? ''}`}>
       <div ref={containerRef} className="relative z-0 h-full w-full" />
       {map ? <GeoMapCameraControls map={map} /> : null}
-      {infoObject ? (
+      {!editable && infoObject ? (
         <GeoMapInfoCard projectName={infoObject.label} logoUrl={infoObject.logoUrl} />
       ) : null}
       {uiOverlayRoot && editable && adminSelectionChrome
-        ? createPortal(
-            <GeoMapAdminMapSelectionChrome
-              map={map}
-              isMapLoaded={isMapLoaded}
-              {...adminSelectionChrome}
-            />,
-            uiOverlayRoot,
-          )
+        ? createPortal(<GeoMapAdminMapSelectionChrome {...adminSelectionChrome} />, uiOverlayRoot)
         : null}
     </div>
   );

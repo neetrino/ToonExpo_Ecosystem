@@ -1,67 +1,21 @@
 'use client';
 
-import type { MapLibreMap } from 'maplibre-gl';
 import { Link2, RefreshCw, Trash2, Upload, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useLayoutEffect, useRef } from 'react';
 
 import { GEO_MAP_UI_OVERLAY_Z_INDEX_CLASS } from '@/features/geo-map/constants';
-import { useMapAnchoredScreenPoint } from '@/features/geo-map/hooks/use-map-anchored-screen-point';
 import type { GeoMapAdminMapSelectionChromeProps } from '@/features/geo-map/types';
 import { IconButton } from '@/shared/ui/icon-button';
 
-const FLOATING_BAR_OFFSET_PX = 56;
-const BAR_EDGE_PADDING_PX = 8;
+/** Same top as camera controls (`top-2.5 right-2.5`); inset clears the w-7 stack. */
+const ADMIN_SELECTION_CHROME_POSITION_CLASS = 'top-2.5 right-14';
+
 const ICON_CLASS = 'size-4 shrink-0';
 
-type GeoMapAdminMapSelectionChromeComponentProps = GeoMapAdminMapSelectionChromeProps & {
-  map: MapLibreMap | null;
-  isMapLoaded: boolean;
-};
-
-const applyScreenPosition = (
-  map: MapLibreMap,
-  element: HTMLElement | null,
-  point: { x: number; y: number } | null,
-  offsetY: number,
-): void => {
-  if (!element || !point) {
-    return;
-  }
-
-  const container = map.getContainer();
-  const containerWidth = container.clientWidth;
-  const containerHeight = container.clientHeight;
-  const barWidth = element.offsetWidth;
-  const barHeight = element.offsetHeight;
-
-  let x = point.x;
-  let y = point.y + offsetY;
-
-  const halfWidth = barWidth / 2;
-  const minX = halfWidth + BAR_EDGE_PADDING_PX;
-  const maxX = containerWidth - halfWidth - BAR_EDGE_PADDING_PX;
-  if (maxX >= minX) {
-    x = Math.min(Math.max(x, minX), maxX);
-  }
-
-  const minY = barHeight + BAR_EDGE_PADDING_PX;
-  const maxY = containerHeight - BAR_EDGE_PADDING_PX;
-  if (maxY >= minY) {
-    y = Math.min(Math.max(y, minY), maxY);
-  }
-
-  element.style.left = `${x}px`;
-  element.style.top = `${y}px`;
-};
-
 /**
- * Map-anchored compact icon toolbar for admin OSM / model selection.
+ * Compact icon toolbar for admin OSM / model selection — pinned top-right on the map overlay.
  */
 export const GeoMapAdminMapSelectionChrome = ({
-  map,
-  isMapLoaded,
-  anchor,
   kind,
   showAttachProject,
   isDeleting,
@@ -71,26 +25,16 @@ export const GeoMapAdminMapSelectionChrome = ({
   onFocusCreateUpload,
   onFocusReplaceUpload,
   onFocusAttachProject,
-}: GeoMapAdminMapSelectionChromeComponentProps) => {
+}: GeoMapAdminMapSelectionChromeProps) => {
   const t = useTranslations('Admin.geoMap');
-  const screenPoint = useMapAnchoredScreenPoint(map, isMapLoaded, anchor);
-  const barRef = useRef<HTMLDivElement>(null);
 
-  useLayoutEffect(() => {
-    if (!map) {
-      return;
-    }
-    applyScreenPosition(map, barRef.current, screenPoint, -FLOATING_BAR_OFFSET_PX);
-  }, [map, screenPoint]);
-
-  if (!kind || !screenPoint) {
+  if (!kind) {
     return null;
   }
 
   return (
     <div
-      ref={barRef}
-      className={`pointer-events-auto absolute ${GEO_MAP_UI_OVERLAY_Z_INDEX_CLASS} flex -translate-x-1/2 -translate-y-full flex-nowrap items-center gap-0.5 rounded-sm border border-border bg-surface-elevated/95 p-0.5 shadow-sm backdrop-blur-sm`}
+      className={`pointer-events-auto absolute ${ADMIN_SELECTION_CHROME_POSITION_CLASS} ${GEO_MAP_UI_OVERLAY_Z_INDEX_CLASS} flex flex-nowrap items-center gap-0.5 rounded-sm border border-border bg-surface-elevated/95 p-0.5 shadow-sm backdrop-blur-sm`}
       onPointerDown={(event) => event.stopPropagation()}
       onClick={(event) => event.stopPropagation()}
     >
