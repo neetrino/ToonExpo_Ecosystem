@@ -61,7 +61,10 @@ export type GeoMapCanvasProps = {
   initialCenter?: GeoMapLngLat;
   /** Initial camera zoom; defaults to `DEFAULT_MAP_ZOOM`. */
   initialZoom?: number;
-  /** Initial camera pitch; defaults to `DEFAULT_MAP_PITCH_DEG` (pitched city view). */
+  /**
+   * Fixed initial pitch (lab/tests). When omitted, the map mounts at pitch 0
+   * and eases once to `DEFAULT_MAP_PITCH_DEG` after style idle.
+   */
   initialPitch?: number;
   /** Initial camera bearing; defaults to `DEFAULT_MAP_BEARING_DEG`. */
   initialBearing?: number;

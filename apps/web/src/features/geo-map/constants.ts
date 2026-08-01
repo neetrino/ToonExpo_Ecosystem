@@ -29,6 +29,37 @@ export const MAP_BEARING_STEP_DEG = 15;
 /** Ease duration for zoom / rotate / tilt camera control actions (ms). */
 export const MAP_CAMERA_EASE_DURATION_MS = 300;
 
+/**
+ * Cold-start camera: MapLibre mounts at pitch 0 for a fast first paint, then
+ * eases once to {@link DEFAULT_MAP_PITCH_DEG} after style idle (default path only).
+ */
+export const COLD_START_MAP_PITCH_DEG = 0;
+export const COLD_START_PITCH_EASE_DURATION_MS = 800;
+
+/** MapLibre ctor: skip label/icon fade-in for snappier tile paint. */
+export const MAP_FADE_DURATION_MS = 0;
+
+/** Cap device pixel ratio so retina devices do not over-render the WebGL canvas. */
+export const MAP_MAX_PIXEL_RATIO = 2;
+
+/** MapLibre WebGL antialias — off for cheaper fragment work on mobile GPUs. */
+export const MAP_ANTIALIAS_ENABLED = false;
+
+/** Zoom decimals kept in React viewport state (avoids setState on sub-pixel ticks). */
+export const VIEWPORT_ZOOM_QUANTIZE_DECIMALS = 2;
+
+/** Bounds decimals for viewport signature equality. */
+export const VIEWPORT_BOUNDS_QUANTIZE_DECIMALS = 4;
+
+/** Model lng/lat decimals for mask / layer signature equality (~11 m at equator). */
+export const MODEL_POSITION_QUANTIZE_DECIMALS = 4;
+
+/**
+ * Discrete opacity steps for ScenegraphLayer fade — zoom micro-ticks must not
+ * recreate layers on every frame.
+ */
+export const MODEL_FADE_OPACITY_STEP_COUNT = 5;
+
 /** Zoom level delta for map control buttons. */
 export const MAP_ZOOM_STEP = 1;
 

@@ -219,10 +219,28 @@ Stage rules:
   the shared `GeoMapInfoCard` (logo + name) on the canvas — not as a name pill
   on the pin — so home, `/map`, and apartments share one UX. Public payload
   includes `logoUrl` from `builderCompany.logoMedia`.
-- **Default pitched camera (done):** All `GeoMapCanvas` maps start at
-  `DEFAULT_MAP_PITCH_DEG` (55°, same as `FOCUS_PITCH_DEG`) so the initial view
-  is a side-angle city perspective, not top-down. `maxPitch` is 85°;
+- **Default pitched camera (done):** Default `GeoMapCanvas` path mounts at
+  pitch 0 for a fast first paint, then eases once to `DEFAULT_MAP_PITCH_DEG`
+  (55°, same as `FOCUS_PITCH_DEG`) after style idle. Explicit `initialPitch`
+  (lab/tests) skips the ease and starts at that pitch. `maxPitch` is 85°;
   `dragRotate` / `touchPitch` / `touchZoomRotate` stay enabled. Users rotate via
   right-drag or Ctrl+drag, the pitched compass (`NavigationControl`), or the
   compact tilt +/− / reset controls under the compass. Optional
-  `initialPitch` / `initialBearing` props override defaults per consumer.
+  `initialBearing` overrides the north-up default.
+
+## Performance
+
+- **Viewport sync:** `useMapViewportState` rAF-coalesces `move` and only
+  `setState`s when quantized zoom (2 dp) + bounds signature change — cuts
+  React → model/marker array → ScenegraphLayer / OSM `setFilter` thrash while
+  tilting.
+- **Guarded updates:** Footprint mask skips `setFilter` when model id/position
+  signature is unchanged; deck rebuilds ScenegraphLayer only when object pose /
+  quantized fade opacity / highlight change. Opacity is stepped so zoom ticks
+  do not recreate layers.
+- **Cold start:** MapLibre ctor uses `fadeDuration: 0`, `canvasContextAttributes.antialias: false`, and
+  `pixelRatio` capped at 2; pitch eases 0→55 after idle (see above).
+- **Lazy deck:** `MapboxOverlay` mounts only while viewport-visible GLB models
+  exist; safe remount when models appear later.
+- **Deferred (not in this pass):** structural ScenegraphLayer identity across
+  updates, `interleaved: true`, and a lighter basemap / `building-3d` strategy.

@@ -5,8 +5,13 @@ import { type RefObject, useEffect, useState } from 'react';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
 import {
+  COLD_START_MAP_PITCH_DEG,
+  COLD_START_PITCH_EASE_DURATION_MS,
   DEFAULT_MAP_BEARING_DEG,
   DEFAULT_MAP_PITCH_DEG,
+  MAP_ANTIALIAS_ENABLED,
+  MAP_FADE_DURATION_MS,
+  MAP_MAX_PIXEL_RATIO,
   MAX_MAP_PITCH_DEG,
 } from '@/features/geo-map/constants';
 import type { GeoMapLngLat } from '@/features/geo-map/types';
@@ -18,6 +23,10 @@ export type UseMaplibreMapOptions = {
   styleUrl: string;
   initialCenter: GeoMapLngLat;
   initialZoom: number;
+  /**
+   * When set, camera starts at this pitch (lab/tests). When omitted, mounts at
+   * pitch 0 and eases once to {@link DEFAULT_MAP_PITCH_DEG} after style idle.
+   */
   initialPitch?: number;
   initialBearing?: number;
 };
@@ -25,6 +34,66 @@ export type UseMaplibreMapOptions = {
 export type UseMaplibreMapResult = {
   map: MapLibreMap | null;
   isMapLoaded: boolean;
+};
+
+type CreateMapInstanceOptions = {
+  container: HTMLElement;
+  styleUrl: string;
+  initialCenter: GeoMapLngLat;
+  initialZoom: number;
+  startPitch: number;
+  initialBearing: number;
+  easePitchOnIdle: boolean;
+  onLoaded: () => void;
+};
+
+const resolveMapPixelRatio = (): number =>
+  Math.min(typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1, MAP_MAX_PIXEL_RATIO);
+
+const scheduleColdStartPitchEase = (mapInstance: MapLibreMap): void => {
+  mapInstance.once('idle', () => {
+    mapInstance.easeTo({
+      pitch: DEFAULT_MAP_PITCH_DEG,
+      duration: COLD_START_PITCH_EASE_DURATION_MS,
+    });
+  });
+};
+
+const createMapInstance = ({
+  container,
+  styleUrl,
+  initialCenter,
+  initialZoom,
+  startPitch,
+  initialBearing,
+  easePitchOnIdle,
+  onLoaded,
+}: CreateMapInstanceOptions): MapLibreMap => {
+  const mapInstance = new MapLibreMap({
+    container,
+    style: styleUrl,
+    center: [initialCenter.longitude, initialCenter.latitude],
+    zoom: initialZoom,
+    pitch: startPitch,
+    bearing: initialBearing,
+    maxPitch: MAX_MAP_PITCH_DEG,
+    fadeDuration: MAP_FADE_DURATION_MS,
+    canvasContextAttributes: { antialias: MAP_ANTIALIAS_ENABLED },
+    pixelRatio: resolveMapPixelRatio(),
+    dragRotate: true,
+    touchPitch: true,
+    touchZoomRotate: true,
+    attributionControl: { compact: true },
+  });
+  mapInstance.on('load', () => {
+    applyBrandMapStyle(mapInstance);
+    mapInstance.resize();
+    onLoaded();
+    if (easePitchOnIdle) {
+      scheduleColdStartPitchEase(mapInstance);
+    }
+  });
+  return mapInstance;
 };
 
 /**
@@ -42,7 +111,7 @@ export const useMaplibreMap = ({
   styleUrl,
   initialCenter,
   initialZoom,
-  initialPitch = DEFAULT_MAP_PITCH_DEG,
+  initialPitch,
   initialBearing = DEFAULT_MAP_BEARING_DEG,
 }: UseMaplibreMapOptions): UseMaplibreMapResult => {
   const [map, setMap] = useState<MapLibreMap | null>(null);
@@ -55,24 +124,16 @@ export const useMaplibreMap = ({
     }
 
     configureMaplibreWorker();
-
-    const mapInstance = new MapLibreMap({
+    const hasExplicitPitch = initialPitch !== undefined;
+    const mapInstance = createMapInstance({
       container,
-      style: styleUrl,
-      center: [initialCenter.longitude, initialCenter.latitude],
-      zoom: initialZoom,
-      pitch: initialPitch,
-      bearing: initialBearing,
-      maxPitch: MAX_MAP_PITCH_DEG,
-      dragRotate: true,
-      touchPitch: true,
-      touchZoomRotate: true,
-      attributionControl: { compact: true },
-    });
-    mapInstance.on('load', () => {
-      applyBrandMapStyle(mapInstance);
-      mapInstance.resize();
-      setIsMapLoaded(true);
+      styleUrl,
+      initialCenter,
+      initialZoom,
+      startPitch: hasExplicitPitch ? initialPitch : COLD_START_MAP_PITCH_DEG,
+      initialBearing,
+      easePitchOnIdle: !hasExplicitPitch,
+      onLoaded: () => setIsMapLoaded(true),
     });
     setMap(mapInstance);
 

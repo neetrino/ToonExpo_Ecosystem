@@ -18,6 +18,10 @@ import {
 } from '@/features/geo-map/constants';
 import type { GeoMapLngLat, GeoMapObject } from '@/features/geo-map/types';
 import {
+  buildScenegraphLayerSignature,
+  quantizeModelFadeOpacity,
+} from '@/features/geo-map/utils/geo-map-update-signatures';
+import {
   getScenegraphObjectColor,
   getScenegraphObjectOrientation,
   getScenegraphObjectPosition,
@@ -48,6 +52,7 @@ export type UseDeckOverlayOptions = {
 };
 
 type ScenegraphPickingInfo = PickingInfo<ScenegraphLayerObjectDatum>;
+type ScenegraphLayers = ScenegraphLayer<ScenegraphLayerObjectDatum>[];
 
 const AMBIENT_LIGHT_INTENSITY = 1.15;
 const DIRECTIONAL_LIGHT_INTENSITY = 0.85;
@@ -72,12 +77,20 @@ const toLngLat = (coordinate: number[] | undefined): GeoMapLngLat | null =>
 const resolveBeforeId = (map: MapLibreMap): string | undefined =>
   map.getLayer(SCENEGRAPH_BEFORE_LAYER_ID) ? SCENEGRAPH_BEFORE_LAYER_ID : undefined;
 
+const resolveQuantizedOpacity = (modelObjects: GeoMapObject[], zoom: number): number => {
+  const layerMinZoom = resolveLayerMinZoom(modelObjects.map((object) => object.minZoom));
+  if (layerMinZoom === null) {
+    return 0;
+  }
+  return quantizeModelFadeOpacity(computeModelFadeOpacity(zoom, layerMinZoom));
+};
+
 const buildScenegraphLayers = (
   map: MapLibreMap,
   modelObjects: GeoMapObject[],
   opacity: number,
   highlightedObjectId: string | null,
-): ScenegraphLayer<ScenegraphLayerObjectDatum>[] => {
+): ScenegraphLayers => {
   const beforeId = resolveBeforeId(map);
   return groupObjectsByModelUrl(modelObjects).map(
     (group) =>
@@ -178,9 +191,9 @@ const buildOverlayInteractionProps = (
 });
 
 /**
- * Creates a `MapboxOverlay` interleaved with MapLibre and keeps it in sync with
- * `modelObjects`: one `ScenegraphLayer` per unique GLB url. Click/hover/drag are
- * wired at the overlay level (fires for both hits and empty-space interactions).
+ * Lazily mounts a non-interleaved `MapboxOverlay` only while viewport-visible
+ * GLB models exist. Rebuilds ScenegraphLayer when the quantized object /
+ * opacity / highlight signature changes.
  */
 export const useDeckOverlay = ({
   map,
@@ -197,9 +210,12 @@ export const useDeckOverlay = ({
 }: UseDeckOverlayOptions): void => {
   const overlayRef = useRef<MapboxOverlay | null>(null);
   const draggingIdRef = useRef<string | null>(null);
+  const layerSignatureRef = useRef<string | null>(null);
+  const layersRef = useRef<ScenegraphLayers>([]);
+  const shouldMountOverlay = modelObjects.length > 0;
 
   useEffect(() => {
-    if (!map || !isMapLoaded) {
+    if (!map || !isMapLoaded || !shouldMountOverlay) {
       return;
     }
 
@@ -212,25 +228,33 @@ export const useDeckOverlay = ({
     });
     map.addControl(overlay);
     overlayRef.current = overlay;
+    layerSignatureRef.current = null;
 
     return () => {
       setCanvasHoverCursor(map, false);
       map.removeControl(overlay);
       overlayRef.current = null;
+      layerSignatureRef.current = null;
+      layersRef.current = [];
     };
-  }, [map, isMapLoaded]);
+  }, [map, isMapLoaded, shouldMountOverlay]);
 
   useEffect(() => {
     const overlay = overlayRef.current;
-    if (!overlay || !map) {
+    if (!overlay || !map || !shouldMountOverlay) {
       return;
     }
 
-    const layerMinZoom = resolveLayerMinZoom(modelObjects.map((object) => object.minZoom));
-    const opacity = layerMinZoom === null ? 0 : computeModelFadeOpacity(zoom, layerMinZoom);
+    const opacity = resolveQuantizedOpacity(modelObjects, zoom);
+    const highlightId = highlightedObjectId ?? null;
+    const signature = buildScenegraphLayerSignature(modelObjects, opacity, highlightId);
+    if (layerSignatureRef.current !== signature) {
+      layerSignatureRef.current = signature;
+      layersRef.current = buildScenegraphLayers(map, modelObjects, opacity, highlightId);
+    }
 
     overlay.setProps({
-      layers: buildScenegraphLayers(map, modelObjects, opacity, highlightedObjectId),
+      layers: layersRef.current,
       effects: [geoMapLightingEffect],
       ...buildOverlayInteractionProps(map, draggingIdRef, {
         editable,
@@ -252,5 +276,6 @@ export const useDeckOverlay = ({
     onMapClick,
     onModelDragMove,
     onModelDragEnd,
+    shouldMountOverlay,
   ]);
 };

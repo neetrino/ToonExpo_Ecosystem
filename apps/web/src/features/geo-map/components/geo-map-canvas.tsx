@@ -10,7 +10,6 @@ import {
   DEFAULT_MAP_BEARING_DEG,
   DEFAULT_MAP_CENTER_LATITUDE,
   DEFAULT_MAP_CENTER_LONGITUDE,
-  DEFAULT_MAP_PITCH_DEG,
   DEFAULT_MAP_ZOOM,
 } from '@/features/geo-map/constants';
 import { useDeckOverlay } from '@/features/geo-map/hooks/use-deck-overlay';
@@ -60,7 +59,7 @@ export const GeoMapCanvas = ({
   styleUrl,
   initialCenter = DEFAULT_CENTER,
   initialZoom = DEFAULT_MAP_ZOOM,
-  initialPitch = DEFAULT_MAP_PITCH_DEG,
+  initialPitch,
   initialBearing = DEFAULT_MAP_BEARING_DEG,
   editable = false,
   className,
