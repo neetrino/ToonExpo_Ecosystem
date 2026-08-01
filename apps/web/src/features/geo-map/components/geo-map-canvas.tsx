@@ -1,6 +1,7 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 import { GeoMapCameraControls } from '@/features/geo-map/components/geo-map-camera-controls';
 import { GeoMapInfoCard } from '@/features/geo-map/components/geo-map-info-card';
@@ -11,6 +12,7 @@ import {
   DEFAULT_MAP_CENTER_LATITUDE,
   DEFAULT_MAP_CENTER_LONGITUDE,
   DEFAULT_MAP_ZOOM,
+  GEO_MAP_UI_OVERLAY_Z_INDEX_CLASS,
 } from '@/features/geo-map/constants';
 import { useDeckOverlay } from '@/features/geo-map/hooks/use-deck-overlay';
 import { useMapFocus } from '@/features/geo-map/hooks/use-map-focus';
@@ -74,6 +76,7 @@ export const GeoMapCanvas = ({
   adminSelectionChrome = null,
 }: GeoMapCanvasProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [uiOverlayRoot, setUiOverlayRoot] = useState<HTMLDivElement | null>(null);
   const isWebglSupported = useWebglSupport();
   const [dragOverride, setDragOverride] = useState<ObjectPositionOverride | null>(null);
   const [hoveredObjectId, setHoveredObjectId] = useState<string | null>(null);
@@ -118,6 +121,25 @@ export const GeoMapCanvas = ({
     onObjectHover: handleObjectHover,
     onObjectDragged,
   });
+  useEffect(() => {
+    if (!map || !isMapLoaded) {
+      setUiOverlayRoot(null);
+      return;
+    }
+
+    const container = map.getContainer();
+    const overlay = document.createElement('div');
+    overlay.setAttribute('data-geo-map-ui-overlay', 'true');
+    overlay.className = `pointer-events-none absolute inset-0 ${GEO_MAP_UI_OVERLAY_Z_INDEX_CLASS}`;
+    container.appendChild(overlay);
+    setUiOverlayRoot(overlay);
+
+    return () => {
+      overlay.remove();
+      setUiOverlayRoot(null);
+    };
+  }, [map, isMapLoaded]);
+
   useDeckOverlay({
     map,
     isMapLoaded,
@@ -142,18 +164,21 @@ export const GeoMapCanvas = ({
 
   return (
     <div className={`relative h-full w-full ${className ?? ''}`}>
-      <div ref={containerRef} className="h-full w-full" />
+      <div ref={containerRef} className="relative z-0 h-full w-full" />
       {map ? <GeoMapCameraControls map={map} /> : null}
       {infoObject ? (
         <GeoMapInfoCard projectName={infoObject.label} logoUrl={infoObject.logoUrl} />
       ) : null}
-      {editable && adminSelectionChrome ? (
-        <GeoMapAdminMapSelectionChrome
-          map={map}
-          isMapLoaded={isMapLoaded}
-          {...adminSelectionChrome}
-        />
-      ) : null}
+      {uiOverlayRoot && editable && adminSelectionChrome
+        ? createPortal(
+            <GeoMapAdminMapSelectionChrome
+              map={map}
+              isMapLoaded={isMapLoaded}
+              {...adminSelectionChrome}
+            />,
+            uiOverlayRoot,
+          )
+        : null}
     </div>
   );
 };

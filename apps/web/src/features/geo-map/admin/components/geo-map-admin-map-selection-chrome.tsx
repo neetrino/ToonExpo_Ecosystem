@@ -4,6 +4,10 @@ import type { MapLibreMap } from 'maplibre-gl';
 import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 
+import {
+  GEO_MAP_ADMIN_CONTEXT_MENU_Z_INDEX_CLASS,
+  GEO_MAP_UI_OVERLAY_Z_INDEX_CLASS,
+} from '@/features/geo-map/constants';
 import { useMapAnchoredScreenPoint } from '@/features/geo-map/hooks/use-map-anchored-screen-point';
 import type { GeoMapAdminMapSelectionChromeProps } from '@/features/geo-map/types';
 import { Button } from '@/shared/ui/button';
@@ -19,6 +23,15 @@ type ContextMenuState = {
   x: number;
   y: number;
 } | null;
+
+const toContainerLocalPoint = (
+  map: MapLibreMap,
+  clientX: number,
+  clientY: number,
+): { x: number; y: number } => {
+  const rect = map.getContainer().getBoundingClientRect();
+  return { x: clientX - rect.left, y: clientY - rect.top };
+};
 
 const applyScreenPosition = (
   element: HTMLElement | null,
@@ -75,7 +88,7 @@ export const GeoMapAdminMapSelectionChrome = ({
     const canvas = map.getCanvas();
     const handleContextMenu = (event: MouseEvent): void => {
       event.preventDefault();
-      setContextMenu({ x: event.offsetX, y: event.offsetY });
+      setContextMenu(toContainerLocalPoint(map, event.clientX, event.clientY));
     };
 
     canvas.addEventListener('contextmenu', handleContextMenu);
@@ -109,7 +122,7 @@ export const GeoMapAdminMapSelectionChrome = ({
     <>
       <div
         ref={barRef}
-        className="pointer-events-auto absolute z-40 flex max-w-[min(20rem,calc(100%-1.5rem))] -translate-x-1/2 -translate-y-full flex-wrap items-center gap-2 rounded-sm border border-border bg-surface-elevated/95 px-3 py-2 shadow-sm backdrop-blur-sm"
+        className={`pointer-events-auto absolute ${GEO_MAP_UI_OVERLAY_Z_INDEX_CLASS} flex max-w-[min(20rem,calc(100%-1.5rem))] -translate-x-1/2 -translate-y-full flex-wrap items-center gap-2 rounded-sm border border-border bg-surface-elevated/95 px-3 py-2 shadow-sm backdrop-blur-sm`}
         onPointerDown={(event) => event.stopPropagation()}
         onClick={(event) => event.stopPropagation()}
       >
@@ -149,7 +162,7 @@ export const GeoMapAdminMapSelectionChrome = ({
         <div
           ref={menuRef}
           role="menu"
-          className="pointer-events-auto absolute z-50 min-w-[11rem] rounded-sm border border-border bg-surface-elevated py-1 shadow-md"
+          className={`pointer-events-auto absolute ${GEO_MAP_ADMIN_CONTEXT_MENU_Z_INDEX_CLASS} min-w-[11rem] rounded-sm border border-border bg-surface-elevated py-1 shadow-md`}
           onPointerDown={(event) => event.stopPropagation()}
           onClick={(event) => event.stopPropagation()}
         >

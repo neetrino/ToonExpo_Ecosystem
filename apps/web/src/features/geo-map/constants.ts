@@ -166,6 +166,12 @@ export const GEO_MAP_INFO_CARD_LOGO_PX = 40;
 /** MapLibre canvas gains this class while the pointer is over a pickable model. */
 export const MAP_CANVAS_HOVER_CURSOR_CLASS = 'cursor-pointer';
 
+/** Stack admin map UI above MapLibre / deck.gl canvases (see `GeoMapCanvas` UI overlay root). */
+export const GEO_MAP_UI_OVERLAY_Z_INDEX_CLASS = 'z-[100]';
+
+/** Context menu above the floating selection bar within the map UI overlay. */
+export const GEO_MAP_ADMIN_CONTEXT_MENU_Z_INDEX_CLASS = 'z-[110]';
+
 /** Default ScenegraphLayer tint (RGBA 0–255) — neutral, no wash. */
 export const SCENEGRAPH_DEFAULT_COLOR: [number, number, number, number] = [255, 255, 255, 255];
 
