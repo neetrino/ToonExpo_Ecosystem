@@ -10,6 +10,7 @@ import type { GeoMapObject } from '@/features/geo-map/types';
 const buildObject = (overrides: Partial<GeoMapObject> & { id: string }): GeoMapObject => ({
   projectId: overrides.id,
   label: 'Project',
+  logoUrl: null,
   modelUrl: 'https://cdn.example/model.glb',
   longitude: 44.5152,
   latitude: 40.1872,
@@ -33,7 +34,7 @@ describe('hasReachedModelZoom', () => {
 });
 
 describe('splitObjectsByVisibility', () => {
-  it('shows a marker below minZoom and a model at/above minZoom', () => {
+  it('keeps a discoverability dot below and at/above minZoom while models appear at threshold', () => {
     const object = buildObject({ id: 'a', minZoom: 14 });
 
     expect(splitObjectsByVisibility([object], 13, bounds)).toEqual({
@@ -41,23 +42,24 @@ describe('splitObjectsByVisibility', () => {
       modelObjects: [],
     });
     expect(splitObjectsByVisibility([object], 14, bounds)).toEqual({
-      markerObjects: [],
+      markerObjects: [object],
       modelObjects: [object],
     });
   });
 
-  it('drops out-of-viewport models even though a marker would still show with the wider margin', () => {
+  it('keeps a wide-margin marker while dropping an out-of-viewport model', () => {
     const object = buildObject({ id: 'far', minZoom: 10, longitude: 45.2, latitude: 40.5 });
 
     // Outside the tight model margin (bounds.east + 0.05°) but within the wide marker margin (+0.5°).
     const { markerObjects, modelObjects } = splitObjectsByVisibility([object], 12, bounds);
     expect(modelObjects).toEqual([]);
-    expect(markerObjects).toEqual([]);
+    expect(markerObjects).toEqual([object]);
   });
 
   it('skips the viewport check entirely when bounds are not yet known', () => {
     const object = buildObject({ id: 'no-bounds', longitude: 100, latitude: 60 });
     expect(splitObjectsByVisibility([object], 20, null).modelObjects).toEqual([object]);
+    expect(splitObjectsByVisibility([object], 20, null).markerObjects).toEqual([object]);
   });
 
   it('partitions a mixed list correctly', () => {
@@ -65,7 +67,7 @@ describe('splitObjectsByVisibility', () => {
     const aboveThreshold = buildObject({ id: 'above', minZoom: 10 });
 
     const result = splitObjectsByVisibility([belowThreshold, aboveThreshold], 12, bounds);
-    expect(result.markerObjects.map((item) => item.id)).toEqual(['below']);
+    expect(result.markerObjects.map((item) => item.id)).toEqual(['below', 'above']);
     expect(result.modelObjects.map((item) => item.id)).toEqual(['above']);
   });
 });

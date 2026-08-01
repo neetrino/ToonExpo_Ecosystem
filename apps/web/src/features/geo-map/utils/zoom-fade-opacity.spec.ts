@@ -20,11 +20,11 @@ describe('BRAND_MAP_PAINT_OVERRIDES', () => {
 });
 
 describe('zoom-fade-opacity', () => {
-  it('fades markers out as zoom approaches minZoom', () => {
+  it('keeps markers fully opaque for discoverability at all zooms', () => {
     expect(computeMarkerFadeOpacity(12, 14)).toBe(1);
-    expect(computeMarkerFadeOpacity(13.25, 14)).toBeCloseTo(1);
-    expect(computeMarkerFadeOpacity(13.625, 14)).toBeCloseTo(0.5);
-    expect(computeMarkerFadeOpacity(14, 14)).toBe(0);
+    expect(computeMarkerFadeOpacity(13.625, 14)).toBe(1);
+    expect(computeMarkerFadeOpacity(14, 14)).toBe(1);
+    expect(computeMarkerFadeOpacity(16, 14)).toBe(1);
   });
 
   it('fades models in after minZoom', () => {

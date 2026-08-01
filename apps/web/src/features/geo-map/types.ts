@@ -16,8 +16,10 @@ export type GeoMapObject = {
   /** Stable id used for click/hover/drag callbacks (`ProjectMapModel.id`, or `projectId` for public payloads). */
   id: string;
   projectId: string;
-  /** Marker label shown below `minZoom`. */
+  /** Project name — shown in the hover/select info card (not on the dot marker). */
   label: string;
+  /** Builder company logo URL for the info card; null when unavailable. */
+  logoUrl: string | null;
   /** GLB url (R2), rendered via deck.gl `ScenegraphLayer` at/above `minZoom`. */
   modelUrl: string;
   longitude: number;
@@ -27,7 +29,7 @@ export type GeoMapObject = {
   pitchDeg: number;
   rollDeg: number;
   scale: number;
-  /** Map zoom at which the model replaces the marker. */
+  /** Map zoom at which the 3D model appears (dots stay visible for discoverability). */
   minZoom: number;
 };
 
@@ -44,7 +46,7 @@ export type GeoMapFocusRequest = {
 
 /** Props for `GeoMapCanvas`. Designed for reuse by the admin editor (Stage 2b) and the public map (Stage 3). */
 export type GeoMapCanvasProps = {
-  /** Objects to render — markers below `minZoom`, GLB models at/above `minZoom`. */
+  /** Objects to render — always-visible dots + GLB models at/above each object's `minZoom`. */
   objects: GeoMapObject[];
   /** MapLibre style URL; defaults to `DEFAULT_MAP_STYLE_URL` (override via `NEXT_PUBLIC_MAP_STYLE_URL`). */
   styleUrl?: string;

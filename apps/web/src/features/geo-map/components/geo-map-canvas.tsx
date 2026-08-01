@@ -10,6 +10,7 @@ import {
   DEFAULT_MAP_ZOOM,
 } from '@/features/geo-map/constants';
 import { GeoMapCameraControls } from '@/features/geo-map/components/geo-map-camera-controls';
+import { GeoMapInfoCard } from '@/features/geo-map/components/geo-map-info-card';
 import { GeoMapWebglFallback } from '@/features/geo-map/components/geo-map-webgl-fallback';
 import { useDeckOverlay } from '@/features/geo-map/hooks/use-deck-overlay';
 import { useMapFocus } from '@/features/geo-map/hooks/use-map-focus';
@@ -19,7 +20,7 @@ import { useMarkerLayer } from '@/features/geo-map/hooks/use-marker-layer';
 import { useModelFootprintMasks } from '@/features/geo-map/hooks/use-model-footprint-masks';
 import { useVisibleObjects } from '@/features/geo-map/hooks/use-visible-objects';
 import { useWebglSupport } from '@/features/geo-map/hooks/use-webgl-support';
-import type { GeoMapCanvasProps, GeoMapLngLat } from '@/features/geo-map/types';
+import type { GeoMapCanvasProps, GeoMapLngLat, GeoMapObject } from '@/features/geo-map/types';
 import type { ObjectPositionOverride } from '@/features/geo-map/utils/apply-position-override';
 import { resolveMapStyleUrl } from '@/features/geo-map/utils/resolve-map-style-url';
 
@@ -28,16 +29,25 @@ const DEFAULT_CENTER: GeoMapLngLat = {
   latitude: DEFAULT_MAP_CENTER_LATITUDE,
 };
 
+const findObjectById = (
+  objects: readonly GeoMapObject[],
+  id: string | null,
+): GeoMapObject | null => {
+  if (!id) {
+    return null;
+  }
+  return objects.find((object) => object.id === id) ?? null;
+};
+
 /**
  * Reusable MapLibre + deck.gl 3D map core (Stage 2a — see `docs/3D-MAP-PLAN.md`).
  *
- * Renders `objects` as markers (project name labels) below each object's `minZoom`,
- * and as GLB models — deck.gl `ScenegraphLayer`, interleaved with MapLibre via
- * `MapboxOverlay` — at/above `minZoom`. Model layers are limited to the current
- * viewport so only a few dozen GLBs load at once, however many objects are passed in.
+ * Renders always-visible compact dots for discoverability, plus GLB models via
+ * deck.gl `ScenegraphLayer` at/above each object's `minZoom`. Model layers are
+ * limited to the current viewport so only a few dozen GLBs load at once.
  *
- * Optional `focusRequest` (Stage 5+) flies the camera to an object without
- * breaking existing read-only / editable consumers.
+ * Hover/select shows a shared logo + name info card. Optional `focusRequest`
+ * flies the camera to an object without breaking read-only / editable consumers.
  *
  * Consumed by the admin editor (Stage 2b, `editable`), the public map (Stage 3),
  * and the home map (Stage 5). Load via `next/dynamic` with `ssr: false` —
@@ -62,6 +72,7 @@ export const GeoMapCanvas = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const isWebglSupported = useWebglSupport();
   const [dragOverride, setDragOverride] = useState<ObjectPositionOverride | null>(null);
+  const [hoveredObjectId, setHoveredObjectId] = useState<string | null>(null);
 
   const { map, isMapLoaded } = useMaplibreMap({
     containerRef,
@@ -74,6 +85,15 @@ export const GeoMapCanvas = ({
   const { zoom, bounds } = useMapViewportState(map, isMapLoaded, initialZoom);
   const { markerObjects, modelObjects } = useVisibleObjects(objects, dragOverride, zoom, bounds);
 
+  const activeHighlightId = hoveredObjectId ?? highlightedObjectId ?? null;
+  const infoObject =
+    findObjectById(objects, hoveredObjectId) ?? findObjectById(objects, highlightedObjectId);
+
+  const handleObjectHover = (id: string | null): void => {
+    setHoveredObjectId(id);
+    onObjectHover?.(id);
+  };
+
   useMapFocus({ map, isMapLoaded, objects, focusRequest });
   useModelFootprintMasks({ map, isMapLoaded, modelObjects });
   useMarkerLayer({
@@ -82,9 +102,9 @@ export const GeoMapCanvas = ({
     markerObjects,
     zoom,
     editable,
-    highlightedObjectId,
+    highlightedObjectId: activeHighlightId,
     onObjectClick,
-    onObjectHover,
+    onObjectHover: handleObjectHover,
     onObjectDragged,
   });
   useDeckOverlay({
@@ -94,7 +114,7 @@ export const GeoMapCanvas = ({
     zoom,
     editable,
     onObjectClick,
-    onObjectHover,
+    onObjectHover: handleObjectHover,
     onMapClick,
     onModelDragMove: (id, position) => setDragOverride({ id, ...position }),
     onModelDragEnd: (id, position) => {
@@ -111,6 +131,9 @@ export const GeoMapCanvas = ({
     <div className={`relative h-full w-full ${className ?? ''}`}>
       <div ref={containerRef} className="h-full w-full" />
       {map ? <GeoMapCameraControls map={map} /> : null}
+      {infoObject ? (
+        <GeoMapInfoCard projectName={infoObject.label} logoUrl={infoObject.logoUrl} />
+      ) : null}
     </div>
   );
 };

@@ -75,7 +75,8 @@ Admin endpoints (super-admin guard, same as other admin controllers):
 Public endpoint (no auth, cacheable):
 
 - `GET /public/geo-map/models` — published only; returns compact payload:
-  project id/slug/name, marker data (lng/lat), model URL + transform + minZoom.
+  project id/slug/name, `logoUrl` (builder company logo), marker data (lng/lat),
+  model URL + transform + minZoom.
 
 Contracts/DTO types go to `packages/contracts` per existing conventions.
 
@@ -169,8 +170,8 @@ Stage rules:
 
 1. Super admin opens "3D Map", uploads a GLB, places/moves/rotates/scales it,
    publishes — data persisted via API in PostgreSQL, file in R2.
-2. Public map shows markers at low zoom and 3D models above `minZoom`;
-   click opens the project.
+2. Public map shows always-visible teal dots at all zooms and 3D models above
+   `minZoom`; hover/select shows logo + name card; click opens the project.
 3. No Prisma/DB access from Next.js; all writes go through NestJS admin API.
 4. Typecheck, lint, unit tests pass across the workspace; no `any`, named
    exports, files ≤300 lines.
@@ -196,6 +197,13 @@ Stage rules:
 
 ## Polish
 
+- **Always-visible project pins (done):** Every published map object renders as a
+  ~24×32px brand-teal MapPin (filled Lucide-style SVG, white stroke + hole,
+  drop shadow) at all zooms — including while the GLB is visible. Hovered /
+  `highlightedObjectId` pins switch to dark (`text-ink`). Project name lives in
+  the shared `GeoMapInfoCard` (logo + name) on the canvas — not as a name pill
+  on the pin — so home, `/map`, and apartments share one UX. Public payload
+  includes `logoUrl` from `builderCompany.logoMedia`.
 - **Default pitched camera (done):** All `GeoMapCanvas` maps start at
   `DEFAULT_MAP_PITCH_DEG` (55°, same as `FOCUS_PITCH_DEG`) so the initial view
   is a side-angle city perspective, not top-down. `maxPitch` is 85°;

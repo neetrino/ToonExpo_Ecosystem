@@ -11,6 +11,7 @@ import type { GeoMapObject } from '@/features/geo-map/types';
 const buildObject = (overrides: Partial<GeoMapObject> & { id: string }): GeoMapObject => ({
   projectId: overrides.id,
   label: 'Project',
+  logoUrl: null,
   modelUrl: 'https://cdn.example/a.glb',
   longitude: 44.5152,
   latitude: 40.1872,

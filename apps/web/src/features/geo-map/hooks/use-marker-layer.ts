@@ -7,6 +7,7 @@ import {
   MARKER_ELEMENT_CLASS_NAME,
   MARKER_ELEMENT_EDITABLE_CLASS_NAME,
   MARKER_ELEMENT_HIGHLIGHTED_CLASS_NAME,
+  MARKER_PIN_SVG_INNER_HTML,
 } from '@/features/geo-map/constants';
 import type { GeoMapLngLat, GeoMapObject } from '@/features/geo-map/types';
 import { computeMarkerFadeOpacity } from '@/features/geo-map/utils/zoom-fade-opacity';
@@ -41,7 +42,10 @@ const createMarkerElement = (
 ): HTMLDivElement => {
   const element = document.createElement('div');
   element.className = resolveMarkerClassName(editable, highlighted);
-  element.textContent = label;
+  element.setAttribute('role', 'button');
+  element.setAttribute('aria-label', label);
+  element.title = label;
+  element.innerHTML = MARKER_PIN_SVG_INNER_HTML;
   return element;
 };
 
@@ -94,13 +98,18 @@ const syncMarkers = (
       existing.setDraggable(editable);
       const element = existing.getElement();
       element.className = resolveMarkerClassName(editable, highlighted);
+      element.setAttribute('aria-label', object.label);
+      element.title = object.label;
+      if (!element.querySelector('svg')) {
+        element.innerHTML = MARKER_PIN_SVG_INNER_HTML;
+      }
       element.style.setProperty('opacity', String(opacity));
       continue;
     }
 
     const element = createMarkerElement(object.label, editable, highlighted);
     element.style.setProperty('opacity', String(opacity));
-    const marker = new Marker({ element, draggable: editable })
+    const marker = new Marker({ element, draggable: editable, anchor: 'bottom' })
       .setLngLat([object.longitude, object.latitude])
       .addTo(map);
     attachMarkerHandlers(marker, element, object.id, callbacks);
@@ -109,7 +118,7 @@ const syncMarkers = (
 };
 
 /**
- * Renders `markerObjects` as MapLibre HTML markers (project name labels),
+ * Renders `markerObjects` as MapLibre HTML map-pin markers (always visible),
  * draggable when `editable`, reporting drag results via `onObjectDragged`.
  */
 export const useMarkerLayer = ({

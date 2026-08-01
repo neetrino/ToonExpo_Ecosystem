@@ -6,7 +6,10 @@ import { isCoordinateWithinBounds, type LngLatBounds } from '@/features/geo-map/
 import type { GeoMapObject } from '@/features/geo-map/types';
 
 export type ObjectVisibilitySplit = {
-  /** Objects to render as a marker (label) — zoom below the object's `minZoom`. */
+  /**
+   * Compact discoverability dots — kept whenever the object is near the
+   * viewport, including after the 3D model appears.
+   */
   markerObjects: GeoMapObject[];
   /** Objects to render as a GLB model — zoom at/above `minZoom` and within the (padded) viewport. */
   modelObjects: GeoMapObject[];
@@ -15,13 +18,21 @@ export type ObjectVisibilitySplit = {
 /** Whether the current zoom has reached the object's model threshold. */
 export const hasReachedModelZoom = (zoom: number, minZoom: number): boolean => zoom >= minZoom;
 
+const isWithinPaddedBounds = (
+  object: GeoMapObject,
+  bounds: LngLatBounds | null,
+  paddingDegrees: number,
+): boolean =>
+  bounds === null ||
+  isCoordinateWithinBounds(object.longitude, object.latitude, bounds, paddingDegrees);
+
 /**
  * Splits `objects` into markers vs. models for the current camera state.
  *
- * - Below `minZoom`: shown as a marker (viewport-filtered with a generous margin;
- *   markers are cheap DOM nodes).
- * - At/above `minZoom`: shown as a GLB model, but only when inside the viewport
- *   (tight margin) — this is what keeps concurrent GLB loads to a few dozen at most.
+ * - Dots (markers): always when near the viewport (generous margin) so every
+ *   placed project stays discoverable at low zoom and while GLBs are shown.
+ * - Models: at/above `minZoom` and inside a tight viewport margin so concurrent
+ *   GLB loads stay capped.
  *
  * `bounds === null` (e.g. map not ready yet) skips the viewport check so nothing
  * is hidden purely because the camera state hasn't loaded.
@@ -35,20 +46,15 @@ export const splitObjectsByVisibility = (
   const modelObjects: GeoMapObject[] = [];
 
   for (const object of objects) {
-    const showAsModel = hasReachedModelZoom(zoom, object.minZoom);
-    const padding = showAsModel ? MODEL_BOUNDS_PADDING_DEGREES : MARKER_BOUNDS_PADDING_DEGREES;
-    const isInBounds =
-      bounds === null ||
-      isCoordinateWithinBounds(object.longitude, object.latitude, bounds, padding);
-
-    if (!isInBounds) {
-      continue;
+    if (isWithinPaddedBounds(object, bounds, MARKER_BOUNDS_PADDING_DEGREES)) {
+      markerObjects.push(object);
     }
 
-    if (showAsModel) {
+    if (
+      hasReachedModelZoom(zoom, object.minZoom) &&
+      isWithinPaddedBounds(object, bounds, MODEL_BOUNDS_PADDING_DEGREES)
+    ) {
       modelObjects.push(object);
-    } else {
-      markerObjects.push(object);
     }
   }
 

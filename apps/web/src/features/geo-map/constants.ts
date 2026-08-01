@@ -58,8 +58,17 @@ export const SCENEGRAPH_BEFORE_LAYER_ID = 'boundary_3';
 export const MODEL_FADE_ZOOM_DELTA = 0.75;
 export const MODEL_FADE_MIN_OPACITY = 0.45;
 
-/** Zoom span over which marker opacity eases out as `minZoom` approaches. */
+/**
+ * Legacy fade window — dots stay fully opaque for discoverability; kept so
+ * call sites / tests can share one constant if fade is reintroduced.
+ */
 export const MARKER_FADE_ZOOM_DELTA = 0.75;
+
+/**
+ * Floor opacity for dots once the 3D model is visible (kept at full so pins
+ * remain findable next to GLBs).
+ */
+export const MARKER_DOT_MIN_OPACITY = 1;
 
 /**
  * Bounds padding (degrees) applied around the current viewport so objects just
@@ -70,10 +79,19 @@ export const MARKER_FADE_ZOOM_DELTA = 0.75;
 export const MARKER_BOUNDS_PADDING_DEGREES = 0.5;
 export const MODEL_BOUNDS_PADDING_DEGREES = 0.05;
 
+/**
+ * Map pin footprint — ~24×32px (Tailwind `w-6` / `h-8`) so pins stay readable
+ * on light basemap tiles from far zoom.
+ */
+export const MARKER_DOT_SIZE_CLASS_NAME = 'h-8 w-6';
+
+/** Outer wrapper for the HTML marker (color via `currentColor` on the SVG). */
 export const MARKER_ELEMENT_CLASS_NAME =
-  'inline-block w-max cursor-pointer select-none whitespace-nowrap rounded-full border border-border-strong ' +
-  'bg-surface-elevated px-2 py-1 text-xs font-medium text-ink shadow-sm ' +
-  'transition-opacity duration-200';
+  `${MARKER_DOT_SIZE_CLASS_NAME} cursor-pointer select-none text-brand ` +
+  'drop-shadow-md transition-[color,transform,filter] duration-150';
+
+/** SVG fill/stroke classes applied to the pin path inside the marker. */
+export const MARKER_PIN_SVG_CLASS_NAME = 'block h-full w-full overflow-visible';
 
 export const MARKER_ELEMENT_EDITABLE_CLASS_NAME = 'cursor-grab active:cursor-grabbing';
 
@@ -89,9 +107,24 @@ export const FOCUS_FLY_TO_DURATION_MS = 1600;
 /** Camera pitch applied on focus — kept identical to the default pitched view. */
 export const FOCUS_PITCH_DEG = DEFAULT_MAP_PITCH_DEG;
 
-/** Marker element class applied while `highlightedObjectId` matches. */
-export const MARKER_ELEMENT_HIGHLIGHTED_CLASS_NAME =
-  'ring-2 ring-brand-deep border-brand-deep shadow-md';
+/** Marker element class applied while hovered or `highlightedObjectId` matches. */
+export const MARKER_ELEMENT_HIGHLIGHTED_CLASS_NAME = 'scale-110 text-ink drop-shadow-lg';
+
+/**
+ * Filled MapPin SVG (Lucide-style path) — white stroke + hole so it pops on
+ * light map tiles. Pin fill uses parent `text-*` via `fill-current`.
+ */
+export const MARKER_PIN_SVG_INNER_HTML =
+  '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="' +
+  MARKER_PIN_SVG_CLASS_NAME +
+  '">' +
+  '<path class="fill-current stroke-white stroke-[1.75] [stroke-linejoin:round]" ' +
+  'd="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0Z"/>' +
+  '<circle class="fill-white" cx="12" cy="10" r="3"/>' +
+  '</svg>';
+
+/** Info card logo slot edge length (px) — matches Tailwind `size-10`. */
+export const GEO_MAP_INFO_CARD_LOGO_PX = 40;
 
 /** MapLibre canvas gains this class while the pointer is over a pickable model. */
 export const MAP_CANVAS_HOVER_CURSOR_CLASS = 'cursor-pointer';

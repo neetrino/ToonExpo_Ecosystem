@@ -1,5 +1,5 @@
 import {
-  MARKER_FADE_ZOOM_DELTA,
+  MARKER_DOT_MIN_OPACITY,
   MODEL_FADE_MIN_OPACITY,
   MODEL_FADE_ZOOM_DELTA,
 } from '@/features/geo-map/constants';
@@ -7,18 +7,13 @@ import {
 const clamp01 = (value: number): number => Math.min(1, Math.max(0, value));
 
 /**
- * Marker opacity while zooming toward `minZoom` — full until the fade window,
- * then eases to 0 at the model threshold.
+ * Dot marker opacity — always fully visible for discoverability (dots stay on
+ * after the 3D model appears). Zoom args retained for call-site compatibility.
  */
 export const computeMarkerFadeOpacity = (zoom: number, minZoom: number): number => {
-  if (zoom >= minZoom) {
-    return 0;
-  }
-  const distanceToThreshold = minZoom - zoom;
-  if (distanceToThreshold >= MARKER_FADE_ZOOM_DELTA) {
-    return 1;
-  }
-  return clamp01(distanceToThreshold / MARKER_FADE_ZOOM_DELTA);
+  void zoom;
+  void minZoom;
+  return MARKER_DOT_MIN_OPACITY;
 };
 
 /**

@@ -30,6 +30,7 @@ export const mapAdminGeoMapItemToObject = (item: AdminGeoMapModelItem): GeoMapOb
   id: item.id,
   projectId: item.projectId,
   label: item.projectName,
+  logoUrl: null,
   modelUrl: item.modelUrl,
   ...toNumericTransform(item),
 });
@@ -46,6 +47,7 @@ export const mapPublicGeoMapItemToObject = (item: PublicGeoMapModelItem): GeoMap
   id: item.projectId,
   projectId: item.projectId,
   label: item.projectName,
+  logoUrl: item.logoUrl,
   modelUrl: item.modelUrl,
   ...toNumericTransform(item),
 });
