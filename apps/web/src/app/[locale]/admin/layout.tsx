@@ -5,6 +5,7 @@ import type { ReactNode } from 'react';
 
 import { AdminMobileStack } from '@/features/admin/components/admin-mobile-stack';
 import { AdminNav } from '@/features/admin/components/admin-nav';
+import { ADMIN_RAIL_COLLAPSED_STORAGE_KEY } from '@/features/admin/constants';
 import { getMeOrNullCached as getMeOrNull } from '@/features/auth/api/get-me-or-null-cached';
 import { redirect } from '@/i18n/navigation';
 import { PortalShell } from '@/shared/ui/portal-shell';
@@ -47,6 +48,11 @@ export default async function AdminLayout({ children, params }: AdminLayoutProps
       variant="rail"
       mobileDrawerControlledByNavbar
       className="bg-canvas"
+      railCollapsedStorageKey={ADMIN_RAIL_COLLAPSED_STORAGE_KEY}
+      railCollapseLabels={{
+        expand: t('nav.railExpand'),
+        collapse: t('nav.railCollapse'),
+      }}
       sidebar={<AdminNav />}
     >
       <AdminMobileStack name={user.name} email={user.email}>

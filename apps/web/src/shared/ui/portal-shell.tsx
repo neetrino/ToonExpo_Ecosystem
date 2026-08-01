@@ -1,6 +1,6 @@
 'use client';
 
-import { type ReactNode, useEffect, useState } from 'react';
+import { type ReactNode, useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Menu, X } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
@@ -21,8 +21,17 @@ import {
 import { SiteHeader } from '@/shared/ui/site-header';
 import { useDrawerTransition } from '@/shared/ui/use-drawer-transition';
 import { Link, usePathname } from '@/i18n/navigation';
+import { usePersistedRailCollapsed } from '@/shared/hooks/use-persisted-rail-collapsed';
 import { cn } from '@/shared/ui/cn';
 import { MOBILE_BOTTOM_NAV_CONTENT_PB_CLASS } from '@/shared/ui/mobile-bottom-nav-clearance';
+import { PortalRailDesktopAside } from '@/shared/ui/portal-rail-desktop-aside';
+import {
+  PORTAL_RAIL_COLLAPSED_STORAGE_KEY,
+  PORTAL_RAIL_WIDTH_COLLAPSED_CLASS,
+  PORTAL_RAIL_WIDTH_EXPANDED_CLASS,
+  PORTAL_RAIL_INSET_TRANSITION_CLASS,
+  PORTAL_RAIL_WIDTH_TRANSITION_CLASS,
+} from '@/shared/ui/portal-rail.constants';
 
 type PortalShellProps = {
   brandHref: '/builder' | '/admin' | '/partner' | '/settings' | '/dashboard';
@@ -58,6 +67,12 @@ type PortalShellProps = {
   mobileHeader?: ReactNode;
   /** Extra classes on the shell root (e.g. `bg-canvas` for buyer account). */
   className?: string | undefined;
+  /** Desktop rail collapse (variant `rail` only). Defaults to true for rail. */
+  railCollapsible?: boolean | undefined;
+  /** localStorage key for collapsed preference. */
+  railCollapsedStorageKey?: string | undefined;
+  /** Accessible labels for the rail collapse toggle. */
+  railCollapseLabels?: { expand: string; collapse: string } | undefined;
 };
 
 /**
@@ -73,7 +88,6 @@ const RAIL_CHROME_BOTTOM_CLASS = 'bottom-0';
 const RAIL_HEADER_BAND_HEIGHT_CLASS = 'h-[calc(4.5rem+env(safe-area-inset-top,0px))]';
 /** Header band + light extra clip so content vanishes just below the header edge. */
 const RAIL_CONTENT_MASK_HEIGHT_CLASS = 'h-[calc(5.125rem+env(safe-area-inset-top,0px))]';
-const RAIL_SIDEBAR_WIDTH_CLASS = 'w-72';
 /** Narrower than desktop rail so the drawer leaves more page visible on phones. */
 const MOBILE_DRAWER_WIDTH_CLASS = 'w-[min(72vw,14rem)]';
 /** Armenian labels need a touch more room in the mobile drawer. */
@@ -103,6 +117,9 @@ export const PortalShell = ({
   mobileDrawerControlledByNavbar = false,
   mobileHeader,
   className,
+  railCollapsible = true,
+  railCollapsedStorageKey = PORTAL_RAIL_COLLAPSED_STORAGE_KEY,
+  railCollapseLabels,
 }: PortalShellProps) => {
   const t = useTranslations('Nav');
   const tCommon = useTranslations('Common');
@@ -114,6 +131,19 @@ export const PortalShell = ({
     SIDE_SHEET_PANEL_TRANSITION_MS,
   );
   const isRail = variant === 'rail';
+  const railCollapseEnabled = isRail && railCollapsible;
+  const { effectiveCollapsed: railCollapsed, toggleCollapsed: toggleRailCollapsed } =
+    usePersistedRailCollapsed(railCollapsedStorageKey, railCollapseEnabled);
+  const railCollapseCopy = useMemo(
+    () => ({
+      expand: railCollapseLabels?.expand ?? t('railExpand'),
+      collapse: railCollapseLabels?.collapse ?? t('railCollapse'),
+    }),
+    [railCollapseLabels, t],
+  );
+  const railWidthClass = railCollapsed
+    ? PORTAL_RAIL_WIDTH_COLLAPSED_CLASS
+    : PORTAL_RAIL_WIDTH_EXPANDED_CLASS;
   const renderSiteHeader = isRail && showSiteHeader;
   const renderRailHeaderMask = isRail && showRailHeaderMask;
   /** Keep under-header clip the same fill as the shell (e.g. admin `bg-canvas`). */
@@ -147,6 +177,13 @@ export const PortalShell = ({
       unlockBodyScroll();
     };
   }, [drawerRendered]);
+
+  useEffect(() => {
+    if (!railCollapseEnabled) {
+      return;
+    }
+    window.dispatchEvent(new Event('resize'));
+  }, [railCollapseEnabled, railCollapsed]);
 
   const closeDrawer = (): void => {
     if (mobileDrawerControlledByNavbar) {
@@ -242,7 +279,9 @@ export const PortalShell = ({
               <div
                 className={cn(
                   'pointer-events-none fixed top-0 right-0 z-[var(--z-sticky)] hidden md:block',
-                  'left-0 md:left-72',
+                  'left-0',
+                  railCollapsed ? 'md:left-[4.5rem]' : 'md:left-72',
+                  PORTAL_RAIL_INSET_TRANSITION_CLASS,
                   railMaskFillClass,
                   RAIL_CONTENT_MASK_HEIGHT_CLASS,
                 )}
@@ -250,24 +289,33 @@ export const PortalShell = ({
               />
             </>
           ) : null}
-          <aside
-            className={cn(
-              'fixed left-0 z-[var(--z-sticky)] hidden overflow-hidden',
-              RAIL_CHROME_TOP_CLASS,
-              RAIL_CHROME_BOTTOM_CLASS,
-              RAIL_SIDEBAR_WIDTH_CLASS,
-              'md:block',
-            )}
-          >
-            <div
+          {railCollapseEnabled ? (
+            <PortalRailDesktopAside
+              sidebar={sidebar}
+              collapsed={railCollapsed}
+              expandLabel={railCollapseCopy.expand}
+              collapseLabel={railCollapseCopy.collapse}
+              onToggleCollapsed={toggleRailCollapsed}
+            />
+          ) : (
+            <aside
               className={cn(
-                'flex h-full min-h-0 flex-col overflow-hidden rounded-tr-[2.5rem] rounded-br-[2.5rem] bg-brand-secondary p-4',
-                MOBILE_BOTTOM_NAV_CONTENT_PB_CLASS,
+                'fixed left-0 z-[var(--z-sticky)] hidden overflow-hidden md:block',
+                RAIL_CHROME_TOP_CLASS,
+                RAIL_CHROME_BOTTOM_CLASS,
+                PORTAL_RAIL_WIDTH_EXPANDED_CLASS,
               )}
             >
-              {sidebar}
-            </div>
-          </aside>
+              <div
+                className={cn(
+                  'flex h-full min-h-0 flex-col overflow-hidden rounded-tr-[2.5rem] rounded-br-[2.5rem] bg-brand-secondary p-4',
+                  MOBILE_BOTTOM_NAV_CONTENT_PB_CLASS,
+                )}
+              >
+                {sidebar}
+              </div>
+            </aside>
+          )}
         </>
       ) : null}
 
@@ -337,7 +385,14 @@ export const PortalShell = ({
               {mobileHeader}
             </div>
           )}
-          <div className={cn('hidden shrink-0 md:block', RAIL_SIDEBAR_WIDTH_CLASS)} aria-hidden />
+          <div
+            className={cn(
+              'hidden shrink-0 md:block',
+              PORTAL_RAIL_WIDTH_TRANSITION_CLASS,
+              railCollapseEnabled ? railWidthClass : PORTAL_RAIL_WIDTH_EXPANDED_CLASS,
+            )}
+            aria-hidden
+          />
           <main className="relative z-[var(--z-base)] page-container min-w-0 flex-1 py-6 md:py-8">
             {children}
           </main>

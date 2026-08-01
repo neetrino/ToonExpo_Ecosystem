@@ -109,6 +109,9 @@ export const BOS_PROVISIONING_STATUSES = [
   'partial',
 ] as const;
 
+/** localStorage key for admin management portal rail collapse. */
+export const ADMIN_RAIL_COLLAPSED_STORAGE_KEY = 'toonexpo.admin.rail-collapsed';
+
 /** localStorage keys for admin list/cards view preference. */
 export const ADMIN_VIEW_MODE_KEYS = {
   companies: 'admin-companies',
