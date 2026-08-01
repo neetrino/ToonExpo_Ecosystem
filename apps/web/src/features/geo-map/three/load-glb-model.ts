@@ -1,4 +1,4 @@
-import { Mesh, MeshStandardMaterial, type Object3D } from 'three';
+import { MeshStandardMaterial, type Mesh, type Object3D } from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 import {
