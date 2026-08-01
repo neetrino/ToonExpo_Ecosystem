@@ -8,7 +8,7 @@ const decimalToString = (value: Prisma.Decimal): string => value.toString();
 type AdminGeoMapModelRow = Prisma.ProjectMapModelGetPayload<{
   include: {
     project: { select: { name: true; slug: true } };
-    mediaAsset: { select: { fileUrl: true } };
+    mediaAsset: { select: { fileUrl: true; title: true } };
   };
 }>;
 
@@ -29,10 +29,12 @@ type PublicGeoMapModelRow = Prisma.ProjectMapModelGetPayload<{
 export const toAdminGeoMapModelItem = (row: AdminGeoMapModelRow): AdminGeoMapModelItem => ({
   id: row.id,
   projectId: row.projectId,
-  projectName: row.project.name,
-  projectSlug: row.project.slug,
+  projectName: row.project?.name ?? null,
+  projectSlug: row.project?.slug ?? null,
   mediaAssetId: row.mediaAssetId,
+  mediaTitle: row.mediaAsset.title,
   modelUrl: row.mediaAsset.fileUrl,
+  sourceOsmId: row.sourceOsmId,
   longitude: decimalToString(row.longitude),
   latitude: decimalToString(row.latitude),
   altitudeM: decimalToString(row.altitudeM),
@@ -48,18 +50,25 @@ export const toAdminGeoMapModelItem = (row: AdminGeoMapModelRow): AdminGeoMapMod
   updatedAt: toIso(row.updatedAt),
 });
 
-export const toPublicGeoMapModelItem = (row: PublicGeoMapModelRow): PublicGeoMapModelItem => ({
-  projectId: row.project.id,
-  projectSlug: row.project.slug,
-  projectName: row.project.name,
-  logoUrl: row.project.builderCompany.logoMedia?.fileUrl ?? null,
-  longitude: decimalToString(row.longitude),
-  latitude: decimalToString(row.latitude),
-  modelUrl: row.mediaAsset.fileUrl,
-  altitudeM: decimalToString(row.altitudeM),
-  headingDeg: decimalToString(row.headingDeg),
-  pitchDeg: decimalToString(row.pitchDeg),
-  rollDeg: decimalToString(row.rollDeg),
-  scale: decimalToString(row.scale),
-  minZoom: decimalToString(row.minZoom),
-});
+export const toPublicGeoMapModelItem = (row: PublicGeoMapModelRow): PublicGeoMapModelItem => {
+  if (!row.project) {
+    throw new Error('Public geo-map model is missing required project relation');
+  }
+
+  return {
+    projectId: row.project.id,
+    projectSlug: row.project.slug,
+    projectName: row.project.name,
+    logoUrl: row.project.builderCompany.logoMedia?.fileUrl ?? null,
+    longitude: decimalToString(row.longitude),
+    latitude: decimalToString(row.latitude),
+    modelUrl: row.mediaAsset.fileUrl,
+    sourceOsmId: row.sourceOsmId,
+    altitudeM: decimalToString(row.altitudeM),
+    headingDeg: decimalToString(row.headingDeg),
+    pitchDeg: decimalToString(row.pitchDeg),
+    rollDeg: decimalToString(row.rollDeg),
+    scale: decimalToString(row.scale),
+    minZoom: decimalToString(row.minZoom),
+  };
+};

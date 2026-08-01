@@ -28,18 +28,33 @@ Scale target: ~200–300 objects now, up to ~1000 buildings long-term.
 ### Explicit non-goals (rejected complexity from vMap/Cesium prototype)
 
 - No CesiumJS / Cesium ion / terrain / photorealistic tiles.
-- No OSM building "replacement" or clipping polygons.
 - No LOD pipeline for v1 (viewport-based loading is enough at ≤1000 models).
+- No Three.js custom layer (deck.gl `ScenegraphLayer` remains the renderer).
+
+### Stage 2b+ (2026-08-01) — OSM pick + unassigned placements
+
+Admin can click an OSM `building-3d` extrusion (cyan footprint highlight), place a
+GLB at the footprint centroid (or empty map), optionally without a project, then
+attach a project later. Hide uses `sourceOsmId` filter when available, plus the
+existing distance mask. Publish requires an attached project; public list is
+`isPublished && projectId != null`.
+
+### Future polish backlog (not in current scope)
+
+- Sparse cars only near viewport/camera focus (performance-safe).
+- Richer trees / water / grass — minimal “life”, not a sim.
+- Yerevan pink-tuff brand paint on the basemap.
 
 ## Data model (packages/db)
 
-New Prisma model file `packages/db/prisma/models/geo-map.prisma`:
+Prisma model file `packages/db/prisma/models/geo-map.prisma`:
 
 ```
 model ProjectMapModel {
   id            String   @id @default(cuid())
-  projectId     String   @unique              // one 3D model per project (v1)
+  projectId     String?  @unique              // optional; one model per project when set
   mediaAssetId  String                        // GLB file in R2 (MediaAsset)
+  sourceOsmId   String?                       // hide OSM extrusion when present in tiles
   longitude     Decimal  @db.Decimal(10, 7)
   latitude      Decimal  @db.Decimal(10, 7)
   altitudeM     Decimal  @default(0)          // meters above ground
@@ -54,8 +69,8 @@ model ProjectMapModel {
 ```
 
 Follow existing conventions in `models/*.prisma` (snake_case `@map`,
-indexes, relation `onDelete` rules). Relation: `Project 1—0..1 ProjectMapModel`,
-`MediaAsset 1—N ProjectMapModel`.
+indexes, relation `onDelete` rules). Relation: `Project 1—0..1 ProjectMapModel`
+(optional; `onDelete: SetNull`), `MediaAsset 1—N ProjectMapModel`.
 
 GLB upload: extend media module config with a `model3d` kind — allowed
 extension `.glb`, MIME `model/gltf-binary`, max size **15 MB** (named constant).
@@ -74,8 +89,8 @@ Admin endpoints (super-admin guard, same as other admin controllers):
 
 Public endpoint (no auth, cacheable):
 
-- `GET /public/geo-map/models` — published only; returns compact payload:
-  project id/slug/name, `logoUrl` (builder company logo), marker data (lng/lat),
+- `GET /public/geo-map/models` — published + attached (`projectId` not null);
+  compact payload: project id/slug/name, `logoUrl`, `sourceOsmId`, marker data,
   model URL + transform + minZoom.
 
 Contracts/DTO types go to `packages/contracts` per existing conventions.

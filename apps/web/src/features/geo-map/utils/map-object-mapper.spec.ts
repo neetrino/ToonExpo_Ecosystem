@@ -14,7 +14,9 @@ const adminItem: AdminGeoMapModelItem = {
   projectName: 'Toon Towers',
   projectSlug: 'toon-towers',
   mediaAssetId: 'media_1',
+  mediaTitle: 'toon-towers.glb',
   modelUrl: 'https://cdn.example/toon-towers.glb',
+  sourceOsmId: '123',
   longitude: '44.5152000',
   latitude: '40.1872000',
   altitudeM: '2.5',
@@ -38,6 +40,7 @@ const publicItem: PublicGeoMapModelItem = {
   longitude: '44.5152000',
   latitude: '40.1872000',
   modelUrl: 'https://cdn.example/toon-towers.glb',
+  sourceOsmId: '123',
   altitudeM: '2.5',
   headingDeg: '90',
   pitchDeg: '0',
@@ -54,6 +57,7 @@ describe('mapAdminGeoMapItemToObject', () => {
       label: 'Toon Towers',
       logoUrl: null,
       modelUrl: 'https://cdn.example/toon-towers.glb',
+      sourceOsmId: '123',
       longitude: 44.5152,
       latitude: 40.1872,
       altitudeM: 2.5,
@@ -63,6 +67,17 @@ describe('mapAdminGeoMapItemToObject', () => {
       scale: 1.5,
       minZoom: 14,
     });
+  });
+
+  it('falls back to media title for unassigned models', () => {
+    expect(
+      mapAdminGeoMapItemToObject({
+        ...adminItem,
+        projectId: null,
+        projectName: null,
+        projectSlug: null,
+      }).label,
+    ).toBe('toon-towers.glb');
   });
 
   it('maps a batch preserving order', () => {
@@ -78,6 +93,7 @@ describe('mapPublicGeoMapItemToObject', () => {
       label: 'Toon Towers',
       logoUrl: 'https://cdn.example/logo.png',
       modelUrl: 'https://cdn.example/toon-towers.glb',
+      sourceOsmId: '123',
       longitude: 44.5152,
       latitude: 40.1872,
       altitudeM: 2.5,

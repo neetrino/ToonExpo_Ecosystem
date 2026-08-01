@@ -7,7 +7,7 @@ import {
   OSM_BUILDING_EXTRUSION_LAYER_ID,
 } from '@/features/geo-map/constants';
 import type { GeoMapObject } from '@/features/geo-map/types';
-import { buildOsmBuildingExtrusionFilter } from '@/features/geo-map/utils/build-osm-building-extrusion-filter';
+import { buildCombinedOsmBuildingExtrusionFilter } from '@/features/geo-map/utils/build-osm-building-extrusion-filter';
 
 const removeLegacyCoveragePads = (map: MapLibreMap): void => {
   if (map.getLayer(MODEL_FOOTPRINT_MASK_LAYER_ID)) {
@@ -19,15 +19,12 @@ const removeLegacyCoveragePads = (map: MapLibreMap): void => {
 };
 
 /**
- * Hides liberty `building-3d` extrusions within a radius of each visible model
- * anchor using MapLibre's `distance` expression filter.
- *
- * Coverage pads alone cannot subtract vector-tile extrusions (fill-extrusions
- * are hollow shells), so a distance filter is the reliable v1 approach.
+ * Hides liberty `building-3d` extrusions near visible models via distance and
+ * optional `osm_id` exclusions when models store `sourceOsmId`.
  */
 export const syncModelFootprintMasks = (
   map: MapLibreMap,
-  modelObjects: readonly Pick<GeoMapObject, 'id' | 'longitude' | 'latitude'>[],
+  modelObjects: readonly Pick<GeoMapObject, 'id' | 'longitude' | 'latitude' | 'sourceOsmId'>[],
 ): void => {
   if (!map.getLayer(OSM_BUILDING_EXTRUSION_LAYER_ID)) {
     return;
@@ -35,7 +32,10 @@ export const syncModelFootprintMasks = (
 
   removeLegacyCoveragePads(map);
 
-  const filter = buildOsmBuildingExtrusionFilter(modelObjects, MODEL_FOOTPRINT_MASK_RADIUS_METERS);
+  const filter = buildCombinedOsmBuildingExtrusionFilter(
+    modelObjects,
+    MODEL_FOOTPRINT_MASK_RADIUS_METERS,
+  );
 
   map.setFilter(OSM_BUILDING_EXTRUSION_LAYER_ID, (filter ?? null) as FilterSpecification | null);
 };

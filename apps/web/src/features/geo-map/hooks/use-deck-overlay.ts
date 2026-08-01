@@ -10,6 +10,7 @@ import { useEffect, useRef } from 'react';
 
 import {
   MAP_CANVAS_HOVER_CURSOR_CLASS,
+  OSM_BUILDING_EXTRUSION_LAYER_ID,
   SCENEGRAPH_BEFORE_LAYER_ID,
   SCENEGRAPH_HOVER_HIGHLIGHT_COLOR,
   SCENEGRAPH_SIZE_MIN_PIXELS,
@@ -126,6 +127,20 @@ const buildOverlayInteractionProps = (
     if (info.picked && info.object) {
       options.onObjectClick?.(info.object.id);
       return;
+    }
+    // Admin OSM pick owns clicks on liberty `building-3d` — avoid double place.
+    if (
+      options.editable &&
+      typeof info.x === 'number' &&
+      typeof info.y === 'number' &&
+      map.getLayer(OSM_BUILDING_EXTRUSION_LAYER_ID)
+    ) {
+      const osmHits = map.queryRenderedFeatures([info.x, info.y], {
+        layers: [OSM_BUILDING_EXTRUSION_LAYER_ID],
+      });
+      if (osmHits.length > 0) {
+        return;
+      }
     }
     const position = toLngLat(info.coordinate);
     if (position) {

@@ -12,7 +12,7 @@ type GeoMapModelListProps = {
 };
 
 /**
- * Side-panel list of placed map models (draft + published).
+ * Side-panel list of placed map models (draft + published + unassigned).
  */
 export const GeoMapModelList = ({ models, selectedId, onSelect }: GeoMapModelListProps) => {
   const t = useTranslations('Admin.geoMap');
@@ -29,6 +29,13 @@ export const GeoMapModelList = ({ models, selectedId, onSelect }: GeoMapModelLis
     <ul className="space-y-1">
       {models.map((model) => {
         const selected = model.id === selectedId;
+        const title = model.projectName ?? model.mediaTitle ?? t('list.unassigned');
+        const status = !model.projectId
+          ? t('list.unassigned')
+          : model.isPublished
+            ? t('list.published')
+            : t('list.draft');
+
         return (
           <li key={model.id}>
             <button
@@ -41,11 +48,9 @@ export const GeoMapModelList = ({ models, selectedId, onSelect }: GeoMapModelLis
               onClick={() => onSelect(model.id)}
             >
               <span className="min-w-0">
-                <span className="block truncate text-sm font-medium text-ink">
-                  {model.projectName}
-                </span>
+                <span className="block truncate text-sm font-medium text-ink">{title}</span>
                 <span className="mt-0.5 block text-[11px] uppercase tracking-[0.12em] text-ink-muted">
-                  {model.isPublished ? t('list.published') : t('list.draft')}
+                  {status}
                 </span>
               </span>
             </button>

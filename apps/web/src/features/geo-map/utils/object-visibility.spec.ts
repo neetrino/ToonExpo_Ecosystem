@@ -12,6 +12,7 @@ const buildObject = (overrides: Partial<GeoMapObject> & { id: string }): GeoMapO
   label: 'Project',
   logoUrl: null,
   modelUrl: 'https://cdn.example/model.glb',
+  sourceOsmId: null,
   longitude: 44.5152,
   latitude: 40.1872,
   altitudeM: 0,

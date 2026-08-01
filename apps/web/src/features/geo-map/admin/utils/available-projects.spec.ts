@@ -18,13 +18,15 @@ const project = (id: string, name: string): AdminProjectListItem => ({
   apartmentsCount: 0,
 });
 
-const model = (projectId: string): AdminGeoMapModelItem => ({
-  id: `model_${projectId}`,
+const model = (projectId: string | null): AdminGeoMapModelItem => ({
+  id: `model_${projectId ?? 'free'}`,
   projectId,
-  projectName: 'X',
-  projectSlug: 'x',
+  projectName: projectId ? 'X' : null,
+  projectSlug: projectId ? 'x' : null,
   mediaAssetId: 'media_1',
+  mediaTitle: 'x.glb',
   modelUrl: 'https://cdn.example/x.glb',
+  sourceOsmId: null,
   longitude: '44.5',
   latitude: '40.1',
   altitudeM: '0',
@@ -44,7 +46,7 @@ describe('buildGeoMapProjectOptions', () => {
   it('flags projects that already have a map model', () => {
     const options = buildGeoMapProjectOptions(
       [project('p1', 'One'), project('p2', 'Two')],
-      [model('p1')],
+      [model('p1'), model(null)],
     );
     expect(options).toEqual([
       { id: 'p1', name: 'One', companyName: 'Acme', hasModel: true },
@@ -54,7 +56,10 @@ describe('buildGeoMapProjectOptions', () => {
 });
 
 describe('collectTakenProjectIds', () => {
-  it('returns a set of project ids with models', () => {
-    expect([...collectTakenProjectIds([model('p1'), model('p2')])].sort()).toEqual(['p1', 'p2']);
+  it('returns a set of project ids with models and ignores unassigned', () => {
+    expect([...collectTakenProjectIds([model('p1'), model(null), model('p2')])].sort()).toEqual([
+      'p1',
+      'p2',
+    ]);
   });
 });

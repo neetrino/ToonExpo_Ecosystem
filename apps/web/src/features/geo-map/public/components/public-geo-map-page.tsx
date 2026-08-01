@@ -32,7 +32,7 @@ export const PublicGeoMapPage = () => {
 
   const onObjectClick = (id: string) => {
     const object = findObjectById(objects, id);
-    if (!object) {
+    if (!object?.projectId) {
       return;
     }
     router.push(buildProjectPublicHref(object.projectId));

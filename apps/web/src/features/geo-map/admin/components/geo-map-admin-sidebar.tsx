@@ -19,6 +19,7 @@ type GeoMapAdminSidebarProps = {
   selectedId: string | null;
   createDraft: GeoMapCreateDraft | null;
   selectedModel: AdminGeoMapModelItem | null;
+  hasOsmSelection: boolean;
   isCreating: boolean;
   isSaving: boolean;
   isDeleting: boolean;
@@ -28,6 +29,7 @@ type GeoMapAdminSidebarProps = {
   onSave: (body: UpdateGeoMapModelRequest) => Promise<void>;
   onPublishChange: (isPublished: boolean) => Promise<void>;
   onReplaceModel: (mediaAssetId: string) => Promise<void>;
+  onAttachProject: (projectId: string) => Promise<void>;
   onDelete: () => void;
   headerActions?: ReactNode | undefined;
 };
@@ -41,6 +43,7 @@ export const GeoMapAdminSidebar = ({
   selectedId,
   createDraft,
   selectedModel,
+  hasOsmSelection,
   isCreating,
   isSaving,
   isDeleting,
@@ -50,6 +53,7 @@ export const GeoMapAdminSidebar = ({
   onSave,
   onPublishChange,
   onReplaceModel,
+  onAttachProject,
   onDelete,
   headerActions,
 }: GeoMapAdminSidebarProps) => {
@@ -84,17 +88,20 @@ export const GeoMapAdminSidebar = ({
           draft={createDraft}
           onDraftChange={onCreateDraftChange}
           isCreating={isCreating}
+          hasOsmSelection={hasOsmSelection}
         />
       ) : null}
 
       {!isCreateMode && selectedModel ? (
         <GeoMapEditPanel
           model={selectedModel}
+          projects={projects}
           isSaving={isSaving}
           isDeleting={isDeleting}
           onSave={onSave}
           onPublishChange={onPublishChange}
           onReplaceModel={onReplaceModel}
+          onAttachProject={onAttachProject}
           onDelete={onDelete}
         />
       ) : null}

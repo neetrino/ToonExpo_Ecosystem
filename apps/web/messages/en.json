@@ -1204,25 +1204,36 @@
       "labLink": "Lab",
       "list": {
         "title": "Models",
-        "empty": "No models yet. Create one to place a project on the map.",
+        "empty": "No models yet. Upload a GLB and place it on the map.",
         "published": "Published",
-        "draft": "Draft"
+        "draft": "Draft",
+        "unassigned": "Unassigned"
       },
       "create": {
         "new": "+ New",
         "title": "Place a model",
         "project": "Project",
         "projectPlaceholder": "Select a project…",
+        "projectOptional": "No project yet (attach later)",
+        "projectLaterHint": "You can place the GLB first and attach a project later.",
         "projectTaken": "{name} (already has a model)",
-        "hint": "Select a project and upload a GLB, then click the map to place it.",
+        "hint": "Upload a GLB, optionally pick a project, then click an OSM building or the map.",
         "clickMap": "Click the map to place the model.",
+        "clickMapOrOsm": "Click an OSM building (highlighted) or empty map to place.",
+        "clickOsmReady": "OSM building selected — placing at its footprint…",
         "placing": "Placing model…"
       },
       "edit": {
         "subtitle": "Drag on the map to move. Replace the GLB or adjust transforms below, then save.",
-        "replaceHint": "Upload a new GLB to replace the model for this project (position is kept).",
+        "replaceHint": "Upload a new GLB to replace the model (position is kept).",
         "replacing": "Replacing model…",
-        "replaceError": "Could not replace the model. Try again."
+        "replaceError": "Could not replace the model. Try again.",
+        "attachTitle": "Attach to a project",
+        "attachHint": "This model is not linked yet. Choose a free project to publish it.",
+        "attach": "Attach project",
+        "attaching": "Attaching…",
+        "attachError": "Could not attach the project. Try again.",
+        "publishRequiresProject": "Publish is available after a project is attached."
       },
       "upload": {
         "label": "GLB model",

@@ -9,6 +9,7 @@ import { FormField } from '@/shared/ui/form-field';
 import { Select } from '@/shared/ui/select';
 
 export type GeoMapCreateDraft = {
+  /** Empty string = place without attaching a project yet. */
   projectId: string;
   mediaAssetId: string;
   modelUrl: string;
@@ -20,16 +21,18 @@ type GeoMapCreatePanelProps = {
   draft: GeoMapCreateDraft | null;
   onDraftChange: (draft: GeoMapCreateDraft | null) => void;
   isCreating: boolean;
+  hasOsmSelection: boolean;
 };
 
 /**
- * Create flow: pick a free project, upload GLB, then click the map to place.
+ * Create flow: optional project + required GLB, then click OSM building or empty map.
  */
 export const GeoMapCreatePanel = ({
   projects,
   draft,
   onDraftChange,
   isCreating,
+  hasOsmSelection,
 }: GeoMapCreatePanelProps) => {
   const t = useTranslations('Admin.geoMap');
   const selectedProjectId = draft?.projectId ?? '';
@@ -37,16 +40,13 @@ export const GeoMapCreatePanel = ({
   const handleProjectChange = (projectId: string): void => {
     onDraftChange({
       projectId,
-      mediaAssetId: projectId ? (draft?.mediaAssetId ?? '') : '',
-      modelUrl: projectId ? (draft?.modelUrl ?? '') : '',
-      fileName: projectId ? (draft?.fileName ?? '') : '',
+      mediaAssetId: draft?.mediaAssetId ?? '',
+      modelUrl: draft?.modelUrl ?? '',
+      fileName: draft?.fileName ?? '',
     });
   };
 
   const handleUploaded = (asset: MediaAssetItem): void => {
-    if (!selectedProjectId) {
-      return;
-    }
     onDraftChange({
       projectId: selectedProjectId,
       mediaAssetId: asset.id,
@@ -55,7 +55,7 @@ export const GeoMapCreatePanel = ({
     });
   };
 
-  const readyToPlace = Boolean(draft?.projectId && draft.mediaAssetId);
+  const readyToPlace = Boolean(draft?.mediaAssetId);
 
   return (
     <section className="space-y-3 border-t border-border pt-4">
@@ -69,7 +69,7 @@ export const GeoMapCreatePanel = ({
           disabled={isCreating}
           onChange={(event) => handleProjectChange(event.target.value)}
         >
-          <option value="">{t('create.projectPlaceholder')}</option>
+          <option value="">{t('create.projectOptional')}</option>
           {projects.map((project) => (
             <option key={project.id} value={project.id} disabled={project.hasModel}>
               {project.hasModel
@@ -79,16 +79,21 @@ export const GeoMapCreatePanel = ({
           ))}
         </Select>
       </FormField>
+      <p className="text-xs text-ink-muted">{t('create.projectLaterHint')}</p>
 
       <GeoMapGlbUploader
-        disabled={!selectedProjectId || isCreating}
+        disabled={isCreating}
         fileName={draft?.fileName || null}
         onUploaded={handleUploaded}
       />
 
       {readyToPlace ? (
         <p className="rounded-sm border border-brand/40 bg-brand-soft/30 px-3 py-2 text-sm text-ink">
-          {isCreating ? t('create.placing') : t('create.clickMap')}
+          {isCreating
+            ? t('create.placing')
+            : hasOsmSelection
+              ? t('create.clickOsmReady')
+              : t('create.clickMapOrOsm')}
         </p>
       ) : (
         <p className="text-xs text-ink-muted">{t('create.hint')}</p>

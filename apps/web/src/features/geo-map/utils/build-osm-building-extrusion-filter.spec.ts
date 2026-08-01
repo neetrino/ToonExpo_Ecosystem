@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
-import { buildOsmBuildingExtrusionFilter } from '@/features/geo-map/utils/build-osm-building-extrusion-filter';
+import {
+  buildCombinedOsmBuildingExtrusionFilter,
+  buildOsmBuildingExtrusionFilter,
+} from '@/features/geo-map/utils/build-osm-building-extrusion-filter';
 
 const RADIUS_METERS = 80;
 
@@ -49,5 +52,24 @@ describe('buildOsmBuildingExtrusionFilter', () => {
     expect(() => buildOsmBuildingExtrusionFilter([{ longitude: 0, latitude: 0 }], 0)).toThrow(
       /radiusMeters/,
     );
+  });
+});
+
+describe('buildCombinedOsmBuildingExtrusionFilter', () => {
+  it('merges distance and osm_id exclusions', () => {
+    const filter = buildCombinedOsmBuildingExtrusionFilter(
+      [
+        { longitude: 44.5, latitude: 40.2, sourceOsmId: '111' },
+        { longitude: 44.6, latitude: 40.3, sourceOsmId: null },
+      ],
+      RADIUS_METERS,
+    );
+
+    expect(filter?.[0]).toBe('all');
+    expect(filter).toHaveLength(3);
+  });
+
+  it('returns null when there are no models', () => {
+    expect(buildCombinedOsmBuildingExtrusionFilter([], RADIUS_METERS)).toBeNull();
   });
 });

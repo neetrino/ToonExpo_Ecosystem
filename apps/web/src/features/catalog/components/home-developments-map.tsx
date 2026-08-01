@@ -44,7 +44,7 @@ export const HomeDevelopmentsMap = () => {
 
   const onObjectClick = (id: string): void => {
     const object = findObjectById(objects, id);
-    if (!object) {
+    if (!object?.projectId) {
       return;
     }
     router.push(buildProjectPublicHref(object.projectId));

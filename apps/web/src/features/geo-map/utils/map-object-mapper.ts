@@ -25,13 +25,17 @@ const toNumericTransform = (item: GeoMapDecimalFields) => ({
   minZoom: Number(item.minZoom),
 });
 
+const resolveAdminLabel = (item: AdminGeoMapModelItem): string =>
+  item.projectName ?? item.mediaTitle ?? 'Unassigned';
+
 /** Maps an admin API item (`GET /admin/geo-map/models`) to the canvas view-model. */
 export const mapAdminGeoMapItemToObject = (item: AdminGeoMapModelItem): GeoMapObject => ({
   id: item.id,
   projectId: item.projectId,
-  label: item.projectName,
+  label: resolveAdminLabel(item),
   logoUrl: null,
   modelUrl: item.modelUrl,
+  sourceOsmId: item.sourceOsmId,
   ...toNumericTransform(item),
 });
 
@@ -49,6 +53,7 @@ export const mapPublicGeoMapItemToObject = (item: PublicGeoMapModelItem): GeoMap
   label: item.projectName,
   logoUrl: item.logoUrl,
   modelUrl: item.modelUrl,
+  sourceOsmId: item.sourceOsmId,
   ...toNumericTransform(item),
 });
 

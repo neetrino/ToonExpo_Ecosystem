@@ -22,7 +22,10 @@ export class PublicGeoMapService {
   constructor(private readonly prisma: PrismaService) {}
 
   buildPublishedWhere(): Prisma.ProjectMapModelWhereInput {
-    return { isPublished: true };
+    return {
+      isPublished: true,
+      NOT: { projectId: null },
+    };
   }
 
   async listPublished(): Promise<PublicGeoMapModelListResponse> {

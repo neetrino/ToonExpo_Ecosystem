@@ -2,6 +2,9 @@
 
 import { useRef, useState } from 'react';
 
+import { GeoMapCameraControls } from '@/features/geo-map/components/geo-map-camera-controls';
+import { GeoMapInfoCard } from '@/features/geo-map/components/geo-map-info-card';
+import { GeoMapWebglFallback } from '@/features/geo-map/components/geo-map-webgl-fallback';
 import {
   DEFAULT_MAP_BEARING_DEG,
   DEFAULT_MAP_CENTER_LATITUDE,
@@ -9,15 +12,13 @@ import {
   DEFAULT_MAP_PITCH_DEG,
   DEFAULT_MAP_ZOOM,
 } from '@/features/geo-map/constants';
-import { GeoMapCameraControls } from '@/features/geo-map/components/geo-map-camera-controls';
-import { GeoMapInfoCard } from '@/features/geo-map/components/geo-map-info-card';
-import { GeoMapWebglFallback } from '@/features/geo-map/components/geo-map-webgl-fallback';
 import { useDeckOverlay } from '@/features/geo-map/hooks/use-deck-overlay';
 import { useMapFocus } from '@/features/geo-map/hooks/use-map-focus';
 import { useMapViewportState } from '@/features/geo-map/hooks/use-map-viewport-state';
 import { useMaplibreMap } from '@/features/geo-map/hooks/use-maplibre-map';
 import { useMarkerLayer } from '@/features/geo-map/hooks/use-marker-layer';
 import { useModelFootprintMasks } from '@/features/geo-map/hooks/use-model-footprint-masks';
+import { useOsmBuildingPick } from '@/features/geo-map/hooks/use-osm-building-pick';
 import { useVisibleObjects } from '@/features/geo-map/hooks/use-visible-objects';
 import { useWebglSupport } from '@/features/geo-map/hooks/use-webgl-support';
 import type { GeoMapCanvasProps, GeoMapLngLat, GeoMapObject } from '@/features/geo-map/types';
@@ -68,6 +69,8 @@ export const GeoMapCanvas = ({
   onObjectHover,
   onMapClick,
   onObjectDragged,
+  selectedOsmBuilding = null,
+  onOsmBuildingSelect,
 }: GeoMapCanvasProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const isWebglSupported = useWebglSupport();
@@ -96,6 +99,13 @@ export const GeoMapCanvas = ({
 
   useMapFocus({ map, isMapLoaded, objects, focusRequest });
   useModelFootprintMasks({ map, isMapLoaded, modelObjects });
+  useOsmBuildingPick({
+    map,
+    isMapLoaded,
+    enabled: editable && Boolean(onOsmBuildingSelect),
+    selectedBuilding: selectedOsmBuilding,
+    onSelect: onOsmBuildingSelect ?? (() => undefined),
+  });
   useMarkerLayer({
     map,
     isMapLoaded,

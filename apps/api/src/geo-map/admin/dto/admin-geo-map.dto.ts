@@ -9,6 +9,7 @@ import {
   MinLength,
   Min,
   Max,
+  ValidateIf,
 } from 'class-validator';
 
 import {
@@ -21,9 +22,11 @@ import {
 } from '../../geo-map.constants.js';
 
 export class CreateGeoMapModelDto {
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsString()
   @MinLength(1)
-  projectId!: string;
+  projectId?: string;
 
   @IsString()
   @MinLength(1)
@@ -40,6 +43,12 @@ export class CreateGeoMapModelDto {
   @Min(GEO_MAP_LATITUDE_MIN)
   @Max(GEO_MAP_LATITUDE_MAX)
   latitude!: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MinLength(1)
+  sourceOsmId?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -91,7 +100,20 @@ export class UpdateGeoMapModelDto {
   @IsOptional()
   @IsString()
   @MinLength(1)
+  projectId?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MinLength(1)
   mediaAssetId?: string;
+
+  @ApiPropertyOptional({ nullable: true })
+  @IsOptional()
+  @ValidateIf((_, value) => value !== null)
+  @IsString()
+  @MinLength(1)
+  sourceOsmId?: string | null;
 
   @ApiPropertyOptional()
   @IsOptional()

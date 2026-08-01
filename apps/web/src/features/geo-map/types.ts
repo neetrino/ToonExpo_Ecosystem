@@ -1,4 +1,8 @@
+import type { SelectedOsmBuilding } from '@/features/geo-map/utils/building-identification';
+
 /** Shared types for the `GeoMapCanvas` core and its consumers (Stage 2b, Stage 3). */
+
+export type { SelectedOsmBuilding };
 
 /** A geographic point in `[longitude, latitude]` order (MapLibre/deck.gl convention). */
 export type GeoMapLngLat = {
@@ -15,13 +19,16 @@ export type GeoMapLngLat = {
 export type GeoMapObject = {
   /** Stable id used for click/hover/drag callbacks (`ProjectMapModel.id`, or `projectId` for public payloads). */
   id: string;
-  projectId: string;
+  /** Null for admin unassigned placements (not yet attached to a project). */
+  projectId: string | null;
   /** Project name — shown in the hover/select info card (not on the dot marker). */
   label: string;
   /** Builder company logo URL for the info card; null when unavailable. */
   logoUrl: string | null;
   /** GLB url (R2), rendered via deck.gl `ScenegraphLayer` at/above `minZoom`. */
   modelUrl: string;
+  /** OSM id for precise extrusion hide; null → distance mask only. */
+  sourceOsmId: string | null;
   longitude: number;
   latitude: number;
   altitudeM: number;
@@ -80,4 +87,11 @@ export type GeoMapCanvasProps = {
   onMapClick?: ((position: GeoMapLngLat) => void) | undefined;
   /** Fired once an `editable` drag ends, with the object's new position. */
   onObjectDragged?: ((id: string, position: GeoMapLngLat) => void) | undefined;
+  /**
+   * Admin-only: currently selected OSM building for cyan footprint highlight.
+   * Ignored when `editable` is false.
+   */
+  selectedOsmBuilding?: SelectedOsmBuilding | null | undefined;
+  /** Admin-only: OSM `building-3d` click (after cyan highlight update). */
+  onOsmBuildingSelect?: ((building: SelectedOsmBuilding) => void) | undefined;
 };

@@ -15,4 +15,12 @@ export const resolveMapObjectForProject = (
 /** Project ids that currently have a published map model. */
 export const collectMappableProjectIds = (
   objects: readonly Pick<GeoMapObject, 'projectId'>[],
-): ReadonlySet<string> => new Set(objects.map((object) => object.projectId));
+): ReadonlySet<string> => {
+  const ids = new Set<string>();
+  for (const object of objects) {
+    if (object.projectId) {
+      ids.add(object.projectId);
+    }
+  }
+  return ids;
+};

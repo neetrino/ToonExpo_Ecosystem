@@ -17,10 +17,10 @@ import {
 } from '@/features/geo-map/admin/hooks/use-geo-map-admin';
 import { buildGeoMapProjectOptions } from '@/features/geo-map/admin/utils/available-projects';
 import { GeoMapCanvasLazy } from '@/features/geo-map/components/geo-map-canvas-lazy';
-import type { GeoMapLngLat } from '@/features/geo-map/types';
+import type { GeoMapLngLat, SelectedOsmBuilding } from '@/features/geo-map/types';
 import { mapAdminGeoMapItemsToObjects } from '@/features/geo-map/utils/map-object-mapper';
-import { AdminDeleteModal } from '@/shared/ui/admin-delete-modal';
 import { Link } from '@/i18n/navigation';
+import { AdminDeleteModal } from '@/shared/ui/admin-delete-modal';
 
 const EMPTY_CREATE_DRAFT: GeoMapCreateDraft = {
   projectId: '',
@@ -42,6 +42,7 @@ export const GeoMapAdminPage = () => {
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [createDraft, setCreateDraft] = useState<GeoMapCreateDraft | null>(EMPTY_CREATE_DRAFT);
+  const [selectedOsmBuilding, setSelectedOsmBuilding] = useState<SelectedOsmBuilding | null>(null);
   const [pendingDelete, setPendingDelete] = useState<AdminGeoMapModelItem | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
 
@@ -56,38 +57,58 @@ export const GeoMapAdminPage = () => {
   const startCreate = (): void => {
     setSelectedId(null);
     setCreateDraft(EMPTY_CREATE_DRAFT);
+    setSelectedOsmBuilding(null);
     setActionError(null);
   };
 
   const selectModel = (id: string): void => {
     setSelectedId(id);
     setCreateDraft(null);
+    setSelectedOsmBuilding(null);
     setActionError(null);
   };
 
   const clearSelection = (): void => {
     setSelectedId(null);
     setCreateDraft(EMPTY_CREATE_DRAFT);
+    setSelectedOsmBuilding(null);
     setActionError(null);
   };
 
-  const handleMapClick = async (position: GeoMapLngLat): Promise<void> => {
-    if (!createDraft?.projectId || !createDraft.mediaAssetId) {
+  const placeModel = async (position: GeoMapLngLat, sourceOsmId: string | null): Promise<void> => {
+    if (!createDraft?.mediaAssetId) {
       return;
     }
     setActionError(null);
     try {
       const created = await createMutation.mutateAsync({
-        projectId: createDraft.projectId,
         mediaAssetId: createDraft.mediaAssetId,
         longitude: position.longitude,
         latitude: position.latitude,
         ...GEO_MAP_DEFAULT_CREATE_VALUES,
+        ...(createDraft.projectId ? { projectId: createDraft.projectId } : {}),
+        ...(sourceOsmId ? { sourceOsmId } : {}),
       });
       setCreateDraft(null);
+      setSelectedOsmBuilding(null);
       setSelectedId(created.id);
     } catch {
       setActionError(t('errors.createFailed'));
+    }
+  };
+
+  const handleMapClick = (position: GeoMapLngLat): void => {
+    void placeModel(position, null);
+  };
+
+  const handleOsmBuildingSelect = (building: SelectedOsmBuilding): void => {
+    setSelectedOsmBuilding(building);
+    setActionError(null);
+    if (createDraft?.mediaAssetId) {
+      void placeModel(
+        { longitude: building.longitude, latitude: building.latitude },
+        building.sourceOsmId,
+      );
     }
   };
 
@@ -136,6 +157,19 @@ export const GeoMapAdminPage = () => {
     }
   };
 
+  const handleAttachProject = async (projectId: string): Promise<void> => {
+    if (!selectedId) {
+      return;
+    }
+    setActionError(null);
+    try {
+      await updateMutation.mutateAsync({ id: selectedId, body: { projectId } });
+    } catch {
+      setActionError(t('errors.updateFailed'));
+      throw new Error('attach-failed');
+    }
+  };
+
   const requestDelete = (model: AdminGeoMapModelItem): void => {
     setPendingDelete(model);
   };
@@ -178,6 +212,7 @@ export const GeoMapAdminPage = () => {
           selectedId={selectedId}
           createDraft={createDraft}
           selectedModel={selectedModel}
+          hasOsmSelection={selectedOsmBuilding !== null}
           isCreating={createMutation.isPending}
           isSaving={updateMutation.isPending}
           isDeleting={deleteMutation.isPending}
@@ -187,6 +222,7 @@ export const GeoMapAdminPage = () => {
           onSave={handleSave}
           onPublishChange={handlePublishChange}
           onReplaceModel={handleReplaceModel}
+          onAttachProject={handleAttachProject}
           onDelete={() => {
             if (selectedModel) {
               requestDelete(selectedModel);
@@ -208,11 +244,11 @@ export const GeoMapAdminPage = () => {
           objects={objects}
           editable
           highlightedObjectId={selectedId}
+          selectedOsmBuilding={selectedOsmBuilding}
           className="h-full min-h-[50vh] w-full lg:min-h-full"
           onObjectClick={selectModel}
-          onMapClick={(position) => {
-            void handleMapClick(position);
-          }}
+          onOsmBuildingSelect={handleOsmBuildingSelect}
+          onMapClick={handleMapClick}
           onObjectDragged={(id, position) => {
             void handleDragged(id, position);
           }}
@@ -239,7 +275,11 @@ export const GeoMapAdminPage = () => {
         open={pendingDelete !== null}
         title={t('deleteConfirmTitle')}
         message={
-          pendingDelete ? t('deleteConfirmMessage', { name: pendingDelete.projectName }) : ''
+          pendingDelete
+            ? t('deleteConfirmMessage', {
+                name: pendingDelete.projectName ?? pendingDelete.mediaTitle ?? t('list.unassigned'),
+              })
+            : ''
         }
         confirming={deleteMutation.isPending}
         onCancel={() => setPendingDelete(null)}

@@ -1,4 +1,4 @@
-import { ConflictException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, NotFoundException } from '@nestjs/common';
 import type { Prisma } from '@toonexpo/db';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -12,6 +12,7 @@ const baseRow = {
   id: 'pmm_1',
   projectId: 'proj_1',
   mediaAssetId: 'media_1',
+  sourceOsmId: null as string | null,
   longitude: decimal('44.5123456'),
   latitude: decimal('40.1812345'),
   altitudeM: decimal('0'),
@@ -26,7 +27,7 @@ const baseRow = {
   createdAt: new Date('2026-07-31T10:00:00.000Z'),
   updatedAt: new Date('2026-07-31T10:00:00.000Z'),
   project: { name: 'Demo Tower', slug: 'demo-tower' },
-  mediaAsset: { fileUrl: 'https://cdn.example.com/platform/media_1.glb' },
+  mediaAsset: { fileUrl: 'https://cdn.example.com/platform/media_1.glb', title: 'Tower.glb' },
 };
 
 describe('AdminGeoMapService', () => {
@@ -78,6 +79,42 @@ describe('AdminGeoMapService', () => {
     expect(result.isPublished).toBe(false);
   });
 
+  it('creates an unassigned model without a project', async () => {
+    mediaAssetFindUnique.mockResolvedValue({ id: 'media_1' });
+    projectMapModelCreate.mockResolvedValue({
+      ...baseRow,
+      projectId: null,
+      project: null,
+      sourceOsmId: '582962758',
+    });
+
+    const result = await service.create('user_1', {
+      mediaAssetId: 'media_1',
+      longitude: 44.5,
+      latitude: 40.1,
+      sourceOsmId: '582962758',
+    });
+
+    expect(projectFindUnique).not.toHaveBeenCalled();
+    expect(result.projectId).toBeNull();
+    expect(result.sourceOsmId).toBe('582962758');
+  });
+
+  it('rejects publishing an unassigned model on create', async () => {
+    mediaAssetFindUnique.mockResolvedValue({ id: 'media_1' });
+
+    await expect(
+      service.create('user_1', {
+        mediaAssetId: 'media_1',
+        longitude: 44.5,
+        latitude: 40.1,
+        isPublished: true,
+      }),
+    ).rejects.toBeInstanceOf(BadRequestException);
+
+    expect(projectMapModelCreate).not.toHaveBeenCalled();
+  });
+
   it('rejects create when project already has a model', async () => {
     projectFindUnique.mockResolvedValue({ id: 'proj_1' });
     mediaAssetFindUnique.mockResolvedValue({ id: 'media_1' });
@@ -109,7 +146,11 @@ describe('AdminGeoMapService', () => {
   });
 
   it('updates transform and publish flag', async () => {
-    projectMapModelFindUnique.mockResolvedValue({ id: 'pmm_1' });
+    projectMapModelFindUnique.mockResolvedValue({
+      id: 'pmm_1',
+      projectId: 'proj_1',
+      isPublished: false,
+    });
     projectMapModelUpdate.mockResolvedValue({
       ...baseRow,
       isPublished: true,
@@ -136,6 +177,42 @@ describe('AdminGeoMapService', () => {
     );
     expect(result.isPublished).toBe(true);
     expect(result.scale).toBe('1.5');
+  });
+
+  it('attaches a free project to an unassigned model', async () => {
+    projectMapModelFindUnique
+      .mockResolvedValueOnce({ id: 'pmm_1', projectId: null, isPublished: false })
+      .mockResolvedValueOnce(null);
+    projectFindUnique.mockResolvedValue({ id: 'proj_2' });
+    projectMapModelUpdate.mockResolvedValue({
+      ...baseRow,
+      projectId: 'proj_2',
+      project: { name: 'Other', slug: 'other' },
+    });
+
+    const result = await service.update('pmm_1', 'user_1', { projectId: 'proj_2' });
+
+    expect(result.projectId).toBe('proj_2');
+    expect(projectMapModelUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          project: { connect: { id: 'proj_2' } },
+        }),
+      }),
+    );
+  });
+
+  it('rejects publishing when the model stays unassigned', async () => {
+    projectMapModelFindUnique.mockResolvedValue({
+      id: 'pmm_1',
+      projectId: null,
+      isPublished: false,
+    });
+
+    await expect(service.update('pmm_1', 'user_1', { isPublished: true })).rejects.toBeInstanceOf(
+      BadRequestException,
+    );
+    expect(projectMapModelUpdate).not.toHaveBeenCalled();
   });
 
   it('rejects update when model is missing', async () => {

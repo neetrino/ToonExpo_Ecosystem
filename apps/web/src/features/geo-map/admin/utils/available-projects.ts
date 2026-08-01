@@ -8,12 +8,22 @@ export type GeoMapProjectOption = {
   hasModel: boolean;
 };
 
+const attachedProjectIds = (models: AdminGeoMapModelItem[]): Set<string> => {
+  const taken = new Set<string>();
+  for (const model of models) {
+    if (model.projectId) {
+      taken.add(model.projectId);
+    }
+  }
+  return taken;
+};
+
 /** Builds project picker options; projects with an existing model are flagged. */
 export const buildGeoMapProjectOptions = (
   projects: AdminProjectListItem[],
   models: AdminGeoMapModelItem[],
 ): GeoMapProjectOption[] => {
-  const taken = new Set(models.map((model) => model.projectId));
+  const taken = attachedProjectIds(models);
   return projects.map((project) => ({
     id: project.id,
     name: project.name,
@@ -24,4 +34,4 @@ export const buildGeoMapProjectOptions = (
 
 /** Project ids that already have a map model. */
 export const collectTakenProjectIds = (models: AdminGeoMapModelItem[]): ReadonlySet<string> =>
-  new Set(models.map((model) => model.projectId));
+  attachedProjectIds(models);

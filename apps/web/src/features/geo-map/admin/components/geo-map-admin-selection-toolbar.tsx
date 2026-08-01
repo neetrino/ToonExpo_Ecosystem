@@ -25,7 +25,9 @@ export const GeoMapAdminSelectionToolbar = ({
 
   return (
     <div className="absolute bottom-3 left-3 right-3 z-10 flex flex-wrap items-center gap-2 rounded-sm border border-border bg-surface-elevated/95 px-3 py-2 shadow-sm backdrop-blur-sm lg:left-auto lg:right-3 lg:max-w-md">
-      <p className="min-w-0 flex-1 truncate text-sm font-medium text-ink">{model.projectName}</p>
+      <p className="min-w-0 flex-1 truncate text-sm font-medium text-ink">
+        {model.projectName ?? model.mediaTitle ?? t('list.unassigned')}
+      </p>
       <Button
         type="button"
         size="sm"

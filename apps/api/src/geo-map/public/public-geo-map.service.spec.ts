@@ -24,8 +24,11 @@ describe('PublicGeoMapService', () => {
     projectMapModelFindMany.mockResolvedValue([]);
   });
 
-  it('filters public listing to published models only', () => {
-    expect(service.buildPublishedWhere()).toEqual({ isPublished: true });
+  it('filters public listing to published models attached to a project', () => {
+    expect(service.buildPublishedWhere()).toEqual({
+      isPublished: true,
+      NOT: { projectId: null },
+    });
   });
 
   it('lists only published models with compact payload', async () => {
@@ -34,6 +37,7 @@ describe('PublicGeoMapService', () => {
         id: 'pmm_1',
         projectId: 'proj_1',
         mediaAssetId: 'media_1',
+        sourceOsmId: null,
         longitude: decimal('44.5'),
         latitude: decimal('40.1'),
         altitudeM: decimal('0'),
@@ -63,7 +67,7 @@ describe('PublicGeoMapService', () => {
 
     expect(projectMapModelFindMany).toHaveBeenCalledWith(
       expect.objectContaining({
-        where: { isPublished: true },
+        where: { isPublished: true, NOT: { projectId: null } },
       }),
     );
     expect(result.data).toHaveLength(1);
@@ -75,6 +79,7 @@ describe('PublicGeoMapService', () => {
       longitude: '44.5',
       latitude: '40.1',
       modelUrl: 'https://cdn.example.com/model.glb',
+      sourceOsmId: null,
       altitudeM: '0',
       headingDeg: '45',
       pitchDeg: '0',
@@ -90,6 +95,7 @@ describe('PublicGeoMapService', () => {
         id: 'pmm_2',
         projectId: 'proj_2',
         mediaAssetId: 'media_2',
+        sourceOsmId: null,
         longitude: decimal('44.6'),
         latitude: decimal('40.2'),
         altitudeM: decimal('0'),

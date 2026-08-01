@@ -9,16 +9,21 @@ import {
   GeoMapTransformFields,
   type GeoMapTransformDraft,
 } from '@/features/geo-map/admin/components/geo-map-transform-fields';
+import type { GeoMapProjectOption } from '@/features/geo-map/admin/utils/available-projects';
 import { Button } from '@/shared/ui/button';
+import { FormField } from '@/shared/ui/form-field';
+import { Select } from '@/shared/ui/select';
 import { Switch } from '@/shared/ui/switch';
 
 type GeoMapEditPanelProps = {
   model: AdminGeoMapModelItem;
+  projects: GeoMapProjectOption[];
   isSaving: boolean;
   isDeleting: boolean;
   onSave: (body: UpdateGeoMapModelRequest) => Promise<void>;
   onPublishChange: (isPublished: boolean) => Promise<void>;
   onReplaceModel: (mediaAssetId: string) => Promise<void>;
+  onAttachProject: (projectId: string) => Promise<void>;
   onDelete: () => void;
 };
 
@@ -34,27 +39,36 @@ const toDraft = (model: AdminGeoMapModelItem): GeoMapTransformDraft => ({
 });
 
 /**
- * Edit panel for a selected map model: replace GLB, transforms, publish, delete.
+ * Edit panel: attach project, replace GLB, transforms, publish, delete.
  */
 export const GeoMapEditPanel = ({
   model,
+  projects,
   isSaving,
   isDeleting,
   onSave,
   onPublishChange,
   onReplaceModel,
+  onAttachProject,
   onDelete,
 }: GeoMapEditPanelProps) => {
   const t = useTranslations('Admin.geoMap');
   const [draft, setDraft] = useState(() => toDraft(model));
+  const [attachProjectId, setAttachProjectId] = useState('');
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [attachError, setAttachError] = useState<string | null>(null);
   const [replaceError, setReplaceError] = useState<string | null>(null);
   const [isReplacing, setIsReplacing] = useState(false);
-  const busy = isSaving || isDeleting || isReplacing;
+  const [isAttaching, setIsAttaching] = useState(false);
+  const busy = isSaving || isDeleting || isReplacing || isAttaching;
+  const isUnassigned = model.projectId === null;
+  const freeProjects = projects.filter((project) => !project.hasModel);
 
   useEffect(() => {
     setDraft(toDraft(model));
+    setAttachProjectId('');
     setSaveError(null);
+    setAttachError(null);
     setReplaceError(null);
   }, [model]);
 
@@ -88,24 +102,80 @@ export const GeoMapEditPanel = ({
     }
   };
 
+  const handleAttach = async (): Promise<void> => {
+    if (!attachProjectId) {
+      return;
+    }
+    setAttachError(null);
+    setIsAttaching(true);
+    try {
+      await onAttachProject(attachProjectId);
+    } catch {
+      setAttachError(t('edit.attachError'));
+    } finally {
+      setIsAttaching(false);
+    }
+  };
+
   return (
     <section className="space-y-4 border-t border-border pt-4">
       <div>
-        <h2 className="font-display text-xl text-ink">{model.projectName}</h2>
+        <h2 className="font-display text-xl text-ink">
+          {model.projectName ?? model.mediaTitle ?? t('list.unassigned')}
+        </h2>
         <p className="mt-1 text-xs text-ink-muted">{t('edit.subtitle')}</p>
       </div>
 
-      <div className="flex items-center justify-between gap-3">
-        <span className="text-sm font-medium text-ink">{t('form.published')}</span>
-        <Switch
-          checked={model.isPublished}
-          disabled={busy}
-          aria-label={t('form.published')}
-          onCheckedChange={(checked) => {
-            void onPublishChange(checked);
-          }}
-        />
-      </div>
+      {isUnassigned ? (
+        <div className="space-y-2 rounded-sm border border-border px-3 py-3">
+          <p className="text-sm font-medium text-ink">{t('edit.attachTitle')}</p>
+          <p className="text-xs text-ink-muted">{t('edit.attachHint')}</p>
+          <FormField id="geo-map-attach-project" label={t('create.project')}>
+            <Select
+              id="geo-map-attach-project"
+              value={attachProjectId}
+              disabled={busy}
+              onChange={(event) => setAttachProjectId(event.target.value)}
+            >
+              <option value="">{t('create.projectPlaceholder')}</option>
+              {freeProjects.map((project) => (
+                <option key={project.id} value={project.id}>
+                  {project.name} · {project.companyName}
+                </option>
+              ))}
+            </Select>
+          </FormField>
+          <Button
+            type="button"
+            size="sm"
+            disabled={busy || !attachProjectId}
+            onClick={() => void handleAttach()}
+          >
+            {isAttaching ? t('edit.attaching') : t('edit.attach')}
+          </Button>
+          {attachError ? (
+            <p role="alert" className="text-sm text-danger">
+              {attachError}
+            </p>
+          ) : null}
+        </div>
+      ) : (
+        <div className="flex items-center justify-between gap-3">
+          <span className="text-sm font-medium text-ink">{t('form.published')}</span>
+          <Switch
+            checked={model.isPublished}
+            disabled={busy}
+            aria-label={t('form.published')}
+            onCheckedChange={(checked) => {
+              void onPublishChange(checked);
+            }}
+          />
+        </div>
+      )}
+
+      {isUnassigned ? (
+        <p className="text-xs text-ink-muted">{t('edit.publishRequiresProject')}</p>
+      ) : null}
 
       <div className="space-y-2">
         <p className="text-xs text-ink-muted">{t('edit.replaceHint')}</p>
