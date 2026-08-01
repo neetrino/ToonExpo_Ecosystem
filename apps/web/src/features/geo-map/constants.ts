@@ -78,3 +78,14 @@ export const MAP_CANVAS_HOVER_CURSOR_CLASS = 'cursor-pointer';
 export const OSM_BUILDING_EXTRUSION_LAYER_ID = 'building-3d';
 export const OSM_BUILDING_FILL_LAYER_ID = 'building';
 export const OSM_BUILDING_EXTRUSION_MIN_ZOOM = 15;
+
+/**
+ * Hide OSM `building-3d` fill-extrusions near published GLB anchors via a
+ * MapLibre `distance` filter (true vector-tile subtraction needs custom tiles).
+ */
+export const MODEL_FOOTPRINT_SOURCE_ID = 'geo-map-model-footprints';
+export const MODEL_FOOTPRINT_MASK_LAYER_ID = 'geo-map-model-footprint-mask';
+/** Radius around each model center where OSM extrusions are filtered out (meters). */
+export const MODEL_FOOTPRINT_MASK_RADIUS_METERS = 80;
+/** N-gon segment count for circular footprint helpers / tests. */
+export const MODEL_FOOTPRINT_MASK_SEGMENT_COUNT = 24;

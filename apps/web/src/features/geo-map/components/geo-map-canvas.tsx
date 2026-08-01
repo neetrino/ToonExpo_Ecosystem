@@ -13,6 +13,7 @@ import { useMapFocus } from '@/features/geo-map/hooks/use-map-focus';
 import { useMapViewportState } from '@/features/geo-map/hooks/use-map-viewport-state';
 import { useMaplibreMap } from '@/features/geo-map/hooks/use-maplibre-map';
 import { useMarkerLayer } from '@/features/geo-map/hooks/use-marker-layer';
+import { useModelFootprintMasks } from '@/features/geo-map/hooks/use-model-footprint-masks';
 import { useVisibleObjects } from '@/features/geo-map/hooks/use-visible-objects';
 import { useWebglSupport } from '@/features/geo-map/hooks/use-webgl-support';
 import type { GeoMapCanvasProps, GeoMapLngLat } from '@/features/geo-map/types';
@@ -67,6 +68,7 @@ export const GeoMapCanvas = ({
   const { markerObjects, modelObjects } = useVisibleObjects(objects, dragOverride, zoom, bounds);
 
   useMapFocus({ map, isMapLoaded, objects, focusRequest });
+  useModelFootprintMasks({ map, isMapLoaded, modelObjects });
   useMarkerLayer({
     map,
     isMapLoaded,

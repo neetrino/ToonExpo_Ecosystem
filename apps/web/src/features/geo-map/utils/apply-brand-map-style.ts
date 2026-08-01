@@ -140,8 +140,8 @@ const applyBuildingExtrusionStyle = (map: MapLibreMap): void => {
  * Applies ToonExpo brand paint overrides to a loaded OpenFreeMap liberty style.
  * Keeps attribution intact; only mutates paint / zoom-range on known layer ids.
  *
- * Follow-up (not in v1): filter OSM extrusions within a radius of our GLB
- * models to avoid double-rendering at the same footprint.
+ * OSM boxes under GLBs are hidden by `syncModelFootprintMasks` (distance filter
+ * on `building-3d`), not by paint overrides here.
  */
 export const applyBrandMapStyle = (map: MapLibreMap): void => {
   for (const override of BRAND_MAP_PAINT_OVERRIDES) {

@@ -124,17 +124,20 @@ click → project page via `buildProjectPublicHref`.
 ### Stage 6 — Apartments page map
 
 On `apps/web/src/app/[locale]/apartments` add/replace the map with
-`GeoMapCanvas`. Selecting an apartment in the list highlights and flies to
+`GeoMapCanvas`. Hovering an apartment card in the list highlights and flies to
 the 3D model of the project the apartment belongs to (apartment → project →
 map model). Reverse direction (click model → filter apartment list) is
 implemented on the apartments page only.
 
 **Done:** Replaced the static Buy-page map image with `GeoMapCanvasLazy`
 (published models via `usePublicGeoMapModelsQuery`). Cards keep navigating
-to the apartment on click; an explicit **Show on map** affordance (hidden
-when the project has no published model) sets `focusRequest` +
-`highlightedObjectId` for that project's model. Pure util
-`resolveMapObjectForProject` + unit tests.
+to the apartment on click. **List → map sync is card hover** (mouse enter):
+resolves `listing.projectId` via `resolveMapObjectForProject`, then sets
+`focusRequest` + `highlightedObjectId` for that project's published 3D model.
+Mouse leave clears highlight only (camera is not reset, to avoid jitter);
+hover is debounced (~80ms). The previous **Show on map** button UX was
+removed — hover replaces it. Pure util `resolveMapObjectForProject` + unit
+tests.
 
 **Reverse sync (done):** On the apartments page only, map marker/model click
 filters the listing grid to that project's apartments (`listing.projectId`)
@@ -142,6 +145,10 @@ and highlights the model — it does **not** navigate away. A filter chip shows
 the project name, **Open project** (`buildProjectPublicHref`), and
 **All apartments** to clear. Pure util `filterListingsByProjectId` + unit
 tests. `/map` and home keep click → project page.
+
+**Decision:** Card hover is the primary list→map sync. Model click still
+sets the project filter chip (explicit map→list). The two coexist: hover
+does not set/clear the filter; leave clears highlight only.
 
 ### Production follow-up (final control stage)
 
@@ -175,10 +182,10 @@ Stage rules:
   forked style JSON. Attribution remains MapLibre’s default control.
 - Liberty already ships `building-3d` fill-extrusions; Stage 4 restyles them
   (muted gray, min zoom 15) so GLB models sit in city context.
-- **Follow-up (done):** OSM extrusions under GLBs are masked via brand-colored
-  coverage pads (`geo-map-model-footprints` GeoJSON + fill-extrusion, ~30 m
-  radius) synced from visible models — MapLibre cannot subtract dynamic
-  polygons from vector-tile `building-3d` without custom tiles.
+- **Follow-up (done):** OSM extrusions under GLBs are hidden with a MapLibre
+  `distance` filter on liberty `building-3d` (~80 m around each visible model
+  anchor). Coverage pads alone cannot subtract hollow fill-extrusions; true
+  geometry clipping needs custom tiles.
 - **Done:** R2 bucket CORS allows direct GLB fetches from `pub-*.r2.dev`; the
   `/r2-proxy/*` rewrite was removed.
 - Scenegraph layers render via `MapboxOverlay` with `interleaved: false` (and
