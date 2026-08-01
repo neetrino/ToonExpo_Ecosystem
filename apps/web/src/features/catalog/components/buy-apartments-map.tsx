@@ -8,15 +8,15 @@ import type { GeoMapFocusRequest, GeoMapObject } from '@/features/geo-map/types'
 import { mapPublicGeoMapItemsToObjects } from '@/features/geo-map/utils/map-object-mapper';
 import { GeoMapStatusOverlays } from '@/features/geo-map/public/components/geo-map-status-overlays';
 import { usePublicGeoMapModelsQuery } from '@/features/geo-map/public/hooks/use-public-geo-map-models';
-import { buildProjectPublicHref } from '@/features/geo-map/public/utils/build-project-public-href';
 import { resolvePublicGeoMapView } from '@/features/geo-map/public/utils/resolve-public-geo-map-view';
-import { useRouter } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 
 type BuyApartmentsMapProps = {
   focusRequest?: GeoMapFocusRequest | undefined;
   highlightedObjectId?: string | null | undefined;
   homesInViewCount: number;
+  /** Map → list: select a project model without navigating away. */
+  onObjectSelect?: ((object: GeoMapObject) => void) | undefined;
   className?: string | undefined;
 };
 
@@ -24,16 +24,16 @@ const findObjectById = (objects: GeoMapObject[], id: string): GeoMapObject | nul
   objects.find((object) => object.id === id) ?? null;
 
 /**
- * Buy-page map panel — published 3D project models (list → map sync via focus props).
+ * Buy-page map panel — published 3D project models with bidirectional list sync.
  */
 export const BuyApartmentsMap = ({
   focusRequest,
   highlightedObjectId = null,
   homesInViewCount,
+  onObjectSelect,
   className,
 }: BuyApartmentsMapProps) => {
   const t = useTranslations('BuyPage');
-  const router = useRouter();
   const modelsQuery = usePublicGeoMapModelsQuery();
 
   const objects = useMemo(
@@ -45,10 +45,10 @@ export const BuyApartmentsMap = ({
 
   const onObjectClick = (id: string): void => {
     const object = findObjectById(objects, id);
-    if (!object) {
+    if (!object || onObjectSelect == null) {
       return;
     }
-    router.push(buildProjectPublicHref(object.projectId));
+    onObjectSelect(object);
   };
 
   return (

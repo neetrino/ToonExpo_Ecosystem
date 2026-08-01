@@ -329,6 +329,9 @@
     "saveSearchHint": "Save this search to get email alerts when new homes match.",
     "saveSearch": "Save search",
     "showOnMap": "Show on map",
+    "mapProjectFilter": "{project}",
+    "clearMapFilter": "All apartments",
+    "openProject": "Open project",
     "filters": {
       "location": "Location",
       "allCities": "All cities",

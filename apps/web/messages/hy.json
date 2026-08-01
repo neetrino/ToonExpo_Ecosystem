@@ -329,6 +329,9 @@
     "saveSearchHint": "Պահպանեք որոնումը՝ նոր համընկնումների մասին ծանուցումներ ստանալու համար։",
     "saveSearch": "Պահպանել որոնումը",
     "showOnMap": "Ցույց տալ քարտեզում",
+    "mapProjectFilter": "{project}",
+    "clearMapFilter": "Բոլոր բնակարանները",
+    "openProject": "Բացել նախագիծը",
     "filters": {
       "location": "Վայր",
       "allCities": "Բոլոր քաղաքները",

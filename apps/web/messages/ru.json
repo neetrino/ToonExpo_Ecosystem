@@ -329,6 +329,9 @@
     "saveSearchHint": "Сохраните поиск, чтобы получать уведомления о новых подходящих объектах.",
     "saveSearch": "Сохранить поиск",
     "showOnMap": "Показать на карте",
+    "mapProjectFilter": "{project}",
+    "clearMapFilter": "Все квартиры",
+    "openProject": "Открыть проект",
     "filters": {
       "location": "Локация",
       "allCities": "Все города",
