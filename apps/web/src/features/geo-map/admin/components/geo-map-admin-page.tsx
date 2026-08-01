@@ -27,6 +27,10 @@ import type {
   SelectedOsmBuilding,
 } from '@/features/geo-map/types';
 import { mapAdminGeoMapItemsToObjects } from '@/features/geo-map/utils/map-object-mapper';
+import {
+  roundGeoMapCoordinateForApi,
+  roundGeoMapLngLatForApi,
+} from '@/features/geo-map/utils/round-geo-map-coordinates';
 import { Link } from '@/i18n/navigation';
 import { AdminDeleteModal } from '@/shared/ui/admin-delete-modal';
 
@@ -96,10 +100,11 @@ export const GeoMapAdminPage = () => {
       }
       setActionError(null);
       try {
+        const { longitude, latitude } = roundGeoMapLngLatForApi(position);
         const created = await createMutation.mutateAsync({
           mediaAssetId: draft.mediaAssetId,
-          longitude: position.longitude,
-          latitude: position.latitude,
+          longitude,
+          latitude,
           ...GEO_MAP_DEFAULT_CREATE_VALUES,
           ...(draft.projectId ? { projectId: draft.projectId } : {}),
           ...(sourceOsmId ? { sourceOsmId } : {}),
@@ -156,9 +161,10 @@ export const GeoMapAdminPage = () => {
   const handleDragged = async (id: string, position: GeoMapLngLat): Promise<void> => {
     setActionError(null);
     try {
+      const { longitude, latitude } = roundGeoMapLngLatForApi(position);
       await updateMutation.mutateAsync({
         id,
-        body: { longitude: position.longitude, latitude: position.latitude },
+        body: { longitude, latitude },
       });
     } catch {
       setActionError(t('errors.updateFailed'));
@@ -170,7 +176,18 @@ export const GeoMapAdminPage = () => {
       return;
     }
     setActionError(null);
-    await updateMutation.mutateAsync({ id: selectedId, body });
+    await updateMutation.mutateAsync({
+      id: selectedId,
+      body: {
+        ...body,
+        ...(body.longitude !== undefined
+          ? { longitude: roundGeoMapCoordinateForApi(body.longitude) }
+          : {}),
+        ...(body.latitude !== undefined
+          ? { latitude: roundGeoMapCoordinateForApi(body.latitude) }
+          : {}),
+      },
+    });
   };
 
   const handlePublishChange = async (isPublished: boolean): Promise<void> => {

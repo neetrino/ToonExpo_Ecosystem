@@ -54,6 +54,9 @@ export const VIEWPORT_BOUNDS_QUANTIZE_DECIMALS = 4;
 /** Model lng/lat decimals for mask / layer signature equality (~11 m at equator). */
 export const MODEL_POSITION_QUANTIZE_DECIMALS = 4;
 
+/** Lng/lat decimals accepted by admin geo-map create/update DTOs (`maxDecimalPlaces: 7`). */
+export const GEO_MAP_API_COORDINATE_DECIMALS = 7;
+
 /**
  * Discrete opacity steps for ScenegraphLayer fade — zoom micro-ticks must not
  * recreate layers on every frame.
