@@ -1277,7 +1277,9 @@
         "actions": {
           "placeModel": "Place model",
           "replaceGlb": "Replace GLB",
-          "attachProject": "Attach project"
+          "attachProject": "Attach project",
+          "hideOsm": "Hide OSM building",
+          "deleteModel": "Delete model"
         },
         "context": {
           "placeModel": "Upload / place model…",

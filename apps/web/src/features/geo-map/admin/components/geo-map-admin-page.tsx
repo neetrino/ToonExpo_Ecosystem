@@ -22,6 +22,7 @@ import {
 } from '@/features/geo-map/admin/utils/focus-geo-map-file-input';
 import { GeoMapCanvasLazy } from '@/features/geo-map/components/geo-map-canvas-lazy';
 import type {
+  AdminOsmHideSession,
   GeoMapLngLat,
   GeoMapAdminMapSelectionChromeProps,
   SelectedOsmBuilding,
@@ -71,6 +72,10 @@ export const GeoMapAdminPage = () => {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [createDraft, setCreateDraft] = useState<GeoMapCreateDraft | null>(EMPTY_CREATE_DRAFT);
   const [selectedOsmBuilding, setSelectedOsmBuilding] = useState<SelectedOsmBuilding | null>(null);
+  const [hiddenOsmIds, setHiddenOsmIds] = useState<string[]>([]);
+  const [hiddenOsmCentroidsWithoutId, setHiddenOsmCentroidsWithoutId] = useState<GeoMapLngLat[]>(
+    [],
+  );
   const [pendingDelete, setPendingDelete] = useState<AdminGeoMapModelItem | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
 
@@ -270,6 +275,30 @@ export const GeoMapAdminPage = () => {
     }
   }, [requestDelete, selectedModel]);
 
+  const handleHideOsmBuilding = useCallback((): void => {
+    if (!selectedOsmBuilding) {
+      return;
+    }
+    const trimmedId = selectedOsmBuilding.sourceOsmId?.trim();
+    if (trimmedId) {
+      setHiddenOsmIds((current) =>
+        current.includes(trimmedId) ? current : [...current, trimmedId],
+      );
+    } else {
+      const { longitude, latitude } = selectedOsmBuilding;
+      setHiddenOsmCentroidsWithoutId((current) => [...current, { longitude, latitude }]);
+    }
+    setSelectedOsmBuilding(null);
+    setActionError(null);
+  }, [selectedOsmBuilding]);
+
+  const adminOsmHideSession = useMemo((): AdminOsmHideSession => {
+    return {
+      hiddenOsmIds,
+      hiddenCentroidsWithoutId: hiddenOsmCentroidsWithoutId,
+    };
+  }, [hiddenOsmIds, hiddenOsmCentroidsWithoutId]);
+
   const handleConfirmDelete = async (): Promise<void> => {
     if (!pendingDelete) {
       return;
@@ -297,6 +326,7 @@ export const GeoMapAdminPage = () => {
         isDeleting: deleteMutation.isPending,
         onClearSelection: clearSelection,
         onDeleteModel: handleMapDeleteModel,
+        onHideOsmBuilding: () => undefined,
         onFocusCreateUpload: focusCreateUpload,
         onFocusReplaceUpload: focusReplaceUpload,
         onFocusAttachProject: focusAttachProject,
@@ -315,6 +345,7 @@ export const GeoMapAdminPage = () => {
         isDeleting: false,
         onClearSelection: clearSelection,
         onDeleteModel: () => undefined,
+        onHideOsmBuilding: handleHideOsmBuilding,
         onFocusCreateUpload: focusCreateUploadKeepingOsm,
         onFocusReplaceUpload: focusReplaceUpload,
         onFocusAttachProject: focusAttachProject,
@@ -330,6 +361,7 @@ export const GeoMapAdminPage = () => {
     t,
     clearSelection,
     handleMapDeleteModel,
+    handleHideOsmBuilding,
     focusCreateUpload,
     focusCreateUploadKeepingOsm,
     focusReplaceUpload,
@@ -391,6 +423,7 @@ export const GeoMapAdminPage = () => {
           highlightedObjectId={selectedId}
           selectedOsmBuilding={selectedOsmBuilding}
           adminSelectionChrome={adminSelectionChrome}
+          adminOsmHideSession={adminOsmHideSession}
           className="absolute inset-0 h-full w-full"
           onObjectClick={selectModel}
           onOsmBuildingSelect={handleOsmBuildingSelect}

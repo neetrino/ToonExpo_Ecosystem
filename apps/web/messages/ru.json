@@ -1277,7 +1277,9 @@
         "actions": {
           "placeModel": "Разместить модель",
           "replaceGlb": "Заменить GLB",
-          "attachProject": "Привязать проект"
+          "attachProject": "Привязать проект",
+          "hideOsm": "Скрыть здание OSM",
+          "deleteModel": "Удалить модель"
         },
         "context": {
           "placeModel": "Загрузить / разместить модель…",

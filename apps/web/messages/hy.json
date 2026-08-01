@@ -1277,7 +1277,9 @@
         "actions": {
           "placeModel": "Տեղադրել մոդել",
           "replaceGlb": "Փոխարինել GLB",
-          "attachProject": "Կցել նախագիծ"
+          "attachProject": "Կցել նախագիծ",
+          "hideOsm": "Թաքցնել OSM շենքը",
+          "deleteModel": "Ջնջել մոդելը"
         },
         "context": {
           "placeModel": "Վերբեռնել / տեղադրել մոդել…",

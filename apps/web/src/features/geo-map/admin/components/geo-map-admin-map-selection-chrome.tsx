@@ -1,39 +1,26 @@
 'use client';
 
 import type { MapLibreMap } from 'maplibre-gl';
+import { Link2, RefreshCw, Trash2, Upload, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 
-import {
-  GEO_MAP_ADMIN_CONTEXT_MENU_Z_INDEX_CLASS,
-  GEO_MAP_UI_OVERLAY_Z_INDEX_CLASS,
-} from '@/features/geo-map/constants';
+import { GEO_MAP_UI_OVERLAY_Z_INDEX_CLASS } from '@/features/geo-map/constants';
 import { useMapAnchoredScreenPoint } from '@/features/geo-map/hooks/use-map-anchored-screen-point';
 import type { GeoMapAdminMapSelectionChromeProps } from '@/features/geo-map/types';
-import { Button } from '@/shared/ui/button';
+import { IconButton } from '@/shared/ui/icon-button';
 
-const FLOATING_BAR_OFFSET_PX = 12;
+const FLOATING_BAR_OFFSET_PX = 56;
+const BAR_EDGE_PADDING_PX = 8;
+const ICON_CLASS = 'size-4 shrink-0';
 
 type GeoMapAdminMapSelectionChromeComponentProps = GeoMapAdminMapSelectionChromeProps & {
   map: MapLibreMap | null;
   isMapLoaded: boolean;
 };
 
-type ContextMenuState = {
-  x: number;
-  y: number;
-} | null;
-
-const toContainerLocalPoint = (
-  map: MapLibreMap,
-  clientX: number,
-  clientY: number,
-): { x: number; y: number } => {
-  const rect = map.getContainer().getBoundingClientRect();
-  return { x: clientX - rect.left, y: clientY - rect.top };
-};
-
 const applyScreenPosition = (
+  map: MapLibreMap,
   element: HTMLElement | null,
   point: { x: number; y: number } | null,
   offsetY: number,
@@ -41,23 +28,46 @@ const applyScreenPosition = (
   if (!element || !point) {
     return;
   }
-  element.style.left = `${point.x}px`;
-  element.style.top = `${point.y + offsetY}px`;
+
+  const container = map.getContainer();
+  const containerWidth = container.clientWidth;
+  const containerHeight = container.clientHeight;
+  const barWidth = element.offsetWidth;
+  const barHeight = element.offsetHeight;
+
+  let x = point.x;
+  let y = point.y + offsetY;
+
+  const halfWidth = barWidth / 2;
+  const minX = halfWidth + BAR_EDGE_PADDING_PX;
+  const maxX = containerWidth - halfWidth - BAR_EDGE_PADDING_PX;
+  if (maxX >= minX) {
+    x = Math.min(Math.max(x, minX), maxX);
+  }
+
+  const minY = barHeight + BAR_EDGE_PADDING_PX;
+  const maxY = containerHeight - BAR_EDGE_PADDING_PX;
+  if (maxY >= minY) {
+    y = Math.min(Math.max(y, minY), maxY);
+  }
+
+  element.style.left = `${x}px`;
+  element.style.top = `${y}px`;
 };
 
 /**
- * Map-anchored floating actions + right-click menu for admin OSM / model selection.
+ * Map-anchored compact icon toolbar for admin OSM / model selection.
  */
 export const GeoMapAdminMapSelectionChrome = ({
   map,
   isMapLoaded,
   anchor,
   kind,
-  title,
   showAttachProject,
   isDeleting,
   onClearSelection,
   onDeleteModel,
+  onHideOsmBuilding,
   onFocusCreateUpload,
   onFocusReplaceUpload,
   onFocusAttachProject,
@@ -65,176 +75,89 @@ export const GeoMapAdminMapSelectionChrome = ({
   const t = useTranslations('Admin.geoMap');
   const screenPoint = useMapAnchoredScreenPoint(map, isMapLoaded, anchor);
   const barRef = useRef<HTMLDivElement>(null);
-  const menuRef = useRef<HTMLDivElement>(null);
-  const [contextMenu, setContextMenu] = useState<ContextMenuState>(null);
-
-  const closeContextMenu = useCallback((): void => {
-    setContextMenu(null);
-  }, []);
 
   useLayoutEffect(() => {
-    applyScreenPosition(barRef.current, screenPoint, -FLOATING_BAR_OFFSET_PX);
-  }, [screenPoint]);
-
-  useLayoutEffect(() => {
-    applyScreenPosition(menuRef.current, contextMenu, 0);
-  }, [contextMenu]);
-
-  useEffect(() => {
-    if (!map || !kind) {
+    if (!map) {
       return;
     }
-
-    const canvas = map.getCanvas();
-    const handleContextMenu = (event: MouseEvent): void => {
-      event.preventDefault();
-      setContextMenu(toContainerLocalPoint(map, event.clientX, event.clientY));
-    };
-
-    canvas.addEventListener('contextmenu', handleContextMenu);
-    return () => {
-      canvas.removeEventListener('contextmenu', handleContextMenu);
-    };
-  }, [map, kind]);
-
-  useEffect(() => {
-    if (!contextMenu) {
-      return;
-    }
-    const handlePointerDown = (event: PointerEvent): void => {
-      const target = event.target;
-      if (target instanceof Node && menuRef.current?.contains(target)) {
-        return;
-      }
-      closeContextMenu();
-    };
-    window.addEventListener('pointerdown', handlePointerDown, true);
-    return () => {
-      window.removeEventListener('pointerdown', handlePointerDown, true);
-    };
-  }, [contextMenu, closeContextMenu]);
+    applyScreenPosition(map, barRef.current, screenPoint, -FLOATING_BAR_OFFSET_PX);
+  }, [map, screenPoint]);
 
   if (!kind || !screenPoint) {
     return null;
   }
 
   return (
-    <>
-      <div
-        ref={barRef}
-        className={`pointer-events-auto absolute ${GEO_MAP_UI_OVERLAY_Z_INDEX_CLASS} flex max-w-[min(20rem,calc(100%-1.5rem))] -translate-x-1/2 -translate-y-full flex-wrap items-center gap-2 rounded-sm border border-border bg-surface-elevated/95 px-3 py-2 shadow-sm backdrop-blur-sm`}
-        onPointerDown={(event) => event.stopPropagation()}
-        onClick={(event) => event.stopPropagation()}
-      >
-        <p className="min-w-0 flex-1 truncate text-sm font-medium text-ink">{title}</p>
-        {kind === 'osm' ? (
-          <Button type="button" size="sm" variant="secondary" onClick={onFocusCreateUpload}>
-            {t('map.actions.placeModel')}
-          </Button>
-        ) : null}
-        {kind === 'model' ? (
-          <>
-            <Button type="button" size="sm" variant="secondary" onClick={onFocusReplaceUpload}>
-              {t('map.actions.replaceGlb')}
-            </Button>
-            {showAttachProject ? (
-              <Button type="button" size="sm" variant="secondary" onClick={onFocusAttachProject}>
-                {t('map.actions.attachProject')}
-              </Button>
-            ) : null}
-            <Button
-              type="button"
+    <div
+      ref={barRef}
+      className={`pointer-events-auto absolute ${GEO_MAP_UI_OVERLAY_Z_INDEX_CLASS} flex -translate-x-1/2 -translate-y-full flex-nowrap items-center gap-0.5 rounded-sm border border-border bg-surface-elevated/95 p-0.5 shadow-sm backdrop-blur-sm`}
+      onPointerDown={(event) => event.stopPropagation()}
+      onClick={(event) => event.stopPropagation()}
+    >
+      {kind === 'osm' ? (
+        <>
+          <IconButton
+            label={t('map.actions.placeModel')}
+            size="sm"
+            variant="outline"
+            className="size-8 rounded-sm"
+            onClick={onFocusCreateUpload}
+          >
+            <Upload className={ICON_CLASS} strokeWidth={1.75} aria-hidden />
+          </IconButton>
+          <IconButton
+            label={t('map.actions.hideOsm')}
+            size="sm"
+            variant="outline"
+            className="size-8 rounded-sm text-danger hover:bg-danger-soft"
+            onClick={onHideOsmBuilding}
+          >
+            <Trash2 className={ICON_CLASS} strokeWidth={1.75} aria-hidden />
+          </IconButton>
+        </>
+      ) : (
+        <>
+          <IconButton
+            label={t('map.actions.replaceGlb')}
+            size="sm"
+            variant="outline"
+            className="size-8 rounded-sm"
+            onClick={onFocusReplaceUpload}
+          >
+            <RefreshCw className={ICON_CLASS} strokeWidth={1.75} aria-hidden />
+          </IconButton>
+          {showAttachProject ? (
+            <IconButton
+              label={t('map.actions.attachProject')}
               size="sm"
-              variant="danger"
-              disabled={isDeleting}
-              onClick={onDeleteModel}
+              variant="outline"
+              className="size-8 rounded-sm"
+              onClick={onFocusAttachProject}
             >
-              {isDeleting ? t('form.deleting') : t('form.delete')}
-            </Button>
-          </>
-        ) : null}
-        <Button type="button" size="sm" variant="secondary" onClick={onClearSelection}>
-          {t('map.deselect')}
-        </Button>
-      </div>
-
-      {contextMenu ? (
-        <div
-          ref={menuRef}
-          role="menu"
-          className={`pointer-events-auto absolute ${GEO_MAP_ADMIN_CONTEXT_MENU_Z_INDEX_CLASS} min-w-[11rem] rounded-sm border border-border bg-surface-elevated py-1 shadow-md`}
-          onPointerDown={(event) => event.stopPropagation()}
-          onClick={(event) => event.stopPropagation()}
-        >
-          {kind === 'osm' ? (
-            <>
-              <ContextMenuItem
-                label={t('map.context.placeModel')}
-                onSelect={() => {
-                  closeContextMenu();
-                  onFocusCreateUpload();
-                }}
-              />
-              <ContextMenuItem
-                label={t('map.context.clearSelection')}
-                onSelect={() => {
-                  closeContextMenu();
-                  onClearSelection();
-                }}
-              />
-            </>
-          ) : (
-            <>
-              <ContextMenuItem
-                label={t('map.context.replaceGlb')}
-                onSelect={() => {
-                  closeContextMenu();
-                  onFocusReplaceUpload();
-                }}
-              />
-              {showAttachProject ? (
-                <ContextMenuItem
-                  label={t('map.context.attachProject')}
-                  onSelect={() => {
-                    closeContextMenu();
-                    onFocusAttachProject();
-                  }}
-                />
-              ) : null}
-              <ContextMenuItem
-                label={t('map.context.deleteModel')}
-                onSelect={() => {
-                  closeContextMenu();
-                  onDeleteModel();
-                }}
-              />
-              <ContextMenuItem
-                label={t('map.context.deselect')}
-                onSelect={() => {
-                  closeContextMenu();
-                  onClearSelection();
-                }}
-              />
-            </>
-          )}
-        </div>
-      ) : null}
-    </>
+              <Link2 className={ICON_CLASS} strokeWidth={1.75} aria-hidden />
+            </IconButton>
+          ) : null}
+          <IconButton
+            label={t('map.actions.deleteModel')}
+            size="sm"
+            variant="outline"
+            className="size-8 rounded-sm text-danger hover:bg-danger-soft"
+            disabled={isDeleting}
+            onClick={onDeleteModel}
+          >
+            <Trash2 className={ICON_CLASS} strokeWidth={1.75} aria-hidden />
+          </IconButton>
+        </>
+      )}
+      <IconButton
+        label={t('map.deselect')}
+        size="sm"
+        variant="outline"
+        className="size-8 rounded-sm"
+        onClick={onClearSelection}
+      >
+        <X className={ICON_CLASS} strokeWidth={1.75} aria-hidden />
+      </IconButton>
+    </div>
   );
 };
-
-type ContextMenuItemProps = {
-  label: string;
-  onSelect: () => void;
-};
-
-const ContextMenuItem = ({ label, onSelect }: ContextMenuItemProps) => (
-  <button
-    type="button"
-    role="menuitem"
-    className="block w-full px-3 py-2 text-left text-sm text-ink hover:bg-surface-muted"
-    onClick={onSelect}
-  >
-    {label}
-  </button>
-);

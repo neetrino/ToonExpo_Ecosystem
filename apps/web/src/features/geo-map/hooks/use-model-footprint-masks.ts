@@ -3,7 +3,7 @@
 import type { MapLibreMap } from 'maplibre-gl';
 import { useEffect } from 'react';
 
-import type { GeoMapObject } from '@/features/geo-map/types';
+import type { AdminOsmHideSession, GeoMapObject } from '@/features/geo-map/types';
 import { syncModelFootprintMasks } from '@/features/geo-map/utils/sync-model-footprint-masks';
 
 export type UseModelFootprintMasksOptions = {
@@ -11,6 +11,8 @@ export type UseModelFootprintMasksOptions = {
   isMapLoaded: boolean;
   /** Viewport-visible GLB models (same set as the deck.gl overlay). */
   modelObjects: GeoMapObject[];
+  /** Admin session hides for raw OSM extrusions (editable map only). */
+  adminOsmHideSession?: AdminOsmHideSession | null | undefined;
 };
 
 /**
@@ -20,11 +22,12 @@ export const useModelFootprintMasks = ({
   map,
   isMapLoaded,
   modelObjects,
+  adminOsmHideSession = null,
 }: UseModelFootprintMasksOptions): void => {
   useEffect(() => {
     if (!map || !isMapLoaded) {
       return;
     }
-    syncModelFootprintMasks(map, modelObjects);
-  }, [map, isMapLoaded, modelObjects]);
+    syncModelFootprintMasks(map, modelObjects, adminOsmHideSession);
+  }, [map, isMapLoaded, modelObjects, adminOsmHideSession]);
 };

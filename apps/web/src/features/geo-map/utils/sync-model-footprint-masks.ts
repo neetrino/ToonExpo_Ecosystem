@@ -6,9 +6,12 @@ import {
   MODEL_FOOTPRINT_SOURCE_ID,
   OSM_BUILDING_EXTRUSION_LAYER_ID,
 } from '@/features/geo-map/constants';
-import type { GeoMapObject } from '@/features/geo-map/types';
+import type { AdminOsmHideSession, GeoMapObject } from '@/features/geo-map/types';
 import { buildCombinedOsmBuildingExtrusionFilter } from '@/features/geo-map/utils/build-osm-building-extrusion-filter';
-import { buildFootprintMaskSignature } from '@/features/geo-map/utils/geo-map-update-signatures';
+import {
+  buildAdminOsmHideSignature,
+  buildFootprintMaskSignature,
+} from '@/features/geo-map/utils/geo-map-update-signatures';
 
 const lastMaskSignatureByMap = new WeakMap<MapLibreMap, string>();
 
@@ -29,12 +32,13 @@ const removeLegacyCoveragePads = (map: MapLibreMap): void => {
 export const syncModelFootprintMasks = (
   map: MapLibreMap,
   modelObjects: readonly Pick<GeoMapObject, 'id' | 'longitude' | 'latitude' | 'sourceOsmId'>[],
+  adminOsmHide?: AdminOsmHideSession | null,
 ): void => {
   if (!map.getLayer(OSM_BUILDING_EXTRUSION_LAYER_ID)) {
     return;
   }
 
-  const signature = buildFootprintMaskSignature(modelObjects);
+  const signature = `${buildFootprintMaskSignature(modelObjects)}|${buildAdminOsmHideSignature(adminOsmHide)}`;
   if (lastMaskSignatureByMap.get(map) === signature) {
     return;
   }
@@ -44,6 +48,12 @@ export const syncModelFootprintMasks = (
   const filter = buildCombinedOsmBuildingExtrusionFilter(
     modelObjects,
     MODEL_FOOTPRINT_MASK_RADIUS_METERS,
+    adminOsmHide
+      ? {
+          hiddenOsmIds: adminOsmHide.hiddenOsmIds,
+          hiddenDistancePoints: adminOsmHide.hiddenCentroidsWithoutId,
+        }
+      : undefined,
   );
 
   map.setFilter(OSM_BUILDING_EXTRUSION_LAYER_ID, (filter ?? null) as FilterSpecification | null);

@@ -97,11 +97,19 @@ export type GeoMapCanvasProps = {
   selectedOsmBuilding?: SelectedOsmBuilding | null | undefined;
   /** Admin-only: OSM `building-3d` click (after cyan highlight update). */
   onOsmBuildingSelect?: ((building: SelectedOsmBuilding) => void) | undefined;
-  /** Admin-only: map-anchored selection toolbar + context menu (editable maps). */
+  /** Admin-only: map-anchored selection toolbar (editable maps). */
   adminSelectionChrome?: GeoMapAdminMapSelectionChromeProps | null | undefined;
+  /** Admin-only: session OSM building hides merged into the building-3d filter. */
+  adminOsmHideSession?: AdminOsmHideSession | null | undefined;
 };
 
 export type GeoMapAdminSelectionKind = 'osm' | 'model';
+
+/** Session-only OSM building hides in the admin geo-map editor (not persisted to DB). */
+export type AdminOsmHideSession = {
+  hiddenOsmIds: readonly string[];
+  hiddenCentroidsWithoutId: readonly GeoMapLngLat[];
+};
 
 export type GeoMapAdminMapSelectionChromeProps = {
   anchor: GeoMapLngLat | null;
@@ -111,6 +119,7 @@ export type GeoMapAdminMapSelectionChromeProps = {
   isDeleting: boolean;
   onClearSelection: () => void;
   onDeleteModel: () => void;
+  onHideOsmBuilding: () => void;
   onFocusCreateUpload: () => void;
   onFocusReplaceUpload: () => void;
   onFocusAttachProject: () => void;

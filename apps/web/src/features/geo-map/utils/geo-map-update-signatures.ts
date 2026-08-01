@@ -4,6 +4,7 @@ import {
   VIEWPORT_BOUNDS_QUANTIZE_DECIMALS,
   VIEWPORT_ZOOM_QUANTIZE_DECIMALS,
 } from '@/features/geo-map/constants';
+import type { AdminOsmHideSession } from '@/features/geo-map/types';
 import type { LngLatBounds } from '@/features/geo-map/utils/geo-bounds';
 
 /** Round `value` to a fixed number of decimal places (half-up via `Math.round`). */
@@ -81,6 +82,26 @@ export const buildFootprintMaskSignature = (
     })
     .sort()
     .join('|');
+};
+
+/** Stable key for admin-only OSM hides merged into the extrusion filter. */
+export const buildAdminOsmHideSignature = (
+  hide: AdminOsmHideSession | null | undefined,
+): string => {
+  if (!hide || (hide.hiddenOsmIds.length === 0 && hide.hiddenCentroidsWithoutId.length === 0)) {
+    return 'hide:empty';
+  }
+  const ids = [...hide.hiddenOsmIds].sort().join(',');
+  const d = MODEL_POSITION_QUANTIZE_DECIMALS;
+  const points = [...hide.hiddenCentroidsWithoutId]
+    .map((point) => {
+      const lng = quantizeDecimal(point.longitude, d).toFixed(d);
+      const lat = quantizeDecimal(point.latitude, d).toFixed(d);
+      return `${lng},${lat}`;
+    })
+    .sort()
+    .join(';');
+  return `hide:${ids}|pts:${points}`;
 };
 
 export type ScenegraphSignatureModel = {

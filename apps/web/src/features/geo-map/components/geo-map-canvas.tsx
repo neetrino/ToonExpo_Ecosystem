@@ -74,6 +74,7 @@ export const GeoMapCanvas = ({
   selectedOsmBuilding = null,
   onOsmBuildingSelect,
   adminSelectionChrome = null,
+  adminOsmHideSession = null,
 }: GeoMapCanvasProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [uiOverlayRoot, setUiOverlayRoot] = useState<HTMLDivElement | null>(null);
@@ -102,7 +103,7 @@ export const GeoMapCanvas = ({
   };
 
   useMapFocus({ map, isMapLoaded, objects, focusRequest });
-  useModelFootprintMasks({ map, isMapLoaded, modelObjects });
+  useModelFootprintMasks({ map, isMapLoaded, modelObjects, adminOsmHideSession });
   useOsmBuildingPick({
     map,
     isMapLoaded,

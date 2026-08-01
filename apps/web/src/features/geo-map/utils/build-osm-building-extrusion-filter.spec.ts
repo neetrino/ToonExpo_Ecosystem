@@ -69,7 +69,17 @@ describe('buildCombinedOsmBuildingExtrusionFilter', () => {
     expect(filter).toHaveLength(3);
   });
 
-  it('returns null when there are no models', () => {
+  it('returns null when there are no models and no extras', () => {
     expect(buildCombinedOsmBuildingExtrusionFilter([], RADIUS_METERS)).toBeNull();
+  });
+
+  it('merges admin session osm_id and distance hides', () => {
+    const filter = buildCombinedOsmBuildingExtrusionFilter([], RADIUS_METERS, {
+      hiddenOsmIds: ['999'],
+      hiddenDistancePoints: [{ longitude: 44.51, latitude: 40.18 }],
+    });
+
+    expect(filter?.[0]).toBe('all');
+    expect(filter).toHaveLength(3);
   });
 });

@@ -16,6 +16,12 @@ export type OsmBuildingHideInput = {
   sourceOsmId?: string | null | undefined;
 };
 
+/** Admin session hides (no DB) merged into the building-3d filter. */
+export type OsmBuildingExtrusionFilterExtras = {
+  hiddenOsmIds?: readonly string[] | undefined;
+  hiddenDistancePoints?: readonly OsmExtrusionFilterPoint[] | undefined;
+};
+
 type DistanceClause = readonly ['<', readonly ['distance', GeoJSON.Point], number];
 type OsmIdExclusion = readonly [
   '!',
@@ -99,6 +105,7 @@ export const buildOsmBuildingExtrusionFilter = (
 export const buildCombinedOsmBuildingExtrusionFilter = (
   models: readonly OsmBuildingHideInput[],
   radiusMeters: number,
+  extras?: OsmBuildingExtrusionFilterExtras,
 ): OsmBuildingExtrusionFilter | null => {
   if (radiusMeters <= 0) {
     throw new Error('radiusMeters must be positive');
@@ -106,18 +113,22 @@ export const buildCombinedOsmBuildingExtrusionFilter = (
 
   const osmIds = [
     ...new Set(
-      models
-        .map((model) => model.sourceOsmId?.trim())
-        .filter((id): id is string => Boolean(id && id.length > 0)),
+      [
+        ...models.map((model) => model.sourceOsmId?.trim()),
+        ...(extras?.hiddenOsmIds ?? []).map((id) => id.trim()),
+      ].filter((id): id is string => Boolean(id && id.length > 0)),
     ),
   ];
 
   // Always keep distance mask for models without osm_id; also keep it for all
   // anchors so tiles missing osm_id still clear under the GLB.
-  const distancePoints = models.map((model) => ({
-    longitude: model.longitude,
-    latitude: model.latitude,
-  }));
+  const distancePoints = [
+    ...models.map((model) => ({
+      longitude: model.longitude,
+      latitude: model.latitude,
+    })),
+    ...(extras?.hiddenDistancePoints ?? []),
+  ];
 
   const distanceFilter = buildDistanceExclusion(distancePoints, radiusMeters);
   const osmFilter = buildOsmIdExclusion(osmIds);
