@@ -47,7 +47,7 @@ export const MARKER_BOUNDS_PADDING_DEGREES = 0.5;
 export const MODEL_BOUNDS_PADDING_DEGREES = 0.05;
 
 export const MARKER_ELEMENT_CLASS_NAME =
-  'cursor-pointer select-none whitespace-nowrap rounded-full border border-border-strong ' +
+  'inline-block w-max cursor-pointer select-none whitespace-nowrap rounded-full border border-border-strong ' +
   'bg-surface-elevated px-2 py-1 text-xs font-medium text-ink shadow-sm ' +
   'transition-opacity duration-200';
 
