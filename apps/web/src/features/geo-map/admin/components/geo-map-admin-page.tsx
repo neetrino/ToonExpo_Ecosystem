@@ -4,7 +4,6 @@ import type { AdminGeoMapModelItem, UpdateGeoMapModelRequest } from '@toonexpo/c
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 
-import { GeoMapAdminSelectionToolbar } from '@/features/geo-map/admin/components/geo-map-admin-selection-toolbar';
 import { GeoMapAdminSidebar } from '@/features/geo-map/admin/components/geo-map-admin-sidebar';
 import type { GeoMapCreateDraft } from '@/features/geo-map/admin/components/geo-map-create-panel';
 import { GEO_MAP_DEFAULT_CREATE_VALUES } from '@/features/geo-map/admin/constants';
@@ -17,10 +16,27 @@ import {
 } from '@/features/geo-map/admin/hooks/use-geo-map-admin';
 import { buildGeoMapProjectOptions } from '@/features/geo-map/admin/utils/available-projects';
 import { GeoMapCanvasLazy } from '@/features/geo-map/components/geo-map-canvas-lazy';
-import type { GeoMapLngLat, SelectedOsmBuilding } from '@/features/geo-map/types';
+import type {
+  GeoMapLngLat,
+  GeoMapAdminMapSelectionChromeProps,
+  SelectedOsmBuilding,
+} from '@/features/geo-map/types';
 import { mapAdminGeoMapItemsToObjects } from '@/features/geo-map/utils/map-object-mapper';
 import { Link } from '@/i18n/navigation';
 import { AdminDeleteModal } from '@/shared/ui/admin-delete-modal';
+
+const modelToLngLat = (model: AdminGeoMapModelItem): GeoMapLngLat => ({
+  longitude: Number(model.longitude),
+  latitude: Number(model.latitude),
+});
+
+const focusElementById = (id: string): void => {
+  const element = document.getElementById(id);
+  if (element instanceof HTMLElement) {
+    element.click();
+    element.focus();
+  }
+};
 
 const EMPTY_CREATE_DRAFT: GeoMapCreateDraft = {
   projectId: '',
@@ -191,6 +207,53 @@ export const GeoMapAdminPage = () => {
     }
   };
 
+  const adminSelectionChrome = useMemo((): GeoMapAdminMapSelectionChromeProps | null => {
+    if (selectedModel && createDraft === null) {
+      return {
+        anchor: modelToLngLat(selectedModel),
+        kind: 'model',
+        title: selectedModel.projectName ?? selectedModel.mediaTitle ?? t('list.unassigned'),
+        showAttachProject: !selectedModel.projectId,
+        isDeleting: deleteMutation.isPending,
+        onClearSelection: clearSelection,
+        onDeleteModel: () => {
+          requestDelete(selectedModel);
+        },
+        onFocusCreateUpload: () => {
+          startCreate();
+          focusElementById('geo-map-create-glb-browse');
+        },
+        onFocusReplaceUpload: () => focusElementById('geo-map-replace-glb-browse'),
+        onFocusAttachProject: () => focusElementById('geo-map-attach-project'),
+      };
+    }
+
+    if (selectedOsmBuilding) {
+      return {
+        anchor: {
+          longitude: selectedOsmBuilding.longitude,
+          latitude: selectedOsmBuilding.latitude,
+        },
+        kind: 'osm',
+        title: t('map.osmBuilding'),
+        showAttachProject: false,
+        isDeleting: false,
+        onClearSelection: clearSelection,
+        onDeleteModel: () => undefined,
+        onFocusCreateUpload: () => {
+          if (createDraft === null) {
+            setCreateDraft(EMPTY_CREATE_DRAFT);
+          }
+          focusElementById('geo-map-create-glb-browse');
+        },
+        onFocusReplaceUpload: () => focusElementById('geo-map-replace-glb-browse'),
+        onFocusAttachProject: () => focusElementById('geo-map-attach-project'),
+      };
+    }
+
+    return null;
+  }, [selectedModel, createDraft, selectedOsmBuilding, deleteMutation.isPending, t]);
+
   if (modelsQuery.isLoading || projectsQuery.isLoading) {
     return <p className="p-6 text-sm text-ink-muted">{t('loading')}</p>;
   }
@@ -204,8 +267,8 @@ export const GeoMapAdminPage = () => {
   }
 
   return (
-    <div className="flex min-h-[calc(100dvh-5rem)] flex-col lg:flex-row lg:h-[calc(100dvh-5rem)]">
-      <div className="w-full shrink-0 lg:w-80 lg:min-h-0">
+    <div className="geo-map-admin-page">
+      <div className="geo-map-admin-page__sidebar">
         <GeoMapAdminSidebar
           models={models}
           projects={projects}
@@ -239,13 +302,14 @@ export const GeoMapAdminPage = () => {
         />
       </div>
 
-      <div className="relative min-h-[50vh] min-w-0 flex-1 lg:min-h-0">
+      <div className="geo-map-admin-page__map">
         <GeoMapCanvasLazy
           objects={objects}
           editable
           highlightedObjectId={selectedId}
           selectedOsmBuilding={selectedOsmBuilding}
-          className="h-full min-h-[50vh] w-full lg:min-h-full"
+          adminSelectionChrome={adminSelectionChrome}
+          className="absolute inset-0 h-full w-full"
           onObjectClick={selectModel}
           onOsmBuildingSelect={handleOsmBuildingSelect}
           onMapClick={handleMapClick}
@@ -253,14 +317,6 @@ export const GeoMapAdminPage = () => {
             void handleDragged(id, position);
           }}
         />
-        {selectedModel && createDraft === null ? (
-          <GeoMapAdminSelectionToolbar
-            model={selectedModel}
-            isDeleting={deleteMutation.isPending}
-            onDelete={() => requestDelete(selectedModel)}
-            onClearSelection={clearSelection}
-          />
-        ) : null}
         {actionError ? (
           <p
             role="alert"

@@ -1,0 +1,53 @@
+@layer utilities {
+  /**
+   * Admin 3D map editor — fills the rail main column without document scroll.
+   * Uses fluid viewport height (desktop zoom) and cancels portal `main` padding,
+   * matching `.crm-board-page`.
+   */
+  .geo-map-admin-page {
+    display: flex;
+    box-sizing: border-box;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+    margin-top: -1.5rem;
+    margin-bottom: -1.5rem;
+    height: calc(100svh / var(--desktop-layout-scale) - 5.5rem);
+    max-height: calc(100svh / var(--desktop-layout-scale) - 5.5rem);
+  }
+
+  @media (min-width: 768px) {
+    .geo-map-admin-page {
+      margin-top: -2rem;
+      margin-bottom: -2rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .geo-map-admin-page {
+      flex-direction: row;
+    }
+  }
+
+  .geo-map-admin-page__sidebar {
+    display: flex;
+    min-height: 0;
+    width: 100%;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+
+  @media (min-width: 1024px) {
+    .geo-map-admin-page__sidebar {
+      width: 20rem;
+    }
+  }
+
+  .geo-map-admin-page__map {
+    position: relative;
+    min-width: 0;
+    min-height: 0;
+    flex: 1 1 0%;
+    overflow: hidden;
+  }
+}

@@ -76,7 +76,13 @@ export const useMaplibreMap = ({
     });
     setMap(mapInstance);
 
+    const resizeObserver = new ResizeObserver(() => {
+      mapInstance.resize();
+    });
+    resizeObserver.observe(container);
+
     return () => {
+      resizeObserver.disconnect();
       mapInstance.remove();
       setMap(null);
       setIsMapLoaded(false);
