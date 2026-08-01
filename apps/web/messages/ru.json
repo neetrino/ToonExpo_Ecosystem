@@ -1259,7 +1259,7 @@
         "scale": "Масштаб",
         "altitudeM": "Высота (м)",
         "minZoom": "Мин. зум (3D)",
-        "pitchDeg": "Тангаж (°)",
+        "pitchDeg": "Тангаж / Rotation X (°)",
         "rollDeg": "Крен (°)",
         "showAdvanced": "Доп. ориентация",
         "hideAdvanced": "Скрыть",

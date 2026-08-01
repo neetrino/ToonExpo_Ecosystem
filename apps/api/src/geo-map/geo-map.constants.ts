@@ -15,7 +15,11 @@ export const GEO_MAP_MIN_ZOOM_MAX = 22;
 
 export const GEO_MAP_DEFAULT_ALTITUDE_M = 0;
 export const GEO_MAP_DEFAULT_HEADING_DEG = 0;
-export const GEO_MAP_DEFAULT_PITCH_DEG = 0;
+/**
+ * Typical Y-up glTF/GLB needs 90° pitch for deck.gl ScenegraphLayer on MapLibre
+ * (Map POC Rotation X = 90°). Prisma column default stays 0; create paths use this.
+ */
+export const GEO_MAP_DEFAULT_PITCH_DEG = 90;
 export const GEO_MAP_DEFAULT_ROLL_DEG = 0;
 export const GEO_MAP_DEFAULT_SCALE = 1;
 export const GEO_MAP_DEFAULT_MIN_ZOOM = 14;

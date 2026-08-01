@@ -40,8 +40,6 @@ export type UseDeckOverlayOptions = {
   modelObjects: GeoMapObject[];
   zoom: number;
   editable: boolean;
-  /** Selected or externally highlighted model id (warm tint via `getColor`). */
-  highlightedObjectId?: string | null | undefined;
   onObjectClick?: ((id: string) => void) | undefined;
   onObjectHover?: ((id: string | null) => void) | undefined;
   onMapClick?: ((position: GeoMapLngLat) => void) | undefined;
@@ -89,7 +87,6 @@ const buildScenegraphLayers = (
   map: MapLibreMap,
   modelObjects: GeoMapObject[],
   opacity: number,
-  highlightedObjectId: string | null,
 ): ScenegraphLayers => {
   const beforeId = resolveBeforeId(map);
   return groupObjectsByModelUrl(modelObjects).map(
@@ -109,10 +106,7 @@ const buildScenegraphLayers = (
         getPosition: getScenegraphObjectPosition,
         getOrientation: getScenegraphObjectOrientation,
         getScale: getScenegraphObjectScale,
-        getColor: (datum) => getScenegraphObjectColor(datum, highlightedObjectId),
-        updateTriggers: {
-          getColor: highlightedObjectId,
-        },
+        getColor: getScenegraphObjectColor,
         ...(beforeId ? { beforeId } : {}),
       }),
   );
@@ -201,7 +195,6 @@ export const useDeckOverlay = ({
   modelObjects,
   zoom,
   editable,
-  highlightedObjectId = null,
   onObjectClick,
   onObjectHover,
   onMapClick,
@@ -246,11 +239,10 @@ export const useDeckOverlay = ({
     }
 
     const opacity = resolveQuantizedOpacity(modelObjects, zoom);
-    const highlightId = highlightedObjectId ?? null;
-    const signature = buildScenegraphLayerSignature(modelObjects, opacity, highlightId);
+    const signature = buildScenegraphLayerSignature(modelObjects, opacity);
     if (layerSignatureRef.current !== signature) {
       layerSignatureRef.current = signature;
-      layersRef.current = buildScenegraphLayers(map, modelObjects, opacity, highlightId);
+      layersRef.current = buildScenegraphLayers(map, modelObjects, opacity);
     }
 
     overlay.setProps({
@@ -270,7 +262,6 @@ export const useDeckOverlay = ({
     modelObjects,
     zoom,
     editable,
-    highlightedObjectId,
     onObjectClick,
     onObjectHover,
     onMapClick,

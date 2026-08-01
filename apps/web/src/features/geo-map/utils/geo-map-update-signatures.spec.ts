@@ -81,17 +81,20 @@ describe('buildScenegraphLayerSignature', () => {
   };
 
   it('ignores opacity micro-noise already quantized by the caller', () => {
-    expect(buildScenegraphLayerSignature([model], 0.6, null)).toBe(
-      buildScenegraphLayerSignature([model], 0.6, null),
+    expect(buildScenegraphLayerSignature([model], 0.6)).toBe(
+      buildScenegraphLayerSignature([model], 0.6),
     );
   });
 
-  it('changes when highlight or opacity step changes', () => {
-    expect(buildScenegraphLayerSignature([model], 0.6, null)).not.toBe(
-      buildScenegraphLayerSignature([model], 0.8, null),
+  it('changes when opacity step changes', () => {
+    expect(buildScenegraphLayerSignature([model], 0.6)).not.toBe(
+      buildScenegraphLayerSignature([model], 0.8),
     );
-    expect(buildScenegraphLayerSignature([model], 0.6, null)).not.toBe(
-      buildScenegraphLayerSignature([model], 0.6, 'm1'),
-    );
+  });
+
+  it('does not include selection highlight (chrome-only, no mesh wash)', () => {
+    // Selection must not rebuild ScenegraphLayer — getColor stays white.
+    expect(buildScenegraphLayerSignature([model], 0.6)).toContain('|op:0.6');
+    expect(buildScenegraphLayerSignature([model], 0.6)).not.toContain('|hl:');
   });
 });

@@ -1,8 +1,4 @@
-import {
-  SCENEGRAPH_DEFAULT_COLOR,
-  SCENEGRAPH_LAYER_ID_PREFIX,
-  SCENEGRAPH_SELECTED_COLOR,
-} from '@/features/geo-map/constants';
+import { SCENEGRAPH_DEFAULT_COLOR, SCENEGRAPH_LAYER_ID_PREFIX } from '@/features/geo-map/constants';
 import type { GeoMapObject } from '@/features/geo-map/types';
 
 /** Per-instance datum consumed by a single `ScenegraphLayer` group's accessors. */
@@ -75,13 +71,10 @@ export const getScenegraphObjectScale = (
 ): [number, number, number] => [datum.scale, datum.scale, datum.scale];
 
 /**
- * deck.gl `getColor` accessor — warms the selected instance so admin/public
- * highlight is visible on flat-lit GLBs (hover uses Layer `autoHighlight`).
+ * deck.gl `getColor` accessor — always opaque white so textured GLB materials
+ * stay intact. Selection uses pins / chrome / info card; hover uses Layer
+ * `autoHighlight`.
  */
 export const getScenegraphObjectColor = (
-  datum: ScenegraphLayerObjectDatum,
-  highlightedObjectId: string | null,
-): [number, number, number, number] =>
-  highlightedObjectId !== null && datum.id === highlightedObjectId
-    ? SCENEGRAPH_SELECTED_COLOR
-    : SCENEGRAPH_DEFAULT_COLOR;
+  _datum: ScenegraphLayerObjectDatum,
+): [number, number, number, number] => SCENEGRAPH_DEFAULT_COLOR;

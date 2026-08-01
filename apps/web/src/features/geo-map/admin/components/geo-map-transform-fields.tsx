@@ -145,6 +145,17 @@ export const GeoMapTransformFields = ({
         onChange={(headingDeg) => patch({ headingDeg })}
       />
       <NumberField
+        id={`${baseId}-pitch`}
+        label={t('pitchDeg')}
+        value={value.pitchDeg}
+        min={GEO_MAP_PITCH_MIN_DEG}
+        max={GEO_MAP_PITCH_MAX_DEG}
+        step={1}
+        disabled={disabled}
+        showSlider
+        onChange={(pitchDeg) => patch({ pitchDeg })}
+      />
+      <NumberField
         id={`${baseId}-scale`}
         label={t('scale')}
         value={value.scale}
@@ -188,17 +199,6 @@ export const GeoMapTransformFields = ({
         </button>
         {advancedOpen ? (
           <div className="mt-3 space-y-3">
-            <NumberField
-              id={`${baseId}-pitch`}
-              label={t('pitchDeg')}
-              value={value.pitchDeg}
-              min={GEO_MAP_PITCH_MIN_DEG}
-              max={GEO_MAP_PITCH_MAX_DEG}
-              step={1}
-              disabled={disabled}
-              showSlider
-              onChange={(pitchDeg) => patch({ pitchDeg })}
-            />
             <NumberField
               id={`${baseId}-roll`}
               label={t('rollDeg')}

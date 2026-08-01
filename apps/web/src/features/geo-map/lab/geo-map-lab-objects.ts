@@ -1,4 +1,4 @@
-import { DEFAULT_MODEL_MIN_ZOOM } from '@/features/geo-map/constants';
+import { DEFAULT_MODEL_MIN_ZOOM, GEO_MAP_DEFAULT_PITCH_DEG } from '@/features/geo-map/constants';
 import type { GeoMapObject } from '@/features/geo-map/types';
 
 const KHRONOS_SAMPLE_MODELS_BASE_URL =
@@ -24,7 +24,7 @@ export const GEO_MAP_LAB_OBJECTS: GeoMapObject[] = [
     latitude: 40.1872,
     altitudeM: 0,
     headingDeg: 0,
-    pitchDeg: 0,
+    pitchDeg: GEO_MAP_DEFAULT_PITCH_DEG,
     rollDeg: 0,
     scale: DUCK_MODEL_SCALE,
     minZoom: DEFAULT_MODEL_MIN_ZOOM,
@@ -40,7 +40,7 @@ export const GEO_MAP_LAB_OBJECTS: GeoMapObject[] = [
     latitude: 40.191,
     altitudeM: 0,
     headingDeg: 45,
-    pitchDeg: 0,
+    pitchDeg: GEO_MAP_DEFAULT_PITCH_DEG,
     rollDeg: 0,
     scale: AVOCADO_MODEL_SCALE,
     minZoom: DEFAULT_MODEL_MIN_ZOOM,
@@ -56,7 +56,7 @@ export const GEO_MAP_LAB_OBJECTS: GeoMapObject[] = [
     latitude: 40.181,
     altitudeM: 0,
     headingDeg: 200,
-    pitchDeg: 0,
+    pitchDeg: GEO_MAP_DEFAULT_PITCH_DEG,
     rollDeg: 0,
     scale: DUCK_MODEL_SCALE,
     minZoom: DEFAULT_MODEL_MIN_ZOOM,

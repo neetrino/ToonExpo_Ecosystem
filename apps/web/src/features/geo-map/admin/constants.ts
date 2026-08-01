@@ -1,5 +1,5 @@
 import { ADMIN_COMPANIES_MAX_PAGE_SIZE } from '@/features/admin/constants';
-import { DEFAULT_MODEL_MIN_ZOOM } from '@/features/geo-map/constants';
+import { DEFAULT_MODEL_MIN_ZOOM, GEO_MAP_DEFAULT_PITCH_DEG } from '@/features/geo-map/constants';
 
 /** TanStack Query key for `GET /admin/geo-map/models`. */
 export const ADMIN_GEO_MAP_MODELS_QUERY_KEY = ['admin', 'geo-map', 'models'] as const;
@@ -35,7 +35,8 @@ export const GEO_MAP_MIN_ZOOM_FIELD_MAX = 22;
 export const GEO_MAP_DEFAULT_CREATE_VALUES = {
   altitudeM: 0,
   headingDeg: 0,
-  pitchDeg: 0,
+  /** Y-up GLB → MapLibre upright — see `GEO_MAP_DEFAULT_PITCH_DEG`. */
+  pitchDeg: GEO_MAP_DEFAULT_PITCH_DEG,
   rollDeg: 0,
   scale: 1,
   minZoom: DEFAULT_MODEL_MIN_ZOOM,

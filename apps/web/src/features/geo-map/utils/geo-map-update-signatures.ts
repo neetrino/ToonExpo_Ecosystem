@@ -118,13 +118,13 @@ export type ScenegraphSignatureModel = {
 };
 
 /**
- * Signature for ScenegraphLayer rebuild inputs — ids, quantized pose, opacity,
- * and highlight. Drag updates still invalidate when position moves past quantize.
+ * Signature for ScenegraphLayer rebuild inputs — ids, quantized pose, and
+ * opacity. Drag updates still invalidate when position moves past quantize.
+ * Selection is not included: mesh color stays white; highlight is chrome-only.
  */
 export const buildScenegraphLayerSignature = (
   models: readonly ScenegraphSignatureModel[],
   opacity: number,
-  highlightedObjectId: string | null,
 ): string => {
   const d = MODEL_POSITION_QUANTIZE_DECIMALS;
   const objectKey =
@@ -149,5 +149,5 @@ export const buildScenegraphLayerSignature = (
           })
           .sort()
           .join('|');
-  return `${objectKey}|op:${opacity}|hl:${highlightedObjectId ?? ''}`;
+  return `${objectKey}|op:${opacity}`;
 };

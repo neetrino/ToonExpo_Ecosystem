@@ -207,6 +207,14 @@ Stage rules:
 - Scenegraph layers render via `MapboxOverlay` with `interleaved: false` (and
   `_lighting: 'flat'`) so GLBs stay visible above MapLibre depth/stencil and
   near-mirror PBR materials from authoring tools.
+- **Default model pitch 90° (POC parity):** deck.gl `ScenegraphLayer`
+  `getOrientation` is `[pitch, yaw, roll]`. Typical Y-up glTF/GLB assets
+  (including Map POC `Building01.glb`) need `pitchDeg: 90` to stand upright on
+  MapLibre — matches POC “Rotation X = 90°”. Prisma column default stays `0`
+  for schema stability; admin create + Nest create defaults send
+  `GEO_MAP_DEFAULT_PITCH_DEG = 90`. Selection must not multiply mesh color
+  (warm `getColor` wash + flat lighting reads as a solid yellow slab); keep
+  opaque white `getColor` and show selection via pin / chrome / info card only.
 - When interleaved mode is re-enabled later, use `beforeId: boundary_3` so
   models draw above `building-3d` extrusions.
 
@@ -236,8 +244,8 @@ Stage rules:
   tilting.
 - **Guarded updates:** Footprint mask skips `setFilter` when model id/position
   signature is unchanged; deck rebuilds ScenegraphLayer only when object pose /
-  quantized fade opacity / highlight change. Opacity is stepped so zoom ticks
-  do not recreate layers.
+  quantized fade opacity change (selection is chrome-only, not mesh tint).
+  Opacity is stepped so zoom ticks do not recreate layers.
 - **Cold start:** MapLibre ctor uses `fadeDuration: 0`, `canvasContextAttributes.antialias: false`, and
   `pixelRatio` capped at 2; pitch eases 0→55 after idle (see above).
 - **Lazy deck:** `MapboxOverlay` mounts only while viewport-visible GLB models

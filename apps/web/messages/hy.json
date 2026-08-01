@@ -1259,7 +1259,7 @@
         "scale": "Մասշտաբ",
         "altitudeM": "Բարձրություն (մ)",
         "minZoom": "Min zoom (3D)",
-        "pitchDeg": "Pitch (°)",
+        "pitchDeg": "Pitch / Rotation X (°)",
         "rollDeg": "Roll (°)",
         "showAdvanced": "Լրացուցիչ կողմնորոշում",
         "hideAdvanced": "Թաքցնել",

@@ -74,6 +74,10 @@ describe('AdminGeoMapService', () => {
     });
 
     expect(projectMapModelCreate).toHaveBeenCalled();
+    const createArg = projectMapModelCreate.mock.calls[0]?.[0] as {
+      data: { pitchDeg: number };
+    };
+    expect(createArg.data.pitchDeg).toBe(90);
     expect(result.projectSlug).toBe('demo-tower');
     expect(result.modelUrl).toContain('media_1.glb');
     expect(result.isPublished).toBe(false);

@@ -75,6 +75,15 @@ export const DEFAULT_MAP_STYLE_URL = 'https://tiles.openfreemap.org/styles/liber
 /** Matches the Prisma `ProjectMapModel.minZoom` default. */
 export const DEFAULT_MODEL_MIN_ZOOM = 14;
 
+/**
+ * Default model pitch for new admin placements and lab fixtures.
+ * deck.gl ScenegraphLayer `getOrientation` is `[pitch, yaw, roll]`; typical
+ * Y-up glTF/GLB assets need ~90° pitch to stand upright on MapLibre
+ * (Map POC Rotation X = 90°). Prisma schema default stays 0 for stability —
+ * create paths must send this value explicitly.
+ */
+export const GEO_MAP_DEFAULT_PITCH_DEG = 90;
+
 export const MIN_MAP_ZOOM = 0;
 export const MAX_MAP_ZOOM = 22;
 
@@ -172,14 +181,13 @@ export const GEO_MAP_UI_OVERLAY_Z_INDEX_CLASS = 'z-[100]';
 /** Context menu above the floating selection bar within the map UI overlay. */
 export const GEO_MAP_ADMIN_CONTEXT_MENU_Z_INDEX_CLASS = 'z-[110]';
 
-/** Default ScenegraphLayer tint (RGBA 0–255) — neutral, no wash. */
-export const SCENEGRAPH_DEFAULT_COLOR: [number, number, number, number] = [255, 255, 255, 255];
-
 /**
- * Selected-model tint — warm brand wash so the picked GLB stands out from
- * neighbors without hiding mesh detail (`_lighting: 'flat'` multiplies albedo).
+ * ScenegraphLayer `getColor` tint (RGBA 0–255) — always opaque white so GLB
+ * materials stay visible. Selection is shown via pins / floating chrome / info
+ * card, not a multiplicative mesh wash (`_lighting: 'flat'` would turn a warm
+ * tint into a solid yellow/orange slab).
  */
-export const SCENEGRAPH_SELECTED_COLOR: [number, number, number, number] = [255, 196, 120, 255];
+export const SCENEGRAPH_DEFAULT_COLOR: [number, number, number, number] = [255, 255, 255, 255];
 
 /**
  * deck.gl `autoHighlight` wash while the pointer is over a pickable instance

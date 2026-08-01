@@ -1259,7 +1259,7 @@
         "scale": "Scale",
         "altitudeM": "Altitude (m)",
         "minZoom": "Min zoom (show 3D)",
-        "pitchDeg": "Pitch (°)",
+        "pitchDeg": "Pitch / Rotation X (°)",
         "rollDeg": "Roll (°)",
         "showAdvanced": "Advanced orientation",
         "hideAdvanced": "Hide advanced",
