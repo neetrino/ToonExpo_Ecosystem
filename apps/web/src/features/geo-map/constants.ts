@@ -86,17 +86,6 @@ export const GEO_MAP_DEFAULT_PITCH_DEG = 90;
 export const MIN_MAP_ZOOM = 0;
 export const MAX_MAP_ZOOM = 22;
 
-/** @deprecated Temporary until Scenegraph path removal commit. */
-export const SCENEGRAPH_LAYER_ID_PREFIX = 'geo-map-scenegraph-layer';
-export const SCENEGRAPH_SIZE_SCALE = 1;
-export const SCENEGRAPH_SIZE_MIN_PIXELS = 0;
-export const SCENEGRAPH_BEFORE_LAYER_ID = 'boundary_3';
-export const SCENEGRAPH_DEFAULT_COLOR: [number, number, number, number] = [255, 255, 255, 255];
-export const SCENEGRAPH_HOVER_HIGHLIGHT_COLOR: [number, number, number, number] = [
-  255, 214, 64, 160,
-];
-export const MAP_CANVAS_HOVER_CURSOR_CLASS = 'cursor-pointer';
-
 /** Zoom span over which model opacity eases from floor → full after `minZoom`. */
 export const MODEL_FADE_ZOOM_DELTA = 0.75;
 export const MODEL_FADE_MIN_OPACITY = 0.45;

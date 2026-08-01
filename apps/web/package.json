@@ -21,15 +21,10 @@
     "e2e:install": "playwright install chromium"
   },
   "dependencies": {
-    "@deck.gl/core": "^9.3.7",
-    "@deck.gl/mapbox": "^9.3.7",
-    "@deck.gl/mesh-layers": "^9.3.7",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
     "@dnd-kit/utilities": "^3.2.2",
     "@hookform/resolvers": "^5.4.0",
-    "@loaders.gl/core": "^4.4.3",
-    "@loaders.gl/gltf": "^4.4.3",
     "@sentry/nextjs": "^10.66.0",
     "@tanstack/react-query": "^5.101.2",
     "@toonexpo/contracts": "workspace:*",

@@ -148,10 +148,3 @@ export const buildThreeBuildingLayerSignature = (
     .sort()
     .join('|');
 };
-
-/** @deprecated Temporary until Scenegraph path removal commit. */
-export type ScenegraphSignatureModel = ThreeBuildingSignatureModel;
-export const buildScenegraphLayerSignature = (
-  models: readonly ThreeBuildingSignatureModel[],
-  opacity: number,
-): string => `${buildThreeBuildingLayerSignature(models)}|op:${opacity}`;
