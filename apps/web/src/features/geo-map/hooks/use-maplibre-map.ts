@@ -1,6 +1,6 @@
 'use client';
 
-import { MapLibreMap, NavigationControl } from 'maplibre-gl';
+import { MapLibreMap } from 'maplibre-gl';
 import { type RefObject, useEffect, useState } from 'react';
 import 'maplibre-gl/dist/maplibre-gl.css';
 
@@ -8,7 +8,6 @@ import {
   DEFAULT_MAP_BEARING_DEG,
   DEFAULT_MAP_PITCH_DEG,
   MAX_MAP_PITCH_DEG,
-  NAVIGATION_CONTROL_POSITION,
 } from '@/features/geo-map/constants';
 import type { GeoMapLngLat } from '@/features/geo-map/types';
 import { applyBrandMapStyle } from '@/features/geo-map/utils/apply-brand-map-style';
@@ -36,7 +35,7 @@ export type UseMaplibreMapResult = {
  * Rotate / tilt (MapLibre defaults, left enabled explicitly for clarity):
  * - Desktop: right-drag or Ctrl+drag to rotate bearing and pitch around the center.
  * - Touch: two-finger rotate/zoom; two-finger drag to pitch (`touchPitch`).
- * - Compass (`NavigationControl` with `visualizePitch`): drag to tilt/orbit; click to reset north.
+ * - Zoom / pitch / reset north: `GeoMapCameraControls` in `GeoMapCanvas`.
  */
 export const useMaplibreMap = ({
   containerRef,
@@ -70,10 +69,6 @@ export const useMaplibreMap = ({
       touchZoomRotate: true,
       attributionControl: { compact: true },
     });
-    mapInstance.addControl(
-      new NavigationControl({ visualizePitch: true }),
-      NAVIGATION_CONTROL_POSITION,
-    );
     mapInstance.on('load', () => {
       applyBrandMapStyle(mapInstance);
       mapInstance.resize();

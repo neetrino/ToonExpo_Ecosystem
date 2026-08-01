@@ -26,6 +26,9 @@ export const MAP_PITCH_STEP_DEG = 10;
 /** Ease duration for tilt / reset camera control actions (ms). */
 export const MAP_CAMERA_EASE_DURATION_MS = 300;
 
+/** Zoom level delta for map control buttons. */
+export const MAP_ZOOM_STEP = 1;
+
 /** Env var name consumers/scripts can set to override the MapLibre style URL. */
 export const MAP_STYLE_URL_ENV_VAR = 'NEXT_PUBLIC_MAP_STYLE_URL';
 
@@ -73,8 +76,6 @@ export const MARKER_ELEMENT_CLASS_NAME =
   'transition-opacity duration-200';
 
 export const MARKER_ELEMENT_EDITABLE_CLASS_NAME = 'cursor-grab active:cursor-grabbing';
-
-export const NAVIGATION_CONTROL_POSITION = 'top-right';
 
 /**
  * Extra zoom above an object's `minZoom` when focusing so the GLB is clearly

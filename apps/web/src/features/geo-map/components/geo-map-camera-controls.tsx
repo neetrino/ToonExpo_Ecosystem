@@ -1,7 +1,7 @@
 'use client';
 
 import type { MapLibreMap } from 'maplibre-gl';
-import { ChevronDown, ChevronUp, Compass } from 'lucide-react';
+import { ChevronDown, Compass, MoveVertical, ZoomIn, ZoomOut } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import {
@@ -9,6 +9,9 @@ import {
   DEFAULT_MAP_PITCH_DEG,
   MAP_CAMERA_EASE_DURATION_MS,
   MAP_PITCH_STEP_DEG,
+  MAP_ZOOM_STEP,
+  MAX_MAP_ZOOM,
+  MIN_MAP_ZOOM,
 } from '@/features/geo-map/constants';
 import { clampMapPitch } from '@/features/geo-map/utils/clamp-map-pitch';
 
@@ -21,13 +24,22 @@ const BUTTON_CLASS_NAME =
   'hover:bg-surface focus-visible:outline-none focus-visible:ring-2 ' +
   'focus-visible:ring-brand-deep disabled:opacity-40';
 
+const clampMapZoom = (zoom: number): number => Math.min(MAX_MAP_ZOOM, Math.max(MIN_MAP_ZOOM, zoom));
+
 /**
- * Compact tilt / reset controls under MapLibre's NavigationControl.
- * Native rotate remains primary (right-drag / Ctrl+drag / compass); these
- * buttons make pitch adjustment discoverable.
+ * Single stacked panel for zoom and camera pitch/bearing reset.
+ * Gesture rotate/pitch (right-drag, touch) remains enabled on the map.
  */
 export const GeoMapCameraControls = ({ map }: GeoMapCameraControlsProps) => {
   const t = useTranslations('GeoMap.camera');
+
+  const easeZoomBy = (delta: number): void => {
+    map.easeTo({
+      zoom: clampMapZoom(map.getZoom() + delta),
+      duration: MAP_CAMERA_EASE_DURATION_MS,
+      essential: true,
+    });
+  };
 
   const easePitchBy = (deltaDeg: number): void => {
     map.easeTo({
@@ -48,10 +60,28 @@ export const GeoMapCameraControls = ({ map }: GeoMapCameraControlsProps) => {
 
   return (
     <div
-      className="pointer-events-auto absolute top-28 right-2.5 z-10 flex flex-col overflow-hidden rounded border border-border-strong bg-surface-elevated shadow-sm"
+      className="pointer-events-auto absolute top-2.5 right-2.5 z-10 flex flex-col overflow-hidden rounded border border-border-strong bg-surface-elevated shadow-sm"
       role="group"
       aria-label={t('groupLabel')}
     >
+      <button
+        type="button"
+        className={BUTTON_CLASS_NAME}
+        aria-label={t('zoomIn')}
+        title={t('zoomIn')}
+        onClick={() => easeZoomBy(MAP_ZOOM_STEP)}
+      >
+        <ZoomIn className="h-4 w-4" aria-hidden />
+      </button>
+      <button
+        type="button"
+        className={BUTTON_CLASS_NAME}
+        aria-label={t('zoomOut')}
+        title={t('zoomOut')}
+        onClick={() => easeZoomBy(-MAP_ZOOM_STEP)}
+      >
+        <ZoomOut className="h-4 w-4" aria-hidden />
+      </button>
       <button
         type="button"
         className={BUTTON_CLASS_NAME}
@@ -59,7 +89,7 @@ export const GeoMapCameraControls = ({ map }: GeoMapCameraControlsProps) => {
         title={t('tiltUp')}
         onClick={() => easePitchBy(MAP_PITCH_STEP_DEG)}
       >
-        <ChevronUp className="h-4 w-4" aria-hidden />
+        <MoveVertical className="h-4 w-4" aria-hidden />
       </button>
       <button
         type="button"

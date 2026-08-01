@@ -3413,9 +3413,11 @@
       "viewProject": "View project"
     },
     "camera": {
-      "groupLabel": "Map viewing angle",
-      "tiltUp": "Tilt up",
-      "tiltDown": "Tilt down",
+      "groupLabel": "Map zoom and view",
+      "zoomIn": "Zoom in",
+      "zoomOut": "Zoom out",
+      "tiltUp": "Tilt view",
+      "tiltDown": "Flatten view",
       "resetView": "Reset north and default tilt"
     }
   },
