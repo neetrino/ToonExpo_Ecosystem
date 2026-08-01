@@ -97,3 +97,85 @@ export const isBuildingGeometry = (
   value: GeoJSON.Geometry | null | undefined,
 ): value is BuildingGeometry =>
   Boolean(value && (value.type === 'Polygon' || value.type === 'MultiPolygon'));
+
+const pointInRing = (longitude: number, latitude: number, ring: number[][]): boolean => {
+  let inside = false;
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+    const [xi = 0, yi = 0] = ring[i] ?? [];
+    const [xj = 0, yj = 0] = ring[j] ?? [];
+    const intersects =
+      yi > latitude !== yj > latitude &&
+      longitude < ((xj - xi) * (latitude - yi)) / (yj - yi + Number.EPSILON) + xi;
+    if (intersects) {
+      inside = !inside;
+    }
+  }
+  return inside;
+};
+
+const pointInPolygonRings = (longitude: number, latitude: number, rings: number[][][]): boolean => {
+  const outer = rings[0];
+  if (!outer || !pointInRing(longitude, latitude, outer)) {
+    return false;
+  }
+  for (let holeIndex = 1; holeIndex < rings.length; holeIndex += 1) {
+    const hole = rings[holeIndex];
+    if (hole && pointInRing(longitude, latitude, hole)) {
+      return false;
+    }
+  }
+  return true;
+};
+
+const squaredDistance = (lng: number, lat: number, center: [number, number]): number => {
+  const dLng = lng - center[0];
+  const dLat = lat - center[1];
+  return dLng * dLng + dLat * dLat;
+};
+
+const nearestPolygonFromMulti = (
+  longitude: number,
+  latitude: number,
+  coordinates: number[][][][],
+): BuildingGeometry => {
+  let bestDistance = Number.POSITIVE_INFINITY;
+  let bestPolygon: number[][][] = coordinates[0] ?? [[]];
+
+  for (const polygon of coordinates) {
+    const ring = polygon[0] ?? [];
+    const center = ringCentroid(ring);
+    const distance = squaredDistance(longitude, latitude, center);
+    if (distance < bestDistance) {
+      bestDistance = distance;
+      bestPolygon = polygon;
+    }
+  }
+
+  return { type: 'Polygon', coordinates: bestPolygon };
+};
+
+/**
+ * When a vector tile feature is a MultiPolygon (or click misses the outer ring),
+ * keep only the polygon part the user clicked — avoids highlighting distant footprints.
+ */
+export const narrowBuildingGeometryToClick = (
+  click: { longitude: number; latitude: number },
+  geometry: BuildingGeometry,
+): BuildingGeometry => {
+  const { longitude, latitude } = click;
+
+  if (geometry.type === 'MultiPolygon') {
+    for (const polygon of geometry.coordinates) {
+      if (pointInPolygonRings(longitude, latitude, polygon)) {
+        return { type: 'Polygon', coordinates: polygon };
+      }
+    }
+    return nearestPolygonFromMulti(longitude, latitude, geometry.coordinates);
+  }
+
+  if (pointInPolygonRings(longitude, latitude, geometry.coordinates)) {
+    return geometry;
+  }
+
+  return { type: 'Polygon', coordinates: [geometry.coordinates[0] ?? []] };
+};

@@ -14,6 +14,8 @@ type GeoMapGlbUploaderProps = {
   onUploaded: (asset: MediaAssetItem) => void;
   disabled?: boolean | undefined;
   fileName?: string | null | undefined;
+  /** Optional id for the browse label (admin map shortcuts). */
+  browseButtonId?: string | undefined;
 };
 
 /**
@@ -23,6 +25,7 @@ export const GeoMapGlbUploader = ({
   onUploaded,
   disabled = false,
   fileName = null,
+  browseButtonId,
 }: GeoMapGlbUploaderProps) => {
   const t = useTranslations('Admin.geoMap.upload');
   const inputId = useId();
@@ -64,6 +67,7 @@ export const GeoMapGlbUploader = ({
         )}
       >
         <label
+          id={browseButtonId}
           htmlFor={inputId}
           className={cn(
             'inline-flex cursor-pointer items-center rounded-sm border border-border px-3 py-2',

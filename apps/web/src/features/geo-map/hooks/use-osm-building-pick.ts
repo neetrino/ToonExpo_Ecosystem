@@ -7,6 +7,7 @@ import { OSM_BUILDING_EXTRUSION_LAYER_ID } from '@/features/geo-map/constants';
 import {
   computeFootprintCenter,
   isBuildingGeometry,
+  narrowBuildingGeometryToClick,
   resolveSourceOsmId,
   type SelectedOsmBuilding,
 } from '@/features/geo-map/utils/building-identification';
@@ -24,11 +25,15 @@ export type UseOsmBuildingPickOptions = {
   onSelect: (building: SelectedOsmBuilding) => void;
 };
 
-const toSelectedBuilding = (feature: MapGeoJSONFeature): SelectedOsmBuilding | null => {
+const toSelectedBuilding = (
+  feature: MapGeoJSONFeature,
+  click: { longitude: number; latitude: number },
+): SelectedOsmBuilding | null => {
   if (!isBuildingGeometry(feature.geometry)) {
     return null;
   }
-  const [longitude, latitude] = computeFootprintCenter(feature.geometry);
+  const geometry = narrowBuildingGeometryToClick(click, feature.geometry);
+  const [longitude, latitude] = computeFootprintCenter(geometry);
   const properties =
     feature.properties && typeof feature.properties === 'object'
       ? (feature.properties as Record<string, unknown>)
@@ -38,7 +43,7 @@ const toSelectedBuilding = (feature: MapGeoJSONFeature): SelectedOsmBuilding | n
     sourceOsmId: resolveSourceOsmId(properties),
     longitude,
     latitude,
-    geometry: feature.geometry,
+    geometry,
   };
 };
 
@@ -71,7 +76,10 @@ export const useOsmBuildingPick = ({
         return;
       }
 
-      const selected = toSelectedBuilding(feature);
+      const selected = toSelectedBuilding(feature, {
+        longitude: event.lngLat.lng,
+        latitude: event.lngLat.lat,
+      });
       if (!selected) {
         return;
       }

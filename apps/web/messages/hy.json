@@ -1268,7 +1268,21 @@
       },
       "map": {
         "hover": "Hover: {id}",
-        "deselect": "Ապընտրել"
+        "deselect": "Ապընտրել",
+        "osmBuilding": "OSM շենք",
+        "actions": {
+          "placeModel": "Տեղադրել մոդել",
+          "replaceGlb": "Փոխարինել GLB",
+          "attachProject": "Կցել նախագիծ"
+        },
+        "context": {
+          "placeModel": "Վերբեռնել / տեղադրել մոդել…",
+          "clearSelection": "Մաքրել ընտրությունը",
+          "replaceGlb": "Փոխարինել GLB…",
+          "attachProject": "Կցել նախագիծ…",
+          "deleteModel": "Ջնջել մոդել…",
+          "deselect": "Ապընտրել"
+        }
       },
       "deleteConfirmTitle": "Ջնջել մոդելը",
       "deleteConfirmMessage": "Ջնջե՞լ «{name}»-ի 3D մոդելը։ Սա անհնար է հետ շրջել։",

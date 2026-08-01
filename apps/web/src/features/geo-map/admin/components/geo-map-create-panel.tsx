@@ -82,6 +82,7 @@ export const GeoMapCreatePanel = ({
       <p className="text-xs text-ink-muted">{t('create.projectLaterHint')}</p>
 
       <GeoMapGlbUploader
+        browseButtonId="geo-map-create-glb-browse"
         disabled={isCreating}
         fileName={draft?.fileName || null}
         onUploaded={handleUploaded}

@@ -94,4 +94,21 @@ export type GeoMapCanvasProps = {
   selectedOsmBuilding?: SelectedOsmBuilding | null | undefined;
   /** Admin-only: OSM `building-3d` click (after cyan highlight update). */
   onOsmBuildingSelect?: ((building: SelectedOsmBuilding) => void) | undefined;
+  /** Admin-only: map-anchored selection toolbar + context menu (editable maps). */
+  adminSelectionChrome?: GeoMapAdminMapSelectionChromeProps | null | undefined;
+};
+
+export type GeoMapAdminSelectionKind = 'osm' | 'model';
+
+export type GeoMapAdminMapSelectionChromeProps = {
+  anchor: GeoMapLngLat | null;
+  kind: GeoMapAdminSelectionKind | null;
+  title: string;
+  showAttachProject: boolean;
+  isDeleting: boolean;
+  onClearSelection: () => void;
+  onDeleteModel: () => void;
+  onFocusCreateUpload: () => void;
+  onFocusReplaceUpload: () => void;
+  onFocusAttachProject: () => void;
 };

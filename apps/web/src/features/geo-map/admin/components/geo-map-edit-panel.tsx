@@ -180,6 +180,7 @@ export const GeoMapEditPanel = ({
       <div className="space-y-2">
         <p className="text-xs text-ink-muted">{t('edit.replaceHint')}</p>
         <GeoMapGlbUploader
+          browseButtonId="geo-map-replace-glb-browse"
           disabled={busy}
           onUploaded={(asset) => {
             void handleReplaceUploaded(asset.id);

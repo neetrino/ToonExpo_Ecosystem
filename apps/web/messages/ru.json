@@ -1268,7 +1268,21 @@
       },
       "map": {
         "hover": "Hover: {id}",
-        "deselect": "Снять выбор"
+        "deselect": "Снять выбор",
+        "osmBuilding": "Здание OSM",
+        "actions": {
+          "placeModel": "Разместить модель",
+          "replaceGlb": "Заменить GLB",
+          "attachProject": "Привязать проект"
+        },
+        "context": {
+          "placeModel": "Загрузить / разместить модель…",
+          "clearSelection": "Снять выбор",
+          "replaceGlb": "Заменить GLB…",
+          "attachProject": "Привязать проект…",
+          "deleteModel": "Удалить модель…",
+          "deselect": "Снять выбор"
+        }
       },
       "deleteConfirmTitle": "Удалить модель",
       "deleteConfirmMessage": "Удалить 3D-модель для «{name}»? Это действие нельзя отменить.",

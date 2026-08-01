@@ -1268,7 +1268,21 @@
       },
       "map": {
         "hover": "Hover: {id}",
-        "deselect": "Deselect"
+        "deselect": "Deselect",
+        "osmBuilding": "OSM building",
+        "actions": {
+          "placeModel": "Place model",
+          "replaceGlb": "Replace GLB",
+          "attachProject": "Attach project"
+        },
+        "context": {
+          "placeModel": "Upload / place model…",
+          "clearSelection": "Clear selection",
+          "replaceGlb": "Replace GLB…",
+          "attachProject": "Attach project…",
+          "deleteModel": "Delete model…",
+          "deselect": "Deselect"
+        }
       },
       "deleteConfirmTitle": "Delete model",
       "deleteConfirmMessage": "Delete the 3D model for \"{name}\"? This cannot be undone.",

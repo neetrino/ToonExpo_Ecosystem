@@ -5,6 +5,7 @@ import { useRef, useState } from 'react';
 import { GeoMapCameraControls } from '@/features/geo-map/components/geo-map-camera-controls';
 import { GeoMapInfoCard } from '@/features/geo-map/components/geo-map-info-card';
 import { GeoMapWebglFallback } from '@/features/geo-map/components/geo-map-webgl-fallback';
+import { GeoMapAdminMapSelectionChrome } from '@/features/geo-map/admin/components/geo-map-admin-map-selection-chrome';
 import {
   DEFAULT_MAP_BEARING_DEG,
   DEFAULT_MAP_CENTER_LATITUDE,
@@ -71,6 +72,7 @@ export const GeoMapCanvas = ({
   onObjectDragged,
   selectedOsmBuilding = null,
   onOsmBuildingSelect,
+  adminSelectionChrome = null,
 }: GeoMapCanvasProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const isWebglSupported = useWebglSupport();
@@ -145,6 +147,13 @@ export const GeoMapCanvas = ({
       {map ? <GeoMapCameraControls map={map} /> : null}
       {infoObject ? (
         <GeoMapInfoCard projectName={infoObject.label} logoUrl={infoObject.logoUrl} />
+      ) : null}
+      {editable && adminSelectionChrome ? (
+        <GeoMapAdminMapSelectionChrome
+          map={map}
+          isMapLoaded={isMapLoaded}
+          {...adminSelectionChrome}
+        />
       ) : null}
     </div>
   );
