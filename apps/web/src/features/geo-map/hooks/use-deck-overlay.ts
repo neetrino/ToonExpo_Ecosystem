@@ -11,11 +11,13 @@ import { useEffect, useRef } from 'react';
 import {
   MAP_CANVAS_HOVER_CURSOR_CLASS,
   SCENEGRAPH_BEFORE_LAYER_ID,
+  SCENEGRAPH_HOVER_HIGHLIGHT_COLOR,
   SCENEGRAPH_SIZE_MIN_PIXELS,
   SCENEGRAPH_SIZE_SCALE,
 } from '@/features/geo-map/constants';
 import type { GeoMapLngLat, GeoMapObject } from '@/features/geo-map/types';
 import {
+  getScenegraphObjectColor,
   getScenegraphObjectOrientation,
   getScenegraphObjectPosition,
   getScenegraphObjectScale,
@@ -33,6 +35,8 @@ export type UseDeckOverlayOptions = {
   modelObjects: GeoMapObject[];
   zoom: number;
   editable: boolean;
+  /** Selected or externally highlighted model id (warm tint via `getColor`). */
+  highlightedObjectId?: string | null | undefined;
   onObjectClick?: ((id: string) => void) | undefined;
   onObjectHover?: ((id: string | null) => void) | undefined;
   onMapClick?: ((position: GeoMapLngLat) => void) | undefined;
@@ -71,6 +75,7 @@ const buildScenegraphLayers = (
   map: MapLibreMap,
   modelObjects: GeoMapObject[],
   opacity: number,
+  highlightedObjectId: string | null,
 ): ScenegraphLayer<ScenegraphLayerObjectDatum>[] => {
   const beforeId = resolveBeforeId(map);
   return groupObjectsByModelUrl(modelObjects).map(
@@ -82,12 +87,18 @@ const buildScenegraphLayers = (
         loaders: [GLTFLoader],
         _lighting: 'flat',
         pickable: true,
+        autoHighlight: true,
+        highlightColor: SCENEGRAPH_HOVER_HIGHLIGHT_COLOR,
         opacity,
         sizeScale: SCENEGRAPH_SIZE_SCALE,
         sizeMinPixels: SCENEGRAPH_SIZE_MIN_PIXELS,
         getPosition: getScenegraphObjectPosition,
         getOrientation: getScenegraphObjectOrientation,
         getScale: getScenegraphObjectScale,
+        getColor: (datum) => getScenegraphObjectColor(datum, highlightedObjectId),
+        updateTriggers: {
+          getColor: highlightedObjectId,
+        },
         ...(beforeId ? { beforeId } : {}),
       }),
   );
@@ -162,6 +173,7 @@ export const useDeckOverlay = ({
   modelObjects,
   zoom,
   editable,
+  highlightedObjectId = null,
   onObjectClick,
   onObjectHover,
   onMapClick,
@@ -203,7 +215,7 @@ export const useDeckOverlay = ({
     const opacity = layerMinZoom === null ? 0 : computeModelFadeOpacity(zoom, layerMinZoom);
 
     overlay.setProps({
-      layers: buildScenegraphLayers(map, modelObjects, opacity),
+      layers: buildScenegraphLayers(map, modelObjects, opacity, highlightedObjectId),
       effects: [geoMapLightingEffect],
       ...buildOverlayInteractionProps(map, draggingIdRef, {
         editable,
@@ -219,6 +231,7 @@ export const useDeckOverlay = ({
     modelObjects,
     zoom,
     editable,
+    highlightedObjectId,
     onObjectClick,
     onObjectHover,
     onMapClick,

@@ -4,6 +4,7 @@ import type { AdminGeoMapModelItem, UpdateGeoMapModelRequest } from '@toonexpo/c
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
+import { GeoMapGlbUploader } from '@/features/geo-map/admin/components/geo-map-glb-uploader';
 import {
   GeoMapTransformFields,
   type GeoMapTransformDraft,
@@ -17,6 +18,7 @@ type GeoMapEditPanelProps = {
   isDeleting: boolean;
   onSave: (body: UpdateGeoMapModelRequest) => Promise<void>;
   onPublishChange: (isPublished: boolean) => Promise<void>;
+  onReplaceModel: (mediaAssetId: string) => Promise<void>;
   onDelete: () => void;
 };
 
@@ -32,7 +34,7 @@ const toDraft = (model: AdminGeoMapModelItem): GeoMapTransformDraft => ({
 });
 
 /**
- * Edit panel for a selected map model: transforms, publish toggle, delete.
+ * Edit panel for a selected map model: replace GLB, transforms, publish, delete.
  */
 export const GeoMapEditPanel = ({
   model,
@@ -40,16 +42,20 @@ export const GeoMapEditPanel = ({
   isDeleting,
   onSave,
   onPublishChange,
+  onReplaceModel,
   onDelete,
 }: GeoMapEditPanelProps) => {
   const t = useTranslations('Admin.geoMap');
   const [draft, setDraft] = useState(() => toDraft(model));
   const [saveError, setSaveError] = useState<string | null>(null);
-  const busy = isSaving || isDeleting;
+  const [replaceError, setReplaceError] = useState<string | null>(null);
+  const [isReplacing, setIsReplacing] = useState(false);
+  const busy = isSaving || isDeleting || isReplacing;
 
   useEffect(() => {
     setDraft(toDraft(model));
     setSaveError(null);
+    setReplaceError(null);
   }, [model]);
 
   const handleSave = async (): Promise<void> => {
@@ -67,6 +73,18 @@ export const GeoMapEditPanel = ({
       });
     } catch {
       setSaveError(t('form.saveError'));
+    }
+  };
+
+  const handleReplaceUploaded = async (mediaAssetId: string): Promise<void> => {
+    setReplaceError(null);
+    setIsReplacing(true);
+    try {
+      await onReplaceModel(mediaAssetId);
+    } catch {
+      setReplaceError(t('edit.replaceError'));
+    } finally {
+      setIsReplacing(false);
     }
   };
 
@@ -89,6 +107,22 @@ export const GeoMapEditPanel = ({
         />
       </div>
 
+      <div className="space-y-2">
+        <p className="text-xs text-ink-muted">{t('edit.replaceHint')}</p>
+        <GeoMapGlbUploader
+          disabled={busy}
+          onUploaded={(asset) => {
+            void handleReplaceUploaded(asset.id);
+          }}
+        />
+        {replaceError ? (
+          <p role="alert" className="text-sm text-danger">
+            {replaceError}
+          </p>
+        ) : null}
+        {isReplacing ? <p className="text-xs text-ink-muted">{t('edit.replacing')}</p> : null}
+      </div>
+
       <GeoMapTransformFields value={draft} onChange={setDraft} disabled={busy} />
 
       {saveError ? (
@@ -102,7 +136,7 @@ export const GeoMapEditPanel = ({
           {isSaving ? t('form.saving') : t('form.save')}
         </Button>
         <Button type="button" size="sm" variant="danger" disabled={busy} onClick={onDelete}>
-          {t('form.delete')}
+          {isDeleting ? t('form.deleting') : t('form.delete')}
         </Button>
       </div>
     </section>

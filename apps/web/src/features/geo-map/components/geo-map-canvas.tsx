@@ -113,6 +113,8 @@ export const GeoMapCanvas = ({
     modelObjects,
     zoom,
     editable,
+    // Persistent selection tint only — pointer hover uses Layer `autoHighlight`.
+    highlightedObjectId,
     onObjectClick,
     onObjectHover: handleObjectHover,
     onMapClick,

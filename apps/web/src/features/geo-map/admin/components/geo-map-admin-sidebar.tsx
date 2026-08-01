@@ -27,6 +27,7 @@ type GeoMapAdminSidebarProps = {
   onCreateDraftChange: (draft: GeoMapCreateDraft | null) => void;
   onSave: (body: UpdateGeoMapModelRequest) => Promise<void>;
   onPublishChange: (isPublished: boolean) => Promise<void>;
+  onReplaceModel: (mediaAssetId: string) => Promise<void>;
   onDelete: () => void;
   headerActions?: ReactNode | undefined;
 };
@@ -48,6 +49,7 @@ export const GeoMapAdminSidebar = ({
   onCreateDraftChange,
   onSave,
   onPublishChange,
+  onReplaceModel,
   onDelete,
   headerActions,
 }: GeoMapAdminSidebarProps) => {
@@ -92,6 +94,7 @@ export const GeoMapAdminSidebar = ({
           isDeleting={isDeleting}
           onSave={onSave}
           onPublishChange={onPublishChange}
+          onReplaceModel={onReplaceModel}
           onDelete={onDelete}
         />
       ) : null}

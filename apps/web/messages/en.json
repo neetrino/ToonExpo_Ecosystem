@@ -1219,7 +1219,10 @@
         "placing": "Placing model…"
       },
       "edit": {
-        "subtitle": "Drag on the map to move. Adjust transforms below, then save."
+        "subtitle": "Drag on the map to move. Replace the GLB or adjust transforms below, then save.",
+        "replaceHint": "Upload a new GLB to replace the model for this project (position is kept).",
+        "replacing": "Replacing model…",
+        "replaceError": "Could not replace the model. Try again."
       },
       "upload": {
         "label": "GLB model",
@@ -1249,10 +1252,12 @@
         "save": "Save",
         "saving": "Saving…",
         "saveError": "Could not save changes.",
-        "delete": "Delete"
+        "delete": "Delete",
+        "deleting": "Deleting…"
       },
       "map": {
-        "hover": "Hover: {id}"
+        "hover": "Hover: {id}",
+        "deselect": "Deselect"
       },
       "deleteConfirmTitle": "Delete model",
       "deleteConfirmMessage": "Delete the 3D model for \"{name}\"? This cannot be undone.",

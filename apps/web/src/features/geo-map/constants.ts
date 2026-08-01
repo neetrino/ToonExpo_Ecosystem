@@ -132,6 +132,23 @@ export const GEO_MAP_INFO_CARD_LOGO_PX = 40;
 /** MapLibre canvas gains this class while the pointer is over a pickable model. */
 export const MAP_CANVAS_HOVER_CURSOR_CLASS = 'cursor-pointer';
 
+/** Default ScenegraphLayer tint (RGBA 0–255) — neutral, no wash. */
+export const SCENEGRAPH_DEFAULT_COLOR: [number, number, number, number] = [255, 255, 255, 255];
+
+/**
+ * Selected-model tint — warm brand wash so the picked GLB stands out from
+ * neighbors without hiding mesh detail (`_lighting: 'flat'` multiplies albedo).
+ */
+export const SCENEGRAPH_SELECTED_COLOR: [number, number, number, number] = [255, 196, 120, 255];
+
+/**
+ * deck.gl `autoHighlight` wash while the pointer is over a pickable instance
+ * (RGBA). Semi-transparent so mesh detail remains readable.
+ */
+export const SCENEGRAPH_HOVER_HIGHLIGHT_COLOR: [number, number, number, number] = [
+  255, 214, 64, 160,
+];
+
 /** OpenFreeMap liberty layer that provides surrounding OSM building extrusions. */
 export const OSM_BUILDING_EXTRUSION_LAYER_ID = 'building-3d';
 export const OSM_BUILDING_FILL_LAYER_ID = 'building';

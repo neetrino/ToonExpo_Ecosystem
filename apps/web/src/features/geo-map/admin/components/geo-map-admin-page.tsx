@@ -4,6 +4,7 @@ import type { AdminGeoMapModelItem, UpdateGeoMapModelRequest } from '@toonexpo/c
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 
+import { GeoMapAdminSelectionToolbar } from '@/features/geo-map/admin/components/geo-map-admin-selection-toolbar';
 import { GeoMapAdminSidebar } from '@/features/geo-map/admin/components/geo-map-admin-sidebar';
 import type { GeoMapCreateDraft } from '@/features/geo-map/admin/components/geo-map-create-panel';
 import { GEO_MAP_DEFAULT_CREATE_VALUES } from '@/features/geo-map/admin/constants';
@@ -40,7 +41,6 @@ export const GeoMapAdminPage = () => {
   const deleteMutation = useDeleteGeoMapModelMutation();
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [createDraft, setCreateDraft] = useState<GeoMapCreateDraft | null>(EMPTY_CREATE_DRAFT);
   const [pendingDelete, setPendingDelete] = useState<AdminGeoMapModelItem | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
@@ -62,6 +62,12 @@ export const GeoMapAdminPage = () => {
   const selectModel = (id: string): void => {
     setSelectedId(id);
     setCreateDraft(null);
+    setActionError(null);
+  };
+
+  const clearSelection = (): void => {
+    setSelectedId(null);
+    setCreateDraft(EMPTY_CREATE_DRAFT);
     setActionError(null);
   };
 
@@ -117,6 +123,23 @@ export const GeoMapAdminPage = () => {
     }
   };
 
+  const handleReplaceModel = async (mediaAssetId: string): Promise<void> => {
+    if (!selectedId) {
+      return;
+    }
+    setActionError(null);
+    try {
+      await updateMutation.mutateAsync({ id: selectedId, body: { mediaAssetId } });
+    } catch {
+      setActionError(t('errors.updateFailed'));
+      throw new Error('replace-failed');
+    }
+  };
+
+  const requestDelete = (model: AdminGeoMapModelItem): void => {
+    setPendingDelete(model);
+  };
+
   const handleConfirmDelete = async (): Promise<void> => {
     if (!pendingDelete) {
       return;
@@ -163,9 +186,10 @@ export const GeoMapAdminPage = () => {
           onCreateDraftChange={setCreateDraft}
           onSave={handleSave}
           onPublishChange={handlePublishChange}
+          onReplaceModel={handleReplaceModel}
           onDelete={() => {
             if (selectedModel) {
-              setPendingDelete(selectedModel);
+              requestDelete(selectedModel);
             }
           }}
           headerActions={
@@ -183,9 +207,9 @@ export const GeoMapAdminPage = () => {
         <GeoMapCanvasLazy
           objects={objects}
           editable
+          highlightedObjectId={selectedId}
           className="h-full min-h-[50vh] w-full lg:min-h-full"
           onObjectClick={selectModel}
-          onObjectHover={setHoveredId}
           onMapClick={(position) => {
             void handleMapClick(position);
           }}
@@ -193,17 +217,20 @@ export const GeoMapAdminPage = () => {
             void handleDragged(id, position);
           }}
         />
+        {selectedModel && createDraft === null ? (
+          <GeoMapAdminSelectionToolbar
+            model={selectedModel}
+            isDeleting={deleteMutation.isPending}
+            onDelete={() => requestDelete(selectedModel)}
+            onClearSelection={clearSelection}
+          />
+        ) : null}
         {actionError ? (
           <p
             role="alert"
-            className="absolute bottom-3 left-3 right-3 rounded-sm border border-danger/40 bg-surface-elevated px-3 py-2 text-sm text-danger shadow-sm lg:left-auto lg:right-3 lg:max-w-sm"
+            className="absolute bottom-16 left-3 right-3 rounded-sm border border-danger/40 bg-surface-elevated px-3 py-2 text-sm text-danger shadow-sm lg:left-auto lg:right-3 lg:max-w-sm"
           >
             {actionError}
-          </p>
-        ) : null}
-        {hoveredId && !selectedId ? (
-          <p className="pointer-events-none absolute left-3 top-3 rounded-sm bg-surface-elevated/90 px-2 py-1 text-xs text-ink-muted">
-            {t('map.hover', { id: hoveredId })}
           </p>
         ) : null}
       </div>

@@ -1,11 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  getScenegraphObjectColor,
   getScenegraphObjectOrientation,
   getScenegraphObjectPosition,
   getScenegraphObjectScale,
   groupObjectsByModelUrl,
 } from '@/features/geo-map/utils/scenegraph-layer-props';
+import { SCENEGRAPH_DEFAULT_COLOR, SCENEGRAPH_SELECTED_COLOR } from '@/features/geo-map/constants';
 import type { GeoMapObject } from '@/features/geo-map/types';
 
 const buildObject = (overrides: Partial<GeoMapObject> & { id: string }): GeoMapObject => ({
@@ -78,5 +80,21 @@ describe('scenegraph accessors', () => {
 
   it('builds a uniform scale vector', () => {
     expect(datum && getScenegraphObjectScale(datum)).toEqual([2, 2, 2]);
+  });
+});
+
+describe('getScenegraphObjectColor', () => {
+  const datum = groupObjectsByModelUrl([buildObject({ id: 'selected' })])[0]?.data[0];
+
+  it('returns the selected tint when ids match', () => {
+    expect(datum && getScenegraphObjectColor(datum, 'selected')).toEqual(SCENEGRAPH_SELECTED_COLOR);
+  });
+
+  it('returns the default tint when nothing is selected', () => {
+    expect(datum && getScenegraphObjectColor(datum, null)).toEqual(SCENEGRAPH_DEFAULT_COLOR);
+  });
+
+  it('returns the default tint for a different selection', () => {
+    expect(datum && getScenegraphObjectColor(datum, 'other')).toEqual(SCENEGRAPH_DEFAULT_COLOR);
   });
 });
