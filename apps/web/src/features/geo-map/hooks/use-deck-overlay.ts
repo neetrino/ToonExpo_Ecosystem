@@ -191,9 +191,9 @@ const buildOverlayInteractionProps = (
 });
 
 /**
- * Lazily mounts a non-interleaved `MapboxOverlay` only while viewport-visible
- * GLB models exist. Rebuilds ScenegraphLayer when the quantized object /
- * opacity / highlight signature changes.
+ * Mounts a non-interleaved `MapboxOverlay` when GLB models exist, or in admin
+ * editable mode with `onMapClick` (empty-map place). Read-only maps skip mount
+ * with zero models. Rebuilds ScenegraphLayer when signature changes.
  */
 export const useDeckOverlay = ({
   map,
@@ -212,7 +212,7 @@ export const useDeckOverlay = ({
   const draggingIdRef = useRef<string | null>(null);
   const layerSignatureRef = useRef<string | null>(null);
   const layersRef = useRef<ScenegraphLayers>([]);
-  const shouldMountOverlay = modelObjects.length > 0;
+  const shouldMountOverlay = modelObjects.length > 0 || (editable && Boolean(onMapClick));
 
   useEffect(() => {
     if (!map || !isMapLoaded || !shouldMountOverlay) {
