@@ -5,7 +5,7 @@ import type { ObjectTransformOverride } from '@/features/geo-map/utils/apply-pos
 
 export type { SelectedOsmBuilding };
 
-/** A geographic point in `[longitude, latitude]` order (MapLibre/deck.gl convention). */
+/** A geographic point in `[longitude, latitude]` order (MapLibre convention). */
 export type GeoMapLngLat = {
   longitude: number;
   latitude: number;
@@ -26,7 +26,7 @@ export type GeoMapObject = {
   label: string;
   /** Builder company logo URL for the info card; null when unavailable. */
   logoUrl: string | null;
-  /** GLB url (R2), rendered via deck.gl `ScenegraphLayer` at/above `minZoom`. */
+  /** GLB url (R2), rendered via MapLibre Three.js custom layer at/above `minZoom`. */
   modelUrl: string;
   /** OSM id for precise extrusion hide; null → distance mask only. */
   sourceOsmId: string | null;

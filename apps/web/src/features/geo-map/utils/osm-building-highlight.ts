@@ -1,3 +1,4 @@
+import type { FeatureCollection } from 'geojson';
 import type { GeoJSONSource, MapLibreMap } from 'maplibre-gl';
 
 import type { BuildingGeometry } from '@/features/geo-map/utils/building-identification';
@@ -11,7 +12,7 @@ const HIGHLIGHT_FILL_OPACITY = 0.35;
 const HIGHLIGHT_LINE_COLOR = '#67e8f9';
 const HIGHLIGHT_LINE_WIDTH = 3;
 
-const emptyCollection = (): GeoJSON.FeatureCollection => ({
+const emptyCollection = (): FeatureCollection => ({
   type: 'FeatureCollection',
   features: [],
 });

@@ -49,7 +49,7 @@ const toSelectedBuilding = (
 
 /**
  * Admin-only: click liberty `building-3d` → select footprint + cyan highlight.
- * Does not fire when the click hits a deck.gl / marker object (those stop map click).
+ * Does not fire when the click hits a marker (markers stopPropagation).
  */
 export const useOsmBuildingPick = ({
   map,

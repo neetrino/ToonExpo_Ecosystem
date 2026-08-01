@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   buildFootprintMaskSignature,
-  buildScenegraphLayerSignature,
+  buildThreeBuildingLayerSignature,
   buildViewportSignature,
   quantizeDecimal,
   quantizeModelFadeOpacity,
@@ -66,7 +66,7 @@ describe('buildFootprintMaskSignature', () => {
   });
 });
 
-describe('buildScenegraphLayerSignature', () => {
+describe('buildThreeBuildingLayerSignature', () => {
   const model = {
     id: 'm1',
     modelUrl: 'https://cdn.example/a.glb',
@@ -74,27 +74,28 @@ describe('buildScenegraphLayerSignature', () => {
     latitude: 40.18,
     altitudeM: 0,
     headingDeg: 0,
-    pitchDeg: 0,
+    pitchDeg: 90,
     rollDeg: 0,
     scale: 1,
     minZoom: 14,
   };
 
-  it('ignores opacity micro-noise already quantized by the caller', () => {
-    expect(buildScenegraphLayerSignature([model], 0.6)).toBe(
-      buildScenegraphLayerSignature([model], 0.6),
+  it('is stable for the same pose set', () => {
+    expect(buildThreeBuildingLayerSignature([model])).toBe(
+      buildThreeBuildingLayerSignature([model]),
     );
   });
 
-  it('changes when opacity step changes', () => {
-    expect(buildScenegraphLayerSignature([model], 0.6)).not.toBe(
-      buildScenegraphLayerSignature([model], 0.8),
+  it('changes when rotation / scale / position change past quantize', () => {
+    expect(buildThreeBuildingLayerSignature([model])).not.toBe(
+      buildThreeBuildingLayerSignature([{ ...model, pitchDeg: 45 }]),
+    );
+    expect(buildThreeBuildingLayerSignature([model])).not.toBe(
+      buildThreeBuildingLayerSignature([{ ...model, scale: 1.5 }]),
     );
   });
 
-  it('does not include selection highlight (chrome-only, no mesh wash)', () => {
-    // Selection must not rebuild ScenegraphLayer — getColor stays white.
-    expect(buildScenegraphLayerSignature([model], 0.6)).toContain('|op:0.6');
-    expect(buildScenegraphLayerSignature([model], 0.6)).not.toContain('|hl:');
+  it('does not include selection highlight keys', () => {
+    expect(buildThreeBuildingLayerSignature([model])).not.toContain('|hl:');
   });
 });

@@ -32,7 +32,7 @@ const readViewportState = (map: MapLibreMap): MapViewportState => {
  * Tracks map zoom + viewport bounds for marker/model visibility.
  *
  * `move` is rAF-coalesced and React state only updates when the quantized
- * zoom/bounds signature changes — avoids ScenegraphLayer / OSM filter thrash
+ * zoom/bounds signature changes — avoids Three layer / OSM filter thrash
  * on every camera frame.
  */
 export const useMapViewportState = (

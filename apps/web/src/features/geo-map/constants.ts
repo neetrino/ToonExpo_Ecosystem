@@ -58,8 +58,8 @@ export const MODEL_POSITION_QUANTIZE_DECIMALS = 4;
 export const GEO_MAP_API_COORDINATE_DECIMALS = 7;
 
 /**
- * Discrete opacity steps for ScenegraphLayer fade — zoom micro-ticks must not
- * recreate layers on every frame.
+ * Discrete opacity steps for marker / legacy fade helpers — zoom micro-ticks
+ * must not thrash React state on every frame.
  */
 export const MODEL_FADE_OPACITY_STEP_COUNT = 5;
 
@@ -76,29 +76,26 @@ export const DEFAULT_MAP_STYLE_URL = 'https://tiles.openfreemap.org/styles/liber
 export const DEFAULT_MODEL_MIN_ZOOM = 14;
 
 /**
- * Default model pitch for new admin placements and lab fixtures.
- * deck.gl ScenegraphLayer `getOrientation` is `[pitch, yaw, roll]`; typical
- * Y-up glTF/GLB assets need ~90° pitch to stand upright on MapLibre
- * (Map POC Rotation X = 90°). Prisma schema default stays 0 for stability —
- * create paths must send this value explicitly.
+ * Default model Rotation X (`pitchDeg`) for new admin placements and lab
+ * fixtures. MapLibre Three.js custom layer (POC parity):
+ * `DEFAULT_MODEL_ROTATION_X_DEG = 90`. Prisma column default stays 0 for
+ * schema stability — create paths must send this value explicitly.
  */
 export const GEO_MAP_DEFAULT_PITCH_DEG = 90;
 
 export const MIN_MAP_ZOOM = 0;
 export const MAX_MAP_ZOOM = 22;
 
-/** Prefix for per-model-URL `ScenegraphLayer` ids (grouped by GLB url). */
+/** @deprecated Temporary until Scenegraph path removal commit. */
 export const SCENEGRAPH_LAYER_ID_PREFIX = 'geo-map-scenegraph-layer';
 export const SCENEGRAPH_SIZE_SCALE = 1;
-/** Disabled — sizeMinPixels fights real-meter GLBs and huge authoring-unit assets. */
 export const SCENEGRAPH_SIZE_MIN_PIXELS = 0;
-
-/**
- * Insert ScenegraphLayer before this liberty style layer so GLBs draw *above*
- * `building-3d` fill-extrusions when using interleaved overlay mode.
- * Currently unused while `MapboxOverlay` runs with `interleaved: false`.
- */
 export const SCENEGRAPH_BEFORE_LAYER_ID = 'boundary_3';
+export const SCENEGRAPH_DEFAULT_COLOR: [number, number, number, number] = [255, 255, 255, 255];
+export const SCENEGRAPH_HOVER_HIGHLIGHT_COLOR: [number, number, number, number] = [
+  255, 214, 64, 160,
+];
+export const MAP_CANVAS_HOVER_CURSOR_CLASS = 'cursor-pointer';
 
 /** Zoom span over which model opacity eases from floor → full after `minZoom`. */
 export const MODEL_FADE_ZOOM_DELTA = 0.75;
@@ -172,30 +169,11 @@ export const MARKER_PIN_SVG_INNER_HTML =
 /** Info card logo slot edge length (px) — matches Tailwind `size-10`. */
 export const GEO_MAP_INFO_CARD_LOGO_PX = 40;
 
-/** MapLibre canvas gains this class while the pointer is over a pickable model. */
-export const MAP_CANVAS_HOVER_CURSOR_CLASS = 'cursor-pointer';
-
-/** Stack admin map UI above MapLibre / deck.gl canvases (see `GeoMapCanvas` UI overlay root). */
+/** Stack admin map UI above MapLibre canvas (see `GeoMapCanvas` UI overlay root). */
 export const GEO_MAP_UI_OVERLAY_Z_INDEX_CLASS = 'z-[100]';
 
 /** Context menu above the floating selection bar within the map UI overlay. */
 export const GEO_MAP_ADMIN_CONTEXT_MENU_Z_INDEX_CLASS = 'z-[110]';
-
-/**
- * ScenegraphLayer `getColor` tint (RGBA 0–255) — always opaque white so GLB
- * materials stay visible. Selection is shown via pins / floating chrome / info
- * card, not a multiplicative mesh wash (a warm tint under flat or PBR lighting
- * can read as a solid yellow/orange slab).
- */
-export const SCENEGRAPH_DEFAULT_COLOR: [number, number, number, number] = [255, 255, 255, 255];
-
-/**
- * deck.gl `autoHighlight` wash while the pointer is over a pickable instance
- * (RGBA). Semi-transparent so mesh detail remains readable.
- */
-export const SCENEGRAPH_HOVER_HIGHLIGHT_COLOR: [number, number, number, number] = [
-  255, 214, 64, 160,
-];
 
 /** OpenFreeMap liberty layer that provides surrounding OSM building extrusions. */
 export const OSM_BUILDING_EXTRUSION_LAYER_ID = 'building-3d';

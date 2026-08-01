@@ -14,8 +14,8 @@ export const quantizeDecimal = (value: number, decimals: number): number => {
 };
 
 /**
- * Snap continuous fade opacity into a few steps so zoom ticks do not recreate
- * ScenegraphLayer instances on every sub-pixel zoom change.
+ * Snap continuous fade opacity into a few steps (marker / legacy helpers).
+ * Three.js GLB layer visibility is discrete via viewport split, not opacity.
  */
 export const quantizeModelFadeOpacity = (
   opacity: number,
@@ -104,7 +104,7 @@ export const buildAdminOsmHideSignature = (
   return `hide:${ids}|pts:${points}`;
 };
 
-export type ScenegraphSignatureModel = {
+export type ThreeBuildingSignatureModel = {
   id: string;
   modelUrl: string;
   longitude: number;
@@ -118,36 +118,40 @@ export type ScenegraphSignatureModel = {
 };
 
 /**
- * Signature for ScenegraphLayer rebuild inputs — ids, quantized pose, and
- * opacity. Drag updates still invalidate when position moves past quantize.
- * Selection is not included: mesh color stays white; highlight is chrome-only.
+ * Signature for Three.js building-layer sync — ids + quantized pose/url.
+ * Drag / live transform preview invalidate when values move past quantize.
  */
-export const buildScenegraphLayerSignature = (
-  models: readonly ScenegraphSignatureModel[],
-  opacity: number,
+export const buildThreeBuildingLayerSignature = (
+  models: readonly ThreeBuildingSignatureModel[],
 ): string => {
   const d = MODEL_POSITION_QUANTIZE_DECIMALS;
-  const objectKey =
-    models.length === 0
-      ? 'empty'
-      : [...models]
-          .map((model) => {
-            const lng = quantizeDecimal(model.longitude, d).toFixed(d);
-            const lat = quantizeDecimal(model.latitude, d).toFixed(d);
-            return [
-              model.id,
-              model.modelUrl,
-              lng,
-              lat,
-              quantizeDecimal(model.altitudeM, 2),
-              quantizeDecimal(model.headingDeg, 1),
-              quantizeDecimal(model.pitchDeg, 1),
-              quantizeDecimal(model.rollDeg, 1),
-              quantizeDecimal(model.scale, 3),
-              quantizeDecimal(model.minZoom, 2),
-            ].join(':');
-          })
-          .sort()
-          .join('|');
-  return `${objectKey}|op:${opacity}`;
+  if (models.length === 0) {
+    return 'empty';
+  }
+  return [...models]
+    .map((model) => {
+      const lng = quantizeDecimal(model.longitude, d).toFixed(d);
+      const lat = quantizeDecimal(model.latitude, d).toFixed(d);
+      return [
+        model.id,
+        model.modelUrl,
+        lng,
+        lat,
+        quantizeDecimal(model.altitudeM, 2),
+        quantizeDecimal(model.headingDeg, 1),
+        quantizeDecimal(model.pitchDeg, 1),
+        quantizeDecimal(model.rollDeg, 1),
+        quantizeDecimal(model.scale, 3),
+        quantizeDecimal(model.minZoom, 2),
+      ].join(':');
+    })
+    .sort()
+    .join('|');
 };
+
+/** @deprecated Temporary until Scenegraph path removal commit. */
+export type ScenegraphSignatureModel = ThreeBuildingSignatureModel;
+export const buildScenegraphLayerSignature = (
+  models: readonly ThreeBuildingSignatureModel[],
+  opacity: number,
+): string => `${buildThreeBuildingLayerSignature(models)}|op:${opacity}`;

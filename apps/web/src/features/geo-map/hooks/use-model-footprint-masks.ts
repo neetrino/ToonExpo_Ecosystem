@@ -9,7 +9,7 @@ import { syncModelFootprintMasks } from '@/features/geo-map/utils/sync-model-foo
 export type UseModelFootprintMasksOptions = {
   map: MapLibreMap | null;
   isMapLoaded: boolean;
-  /** Viewport-visible GLB models (same set as the deck.gl overlay). */
+  /** Viewport-visible GLB models (same set as the Three.js building layer). */
   modelObjects: GeoMapObject[];
   /** Admin session hides for raw OSM extrusions (editable map only). */
   adminOsmHideSession?: AdminOsmHideSession | null | undefined;

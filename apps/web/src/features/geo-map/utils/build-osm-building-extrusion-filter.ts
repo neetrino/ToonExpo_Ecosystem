@@ -5,6 +5,8 @@
  * Returns `null` when there is nothing to hide (caller should clear the filter).
  */
 
+import type { Point } from 'geojson';
+
 export type OsmExtrusionFilterPoint = {
   longitude: number;
   latitude: number;
@@ -22,7 +24,7 @@ export type OsmBuildingExtrusionFilterExtras = {
   hiddenDistancePoints?: readonly OsmExtrusionFilterPoint[] | undefined;
 };
 
-type DistanceClause = readonly ['<', readonly ['distance', GeoJSON.Point], number];
+type DistanceClause = readonly ['<', readonly ['distance', Point], number];
 type OsmIdExclusion = readonly [
   '!',
   readonly [

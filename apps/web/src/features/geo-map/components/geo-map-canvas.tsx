@@ -14,13 +14,14 @@ import {
   DEFAULT_MAP_ZOOM,
   GEO_MAP_UI_OVERLAY_Z_INDEX_CLASS,
 } from '@/features/geo-map/constants';
-import { useDeckOverlay } from '@/features/geo-map/hooks/use-deck-overlay';
+import { useGeoMapEmptyClick } from '@/features/geo-map/hooks/use-geo-map-empty-click';
 import { useMapFocus } from '@/features/geo-map/hooks/use-map-focus';
 import { useMapViewportState } from '@/features/geo-map/hooks/use-map-viewport-state';
 import { useMaplibreMap } from '@/features/geo-map/hooks/use-maplibre-map';
 import { useMarkerLayer } from '@/features/geo-map/hooks/use-marker-layer';
 import { useModelFootprintMasks } from '@/features/geo-map/hooks/use-model-footprint-masks';
 import { useOsmBuildingPick } from '@/features/geo-map/hooks/use-osm-building-pick';
+import { useThreeBuildingLayer } from '@/features/geo-map/hooks/use-three-building-layer';
 import { useVisibleObjects } from '@/features/geo-map/hooks/use-visible-objects';
 import { useWebglSupport } from '@/features/geo-map/hooks/use-webgl-support';
 import type { GeoMapCanvasProps, GeoMapLngLat, GeoMapObject } from '@/features/geo-map/types';
@@ -43,18 +44,17 @@ const findObjectById = (
 };
 
 /**
- * Reusable MapLibre + deck.gl 3D map core (Stage 2a — see `docs/3D-MAP-PLAN.md`).
+ * Reusable MapLibre + Three.js 3D map core (see `docs/3D-MAP-PLAN.md`).
  *
- * Renders always-visible compact dots for discoverability, plus GLB models via
- * deck.gl `ScenegraphLayer` at/above each object's `minZoom`. Model layers are
- * limited to the current viewport so only a few dozen GLBs load at once.
+ * MapLibre owns basemap, OSM buildings, and camera. GLB models render via a
+ * MapLibre Three.js custom layer (`ThreeBuildingLayer`) at/above each object's
+ * `minZoom`, limited to the current viewport.
  *
  * Hover/select shows a shared logo + name info card. Optional `focusRequest`
  * flies the camera to an object without breaking read-only / editable consumers.
  *
- * Consumed by the admin editor (Stage 2b, `editable`), the public map (Stage 3),
- * and the home map (Stage 5). Load via `next/dynamic` with `ssr: false` —
- * see `GeoMapCanvasLazy`.
+ * Consumed by the admin editor (`editable`), the public map, and the home map.
+ * Load via `next/dynamic` with `ssr: false` — see `GeoMapCanvasLazy`.
  */
 export const GeoMapCanvas = ({
   objects,
@@ -88,8 +88,8 @@ export const GeoMapCanvas = ({
     styleUrl: styleUrl ?? resolveMapStyleUrl(),
     initialCenter,
     initialZoom,
-    initialPitch,
     initialBearing,
+    ...(initialPitch !== undefined ? { initialPitch } : {}),
   });
   const { zoom, bounds } = useMapViewportState(map, isMapLoaded, initialZoom);
   const { markerObjects, modelObjects } = useVisibleObjects(
@@ -118,6 +118,12 @@ export const GeoMapCanvas = ({
     selectedBuilding: selectedOsmBuilding,
     onSelect: onOsmBuildingSelect ?? (() => undefined),
   });
+  useGeoMapEmptyClick({
+    map,
+    isMapLoaded,
+    enabled: editable && Boolean(onMapClick),
+    onMapClick,
+  });
   useMarkerLayer({
     map,
     isMapLoaded,
@@ -127,8 +133,13 @@ export const GeoMapCanvas = ({
     highlightedObjectId: activeHighlightId,
     onObjectClick,
     onObjectHover: handleObjectHover,
-    onObjectDragged,
+    onObjectDragMove: (id, position) => setDragOverride({ id, ...position }),
+    onObjectDragged: (id, position) => {
+      setDragOverride(null);
+      onObjectDragged?.(id, position);
+    },
   });
+  useThreeBuildingLayer({ map, isMapLoaded, modelObjects });
   useEffect(() => {
     if (!map || !isMapLoaded) {
       setUiOverlayRoot(null);
@@ -147,22 +158,6 @@ export const GeoMapCanvas = ({
       setUiOverlayRoot(null);
     };
   }, [map, isMapLoaded]);
-
-  useDeckOverlay({
-    map,
-    isMapLoaded,
-    modelObjects,
-    zoom,
-    editable,
-    onObjectClick,
-    onObjectHover: handleObjectHover,
-    onMapClick,
-    onModelDragMove: (id, position) => setDragOverride({ id, ...position }),
-    onModelDragEnd: (id, position) => {
-      setDragOverride(null);
-      onObjectDragged?.(id, position);
-    },
-  });
 
   if (!isWebglSupported) {
     return <GeoMapWebglFallback className={className} />;

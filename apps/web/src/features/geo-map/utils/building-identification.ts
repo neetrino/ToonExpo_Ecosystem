@@ -3,6 +3,8 @@
  * Used by admin pick → place / hide-extrusion flows.
  */
 
+import type { Geometry } from 'geojson';
+
 export type BuildingGeometry =
   | { type: 'Polygon'; coordinates: number[][][] }
   | { type: 'MultiPolygon'; coordinates: number[][][][] };
@@ -93,9 +95,7 @@ export const computeFootprintCenter = (geometry: BuildingGeometry): [number, num
   return best;
 };
 
-export const isBuildingGeometry = (
-  value: GeoJSON.Geometry | null | undefined,
-): value is BuildingGeometry =>
+export const isBuildingGeometry = (value: Geometry | null | undefined): value is BuildingGeometry =>
   Boolean(value && (value.type === 'Polygon' || value.type === 'MultiPolygon'));
 
 const pointInRing = (longitude: number, latitude: number, ring: number[][]): boolean => {

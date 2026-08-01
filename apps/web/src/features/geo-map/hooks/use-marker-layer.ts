@@ -21,6 +21,8 @@ export type UseMarkerLayerOptions = {
   highlightedObjectId?: string | null | undefined;
   onObjectClick?: ((id: string) => void) | undefined;
   onObjectHover?: ((id: string | null) => void) | undefined;
+  /** Fired continuously while an editable pin drag is in progress. */
+  onObjectDragMove?: ((id: string, position: GeoMapLngLat) => void) | undefined;
   onObjectDragged?: ((id: string, position: GeoMapLngLat) => void) | undefined;
 };
 
@@ -51,14 +53,20 @@ const createMarkerElement = (
 
 type MarkerCallbacks = Pick<
   UseMarkerLayerOptions,
-  'onObjectClick' | 'onObjectHover' | 'onObjectDragged'
+  'onObjectClick' | 'onObjectHover' | 'onObjectDragMove' | 'onObjectDragged'
 >;
+
+const toLngLat = (marker: Marker): GeoMapLngLat => {
+  const lngLat = marker.getLngLat();
+  return { longitude: lngLat.lng, latitude: lngLat.lat };
+};
 
 const attachMarkerHandlers = (
   marker: Marker,
   element: HTMLDivElement,
   id: string,
-  { onObjectClick, onObjectHover, onObjectDragged }: MarkerCallbacks,
+  draggingIdRef: { current: string | null },
+  { onObjectClick, onObjectHover, onObjectDragMove, onObjectDragged }: MarkerCallbacks,
 ): void => {
   element.addEventListener('click', (event) => {
     event.stopPropagation();
@@ -66,9 +74,13 @@ const attachMarkerHandlers = (
   });
   element.addEventListener('mouseenter', () => onObjectHover?.(id));
   element.addEventListener('mouseleave', () => onObjectHover?.(null));
+  marker.on('drag', () => {
+    draggingIdRef.current = id;
+    onObjectDragMove?.(id, toLngLat(marker));
+  });
   marker.on('dragend', () => {
-    const lngLat = marker.getLngLat();
-    onObjectDragged?.(id, { longitude: lngLat.lng, latitude: lngLat.lat });
+    draggingIdRef.current = null;
+    onObjectDragged?.(id, toLngLat(marker));
   });
 };
 
@@ -79,6 +91,8 @@ const syncMarkers = (
   zoom: number,
   editable: boolean,
   highlightedObjectId: string | null | undefined,
+  draggingId: string | null,
+  draggingIdRef: { current: string | null },
   callbacks: MarkerCallbacks,
 ): void => {
   const nextIds = new Set(markerObjects.map((object) => object.id));
@@ -94,7 +108,9 @@ const syncMarkers = (
     const highlighted = object.id === highlightedObjectId;
     const existing = markers.get(object.id);
     if (existing) {
-      existing.setLngLat([object.longitude, object.latitude]);
+      if (draggingId !== object.id) {
+        existing.setLngLat([object.longitude, object.latitude]);
+      }
       existing.setDraggable(editable);
       const element = existing.getElement();
       element.className = resolveMarkerClassName(editable, highlighted);
@@ -112,14 +128,14 @@ const syncMarkers = (
     const marker = new Marker({ element, draggable: editable, anchor: 'bottom' })
       .setLngLat([object.longitude, object.latitude])
       .addTo(map);
-    attachMarkerHandlers(marker, element, object.id, callbacks);
+    attachMarkerHandlers(marker, element, object.id, draggingIdRef, callbacks);
     markers.set(object.id, marker);
   }
 };
 
 /**
  * Renders `markerObjects` as MapLibre HTML map-pin markers (always visible),
- * draggable when `editable`, reporting drag results via `onObjectDragged`.
+ * draggable when `editable`, reporting drag via `onObjectDragMove` / `onObjectDragged`.
  */
 export const useMarkerLayer = ({
   map,
@@ -130,19 +146,32 @@ export const useMarkerLayer = ({
   highlightedObjectId = null,
   onObjectClick,
   onObjectHover,
+  onObjectDragMove,
   onObjectDragged,
 }: UseMarkerLayerOptions): void => {
   const markersRef = useRef(new Map<string, Marker>());
+  const draggingIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!map || !isMapLoaded) {
       return;
     }
-    syncMarkers(map, markersRef.current, markerObjects, zoom, editable, highlightedObjectId, {
-      onObjectClick,
-      onObjectHover,
-      onObjectDragged,
-    });
+    syncMarkers(
+      map,
+      markersRef.current,
+      markerObjects,
+      zoom,
+      editable,
+      highlightedObjectId,
+      draggingIdRef.current,
+      draggingIdRef,
+      {
+        onObjectClick,
+        onObjectHover,
+        onObjectDragMove,
+        onObjectDragged,
+      },
+    );
   }, [
     map,
     isMapLoaded,
@@ -152,6 +181,7 @@ export const useMarkerLayer = ({
     highlightedObjectId,
     onObjectClick,
     onObjectHover,
+    onObjectDragMove,
     onObjectDragged,
   ]);
 

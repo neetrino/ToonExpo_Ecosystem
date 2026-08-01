@@ -18,10 +18,15 @@ Scale target: ~200–300 objects now, up to ~1000 buildings long-term.
 
 ## Stack decision
 
-- **MapLibre GL** (OSM vector tiles) — base map, free, no tokens; already used
-  in ToonExpo v1.
-- **deck.gl `ScenegraphLayer`** (`@deck.gl/mapbox` MapboxOverlay interleaved
-  with MapLibre) — renders GLB models at [lng, lat] with orientation + scale.
+- **MapLibre GL** (OSM vector tiles) — basemap, OSM building pick/hide, camera
+  only; free, no tokens.
+- **Three.js MapLibre custom layer(s)** — all custom 3D content (GLB buildings
+  now; cars / vegetation / animations later). Orientation matches the proven
+  Manvel-Lambaryan/Map POC matrix:
+  `camera.projectionMatrix = mainMatrix * translate(mercator)
+  - scale(s, -s, s) * rotX * rotY * rotZ`with`DEFAULT_MODEL_ROTATION_X_DEG = 90` (`pitchDeg`↔ Rotation X,`headingDeg`↔ Y,`rollDeg`↔ Z). See`apps/web/src/features/geo-map/three/`.
+- **deck.gl `ScenegraphLayer` removed** from the product path (orientation
+  semantics did not match the POC matrix).
 - **GLB storage:** Cloudflare R2 via existing `apps/api/src/media` module.
 - Runtime flow (hard rule): browser → Next.js → NestJS API → Prisma → PostgreSQL.
 
@@ -29,7 +34,7 @@ Scale target: ~200–300 objects now, up to ~1000 buildings long-term.
 
 - No CesiumJS / Cesium ion / terrain / photorealistic tiles.
 - No LOD pipeline for v1 (viewport-based loading is enough at ≤1000 models).
-- No Three.js custom layer (deck.gl `ScenegraphLayer` remains the renderer).
+- No deck.gl mesh rendering for geo-map GLBs.
 
 ### Stage 2b+ (2026-08-01) — OSM pick + unassigned placements
 
@@ -41,8 +46,9 @@ existing distance mask. Publish requires an attached project; public list is
 
 ### Future polish backlog (not in current scope)
 
-- Sparse cars only near viewport/camera focus (performance-safe).
-- Richer trees / water / grass — minimal “life”, not a sim.
+- Sparse cars / vegetation / animations as additional Three.js custom layers
+  under `apps/web/src/features/geo-map/three/` (same MapLibre custom-layer
+  architecture — see `three/index.ts` extension point).
 - Yerevan pink-tuff brand paint on the basemap.
 
 ## Data model (packages/db)
@@ -99,22 +105,22 @@ Contracts/DTO types go to `packages/contracts` per existing conventions.
 
 Shared map core in `apps/web/src/features/geo-map/`:
 
-- `GeoMapCanvas` — MapLibre init + deck.gl MapboxOverlay + ScenegraphLayer;
-  markers below `minZoom`, GLB models above; viewport-based model loading.
+- `GeoMapCanvas` — MapLibre init + Three.js `ThreeBuildingLayer` custom layer;
+  always-visible markers + GLB models at/above `minZoom`; viewport-based loads.
 - Admin editor page `/[locale]/admin/geo-map`:
   nav item "3D Map" in `apps/web/src/features/admin/admin-nav-items.ts`;
   fullscreen map + side panel: project select, GLB upload, click-to-place,
   drag-to-move, heading/scale sliders, numeric transform fields, publish toggle.
 - Public page: markers → 3D on zoom, hover card, click → project page.
 
-MapLibre/deck.gl are client-only (`dynamic(..., { ssr: false })`).
+MapLibre/Three.js are client-only (`dynamic(..., { ssr: false })`).
 
 ## Stages
 
 | #   | Scope                                                                                        | Model             | Status |
 | --- | -------------------------------------------------------------------------------------------- | ----------------- | ------ |
 | 1   | DB schema + migration + `geo-map` API module + media `model3d` kind + contracts + unit tests | Grok 4.5 High     | done   |
-| 2a  | `GeoMapCanvas` core: MapLibre + deck.gl integration, marker/model zoom switch                | Sonnet 5 High     | done   |
+| 2a  | `GeoMapCanvas` core: MapLibre + Three.js GLB layer, marker/model zoom switch                 | Sonnet 5 High     | done   |
 | 2b  | Admin editor page: panel UI, upload flow, transform controls, wiring to API                  | Grok 4.5 High     | done   |
 | 3   | Public map page (reuse `GeoMapCanvas`, read-only)                                            | Composer 2.5 Fast | done   |
 | 4   | Map styling (brand colors, OSM building extrusions), polish, i18n strings                    | Grok 4.5 High     | done   |
@@ -204,27 +210,19 @@ Stage rules:
   geometry clipping needs custom tiles.
 - **Done:** R2 bucket CORS allows direct GLB fetches from `pub-*.r2.dev`; the
   `/r2-proxy/*` rewrite was removed.
-- Scenegraph layers render via `MapboxOverlay` with `interleaved: false` (and
-  `_lighting: 'pbr'`) so GLBs stay visible above MapLibre depth/stencil and
-  textured materials read more realistically than flat unlit shading. If a GLB
-  still looks washed or mirror-black after PBR, escalate (authoring materials /
-  Three.js path) rather than reintroducing a warm `getColor` wash.
+- **Three.js GLB runtime (POC parity):** `ThreeBuildingLayer` shares MapLibre’s
+  WebGL context, lights with Ambient + Directional (POC intensities), and
+  plants models with `mainMatrix * translate * scale(s,-s,s) * Rx*Ry*Rz`.
+  Field mapping: `pitchDeg`→Rotation X (default **90**), `headingDeg`→Y,
+  `rollDeg`→Z. Selection stays chrome-only (pin / floating bar / info card).
 - **Admin live transform preview:** Sidebar sliders (position, altitude, rotate
   X/Y/Z, scale, minZoom) update the map immediately via an in-memory
   `transformOverride` on `GeoMapCanvas`. **Save** PATCHes the API/DB. **Publish**
   remains a separate flag — the public map still only lists
-  `isPublished && projectId != null`. Drag-to-move still PATCHes lng/lat on drop
+  `isPublished && projectId != null`. Pin drag-to-move PATCHes lng/lat on drop
   and wins over the preview while dragging.
-- **Default model pitch 90° (POC parity):** deck.gl `ScenegraphLayer`
-  `getOrientation` is `[pitch, yaw, roll]`. Typical Y-up glTF/GLB assets
-  (including Map POC `Building01.glb`) need `pitchDeg: 90` to stand upright on
-  MapLibre — matches POC “Rotation X = 90°”. Prisma column default stays `0`
-  for schema stability; admin create + Nest create defaults send
-  `GEO_MAP_DEFAULT_PITCH_DEG = 90`. Selection must not multiply mesh color
-  (warm `getColor` wash reads as a solid yellow slab); keep opaque white
-  `getColor` and show selection via pin / chrome / info card only.
-- When interleaved mode is re-enabled later, use `beforeId: boundary_3` so
-  models draw above `building-3d` extrusions.
+- Prisma `pitchDeg` column default stays `0` for schema stability; admin create
+  - Nest create defaults send `GEO_MAP_DEFAULT_PITCH_DEG = 90`.
 
 ## Polish
 
@@ -248,15 +246,12 @@ Stage rules:
 
 - **Viewport sync:** `useMapViewportState` rAF-coalesces `move` and only
   `setState`s when quantized zoom (2 dp) + bounds signature change — cuts
-  React → model/marker array → ScenegraphLayer / OSM `setFilter` thrash while
+  React → model/marker array → Three layer / OSM `setFilter` thrash while
   tilting.
 - **Guarded updates:** Footprint mask skips `setFilter` when model id/position
-  signature is unchanged; deck rebuilds ScenegraphLayer only when object pose /
-  quantized fade opacity change (selection is chrome-only, not mesh tint).
-  Opacity is stepped so zoom ticks do not recreate layers.
+  signature is unchanged; Three building layer syncs only when
+  `buildThreeBuildingLayerSignature` (pose / url / set) changes.
 - **Cold start:** MapLibre ctor uses `fadeDuration: 0`, `canvasContextAttributes.antialias: false`, and
   `pixelRatio` capped at 2; pitch eases 0→55 after idle (see above).
-- **Lazy deck:** `MapboxOverlay` mounts only while viewport-visible GLB models
-  exist; safe remount when models appear later.
-- **Deferred (not in this pass):** structural ScenegraphLayer identity across
-  updates, `interleaved: true`, and a lighter basemap / `building-3d` strategy.
+- **Deferred:** lighter basemap / `building-3d` strategy; Three mesh picking /
+  raycast for model click (today: pin click + sidebar selection).

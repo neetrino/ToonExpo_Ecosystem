@@ -1,7 +1,9 @@
+import type { FeatureCollection, Polygon } from 'geojson';
+
 import type { GeoMapObject } from '@/features/geo-map/types';
 import { buildCirclePolygonRing } from '@/features/geo-map/utils/model-footprint-polygon';
 
-export type ModelFootprintFeatureCollection = GeoJSON.FeatureCollection<GeoJSON.Polygon>;
+export type ModelFootprintFeatureCollection = FeatureCollection<Polygon>;
 
 export const EMPTY_MODEL_FOOTPRINT_GEOJSON: ModelFootprintFeatureCollection = {
   type: 'FeatureCollection',
