@@ -24,7 +24,9 @@ const findObjectById = (objects: GeoMapObject[], id: string): GeoMapObject | nul
   objects.find((object) => object.id === id) ?? null;
 
 /**
- * Buy-page map panel — published 3D project models with bidirectional list sync.
+ * Buy-page map panel — published 3D project models.
+ * List→map hover focus/highlight is owned by the browse parent; model click
+ * filters the list (filter chip) without fighting hover as primary sync.
  */
 export const BuyApartmentsMap = ({
   focusRequest,

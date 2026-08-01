@@ -1,17 +1,15 @@
 'use client';
 
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 
 import { BuyApartmentCard } from '@/features/catalog/components/buy-apartment-card';
 import { BuyApartmentsMap } from '@/features/catalog/components/buy-apartments-map';
 import { BuyMapProjectFilterChip } from '@/features/catalog/components/buy-map-project-filter-chip';
+import { BUY_APARTMENTS_MAP_HOVER_DEBOUNCE_MS } from '@/features/catalog/constants';
 import type { BuyApartmentListing } from '@/features/catalog/utils/load-buy-apartments';
 import { filterListingsByProjectId } from '@/features/catalog/utils/filter-listings-by-project';
-import {
-  collectMappableProjectIds,
-  resolveMapObjectForProject,
-} from '@/features/catalog/utils/resolve-map-object-for-project';
+import { resolveMapObjectForProject } from '@/features/catalog/utils/resolve-map-object-for-project';
 import type { GeoMapFocusRequest, GeoMapObject } from '@/features/geo-map/types';
 import { mapPublicGeoMapItemsToObjects } from '@/features/geo-map/utils/map-object-mapper';
 import { usePublicGeoMapModelsQuery } from '@/features/geo-map/public/hooks/use-public-geo-map-models';
@@ -25,13 +23,15 @@ type BuyApartmentsBrowseProps = {
 
 /**
  * Map + listing grid for the Buy apartments page.
- * List → map via "Show on map"; map → list via project filter on model click.
+ * List → map via card hover; map → list via project filter on model click.
+ * Hover is the primary list→map sync; the filter chip is only set on explicit model click.
  */
 export const BuyApartmentsBrowse = ({ listings }: BuyApartmentsBrowseProps) => {
   const t = useTranslations('BuyPage');
   const pathname = usePathname();
   const modelsQuery = usePublicGeoMapModelsQuery();
   const listPanelRef = useRef<HTMLDivElement>(null);
+  const hoverTimerRef = useRef<number | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [focusRequest, setFocusRequest] = useState<GeoMapFocusRequest | undefined>(undefined);
   const [highlightedObjectId, setHighlightedObjectId] = useState<string | null>(null);
@@ -43,23 +43,51 @@ export const BuyApartmentsBrowse = ({ listings }: BuyApartmentsBrowseProps) => {
     () => mapPublicGeoMapItemsToObjects(modelsQuery.data?.data ?? []),
     [modelsQuery.data?.data],
   );
-  const mappableProjectIds = useMemo(() => collectMappableProjectIds(objects), [objects]);
+  const objectsRef = useRef(objects);
+  objectsRef.current = objects;
+
   const visibleListings = useMemo(
     () => filterListingsByProjectId(listings, mapProjectId),
     [listings, mapProjectId],
   );
 
-  const onShowOnMap = (listing: BuyApartmentListing): void => {
-    setSelectedId(listing.id);
-    const object = resolveMapObjectForProject(objects, listing.projectId);
-    if (!object) {
-      return;
+  useEffect(() => {
+    return () => {
+      if (hoverTimerRef.current != null) {
+        window.clearTimeout(hoverTimerRef.current);
+      }
+    };
+  }, []);
+
+  const clearHoverTimer = (): void => {
+    if (hoverTimerRef.current != null) {
+      window.clearTimeout(hoverTimerRef.current);
+      hoverTimerRef.current = null;
     }
-    setHighlightedObjectId(object.id);
-    setFocusRequest((prev) => ({
-      objectId: object.id,
-      token: (prev?.token ?? 0) + 1,
-    }));
+  };
+
+  const onCardHoverEnter = (listing: BuyApartmentListing): void => {
+    clearHoverTimer();
+    hoverTimerRef.current = window.setTimeout(() => {
+      setSelectedId(listing.id);
+      const object = resolveMapObjectForProject(objectsRef.current, listing.projectId);
+      if (!object) {
+        return;
+      }
+      setHighlightedObjectId(object.id);
+      setFocusRequest((prev) => ({
+        objectId: object.id,
+        token: (prev?.token ?? 0) + 1,
+      }));
+    }, BUY_APARTMENTS_MAP_HOVER_DEBOUNCE_MS);
+  };
+
+  const onCardHoverLeave = (): void => {
+    clearHoverTimer();
+    hoverTimerRef.current = window.setTimeout(() => {
+      setSelectedId(null);
+      setHighlightedObjectId(null);
+    }, BUY_APARTMENTS_MAP_HOVER_DEBOUNCE_MS);
   };
 
   const onMapObjectSelect = (object: GeoMapObject): void => {
@@ -112,8 +140,8 @@ export const BuyApartmentsBrowse = ({ listings }: BuyApartmentsBrowseProps) => {
                 key={listing.id}
                 listing={listing}
                 highlighted={selectedId != null && listing.id === selectedId}
-                canShowOnMap={mappableProjectIds.has(listing.projectId)}
-                onShowOnMap={() => onShowOnMap(listing)}
+                onHoverEnter={() => onCardHoverEnter(listing)}
+                onHoverLeave={onCardHoverLeave}
               />
             ))}
           </div>
