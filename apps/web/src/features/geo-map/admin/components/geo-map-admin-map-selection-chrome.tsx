@@ -88,12 +88,16 @@ export const GeoMapAdminMapSelectionChrome = ({
     if (!contextMenu) {
       return;
     }
-    const handlePointerDown = (): void => {
+    const handlePointerDown = (event: PointerEvent): void => {
+      const target = event.target;
+      if (target instanceof Node && menuRef.current?.contains(target)) {
+        return;
+      }
       closeContextMenu();
     };
-    window.addEventListener('pointerdown', handlePointerDown);
+    window.addEventListener('pointerdown', handlePointerDown, true);
     return () => {
-      window.removeEventListener('pointerdown', handlePointerDown);
+      window.removeEventListener('pointerdown', handlePointerDown, true);
     };
   }, [contextMenu, closeContextMenu]);
 
@@ -105,41 +109,23 @@ export const GeoMapAdminMapSelectionChrome = ({
     <>
       <div
         ref={barRef}
-        className="pointer-events-none absolute z-20 flex max-w-[min(20rem,calc(100%-1.5rem))] -translate-x-1/2 -translate-y-full flex-wrap items-center gap-2 rounded-sm border border-border bg-surface-elevated/95 px-3 py-2 shadow-sm backdrop-blur-sm"
+        className="pointer-events-auto absolute z-40 flex max-w-[min(20rem,calc(100%-1.5rem))] -translate-x-1/2 -translate-y-full flex-wrap items-center gap-2 rounded-sm border border-border bg-surface-elevated/95 px-3 py-2 shadow-sm backdrop-blur-sm"
+        onPointerDown={(event) => event.stopPropagation()}
+        onClick={(event) => event.stopPropagation()}
       >
-        <p className="pointer-events-auto min-w-0 flex-1 truncate text-sm font-medium text-ink">
-          {title}
-        </p>
+        <p className="min-w-0 flex-1 truncate text-sm font-medium text-ink">{title}</p>
         {kind === 'osm' ? (
-          <Button
-            type="button"
-            size="sm"
-            variant="secondary"
-            className="pointer-events-auto"
-            onClick={onFocusCreateUpload}
-          >
+          <Button type="button" size="sm" variant="secondary" onClick={onFocusCreateUpload}>
             {t('map.actions.placeModel')}
           </Button>
         ) : null}
         {kind === 'model' ? (
           <>
-            <Button
-              type="button"
-              size="sm"
-              variant="secondary"
-              className="pointer-events-auto"
-              onClick={onFocusReplaceUpload}
-            >
+            <Button type="button" size="sm" variant="secondary" onClick={onFocusReplaceUpload}>
               {t('map.actions.replaceGlb')}
             </Button>
             {showAttachProject ? (
-              <Button
-                type="button"
-                size="sm"
-                variant="secondary"
-                className="pointer-events-auto"
-                onClick={onFocusAttachProject}
-              >
+              <Button type="button" size="sm" variant="secondary" onClick={onFocusAttachProject}>
                 {t('map.actions.attachProject')}
               </Button>
             ) : null}
@@ -147,7 +133,6 @@ export const GeoMapAdminMapSelectionChrome = ({
               type="button"
               size="sm"
               variant="danger"
-              className="pointer-events-auto"
               disabled={isDeleting}
               onClick={onDeleteModel}
             >
@@ -155,13 +140,7 @@ export const GeoMapAdminMapSelectionChrome = ({
             </Button>
           </>
         ) : null}
-        <Button
-          type="button"
-          size="sm"
-          variant="secondary"
-          className="pointer-events-auto"
-          onClick={onClearSelection}
-        >
+        <Button type="button" size="sm" variant="secondary" onClick={onClearSelection}>
           {t('map.deselect')}
         </Button>
       </div>
@@ -170,8 +149,9 @@ export const GeoMapAdminMapSelectionChrome = ({
         <div
           ref={menuRef}
           role="menu"
-          className="absolute z-30 min-w-[11rem] rounded-sm border border-border bg-surface-elevated py-1 shadow-md"
+          className="pointer-events-auto absolute z-50 min-w-[11rem] rounded-sm border border-border bg-surface-elevated py-1 shadow-md"
           onPointerDown={(event) => event.stopPropagation()}
+          onClick={(event) => event.stopPropagation()}
         >
           {kind === 'osm' ? (
             <>

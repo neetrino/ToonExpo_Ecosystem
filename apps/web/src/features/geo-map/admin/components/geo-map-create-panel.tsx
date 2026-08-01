@@ -4,6 +4,7 @@ import type { MediaAssetItem } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 
 import { GeoMapGlbUploader } from '@/features/geo-map/admin/components/geo-map-glb-uploader';
+import { GEO_MAP_CREATE_GLB_INPUT_ID } from '@/features/geo-map/admin/utils/focus-geo-map-file-input';
 import type { GeoMapProjectOption } from '@/features/geo-map/admin/utils/available-projects';
 import { FormField } from '@/shared/ui/form-field';
 import { Select } from '@/shared/ui/select';
@@ -83,6 +84,7 @@ export const GeoMapCreatePanel = ({
 
       <GeoMapGlbUploader
         browseButtonId="geo-map-create-glb-browse"
+        fileInputId={GEO_MAP_CREATE_GLB_INPUT_ID}
         disabled={isCreating}
         fileName={draft?.fileName || null}
         onUploaded={handleUploaded}

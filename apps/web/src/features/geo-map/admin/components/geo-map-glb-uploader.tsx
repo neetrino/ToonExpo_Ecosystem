@@ -16,6 +16,8 @@ type GeoMapGlbUploaderProps = {
   fileName?: string | null | undefined;
   /** Optional id for the browse label (admin map shortcuts). */
   browseButtonId?: string | undefined;
+  /** Optional stable id for the hidden file input (programmatic file picker). */
+  fileInputId?: string | undefined;
 };
 
 /**
@@ -26,6 +28,7 @@ export const GeoMapGlbUploader = ({
   disabled = false,
   fileName = null,
   browseButtonId,
+  fileInputId,
 }: GeoMapGlbUploaderProps) => {
   const t = useTranslations('Admin.geoMap.upload');
   const inputId = useId();
@@ -68,7 +71,7 @@ export const GeoMapGlbUploader = ({
       >
         <label
           id={browseButtonId}
-          htmlFor={inputId}
+          htmlFor={fileInputId ?? inputId}
           className={cn(
             'inline-flex cursor-pointer items-center rounded-sm border border-border px-3 py-2',
             'text-sm font-medium text-ink hover:bg-surface-muted',
@@ -78,7 +81,7 @@ export const GeoMapGlbUploader = ({
           {busy ? t('uploading') : t('browse')}
         </label>
         <input
-          id={inputId}
+          id={fileInputId ?? inputId}
           type="file"
           accept=".glb,model/gltf-binary"
           className="sr-only"

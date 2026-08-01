@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 import { GeoMapGlbUploader } from '@/features/geo-map/admin/components/geo-map-glb-uploader';
+import { GEO_MAP_REPLACE_GLB_INPUT_ID } from '@/features/geo-map/admin/utils/focus-geo-map-file-input';
 import {
   GeoMapTransformFields,
   type GeoMapTransformDraft,
@@ -181,6 +182,7 @@ export const GeoMapEditPanel = ({
         <p className="text-xs text-ink-muted">{t('edit.replaceHint')}</p>
         <GeoMapGlbUploader
           browseButtonId="geo-map-replace-glb-browse"
+          fileInputId={GEO_MAP_REPLACE_GLB_INPUT_ID}
           disabled={busy}
           onUploaded={(asset) => {
             void handleReplaceUploaded(asset.id);

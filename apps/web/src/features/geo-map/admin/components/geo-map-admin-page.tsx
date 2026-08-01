@@ -2,7 +2,7 @@
 
 import type { AdminGeoMapModelItem, UpdateGeoMapModelRequest } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import { GeoMapAdminSidebar } from '@/features/geo-map/admin/components/geo-map-admin-sidebar';
 import type { GeoMapCreateDraft } from '@/features/geo-map/admin/components/geo-map-create-panel';
@@ -15,6 +15,11 @@ import {
   useUpdateGeoMapModelMutation,
 } from '@/features/geo-map/admin/hooks/use-geo-map-admin';
 import { buildGeoMapProjectOptions } from '@/features/geo-map/admin/utils/available-projects';
+import {
+  focusGeoMapFileInput,
+  GEO_MAP_CREATE_GLB_INPUT_ID,
+  GEO_MAP_REPLACE_GLB_INPUT_ID,
+} from '@/features/geo-map/admin/utils/focus-geo-map-file-input';
 import { GeoMapCanvasLazy } from '@/features/geo-map/components/geo-map-canvas-lazy';
 import type {
   GeoMapLngLat,
@@ -30,12 +35,15 @@ const modelToLngLat = (model: AdminGeoMapModelItem): GeoMapLngLat => ({
   latitude: Number(model.latitude),
 });
 
-const focusElementById = (id: string): void => {
-  const element = document.getElementById(id);
-  if (element instanceof HTMLElement) {
-    element.click();
-    element.focus();
-  }
+const focusSidebarSelect = (id: string): void => {
+  queueMicrotask(() => {
+    requestAnimationFrame(() => {
+      const element = document.getElementById(id);
+      if (element instanceof HTMLElement) {
+        element.focus();
+      }
+    });
+  });
 };
 
 const EMPTY_CREATE_DRAFT: GeoMapCreateDraft = {
@@ -70,13 +78,6 @@ export const GeoMapAdminPage = () => {
   const objects = useMemo(() => mapAdminGeoMapItemsToObjects(models), [models]);
   const selectedModel = models.find((model) => model.id === selectedId) ?? null;
 
-  const startCreate = (): void => {
-    setSelectedId(null);
-    setCreateDraft(EMPTY_CREATE_DRAFT);
-    setSelectedOsmBuilding(null);
-    setActionError(null);
-  };
-
   const selectModel = (id: string): void => {
     setSelectedId(id);
     setCreateDraft(null);
@@ -84,37 +85,40 @@ export const GeoMapAdminPage = () => {
     setActionError(null);
   };
 
-  const clearSelection = (): void => {
-    setSelectedId(null);
-    setCreateDraft(EMPTY_CREATE_DRAFT);
-    setSelectedOsmBuilding(null);
-    setActionError(null);
-  };
-
-  const placeModel = async (position: GeoMapLngLat, sourceOsmId: string | null): Promise<void> => {
-    if (!createDraft?.mediaAssetId) {
-      return;
-    }
-    setActionError(null);
-    try {
-      const created = await createMutation.mutateAsync({
-        mediaAssetId: createDraft.mediaAssetId,
-        longitude: position.longitude,
-        latitude: position.latitude,
-        ...GEO_MAP_DEFAULT_CREATE_VALUES,
-        ...(createDraft.projectId ? { projectId: createDraft.projectId } : {}),
-        ...(sourceOsmId ? { sourceOsmId } : {}),
-      });
-      setCreateDraft(null);
-      setSelectedOsmBuilding(null);
-      setSelectedId(created.id);
-    } catch {
-      setActionError(t('errors.createFailed'));
-    }
-  };
+  const placeModel = useCallback(
+    async (
+      position: GeoMapLngLat,
+      sourceOsmId: string | null,
+      draft: GeoMapCreateDraft,
+    ): Promise<void> => {
+      if (!draft.mediaAssetId) {
+        return;
+      }
+      setActionError(null);
+      try {
+        const created = await createMutation.mutateAsync({
+          mediaAssetId: draft.mediaAssetId,
+          longitude: position.longitude,
+          latitude: position.latitude,
+          ...GEO_MAP_DEFAULT_CREATE_VALUES,
+          ...(draft.projectId ? { projectId: draft.projectId } : {}),
+          ...(sourceOsmId ? { sourceOsmId } : {}),
+        });
+        setCreateDraft(null);
+        setSelectedOsmBuilding(null);
+        setSelectedId(created.id);
+      } catch {
+        setActionError(t('errors.createFailed'));
+      }
+    },
+    [createMutation, t],
+  );
 
   const handleMapClick = (position: GeoMapLngLat): void => {
-    void placeModel(position, null);
+    if (!createDraft) {
+      return;
+    }
+    void placeModel(position, null, createDraft);
   };
 
   const handleOsmBuildingSelect = (building: SelectedOsmBuilding): void => {
@@ -124,9 +128,30 @@ export const GeoMapAdminPage = () => {
       void placeModel(
         { longitude: building.longitude, latitude: building.latitude },
         building.sourceOsmId,
+        createDraft,
       );
     }
   };
+
+  const handleCreateDraftChange = useCallback(
+    (draft: GeoMapCreateDraft | null): void => {
+      const previousAssetId = createDraft?.mediaAssetId ?? '';
+      setCreateDraft(draft);
+      const nextAssetId = draft?.mediaAssetId ?? '';
+      if (!nextAssetId || nextAssetId === previousAssetId || !selectedOsmBuilding || !draft) {
+        return;
+      }
+      void placeModel(
+        {
+          longitude: selectedOsmBuilding.longitude,
+          latitude: selectedOsmBuilding.latitude,
+        },
+        selectedOsmBuilding.sourceOsmId,
+        draft,
+      );
+    },
+    [createDraft?.mediaAssetId, placeModel, selectedOsmBuilding],
+  );
 
   const handleDragged = async (id: string, position: GeoMapLngLat): Promise<void> => {
     setActionError(null);
@@ -186,9 +211,47 @@ export const GeoMapAdminPage = () => {
     }
   };
 
-  const requestDelete = (model: AdminGeoMapModelItem): void => {
+  const requestDelete = useCallback((model: AdminGeoMapModelItem): void => {
     setPendingDelete(model);
-  };
+  }, []);
+
+  const clearSelection = useCallback((): void => {
+    setSelectedId(null);
+    setCreateDraft(EMPTY_CREATE_DRAFT);
+    setSelectedOsmBuilding(null);
+    setActionError(null);
+  }, []);
+
+  const startCreate = useCallback((): void => {
+    setSelectedId(null);
+    setCreateDraft(EMPTY_CREATE_DRAFT);
+    setSelectedOsmBuilding(null);
+    setActionError(null);
+  }, []);
+
+  const focusCreateUpload = useCallback((): void => {
+    startCreate();
+    focusGeoMapFileInput(GEO_MAP_CREATE_GLB_INPUT_ID);
+  }, [startCreate]);
+
+  const focusCreateUploadKeepingOsm = useCallback((): void => {
+    setCreateDraft((current) => current ?? EMPTY_CREATE_DRAFT);
+    focusGeoMapFileInput(GEO_MAP_CREATE_GLB_INPUT_ID);
+  }, []);
+
+  const focusReplaceUpload = useCallback((): void => {
+    focusGeoMapFileInput(GEO_MAP_REPLACE_GLB_INPUT_ID);
+  }, []);
+
+  const focusAttachProject = useCallback((): void => {
+    focusSidebarSelect('geo-map-attach-project');
+  }, []);
+
+  const handleMapDeleteModel = useCallback((): void => {
+    if (selectedModel) {
+      requestDelete(selectedModel);
+    }
+  }, [requestDelete, selectedModel]);
 
   const handleConfirmDelete = async (): Promise<void> => {
     if (!pendingDelete) {
@@ -216,15 +279,10 @@ export const GeoMapAdminPage = () => {
         showAttachProject: !selectedModel.projectId,
         isDeleting: deleteMutation.isPending,
         onClearSelection: clearSelection,
-        onDeleteModel: () => {
-          requestDelete(selectedModel);
-        },
-        onFocusCreateUpload: () => {
-          startCreate();
-          focusElementById('geo-map-create-glb-browse');
-        },
-        onFocusReplaceUpload: () => focusElementById('geo-map-replace-glb-browse'),
-        onFocusAttachProject: () => focusElementById('geo-map-attach-project'),
+        onDeleteModel: handleMapDeleteModel,
+        onFocusCreateUpload: focusCreateUpload,
+        onFocusReplaceUpload: focusReplaceUpload,
+        onFocusAttachProject: focusAttachProject,
       };
     }
 
@@ -240,19 +298,26 @@ export const GeoMapAdminPage = () => {
         isDeleting: false,
         onClearSelection: clearSelection,
         onDeleteModel: () => undefined,
-        onFocusCreateUpload: () => {
-          if (createDraft === null) {
-            setCreateDraft(EMPTY_CREATE_DRAFT);
-          }
-          focusElementById('geo-map-create-glb-browse');
-        },
-        onFocusReplaceUpload: () => focusElementById('geo-map-replace-glb-browse'),
-        onFocusAttachProject: () => focusElementById('geo-map-attach-project'),
+        onFocusCreateUpload: focusCreateUploadKeepingOsm,
+        onFocusReplaceUpload: focusReplaceUpload,
+        onFocusAttachProject: focusAttachProject,
       };
     }
 
     return null;
-  }, [selectedModel, createDraft, selectedOsmBuilding, deleteMutation.isPending, t]);
+  }, [
+    selectedModel,
+    createDraft,
+    selectedOsmBuilding,
+    deleteMutation.isPending,
+    t,
+    clearSelection,
+    handleMapDeleteModel,
+    focusCreateUpload,
+    focusCreateUploadKeepingOsm,
+    focusReplaceUpload,
+    focusAttachProject,
+  ]);
 
   if (modelsQuery.isLoading || projectsQuery.isLoading) {
     return <p className="p-6 text-sm text-ink-muted">{t('loading')}</p>;
@@ -281,7 +346,7 @@ export const GeoMapAdminPage = () => {
           isDeleting={deleteMutation.isPending}
           onSelect={selectModel}
           onStartCreate={startCreate}
-          onCreateDraftChange={setCreateDraft}
+          onCreateDraftChange={handleCreateDraftChange}
           onSave={handleSave}
           onPublishChange={handlePublishChange}
           onReplaceModel={handleReplaceModel}

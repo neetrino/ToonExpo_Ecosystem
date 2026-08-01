@@ -50,4 +50,8 @@
     flex: 1 1 0%;
     overflow: hidden;
   }
+
+  .geo-map-admin-page__map > .absolute {
+    overflow: visible;
+  }
 }
