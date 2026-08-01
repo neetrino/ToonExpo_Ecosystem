@@ -193,3 +193,13 @@ Stage rules:
   near-mirror PBR materials from authoring tools.
 - When interleaved mode is re-enabled later, use `beforeId: boundary_3` so
   models draw above `building-3d` extrusions.
+
+## Polish
+
+- **Default pitched camera (done):** All `GeoMapCanvas` maps start at
+  `DEFAULT_MAP_PITCH_DEG` (55°, same as `FOCUS_PITCH_DEG`) so the initial view
+  is a side-angle city perspective, not top-down. `maxPitch` is 85°;
+  `dragRotate` / `touchPitch` / `touchZoomRotate` stay enabled. Users rotate via
+  right-drag or Ctrl+drag, the pitched compass (`NavigationControl`), or the
+  compact tilt +/− / reset controls under the compass. Optional
+  `initialPitch` / `initialBearing` props override defaults per consumer.

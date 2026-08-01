@@ -5,6 +5,27 @@ export const DEFAULT_MAP_CENTER_LONGITUDE = 44.5152;
 export const DEFAULT_MAP_CENTER_LATITUDE = 40.1872;
 export const DEFAULT_MAP_ZOOM = 12;
 
+/**
+ * Default camera pitch for all GeoMapCanvas maps — pitched city view
+ * (slightly from the side), not top-down. Degrees from the screen plane.
+ */
+export const DEFAULT_MAP_PITCH_DEG = 55;
+
+/** Default bearing (0 = north-up). Pitch alone is enough for the 3D look. */
+export const DEFAULT_MAP_BEARING_DEG = 0;
+
+/**
+ * Max camera pitch users can reach via tilt / touch / Ctrl+drag.
+ * MapLibre allows up to 85; values above 60 are experimental.
+ */
+export const MAX_MAP_PITCH_DEG = 85;
+
+/** Pitch step for the compact tilt + / − controls (degrees). */
+export const MAP_PITCH_STEP_DEG = 10;
+
+/** Ease duration for tilt / reset camera control actions (ms). */
+export const MAP_CAMERA_EASE_DURATION_MS = 300;
+
 /** Env var name consumers/scripts can set to override the MapLibre style URL. */
 export const MAP_STYLE_URL_ENV_VAR = 'NEXT_PUBLIC_MAP_STYLE_URL';
 
@@ -64,8 +85,8 @@ export const FOCUS_ZOOM_ABOVE_MIN = 1.25;
 /** MapLibre `flyTo` duration for focus requests (ms). */
 export const FOCUS_FLY_TO_DURATION_MS = 1600;
 
-/** Camera pitch applied on focus so the GLB reads in 3D (degrees). */
-export const FOCUS_PITCH_DEG = 55;
+/** Camera pitch applied on focus — kept identical to the default pitched view. */
+export const FOCUS_PITCH_DEG = DEFAULT_MAP_PITCH_DEG;
 
 /** Marker element class applied while `highlightedObjectId` matches. */
 export const MARKER_ELEMENT_HIGHLIGHTED_CLASS_NAME =

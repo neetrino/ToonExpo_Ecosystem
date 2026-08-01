@@ -3,10 +3,13 @@
 import { useRef, useState } from 'react';
 
 import {
+  DEFAULT_MAP_BEARING_DEG,
   DEFAULT_MAP_CENTER_LATITUDE,
   DEFAULT_MAP_CENTER_LONGITUDE,
+  DEFAULT_MAP_PITCH_DEG,
   DEFAULT_MAP_ZOOM,
 } from '@/features/geo-map/constants';
+import { GeoMapCameraControls } from '@/features/geo-map/components/geo-map-camera-controls';
 import { GeoMapWebglFallback } from '@/features/geo-map/components/geo-map-webgl-fallback';
 import { useDeckOverlay } from '@/features/geo-map/hooks/use-deck-overlay';
 import { useMapFocus } from '@/features/geo-map/hooks/use-map-focus';
@@ -45,6 +48,8 @@ export const GeoMapCanvas = ({
   styleUrl,
   initialCenter = DEFAULT_CENTER,
   initialZoom = DEFAULT_MAP_ZOOM,
+  initialPitch = DEFAULT_MAP_PITCH_DEG,
+  initialBearing = DEFAULT_MAP_BEARING_DEG,
   editable = false,
   className,
   focusRequest,
@@ -63,6 +68,8 @@ export const GeoMapCanvas = ({
     styleUrl: styleUrl ?? resolveMapStyleUrl(),
     initialCenter,
     initialZoom,
+    initialPitch,
+    initialBearing,
   });
   const { zoom, bounds } = useMapViewportState(map, isMapLoaded, initialZoom);
   const { markerObjects, modelObjects } = useVisibleObjects(objects, dragOverride, zoom, bounds);
@@ -100,5 +107,10 @@ export const GeoMapCanvas = ({
     return <GeoMapWebglFallback className={className} />;
   }
 
-  return <div ref={containerRef} className={`h-full w-full ${className ?? ''}`} />;
+  return (
+    <div className={`relative h-full w-full ${className ?? ''}`}>
+      <div ref={containerRef} className="h-full w-full" />
+      {map ? <GeoMapCameraControls map={map} /> : null}
+    </div>
+  );
 };

@@ -3411,6 +3411,12 @@
     "empty": "No published 3D models yet. Check back soon — the map is ready when projects go live.",
     "hover": {
       "viewProject": "View project"
+    },
+    "camera": {
+      "groupLabel": "Map viewing angle",
+      "tiltUp": "Tilt up",
+      "tiltDown": "Tilt down",
+      "resetView": "Reset north and default tilt"
     }
   },
   "Expo": {

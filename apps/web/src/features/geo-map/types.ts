@@ -52,6 +52,10 @@ export type GeoMapCanvasProps = {
   initialCenter?: GeoMapLngLat;
   /** Initial camera zoom; defaults to `DEFAULT_MAP_ZOOM`. */
   initialZoom?: number;
+  /** Initial camera pitch; defaults to `DEFAULT_MAP_PITCH_DEG` (pitched city view). */
+  initialPitch?: number;
+  /** Initial camera bearing; defaults to `DEFAULT_MAP_BEARING_DEG`. */
+  initialBearing?: number;
   /**
    * Enables drag-to-move for markers and models and reports the result via
    * `onObjectDragged`. Read-only consumers (public map) must omit this or pass `false`.
