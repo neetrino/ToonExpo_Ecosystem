@@ -47,7 +47,14 @@ describe('PublicGeoMapService', () => {
         updatedByUserId: null,
         createdAt: new Date('2026-07-31T10:00:00.000Z'),
         updatedAt: new Date('2026-07-31T10:00:00.000Z'),
-        project: { id: 'proj_1', name: 'Demo Tower', slug: 'demo-tower' },
+        project: {
+          id: 'proj_1',
+          name: 'Demo Tower',
+          slug: 'demo-tower',
+          builderCompany: {
+            logoMedia: { fileUrl: 'https://cdn.example.com/logo.png' },
+          },
+        },
         mediaAsset: { fileUrl: 'https://cdn.example.com/model.glb' },
       },
     ]);
@@ -64,6 +71,7 @@ describe('PublicGeoMapService', () => {
       projectId: 'proj_1',
       projectSlug: 'demo-tower',
       projectName: 'Demo Tower',
+      logoUrl: 'https://cdn.example.com/logo.png',
       longitude: '44.5',
       latitude: '40.1',
       modelUrl: 'https://cdn.example.com/model.glb',
@@ -74,5 +82,39 @@ describe('PublicGeoMapService', () => {
       scale: '1',
       minZoom: '14',
     });
+  });
+
+  it('maps null logoUrl when the builder has no logo media', async () => {
+    projectMapModelFindMany.mockResolvedValue([
+      {
+        id: 'pmm_2',
+        projectId: 'proj_2',
+        mediaAssetId: 'media_2',
+        longitude: decimal('44.6'),
+        latitude: decimal('40.2'),
+        altitudeM: decimal('0'),
+        headingDeg: decimal('0'),
+        pitchDeg: decimal('0'),
+        rollDeg: decimal('0'),
+        scale: decimal('1'),
+        minZoom: decimal('14'),
+        isPublished: true,
+        createdByUserId: 'user_1',
+        updatedByUserId: null,
+        createdAt: new Date('2026-07-31T10:00:00.000Z'),
+        updatedAt: new Date('2026-07-31T10:00:00.000Z'),
+        project: {
+          id: 'proj_2',
+          name: 'No Logo Tower',
+          slug: 'no-logo-tower',
+          builderCompany: { logoMedia: null },
+        },
+        mediaAsset: { fileUrl: 'https://cdn.example.com/model-2.glb' },
+      },
+    ]);
+
+    const result = await service.listPublished();
+
+    expect(result.data[0]?.logoUrl).toBeNull();
   });
 });

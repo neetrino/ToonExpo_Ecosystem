@@ -6,7 +6,14 @@ import { PrismaService } from '../../prisma/prisma.service.js';
 import { toPublicGeoMapModelItem } from '../mappers/geo-map.mapper.js';
 
 const publicInclude = {
-  project: { select: { id: true, name: true, slug: true } },
+  project: {
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      builderCompany: { select: { logoMedia: { select: { fileUrl: true } } } },
+    },
+  },
   mediaAsset: { select: { fileUrl: true } },
 } satisfies Prisma.ProjectMapModelInclude;
 

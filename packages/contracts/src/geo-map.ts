@@ -59,6 +59,8 @@ export type PublicGeoMapModelItem = {
   projectId: string;
   projectSlug: string;
   projectName: string;
+  /** Builder company logo URL; null when the company has no logo media. */
+  logoUrl: string | null;
   longitude: string;
   latitude: string;
   modelUrl: string;
