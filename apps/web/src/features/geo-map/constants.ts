@@ -30,12 +30,6 @@ export const SCENEGRAPH_SIZE_MIN_PIXELS = 0;
  */
 export const SCENEGRAPH_BEFORE_LAYER_ID = 'boundary_3';
 
-/**
- * Same-origin Next.js rewrite prefix for R2 GLB assets (CORS-safe for deck.gl).
- * Must stay in sync with the rewrite in `apps/web/next.config.ts`.
- */
-export const GEO_MAP_R2_PROXY_PATH_PREFIX = '/r2-proxy';
-
 /** Zoom span over which model opacity eases from floor → full after `minZoom`. */
 export const MODEL_FADE_ZOOM_DELTA = 0.75;
 export const MODEL_FADE_MIN_OPACITY = 0.45;

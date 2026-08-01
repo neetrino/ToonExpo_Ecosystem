@@ -3,9 +3,8 @@
 **Status:** v1 complete (stages 1–6 done; final control passed 2026-08-01) ·
 **Owner:** Orchestrator (Fable 5) · **Created:** 2026-07-31
 
-Remaining production follow-ups: R2 bucket CORS (remove `/r2-proxy`),
-OSM-extrusion footprint filter under our models, reverse apartments-map sync
-(pending owner decision).
+Remaining production follow-ups: OSM-extrusion footprint filter under our
+models, reverse apartments-map sync (pending owner decision).
 
 ## Goal
 
@@ -140,8 +139,9 @@ Pure util `resolveMapObjectForProject` + unit tests.
 
 ### Production follow-up (final control stage)
 
-Configure a CORS policy or custom domain on the R2 bucket so GLBs are fetched
-directly from R2/CDN, then remove the `/r2-proxy/*` rewrite workaround.
+**Done:** R2 bucket CORS is configured (`Access-Control-Allow-Origin: *`,
+methods GET/HEAD). GLBs load directly from `pub-*.r2.dev`; the same-origin
+`/r2-proxy/*` rewrite and `resolveModelAssetUrl` helper were removed.
 
 Stage rules:
 
@@ -172,11 +172,10 @@ Stage rules:
 - **Follow-up:** filter OSM extrusions within a small radius of our model
   coordinates to avoid double-rendering at the same footprint (not done in v1 —
   needs a reliable per-feature filter against dynamic model positions).
-- R2 public-dev hosts often lack CORS; GLBs load via same-origin `/r2-proxy/*`
-  rewrite in `apps/web/next.config.ts`.
+- **Done:** R2 bucket CORS allows direct GLB fetches from `pub-*.r2.dev`; the
+  `/r2-proxy/*` rewrite was removed.
 - Scenegraph layers render via `MapboxOverlay` with `interleaved: false` (and
   `_lighting: 'flat'`) so GLBs stay visible above MapLibre depth/stencil and
-  near-mirror PBR materials from authoring tools. Same-origin `/r2-proxy/*`
-  rewrite loads R2 GLBs without bucket CORS.
+  near-mirror PBR materials from authoring tools.
 - When interleaved mode is re-enabled later, use `beforeId: boundary_3` so
   models draw above `building-3d` extrusions.

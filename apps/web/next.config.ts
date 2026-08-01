@@ -179,17 +179,6 @@ const nextConfig: NextConfig = {
   async rewrites() {
     const rewrites: { source: string; destination: string }[] = [];
 
-    // Same-origin proxy for R2 assets (GLBs need CORS-safe fetch for deck.gl).
-    const r2PublicUrl =
-      process.env['NEXT_PUBLIC_R2_PUBLIC_URL']?.trim() || process.env['R2_PUBLIC_URL']?.trim();
-    if (r2PublicUrl) {
-      const r2Origin = r2PublicUrl.replace(/\/$/, '');
-      rewrites.push({
-        source: '/r2-proxy/:path*',
-        destination: `${r2Origin}/:path*`,
-      });
-    }
-
     const apiProxyTarget = process.env[API_PROXY_TARGET_ENV]?.trim();
     if (apiProxyTarget) {
       const origin = apiProxyTarget.replace(/\/$/, '');
