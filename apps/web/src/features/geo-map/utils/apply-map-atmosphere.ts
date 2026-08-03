@@ -39,14 +39,27 @@ const DAYTIME_LIGHT: LightSpecification = {
   position: [...MAP_LIGHT_POSITION],
 };
 
+type ExtrusionPaintProperty =
+  | 'fill-extrusion-color'
+  | 'fill-extrusion-opacity'
+  | 'fill-extrusion-vertical-gradient'
+  | 'fill-extrusion-ambient-occlusion-intensity'
+  | 'fill-extrusion-ambient-occlusion-radius';
+
 const setExtrusionPaintSafe = (
   map: MapLibreMap,
   layerId: string,
-  property: string,
-  value: unknown,
+  property: ExtrusionPaintProperty,
+  value: string | number | boolean | ReturnType<typeof realisticBuildingColorExpr>,
 ): void => {
   try {
-    map.setPaintProperty(layerId, property, value);
+    // AO paint keys exist at runtime on recent MapLibre builds but are absent
+    // from the published AllPaintProperties union in our typings.
+    (map.setPaintProperty as (id: string, name: string, next: unknown) => void)(
+      layerId,
+      property,
+      value,
+    );
   } catch {
     /* property unsupported on this MapLibre / style build */
   }
