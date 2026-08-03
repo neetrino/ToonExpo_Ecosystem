@@ -23,10 +23,10 @@ export const DEFAULT_DB_STATEMENT_TIMEOUT_MS = 10_000;
  */
 export const DEFAULT_DB_POOL_IDLE_TIMEOUT_MS = 30_000;
 /**
- * App-level ping while the API process is alive — keeps Neon compute warm
- * (default suspend is ~5 minutes with no queries).
+ * Typical Neon compute auto-suspend after no queries (scale-to-zero).
+ * Used by the API for local idle console notices — not a keepalive.
  */
-export const DEFAULT_DB_KEEPALIVE_INTERVAL_MS = 4 * 60 * 1000;
+export const DEFAULT_NEON_AUTO_SUSPEND_MS = 5 * 60 * 1000;
 
 /** pg v8 aliases these to verify-full; set explicitly to silence the SSL warning. */
 const LEGACY_SSL_MODES = new Set(['prefer', 'require', 'verify-ca']);
@@ -67,6 +67,8 @@ export type CreatePrismaClientOptions = {
    * statement_timeout as a libpq startup `options` parameter).
    */
   statementTimeoutMs?: number;
+  /** Fires when the pool checks out a client (real query activity). */
+  onQueryActivity?: () => void;
 };
 
 /** `onConnect` shipped in pg 8.20; @types/pg may lag behind. */
@@ -98,6 +100,12 @@ export const createPrismaClient = (options: CreatePrismaClientOptions): PrismaCl
   };
 
   const pool = new pg.Pool(poolConfig);
+
+  if (options.onQueryActivity !== undefined) {
+    pool.on('acquire', () => {
+      options.onQueryActivity?.();
+    });
+  }
 
   // Idle Neon suspend / network drops emit here; without a listener the process can crash.
   pool.on('error', () => {
