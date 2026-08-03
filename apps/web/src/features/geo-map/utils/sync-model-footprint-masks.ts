@@ -5,13 +5,21 @@ import {
   MODEL_FOOTPRINT_MASK_RADIUS_METERS,
   MODEL_FOOTPRINT_SOURCE_ID,
   OSM_BUILDING_EXTRUSION_LAYER_ID,
+  OSM_BUILDING_HIDE_SCOPE_RADIUS_METERS,
 } from '@/features/geo-map/constants';
 import type { AdminOsmHideSession, GeoMapObject } from '@/features/geo-map/types';
-import { buildCombinedOsmBuildingExtrusionFilter } from '@/features/geo-map/utils/build-osm-building-extrusion-filter';
+import {
+  buildOsmBuildingHideFilter,
+  modelToOsmBuildingHideTarget,
+} from '@/features/geo-map/utils/build-osm-building-extrusion-filter';
 import {
   buildAdminOsmHideSignature,
   buildFootprintMaskSignature,
 } from '@/features/geo-map/utils/geo-map-update-signatures';
+import {
+  collectPreservedOsmSiblingParts,
+  syncPreservedOsmSiblingParts,
+} from '@/features/geo-map/utils/sync-preserved-osm-parts';
 
 const lastMaskSignatureByMap = new WeakMap<MapLibreMap, string>();
 
@@ -25,9 +33,13 @@ const removeLegacyCoveragePads = (map: MapLibreMap): void => {
 };
 
 /**
- * Hides liberty `building-3d` extrusions near visible models via distance and
- * optional `osm_id` exclusions when models store `sourceOsmId`.
- * Skips `setFilter` when the model id / position / osm_id signature is unchanged.
+ * Hides liberty `building-3d` extrusions under models via distance-scoped
+ * identity (feature id / osm_id) with a tight distance fallback, and restores
+ * MultiPolygon sibling rings so one hide never wipes a whole block.
+ *
+ * The filter is signature-guarded; sibling restoration always re-runs because
+ * vector tiles may finish loading after the filter was applied (call this from
+ * both React state changes and the map `idle` event).
  */
 export const syncModelFootprintMasks = (
   map: MapLibreMap,
@@ -39,23 +51,26 @@ export const syncModelFootprintMasks = (
   }
 
   const signature = `${buildFootprintMaskSignature(modelObjects)}|${buildAdminOsmHideSignature(adminOsmHide)}`;
-  if (lastMaskSignatureByMap.get(map) === signature) {
-    return;
+  if (lastMaskSignatureByMap.get(map) !== signature) {
+    removeLegacyCoveragePads(map);
+
+    const targets = [
+      ...modelObjects.map(modelToOsmBuildingHideTarget),
+      ...(adminOsmHide?.hiddenBuildings ?? []),
+    ];
+    const filter = buildOsmBuildingHideFilter(targets, {
+      scopeRadiusMeters: OSM_BUILDING_HIDE_SCOPE_RADIUS_METERS,
+      fallbackRadiusMeters: MODEL_FOOTPRINT_MASK_RADIUS_METERS,
+    });
+
+    map.setFilter(OSM_BUILDING_EXTRUSION_LAYER_ID, (filter ?? null) as FilterSpecification | null);
+    lastMaskSignatureByMap.set(map, signature);
   }
 
-  removeLegacyCoveragePads(map);
-
-  const filter = buildCombinedOsmBuildingExtrusionFilter(
+  const preservedParts = collectPreservedOsmSiblingParts(
+    map,
     modelObjects,
-    MODEL_FOOTPRINT_MASK_RADIUS_METERS,
-    adminOsmHide
-      ? {
-          hiddenOsmIds: adminOsmHide.hiddenOsmIds,
-          hiddenDistancePoints: adminOsmHide.hiddenCentroidsWithoutId,
-        }
-      : undefined,
+    adminOsmHide?.hiddenBuildings ?? [],
   );
-
-  map.setFilter(OSM_BUILDING_EXTRUSION_LAYER_ID, (filter ?? null) as FilterSpecification | null);
-  lastMaskSignatureByMap.set(map, signature);
+  syncPreservedOsmSiblingParts(map, preservedParts);
 };

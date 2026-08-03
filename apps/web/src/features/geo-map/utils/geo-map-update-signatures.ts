@@ -88,20 +88,19 @@ export const buildFootprintMaskSignature = (
 export const buildAdminOsmHideSignature = (
   hide: AdminOsmHideSession | null | undefined,
 ): string => {
-  if (!hide || (hide.hiddenOsmIds.length === 0 && hide.hiddenCentroidsWithoutId.length === 0)) {
+  if (!hide || hide.hiddenBuildings.length === 0) {
     return 'hide:empty';
   }
-  const ids = [...hide.hiddenOsmIds].sort().join(',');
   const d = MODEL_POSITION_QUANTIZE_DECIMALS;
-  const points = [...hide.hiddenCentroidsWithoutId]
-    .map((point) => {
-      const lng = quantizeDecimal(point.longitude, d).toFixed(d);
-      const lat = quantizeDecimal(point.latitude, d).toFixed(d);
-      return `${lng},${lat}`;
+  const targets = [...hide.hiddenBuildings]
+    .map((target) => {
+      const lng = quantizeDecimal(target.longitude, d).toFixed(d);
+      const lat = quantizeDecimal(target.latitude, d).toFixed(d);
+      return `${target.osmId ?? ''}/${target.featureId ?? ''}/${lng},${lat}`;
     })
     .sort()
     .join(';');
-  return `hide:${ids}|pts:${points}`;
+  return `hide:${targets}`;
 };
 
 export type ThreeBuildingSignatureModel = {

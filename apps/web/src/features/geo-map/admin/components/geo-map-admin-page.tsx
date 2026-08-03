@@ -27,9 +27,11 @@ import type {
   AdminOsmHideSession,
   GeoMapLngLat,
   GeoMapAdminMapSelectionChromeProps,
+  OsmBuildingHideTarget,
   SelectedOsmBuilding,
 } from '@/features/geo-map/types';
 import type { ObjectTransformOverride } from '@/features/geo-map/utils/apply-position-override';
+import { resolveStoredHideIdForPlacement } from '@/features/geo-map/utils/building-hide-identity';
 import { mapAdminGeoMapItemsToObjects } from '@/features/geo-map/utils/map-object-mapper';
 import {
   roundGeoMapCoordinateForApi,
@@ -103,10 +105,7 @@ export const GeoMapAdminPage = () => {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [createDraft, setCreateDraft] = useState<GeoMapCreateDraft | null>(EMPTY_CREATE_DRAFT);
   const [selectedOsmBuilding, setSelectedOsmBuilding] = useState<SelectedOsmBuilding | null>(null);
-  const [hiddenOsmIds, setHiddenOsmIds] = useState<string[]>([]);
-  const [hiddenOsmCentroidsWithoutId, setHiddenOsmCentroidsWithoutId] = useState<GeoMapLngLat[]>(
-    [],
-  );
+  const [hiddenOsmBuildings, setHiddenOsmBuildings] = useState<OsmBuildingHideTarget[]>([]);
   const [pendingDelete, setPendingDelete] = useState<AdminGeoMapModelItem | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [transformPreview, setTransformPreview] = useState<ObjectTransformOverride | null>(null);
@@ -149,7 +148,7 @@ export const GeoMapAdminPage = () => {
   const placeModel = useCallback(
     async (
       position: GeoMapLngLat,
-      sourceOsmId: string | null,
+      hideKey: string | null,
       draft: GeoMapCreateDraft,
     ): Promise<void> => {
       if (!draft.mediaAssetId) {
@@ -164,7 +163,7 @@ export const GeoMapAdminPage = () => {
           latitude,
           ...GEO_MAP_DEFAULT_CREATE_VALUES,
           ...(draft.projectId ? { projectId: draft.projectId } : {}),
-          ...(sourceOsmId ? { sourceOsmId } : {}),
+          ...(hideKey ? { sourceOsmId: hideKey } : {}),
         });
         setCreateDraft(null);
         setSelectedOsmBuilding(null);
@@ -191,7 +190,10 @@ export const GeoMapAdminPage = () => {
     if (createDraft?.mediaAssetId) {
       void placeModel(
         { longitude: building.longitude, latitude: building.latitude },
-        building.sourceOsmId,
+        resolveStoredHideIdForPlacement({
+          sourceOsmId: building.sourceOsmId,
+          featureId: building.featureId,
+        }),
         createDraft,
       );
     }
@@ -210,7 +212,10 @@ export const GeoMapAdminPage = () => {
           longitude: selectedOsmBuilding.longitude,
           latitude: selectedOsmBuilding.latitude,
         },
-        selectedOsmBuilding.sourceOsmId,
+        resolveStoredHideIdForPlacement({
+          sourceOsmId: selectedOsmBuilding.sourceOsmId,
+          featureId: selectedOsmBuilding.featureId,
+        }),
         draft,
       );
     },
@@ -345,25 +350,24 @@ export const GeoMapAdminPage = () => {
     if (!selectedOsmBuilding) {
       return;
     }
-    const trimmedId = selectedOsmBuilding.sourceOsmId?.trim();
-    if (trimmedId) {
-      setHiddenOsmIds((current) =>
-        current.includes(trimmedId) ? current : [...current, trimmedId],
-      );
-    } else {
-      const { longitude, latitude } = selectedOsmBuilding;
-      setHiddenOsmCentroidsWithoutId((current) => [...current, { longitude, latitude }]);
-    }
+
+    const { longitude, latitude } = selectedOsmBuilding;
+    const target: OsmBuildingHideTarget = {
+      longitude,
+      latitude,
+      osmId: selectedOsmBuilding.sourceOsmId?.trim() || null,
+      featureId: selectedOsmBuilding.featureId,
+    };
+    setHiddenOsmBuildings((current) => [...current, target]);
     setSelectedOsmBuilding(null);
     setActionError(null);
   }, [selectedOsmBuilding]);
 
   const adminOsmHideSession = useMemo((): AdminOsmHideSession => {
     return {
-      hiddenOsmIds,
-      hiddenCentroidsWithoutId: hiddenOsmCentroidsWithoutId,
+      hiddenBuildings: hiddenOsmBuildings,
     };
-  }, [hiddenOsmIds, hiddenOsmCentroidsWithoutId]);
+  }, [hiddenOsmBuildings]);
 
   const handleConfirmDelete = async (): Promise<void> => {
     if (!pendingDelete) {

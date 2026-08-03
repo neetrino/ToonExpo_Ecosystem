@@ -1,5 +1,8 @@
 import type { SelectedOsmBuilding } from '@/features/geo-map/utils/building-identification';
+import type { OsmBuildingHideTarget } from '@/features/geo-map/utils/build-osm-building-extrusion-filter';
 import type { ObjectTransformOverride } from '@/features/geo-map/utils/apply-position-override';
+
+export type { OsmBuildingHideTarget };
 
 /** Shared types for the `GeoMapCanvas` core and its consumers (Stage 2b, Stage 3). */
 
@@ -28,7 +31,10 @@ export type GeoMapObject = {
   logoUrl: string | null;
   /** GLB url (R2), rendered via MapLibre Three.js custom layer at/above `minZoom`. */
   modelUrl: string;
-  /** OSM id for precise extrusion hide; null → distance mask only. */
+  /**
+   * Hide identity for the replaced OSM extrusion: real `osm_id`, or `mvt:<featureId>`
+   * for OpenFreeMap feature ids. Null → tight distance fallback only.
+   */
   sourceOsmId: string | null;
   longitude: number;
   latitude: number;
@@ -111,10 +117,16 @@ export type GeoMapCanvasProps = {
 
 export type GeoMapAdminSelectionKind = 'osm' | 'model';
 
+export type PreservedOsmSiblingPart = {
+  geometry: { type: 'Polygon'; coordinates: number[][][] };
+  heightM: number;
+  minHeightM: number;
+};
+
 /** Session-only OSM building hides in the admin geo-map editor (not persisted to DB). */
 export type AdminOsmHideSession = {
-  hiddenOsmIds: readonly string[];
-  hiddenCentroidsWithoutId: readonly GeoMapLngLat[];
+  /** Anchor + identity per hidden building — identity is always distance-scoped. */
+  hiddenBuildings: readonly OsmBuildingHideTarget[];
 };
 
 export type GeoMapAdminMapSelectionChromeProps = {

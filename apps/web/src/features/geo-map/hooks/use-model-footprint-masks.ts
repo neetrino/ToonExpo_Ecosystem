@@ -16,7 +16,9 @@ export type UseModelFootprintMasksOptions = {
 };
 
 /**
- * Keeps the OSM `building-3d` distance filter in sync with visible models.
+ * Keeps the OSM `building-3d` hide filter and preserved-sibling restoration in
+ * sync with visible models. Re-runs on map `idle` because sibling lookup needs
+ * vector tiles that may finish loading after the React state settled.
  */
 export const useModelFootprintMasks = ({
   map,
@@ -28,6 +30,13 @@ export const useModelFootprintMasks = ({
     if (!map || !isMapLoaded) {
       return;
     }
-    syncModelFootprintMasks(map, modelObjects, adminOsmHideSession);
+    const sync = (): void => {
+      syncModelFootprintMasks(map, modelObjects, adminOsmHideSession);
+    };
+    sync();
+    map.on('idle', sync);
+    return () => {
+      map.off('idle', sync);
+    };
   }, [map, isMapLoaded, modelObjects, adminOsmHideSession]);
 };

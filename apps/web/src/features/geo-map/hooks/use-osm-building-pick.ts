@@ -8,6 +8,7 @@ import {
   computeFootprintCenter,
   isBuildingGeometry,
   narrowBuildingGeometryToClick,
+  resolveExtrusionHeights,
   resolveSourceOsmId,
   type SelectedOsmBuilding,
 } from '@/features/geo-map/utils/building-identification';
@@ -39,11 +40,18 @@ const toSelectedBuilding = (
       ? (feature.properties as Record<string, unknown>)
       : null;
 
+  const featureId =
+    feature.id === undefined || feature.id === null ? null : (feature.id as string | number);
+  const heights = resolveExtrusionHeights(properties);
+
   return {
     sourceOsmId: resolveSourceOsmId(properties),
+    featureId,
     longitude,
     latitude,
     geometry,
+    extrusionHeightM: heights.heightM,
+    extrusionMinHeightM: heights.minHeightM,
   };
 };
 

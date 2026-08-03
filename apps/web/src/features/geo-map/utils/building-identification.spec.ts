@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   computeFootprintCenter,
+  extractSiblingPolygons,
   narrowBuildingGeometryToClick,
   resolveSourceOsmId,
 } from '@/features/geo-map/utils/building-identification';
@@ -86,5 +87,40 @@ describe('narrowBuildingGeometryToClick', () => {
       coordinates: [westSquare],
     };
     expect(narrowBuildingGeometryToClick({ longitude: 1, latitude: 1 }, polygon)).toEqual(polygon);
+  });
+});
+
+describe('extractSiblingPolygons', () => {
+  const westSquare: number[][] = [
+    [0, 0],
+    [2, 0],
+    [2, 2],
+    [0, 2],
+    [0, 0],
+  ];
+  const eastSquare: number[][] = [
+    [10, 0],
+    [12, 0],
+    [12, 2],
+    [10, 2],
+    [10, 0],
+  ];
+
+  it('returns the other MultiPolygon rings', () => {
+    const kept = { type: 'Polygon' as const, coordinates: [eastSquare] };
+    const siblings = extractSiblingPolygons(
+      {
+        type: 'MultiPolygon',
+        coordinates: [[westSquare], [eastSquare]],
+      },
+      kept,
+    );
+    expect(siblings).toHaveLength(1);
+    expect(siblings[0]?.coordinates[0]?.[0]?.[0]).toBe(0);
+  });
+
+  it('returns empty for a single Polygon', () => {
+    const polygon = { type: 'Polygon' as const, coordinates: [westSquare] };
+    expect(extractSiblingPolygons(polygon, polygon)).toEqual([]);
   });
 });
