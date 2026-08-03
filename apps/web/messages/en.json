@@ -2122,7 +2122,7 @@
         "error": "Could not load readiness. Try again.",
         "overallScore": "Overall Score",
         "categoriesTitle": "Categories",
-        "projectHint": "Scores apply to this building’s project."
+        "projectHint": "Updates apply to the readiness the builder sees in their portal."
       },
       "categories": {
         "title": "Readiness categories",
