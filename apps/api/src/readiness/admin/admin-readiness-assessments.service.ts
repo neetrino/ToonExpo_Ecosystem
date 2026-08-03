@@ -19,6 +19,8 @@ import { ReadinessAssessmentSupportService } from './readiness-assessment-suppor
 import type { CreateReadinessAssessmentDto } from './dto/readiness-assessment.dto.js';
 import type { ListReadinessAssessmentsQueryDto } from './dto/readiness-assessment.dto.js';
 import type { UpdateReadinessAssessmentDto } from './dto/readiness-assessment.dto.js';
+import type { UpsertReadinessCriterionScoreDto } from './dto/readiness-assessment.dto.js';
+import type { UpsertReadinessCriterionScoresBatchDto } from './dto/readiness-assessment.dto.js';
 import type { UpsertReadinessScoreDto } from './dto/readiness-assessment.dto.js';
 
 @Injectable()
@@ -55,14 +57,17 @@ export class AdminReadinessAssessmentsService {
   }
 
   async getById(id: string): Promise<ReadinessAssessmentDetail> {
-    const assessment = await this.prisma.db.readinessAssessment.findUnique({
-      where: { id },
-      include: assessmentDetailInclude,
-    });
+    const [assessment, catalogCriteria] = await Promise.all([
+      this.prisma.db.readinessAssessment.findUnique({
+        where: { id },
+        include: assessmentDetailInclude,
+      }),
+      this.support.listActiveCriteria(),
+    ]);
     if (!assessment) {
       throw new NotFoundException('Readiness assessment not found');
     }
-    return toReadinessAssessmentDetail(assessment);
+    return toReadinessAssessmentDetail(assessment, catalogCriteria);
   }
 
   async create(body: CreateReadinessAssessmentDto): Promise<ReadinessAssessmentDetail> {
@@ -77,10 +82,13 @@ export class AdminReadinessAssessmentsService {
       throw new BadRequestException('projectId must be omitted for company assessments');
     }
 
-    const activeCategories = await this.prisma.db.readinessCategory.findMany({
-      where: { active: true },
-      orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
-    });
+    const [activeCategories, activeCriteria] = await Promise.all([
+      this.prisma.db.readinessCategory.findMany({
+        where: { active: true },
+        orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
+      }),
+      this.support.listActiveCriteria(),
+    ]);
 
     const assessment = await this.prisma.db.$transaction(async (tx) => {
       await this.support.archiveActiveAssessments(tx, {
@@ -107,31 +115,41 @@ export class AdminReadinessAssessmentsService {
               status: ReadinessScoreStatus.not_started,
             })),
           },
+          criterionScores: {
+            create: activeCriteria.map((criterion) => ({
+              criterionId: criterion.id,
+              value: null,
+              checked: false,
+            })),
+          },
         },
         include: assessmentDetailInclude,
       });
     });
 
-    return toReadinessAssessmentDetail(assessment);
+    return toReadinessAssessmentDetail(assessment, activeCriteria);
   }
 
   async update(id: string, body: UpdateReadinessAssessmentDto): Promise<ReadinessAssessmentDetail> {
     const existing = await this.support.getAssessmentOrThrow(id);
 
-    const assessment = await this.prisma.db.readinessAssessment.update({
-      where: { id },
-      data: {
-        ...(body.status !== undefined ? { status: body.status } : {}),
-        ...(body.overallScore !== undefined
-          ? {
-              overallScore: body.overallScore,
-              overallScoreOverridden: true,
-            }
-          : {}),
-        ...(body.archive === true ? { archivedAt: new Date() } : {}),
-      },
-      include: assessmentDetailInclude,
-    });
+    const [assessment, catalogCriteria] = await Promise.all([
+      this.prisma.db.readinessAssessment.update({
+        where: { id },
+        data: {
+          ...(body.status !== undefined ? { status: body.status } : {}),
+          ...(body.overallScore !== undefined
+            ? {
+                overallScore: body.overallScore,
+                overallScoreOverridden: true,
+              }
+            : {}),
+          ...(body.archive === true ? { archivedAt: new Date() } : {}),
+        },
+        include: assessmentDetailInclude,
+      }),
+      this.support.listActiveCriteria(),
+    ]);
 
     if (body.status !== undefined && body.status !== existing.status) {
       this.trackReadinessChange({
@@ -145,7 +163,7 @@ export class AdminReadinessAssessmentsService {
       });
     }
 
-    return toReadinessAssessmentDetail(assessment);
+    return toReadinessAssessmentDetail(assessment, catalogCriteria);
   }
 
   async upsertScore(
@@ -220,7 +238,122 @@ export class AdminReadinessAssessmentsService {
       newScore: body.score ?? previous?.score ?? null,
     });
 
-    return toReadinessScoreItem(score);
+    const detail = await this.getById(assessmentId);
+    const updated = detail.scores.find((row) => row.categoryId === categoryId);
+    return updated ?? toReadinessScoreItem(score, []);
+  }
+
+  async upsertCriterionScore(
+    assessmentId: string,
+    criterionId: string,
+    evaluatorUserId: string,
+    body: UpsertReadinessCriterionScoreDto,
+  ): Promise<ReadinessAssessmentDetail> {
+    return this.upsertCriterionScoresBatch(assessmentId, evaluatorUserId, {
+      items: [{ criterionId, ...body }],
+    });
+  }
+
+  async upsertCriterionScoresBatch(
+    assessmentId: string,
+    evaluatorUserId: string,
+    body: UpsertReadinessCriterionScoresBatchDto,
+  ): Promise<ReadinessAssessmentDetail> {
+    const assessment = await this.support.getAssessmentOrThrow(assessmentId);
+    const criterionIds = [...new Set(body.items.map((item) => item.criterionId))];
+    const criteria = await this.prisma.db.readinessCriterion.findMany({
+      where: { id: { in: criterionIds }, active: true },
+    });
+    const criterionById = new Map(criteria.map((criterion) => [criterion.id, criterion]));
+
+    if (criteria.length !== criterionIds.length) {
+      throw new NotFoundException('One or more readiness criteria were not found');
+    }
+
+    for (const item of body.items) {
+      const criterion = criterionById.get(item.criterionId);
+      if (!criterion) {
+        throw new NotFoundException('Readiness criterion not found');
+      }
+      if (item.value !== undefined && item.value !== null && criterion.maxPoints !== null) {
+        if (item.value > criterion.maxPoints) {
+          throw new BadRequestException(
+            `value cannot exceed maxPoints (${criterion.maxPoints}) for ${criterion.code}`,
+          );
+        }
+      }
+    }
+
+    const evaluatedAt = new Date();
+    const affectedCategoryIds = new Set(criteria.map((criterion) => criterion.categoryId));
+
+    await this.prisma.db.$transaction(async (tx) => {
+      for (const item of body.items) {
+        const nextValue =
+          item.value === undefined
+            ? undefined
+            : item.value === null
+              ? null
+              : Math.max(0, item.value);
+        const nextChecked =
+          item.checked !== undefined
+            ? item.checked
+            : nextValue === undefined
+              ? undefined
+              : nextValue !== null;
+
+        await tx.readinessCriterionScore.upsert({
+          where: {
+            assessmentId_criterionId: {
+              assessmentId,
+              criterionId: item.criterionId,
+            },
+          },
+          create: {
+            assessmentId,
+            criterionId: item.criterionId,
+            value: nextValue ?? null,
+            checked: nextChecked ?? false,
+          },
+          update: {
+            ...(nextValue !== undefined ? { value: nextValue } : {}),
+            ...(nextChecked !== undefined ? { checked: nextChecked } : {}),
+          },
+        });
+      }
+
+      for (const categoryId of affectedCategoryIds) {
+        await this.support.recalculateCategoryScoreFromCriteria(
+          tx,
+          assessmentId,
+          categoryId,
+          evaluatorUserId,
+          evaluatedAt,
+        );
+      }
+
+      await tx.readinessAssessment.update({
+        where: { id: assessmentId },
+        data: {
+          lastEvaluatedAt: evaluatedAt,
+          evaluatedByUserId: evaluatorUserId,
+        },
+      });
+
+      await this.support.recalculateOverallScore(tx, assessmentId);
+    });
+
+    this.trackReadinessChange({
+      companyId: assessment.builderCompanyId,
+      projectId: assessment.projectId,
+      categoryId: criteria[0]?.categoryId ?? null,
+      oldStatus: assessment.status,
+      newStatus: assessment.status,
+      oldScore: assessment.overallScore,
+      newScore: null,
+    });
+
+    return this.getById(assessmentId);
   }
 
   private trackReadinessChange(input: {

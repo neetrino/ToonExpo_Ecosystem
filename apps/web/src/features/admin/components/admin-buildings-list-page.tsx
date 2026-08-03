@@ -1,5 +1,6 @@
 'use client';
 
+import type { AdminBuildingListItem } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -11,6 +12,7 @@ import {
   AdminInventoryListShell,
   useAdminInventoryListParams,
 } from '@/features/admin/components/admin-inventory-list-shell';
+import { ReadinessManagementModal } from '@/features/admin/components/readiness-management-modal';
 import { ADMIN_VIEW_MODE_KEYS } from '@/features/admin/constants';
 import { useAdminBuildingsQuery } from '@/features/admin/hooks/use-admin-inventory';
 import { usePathname, useRouter } from '@/i18n/navigation';
@@ -19,7 +21,7 @@ import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { Button } from '@/shared/ui/button';
 
 /**
- * Admin buildings hub list with inventory glance sheet.
+ * Admin buildings hub list with inventory glance sheet and readiness popup.
  */
 export const AdminBuildingsListPage = () => {
   const t = useTranslations('Admin.buildings');
@@ -31,6 +33,7 @@ export const AdminBuildingsListPage = () => {
   const pathname = usePathname();
   const [showCreate, setShowCreate] = useState(false);
   const [sheetFloorId, setSheetFloorId] = useState<string | null>(null);
+  const [readinessBuilding, setReadinessBuilding] = useState<AdminBuildingListItem | null>(null);
   const { viewMode, effectiveViewMode, setViewMode } = usePersistedViewMode(
     ADMIN_VIEW_MODE_KEYS.buildings,
   );
@@ -113,6 +116,7 @@ export const AdminBuildingsListPage = () => {
               setSheetFloorId(null);
               replaceHref(buildHref({ buildingId: id }));
             }}
+            onOpenReadiness={setReadinessBuilding}
           />
         ) : null}
       </AdminInventoryListShell>
@@ -135,6 +139,13 @@ export const AdminBuildingsListPage = () => {
         onSelectFloor={setSheetFloorId}
         onCloseFloor={() => {
           setSheetFloorId(null);
+        }}
+      />
+
+      <ReadinessManagementModal
+        target={readinessBuilding ? { kind: 'building', building: readinessBuilding } : null}
+        onClose={() => {
+          setReadinessBuilding(null);
         }}
       />
     </>

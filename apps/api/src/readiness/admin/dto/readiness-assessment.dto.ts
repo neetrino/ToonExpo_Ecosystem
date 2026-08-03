@@ -1,21 +1,21 @@
-import { ApiPropertyOptional } from "@nestjs/swagger";
-import { Type } from "class-transformer";
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
+  IsArray,
   IsBoolean,
   IsEnum,
   IsInt,
   IsOptional,
   IsString,
+  ArrayMinSize,
   Max,
   MaxLength,
   Min,
   MinLength,
   ValidateIf,
-} from "class-validator";
-import {
-  ReadinessAssessmentTargetType,
-  ReadinessScoreStatus,
-} from "@toonexpo/db";
+  ValidateNested,
+} from 'class-validator';
+import { ReadinessAssessmentTargetType, ReadinessScoreStatus } from '@toonexpo/db';
 
 import {
   READINESS_DEFAULT_PAGE_SIZE,
@@ -23,19 +23,19 @@ import {
   READINESS_MIN_PAGE,
   READINESS_SCORE_MAX,
   READINESS_SCORE_MIN,
-} from "../../readiness.constants.js";
+} from '../../readiness.constants.js';
 
 enum ReadinessAssessmentTargetTypeDto {
-  builder_company = "builder_company",
-  project = "project",
+  builder_company = 'builder_company',
+  project = 'project',
 }
 
 enum ReadinessScoreStatusDto {
-  not_started = "not_started",
-  needs_improvement = "needs_improvement",
-  in_progress = "in_progress",
-  ready = "ready",
-  blocked = "blocked",
+  not_started = 'not_started',
+  needs_improvement = 'needs_improvement',
+  in_progress = 'in_progress',
+  ready = 'ready',
+  blocked = 'blocked',
 }
 
 export class ListReadinessAssessmentsQueryDto {
@@ -60,6 +60,12 @@ export class ListReadinessAssessmentsQueryDto {
   @MinLength(1)
   builderCompanyId?: string;
 
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MinLength(1)
+  projectId?: string;
+
   @ApiPropertyOptional({ enum: ReadinessAssessmentTargetTypeDto })
   @IsOptional()
   @IsEnum(ReadinessAssessmentTargetTypeDto)
@@ -80,7 +86,7 @@ export class CreateReadinessAssessmentDto {
   @MinLength(1)
   builderCompanyId!: string;
 
-  @ValidateIf((dto: CreateReadinessAssessmentDto) => dto.targetType === "project")
+  @ValidateIf((dto: CreateReadinessAssessmentDto) => dto.targetType === 'project')
   @IsString()
   @MinLength(1)
   projectId?: string;
@@ -125,4 +131,46 @@ export class UpsertReadinessScoreDto {
   @IsString()
   @MaxLength(2000)
   recommendationSummary?: string | null;
+}
+
+export class UpsertReadinessCriterionScoreDto {
+  @ApiPropertyOptional({ nullable: true })
+  @IsOptional()
+  @ValidateIf((_, value) => value !== null)
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  value?: number | null;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  checked?: boolean;
+}
+
+export class UpsertReadinessCriterionScoreItemDto {
+  @IsString()
+  @MinLength(1)
+  criterionId!: string;
+
+  @ApiPropertyOptional({ nullable: true })
+  @IsOptional()
+  @ValidateIf((_, value) => value !== null)
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  value?: number | null;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  checked?: boolean;
+}
+
+export class UpsertReadinessCriterionScoresBatchDto {
+  @Type(() => UpsertReadinessCriterionScoreItemDto)
+  @IsArray()
+  @ArrayMinSize(1)
+  @ValidateNested({ each: true })
+  items!: UpsertReadinessCriterionScoreItemDto[];
 }

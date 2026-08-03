@@ -30,12 +30,23 @@ export const MEDIA_MIME_TO_EXT: Record<MediaAllowedMimeType, string> = {
   'image/avif': 'avif',
 };
 
-export const MEDIA_MODEL3D_ALLOWED_MIME_TYPES = ['model/gltf-binary'] as const;
+/** Canonical MIME stored/uploaded for GLB assets. */
+export const MEDIA_MODEL3D_CANONICAL_MIME = 'model/gltf-binary' as const;
+
+/**
+ * Browsers often send `.glb` as `application/octet-stream` or with an empty type.
+ * Extension check still gates acceptance.
+ */
+export const MEDIA_MODEL3D_ALLOWED_MIME_TYPES = [
+  MEDIA_MODEL3D_CANONICAL_MIME,
+  'application/octet-stream',
+] as const;
 
 export type MediaModel3dMimeType = (typeof MEDIA_MODEL3D_ALLOWED_MIME_TYPES)[number];
 
 export const MEDIA_MODEL3D_MIME_TO_EXT: Record<MediaModel3dMimeType, string> = {
   'model/gltf-binary': 'glb',
+  'application/octet-stream': 'glb',
 };
 
 export const MEDIA_MODEL3D_ALLOWED_EXTENSIONS = ['.glb'] as const;

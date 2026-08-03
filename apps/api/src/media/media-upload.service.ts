@@ -14,6 +14,7 @@ import {
   MEDIA_DEFAULT_PAGE_SIZE,
   MEDIA_MAX_PAGE_SIZE,
   MEDIA_MIN_PAGE,
+  MEDIA_MODEL3D_CANONICAL_MIME,
   MEDIA_UPLOAD_KINDS,
   R2_NOT_CONFIGURED_MESSAGE,
   type MediaUploadKind,
@@ -24,6 +25,7 @@ import {
   isR2ConfiguredFromService,
   resolveMediaKindConfig,
   sanitizeOriginalFilename,
+  type MediaKindUploadConfig,
 } from './media.config.js';
 import { toMediaAssetItem } from './media.mapper.js';
 import { R2_STORAGE, type R2StorageClient, type UploadedMediaScope } from './media.types.js';
@@ -76,16 +78,16 @@ export class MediaUploadService {
     const config = resolveMediaKindConfig(kind);
     const normalizedMime = mimeType.trim().toLowerCase();
 
+    if (kind === 'model3d') {
+      return validateModel3dUpload(buffer, normalizedMime, originalFilename, config);
+    }
+
     if (!config.allowedMimeTypes.includes(normalizedMime)) {
       throw new BadRequestException(config.mimeRejectMessage);
     }
 
     if (buffer.byteLength > config.maxBytes) {
       throw new BadRequestException(config.sizeLimitMessage);
-    }
-
-    if (kind === 'model3d' && originalFilename) {
-      assertModel3dExtension(originalFilename, config.allowedExtensions);
     }
 
     const extension = config.mimeToExt[normalizedMime];
@@ -199,6 +201,34 @@ export class MediaUploadService {
     };
   }
 }
+
+const validateModel3dUpload = (
+  buffer: Buffer,
+  normalizedMime: string,
+  originalFilename: string | undefined,
+  config: MediaKindUploadConfig,
+): ValidatedUpload => {
+  if (!originalFilename?.trim()) {
+    throw new BadRequestException(config.mimeRejectMessage);
+  }
+
+  assertModel3dExtension(originalFilename, config.allowedExtensions);
+
+  const mimeOk = normalizedMime.length === 0 || config.allowedMimeTypes.includes(normalizedMime);
+  if (!mimeOk) {
+    throw new BadRequestException(config.mimeRejectMessage);
+  }
+
+  if (buffer.byteLength > config.maxBytes) {
+    throw new BadRequestException(config.sizeLimitMessage);
+  }
+
+  return {
+    mimeType: MEDIA_MODEL3D_CANONICAL_MIME,
+    extension: 'glb',
+    kind: 'model3d',
+  };
+};
 
 const assertModel3dExtension = (
   originalFilename: string,

@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 import {
   READINESS_CATEGORY_NAME_MAX_LENGTH,
@@ -12,9 +12,15 @@ import {
   READINESS_TARGET_TYPES,
   READINESS_TITLE_MAX_LENGTH,
   READINESS_VISIBILITY_OPTIONS,
-} from "@/features/readiness/constants";
+} from '@/features/readiness/constants';
 
 export const readinessCategorySchema = z.object({
+  code: z
+    .string()
+    .trim()
+    .min(1)
+    .max(64)
+    .regex(/^[a-z][a-z0-9_]*$/),
   name: z.string().trim().min(1).max(READINESS_CATEGORY_NAME_MAX_LENGTH),
   description: z.string().max(READINESS_DESCRIPTION_MAX_LENGTH),
   weight: z.string(),
@@ -22,9 +28,7 @@ export const readinessCategorySchema = z.object({
   active: z.boolean(),
 });
 
-export type ReadinessCategoryFormValues = z.infer<
-  typeof readinessCategorySchema
->;
+export type ReadinessCategoryFormValues = z.infer<typeof readinessCategorySchema>;
 
 export const createReadinessAssessmentSchema = z
   .object({
@@ -33,38 +37,31 @@ export const createReadinessAssessmentSchema = z
     projectId: z.string().trim(),
   })
   .superRefine((values, ctx) => {
-    if (values.targetType === "project" && values.projectId.length === 0) {
+    if (values.targetType === 'project' && values.projectId.length === 0) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        path: ["projectId"],
-        message: "projectId",
+        path: ['projectId'],
+        message: 'projectId',
       });
     }
   });
 
-export type CreateReadinessAssessmentFormValues = z.infer<
-  typeof createReadinessAssessmentSchema
->;
+export type CreateReadinessAssessmentFormValues = z.infer<typeof createReadinessAssessmentSchema>;
 
 export const upsertReadinessScoreSchema = z.object({
   score: z
-    .union([z.literal(""), z.coerce.number().int()])
-    .transform((value) => (value === "" ? undefined : value))
+    .union([z.literal(''), z.coerce.number().int()])
+    .transform((value) => (value === '' ? undefined : value))
     .refine(
       (value) =>
-        value === undefined ||
-        (value >= READINESS_SCORE_MIN && value <= READINESS_SCORE_MAX),
-      { message: "score" },
+        value === undefined || (value >= READINESS_SCORE_MIN && value <= READINESS_SCORE_MAX),
+      { message: 'score' },
     ),
   status: z.enum(READINESS_SCORE_STATUSES),
-  recommendationSummary: z
-    .string()
-    .max(READINESS_RECOMMENDATION_SUMMARY_MAX_LENGTH),
+  recommendationSummary: z.string().max(READINESS_RECOMMENDATION_SUMMARY_MAX_LENGTH),
 });
 
-export type UpsertReadinessScoreFormValues = z.infer<
-  typeof upsertReadinessScoreSchema
->;
+export type UpsertReadinessScoreFormValues = z.infer<typeof upsertReadinessScoreSchema>;
 
 export const readinessRecommendationSchema = z.object({
   title: z.string().trim().min(1).max(READINESS_TITLE_MAX_LENGTH),
@@ -73,9 +70,7 @@ export const readinessRecommendationSchema = z.object({
   sortOrder: z.coerce.number().int().min(0),
 });
 
-export type ReadinessRecommendationFormValues = z.infer<
-  typeof readinessRecommendationSchema
->;
+export type ReadinessRecommendationFormValues = z.infer<typeof readinessRecommendationSchema>;
 
 export const readinessRequiredActionSchema = z.object({
   title: z.string().trim().min(1).max(READINESS_TITLE_MAX_LENGTH),
@@ -84,30 +79,22 @@ export const readinessRequiredActionSchema = z.object({
   visibility: z.enum(READINESS_VISIBILITY_OPTIONS),
 });
 
-export type ReadinessRequiredActionFormValues = z.infer<
-  typeof readinessRequiredActionSchema
->;
+export type ReadinessRequiredActionFormValues = z.infer<typeof readinessRequiredActionSchema>;
 
 export const readinessInternalNoteSchema = z.object({
   body: z.string().trim().min(1).max(READINESS_NOTE_BODY_MAX_LENGTH),
 });
 
-export type ReadinessInternalNoteFormValues = z.infer<
-  typeof readinessInternalNoteSchema
->;
+export type ReadinessInternalNoteFormValues = z.infer<typeof readinessInternalNoteSchema>;
 
 export const overrideOverallScoreSchema = z.object({
   overallScore: z
-    .union([z.literal(""), z.coerce.number().int(), z.null()])
-    .transform((value) => (value === "" ? null : value))
+    .union([z.literal(''), z.coerce.number().int(), z.null()])
+    .transform((value) => (value === '' ? null : value))
     .refine(
-      (value) =>
-        value === null ||
-        (value >= READINESS_SCORE_MIN && value <= READINESS_SCORE_MAX),
-      { message: "overallScore" },
+      (value) => value === null || (value >= READINESS_SCORE_MIN && value <= READINESS_SCORE_MAX),
+      { message: 'overallScore' },
     ),
 });
 
-export type OverrideOverallScoreFormValues = z.infer<
-  typeof overrideOverallScoreSchema
->;
+export type OverrideOverallScoreFormValues = z.infer<typeof overrideOverallScoreSchema>;

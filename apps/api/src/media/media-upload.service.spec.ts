@@ -111,6 +111,29 @@ describe('MediaUploadService', () => {
     });
   });
 
+  it('accepts model3d GLB with application/octet-stream mime', () => {
+    const result = service.validateUpload(
+      Buffer.from('glb'),
+      'application/octet-stream',
+      'model3d',
+      'building.glb',
+    );
+    expect(result).toEqual({
+      mimeType: 'model/gltf-binary',
+      extension: 'glb',
+      kind: 'model3d',
+    });
+  });
+
+  it('accepts model3d GLB with empty mime when extension is .glb', () => {
+    const result = service.validateUpload(Buffer.from('glb'), '', 'model3d', 'building.glb');
+    expect(result).toEqual({
+      mimeType: 'model/gltf-binary',
+      extension: 'glb',
+      kind: 'model3d',
+    });
+  });
+
   it('uploads and persists a company-scoped asset', async () => {
     mediaAssetCreate.mockResolvedValue({
       id: 'media_1',

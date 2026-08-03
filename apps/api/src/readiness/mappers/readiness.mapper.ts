@@ -1,17 +1,19 @@
 import type {
   PortalReadinessAssessmentItem,
+  PortalReadinessCriterionItem,
   PortalReadinessRecommendationItem,
   PortalReadinessRequiredActionItem,
   PortalReadinessScoreItem,
   ReadinessAssessmentDetail,
   ReadinessAssessmentListItem,
   ReadinessCategoryItem,
+  ReadinessCriterionScoreItem,
   ReadinessInternalNoteItem,
   ReadinessRecommendationItem,
   ReadinessRequiredActionItem,
   ReadinessScoreItem,
-} from "@toonexpo/contracts";
-import type { Prisma } from "@toonexpo/db";
+} from '@toonexpo/contracts';
+import type { Prisma } from '@toonexpo/db';
 
 type ReadinessCategory = Prisma.ReadinessCategoryGetPayload<object>;
 type ReadinessAssessment = Prisma.ReadinessAssessmentGetPayload<object>;
@@ -19,13 +21,21 @@ type ReadinessScore = Prisma.ReadinessScoreGetPayload<object>;
 type ReadinessRecommendation = Prisma.ReadinessRecommendationGetPayload<object>;
 type ReadinessRequiredAction = Prisma.ReadinessRequiredActionGetPayload<object>;
 type ReadinessInternalNote = Prisma.ReadinessInternalNoteGetPayload<object>;
+type ReadinessCriterion = Prisma.ReadinessCriterionGetPayload<object>;
+type ReadinessCriterionScore = Prisma.ReadinessCriterionScoreGetPayload<object>;
 
 const toIso = (value: Date): string => value.toISOString();
 
-export const toReadinessCategoryItem = (
-  category: ReadinessCategory,
-): ReadinessCategoryItem => ({
+const criterionPercent = (value: number | null, maxPoints: number | null): number | null => {
+  if (value === null || maxPoints === null || maxPoints <= 0) {
+    return null;
+  }
+  return Math.max(0, Math.min(100, Math.round((value / maxPoints) * 100)));
+};
+
+export const toReadinessCategoryItem = (category: ReadinessCategory): ReadinessCategoryItem => ({
   id: category.id,
+  code: category.code,
   name: category.name,
   description: category.description,
   weight: category.weight,
@@ -47,9 +57,7 @@ export const toReadinessAssessmentListItem = (
   overallScore: assessment.overallScore,
   overallScoreOverridden: assessment.overallScoreOverridden,
   evaluatedByUserId: assessment.evaluatedByUserId,
-  lastEvaluatedAt: assessment.lastEvaluatedAt
-    ? toIso(assessment.lastEvaluatedAt)
-    : null,
+  lastEvaluatedAt: assessment.lastEvaluatedAt ? toIso(assessment.lastEvaluatedAt) : null,
   archivedAt: assessment.archivedAt ? toIso(assessment.archivedAt) : null,
   createdAt: toIso(assessment.createdAt),
   updatedAt: toIso(assessment.updatedAt),
@@ -57,24 +65,100 @@ export const toReadinessAssessmentListItem = (
 
 type ScoreWithCategory = ReadinessScore & { category: ReadinessCategory };
 
+type CriterionScoreWithCriterion = ReadinessCriterionScore & {
+  criterion: ReadinessCriterion;
+};
+
 export const assessmentDetailInclude = {
   scores: {
     include: { category: true },
-    orderBy: [{ category: { sortOrder: "asc" as const } }, { category: { name: "asc" as const } }],
+    orderBy: [{ category: { sortOrder: 'asc' as const } }, { category: { name: 'asc' as const } }],
   },
-  recommendations: { orderBy: [{ sortOrder: "asc" as const }, { createdAt: "asc" as const }] },
-  requiredActions: { orderBy: [{ createdAt: "asc" as const }] },
-  internalNotes: { orderBy: [{ createdAt: "desc" as const }] },
+  criterionScores: {
+    include: { criterion: true },
+  },
+  recommendations: { orderBy: [{ sortOrder: 'asc' as const }, { createdAt: 'asc' as const }] },
+  requiredActions: { orderBy: [{ createdAt: 'asc' as const }] },
+  internalNotes: { orderBy: [{ createdAt: 'desc' as const }] },
 } satisfies Prisma.ReadinessAssessmentInclude;
 
 export type AssessmentDetailRecord = Prisma.ReadinessAssessmentGetPayload<{
   include: typeof assessmentDetailInclude;
 }>;
 
-export const toReadinessScoreItem = (score: ScoreWithCategory): ReadinessScoreItem => ({
+const toCriterionScoreNode = (
+  criterion: ReadinessCriterion,
+  scoreByCriterionId: ReadonlyMap<string, CriterionScoreWithCriterion>,
+  childrenByParentId: ReadonlyMap<string, ReadinessCriterion[]>,
+): ReadinessCriterionScoreItem => {
+  const score = scoreByCriterionId.get(criterion.id);
+  const children = childrenByParentId.get(criterion.id) ?? [];
+
+  return {
+    scoreId: score?.id ?? null,
+    criterionId: criterion.id,
+    code: criterion.code,
+    parentId: criterion.parentId,
+    maxPoints: criterion.maxPoints,
+    sortOrder: criterion.sortOrder,
+    value: score?.value ?? null,
+    checked: score?.checked ?? false,
+    children: children.map((child) =>
+      toCriterionScoreNode(child, scoreByCriterionId, childrenByParentId),
+    ),
+  };
+};
+
+export const buildCriterionTreeForCategory = (
+  categoryId: string,
+  criteria: readonly ReadinessCriterion[],
+  criterionScores: readonly CriterionScoreWithCriterion[],
+): ReadinessCriterionScoreItem[] => {
+  const categoryCriteria = criteria
+    .filter((criterion) => criterion.categoryId === categoryId && criterion.active)
+    .slice()
+    .sort((a, b) => a.sortOrder - b.sortOrder || a.code.localeCompare(b.code));
+
+  const childrenByParentId = new Map<string, ReadinessCriterion[]>();
+  for (const criterion of categoryCriteria) {
+    if (!criterion.parentId) {
+      continue;
+    }
+    const list = childrenByParentId.get(criterion.parentId) ?? [];
+    list.push(criterion);
+    childrenByParentId.set(criterion.parentId, list);
+  }
+
+  const scoreByCriterionId = new Map(criterionScores.map((row) => [row.criterionId, row] as const));
+
+  return categoryCriteria
+    .filter((criterion) => criterion.parentId === null)
+    .map((criterion) => toCriterionScoreNode(criterion, scoreByCriterionId, childrenByParentId));
+};
+
+const toPortalCriterionNode = (
+  item: ReadinessCriterionScoreItem,
+): PortalReadinessCriterionItem => ({
+  criterionId: item.criterionId,
+  code: item.code,
+  parentId: item.parentId,
+  maxPoints: item.maxPoints,
+  sortOrder: item.sortOrder,
+  value: item.value,
+  checked: item.checked,
+  percent: criterionPercent(item.value, item.maxPoints),
+  children: item.children.map(toPortalCriterionNode),
+});
+
+export const toReadinessScoreItem = (
+  score: ScoreWithCategory,
+  criteria: ReadinessCriterionScoreItem[] = [],
+): ReadinessScoreItem => ({
   id: score.id,
   categoryId: score.categoryId,
+  categoryCode: score.category.code,
   categoryName: score.category.name,
+  categoryWeight: score.category.weight,
   score: score.score,
   status: score.status,
   recommendationSummary: score.recommendationSummary,
@@ -82,6 +166,7 @@ export const toReadinessScoreItem = (score: ScoreWithCategory): ReadinessScoreIt
   evaluatedAt: score.evaluatedAt ? toIso(score.evaluatedAt) : null,
   createdAt: toIso(score.createdAt),
   updatedAt: toIso(score.updatedAt),
+  criteria,
 });
 
 export const toReadinessRecommendationItem = (
@@ -130,25 +215,39 @@ export const toReadinessInternalNoteItem = (
 
 export const toReadinessAssessmentDetail = (
   assessment: AssessmentDetailRecord,
-): ReadinessAssessmentDetail => ({
-  ...toReadinessAssessmentListItem(assessment),
-  scores: assessment.scores.map(toReadinessScoreItem),
-  recommendations: assessment.recommendations.map(toReadinessRecommendationItem),
-  requiredActions: assessment.requiredActions.map(toReadinessRequiredActionItem),
-  internalNotes: assessment.internalNotes.map(toReadinessInternalNoteItem),
-});
+  catalogCriteria: readonly ReadinessCriterion[],
+): ReadinessAssessmentDetail => {
+  const criterionScores = assessment.criterionScores as CriterionScoreWithCriterion[];
+
+  return {
+    ...toReadinessAssessmentListItem(assessment),
+    scores: assessment.scores.map((score) =>
+      toReadinessScoreItem(
+        score,
+        buildCriterionTreeForCategory(score.categoryId, catalogCriteria, criterionScores),
+      ),
+    ),
+    recommendations: assessment.recommendations.map(toReadinessRecommendationItem),
+    requiredActions: assessment.requiredActions.map(toReadinessRequiredActionItem),
+    internalNotes: assessment.internalNotes.map(toReadinessInternalNoteItem),
+  };
+};
 
 export const toPortalReadinessScoreItem = (
   score: ScoreWithCategory,
   helpAvailable: boolean,
+  criteria: ReadinessCriterionScoreItem[] = [],
 ): PortalReadinessScoreItem => ({
   categoryId: score.categoryId,
+  categoryCode: score.category.code,
   categoryName: score.category.name,
+  categoryWeight: score.category.weight,
   score: score.score,
   status: score.status,
   recommendationSummary: score.recommendationSummary,
   serviceProviderCategoryId: score.category.serviceProviderCategoryId,
   helpAvailable,
+  criteria: criteria.map(toPortalCriterionNode),
 });
 
 export const toPortalReadinessRecommendationItem = (
@@ -176,6 +275,7 @@ export const toPortalReadinessRequiredActionItem = (
 type PortalAssessmentSource = ReadinessAssessment & {
   project: { name: string } | null;
   scores: ScoreWithCategory[];
+  criterionScores: CriterionScoreWithCriterion[];
   recommendations: ReadinessRecommendation[];
   requiredActions: ReadinessRequiredAction[];
 };
@@ -183,6 +283,7 @@ type PortalAssessmentSource = ReadinessAssessment & {
 export const toPortalReadinessAssessmentItem = (
   assessment: PortalAssessmentSource,
   helpAvailabilityByCategoryId: ReadonlyMap<string, boolean>,
+  catalogCriteria: readonly ReadinessCriterion[],
 ): PortalReadinessAssessmentItem => ({
   id: assessment.id,
   targetType: assessment.targetType,
@@ -190,13 +291,12 @@ export const toPortalReadinessAssessmentItem = (
   projectName: assessment.project?.name ?? null,
   status: assessment.status,
   overallScore: assessment.overallScore,
-  lastEvaluatedAt: assessment.lastEvaluatedAt
-    ? toIso(assessment.lastEvaluatedAt)
-    : null,
+  lastEvaluatedAt: assessment.lastEvaluatedAt ? toIso(assessment.lastEvaluatedAt) : null,
   scores: assessment.scores.map((score) =>
     toPortalReadinessScoreItem(
       score,
       helpAvailabilityByCategoryId.get(score.categoryId) ?? false,
+      buildCriterionTreeForCategory(score.categoryId, catalogCriteria, assessment.criterionScores),
     ),
   ),
   recommendations: assessment.recommendations.map(toPortalReadinessRecommendationItem),

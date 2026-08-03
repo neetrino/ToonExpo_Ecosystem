@@ -40,7 +40,7 @@ export const MEDIA_KIND_UPLOAD_CONFIG: Record<MediaUploadKind, MediaKindUploadCo
     allowedExtensions: MEDIA_MODEL3D_ALLOWED_EXTENSIONS,
     assetType: MediaAssetType.other,
     sizeLimitMessage: '3D model exceeds the 15 MB upload limit',
-    mimeRejectMessage: 'Only GLB (model/gltf-binary) files are allowed',
+    mimeRejectMessage: 'Only GLB (.glb) files are allowed',
   },
 };
 

@@ -1,69 +1,64 @@
-"use client";
+'use client';
 
-import type { ReadinessScoreItem, ReadinessScoreStatus } from "@toonexpo/contracts";
-import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import type { ReadinessScoreItem, ReadinessScoreStatus } from '@toonexpo/contracts';
+import { useTranslations } from 'next-intl';
+import { useEffect, useState } from 'react';
 
-import { useUpsertReadinessScoreMutation } from "@/features/admin/hooks/use-admin-readiness";
-import { ReadinessStatusBadge } from "@/features/readiness/components/readiness-status-badge";
+import { useUpsertReadinessScoreMutation } from '@/features/admin/hooks/use-admin-readiness';
+import { ReadinessStatusBadge } from '@/features/readiness/components/readiness-status-badge';
 import {
   READINESS_SCORE_MAX,
   READINESS_SCORE_MIN,
   READINESS_SCORE_STATUSES,
-} from "@/features/readiness/constants";
-import { Button } from "@/shared/ui/button";
-import { FormField } from "@/shared/ui/form-field";
-import { Input } from "@/shared/ui/input";
-import { Textarea } from "@/shared/ui/textarea";
+} from '@/features/readiness/constants';
+import { Button } from '@/shared/ui/button';
+import { FormField } from '@/shared/ui/form-field';
+import { Input } from '@/shared/ui/input';
+import { Textarea } from '@/shared/ui/textarea';
 
 type ReadinessCategoryScoreRowProps = {
   assessmentId: string;
   score: ReadinessScoreItem;
+  /** Hide outer card chrome when nested in an accordion. */
+  plain?: boolean | undefined;
 };
 
 /**
- * Inline category evaluation row with save action.
+ * Compact category score editor for admin evaluation.
  */
 export const ReadinessCategoryScoreRow = ({
   assessmentId,
   score,
+  plain = false,
 }: ReadinessCategoryScoreRowProps) => {
-  const t = useTranslations("Admin.readiness.detail.categories");
-  const mutation = useUpsertReadinessScoreMutation(
-    assessmentId,
-    score.categoryId,
-  );
-  const [scoreValue, setScoreValue] = useState(
-    score.score === null ? "" : String(score.score),
-  );
+  const t = useTranslations('Admin.readiness.detail.categories');
+  const mutation = useUpsertReadinessScoreMutation(assessmentId, score.categoryId);
+  const [scoreValue, setScoreValue] = useState(score.score === null ? '' : String(score.score));
   const [status, setStatus] = useState<ReadinessScoreStatus>(score.status);
-  const [summary, setSummary] = useState(score.recommendationSummary ?? "");
+  const [summary, setSummary] = useState(score.recommendationSummary ?? '');
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
-    setScoreValue(score.score === null ? "" : String(score.score));
+    setScoreValue(score.score === null ? '' : String(score.score));
     setStatus(score.status);
-    setSummary(score.recommendationSummary ?? "");
+    setSummary(score.recommendationSummary ?? '');
   }, [score]);
 
   const dirty =
-    scoreValue !== (score.score === null ? "" : String(score.score)) ||
+    scoreValue !== (score.score === null ? '' : String(score.score)) ||
     status !== score.status ||
-    summary !== (score.recommendationSummary ?? "");
+    summary !== (score.recommendationSummary ?? '');
 
   const onSave = async () => {
     setError(null);
     setSaved(false);
-    const parsed =
-      scoreValue.trim() === "" ? undefined : Number.parseInt(scoreValue, 10);
+    const parsed = scoreValue.trim() === '' ? undefined : Number.parseInt(scoreValue, 10);
     if (
       parsed !== undefined &&
-      (Number.isNaN(parsed) ||
-        parsed < READINESS_SCORE_MIN ||
-        parsed > READINESS_SCORE_MAX)
+      (Number.isNaN(parsed) || parsed < READINESS_SCORE_MIN || parsed > READINESS_SCORE_MAX)
     ) {
-      setError(t("validation.score"));
+      setError(t('validation.score'));
       return;
     }
     try {
@@ -74,19 +69,27 @@ export const ReadinessCategoryScoreRow = ({
       });
       setSaved(true);
     } catch {
-      setError(t("errors.generic"));
+      setError(t('errors.generic'));
     }
   };
 
   return (
-    <div className="flex flex-col gap-3 rounded-sm border border-border p-4">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h3 className="text-sm font-semibold text-ink">{score.categoryName}</h3>
-        <ReadinessStatusBadge status={score.status} namespace="Admin.readiness" />
-      </div>
+    <div
+      className={
+        plain
+          ? 'flex flex-col gap-3'
+          : 'flex flex-col gap-3 rounded-sm border border-border bg-background p-4'
+      }
+    >
+      {plain ? null : (
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h3 className="text-sm font-semibold text-ink">{score.categoryName}</h3>
+          <ReadinessStatusBadge status={score.status} namespace="Admin.readiness" />
+        </div>
+      )}
 
-      <div className="grid gap-3 sm:grid-cols-2">
-        <FormField id={`score-${score.id}`} label={t("score")}>
+      <div className="grid gap-3 sm:grid-cols-[8rem_minmax(0,1fr)_auto] sm:items-end">
+        <FormField id={`score-${score.id}`} label={t('score')}>
           <Input
             id={`score-${score.id}`}
             type="number"
@@ -99,7 +102,7 @@ export const ReadinessCategoryScoreRow = ({
           />
         </FormField>
 
-        <FormField id={`status-${score.id}`} label={t("status")}>
+        <FormField id={`status-${score.id}`} label={t('status')}>
           <select
             id={`status-${score.id}`}
             className="h-11 w-full rounded-sm border border-border bg-background px-3 text-sm text-ink"
@@ -115,9 +118,21 @@ export const ReadinessCategoryScoreRow = ({
             ))}
           </select>
         </FormField>
+
+        <Button
+          type="button"
+          size="sm"
+          className="sm:mb-0.5"
+          disabled={!dirty || mutation.isPending}
+          onClick={() => {
+            void onSave();
+          }}
+        >
+          {mutation.isPending ? t('saving') : t('save')}
+        </Button>
       </div>
 
-      <FormField id={`summary-${score.id}`} label={t("recommendationSummary")}>
+      <FormField id={`summary-${score.id}`} label={t('recommendationSummary')}>
         <Textarea
           id={`summary-${score.id}`}
           rows={2}
@@ -135,20 +150,9 @@ export const ReadinessCategoryScoreRow = ({
       ) : null}
       {saved ? (
         <p role="status" className="text-sm text-success">
-          {t("saved")}
+          {t('saved')}
         </p>
       ) : null}
-
-      <Button
-        type="button"
-        size="sm"
-        disabled={!dirty || mutation.isPending}
-        onClick={() => {
-          void onSave();
-        }}
-      >
-        {mutation.isPending ? t("saving") : t("save")}
-      </Button>
     </div>
   );
 };

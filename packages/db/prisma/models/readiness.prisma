@@ -45,6 +45,7 @@ model ReadinessAssessment {
   project          Project?                  @relation(fields: [projectId], references: [id], onDelete: Restrict)
   evaluatedBy      User?                     @relation("ReadinessAssessmentEvaluator", fields: [evaluatedByUserId], references: [id], onDelete: SetNull)
   scores           ReadinessScore[]
+  criterionScores  ReadinessCriterionScore[]
   recommendations  ReadinessRecommendation[]
   requiredActions  ReadinessRequiredAction[]
   internalNotes    ReadinessInternalNote[]
@@ -59,6 +60,8 @@ model ReadinessAssessment {
 
 model ReadinessCategory {
   id                        String   @id @default(cuid())
+  /// Stable key for i18n (e.g. product, packaging, team).
+  code                      String   @unique
   name                      String
   description               String?
   weight                    Int?
@@ -69,12 +72,56 @@ model ReadinessCategory {
   updatedAt                 DateTime                 @updatedAt @map("updated_at")
 
   scores                    ReadinessScore[]
+  criteria                  ReadinessCriterion[]
   serviceProviderCategory   ServiceProviderCategory? @relation(fields: [serviceProviderCategoryId], references: [id], onDelete: SetNull)
 
   @@index([active])
   @@index([sortOrder])
   @@index([serviceProviderCategoryId])
   @@map("readiness_categories")
+}
+
+/// KPI criterion (leaf score row or group header) under a readiness category.
+model ReadinessCriterion {
+  id         String   @id @default(cuid())
+  code       String   @unique
+  categoryId String   @map("category_id")
+  parentId   String?  @map("parent_id")
+  /// Max points for leaf criteria; null for group headers / non-scored rows.
+  maxPoints  Int?     @map("max_points")
+  sortOrder  Int      @default(0) @map("sort_order")
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  category ReadinessCategory        @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  parent   ReadinessCriterion?      @relation("ReadinessCriterionTree", fields: [parentId], references: [id], onDelete: Restrict)
+  children ReadinessCriterion[]     @relation("ReadinessCriterionTree")
+  scores   ReadinessCriterionScore[]
+
+  @@index([categoryId])
+  @@index([parentId])
+  @@index([active, sortOrder])
+  @@map("readiness_criteria")
+}
+
+/// Per-assessment value for a KPI criterion.
+model ReadinessCriterionScore {
+  id           String   @id @default(cuid())
+  assessmentId String   @map("assessment_id")
+  criterionId  String   @map("criterion_id")
+  value        Int?
+  checked      Boolean  @default(false)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  assessment ReadinessAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  criterion  ReadinessCriterion  @relation(fields: [criterionId], references: [id], onDelete: Restrict)
+
+  @@unique([assessmentId, criterionId])
+  @@index([assessmentId])
+  @@index([criterionId])
+  @@map("readiness_criterion_scores")
 }
 
 model ReadinessScore {

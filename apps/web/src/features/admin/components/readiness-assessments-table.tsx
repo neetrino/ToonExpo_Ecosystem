@@ -9,7 +9,6 @@ import { useLocale, useTranslations } from 'next-intl';
 
 import { ReadinessStatusBadge } from '@/features/readiness/components/readiness-status-badge';
 import { formatReadinessDate } from '@/features/readiness/utils/format-readiness-date';
-import { Link } from '@/i18n/navigation';
 import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
 import { VIEW_MODE_CARDS, type ViewMode } from '@/shared/ui/view-mode';
 
@@ -18,6 +17,7 @@ type CompanyLookup = Map<string, string>;
 type ReadinessAssessmentsTableProps = {
   assessments: ReadinessAssessmentListItem[];
   companyLookup: CompanyLookup;
+  onOpenAssessment: (assessment: ReadinessAssessmentListItem) => void;
   viewMode?: ViewMode | undefined;
 };
 
@@ -27,41 +27,44 @@ type ReadinessAssessmentsTableProps = {
 export const ReadinessAssessmentsTable = ({
   assessments,
   companyLookup,
+  onOpenAssessment,
   viewMode = VIEW_MODE_CARDS,
 }: ReadinessAssessmentsTableProps) => {
   const t = useTranslations('Admin.readiness.assessments');
   const locale = useLocale();
 
   const targetLabel = (target: ReadinessAssessmentTargetType): string => t(`targetTypes.${target}`);
+  const companyName = (assessment: ReadinessAssessmentListItem): string =>
+    companyLookup.get(assessment.builderCompanyId) ?? assessment.builderCompanyId;
 
   if (viewMode === VIEW_MODE_CARDS) {
     return (
       <AdminListCardGrid>
         {assessments.map((assessment) => (
-          <Link
+          <button
             key={assessment.id}
-            href={`/admin/readiness/${assessment.id}`}
-            className="flex flex-col gap-2 rounded-sm border border-border bg-background p-3 transition-colors hover:bg-surface/60"
+            type="button"
+            onClick={() => {
+              onOpenAssessment(assessment);
+            }}
+            className="flex flex-col gap-3 rounded-sm border border-border bg-background p-4 text-left transition-colors hover:border-border-strong hover:bg-surface/60"
           >
-            <span className="font-medium text-ink">
-              {companyLookup.get(assessment.builderCompanyId) ?? assessment.builderCompanyId}
-            </span>
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex flex-wrap items-start justify-between gap-2">
+              <span className="font-medium text-ink">{companyName(assessment)}</span>
               <ReadinessStatusBadge
                 status={assessment.status as ReadinessScoreStatus}
                 namespace="Admin.readiness"
               />
-              <span className="text-xs text-ink-muted">{targetLabel(assessment.targetType)}</span>
             </div>
-            <div className="flex flex-wrap items-center gap-2 text-xs text-ink-muted">
+            <p className="text-sm text-ink-secondary">{targetLabel(assessment.targetType)}</p>
+            <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-ink-muted">
               <span>
                 {t('columns.score')}: {assessment.overallScore ?? '—'}
-                {assessment.overallScoreOverridden ? ` (${t('overridden')})` : ''}
               </span>
-              <span aria-hidden>·</span>
               <span>{formatReadinessDate(assessment.lastEvaluatedAt, locale)}</span>
             </div>
-          </Link>
+            <span className="text-sm font-medium text-brand">{t('openToScore')}</span>
+          </button>
         ))}
       </AdminListCardGrid>
     );
@@ -83,12 +86,15 @@ export const ReadinessAssessmentsTable = ({
           {assessments.map((assessment) => (
             <tr key={assessment.id} className="border-t border-border hover:bg-surface/60">
               <td className="px-3 py-2.5">
-                <Link
-                  href={`/admin/readiness/${assessment.id}`}
+                <button
+                  type="button"
                   className="font-medium text-brand hover:underline"
+                  onClick={() => {
+                    onOpenAssessment(assessment);
+                  }}
                 >
-                  {companyLookup.get(assessment.builderCompanyId) ?? assessment.builderCompanyId}
-                </Link>
+                  {companyName(assessment)}
+                </button>
               </td>
               <td className="px-3 py-2.5 text-ink-secondary">
                 {targetLabel(assessment.targetType)}

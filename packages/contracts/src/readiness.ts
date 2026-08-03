@@ -2,28 +2,21 @@
  * Builder Readiness contracts (admin evaluation + builder portal view).
  */
 
-import type { PaginatedResponse } from "./catalog.js";
+import type { PaginatedResponse } from './catalog.js';
 
-export type ReadinessAssessmentTargetType = "builder_company" | "project";
+export type ReadinessAssessmentTargetType = 'builder_company' | 'project';
 
 export type ReadinessScoreStatus =
-  | "not_started"
-  | "needs_improvement"
-  | "in_progress"
-  | "ready"
-  | "blocked";
+  'not_started' | 'needs_improvement' | 'in_progress' | 'ready' | 'blocked';
 
-export type ReadinessVisibility = "builder_visible" | "internal_only";
+export type ReadinessVisibility = 'builder_visible' | 'internal_only';
 
 export type ReadinessRequiredActionStatus =
-  | "open"
-  | "in_progress"
-  | "done"
-  | "blocked"
-  | "cancelled";
+  'open' | 'in_progress' | 'done' | 'blocked' | 'cancelled';
 
 export type ReadinessCategoryItem = {
   id: string;
+  code: string;
   name: string;
   description: string | null;
   weight: number | null;
@@ -39,6 +32,7 @@ export type ReadinessCategoryListResponse = {
 };
 
 export type CreateReadinessCategoryBody = {
+  code: string;
   name: string;
   description?: string;
   weight?: number;
@@ -48,6 +42,7 @@ export type CreateReadinessCategoryBody = {
 };
 
 export type UpdateReadinessCategoryBody = {
+  code?: string;
   name?: string;
   description?: string | null;
   weight?: number | null;
@@ -56,10 +51,24 @@ export type UpdateReadinessCategoryBody = {
   active?: boolean;
 };
 
+export type ReadinessCriterionScoreItem = {
+  scoreId: string | null;
+  criterionId: string;
+  code: string;
+  parentId: string | null;
+  maxPoints: number | null;
+  sortOrder: number;
+  value: number | null;
+  checked: boolean;
+  children: ReadinessCriterionScoreItem[];
+};
+
 export type ReadinessScoreItem = {
   id: string;
   categoryId: string;
+  categoryCode: string;
   categoryName: string;
+  categoryWeight: number | null;
   score: number | null;
   status: ReadinessScoreStatus;
   recommendationSummary: string | null;
@@ -67,6 +76,7 @@ export type ReadinessScoreItem = {
   evaluatedAt: string | null;
   createdAt: string;
   updatedAt: string;
+  criteria: ReadinessCriterionScoreItem[];
 };
 
 export type ReadinessRecommendationItem = {
@@ -122,8 +132,7 @@ export type ReadinessAssessmentListItem = {
   updatedAt: string;
 };
 
-export type ReadinessAssessmentListResponse =
-  PaginatedResponse<ReadinessAssessmentListItem>;
+export type ReadinessAssessmentListResponse = PaginatedResponse<ReadinessAssessmentListItem>;
 
 export type ReadinessAssessmentDetail = ReadinessAssessmentListItem & {
   scores: ReadinessScoreItem[];
@@ -148,6 +157,19 @@ export type UpsertReadinessScoreBody = {
   score?: number;
   status?: ReadinessScoreStatus;
   recommendationSummary?: string | null;
+};
+
+export type UpsertReadinessCriterionScoreBody = {
+  value?: number | null;
+  checked?: boolean;
+};
+
+export type UpsertReadinessCriterionScoresBatchBody = {
+  items: Array<{
+    criterionId: string;
+    value?: number | null;
+    checked?: boolean;
+  }>;
 };
 
 export type CreateReadinessRecommendationBody = {
@@ -191,14 +213,30 @@ export type CreateReadinessInternalNoteBody = {
   scoreId?: string;
 };
 
+export type PortalReadinessCriterionItem = {
+  criterionId: string;
+  code: string;
+  parentId: string | null;
+  maxPoints: number | null;
+  sortOrder: number;
+  value: number | null;
+  checked: boolean;
+  /** value / maxPoints as 0–100 when scored; null for non-scored rows. */
+  percent: number | null;
+  children: PortalReadinessCriterionItem[];
+};
+
 export type PortalReadinessScoreItem = {
   categoryId: string;
+  categoryCode: string;
   categoryName: string;
+  categoryWeight: number | null;
   score: number | null;
   status: ReadinessScoreStatus;
   recommendationSummary: string | null;
   serviceProviderCategoryId: string | null;
   helpAvailable: boolean;
+  criteria: PortalReadinessCriterionItem[];
 };
 
 export type PortalReadinessRecommendationItem = {

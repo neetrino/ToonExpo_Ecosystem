@@ -1,13 +1,10 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
-import type {
-  ReadinessCategoryItem,
-  ReadinessCategoryListResponse,
-} from "@toonexpo/contracts";
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import type { ReadinessCategoryItem, ReadinessCategoryListResponse } from '@toonexpo/contracts';
 
-import { PrismaService } from "../../prisma/prisma.service.js";
-import { toReadinessCategoryItem } from "../mappers/readiness.mapper.js";
-import type { CreateReadinessCategoryDto } from "./dto/readiness-category.dto.js";
-import type { UpdateReadinessCategoryDto } from "./dto/readiness-category.dto.js";
+import { PrismaService } from '../../prisma/prisma.service.js';
+import { toReadinessCategoryItem } from '../mappers/readiness.mapper.js';
+import type { CreateReadinessCategoryDto } from './dto/readiness-category.dto.js';
+import type { UpdateReadinessCategoryDto } from './dto/readiness-category.dto.js';
 
 @Injectable()
 export class AdminReadinessCategoriesService {
@@ -15,7 +12,7 @@ export class AdminReadinessCategoriesService {
 
   async list(): Promise<ReadinessCategoryListResponse> {
     const rows = await this.prisma.db.readinessCategory.findMany({
-      orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+      orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
     });
 
     return { data: rows.map(toReadinessCategoryItem) };
@@ -28,6 +25,7 @@ export class AdminReadinessCategoriesService {
 
     const category = await this.prisma.db.readinessCategory.create({
       data: {
+        code: body.code.trim().toLowerCase(),
         name: body.name.trim(),
         description: body.description?.trim() || null,
         weight: body.weight ?? null,
@@ -40,10 +38,7 @@ export class AdminReadinessCategoriesService {
     return toReadinessCategoryItem(category);
   }
 
-  async update(
-    id: string,
-    body: UpdateReadinessCategoryDto,
-  ): Promise<ReadinessCategoryItem> {
+  async update(id: string, body: UpdateReadinessCategoryDto): Promise<ReadinessCategoryItem> {
     await this.assertExists(id);
 
     if (body.serviceProviderCategoryId) {
@@ -53,6 +48,7 @@ export class AdminReadinessCategoriesService {
     const category = await this.prisma.db.readinessCategory.update({
       where: { id },
       data: {
+        ...(body.code !== undefined ? { code: body.code.trim().toLowerCase() } : {}),
         ...(body.name !== undefined ? { name: body.name.trim() } : {}),
         ...(body.description !== undefined
           ? { description: body.description?.trim() || null }
@@ -61,8 +57,7 @@ export class AdminReadinessCategoriesService {
         ...(body.sortOrder !== undefined ? { sortOrder: body.sortOrder } : {}),
         ...(body.serviceProviderCategoryId !== undefined
           ? {
-              serviceProviderCategoryId:
-                body.serviceProviderCategoryId?.trim() || null,
+              serviceProviderCategoryId: body.serviceProviderCategoryId?.trim() || null,
             }
           : {}),
         ...(body.active !== undefined ? { active: body.active } : {}),
@@ -72,16 +67,14 @@ export class AdminReadinessCategoriesService {
     return toReadinessCategoryItem(category);
   }
 
-  private async assertServiceProviderCategoryExists(
-    categoryId: string,
-  ): Promise<void> {
+  private async assertServiceProviderCategoryExists(categoryId: string): Promise<void> {
     const category = await this.prisma.db.serviceProviderCategory.findUnique({
       where: { id: categoryId.trim() },
       select: { id: true },
     });
 
     if (!category) {
-      throw new BadRequestException("Service provider category not found");
+      throw new BadRequestException('Service provider category not found');
     }
   }
 
@@ -91,7 +84,7 @@ export class AdminReadinessCategoriesService {
       select: { id: true },
     });
     if (!category) {
-      throw new NotFoundException("Readiness category not found");
+      throw new NotFoundException('Readiness category not found');
     }
   }
 }

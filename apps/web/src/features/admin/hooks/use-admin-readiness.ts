@@ -1,6 +1,6 @@
-"use client";
+'use client';
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type {
   CreateReadinessAssessmentBody,
   CreateReadinessCategoryBody,
@@ -12,7 +12,9 @@ import type {
   UpdateReadinessRecommendationBody,
   UpdateReadinessRequiredActionBody,
   UpsertReadinessScoreBody,
-} from "@toonexpo/contracts";
+  UpsertReadinessCriterionScoreBody,
+  UpsertReadinessCriterionScoresBatchBody,
+} from '@toonexpo/contracts';
 
 import {
   createAdminReadinessAssessment,
@@ -30,14 +32,16 @@ import {
   updateAdminReadinessCategory,
   updateAdminReadinessRecommendation,
   updateAdminReadinessRequiredAction,
+  upsertAdminReadinessCriterionScore,
+  upsertAdminReadinessCriterionScoresBatch,
   upsertAdminReadinessScore,
   type ListReadinessAssessmentsParams,
-} from "@/features/admin/api/admin-readiness-api";
+} from '@/features/admin/api/admin-readiness-api';
 import {
   ADMIN_READINESS_ASSESSMENTS_QUERY_KEY,
   ADMIN_READINESS_CATEGORIES_QUERY_KEY,
   adminReadinessAssessmentQueryKey,
-} from "@/features/admin/constants";
+} from '@/features/admin/constants';
 
 export const useAdminReadinessCategoriesQuery = () =>
   useQuery({
@@ -48,8 +52,7 @@ export const useAdminReadinessCategoriesQuery = () =>
 export const useCreateReadinessCategoryMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (body: CreateReadinessCategoryBody) =>
-      createAdminReadinessCategory(body),
+    mutationFn: (body: CreateReadinessCategoryBody) => createAdminReadinessCategory(body),
     onSuccess: () => {
       void queryClient.invalidateQueries({
         queryKey: ADMIN_READINESS_CATEGORIES_QUERY_KEY,
@@ -61,8 +64,7 @@ export const useCreateReadinessCategoryMutation = () => {
 export const useUpdateReadinessCategoryMutation = (id: string) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (body: UpdateReadinessCategoryBody) =>
-      updateAdminReadinessCategory(id, body),
+    mutationFn: (body: UpdateReadinessCategoryBody) => updateAdminReadinessCategory(id, body),
     onSuccess: () => {
       void queryClient.invalidateQueries({
         queryKey: ADMIN_READINESS_CATEGORIES_QUERY_KEY,
@@ -71,9 +73,7 @@ export const useUpdateReadinessCategoryMutation = (id: string) => {
   });
 };
 
-export const useAdminReadinessAssessmentsQuery = (
-  params: ListReadinessAssessmentsParams,
-) =>
+export const useAdminReadinessAssessmentsQuery = (params: ListReadinessAssessmentsParams) =>
   useQuery({
     queryKey: [...ADMIN_READINESS_ASSESSMENTS_QUERY_KEY, params],
     queryFn: () => listAdminReadinessAssessments(params),
@@ -86,10 +86,7 @@ export const useAdminReadinessAssessmentQuery = (id: string) =>
     enabled: id.length > 0,
   });
 
-const invalidateAssessmentDetail = (
-  queryClient: ReturnType<typeof useQueryClient>,
-  id: string,
-) => {
+const invalidateAssessmentDetail = (queryClient: ReturnType<typeof useQueryClient>, id: string) => {
   void queryClient.invalidateQueries({
     queryKey: adminReadinessAssessmentQueryKey(id),
   });
@@ -101,8 +98,7 @@ const invalidateAssessmentDetail = (
 export const useCreateReadinessAssessmentMutation = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (body: CreateReadinessAssessmentBody) =>
-      createAdminReadinessAssessment(body),
+    mutationFn: (body: CreateReadinessAssessmentBody) => createAdminReadinessAssessment(body),
     onSuccess: () => {
       void queryClient.invalidateQueries({
         queryKey: ADMIN_READINESS_ASSESSMENTS_QUERY_KEY,
@@ -114,8 +110,7 @@ export const useCreateReadinessAssessmentMutation = () => {
 export const useUpdateReadinessAssessmentMutation = (id: string) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (body: UpdateReadinessAssessmentBody) =>
-      updateAdminReadinessAssessment(id, body),
+    mutationFn: (body: UpdateReadinessAssessmentBody) => updateAdminReadinessAssessment(id, body),
     onSuccess: (assessment) => {
       queryClient.setQueryData(adminReadinessAssessmentQueryKey(id), assessment);
       invalidateAssessmentDetail(queryClient, id);
@@ -123,16 +118,43 @@ export const useUpdateReadinessAssessmentMutation = (id: string) => {
   });
 };
 
-export const useUpsertReadinessScoreMutation = (
-  assessmentId: string,
-  categoryId: string,
-) => {
+export const useUpsertReadinessScoreMutation = (assessmentId: string, categoryId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (body: UpsertReadinessScoreBody) =>
       upsertAdminReadinessScore(assessmentId, categoryId, body),
     onSuccess: () => {
       invalidateAssessmentDetail(queryClient, assessmentId);
+    },
+  });
+};
+
+export const useUpsertReadinessCriterionScoreMutation = (assessmentId: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      criterionId,
+      body,
+    }: {
+      criterionId: string;
+      body: UpsertReadinessCriterionScoreBody;
+    }) => upsertAdminReadinessCriterionScore(assessmentId, criterionId, body),
+    onSuccess: (assessment) => {
+      queryClient.setQueryData(adminReadinessAssessmentQueryKey(assessmentId), assessment);
+      invalidateAssessmentDetail(queryClient, assessmentId);
+    },
+  });
+};
+
+export const useUpsertReadinessCriterionScoresBatchMutation = (assessmentId: string) => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (body: UpsertReadinessCriterionScoresBatchBody) =>
+      upsertAdminReadinessCriterionScoresBatch(assessmentId, body),
+    onSuccess: (assessment) => {
+      queryClient.setQueryData(adminReadinessAssessmentQueryKey(assessmentId), assessment);
+      invalidateAssessmentDetail(queryClient, assessmentId);
+      void queryClient.invalidateQueries({ queryKey: ['portal', 'readiness'] });
     },
   });
 };
@@ -148,40 +170,28 @@ export const useCreateReadinessRecommendationMutation = (assessmentId: string) =
   });
 };
 
-export const useUpdateReadinessRecommendationMutation = (
-  assessmentId: string,
-) => {
+export const useUpdateReadinessRecommendationMutation = (assessmentId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({
-      recId,
-      body,
-    }: {
-      recId: string;
-      body: UpdateReadinessRecommendationBody;
-    }) => updateAdminReadinessRecommendation(assessmentId, recId, body),
+    mutationFn: ({ recId, body }: { recId: string; body: UpdateReadinessRecommendationBody }) =>
+      updateAdminReadinessRecommendation(assessmentId, recId, body),
     onSuccess: () => {
       invalidateAssessmentDetail(queryClient, assessmentId);
     },
   });
 };
 
-export const useDeleteReadinessRecommendationMutation = (
-  assessmentId: string,
-) => {
+export const useDeleteReadinessRecommendationMutation = (assessmentId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (recId: string) =>
-      deleteAdminReadinessRecommendation(assessmentId, recId),
+    mutationFn: (recId: string) => deleteAdminReadinessRecommendation(assessmentId, recId),
     onSuccess: () => {
       invalidateAssessmentDetail(queryClient, assessmentId);
     },
   });
 };
 
-export const useCreateReadinessRequiredActionMutation = (
-  assessmentId: string,
-) => {
+export const useCreateReadinessRequiredActionMutation = (assessmentId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (body: CreateReadinessRequiredActionBody) =>
@@ -192,9 +202,7 @@ export const useCreateReadinessRequiredActionMutation = (
   });
 };
 
-export const useUpdateReadinessRequiredActionMutation = (
-  assessmentId: string,
-) => {
+export const useUpdateReadinessRequiredActionMutation = (assessmentId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({
@@ -210,13 +218,10 @@ export const useUpdateReadinessRequiredActionMutation = (
   });
 };
 
-export const useDeleteReadinessRequiredActionMutation = (
-  assessmentId: string,
-) => {
+export const useDeleteReadinessRequiredActionMutation = (assessmentId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (actionId: string) =>
-      deleteAdminReadinessRequiredAction(assessmentId, actionId),
+    mutationFn: (actionId: string) => deleteAdminReadinessRequiredAction(assessmentId, actionId),
     onSuccess: () => {
       invalidateAssessmentDetail(queryClient, assessmentId);
     },
@@ -234,13 +239,10 @@ export const useCreateReadinessInternalNoteMutation = (assessmentId: string) => 
   });
 };
 
-export const useDeleteReadinessInternalNoteMutation = (
-  assessmentId: string,
-) => {
+export const useDeleteReadinessInternalNoteMutation = (assessmentId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (noteId: string) =>
-      deleteAdminReadinessInternalNote(assessmentId, noteId),
+    mutationFn: (noteId: string) => deleteAdminReadinessInternalNote(assessmentId, noteId),
     onSuccess: () => {
       invalidateAssessmentDetail(queryClient, assessmentId);
     },

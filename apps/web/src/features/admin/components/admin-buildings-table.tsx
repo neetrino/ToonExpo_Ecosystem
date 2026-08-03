@@ -5,12 +5,14 @@ import { useTranslations } from 'next-intl';
 
 import { AdminBuildingCard } from '@/features/admin/components/admin-building-card';
 import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
+import { Button } from '@/shared/ui/button';
 import { LIST_STATUS_BADGE_COMPACT_CLASS } from '@/shared/ui/list-status-badge';
 import { VIEW_MODE_CARDS, type ViewMode } from '@/shared/ui/view-mode';
 
 type AdminBuildingsTableProps = {
   buildings: AdminBuildingListItem[];
   onSelectBuilding: (buildingId: string) => void;
+  onOpenReadiness: (building: AdminBuildingListItem) => void;
   viewMode?: ViewMode | undefined;
 };
 
@@ -20,6 +22,7 @@ type AdminBuildingsTableProps = {
 export const AdminBuildingsTable = ({
   buildings,
   onSelectBuilding,
+  onOpenReadiness,
   viewMode = VIEW_MODE_CARDS,
 }: AdminBuildingsTableProps) => {
   const t = useTranslations('Admin.buildings');
@@ -28,7 +31,12 @@ export const AdminBuildingsTable = ({
     return (
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {buildings.map((building) => (
-          <AdminBuildingCard key={building.id} building={building} onSelect={onSelectBuilding} />
+          <AdminBuildingCard
+            key={building.id}
+            building={building}
+            onSelect={onSelectBuilding}
+            onOpenReadiness={onOpenReadiness}
+          />
         ))}
       </div>
     );
@@ -36,7 +44,7 @@ export const AdminBuildingsTable = ({
 
   return (
     <div className="overflow-x-auto rounded-sm border border-border">
-      <table className="w-full min-w-[48rem] border-collapse text-sm">
+      <table className="w-full min-w-[52rem] border-collapse text-sm">
         <thead className="bg-surface text-xs uppercase tracking-wide text-ink-muted">
           <tr>
             <th className="px-3 py-2.5 text-left font-medium">{t('columns.name')}</th>
@@ -45,6 +53,7 @@ export const AdminBuildingsTable = ({
             <th className="px-3 py-2.5 text-center font-medium">{t('columns.status')}</th>
             <th className="px-3 py-2.5 text-center font-medium">{t('columns.floors')}</th>
             <th className="px-3 py-2.5 text-center font-medium">{t('columns.apartments')}</th>
+            <th className="px-3 py-2.5 text-right font-medium">{t('columns.actions')}</th>
           </tr>
         </thead>
         <tbody>
@@ -78,6 +87,18 @@ export const AdminBuildingsTable = ({
               </td>
               <td className="px-3 py-2.5 text-center align-middle text-ink-secondary">
                 {building.apartmentsCount}
+              </td>
+              <td className="px-3 py-2.5 text-right align-middle">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="secondary"
+                  onClick={() => {
+                    onOpenReadiness(building);
+                  }}
+                >
+                  {t('readiness')}
+                </Button>
               </td>
             </tr>
           ))}

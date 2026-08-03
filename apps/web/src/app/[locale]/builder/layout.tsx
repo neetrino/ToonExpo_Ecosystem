@@ -52,7 +52,6 @@ export default async function BuilderLayout({ children, params }: BuilderLayoutP
       profileHref="/builder/settings"
       navLabel={t('nav.label')}
       variant="rail"
-      showRailHeaderMask={false}
       mobileDrawerControlledByNavbar
       className="bg-canvas"
       sidebar={<BuilderNav companyName={company.name} />}

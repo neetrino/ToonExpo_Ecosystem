@@ -18,6 +18,7 @@ import {
 } from './seed-entities.js';
 import { upsertSeedExhibition } from './seed-exhibition.js';
 import { upsertSeedMortgageOffer } from './seed-mortgage.js';
+import { upsertSeedReadiness } from './seed-readiness.js';
 import { upsertSeedVisualMaps } from './seed-visual-maps.js';
 
 const packageRoot = path.dirname(fileURLToPath(import.meta.url));
@@ -55,8 +56,9 @@ const main = async (): Promise<void> => {
         await upsertSeedMortgageOffer(prisma);
         await upsertSeedExhibition(prisma);
         const visualMaps = await upsertSeedVisualMaps(prisma);
+        const readinessAssessments = await upsertSeedReadiness(prisma);
         console.info(
-          `Seed complete: ${SEED_BUILDERS.length} builders, ${SEED_PROJECTS.length} published projects, ${apartmentCount} apartments, ${translations.length} translations, ${visualMaps} visual maps, auth + mortgage + exhibition ready`,
+          `Seed complete: ${SEED_BUILDERS.length} builders, ${SEED_PROJECTS.length} published projects, ${apartmentCount} apartments, ${translations.length} translations, ${visualMaps} visual maps, ${readinessAssessments} readiness assessments, auth + mortgage + exhibition ready`,
         );
         return;
       } catch (error: unknown) {

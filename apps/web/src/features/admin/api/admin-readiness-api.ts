@@ -19,38 +19,40 @@ import type {
   UpdateReadinessRecommendationBody,
   UpdateReadinessRequiredActionBody,
   UpsertReadinessScoreBody,
-} from "@toonexpo/contracts";
+  UpsertReadinessCriterionScoreBody,
+  UpsertReadinessCriterionScoresBatchBody,
+} from '@toonexpo/contracts';
 
-import { apiFetch } from "@/shared/api/client";
+import { apiFetch } from '@/shared/api/client';
 
 const jsonCredentials = {
-  credentials: "include" as const,
-  headers: { "Content-Type": "application/json" },
+  credentials: 'include' as const,
+  headers: { 'Content-Type': 'application/json' },
 };
 
 export type ListReadinessAssessmentsParams = {
   page: number;
   pageSize: number;
   builderCompanyId?: string;
+  projectId?: string;
   targetType?: ReadinessAssessmentTargetType;
   status?: ReadinessScoreStatus;
 };
 
-export const listAdminReadinessCategories =
-  (): Promise<ReadinessCategoryListResponse> =>
-    apiFetch<ReadinessCategoryListResponse>({
-      path: "/admin/readiness/categories",
-      method: "GET",
-      credentials: "include",
-      cache: "no-store",
-    });
+export const listAdminReadinessCategories = (): Promise<ReadinessCategoryListResponse> =>
+  apiFetch<ReadinessCategoryListResponse>({
+    path: '/admin/readiness/categories',
+    method: 'GET',
+    credentials: 'include',
+    cache: 'no-store',
+  });
 
 export const createAdminReadinessCategory = (
   body: CreateReadinessCategoryBody,
 ): Promise<ReadinessCategoryItem> =>
   apiFetch<ReadinessCategoryItem>({
-    path: "/admin/readiness/categories",
-    method: "POST",
+    path: '/admin/readiness/categories',
+    method: 'POST',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
@@ -61,7 +63,7 @@ export const updateAdminReadinessCategory = (
 ): Promise<ReadinessCategoryItem> =>
   apiFetch<ReadinessCategoryItem>({
     path: `/admin/readiness/categories/${encodeURIComponent(id)}`,
-    method: "PATCH",
+    method: 'PATCH',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
@@ -74,39 +76,40 @@ export const listAdminReadinessAssessments = (
     pageSize: String(params.pageSize),
   });
   if (params.builderCompanyId) {
-    search.set("builderCompanyId", params.builderCompanyId);
+    search.set('builderCompanyId', params.builderCompanyId);
+  }
+  if (params.projectId) {
+    search.set('projectId', params.projectId);
   }
   if (params.targetType) {
-    search.set("targetType", params.targetType);
+    search.set('targetType', params.targetType);
   }
   if (params.status) {
-    search.set("status", params.status);
+    search.set('status', params.status);
   }
 
   return apiFetch<ReadinessAssessmentListResponse>({
     path: `/admin/readiness/assessments?${search.toString()}`,
-    method: "GET",
-    credentials: "include",
-    cache: "no-store",
+    method: 'GET',
+    credentials: 'include',
+    cache: 'no-store',
   });
 };
 
-export const getAdminReadinessAssessment = (
-  id: string,
-): Promise<ReadinessAssessmentDetail> =>
+export const getAdminReadinessAssessment = (id: string): Promise<ReadinessAssessmentDetail> =>
   apiFetch<ReadinessAssessmentDetail>({
     path: `/admin/readiness/assessments/${encodeURIComponent(id)}`,
-    method: "GET",
-    credentials: "include",
-    cache: "no-store",
+    method: 'GET',
+    credentials: 'include',
+    cache: 'no-store',
   });
 
 export const createAdminReadinessAssessment = (
   body: CreateReadinessAssessmentBody,
 ): Promise<ReadinessAssessmentDetail> =>
   apiFetch<ReadinessAssessmentDetail>({
-    path: "/admin/readiness/assessments",
-    method: "POST",
+    path: '/admin/readiness/assessments',
+    method: 'POST',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
@@ -117,7 +120,7 @@ export const updateAdminReadinessAssessment = (
 ): Promise<ReadinessAssessmentDetail> =>
   apiFetch<ReadinessAssessmentDetail>({
     path: `/admin/readiness/assessments/${encodeURIComponent(id)}`,
-    method: "PATCH",
+    method: 'PATCH',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
@@ -129,7 +132,30 @@ export const upsertAdminReadinessScore = (
 ): Promise<ReadinessScoreItem> =>
   apiFetch<ReadinessScoreItem>({
     path: `/admin/readiness/assessments/${encodeURIComponent(assessmentId)}/scores/${encodeURIComponent(categoryId)}`,
-    method: "PUT",
+    method: 'PUT',
+    ...jsonCredentials,
+    body: JSON.stringify(body),
+  });
+
+export const upsertAdminReadinessCriterionScore = (
+  assessmentId: string,
+  criterionId: string,
+  body: UpsertReadinessCriterionScoreBody,
+): Promise<ReadinessAssessmentDetail> =>
+  apiFetch<ReadinessAssessmentDetail>({
+    path: `/admin/readiness/assessments/${encodeURIComponent(assessmentId)}/criteria/${encodeURIComponent(criterionId)}`,
+    method: 'PUT',
+    ...jsonCredentials,
+    body: JSON.stringify(body),
+  });
+
+export const upsertAdminReadinessCriterionScoresBatch = (
+  assessmentId: string,
+  body: UpsertReadinessCriterionScoresBatchBody,
+): Promise<ReadinessAssessmentDetail> =>
+  apiFetch<ReadinessAssessmentDetail>({
+    path: `/admin/readiness/assessments/${encodeURIComponent(assessmentId)}/criteria`,
+    method: 'PUT',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
@@ -140,7 +166,7 @@ export const createAdminReadinessRecommendation = (
 ): Promise<ReadinessRecommendationItem> =>
   apiFetch<ReadinessRecommendationItem>({
     path: `/admin/readiness/assessments/${encodeURIComponent(assessmentId)}/recommendations`,
-    method: "POST",
+    method: 'POST',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
@@ -152,7 +178,7 @@ export const updateAdminReadinessRecommendation = (
 ): Promise<ReadinessRecommendationItem> =>
   apiFetch<ReadinessRecommendationItem>({
     path: `/admin/readiness/assessments/${encodeURIComponent(assessmentId)}/recommendations/${encodeURIComponent(recId)}`,
-    method: "PATCH",
+    method: 'PATCH',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
@@ -163,8 +189,8 @@ export const deleteAdminReadinessRecommendation = (
 ): Promise<void> =>
   apiFetch<void>({
     path: `/admin/readiness/assessments/${encodeURIComponent(assessmentId)}/recommendations/${encodeURIComponent(recId)}`,
-    method: "DELETE",
-    credentials: "include",
+    method: 'DELETE',
+    credentials: 'include',
   });
 
 export const createAdminReadinessRequiredAction = (
@@ -173,7 +199,7 @@ export const createAdminReadinessRequiredAction = (
 ): Promise<ReadinessRequiredActionItem> =>
   apiFetch<ReadinessRequiredActionItem>({
     path: `/admin/readiness/assessments/${encodeURIComponent(assessmentId)}/required-actions`,
-    method: "POST",
+    method: 'POST',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
@@ -185,7 +211,7 @@ export const updateAdminReadinessRequiredAction = (
 ): Promise<ReadinessRequiredActionItem> =>
   apiFetch<ReadinessRequiredActionItem>({
     path: `/admin/readiness/assessments/${encodeURIComponent(assessmentId)}/required-actions/${encodeURIComponent(actionId)}`,
-    method: "PATCH",
+    method: 'PATCH',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
@@ -196,8 +222,8 @@ export const deleteAdminReadinessRequiredAction = (
 ): Promise<void> =>
   apiFetch<void>({
     path: `/admin/readiness/assessments/${encodeURIComponent(assessmentId)}/required-actions/${encodeURIComponent(actionId)}`,
-    method: "DELETE",
-    credentials: "include",
+    method: 'DELETE',
+    credentials: 'include',
   });
 
 export const createAdminReadinessInternalNote = (
@@ -206,7 +232,7 @@ export const createAdminReadinessInternalNote = (
 ): Promise<ReadinessInternalNoteItem> =>
   apiFetch<ReadinessInternalNoteItem>({
     path: `/admin/readiness/assessments/${encodeURIComponent(assessmentId)}/internal-notes`,
-    method: "POST",
+    method: 'POST',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
@@ -217,6 +243,6 @@ export const deleteAdminReadinessInternalNote = (
 ): Promise<void> =>
   apiFetch<void>({
     path: `/admin/readiness/assessments/${encodeURIComponent(assessmentId)}/internal-notes/${encodeURIComponent(noteId)}`,
-    method: "DELETE",
-    credentials: "include",
+    method: 'DELETE',
+    credentials: 'include',
   });
