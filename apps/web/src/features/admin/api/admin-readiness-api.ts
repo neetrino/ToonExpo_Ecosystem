@@ -19,6 +19,8 @@ import type {
   UpdateReadinessRecommendationBody,
   UpdateReadinessRequiredActionBody,
   UpsertReadinessScoreBody,
+  UpsertReadinessCriterionScoreBody,
+  UpsertReadinessCriterionScoresBatchBody,
 } from '@toonexpo/contracts';
 
 import { apiFetch } from '@/shared/api/client';
@@ -130,6 +132,29 @@ export const upsertAdminReadinessScore = (
 ): Promise<ReadinessScoreItem> =>
   apiFetch<ReadinessScoreItem>({
     path: `/admin/readiness/assessments/${encodeURIComponent(assessmentId)}/scores/${encodeURIComponent(categoryId)}`,
+    method: 'PUT',
+    ...jsonCredentials,
+    body: JSON.stringify(body),
+  });
+
+export const upsertAdminReadinessCriterionScore = (
+  assessmentId: string,
+  criterionId: string,
+  body: UpsertReadinessCriterionScoreBody,
+): Promise<ReadinessAssessmentDetail> =>
+  apiFetch<ReadinessAssessmentDetail>({
+    path: `/admin/readiness/assessments/${encodeURIComponent(assessmentId)}/criteria/${encodeURIComponent(criterionId)}`,
+    method: 'PUT',
+    ...jsonCredentials,
+    body: JSON.stringify(body),
+  });
+
+export const upsertAdminReadinessCriterionScoresBatch = (
+  assessmentId: string,
+  body: UpsertReadinessCriterionScoresBatchBody,
+): Promise<ReadinessAssessmentDetail> =>
+  apiFetch<ReadinessAssessmentDetail>({
+    path: `/admin/readiness/assessments/${encodeURIComponent(assessmentId)}/criteria`,
     method: 'PUT',
     ...jsonCredentials,
     body: JSON.stringify(body),

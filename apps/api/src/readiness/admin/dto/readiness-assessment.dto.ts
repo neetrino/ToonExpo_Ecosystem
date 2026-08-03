@@ -1,16 +1,19 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
+  IsArray,
   IsBoolean,
   IsEnum,
   IsInt,
   IsOptional,
   IsString,
+  ArrayMinSize,
   Max,
   MaxLength,
   Min,
   MinLength,
   ValidateIf,
+  ValidateNested,
 } from 'class-validator';
 import { ReadinessAssessmentTargetType, ReadinessScoreStatus } from '@toonexpo/db';
 
@@ -128,4 +131,46 @@ export class UpsertReadinessScoreDto {
   @IsString()
   @MaxLength(2000)
   recommendationSummary?: string | null;
+}
+
+export class UpsertReadinessCriterionScoreDto {
+  @ApiPropertyOptional({ nullable: true })
+  @IsOptional()
+  @ValidateIf((_, value) => value !== null)
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  value?: number | null;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  checked?: boolean;
+}
+
+export class UpsertReadinessCriterionScoreItemDto {
+  @IsString()
+  @MinLength(1)
+  criterionId!: string;
+
+  @ApiPropertyOptional({ nullable: true })
+  @IsOptional()
+  @ValidateIf((_, value) => value !== null)
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  value?: number | null;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  checked?: boolean;
+}
+
+export class UpsertReadinessCriterionScoresBatchDto {
+  @Type(() => UpsertReadinessCriterionScoreItemDto)
+  @IsArray()
+  @ArrayMinSize(1)
+  @ValidateNested({ each: true })
+  items!: UpsertReadinessCriterionScoreItemDto[];
 }

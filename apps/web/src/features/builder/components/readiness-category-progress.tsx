@@ -65,9 +65,11 @@ export const BuilderReadinessCategoryProgressRow = ({
   score,
 }: BuilderReadinessCategoryProgressRowProps) => {
   const t = useTranslations('Builder.readiness');
+  const tKpi = useTranslations('ReadinessKpi');
   const [helpOpen, setHelpOpen] = useState(false);
   const percent = scorePercent(score.score);
   const spanClass = barFillColSpanClass(percent, 100);
+  const categoryLabel = tKpi(`categories.${score.categoryCode}`);
 
   const showHelp =
     score.helpAvailable &&
@@ -79,7 +81,7 @@ export const BuilderReadinessCategoryProgressRow = ({
       <div className="flex flex-col gap-2 py-3">
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-medium text-ink">{score.categoryName}</p>
+            <p className="truncate text-sm font-medium text-ink">{categoryLabel}</p>
             <p className="mt-0.5 text-xs text-ink-muted">{t(`statuses.${score.status}`)}</p>
           </div>
           <span className="shrink-0 text-sm font-semibold tabular-nums text-ink">{percent}%</span>
@@ -137,7 +139,9 @@ type BuilderReadinessCategoryGaugeProps = {
  * Compact category gauge used in the overview strip.
  */
 export const BuilderReadinessCategoryGauge = ({ score }: BuilderReadinessCategoryGaugeProps) => {
+  const tKpi = useTranslations('ReadinessKpi');
   const percent = scorePercent(score.score);
+  const categoryLabel = tKpi(`categories.${score.categoryCode}`);
 
   return (
     <div className="flex w-[4.75rem] flex-col items-center gap-1.5">
@@ -145,10 +149,10 @@ export const BuilderReadinessCategoryGauge = ({ score }: BuilderReadinessCategor
         percent={percent}
         size="sm"
         tone={toneForStatus(score.status)}
-        label={`${score.categoryName}: ${percent}%`}
+        label={`${categoryLabel}: ${percent}%`}
       />
       <p className="line-clamp-2 text-center text-[0.65rem] leading-tight text-ink-secondary">
-        {score.categoryName}
+        {categoryLabel}
       </p>
     </div>
   );

@@ -1,5 +1,5 @@
-import { ApiPropertyOptional } from "@nestjs/swagger";
-import { Type } from "class-transformer";
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   IsBoolean,
   IsInt,
@@ -10,16 +10,21 @@ import {
   Min,
   MinLength,
   ValidateIf,
-} from "class-validator";
+} from 'class-validator';
 
 import {
   READINESS_CATEGORY_NAME_MAX_LENGTH,
   READINESS_CATEGORY_WEIGHT_MAX,
   READINESS_CATEGORY_WEIGHT_MIN,
   READINESS_DESCRIPTION_MAX_LENGTH,
-} from "../../readiness.constants.js";
+} from '../../readiness.constants.js';
 
 export class CreateReadinessCategoryDto {
+  @IsString()
+  @MinLength(1)
+  @MaxLength(64)
+  code!: string;
+
   @IsString()
   @MinLength(1)
   @MaxLength(READINESS_CATEGORY_NAME_MAX_LENGTH)
@@ -59,6 +64,13 @@ export class CreateReadinessCategoryDto {
 }
 
 export class UpdateReadinessCategoryDto {
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MinLength(1)
+  @MaxLength(64)
+  code?: string;
+
   @ApiPropertyOptional()
   @IsOptional()
   @IsString()

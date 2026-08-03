@@ -40,6 +40,7 @@ export const ReadinessCategoryForm = ({ category, onDone }: ReadinessCategoryFor
   const form = useForm<ReadinessCategoryFormValues>({
     resolver: zodResolver(readinessCategorySchema),
     defaultValues: {
+      code: category?.code ?? '',
       name: category?.name ?? '',
       description: category?.description ?? '',
       weight:
@@ -52,6 +53,7 @@ export const ReadinessCategoryForm = ({ category, onDone }: ReadinessCategoryFor
   useEffect(() => {
     if (category) {
       form.reset({
+        code: category.code,
         name: category.name,
         description: category.description ?? '',
         weight:
@@ -80,6 +82,7 @@ export const ReadinessCategoryForm = ({ category, onDone }: ReadinessCategoryFor
 
     try {
       const payload = {
+        code: values['code'],
         name: values['name'],
         sortOrder: values['sortOrder'],
         active: values['active'],
@@ -102,6 +105,14 @@ export const ReadinessCategoryForm = ({ category, onDone }: ReadinessCategoryFor
 
   return (
     <form className="flex flex-col gap-4" onSubmit={onSubmit}>
+      <FormField
+        id="category-code"
+        label={t('form.code')}
+        error={form.formState.errors.code ? t('validation.code') : undefined}
+      >
+        <Input id="category-code" {...form.register('code')} />
+      </FormField>
+
       <FormField
         id="category-name"
         label={t('form.name')}

@@ -26,6 +26,45 @@
       "nextMonth": "Next month"
     }
   },
+  "ReadinessKpi": {
+    "categories": {
+      "product": "Product",
+      "packaging": "Packaging",
+      "team": "Team"
+    },
+    "criteria": {
+      "price_orientation": "Price orientation coefficient",
+      "property_purpose": "Property purpose (investment, residential, etc.)",
+      "special_offer": "Special offer available",
+      "payment_methods": "Payment methods available",
+      "prepayment": "Prepayment",
+      "mortgage_option": "Mortgage option",
+      "installment_option": "Installment option",
+      "mortgage_return": "Mortgage return available",
+      "media_materials": "Media materials",
+      "videos": "Videos",
+      "renders": "Renders",
+      "apartment_interactive": "Apartment interactive materials",
+      "building_interactive": "Building interactive materials / environment",
+      "floor_plans_2d_3d": "2D/3D floor plans",
+      "digital_presence": "Digital presence (Web, App)",
+      "sales_office": "Sales office",
+      "scale_model": "Scale model available",
+      "print_materials": "Print materials available",
+      "outdoor_ads": "Outdoor advertising available",
+      "sponsorship": "Sponsorship presentation",
+      "tv_presence": "TV presentation",
+      "social_presence": "Social media presentation",
+      "booth_quality": "Booth presence / quality",
+      "expo_space": "Exhibition space and position characteristics",
+      "marketing_team": "Marketing team readiness",
+      "sales_team": "Sales team presence / outsource",
+      "sales_volume": "Completed sales volume / percentage",
+      "building_completion": "Building completion coefficient",
+      "completed_projects": "Completed construction projects coefficient",
+      "legal_readiness": "Deal / legal readiness"
+    }
+  },
   "CrmBoard": {
     "unnamedBuyer": "Unnamed contact",
     "noProject": "No project",
@@ -2122,7 +2161,10 @@
         "error": "Could not load readiness. Try again.",
         "overallScore": "Overall Score",
         "categoriesTitle": "Categories",
-        "projectHint": "Updates apply to the readiness the builder sees in their portal."
+        "projectHint": "Updates apply to the readiness the builder sees in their portal.",
+        "save": "Save",
+        "saving": "Saving…",
+        "saveError": "Could not save changes. Try again."
       },
       "categories": {
         "title": "Readiness categories",
@@ -2145,6 +2187,7 @@
           "actions": "Actions"
         },
         "form": {
+          "code": "Code (e.g. product)",
           "name": "Name",
           "description": "Description",
           "weight": "Weight (optional)",
@@ -2155,6 +2198,7 @@
           "cancel": "Cancel"
         },
         "validation": {
+          "code": "Use lowercase letters, numbers, and underscores",
           "name": "Enter a category name",
           "weight": "Weight must be between 1 and 100"
         },
