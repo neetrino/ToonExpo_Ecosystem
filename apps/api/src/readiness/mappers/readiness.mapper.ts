@@ -1,5 +1,6 @@
 import type {
   PortalReadinessAssessmentItem,
+  PortalReadinessCriterionItem,
   PortalReadinessRecommendationItem,
   PortalReadinessRequiredActionItem,
   PortalReadinessScoreItem,
@@ -24,6 +25,13 @@ type ReadinessCriterion = Prisma.ReadinessCriterionGetPayload<object>;
 type ReadinessCriterionScore = Prisma.ReadinessCriterionScoreGetPayload<object>;
 
 const toIso = (value: Date): string => value.toISOString();
+
+const criterionPercent = (value: number | null, maxPoints: number | null): number | null => {
+  if (value === null || maxPoints === null || maxPoints <= 0) {
+    return null;
+  }
+  return Math.max(0, Math.min(100, Math.round((value / maxPoints) * 100)));
+};
 
 export const toReadinessCategoryItem = (category: ReadinessCategory): ReadinessCategoryItem => ({
   id: category.id,
@@ -128,6 +136,20 @@ export const buildCriterionTreeForCategory = (
     .map((criterion) => toCriterionScoreNode(criterion, scoreByCriterionId, childrenByParentId));
 };
 
+const toPortalCriterionNode = (
+  item: ReadinessCriterionScoreItem,
+): PortalReadinessCriterionItem => ({
+  criterionId: item.criterionId,
+  code: item.code,
+  parentId: item.parentId,
+  maxPoints: item.maxPoints,
+  sortOrder: item.sortOrder,
+  value: item.value,
+  checked: item.checked,
+  percent: criterionPercent(item.value, item.maxPoints),
+  children: item.children.map(toPortalCriterionNode),
+});
+
 export const toReadinessScoreItem = (
   score: ScoreWithCategory,
   criteria: ReadinessCriterionScoreItem[] = [],
@@ -214,6 +236,7 @@ export const toReadinessAssessmentDetail = (
 export const toPortalReadinessScoreItem = (
   score: ScoreWithCategory,
   helpAvailable: boolean,
+  criteria: ReadinessCriterionScoreItem[] = [],
 ): PortalReadinessScoreItem => ({
   categoryId: score.categoryId,
   categoryCode: score.category.code,
@@ -224,6 +247,7 @@ export const toPortalReadinessScoreItem = (
   recommendationSummary: score.recommendationSummary,
   serviceProviderCategoryId: score.category.serviceProviderCategoryId,
   helpAvailable,
+  criteria: criteria.map(toPortalCriterionNode),
 });
 
 export const toPortalReadinessRecommendationItem = (
@@ -251,6 +275,7 @@ export const toPortalReadinessRequiredActionItem = (
 type PortalAssessmentSource = ReadinessAssessment & {
   project: { name: string } | null;
   scores: ScoreWithCategory[];
+  criterionScores: CriterionScoreWithCriterion[];
   recommendations: ReadinessRecommendation[];
   requiredActions: ReadinessRequiredAction[];
 };
@@ -258,6 +283,7 @@ type PortalAssessmentSource = ReadinessAssessment & {
 export const toPortalReadinessAssessmentItem = (
   assessment: PortalAssessmentSource,
   helpAvailabilityByCategoryId: ReadonlyMap<string, boolean>,
+  catalogCriteria: readonly ReadinessCriterion[],
 ): PortalReadinessAssessmentItem => ({
   id: assessment.id,
   targetType: assessment.targetType,
@@ -267,7 +293,11 @@ export const toPortalReadinessAssessmentItem = (
   overallScore: assessment.overallScore,
   lastEvaluatedAt: assessment.lastEvaluatedAt ? toIso(assessment.lastEvaluatedAt) : null,
   scores: assessment.scores.map((score) =>
-    toPortalReadinessScoreItem(score, helpAvailabilityByCategoryId.get(score.categoryId) ?? false),
+    toPortalReadinessScoreItem(
+      score,
+      helpAvailabilityByCategoryId.get(score.categoryId) ?? false,
+      buildCriterionTreeForCategory(score.categoryId, catalogCriteria, assessment.criterionScores),
+    ),
   ),
   recommendations: assessment.recommendations.map(toPortalReadinessRecommendationItem),
   requiredActions: assessment.requiredActions.map(toPortalReadinessRequiredActionItem),

@@ -1,30 +1,32 @@
-import { Injectable } from "@nestjs/common";
-import type { PortalReadinessResponse } from "@toonexpo/contracts";
-import {
-  ReadinessAssessmentTargetType,
-  ReadinessVisibility,
-} from "@toonexpo/db";
+import { Injectable } from '@nestjs/common';
+import type { PortalReadinessResponse } from '@toonexpo/contracts';
+import { ReadinessAssessmentTargetType, ReadinessVisibility } from '@toonexpo/db';
 
-import type { CompanyMemberContext } from "../../company/types/company-member-context.js";
-import { PrismaService } from "../../prisma/prisma.service.js";
-import { toPortalReadinessAssessmentItem } from "../mappers/readiness.mapper.js";
+import type { CompanyMemberContext } from '../../company/types/company-member-context.js';
+import { PrismaService } from '../../prisma/prisma.service.js';
+import { toPortalReadinessAssessmentItem } from '../mappers/readiness.mapper.js';
 
 @Injectable()
 export class PortalReadinessService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getCompanyReadiness(
-    member: CompanyMemberContext,
-  ): Promise<PortalReadinessResponse> {
+  async getCompanyReadiness(member: CompanyMemberContext): Promise<PortalReadinessResponse> {
     const companyId = member.companyId;
+    const catalogCriteria = await this.prisma.db.readinessCriterion.findMany({
+      where: { active: true },
+      orderBy: [{ sortOrder: 'asc' }, { code: 'asc' }],
+    });
 
     const [companyAssessment, projectAssessments] = await Promise.all([
-      this.findActiveAssessment({
-        targetType: ReadinessAssessmentTargetType.builder_company,
-        builderCompanyId: companyId,
-        projectId: null,
-      }),
-      this.findActiveProjectAssessments(companyId),
+      this.findActiveAssessment(
+        {
+          targetType: ReadinessAssessmentTargetType.builder_company,
+          builderCompanyId: companyId,
+          projectId: null,
+        },
+        catalogCriteria,
+      ),
+      this.findActiveProjectAssessments(companyId, catalogCriteria),
     ]);
 
     const data = [...(companyAssessment ? [companyAssessment] : []), ...projectAssessments];
@@ -32,17 +34,20 @@ export class PortalReadinessService {
     return { data };
   }
 
-  private async findActiveAssessment(where: {
-    targetType: ReadinessAssessmentTargetType;
-    builderCompanyId: string;
-    projectId: string | null;
-  }) {
+  private async findActiveAssessment(
+    where: {
+      targetType: ReadinessAssessmentTargetType;
+      builderCompanyId: string;
+      projectId: string | null;
+    },
+    catalogCriteria: Awaited<ReturnType<PrismaService['db']['readinessCriterion']['findMany']>>,
+  ) {
     const assessment = await this.prisma.db.readinessAssessment.findFirst({
       where: {
         ...where,
         archivedAt: null,
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: 'desc' },
       include: this.portalInclude(),
     });
 
@@ -50,16 +55,19 @@ export class PortalReadinessService {
       return null;
     }
 
-    const helpAvailabilityByCategoryId =
-      await this.buildHelpAvailabilityMap(assessment.scores);
+    const helpAvailabilityByCategoryId = await this.buildHelpAvailabilityMap(assessment.scores);
 
     return toPortalReadinessAssessmentItem(
       assessment,
       helpAvailabilityByCategoryId,
+      catalogCriteria,
     );
   }
 
-  private async findActiveProjectAssessments(companyId: string) {
+  private async findActiveProjectAssessments(
+    companyId: string,
+    catalogCriteria: Awaited<ReturnType<PrismaService['db']['readinessCriterion']['findMany']>>,
+  ) {
     const projects = await this.prisma.db.project.findMany({
       where: { builderCompanyId: companyId },
       select: { id: true },
@@ -67,17 +75,18 @@ export class PortalReadinessService {
 
     const assessments = await Promise.all(
       projects.map((project) =>
-        this.findActiveAssessment({
-          targetType: ReadinessAssessmentTargetType.project,
-          builderCompanyId: companyId,
-          projectId: project.id,
-        }),
+        this.findActiveAssessment(
+          {
+            targetType: ReadinessAssessmentTargetType.project,
+            builderCompanyId: companyId,
+            projectId: project.id,
+          },
+          catalogCriteria,
+        ),
       ),
     );
 
-    return assessments.filter(
-      (item): item is NonNullable<typeof item> => item !== null,
-    );
+    return assessments.filter((item): item is NonNullable<typeof item> => item !== null);
   }
 
   private async buildHelpAvailabilityMap(
@@ -99,7 +108,7 @@ export class PortalReadinessService {
     }
 
     const counts = await this.prisma.db.serviceProviderCategoryLink.groupBy({
-      by: ["serviceProviderCategoryId"],
+      by: ['serviceProviderCategoryId'],
       where: {
         serviceProviderCategoryId: { in: categoryIds },
         serviceProvider: { active: true },
@@ -116,8 +125,7 @@ export class PortalReadinessService {
     for (const score of scores) {
       const linkedCategoryId = score.category.serviceProviderCategoryId;
       const helpAvailable =
-        linkedCategoryId != null &&
-        (activeCounts.get(linkedCategoryId) ?? 0) > 0;
+        linkedCategoryId != null && (activeCounts.get(linkedCategoryId) ?? 0) > 0;
       helpByScoreCategory.set(score.categoryId, helpAvailable);
     }
 
@@ -129,15 +137,18 @@ export class PortalReadinessService {
       project: { select: { name: true } },
       scores: {
         include: { category: true },
-        orderBy: { category: { sortOrder: "asc" as const } },
+        orderBy: { category: { sortOrder: 'asc' as const } },
+      },
+      criterionScores: {
+        include: { criterion: true },
       },
       recommendations: {
         where: { visibility: ReadinessVisibility.builder_visible },
-        orderBy: [{ sortOrder: "asc" as const }, { createdAt: "asc" as const }],
+        orderBy: [{ sortOrder: 'asc' as const }, { createdAt: 'asc' as const }],
       },
       requiredActions: {
         where: { visibility: ReadinessVisibility.builder_visible },
-        orderBy: { createdAt: "asc" as const },
+        orderBy: { createdAt: 'asc' as const },
       },
     };
   }

@@ -7,7 +7,7 @@ import { usePortalReadinessQuery } from '@/features/builder/hooks/use-portal-rea
 import { EmptyState } from '@/shared/ui/empty-state';
 
 /**
- * Builder portal readiness dashboard.
+ * Builder portal readiness page — KPI overview + criterion detail (read-only).
  */
 export const BuilderReadinessPage = () => {
   const t = useTranslations('Builder.readiness');
@@ -31,13 +31,13 @@ export const BuilderReadinessPage = () => {
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-1">
         <h1 className="text-page-title text-ink">{t('title')}</h1>
-        <p className="text-sm text-ink-secondary">{t('subtitle')}</p>
+        <p className="max-w-2xl text-sm leading-relaxed text-ink-secondary">{t('subtitle')}</p>
       </div>
 
       {assessments.length === 0 ? (
         <EmptyState title={t('emptyTitle')} description={t('empty')} />
       ) : (
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-10">
           {assessments.map((assessment) => (
             <BuilderReadinessAssessmentPanel key={assessment.id} assessment={assessment} />
           ))}

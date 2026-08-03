@@ -4,21 +4,23 @@ import { cn } from '@/shared/ui/cn';
 
 type ReadinessProgressRingProps = {
   percent: number;
-  size?: 'sm' | 'md' | 'lg' | undefined;
+  size?: 'xs' | 'sm' | 'md' | 'lg' | undefined;
   tone?: 'brand' | 'success' | 'warning' | 'danger' | 'muted' | undefined;
   className?: string | undefined;
   label?: string | undefined;
 };
 
 const SIZE_CLASS: Record<NonNullable<ReadinessProgressRingProps['size']>, string> = {
-  sm: 'size-14',
-  md: 'size-24',
+  xs: 'size-20',
+  sm: 'size-16',
+  md: 'size-28',
   lg: 'size-40',
 };
 
 const TEXT_CLASS: Record<NonNullable<ReadinessProgressRingProps['size']>, string> = {
-  sm: 'text-[0.65rem]',
-  md: 'text-lg',
+  xs: 'text-sm',
+  sm: 'text-[0.7rem]',
+  md: 'text-xl',
   lg: 'text-3xl',
 };
 
@@ -31,6 +33,7 @@ const STROKE_CLASS: Record<NonNullable<ReadinessProgressRingProps['tone']>, stri
 };
 
 const STROKE_WIDTH: Record<NonNullable<ReadinessProgressRingProps['size']>, number> = {
+  xs: 2.2,
   sm: 2.4,
   md: 2.8,
   lg: 3,

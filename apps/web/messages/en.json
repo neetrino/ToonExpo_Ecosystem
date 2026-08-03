@@ -3367,19 +3367,31 @@
     "readiness": {
       "title": "Readiness",
       "eyebrow": "Builder portal",
-      "subtitle": "See what is ready, what needs work, and what to improve next",
+      "subtitle": "See how ready your project is for ToonExpo — and what to improve next.",
+      "howToRead": "Start with the overall score, then check each category. Finish the required actions first.",
       "loading": "Loading readiness…",
       "error": "Could not load readiness. Try again.",
       "emptyTitle": "No readiness yet",
       "empty": "Readiness has not been evaluated yet. Your evaluator will publish guidance here when ready.",
       "companyAssessment": "Company readiness",
       "overallScore": "Overall score",
+      "overallHints": {
+        "strong": "You are in good shape. Keep the remaining items current before the event.",
+        "progress": "Solid progress. Focus on the weaker categories below to raise your score.",
+        "weak": "Several areas need attention. Start with the required actions and low-scoring categories.",
+        "blocked": "Progress is blocked. Contact your ToonExpo evaluator for the next step.",
+        "notStarted": "Evaluation has not started yet. Scores will appear here after the first review."
+      },
       "lastUpdated": "Last updated",
       "highlightsTitle": "Key categories",
-      "categoriesTitle": "Category progress",
+      "categoriesTitle": "Categories",
+      "categoriesHint": "Each category affects your overall score. Lower scores need attention first.",
+      "categoryWeight": "{weight}% of overall score",
       "categoryScore": "Score",
-      "noRecommendation": "No recommendation yet",
-      "helpButton": "Help / providers",
+      "noRecommendation": "No specific tip for this category yet.",
+      "helpButton": "Find help providers",
+      "flagYes": "Yes",
+      "flagNo": "No",
       "help": {
         "title": "Help providers",
         "loading": "Loading providers…",
@@ -3393,8 +3405,18 @@
           "other": "Other"
         }
       },
-      "requiredActionsTitle": "Required actions",
-      "recommendationsTitle": "Recommendations",
+      "requiredActionsTitle": "What to do next",
+      "requiredActionsHint": "Complete these items first — they have the biggest impact on readiness.",
+      "actionsAllClear": "No open actions right now. Keep monitoring category tips below.",
+      "recommendationsTitle": "Tips from your evaluator",
+      "recommendationsHint": "Guidance to improve quality beyond the required checklist.",
+      "statusHints": {
+        "not_started": "Not evaluated yet",
+        "needs_improvement": "Needs your attention",
+        "in_progress": "Improving — keep going",
+        "ready": "Looking good",
+        "blocked": "Blocked — ask for help"
+      },
       "statuses": {
         "not_started": "Not started",
         "needs_improvement": "Needs improvement",
@@ -3407,7 +3429,7 @@
         "project": "Project"
       },
       "actionStatuses": {
-        "open": "Open",
+        "open": "To do",
         "in_progress": "In progress",
         "done": "Done",
         "blocked": "Blocked",

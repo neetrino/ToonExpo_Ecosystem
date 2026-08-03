@@ -213,6 +213,19 @@ export type CreateReadinessInternalNoteBody = {
   scoreId?: string;
 };
 
+export type PortalReadinessCriterionItem = {
+  criterionId: string;
+  code: string;
+  parentId: string | null;
+  maxPoints: number | null;
+  sortOrder: number;
+  value: number | null;
+  checked: boolean;
+  /** value / maxPoints as 0–100 when scored; null for non-scored rows. */
+  percent: number | null;
+  children: PortalReadinessCriterionItem[];
+};
+
 export type PortalReadinessScoreItem = {
   categoryId: string;
   categoryCode: string;
@@ -223,6 +236,7 @@ export type PortalReadinessScoreItem = {
   recommendationSummary: string | null;
   serviceProviderCategoryId: string | null;
   helpAvailable: boolean;
+  criteria: PortalReadinessCriterionItem[];
 };
 
 export type PortalReadinessRecommendationItem = {
