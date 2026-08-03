@@ -80,14 +80,14 @@ type PortalShellProps = {
  * Sidebar is pinned with top + bottom (not a fixed vh height) so the full
  * rail stays inside the visual viewport at any zoom / short screen.
  * Rail chrome runs under the bottom nav (lower z-index); inner padding keeps labels clear.
- * Content mask extends a bit lower so scrolled main vanishes under the header.
+ * Main-column mask matches sidebar top so scrolled content vanishes from that edge.
  */
 const RAIL_CHROME_TOP_CLASS = 'top-[calc(5.5rem+env(safe-area-inset-top,0px))]';
 const RAIL_CHROME_BOTTOM_CLASS = 'bottom-0';
 /** Header spacer band under the fixed pill. */
 const RAIL_HEADER_BAND_HEIGHT_CLASS = 'h-[calc(4.5rem+env(safe-area-inset-top,0px))]';
-/** Header band + light extra clip so content vanishes just below the header edge. */
-const RAIL_CONTENT_MASK_HEIGHT_CLASS = 'h-[calc(5.125rem+env(safe-area-inset-top,0px))]';
+/** Main-column clip — slightly below sidebar top so content vanishes a bit lower. */
+const RAIL_CONTENT_MASK_HEIGHT_CLASS = 'h-[calc(6rem+env(safe-area-inset-top,0px))]';
 /** Narrower than desktop rail so the drawer leaves more page visible on phones. */
 const MOBILE_DRAWER_WIDTH_CLASS = 'w-[min(72vw,14rem)]';
 /** Armenian labels need a touch more room in the mobile drawer. */
@@ -262,9 +262,9 @@ export const PortalShell = ({
       {isRail ? (
         <>
           {/*
-            Full-width band under the floating header (stops at sidebar top),
-            plus a slightly lower main-column clip so content starts vanishing
-            below the header edge — never over the sidebar.
+            Full-width band under the floating header, plus a main-column clip
+            that reaches the sidebar top so scrolled content vanishes there —
+            never over the sidebar.
           */}
           {renderRailHeaderMask ? (
             <>
