@@ -22,8 +22,6 @@ import { useMarkerLayer } from '@/features/geo-map/hooks/use-marker-layer';
 import { useModelFootprintMasks } from '@/features/geo-map/hooks/use-model-footprint-masks';
 import { useOsmBuildingPick } from '@/features/geo-map/hooks/use-osm-building-pick';
 import { useThreeBuildingLayer } from '@/features/geo-map/hooks/use-three-building-layer';
-import { useVegetationLayer } from '@/features/geo-map/hooks/use-vegetation-layer';
-import { useVehicleLayer } from '@/features/geo-map/hooks/use-vehicle-layer';
 import { useVisibleObjects } from '@/features/geo-map/hooks/use-visible-objects';
 import { useWebglSupport } from '@/features/geo-map/hooks/use-webgl-support';
 import type { GeoMapCanvasProps, GeoMapLngLat, GeoMapObject } from '@/features/geo-map/types';
@@ -142,8 +140,6 @@ export const GeoMapCanvas = ({
     },
   });
   useThreeBuildingLayer({ map, isMapLoaded, modelObjects });
-  useVegetationLayer({ map, isMapLoaded });
-  useVehicleLayer({ map, isMapLoaded });
   useEffect(() => {
     if (!map || !isMapLoaded) {
       setUiOverlayRoot(null);

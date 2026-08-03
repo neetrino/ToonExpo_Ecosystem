@@ -8,11 +8,10 @@
  *
  * Layers:
  * - `ThreeBuildingLayer` — project GLB buildings (`use-three-building-layer.ts`)
- * - `VegetationLayer` — zoom-gated park trees/grass (`use-vegetation-layer.ts`)
- * - `VehicleLayer` — sparse close-range traffic (`use-vehicle-layer.ts`)
  *
- * Extension point: add a new `*Layer` class + `ensure*` / `remove*` helpers,
- * then mount from a dedicated hook (see the hooks above).
+ * Extension point: optional future layers (e.g. park vegetation, sparse
+ * traffic) would add a new `*Layer` class + `ensure*` / `remove*` helpers and
+ * mount from a dedicated hook — not shipped in production today.
  */
 
 export {
@@ -25,16 +24,6 @@ export {
   ensureThreeBuildingLayer,
   removeThreeBuildingLayer,
 } from '@/features/geo-map/three/custom-building-layer';
-export {
-  VegetationLayer,
-  ensureVegetationLayer,
-  removeVegetationLayer,
-} from '@/features/geo-map/three/vegetation-layer';
-export {
-  VehicleLayer,
-  ensureVehicleLayer,
-  removeVehicleLayer,
-} from '@/features/geo-map/three/vehicle-layer';
 export {
   composeCameraProjectionMatrix,
   composeModelTransformMatrix,
