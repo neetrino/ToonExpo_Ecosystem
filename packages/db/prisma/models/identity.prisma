@@ -93,6 +93,8 @@ model User {
   updatedVisualMapCanvases        VisualMapCanvas[]         @relation("VisualMapCanvasUpdater")
   createdVisualHotspots           VisualHotspot[]           @relation("VisualHotspotCreator")
   updatedVisualHotspots           VisualHotspot[]           @relation("VisualHotspotUpdater")
+  createdProjectMapModels         ProjectMapModel[]         @relation("ProjectMapModelCreator")
+  updatedProjectMapModels         ProjectMapModel[]         @relation("ProjectMapModelUpdater")
   checkInRecords                  CheckInRecord[]           @relation("CheckInStaff")
 
   @@index([accountType])

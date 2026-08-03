@@ -13,3 +13,5 @@ allowBuilds:
   prisma: true
   sharp: true
   unrs-resolver: true
+minimumReleaseAgeExclude:
+  - maplibre-gl@6.1.0

@@ -14,6 +14,7 @@ import {
 } from '@/features/admin/admin-nav-items';
 import { Link, usePathname } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
+import { usePortalRailCollapsed } from '@/shared/ui/portal-rail-collapse-context';
 
 const NAV_ICON_CLASS = 'size-[1.125rem] shrink-0 opacity-90';
 const NAV_CHILD_ICON_CLASS = 'size-4 shrink-0 opacity-90';
@@ -37,10 +38,14 @@ const initialOpenSections = (pathname: string): Record<string, boolean> => {
   return open;
 };
 
-const navLinkClassName = (active: boolean, nested = false): string =>
+const navLinkClassName = (active: boolean, collapsed: boolean, nested = false): string =>
   cn(
-    'flex items-center gap-2.5 rounded-pill font-medium tracking-wide transition-colors',
-    nested ? 'gap-2.5 px-3.5 py-1.5 text-sm' : 'px-3.5 py-2 text-[0.9375rem]',
+    'flex items-center rounded-pill font-medium tracking-wide transition-colors',
+    collapsed
+      ? 'justify-center px-2 py-2'
+      : nested
+        ? 'gap-2.5 px-3.5 py-1.5 text-sm'
+        : 'gap-2.5 px-3.5 py-2 text-[0.9375rem]',
     active
       ? 'bg-surface-elevated text-brand-secondary shadow-xs'
       : 'text-on-dark/85 hover:bg-on-dark/10 hover:text-on-dark',
@@ -52,6 +57,7 @@ const navLinkClassName = (active: boolean, nested = false): string =>
 export const AdminNav = () => {
   const t = useTranslations('Admin.nav');
   const pathname = usePathname();
+  const railCollapsed = usePortalRailCollapsed();
   const [openSections, setOpenSections] = useState(() => initialOpenSections(pathname));
 
   useEffect(() => {
@@ -91,10 +97,33 @@ export const AdminNav = () => {
     const hasChildren = Boolean(item.children?.length);
 
     if (!hasChildren || !item.children) {
+      const label = t(item.key);
       return (
-        <Link key={item.href} href={item.href} className={navLinkClassName(active)}>
+        <Link
+          key={item.href}
+          href={item.href}
+          className={navLinkClassName(active, railCollapsed)}
+          aria-label={railCollapsed ? label : undefined}
+          title={railCollapsed ? label : undefined}
+        >
           <Icon className={NAV_ICON_CLASS} aria-hidden />
-          {t(item.key)}
+          {railCollapsed ? <span className="sr-only">{label}</span> : label}
+        </Link>
+      );
+    }
+
+    if (railCollapsed) {
+      const label = t(item.key);
+      return (
+        <Link
+          key={item.href}
+          href={item.href}
+          className={navLinkClassName(active, railCollapsed)}
+          aria-label={label}
+          title={label}
+        >
+          <Icon className={NAV_ICON_CLASS} aria-hidden />
+          <span className="sr-only">{label}</span>
         </Link>
       );
     }
@@ -104,7 +133,7 @@ export const AdminNav = () => {
 
     return (
       <div key={item.href} className="flex flex-col gap-0.5">
-        <div className={cn(navLinkClassName(active), 'pr-2')}>
+        <div className={cn(navLinkClassName(active, railCollapsed), 'pr-2')}>
           <Link href={item.href} className="flex min-w-0 flex-1 items-center gap-2.5 text-inherit">
             <Icon className={NAV_ICON_CLASS} aria-hidden />
             <span className="truncate">{t(item.key)}</span>
@@ -149,7 +178,7 @@ export const AdminNav = () => {
                   <Link
                     key={child.href}
                     href={child.href}
-                    className={navLinkClassName(childActive, true)}
+                    className={navLinkClassName(childActive, railCollapsed, true)}
                     tabIndex={sectionOpen ? undefined : -1}
                   >
                     <ChildIcon className={NAV_CHILD_ICON_CLASS} aria-hidden />
@@ -166,10 +195,12 @@ export const AdminNav = () => {
 
   return (
     <nav aria-label={t('label')} className="flex h-full min-h-0 flex-col gap-1">
-      <div className="mb-3 hidden shrink-0 px-3.5 pt-1 md:block">
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-on-dark/65">
-          {t('portalLabel')}
-        </p>
+      <div className={cn('mb-3 hidden shrink-0 md:block', railCollapsed ? 'px-0' : 'px-3.5 pt-1')}>
+        {railCollapsed ? null : (
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-on-dark/65">
+            {t('portalLabel')}
+          </p>
+        )}
       </div>
 
       <div className="scrollbar-none flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto overscroll-contain">

@@ -39,6 +39,7 @@ import { ThrottlerConfigService } from './rate-limit/throttler-config.service.js
 import { ReadinessModule } from './readiness/readiness.module.js';
 import { ServiceProvidersModule } from './service-providers/service-providers.module.js';
 import { VisualMapModule } from './visual-map/visual-map.module.js';
+import { GeoMapModule } from './geo-map/geo-map.module.js';
 
 @Module({
   imports: [
@@ -75,6 +76,7 @@ import { VisualMapModule } from './visual-map/visual-map.module.js';
     IntegrationsModule,
     InteractiveMappingModule,
     VisualMapModule,
+    GeoMapModule,
     MediaModule,
     HealthModule,
   ],

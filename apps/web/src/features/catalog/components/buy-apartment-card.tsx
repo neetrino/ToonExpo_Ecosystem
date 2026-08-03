@@ -11,15 +11,21 @@ import { cn } from '@/shared/ui/cn';
 type BuyApartmentCardProps = {
   listing: BuyApartmentListing;
   highlighted?: boolean | undefined;
+  /** List → map: hover focuses the apartment's project 3D model. */
+  onHoverEnter?: (() => void) | undefined;
+  onHoverLeave?: (() => void) | undefined;
   className?: string | undefined;
 };
 
 /**
  * Buy-page apartment card — Figma `103:1437` listing grid.
+ * Card body navigates to the apartment; hover syncs the map to the project model.
  */
 export const BuyApartmentCard = ({
   listing,
   highlighted = false,
+  onHoverEnter,
+  onHoverLeave,
   className,
 }: BuyApartmentCardProps) => {
   const t = useTranslations('BuyPage');
@@ -43,6 +49,8 @@ export const BuyApartmentCard = ({
         highlighted && 'ring-2 ring-brand-deep',
         className,
       )}
+      onMouseEnter={onHoverEnter}
+      onMouseLeave={onHoverLeave}
     >
       <Link href={`/apartments/${listing.id}`} className="block">
         <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-surface">

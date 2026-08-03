@@ -18,6 +18,8 @@ const ICON_TONES: Record<string, string> = {
   companies: 'bg-brand-soft text-brand',
   users: 'bg-brand-secondary/12 text-brand-secondary',
   projects: 'bg-brand-secondary/12 text-brand-secondary',
+  interactiveMapping: 'bg-ink-muted/10 text-ink-label',
+  geoMap: 'bg-brand-soft text-brand',
   partners: 'bg-brand-soft text-brand',
   bankOffers: 'bg-ink-muted/10 text-ink-label',
   readiness: 'bg-brand-soft text-brand',

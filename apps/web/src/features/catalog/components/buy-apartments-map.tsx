@@ -1,87 +1,86 @@
 'use client';
 
-import Image from 'next/image';
-import { useLocale, useTranslations } from 'next-intl';
+import { useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 
-import type { BuyApartmentListing } from '@/features/catalog/utils/load-buy-apartments';
-import { formatCatalogPrice } from '@/features/catalog/utils/format-price';
-import { Link } from '@/i18n/navigation';
-import { staticAssetUrl } from '@/shared/lib/static-asset-url';
+import { GeoMapCanvasLazy } from '@/features/geo-map/components/geo-map-canvas-lazy';
+import type { GeoMapFocusRequest, GeoMapObject } from '@/features/geo-map/types';
+import { mapPublicGeoMapItemsToObjects } from '@/features/geo-map/utils/map-object-mapper';
+import { GeoMapStatusOverlays } from '@/features/geo-map/public/components/geo-map-status-overlays';
+import { usePublicGeoMapModelsQuery } from '@/features/geo-map/public/hooks/use-public-geo-map-models';
+import { resolvePublicGeoMapView } from '@/features/geo-map/public/utils/resolve-public-geo-map-view';
 import { cn } from '@/shared/ui/cn';
 
-const BUY_MAP_SRC = staticAssetUrl('/images/buy-map.webp');
-
 type BuyApartmentsMapProps = {
-  listings: BuyApartmentListing[];
-  selectedId: string | null;
-  onSelect: (id: string) => void;
+  focusRequest?: GeoMapFocusRequest | undefined;
+  highlightedObjectId?: string | null | undefined;
+  homesInViewCount: number;
+  /** Map → list: select a project model without navigating away. */
+  onObjectSelect?: ((object: GeoMapObject) => void) | undefined;
+  className?: string | undefined;
 };
 
+const findObjectById = (objects: GeoMapObject[], id: string): GeoMapObject | null =>
+  objects.find((object) => object.id === id) ?? null;
+
 /**
- * Map panel with price pins — Figma `103:1437` left column.
+ * Buy-page map panel — published 3D project models.
+ * List→map hover focus/highlight is owned by the browse parent; model click
+ * filters the list (filter chip) without fighting hover as primary sync.
  */
-export const BuyApartmentsMap = ({ listings, selectedId, onSelect }: BuyApartmentsMapProps) => {
+export const BuyApartmentsMap = ({
+  focusRequest,
+  highlightedObjectId = null,
+  homesInViewCount,
+  onObjectSelect,
+  className,
+}: BuyApartmentsMapProps) => {
   const t = useTranslations('BuyPage');
-  const locale = useLocale();
-  const pins = listings.slice(0, 8);
+  const modelsQuery = usePublicGeoMapModelsQuery();
+
+  const objects = useMemo(
+    () => mapPublicGeoMapItemsToObjects(modelsQuery.data?.data ?? []),
+    [modelsQuery.data?.data],
+  );
+  const view = useMemo(() => resolvePublicGeoMapView(objects), [objects]);
+  const showEmpty = !modelsQuery.isLoading && !modelsQuery.isError && objects.length === 0;
+
+  const onObjectClick = (id: string): void => {
+    const object = findObjectById(objects, id);
+    if (!object || onObjectSelect == null) {
+      return;
+    }
+    onObjectSelect(object);
+  };
 
   return (
-    <div className="relative h-[min(70vh,52rem)] overflow-hidden bg-canvas lg:sticky lg:top-24 lg:h-[calc(100vh-7rem)]">
-      <Image
-        src={BUY_MAP_SRC}
-        alt=""
-        fill
-        className="object-cover"
-        sizes="(max-width: 1024px) 100vw, 50vw"
-        priority
+    <div
+      className={cn(
+        'relative h-[min(70vh,52rem)] overflow-hidden bg-map-canvas lg:sticky lg:top-24 lg:h-[calc(100vh-7rem)]',
+        className,
+      )}
+    >
+      <GeoMapCanvasLazy
+        objects={objects}
+        initialCenter={view.center}
+        initialZoom={view.zoom}
+        focusRequest={focusRequest}
+        highlightedObjectId={highlightedObjectId}
+        className="absolute inset-0 h-full w-full"
+        onObjectClick={onObjectClick}
       />
-      <div className="absolute inset-0 bg-canvas/10" aria-hidden />
 
-      {pins.map((listing, index) => {
-        const priceLabel = formatCatalogPrice({
-          amount: listing.price,
-          currency: listing.priceCurrency,
-          locale,
-          priceVisibility: listing.priceVisibility,
-          onRequestLabel: '—',
-          signInLabel: '—',
-        });
-        const position = pinPosition(index, pins.length);
-        const selected = listing.id === selectedId;
+      <GeoMapStatusOverlays
+        isLoading={modelsQuery.isLoading}
+        isError={modelsQuery.isError}
+        isEmpty={showEmpty}
+        onRetry={() => void modelsQuery.refetch()}
+      />
 
-        return (
-          <Link
-            key={listing.id}
-            href={`/apartments/${listing.id}`}
-            onMouseEnter={() => onSelect(listing.id)}
-            className={cn(
-              'absolute z-[1] -translate-x-1/2 -translate-y-1/2 rounded-pill px-3 py-1',
-              'font-brand text-xs font-bold whitespace-nowrap shadow-md',
-              'transition-transform hover:z-[2] hover:scale-105',
-              selected ? 'bg-brand-deep text-on-dark' : 'bg-canvas text-brand-deep',
-            )}
-            style={{ left: position.left, top: position.top }}
-          >
-            {priceLabel}
-          </Link>
-        );
-      })}
-
-      <div className="absolute bottom-4 left-4 z-[1] inline-flex items-center gap-2 rounded-xl bg-canvas/95 px-3 py-1.5 text-xs font-medium whitespace-nowrap text-ink-navy">
-        <span className="size-2 shrink-0 rounded-pill bg-[#00a159]" aria-hidden />
-        {t('homesInView', { count: listings.length })}
+      <div className="pointer-events-none absolute bottom-4 left-4 z-[1] inline-flex items-center gap-2 rounded-xl bg-canvas/95 px-3 py-1.5 text-xs font-medium whitespace-nowrap text-ink-navy shadow-md ring-1 ring-header-border">
+        <span className="size-2 shrink-0 rounded-pill bg-brand-secondary" aria-hidden />
+        {t('homesInView', { count: homesInViewCount })}
       </div>
     </div>
   );
-};
-
-const pinPosition = (index: number, total: number): { left: string; top: string } => {
-  const col = index % 3;
-  const row = Math.floor(index / 3);
-  const left = 24 + col * 26;
-  const top = 26 + row * 22 + (total > 6 ? 0 : 2);
-  return {
-    left: `${Math.min(left, 76)}%`,
-    top: `${Math.min(top, 70)}%`,
-  };
 };

@@ -169,8 +169,14 @@
       "completionTbaShort": "TBA",
       "mapEyebrow": "Map view",
       "mapTitle": "Every new development on one map.",
+      "openFullMap": "Open full map →",
       "browseList": "Browse the list →",
       "mapPlaceholder": "Interactive map coming soon — browse projects by city for now.",
+      "search": {
+        "label": "Search projects on the map",
+        "placeholder": "Search projects…",
+        "empty": "No projects match your search."
+      },
       "allDevelopments": "All developments",
       "units": "Units",
       "sold": "Sold",
@@ -258,6 +264,8 @@
     "bottomNav": "Mobile navigation",
     "home": "Home",
     "menu": "Open menu",
+    "railExpand": "Expand sidebar",
+    "railCollapse": "Collapse sidebar",
     "buy": "Apartments",
     "newDevelopments": "New Developments",
     "marketInsights": "Market Insights",
@@ -265,6 +273,7 @@
     "builders": "Builders",
     "partners": "Partners",
     "mortgage": "Mortgage",
+    "geoMap": "3D Map",
     "expoMap": "Expo map",
     "login": "Sign in",
     "register": "Register",
@@ -321,6 +330,9 @@
     "specArea": "{area} m²",
     "saveSearchHint": "Save this search to get email alerts when new homes match.",
     "saveSearch": "Save search",
+    "mapProjectFilter": "{project}",
+    "clearMapFilter": "All apartments",
+    "openProject": "Open project",
     "filters": {
       "location": "Location",
       "allCities": "All cities",
@@ -1167,6 +1179,8 @@
       "label": "Admin navigation",
       "section": "Manage",
       "portalLabel": "Management portal",
+      "railExpand": "Expand management portal",
+      "railCollapse": "Collapse management portal",
       "analytics": "Analytics",
       "companies": "Companies",
       "users": "Users",
@@ -1175,6 +1189,7 @@
       "floors": "Floor",
       "apartments": "Apartment",
       "interactiveMapping": "Interactive mapping",
+      "geoMap": "3D Map",
       "partners": "Partners",
       "bankOffers": "Bank offers",
       "serviceProviders": "Service providers",
@@ -1184,6 +1199,104 @@
       "checkin": "Check-in scanner",
       "bos": "BOS",
       "settings": "Settings"
+    },
+    "geoMap": {
+      "title": "3D Map",
+      "subtitle": "Upload GLB models, place them on the map, and publish for visitors.",
+      "loading": "Loading…",
+      "error": "Could not load 3D map data.",
+      "labLink": "Lab",
+      "list": {
+        "title": "Models",
+        "empty": "No models yet. Upload a GLB and place it on the map.",
+        "published": "Published",
+        "draft": "Draft",
+        "unassigned": "Unassigned"
+      },
+      "create": {
+        "new": "+ New",
+        "title": "Place a model",
+        "project": "Project",
+        "projectPlaceholder": "Select a project…",
+        "projectOptional": "No project yet (attach later)",
+        "projectLaterHint": "You can place the GLB first and attach a project later.",
+        "projectTaken": "{name} (already has a model)",
+        "hint": "Upload a GLB, optionally pick a project, then click an OSM building or the map.",
+        "clickMap": "Click the map to place the model.",
+        "clickMapOrOsm": "Click an OSM building (highlighted) or empty map to place.",
+        "clickOsmReady": "OSM building selected — placing at its footprint…",
+        "placing": "Placing model…"
+      },
+      "edit": {
+        "subtitle": "Drag on the map to move. Replace the GLB or adjust transforms below, then save.",
+        "replaceHint": "Upload a new GLB to replace the model (position is kept).",
+        "replacing": "Replacing model…",
+        "replaceError": "Could not replace the model. Try again.",
+        "attachTitle": "Attach to a project",
+        "attachHint": "This model is not linked yet. Choose a free project to publish it.",
+        "attach": "Attach project",
+        "attaching": "Attaching…",
+        "attachError": "Could not attach the project. Try again.",
+        "publishRequiresProject": "Publish is available after a project is attached."
+      },
+      "upload": {
+        "label": "GLB model",
+        "browse": "Choose GLB",
+        "uploading": "Uploading…",
+        "hint": "GLB only, up to {maxMb} MB.",
+        "selected": "Uploaded: {name}",
+        "errors": {
+          "type": "Only .glb files are allowed.",
+          "size": "File must be 15 MB or smaller.",
+          "uploadFailed": "Upload failed. Try again.",
+          "notConfigured": "Media upload is not configured on the server."
+        }
+      },
+      "form": {
+        "longitude": "Longitude",
+        "latitude": "Latitude",
+        "headingDeg": "Rotate Y / Heading (°)",
+        "scale": "Scale",
+        "altitudeM": "Altitude (m)",
+        "minZoom": "Min zoom (show 3D)",
+        "pitchDeg": "Rotate X / Pitch (°)",
+        "rollDeg": "Rotate Z / Roll (°)",
+        "showAdvanced": "Advanced orientation",
+        "hideAdvanced": "Hide advanced",
+        "published": "Published",
+        "save": "Save",
+        "saving": "Saving…",
+        "saveError": "Could not save changes.",
+        "delete": "Delete",
+        "deleting": "Deleting…"
+      },
+      "map": {
+        "hover": "Hover: {id}",
+        "deselect": "Deselect",
+        "osmBuilding": "OSM building",
+        "actions": {
+          "placeModel": "Place model",
+          "replaceGlb": "Replace GLB",
+          "attachProject": "Attach project",
+          "hideOsm": "Hide OSM building",
+          "deleteModel": "Delete model"
+        },
+        "context": {
+          "placeModel": "Upload / place model…",
+          "clearSelection": "Clear selection",
+          "replaceGlb": "Replace GLB…",
+          "attachProject": "Attach project…",
+          "deleteModel": "Delete model…",
+          "deselect": "Deselect"
+        }
+      },
+      "deleteConfirmTitle": "Delete model",
+      "deleteConfirmMessage": "Delete the 3D model for \"{name}\"? This cannot be undone.",
+      "errors": {
+        "createFailed": "Could not place the model. Try again.",
+        "updateFailed": "Could not update the model. Try again.",
+        "deleteFailed": "Could not delete the model. Try again."
+      }
     },
     "interactiveMapping": {
       "title": "Interactive mapping",
@@ -3321,6 +3434,28 @@
         "uploadFailed": "Upload failed. Try again.",
         "notConfigured": "Media upload is not configured on the server."
       }
+    }
+  },
+  "GeoMap": {
+    "meta": {
+      "title": "3D Map",
+      "description": "Explore ToonExpo projects on an interactive 3D map of Yerevan."
+    },
+    "loading": "Loading 3D map…",
+    "error": "Could not load the 3D map. Try again.",
+    "retry": "Retry",
+    "empty": "No published 3D models yet. Check back soon — the map is ready when projects go live.",
+    "hover": {
+      "viewProject": "View project"
+    },
+    "camera": {
+      "groupLabel": "Map zoom, rotate and tilt",
+      "zoomIn": "Zoom in",
+      "zoomOut": "Zoom out",
+      "rotateLeft": "Rotate left",
+      "rotateRight": "Rotate right",
+      "tiltUp": "Tilt up",
+      "tiltDown": "Tilt down"
     }
   },
   "Expo": {

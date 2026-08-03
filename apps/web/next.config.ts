@@ -177,20 +177,18 @@ const nextConfig: NextConfig = {
     ];
   },
   async rewrites() {
+    const rewrites: { source: string; destination: string }[] = [];
+
     const apiProxyTarget = process.env[API_PROXY_TARGET_ENV]?.trim();
-
-    if (!apiProxyTarget) {
-      return [];
-    }
-
-    const origin = apiProxyTarget.replace(/\/$/, '');
-
-    return [
-      {
+    if (apiProxyTarget) {
+      const origin = apiProxyTarget.replace(/\/$/, '');
+      rewrites.push({
         source: API_PROXY_REWRITE_SOURCE,
         destination: `${origin}${API_V1_PREFIX}/:path*`,
-      },
-    ];
+      });
+    }
+
+    return rewrites;
   },
 };
 
