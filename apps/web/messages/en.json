@@ -1614,8 +1614,10 @@
         "project": "Project",
         "status": "Status",
         "floors": "Floors",
-        "apartments": "Apartments"
+        "apartments": "Apartments",
+        "actions": "Actions"
       },
+      "readiness": "Readiness",
       "create": {
         "cta": "+ Add Building",
         "title": "Add Building",
@@ -2114,9 +2116,18 @@
         "builder_company": "Builder company",
         "project": "Project"
       },
+      "management": {
+        "title": "Readiness Management",
+        "loading": "Loading readiness…",
+        "error": "Could not load readiness. Try again.",
+        "overallScore": "Overall Score",
+        "categoriesTitle": "Categories",
+        "projectHint": "Scores apply to this building’s project."
+      },
       "categories": {
         "title": "Readiness categories",
-        "subtitle": "Configure evaluation categories and weights",
+        "subtitle": "These are scoring criteria only. To score a builder, go back to assessments and open one.",
+        "backToAssessments": "← Back to assessments",
         "loading": "Loading categories…",
         "error": "Could not load categories. Try again.",
         "empty": "No categories yet. Create the first one.",
@@ -2152,13 +2163,16 @@
         }
       },
       "assessments": {
-        "title": "Readiness assessments",
+        "title": "Readiness",
+        "guide": "Open an assessment to score categories. The builder sees the result in their portal.",
         "subtitle": "{count, plural, =0 {No assessments} one {# assessment} other {# assessments}}",
         "loading": "Loading assessments…",
         "error": "Could not load assessments. Try again.",
-        "empty": "No assessments yet. Create one to start evaluating.",
+        "emptyTitle": "No assessments yet",
+        "empty": "Create an assessment for a builder company or project, then score its categories.",
         "newAssessment": "+ New Assessment",
-        "categoriesLink": "Manage categories",
+        "categoriesLink": "Edit scoring categories",
+        "openToScore": "Open to score →",
         "overridden": "overridden",
         "pagination": {
           "previous": "Previous",
@@ -2230,18 +2244,23 @@
         "overallScore": "Overall score",
         "overridden": "overridden",
         "lastEvaluated": "Last evaluated",
+        "builderGuidanceTitle": "What the builder should do",
+        "builderGuidanceHint": "Recommendations and required actions visible to the builder.",
+        "advancedTitle": "Advanced (status override, archive, internal notes)",
+        "advancedHint": "Internal notes are never shown to the builder.",
         "targetTypes": {
           "builder_company": "Builder company assessment",
           "project": "Project assessment"
         },
         "categories": {
-          "title": "Category evaluation",
-          "score": "Score (0–100)",
+          "title": "Score categories",
+          "hint": "Set a score (0–100) and status for each category, then save.",
+          "score": "Score",
           "status": "Status",
-          "recommendationSummary": "Recommendation summary",
-          "save": "Save category",
+          "recommendationSummary": "Short note for this category",
+          "save": "Save",
           "saving": "Saving…",
-          "saved": "Category saved",
+          "saved": "Saved",
           "validation": {
             "score": "Score must be between 0 and 100"
           },

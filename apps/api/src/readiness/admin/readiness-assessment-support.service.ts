@@ -1,17 +1,10 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from "@nestjs/common";
-import type { Prisma } from "@toonexpo/db";
-import {
-  ReadinessAssessmentTargetType,
-  ReadinessScoreStatus,
-} from "@toonexpo/db";
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import type { Prisma } from '@toonexpo/db';
+import { ReadinessAssessmentTargetType, ReadinessScoreStatus } from '@toonexpo/db';
 
-import { PrismaService } from "../../prisma/prisma.service.js";
-import { calculateWeightedOverallScore } from "../utils/overall-score.util.js";
-import type { ListReadinessAssessmentsQueryDto } from "./dto/readiness-assessment.dto.js";
+import { PrismaService } from '../../prisma/prisma.service.js';
+import { calculateWeightedOverallScore } from '../utils/overall-score.util.js';
+import type { ListReadinessAssessmentsQueryDto } from './dto/readiness-assessment.dto.js';
 
 type ActiveTargetFilter = {
   targetType: ReadinessAssessmentTargetType;
@@ -23,13 +16,10 @@ type ActiveTargetFilter = {
 export class ReadinessAssessmentSupportService {
   constructor(private readonly prisma: PrismaService) {}
 
-  buildListWhere(
-    query: ListReadinessAssessmentsQueryDto,
-  ): Prisma.ReadinessAssessmentWhereInput {
+  buildListWhere(query: ListReadinessAssessmentsQueryDto): Prisma.ReadinessAssessmentWhereInput {
     return {
-      ...(query.builderCompanyId
-        ? { builderCompanyId: query.builderCompanyId }
-        : {}),
+      ...(query.builderCompanyId ? { builderCompanyId: query.builderCompanyId } : {}),
+      ...(query.projectId ? { projectId: query.projectId } : {}),
       ...(query.targetType ? { targetType: query.targetType } : {}),
       ...(query.status ? { status: query.status } : {}),
     };
@@ -56,20 +46,17 @@ export class ReadinessAssessmentSupportService {
       select: { id: true },
     });
     if (!company) {
-      throw new NotFoundException("Company not found");
+      throw new NotFoundException('Company not found');
     }
   }
 
-  async assertProjectBelongsToCompany(
-    projectId: string,
-    builderCompanyId: string,
-  ): Promise<void> {
+  async assertProjectBelongsToCompany(projectId: string, builderCompanyId: string): Promise<void> {
     const project = await this.prisma.db.project.findFirst({
       where: { id: projectId, builderCompanyId },
       select: { id: true },
     });
     if (!project) {
-      throw new BadRequestException("Project does not belong to the company");
+      throw new BadRequestException('Project does not belong to the company');
     }
   }
 
@@ -78,28 +65,22 @@ export class ReadinessAssessmentSupportService {
       where: { id: assessmentId },
     });
     if (!assessment) {
-      throw new NotFoundException("Readiness assessment not found");
+      throw new NotFoundException('Readiness assessment not found');
     }
     return assessment;
   }
 
-  async assertScoreBelongsToAssessment(
-    assessmentId: string,
-    scoreId: string,
-  ): Promise<void> {
+  async assertScoreBelongsToAssessment(assessmentId: string, scoreId: string): Promise<void> {
     const score = await this.prisma.db.readinessScore.findFirst({
       where: { id: scoreId, assessmentId },
       select: { id: true },
     });
     if (!score) {
-      throw new BadRequestException("Score does not belong to this assessment");
+      throw new BadRequestException('Score does not belong to this assessment');
     }
   }
 
-  async recalculateOverallScore(
-    tx: Prisma.TransactionClient,
-    assessmentId: string,
-  ): Promise<void> {
+  async recalculateOverallScore(tx: Prisma.TransactionClient, assessmentId: string): Promise<void> {
     const assessment = await tx.readinessAssessment.findUnique({
       where: { id: assessmentId },
       select: { overallScoreOverridden: true },

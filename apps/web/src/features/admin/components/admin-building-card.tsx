@@ -1,7 +1,7 @@
 'use client';
 
 import type { AdminBuildingListItem } from '@toonexpo/contracts';
-import { Building2, Home, Layers } from 'lucide-react';
+import { Building2, ClipboardCheck, Home, Layers } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import {
@@ -10,28 +10,34 @@ import {
   AdminInventoryCardStat,
   AdminInventoryPublicationBadge,
 } from '@/features/admin/components/admin-inventory-card';
+import { Button } from '@/shared/ui/button';
 import { cn } from '@/shared/ui/cn';
 
 type AdminBuildingCardProps = {
   building: AdminBuildingListItem;
   onSelect: (buildingId: string) => void;
+  onOpenReadiness: (building: AdminBuildingListItem) => void;
 };
 
 /**
  * Building hub card — same layout language as admin project cards.
  */
-export const AdminBuildingCard = ({ building, onSelect }: AdminBuildingCardProps) => {
+export const AdminBuildingCard = ({
+  building,
+  onSelect,
+  onOpenReadiness,
+}: AdminBuildingCardProps) => {
   const t = useTranslations('Admin.buildings');
 
   return (
-    <button
-      type="button"
-      onClick={() => {
-        onSelect(building.id);
-      }}
-      className={cn(ADMIN_INVENTORY_CARD_CLASS, 'w-full text-left')}
-    >
-      <div className="flex flex-1 flex-col p-4">
+    <div className={cn(ADMIN_INVENTORY_CARD_CLASS, 'w-full')}>
+      <button
+        type="button"
+        onClick={() => {
+          onSelect(building.id);
+        }}
+        className="flex flex-1 flex-col p-4 text-left"
+      >
         <div className="flex flex-wrap items-start justify-between gap-2">
           <h2 className="min-w-0 flex-1 text-base font-semibold tracking-tight text-ink">
             {building.name}
@@ -47,7 +53,7 @@ export const AdminBuildingCard = ({ building, onSelect }: AdminBuildingCardProps
             {building.projectName}
           </AdminInventoryCardMetaRow>
         </div>
-      </div>
+      </button>
 
       <div className="mt-auto flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-border px-4 py-3">
         <AdminInventoryCardStat
@@ -60,7 +66,20 @@ export const AdminBuildingCard = ({ building, onSelect }: AdminBuildingCardProps
           label={t('columns.apartments')}
           value={building.apartmentsCount}
         />
+        <Button
+          type="button"
+          size="sm"
+          variant="secondary"
+          className="ml-auto"
+          onClick={(event) => {
+            event.stopPropagation();
+            onOpenReadiness(building);
+          }}
+        >
+          <ClipboardCheck className="size-3.5" aria-hidden />
+          {t('readiness')}
+        </Button>
       </div>
-    </button>
+    </div>
   );
 };

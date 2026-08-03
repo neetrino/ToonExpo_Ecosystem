@@ -1,5 +1,5 @@
-import { ApiPropertyOptional } from "@nestjs/swagger";
-import { Type } from "class-transformer";
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   IsBoolean,
   IsEnum,
@@ -11,11 +11,8 @@ import {
   Min,
   MinLength,
   ValidateIf,
-} from "class-validator";
-import {
-  ReadinessAssessmentTargetType,
-  ReadinessScoreStatus,
-} from "@toonexpo/db";
+} from 'class-validator';
+import { ReadinessAssessmentTargetType, ReadinessScoreStatus } from '@toonexpo/db';
 
 import {
   READINESS_DEFAULT_PAGE_SIZE,
@@ -23,19 +20,19 @@ import {
   READINESS_MIN_PAGE,
   READINESS_SCORE_MAX,
   READINESS_SCORE_MIN,
-} from "../../readiness.constants.js";
+} from '../../readiness.constants.js';
 
 enum ReadinessAssessmentTargetTypeDto {
-  builder_company = "builder_company",
-  project = "project",
+  builder_company = 'builder_company',
+  project = 'project',
 }
 
 enum ReadinessScoreStatusDto {
-  not_started = "not_started",
-  needs_improvement = "needs_improvement",
-  in_progress = "in_progress",
-  ready = "ready",
-  blocked = "blocked",
+  not_started = 'not_started',
+  needs_improvement = 'needs_improvement',
+  in_progress = 'in_progress',
+  ready = 'ready',
+  blocked = 'blocked',
 }
 
 export class ListReadinessAssessmentsQueryDto {
@@ -60,6 +57,12 @@ export class ListReadinessAssessmentsQueryDto {
   @MinLength(1)
   builderCompanyId?: string;
 
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MinLength(1)
+  projectId?: string;
+
   @ApiPropertyOptional({ enum: ReadinessAssessmentTargetTypeDto })
   @IsOptional()
   @IsEnum(ReadinessAssessmentTargetTypeDto)
@@ -80,7 +83,7 @@ export class CreateReadinessAssessmentDto {
   @MinLength(1)
   builderCompanyId!: string;
 
-  @ValidateIf((dto: CreateReadinessAssessmentDto) => dto.targetType === "project")
+  @ValidateIf((dto: CreateReadinessAssessmentDto) => dto.targetType === 'project')
   @IsString()
   @MinLength(1)
   projectId?: string;

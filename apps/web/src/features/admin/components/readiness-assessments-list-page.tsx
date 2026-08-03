@@ -1,17 +1,16 @@
 'use client';
 
+import type { ReadinessAssessmentListItem } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
 
 import { ReadinessAssessmentsTable } from '@/features/admin/components/readiness-assessments-table';
-import {
-  applyReadinessAssessmentFilterKey,
-  buildReadinessAssessmentFilterConfigs,
-  EMPTY_READINESS_ASSESSMENT_FILTERS,
-  readinessAssessmentFiltersToRecord,
-} from '@/features/admin/components/readiness-assessment-filters';
 import { ReadinessCreateAssessmentSheet } from '@/features/admin/components/readiness-create-assessment-sheet';
+import {
+  ReadinessManagementModal,
+  type ReadinessManagementTarget,
+} from '@/features/admin/components/readiness-management-modal';
 import { ADMIN_COMPANIES_MAX_PAGE_SIZE, ADMIN_VIEW_MODE_KEYS } from '@/features/admin/constants';
 import { useAdminCompaniesQuery } from '@/features/admin/hooks/use-admin-companies';
 import { useAdminReadinessAssessmentsQuery } from '@/features/admin/hooks/use-admin-readiness';
@@ -21,7 +20,7 @@ import { Link } from '@/i18n/navigation';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { Button } from '@/shared/ui/button';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
-import { ListPageHeader } from '@/shared/ui/list-page-header';
+import { EmptyState } from '@/shared/ui/empty-state';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
 const parsePage = (raw: string | null): number => {
@@ -33,27 +32,25 @@ const parsePage = (raw: string | null): number => {
 };
 
 /**
- * Admin readiness assessments list with filters and create side sheet.
+ * Admin readiness assessments list — opens scoring in a modal.
  */
 export const ReadinessAssessmentsListPage = () => {
   const t = useTranslations('Admin.readiness.assessments');
-  const tCommon = useTranslations('Common.integratedSearch');
+  const tDetail = useTranslations('Admin.readiness.detail');
   const searchParams = useSearchParams();
   const page = parsePage(searchParams.get('page'));
   const [showCreate, setShowCreate] = useState(false);
+  const [companyId, setCompanyId] = useState('');
+  const [modalTarget, setModalTarget] = useState<ReadinessManagementTarget | null>(null);
   const { viewMode, effectiveViewMode, setViewMode } = usePersistedViewMode(
     ADMIN_VIEW_MODE_KEYS.readinessAssessments,
   );
-  const [search, setSearch] = useState('');
-  const [filters, setFilters] = useState(EMPTY_READINESS_ASSESSMENT_FILTERS);
 
   const companiesQuery = useAdminCompaniesQuery(1, ADMIN_COMPANIES_MAX_PAGE_SIZE);
   const assessmentsQuery = useAdminReadinessAssessmentsQuery({
     page,
     pageSize: READINESS_DEFAULT_PAGE_SIZE,
-    ...(filters.companyId ? { builderCompanyId: filters.companyId } : {}),
-    ...(filters.targetType ? { targetType: filters.targetType } : {}),
-    ...(filters.status ? { status: filters.status } : {}),
+    ...(companyId ? { builderCompanyId: companyId } : {}),
   });
 
   const companyLookup = useMemo(() => {
@@ -64,29 +61,16 @@ export const ReadinessAssessmentsListPage = () => {
     return map;
   }, [companiesQuery.data]);
 
-  const companyOptions = useMemo(
-    () =>
-      (companiesQuery.data?.data ?? []).map((company) => ({
-        id: company.id,
-        name: company.name,
-      })),
-    [companiesQuery.data],
-  );
-
-  const filterConfigs = useMemo(
-    () =>
-      buildReadinessAssessmentFilterConfigs(companyOptions, {
-        company: t('filters.company'),
-        allCompanies: t('filters.allCompanies'),
-        targetType: t('filters.targetType'),
-        allTargets: t('filters.allTargets'),
-        status: t('filters.status'),
-        allStatuses: t('filters.allStatuses'),
-        targetTypeOption: (type) => t(`filters.targetTypes.${type}`),
-        statusOption: (status) => t(`filters.statuses.${status}`),
-      }),
-    [companyOptions, t],
-  );
+  const openAssessment = (assessment: ReadinessAssessmentListItem): void => {
+    const companyName =
+      companyLookup.get(assessment.builderCompanyId) ?? assessment.builderCompanyId;
+    const targetLabel = tDetail(`targetTypes.${assessment.targetType}`);
+    setModalTarget({
+      kind: 'assessment',
+      assessmentId: assessment.id,
+      subtitle: `${companyName} · ${targetLabel}`,
+    });
+  };
 
   if (assessmentsQuery.isLoading || companiesQuery.isLoading) {
     return <p className="text-sm text-ink-secondary">{t('loading')}</p>;
@@ -101,6 +85,8 @@ export const ReadinessAssessmentsListPage = () => {
   }
 
   const response = assessmentsQuery.data;
+  const visibleAssessments = response.data.filter((item) => item.archivedAt === null);
+
   const buildHref = (nextPage: number): string => {
     const params = new URLSearchParams();
     if (nextPage > 1) {
@@ -112,53 +98,67 @@ export const ReadinessAssessmentsListPage = () => {
 
   return (
     <div className="flex flex-col gap-6">
-      <ListPageHeader
-        title={t('title')}
-        subtitle={t('subtitle', { count: response.meta.total })}
-        search={search}
-        searchPlaceholder={tCommon('searchPlaceholder')}
-        searchAriaLabel={tCommon('searchLabel')}
-        searchClassName="w-full max-w-none md:min-w-[10rem] md:max-w-[14rem] md:flex-none md:w-auto"
-        filters={filterConfigs}
-        filterValues={readinessAssessmentFiltersToRecord(filters)}
-        onSearchChange={setSearch}
-        onFilterChange={(key, value) => {
-          setFilters((prev) => applyReadinessAssessmentFilterKey(prev, key, value));
-        }}
-        onClearAll={() => {
-          setFilters(EMPTY_READINESS_ASSESSMENT_FILTERS);
-        }}
-        actions={
-          <div className="flex w-full basis-full items-center gap-2 md:w-auto md:basis-auto">
-            <ViewModeToggle value={viewMode} onChange={setViewMode} />
-            <Link
-              href="/admin/readiness/categories"
-              className="inline-flex h-9 flex-1 items-center justify-center rounded-[15px] border border-border-strong px-4 text-sm font-medium text-ink hover:bg-surface md:flex-none"
-            >
-              {t('categoriesLink')}
-            </Link>
-            <Button
-              type="button"
-              size="sm"
-              variant="secondary"
-              className="shrink-0"
-              onClick={() => {
-                setShowCreate(true);
-              }}
-            >
-              <AddActionLabel>{t('newAssessment')}</AddActionLabel>
-            </Button>
-          </div>
-        }
-      />
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex flex-col gap-1">
+          <h1 className="text-page-title text-ink">{t('title')}</h1>
+          <p className="max-w-xl text-sm text-ink-secondary">{t('guide')}</p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <ViewModeToggle value={viewMode} onChange={setViewMode} />
+          <Button
+            type="button"
+            size="sm"
+            variant="secondary"
+            onClick={() => {
+              setShowCreate(true);
+            }}
+          >
+            <AddActionLabel>{t('newAssessment')}</AddActionLabel>
+          </Button>
+        </div>
+      </div>
 
-      {response.data.length === 0 ? (
-        <p className="text-sm text-ink-secondary">{t('empty')}</p>
+      <div className="flex flex-wrap items-center gap-3">
+        <label className="flex min-w-[12rem] flex-1 flex-col gap-1 text-sm text-ink sm:max-w-xs">
+          <span className="text-ink-secondary">{t('filters.company')}</span>
+          <select
+            className="h-10 rounded-sm border border-border bg-background px-3 text-sm text-ink"
+            value={companyId}
+            onChange={(event) => {
+              setCompanyId(event.target.value);
+            }}
+          >
+            <option value="">{t('filters.allCompanies')}</option>
+            {(companiesQuery.data?.data ?? []).map((company) => (
+              <option key={company.id} value={company.id}>
+                {company.name}
+              </option>
+            ))}
+          </select>
+        </label>
+        <Link
+          href="/admin/readiness/categories"
+          className="text-sm text-ink-secondary underline-offset-2 hover:text-ink hover:underline"
+        >
+          {t('categoriesLink')}
+        </Link>
+      </div>
+
+      {visibleAssessments.length === 0 ? (
+        <EmptyState
+          title={t('emptyTitle')}
+          description={t('empty')}
+          actionLabel={t('newAssessment')}
+          onAction={() => {
+            setShowCreate(true);
+          }}
+        />
       ) : (
         <ReadinessAssessmentsTable
-          assessments={response.data}
+          assessments={visibleAssessments}
           companyLookup={companyLookup}
           viewMode={effectiveViewMode}
+          onOpenAssessment={openAssessment}
         />
       )}
 
@@ -176,6 +176,13 @@ export const ReadinessAssessmentsListPage = () => {
         companies={companiesQuery.data?.data ?? []}
         onClose={() => {
           setShowCreate(false);
+        }}
+      />
+
+      <ReadinessManagementModal
+        target={modalTarget}
+        onClose={() => {
+          setModalTarget(null);
         }}
       />
     </div>
