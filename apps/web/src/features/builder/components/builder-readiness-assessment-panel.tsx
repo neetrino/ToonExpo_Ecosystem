@@ -4,10 +4,14 @@ import type {
   PortalReadinessAssessmentItem,
   PortalReadinessCriterionItem,
   PortalReadinessRequiredActionItem,
+  PortalReadinessScoreItem,
 } from '@toonexpo/contracts';
 import { useLocale, useTranslations } from 'next-intl';
 
-import { BuilderReadinessCriteriaBlock } from '@/features/builder/components/builder-readiness-criteria-block';
+import {
+  BuilderReadinessCategoryHelp,
+  BuilderReadinessCriteriaBlock,
+} from '@/features/builder/components/builder-readiness-criteria-block';
 import {
   scorePercent,
   toneForStatus,
@@ -15,8 +19,10 @@ import {
 import { ReadinessProgressRing } from '@/features/readiness/components/readiness-progress-ring';
 import { ReadinessStatusBadge } from '@/features/readiness/components/readiness-status-badge';
 import { formatReadinessDate } from '@/features/readiness/utils/format-readiness-date';
-import { Card } from '@/shared/ui/card';
 import { cn } from '@/shared/ui/cn';
+
+/** Groups that display as Yes/No list in Partners-style UI. */
+const FLAG_GROUP_CODES = new Set(['payment_methods']);
 
 const ACTION_PRIORITY: Record<PortalReadinessRequiredActionItem['status'], number> = {
   open: 0,
@@ -42,11 +48,18 @@ const actionToneClass = (status: PortalReadinessRequiredActionItem['status']): s
   return 'bg-danger/10 text-danger';
 };
 
+type CriteriaBlock = {
+  key: string;
+  title: string;
+  items: PortalReadinessCriterionItem[];
+  preferFlags: boolean;
+};
+
 const collectDisplayBlocks = (
   roots: PortalReadinessCriterionItem[],
   tKpi: (key: string) => string,
-): Array<{ key: string; title: string; items: PortalReadinessCriterionItem[] }> => {
-  const blocks: Array<{ key: string; title: string; items: PortalReadinessCriterionItem[] }> = [];
+): CriteriaBlock[] => {
+  const blocks: CriteriaBlock[] = [];
   const topScored: PortalReadinessCriterionItem[] = [];
 
   for (const root of roots) {
@@ -55,6 +68,7 @@ const collectDisplayBlocks = (
         key: root.criterionId,
         title: tKpi(`criteria.${root.code}`),
         items: root.children,
+        preferFlags: FLAG_GROUP_CODES.has(root.code),
       });
       continue;
     }
@@ -66,10 +80,104 @@ const collectDisplayBlocks = (
       key: 'top-scored',
       title: '',
       items: topScored,
+      preferFlags: false,
     });
   }
 
   return blocks;
+};
+
+const OverviewCard = ({ assessment }: { assessment: PortalReadinessAssessmentItem }) => {
+  const t = useTranslations('Builder.readiness');
+  const tKpi = useTranslations('ReadinessKpi');
+  const overallPercent = scorePercent(assessment.overallScore);
+
+  return (
+    <section className="rounded-[var(--radius-lg)] border border-border/80 bg-surface-elevated p-5 shadow-card sm:p-7">
+      <h3 className="mb-6 text-lg font-semibold tracking-tight text-ink">{t('overallScore')}</h3>
+      <div className="flex flex-col items-center gap-8 lg:flex-row lg:items-center lg:justify-center lg:gap-12">
+        <div className="flex flex-col items-center gap-2">
+          <ReadinessProgressRing
+            percent={overallPercent}
+            size="lg"
+            tone={toneForStatus(assessment.status)}
+            label={`${t('overallScore')}: ${overallPercent}%`}
+          />
+          <p className="text-sm font-medium text-ink-secondary">{t('kpiScoreLabel')}</p>
+        </div>
+
+        <div className="hidden h-32 w-px bg-border lg:block" aria-hidden />
+
+        <div className="flex flex-wrap items-start justify-center gap-8 sm:gap-10">
+          {assessment.scores.map((score) => {
+            const percent = scorePercent(score.score);
+            const label = tKpi(`categories.${score.categoryCode}`);
+            return (
+              <div key={score.categoryId} className="flex w-[5.5rem] flex-col items-center gap-2">
+                <ReadinessProgressRing
+                  percent={percent}
+                  size="md"
+                  tone={toneForStatus(score.status)}
+                  label={`${label}: ${percent}%`}
+                />
+                <p className="text-center text-sm font-semibold text-ink">{label}</p>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const CategorySection = ({ score }: { score: PortalReadinessScoreItem }) => {
+  const t = useTranslations('Builder.readiness');
+  const tKpi = useTranslations('ReadinessKpi');
+  const categoryLabel = tKpi(`categories.${score.categoryCode}`);
+  const blocks = collectDisplayBlocks(score.criteria, (key) => tKpi(key));
+  const percent = scorePercent(score.score);
+
+  if (blocks.length === 0) {
+    return null;
+  }
+
+  return (
+    <section className="flex flex-col gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <h3 className="text-lg font-semibold tracking-tight text-ink">{categoryLabel}</h3>
+          <ReadinessStatusBadge status={score.status} namespace="Builder.readiness" />
+        </div>
+        <div className="flex items-baseline gap-2">
+          <span className="text-xl font-semibold tabular-nums text-ink">{percent}%</span>
+          {score.categoryWeight !== null ? (
+            <span className="text-xs text-ink-muted">
+              {t('categoryWeight', { weight: score.categoryWeight })}
+            </span>
+          ) : null}
+        </div>
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        {blocks.map((block) => (
+          <BuilderReadinessCriteriaBlock
+            key={block.key}
+            title={block.title}
+            items={block.items}
+            preferFlags={block.preferFlags}
+          />
+        ))}
+      </div>
+
+      <BuilderReadinessCategoryHelp
+        categoryName={categoryLabel}
+        status={score.status}
+        helpAvailable={score.helpAvailable}
+        serviceProviderCategoryId={score.serviceProviderCategoryId}
+        recommendationSummary={score.recommendationSummary}
+      />
+    </section>
+  );
 };
 
 type BuilderReadinessAssessmentPanelProps = {
@@ -77,117 +185,52 @@ type BuilderReadinessAssessmentPanelProps = {
 };
 
 /**
- * Builder readiness panel matching Toon Partners listing KPI layout.
+ * Builder readiness — Partners KPI layout + ToonExpo design + portal functionality.
  */
 export const BuilderReadinessAssessmentPanel = ({
   assessment,
 }: BuilderReadinessAssessmentPanelProps) => {
   const t = useTranslations('Builder.readiness');
-  const tKpi = useTranslations('ReadinessKpi');
   const locale = useLocale();
-  const overallPercent = scorePercent(assessment.overallScore);
   const title = assessment.projectName ?? t('companyAssessment');
   const sortedActions = [...assessment.requiredActions].sort(
     (a, b) => ACTION_PRIORITY[a.status] - ACTION_PRIORITY[b.status],
   );
 
   return (
-    <div className="flex flex-col gap-5">
-      <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-8">
+      <header className="flex flex-col gap-2">
         <div className="flex flex-wrap items-center gap-2">
           <ReadinessStatusBadge status={assessment.status} namespace="Builder.readiness" />
-          <span className="text-xs text-ink-muted">
+          <span className="text-xs font-medium tracking-wide text-ink-muted uppercase">
             {t(`targetTypes.${assessment.targetType}`)}
           </span>
         </div>
-        <h2 className="text-2xl font-semibold tracking-tight text-ink">{title}</h2>
+        <h2 className="font-display text-2xl font-semibold tracking-tight text-ink-navy sm:text-3xl">
+          {title}
+        </h2>
         <p className="text-sm text-ink-secondary">
           {t('lastUpdated')}: {formatReadinessDate(assessment.lastEvaluatedAt, locale)}
         </p>
+      </header>
+
+      <OverviewCard assessment={assessment} />
+
+      <div className="flex flex-col gap-8">
+        {assessment.scores.map((score) => (
+          <CategorySection key={score.categoryId} score={score} />
+        ))}
       </div>
 
-      <Card variant="elevated" padding="lg" className="overflow-hidden">
-        <h3 className="mb-5 text-lg font-semibold text-ink">{t('overallScore')}</h3>
-        <div className="flex flex-col items-center gap-8 lg:flex-row lg:justify-center lg:gap-10">
-          <div className="flex flex-col items-center gap-2">
-            <ReadinessProgressRing
-              percent={overallPercent}
-              size="lg"
-              tone={toneForStatus(assessment.status)}
-              label={`${t('overallScore')}: ${overallPercent}%`}
-            />
-            <p className="text-sm font-medium text-ink-secondary">{t('overallScore')}</p>
-          </div>
-
-          <div className="hidden h-28 w-px bg-border lg:block" aria-hidden />
-
-          <div className="flex flex-wrap items-start justify-center gap-6 sm:gap-8">
-            {assessment.scores.map((score) => {
-              const percent = scorePercent(score.score);
-              const label = tKpi(`categories.${score.categoryCode}`);
-              return (
-                <div key={score.categoryId} className="flex w-24 flex-col items-center gap-2">
-                  <ReadinessProgressRing
-                    percent={percent}
-                    size="md"
-                    tone={toneForStatus(score.status)}
-                    label={`${label}: ${percent}%`}
-                  />
-                  <p className="text-center text-sm font-medium text-ink">{label}</p>
-                  {score.categoryWeight !== null ? (
-                    <p className="text-xs text-ink-muted">
-                      {t('categoryWeight', { weight: score.categoryWeight })}
-                    </p>
-                  ) : null}
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      </Card>
-
-      {assessment.scores.map((score) => {
-        const categoryLabel = tKpi(`categories.${score.categoryCode}`);
-        const blocks = collectDisplayBlocks(score.criteria, (key) => tKpi(key));
-        if (blocks.length === 0) {
-          return null;
-        }
-
-        return (
-          <section key={score.categoryId} className="flex flex-col gap-4">
-            <div className="flex flex-wrap items-end justify-between gap-2">
-              <h3 className="text-lg font-semibold text-ink">{categoryLabel}</h3>
-              <p className="text-sm tabular-nums text-ink-secondary">
-                {scorePercent(score.score)}%
-              </p>
-            </div>
-            <div className="grid gap-4 lg:grid-cols-2">
-              {blocks.map((block) => (
-                <BuilderReadinessCriteriaBlock
-                  key={block.key}
-                  title={block.title}
-                  items={block.items}
-                />
-              ))}
-            </div>
-            {score.recommendationSummary ? (
-              <p className="text-sm leading-relaxed text-ink-secondary">
-                {score.recommendationSummary}
-              </p>
-            ) : null}
-          </section>
-        );
-      })}
-
       {sortedActions.length > 0 ? (
-        <Card variant="elevated" padding="md">
+        <section className="rounded-[var(--radius-md)] border border-border/80 bg-surface-elevated p-5 shadow-card">
           <h3 className="mb-1 text-base font-semibold text-ink">{t('requiredActionsTitle')}</h3>
           <p className="mb-4 text-sm text-ink-secondary">{t('requiredActionsHint')}</p>
           <ul className="flex flex-col gap-3">
             {sortedActions.map((action) => (
               <li
                 key={action.id}
-                className="flex flex-col gap-1 rounded-md border border-border/70 px-4 py-3"
+                className="flex flex-col gap-1 rounded-[var(--radius-sm)] border border-border/70 bg-canvas/40 px-4 py-3"
               >
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <p className="text-sm font-semibold text-ink">{action.title}</p>
@@ -206,11 +249,11 @@ export const BuilderReadinessAssessmentPanel = ({
               </li>
             ))}
           </ul>
-        </Card>
+        </section>
       ) : null}
 
       {assessment.recommendations.length > 0 ? (
-        <Card variant="elevated" padding="md">
+        <section className="rounded-[var(--radius-md)] border border-border/80 bg-surface-elevated p-5 shadow-card">
           <h3 className="mb-1 text-base font-semibold text-ink">{t('recommendationsTitle')}</h3>
           <p className="mb-4 text-sm text-ink-secondary">{t('recommendationsHint')}</p>
           <ul className="flex flex-col gap-3">
@@ -223,7 +266,7 @@ export const BuilderReadinessAssessmentPanel = ({
               </li>
             ))}
           </ul>
-        </Card>
+        </section>
       ) : null}
     </div>
   );

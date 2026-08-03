@@ -3375,6 +3375,7 @@
       "empty": "Readiness has not been evaluated yet. Your evaluator will publish guidance here when ready.",
       "companyAssessment": "Company readiness",
       "overallScore": "Overall score",
+      "kpiScoreLabel": "Readiness score",
       "overallHints": {
         "strong": "You are in good shape. Keep the remaining items current before the event.",
         "progress": "Solid progress. Focus on the weaker categories below to raise your score.",
