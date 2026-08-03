@@ -20,8 +20,8 @@ Scale target: ~200–300 objects now, up to ~1000 buildings long-term.
 
 - **MapLibre GL** (OSM vector tiles) — basemap, OSM building pick/hide, camera
   only; free, no tokens.
-- **Three.js MapLibre custom layer(s)** — all custom 3D content (GLB buildings
-  now; cars / vegetation / animations later). Orientation matches the proven
+- **Three.js MapLibre custom layer(s)** — all custom 3D content (GLB buildings,
+  park vegetation, sparse traffic). Orientation matches the proven
   Manvel-Lambaryan/Map POC matrix:
   `camera.projectionMatrix = mainMatrix * translate(mercator)
   - scale(s, -s, s) * rotX * rotY * rotZ`with`DEFAULT_MODEL_ROTATION_X_DEG = 90` (`pitchDeg`↔ Rotation X,`headingDeg`↔ Y,`rollDeg`↔ Z). See`apps/web/src/features/geo-map/three/`.
@@ -44,12 +44,28 @@ attach a project later. Hide uses `sourceOsmId` filter when available, plus the
 existing distance mask. Publish requires an attached project; public list is
 `isPublished && projectId != null`.
 
-### Future polish backlog (not in current scope)
+### Visual polish (implemented)
 
-- Sparse cars / vegetation / animations as additional Three.js custom layers
-  under `apps/web/src/features/geo-map/three/` (same MapLibre custom-layer
-  architecture — see `three/index.ts` extension point).
+Atmosphere, vegetation, and sparse traffic ship as MapLibre style polish +
+additional Three.js custom layers (see `three/index.ts`):
+
+- **Atmosphere / roof lighting** — daytime sky + fog + map light + height-tinted
+  extrusions (`utils/apply-map-atmosphere.ts`). Wired on map load after brand
+  style.
+- **Vegetation** — zoom-gated park trees + grass (`vegetation/`,
+  `three/vegetation-layer.ts`). Gates: trees `minZoom ≥ 16` + pitch ≥ 28°;
+  grass `minZoom ≥ 17.5` + pitch ≥ 35°; medium quality ≤ 450 trees / ≤ 280
+  grass; wind off; park POI symbols hidden when active.
+- **Sparse traffic** — vector-tile roads only, no Overpass
+  (`traffic/`, `three/vehicle-layer.ts`). Gates: visible at zoom ≥ 17 (or
+  pitch ≥ 50° and zoom ≥ 16.5); animate at zoom ≥ 17.5; max 16 cars; pause when
+  tab hidden.
+
+### Future polish backlog
+
 - Yerevan pink-tuff brand paint on the basemap.
+- Optional time-of-day / weather atmosphere presets (daytime default is enough).
+- Tree wind animation at zoom ≥ 18 (currently off for jank avoidance).
 
 ## Data model (packages/db)
 

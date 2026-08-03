@@ -5,11 +5,11 @@ import {
   DoubleSide,
   Group,
   LoadingManager,
-  Mesh,
   MeshStandardMaterial,
   SRGBColorSpace,
   TextureLoader,
   Vector3,
+  type Mesh,
   type Object3D,
   type Texture,
 } from 'three';

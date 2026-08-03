@@ -8,11 +8,11 @@ import {
   AmbientLight,
   Camera,
   DirectionalLight,
-  Group,
   Matrix4,
   Scene,
   Vector3,
   WebGLRenderer,
+  type Group,
 } from 'three';
 
 import { cloneCarModel, preloadCarTemplates } from '@/features/geo-map/traffic/load-car-models';
