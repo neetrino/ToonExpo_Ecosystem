@@ -12,6 +12,9 @@ const HIGHLIGHT_FILL_OPACITY = 0.35;
 const HIGHLIGHT_LINE_COLOR = '#67e8f9';
 const HIGHLIGHT_LINE_WIDTH = 3;
 
+/** Last geometry successfully written to the highlight source (reference equality). */
+const lastAppliedHighlightByMap = new WeakMap<MapLibreMap, BuildingGeometry | null>();
+
 const emptyCollection = (): FeatureCollection => ({
   type: 'FeatureCollection',
   features: [],
@@ -55,11 +58,19 @@ export const ensureOsmHighlightLayers = (map: MapLibreMap): void => {
   }
 };
 
-/** Updates (or clears) the cyan OSM footprint highlight. */
+/**
+ * Updates (or clears) the cyan OSM footprint highlight.
+ * Skips when the requested geometry is reference-equal to the last applied
+ * value. Early returns while the style is unloaded do not record, so idle
+ * retries can succeed.
+ */
 export const setOsmHighlightedBuilding = (
   map: MapLibreMap,
   geometry: BuildingGeometry | null,
 ): void => {
+  if (lastAppliedHighlightByMap.get(map) === geometry) {
+    return;
+  }
   if (!map.isStyleLoaded()) {
     return;
   }
@@ -72,6 +83,7 @@ export const setOsmHighlightedBuilding = (
 
   if (!geometry) {
     source.setData(emptyCollection());
+    lastAppliedHighlightByMap.set(map, null);
     return;
   }
 
@@ -85,10 +97,12 @@ export const setOsmHighlightedBuilding = (
       },
     ],
   });
+  lastAppliedHighlightByMap.set(map, geometry);
 };
 
 /** Removes highlight layers/source (style reload / unmount cleanup). */
 export const removeOsmHighlightLayers = (map: MapLibreMap): void => {
+  lastAppliedHighlightByMap.delete(map);
   if (map.getLayer(OSM_HIGHLIGHT_LINE_LAYER_ID)) {
     map.removeLayer(OSM_HIGHLIGHT_LINE_LAYER_ID);
   }

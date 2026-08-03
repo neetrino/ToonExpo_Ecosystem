@@ -106,7 +106,14 @@ export const useOsmBuildingPick = ({
     if (!map || !isMapLoaded || !enabled) {
       return;
     }
-    setOsmHighlightedBuilding(map, selectedBuilding?.geometry ?? null);
+    const applyHighlight = (): void => {
+      setOsmHighlightedBuilding(map, selectedBuilding?.geometry ?? null);
+    };
+    applyHighlight();
+    map.on('idle', applyHighlight);
+    return () => {
+      map.off('idle', applyHighlight);
+    };
   }, [map, isMapLoaded, enabled, selectedBuilding]);
 
   useEffect(() => {

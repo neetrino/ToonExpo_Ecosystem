@@ -270,6 +270,21 @@ export const syncPreservedOsmSiblingParts = (
   }
 };
 
+/**
+ * True when the preserved-sibling GeoJSON source exists and MapLibre has finished
+ * loading it — used to defer `building-3d` filters until siblings can paint.
+ */
+export const isPreservedOsmPartsSourceReady = (map: MapLibreMap): boolean => {
+  if (!map.getSource(PRESERVED_OSM_PARTS_SOURCE_ID)) {
+    return false;
+  }
+  try {
+    return map.isSourceLoaded(PRESERVED_OSM_PARTS_SOURCE_ID);
+  } catch {
+    return false;
+  }
+};
+
 /** Removes preserved-sibling layers/source (style reload / unmount). */
 export const removePreservedOsmSiblingParts = (map: MapLibreMap): void => {
   if (map.getLayer(PRESERVED_OSM_PARTS_LAYER_ID)) {

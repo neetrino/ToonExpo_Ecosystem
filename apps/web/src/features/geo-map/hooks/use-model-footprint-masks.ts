@@ -17,8 +17,9 @@ export type UseModelFootprintMasksOptions = {
 
 /**
  * Keeps the OSM `building-3d` hide filter and preserved-sibling restoration in
- * sync with visible models. Re-runs on map `idle` because sibling lookup needs
- * vector tiles that may finish loading after the React state settled.
+ * sync with visible models. Re-runs on map `idle` so sibling lookup can wait for
+ * vector tiles and so a deferred filter (gated on preserved-parts source load)
+ * is retried once siblings are ready to paint.
  */
 export const useModelFootprintMasks = ({
   map,

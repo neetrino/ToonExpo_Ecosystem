@@ -18,6 +18,7 @@ import {
 } from '@/features/geo-map/utils/geo-map-update-signatures';
 import {
   collectPreservedOsmSiblingParts,
+  isPreservedOsmPartsSourceReady,
   syncPreservedOsmSiblingParts,
 } from '@/features/geo-map/utils/sync-preserved-osm-parts';
 
@@ -37,9 +38,9 @@ const removeLegacyCoveragePads = (map: MapLibreMap): void => {
  * identity (feature id / osm_id) with a tight distance fallback, and restores
  * MultiPolygon sibling rings so one hide never wipes a whole block.
  *
- * The filter is signature-guarded; sibling restoration always re-runs because
- * vector tiles may finish loading after the filter was applied (call this from
- * both React state changes and the map `idle` event).
+ * Sibling GeoJSON is synced first; the `building-3d` filter is applied only when
+ * no siblings are required or the preserved-parts source is loaded — otherwise
+ * the signature stays unset so the next map `idle` retry can apply it.
  */
 export const syncModelFootprintMasks = (
   map: MapLibreMap,
@@ -50,27 +51,35 @@ export const syncModelFootprintMasks = (
     return;
   }
 
-  const signature = `${buildFootprintMaskSignature(modelObjects)}|${buildAdminOsmHideSignature(adminOsmHide)}`;
-  if (lastMaskSignatureByMap.get(map) !== signature) {
-    removeLegacyCoveragePads(map);
-
-    const targets = [
-      ...modelObjects.map(modelToOsmBuildingHideTarget),
-      ...(adminOsmHide?.hiddenBuildings ?? []),
-    ];
-    const filter = buildOsmBuildingHideFilter(targets, {
-      scopeRadiusMeters: OSM_BUILDING_HIDE_SCOPE_RADIUS_METERS,
-      fallbackRadiusMeters: MODEL_FOOTPRINT_MASK_RADIUS_METERS,
-    });
-
-    map.setFilter(OSM_BUILDING_EXTRUSION_LAYER_ID, (filter ?? null) as FilterSpecification | null);
-    lastMaskSignatureByMap.set(map, signature);
-  }
-
   const preservedParts = collectPreservedOsmSiblingParts(
     map,
     modelObjects,
     adminOsmHide?.hiddenBuildings ?? [],
   );
   syncPreservedOsmSiblingParts(map, preservedParts);
+
+  const signature = `${buildFootprintMaskSignature(modelObjects)}|${buildAdminOsmHideSignature(adminOsmHide)}`;
+  if (lastMaskSignatureByMap.get(map) === signature) {
+    return;
+  }
+
+  removeLegacyCoveragePads(map);
+
+  const targets = [
+    ...modelObjects.map(modelToOsmBuildingHideTarget),
+    ...(adminOsmHide?.hiddenBuildings ?? []),
+  ];
+  const filter = buildOsmBuildingHideFilter(targets, {
+    scopeRadiusMeters: OSM_BUILDING_HIDE_SCOPE_RADIUS_METERS,
+    fallbackRadiusMeters: MODEL_FOOTPRINT_MASK_RADIUS_METERS,
+  });
+
+  const canApplyFilter =
+    preservedParts.length === 0 || isPreservedOsmPartsSourceReady(map);
+  if (!canApplyFilter) {
+    return;
+  }
+
+  map.setFilter(OSM_BUILDING_EXTRUSION_LAYER_ID, (filter ?? null) as FilterSpecification | null);
+  lastMaskSignatureByMap.set(map, signature);
 };
