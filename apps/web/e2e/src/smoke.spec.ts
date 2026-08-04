@@ -269,7 +269,7 @@ test.describe('smoke', () => {
   test('language switch hy → ru', async ({ page }) => {
     await page.goto('/hy');
     const languageButton = page.getByRole('button', { name: 'Լեզու' }).first();
-    await languageButton.hover();
+    await languageButton.click();
     await expect(page.getByRole('listbox', { name: 'Լեզու' })).toBeVisible();
     await page.getByRole('option', { name: 'Русский' }).click();
     await expect(page).toHaveURL(/\/ru(\/|$)/);
