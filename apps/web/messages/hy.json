@@ -654,6 +654,11 @@
       "backToProject": "← Վերադառնալ նախագծին",
       "notFoundTitle": "Շենքը չի գտնվել"
     },
+    "district": {
+      "backToProject": "← Վերադառնալ նախագծին",
+      "notFoundTitle": "Թաղամասը չի գտնվել",
+      "fallbackTitle": "Թաղամասի քարտեզ"
+    },
     "floor": {
       "apartments": "Բնակարաններ",
       "noApartments": "Դեռ հրապարակված բնակարաններ չկան։",

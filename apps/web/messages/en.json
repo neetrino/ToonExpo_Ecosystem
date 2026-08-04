@@ -654,6 +654,11 @@
       "backToProject": "← Back to project",
       "notFoundTitle": "Building not found"
     },
+    "district": {
+      "backToProject": "← Back to project",
+      "notFoundTitle": "District not found",
+      "fallbackTitle": "District map"
+    },
     "floor": {
       "apartments": "Apartments",
       "noApartments": "No published apartments yet.",

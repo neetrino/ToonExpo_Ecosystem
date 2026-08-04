@@ -654,6 +654,11 @@
       "backToProject": "← К проекту",
       "notFoundTitle": "Корпус не найден"
     },
+    "district": {
+      "backToProject": "← К проекту",
+      "notFoundTitle": "Район не найден",
+      "fallbackTitle": "Карта района"
+    },
     "floor": {
       "apartments": "Квартиры",
       "noApartments": "Пока нет опубликованных квартир.",
