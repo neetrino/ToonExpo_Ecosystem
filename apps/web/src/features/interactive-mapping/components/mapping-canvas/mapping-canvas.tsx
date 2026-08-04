@@ -1,6 +1,7 @@
 'use client';
 
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { bandPolygonFromEdge, pointerToNormalized, type NormPoint } from '../../utils/mapping-math';
 import { type PolygonShape } from '../../utils/curved-polygon';
 import { getContainedImageBounds } from '../../utils/coordinates';
@@ -40,6 +41,7 @@ export const MappingCanvas = forwardRef<MappingCanvasHandle, MappingCanvasProps>
     },
     ref,
   ) {
+    const tCanvas = useTranslations('Admin.interactiveMapping.canvas');
     const viewportRef = useRef<HTMLDivElement>(null);
     const [mode, setMode] = useState<EditorMode>('select');
     const [draftPoints, setDraftPoints] = useState<NormPoint[]>([]);
