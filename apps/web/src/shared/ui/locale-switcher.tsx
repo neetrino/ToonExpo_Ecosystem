@@ -47,13 +47,13 @@ const LocaleSwitcherFallback = ({ tone = 'light' }: LocaleSwitcherProps) => {
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1 text-sm font-medium leading-5',
+        'inline-flex items-center gap-1 rounded-[10px] px-2.5 py-1.5 text-sm font-medium leading-5',
         isDark ? 'text-on-dark' : 'text-brand-deep',
       )}
       aria-hidden
     >
       <span>{LOCALE_CODE[locale] ?? locale.toUpperCase()}</span>
-      <ChevronDown className="size-3.5 shrink-0 opacity-80" />
+      <ChevronDown className="size-3.5 shrink-0 opacity-70" />
     </span>
   );
 };
@@ -130,12 +130,21 @@ const LocaleSwitcherInner = ({ tone = 'light' }: LocaleSwitcherProps) => {
       <button
         type="button"
         className={cn(
-          'inline-flex items-center gap-1 text-sm font-medium leading-5',
-          'transition-colors duration-[var(--duration-fast)]',
+          'group inline-flex cursor-pointer items-center gap-1 rounded-[10px] px-2.5 py-1.5',
+          'text-sm font-medium leading-5',
+          'transition-[color,background-color,transform,box-shadow] duration-[var(--duration-base)]',
+          'ease-[var(--ease-out-premium)] active:scale-[0.97]',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-deep/30',
+          'disabled:cursor-not-allowed disabled:opacity-60',
           isDark
-            ? 'text-on-dark hover:text-on-dark/90'
-            : 'text-brand-deep hover:text-brand-deep/90',
+            ? cn(
+                'text-on-dark hover:bg-white/12',
+                open && 'bg-white/15 shadow-[inset_0_0_0_1px_rgb(255_255_255/0.18)]',
+              )
+            : cn(
+                'text-brand-deep hover:bg-brand-deep/[0.06]',
+                open && 'bg-brand-deep/[0.08] shadow-[inset_0_0_0_1px_rgb(9_43_68/0.08)]',
+              ),
         )}
         aria-label={t('languageLabel')}
         aria-haspopup="listbox"
@@ -150,8 +159,9 @@ const LocaleSwitcherInner = ({ tone = 'light' }: LocaleSwitcherProps) => {
         <span>{LOCALE_CODE[displayLocale] ?? displayLocale.toUpperCase()}</span>
         <ChevronDown
           className={cn(
-            'size-3.5 shrink-0 opacity-80 transition-transform duration-[var(--duration-fast)]',
-            open && 'rotate-180',
+            'size-3.5 shrink-0 opacity-70 transition-[transform,opacity] duration-[var(--duration-base)]',
+            'ease-[var(--ease-out-premium)] group-hover:opacity-100',
+            open && 'rotate-180 opacity-100',
           )}
           aria-hidden
         />
