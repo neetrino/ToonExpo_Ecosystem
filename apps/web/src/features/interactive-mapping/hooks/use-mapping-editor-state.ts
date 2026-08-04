@@ -229,7 +229,7 @@ export const useMappingEditorState = ({
       if (flushed) {
         return;
       }
-      setMessage('Draw at least one point first');
+      setMessage('Draw at least 3 points to close the polygon');
       return;
     }
     const latest = entitiesRef.current.find((item) => item.id === selected.id) ?? selected;
