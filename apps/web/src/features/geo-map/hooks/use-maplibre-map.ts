@@ -16,6 +16,7 @@ import {
 } from '@/features/geo-map/constants';
 import type { GeoMapLngLat } from '@/features/geo-map/types';
 import { applyBrandMapStyle } from '@/features/geo-map/utils/apply-brand-map-style';
+import { applyMapAtmosphere } from '@/features/geo-map/utils/apply-map-atmosphere';
 import { configureMaplibreWorker } from '@/features/geo-map/utils/configure-maplibre-worker';
 
 export type UseMaplibreMapOptions = {
@@ -87,6 +88,7 @@ const createMapInstance = ({
   });
   mapInstance.on('load', () => {
     applyBrandMapStyle(mapInstance);
+    applyMapAtmosphere(mapInstance);
     mapInstance.resize();
     onLoaded();
     if (easePitchOnIdle) {

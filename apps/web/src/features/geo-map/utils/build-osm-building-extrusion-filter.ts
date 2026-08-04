@@ -1,145 +1,127 @@
 /**
- * Builds a MapLibre filter that hides OSM `building-3d` features near placed
- * models (distance) and/or by stable `osm_id` when known.
+ * Builds the MapLibre filter that hides OSM `building-3d` features under
+ * placed GLB models.
  *
- * Returns `null` when there is nothing to hide (caller should clear the filter).
+ * Key invariant: identity keys are NEVER applied globally. MVT feature ids in
+ * public OpenMapTiles / OpenFreeMap tiles are only unique per tile, so a bare
+ * `["in", ["id"], …]` filter also hid unrelated buildings on other streets
+ * that happened to share the id. Every identity clause is therefore scoped to
+ * a small radius around the placement anchor:
+ *
+ *   hide(feature) = (id matches) AND (feature within scopeRadius of anchor)
+ *
+ * Targets without any identity fall back to a tight distance-only mask.
  */
 
 import type { Point } from 'geojson';
 
-export type OsmExtrusionFilterPoint = {
+import {
+  expandFeatureIdLiterals,
+  parseBuildingHideIdentity,
+} from '@/features/geo-map/utils/building-hide-identity';
+
+/** One building to hide: anchor + best-known identity. */
+export type OsmBuildingHideTarget = {
   longitude: number;
   latitude: number;
+  /** Real OSM id when tiles expose it (stable, but still kept scoped). */
+  osmId?: string | null | undefined;
+  /** MVT feature id — only unique per tile, must stay distance-scoped. */
+  featureId?: string | number | null | undefined;
 };
 
-export type OsmBuildingHideInput = {
-  longitude: number;
-  latitude: number;
-  sourceOsmId?: string | null | undefined;
+export type OsmBuildingHideRadii = {
+  /** Radius that scopes an identity match around the anchor (meters). */
+  scopeRadiusMeters: number;
+  /** Distance-only fallback radius for targets without identity (meters). */
+  fallbackRadiusMeters: number;
 };
 
-/** Admin session hides (no DB) merged into the building-3d filter. */
-export type OsmBuildingExtrusionFilterExtras = {
-  hiddenOsmIds?: readonly string[] | undefined;
-  hiddenDistancePoints?: readonly OsmExtrusionFilterPoint[] | undefined;
-};
-
-type DistanceClause = readonly ['<', readonly ['distance', Point], number];
-type OsmIdExclusion = readonly [
-  '!',
-  readonly [
-    'in',
-    readonly ['to-string', readonly ['get', 'osm_id']],
-    readonly ['literal', string[]],
-  ],
-];
-type DistanceExclusion =
-  readonly ['!', DistanceClause] | readonly ['!', readonly ['any', ...DistanceClause[]]];
-
-export type OsmBuildingExtrusionFilter =
-  | DistanceExclusion
-  | OsmIdExclusion
-  | readonly ['all', ...ReadonlyArray<DistanceExclusion | OsmIdExclusion>];
+/** MapLibre expression fragment (structural typing is done by MapLibre itself). */
+export type OsmBuildingHideExpression = readonly unknown[];
 
 const distanceBelowRadius = (
   longitude: number,
   latitude: number,
   radiusMeters: number,
-): DistanceClause => [
-  '<',
-  [
-    'distance',
-    {
-      type: 'Point',
-      coordinates: [longitude, latitude],
-    },
-  ],
-  radiusMeters,
+): OsmBuildingHideExpression => {
+  const point: Point = { type: 'Point', coordinates: [longitude, latitude] };
+  return ['<', ['distance', point], radiusMeters];
+};
+
+const osmIdMatch = (osmId: string): OsmBuildingHideExpression => [
+  '==',
+  ['to-string', ['get', 'osm_id']],
+  osmId,
 ];
 
-const buildDistanceExclusion = (
-  points: readonly OsmExtrusionFilterPoint[],
-  radiusMeters: number,
-): DistanceExclusion | null => {
-  if (points.length === 0) {
+const featureIdMatch = (featureId: string | number): OsmBuildingHideExpression | null => {
+  const literals = expandFeatureIdLiterals([featureId]);
+  if (literals.length === 0) {
     return null;
   }
+  return ['in', ['id'], ['literal', literals]];
+};
 
-  if (points.length === 1) {
-    const only = points[0];
-    if (!only) {
-      return null;
+/**
+ * Converts a stored model row into a hide target.
+ * `sourceOsmId` may hold a real OSM id or an encoded `mvt:<featureId>`.
+ */
+export const modelToOsmBuildingHideTarget = (model: {
+  longitude: number;
+  latitude: number;
+  sourceOsmId?: string | null | undefined;
+}): OsmBuildingHideTarget => {
+  const identity = parseBuildingHideIdentity(model.sourceOsmId);
+  return {
+    longitude: model.longitude,
+    latitude: model.latitude,
+    osmId: identity.kind === 'osm-id' ? identity.value : null,
+    featureId: identity.kind === 'feature-id' ? identity.value : null,
+  };
+};
+
+/** Positive match expression for one target (true = feature must be hidden). */
+const buildTargetMatch = (
+  target: OsmBuildingHideTarget,
+  radii: OsmBuildingHideRadii,
+): OsmBuildingHideExpression => {
+  const scope = distanceBelowRadius(target.longitude, target.latitude, radii.scopeRadiusMeters);
+
+  const osmId = target.osmId?.trim();
+  if (osmId) {
+    return ['all', osmIdMatch(osmId), scope];
+  }
+
+  if (target.featureId !== null && target.featureId !== undefined) {
+    const idMatch = featureIdMatch(target.featureId);
+    if (idMatch) {
+      return ['all', idMatch, scope];
     }
-    return ['!', distanceBelowRadius(only.longitude, only.latitude, radiusMeters)];
   }
 
-  const clauses = points.map((point) =>
-    distanceBelowRadius(point.longitude, point.latitude, radiusMeters),
-  ) as [DistanceClause, ...DistanceClause[]];
-
-  return ['!', ['any', ...clauses]];
-};
-
-const buildOsmIdExclusion = (osmIds: readonly string[]): OsmIdExclusion | null => {
-  if (osmIds.length === 0) {
-    return null;
-  }
-  return ['!', ['in', ['to-string', ['get', 'osm_id']], ['literal', [...osmIds]]]];
+  return distanceBelowRadius(target.longitude, target.latitude, radii.fallbackRadiusMeters);
 };
 
 /**
- * Legacy distance-only helper (kept for existing call sites / tests).
+ * Combined hide filter for `building-3d`. Returns `null` when there is nothing
+ * to hide (caller should clear the layer filter).
  */
-export const buildOsmBuildingExtrusionFilter = (
-  points: readonly OsmExtrusionFilterPoint[],
-  radiusMeters: number,
-): OsmBuildingExtrusionFilter | null => {
-  if (radiusMeters <= 0) {
-    throw new Error('radiusMeters must be positive');
+export const buildOsmBuildingHideFilter = (
+  targets: readonly OsmBuildingHideTarget[],
+  radii: OsmBuildingHideRadii,
+): OsmBuildingHideExpression | null => {
+  if (radii.scopeRadiusMeters <= 0 || radii.fallbackRadiusMeters <= 0) {
+    throw new Error('hide radii must be positive');
   }
-  return buildDistanceExclusion(points, radiusMeters);
-};
-
-/**
- * Preferred hide filter: merge `osm_id` exclusions with distance mask around
- * models that lack a stable OSM id (or for all models as a safety net).
- */
-export const buildCombinedOsmBuildingExtrusionFilter = (
-  models: readonly OsmBuildingHideInput[],
-  radiusMeters: number,
-  extras?: OsmBuildingExtrusionFilterExtras,
-): OsmBuildingExtrusionFilter | null => {
-  if (radiusMeters <= 0) {
-    throw new Error('radiusMeters must be positive');
-  }
-
-  const osmIds = [
-    ...new Set(
-      [
-        ...models.map((model) => model.sourceOsmId?.trim()),
-        ...(extras?.hiddenOsmIds ?? []).map((id) => id.trim()),
-      ].filter((id): id is string => Boolean(id && id.length > 0)),
-    ),
-  ];
-
-  // Always keep distance mask for models without osm_id; also keep it for all
-  // anchors so tiles missing osm_id still clear under the GLB.
-  const distancePoints = [
-    ...models.map((model) => ({
-      longitude: model.longitude,
-      latitude: model.latitude,
-    })),
-    ...(extras?.hiddenDistancePoints ?? []),
-  ];
-
-  const distanceFilter = buildDistanceExclusion(distancePoints, radiusMeters);
-  const osmFilter = buildOsmIdExclusion(osmIds);
-
-  if (!distanceFilter && !osmFilter) {
+  if (targets.length === 0) {
     return null;
   }
-  if (distanceFilter && osmFilter) {
-    return ['all', distanceFilter, osmFilter];
+
+  const matches = targets.map((target) => buildTargetMatch(target, radii));
+  const first = matches[0];
+  if (matches.length === 1 && first) {
+    return ['!', first];
   }
-  return distanceFilter ?? osmFilter;
+  return ['!', ['any', ...matches]];
 };

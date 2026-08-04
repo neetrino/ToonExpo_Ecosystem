@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  buildAdminOsmHideSignature,
   buildFootprintMaskSignature,
   buildThreeBuildingLayerSignature,
   buildViewportSignature,
@@ -63,6 +64,20 @@ describe('buildFootprintMaskSignature', () => {
     const base = [{ id: 'a', longitude: 44.51, latitude: 40.18 }];
     const next = [...base, { id: 'b', longitude: 44.52, latitude: 40.19 }];
     expect(buildFootprintMaskSignature(base)).not.toBe(buildFootprintMaskSignature(next));
+  });
+});
+
+describe('buildAdminOsmHideSignature', () => {
+  it('covers only hidden buildings', () => {
+    const hide = {
+      hiddenBuildings: [
+        { longitude: 44.52, latitude: 40.19, featureId: 2, osmId: null },
+        { longitude: 44.51, latitude: 40.18, featureId: 1, osmId: '9' },
+      ],
+    };
+    expect(buildAdminOsmHideSignature(hide)).toBe(buildAdminOsmHideSignature(hide));
+    expect(buildAdminOsmHideSignature(hide)).not.toContain('|sib:');
+    expect(buildAdminOsmHideSignature({ hiddenBuildings: [] })).toBe('hide:empty');
   });
 });
 

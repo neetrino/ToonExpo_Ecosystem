@@ -9,12 +9,23 @@ export type BuildingGeometry =
   | { type: 'Polygon'; coordinates: number[][][] }
   | { type: 'MultiPolygon'; coordinates: number[][][][] };
 
+export type BuildingPolygon = { type: 'Polygon'; coordinates: number[][][] };
+
 export type SelectedOsmBuilding = {
   sourceOsmId: string | null;
+  /** MapLibre vector feature id — primary hide key on OpenFreeMap (often no osm_id). */
+  featureId: string | number | null;
   longitude: number;
   latitude: number;
+  /** Clicked footprint only (never the full MultiPolygon cluster). */
   geometry: BuildingGeometry;
+  extrusionHeightM: number;
+  extrusionMinHeightM: number;
 };
+
+const DEFAULT_EXTRUSION_HEIGHT_M = 12;
+const DEFAULT_EXTRUSION_MIN_HEIGHT_M = 0;
+const METERS_PER_BUILDING_LEVEL = 3;
 
 const OSM_KEYS = ['osm_id', 'osm_way_id', 'OSM_ID', '@id', 'id_osm'] as const;
 
@@ -98,6 +109,16 @@ export const computeFootprintCenter = (geometry: BuildingGeometry): [number, num
 export const isBuildingGeometry = (value: Geometry | null | undefined): value is BuildingGeometry =>
   Boolean(value && (value.type === 'Polygon' || value.type === 'MultiPolygon'));
 
+/** True when the point lies inside the polygon (or any MultiPolygon part). */
+export const buildingGeometryContainsPoint = (
+  longitude: number,
+  latitude: number,
+  geometry: BuildingGeometry,
+): boolean =>
+  geometry.type === 'Polygon'
+    ? pointInPolygonRings(longitude, latitude, geometry.coordinates)
+    : geometry.coordinates.some((polygon) => pointInPolygonRings(longitude, latitude, polygon));
+
 const pointInRing = (longitude: number, latitude: number, ring: number[][]): boolean => {
   let inside = false;
   for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
@@ -178,4 +199,75 @@ export const narrowBuildingGeometryToClick = (
   }
 
   return { type: 'Polygon', coordinates: [geometry.coordinates[0] ?? []] };
+};
+
+/** Absolute footprint area helper (planar lng/lat units — compare only). */
+export const footprintArea = (geometry: BuildingPolygon): number =>
+  Math.abs(ringArea(geometry.coordinates[0] ?? []));
+
+/**
+ * Other outer rings of a MultiPolygon that were not selected — needed because
+ * MapLibre can only hide the whole feature id, not a single ring.
+ */
+export const extractSiblingPolygons = (
+  sourceGeometry: BuildingGeometry,
+  kept: BuildingPolygon,
+): BuildingPolygon[] => {
+  if (sourceGeometry.type === 'Polygon') {
+    return [];
+  }
+
+  const keptArea = footprintArea(kept);
+  const [keptLng, keptLat] = computeFootprintCenter(kept);
+  const siblings: BuildingPolygon[] = [];
+
+  for (const rings of sourceGeometry.coordinates) {
+    const candidate: BuildingPolygon = { type: 'Polygon', coordinates: rings };
+    const area = footprintArea(candidate);
+    const [lng, lat] = computeFootprintCenter(candidate);
+    const same =
+      Math.abs(area - keptArea) < 1e-14 &&
+      Math.abs(lng - keptLng) < 1e-8 &&
+      Math.abs(lat - keptLat) < 1e-8;
+    if (!same) {
+      siblings.push(candidate);
+    }
+  }
+  return siblings;
+};
+
+const readFiniteNumber = (
+  properties: Record<string, unknown>,
+  keys: readonly string[],
+): number | null => {
+  for (const key of keys) {
+    const value = properties[key];
+    if (typeof value === 'number' && Number.isFinite(value)) {
+      return value;
+    }
+    if (typeof value === 'string' && value.trim() !== '' && !Number.isNaN(Number(value))) {
+      return Number(value);
+    }
+  }
+  return null;
+};
+
+/** Best-effort extrusion height/base from OpenMapTiles / liberty properties. */
+export const resolveExtrusionHeights = (
+  properties: Record<string, unknown> | null,
+): { heightM: number; minHeightM: number } => {
+  if (!properties) {
+    return { heightM: DEFAULT_EXTRUSION_HEIGHT_M, minHeightM: DEFAULT_EXTRUSION_MIN_HEIGHT_M };
+  }
+  const height =
+    readFiniteNumber(properties, ['render_height', 'height']) ??
+    (() => {
+      const levels = readFiniteNumber(properties, ['building:levels', 'levels']);
+      return levels === null ? null : levels * METERS_PER_BUILDING_LEVEL;
+    })() ??
+    DEFAULT_EXTRUSION_HEIGHT_M;
+  const minHeight =
+    readFiniteNumber(properties, ['render_min_height', 'min_height']) ??
+    DEFAULT_EXTRUSION_MIN_HEIGHT_M;
+  return { heightM: height, minHeightM: minHeight };
 };

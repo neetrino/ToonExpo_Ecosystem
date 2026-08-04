@@ -2,12 +2,16 @@
  * Geo-map Three.js custom-layer surface.
  *
  * Architecture: MapLibre owns basemap / OSM / camera; all custom 3D content
- * (GLB buildings now; cars / vegetation / animations later) lives in MapLibre
- * `CustomLayerInterface` implementations under this folder — same matrix model
- * as Manvel-Lambaryan/Map (`mainMatrix * translate * scale(y:-s) * Rx*Ry*Rz`).
+ * lives in MapLibre `CustomLayerInterface` implementations under this folder —
+ * same matrix model as Manvel-Lambaryan/Map
+ * (`mainMatrix * translate * scale(y:-s) * Rx*Ry*Rz`).
  *
- * Extension point: add a new `*Layer` class + `ensure*` / `remove*` helpers,
- * then mount from a dedicated hook (see `use-three-building-layer.ts`).
+ * Layers:
+ * - `ThreeBuildingLayer` — project GLB buildings (`use-three-building-layer.ts`)
+ *
+ * Extension point: optional future layers (e.g. park vegetation, sparse
+ * traffic) would add a new `*Layer` class + `ensure*` / `remove*` helpers and
+ * mount from a dedicated hook — not shipped in production today.
  */
 
 export {

@@ -48,3 +48,4 @@ apps/web-e2e/test-results/
 # *.swp
 # *.swo
 *.tsbuildinfo
+.local-research/

@@ -170,12 +170,26 @@ export const OSM_BUILDING_FILL_LAYER_ID = 'building';
 export const OSM_BUILDING_EXTRUSION_MIN_ZOOM = 15;
 
 /**
- * Hide OSM `building-3d` fill-extrusions near published GLB anchors via a
- * MapLibre `distance` filter (true vector-tile subtraction needs custom tiles).
+ * Hide OSM `building-3d` fill-extrusions under published GLB anchors.
+ * Prefer feature `id` / `osm_id` scoped by distance; bare distance is a
+ * last-resort fallback only.
  */
 export const MODEL_FOOTPRINT_SOURCE_ID = 'geo-map-model-footprints';
 export const MODEL_FOOTPRINT_MASK_LAYER_ID = 'geo-map-model-footprint-mask';
-/** Radius around each model center where OSM extrusions are filtered out (meters). */
-export const MODEL_FOOTPRINT_MASK_RADIUS_METERS = 80;
+/**
+ * Last-resort radius when a placement has no feature/osm identity (meters).
+ * Keep tight — a large radius previously wiped whole city blocks.
+ */
+export const MODEL_FOOTPRINT_MASK_RADIUS_METERS = 12;
+/**
+ * Identity matches (feature id / osm_id) only hide buildings within this
+ * radius of the placement anchor. Public tiles reuse MVT feature ids across
+ * tiles, so an unscoped id filter removed random buildings on other streets.
+ */
+export const OSM_BUILDING_HIDE_SCOPE_RADIUS_METERS = 120;
 /** N-gon segment count for circular footprint helpers / tests. */
 export const MODEL_FOOTPRINT_MASK_SEGMENT_COUNT = 24;
+
+/** GeoJSON restoration of MultiPolygon sibling rings after parent feature hide. */
+export const PRESERVED_OSM_PARTS_SOURCE_ID = 'geo-map-preserved-osm-parts';
+export const PRESERVED_OSM_PARTS_LAYER_ID = 'geo-map-preserved-osm-parts';

@@ -12,7 +12,7 @@ export type AdminGeoMapModelItem = {
   /** Original upload title when available (useful for unassigned list labels). */
   mediaTitle: string | null;
   modelUrl: string;
-  /** OSM id used to hide the replaced extrusion; null when unknown / radius-only hide. */
+  /** OSM id or `mvt:<featureId>` used to hide the replaced extrusion; null when unknown / radius-only hide. */
   sourceOsmId: string | null;
   longitude: string;
   latitude: string;
