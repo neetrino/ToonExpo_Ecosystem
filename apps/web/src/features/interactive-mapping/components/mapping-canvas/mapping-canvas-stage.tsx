@@ -5,6 +5,7 @@ import type {
   PointerEvent as ReactPointerEvent,
   RefObject,
 } from 'react';
+import { useTranslations } from 'next-intl';
 import type { NormPoint } from '../../utils/mapping-math';
 import { polygonShapeToSvgPath, type PolygonShape } from '../../utils/curved-polygon';
 import { formatMarkerLabel } from '../../utils/format-marker-label';
@@ -79,6 +80,8 @@ export const MappingCanvasStage = ({
   onMarkerPointerUp,
   setCursorPoint,
 }: MappingCanvasStageProps) => {
+  const t = useTranslations('Admin.interactiveMapping.canvas');
+
   return (
     <div
       ref={viewportRef}
@@ -110,7 +113,7 @@ export const MappingCanvasStage = ({
       >
         <img
           src={imageUrl}
-          alt="Mapping canvas"
+          alt={t('canvasAlt')}
           width={imageWidth}
           height={imageHeight}
           draggable={false}

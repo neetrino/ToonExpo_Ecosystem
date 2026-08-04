@@ -26,6 +26,8 @@ type UseMappingCanvasInteractionsParams = {
   draftRef: MutableRefObject<NormPoint[]>;
   dragRef: MutableRefObject<MarkerDragState | null>;
   replaceOnCommitRef: MutableRefObject<boolean>;
+  confirmDeletePolygon: string;
+  confirmReplacePolygon: string;
   readNormalized: (
     event: { clientX: number; clientY: number },
     options?: { clamp?: boolean },
@@ -48,6 +50,8 @@ export const useMappingCanvasInteractions = ({
   mode,
   selectedId,
   selected,
+  confirmDeletePolygon,
+  confirmReplacePolygon,
   draftRef,
   dragRef,
   replaceOnCommitRef,
@@ -135,19 +139,27 @@ export const useMappingCanvasInteractions = ({
 
   const deletePolygon = useCallback(() => {
     if (!selectedId || !selected?.svgPath) return;
-    if (!window.confirm('Ջնջե՞լ այս գծագիրը։ Կարող ես հետո նոր polygon գծել։')) {
+    if (!window.confirm(confirmDeletePolygon)) {
       return;
     }
     onChangeEntity(selectedId, { svgPath: null });
     onPolygonDeleted?.(selectedId);
     clearDraft();
     setMode('select');
-  }, [clearDraft, onChangeEntity, onPolygonDeleted, selected, selectedId, setMode]);
+  }, [
+    clearDraft,
+    confirmDeletePolygon,
+    onChangeEntity,
+    onPolygonDeleted,
+    selected,
+    selectedId,
+    setMode,
+  ]);
 
   const startFreshPolygon = useCallback(() => {
     if (!selectedId) return;
     if (selected?.svgPath) {
-      if (!window.confirm('Ջնջե՞լ հին գծագիրը և սկսել նորը։ Հինը կպահպանվի որպես ջնջված։')) {
+      if (!window.confirm(confirmReplacePolygon)) {
         return;
       }
       onChangeEntity(selectedId, { svgPath: null });
@@ -158,6 +170,7 @@ export const useMappingCanvasInteractions = ({
     setMode('draw-polygon');
   }, [
     clearDraft,
+    confirmReplacePolygon,
     onChangeEntity,
     onPolygonDeleted,
     replaceOnCommitRef,

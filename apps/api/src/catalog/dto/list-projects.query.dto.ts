@@ -110,7 +110,7 @@ export class ListProjectsQueryDto {
 
   @ApiPropertyOptional({
     enum: ['hy', 'ru', 'en'],
-    description: 'Catalog content locale; falls back to hy',
+    description: 'Catalog content locale; unknown values resolve to hy',
   })
   @IsOptional()
   @IsString()

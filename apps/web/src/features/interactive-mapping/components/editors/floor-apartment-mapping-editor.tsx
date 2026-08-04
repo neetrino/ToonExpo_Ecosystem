@@ -1,6 +1,7 @@
 'use client';
 
 import type { PortalVisualHotspotItem } from '@toonexpo/contracts';
+import { useTranslations } from 'next-intl';
 import type { ReactNode } from 'react';
 
 import { MappingEditorShell, type MappingEditorEntity } from './mapping-editor-shell';
@@ -55,24 +56,28 @@ export const FloorApartmentMappingEditor = ({
   createForm,
   onDeleteApartment,
   onAfterSave,
-}: FloorApartmentMappingEditorProps) => (
-  <MappingEditorShell
-    companyId={companyId}
-    canvasId={canvasId}
-    targetType="apartment"
-    toolPreset="basic"
-    listTitle="Apartments"
-    emptyHint="Այս հարկում բնակարան չկա։ Ստեղծիր առնվազն մեկը, ընտրիր ցանկից, հետո գծիր Polygon։"
-    sidebarFooter={createForm}
-    labelDigitsOnly
-    deleteEntityLabel="Delete apartment"
-    imageUrl={imageUrl}
-    imageWidth={imageWidth}
-    imageHeight={imageHeight}
-    viewBoxWidth={viewBoxWidth}
-    viewBoxHeight={viewBoxHeight}
-    initialEntities={buildEntities(apartments, hotspots)}
-    onDeleteEntity={onDeleteApartment}
-    onAfterSave={onAfterSave}
-  />
-);
+}: FloorApartmentMappingEditorProps) => {
+  const t = useTranslations('Admin.interactiveMapping.canvas');
+
+  return (
+    <MappingEditorShell
+      companyId={companyId}
+      canvasId={canvasId}
+      targetType="apartment"
+      toolPreset="basic"
+      listTitle={t('apartmentsListTitle')}
+      emptyHint={t('emptyFloorHint')}
+      sidebarFooter={createForm}
+      labelDigitsOnly
+      deleteEntityLabel={t('deleteApartment')}
+      imageUrl={imageUrl}
+      imageWidth={imageWidth}
+      imageHeight={imageHeight}
+      viewBoxWidth={viewBoxWidth}
+      viewBoxHeight={viewBoxHeight}
+      initialEntities={buildEntities(apartments, hotspots)}
+      onDeleteEntity={onDeleteApartment}
+      onAfterSave={onAfterSave}
+    />
+  );
+};

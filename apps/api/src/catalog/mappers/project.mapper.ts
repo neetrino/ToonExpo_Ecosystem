@@ -9,6 +9,7 @@ import type { ApartmentSalesStatus, Prisma } from '@toonexpo/db';
 import type { SupportedLocale } from '@toonexpo/shared';
 
 import {
+  resolveTranslatedName,
   resolveTranslatedValue,
   TRANSLATION_ENTITY,
   TRANSLATION_FIELD,
@@ -141,15 +142,14 @@ const localizeProjectFields = (
 } => {
   const { locale, translations } = ctx;
   return {
-    name:
-      resolveTranslatedValue(
-        translations,
-        TRANSLATION_ENTITY.project,
-        project.id,
-        TRANSLATION_FIELD.name,
-        locale,
-        project.name,
-      ) ?? project.name,
+    name: resolveTranslatedName(
+      translations,
+      TRANSLATION_ENTITY.project,
+      project.id,
+      TRANSLATION_FIELD.name,
+      locale,
+      project.name,
+    ),
     shortDescription: resolveTranslatedValue(
       translations,
       TRANSLATION_ENTITY.project,
@@ -166,15 +166,14 @@ const localizeProjectFields = (
       locale,
       project.locationText,
     ),
-    builderName:
-      resolveTranslatedValue(
-        translations,
-        TRANSLATION_ENTITY.company,
-        project.builderCompany.id,
-        TRANSLATION_FIELD.name,
-        locale,
-        project.builderCompany.name,
-      ) ?? project.builderCompany.name,
+    builderName: resolveTranslatedName(
+      translations,
+      TRANSLATION_ENTITY.company,
+      project.builderCompany.id,
+      TRANSLATION_FIELD.name,
+      locale,
+      project.builderCompany.name,
+    ),
   };
 };
 

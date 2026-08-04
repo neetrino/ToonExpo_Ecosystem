@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, NotFoundException } from '@nestjs/common';
 import type {
   BoothSearchResponse,
   CurrentEventResponse,
@@ -6,24 +6,21 @@ import type {
   PublicBoothListResponse,
   PublicEntranceNodeListResponse,
   RoutePathResponse,
-} from "@toonexpo/contracts";
-import {
-  EventStatus,
-  PublicationStatus,
-} from "@toonexpo/db";
-import { resolveCatalogLocale, type SupportedLocale } from "@toonexpo/shared";
+} from '@toonexpo/contracts';
+import { EventStatus, PublicationStatus } from '@toonexpo/db';
+import { resolveCatalogLocale, type SupportedLocale } from '@toonexpo/shared';
 
-import { AnalyticsService } from "../../analytics/analytics.service.js";
-import { PrismaService } from "../../prisma/prisma.service.js";
+import { AnalyticsService } from '../../analytics/analytics.service.js';
+import { PrismaService } from '../../prisma/prisma.service.js';
 import {
   TRANSLATION_ENTITY,
   TRANSLATION_FIELD,
-  resolveTranslatedValue,
+  resolveTranslatedName,
   type TranslationRow,
-} from "../../catalog/utils/resolve-translation.js";
-import { PublicBoothSearchService } from "./public-booth-search.service.js";
-import { PublicRouteService } from "./public-route.service.js";
-import { loadEntityTranslations } from "../utils/load-entity-translations.js";
+} from '../../catalog/utils/resolve-translation.js';
+import { PublicBoothSearchService } from './public-booth-search.service.js';
+import { PublicRouteService } from './public-route.service.js';
+import { loadEntityTranslations } from '../utils/load-entity-translations.js';
 
 @Injectable()
 export class PublicExhibitionService {
@@ -40,18 +37,18 @@ export class PublicExhibitionService {
         status: EventStatus.active,
         publicationStatus: PublicationStatus.published,
       },
-      orderBy: [{ updatedAt: "desc" }],
+      orderBy: [{ updatedAt: 'desc' }],
       include: {
         venueMaps: {
           where: { publicationStatus: PublicationStatus.published },
-          orderBy: [{ updatedAt: "desc" }],
+          orderBy: [{ updatedAt: 'desc' }],
           include: { mediaAsset: { select: { fileUrl: true } } },
         },
       },
     });
 
     if (!event) {
-      throw new NotFoundException("No published active event");
+      throw new NotFoundException('No published active event');
     }
 
     return {
@@ -71,10 +68,7 @@ export class PublicExhibitionService {
     };
   }
 
-  async listPublishedBooths(
-    mapId: string,
-    localeInput?: string,
-  ): Promise<PublicBoothListResponse> {
+  async listPublishedBooths(mapId: string, localeInput?: string): Promise<PublicBoothListResponse> {
     await this.requirePublishedMap(mapId);
     const locale = resolveCatalogLocale(localeInput);
 
@@ -86,21 +80,18 @@ export class PublicExhibitionService {
       include: {
         assignments: {
           where: { active: true },
-          orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+          orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
           include: {
             company: { select: { id: true, name: true } },
             project: { select: { id: true, name: true } },
           },
         },
       },
-      orderBy: [{ code: "asc" }],
+      orderBy: [{ code: 'asc' }],
     });
 
     const entityIds = collectTranslationEntityIds(booths);
-    const translations = await loadEntityTranslations(
-      this.prisma.db,
-      entityIds,
-    );
+    const translations = await loadEntityTranslations(this.prisma.db, entityIds);
 
     return {
       data: booths.map((booth) => ({
@@ -122,18 +113,11 @@ export class PublicExhibitionService {
     };
   }
 
-  searchBooths(
-    mapId: string,
-    query: string,
-    localeInput?: string,
-  ): Promise<BoothSearchResponse> {
+  searchBooths(mapId: string, query: string, localeInput?: string): Promise<BoothSearchResponse> {
     return this.boothSearch.search(mapId, query, localeInput);
   }
 
-  async getPublishedBoothById(
-    boothId: string,
-    localeInput?: string,
-  ): Promise<PublicBoothDetail> {
+  async getPublishedBoothById(boothId: string, localeInput?: string): Promise<PublicBoothDetail> {
     const locale = resolveCatalogLocale(localeInput);
     const booth = await this.prisma.db.booth.findFirst({
       where: {
@@ -151,7 +135,7 @@ export class PublicExhibitionService {
         venueMap: { select: { id: true, eventId: true } },
         assignments: {
           where: { active: true },
-          orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+          orderBy: [{ sortOrder: 'asc' }, { createdAt: 'asc' }],
           include: {
             company: { select: { id: true, name: true } },
             project: { select: { id: true, name: true } },
@@ -161,17 +145,14 @@ export class PublicExhibitionService {
     });
 
     if (!booth) {
-      throw new NotFoundException("Published booth not found");
+      throw new NotFoundException('Published booth not found');
     }
 
     const entityIds = collectTranslationEntityIds([booth]);
-    const translations = await loadEntityTranslations(
-      this.prisma.db,
-      entityIds,
-    );
+    const translations = await loadEntityTranslations(this.prisma.db, entityIds);
 
     this.analytics.track({
-      eventType: "booth_selected",
+      eventType: 'booth_selected',
       boothId: booth.id,
       eventId: booth.venueMap.eventId,
     });
@@ -194,11 +175,7 @@ export class PublicExhibitionService {
     };
   }
 
-  computeRoute(
-    mapId: string,
-    fromNodeId: string,
-    toBoothId: string,
-  ): Promise<RoutePathResponse> {
+  computeRoute(mapId: string, fromNodeId: string, toBoothId: string): Promise<RoutePathResponse> {
     return this.routeService.computeRoute(mapId, fromNodeId, toBoothId);
   }
 
@@ -220,7 +197,7 @@ export class PublicExhibitionService {
     });
 
     if (!map) {
-      throw new NotFoundException("Published venue map not found");
+      throw new NotFoundException('Published venue map not found');
     }
   }
 }
@@ -270,30 +247,26 @@ const resolveAssignmentDisplayName = (
   }
 
   if (assignment.project) {
-    return (
-      resolveTranslatedValue(
-        translations,
-        TRANSLATION_ENTITY.project,
-        assignment.project.id,
-        TRANSLATION_FIELD.name,
-        locale,
-        assignment.project.name,
-      ) ?? assignment.project.name
+    return resolveTranslatedName(
+      translations,
+      TRANSLATION_ENTITY.project,
+      assignment.project.id,
+      TRANSLATION_FIELD.name,
+      locale,
+      assignment.project.name,
     );
   }
 
   if (assignment.company) {
-    return (
-      resolveTranslatedValue(
-        translations,
-        TRANSLATION_ENTITY.company,
-        assignment.company.id,
-        TRANSLATION_FIELD.name,
-        locale,
-        assignment.company.name,
-      ) ?? assignment.company.name
+    return resolveTranslatedName(
+      translations,
+      TRANSLATION_ENTITY.company,
+      assignment.company.id,
+      TRANSLATION_FIELD.name,
+      locale,
+      assignment.company.name,
     );
   }
 
-  return "Unassigned";
+  return 'Unassigned';
 };

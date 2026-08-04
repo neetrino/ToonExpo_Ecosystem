@@ -2,6 +2,7 @@
 
 import type { VisualHotspotTargetType } from '@toonexpo/contracts';
 import { Maximize2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 
 import { Button } from '@/shared/ui/button';
@@ -58,10 +59,11 @@ export const MappingEditorShell = ({
   emptyHint,
   sidebarFooter,
   labelDigitsOnly = false,
-  deleteEntityLabel = 'Delete',
+  deleteEntityLabel,
   onDeleteEntity,
   onAfterSave,
 }: MappingEditorShellProps) => {
+  const t = useTranslations('Admin.interactiveMapping.canvas');
   const canvasRef = useRef<MappingCanvasHandle>(null);
   const [fullscreen, setFullscreen] = useState(false);
   const [portalReady, setPortalReady] = useState(false);
@@ -121,7 +123,7 @@ export const MappingEditorShell = ({
     if (!id || !onDeleteEntity) {
       return;
     }
-    if (!window.confirm('Ջնջե՞լ այս բնակարանը։')) {
+    if (!window.confirm(t('confirmDeleteApartment'))) {
       return;
     }
     setDeletePending(true);
@@ -131,7 +133,7 @@ export const MappingEditorShell = ({
         editor.setSelectedId(null);
         onAfterSave?.();
       } catch (error) {
-        window.alert(error instanceof Error ? error.message : 'Delete failed');
+        window.alert(error instanceof Error ? error.message : t('deleteFailed'));
       } finally {
         setDeletePending(false);
       }
@@ -149,7 +151,7 @@ export const MappingEditorShell = ({
       emptyHint={emptyHint}
       footer={sidebarFooter}
       labelDigitsOnly={labelDigitsOnly}
-      deleteLabel={deleteEntityLabel}
+      deleteLabel={deleteEntityLabel ?? t('deleteDefault')}
       onSelect={editor.setSelectedId}
       onLabelChange={editor.onLabelChange}
       onSave={() => {
@@ -170,7 +172,7 @@ export const MappingEditorShell = ({
       <div className="mb-3 flex flex-wrap items-center justify-end gap-2">
         <Button type="button" size="sm" variant="secondary" onClick={() => setFullscreen(true)}>
           <Maximize2 className="size-4" aria-hidden />
-          Open fullscreen map
+          {t('openFullscreen')}
         </Button>
       </div>
       {!fullscreen ? (

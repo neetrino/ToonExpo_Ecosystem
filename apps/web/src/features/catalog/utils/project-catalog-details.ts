@@ -151,8 +151,6 @@ const EMPTY_DETAILS: ProjectCatalogDetails = {
 
 const DETAIL_KEYS = Object.keys(EMPTY_DETAILS) as Array<keyof ProjectCatalogDetails>;
 
-const LOCALE_FALLBACK: CatalogContentLocale[] = ['hy', 'en', 'ru'];
-
 const asNonEmptyString = (value: unknown): string | null => {
   if (typeof value !== 'string') {
     return null;
@@ -161,10 +159,14 @@ const asNonEmptyString = (value: unknown): string | null => {
   return trimmed.length > 0 ? trimmed : null;
 };
 
+/**
+ * Resolves catalog text for one locale only — no cross-language fallback.
+ * Plain (legacy) strings are treated as canonical Armenian content.
+ */
 const resolveLocaleText = (value: unknown, locale: CatalogContentLocale): string | null => {
   const plain = asNonEmptyString(value);
   if (plain != null) {
-    return plain;
+    return locale === 'hy' ? plain : null;
   }
 
   if (value == null || typeof value !== 'object' || Array.isArray(value)) {
@@ -172,19 +174,7 @@ const resolveLocaleText = (value: unknown, locale: CatalogContentLocale): string
   }
 
   const record = value as Record<string, unknown>;
-  const preferred = asNonEmptyString(record[locale]);
-  if (preferred != null) {
-    return preferred;
-  }
-
-  for (const fallback of LOCALE_FALLBACK) {
-    const next = asNonEmptyString(record[fallback]);
-    if (next != null) {
-      return next;
-    }
-  }
-
-  return null;
+  return asNonEmptyString(record[locale]);
 };
 
 const asLocalizedStringList = (value: unknown, locale: CatalogContentLocale): string[] => {
@@ -201,15 +191,6 @@ const asLocalizedStringList = (value: unknown, locale: CatalogContentLocale): st
       return localeList
         .map((item) => asNonEmptyString(item))
         .filter((item): item is string => item != null);
-    }
-
-    for (const fallback of LOCALE_FALLBACK) {
-      const list = record[fallback];
-      if (Array.isArray(list)) {
-        return list
-          .map((item) => asNonEmptyString(item))
-          .filter((item): item is string => item != null);
-      }
     }
   }
 

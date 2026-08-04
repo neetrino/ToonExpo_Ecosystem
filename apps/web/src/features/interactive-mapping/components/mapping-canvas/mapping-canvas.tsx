@@ -207,6 +207,8 @@ export const MappingCanvas = forwardRef<MappingCanvasHandle, MappingCanvasProps>
       draftRef,
       dragRef,
       replaceOnCommitRef,
+      confirmDeletePolygon: tCanvas('confirmDeletePolygon'),
+      confirmReplacePolygon: tCanvas('confirmReplacePolygon'),
       readNormalized,
       onSelect,
       onChangeEntity,
@@ -224,6 +226,7 @@ export const MappingCanvas = forwardRef<MappingCanvasHandle, MappingCanvasProps>
       entitiesCount: entities.length,
       selectedId,
       toolPreset,
+      t: tCanvas,
     });
 
     const bandPreview =

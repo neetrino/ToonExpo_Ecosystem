@@ -8,6 +8,7 @@ import {
   toMediaSummary,
 } from '../../catalog/mappers/catalog.mapper.js';
 import {
+  resolveTranslatedName,
   resolveTranslatedValue,
   TRANSLATION_ENTITY,
   TRANSLATION_FIELD,
@@ -51,25 +52,23 @@ export const mapFavoriteApartmentCard = (
 ): FavoriteApartmentCard => {
   const revealPrice = shouldRevealPrice(apartment.priceVisibility, ctx.isAuthenticated);
 
-  const projectName =
-    resolveTranslatedValue(
-      ctx.translations,
-      TRANSLATION_ENTITY.project,
-      apartment.project.id,
-      TRANSLATION_FIELD.name,
-      ctx.locale,
-      apartment.project.name,
-    ) ?? apartment.project.name;
+  const projectName = resolveTranslatedName(
+    ctx.translations,
+    TRANSLATION_ENTITY.project,
+    apartment.project.id,
+    TRANSLATION_FIELD.name,
+    ctx.locale,
+    apartment.project.name,
+  );
 
-  const builderName =
-    resolveTranslatedValue(
-      ctx.translations,
-      TRANSLATION_ENTITY.company,
-      apartment.project.builderCompany.id,
-      TRANSLATION_FIELD.name,
-      ctx.locale,
-      apartment.project.builderCompany.name,
-    ) ?? apartment.project.builderCompany.name;
+  const builderName = resolveTranslatedName(
+    ctx.translations,
+    TRANSLATION_ENTITY.company,
+    apartment.project.builderCompany.id,
+    TRANSLATION_FIELD.name,
+    ctx.locale,
+    apartment.project.builderCompany.name,
+  );
 
   return {
     id: apartment.id,
@@ -83,7 +82,14 @@ export const mapFavoriteApartmentCard = (
     cover: toMediaSummary(apartment.project.coverMedia),
     city: apartment.project.city,
     district: apartment.project.district,
-    locationText: apartment.project.locationText,
+    locationText: resolveTranslatedValue(
+      ctx.translations,
+      TRANSLATION_ENTITY.project,
+      apartment.project.id,
+      TRANSLATION_FIELD.locationText,
+      ctx.locale,
+      apartment.project.locationText,
+    ),
     project: {
       id: apartment.project.id,
       name: projectName,

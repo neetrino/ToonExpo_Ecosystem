@@ -21,7 +21,7 @@ function loadImage(file: File): Promise<HTMLImageElement> {
     };
     image.onerror = () => {
       URL.revokeObjectURL(url);
-      reject(new Error('Նկարը չհաջողվեց կարդալ'));
+      reject(new Error('Could not read the image'));
     };
     image.src = url;
   });
@@ -32,7 +32,7 @@ function canvasToJpegFile(canvas: HTMLCanvasElement, name: string): Promise<File
     canvas.toBlob(
       (blob) => {
         if (!blob) {
-          reject(new Error('Նկարը չհաջողվեց սեղմել'));
+          reject(new Error('Could not compress the image'));
           return;
         }
         const base = name.replace(/\.[^.]+$/, '') || 'image';
@@ -53,7 +53,7 @@ export async function prepareImageForUpload(file: File): Promise<PreparedImageUp
   const sourceW = image.naturalWidth;
   const sourceH = image.naturalHeight;
   if (sourceW < 32 || sourceH < 32) {
-    throw new Error('Նկարի չափերը անվավեր են');
+    throw new Error('Invalid image dimensions');
   }
 
   const scale = Math.min(1, MAX_EDGE / Math.max(sourceW, sourceH));
