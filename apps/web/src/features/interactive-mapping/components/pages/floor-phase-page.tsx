@@ -5,7 +5,10 @@ import { useTranslations } from 'next-intl';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 
-import { createPortalApartment } from '@/features/builder/api/portal-apartments-api';
+import {
+  createPortalApartment,
+  deletePortalApartment,
+} from '@/features/builder/api/portal-apartments-api';
 import { Link, useRouter } from '@/i18n/navigation';
 
 import {
@@ -203,6 +206,7 @@ export const FloorPhasePage = ({ projectId, floorId }: FloorPhasePageProps) => {
               pendingLabel={t('forms.saving')}
               nameLabel={t('forms.apartmentNumber')}
               namePlaceholder={t('forms.apartmentPlaceholder')}
+              digitsOnly
               onSubmit={async (number) => {
                 await createPortalApartment(floorId, { number }, { scope: catalogScope });
                 void queryClient.invalidateQueries({
@@ -211,6 +215,12 @@ export const FloorPhasePage = ({ projectId, floorId }: FloorPhasePageProps) => {
               }}
             />
           }
+          onDeleteApartment={async (apartmentId) => {
+            await deletePortalApartment(apartmentId, { scope: catalogScope });
+            void queryClient.invalidateQueries({
+              queryKey: interactiveMappingProjectQueryKey(projectId, mode),
+            });
+          }}
           onAfterSave={() => {
             void queryClient.invalidateQueries({
               queryKey: interactiveMappingProjectQueryKey(projectId, mode),

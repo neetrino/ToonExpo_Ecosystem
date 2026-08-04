@@ -222,6 +222,7 @@ export const PhaseWizardPage = ({ projectId }: PhaseWizardPageProps) => {
               pendingLabel={t('forms.saving')}
               nameLabel={t('forms.apartmentNumber')}
               namePlaceholder={t('forms.apartmentPlaceholder')}
+              digitsOnly
               onSubmit={async (number) => {
                 await createPortalApartment(primaryFloor.id, { number }, { scope });
                 invalidate();

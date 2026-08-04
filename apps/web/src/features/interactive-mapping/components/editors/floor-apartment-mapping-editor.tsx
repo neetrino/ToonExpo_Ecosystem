@@ -16,6 +16,7 @@ export type FloorApartmentMappingEditorProps = {
   apartments: { id: string; number: string; label?: string }[];
   hotspots: PortalVisualHotspotItem[];
   createForm?: ReactNode;
+  onDeleteApartment?: ((id: string) => Promise<void>) | undefined;
   onAfterSave?: () => void;
 };
 
@@ -52,6 +53,7 @@ export const FloorApartmentMappingEditor = ({
   apartments,
   hotspots,
   createForm,
+  onDeleteApartment,
   onAfterSave,
 }: FloorApartmentMappingEditorProps) => (
   <MappingEditorShell
@@ -62,12 +64,15 @@ export const FloorApartmentMappingEditor = ({
     listTitle="Apartments"
     emptyHint="Այս հարկում բնակարան չկա։ Ստեղծիր առնվազն մեկը, ընտրիր ցանկից, հետո գծիր Polygon։"
     sidebarFooter={createForm}
+    labelDigitsOnly
+    deleteEntityLabel="Delete apartment"
     imageUrl={imageUrl}
     imageWidth={imageWidth}
     imageHeight={imageHeight}
     viewBoxWidth={viewBoxWidth}
     viewBoxHeight={viewBoxHeight}
     initialEntities={buildEntities(apartments, hotspots)}
+    onDeleteEntity={onDeleteApartment}
     onAfterSave={onAfterSave}
   />
 );

@@ -27,6 +27,9 @@ export type MappingEditorShellProps = {
   toolPreset?: 'basic' | 'floors' | undefined;
   emptyHint?: string | undefined;
   sidebarFooter?: ReactNode | undefined;
+  labelDigitsOnly?: boolean | undefined;
+  deleteEntityLabel?: string | undefined;
+  onDeleteEntity?: ((id: string) => Promise<void>) | undefined;
   onAfterSave?: (() => void) | undefined;
 };
 
@@ -54,11 +57,15 @@ export const MappingEditorShell = ({
   toolPreset = 'basic',
   emptyHint,
   sidebarFooter,
+  labelDigitsOnly = false,
+  deleteEntityLabel = 'Delete',
+  onDeleteEntity,
   onAfterSave,
 }: MappingEditorShellProps) => {
   const canvasRef = useRef<MappingCanvasHandle>(null);
   const [fullscreen, setFullscreen] = useState(false);
   const [portalReady, setPortalReady] = useState(false);
+  const [deletePending, setDeletePending] = useState(false);
   const editor = useMappingEditorState({
     companyId,
     canvasId,
@@ -109,16 +116,40 @@ export const MappingEditorShell = ({
     />
   );
 
+  const handleDeleteEntity = (): void => {
+    const id = editor.selectedId;
+    if (!id || !onDeleteEntity) {
+      return;
+    }
+    if (!window.confirm('Ջնջե՞լ այս բնակարանը։')) {
+      return;
+    }
+    setDeletePending(true);
+    void (async () => {
+      try {
+        await onDeleteEntity(id);
+        editor.setSelectedId(null);
+        onAfterSave?.();
+      } catch (error) {
+        window.alert(error instanceof Error ? error.message : 'Delete failed');
+      } finally {
+        setDeletePending(false);
+      }
+    })();
+  };
+
   const sidebar = (
     <MappingEntitySidebar
       listTitle={listTitle}
       entities={editor.entities}
       selectedId={editor.selectedId}
       dirtyIds={editor.dirtyIds}
-      pending={editor.pending}
+      pending={editor.pending || deletePending}
       message={editor.message}
       emptyHint={emptyHint}
       footer={sidebarFooter}
+      labelDigitsOnly={labelDigitsOnly}
+      deleteLabel={deleteEntityLabel}
       onSelect={editor.setSelectedId}
       onLabelChange={editor.onLabelChange}
       onSave={() => {
@@ -130,6 +161,7 @@ export const MappingEditorShell = ({
       onClear={() => {
         void editor.onClear();
       }}
+      onDelete={onDeleteEntity ? handleDeleteEntity : undefined}
     />
   );
 

@@ -4,12 +4,16 @@ import { useState, type FormEvent } from 'react';
 
 import { Button } from '@/shared/ui/button';
 
+const NON_DIGIT = /\D/g;
+
 export type CreateEntityInlineFormProps = {
   title: string;
   submitLabel: string;
   pendingLabel?: string;
   nameLabel: string;
   namePlaceholder?: string;
+  /** Restrict input to ASCII digits (apartment numbers). */
+  digitsOnly?: boolean | undefined;
   onSubmit: (name: string) => Promise<void>;
 };
 
@@ -22,6 +26,7 @@ export const CreateEntityInlineForm = ({
   pendingLabel,
   nameLabel,
   namePlaceholder,
+  digitsOnly = false,
   onSubmit,
 }: CreateEntityInlineFormProps) => {
   const [name, setName] = useState('');
@@ -32,6 +37,10 @@ export const CreateEntityInlineForm = ({
     event.preventDefault();
     const trimmed = name.trim();
     if (trimmed.length < 1) {
+      setError(nameLabel);
+      return;
+    }
+    if (digitsOnly && !/^\d+$/.test(trimmed)) {
       setError(nameLabel);
       return;
     }
@@ -59,11 +68,16 @@ export const CreateEntityInlineForm = ({
         <span>{nameLabel}</span>
         <input
           type="text"
+          inputMode={digitsOnly ? 'numeric' : 'text'}
+          pattern={digitsOnly ? '[0-9]*' : undefined}
           required
           minLength={1}
           value={name}
           placeholder={namePlaceholder}
-          onChange={(event) => setName(event.target.value)}
+          onChange={(event) => {
+            const next = event.target.value;
+            setName(digitsOnly ? next.replace(NON_DIGIT, '') : next);
+          }}
           className="w-full rounded-sm border border-border bg-background px-3 py-2 text-sm text-ink"
         />
       </label>
