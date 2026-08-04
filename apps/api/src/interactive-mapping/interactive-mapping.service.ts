@@ -21,6 +21,7 @@ import {
   slugifyDistrictName,
   toProjectSummary,
 } from './interactive-mapping.helpers.js';
+import { collectFloorsWithBuildingPolygon } from './floor-building-polygon.js';
 import {
   mapApartment,
   mapBuilding,
@@ -100,7 +101,7 @@ export class InteractiveMappingService {
           include: {
             mediaAsset: { select: { fileUrl: true, width: true, height: true } },
             _count: { select: { hotspots: true } },
-            hotspots: { select: { targetType: true } },
+            hotspots: { select: { targetType: true, targetId: true, svgPath: true } },
           },
         },
       },
@@ -120,6 +121,13 @@ export class InteractiveMappingService {
       hasMedia: Boolean(c.mediaAssetId),
       hotspotTargetTypes: c.hotspots.map((h) => h.targetType),
     }));
+
+    const floorsWithBuildingPolygon = collectFloorsWithBuildingPolygon(project.visualMapCanvases);
+    const floorsWithPlan = new Set(
+      project.visualMapCanvases
+        .filter((canvas) => canvas.contextType === 'floor' && Boolean(canvas.mediaAssetId))
+        .map((canvas) => canvas.contextId),
+    );
 
     const summary = toProjectSummary(
       {
@@ -143,7 +151,12 @@ export class InteractiveMappingService {
       project: summary,
       districts: project.districts.map(mapDistrict),
       buildings: project.buildings.map(mapBuilding),
-      floors: floors.map(mapFloor),
+      floors: floors.map((floor) =>
+        mapFloor(floor, {
+          hasBuildingPolygon: floorsWithBuildingPolygon.has(floor.id),
+          hasFloorPlan: floorsWithPlan.has(floor.id) || floor.floorplanMediaId != null,
+        }),
+      ),
       apartments: project.apartments.map(mapApartment),
       canvases: project.visualMapCanvases.map(mapCanvas),
     };

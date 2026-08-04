@@ -1410,7 +1410,12 @@
         "uploadFirst": "Նախ upload արա նկարը։",
         "uploadAndSetupFloors": "Նախ upload արա նկարը և setup արա հարկերը։",
         "pickFloor": "Հարկեր",
-        "noFloors": "Հարկեր դեռ չկան։"
+        "noFloors": "Հարկեր դեռ չկան։",
+        "needsPolygon": "Նախ գծեք polygon",
+        "planReady": "plan",
+        "floorNeedsPolygon": "Նախ Building render-ում գծեք այս հարկի polygon-ը։ Հետո նոր կկարողանաք վերբեռնել հարկի նկարը։",
+        "floorNeedsPolygonNamed": "Հարկ {name}-ը դեռ շենքի վրա polygon չունի։ Բացեք Building render, գծեք, հետո վերադարձեք։",
+        "goToBuildingRender": "Բացել Building render"
       },
       "pages": {
         "masterplan": "Masterplan · թաղամասեր",

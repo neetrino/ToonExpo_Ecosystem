@@ -1410,7 +1410,12 @@
         "uploadFirst": "Сначала загрузите изображение.",
         "uploadAndSetupFloors": "Сначала загрузите рендер и настройте этажи.",
         "pickFloor": "Этажи",
-        "noFloors": "Этажей пока нет."
+        "noFloors": "Этажей пока нет.",
+        "needsPolygon": "Сначала нарисуйте polygon",
+        "planReady": "plan",
+        "floorNeedsPolygon": "Сначала нарисуйте polygon этого этажа на рендере здания. Затем можно загрузить план этажа.",
+        "floorNeedsPolygonNamed": "У этажа {name} ещё нет polygon на здании. Откройте building render, нарисуйте его и вернитесь.",
+        "goToBuildingRender": "Открыть building render"
       },
       "pages": {
         "masterplan": "Masterplan · районы",

@@ -77,6 +77,10 @@ export type InteractiveMappingFloorSummary = {
   name: string | null;
   floorplanMediaId: string | null;
   publicationStatus: PublicationStatus;
+  /** True when this floor has a fillable polygon on the building render canvas. */
+  hasBuildingPolygon: boolean;
+  /** True when a floor-plan image is already attached (catalog field or floor canvas). */
+  hasFloorPlan: boolean;
 };
 
 export type InteractiveMappingApartmentSummary = {

@@ -1410,7 +1410,12 @@
         "uploadFirst": "Upload an image to start mapping.",
         "uploadAndSetupFloors": "Upload a render and set up floors first.",
         "pickFloor": "Floors",
-        "noFloors": "No floors yet."
+        "noFloors": "No floors yet.",
+        "needsPolygon": "Draw polygon first",
+        "planReady": "plan",
+        "floorNeedsPolygon": "Draw this floor’s polygon on the building render first. Then you can upload the floor plan.",
+        "floorNeedsPolygonNamed": "Floor {name} has no building polygon yet. Open building render, draw it, then come back.",
+        "goToBuildingRender": "Open building render"
       },
       "pages": {
         "masterplan": "Masterplan · districts",
