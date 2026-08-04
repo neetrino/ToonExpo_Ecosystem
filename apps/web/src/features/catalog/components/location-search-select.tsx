@@ -169,13 +169,7 @@ export const LocationSearchSelect = ({
       />
 
       <DropdownPortal open={open} anchorRef={rootRef} exactWidth>
-        <div
-          ref={panelRef}
-          className={cn(
-            HERO_FILTER_PANEL_CLASS,
-            'animate-[locale-dropdown-in_var(--duration-base)_var(--ease-out-premium)]',
-          )}
-        >
+        <div ref={panelRef} className={HERO_FILTER_PANEL_CLASS}>
           <div className="border-b border-header-border bg-canvas/80 p-2.5">
             <div className="relative">
               <Search

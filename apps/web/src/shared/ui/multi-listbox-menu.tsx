@@ -55,12 +55,11 @@ export const MultiListboxMenu = ({
   >
     <div
       ref={menuRef}
-      className={cn(
+      className={
         useHeroBlock
           ? HERO_FILTER_PANEL_CLASS
-          : 'w-full overflow-hidden rounded-[16px] border border-header-border bg-surface-elevated shadow-lg',
-        'animate-[locale-dropdown-in_var(--duration-base)_var(--ease-out-premium)]',
-      )}
+          : 'w-full overflow-hidden rounded-[16px] border border-header-border bg-surface-elevated shadow-lg'
+      }
     >
       <ul
         id={listId}

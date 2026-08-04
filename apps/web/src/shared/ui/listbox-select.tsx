@@ -200,7 +200,6 @@ export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
             className={cn(
               'w-full overflow-hidden',
               'rounded-[12px] border border-header-border bg-surface-elevated py-1.5 shadow-md',
-              'animate-[locale-dropdown-in_var(--duration-base)_var(--ease-out-premium)]',
             )}
           >
             {options.map((option) => {

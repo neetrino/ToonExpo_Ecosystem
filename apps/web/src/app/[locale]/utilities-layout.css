@@ -41,11 +41,35 @@
     animation: admin-delete-modal-panel-out 0.28s cubic-bezier(0.4, 0, 0.2, 1) forwards;
   }
 
+  .animate-dropdown-panel-in-bottom {
+    transform-origin: top center;
+    animation: dropdown-panel-in-bottom var(--duration-slow) var(--ease-out-premium) both;
+  }
+
+  .animate-dropdown-panel-out-bottom {
+    transform-origin: top center;
+    animation: dropdown-panel-out-bottom 0.26s var(--ease-in-out-premium) forwards;
+  }
+
+  .animate-dropdown-panel-in-top {
+    transform-origin: bottom center;
+    animation: dropdown-panel-in-top var(--duration-slow) var(--ease-out-premium) both;
+  }
+
+  .animate-dropdown-panel-out-top {
+    transform-origin: bottom center;
+    animation: dropdown-panel-out-top 0.26s var(--ease-in-out-premium) forwards;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .animate-admin-delete-modal-backdrop-in,
     .animate-admin-delete-modal-backdrop-out,
     .animate-admin-delete-modal-panel-in,
-    .animate-admin-delete-modal-panel-out {
+    .animate-admin-delete-modal-panel-out,
+    .animate-dropdown-panel-in-bottom,
+    .animate-dropdown-panel-out-bottom,
+    .animate-dropdown-panel-in-top,
+    .animate-dropdown-panel-out-top {
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
     }

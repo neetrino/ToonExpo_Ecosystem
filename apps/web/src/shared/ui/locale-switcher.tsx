@@ -23,11 +23,6 @@ const LOCALE_FULL: Record<string, string> = {
   en: 'English',
 };
 
-/** Keeps the menu open while the pointer moves from trigger to panel. */
-const HOVER_CLOSE_DELAY_MS = 120;
-/** Invisible bridge under the trigger so the 8px gap does not fire mouseleave. */
-const MENU_HOVER_BRIDGE_CLASS = 'absolute top-full right-0 z-[var(--z-dropdown)] pt-2';
-
 type LocaleSwitcherProps = {
   /** Visual tone for light surfaces vs dark chrome (footer / hero). */
   tone?: 'light' | 'dark' | undefined;
@@ -35,9 +30,8 @@ type LocaleSwitcherProps = {
 
 /**
  * Compact language control — Figma header: plain `EN` + chevron (no pill).
- * Opens on hover (desktop); click still toggles for touch / keyboard.
- * Menu stays `absolute` under the trigger so it inherits desktop `zoom`
- * (Safari-safe — no body portal + getBoundingClientRect).
+ * Opens on click only (not hover). Menu stays `absolute` under the trigger so
+ * it inherits desktop `zoom` (Safari-safe — no body portal).
  * Wrapped in Suspense for `useSearchParams` during static prerender.
  */
 export const LocaleSwitcher = (props: LocaleSwitcherProps) => (
@@ -76,40 +70,13 @@ const LocaleSwitcherInner = ({ tone = 'light' }: LocaleSwitcherProps) => {
   const [optimisticLocale, setOptimisticLocale] = useOptimistic(locale);
   const rootRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLUListElement>(null);
-  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const listId = useId();
   const isDark = tone === 'dark';
   const displayLocale = optimisticLocale;
 
-  const clearCloseTimer = (): void => {
-    if (closeTimerRef.current == null) {
-      return;
-    }
-    clearTimeout(closeTimerRef.current);
-    closeTimerRef.current = null;
-  };
-
-  const openMenu = (): void => {
-    clearCloseTimer();
-    setOpen(true);
-  };
-
-  const scheduleCloseMenu = (): void => {
-    clearCloseTimer();
-    closeTimerRef.current = setTimeout(() => {
-      setOpen(false);
-      closeTimerRef.current = null;
-    }, HOVER_CLOSE_DELAY_MS);
-  };
-
   useEffect(() => {
     setOpen(false);
-    clearCloseTimer();
   }, [pathname, locale]);
-
-  useEffect(() => {
-    return () => clearCloseTimer();
-  }, []);
 
   useEffect(() => {
     if (!open) {
@@ -159,12 +126,7 @@ const LocaleSwitcherInner = ({ tone = 'light' }: LocaleSwitcherProps) => {
   };
 
   return (
-    <div
-      ref={rootRef}
-      className="relative"
-      onMouseEnter={openMenu}
-      onMouseLeave={scheduleCloseMenu}
-    >
+    <div ref={rootRef} className="relative">
       <button
         type="button"
         className={cn(
@@ -182,12 +144,8 @@ const LocaleSwitcherInner = ({ tone = 'light' }: LocaleSwitcherProps) => {
         aria-busy={isPending}
         disabled={isPending}
         onClick={() => {
-          // Hover/focus may already open the menu; a following click must not
-          // toggle it closed (Playwright and real pointer users both hit this).
-          clearCloseTimer();
-          setOpen(true);
+          setOpen((current) => !current);
         }}
-        onFocus={openMenu}
       >
         <span>{LOCALE_CODE[displayLocale] ?? displayLocale.toUpperCase()}</span>
         <ChevronDown
@@ -200,7 +158,7 @@ const LocaleSwitcherInner = ({ tone = 'light' }: LocaleSwitcherProps) => {
       </button>
 
       {open ? (
-        <div className={MENU_HOVER_BRIDGE_CLASS}>
+        <div className="absolute top-full right-0 z-[var(--z-dropdown)] pt-2">
           <ul
             ref={menuRef}
             id={listId}
@@ -209,7 +167,7 @@ const LocaleSwitcherInner = ({ tone = 'light' }: LocaleSwitcherProps) => {
             className={cn(
               'w-max overflow-hidden rounded-[12px] border border-header-border',
               'bg-surface-elevated py-1.5 text-ink shadow-md',
-              'animate-[locale-dropdown-in_var(--duration-base)_var(--ease-out-premium)]',
+              'animate-dropdown-panel-in-bottom',
             )}
           >
             {routing.locales.map((code) => {
