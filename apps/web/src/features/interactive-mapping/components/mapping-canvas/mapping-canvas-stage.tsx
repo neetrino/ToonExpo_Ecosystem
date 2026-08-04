@@ -202,17 +202,17 @@ export const MappingCanvasStage = ({
             return null;
           }
           const editingSelected = mode === 'edit-polygon' && entity.id === selectedId;
+          const markerLabel = formatMarkerLabel(entity.label);
+          const compactMarker = markerLabel.length <= 2;
           return (
             <button
               key={`marker-${entity.id}`}
               type="button"
-              className={`absolute z-10 flex -translate-x-1/2 -translate-y-1/2 cursor-grab items-center justify-center rounded-full border border-white font-semibold tracking-wide text-white shadow-[0_2px_6px_rgba(0,0,0,0.35)] active:cursor-grabbing ${
-                editingSelected ? 'h-3.5 w-3.5 text-[8px] opacity-70' : 'h-5 w-5 text-[10px]'
-              } ${isDrawingMode ? 'pointer-events-none' : ''} ${
-                entity.id === selectedId
-                  ? 'bg-[#d56a20] ring-2 ring-white/80 ring-offset-1 ring-offset-transparent'
-                  : 'bg-[#e07a2f]'
-              }`}
+              className={`map-editor-marker absolute z-10 -translate-x-1/2 -translate-y-1/2 cursor-grab active:cursor-grabbing ${
+                compactMarker ? 'map-editor-marker--compact' : 'map-editor-marker--pill'
+              } ${editingSelected ? 'map-editor-marker--editing' : ''} ${
+                isDrawingMode ? 'pointer-events-none' : ''
+              } ${entity.id === selectedId ? 'map-editor-marker--selected' : ''}`}
               style={{
                 left: `${markerX * 100}%`,
                 top: `${markerY * 100}%`,
@@ -225,7 +225,7 @@ export const MappingCanvasStage = ({
               onPointerMove={onMarkerPointerMove}
               onPointerUp={onMarkerPointerUp}
             >
-              {formatMarkerLabel(entity.label)}
+              {markerLabel}
             </button>
           );
         })}

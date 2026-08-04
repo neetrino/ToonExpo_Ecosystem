@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+
 import { resolvePolygonLabelPoint } from '@/features/visual-map/utils/resolve-polygon-label-point';
 
 export type PolygonHotspotOverlayItem = {
@@ -19,14 +21,11 @@ type PolygonHotspotOverlayProps = {
   onSelect?: (id: string) => void;
 };
 
-const LABEL_RADIUS_RATIO = 0.018;
-const LABEL_FONT_RATIO = 0.024;
-const LABEL_SIZE_MIN = 10;
-const LABEL_SIZE_MAX = 22;
+const LABEL_COMPACT_MAX_CHARS = 2;
 
 /**
- * SVG overlay for published polygon hotspots (Admin viewBox pixel `d` paths).
- * Fill + labels stay hidden until hover/focus (same contract as Phase 1–2).
+ * SVG polygon hit-targets + HTML label badges.
+ * Badges stay circular (not warped by the stretched SVG viewBox).
  */
 export const PolygonHotspotOverlay = ({
   items,
@@ -35,44 +34,25 @@ export const PolygonHotspotOverlay = ({
   interactive = false,
   onSelect,
 }: PolygonHotspotOverlayProps) => {
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
+
   if (items.length === 0 || viewBoxWidth <= 0 || viewBoxHeight <= 0) {
     return null;
   }
 
-  const minSide = Math.min(viewBoxWidth, viewBoxHeight);
-  const labelRadius = Math.min(
-    LABEL_SIZE_MAX,
-    Math.max(LABEL_SIZE_MIN, minSide * LABEL_RADIUS_RATIO),
-  );
-  const labelFontSize = Math.min(
-    LABEL_SIZE_MAX,
-    Math.max(LABEL_SIZE_MIN, minSide * LABEL_FONT_RATIO),
-  );
-
   return (
-    <svg
-      viewBox={`0 0 ${viewBoxWidth} ${viewBoxHeight}`}
-      preserveAspectRatio="none"
-      className="pointer-events-none absolute inset-0 z-10 h-full w-full"
-      aria-hidden={!interactive}
-    >
-      {items.map((item) => {
-        const selected = item.selected === true;
-        const labelPoint = resolvePolygonLabelPoint({
-          svgPath: item.svgPath,
-          xPercent: item.xPercent ?? 0,
-          yPercent: item.yPercent ?? 0,
-          viewBoxWidth,
-          viewBoxHeight,
-        });
-
-        return (
-          <g
-            key={item.id}
-            className="map-hotspot-item"
-            data-selected={selected ? 'true' : undefined}
-          >
+    <>
+      <svg
+        viewBox={`0 0 ${viewBoxWidth} ${viewBoxHeight}`}
+        preserveAspectRatio="none"
+        className="pointer-events-none absolute inset-0 z-10 h-full w-full"
+        aria-hidden={!interactive}
+      >
+        {items.map((item) => {
+          const selected = item.selected === true;
+          return (
             <path
+              key={item.id}
               d={item.svgPath}
               className="map-hotspot-path"
               data-selected={selected ? 'true' : undefined}
@@ -81,6 +61,10 @@ export const PolygonHotspotOverlay = ({
               role={interactive ? 'button' : undefined}
               tabIndex={interactive ? 0 : undefined}
               aria-label={interactive ? item.label : undefined}
+              onMouseEnter={() => setHoveredId(item.id)}
+              onMouseLeave={() => setHoveredId((current) => (current === item.id ? null : current))}
+              onFocus={() => setHoveredId(item.id)}
+              onBlur={() => setHoveredId((current) => (current === item.id ? null : current))}
               onClick={
                 interactive
                   ? (event) => {
@@ -101,29 +85,41 @@ export const PolygonHotspotOverlay = ({
                   : undefined
               }
             />
-            {labelPoint ? (
-              <g className="map-hotspot-label" pointerEvents="none" aria-hidden="true">
-                <circle
-                  cx={labelPoint.x}
-                  cy={labelPoint.y}
-                  r={labelRadius}
-                  className="map-hotspot-label-disc"
-                />
-                <text
-                  x={labelPoint.x}
-                  y={labelPoint.y}
-                  textAnchor="middle"
-                  dominantBaseline="central"
-                  fontSize={labelFontSize}
-                  className="map-hotspot-label-text"
-                >
-                  {item.label}
-                </text>
-              </g>
-            ) : null}
-          </g>
-        );
-      })}
-    </svg>
+          );
+        })}
+      </svg>
+
+      <div className="pointer-events-none absolute inset-0 z-20" aria-hidden="true">
+        {items.map((item) => {
+          const labelPoint = resolvePolygonLabelPoint({
+            svgPath: item.svgPath,
+            xPercent: item.xPercent ?? 0,
+            yPercent: item.yPercent ?? 0,
+            viewBoxWidth,
+            viewBoxHeight,
+          });
+          if (!labelPoint) {
+            return null;
+          }
+
+          const visible = item.selected === true || hoveredId === item.id;
+          const compact = item.label.trim().length <= LABEL_COMPACT_MAX_CHARS;
+          const leftPercent = (labelPoint.x / viewBoxWidth) * 100;
+          const topPercent = (labelPoint.y / viewBoxHeight) * 100;
+
+          return (
+            <span
+              key={`label-${item.id}`}
+              className={`map-hotspot-badge ${compact ? 'map-hotspot-badge--compact' : 'map-hotspot-badge--pill'} ${
+                visible ? 'map-hotspot-badge--visible' : ''
+              }`}
+              style={{ left: `${leftPercent}%`, top: `${topPercent}%` }}
+            >
+              {item.label}
+            </span>
+          );
+        })}
+      </div>
+    </>
   );
 };
