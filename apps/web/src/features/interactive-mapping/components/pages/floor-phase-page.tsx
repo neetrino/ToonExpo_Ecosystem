@@ -5,7 +5,10 @@ import { useTranslations } from 'next-intl';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 
-import { createPortalApartment } from '@/features/builder/api/portal-apartments-api';
+import {
+  createPortalApartment,
+  deletePortalApartment,
+} from '@/features/builder/api/portal-apartments-api';
 import { Link, useRouter } from '@/i18n/navigation';
 
 import {
@@ -19,8 +22,10 @@ import { useInteractiveMappingProjectQuery } from '../../hooks/use-interactive-m
 import { useMappingCatalog } from '../../hooks/use-mapping-catalog';
 import { FloorApartmentMappingEditor } from '../editors/floor-apartment-mapping-editor';
 import { FloorPlanUploadPicker } from '../floor-plan-upload-picker';
+import { FloorPolygonRequiredGate } from '../floor-polygon-required-gate';
 import { CreateEntityInlineForm } from '../forms/create-entity-inline-form';
 import { MappingImageUploader } from '../media/mapping-image-uploader';
+import { isFloorPlanMappingUnlocked } from '../../utils/is-floor-plan-mapping-unlocked';
 
 export type FloorPhasePageProps = {
   projectId: string;
@@ -29,6 +34,7 @@ export type FloorPhasePageProps = {
 
 /**
  * Phase 4 page: floor plan + apartment mapping.
+ * Floors without a building-render polygon are soft-locked until Phase 3 is done for them.
  */
 export const FloorPhasePage = ({ projectId, floorId }: FloorPhasePageProps) => {
   const t = useTranslations('Admin.interactiveMapping');
@@ -39,6 +45,7 @@ export const FloorPhasePage = ({ projectId, floorId }: FloorPhasePageProps) => {
   const [loadingCanvas, setLoadingCanvas] = useState(true);
   const [mediaId, setMediaId] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [lockNotice, setLockNotice] = useState<string | null>(null);
 
   const companyId = detailQuery.data?.project.builderCompanyId;
   const catalog = useMappingCatalog(companyId);
@@ -83,6 +90,10 @@ export const FloorPhasePage = ({ projectId, floorId }: FloorPhasePageProps) => {
     };
   }, [catalogScope, floorId, projectId, t]);
 
+  useEffect(() => {
+    setLockNotice(null);
+  }, [floorId]);
+
   if (detailQuery.isLoading || loadingCanvas) {
     return <p className="text-sm text-ink-muted">{t('loading')}</p>;
   }
@@ -109,8 +120,15 @@ export const FloorPhasePage = ({ projectId, floorId }: FloorPhasePageProps) => {
   );
   const apartments = detailQuery.data.apartments.filter((item) => item.floorId === floorId);
   const { mediaContext, basePath, mode } = catalog;
+  const buildingRenderHref = `${basePath}/${projectId}/buildings/${floor.buildingId}/render`;
+  const floorUnlocked = isFloorPlanMappingUnlocked(floor);
+  const floorLabel = floor.name ?? String(floor.number);
 
   const attachMedia = async (asset: MediaAssetItem) => {
+    if (!floorUnlocked) {
+      setLockNotice(t('forms.floorNeedsPolygon'));
+      return;
+    }
     setError(null);
     setMediaId(asset.id);
     try {
@@ -154,7 +172,7 @@ export const FloorPhasePage = ({ projectId, floorId }: FloorPhasePageProps) => {
           {t('backToWizard')}
         </Link>
         <h1 className="mt-3 font-display text-3xl text-ink">
-          {t('pages.floor', { name: floor.name ?? String(floor.number) })}
+          {t('pages.floor', { name: floorLabel })}
         </h1>
       </div>
 
@@ -163,62 +181,97 @@ export const FloorPhasePage = ({ projectId, floorId }: FloorPhasePageProps) => {
         selectedFloorId={floorId}
         title={t('forms.pickFloor')}
         emptyLabel={t('forms.noFloors')}
+        lockedHint={t('forms.floorNeedsPolygon')}
+        planReadyLabel={t('forms.planReady')}
+        needsPolygonLabel={t('forms.needsPolygon')}
         onSelectFloor={(nextFloorId) => {
+          setLockNotice(null);
           router.push(`${basePath}/${projectId}/floors/${nextFloorId}`);
         }}
-      />
-
-      <MappingImageUploader
-        id="floor-plan-image"
-        label={t('forms.floorPlanImage')}
-        context={mediaContext}
-        value={mediaId}
-        previewUrl={canvas?.media.fileUrl}
-        onChange={(asset) => {
-          void attachMedia(asset);
+        onSelectLockedFloor={(lockedFloor) => {
+          setLockNotice(
+            t('forms.floorNeedsPolygonNamed', {
+              name: lockedFloor.name ?? String(lockedFloor.number),
+            }),
+          );
         }}
       />
 
-      {error ? (
-        <p role="alert" className="text-sm text-danger">
-          {error}
+      {lockNotice ? (
+        <p role="status" className="text-sm text-ink-muted">
+          {lockNotice}
         </p>
       ) : null}
 
-      {canvas ? (
-        <FloorApartmentMappingEditor
-          companyId={companyId}
-          canvasId={canvas.id}
-          imageUrl={canvas.media.fileUrl}
-          imageWidth={width}
-          imageHeight={height}
-          viewBoxWidth={width}
-          viewBoxHeight={height}
-          apartments={apartments}
-          hotspots={canvas.hotspots}
-          createForm={
-            <CreateEntityInlineForm
-              title={t('forms.createApartment')}
-              submitLabel={t('forms.createApartment')}
-              pendingLabel={t('forms.saving')}
-              nameLabel={t('forms.apartmentNumber')}
-              namePlaceholder={t('forms.apartmentPlaceholder')}
-              onSubmit={async (number) => {
-                await createPortalApartment(floorId, { number }, { scope: catalogScope });
+      {!floorUnlocked ? (
+        <FloorPolygonRequiredGate
+          floorLabel={t('pages.floor', { name: floorLabel })}
+          message={t('forms.floorNeedsPolygon')}
+          ctaLabel={t('forms.goToBuildingRender')}
+          buildingRenderHref={buildingRenderHref}
+        />
+      ) : (
+        <>
+          <MappingImageUploader
+            id="floor-plan-image"
+            label={t('forms.floorPlanImage')}
+            context={mediaContext}
+            value={mediaId}
+            previewUrl={canvas?.media.fileUrl}
+            onChange={(asset) => {
+              void attachMedia(asset);
+            }}
+          />
+
+          {error ? (
+            <p role="alert" className="text-sm text-danger">
+              {error}
+            </p>
+          ) : null}
+
+          {canvas ? (
+            <FloorApartmentMappingEditor
+              companyId={companyId}
+              canvasId={canvas.id}
+              imageUrl={canvas.media.fileUrl}
+              imageWidth={width}
+              imageHeight={height}
+              viewBoxWidth={width}
+              viewBoxHeight={height}
+              apartments={apartments}
+              hotspots={canvas.hotspots}
+              createForm={
+                <CreateEntityInlineForm
+                  title={t('forms.createApartment')}
+                  submitLabel={t('forms.createApartment')}
+                  pendingLabel={t('forms.saving')}
+                  nameLabel={t('forms.apartmentNumber')}
+                  namePlaceholder={t('forms.apartmentPlaceholder')}
+                  digitsOnly
+                  onSubmit={async (number) => {
+                    await createPortalApartment(floorId, { number }, { scope: catalogScope });
+                    void queryClient.invalidateQueries({
+                      queryKey: interactiveMappingProjectQueryKey(projectId, mode),
+                    });
+                  }}
+                />
+              }
+              onDeleteApartment={async (apartmentId) => {
+                await deletePortalApartment(apartmentId, { scope: catalogScope });
+                void queryClient.invalidateQueries({
+                  queryKey: interactiveMappingProjectQueryKey(projectId, mode),
+                });
+              }}
+              onAfterSave={() => {
                 void queryClient.invalidateQueries({
                   queryKey: interactiveMappingProjectQueryKey(projectId, mode),
                 });
               }}
             />
-          }
-          onAfterSave={() => {
-            void queryClient.invalidateQueries({
-              queryKey: interactiveMappingProjectQueryKey(projectId, mode),
-            });
-          }}
-        />
-      ) : (
-        <p className="text-sm text-ink-muted">{t('forms.uploadFirst')}</p>
+          ) : (
+            <p className="text-sm text-ink-muted">{t('forms.uploadFirst')}</p>
+          )}
+        </>
       )}
     </div>
   );

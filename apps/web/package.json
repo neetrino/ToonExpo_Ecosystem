@@ -6,6 +6,7 @@
   "description": "ToonExpo Next.js frontend",
   "scripts": {
     "copy:maplibre-worker": "node scripts/copy-maplibre-worker.mjs",
+    "generate:brand-icons": "node scripts/generate-brand-icons.mjs",
     "predev": "pnpm run copy:maplibre-worker",
     "prebuild": "pnpm run copy:maplibre-worker",
     "dev": "next dev -p 3000",
@@ -39,6 +40,7 @@
     "react": "19.2.7",
     "react-dom": "19.2.7",
     "react-hook-form": "^7.81.0",
+    "sharp": "0.34.5",
     "tailwind-merge": "3.6.0",
     "three": "^0.185.1",
     "zod": "4.4.3"

@@ -20,11 +20,11 @@ Supported languages:
 
 Public content should support translations.
 
-## Fallback Language
+## Missing Translations
 
-If translation is missing in v1, platform can fall back to default language.
+If a translation is missing for the active locale, that field is omitted (empty) rather than showing another language.
 
-This should be visible/understandable, not broken empty content.
+Builders should fill `hy`, `ru`, and `en` translation records for public catalog text.
 
 ## Performance
 
@@ -47,4 +47,3 @@ Provide:
 - keyboard reachable controls;
 - text fallback for visual maps;
 - color labels not relying only on color.
-

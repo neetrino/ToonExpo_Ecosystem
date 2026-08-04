@@ -180,7 +180,6 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(functio
           className={cn(
             'w-full min-w-[16.5rem] overflow-hidden p-3',
             'rounded-[12px] border border-header-border bg-surface-elevated shadow-md',
-            'animate-[locale-dropdown-in_var(--duration-base)_var(--ease-out-premium)]',
           )}
         >
           <div className="mb-2 flex items-center justify-between gap-2">

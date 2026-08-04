@@ -71,7 +71,14 @@ export const PhaseWizardPage = ({ projectId }: PhaseWizardPageProps) => {
   const primaryDistrict = districts[0];
   const primaryBuilding =
     buildings.find((item) => item.districtId === primaryDistrict?.id) ?? buildings[0];
-  const primaryFloor = floors.find((item) => item.buildingId === primaryBuilding?.id) ?? floors[0];
+  const primaryFloor =
+    floors.find(
+      (item) =>
+        item.buildingId === primaryBuilding?.id && (item.hasBuildingPolygon || item.hasFloorPlan),
+    ) ??
+    floors.find((item) => item.hasBuildingPolygon || item.hasFloorPlan) ??
+    floors.find((item) => item.buildingId === primaryBuilding?.id) ??
+    floors[0];
 
   const invalidate = () => {
     void queryClient.invalidateQueries({
@@ -222,6 +229,7 @@ export const PhaseWizardPage = ({ projectId }: PhaseWizardPageProps) => {
               pendingLabel={t('forms.saving')}
               nameLabel={t('forms.apartmentNumber')}
               namePlaceholder={t('forms.apartmentPlaceholder')}
+              digitsOnly
               onSubmit={async (number) => {
                 await createPortalApartment(primaryFloor.id, { number }, { scope });
                 invalidate();

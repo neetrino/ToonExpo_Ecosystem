@@ -146,11 +146,7 @@ export const PriceRangeSelect = ({
           ref={panelRef}
           role="dialog"
           aria-label={labels.save}
-          className={cn(
-            HERO_FILTER_PANEL_CLASS,
-            'p-3.5',
-            'animate-[locale-dropdown-in_var(--duration-base)_var(--ease-out-premium)]',
-          )}
+          className={cn(HERO_FILTER_PANEL_CLASS, 'p-3.5')}
         >
           <div className="flex flex-col gap-3">
             <label className="space-y-1.5">

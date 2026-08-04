@@ -5,31 +5,36 @@ type MappingCanvasHintParams = {
   entitiesCount: number;
   selectedId: string | null;
   toolPreset: 'basic' | 'floors';
+  t: (key: string, values?: Record<string, string | number>) => string;
 };
 
+/**
+ * Returns the localized hint under the mapping toolbar for the current mode.
+ */
 export const getMappingCanvasHintText = ({
   mode,
   entitiesCount,
   selectedId,
   toolPreset,
+  t,
 }: MappingCanvasHintParams): string => {
   if (mode === 'draw-band') {
-    return 'Գոտի · 3 կտտոց՝ ձախ-վերև → աջ-վերև → ներքևի եզր։';
+    return t('hintDrawBand');
   }
   if (mode === 'auto-stack') {
-    return `Ավտո հարկեր · 4 կտտոց՝ TL → TR → BR → BL (${entitiesCount} հարկ)։`;
+    return t('hintAutoStack', { count: entitiesCount });
   }
   if (mode === 'edit-polygon') {
-    return 'Նարնջագույն կետերը քաշիր։ Եզրի + · նոր կետ ավելացնել։ Delete՝ ջնջել ընտրվածը։';
+    return t('hintEditPolygon');
   }
   if (entitiesCount === 0) {
-    return 'Նախ ստեղծիր/ընտրիր միավորը ձախ ցանկում, հետո Polygon գործիքով գծիր։';
+    return t('hintEmpty');
   }
   if (!selectedId) {
-    return 'Ընտրիր միավորը ձախ ցանկից, հետո սեղմիր Polygon և գծիր կետեր։';
+    return t('hintSelectEntity');
   }
   if (toolPreset === 'floors') {
-    return 'Արագ՝ Ավտո / Գոտի։ Խմբագրել · քաշել՝ ձևը ադապտացնելու համար։';
+    return t('hintFloorsReady');
   }
-  return 'Save-ից հետո հաջորդ կտտոցը սկսում է նոր գիծ (հինը մնում է)։ Խմբագրել · քաշել՝ ձևը փոխելու համար։';
+  return t('hintAfterSave');
 };

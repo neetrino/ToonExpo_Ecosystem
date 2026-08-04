@@ -1,6 +1,6 @@
-import { ApiPropertyOptional } from "@nestjs/swagger";
-import { Transform } from "class-transformer";
-import { IsOptional, IsString } from "class-validator";
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
+import { IsOptional, IsString } from 'class-validator';
 
 /**
  * Shared `?locale=` query for public catalog endpoints.
@@ -8,13 +8,13 @@ import { IsOptional, IsString } from "class-validator";
  */
 export class CatalogLocaleQueryDto {
   @ApiPropertyOptional({
-    enum: ["hy", "ru", "en"],
-    description: "Catalog content locale; falls back to hy",
+    enum: ['hy', 'ru', 'en'],
+    description: 'Catalog content locale; unknown values resolve to hy',
   })
   @IsOptional()
   @IsString()
   @Transform(({ value }: { value: unknown }) =>
-    typeof value === "string" ? value.trim().toLowerCase() : value,
+    typeof value === 'string' ? value.trim().toLowerCase() : value,
   )
   locale?: string;
 }

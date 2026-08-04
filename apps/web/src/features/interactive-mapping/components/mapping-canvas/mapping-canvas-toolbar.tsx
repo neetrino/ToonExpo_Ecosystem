@@ -1,5 +1,7 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
+
 import { svgPathToPolygonShape, type PolygonShape } from '../../utils/curved-polygon';
 import {
   AutoStackIcon,
@@ -42,16 +44,18 @@ type MappingCanvasToolbarProps = {
   modeIsAutoStack: boolean;
 };
 
-const BASIC_TOOLS = [
-  ['select', 'Ընտրել', SelectCursorIcon],
-  ['place-marker', 'Marker', MarkerPinIcon],
-  ['draw-polygon', 'Polygon', PolygonShapeIcon],
-] as const;
+type ToolId = 'select' | 'place-marker' | 'draw-polygon' | 'draw-band' | 'auto-stack';
 
-const FLOOR_TOOLS = [
-  ['draw-band', 'Գոտի', BandStripIcon],
-  ['auto-stack', 'Ավտո', AutoStackIcon],
-] as const;
+const BASIC_TOOLS: Array<[ToolId, string, typeof SelectCursorIcon]> = [
+  ['select', 'toolSelect', SelectCursorIcon],
+  ['place-marker', 'toolMarker', MarkerPinIcon],
+  ['draw-polygon', 'toolPolygon', PolygonShapeIcon],
+];
+
+const FLOOR_TOOLS: Array<[ToolId, string, typeof BandStripIcon]> = [
+  ['draw-band', 'toolBand', BandStripIcon],
+  ['auto-stack', 'toolAuto', AutoStackIcon],
+];
 
 export const MappingCanvasToolbar = ({
   mode,
@@ -80,19 +84,21 @@ export const MappingCanvasToolbar = ({
   modeIsDrawBand,
   modeIsAutoStack,
 }: MappingCanvasToolbarProps) => {
+  const t = useTranslations('Admin.interactiveMapping.canvas');
   const floorTools = toolPreset === 'floors' ? FLOOR_TOOLS : [];
 
   return (
     <>
-      <div className="flex flex-wrap gap-2" role="toolbar" aria-label="Mapping tools">
-        {[...BASIC_TOOLS, ...floorTools].map(([value, label, Icon]) => {
+      <div className="flex flex-wrap gap-2" role="toolbar" aria-label={t('toolsAria')}>
+        {[...BASIC_TOOLS, ...floorTools].map(([value, labelKey, Icon]) => {
           const needsSelection = value === 'draw-polygon' || value === 'place-marker';
           const disabled = needsSelection && !selectedId;
+          const label = t(labelKey);
           return (
             <button
               key={value}
               type="button"
-              title={disabled ? 'Նախ ընտրիր միավորը ձախ ցանկից' : label}
+              title={disabled ? t('selectEntityFirst') : label}
               aria-label={label}
               disabled={disabled}
               className={`inline-flex items-center gap-1.5 border px-2.5 py-1.5 text-xs uppercase tracking-[0.14em] disabled:cursor-not-allowed disabled:opacity-40 ${
@@ -121,7 +127,7 @@ export const MappingCanvasToolbar = ({
                 );
               }}
             >
-              Խմբագրել · քաշել
+              {t('editDrag')}
             </button>
             <button
               type="button"
@@ -131,14 +137,14 @@ export const MappingCanvasToolbar = ({
                 startFreshPolygon();
               }}
             >
-              Նոր polygon
+              {t('newPolygon')}
             </button>
             <button
               type="button"
               className="border border-red-700/40 px-3 py-1.5 text-xs uppercase tracking-[0.14em] text-red-800"
               onClick={deletePolygon}
             >
-              Ջնջել polygon
+              {t('deletePolygon')}
             </button>
           </>
         ) : null}
@@ -157,8 +163,8 @@ export const MappingCanvasToolbar = ({
                   closePolygon();
                 }}
                 disabled={draftPointsLength < 1}
-                title={`Պահպանել գծագիրը (${draftPointsLength} կետ)`}
-                aria-label={`Պահպանել գծագիրը, ${draftPointsLength} կետ`}
+                title={t('saveDrawing', { count: draftPointsLength })}
+                aria-label={t('saveDrawingAria', { count: draftPointsLength })}
               >
                 <SaveCheckIcon />
                 <span>{draftPointsLength}</span>
@@ -169,8 +175,8 @@ export const MappingCanvasToolbar = ({
               className="inline-flex items-center justify-center border border-red-700/40 px-2.5 py-1.5 text-red-800 disabled:opacity-40"
               onClick={deleteSelectedDraftPoint}
               disabled={selectedDraftIndex == null}
-              title="Ջնջել ընտրված կետը (Delete)"
-              aria-label="Ջնջել ընտրված կետը"
+              title={t('deleteSelectedPoint')}
+              aria-label={t('deleteSelectedPointAria')}
             >
               <TrashPointIcon />
             </button>
@@ -179,8 +185,8 @@ export const MappingCanvasToolbar = ({
               className="inline-flex items-center justify-center border border-border px-2.5 py-1.5 disabled:opacity-40"
               onClick={undoLastDraftPoint}
               disabled={draftPointsLength === 0}
-              title="Հետ · վերջին կետ (Ctrl+Z)"
-              aria-label="Հետ վերջին կետ"
+              title={t('undoLastPoint')}
+              aria-label={t('undoLastPointAria')}
             >
               <UndoPointIcon />
             </button>
@@ -188,8 +194,8 @@ export const MappingCanvasToolbar = ({
               type="button"
               className="inline-flex items-center justify-center border border-border px-2.5 py-1.5"
               onClick={clearDraft}
-              title="Չեղարկել բոլոր կետերը"
-              aria-label="Չեղարկել բոլոր կետերը"
+              title={t('clearAllPoints')}
+              aria-label={t('clearAllPointsAria')}
             >
               <ClearPointsIcon />
             </button>
@@ -199,21 +205,19 @@ export const MappingCanvasToolbar = ({
 
       {draftPointsLength > 0 && modeIsDrawPolygon ? (
         <p className="text-xs text-amber-800">
-          Գիծը հետևում է cursor-ին։ Կտտացրու կետեր ավելացնելու համար · ✓ / Enter՝ պահպանել
-          {toolPreset === 'floors' ? ' (փոխարինում է հին գծագիրը)' : ''}։
+          {t('draftFollowCursor', {
+            floorsSuffix: toolPreset === 'floors' ? t('floorsReplaceSuffix') : '',
+          })}
         </p>
       ) : null}
       {draftPointsLength > 0 && modeIsEditPolygon ? (
-        <p className="text-xs text-amber-800">
-          Եզրի կետը քաշիր՝ գիծը կլորացնելու համար (գիծը մնում է cursor-ի տակ)։ Alt+click՝ ուղղել։ ✓
-          / Enter՝ պահպանել։
-        </p>
+        <p className="text-xs text-amber-800">{t('editCurveHint')}</p>
       ) : null}
       {draftPointsLength > 0 && (modeIsDrawBand || modeIsAutoStack) ? (
         <p className="text-xs text-amber-800">
           {modeIsDrawBand
-            ? `Գոտի · ${draftPointsLength}/3 կտտոց`
-            : `Ավտո · ${draftPointsLength}/4 կտտոց`}
+            ? t('bandProgress', { count: draftPointsLength })
+            : t('autoProgress', { count: draftPointsLength })}
         </p>
       ) : null}
     </>

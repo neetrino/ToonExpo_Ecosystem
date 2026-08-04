@@ -1,19 +1,20 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
-import type { BuilderDetail, BuilderSummary } from "@toonexpo/contracts";
-import { CompanyStatus, CompanyType, PublicationStatus } from "@toonexpo/db";
+import { Injectable, NotFoundException } from '@nestjs/common';
+import type { BuilderDetail, BuilderSummary } from '@toonexpo/contracts';
+import { CompanyStatus, CompanyType, PublicationStatus } from '@toonexpo/db';
 
-import { AnalyticsService } from "../analytics/analytics.service.js";
-import { PrismaService } from "../prisma/prisma.service.js";
-import { publishedApartmentWhere } from "./mappers/catalog.mapper.js";
-import { mapProjectListItem } from "./mappers/project.mapper.js";
-import type { CatalogViewerContext } from "./projects.service.js";
-import { loadTranslations } from "./utils/load-translations.js";
+import { AnalyticsService } from '../analytics/analytics.service.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { publishedApartmentWhere } from './mappers/catalog.mapper.js';
+import { mapProjectListItem } from './mappers/project.mapper.js';
+import type { CatalogViewerContext } from './projects.service.js';
+import { loadTranslations } from './utils/load-translations.js';
 import {
   resolveCatalogLocale,
+  resolveTranslatedName,
   resolveTranslatedValue,
   TRANSLATION_ENTITY,
   TRANSLATION_FIELD,
-} from "./utils/resolve-translation.js";
+} from './utils/resolve-translation.js';
 
 @Injectable()
 export class BuildersService {
@@ -29,7 +30,7 @@ export class BuildersService {
         type: CompanyType.builder,
         status: CompanyStatus.active,
       },
-      orderBy: { name: "asc" },
+      orderBy: { name: 'asc' },
       include: {
         logoMedia: true,
         _count: {
@@ -48,15 +49,10 @@ export class BuildersService {
       builders.map((builder) => builder.id),
     );
 
-    return builders.map((builder) =>
-      this.mapBuilderSummary(builder, locale, translations),
-    );
+    return builders.map((builder) => this.mapBuilderSummary(builder, locale, translations));
   }
 
-  async getBuilderById(
-    builderId: string,
-    viewer: CatalogViewerContext,
-  ): Promise<BuilderDetail> {
+  async getBuilderById(builderId: string, viewer: CatalogViewerContext): Promise<BuilderDetail> {
     const locale = resolveCatalogLocale(viewer.locale);
     const builder = await this.prisma.db.company.findFirst({
       where: {
@@ -77,7 +73,7 @@ export class BuildersService {
     });
 
     if (!builder) {
-      throw new NotFoundException("Builder not found");
+      throw new NotFoundException('Builder not found');
     }
 
     const projects = await this.prisma.db.project.findMany({
@@ -85,7 +81,7 @@ export class BuildersService {
         builderCompanyId: builder.id,
         publicationStatus: PublicationStatus.published,
       },
-      orderBy: [{ name: "asc" }],
+      orderBy: [{ name: 'asc' }],
       include: {
         builderCompany: { include: { logoMedia: true } },
         coverMedia: true,
@@ -101,11 +97,9 @@ export class BuildersService {
       },
     });
 
-    const translations = await loadTranslations(
-      this.prisma.db,
-      TRANSLATION_ENTITY.company,
-      [builder.id],
-    );
+    const translations = await loadTranslations(this.prisma.db, TRANSLATION_ENTITY.company, [
+      builder.id,
+    ]);
     const projectTranslations = await loadTranslations(
       this.prisma.db,
       TRANSLATION_ENTITY.project,
@@ -114,15 +108,11 @@ export class BuildersService {
     const mergedTranslations = [...translations, ...projectTranslations];
 
     this.analytics.track({
-      eventType: "builder_profile_view",
+      eventType: 'builder_profile_view',
       companyId: builder.id,
     });
 
-    const summary = this.mapBuilderSummary(
-      builder,
-      locale,
-      translations,
-    );
+    const summary = this.mapBuilderSummary(builder, locale, translations);
 
     return {
       ...summary,
@@ -147,15 +137,14 @@ export class BuildersService {
     locale: ReturnType<typeof resolveCatalogLocale>,
     translations: Awaited<ReturnType<typeof loadTranslations>>,
   ): BuilderSummary {
-    const name =
-      resolveTranslatedValue(
-        translations,
-        TRANSLATION_ENTITY.company,
-        builder.id,
-        TRANSLATION_FIELD.name,
-        locale,
-        builder.name,
-      ) ?? builder.name;
+    const name = resolveTranslatedName(
+      translations,
+      TRANSLATION_ENTITY.company,
+      builder.id,
+      TRANSLATION_FIELD.name,
+      locale,
+      builder.name,
+    );
 
     return {
       id: builder.id,

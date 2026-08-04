@@ -10,6 +10,56 @@
   }
 }
 
+/** Portaled menus that open below the trigger. */
+@keyframes dropdown-panel-in-bottom {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -12px, 0) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes dropdown-panel-out-bottom {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translate3d(0, -8px, 0) scale(0.98);
+  }
+}
+
+/** Portaled menus that open above the trigger (hero search on desktop). */
+@keyframes dropdown-panel-in-top {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes dropdown-panel-out-top {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translate3d(0, 8px, 0) scale(0.98);
+  }
+}
+
 /**
  * Opacity-only: any non-none `transform` on this wrapper becomes a containing
  * block and breaks `position: fixed|sticky` for role portal headers inside it.

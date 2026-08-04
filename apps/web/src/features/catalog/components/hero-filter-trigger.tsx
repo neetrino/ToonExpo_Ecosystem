@@ -56,7 +56,8 @@ export const HeroFilterTrigger = forwardRef<HTMLButtonElement, HeroFilterTrigger
 
         <ChevronDown
           className={cn(
-            'size-4 shrink-0 text-header-muted transition-transform duration-[var(--duration-fast)]',
+            'size-4 shrink-0 text-header-muted',
+            'transition-transform duration-[var(--duration-slow)] ease-[var(--ease-out-premium)]',
             open && 'rotate-180',
             open && 'lg:text-brand-deep',
           )}

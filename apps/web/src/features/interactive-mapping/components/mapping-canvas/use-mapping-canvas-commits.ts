@@ -60,10 +60,13 @@ export const useMappingCanvasCommits = ({
 }: UseMappingCanvasCommitsParams) => {
   const commitDraft = useCallback(
     (points: NormPoint[], entityId: string) => {
-      if (points.length < 1) return null;
-
       const editing = modeRef.current === 'edit-polygon';
       const shaped = editShapeRef.current;
+      const vertexCount =
+        editing && shaped && shaped.vertices.length > 0 ? shaped.vertices.length : points.length;
+      // Public hover uses SVG fill hit-testing — need a closed polygon (≥3 points).
+      if (vertexCount < 3) return null;
+
       const nextSegment =
         editing && shaped && shaped.vertices.length > 0
           ? polygonShapeToSvgPath(shaped, viewBoxWidth, viewBoxHeight)
@@ -191,7 +194,7 @@ export const useMappingCanvasCommits = ({
     const entityId = selectedIdRef.current;
     if (!entityId) return;
     const points = draftRef.current;
-    if (points.length < 1) return;
+    if (points.length < 3) return;
     commitDraft(points, entityId);
   }, [commitDraft, draftRef, selectedIdRef]);
 

@@ -74,7 +74,7 @@ export const setupBuildingFloors = async (
   return {
     buildingId,
     floorsCount: dto.floorCount,
-    floors: floors.map(mapFloor),
+    floors: floors.map((floor) => mapFloor(floor)),
     renderCanvasId,
   };
 };

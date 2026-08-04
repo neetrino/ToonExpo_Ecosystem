@@ -23,11 +23,6 @@ const LOCALE_FULL: Record<string, string> = {
   en: 'English',
 };
 
-/** Keeps the menu open while the pointer moves from trigger to panel. */
-const HOVER_CLOSE_DELAY_MS = 120;
-/** Invisible bridge under the trigger so the 8px gap does not fire mouseleave. */
-const MENU_HOVER_BRIDGE_CLASS = 'absolute top-full right-0 z-[var(--z-dropdown)] pt-2';
-
 type LocaleSwitcherProps = {
   /** Visual tone for light surfaces vs dark chrome (footer / hero). */
   tone?: 'light' | 'dark' | undefined;
@@ -35,9 +30,8 @@ type LocaleSwitcherProps = {
 
 /**
  * Compact language control — Figma header: plain `EN` + chevron (no pill).
- * Opens on hover (desktop); click still toggles for touch / keyboard.
- * Menu stays `absolute` under the trigger so it inherits desktop `zoom`
- * (Safari-safe — no body portal + getBoundingClientRect).
+ * Opens on click only (not hover). Menu stays `absolute` under the trigger so
+ * it inherits desktop `zoom` (Safari-safe — no body portal).
  * Wrapped in Suspense for `useSearchParams` during static prerender.
  */
 export const LocaleSwitcher = (props: LocaleSwitcherProps) => (
@@ -53,13 +47,13 @@ const LocaleSwitcherFallback = ({ tone = 'light' }: LocaleSwitcherProps) => {
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1 text-sm font-medium leading-5',
+        'inline-flex items-center gap-1 rounded-[10px] px-2.5 py-1.5 text-sm font-medium leading-5',
         isDark ? 'text-on-dark' : 'text-brand-deep',
       )}
       aria-hidden
     >
       <span>{LOCALE_CODE[locale] ?? locale.toUpperCase()}</span>
-      <ChevronDown className="size-3.5 shrink-0 opacity-80" />
+      <ChevronDown className="size-3.5 shrink-0 opacity-70" />
     </span>
   );
 };
@@ -76,40 +70,13 @@ const LocaleSwitcherInner = ({ tone = 'light' }: LocaleSwitcherProps) => {
   const [optimisticLocale, setOptimisticLocale] = useOptimistic(locale);
   const rootRef = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLUListElement>(null);
-  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const listId = useId();
   const isDark = tone === 'dark';
   const displayLocale = optimisticLocale;
 
-  const clearCloseTimer = (): void => {
-    if (closeTimerRef.current == null) {
-      return;
-    }
-    clearTimeout(closeTimerRef.current);
-    closeTimerRef.current = null;
-  };
-
-  const openMenu = (): void => {
-    clearCloseTimer();
-    setOpen(true);
-  };
-
-  const scheduleCloseMenu = (): void => {
-    clearCloseTimer();
-    closeTimerRef.current = setTimeout(() => {
-      setOpen(false);
-      closeTimerRef.current = null;
-    }, HOVER_CLOSE_DELAY_MS);
-  };
-
   useEffect(() => {
     setOpen(false);
-    clearCloseTimer();
   }, [pathname, locale]);
-
-  useEffect(() => {
-    return () => clearCloseTimer();
-  }, []);
 
   useEffect(() => {
     if (!open) {
@@ -159,21 +126,25 @@ const LocaleSwitcherInner = ({ tone = 'light' }: LocaleSwitcherProps) => {
   };
 
   return (
-    <div
-      ref={rootRef}
-      className="relative"
-      onMouseEnter={openMenu}
-      onMouseLeave={scheduleCloseMenu}
-    >
+    <div ref={rootRef} className="relative">
       <button
         type="button"
         className={cn(
-          'inline-flex items-center gap-1 text-sm font-medium leading-5',
-          'transition-colors duration-[var(--duration-fast)]',
+          'group inline-flex cursor-pointer items-center gap-1 rounded-[10px] px-2.5 py-1.5',
+          'text-sm font-medium leading-5',
+          'transition-[color,background-color,transform,box-shadow] duration-[var(--duration-base)]',
+          'ease-[var(--ease-out-premium)] active:scale-[0.97]',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-deep/30',
+          'disabled:cursor-not-allowed disabled:opacity-60',
           isDark
-            ? 'text-on-dark hover:text-on-dark/90'
-            : 'text-brand-deep hover:text-brand-deep/90',
+            ? cn(
+                'text-on-dark hover:bg-white/12',
+                open && 'bg-white/15 shadow-[inset_0_0_0_1px_rgb(255_255_255/0.18)]',
+              )
+            : cn(
+                'text-brand-deep hover:bg-brand-deep/[0.06]',
+                open && 'bg-brand-deep/[0.08] shadow-[inset_0_0_0_1px_rgb(9_43_68/0.08)]',
+              ),
         )}
         aria-label={t('languageLabel')}
         aria-haspopup="listbox"
@@ -182,25 +153,22 @@ const LocaleSwitcherInner = ({ tone = 'light' }: LocaleSwitcherProps) => {
         aria-busy={isPending}
         disabled={isPending}
         onClick={() => {
-          // Hover/focus may already open the menu; a following click must not
-          // toggle it closed (Playwright and real pointer users both hit this).
-          clearCloseTimer();
-          setOpen(true);
+          setOpen((current) => !current);
         }}
-        onFocus={openMenu}
       >
         <span>{LOCALE_CODE[displayLocale] ?? displayLocale.toUpperCase()}</span>
         <ChevronDown
           className={cn(
-            'size-3.5 shrink-0 opacity-80 transition-transform duration-[var(--duration-fast)]',
-            open && 'rotate-180',
+            'size-3.5 shrink-0 opacity-70 transition-[transform,opacity] duration-[var(--duration-base)]',
+            'ease-[var(--ease-out-premium)] group-hover:opacity-100',
+            open && 'rotate-180 opacity-100',
           )}
           aria-hidden
         />
       </button>
 
       {open ? (
-        <div className={MENU_HOVER_BRIDGE_CLASS}>
+        <div className="absolute top-full right-0 z-[var(--z-dropdown)] pt-2">
           <ul
             ref={menuRef}
             id={listId}
@@ -209,7 +177,7 @@ const LocaleSwitcherInner = ({ tone = 'light' }: LocaleSwitcherProps) => {
             className={cn(
               'w-max overflow-hidden rounded-[12px] border border-header-border',
               'bg-surface-elevated py-1.5 text-ink shadow-md',
-              'animate-[locale-dropdown-in_var(--duration-base)_var(--ease-out-premium)]',
+              'animate-dropdown-panel-in-bottom',
             )}
           >
             {routing.locales.map((code) => {

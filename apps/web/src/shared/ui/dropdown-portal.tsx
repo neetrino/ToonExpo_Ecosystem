@@ -12,6 +12,10 @@ import {
 import { createPortal } from 'react-dom';
 
 import { cn } from '@/shared/ui/cn';
+import {
+  dropdownPanelMotionClass,
+  useDropdownEnterExit,
+} from '@/shared/ui/use-dropdown-enter-exit';
 
 const MENU_GAP_PX = 8;
 const VIEWPORT_EDGE_PAD_PX = 8;
@@ -208,15 +212,23 @@ export const DropdownPortal = ({
   const [placement, setPlacement] = useState<{ host: HTMLElement; coords: MenuCoords } | null>(
     null,
   );
+  const [hasPositioned, setHasPositioned] = useState(false);
   const portalRef = useRef<HTMLDivElement>(null);
+  const { isVisible, isExiting, handleAnimationEnd } = useDropdownEnterExit({ open });
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  useLayoutEffect(() => {
-    if (!open) {
+  useEffect(() => {
+    if (!isVisible) {
       setPlacement(null);
+      setHasPositioned(false);
+    }
+  }, [isVisible]);
+
+  useLayoutEffect(() => {
+    if (!isVisible || isExiting) {
       return;
     }
 
@@ -230,6 +242,7 @@ export const DropdownPortal = ({
         return;
       }
       setPlacement((prev) => (isSamePlacement(prev, next) ? prev : next));
+      setHasPositioned(true);
     };
 
     update();
@@ -251,9 +264,9 @@ export const DropdownPortal = ({
       window.removeEventListener('scroll', update, true);
       window.removeEventListener('resize', update);
     };
-  }, [open, anchorRef, align, exactWidth]);
+  }, [isVisible, isExiting, anchorRef, align, exactWidth]);
 
-  if (!mounted || !open) {
+  if (!mounted || !isVisible) {
     return null;
   }
 
@@ -264,6 +277,7 @@ export const DropdownPortal = ({
   }
 
   const coords = placement?.coords;
+  const side = coords?.placement ?? 'bottom';
   const style: CSSProperties = coords
     ? {
         position: coords.position,
@@ -292,11 +306,14 @@ export const DropdownPortal = ({
         // Overflow must share the panel radius — otherwise the scroll layer
         // paints square corners behind rounded panel chrome.
         'rounded-[16px]',
+        isExiting && 'pointer-events-none',
+        dropdownPanelMotionClass(side, isExiting, hasPositioned),
         className,
       )}
       style={style}
       data-dropdown-portal
-      data-placement={coords?.placement ?? 'bottom'}
+      data-placement={side}
+      onAnimationEnd={handleAnimationEnd}
     >
       {children}
     </div>,

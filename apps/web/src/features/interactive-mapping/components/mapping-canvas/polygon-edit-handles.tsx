@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { useTranslations } from 'next-intl';
 import type { NormPoint } from '../../utils/mapping-math';
 import {
   bendEdgeToHandle,
@@ -81,6 +82,7 @@ export function PolygonEditHandles({
   onChangeShape,
   readNormalized,
 }: PolygonEditHandlesProps) {
+  const t = useTranslations('Admin.interactiveMapping.canvas');
   const dragRef = useRef<DragState | null>(null);
   const shapeRef = useRef(shape);
   const onChangeRef = useRef(onChangeShape);
@@ -191,7 +193,7 @@ export function PolygonEditHandles({
     <>
       <button
         type="button"
-        aria-label="Տեղաշարժել polygon"
+        aria-label={t('movePolygon')}
         className="absolute z-[15] -translate-x-1/2 -translate-y-1/2 cursor-move rounded-full border border-white/80 bg-[#e07a2f]/70"
         style={{
           left: `${center.x * 100}%`,
@@ -211,8 +213,8 @@ export function PolygonEditHandles({
 
       <button
         type="button"
-        aria-label="Պտտել polygon"
-        title="Պտտել"
+        aria-label={t('rotatePolygon')}
+        title={t('rotate')}
         className="absolute z-20 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white bg-[#2f6fed] shadow-sm"
         style={{
           left: `${rotateHandle.x * 100}%`,
@@ -248,8 +250,8 @@ export function PolygonEditHandles({
           <button
             key={corner}
             type="button"
-            aria-label={`Մեծացնել/փոքրացնել ${corner}`}
-            title="Քաշիր · Shift = համաչափ"
+            aria-label={t('scaleCorner', { corner })}
+            title={t('scaleHint')}
             className="absolute z-20 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-[1px] border border-white bg-[#c45c26] shadow-sm"
             style={{
               left: `${pos.x * 100}%`,
@@ -281,12 +283,10 @@ export function PolygonEditHandles({
           <button
             key={`edge-${index}`}
             type="button"
-            aria-label={isCurved ? `Կոր եզր ${index + 1}` : `Կլորացնել եզր ${index + 1}`}
-            title={
-              isCurved
-                ? 'Քաշիր՝ կորը cursor-ի հետ տանելու համար · Alt+click՝ ուղղել'
-                : 'Քաշիր՝ գիծը կլորացնելու համար (գիծը մնում է cursor-ի տակ)'
+            aria-label={
+              isCurved ? t('curveEdge', { index: index + 1 }) : t('roundEdge', { index: index + 1 })
             }
+            title={isCurved ? t('curveDragHint') : t('roundDragHint')}
             className={`absolute z-20 h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white shadow-sm ${
               isCurved ? 'bg-[#7c5cff]' : 'bg-[#f0c28a]'
             }`}
@@ -313,8 +313,8 @@ export function PolygonEditHandles({
         <button
           key={`vertex-${index}`}
           type="button"
-          aria-label={`Կետ ${index + 1}`}
-          title="Քաշիր կետը"
+          aria-label={t('pointLabel', { index: index + 1 })}
+          title={t('dragPoint')}
           className="absolute z-[22] h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white bg-[#c45c26] shadow-sm"
           style={{
             left: `${point.x * 100}%`,

@@ -10,6 +10,7 @@ import {
   PUBLIC_VISUAL_MAP_CONTAINED_CONTEXT_TYPES,
   PUBLIC_VISUAL_MAP_CONTAINED_MAX_HEIGHT_CLASS,
 } from '@/features/visual-map/constants';
+import { isFillableSvgPath } from '@/features/visual-map/utils/is-fillable-svg-path';
 
 const FALLBACK_VIEWBOX_WIDTH = 1000;
 const FALLBACK_VIEWBOX_HEIGHT = 1000;
@@ -66,8 +67,12 @@ export const InteractiveMapImage = ({
 
   const pointMarkers = canvas.hotspots
     .filter((hotspot) => {
-      // Polygons own the hit target — never stack a marker overlay on top of them.
-      if (hotspot.svgPath != null && hotspot.svgPath.length > 0) {
+      // Real polygons own the hit target — never stack a marker on top.
+      if (isFillableSvgPath(hotspot.svgPath)) {
+        return false;
+      }
+      // Incomplete polygon drafts must not become a corner (0,0) click target.
+      if (hotspot.shapeType === 'polygon') {
         return false;
       }
       return (
@@ -85,11 +90,13 @@ export const InteractiveMapImage = ({
     }));
 
   const polygonItems = canvas.hotspots
-    .filter((hotspot) => hotspot.svgPath != null && hotspot.svgPath.length > 0)
+    .filter((hotspot) => isFillableSvgPath(hotspot.svgPath))
     .map((hotspot) => ({
       id: hotspot.id,
       label: hotspot.label,
       svgPath: hotspot.svgPath as string,
+      xPercent: hotspot.xPercent,
+      yPercent: hotspot.yPercent,
       selected: selectedHotspotId === hotspot.id,
     }));
 

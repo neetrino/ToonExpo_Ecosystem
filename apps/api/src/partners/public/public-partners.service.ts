@@ -11,6 +11,7 @@ import type { SupportedLocale } from '@toonexpo/shared';
 import { loadTranslations } from '../../catalog/utils/load-translations.js';
 import {
   resolveCatalogLocale,
+  resolveTranslatedName,
   resolveTranslatedValue,
   TRANSLATION_ENTITY,
   TRANSLATION_FIELD,
@@ -170,15 +171,14 @@ export class PublicPartnersService {
 
     for (const offer of offers) {
       map.set(offer.id, {
-        title:
-          resolveTranslatedValue(
-            rows,
-            TRANSLATION_ENTITY.partnerOffer,
-            offer.id,
-            TRANSLATION_FIELD.title,
-            locale,
-            offer.title,
-          ) ?? offer.title,
+        title: resolveTranslatedName(
+          rows,
+          TRANSLATION_ENTITY.partnerOffer,
+          offer.id,
+          TRANSLATION_FIELD.title,
+          locale,
+          offer.title,
+        ),
         description: resolveTranslatedValue(
           rows,
           TRANSLATION_ENTITY.partnerOffer,

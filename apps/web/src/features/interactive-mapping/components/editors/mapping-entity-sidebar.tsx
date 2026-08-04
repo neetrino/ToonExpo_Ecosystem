@@ -7,6 +7,8 @@ import { cn } from '@/shared/ui/cn';
 
 import type { MappingEntity } from '../mapping-canvas/mapping-canvas';
 
+const NON_DIGIT = /\D/g;
+
 export type MappingEditorEntity = MappingEntity & {
   hotspotId: string | null;
 };
@@ -20,10 +22,14 @@ export type MappingEntitySidebarProps = {
   message: string | null;
   emptyHint?: string | undefined;
   footer?: ReactNode | undefined;
+  /** Restrict Label to ASCII digits (apartments). */
+  labelDigitsOnly?: boolean | undefined;
+  deleteLabel?: string | undefined;
   onSelect: (id: string) => void;
   onLabelChange: (id: string, label: string) => void;
   onSave: () => void;
   onClear: () => void;
+  onDelete?: (() => void) | undefined;
 };
 
 /**
@@ -38,10 +44,13 @@ export const MappingEntitySidebar = ({
   message,
   emptyHint,
   footer,
+  labelDigitsOnly = false,
+  deleteLabel = 'Delete',
   onSelect,
   onLabelChange,
   onSave,
   onClear,
+  onDelete,
 }: MappingEntitySidebarProps) => {
   const selected = entities.find((item) => item.id === selectedId) ?? null;
 
@@ -85,7 +94,12 @@ export const MappingEntitySidebar = ({
               className="mt-1 w-full rounded-sm border border-border bg-background px-2 py-1 text-ink"
               value={selected.label}
               maxLength={32}
-              onChange={(event) => onLabelChange(selected.id, event.target.value)}
+              inputMode={labelDigitsOnly ? 'numeric' : 'text'}
+              pattern={labelDigitsOnly ? '[0-9]*' : undefined}
+              onChange={(event) => {
+                const next = event.target.value;
+                onLabelChange(selected.id, labelDigitsOnly ? next.replace(NON_DIGIT, '') : next);
+              }}
             />
           </label>
           <Button type="button" size="sm" className="w-full" disabled={pending} onClick={onSave}>
@@ -101,6 +115,18 @@ export const MappingEntitySidebar = ({
               onClick={onClear}
             >
               Clear mapping
+            </Button>
+          ) : null}
+          {onDelete ? (
+            <Button
+              type="button"
+              size="sm"
+              variant="danger"
+              className="w-full"
+              disabled={pending}
+              onClick={onDelete}
+            >
+              {deleteLabel}
             </Button>
           ) : null}
           {message ? <p className="text-xs text-ink-muted">{message}</p> : null}

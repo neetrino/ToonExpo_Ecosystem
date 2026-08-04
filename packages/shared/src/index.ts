@@ -10,7 +10,8 @@ export const SUPPORTED_LOCALES = ['hy', 'ru', 'en'] as const;
 export const DEFAULT_LOCALE = 'en' as const;
 
 /**
- * Catalog content fallback locale (Armenian canonical text).
+ * Catalog content canonical locale (Armenian primary text store).
+ * Public display uses the active locale only — no cross-language fallback.
  */
 export const CATALOG_CONTENT_FALLBACK_LOCALE = 'hy' as const;
 

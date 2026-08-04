@@ -1,22 +1,19 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
-import type { ApartmentDetail } from "@toonexpo/contracts";
+import { Injectable, NotFoundException } from '@nestjs/common';
+import type { ApartmentDetail } from '@toonexpo/contracts';
 
-import { PrismaService } from "../prisma/prisma.service.js";
-import { AnalyticsService } from "../analytics/analytics.service.js";
-import { PUBLIC_PUBLICATION_STATUS } from "./catalog.constants.js";
-import type { CatalogViewerContext } from "./projects.service.js";
-import {
-  decimalToString,
-  shouldRevealPrice,
-  toMediaSummary,
-} from "./mappers/catalog.mapper.js";
-import { loadTranslations } from "./utils/load-translations.js";
+import { PrismaService } from '../prisma/prisma.service.js';
+import { AnalyticsService } from '../analytics/analytics.service.js';
+import { PUBLIC_PUBLICATION_STATUS } from './catalog.constants.js';
+import type { CatalogViewerContext } from './projects.service.js';
+import { decimalToString, shouldRevealPrice, toMediaSummary } from './mappers/catalog.mapper.js';
+import { loadTranslations } from './utils/load-translations.js';
 import {
   resolveCatalogLocale,
+  resolveTranslatedName,
   resolveTranslatedValue,
   TRANSLATION_ENTITY,
   TRANSLATION_FIELD,
-} from "./utils/resolve-translation.js";
+} from './utils/resolve-translation.js';
 
 @Injectable()
 export class ApartmentsService {
@@ -51,7 +48,7 @@ export class ApartmentsService {
     });
 
     if (!apartment) {
-      throw new NotFoundException("Apartment not found");
+      throw new NotFoundException('Apartment not found');
     }
 
     const translations = await this.loadApartmentTranslations(
@@ -59,30 +56,25 @@ export class ApartmentsService {
       apartment.project.id,
       apartment.project.builderCompany.id,
     );
-    const revealPrice = shouldRevealPrice(
-      apartment.priceVisibility,
-      viewer.isAuthenticated,
+    const revealPrice = shouldRevealPrice(apartment.priceVisibility, viewer.isAuthenticated);
+
+    const projectName = resolveTranslatedName(
+      translations,
+      TRANSLATION_ENTITY.project,
+      apartment.project.id,
+      TRANSLATION_FIELD.name,
+      locale,
+      apartment.project.name,
     );
 
-    const projectName =
-      resolveTranslatedValue(
-        translations,
-        TRANSLATION_ENTITY.project,
-        apartment.project.id,
-        TRANSLATION_FIELD.name,
-        locale,
-        apartment.project.name,
-      ) ?? apartment.project.name;
-
-    const builderName =
-      resolveTranslatedValue(
-        translations,
-        TRANSLATION_ENTITY.company,
-        apartment.project.builderCompany.id,
-        TRANSLATION_FIELD.name,
-        locale,
-        apartment.project.builderCompany.name,
-      ) ?? apartment.project.builderCompany.name;
+    const builderName = resolveTranslatedName(
+      translations,
+      TRANSLATION_ENTITY.company,
+      apartment.project.builderCompany.id,
+      TRANSLATION_FIELD.name,
+      locale,
+      apartment.project.builderCompany.name,
+    );
 
     const description = resolveTranslatedValue(
       translations,
@@ -94,7 +86,7 @@ export class ApartmentsService {
     );
 
     this.analytics.track({
-      eventType: "apartment_view",
+      eventType: 'apartment_view',
       apartmentId: apartment.id,
       projectId: apartment.projectId,
       buildingId: apartment.buildingId,
@@ -150,9 +142,7 @@ export class ApartmentsService {
     builderId: string,
   ) {
     const [apartmentRows, projectRows, companyRows] = await Promise.all([
-      loadTranslations(this.prisma.db, TRANSLATION_ENTITY.apartment, [
-        apartmentId,
-      ]),
+      loadTranslations(this.prisma.db, TRANSLATION_ENTITY.apartment, [apartmentId]),
       loadTranslations(this.prisma.db, TRANSLATION_ENTITY.project, [projectId]),
       loadTranslations(this.prisma.db, TRANSLATION_ENTITY.company, [builderId]),
     ]);

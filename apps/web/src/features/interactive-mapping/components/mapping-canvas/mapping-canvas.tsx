@@ -1,6 +1,7 @@
 'use client';
 
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { useTranslations } from 'next-intl';
 import { bandPolygonFromEdge, pointerToNormalized, type NormPoint } from '../../utils/mapping-math';
 import { type PolygonShape } from '../../utils/curved-polygon';
 import { getContainedImageBounds } from '../../utils/coordinates';
@@ -40,13 +41,14 @@ export const MappingCanvas = forwardRef<MappingCanvasHandle, MappingCanvasProps>
     },
     ref,
   ) {
+    const tCanvas = useTranslations('Admin.interactiveMapping.canvas');
     const viewportRef = useRef<HTMLDivElement>(null);
     const [mode, setMode] = useState<EditorMode>('select');
     const [draftPoints, setDraftPoints] = useState<NormPoint[]>([]);
     const [editShape, setEditShape] = useState<PolygonShape | null>(null);
     const [selectedDraftIndex, setSelectedDraftIndex] = useState<number | null>(null);
     const [bounds, setBounds] = useState({ x: 0, y: 0, width: 0, height: 0 });
-    const dragRef = useRef<{ id: string } | null>(null);
+    const dragRef = useRef<{ id: string; offsetX: number; offsetY: number } | null>(null);
     const draftRef = useRef(draftPoints);
     const editShapeRef = useRef<PolygonShape | null>(null);
     const selectedDraftIndexRef = useRef(selectedDraftIndex);
@@ -207,6 +209,8 @@ export const MappingCanvas = forwardRef<MappingCanvasHandle, MappingCanvasProps>
       draftRef,
       dragRef,
       replaceOnCommitRef,
+      confirmDeletePolygon: tCanvas('confirmDeletePolygon'),
+      confirmReplacePolygon: tCanvas('confirmReplacePolygon'),
       readNormalized,
       onSelect,
       onChangeEntity,
@@ -224,6 +228,7 @@ export const MappingCanvas = forwardRef<MappingCanvasHandle, MappingCanvasProps>
       entitiesCount: entities.length,
       selectedId,
       toolPreset,
+      t: tCanvas,
     });
 
     const bandPreview =

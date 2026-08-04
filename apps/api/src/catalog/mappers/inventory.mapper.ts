@@ -3,7 +3,7 @@ import type { ApartmentSalesStatus, Prisma } from '@toonexpo/db';
 import type { SupportedLocale } from '@toonexpo/shared';
 
 import {
-  resolveTranslatedValue,
+  resolveTranslatedName,
   TRANSLATION_ENTITY,
   TRANSLATION_FIELD,
   type TranslationRow,
@@ -74,15 +74,14 @@ export const mapBuildingDetail = (
   },
   ctx: MapContext,
 ): BuildingDetail => {
-  const projectName =
-    resolveTranslatedValue(
-      ctx.translations,
-      TRANSLATION_ENTITY.project,
-      building.project.id,
-      TRANSLATION_FIELD.name,
-      ctx.locale,
-      building.project.name,
-    ) ?? building.project.name;
+  const projectName = resolveTranslatedName(
+    ctx.translations,
+    TRANSLATION_ENTITY.project,
+    building.project.id,
+    TRANSLATION_FIELD.name,
+    ctx.locale,
+    building.project.name,
+  );
 
   return {
     id: building.id,
@@ -138,15 +137,14 @@ export const mapFloorDetail = (
   },
   ctx: MapContext,
 ): FloorDetail => {
-  const projectName =
-    resolveTranslatedValue(
-      ctx.translations,
-      TRANSLATION_ENTITY.project,
-      floor.project.id,
-      TRANSLATION_FIELD.name,
-      ctx.locale,
-      floor.project.name,
-    ) ?? floor.project.name;
+  const projectName = resolveTranslatedName(
+    ctx.translations,
+    TRANSLATION_ENTITY.project,
+    floor.project.id,
+    TRANSLATION_FIELD.name,
+    ctx.locale,
+    floor.project.name,
+  );
 
   return {
     id: floor.id,

@@ -37,20 +37,25 @@ export const mapBuilding = (row: {
   publicationStatus: row.publicationStatus,
 });
 
-export const mapFloor = (row: {
-  id: string;
-  buildingId: string;
-  number: number;
-  name: string | null;
-  floorplanMediaId: string | null;
-  publicationStatus: PublicationStatus;
-}): InteractiveMappingFloorSummary => ({
+export const mapFloor = (
+  row: {
+    id: string;
+    buildingId: string;
+    number: number;
+    name: string | null;
+    floorplanMediaId: string | null;
+    publicationStatus: PublicationStatus;
+  },
+  flags: { hasBuildingPolygon?: boolean; hasFloorPlan?: boolean } = {},
+): InteractiveMappingFloorSummary => ({
   id: row.id,
   buildingId: row.buildingId,
   number: row.number,
   name: row.name,
   floorplanMediaId: row.floorplanMediaId,
   publicationStatus: row.publicationStatus,
+  hasBuildingPolygon: flags.hasBuildingPolygon === true,
+  hasFloorPlan: flags.hasFloorPlan === true || row.floorplanMediaId != null,
 });
 
 export const mapApartment = (row: {

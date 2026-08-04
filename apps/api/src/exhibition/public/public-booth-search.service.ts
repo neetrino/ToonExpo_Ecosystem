@@ -1,35 +1,25 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
-import type { BoothSearchResponse } from "@toonexpo/contracts";
-import {
-  BoothType,
-  CompanyType,
-  EventStatus,
-  PublicationStatus,
-  type Prisma,
-} from "@toonexpo/db";
-import { resolveCatalogLocale } from "@toonexpo/shared";
+import { Injectable, NotFoundException } from '@nestjs/common';
+import type { BoothSearchResponse } from '@toonexpo/contracts';
+import { BoothType, CompanyType, EventStatus, PublicationStatus, type Prisma } from '@toonexpo/db';
+import { resolveCatalogLocale } from '@toonexpo/shared';
 
 import {
   TRANSLATION_ENTITY,
   TRANSLATION_FIELD,
-  resolveTranslatedValue,
-} from "../../catalog/utils/resolve-translation.js";
-import { loadEntityTranslations } from "../utils/load-entity-translations.js";
-import { PrismaService } from "../../prisma/prisma.service.js";
+  resolveTranslatedName,
+} from '../../catalog/utils/resolve-translation.js';
+import { loadEntityTranslations } from '../utils/load-entity-translations.js';
+import { PrismaService } from '../../prisma/prisma.service.js';
 import {
   BOOTH_SEARCH_MAX_RESULTS,
   BOOTH_SEARCH_MIN_QUERY_LENGTH,
-} from "../exhibition.constants.js";
+} from '../exhibition.constants.js';
 
 @Injectable()
 export class PublicBoothSearchService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async search(
-    mapId: string,
-    query: string,
-    localeInput?: string,
-  ): Promise<BoothSearchResponse> {
+  async search(mapId: string, query: string, localeInput?: string): Promise<BoothSearchResponse> {
     await this.requirePublishedMap(mapId);
 
     const trimmed = query.trim();
@@ -74,13 +64,8 @@ export class PublicBoothSearchService {
       ],
     };
 
-    const translations = await loadEntityTranslations(
-      this.prisma.db,
-      entityIds,
-    );
-    const results = booths.flatMap((booth) =>
-      matchBooth(booth, needle, locale, translations),
-    );
+    const translations = await loadEntityTranslations(this.prisma.db, entityIds);
+    const results = booths.flatMap((booth) => matchBooth(booth, needle, locale, translations));
 
     return { data: results.slice(0, BOOTH_SEARCH_MAX_RESULTS) };
   }
@@ -99,41 +84,33 @@ export class PublicBoothSearchService {
     });
 
     if (!map) {
-      throw new NotFoundException("Published venue map not found");
+      throw new NotFoundException('Published venue map not found');
     }
   }
 }
 
-const enumValuesMatching = <T extends string>(
-  values: readonly T[],
-  needle: string,
-): T[] => values.filter((value) => value.toLowerCase().includes(needle));
+const enumValuesMatching = <T extends string>(values: readonly T[], needle: string): T[] =>
+  values.filter((value) => value.toLowerCase().includes(needle));
 
 const buildBoothSearchWhere = (
   mapId: string,
   trimmed: string,
   needle: string,
 ): Prisma.BoothWhereInput => {
-  const matchingBoothTypes = enumValuesMatching(
-    Object.values(BoothType),
-    needle,
-  );
-  const matchingCompanyTypes = enumValuesMatching(
-    Object.values(CompanyType),
-    needle,
-  );
+  const matchingBoothTypes = enumValuesMatching(Object.values(BoothType), needle);
+  const matchingCompanyTypes = enumValuesMatching(Object.values(CompanyType), needle);
 
   const assignmentOr: Prisma.BoothAssignmentWhereInput[] = [
-    { assignmentLabel: { contains: trimmed, mode: "insensitive" } },
-    { company: { name: { contains: trimmed, mode: "insensitive" } } },
-    { project: { name: { contains: trimmed, mode: "insensitive" } } },
+    { assignmentLabel: { contains: trimmed, mode: 'insensitive' } },
+    { company: { name: { contains: trimmed, mode: 'insensitive' } } },
+    { project: { name: { contains: trimmed, mode: 'insensitive' } } },
   ];
   if (matchingCompanyTypes.length > 0) {
     assignmentOr.push({ company: { type: { in: matchingCompanyTypes } } });
   }
 
   const or: Prisma.BoothWhereInput[] = [
-    { code: { contains: trimmed, mode: "insensitive" } },
+    { code: { contains: trimmed, mode: 'insensitive' } },
     {
       assignments: {
         some: {
@@ -170,7 +147,7 @@ const matchBooth = (
   locale: ReturnType<typeof resolveCatalogLocale>,
   translations: Awaited<ReturnType<typeof loadEntityTranslations>>,
 ) => {
-  const cards: BoothSearchResponse["data"] = [];
+  const cards: BoothSearchResponse['data'] = [];
 
   if (booth.code.toLowerCase().includes(needle)) {
     cards.push(buildCard(booth, booth.code));
@@ -183,25 +160,25 @@ const matchBooth = (
 
   for (const assignment of booth.assignments) {
     const companyName = assignment.company
-      ? (resolveTranslatedValue(
+      ? resolveTranslatedName(
           translations,
           TRANSLATION_ENTITY.company,
           assignment.company.id,
           TRANSLATION_FIELD.name,
           locale,
           assignment.company.name,
-        ) ?? assignment.company.name)
+        )
       : null;
 
     const projectName = assignment.project
-      ? (resolveTranslatedValue(
+      ? resolveTranslatedName(
           translations,
           TRANSLATION_ENTITY.project,
           assignment.project.id,
           TRANSLATION_FIELD.name,
           locale,
           assignment.project.name,
-        ) ?? assignment.project.name)
+        )
       : null;
 
     const partnerType = assignment.company?.type ?? null;
@@ -210,14 +187,10 @@ const matchBooth = (
       (companyName && companyName.toLowerCase().includes(needle)) ||
       (projectName && projectName.toLowerCase().includes(needle)) ||
       (partnerType && partnerType.toLowerCase().includes(needle)) ||
-      (assignment.assignmentLabel &&
-        assignment.assignmentLabel.toLowerCase().includes(needle))
+      (assignment.assignmentLabel && assignment.assignmentLabel.toLowerCase().includes(needle))
     ) {
       cards.push(
-        buildCard(
-          booth,
-          projectName ?? companyName ?? assignment.assignmentLabel ?? booth.code,
-        ),
+        buildCard(booth, projectName ?? companyName ?? assignment.assignmentLabel ?? booth.code),
       );
     }
   }
@@ -233,10 +206,10 @@ const buildCard = (
     locationText: string | null;
   },
   name: string,
-): BoothSearchResponse["data"][number] => ({
+): BoothSearchResponse['data'][number] => ({
   name,
   boothId: booth.id,
   boothCode: booth.code,
-  type: booth.type as BoothSearchResponse["data"][number]["type"],
+  type: booth.type as BoothSearchResponse['data'][number]['type'],
   locationText: booth.locationText,
 });

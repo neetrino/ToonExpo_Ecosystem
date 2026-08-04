@@ -2,6 +2,7 @@
 
 import type { VisualHotspotTargetType } from '@toonexpo/contracts';
 import { Maximize2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 
 import { Button } from '@/shared/ui/button';
@@ -27,6 +28,9 @@ export type MappingEditorShellProps = {
   toolPreset?: 'basic' | 'floors' | undefined;
   emptyHint?: string | undefined;
   sidebarFooter?: ReactNode | undefined;
+  labelDigitsOnly?: boolean | undefined;
+  deleteEntityLabel?: string | undefined;
+  onDeleteEntity?: ((id: string) => Promise<void>) | undefined;
   onAfterSave?: (() => void) | undefined;
 };
 
@@ -54,11 +58,16 @@ export const MappingEditorShell = ({
   toolPreset = 'basic',
   emptyHint,
   sidebarFooter,
+  labelDigitsOnly = false,
+  deleteEntityLabel,
+  onDeleteEntity,
   onAfterSave,
 }: MappingEditorShellProps) => {
+  const t = useTranslations('Admin.interactiveMapping.canvas');
   const canvasRef = useRef<MappingCanvasHandle>(null);
   const [fullscreen, setFullscreen] = useState(false);
   const [portalReady, setPortalReady] = useState(false);
+  const [deletePending, setDeletePending] = useState(false);
   const editor = useMappingEditorState({
     companyId,
     canvasId,
@@ -109,16 +118,40 @@ export const MappingEditorShell = ({
     />
   );
 
+  const handleDeleteEntity = (): void => {
+    const id = editor.selectedId;
+    if (!id || !onDeleteEntity) {
+      return;
+    }
+    if (!window.confirm(t('confirmDeleteApartment'))) {
+      return;
+    }
+    setDeletePending(true);
+    void (async () => {
+      try {
+        await onDeleteEntity(id);
+        editor.setSelectedId(null);
+        onAfterSave?.();
+      } catch (error) {
+        window.alert(error instanceof Error ? error.message : t('deleteFailed'));
+      } finally {
+        setDeletePending(false);
+      }
+    })();
+  };
+
   const sidebar = (
     <MappingEntitySidebar
       listTitle={listTitle}
       entities={editor.entities}
       selectedId={editor.selectedId}
       dirtyIds={editor.dirtyIds}
-      pending={editor.pending}
+      pending={editor.pending || deletePending}
       message={editor.message}
       emptyHint={emptyHint}
       footer={sidebarFooter}
+      labelDigitsOnly={labelDigitsOnly}
+      deleteLabel={deleteEntityLabel ?? t('deleteDefault')}
       onSelect={editor.setSelectedId}
       onLabelChange={editor.onLabelChange}
       onSave={() => {
@@ -130,6 +163,7 @@ export const MappingEditorShell = ({
       onClear={() => {
         void editor.onClear();
       }}
+      onDelete={onDeleteEntity ? handleDeleteEntity : undefined}
     />
   );
 
@@ -138,7 +172,7 @@ export const MappingEditorShell = ({
       <div className="mb-3 flex flex-wrap items-center justify-end gap-2">
         <Button type="button" size="sm" variant="secondary" onClick={() => setFullscreen(true)}>
           <Maximize2 className="size-4" aria-hidden />
-          Open fullscreen map
+          {t('openFullscreen')}
         </Button>
       </div>
       {!fullscreen ? (

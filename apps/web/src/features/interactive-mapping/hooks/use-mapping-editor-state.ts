@@ -1,6 +1,7 @@
 'use client';
 
 import type { PortalVisualHotspotItem, VisualHotspotTargetType } from '@toonexpo/contracts';
+import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import {
@@ -60,6 +61,7 @@ export const useMappingEditorState = ({
   initialEntities,
   onAfterSave,
 }: UseMappingEditorStateArgs) => {
+  const t = useTranslations('Admin.interactiveMapping.canvas');
   const mappingScope = useInteractiveMappingScope();
   const catalogScope = useMemo(
     () => resolveMappingCatalogScope(mappingScope, companyId),
@@ -175,7 +177,7 @@ export const useMappingEditorState = ({
     }
     const next = { ...current, svgPath };
     setEntities((prev) => prev.map((item) => (item.id === id ? next : item)));
-    void persistEntity(next, 'Saved');
+    void persistEntity(next, t('saved'));
   };
 
   const onPolygonDeleted = (id: string) => {
@@ -185,7 +187,7 @@ export const useMappingEditorState = ({
     }
     const next = { ...current, svgPath: null };
     setEntities((prev) => prev.map((item) => (item.id === id ? next : item)));
-    void persistEntity(next, 'Polygon cleared');
+    void persistEntity(next, t('polygonCleared'));
   };
 
   const onBulkPaths = (updates: MappingBulkPathUpdate[]) => {
@@ -229,15 +231,15 @@ export const useMappingEditorState = ({
       if (flushed) {
         return;
       }
-      setMessage('Draw at least one point first');
+      setMessage(t('drawMinPoints'));
       return;
     }
     const latest = entitiesRef.current.find((item) => item.id === selected.id) ?? selected;
-    await persistEntity(latest, 'Saved');
+    await persistEntity(latest, t('saved'));
   };
 
   const onClear = async () => {
-    if (!selected?.hotspotId || !window.confirm('Remove mapping for this entity?')) {
+    if (!selected?.hotspotId || !window.confirm(t('removeMappingConfirm'))) {
       return;
     }
     setPending(true);
@@ -251,10 +253,10 @@ export const useMappingEditorState = ({
         svgPath: null,
       };
       setEntities((prev) => prev.map((item) => (item.id === selected.id ? cleared : item)));
-      setMessage('Cleared');
+      setMessage(t('cleared'));
       onAfterSaveRef.current?.();
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'Delete failed');
+      setMessage(error instanceof Error ? error.message : t('deleteFailed'));
     } finally {
       setPending(false);
     }

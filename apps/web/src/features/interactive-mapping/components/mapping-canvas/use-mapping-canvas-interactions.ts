@@ -8,16 +8,26 @@ import {
   type SetStateAction,
 } from 'react';
 import type { MouseEvent as ReactMouseEvent } from 'react';
+import { clampNormalized } from '../../utils/coordinates';
 import type { NormPoint } from '../../utils/mapping-math';
 import type { EditorMode, MappingEntity } from './mapping-canvas.types';
+
+type MarkerDragState = {
+  id: string;
+  /** Cursor − marker center at pointer-down — keeps the grab point stable. */
+  offsetX: number;
+  offsetY: number;
+};
 
 type UseMappingCanvasInteractionsParams = {
   mode: EditorMode;
   selectedId: string | null;
   selected: MappingEntity | null;
   draftRef: MutableRefObject<NormPoint[]>;
-  dragRef: MutableRefObject<{ id: string } | null>;
+  dragRef: MutableRefObject<MarkerDragState | null>;
   replaceOnCommitRef: MutableRefObject<boolean>;
+  confirmDeletePolygon: string;
+  confirmReplacePolygon: string;
   readNormalized: (
     event: { clientX: number; clientY: number },
     options?: { clamp?: boolean },
@@ -40,6 +50,8 @@ export const useMappingCanvasInteractions = ({
   mode,
   selectedId,
   selected,
+  confirmDeletePolygon,
+  confirmReplacePolygon,
   draftRef,
   dragRef,
   replaceOnCommitRef,
@@ -127,19 +139,27 @@ export const useMappingCanvasInteractions = ({
 
   const deletePolygon = useCallback(() => {
     if (!selectedId || !selected?.svgPath) return;
-    if (!window.confirm('Ջնջե՞լ այս գծագիրը։ Կարող ես հետո նոր polygon գծել։')) {
+    if (!window.confirm(confirmDeletePolygon)) {
       return;
     }
     onChangeEntity(selectedId, { svgPath: null });
     onPolygonDeleted?.(selectedId);
     clearDraft();
     setMode('select');
-  }, [clearDraft, onChangeEntity, onPolygonDeleted, selected, selectedId, setMode]);
+  }, [
+    clearDraft,
+    confirmDeletePolygon,
+    onChangeEntity,
+    onPolygonDeleted,
+    selected,
+    selectedId,
+    setMode,
+  ]);
 
   const startFreshPolygon = useCallback(() => {
     if (!selectedId) return;
     if (selected?.svgPath) {
-      if (!window.confirm('Ջնջե՞լ հին գծագիրը և սկսել նորը։ Հինը կպահպանվի որպես ջնջված։')) {
+      if (!window.confirm(confirmReplacePolygon)) {
         return;
       }
       onChangeEntity(selectedId, { svgPath: null });
@@ -150,6 +170,7 @@ export const useMappingCanvasInteractions = ({
     setMode('draw-polygon');
   }, [
     clearDraft,
+    confirmReplacePolygon,
     onChangeEntity,
     onPolygonDeleted,
     replaceOnCommitRef,
@@ -159,23 +180,33 @@ export const useMappingCanvasInteractions = ({
   ]);
 
   const onMarkerPointerDown = useCallback(
-    (event: ReactPointerEvent<HTMLButtonElement>, id: string) => {
+    (event: ReactPointerEvent<HTMLButtonElement>, id: string, markerX: number, markerY: number) => {
       event.stopPropagation();
+      event.preventDefault();
       onSelect(id);
-      dragRef.current = { id };
+      const point = readNormalized(event);
+      if (!point) {
+        return;
+      }
+      dragRef.current = {
+        id,
+        offsetX: point.x - markerX,
+        offsetY: point.y - markerY,
+      };
       event.currentTarget.setPointerCapture(event.pointerId);
     },
-    [dragRef, onSelect],
+    [dragRef, onSelect, readNormalized],
   );
 
   const onMarkerPointerMove = useCallback(
     (event: ReactPointerEvent<HTMLButtonElement>) => {
-      if (!dragRef.current) return;
+      const drag = dragRef.current;
+      if (!drag) return;
       const point = readNormalized(event);
       if (!point) return;
-      onChangeEntity(dragRef.current.id, {
-        markerX: point.x,
-        markerY: point.y,
+      onChangeEntity(drag.id, {
+        markerX: clampNormalized(point.x - drag.offsetX),
+        markerY: clampNormalized(point.y - drag.offsetY),
       });
     },
     [dragRef, onChangeEntity, readNormalized],
