@@ -42,7 +42,12 @@ type MappingCanvasStageProps = {
   ) => NormPoint | null;
   replaceEditShape: (shape: PolygonShape) => void;
   onSelect: (id: string) => void;
-  onMarkerPointerDown: (event: ReactPointerEvent<HTMLButtonElement>, id: string) => void;
+  onMarkerPointerDown: (
+    event: ReactPointerEvent<HTMLButtonElement>,
+    id: string,
+    markerX: number,
+    markerY: number,
+  ) => void;
   onMarkerPointerMove: (event: ReactPointerEvent<HTMLButtonElement>) => void;
   onMarkerPointerUp: () => void;
   setCursorPoint: (point: NormPoint | null) => void;
@@ -188,7 +193,9 @@ export const MappingCanvasStage = ({
         ) : null}
 
         {entities.map((entity) => {
-          if (entity.markerX == null || entity.markerY == null) {
+          const markerX = entity.markerX;
+          const markerY = entity.markerY;
+          if (markerX == null || markerY == null) {
             return null;
           }
           if (mode === 'edit-polygon' && entity.id !== selectedId) {
@@ -199,7 +206,7 @@ export const MappingCanvasStage = ({
             <button
               key={`marker-${entity.id}`}
               type="button"
-              className={`absolute z-10 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white font-semibold tracking-wide text-white shadow-[0_2px_6px_rgba(0,0,0,0.35)] ${
+              className={`absolute z-10 flex -translate-x-1/2 -translate-y-1/2 cursor-grab items-center justify-center rounded-full border border-white font-semibold tracking-wide text-white shadow-[0_2px_6px_rgba(0,0,0,0.35)] active:cursor-grabbing ${
                 editingSelected ? 'h-3.5 w-3.5 text-[8px] opacity-70' : 'h-5 w-5 text-[10px]'
               } ${isDrawingMode ? 'pointer-events-none' : ''} ${
                 entity.id === selectedId
@@ -207,14 +214,14 @@ export const MappingCanvasStage = ({
                   : 'bg-[#e07a2f]'
               }`}
               style={{
-                left: `${entity.markerX * 100}%`,
-                top: `${entity.markerY * 100}%`,
+                left: `${markerX * 100}%`,
+                top: `${markerY * 100}%`,
               }}
               onClick={(event) => {
                 event.stopPropagation();
                 onSelect(entity.id);
               }}
-              onPointerDown={(event) => onMarkerPointerDown(event, entity.id)}
+              onPointerDown={(event) => onMarkerPointerDown(event, entity.id, markerX, markerY)}
               onPointerMove={onMarkerPointerMove}
               onPointerUp={onMarkerPointerUp}
             >
