@@ -1,5 +1,6 @@
 'use client';
 
+import { FolderOpen, SearchX } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
@@ -22,6 +23,7 @@ import { useDebouncedValue } from '@/shared/hooks/use-debounced-value';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { Button } from '@/shared/ui/button';
+import { EmptyState } from '@/shared/ui/empty-state';
 import type { IntegratedSearchFilterConfig } from '@/shared/ui/integrated-search-filters.types';
 import { ListPageHeader } from '@/shared/ui/list-page-header';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
@@ -99,6 +101,10 @@ export const AdminProjectsListPage = () => {
     }
   };
 
+  const handleClearSearch = (): void => {
+    handleSearchChange('');
+  };
+
   const filterConfigs = useMemo(
     (): IntegratedSearchFilterConfig[] => [
       {
@@ -167,9 +173,16 @@ export const AdminProjectsListPage = () => {
       />
 
       {response.data.length === 0 ? (
-        <p className="text-sm text-ink-secondary">
-          {activeSearch ? t('noResults', { query: activeSearch }) : t('empty')}
-        </p>
+        <div className="flex min-h-72 items-center justify-center">
+          <EmptyState
+            icon={activeSearch ? SearchX : FolderOpen}
+            title={activeSearch ? t('noResultsTitle') : t('emptyTitle')}
+            description={activeSearch ? t('noResults', { query: activeSearch }) : undefined}
+            actionLabel={activeSearch ? t('clearSearch') : undefined}
+            onAction={activeSearch ? handleClearSearch : undefined}
+            className="w-full max-w-md border-solid border-border/70 bg-surface-elevated px-6 py-10 shadow-sm sm:px-10 sm:py-12"
+          />
+        </div>
       ) : (
         <AdminProjectsTable projects={response.data} viewMode={effectiveViewMode} />
       )}
