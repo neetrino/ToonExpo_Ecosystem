@@ -102,6 +102,7 @@ export type ListAdminProjectsParams = {
   pageSize: number;
   companyId?: string;
   buildingId?: string;
+  search?: string;
 };
 
 /**
@@ -111,18 +112,22 @@ export const listAdminProjects = (
   params: ListAdminProjectsParams,
   options: AdminRequestOptions = {},
 ): Promise<AdminProjectListResponse> => {
-  const search = new URLSearchParams({
+  const query = new URLSearchParams({
     page: String(params.page),
     pageSize: String(params.pageSize),
   });
   if (params.companyId) {
-    search.set('companyId', params.companyId);
+    query.set('companyId', params.companyId);
+  }
+  const search = params.search?.trim();
+  if (search) {
+    query.set('search', search);
   }
 
   return apiFetch<AdminProjectListResponse>(
     withCookie(
       {
-        path: `/admin/projects?${search.toString()}`,
+        path: `/admin/projects?${query.toString()}`,
         method: 'GET',
         credentials: 'include',
         cache: 'no-store',

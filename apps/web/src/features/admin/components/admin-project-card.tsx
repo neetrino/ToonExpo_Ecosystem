@@ -10,6 +10,7 @@ import {
   MapPin,
   QrCode,
 } from 'lucide-react';
+import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
@@ -26,6 +27,60 @@ const STATUS_BADGE_CLASS: Record<PublicationStatus, string> = {
   published: 'bg-success-soft text-success',
   draft: 'bg-surface text-ink-muted',
   archived: 'bg-warning-soft text-warning',
+};
+
+type AdminProjectImageProps = {
+  project: AdminProjectListItem;
+};
+
+const toSafeImageSource = (value: string | null | undefined): string | undefined => {
+  const source = value?.trim();
+  if (!source) {
+    return undefined;
+  }
+  if (source.startsWith('/')) {
+    return source;
+  }
+
+  try {
+    const url = new URL(source);
+    return url.protocol === 'https:' || url.protocol === 'http:' ? source : undefined;
+  } catch {
+    return undefined;
+  }
+};
+
+const AdminProjectImage = ({ project }: AdminProjectImageProps) => {
+  const [imageFailed, setImageFailed] = useState(false);
+  const cover = project.buildingCover;
+  const imageSource =
+    toSafeImageSource(cover?.media.thumbnailUrl) ?? toSafeImageSource(cover?.media.fileUrl);
+  const validImageSource = imageFailed ? undefined : imageSource;
+
+  return (
+    <Link
+      href={`/admin/projects/${project.id}`}
+      className="relative block aspect-[16/9] overflow-hidden bg-surface"
+    >
+      {validImageSource && cover ? (
+        <Image
+          src={validImageSource}
+          alt={cover.media.altText?.trim() || `${cover.buildingName} — ${project.name}`}
+          fill
+          className="object-cover"
+          sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
+          onError={() => {
+            setImageFailed(true);
+          }}
+        />
+      ) : (
+        <span className="flex size-full flex-col items-center justify-center gap-2 text-ink-muted">
+          <Building2 className="size-8 opacity-50" aria-hidden />
+          <span className="max-w-[80%] truncate text-sm">{project.name}</span>
+        </span>
+      )}
+    </Link>
+  );
 };
 
 /**
@@ -46,6 +101,8 @@ export const AdminProjectCard = ({ project }: AdminProjectCardProps) => {
           'hover:shadow-sm',
         )}
       >
+        <AdminProjectImage key={project.buildingCover?.media.id ?? 'fallback'} project={project} />
+
         <div className="flex flex-1 gap-2 p-4">
           <Link
             href={`/admin/projects/${project.id}`}

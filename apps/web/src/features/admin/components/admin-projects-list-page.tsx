@@ -9,6 +9,7 @@ import { AdminProjectsTable } from '@/features/admin/components/admin-projects-t
 import {
   ADMIN_COMPANIES_MAX_PAGE_SIZE,
   ADMIN_INVENTORY_DEFAULT_PAGE_SIZE,
+  ADMIN_PROJECTS_SEARCH_DEBOUNCE_MS,
   ADMIN_VIEW_MODE_KEYS,
 } from '@/features/admin/constants';
 import {
@@ -17,6 +18,7 @@ import {
 } from '@/features/admin/hooks/use-admin-companies';
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
 import { usePathname, useRouter } from '@/i18n/navigation';
+import { useDebouncedValue } from '@/shared/hooks/use-debounced-value';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { Button } from '@/shared/ui/button';
@@ -26,12 +28,26 @@ import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
 const ADMIN_PROJECTS_FILTER_COMPANY_KEY = 'companyId';
 
+const FIRST_PAGE = 1;
+
 const parsePage = (raw: string | null): number => {
   const parsed = Number(raw);
-  if (!Number.isFinite(parsed) || parsed < 1) {
-    return 1;
+  if (!Number.isFinite(parsed) || parsed < FIRST_PAGE) {
+    return FIRST_PAGE;
   }
   return Math.floor(parsed);
+};
+
+const buildAdminProjectsHref = (pathname: string, page: number, companyId?: string): string => {
+  const params = new URLSearchParams();
+  if (companyId) {
+    params.set('companyId', companyId);
+  }
+  if (page > FIRST_PAGE) {
+    params.set('page', String(page));
+  }
+  const query = params.toString();
+  return query.length > 0 ? `${pathname}?${query}` : pathname;
 };
 
 /**
@@ -51,8 +67,17 @@ export const AdminProjectsListPage = () => {
   );
   const [search, setSearch] = useState('');
   const [createOpen, setCreateOpen] = useState(false);
+  const trimmedSearch = search.trim();
+  const debouncedSearch = useDebouncedValue(trimmedSearch, ADMIN_PROJECTS_SEARCH_DEBOUNCE_MS);
+  /* Typing is debounced; clearing applies at once so the full list returns immediately. */
+  const activeSearch = trimmedSearch.length === 0 ? '' : debouncedSearch;
 
-  const projectsQuery = useAdminProjectsQuery(page, pageSize, companyId);
+  const projectsQuery = useAdminProjectsQuery({
+    page,
+    pageSize,
+    ...(companyId ? { companyId } : {}),
+    ...(activeSearch ? { search: activeSearch } : {}),
+  });
   const companiesQuery = useAdminCompaniesQuery(1, ADMIN_COMPANIES_MAX_PAGE_SIZE);
 
   const builderCompanies = useMemo(() => {
@@ -63,16 +88,15 @@ export const AdminProjectsListPage = () => {
       .sort((a, b) => a.name.localeCompare(b.name));
   }, [companiesQuery.data]);
 
-  const buildListHref = (nextPage: number, nextCompanyId?: string): string => {
-    const params = new URLSearchParams();
-    if (nextCompanyId) {
-      params.set('companyId', nextCompanyId);
+  const buildListHref = (nextPage: number, nextCompanyId?: string): string =>
+    buildAdminProjectsHref(pathname, nextPage, nextCompanyId);
+
+  /** Search always looks at the whole list, so a new term restarts pagination. */
+  const handleSearchChange = (value: string): void => {
+    setSearch(value);
+    if (page > FIRST_PAGE) {
+      router.replace(buildListHref(FIRST_PAGE, companyId));
     }
-    if (nextPage > 1) {
-      params.set('page', String(nextPage));
-    }
-    const query = params.toString();
-    return query.length > 0 ? `${pathname}?${query}` : pathname;
   };
 
   const filterConfigs = useMemo(
@@ -110,19 +134,19 @@ export const AdminProjectsListPage = () => {
         title={t('title')}
         subtitle={t('subtitle', { count: response.meta.total })}
         search={search}
-        searchPlaceholder={tCommon('searchPlaceholder')}
+        searchPlaceholder={t('filters.searchPlaceholder')}
         searchAriaLabel={tCommon('searchLabel')}
         filters={filterConfigs}
         filterValues={{ [ADMIN_PROJECTS_FILTER_COMPANY_KEY]: companyId ?? '' }}
-        onSearchChange={setSearch}
+        onSearchChange={handleSearchChange}
         onFilterChange={(key, value) => {
           if (key === ADMIN_PROJECTS_FILTER_COMPANY_KEY) {
-            router.replace(buildListHref(1, value || undefined));
+            router.replace(buildListHref(FIRST_PAGE, value || undefined));
           }
         }}
         onClearAll={() => {
           setSearch('');
-          router.replace(buildListHref(1, undefined));
+          router.replace(buildListHref(FIRST_PAGE, undefined));
         }}
         actions={
           <>

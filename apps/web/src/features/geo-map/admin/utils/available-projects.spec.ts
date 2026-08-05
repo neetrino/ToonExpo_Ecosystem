@@ -14,6 +14,7 @@ const project = (id: string, name: string): AdminProjectListItem => ({
   city: null,
   builderCompanyId: 'co_1',
   companyName: 'Acme',
+  buildingCover: null,
   buildingsCount: 0,
   apartmentsCount: 0,
 });

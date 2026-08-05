@@ -1,12 +1,14 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsInt, IsOptional, IsString, Max, Min, MinLength } from 'class-validator';
+import { IsInt, IsOptional, IsString, Max, MaxLength, Min, MinLength } from 'class-validator';
 
 import {
   ADMIN_COMPANIES_DEFAULT_PAGE_SIZE,
   ADMIN_COMPANIES_MAX_PAGE_SIZE,
   LIST_MIN_PAGE,
 } from '../../../common/constants/app.constants.js';
+
+const PROJECT_SEARCH_MAX_LENGTH = 120;
 
 /**
  * Query for the cross-company admin projects list.
@@ -42,4 +44,14 @@ export class ListAdminProjectsQueryDto {
   @IsString()
   @MinLength(1)
   buildingId?: string;
+
+  @ApiPropertyOptional({
+    description:
+      'Case-insensitive search over project name, slug, city and builder company name. Blank behaves as no search.',
+    maxLength: PROJECT_SEARCH_MAX_LENGTH,
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(PROJECT_SEARCH_MAX_LENGTH)
+  search?: string;
 }

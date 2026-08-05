@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import type {
   AdminCompanyProjectListResponse,
+  AdminProjectListItem,
   AdminProjectListResponse,
   AdminProjectScope,
   CompanyListResponse,
@@ -17,6 +18,7 @@ import {
   type Prisma,
 } from '@toonexpo/db';
 
+import { toMediaSummary } from '../../catalog/mappers/catalog.mapper.js';
 import { resolveOptionalCompanyLogoMediaId } from '../../media/utils/media-ownership.js';
 import { toUserResponse } from '../../auth/mappers/user.mapper.js';
 import { toCompanyResponse } from '../../companies/mappers/company.mapper.js';
@@ -38,6 +40,45 @@ type UpdateCompanyInput = {
   description?: string | null;
   status?: CompanyStatus;
   logoMediaId?: string | null;
+};
+
+type BuildingCoverRow = {
+  name: string;
+  coverMedia: {
+    id: string;
+    fileUrl: string;
+    thumbnailUrl: string | null;
+    altText: string | null;
+  } | null;
+};
+
+const toAdminBuildingCover = (
+  building: BuildingCoverRow | undefined,
+): AdminProjectListItem['buildingCover'] => {
+  const media = toMediaSummary(building?.coverMedia ?? null);
+  return building && media ? { buildingName: building.name, media } : null;
+};
+
+/**
+ * Company scope plus optional case-insensitive search for the admin projects list.
+ */
+const buildAdminProjectsWhere = (
+  companyId: string | undefined,
+  search: string | undefined,
+): Prisma.ProjectWhereInput => {
+  const where: Prisma.ProjectWhereInput = companyId ? { builderCompanyId: companyId } : {};
+  const needle = search?.trim();
+  if (!needle) {
+    return where;
+  }
+
+  where.OR = [
+    { name: { contains: needle, mode: 'insensitive' } },
+    { slug: { contains: needle, mode: 'insensitive' } },
+    { city: { contains: needle, mode: 'insensitive' } },
+    { builderCompany: { name: { contains: needle, mode: 'insensitive' } } },
+  ];
+  return where;
 };
 
 /**
@@ -135,18 +176,19 @@ export class AdminCompaniesService {
   }
 
   /**
-   * Lists projects across builder companies, optionally filtered by company.
+   * Lists projects across builder companies, optionally filtered by company and search term.
    */
   async listAllProjects(
     page: number,
     pageSize: number,
     companyId?: string,
+    search?: string,
   ): Promise<AdminProjectListResponse> {
     if (companyId) {
       await this.getById(companyId);
     }
 
-    const where: Prisma.ProjectWhereInput = companyId ? { builderCompanyId: companyId } : {};
+    const where = buildAdminProjectsWhere(companyId, search);
 
     const [total, projects] = await Promise.all([
       this.prisma.db.project.count({ where }),
@@ -163,6 +205,22 @@ export class AdminCompaniesService {
           city: true,
           builderCompanyId: true,
           builderCompany: { select: { name: true } },
+          buildings: {
+            where: { coverMediaId: { not: null } },
+            orderBy: [{ displayOrder: 'asc' }, { createdAt: 'asc' }],
+            take: 1,
+            select: {
+              name: true,
+              coverMedia: {
+                select: {
+                  id: true,
+                  fileUrl: true,
+                  thumbnailUrl: true,
+                  altText: true,
+                },
+              },
+            },
+          },
           _count: { select: { buildings: true, apartments: true } },
         },
       }),
@@ -177,6 +235,7 @@ export class AdminCompaniesService {
         city: project.city,
         builderCompanyId: project.builderCompanyId,
         companyName: project.builderCompany.name,
+        buildingCover: toAdminBuildingCover(project.buildings[0]),
         buildingsCount: project._count.buildings,
         apartmentsCount: project._count.apartments,
       })),
