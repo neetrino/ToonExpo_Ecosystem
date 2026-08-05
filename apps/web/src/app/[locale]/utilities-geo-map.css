@@ -54,4 +54,73 @@
   .geo-map-admin-page__map > .absolute {
     overflow: visible;
   }
+
+  /**
+   * Map pin marker (`useMarkerLayer`). MapLibre owns the root element's
+   * `transform` and `position`, so the root only carries size + cursor: every
+   * hover / selected effect lives on `.geo-map-pin__shape`, scaled from the pin
+   * tip so the anchored coordinate never moves.
+   */
+  .geo-map-pin {
+    width: 1.5rem;
+    height: 2rem;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .geo-map-pin--editable {
+    cursor: grab;
+  }
+
+  .geo-map-pin--editable:active {
+    cursor: grabbing;
+  }
+
+  .geo-map-pin__shape {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    color: var(--color-brand);
+    transform-origin: bottom center;
+    scale: 1;
+    filter: drop-shadow(0 2px 3px rgb(14 15 20 / 0.28));
+    transition:
+      scale var(--duration-fast) var(--ease-out-premium),
+      color var(--duration-fast) var(--ease-out-premium),
+      filter var(--duration-fast) var(--ease-out-premium);
+  }
+
+  .geo-map-pin:hover .geo-map-pin__shape {
+    color: var(--color-brand-hover);
+    scale: 1.08;
+    filter: drop-shadow(0 3px 5px rgb(14 15 20 / 0.32));
+  }
+
+  .geo-map-pin--selected .geo-map-pin__shape {
+    color: var(--color-brand-deep);
+    scale: 1.16;
+    filter: drop-shadow(0 4px 7px rgb(14 15 20 / 0.34));
+  }
+
+  .geo-map-pin__body {
+    fill: currentcolor;
+    stroke: var(--color-surface-elevated);
+    stroke-width: 1.75;
+    stroke-linejoin: round;
+  }
+
+  .geo-map-pin__dot {
+    fill: var(--color-surface-elevated);
+  }
+
+  .geo-map-pin--selected .geo-map-pin__dot {
+    fill: var(--color-brand-soft);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .geo-map-pin__shape {
+      transition: color var(--duration-fast) linear;
+    }
+  }
 }

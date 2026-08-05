@@ -6,10 +6,11 @@ import { useEffect, useRef } from 'react';
 import {
   MARKER_ELEMENT_CLASS_NAME,
   MARKER_ELEMENT_EDITABLE_CLASS_NAME,
-  MARKER_ELEMENT_HIGHLIGHTED_CLASS_NAME,
+  MARKER_ELEMENT_SELECTED_CLASS_NAME,
   MARKER_PIN_SVG_INNER_HTML,
 } from '@/features/geo-map/constants';
 import type { GeoMapLngLat, GeoMapObject } from '@/features/geo-map/types';
+import { isValidGeoMapLngLat } from '@/features/geo-map/utils/validate-geo-map-position';
 import { computeMarkerFadeOpacity } from '@/features/geo-map/utils/zoom-fade-opacity';
 
 export type UseMarkerLayerOptions = {
@@ -26,28 +27,33 @@ export type UseMarkerLayerOptions = {
   onObjectDragged?: ((id: string, position: GeoMapLngLat) => void) | undefined;
 };
 
-const resolveMarkerClassName = (editable: boolean, highlighted: boolean): string => {
-  const parts = [MARKER_ELEMENT_CLASS_NAME];
-  if (editable) {
-    parts.push(MARKER_ELEMENT_EDITABLE_CLASS_NAME);
-  }
-  if (highlighted) {
-    parts.push(MARKER_ELEMENT_HIGHLIGHTED_CLASS_NAME);
-  }
-  return parts.join(' ');
+/**
+ * Applies state as class toggles / attributes only. Never assigns `className`:
+ * MapLibre keeps `maplibregl-marker` (absolute positioning) on the same element,
+ * and dropping it makes every pin fall back into document flow.
+ */
+const applyMarkerState = (
+  element: HTMLElement,
+  label: string,
+  editable: boolean,
+  selected: boolean,
+): void => {
+  element.classList.toggle(MARKER_ELEMENT_EDITABLE_CLASS_NAME, editable);
+  element.classList.toggle(MARKER_ELEMENT_SELECTED_CLASS_NAME, selected);
+  element.setAttribute('aria-label', label);
+  element.title = label;
 };
 
 const createMarkerElement = (
   label: string,
   editable: boolean,
-  highlighted: boolean,
+  selected: boolean,
 ): HTMLDivElement => {
   const element = document.createElement('div');
-  element.className = resolveMarkerClassName(editable, highlighted);
+  element.classList.add(MARKER_ELEMENT_CLASS_NAME);
   element.setAttribute('role', 'button');
-  element.setAttribute('aria-label', label);
-  element.title = label;
   element.innerHTML = MARKER_PIN_SVG_INNER_HTML;
+  applyMarkerState(element, label, editable, selected);
   return element;
 };
 
@@ -59,6 +65,15 @@ type MarkerCallbacks = Pick<
 const toLngLat = (marker: Marker): GeoMapLngLat => {
   const lngLat = marker.getLngLat();
   return { longitude: lngLat.lng, latitude: lngLat.lat };
+};
+
+/** Skips redundant `setLngLat` so re-renders never re-project an unchanged pin. */
+const syncMarkerPosition = (marker: Marker, object: GeoMapObject): void => {
+  const current = marker.getLngLat();
+  if (current.lng === object.longitude && current.lat === object.latitude) {
+    return;
+  }
+  marker.setLngLat([object.longitude, object.latitude]);
 };
 
 const attachMarkerHandlers = (
@@ -95,7 +110,8 @@ const syncMarkers = (
   draggingIdRef: { current: string | null },
   callbacksRef: { current: MarkerCallbacks },
 ): void => {
-  const nextIds = new Set(markerObjects.map((object) => object.id));
+  const placeableObjects = markerObjects.filter(isValidGeoMapLngLat);
+  const nextIds = new Set(placeableObjects.map((object) => object.id));
   for (const [id, marker] of markers) {
     if (!nextIds.has(id)) {
       marker.remove();
@@ -103,30 +119,24 @@ const syncMarkers = (
     }
   }
 
-  for (const object of markerObjects) {
-    const opacity = computeMarkerFadeOpacity(zoom, object.minZoom);
-    const highlighted = object.id === highlightedObjectId;
+  for (const object of placeableObjects) {
+    const opacity = String(computeMarkerFadeOpacity(zoom, object.minZoom));
+    const selected = object.id === highlightedObjectId;
     const existing = markers.get(object.id);
     if (existing) {
       if (draggingId !== object.id) {
-        existing.setLngLat([object.longitude, object.latitude]);
+        syncMarkerPosition(existing, object);
       }
       existing.setDraggable(editable);
-      const element = existing.getElement();
-      element.className = resolveMarkerClassName(editable, highlighted);
-      element.setAttribute('aria-label', object.label);
-      element.title = object.label;
-      if (!element.querySelector('svg')) {
-        element.innerHTML = MARKER_PIN_SVG_INNER_HTML;
-      }
-      element.style.setProperty('opacity', String(opacity));
+      existing.setOpacity(opacity);
+      applyMarkerState(existing.getElement(), object.label, editable, selected);
       continue;
     }
 
-    const element = createMarkerElement(object.label, editable, highlighted);
-    element.style.setProperty('opacity', String(opacity));
+    const element = createMarkerElement(object.label, editable, selected);
     const marker = new Marker({ element, draggable: editable, anchor: 'bottom' })
       .setLngLat([object.longitude, object.latitude])
+      .setOpacity(opacity)
       .addTo(map);
     attachMarkerHandlers(marker, element, object.id, draggingIdRef, callbacksRef);
     markers.set(object.id, marker);
@@ -136,6 +146,10 @@ const syncMarkers = (
 /**
  * Renders `markerObjects` as MapLibre HTML map-pin markers (always visible),
  * draggable when `editable`, reporting drag via `onObjectDragMove` / `onObjectDragged`.
+ *
+ * MapLibre positions each pin through the root element's inline `transform`, so
+ * hover / selected styling is CSS-only on the inner SVG (`.geo-map-pin__shape`).
+ * Objects with invalid coordinates are skipped instead of anchored to `0,0`.
  */
 export const useMarkerLayer = ({
   map,

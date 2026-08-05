@@ -100,7 +100,6 @@ export const GeoMapCanvas = ({
     transformOverride,
   );
 
-  const activeHighlightId = hoveredObjectId ?? highlightedObjectId ?? null;
   const infoObject =
     findObjectById(objects, hoveredObjectId) ?? findObjectById(objects, highlightedObjectId);
 
@@ -130,7 +129,7 @@ export const GeoMapCanvas = ({
     markerObjects,
     zoom,
     editable,
-    highlightedObjectId: activeHighlightId,
+    highlightedObjectId,
     onObjectClick,
     onObjectHover: handleObjectHover,
     onObjectDragMove: (id, position) => setDragOverride({ id, ...position }),
