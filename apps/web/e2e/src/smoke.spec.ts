@@ -2,21 +2,22 @@ import { expect, test, type Page } from '@playwright/test';
 
 import { loginAs } from './helpers/auth.js';
 import {
-  SEED_APARTMENT_NUMBER,
-  SEED_APARTMENT_VISIBLE_AFTER_LOGIN_ID,
-  SEED_BUILDER_ADMIN_EMAIL,
-  SEED_BUILDER_COMPANY_ID,
-  SEED_BUYER_EMAIL,
-  SEED_FLOOR_LABEL,
-  SEED_PLATFORM_ADMIN_EMAIL,
-  SEED_PROJECT_ID,
-  SEED_PROJECT_NAME,
+  E2E_APARTMENT_ID,
+  E2E_APARTMENT_NUMBER,
+  E2E_BUILDER_ADMIN_EMAIL,
+  E2E_BUILDER_ADMIN_PASSWORD,
+  E2E_BUILDER_COMPANY_ID,
+  E2E_BUYER_EMAIL,
+  E2E_BUYER_PASSWORD,
+  E2E_FLOOR_LABEL,
+  E2E_PLATFORM_ADMIN_EMAIL,
+  E2E_PLATFORM_ADMIN_PASSWORD,
+  E2E_PROJECT_ID,
+  E2E_PROJECT_NAME,
+  E2E_PROJECT_NAME_HY,
 } from './helpers/env.js';
 
-/** hy-locale seed translation for Northern Avenue Residences. */
-const SEED_PROJECT_NAME_HY = 'Հյուսիսային պողոտայի նստավայրեր';
-
-/** Catalog page size large enough to include Northern Avenue among expanded seed data. */
+/** Catalog page size large enough for the configured database project. */
 const CATALOG_SMOKE_PAGE_SIZE = 50;
 
 type BuyerRegistrationValues = {
@@ -53,29 +54,27 @@ test.describe('smoke', () => {
     await expect(page.getByRole('heading', { name: 'Նախագծեր', level: 1 })).toBeVisible();
     await expect(
       page
-        .getByRole('link', { name: SEED_PROJECT_NAME_HY })
-        .or(page.getByRole('link', { name: SEED_PROJECT_NAME }))
+        .getByRole('link', { name: E2E_PROJECT_NAME_HY })
+        .or(page.getByRole('link', { name: E2E_PROJECT_NAME }))
         .first(),
     ).toBeVisible();
 
-    await page.goto(`/hy/projects/${SEED_PROJECT_ID}`);
+    await page.goto(`/hy/projects/${E2E_PROJECT_ID}`);
     // Floor picker links straight to floors (no intermediate building step).
-    await page.getByRole('link', { name: SEED_FLOOR_LABEL }).click();
+    await page.getByRole('link', { name: E2E_FLOOR_LABEL }).click();
     await expect(page).toHaveURL(/\/buildings\/.+\/floors\//);
 
-    await page.getByRole('link', { name: new RegExp(`Բն\\.\\s*${SEED_APARTMENT_NUMBER}`) }).click();
-    await expect(page).toHaveURL(
-      new RegExp(`/hy/apartments/${SEED_APARTMENT_VISIBLE_AFTER_LOGIN_ID}`),
-    );
+    await page.getByRole('link', { name: new RegExp(`Բն\\.\\s*${E2E_APARTMENT_NUMBER}`) }).click();
+    await expect(page).toHaveURL(new RegExp(`/hy/apartments/${E2E_APARTMENT_ID}`));
     // Detail hero title is the project name; unit number remains in breadcrumb/meta.
     await expect(
       page
-        .getByRole('heading', { name: SEED_PROJECT_NAME_HY, level: 1 })
-        .or(page.getByRole('heading', { name: SEED_PROJECT_NAME, level: 1 }))
+        .getByRole('heading', { name: E2E_PROJECT_NAME_HY, level: 1 })
+        .or(page.getByRole('heading', { name: E2E_PROJECT_NAME, level: 1 }))
         .first(),
     ).toBeVisible();
     await expect(
-      page.getByText(new RegExp(`Բն\\.\\s*${SEED_APARTMENT_NUMBER}`)).first(),
+      page.getByText(new RegExp(`Բն\\.\\s*${E2E_APARTMENT_NUMBER}`)).first(),
     ).toBeVisible();
   });
 
@@ -155,15 +154,15 @@ test.describe('smoke', () => {
   });
 
   test('buyer login shows QR on profile', async ({ page }) => {
-    await loginAs(page, SEED_BUYER_EMAIL);
+    await loginAs(page, E2E_BUYER_EMAIL, E2E_BUYER_PASSWORD);
     await page.goto('/hy/qr');
     await expect(page.getByRole('heading', { name: 'Իմ QR' })).toBeVisible();
     await expect(page.getByRole('img', { name: /QR/ })).toBeVisible();
   });
 
   test('favorites add and remove', async ({ page }) => {
-    await loginAs(page, SEED_BUYER_EMAIL);
-    await page.goto(`/hy/apartments/${SEED_APARTMENT_VISIBLE_AFTER_LOGIN_ID}`);
+    await loginAs(page, E2E_BUYER_EMAIL, E2E_BUYER_PASSWORD);
+    await page.goto(`/hy/apartments/${E2E_APARTMENT_ID}`);
 
     const addButton = page.getByRole('button', {
       name: 'Ավելացնել ընտրյալներին',
@@ -196,9 +195,7 @@ test.describe('smoke', () => {
 
     await page.goto('/hy/favorites');
     await expect(page.getByRole('heading', { name: 'Իմ ընտրյալները' })).toBeVisible();
-    const favoriteLink = page
-      .getByRole('link', { name: new RegExp(SEED_APARTMENT_NUMBER) })
-      .first();
+    const favoriteLink = page.getByRole('link', { name: new RegExp(E2E_APARTMENT_NUMBER) }).first();
     await expect(favoriteLink).toBeVisible();
 
     const listRemove = page.getByRole('button', {
@@ -216,13 +213,13 @@ test.describe('smoke', () => {
   });
 
   test('login-gated apartment price', async ({ page }) => {
-    const apartmentPath = `/hy/apartments/${SEED_APARTMENT_VISIBLE_AFTER_LOGIN_ID}`;
+    const apartmentPath = `/hy/apartments/${E2E_APARTMENT_ID}`;
     const signInCta = 'Մուտք գործեք՝ գինը տեսնելու համար';
 
     await page.goto(apartmentPath);
     await expect(page.getByRole('link', { name: signInCta })).toBeVisible();
 
-    await loginAs(page, SEED_BUYER_EMAIL);
+    await loginAs(page, E2E_BUYER_EMAIL, E2E_BUYER_PASSWORD);
     await page.goto(apartmentPath);
     await expect(page.getByRole('link', { name: signInCta })).toHaveCount(0, {
       timeout: 20_000,
@@ -233,7 +230,7 @@ test.describe('smoke', () => {
   });
 
   test('builder portal dashboard', async ({ page }) => {
-    await loginAs(page, SEED_BUILDER_ADMIN_EMAIL);
+    await loginAs(page, E2E_BUILDER_ADMIN_EMAIL, E2E_BUILDER_ADMIN_PASSWORD);
     await expect(page).toHaveURL(/\/hy\/builder/);
     await expect(page.getByRole('heading', { name: 'Վահանակ' })).toBeVisible();
 
@@ -243,7 +240,7 @@ test.describe('smoke', () => {
       .click();
     await expect(page).toHaveURL(/\/hy\/builder\/projects/);
     await expect(
-      page.getByText(SEED_PROJECT_NAME).or(page.getByText(SEED_PROJECT_NAME_HY)).first(),
+      page.getByText(E2E_PROJECT_NAME).or(page.getByText(E2E_PROJECT_NAME_HY)).first(),
     ).toBeVisible();
   });
 
@@ -279,15 +276,15 @@ test.describe('smoke', () => {
   });
 
   test('buyer cannot access admin', async ({ page }) => {
-    await loginAs(page, SEED_BUYER_EMAIL);
+    await loginAs(page, E2E_BUYER_EMAIL, E2E_BUYER_PASSWORD);
     await page.goto('/hy/admin');
     await expect(page.getByRole('heading', { name: 'Էջը չի գտնվել' })).toBeVisible();
   });
 
   test('admin can edit a company catalog project', async ({ page }) => {
-    await loginAs(page, SEED_PLATFORM_ADMIN_EMAIL);
+    await loginAs(page, E2E_PLATFORM_ADMIN_EMAIL, E2E_PLATFORM_ADMIN_PASSWORD);
     await page.goto(
-      `/hy/admin/companies/${SEED_BUILDER_COMPANY_ID}/catalog/projects/${SEED_PROJECT_ID}`,
+      `/hy/admin/companies/${E2E_BUILDER_COMPANY_ID}/catalog/projects/${E2E_PROJECT_ID}`,
     );
     await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
 
@@ -301,7 +298,7 @@ test.describe('smoke', () => {
     await expect(saveButton).toBeEnabled();
     const saveResponse = page.waitForResponse(
       (response) =>
-        response.url().includes(`/admin/companies/${SEED_BUILDER_COMPANY_ID}/catalog/projects/`) &&
+        response.url().includes(`/admin/companies/${E2E_BUILDER_COMPANY_ID}/catalog/projects/`) &&
         response.request().method() === 'PATCH' &&
         response.ok(),
     );
@@ -316,7 +313,7 @@ test.describe('smoke', () => {
     await expect(saveButton).toBeEnabled();
     const restoreResponse = page.waitForResponse(
       (response) =>
-        response.url().includes(`/admin/companies/${SEED_BUILDER_COMPANY_ID}/catalog/projects/`) &&
+        response.url().includes(`/admin/companies/${E2E_BUILDER_COMPANY_ID}/catalog/projects/`) &&
         response.request().method() === 'PATCH' &&
         response.ok(),
     );

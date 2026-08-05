@@ -26,6 +26,9 @@ set -a
 source "$ROOT/.env"
 set +a
 
+: "${LIVE_CHECK_EMAIL:?Set LIVE_CHECK_EMAIL to a builder admin stored in the database}"
+: "${LIVE_CHECK_PASSWORD:?Set LIVE_CHECK_PASSWORD for the builder admin}"
+
 pnpm --filter @toonexpo/api dev >/tmp/toonexpo-api-live.log 2>&1 &
 API_PID=$!
 
@@ -42,7 +45,7 @@ LOGIN_JSON=$(curl -sf "$API/auth/login" \
   -H "Content-Type: application/json" \
   -H "Origin: $ORIGIN" \
   -c "$COOKIE_JAR" \
-  -d "{\"email\":\"builder.admin@toonexpo.local\",\"password\":\"$SEED_ADMIN_PASSWORD\"}")
+  -d "{\"email\":\"$LIVE_CHECK_EMAIL\",\"password\":\"$LIVE_CHECK_PASSWORD\"}")
 
 CSRF=$(node -e "const j=JSON.parse(process.argv[1]); process.stdout.write(j.csrfToken||'');" "$LOGIN_JSON")
 

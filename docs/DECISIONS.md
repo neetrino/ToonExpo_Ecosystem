@@ -84,9 +84,12 @@
 
 These inputs do not block local development or Sprint 1 CSRF hardening.
 
-## Confirmed 2026-07-19 (Production bootstrap and account security)
+## Confirmed 2026-08-05 (Database-only product data)
 
-- **Production first admin:** use `pnpm --filter @toonexpo/db run db:seed:prod` with `PROD_ADMIN_EMAIL` + `PROD_ADMIN_PASSWORD` (≥12 chars). Script creates only one `platform_admin`, refuses when any user already exists, and never seeds demo companies. Dev seed (`db:seed`) remains local-only.
+- **Database-only product data:** the repository contains no seed/demo-data or first-admin
+  bootstrap scripts. Runtime, local tools, and E2E read pre-existing PostgreSQL records. The
+  production database owner provisions the initial `platform_admin` through the approved
+  operations process.
 - **Self-service password change:** authenticated users of all account types may change password from `/profile/password` (`POST /auth/change-password`). Wrong current password returns HTTP 400 (session preserved). On success, all other sessions are revoked (current session kept), mirroring reset-password security.
 - **Not planned (mobile):** Admin CMS for homepage/content blocks and PWA (manifest/offline) are out of scope — a WebView app will cover mobile instead.
 - **Pulled into v1:** Admin editing of any company's catalog/inventory (platform team fills content in the first months); Admin UI for BOS provisioning history still next.

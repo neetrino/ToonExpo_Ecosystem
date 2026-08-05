@@ -176,7 +176,7 @@ Auth: `platform_admin`. Canvas `ownerCompanyId` = `Project.builderCompanyId`.
 ## Gaps
 
 ```text
-GAP: full headed Playwright 4-phase draw with real R2 uploads → requires seeded platform_admin + R2 credentials in CI; covered by unit/API tests + smoke E2E + manual QA checklist below.
+GAP: full headed Playwright 4-phase draw with real R2 uploads → requires a configured platform_admin, populated E2E database, and R2 credentials in CI; covered by unit/API tests + smoke E2E + manual QA checklist below.
 GAP: public district deep-link page → district hotspots currently link to project page; district-context public surface can be added later.
 ```
 

@@ -8,13 +8,6 @@ export const DEFAULT_SESSION_COOKIE = 'toonexpo_session';
 
 export const DEFAULT_CSRF_COOKIE = 'toonexpo_csrf';
 
-export const DEFAULT_LOAD_PASSWORD = 'ChangeMeAdmin123!';
-
-export const DEFAULT_SEED_PROJECT_ID = 'seed_project_northern_avenue';
-
-export const DEFAULT_SEED_APARTMENT_ID =
-  'seed_apt_northern-avenue-residences_building_a_f3_1';
-
 /**
  * @returns {boolean}
  */
@@ -39,8 +32,8 @@ export function isSmokeMode() {
  *   staffPassword: string;
  *   qrTokens: string[];
  *   stampedePath: string;
- *   seedProjectId: string;
- *   seedApartmentId: string;
+ *   projectId: string;
+ *   apartmentId: string;
  *   thinkTimeMinSec: number;
  *   thinkTimeMaxSec: number;
  * }}
@@ -56,19 +49,16 @@ export function loadConfig() {
     vus: Number.parseInt(__ENV.VUS || '20', 10),
     sessionCookieName: __ENV.SESSION_COOKIE_NAME || DEFAULT_SESSION_COOKIE,
     csrfCookieName: __ENV.CSRF_COOKIE_NAME || DEFAULT_CSRF_COOKIE,
-    buyerEmail: __ENV.LOAD_BUYER_EMAIL || 'buyer@toonexpo.local',
-    buyerPassword:
-      __ENV.LOAD_BUYER_PASSWORD || __ENV.SEED_ADMIN_PASSWORD || DEFAULT_LOAD_PASSWORD,
-    builderEmail: __ENV.LOAD_BUILDER_EMAIL || 'builder.admin@toonexpo.local',
-    builderPassword:
-      __ENV.LOAD_BUILDER_PASSWORD || __ENV.SEED_ADMIN_PASSWORD || DEFAULT_LOAD_PASSWORD,
+    buyerEmail: __ENV.LOAD_BUYER_EMAIL || '',
+    buyerPassword: __ENV.LOAD_BUYER_PASSWORD || '',
+    builderEmail: __ENV.LOAD_BUILDER_EMAIL || '',
+    builderPassword: __ENV.LOAD_BUILDER_PASSWORD || '',
     staffEmail: __ENV.LOAD_STAFF_EMAIL || '',
-    staffPassword:
-      __ENV.LOAD_STAFF_PASSWORD || __ENV.SEED_ADMIN_PASSWORD || DEFAULT_LOAD_PASSWORD,
+    staffPassword: __ENV.LOAD_STAFF_PASSWORD || '',
     qrTokens: parseQrTokens(),
     stampedePath: __ENV.STAMPEDE_PATH || `${API_PREFIX}/projects?page=1&pageSize=10`,
-    seedProjectId: __ENV.LOAD_PROJECT_ID || DEFAULT_SEED_PROJECT_ID,
-    seedApartmentId: __ENV.LOAD_APARTMENT_ID || DEFAULT_SEED_APARTMENT_ID,
+    projectId: __ENV.LOAD_PROJECT_ID || '',
+    apartmentId: __ENV.LOAD_APARTMENT_ID || '',
     thinkTimeMinSec: Number.parseFloat(__ENV.THINK_TIME_MIN_SEC || '1'),
     thinkTimeMaxSec: Number.parseFloat(__ENV.THINK_TIME_MAX_SEC || '3'),
   };

@@ -40,26 +40,14 @@ These keys were used during development and may have been exposed. **Rotate befo
 Additional hardening:
 
 - Use a **dedicated Neon production branch/database**; keep `DATABASE_URL` (pooled) and `DIRECT_URL` (non-pooled) for that instance only.
-- **Do not run dev seed in production.** `pnpm --filter @toonexpo/db db:seed` is for local/dev only.
-- **First platform admin:** after migrations on an **empty** production database, run the production-safe seed once (see §2.1).
+- Application records are managed only in PostgreSQL; deployment and migration commands never populate or reset product data.
+- Provision the first platform administrator through the approved database operations process before launch.
 
-### 2.1 Create the first platform admin (empty DB only)
+### 2.1 Provision the first platform admin
 
-From the monorepo root, with production `DATABASE_URL` / `DIRECT_URL` in `.env`:
-
-```bash
-export PROD_ADMIN_EMAIL="you@company.com"
-export PROD_ADMIN_PASSWORD="your-strong-password-at-least-12-chars"
-pnpm --filter @toonexpo/db run db:seed:prod
-```
-
-Guardrails (non-zero exit if violated):
-
-- Both `PROD_ADMIN_EMAIL` and `PROD_ADMIN_PASSWORD` must be set.
-- Password must be ≥ 12 characters.
-- Database must have **zero** users (refuses if any account exists).
-
-Creates exactly one `platform_admin` — no demo companies or catalog data. Unset `PROD_ADMIN_PASSWORD` from your shell when done.
+The repository contains no database population or bootstrap scripts. The production database owner
+must provision the initial `platform_admin` through the approved operations process, record the action
+in the deployment log, and then use the application admin workflows for subsequent data management.
 
 ---
 
@@ -181,33 +169,31 @@ Expect HTTP 200 with JSON `status: "ok"` when the database is reachable.
 
 Set these on the Cloud Run service (Console → Edit & deploy → Variables & secrets).
 
-| Variable                                   | Required             | Notes                                                                                                                                          |
-| ------------------------------------------ | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `NODE_ENV`                                 | **Yes**              | `production`                                                                                                                                   |
-| `PORT`                                     | **No — do not set**  | Injected by Cloud Run                                                                                                                          |
-| `DATABASE_URL`                             | **Yes**              | Neon **pooled** connection string                                                                                                              |
-| `APP_URL`                                  | **Yes**              | Public web URL, e.g. `https://toonexpo.com` (emails, QR links)                                                                                 |
-| `CORS_ORIGINS`                             | **Yes**              | Comma-separated browser origins, e.g. `https://toonexpo.com,https://www.toonexpo.com` — must include the exact Vercel/production web origin(s) |
-| `SESSION_TOKEN_PEPPER`                     | **Yes**              | ≥ 32 chars; changing invalidates all sessions                                                                                                  |
-| `CSRF_SECRET`                              | **Yes**              | ≥ 32 chars                                                                                                                                     |
-| `RESEND_API_KEY`                           | **Yes** (prod)       | Validated when `NODE_ENV=production`                                                                                                           |
-| `RESEND_FROM_EMAIL`                        | **Yes** (prod)       | Verified sender in Resend                                                                                                                      |
-| `SESSION_COOKIE_NAME`                      | Optional             | Default `toonexpo_session`                                                                                                                     |
-| `SESSION_IDLE_TTL_SECONDS`                 | Optional             | Default 604800 (7d)                                                                                                                            |
-| `SESSION_ABSOLUTE_TTL_SECONDS`             | Optional             | Default 2592000 (30d)                                                                                                                          |
-| `CSRF_COOKIE_NAME`                         | Optional             | Default `toonexpo_csrf`                                                                                                                        |
-| `UPSTASH_REDIS_REST_URL`                   | Optional*            | Both Upstash vars required together for distributed rate limiting                                                                              |
-| `UPSTASH_REDIS_REST_TOKEN`                 | Optional*            |                                                                                                                                                |
-| `R2_ACCOUNT_ID`                            | Optional             | All R2 vars needed for media uploads                                                                                                           |
-| `R2_ACCESS_KEY_ID`                         | Optional             |                                                                                                                                                |
-| `R2_SECRET_ACCESS_KEY`                     | Optional             |                                                                                                                                                |
-| `R2_BUCKET_NAME`                           | Optional             |                                                                                                                                                |
-| `R2_PUBLIC_URL`                            | Optional             | Public CDN/base URL for R2 objects                                                                                                             |
-| `BOS_API_KEY`                              | Optional             | ≥ 32 chars; unset → inbound BOS provisioning returns 503                                                                                       |
-| `SENTRY_DSN`                               | Optional             | API error tracking                                                                                                                             |
-| `DIRECT_URL`                               | **Not on Cloud Run** | Migrations only (local/CI `.env`)                                                                                                              |
-| `SEED_ADMIN_PASSWORD`                      | **Do not set**       | Dev seed only (`db:seed`)                                                                                                                      |
-| `PROD_ADMIN_EMAIL` / `PROD_ADMIN_PASSWORD` | **Bootstrap only**   | One-off `db:seed:prod` on empty prod DB; never on Cloud Run runtime                                                                            |
+| Variable                       | Required             | Notes                                                                                                                                          |
+| ------------------------------ | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| `NODE_ENV`                     | **Yes**              | `production`                                                                                                                                   |
+| `PORT`                         | **No — do not set**  | Injected by Cloud Run                                                                                                                          |
+| `DATABASE_URL`                 | **Yes**              | Neon **pooled** connection string                                                                                                              |
+| `APP_URL`                      | **Yes**              | Public web URL, e.g. `https://toonexpo.com` (emails, QR links)                                                                                 |
+| `CORS_ORIGINS`                 | **Yes**              | Comma-separated browser origins, e.g. `https://toonexpo.com,https://www.toonexpo.com` — must include the exact Vercel/production web origin(s) |
+| `SESSION_TOKEN_PEPPER`         | **Yes**              | ≥ 32 chars; changing invalidates all sessions                                                                                                  |
+| `CSRF_SECRET`                  | **Yes**              | ≥ 32 chars                                                                                                                                     |
+| `RESEND_API_KEY`               | **Yes** (prod)       | Validated when `NODE_ENV=production`                                                                                                           |
+| `RESEND_FROM_EMAIL`            | **Yes** (prod)       | Verified sender in Resend                                                                                                                      |
+| `SESSION_COOKIE_NAME`          | Optional             | Default `toonexpo_session`                                                                                                                     |
+| `SESSION_IDLE_TTL_SECONDS`     | Optional             | Default 604800 (7d)                                                                                                                            |
+| `SESSION_ABSOLUTE_TTL_SECONDS` | Optional             | Default 2592000 (30d)                                                                                                                          |
+| `CSRF_COOKIE_NAME`             | Optional             | Default `toonexpo_csrf`                                                                                                                        |
+| `UPSTASH_REDIS_REST_URL`       | Optional*            | Both Upstash vars required together for distributed rate limiting                                                                              |
+| `UPSTASH_REDIS_REST_TOKEN`     | Optional*            |                                                                                                                                                |
+| `R2_ACCOUNT_ID`                | Optional             | All R2 vars needed for media uploads                                                                                                           |
+| `R2_ACCESS_KEY_ID`             | Optional             |                                                                                                                                                |
+| `R2_SECRET_ACCESS_KEY`         | Optional             |                                                                                                                                                |
+| `R2_BUCKET_NAME`               | Optional             |                                                                                                                                                |
+| `R2_PUBLIC_URL`                | Optional             | Public CDN/base URL for R2 objects                                                                                                             |
+| `BOS_API_KEY`                  | Optional             | ≥ 32 chars; unset → inbound BOS provisioning returns 503                                                                                       |
+| `SENTRY_DSN`                   | Optional             | API error tracking                                                                                                                             |
+| `DIRECT_URL`                   | **Not on Cloud Run** | Migrations only (local/CI `.env`)                                                                                                              |
 
 \* If one Upstash variable is set, the other must be set too (API startup validation).
 

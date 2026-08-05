@@ -22,24 +22,25 @@ k6 version
 
 ## Environment variables
 
-| Variable                                       | Default (local)                       | Purpose                                                                     |
-| ---------------------------------------------- | ------------------------------------- | --------------------------------------------------------------------------- |
-| `BASE_URL`                                     | `http://localhost:3000`               | Next.js web origin (HTML + optional proxy)                                  |
-| `API_URL`                                      | `http://localhost:4000`               | NestJS API origin                                                           |
-| `VUS`                                          | `20`                                  | Peak virtual users for full scenarios                                       |
-| `SMOKE`                                        | unset                                 | Set to `1` for smoke mode (2–3 VUs, ~20s)                                   |
-| `LOAD_BUYER_EMAIL` / `LOAD_BUYER_PASSWORD`     | seed buyer                            | Buyer account for QR display (password falls back to `SEED_ADMIN_PASSWORD`) |
-| `LOAD_BUILDER_EMAIL` / `LOAD_BUILDER_PASSWORD` | seed builder admin                    | Builder CRM portal (password falls back to `SEED_ADMIN_PASSWORD`)           |
-| `LOAD_STAFF_EMAIL` / `LOAD_STAFF_PASSWORD`     | unset                                 | Entrance staff for check-in (expo-day)                                      |
-| `LOAD_QR_TOKENS`                               | unset                                 | Comma-separated opaque QR tokens for resolve/check-in                       |
-| `LOAD_QR_TOKENS_FILE`                          | unset                                 | Newline-separated token file (`#` comments allowed)                         |
-| `LOAD_PROJECT_ID` / `LOAD_APARTMENT_ID`        | seed IDs                              | Catalog fallback IDs                                                        |
-| `STAMPEDE_PATH`                                | `/api/v1/projects?page=1&pageSize=10` | Identical GET target for stampede                                           |
-| `SESSION_COOKIE_NAME`                          | `toonexpo_session`                    | Session cookie name                                                         |
-| `CSRF_COOKIE_NAME`                             | `toonexpo_csrf`                       | CSRF cookie name                                                            |
-| `THINK_TIME_MIN_SEC` / `THINK_TIME_MAX_SEC`    | `1` / `3`                             | Random pause between browse steps                                           |
+| Variable                                       | Default (local)                       | Purpose                                               |
+| ---------------------------------------------- | ------------------------------------- | ----------------------------------------------------- |
+| `BASE_URL`                                     | `http://localhost:3000`               | Next.js web origin (HTML + optional proxy)            |
+| `API_URL`                                      | `http://localhost:4000`               | NestJS API origin                                     |
+| `VUS`                                          | `20`                                  | Peak virtual users for full scenarios                 |
+| `SMOKE`                                        | unset                                 | Set to `1` for smoke mode (2–3 VUs, ~20s)             |
+| `LOAD_BUYER_EMAIL` / `LOAD_BUYER_PASSWORD`     | unset                                 | Existing buyer account for QR display                 |
+| `LOAD_BUILDER_EMAIL` / `LOAD_BUILDER_PASSWORD` | unset                                 | Existing builder admin account for CRM                |
+| `LOAD_STAFF_EMAIL` / `LOAD_STAFF_PASSWORD`     | unset                                 | Entrance staff for check-in (expo-day)                |
+| `LOAD_QR_TOKENS`                               | unset                                 | Comma-separated opaque QR tokens for resolve/check-in |
+| `LOAD_QR_TOKENS_FILE`                          | unset                                 | Newline-separated token file (`#` comments allowed)   |
+| `LOAD_PROJECT_ID` / `LOAD_APARTMENT_ID`        | unset                                 | Optional existing catalog fallback IDs                |
+| `STAMPEDE_PATH`                                | `/api/v1/projects?page=1&pageSize=10` | Identical GET target for stampede                     |
+| `SESSION_COOKIE_NAME`                          | `toonexpo_session`                    | Session cookie name                                   |
+| `CSRF_COOKIE_NAME`                             | `toonexpo_csrf`                       | CSRF cookie name                                      |
+| `THINK_TIME_MIN_SEC` / `THINK_TIME_MAX_SEC`    | `1` / `3`                             | Random pause between browse steps                     |
 
-Credentials are read from the environment only — never hardcoded in scripts (local defaults match seed accounts documented in `packages/db/prisma/seed-auth.ts`).
+Credentials and fallback IDs are read from the environment only. Load tests never create or reset
+database records.
 
 ## Auth / CSRF
 
@@ -101,8 +102,7 @@ From the repo root with API + web running (`pnpm dev` or separate filters):
 export BASE_URL=http://localhost:3000
 export API_URL=http://localhost:4000
 export SMOKE=1
-# Optional when seed password is not the dev default:
-# export $(grep -E '^SEED_ADMIN_PASSWORD=' .env | xargs)
+# Export the LOAD_* credentials and IDs needed by the selected scenarios.
 
 k6 run load/public-browse.js
 k6 run load/registration-login.js

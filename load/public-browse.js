@@ -47,7 +47,11 @@ export default function publicBrowse() {
   });
   checkStatus(projects, 'projects list');
 
-  const projectId = firstProjectId(projects) || config.seedProjectId;
+  const projectId = firstProjectId(projects) || config.projectId;
+  if (!projectId) {
+    check(projectId, { 'database has a project for catalog flow': Boolean });
+    return;
+  }
 
   thinkTime(config.thinkTimeMinSec, config.thinkTimeMaxSec);
 
@@ -57,7 +61,11 @@ export default function publicBrowse() {
   });
   checkStatus(project, 'project detail', [200, 404]);
 
-  const apartmentId = firstApartmentId(project) || config.seedApartmentId;
+  const apartmentId = firstApartmentId(project) || config.apartmentId;
+  if (!apartmentId) {
+    check(apartmentId, { 'database has an apartment for catalog flow': Boolean });
+    return;
+  }
 
   thinkTime(config.thinkTimeMinSec, config.thinkTimeMaxSec);
 

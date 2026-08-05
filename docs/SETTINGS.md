@@ -32,15 +32,9 @@
 
 ## Первый platform_admin (production)
 
-Только на **пустой** prod БД после migrate deploy:
-
-```bash
-export PROD_ADMIN_EMAIL="you@company.com"
-export PROD_ADMIN_PASSWORD="минимум-12-символов"
-pnpm --filter @toonexpo/db run db:seed:prod
-```
-
-Скрипт откажется, если в БД уже есть пользователи или пароль короче 12 символов. Dev seed (`db:seed`) — только локально.
+В репозитории нет скриптов заполнения или сброса БД. Владельцу production-БД необходимо
+создать первого `platform_admin` через утверждённый операционный процесс и зафиксировать
+операцию в журнале развёртывания. Все последующие данные управляются через приложение.
 
 ## Cloud Run
 

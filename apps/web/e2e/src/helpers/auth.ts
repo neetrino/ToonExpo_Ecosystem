@@ -1,18 +1,12 @@
 import type { Page } from '@playwright/test';
 
-import { SEED_PASSWORD } from './env.js';
-
 /** Keep in sync with `CLIENT_SESSION_HINT_STORAGE_KEY` in session-hint.ts. */
 const CLIENT_SESSION_HINT_STORAGE_KEY = 'toonexpo_session_hint';
 
 /**
  * Fills the hy-locale login form and waits for navigation away from login.
  */
-export const loginAs = async (
-  page: Page,
-  email: string,
-  password: string = SEED_PASSWORD,
-): Promise<void> => {
+export const loginAs = async (page: Page, email: string, password: string): Promise<void> => {
   await page.goto('/hy/auth/login');
   await page.getByLabel('Էլ․ փոստ').fill(email);
   await page.getByLabel('Գաղտնաբառ', { exact: true }).fill(password);

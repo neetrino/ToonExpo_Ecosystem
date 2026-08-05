@@ -27,7 +27,6 @@ Previously **9** files were over 350; all were split into smaller modules withou
 | `crm.e2e-spec.ts`                       | fixtures + harness + `crm-isolation.e2e-spec.ts`                                |
 | `portal.e2e-spec.ts`                    | fixtures + harness + `portal-company.e2e-spec.ts`                               |
 | `catalog.e2e-spec.ts`                   | fixtures extraction                                                             |
-| `seed-catalog.ts`                       | builders / buildings / projects / translations + thin barrel                    |
 | `packages/contracts/src/index.ts`       | thin `export *` barrel + `health.ts`                                            |
 | `multi-listbox-select.tsx`              | types / selection-mark / menu                                                   |
 

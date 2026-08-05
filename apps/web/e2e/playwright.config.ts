@@ -14,10 +14,9 @@ const webPort = new URL(WEB_ORIGIN).port || '3000';
 const apiPort = new URL(API_ORIGIN).port || '4000';
 
 /**
- * Chromium-only smoke suite. Starts built API + Next.js servers unless already up.
- * Database seed runs in `scripts/e2e-with-seed.mjs` before this config loads
- * (Playwright would otherwise start webServer before any globalSetup seed).
- * Run `pnpm e2e:build` first (or root `pnpm e2e`, which builds then tests).
+ * Chromium-only smoke suite against a pre-populated database.
+ * Starts built API + Next.js servers unless they are already running.
+ * Run `pnpm e2e:build` before this suite.
  */
 export default defineConfig({
   testDir: path.join(packageRoot, 'src'),

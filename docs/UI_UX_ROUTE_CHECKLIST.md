@@ -74,4 +74,3 @@ Verification columns: Mobile (≤430) · Tablet (~768) · Desktop (~1280) · Wid
 - All portal routes inherit the new `PortalShell` (sticky header, desktop sidebar card, mobile drawer).
 - “Partial” means the route uses the global design system and shell but was not fully rewritten section-by-section.
 - Homepage was manually verified in browser at desktop width; mobile drawer/header patterns verified via code + shared components.
-- After pulling these changes, run `pnpm --filter @toonexpo/db db:seed` to refresh local demo media URLs.

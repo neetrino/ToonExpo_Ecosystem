@@ -2,7 +2,8 @@
 
 /**
  * Interactive Mapping smoke — verifies admin route shell is reachable after auth redirect.
- * Full 4-phase draw flows require seeded admin + R2; covered by unit/API gates + manual QA.
+ * Full 4-phase draw flows require a configured admin account and R2; covered by unit/API gates
+ * and manual QA.
  */
 test.describe('interactive mapping admin', () => {
   test('interactive mapping path redirects unauthenticated users away from content', async ({

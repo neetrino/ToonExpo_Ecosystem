@@ -51,14 +51,14 @@ packages/
   config/              # shared ESLint / tsconfig / Vitest presets
   shared/              # environment-neutral utilities (incl. DEFAULT_LOCALE = en)
   contracts/           # framework-neutral API types/contracts
-  db/                  # Prisma schema, migrations, seed scripts
+  db/                  # Prisma schema and migrations
 ```
 
 ## Prerequisites
 
 - Node.js >= 24
 - pnpm >= 11
-- Neon `DATABASE_URL` (and `DIRECT_URL` for migrations/seeds) in a local `.env` (never commit secrets)
+- Neon `DATABASE_URL` (and `DIRECT_URL` for migrations) in a local `.env` (never commit secrets)
 
 ## Local development
 
@@ -77,20 +77,13 @@ pnpm --filter @toonexpo/db db:validate
 
 # Apply migrations on a fresh database:
 pnpm --filter @toonexpo/db db:migrate:dev
-
-# Idempotent demo data (local/dev only):
-pnpm --filter @toonexpo/db db:seed
 ```
 
 Git hooks install automatically via the root `prepare` script (Husky + lint-staged on pre-commit).
 
-Seeded accounts (password from `SEED_ADMIN_PASSWORD` in `.env`, or dev fallback documented in seed script — never commit real passwords):
-
-| Role                               | Email                          |
-| ---------------------------------- | ------------------------------ |
-| Platform admin                     | `admin@toonexpo.local`         |
-| Company admin (first seed builder) | `builder.admin@toonexpo.local` |
-| Buyer (with QR)                    | `buyer@toonexpo.local`         |
+Application data is read only from PostgreSQL. A new database starts empty; create users and catalog
+content through the approved admin/operations flow. Database population scripts are intentionally not
+part of this repository.
 
 Start apps in **separate terminals** (do not use turbo TUI for local `dev`):
 
@@ -126,20 +119,16 @@ pnpm build
 
 Chromium-only smoke suite in `apps/web/e2e`. Not part of the default turbo `build` / `test` pipeline.
 
-Prerequisites: root `.env` with `DATABASE_URL` / `DIRECT_URL`, `SESSION_TOKEN_PEPPER`, `CSRF_SECRET`, and optional `SEED_ADMIN_PASSWORD` (fallback `ChangeMeAdmin123!` from `@toonexpo/shared` seed contract).
-
-Stable seed emails / catalog IDs used by smoke live in `packages/shared/src/seed-contract.ts` (imported by `db` seed and e2e helpers). Do not hardcode divergent IDs in tests.
+Prerequisites: root `.env` with `DATABASE_URL` / `DIRECT_URL`, `SESSION_TOKEN_PEPPER`,
+`CSRF_SECRET`, and the `E2E_*` account/catalog values required by
+`apps/web/e2e/src/helpers/env.ts`. The database must already contain those records.
 
 ```bash
-# Builds API + web, seeds DB (before Playwright), starts both servers if needed, runs smoke tests
+# Builds API + web, starts both servers if needed, and runs smoke tests
 pnpm e2e
 
 # Or after an existing build / with servers already on :3000 and :4000:
 pnpm --filter @toonexpo/web e2e
-
-# DB already seeded (e.g. CI after explicit seed + e2e:build):
-pnpm --filter @toonexpo/web e2e:playwright
-# or: SKIP_E2E_SEED=1 pnpm --filter @toonexpo/web e2e
 ```
 
 Install browsers once (CI and first local run):
@@ -148,7 +137,9 @@ Install browsers once (CI and first local run):
 pnpm --filter @toonexpo/web e2e:install
 ```
 
-CI `e2e` job: migrate → build shared → **seed once** → `e2e:build` → Playwright with `SKIP_E2E_SEED=1` (no second seed). Local `pnpm e2e` seeds inside `apps/web/scripts/e2e-with-seed.mjs` before Playwright starts webServers.
+The CI `e2e` job runs only when `E2E_DATABASE_ENABLED=true` and uses a dedicated, pre-populated
+database configured through repository secrets/variables. Neither CI nor local Playwright creates or
+resets product data.
 
 ## Docker (API image)
 
