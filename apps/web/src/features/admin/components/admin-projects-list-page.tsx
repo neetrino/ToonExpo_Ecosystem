@@ -3,9 +3,10 @@
 import { FolderOpen, SearchX } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 
 import { AdminCreateProjectSheet } from '@/features/admin/components/admin-create-project-sheet';
+import { AdminProjectsResultsSkeleton } from '@/features/admin/components/admin-projects-results-skeleton';
 import { AdminProjectsTable } from '@/features/admin/components/admin-projects-table';
 import {
   ADMIN_COMPANIES_MAX_PAGE_SIZE,
@@ -81,6 +82,16 @@ export const AdminProjectsListPage = () => {
     ...(activeSearch ? { search: activeSearch } : {}),
   });
   const companiesQuery = useAdminCompaniesQuery(1, ADMIN_COMPANIES_MAX_PAGE_SIZE);
+
+  /*
+   * Kept results are the previous term's rows, so track which term the rendered
+   * data belongs to: until it matches the input, the list must not be shown.
+   */
+  const loadedSearchRef = useRef(activeSearch);
+  if (!projectsQuery.isPlaceholderData && projectsQuery.data) {
+    loadedSearchRef.current = activeSearch;
+  }
+  const isSearchSettling = loadedSearchRef.current !== trimmedSearch;
 
   const builderCompanies = useMemo(() => {
     const companies = companiesQuery.data?.data ?? [];
@@ -172,7 +183,9 @@ export const AdminProjectsListPage = () => {
         }
       />
 
-      {response.data.length === 0 ? (
+      {isSearchSettling ? (
+        <AdminProjectsResultsSkeleton label={t('loading')} viewMode={effectiveViewMode} />
+      ) : response.data.length === 0 ? (
         <div className="flex min-h-72 items-center justify-center">
           <EmptyState
             icon={activeSearch ? SearchX : FolderOpen}
