@@ -14,6 +14,7 @@ import {
   DEFAULT_MAP_ZOOM,
   GEO_MAP_UI_OVERLAY_Z_INDEX_CLASS,
 } from '@/features/geo-map/constants';
+import { useDelayedHoverTarget } from '@/features/geo-map/hooks/use-delayed-hover-target';
 import { useGeoMapEmptyClick } from '@/features/geo-map/hooks/use-geo-map-empty-click';
 import { useMapAnchoredScreenPoint } from '@/features/geo-map/hooks/use-map-anchored-screen-point';
 import { useMapFocus } from '@/features/geo-map/hooks/use-map-focus';
@@ -83,7 +84,7 @@ export const GeoMapCanvas = ({
   const [uiOverlayRoot, setUiOverlayRoot] = useState<HTMLDivElement | null>(null);
   const isWebglSupported = useWebglSupport();
   const [dragOverride, setDragOverride] = useState<ObjectTransformOverride | null>(null);
-  const [hoveredObjectId, setHoveredObjectId] = useState<string | null>(null);
+  const hoverTarget = useDelayedHoverTarget();
 
   const { map, isMapLoaded } = useMaplibreMap({
     containerRef,
@@ -103,7 +104,7 @@ export const GeoMapCanvas = ({
   );
 
   const infoObject =
-    findObjectById(objects, hoveredObjectId) ?? findObjectById(objects, highlightedObjectId);
+    findObjectById(objects, hoverTarget.targetId) ?? findObjectById(objects, highlightedObjectId);
   const infoAnchor = useMemo(
     (): GeoMapLngLat | null =>
       infoObject ? { longitude: infoObject.longitude, latitude: infoObject.latitude } : null,
@@ -111,7 +112,7 @@ export const GeoMapCanvas = ({
   );
 
   const handleObjectHover = (id: string | null): void => {
-    setHoveredObjectId(id);
+    hoverTarget.setTargetId(id);
     onObjectHover?.(id);
   };
 
@@ -181,6 +182,13 @@ export const GeoMapCanvas = ({
           addressLine={infoObject.addressLine}
           logoUrl={infoObject.logoUrl}
           anchor={infoPoint ? resolveInfoCardPlacement(infoPoint) : null}
+          {...(onObjectClick
+            ? {
+                onActivate: () => onObjectClick(infoObject.id),
+                onPointerEnter: hoverTarget.holdTarget,
+                onPointerLeave: hoverTarget.releaseTarget,
+              }
+            : {})}
         />
       ) : null}
       {uiOverlayRoot && editable && adminSelectionChrome

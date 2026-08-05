@@ -168,6 +168,12 @@ export const GEO_MAP_INFO_CARD_ESTIMATED_HEIGHT_PX = 76;
 export const GEO_MAP_INFO_CARD_PIN_GAP_PX = 10;
 export const GEO_MAP_INFO_CARD_EDGE_MARGIN_PX = 12;
 
+/**
+ * Grace period before the hover card closes after the pointer leaves a pin —
+ * long enough to cross {@link GEO_MAP_INFO_CARD_PIN_GAP_PX} and click the card.
+ */
+export const GEO_MAP_HOVER_CARD_CLOSE_DELAY_MS = 320;
+
 /** Stack admin map UI above MapLibre canvas (see `GeoMapCanvas` UI overlay root). */
 export const GEO_MAP_UI_OVERLAY_Z_INDEX_CLASS = 'z-[100]';
 
