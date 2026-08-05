@@ -184,7 +184,11 @@ export const AdminProjectsListPage = () => {
           />
         </div>
       ) : (
-        <AdminProjectsTable projects={response.data} viewMode={effectiveViewMode} />
+        <AdminProjectsTable
+          projects={response.data}
+          viewMode={effectiveViewMode}
+          searchKey={activeSearch}
+        />
       )}
 
       <CatalogPagination

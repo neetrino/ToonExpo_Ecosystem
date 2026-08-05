@@ -6,12 +6,15 @@ import { useTranslations } from 'next-intl';
 import { AdminProjectCard } from '@/features/admin/components/admin-project-card';
 import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
 import { Link } from '@/i18n/navigation';
+import { cn } from '@/shared/ui/cn';
 import { LIST_STATUS_BADGE_COMPACT_CLASS } from '@/shared/ui/list-status-badge';
 import { VIEW_MODE_CARDS, type ViewMode } from '@/shared/ui/view-mode';
 
 type AdminProjectsTableProps = {
   projects: AdminProjectListItem[];
   viewMode?: ViewMode | undefined;
+  /** Active search term: cards drop in again whenever the query changes. */
+  searchKey?: string | undefined;
 };
 
 const projectHref = (project: AdminProjectListItem): string => `/admin/projects/${project.id}`;
@@ -22,12 +25,19 @@ const projectHref = (project: AdminProjectListItem): string => `/admin/projects/
 export const AdminProjectsTable = ({
   projects,
   viewMode = VIEW_MODE_CARDS,
+  searchKey = '',
 }: AdminProjectsTableProps) => {
   const t = useTranslations('Admin.projects');
 
   if (viewMode === VIEW_MODE_CARDS) {
     return (
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <div
+        key={searchKey}
+        className={cn(
+          'grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3',
+          searchKey.length > 0 && 'search-results-drop-in',
+        )}
+      >
         {projects.map((project) => (
           <AdminProjectCard key={project.id} project={project} />
         ))}
