@@ -90,8 +90,25 @@ const toCriterionScoreNode = (
   criterion: ReadinessCriterion,
   scoreByCriterionId: ReadonlyMap<string, CriterionScoreWithCriterion>,
   childrenByParentId: ReadonlyMap<string, ReadinessCriterion[]>,
+  ancestors: ReadonlySet<string> = new Set(),
 ): ReadinessCriterionScoreItem => {
   const score = scoreByCriterionId.get(criterion.id);
+  if (ancestors.has(criterion.id)) {
+    return {
+      scoreId: score?.id ?? null,
+      criterionId: criterion.id,
+      code: criterion.code,
+      parentId: criterion.parentId,
+      maxPoints: criterion.maxPoints,
+      sortOrder: criterion.sortOrder,
+      value: score?.value ?? null,
+      checked: score?.checked ?? false,
+      children: [],
+    };
+  }
+
+  const nextAncestors = new Set(ancestors);
+  nextAncestors.add(criterion.id);
   const children = childrenByParentId.get(criterion.id) ?? [];
 
   return {
@@ -104,7 +121,7 @@ const toCriterionScoreNode = (
     value: score?.value ?? null,
     checked: score?.checked ?? false,
     children: children.map((child) =>
-      toCriterionScoreNode(child, scoreByCriterionId, childrenByParentId),
+      toCriterionScoreNode(child, scoreByCriterionId, childrenByParentId, nextAncestors),
     ),
   };
 };

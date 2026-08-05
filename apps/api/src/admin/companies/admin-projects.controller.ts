@@ -14,10 +14,17 @@ export class AdminProjectsController {
   constructor(private readonly companiesService: AdminCompaniesService) {}
 
   @Get()
-  @ApiOperation({ summary: 'List all projects across companies (optional company filter)' })
+  @ApiOperation({
+    summary: 'List all projects across companies (optional company filter and search)',
+  })
   @ApiOkResponse({ description: 'Paginated admin projects list' })
   list(@Query() query: ListAdminProjectsQueryDto): Promise<AdminProjectListResponse> {
-    return this.companiesService.listAllProjects(query.page, query.pageSize, query.companyId);
+    return this.companiesService.listAllProjects(
+      query.page,
+      query.pageSize,
+      query.companyId,
+      query.search,
+    );
   }
 
   @Get(':projectId/scope')

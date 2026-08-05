@@ -1,7 +1,7 @@
 'use client';
 
 import { Search } from 'lucide-react';
-import { useId, useMemo, useState, type KeyboardEvent } from 'react';
+import { useEffect, useId, useMemo, useRef, useState, type KeyboardEvent } from 'react';
 import { useTranslations } from 'next-intl';
 
 import { HOME_GEO_MAP_SEARCH_MAX_RESULTS } from '@/features/catalog/constants/home-geo-map';
@@ -97,6 +97,15 @@ export const HomeGeoMapProjectSearch = ({
   const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
+  const blurCloseTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (blurCloseTimerRef.current !== null) {
+        window.clearTimeout(blurCloseTimerRef.current);
+      }
+    };
+  }, []);
 
   const results = useMemo(() => {
     const matched = filterMapObjectsByLabel(objects, query);
@@ -177,7 +186,13 @@ export const HomeGeoMapProjectSearch = ({
           }}
           onBlur={() => {
             // Delay so option clicks register before the panel closes.
-            window.setTimeout(() => setIsOpen(false), SEARCH_BLUR_CLOSE_DELAY_MS);
+            if (blurCloseTimerRef.current !== null) {
+              window.clearTimeout(blurCloseTimerRef.current);
+            }
+            blurCloseTimerRef.current = window.setTimeout(() => {
+              blurCloseTimerRef.current = null;
+              setIsOpen(false);
+            }, SEARCH_BLUR_CLOSE_DELAY_MS);
           }}
           onKeyDown={onKeyDown}
         />

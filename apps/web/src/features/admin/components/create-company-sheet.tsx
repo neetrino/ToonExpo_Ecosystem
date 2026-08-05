@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { CreateCompanyForm } from '@/features/admin/components/create-company-form';
 import { AdminCreateSheet } from '@/shared/ui/admin-create-sheet';
@@ -19,10 +19,25 @@ type CreateCompanySheetProps = {
 export const CreateCompanySheet = ({ open, onClose }: CreateCompanySheetProps) => {
   const t = useTranslations('Admin.companies');
   const [invitedEmail, setInvitedEmail] = useState<string | null>(null);
+  const resetTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (resetTimerRef.current !== null) {
+        window.clearTimeout(resetTimerRef.current);
+      }
+    };
+  }, []);
 
   const handleClose = (): void => {
     onClose();
-    window.setTimeout(() => setInvitedEmail(null), SIDE_SHEET_PANEL_TRANSITION_MS);
+    if (resetTimerRef.current !== null) {
+      window.clearTimeout(resetTimerRef.current);
+    }
+    resetTimerRef.current = window.setTimeout(() => {
+      resetTimerRef.current = null;
+      setInvitedEmail(null);
+    }, SIDE_SHEET_PANEL_TRANSITION_MS);
   };
 
   return (

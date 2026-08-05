@@ -73,20 +73,42 @@ export class PortalReadinessService {
       select: { id: true },
     });
 
-    const assessments = await Promise.all(
-      projects.map((project) =>
-        this.findActiveAssessment(
-          {
-            targetType: ReadinessAssessmentTargetType.project,
-            builderCompanyId: companyId,
-            projectId: project.id,
-          },
-          catalogCriteria,
-        ),
-      ),
+    if (projects.length === 0) {
+      return [];
+    }
+
+    const projectIds = projects.map((project) => project.id);
+    const assessments = await this.prisma.db.readinessAssessment.findMany({
+      where: {
+        targetType: ReadinessAssessmentTargetType.project,
+        builderCompanyId: companyId,
+        projectId: { in: projectIds },
+        archivedAt: null,
+      },
+      orderBy: { createdAt: 'desc' },
+      include: this.portalInclude(),
+    });
+
+    const latestByProjectId = new Map<string, (typeof assessments)[number]>();
+    for (const assessment of assessments) {
+      if (!assessment.projectId || latestByProjectId.has(assessment.projectId)) {
+        continue;
+      }
+      latestByProjectId.set(assessment.projectId, assessment);
+    }
+
+    const latestAssessments = [...latestByProjectId.values()];
+    if (latestAssessments.length === 0) {
+      return [];
+    }
+
+    const helpAvailabilityByCategoryId = await this.buildHelpAvailabilityMap(
+      latestAssessments.flatMap((assessment) => assessment.scores),
     );
 
-    return assessments.filter((item): item is NonNullable<typeof item> => item !== null);
+    return latestAssessments.map((assessment) =>
+      toPortalReadinessAssessmentItem(assessment, helpAvailabilityByCategoryId, catalogCriteria),
+    );
   }
 
   private async buildHelpAvailabilityMap(

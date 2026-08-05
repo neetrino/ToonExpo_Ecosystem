@@ -10,7 +10,7 @@ import { catalogProjectsListHref } from '@/features/builder/catalog-scope';
 import { useCatalogScope } from '@/features/builder/catalog-scope-context';
 import { usePortalProjectQuery } from '@/features/builder/hooks/use-portal-projects';
 import { PortalVisualCanvasesSection } from '@/features/visual-map/components/portal-visual-canvases-section';
-import { Link } from '@/i18n/navigation';
+import { BackLink } from '@/shared/ui/back-link';
 import { Card } from '@/shared/ui/card';
 
 type ProjectDetailPageProps = {
@@ -38,9 +38,7 @@ export const ProjectDetailPage = ({ projectId, showInventory = true }: ProjectDe
         <p role="alert" className="text-sm text-danger">
           {t('detail.notFound')}
         </p>
-        <Link href={listHref} className="text-sm font-medium text-brand hover:underline">
-          {t('detail.back')}
-        </Link>
+        <BackLink href={listHref} label={t('detail.back')} />
       </div>
     );
   }
@@ -50,10 +48,8 @@ export const ProjectDetailPage = ({ projectId, showInventory = true }: ProjectDe
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="flex flex-col gap-1">
-          <Link href={listHref} className="text-sm text-ink-secondary hover:text-ink">
-            {t('detail.back')}
-          </Link>
+        <div className="flex flex-col gap-2">
+          <BackLink href={listHref} label={t('detail.back')} />
           <h1 className="text-page-title text-ink">{project.name}</h1>
           <p className="text-sm text-ink-secondary">
             {t(`publication.${project.publicationStatus}`)}

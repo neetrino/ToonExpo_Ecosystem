@@ -24,7 +24,8 @@
       "today": "Today",
       "previousMonth": "Previous month",
       "nextMonth": "Next month"
-    }
+    },
+    "back": "Back"
   },
   "ReadinessKpi": {
     "categories": {
@@ -460,7 +461,7 @@
       "details": "Details",
       "viewProjects": "View projects",
       "viewProject": "View project",
-      "backToProjects": "← All projects",
+      "backToProjects": "All projects",
       "requestPrice": "Request price",
       "requestInfo": "Request info",
       "comingSoon": "Coming soon"
@@ -651,18 +652,18 @@
     "building": {
       "floors": "Floors",
       "noFloors": "No published floors yet.",
-      "backToProject": "← Back to project",
+      "backToProject": "Back to project",
       "notFoundTitle": "Building not found"
     },
     "district": {
-      "backToProject": "← Back to project",
+      "backToProject": "Back to project",
       "notFoundTitle": "District not found",
       "fallbackTitle": "District map"
     },
     "floor": {
       "apartments": "Apartments",
       "noApartments": "No published apartments yet.",
-      "backToBuilding": "← Back to building",
+      "backToBuilding": "Back to building",
       "notFoundTitle": "Floor not found",
       "floorplanTitle": "Floor plan",
       "floorplanAlt": "Floor plan image"
@@ -802,7 +803,7 @@
         "empty": "No builders match your search."
       },
       "detail": {
-        "back": "← All builders",
+        "back": "All builders",
         "backToBuilders": "All builders",
         "heroEyebrow": "Builder",
         "companyTitle": "Company",
@@ -821,7 +822,7 @@
     },
     "developersPage": {
       "eyebrow": "Developer",
-      "back": "← All builders",
+      "back": "All builders",
       "backToBuilders": "All builders",
       "notFoundTitle": "Developer not found",
       "metaTitle": "{name} — developer",
@@ -1354,8 +1355,8 @@
       "continuePhase": "Phase {phase} →",
       "projectMeta": "{districts} districts · {buildings} buildings · phase {phase}",
       "labLink": "Mapping lab (QA)",
-      "backToProjects": "← Projects",
-      "backToWizard": "← Wizard",
+      "backToProjects": "Projects",
+      "backToWizard": "Wizard",
       "activePhase": "Continue with phase {phase}",
       "allPhasesDone": "All phases are complete",
       "status": {
@@ -1486,7 +1487,8 @@
         "cleared": "Cleared",
         "polygonCleared": "Polygon cleared",
         "deleteDefault": "Delete"
-      }
+      },
+      "labBack": "Interactive mapping"
     },
     "settings": {
       "title": "Settings",
@@ -1609,7 +1611,7 @@
         "createAnother": "Create another"
       },
       "detail": {
-        "back": "← Companies",
+        "back": "Companies",
         "sheetTitle": "Company",
         "typeLabel": "Type",
         "save": "Save changes",
@@ -1681,13 +1683,18 @@
       "title": "Projects",
       "subtitle": "{count, plural, =0 {No projects} one {# project} other {# projects}}",
       "empty": "No projects yet.",
+      "emptyTitle": "No projects yet",
+      "noResults": "No projects match “{query}”.",
+      "noResultsTitle": "No projects found",
+      "clearSearch": "Clear search",
       "loading": "Loading projects…",
       "error": "Could not load projects. Try again.",
       "filters": {
         "company": "Company",
         "allCompanies": "All companies",
         "building": "Building",
-        "allBuildings": "All buildings"
+        "allBuildings": "All buildings",
+        "searchPlaceholder": "Search by project, company, or city"
       },
       "columns": {
         "name": "Name",
@@ -1944,7 +1951,7 @@
       "detail": {
         "loading": "Loading partner…",
         "notFound": "Partner not found",
-        "back": "← Partners",
+        "back": "Partners",
         "sheetTitle": "Partner",
         "save": "Save changes",
         "saving": "Saving…",
@@ -2182,7 +2189,7 @@
       "detail": {
         "loading": "Loading request…",
         "notFound": "Provisioning request not found",
-        "back": "← BOS provisioning",
+        "back": "BOS provisioning",
         "summary": {
           "title": "Request summary",
           "bosCompanyId": "BOS company ID",
@@ -2243,7 +2250,7 @@
       "categories": {
         "title": "Readiness categories",
         "subtitle": "These are scoring criteria only. To score a builder, go back to assessments and open one.",
-        "backToAssessments": "← Back to assessments",
+        "backToAssessments": "Back to assessments",
         "loading": "Loading categories…",
         "error": "Could not load categories. Try again.",
         "empty": "No categories yet. Create the first one.",
@@ -2358,7 +2365,7 @@
       "detail": {
         "loading": "Loading assessment…",
         "notFound": "Assessment not found",
-        "back": "← Assessments",
+        "back": "Assessments",
         "overallScore": "Overall score",
         "overridden": "overridden",
         "lastEvaluated": "Last evaluated",
@@ -2517,7 +2524,7 @@
         "subtitle": "Create an exhibition event for maps and check-in"
       },
       "detail": {
-        "back": "← Events",
+        "back": "Events",
         "notFound": "Event not found"
       },
       "form": {
@@ -3009,7 +3016,7 @@
         "generic": "Something went wrong. Please try again."
       },
       "detail": {
-        "back": "← Projects",
+        "back": "Projects",
         "save": "Save changes",
         "saving": "Saving…",
         "saveSuccess": "Project updated",
@@ -3109,7 +3116,7 @@
       "editor": {
         "loading": "Loading canvas…",
         "notFound": "Visual canvas not found",
-        "back": "← Back to project",
+        "back": "Back to project",
         "untitled": "Untitled canvas",
         "publish": "Publish canvas",
         "archive": "Archive canvas",
@@ -3160,7 +3167,7 @@
     },
     "apartments": {
       "title": "Apartment {number}",
-      "back": "← Back",
+      "back": "Back",
       "loading": "Loading apartment…",
       "notFound": "Apartment not found",
       "planTitle": "Apartment plan",
@@ -3373,7 +3380,7 @@
         "generic": "Something went wrong. Please try again."
       },
       "detail": {
-        "back": "← CRM",
+        "back": "CRM",
         "notFound": "Deal not found.",
         "phone": "Phone",
         "email": "Email",

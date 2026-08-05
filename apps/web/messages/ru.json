@@ -24,7 +24,8 @@
       "today": "Сегодня",
       "previousMonth": "Предыдущий месяц",
       "nextMonth": "Следующий месяц"
-    }
+    },
+    "back": "Назад"
   },
   "ReadinessKpi": {
     "categories": {
@@ -460,7 +461,7 @@
       "details": "Подробнее",
       "viewProjects": "Проекты",
       "viewProject": "К проекту",
-      "backToProjects": "← Все проекты",
+      "backToProjects": "Все проекты",
       "requestPrice": "Запросить цену",
       "requestInfo": "Запросить информацию",
       "comingSoon": "Скоро"
@@ -651,18 +652,18 @@
     "building": {
       "floors": "Этажи",
       "noFloors": "Пока нет опубликованных этажей.",
-      "backToProject": "← К проекту",
+      "backToProject": "К проекту",
       "notFoundTitle": "Корпус не найден"
     },
     "district": {
-      "backToProject": "← К проекту",
+      "backToProject": "К проекту",
       "notFoundTitle": "Район не найден",
       "fallbackTitle": "Карта района"
     },
     "floor": {
       "apartments": "Квартиры",
       "noApartments": "Пока нет опубликованных квартир.",
-      "backToBuilding": "← К корпусу",
+      "backToBuilding": "К корпусу",
       "notFoundTitle": "Этаж не найден",
       "floorplanTitle": "План этажа",
       "floorplanAlt": "Изображение плана этажа"
@@ -802,7 +803,7 @@
         "empty": "По запросу застройщики не найдены."
       },
       "detail": {
-        "back": "← Все застройщики",
+        "back": "Все застройщики",
         "backToBuilders": "Все застройщики",
         "heroEyebrow": "Застройщик",
         "companyTitle": "Компания",
@@ -821,7 +822,7 @@
     },
     "developersPage": {
       "eyebrow": "Застройщик",
-      "back": "← Все застройщики",
+      "back": "Все застройщики",
       "backToBuilders": "Все застройщики",
       "notFoundTitle": "Застройщик не найден",
       "metaTitle": "{name} — застройщик",
@@ -1354,8 +1355,8 @@
       "continuePhase": "Фаза {phase} →",
       "projectMeta": "{districts} районов · {buildings} зданий · фаза {phase}",
       "labLink": "Mapping lab (QA)",
-      "backToProjects": "← Проекты",
-      "backToWizard": "← Мастер",
+      "backToProjects": "Проекты",
+      "backToWizard": "Мастер",
       "activePhase": "Сейчас фаза {phase}",
       "allPhasesDone": "Все фазы завершены",
       "status": {
@@ -1486,7 +1487,8 @@
         "cleared": "Очищено",
         "polygonCleared": "Полигон очищен",
         "deleteDefault": "Удалить"
-      }
+      },
+      "labBack": "Интерактивная карта"
     },
     "settings": {
       "title": "Настройки",
@@ -1609,7 +1611,7 @@
         "createAnother": "Создать ещё"
       },
       "detail": {
-        "back": "← Компании",
+        "back": "Компании",
         "sheetTitle": "Компания",
         "typeLabel": "Тип",
         "save": "Сохранить",
@@ -1681,13 +1683,18 @@
       "title": "Проекты",
       "subtitle": "{count, plural, =0 {Нет проектов} one {# проект} few {# проекта} other {# проектов}}",
       "empty": "Проектов пока нет.",
+      "emptyTitle": "Проектов пока нет",
+      "noResults": "Нет проектов по запросу «{query}».",
+      "noResultsTitle": "Проекты не найдены",
+      "clearSearch": "Очистить поиск",
       "loading": "Загрузка проектов…",
       "error": "Не удалось загрузить проекты. Попробуйте ещё раз.",
       "filters": {
         "company": "Компания",
         "allCompanies": "Все компании",
         "building": "Здание",
-        "allBuildings": "Все здания"
+        "allBuildings": "Все здания",
+        "searchPlaceholder": "Поиск по проекту, компании или городу"
       },
       "columns": {
         "name": "Название",
@@ -1886,7 +1893,7 @@
       "categories": {
         "title": "Категории готовности",
         "subtitle": "Это только критерии оценки. Чтобы выставить баллы, вернитесь к списку оценок и откройте одну.",
-        "backToAssessments": "← К оценкам",
+        "backToAssessments": "К оценкам",
         "loading": "Загрузка категорий…",
         "error": "Не удалось загрузить категории. Попробуйте снова.",
         "empty": "Категорий пока нет. Создайте первую.",
@@ -2001,7 +2008,7 @@
       "detail": {
         "loading": "Загрузка оценки…",
         "notFound": "Оценка не найдена",
-        "back": "← Оценки",
+        "back": "Оценки",
         "overallScore": "Общий балл",
         "overridden": "переопределено",
         "lastEvaluated": "Последняя оценка",
@@ -2219,7 +2226,7 @@
       "detail": {
         "loading": "Загрузка…",
         "notFound": "Партнёр не найден",
-        "back": "← Партнёры",
+        "back": "Партнёры",
         "sheetTitle": "Партнёр",
         "save": "Сохранить",
         "saving": "Сохранение…",
@@ -2310,7 +2317,7 @@
       "detail": {
         "loading": "Загрузка запроса…",
         "notFound": "Запрос на обеспечение не найден",
-        "back": "← Обеспечение BOS",
+        "back": "Обеспечение BOS",
         "summary": {
           "title": "Сводка запроса",
           "bosCompanyId": "ID компании в BOS",
@@ -2517,7 +2524,7 @@
         "subtitle": "Создайте выставочное событие для карт и регистрации"
       },
       "detail": {
-        "back": "← События",
+        "back": "События",
         "notFound": "Событие не найдено"
       },
       "form": {
@@ -2813,7 +2820,7 @@
         "generic": "Что-то пошло не так. Попробуйте ещё раз."
       },
       "detail": {
-        "back": "← Проекты",
+        "back": "Проекты",
         "save": "Сохранить",
         "saving": "Сохранение…",
         "saveSuccess": "Проект обновлён",
@@ -2913,7 +2920,7 @@
       "editor": {
         "loading": "Загрузка canvas…",
         "notFound": "Визуальный canvas не найден",
-        "back": "← К проекту",
+        "back": "К проекту",
         "untitled": "Canvas без названия",
         "publish": "Опубликовать canvas",
         "archive": "Архивировать canvas",
@@ -2964,7 +2971,7 @@
     },
     "apartments": {
       "title": "Квартира {number}",
-      "back": "← К проекту",
+      "back": "Назад",
       "loading": "Загрузка…",
       "notFound": "Квартира не найдена",
       "planTitle": "Планировка квартиры",
@@ -3177,7 +3184,7 @@
         "generic": "Что-то пошло не так. Попробуйте ещё раз."
       },
       "detail": {
-        "back": "← CRM",
+        "back": "CRM",
         "notFound": "Сделка не найдена.",
         "phone": "Телефон",
         "email": "Email",

@@ -154,6 +154,10 @@ export type AdminProjectListItem = {
   city: string | null;
   builderCompanyId: string;
   companyName: string;
+  buildingCover: {
+    buildingName: string;
+    media: MediaAssetSummary;
+  } | null;
   buildingsCount: number;
   apartmentsCount: number;
 };

@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 
 import { PortalCanvasEditorPage } from '@/features/visual-map/components/portal-canvas-editor-page';
 import { usePortalProjectQuery } from '@/features/builder/hooks/use-portal-projects';
-import { Link } from '@/i18n/navigation';
+import { BackLink } from '@/shared/ui/back-link';
 
 type PortalCanvasEditorShellProps = {
   projectId: string;
@@ -31,12 +31,7 @@ export const PortalCanvasEditorShell = ({ projectId, canvasId }: PortalCanvasEdi
         <p role="alert" className="text-sm text-danger">
           {t('detail.notFound')}
         </p>
-        <Link
-          href={catalogProjectsListHref(scope)}
-          className="text-sm font-medium text-brand hover:underline"
-        >
-          {t('detail.back')}
-        </Link>
+        <BackLink href={catalogProjectsListHref(scope)} label={t('detail.back')} />
       </div>
     );
   }

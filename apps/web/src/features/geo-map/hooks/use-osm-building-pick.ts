@@ -1,7 +1,7 @@
 'use client';
 
 import type { MapGeoJSONFeature, MapLibreMap, MapMouseEvent } from 'maplibre-gl';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { OSM_BUILDING_EXTRUSION_LAYER_ID } from '@/features/geo-map/constants';
 import {
@@ -66,6 +66,9 @@ export const useOsmBuildingPick = ({
   selectedBuilding,
   onSelect,
 }: UseOsmBuildingPickOptions): void => {
+  const onSelectRef = useRef(onSelect);
+  onSelectRef.current = onSelect;
+
   useEffect(() => {
     if (!map || !isMapLoaded || !enabled) {
       return;
@@ -93,14 +96,14 @@ export const useOsmBuildingPick = ({
       }
 
       event.preventDefault();
-      onSelect(selected);
+      onSelectRef.current(selected);
     };
 
     map.on('click', handleClick);
     return () => {
       map.off('click', handleClick);
     };
-  }, [map, isMapLoaded, enabled, onSelect]);
+  }, [map, isMapLoaded, enabled]);
 
   useEffect(() => {
     if (!map || !isMapLoaded || !enabled) {

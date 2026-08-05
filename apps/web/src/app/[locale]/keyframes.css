@@ -194,3 +194,21 @@
     transform: translate3d(8%, -2%, 0) scale(1.12);
   }
 }
+
+/** Search hits: result cards drop onto the screen from above and settle. */
+@keyframes search-result-drop-in {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -28px, 0) scale(0.96);
+  }
+
+  70% {
+    opacity: 1;
+    transform: translate3d(0, 3px, 0) scale(1.004);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}

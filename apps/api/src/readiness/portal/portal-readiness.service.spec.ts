@@ -10,6 +10,7 @@ import { PortalReadinessService } from './portal-readiness.service.js';
 
 describe('PortalReadinessService helpAvailable', () => {
   const readinessAssessmentFindFirst = vi.fn();
+  const readinessAssessmentFindMany = vi.fn();
   const projectFindMany = vi.fn();
   const serviceProviderCategoryLinkGroupBy = vi.fn();
   let service: PortalReadinessService;
@@ -26,7 +27,10 @@ describe('PortalReadinessService helpAvailable', () => {
 
     const prisma = {
       db: {
-        readinessAssessment: { findFirst: readinessAssessmentFindFirst },
+        readinessAssessment: {
+          findFirst: readinessAssessmentFindFirst,
+          findMany: readinessAssessmentFindMany,
+        },
         readinessCriterion: { findMany: vi.fn().mockResolvedValue([]) },
         project: { findMany: projectFindMany },
         serviceProviderCategoryLink: { groupBy: serviceProviderCategoryLinkGroupBy },
@@ -35,6 +39,7 @@ describe('PortalReadinessService helpAvailable', () => {
 
     service = new PortalReadinessService(prisma);
     projectFindMany.mockResolvedValue([]);
+    readinessAssessmentFindMany.mockResolvedValue([]);
     serviceProviderCategoryLinkGroupBy.mockResolvedValue([
       {
         serviceProviderCategoryId: 'sp_cat_1',

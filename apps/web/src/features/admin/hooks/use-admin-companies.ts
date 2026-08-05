@@ -1,6 +1,6 @@
 'use client';
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { CreateCompanyRequest, UpdateCompanyRequest } from '@toonexpo/contracts';
 
 import {
@@ -12,6 +12,7 @@ import {
   listAdminProjects,
   resendAdminCompanyInvite,
   updateAdminCompany,
+  type ListAdminProjectsParams,
 } from '@/features/admin/api/admin-companies-api';
 import {
   ADMIN_COMPANIES_QUERY_KEY,
@@ -53,20 +54,13 @@ export const useAdminCompanyProjectsQuery = (companyId: string, enabled = true) 
 
 /**
  * Paginated cross-company projects list for the admin projects page.
+ * Keeps the previous page visible while a new search/page loads.
  */
-export const useAdminProjectsQuery = (page: number, pageSize: number, companyId?: string) =>
+export const useAdminProjectsQuery = (params: ListAdminProjectsParams) =>
   useQuery({
-    queryKey: adminProjectsQueryKey({
-      page,
-      pageSize,
-      ...(companyId ? { companyId } : {}),
-    }),
-    queryFn: () =>
-      listAdminProjects({
-        page,
-        pageSize,
-        ...(companyId ? { companyId } : {}),
-      }),
+    queryKey: adminProjectsQueryKey(params),
+    queryFn: () => listAdminProjects(params),
+    placeholderData: keepPreviousData,
   });
 
 /**

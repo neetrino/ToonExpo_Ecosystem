@@ -1,7 +1,7 @@
 'use client';
 
 import type { MapLibreMap, MapMouseEvent } from 'maplibre-gl';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { OSM_BUILDING_EXTRUSION_LAYER_ID } from '@/features/geo-map/constants';
 import type { GeoMapLngLat } from '@/features/geo-map/types';
@@ -24,8 +24,11 @@ export const useGeoMapEmptyClick = ({
   enabled,
   onMapClick,
 }: UseGeoMapEmptyClickOptions): void => {
+  const onMapClickRef = useRef(onMapClick);
+  onMapClickRef.current = onMapClick;
+
   useEffect(() => {
-    if (!map || !isMapLoaded || !enabled || !onMapClick) {
+    if (!map || !isMapLoaded || !enabled) {
       return;
     }
 
@@ -38,12 +41,12 @@ export const useGeoMapEmptyClick = ({
           return;
         }
       }
-      onMapClick({ longitude: event.lngLat.lng, latitude: event.lngLat.lat });
+      onMapClickRef.current?.({ longitude: event.lngLat.lng, latitude: event.lngLat.lat });
     };
 
     map.on('click', handleClick);
     return () => {
       map.off('click', handleClick);
     };
-  }, [map, isMapLoaded, enabled, onMapClick]);
+  }, [map, isMapLoaded, enabled]);
 };

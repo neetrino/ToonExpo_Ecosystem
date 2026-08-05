@@ -103,6 +103,17 @@ describe('AdminCompaniesService.listProjects', () => {
         city: 'Yerevan',
         builderCompanyId: 'co_1',
         builderCompany: { name: 'Builder Co' },
+        buildings: [
+          {
+            name: 'Building B',
+            coverMedia: {
+              id: 'media_1',
+              fileUrl: 'https://cdn.example.com/building-b.jpg',
+              thumbnailUrl: null,
+              altText: null,
+            },
+          },
+        ],
         _count: { buildings: 2, apartments: 10 },
       },
     ]);
@@ -123,6 +134,22 @@ describe('AdminCompaniesService.listProjects', () => {
         city: true,
         builderCompanyId: true,
         builderCompany: { select: { name: true } },
+        buildings: {
+          where: { coverMediaId: { not: null } },
+          orderBy: [{ displayOrder: 'asc' }, { createdAt: 'asc' }],
+          take: 1,
+          select: {
+            name: true,
+            coverMedia: {
+              select: {
+                id: true,
+                fileUrl: true,
+                thumbnailUrl: true,
+                altText: true,
+              },
+            },
+          },
+        },
         _count: { select: { buildings: true, apartments: true } },
       },
     });
@@ -136,12 +163,81 @@ describe('AdminCompaniesService.listProjects', () => {
           city: 'Yerevan',
           builderCompanyId: 'co_1',
           companyName: 'Builder Co',
+          buildingCover: {
+            buildingName: 'Building B',
+            media: {
+              id: 'media_1',
+              fileUrl: 'https://cdn.example.com/building-b.jpg',
+              thumbnailUrl: null,
+              altText: null,
+            },
+          },
           buildingsCount: 2,
           apartmentsCount: 10,
         },
       ],
       meta: { page: 1, pageSize: 20, total: 1, totalPages: 1 },
     });
+  });
+
+  it('searches trimmed and case-insensitively across name, slug, city and company', async () => {
+    projectCount.mockResolvedValue(0);
+    projectFindMany.mockResolvedValue([]);
+
+    await service.listAllProjects(2, 18, undefined, '  Alpha  ');
+
+    const expectedWhere = {
+      OR: [
+        { name: { contains: 'Alpha', mode: 'insensitive' } },
+        { slug: { contains: 'Alpha', mode: 'insensitive' } },
+        { city: { contains: 'Alpha', mode: 'insensitive' } },
+        { builderCompany: { name: { contains: 'Alpha', mode: 'insensitive' } } },
+      ],
+    };
+
+    expect(projectCount).toHaveBeenCalledWith({ where: expectedWhere });
+    expect(projectFindMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: expectedWhere, skip: 18, take: 18 }),
+    );
+  });
+
+  it('combines search with the company filter', async () => {
+    companyFindUnique.mockResolvedValue({
+      id: 'co_1',
+      name: 'Builder Co',
+      description: null,
+      type: 'builder',
+      status: 'active',
+      source: 'admin',
+      bosCompanyId: null,
+      createdAt: new Date('2026-01-01T00:00:00.000Z'),
+      updatedAt: new Date('2026-01-01T00:00:00.000Z'),
+    });
+    projectCount.mockResolvedValue(0);
+    projectFindMany.mockResolvedValue([]);
+
+    await service.listAllProjects(1, 18, 'co_1', 'tower');
+
+    expect(projectCount).toHaveBeenCalledWith({
+      where: {
+        builderCompanyId: 'co_1',
+        OR: [
+          { name: { contains: 'tower', mode: 'insensitive' } },
+          { slug: { contains: 'tower', mode: 'insensitive' } },
+          { city: { contains: 'tower', mode: 'insensitive' } },
+          { builderCompany: { name: { contains: 'tower', mode: 'insensitive' } } },
+        ],
+      },
+    });
+  });
+
+  it('treats a blank search term as no search filter', async () => {
+    projectCount.mockResolvedValue(0);
+    projectFindMany.mockResolvedValue([]);
+
+    await service.listAllProjects(1, 18, undefined, '   ');
+
+    expect(projectCount).toHaveBeenCalledWith({ where: {} });
   });
 });
 

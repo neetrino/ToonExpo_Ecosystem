@@ -11,3 +11,9 @@ export const EUCLIDEAN_WEIGHT_SCALE = 1;
 
 /** Per-instance in-memory TTL for published venue route graphs. */
 export const ROUTE_GRAPH_CACHE_TTL_MS = 5 * 60 * 1000;
+
+/** Hard cap on admin route-graph replace payloads (DoS / pool protection). */
+export const ROUTE_GRAPH_MAX_NODES = 500;
+
+/** Hard cap on admin route-graph replace edge payloads. */
+export const ROUTE_GRAPH_MAX_EDGES = 2000;

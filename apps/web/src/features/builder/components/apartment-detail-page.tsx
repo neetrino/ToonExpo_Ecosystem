@@ -8,8 +8,8 @@ import { catalogProjectDetailHref, isSafeAppReturnPath } from '@/features/builde
 import { useCatalogScope } from '@/features/builder/catalog-scope-context';
 import { EditApartmentForm } from '@/features/builder/components/edit-apartment-form';
 import { usePortalApartmentQuery } from '@/features/builder/hooks/use-portal-inventory';
-import { Link } from '@/i18n/navigation';
 import { ApartmentSalesStatusBadge } from '@/shared/ui/apartment-sales-status-badge';
+import { BackLink } from '@/shared/ui/back-link';
 import { Card } from '@/shared/ui/card';
 import { ImageLightbox } from '@/shared/ui/image-lightbox';
 
@@ -50,10 +50,8 @@ export const ApartmentDetailPage = ({ apartmentId }: ApartmentDetailPageProps) =
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-1">
-        <Link href={backHref} className="text-sm text-ink-secondary hover:text-ink">
-          {t('back')}
-        </Link>
+      <div className="flex flex-col gap-2">
+        <BackLink href={backHref} label={t('back')} />
         <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
           <h1 className="text-page-title text-ink">{t('title', { number: apartment.number })}</h1>
           <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-ink-secondary sm:justify-end">

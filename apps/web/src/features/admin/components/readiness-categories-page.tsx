@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { ReadinessCategoryForm } from '@/features/admin/components/readiness-category-form';
 import { ADMIN_VIEW_MODE_KEYS } from '@/features/admin/constants';
 import { useAdminReadinessCategoriesQuery } from '@/features/admin/hooks/use-admin-readiness';
-import { Link } from '@/i18n/navigation';
+import { BackLink } from '@/shared/ui/back-link';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { Button } from '@/shared/ui/button';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
@@ -45,10 +45,8 @@ export const ReadinessCategoriesPage = () => {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-col gap-1">
-          <Link href="/admin/readiness" className="text-sm text-ink-secondary hover:text-ink">
-            {t('backToAssessments')}
-          </Link>
+        <div className="flex flex-col gap-2">
+          <BackLink href="/admin/readiness" label={t('backToAssessments')} />
           <h1 className="text-page-title text-ink">{t('title')}</h1>
           <p className="max-w-xl text-sm text-ink-secondary">{t('subtitle')}</p>
         </div>

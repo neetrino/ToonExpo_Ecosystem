@@ -55,6 +55,16 @@ export const useBottomSheetSwipeDismiss = ({
   const axisRef = useRef<SwipeAxis>('undecided');
   const dragYRef = useRef(0);
   const dismissPendingRef = useRef(false);
+  const animationTimerRef = useRef<number | null>(null);
+  const onDismissRef = useRef(onDismiss);
+  onDismissRef.current = onDismiss;
+
+  const clearAnimationTimer = useCallback((): void => {
+    if (animationTimerRef.current !== null) {
+      window.clearTimeout(animationTimerRef.current);
+      animationTimerRef.current = null;
+    }
+  }, []);
 
   const resetVisual = useCallback((): void => {
     dragYRef.current = 0;
@@ -76,32 +86,37 @@ export const useBottomSheetSwipeDismiss = ({
     setDragY(height);
 
     if (prefersReducedMotion()) {
-      onDismiss();
+      onDismissRef.current();
       dismissPendingRef.current = false;
       return;
     }
 
-    window.setTimeout(() => {
-      onDismiss();
+    clearAnimationTimer();
+    animationTimerRef.current = window.setTimeout(() => {
+      animationTimerRef.current = null;
+      onDismissRef.current();
       dismissPendingRef.current = false;
       // Keep translateY off-screen until the drawer unmounts.
       // Resetting here snaps the sheet back open for 1–2 frames (page flash).
     }, SIDE_SHEET_PANEL_TRANSITION_MS);
-  }, [onDismiss, sheetRef]);
+  }, [clearAnimationTimer, sheetRef]);
 
   const snapBack = useCallback((): void => {
     setIsDragging(false);
     setIsSnapping(true);
     dragYRef.current = 0;
     setDragY(0);
-    window.setTimeout(() => {
+    clearAnimationTimer();
+    animationTimerRef.current = window.setTimeout(() => {
+      animationTimerRef.current = null;
       setIsSnapping(false);
     }, SIDE_SHEET_PANEL_TRANSITION_MS);
-  }, []);
+  }, [clearAnimationTimer]);
 
   useEffect(() => {
     if (!enabled) {
       activeRef.current = false;
+      clearAnimationTimer();
       resetVisual();
       return;
     }
@@ -209,12 +224,13 @@ export const useBottomSheetSwipeDismiss = ({
     el.addEventListener('touchcancel', onTouchCancel);
 
     return () => {
+      clearAnimationTimer();
       el.removeEventListener('touchstart', onTouchStart);
       el.removeEventListener('touchmove', onTouchMove);
       el.removeEventListener('touchend', onTouchEnd);
       el.removeEventListener('touchcancel', onTouchCancel);
     };
-  }, [enabled, finishDismiss, resetVisual, sheetRef, snapBack]);
+  }, [clearAnimationTimer, enabled, finishDismiss, resetVisual, sheetRef, snapBack]);
 
   const isInteracting = isDragging || isSnapping;
 
