@@ -10,7 +10,7 @@ import { CrmDealRequestsSection } from '@/features/builder/components/crm-deal-r
 import { CrmDealStatusControl } from '@/features/builder/components/crm-deal-status-control';
 import { useCrmDealQuery } from '@/features/builder/hooks/use-portal-crm';
 import { formatBuyerDateTime } from '@/features/buyer/utils/format-datetime';
-import { Link } from '@/i18n/navigation';
+import { BackLink } from '@/shared/ui/back-link';
 
 type CrmDealDetailPageProps = {
   dealId: string;
@@ -46,9 +46,7 @@ export const CrmDealDetailPage = ({ dealId }: CrmDealDetailPageProps) => {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
-        <Link href="/builder/crm" className="text-sm font-medium text-ink-secondary hover:text-ink">
-          {t('detail.back')}
-        </Link>
+        <BackLink href="/builder/crm" label={t('detail.back')} />
         <h1 className="text-page-title text-ink">{buyerLabel}</h1>
         <dl className="grid gap-2 text-sm sm:grid-cols-2">
           <div>

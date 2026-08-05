@@ -10,7 +10,7 @@ import {
   PublicationStatusBadge,
 } from '@/features/partners/components/partner-badges';
 import { PartnerTypeLabel } from '@/features/partners/components/partner-type-label';
-import { Link } from '@/i18n/navigation';
+import { BackLink } from '@/shared/ui/back-link';
 
 type AdminPartnerDetailPageProps = {
   partnerId: string;
@@ -33,9 +33,7 @@ export const AdminPartnerDetailPage = ({ partnerId }: AdminPartnerDetailPageProp
         <p role="alert" className="text-sm text-danger">
           {t('notFound')}
         </p>
-        <Link href="/admin/partners" className="text-sm font-medium text-brand hover:underline">
-          {t('back')}
-        </Link>
+        <BackLink href="/admin/partners" label={t('back')} />
       </div>
     );
   }
@@ -45,9 +43,7 @@ export const AdminPartnerDetailPage = ({ partnerId }: AdminPartnerDetailPageProp
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col gap-2">
-        <Link href="/admin/partners" className="text-sm text-ink-secondary hover:text-ink">
-          {t('back')}
-        </Link>
+        <BackLink href="/admin/partners" label={t('back')} />
         <div className="flex flex-wrap items-center gap-3">
           <h1 className="text-page-title text-ink">{partner.name}</h1>
           <PartnerTypeLabel type={partner.type} className="text-sm text-ink-secondary" />

@@ -6,7 +6,7 @@ import { SiteFooter } from '@/features/catalog/components/site-footer';
 import { listDistrictVisualCanvases } from '@/features/visual-map/api/public-visual-map-api';
 import { PublicVisualMap } from '@/features/visual-map/components/public-visual-map';
 import { pickPrimaryVisualCanvas } from '@/features/visual-map/utils/public-visual-map';
-import { Link } from '@/i18n/navigation';
+import { BackLink } from '@/shared/ui/back-link';
 
 type DistrictPageProps = {
   params: Promise<{ locale: string; id: string; districtId: string }>;
@@ -48,9 +48,7 @@ export default async function DistrictPage({ params }: DistrictPageProps) {
     <div className="min-h-screen bg-canvas">
       <main className="page-container section-pad">
         <div className="mb-6 flex flex-col gap-2">
-          <Link href={`/projects/${id}`} className="text-sm text-ink-secondary hover:text-ink">
-            {t('district.backToProject')}
-          </Link>
+          <BackLink href={`/projects/${id}`} label={t('district.backToProject')} />
           <h1 className="text-page-title text-ink">{title}</h1>
         </div>
 

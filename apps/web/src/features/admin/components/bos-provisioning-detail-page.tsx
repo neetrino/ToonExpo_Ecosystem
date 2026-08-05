@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { BosProvisioningStatusBadge } from '@/features/admin/components/bos-provisioning-status-badge';
 import { useAdminBosProvisioningDetailQuery } from '@/features/admin/hooks/use-admin-bos-provisioning';
 import { Link } from '@/i18n/navigation';
+import { BackLink } from '@/shared/ui/back-link';
 
 type BosProvisioningDetailPageProps = {
   requestId: string;
@@ -73,12 +74,7 @@ export const BosProvisioningDetailPage = ({ requestId }: BosProvisioningDetailPa
         <p role="alert" className="text-sm text-danger">
           {t('notFound')}
         </p>
-        <Link
-          href="/admin/integrations/bos"
-          className="text-sm font-medium text-brand hover:underline"
-        >
-          {t('back')}
-        </Link>
+        <BackLink href="/admin/integrations/bos" label={t('back')} />
       </div>
     );
   }
@@ -88,9 +84,7 @@ export const BosProvisioningDetailPage = ({ requestId }: BosProvisioningDetailPa
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col gap-2">
-        <Link href="/admin/integrations/bos" className="text-sm text-ink-secondary hover:text-ink">
-          {t('back')}
-        </Link>
+        <BackLink href="/admin/integrations/bos" label={t('back')} />
         <div className="flex flex-wrap items-center gap-3">
           <h1 className="font-mono text-lg font-semibold text-ink">{request.requestId}</h1>
           <BosProvisioningStatusBadge status={request.status} />

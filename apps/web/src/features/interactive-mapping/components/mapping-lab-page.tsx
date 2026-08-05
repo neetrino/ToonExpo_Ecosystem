@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import { useTranslations } from 'next-intl';
 
-import { Link } from '@/i18n/navigation';
+import { BackLink } from '@/shared/ui/back-link';
 
 import { INTERACTIVE_MAPPING_BASE_PATH } from '../constants';
 import { MappingCanvas, type MappingEntity } from './mapping-canvas/mapping-canvas';
@@ -41,6 +42,7 @@ const LAB_ENTITIES: MappingEntity[] = [
  * Temporary MappingCanvas sandbox for headed QA.
  */
 export const MappingLabPage = () => {
+  const t = useTranslations('Admin.interactiveMapping');
   const [entities, setEntities] = useState(LAB_ENTITIES);
   const [selectedId, setSelectedId] = useState<string | null>(LAB_ENTITIES[0]?.id ?? null);
 
@@ -54,12 +56,7 @@ export const MappingLabPage = () => {
             Sandbox with fake entities. Coordinates stay normalized 0–1.
           </p>
         </div>
-        <Link
-          href={INTERACTIVE_MAPPING_BASE_PATH}
-          className="text-xs uppercase tracking-[0.14em] text-ink-muted underline-offset-4 hover:underline"
-        >
-          ← Interactive mapping
-        </Link>
+        <BackLink href={INTERACTIVE_MAPPING_BASE_PATH} label={t('labBack')} variant="compact" />
       </div>
 
       <MappingCanvas

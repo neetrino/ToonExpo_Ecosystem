@@ -5,7 +5,7 @@ import { useCatalogScope } from '@/features/builder/catalog-scope-context';
 import { useTranslations } from 'next-intl';
 
 import { CreateProjectForm } from '@/features/builder/components/create-project-form';
-import { Link } from '@/i18n/navigation';
+import { BackLink } from '@/shared/ui/back-link';
 import { Card } from '@/shared/ui/card';
 
 /**
@@ -17,13 +17,8 @@ export const NewProjectPage = () => {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-1">
-        <Link
-          href={catalogProjectsListHref(scope)}
-          className="text-sm text-ink-secondary hover:text-ink"
-        >
-          {t('detail.back')}
-        </Link>
+      <div className="flex flex-col gap-2">
+        <BackLink href={catalogProjectsListHref(scope)} label={t('detail.back')} />
         <h1 className="text-page-title text-ink">{t('new.title')}</h1>
         <p className="text-sm text-ink-secondary">{t('new.subtitle')}</p>
       </div>

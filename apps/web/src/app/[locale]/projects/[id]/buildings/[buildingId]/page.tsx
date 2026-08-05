@@ -10,7 +10,7 @@ import { getBuilding } from '@/features/catalog/api/catalog-api';
 import { listBuildingVisualCanvases } from '@/features/visual-map/api/public-visual-map-api';
 import { PublicVisualMap } from '@/features/visual-map/components/public-visual-map';
 import { pickPrimaryVisualCanvas } from '@/features/visual-map/utils/public-visual-map';
-import { Link } from '@/i18n/navigation';
+import { BackLink } from '@/shared/ui/back-link';
 import { SiteFooter } from '@/features/catalog/components/site-footer';
 
 type BuildingPageProps = {
@@ -64,12 +64,11 @@ export default async function BuildingPage({ params }: BuildingPageProps) {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-ink/70 via-ink/25 to-transparent" />
             <div className="page-container absolute inset-x-0 bottom-0 pb-6">
-              <Link
+              <BackLink
                 href={`/projects/${building.project.id}`}
-                className="text-sm text-on-dark/80 transition-colors hover:text-on-dark"
-              >
-                {t('building.backToProject')}
-              </Link>
+                label={t('building.backToProject')}
+                tone="onDark"
+              />
               <h1 className="mt-2 font-brand text-2xl font-bold text-on-dark sm:text-3xl">
                 {building.name}
               </h1>
@@ -78,12 +77,10 @@ export default async function BuildingPage({ params }: BuildingPageProps) {
           </section>
         ) : (
           <div className="page-container pt-[calc(5.5rem+env(safe-area-inset-top,0px))]">
-            <Link
+            <BackLink
               href={`/projects/${building.project.id}`}
-              className="text-sm text-ink-secondary hover:text-ink"
-            >
-              {t('building.backToProject')}
-            </Link>
+              label={t('building.backToProject')}
+            />
             <h1 className="mt-2 font-brand text-2xl font-bold text-ink">{building.name}</h1>
             <p className="text-sm text-ink-secondary">{building.project.name}</p>
           </div>

@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { EditCompanyForm } from '@/features/admin/components/edit-company-form';
 import { ResendInviteButton } from '@/features/admin/components/resend-invite-button';
 import { useAdminCompanyQuery } from '@/features/admin/hooks/use-admin-companies';
-import { Link } from '@/i18n/navigation';
+import { BackLink } from '@/shared/ui/back-link';
 import { Card } from '@/shared/ui/card';
 
 type CompanyDetailPageProps = {
@@ -29,9 +29,7 @@ export const CompanyDetailPage = ({ companyId }: CompanyDetailPageProps) => {
         <p role="alert" className="text-sm text-danger">
           {t('detail.notFound')}
         </p>
-        <Link href="/admin/companies" className="text-sm font-medium text-brand hover:underline">
-          {t('detail.back')}
-        </Link>
+        <BackLink href="/admin/companies" label={t('detail.back')} />
       </div>
     );
   }
@@ -41,10 +39,8 @@ export const CompanyDetailPage = ({ companyId }: CompanyDetailPageProps) => {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="flex flex-col gap-1">
-          <Link href="/admin/companies" className="text-sm text-ink-secondary hover:text-ink">
-            {t('detail.back')}
-          </Link>
+        <div className="flex flex-col gap-2">
+          <BackLink href="/admin/companies" label={t('detail.back')} />
           <h1 className="text-page-title text-ink">{company.name}</h1>
           <p className="text-sm text-ink-secondary">
             {t(`statuses.${company.status}`)} · {t(`types.${company.type}`)}

@@ -11,7 +11,7 @@ import {
   type ForgotPasswordFormValues,
 } from '@/features/auth/schemas/forgot-password.schema';
 import { mapAuthError } from '@/features/auth/utils/map-auth-error';
-import { Link } from '@/i18n/navigation';
+import { BackLink } from '@/shared/ui/back-link';
 import { Button } from '@/shared/ui/button';
 import { Form } from '@/shared/ui/form';
 import { FormField } from '@/shared/ui/form-field';
@@ -53,11 +53,9 @@ export const ForgotPasswordForm = () => {
         <p role="status" className="text-sm text-ink">
           {t('forgotPassword.success')}
         </p>
-        <p className="text-center text-sm text-ink-secondary">
-          <Link href="/auth/login" className="font-medium text-brand hover:underline">
-            {t('forgotPassword.backToLogin')}
-          </Link>
-        </p>
+        <div className="flex justify-center">
+          <BackLink href="/auth/login" label={t('forgotPassword.backToLogin')} variant="compact" />
+        </div>
       </div>
     );
   }
@@ -88,11 +86,9 @@ export const ForgotPasswordForm = () => {
         {busy ? t('forgotPassword.submitting') : t('forgotPassword.submit')}
       </Button>
 
-      <p className="text-center text-sm text-ink-secondary">
-        <Link href="/auth/login" className="font-medium text-brand hover:underline">
-          {t('forgotPassword.backToLogin')}
-        </Link>
-      </p>
+      <div className="flex justify-center">
+        <BackLink href="/auth/login" label={t('forgotPassword.backToLogin')} variant="compact" />
+      </div>
     </Form>
   );
 };

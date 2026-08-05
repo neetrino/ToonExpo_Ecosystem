@@ -12,7 +12,7 @@ import {
 } from '@/features/exhibition/hooks/use-exhibition';
 import type { EventFormValues } from '@/features/exhibition/schemas/exhibition.schema';
 import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
-import { Link } from '@/i18n/navigation';
+import { BackLink } from '@/shared/ui/back-link';
 
 type AdminEventDetailPageProps = {
   eventId: string;
@@ -37,9 +37,7 @@ export const AdminEventDetailPage = ({ eventId }: AdminEventDetailPageProps) => 
         <p role="alert" className="text-sm text-danger">
           {t('detail.notFound')}
         </p>
-        <Link href="/admin/events" className="text-sm font-medium text-brand hover:underline">
-          {t('detail.back')}
-        </Link>
+        <BackLink href="/admin/events" label={t('detail.back')} />
       </div>
     );
   }
@@ -59,10 +57,8 @@ export const AdminEventDetailPage = ({ eventId }: AdminEventDetailPageProps) => 
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="flex flex-col gap-1">
-        <Link href="/admin/events" className="text-sm text-ink-secondary hover:text-ink">
-          {t('detail.back')}
-        </Link>
+      <div className="flex flex-col gap-2">
+        <BackLink href="/admin/events" label={t('detail.back')} />
         <div className="flex flex-wrap items-center gap-2">
           <h1 className="text-page-title text-ink">{event.name}</h1>
           <PublicationStatusBadge status={event.publicationStatus} />

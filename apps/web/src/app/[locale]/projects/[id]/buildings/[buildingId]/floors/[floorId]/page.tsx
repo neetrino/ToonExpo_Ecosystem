@@ -11,7 +11,7 @@ import { SiteFooter } from '@/features/catalog/components/site-footer';
 import { listFloorVisualCanvases } from '@/features/visual-map/api/public-visual-map-api';
 import { PublicVisualMap } from '@/features/visual-map/components/public-visual-map';
 import { pickPrimaryVisualCanvas } from '@/features/visual-map/utils/public-visual-map';
-import { Link } from '@/i18n/navigation';
+import { BackLink } from '@/shared/ui/back-link';
 
 type FloorPageProps = {
   params: Promise<{
@@ -60,12 +60,10 @@ export default async function FloorPage({ params }: FloorPageProps) {
     <div className="min-h-screen bg-canvas">
       <main className="page-container section-pad">
         <div className="mb-6 flex flex-col gap-2">
-          <Link
+          <BackLink
             href={`/projects/${floor.project.id}/buildings/${floor.building.id}`}
-            className="text-sm text-ink-secondary hover:text-ink"
-          >
-            {t('floor.backToBuilding')}
-          </Link>
+            label={t('floor.backToBuilding')}
+          />
           <h1 className="text-page-title text-ink">{floorLabel}</h1>
           <p className="text-sm text-ink-secondary">
             {floor.building.name} · {floor.project.name}

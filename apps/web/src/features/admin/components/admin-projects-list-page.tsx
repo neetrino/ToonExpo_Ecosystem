@@ -167,7 +167,9 @@ export const AdminProjectsListPage = () => {
       />
 
       {response.data.length === 0 ? (
-        <p className="text-sm text-ink-secondary">{t('empty')}</p>
+        <p className="text-sm text-ink-secondary">
+          {activeSearch ? t('noResults', { query: activeSearch }) : t('empty')}
+        </p>
       ) : (
         <AdminProjectsTable projects={response.data} viewMode={effectiveViewMode} />
       )}

@@ -24,7 +24,8 @@
       "today": "Այսօր",
       "previousMonth": "Նախորդ ամիս",
       "nextMonth": "Հաջորդ ամիս"
-    }
+    },
+    "back": "Հետ"
   },
   "ReadinessKpi": {
     "categories": {
@@ -460,7 +461,7 @@
       "details": "Մանրամասն",
       "viewProjects": "Նախագծեր",
       "viewProject": "Դեպի նախագիծ",
-      "backToProjects": "← Բոլոր նախագծերը",
+      "backToProjects": "Բոլոր նախագծերը",
       "requestPrice": "Հարցնել գինը",
       "requestInfo": "Հարցնել տեղեկություն",
       "comingSoon": "Շուտով"
@@ -651,18 +652,18 @@
     "building": {
       "floors": "Հարկեր",
       "noFloors": "Դեռ հրապարակված հարկեր չկան։",
-      "backToProject": "← Վերադառնալ նախագծին",
+      "backToProject": "Վերադառնալ նախագծին",
       "notFoundTitle": "Շենքը չի գտնվել"
     },
     "district": {
-      "backToProject": "← Վերադառնալ նախագծին",
+      "backToProject": "Վերադառնալ նախագծին",
       "notFoundTitle": "Թաղամասը չի գտնվել",
       "fallbackTitle": "Թաղամասի քարտեզ"
     },
     "floor": {
       "apartments": "Բնակարաններ",
       "noApartments": "Դեռ հրապարակված բնակարաններ չկան։",
-      "backToBuilding": "← Վերադառնալ շենքին",
+      "backToBuilding": "Վերադառնալ շենքին",
       "notFoundTitle": "Հարկը չի գտնվել",
       "floorplanTitle": "Հարկի հատակագիծ",
       "floorplanAlt": "Հարկի հատակագծի նկար"
@@ -802,7 +803,7 @@
         "empty": "Որոնմանը համապատասխանող կառուցապատողներ չկան։"
       },
       "detail": {
-        "back": "← Բոլոր կառուցապատողները",
+        "back": "Բոլոր կառուցապատողները",
         "backToBuilders": "Բոլոր կառուցապատողները",
         "heroEyebrow": "Կառուցապատող",
         "companyTitle": "Ընկերություն",
@@ -821,7 +822,7 @@
     },
     "developersPage": {
       "eyebrow": "Կառուցապատող",
-      "back": "← Բոլոր կառուցապատողները",
+      "back": "Բոլոր կառուցապատողները",
       "backToBuilders": "Բոլոր կառուցապատողները",
       "notFoundTitle": "Կառուցապատողը չի գտնվել",
       "metaTitle": "{name} — կառուցապատող",
@@ -1354,8 +1355,8 @@
       "continuePhase": "Փուլ {phase} →",
       "projectMeta": "{districts} թաղամաս · {buildings} շենք · փուլ {phase}",
       "labLink": "Mapping lab (QA)",
-      "backToProjects": "← Նախագծեր",
-      "backToWizard": "← Փուլեր",
+      "backToProjects": "Նախագծեր",
+      "backToWizard": "Փուլեր",
       "activePhase": "Հիմա Փուլ {phase}",
       "allPhasesDone": "Բոլոր փուլերը պատրաստ են",
       "status": {
@@ -1486,7 +1487,8 @@
         "cleared": "Մաքրված է",
         "polygonCleared": "Polygon-ը մաքրված է",
         "deleteDefault": "Ջնջել"
-      }
+      },
+      "labBack": "Ինտերակտիվ քարտեզ"
     },
     "settings": {
       "title": "Կարգավորումներ",
@@ -1609,7 +1611,7 @@
         "createAnother": "Ստեղծել ևս մեկը"
       },
       "detail": {
-        "back": "← Ընկերություններ",
+        "back": "Ընկերություններ",
         "sheetTitle": "Ընկերություն",
         "typeLabel": "Տեսակ",
         "save": "Պահպանել",
@@ -1681,13 +1683,15 @@
       "title": "Նախագծեր",
       "subtitle": "{count, plural, =0 {Նախագծեր չկան} one {# նախագիծ} other {# նախագիծ}}",
       "empty": "Դեռ նախագծեր չկան։",
+      "noResults": "«{query}» հարցմանը համապատասխանող նախագիծ չկա։",
       "loading": "Բեռնվում է…",
       "error": "Չհաջողվեց բեռնել նախագծերը։ Կրկին փորձեք։",
       "filters": {
         "company": "Ընկերություն",
         "allCompanies": "Բոլոր ընկերությունները",
         "building": "Շենք",
-        "allBuildings": "Բոլոր շենքերը"
+        "allBuildings": "Բոլոր շենքերը",
+        "searchPlaceholder": "Փնտրել ըստ նախագծի, ընկերության կամ քաղաքի"
       },
       "columns": {
         "name": "Անուն",
@@ -1944,7 +1948,7 @@
       "detail": {
         "loading": "Բեռնում…",
         "notFound": "Գործընկերը չի գտնվել",
-        "back": "← Գործընկերներ",
+        "back": "Գործընկերներ",
         "sheetTitle": "Գործընկեր",
         "save": "Պահպանել",
         "saving": "Պահպանում…",
@@ -2182,7 +2186,7 @@
       "detail": {
         "loading": "Հարցումը բեռնվում է…",
         "notFound": "Ապահովման հարցումը չի գտնվել",
-        "back": "← BOS ապահովում",
+        "back": "BOS ապահովում",
         "summary": {
           "title": "Հարցման ամփոփում",
           "bosCompanyId": "BOS ընկերության ID",
@@ -2243,7 +2247,7 @@
       "categories": {
         "title": "Պատրաստվածության կատեգորիաներ",
         "subtitle": "Սա միայն գնահատման չափանիշների կարգավորումն է։ Գնահատելու համար վերադարձեք գնահատումների ցուցակ և բացեք մեկը։",
-        "backToAssessments": "← Վերադառնալ գնահատումներ",
+        "backToAssessments": "Վերադառնալ գնահատումներ",
         "loading": "Բեռնվում է…",
         "error": "Չհաջողվեց բեռնել կատեգորիաները։ Կրկին փորձեք։",
         "empty": "Դեռ կատեգորիաներ չկան։ Ստեղծեք առաջինը։",
@@ -2358,7 +2362,7 @@
       "detail": {
         "loading": "Բեռնվում է…",
         "notFound": "Գնահատումը չի գտնվել",
-        "back": "← Գնահատումներ",
+        "back": "Գնահատումներ",
         "overallScore": "Ընդհանուր միավոր",
         "overridden": "վերագրավված",
         "lastEvaluated": "Վերջին գնահատում",
@@ -2517,7 +2521,7 @@
         "subtitle": "Ստեղծեք ցուցահանդեսային միջոցառում քարտեզների և գրանցման համար"
       },
       "detail": {
-        "back": "← Միջոցառումներ",
+        "back": "Միջոցառումներ",
         "notFound": "Միջոցառումը չի գտնվել"
       },
       "form": {
@@ -2813,7 +2817,7 @@
         "generic": "Ինչ-որ սխալ տեղի ունեցավ։ Կրկին փորձեք։"
       },
       "detail": {
-        "back": "← Նախագծեր",
+        "back": "Նախագծեր",
         "save": "Պահպանել",
         "saving": "Պահպանում…",
         "saveSuccess": "Նախագիծը թարմացված է",
@@ -2913,7 +2917,7 @@
       "editor": {
         "loading": "Canvas-ը բեռնվում է…",
         "notFound": "Տեսական canvas-ը չի գտնվել",
-        "back": "← Վերադառնալ նախագիծ",
+        "back": "Վերադառնալ նախագիծ",
         "untitled": "Անվերնագիր canvas",
         "publish": "Հրապարակել canvas",
         "archive": "Արխիվացնել canvas",
@@ -2964,7 +2968,7 @@
     },
     "apartments": {
       "title": "Բնակարան {number}",
-      "back": "← Վերադառնալ",
+      "back": "Հետ",
       "loading": "Բեռնվում է…",
       "notFound": "Բնակարանը չի գտնվել",
       "planTitle": "Բնակարանի պլան",
@@ -3177,7 +3181,7 @@
         "generic": "Ինչ-որ սխալ տեղի ունեցավ։ Կրկին փորձեք։"
       },
       "detail": {
-        "back": "← CRM",
+        "back": "CRM",
         "notFound": "Գործարքը չի գտնվել։",
         "phone": "Հեռախոս",
         "email": "Էլ․ փոստ",

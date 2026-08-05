@@ -1,8 +1,8 @@
-import type { InputHTMLAttributes } from 'react';
+import type { ComponentPropsWithRef } from 'react';
 
 import { cn } from '@/shared/ui/cn';
 
-export type InputProps = InputHTMLAttributes<HTMLInputElement>;
+export type InputProps = ComponentPropsWithRef<'input'>;
 
 /**
  * Text input — 16px on mobile to avoid iOS zoom; focus ring via brand.

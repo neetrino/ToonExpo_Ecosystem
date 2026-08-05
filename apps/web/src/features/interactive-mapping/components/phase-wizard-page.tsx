@@ -6,7 +6,7 @@ import { useQueryClient } from '@tanstack/react-query';
 
 import { createPortalApartment } from '@/features/builder/api/portal-apartments-api';
 import { createPortalBuilding } from '@/features/builder/api/portal-buildings-api';
-import { Link } from '@/i18n/navigation';
+import { BackLink } from '@/shared/ui/back-link';
 
 import { interactiveMappingProjectQueryKey } from '../constants';
 import {
@@ -89,12 +89,7 @@ export const PhaseWizardPage = ({ projectId }: PhaseWizardPageProps) => {
   return (
     <div className="mx-auto max-w-3xl space-y-8">
       <div>
-        <Link
-          href={basePath}
-          className="text-xs uppercase tracking-[0.14em] text-ink-muted underline-offset-4 hover:underline"
-        >
-          {t('backToProjects')}
-        </Link>
+        <BackLink href={basePath} label={t('backToProjects')} />
         <h1 className="mt-3 font-display text-4xl text-ink">{project.name}</h1>
         <p className="mt-2 text-sm text-ink-muted">
           {project.activePhase

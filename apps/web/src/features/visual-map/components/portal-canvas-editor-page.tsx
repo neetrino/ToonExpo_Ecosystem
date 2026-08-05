@@ -17,7 +17,7 @@ import {
   useUpdatePortalVisualHotspotMutation,
 } from '@/features/visual-map/hooks/use-portal-visual-map';
 import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
-import { Link } from '@/i18n/navigation';
+import { BackLink } from '@/shared/ui/back-link';
 import { Button } from '@/shared/ui/button';
 import { Card } from '@/shared/ui/card';
 import { cn } from '@/shared/ui/cn';
@@ -56,12 +56,7 @@ export const PortalCanvasEditorPage = ({ project, canvasId }: PortalCanvasEditor
         <p role="alert" className="text-sm text-danger">
           {t('notFound')}
         </p>
-        <Link
-          href={catalogProjectDetailHref(scope, project.id)}
-          className="text-sm font-medium text-brand hover:underline"
-        >
-          {t('back')}
-        </Link>
+        <BackLink href={catalogProjectDetailHref(scope, project.id)} label={t('back')} />
       </div>
     );
   }
@@ -85,13 +80,8 @@ export const PortalCanvasEditorPage = ({ project, canvasId }: PortalCanvasEditor
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="flex flex-col gap-1">
-          <Link
-            href={catalogProjectDetailHref(scope, project.id)}
-            className="text-sm text-ink-secondary hover:text-ink"
-          >
-            {t('back')}
-          </Link>
+        <div className="flex flex-col gap-2">
+          <BackLink href={catalogProjectDetailHref(scope, project.id)} label={t('back')} />
           <h1 className="text-page-title text-ink">{canvas.title ?? t('untitled')}</h1>
           <PublicationStatusBadge status={canvas.publicationStatus} />
         </div>

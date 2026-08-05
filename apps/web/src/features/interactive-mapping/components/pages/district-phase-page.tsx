@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 
-import { Link } from '@/i18n/navigation';
+import { BackLink } from '@/shared/ui/back-link';
 
 import {
   createVisualCanvas,
@@ -143,12 +143,7 @@ export const DistrictPhasePage = ({ projectId, districtId }: DistrictPhasePagePr
   return (
     <div className="space-y-6">
       <div>
-        <Link
-          href={`${basePath}/${projectId}`}
-          className="text-xs uppercase tracking-[0.14em] text-ink-muted underline-offset-4 hover:underline"
-        >
-          {t('backToWizard')}
-        </Link>
+        <BackLink href={`${basePath}/${projectId}`} label={t('backToWizard')} />
         <h1 className="mt-3 font-display text-3xl text-ink">
           {t('pages.district', { name: district.name })}
         </h1>

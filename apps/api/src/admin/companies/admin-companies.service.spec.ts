@@ -179,6 +179,66 @@ describe('AdminCompaniesService.listProjects', () => {
       meta: { page: 1, pageSize: 20, total: 1, totalPages: 1 },
     });
   });
+
+  it('searches trimmed and case-insensitively across name, slug, city and company', async () => {
+    projectCount.mockResolvedValue(0);
+    projectFindMany.mockResolvedValue([]);
+
+    await service.listAllProjects(2, 18, undefined, '  Alpha  ');
+
+    const expectedWhere = {
+      OR: [
+        { name: { contains: 'Alpha', mode: 'insensitive' } },
+        { slug: { contains: 'Alpha', mode: 'insensitive' } },
+        { city: { contains: 'Alpha', mode: 'insensitive' } },
+        { builderCompany: { name: { contains: 'Alpha', mode: 'insensitive' } } },
+      ],
+    };
+
+    expect(projectCount).toHaveBeenCalledWith({ where: expectedWhere });
+    expect(projectFindMany).toHaveBeenCalledWith(
+      expect.objectContaining({ where: expectedWhere, skip: 18, take: 18 }),
+    );
+  });
+
+  it('combines search with the company filter', async () => {
+    companyFindUnique.mockResolvedValue({
+      id: 'co_1',
+      name: 'Builder Co',
+      description: null,
+      type: 'builder',
+      status: 'active',
+      source: 'admin',
+      bosCompanyId: null,
+      createdAt: new Date('2026-01-01T00:00:00.000Z'),
+      updatedAt: new Date('2026-01-01T00:00:00.000Z'),
+    });
+    projectCount.mockResolvedValue(0);
+    projectFindMany.mockResolvedValue([]);
+
+    await service.listAllProjects(1, 18, 'co_1', 'tower');
+
+    expect(projectCount).toHaveBeenCalledWith({
+      where: {
+        builderCompanyId: 'co_1',
+        OR: [
+          { name: { contains: 'tower', mode: 'insensitive' } },
+          { slug: { contains: 'tower', mode: 'insensitive' } },
+          { city: { contains: 'tower', mode: 'insensitive' } },
+          { builderCompany: { name: { contains: 'tower', mode: 'insensitive' } } },
+        ],
+      },
+    });
+  });
+
+  it('treats a blank search term as no search filter', async () => {
+    projectCount.mockResolvedValue(0);
+    projectFindMany.mockResolvedValue([]);
+
+    await service.listAllProjects(1, 18, undefined, '   ');
+
+    expect(projectCount).toHaveBeenCalledWith({ where: {} });
+  });
 });
 
 describe('AdminCompaniesController', () => {

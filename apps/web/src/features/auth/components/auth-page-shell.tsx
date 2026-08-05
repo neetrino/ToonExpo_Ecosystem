@@ -1,11 +1,10 @@
 import Image from 'next/image';
-import { ArrowLeft } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import type { ReactNode } from 'react';
 
 import { AuthFitStage } from '@/features/auth/components/auth-fit-stage';
-import { Link } from '@/i18n/navigation';
 import { staticAssetUrl } from '@/shared/lib/static-asset-url';
+import { BackLink } from '@/shared/ui/back-link';
 import { BrandLogo } from '@/shared/ui/brand-logo';
 import { cn } from '@/shared/ui/cn';
 
@@ -134,24 +133,7 @@ const AuthFormColumn = ({
         )}
       >
         <BrandLogo size="md" className="lg:hidden" />
-        <Link
-          href="/"
-          className={cn(
-            'group inline-flex h-9 items-center gap-2 rounded-sm border border-border/80',
-            'bg-surface-elevated/90 px-3 text-xs font-semibold tracking-wide text-ink',
-            'shadow-xs transition-[border-color,background-color,box-shadow,color,transform]',
-            'duration-[var(--duration-fast)] ease-[var(--ease-out-premium)]',
-            'hover:border-accent/40 hover:bg-accent-soft/50 hover:text-ink hover:shadow-sm',
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/25',
-            'active:scale-[0.98]',
-          )}
-        >
-          <ArrowLeft
-            className="size-3.5 shrink-0 text-accent transition-transform duration-[var(--duration-fast)] group-hover:-translate-x-0.5"
-            aria-hidden
-          />
-          <span>{backHomeLabel}</span>
-        </Link>
+        <BackLink href="/" label={backHomeLabel} variant="compact" />
       </header>
 
       <AuthFitStage className="relative z-[1] px-5 pb-4 sm:px-8 lg:px-12">
