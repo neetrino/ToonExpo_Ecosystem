@@ -104,7 +104,7 @@ describe('PublicPartnersService visibility rules', () => {
       bankOffers: [
         {
           id: 'bo_1',
-          title: 'Seed offer',
+          title: 'Test offer',
           shortDescription: 'Public calculator',
           rate: { toString: () => '12.5' },
           apr: { toString: () => '13' },

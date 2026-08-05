@@ -24,7 +24,7 @@ describe('parseProjectFilters', () => {
         maxPrice: '90000000',
         salesStatus: 'available',
         city: 'Yerevan',
-        builderId: 'seed_company_glendale',
+        builderId: 'builder_company_a',
       }),
     ).toEqual({
       page: 2,
@@ -34,7 +34,7 @@ describe('parseProjectFilters', () => {
       maxPrice: 90_000_000,
       salesStatus: 'available',
       city: 'Yerevan',
-      builderId: 'seed_company_glendale',
+      builderId: 'builder_company_a',
     });
   });
 

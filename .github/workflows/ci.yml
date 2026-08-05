@@ -42,7 +42,6 @@ jobs:
       DIRECT_URL: postgresql://toonexpo:toonexpo@localhost:5432/toonexpo
       SESSION_TOKEN_PEPPER: ci-only-session-token-pepper-min-32-chars
       CSRF_SECRET: ci-only-csrf-secret-value-min-32-chars!!
-      SEED_ADMIN_PASSWORD: ChangeMeAdmin123!
 
     steps:
       - name: Checkout
@@ -64,9 +63,6 @@ jobs:
 
       - name: Apply migrations
         run: pnpm --filter @toonexpo/db db:migrate:deploy
-
-      - name: Build shared (seed contract)
-        run: pnpm --filter @toonexpo/shared build
 
       - name: Architecture boundary check
         run: |
@@ -97,43 +93,38 @@ jobs:
       - name: Test
         run: pnpm test
 
-      - name: Seed database
-        run: pnpm --filter @toonexpo/db db:seed
-
       - name: Build
         run: pnpm run e2e:build
 
   e2e:
     name: Playwright smoke e2e
+    if: ${{ vars.E2E_DATABASE_ENABLED == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 45
-
-    services:
-      postgres:
-        image: postgres:18-alpine
-        env:
-          POSTGRES_USER: toonexpo
-          POSTGRES_PASSWORD: toonexpo
-          POSTGRES_DB: toonexpo
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U toonexpo -d toonexpo"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 10
 
     env:
       PORT: "4000"
       APP_URL: http://localhost:3000
       CORS_ORIGINS: http://localhost:3000
       NEXT_PUBLIC_API_URL: http://localhost:4000
-      DATABASE_URL: postgresql://toonexpo:toonexpo@localhost:5432/toonexpo
-      DIRECT_URL: postgresql://toonexpo:toonexpo@localhost:5432/toonexpo
+      DATABASE_URL: ${{ secrets.E2E_DATABASE_URL }}
+      DIRECT_URL: ${{ secrets.E2E_DIRECT_URL }}
       SESSION_TOKEN_PEPPER: ci-only-session-token-pepper-min-32-chars
       CSRF_SECRET: ci-only-csrf-secret-value-min-32-chars!!
-      SEED_ADMIN_PASSWORD: ChangeMeAdmin123!
       PLAYWRIGHT_BASE_URL: http://localhost:3000
+      E2E_APARTMENT_ID: ${{ vars.E2E_APARTMENT_ID }}
+      E2E_APARTMENT_NUMBER: ${{ vars.E2E_APARTMENT_NUMBER }}
+      E2E_BUILDER_ADMIN_EMAIL: ${{ vars.E2E_BUILDER_ADMIN_EMAIL }}
+      E2E_BUILDER_ADMIN_PASSWORD: ${{ secrets.E2E_BUILDER_ADMIN_PASSWORD }}
+      E2E_BUILDER_COMPANY_ID: ${{ vars.E2E_BUILDER_COMPANY_ID }}
+      E2E_BUYER_EMAIL: ${{ vars.E2E_BUYER_EMAIL }}
+      E2E_BUYER_PASSWORD: ${{ secrets.E2E_BUYER_PASSWORD }}
+      E2E_FLOOR_LABEL: ${{ vars.E2E_FLOOR_LABEL }}
+      E2E_PLATFORM_ADMIN_EMAIL: ${{ vars.E2E_PLATFORM_ADMIN_EMAIL }}
+      E2E_PLATFORM_ADMIN_PASSWORD: ${{ secrets.E2E_PLATFORM_ADMIN_PASSWORD }}
+      E2E_PROJECT_ID: ${{ vars.E2E_PROJECT_ID }}
+      E2E_PROJECT_NAME: ${{ vars.E2E_PROJECT_NAME }}
+      E2E_PROJECT_NAME_HY: ${{ vars.E2E_PROJECT_NAME_HY }}
 
     steps:
       - name: Checkout
@@ -156,12 +147,6 @@ jobs:
       - name: Apply migrations
         run: pnpm --filter @toonexpo/db db:migrate:deploy
 
-      - name: Build shared (seed contract)
-        run: pnpm --filter @toonexpo/shared build
-
-      - name: Seed database
-        run: pnpm --filter @toonexpo/db db:seed
-
       - name: Build API and web (API boots briefly for Next prerender)
         run: pnpm run e2e:build
 
@@ -178,6 +163,4 @@ jobs:
           done
 
       - name: Run smoke e2e
-        env:
-          SKIP_E2E_SEED: "1"
         run: pnpm --filter @toonexpo/web e2e

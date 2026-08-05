@@ -45,4 +45,5 @@ Last updated: 2026-07-19.
 - **Rotate secrets before production:** Resend, R2, BOS API key, Upstash token and the Neon password were exposed during development (chat/screenshots). Generate fresh production values; never reuse dev secrets.
 - **Separate production Neon database** (dev DB stays for development); run `prisma migrate deploy` against prod before first release.
 - **Enable Sentry sourcemap upload** in CI once `SENTRY_AUTH_TOKEN` is wired into the pipeline (currently disabled by design).
-- **First platform admin:** use `pnpm --filter @toonexpo/db run db:seed:prod` on an empty production DB (see `DEPLOYMENT.md` and `DECISIONS.md`).
+- **First platform admin:** provision through the approved production database operations process
+  and record it in the deployment log (see `DEPLOYMENT.md` and `DECISIONS.md`).

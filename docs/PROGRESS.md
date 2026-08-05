@@ -8,7 +8,10 @@ The historical Wave 3/Sprint 5 implementation below accurately records what was 
 
 Final pre-production completion pass **closed** (2026-07-18). Sprints 0–6 and final completion waves 1–4 are done. Platform is ready for owner review (`OPEN_QUESTIONS.md`), performance architecture review, and manual deploy per `DEPLOYMENT.md`.
 
-**2026-07-19:** Self-service password change (`/profile/password`, `POST /auth/change-password`) and production-safe first-admin seed (`db:seed:prod`).
+**2026-08-05:** Removed database population/reset scripts. Product and test tooling now read
+pre-existing PostgreSQL records only; first-admin provisioning is an operations responsibility.
+
+**2026-07-19:** Self-service password change (`/profile/password`, `POST /auth/change-password`).
 
 **2026-07-19:** Admin BOS provisioning history UI (`/admin/integrations/bos` — paginated list, detail + audit log, status filter, hy/ru/en).
 
@@ -29,7 +32,7 @@ Infrastructure and platform services completed during waves 1–4 (2026-07-18):
 - Sentry in api + web (DSN-gated; sourcemap upload deferred to CI); `SENTRY_AUTH_TOKEN` in GitHub Secrets.
 - Distributed rate limiting via Upstash Redis (atomic Lua, fail-open, in-memory fallback).
 - Deploy artifacts: `apps/api/Dockerfile`, `.dockerignore`, `apps/web/vercel.json`, `docs/DEPLOYMENT.md`, `docs/SETTINGS.md`.
-- Idempotent Prisma seeds (`pnpm --filter @toonexpo/db db:seed`).
+- PostgreSQL migrations and database-only product data lifecycle.
 
 ## Completed
 

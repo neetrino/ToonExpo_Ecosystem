@@ -113,12 +113,12 @@ export default function registrationLoginStorm(data) {
   }
 
   if (__ITER % 5 === 0 && config.buyerEmail) {
-    const seedLogin = login(config.buyerEmail, config.buyerPassword, {
+    const configuredBuyerLogin = login(config.buyerEmail, config.buyerPassword, {
       ...tags,
-      endpoint: 'auth_login_seed',
+      endpoint: 'auth_login_configured_buyer',
     });
-    check(seedLogin, {
-      'seed buyer login succeeded': (session) => session !== null,
+    check(configuredBuyerLogin, {
+      'configured buyer login succeeded': (session) => session !== null,
     });
   }
 }

@@ -43,11 +43,7 @@ export const isSiteHeaderNavActive = (pathname: string, href: SiteHeaderNavHref)
     return pathname === '/projects' || pathname.startsWith('/projects/');
   }
   if (href === '/builders') {
-    return (
-      pathname === '/builders' ||
-      pathname.startsWith('/builders/') ||
-      pathname.startsWith('/developers/')
-    );
+    return pathname === '/builders' || pathname.startsWith('/builders/');
   }
   if (href === '/map') {
     return pathname === '/map' || pathname.startsWith('/map/');

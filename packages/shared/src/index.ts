@@ -55,25 +55,3 @@ export type PublicCacheTag = (typeof PUBLIC_CACHE_TAG)[keyof typeof PUBLIC_CACHE
 
 /** Per-project catalog detail tag (`catalog-project-<id>`). */
 export const catalogProjectCacheTag = (projectId: string): string => `catalog-project-${projectId}`;
-
-export {
-  DEV_SEED_ADMIN_PASSWORD,
-  SEED_APARTMENT_NUMBER,
-  SEED_APARTMENT_VISIBLE_AFTER_LOGIN_ID,
-  SEED_BUILDER_COMPANY_ID,
-  SEED_BUILDING_ID,
-  SEED_BUILDING_NAME,
-  SEED_BUYER_EMAIL,
-  SEED_BUYER_ID,
-  SEED_BUYER_PROFILE_ID,
-  SEED_BUYER_QR_ID,
-  SEED_COMPANY_ADMIN_EMAIL,
-  SEED_COMPANY_ADMIN_ID,
-  SEED_COMPANY_MEMBER_ID,
-  SEED_FLOOR_ID,
-  SEED_FLOOR_LABEL,
-  SEED_PLATFORM_ADMIN_EMAIL,
-  SEED_PLATFORM_ADMIN_ID,
-  SEED_PROJECT_ID,
-  SEED_PROJECT_NAME,
-} from './seed-contract.js';

@@ -58,10 +58,6 @@ const isBuilderDetailRoute = (pathname: string): boolean => {
   return /^\/builders\/[^/]+$/.test(pathname);
 };
 
-const isDeveloperDetailRoute = (pathname: string): boolean => {
-  return /^\/developers\/[^/]+$/.test(pathname);
-};
-
 /** Building detail (`/projects/:id/buildings/:buildingId`) — cover under transparent header. */
 const isBuildingDetailRoute = (pathname: string): boolean => {
   return /^\/projects\/[^/]+\/buildings\/[^/]+$/.test(pathname);
@@ -90,7 +86,6 @@ export const PublicChrome = ({ children }: PublicChromeProps) => {
     isProjectsListRoute(pathname) ||
     isBuildersListRoute(pathname) ||
     isBuilderDetailRoute(pathname) ||
-    isDeveloperDetailRoute(pathname) ||
     isBuildingDetailRoute(pathname)
       ? 'transparent'
       : 'solid';

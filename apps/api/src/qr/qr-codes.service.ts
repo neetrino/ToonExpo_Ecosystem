@@ -1,9 +1,6 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import type {
-  BuyerQrResponse,
-  BuyerQrScanHistoryResponse,
-} from "@toonexpo/contracts";
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import type { BuyerQrResponse, BuyerQrScanHistoryResponse } from '@toonexpo/contracts';
 import {
   QrCodeStatus,
   createQrToken,
@@ -11,14 +8,12 @@ import {
   encryptQrToken,
   hashQrToken,
   type Prisma,
-} from "@toonexpo/db";
+} from '@toonexpo/db';
 
-import {
-  BUYER_QR_SCANS_DEFAULT_PAGE_SIZE,
-} from "../common/constants/app.constants.js";
-import type { AppEnv } from "../config/env.validation.js";
-import { PrismaService } from "../prisma/prisma.service.js";
-import { buildBuyerQrPayloadUrl } from "./qr-payload.util.js";
+import { BUYER_QR_SCANS_DEFAULT_PAGE_SIZE } from '../common/constants/app.constants.js';
+import type { AppEnv } from '../config/env.validation.js';
+import { PrismaService } from '../prisma/prisma.service.js';
+import { buildBuyerQrPayloadUrl } from './qr-payload.util.js';
 
 type TxClient = Prisma.TransactionClient;
 
@@ -29,13 +24,8 @@ export class QrCodesService {
     private readonly configService: ConfigService<AppEnv, true>,
   ) {}
 
-  /**
-   * Issues a permanent active QR for a buyer profile (registration / seed).
-   */
-  async createForBuyerProfile(
-    buyerProfileId: string,
-    tx?: TxClient,
-  ): Promise<void> {
+  /** Issues a permanent active QR for a buyer profile. */
+  async createForBuyerProfile(buyerProfileId: string, tx?: TxClient): Promise<void> {
     const db = tx ?? this.prisma.db;
     const pepper = this.pepper();
     const token = createQrToken();
@@ -53,7 +43,7 @@ export class QrCodesService {
   async getBuyerQr(userId: string): Promise<BuyerQrResponse> {
     const qr = await this.findActiveBuyerQr(userId);
     const token = decryptQrToken(qr.tokenEncrypted, this.pepper());
-    const appUrl = this.configService.get("APP_URL", { infer: true });
+    const appUrl = this.configService.get('APP_URL', { infer: true });
 
     return {
       qrCodeId: qr.id,
@@ -71,16 +61,14 @@ export class QrCodesService {
     const qr = await this.findActiveBuyerQr(userId);
     const events = await this.prisma.db.qrScanEvent.findMany({
       where: { qrCodeId: qr.id },
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: 'desc' },
       skip: (page - 1) * pageSize,
       take: pageSize,
     });
 
     const companyIds = [
       ...new Set(
-        events
-          .map((event) => event.scannerCompanyId)
-          .filter((id): id is string => id != null),
+        events.map((event) => event.scannerCompanyId).filter((id): id is string => id != null),
       ),
     ];
     const companies =
@@ -90,9 +78,7 @@ export class QrCodesService {
             where: { id: { in: companyIds } },
             select: { id: true, name: true },
           });
-    const companyNameById = new Map(
-      companies.map((company) => [company.id, company.name]),
-    );
+    const companyNameById = new Map(companies.map((company) => [company.id, company.name]));
 
     return {
       data: events.map((event) => ({
@@ -119,13 +105,13 @@ export class QrCodesService {
     });
 
     if (!profile?.qrCode) {
-      throw new NotFoundException("QR code not found");
+      throw new NotFoundException('QR code not found');
     }
 
     return profile.qrCode;
   }
 
   private pepper(): string {
-    return this.configService.get("SESSION_TOKEN_PEPPER", { infer: true });
+    return this.configService.get('SESSION_TOKEN_PEPPER', { infer: true });
   }
 }

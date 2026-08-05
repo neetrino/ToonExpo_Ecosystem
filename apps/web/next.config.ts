@@ -107,7 +107,7 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: resolveAllowedDevOrigins(),
   images: {
     remotePatterns: resolveImageRemotePatterns(),
-    // Dev seed uses local SVG architecture placeholders under /public/demo.
+    // Local SVG architecture placeholders require explicit SVG handling.
     dangerouslyAllowSVG: true,
     contentDispositionType: 'attachment',
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",

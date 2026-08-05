@@ -2,7 +2,7 @@
 
 **Date:** 2026-07-21  
 **Scope:** Full frontend design-system evolution across public, buyer, builder, partner, and admin surfaces.  
-**Constraint:** Preserve NestJS API, Prisma schema (except safe seed media URLs), auth/RBAC, i18n, and business logic.
+**Constraint:** Preserve NestJS API, Prisma schema, auth/RBAC, i18n, and business logic.
 
 ---
 
@@ -14,7 +14,7 @@
 - `apps/web/src/shared/ui` — previously thin primitives only
 - Message catalogs `en` / `ru` / `hy`
 - Design tokens in `globals.css` (Variant A baseline)
-- Seed demo data in `packages/db/prisma`
+- Demo media presentation
 - Playwright / Vitest presence
 
 ## Discovered inconsistencies
@@ -27,7 +27,7 @@
 | Homepage missing explore / exhibition / mortgage / partners / final CTA bands | Incomplete marketing story                   |
 | Portal shells duplicated without mobile drawer                                | Weak mobile portal UX                        |
 | No motion system                                                              | Ad-hoc or absent reveal patterns             |
-| Seed covers used generic `placehold.co` text tiles                            | Weak catalog visuals                         |
+| Demo covers used generic `placehold.co` text tiles                            | Weak catalog visuals                         |
 | Loading / empty / error states inconsistent                                   | Uneven trust and polish                      |
 
 ## Design direction
@@ -98,7 +98,7 @@ Removed Syne (no Armenian / Cyrillic coverage). Responsive clamp scale for hero 
 | Buyer    | Profile shell, icon tabs, QR presentation                                                                              |
 | Portals  | Shared `PortalShell` + icon sidebars (builder/admin/partner) + mobile drawer                                           |
 | CRM      | Page title, loading skeletons, empty treatment, table chrome                                                           |
-| Demo     | Local `/public/demo/*.svg` wired into seed media URLs                                                                  |
+| Demo     | Local `/public/demo/*.svg` architecture placeholders                                                                   |
 
 ## Responsive improvements
 
@@ -124,12 +124,10 @@ Removed Syne (no Armenian / Cyrillic coverage). Responsive clamp scale for hero 
 - No new heavy animation library
 - Stagger/reveal disconnect after first paint
 
-## Demo-data changes
+## Demo-media changes
 
-- `packages/db/prisma/seed-data.ts` — `demoCoverUrl` / `demoLogoUrl` → `/demo/*.svg`
-- `seed-catalog.ts` uses local demo URLs for seed media
-- Assets in `apps/web/public/demo/` (architecture silhouettes + logos)
-- Still idempotent `seed_*` IDs; production seed path unchanged
+- Assets in `apps/web/public/demo/` provide architecture silhouettes and logos.
+- Runtime catalog records remain database-owned.
 
 ## Dependencies added
 
@@ -142,8 +140,7 @@ Removed Syne (no Armenian / Cyrillic coverage). Responsive clamp scale for hero 
 - Not every dense admin/builder form was visually rewritten line-by-line; all share the new tokens/shell/primitives
 - Exhibition map Konva migration remains a product backlog item (`MODULE_STATUS`)
 - Some detail pages still use older local class patterns; they inherit global tokens
-- Playwright e2e not run in this session (requires full env + seed confirmation)
-- Re-seed required locally to refresh media URLs to `/demo/*`
+- Playwright e2e not run in this session (requires full environment confirmation)
 
 ## Commands executed
 
