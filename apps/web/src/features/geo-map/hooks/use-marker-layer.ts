@@ -66,21 +66,21 @@ const attachMarkerHandlers = (
   element: HTMLDivElement,
   id: string,
   draggingIdRef: { current: string | null },
-  { onObjectClick, onObjectHover, onObjectDragMove, onObjectDragged }: MarkerCallbacks,
+  callbacksRef: { current: MarkerCallbacks },
 ): void => {
   element.addEventListener('click', (event) => {
     event.stopPropagation();
-    onObjectClick?.(id);
+    callbacksRef.current.onObjectClick?.(id);
   });
-  element.addEventListener('mouseenter', () => onObjectHover?.(id));
-  element.addEventListener('mouseleave', () => onObjectHover?.(null));
+  element.addEventListener('mouseenter', () => callbacksRef.current.onObjectHover?.(id));
+  element.addEventListener('mouseleave', () => callbacksRef.current.onObjectHover?.(null));
   marker.on('drag', () => {
     draggingIdRef.current = id;
-    onObjectDragMove?.(id, toLngLat(marker));
+    callbacksRef.current.onObjectDragMove?.(id, toLngLat(marker));
   });
   marker.on('dragend', () => {
     draggingIdRef.current = null;
-    onObjectDragged?.(id, toLngLat(marker));
+    callbacksRef.current.onObjectDragged?.(id, toLngLat(marker));
   });
 };
 
@@ -93,7 +93,7 @@ const syncMarkers = (
   highlightedObjectId: string | null | undefined,
   draggingId: string | null,
   draggingIdRef: { current: string | null },
-  callbacks: MarkerCallbacks,
+  callbacksRef: { current: MarkerCallbacks },
 ): void => {
   const nextIds = new Set(markerObjects.map((object) => object.id));
   for (const [id, marker] of markers) {
@@ -128,7 +128,7 @@ const syncMarkers = (
     const marker = new Marker({ element, draggable: editable, anchor: 'bottom' })
       .setLngLat([object.longitude, object.latitude])
       .addTo(map);
-    attachMarkerHandlers(marker, element, object.id, draggingIdRef, callbacks);
+    attachMarkerHandlers(marker, element, object.id, draggingIdRef, callbacksRef);
     markers.set(object.id, marker);
   }
 };
@@ -151,6 +151,18 @@ export const useMarkerLayer = ({
 }: UseMarkerLayerOptions): void => {
   const markersRef = useRef(new Map<string, Marker>());
   const draggingIdRef = useRef<string | null>(null);
+  const callbacksRef = useRef<MarkerCallbacks>({
+    onObjectClick,
+    onObjectHover,
+    onObjectDragMove,
+    onObjectDragged,
+  });
+  callbacksRef.current = {
+    onObjectClick,
+    onObjectHover,
+    onObjectDragMove,
+    onObjectDragged,
+  };
 
   useEffect(() => {
     if (!map || !isMapLoaded) {
@@ -165,25 +177,9 @@ export const useMarkerLayer = ({
       highlightedObjectId,
       draggingIdRef.current,
       draggingIdRef,
-      {
-        onObjectClick,
-        onObjectHover,
-        onObjectDragMove,
-        onObjectDragged,
-      },
+      callbacksRef,
     );
-  }, [
-    map,
-    isMapLoaded,
-    markerObjects,
-    zoom,
-    editable,
-    highlightedObjectId,
-    onObjectClick,
-    onObjectHover,
-    onObjectDragMove,
-    onObjectDragged,
-  ]);
+  }, [map, isMapLoaded, markerObjects, zoom, editable, highlightedObjectId]);
 
   useEffect(() => {
     const markers = markersRef.current;

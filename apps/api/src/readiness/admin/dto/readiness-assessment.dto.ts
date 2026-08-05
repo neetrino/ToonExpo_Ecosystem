@@ -1,6 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
+  ArrayMaxSize,
   IsArray,
   IsBoolean,
   IsEnum,
@@ -18,6 +19,7 @@ import {
 import { ReadinessAssessmentTargetType, ReadinessScoreStatus } from '@toonexpo/db';
 
 import {
+  READINESS_CRITERION_SCORES_BATCH_MAX,
   READINESS_DEFAULT_PAGE_SIZE,
   READINESS_MAX_PAGE_SIZE,
   READINESS_MIN_PAGE,
@@ -171,6 +173,7 @@ export class UpsertReadinessCriterionScoresBatchDto {
   @Type(() => UpsertReadinessCriterionScoreItemDto)
   @IsArray()
   @ArrayMinSize(1)
+  @ArrayMaxSize(READINESS_CRITERION_SCORES_BATCH_MAX)
   @ValidateNested({ each: true })
   items!: UpsertReadinessCriterionScoreItemDto[];
 }

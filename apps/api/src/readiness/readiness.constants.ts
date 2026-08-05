@@ -42,3 +42,6 @@ export const READINESS_CATEGORY_NAME_MAX_LENGTH = 120;
 export const READINESS_CATEGORY_WEIGHT_MIN = 1;
 
 export const READINESS_CATEGORY_WEIGHT_MAX = 100;
+
+/** Hard cap on admin criterion-score batch upserts (transaction / pool protection). */
+export const READINESS_CRITERION_SCORES_BATCH_MAX = 200;

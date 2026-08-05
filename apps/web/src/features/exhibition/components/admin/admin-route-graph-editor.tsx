@@ -54,6 +54,7 @@ export const AdminRouteGraphEditor = ({
     initialEdges.map(toEditableRouteEdge),
   );
   const [saved, setSaved] = useState(false);
+  const savedTimerRef = useRef<number | null>(null);
   const initialNodesRef = useRef(initialNodes);
   const initialEdgesRef = useRef(initialEdges);
   initialNodesRef.current = initialNodes;
@@ -64,6 +65,14 @@ export const AdminRouteGraphEditor = ({
     setNodes(initialNodesRef.current.map(toEditableRouteNode));
     setEdges(initialEdgesRef.current.map(toEditableRouteEdge));
   }, [mapId, syncKey]);
+
+  useEffect(() => {
+    return () => {
+      if (savedTimerRef.current !== null) {
+        window.clearTimeout(savedTimerRef.current);
+      }
+    };
+  }, []);
 
   const nodeIds = nodes.map((node) => node.localId);
 
@@ -87,7 +96,13 @@ export const AdminRouteGraphEditor = ({
     };
     await mutation.mutateAsync(payload);
     setSaved(true);
-    window.setTimeout(() => setSaved(false), 2000);
+    if (savedTimerRef.current !== null) {
+      window.clearTimeout(savedTimerRef.current);
+    }
+    savedTimerRef.current = window.setTimeout(() => {
+      savedTimerRef.current = null;
+      setSaved(false);
+    }, 2000);
   };
 
   return (

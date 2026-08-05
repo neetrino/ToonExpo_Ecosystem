@@ -60,8 +60,16 @@ export const useAccountSheetEdgeSwipe = ({
   const axisRef = useRef<SwipeAxis>('undecided');
   const dragXRef = useRef(0);
   const dismissPendingRef = useRef(false);
+  const animationTimerRef = useRef<number | null>(null);
   const onDismissRef = useRef(onDismiss);
   onDismissRef.current = onDismiss;
+
+  const clearAnimationTimer = useCallback((): void => {
+    if (animationTimerRef.current !== null) {
+      window.clearTimeout(animationTimerRef.current);
+      animationTimerRef.current = null;
+    }
+  }, []);
 
   const resetVisual = useCallback((): void => {
     dragXRef.current = 0;
@@ -88,27 +96,32 @@ export const useAccountSheetEdgeSwipe = ({
       return;
     }
 
-    window.setTimeout(() => {
+    clearAnimationTimer();
+    animationTimerRef.current = window.setTimeout(() => {
+      animationTimerRef.current = null;
       onDismissRef.current();
       // Keep translateX off-screen until the sheet unmounts / disables.
       dismissPendingRef.current = false;
     }, ACCOUNT_PAGE_PUSH_MS);
-  }, []);
+  }, [clearAnimationTimer]);
 
   const snapBack = useCallback((): void => {
     setIsDragging(false);
     setIsSnapping(true);
     dragXRef.current = 0;
     setDragX(0);
-    window.setTimeout(() => {
+    clearAnimationTimer();
+    animationTimerRef.current = window.setTimeout(() => {
+      animationTimerRef.current = null;
       setIsSnapping(false);
     }, ACCOUNT_PAGE_PUSH_MS);
-  }, []);
+  }, [clearAnimationTimer]);
 
   useEffect(() => {
     if (!enabled) {
       activeRef.current = false;
       dismissPendingRef.current = false;
+      clearAnimationTimer();
       resetVisual();
       return;
     }
@@ -240,9 +253,10 @@ export const useAccountSheetEdgeSwipe = ({
     return () => {
       cancelled = true;
       window.cancelAnimationFrame(rafId);
+      clearAnimationTimer();
       removeListeners?.();
     };
-  }, [enabled, finishDismiss, resetVisual, sheetRef, snapBack]);
+  }, [clearAnimationTimer, enabled, finishDismiss, resetVisual, sheetRef, snapBack]);
 
   const isInteracting = isDragging || isSnapping;
 

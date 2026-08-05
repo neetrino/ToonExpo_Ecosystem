@@ -2,13 +2,16 @@
 
 import { QRCodeSVG } from 'qrcode.react';
 import { useTranslations } from 'next-intl';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 import type { CatalogScope } from '@/features/builder/catalog-scope';
 import { usePortalProjectQrQuery } from '@/features/builder/hooks/use-portal-projects';
 import { QR_DISPLAY_SIZE_PX } from '@/features/buyer/constants';
 import { Button } from '@/shared/ui/button';
 import { cn } from '@/shared/ui/cn';
+
+/** How long the “copied” affordance stays visible after a successful clipboard write. */
+const QR_COPIED_FEEDBACK_MS = 2000;
 
 type ProjectQrPanelProps = {
   projectId: string;
@@ -34,15 +37,28 @@ export const ProjectQrPanel = ({
   const t = useTranslations('Builder.projects.qr');
   const qrQuery = usePortalProjectQrQuery(projectId, { enabled, scope });
   const [copied, setCopied] = useState(false);
+  const copiedTimerRef = useRef<number | null>(null);
   const isModal = layout === 'modal';
+
+  useEffect(() => {
+    return () => {
+      if (copiedTimerRef.current !== null) {
+        window.clearTimeout(copiedTimerRef.current);
+      }
+    };
+  }, []);
 
   const onCopy = useCallback(async (payloadUrl: string) => {
     try {
       await navigator.clipboard.writeText(payloadUrl);
       setCopied(true);
-      window.setTimeout(() => {
+      if (copiedTimerRef.current !== null) {
+        window.clearTimeout(copiedTimerRef.current);
+      }
+      copiedTimerRef.current = window.setTimeout(() => {
+        copiedTimerRef.current = null;
         setCopied(false);
-      }, 2000);
+      }, QR_COPIED_FEEDBACK_MS);
     } catch {
       setCopied(false);
     }
