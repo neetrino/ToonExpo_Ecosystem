@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import { GeoMapCameraControls } from '@/features/geo-map/components/geo-map-camera-controls';
@@ -15,6 +15,7 @@ import {
   GEO_MAP_UI_OVERLAY_Z_INDEX_CLASS,
 } from '@/features/geo-map/constants';
 import { useGeoMapEmptyClick } from '@/features/geo-map/hooks/use-geo-map-empty-click';
+import { useMapAnchoredScreenPoint } from '@/features/geo-map/hooks/use-map-anchored-screen-point';
 import { useMapFocus } from '@/features/geo-map/hooks/use-map-focus';
 import { useMapViewportState } from '@/features/geo-map/hooks/use-map-viewport-state';
 import { useMaplibreMap } from '@/features/geo-map/hooks/use-maplibre-map';
@@ -26,6 +27,7 @@ import { useVisibleObjects } from '@/features/geo-map/hooks/use-visible-objects'
 import { useWebglSupport } from '@/features/geo-map/hooks/use-webgl-support';
 import type { GeoMapCanvasProps, GeoMapLngLat, GeoMapObject } from '@/features/geo-map/types';
 import type { ObjectTransformOverride } from '@/features/geo-map/utils/apply-position-override';
+import { resolveInfoCardPlacement } from '@/features/geo-map/utils/resolve-info-card-placement';
 import { resolveMapStyleUrl } from '@/features/geo-map/utils/resolve-map-style-url';
 
 const DEFAULT_CENTER: GeoMapLngLat = {
@@ -102,11 +104,18 @@ export const GeoMapCanvas = ({
 
   const infoObject =
     findObjectById(objects, hoveredObjectId) ?? findObjectById(objects, highlightedObjectId);
+  const infoAnchor = useMemo(
+    (): GeoMapLngLat | null =>
+      infoObject ? { longitude: infoObject.longitude, latitude: infoObject.latitude } : null,
+    [infoObject?.longitude, infoObject?.latitude],
+  );
 
   const handleObjectHover = (id: string | null): void => {
     setHoveredObjectId(id);
     onObjectHover?.(id);
   };
+
+  const infoPoint = useMapAnchoredScreenPoint(map, isMapLoaded, infoAnchor);
 
   useMapFocus({ map, isMapLoaded, objects, focusRequest });
   useModelFootprintMasks({ map, isMapLoaded, modelObjects, adminOsmHideSession });
@@ -167,7 +176,12 @@ export const GeoMapCanvas = ({
       <div ref={containerRef} className="relative z-0 h-full w-full" />
       {map ? <GeoMapCameraControls map={map} /> : null}
       {!editable && infoObject ? (
-        <GeoMapInfoCard projectName={infoObject.label} logoUrl={infoObject.logoUrl} />
+        <GeoMapInfoCard
+          projectName={infoObject.label}
+          addressLine={infoObject.addressLine}
+          logoUrl={infoObject.logoUrl}
+          anchor={infoPoint ? resolveInfoCardPlacement(infoPoint) : null}
+        />
       ) : null}
       {uiOverlayRoot && editable && adminSelectionChrome
         ? createPortal(<GeoMapAdminMapSelectionChrome {...adminSelectionChrome} />, uiOverlayRoot)

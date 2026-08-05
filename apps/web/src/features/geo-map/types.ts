@@ -29,6 +29,11 @@ export type GeoMapObject = {
   label: string;
   /** Builder company logo URL for the info card; null when unavailable. */
   logoUrl: string | null;
+  /**
+   * Single-line project address (as entered in the admin project form) shown on
+   * the hover card. Null for admin placements and projects without location data.
+   */
+  addressLine: string | null;
   /** GLB url (R2), rendered via MapLibre Three.js custom layer at/above `minZoom`. */
   modelUrl: string;
   /**

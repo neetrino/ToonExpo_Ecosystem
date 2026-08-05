@@ -159,6 +159,15 @@ export const MARKER_PIN_SVG_INNER_HTML =
 /** Info card logo slot edge length (px) — matches Tailwind `size-10`. */
 export const GEO_MAP_INFO_CARD_LOGO_PX = 40;
 
+/** Pin head height (px) — keeps the hover card clear of the marker artwork. */
+export const MARKER_PIN_HEIGHT_PX = 32;
+
+/** Hover card geometry used to place it next to a pin without overflowing the map. */
+export const GEO_MAP_INFO_CARD_WIDTH_PX = 288;
+export const GEO_MAP_INFO_CARD_ESTIMATED_HEIGHT_PX = 76;
+export const GEO_MAP_INFO_CARD_PIN_GAP_PX = 10;
+export const GEO_MAP_INFO_CARD_EDGE_MARGIN_PX = 12;
+
 /** Stack admin map UI above MapLibre canvas (see `GeoMapCanvas` UI overlay root). */
 export const GEO_MAP_UI_OVERLAY_Z_INDEX_CLASS = 'z-[100]';
 

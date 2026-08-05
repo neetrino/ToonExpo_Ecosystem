@@ -118,9 +118,18 @@
     fill: var(--color-brand-soft);
   }
 
+  /** Pin-anchored hover card entrance (scale/opacity only — see keyframes.css). */
+  .animate-geo-map-info-card-in {
+    animation: geo-map-info-card-in var(--duration-fast) var(--ease-out-premium) both;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .geo-map-pin__shape {
       transition: color var(--duration-fast) linear;
+    }
+
+    .animate-geo-map-info-card-in {
+      animation-duration: 0.01ms;
     }
   }
 }

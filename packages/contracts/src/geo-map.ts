@@ -71,6 +71,10 @@ export type PublicGeoMapModelItem = {
   projectName: string;
   /** Builder company logo URL; null when the company has no logo media. */
   logoUrl: string | null;
+  /** Street address as entered on the project record; shown on the map hover card. */
+  address: string | null;
+  city: string | null;
+  district: string | null;
   longitude: string;
   latitude: string;
   modelUrl: string;

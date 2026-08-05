@@ -5,11 +5,15 @@ import { useEffect, useState } from 'react';
 
 import type { GeoMapLngLat } from '@/features/geo-map/types';
 
-const MAP_CAMERA_EVENTS = ['move', 'zoom', 'pitch', 'rotate'] as const;
+const MAP_CAMERA_EVENTS = ['move', 'zoom', 'pitch', 'rotate', 'resize'] as const;
 
 export type MapAnchoredScreenPoint = {
+  /** Anchor position in map container pixels. */
   x: number;
   y: number;
+  /** Container box, so overlays can keep themselves inside the map. */
+  containerWidth: number;
+  containerHeight: number;
 };
 
 /** Projects a lng/lat anchor to container pixels; updates on camera changes. */
@@ -28,7 +32,13 @@ export const useMapAnchoredScreenPoint = (
 
     const update = (): void => {
       const projected = map.project([anchor.longitude, anchor.latitude]);
-      setPoint({ x: projected.x, y: projected.y });
+      const container = map.getContainer();
+      setPoint({
+        x: projected.x,
+        y: projected.y,
+        containerWidth: container.clientWidth,
+        containerHeight: container.clientHeight,
+      });
     };
 
     update();

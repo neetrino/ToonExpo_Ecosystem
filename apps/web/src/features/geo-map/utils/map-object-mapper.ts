@@ -1,6 +1,7 @@
 import type { AdminGeoMapModelItem, PublicGeoMapModelItem } from '@toonexpo/contracts';
 
 import type { GeoMapObject } from '@/features/geo-map/types';
+import { formatGeoMapAddressLine } from '@/features/geo-map/utils/format-geo-map-address-line';
 
 type GeoMapDecimalFields = Pick<
   AdminGeoMapModelItem,
@@ -34,6 +35,7 @@ export const mapAdminGeoMapItemToObject = (item: AdminGeoMapModelItem): GeoMapOb
   projectId: item.projectId,
   label: resolveAdminLabel(item),
   logoUrl: null,
+  addressLine: null,
   modelUrl: item.modelUrl,
   sourceOsmId: item.sourceOsmId,
   ...toNumericTransform(item),
@@ -52,6 +54,7 @@ export const mapPublicGeoMapItemToObject = (item: PublicGeoMapModelItem): GeoMap
   projectId: item.projectId,
   label: item.projectName,
   logoUrl: item.logoUrl,
+  addressLine: formatGeoMapAddressLine(item),
   modelUrl: item.modelUrl,
   sourceOsmId: item.sourceOsmId,
   ...toNumericTransform(item),
