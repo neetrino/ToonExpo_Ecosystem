@@ -22,6 +22,8 @@ type PortalRailDesktopAsideProps = {
   expandLabel: string;
   collapseLabel: string;
   onToggleCollapsed: () => void;
+  /** Shown left of the collapse toggle when expanded (e.g. portal title). */
+  header?: ReactNode | undefined;
 };
 
 /**
@@ -33,7 +35,10 @@ export const PortalRailDesktopAside = ({
   expandLabel,
   collapseLabel,
   onToggleCollapsed,
+  header,
 }: PortalRailDesktopAsideProps) => {
+  const showHeader = Boolean(header) && !collapsed;
+
   return (
     <PortalRailCollapseProvider collapsed={collapsed}>
       <aside
@@ -53,7 +58,13 @@ export const PortalRailDesktopAside = ({
             MOBILE_BOTTOM_NAV_CONTENT_PB_CLASS,
           )}
         >
-          <div className={cn('mb-2 flex shrink-0', collapsed ? 'justify-center' : 'justify-end')}>
+          <div
+            className={cn(
+              'mb-2 flex shrink-0 items-center',
+              showHeader ? 'justify-between gap-2' : collapsed ? 'justify-center' : 'justify-end',
+            )}
+          >
+            {showHeader ? <div className="min-w-0 flex-1 px-1.5">{header}</div> : null}
             <PortalRailCollapseToggle
               collapsed={collapsed}
               expandLabel={expandLabel}

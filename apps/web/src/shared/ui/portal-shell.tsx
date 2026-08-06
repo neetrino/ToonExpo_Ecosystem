@@ -73,6 +73,8 @@ type PortalShellProps = {
   railCollapsedStorageKey?: string | undefined;
   /** Accessible labels for the rail collapse toggle. */
   railCollapseLabels?: { expand: string; collapse: string } | undefined;
+  /** Desktop rail title opposite the collapse toggle (expanded only). */
+  railHeader?: ReactNode | undefined;
 };
 
 /**
@@ -120,6 +122,7 @@ export const PortalShell = ({
   railCollapsible = true,
   railCollapsedStorageKey = PORTAL_RAIL_COLLAPSED_STORAGE_KEY,
   railCollapseLabels,
+  railHeader,
 }: PortalShellProps) => {
   const t = useTranslations('Nav');
   const tCommon = useTranslations('Common');
@@ -296,6 +299,7 @@ export const PortalShell = ({
               expandLabel={railCollapseCopy.expand}
               collapseLabel={railCollapseCopy.collapse}
               onToggleCollapsed={toggleRailCollapsed}
+              header={railHeader}
             />
           ) : (
             <aside
