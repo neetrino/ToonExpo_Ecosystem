@@ -169,10 +169,17 @@ export const GEO_MAP_INFO_CARD_PIN_GAP_PX = 10;
 export const GEO_MAP_INFO_CARD_EDGE_MARGIN_PX = 12;
 
 /**
- * Grace period before the hover card closes after the pointer leaves a pin —
- * long enough to cross {@link GEO_MAP_INFO_CARD_PIN_GAP_PX} and click the card.
+ * Grace period before the hover card closes after the pointer leaves a pin /
+ * card — long enough to cross the pin gap and click the card action.
  */
-export const GEO_MAP_HOVER_CARD_CLOSE_DELAY_MS = 320;
+export const GEO_MAP_HOVER_CARD_CLOSE_DELAY_MS = 550;
+
+/**
+ * Invisible hit-area between card and pin (Tailwind `h-3`). Matches
+ * {@link GEO_MAP_INFO_CARD_PIN_GAP_PX} with a 2px cushion — avoids covering the
+ * pin itself (which would steal hit-testing and fire a spurious leave).
+ */
+export const GEO_MAP_INFO_CARD_HOVER_BRIDGE_PX = 12;
 
 /** Stack admin map UI above MapLibre canvas (see `GeoMapCanvas` UI overlay root). */
 export const GEO_MAP_UI_OVERLAY_Z_INDEX_CLASS = 'z-[100]';

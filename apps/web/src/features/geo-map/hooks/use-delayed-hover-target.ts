@@ -17,39 +17,60 @@ export type DelayedHoverTarget = {
 /**
  * Hover target with a close grace period, so the pointer can travel from a map
  * pin to its hover card (and click it) without the card disappearing.
+ *
+ * Pin leave schedules a close; card enter cancels it. While the card is held,
+ * further pin-leave events are ignored so the card stays interactive.
  */
 export const useDelayedHoverTarget = (): DelayedHoverTarget => {
   const [targetId, setTarget] = useState<string | null>(null);
   const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isCardHeldRef = useRef(false);
 
-  const holdTarget = useCallback((): void => {
+  const clearCloseTimeout = useCallback((): void => {
     if (closeTimeoutRef.current !== null) {
       clearTimeout(closeTimeoutRef.current);
       closeTimeoutRef.current = null;
     }
   }, []);
 
-  const releaseTarget = useCallback((): void => {
-    holdTarget();
+  const holdTarget = useCallback((): void => {
+    isCardHeldRef.current = true;
+    clearCloseTimeout();
+  }, [clearCloseTimeout]);
+
+  const scheduleClose = useCallback((): void => {
+    clearCloseTimeout();
     closeTimeoutRef.current = setTimeout(() => {
       closeTimeoutRef.current = null;
+      if (isCardHeldRef.current) {
+        return;
+      }
       setTarget(null);
     }, GEO_MAP_HOVER_CARD_CLOSE_DELAY_MS);
-  }, [holdTarget]);
+  }, [clearCloseTimeout]);
+
+  const releaseTarget = useCallback((): void => {
+    isCardHeldRef.current = false;
+    scheduleClose();
+  }, [scheduleClose]);
 
   const setTargetId = useCallback(
     (id: string | null): void => {
       if (id === null) {
-        releaseTarget();
+        if (isCardHeldRef.current) {
+          return;
+        }
+        scheduleClose();
         return;
       }
-      holdTarget();
+      clearCloseTimeout();
+      isCardHeldRef.current = false;
       setTarget(id);
     },
-    [holdTarget, releaseTarget],
+    [clearCloseTimeout, scheduleClose],
   );
 
-  useEffect(() => holdTarget, [holdTarget]);
+  useEffect(() => () => clearCloseTimeout(), [clearCloseTimeout]);
 
   return { targetId, setTargetId, holdTarget, releaseTarget };
 };

@@ -111,9 +111,14 @@ export const GeoMapCanvas = ({
     [infoObject?.longitude, infoObject?.latitude],
   );
 
+  const onObjectHoverRef = useRef(onObjectHover);
+  onObjectHoverRef.current = onObjectHover;
+  useEffect(() => {
+    onObjectHoverRef.current?.(hoverTarget.targetId);
+  }, [hoverTarget.targetId]);
+
   const handleObjectHover = (id: string | null): void => {
     hoverTarget.setTargetId(id);
-    onObjectHover?.(id);
   };
 
   const infoPoint = useMapAnchoredScreenPoint(map, isMapLoaded, infoAnchor);

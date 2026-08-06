@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 
 import { GEO_MAP_INFO_CARD_LOGO_PX } from '@/features/geo-map/constants';
+import { useAdoptPointerHoldOnMount } from '@/features/geo-map/hooks/use-adopt-pointer-hold-on-mount';
 import type { GeoMapInfoCardSide } from '@/features/geo-map/utils/resolve-info-card-placement';
 import { cn } from '@/shared/ui/cn';
 
@@ -33,8 +34,14 @@ const CARD_INTERACTIVE_CLASS =
   'cursor-pointer transition-shadow duration-150 hover:shadow-xl focus-visible:outline-none ' +
   'focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2';
 
-/** Invisible strip across the pin gap so the pointer never leaves a hover area. */
-const HOVER_BRIDGE_CLASS = "after:absolute after:inset-x-0 after:h-3 after:content-['']";
+/**
+ * Real hit-area across the pin gap (`h-3` = {@link GEO_MAP_INFO_CARD_HOVER_BRIDGE_PX}).
+ * A DOM node is more reliable than `::after` for pointer enter/leave.
+ */
+const HOVER_BRIDGE_CLASS_BY_SIDE: Record<GeoMapInfoCardSide, string> = {
+  above: 'absolute inset-x-0 top-full h-3',
+  below: 'absolute inset-x-0 bottom-full h-3',
+};
 
 type InfoCardContentProps = Pick<GeoMapInfoCardProps, 'projectName' | 'addressLine' | 'logoUrl'>;
 
@@ -102,6 +109,8 @@ export const GeoMapInfoCard = ({
   className,
 }: GeoMapInfoCardProps) => {
   const side = anchor?.side ?? 'below';
+  const holdSyncKey = `${projectName}:${anchor?.x ?? ''}:${anchor?.y ?? ''}`;
+  const holdZoneRef = useAdoptPointerHoldOnMount(onPointerEnter, holdSyncKey);
   const content = (
     <InfoCardContent projectName={projectName} addressLine={addressLine} logoUrl={logoUrl} />
   );
@@ -117,12 +126,8 @@ export const GeoMapInfoCard = ({
       {...(anchor ? { style: { left: `${anchor.x}px`, top: `${anchor.y}px` } } : {})}
     >
       <div
-        className={cn(
-          'relative',
-          onActivate && 'pointer-events-auto',
-          onActivate && anchor && HOVER_BRIDGE_CLASS,
-          onActivate && anchor && (side === 'above' ? 'after:top-full' : 'after:bottom-full'),
-        )}
+        ref={holdZoneRef}
+        className={cn('relative', onActivate && 'pointer-events-auto')}
         onPointerEnter={onPointerEnter}
         onPointerLeave={onPointerLeave}
       >
@@ -135,6 +140,9 @@ export const GeoMapInfoCard = ({
             )}
             aria-hidden
           />
+        ) : null}
+        {onActivate && anchor ? (
+          <span className={HOVER_BRIDGE_CLASS_BY_SIDE[side]} aria-hidden />
         ) : null}
         {onActivate ? (
           <button
