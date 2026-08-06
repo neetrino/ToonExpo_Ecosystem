@@ -206,6 +206,30 @@ export const updateVisualCanvas = (
     body: JSON.stringify(body),
   });
 
+export const deleteVisualCanvas = (scope: CatalogScope, canvasId: string): Promise<void> =>
+  apiFetch<void>({
+    path: catalogPath(
+      `/portal/visual-canvases/${encodeURIComponent(canvasId)}`,
+      catalogOptions(scope),
+    ),
+    method: 'DELETE',
+    credentials: 'include',
+  });
+
+/**
+ * Removes an attached mapping image by deleting its visual canvas.
+ * Published canvases are unpublished first (API allows hard-delete of drafts only).
+ */
+export const clearAttachedVisualCanvas = async (
+  scope: CatalogScope,
+  canvas: Pick<PortalVisualCanvasDetail, 'id' | 'publicationStatus'>,
+): Promise<void> => {
+  if (canvas.publicationStatus === 'published') {
+    await updateVisualCanvas(scope, canvas.id, { publicationStatus: 'draft' });
+  }
+  await deleteVisualCanvas(scope, canvas.id);
+};
+
 export const createVisualHotspot = (
   scope: CatalogScope,
   canvasId: string,

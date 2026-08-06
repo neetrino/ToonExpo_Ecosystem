@@ -3585,6 +3585,10 @@
     "upload": {
       "browse": "Choose image",
       "uploading": "Uploading…",
+      "remove": "Delete",
+      "removing": "Deleting…",
+      "removeConfirmTitle": "Delete image?",
+      "removeConfirmMessage": "This removes the image from interactive mapping. Hotspots on this canvas will be deleted. You can upload a new image afterwards.",
       "hint": "JPEG, PNG, WebP, or AVIF up to 10 MB. SVG is not supported.",
       "useExisting": "Choose existing",
       "libraryTitle": "Uploaded images",
