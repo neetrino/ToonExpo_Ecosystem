@@ -17,8 +17,16 @@ import {
   GEO_MAP_SCALE_MAX,
   GEO_MAP_SCALE_MIN,
 } from '@/features/geo-map/admin/constants';
+import {
+  GEO_MAP_API_COORDINATE_DECIMALS,
+  GEO_MAP_MAX_ABS_LATITUDE,
+  GEO_MAP_MAX_ABS_LONGITUDE,
+} from '@/features/geo-map/constants';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
+
+/** Smallest lng/lat step the admin API persists (7 decimals). */
+const COORDINATE_FIELD_STEP = 10 ** -GEO_MAP_API_COORDINATE_DECIMALS;
 
 export type GeoMapTransformDraft = {
   longitude: number;
@@ -115,9 +123,9 @@ export const GeoMapTransformFields = ({
           id={`${baseId}-lng`}
           label={t('longitude')}
           value={value.longitude}
-          min={-180}
-          max={180}
-          step={0.0000001}
+          min={-GEO_MAP_MAX_ABS_LONGITUDE}
+          max={GEO_MAP_MAX_ABS_LONGITUDE}
+          step={COORDINATE_FIELD_STEP}
           disabled={disabled}
           onChange={(longitude) => patch({ longitude })}
         />
@@ -125,9 +133,9 @@ export const GeoMapTransformFields = ({
           id={`${baseId}-lat`}
           label={t('latitude')}
           value={value.latitude}
-          min={-90}
-          max={90}
-          step={0.0000001}
+          min={-GEO_MAP_MAX_ABS_LATITUDE}
+          max={GEO_MAP_MAX_ABS_LATITUDE}
+          step={COORDINATE_FIELD_STEP}
           disabled={disabled}
           onChange={(latitude) => patch({ latitude })}
         />

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import { GeoMapCameraControls } from '@/features/geo-map/components/geo-map-camera-controls';
@@ -14,7 +14,9 @@ import {
   DEFAULT_MAP_ZOOM,
   GEO_MAP_UI_OVERLAY_Z_INDEX_CLASS,
 } from '@/features/geo-map/constants';
+import { useDelayedHoverTarget } from '@/features/geo-map/hooks/use-delayed-hover-target';
 import { useGeoMapEmptyClick } from '@/features/geo-map/hooks/use-geo-map-empty-click';
+import { useMapAnchoredScreenPoint } from '@/features/geo-map/hooks/use-map-anchored-screen-point';
 import { useMapFocus } from '@/features/geo-map/hooks/use-map-focus';
 import { useMapViewportState } from '@/features/geo-map/hooks/use-map-viewport-state';
 import { useMaplibreMap } from '@/features/geo-map/hooks/use-maplibre-map';
@@ -26,6 +28,7 @@ import { useVisibleObjects } from '@/features/geo-map/hooks/use-visible-objects'
 import { useWebglSupport } from '@/features/geo-map/hooks/use-webgl-support';
 import type { GeoMapCanvasProps, GeoMapLngLat, GeoMapObject } from '@/features/geo-map/types';
 import type { ObjectTransformOverride } from '@/features/geo-map/utils/apply-position-override';
+import { resolveInfoCardPlacement } from '@/features/geo-map/utils/resolve-info-card-placement';
 import { resolveMapStyleUrl } from '@/features/geo-map/utils/resolve-map-style-url';
 
 const DEFAULT_CENTER: GeoMapLngLat = {
@@ -81,7 +84,7 @@ export const GeoMapCanvas = ({
   const [uiOverlayRoot, setUiOverlayRoot] = useState<HTMLDivElement | null>(null);
   const isWebglSupported = useWebglSupport();
   const [dragOverride, setDragOverride] = useState<ObjectTransformOverride | null>(null);
-  const [hoveredObjectId, setHoveredObjectId] = useState<string | null>(null);
+  const hoverTarget = useDelayedHoverTarget();
 
   const { map, isMapLoaded } = useMaplibreMap({
     containerRef,
@@ -100,14 +103,25 @@ export const GeoMapCanvas = ({
     transformOverride,
   );
 
-  const activeHighlightId = hoveredObjectId ?? highlightedObjectId ?? null;
   const infoObject =
-    findObjectById(objects, hoveredObjectId) ?? findObjectById(objects, highlightedObjectId);
+    findObjectById(objects, hoverTarget.targetId) ?? findObjectById(objects, highlightedObjectId);
+  const infoAnchor = useMemo(
+    (): GeoMapLngLat | null =>
+      infoObject ? { longitude: infoObject.longitude, latitude: infoObject.latitude } : null,
+    [infoObject?.longitude, infoObject?.latitude],
+  );
+
+  const onObjectHoverRef = useRef(onObjectHover);
+  onObjectHoverRef.current = onObjectHover;
+  useEffect(() => {
+    onObjectHoverRef.current?.(hoverTarget.targetId);
+  }, [hoverTarget.targetId]);
 
   const handleObjectHover = (id: string | null): void => {
-    setHoveredObjectId(id);
-    onObjectHover?.(id);
+    hoverTarget.setTargetId(id);
   };
+
+  const infoPoint = useMapAnchoredScreenPoint(map, isMapLoaded, infoAnchor);
 
   useMapFocus({ map, isMapLoaded, objects, focusRequest });
   useModelFootprintMasks({ map, isMapLoaded, modelObjects, adminOsmHideSession });
@@ -130,7 +144,7 @@ export const GeoMapCanvas = ({
     markerObjects,
     zoom,
     editable,
-    highlightedObjectId: activeHighlightId,
+    highlightedObjectId,
     onObjectClick,
     onObjectHover: handleObjectHover,
     onObjectDragMove: (id, position) => setDragOverride({ id, ...position }),
@@ -168,7 +182,19 @@ export const GeoMapCanvas = ({
       <div ref={containerRef} className="relative z-0 h-full w-full" />
       {map ? <GeoMapCameraControls map={map} /> : null}
       {!editable && infoObject ? (
-        <GeoMapInfoCard projectName={infoObject.label} logoUrl={infoObject.logoUrl} />
+        <GeoMapInfoCard
+          projectName={infoObject.label}
+          addressLine={infoObject.addressLine}
+          logoUrl={infoObject.logoUrl}
+          anchor={infoPoint ? resolveInfoCardPlacement(infoPoint) : null}
+          {...(onObjectClick
+            ? {
+                onActivate: () => onObjectClick(infoObject.id),
+                onPointerEnter: hoverTarget.holdTarget,
+                onPointerLeave: hoverTarget.releaseTarget,
+              }
+            : {})}
+        />
       ) : null}
       {uiOverlayRoot && editable && adminSelectionChrome
         ? createPortal(<GeoMapAdminMapSelectionChrome {...adminSelectionChrome} />, uiOverlayRoot)

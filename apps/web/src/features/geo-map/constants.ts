@@ -57,6 +57,10 @@ export const MODEL_POSITION_QUANTIZE_DECIMALS = 4;
 /** Lng/lat decimals accepted by admin geo-map create/update DTOs (`maxDecimalPlaces: 7`). */
 export const GEO_MAP_API_COORDINATE_DECIMALS = 7;
 
+/** Valid WGS84 ranges — also catches lng/lat pairs saved in reversed order. */
+export const GEO_MAP_MAX_ABS_LONGITUDE = 180;
+export const GEO_MAP_MAX_ABS_LATITUDE = 90;
+
 /**
  * Discrete opacity steps for marker / legacy fade helpers — zoom micro-ticks
  * must not thrash React state on every frame.
@@ -112,20 +116,18 @@ export const MARKER_BOUNDS_PADDING_DEGREES = 0.5;
 export const MODEL_BOUNDS_PADDING_DEGREES = 0.05;
 
 /**
- * Map pin footprint — ~24×32px (Tailwind `w-6` / `h-8`) so pins stay readable
- * on light basemap tiles from far zoom.
+ * Positioning root of the HTML marker (`utilities-geo-map.css`).
+ *
+ * MapLibre owns this element's `transform` (anchor translate + screen position)
+ * and its own `maplibregl-marker` classes, so the root must never carry
+ * transform/scale utilities, transform transitions, or a full `className`
+ * rewrite — otherwise pins drift away from their coordinates. Visual state
+ * lives on {@link MARKER_PIN_SVG_INNER_HTML}'s inner shape element.
  */
-export const MARKER_DOT_SIZE_CLASS_NAME = 'h-8 w-6';
+export const MARKER_ELEMENT_CLASS_NAME = 'geo-map-pin';
 
-/** Outer wrapper for the HTML marker (color via `currentColor` on the SVG). */
-export const MARKER_ELEMENT_CLASS_NAME =
-  `${MARKER_DOT_SIZE_CLASS_NAME} cursor-pointer select-none text-brand ` +
-  'drop-shadow-md transition-[color,transform,filter] duration-150';
-
-/** SVG fill/stroke classes applied to the pin path inside the marker. */
-export const MARKER_PIN_SVG_CLASS_NAME = 'block h-full w-full overflow-visible';
-
-export const MARKER_ELEMENT_EDITABLE_CLASS_NAME = 'cursor-grab active:cursor-grabbing';
+/** Grab cursors while the admin editor allows dragging pins. */
+export const MARKER_ELEMENT_EDITABLE_CLASS_NAME = 'geo-map-pin--editable';
 
 /**
  * Extra zoom above an object's `minZoom` when focusing so the GLB is clearly
@@ -139,24 +141,46 @@ export const FOCUS_FLY_TO_DURATION_MS = 1600;
 /** Camera pitch applied on focus — kept identical to the default pitched view. */
 export const FOCUS_PITCH_DEG = DEFAULT_MAP_PITCH_DEG;
 
-/** Marker element class applied while hovered or `highlightedObjectId` matches. */
-export const MARKER_ELEMENT_HIGHLIGHTED_CLASS_NAME = 'scale-110 text-ink drop-shadow-lg';
+/** Marker root class applied while `highlightedObjectId` matches (selected pin). */
+export const MARKER_ELEMENT_SELECTED_CLASS_NAME = 'geo-map-pin--selected';
 
 /**
- * Filled MapPin SVG (Lucide-style path) — white stroke + hole so it pops on
- * light map tiles. Pin fill uses parent `text-*` via `fill-current`.
+ * Refined map pin SVG — brand teardrop, white rim, deep center beacon.
+ * The SVG is the hover/selected animation target; it scales from the pin tip
+ * (`transform-origin`) so the anchor point never moves.
  */
 export const MARKER_PIN_SVG_INNER_HTML =
-  '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="' +
-  MARKER_PIN_SVG_CLASS_NAME +
-  '">' +
-  '<path class="fill-current stroke-white stroke-[1.75] [stroke-linejoin:round]" ' +
-  'd="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0Z"/>' +
-  '<circle class="fill-white" cx="12" cy="10" r="3"/>' +
+  '<svg viewBox="0 0 28 36" aria-hidden="true" focusable="false" class="geo-map-pin__shape">' +
+  '<path class="geo-map-pin__body" ' +
+  'd="M14 1.5c-6.075 0-11 4.925-11 11 0 7.875 9.35 20.55 10.35 21.9a0.85 0.85 0 0 0 1.3 0C15.65 33.05 25 20.375 25 12.5c0-6.075-4.925-11-11-11Z"/>' +
+  '<circle class="geo-map-pin__rim" cx="14" cy="12.5" r="5.25"/>' +
+  '<circle class="geo-map-pin__dot" cx="14" cy="12.5" r="2.6"/>' +
   '</svg>';
 
-/** Info card logo slot edge length (px) — matches Tailwind `size-10`. */
-export const GEO_MAP_INFO_CARD_LOGO_PX = 40;
+/** Info card logo slot edge length (px) — matches Tailwind `size-11`. */
+export const GEO_MAP_INFO_CARD_LOGO_PX = 44;
+
+/** Pin head height (px) — keeps the hover card clear of the marker artwork. */
+export const MARKER_PIN_HEIGHT_PX = 36;
+
+/** Hover card geometry used to place it next to a pin without overflowing the map. */
+export const GEO_MAP_INFO_CARD_WIDTH_PX = 300;
+export const GEO_MAP_INFO_CARD_ESTIMATED_HEIGHT_PX = 80;
+export const GEO_MAP_INFO_CARD_PIN_GAP_PX = 8;
+export const GEO_MAP_INFO_CARD_EDGE_MARGIN_PX = 12;
+
+/**
+ * Grace period before the hover card closes after the pointer leaves a pin /
+ * card — long enough to cross the pin gap and click the card action.
+ */
+export const GEO_MAP_HOVER_CARD_CLOSE_DELAY_MS = 550;
+
+/**
+ * Invisible hit-area between card and pin (Tailwind `h-3`). Covers
+ * {@link GEO_MAP_INFO_CARD_PIN_GAP_PX} with a small cushion — avoids covering the
+ * pin itself (which would steal hit-testing and fire a spurious leave).
+ */
+export const GEO_MAP_INFO_CARD_HOVER_BRIDGE_PX = 12;
 
 /** Stack admin map UI above MapLibre canvas (see `GeoMapCanvas` UI overlay root). */
 export const GEO_MAP_UI_OVERLAY_Z_INDEX_CLASS = 'z-[100]';

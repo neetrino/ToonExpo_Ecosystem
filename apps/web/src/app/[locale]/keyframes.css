@@ -195,6 +195,24 @@
   }
 }
 
+/**
+ * Geo-map hover card appearing next to its pin. Animates `opacity` / `scale`
+ * only — the wrapper's `translate` carries the pin anchoring and must stay put.
+ */
+@keyframes geo-map-info-card-in {
+  from {
+    opacity: 0;
+    scale: 0.94;
+    filter: blur(2px);
+  }
+
+  to {
+    opacity: 1;
+    scale: 1;
+    filter: blur(0);
+  }
+}
+
 /** Search hits: result cards drop onto the screen from above and settle. */
 @keyframes search-result-drop-in {
   0% {

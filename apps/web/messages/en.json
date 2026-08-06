@@ -1312,6 +1312,7 @@
         "save": "Save",
         "saving": "Saving…",
         "saveError": "Could not save changes.",
+        "coordinatesInvalid": "Longitude must be between -180 and 180, latitude between -90 and 90.",
         "delete": "Delete",
         "deleting": "Deleting…"
       },

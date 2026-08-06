@@ -19,6 +19,9 @@ type PublicGeoMapModelRow = Prisma.ProjectMapModelGetPayload<{
         id: true;
         name: true;
         slug: true;
+        address: true;
+        city: true;
+        district: true;
         builderCompany: { select: { logoMedia: { select: { fileUrl: true } } } };
       };
     };
@@ -60,6 +63,9 @@ export const toPublicGeoMapModelItem = (row: PublicGeoMapModelRow): PublicGeoMap
     projectSlug: row.project.slug,
     projectName: row.project.name,
     logoUrl: row.project.builderCompany.logoMedia?.fileUrl ?? null,
+    address: row.project.address,
+    city: row.project.city,
+    district: row.project.district,
     longitude: decimalToString(row.longitude),
     latitude: decimalToString(row.latitude),
     modelUrl: row.mediaAsset.fileUrl,

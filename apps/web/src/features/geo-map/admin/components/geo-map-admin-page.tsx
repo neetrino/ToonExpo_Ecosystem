@@ -37,6 +37,7 @@ import {
   roundGeoMapCoordinateForApi,
   roundGeoMapLngLatForApi,
 } from '@/features/geo-map/utils/round-geo-map-coordinates';
+import { isValidGeoMapLngLat } from '@/features/geo-map/utils/validate-geo-map-position';
 import { Link } from '@/i18n/navigation';
 import { AdminDeleteModal } from '@/shared/ui/admin-delete-modal';
 
@@ -155,6 +156,10 @@ export const GeoMapAdminPage = () => {
         return;
       }
       setActionError(null);
+      if (!isValidGeoMapLngLat(position)) {
+        setActionError(t('errors.createFailed'));
+        return;
+      }
       try {
         const { longitude, latitude } = roundGeoMapLngLatForApi(position);
         const created = await createMutation.mutateAsync({
@@ -224,9 +229,14 @@ export const GeoMapAdminPage = () => {
 
   const handleDragged = async (id: string, position: GeoMapLngLat): Promise<void> => {
     setActionError(null);
+    if (!isValidGeoMapLngLat(position)) {
+      setActionError(t('errors.updateFailed'));
+      return;
+    }
     try {
       const { longitude, latitude } = roundGeoMapLngLatForApi(position);
       setDragSyncedPosition((previous) => ({
+        id,
         longitude,
         latitude,
         token: (previous?.token ?? 0) + 1,

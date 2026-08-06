@@ -12,13 +12,18 @@ import {
 } from '@/features/geo-map/admin/components/geo-map-transform-fields';
 import type { GeoMapProjectOption } from '@/features/geo-map/admin/utils/available-projects';
 import type { GeoMapLngLat } from '@/features/geo-map/types';
+import { isValidGeoMapLngLat } from '@/features/geo-map/utils/validate-geo-map-position';
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Select } from '@/shared/ui/select';
 import { Switch } from '@/shared/ui/switch';
 
-/** Map-drag end → sidebar draft sync (token bumps each drag). */
+/**
+ * Map-drag end → sidebar draft sync (token bumps each drag). `id` scopes the
+ * patch to the dragged model so dragging one pin never moves the selected one.
+ */
 export type GeoMapDragSyncedPosition = GeoMapLngLat & {
+  id: string;
   token: number;
 };
 
@@ -93,7 +98,7 @@ export const GeoMapEditPanel = ({
   }, [model, onTransformPreview]);
 
   useEffect(() => {
-    if (!dragSyncedPosition) {
+    if (!dragSyncedPosition || dragSyncedPosition.id !== model.id) {
       return;
     }
     setDraft((current) => {
@@ -105,10 +110,14 @@ export const GeoMapEditPanel = ({
       onTransformPreview(next);
       return next;
     });
-  }, [dragSyncedPosition, onTransformPreview]);
+  }, [dragSyncedPosition, model.id, onTransformPreview]);
 
   const handleSave = async (): Promise<void> => {
     setSaveError(null);
+    if (!isValidGeoMapLngLat({ longitude: draft.longitude, latitude: draft.latitude })) {
+      setSaveError(t('form.coordinatesInvalid'));
+      return;
+    }
     try {
       await onSave({
         longitude: draft.longitude,

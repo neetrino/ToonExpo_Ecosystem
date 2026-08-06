@@ -38,6 +38,7 @@ describe('findFocusObject', () => {
       projectId: 'proj-a',
       label: 'Ajapnyak Terrace',
       logoUrl: null,
+      addressLine: null,
       modelUrl: '/models/a.glb',
       sourceOsmId: null,
       longitude: 44.5,
