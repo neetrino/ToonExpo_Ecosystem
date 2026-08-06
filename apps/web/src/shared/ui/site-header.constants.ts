@@ -17,10 +17,9 @@ export const HEADER_HEIGHT_CLASS = 'h-16';
 export const HEADER_SPACER_CLASS = 'h-[calc(4.5rem+env(safe-area-inset-top,0px))]';
 
 export type SiteHeaderNavHref =
-  '/apartments' | '/projects' | '/developments' | '/builders' | '/partners' | '/mortgage' | '/map';
+  '/apartments' | '/projects' | '/builders' | '/partners' | '/mortgage' | '/map';
 
-export type SiteHeaderNavKey =
-  'buy' | 'projects' | 'newDevelopments' | 'builders' | 'partners' | 'mortgage' | 'geoMap';
+export type SiteHeaderNavKey = 'buy' | 'projects' | 'builders' | 'partners' | 'mortgage' | 'geoMap';
 
 export const SITE_HEADER_NAV_HREFS: ReadonlyArray<{
   href: SiteHeaderNavHref;
@@ -28,7 +27,6 @@ export const SITE_HEADER_NAV_HREFS: ReadonlyArray<{
 }> = [
   { href: '/apartments', key: 'buy' },
   { href: '/projects', key: 'projects' },
-  { href: '/developments', key: 'newDevelopments' },
   { href: '/builders', key: 'builders' },
   { href: '/partners', key: 'partners' },
   { href: '/mortgage', key: 'mortgage' },
