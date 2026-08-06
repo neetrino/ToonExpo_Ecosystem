@@ -145,27 +145,28 @@ export const FOCUS_PITCH_DEG = DEFAULT_MAP_PITCH_DEG;
 export const MARKER_ELEMENT_SELECTED_CLASS_NAME = 'geo-map-pin--selected';
 
 /**
- * Filled MapPin SVG (Lucide-style path) — brand fill, light stroke + hole so it
- * pops on any basemap. The SVG is the hover/selected animation target; it scales
- * from the pin tip (`transform-origin`) so the anchor point never moves.
+ * Refined map pin SVG — brand teardrop, white rim, deep center beacon.
+ * The SVG is the hover/selected animation target; it scales from the pin tip
+ * (`transform-origin`) so the anchor point never moves.
  */
 export const MARKER_PIN_SVG_INNER_HTML =
-  '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="geo-map-pin__shape">' +
+  '<svg viewBox="0 0 28 36" aria-hidden="true" focusable="false" class="geo-map-pin__shape">' +
   '<path class="geo-map-pin__body" ' +
-  'd="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0Z"/>' +
-  '<circle class="geo-map-pin__dot" cx="12" cy="10" r="3"/>' +
+  'd="M14 1.5c-6.075 0-11 4.925-11 11 0 7.875 9.35 20.55 10.35 21.9a0.85 0.85 0 0 0 1.3 0C15.65 33.05 25 20.375 25 12.5c0-6.075-4.925-11-11-11Z"/>' +
+  '<circle class="geo-map-pin__rim" cx="14" cy="12.5" r="5.25"/>' +
+  '<circle class="geo-map-pin__dot" cx="14" cy="12.5" r="2.6"/>' +
   '</svg>';
 
-/** Info card logo slot edge length (px) — matches Tailwind `size-10`. */
-export const GEO_MAP_INFO_CARD_LOGO_PX = 40;
+/** Info card logo slot edge length (px) — matches Tailwind `size-11`. */
+export const GEO_MAP_INFO_CARD_LOGO_PX = 44;
 
 /** Pin head height (px) — keeps the hover card clear of the marker artwork. */
-export const MARKER_PIN_HEIGHT_PX = 32;
+export const MARKER_PIN_HEIGHT_PX = 36;
 
 /** Hover card geometry used to place it next to a pin without overflowing the map. */
-export const GEO_MAP_INFO_CARD_WIDTH_PX = 288;
-export const GEO_MAP_INFO_CARD_ESTIMATED_HEIGHT_PX = 76;
-export const GEO_MAP_INFO_CARD_PIN_GAP_PX = 10;
+export const GEO_MAP_INFO_CARD_WIDTH_PX = 300;
+export const GEO_MAP_INFO_CARD_ESTIMATED_HEIGHT_PX = 80;
+export const GEO_MAP_INFO_CARD_PIN_GAP_PX = 8;
 export const GEO_MAP_INFO_CARD_EDGE_MARGIN_PX = 12;
 
 /**
@@ -175,8 +176,8 @@ export const GEO_MAP_INFO_CARD_EDGE_MARGIN_PX = 12;
 export const GEO_MAP_HOVER_CARD_CLOSE_DELAY_MS = 550;
 
 /**
- * Invisible hit-area between card and pin (Tailwind `h-3`). Matches
- * {@link GEO_MAP_INFO_CARD_PIN_GAP_PX} with a 2px cushion — avoids covering the
+ * Invisible hit-area between card and pin (Tailwind `h-3`). Covers
+ * {@link GEO_MAP_INFO_CARD_PIN_GAP_PX} with a small cushion — avoids covering the
  * pin itself (which would steal hit-testing and fire a spurious leave).
  */
 export const GEO_MAP_INFO_CARD_HOVER_BRIDGE_PX = 12;

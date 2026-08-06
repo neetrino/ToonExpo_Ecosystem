@@ -62,8 +62,8 @@
    * tip so the anchored coordinate never moves.
    */
   .geo-map-pin {
-    width: 1.5rem;
-    height: 2rem;
+    width: 1.75rem;
+    height: 2.25rem;
     cursor: pointer;
     user-select: none;
   }
@@ -84,48 +84,155 @@
     color: var(--color-brand);
     transform-origin: bottom center;
     scale: 1;
-    filter: drop-shadow(0 2px 3px rgb(14 15 20 / 0.28));
+    filter: drop-shadow(0 1px 1px rgb(9 43 68 / 0.12))
+      drop-shadow(0 4px 10px rgb(26 143 152 / 0.28));
     transition:
-      scale var(--duration-fast) var(--ease-out-premium),
-      color var(--duration-fast) var(--ease-out-premium),
-      filter var(--duration-fast) var(--ease-out-premium);
+      scale var(--duration-base) var(--ease-out-premium),
+      color var(--duration-base) var(--ease-out-premium),
+      filter var(--duration-base) var(--ease-out-premium);
   }
 
   .geo-map-pin:hover .geo-map-pin__shape {
     color: var(--color-brand-hover);
-    scale: 1.08;
-    filter: drop-shadow(0 3px 5px rgb(14 15 20 / 0.32));
+    scale: 1.12;
+    filter: drop-shadow(0 2px 2px rgb(9 43 68 / 0.14))
+      drop-shadow(0 6px 14px rgb(26 143 152 / 0.38));
   }
 
   .geo-map-pin--selected .geo-map-pin__shape {
     color: var(--color-brand-deep);
-    scale: 1.16;
-    filter: drop-shadow(0 4px 7px rgb(14 15 20 / 0.34));
+    scale: 1.18;
+    filter: drop-shadow(0 2px 3px rgb(9 43 68 / 0.18)) drop-shadow(0 8px 18px rgb(9 43 68 / 0.35));
   }
 
   .geo-map-pin__body {
     fill: currentcolor;
     stroke: var(--color-surface-elevated);
-    stroke-width: 1.75;
+    stroke-width: 1.5;
     stroke-linejoin: round;
   }
 
-  .geo-map-pin__dot {
+  .geo-map-pin__rim {
     fill: var(--color-surface-elevated);
   }
 
+  .geo-map-pin__dot {
+    fill: var(--color-brand-deep);
+  }
+
+  .geo-map-pin:hover .geo-map-pin__dot {
+    fill: var(--color-brand-deep);
+  }
+
   .geo-map-pin--selected .geo-map-pin__dot {
-    fill: var(--color-brand-soft);
+    fill: var(--color-brand);
+  }
+
+  /** Glass hover card surface — matches public catalog / header tokens. */
+  .geo-map-info-card__surface {
+    position: relative;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 0.75rem;
+    border-radius: 1.25rem;
+    border: 1px solid color-mix(in srgb, var(--color-header-border) 80%, transparent);
+    background: color-mix(in srgb, var(--color-surface-elevated) 92%, transparent);
+    padding: 0.625rem 0.75rem 0.625rem 0.625rem;
+    text-align: left;
+    box-shadow:
+      0 1px 0 rgb(255 255 255 / 0.7) inset,
+      0 14px 36px rgb(69 85 108 / 0.12),
+      0 4px 12px rgb(26 143 152 / 0.08);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition:
+      box-shadow var(--duration-base) var(--ease-out-premium),
+      border-color var(--duration-base) var(--ease-out-premium);
+  }
+
+  .geo-map-info-card__surface--interactive {
+    cursor: pointer;
+  }
+
+  .geo-map-info-card__surface--interactive:hover {
+    border-color: color-mix(in srgb, var(--color-brand) 35%, var(--color-header-border));
+    box-shadow:
+      0 1px 0 rgb(255 255 255 / 0.8) inset,
+      0 18px 40px rgb(69 85 108 / 0.14),
+      0 6px 16px rgb(26 143 152 / 0.14);
+  }
+
+  .geo-map-info-card__surface--interactive:focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--color-brand) 45%, transparent);
+    outline-offset: 2px;
+  }
+
+  .geo-map-info-card__tail {
+    position: absolute;
+    left: 50%;
+    width: 0.7rem;
+    height: 0.7rem;
+    margin-left: -0.35rem;
+    border-radius: 0.15rem;
+    border: 1px solid color-mix(in srgb, var(--color-header-border) 80%, transparent);
+    background: color-mix(in srgb, var(--color-surface-elevated) 92%, transparent);
+    transform: rotate(45deg);
+  }
+
+  .geo-map-info-card__tail--above {
+    bottom: -0.3rem;
+  }
+
+  .geo-map-info-card__tail--below {
+    top: -0.3rem;
+  }
+
+  .geo-map-info-card__logo {
+    position: relative;
+    width: 2.75rem;
+    height: 2.75rem;
+    flex-shrink: 0;
+    overflow: hidden;
+    border-radius: 0.875rem;
+    background: var(--color-surface);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-border) 70%, transparent);
+  }
+
+  .geo-map-info-card__cta {
+    display: flex;
+    width: 2rem;
+    height: 2rem;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    background: var(--color-brand-deep);
+    color: var(--color-on-brand);
+    box-shadow: 0 4px 10px rgb(9 43 68 / 0.22);
+    transition:
+      background-color var(--duration-fast) var(--ease-out-premium),
+      transform var(--duration-fast) var(--ease-out-premium);
+  }
+
+  .geo-map-info-card__surface--interactive:hover .geo-map-info-card__cta {
+    background: var(--color-brand);
+    transform: translateY(-1px);
   }
 
   /** Pin-anchored hover card entrance (scale/opacity only — see keyframes.css). */
   .animate-geo-map-info-card-in {
-    animation: geo-map-info-card-in var(--duration-fast) var(--ease-out-premium) both;
+    animation: geo-map-info-card-in var(--duration-base) var(--ease-out-premium) both;
   }
 
   @media (prefers-reduced-motion: reduce) {
     .geo-map-pin__shape {
       transition: color var(--duration-fast) linear;
+    }
+
+    .geo-map-info-card__surface,
+    .geo-map-info-card__cta {
+      transition: none;
     }
 
     .animate-geo-map-info-card-in {

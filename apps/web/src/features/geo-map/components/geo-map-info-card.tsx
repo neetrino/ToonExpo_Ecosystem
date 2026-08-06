@@ -26,14 +26,6 @@ type GeoMapInfoCardProps = {
 
 const FALLBACK_POSITION_CLASS = 'top-4 left-1/2 -translate-x-1/2';
 
-const CARD_SURFACE_CLASS =
-  'relative flex w-full items-center gap-3 rounded-[18px] bg-surface-elevated px-3 py-2.5 ' +
-  'text-left shadow-lg ring-1 ring-header-border';
-
-const CARD_INTERACTIVE_CLASS =
-  'cursor-pointer transition-shadow duration-150 hover:shadow-xl focus-visible:outline-none ' +
-  'focus-visible:ring-2 focus-visible:ring-brand/40 focus-visible:ring-offset-2';
-
 /**
  * Real hit-area across the pin gap (`h-3` = {@link GEO_MAP_INFO_CARD_HOVER_BRIDGE_PX}).
  * A DOM node is more reliable than `::after` for pointer enter/leave.
@@ -51,7 +43,7 @@ const InfoCardContent = ({ projectName, addressLine, logoUrl }: InfoCardContentP
 
   return (
     <>
-      <span className="relative size-10 shrink-0 overflow-hidden rounded-full bg-surface ring-1 ring-border">
+      <span className="geo-map-info-card__logo">
         {logoUrl ? (
           <Image
             src={logoUrl}
@@ -62,7 +54,7 @@ const InfoCardContent = ({ projectName, addressLine, logoUrl }: InfoCardContentP
           />
         ) : (
           <span
-            className="absolute inset-0 flex items-center justify-center text-xs font-semibold text-ink-muted"
+            className="absolute inset-0 flex items-center justify-center bg-brand-soft font-brand text-xs font-semibold tracking-wide text-brand-deep"
             aria-hidden
           >
             {initials}
@@ -70,22 +62,22 @@ const InfoCardContent = ({ projectName, addressLine, logoUrl }: InfoCardContentP
         )}
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block truncate font-brand text-sm font-semibold tracking-[-0.02em] text-ink-navy">
+        <span className="block truncate font-brand text-[0.9375rem] leading-tight font-semibold tracking-[-0.02em] text-ink-navy">
           {projectName}
         </span>
         {addressLine ? (
-          <span className="mt-0.5 flex items-center gap-1 text-xs text-ink-secondary">
-            <MapPin className="size-3 shrink-0 text-brand" strokeWidth={2} aria-hidden />
+          <span className="mt-1 flex items-center gap-1 text-[0.6875rem] leading-none text-header-muted">
+            <MapPin className="size-3 shrink-0 text-brand" strokeWidth={2.25} aria-hidden />
             <span className="truncate">{addressLine}</span>
           </span>
         ) : (
-          <span className="mt-0.5 block text-xs font-medium text-brand-deep">
+          <span className="mt-1 block text-[0.6875rem] font-medium tracking-wide text-brand-deep uppercase">
             {t('viewProject')}
           </span>
         )}
       </span>
-      <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-brand-soft text-brand-deep">
-        <ArrowUpRight className="size-4" strokeWidth={2} aria-hidden />
+      <span className="geo-map-info-card__cta">
+        <ArrowUpRight className="size-3.5" strokeWidth={2.25} aria-hidden />
         <span className="sr-only">{t('viewProject')}</span>
       </span>
     </>
@@ -114,11 +106,15 @@ export const GeoMapInfoCard = ({
   const content = (
     <InfoCardContent projectName={projectName} addressLine={addressLine} logoUrl={logoUrl} />
   );
+  const surfaceClass = cn(
+    'geo-map-info-card__surface',
+    onActivate && 'geo-map-info-card__surface--interactive',
+  );
 
   return (
     <div
       className={cn(
-        'pointer-events-none absolute z-10 w-[min(18rem,calc(100%-1.5rem))] -translate-x-1/2',
+        'pointer-events-none absolute z-10 w-[min(18.75rem,calc(100%-1.5rem))] -translate-x-1/2',
         anchor ? 'animate-geo-map-info-card-in' : FALLBACK_POSITION_CLASS,
         anchor && side === 'above' && '-translate-y-full',
         className,
@@ -134,9 +130,10 @@ export const GeoMapInfoCard = ({
         {anchor ? (
           <span
             className={cn(
-              'absolute left-1/2 size-3 -translate-x-1/2 rotate-45 rounded-[3px]',
-              'bg-surface-elevated ring-1 ring-header-border',
-              side === 'above' ? 'bottom-0 translate-y-1/2' : 'top-0 -translate-y-1/2',
+              'geo-map-info-card__tail',
+              side === 'above'
+                ? 'geo-map-info-card__tail--above'
+                : 'geo-map-info-card__tail--below',
             )}
             aria-hidden
           />
@@ -145,15 +142,11 @@ export const GeoMapInfoCard = ({
           <span className={HOVER_BRIDGE_CLASS_BY_SIDE[side]} aria-hidden />
         ) : null}
         {onActivate ? (
-          <button
-            type="button"
-            className={cn(CARD_SURFACE_CLASS, CARD_INTERACTIVE_CLASS)}
-            onClick={onActivate}
-          >
+          <button type="button" className={surfaceClass} onClick={onActivate}>
             {content}
           </button>
         ) : (
-          <div className={CARD_SURFACE_CLASS}>{content}</div>
+          <div className={surfaceClass}>{content}</div>
         )}
       </div>
     </div>
