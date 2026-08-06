@@ -75,6 +75,7 @@ export const AdminInventoryListShell = ({
   const pathname = usePathname();
   const companyId = searchParams.get('companyId')?.trim() || undefined;
   const buildingId = searchParams.get('buildingId')?.trim() || undefined;
+  const projectId = searchParams.get('projectId')?.trim() || undefined;
   const [search, setSearch] = useState('');
   const companiesQuery = useAdminCompaniesQuery(1, ADMIN_COMPANIES_MAX_PAGE_SIZE);
   const buildingsQuery = useAdminBuildingsQuery(1, ADMIN_COMPANIES_MAX_PAGE_SIZE, companyId);
@@ -102,11 +103,13 @@ export const AdminInventoryListShell = ({
     page?: number;
     companyId?: string | null;
     buildingId?: string | null;
+    projectId?: string | null;
   }): string => {
     const params = new URLSearchParams();
     const nextCompanyId = next.companyId === undefined ? companyId : next.companyId || undefined;
     const nextBuildingId =
       next.buildingId === undefined ? buildingId : next.buildingId || undefined;
+    const nextProjectId = next.projectId === undefined ? projectId : next.projectId || undefined;
     const nextPage = next.page ?? page;
 
     if (nextCompanyId) {
@@ -114,6 +117,9 @@ export const AdminInventoryListShell = ({
     }
     if (showBuildingFilter && nextBuildingId) {
       params.set('buildingId', nextBuildingId);
+    }
+    if (nextProjectId) {
+      params.set('projectId', nextProjectId);
     }
     if (nextPage > 1) {
       params.set('page', String(nextPage));
@@ -179,7 +185,14 @@ export const AdminInventoryListShell = ({
         onSearchChange={setSearch}
         onFilterChange={(key, value) => {
           if (key === ADMIN_INVENTORY_FILTER_COMPANY_KEY) {
-            router.replace(buildListHref({ page: 1, companyId: value || null, buildingId: null }));
+            router.replace(
+              buildListHref({
+                page: 1,
+                companyId: value || null,
+                buildingId: null,
+                projectId: null,
+              }),
+            );
             return;
           }
           if (key === ADMIN_INVENTORY_FILTER_BUILDING_KEY) {
@@ -188,7 +201,9 @@ export const AdminInventoryListShell = ({
         }}
         onClearAll={() => {
           setSearch('');
-          router.replace(buildListHref({ page: 1, companyId: null, buildingId: null }));
+          router.replace(
+            buildListHref({ page: 1, companyId: null, buildingId: null, projectId: null }),
+          );
         }}
         actions={
           <>
@@ -219,14 +234,17 @@ export const useAdminInventoryListParams = (): {
   pageSize: number;
   companyId?: string;
   buildingId?: string;
+  projectId?: string;
 } => {
   const searchParams = useSearchParams();
   const companyId = searchParams.get('companyId')?.trim() || undefined;
   const buildingId = searchParams.get('buildingId')?.trim() || undefined;
+  const projectId = searchParams.get('projectId')?.trim() || undefined;
   return {
     page: parsePage(searchParams.get('page')),
     pageSize: ADMIN_INVENTORY_DEFAULT_PAGE_SIZE,
     ...(companyId ? { companyId } : {}),
     ...(buildingId ? { buildingId } : {}),
+    ...(projectId ? { projectId } : {}),
   };
 };

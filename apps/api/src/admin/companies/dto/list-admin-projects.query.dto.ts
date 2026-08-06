@@ -45,6 +45,12 @@ export class ListAdminProjectsQueryDto {
   @MinLength(1)
   buildingId?: string;
 
+  @ApiPropertyOptional({ description: 'Filter buildings by project id' })
+  @IsOptional()
+  @IsString()
+  @MinLength(1)
+  projectId?: string;
+
   @ApiPropertyOptional({
     description:
       'Case-insensitive search over project name, slug, city and builder company name. Blank behaves as no search.',

@@ -21,14 +21,19 @@ export class AdminInventoryService {
     page: number,
     pageSize: number,
     companyId?: string,
+    projectId?: string,
   ): Promise<AdminBuildingListResponse> {
     if (companyId) {
       await this.assertCompanyExists(companyId);
     }
+    if (projectId) {
+      await this.assertProjectInScope(projectId, companyId);
+    }
 
-    const where: Prisma.BuildingWhereInput = companyId
-      ? { project: { builderCompanyId: companyId } }
-      : {};
+    const where: Prisma.BuildingWhereInput = {
+      ...(projectId ? { projectId } : {}),
+      ...(companyId && !projectId ? { project: { builderCompanyId: companyId } } : {}),
+    };
 
     const [total, buildings] = await Promise.all([
       this.prisma.db.building.count({ where }),
@@ -294,6 +299,19 @@ export class AdminInventoryService {
     });
     if (!company) {
       throw new NotFoundException('Company not found');
+    }
+  }
+
+  private async assertProjectInScope(projectId: string, companyId?: string): Promise<void> {
+    const project = await this.prisma.db.project.findUnique({
+      where: { id: projectId },
+      select: { id: true, builderCompanyId: true },
+    });
+    if (!project) {
+      throw new NotFoundException('Project not found');
+    }
+    if (companyId && project.builderCompanyId !== companyId) {
+      throw new NotFoundException('Project not found');
     }
   }
 

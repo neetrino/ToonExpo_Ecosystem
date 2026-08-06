@@ -15,6 +15,7 @@ type AdminProjectsTableProps = {
   viewMode?: ViewMode | undefined;
   /** Active search term: cards drop in again whenever the query changes. */
   searchKey?: string | undefined;
+  onOpenBuildings?: ((project: AdminProjectListItem) => void) | undefined;
 };
 
 const projectHref = (project: AdminProjectListItem): string => `/admin/projects/${project.id}`;
@@ -26,6 +27,7 @@ export const AdminProjectsTable = ({
   projects,
   viewMode = VIEW_MODE_CARDS,
   searchKey = '',
+  onOpenBuildings,
 }: AdminProjectsTableProps) => {
   const t = useTranslations('Admin.projects');
 
@@ -39,7 +41,7 @@ export const AdminProjectsTable = ({
         )}
       >
         {projects.map((project) => (
-          <AdminProjectCard key={project.id} project={project} />
+          <AdminProjectCard key={project.id} project={project} onOpenBuildings={onOpenBuildings} />
         ))}
       </div>
     );
@@ -80,7 +82,20 @@ export const AdminProjectsTable = ({
                 {project.city ?? '—'}
               </td>
               <td className="px-3 py-2.5 text-center align-middle text-ink-secondary">
-                {project.buildingsCount}
+                {onOpenBuildings ? (
+                  <button
+                    type="button"
+                    aria-label={t('openBuildings', { name: project.name })}
+                    className="font-medium text-brand hover:underline"
+                    onClick={() => {
+                      onOpenBuildings(project);
+                    }}
+                  >
+                    {project.buildingsCount}
+                  </button>
+                ) : (
+                  project.buildingsCount
+                )}
               </td>
               <td className="px-3 py-2.5 text-center align-middle text-ink-secondary">
                 {project.apartmentsCount}

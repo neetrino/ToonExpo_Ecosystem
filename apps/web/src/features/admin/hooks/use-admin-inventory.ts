@@ -45,11 +45,13 @@ const toListParams = (
   pageSize: number,
   companyId?: string,
   buildingId?: string,
+  projectId?: string,
 ): ListAdminProjectsParams => ({
   page,
   pageSize,
   ...(companyId ? { companyId } : {}),
   ...(buildingId ? { buildingId } : {}),
+  ...(projectId ? { projectId } : {}),
 });
 
 const adminCatalogScope = (companyId: string): CatalogScope => ({
@@ -60,11 +62,18 @@ const adminCatalogScope = (companyId: string): CatalogScope => ({
 /**
  * Paginated buildings list for the admin buildings hub.
  */
-export const useAdminBuildingsQuery = (page: number, pageSize: number, companyId?: string) => {
-  const params = toListParams(page, pageSize, companyId);
+export const useAdminBuildingsQuery = (
+  page: number,
+  pageSize: number,
+  companyId?: string,
+  projectId?: string,
+  options?: { enabled?: boolean },
+) => {
+  const params = toListParams(page, pageSize, companyId, undefined, projectId);
   return useQuery({
     queryKey: adminBuildingsQueryKey(params),
     queryFn: () => listAdminBuildings(params),
+    enabled: options?.enabled ?? true,
   });
 };
 

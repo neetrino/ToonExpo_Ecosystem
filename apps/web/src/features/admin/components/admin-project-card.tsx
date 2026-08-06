@@ -22,6 +22,7 @@ import { IconButton } from '@/shared/ui/icon-button';
 
 type AdminProjectCardProps = {
   project: AdminProjectListItem;
+  onOpenBuildings?: ((project: AdminProjectListItem) => void) | undefined;
 };
 
 const STATUS_BADGE_CLASS: Record<PublicationStatus, string> = {
@@ -62,7 +63,7 @@ const AdminProjectImage = ({ project }: AdminProjectImageProps) => {
     <Link
       href={`/admin/projects/${project.id}`}
       className={cn(
-        'relative block aspect-[16/9] w-full overflow-hidden border-b border-border/60 bg-surface',
+        'relative block aspect-[16/9] w-full cursor-pointer overflow-hidden border-b border-border/60 bg-surface',
         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30 focus-visible:ring-inset',
       )}
     >
@@ -73,7 +74,7 @@ const AdminProjectImage = ({ project }: AdminProjectImageProps) => {
             alt={cover.media.altText?.trim() || `${cover.buildingName} — ${project.name}`}
             fill
             className={cn(
-              'object-cover transition-transform duration-[var(--duration-slow)]',
+              'pointer-events-none object-cover transition-transform duration-[var(--duration-slow)]',
               'ease-[var(--ease-out-premium)] group-hover:scale-[1.04]',
               'motion-reduce:transition-none motion-reduce:group-hover:scale-100',
             )}
@@ -83,7 +84,7 @@ const AdminProjectImage = ({ project }: AdminProjectImageProps) => {
             }}
           />
           <span
-            className="absolute inset-0 bg-gradient-to-t from-ink/20 via-transparent to-transparent"
+            className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/20 via-transparent to-transparent"
             aria-hidden
           />
         </>
@@ -101,11 +102,19 @@ type AdminProjectStatProps = {
   icon: LucideIcon;
   label: string;
   value: number;
+  onClick?: (() => void) | undefined;
+  buttonAriaLabel?: string | undefined;
 };
 
-const AdminProjectStat = ({ icon: Icon, label, value }: AdminProjectStatProps) => {
-  return (
-    <span className="flex min-w-0 items-center gap-2.5">
+const AdminProjectStat = ({
+  icon: Icon,
+  label,
+  value,
+  onClick,
+  buttonAriaLabel,
+}: AdminProjectStatProps) => {
+  const body = (
+    <>
       <span
         className="flex size-9 shrink-0 items-center justify-center rounded-sm bg-brand-soft text-brand"
         aria-hidden
@@ -120,18 +129,38 @@ const AdminProjectStat = ({ icon: Icon, label, value }: AdminProjectStatProps) =
           {value}
         </span>
       </span>
-    </span>
+    </>
+  );
+
+  if (!onClick) {
+    return <span className="flex min-w-0 items-center gap-2.5">{body}</span>;
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={buttonAriaLabel ?? label}
+      className={cn(
+        'flex min-w-0 items-center gap-2.5 rounded-sm text-left',
+        'transition-colors duration-[var(--duration-fast)] hover:text-brand-deep',
+        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30',
+      )}
+    >
+      {body}
+    </button>
   );
 };
 
 /**
  * Wide project card for the admin projects hub.
  */
-export const AdminProjectCard = ({ project }: AdminProjectCardProps) => {
+export const AdminProjectCard = ({ project, onOpenBuildings }: AdminProjectCardProps) => {
   const t = useTranslations('Admin.projects');
   const tQr = useTranslations('Builder.projects.qr');
   const StatusIcon = project.publicationStatus === 'published' ? CheckCircle2 : CircleDashed;
   const [qrOpen, setQrOpen] = useState(false);
+  const openBuildingsLabel = t('openBuildings', { name: project.name });
 
   return (
     <>
@@ -151,7 +180,7 @@ export const AdminProjectCard = ({ project }: AdminProjectCardProps) => {
 
           <span
             className={cn(
-              'absolute top-3 right-3 inline-flex items-center gap-1.5 rounded-pill px-2.5 py-1',
+              'pointer-events-none absolute top-3 right-3 inline-flex items-center gap-1.5 rounded-pill px-2.5 py-1',
               'text-xs font-medium shadow-xs ring-1 ring-ink/5',
               STATUS_BADGE_CLASS[project.publicationStatus],
             )}
@@ -194,6 +223,14 @@ export const AdminProjectCard = ({ project }: AdminProjectCardProps) => {
               icon={Building}
               label={t('columns.buildings')}
               value={project.buildingsCount}
+              onClick={
+                onOpenBuildings
+                  ? () => {
+                      onOpenBuildings(project);
+                    }
+                  : undefined
+              }
+              buttonAriaLabel={openBuildingsLabel}
             />
             <AdminProjectStat
               icon={Home}

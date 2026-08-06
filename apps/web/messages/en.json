@@ -1696,6 +1696,13 @@
         "allBuildings": "All buildings",
         "searchPlaceholder": "Search by project, company, or city"
       },
+      "openBuildings": "View buildings for {name}",
+      "buildingsSheet": {
+        "title": "Buildings",
+        "loading": "Loading buildings…",
+        "error": "Could not load buildings. Try again.",
+        "empty": "No buildings in this project yet."
+      },
       "columns": {
         "name": "Name",
         "company": "Company",

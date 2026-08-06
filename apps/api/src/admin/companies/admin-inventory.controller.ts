@@ -22,7 +22,12 @@ export class AdminInventoryController {
   @ApiOperation({ summary: 'List buildings across companies' })
   @ApiOkResponse({ description: 'Paginated buildings list' })
   listBuildings(@Query() query: ListAdminProjectsQueryDto): Promise<AdminBuildingListResponse> {
-    return this.inventoryService.listBuildings(query.page, query.pageSize, query.companyId);
+    return this.inventoryService.listBuildings(
+      query.page,
+      query.pageSize,
+      query.companyId,
+      query.projectId,
+    );
   }
 
   @Get('admin/buildings/:buildingId/inventory-glance')
