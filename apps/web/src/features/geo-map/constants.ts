@@ -148,7 +148,7 @@ export const MARKER_ELEMENT_SELECTED_CLASS_NAME = 'geo-map-pin--selected';
 export const GEO_MAP_INFO_CARD_LOGO_PX = 44;
 
 /** Pin height (px) — keeps the hover card clear of the marker artwork. */
-export const MARKER_PIN_HEIGHT_PX = 38;
+export const MARKER_PIN_HEIGHT_PX = 40;
 
 /** Hover card geometry used to place it next to a pin without overflowing the map. */
 export const GEO_MAP_INFO_CARD_WIDTH_PX = 300;
