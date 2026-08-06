@@ -1,10 +1,9 @@
 'use client';
 
-import type { AdminServiceProviderItem, ServiceProviderCategoryItem } from '@toonexpo/contracts';
+import type { AdminServiceProviderItem } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
-import { ServiceProvidersCategoriesSection } from '@/features/admin/components/service-providers-categories-section';
 import {
   ServiceProvidersProvidersSection,
   type ServiceProviderFilters,
@@ -13,7 +12,6 @@ import {
   useAdminServiceProviderCategoriesQuery,
   useAdminServiceProvidersQuery,
   useCreateServiceProviderMutation,
-  useDeleteServiceProviderCategoryMutation,
   useDeleteServiceProviderMutation,
   useUpdateServiceProviderMutation,
 } from '@/features/admin/hooks/use-admin-service-providers';
@@ -23,7 +21,7 @@ import {
 } from '@/features/admin/utils/service-provider-mappers';
 
 /**
- * Admin service provider directory: categories + providers CRUD.
+ * Admin service provider directory — providers CRUD (categories used only as filters).
  */
 export const ServiceProvidersPage = () => {
   const t = useTranslations('Admin.serviceProviders');
@@ -41,15 +39,12 @@ export const ServiceProvidersPage = () => {
     ...(providerFilters.active === 'false' ? { active: false } : {}),
   });
 
-  const [editingCategory, setEditingCategory] = useState<ServiceProviderCategoryItem | null>(null);
-  const [creatingCategory, setCreatingCategory] = useState(false);
   const [editingProvider, setEditingProvider] = useState<AdminServiceProviderItem | null>(null);
   const [creatingProvider, setCreatingProvider] = useState(false);
 
   const createProviderMutation = useCreateServiceProviderMutation();
   const updateProviderMutation = useUpdateServiceProviderMutation();
   const deleteProviderMutation = useDeleteServiceProviderMutation();
-  const deleteCategoryMutation = useDeleteServiceProviderCategoryMutation();
 
   if (categoriesQuery.isLoading || providersQuery.isLoading) {
     return <p className="text-sm text-ink-secondary">{t('loading')}</p>;
@@ -73,37 +68,14 @@ export const ServiceProvidersPage = () => {
   const busy =
     createProviderMutation.isPending ||
     updateProviderMutation.isPending ||
-    deleteProviderMutation.isPending ||
-    deleteCategoryMutation.isPending;
+    deleteProviderMutation.isPending;
 
   return (
-    <div className="flex flex-col gap-10">
+    <div className="flex flex-col gap-6">
       <header className="flex flex-col gap-1">
         <h1 className="text-page-title text-ink">{t('title')}</h1>
         <p className="text-sm text-ink-secondary">{t('subtitle')}</p>
       </header>
-
-      <ServiceProvidersCategoriesSection
-        categories={categories}
-        creating={creatingCategory}
-        editing={editingCategory}
-        onCreate={() => {
-          setCreatingCategory(true);
-          setEditingCategory(null);
-        }}
-        onEdit={(category) => {
-          setEditingCategory(category);
-          setCreatingCategory(false);
-        }}
-        onDelete={(id) => {
-          void deleteCategoryMutation.mutateAsync(id);
-        }}
-        onDone={() => {
-          setCreatingCategory(false);
-          setEditingCategory(null);
-        }}
-        busy={busy}
-      />
 
       <ServiceProvidersProvidersSection
         categories={categories}
