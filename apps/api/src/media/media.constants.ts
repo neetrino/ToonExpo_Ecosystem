@@ -57,3 +57,6 @@ export const MEDIA_UPLOAD_INTERCEPTOR_MAX_BYTES = MEDIA_MODEL3D_UPLOAD_MAX_BYTES
 export const R2_REGION = 'auto';
 
 export const R2_NOT_CONFIGURED_MESSAGE = 'Media upload is not configured';
+
+/** Returned when R2 is configured but PutObject fails (credentials, bucket, network). */
+export const R2_UPLOAD_FAILED_MESSAGE = 'Media storage upload failed';
