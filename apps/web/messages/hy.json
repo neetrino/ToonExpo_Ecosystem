@@ -3603,6 +3603,8 @@
       "uploading": "Վերբեռնվում է…",
       "remove": "Ջնջել",
       "removing": "Ջնջվում է…",
+      "removeConfirmTitle": "Ջնջե՞լ պատկերը",
+      "removeConfirmMessage": "Պատկերը կհանվի ինտերակտիվ քարտեզից։ Այս canvas-ի hotspot-ները նույնպես կջնջվեն։ Հետո կարող եք նոր պատկեր վերբեռնել։",
       "hint": "JPEG, PNG, WebP կամ AVIF՝ մինչև 10 ՄԲ։ SVG-ն չի աջակցվում։",
       "useExisting": "Ընտրել գոյություն ունեցող",
       "libraryTitle": "Վերբեռնված պատկերներ",

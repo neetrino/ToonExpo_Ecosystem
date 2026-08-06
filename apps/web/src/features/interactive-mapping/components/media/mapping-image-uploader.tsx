@@ -11,6 +11,7 @@ import {
 } from '@/features/media/api/media-api';
 import { isAllowedMediaMimeType, MEDIA_UPLOAD_MAX_BYTES } from '@/features/media/constants';
 import { ApiError } from '@/shared/api/errors';
+import { AdminDeleteModal } from '@/shared/ui/admin-delete-modal';
 import { Button } from '@/shared/ui/button';
 import { cn } from '@/shared/ui/cn';
 
@@ -42,9 +43,11 @@ export const MappingImageUploader = ({
   error,
 }: MappingImageUploaderProps) => {
   const t = useTranslations('Media.upload');
+  const tCommon = useTranslations('Common');
   const inputId = useId();
   const [busy, setBusy] = useState(false);
   const [clearing, setClearing] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(previewUrl ?? null);
   const [showLibrary, setShowLibrary] = useState(false);
@@ -90,7 +93,7 @@ export const MappingImageUploader = ({
     }
   };
 
-  const handleClear = async () => {
+  const handleConfirmedClear = async () => {
     if (!onClear) {
       return;
     }
@@ -100,8 +103,10 @@ export const MappingImageUploader = ({
       await onClear();
       setThumbnailUrl(null);
       setShowLibrary(false);
+      setConfirmOpen(false);
     } catch {
-      // Parent surfaces the failure; keep the current preview.
+      // Parent surfaces the failure; keep the current preview and close the modal.
+      setConfirmOpen(false);
     } finally {
       setClearing(false);
     }
@@ -167,10 +172,10 @@ export const MappingImageUploader = ({
               variant="danger"
               disabled={interactionLocked}
               onClick={() => {
-                void handleClear();
+                setConfirmOpen(true);
               }}
             >
-              {clearing ? t('removing') : t('remove')}
+              {t('remove')}
             </Button>
           ) : null}
         </div>
@@ -222,6 +227,25 @@ export const MappingImageUploader = ({
         <p id={`${id}-error`} role="alert" className="text-sm text-danger">
           {displayError}
         </p>
+      ) : null}
+
+      {onClear ? (
+        <AdminDeleteModal
+          open={confirmOpen}
+          title={t('removeConfirmTitle')}
+          message={t('removeConfirmMessage')}
+          confirmLabel={t('remove')}
+          cancelLabel={tCommon('cancel')}
+          confirming={clearing}
+          onCancel={() => {
+            if (!clearing) {
+              setConfirmOpen(false);
+            }
+          }}
+          onConfirm={() => {
+            void handleConfirmedClear();
+          }}
+        />
       ) : null}
     </div>
   );
