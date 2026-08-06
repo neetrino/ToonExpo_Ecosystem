@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import { BackLink } from '@/shared/ui/back-link';
 
 import {
+  clearAttachedVisualCanvas,
   createVisualCanvas,
   getVisualCanvas,
   listProjectVisualCanvases,
@@ -123,6 +124,25 @@ export const MasterplanPhasePage = ({ projectId }: MasterplanPhasePageProps) => 
     }
   };
 
+  const clearMedia = async () => {
+    if (!canvas) {
+      setMediaId('');
+      return;
+    }
+    setError(null);
+    try {
+      await clearAttachedVisualCanvas(catalogScope, canvas);
+      setCanvas(null);
+      setMediaId('');
+      void queryClient.invalidateQueries({
+        queryKey: interactiveMappingProjectQueryKey(projectId, mode),
+      });
+    } catch (clearError) {
+      setError(clearError instanceof Error ? clearError.message : t('error'));
+      throw clearError;
+    }
+  };
+
   const width = canvas?.media.width ?? 1600;
   const height = canvas?.media.height ?? 900;
 
@@ -142,6 +162,7 @@ export const MasterplanPhasePage = ({ projectId }: MasterplanPhasePageProps) => 
         onChange={(asset) => {
           void attachMedia(asset);
         }}
+        onClear={clearMedia}
       />
 
       {error ? (

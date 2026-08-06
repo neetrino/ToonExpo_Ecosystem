@@ -3601,6 +3601,8 @@
     "upload": {
       "browse": "Ընտրել պատկեր",
       "uploading": "Վերբեռնվում է…",
+      "remove": "Ջնջել",
+      "removing": "Ջնջվում է…",
       "hint": "JPEG, PNG, WebP կամ AVIF՝ մինչև 10 ՄԲ։ SVG-ն չի աջակցվում։",
       "useExisting": "Ընտրել գոյություն ունեցող",
       "libraryTitle": "Վերբեռնված պատկերներ",

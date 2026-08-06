@@ -3601,6 +3601,8 @@
     "upload": {
       "browse": "Choose image",
       "uploading": "Uploading…",
+      "remove": "Delete",
+      "removing": "Deleting…",
       "hint": "JPEG, PNG, WebP, or AVIF up to 10 MB. SVG is not supported.",
       "useExisting": "Choose existing",
       "libraryTitle": "Uploaded images",
