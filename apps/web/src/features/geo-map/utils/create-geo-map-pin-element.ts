@@ -50,6 +50,13 @@ export const createGeoMapPinElement = (
   return { element, root };
 };
 
+/**
+ * Defers `root.unmount()` — calling it synchronously inside a parent React
+ * effect cleanup races with React's own commit (nested createRoot).
+ */
 export const disposeGeoMapPinElement = (pin: GeoMapPinElement): void => {
-  pin.root.unmount();
+  const { root } = pin;
+  queueMicrotask(() => {
+    root.unmount();
+  });
 };

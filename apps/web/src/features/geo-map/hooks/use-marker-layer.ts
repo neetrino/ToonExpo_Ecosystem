@@ -56,8 +56,8 @@ const removeManagedMarker = (
   markers: Map<string, ManagedMarker>,
   id: string,
 ): void => {
-  disposeGeoMapPinElement(managed.pin);
   managed.marker.remove();
+  disposeGeoMapPinElement(managed.pin);
   markers.delete(id);
 };
 
