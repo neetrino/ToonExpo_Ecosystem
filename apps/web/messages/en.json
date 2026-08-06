@@ -486,7 +486,6 @@
     "entityQr": {
       "open": "Open QR",
       "title": "QR code",
-      "subtitle": "Scan to open this page on another device.",
       "copyLink": "Copy link",
       "copied": "Copied"
     },
