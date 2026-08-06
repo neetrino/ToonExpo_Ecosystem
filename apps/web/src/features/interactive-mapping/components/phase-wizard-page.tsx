@@ -87,7 +87,7 @@ export const PhaseWizardPage = ({ projectId }: PhaseWizardPageProps) => {
   };
 
   return (
-    <div className="mx-auto max-w-3xl space-y-8">
+    <div className="space-y-8">
       <div>
         <BackLink href={basePath} label={t('backToProjects')} />
         <h1 className="mt-3 font-display text-4xl text-ink">{project.name}</h1>
@@ -98,7 +98,7 @@ export const PhaseWizardPage = ({ projectId }: PhaseWizardPageProps) => {
         </p>
       </div>
 
-      <div className="space-y-3">
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
         <PhaseCard
           step={1}
           title={t('phases.districts')}
