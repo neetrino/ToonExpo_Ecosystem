@@ -5,7 +5,9 @@ import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
 
 import { ProjectDetailFavorite } from '@/features/buyer/components/project-detail-favorite';
+import { CatalogEntityQr } from '@/features/catalog/components/catalog-entity-qr';
 import { usePriceOverlay } from '@/features/catalog/components/price-overlay-scope';
+import { buildProjectCatalogQrUrl } from '@/features/catalog/utils/build-catalog-entity-qr-url';
 import { computeSoldPercent, resolveBadge } from '@/features/catalog/utils/development-progress';
 import { formatCompactPrice } from '@/features/catalog/utils/format-price';
 import { formatCompletionQuarter } from '@/features/catalog/utils/project-detail-presentation';
@@ -47,6 +49,7 @@ export const ProjectDetailHero = ({ project }: ProjectDetailHeroProps) => {
     onRequestLabel: catalogT('price.onRequest'),
   });
   const builderInitials = project.builder.name.trim().slice(0, 2).toUpperCase() || '—';
+  const projectQrUrl = buildProjectCatalogQrUrl(locale, project.id);
 
   return (
     <section className="relative">
@@ -105,9 +108,17 @@ export const ProjectDetailHero = ({ project }: ProjectDetailHeroProps) => {
               <p className="text-[11px] font-bold tracking-[0.2em] text-brand-secondary uppercase">
                 {project.builder.name}
               </p>
-              <h1 className="mt-2 font-brand text-[clamp(2rem,5vw,3.75rem)] font-bold leading-[1.15] tracking-[-0.03em] text-ink-navy">
-                {project.name}
-              </h1>
+              <div className="mt-2 flex items-start gap-3">
+                <h1 className="min-w-0 flex-1 font-brand text-[clamp(2rem,5vw,3.75rem)] font-bold leading-[1.15] tracking-[-0.03em] text-ink-navy">
+                  {project.name}
+                </h1>
+                <CatalogEntityQr
+                  className="mt-1"
+                  payloadUrl={projectQrUrl}
+                  codeLabel={t('qrTitle', { name: project.name })}
+                  entityName={project.name}
+                />
+              </div>
               <p className="mt-3 max-w-2xl text-lg leading-6 text-header-muted">
                 {project.shortDescription ?? catalogT('project.noDescription')}
               </p>

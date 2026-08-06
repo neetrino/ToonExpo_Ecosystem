@@ -483,6 +483,13 @@
       "next": "Next",
       "ariaLabel": "Pagination"
     },
+    "entityQr": {
+      "open": "Open QR",
+      "title": "QR code",
+      "subtitle": "Scan to open this page on another device.",
+      "copyLink": "Copy link",
+      "copied": "Copied"
+    },
     "projects": {
       "title": "Projects",
       "subtitle": "{count, plural, =0 {No projects} one {# project} other {# projects}}",
@@ -508,6 +515,7 @@
       "statFrom": "From",
       "statTotalUnits": "Total units",
       "statSold": "Sold",
+      "qrTitle": "QR code for {name}",
       "completionTba": "TBA",
       "timelineTitle": "Construction timeline",
       "timelineStageIndex": "Stage {number}",
@@ -691,6 +699,7 @@
       "verifiedLabel": "Verified",
       "verifiedYes": "Yes",
       "verifiedBadge": "Verified",
+      "qrTitle": "QR code for {name}, apt. {number}",
       "unitIdLabel": "Unit ID",
       "floorLabel": "Floor",
       "livingAreaLabel": "Living area",

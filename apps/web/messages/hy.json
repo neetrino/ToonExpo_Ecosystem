@@ -483,6 +483,13 @@
       "next": "Հաջորդ",
       "ariaLabel": "Էջավորում"
     },
+    "entityQr": {
+      "open": "Բացել QR",
+      "title": "QR կոդ",
+      "subtitle": "Սկանավորեք՝ այս էջը այլ սարքում բացելու համար։",
+      "copyLink": "Պատճենել հղումը",
+      "copied": "Պատճենված է"
+    },
     "projects": {
       "title": "Նախագծեր",
       "subtitle": "{count, plural, =0 {Նախագծեր չկան} one {# նախագիծ} other {# նախագիծ}}",
@@ -508,6 +515,7 @@
       "statFrom": "Սկսած",
       "statTotalUnits": "Ընդամենը",
       "statSold": "Վաճառված",
+      "qrTitle": "QR կոդ՝ {name}",
       "completionTba": "Շուտով",
       "timelineTitle": "Շինարարության ժամանակացույց",
       "timelineStageIndex": "Փուլ {number}",
@@ -691,6 +699,7 @@
       "verifiedLabel": "Ստուգված",
       "verifiedYes": "Այո",
       "verifiedBadge": "Ստուգված",
+      "qrTitle": "QR կոդ՝ {name}, բն. {number}",
       "unitIdLabel": "Միավոր",
       "floorLabel": "Հարկ",
       "livingAreaLabel": "Բնակելի մակերես",

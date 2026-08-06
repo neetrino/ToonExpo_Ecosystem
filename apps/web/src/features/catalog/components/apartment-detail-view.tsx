@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import type { ApartmentDetail } from '@toonexpo/contracts';
-import { getTranslations } from 'next-intl/server';
+import { getLocale, getTranslations } from 'next-intl/server';
 
 import { ApartmentDetailCriteriaPanel } from '@/features/catalog/components/apartment-detail-criteria-panel';
 import { ApartmentDetailPrice } from '@/features/catalog/components/apartment-price-label';
@@ -10,6 +10,8 @@ import { ApartmentNeighborhood } from '@/features/catalog/components/apartment-n
 import { ApartmentPhotoGallery } from '@/features/catalog/components/apartment-photo-gallery';
 import { ApartmentPriceHistory } from '@/features/catalog/components/apartment-price-history';
 import { ApartmentPricePerArea } from '@/features/catalog/components/apartment-price-per-area';
+import { CatalogEntityQr } from '@/features/catalog/components/catalog-entity-qr';
+import { buildApartmentCatalogQrUrl } from '@/features/catalog/utils/build-catalog-entity-qr-url';
 import { buildApartmentDetailRows } from '@/features/catalog/utils/build-apartment-detail-rows';
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
@@ -36,7 +38,9 @@ export const ApartmentDetailView = async ({
   district,
 }: ApartmentDetailViewProps) => {
   const t = await getTranslations('Catalog');
+  const locale = await getLocale();
   const title = t('apartment.unit', { number: apartment.number });
+  const apartmentQrUrl = buildApartmentCatalogQrUrl(locale, apartment.id);
   const typeLabel = projectType?.trim()
     ? projectType
     : apartment.rooms != null
@@ -116,9 +120,20 @@ export const ApartmentDetailView = async ({
             </span>
           </div>
 
-          <h1 className="mt-3 font-brand text-[clamp(2rem,5vw,3rem)] font-bold leading-[1.15] tracking-tight text-ink-navy">
-            {apartment.project.name}
-          </h1>
+          <div className="mt-3 flex items-start gap-3">
+            <h1 className="min-w-0 flex-1 font-brand text-[clamp(2rem,5vw,3rem)] font-bold leading-[1.15] tracking-tight text-ink-navy">
+              {apartment.project.name}
+            </h1>
+            <CatalogEntityQr
+              className="mt-1"
+              payloadUrl={apartmentQrUrl}
+              codeLabel={t('apartment.qrTitle', {
+                name: apartment.project.name,
+                number: apartment.number,
+              })}
+              entityName={apartment.project.name}
+            />
+          </div>
           <p className="mt-2 text-lg leading-[1.2] text-header-muted">
             {locationLine ?? `${apartment.building.name} · ${title}`}
           </p>
