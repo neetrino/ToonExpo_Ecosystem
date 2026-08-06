@@ -7,7 +7,6 @@ import { useLocale, useTranslations } from 'next-intl';
 import {
   ADMIN_INVENTORY_CARD_CLASS,
   AdminInventoryCardMetaRow,
-  AdminInventoryCardStat,
 } from '@/features/admin/components/admin-inventory-card';
 import { UserStatusBadge } from '@/features/admin/components/user-status-badge';
 import { cn } from '@/shared/ui/cn';
@@ -20,8 +19,8 @@ const formatDate = (iso: string, locale: string): string => {
   try {
     return new Intl.DateTimeFormat(locale, {
       year: 'numeric',
-      month: 'short',
-      day: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
     }).format(new Date(iso));
   } catch {
     return iso.slice(0, 10);
@@ -61,15 +60,22 @@ export const AdminUserCard = ({ user }: AdminUserCardProps) => {
       </div>
 
       <div className="mt-auto flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-border px-4 py-3">
-        <AdminInventoryCardStat
-          icon={<CalendarDays className="size-4" strokeWidth={2} />}
-          label={t('columns.createdAt')}
-          value={
-            <span className="text-sm font-semibold tracking-tight">
+        <span className="flex min-w-0 items-center gap-2.5">
+          <span
+            className="flex size-8 shrink-0 items-center justify-center rounded-sm bg-brand-soft text-brand"
+            aria-hidden
+          >
+            <CalendarDays className="size-4" strokeWidth={2} />
+          </span>
+          <span className="flex min-w-0 flex-col leading-tight">
+            <span className="truncate text-[11px] font-medium tracking-wide text-ink-muted uppercase">
+              {t('columns.createdAt')}
+            </span>
+            <span className="text-base font-semibold tabular-nums tracking-tight text-ink">
               {formatDate(user.createdAt, locale)}
             </span>
-          }
-        />
+          </span>
+        </span>
       </div>
     </article>
   );
