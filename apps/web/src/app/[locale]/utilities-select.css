@@ -1,0 +1,108 @@
+/* Site-wide custom listbox dropdown (ListboxSelect / Select / LocaleSwitcher menu). */
+
+@layer components {
+  .site-select-trigger {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    height: 2.75rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background-color: var(--color-surface-elevated);
+    padding-inline: 1rem;
+    text-align: left;
+    color: var(--color-ink);
+    font-size: 1rem;
+    line-height: 1.25rem;
+    transition:
+      border-color var(--duration-fast) var(--ease-out-premium),
+      box-shadow var(--duration-fast) var(--ease-out-premium),
+      background-color var(--duration-fast) var(--ease-out-premium);
+  }
+
+  @media (min-width: 640px) {
+    .site-select-trigger {
+      font-size: 0.875rem;
+    }
+  }
+
+  .site-select-trigger:hover:not(:disabled) {
+    border-color: var(--color-border-strong);
+  }
+
+  .site-select-trigger:focus-visible {
+    border-color: var(--color-brand);
+    outline: none;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-brand) 20%, transparent);
+  }
+
+  .site-select-trigger:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  .site-select-trigger__label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .site-select-trigger__chevron {
+    flex-shrink: 0;
+    width: 1rem;
+    height: 1rem;
+    color: var(--color-brand);
+    transition: transform var(--duration-base) var(--ease-out-premium);
+  }
+
+  .site-select-trigger[aria-expanded='true'] .site-select-trigger__chevron {
+    transform: rotate(180deg);
+  }
+
+  .site-select-menu {
+    width: 100%;
+    overflow: hidden;
+    border: 1px solid var(--color-header-border);
+    border-radius: 12px;
+    background-color: var(--color-surface-elevated);
+    padding-block: 0.375rem;
+    box-shadow: var(--shadow-md);
+  }
+
+  .site-select-option {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.625rem 0.75rem;
+    text-align: left;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 500;
+    color: var(--color-ink);
+    white-space: nowrap;
+    transition: background-color var(--duration-base) var(--ease-out-premium);
+  }
+
+  .site-select-option:hover {
+    background-color: var(--color-surface);
+  }
+
+  .site-select-option[aria-selected='true'] {
+    background-color: var(--color-brand-soft);
+    font-weight: 600;
+    color: var(--color-brand-deep);
+  }
+
+  .site-select-option__check {
+    flex-shrink: 0;
+    width: 0.875rem;
+    height: 0.875rem;
+    color: var(--color-brand-logo);
+  }
+}

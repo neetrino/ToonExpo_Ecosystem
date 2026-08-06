@@ -16,11 +16,11 @@ import { useAdminCompaniesQuery } from '@/features/admin/hooks/use-admin-compani
 import { useAdminReadinessAssessmentsQuery } from '@/features/admin/hooks/use-admin-readiness';
 import { READINESS_DEFAULT_PAGE_SIZE } from '@/features/readiness/constants';
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
-import { Link } from '@/i18n/navigation';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
-import { Button } from '@/shared/ui/button';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
+import { Button } from '@/shared/ui/button';
 import { EmptyState } from '@/shared/ui/empty-state';
+import { Select } from '@/shared/ui/select';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
 const parsePage = (raw: string | null): number => {
@@ -54,16 +54,16 @@ export const ReadinessAssessmentsListPage = () => {
   });
 
   const companyLookup = useMemo(() => {
-    const map = new Map<string, string>();
+    const map = new Map<string, { name: string; logoUrl: string | null }>();
     for (const company of companiesQuery.data?.data ?? []) {
-      map.set(company.id, company.name);
+      map.set(company.id, { name: company.name, logoUrl: company.logoUrl });
     }
     return map;
   }, [companiesQuery.data]);
 
   const openAssessment = (assessment: ReadinessAssessmentListItem): void => {
     const companyName =
-      companyLookup.get(assessment.builderCompanyId) ?? assessment.builderCompanyId;
+      companyLookup.get(assessment.builderCompanyId)?.name ?? assessment.builderCompanyId;
     const targetLabel = tDetail(`targetTypes.${assessment.targetType}`);
     setModalTarget({
       kind: 'assessment',
@@ -121,8 +121,9 @@ export const ReadinessAssessmentsListPage = () => {
       <div className="flex flex-wrap items-center gap-3">
         <label className="flex min-w-[12rem] flex-1 flex-col gap-1 text-sm text-ink sm:max-w-xs">
           <span className="text-ink-secondary">{t('filters.company')}</span>
-          <select
-            className="h-10 rounded-sm border border-border bg-background px-3 text-sm text-ink"
+          <Select
+            id="readiness-company-filter"
+            aria-label={t('filters.company')}
             value={companyId}
             onChange={(event) => {
               setCompanyId(event.target.value);
@@ -134,14 +135,8 @@ export const ReadinessAssessmentsListPage = () => {
                 {company.name}
               </option>
             ))}
-          </select>
+          </Select>
         </label>
-        <Link
-          href="/admin/readiness/categories"
-          className="text-sm text-ink-secondary underline-offset-2 hover:text-ink hover:underline"
-        >
-          {t('categoriesLink')}
-        </Link>
       </div>
 
       {visibleAssessments.length === 0 ? (

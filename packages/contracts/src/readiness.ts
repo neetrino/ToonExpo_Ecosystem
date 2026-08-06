@@ -117,11 +117,22 @@ export type ReadinessInternalNoteItem = {
   updatedAt: string;
 };
 
+export type ReadinessAssessmentCategorySummary = {
+  categoryId: string;
+  categoryCode: string;
+  categoryWeight: number | null;
+  score: number | null;
+};
+
 export type ReadinessAssessmentListItem = {
   id: string;
   targetType: ReadinessAssessmentTargetType;
   builderCompanyId: string;
   projectId: string | null;
+  /** Resolved project name when target is a project. */
+  projectName: string | null;
+  /** Project cover image URL when available. */
+  coverUrl: string | null;
   status: ReadinessScoreStatus;
   overallScore: number | null;
   overallScoreOverridden: boolean;
@@ -130,6 +141,8 @@ export type ReadinessAssessmentListItem = {
   archivedAt: string | null;
   createdAt: string;
   updatedAt: string;
+  /** Compact category rows for list cards (no criteria tree). */
+  categories: ReadinessAssessmentCategorySummary[];
 };
 
 export type ReadinessAssessmentListResponse = PaginatedResponse<ReadinessAssessmentListItem>;

@@ -1,22 +1,40 @@
 'use client';
 
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
+import { useState } from 'react';
 
-import { Link } from '@/i18n/navigation';
+import { AdminCreateProjectSheet } from '@/features/admin/components/admin-create-project-sheet';
+import { CreateProjectSheet } from '@/features/builder/components/create-project-sheet';
+import { Link, useRouter } from '@/i18n/navigation';
+import { AddActionLabel } from '@/shared/ui/add-action-label';
+import { Button } from '@/shared/ui/button';
 
+import { interactiveMappingProjectsQueryKey } from '../constants';
 import { useInteractiveMappingProjectsQuery } from '../hooks/use-interactive-mapping';
 import { useInteractiveMappingScope } from '../scope/interactive-mapping-scope';
+import { InteractiveMappingProjectCard } from './interactive-mapping-project-card';
 
 /**
  * Interactive-mapping project list with phase progress (Admin or Builder).
  */
 export const InteractiveMappingProjectsPage = () => {
   const t = useTranslations('Admin.interactiveMapping');
-  const { basePath, createProjectHref, showLabLink } = useInteractiveMappingScope();
+  const { basePath, mode, showLabLink } = useInteractiveMappingScope();
   const projectsQuery = useInteractiveMappingProjectsQuery();
+  const queryClient = useQueryClient();
+  const router = useRouter();
+  const [createOpen, setCreateOpen] = useState(false);
+
+  const handleProjectCreated = (projectId: string) => {
+    void queryClient.invalidateQueries({
+      queryKey: interactiveMappingProjectsQueryKey(mode),
+    });
+    router.push(`${basePath}/${projectId}`);
+  };
 
   if (projectsQuery.isLoading) {
-    return <p className="text-sm text-ink-muted">{t('loading')}</p>;
+    return <p className="text-sm text-ink-secondary">{t('loading')}</p>;
   }
 
   if (projectsQuery.isError) {
@@ -30,55 +48,38 @@ export const InteractiveMappingProjectsPage = () => {
   const projects = projectsQuery.data?.data ?? [];
 
   return (
-    <div className="mx-auto max-w-3xl space-y-8">
+    <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="font-display text-4xl text-ink">{t('title')}</h1>
-          <p className="mt-2 text-sm text-ink-muted">{t('subtitle')}</p>
+          <h1 className="text-2xl font-semibold tracking-tight text-ink">{t('title')}</h1>
+          <p className="mt-1 text-sm text-ink-secondary">{t('subtitle')}</p>
         </div>
-        <Link
-          href={createProjectHref}
-          className="rounded-sm border border-ink bg-ink px-4 py-3 text-xs uppercase tracking-[0.16em] text-on-dark"
+        <Button
+          type="button"
+          size="sm"
+          variant="secondary"
+          className="shrink-0"
+          onClick={() => {
+            setCreateOpen(true);
+          }}
         >
-          {t('createProject')}
-        </Link>
+          <AddActionLabel>{t('createProject')}</AddActionLabel>
+        </Button>
       </div>
 
-      <section className="space-y-3">
-        <h2 className="text-[11px] uppercase tracking-[0.16em] text-ink-muted">{t('existing')}</h2>
-        {projects.length === 0 ? (
-          <p className="rounded-sm border border-dashed border-border bg-background px-4 py-6 text-sm text-ink-muted">
-            {t('empty')}
-          </p>
-        ) : (
-          <ul className="space-y-2">
-            {projects.map((project) => (
-              <li key={project.id}>
-                <Link
-                  href={`${basePath}/${project.id}`}
-                  className="flex flex-wrap items-center justify-between gap-3 rounded-sm border border-border bg-background px-4 py-4 transition hover:border-border-strong"
-                >
-                  <div>
-                    <p className="font-display text-xl text-ink">{project.name}</p>
-                    <p className="mt-1 text-xs text-ink-muted">
-                      {t('projectMeta', {
-                        districts: project.districtCount,
-                        buildings: project.buildingCount,
-                        phase: project.activePhase ?? 0,
-                      })}
-                    </p>
-                  </div>
-                  <span className="text-xs uppercase tracking-[0.14em] text-ink">
-                    {project.activePhase
-                      ? t('continuePhase', { phase: project.activePhase })
-                      : t('open')}
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+      {projects.length === 0 ? (
+        <p className="text-sm text-ink-secondary">{t('empty')}</p>
+      ) : (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          {projects.map((project) => (
+            <InteractiveMappingProjectCard
+              key={project.id}
+              project={project}
+              href={`${basePath}/${project.id}`}
+            />
+          ))}
+        </div>
+      )}
 
       {showLabLink ? (
         <p className="text-xs text-ink-muted">
@@ -87,6 +88,24 @@ export const InteractiveMappingProjectsPage = () => {
           </Link>
         </p>
       ) : null}
+
+      {mode === 'admin' ? (
+        <AdminCreateProjectSheet
+          open={createOpen}
+          onClose={() => {
+            setCreateOpen(false);
+          }}
+          onCreated={handleProjectCreated}
+        />
+      ) : (
+        <CreateProjectSheet
+          open={createOpen}
+          onClose={() => {
+            setCreateOpen(false);
+          }}
+          onCreated={handleProjectCreated}
+        />
+      )}
     </div>
   );
 };

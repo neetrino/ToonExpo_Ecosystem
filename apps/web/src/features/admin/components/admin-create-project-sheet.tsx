@@ -20,6 +20,8 @@ type AdminCreateProjectSheetProps = {
   open: boolean;
   onClose: () => void;
   defaultCompanyId?: string | undefined;
+  /** When set, replaces the default navigate-to-project-detail flow. */
+  onCreated?: ((projectId: string) => void) | undefined;
 };
 
 /**
@@ -29,6 +31,7 @@ export const AdminCreateProjectSheet = ({
   open,
   onClose,
   defaultCompanyId,
+  onCreated,
 }: AdminCreateProjectSheetProps) => {
   const t = useTranslations('Admin.projects.create');
   const tNew = useTranslations('Builder.projects.new');
@@ -84,6 +87,10 @@ export const AdminCreateProjectSheet = ({
               onCreated={(projectId) => {
                 void queryClient.invalidateQueries({ queryKey: ADMIN_PROJECTS_QUERY_KEY });
                 onClose();
+                if (onCreated) {
+                  onCreated(projectId);
+                  return;
+                }
                 router.push(`/admin/projects/${projectId}`);
               }}
             />

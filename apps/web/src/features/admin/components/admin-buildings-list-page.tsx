@@ -25,8 +25,8 @@ import { Button } from '@/shared/ui/button';
  */
 export const AdminBuildingsListPage = () => {
   const t = useTranslations('Admin.buildings');
-  const { page, pageSize, companyId } = useAdminInventoryListParams();
-  const query = useAdminBuildingsQuery(page, pageSize, companyId);
+  const { page, pageSize, companyId, projectId } = useAdminInventoryListParams();
+  const query = useAdminBuildingsQuery(page, pageSize, companyId, projectId);
   const response = query.data;
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -52,15 +52,20 @@ export const AdminBuildingsListPage = () => {
   const buildHref = (next: {
     page?: number;
     companyId?: string;
+    projectId?: string;
     buildingId?: string | null;
   }): string => {
     const params = new URLSearchParams();
     const nextCompanyId = next.companyId ?? companyId;
+    const nextProjectId = next.projectId ?? projectId;
     const nextPage = next.page ?? page;
     const nextBuildingId = next.buildingId === undefined ? buildingId : next.buildingId;
 
     if (nextCompanyId) {
       params.set('companyId', nextCompanyId);
+    }
+    if (nextProjectId) {
+      params.set('projectId', nextProjectId);
     }
     if (nextPage > 1) {
       params.set('page', String(nextPage));

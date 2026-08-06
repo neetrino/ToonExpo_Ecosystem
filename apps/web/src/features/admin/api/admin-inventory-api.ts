@@ -35,6 +35,9 @@ const toSearch = (params: ListAdminProjectsParams): string => {
   if (params.buildingId) {
     search.set('buildingId', params.buildingId);
   }
+  if (params.projectId) {
+    search.set('projectId', params.projectId);
+  }
   return search.toString();
 };
 

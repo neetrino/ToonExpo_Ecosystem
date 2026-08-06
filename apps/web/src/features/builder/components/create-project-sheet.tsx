@@ -11,12 +11,14 @@ import { AdminCreateSheet } from '@/shared/ui/admin-create-sheet';
 type CreateProjectSheetProps = {
   open: boolean;
   onClose: () => void;
+  /** When set, replaces the default navigate-to-project-detail flow. */
+  onCreated?: ((projectId: string) => void) | undefined;
 };
 
 /**
  * Side sheet to create a draft project (same form as /builder/projects/new).
  */
-export const CreateProjectSheet = ({ open, onClose }: CreateProjectSheetProps) => {
+export const CreateProjectSheet = ({ open, onClose, onCreated }: CreateProjectSheetProps) => {
   const t = useTranslations('Builder.projects');
   const scope = useCatalogScope();
   const router = useRouter();
@@ -32,6 +34,10 @@ export const CreateProjectSheet = ({ open, onClose }: CreateProjectSheetProps) =
       <CreateProjectForm
         onCreated={(projectId) => {
           onClose();
+          if (onCreated) {
+            onCreated(projectId);
+            return;
+          }
           router.push(catalogProjectDetailHref(scope, projectId));
         }}
       />

@@ -47,7 +47,7 @@ export const PhaseCard = ({
   return (
     <article
       className={cn(
-        'rounded-sm border border-border bg-background p-5 transition-colors',
+        'flex h-full flex-col rounded-sm border border-border bg-background p-5 transition-colors',
         active && 'border-border-strong',
         locked && 'opacity-55',
       )}

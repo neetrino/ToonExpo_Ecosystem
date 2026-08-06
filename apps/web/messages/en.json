@@ -1697,6 +1697,13 @@
         "allBuildings": "All buildings",
         "searchPlaceholder": "Search by project, company, or city"
       },
+      "openBuildings": "View buildings for {name}",
+      "buildingsSheet": {
+        "title": "Buildings",
+        "loading": "Loading buildings…",
+        "error": "Could not load buildings. Try again.",
+        "empty": "No buildings in this project yet."
+      },
       "columns": {
         "name": "Name",
         "company": "Company",
@@ -2050,7 +2057,7 @@
     },
     "serviceProviders": {
       "title": "Service provider directory",
-      "subtitle": "Categories and providers for readiness help",
+      "subtitle": "Providers for readiness help",
       "loading": "Loading…",
       "error": "Could not load service providers. Try again.",
       "categories": {
@@ -2113,6 +2120,9 @@
           "socialInstagram": "Instagram",
           "socialLinkedin": "LinkedIn",
           "categories": "Categories",
+          "categoriesPlaceholder": "Select category…",
+          "categoriesSelectedCount": "{count} selected",
+          "categoriesEmpty": "No categories available yet.",
           "internalNotes": "Internal notes (admin only)",
           "internalNotesHint": "Builders never see internal notes.",
           "publication": "Public directory publication",

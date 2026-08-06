@@ -7,12 +7,16 @@ import type {
 } from '@toonexpo/contracts';
 import { useLocale, useTranslations } from 'next-intl';
 
+import {
+  AdminReadinessAssessmentCard,
+  type AdminReadinessCompanyInfo,
+} from '@/features/admin/components/admin-readiness-assessment-card';
 import { ReadinessStatusBadge } from '@/features/readiness/components/readiness-status-badge';
 import { formatReadinessDate } from '@/features/readiness/utils/format-readiness-date';
 import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
 import { VIEW_MODE_CARDS, type ViewMode } from '@/shared/ui/view-mode';
 
-type CompanyLookup = Map<string, string>;
+type CompanyLookup = Map<string, AdminReadinessCompanyInfo>;
 
 type ReadinessAssessmentsTableProps = {
   assessments: ReadinessAssessmentListItem[];
@@ -34,37 +38,24 @@ export const ReadinessAssessmentsTable = ({
   const locale = useLocale();
 
   const targetLabel = (target: ReadinessAssessmentTargetType): string => t(`targetTypes.${target}`);
-  const companyName = (assessment: ReadinessAssessmentListItem): string =>
-    companyLookup.get(assessment.builderCompanyId) ?? assessment.builderCompanyId;
+  const companyInfo = (assessment: ReadinessAssessmentListItem): AdminReadinessCompanyInfo =>
+    companyLookup.get(assessment.builderCompanyId) ?? {
+      name: assessment.builderCompanyId,
+      logoUrl: null,
+    };
 
   if (viewMode === VIEW_MODE_CARDS) {
     return (
-      <AdminListCardGrid>
+      <AdminListCardGrid className="gap-4 xl:grid-cols-4">
         {assessments.map((assessment) => (
-          <button
+          <AdminReadinessAssessmentCard
             key={assessment.id}
-            type="button"
-            onClick={() => {
+            assessment={assessment}
+            company={companyInfo(assessment)}
+            onOpen={() => {
               onOpenAssessment(assessment);
             }}
-            className="flex flex-col gap-3 rounded-sm border border-border bg-background p-4 text-left transition-colors hover:border-border-strong hover:bg-surface/60"
-          >
-            <div className="flex flex-wrap items-start justify-between gap-2">
-              <span className="font-medium text-ink">{companyName(assessment)}</span>
-              <ReadinessStatusBadge
-                status={assessment.status as ReadinessScoreStatus}
-                namespace="Admin.readiness"
-              />
-            </div>
-            <p className="text-sm text-ink-secondary">{targetLabel(assessment.targetType)}</p>
-            <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-ink-muted">
-              <span>
-                {t('columns.score')}: {assessment.overallScore ?? '—'}
-              </span>
-              <span>{formatReadinessDate(assessment.lastEvaluatedAt, locale)}</span>
-            </div>
-            <span className="text-sm font-medium text-brand">{t('openToScore')}</span>
-          </button>
+          />
         ))}
       </AdminListCardGrid>
     );
@@ -93,7 +84,7 @@ export const ReadinessAssessmentsTable = ({
                     onOpenAssessment(assessment);
                   }}
                 >
-                  {companyName(assessment)}
+                  {companyInfo(assessment).name}
                 </button>
               </td>
               <td className="px-3 py-2.5 text-ink-secondary">

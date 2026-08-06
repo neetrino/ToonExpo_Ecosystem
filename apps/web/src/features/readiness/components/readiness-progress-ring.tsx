@@ -6,6 +6,8 @@ type ReadinessProgressRingProps = {
   percent: number;
   size?: 'xs' | 'sm' | 'md' | 'lg' | undefined;
   tone?: 'brand' | 'success' | 'warning' | 'danger' | 'muted' | undefined;
+  /** When false, only the ring is shown (value lives beside the ring in layouts). */
+  showValue?: boolean | undefined;
   className?: string | undefined;
   label?: string | undefined;
 };
@@ -46,6 +48,7 @@ export const ReadinessProgressRing = ({
   percent,
   size = 'md',
   tone = 'brand',
+  showValue = true,
   className,
   label,
 }: ReadinessProgressRingProps) => {
@@ -83,14 +86,16 @@ export const ReadinessProgressRing = ({
           strokeDasharray={`${clamped} 100`}
         />
       </svg>
-      <span
-        className={cn(
-          'absolute inset-0 flex items-center justify-center font-semibold tabular-nums tracking-tight text-ink',
-          TEXT_CLASS[size],
-        )}
-      >
-        {display}
-      </span>
+      {showValue ? (
+        <span
+          className={cn(
+            'absolute inset-0 flex items-center justify-center font-semibold tabular-nums tracking-tight text-ink',
+            TEXT_CLASS[size],
+          )}
+        >
+          {display}
+        </span>
+      ) : null}
     </div>
   );
 };

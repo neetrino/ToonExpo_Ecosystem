@@ -6,6 +6,10 @@ import { useSearchParams } from 'next/navigation';
 import { useMemo, useRef, useState } from 'react';
 
 import { AdminCreateProjectSheet } from '@/features/admin/components/admin-create-project-sheet';
+import {
+  AdminProjectBuildingsSheet,
+  type AdminProjectBuildingsTarget,
+} from '@/features/admin/components/admin-project-buildings-sheet';
 import { AdminProjectsResultsSkeleton } from '@/features/admin/components/admin-projects-results-skeleton';
 import { AdminProjectsTable } from '@/features/admin/components/admin-projects-table';
 import {
@@ -70,6 +74,9 @@ export const AdminProjectsListPage = () => {
   );
   const [search, setSearch] = useState('');
   const [createOpen, setCreateOpen] = useState(false);
+  const [buildingsProject, setBuildingsProject] = useState<AdminProjectBuildingsTarget | null>(
+    null,
+  );
   const trimmedSearch = search.trim();
   const debouncedSearch = useDebouncedValue(trimmedSearch, ADMIN_PROJECTS_SEARCH_DEBOUNCE_MS);
   /* Typing is debounced; clearing applies at once so the full list returns immediately. */
@@ -201,6 +208,13 @@ export const AdminProjectsListPage = () => {
           projects={response.data}
           viewMode={effectiveViewMode}
           searchKey={activeSearch}
+          onOpenBuildings={(project) => {
+            setBuildingsProject({
+              id: project.id,
+              name: project.name,
+              builderCompanyId: project.builderCompanyId,
+            });
+          }}
         />
       )}
 
@@ -219,6 +233,13 @@ export const AdminProjectsListPage = () => {
           setCreateOpen(false);
         }}
         defaultCompanyId={companyId}
+      />
+
+      <AdminProjectBuildingsSheet
+        project={buildingsProject}
+        onClose={() => {
+          setBuildingsProject(null);
+        }}
       />
     </div>
   );

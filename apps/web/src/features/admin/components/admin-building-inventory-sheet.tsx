@@ -18,6 +18,8 @@ type AdminBuildingInventorySheetProps = {
   onClose: () => void;
   onSelectFloor: (floorId: string) => void;
   onCloseFloor: () => void;
+  /** Nested under project buildings sheet = 1; standalone from buildings hub = 0. */
+  stackLevel?: number | undefined;
 };
 
 type FloorSheetSnapshot = {
@@ -35,6 +37,7 @@ export const AdminBuildingInventorySheet = ({
   onClose,
   onSelectFloor,
   onCloseFloor,
+  stackLevel = 0,
 }: AdminBuildingInventorySheetProps) => {
   const t = useTranslations('Admin.buildings.inventory');
   const query = useAdminBuildingInventoryGlanceQuery(buildingId ?? '');
@@ -75,6 +78,7 @@ export const AdminBuildingInventorySheet = ({
         title={title}
         description={description}
         size="default"
+        stackLevel={stackLevel}
         headerActions={
           glance ? (
             <PublicationStatusBadge
@@ -110,6 +114,7 @@ export const AdminBuildingInventorySheet = ({
           floorId={floorSheetFloorId}
           floorLabel={floorSheetLabel}
           floorplan={floorSheetPlan}
+          stackLevel={stackLevel + 1}
           onClose={onCloseFloor}
         />
       ) : null}

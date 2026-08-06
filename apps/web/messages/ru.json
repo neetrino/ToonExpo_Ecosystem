@@ -1697,6 +1697,13 @@
         "allBuildings": "Все здания",
         "searchPlaceholder": "Поиск по проекту, компании или городу"
       },
+      "openBuildings": "Показать здания проекта {name}",
+      "buildingsSheet": {
+        "title": "Здания",
+        "loading": "Загрузка зданий…",
+        "error": "Не удалось загрузить здания. Попробуйте ещё раз.",
+        "empty": "В этом проекте пока нет зданий."
+      },
       "columns": {
         "name": "Название",
         "company": "Компания",
@@ -2411,7 +2418,7 @@
     },
     "serviceProviders": {
       "title": "Каталог поставщиков услуг",
-      "subtitle": "Категории и поставщики для помощи по готовности",
+      "subtitle": "Поставщики для помощи по готовности",
       "loading": "Загрузка…",
       "error": "Не удалось загрузить данные.",
       "categories": {
@@ -2474,6 +2481,9 @@
           "socialInstagram": "Instagram",
           "socialLinkedin": "LinkedIn",
           "categories": "Категории",
+          "categoriesPlaceholder": "Выберите категорию…",
+          "categoriesSelectedCount": "{count} выбрано",
+          "categoriesEmpty": "Категории пока недоступны.",
           "internalNotes": "Внутренние заметки (только админ)",
           "internalNotesHint": "Застройщики не видят внутренние заметки.",
           "publication": "Публикация в каталоге",

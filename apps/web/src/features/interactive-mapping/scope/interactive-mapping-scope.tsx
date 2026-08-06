@@ -23,8 +23,6 @@ export type InteractiveMappingScopeValue = {
     typeof INTERACTIVE_MAPPING_ADMIN_API_PREFIX | typeof INTERACTIVE_MAPPING_PORTAL_API_PREFIX;
   /** Catalog (canvas/hotspot) API scope — never mixes portals. */
   catalogScope: CatalogScope;
-  /** New-project link for empty / CTA states. */
-  createProjectHref: '/admin/projects/new' | '/builder/projects/new';
   /** Lab QA route is admin-only. */
   showLabLink: boolean;
 };
@@ -34,7 +32,6 @@ const ADMIN_SCOPE: InteractiveMappingScopeValue = {
   basePath: INTERACTIVE_MAPPING_ADMIN_BASE_PATH,
   apiPrefix: INTERACTIVE_MAPPING_ADMIN_API_PREFIX,
   catalogScope: { mode: 'admin', companyId: '' },
-  createProjectHref: '/admin/projects/new',
   showLabLink: true,
 };
 
@@ -43,7 +40,6 @@ const PORTAL_SCOPE: InteractiveMappingScopeValue = {
   basePath: INTERACTIVE_MAPPING_BUILDER_BASE_PATH,
   apiPrefix: INTERACTIVE_MAPPING_PORTAL_API_PREFIX,
   catalogScope: { mode: 'portal' },
-  createProjectHref: '/builder/projects/new',
   showLabLink: false,
 };
 
