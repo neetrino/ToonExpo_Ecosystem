@@ -47,7 +47,7 @@ export class NeonIdleConsoleNotifier {
     this.announced = true;
     console.log('');
     console.log(`${ANSI_RED}────────────────────────────────────────${ANSI_RESET}`);
-    console.log(`${ANSI_RED}  ✗  Neon database → IDLE (suspended)${ANSI_RESET}`);
+    console.log(`${ANSI_RED}  ✗  Neon database → IDLE (suspended)📿${ANSI_RESET}`);
     console.log(
       `${ANSI_DIM}  No queries for ${Math.round(this.suspendAfterMs / 60_000)} min — compute scaled to zero${ANSI_RESET}`,
     );

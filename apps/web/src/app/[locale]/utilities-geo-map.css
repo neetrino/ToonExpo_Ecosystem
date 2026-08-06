@@ -9,7 +9,13 @@
     box-sizing: border-box;
     flex-direction: column;
     min-height: 0;
-    overflow: hidden;
+    /**
+     * Sidebar model lists are taller than the viewport. `overflow: hidden`
+     * alone still lets that content inflate document scroll through portal
+     * `overflow: visible` ancestors — `clip` + paint containment stops it.
+     */
+    overflow: clip;
+    contain: paint;
     margin-top: -1.5rem;
     margin-bottom: -1.5rem;
     height: calc(100svh / var(--desktop-layout-scale) - 5.5rem);
@@ -33,13 +39,16 @@
     display: flex;
     min-height: 0;
     width: 100%;
-    flex-shrink: 0;
-    overflow: hidden;
+    flex: 1 1 40%;
+    max-height: 40%;
+    overflow: clip;
   }
 
   @media (min-width: 1024px) {
     .geo-map-admin-page__sidebar {
       width: 20rem;
+      flex: 0 0 20rem;
+      max-height: none;
     }
   }
 
@@ -48,7 +57,7 @@
     min-width: 0;
     min-height: 0;
     flex: 1 1 0%;
-    overflow: hidden;
+    overflow: clip;
   }
 
   .geo-map-admin-page__map > .absolute {
@@ -60,12 +69,35 @@
    * `transform` and `position`, so the root only carries size + cursor: every
    * hover / selected effect lives on `.geo-map-pin__shape`, scaled from the pin
    * tip so the anchored coordinate never moves.
+   *
+   * Brand teal fill + Lucide Home glyph — matches `--color-brand` tokens.
    */
   .geo-map-pin {
+    position: relative;
     width: 1.75rem;
-    height: 2.25rem;
+    height: 2.5rem;
     cursor: pointer;
     user-select: none;
+  }
+
+  .geo-map-pin__icon {
+    display: block;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    line-height: 0;
+    pointer-events: none;
+    transform-origin: bottom center;
+    scale: 1;
+    transition: scale var(--duration-base) var(--ease-out-premium);
+  }
+
+  .geo-map-pin:hover .geo-map-pin__icon {
+    scale: 1.1;
+  }
+
+  .geo-map-pin--selected .geo-map-pin__icon {
+    scale: 1.14;
   }
 
   .geo-map-pin--editable {
@@ -82,50 +114,40 @@
     height: 100%;
     overflow: visible;
     color: var(--color-brand);
-    transform-origin: bottom center;
-    scale: 1;
-    filter: drop-shadow(0 1px 1px rgb(9 43 68 / 0.12))
-      drop-shadow(0 4px 10px rgb(26 143 152 / 0.28));
+    filter: drop-shadow(0 1px 1px rgb(9 43 68 / 0.22)) drop-shadow(0 3px 6px rgb(9 43 68 / 0.16));
     transition:
-      scale var(--duration-base) var(--ease-out-premium),
       color var(--duration-base) var(--ease-out-premium),
       filter var(--duration-base) var(--ease-out-premium);
   }
 
   .geo-map-pin:hover .geo-map-pin__shape {
     color: var(--color-brand-hover);
-    scale: 1.12;
-    filter: drop-shadow(0 2px 2px rgb(9 43 68 / 0.14))
-      drop-shadow(0 6px 14px rgb(26 143 152 / 0.38));
+    filter: drop-shadow(0 1px 2px rgb(9 43 68 / 0.26)) drop-shadow(0 4px 10px rgb(9 43 68 / 0.2));
   }
 
   .geo-map-pin--selected .geo-map-pin__shape {
     color: var(--color-brand-deep);
-    scale: 1.18;
-    filter: drop-shadow(0 2px 3px rgb(9 43 68 / 0.18)) drop-shadow(0 8px 18px rgb(9 43 68 / 0.35));
+    filter: drop-shadow(0 1px 2px rgb(9 43 68 / 0.28)) drop-shadow(0 5px 12px rgb(9 43 68 / 0.24));
   }
 
   .geo-map-pin__body {
     fill: currentcolor;
     stroke: var(--color-surface-elevated);
-    stroke-width: 1.5;
-    stroke-linejoin: round;
+    stroke-width: 1.35;
+    stroke-linejoin: miter;
+    stroke-linecap: butt;
+    stroke-miterlimit: 10;
+    paint-order: stroke fill;
   }
 
-  .geo-map-pin__rim {
-    fill: var(--color-surface-elevated);
-  }
-
-  .geo-map-pin__dot {
-    fill: var(--color-brand-deep);
-  }
-
-  .geo-map-pin:hover .geo-map-pin__dot {
-    fill: var(--color-brand-deep);
-  }
-
-  .geo-map-pin--selected .geo-map-pin__dot {
-    fill: var(--color-brand);
+  .geo-map-pin__glyph {
+    position: absolute;
+    top: 0.5rem;
+    left: 50%;
+    width: 0.75rem;
+    height: 0.75rem;
+    color: var(--color-on-brand);
+    transform: translateX(-50%);
   }
 
   /** Glass hover card surface — matches public catalog / header tokens. */
@@ -226,6 +248,7 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .geo-map-pin__icon,
     .geo-map-pin__shape {
       transition: color var(--duration-fast) linear;
     }

@@ -122,7 +122,7 @@ export const MODEL_BOUNDS_PADDING_DEGREES = 0.05;
  * and its own `maplibregl-marker` classes, so the root must never carry
  * transform/scale utilities, transform transitions, or a full `className`
  * rewrite — otherwise pins drift away from their coordinates. Visual state
- * lives on {@link MARKER_PIN_SVG_INNER_HTML}'s inner shape element.
+ * lives on the Lucide pin SVG (`.geo-map-pin__shape`).
  */
 export const MARKER_ELEMENT_CLASS_NAME = 'geo-map-pin';
 
@@ -144,24 +144,11 @@ export const FOCUS_PITCH_DEG = DEFAULT_MAP_PITCH_DEG;
 /** Marker root class applied while `highlightedObjectId` matches (selected pin). */
 export const MARKER_ELEMENT_SELECTED_CLASS_NAME = 'geo-map-pin--selected';
 
-/**
- * Refined map pin SVG — brand teardrop, white rim, deep center beacon.
- * The SVG is the hover/selected animation target; it scales from the pin tip
- * (`transform-origin`) so the anchor point never moves.
- */
-export const MARKER_PIN_SVG_INNER_HTML =
-  '<svg viewBox="0 0 28 36" aria-hidden="true" focusable="false" class="geo-map-pin__shape">' +
-  '<path class="geo-map-pin__body" ' +
-  'd="M14 1.5c-6.075 0-11 4.925-11 11 0 7.875 9.35 20.55 10.35 21.9a0.85 0.85 0 0 0 1.3 0C15.65 33.05 25 20.375 25 12.5c0-6.075-4.925-11-11-11Z"/>' +
-  '<circle class="geo-map-pin__rim" cx="14" cy="12.5" r="5.25"/>' +
-  '<circle class="geo-map-pin__dot" cx="14" cy="12.5" r="2.6"/>' +
-  '</svg>';
-
 /** Info card logo slot edge length (px) — matches Tailwind `size-11`. */
 export const GEO_MAP_INFO_CARD_LOGO_PX = 44;
 
-/** Pin head height (px) — keeps the hover card clear of the marker artwork. */
-export const MARKER_PIN_HEIGHT_PX = 36;
+/** Pin height (px) — keeps the hover card clear of the marker artwork. */
+export const MARKER_PIN_HEIGHT_PX = 40;
 
 /** Hover card geometry used to place it next to a pin without overflowing the map. */
 export const GEO_MAP_INFO_CARD_WIDTH_PX = 300;

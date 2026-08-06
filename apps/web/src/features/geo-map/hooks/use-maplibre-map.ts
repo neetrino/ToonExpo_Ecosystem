@@ -18,6 +18,7 @@ import type { GeoMapLngLat } from '@/features/geo-map/types';
 import { applyBrandMapStyle } from '@/features/geo-map/utils/apply-brand-map-style';
 import { applyMapAtmosphere } from '@/features/geo-map/utils/apply-map-atmosphere';
 import { configureMaplibreWorker } from '@/features/geo-map/utils/configure-maplibre-worker';
+import { registerMissingStyleImageResolver } from '@/features/geo-map/utils/register-missing-style-image-resolver';
 
 export type UseMaplibreMapOptions = {
   containerRef: RefObject<HTMLDivElement | null>;
@@ -86,6 +87,8 @@ const createMapInstance = ({
     touchZoomRotate: true,
     attributionControl: { compact: true },
   });
+  // OpenFreeMap liberty sprite omits many OSM amenity icons the style references.
+  registerMissingStyleImageResolver(mapInstance);
   mapInstance.on('load', () => {
     applyBrandMapStyle(mapInstance);
     applyMapAtmosphere(mapInstance);
