@@ -326,7 +326,7 @@ export const toPortalReadinessRequiredActionItem = (
 });
 
 type PortalAssessmentSource = ReadinessAssessment & {
-  project: { name: string } | null;
+  project: ProjectWithCover | null;
   scores: ScoreWithCategory[];
   criterionScores: CriterionScoreWithCriterion[];
   recommendations: ReadinessRecommendation[];
@@ -337,21 +337,31 @@ export const toPortalReadinessAssessmentItem = (
   assessment: PortalAssessmentSource,
   helpAvailabilityByCategoryId: ReadonlyMap<string, boolean>,
   catalogCriteria: readonly ReadinessCriterion[],
-): PortalReadinessAssessmentItem => ({
-  id: assessment.id,
-  targetType: assessment.targetType,
-  projectId: assessment.projectId,
-  projectName: assessment.project?.name ?? null,
-  status: assessment.status,
-  overallScore: assessment.overallScore,
-  lastEvaluatedAt: assessment.lastEvaluatedAt ? toIso(assessment.lastEvaluatedAt) : null,
-  scores: assessment.scores.map((score) =>
-    toPortalReadinessScoreItem(
-      score,
-      helpAvailabilityByCategoryId.get(score.categoryId) ?? false,
-      buildCriterionTreeForCategory(score.categoryId, catalogCriteria, assessment.criterionScores),
+): PortalReadinessAssessmentItem => {
+  const coverUrl =
+    assessment.project?.coverMedia?.thumbnailUrl ?? assessment.project?.coverMedia?.fileUrl ?? null;
+
+  return {
+    id: assessment.id,
+    targetType: assessment.targetType,
+    projectId: assessment.projectId,
+    projectName: assessment.project?.name ?? null,
+    coverUrl,
+    status: assessment.status,
+    overallScore: assessment.overallScore,
+    lastEvaluatedAt: assessment.lastEvaluatedAt ? toIso(assessment.lastEvaluatedAt) : null,
+    scores: assessment.scores.map((score) =>
+      toPortalReadinessScoreItem(
+        score,
+        helpAvailabilityByCategoryId.get(score.categoryId) ?? false,
+        buildCriterionTreeForCategory(
+          score.categoryId,
+          catalogCriteria,
+          assessment.criterionScores,
+        ),
+      ),
     ),
-  ),
-  recommendations: assessment.recommendations.map(toPortalReadinessRecommendationItem),
-  requiredActions: assessment.requiredActions.map(toPortalReadinessRequiredActionItem),
-});
+    recommendations: assessment.recommendations.map(toPortalReadinessRecommendationItem),
+    requiredActions: assessment.requiredActions.map(toPortalReadinessRequiredActionItem),
+  };
+};

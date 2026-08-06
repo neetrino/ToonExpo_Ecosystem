@@ -307,7 +307,6 @@
     "railExpand": "Expand sidebar",
     "railCollapse": "Collapse sidebar",
     "buy": "Apartments",
-    "newDevelopments": "New Developments",
     "marketInsights": "Market Insights",
     "projects": "Projects",
     "builders": "Builders",
@@ -387,28 +386,12 @@
       "description": "Browse verified apartments with live availability, filters, and map view."
     }
   },
-  "DevelopmentsPage": {
-    "eyebrow": "New developments",
-    "title": "The skyline taking shape, with live unit availability.",
-    "subtitle": "Track inventory, pricing, and construction progress on the most anticipated residential projects — directly from developers.",
-    "empty": "No developments to show yet.",
-    "statFrom": "From",
-    "statUnits": "Units",
-    "statSold": "Sold",
-    "unitsLeft": "{count} units left",
-    "completionTba": "Completion TBA",
-    "meta": {
-      "title": "New developments — ToonExpo",
-      "description": "Track inventory, pricing, and construction progress on residential projects from developers."
-    }
-  },
   "Footer": {
     "tagline": "The marketplace for verified homes, new developments, and partner bank offers — built for buyers, brokers, and developers in one transparent platform.",
     "marketplace": "Marketplace",
     "company": "Company",
     "links": {
       "allListings": "All listings",
-      "newDevelopments": "New developments",
       "marketReports": "Market reports",
       "partnerBanks": "Partner banks",
       "about": "About",
@@ -1227,12 +1210,13 @@
       "railExpand": "Expand management portal",
       "railCollapse": "Collapse management portal",
       "analytics": "Analytics",
-      "companies": "Companies",
+      "companies": "Builder",
       "users": "Users",
       "projects": "Projects",
       "buildings": "Building",
       "floors": "Floor",
       "apartments": "Apartment",
+
       "interactiveMapping": "Interactive mapping",
       "geoMap": "3D Map",
       "partners": "Partners",
@@ -1546,8 +1530,8 @@
       }
     },
     "companies": {
-      "title": "Companies",
-      "subtitle": "{count, plural, =0 {No companies} one {# company} other {# companies}}",
+      "title": "Builder",
+      "subtitle": "{count, plural, =0 {No builders} one {# builder} other {# builders}}",
       "empty": "No companies yet. Create the first one.",
       "loading": "Loading companies…",
       "error": "Could not load companies. Try again.",

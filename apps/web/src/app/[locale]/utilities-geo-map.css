@@ -20,6 +20,8 @@
     margin-bottom: -1.5rem;
     height: calc(100svh / var(--desktop-layout-scale) - 5.5rem);
     max-height: calc(100svh / var(--desktop-layout-scale) - 5.5rem);
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
   }
 
   @media (min-width: 768px) {

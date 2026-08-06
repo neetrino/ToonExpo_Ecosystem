@@ -16,8 +16,8 @@ const formatDate = (iso: string, locale: string): string => {
   try {
     return new Intl.DateTimeFormat(locale, {
       year: 'numeric',
-      month: 'short',
-      day: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
     }).format(new Date(iso));
   } catch {
     return iso.slice(0, 10);
@@ -51,7 +51,7 @@ export const UsersTable = ({ users, viewMode = VIEW_MODE_CARDS }: UsersTableProp
             <th className="px-3 py-2.5 text-center font-medium">{t('columns.accountType')}</th>
             <th className="px-3 py-2.5 text-center font-medium">{t('columns.company')}</th>
             <th className="px-3 py-2.5 text-center font-medium">{t('columns.status')}</th>
-            <th className="px-3 py-2.5 text-center font-medium">{t('columns.createdAt')}</th>
+            <th className="px-3 py-2.5 text-right font-medium">{t('columns.createdAt')}</th>
           </tr>
         </thead>
         <tbody>
@@ -70,7 +70,7 @@ export const UsersTable = ({ users, viewMode = VIEW_MODE_CARDS }: UsersTableProp
                   <UserStatusBadge status={user.status} />
                 </div>
               </td>
-              <td className="px-3 py-2.5 align-middle text-center text-ink-secondary">
+              <td className="px-3 py-2.5 align-middle text-right tabular-nums text-ink-secondary whitespace-nowrap">
                 {formatDate(user.createdAt, locale)}
               </td>
             </tr>

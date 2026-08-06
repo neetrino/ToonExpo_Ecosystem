@@ -32,11 +32,6 @@ export const SiteFooter = async () => {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/developments" className="transition-colors hover:text-brand-deep">
-                    {tNav('newDevelopments')}
-                  </Link>
-                </li>
-                <li>
                   <Link href="/partners" className="transition-colors hover:text-brand-deep">
                     {tNav('partners')}
                   </Link>

@@ -2,16 +2,21 @@
 
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import { CompaniesTable } from '@/features/admin/components/companies-table';
+import {
+  buildCompanyReadinessMap,
+  CompaniesTable,
+} from '@/features/admin/components/companies-table';
 import { CompanyDetailSheet } from '@/features/admin/components/company-detail-sheet';
 import { CreateCompanySheet } from '@/features/admin/components/create-company-sheet';
 import {
   ADMIN_COMPANIES_DEFAULT_PAGE_SIZE,
+  ADMIN_COMPANIES_MAX_PAGE_SIZE,
   ADMIN_VIEW_MODE_KEYS,
 } from '@/features/admin/constants';
 import { useAdminCompaniesQuery } from '@/features/admin/hooks/use-admin-companies';
+import { useAdminReadinessAssessmentsQuery } from '@/features/admin/hooks/use-admin-readiness';
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
 import { usePathname, useRouter } from '@/i18n/navigation';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
@@ -38,10 +43,20 @@ export const CompaniesListPage = () => {
   const page = parsePage(searchParams.get('page'));
   const pageSize = ADMIN_COMPANIES_DEFAULT_PAGE_SIZE;
   const query = useAdminCompaniesQuery(page, pageSize);
+  const readinessQuery = useAdminReadinessAssessmentsQuery({
+    page: 1,
+    pageSize: ADMIN_COMPANIES_MAX_PAGE_SIZE,
+    targetType: 'builder_company',
+  });
   const [createSheetOpen, setCreateSheetOpen] = useState(false);
   const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(null);
   const { viewMode, effectiveViewMode, setViewMode } = usePersistedViewMode(
     ADMIN_VIEW_MODE_KEYS.companies,
+  );
+
+  const readinessByCompanyId = useMemo(
+    () => buildCompanyReadinessMap(readinessQuery.data?.data ?? []),
+    [readinessQuery.data?.data],
   );
 
   const clearCreateParam = useCallback((): void => {
@@ -120,6 +135,7 @@ export const CompaniesListPage = () => {
       ) : (
         <CompaniesTable
           companies={response.data}
+          readinessByCompanyId={readinessByCompanyId}
           onSelectCompany={handleSelectCompany}
           viewMode={effectiveViewMode}
         />
