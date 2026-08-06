@@ -49,6 +49,11 @@ export const AccountShell = async ({ children, locale }: AccountShellProps) => {
       showRailHeaderMask={false}
       mobileDrawerControlledByNavbar
       className="bg-canvas"
+      railHeader={
+        <p className="truncate text-xs font-semibold uppercase tracking-[0.16em] text-on-dark/65">
+          {t('nav.portalLabel')}
+        </p>
+      }
       sidebar={<AccountNav accountType={user.accountType} />}
     >
       <AccountMobileStack name={user.name} email={user.email} accountType={user.accountType}>

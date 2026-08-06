@@ -7,7 +7,6 @@ import { useTranslations } from 'next-intl';
 
 import { useLogoutMutation } from '@/features/auth/hooks/use-auth';
 import { Link, usePathname } from '@/i18n/navigation';
-import { BrandLogo } from '@/shared/ui/brand-logo';
 import { cn } from '@/shared/ui/cn';
 import { usePortalRailCollapsed } from '@/shared/ui/portal-rail-collapse-context';
 
@@ -74,17 +73,6 @@ export const AccountNav = ({ accountType }: AccountNavProps) => {
 
   return (
     <nav aria-label={t('label')} className="flex h-full min-h-0 flex-col gap-1">
-      <div className={cn('mb-5 hidden shrink-0 md:block', railCollapsed ? 'px-0' : 'px-2')}>
-        {railCollapsed ? null : (
-          <>
-            <BrandLogo href="/dashboard" size="sm" inverted />
-            <p className="mt-2 px-0.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-on-dark/65">
-              {t('portalLabel')}
-            </p>
-          </>
-        )}
-      </div>
-
       <div className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto overscroll-contain">
         {primaryItems.map((item) => {
           const active = isActive(pathname, item.href);
