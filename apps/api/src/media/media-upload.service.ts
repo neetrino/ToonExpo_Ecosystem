@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Inject,
   Injectable,
+  Logger,
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -17,6 +18,7 @@ import {
   MEDIA_MODEL3D_CANONICAL_MIME,
   MEDIA_UPLOAD_KINDS,
   R2_NOT_CONFIGURED_MESSAGE,
+  R2_UPLOAD_FAILED_MESSAGE,
   type MediaUploadKind,
 } from './media.constants.js';
 import {
@@ -47,6 +49,8 @@ type ValidatedUpload = {
 
 @Injectable()
 export class MediaUploadService {
+  private readonly logger = new Logger(MediaUploadService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly configService: ConfigService<AppEnv, true>,
@@ -149,8 +153,12 @@ export class MediaUploadService {
       });
       return toMediaAssetItem(asset);
     } catch (error) {
-      await this.prisma.db.mediaAsset.delete({ where: { id: draft.id } });
-      throw error;
+      await this.prisma.db.mediaAsset.delete({ where: { id: draft.id } }).catch(() => undefined);
+      this.logger.error(
+        { err: error, key, mimeType: validated.mimeType },
+        'R2 media upload failed',
+      );
+      throw new ServiceUnavailableException(R2_UPLOAD_FAILED_MESSAGE);
     }
   }
 

@@ -171,6 +171,34 @@ describe('MediaUploadService', () => {
     expect(result.fileUrl).toBe('https://cdn.example.com/companies/co_1/media_1.png');
   });
 
+  it('maps R2 PutObject failures to 503 and deletes the draft asset', async () => {
+    mediaAssetCreate.mockResolvedValue({
+      id: 'media_fail',
+      ownerCompanyId: 'co_1',
+      type: MediaAssetType.image,
+      fileUrl: 'pending',
+      thumbnailUrl: null,
+      title: 'photo.png',
+      width: 1,
+      height: 1,
+      createdAt: new Date('2026-07-18T10:00:00.000Z'),
+    });
+    mediaAssetDelete.mockResolvedValue({});
+    uploadObject.mockRejectedValue(new Error('AccessDenied'));
+
+    await expect(
+      service.uploadImage({
+        buffer: pngBuffer,
+        mimeType: 'image/png',
+        originalFilename: 'photo.png',
+        uploadedByUserId: 'user_1',
+        scope: { kind: 'company', companyId: 'co_1' },
+      }),
+    ).rejects.toBeInstanceOf(ServiceUnavailableException);
+
+    expect(mediaAssetDelete).toHaveBeenCalledWith({ where: { id: 'media_fail' } });
+  });
+
   it('lists only company-owned media for portal scope', async () => {
     mediaAssetCount.mockResolvedValue(1);
     mediaAssetFindMany.mockResolvedValue([
