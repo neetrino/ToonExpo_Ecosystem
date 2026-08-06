@@ -2049,7 +2049,7 @@
     },
     "serviceProviders": {
       "title": "Ծառայություն մատուցողների կատալոգ",
-      "subtitle": "Կատեգորիաներ և մատակարարներ պատրաստվածության աջակցության համար",
+      "subtitle": "Մատակարարներ պատրաստվածության աջակցության համար",
       "loading": "Բեռնվում է…",
       "error": "Չհաջողվեց բեռնել տվյալները։",
       "categories": {
@@ -2112,6 +2112,9 @@
           "socialInstagram": "Instagram",
           "socialLinkedin": "LinkedIn",
           "categories": "Կատեգորիաներ",
+          "categoriesPlaceholder": "Ընտրել կատեգորիա…",
+          "categoriesSelectedCount": "{count} ընտրված",
+          "categoriesEmpty": "Կատեգորիաներ դեռ հասանելի չեն։",
           "internalNotes": "Ներքին նշումներ (միայն ադմին)",
           "internalNotesHint": "Կառուցապատողները ներքին նշումները չեն տեսնում։",
           "publication": "Հրապարակային կատալոգ",

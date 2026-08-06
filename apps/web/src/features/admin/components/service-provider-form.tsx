@@ -5,6 +5,7 @@ import type { ServiceProviderCategoryItem } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 import { Controller, useForm } from 'react-hook-form';
 
+import { SERVICE_PROVIDER_FORM_CATEGORY_NAMES } from '@/features/admin/constants/service-provider-categories';
 import {
   SERVICE_PROVIDER_TYPES,
   serviceProviderSchema,
@@ -26,6 +27,28 @@ type ServiceProviderFormProps = {
   isBusy: boolean;
 };
 
+const categoryIdToName = (
+  categoryIds: readonly string[],
+  categories: readonly ServiceProviderCategoryItem[],
+): string => {
+  const selectedId = categoryIds[0];
+  if (!selectedId) {
+    return '';
+  }
+  return categories.find((category) => category.id === selectedId)?.name ?? '';
+};
+
+const categoryNameToIds = (
+  name: string,
+  categories: readonly ServiceProviderCategoryItem[],
+): string[] => {
+  if (name.length === 0) {
+    return [];
+  }
+  const match = categories.find((category) => category.name === name);
+  return match ? [match.id] : [];
+};
+
 /**
  * Admin create/edit form for service providers (side sheet).
  */
@@ -44,21 +67,7 @@ export const ServiceProviderForm = ({
     defaultValues,
   });
 
-  const selectedCategoryIds = form.watch('categoryIds');
   const busy = isBusy || form.formState.isSubmitting;
-
-  const toggleCategory = (categoryId: string): void => {
-    const current = form.getValues('categoryIds');
-    if (current.includes(categoryId)) {
-      form.setValue(
-        'categoryIds',
-        current.filter((id) => id !== categoryId),
-        { shouldDirty: true },
-      );
-      return;
-    }
-    form.setValue('categoryIds', [...current, categoryId], { shouldDirty: true });
-  };
 
   const handleSubmit = form.handleSubmit(async (values) => {
     await onSubmit(values);
@@ -105,29 +114,31 @@ export const ServiceProviderForm = ({
         <FormField id="providerServices" label={t('services')}>
           <Textarea id="providerServices" rows={2} {...form.register('services')} />
         </FormField>
-        <fieldset className="flex flex-col gap-2">
-          <legend className="text-sm font-medium text-ink">{t('categories')}</legend>
-          <div className="flex flex-wrap gap-2">
-            {categories.map((category) => {
-              const checked = selectedCategoryIds.includes(category.id);
-              return (
-                <label
-                  key={category.id}
-                  className="inline-flex items-center gap-2 rounded-sm border border-border px-3 py-1.5 text-sm"
-                >
-                  <input
-                    type="checkbox"
-                    checked={checked}
-                    onChange={() => {
-                      toggleCategory(category.id);
-                    }}
-                  />
-                  {category.name}
-                </label>
-              );
-            })}
-          </div>
-        </fieldset>
+        <FormField id="providerCategory" label={t('categories')}>
+          <Controller
+            name="categoryIds"
+            control={form.control}
+            render={({ field }) => (
+              <Select
+                id="providerCategory"
+                name={field.name}
+                value={categoryIdToName(field.value, categories)}
+                aria-label={t('categories')}
+                onBlur={field.onBlur}
+                onChange={(event) => {
+                  field.onChange(categoryNameToIds(event.target.value, categories));
+                }}
+              >
+                <option value="">{t('categoriesPlaceholder')}</option>
+                {SERVICE_PROVIDER_FORM_CATEGORY_NAMES.map((name) => (
+                  <option key={name} value={name}>
+                    {name}
+                  </option>
+                ))}
+              </Select>
+            )}
+          />
+        </FormField>
       </fieldset>
 
       <fieldset className="mt-2 flex flex-col gap-3">
