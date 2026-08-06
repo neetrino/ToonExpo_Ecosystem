@@ -6,19 +6,15 @@ import type {
   PortalReadinessRequiredActionItem,
   PortalReadinessScoreItem,
 } from '@toonexpo/contracts';
-import { useLocale, useTranslations } from 'next-intl';
+import { useTranslations } from 'next-intl';
 
 import {
   BuilderReadinessCategoryHelp,
   BuilderReadinessCriteriaBlock,
 } from '@/features/builder/components/builder-readiness-criteria-block';
-import {
-  scorePercent,
-  toneForStatus,
-} from '@/features/builder/components/readiness-category-progress';
-import { ReadinessProgressRing } from '@/features/readiness/components/readiness-progress-ring';
+import { BuilderReadinessOverviewCard } from '@/features/builder/components/builder-readiness-overview-card';
+import { scorePercent } from '@/features/readiness/utils/readiness-score-display';
 import { ReadinessStatusBadge } from '@/features/readiness/components/readiness-status-badge';
-import { formatReadinessDate } from '@/features/readiness/utils/format-readiness-date';
 import { cn } from '@/shared/ui/cn';
 
 /** Groups that display as Yes/No list in Partners-style UI. */
@@ -87,49 +83,6 @@ const collectDisplayBlocks = (
   return blocks;
 };
 
-const OverviewCard = ({ assessment }: { assessment: PortalReadinessAssessmentItem }) => {
-  const t = useTranslations('Builder.readiness');
-  const tKpi = useTranslations('ReadinessKpi');
-  const overallPercent = scorePercent(assessment.overallScore);
-
-  return (
-    <section className="rounded-[var(--radius-lg)] border border-border/80 bg-surface-elevated p-5 shadow-card sm:p-7">
-      <h3 className="mb-6 text-lg font-semibold tracking-tight text-ink">{t('overallScore')}</h3>
-      <div className="flex flex-col items-center gap-8 lg:flex-row lg:items-center lg:justify-center lg:gap-12">
-        <div className="flex flex-col items-center gap-2">
-          <ReadinessProgressRing
-            percent={overallPercent}
-            size="lg"
-            tone={toneForStatus(assessment.status)}
-            label={`${t('overallScore')}: ${overallPercent}%`}
-          />
-          <p className="text-sm font-medium text-ink-secondary">{t('kpiScoreLabel')}</p>
-        </div>
-
-        <div className="hidden h-32 w-px bg-border lg:block" aria-hidden />
-
-        <div className="flex flex-wrap items-start justify-center gap-8 sm:gap-10">
-          {assessment.scores.map((score) => {
-            const percent = scorePercent(score.score);
-            const label = tKpi(`categories.${score.categoryCode}`);
-            return (
-              <div key={score.categoryId} className="flex w-[5.5rem] flex-col items-center gap-2">
-                <ReadinessProgressRing
-                  percent={percent}
-                  size="md"
-                  tone={toneForStatus(score.status)}
-                  label={`${label}: ${percent}%`}
-                />
-                <p className="text-center text-sm font-semibold text-ink">{label}</p>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </section>
-  );
-};
-
 const CategorySection = ({ score }: { score: PortalReadinessScoreItem }) => {
   const t = useTranslations('Builder.readiness');
   const tKpi = useTranslations('ReadinessKpi');
@@ -185,36 +138,19 @@ type BuilderReadinessAssessmentPanelProps = {
 };
 
 /**
- * Builder readiness — Partners KPI layout + ToonExpo design + portal functionality.
+ * Builder readiness — Partners KPI card layout + ToonExpo tokens + portal detail.
  */
 export const BuilderReadinessAssessmentPanel = ({
   assessment,
 }: BuilderReadinessAssessmentPanelProps) => {
   const t = useTranslations('Builder.readiness');
-  const locale = useLocale();
-  const title = assessment.projectName ?? t('companyAssessment');
   const sortedActions = [...assessment.requiredActions].sort(
     (a, b) => ACTION_PRIORITY[a.status] - ACTION_PRIORITY[b.status],
   );
 
   return (
     <div className="flex flex-col gap-8">
-      <header className="flex flex-col gap-2">
-        <div className="flex flex-wrap items-center gap-2">
-          <ReadinessStatusBadge status={assessment.status} namespace="Builder.readiness" />
-          <span className="text-xs font-medium tracking-wide text-ink-muted uppercase">
-            {t(`targetTypes.${assessment.targetType}`)}
-          </span>
-        </div>
-        <h2 className="font-display text-2xl font-semibold tracking-tight text-ink-navy sm:text-3xl">
-          {title}
-        </h2>
-        <p className="text-sm text-ink-secondary">
-          {t('lastUpdated')}: {formatReadinessDate(assessment.lastEvaluatedAt, locale)}
-        </p>
-      </header>
-
-      <OverviewCard assessment={assessment} />
+      <BuilderReadinessOverviewCard assessment={assessment} />
 
       <div className="flex flex-col gap-8">
         {assessment.scores.map((score) => (

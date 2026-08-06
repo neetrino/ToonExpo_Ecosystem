@@ -46,24 +46,60 @@ export const toReadinessCategoryItem = (category: ReadinessCategory): ReadinessC
   updatedAt: toIso(category.updatedAt),
 });
 
-export const toReadinessAssessmentListItem = (
-  assessment: ReadinessAssessment,
-): ReadinessAssessmentListItem => ({
-  id: assessment.id,
-  targetType: assessment.targetType,
-  builderCompanyId: assessment.builderCompanyId,
-  projectId: assessment.projectId,
-  status: assessment.status,
-  overallScore: assessment.overallScore,
-  overallScoreOverridden: assessment.overallScoreOverridden,
-  evaluatedByUserId: assessment.evaluatedByUserId,
-  lastEvaluatedAt: assessment.lastEvaluatedAt ? toIso(assessment.lastEvaluatedAt) : null,
-  archivedAt: assessment.archivedAt ? toIso(assessment.archivedAt) : null,
-  createdAt: toIso(assessment.createdAt),
-  updatedAt: toIso(assessment.updatedAt),
-});
-
 type ScoreWithCategory = ReadinessScore & { category: ReadinessCategory };
+
+type ProjectWithCover = {
+  name: string;
+  coverMedia: { fileUrl: string; thumbnailUrl: string | null } | null;
+};
+
+type AssessmentListRecord = ReadinessAssessment & {
+  scores?: ScoreWithCategory[];
+  project?: ProjectWithCover | null;
+};
+
+export const assessmentListInclude = {
+  scores: {
+    include: { category: true },
+    orderBy: [{ category: { sortOrder: 'asc' as const } }, { category: { name: 'asc' as const } }],
+  },
+  project: {
+    select: {
+      name: true,
+      coverMedia: { select: { fileUrl: true, thumbnailUrl: true } },
+    },
+  },
+} satisfies Prisma.ReadinessAssessmentInclude;
+
+export const toReadinessAssessmentListItem = (
+  assessment: AssessmentListRecord,
+): ReadinessAssessmentListItem => {
+  const cover =
+    assessment.project?.coverMedia?.thumbnailUrl ?? assessment.project?.coverMedia?.fileUrl ?? null;
+
+  return {
+    id: assessment.id,
+    targetType: assessment.targetType,
+    builderCompanyId: assessment.builderCompanyId,
+    projectId: assessment.projectId,
+    projectName: assessment.project?.name ?? null,
+    coverUrl: cover,
+    status: assessment.status,
+    overallScore: assessment.overallScore,
+    overallScoreOverridden: assessment.overallScoreOverridden,
+    evaluatedByUserId: assessment.evaluatedByUserId,
+    lastEvaluatedAt: assessment.lastEvaluatedAt ? toIso(assessment.lastEvaluatedAt) : null,
+    archivedAt: assessment.archivedAt ? toIso(assessment.archivedAt) : null,
+    createdAt: toIso(assessment.createdAt),
+    updatedAt: toIso(assessment.updatedAt),
+    categories: (assessment.scores ?? []).map((score) => ({
+      categoryId: score.categoryId,
+      categoryCode: score.category.code,
+      categoryWeight: score.category.weight,
+      score: score.score,
+    })),
+  };
+};
 
 type CriterionScoreWithCriterion = ReadinessCriterionScore & {
   criterion: ReadinessCriterion;

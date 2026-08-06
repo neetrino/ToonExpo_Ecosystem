@@ -10,6 +10,7 @@ import { PrismaService } from '../../prisma/prisma.service.js';
 import { AnalyticsService } from '../../analytics/analytics.service.js';
 import {
   assessmentDetailInclude,
+  assessmentListInclude,
   toReadinessAssessmentDetail,
   toReadinessAssessmentListItem,
   toReadinessScoreItem,
@@ -39,6 +40,7 @@ export class AdminReadinessAssessmentsService {
       this.prisma.db.readinessAssessment.count({ where }),
       this.prisma.db.readinessAssessment.findMany({
         where,
+        include: assessmentListInclude,
         orderBy: { createdAt: 'desc' },
         skip,
         take: query.pageSize,

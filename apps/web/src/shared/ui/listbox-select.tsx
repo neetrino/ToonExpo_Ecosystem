@@ -75,9 +75,23 @@ export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
         return;
       }
 
+      const isInsideOpenMenu = (node: Node): boolean => {
+        if (rootRef.current?.contains(node)) {
+          return true;
+        }
+        if (menuRef.current?.contains(node)) {
+          return true;
+        }
+        // Scroll/overflow lives on DropdownPortal wrapper, not the <ul>.
+        if (node instanceof Element && menuRef.current) {
+          const portal = node.closest('[data-dropdown-portal]');
+          return Boolean(portal?.contains(menuRef.current));
+        }
+        return false;
+      };
+
       const onPointerDown = (event: MouseEvent): void => {
-        const target = event.target as Node;
-        if (rootRef.current?.contains(target) || menuRef.current?.contains(target)) {
+        if (isInsideOpenMenu(event.target as Node)) {
           return;
         }
         setOpen(false);
@@ -92,7 +106,7 @@ export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
 
       const onScroll = (event: Event): void => {
         const target = event.target;
-        if (target instanceof Node && menuRef.current?.contains(target)) {
+        if (target instanceof Node && isInsideOpenMenu(target)) {
           return;
         }
         setOpen(false);
@@ -152,20 +166,16 @@ export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
           type="button"
           disabled={disabled}
           className={cn(
-            'col-start-1 row-start-1 flex min-w-0 w-full items-center justify-between gap-2 text-left',
-            'transition-colors duration-[var(--duration-fast)]',
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/25',
-            'disabled:cursor-not-allowed disabled:opacity-50',
+            'col-start-1 row-start-1',
             isField
-              ? cn(
-                  'h-11 rounded-sm border border-border bg-surface-elevated px-4',
-                  'text-base text-ink sm:text-sm',
-                  'transition-[border-color,box-shadow,background-color] duration-[var(--duration-fast)]',
-                  'hover:border-border-strong focus-visible:border-brand focus-visible:ring-brand/20',
-                  className,
-                )
-              : cn('bg-transparent p-0 text-sm font-medium text-ink-navy', 'hover:text-brand-deep'),
-            !isField && open && 'text-brand-deep',
+              ? cn('site-select-trigger', className)
+              : cn(
+                  'flex min-w-0 w-full items-center justify-between gap-2 bg-transparent p-0 text-left',
+                  'text-sm font-medium text-ink-navy transition-colors duration-[var(--duration-fast)]',
+                  'hover:text-brand-deep focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/25',
+                  'disabled:cursor-not-allowed disabled:opacity-50',
+                  open && 'text-brand-deep',
+                ),
           )}
           aria-label={ariaLabel}
           aria-haspopup="listbox"
@@ -179,13 +189,22 @@ export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
             setOpen((current) => !current);
           }}
         >
-          <span className={cn(isFit ? 'whitespace-nowrap' : 'truncate')}>{selected?.label}</span>
+          <span
+            className={cn(
+              isField ? 'site-select-trigger__label' : isFit ? 'whitespace-nowrap' : 'truncate',
+            )}
+          >
+            {selected?.label}
+          </span>
           <ChevronDown
             className={cn(
-              'size-4 shrink-0 transition-transform duration-[var(--duration-base)] ease-[var(--ease-out-premium)]',
-              isField ? 'text-brand' : 'text-header-muted',
-              open && 'rotate-180',
-              open && !isField && 'text-brand-deep',
+              isField
+                ? 'site-select-trigger__chevron'
+                : cn(
+                    'size-4 shrink-0 text-header-muted transition-transform duration-[var(--duration-base)]',
+                    'ease-[var(--ease-out-premium)]',
+                    open && 'rotate-180 text-brand-deep',
+                  ),
             )}
             aria-hidden
           />
@@ -197,10 +216,7 @@ export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
             id={listId}
             role="listbox"
             aria-label={ariaLabel}
-            className={cn(
-              'w-full overflow-hidden',
-              'rounded-[12px] border border-header-border bg-surface-elevated py-1.5 shadow-md',
-            )}
+            className="site-select-menu"
           >
             {options.map((option) => {
               const active = option.value === value;
@@ -210,19 +226,11 @@ export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
                     type="button"
                     role="option"
                     aria-selected={active}
-                    className={cn(
-                      'flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left text-sm whitespace-nowrap',
-                      'transition-colors duration-[var(--duration-base)] ease-[var(--ease-out-premium)]',
-                      active
-                        ? 'bg-brand-soft font-semibold text-brand-deep'
-                        : 'font-medium text-ink hover:bg-surface',
-                    )}
+                    className="site-select-option"
                     onClick={() => pick(option.value)}
                   >
                     <span>{option.label}</span>
-                    {active ? (
-                      <Check className="size-3.5 shrink-0 text-brand-logo" aria-hidden />
-                    ) : null}
+                    {active ? <Check className="site-select-option__check" aria-hidden /> : null}
                   </button>
                 </li>
               );
