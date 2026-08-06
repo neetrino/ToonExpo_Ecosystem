@@ -4,15 +4,16 @@ import type { ReadinessCategoryItem } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
+import { ReadinessCategoryCard } from '@/features/admin/components/readiness-category-card';
 import { ReadinessCategoryForm } from '@/features/admin/components/readiness-category-form';
 import { ADMIN_VIEW_MODE_KEYS } from '@/features/admin/constants';
 import { useAdminReadinessCategoriesQuery } from '@/features/admin/hooks/use-admin-readiness';
-import { BackLink } from '@/shared/ui/back-link';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
-import { Button } from '@/shared/ui/button';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { AdminCreateSheet } from '@/shared/ui/admin-create-sheet';
 import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
+import { BackLink } from '@/shared/ui/back-link';
+import { Button } from '@/shared/ui/button';
 import { VIEW_MODE_CARDS } from '@/shared/ui/view-mode';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
@@ -100,42 +101,16 @@ export const ReadinessCategoriesPage = () => {
       {categories.length === 0 ? (
         <p className="text-sm text-ink-secondary">{t('empty')}</p>
       ) : effectiveViewMode === VIEW_MODE_CARDS ? (
-        <AdminListCardGrid>
+        <AdminListCardGrid className="gap-4 xl:grid-cols-4">
           {categories.map((category) => (
-            <div
+            <ReadinessCategoryCard
               key={category.id}
-              className="flex flex-col gap-2 rounded-sm border border-border bg-background p-3"
-            >
-              <div className="flex items-start justify-between gap-2">
-                <div className="min-w-0">
-                  <p className="font-medium text-ink">{category.name}</p>
-                  {category.description ? (
-                    <p className="mt-0.5 text-xs text-ink-muted">{category.description}</p>
-                  ) : null}
-                </div>
-                <button
-                  type="button"
-                  className="shrink-0 text-sm font-medium text-brand hover:underline"
-                  onClick={() => {
-                    setEditing(category);
-                    setCreating(false);
-                  }}
-                >
-                  {t('edit')}
-                </button>
-              </div>
-              <div className="flex flex-wrap gap-2 text-xs text-ink-muted">
-                <span>
-                  {t('columns.weight')}: {category.weight ?? '—'}
-                </span>
-                <span aria-hidden>·</span>
-                <span>
-                  {t('columns.sort')}: {category.sortOrder}
-                </span>
-                <span aria-hidden>·</span>
-                <span>{category.active ? t('activeYes') : t('activeNo')}</span>
-              </div>
-            </div>
+              category={category}
+              onEdit={() => {
+                setEditing(category);
+                setCreating(false);
+              }}
+            />
           ))}
         </AdminListCardGrid>
       ) : (
@@ -153,12 +128,7 @@ export const ReadinessCategoriesPage = () => {
             <tbody>
               {categories.map((category) => (
                 <tr key={category.id} className="border-t border-border hover:bg-surface/60">
-                  <td className="px-3 py-2.5">
-                    <p className="font-medium text-ink">{category.name}</p>
-                    {category.description ? (
-                      <p className="mt-0.5 text-xs text-ink-muted">{category.description}</p>
-                    ) : null}
-                  </td>
+                  <td className="px-3 py-2.5 font-medium text-ink">{category.name}</td>
                   <td className="px-3 py-2.5 text-ink-secondary">{category.weight ?? '—'}</td>
                   <td className="px-3 py-2.5 text-ink-secondary">{category.sortOrder}</td>
                   <td className="px-3 py-2.5 text-ink-secondary">

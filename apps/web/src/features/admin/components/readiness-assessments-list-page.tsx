@@ -16,7 +16,6 @@ import { useAdminCompaniesQuery } from '@/features/admin/hooks/use-admin-compani
 import { useAdminReadinessAssessmentsQuery } from '@/features/admin/hooks/use-admin-readiness';
 import { READINESS_DEFAULT_PAGE_SIZE } from '@/features/readiness/constants';
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
-import { Link } from '@/i18n/navigation';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { Button } from '@/shared/ui/button';
@@ -138,12 +137,6 @@ export const ReadinessAssessmentsListPage = () => {
             ))}
           </Select>
         </label>
-        <Link
-          href="/admin/readiness/categories"
-          className="text-sm text-ink-secondary underline-offset-2 hover:text-ink hover:underline"
-        >
-          {t('categoriesLink')}
-        </Link>
       </div>
 
       {visibleAssessments.length === 0 ? (
