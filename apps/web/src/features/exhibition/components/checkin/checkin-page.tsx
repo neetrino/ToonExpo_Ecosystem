@@ -126,6 +126,7 @@ export const CheckinPage = () => {
       ) : (
         <ScannerCamera
           paused={scanMutation.isPending}
+          showManualHint={false}
           onToken={(raw) => {
             void handleScan(raw);
           }}

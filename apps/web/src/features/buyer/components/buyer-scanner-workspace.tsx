@@ -39,7 +39,7 @@ export const BuyerScannerWorkspace = ({ onNavigated }: BuyerScannerWorkspaceProp
 
   return (
     <div className="flex flex-col gap-4">
-      <ScannerCamera paused={paused} onToken={handleToken} />
+      <ScannerCamera paused={paused} onToken={handleToken} showManualHint={false} />
       {error ? (
         <p role="alert" className="text-sm text-danger">
           {error}

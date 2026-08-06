@@ -9,8 +9,8 @@ export const extractQrToken = (input: string): string => {
 
   try {
     const asUrl = new URL(trimmed);
-    const segments = asUrl.pathname.split("/").filter(Boolean);
-    const qrIndex = segments.findIndex((segment) => segment === "qr");
+    const segments = asUrl.pathname.split('/').filter(Boolean);
+    const qrIndex = segments.findIndex((segment) => segment === 'qr');
     if (qrIndex >= 0 && segments[qrIndex + 1]) {
       return segments[qrIndex + 1] as string;
     }
@@ -29,11 +29,8 @@ export const extractQrToken = (input: string): string => {
 /**
  * Builds the camera-scannable buyer QR payload URL.
  */
-export const buildBuyerQrPayloadUrl = (
-  appUrl: string,
-  token: string,
-): string => {
-  const base = appUrl.replace(/\/$/, "");
+export const buildBuyerQrPayloadUrl = (appUrl: string, token: string): string => {
+  const base = appUrl.replace(/\/$/, '');
   return `${base}/qr/${token}`;
 };
 
@@ -45,6 +42,18 @@ export const buildProjectQrPayloadUrl = (
   locale: string,
   projectId: string,
 ): string => {
-  const base = appUrl.replace(/\/$/, "");
+  const base = appUrl.replace(/\/$/, '');
   return `${base}/${locale}/projects/${projectId}`;
+};
+
+/**
+ * Builds the public apartment page URL for apartment QR printouts.
+ */
+export const buildApartmentQrPayloadUrl = (
+  appUrl: string,
+  locale: string,
+  apartmentId: string,
+): string => {
+  const base = appUrl.replace(/\/$/, '');
+  return `${base}/${locale}/apartments/${apartmentId}`;
 };

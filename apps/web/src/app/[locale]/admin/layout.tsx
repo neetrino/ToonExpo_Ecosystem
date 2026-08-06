@@ -53,6 +53,11 @@ export default async function AdminLayout({ children, params }: AdminLayoutProps
         expand: t('nav.railExpand'),
         collapse: t('nav.railCollapse'),
       }}
+      railHeader={
+        <p className="truncate text-xs font-semibold uppercase tracking-[0.16em] text-on-dark/65">
+          {t('nav.portalLabel')}
+        </p>
+      }
       sidebar={<AdminNav />}
     >
       <AdminMobileStack name={user.name} email={user.email}>

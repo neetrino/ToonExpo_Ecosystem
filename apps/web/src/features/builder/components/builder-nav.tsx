@@ -43,18 +43,11 @@ export const BuilderNav = ({ companyName }: BuilderNavProps) => {
 
   return (
     <nav aria-label={t('label')} className="flex h-full min-h-0 flex-col gap-1">
-      <div className={cn('mb-4 hidden shrink-0 md:block', railCollapsed ? 'px-0' : 'px-3.5 pt-1')}>
-        {railCollapsed ? null : (
-          <>
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-on-dark/65">
-              {t('portalLabel')}
-            </p>
-            {companyName ? (
-              <p className="mt-1 truncate text-sm font-medium text-on-dark">{companyName}</p>
-            ) : null}
-          </>
-        )}
-      </div>
+      {companyName && !railCollapsed ? (
+        <div className="mb-4 hidden shrink-0 px-1.5 md:block">
+          <p className="truncate text-sm font-medium text-on-dark">{companyName}</p>
+        </div>
+      ) : null}
 
       <div className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto overscroll-contain">
         {BUILDER_PRIMARY_NAV_ITEMS.map((item) => {

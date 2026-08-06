@@ -195,14 +195,6 @@ export const AdminNav = () => {
 
   return (
     <nav aria-label={t('label')} className="flex h-full min-h-0 flex-col gap-1">
-      <div className={cn('mb-3 hidden shrink-0 md:block', railCollapsed ? 'px-0' : 'px-3.5 pt-1')}>
-        {railCollapsed ? null : (
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-on-dark/65">
-            {t('portalLabel')}
-          </p>
-        )}
-      </div>
-
       <div className="scrollbar-none flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto overscroll-contain">
         {ADMIN_PRIMARY_NAV_ITEMS.map(renderNavItem)}
       </div>

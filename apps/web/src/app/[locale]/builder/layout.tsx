@@ -54,6 +54,11 @@ export default async function BuilderLayout({ children, params }: BuilderLayoutP
       variant="rail"
       mobileDrawerControlledByNavbar
       className="bg-canvas"
+      railHeader={
+        <p className="truncate text-xs font-semibold uppercase tracking-[0.16em] text-on-dark/65">
+          {t('nav.portalLabel')}
+        </p>
+      }
       sidebar={<BuilderNav companyName={company.name} />}
     >
       <BuilderMobileStack name={user.name} email={user.email} companyName={company.name}>

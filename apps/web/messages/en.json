@@ -483,6 +483,13 @@
       "next": "Next",
       "ariaLabel": "Pagination"
     },
+    "entityQr": {
+      "open": "Open QR",
+      "title": "QR code",
+      "subtitle": "Scan to open this page on another device.",
+      "copyLink": "Copy link",
+      "copied": "Copied"
+    },
     "projects": {
       "title": "Projects",
       "subtitle": "{count, plural, =0 {No projects} one {# project} other {# projects}}",
@@ -508,6 +515,7 @@
       "statFrom": "From",
       "statTotalUnits": "Total units",
       "statSold": "Sold",
+      "qrTitle": "QR code for {name}",
       "completionTba": "TBA",
       "timelineTitle": "Construction timeline",
       "timelineStageIndex": "Stage {number}",
@@ -691,6 +699,7 @@
       "verifiedLabel": "Verified",
       "verifiedYes": "Yes",
       "verifiedBadge": "Verified",
+      "qrTitle": "QR code for {name}, apt. {number}",
       "unitIdLabel": "Unit ID",
       "floorLabel": "Floor",
       "livingAreaLabel": "Living area",
@@ -3516,7 +3525,14 @@
     "scanner": {
       "title": "QR scanner",
       "subtitle": "Scan a buyer QR at the exhibition to open a CRM deal",
-      "cameraDenied": "Camera access was denied or unavailable.",
+      "cameraPrompt": "Camera is needed to scan QR codes.",
+      "cameraPromptHint": "Tap the button to allow camera access.",
+      "cameraDenied": "Camera access was denied.",
+      "cameraUnavailable": "Camera is unavailable.",
+      "cameraUnavailableHint": "Check that no other app is using the camera, then try again.",
+      "retryCamera": "Allow camera access",
+      "retryCameraAgain": "Try again",
+      "cameraSettingsHint": "Access is blocked for this site. Open the browser site settings, set Camera to Allow, then tap Try again.",
       "useManual": "Enter the QR URL or token manually below.",
       "resolving": "Resolving QR…",
       "manualLabel": "QR URL or token",
