@@ -156,7 +156,12 @@ export class PortalReadinessService {
 
   private portalInclude() {
     return {
-      project: { select: { name: true } },
+      project: {
+        select: {
+          name: true,
+          coverMedia: { select: { fileUrl: true, thumbnailUrl: true } },
+        },
+      },
       scores: {
         include: { category: true },
         orderBy: { category: { sortOrder: 'asc' as const } },

@@ -275,6 +275,8 @@ export type PortalReadinessAssessmentItem = {
   targetType: ReadinessAssessmentTargetType;
   projectId: string | null;
   projectName: string | null;
+  /** Project cover image URL when available. */
+  coverUrl: string | null;
   status: ReadinessScoreStatus;
   overallScore: number | null;
   lastEvaluatedAt: string | null;

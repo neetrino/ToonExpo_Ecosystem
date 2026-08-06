@@ -2,15 +2,7 @@
 
 import type { AdminProjectListItem, PublicationStatus } from '@toonexpo/contracts';
 import type { LucideIcon } from 'lucide-react';
-import {
-  Building,
-  Building2,
-  CheckCircle2,
-  CircleDashed,
-  Home,
-  MapPin,
-  QrCode,
-} from 'lucide-react';
+import { Building, Building2, CheckCircle2, CircleDashed, Home, QrCode } from 'lucide-react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
@@ -19,6 +11,9 @@ import { ProjectQrDialog } from '@/features/builder/components/project-qr-dialog
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 import { IconButton } from '@/shared/ui/icon-button';
+
+const CARD_RADIUS_CLASS = 'rounded-[15px]';
+const MEDIA_RADIUS_CLASS = 'rounded-[15px]';
 
 type AdminProjectCardProps = {
   project: AdminProjectListItem;
@@ -29,10 +24,6 @@ const STATUS_BADGE_CLASS: Record<PublicationStatus, string> = {
   published: 'bg-success-soft text-success',
   draft: 'bg-surface text-ink-muted',
   archived: 'bg-warning-soft text-warning',
-};
-
-type AdminProjectImageProps = {
-  project: AdminProjectListItem;
 };
 
 const toSafeImageSource = (value: string | null | undefined): string | undefined => {
@@ -52,6 +43,10 @@ const toSafeImageSource = (value: string | null | undefined): string | undefined
   }
 };
 
+type AdminProjectImageProps = {
+  project: AdminProjectListItem;
+};
+
 const AdminProjectImage = ({ project }: AdminProjectImageProps) => {
   const [imageFailed, setImageFailed] = useState(false);
   const cover = project.buildingCover;
@@ -60,41 +55,34 @@ const AdminProjectImage = ({ project }: AdminProjectImageProps) => {
   const validImageSource = imageFailed ? undefined : imageSource;
 
   return (
-    <Link
-      href={`/admin/projects/${project.id}`}
+    <div
       className={cn(
-        'relative block aspect-[16/9] w-full cursor-pointer overflow-hidden border-b border-border/60 bg-surface',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30 focus-visible:ring-inset',
+        'relative aspect-[16/10] w-full overflow-hidden bg-surface ring-1 ring-border/60',
+        MEDIA_RADIUS_CLASS,
       )}
     >
       {validImageSource && cover ? (
-        <>
-          <Image
-            src={validImageSource}
-            alt={cover.media.altText?.trim() || `${cover.buildingName} — ${project.name}`}
-            fill
-            className={cn(
-              'pointer-events-none object-cover transition-transform duration-[var(--duration-slow)]',
-              'ease-[var(--ease-out-premium)] group-hover:scale-[1.04]',
-              'motion-reduce:transition-none motion-reduce:group-hover:scale-100',
-            )}
-            sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
-            onError={() => {
-              setImageFailed(true);
-            }}
-          />
-          <span
-            className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink/20 via-transparent to-transparent"
-            aria-hidden
-          />
-        </>
+        <Image
+          src={validImageSource}
+          alt={cover.media.altText?.trim() || `${cover.buildingName} — ${project.name}`}
+          fill
+          className={cn(
+            'object-cover transition-transform duration-[var(--duration-slow)]',
+            'ease-[var(--ease-out-premium)] group-hover:scale-[1.04]',
+            'motion-reduce:transition-none motion-reduce:group-hover:scale-100',
+          )}
+          sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
+          onError={() => {
+            setImageFailed(true);
+          }}
+        />
       ) : (
-        <span className="flex size-full flex-col items-center justify-center gap-2 text-ink-muted">
-          <Building2 className="size-8 opacity-50" aria-hidden />
-          <span className="max-w-[80%] truncate text-sm">{project.name}</span>
+        <span className="flex size-full flex-col items-center justify-center gap-1.5 text-ink-muted">
+          <Building2 className="size-8 opacity-40" aria-hidden />
+          <span className="max-w-[80%] truncate text-xs">{project.name}</span>
         </span>
       )}
-    </Link>
+    </div>
   );
 };
 
@@ -116,7 +104,7 @@ const AdminProjectStat = ({
   const body = (
     <>
       <span
-        className="flex size-9 shrink-0 items-center justify-center rounded-sm bg-brand-soft text-brand"
+        className="flex size-8 shrink-0 items-center justify-center rounded-sm bg-brand-soft text-brand"
         aria-hidden
       >
         <Icon className="size-4" strokeWidth={2} />
@@ -153,7 +141,7 @@ const AdminProjectStat = ({
 };
 
 /**
- * Wide project card for the admin projects hub.
+ * KPI-style project card — company header, title, cover, inventory footer.
  */
 export const AdminProjectCard = ({ project, onOpenBuildings }: AdminProjectCardProps) => {
   const t = useTranslations('Admin.projects');
@@ -161,94 +149,92 @@ export const AdminProjectCard = ({ project, onOpenBuildings }: AdminProjectCardP
   const StatusIcon = project.publicationStatus === 'published' ? CheckCircle2 : CircleDashed;
   const [qrOpen, setQrOpen] = useState(false);
   const openBuildingsLabel = t('openBuildings', { name: project.name });
+  const companyInitials = project.companyName.trim().slice(0, 2).toUpperCase() || '—';
 
   return (
     <>
       <article
         className={cn(
-          'group relative flex h-full flex-col overflow-hidden rounded-lg bg-surface-elevated',
-          'shadow-xs ring-1 ring-border transition-all duration-[var(--duration-base)]',
-          'ease-[var(--ease-out-premium)] hover:-translate-y-1 hover:shadow-card',
-          'hover:ring-brand/30 motion-reduce:transition-none motion-reduce:hover:translate-y-0',
+          'group relative flex h-full flex-col gap-3.5 overflow-hidden border border-border/80',
+          'bg-surface-elevated p-4 shadow-card sm:p-5',
+          'transition-[box-shadow,transform] duration-[var(--duration-base)]',
+          'ease-[var(--ease-out-premium)] hover:-translate-y-1 hover:shadow-sm',
+          'motion-reduce:transition-none motion-reduce:hover:translate-y-0',
+          CARD_RADIUS_CLASS,
         )}
       >
-        <div className="relative">
+        <header className="flex flex-col gap-2">
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex min-w-0 items-center gap-2.5">
+              <div className="relative flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-surface ring-1 ring-border">
+                <span className="text-[10px] font-semibold text-ink-muted">{companyInitials}</span>
+              </div>
+              <p className="min-w-0 truncate text-sm font-medium text-ink-secondary">
+                {project.companyName}
+              </p>
+            </div>
+            <span
+              className={cn(
+                'inline-flex shrink-0 items-center gap-1.5 rounded-pill px-2.5 py-1 text-xs font-medium',
+                STATUS_BADGE_CLASS[project.publicationStatus],
+              )}
+            >
+              <StatusIcon className="size-3.5" aria-hidden />
+              {t(`publication.${project.publicationStatus}`)}
+            </span>
+          </div>
+          <Link
+            href={`/admin/projects/${project.id}`}
+            className={cn(
+              'text-lg font-semibold tracking-tight text-ink sm:text-xl',
+              'transition-colors duration-[var(--duration-fast)] group-hover:text-brand-deep',
+              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30',
+            )}
+          >
+            {project.name}
+          </Link>
+        </header>
+
+        <Link
+          href={`/admin/projects/${project.id}`}
+          className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30"
+        >
           <AdminProjectImage
             key={project.buildingCover?.media.id ?? 'fallback'}
             project={project}
           />
+        </Link>
 
-          <span
-            className={cn(
-              'pointer-events-none absolute top-3 right-3 inline-flex items-center gap-1.5 rounded-pill px-2.5 py-1',
-              'text-xs font-medium shadow-xs ring-1 ring-ink/5',
-              STATUS_BADGE_CLASS[project.publicationStatus],
-            )}
+        <div className="mt-auto flex flex-wrap items-center gap-x-5 gap-y-3 border-t border-border/70 pt-3">
+          <AdminProjectStat
+            icon={Building}
+            label={t('columns.buildings')}
+            value={project.buildingsCount}
+            onClick={
+              onOpenBuildings
+                ? () => {
+                    onOpenBuildings(project);
+                  }
+                : undefined
+            }
+            buttonAriaLabel={openBuildingsLabel}
+          />
+          <AdminProjectStat
+            icon={Home}
+            label={t('columns.apartments')}
+            value={project.apartmentsCount}
+          />
+          <IconButton
+            label={tQr('open')}
+            variant="soft"
+            size="md"
+            className="ml-auto"
+            onClick={() => {
+              setQrOpen(true);
+            }}
           >
-            <StatusIcon className="size-3.5" aria-hidden />
-            {t(`publication.${project.publicationStatus}`)}
-          </span>
-        </div>
-
-        <div className="flex flex-1 flex-col p-4 sm:p-5">
-          <Link
-            href={`/admin/projects/${project.id}`}
-            className={cn(
-              'flex min-w-0 flex-1 flex-col rounded-sm active:scale-[0.995]',
-              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30',
-            )}
-          >
-            <h2
-              className={cn(
-                'truncate font-brand text-lg font-semibold tracking-[-0.02em] text-ink',
-                'transition-colors duration-[var(--duration-fast)] group-hover:text-brand-deep',
-              )}
-            >
-              {project.name}
-            </h2>
-            <div className="mt-2.5 flex flex-col gap-1.5 text-sm">
-              <span className="inline-flex min-w-0 items-center gap-2 font-medium text-ink-secondary">
-                <Building2 className="size-3.5 shrink-0 text-ink-muted" aria-hidden />
-                <span className="truncate">{project.companyName}</span>
-              </span>
-              <span className="inline-flex min-w-0 items-center gap-2 text-ink-muted">
-                <MapPin className="size-3.5 shrink-0" aria-hidden />
-                <span className="truncate">{project.city ?? '—'}</span>
-              </span>
-            </div>
-          </Link>
-
-          <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-3 border-t border-border/70 pt-4">
-            <AdminProjectStat
-              icon={Building}
-              label={t('columns.buildings')}
-              value={project.buildingsCount}
-              onClick={
-                onOpenBuildings
-                  ? () => {
-                      onOpenBuildings(project);
-                    }
-                  : undefined
-              }
-              buttonAriaLabel={openBuildingsLabel}
-            />
-            <AdminProjectStat
-              icon={Home}
-              label={t('columns.apartments')}
-              value={project.apartmentsCount}
-            />
-            <IconButton
-              label={tQr('open')}
-              variant="soft"
-              size="md"
-              className="ml-auto"
-              onClick={() => {
-                setQrOpen(true);
-              }}
-            >
-              <QrCode className="size-4" aria-hidden />
-            </IconButton>
-          </div>
+            <QrCode className="size-4" aria-hidden />
+          </IconButton>
         </div>
       </article>
 

@@ -1530,8 +1530,8 @@
       }
     },
     "companies": {
-      "title": "Companies",
-      "subtitle": "{count, plural, =0 {No companies} one {# company} other {# companies}}",
+      "title": "Builder",
+      "subtitle": "{count, plural, =0 {No builders} one {# builder} other {# builders}}",
       "empty": "No companies yet. Create the first one.",
       "loading": "Loading companies…",
       "error": "Could not load companies. Try again.",
