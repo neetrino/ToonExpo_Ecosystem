@@ -13,13 +13,15 @@ import {
 } from '@dnd-kit/core';
 import type { CrmDealListItem, CrmDealStatus } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 
 import { CrmKanbanCard } from '@/features/crm-board/crm-kanban-card';
 import { CrmKanbanColumn } from '@/features/crm-board/crm-kanban-column';
+import { CrmKanbanScrollArrows } from '@/features/crm-board/crm-kanban-scroll-arrows';
 import { CRM_KANBAN_STATUSES, type CrmBoardMode } from '@/features/crm-board/constants';
 import { groupDealsByStatus } from '@/features/crm-board/group-deals-by-status';
+import { useCrmKanbanHScroll } from '@/features/crm-board/use-crm-kanban-h-scroll';
 import { cn } from '@/shared/ui/cn';
 import { useDesktopFluidStageScale } from '@/shared/ui/desktop-fluid-stage-scale';
 
@@ -56,6 +58,9 @@ export const CrmKanbanBoard = ({
   const tSources = useTranslations('CrmBoard.sources');
   const canDrag = Boolean(onStatusDrop);
   const stageScale = useDesktopFluidStageScale();
+  const columnsRef = useRef<HTMLDivElement>(null);
+  const { canScrollLeft, canScrollRight, scrollByColumn, startHoverScroll, stopHoverScroll } =
+    useCrmKanbanHScroll(columnsRef);
   const [portalReady, setPortalReady] = useState(false);
   const [items, setItems] = useState(deals);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -169,25 +174,39 @@ export const CrmKanbanBoard = ({
         onDragEnd={onDragEnd}
         onDragCancel={onDragCancel}
       >
-        <div className="crm-kanban-board-columns luxury-scrollbar">
-          {CRM_KANBAN_STATUSES.map((status) => (
-            <CrmKanbanColumn
-              key={status}
-              status={status}
-              title={tStatuses(status)}
-              deals={grouped[status]}
-              isOver={overColumn === status && canDrag}
-              canDrag={canDrag}
-              showCompany={mode === 'readonly'}
-              emptyLabel={t('emptyColumn')}
-              unnamedLabel={t('unnamedBuyer')}
-              noProjectLabel={t('noProject')}
-              sourceLabel={(source) => tSources(source)}
-              onOpenDeal={onOpenDeal}
-              newColumnAction={status === 'new_request' ? newColumnAction : undefined}
-              activeId={activeId}
-            />
-          ))}
+        <div className="crm-kanban-board-scroller">
+          <CrmKanbanScrollArrows
+            canScrollLeft={canScrollLeft}
+            canScrollRight={canScrollRight}
+            onScrollLeft={() => {
+              scrollByColumn(-1);
+            }}
+            onScrollRight={() => {
+              scrollByColumn(1);
+            }}
+            onHoverScrollStart={startHoverScroll}
+            onHoverScrollStop={stopHoverScroll}
+          />
+          <div ref={columnsRef} className="crm-kanban-board-columns luxury-scrollbar">
+            {CRM_KANBAN_STATUSES.map((status) => (
+              <CrmKanbanColumn
+                key={status}
+                status={status}
+                title={tStatuses(status)}
+                deals={grouped[status]}
+                isOver={overColumn === status && canDrag}
+                canDrag={canDrag}
+                showCompany={mode === 'readonly'}
+                emptyLabel={t('emptyColumn')}
+                unnamedLabel={t('unnamedBuyer')}
+                noProjectLabel={t('noProject')}
+                sourceLabel={(source) => tSources(source)}
+                onOpenDeal={onOpenDeal}
+                newColumnAction={status === 'new_request' ? newColumnAction : undefined}
+                activeId={activeId}
+              />
+            ))}
+          </div>
         </div>
 
         {portalReady ? createPortal(overlay, document.body) : overlay}

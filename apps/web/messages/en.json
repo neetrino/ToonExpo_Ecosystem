@@ -71,6 +71,8 @@
     "noProject": "No project",
     "unassigned": "Unassigned",
     "emptyColumn": "No leads",
+    "scrollColumnsLeft": "Previous columns",
+    "scrollColumnsRight": "Next columns",
     "quickLead": "Quick Lead",
     "searchLabel": "Search leads",
     "searchPlaceholder": "Search leads by name, email, phone…",
@@ -467,6 +469,20 @@
       "errors": {
         "generic": "Could not send the request. Please try again."
       }
+    },
+    "qrInterest": {
+      "metaDescription": "Send your interest and a short note to the builder.",
+      "metaTitleProject": "Interest — {name}",
+      "metaTitleApartment": "Interest — Apt {number}, {project}",
+      "subtitleProject": "Send a note to {builder}. They will see your contact details from your account.",
+      "subtitleApartment": "Send a note to {builder}. They will see your contact details from your account.",
+      "apartmentTitle": "Apartment {number} · {project}",
+      "apartmentImageAlt": "Apartment {number}",
+      "viewDetails": "View full listing",
+      "viewRequests": "My requests",
+      "loginRequired": "Sign in with your buyer account to send this request.",
+      "loginCta": "Sign in",
+      "staffBlocked": "Staff accounts cannot send buyer interest requests."
     },
     "filters": {
       "rooms": "Rooms",
@@ -1060,6 +1076,8 @@
       "subtitle": "Show this permanent code to builders and entrance staff at the exhibition",
       "secureBadge": "Secure permanent QR",
       "codeTitle": "QR code for {name}",
+      "copyLink": "Copy link",
+      "copied": "Copied",
       "loading": "Loading your QR…",
       "error": "Could not load your QR. Try again.",
       "sheet": {
@@ -3542,6 +3560,8 @@
       "email": "Email",
       "projectOptional": "Project (optional)",
       "noProject": "No project",
+      "noteOptional": "Description (optional)",
+      "notePlaceholder": "Add context for the team — what the buyer asked, booth notes, next step…",
       "createDeal": "Create deal",
       "creating": "Creating…",
       "success": "Deal created from scan.",
@@ -3552,7 +3572,8 @@
         "invalid": "Could not read a ToonExpo QR token.",
         "notBuyer": "This QR is not a buyer action code.",
         "resolve": "Could not resolve the QR. Try again.",
-        "create": "Could not create the deal. Try again."
+        "create": "Could not create the deal. Try again.",
+        "noteTooLong": "Description is too long."
       }
     }
   },

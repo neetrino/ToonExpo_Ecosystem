@@ -7,11 +7,13 @@ import { useState } from 'react';
 import { PORTAL_MAX_PAGE_SIZE } from '@/features/builder/constants';
 import { useCreateDealFromScanMutation } from '@/features/builder/hooks/use-portal-crm';
 import { usePortalProjectsQuery } from '@/features/builder/hooks/use-portal-projects';
+import { CRM_NOTE_MAX_LENGTH } from '@/features/builder/schemas/crm.schema';
 import { Link } from '@/i18n/navigation';
 import { Button } from '@/shared/ui/button';
 import { Card } from '@/shared/ui/card';
 import { FormField } from '@/shared/ui/form-field';
 import { Select } from '@/shared/ui/select';
+import { Textarea } from '@/shared/ui/textarea';
 
 type ScannerBuyerResultProps = {
   payload: QrBuyerActionPayload;
@@ -26,15 +28,22 @@ export const ScannerBuyerResult = ({ payload, onReset }: ScannerBuyerResultProps
   const projectsQuery = usePortalProjectsQuery(1, PORTAL_MAX_PAGE_SIZE);
   const mutation = useCreateDealFromScanMutation();
   const [projectId, setProjectId] = useState('');
+  const [note, setNote] = useState('');
   const [dealId, setDealId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const onCreate = async () => {
     setError(null);
+    const trimmedNote = note.trim();
+    if (trimmedNote.length > CRM_NOTE_MAX_LENGTH) {
+      setError(t('errors.noteTooLong'));
+      return;
+    }
     try {
       const result = await mutation.mutateAsync({
         scanEventId: payload.scanEventId,
         ...(projectId ? { projectId } : {}),
+        ...(trimmedNote.length > 0 ? { note: trimmedNote } : {}),
       });
       setDealId(result.dealId);
     } catch {
@@ -96,6 +105,19 @@ export const ScannerBuyerResult = ({ payload, onReset }: ScannerBuyerResultProps
             </option>
           ))}
         </Select>
+      </FormField>
+
+      <FormField id="scan-note" label={t('noteOptional')}>
+        <Textarea
+          id="scan-note"
+          rows={3}
+          maxLength={CRM_NOTE_MAX_LENGTH}
+          placeholder={t('notePlaceholder')}
+          value={note}
+          onChange={(event) => {
+            setNote(event.target.value);
+          }}
+        />
       </FormField>
 
       {error ? (

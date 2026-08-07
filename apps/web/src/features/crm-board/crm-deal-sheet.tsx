@@ -131,7 +131,7 @@ export const CrmDealSheet = ({
               </p>
             ) : null}
 
-            <dl className="grid gap-3 sm:grid-cols-2">
+            <dl className="grid gap-x-3 gap-y-5 sm:grid-cols-2">
               <SheetField icon={Phone} label={t('fields.phone')}>
                 {deal.buyer.phone ?? '—'}
               </SheetField>

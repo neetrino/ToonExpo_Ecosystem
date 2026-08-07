@@ -24,10 +24,110 @@ const STAT_CONTENT_MIN_CLASS = 'min-w-[5.5rem]';
  * (accounts for `gap-6` gutters).
  */
 const TITLE_ALIGN_PL_CLASS =
-  'pl-[max(0rem,calc((100%-1.5rem)/4-2.75rem))] sm:pl-[max(0rem,calc((100%-3rem)/6-2.75rem))] lg:pl-[max(0rem,calc((100%-6rem)/10-2.75rem))]';
+  'sm:pl-[max(0rem,calc((100%-3rem)/6-2.75rem))] lg:pl-[max(0rem,calc((100%-6rem)/10-2.75rem))]';
 /** Builder mark beside the project title. */
 const BUILDER_LOGO_SIZE_CLASS = 'size-14 sm:size-16';
 const BUILDER_LOGO_IMAGE_SIZES = '64px';
+
+type BuilderMarkProps = {
+  name: string;
+  logoUrl: string | null;
+  initials: string;
+};
+
+const BuilderMark = ({ name, logoUrl, initials }: BuilderMarkProps) =>
+  logoUrl ? (
+    <span
+      className={cn(
+        'relative shrink-0 overflow-hidden rounded-full bg-surface ring-1 ring-header-border',
+        BUILDER_LOGO_SIZE_CLASS,
+      )}
+    >
+      <Image
+        src={logoUrl}
+        alt={name}
+        fill
+        className="object-cover"
+        sizes={BUILDER_LOGO_IMAGE_SIZES}
+      />
+    </span>
+  ) : (
+    <span
+      className={cn(
+        'grid shrink-0 place-items-center rounded-full bg-brand-deep font-brand text-lg font-bold text-on-dark sm:text-xl',
+        BUILDER_LOGO_SIZE_CLASS,
+      )}
+      aria-hidden
+    >
+      {initials}
+    </span>
+  );
+
+type ProjectHeroSummaryProps = {
+  project: ProjectDetail;
+  projectQrUrl: string;
+  builderInitials: string;
+  qrTitle: string;
+  description: string;
+};
+
+const ProjectHeroSummary = ({
+  project,
+  projectQrUrl,
+  builderInitials,
+  qrTitle,
+  description,
+}: ProjectHeroSummaryProps) => (
+  <div className={cn(TITLE_ALIGN_PL_CLASS)}>
+    {/* Mobile: logo + builder name left, QR right — one line */}
+    <div className="flex items-center justify-between gap-3 sm:hidden">
+      <div className="flex min-w-0 items-center gap-3">
+        <BuilderMark
+          name={project.builder.name}
+          logoUrl={project.builder.logoUrl}
+          initials={builderInitials}
+        />
+        <p className="truncate text-[11px] font-bold tracking-[0.2em] text-brand-secondary uppercase">
+          {project.builder.name}
+        </p>
+      </div>
+      <CatalogEntityQr payloadUrl={projectQrUrl} codeLabel={qrTitle} entityName={project.name} />
+    </div>
+
+    <div className="mt-3 sm:hidden">
+      <h1 className="font-brand text-[clamp(2rem,5vw,3.75rem)] font-bold leading-[1.15] tracking-[-0.03em] text-ink-navy">
+        {project.name}
+      </h1>
+      <p className="mt-3 text-lg leading-6 text-header-muted">{description}</p>
+    </div>
+
+    {/* Desktop / tablet */}
+    <div className="hidden items-start gap-5 sm:flex">
+      <BuilderMark
+        name={project.builder.name}
+        logoUrl={project.builder.logoUrl}
+        initials={builderInitials}
+      />
+      <div className="min-w-0 flex-1">
+        <p className="text-[11px] font-bold tracking-[0.2em] text-brand-secondary uppercase">
+          {project.builder.name}
+        </p>
+        <div className="mt-2 flex items-start gap-3">
+          <h1 className="min-w-0 flex-1 font-brand text-[clamp(2rem,5vw,3.75rem)] font-bold leading-[1.15] tracking-[-0.03em] text-ink-navy">
+            {project.name}
+          </h1>
+          <CatalogEntityQr
+            className="mt-1"
+            payloadUrl={projectQrUrl}
+            codeLabel={qrTitle}
+            entityName={project.name}
+          />
+        </div>
+        <p className="mt-3 max-w-2xl text-lg leading-6 text-header-muted">{description}</p>
+      </div>
+    </div>
+  </div>
+);
 
 /**
  * Full-bleed cover + overlapping summary card — Figma `89:876` hero.
@@ -77,53 +177,13 @@ export const ProjectDetailHero = ({ project }: ProjectDetailHeroProps) => {
             'shadow-lg shadow-brand/5',
           )}
         >
-          <div className={cn(TITLE_ALIGN_PL_CLASS, 'flex items-start gap-4 sm:gap-5')}>
-            {project.builder.logoUrl ? (
-              <span
-                className={cn(
-                  'relative shrink-0 overflow-hidden rounded-full bg-surface ring-1 ring-header-border',
-                  BUILDER_LOGO_SIZE_CLASS,
-                )}
-              >
-                <Image
-                  src={project.builder.logoUrl}
-                  alt={project.builder.name}
-                  fill
-                  className="object-cover"
-                  sizes={BUILDER_LOGO_IMAGE_SIZES}
-                />
-              </span>
-            ) : (
-              <span
-                className={cn(
-                  'grid shrink-0 place-items-center rounded-full bg-brand-deep font-brand text-lg font-bold text-on-dark sm:text-xl',
-                  BUILDER_LOGO_SIZE_CLASS,
-                )}
-                aria-hidden
-              >
-                {builderInitials}
-              </span>
-            )}
-            <div className="min-w-0 flex-1">
-              <p className="text-[11px] font-bold tracking-[0.2em] text-brand-secondary uppercase">
-                {project.builder.name}
-              </p>
-              <div className="mt-2 flex items-start gap-3">
-                <h1 className="min-w-0 flex-1 font-brand text-[clamp(2rem,5vw,3.75rem)] font-bold leading-[1.15] tracking-[-0.03em] text-ink-navy">
-                  {project.name}
-                </h1>
-                <CatalogEntityQr
-                  className="mt-1"
-                  payloadUrl={projectQrUrl}
-                  codeLabel={t('qrTitle', { name: project.name })}
-                  entityName={project.name}
-                />
-              </div>
-              <p className="mt-3 max-w-2xl text-lg leading-6 text-header-muted">
-                {project.shortDescription ?? catalogT('project.noDescription')}
-              </p>
-            </div>
-          </div>
+          <ProjectHeroSummary
+            project={project}
+            projectQrUrl={projectQrUrl}
+            builderInitials={builderInitials}
+            qrTitle={t('qrTitle', { name: project.name })}
+            description={project.shortDescription ?? catalogT('project.noDescription')}
+          />
 
           <dl className="mt-8 grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-5">
             <HeroStat label={t('statStatus')} value={homeT(`badges.${badge}`)} />

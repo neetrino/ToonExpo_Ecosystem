@@ -2,7 +2,7 @@
 
 import { X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useEffect, useId } from 'react';
+import { useEffect, useId, useRef } from 'react';
 import { createPortal } from 'react-dom';
 
 import { CatalogEntityQrBody } from '@/features/catalog/components/catalog-entity-qr-body';
@@ -18,6 +18,7 @@ import {
   SIDE_SHEET_BACKDROP_TRANSITION_MS,
   SIDE_SHEET_PANEL_TRANSITION_MS,
 } from '@/shared/ui/side-sheet.constants';
+import { useBottomSheetSwipeDismiss } from '@/shared/ui/use-bottom-sheet-swipe-dismiss';
 import { useDrawerTransition } from '@/shared/ui/use-drawer-transition';
 import { useModalEnterExit } from '@/shared/ui/use-modal-enter-exit';
 
@@ -28,6 +29,9 @@ export type CatalogEntityQrOverlayProps = {
   codeLabel: string;
   entityName: string;
 };
+
+/** Drag distance used to fade backdrop while swiping down. */
+const QR_SHEET_BACKDROP_DRAG_FADE_PX = 320;
 
 const CatalogEntityQrDesktopModal = ({
   open,
@@ -127,7 +131,13 @@ const CatalogEntityQrMobileSheet = ({
   const t = useTranslations('Catalog.entityQr');
   const tCommon = useTranslations('Common');
   const titleId = useId();
+  const panelRef = useRef<HTMLDivElement>(null);
   const { rendered, visible } = useDrawerTransition(open, SIDE_SHEET_PANEL_TRANSITION_MS);
+  const { isInteracting, dragY, sheetStyle } = useBottomSheetSwipeDismiss({
+    enabled: rendered && visible,
+    sheetRef: panelRef,
+    onDismiss: onClose,
+  });
 
   useEffect(() => {
     if (!rendered) {
@@ -159,6 +169,8 @@ const CatalogEntityQrMobileSheet = ({
     return null;
   }
 
+  const backdropOpacity = visible ? Math.max(0, 1 - dragY / QR_SHEET_BACKDROP_DRAG_FADE_PX) : 0;
+
   return createPortal(
     <div
       className={cn(
@@ -178,28 +190,33 @@ const CatalogEntityQrMobileSheet = ({
           MODAL_BACKDROP_CLASS_NAME,
           'transition-opacity duration-[var(--qr-sheet-backdrop-ms)] ease-[var(--ease-out-premium)]',
           'motion-reduce:transition-none',
-          visible ? 'opacity-100' : 'opacity-0',
+          isInteracting ? 'transition-none' : null,
         )}
         style={{
           ['--qr-sheet-backdrop-ms' as string]: `${SIDE_SHEET_BACKDROP_TRANSITION_MS}ms`,
+          opacity: backdropOpacity,
         }}
         onClick={onClose}
       />
       <div className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center">
         <div
+          ref={panelRef}
           role="dialog"
           aria-modal="true"
           aria-labelledby={titleId}
           className={cn(
             'pointer-events-auto touch-auto flex w-full max-w-lg flex-col',
             'rounded-t-[15px] border border-border bg-surface-elevated shadow-lg',
-            'transition-transform duration-[var(--qr-sheet-panel-ms)] ease-[var(--ease-out-premium)]',
-            'motion-reduce:transition-none motion-reduce:duration-0',
             'will-change-transform',
-            visible ? 'translate-y-0' : 'translate-y-full motion-reduce:translate-y-0',
+            !isInteracting && [
+              'transition-transform duration-[var(--qr-sheet-panel-ms)] ease-[var(--ease-out-premium)]',
+              'motion-reduce:transition-none motion-reduce:duration-0',
+              visible ? 'translate-y-0' : 'translate-y-full motion-reduce:translate-y-0',
+            ],
           )}
           style={{
             ['--qr-sheet-panel-ms' as string]: `${SIDE_SHEET_PANEL_TRANSITION_MS}ms`,
+            ...sheetStyle,
           }}
         >
           <span id={titleId} className="sr-only">
@@ -224,7 +241,7 @@ const CatalogEntityQrMobileSheet = ({
 };
 
 /**
- * Centered modal on desktop; bottom sheet popup on mobile.
+ * Centered modal on desktop; bottom sheet popup on mobile (swipe-down to dismiss).
  */
 export const CatalogEntityQrOverlay = (props: CatalogEntityQrOverlayProps) => {
   const isDesktop = useMinWidth();

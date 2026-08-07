@@ -13,10 +13,10 @@ describe('qr-payload', () => {
       'http://localhost:3000/qr/tok_abc',
     );
     expect(buildProjectQrPayloadUrl('http://localhost:3000', 'hy', 'proj_1')).toBe(
-      'http://localhost:3000/hy/projects/proj_1',
+      'http://localhost:3000/hy/projects/proj_1/interest',
     );
     expect(buildApartmentQrPayloadUrl('http://localhost:3000', 'hy', 'apt_1')).toBe(
-      'http://localhost:3000/hy/apartments/apt_1',
+      'http://localhost:3000/hy/apartments/apt_1/interest',
     );
   });
 

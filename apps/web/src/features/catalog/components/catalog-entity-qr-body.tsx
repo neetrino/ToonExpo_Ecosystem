@@ -52,8 +52,8 @@ export const CatalogEntityQrBody = ({
   }, [payloadUrl]);
 
   return (
-    <div className="flex flex-col items-center gap-4">
-      <div className="w-full max-w-[min(100%,17.5rem)] rounded-md border border-border bg-white p-4 shadow-xs sm:p-5">
+    <div className="mx-auto flex w-full max-w-[min(100%,17.5rem)] flex-col items-center gap-4">
+      <div className="w-full rounded-md border border-border bg-white p-4 shadow-xs sm:p-5">
         <div className="aspect-square w-full [&_svg]:h-auto [&_svg]:w-full">
           <QRCodeSVG
             value={payloadUrl}
@@ -64,12 +64,14 @@ export const CatalogEntityQrBody = ({
           />
         </div>
       </div>
-      <p className="font-brand text-lg font-bold tracking-tight text-ink">{entityName}</p>
+      <p className="text-center font-brand text-lg font-bold tracking-tight text-ink">
+        {entityName}
+      </p>
       <Button
         type="button"
         size="md"
         variant="primary"
-        className="w-full max-w-xs"
+        className="w-full"
         disabled={actionsDisabled}
         onClick={() => {
           void onCopy();

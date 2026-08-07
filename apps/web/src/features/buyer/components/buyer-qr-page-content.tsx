@@ -95,7 +95,7 @@ export const BuyerQrPageContent = ({ buyerName }: BuyerQrPageContentProps) => {
           <Button
             type="button"
             variant="secondary"
-            className="mx-auto w-full max-w-md"
+            className="mx-auto w-full max-w-[min(100%,17.5rem)]"
             onClick={() => {
               setScannerOpen(true);
             }}

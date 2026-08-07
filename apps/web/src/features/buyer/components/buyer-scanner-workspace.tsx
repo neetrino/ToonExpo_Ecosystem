@@ -33,8 +33,8 @@ export const BuyerScannerWorkspace = ({ onNavigated }: BuyerScannerWorkspaceProp
 
     setPaused(true);
     setError(null);
-    onNavigated();
     router.push(href);
+    onNavigated();
   };
 
   return (
