@@ -1074,6 +1074,8 @@
       "subtitle": "Show this permanent code to builders and entrance staff at the exhibition",
       "secureBadge": "Secure permanent QR",
       "codeTitle": "QR code for {name}",
+      "copyLink": "Copy link",
+      "copied": "Copied",
       "loading": "Loading your QR…",
       "error": "Could not load your QR. Try again.",
       "sheet": {
