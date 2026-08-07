@@ -120,8 +120,8 @@
       "lost": "Потерян"
     },
     "sources": {
-      "buyer_project_request": "Заявка покупателя",
-      "builder_buyer_qr_scan": "QR-скан",
+      "buyer_project_request": "QR покупателя",
+      "builder_buyer_qr_scan": "QR строителя",
       "manual_builder_entry": "Вручную",
       "event_interaction": "Событие"
     }
@@ -1193,8 +1193,8 @@
       "lost": "Потеряна"
     },
     "requestSources": {
-      "buyer_project_request": "Заявка покупателя",
-      "builder_buyer_qr_scan": "QR-скан",
+      "buyer_project_request": "QR покупателя",
+      "builder_buyer_qr_scan": "QR строителя",
       "manual_builder_entry": "Вручную",
       "event_interaction": "Событие"
     },
@@ -3157,8 +3157,8 @@
         "lost": "Потеряна"
       },
       "sources": {
-        "buyer_project_request": "Заявка покупателя",
-        "builder_buyer_qr_scan": "QR-скан",
+        "buyer_project_request": "QR покупателя",
+        "builder_buyer_qr_scan": "QR строителя",
         "manual_builder_entry": "Вручную",
         "event_interaction": "Мероприятие"
       },
