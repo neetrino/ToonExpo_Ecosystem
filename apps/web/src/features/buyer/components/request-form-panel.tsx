@@ -1,40 +1,47 @@
-"use client";
+'use client';
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useTranslations } from "next-intl";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useTranslations } from 'next-intl';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
 
-import { useCreateBuyerRequestMutation } from "@/features/buyer/hooks/use-buyer";
+import { useCreateBuyerRequestMutation } from '@/features/buyer/hooks/use-buyer';
 import {
   createRequestNoteSchema,
   toCreateBuyerRequestBody,
   type CreateRequestNoteValues,
-} from "@/features/buyer/schemas/create-request.schema";
-import { Button } from "@/shared/ui/button";
-import { FormField } from "@/shared/ui/form-field";
-import { Textarea } from "@/shared/ui/textarea";
+} from '@/features/buyer/schemas/create-request.schema';
+import { Link } from '@/i18n/navigation';
+import { Button } from '@/shared/ui/button';
+import { FormField } from '@/shared/ui/form-field';
+import { Textarea } from '@/shared/ui/textarea';
 
 type RequestFormPanelProps = {
   projectId: string;
   apartmentId?: string | undefined;
-  onClose: () => void;
+  /** Required for modal variant (close / cancel). */
+  onClose?: (() => void) | undefined;
+  /** `modal` = dialog with cancel; `page` = QR interest landing. */
+  variant?: 'modal' | 'page' | undefined;
 };
 
-type SuccessKind = "created" | "deduplicated";
+type SuccessKind = 'created' | 'deduplicated';
 
 /**
- * Modal panel: optional note → POST /requests.
+ * Optional note → POST /requests (modal or QR interest page).
  */
 export const RequestFormPanel = ({
   projectId,
   apartmentId,
   onClose,
+  variant = 'modal',
 }: RequestFormPanelProps) => {
-  const t = useTranslations("Catalog.request");
+  const t = useTranslations('Catalog.request');
+  const tInterest = useTranslations('Catalog.qrInterest');
   const mutation = useCreateBuyerRequestMutation();
   const [success, setSuccess] = useState<SuccessKind | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
+  const isPage = variant === 'page';
 
   const {
     register,
@@ -42,7 +49,7 @@ export const RequestFormPanel = ({
     formState: { errors, isSubmitting },
   } = useForm<CreateRequestNoteValues>({
     resolver: zodResolver(createRequestNoteSchema),
-    defaultValues: { note: "" },
+    defaultValues: { note: '' },
   });
 
   const onSubmit = handleSubmit(async (values) => {
@@ -55,9 +62,9 @@ export const RequestFormPanel = ({
           note: values.note,
         }),
       );
-      setSuccess(result.deduplicated ? "deduplicated" : "created");
+      setSuccess(result.deduplicated ? 'deduplicated' : 'created');
     } catch {
-      setFormError(t("errors.generic"));
+      setFormError(t('errors.generic'));
     }
   });
 
@@ -67,13 +74,19 @@ export const RequestFormPanel = ({
     return (
       <div className="flex flex-col gap-4">
         <p className="text-sm text-ink" role="status">
-          {success === "deduplicated"
-            ? t("success.deduplicated")
-            : t("success.created")}
+          {success === 'deduplicated' ? t('success.deduplicated') : t('success.created')}
         </p>
-        <Button type="button" variant="secondary" onClick={onClose}>
-          {t("close")}
-        </Button>
+        {isPage ? (
+          <Link href="/requests" className="inline-flex">
+            <Button type="button" variant="secondary" className="w-full sm:w-auto">
+              {tInterest('viewRequests')}
+            </Button>
+          </Link>
+        ) : (
+          <Button type="button" variant="secondary" onClick={onClose}>
+            {t('close')}
+          </Button>
+        )}
       </div>
     );
   }
@@ -82,14 +95,14 @@ export const RequestFormPanel = ({
     <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
       <FormField
         id="request-note"
-        label={t("noteLabel")}
-        error={errors.note ? t("validation.note") : undefined}
+        label={t('noteLabel')}
+        error={errors.note ? t('validation.note') : undefined}
       >
         <Textarea
           id="request-note"
-          placeholder={t("notePlaceholder")}
+          placeholder={t('notePlaceholder')}
           aria-invalid={Boolean(errors.note)}
-          {...register("note")}
+          {...register('note')}
         />
       </FormField>
 
@@ -101,16 +114,13 @@ export const RequestFormPanel = ({
 
       <div className="flex flex-col gap-2 sm:flex-row">
         <Button type="submit" disabled={busy} className="w-full sm:w-auto">
-          {busy ? t("submitting") : t("submit")}
+          {busy ? t('submitting') : t('submit')}
         </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          onClick={onClose}
-          className="w-full sm:w-auto"
-        >
-          {t("cancel")}
-        </Button>
+        {!isPage && onClose ? (
+          <Button type="button" variant="ghost" onClick={onClose} className="w-full sm:w-auto">
+            {t('cancel')}
+          </Button>
+        ) : null}
       </div>
     </form>
   );

@@ -468,6 +468,20 @@
         "generic": "Could not send the request. Please try again."
       }
     },
+    "qrInterest": {
+      "metaDescription": "Send your interest and a short note to the builder.",
+      "metaTitleProject": "Interest — {name}",
+      "metaTitleApartment": "Interest — Apt {number}, {project}",
+      "subtitleProject": "Send a note to {builder}. They will see your contact details from your account.",
+      "subtitleApartment": "Send a note to {builder}. They will see your contact details from your account.",
+      "apartmentTitle": "Apartment {number} · {project}",
+      "apartmentImageAlt": "Apartment {number}",
+      "viewDetails": "View full listing",
+      "viewRequests": "My requests",
+      "loginRequired": "Sign in with your buyer account to send this request.",
+      "loginCta": "Sign in",
+      "staffBlocked": "Staff accounts cannot send buyer interest requests."
+    },
     "filters": {
       "rooms": "Rooms",
       "minPrice": "Min price",

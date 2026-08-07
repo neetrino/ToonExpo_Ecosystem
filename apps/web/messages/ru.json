@@ -468,6 +468,20 @@
         "generic": "Не удалось отправить заявку. Попробуйте ещё раз."
       }
     },
+    "qrInterest": {
+      "metaDescription": "Отправьте интерес и короткое сообщение застройщику.",
+      "metaTitleProject": "Интерес — {name}",
+      "metaTitleApartment": "Интерес — кв. {number}, {project}",
+      "subtitleProject": "Напишите сообщение для {builder}. Контакты возьмутся из вашего аккаунта.",
+      "subtitleApartment": "Напишите сообщение для {builder}. Контакты возьмутся из вашего аккаунта.",
+      "apartmentTitle": "Квартира {number} · {project}",
+      "apartmentImageAlt": "Квартира {number}",
+      "viewDetails": "Открыть объявление",
+      "viewRequests": "Мои заявки",
+      "loginRequired": "Войдите в аккаунт покупателя, чтобы отправить заявку.",
+      "loginCta": "Войти",
+      "staffBlocked": "Служебные аккаунты не могут отправлять заявки покупателя."
+    },
     "filters": {
       "rooms": "Комнаты",
       "minPrice": "Цена от",

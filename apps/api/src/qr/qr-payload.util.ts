@@ -34,8 +34,11 @@ export const buildBuyerQrPayloadUrl = (appUrl: string, token: string): string =>
   return `${base}/qr/${token}`;
 };
 
+/** Path segment for catalog QR interest landing (notes form → CRM request). */
+export const CATALOG_QR_INTEREST_PATH_SEGMENT = 'interest';
+
 /**
- * Builds the public project page URL for Project QR printouts.
+ * Builds the project interest landing URL for Project QR printouts.
  */
 export const buildProjectQrPayloadUrl = (
   appUrl: string,
@@ -43,11 +46,11 @@ export const buildProjectQrPayloadUrl = (
   projectId: string,
 ): string => {
   const base = appUrl.replace(/\/$/, '');
-  return `${base}/${locale}/projects/${projectId}`;
+  return `${base}/${locale}/projects/${projectId}/${CATALOG_QR_INTEREST_PATH_SEGMENT}`;
 };
 
 /**
- * Builds the public apartment page URL for apartment QR printouts.
+ * Builds the apartment interest landing URL for apartment QR printouts.
  */
 export const buildApartmentQrPayloadUrl = (
   appUrl: string,
@@ -55,5 +58,5 @@ export const buildApartmentQrPayloadUrl = (
   apartmentId: string,
 ): string => {
   const base = appUrl.replace(/\/$/, '');
-  return `${base}/${locale}/apartments/${apartmentId}`;
+  return `${base}/${locale}/apartments/${apartmentId}/${CATALOG_QR_INTEREST_PATH_SEGMENT}`;
 };
