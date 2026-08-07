@@ -61,31 +61,55 @@
   }
 
   .crm-kanban-board-columns {
+    --crm-kanban-column-gap: 0.75rem;
+    --crm-kanban-visible-columns: 1.15;
+
+    container-type: inline-size;
     display: flex;
     height: 100%;
     min-height: 0;
     width: 100%;
     align-items: stretch;
-    gap: 0.75rem;
+    gap: var(--crm-kanban-column-gap);
     overflow-x: auto;
     overflow-y: hidden;
     padding-bottom: 0.25rem;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+    scrollbar-width: thin;
+    -ms-overflow-style: auto;
+  }
+
+  @media (min-width: 768px) {
+    .crm-kanban-board-columns {
+      --crm-kanban-visible-columns: 4;
+    }
   }
 
   .crm-kanban-board-columns::-webkit-scrollbar {
-    display: none;
+    height: 0.375rem;
   }
 
+  .crm-kanban-board-columns::-webkit-scrollbar-thumb {
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--color-border-strong) 70%, transparent);
+  }
+
+  /**
+   * Column width = board viewport ÷ visible count (4 on md+).
+   * Remaining status columns scroll horizontally.
+   */
   .crm-kanban-column {
+    --crm-kanban-column-width: calc(
+      (100cqi - (var(--crm-kanban-visible-columns) - 1) * var(--crm-kanban-column-gap)) /
+        var(--crm-kanban-visible-columns)
+    );
+
     display: flex;
     height: 100%;
     min-height: 0;
-    width: 12.5rem;
-    min-width: 12.5rem;
-    max-width: 12.5rem;
-    flex: 0 0 12.5rem;
+    width: var(--crm-kanban-column-width);
+    min-width: var(--crm-kanban-column-width);
+    max-width: var(--crm-kanban-column-width);
+    flex: 0 0 var(--crm-kanban-column-width);
     flex-direction: column;
     overflow: hidden;
     border: 1px solid color-mix(in srgb, var(--color-border) 88%, transparent);

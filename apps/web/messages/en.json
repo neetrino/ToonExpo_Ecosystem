@@ -3558,6 +3558,8 @@
       "email": "Email",
       "projectOptional": "Project (optional)",
       "noProject": "No project",
+      "noteOptional": "Description (optional)",
+      "notePlaceholder": "Add context for the team — what the buyer asked, booth notes, next step…",
       "createDeal": "Create deal",
       "creating": "Creating…",
       "success": "Deal created from scan.",
@@ -3568,7 +3570,8 @@
         "invalid": "Could not read a ToonExpo QR token.",
         "notBuyer": "This QR is not a buyer action code.",
         "resolve": "Could not resolve the QR. Try again.",
-        "create": "Could not create the deal. Try again."
+        "create": "Could not create the deal. Try again.",
+        "noteTooLong": "Description is too long."
       }
     }
   },
