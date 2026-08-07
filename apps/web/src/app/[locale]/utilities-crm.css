@@ -60,6 +60,66 @@
     overflow: hidden;
   }
 
+  .crm-kanban-board-scroller {
+    --crm-kanban-arrow-size: 1.5rem;
+
+    position: relative;
+    display: flex;
+    min-height: 0;
+    flex: 1 1 0%;
+    flex-direction: column;
+    overflow: hidden;
+    /* Room for half the arrow outside the column edge */
+    padding-inline: calc(var(--crm-kanban-arrow-size) / 2);
+  }
+
+  .crm-kanban-scroll-arrow {
+    position: absolute;
+    top: 50%;
+    z-index: 2;
+    display: inline-flex;
+    width: var(--crm-kanban-arrow-size);
+    height: var(--crm-kanban-arrow-size);
+    align-items: center;
+    justify-content: center;
+    border: 1px solid color-mix(in srgb, var(--color-border) 85%, transparent);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--color-surface-elevated) 94%, white);
+    color: var(--color-brand-deep);
+    box-shadow: var(--shadow-xs);
+    transition:
+      opacity var(--duration-fast) var(--ease-out-premium),
+      background-color var(--duration-fast) var(--ease-out-premium),
+      border-color var(--duration-fast) var(--ease-out-premium);
+  }
+
+  .crm-kanban-scroll-arrow:hover:not(:disabled) {
+    border-color: color-mix(in srgb, var(--color-brand) 40%, var(--color-border));
+    background: color-mix(in srgb, var(--color-brand-soft) 55%, white);
+  }
+
+  .crm-kanban-scroll-arrow:disabled {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* Center of button sits on the column strip edge */
+  .crm-kanban-scroll-arrow--left {
+    left: calc(var(--crm-kanban-arrow-size) / 2);
+    transform: translate(-50%, -50%);
+  }
+
+  .crm-kanban-scroll-arrow--right {
+    right: calc(var(--crm-kanban-arrow-size) / 2);
+    transform: translate(50%, -50%);
+  }
+
+  @media (min-width: 768px) {
+    .crm-kanban-board-scroller {
+      --crm-kanban-arrow-size: 1.625rem;
+    }
+  }
+
   .crm-kanban-board-columns {
     --crm-kanban-column-gap: 0.75rem;
     --crm-kanban-visible-columns: 1.15;

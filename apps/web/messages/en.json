@@ -71,6 +71,8 @@
     "noProject": "No project",
     "unassigned": "Unassigned",
     "emptyColumn": "No leads",
+    "scrollColumnsLeft": "Previous columns",
+    "scrollColumnsRight": "Next columns",
     "quickLead": "Quick Lead",
     "searchLabel": "Search leads",
     "searchPlaceholder": "Search leads by name, email, phone…",

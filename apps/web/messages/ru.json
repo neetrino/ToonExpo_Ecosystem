@@ -71,6 +71,8 @@
     "noProject": "Без проекта",
     "unassigned": "Не назначен",
     "emptyColumn": "Нет лидов",
+    "scrollColumnsLeft": "Предыдущие колонки",
+    "scrollColumnsRight": "Следующие колонки",
     "quickLead": "Быстрый лид",
     "searchLabel": "Поиск лидов",
     "searchPlaceholder": "Поиск по имени, email, телефону…",

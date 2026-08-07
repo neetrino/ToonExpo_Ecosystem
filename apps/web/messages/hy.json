@@ -71,6 +71,8 @@
     "noProject": "Առանց նախագծի",
     "unassigned": "Չնշանակված",
     "emptyColumn": "Lead չկա",
+    "scrollColumnsLeft": "Նախորդ սյունակներ",
+    "scrollColumnsRight": "Հաջորդ սյունակներ",
     "quickLead": "Արագ lead",
     "searchLabel": "Որոնել lead-եր",
     "searchPlaceholder": "Որոնել անունով, email-ով, հեռախոսով…",
