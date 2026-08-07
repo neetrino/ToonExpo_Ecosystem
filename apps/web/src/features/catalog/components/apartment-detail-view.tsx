@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import type { ApartmentDetail } from '@toonexpo/contracts';
+import Image from 'next/image';
 import { getLocale, getTranslations } from 'next-intl/server';
 
 import { ApartmentDetailCriteriaPanel } from '@/features/catalog/components/apartment-detail-criteria-panel';
@@ -120,12 +121,44 @@ export const ApartmentDetailView = async ({
             </span>
           </div>
 
+          {/* Mobile: logo + builder name left, QR right — one line */}
+          <div className="mt-3 flex items-center justify-between gap-3 lg:hidden">
+            <div className="flex min-w-0 items-center gap-3">
+              {apartment.builder.logoUrl ? (
+                <span className="relative size-12 shrink-0 overflow-hidden rounded-full bg-brand-deep">
+                  <Image
+                    src={apartment.builder.logoUrl}
+                    alt={apartment.builder.name}
+                    fill
+                    className="object-cover"
+                    sizes="48px"
+                  />
+                </span>
+              ) : (
+                <span className="grid size-12 shrink-0 place-items-center rounded-full bg-brand-deep font-brand text-lg font-bold text-on-dark">
+                  {apartment.builder.name.trim().slice(0, 2).toUpperCase() || '—'}
+                </span>
+              )}
+              <p className="truncate text-[11px] font-bold tracking-[0.2em] text-brand-secondary uppercase">
+                {apartment.builder.name}
+              </p>
+            </div>
+            <CatalogEntityQr
+              payloadUrl={apartmentQrUrl}
+              codeLabel={t('apartment.qrTitle', {
+                name: apartment.project.name,
+                number: apartment.number,
+              })}
+              entityName={apartment.project.name}
+            />
+          </div>
+
           <div className="mt-3 flex items-start gap-3">
             <h1 className="min-w-0 flex-1 font-brand text-[clamp(2rem,5vw,3rem)] font-bold leading-[1.15] tracking-tight text-ink-navy">
               {apartment.project.name}
             </h1>
             <CatalogEntityQr
-              className="mt-1"
+              className="mt-1 hidden lg:inline-flex"
               payloadUrl={apartmentQrUrl}
               codeLabel={t('apartment.qrTitle', {
                 name: apartment.project.name,
