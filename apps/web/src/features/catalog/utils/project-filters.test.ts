@@ -66,13 +66,13 @@ describe('toListProjectsQuery', () => {
     expect(
       toListProjectsQuery({
         page: 1,
-        pageSize: 12,
+        pageSize: PROJECT_PAGE_SIZE,
         rooms: [2],
         salesStatus: 'reserved',
       }),
     ).toEqual({
       page: 1,
-      pageSize: 12,
+      pageSize: PROJECT_PAGE_SIZE,
       rooms: [2],
       salesStatus: 'reserved',
     });

@@ -3,7 +3,7 @@
  * ADAPTIVE VALUES — confirm with owner before production tuning.
  */
 
-export const PORTAL_DEFAULT_PAGE_SIZE = 20;
+export const PORTAL_DEFAULT_PAGE_SIZE = 18;
 
 export const PORTAL_MAX_PAGE_SIZE = 50;
 

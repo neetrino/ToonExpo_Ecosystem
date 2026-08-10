@@ -21,7 +21,7 @@ export const READINESS_READY_MIN = 70;
 
 export const READINESS_MIN_PAGE = 1;
 
-export const READINESS_DEFAULT_PAGE_SIZE = 20;
+export const READINESS_DEFAULT_PAGE_SIZE = 18;
 
 export const READINESS_MAX_PAGE_SIZE = 50;
 

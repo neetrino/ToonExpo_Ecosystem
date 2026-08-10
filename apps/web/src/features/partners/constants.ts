@@ -1,7 +1,7 @@
 import type { CompanyType, PartnerCompanyType } from '@toonexpo/contracts';
 
 /** Mirrors NestJS partners module limits. */
-export const PARTNERS_DEFAULT_PAGE_SIZE = 20;
+export const PARTNERS_DEFAULT_PAGE_SIZE = 18;
 export const PARTNERS_MAX_PAGE_SIZE = 50;
 export const PARTNER_SEARCH_MIN_LENGTH = 1;
 

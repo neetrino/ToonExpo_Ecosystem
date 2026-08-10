@@ -1,6 +1,6 @@
 import type { ApartmentSalesStatus, ListProjectsQuery } from '@toonexpo/contracts';
 
-export const PROJECT_PAGE_SIZE = 12;
+export const PROJECT_PAGE_SIZE = 18;
 
 const SALES_STATUSES = new Set<ApartmentSalesStatus>(['available', 'reserved', 'sold']);
 

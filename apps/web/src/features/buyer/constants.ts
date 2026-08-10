@@ -13,7 +13,7 @@ export const BUYER_CHECKIN_QUERY_KEY = ['buyer', 'checkin'] as const;
 export const BUYER_FAVORITES_STATUS_BATCH_LIMIT = 100;
 
 /** Default page size for buyer request history. */
-export const BUYER_REQUESTS_PAGE_SIZE = 20;
+export const BUYER_REQUESTS_PAGE_SIZE = 18;
 
 /** QR display sizes (px) for phone exhibition use. */
 export const QR_DISPLAY_SIZE_PX = 280;
