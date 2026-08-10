@@ -33,8 +33,12 @@ import {
   type AnalyticsRangePreset,
 } from '@/features/analytics/constants';
 import { Link } from '@/i18n/navigation';
+import { Reveal, StaggerGroup } from '@/shared/ui/motion';
 
 const TOP_PROJECTS_DISPLAY_LIMIT = 5;
+const KPI_STAGGER_MS = 70;
+const SECTION_STAGGER_MS = 90;
+const SECTION_BASE_DELAY_MS = 280;
 
 type KpiConfig = {
   key: keyof AdminAnalyticsOverview['platformActivity'];
@@ -107,18 +111,20 @@ export const AdminAnalyticsPage = () => {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex min-w-0 flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-        <div className="flex min-w-0 items-start gap-3">
-          <span className="mt-0.5 inline-flex size-14 shrink-0 items-center justify-center rounded-md bg-[#d3f6f6] text-[#2bb5ad]">
-            <LineChart className="size-7" strokeWidth={2} aria-hidden />
-          </span>
-          <div className="flex min-w-0 flex-col gap-1">
-            <h1 className="text-page-title text-ink">{t('title')}</h1>
-            <p className="text-sm text-ink-secondary">{t('subtitle')}</p>
+      <Reveal force>
+        <div className="flex min-w-0 flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <div className="flex min-w-0 items-start gap-3">
+            <span className="mt-0.5 inline-flex size-14 shrink-0 items-center justify-center rounded-md bg-[#d3f6f6] text-[#2bb5ad]">
+              <LineChart className="size-7" strokeWidth={2} aria-hidden />
+            </span>
+            <div className="flex min-w-0 flex-col gap-1">
+              <h1 className="text-page-title text-ink">{t('title')}</h1>
+              <p className="text-sm text-ink-secondary">{t('subtitle')}</p>
+            </div>
           </div>
+          <AnalyticsDateRangeFilter variant="toolbar" />
         </div>
-        <AnalyticsDateRangeFilter variant="toolbar" />
-      </div>
+      </Reveal>
 
       {query.isLoading ? (
         <p className="text-sm text-ink-secondary">{tCommon('loading')}</p>
@@ -148,8 +154,14 @@ const AdminAnalyticsContent = ({ data }: AdminAnalyticsContentProps) => {
     : ANALYTICS_DEFAULT_PRESET;
 
   return (
-    <>
-      <section className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+    <div className="flex flex-col gap-6">
+      <StaggerGroup
+        force
+        className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 [&>*]:h-full [&>*]:min-w-0"
+        staggerMs={KPI_STAGGER_MS}
+        baseDelayMs={80}
+        durationMs={520}
+      >
         {KPI_CONFIG.map((item) => {
           const metric = data.platformActivity[item.key];
           return (
@@ -161,14 +173,22 @@ const AdminAnalyticsContent = ({ data }: AdminAnalyticsContentProps) => {
               tone={item.tone}
               changePercent={metric.changePercent}
               trendLabel={t(`trend.${preset}`)}
+              className="h-full"
             />
           );
         })}
-      </section>
+      </StaggerGroup>
 
-      <section className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.6fr)_minmax(18rem,1fr)]">
+      <StaggerGroup
+        force
+        className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.6fr)_minmax(18rem,1fr)] [&>*]:h-full [&>*]:min-w-0"
+        staggerMs={SECTION_STAGGER_MS}
+        baseDelayMs={SECTION_BASE_DELAY_MS}
+        durationMs={560}
+      >
         <AnalyticsSectionCard
           title={t('sections.platformActivity')}
+          className="h-full"
           action={
             <span className="rounded-pill bg-surface px-3 py-1 text-xs font-medium text-ink-secondary ring-1 ring-border">
               {tDate(preset)}
@@ -200,6 +220,7 @@ const AdminAnalyticsContent = ({ data }: AdminAnalyticsContentProps) => {
           title={t('sections.topProjects')}
           empty={data.topProjectsByViews.length === 0}
           emptyLabel={tCommon('empty')}
+          className="h-full"
           action={
             <Link
               href="/admin/projects"
@@ -218,10 +239,10 @@ const AdminAnalyticsContent = ({ data }: AdminAnalyticsContentProps) => {
             showCovers
           />
         </AnalyticsSectionCard>
-      </section>
+      </StaggerGroup>
 
       <AdminAnalyticsSecondarySections data={data} />
-    </>
+    </div>
   );
 };
 

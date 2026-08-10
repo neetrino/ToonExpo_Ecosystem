@@ -14,8 +14,11 @@ import { AnalyticsSectionCard } from '@/features/analytics/components/analytics-
 import { AnalyticsStatCard } from '@/features/analytics/components/analytics-stat-card';
 import { ReadinessStatusBadge } from '@/features/readiness/components/readiness-status-badge';
 import { READINESS_SCORE_MAX } from '@/features/readiness/constants';
+import { StaggerGroup } from '@/shared/ui/motion';
 
 const maxCount = (values: number[]): number => (values.length > 0 ? Math.max(...values) : 0);
+const SECONDARY_STAGGER_MS = 80;
+const SECONDARY_BASE_DELAY_MS = 420;
 
 type AdminAnalyticsSecondarySectionsProps = {
   data: AdminAnalyticsOverview;
@@ -43,34 +46,13 @@ export const AdminAnalyticsSecondarySections = ({
   );
 
   return (
-    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-      <AnalyticsSectionCard title={t('sections.favorites')}>
-        <AnalyticsStatCard
-          label={t('favorites.total')}
-          value={data.favorites.total}
-          className="bg-surface-elevated"
-        />
-      </AnalyticsSectionCard>
-
-      <AnalyticsSectionCard
-        title={t('sections.topProjectsByFavorites')}
-        empty={data.favorites.topProjects.length === 0}
-        emptyLabel={tCommon('empty')}
-        className="h-full"
-      >
-        <AnalyticsEntityRankList
-          items={data.favorites.topProjects.map((item) => ({
-            entityId: item.entityId,
-            name: item.name,
-            viewCount: item.favoriteCount,
-          }))}
-          rankLabel={t('table.rank')}
-          nameLabel={t('table.name')}
-          viewsLabel={t('table.favorites')}
-          emptyLabel={tCommon('empty')}
-        />
-      </AnalyticsSectionCard>
-
+    <StaggerGroup
+      force
+      className="grid grid-cols-1 gap-4 lg:grid-cols-2 [&>*]:h-full [&>*]:min-w-0 [&>*:last-child]:lg:col-span-2"
+      staggerMs={SECONDARY_STAGGER_MS}
+      baseDelayMs={SECONDARY_BASE_DELAY_MS}
+      durationMs={560}
+    >
       <AnalyticsSectionCard title={t('sections.requests')} className="h-full">
         <div className="flex flex-col gap-4">
           <div>
@@ -97,21 +79,22 @@ export const AdminAnalyticsSecondarySections = ({
       </AnalyticsSectionCard>
 
       <AnalyticsSectionCard
-        title={t('sections.dealsByStatus')}
-        empty={data.dealsByStatus.length === 0}
+        title={t('sections.topProjectsByFavorites')}
+        empty={data.favorites.topProjects.length === 0}
         emptyLabel={tCommon('empty')}
         className="h-full"
       >
-        <div className="flex flex-col gap-3">
-          {data.dealsByStatus.map((item) => (
-            <AnalyticsBarRow
-              key={item.status}
-              label={tCrm(item.status as CrmDealStatus)}
-              value={item.count}
-              max={dealMax}
-            />
-          ))}
-        </div>
+        <AnalyticsEntityRankList
+          items={data.favorites.topProjects.map((item) => ({
+            entityId: item.entityId,
+            name: item.name,
+            viewCount: item.favoriteCount,
+          }))}
+          rankLabel={t('table.rank')}
+          nameLabel={t('table.name')}
+          viewsLabel={t('table.favorites')}
+          emptyLabel={tCommon('empty')}
+        />
       </AnalyticsSectionCard>
 
       <AnalyticsSectionCard
@@ -130,6 +113,32 @@ export const AdminAnalyticsSecondarySections = ({
             />
           ))}
         </div>
+      </AnalyticsSectionCard>
+
+      <AnalyticsSectionCard
+        title={t('sections.dealsByStatus')}
+        empty={data.dealsByStatus.length === 0}
+        emptyLabel={tCommon('empty')}
+        className="h-full"
+      >
+        <div className="flex flex-col gap-3">
+          {data.dealsByStatus.map((item) => (
+            <AnalyticsBarRow
+              key={item.status}
+              label={tCrm(item.status as CrmDealStatus)}
+              value={item.count}
+              max={dealMax}
+            />
+          ))}
+        </div>
+      </AnalyticsSectionCard>
+
+      <AnalyticsSectionCard title={t('sections.favorites')}>
+        <AnalyticsStatCard
+          label={t('favorites.total')}
+          value={data.favorites.total}
+          className="border-info/20 bg-info-soft shadow-none [&_p]:text-info"
+        />
       </AnalyticsSectionCard>
 
       <AnalyticsSectionCard title={t('sections.checkIns')} className="h-full">
@@ -152,10 +161,7 @@ export const AdminAnalyticsSecondarySections = ({
         </div>
       </AnalyticsSectionCard>
 
-      <AnalyticsSectionCard
-        title={t('sections.readiness')}
-        className="h-full lg:col-span-2"
-      >
+      <AnalyticsSectionCard title={t('sections.readiness')} className="h-full">
         <div className="flex flex-col gap-6">
           {data.readiness.assessmentsByStatus.length === 0 ? (
             <p className="text-sm text-ink-secondary">{tCommon('empty')}</p>
@@ -201,6 +207,6 @@ export const AdminAnalyticsSecondarySections = ({
           </div>
         </div>
       </AnalyticsSectionCard>
-    </div>
+    </StaggerGroup>
   );
 };

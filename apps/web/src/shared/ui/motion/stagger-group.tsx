@@ -16,6 +16,10 @@ type StaggerGroupProps = {
   /** Base delay before the first child (ms). */
   baseDelayMs?: number | undefined;
   as?: 'div' | 'ul' | 'ol' | 'section' | undefined;
+  /** Always play entrance (for async-mounted dashboards). */
+  force?: boolean | undefined;
+  /** Per-item reveal duration (ms). */
+  durationMs?: number | undefined;
 };
 
 /**
@@ -27,6 +31,8 @@ export const StaggerGroup = ({
   staggerMs = DEFAULT_STAGGER_MS,
   baseDelayMs = 0,
   as: Tag = 'div',
+  force = false,
+  durationMs,
 }: StaggerGroupProps) => {
   const items = Children.toArray(children).filter(isValidElement);
 
@@ -35,7 +41,12 @@ export const StaggerGroup = ({
       {items.map((child, index) => {
         const cappedIndex = Math.min(index, MAX_STAGGER_ITEMS - 1);
         return (
-          <Reveal key={child.key ?? index} delayMs={baseDelayMs + cappedIndex * staggerMs}>
+          <Reveal
+            key={child.key ?? index}
+            delayMs={baseDelayMs + cappedIndex * staggerMs}
+            force={force}
+            {...(durationMs != null ? { durationMs } : {})}
+          >
             {child}
           </Reveal>
         );
