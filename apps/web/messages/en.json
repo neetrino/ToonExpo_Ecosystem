@@ -2057,6 +2057,7 @@
         "title": "Title",
         "bank": "Bank",
         "rate": "Rate",
+        "minDown": "Min down",
         "publication": "Publication",
         "actions": "Actions"
       },

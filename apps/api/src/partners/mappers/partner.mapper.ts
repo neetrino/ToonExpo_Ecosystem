@@ -38,6 +38,7 @@ export const toAdminPartnerListItem = (partner: PartnerWithMedia): AdminPartnerL
   publicationStatus: partner.publicationStatus,
   featured: partner.featured,
   logoUrl: partner.logoMedia?.fileUrl ?? null,
+  coverUrl: partner.coverMedia?.fileUrl ?? null,
   createdAt: partner.createdAt.toISOString(),
   updatedAt: partner.updatedAt.toISOString(),
 });

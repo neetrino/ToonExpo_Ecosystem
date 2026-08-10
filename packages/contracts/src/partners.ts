@@ -58,6 +58,7 @@ export type AdminPartnerListItem = {
   publicationStatus: PublicationStatus;
   featured: boolean;
   logoUrl: string | null;
+  coverUrl: string | null;
   createdAt: string;
   updatedAt: string;
 };
