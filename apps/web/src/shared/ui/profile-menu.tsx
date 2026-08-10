@@ -130,7 +130,7 @@ export const ProfileMenu = ({
   );
 
   const menuItemClassName = cn(
-    'flex w-full items-center gap-2 whitespace-nowrap px-3 py-2 text-left text-sm font-medium',
+    'flex w-full items-center gap-2 whitespace-nowrap px-3 py-2.5 text-left text-sm font-medium',
     'transition-colors duration-[var(--duration-fast)]',
     'text-ink hover:bg-surface',
   );
@@ -181,7 +181,8 @@ export const ProfileMenu = ({
             aria-label={t('profileMenu')}
             className={cn(
               'w-max min-w-0 overflow-hidden rounded-[12px] border border-header-border',
-              'bg-surface-elevated py-1.5 text-ink shadow-md',
+              /* No py — hover fill must reach top/bottom rounded corners. */
+              'bg-surface-elevated text-ink shadow-md',
             )}
           >
             {showAdmin ? (
@@ -224,7 +225,7 @@ export const ProfileMenu = ({
               type="button"
               role="menuitem"
               className={cn(
-                'flex w-full items-center gap-2 whitespace-nowrap px-3 py-2 text-left text-sm font-medium',
+                'flex w-full items-center gap-2 whitespace-nowrap px-3 py-2.5 text-left text-sm font-medium',
                 'transition-colors duration-[var(--duration-fast)]',
                 'text-danger hover:bg-danger-soft',
                 'disabled:pointer-events-none disabled:opacity-50',
