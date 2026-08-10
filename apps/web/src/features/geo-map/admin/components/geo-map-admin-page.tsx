@@ -2,7 +2,7 @@
 
 import type { AdminGeoMapModelItem, UpdateGeoMapModelRequest } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { GeoMapAdminSidebar } from '@/features/geo-map/admin/components/geo-map-admin-sidebar';
 import type { GeoMapCreateDraft } from '@/features/geo-map/admin/components/geo-map-create-panel';
@@ -92,6 +92,10 @@ const EMPTY_CREATE_DRAFT: GeoMapCreateDraft = {
   fileName: '',
 };
 
+const createEmptyDraft = (): GeoMapCreateDraft => ({ ...EMPTY_CREATE_DRAFT });
+
+const GEO_MAP_CREATE_PANEL_ID = 'geo-map-create-panel';
+
 /**
  * Super-admin 3D map editor: fullscreen map + side panel (Stage 2b).
  */
@@ -104,7 +108,8 @@ export const GeoMapAdminPage = () => {
   const deleteMutation = useDeleteGeoMapModelMutation();
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [createDraft, setCreateDraft] = useState<GeoMapCreateDraft | null>(EMPTY_CREATE_DRAFT);
+  const [createDraft, setCreateDraft] = useState<GeoMapCreateDraft | null>(null);
+  const [pendingCreateFocus, setPendingCreateFocus] = useState(false);
   const [selectedOsmBuilding, setSelectedOsmBuilding] = useState<SelectedOsmBuilding | null>(null);
   const [hiddenOsmBuildings, setHiddenOsmBuildings] = useState<OsmBuildingHideTarget[]>([]);
   const [pendingDelete, setPendingDelete] = useState<AdminGeoMapModelItem | null>(null);
@@ -316,7 +321,7 @@ export const GeoMapAdminPage = () => {
 
   const clearSelection = useCallback((): void => {
     setSelectedId(null);
-    setCreateDraft(EMPTY_CREATE_DRAFT);
+    setCreateDraft(null);
     setSelectedOsmBuilding(null);
     setActionError(null);
     setTransformPreview(null);
@@ -325,21 +330,34 @@ export const GeoMapAdminPage = () => {
 
   const startCreate = useCallback((): void => {
     setSelectedId(null);
-    setCreateDraft(EMPTY_CREATE_DRAFT);
+    setCreateDraft(createEmptyDraft());
     setSelectedOsmBuilding(null);
     setActionError(null);
     setTransformPreview(null);
     setDragSyncedPosition(null);
+    setPendingCreateFocus(true);
   }, []);
+
+  useEffect(() => {
+    if (!pendingCreateFocus || createDraft === null) {
+      return;
+    }
+
+    setPendingCreateFocus(false);
+    document.getElementById(GEO_MAP_CREATE_PANEL_ID)?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'nearest',
+    });
+    focusGeoMapFileInput(GEO_MAP_CREATE_GLB_INPUT_ID);
+  }, [pendingCreateFocus, createDraft]);
 
   const focusCreateUpload = useCallback((): void => {
     startCreate();
-    focusGeoMapFileInput(GEO_MAP_CREATE_GLB_INPUT_ID);
   }, [startCreate]);
 
   const focusCreateUploadKeepingOsm = useCallback((): void => {
-    setCreateDraft((current) => current ?? EMPTY_CREATE_DRAFT);
-    focusGeoMapFileInput(GEO_MAP_CREATE_GLB_INPUT_ID);
+    setCreateDraft((current) => current ?? createEmptyDraft());
+    setPendingCreateFocus(true);
   }, []);
 
   const focusReplaceUpload = useCallback((): void => {
@@ -388,7 +406,7 @@ export const GeoMapAdminPage = () => {
       await deleteMutation.mutateAsync(pendingDelete.id);
       if (selectedId === pendingDelete.id) {
         setSelectedId(null);
-        setCreateDraft(EMPTY_CREATE_DRAFT);
+        setCreateDraft(null);
         setTransformPreview(null);
         setDragSyncedPosition(null);
       }
