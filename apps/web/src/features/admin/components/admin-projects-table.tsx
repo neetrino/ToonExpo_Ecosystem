@@ -2,10 +2,11 @@
 
 import type { AdminProjectListItem } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
+import type { KeyboardEvent } from 'react';
 
 import { AdminProjectCard } from '@/features/admin/components/admin-project-card';
 import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
-import { Link } from '@/i18n/navigation';
+import { useRouter } from '@/i18n/navigation';
 import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
 import { cn } from '@/shared/ui/cn';
 import { LIST_STATUS_BADGE_COMPACT_CLASS } from '@/shared/ui/list-status-badge';
@@ -32,6 +33,7 @@ export const AdminProjectsTable = ({
   onOpenBuildings,
 }: AdminProjectsTableProps) => {
   const t = useTranslations('Admin.projects');
+  const router = useRouter();
 
   if (viewMode === VIEW_MODE_CARDS) {
     return (
@@ -45,6 +47,21 @@ export const AdminProjectsTable = ({
       </AdminListCardGrid>
     );
   }
+
+  const openProject = (project: AdminProjectListItem): void => {
+    router.push(projectHref(project));
+  };
+
+  const onRowKeyDown = (
+    event: KeyboardEvent<HTMLTableRowElement>,
+    project: AdminProjectListItem,
+  ): void => {
+    if (event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
+    event.preventDefault();
+    openProject(project);
+  };
 
   return (
     <ListTableReveal>
@@ -62,15 +79,18 @@ export const AdminProjectsTable = ({
           </thead>
           <tbody>
             {projects.map((project) => (
-              <tr key={project.id} className="border-t border-border hover:bg-surface/60">
-                <td className="px-3 py-2.5 align-middle">
-                  <Link
-                    href={projectHref(project)}
-                    className="font-medium text-brand hover:underline"
-                  >
-                    {project.name}
-                  </Link>
-                </td>
+              <tr
+                key={project.id}
+                tabIndex={0}
+                className="cursor-pointer border-t border-border hover:bg-surface/60 focus-visible:bg-surface/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand/30"
+                onClick={() => {
+                  openProject(project);
+                }}
+                onKeyDown={(event) => {
+                  onRowKeyDown(event, project);
+                }}
+              >
+                <td className="px-3 py-2.5 align-middle font-medium text-brand">{project.name}</td>
                 <td className="px-3 py-2.5 align-middle text-ink-secondary">{project.companyName}</td>
                 <td className="px-3 py-2.5 text-center align-middle">
                   <PublicationStatusBadge
@@ -87,7 +107,8 @@ export const AdminProjectsTable = ({
                       type="button"
                       aria-label={t('openBuildings', { name: project.name })}
                       className="font-medium text-brand hover:underline"
-                      onClick={() => {
+                      onClick={(event) => {
+                        event.stopPropagation();
                         onOpenBuildings(project);
                       }}
                     >
