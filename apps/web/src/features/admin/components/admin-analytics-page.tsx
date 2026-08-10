@@ -109,8 +109,8 @@ export const AdminAnalyticsPage = () => {
     <div className="flex flex-col gap-6">
       <div className="flex min-w-0 flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="flex min-w-0 items-start gap-3">
-          <span className="mt-0.5 inline-flex size-10 shrink-0 items-center justify-center rounded-md bg-brand-secondary/10 text-brand-secondary">
-            <LineChart className="size-5" strokeWidth={1.75} aria-hidden />
+          <span className="mt-0.5 inline-flex size-14 shrink-0 items-center justify-center rounded-md bg-[#d3f6f6] text-[#2bb5ad]">
+            <LineChart className="size-7" strokeWidth={2} aria-hidden />
           </span>
           <div className="flex min-w-0 flex-col gap-1">
             <h1 className="text-page-title text-ink">{t('title')}</h1>

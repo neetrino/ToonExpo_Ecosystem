@@ -43,16 +43,20 @@ export const AdminAnalyticsSecondarySections = ({
   );
 
   return (
-    <>
-      <section className="flex flex-col gap-3">
-        <h2 className="text-sm font-semibold text-ink">{t('sections.favorites')}</h2>
-        <AnalyticsStatCard label={t('favorites.total')} value={data.favorites.total} />
-      </section>
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+      <AnalyticsSectionCard title={t('sections.favorites')}>
+        <AnalyticsStatCard
+          label={t('favorites.total')}
+          value={data.favorites.total}
+          className="bg-surface-elevated"
+        />
+      </AnalyticsSectionCard>
 
       <AnalyticsSectionCard
         title={t('sections.topProjectsByFavorites')}
         empty={data.favorites.topProjects.length === 0}
         emptyLabel={tCommon('empty')}
+        className="h-full"
       >
         <AnalyticsEntityRankList
           items={data.favorites.topProjects.map((item) => ({
@@ -67,7 +71,7 @@ export const AdminAnalyticsSecondarySections = ({
         />
       </AnalyticsSectionCard>
 
-      <AnalyticsSectionCard title={t('sections.requests')}>
+      <AnalyticsSectionCard title={t('sections.requests')} className="h-full">
         <div className="flex flex-col gap-4">
           <div>
             <p className="text-xs uppercase tracking-wide text-ink-muted">
@@ -96,6 +100,7 @@ export const AdminAnalyticsSecondarySections = ({
         title={t('sections.dealsByStatus')}
         empty={data.dealsByStatus.length === 0}
         emptyLabel={tCommon('empty')}
+        className="h-full"
       >
         <div className="flex flex-col gap-3">
           {data.dealsByStatus.map((item) => (
@@ -113,6 +118,7 @@ export const AdminAnalyticsSecondarySections = ({
         title={t('sections.qrScans')}
         empty={data.qrScansByContext.length === 0}
         emptyLabel={tCommon('empty')}
+        className="h-full"
       >
         <div className="flex flex-col gap-3">
           {data.qrScansByContext.map((item) => (
@@ -126,27 +132,30 @@ export const AdminAnalyticsSecondarySections = ({
         </div>
       </AnalyticsSectionCard>
 
-      <AnalyticsSectionCard title={t('sections.checkIns')}>
+      <AnalyticsSectionCard title={t('sections.checkIns')} className="h-full">
         <div className="grid gap-3 sm:grid-cols-3">
           <AnalyticsStatCard
             label={t('checkIns.allowed')}
             value={data.checkIns.allowed}
-            className="bg-surface-elevated"
+            className="border-success/20 bg-success-soft shadow-none [&_p]:text-success"
           />
           <AnalyticsStatCard
             label={t('checkIns.duplicate')}
             value={data.checkIns.duplicate}
-            className="bg-surface-elevated"
+            className="border-warning/20 bg-warning-soft shadow-none [&_p]:text-warning"
           />
           <AnalyticsStatCard
             label={t('checkIns.denied')}
             value={data.checkIns.denied}
-            className="bg-surface-elevated"
+            className="border-danger/20 bg-danger-soft shadow-none [&_p]:text-danger"
           />
         </div>
       </AnalyticsSectionCard>
 
-      <AnalyticsSectionCard title={t('sections.readiness')}>
+      <AnalyticsSectionCard
+        title={t('sections.readiness')}
+        className="h-full lg:col-span-2"
+      >
         <div className="flex flex-col gap-6">
           {data.readiness.assessmentsByStatus.length === 0 ? (
             <p className="text-sm text-ink-secondary">{tCommon('empty')}</p>
@@ -192,6 +201,6 @@ export const AdminAnalyticsSecondarySections = ({
           </div>
         </div>
       </AnalyticsSectionCard>
-    </>
+    </div>
   );
 };
