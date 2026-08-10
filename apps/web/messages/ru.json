@@ -2773,11 +2773,25 @@
     "analytics": {
       "title": "Аналитика",
       "subtitle": "Показатели вашей компании за выбранный период",
+      "viewAll": "Смотреть все",
+      "trend": {
+        "today": "за выбранный период",
+        "last7Days": "за выбранный период",
+        "last30Days": "за выбранный период"
+      },
+      "kpis": {
+        "requests": "Заявки",
+        "favorites": "Избранное",
+        "deals": "CRM-сделки",
+        "available": "Свободные квартиры",
+        "reserved": "Забронированные",
+        "sold": "Проданные"
+      },
       "sections": {
         "topProjects": "Топ проектов по просмотрам",
         "topApartments": "Топ квартир по просмотрам",
         "favorites": "Избранное",
-        "topProjectsByFavorites": "Мои топ проекты по избранному",
+        "topProjectsByFavorites": "Топ проектов по избранному",
         "requests": "Заявки",
         "dealsByStatus": "CRM-сделки по статусу",
         "apartmentSales": "Статус продаж квартир",

@@ -2969,6 +2969,20 @@
     "analytics": {
       "title": "Analytics",
       "subtitle": "Your company performance for the selected period",
+      "viewAll": "View all",
+      "trend": {
+        "today": "in selected period",
+        "last7Days": "in selected period",
+        "last30Days": "in selected period"
+      },
+      "kpis": {
+        "requests": "Requests",
+        "favorites": "Favorites",
+        "deals": "CRM deals",
+        "available": "Available apartments",
+        "reserved": "Reserved apartments",
+        "sold": "Sold apartments"
+      },
       "sections": {
         "topProjects": "Top projects by views",
         "topApartments": "Top apartments by views",
