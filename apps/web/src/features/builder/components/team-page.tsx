@@ -100,8 +100,17 @@ export const TeamPage = () => {
       <CatalogPagination
         page={response.meta.page}
         totalPages={response.meta.totalPages}
-        buildHref={(nextPage) =>
-          nextPage <= 1 ? '/builder/team' : `/builder/team?page=${nextPage}`
+        previousHref={
+          response.meta.page > 1
+            ? response.meta.page - 1 <= 1
+              ? '/builder/team'
+              : `/builder/team?page=${response.meta.page - 1}`
+            : null
+        }
+        nextHref={
+          response.meta.page < response.meta.totalPages
+            ? `/builder/team?page=${response.meta.page + 1}`
+            : null
         }
         previousLabel={t('pagination.previous')}
         nextLabel={t('pagination.next')}

@@ -89,7 +89,14 @@ export default async function ProjectsPage({ params, searchParams }: ProjectsPag
             className="mt-10"
             page={response.meta.page}
             totalPages={response.meta.totalPages}
-            buildHref={buildHref}
+            previousHref={
+              response.meta.page > 1 ? buildHref(response.meta.page - 1) : null
+            }
+            nextHref={
+              response.meta.page < response.meta.totalPages
+                ? buildHref(response.meta.page + 1)
+                : null
+            }
             previousLabel={t('pagination.previous')}
             nextLabel={t('pagination.next')}
             ariaLabel={t('pagination.ariaLabel')}

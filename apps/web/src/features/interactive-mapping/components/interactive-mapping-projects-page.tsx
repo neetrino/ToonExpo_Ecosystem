@@ -146,7 +146,16 @@ export const InteractiveMappingProjectsPage = () => {
       <CatalogPagination
         page={response.meta.page}
         totalPages={response.meta.totalPages}
-        buildHref={(nextPage) => buildListHref(pathname, nextPage)}
+        previousHref={
+          response.meta.page > 1
+            ? buildListHref(pathname, response.meta.page - 1)
+            : null
+        }
+        nextHref={
+          response.meta.page < response.meta.totalPages
+            ? buildListHref(pathname, response.meta.page + 1)
+            : null
+        }
         previousLabel={t('pagination.previous')}
         nextLabel={t('pagination.next')}
         ariaLabel={t('pagination.ariaLabel')}

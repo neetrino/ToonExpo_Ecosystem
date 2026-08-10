@@ -105,8 +105,17 @@ export const BosProvisioningListPage = () => {
       <CatalogPagination
         page={response.meta.page}
         totalPages={response.meta.totalPages}
-        buildHref={(nextPage) =>
-          nextPage <= 1 ? '/admin/integrations/bos' : `/admin/integrations/bos?page=${nextPage}`
+        previousHref={
+          response.meta.page > 1
+            ? response.meta.page - 1 <= 1
+              ? '/admin/integrations/bos'
+              : `/admin/integrations/bos?page=${response.meta.page - 1}`
+            : null
+        }
+        nextHref={
+          response.meta.page < response.meta.totalPages
+            ? `/admin/integrations/bos?page=${response.meta.page + 1}`
+            : null
         }
         previousLabel={t('pagination.previous')}
         nextLabel={t('pagination.next')}
