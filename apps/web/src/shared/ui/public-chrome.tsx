@@ -63,21 +63,28 @@ const isBuildingDetailRoute = (pathname: string): boolean => {
   return /^\/projects\/[^/]+\/buildings\/[^/]+$/.test(pathname);
 };
 
+/** Public 3D map — full-bleed under overlay header + bottom nav. */
+const isGeoMapRoute = (pathname: string): boolean => {
+  return pathname === '/map' || pathname.startsWith('/map/');
+};
+
 /**
  * Persistent public chrome — keeps SiteHeader mounted across navigations
  * so the bar does not remount/jump when switching Projects / Builders / etc.
  * Auth routes use AuthPageShell instead of the public header.
- * Home, partners/projects/builders list+detail, and building detail use a
- * transparent header so the hero sits under the bar; other public pages use the
- * same floating pill chrome as home-after-scroll.
+ * Home, partners/projects/builders list+detail, building detail, and geo map
+ * use a transparent header so content sits under the bar; other public pages
+ * use the same floating pill chrome as home-after-scroll.
  * Public, portal, and auth pages use DesktopFluidFrame so desktop composition
  * scales like ma-marie. Auth keeps AuthPageShell (no public SiteHeader).
  *
  * One MobileBottomNav for public + buyer + builder + admin profiles so the
  * selected thumb can glide (no remount snap) — same bar as user profile.
+ * Geo map skips the bottom spacer so the canvas fills the viewport.
  */
 export const PublicChrome = ({ children }: PublicChromeProps) => {
   const pathname = usePathname();
+  const isMap = isGeoMapRoute(pathname);
   const headerVariant =
     isHomeRoute(pathname) ||
     isProjectDetailRoute(pathname) ||
@@ -86,7 +93,8 @@ export const PublicChrome = ({ children }: PublicChromeProps) => {
     isProjectsListRoute(pathname) ||
     isBuildersListRoute(pathname) ||
     isBuilderDetailRoute(pathname) ||
-    isBuildingDetailRoute(pathname)
+    isBuildingDetailRoute(pathname) ||
+    isMap
       ? 'transparent'
       : 'solid';
 
@@ -107,7 +115,7 @@ export const PublicChrome = ({ children }: PublicChromeProps) => {
           <PageEnter>{children}</PageEnter>
         </>
       )}
-      <MobileBottomNavSpacer />
+      {isMap ? null : <MobileBottomNavSpacer />}
       <MobileBottomNav />
     </DesktopFluidFrame>
   );
