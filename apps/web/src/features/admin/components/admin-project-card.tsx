@@ -13,7 +13,6 @@ import { cn } from '@/shared/ui/cn';
 import { IconButton } from '@/shared/ui/icon-button';
 import { LIST_CARD_LIFT_CLASS } from '@/shared/ui/motion';
 
-const CARD_RADIUS_CLASS = 'rounded-[15px]';
 const MEDIA_RADIUS_CLASS = 'rounded-[15px]';
 
 type AdminProjectCardProps = {
@@ -159,7 +158,7 @@ export const AdminProjectCard = ({ project, onOpenBuildings }: AdminProjectCardP
           'group relative flex h-full flex-col gap-3.5 overflow-hidden border border-border/80',
           'bg-surface-elevated p-4 shadow-card sm:p-5',
           LIST_CARD_LIFT_CLASS,
-          CARD_RADIUS_CLASS,
+          'rounded-[15px]',
         )}
       >
         <header className="flex flex-col gap-2">

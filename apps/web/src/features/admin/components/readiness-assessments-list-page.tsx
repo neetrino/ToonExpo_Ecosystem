@@ -106,6 +106,23 @@ export const ReadinessAssessmentsListPage = () => {
             <p className="max-w-xl text-sm text-ink-secondary">{t('guide')}</p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
+            <Select
+              id="readiness-company-filter"
+              aria-label={t('filters.company')}
+              size="fit"
+              className="h-9 min-w-[10rem] max-w-[16rem]"
+              value={companyId}
+              onChange={(event) => {
+                setCompanyId(event.target.value);
+              }}
+            >
+              <option value="">{t('filters.allCompanies')}</option>
+              {(companiesQuery.data?.data ?? []).map((company) => (
+                <option key={company.id} value={company.id}>
+                  {company.name}
+                </option>
+              ))}
+            </Select>
             <ViewModeToggle value={viewMode} onChange={setViewMode} />
             <Button
               type="button"
@@ -120,27 +137,6 @@ export const ReadinessAssessmentsListPage = () => {
           </div>
         </div>
       </Reveal>
-
-      <div className="flex flex-wrap items-center gap-3">
-        <label className="flex min-w-[12rem] flex-1 flex-col gap-1 text-sm text-ink sm:max-w-xs">
-          <span className="text-ink-secondary">{t('filters.company')}</span>
-          <Select
-            id="readiness-company-filter"
-            aria-label={t('filters.company')}
-            value={companyId}
-            onChange={(event) => {
-              setCompanyId(event.target.value);
-            }}
-          >
-            <option value="">{t('filters.allCompanies')}</option>
-            {(companiesQuery.data?.data ?? []).map((company) => (
-              <option key={company.id} value={company.id}>
-                {company.name}
-              </option>
-            ))}
-          </Select>
-        </label>
-      </div>
 
       {visibleAssessments.length === 0 ? (
         <EmptyState
