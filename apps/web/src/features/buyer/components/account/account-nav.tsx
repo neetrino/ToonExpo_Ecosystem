@@ -8,6 +8,10 @@ import { useTranslations } from 'next-intl';
 import { useLogoutMutation } from '@/features/auth/hooks/use-auth';
 import { Link, usePathname } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
+import {
+  PORTAL_NAV_ACTIVE_ATTR,
+  PortalNavRailGroup,
+} from '@/shared/ui/portal-nav-rail-group';
 import { usePortalRailCollapsed } from '@/shared/ui/portal-rail-collapse-context';
 
 type NavKey = 'dashboard' | 'password' | 'qr' | 'requests' | 'favorites' | 'checkin';
@@ -34,16 +38,18 @@ const SETTINGS_NAV_ITEM: NavItem = {
   icon: Settings,
 };
 
-const NAV_ICON_CLASS = 'size-5 shrink-0 opacity-90';
+const NAV_ICON_CLASS = 'block size-5 shrink-0 opacity-90';
 
 const EXACT_MATCH_HREFS = new Set(['/dashboard', '/settings', '/qr', '/checkin']);
 
 const navLinkClassName = (active: boolean, collapsed: boolean): string =>
   cn(
-    'flex items-center rounded-pill font-medium tracking-wide transition-colors',
-    collapsed ? 'justify-center px-2 py-2.5 text-base' : 'gap-3 px-3.5 py-2.5 text-base',
+    'relative z-10 flex h-10 items-center rounded-pill font-medium tracking-wide leading-none',
+    'transition-colors duration-[var(--duration-base)] ease-[var(--ease-out-premium)]',
+    'motion-reduce:transition-none',
+    collapsed ? 'justify-center px-2' : 'gap-3 px-3.5 text-base',
     active
-      ? 'bg-surface-elevated text-brand-secondary shadow-xs'
+      ? 'text-brand-secondary'
       : 'text-on-dark/85 hover:bg-on-dark/10 hover:text-on-dark',
   );
 
@@ -68,12 +74,18 @@ export const AccountNav = ({ accountType }: AccountNavProps) => {
   const railCollapsed = usePortalRailCollapsed();
   const logoutMutation = useLogoutMutation();
   const showBuyerTabs = accountType === 'buyer';
+  const measureKey = `${pathname}|${railCollapsed ? '1' : '0'}|${showBuyerTabs ? '1' : '0'}`;
 
   const primaryItems = PRIMARY_NAV_ITEMS.filter((item) => !item.buyerOnly || showBuyerTabs);
+  const settingsActive = isActive(pathname, SETTINGS_NAV_ITEM.href);
 
   return (
     <nav aria-label={t('label')} className="flex h-full min-h-0 flex-col gap-1">
-      <div className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto overscroll-contain">
+      <PortalNavRailGroup
+        measureKey={measureKey}
+        className="min-h-0 flex-1 overflow-y-auto overscroll-contain"
+        gapClassName="gap-1"
+      >
         {primaryItems.map((item) => {
           const active = isActive(pathname, item.href);
           const Icon = item.icon;
@@ -85,28 +97,32 @@ export const AccountNav = ({ accountType }: AccountNavProps) => {
               className={navLinkClassName(active, railCollapsed)}
               aria-label={railCollapsed ? label : undefined}
               title={railCollapsed ? label : undefined}
+              {...(active ? { [PORTAL_NAV_ACTIVE_ATTR]: 'true' } : {})}
             >
               <Icon className={NAV_ICON_CLASS} aria-hidden />
               {railCollapsed ? <span className="sr-only">{label}</span> : label}
             </Link>
           );
         })}
-      </div>
+      </PortalNavRailGroup>
 
       <div className="mt-auto flex shrink-0 flex-col gap-1 border-t border-on-dark/15 pt-3">
-        <Link
-          href={SETTINGS_NAV_ITEM.href}
-          className={navLinkClassName(isActive(pathname, SETTINGS_NAV_ITEM.href), railCollapsed)}
-          aria-label={railCollapsed ? t(SETTINGS_NAV_ITEM.key) : undefined}
-          title={railCollapsed ? t(SETTINGS_NAV_ITEM.key) : undefined}
-        >
-          <Settings className={NAV_ICON_CLASS} aria-hidden />
-          {railCollapsed ? (
-            <span className="sr-only">{t(SETTINGS_NAV_ITEM.key)}</span>
-          ) : (
-            t(SETTINGS_NAV_ITEM.key)
-          )}
-        </Link>
+        <PortalNavRailGroup measureKey={measureKey} gapClassName="gap-1">
+          <Link
+            href={SETTINGS_NAV_ITEM.href}
+            className={navLinkClassName(settingsActive, railCollapsed)}
+            aria-label={railCollapsed ? t(SETTINGS_NAV_ITEM.key) : undefined}
+            title={railCollapsed ? t(SETTINGS_NAV_ITEM.key) : undefined}
+            {...(settingsActive ? { [PORTAL_NAV_ACTIVE_ATTR]: 'true' } : {})}
+          >
+            <Settings className={NAV_ICON_CLASS} aria-hidden />
+            {railCollapsed ? (
+              <span className="sr-only">{t(SETTINGS_NAV_ITEM.key)}</span>
+            ) : (
+              t(SETTINGS_NAV_ITEM.key)
+            )}
+          </Link>
+        </PortalNavRailGroup>
         <button
           type="button"
           className={cn(

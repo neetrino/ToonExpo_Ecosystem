@@ -8,16 +8,22 @@ import {
 } from '@/features/builder/builder-nav-items';
 import { Link, usePathname } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
+import {
+  PORTAL_NAV_ACTIVE_ATTR,
+  PortalNavRailGroup,
+} from '@/shared/ui/portal-nav-rail-group';
 import { usePortalRailCollapsed } from '@/shared/ui/portal-rail-collapse-context';
 
-const NAV_ICON_CLASS = 'size-5 shrink-0 opacity-90';
+const NAV_ICON_CLASS = 'block size-5 shrink-0 opacity-90';
 
 const navLinkClassName = (active: boolean, collapsed: boolean): string =>
   cn(
-    'flex items-center rounded-pill font-medium tracking-wide transition-colors',
-    collapsed ? 'justify-center px-2 py-2.5 text-base' : 'gap-3 px-3.5 py-2.5 text-base',
+    'relative z-10 flex h-10 items-center rounded-pill font-medium tracking-wide leading-none',
+    'transition-colors duration-[var(--duration-base)] ease-[var(--ease-out-premium)]',
+    'motion-reduce:transition-none',
+    collapsed ? 'justify-center px-2' : 'gap-3 px-3.5 text-base',
     active
-      ? 'bg-surface-elevated text-brand-secondary shadow-xs'
+      ? 'text-brand-secondary'
       : 'text-on-dark/85 hover:bg-on-dark/10 hover:text-on-dark',
   );
 
@@ -33,6 +39,7 @@ export const BuilderNav = ({ companyName }: BuilderNavProps) => {
   const pathname = usePathname();
   const railCollapsed = usePortalRailCollapsed();
   const SettingsIcon = BUILDER_SETTINGS_NAV_ITEM.icon;
+  const measureKey = `${pathname}|${railCollapsed ? '1' : '0'}`;
 
   const isItemActive = (href: string): boolean => {
     if (href === '/builder') {
@@ -49,7 +56,11 @@ export const BuilderNav = ({ companyName }: BuilderNavProps) => {
         </div>
       ) : null}
 
-      <div className="flex min-h-0 flex-1 flex-col gap-1 overflow-y-auto overscroll-contain">
+      <PortalNavRailGroup
+        measureKey={measureKey}
+        className="min-h-0 flex-1 overflow-y-auto overscroll-contain"
+        gapClassName="gap-1"
+      >
         {BUILDER_PRIMARY_NAV_ITEMS.map((item) => {
           const active = isItemActive(item.href);
           const Icon = item.icon;
@@ -62,20 +73,28 @@ export const BuilderNav = ({ companyName }: BuilderNavProps) => {
               className={navLinkClassName(active, railCollapsed)}
               aria-label={railCollapsed ? label : undefined}
               title={railCollapsed ? label : undefined}
+              {...(active ? { [PORTAL_NAV_ACTIVE_ATTR]: 'true' } : {})}
             >
               <Icon className={NAV_ICON_CLASS} aria-hidden />
               {railCollapsed ? <span className="sr-only">{label}</span> : label}
             </Link>
           );
         })}
-      </div>
+      </PortalNavRailGroup>
 
-      <div className="mt-auto shrink-0 border-t border-on-dark/15 pt-3">
+      <PortalNavRailGroup
+        measureKey={measureKey}
+        className="mt-auto shrink-0 border-t border-on-dark/15 pt-3"
+        gapClassName="gap-1"
+      >
         <Link
           href={BUILDER_SETTINGS_NAV_ITEM.href}
           className={navLinkClassName(isItemActive(BUILDER_SETTINGS_NAV_ITEM.href), railCollapsed)}
           aria-label={railCollapsed ? t(BUILDER_SETTINGS_NAV_ITEM.key) : undefined}
           title={railCollapsed ? t(BUILDER_SETTINGS_NAV_ITEM.key) : undefined}
+          {...(isItemActive(BUILDER_SETTINGS_NAV_ITEM.href)
+            ? { [PORTAL_NAV_ACTIVE_ATTR]: 'true' }
+            : {})}
         >
           <SettingsIcon className={NAV_ICON_CLASS} aria-hidden />
           {railCollapsed ? (
@@ -84,7 +103,7 @@ export const BuilderNav = ({ companyName }: BuilderNavProps) => {
             t(BUILDER_SETTINGS_NAV_ITEM.key)
           )}
         </Link>
-      </div>
+      </PortalNavRailGroup>
     </nav>
   );
 };
