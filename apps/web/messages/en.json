@@ -3500,6 +3500,8 @@
       "error": "Could not load readiness. Try again.",
       "emptyTitle": "No readiness yet",
       "empty": "Readiness has not been evaluated yet. Your evaluator will publish guidance here when ready.",
+      "previewBadge": "Example preview",
+      "previewHint": "No real assessment yet — this is sample data so you can see how readiness looks in the portal.",
       "companyAssessment": "Company readiness",
       "overallScore": "Overall score",
       "kpiScoreLabel": "Readiness score",

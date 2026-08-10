@@ -11,7 +11,8 @@ import { scorePercent, toneForStatus } from '@/features/readiness/utils/readines
 import { cn } from '@/shared/ui/cn';
 
 const CARD_RADIUS_CLASS = 'rounded-[15px]';
-const MEDIA_RADIUS_CLASS = 'rounded-[15px]';
+const MEDIA_RADIUS_CLASS = 'rounded-[12px]';
+const CARD_MAX_WIDTH_CLASS = 'max-w-[16.5rem]';
 
 type BuilderReadinessOverviewCardProps = {
   assessment: PortalReadinessAssessmentItem;
@@ -29,7 +30,7 @@ const ScorePair = ({ primary, className }: ScorePairProps) => (
 );
 
 /**
- * Partners-KPI readiness overview card: logo, title, cover, overall score ring.
+ * Compact Partners-KPI readiness overview card: logo, title, cover, score ring.
  */
 export const BuilderReadinessOverviewCard = ({ assessment }: BuilderReadinessOverviewCardProps) => {
   const t = useTranslations('Builder.readiness');
@@ -48,30 +49,31 @@ export const BuilderReadinessOverviewCard = ({ assessment }: BuilderReadinessOve
   return (
     <article
       className={cn(
-        'flex w-full max-w-md flex-col gap-3.5 overflow-hidden border border-border/80',
-        'bg-surface-elevated p-4 shadow-card sm:p-5',
+        'flex w-full flex-col gap-2.5 overflow-hidden border border-border/80',
+        'bg-surface-elevated p-3 shadow-card',
+        CARD_MAX_WIDTH_CLASS,
         CARD_RADIUS_CLASS,
       )}
     >
-      <header className="flex flex-col gap-2">
-        <div className="flex min-w-0 items-center gap-2.5">
-          <div className="relative size-9 shrink-0 overflow-hidden rounded-full bg-surface ring-1 ring-border">
+      <header className="flex flex-col gap-1">
+        <div className="flex min-w-0 items-center gap-2">
+          <div className="relative size-7 shrink-0 overflow-hidden rounded-full bg-surface ring-1 ring-border">
             {companyLogoUrl ? (
-              <Image src={companyLogoUrl} alt="" fill className="object-cover" sizes="36px" />
+              <Image src={companyLogoUrl} alt="" fill className="object-cover" sizes="28px" />
             ) : (
-              <span className="absolute inset-0 flex items-center justify-center text-[10px] font-semibold text-ink-muted">
+              <span className="absolute inset-0 flex items-center justify-center text-[9px] font-semibold text-ink-muted">
                 {companyInitials}
               </span>
             )}
           </div>
-          <p className="min-w-0 truncate text-sm font-medium text-ink-secondary">{companyName}</p>
+          <p className="min-w-0 truncate text-xs font-medium text-ink-secondary">{companyName}</p>
         </div>
-        <h2 className="text-lg font-semibold tracking-tight text-ink sm:text-xl">{title}</h2>
+        <h2 className="text-base font-semibold tracking-tight text-ink">{title}</h2>
       </header>
 
       <div
         className={cn(
-          'relative aspect-[16/10] w-full overflow-hidden bg-surface ring-1 ring-border/60',
+          'relative aspect-[16/9] w-full overflow-hidden bg-surface ring-1 ring-border/60',
           MEDIA_RADIUS_CLASS,
         )}
       >
@@ -81,46 +83,44 @@ export const BuilderReadinessOverviewCard = ({ assessment }: BuilderReadinessOve
             alt=""
             fill
             className="object-cover"
-            sizes="(max-width: 640px) 100vw, 28rem"
+            sizes="(max-width: 640px) 100vw, 16.5rem"
           />
         ) : (
-          <span className="flex size-full flex-col items-center justify-center gap-1.5 text-ink-muted">
-            <Building2 className="size-8 opacity-40" aria-hidden />
-            <span className="max-w-[80%] truncate text-xs">{title}</span>
+          <span className="flex size-full flex-col items-center justify-center gap-1 text-ink-muted">
+            <Building2 className="size-6 opacity-40" aria-hidden />
+            <span className="max-w-[80%] truncate text-[10px]">{title}</span>
           </span>
         )}
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2">
         <ReadinessProgressRing
           percent={overallPercent}
           size="sm"
           tone={tone}
           showValue={false}
-          className="size-12"
+          className="size-9"
           label={`${t('overallScore')}: ${hasScore ? `${overallPercent}%` : '—'}`}
         />
-        <p className="min-w-0 flex-1 text-sm leading-snug text-ink-secondary">
-          {t('overallScore')}
-        </p>
+        <p className="min-w-0 flex-1 text-xs leading-snug text-ink-secondary">{t('overallScore')}</p>
         {hasScore ? (
-          <ScorePair primary={overallPercent} className="shrink-0 text-xl" />
+          <ScorePair primary={overallPercent} className="shrink-0 text-base" />
         ) : (
-          <span className="shrink-0 text-xl tabular-nums text-ink-muted">—</span>
+          <span className="shrink-0 text-base tabular-nums text-ink-muted">—</span>
         )}
       </div>
 
       {assessment.scores.length > 0 ? (
         <>
           <div className="border-t border-border" aria-hidden />
-          <ul className="flex flex-col gap-2.5">
+          <ul className="flex flex-col gap-1.5">
             {assessment.scores.map((score) => {
               const percent = scorePercent(score.score);
               const label = tKpi(`categories.${score.categoryCode}`);
               return (
-                <li key={score.categoryId} className="flex items-center justify-between gap-3">
-                  <span className="min-w-0 truncate text-sm text-ink-secondary">{label}</span>
-                  <ScorePair primary={percent} className="shrink-0 text-sm" />
+                <li key={score.categoryId} className="flex items-center justify-between gap-2">
+                  <span className="min-w-0 truncate text-xs text-ink-secondary">{label}</span>
+                  <ScorePair primary={percent} className="shrink-0 text-xs" />
                 </li>
               );
             })}

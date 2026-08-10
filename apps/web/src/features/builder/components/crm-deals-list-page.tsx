@@ -212,17 +212,16 @@ export const CrmDealsListPage = () => {
           }
         />
       </div>
-      {isNewLeadOpen ? (
-        <CrmNewDealPanel
-          projects={projects}
-          onClose={() => {
-            closeNewLead();
-          }}
-          onCreated={(dealId) => {
-            openDeal(dealId);
-          }}
-        />
-      ) : null}
+      <CrmNewDealPanel
+        open={isNewLeadOpen}
+        projects={projects}
+        onClose={() => {
+          closeNewLead();
+        }}
+        onCreated={(dealId) => {
+          openDeal(dealId);
+        }}
+      />
 
       <CrmDealSheet
         open={selectedDealId !== null}
