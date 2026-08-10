@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl';
 import { ReadinessProgressRing } from '@/features/readiness/components/readiness-progress-ring';
 import { scorePercent, toneForStatus } from '@/features/readiness/utils/readiness-score-display';
 import { cn } from '@/shared/ui/cn';
+import { LIST_CARD_LIFT_CLASS } from '@/shared/ui/motion';
 
 export type AdminReadinessCompanyInfo = {
   name: string;
@@ -63,8 +64,7 @@ export const AdminReadinessAssessmentCard = ({
       className={cn(
         'flex h-full w-full flex-col gap-3.5 overflow-hidden rounded-[20px]',
         'border border-border/80 bg-surface-elevated p-4 text-left shadow-card',
-        'transition-[box-shadow,transform] duration-[var(--duration-fast)]',
-        'hover:shadow-sm active:scale-[0.995]',
+        LIST_CARD_LIFT_CLASS,
       )}
     >
       <header className="flex flex-col gap-2">

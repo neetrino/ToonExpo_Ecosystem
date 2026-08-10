@@ -5,6 +5,7 @@ import type { ReactNode } from 'react';
 
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
+import { LIST_CARD_LIFT_CLASS } from '@/shared/ui/motion';
 
 export type PhaseCardProps = {
   step: number;
@@ -47,7 +48,8 @@ export const PhaseCard = ({
   return (
     <article
       className={cn(
-        'flex h-full flex-col rounded-sm border border-border bg-background p-5 transition-colors',
+        'flex h-full flex-col rounded-sm border border-border bg-background p-5',
+        LIST_CARD_LIFT_CLASS,
         active && 'border-border-strong',
         locked && 'opacity-55',
       )}

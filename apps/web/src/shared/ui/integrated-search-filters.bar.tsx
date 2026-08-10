@@ -50,7 +50,8 @@ export const IntegratedSearchBar = ({
   return (
     <div
       className={cn(
-        'flex min-h-11 w-full min-w-0 cursor-text items-center gap-2 rounded-2xl border border-border bg-surface-elevated px-3',
+        // Match ViewModeToggle / Button sm height (`h-9`) and radius.
+        'flex h-9 w-full min-w-0 cursor-text items-center gap-1.5 rounded-[15px] border border-border bg-surface-elevated px-2.5',
         hasQuery && 'ring-2 ring-brand/30',
         panelOpen && hasFilters && 'ring-2 ring-brand/20',
       )}
@@ -69,7 +70,7 @@ export const IntegratedSearchBar = ({
       />
       <div className="relative min-w-0 flex-1">
         <Search
-          className="pointer-events-none absolute top-1/2 left-2 size-4 -translate-y-1/2 text-ink-muted"
+          className="pointer-events-none absolute top-1/2 left-1.5 size-4 -translate-y-1/2 text-ink-muted"
           aria-hidden
         />
         <Input
@@ -81,7 +82,7 @@ export const IntegratedSearchBar = ({
           role="searchbox"
           aria-controls={hasFilters ? 'integrated-search-filter-panel' : undefined}
           /* Native search cancel button is suppressed: the bar renders its own clear control. */
-          className="h-9 border-0 bg-transparent pl-8 shadow-none focus-visible:ring-0 [&::-webkit-search-cancel-button]:hidden"
+          className="h-8 border-0 bg-transparent py-0 pl-7 shadow-none focus-visible:ring-0 [&::-webkit-search-cancel-button]:hidden"
           onChange={(event) => {
             onSearchChange(event.target.value);
             if (event.target.value.length > 0) {
@@ -97,13 +98,13 @@ export const IntegratedSearchBar = ({
           label={clearAllAriaLabel}
           size="sm"
           variant="ghost"
-          className="size-8 shrink-0 rounded-full"
+          className="size-7 shrink-0 rounded-[15px]"
           onClick={() => {
             onReset();
             inputRef.current?.focus();
           }}
         >
-          <X className="size-4" aria-hidden />
+          <X className="size-3.5" aria-hidden />
         </IconButton>
       ) : null}
     </div>

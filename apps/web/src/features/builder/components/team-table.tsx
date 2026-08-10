@@ -7,7 +7,9 @@ import { useState } from 'react';
 import { BuilderTeamMemberCard } from '@/features/builder/components/builder-team-member-card';
 import { COMPANY_MEMBER_ROLES } from '@/features/builder/constants';
 import { useUpdateMemberMutation } from '@/features/builder/hooks/use-company-members';
+import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
 import { AdminDeleteModal } from '@/shared/ui/admin-delete-modal';
+import { ListTableReveal } from '@/shared/ui/motion';
 import { Select } from '@/shared/ui/select';
 import { Switch } from '@/shared/ui/switch';
 import { VIEW_MODE_CARDS, type ViewMode } from '@/shared/ui/view-mode';
@@ -104,7 +106,7 @@ export const TeamTable = ({ members, canManage, viewMode = VIEW_MODE_CARDS }: Te
   return (
     <div className="flex flex-col gap-3">
       {viewMode === VIEW_MODE_CARDS ? (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <AdminListCardGrid className="gap-4">
           {members.map((member) => (
             <BuilderTeamMemberCard
               key={member.id}
@@ -117,8 +119,9 @@ export const TeamTable = ({ members, canManage, viewMode = VIEW_MODE_CARDS }: Te
               }}
             />
           ))}
-        </div>
+        </AdminListCardGrid>
       ) : (
+        <ListTableReveal>
         <div className="overflow-x-auto rounded-sm border border-border">
           <table className="w-full min-w-[40rem] border-collapse text-sm">
             <thead className="bg-surface text-xs uppercase tracking-wide text-ink-muted">
@@ -195,6 +198,7 @@ export const TeamTable = ({ members, canManage, viewMode = VIEW_MODE_CARDS }: Te
             </tbody>
           </table>
         </div>
+        </ListTableReveal>
       )}
       {toast === 'success' ? (
         <p role="status" className="text-sm text-success">

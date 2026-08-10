@@ -17,6 +17,7 @@ import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { AdminCreateSheet } from '@/shared/ui/admin-create-sheet';
 import { Button } from '@/shared/ui/button';
+import { Reveal } from '@/shared/ui/motion';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
 /**
@@ -84,25 +85,27 @@ export const AdminEventsListPage = () => {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-page-title text-ink">{t('title')}</h1>
-          <p className="text-sm text-ink-secondary">{t('subtitle', { count: events.length })}</p>
+      <Reveal force>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-col gap-1">
+            <h1 className="text-page-title text-ink">{t('title')}</h1>
+            <p className="text-sm text-ink-secondary">{t('subtitle', { count: events.length })}</p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <ViewModeToggle value={viewMode} onChange={setViewMode} />
+            <Button
+              type="button"
+              size="sm"
+              variant="secondary"
+              onClick={() => {
+                setSheetOpen(true);
+              }}
+            >
+              <AddActionLabel>{t('newEvent')}</AddActionLabel>
+            </Button>
+          </div>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <ViewModeToggle value={viewMode} onChange={setViewMode} />
-          <Button
-            type="button"
-            size="sm"
-            variant="secondary"
-            onClick={() => {
-              setSheetOpen(true);
-            }}
-          >
-            <AddActionLabel>{t('newEvent')}</AddActionLabel>
-          </Button>
-        </div>
-      </div>
+      </Reveal>
       {events.length === 0 ? (
         <p className="text-sm text-ink-secondary">{t('empty')}</p>
       ) : (

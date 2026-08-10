@@ -5,6 +5,8 @@ import { useLocale, useTranslations } from 'next-intl';
 
 import { AdminUserCard } from '@/features/admin/components/admin-user-card';
 import { UserStatusBadge } from '@/features/admin/components/user-status-badge';
+import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
+import { ListTableReveal } from '@/shared/ui/motion';
 import { VIEW_MODE_CARDS, type ViewMode } from '@/shared/ui/view-mode';
 
 type UsersTableProps = {
@@ -33,50 +35,52 @@ export const UsersTable = ({ users, viewMode = VIEW_MODE_CARDS }: UsersTableProp
 
   if (viewMode === VIEW_MODE_CARDS) {
     return (
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <AdminListCardGrid className="gap-4">
         {users.map((user) => (
           <AdminUserCard key={user.id} user={user} />
         ))}
-      </div>
+      </AdminListCardGrid>
     );
   }
 
   return (
-    <div className="overflow-x-auto rounded-sm border border-border">
-      <table className="w-full min-w-[48rem] border-collapse text-sm">
-        <thead className="bg-surface text-xs uppercase tracking-wide text-ink-muted">
-          <tr>
-            <th className="px-3 py-2.5 text-left font-medium">{t('columns.name')}</th>
-            <th className="px-3 py-2.5 text-left font-medium">{t('columns.email')}</th>
-            <th className="px-3 py-2.5 text-center font-medium">{t('columns.accountType')}</th>
-            <th className="px-3 py-2.5 text-center font-medium">{t('columns.company')}</th>
-            <th className="px-3 py-2.5 text-center font-medium">{t('columns.status')}</th>
-            <th className="px-3 py-2.5 text-right font-medium">{t('columns.createdAt')}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((user) => (
-            <tr key={user.id} className="border-t border-border hover:bg-surface/60">
-              <td className="px-3 py-2.5 align-middle font-medium text-ink">{user.name}</td>
-              <td className="px-3 py-2.5 align-middle text-ink-secondary">{user.email}</td>
-              <td className="px-3 py-2.5 align-middle text-center text-ink-secondary">
-                {t(`accountTypes.${user.accountType}`)}
-              </td>
-              <td className="px-3 py-2.5 align-middle text-center text-ink-secondary">
-                {user.companyName ?? '—'}
-              </td>
-              <td className="px-3 py-2.5 align-middle">
-                <div className="flex justify-center">
-                  <UserStatusBadge status={user.status} />
-                </div>
-              </td>
-              <td className="px-3 py-2.5 align-middle text-right tabular-nums text-ink-secondary whitespace-nowrap">
-                {formatDate(user.createdAt, locale)}
-              </td>
+    <ListTableReveal>
+      <div className="overflow-x-auto rounded-sm border border-border">
+        <table className="w-full min-w-[48rem] border-collapse text-sm">
+          <thead className="bg-surface text-xs uppercase tracking-wide text-ink-muted">
+            <tr>
+              <th className="px-3 py-2.5 text-left font-medium">{t('columns.name')}</th>
+              <th className="px-3 py-2.5 text-left font-medium">{t('columns.email')}</th>
+              <th className="px-3 py-2.5 text-center font-medium">{t('columns.accountType')}</th>
+              <th className="px-3 py-2.5 text-center font-medium">{t('columns.company')}</th>
+              <th className="px-3 py-2.5 text-center font-medium">{t('columns.status')}</th>
+              <th className="px-3 py-2.5 text-right font-medium">{t('columns.createdAt')}</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {users.map((user) => (
+              <tr key={user.id} className="border-t border-border hover:bg-surface/60">
+                <td className="px-3 py-2.5 align-middle font-medium text-ink">{user.name}</td>
+                <td className="px-3 py-2.5 align-middle text-ink-secondary">{user.email}</td>
+                <td className="px-3 py-2.5 align-middle text-center text-ink-secondary">
+                  {t(`accountTypes.${user.accountType}`)}
+                </td>
+                <td className="px-3 py-2.5 align-middle text-center text-ink-secondary">
+                  {user.companyName ?? '—'}
+                </td>
+                <td className="px-3 py-2.5 align-middle">
+                  <div className="flex justify-center">
+                    <UserStatusBadge status={user.status} />
+                  </div>
+                </td>
+                <td className="px-3 py-2.5 align-middle text-right tabular-nums text-ink-secondary whitespace-nowrap">
+                  {formatDate(user.createdAt, locale)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </ListTableReveal>
   );
 };

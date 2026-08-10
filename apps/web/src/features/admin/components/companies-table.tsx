@@ -9,9 +9,10 @@ import { Building2 } from 'lucide-react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 
+import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
 import { AdminListCardLogo } from '@/shared/ui/admin-list-card-logo';
 import { cn } from '@/shared/ui/cn';
-import { Reveal, StaggerGroup } from '@/shared/ui/motion';
+import { LIST_CARD_LIFT_CLASS, ListTableReveal } from '@/shared/ui/motion';
 import { VIEW_MODE_CARDS, type ViewMode } from '@/shared/ui/view-mode';
 import { CompanyStatusBadge } from '@/features/admin/components/company-status-badge';
 import { ReadinessProgressRing } from '@/features/readiness/components/readiness-progress-ring';
@@ -20,11 +21,6 @@ import { scorePercent, toneForStatus } from '@/features/readiness/utils/readines
 const CARD_RADIUS_CLASS = 'rounded-[15px]';
 const MEDIA_RADIUS_CLASS = 'rounded-[14px]';
 const MEDIA_ASPECT_CLASS = 'aspect-[16/10]';
-const CARD_STAGGER_MS = 70;
-const CARD_BASE_DELAY_MS = 80;
-const CARD_DURATION_MS = 520;
-const TABLE_BASE_DELAY_MS = 80;
-const TABLE_DURATION_MS = 520;
 
 export type CompanyReadinessSummary = {
   overallScore: number | null;
@@ -80,11 +76,7 @@ const CompanyCard = ({ company, readiness, onSelect }: CompanyCardProps) => {
       className={cn(
         'flex h-full w-full flex-col gap-3 overflow-hidden border border-border/80',
         'bg-surface-elevated p-3.5 text-left shadow-card',
-        // Match analytics KPI cards: lift + shadow (Tailwind v4 translate property).
-        'transition-[translate,box-shadow] duration-[400ms]',
-        'ease-[cubic-bezier(0.25,0.46,0.45,0.94)]',
-        'hover:-translate-y-1 hover:shadow-md',
-        'motion-reduce:transition-none motion-reduce:hover:translate-y-0',
+        LIST_CARD_LIFT_CLASS,
         CARD_RADIUS_CLASS,
       )}
     >
@@ -186,13 +178,7 @@ export const CompaniesTable = ({
 
   if (viewMode === VIEW_MODE_CARDS) {
     return (
-      <StaggerGroup
-        force
-        className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 [&>*]:h-full [&>*]:min-w-0"
-        staggerMs={CARD_STAGGER_MS}
-        baseDelayMs={CARD_BASE_DELAY_MS}
-        durationMs={CARD_DURATION_MS}
-      >
+      <AdminListCardGrid className="sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {companies.map((company) => (
           <CompanyCard
             key={company.id}
@@ -203,12 +189,12 @@ export const CompaniesTable = ({
             }}
           />
         ))}
-      </StaggerGroup>
+      </AdminListCardGrid>
     );
   }
 
   return (
-    <Reveal force delayMs={TABLE_BASE_DELAY_MS} durationMs={TABLE_DURATION_MS}>
+    <ListTableReveal>
       <div className="overflow-x-auto rounded-sm border border-border">
         <table className="w-full min-w-[40rem] border-collapse text-sm">
           <thead className="bg-surface text-xs uppercase tracking-wide text-ink-muted">
@@ -256,6 +242,6 @@ export const CompaniesTable = ({
           </tbody>
         </table>
       </div>
-    </Reveal>
+    </ListTableReveal>
   );
 };

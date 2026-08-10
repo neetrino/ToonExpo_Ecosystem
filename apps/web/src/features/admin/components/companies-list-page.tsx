@@ -26,7 +26,6 @@ import { Reveal } from '@/shared/ui/motion';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
 const CONTENT_BASE_DELAY_MS = 80;
-const PAGINATION_DELAY_MS = 280;
 
 const parsePage = (raw: string | null): number => {
   const parsed = Number(raw);
@@ -143,20 +142,18 @@ export const CompaniesListPage = () => {
             />
           )}
 
-          <Reveal force delayMs={PAGINATION_DELAY_MS}>
-            <CatalogPagination
-              page={response.meta.page}
-              totalPages={response.meta.totalPages}
-              buildHref={(nextPage) =>
-                nextPage <= 1
-                  ? '/admin/companies'
-                  : `/admin/companies?page=${nextPage}`
-              }
-              previousLabel={t('pagination.previous')}
-              nextLabel={t('pagination.next')}
-              ariaLabel={t('pagination.ariaLabel')}
-            />
-          </Reveal>
+          <CatalogPagination
+            page={response.meta.page}
+            totalPages={response.meta.totalPages}
+            buildHref={(nextPage) =>
+              nextPage <= 1
+                ? '/admin/companies'
+                : `/admin/companies?page=${nextPage}`
+            }
+            previousLabel={t('pagination.previous')}
+            nextLabel={t('pagination.next')}
+            ariaLabel={t('pagination.ariaLabel')}
+          />
         </>
       )}
 

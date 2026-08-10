@@ -13,6 +13,7 @@ import { CatalogPagination } from '@/features/catalog/components/catalog-paginat
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { Button } from '@/shared/ui/button';
+import { Reveal } from '@/shared/ui/motion';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
 const parsePage = (raw: string | null): number => {
@@ -53,32 +54,34 @@ export const TeamPage = () => {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-page-title text-ink">{t('title')}</h1>
-          <p className="text-sm text-ink-secondary">
-            {t('subtitle', { count: response.meta.total })}
-          </p>
-          {!canManage ? <p className="text-sm text-ink-muted">{t('readOnlyNotice')}</p> : null}
+      <Reveal force>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-col gap-1">
+            <h1 className="text-page-title text-ink">{t('title')}</h1>
+            <p className="text-sm text-ink-secondary">
+              {t('subtitle', { count: response.meta.total })}
+            </p>
+            {!canManage ? <p className="text-sm text-ink-muted">{t('readOnlyNotice')}</p> : null}
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <ViewModeToggle value={viewMode} onChange={setViewMode} />
+            {canManage ? (
+              <Button
+                type="button"
+                size="sm"
+                variant="secondary"
+                className="shrink-0"
+                onClick={() => {
+                  setInviteOpen(true);
+                  setInviteEmail(null);
+                }}
+              >
+                <AddActionLabel>{t('inviteMember')}</AddActionLabel>
+              </Button>
+            ) : null}
+          </div>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <ViewModeToggle value={viewMode} onChange={setViewMode} />
-          {canManage ? (
-            <Button
-              type="button"
-              size="sm"
-              variant="secondary"
-              className="shrink-0"
-              onClick={() => {
-                setInviteOpen(true);
-                setInviteEmail(null);
-              }}
-            >
-              <AddActionLabel>{t('inviteMember')}</AddActionLabel>
-            </Button>
-          ) : null}
-        </div>
-      </div>
+      </Reveal>
 
       {inviteEmail ? (
         <p role="status" className="rounded-sm bg-surface px-3 py-2 text-sm text-ink">

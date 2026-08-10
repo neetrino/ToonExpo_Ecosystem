@@ -14,6 +14,7 @@ import { AdminCreateSheet } from '@/shared/ui/admin-create-sheet';
 import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
 import { BackLink } from '@/shared/ui/back-link';
 import { Button } from '@/shared/ui/button';
+import { Reveal } from '@/shared/ui/motion';
 import { VIEW_MODE_CARDS } from '@/shared/ui/view-mode';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
@@ -45,27 +46,29 @@ export const ReadinessCategoriesPage = () => {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-col gap-2">
-          <BackLink href="/admin/readiness" label={t('backToAssessments')} />
-          <h1 className="text-page-title text-ink">{t('title')}</h1>
-          <p className="max-w-xl text-sm text-ink-secondary">{t('subtitle')}</p>
+      <Reveal force>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-col gap-2">
+            <BackLink href="/admin/readiness" label={t('backToAssessments')} />
+            <h1 className="text-page-title text-ink">{t('title')}</h1>
+            <p className="max-w-xl text-sm text-ink-secondary">{t('subtitle')}</p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <ViewModeToggle value={viewMode} onChange={setViewMode} />
+            <Button
+              type="button"
+              size="sm"
+              variant="secondary"
+              onClick={() => {
+                setCreating(true);
+                setEditing(null);
+              }}
+            >
+              <AddActionLabel>{t('newCategory')}</AddActionLabel>
+            </Button>
+          </div>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <ViewModeToggle value={viewMode} onChange={setViewMode} />
-          <Button
-            type="button"
-            size="sm"
-            variant="secondary"
-            onClick={() => {
-              setCreating(true);
-              setEditing(null);
-            }}
-          >
-            <AddActionLabel>{t('newCategory')}</AddActionLabel>
-          </Button>
-        </div>
-      </div>
+      </Reveal>
 
       <AdminCreateSheet
         open={creating}

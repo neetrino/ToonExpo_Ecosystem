@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import type { ReactNode } from 'react';
 
 import { cn } from '@/shared/ui/cn';
+import { LIST_CARD_LIFT_CLASS } from '@/shared/ui/motion';
 
 const STATUS_BADGE_CLASS: Record<PublicationStatus, string> = {
   published: 'bg-success-soft text-success',
@@ -15,8 +16,7 @@ const STATUS_BADGE_CLASS: Record<PublicationStatus, string> = {
 
 export const ADMIN_INVENTORY_CARD_CLASS = cn(
   'flex h-full flex-col overflow-hidden rounded-lg bg-surface-elevated shadow-xs',
-  'transition-[box-shadow,transform] duration-[var(--duration-fast)]',
-  'hover:shadow-sm active:scale-[0.995]',
+  LIST_CARD_LIFT_CLASS,
 );
 
 type AdminInventoryPublicationBadgeProps = {

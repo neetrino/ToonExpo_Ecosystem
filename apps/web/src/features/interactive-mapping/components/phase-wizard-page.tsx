@@ -7,6 +7,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { createPortalApartment } from '@/features/builder/api/portal-apartments-api';
 import { createPortalBuilding } from '@/features/builder/api/portal-buildings-api';
 import { BackLink } from '@/shared/ui/back-link';
+import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
+import { Reveal } from '@/shared/ui/motion';
 
 import { interactiveMappingProjectQueryKey } from '../constants';
 import {
@@ -88,17 +90,19 @@ export const PhaseWizardPage = ({ projectId }: PhaseWizardPageProps) => {
 
   return (
     <div className="space-y-8">
-      <div>
-        <BackLink href={basePath} label={t('backToProjects')} />
-        <h1 className="mt-3 font-display text-4xl text-ink">{project.name}</h1>
-        <p className="mt-2 text-sm text-ink-muted">
-          {project.activePhase
-            ? t('activePhase', { phase: project.activePhase })
-            : t('allPhasesDone')}
-        </p>
-      </div>
+      <Reveal force>
+        <div>
+          <BackLink href={basePath} label={t('backToProjects')} />
+          <h1 className="mt-3 font-display text-4xl text-ink">{project.name}</h1>
+          <p className="mt-2 text-sm text-ink-muted">
+            {project.activePhase
+              ? t('activePhase', { phase: project.activePhase })
+              : t('allPhasesDone')}
+          </p>
+        </div>
+      </Reveal>
 
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+      <AdminListCardGrid className="gap-3 md:grid-cols-2 xl:grid-cols-2">
         <PhaseCard
           step={1}
           title={t('phases.districts')}
@@ -232,7 +236,7 @@ export const PhaseWizardPage = ({ projectId }: PhaseWizardPageProps) => {
             />
           ) : null}
         </PhaseCard>
-      </div>
+      </AdminListCardGrid>
     </div>
   );
 };

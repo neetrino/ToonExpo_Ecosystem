@@ -7,6 +7,7 @@ import { PublicationStatusBadge } from '@/features/partners/components/partner-b
 import { Link } from '@/i18n/navigation';
 import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
 import { cn } from '@/shared/ui/cn';
+import { LIST_CARD_LIFT_CLASS, ListTableReveal } from '@/shared/ui/motion';
 import { VIEW_MODE_CARDS, type ViewMode } from '@/shared/ui/view-mode';
 
 type AdminEventsTableProps = {
@@ -35,7 +36,10 @@ export const AdminEventsTable = ({ events, viewMode = VIEW_MODE_CARDS }: AdminEv
           <Link
             key={event.id}
             href={`/admin/events/${event.id}`}
-            className="flex flex-col gap-2 rounded-sm border border-border bg-background p-3 transition-colors hover:bg-surface/60"
+            className={cn(
+              'flex flex-col gap-2 rounded-sm border border-border bg-background p-3',
+              LIST_CARD_LIFT_CLASS,
+            )}
           >
             <div className="flex items-start justify-between gap-3">
               <span className="min-w-0 truncate font-medium text-ink">{event.name}</span>
@@ -59,36 +63,38 @@ export const AdminEventsTable = ({ events, viewMode = VIEW_MODE_CARDS }: AdminEv
   }
 
   return (
-    <div className="overflow-x-auto rounded-sm border border-border">
-      <table className="min-w-full text-left text-sm">
-        <thead>
-          <tr className="border-b border-border bg-surface text-xs uppercase text-ink-muted">
-            <th className="px-4 py-3">{t('columns.name')}</th>
-            <th className="px-4 py-3">{t('columns.code')}</th>
-            <th className="px-4 py-3">{t('columns.status')}</th>
-            <th className="px-4 py-3">{t('columns.publication')}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {events.map((event) => (
-            <tr key={event.id} className="border-b border-border last:border-0">
-              <td className="px-4 py-3">
-                <Link
-                  href={`/admin/events/${event.id}`}
-                  className="font-medium text-brand hover:underline"
-                >
-                  {event.name}
-                </Link>
-              </td>
-              <td className="px-4 py-3 text-ink-secondary">{event.code}</td>
-              <td className="px-4 py-3">{t(`statuses.${event.status}`)}</td>
-              <td className="px-4 py-3">
-                <PublicationStatusBadge status={event.publicationStatus} />
-              </td>
+    <ListTableReveal>
+      <div className="overflow-x-auto rounded-sm border border-border">
+        <table className="min-w-full text-left text-sm">
+          <thead>
+            <tr className="border-b border-border bg-surface text-xs uppercase text-ink-muted">
+              <th className="px-4 py-3">{t('columns.name')}</th>
+              <th className="px-4 py-3">{t('columns.code')}</th>
+              <th className="px-4 py-3">{t('columns.status')}</th>
+              <th className="px-4 py-3">{t('columns.publication')}</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {events.map((event) => (
+              <tr key={event.id} className="border-b border-border last:border-0">
+                <td className="px-4 py-3">
+                  <Link
+                    href={`/admin/events/${event.id}`}
+                    className="font-medium text-brand hover:underline"
+                  >
+                    {event.name}
+                  </Link>
+                </td>
+                <td className="px-4 py-3 text-ink-secondary">{event.code}</td>
+                <td className="px-4 py-3">{t(`statuses.${event.status}`)}</td>
+                <td className="px-4 py-3">
+                  <PublicationStatusBadge status={event.publicationStatus} />
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </ListTableReveal>
   );
 };

@@ -1356,10 +1356,11 @@
     },
     "interactiveMapping": {
       "title": "Interactive mapping",
-      "subtitle": "Map districts, buildings, floors, and apartments in four phases.",
+      "subtitle": "{count, plural, =0 {No projects} one {# project} other {# projects}}",
       "loading": "Loading…",
       "error": "Could not load interactive mapping data.",
       "empty": "No projects yet. Create one to start mapping.",
+      "noResults": "No projects match “{query}”.",
       "existing": "Projects",
       "createProject": "Create project",
       "open": "Open",
@@ -1370,6 +1371,14 @@
       "backToWizard": "Wizard",
       "activePhase": "Continue with phase {phase}",
       "allPhasesDone": "All phases are complete",
+      "filters": {
+        "searchPlaceholder": "Search by project, company, or city"
+      },
+      "pagination": {
+        "previous": "Previous",
+        "next": "Next",
+        "ariaLabel": "Interactive mapping projects pagination"
+      },
       "status": {
         "locked": "Locked",
         "active": "Do this now",

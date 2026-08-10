@@ -32,6 +32,27 @@ import {
 import type { CanvasSnapshot } from './phase-progress.js';
 import { setupBuildingFloors } from './setup-building-floors.js';
 
+const buildInteractiveMappingProjectsWhere = (
+  companyId: string | undefined,
+  search: string | undefined,
+): Prisma.ProjectWhereInput => {
+  const where: Prisma.ProjectWhereInput = {};
+  if (companyId) {
+    where.builderCompanyId = companyId;
+  }
+  const needle = search?.trim();
+  if (!needle) {
+    return where;
+  }
+  where.OR = [
+    { name: { contains: needle, mode: 'insensitive' } },
+    { slug: { contains: needle, mode: 'insensitive' } },
+    { city: { contains: needle, mode: 'insensitive' } },
+    { builderCompany: { name: { contains: needle, mode: 'insensitive' } } },
+  ];
+  return where;
+};
+
 @Injectable()
 export class InteractiveMappingService {
   constructor(private readonly prisma: PrismaService) {}
@@ -40,21 +61,32 @@ export class InteractiveMappingService {
    * Lists projects with phase progress. When `companyId` is set, only that
    * builder company's projects are returned.
    */
-  async listProjects(companyId?: string): Promise<InteractiveMappingProjectListResponse> {
-    const projects = await this.prisma.db.project.findMany({
-      ...(companyId ? { where: { builderCompanyId: companyId } } : {}),
-      orderBy: [{ name: 'asc' }],
-      select: {
-        id: true,
-        name: true,
-        slug: true,
-        builderCompanyId: true,
-        publicationStatus: true,
-        districts: { select: { id: true } },
-        buildings: { select: { id: true, floorsCount: true } },
-        _count: { select: { apartments: true } },
-      },
-    });
+  async listProjects(
+    companyId: string | undefined,
+    page: number,
+    pageSize: number,
+    search?: string,
+  ): Promise<InteractiveMappingProjectListResponse> {
+    const where = buildInteractiveMappingProjectsWhere(companyId, search);
+    const [total, projects] = await Promise.all([
+      this.prisma.db.project.count({ where }),
+      this.prisma.db.project.findMany({
+        where,
+        orderBy: [{ name: 'asc' }],
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          builderCompanyId: true,
+          publicationStatus: true,
+          districts: { select: { id: true } },
+          buildings: { select: { id: true, floorsCount: true } },
+          _count: { select: { apartments: true } },
+        },
+      }),
+    ]);
 
     const projectIds = projects.map((p) => p.id);
     const [floors, canvases] = await Promise.all([
@@ -66,6 +98,12 @@ export class InteractiveMappingService {
       data: projects.map((project) =>
         toProjectSummary(project, floors.get(project.id) ?? [], canvases.get(project.id) ?? []),
       ),
+      meta: {
+        page,
+        pageSize,
+        total,
+        totalPages: total === 0 ? 0 : Math.ceil(total / pageSize),
+      },
     };
   }
 

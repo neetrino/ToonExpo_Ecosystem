@@ -11,11 +11,22 @@ export const INTERACTIVE_MAPPING_PORTAL_API_PREFIX = '/portal/interactive-mappin
 
 export const INTERACTIVE_MAPPING_PROJECTS_QUERY_KEY = ['interactive-mapping', 'projects'] as const;
 
+/** Debounce before interactive-mapping project search hits the API. */
+export const INTERACTIVE_MAPPING_SEARCH_DEBOUNCE_MS = 300;
+
+/** Page size for the interactive-mapping project list (matches admin inventory). */
+export const INTERACTIVE_MAPPING_DEFAULT_PAGE_SIZE = 18;
+
 export const interactiveMappingProjectQueryKey = (projectId: string, mode: 'admin' | 'portal') =>
   [...INTERACTIVE_MAPPING_PROJECTS_QUERY_KEY, mode, projectId] as const;
 
 export const interactiveMappingProjectsQueryKey = (mode: 'admin' | 'portal') =>
   [...INTERACTIVE_MAPPING_PROJECTS_QUERY_KEY, mode] as const;
+
+export const interactiveMappingProjectsListQueryKey = (
+  mode: 'admin' | 'portal',
+  params: { page: number; pageSize: number; search: string },
+) => [...interactiveMappingProjectsQueryKey(mode), 'list', params] as const;
 
 export const MIN_FLOOR_COUNT = 1;
 export const MAX_FLOOR_COUNT = 60;

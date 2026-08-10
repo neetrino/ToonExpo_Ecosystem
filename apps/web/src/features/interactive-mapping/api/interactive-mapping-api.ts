@@ -63,13 +63,28 @@ const catalogOptions = (scope: CatalogScope): PortalRequestOptions => ({ scope }
  * Admin: all projects. Portal: caller's company only.
  */
 export const listInteractiveMappingProjects = (
-  options: InteractiveMappingRequestOptions = {},
+  options: InteractiveMappingRequestOptions & {
+    page?: number | undefined;
+    pageSize?: number | undefined;
+    search?: string | undefined;
+  } = {},
 ): Promise<InteractiveMappingProjectListResponse> => {
   const mode = options.mode ?? 'admin';
+  const params = new URLSearchParams();
+  if (options.page != null) {
+    params.set('page', String(options.page));
+  }
+  if (options.pageSize != null) {
+    params.set('pageSize', String(options.pageSize));
+  }
+  if (options.search?.trim()) {
+    params.set('search', options.search.trim());
+  }
+  const query = params.toString();
   return apiFetch<InteractiveMappingProjectListResponse>(
     withCookie(
       {
-        path: `${apiPrefixFor(mode)}/projects`,
+        path: `${apiPrefixFor(mode)}/projects${query.length > 0 ? `?${query}` : ''}`,
         method: 'GET',
         credentials: 'include',
         cache: 'no-store',

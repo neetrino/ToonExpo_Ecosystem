@@ -11,6 +11,8 @@ import {
 import { PartnerTypeLabel } from '@/features/partners/components/partner-type-label';
 import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
 import { AdminListCardLogo } from '@/shared/ui/admin-list-card-logo';
+import { cn } from '@/shared/ui/cn';
+import { LIST_CARD_LIFT_CLASS, ListTableReveal } from '@/shared/ui/motion';
 import { VIEW_MODE_CARDS, type ViewMode } from '@/shared/ui/view-mode';
 
 type PartnersTableProps = {
@@ -49,7 +51,10 @@ export const PartnersTable = ({
           <button
             key={partner.id}
             type="button"
-            className="flex items-stretch gap-3 rounded-sm border border-border bg-background p-3 text-left transition-colors hover:bg-surface/60"
+            className={cn(
+              'flex items-stretch gap-3 rounded-sm border border-border bg-background p-3 text-left',
+              LIST_CARD_LIFT_CLASS,
+            )}
             onClick={() => onSelectPartner(partner.id)}
           >
             <AdminListCardLogo name={partner.name} logoUrl={partner.logoUrl} size="match" />
@@ -70,8 +75,9 @@ export const PartnersTable = ({
   }
 
   return (
-    <div className="overflow-x-auto rounded-sm border border-border">
-      <table className="w-full min-w-[48rem] border-collapse text-left text-sm">
+    <ListTableReveal>
+      <div className="overflow-x-auto rounded-sm border border-border">
+        <table className="w-full min-w-[48rem] border-collapse text-left text-sm">
         <thead className="bg-surface text-xs uppercase tracking-wide text-ink-muted">
           <tr>
             <th className="px-3 py-2 text-left font-medium">{t('columns.name')}</th>
@@ -120,5 +126,6 @@ export const PartnersTable = ({
         </tbody>
       </table>
     </div>
+    </ListTableReveal>
   );
 };

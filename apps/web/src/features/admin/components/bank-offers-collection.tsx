@@ -6,8 +6,10 @@ import { useTranslations } from 'next-intl';
 
 import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
 import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
+import { cn } from '@/shared/ui/cn';
 import { IconButton } from '@/shared/ui/icon-button';
 import { LIST_STATUS_BADGE_COMPACT_CLASS } from '@/shared/ui/list-status-badge';
+import { LIST_CARD_LIFT_CLASS, ListTableReveal } from '@/shared/ui/motion';
 import { VIEW_MODE_CARDS, type ViewMode } from '@/shared/ui/view-mode';
 
 type BankOffersCollectionProps = {
@@ -38,7 +40,10 @@ export const BankOffersCollection = ({
           <button
             key={offer.id}
             type="button"
-            className="flex flex-col gap-2 rounded-sm border border-border bg-background p-3 text-left transition-colors hover:bg-surface/60"
+            className={cn(
+              'flex flex-col gap-2 rounded-sm border border-border bg-background p-3 text-left',
+              LIST_CARD_LIFT_CLASS,
+            )}
             onClick={() => {
               onEdit(offer);
             }}
@@ -62,59 +67,61 @@ export const BankOffersCollection = ({
   }
 
   return (
-    <div className="overflow-x-auto rounded-sm border border-border">
-      <table className="w-full min-w-[48rem] border-collapse text-left text-sm">
-        <thead className="bg-surface text-xs uppercase tracking-wide text-ink-muted">
-          <tr>
-            <th className="px-3 py-2 text-left font-medium">{t('columns.title')}</th>
-            <th className="px-3 py-2 text-center font-medium">{t('columns.bank')}</th>
-            <th className="px-3 py-2 text-center font-medium">{t('columns.rate')}</th>
-            <th className="px-3 py-2 text-center font-medium">{t('columns.publication')}</th>
-            <th className="px-3 py-2 text-center font-medium">{t('columns.actions')}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {offers.map((offer) => (
-            <tr key={offer.id} className="border-t border-border">
-              <td className="px-3 py-2.5 text-left font-medium text-ink">{offer.title}</td>
-              <td className="px-3 py-2.5 text-center text-ink-secondary">
-                {offer.partnerCompanyName ?? '—'}
-              </td>
-              <td className="px-3 py-2.5 text-center text-ink-secondary">{offer.rate}%</td>
-              <td className="px-3 py-2.5">
-                <div className="flex justify-center">
-                  <PublicationStatusBadge status={offer.publicationStatus} />
-                </div>
-              </td>
-              <td className="px-3 py-2.5">
-                <div className="flex items-center justify-center gap-1">
-                  <IconButton
-                    label={t('edit')}
-                    size="sm"
-                    className="text-cta-dark hover:bg-cta-dark/5"
-                    onClick={() => {
-                      onEdit(offer);
-                    }}
-                  >
-                    <SquarePen className="size-4" strokeWidth={1.75} aria-hidden />
-                  </IconButton>
-                  <IconButton
-                    label={t('delete')}
-                    size="sm"
-                    className="text-danger hover:bg-danger-soft"
-                    disabled={busy}
-                    onClick={() => {
-                      onDelete(offer);
-                    }}
-                  >
-                    <Trash2 className="size-4" strokeWidth={1.75} aria-hidden />
-                  </IconButton>
-                </div>
-              </td>
+    <ListTableReveal>
+      <div className="overflow-x-auto rounded-sm border border-border">
+        <table className="w-full min-w-[48rem] border-collapse text-left text-sm">
+          <thead className="bg-surface text-xs uppercase tracking-wide text-ink-muted">
+            <tr>
+              <th className="px-3 py-2 text-left font-medium">{t('columns.title')}</th>
+              <th className="px-3 py-2 text-center font-medium">{t('columns.bank')}</th>
+              <th className="px-3 py-2 text-center font-medium">{t('columns.rate')}</th>
+              <th className="px-3 py-2 text-center font-medium">{t('columns.publication')}</th>
+              <th className="px-3 py-2 text-center font-medium">{t('columns.actions')}</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {offers.map((offer) => (
+              <tr key={offer.id} className="border-t border-border">
+                <td className="px-3 py-2.5 text-left font-medium text-ink">{offer.title}</td>
+                <td className="px-3 py-2.5 text-center text-ink-secondary">
+                  {offer.partnerCompanyName ?? '—'}
+                </td>
+                <td className="px-3 py-2.5 text-center text-ink-secondary">{offer.rate}%</td>
+                <td className="px-3 py-2.5">
+                  <div className="flex justify-center">
+                    <PublicationStatusBadge status={offer.publicationStatus} />
+                  </div>
+                </td>
+                <td className="px-3 py-2.5">
+                  <div className="flex items-center justify-center gap-1">
+                    <IconButton
+                      label={t('edit')}
+                      size="sm"
+                      className="text-cta-dark hover:bg-cta-dark/5"
+                      onClick={() => {
+                        onEdit(offer);
+                      }}
+                    >
+                      <SquarePen className="size-4" strokeWidth={1.75} aria-hidden />
+                    </IconButton>
+                    <IconButton
+                      label={t('delete')}
+                      size="sm"
+                      className="text-danger hover:bg-danger-soft"
+                      disabled={busy}
+                      onClick={() => {
+                        onDelete(offer);
+                      }}
+                    >
+                      <Trash2 className="size-4" strokeWidth={1.75} aria-hidden />
+                    </IconButton>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </ListTableReveal>
   );
 };

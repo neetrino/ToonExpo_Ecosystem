@@ -17,15 +17,31 @@ import {
 } from '../api/interactive-mapping-api';
 import {
   interactiveMappingProjectQueryKey,
+  interactiveMappingProjectsListQueryKey,
   interactiveMappingProjectsQueryKey,
 } from '../constants';
 import { useInteractiveMappingScope } from '../scope/interactive-mapping-scope';
 
-export const useInteractiveMappingProjectsQuery = () => {
+export const useInteractiveMappingProjectsQuery = (params: {
+  page: number;
+  pageSize: number;
+  search?: string | undefined;
+}) => {
   const { mode } = useInteractiveMappingScope();
+  const search = params.search?.trim() ?? '';
   return useQuery({
-    queryKey: interactiveMappingProjectsQueryKey(mode),
-    queryFn: () => listInteractiveMappingProjects({ mode }),
+    queryKey: interactiveMappingProjectsListQueryKey(mode, {
+      page: params.page,
+      pageSize: params.pageSize,
+      search,
+    }),
+    queryFn: () =>
+      listInteractiveMappingProjects({
+        mode,
+        page: params.page,
+        pageSize: params.pageSize,
+        ...(search ? { search } : {}),
+      }),
   });
 };
 

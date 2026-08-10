@@ -20,6 +20,7 @@ import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { Button } from '@/shared/ui/button';
 import { EmptyState } from '@/shared/ui/empty-state';
+import { Reveal } from '@/shared/ui/motion';
 import { Select } from '@/shared/ui/select';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
@@ -98,25 +99,27 @@ export const ReadinessAssessmentsListPage = () => {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-page-title text-ink">{t('title')}</h1>
-          <p className="max-w-xl text-sm text-ink-secondary">{t('guide')}</p>
+      <Reveal force>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div className="flex flex-col gap-1">
+            <h1 className="text-page-title text-ink">{t('title')}</h1>
+            <p className="max-w-xl text-sm text-ink-secondary">{t('guide')}</p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <ViewModeToggle value={viewMode} onChange={setViewMode} />
+            <Button
+              type="button"
+              size="sm"
+              variant="secondary"
+              onClick={() => {
+                setShowCreate(true);
+              }}
+            >
+              <AddActionLabel>{t('newAssessment')}</AddActionLabel>
+            </Button>
+          </div>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <ViewModeToggle value={viewMode} onChange={setViewMode} />
-          <Button
-            type="button"
-            size="sm"
-            variant="secondary"
-            onClick={() => {
-              setShowCreate(true);
-            }}
-          >
-            <AddActionLabel>{t('newAssessment')}</AddActionLabel>
-          </Button>
-        </div>
-      </div>
+      </Reveal>
 
       <div className="flex flex-wrap items-center gap-3">
         <label className="flex min-w-[12rem] flex-1 flex-col gap-1 text-sm text-ink sm:max-w-xs">
