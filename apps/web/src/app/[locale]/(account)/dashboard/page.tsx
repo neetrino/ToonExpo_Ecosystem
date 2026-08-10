@@ -2,7 +2,7 @@ import { headers } from 'next/headers';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { getMeOrNullCached as getMeOrNull } from '@/features/auth/api/get-me-or-null-cached';
-import { AccountOverviewStats } from '@/features/buyer/components/account/account-overview-stats';
+import { AccountDashboardView } from '@/features/buyer/components/account/account-dashboard-view';
 import {
   AccountContentReveal,
   AccountPageEnter,
@@ -49,11 +49,15 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
 
   return (
     <AccountPageEnter>
-      <div className="hidden flex-col gap-15 md:flex">
-        <AccountPageHeader title={t('dashboard.welcome', { name: user.name })} iconName="dashboard" />
+      <div className="hidden flex-col gap-6 md:flex">
+        <AccountPageHeader
+          title={t('dashboard.welcome', { name: user.name })}
+          subtitle={t('dashboard.subtitle')}
+          iconName="dashboard"
+        />
 
         {showBuyerOverview ? (
-          <AccountOverviewStats />
+          <AccountDashboardView />
         ) : (
           <AccountContentReveal>
             <Card variant="elevated" className="max-w-xl">

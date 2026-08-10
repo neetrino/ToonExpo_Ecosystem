@@ -1024,18 +1024,42 @@
     },
     "dashboard": {
       "welcome": "Բարև, {name}",
+      "subtitle": "Ձեր ցուցահանդեսային ակտիվությունը, ընտրյալները և հայտերը՝ մեկ տեղում։",
       "qrLabel": "Իմ QR",
       "qrReady": "Պատրաստ է",
+      "scansLabel": "QR սկաներ",
       "scansHint": "{count, plural, =0 {Դեռ սկաներ չկան} one {# սկան} other {# սկան}}",
       "favoritesLabel": "Ընտրյալներ",
       "favoritesHint": "Պահպանված կատալոգից",
       "requestsLabel": "Հայտեր",
       "requestsHint": "Կառուցապատողների հետ",
-      "checkinLabel": "Գրանցում",
+      "checkinLabel": "Check-in",
       "checkinCheckedIn": "Գրանցված եք",
       "checkinPending": "Դեռ ոչ",
       "checkinNone": "Միջոցառում չկա",
-      "settingsHint": "Պրոֆիլի տվյալները և գաղտնաբառը կառավարեք Կարգավորումներում։"
+      "checkinActiveHint": "Ակտիվ ցուցահանդեսի կարգավիճակ ձեր visitor QR-ի համար։",
+      "settingsHint": "Պրոֆիլի տվյալները և գաղտնաբառը կառավարեք Կարգավորումներում։",
+      "viewAll": "Տեսնել բոլորը",
+      "favoriteProject": "Նախագիծ",
+      "favoriteApartment": "Բնակարան",
+      "sections": {
+        "recentRequests": "Վերջին հայտեր",
+        "recentScans": "Վերջին QR սկաներ",
+        "savedFavorites": "Ընտրյալներ",
+        "checkinStatus": "Check-in և արագ հղումներ"
+      },
+      "empty": {
+        "requests": "Դեռ հայտեր չկան։ Դիտեք կատալոգը և ուղարկեք հետաքրքրություն։",
+        "scans": "Դեռ սկաներ չկան։ Ցույց տվեք QR-ը կառուցապատողներին։",
+        "favorites": "Դեռ դատարկ է։ Ավելացրեք նախագծեր ընտրյալներում։",
+        "checkin": "Այժմ ակտիվ check-in չկա։"
+      },
+      "quickLinks": {
+        "qr": "Իմ QR",
+        "favorites": "Ընտրյալներ",
+        "requests": "Հայտեր",
+        "settings": "Կարգավորումներ"
+      }
     },
     "accountTypes": {
       "buyer": "Գնորդ / այցելու",
@@ -2778,14 +2802,48 @@
     },
     "dashboard": {
       "title": "Վահանակ",
-      "subtitle": "Ձեր ընկերության նախագծերի և գույքի ամփոփում",
+      "subtitle": "Նախագծեր, CRM խողովակ և ընկերության ակտիվություն՝ մեկ տեղում։",
       "loading": "Բեռնվում է…",
       "error": "Չհաջողվեց բեռնել վահանակը։ Կրկին փորձեք։",
+      "viewAll": "Տեսնել բոլորը",
+      "noProject": "Առանց նախագծի",
+      "dealFallback": "Անանուն գործարք",
+      "projectMeta": "{buildings} շենք · {apartments} բնակարան",
       "stats": {
         "projects": "Նախագծեր",
         "published": "Հրապարակված",
         "drafts": "Սևագրեր",
-        "apartments": "Բնակարաններ"
+        "apartments": "Բնակարաններ",
+        "openDeals": "Բաց գործարքներ",
+        "requests": "Հայտեր",
+        "favorites": "Ընտրյալներ"
+      },
+      "hints": {
+        "projects": "Ընկերության բոլոր նախագծերը",
+        "published": "Հրապարակված կատալոգում",
+        "openDeals": "{count, plural, =0 {Այսօր չի ստեղծվել} one {# ստեղծված այսօր} other {# ստեղծված այսօր}}",
+        "apartments": "Բեռնված նախագծերում"
+      },
+      "sections": {
+        "recentProjects": "Վերջին նախագծեր",
+        "recentDeals": "Վերջին CRM գործարքներ",
+        "crmPipeline": "CRM խողովակ",
+        "topProjects": "Լավագույն նախագծեր ըստ դիտումների",
+        "shortcuts": "Արագ հղումներ և ակտիվություն"
+      },
+      "empty": {
+        "projects": "Դեռ նախագծեր չկան։ Ստեղծեք առաջինը։",
+        "deals": "Դեռ գործարքներ չկան։ Սկանավորեք visitor QR կամ ավելացրեք Quick Lead։",
+        "pipeline": "Այժմ բաց գործարքներ չկան։",
+        "topProjects": "Այս ժամանակահատվածում դիտումներ չկան։"
+      },
+      "quickLinks": {
+        "projects": "Նախագծեր",
+        "crm": "CRM",
+        "team": "Թիմ",
+        "scanner": "Սկաներ",
+        "readiness": "Պատրաստվածություն",
+        "analytics": "Վերլուծություն"
       },
       "links": {
         "projects": "Բոլոր նախագծերը",

@@ -12,7 +12,8 @@ import { cn } from '@/shared/ui/cn';
 
 const CARD_RADIUS_CLASS = 'rounded-[15px]';
 const MEDIA_RADIUS_CLASS = 'rounded-[12px]';
-const CARD_MAX_WIDTH_CLASS = 'max-w-[16.5rem]';
+/** Matches admin readiness 4-col card width (~partners KPI). */
+const CARD_MAX_WIDTH_CLASS = 'max-w-[15rem]';
 
 type BuilderReadinessOverviewCardProps = {
   assessment: PortalReadinessAssessmentItem;
@@ -49,31 +50,31 @@ export const BuilderReadinessOverviewCard = ({ assessment }: BuilderReadinessOve
   return (
     <article
       className={cn(
-        'flex w-full flex-col gap-2.5 overflow-hidden border border-border/80',
-        'bg-surface-elevated p-3 shadow-card',
+        'flex w-full flex-col gap-2 overflow-hidden border border-border/80',
+        'bg-surface-elevated p-2.5 shadow-card',
         CARD_MAX_WIDTH_CLASS,
         CARD_RADIUS_CLASS,
       )}
     >
-      <header className="flex flex-col gap-1">
-        <div className="flex min-w-0 items-center gap-2">
-          <div className="relative size-7 shrink-0 overflow-hidden rounded-full bg-surface ring-1 ring-border">
+      <header className="flex flex-col gap-0.5">
+        <div className="flex min-w-0 items-center gap-1.5">
+          <div className="relative size-6 shrink-0 overflow-hidden rounded-full bg-surface ring-1 ring-border">
             {companyLogoUrl ? (
-              <Image src={companyLogoUrl} alt="" fill className="object-cover" sizes="28px" />
+              <Image src={companyLogoUrl} alt="" fill className="object-cover" sizes="24px" />
             ) : (
-              <span className="absolute inset-0 flex items-center justify-center text-[9px] font-semibold text-ink-muted">
+              <span className="absolute inset-0 flex items-center justify-center text-[8px] font-semibold text-ink-muted">
                 {companyInitials}
               </span>
             )}
           </div>
-          <p className="min-w-0 truncate text-xs font-medium text-ink-secondary">{companyName}</p>
+          <p className="min-w-0 truncate text-[11px] font-medium text-ink-secondary">{companyName}</p>
         </div>
-        <h2 className="text-base font-semibold tracking-tight text-ink">{title}</h2>
+        <h2 className="truncate text-sm font-semibold tracking-tight text-ink">{title}</h2>
       </header>
 
       <div
         className={cn(
-          'relative aspect-[16/9] w-full overflow-hidden bg-surface ring-1 ring-border/60',
+          'relative h-24 w-full overflow-hidden bg-surface ring-1 ring-border/60',
           MEDIA_RADIUS_CLASS,
         )}
       >
@@ -83,11 +84,11 @@ export const BuilderReadinessOverviewCard = ({ assessment }: BuilderReadinessOve
             alt=""
             fill
             className="object-cover"
-            sizes="(max-width: 640px) 100vw, 16.5rem"
+            sizes="(max-width: 640px) 100vw, 15rem"
           />
         ) : (
-          <span className="flex size-full flex-col items-center justify-center gap-1 text-ink-muted">
-            <Building2 className="size-6 opacity-40" aria-hidden />
+          <span className="flex size-full flex-col items-center justify-center gap-0.5 text-ink-muted">
+            <Building2 className="size-5 opacity-40" aria-hidden />
             <span className="max-w-[80%] truncate text-[10px]">{title}</span>
           </span>
         )}
@@ -99,28 +100,30 @@ export const BuilderReadinessOverviewCard = ({ assessment }: BuilderReadinessOve
           size="sm"
           tone={tone}
           showValue={false}
-          className="size-9"
+          className="size-8"
           label={`${t('overallScore')}: ${hasScore ? `${overallPercent}%` : '—'}`}
         />
-        <p className="min-w-0 flex-1 text-xs leading-snug text-ink-secondary">{t('overallScore')}</p>
+        <p className="min-w-0 flex-1 text-[11px] leading-snug text-ink-secondary">
+          {t('overallScore')}
+        </p>
         {hasScore ? (
-          <ScorePair primary={overallPercent} className="shrink-0 text-base" />
+          <ScorePair primary={overallPercent} className="shrink-0 text-sm" />
         ) : (
-          <span className="shrink-0 text-base tabular-nums text-ink-muted">—</span>
+          <span className="shrink-0 text-sm tabular-nums text-ink-muted">—</span>
         )}
       </div>
 
       {assessment.scores.length > 0 ? (
         <>
           <div className="border-t border-border" aria-hidden />
-          <ul className="flex flex-col gap-1.5">
+          <ul className="flex flex-col gap-1">
             {assessment.scores.map((score) => {
               const percent = scorePercent(score.score);
               const label = tKpi(`categories.${score.categoryCode}`);
               return (
                 <li key={score.categoryId} className="flex items-center justify-between gap-2">
-                  <span className="min-w-0 truncate text-xs text-ink-secondary">{label}</span>
-                  <ScorePair primary={percent} className="shrink-0 text-xs" />
+                  <span className="min-w-0 truncate text-[11px] text-ink-secondary">{label}</span>
+                  <ScorePair primary={percent} className="shrink-0 text-[11px]" />
                 </li>
               );
             })}

@@ -1024,18 +1024,42 @@
     },
     "dashboard": {
       "welcome": "Здравствуйте, {name}",
+      "subtitle": "Ваша активность на выставке, избранное и заявки — в одном месте.",
       "qrLabel": "Мой QR",
       "qrReady": "Готов",
+      "scansLabel": "Сканы QR",
       "scansHint": "{count, plural, =0 {Сканов пока нет} one {# скан} few {# скана} other {# сканов}}",
       "favoritesLabel": "Избранное",
       "favoritesHint": "Сохранено из каталога",
       "requestsLabel": "Заявки",
       "requestsHint": "С застройщиками",
-      "checkinLabel": "Регистрация",
+      "checkinLabel": "Check-in",
       "checkinCheckedIn": "Пройден",
       "checkinPending": "Ещё нет",
       "checkinNone": "Нет события",
-      "settingsHint": "Данные профиля и пароль можно изменить в Настройках."
+      "checkinActiveHint": "Статус активной выставки для вашего visitor QR.",
+      "settingsHint": "Данные профиля и пароль можно изменить в Настройках.",
+      "viewAll": "Смотреть все",
+      "favoriteProject": "Проект",
+      "favoriteApartment": "Квартира",
+      "sections": {
+        "recentRequests": "Недавние заявки",
+        "recentScans": "Недавние сканы QR",
+        "savedFavorites": "Избранное",
+        "checkinStatus": "Check-in и быстрые ссылки"
+      },
+      "empty": {
+        "requests": "Заявок пока нет. Откройте каталог и отправьте интерес.",
+        "scans": "Сканов пока нет. Покажите QR застройщикам на выставке.",
+        "favorites": "Пока пусто. Добавляйте проекты в избранное в каталоге.",
+        "checkin": "Сейчас нет активного check-in на выставке."
+      },
+      "quickLinks": {
+        "qr": "Мой QR",
+        "favorites": "Избранное",
+        "requests": "Заявки",
+        "settings": "Настройки"
+      }
     },
     "accountTypes": {
       "buyer": "Покупатель / посетитель",
@@ -2778,14 +2802,48 @@
     },
     "dashboard": {
       "title": "Дашборд",
-      "subtitle": "Сводка по проектам и инвентарю компании",
+      "subtitle": "Проекты, CRM-воронка и активность компании — в одном месте.",
       "loading": "Загрузка…",
       "error": "Не удалось загрузить дашборд. Попробуйте ещё раз.",
+      "viewAll": "Смотреть все",
+      "noProject": "Без проекта",
+      "dealFallback": "Сделка без названия",
+      "projectMeta": "{buildings} зданий · {apartments} квартир",
       "stats": {
         "projects": "Проекты",
         "published": "Опубликовано",
         "drafts": "Черновики",
-        "apartments": "Квартиры"
+        "apartments": "Квартиры",
+        "openDeals": "Открытые сделки",
+        "requests": "Заявки",
+        "favorites": "Избранное"
+      },
+      "hints": {
+        "projects": "Все проекты компании",
+        "published": "В публичном каталоге",
+        "openDeals": "{count, plural, =0 {Сегодня не создано} one {# создана сегодня} few {# созданы сегодня} other {# создано сегодня}}",
+        "apartments": "По загруженным проектам"
+      },
+      "sections": {
+        "recentProjects": "Недавние проекты",
+        "recentDeals": "Недавние CRM-сделки",
+        "crmPipeline": "CRM-воронка",
+        "topProjects": "Топ проектов по просмотрам",
+        "shortcuts": "Быстрые ссылки и активность"
+      },
+      "empty": {
+        "projects": "Проектов пока нет. Создайте первый.",
+        "deals": "Сделок пока нет. Отсканируйте visitor QR или добавьте Quick Lead.",
+        "pipeline": "Сейчас нет открытых сделок в воронке.",
+        "topProjects": "За период пока нет просмотров проектов."
+      },
+      "quickLinks": {
+        "projects": "Проекты",
+        "crm": "CRM",
+        "team": "Команда",
+        "scanner": "Сканер",
+        "readiness": "Готовность",
+        "analytics": "Аналитика"
       },
       "links": {
         "projects": "Все проекты",

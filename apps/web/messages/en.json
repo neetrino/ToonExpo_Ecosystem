@@ -1024,18 +1024,42 @@
     },
     "dashboard": {
       "welcome": "Welcome, {name}",
+      "subtitle": "Your exhibition activity, saved projects, and requests in one place.",
       "qrLabel": "My QR",
       "qrReady": "Ready",
+      "scansLabel": "QR scans",
       "scansHint": "{count, plural, =0 {No scans yet} one {# scan} other {# scans}}",
       "favoritesLabel": "Favorites",
       "favoritesHint": "Saved from catalog",
       "requestsLabel": "Requests",
       "requestsHint": "Builder conversations",
-      "checkinLabel": "Check-in",
+      "checkinLabel": "Check-ins",
       "checkinCheckedIn": "Checked in",
       "checkinPending": "Not yet",
       "checkinNone": "No event",
-      "settingsHint": "Manage your profile details and password in Settings."
+      "checkinActiveHint": "Active exhibition status for your visitor QR.",
+      "settingsHint": "Manage your profile details and password in Settings.",
+      "viewAll": "View all",
+      "favoriteProject": "Project",
+      "favoriteApartment": "Apartment",
+      "sections": {
+        "recentRequests": "Recent requests",
+        "recentScans": "Recent QR scans",
+        "savedFavorites": "Saved favorites",
+        "checkinStatus": "Check-in & shortcuts"
+      },
+      "empty": {
+        "requests": "No requests yet. Browse projects and send interest.",
+        "scans": "No QR scans yet. Show your code to builders at the expo.",
+        "favorites": "Nothing saved yet. Heart projects in the catalog.",
+        "checkin": "No active exhibition check-in right now."
+      },
+      "quickLinks": {
+        "qr": "My QR",
+        "favorites": "Favorites",
+        "requests": "Requests",
+        "settings": "Settings"
+      }
     },
     "accountTypes": {
       "buyer": "Buyer / visitor",
@@ -2974,14 +2998,48 @@
     },
     "dashboard": {
       "title": "Dashboard",
-      "subtitle": "Overview of your company projects and inventory",
+      "subtitle": "Projects, CRM pipeline, and company activity in one place.",
       "loading": "Loading dashboard…",
       "error": "Could not load dashboard. Try again.",
+      "viewAll": "View all",
+      "noProject": "No project",
+      "dealFallback": "Untitled deal",
+      "projectMeta": "{buildings} buildings · {apartments} apartments",
       "stats": {
         "projects": "Projects",
         "published": "Published",
         "drafts": "Drafts",
-        "apartments": "Apartments"
+        "apartments": "Apartments",
+        "openDeals": "Open deals",
+        "requests": "Requests",
+        "favorites": "Favorites"
+      },
+      "hints": {
+        "projects": "All company projects",
+        "published": "Live in the catalog",
+        "openDeals": "{count, plural, =0 {None created today} one {# created today} other {# created today}}",
+        "apartments": "Across loaded projects"
+      },
+      "sections": {
+        "recentProjects": "Recent projects",
+        "recentDeals": "Recent CRM deals",
+        "crmPipeline": "CRM pipeline",
+        "topProjects": "Top projects by views",
+        "shortcuts": "Shortcuts & activity"
+      },
+      "empty": {
+        "projects": "No projects yet. Create the first one.",
+        "deals": "No CRM deals yet. Scan a visitor QR or add a quick lead.",
+        "pipeline": "No open deals in the pipeline right now.",
+        "topProjects": "No project views in this period yet."
+      },
+      "quickLinks": {
+        "projects": "Projects",
+        "crm": "CRM",
+        "team": "Team",
+        "scanner": "Scanner",
+        "readiness": "Readiness",
+        "analytics": "Analytics"
       },
       "links": {
         "projects": "All projects",
