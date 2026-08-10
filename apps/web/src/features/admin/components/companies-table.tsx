@@ -81,19 +81,22 @@ const CompanyCard = ({ company, readiness, onSelect }: CompanyCardProps) => {
       )}
     >
       <header className="flex flex-col gap-1.5">
-        <div className="flex min-w-0 items-center gap-2">
-          <div className="relative size-8 shrink-0 overflow-hidden rounded-full bg-surface ring-1 ring-border">
-            {company.logoUrl ? (
-              <Image src={company.logoUrl} alt="" fill className="object-cover" sizes="32px" />
-            ) : (
-              <span className="absolute inset-0 flex items-center justify-center text-[10px] font-semibold text-ink-muted">
-                {initials}
-              </span>
-            )}
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex min-w-0 items-center gap-2">
+            <div className="relative size-8 shrink-0 overflow-hidden rounded-full bg-surface ring-1 ring-border">
+              {company.logoUrl ? (
+                <Image src={company.logoUrl} alt="" fill className="object-cover" sizes="32px" />
+              ) : (
+                <span className="absolute inset-0 flex items-center justify-center text-[10px] font-semibold text-ink-muted">
+                  {initials}
+                </span>
+              )}
+            </div>
+            <p className="min-w-0 truncate text-sm font-medium text-ink-secondary">
+              {t(`types.${company.type}`)}
+            </p>
           </div>
-          <p className="min-w-0 truncate text-sm font-medium text-ink-secondary">
-            {t(`types.${company.type}`)}
-          </p>
+          <CompanyStatusBadge status={company.status} className="shrink-0" />
         </div>
         <h2 className="truncate text-base font-semibold tracking-tight text-ink">{company.name}</h2>
       </header>
