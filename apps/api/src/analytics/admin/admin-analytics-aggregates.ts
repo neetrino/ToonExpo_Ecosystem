@@ -4,15 +4,7 @@ import type {
   ReadinessScoreStatus,
   RequestSource,
 } from "@toonexpo/contracts";
-import {
-  AccountType,
-  AnalyticsEventType,
-  CheckInStatus,
-  CompanyStatus,
-  CompanyType,
-  PartnerCompanyStatus,
-  PublicationStatus,
-} from "@toonexpo/db";
+import { AnalyticsEventType, CheckInStatus } from "@toonexpo/db";
 
 import {
   ANALYTICS_ADMIN_TOP_PROJECTS_LIMIT,
@@ -22,6 +14,7 @@ import type { ResolvedAnalyticsDateRange } from "../analytics.types.js";
 import { createdAtInRange } from "../utils/resolve-date-range.js";
 import { loadAdminFavoritesSummary } from "../utils/favorites-aggregates.js";
 import type { PrismaService } from "../../prisma/prisma.service.js";
+import { loadAdminPlatformActivity } from "./admin-analytics-platform-activity.js";
 
 export const loadAdminAnalyticsOverview = async (
   prisma: PrismaService,
@@ -30,12 +23,7 @@ export const loadAdminAnalyticsOverview = async (
   const dateFilter = createdAtInRange(range);
 
   const [
-    totalUsers,
-    registeredBuyers,
-    activeBuilderCompanies,
-    activePartners,
-    publishedProjects,
-    publishedApartments,
+    platformBundle,
     topProjectGroups,
     requestGroups,
     dealGroups,
@@ -45,23 +33,7 @@ export const loadAdminAnalyticsOverview = async (
     weakestCategories,
     favorites,
   ] = await Promise.all([
-    prisma.db.user.count(),
-    prisma.db.user.count({ where: { accountType: AccountType.buyer } }),
-    prisma.db.company.count({
-      where: { type: CompanyType.builder, status: CompanyStatus.active },
-    }),
-    prisma.db.partnerCompany.count({
-      where: {
-        status: PartnerCompanyStatus.active,
-        publicationStatus: PublicationStatus.published,
-      },
-    }),
-    prisma.db.project.count({
-      where: { publicationStatus: PublicationStatus.published },
-    }),
-    prisma.db.apartment.count({
-      where: { publicationStatus: PublicationStatus.published },
-    }),
+    loadAdminPlatformActivity(prisma, range),
     prisma.db.analyticsEvent.groupBy({
       by: ["projectId"],
       where: {
@@ -108,7 +80,7 @@ export const loadAdminAnalyticsOverview = async (
   const projectIds = topProjectGroups
     .map((row) => row.projectId)
     .filter((id): id is string => id != null);
-  const projectNames = await loadProjectNames(prisma, projectIds);
+  const projectMeta = await loadProjectMeta(prisma, projectIds);
 
   const requestsTotal = requestGroups.reduce(
     (sum, row) => sum + row._count._all,
@@ -117,21 +89,21 @@ export const loadAdminAnalyticsOverview = async (
 
   return {
     range: { from: range.fromIso, to: range.toIso },
-    platformActivity: {
-      totalUsers,
-      registeredBuyers,
-      activeBuilderCompanies,
-      activePartners,
-      publishedProjects,
-      publishedApartments,
-    },
+    platformActivity: platformBundle.platformActivity,
+    activitySeries: platformBundle.activitySeries,
+    activityGrowth: platformBundle.activityGrowth,
     topProjectsByViews: topProjectGroups
       .filter((row) => row.projectId != null)
-      .map((row) => ({
-        entityId: row.projectId as string,
-        name: projectNames.get(row.projectId as string) ?? null,
-        viewCount: row._count._all,
-      })),
+      .map((row) => {
+        const id = row.projectId as string;
+        const meta = projectMeta.get(id);
+        return {
+          entityId: id,
+          name: meta?.name ?? null,
+          viewCount: row._count._all,
+          coverUrl: meta?.coverUrl ?? null,
+        };
+      }),
     favorites,
     requests: {
       total: requestsTotal,
@@ -159,20 +131,34 @@ export const loadAdminAnalyticsOverview = async (
   };
 };
 
-const loadProjectNames = async (
+type ProjectMeta = { name: string; coverUrl: string | null };
+
+const loadProjectMeta = async (
   prisma: PrismaService,
   projectIds: string[],
-): Promise<Map<string, string>> => {
+): Promise<Map<string, ProjectMeta>> => {
   if (projectIds.length === 0) {
     return new Map();
   }
 
   const rows = await prisma.db.project.findMany({
     where: { id: { in: projectIds } },
-    select: { id: true, name: true },
+    select: {
+      id: true,
+      name: true,
+      coverMedia: { select: { fileUrl: true, thumbnailUrl: true } },
+    },
   });
 
-  return new Map(rows.map((row) => [row.id, row.name]));
+  return new Map(
+    rows.map((row) => [
+      row.id,
+      {
+        name: row.name,
+        coverUrl: row.coverMedia?.thumbnailUrl ?? row.coverMedia?.fileUrl ?? null,
+      },
+    ]),
+  );
 };
 
 const summarizeCheckIns = (
@@ -197,9 +183,7 @@ const summarizeCheckIns = (
   return { allowed, duplicate, denied };
 };
 
-const loadWeakestReadinessCategories = async (
-  prisma: PrismaService,
-) => {
+const loadWeakestReadinessCategories = async (prisma: PrismaService) => {
   const rows = await prisma.db.readinessScore.groupBy({
     by: ["categoryId"],
     where: {

@@ -1515,6 +1515,21 @@
     "analytics": {
       "title": "Analytics",
       "subtitle": "Platform-wide activity and performance",
+      "viewAll": "View all",
+      "trend": {
+        "today": "from previous day",
+        "last7Days": "from previous 7 days",
+        "last30Days": "from previous 30 days"
+      },
+      "chart": {
+        "users": "Users",
+        "projects": "Projects"
+      },
+      "growth": {
+        "newUsers": "New users",
+        "newProjects": "New projects",
+        "newApartments": "New apartments"
+      },
       "sections": {
         "platformActivity": "Platform activity",
         "topProjects": "Top projects by views",

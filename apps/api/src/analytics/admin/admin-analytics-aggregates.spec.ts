@@ -5,9 +5,11 @@ import { loadAdminAnalyticsOverview } from "./admin-analytics-aggregates.js";
 
 describe("loadAdminAnalyticsOverview", () => {
   const userCount = vi.fn();
+  const userFindMany = vi.fn();
   const companyCount = vi.fn();
   const partnerCompanyCount = vi.fn();
   const projectCount = vi.fn();
+  const projectFindMany = vi.fn();
   const apartmentCount = vi.fn();
   const analyticsGroupBy = vi.fn();
   const requestGroupBy = vi.fn();
@@ -15,7 +17,6 @@ describe("loadAdminAnalyticsOverview", () => {
   const checkInGroupBy = vi.fn();
   const readinessGroupBy = vi.fn();
   const readinessScoreGroupBy = vi.fn();
-  const projectFindMany = vi.fn();
   const readinessCategoryFindMany = vi.fn();
   const buyerFavoriteCount = vi.fn();
   const buyerFavoriteGroupBy = vi.fn();
@@ -24,19 +25,65 @@ describe("loadAdminAnalyticsOverview", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    userCount.mockResolvedValueOnce(100).mockResolvedValueOnce(80);
-    companyCount.mockResolvedValue(12);
-    partnerCompanyCount.mockResolvedValue(5);
-    projectCount.mockResolvedValue(20);
-    apartmentCount.mockResolvedValue(200);
+
+    // loadAdminPlatformActivity user.count order (Promise.all):
+    // total, atStart, buyers, buyersAtStart, newUsers, prevNewUsers
+    userCount
+      .mockResolvedValueOnce(100)
+      .mockResolvedValueOnce(90)
+      .mockResolvedValueOnce(80)
+      .mockResolvedValueOnce(74)
+      .mockResolvedValueOnce(10)
+      .mockResolvedValueOnce(8);
+
+    companyCount.mockResolvedValueOnce(12).mockResolvedValueOnce(10);
+    partnerCompanyCount.mockResolvedValueOnce(5).mockResolvedValueOnce(5);
+
+    // published, atStart, newInRange, prevNew
+    projectCount
+      .mockResolvedValueOnce(20)
+      .mockResolvedValueOnce(17)
+      .mockResolvedValueOnce(3)
+      .mockResolvedValueOnce(2);
+
+    apartmentCount
+      .mockResolvedValueOnce(200)
+      .mockResolvedValueOnce(180)
+      .mockResolvedValueOnce(20)
+      .mockResolvedValueOnce(15);
+
+    userFindMany.mockResolvedValue([
+      { createdAt: new Date("2026-06-20T12:00:00.000Z") },
+      { createdAt: new Date("2026-06-20T18:00:00.000Z") },
+    ]);
+
+    projectFindMany.mockImplementation(async (args: { select?: Record<string, unknown> }) => {
+      if (args.select?.createdAt) {
+        return [{ createdAt: new Date("2026-06-21T12:00:00.000Z") }];
+      }
+      if (args.select?.coverMedia) {
+        return [
+          {
+            id: "proj_a",
+            name: "Project Alpha",
+            coverMedia: {
+              fileUrl: "https://cdn.example/a.jpg",
+              thumbnailUrl: null,
+            },
+          },
+          { id: "proj_b", name: "Project Beta", coverMedia: null },
+        ];
+      }
+      return [{ id: "proj_a", name: "Project Alpha" }];
+    });
+
     analyticsGroupBy
       .mockResolvedValueOnce([
         { projectId: "proj_a", _count: { _all: 50 } },
         { projectId: "proj_b", _count: { _all: 30 } },
       ])
-      .mockResolvedValueOnce([
-        { source: "builder_scan", _count: { _all: 10 } },
-      ]);
+      .mockResolvedValueOnce([{ source: "builder_scan", _count: { _all: 10 } }]);
+
     requestGroupBy.mockResolvedValue([
       { source: "buyer_project_request", _count: { _all: 7 } },
       { source: "builder_buyer_qr_scan", _count: { _all: 3 } },
@@ -64,14 +111,10 @@ describe("loadAdminAnalyticsOverview", () => {
     buyerFavoriteGroupBy.mockResolvedValue([
       { targetId: "proj_a", _count: { _all: 8 } },
     ]);
-    projectFindMany.mockResolvedValue([
-      { id: "proj_a", name: "Project Alpha" },
-      { id: "proj_b", name: "Project Beta" },
-    ]);
 
     prisma = {
       db: {
-        user: { count: userCount },
+        user: { count: userCount, findMany: userFindMany },
         company: { count: companyCount },
         partnerCompany: { count: partnerCompanyCount },
         project: { count: projectCount, findMany: projectFindMany },
@@ -102,17 +145,31 @@ describe("loadAdminAnalyticsOverview", () => {
       toIso: to.toISOString(),
     });
 
-    expect(overview.platformActivity).toEqual({
-      totalUsers: 100,
-      registeredBuyers: 80,
-      activeBuilderCompanies: 12,
-      activePartners: 5,
-      publishedProjects: 20,
-      publishedApartments: 200,
+    expect(overview.platformActivity.totalUsers).toEqual({
+      value: 100,
+      changePercent: 11.1,
     });
+    expect(overview.platformActivity.registeredBuyers.value).toBe(80);
+    expect(overview.activityGrowth.newUsers).toEqual({
+      value: 10,
+      changePercent: 25,
+    });
+    expect(overview.activitySeries.some((point) => point.date === "2026-06-20")).toBe(
+      true,
+    );
     expect(overview.topProjectsByViews).toEqual([
-      { entityId: "proj_a", name: "Project Alpha", viewCount: 50 },
-      { entityId: "proj_b", name: "Project Beta", viewCount: 30 },
+      {
+        entityId: "proj_a",
+        name: "Project Alpha",
+        viewCount: 50,
+        coverUrl: "https://cdn.example/a.jpg",
+      },
+      {
+        entityId: "proj_b",
+        name: "Project Beta",
+        viewCount: 30,
+        coverUrl: null,
+      },
     ]);
     expect(overview.favorites).toEqual({
       total: 42,
