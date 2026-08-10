@@ -7,7 +7,10 @@ import { LIST_PAGINATION_DELAY_MS, Reveal } from '@/shared/ui/motion';
 type PaginationProps = {
   page: number;
   totalPages: number;
-  buildHref: (page: number) => string;
+  /** Serializable href for previous page; null when unavailable. */
+  previousHref: string | null;
+  /** Serializable href for next page; null when unavailable. */
+  nextHref: string | null;
   previousLabel: string;
   nextLabel: string;
   ariaLabel: string;
@@ -16,11 +19,13 @@ type PaginationProps = {
 
 /**
  * Simple prev/next pagination for catalog lists.
+ * Hrefs are plain strings so Server Components can pass them safely.
  */
 export const CatalogPagination = ({
   page,
   totalPages,
-  buildHref,
+  previousHref,
+  nextHref,
   previousLabel,
   nextLabel,
   ariaLabel,
@@ -30,18 +35,15 @@ export const CatalogPagination = ({
     return null;
   }
 
-  const hasPrevious = page > 1;
-  const hasNext = page < totalPages;
-
   return (
     <Reveal force delayMs={LIST_PAGINATION_DELAY_MS}>
       <nav
         className={cn('flex items-center justify-between gap-4', className)}
         aria-label={ariaLabel}
       >
-        {hasPrevious ? (
+        {previousHref ? (
           <Link
-            href={buildHref(page - 1)}
+            href={previousHref}
             className="rounded-sm border border-border px-4 py-2 text-sm font-medium text-ink hover:bg-surface"
           >
             {previousLabel}
@@ -56,9 +58,9 @@ export const CatalogPagination = ({
           {page} / {totalPages}
         </span>
 
-        {hasNext ? (
+        {nextHref ? (
           <Link
-            href={buildHref(page + 1)}
+            href={nextHref}
             className="rounded-sm border border-border px-4 py-2 text-sm font-medium text-ink hover:bg-surface"
           >
             {nextLabel}

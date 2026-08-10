@@ -199,7 +199,7 @@ export const LocationSearchSelect = ({
             role="listbox"
             aria-multiselectable="true"
             aria-label={ariaLabel}
-            className="luxury-scrollbar max-h-56 overflow-y-auto py-1.5"
+            className="luxury-scrollbar max-h-56 overflow-y-auto"
           >
             <li role="none">
               <button

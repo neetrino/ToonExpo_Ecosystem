@@ -184,7 +184,16 @@ export const UsersListPage = () => {
       <CatalogPagination
         page={response.meta.page}
         totalPages={response.meta.totalPages}
-        buildHref={(nextPage) => buildListHref({ page: nextPage })}
+        previousHref={
+          response.meta.page > 1
+            ? buildListHref({ page: response.meta.page - 1 })
+            : null
+        }
+        nextHref={
+          response.meta.page < response.meta.totalPages
+            ? buildListHref({ page: response.meta.page + 1 })
+            : null
+        }
         previousLabel={t('pagination.previous')}
         nextLabel={t('pagination.next')}
         ariaLabel={t('pagination.ariaLabel')}

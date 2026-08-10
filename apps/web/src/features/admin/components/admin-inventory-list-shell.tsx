@@ -224,7 +224,8 @@ export const AdminInventoryListShell = ({
       <CatalogPagination
         page={page}
         totalPages={totalPages}
-        buildHref={(nextPage) => buildListHref({ page: nextPage })}
+        previousHref={page > 1 ? buildListHref({ page: page - 1 }) : null}
+        nextHref={page < totalPages ? buildListHref({ page: page + 1 }) : null}
         previousLabel={t('pagination.previous')}
         nextLabel={t('pagination.next')}
         ariaLabel={t('pagination.ariaLabel')}

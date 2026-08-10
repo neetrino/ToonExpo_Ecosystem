@@ -12,7 +12,7 @@ export const HERO_FILTER_OPTION_BASE_CLASS =
 
 export const heroFilterOptionStateClass = (active: boolean): string =>
   active
-    ? 'font-semibold text-ink-navy'
+    ? 'bg-brand-soft font-semibold text-ink-navy'
     : 'font-medium text-ink-navy/75 hover:bg-brand-deep/[0.04]';
 
 export const HERO_FILTER_CHECK_CLASS = {

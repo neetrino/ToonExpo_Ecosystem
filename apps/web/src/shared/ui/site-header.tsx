@@ -52,6 +52,8 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
   const [showPill, setShowPill] = useState(false);
   const isTransparentStart = variant === 'transparent';
   const isAccountRoute = isNavbarControlledPortalPath(pathname);
+  /** Light map tiles — keep pill chrome readable while map stays full-bleed. */
+  const isGeoMapRoute = pathname === '/map' || pathname.startsWith('/map/');
   const burgerOpen = isAccountRoute ? accountNavOpen : menuOpen;
   const publicMenuOpen = menuOpen && !isAccountRoute;
   const { rendered: menuRendered, visible: menuVisible } = useDrawerTransition(
@@ -59,7 +61,7 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
     BURGER_MENU_MS,
   );
   /** Pill follows scroll / solid pages only — never the burger. */
-  const pillVisible = !isTransparentStart || showPill;
+  const pillVisible = !isTransparentStart || showPill || isGeoMapRoute;
   const isOverHero = isTransparentStart && !pillVisible;
   const needsSpacer = !isTransparentStart;
 

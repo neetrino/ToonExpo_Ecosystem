@@ -176,7 +176,7 @@ const LocaleSwitcherInner = ({ tone = 'light' }: LocaleSwitcherProps) => {
             aria-label={t('languageLabel')}
             className={cn(
               'w-max overflow-hidden rounded-[12px] border border-header-border',
-              'bg-surface-elevated py-1.5 text-ink shadow-md',
+              'bg-surface-elevated text-ink shadow-md',
               'animate-dropdown-panel-in-bottom',
             )}
           >
@@ -189,7 +189,7 @@ const LocaleSwitcherInner = ({ tone = 'light' }: LocaleSwitcherProps) => {
                     role="option"
                     aria-selected={active}
                     className={cn(
-                      'flex w-full items-center justify-between gap-3 px-3 py-2 text-left text-sm whitespace-nowrap',
+                      'flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left text-sm whitespace-nowrap',
                       'transition-colors duration-[var(--duration-fast)]',
                       active
                         ? 'bg-brand-soft font-semibold text-brand-deep'

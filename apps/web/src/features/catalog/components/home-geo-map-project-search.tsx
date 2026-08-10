@@ -46,7 +46,7 @@ const SearchResultsList = ({
     aria-label={listLabel}
     className={cn(
       'absolute inset-x-0 top-full z-20 mt-1 max-h-64 overflow-y-auto',
-      'rounded-[12px] bg-surface-elevated py-1 shadow-lg ring-1 ring-header-border',
+      'rounded-[12px] bg-surface-elevated shadow-lg ring-1 ring-header-border',
     )}
   >
     {showEmpty ? (

@@ -146,10 +146,17 @@ export const CompaniesListPage = () => {
           <CatalogPagination
             page={response.meta.page}
             totalPages={response.meta.totalPages}
-            buildHref={(nextPage) =>
-              nextPage <= 1
-                ? '/admin/companies'
-                : `/admin/companies?page=${nextPage}`
+            previousHref={
+              response.meta.page > 1
+                ? response.meta.page - 1 <= 1
+                  ? '/admin/companies'
+                  : `/admin/companies?page=${response.meta.page - 1}`
+                : null
+            }
+            nextHref={
+              response.meta.page < response.meta.totalPages
+                ? `/admin/companies?page=${response.meta.page + 1}`
+                : null
             }
             previousLabel={t('pagination.previous')}
             nextLabel={t('pagination.next')}
