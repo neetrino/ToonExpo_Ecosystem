@@ -173,7 +173,7 @@ export const HomeGeoMapProjectSearch = ({
           aria-autocomplete="list"
           aria-activedescendant={activeOptionId}
           autoComplete="off"
-          className="h-10 w-full bg-surface-elevated pl-9 shadow-md ring-1 ring-header-border"
+          className="h-9 w-full rounded-[15px] bg-surface-elevated pl-9 shadow-md ring-1 ring-header-border"
           onChange={(event) => {
             setQuery(event.target.value);
             setIsOpen(true);

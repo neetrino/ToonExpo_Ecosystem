@@ -2,7 +2,7 @@
  * Partners module constants.
  */
 
-export const PARTNERS_DEFAULT_PAGE_SIZE = 20;
+export const PARTNERS_DEFAULT_PAGE_SIZE = 18;
 
 export const PARTNERS_MAX_PAGE_SIZE = 50;
 

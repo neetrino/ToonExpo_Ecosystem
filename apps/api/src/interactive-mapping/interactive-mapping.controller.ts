@@ -8,6 +8,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import {
   ApiCreatedResponse,
@@ -31,6 +32,7 @@ import {
   InteractiveMappingBuildingParamDto,
   InteractiveMappingDistrictParamDto,
   InteractiveMappingProjectParamDto,
+  ListInteractiveMappingProjectsQueryDto,
   SetupBuildingFloorsDto,
   UpdateDistrictDto,
 } from './interactive-mapping.dto.js';
@@ -45,8 +47,15 @@ export class InteractiveMappingController {
   @Get('projects')
   @ApiOperation({ summary: 'List projects with interactive mapping phase progress' })
   @ApiOkResponse({ description: 'Projects with phase progress' })
-  listProjects(): Promise<InteractiveMappingProjectListResponse> {
-    return this.interactiveMapping.listProjects();
+  listProjects(
+    @Query() query: ListInteractiveMappingProjectsQueryDto,
+  ): Promise<InteractiveMappingProjectListResponse> {
+    return this.interactiveMapping.listProjects(
+      undefined,
+      query.page,
+      query.pageSize,
+      query.search,
+    );
   }
 
   @Get('projects/:projectId')

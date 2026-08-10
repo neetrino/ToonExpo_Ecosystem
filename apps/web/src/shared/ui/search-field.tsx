@@ -36,7 +36,7 @@ export const SearchField = ({
       value={value}
       placeholder={placeholder}
       aria-label={ariaLabel}
-      className={cn('h-10 w-full bg-surface-elevated pl-9', inputClassName)}
+      className={cn('h-9 w-full rounded-[15px] bg-surface-elevated pl-9', inputClassName)}
       onChange={onChange}
     />
   </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import type { BankOfferListItem, PublicationStatus } from '@toonexpo/contracts';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Landmark } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 
@@ -125,6 +125,7 @@ export const BankOffersListPage = () => {
   return (
     <div className="flex flex-col gap-6">
       <ListPageHeader
+        icon={Landmark}
         title={t('title')}
         subtitle={t('subtitle')}
         search={search}

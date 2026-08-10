@@ -1,6 +1,7 @@
 'use client';
 
 import type { BosProvisioningStatus } from '@toonexpo/contracts';
+import { Workflow } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
@@ -75,6 +76,7 @@ export const BosProvisioningListPage = () => {
   return (
     <div className="flex flex-col gap-6">
       <ListPageHeader
+        icon={Workflow}
         title={t('title')}
         subtitle={t('subtitle', { count: response.meta.total })}
         search={search}

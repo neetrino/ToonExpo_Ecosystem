@@ -126,7 +126,7 @@ export const ACCOUNT_ACCESS_TOKEN_BYTES = 32;
  * ADAPTIVE VALUE — confirm with owner.
  * Default page size for admin company lists.
  */
-export const ADMIN_COMPANIES_DEFAULT_PAGE_SIZE = 20;
+export const ADMIN_COMPANIES_DEFAULT_PAGE_SIZE = 18;
 
 /**
  * ADAPTIVE VALUE — confirm with owner.
@@ -138,7 +138,7 @@ export const ADMIN_COMPANIES_MAX_PAGE_SIZE = 50;
  * ADAPTIVE VALUE — confirm with owner.
  * Default page size for company member lists.
  */
-export const COMPANY_MEMBERS_DEFAULT_PAGE_SIZE = 20;
+export const COMPANY_MEMBERS_DEFAULT_PAGE_SIZE = 18;
 
 /**
  * ADAPTIVE VALUE — confirm with owner.
@@ -192,7 +192,7 @@ export const WEB_REVALIDATE_SECRET_HEADER = 'x-revalidate-secret';
 export const WEB_REVALIDATE_TIMEOUT_MS = 3_000;
 
 /** Default page size for admin BOS provisioning lists. */
-export const ADMIN_BOS_PROVISIONING_DEFAULT_PAGE_SIZE = 20;
+export const ADMIN_BOS_PROVISIONING_DEFAULT_PAGE_SIZE = 18;
 
 /** Maximum page size for admin BOS provisioning lists. */
 export const ADMIN_BOS_PROVISIONING_MAX_PAGE_SIZE = 50;

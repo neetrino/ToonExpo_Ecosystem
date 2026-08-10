@@ -11,8 +11,8 @@ import { ProjectQrDialog } from '@/features/builder/components/project-qr-dialog
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 import { IconButton } from '@/shared/ui/icon-button';
+import { LIST_CARD_LIFT_CLASS } from '@/shared/ui/motion';
 
-const CARD_RADIUS_CLASS = 'rounded-[15px]';
 const MEDIA_RADIUS_CLASS = 'rounded-[15px]';
 
 type AdminProjectCardProps = {
@@ -157,10 +157,8 @@ export const AdminProjectCard = ({ project, onOpenBuildings }: AdminProjectCardP
         className={cn(
           'group relative flex h-full flex-col gap-3.5 overflow-hidden border border-border/80',
           'bg-surface-elevated p-4 shadow-card sm:p-5',
-          'transition-[box-shadow,transform] duration-[var(--duration-base)]',
-          'ease-[var(--ease-out-premium)] hover:-translate-y-1 hover:shadow-sm',
-          'motion-reduce:transition-none motion-reduce:hover:translate-y-0',
-          CARD_RADIUS_CLASS,
+          LIST_CARD_LIFT_CLASS,
+          'rounded-[15px]',
         )}
       >
         <header className="flex flex-col gap-2">

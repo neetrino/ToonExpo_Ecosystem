@@ -32,6 +32,11 @@ type RevealProps = {
   /** IntersectionObserver rootMargin. */
   rootMargin?: string | undefined;
   as?: 'div' | 'section' | 'article' | 'li' | undefined;
+  /**
+   * Always play on mount (ignore session settle + intersection).
+   * Use for dashboards that mount after async data.
+   */
+  force?: boolean | undefined;
 };
 
 /**
@@ -47,6 +52,7 @@ export const Reveal = ({
   fadeOnly = false,
   rootMargin = '0px 0px -8% 0px',
   as: Tag = 'div',
+  force = false,
 }: RevealProps) => {
   const ref = useRef<HTMLElement | null>(null);
   const [visible, setVisible] = useState(false);
@@ -55,12 +61,12 @@ export const Reveal = ({
   const [isMobile, setIsMobile] = useState(false);
 
   useLayoutEffect(() => {
-    if (!isEntranceMotionSettled()) {
+    if (force || !isEntranceMotionSettled()) {
       return;
     }
     setVisible(true);
     setSkipTransition(true);
-  }, []);
+  }, [force]);
 
   useEffect(() => {
     const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -82,7 +88,9 @@ export const Reveal = ({
 
   useEffect(() => {
     if (visible) {
-      markEntranceMotionSettled();
+      if (!force) {
+        markEntranceMotionSettled();
+      }
       return;
     }
 
@@ -92,8 +100,23 @@ export const Reveal = ({
     }
     if (reduceMotion) {
       setVisible(true);
-      markEntranceMotionSettled();
+      if (!force) {
+        markEntranceMotionSettled();
+      }
       return;
+    }
+
+    if (force) {
+      let frameTwo = 0;
+      const frameOne = requestAnimationFrame(() => {
+        frameTwo = requestAnimationFrame(() => {
+          setVisible(true);
+        });
+      });
+      return () => {
+        cancelAnimationFrame(frameOne);
+        cancelAnimationFrame(frameTwo);
+      };
     }
 
     const observer = new IntersectionObserver(
@@ -108,7 +131,7 @@ export const Reveal = ({
     );
     observer.observe(node);
     return () => observer.disconnect();
-  }, [reduceMotion, rootMargin, visible]);
+  }, [force, reduceMotion, rootMargin, visible]);
 
   const distance = fadeOnly ? 0 : isMobile ? REVEAL_DISTANCE_MOBILE_PX : REVEAL_DISTANCE_PX;
 

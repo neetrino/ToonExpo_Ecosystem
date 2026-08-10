@@ -2,7 +2,7 @@ import { headers } from 'next/headers';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { getMeOrNullCached as getMeOrNull } from '@/features/auth/api/get-me-or-null-cached';
-import { AccountPageEnter } from '@/features/buyer/components/account/account-page-enter';
+import { AccountPageEnter, AccountContentReveal } from '@/features/buyer/components/account/account-page-enter';
 import { AccountPageHeader } from '@/features/buyer/components/account/account-page-header';
 import { BuyerQrPageContent } from '@/features/buyer/components/buyer-qr-page-content';
 import { isBuyerAccount } from '@/features/buyer/utils/is-buyer-account';
@@ -37,8 +37,10 @@ export default async function MyQrPage({ params }: MyQrPageProps) {
 
   return (
     <AccountPageEnter mobilePush>
-      <AccountPageHeader title={t('title')} subtitle={t('subtitle')} />
-      <BuyerQrPageContent buyerName={user.name} />
+      <AccountPageHeader title={t('title')} subtitle={t('subtitle')} iconName="qr" />
+      <AccountContentReveal>
+        <BuyerQrPageContent buyerName={user.name} />
+      </AccountContentReveal>
     </AccountPageEnter>
   );
 }

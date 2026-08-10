@@ -21,13 +21,13 @@ export const IntegratedSearchFilterChips = ({
   }
 
   return (
-    <div className="flex min-w-0 flex-wrap items-center gap-1.5 pe-2">
+    <div className="flex min-w-0 flex-nowrap items-center gap-1 overflow-x-auto pe-1">
       {chips.map((chip) => (
         <span
           key={chip.key}
           className={cn(
-            'inline-flex max-w-[12rem] items-center gap-1 rounded-md bg-brand-soft px-2 py-0.5',
-            'text-xs font-medium text-brand',
+            'inline-flex max-w-[10rem] shrink-0 items-center gap-1 rounded-md bg-brand-soft px-1.5 py-0.5',
+            'text-[11px] font-medium text-brand',
           )}
         >
           <span className="truncate">{chip.label}</span>

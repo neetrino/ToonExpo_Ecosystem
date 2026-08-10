@@ -1,20 +1,63 @@
 'use client';
 
-import type { CrmDealStatus, RequestSource } from '@toonexpo/contracts';
+import type { PortalAnalyticsOverview } from '@toonexpo/contracts';
+import {
+  Briefcase,
+  Building2,
+  Heart,
+  Inbox,
+  LineChart,
+  type LucideIcon,
+} from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 
-import { AnalyticsBarRow } from '@/features/analytics/components/analytics-bar-row';
 import { AnalyticsDateRangeFilter } from '@/features/analytics/components/analytics-date-range-filter';
 import { AnalyticsEntityRankList } from '@/features/analytics/components/analytics-entity-rank-list';
+import {
+  AnalyticsKpiCard,
+  type AnalyticsKpiTone,
+} from '@/features/analytics/components/analytics-kpi-card';
 import { AnalyticsSectionCard } from '@/features/analytics/components/analytics-section-card';
-import { AnalyticsStatCard } from '@/features/analytics/components/analytics-stat-card';
+import {
+  ANALYTICS_DEFAULT_PRESET,
+  ANALYTICS_RANGE_PRESETS,
+  type AnalyticsRangePreset,
+} from '@/features/analytics/constants';
+import { BuilderAnalyticsSecondarySections } from '@/features/builder/components/builder-analytics-secondary-sections';
 import { usePortalAnalyticsOverviewQuery } from '@/features/builder/hooks/use-portal-analytics';
-import { ReadinessStatusBadge } from '@/features/readiness/components/readiness-status-badge';
+import { Link } from '@/i18n/navigation';
+import { Reveal, StaggerGroup } from '@/shared/ui/motion';
+import { PageTitleBlock } from '@/shared/ui/page-title-icon';
+import { Skeleton } from '@/shared/ui/skeleton';
 
-const maxCount = (values: number[]): number => (values.length > 0 ? Math.max(...values) : 0);
+const TOP_ENTITIES_DISPLAY_LIMIT = 5;
+const KPI_STAGGER_MS = 70;
+const SECTION_STAGGER_MS = 90;
+const SECTION_BASE_DELAY_MS = 280;
+
+type KpiItem = {
+  key: string;
+  labelKey:
+    | 'requests'
+    | 'favorites'
+    | 'deals'
+    | 'available'
+    | 'reserved'
+    | 'sold';
+  value: number;
+  icon: LucideIcon;
+  tone: AnalyticsKpiTone;
+};
+
+const isAnalyticsRangePreset = (value: string | null): value is AnalyticsRangePreset =>
+  value !== null && (ANALYTICS_RANGE_PRESETS as readonly string[]).includes(value);
+
+const sumDealCounts = (data: PortalAnalyticsOverview): number =>
+  data.dealsByStatus.reduce((sum, item) => sum + item.count, 0);
 
 /**
- * Builder portal analytics dashboard (company-scoped).
+ * Builder portal analytics — same layout language as admin analytics.
  */
 export const BuilderAnalyticsPage = () => {
   const t = useTranslations('Builder.analytics');
@@ -23,13 +66,25 @@ export const BuilderAnalyticsPage = () => {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex min-w-0 flex-col gap-1">
-        <h1 className="text-page-title text-ink">{t('title')}</h1>
-        <p className="text-sm text-ink-secondary">{t('subtitle')}</p>
-      </div>
+      <Reveal force>
+        <div className="flex min-w-0 flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+          <PageTitleBlock title={t('title')} subtitle={t('subtitle')} icon={LineChart} />
+          <AnalyticsDateRangeFilter variant="toolbar" />
+        </div>
+      </Reveal>
 
       {query.isLoading ? (
-        <p className="text-sm text-ink-secondary">{tCommon('loading')}</p>
+        <div className="flex flex-col gap-6" aria-busy="true">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            {Array.from({ length: 6 }, (_, index) => (
+              <Skeleton key={index} className="h-28 w-full" />
+            ))}
+          </div>
+          <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
+            <Skeleton className="h-72 w-full" />
+            <Skeleton className="h-72 w-full" />
+          </div>
+        </div>
       ) : query.isError || !query.data ? (
         <p role="alert" className="text-sm text-danger">
           {tCommon('error')}
@@ -42,184 +97,149 @@ export const BuilderAnalyticsPage = () => {
 };
 
 type BuilderAnalyticsContentProps = {
-  data: NonNullable<ReturnType<typeof usePortalAnalyticsOverviewQuery>['data']>;
+  data: PortalAnalyticsOverview;
 };
 
 const BuilderAnalyticsContent = ({ data }: BuilderAnalyticsContentProps) => {
   const t = useTranslations('Builder.analytics');
   const tCommon = useTranslations('Analytics.common');
-  const tCrm = useTranslations('Analytics.crmStatuses');
-  const tSources = useTranslations('Analytics.requestSources');
-  const tSales = useTranslations('Analytics.apartmentSales');
-  const requestMax = maxCount([
-    data.requests.total,
-    ...data.requests.bySource.map((item) => item.count),
-  ]);
-  const dealMax = maxCount(data.dealsByStatus.map((item) => item.count));
-  const salesMax = maxCount([
-    data.apartmentSalesStatus.available,
-    data.apartmentSalesStatus.reserved,
-    data.apartmentSalesStatus.sold,
-  ]);
+  const tDate = useTranslations('Analytics.dateRange');
+  const searchParams = useSearchParams();
+  const presetParam = searchParams.get('preset');
+  const preset = isAnalyticsRangePreset(presetParam)
+    ? presetParam
+    : ANALYTICS_DEFAULT_PRESET;
+
+  const kpis: KpiItem[] = [
+    {
+      key: 'requests',
+      labelKey: 'requests',
+      value: data.requests.total,
+      icon: Inbox,
+      tone: 'teal',
+    },
+    {
+      key: 'favorites',
+      labelKey: 'favorites',
+      value: data.favorites.total,
+      icon: Heart,
+      tone: 'accent',
+    },
+    {
+      key: 'deals',
+      labelKey: 'deals',
+      value: sumDealCounts(data),
+      icon: Briefcase,
+      tone: 'blue',
+    },
+    {
+      key: 'available',
+      labelKey: 'available',
+      value: data.apartmentSalesStatus.available,
+      icon: Building2,
+      tone: 'green',
+    },
+    {
+      key: 'reserved',
+      labelKey: 'reserved',
+      value: data.apartmentSalesStatus.reserved,
+      icon: Building2,
+      tone: 'orange',
+    },
+    {
+      key: 'sold',
+      labelKey: 'sold',
+      value: data.apartmentSalesStatus.sold,
+      icon: Building2,
+      tone: 'sky',
+    },
+  ];
 
   return (
-    <>
-      <AnalyticsDateRangeFilter />
-
-      <AnalyticsSectionCard
-        title={t('sections.topProjects')}
-        empty={data.topProjectsByViews.length === 0}
-        emptyLabel={tCommon('empty')}
+    <div className="flex flex-col gap-6">
+      <StaggerGroup
+        force
+        className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3 [&>*]:h-full [&>*]:min-w-0"
+        staggerMs={KPI_STAGGER_MS}
+        baseDelayMs={80}
+        durationMs={520}
       >
-        <AnalyticsEntityRankList
-          items={data.topProjectsByViews}
-          rankLabel={t('table.rank')}
-          nameLabel={t('table.name')}
-          viewsLabel={t('table.views')}
-          emptyLabel={tCommon('empty')}
-        />
-      </AnalyticsSectionCard>
+        {kpis.map((item) => (
+          <AnalyticsKpiCard
+            key={item.key}
+            label={t(`kpis.${item.labelKey}`)}
+            value={item.value}
+            icon={item.icon}
+            tone={item.tone}
+            changePercent={null}
+            trendLabel={t(`trend.${preset}`)}
+            className="h-full"
+          />
+        ))}
+      </StaggerGroup>
 
-      <AnalyticsSectionCard
-        title={t('sections.topApartments')}
-        empty={data.topApartmentsByViews.length === 0}
-        emptyLabel={tCommon('empty')}
+      <StaggerGroup
+        force
+        className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1.6fr)_minmax(18rem,1fr)] [&>*]:h-full [&>*]:min-w-0"
+        staggerMs={SECTION_STAGGER_MS}
+        baseDelayMs={SECTION_BASE_DELAY_MS}
+        durationMs={560}
       >
-        <AnalyticsEntityRankList
-          items={data.topApartmentsByViews}
-          rankLabel={t('table.rank')}
-          nameLabel={t('table.name')}
-          viewsLabel={t('table.views')}
+        <AnalyticsSectionCard
+          title={t('sections.topProjects')}
+          empty={data.topProjectsByViews.length === 0}
           emptyLabel={tCommon('empty')}
-        />
-      </AnalyticsSectionCard>
-
-      <section className="flex flex-col gap-3">
-        <h2 className="text-sm font-semibold text-ink">{t('sections.favorites')}</h2>
-        <AnalyticsStatCard label={t('favorites.total')} value={data.favorites.total} />
-      </section>
-
-      <AnalyticsSectionCard
-        title={t('sections.topProjectsByFavorites')}
-        empty={data.favorites.topProjects.length === 0}
-        emptyLabel={tCommon('empty')}
-      >
-        <AnalyticsEntityRankList
-          items={data.favorites.topProjects.map((item) => ({
-            entityId: item.entityId,
-            name: item.name,
-            viewCount: item.favoriteCount,
-          }))}
-          rankLabel={t('table.rank')}
-          nameLabel={t('table.name')}
-          viewsLabel={t('table.favorites')}
-          emptyLabel={tCommon('empty')}
-        />
-      </AnalyticsSectionCard>
-
-      <AnalyticsSectionCard title={t('sections.requests')}>
-        <div className="flex flex-col gap-4">
-          <div>
-            <p className="text-xs uppercase tracking-wide text-ink-muted">{t('requests.total')}</p>
-            <p className="mt-1 text-2xl font-semibold text-ink">{data.requests.total}</p>
-          </div>
-          {data.requests.bySource.length === 0 ? (
-            <p className="text-sm text-ink-secondary">{tCommon('empty')}</p>
-          ) : (
-            <div className="flex flex-col gap-3">
-              {data.requests.bySource.map((item) => (
-                <AnalyticsBarRow
-                  key={item.source}
-                  label={tSources(item.source as RequestSource)}
-                  value={item.count}
-                  max={requestMax}
-                />
-              ))}
+          className="h-full"
+          action={
+            <div className="flex items-center gap-3">
+              <span className="rounded-pill bg-surface px-3 py-1 text-xs font-medium text-ink-secondary ring-1 ring-border">
+                {tDate(preset)}
+              </span>
+              <Link
+                href="/builder/projects"
+                className="text-sm font-medium text-brand-secondary hover:underline"
+              >
+                {t('viewAll')}
+              </Link>
             </div>
-          )}
-        </div>
-      </AnalyticsSectionCard>
-
-      <AnalyticsSectionCard
-        title={t('sections.dealsByStatus')}
-        empty={data.dealsByStatus.length === 0}
-        emptyLabel={tCommon('empty')}
-      >
-        <div className="flex flex-col gap-3">
-          {data.dealsByStatus.map((item) => (
-            <AnalyticsBarRow
-              key={item.status}
-              label={tCrm(item.status as CrmDealStatus)}
-              value={item.count}
-              max={dealMax}
-            />
-          ))}
-        </div>
-      </AnalyticsSectionCard>
-
-      <AnalyticsSectionCard title={t('sections.apartmentSales')}>
-        <div className="flex flex-col gap-3">
-          <AnalyticsBarRow
-            label={tSales('available')}
-            value={data.apartmentSalesStatus.available}
-            max={salesMax}
+          }
+        >
+          <AnalyticsEntityRankList
+            items={data.topProjectsByViews.slice(0, TOP_ENTITIES_DISPLAY_LIMIT)}
+            rankLabel={t('table.rank')}
+            nameLabel={t('table.name')}
+            viewsLabel={t('table.views')}
+            emptyLabel={tCommon('empty')}
+            showCovers
           />
-          <AnalyticsBarRow
-            label={tSales('reserved')}
-            value={data.apartmentSalesStatus.reserved}
-            max={salesMax}
-          />
-          <AnalyticsBarRow
-            label={tSales('sold')}
-            value={data.apartmentSalesStatus.sold}
-            max={salesMax}
-          />
-        </div>
-      </AnalyticsSectionCard>
+        </AnalyticsSectionCard>
 
-      <AnalyticsSectionCard title={t('sections.readiness')}>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <ReadinessMetric
-            title={t('readiness.company')}
-            status={data.readiness.companyStatus}
-            score={data.readiness.companyOverallScore}
-            noDataLabel={tCommon('empty')}
+        <AnalyticsSectionCard
+          title={t('sections.topApartments')}
+          empty={data.topApartmentsByViews.length === 0}
+          emptyLabel={tCommon('empty')}
+          className="h-full"
+          action={
+            <Link
+              href="/builder/projects"
+              className="text-sm font-medium text-brand-secondary hover:underline"
+            >
+              {t('viewAll')}
+            </Link>
+          }
+        >
+          <AnalyticsEntityRankList
+            items={data.topApartmentsByViews.slice(0, TOP_ENTITIES_DISPLAY_LIMIT)}
+            rankLabel={t('table.rank')}
+            nameLabel={t('table.name')}
+            viewsLabel={t('table.views')}
+            emptyLabel={tCommon('empty')}
+            showCovers
           />
-          <ReadinessMetric
-            title={t('readiness.project')}
-            status={data.readiness.projectStatus}
-            score={data.readiness.projectOverallScore}
-            noDataLabel={tCommon('empty')}
-          />
-        </div>
-      </AnalyticsSectionCard>
-    </>
-  );
-};
+        </AnalyticsSectionCard>
+      </StaggerGroup>
 
-type ReadinessMetricProps = {
-  title: string;
-  status: Parameters<typeof ReadinessStatusBadge>[0]['status'] | null;
-  score: number | null;
-  noDataLabel: string;
-};
-
-const ReadinessMetric = ({ title, status, score, noDataLabel }: ReadinessMetricProps) => {
-  const t = useTranslations('Builder.readiness');
-
-  return (
-    <div className="rounded-sm border border-border bg-background p-4">
-      <p className="text-xs font-medium uppercase tracking-wide text-ink-muted">{title}</p>
-      {status ? (
-        <div className="mt-3 flex flex-col gap-2">
-          <ReadinessStatusBadge status={status} namespace="Builder.readiness" />
-          <p className="text-sm text-ink-secondary">
-            {t('overallScore')}: {score ?? '—'}
-          </p>
-        </div>
-      ) : (
-        <p className="mt-3 text-sm text-ink-secondary">{noDataLabel}</p>
-      )}
+      <BuilderAnalyticsSecondarySections data={data} />
     </div>
   );
 };

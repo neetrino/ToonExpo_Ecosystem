@@ -1024,18 +1024,42 @@
     },
     "dashboard": {
       "welcome": "Welcome, {name}",
+      "subtitle": "Your exhibition activity, saved projects, and requests in one place.",
       "qrLabel": "My QR",
       "qrReady": "Ready",
+      "scansLabel": "QR scans",
       "scansHint": "{count, plural, =0 {No scans yet} one {# scan} other {# scans}}",
       "favoritesLabel": "Favorites",
       "favoritesHint": "Saved from catalog",
       "requestsLabel": "Requests",
       "requestsHint": "Builder conversations",
-      "checkinLabel": "Check-in",
+      "checkinLabel": "Check-ins",
       "checkinCheckedIn": "Checked in",
       "checkinPending": "Not yet",
       "checkinNone": "No event",
-      "settingsHint": "Manage your profile details and password in Settings."
+      "checkinActiveHint": "Active exhibition status for your visitor QR.",
+      "settingsHint": "Manage your profile details and password in Settings.",
+      "viewAll": "View all",
+      "favoriteProject": "Project",
+      "favoriteApartment": "Apartment",
+      "sections": {
+        "recentRequests": "Recent requests",
+        "recentScans": "Recent QR scans",
+        "savedFavorites": "Saved favorites",
+        "checkinStatus": "Check-in & shortcuts"
+      },
+      "empty": {
+        "requests": "No requests yet. Browse projects and send interest.",
+        "scans": "No QR scans yet. Show your code to builders at the expo.",
+        "favorites": "Nothing saved yet. Heart projects in the catalog.",
+        "checkin": "No active exhibition check-in right now."
+      },
+      "quickLinks": {
+        "qr": "My QR",
+        "favorites": "Favorites",
+        "requests": "Requests",
+        "settings": "Settings"
+      }
     },
     "accountTypes": {
       "buyer": "Buyer / visitor",
@@ -1127,6 +1151,8 @@
       "empty": "You have not checked in to any exhibition yet.",
       "openQr": "Open my QR",
       "noActiveEvent": "There is no active exhibition right now.",
+      "previewBadge": "Example preview",
+      "previewHint": "No real check-in yet — this is sample data so you can see how the page looks with an active event and history.",
       "current": {
         "title": "Current exhibition",
         "checkedIn": "You are checked in",
@@ -1356,10 +1382,11 @@
     },
     "interactiveMapping": {
       "title": "Interactive mapping",
-      "subtitle": "Map districts, buildings, floors, and apartments in four phases.",
+      "subtitle": "{count, plural, =0 {No projects} one {# project} other {# projects}}",
       "loading": "Loading…",
       "error": "Could not load interactive mapping data.",
       "empty": "No projects yet. Create one to start mapping.",
+      "noResults": "No projects match “{query}”.",
       "existing": "Projects",
       "createProject": "Create project",
       "open": "Open",
@@ -1370,6 +1397,14 @@
       "backToWizard": "Wizard",
       "activePhase": "Continue with phase {phase}",
       "allPhasesDone": "All phases are complete",
+      "filters": {
+        "searchPlaceholder": "Search by project, company, or city"
+      },
+      "pagination": {
+        "previous": "Previous",
+        "next": "Next",
+        "ariaLabel": "Interactive mapping projects pagination"
+      },
       "status": {
         "locked": "Locked",
         "active": "Do this now",
@@ -1515,6 +1550,21 @@
     "analytics": {
       "title": "Analytics",
       "subtitle": "Platform-wide activity and performance",
+      "viewAll": "View all",
+      "trend": {
+        "today": "from previous day",
+        "last7Days": "from previous 7 days",
+        "last30Days": "from previous 30 days"
+      },
+      "chart": {
+        "users": "Users",
+        "projects": "Projects"
+      },
+      "growth": {
+        "newUsers": "New users",
+        "newProjects": "New projects",
+        "newApartments": "New apartments"
+      },
       "sections": {
         "platformActivity": "Platform activity",
         "topProjects": "Top projects by views",
@@ -2033,6 +2083,7 @@
         "title": "Title",
         "bank": "Bank",
         "rate": "Rate",
+        "minDown": "Min down",
         "publication": "Publication",
         "actions": "Actions"
       },
@@ -2920,6 +2971,20 @@
     "analytics": {
       "title": "Analytics",
       "subtitle": "Your company performance for the selected period",
+      "viewAll": "View all",
+      "trend": {
+        "today": "in selected period",
+        "last7Days": "in selected period",
+        "last30Days": "in selected period"
+      },
+      "kpis": {
+        "requests": "Requests",
+        "favorites": "Favorites",
+        "deals": "CRM deals",
+        "available": "Available apartments",
+        "reserved": "Reserved apartments",
+        "sold": "Sold apartments"
+      },
       "sections": {
         "topProjects": "Top projects by views",
         "topApartments": "Top apartments by views",
@@ -2949,14 +3014,48 @@
     },
     "dashboard": {
       "title": "Dashboard",
-      "subtitle": "Overview of your company projects and inventory",
+      "subtitle": "Projects, CRM pipeline, and company activity in one place.",
       "loading": "Loading dashboard…",
       "error": "Could not load dashboard. Try again.",
+      "viewAll": "View all",
+      "noProject": "No project",
+      "dealFallback": "Untitled deal",
+      "projectMeta": "{buildings} buildings · {apartments} apartments",
       "stats": {
         "projects": "Projects",
         "published": "Published",
         "drafts": "Drafts",
-        "apartments": "Apartments"
+        "apartments": "Apartments",
+        "openDeals": "Open deals",
+        "requests": "Requests",
+        "favorites": "Favorites"
+      },
+      "hints": {
+        "projects": "All company projects",
+        "published": "Live in the catalog",
+        "openDeals": "{count, plural, =0 {None created today} one {# created today} other {# created today}}",
+        "apartments": "Across loaded projects"
+      },
+      "sections": {
+        "recentProjects": "Recent projects",
+        "recentDeals": "Recent CRM deals",
+        "crmPipeline": "CRM pipeline",
+        "topProjects": "Top projects by views",
+        "shortcuts": "Shortcuts & activity"
+      },
+      "empty": {
+        "projects": "No projects yet. Create the first one.",
+        "deals": "No CRM deals yet. Scan a visitor QR or add a quick lead.",
+        "pipeline": "No open deals in the pipeline right now.",
+        "topProjects": "No project views in this period yet."
+      },
+      "quickLinks": {
+        "projects": "Projects",
+        "crm": "CRM",
+        "team": "Team",
+        "scanner": "Scanner",
+        "readiness": "Readiness",
+        "analytics": "Analytics"
       },
       "links": {
         "projects": "All projects",
@@ -3475,6 +3574,8 @@
       "error": "Could not load readiness. Try again.",
       "emptyTitle": "No readiness yet",
       "empty": "Readiness has not been evaluated yet. Your evaluator will publish guidance here when ready.",
+      "previewBadge": "Example preview",
+      "previewHint": "No real assessment yet — this is sample data so you can see how readiness looks in the portal.",
       "companyAssessment": "Company readiness",
       "overallScore": "Overall score",
       "kpiScoreLabel": "Readiness score",

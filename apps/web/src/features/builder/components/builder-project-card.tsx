@@ -36,7 +36,7 @@ export const BuilderProjectCard = ({ project }: BuilderProjectCardProps) => {
     <>
       <article
         className={cn(
-          'flex h-full flex-col overflow-hidden rounded-lg bg-surface-elevated shadow-xs',
+          'flex h-full flex-col overflow-hidden rounded-[15px] bg-surface-elevated shadow-xs',
           'transition-[box-shadow,transform] duration-[var(--duration-fast)]',
           'hover:shadow-sm',
         )}

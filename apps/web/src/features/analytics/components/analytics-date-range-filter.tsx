@@ -1,5 +1,6 @@
 'use client';
 
+import { CalendarDays } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 
@@ -10,10 +11,12 @@ import { cn } from '@/shared/ui/cn';
 
 type AnalyticsDateRangeFilterProps = {
   presetParam?: string;
+  /** `panel` — bordered block (builder). `toolbar` — header controls (admin design). */
+  variant?: 'panel' | 'toolbar';
 };
 
 /** Equal segment width so the thumb can slide like ViewModeToggle (desktop). */
-const SEGMENT_MIN_WIDTH_CLASS = 'min-w-[8.25rem]';
+const SEGMENT_MIN_WIDTH_CLASS = 'min-w-[7.5rem]';
 
 const PRESET_THUMB_TRANSLATE: Record<AnalyticsRangePreset, string> = {
   today: 'translate-x-0',
@@ -30,10 +33,10 @@ const formatRangeDate = (iso: string, locale: string): string =>
 
 /**
  * Preset switcher (today / 7 / 30 days) synced to URL search params.
- * Mobile: full-width equal segments. Desktop: fixed-width sliding pill.
  */
 export const AnalyticsDateRangeFilter = ({
   presetParam = 'preset',
+  variant = 'panel',
 }: AnalyticsDateRangeFilterProps) => {
   const t = useTranslations('Analytics.dateRange');
   const locale = useLocale();
@@ -49,103 +52,123 @@ export const AnalyticsDateRangeFilter = ({
     router.push(query ? `${pathname}?${query}` : pathname);
   };
 
+  const rangeLabel = t('activeRange', {
+    from: formatRangeDate(range.from, locale),
+    to: formatRangeDate(range.to, locale),
+  });
+
+  const switcher = (
+    <>
+      <div
+        role="group"
+        aria-label={t('label')}
+        className="relative flex w-full min-w-0 items-center gap-0.5 rounded-pill bg-surface-elevated p-0.5 ring-1 ring-border md:hidden"
+      >
+        <span
+          aria-hidden
+          className={cn(
+            'pointer-events-none absolute top-0.5 bottom-0.5 left-0.5 w-[calc((100%-0.5rem)/3)] rounded-pill',
+            'bg-brand-secondary shadow-xs',
+            'transition-transform duration-[var(--duration-base)] ease-[var(--ease-out-premium)]',
+            'motion-reduce:transition-none',
+            PRESET_THUMB_TRANSLATE[range.preset],
+          )}
+        />
+        {ANALYTICS_RANGE_PRESETS.map((preset) => {
+          const active = range.preset === preset;
+          return (
+            <button
+              key={preset}
+              type="button"
+              aria-pressed={active}
+              className={cn(
+                'relative z-10 inline-flex h-8 min-w-0 flex-1 items-center justify-center rounded-pill px-1.5',
+                'text-center text-xs font-medium leading-tight',
+                'transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out-premium)]',
+                'motion-reduce:transition-none',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary/30',
+                active ? 'text-on-dark' : 'text-ink-muted hover:text-ink',
+              )}
+              onClick={() => {
+                setPreset(preset);
+              }}
+            >
+              <span className="truncate">{t(preset)}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <div
+        role="group"
+        aria-label={t('label')}
+        className="relative hidden h-9 items-center gap-0.5 rounded-pill bg-surface-elevated p-0.5 ring-1 ring-border md:inline-flex"
+      >
+        <span
+          aria-hidden
+          className={cn(
+            'pointer-events-none absolute top-0.5 left-0.5 h-8 rounded-pill',
+            SEGMENT_MIN_WIDTH_CLASS,
+            'bg-brand-secondary shadow-xs',
+            'transition-transform duration-[var(--duration-base)] ease-[var(--ease-out-premium)]',
+            'motion-reduce:transition-none',
+            PRESET_THUMB_TRANSLATE[range.preset],
+          )}
+        />
+        {ANALYTICS_RANGE_PRESETS.map((preset) => {
+          const active = range.preset === preset;
+          return (
+            <button
+              key={preset}
+              type="button"
+              aria-pressed={active}
+              className={cn(
+                'relative z-10 inline-flex h-8 items-center justify-center rounded-pill px-3',
+                SEGMENT_MIN_WIDTH_CLASS,
+                'text-sm font-medium whitespace-nowrap',
+                'transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out-premium)]',
+                'motion-reduce:transition-none',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary/30',
+                active ? 'text-on-dark' : 'text-ink-muted hover:text-ink',
+              )}
+              onClick={() => {
+                setPreset(preset);
+              }}
+            >
+              {t(preset)}
+            </button>
+          );
+        })}
+      </div>
+    </>
+  );
+
+  if (variant === 'toolbar') {
+    return (
+      <div className="flex min-w-0 flex-col items-stretch gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
+        {switcher}
+        <p
+          className={cn(
+            'inline-flex min-w-0 items-center gap-2 rounded-md border border-border',
+            'bg-surface-elevated px-3 py-2 text-sm text-ink-secondary',
+          )}
+        >
+          <CalendarDays className="size-4 shrink-0 text-ink-muted" aria-hidden />
+          <span className="min-w-0 truncate">{rangeLabel}</span>
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="flex min-w-0 flex-col gap-3 rounded-md border border-border bg-surface p-4">
       <div className="flex min-w-0 flex-col gap-2 md:flex-row md:flex-wrap md:items-center md:gap-3">
         <span className="text-xs font-medium uppercase tracking-wide text-ink-muted">
           {t('label')}
         </span>
-
-        {/* Mobile — full-width switcher, stays inside the page */}
-        <div
-          role="group"
-          aria-label={t('label')}
-          className="relative flex w-full min-w-0 items-center gap-0.5 rounded-pill bg-surface-elevated p-0.5 ring-1 ring-border md:hidden"
-        >
-          <span
-            aria-hidden
-            className={cn(
-              'pointer-events-none absolute top-0.5 bottom-0.5 left-0.5 w-[calc((100%-0.5rem)/3)] rounded-pill',
-              'bg-brand-secondary shadow-xs',
-              'transition-transform duration-[var(--duration-base)] ease-[var(--ease-out-premium)]',
-              'motion-reduce:transition-none',
-              PRESET_THUMB_TRANSLATE[range.preset],
-            )}
-          />
-          {ANALYTICS_RANGE_PRESETS.map((preset) => {
-            const active = range.preset === preset;
-            return (
-              <button
-                key={preset}
-                type="button"
-                aria-pressed={active}
-                className={cn(
-                  'relative z-10 inline-flex h-8 min-w-0 flex-1 items-center justify-center rounded-pill px-1.5',
-                  'text-center text-xs font-medium leading-tight',
-                  'transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out-premium)]',
-                  'motion-reduce:transition-none',
-                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary/30',
-                  active ? 'text-on-dark' : 'text-ink-muted hover:text-ink',
-                )}
-                onClick={() => {
-                  setPreset(preset);
-                }}
-              >
-                <span className="truncate">{t(preset)}</span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Desktop — original fixed-width sliding pill */}
-        <div
-          role="group"
-          aria-label={t('label')}
-          className="relative hidden h-9 items-center gap-0.5 rounded-pill bg-surface-elevated p-0.5 ring-1 ring-border md:inline-flex"
-        >
-          <span
-            aria-hidden
-            className={cn(
-              'pointer-events-none absolute top-0.5 left-0.5 h-8 rounded-pill',
-              SEGMENT_MIN_WIDTH_CLASS,
-              'bg-brand-secondary shadow-xs',
-              'transition-transform duration-[var(--duration-base)] ease-[var(--ease-out-premium)]',
-              'motion-reduce:transition-none',
-              PRESET_THUMB_TRANSLATE[range.preset],
-            )}
-          />
-          {ANALYTICS_RANGE_PRESETS.map((preset) => {
-            const active = range.preset === preset;
-            return (
-              <button
-                key={preset}
-                type="button"
-                aria-pressed={active}
-                className={cn(
-                  'relative z-10 inline-flex h-8 items-center justify-center rounded-pill px-3',
-                  SEGMENT_MIN_WIDTH_CLASS,
-                  'text-sm font-medium whitespace-nowrap',
-                  'transition-colors duration-[var(--duration-fast)] ease-[var(--ease-out-premium)]',
-                  'motion-reduce:transition-none',
-                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-secondary/30',
-                  active ? 'text-on-dark' : 'text-ink-muted hover:text-ink',
-                )}
-                onClick={() => {
-                  setPreset(preset);
-                }}
-              >
-                {t(preset)}
-              </button>
-            );
-          })}
-        </div>
+        {switcher}
       </div>
-      <p className="min-w-0 break-words text-sm text-ink-secondary">
-        {t('activeRange', {
-          from: formatRangeDate(range.from, locale),
-          to: formatRangeDate(range.to, locale),
-        })}
-      </p>
+      <p className="min-w-0 break-words text-sm text-ink-secondary">{rangeLabel}</p>
     </div>
   );
 };

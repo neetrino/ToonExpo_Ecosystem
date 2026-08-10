@@ -2,8 +2,11 @@ import { headers } from 'next/headers';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { getMeOrNullCached as getMeOrNull } from '@/features/auth/api/get-me-or-null-cached';
-import { AccountOverviewStats } from '@/features/buyer/components/account/account-overview-stats';
-import { AccountPageEnter } from '@/features/buyer/components/account/account-page-enter';
+import { AccountDashboardView } from '@/features/buyer/components/account/account-dashboard-view';
+import {
+  AccountContentReveal,
+  AccountPageEnter,
+} from '@/features/buyer/components/account/account-page-enter';
 import { AccountPageHeader } from '@/features/buyer/components/account/account-page-header';
 import { getCompanyProfile } from '@/features/builder/api/company-profile-api';
 import { isBuyerAccount } from '@/features/buyer/utils/is-buyer-account';
@@ -12,7 +15,6 @@ import { isPartnerCompatibleCompany } from '@/features/partners/utils/is-partner
 import { Link, redirect } from '@/i18n/navigation';
 import { isApiErrorStatus } from '@/shared/api/errors';
 import { Card } from '@/shared/ui/card';
-import { Reveal } from '@/shared/ui/motion/reveal';
 
 type DashboardPageProps = {
   params: Promise<{ locale: string }>;
@@ -47,15 +49,17 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
 
   return (
     <AccountPageEnter>
-      <div className="hidden flex-col gap-15 md:flex">
-        <AccountPageHeader title={t('dashboard.welcome', { name: user.name })} />
+      <div className="hidden flex-col gap-6 md:flex">
+        <AccountPageHeader
+          title={t('dashboard.welcome', { name: user.name })}
+          subtitle={t('dashboard.subtitle')}
+          iconName="dashboard"
+        />
 
         {showBuyerOverview ? (
-          <Reveal fadeOnly>
-            <AccountOverviewStats />
-          </Reveal>
+          <AccountDashboardView />
         ) : (
-          <Reveal>
+          <AccountContentReveal>
             <Card variant="elevated" className="max-w-xl">
               <p className="text-sm text-ink-secondary">{t('dashboard.settingsHint')}</p>
               <Link
@@ -65,7 +69,7 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
                 {t('nav.password')}
               </Link>
             </Card>
-          </Reveal>
+          </AccountContentReveal>
         )}
       </div>
     </AccountPageEnter>

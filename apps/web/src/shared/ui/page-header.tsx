@@ -1,11 +1,14 @@
+import type { LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 
 import { cn } from '@/shared/ui/cn';
+import { PageTitleBlock } from '@/shared/ui/page-title-icon';
 
 type PageHeaderProps = {
   title: string;
   description?: string | undefined;
   eyebrow?: string | undefined;
+  icon?: LucideIcon | undefined;
   actions?: ReactNode | undefined;
   className?: string | undefined;
 };
@@ -17,6 +20,7 @@ export const PageHeader = ({
   title,
   description,
   eyebrow,
+  icon,
   actions,
   className,
 }: PageHeaderProps) => {
@@ -26,10 +30,11 @@ export const PageHeader = ({
     >
       <div className="min-w-0">
         {eyebrow ? <p className="text-eyebrow mb-2">{eyebrow}</p> : null}
-        <h1 className="text-page-title text-ink">{title}</h1>
-        {description ? (
-          <p className="text-body-sm mt-2 max-w-2xl text-ink-secondary">{description}</p>
-        ) : null}
+        <PageTitleBlock
+          title={title}
+          {...(description ? { subtitle: description } : {})}
+          {...(icon ? { icon } : {})}
+        />
       </div>
       {actions ? <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div> : null}
     </div>

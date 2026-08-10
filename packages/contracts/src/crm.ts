@@ -210,8 +210,12 @@ export type BuyerRequestListItem = {
   buyerStatus: BuyerFacingRequestStatus;
   builderCompanyId: string;
   builderCompanyName: string;
+  /** Builder company logo when available. */
+  builderLogoUrl: string | null;
   projectId: string | null;
   projectName: string | null;
+  /** Project cover thumbnail/file URL when the request is tied to a project. */
+  projectCoverUrl: string | null;
   apartmentId: string | null;
   note: string | null;
   createdAt: string;

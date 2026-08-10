@@ -29,19 +29,41 @@ export type AnalyticsDateRange = {
   to: string;
 };
 
+/** Absolute metric with period-over-period percent change. */
+export type AnalyticsTrendMetric = {
+  value: number;
+  /** Percent change vs comparison baseline; null when undefined. */
+  changePercent: number | null;
+};
+
 export type PlatformActivitySummary = {
-  totalUsers: number;
-  registeredBuyers: number;
-  activeBuilderCompanies: number;
-  activePartners: number;
-  publishedProjects: number;
-  publishedApartments: number;
+  totalUsers: AnalyticsTrendMetric;
+  registeredBuyers: AnalyticsTrendMetric;
+  activeBuilderCompanies: AnalyticsTrendMetric;
+  activePartners: AnalyticsTrendMetric;
+  publishedProjects: AnalyticsTrendMetric;
+  publishedApartments: AnalyticsTrendMetric;
+};
+
+/** Daily new users / projects for the admin activity chart. */
+export type PlatformActivitySeriesPoint = {
+  date: string;
+  users: number;
+  projects: number;
+};
+
+/** New entities created in the selected range, with prior-window comparison. */
+export type PlatformActivityGrowth = {
+  newUsers: AnalyticsTrendMetric;
+  newProjects: AnalyticsTrendMetric;
+  newApartments: AnalyticsTrendMetric;
 };
 
 export type EntityViewCount = {
   entityId: string;
   name: string | null;
   viewCount: number;
+  coverUrl?: string | null;
 };
 
 export type EntityFavoriteCount = {
@@ -85,6 +107,8 @@ export type ReadinessCategoryAverage = {
 export type AdminAnalyticsOverview = {
   range: AnalyticsDateRange;
   platformActivity: PlatformActivitySummary;
+  activitySeries: PlatformActivitySeriesPoint[];
+  activityGrowth: PlatformActivityGrowth;
   topProjectsByViews: EntityViewCount[];
   favorites: FavoritesSummary;
   requests: {

@@ -88,8 +88,19 @@ export class BuyerRequestsService {
         skip: (page - 1) * pageSize,
         take: pageSize,
         include: {
-          builderCompany: { select: { id: true, name: true } },
-          project: { select: { name: true } },
+          builderCompany: {
+            select: {
+              id: true,
+              name: true,
+              logoMedia: { select: { fileUrl: true } },
+            },
+          },
+          project: {
+            select: {
+              name: true,
+              coverMedia: { select: { fileUrl: true, thumbnailUrl: true } },
+            },
+          },
           crmDeal: { select: { id: true, status: true } },
         },
       }),

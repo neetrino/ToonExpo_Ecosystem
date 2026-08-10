@@ -187,8 +187,15 @@ export const mapBuyerRequestItem = (row: {
   apartmentId: string | null;
   createdAt: Date;
   updatedAt: Date;
-  builderCompany: { id: string; name: string };
-  project: { name: string } | null;
+  builderCompany: {
+    id: string;
+    name: string;
+    logoMedia: { fileUrl: string } | null;
+  };
+  project: {
+    name: string;
+    coverMedia: { fileUrl: string; thumbnailUrl: string | null } | null;
+  } | null;
   crmDeal: { id: string; status: CrmDealStatus } | null;
 }): BuyerRequestListItem => ({
   requestId: row.id,
@@ -197,8 +204,11 @@ export const mapBuyerRequestItem = (row: {
   buyerStatus: mapDealStatusToBuyerFacing(row.crmDeal?.status ?? ('new_request' as CrmDealStatus)),
   builderCompanyId: row.builderCompany.id,
   builderCompanyName: row.builderCompany.name,
+  builderLogoUrl: row.builderCompany.logoMedia?.fileUrl ?? null,
   projectId: row.projectId,
   projectName: row.project?.name ?? null,
+  projectCoverUrl:
+    row.project?.coverMedia?.thumbnailUrl ?? row.project?.coverMedia?.fileUrl ?? null,
   apartmentId: row.apartmentId,
   note: row.note,
   createdAt: row.createdAt.toISOString(),

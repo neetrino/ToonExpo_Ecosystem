@@ -14,8 +14,23 @@ import type { ListAdminBankOffersQueryDto } from "./dto/admin-bank-offer.dto.js"
 import type { UpdateBankOfferDto } from "./dto/admin-bank-offer.dto.js";
 
 const bankOfferInclude = {
-  partnerCompany: { select: { name: true } },
+  partnerCompany: {
+    select: {
+      name: true,
+      logoMedia: { select: { fileUrl: true } },
+    },
+  },
 } satisfies Prisma.BankOfferInclude;
+
+type BankOfferWithPartner = Prisma.BankOfferGetPayload<{
+  include: typeof bankOfferInclude;
+}>;
+
+const toAdminBankOfferListItem = (offer: BankOfferWithPartner): BankOfferListItem =>
+  toBankOfferListItem(offer, {
+    name: offer.partnerCompany.name,
+    logoUrl: offer.partnerCompany.logoMedia?.fileUrl ?? null,
+  });
 
 @Injectable()
 export class AdminBankOffersService {
@@ -39,7 +54,7 @@ export class AdminBankOffersService {
 
     return {
       data: offers.map((offer) =>
-        toBankOfferListItem(offer, offer.partnerCompany.name),
+        toAdminBankOfferListItem(offer),
       ),
     };
   }
@@ -54,7 +69,7 @@ export class AdminBankOffersService {
       throw bankOfferNotFound();
     }
 
-    return toBankOfferListItem(offer, offer.partnerCompany.name);
+    return toAdminBankOfferListItem(offer);
   }
 
   async create(
@@ -75,7 +90,7 @@ export class AdminBankOffersService {
       this.webRevalidation.revalidateMortgage();
     }
 
-    return toBankOfferListItem(offer, offer.partnerCompany.name);
+    return toAdminBankOfferListItem(offer);
   }
 
   async update(
@@ -95,7 +110,7 @@ export class AdminBankOffersService {
       this.webRevalidation.revalidateMortgage();
     }
 
-    return toBankOfferListItem(offer, offer.partnerCompany.name);
+    return toAdminBankOfferListItem(offer);
   }
 
   async remove(id: string): Promise<void> {

@@ -5,7 +5,7 @@
  * in media viewBox pixel space (Defense MappingCanvas parity).
  */
 
-import type { PublicationStatus } from './catalog.js';
+import type { PaginatedResponse, PublicationStatus } from './catalog.js';
 import type {
   VisualHotspotInteractionType,
   VisualHotspotShapeType,
@@ -45,9 +45,8 @@ export type InteractiveMappingProjectSummary = {
   apartmentCount: number;
 };
 
-export type InteractiveMappingProjectListResponse = {
-  data: InteractiveMappingProjectSummary[];
-};
+export type InteractiveMappingProjectListResponse =
+  PaginatedResponse<InteractiveMappingProjectSummary>;
 
 export type InteractiveMappingCanvasSummary = {
   id: string;

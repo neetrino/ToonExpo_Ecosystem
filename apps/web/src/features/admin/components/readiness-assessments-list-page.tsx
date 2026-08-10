@@ -1,6 +1,7 @@
 'use client';
 
 import type { ReadinessAssessmentListItem } from '@toonexpo/contracts';
+import { ClipboardCheck } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
@@ -20,6 +21,8 @@ import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { Button } from '@/shared/ui/button';
 import { EmptyState } from '@/shared/ui/empty-state';
+import { Reveal } from '@/shared/ui/motion';
+import { PageTitleBlock } from '@/shared/ui/page-title-icon';
 import { Select } from '@/shared/ui/select';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
@@ -98,46 +101,41 @@ export const ReadinessAssessmentsListPage = () => {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-page-title text-ink">{t('title')}</h1>
-          <p className="max-w-xl text-sm text-ink-secondary">{t('guide')}</p>
+      <Reveal force>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <PageTitleBlock title={t('title')} subtitle={t('guide')} icon={ClipboardCheck} />
+          <div className="flex flex-wrap items-center gap-2">
+            <Select
+              id="readiness-company-filter"
+              aria-label={t('filters.company')}
+              size="fit"
+              className="h-9 min-w-[10rem] max-w-[16rem]"
+              value={companyId}
+              onChange={(event) => {
+                setCompanyId(event.target.value);
+              }}
+            >
+              <option value="">{t('filters.allCompanies')}</option>
+              {(companiesQuery.data?.data ?? []).map((company) => (
+                <option key={company.id} value={company.id}>
+                  {company.name}
+                </option>
+              ))}
+            </Select>
+            <ViewModeToggle value={viewMode} onChange={setViewMode} />
+            <Button
+              type="button"
+              size="sm"
+              variant="secondary"
+              onClick={() => {
+                setShowCreate(true);
+              }}
+            >
+              <AddActionLabel>{t('newAssessment')}</AddActionLabel>
+            </Button>
+          </div>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <ViewModeToggle value={viewMode} onChange={setViewMode} />
-          <Button
-            type="button"
-            size="sm"
-            variant="secondary"
-            onClick={() => {
-              setShowCreate(true);
-            }}
-          >
-            <AddActionLabel>{t('newAssessment')}</AddActionLabel>
-          </Button>
-        </div>
-      </div>
-
-      <div className="flex flex-wrap items-center gap-3">
-        <label className="flex min-w-[12rem] flex-1 flex-col gap-1 text-sm text-ink sm:max-w-xs">
-          <span className="text-ink-secondary">{t('filters.company')}</span>
-          <Select
-            id="readiness-company-filter"
-            aria-label={t('filters.company')}
-            value={companyId}
-            onChange={(event) => {
-              setCompanyId(event.target.value);
-            }}
-          >
-            <option value="">{t('filters.allCompanies')}</option>
-            {(companiesQuery.data?.data ?? []).map((company) => (
-              <option key={company.id} value={company.id}>
-                {company.name}
-              </option>
-            ))}
-          </Select>
-        </label>
-      </div>
+      </Reveal>
 
       {visibleAssessments.length === 0 ? (
         <EmptyState

@@ -12,7 +12,7 @@ type AdminProjectsResultsSkeletonProps = {
 
 const AdminProjectCardSkeleton = () => {
   return (
-    <div className="flex flex-col overflow-hidden rounded-lg bg-surface-elevated shadow-xs ring-1 ring-border">
+    <div className="flex flex-col overflow-hidden rounded-[15px] bg-surface-elevated shadow-xs ring-1 ring-border">
       <Skeleton className="aspect-[16/9] w-full rounded-none" />
       <div className="flex flex-col p-4 sm:p-5">
         <Skeleton className="h-5 w-3/5" />

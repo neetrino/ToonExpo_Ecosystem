@@ -1,5 +1,6 @@
 'use client';
 
+import { Handshake } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
@@ -96,6 +97,7 @@ export const PartnersListPage = () => {
   return (
     <div className="flex flex-col gap-6">
       <ListPageHeader
+        icon={Handshake}
         title={t('title')}
         subtitle={t('subtitle', { count: response.meta.total })}
         search={search}

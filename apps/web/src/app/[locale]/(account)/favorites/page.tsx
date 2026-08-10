@@ -1,7 +1,7 @@
 import { headers } from 'next/headers';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
-import { AccountPageEnter } from '@/features/buyer/components/account/account-page-enter';
+import { AccountPageEnter, AccountContentReveal } from '@/features/buyer/components/account/account-page-enter';
 import { AccountPageHeader } from '@/features/buyer/components/account/account-page-header';
 import { BuyerFavoritesList } from '@/features/buyer/components/buyer-favorites-list';
 import { isBuyerAccount } from '@/features/buyer/utils/is-buyer-account';
@@ -37,8 +37,10 @@ export default async function FavoritesPage({ params }: FavoritesPageProps) {
 
   return (
     <AccountPageEnter mobilePush>
-      <AccountPageHeader title={t('title')} subtitle={t('subtitle')} />
-      <BuyerFavoritesList />
+      <AccountPageHeader title={t('title')} subtitle={t('subtitle')} iconName="favorites" />
+      <AccountContentReveal>
+        <BuyerFavoritesList />
+      </AccountContentReveal>
     </AccountPageEnter>
   );
 }

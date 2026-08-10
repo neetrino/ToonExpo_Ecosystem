@@ -4,6 +4,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { CompanyProfileForm } from '@/features/builder/components/company-profile-form';
 import { getCompanyProfileCached as getCompanyProfile } from '@/features/builder/api/get-company-profile-cached';
+import { PageTitleBlock } from '@/shared/ui/page-title-icon';
 
 type CompanyPageProps = {
   params: Promise<{ locale: string }>;
@@ -38,10 +39,7 @@ const CompanyPageShell = ({
   children: ReactNode;
 }) => (
   <div className="flex flex-col gap-6">
-    <div className="flex flex-col gap-1">
-      <h1 className="text-page-title text-ink">{title}</h1>
-      <p className="text-sm text-ink-secondary">{subtitle}</p>
-    </div>
+    <PageTitleBlock title={title} subtitle={subtitle} iconName="company" />
     {children}
   </div>
 );

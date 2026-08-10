@@ -39,7 +39,10 @@ export class AdminPartnersService {
         orderBy: [{ updatedAt: 'desc' }],
         skip,
         take: query.pageSize,
-        include: { logoMedia: { select: { fileUrl: true } } },
+        include: {
+          logoMedia: { select: { fileUrl: true } },
+          coverMedia: { select: { fileUrl: true } },
+        },
       }),
     ]);
 

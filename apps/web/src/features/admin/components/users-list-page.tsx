@@ -1,6 +1,7 @@
 'use client';
 
 import type { AccountType, UserStatus } from '@toonexpo/contracts';
+import { Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
@@ -144,6 +145,7 @@ export const UsersListPage = () => {
   return (
     <div className="flex flex-col gap-6">
       <ListPageHeader
+        icon={Users}
         title={t('title')}
         subtitle={t('subtitle', { count: response.meta.total })}
         search={search}

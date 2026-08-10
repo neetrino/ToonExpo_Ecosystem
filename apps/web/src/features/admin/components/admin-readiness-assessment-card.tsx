@@ -8,6 +8,12 @@ import { useTranslations } from 'next-intl';
 import { ReadinessProgressRing } from '@/features/readiness/components/readiness-progress-ring';
 import { scorePercent, toneForStatus } from '@/features/readiness/utils/readiness-score-display';
 import { cn } from '@/shared/ui/cn';
+import { LIST_CARD_LIFT_CLASS } from '@/shared/ui/motion';
+
+/** Same chrome as `/admin/companies` CompanyCard. */
+const CARD_RADIUS_CLASS = 'rounded-[15px]';
+const MEDIA_RADIUS_CLASS = 'rounded-[14px]';
+const MEDIA_ASPECT_CLASS = 'aspect-[16/10]';
 
 export type AdminReadinessCompanyInfo = {
   name: string;
@@ -37,7 +43,7 @@ const ScorePair = ({ primary, className }: ScorePairProps) => {
 };
 
 /**
- * Admin readiness list card — Partners KPI layout, ToonExpo tokens.
+ * Admin readiness list card — same size/style as `/admin/companies`.
  */
 export const AdminReadinessAssessmentCard = ({
   assessment,
@@ -61,17 +67,17 @@ export const AdminReadinessAssessmentCard = ({
       type="button"
       onClick={onOpen}
       className={cn(
-        'flex h-full w-full flex-col gap-3.5 overflow-hidden rounded-[20px]',
-        'border border-border/80 bg-surface-elevated p-4 text-left shadow-card',
-        'transition-[box-shadow,transform] duration-[var(--duration-fast)]',
-        'hover:shadow-sm active:scale-[0.995]',
+        'flex h-full w-full flex-col gap-3 overflow-hidden border border-border/80',
+        'bg-surface-elevated p-3.5 text-left shadow-card',
+        LIST_CARD_LIFT_CLASS,
+        CARD_RADIUS_CLASS,
       )}
     >
-      <header className="flex flex-col gap-2">
-        <div className="flex min-w-0 items-center gap-2.5">
-          <div className="relative size-9 shrink-0 overflow-hidden rounded-full bg-surface ring-1 ring-border">
+      <header className="flex flex-col gap-1.5">
+        <div className="flex min-w-0 items-center gap-2">
+          <div className="relative size-8 shrink-0 overflow-hidden rounded-full bg-surface ring-1 ring-border">
             {company.logoUrl ? (
-              <Image src={company.logoUrl} alt="" fill className="object-cover" sizes="36px" />
+              <Image src={company.logoUrl} alt="" fill className="object-cover" sizes="32px" />
             ) : (
               <span className="absolute inset-0 flex items-center justify-center text-[10px] font-semibold text-ink-muted">
                 {initials}
@@ -80,13 +86,14 @@ export const AdminReadinessAssessmentCard = ({
           </div>
           <p className="min-w-0 truncate text-sm font-medium text-ink-secondary">{company.name}</p>
         </div>
-        <h2 className="text-lg font-semibold tracking-tight text-ink">{title}</h2>
+        <h2 className="truncate text-base font-semibold tracking-tight text-ink">{title}</h2>
       </header>
 
       <div
         className={cn(
-          'relative aspect-[16/10] w-full overflow-hidden rounded-[14px]',
-          'bg-surface ring-1 ring-border/60',
+          'relative w-full overflow-hidden bg-surface ring-1 ring-border/60',
+          MEDIA_ASPECT_CLASS,
+          MEDIA_RADIUS_CLASS,
         )}
       >
         {coverUrl ? (
@@ -95,7 +102,7 @@ export const AdminReadinessAssessmentCard = ({
             alt=""
             fill
             className="object-cover"
-            sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
+            sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 25vw"
           />
         ) : (
           <span className="flex size-full flex-col items-center justify-center gap-1.5 text-ink-muted">
@@ -105,25 +112,25 @@ export const AdminReadinessAssessmentCard = ({
         )}
       </div>
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2.5">
         <ReadinessProgressRing
           percent={overallPercent}
           size="sm"
           tone={tone}
           showValue={false}
-          className="size-12"
+          className="size-11"
           label={`${tMgmt('overallScore')}: ${hasScore ? `${overallPercent}%` : '—'}`}
         />
         <p className="min-w-0 flex-1 text-sm leading-snug text-ink-secondary">
           {tMgmt('overallScore')}
         </p>
-        <ScorePair primary={hasScore ? overallPercent : null} className="text-xl" />
+        <ScorePair primary={hasScore ? overallPercent : null} className="text-lg" />
       </div>
 
       {categories.length > 0 ? (
         <>
           <div className="border-t border-border" aria-hidden />
-          <ul className="flex flex-col gap-2.5">
+          <ul className="flex flex-col gap-2">
             {categories.map((category) => {
               const percent = scorePercent(category.score);
               const hasCategoryScore = category.score !== null;

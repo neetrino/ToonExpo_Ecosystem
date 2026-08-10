@@ -1,7 +1,7 @@
 import { headers } from 'next/headers';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
-import { AccountPageEnter } from '@/features/buyer/components/account/account-page-enter';
+import { AccountPageEnter, AccountContentReveal } from '@/features/buyer/components/account/account-page-enter';
 import { AccountPageHeader } from '@/features/buyer/components/account/account-page-header';
 import { BuyerRequestsList } from '@/features/buyer/components/buyer-requests-list';
 import { isBuyerAccount } from '@/features/buyer/utils/is-buyer-account';
@@ -37,8 +37,10 @@ export default async function RequestsPage({ params }: RequestsPageProps) {
 
   return (
     <AccountPageEnter mobilePush>
-      <AccountPageHeader title={t('title')} subtitle={t('subtitle')} />
-      <BuyerRequestsList />
+      <AccountPageHeader title={t('title')} subtitle={t('subtitle')} iconName="requests" />
+      <AccountContentReveal>
+        <BuyerRequestsList />
+      </AccountContentReveal>
     </AccountPageEnter>
   );
 }

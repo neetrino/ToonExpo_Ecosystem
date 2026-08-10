@@ -9,6 +9,11 @@ import { useLogoutMutation } from '@/features/auth/hooks/use-auth';
 import { Link } from '@/i18n/navigation';
 import { getAccountInitials } from '@/shared/lib/account-initials';
 import { cn } from '@/shared/ui/cn';
+import {
+  LIST_CARD_STAGGER_MS,
+  LIST_CONTENT_BASE_DELAY_MS,
+  Reveal,
+} from '@/shared/ui/motion';
 
 const AVATAR_SIZE_CLASS = 'size-16';
 const ICON_BOX_CLASS = 'size-10 rounded-xl';
@@ -87,31 +92,38 @@ export const AccountMobileProfileHub = ({
 
   return (
     <div className={cn('mx-auto flex w-full max-w-md flex-col gap-4', className)}>
-      <section className={cn(CARD_CLASS, 'px-4 py-4')} aria-label={t('label')}>
-        <div className="flex items-center gap-2">
-          <span
-            className={cn(
-              'flex shrink-0 items-center justify-center rounded-full bg-brand',
-              'text-lg font-semibold tracking-wide text-on-brand shadow-xs',
-              AVATAR_SIZE_CLASS,
-            )}
-            aria-hidden
-          >
-            {getAccountInitials(name)}
-          </span>
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-xl font-bold leading-tight text-ink">{name}</p>
-            <p className="truncate text-sm leading-snug text-ink-muted">{email}</p>
+      <Reveal force>
+        <section className={cn(CARD_CLASS, 'px-4 py-4')} aria-label={t('label')}>
+          <div className="flex items-center gap-2">
+            <span
+              className={cn(
+                'flex shrink-0 items-center justify-center rounded-full bg-brand',
+                'text-lg font-semibold tracking-wide text-on-brand shadow-xs',
+                AVATAR_SIZE_CLASS,
+              )}
+              aria-hidden
+            >
+              {getAccountInitials(name)}
+            </span>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-xl font-bold leading-tight text-ink">{name}</p>
+              <p className="truncate text-sm leading-snug text-ink-muted">{email}</p>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </Reveal>
 
       <nav className={cn(CARD_CLASS, 'overflow-hidden py-1')} aria-label={t('label')}>
         <ul className="divide-y divide-border/60">
-          {items.map((item) => {
+          {items.map((item, index) => {
             const Icon = item.icon;
             return (
-              <li key={item.href}>
+              <Reveal
+                key={item.href}
+                as="li"
+                force
+                delayMs={LIST_CONTENT_BASE_DELAY_MS + index * LIST_CARD_STAGGER_MS}
+              >
                 <Link
                   href={item.href}
                   prefetch
@@ -131,29 +143,31 @@ export const AccountMobileProfileHub = ({
                   </span>
                   <ChevronRight className="size-[18px] shrink-0 text-ink-muted" aria-hidden />
                 </Link>
-              </li>
+              </Reveal>
             );
           })}
         </ul>
       </nav>
 
-      <button
-        type="button"
-        className={cn(
-          'flex w-full items-center justify-center gap-2.5 rounded-[15px] bg-brand-secondary',
-          'py-3.5 text-base font-semibold text-on-dark transition-opacity',
-          'hover:opacity-90 disabled:pointer-events-none disabled:opacity-50',
-        )}
-        disabled={logoutMutation.isPending}
-        onClick={() => {
-          void logoutMutation.mutateAsync();
-        }}
-      >
-        <LogOut className="size-5 shrink-0" aria-hidden />
-        <span>
-          {logoutMutation.isPending ? tAuth('logout.submitting') : tAuth('logout.submit')}
-        </span>
-      </button>
+      <Reveal force delayMs={LIST_CONTENT_BASE_DELAY_MS + items.length * LIST_CARD_STAGGER_MS}>
+        <button
+          type="button"
+          className={cn(
+            'flex w-full items-center justify-center gap-2.5 rounded-[15px] bg-brand-secondary',
+            'py-3.5 text-base font-semibold text-on-dark transition-opacity',
+            'hover:opacity-90 disabled:pointer-events-none disabled:opacity-50',
+          )}
+          disabled={logoutMutation.isPending}
+          onClick={() => {
+            void logoutMutation.mutateAsync();
+          }}
+        >
+          <LogOut className="size-5 shrink-0" aria-hidden />
+          <span>
+            {logoutMutation.isPending ? tAuth('logout.submitting') : tAuth('logout.submit')}
+          </span>
+        </button>
+      </Reveal>
     </div>
   );
 };

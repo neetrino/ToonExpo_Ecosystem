@@ -14,10 +14,14 @@ import {
 } from '@/features/admin/admin-nav-items';
 import { Link, usePathname } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
+import {
+  PORTAL_NAV_ACTIVE_ATTR,
+  PortalNavRailGroup,
+} from '@/shared/ui/portal-nav-rail-group';
 import { usePortalRailCollapsed } from '@/shared/ui/portal-rail-collapse-context';
 
-const NAV_ICON_CLASS = 'size-[1.125rem] shrink-0 opacity-90';
-const NAV_CHILD_ICON_CLASS = 'size-4 shrink-0 opacity-90';
+const NAV_ICON_CLASS = 'block size-[1.125rem] shrink-0 opacity-90';
+const NAV_CHILD_ICON_CLASS = 'block size-4 shrink-0 opacity-90';
 
 const isPathInSection = (pathname: string, item: AdminNavItem): boolean => {
   if (pathname === item.href || pathname.startsWith(`${item.href}/`)) {
@@ -40,14 +44,16 @@ const initialOpenSections = (pathname: string): Record<string, boolean> => {
 
 const navLinkClassName = (active: boolean, collapsed: boolean, nested = false): string =>
   cn(
-    'flex items-center rounded-pill font-medium tracking-wide transition-colors',
+    'relative z-10 flex items-center justify-start rounded-pill font-medium tracking-wide',
+    'transition-colors duration-[var(--duration-base)] ease-[var(--ease-out-premium)]',
+    'motion-reduce:transition-none',
     collapsed
-      ? 'justify-center px-2 py-2'
+      ? 'h-10 justify-center px-2'
       : nested
-        ? 'gap-2.5 px-3.5 py-1.5 text-sm'
-        : 'gap-2.5 px-3.5 py-2 text-[0.9375rem]',
+        ? 'h-9 gap-2.5 px-3.5 text-sm leading-none'
+        : 'h-10 gap-2.5 px-3.5 text-[0.9375rem] leading-none',
     active
-      ? 'bg-surface-elevated text-brand-secondary shadow-xs'
+      ? 'text-brand-secondary'
       : 'text-on-dark/85 hover:bg-on-dark/10 hover:text-on-dark',
   );
 
@@ -91,6 +97,11 @@ export const AdminNav = () => {
     setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
+  const openSectionsKey = ADMIN_SECTION_NAV_ITEMS.map(
+    (item) => `${item.key}:${openSections[item.key] ? '1' : '0'}`,
+  ).join('|');
+  const measureKey = `${pathname}|${railCollapsed ? '1' : '0'}|${openSectionsKey}`;
+
   const renderNavItem = (item: AdminNavItem) => {
     const active = isItemActive(item.href);
     const Icon = item.icon;
@@ -105,6 +116,7 @@ export const AdminNav = () => {
           className={navLinkClassName(active, railCollapsed)}
           aria-label={railCollapsed ? label : undefined}
           title={railCollapsed ? label : undefined}
+          {...(active ? { [PORTAL_NAV_ACTIVE_ATTR]: 'true' } : {})}
         >
           <Icon className={NAV_ICON_CLASS} aria-hidden />
           {railCollapsed ? <span className="sr-only">{label}</span> : label}
@@ -121,6 +133,7 @@ export const AdminNav = () => {
           className={navLinkClassName(active, railCollapsed)}
           aria-label={label}
           title={label}
+          {...(active ? { [PORTAL_NAV_ACTIVE_ATTR]: 'true' } : {})}
         >
           <Icon className={NAV_ICON_CLASS} aria-hidden />
           <span className="sr-only">{label}</span>
@@ -133,14 +146,20 @@ export const AdminNav = () => {
 
     return (
       <div key={item.href} className="flex flex-col gap-0.5">
-        <div className={cn(navLinkClassName(active, railCollapsed), 'pr-2')}>
-          <Link href={item.href} className="flex min-w-0 flex-1 items-center gap-2.5 text-inherit">
+        <div
+          className={cn(navLinkClassName(active, railCollapsed), 'pr-1.5')}
+          {...(active ? { [PORTAL_NAV_ACTIVE_ATTR]: 'true' } : {})}
+        >
+          <Link
+            href={item.href}
+            className="flex h-full min-w-0 flex-1 items-center gap-2.5 leading-none text-inherit"
+          >
             <Icon className={NAV_ICON_CLASS} aria-hidden />
             <span className="truncate">{t(item.key)}</span>
           </Link>
           <button
             type="button"
-            className="inline-flex size-8 shrink-0 items-center justify-center rounded-pill text-inherit hover:bg-on-dark/10"
+            className="inline-flex size-7 shrink-0 items-center justify-center rounded-pill leading-none text-inherit hover:bg-on-dark/10"
             aria-expanded={sectionOpen}
             aria-controls={subnavId}
             aria-label={t(item.key)}
@@ -150,7 +169,7 @@ export const AdminNav = () => {
           >
             <ChevronDown
               className={cn(
-                'size-4 transition-transform duration-[var(--duration-base)] ease-[var(--ease-out-premium)] motion-reduce:transition-none',
+                'block size-4 transition-transform duration-[var(--duration-base)] ease-[var(--ease-out-premium)] motion-reduce:transition-none',
                 sectionOpen ? 'rotate-0' : '-rotate-90',
               )}
               aria-hidden
@@ -180,6 +199,7 @@ export const AdminNav = () => {
                     href={child.href}
                     className={navLinkClassName(childActive, railCollapsed, true)}
                     tabIndex={sectionOpen ? undefined : -1}
+                    {...(childActive ? { [PORTAL_NAV_ACTIVE_ATTR]: 'true' } : {})}
                   >
                     <ChildIcon className={NAV_CHILD_ICON_CLASS} aria-hidden />
                     {t(child.key)}
@@ -195,13 +215,21 @@ export const AdminNav = () => {
 
   return (
     <nav aria-label={t('label')} className="flex h-full min-h-0 flex-col gap-1">
-      <div className="scrollbar-none flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto overscroll-contain">
+      <PortalNavRailGroup
+        measureKey={measureKey}
+        className="scrollbar-none min-h-0 flex-1 overflow-y-auto overscroll-contain"
+        gapClassName="gap-0.5"
+      >
         {ADMIN_PRIMARY_NAV_ITEMS.map(renderNavItem)}
-      </div>
+      </PortalNavRailGroup>
 
-      <div className="mt-auto shrink-0 border-t border-on-dark/15 pt-2.5">
+      <PortalNavRailGroup
+        measureKey={measureKey}
+        className="mt-auto shrink-0 border-t border-on-dark/15 pt-2.5"
+        gapClassName="gap-0.5"
+      >
         {renderNavItem(ADMIN_SETTINGS_NAV_ITEM)}
-      </div>
+      </PortalNavRailGroup>
     </nav>
   );
 };

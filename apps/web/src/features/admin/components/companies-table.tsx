@@ -12,6 +12,7 @@ import { useTranslations } from 'next-intl';
 import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
 import { AdminListCardLogo } from '@/shared/ui/admin-list-card-logo';
 import { cn } from '@/shared/ui/cn';
+import { LIST_CARD_LIFT_CLASS, ListTableReveal } from '@/shared/ui/motion';
 import { VIEW_MODE_CARDS, type ViewMode } from '@/shared/ui/view-mode';
 import { CompanyStatusBadge } from '@/features/admin/components/company-status-badge';
 import { ReadinessProgressRing } from '@/features/readiness/components/readiness-progress-ring';
@@ -75,25 +76,27 @@ const CompanyCard = ({ company, readiness, onSelect }: CompanyCardProps) => {
       className={cn(
         'flex h-full w-full flex-col gap-3 overflow-hidden border border-border/80',
         'bg-surface-elevated p-3.5 text-left shadow-card',
-        'transition-[box-shadow,transform] duration-[var(--duration-fast)]',
-        'hover:shadow-sm active:scale-[0.995]',
+        LIST_CARD_LIFT_CLASS,
         CARD_RADIUS_CLASS,
       )}
     >
       <header className="flex flex-col gap-1.5">
-        <div className="flex min-w-0 items-center gap-2">
-          <div className="relative size-8 shrink-0 overflow-hidden rounded-full bg-surface ring-1 ring-border">
-            {company.logoUrl ? (
-              <Image src={company.logoUrl} alt="" fill className="object-cover" sizes="32px" />
-            ) : (
-              <span className="absolute inset-0 flex items-center justify-center text-[10px] font-semibold text-ink-muted">
-                {initials}
-              </span>
-            )}
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex min-w-0 items-center gap-2">
+            <div className="relative size-8 shrink-0 overflow-hidden rounded-full bg-surface ring-1 ring-border">
+              {company.logoUrl ? (
+                <Image src={company.logoUrl} alt="" fill className="object-cover" sizes="32px" />
+              ) : (
+                <span className="absolute inset-0 flex items-center justify-center text-[10px] font-semibold text-ink-muted">
+                  {initials}
+                </span>
+              )}
+            </div>
+            <p className="min-w-0 truncate text-sm font-medium text-ink-secondary">
+              {t(`types.${company.type}`)}
+            </p>
           </div>
-          <p className="min-w-0 truncate text-sm font-medium text-ink-secondary">
-            {t(`types.${company.type}`)}
-          </p>
+          <CompanyStatusBadge status={company.status} className="shrink-0" />
         </div>
         <h2 className="truncate text-base font-semibold tracking-tight text-ink">{company.name}</h2>
       </header>
@@ -191,48 +194,54 @@ export const CompaniesTable = ({
   }
 
   return (
-    <div className="overflow-x-auto rounded-sm border border-border">
-      <table className="w-full min-w-[40rem] border-collapse text-sm">
-        <thead className="bg-surface text-xs uppercase tracking-wide text-ink-muted">
-          <tr>
-            <th className="px-3 py-2.5 text-left font-medium">{t('columns.name')}</th>
-            <th className="px-3 py-2.5 text-center font-medium">{t('columns.type')}</th>
-            <th className="px-3 py-2.5 text-center font-medium">{t('columns.status')}</th>
-            <th className="px-3 py-2.5 text-right font-medium">{t('columns.createdAt')}</th>
-          </tr>
-        </thead>
-        <tbody>
-          {companies.map((company) => (
-            <tr key={company.id} className="border-t border-border hover:bg-surface/60">
-              <td className="px-3 py-2.5 align-middle">
-                <div className="flex items-center gap-3">
-                  <AdminListCardLogo name={company.name} logoUrl={company.logoUrl} shape="circle" />
-                  <button
-                    type="button"
-                    className="font-medium text-brand hover:underline"
-                    onClick={() => {
-                      onSelectCompany(company.id);
-                    }}
-                  >
-                    {company.name}
-                  </button>
-                </div>
-              </td>
-              <td className="px-3 py-2.5 align-middle text-center text-ink-secondary">
-                {t(`types.${company.type}`)}
-              </td>
-              <td className="px-3 py-2.5 align-middle">
-                <div className="flex justify-center">
-                  <CompanyStatusBadge status={company.status} />
-                </div>
-              </td>
-              <td className="px-3 py-2.5 align-middle text-right tabular-nums text-ink-secondary whitespace-nowrap">
-                {company.createdAt.slice(0, 10)}
-              </td>
+    <ListTableReveal>
+      <div className="overflow-x-auto rounded-sm border border-border">
+        <table className="w-full min-w-[40rem] border-collapse text-sm">
+          <thead className="bg-surface text-xs uppercase tracking-wide text-ink-muted">
+            <tr>
+              <th className="px-3 py-2.5 text-left font-medium">{t('columns.name')}</th>
+              <th className="px-3 py-2.5 text-center font-medium">{t('columns.type')}</th>
+              <th className="px-3 py-2.5 text-center font-medium">{t('columns.status')}</th>
+              <th className="px-3 py-2.5 text-right font-medium">{t('columns.createdAt')}</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {companies.map((company) => (
+              <tr key={company.id} className="border-t border-border hover:bg-surface/60">
+                <td className="px-3 py-2.5 align-middle">
+                  <div className="flex items-center gap-3">
+                    <AdminListCardLogo
+                      name={company.name}
+                      logoUrl={company.logoUrl}
+                      shape="circle"
+                    />
+                    <button
+                      type="button"
+                      className="font-medium text-brand hover:underline"
+                      onClick={() => {
+                        onSelectCompany(company.id);
+                      }}
+                    >
+                      {company.name}
+                    </button>
+                  </div>
+                </td>
+                <td className="px-3 py-2.5 align-middle text-center text-ink-secondary">
+                  {t(`types.${company.type}`)}
+                </td>
+                <td className="px-3 py-2.5 align-middle">
+                  <div className="flex justify-center">
+                    <CompanyStatusBadge status={company.status} />
+                  </div>
+                </td>
+                <td className="px-3 py-2.5 align-middle text-right tabular-nums text-ink-secondary whitespace-nowrap">
+                  {company.createdAt.slice(0, 10)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </ListTableReveal>
   );
 };

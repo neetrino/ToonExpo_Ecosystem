@@ -59,7 +59,7 @@ export const GeoMapCreatePanel = ({
   const readyToPlace = Boolean(draft?.mediaAssetId);
 
   return (
-    <section className="space-y-3 border-t border-border pt-4">
+    <section id="geo-map-create-panel" className="space-y-3 border-t border-border pt-4">
       <h2 className="text-[11px] uppercase tracking-[0.16em] text-ink-muted">
         {t('create.title')}
       </h2>

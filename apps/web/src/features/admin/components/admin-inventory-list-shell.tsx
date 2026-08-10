@@ -1,5 +1,6 @@
 'use client';
 
+import type { LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
@@ -33,6 +34,7 @@ type AdminInventoryListShellProps = {
   page: number;
   totalPages: number;
   children: ReactNode;
+  icon?: LucideIcon | undefined;
   /** Floors / apartments hubs: company + building cascading filters. */
   showBuildingFilter?: boolean | undefined;
   headerActions?: ReactNode | undefined;
@@ -63,6 +65,7 @@ export const AdminInventoryListShell = ({
   page,
   totalPages,
   children,
+  icon,
   showBuildingFilter = false,
   headerActions,
   viewMode,
@@ -174,6 +177,7 @@ export const AdminInventoryListShell = ({
       <ListPageHeader
         title={title}
         subtitle={subtitle}
+        {...(icon ? { icon } : {})}
         search={search}
         searchPlaceholder={tCommon('searchPlaceholder')}
         searchAriaLabel={tCommon('searchLabel')}

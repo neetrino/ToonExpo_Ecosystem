@@ -13,7 +13,7 @@ export const resolvePostLoginPath = (user: UserResponse, returnUrl?: string | nu
 
   switch (user.accountType) {
     case 'entrance_staff':
-      return '/checkin';
+      return '/staff/checkin';
     case 'platform_admin':
       return '/admin';
     case 'company_member':

@@ -1024,18 +1024,42 @@
     },
     "dashboard": {
       "welcome": "Здравствуйте, {name}",
+      "subtitle": "Ваша активность на выставке, избранное и заявки — в одном месте.",
       "qrLabel": "Мой QR",
       "qrReady": "Готов",
+      "scansLabel": "Сканы QR",
       "scansHint": "{count, plural, =0 {Сканов пока нет} one {# скан} few {# скана} other {# сканов}}",
       "favoritesLabel": "Избранное",
       "favoritesHint": "Сохранено из каталога",
       "requestsLabel": "Заявки",
       "requestsHint": "С застройщиками",
-      "checkinLabel": "Регистрация",
+      "checkinLabel": "Check-in",
       "checkinCheckedIn": "Пройден",
       "checkinPending": "Ещё нет",
       "checkinNone": "Нет события",
-      "settingsHint": "Данные профиля и пароль можно изменить в Настройках."
+      "checkinActiveHint": "Статус активной выставки для вашего visitor QR.",
+      "settingsHint": "Данные профиля и пароль можно изменить в Настройках.",
+      "viewAll": "Смотреть все",
+      "favoriteProject": "Проект",
+      "favoriteApartment": "Квартира",
+      "sections": {
+        "recentRequests": "Недавние заявки",
+        "recentScans": "Недавние сканы QR",
+        "savedFavorites": "Избранное",
+        "checkinStatus": "Check-in и быстрые ссылки"
+      },
+      "empty": {
+        "requests": "Заявок пока нет. Откройте каталог и отправьте интерес.",
+        "scans": "Сканов пока нет. Покажите QR застройщикам на выставке.",
+        "favorites": "Пока пусто. Добавляйте проекты в избранное в каталоге.",
+        "checkin": "Сейчас нет активного check-in на выставке."
+      },
+      "quickLinks": {
+        "qr": "Мой QR",
+        "favorites": "Избранное",
+        "requests": "Заявки",
+        "settings": "Настройки"
+      }
     },
     "accountTypes": {
       "buyer": "Покупатель / посетитель",
@@ -1127,6 +1151,8 @@
       "empty": "Вы ещё не проходили check-in ни на одной выставке.",
       "openQr": "Открыть мой QR",
       "noActiveEvent": "Сейчас нет активной выставки.",
+      "previewBadge": "Пример превью",
+      "previewHint": "Реального check-in ещё нет — это демо-данные, чтобы вы увидели страницу с активным событием и историей.",
       "current": {
         "title": "Текущая выставка",
         "checkedIn": "Вы прошли check-in",
@@ -1356,10 +1382,11 @@
     },
     "interactiveMapping": {
       "title": "Интерактивная карта",
-      "subtitle": "Районы, здания, этажи и квартиры — в четыре фазы.",
+      "subtitle": "{count, plural, =0 {Нет проектов} one {# проект} few {# проекта} other {# проектов}}",
       "loading": "Загрузка…",
       "error": "Не удалось загрузить данные интерактивной карты.",
       "empty": "Проектов пока нет. Создайте проект, чтобы начать.",
+      "noResults": "Нет проектов по запросу «{query}».",
       "existing": "Проекты",
       "createProject": "Создать проект",
       "open": "Открыть",
@@ -1370,6 +1397,14 @@
       "backToWizard": "Мастер",
       "activePhase": "Сейчас фаза {phase}",
       "allPhasesDone": "Все фазы завершены",
+      "filters": {
+        "searchPlaceholder": "Поиск по проекту, компании или городу"
+      },
+      "pagination": {
+        "previous": "Назад",
+        "next": "Далее",
+        "ariaLabel": "Пагинация проектов интерактивной карты"
+      },
       "status": {
         "locked": "Заблокировано",
         "active": "Сделайте это сейчас",
@@ -1515,6 +1550,21 @@
     "analytics": {
       "title": "Аналитика",
       "subtitle": "Сводка по активности и эффективности платформы",
+      "viewAll": "Смотреть все",
+      "trend": {
+        "today": "к предыдущему дню",
+        "last7Days": "к предыдущим 7 дням",
+        "last30Days": "к предыдущим 30 дням"
+      },
+      "chart": {
+        "users": "Пользователи",
+        "projects": "Проекты"
+      },
+      "growth": {
+        "newUsers": "Новые пользователи",
+        "newProjects": "Новые проекты",
+        "newApartments": "Новые квартиры"
+      },
       "sections": {
         "platformActivity": "Активность платформы",
         "topProjects": "Топ проектов по просмотрам",
@@ -2394,6 +2444,7 @@
         "title": "Название",
         "bank": "Банк",
         "rate": "Ставка",
+        "minDown": "Взнос",
         "publication": "Публикация",
         "actions": "Действия"
       },
@@ -2724,11 +2775,25 @@
     "analytics": {
       "title": "Аналитика",
       "subtitle": "Показатели вашей компании за выбранный период",
+      "viewAll": "Смотреть все",
+      "trend": {
+        "today": "за выбранный период",
+        "last7Days": "за выбранный период",
+        "last30Days": "за выбранный период"
+      },
+      "kpis": {
+        "requests": "Заявки",
+        "favorites": "Избранное",
+        "deals": "CRM-сделки",
+        "available": "Свободные квартиры",
+        "reserved": "Забронированные",
+        "sold": "Проданные"
+      },
       "sections": {
         "topProjects": "Топ проектов по просмотрам",
         "topApartments": "Топ квартир по просмотрам",
         "favorites": "Избранное",
-        "topProjectsByFavorites": "Мои топ проекты по избранному",
+        "topProjectsByFavorites": "Топ проектов по избранному",
         "requests": "Заявки",
         "dealsByStatus": "CRM-сделки по статусу",
         "apartmentSales": "Статус продаж квартир",
@@ -2753,14 +2818,48 @@
     },
     "dashboard": {
       "title": "Дашборд",
-      "subtitle": "Сводка по проектам и инвентарю компании",
+      "subtitle": "Проекты, CRM-воронка и активность компании — в одном месте.",
       "loading": "Загрузка…",
       "error": "Не удалось загрузить дашборд. Попробуйте ещё раз.",
+      "viewAll": "Смотреть все",
+      "noProject": "Без проекта",
+      "dealFallback": "Сделка без названия",
+      "projectMeta": "{buildings} зданий · {apartments} квартир",
       "stats": {
         "projects": "Проекты",
         "published": "Опубликовано",
         "drafts": "Черновики",
-        "apartments": "Квартиры"
+        "apartments": "Квартиры",
+        "openDeals": "Открытые сделки",
+        "requests": "Заявки",
+        "favorites": "Избранное"
+      },
+      "hints": {
+        "projects": "Все проекты компании",
+        "published": "В публичном каталоге",
+        "openDeals": "{count, plural, =0 {Сегодня не создано} one {# создана сегодня} few {# созданы сегодня} other {# создано сегодня}}",
+        "apartments": "По загруженным проектам"
+      },
+      "sections": {
+        "recentProjects": "Недавние проекты",
+        "recentDeals": "Недавние CRM-сделки",
+        "crmPipeline": "CRM-воронка",
+        "topProjects": "Топ проектов по просмотрам",
+        "shortcuts": "Быстрые ссылки и активность"
+      },
+      "empty": {
+        "projects": "Проектов пока нет. Создайте первый.",
+        "deals": "Сделок пока нет. Отсканируйте visitor QR или добавьте Quick Lead.",
+        "pipeline": "Сейчас нет открытых сделок в воронке.",
+        "topProjects": "За период пока нет просмотров проектов."
+      },
+      "quickLinks": {
+        "projects": "Проекты",
+        "crm": "CRM",
+        "team": "Команда",
+        "scanner": "Сканер",
+        "readiness": "Готовность",
+        "analytics": "Аналитика"
       },
       "links": {
         "projects": "Все проекты",
@@ -3279,6 +3378,8 @@
       "error": "Не удалось загрузить готовность. Попробуйте снова.",
       "emptyTitle": "Готовности пока нет",
       "empty": "Готовность ещё не оценена. Оценщик опубликует рекомендации здесь, когда будет готово.",
+      "previewBadge": "Пример превью",
+      "previewHint": "Реальной оценки ещё нет — это демо-данные, чтобы вы увидели, как выглядит readiness в портале.",
       "companyAssessment": "Готовность компании",
       "overallScore": "Общий балл",
       "kpiScoreLabel": "Балл готовности",

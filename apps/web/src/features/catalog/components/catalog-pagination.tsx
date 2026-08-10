@@ -1,5 +1,8 @@
-import { Link } from "@/i18n/navigation";
-import { cn } from "@/shared/ui/cn";
+'use client';
+
+import { Link } from '@/i18n/navigation';
+import { cn } from '@/shared/ui/cn';
+import { LIST_PAGINATION_DELAY_MS, Reveal } from '@/shared/ui/motion';
 
 type PaginationProps = {
   page: number;
@@ -31,39 +34,41 @@ export const CatalogPagination = ({
   const hasNext = page < totalPages;
 
   return (
-    <nav
-      className={cn("flex items-center justify-between gap-4", className)}
-      aria-label={ariaLabel}
-    >
-      {hasPrevious ? (
-        <Link
-          href={buildHref(page - 1)}
-          className="rounded-sm border border-border px-4 py-2 text-sm font-medium text-ink hover:bg-surface"
-        >
-          {previousLabel}
-        </Link>
-      ) : (
-        <span className="rounded-sm border border-transparent px-4 py-2 text-sm text-ink-muted">
-          {previousLabel}
-        </span>
-      )}
+    <Reveal force delayMs={LIST_PAGINATION_DELAY_MS}>
+      <nav
+        className={cn('flex items-center justify-between gap-4', className)}
+        aria-label={ariaLabel}
+      >
+        {hasPrevious ? (
+          <Link
+            href={buildHref(page - 1)}
+            className="rounded-sm border border-border px-4 py-2 text-sm font-medium text-ink hover:bg-surface"
+          >
+            {previousLabel}
+          </Link>
+        ) : (
+          <span className="rounded-sm border border-transparent px-4 py-2 text-sm text-ink-muted">
+            {previousLabel}
+          </span>
+        )}
 
-      <span className="text-sm text-ink-secondary">
-        {page} / {totalPages}
-      </span>
-
-      {hasNext ? (
-        <Link
-          href={buildHref(page + 1)}
-          className="rounded-sm border border-border px-4 py-2 text-sm font-medium text-ink hover:bg-surface"
-        >
-          {nextLabel}
-        </Link>
-      ) : (
-        <span className="rounded-sm border border-transparent px-4 py-2 text-sm text-ink-muted">
-          {nextLabel}
+        <span className="text-sm text-ink-secondary">
+          {page} / {totalPages}
         </span>
-      )}
-    </nav>
+
+        {hasNext ? (
+          <Link
+            href={buildHref(page + 1)}
+            className="rounded-sm border border-border px-4 py-2 text-sm font-medium text-ink hover:bg-surface"
+          >
+            {nextLabel}
+          </Link>
+        ) : (
+          <span className="rounded-sm border border-transparent px-4 py-2 text-sm text-ink-muted">
+            {nextLabel}
+          </span>
+        )}
+      </nav>
+    </Reveal>
   );
 };

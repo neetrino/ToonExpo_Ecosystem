@@ -1,6 +1,7 @@
 'use client';
 
 import type { AdminFloorListItem } from '@toonexpo/contracts';
+import { Layers } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 
@@ -64,6 +65,7 @@ export const AdminFloorsListPage = () => {
         total={response?.meta.total ?? 0}
         page={response?.meta.page ?? page}
         totalPages={response?.meta.totalPages ?? 0}
+        icon={Layers}
         showBuildingFilter
         viewMode={viewMode}
         onViewModeChange={setViewMode}

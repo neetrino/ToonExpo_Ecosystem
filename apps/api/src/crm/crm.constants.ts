@@ -6,7 +6,7 @@
 import { CrmDealStatus } from '@toonexpo/db';
 
 /** Default page size for CRM deal lists. */
-export const CRM_DEFAULT_PAGE_SIZE = 20;
+export const CRM_DEFAULT_PAGE_SIZE = 18;
 
 /** Maximum page size for CRM deal lists / Kanban board fetch. */
 export const CRM_MAX_PAGE_SIZE = 100;

@@ -4,7 +4,7 @@
  */
 
 /** Default page size for public project lists. */
-export const CATALOG_DEFAULT_PAGE_SIZE = 20;
+export const CATALOG_DEFAULT_PAGE_SIZE = 18;
 
 /** Maximum page size clients may request. */
 export const CATALOG_MAX_PAGE_SIZE = 50;
