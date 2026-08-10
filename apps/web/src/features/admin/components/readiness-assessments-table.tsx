@@ -47,7 +47,7 @@ export const ReadinessAssessmentsTable = ({
 
   if (viewMode === VIEW_MODE_CARDS) {
     return (
-      <AdminListCardGrid className="gap-4 xl:grid-cols-4">
+      <AdminListCardGrid className="gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {assessments.map((assessment) => (
           <AdminReadinessAssessmentCard
             key={assessment.id}

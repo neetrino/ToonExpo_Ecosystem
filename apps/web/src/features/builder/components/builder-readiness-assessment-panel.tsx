@@ -150,7 +150,10 @@ export const BuilderReadinessAssessmentPanel = ({
 
   return (
     <div className="flex flex-col gap-8">
-      <BuilderReadinessOverviewCard assessment={assessment} />
+      {/* Same column width as `/admin/companies` card grid. */}
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <BuilderReadinessOverviewCard assessment={assessment} />
+      </div>
 
       <div className="flex flex-col gap-8">
         {assessment.scores.map((score) => (
