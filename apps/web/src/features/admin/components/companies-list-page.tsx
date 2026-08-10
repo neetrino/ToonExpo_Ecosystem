@@ -22,7 +22,11 @@ import { usePathname, useRouter } from '@/i18n/navigation';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { Button } from '@/shared/ui/button';
+import { Reveal } from '@/shared/ui/motion';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
+
+const CONTENT_BASE_DELAY_MS = 80;
+const PAGINATION_DELAY_MS = 280;
 
 const parsePage = (raw: string | null): number => {
   const parsed = Number(raw);
@@ -87,70 +91,74 @@ export const CompaniesListPage = () => {
     setSelectedCompanyId(companyId);
   };
 
-  if (query.isLoading) {
-    return <p className="text-sm text-ink-secondary">{t('loading')}</p>;
-  }
-
-  if (query.isError) {
-    return (
-      <p role="alert" className="text-sm text-danger">
-        {t('error')}
-      </p>
-    );
-  }
-
   const response = query.data;
-  if (!response) {
-    return null;
-  }
+  const totalCount = response?.meta.total ?? 0;
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex flex-col gap-1">
-          <h1 className="text-page-title text-ink">{t('title')}</h1>
-          <p className="text-sm text-ink-secondary">
-            {t('subtitle', { count: response.meta.total })}
-          </p>
+      <Reveal force>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-col gap-1">
+            <h1 className="text-page-title text-ink">{t('title')}</h1>
+            <p className="text-sm text-ink-secondary">
+              {query.isLoading
+                ? t('loading')
+                : t('subtitle', { count: totalCount })}
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <ViewModeToggle value={viewMode} onChange={setViewMode} />
+            <Button
+              type="button"
+              size="sm"
+              variant="secondary"
+              className="shrink-0"
+              onClick={() => {
+                setSelectedCompanyId(null);
+                setCreateSheetOpen(true);
+              }}
+            >
+              <AddActionLabel>{t('newCompany')}</AddActionLabel>
+            </Button>
+          </div>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <ViewModeToggle value={viewMode} onChange={setViewMode} />
-          <Button
-            type="button"
-            size="sm"
-            variant="secondary"
-            className="shrink-0"
-            onClick={() => {
-              setSelectedCompanyId(null);
-              setCreateSheetOpen(true);
-            }}
-          >
-            <AddActionLabel>{t('newCompany')}</AddActionLabel>
-          </Button>
-        </div>
-      </div>
+      </Reveal>
 
-      {response.data.length === 0 ? (
-        <p className="text-sm text-ink-secondary">{t('empty')}</p>
+      {query.isLoading ? null : query.isError || !response ? (
+        <p role="alert" className="text-sm text-danger">
+          {t('error')}
+        </p>
       ) : (
-        <CompaniesTable
-          companies={response.data}
-          readinessByCompanyId={readinessByCompanyId}
-          onSelectCompany={handleSelectCompany}
-          viewMode={effectiveViewMode}
-        />
-      )}
+        <>
+          {response.data.length === 0 ? (
+            <Reveal force delayMs={CONTENT_BASE_DELAY_MS}>
+              <p className="text-sm text-ink-secondary">{t('empty')}</p>
+            </Reveal>
+          ) : (
+            <CompaniesTable
+              companies={response.data}
+              readinessByCompanyId={readinessByCompanyId}
+              onSelectCompany={handleSelectCompany}
+              viewMode={effectiveViewMode}
+            />
+          )}
 
-      <CatalogPagination
-        page={response.meta.page}
-        totalPages={response.meta.totalPages}
-        buildHref={(nextPage) =>
-          nextPage <= 1 ? '/admin/companies' : `/admin/companies?page=${nextPage}`
-        }
-        previousLabel={t('pagination.previous')}
-        nextLabel={t('pagination.next')}
-        ariaLabel={t('pagination.ariaLabel')}
-      />
+          <Reveal force delayMs={PAGINATION_DELAY_MS}>
+            <CatalogPagination
+              page={response.meta.page}
+              totalPages={response.meta.totalPages}
+              buildHref={(nextPage) =>
+                nextPage <= 1
+                  ? '/admin/companies'
+                  : `/admin/companies?page=${nextPage}`
+              }
+              previousLabel={t('pagination.previous')}
+              nextLabel={t('pagination.next')}
+              ariaLabel={t('pagination.ariaLabel')}
+            />
+          </Reveal>
+        </>
+      )}
 
       <CreateCompanySheet open={createSheetOpen} onClose={handleCloseCreateSheet} />
       <CompanyDetailSheet
