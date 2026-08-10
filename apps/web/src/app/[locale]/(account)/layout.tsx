@@ -9,7 +9,8 @@ type AccountGroupLayoutProps = {
 
 /**
  * Shared buyer account chrome — keeps AccountShell (and mobile hub stack) mounted
- * across dashboard / favorites / requests / settings / QR so sub-pages can slide over.
+ * across dashboard / favorites / requests / settings / QR / check-in so sub-pages
+ * can slide over and entrance motion stays consistent.
  */
 export default async function AccountGroupLayout({ children, params }: AccountGroupLayoutProps) {
   const { locale } = await params;

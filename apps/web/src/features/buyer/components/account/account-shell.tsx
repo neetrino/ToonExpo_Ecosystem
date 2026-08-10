@@ -36,6 +36,11 @@ export const AccountShell = async ({ children, locale }: AccountShellProps) => {
     return null;
   }
 
+  if (user.accountType === 'entrance_staff') {
+    redirect({ href: '/staff/checkin', locale });
+    return null;
+  }
+
   const t = await getTranslations('Profile');
 
   return (

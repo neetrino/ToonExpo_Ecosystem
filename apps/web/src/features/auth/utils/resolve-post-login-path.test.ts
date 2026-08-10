@@ -29,7 +29,7 @@ describe('resolvePostLoginPath', () => {
   });
 
   it('sends entrance staff to check-in by default', () => {
-    expect(resolvePostLoginPath(user('entrance_staff'), null)).toBe('/checkin');
+    expect(resolvePostLoginPath(user('entrance_staff'), null)).toBe('/staff/checkin');
   });
 
   it('sends builder company members to the builder portal', () => {

@@ -1,26 +1,20 @@
 import { headers } from 'next/headers';
-import { notFound } from 'next/navigation';
 import { setRequestLocale } from 'next-intl/server';
 import type { ReactNode } from 'react';
 
-import { AccountShell } from '@/features/buyer/components/account/account-shell';
-import { isBuyerAccount } from '@/features/buyer/utils/is-buyer-account';
 import { getMeOrNullCached as getMeOrNull } from '@/features/auth/api/get-me-or-null-cached';
 import { redirect } from '@/i18n/navigation';
 import { SiteHeader } from '@/shared/ui/site-header';
 
-type CheckinLayoutProps = {
+type StaffCheckinLayoutProps = {
   children: ReactNode;
   params: Promise<{ locale: string }>;
 };
 
 /**
- * `/checkin` shell:
- * - buyers → account rail (status page)
- * - entrance staff → scanner under public SiteHeader
- * - platform admins → `/admin/checkin`
+ * Entrance-staff scanner chrome (public site header — not the buyer account rail).
  */
-export default async function CheckinLayout({ children, params }: CheckinLayoutProps) {
+export default async function StaffCheckinLayout({ children, params }: StaffCheckinLayoutProps) {
   const { locale } = await params;
   setRequestLocale(locale);
 
@@ -29,7 +23,7 @@ export default async function CheckinLayout({ children, params }: CheckinLayoutP
   const user = await getMeOrNull(cookieHeader);
 
   if (!user) {
-    redirect({ href: '/auth/login?returnUrl=%2Fcheckin', locale });
+    redirect({ href: '/auth/login?returnUrl=%2Fstaff%2Fcheckin', locale });
     return null;
   }
 
@@ -38,12 +32,9 @@ export default async function CheckinLayout({ children, params }: CheckinLayoutP
     return null;
   }
 
-  if (isBuyerAccount(user)) {
-    return <AccountShell locale={locale}>{children}</AccountShell>;
-  }
-
   if (user.accountType !== 'entrance_staff') {
-    notFound();
+    redirect({ href: '/checkin', locale });
+    return null;
   }
 
   return (

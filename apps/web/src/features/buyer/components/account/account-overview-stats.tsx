@@ -7,6 +7,7 @@ import { AccountStatCard } from '@/features/buyer/components/account/account-sta
 import { useBuyerQrScansQuery, useBuyerRequestsQuery } from '@/features/buyer/hooks/use-buyer';
 import { useBuyerCheckInQuery } from '@/features/buyer/hooks/use-buyer-checkin';
 import { useBuyerFavoritesQuery } from '@/features/buyer/hooks/use-favorites';
+import { LIST_CARD_STAGGER_MS, LIST_CONTENT_BASE_DELAY_MS, StaggerGroup } from '@/shared/ui/motion';
 import { Skeleton } from '@/shared/ui/skeleton';
 
 /**
@@ -47,7 +48,12 @@ export const AccountOverviewStats = () => {
     : t('checkinNone');
 
   return (
-    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+    <StaggerGroup
+      force
+      staggerMs={LIST_CARD_STAGGER_MS}
+      baseDelayMs={LIST_CONTENT_BASE_DELAY_MS}
+      className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4"
+    >
       <AccountStatCard
         href="/qr"
         icon={QrCode}
@@ -76,6 +82,6 @@ export const AccountOverviewStats = () => {
         value={checkInValue}
         hint={checkInQuery.data?.current?.eventName}
       />
-    </div>
+    </StaggerGroup>
   );
 };

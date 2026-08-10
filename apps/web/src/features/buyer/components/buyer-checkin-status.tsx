@@ -31,6 +31,7 @@ const CheckInHistoryList = ({ items }: CheckInHistoryListProps) => {
       {items.map((item, index) => (
         <Reveal
           key={`${item.eventId}-${item.checkedInAt}`}
+          force
           delayMs={Math.min(index, 6) * 40}
           as="li"
         >
@@ -107,7 +108,7 @@ export const BuyerCheckInStatus = () => {
   return (
     <div className="flex flex-col gap-8">
       {current ? (
-        <Reveal>
+        <Reveal force>
           <section className="flex flex-col gap-3" aria-labelledby="checkin-current-heading">
             <h2 id="checkin-current-heading" className="text-base font-semibold text-ink">
               {t('current.title')}
