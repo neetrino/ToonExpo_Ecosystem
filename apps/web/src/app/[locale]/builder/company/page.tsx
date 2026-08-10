@@ -1,5 +1,4 @@
 import type { ReactNode } from 'react';
-import { Building2 } from 'lucide-react';
 import { headers } from 'next/headers';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
@@ -40,7 +39,7 @@ const CompanyPageShell = ({
   children: ReactNode;
 }) => (
   <div className="flex flex-col gap-6">
-    <PageTitleBlock title={title} subtitle={subtitle} icon={Building2} />
+    <PageTitleBlock title={title} subtitle={subtitle} iconName="company" />
     {children}
   </div>
 );
