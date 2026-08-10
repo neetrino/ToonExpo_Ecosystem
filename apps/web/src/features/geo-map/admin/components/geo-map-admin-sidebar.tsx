@@ -1,6 +1,7 @@
 'use client';
 
 import type { AdminGeoMapModelItem, UpdateGeoMapModelRequest } from '@toonexpo/contracts';
+import { Globe2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { ReactNode } from 'react';
 
@@ -17,6 +18,7 @@ import type { GeoMapTransformDraft } from '@/features/geo-map/admin/components/g
 import type { GeoMapProjectOption } from '@/features/geo-map/admin/utils/available-projects';
 import { Button } from '@/shared/ui/button';
 import { Reveal } from '@/shared/ui/motion';
+import { PageTitleIcon } from '@/shared/ui/page-title-icon';
 
 type GeoMapAdminSidebarProps = {
   models: AdminGeoMapModelItem[];
@@ -73,9 +75,12 @@ export const GeoMapAdminSidebar = ({
     <aside className="flex h-full min-h-0 w-full flex-col gap-4 overflow-y-auto border-border bg-surface-elevated p-4 lg:border-r">
       <Reveal force>
         <div className="flex flex-wrap items-start justify-between gap-2">
-          <div>
-            <h1 className="font-display text-2xl text-ink">{t('title')}</h1>
-            <p className="mt-1 text-xs text-ink-muted">{t('subtitle')}</p>
+          <div className="flex min-w-0 items-start gap-3">
+            <PageTitleIcon icon={Globe2} />
+            <div>
+              <h1 className="font-display text-2xl text-ink">{t('title')}</h1>
+              <p className="mt-1 text-xs text-ink-muted">{t('subtitle')}</p>
+            </div>
           </div>
           {headerActions}
         </div>

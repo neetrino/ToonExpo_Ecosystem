@@ -1,10 +1,12 @@
 'use client';
 
+import { ClipboardCheck } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import { BuilderReadinessAssessmentPanel } from '@/features/builder/components/builder-readiness-assessment-panel';
 import { usePortalReadinessQuery } from '@/features/builder/hooks/use-portal-readiness';
 import { EmptyState } from '@/shared/ui/empty-state';
+import { PageTitleBlock } from '@/shared/ui/page-title-icon';
 
 /**
  * Builder portal readiness page — KPI overview + criterion detail (read-only).
@@ -29,10 +31,7 @@ export const BuilderReadinessPage = () => {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-page-title text-ink">{t('title')}</h1>
-        <p className="max-w-2xl text-sm leading-relaxed text-ink-secondary">{t('subtitle')}</p>
-      </div>
+      <PageTitleBlock title={t('title')} subtitle={t('subtitle')} icon={ClipboardCheck} />
 
       {assessments.length === 0 ? (
         <EmptyState title={t('emptyTitle')} description={t('empty')} />

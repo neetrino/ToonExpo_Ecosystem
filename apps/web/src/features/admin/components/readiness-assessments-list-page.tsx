@@ -1,6 +1,7 @@
 'use client';
 
 import type { ReadinessAssessmentListItem } from '@toonexpo/contracts';
+import { ClipboardCheck } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
@@ -21,6 +22,7 @@ import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { Button } from '@/shared/ui/button';
 import { EmptyState } from '@/shared/ui/empty-state';
 import { Reveal } from '@/shared/ui/motion';
+import { PageTitleBlock } from '@/shared/ui/page-title-icon';
 import { Select } from '@/shared/ui/select';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
@@ -101,10 +103,7 @@ export const ReadinessAssessmentsListPage = () => {
     <div className="flex flex-col gap-6">
       <Reveal force>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <div className="flex flex-col gap-1">
-            <h1 className="text-page-title text-ink">{t('title')}</h1>
-            <p className="max-w-xl text-sm text-ink-secondary">{t('guide')}</p>
-          </div>
+          <PageTitleBlock title={t('title')} subtitle={t('guide')} icon={ClipboardCheck} />
           <div className="flex flex-wrap items-center gap-2">
             <Select
               id="readiness-company-filter"

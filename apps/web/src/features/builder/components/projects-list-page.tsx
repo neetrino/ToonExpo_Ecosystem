@@ -1,5 +1,6 @@
 'use client';
 
+import { FolderKanban } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
@@ -15,6 +16,7 @@ import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { Button } from '@/shared/ui/button';
 import { Reveal } from '@/shared/ui/motion';
+import { PageTitleBlock } from '@/shared/ui/page-title-icon';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
 const parsePage = (raw: string | null): number => {
@@ -57,12 +59,11 @@ export const ProjectsListPage = () => {
     <div className="flex flex-col gap-6">
       <Reveal force>
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-col gap-1">
-            <h1 className="text-page-title text-ink">{t('title')}</h1>
-            <p className="text-sm text-ink-secondary">
-              {t('subtitle', { count: response.meta.total })}
-            </p>
-          </div>
+          <PageTitleBlock
+            title={t('title')}
+            subtitle={t('subtitle', { count: response.meta.total })}
+            icon={FolderKanban}
+          />
           <div className="flex flex-wrap items-center gap-2">
             <ViewModeToggle value={viewMode} onChange={setViewMode} />
             <Button

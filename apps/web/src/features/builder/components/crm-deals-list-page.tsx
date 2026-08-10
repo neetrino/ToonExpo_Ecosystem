@@ -2,6 +2,7 @@
 
 import { useQueryClient } from '@tanstack/react-query';
 import type { CrmDealStatus } from '@toonexpo/contracts';
+import { Briefcase } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 
@@ -171,6 +172,7 @@ export const CrmDealsListPage = () => {
     <div className="crm-board-page">
       <div className="crm-board-page__chrome">
         <ListPageHeader
+        icon={Briefcase}
           eyebrow={t('eyebrow')}
           title={t('title')}
           subtitle={t('subtitle', { count: totalCount })}

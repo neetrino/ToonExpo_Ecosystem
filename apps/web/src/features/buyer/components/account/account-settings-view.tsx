@@ -1,5 +1,5 @@
 import type { UserResponse } from '@toonexpo/contracts';
-import { KeyRound } from 'lucide-react';
+import { KeyRound, Settings } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
 import { ChangePasswordForm } from '@/features/auth/components/change-password-form';
@@ -33,7 +33,7 @@ export const AccountSettingsView = async ({
 
   return (
     <AccountPageEnter mobilePush={mobilePush}>
-      <AccountPageHeader title={t('title')} subtitle={t('subtitle')} />
+      <AccountPageHeader title={t('title')} subtitle={t('subtitle')} icon={Settings} />
 
       <Reveal>
         <AccountContentPanel className="max-w-4xl gap-8">

@@ -1,6 +1,7 @@
 'use client';
 
 import type { AdminBuildingListItem } from '@toonexpo/contracts';
+import { Building } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -98,6 +99,7 @@ export const AdminBuildingsListPage = () => {
         total={response?.meta.total ?? 0}
         page={response?.meta.page ?? page}
         totalPages={response?.meta.totalPages ?? 0}
+        icon={Building}
         viewMode={viewMode}
         onViewModeChange={setViewMode}
         headerActions={

@@ -22,6 +22,7 @@ import {
   toUpdateServiceProviderBody,
 } from '@/features/admin/utils/service-provider-mappers';
 import { Reveal } from '@/shared/ui/motion';
+import { PageTitleBlock } from '@/shared/ui/page-title-icon';
 
 /**
  * Admin service provider directory — providers CRUD (categories assigned on the form).
@@ -105,10 +106,7 @@ export const ServiceProvidersPage = () => {
   return (
     <div className="flex flex-col gap-6">
       <Reveal force>
-        <header className="flex flex-col gap-1">
-          <h1 className="text-page-title text-ink">{t('title')}</h1>
-          <p className="text-sm text-ink-secondary">{t('subtitle')}</p>
-        </header>
+        <PageTitleBlock title={t('title')} subtitle={t('subtitle')} />
       </Reveal>
 
       <ServiceProvidersProvidersSection

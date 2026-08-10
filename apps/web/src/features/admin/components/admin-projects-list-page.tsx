@@ -1,6 +1,6 @@
 'use client';
 
-import { FolderOpen, SearchX } from 'lucide-react';
+import { FolderOpen, SearchX, FolderKanban } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { useMemo, useRef, useState } from 'react';
@@ -155,6 +155,7 @@ export const AdminProjectsListPage = () => {
   return (
     <div className="flex flex-col gap-6">
       <ListPageHeader
+        icon={FolderKanban}
         title={t('title')}
         subtitle={t('subtitle', { count: response.meta.total })}
         search={search}

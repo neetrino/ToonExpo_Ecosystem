@@ -1,5 +1,6 @@
 'use client';
 
+import { BarChart3 } from 'lucide-react';
 import type { CrmDealStatus, RequestSource } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 
@@ -10,6 +11,7 @@ import { AnalyticsSectionCard } from '@/features/analytics/components/analytics-
 import { AnalyticsStatCard } from '@/features/analytics/components/analytics-stat-card';
 import { usePortalAnalyticsOverviewQuery } from '@/features/builder/hooks/use-portal-analytics';
 import { ReadinessStatusBadge } from '@/features/readiness/components/readiness-status-badge';
+import { PageTitleBlock } from '@/shared/ui/page-title-icon';
 
 const maxCount = (values: number[]): number => (values.length > 0 ? Math.max(...values) : 0);
 
@@ -23,10 +25,7 @@ export const BuilderAnalyticsPage = () => {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex min-w-0 flex-col gap-1">
-        <h1 className="text-page-title text-ink">{t('title')}</h1>
-        <p className="text-sm text-ink-secondary">{t('subtitle')}</p>
-      </div>
+      <PageTitleBlock title={t('title')} subtitle={t('subtitle')} icon={BarChart3} />
 
       {query.isLoading ? (
         <p className="text-sm text-ink-secondary">{tCommon('loading')}</p>

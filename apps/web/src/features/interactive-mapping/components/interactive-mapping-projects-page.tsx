@@ -1,6 +1,7 @@
 'use client';
 
 import { useQueryClient } from '@tanstack/react-query';
+import { Map } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
@@ -99,6 +100,7 @@ export const InteractiveMappingProjectsPage = () => {
   return (
     <div className="flex flex-col gap-6">
       <ListPageHeader
+        icon={Map}
         title={t('title')}
         subtitle={t('subtitle', { count: response.meta.total })}
         search={search}

@@ -1,5 +1,6 @@
 'use client';
 
+import { CalendarDays } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
@@ -18,6 +19,7 @@ import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { AdminCreateSheet } from '@/shared/ui/admin-create-sheet';
 import { Button } from '@/shared/ui/button';
 import { Reveal } from '@/shared/ui/motion';
+import { PageTitleBlock } from '@/shared/ui/page-title-icon';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
 /**
@@ -87,10 +89,11 @@ export const AdminEventsListPage = () => {
     <div className="flex flex-col gap-6">
       <Reveal force>
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-col gap-1">
-            <h1 className="text-page-title text-ink">{t('title')}</h1>
-            <p className="text-sm text-ink-secondary">{t('subtitle', { count: events.length })}</p>
-          </div>
+          <PageTitleBlock
+            title={t('title')}
+            subtitle={t('subtitle', { count: events.length })}
+            icon={CalendarDays}
+          />
           <div className="flex flex-wrap items-center gap-2">
             <ViewModeToggle value={viewMode} onChange={setViewMode} />
             <Button

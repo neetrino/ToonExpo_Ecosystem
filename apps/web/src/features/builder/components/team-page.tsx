@@ -1,5 +1,6 @@
 'use client';
 
+import { Users } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { useState } from 'react';
@@ -14,6 +15,7 @@ import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { Button } from '@/shared/ui/button';
 import { Reveal } from '@/shared/ui/motion';
+import { PageTitleBlock } from '@/shared/ui/page-title-icon';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
 const parsePage = (raw: string | null): number => {
@@ -56,13 +58,13 @@ export const TeamPage = () => {
     <div className="flex flex-col gap-6">
       <Reveal force>
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-col gap-1">
-            <h1 className="text-page-title text-ink">{t('title')}</h1>
-            <p className="text-sm text-ink-secondary">
-              {t('subtitle', { count: response.meta.total })}
-            </p>
+          <PageTitleBlock
+            title={t('title')}
+            subtitle={t('subtitle', { count: response.meta.total })}
+            icon={Users}
+          >
             {!canManage ? <p className="text-sm text-ink-muted">{t('readOnlyNotice')}</p> : null}
-          </div>
+          </PageTitleBlock>
           <div className="flex flex-wrap items-center gap-2">
             <ViewModeToggle value={viewMode} onChange={setViewMode} />
             {canManage ? (

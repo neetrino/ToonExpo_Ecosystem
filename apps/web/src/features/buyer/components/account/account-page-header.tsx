@@ -1,14 +1,17 @@
 'use client';
 
+import type { LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 
 import { AccountMobileBackLink } from '@/features/buyer/components/account/account-mobile-back-link';
 import { useAccountMobileStackBack } from '@/features/buyer/components/account/account-mobile-stack-context';
 import { cn } from '@/shared/ui/cn';
+import { PageTitleIcon } from '@/shared/ui/page-title-icon';
 
 type AccountPageHeaderProps = {
   title: string;
   subtitle?: string | undefined;
+  icon?: LucideIcon | undefined;
   actions?: ReactNode | undefined;
   className?: string | undefined;
   /** Heading level for the page title. */
@@ -22,6 +25,7 @@ type AccountPageHeaderProps = {
 export const AccountPageHeader = ({
   title,
   subtitle,
+  icon,
   actions,
   className,
   headingLevel = 'h1',
@@ -35,10 +39,15 @@ export const AccountPageHeader = ({
     >
       <div className="flex min-w-0 flex-col gap-1">
         {onBack ? <AccountMobileBackLink onBack={onBack} className="-ml-2 mb-3 md:hidden" /> : null}
-        <HeadingTag className="text-page-title min-w-0 text-ink">{title}</HeadingTag>
-        {subtitle ? (
-          <p className="max-w-2xl text-sm leading-relaxed text-ink-secondary">{subtitle}</p>
-        ) : null}
+        <div className="flex min-w-0 items-start gap-3">
+          {icon ? <PageTitleIcon icon={icon} /> : null}
+          <div className="flex min-w-0 flex-col gap-1">
+            <HeadingTag className="text-page-title min-w-0 text-ink">{title}</HeadingTag>
+            {subtitle ? (
+              <p className="max-w-2xl text-sm leading-relaxed text-ink-secondary">{subtitle}</p>
+            ) : null}
+          </div>
+        </div>
       </div>
       {actions ? <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div> : null}
     </div>

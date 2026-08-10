@@ -1,5 +1,6 @@
 'use client';
 
+import { LayoutDashboard } from 'lucide-react';
 import type { PublicationStatus } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
@@ -10,6 +11,7 @@ import { PORTAL_MAX_PAGE_SIZE } from '@/features/builder/constants';
 import { usePortalProjectsQuery } from '@/features/builder/hooks/use-portal-projects';
 import { Link } from '@/i18n/navigation';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
+import { PageTitleBlock } from '@/shared/ui/page-title-icon';
 import { Button } from '@/shared/ui/button';
 import { Card } from '@/shared/ui/card';
 
@@ -50,10 +52,7 @@ export const BuilderDashboardPage = () => {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-page-title text-ink">{t('title')}</h1>
-        <p className="text-sm text-ink-secondary">{t('subtitle')}</p>
-      </div>
+      <PageTitleBlock title={t('title')} subtitle={t('subtitle')} icon={LayoutDashboard} />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Card className="p-4 sm:p-5">
