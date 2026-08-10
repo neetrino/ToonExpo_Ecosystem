@@ -197,7 +197,7 @@ export const BuilderDashboardPage = () => {
 
       <StaggerGroup
         force
-        className="grid grid-cols-1 gap-4 [&>*]:min-w-0 xl:max-w-xl"
+        className="grid grid-cols-1 gap-4 [&>*]:min-w-0"
         staggerMs={90}
         baseDelayMs={SECTION_BASE_DELAY_MS + 240}
         durationMs={560}

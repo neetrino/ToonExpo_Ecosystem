@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { headers } from 'next/headers';
+import { QrCode } from 'lucide-react';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
 import { getMeOrNullCached as getMeOrNull } from '@/features/auth/api/get-me-or-null-cached';
@@ -10,7 +11,7 @@ import {
 import { AccountPageHeader } from '@/features/buyer/components/account/account-page-header';
 import { BuyerCheckInStatus } from '@/features/buyer/components/buyer-checkin-status';
 import { isBuyerAccount } from '@/features/buyer/utils/is-buyer-account';
-import { redirect } from '@/i18n/navigation';
+import { Link, redirect } from '@/i18n/navigation';
 
 type CheckinPageProps = {
   params: Promise<{ locale: string }>;
@@ -61,7 +62,20 @@ export default async function AccountCheckinPage({ params }: CheckinPageProps) {
 
   return (
     <AccountPageEnter mobilePush>
-      <AccountPageHeader title={t('title')} subtitle={t('subtitle')} iconName="checkin" />
+      <AccountPageHeader
+        title={t('title')}
+        subtitle={t('subtitle')}
+        iconName="checkin"
+        actions={
+          <Link
+            href="/qr"
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-pill bg-brand px-5 text-sm font-semibold text-on-dark shadow-sm transition-colors hover:bg-brand-deep"
+          >
+            <QrCode className="size-4" aria-hidden />
+            {t('openQr')}
+          </Link>
+        }
+      />
       <AccountContentReveal>
         <BuyerCheckInStatus />
       </AccountContentReveal>

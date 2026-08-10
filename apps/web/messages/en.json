@@ -1151,6 +1151,8 @@
       "empty": "You have not checked in to any exhibition yet.",
       "openQr": "Open my QR",
       "noActiveEvent": "There is no active exhibition right now.",
+      "previewBadge": "Example preview",
+      "previewHint": "No real check-in yet — this is sample data so you can see how the page looks with an active event and history.",
       "current": {
         "title": "Current exhibition",
         "checkedIn": "You are checked in",
