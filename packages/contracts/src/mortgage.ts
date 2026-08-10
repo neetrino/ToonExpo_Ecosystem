@@ -8,6 +8,7 @@ export type BankOfferListItem = {
   id: string;
   partnerCompanyId: string;
   partnerCompanyName?: string;
+  partnerCompanyLogoUrl: string | null;
   title: string;
   shortDescription: string | null;
   rate: string;

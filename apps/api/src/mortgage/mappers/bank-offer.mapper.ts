@@ -28,13 +28,19 @@ type BankOfferWithPartner = Prisma.BankOfferGetPayload<{
   };
 }>;
 
+type BankOfferPartnerSummary = {
+  name: string;
+  logoUrl?: string | null;
+};
+
 export const toBankOfferListItem = (
   offer: BankOfferRecord,
-  partnerCompanyName?: string,
+  partner?: BankOfferPartnerSummary,
 ): BankOfferListItem => ({
   id: offer.id,
   partnerCompanyId: offer.partnerCompanyId,
-  ...(partnerCompanyName ? { partnerCompanyName } : {}),
+  ...(partner?.name ? { partnerCompanyName: partner.name } : {}),
+  partnerCompanyLogoUrl: partner?.logoUrl ?? null,
   title: offer.title,
   shortDescription: offer.shortDescription,
   rate: decimalToRequiredString(offer.rate),
