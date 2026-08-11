@@ -8,7 +8,7 @@ import {
   type ReadinessManagementTarget,
 } from '@/features/admin/components/readiness-management-modal';
 import { ADMIN_COMPANIES_MAX_PAGE_SIZE } from '@/features/admin/constants';
-import { useAdminCompaniesQuery } from '@/features/admin/hooks/use-admin-companies';
+import { useAdminBuilderCompaniesQuery } from '@/features/admin/hooks/use-admin-companies';
 import { useAdminReadinessAssessmentQuery } from '@/features/admin/hooks/use-admin-readiness';
 import { useRouter } from '@/i18n/navigation';
 
@@ -25,7 +25,7 @@ export const ReadinessAssessmentDetailPage = ({
   const t = useTranslations('Admin.readiness.detail');
   const router = useRouter();
   const query = useAdminReadinessAssessmentQuery(assessmentId);
-  const companiesQuery = useAdminCompaniesQuery(1, ADMIN_COMPANIES_MAX_PAGE_SIZE);
+  const companiesQuery = useAdminBuilderCompaniesQuery(ADMIN_COMPANIES_MAX_PAGE_SIZE);
   const [target, setTarget] = useState<ReadinessManagementTarget | null>(null);
 
   const companyName = useMemo(() => {

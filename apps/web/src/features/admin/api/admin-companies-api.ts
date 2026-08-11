@@ -4,6 +4,7 @@ import type {
   AdminProjectScope,
   CompanyListResponse,
   CompanyResponse,
+  CompanyType,
   CreateCompanyRequest,
   FeaturedOnHomeResponse,
   ProvisionCompanyResponse,
@@ -35,17 +36,20 @@ const withCookie = (options: ApiFetchOptions, cookieHeader?: string): ApiFetchOp
 };
 
 /**
- * Lists companies for platform admin (paginated, optional search).
+ * Lists companies for platform admin (paginated, optional type filter and search).
  */
 export const listAdminCompanies = (
   page: number,
   pageSize: number,
-  options: AdminRequestOptions & { search?: string } = {},
+  options: AdminRequestOptions & { type?: CompanyType; search?: string } = {},
 ): Promise<CompanyListResponse> => {
   const params = new URLSearchParams({
     page: String(page),
     pageSize: String(pageSize),
   });
+  if (options.type) {
+    params.set('type', options.type);
+  }
   const search = options.search?.trim();
   if (search) {
     params.set('search', search);

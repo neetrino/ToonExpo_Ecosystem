@@ -60,7 +60,7 @@ export const AdminReadinessAssessmentCard = ({
   const hasScore = assessment.overallScore !== null;
   const tone = toneForStatus(assessment.status as ReadinessScoreStatus);
   const initials = company.name.trim().slice(0, 2).toUpperCase() || '—';
-  const coverUrl = assessment.coverUrl ?? null;
+  const coverUrl = assessment.coverUrl ?? company.logoUrl;
 
   return (
     <button

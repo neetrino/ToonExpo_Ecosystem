@@ -1,14 +1,21 @@
-import { ApiPropertyOptional } from "@nestjs/swagger";
-import { Type } from "class-transformer";
-import { IsInt, IsOptional, IsString, Max, MaxLength, Min } from "class-validator";
+import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { IsEnum, IsInt, IsOptional, IsString, Max, MaxLength, Min } from 'class-validator';
 
 import {
   ADMIN_COMPANIES_DEFAULT_PAGE_SIZE,
   ADMIN_COMPANIES_MAX_PAGE_SIZE,
   LIST_MIN_PAGE,
-} from "../../../common/constants/app.constants.js";
+} from '../../../common/constants/app.constants.js';
 
 const COMPANY_SEARCH_MAX_LENGTH = 120;
+
+enum CompanyTypeFilterDto {
+  builder = 'builder',
+  partner = 'partner',
+  bank = 'bank',
+  service = 'service',
+}
 
 export class ListCompaniesQueryDto {
   @ApiPropertyOptional({ default: LIST_MIN_PAGE, minimum: LIST_MIN_PAGE })
@@ -30,9 +37,14 @@ export class ListCompaniesQueryDto {
   @Max(ADMIN_COMPANIES_MAX_PAGE_SIZE)
   pageSize: number = ADMIN_COMPANIES_DEFAULT_PAGE_SIZE;
 
+  @ApiPropertyOptional({ enum: CompanyTypeFilterDto })
+  @IsOptional()
+  @IsEnum(CompanyTypeFilterDto)
+  type?: CompanyTypeFilterDto;
+
   @ApiPropertyOptional({
     description:
-      "Case-insensitive search over company name and description. Blank behaves as no search.",
+      'Case-insensitive search over company name and description. Blank behaves as no search.',
     maxLength: COMPANY_SEARCH_MAX_LENGTH,
   })
   @IsOptional()

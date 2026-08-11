@@ -4,9 +4,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import type { CreateCompanyRequest } from '@toonexpo/contracts';
 import { useLocale, useTranslations } from 'next-intl';
 import { useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 
-import { COMPANY_TYPES } from '@/features/admin/constants';
 import { useCreateAdminCompanyMutation } from '@/features/admin/hooks/use-admin-companies';
 import {
   createCompanySchema,
@@ -16,11 +15,12 @@ import { ApiError } from '@/shared/api/errors';
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
-import { Select } from '@/shared/ui/select';
 
 type CreateCompanyFormProps = {
   onSuccess: (adminEmail: string) => void;
 };
+
+const BUILDER_COMPANY_TYPE = 'builder' as const;
 
 const mapCreateError = (error: unknown): 'emailTaken' | 'generic' => {
   if (error instanceof ApiError && error.status === 409) {
@@ -30,7 +30,8 @@ const mapCreateError = (error: unknown): 'emailTaken' | 'generic' => {
 };
 
 /**
- * Form to provision a company and invite the first company_admin.
+ * Form to provision a builder company and invite the first company_admin.
+ * Backend creates the company-level readiness assessment in the same flow.
  */
 export const CreateCompanyForm = ({ onSuccess }: CreateCompanyFormProps) => {
   const t = useTranslations('Admin.companies');
@@ -40,14 +41,13 @@ export const CreateCompanyForm = ({ onSuccess }: CreateCompanyFormProps) => {
 
   const {
     register,
-    control,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<CreateCompanyFormValues>({
     resolver: zodResolver(createCompanySchema),
     defaultValues: {
       name: '',
-      type: 'builder',
+      type: BUILDER_COMPANY_TYPE,
       description: '',
       adminName: '',
       adminEmail: '',
@@ -59,7 +59,7 @@ export const CreateCompanyForm = ({ onSuccess }: CreateCompanyFormProps) => {
     setFormError(null);
     const body: CreateCompanyRequest = {
       name: values.name,
-      type: values.type,
+      type: BUILDER_COMPANY_TYPE,
       adminName: values.adminName,
       adminEmail: values.adminEmail,
       locale,
@@ -89,35 +89,6 @@ export const CreateCompanyForm = ({ onSuccess }: CreateCompanyFormProps) => {
           error={errors.name ? t('validation.name') : undefined}
         >
           <Input id="company-name" aria-invalid={Boolean(errors.name)} {...register('name')} />
-        </FormField>
-        <FormField
-          id="company-type"
-          label={t('form.type')}
-          error={errors.type ? t('validation.type') : undefined}
-        >
-          <Controller
-            name="type"
-            control={control}
-            render={({ field }) => (
-              <Select
-                id="company-type"
-                name={field.name}
-                value={field.value}
-                aria-label={t('form.type')}
-                aria-invalid={Boolean(errors.type)}
-                onBlur={field.onBlur}
-                onChange={(event) => {
-                  field.onChange(event.target.value);
-                }}
-              >
-                {COMPANY_TYPES.map((type) => (
-                  <option key={type} value={type}>
-                    {t(`types.${type}`)}
-                  </option>
-                ))}
-              </Select>
-            )}
-          />
         </FormField>
         <FormField
           id="company-description"

@@ -8,7 +8,7 @@ import {
   ADMIN_COMPANIES_MAX_PAGE_SIZE,
   ADMIN_PROJECTS_QUERY_KEY,
 } from '@/features/admin/constants';
-import { useAdminCompaniesQuery } from '@/features/admin/hooks/use-admin-companies';
+import { useAdminBuilderCompaniesQuery } from '@/features/admin/hooks/use-admin-companies';
 import { CatalogScopeProvider } from '@/features/builder/catalog-scope-context';
 import { CreateProjectForm } from '@/features/builder/components/create-project-form';
 import { useRouter } from '@/i18n/navigation';
@@ -35,17 +35,14 @@ export const AdminCreateProjectSheet = ({
 }: AdminCreateProjectSheetProps) => {
   const t = useTranslations('Admin.projects.create');
   const tNew = useTranslations('Builder.projects.new');
-  const companiesQuery = useAdminCompaniesQuery(1, ADMIN_COMPANIES_MAX_PAGE_SIZE);
+  const companiesQuery = useAdminBuilderCompaniesQuery(ADMIN_COMPANIES_MAX_PAGE_SIZE);
   const queryClient = useQueryClient();
   const router = useRouter();
   const [companyId, setCompanyId] = useState(defaultCompanyId ?? '');
 
   const builderCompanies = useMemo(() => {
     const companies = companiesQuery.data?.data ?? [];
-    return companies
-      .filter((company) => company.type === 'builder')
-      .slice()
-      .sort((a, b) => a.name.localeCompare(b.name));
+    return companies.slice().sort((a, b) => a.name.localeCompare(b.name));
   }, [companiesQuery.data]);
 
   useEffect(() => {

@@ -57,7 +57,7 @@ describe('AdminReadinessAssessmentsService', () => {
   });
 
   it('archives previous active assessment when creating a new one', async () => {
-    companyFindUnique.mockResolvedValue({ id: 'co_1' });
+    companyFindUnique.mockResolvedValue({ id: 'co_1', type: 'builder' });
     readinessCategoryFindMany.mockResolvedValue([{ id: 'cat_1' }, { id: 'cat_2' }]);
     readinessCriterionFindMany.mockResolvedValue([]);
     readinessAssessmentCreate.mockResolvedValue({

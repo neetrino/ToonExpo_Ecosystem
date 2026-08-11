@@ -62,7 +62,10 @@ export const CompaniesListPage = () => {
   const debouncedSearch = useDebouncedValue(trimmedSearch, ADMIN_PROJECTS_SEARCH_DEBOUNCE_MS);
   const activeSearch = trimmedSearch.length === 0 ? '' : debouncedSearch;
 
-  const query = useAdminCompaniesQuery(page, pageSize, activeSearch || undefined);
+  const query = useAdminCompaniesQuery(page, pageSize, {
+    type: 'builder',
+    ...(activeSearch ? { search: activeSearch } : {}),
+  });
   const readinessQuery = useAdminReadinessAssessmentsQuery({
     page: 1,
     pageSize: ADMIN_COMPANIES_MAX_PAGE_SIZE,
@@ -185,9 +188,7 @@ export const CompaniesListPage = () => {
             page={response.meta.page}
             totalPages={response.meta.totalPages}
             previousHref={
-              response.meta.page > 1
-                ? buildCompaniesHref(pathname, response.meta.page - 1)
-                : null
+              response.meta.page > 1 ? buildCompaniesHref(pathname, response.meta.page - 1) : null
             }
             nextHref={
               response.meta.page < response.meta.totalPages

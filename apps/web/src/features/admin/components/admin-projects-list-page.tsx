@@ -19,7 +19,7 @@ import {
   ADMIN_VIEW_MODE_KEYS,
 } from '@/features/admin/constants';
 import {
-  useAdminCompaniesQuery,
+  useAdminBuilderCompaniesQuery,
   useAdminProjectsQuery,
 } from '@/features/admin/hooks/use-admin-companies';
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
@@ -89,7 +89,7 @@ export const AdminProjectsListPage = () => {
     ...(companyId ? { companyId } : {}),
     ...(activeSearch ? { search: activeSearch } : {}),
   });
-  const companiesQuery = useAdminCompaniesQuery(1, ADMIN_COMPANIES_MAX_PAGE_SIZE);
+  const companiesQuery = useAdminBuilderCompaniesQuery(ADMIN_COMPANIES_MAX_PAGE_SIZE);
 
   /*
    * Kept results are the previous term's rows, so track which term the rendered
@@ -103,10 +103,7 @@ export const AdminProjectsListPage = () => {
 
   const builderCompanies = useMemo(() => {
     const companies = companiesQuery.data?.data ?? [];
-    return companies
-      .filter((company) => company.type === 'builder')
-      .slice()
-      .sort((a, b) => a.name.localeCompare(b.name));
+    return companies.slice().sort((a, b) => a.name.localeCompare(b.name));
   }, [companiesQuery.data]);
 
   const buildListHref = (nextPage: number, nextCompanyId?: string): string =>
@@ -228,9 +225,7 @@ export const AdminProjectsListPage = () => {
         page={response.meta.page}
         totalPages={response.meta.totalPages}
         previousHref={
-          response.meta.page > 1
-            ? buildListHref(response.meta.page - 1, companyId)
-            : null
+          response.meta.page > 1 ? buildListHref(response.meta.page - 1, companyId) : null
         }
         nextHref={
           response.meta.page < response.meta.totalPages

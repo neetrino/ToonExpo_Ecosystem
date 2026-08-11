@@ -14,6 +14,7 @@ import {
   CompanySource,
   CompanyStatus,
   CompanyType,
+  ReadinessAssessmentTargetType,
   UserStatus,
   type Prisma,
 } from '@toonexpo/db';
@@ -24,7 +25,7 @@ import { toUserResponse } from '../../auth/mappers/user.mapper.js';
 import { toCompanyResponse } from '../../companies/mappers/company.mapper.js';
 import { CompanyProvisioningService } from '../../company/provisioning/company-provisioning.service.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
-
+import { AdminReadinessAssessmentsService } from '../../readiness/admin/admin-readiness-assessments.service.js';
 
 type CreateCompanyInput = {
   name: string;
@@ -83,22 +84,23 @@ const buildAdminProjectsWhere = (
 };
 
 /**
- * Optional case-insensitive search for the admin companies list.
+ * Optional type + case-insensitive search for the admin companies list.
  */
 const buildAdminCompaniesWhere = (
+  type: CompanyType | undefined,
   search: string | undefined,
 ): Prisma.CompanyWhereInput => {
+  const where: Prisma.CompanyWhereInput = type ? { type } : {};
   const needle = search?.trim();
   if (!needle) {
-    return {};
+    return where;
   }
 
-  return {
-    OR: [
-      { name: { contains: needle, mode: "insensitive" } },
-      { description: { contains: needle, mode: "insensitive" } },
-    ],
-  };
+  where.OR = [
+    { name: { contains: needle, mode: 'insensitive' } },
+    { description: { contains: needle, mode: 'insensitive' } },
+  ];
+  return where;
 };
 
 /**
@@ -109,6 +111,7 @@ export class AdminCompaniesService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly provisioning: CompanyProvisioningService,
+    private readonly readinessAssessments: AdminReadinessAssessmentsService,
   ) {}
 
   async create(input: CreateCompanyInput): Promise<ProvisionCompanyResponse> {
@@ -123,6 +126,13 @@ export class AdminCompaniesService {
       adminEmail: input.adminEmail,
       adminPhone: input.adminPhone?.trim() || null,
     });
+
+    if (input.type === CompanyType.builder) {
+      await this.readinessAssessments.create({
+        targetType: ReadinessAssessmentTargetType.builder_company,
+        builderCompanyId: result.company.id,
+      });
+    }
 
     await this.provisioning.sendSetPasswordInvite({
       userId: result.adminUser.id,
@@ -140,15 +150,16 @@ export class AdminCompaniesService {
   async list(
     page: number,
     pageSize: number,
+    type?: CompanyType,
     search?: string,
   ): Promise<CompanyListResponse> {
     const skip = (page - 1) * pageSize;
-    const where = buildAdminCompaniesWhere(search);
+    const where = buildAdminCompaniesWhere(type, search);
     const [total, rows] = await Promise.all([
       this.prisma.db.company.count({ where }),
       this.prisma.db.company.findMany({
         where,
-        orderBy: { createdAt: "desc" },
+        orderBy: { createdAt: 'desc' },
         skip,
         take: pageSize,
         include: { logoMedia: { select: { id: true, fileUrl: true } } },
