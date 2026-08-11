@@ -50,6 +50,9 @@ const toSearchParams = (query: ListProjectsQuery): string => {
   if (query.builderId) {
     params.set('builderId', query.builderId);
   }
+  if (query.q) {
+    params.set('q', query.q);
+  }
   if (query.locale) {
     params.set('locale', query.locale);
   }

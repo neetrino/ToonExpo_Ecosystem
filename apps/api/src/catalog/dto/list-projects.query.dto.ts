@@ -9,13 +9,16 @@ import {
   IsOptional,
   IsString,
   Max,
+  MaxLength,
   Min,
+  MinLength,
 } from 'class-validator';
 
 import {
   CATALOG_DEFAULT_PAGE_SIZE,
   CATALOG_MAX_PAGE_SIZE,
   CATALOG_MIN_PAGE,
+  CATALOG_SEARCH_Q_MAX_LENGTH,
 } from '../catalog.constants.js';
 
 enum ApartmentSalesStatusQuery {
@@ -107,6 +110,24 @@ export class ListProjectsQueryDto {
   @IsOptional()
   @IsString()
   builderId?: string;
+
+  @ApiPropertyOptional({
+    description: 'Keyword search over project name, builder, city, district, location text',
+    maxLength: CATALOG_SEARCH_Q_MAX_LENGTH,
+    example: 'Arabkir',
+  })
+  @IsOptional()
+  @IsString()
+  @MinLength(1)
+  @MaxLength(CATALOG_SEARCH_Q_MAX_LENGTH)
+  @Transform(({ value }: { value: unknown }) => {
+    if (typeof value !== 'string') {
+      return value;
+    }
+    const trimmed = value.trim();
+    return trimmed.length > 0 ? trimmed : undefined;
+  })
+  q?: string;
 
   @ApiPropertyOptional({
     enum: ['hy', 'ru', 'en'],

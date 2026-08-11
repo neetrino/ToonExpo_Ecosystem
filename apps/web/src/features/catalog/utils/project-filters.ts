@@ -13,6 +13,8 @@ export type ProjectFilterParams = {
   rooms?: number[];
   city?: string;
   builderId?: string;
+  /** Free-text keyword (project / builder / city). */
+  q?: string;
 };
 
 const toPositiveInt = (value: string | undefined): number | undefined => {
@@ -74,6 +76,7 @@ export const parseProjectFilters = (
 
   const city = read('city')?.trim() || undefined;
   const builderId = read('builderId')?.trim() || undefined;
+  const q = read('q')?.trim() || undefined;
   const minPrice = toNonNegativeNumber(read('minPrice'));
   const maxPrice = toNonNegativeNumber(read('maxPrice'));
   const rooms = toPositiveIntList(readList('rooms'));
@@ -101,6 +104,9 @@ export const parseProjectFilters = (
   if (builderId) {
     filters.builderId = builderId;
   }
+  if (q) {
+    filters.q = q;
+  }
 
   return filters;
 };
@@ -118,6 +124,7 @@ export const toListProjectsQuery = (filters: ProjectFilterParams): ListProjectsQ
     ...(filters.rooms != null && filters.rooms.length > 0 ? { rooms: filters.rooms } : {}),
     ...(filters.city ? { city: filters.city } : {}),
     ...(filters.builderId ? { builderId: filters.builderId } : {}),
+    ...(filters.q ? { q: filters.q } : {}),
   };
 };
 
@@ -154,6 +161,9 @@ export const buildProjectSearchParams = (
   }
   if (filters.builderId) {
     params['builderId'] = filters.builderId;
+  }
+  if (filters.q) {
+    params['q'] = filters.q;
   }
 
   return params;

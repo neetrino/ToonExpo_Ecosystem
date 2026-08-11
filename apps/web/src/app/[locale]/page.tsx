@@ -9,6 +9,7 @@ import { HomeHero } from '@/features/catalog/components/home-hero';
 import { HomeMortgage } from '@/features/catalog/components/home-mortgage';
 import { HomeStats } from '@/features/catalog/components/home-stats';
 import { SiteFooter } from '@/features/catalog/components/site-footer';
+import { HOME_HERO_CATALOG_PAGE_SIZE } from '@/features/catalog/constants/hero-search';
 import { loadBuyApartmentListings } from '@/features/catalog/utils/load-buy-apartments';
 import { collectProjectCities } from '@/features/catalog/utils/location-options';
 
@@ -42,9 +43,9 @@ export default async function HomePage({ params }: HomePageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const [featuredResponse, featuredApartments, builders] = await Promise.all([
-    listProjects({ page: 1, pageSize: HOME_FEATURED_PAGE_SIZE }, { locale }).catch(() =>
-      emptyProjectPage(HOME_FEATURED_PAGE_SIZE),
+  const [catalogResponse, featuredApartments, builders] = await Promise.all([
+    listProjects({ page: 1, pageSize: HOME_HERO_CATALOG_PAGE_SIZE }, { locale }).catch(() =>
+      emptyProjectPage(HOME_HERO_CATALOG_PAGE_SIZE),
     ),
     loadBuyApartmentListings({
       locale,
@@ -54,16 +55,17 @@ export default async function HomePage({ params }: HomePageProps) {
     listBuilders({ locale }).catch(() => []),
   ]);
 
-  const featuredProjects = featuredResponse.data;
-  const locations = collectProjectCities(featuredProjects);
+  const catalogProjects = catalogResponse.data;
+  const featuredProjects = catalogProjects.slice(0, HOME_FEATURED_PAGE_SIZE);
+  const locations = collectProjectCities(catalogProjects);
 
   return (
     <div className="min-h-screen bg-canvas">
-      <HomeHero locations={locations} />
+      <HomeHero locations={locations} projects={catalogProjects} />
       <HomeStats
         projects={featuredProjects}
         builderCount={builders.length}
-        projectTotal={featuredResponse.meta.total}
+        projectTotal={catalogResponse.meta.total}
       />
       <FeaturedApartments listings={featuredApartments} />
       <HomeDevelopments projects={featuredProjects} />

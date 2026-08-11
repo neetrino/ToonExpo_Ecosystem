@@ -147,6 +147,12 @@
       "searchLabel": "Поиск проектов",
       "searchPlaceholder": "Проект, застройщик или город…",
       "search": "Искать дома",
+      "suggestionsEmpty": "Ничего не найдено",
+      "suggestionKinds": {
+        "project": "Проект",
+        "builder": "Застройщик",
+        "city": "Город"
+      },
       "explore": "Смотреть проекты",
       "register": "Бесплатная регистрация",
       "locationLabel": "Локация",

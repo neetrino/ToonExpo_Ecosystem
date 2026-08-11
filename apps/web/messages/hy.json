@@ -147,6 +147,12 @@
       "searchLabel": "Որոնել նախագծեր",
       "searchPlaceholder": "Նախագիծ, կառուցապատող կամ քաղաք…",
       "search": "Որոնել տներ",
+      "suggestionsEmpty": "Համընկնումներ չկան",
+      "suggestionKinds": {
+        "project": "Նախագիծ",
+        "builder": "Կառուցապատող",
+        "city": "Քաղաք"
+      },
       "explore": "Դիտել նախագծերը",
       "register": "Անվճար գրանցում",
       "locationLabel": "Վայր",

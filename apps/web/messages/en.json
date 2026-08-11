@@ -147,6 +147,12 @@
       "searchLabel": "Search projects",
       "searchPlaceholder": "Project, builder, or city…",
       "search": "Search homes",
+      "suggestionsEmpty": "No matches found",
+      "suggestionKinds": {
+        "project": "Project",
+        "builder": "Builder",
+        "city": "City"
+      },
       "explore": "Explore projects",
       "register": "Register free",
       "locationLabel": "Location",

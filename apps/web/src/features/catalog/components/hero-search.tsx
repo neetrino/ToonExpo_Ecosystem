@@ -1,8 +1,10 @@
 'use client';
 
+import type { ProjectListItem } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 import { useState, type FormEvent } from 'react';
 
+import { HeroKeywordSearch } from '@/features/catalog/components/hero-keyword-search';
 import { LocationSearchSelect } from '@/features/catalog/components/location-search-select';
 import { PriceRangeSelect } from '@/features/catalog/components/price-range-select';
 import { mergeLocationOptions } from '@/features/catalog/utils/location-options';
@@ -14,19 +16,30 @@ type HeroSearchProps = {
   className?: string | undefined;
   /** Cities from published catalog projects. */
   locations?: readonly string[] | undefined;
+  /** Published projects for keyword suggestions. */
+  projects?: readonly ProjectListItem[] | undefined;
 };
 
 const BED_OPTIONS = [1, 2, 3, 4] as const;
 
 const POPULAR_CITY_KEYS = ['yerevan', 'gyumri', 'vanadzor', 'dilijan', 'tsaghkadzor'] as const;
 
+type HeroSearchHrefInput = {
+  q: string;
+  cities: readonly string[];
+  minPrice: number | null;
+  maxPrice: number | null;
+  rooms: readonly string[];
+};
+
 /**
- * Marketplace search card — location, price, and beds filters.
+ * Marketplace search card — keyword, location, price, and beds filters.
  * Stacks cleanly on small screens; desktop keeps the Figma horizontal row.
  */
-export const HeroSearch = ({ className, locations = [] }: HeroSearchProps) => {
+export const HeroSearch = ({ className, locations = [], projects = [] }: HeroSearchProps) => {
   const t = useTranslations('HomePage.hero');
   const router = useRouter();
+  const [q, setQ] = useState('');
   const [locationsSelected, setLocationsSelected] = useState<string[]>([]);
   const [minPrice, setMinPrice] = useState<number | null>(null);
   const [maxPrice, setMaxPrice] = useState<number | null>(null);
@@ -40,15 +53,31 @@ export const HeroSearch = ({ className, locations = [] }: HeroSearchProps) => {
     label: count >= 4 ? t('bedsFourPlus') : t('bedsValue', { count }),
   }));
 
+  const hrefInput = (): HeroSearchHrefInput => ({
+    q,
+    cities: locationsSelected,
+    minPrice,
+    maxPrice,
+    rooms,
+  });
+
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    router.push(buildProjectsHref(locationsSelected, minPrice, maxPrice, rooms));
+    router.push(buildProjectsHref(hrefInput()));
   };
 
   const applyPriceRange = (nextMin: number | null, nextMax: number | null): void => {
     setMinPrice(nextMin);
     setMaxPrice(nextMax);
-    router.push(buildProjectsHref(locationsSelected, nextMin, nextMax, rooms));
+    router.push(
+      buildProjectsHref({
+        q,
+        cities: locationsSelected,
+        minPrice: nextMin,
+        maxPrice: nextMax,
+        rooms,
+      }),
+    );
   };
 
   return (
@@ -63,9 +92,16 @@ export const HeroSearch = ({ className, locations = [] }: HeroSearchProps) => {
           'ring-1 ring-header-border',
         )}
       >
-        <div className="grid grid-cols-1 gap-2 p-3 lg:grid-cols-[minmax(12rem,15rem)_minmax(11rem,13rem)_minmax(8rem,10rem)_auto] lg:items-center">
+        <div
+          className={cn(
+            'grid grid-cols-1 gap-2 p-3 lg:items-center',
+            'lg:grid-cols-[minmax(12rem,1fr)_minmax(11rem,14rem)_minmax(10rem,12rem)_minmax(7rem,9rem)_auto]',
+          )}
+        >
+          <HeroKeywordSearch value={q} projects={projects} onChange={setQ} />
+
           <LocationSearchSelect
-            className="lg:px-3 lg:py-2"
+            className="lg:border-l lg:border-header-border lg:px-3 lg:py-2"
             values={locationsSelected}
             options={locationOptions}
             fieldLabel={t('locationLabel')}
@@ -150,26 +186,26 @@ export const HeroSearch = ({ className, locations = [] }: HeroSearchProps) => {
   );
 };
 
-const buildProjectsHref = (
-  cities: readonly string[],
-  minPrice: number | null,
-  maxPrice: number | null,
-  rooms: readonly string[],
-): string => {
+const buildProjectsHref = (input: HeroSearchHrefInput): string => {
   const params = new URLSearchParams();
-  if (cities.length > 0) {
-    params.set('city', cities.join(','));
+  const trimmedQ = input.q.trim();
+  if (trimmedQ.length > 0) {
+    params.set('q', trimmedQ);
   }
 
-  if (minPrice != null) {
-    params.set('minPrice', String(minPrice));
-  }
-  if (maxPrice != null) {
-    params.set('maxPrice', String(maxPrice));
+  if (input.cities.length > 0) {
+    params.set('city', input.cities.join(','));
   }
 
-  if (rooms.length > 0) {
-    params.set('rooms', rooms.join(','));
+  if (input.minPrice != null) {
+    params.set('minPrice', String(input.minPrice));
+  }
+  if (input.maxPrice != null) {
+    params.set('maxPrice', String(input.maxPrice));
+  }
+
+  if (input.rooms.length > 0) {
+    params.set('rooms', input.rooms.join(','));
   }
 
   const query = params.toString();

@@ -245,6 +245,8 @@ export type ListProjectsQuery = {
   rooms?: number[];
   city?: string;
   builderId?: string;
+  /** Free-text keyword over project name, builder, city/district/location. */
+  q?: string;
   /** Catalog content locale (`hy` | `ru` | `en`). Falls back to Armenian. */
   locale?: string;
 };
