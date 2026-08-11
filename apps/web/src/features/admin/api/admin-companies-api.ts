@@ -36,12 +36,12 @@ const withCookie = (options: ApiFetchOptions, cookieHeader?: string): ApiFetchOp
 };
 
 /**
- * Lists companies for platform admin (paginated, optional type filter).
+ * Lists companies for platform admin (paginated, optional type filter and search).
  */
 export const listAdminCompanies = (
   page: number,
   pageSize: number,
-  options: AdminRequestOptions & { type?: CompanyType } = {},
+  options: AdminRequestOptions & { type?: CompanyType; search?: string } = {},
 ): Promise<CompanyListResponse> => {
   const params = new URLSearchParams({
     page: String(page),
@@ -49,6 +49,10 @@ export const listAdminCompanies = (
   });
   if (options.type) {
     params.set('type', options.type);
+  }
+  const search = options.search?.trim();
+  if (search) {
+    params.set('search', search);
   }
 
   return apiFetch<CompanyListResponse>(

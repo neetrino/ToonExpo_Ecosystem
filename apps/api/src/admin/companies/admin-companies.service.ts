@@ -27,7 +27,6 @@ import { CompanyProvisioningService } from '../../company/provisioning/company-p
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { AdminReadinessAssessmentsService } from '../../readiness/admin/admin-readiness-assessments.service.js';
 
-
 type CreateCompanyInput = {
   name: string;
   type: CompanyType;
@@ -85,6 +84,26 @@ const buildAdminProjectsWhere = (
 };
 
 /**
+ * Optional type + case-insensitive search for the admin companies list.
+ */
+const buildAdminCompaniesWhere = (
+  type: CompanyType | undefined,
+  search: string | undefined,
+): Prisma.CompanyWhereInput => {
+  const where: Prisma.CompanyWhereInput = type ? { type } : {};
+  const needle = search?.trim();
+  if (!needle) {
+    return where;
+  }
+
+  where.OR = [
+    { name: { contains: needle, mode: 'insensitive' } },
+    { description: { contains: needle, mode: 'insensitive' } },
+  ];
+  return where;
+};
+
+/**
  * Platform-admin company provisioning and management.
  */
 @Injectable()
@@ -132,9 +151,10 @@ export class AdminCompaniesService {
     page: number,
     pageSize: number,
     type?: CompanyType,
+    search?: string,
   ): Promise<CompanyListResponse> {
     const skip = (page - 1) * pageSize;
-    const where: Prisma.CompanyWhereInput = type ? { type } : {};
+    const where = buildAdminCompaniesWhere(type, search);
     const [total, rows] = await Promise.all([
       this.prisma.db.company.count({ where }),
       this.prisma.db.company.findMany({

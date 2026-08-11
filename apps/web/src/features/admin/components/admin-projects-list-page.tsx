@@ -225,9 +225,7 @@ export const AdminProjectsListPage = () => {
         page={response.meta.page}
         totalPages={response.meta.totalPages}
         previousHref={
-          response.meta.page > 1
-            ? buildListHref(response.meta.page - 1, companyId)
-            : null
+          response.meta.page > 1 ? buildListHref(response.meta.page - 1, companyId) : null
         }
         nextHref={
           response.meta.page < response.meta.totalPages

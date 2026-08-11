@@ -1,13 +1,23 @@
 'use client';
 
 import type { PublicMortgageOfferItem } from '@toonexpo/contracts';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useMemo, type ReactNode } from 'react';
 
+import { MortgageLoanSlider } from '@/features/mortgage/components/mortgage-loan-slider';
 import { MortgageOfferCard } from '@/features/mortgage/components/mortgage-offer-card';
 import { MortgagePrequalifyCta } from '@/features/mortgage/components/mortgage-prequalify-cta';
 import { MortgageResultsPanel } from '@/features/mortgage/components/mortgage-results-panel';
+import {
+  MORTGAGE_SLIDER_DOWN_PAYMENT_MAX_PERCENT,
+  MORTGAGE_SLIDER_DOWN_PAYMENT_STEP,
+  MORTGAGE_SLIDER_PROPERTY_PRICE_MAX,
+  MORTGAGE_SLIDER_PROPERTY_PRICE_MIN,
+  MORTGAGE_SLIDER_PROPERTY_PRICE_STEP,
+} from '@/features/mortgage/constants';
 import { useMortgageCalculator } from '@/features/mortgage/hooks/use-mortgage-calculator';
+import { estimateMortgagePayment } from '@/features/mortgage/utils/estimate-monthly-payment';
+import { formatMortgageAmount } from '@/features/mortgage/utils/format-mortgage-amount';
 import { cn } from '@/shared/ui/cn';
 
 type MortgageCalculatorSectionProps = {
@@ -15,10 +25,11 @@ type MortgageCalculatorSectionProps = {
 };
 
 /**
- * Two-column loan card + partner offers — Figma `105:2573`.
+ * Two-column loan card + partner offers — Figma `105:2573` / Lovable mortgage.
  */
 export const MortgageCalculatorSection = ({ offers }: MortgageCalculatorSectionProps) => {
   const t = useTranslations('Mortgage.calculator');
+  const locale = useLocale();
   const {
     selectedOffer,
     selectedOfferId,
@@ -28,12 +39,9 @@ export const MortgageCalculatorSection = ({ offers }: MortgageCalculatorSectionP
     loanTermYears,
     termAdjustedHint,
     validationMessage,
-    calculationResult,
-    isCalculating,
     monthlyPaymentByOffer,
     handlePropertyPriceChange,
     handleDownPaymentPercentChange,
-    handleDownPaymentAmountChange,
     handleSelectOffer,
     setLoanTermYears,
     setTermAdjustedHint,
@@ -52,97 +60,132 @@ export const MortgageCalculatorSection = ({ offers }: MortgageCalculatorSectionP
     return bestId;
   }, [offers]);
 
+  const parsedPrice = Number(propertyPrice.replace(/\s/g, ''));
+  const parsedDownPercent = Number(downPaymentPercent);
+  const parsedDownAmount = Number(downPaymentAmount.replace(/\s/g, ''));
+  const minDownPercent = selectedOffer ? Number(selectedOffer.minDownPaymentPercent) : 0;
+
+  const liveEstimate = useMemo(() => {
+    if (!selectedOffer || loanTermYears == null || validationMessage != null) {
+      return null;
+    }
+    return estimateMortgagePayment({
+      propertyPrice: parsedPrice,
+      downPaymentPercent: parsedDownPercent,
+      annualRatePercent: Number(selectedOffer.rate),
+      loanTermYears,
+    });
+  }, [
+    selectedOffer,
+    loanTermYears,
+    validationMessage,
+    parsedPrice,
+    parsedDownPercent,
+  ]);
+
+  const priceSliderValue = Number.isFinite(parsedPrice)
+    ? Math.min(
+        MORTGAGE_SLIDER_PROPERTY_PRICE_MAX,
+        Math.max(MORTGAGE_SLIDER_PROPERTY_PRICE_MIN, parsedPrice),
+      )
+    : MORTGAGE_SLIDER_PROPERTY_PRICE_MIN;
+
+  const downSliderValue = Number.isFinite(parsedDownPercent)
+    ? Math.min(
+        MORTGAGE_SLIDER_DOWN_PAYMENT_MAX_PERCENT,
+        Math.max(minDownPercent, parsedDownPercent),
+      )
+    : minDownPercent;
+
   if (!selectedOffer) {
     return null;
   }
 
   return (
-    <div className="grid gap-10 lg:grid-cols-[minmax(0,25rem)_minmax(0,1fr)] lg:items-start lg:gap-12">
-      <aside className="rounded-[24px] bg-surface-elevated p-8 shadow-[0_0_0_1px_var(--color-header-border)]">
+    <div className="grid gap-10 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] lg:items-start lg:gap-12">
+      <aside className="rounded-[24px] bg-surface-elevated p-8 shadow-[0_0_0_1px_var(--color-header-border)] lg:sticky lg:top-24">
         <h2 className="font-brand text-xl font-bold tracking-tight text-ink-navy">
           {t('inputsTitle')}
         </h2>
 
-        <LoanRow label={t('propertyPrice')} htmlFor="propertyPrice">
-          <input
+        <LoanField
+          label={t('propertyPrice')}
+          valueLabel={
+            Number.isFinite(parsedPrice) && parsedPrice > 0
+              ? formatMortgageAmount(parsedPrice, locale)
+              : '—'
+          }
+        >
+          <MortgageLoanSlider
             id="propertyPrice"
-            inputMode="numeric"
-            value={propertyPrice}
-            placeholder={t('propertyPricePlaceholder')}
-            onChange={(event) => {
-              handlePropertyPriceChange(event.target.value);
+            label={t('propertyPrice')}
+            min={MORTGAGE_SLIDER_PROPERTY_PRICE_MIN}
+            max={MORTGAGE_SLIDER_PROPERTY_PRICE_MAX}
+            step={MORTGAGE_SLIDER_PROPERTY_PRICE_STEP}
+            value={priceSliderValue}
+            onChange={(value) => {
+              handlePropertyPriceChange(String(value));
             }}
-            className={valueInputClassName}
           />
-        </LoanRow>
+        </LoanField>
 
-        <LoanRow label={t('downPayment')} htmlFor="downPaymentPercent">
-          <div className="flex items-center justify-end gap-2">
-            <input
-              id="downPaymentPercent"
-              inputMode="decimal"
-              value={downPaymentPercent}
-              onChange={(event) => {
-                handleDownPaymentPercentChange(event.target.value);
-              }}
-              className={cn(valueInputClassName, 'w-14')}
-              aria-label={t('downPaymentPercent')}
-            />
-            <span className="font-brand text-lg font-bold text-ink-navy">%</span>
-            <span className="text-header-muted" aria-hidden>
-              ·
-            </span>
-            <input
-              id="downPaymentAmount"
-              inputMode="numeric"
-              value={downPaymentAmount}
-              onChange={(event) => {
-                handleDownPaymentAmountChange(event.target.value);
-              }}
-              className={cn(valueInputClassName, 'w-[7.5rem]')}
-              aria-label={t('downPaymentAmount')}
-            />
-          </div>
-        </LoanRow>
+        <LoanField
+          label={t('downPayment')}
+          valueLabel={
+            Number.isFinite(parsedDownPercent) && Number.isFinite(parsedDownAmount)
+              ? `${parsedDownPercent.toFixed(0)}% · ${formatMortgageAmount(parsedDownAmount, locale)}`
+              : '—'
+          }
+        >
+          <MortgageLoanSlider
+            id="downPaymentPercent"
+            label={t('downPaymentPercent')}
+            min={minDownPercent}
+            max={MORTGAGE_SLIDER_DOWN_PAYMENT_MAX_PERCENT}
+            step={MORTGAGE_SLIDER_DOWN_PAYMENT_STEP}
+            value={downSliderValue}
+            onChange={(value) => {
+              handleDownPaymentPercentChange(String(value));
+            }}
+          />
+        </LoanField>
         {validationMessage ? <p className="mt-1 text-xs text-danger">{validationMessage}</p> : null}
 
-        <LoanRow label={t('loanTerm')}>
-          <span className="font-brand text-lg font-bold text-ink-navy">
-            {loanTermYears != null ? t('termYears', { years: loanTermYears }) : '—'}
-          </span>
-        </LoanRow>
-
-        <div className="mt-3 grid grid-cols-3 gap-2">
-          {selectedOffer.termOptionsYears.map((years) => {
-            const active = loanTermYears === years;
-            return (
-              <button
-                key={years}
-                type="button"
-                onClick={() => {
-                  setTermAdjustedHint(null);
-                  setLoanTermYears(years);
-                }}
-                className={cn(
-                  'inline-flex h-9 items-center justify-center rounded-[15px] text-sm font-semibold',
-                  'transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-deep/30',
-                  active
-                    ? 'bg-brand-deep text-on-dark'
-                    : 'bg-band-mist text-ink-navy hover:bg-band-mist/80',
-                )}
-              >
-                {t('termShort', { years })}
-              </button>
-            );
-          })}
-        </div>
+        <LoanField
+          label={t('loanTerm')}
+          valueLabel={loanTermYears != null ? t('termYears', { years: loanTermYears }) : '—'}
+        >
+          <div className="mt-3 grid grid-cols-3 gap-2">
+            {selectedOffer.termOptionsYears.map((years) => {
+              const active = loanTermYears === years;
+              return (
+                <button
+                  key={years}
+                  type="button"
+                  onClick={() => {
+                    setTermAdjustedHint(null);
+                    setLoanTermYears(years);
+                  }}
+                  className={cn(
+                    'inline-flex h-9 items-center justify-center rounded-[15px] text-sm font-semibold',
+                    'transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-deep/30',
+                    active
+                      ? 'bg-brand-deep text-on-dark'
+                      : 'bg-band-mist text-ink-navy hover:bg-band-mist/80',
+                  )}
+                >
+                  {t('termShort', { years })}
+                </button>
+              );
+            })}
+          </div>
+        </LoanField>
         {termAdjustedHint ? <p className="mt-2 text-xs text-warning">{termAdjustedHint}</p> : null}
 
         <div className="mt-8">
           <MortgageResultsPanel
-            result={calculationResult}
+            estimate={liveEstimate}
             bankName={selectedOffer.bank.name}
-            isCalculating={isCalculating}
             hasValidationError={validationMessage != null}
           />
         </div>
@@ -172,35 +215,24 @@ export const MortgageCalculatorSection = ({ offers }: MortgageCalculatorSectionP
   );
 };
 
-const valueInputClassName = cn(
-  'min-w-0 border-0 bg-transparent p-0 text-right',
-  'font-brand text-lg font-bold text-ink-navy tabular-nums',
-  'placeholder:font-medium placeholder:text-header-muted',
-  'focus-visible:outline-none',
-);
-
-const LoanRow = ({
+const LoanField = ({
   label,
-  htmlFor,
+  valueLabel,
   children,
 }: {
   label: string;
-  htmlFor?: string;
+  valueLabel: string;
   children: ReactNode;
 }) => (
-  <div className="mt-7 flex items-center justify-between gap-4 border-b border-header-border/60 pb-4">
-    {htmlFor ? (
-      <label
-        htmlFor={htmlFor}
-        className="shrink-0 text-[10px] font-bold tracking-widest text-header-muted uppercase"
-      >
-        {label}
-      </label>
-    ) : (
+  <div className="mt-7 border-b border-header-border/60 pb-5 last:border-b-0">
+    <div className="flex items-center justify-between gap-4">
       <span className="shrink-0 text-[10px] font-bold tracking-widest text-header-muted uppercase">
         {label}
       </span>
-    )}
-    <div className="min-w-0 flex-1">{children}</div>
+      <span className="min-w-0 text-right font-brand text-lg font-bold text-ink-navy tabular-nums">
+        {valueLabel}
+      </span>
+    </div>
+    {children}
   </div>
 );

@@ -1,9 +1,9 @@
 'use client';
 
-import { Building2 } from 'lucide-react';
+import { Building2, SearchX } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import {
   buildCompanyReadinessMap,
@@ -14,40 +14,58 @@ import { CreateCompanySheet } from '@/features/admin/components/create-company-s
 import {
   ADMIN_COMPANIES_DEFAULT_PAGE_SIZE,
   ADMIN_COMPANIES_MAX_PAGE_SIZE,
+  ADMIN_PROJECTS_SEARCH_DEBOUNCE_MS,
   ADMIN_VIEW_MODE_KEYS,
 } from '@/features/admin/constants';
 import { useAdminCompaniesQuery } from '@/features/admin/hooks/use-admin-companies';
 import { useAdminReadinessAssessmentsQuery } from '@/features/admin/hooks/use-admin-readiness';
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
 import { usePathname, useRouter } from '@/i18n/navigation';
+import { useDebouncedValue } from '@/shared/hooks/use-debounced-value';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { Button } from '@/shared/ui/button';
-import { Reveal } from '@/shared/ui/motion';
-import { PageTitleBlock } from '@/shared/ui/page-title-icon';
+import { EmptyState } from '@/shared/ui/empty-state';
+import { ListPageHeader } from '@/shared/ui/list-page-header';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
-const CONTENT_BASE_DELAY_MS = 80;
+const FIRST_PAGE = 1;
 
 const parsePage = (raw: string | null): number => {
   const parsed = Number(raw);
-  if (!Number.isFinite(parsed) || parsed < 1) {
-    return 1;
+  if (!Number.isFinite(parsed) || parsed < FIRST_PAGE) {
+    return FIRST_PAGE;
   }
   return Math.floor(parsed);
 };
 
+const buildCompaniesHref = (pathname: string, page: number): string => {
+  if (page <= FIRST_PAGE) {
+    return pathname;
+  }
+  return `${pathname}?page=${page}`;
+};
+
 /**
- * Admin companies list with pagination, create sheet, and company detail sheet.
+ * Admin companies list with search, pagination, create sheet, and detail sheet.
  */
 export const CompaniesListPage = () => {
   const t = useTranslations('Admin.companies');
+  const tCommon = useTranslations('Common.integratedSearch');
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
   const page = parsePage(searchParams.get('page'));
   const pageSize = ADMIN_COMPANIES_DEFAULT_PAGE_SIZE;
-  const query = useAdminCompaniesQuery(page, pageSize, { type: 'builder' });
+  const [search, setSearch] = useState('');
+  const trimmedSearch = search.trim();
+  const debouncedSearch = useDebouncedValue(trimmedSearch, ADMIN_PROJECTS_SEARCH_DEBOUNCE_MS);
+  const activeSearch = trimmedSearch.length === 0 ? '' : debouncedSearch;
+
+  const query = useAdminCompaniesQuery(page, pageSize, {
+    type: 'builder',
+    ...(activeSearch ? { search: activeSearch } : {}),
+  });
   const readinessQuery = useAdminReadinessAssessmentsQuery({
     page: 1,
     pageSize: ADMIN_COMPANIES_MAX_PAGE_SIZE,
@@ -58,6 +76,12 @@ export const CompaniesListPage = () => {
   const { viewMode, effectiveViewMode, setViewMode } = usePersistedViewMode(
     ADMIN_VIEW_MODE_KEYS.companies,
   );
+
+  const loadedSearchRef = useRef(activeSearch);
+  if (!query.isPlaceholderData && query.data) {
+    loadedSearchRef.current = activeSearch;
+  }
+  const isSearchSettling = loadedSearchRef.current !== trimmedSearch;
 
   const readinessByCompanyId = useMemo(
     () => buildCompanyReadinessMap(readinessQuery.data?.data ?? []),
@@ -92,21 +116,31 @@ export const CompaniesListPage = () => {
     setSelectedCompanyId(companyId);
   };
 
+  const handleSearchChange = (value: string): void => {
+    setSearch(value);
+    if (page > FIRST_PAGE) {
+      router.replace(buildCompaniesHref(pathname, FIRST_PAGE));
+    }
+  };
+
   const response = query.data;
   const totalCount = response?.meta.total ?? 0;
 
   return (
     <div className="flex flex-col gap-6">
-      <Reveal force>
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <PageTitleBlock
-            title={t('title')}
-            subtitle={
-              query.isLoading ? t('loading') : t('subtitle', { count: totalCount })
-            }
-            icon={Building2}
-          />
-          <div className="flex flex-wrap items-center gap-2">
+      <ListPageHeader
+        icon={Building2}
+        title={t('title')}
+        subtitle={query.isLoading ? t('loading') : t('subtitle', { count: totalCount })}
+        search={search}
+        searchPlaceholder={t('searchPlaceholder')}
+        searchAriaLabel={tCommon('searchLabel')}
+        onSearchChange={handleSearchChange}
+        onClearAll={() => {
+          handleSearchChange('');
+        }}
+        actions={
+          <>
             <ViewModeToggle value={viewMode} onChange={setViewMode} />
             <Button
               type="button"
@@ -120,42 +154,45 @@ export const CompaniesListPage = () => {
             >
               <AddActionLabel>{t('newCompany')}</AddActionLabel>
             </Button>
-          </div>
-        </div>
-      </Reveal>
+          </>
+        }
+      />
 
       {query.isLoading ? null : query.isError || !response ? (
         <p role="alert" className="text-sm text-danger">
           {t('error')}
         </p>
+      ) : isSearchSettling ? (
+        <p className="text-sm text-ink-secondary">{t('loading')}</p>
+      ) : response.data.length === 0 ? (
+        <div className="flex min-h-72 items-center justify-center">
+          <EmptyState
+            icon={activeSearch ? SearchX : Building2}
+            title={activeSearch ? t('noResultsTitle') : t('empty')}
+            description={activeSearch ? t('noResults', { query: activeSearch }) : undefined}
+            actionLabel={activeSearch ? t('clearSearch') : undefined}
+            onAction={activeSearch ? () => handleSearchChange('') : undefined}
+            className="w-full max-w-md border-solid border-border/70 bg-surface-elevated px-6 py-10 shadow-sm sm:px-10 sm:py-12"
+          />
+        </div>
       ) : (
         <>
-          {response.data.length === 0 ? (
-            <Reveal force delayMs={CONTENT_BASE_DELAY_MS}>
-              <p className="text-sm text-ink-secondary">{t('empty')}</p>
-            </Reveal>
-          ) : (
-            <CompaniesTable
-              companies={response.data}
-              readinessByCompanyId={readinessByCompanyId}
-              onSelectCompany={handleSelectCompany}
-              viewMode={effectiveViewMode}
-            />
-          )}
+          <CompaniesTable
+            companies={response.data}
+            readinessByCompanyId={readinessByCompanyId}
+            onSelectCompany={handleSelectCompany}
+            viewMode={effectiveViewMode}
+          />
 
           <CatalogPagination
             page={response.meta.page}
             totalPages={response.meta.totalPages}
             previousHref={
-              response.meta.page > 1
-                ? response.meta.page - 1 <= 1
-                  ? '/admin/companies'
-                  : `/admin/companies?page=${response.meta.page - 1}`
-                : null
+              response.meta.page > 1 ? buildCompaniesHref(pathname, response.meta.page - 1) : null
             }
             nextHref={
               response.meta.page < response.meta.totalPages
-                ? `/admin/companies?page=${response.meta.page + 1}`
+                ? buildCompaniesHref(pathname, response.meta.page + 1)
                 : null
             }
             previousLabel={t('pagination.previous')}

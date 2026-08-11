@@ -27,10 +27,12 @@ import {
 
 export type AdminCompaniesQueryOptions = {
   type?: CompanyType;
+  search?: string;
 };
 
 /**
  * Paginated company list for the admin companies table.
+ * Keeps the previous page visible while a new search/page loads.
  */
 export const useAdminCompaniesQuery = (
   page: number,
@@ -38,8 +40,12 @@ export const useAdminCompaniesQuery = (
   options: AdminCompaniesQueryOptions = {},
 ) =>
   useQuery({
-    queryKey: [...ADMIN_COMPANIES_QUERY_KEY, { page, pageSize, type: options.type ?? null }],
+    queryKey: [
+      ...ADMIN_COMPANIES_QUERY_KEY,
+      { page, pageSize, type: options.type ?? null, search: options.search ?? '' },
+    ],
     queryFn: () => listAdminCompanies(page, pageSize, options),
+    placeholderData: keepPreviousData,
   });
 
 /**

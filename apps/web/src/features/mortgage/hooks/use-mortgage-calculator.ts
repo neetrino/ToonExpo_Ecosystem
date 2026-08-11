@@ -4,9 +4,13 @@ import type { PublicMortgageOfferItem } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import { MORTGAGE_CALCULATOR_DEBOUNCE_MS } from '@/features/mortgage/constants';
+import {
+  MORTGAGE_CALCULATOR_DEBOUNCE_MS,
+  MORTGAGE_DEFAULT_PROPERTY_PRICE_AMD,
+} from '@/features/mortgage/constants';
 import { useMortgageCalculateMutation } from '@/features/mortgage/hooks/use-public-mortgage';
 import { mortgageCalculatorSchema } from '@/features/mortgage/schemas/mortgage-calculator.schema';
+import { estimateMonthlyPayment } from '@/features/mortgage/utils/estimate-monthly-payment';
 import { resolveMortgageCalculatorValidationMessage } from '@/features/mortgage/utils/mortgage-calculator-validation';
 import { pickNearestLoanTerm } from '@/features/mortgage/utils/mortgage-term';
 
@@ -22,10 +26,16 @@ export const useMortgageCalculator = ({ offers }: UseMortgageCalculatorParams) =
   const t = useTranslations('Mortgage.calculator');
   const { mutate, data, isPending } = useMortgageCalculateMutation();
 
-  const [selectedOfferId, setSelectedOfferId] = useState(offers[0]?.id ?? '');
-  const [propertyPrice, setPropertyPrice] = useState('');
-  const [downPaymentPercent, setDownPaymentPercent] = useState('');
-  const [downPaymentAmount, setDownPaymentAmount] = useState('');
+  const initialOffer = offers[0];
+  const initialMinPercent = initialOffer ? Number(initialOffer.minDownPaymentPercent) : 20;
+  const initialDownAmount = Math.round(
+    (MORTGAGE_DEFAULT_PROPERTY_PRICE_AMD * initialMinPercent) / 100,
+  );
+
+  const [selectedOfferId, setSelectedOfferId] = useState(initialOffer?.id ?? '');
+  const [propertyPrice, setPropertyPrice] = useState(String(MORTGAGE_DEFAULT_PROPERTY_PRICE_AMD));
+  const [downPaymentPercent, setDownPaymentPercent] = useState(String(initialMinPercent));
+  const [downPaymentAmount, setDownPaymentAmount] = useState(String(initialDownAmount));
   const [loanTermYears, setLoanTermYears] = useState<number | null>(null);
   const [termAdjustedHint, setTermAdjustedHint] = useState<string | null>(null);
   const [validationMessage, setValidationMessage] = useState<string | null>(null);
@@ -149,7 +159,6 @@ export const useMortgageCalculator = ({ offers }: UseMortgageCalculatorParams) =
       return;
     }
 
-    // Empty price = pristine form; do not show validation errors yet.
     if (propertyPrice.trim() === '') {
       setValidationMessage(null);
       return;
@@ -197,11 +206,34 @@ export const useMortgageCalculator = ({ offers }: UseMortgageCalculatorParams) =
 
   const monthlyPaymentByOffer = useMemo(() => {
     const map = new Map<string, number>();
-    if (data && selectedOfferId) {
-      map.set(selectedOfferId, data.monthlyPayment);
+    if (
+      !Number.isFinite(parsedPropertyPrice) ||
+      parsedPropertyPrice <= 0 ||
+      !Number.isFinite(parsedDownPaymentPercent) ||
+      loanTermYears == null
+    ) {
+      return map;
     }
+
+    for (const offer of offers) {
+      const minPercent = Number(offer.minDownPaymentPercent);
+      if (parsedDownPaymentPercent + 1e-9 < minPercent) {
+        continue;
+      }
+      const term = pickNearestLoanTerm(loanTermYears, offer.termOptionsYears);
+      const monthly = estimateMonthlyPayment({
+        propertyPrice: parsedPropertyPrice,
+        downPaymentPercent: parsedDownPaymentPercent,
+        annualRatePercent: Number(offer.rate),
+        loanTermYears: term,
+      });
+      if (monthly != null) {
+        map.set(offer.id, monthly);
+      }
+    }
+
     return map;
-  }, [data, selectedOfferId]);
+  }, [offers, parsedPropertyPrice, parsedDownPaymentPercent, loanTermYears]);
 
   return {
     selectedOffer,

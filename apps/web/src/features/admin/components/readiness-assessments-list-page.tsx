@@ -189,9 +189,7 @@ export const ReadinessAssessmentsListPage = () => {
         totalPages={buildersMeta.totalPages}
         previousHref={buildersMeta.page > 1 ? buildHref(buildersMeta.page - 1) : null}
         nextHref={
-          buildersMeta.page < buildersMeta.totalPages
-            ? buildHref(buildersMeta.page + 1)
-            : null
+          buildersMeta.page < buildersMeta.totalPages ? buildHref(buildersMeta.page + 1) : null
         }
         previousLabel={t('pagination.previous')}
         nextLabel={t('pagination.next')}
