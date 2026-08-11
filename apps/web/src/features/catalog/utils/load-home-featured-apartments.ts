@@ -23,9 +23,11 @@ export const loadHomeFeaturedApartments = async (locale: string): Promise<BuyApa
     return curated.data.map(toBuyApartmentListing);
   }
 
-  return loadBuyApartmentListings({
+  const fallback = await loadBuyApartmentListings({
     locale,
     filters: { page: 1, pageSize: HOME_FEATURED_APARTMENT_LIMIT, salesStatus: 'available' },
     limit: HOME_FEATURED_APARTMENT_LIMIT,
   });
+
+  return fallback.data;
 };

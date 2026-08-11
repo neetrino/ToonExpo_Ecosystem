@@ -1,9 +1,11 @@
-import type { ApartmentListItem, PriceVisibility } from '@toonexpo/contracts';
+import type {
+  ApartmentListItem,
+  PaginatedResponse,
+  PriceVisibility,
+} from '@toonexpo/contracts';
 
 import { listApartments } from '@/features/catalog/api/catalog-api';
-import type { ProjectFilterParams } from '@/features/catalog/utils/project-filters';
-
-const BUY_APARTMENT_LIMIT = 24;
+import { PROJECT_PAGE_SIZE, type ProjectFilterParams } from '@/features/catalog/utils/project-filters';
 
 export type BuyApartmentListing = {
   id: string;
@@ -23,6 +25,8 @@ export type BuyApartmentListing = {
   projectId: string;
   projectName: string;
 };
+
+export type BuyApartmentListingsPage = PaginatedResponse<BuyApartmentListing>;
 
 /**
  * Maps a public apartment list row to Buy-page card props.
@@ -61,20 +65,31 @@ export const toBuyApartmentListing = (apartment: ApartmentListItem): BuyApartmen
 };
 
 /**
- * Loads Buy-page apartment cards from the public apartments catalog.
+ * Empty paginated Buy listings (Nest offline / soft-fail).
+ */
+export const emptyBuyApartmentListingsPage = (
+  pageSize: number = PROJECT_PAGE_SIZE,
+): BuyApartmentListingsPage => ({
+  data: [],
+  meta: { page: 1, pageSize, total: 0, totalPages: 0 },
+});
+
+/**
+ * Loads one page of Buy-page apartment cards from the public apartments catalog.
  */
 export const loadBuyApartmentListings = async (options: {
   locale: string;
   filters: ProjectFilterParams;
+  /** Overrides `filters.pageSize` (homepage featured band). */
   limit?: number;
-}): Promise<BuyApartmentListing[]> => {
+}): Promise<BuyApartmentListingsPage> => {
   const { locale, filters } = options;
-  const limit = options.limit ?? BUY_APARTMENT_LIMIT;
-  const pageSize = Math.min(limit, filters.pageSize || BUY_APARTMENT_LIMIT);
+  const pageSize = options.limit ?? filters.pageSize ?? PROJECT_PAGE_SIZE;
+  const page = filters.page || 1;
 
   const response = await listApartments(
     {
-      page: filters.page || 1,
+      page,
       pageSize,
       ...(filters.salesStatus ? { salesStatus: filters.salesStatus } : {}),
       ...(filters.minPrice != null ? { minPrice: filters.minPrice } : {}),
@@ -84,10 +99,14 @@ export const loadBuyApartmentListings = async (options: {
       ...(filters.builderId ? { builderId: filters.builderId } : {}),
       ...(filters.q ? { q: filters.q } : {}),
     },
-    { locale },
+    // Inventory publishes from Admin must appear immediately (avoid stale Data Cache totals).
+    { locale, cacheMode: 'no-store' },
   );
 
-  return response.data.slice(0, limit).map(toBuyApartmentListing);
+  return {
+    data: response.data.map(toBuyApartmentListing),
+    meta: response.meta,
+  };
 };
 
 const toCoord = (value: string | null): number | null => {

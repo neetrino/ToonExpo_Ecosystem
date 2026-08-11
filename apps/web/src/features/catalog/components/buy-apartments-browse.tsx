@@ -6,7 +6,12 @@ import { useTranslations } from 'next-intl';
 import { BuyApartmentCard } from '@/features/catalog/components/buy-apartment-card';
 import { BuyApartmentsMap } from '@/features/catalog/components/buy-apartments-map';
 import { BuyMapProjectFilterChip } from '@/features/catalog/components/buy-map-project-filter-chip';
+import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
 import { BUY_APARTMENTS_MAP_HOVER_DEBOUNCE_MS } from '@/features/catalog/constants';
+import {
+  CATALOG_RESULTS_SCROLL_ID,
+  CATALOG_RESULTS_SCROLL_MARGIN_CLASS,
+} from '@/features/catalog/constants/catalog-list';
 import type { BuyApartmentListing } from '@/features/catalog/utils/load-buy-apartments';
 import { filterListingsByProjectId } from '@/features/catalog/utils/filter-listings-by-project';
 import { resolveMapObjectForProject } from '@/features/catalog/utils/resolve-map-object-for-project';
@@ -15,10 +20,17 @@ import { mapPublicGeoMapItemsToObjects } from '@/features/geo-map/utils/map-obje
 import { usePublicGeoMapModelsQuery } from '@/features/geo-map/public/hooks/use-public-geo-map-models';
 import { buildProjectPublicHref } from '@/features/geo-map/public/utils/build-project-public-href';
 import { Link, usePathname } from '@/i18n/navigation';
+import { cn } from '@/shared/ui/cn';
 import { EmptyState } from '@/shared/ui/empty-state';
 
 type BuyApartmentsBrowseProps = {
   listings: BuyApartmentListing[];
+  /** Matching apartments across all pages (API `meta.total`). */
+  totalCount: number;
+  page: number;
+  totalPages: number;
+  previousHref: string | null;
+  nextHref: string | null;
 };
 
 /**
@@ -26,8 +38,16 @@ type BuyApartmentsBrowseProps = {
  * List → map via card hover; map → list via project filter on model click.
  * Hover is the primary list→map sync; the filter chip is only set on explicit model click.
  */
-export const BuyApartmentsBrowse = ({ listings }: BuyApartmentsBrowseProps) => {
+export const BuyApartmentsBrowse = ({
+  listings,
+  totalCount,
+  page,
+  totalPages,
+  previousHref,
+  nextHref,
+}: BuyApartmentsBrowseProps) => {
   const t = useTranslations('BuyPage');
+  const catalogT = useTranslations('Catalog');
   const pathname = usePathname();
   const modelsQuery = usePublicGeoMapModelsQuery();
   const listPanelRef = useRef<HTMLDivElement>(null);
@@ -50,6 +70,8 @@ export const BuyApartmentsBrowse = ({ listings }: BuyApartmentsBrowseProps) => {
     () => filterListingsByProjectId(listings, mapProjectId),
     [listings, mapProjectId],
   );
+
+  const resultsCount = mapProjectId != null ? visibleListings.length : totalCount;
 
   useEffect(() => {
     return () => {
@@ -114,13 +136,17 @@ export const BuyApartmentsBrowse = ({ listings }: BuyApartmentsBrowseProps) => {
       />
 
       <div ref={listPanelRef} className="bg-canvas px-4 py-6 sm:px-6 lg:px-8 lg:overflow-y-auto">
-        <div className="mb-4 flex items-baseline justify-between gap-4">
+        <div
+          id={CATALOG_RESULTS_SCROLL_ID}
+          className={cn(
+            'mb-4 flex items-baseline justify-between gap-4',
+            CATALOG_RESULTS_SCROLL_MARGIN_CLASS,
+          )}
+        >
           <h1 className="font-brand text-[clamp(1.35rem,2.5vw,1.4rem)] font-bold tracking-[-0.02em] text-ink-navy">
             {t('title')}
           </h1>
-          <p className="text-sm text-header-muted">
-            {t('results', { count: visibleListings.length })}
-          </p>
+          <p className="text-sm text-header-muted">{t('results', { count: resultsCount })}</p>
         </div>
 
         {mapProjectId != null && mapProjectLabel != null ? (
@@ -146,6 +172,18 @@ export const BuyApartmentsBrowse = ({ listings }: BuyApartmentsBrowseProps) => {
             ))}
           </div>
         )}
+
+        <CatalogPagination
+          className="mt-8"
+          page={page}
+          totalPages={totalPages}
+          previousHref={previousHref}
+          nextHref={nextHref}
+          previousLabel={catalogT('pagination.previous')}
+          nextLabel={catalogT('pagination.next')}
+          ariaLabel={catalogT('pagination.ariaLabel')}
+          scrollTargetId={CATALOG_RESULTS_SCROLL_ID}
+        />
 
         <div className="mt-10 rounded-[20px] border border-dashed border-header-border px-6 py-8 text-center">
           <p className="text-sm text-header-muted">{t('saveSearchHint')}</p>
