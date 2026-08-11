@@ -64,7 +64,7 @@ export const ProjectLiveSearch = ({ filters }: ProjectLiveSearchProps) => {
       return;
     }
     startTransition(() => {
-      router.replace(buildProjectsHref(filtersRef.current, activeSearch));
+      router.replace(buildProjectsHref(filtersRef.current, activeSearch), { scroll: false });
     });
   }, [activeSearch, urlQ, router]);
 
