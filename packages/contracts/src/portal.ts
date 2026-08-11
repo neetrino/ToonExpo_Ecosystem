@@ -131,6 +131,8 @@ export type PortalApartmentDetail = {
   features: unknown;
   planMediaId: string | null;
   plan: MediaAssetSummary | null;
+  coverMediaId: string | null;
+  cover: MediaAssetSummary | null;
   createdAt: string;
   updatedAt: string;
   /** Existing Translation rows grouped by field → locale (portal edit prefills). */
@@ -245,6 +247,7 @@ export type CreatePortalApartmentRequest = {
   viewType?: string;
   features?: unknown;
   planMediaId?: string;
+  coverMediaId?: string;
   salesStatus?: ApartmentSalesStatus;
   translations?: PortalTranslationsInput;
 };
@@ -266,6 +269,7 @@ export type UpdatePortalApartmentRequest = {
   viewType?: string | null;
   features?: unknown;
   planMediaId?: string | null;
+  coverMediaId?: string | null;
   salesStatus?: ApartmentSalesStatus;
   statusChangeReason?: string;
   translations?: PortalTranslationsInput;

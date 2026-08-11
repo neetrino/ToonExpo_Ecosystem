@@ -21,6 +21,40 @@ import { buildApartmentUpdateData, createPortalApartmentRow } from './apartment-
 
 const APARTMENT_TRANSLATION_FIELDS = [TRANSLATION_FIELD.description] as const;
 
+const APARTMENT_MEDIA_SELECT = {
+  id: true,
+  fileUrl: true,
+  thumbnailUrl: true,
+  altText: true,
+} as const;
+
+const APARTMENT_DETAIL_INCLUDE = {
+  planMedia: { select: APARTMENT_MEDIA_SELECT },
+  coverMedia: { select: APARTMENT_MEDIA_SELECT },
+  floor: {
+    select: {
+      number: true,
+      displayLabel: true,
+      building: {
+        select: {
+          name: true,
+          project: {
+            select: {
+              name: true,
+              builderCompany: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+} as const;
+
 @Injectable()
 export class PortalApartmentsService {
   constructor(
@@ -33,38 +67,7 @@ export class PortalApartmentsService {
     const apartments = await this.prisma.db.apartment.findMany({
       where: { floorId },
       orderBy: [{ number: 'asc' }],
-      include: {
-        planMedia: {
-          select: {
-            id: true,
-            fileUrl: true,
-            thumbnailUrl: true,
-            altText: true,
-          },
-        },
-        floor: {
-          select: {
-            number: true,
-            displayLabel: true,
-            building: {
-              select: {
-                name: true,
-                project: {
-                  select: {
-                    name: true,
-                    builderCompany: {
-                      select: {
-                        id: true,
-                        name: true,
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
+      include: APARTMENT_DETAIL_INCLUDE,
     });
     return apartments.map((apartment) => mapPortalApartment(apartment));
   }
@@ -207,38 +210,7 @@ export class PortalApartmentsService {
   private async toApartmentDetail(apartment: { id: string }): Promise<PortalApartmentDetail> {
     const full = await this.prisma.db.apartment.findUniqueOrThrow({
       where: { id: apartment.id },
-      include: {
-        planMedia: {
-          select: {
-            id: true,
-            fileUrl: true,
-            thumbnailUrl: true,
-            altText: true,
-          },
-        },
-        floor: {
-          select: {
-            number: true,
-            displayLabel: true,
-            building: {
-              select: {
-                name: true,
-                project: {
-                  select: {
-                    name: true,
-                    builderCompany: {
-                      select: {
-                        id: true,
-                        name: true,
-                      },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
+      include: APARTMENT_DETAIL_INCLUDE,
     });
     const rows = await loadTranslations(this.prisma.db, TRANSLATION_ENTITY.apartment, [full.id]);
     const translations = groupPortalTranslations(rows, APARTMENT_TRANSLATION_FIELDS);

@@ -56,6 +56,7 @@ model MediaAsset {
   buildingCovers    Building[]      @relation("BuildingCover")
   floorPlans        Floor[]         @relation("FloorPlan")
   apartmentPlans    Apartment[]     @relation("ApartmentPlan")
+  apartmentCovers   Apartment[]     @relation("ApartmentCover")
   partnerLogos      PartnerCompany[] @relation("PartnerLogo")
   partnerCovers     PartnerCompany[] @relation("PartnerCover")
   venueMaps         VenueMap[]
@@ -210,6 +211,8 @@ model Apartment {
   priceVisibility         PriceVisibility      @default(public) @map("price_visibility")
   description             String?
   planMediaId             String?              @map("plan_media_id")
+  /// Card / listing cover (preferred over project/building cover on inventory cards).
+  coverMediaId            String?              @map("cover_media_id")
   matterportUrl           String?              @map("matterport_url")
   external3dUrl           String?              @map("external_3d_url")
   orientation             String?
@@ -233,6 +236,7 @@ model Apartment {
   building      Building                  @relation(fields: [buildingId], references: [id], onDelete: Cascade)
   floor         Floor                     @relation(fields: [floorId], references: [id], onDelete: Cascade)
   planMedia     MediaAsset?               @relation("ApartmentPlan", fields: [planMediaId], references: [id], onDelete: SetNull)
+  coverMedia    MediaAsset?               @relation("ApartmentCover", fields: [coverMediaId], references: [id], onDelete: SetNull)
   statusHistory ApartmentStatusHistory[]
   requests      Request[]
   dealLinks     CrmDealApartmentLink[]

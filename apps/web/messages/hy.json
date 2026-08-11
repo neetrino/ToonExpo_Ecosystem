@@ -3167,6 +3167,10 @@
       "planTitle": "Բնակարանի պլան",
       "planAlt": "Բնակարանի պլան",
       "planViewHint": "Դիտել բնակարանի պլանը ամբողջ էկրանով",
+      "coverTitle": "Կարտի շապիկի նկար",
+      "coverHint": "Ցուցադրվում է այս բնակարանի կարտերում։ Եթե դատարկ է՝ կարտում նկար չի լինի։",
+      "saveCover": "Պահպանել շապիկը",
+      "coverSaved": "Շապիկի նկարը պահպանված է",
       "meta": {
         "company": "Ընկերություն",
         "building": "Շենք",
@@ -3191,6 +3195,7 @@
         "salesStatus": "Վաճառքի կարգավիճակ",
         "statusChangeReason": "Կարգավիճակի փոփոխության պատճառ",
         "description": "Նկարագրություն",
+        "coverMedia": "Շապիկի նկար",
         "planMedia": "Հատակագծի նկար",
         "matterportUrl": "Matterport հղում",
         "external3dUrl": "Արտաքին 3D հղում"
@@ -3791,7 +3796,9 @@
   "Media": {
     "upload": {
       "browse": "Ընտրել պատկեր",
+      "replace": "Փոխարինել պատկերը",
       "uploading": "Վերբեռնվում է…",
+      "clear": "Հեռացնել պատկերը",
       "remove": "Ջնջել",
       "removing": "Ջնջվում է…",
       "removeConfirmTitle": "Ջնջե՞լ պատկերը",

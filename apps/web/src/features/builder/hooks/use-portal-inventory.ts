@@ -10,6 +10,7 @@ import type {
   UpdatePortalFloorRequest,
 } from '@toonexpo/contracts';
 
+import { ADMIN_APARTMENTS_QUERY_KEY } from '@/features/admin/constants';
 import {
   bulkCreatePortalApartments,
   getPortalApartment,
@@ -153,6 +154,7 @@ export const useUpdateApartmentMutation = (id: string) => {
       void queryClient.invalidateQueries({
         queryKey: portalFloorApartmentsQueryKey(apartment.floorId),
       });
+      void queryClient.invalidateQueries({ queryKey: ADMIN_APARTMENTS_QUERY_KEY });
       invalidateProject(queryClient, apartment.projectId);
     },
   });

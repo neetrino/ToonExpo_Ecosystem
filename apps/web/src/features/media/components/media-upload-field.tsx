@@ -26,6 +26,8 @@ export type MediaUploadFieldProps = {
   /** Fired with the full asset after upload or library pick (optional). */
   onAssetSelected?: ((asset: MediaAssetItem) => void) | undefined;
   previewUrl?: string | null | undefined;
+  /** When true (default), shows a control to clear the selected image. */
+  allowClear?: boolean | undefined;
   error?: string | undefined;
 };
 
@@ -40,6 +42,7 @@ export const MediaUploadField = ({
   onChange,
   onAssetSelected,
   previewUrl,
+  allowClear = true,
   error,
 }: MediaUploadFieldProps) => {
   const t = useTranslations("Media.upload");
@@ -47,7 +50,7 @@ export const MediaUploadField = ({
   const [busy, setBusy] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(
-    previewUrl ?? null,
+    previewUrl?.trim() || null,
   );
   const [showLibrary, setShowLibrary] = useState(false);
   const [libraryItems, setLibraryItems] = useState<MediaAssetItem[]>([]);
@@ -56,10 +59,10 @@ export const MediaUploadField = ({
   const [libraryLoading, setLibraryLoading] = useState(false);
 
   useEffect(() => {
-    if (previewUrl) {
-      setThumbnailUrl(previewUrl);
-    }
+    setThumbnailUrl(previewUrl?.trim() || null);
   }, [previewUrl]);
+
+  const hasSelection = value.trim().length > 0 || Boolean(thumbnailUrl);
 
   const validateFile = useCallback(
     (file: File): string | null => {
@@ -73,6 +76,12 @@ export const MediaUploadField = ({
     },
     [t],
   );
+
+  const clearSelection = () => {
+    setThumbnailUrl(null);
+    setLocalError(null);
+    onChange("");
+  };
 
   const handleUpload = async (file: File) => {
     const validationError = validateFile(file);
@@ -135,18 +144,20 @@ export const MediaUploadField = ({
         )}
       >
         {thumbnailUrl ? (
-          <img
-            src={thumbnailUrl}
-            alt=""
-            className="mb-3 max-h-40 w-auto rounded-sm border border-border object-contain"
-          />
+          <div className="mb-3 overflow-hidden rounded-sm border border-border bg-surface">
+            <img
+              src={thumbnailUrl}
+              alt=""
+              className="mx-auto max-h-56 w-full object-contain"
+            />
+          </div>
         ) : null}
         <div className="flex flex-wrap items-center gap-2">
           <label
             htmlFor={inputId}
             className="inline-flex cursor-pointer items-center rounded-sm border border-border px-3 py-2 text-sm font-medium text-ink hover:bg-surface-muted"
           >
-            {busy ? t("uploading") : t("browse")}
+            {busy ? t("uploading") : thumbnailUrl ? t("replace") : t("browse")}
           </label>
           <input
             id={inputId}
@@ -173,13 +184,19 @@ export const MediaUploadField = ({
           >
             {t("useExisting")}
           </Button>
+          {allowClear && hasSelection ? (
+            <Button
+              type="button"
+              size="sm"
+              variant="ghost"
+              disabled={busy}
+              onClick={clearSelection}
+            >
+              {t("clear")}
+            </Button>
+          ) : null}
         </div>
         <p className="mt-2 text-xs text-ink-muted">{t("hint")}</p>
-        {value ? (
-          <p className="mt-1 text-xs text-ink-secondary">
-            {t("selectedId", { id: value })}
-          </p>
-        ) : null}
       </div>
       {showLibrary ? (
         <LibraryPanel

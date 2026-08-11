@@ -26,6 +26,7 @@ type ApartmentFavoriteSource = {
   price: Prisma.Decimal | null;
   priceCurrency: string;
   priceVisibility: string;
+  coverMedia: Parameters<typeof toMediaSummary>[0];
   project: {
     id: string;
     name: string;
@@ -33,7 +34,6 @@ type ApartmentFavoriteSource = {
     city: string | null;
     district: string | null;
     locationText: string | null;
-    coverMedia: Parameters<typeof toMediaSummary>[0];
     builderCompany: {
       id: string;
       name: string;
@@ -83,7 +83,7 @@ export const mapFavoriteApartmentCard = (
     price: revealPrice ? decimalToString(apartment.price) : null,
     priceCurrency: apartment.priceCurrency,
     priceVisibility: apartment.priceVisibility as PriceVisibility,
-    cover: toMediaSummary(apartment.project.coverMedia),
+    cover: toMediaSummary(apartment.coverMedia),
     city: apartment.project.city,
     district: apartment.project.district,
     locationText: resolveTranslatedValue(

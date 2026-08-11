@@ -186,17 +186,17 @@ export class AdminInventoryService {
           projectId: true,
           featuredOnHome: true,
           floor: { select: { number: true } },
+          coverMedia: {
+            select: {
+              id: true,
+              fileUrl: true,
+              thumbnailUrl: true,
+              altText: true,
+            },
+          },
           building: {
             select: {
               name: true,
-              coverMedia: {
-                select: {
-                  id: true,
-                  fileUrl: true,
-                  thumbnailUrl: true,
-                  altText: true,
-                },
-              },
             },
           },
           project: {
@@ -204,14 +204,6 @@ export class AdminInventoryService {
               name: true,
               builderCompanyId: true,
               builderCompany: { select: { name: true } },
-              coverMedia: {
-                select: {
-                  id: true,
-                  fileUrl: true,
-                  thumbnailUrl: true,
-                  altText: true,
-                },
-              },
             },
           },
         },
@@ -234,9 +226,7 @@ export class AdminInventoryService {
         builderCompanyId: apartment.project.builderCompanyId,
         companyName: apartment.project.builderCompany.name,
         featuredOnHome: apartment.featuredOnHome,
-        cover:
-          toMediaSummary(apartment.project.coverMedia) ??
-          toMediaSummary(apartment.building.coverMedia),
+        cover: toMediaSummary(apartment.coverMedia),
       })),
       meta: {
         ...this.toMeta(page, pageSize, total),

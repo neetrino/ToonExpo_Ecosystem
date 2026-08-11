@@ -241,7 +241,7 @@ export type AdminApartmentListItem = {
   companyName: string;
   /** Admin-curated homepage featured listings (max 6). */
   featuredOnHome: boolean;
-  /** Main card image — project cover, else building cover. */
+  /** Main card image — apartment cover only (no project/building fallback). */
   cover: MediaAssetSummary | null;
 };
 

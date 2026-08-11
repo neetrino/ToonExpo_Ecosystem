@@ -6,6 +6,7 @@ import { useState } from 'react';
 
 import { catalogProjectDetailHref, isSafeAppReturnPath } from '@/features/builder/catalog-scope';
 import { useCatalogScope } from '@/features/builder/catalog-scope-context';
+import { EditApartmentCoverForm } from '@/features/builder/components/edit-apartment-cover-form';
 import { EditApartmentForm } from '@/features/builder/components/edit-apartment-form';
 import { usePortalApartmentQuery } from '@/features/builder/hooks/use-portal-inventory';
 import { ApartmentSalesStatusBadge } from '@/shared/ui/apartment-sales-status-badge';
@@ -18,7 +19,7 @@ type ApartmentDetailPageProps = {
 };
 
 /**
- * Apartment edit page. Shows plan image first when present.
+ * Apartment edit page. Cover card image first, then plan and details.
  */
 export const ApartmentDetailPage = ({ apartmentId }: ApartmentDetailPageProps) => {
   const scope = useCatalogScope();
@@ -75,6 +76,16 @@ export const ApartmentDetailPage = ({ apartmentId }: ApartmentDetailPageProps) =
           </p>
         </div>
       </div>
+
+      <section className="overflow-hidden rounded-lg border border-border bg-surface-elevated">
+        <div className="border-b border-border px-4 py-3">
+          <h2 className="text-sm font-semibold text-ink">{t('coverTitle')}</h2>
+          <p className="mt-0.5 text-xs text-ink-secondary">{t('coverHint')}</p>
+        </div>
+        <div className="p-4">
+          <EditApartmentCoverForm apartment={apartment} />
+        </div>
+      </section>
 
       {apartment.plan ? (
         <section className="overflow-hidden rounded-lg border border-border bg-surface-elevated">

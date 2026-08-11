@@ -41,6 +41,7 @@ type ApartmentRow = {
   viewType: string | null;
   features: Prisma.JsonValue;
   planMediaId: string | null;
+  coverMediaId: string | null;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -131,6 +132,9 @@ export const createPortalApartmentRow = async (
       ...(dto.planMediaId !== undefined
         ? { planMediaId: dto.planMediaId }
         : {}),
+      ...(dto.coverMediaId !== undefined
+        ? { coverMediaId: dto.coverMediaId }
+        : {}),
     },
   });
 
@@ -180,6 +184,7 @@ export const buildApartmentUpdateData = (
     ? { features: dto.features as Prisma.InputJsonValue }
     : {}),
   ...(dto.planMediaId !== undefined ? { planMediaId: dto.planMediaId } : {}),
+  ...(dto.coverMediaId !== undefined ? { coverMediaId: dto.coverMediaId } : {}),
   ...(dto.salesStatus !== undefined
     ? { salesStatus: dto.salesStatus as ApartmentSalesStatus }
     : {}),

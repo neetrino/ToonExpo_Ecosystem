@@ -130,6 +130,11 @@ export class CreatePortalApartmentDto {
   @IsString()
   planMediaId?: string;
 
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  coverMediaId?: string;
+
   @ApiPropertyOptional({ enum: SalesStatusDto })
   @IsOptional()
   @IsEnum(SalesStatusDto)
@@ -249,6 +254,12 @@ export class UpdatePortalApartmentDto {
   @ValidateIf((_, value) => value !== null)
   @IsString()
   planMediaId?: string | null;
+
+  @ApiPropertyOptional({ nullable: true })
+  @IsOptional()
+  @ValidateIf((_, value) => value !== null)
+  @IsString()
+  coverMediaId?: string | null;
 
   @ApiPropertyOptional({ enum: SalesStatusDto })
   @IsOptional()

@@ -64,6 +64,7 @@ export class ApartmentsService {
           priceCurrency: true,
           priceVisibility: true,
           projectId: true,
+          coverMedia: true,
           project: {
             select: {
               id: true,
@@ -73,7 +74,6 @@ export class ApartmentsService {
               district: true,
               latitude: true,
               longitude: true,
-              coverMedia: true,
             },
           },
         },
@@ -116,7 +116,8 @@ export class ApartmentsService {
           district: apartment.project.district,
           latitude: decimalToString(apartment.project.latitude),
           longitude: decimalToString(apartment.project.longitude),
-          cover: toMediaSummary(apartment.project.coverMedia),
+          cover:
+            toMediaSummary(apartment.coverMedia),
         };
       }),
       meta: {
