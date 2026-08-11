@@ -5,8 +5,10 @@ import type {
 } from '@toonexpo/contracts';
 
 import { listApartments } from '@/features/catalog/api/catalog-api';
-import { PROJECT_PAGE_SIZE, type ProjectFilterParams } from '@/features/catalog/utils/project-filters';
+import type { ProjectFilterParams } from '@/features/catalog/utils/project-filters';
 
+/** Buy /apartments grid — fewer cards per page than the projects catalog. */
+export const BUY_APARTMENT_PAGE_SIZE = 10;
 export type BuyApartmentListing = {
   id: string;
   title: string;
@@ -68,7 +70,7 @@ export const toBuyApartmentListing = (apartment: ApartmentListItem): BuyApartmen
  * Empty paginated Buy listings (Nest offline / soft-fail).
  */
 export const emptyBuyApartmentListingsPage = (
-  pageSize: number = PROJECT_PAGE_SIZE,
+  pageSize: number = BUY_APARTMENT_PAGE_SIZE,
 ): BuyApartmentListingsPage => ({
   data: [],
   meta: { page: 1, pageSize, total: 0, totalPages: 0 },
@@ -84,7 +86,7 @@ export const loadBuyApartmentListings = async (options: {
   limit?: number;
 }): Promise<BuyApartmentListingsPage> => {
   const { locale, filters } = options;
-  const pageSize = options.limit ?? filters.pageSize ?? PROJECT_PAGE_SIZE;
+  const pageSize = options.limit ?? filters.pageSize ?? BUY_APARTMENT_PAGE_SIZE;
   const page = filters.page || 1;
 
   const response = await listApartments(

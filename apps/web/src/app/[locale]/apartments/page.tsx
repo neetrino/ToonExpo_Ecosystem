@@ -7,6 +7,7 @@ import { BuyApartmentsBrowse } from '@/features/catalog/components/buy-apartment
 import { BuyApartmentsFilters } from '@/features/catalog/components/buy-apartments-filters';
 import { SiteFooter } from '@/features/catalog/components/site-footer';
 import {
+  BUY_APARTMENT_PAGE_SIZE,
   emptyBuyApartmentListingsPage,
   loadBuyApartmentListings,
 } from '@/features/catalog/utils/load-buy-apartments';
@@ -50,6 +51,7 @@ export default async function ApartmentsIndexPage({
 
   const rawParams = await searchParams;
   const filters = parseProjectFilters(rawParams);
+  filters.pageSize = BUY_APARTMENT_PAGE_SIZE;
   if (!filters.salesStatus) {
     filters.salesStatus = 'available';
   }
