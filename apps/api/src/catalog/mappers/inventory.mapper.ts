@@ -24,6 +24,8 @@ const mapFloorApartment = (
     number: string;
     salesStatus: ApartmentSalesStatus;
     rooms: number | null;
+    bedrooms: number | null;
+    bathrooms: number | null;
     areaTotal: Prisma.Decimal | null;
     price: Prisma.Decimal | null;
     priceCurrency: string;
@@ -35,6 +37,8 @@ const mapFloorApartment = (
   number: apartment.number,
   salesStatus: apartment.salesStatus,
   rooms: apartment.rooms,
+  bedrooms: apartment.bedrooms,
+  bathrooms: apartment.bathrooms,
   areaTotal: apartment.areaTotal?.toString() ?? null,
   price: shouldRevealPrice(apartment.priceVisibility, isAuthenticated)
     ? (apartment.price?.toString() ?? null)
@@ -65,6 +69,8 @@ export const mapBuildingDetail = (
         number: string;
         salesStatus: ApartmentSalesStatus;
         rooms: number | null;
+        bedrooms: number | null;
+        bathrooms: number | null;
         areaTotal: Prisma.Decimal | null;
         price: Prisma.Decimal | null;
         priceCurrency: string;
@@ -129,6 +135,8 @@ export const mapFloorDetail = (
       number: string;
       salesStatus: ApartmentSalesStatus;
       rooms: number | null;
+      bedrooms: number | null;
+      bathrooms: number | null;
       areaTotal: Prisma.Decimal | null;
       price: Prisma.Decimal | null;
       priceCurrency: string;
