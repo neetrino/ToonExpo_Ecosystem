@@ -11,15 +11,15 @@ import { ProjectFiltersForm } from '@/features/catalog/components/project-filter
 import { ProjectsPageHero } from '@/features/catalog/components/projects-page-hero';
 import { SiteFooter } from '@/features/catalog/components/site-footer';
 import {
+  CATALOG_RESULTS_SCROLL_ID,
+  CATALOG_RESULTS_SCROLL_MARGIN_CLASS,
+} from '@/features/catalog/constants/catalog-list';
+import { cn } from '@/shared/ui/cn';
+import {
   buildProjectSearchParams,
   parseProjectFilters,
   toListProjectsQuery,
 } from '@/features/catalog/utils/project-filters';
-import {
-  CATALOG_RESULTS_SCROLL_ID,
-  CATALOG_RESULTS_SCROLL_MARGIN_CLASS,
-} from '@/features/catalog/constants/projects';
-import { cn } from '@/shared/ui/cn';
 
 type ProjectsPageProps = {
   params: Promise<{ locale: string }>;
