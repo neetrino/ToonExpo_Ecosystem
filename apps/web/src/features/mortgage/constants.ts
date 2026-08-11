@@ -18,6 +18,16 @@ export const MORTGAGE_PROPERTY_PRICE_MAX = 10_000_000_000;
 /** Debounce before calling POST /mortgage/calculate. */
 export const MORTGAGE_CALCULATOR_DEBOUNCE_MS = 400;
 
+/** Showcase default so the public page matches the Lovable filled calculator. */
+export const MORTGAGE_DEFAULT_PROPERTY_PRICE_AMD = 45_000_000;
+
+/** Slider bounds for the public calculator (AMD). */
+export const MORTGAGE_SLIDER_PROPERTY_PRICE_MIN = 10_000_000;
+export const MORTGAGE_SLIDER_PROPERTY_PRICE_MAX = 300_000_000;
+export const MORTGAGE_SLIDER_PROPERTY_PRICE_STEP = 1_000_000;
+export const MORTGAGE_SLIDER_DOWN_PAYMENT_MAX_PERCENT = 80;
+export const MORTGAGE_SLIDER_DOWN_PAYMENT_STEP = 1;
+
 export const PUBLIC_MORTGAGE_OFFERS_QUERY_KEY = ["public", "mortgage", "offers"] as const;
 
 export const ADMIN_BANK_OFFERS_QUERY_KEY = ["admin", "bank-offers"] as const;
