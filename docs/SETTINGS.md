@@ -75,16 +75,17 @@ Anonymous public SSR/RSC GETs use Next.js Data Cache with tag-based purge on pub
 
 ### TTLs
 
-| Content                                      | TTL                | Tag(s)                                                        |
-| -------------------------------------------- | ------------------ | ------------------------------------------------------------- |
-| Catalog / builders / exhibition / visual-map | **1800s** (30 min) | `catalog`, `catalog-project-<id>`, `exhibition`, `visual-map` |
-| Partners / mortgage offers                   | **3600s** (60 min) | `partners`, `mortgage`                                        |
+| Content                                      | TTL                                                         | Tag(s)                                                        |
+| -------------------------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------- |
+| Catalog list / builders / exhibition         | **1800s** (30 min)                                          | `catalog`, `exhibition`                                       |
+| Catalog project detail / visual-map / geo-map | **0** (always fresh; tag purge when `WEB_REVALIDATE_*` set) | `catalog`, `catalog-project-<id>`, `visual-map`, `geo-map`    |
+| Partners / mortgage offers                   | **3600s** (60 min)                                          | `partners`, `mortgage`                                        |
 
 Authenticated/private data (buyer QR, favorites, portals, admin) is never shared-cached.
 
 Цены `visible_after_login`: закэшированный HTML всегда анонимный; залогиненный покупатель получает цены после гидрации отдельным приватным запросом (`GET /api/v1/catalog/projects/:id/prices`, `no-store`). Настройки не требуются.
 
-### Publish invalidation (production)
+### Publish / content invalidation (production)
 
 Owner generates one secret (≥32 characters). Set the same value on both sides:
 
@@ -96,4 +97,6 @@ Owner generates one secret (≥32 characters). Set the same value on both sides:
 
 Webhook: `POST /api/revalidate` with header `x-revalidate-secret` and body `{ "tags": ["catalog", ...] }`.
 
-If these envs are unset, the cache is **TTL-only** (max staleness 30–60 min until natural expiry). Locally leave them unset unless testing purge.
+API purges catalog tags after **publication changes** and after **content/translation updates on published projects** (so Admin save is visible on the public site without waiting for TTL).
+
+If these envs are unset, project detail / visual-map / geo-map still stay fresh via TTL **0**; list/partners stay TTL-only until natural expiry.

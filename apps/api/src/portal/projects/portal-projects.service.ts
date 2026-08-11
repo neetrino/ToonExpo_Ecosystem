@@ -200,6 +200,11 @@ export class PortalProjectsService {
       });
     }
 
+    // Published project copy must appear on the public site immediately after Admin/portal save.
+    if (project.publicationStatus === PublicationStatus.published) {
+      this.webRevalidation.revalidateCatalog(projectId);
+    }
+
     return this.toProjectDetail(project);
   }
 
