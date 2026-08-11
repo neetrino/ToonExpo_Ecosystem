@@ -1,22 +1,29 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import type { UseFormRegister } from 'react-hook-form';
+import { Controller, type Control, type UseFormRegister } from 'react-hook-form';
 
 import { TRANSLATION_LOCALES } from '@/features/builder/constants';
 import {
-  PROJECT_CATALOG_EDITOR_SECTIONS,
+  PROJECT_CATALOG_DETAILS_KEYS,
+  PROJECT_CATALOG_FINANCE_KEYS,
   PROJECT_CATALOG_LINK_EDITOR_IDS,
+  PROJECT_CATALOG_OVERVIEW_KEYS,
 } from '@/features/builder/constants/project-catalog-editor';
-import { ProjectCatalogDetailFields } from '@/features/builder/components/project-catalog-detail-fields';
+import { ProjectCatalogChecklistEditor } from '@/features/builder/components/project-catalog-checklist-editor';
+import {
+  ProjectCatalogKvEditor,
+  ProjectCatalogOverviewEditor,
+} from '@/features/builder/components/project-catalog-layout-fields';
 import { TranslationTabs } from '@/features/builder/components/translation-tabs';
 import type { UpdateProjectFormValues } from '@/features/builder/schemas/project.schema';
+import { ProjectCatalogSectionCard } from '@/features/catalog/components/project-catalog-section-card';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
-import { Textarea } from '@/shared/ui/textarea';
 
 type ProjectCatalogEditorProps = {
   register: UseFormRegister<UpdateProjectFormValues>;
+  control: Control<UpdateProjectFormValues>;
 };
 
 type TranslationLocale = (typeof TRANSLATION_LOCALES)[number];
@@ -36,7 +43,13 @@ const LINK_LABEL_KEYS = {
 const listFieldName = (
   kind: 'amenityLabels' | 'nearbyPlaces',
   locale: TranslationLocale,
-): keyof UpdateProjectFormValues => {
+):
+  | 'amenityLabelsHy'
+  | 'amenityLabelsRu'
+  | 'amenityLabelsEn'
+  | 'nearbyPlacesHy'
+  | 'nearbyPlacesRu'
+  | 'nearbyPlacesEn' => {
   if (kind === 'amenityLabels') {
     return locale === 'hy'
       ? 'amenityLabelsHy'
@@ -52,71 +65,90 @@ const listFieldName = (
 };
 
 /**
- * Admin editor for public Project details JSON (overview / details / finance /
- * features / nearby / links).
+ * Admin catalog editor laid out like the public Project details cards
+ * (Overview / Details / Finance / Features / Nearby / Links).
  */
-export const ProjectCatalogEditor = ({ register }: ProjectCatalogEditorProps) => {
+export const ProjectCatalogEditor = ({ register, control }: ProjectCatalogEditorProps) => {
   const t = useTranslations('Builder.projects.catalog');
   const tCatalog = useTranslations('Catalog.projectDetail.catalog');
 
   return (
-    <fieldset className="flex flex-col gap-6 border-t border-border pt-6">
-      <legend className="text-base font-semibold text-ink">{t('title')}</legend>
+    <fieldset className="flex flex-col gap-4 border-t border-border pt-8">
+      <legend className="font-brand text-2xl font-bold tracking-tight text-ink-navy">
+        {tCatalog('title')}
+      </legend>
       <p className="text-sm text-ink-secondary">{t('subtitle')}</p>
 
       <TranslationTabs>
         {(locale) => (
-          <div className="flex flex-col gap-8">
-            {PROJECT_CATALOG_EDITOR_SECTIONS.map((section) => (
-              <section key={section.id} className="flex flex-col gap-4">
-                <h3 className="text-sm font-semibold tracking-wide text-ink uppercase">
-                  {t(`sections.${section.id}`)}
-                </h3>
-                <ProjectCatalogDetailFields
-                  sectionId={section.id}
-                  keys={section.keys}
-                  locale={locale}
-                  register={register}
-                />
-              </section>
-            ))}
+          <div className="space-y-5 sm:space-y-6">
+            <ProjectCatalogSectionCard title={tCatalog('overview')}>
+              <ProjectCatalogOverviewEditor
+                keys={PROJECT_CATALOG_OVERVIEW_KEYS}
+                locale={locale}
+                register={register}
+              />
+            </ProjectCatalogSectionCard>
 
-            <section className="flex flex-col gap-4">
-              <h3 className="text-sm font-semibold tracking-wide text-ink uppercase">
-                {t('sections.features')}
-              </h3>
-              <FormField id={`catalog-amenities-${locale}`} label={t('amenityLabels')}>
-                <Textarea
-                  id={`catalog-amenities-${locale}`}
-                  rows={6}
-                  {...register(listFieldName('amenityLabels', locale))}
-                />
-              </FormField>
-              <p className="text-xs text-ink-muted">{t('listHint')}</p>
-            </section>
+            <ProjectCatalogSectionCard title={tCatalog('details')}>
+              <ProjectCatalogKvEditor
+                sectionId="details"
+                keys={PROJECT_CATALOG_DETAILS_KEYS}
+                locale={locale}
+                register={register}
+              />
+            </ProjectCatalogSectionCard>
 
-            <section className="flex flex-col gap-4">
-              <h3 className="text-sm font-semibold tracking-wide text-ink uppercase">
-                {t('sections.nearby')}
-              </h3>
-              <FormField id={`catalog-nearby-${locale}`} label={t('nearbyPlaces')}>
-                <Textarea
-                  id={`catalog-nearby-${locale}`}
-                  rows={4}
-                  {...register(listFieldName('nearbyPlaces', locale))}
-                />
-              </FormField>
-              <p className="text-xs text-ink-muted">{t('listHint')}</p>
-            </section>
+            <ProjectCatalogSectionCard title={tCatalog('finance')}>
+              <ProjectCatalogKvEditor
+                sectionId="finance"
+                keys={PROJECT_CATALOG_FINANCE_KEYS}
+                locale={locale}
+                register={register}
+              />
+            </ProjectCatalogSectionCard>
+
+            <ProjectCatalogSectionCard title={tCatalog('amenities')}>
+              <Controller
+                control={control}
+                name={listFieldName('amenityLabels', locale)}
+                render={({ field }) => (
+                  <ProjectCatalogChecklistEditor
+                    id={`catalog-amenities-${locale}`}
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    addLabel={t('addItem')}
+                    removeLabel={t('removeItem')}
+                    columns={3}
+                  />
+                )}
+              />
+            </ProjectCatalogSectionCard>
+
+            <ProjectCatalogSectionCard title={tCatalog('nearby')}>
+              <Controller
+                control={control}
+                name={listFieldName('nearbyPlaces', locale)}
+                render={({ field }) => (
+                  <ProjectCatalogChecklistEditor
+                    id={`catalog-nearby-${locale}`}
+                    value={field.value}
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    addLabel={t('addItem')}
+                    removeLabel={t('removeItem')}
+                    columns={2}
+                  />
+                )}
+              />
+            </ProjectCatalogSectionCard>
           </div>
         )}
       </TranslationTabs>
 
-      <section className="flex flex-col gap-4">
-        <h3 className="text-sm font-semibold tracking-wide text-ink uppercase">
-          {t('sections.links')}
-        </h3>
-        <p className="text-sm text-ink-secondary">{t('linksHint')}</p>
+      <ProjectCatalogSectionCard title={tCatalog('links')} className="mt-2">
+        <p className="mb-4 text-sm text-ink-secondary">{t('linksHint')}</p>
         <div className="grid gap-4 sm:grid-cols-2">
           {PROJECT_CATALOG_LINK_EDITOR_IDS.map((id) => {
             const fieldId = `catalog-link-${id}`;
@@ -133,7 +165,7 @@ export const ProjectCatalogEditor = ({ register }: ProjectCatalogEditorProps) =>
             );
           })}
         </div>
-      </section>
+      </ProjectCatalogSectionCard>
     </fieldset>
   );
 };

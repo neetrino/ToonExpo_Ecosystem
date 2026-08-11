@@ -1,7 +1,7 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
-import { useLayoutEffect, useRef, useState, type ReactNode } from 'react';
+import { useLocale, useTranslations } from 'next-intl';
+import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 
 import { TRANSLATION_LOCALES } from '@/features/builder/constants';
 import { cn } from '@/shared/ui/cn';
@@ -20,16 +20,34 @@ type IndicatorMetrics = {
 /** Active tab underline — 1 layout px (same at every fluid scale). */
 const TAB_UNDERLINE_CLASS = 'h-px';
 
+const isTranslationLocale = (value: string): value is TranslationLocale =>
+  (TRANSLATION_LOCALES as readonly string[]).includes(value);
+
+const resolveTranslationLocale = (value: string): TranslationLocale =>
+  isTranslationLocale(value) ? value : 'hy';
+
 /**
  * hy / ru / en tab switcher with a sliding underline and soft panel fade.
+ * Defaults to (and follows) the site locale from the header language switcher.
  */
 export const TranslationTabs = ({ children }: TranslationTabsProps) => {
   const t = useTranslations('Builder.locales');
-  const [active, setActive] = useState<TranslationLocale>('hy');
+  const siteLocale = resolveTranslationLocale(useLocale());
+  const [active, setActive] = useState<TranslationLocale>(siteLocale);
   const [panelKey, setPanelKey] = useState(0);
   const listRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<Partial<Record<TranslationLocale, HTMLButtonElement | null>>>({});
   const [indicator, setIndicator] = useState<IndicatorMetrics>({ left: 0, width: 0 });
+  const previousSiteLocaleRef = useRef(siteLocale);
+
+  useEffect(() => {
+    if (previousSiteLocaleRef.current === siteLocale) {
+      return;
+    }
+    previousSiteLocaleRef.current = siteLocale;
+    setActive(siteLocale);
+    setPanelKey((key) => key + 1);
+  }, [siteLocale]);
 
   useLayoutEffect(() => {
     const updateIndicator = (): void => {

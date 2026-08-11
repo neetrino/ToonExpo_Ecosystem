@@ -3131,10 +3131,12 @@
       },
       "catalog": {
         "title": "Project details (public catalog)",
-        "subtitle": "These fields power Overview, Details, Finance, Features, and Nearby on the public project page.",
+        "subtitle": "Same layout as the public project page — edit Overview, Details, Finance, Features, and Nearby for each language.",
         "listHint": "One item per line.",
         "amenityLabels": "Features list",
         "nearbyPlaces": "Nearby places",
+        "addItem": "Add item",
+        "removeItem": "Remove item",
         "linksHint": "Optional marketing / social URLs (same for all languages).",
         "sections": {
           "overview": "Overview",

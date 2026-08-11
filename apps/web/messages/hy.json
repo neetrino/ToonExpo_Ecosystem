@@ -2935,10 +2935,12 @@
       },
       "catalog": {
         "title": "Նախագծի մանրամասներ (հանրային կատալոգ)",
-        "subtitle": "Այս դաշտերն են լրացնում Overview, Details, Finance, Features և Nearby բաժինները հանրային էջում։",
+        "subtitle": "Նույն layout-ը, ինչ հանրային նախագծի էջում — խմբագրիր Overview, Details, Finance, Features և Nearby յուրաքանչյուր լեզվով։",
         "listHint": "Յուրաքանչյուր տարր՝ նոր տողից։",
         "amenityLabels": "Հարմարություններ",
         "nearbyPlaces": "Մոտակա վայրեր",
+        "addItem": "Ավելացնել",
+        "removeItem": "Հեռացնել",
         "linksHint": "Կամընտիր մարքեթինգային / սոցիալական հղումներ (նույնը բոլոր լեզուների համար)։",
         "sections": {
           "overview": "Overview",

@@ -2935,10 +2935,12 @@
       },
       "catalog": {
         "title": "Детали проекта (публичный каталог)",
-        "subtitle": "Эти поля заполняют блоки Overview, Details, Finance, Features и Nearby на публичной странице.",
+        "subtitle": "Тот же layout, что на публичной странице проекта — редактируйте Overview, Details, Finance, Features и Nearby для каждого языка.",
         "listHint": "По одному пункту на строку.",
         "amenityLabels": "Удобства",
         "nearbyPlaces": "Рядом",
+        "addItem": "Добавить",
+        "removeItem": "Удалить",
         "linksHint": "Необязательные маркетинговые / социальные ссылки (общие для всех языков).",
         "sections": {
           "overview": "Overview",

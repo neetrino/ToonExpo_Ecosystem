@@ -196,7 +196,7 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
         )}
       />
 
-      <ProjectCatalogEditor register={register} />
+      <ProjectCatalogEditor register={register} control={control} />
 
       {formError ? (
         <p role="alert" className="rounded-sm bg-danger-soft px-3 py-2 text-sm text-danger">
