@@ -288,3 +288,8 @@ export type PortalReadinessAssessmentItem = {
 export type PortalReadinessResponse = {
   data: PortalReadinessAssessmentItem[];
 };
+
+/** Result of ensuring company-level assessments exist for all builders. */
+export type EnsureBuilderReadinessAssessmentsResponse = {
+  createdCount: number;
+};

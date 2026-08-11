@@ -10,7 +10,7 @@ import {
   ADMIN_COMPANIES_MAX_PAGE_SIZE,
   ADMIN_INVENTORY_DEFAULT_PAGE_SIZE,
 } from '@/features/admin/constants';
-import { useAdminCompaniesQuery } from '@/features/admin/hooks/use-admin-companies';
+import { useAdminBuilderCompaniesQuery } from '@/features/admin/hooks/use-admin-companies';
 import { useAdminBuildingsQuery } from '@/features/admin/hooks/use-admin-inventory';
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
 import { usePathname, useRouter } from '@/i18n/navigation';
@@ -80,15 +80,12 @@ export const AdminInventoryListShell = ({
   const buildingId = searchParams.get('buildingId')?.trim() || undefined;
   const projectId = searchParams.get('projectId')?.trim() || undefined;
   const [search, setSearch] = useState('');
-  const companiesQuery = useAdminCompaniesQuery(1, ADMIN_COMPANIES_MAX_PAGE_SIZE);
+  const companiesQuery = useAdminBuilderCompaniesQuery(ADMIN_COMPANIES_MAX_PAGE_SIZE);
   const buildingsQuery = useAdminBuildingsQuery(1, ADMIN_COMPANIES_MAX_PAGE_SIZE, companyId);
 
   const builderCompanies = useMemo(() => {
     const companies = companiesQuery.data?.data ?? [];
-    return companies
-      .filter((company) => company.type === 'builder')
-      .slice()
-      .sort((a, b) => a.name.localeCompare(b.name));
+    return companies.slice().sort((a, b) => a.name.localeCompare(b.name));
   }, [companiesQuery.data]);
 
   const buildingOptions = useMemo(() => {

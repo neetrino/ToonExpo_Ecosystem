@@ -47,7 +47,7 @@ export const CompaniesListPage = () => {
   const pathname = usePathname();
   const page = parsePage(searchParams.get('page'));
   const pageSize = ADMIN_COMPANIES_DEFAULT_PAGE_SIZE;
-  const query = useAdminCompaniesQuery(page, pageSize);
+  const query = useAdminCompaniesQuery(page, pageSize, { type: 'builder' });
   const readinessQuery = useAdminReadinessAssessmentsQuery({
     page: 1,
     pageSize: ADMIN_COMPANIES_MAX_PAGE_SIZE,

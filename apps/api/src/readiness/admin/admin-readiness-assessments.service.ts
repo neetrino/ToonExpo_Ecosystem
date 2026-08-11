@@ -132,6 +132,46 @@ export class AdminReadinessAssessmentsService {
     return toReadinessAssessmentDetail(assessment, activeCriteria);
   }
 
+  /**
+   * Ensures every builder company has an active company-level readiness assessment.
+   * Keeps Admin Builders ↔ Readiness lists in sync.
+   */
+  async ensureBuilderCompanyAssessments(): Promise<{ createdCount: number }> {
+    const builders = await this.prisma.db.company.findMany({
+      where: { type: 'builder' },
+      select: { id: true },
+      orderBy: { createdAt: 'asc' },
+    });
+
+    if (builders.length === 0) {
+      return { createdCount: 0 };
+    }
+
+    const existing = await this.prisma.db.readinessAssessment.findMany({
+      where: {
+        targetType: ReadinessAssessmentTargetType.builder_company,
+        archivedAt: null,
+        builderCompanyId: { in: builders.map((builder) => builder.id) },
+      },
+      select: { builderCompanyId: true },
+    });
+    const covered = new Set(existing.map((row) => row.builderCompanyId));
+
+    let createdCount = 0;
+    for (const builder of builders) {
+      if (covered.has(builder.id)) {
+        continue;
+      }
+      await this.create({
+        targetType: ReadinessAssessmentTargetType.builder_company,
+        builderCompanyId: builder.id,
+      });
+      createdCount += 1;
+    }
+
+    return { createdCount };
+  }
+
   async update(id: string, body: UpdateReadinessAssessmentDto): Promise<ReadinessAssessmentDetail> {
     const existing = await this.support.getAssessmentOrThrow(id);
 

@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 
 import { ADMIN_COMPANIES_MAX_PAGE_SIZE } from '@/features/admin/constants';
 import {
-  useAdminCompaniesQuery,
+  useAdminBuilderCompaniesQuery,
   useAdminCompanyProjectsQuery,
 } from '@/features/admin/hooks/use-admin-companies';
 import { useAdminCreateBuildingMutation } from '@/features/admin/hooks/use-admin-inventory';
@@ -37,7 +37,7 @@ export const AdminCreateBuildingSheet = ({
 }: AdminCreateBuildingSheetProps) => {
   const t = useTranslations('Admin.buildings.create');
   const inventoryT = useTranslations('Builder.inventory');
-  const companiesQuery = useAdminCompaniesQuery(1, ADMIN_COMPANIES_MAX_PAGE_SIZE);
+  const companiesQuery = useAdminBuilderCompaniesQuery(ADMIN_COMPANIES_MAX_PAGE_SIZE);
   const mutation = useAdminCreateBuildingMutation();
   const [companyId, setCompanyId] = useState(defaultCompanyId ?? '');
   const [projectId, setProjectId] = useState('');
@@ -47,10 +47,7 @@ export const AdminCreateBuildingSheet = ({
 
   const builderCompanies = useMemo(() => {
     const companies = companiesQuery.data?.data ?? [];
-    return companies
-      .filter((company) => company.type === 'builder')
-      .slice()
-      .sort((a, b) => a.name.localeCompare(b.name));
+    return companies.slice().sort((a, b) => a.name.localeCompare(b.name));
   }, [companiesQuery.data]);
 
   const {
