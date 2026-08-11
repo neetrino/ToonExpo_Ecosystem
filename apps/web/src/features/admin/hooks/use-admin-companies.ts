@@ -1,7 +1,7 @@
 'use client';
 
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { CreateCompanyRequest, UpdateCompanyRequest } from '@toonexpo/contracts';
+import type { CompanyType, CreateCompanyRequest, UpdateCompanyRequest } from '@toonexpo/contracts';
 
 import {
   createAdminCompany,
@@ -18,20 +18,35 @@ import {
 import {
   ADMIN_COMPANIES_QUERY_KEY,
   ADMIN_PROJECTS_QUERY_KEY,
+  ADMIN_READINESS_ASSESSMENTS_QUERY_KEY,
   adminCompanyProjectsQueryKey,
   adminCompanyQueryKey,
   adminProjectScopeQueryKey,
   adminProjectsQueryKey,
 } from '@/features/admin/constants';
 
+export type AdminCompaniesQueryOptions = {
+  type?: CompanyType;
+};
+
 /**
  * Paginated company list for the admin companies table.
  */
-export const useAdminCompaniesQuery = (page: number, pageSize: number) =>
+export const useAdminCompaniesQuery = (
+  page: number,
+  pageSize: number,
+  options: AdminCompaniesQueryOptions = {},
+) =>
   useQuery({
-    queryKey: [...ADMIN_COMPANIES_QUERY_KEY, { page, pageSize }],
-    queryFn: () => listAdminCompanies(page, pageSize),
+    queryKey: [...ADMIN_COMPANIES_QUERY_KEY, { page, pageSize, type: options.type ?? null }],
+    queryFn: () => listAdminCompanies(page, pageSize, options),
   });
+
+/**
+ * Active builder companies for admin pickers (Buildings / Projects / Readiness).
+ */
+export const useAdminBuilderCompaniesQuery = (pageSize: number) =>
+  useAdminCompaniesQuery(1, pageSize, { type: 'builder' });
 
 /**
  * Single company detail for the admin edit screen.
@@ -85,6 +100,7 @@ export const useCreateAdminCompanyMutation = () => {
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ADMIN_COMPANIES_QUERY_KEY });
       void queryClient.invalidateQueries({ queryKey: ADMIN_PROJECTS_QUERY_KEY });
+      void queryClient.invalidateQueries({ queryKey: ADMIN_READINESS_ASSESSMENTS_QUERY_KEY });
     },
   });
 };

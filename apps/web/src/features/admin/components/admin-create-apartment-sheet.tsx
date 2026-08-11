@@ -6,7 +6,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { ADMIN_COMPANIES_MAX_PAGE_SIZE } from '@/features/admin/constants';
-import { useAdminCompaniesQuery } from '@/features/admin/hooks/use-admin-companies';
+import { useAdminBuilderCompaniesQuery } from '@/features/admin/hooks/use-admin-companies';
 import {
   useAdminBuildingFloorsQuery,
   useAdminBuildingsQuery,
@@ -41,7 +41,7 @@ export const AdminCreateApartmentSheet = ({
 }: AdminCreateApartmentSheetProps) => {
   const t = useTranslations('Admin.apartments.create');
   const inventoryT = useTranslations('Builder.inventory');
-  const companiesQuery = useAdminCompaniesQuery(1, ADMIN_COMPANIES_MAX_PAGE_SIZE);
+  const companiesQuery = useAdminBuilderCompaniesQuery(ADMIN_COMPANIES_MAX_PAGE_SIZE);
   const mutation = useAdminBulkCreateApartmentsMutation();
   const [companyId, setCompanyId] = useState(defaultCompanyId ?? '');
   const [buildingId, setBuildingId] = useState(defaultBuildingId ?? '');
@@ -57,10 +57,7 @@ export const AdminCreateApartmentSheet = ({
 
   const builderCompanies = useMemo(() => {
     const companies = companiesQuery.data?.data ?? [];
-    return companies
-      .filter((company) => company.type === 'builder')
-      .slice()
-      .sort((a, b) => a.name.localeCompare(b.name));
+    return companies.slice().sort((a, b) => a.name.localeCompare(b.name));
   }, [companiesQuery.data]);
 
   const buildingOptions = useMemo(() => {

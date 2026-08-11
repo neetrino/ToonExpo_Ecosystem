@@ -59,7 +59,11 @@ export class AdminCompaniesController {
   @ApiOperation({ summary: "List companies (paginated)" })
   @ApiOkResponse({ description: "Paginated company list" })
   list(@Query() query: ListCompaniesQueryDto): Promise<CompanyListResponse> {
-    return this.companiesService.list(query.page, query.pageSize);
+    return this.companiesService.list(
+      query.page,
+      query.pageSize,
+      query.type as CompanyType | undefined,
+    );
   }
 
   @Get(":companyId/projects")

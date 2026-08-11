@@ -14,6 +14,7 @@ import {
   CompanySource,
   CompanyStatus,
   CompanyType,
+  ReadinessAssessmentTargetType,
   UserStatus,
   type Prisma,
 } from '@toonexpo/db';
@@ -24,6 +25,7 @@ import { toUserResponse } from '../../auth/mappers/user.mapper.js';
 import { toCompanyResponse } from '../../companies/mappers/company.mapper.js';
 import { CompanyProvisioningService } from '../../company/provisioning/company-provisioning.service.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
+import { AdminReadinessAssessmentsService } from '../../readiness/admin/admin-readiness-assessments.service.js';
 
 
 type CreateCompanyInput = {
@@ -90,6 +92,7 @@ export class AdminCompaniesService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly provisioning: CompanyProvisioningService,
+    private readonly readinessAssessments: AdminReadinessAssessmentsService,
   ) {}
 
   async create(input: CreateCompanyInput): Promise<ProvisionCompanyResponse> {
@@ -105,6 +108,13 @@ export class AdminCompaniesService {
       adminPhone: input.adminPhone?.trim() || null,
     });
 
+    if (input.type === CompanyType.builder) {
+      await this.readinessAssessments.create({
+        targetType: ReadinessAssessmentTargetType.builder_company,
+        builderCompanyId: result.company.id,
+      });
+    }
+
     await this.provisioning.sendSetPasswordInvite({
       userId: result.adminUser.id,
       email: result.adminUser.email,
@@ -118,11 +128,17 @@ export class AdminCompaniesService {
     };
   }
 
-  async list(page: number, pageSize: number): Promise<CompanyListResponse> {
+  async list(
+    page: number,
+    pageSize: number,
+    type?: CompanyType,
+  ): Promise<CompanyListResponse> {
     const skip = (page - 1) * pageSize;
+    const where: Prisma.CompanyWhereInput = type ? { type } : {};
     const [total, rows] = await Promise.all([
-      this.prisma.db.company.count(),
+      this.prisma.db.company.count({ where }),
       this.prisma.db.company.findMany({
+        where,
         orderBy: { createdAt: 'desc' },
         skip,
         take: pageSize,

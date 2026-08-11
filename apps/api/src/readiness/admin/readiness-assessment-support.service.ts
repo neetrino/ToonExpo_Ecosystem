@@ -52,10 +52,13 @@ export class ReadinessAssessmentSupportService {
   async assertCompanyExists(companyId: string): Promise<void> {
     const company = await this.prisma.db.company.findUnique({
       where: { id: companyId },
-      select: { id: true },
+      select: { id: true, type: true },
     });
     if (!company) {
       throw new NotFoundException('Company not found');
+    }
+    if (company.type !== 'builder') {
+      throw new BadRequestException('Readiness assessments require a builder company');
     }
   }
 

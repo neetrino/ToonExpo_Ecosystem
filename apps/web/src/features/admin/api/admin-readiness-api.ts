@@ -4,6 +4,7 @@ import type {
   CreateReadinessInternalNoteBody,
   CreateReadinessRecommendationBody,
   CreateReadinessRequiredActionBody,
+  EnsureBuilderReadinessAssessmentsResponse,
   ReadinessAssessmentDetail,
   ReadinessAssessmentListResponse,
   ReadinessAssessmentTargetType,
@@ -113,6 +114,17 @@ export const createAdminReadinessAssessment = (
     ...jsonCredentials,
     body: JSON.stringify(body),
   });
+
+/**
+ * Creates missing company-level assessments so Admin Builders appear in Readiness.
+ */
+export const ensureAdminBuilderReadinessAssessments =
+  (): Promise<EnsureBuilderReadinessAssessmentsResponse> =>
+    apiFetch<EnsureBuilderReadinessAssessmentsResponse>({
+      path: '/admin/readiness/assessments/ensure-builders',
+      method: 'POST',
+      ...jsonCredentials,
+    });
 
 export const updateAdminReadinessAssessment = (
   id: string,

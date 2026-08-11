@@ -1,12 +1,19 @@
 import { ApiPropertyOptional } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsInt, IsOptional, Max, Min } from "class-validator";
+import { IsEnum, IsInt, IsOptional, Max, Min } from "class-validator";
 
 import {
   ADMIN_COMPANIES_DEFAULT_PAGE_SIZE,
   ADMIN_COMPANIES_MAX_PAGE_SIZE,
   LIST_MIN_PAGE,
 } from "../../../common/constants/app.constants.js";
+
+enum CompanyTypeFilterDto {
+  builder = "builder",
+  partner = "partner",
+  bank = "bank",
+  service = "service",
+}
 
 export class ListCompaniesQueryDto {
   @ApiPropertyOptional({ default: LIST_MIN_PAGE, minimum: LIST_MIN_PAGE })
@@ -27,4 +34,9 @@ export class ListCompaniesQueryDto {
   @Min(1)
   @Max(ADMIN_COMPANIES_MAX_PAGE_SIZE)
   pageSize: number = ADMIN_COMPANIES_DEFAULT_PAGE_SIZE;
+
+  @ApiPropertyOptional({ enum: CompanyTypeFilterDto })
+  @IsOptional()
+  @IsEnum(CompanyTypeFilterDto)
+  type?: CompanyTypeFilterDto;
 }

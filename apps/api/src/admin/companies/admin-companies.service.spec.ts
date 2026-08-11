@@ -23,11 +23,15 @@ describe('AdminCompaniesService.listProjects', () => {
       },
     } as unknown as PrismaService;
 
-    service = new AdminCompaniesService(prisma, {
-      assertEmailAvailable: vi.fn(),
-      createCompanyWithPrimaryAdmin: vi.fn(),
-      sendSetPasswordInvite: vi.fn(),
-    } as never);
+    service = new AdminCompaniesService(
+      prisma,
+      {
+        assertEmailAvailable: vi.fn(),
+        createCompanyWithPrimaryAdmin: vi.fn(),
+        sendSetPasswordInvite: vi.fn(),
+      } as never,
+      { create: vi.fn() } as never,
+    );
   });
 
   it('returns only projects belonging to the requested company', async () => {

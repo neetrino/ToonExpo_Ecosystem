@@ -26,5 +26,6 @@ import { PortalReadinessService } from "./portal/portal-readiness.service.js";
     PortalReadinessService,
     CompanyMemberGuard,
   ],
+  exports: [AdminReadinessAssessmentsService],
 })
 export class ReadinessModule {}
