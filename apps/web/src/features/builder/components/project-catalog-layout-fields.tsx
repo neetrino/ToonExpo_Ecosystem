@@ -5,7 +5,7 @@ import { PROJECT_CATALOG_CRITERION_ICON } from '@/features/catalog/components/pr
 import { useTranslations } from 'next-intl';
 import type { UseFormRegister } from 'react-hook-form';
 
-import { TRANSLATION_LOCALES } from '@/features/builder/constants';
+import type { TRANSLATION_LOCALES } from '@/features/builder/constants';
 import {
   catalogDetailKeyToCriterionId,
   isProjectCatalogTextareaKey,

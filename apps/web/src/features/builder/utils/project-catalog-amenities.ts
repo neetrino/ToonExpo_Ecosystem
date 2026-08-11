@@ -3,7 +3,7 @@ import { PROJECT_CATALOG_DETAIL_KEYS } from '@/features/catalog/utils/project-ca
 import type { ProjectCatalogLinkId } from '@/features/catalog/utils/project-catalog-links';
 import { PROJECT_CATALOG_LINK_IDS } from '@/features/catalog/utils/project-catalog-links';
 
-import { TRANSLATION_LOCALES } from '@/features/builder/constants';
+import type { TRANSLATION_LOCALES } from '@/features/builder/constants';
 import { PROJECT_CATALOG_LIST_MAX_ITEMS } from '@/features/builder/constants/project-catalog-editor';
 
 export type CatalogLocaleText = {

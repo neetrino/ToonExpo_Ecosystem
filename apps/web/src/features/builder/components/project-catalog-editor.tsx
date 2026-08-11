@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { Controller, type Control, type UseFormRegister } from 'react-hook-form';
 
-import { TRANSLATION_LOCALES } from '@/features/builder/constants';
+import type { TRANSLATION_LOCALES } from '@/features/builder/constants';
 import {
   PROJECT_CATALOG_DETAILS_KEYS,
   PROJECT_CATALOG_FINANCE_KEYS,
