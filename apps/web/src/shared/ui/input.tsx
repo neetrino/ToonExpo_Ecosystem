@@ -19,6 +19,8 @@ export const Input = ({ className, type = 'text', ...props }: InputProps) => {
         'hover:border-border-strong',
         'focus-visible:border-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/20',
         'disabled:cursor-not-allowed disabled:opacity-50',
+        /* Hide native number steppers when type="number" (also covered in base.css). */
+        '[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none',
         className,
       )}
       {...props}
