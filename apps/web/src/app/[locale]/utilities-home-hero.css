@@ -1,0 +1,41 @@
+/* Public home hero — cinematic stills (Ken Burns + soft crossfade). */
+
+@layer utilities {
+  .home-hero-slide-fade {
+    transition-property: opacity;
+    transition-duration: 1.2s;
+    transition-timing-function: var(--ease-in-out-premium);
+  }
+
+  .home-hero-ken-layer {
+    position: absolute;
+    inset: -6%;
+    will-change: transform;
+  }
+
+  /** Active multi-slide: one Ken Burns pass timed to the rotate interval. */
+  .home-hero-ken-a {
+    animation: home-hero-ken-burns-a 5s linear forwards;
+  }
+
+  .home-hero-ken-b {
+    animation: home-hero-ken-burns-b 5s linear forwards;
+  }
+
+  /** Single slide (or reduced-motion off continuous): endless gentle drift. */
+  .home-hero-ken-loop {
+    animation: home-hero-ken-burns-a 18s ease-in-out infinite alternate;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .home-hero-slide-fade {
+      transition-duration: 0s;
+    }
+
+    .home-hero-ken-a,
+    .home-hero-ken-b,
+    .home-hero-ken-loop {
+      animation: none;
+    }
+  }
+}

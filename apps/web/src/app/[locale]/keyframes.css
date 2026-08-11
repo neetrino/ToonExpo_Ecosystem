@@ -230,3 +230,27 @@
     transform: translate3d(0, 0, 0) scale(1);
   }
 }
+
+/**
+ * Home hero cinematic Ken Burns — slow zoom/pan so stills feel like video.
+ * Variants alternate direction so consecutive slides don’t look identical.
+ */
+@keyframes home-hero-ken-burns-a {
+  from {
+    transform: scale(1.06) translate3d(-1.2%, 0.4%, 0);
+  }
+
+  to {
+    transform: scale(1.16) translate3d(1.4%, -0.8%, 0);
+  }
+}
+
+@keyframes home-hero-ken-burns-b {
+  from {
+    transform: scale(1.1) translate3d(1.3%, -0.6%, 0);
+  }
+
+  to {
+    transform: scale(1.06) translate3d(-1.1%, 0.9%, 0);
+  }
+}

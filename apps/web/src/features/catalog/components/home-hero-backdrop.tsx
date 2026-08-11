@@ -14,8 +14,9 @@ type HomeHeroBackdropProps = {
 };
 
 /**
- * Full-bleed hero backdrop — crossfades through slides every {@link HOME_HERO_ROTATE_MS}.
- * Respects `prefers-reduced-motion` (stays on the first slide).
+ * Full-bleed hero backdrop — soft crossfade + Ken Burns drift (video-like stills).
+ * Multi-slide: advances every {@link HOME_HERO_ROTATE_MS}. Single slide: continuous loop.
+ * Honors `prefers-reduced-motion`.
  */
 export const HomeHeroBackdrop = ({ imageUrls }: HomeHeroBackdropProps) => {
   const slides =
@@ -43,24 +44,43 @@ export const HomeHeroBackdrop = ({ imageUrls }: HomeHeroBackdropProps) => {
   }, [canRotate, slides.length]);
 
   return (
-    <div className="absolute inset-0 -z-10 overflow-x-clip" aria-hidden>
-      {slides.map((src, index) => (
-        <Image
-          key={`${src}-${index}`}
-          src={src}
-          alt=""
-          fill
-          priority={index === 0}
-          loading={index === 0 ? 'eager' : 'lazy'}
-          fetchPriority={index === 0 ? 'high' : 'auto'}
-          className={cn(
-            'object-cover object-center transition-opacity duration-700 ease-out',
-            'motion-reduce:transition-none',
-            index === activeIndex ? 'opacity-100' : 'opacity-0',
-          )}
-          sizes="100vw"
-        />
-      ))}
+    <div className="absolute inset-0 -z-10 overflow-hidden" aria-hidden>
+      {slides.map((src, index) => {
+        const isActive = index === activeIndex;
+        const kenClass = !canRotate
+          ? 'home-hero-ken-loop'
+          : isActive
+            ? index % 2 === 0
+              ? 'home-hero-ken-a'
+              : 'home-hero-ken-b'
+            : undefined;
+
+        return (
+          <div
+            key={`${src}-${index}`}
+            className={cn(
+              'absolute inset-0 home-hero-slide-fade',
+              isActive ? 'opacity-100' : 'opacity-0',
+            )}
+          >
+            <div
+              key={isActive ? `ken-${index}-${activeIndex}` : `ken-${index}-idle`}
+              className={cn('home-hero-ken-layer', kenClass)}
+            >
+              <Image
+                src={src}
+                alt=""
+                fill
+                priority={index === 0}
+                loading={index === 0 ? 'eager' : 'lazy'}
+                fetchPriority={index === 0 ? 'high' : 'auto'}
+                className="object-cover object-center"
+                sizes="100vw"
+              />
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 };
