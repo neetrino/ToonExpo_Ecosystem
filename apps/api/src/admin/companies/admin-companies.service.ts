@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import type {
   AdminCompanyProjectListResponse,
-  AdminProjectListItem,
   AdminProjectListResponse,
   AdminProjectScope,
   CompanyListResponse,
@@ -27,7 +26,6 @@ import { CompanyProvisioningService } from '../../company/provisioning/company-p
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { AdminReadinessAssessmentsService } from '../../readiness/admin/admin-readiness-assessments.service.js';
 
-
 type CreateCompanyInput = {
   name: string;
   type: CompanyType;
@@ -43,23 +41,6 @@ type UpdateCompanyInput = {
   description?: string | null;
   status?: CompanyStatus;
   logoMediaId?: string | null;
-};
-
-type BuildingCoverRow = {
-  name: string;
-  coverMedia: {
-    id: string;
-    fileUrl: string;
-    thumbnailUrl: string | null;
-    altText: string | null;
-  } | null;
-};
-
-const toAdminBuildingCover = (
-  building: BuildingCoverRow | undefined,
-): AdminProjectListItem['buildingCover'] => {
-  const media = toMediaSummary(building?.coverMedia ?? null);
-  return building && media ? { buildingName: building.name, media } : null;
 };
 
 /**
@@ -224,20 +205,12 @@ export class AdminCompaniesService {
           builderCompanyId: true,
           featuredOnHome: true,
           builderCompany: { select: { name: true } },
-          buildings: {
-            where: { coverMediaId: { not: null } },
-            orderBy: [{ displayOrder: 'asc' }, { createdAt: 'asc' }],
-            take: 1,
+          coverMedia: {
             select: {
-              name: true,
-              coverMedia: {
-                select: {
-                  id: true,
-                  fileUrl: true,
-                  thumbnailUrl: true,
-                  altText: true,
-                },
-              },
+              id: true,
+              fileUrl: true,
+              thumbnailUrl: true,
+              altText: true,
             },
           },
           _count: { select: { buildings: true, apartments: true } },
@@ -254,7 +227,7 @@ export class AdminCompaniesService {
         city: project.city,
         builderCompanyId: project.builderCompanyId,
         companyName: project.builderCompany.name,
-        buildingCover: toAdminBuildingCover(project.buildings[0]),
+        cover: toMediaSummary(project.coverMedia),
         buildingsCount: project._count.buildings,
         apartmentsCount: project._count.apartments,
         featuredOnHome: project.featuredOnHome,

@@ -154,10 +154,8 @@ export type AdminProjectListItem = {
   city: string | null;
   builderCompanyId: string;
   companyName: string;
-  buildingCover: {
-    buildingName: string;
-    media: MediaAssetSummary;
-  } | null;
+  /** Project cover only (no building fallback). */
+  cover: MediaAssetSummary | null;
   buildingsCount: number;
   apartmentsCount: number;
   /** Admin-curated homepage developments band (max 3). */

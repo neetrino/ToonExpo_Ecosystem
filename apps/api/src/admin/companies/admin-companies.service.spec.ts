@@ -108,17 +108,12 @@ describe('AdminCompaniesService.listProjects', () => {
         builderCompanyId: 'co_1',
         featuredOnHome: false,
         builderCompany: { name: 'Builder Co' },
-        buildings: [
-          {
-            name: 'Building B',
-            coverMedia: {
-              id: 'media_1',
-              fileUrl: 'https://cdn.example.com/building-b.jpg',
-              thumbnailUrl: null,
-              altText: null,
-            },
-          },
-        ],
+        coverMedia: {
+          id: 'media_1',
+          fileUrl: 'https://cdn.example.com/project.jpg',
+          thumbnailUrl: null,
+          altText: null,
+        },
         _count: { buildings: 2, apartments: 10 },
       },
     ]);
@@ -140,20 +135,12 @@ describe('AdminCompaniesService.listProjects', () => {
         builderCompanyId: true,
         featuredOnHome: true,
         builderCompany: { select: { name: true } },
-        buildings: {
-          where: { coverMediaId: { not: null } },
-          orderBy: [{ displayOrder: 'asc' }, { createdAt: 'asc' }],
-          take: 1,
+        coverMedia: {
           select: {
-            name: true,
-            coverMedia: {
-              select: {
-                id: true,
-                fileUrl: true,
-                thumbnailUrl: true,
-                altText: true,
-              },
-            },
+            id: true,
+            fileUrl: true,
+            thumbnailUrl: true,
+            altText: true,
           },
         },
         _count: { select: { buildings: true, apartments: true } },
@@ -169,14 +156,11 @@ describe('AdminCompaniesService.listProjects', () => {
           city: 'Yerevan',
           builderCompanyId: 'co_1',
           companyName: 'Builder Co',
-          buildingCover: {
-            buildingName: 'Building B',
-            media: {
-              id: 'media_1',
-              fileUrl: 'https://cdn.example.com/building-b.jpg',
-              thumbnailUrl: null,
-              altText: null,
-            },
+          cover: {
+            id: 'media_1',
+            fileUrl: 'https://cdn.example.com/project.jpg',
+            thumbnailUrl: null,
+            altText: null,
           },
           buildingsCount: 2,
           apartmentsCount: 10,
