@@ -26,11 +26,14 @@ import {
 
 /**
  * Paginated company list for the admin companies table.
+ * Keeps the previous page visible while a new search/page loads.
  */
-export const useAdminCompaniesQuery = (page: number, pageSize: number) =>
+export const useAdminCompaniesQuery = (page: number, pageSize: number, search?: string) =>
   useQuery({
-    queryKey: [...ADMIN_COMPANIES_QUERY_KEY, { page, pageSize }],
-    queryFn: () => listAdminCompanies(page, pageSize),
+    queryKey: [...ADMIN_COMPANIES_QUERY_KEY, { page, pageSize, search: search ?? '' }],
+    queryFn: () =>
+      listAdminCompanies(page, pageSize, search ? { search } : {}),
+    placeholderData: keepPreviousData,
   });
 
 /**

@@ -83,6 +83,25 @@ const buildAdminProjectsWhere = (
 };
 
 /**
+ * Optional case-insensitive search for the admin companies list.
+ */
+const buildAdminCompaniesWhere = (
+  search: string | undefined,
+): Prisma.CompanyWhereInput => {
+  const needle = search?.trim();
+  if (!needle) {
+    return {};
+  }
+
+  return {
+    OR: [
+      { name: { contains: needle, mode: "insensitive" } },
+      { description: { contains: needle, mode: "insensitive" } },
+    ],
+  };
+};
+
+/**
  * Platform-admin company provisioning and management.
  */
 @Injectable()
@@ -118,12 +137,18 @@ export class AdminCompaniesService {
     };
   }
 
-  async list(page: number, pageSize: number): Promise<CompanyListResponse> {
+  async list(
+    page: number,
+    pageSize: number,
+    search?: string,
+  ): Promise<CompanyListResponse> {
     const skip = (page - 1) * pageSize;
+    const where = buildAdminCompaniesWhere(search);
     const [total, rows] = await Promise.all([
-      this.prisma.db.company.count(),
+      this.prisma.db.company.count({ where }),
       this.prisma.db.company.findMany({
-        orderBy: { createdAt: 'desc' },
+        where,
+        orderBy: { createdAt: "desc" },
         skip,
         take: pageSize,
         include: { logoMedia: { select: { id: true, fileUrl: true } } },

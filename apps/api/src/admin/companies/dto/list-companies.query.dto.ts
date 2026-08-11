@@ -1,12 +1,14 @@
 import { ApiPropertyOptional } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsInt, IsOptional, Max, Min } from "class-validator";
+import { IsInt, IsOptional, IsString, Max, MaxLength, Min } from "class-validator";
 
 import {
   ADMIN_COMPANIES_DEFAULT_PAGE_SIZE,
   ADMIN_COMPANIES_MAX_PAGE_SIZE,
   LIST_MIN_PAGE,
 } from "../../../common/constants/app.constants.js";
+
+const COMPANY_SEARCH_MAX_LENGTH = 120;
 
 export class ListCompaniesQueryDto {
   @ApiPropertyOptional({ default: LIST_MIN_PAGE, minimum: LIST_MIN_PAGE })
@@ -27,4 +29,14 @@ export class ListCompaniesQueryDto {
   @Min(1)
   @Max(ADMIN_COMPANIES_MAX_PAGE_SIZE)
   pageSize: number = ADMIN_COMPANIES_DEFAULT_PAGE_SIZE;
+
+  @ApiPropertyOptional({
+    description:
+      "Case-insensitive search over company name and description. Blank behaves as no search.",
+    maxLength: COMPANY_SEARCH_MAX_LENGTH,
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(COMPANY_SEARCH_MAX_LENGTH)
+  search?: string;
 }

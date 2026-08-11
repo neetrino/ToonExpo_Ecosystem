@@ -1649,6 +1649,10 @@
       "empty": "No companies yet. Create the first one.",
       "loading": "Loading companies…",
       "error": "Could not load companies. Try again.",
+      "searchPlaceholder": "Search by name…",
+      "noResultsTitle": "No companies found",
+      "noResults": "No companies match “{query}”.",
+      "clearSearch": "Clear search",
       "newCompany": "+ New Company",
       "pagination": {
         "previous": "Previous",
