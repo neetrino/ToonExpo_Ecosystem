@@ -1,13 +1,25 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, MinLength, ValidateIf } from 'class-validator';
+import {
+  ArrayMaxSize,
+  IsArray,
+  IsString,
+  MinLength,
+  ValidateIf,
+} from 'class-validator';
+
+import { HOME_HERO_MAX_SLIDES } from '../../platform-settings.constants.js';
 
 export class UpdateHomeHeroDto {
   @ApiProperty({
     nullable: true,
-    description: 'Platform media asset id, or null to restore the default hero image',
+    type: [String],
+    description:
+      'Ordered platform media asset ids for the home hero carousel; null or [] restores the default image',
   })
   @ValidateIf((_, value) => value !== null)
-  @IsString()
-  @MinLength(1)
-  mediaAssetId!: string | null;
+  @IsArray()
+  @ArrayMaxSize(HOME_HERO_MAX_SLIDES)
+  @IsString({ each: true })
+  @MinLength(1, { each: true })
+  mediaAssetIds!: string[] | null;
 }

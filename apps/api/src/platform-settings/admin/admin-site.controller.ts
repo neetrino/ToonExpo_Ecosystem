@@ -22,12 +22,12 @@ export class AdminSiteController {
   }
 
   @Patch('home-hero')
-  @ApiOperation({ summary: 'Set or clear the public home hero banner image' })
+  @ApiOperation({ summary: 'Set or clear the public home hero banner slides' })
   @ApiOkResponse({ description: 'Updated home hero payload' })
   updateHomeHero(
     @Body() body: UpdateHomeHeroDto,
     @CurrentUser() user: AuthenticatedUser,
   ): Promise<AdminHomeHero> {
-    return this.platformSettings.updateHomeHero(body.mediaAssetId, user.id);
+    return this.platformSettings.updateHomeHero(body.mediaAssetIds, user.id);
   }
 }

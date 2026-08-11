@@ -1,14 +1,9 @@
 /**
- * Seeds platform home-hero MediaAssets + PlatformSetting so Home reads from DB.
- *
- * - Ensures MediaAsset rows for the default hero and a temporary test image
- *   (fileUrl = existing R2 static keys; no re-upload).
- * - With `--test-swap`: briefly points the setting at the test image, prints it,
- *   then restores the default hero (still from DB).
+ * Seeds platform home-hero MediaAssets + PlatformSetting slides JSON.
  *
  * Usage (repo root):
  *   pnpm exec node --env-file=.env scripts/seed-home-hero-setting.mjs
- *   pnpm exec node --env-file=.env scripts/seed-home-hero-setting.mjs --test-swap
+ *   pnpm exec node --env-file=.env scripts/seed-home-hero-setting.mjs --with-test-slide
  */
 import { pathToFileURL } from 'node:url';
 import path from 'node:path';
@@ -16,13 +11,12 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
-/** Stable ids so re-runs stay idempotent. */
 const HOME_HERO_MEDIA_ID = 'media_platform_home_hero';
 const HOME_HERO_TEST_MEDIA_ID = 'media_platform_home_hero_test';
-const PLATFORM_SETTING_KEY = 'home.hero.mediaAssetId';
+const PLATFORM_SETTING_SLIDES_KEY = 'home.hero.slides';
+const PLATFORM_SETTING_LEGACY_KEY = 'home.hero.mediaAssetId';
 
 const DEFAULT_HERO_PATH = '/images/hero-building.webp';
-/** Temporary alternate image for a visible swap test. */
 const TEST_HERO_PATH = '/demo/partner-facade.webp';
 
 const resolvePublicUrl = (assetPath) => {
@@ -45,7 +39,7 @@ const upsertImageAsset = async (db, { id, fileUrl, title }) => {
       altText: title,
       ownerCompanyId: null,
       relatedEntityType: 'platform_setting',
-      relatedEntityId: PLATFORM_SETTING_KEY,
+      relatedEntityId: PLATFORM_SETTING_SLIDES_KEY,
     },
     update: {
       fileUrl,
@@ -56,18 +50,22 @@ const upsertImageAsset = async (db, { id, fileUrl, title }) => {
   });
 };
 
-const setHomeHero = async (db, mediaAssetId) => {
+const setHomeHeroSlides = async (db, mediaAssetIds) => {
   await db.platformSetting.upsert({
-    where: { key: PLATFORM_SETTING_KEY },
+    where: { key: PLATFORM_SETTING_SLIDES_KEY },
     create: {
-      key: PLATFORM_SETTING_KEY,
-      value: mediaAssetId,
-      valueType: 'string',
-      description: 'Media asset id for the public home page hero banner image',
+      key: PLATFORM_SETTING_SLIDES_KEY,
+      value: JSON.stringify(mediaAssetIds),
+      valueType: 'json',
+      description: 'Ordered media asset ids for the public home page hero banner carousel',
     },
     update: {
-      value: mediaAssetId,
+      value: JSON.stringify(mediaAssetIds),
+      valueType: 'json',
     },
+  });
+  await db.platformSetting.deleteMany({
+    where: { key: PLATFORM_SETTING_LEGACY_KEY },
   });
 };
 
@@ -85,7 +83,7 @@ const main = async () => {
     throw new Error('DATABASE_URL is required');
   }
 
-  const doTestSwap = process.argv.includes('--test-swap');
+  const withTestSlide = process.argv.includes('--with-test-slide');
   const defaultUrl = resolvePublicUrl(DEFAULT_HERO_PATH);
   const testUrl = resolvePublicUrl(TEST_HERO_PATH);
 
@@ -102,29 +100,24 @@ const main = async () => {
     await upsertImageAsset(db, {
       id: HOME_HERO_TEST_MEDIA_ID,
       fileUrl: testUrl,
-      title: 'Home hero (test swap)',
+      title: 'Home hero (carousel test)',
     });
 
-    if (doTestSwap) {
-      await setHomeHero(db, HOME_HERO_TEST_MEDIA_ID);
-      const testHero = await fetchPublicHero();
-      console.log('[seed-home-hero] TEST swap OK:', JSON.stringify(testHero));
-      if (testHero.mediaAssetId !== HOME_HERO_TEST_MEDIA_ID) {
-        throw new Error('Test swap did not stick in API response');
-      }
-    }
+    const slideIds = withTestSlide
+      ? [HOME_HERO_MEDIA_ID, HOME_HERO_TEST_MEDIA_ID]
+      : [HOME_HERO_MEDIA_ID];
 
-    await setHomeHero(db, HOME_HERO_MEDIA_ID);
-    const finalHero = await fetchPublicHero();
-    console.log('[seed-home-hero] DEFAULT restored:', JSON.stringify(finalHero));
-    if (finalHero.mediaAssetId !== HOME_HERO_MEDIA_ID) {
-      throw new Error('Default hero was not returned by API');
+    await setHomeHeroSlides(db, slideIds);
+    const hero = await fetchPublicHero();
+    console.log('[seed-home-hero] Public payload:', JSON.stringify(hero));
+    if (!Array.isArray(hero.slides) || hero.slides.length !== slideIds.length) {
+      throw new Error('Unexpected slides payload from API');
     }
-    if (!finalHero.imageUrl?.includes('hero-building.webp')) {
-      throw new Error(`Unexpected imageUrl: ${finalHero.imageUrl}`);
-    }
-
-    console.log('[seed-home-hero] Done — Home reads hero-building.webp from PlatformSetting / MediaAsset.');
+    console.log(
+      withTestSlide
+        ? '[seed-home-hero] Seeded 2 slides (default + test) — Home will rotate every 5s.'
+        : '[seed-home-hero] Seeded 1 slide (default hero-building.webp).',
+    );
   } finally {
     await db.$disconnect();
   }

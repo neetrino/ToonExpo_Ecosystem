@@ -1,7 +1,15 @@
-/** Public home hero image resolved from platform settings. */
+/** One resolved home hero slide (media id + public R2 URL). */
+export type HomeHeroSlide = {
+  mediaAssetId: string;
+  imageUrl: string;
+};
+
+/**
+ * Public home hero — ordered slides for the carousel.
+ * Empty `slides` → client uses the default static asset.
+ */
 export type PublicHomeHero = {
-  mediaAssetId: string | null;
-  imageUrl: string | null;
+  slides: HomeHeroSlide[];
 };
 
 /** Admin home hero payload (includes last update time when configured). */
@@ -9,7 +17,10 @@ export type AdminHomeHero = PublicHomeHero & {
   updatedAt: string | null;
 };
 
-/** Admin PATCH body — `null` clears the custom hero (fallback to default asset). */
+/**
+ * Admin PATCH body — ordered media asset ids.
+ * `null` or `[]` clears custom banners (fallback to default asset).
+ */
 export type UpdateHomeHeroRequest = {
-  mediaAssetId: string | null;
+  mediaAssetIds: string[] | null;
 };

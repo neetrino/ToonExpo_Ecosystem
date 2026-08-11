@@ -1,9 +1,8 @@
-import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
 
 import { getPublicHomeHero } from '@/features/catalog/api/home-hero-api';
+import { HomeHeroBackdrop } from '@/features/catalog/components/home-hero-backdrop';
 import { HeroSearch } from '@/features/catalog/components/hero-search';
-import { DEFAULT_HOME_HERO_IMAGE_SRC } from '@/features/catalog/constants/home-hero';
 import { cn } from '@/shared/ui/cn';
 
 type HomeHeroProps = {
@@ -12,30 +11,18 @@ type HomeHeroProps = {
 
 /**
  * Public home hero — full-bleed skyline with marketplace search.
- * Image comes from platform settings when set; otherwise the default R2 asset.
+ * Slides come from platform settings; empty → default R2 asset inside the backdrop.
  */
 export const HomeHero = async ({ locations = [] }: HomeHeroProps) => {
   const t = await getTranslations('HomePage');
   const hero = await getPublicHomeHero().catch(() => null);
-  const imageSrc =
-    hero?.imageUrl && hero.imageUrl.trim().length > 0
-      ? hero.imageUrl
-      : DEFAULT_HOME_HERO_IMAGE_SRC;
+  const imageUrls = (hero?.slides ?? [])
+    .map((slide) => slide.imageUrl.trim())
+    .filter((url) => url.length > 0);
 
   return (
     <section className="relative isolate flex min-h-fluid-screen flex-col bg-canvas">
-      <div className="absolute inset-0 -z-10 overflow-x-clip" aria-hidden>
-        <Image
-          src={imageSrc}
-          alt=""
-          fill
-          priority
-          loading="eager"
-          fetchPriority="high"
-          className="object-cover object-center"
-          sizes="100vw"
-        />
-      </div>
+      <HomeHeroBackdrop imageUrls={imageUrls} />
 
       <div
         className={cn(

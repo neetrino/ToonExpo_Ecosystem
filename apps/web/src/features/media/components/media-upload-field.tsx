@@ -23,6 +23,8 @@ export type MediaUploadFieldProps = {
   context: MediaUploadContext;
   value: string;
   onChange: (mediaAssetId: string) => void;
+  /** Fired with the full asset after upload or library pick (optional). */
+  onAssetSelected?: ((asset: MediaAssetItem) => void) | undefined;
   previewUrl?: string | null | undefined;
   error?: string | undefined;
 };
@@ -36,6 +38,7 @@ export const MediaUploadField = ({
   context,
   value,
   onChange,
+  onAssetSelected,
   previewUrl,
   error,
 }: MediaUploadFieldProps) => {
@@ -85,6 +88,7 @@ export const MediaUploadField = ({
       const asset = await uploadMediaAsset(context, file);
       setThumbnailUrl(asset.fileUrl);
       onChange(asset.id);
+      onAssetSelected?.(asset);
     } catch (uploadError) {
       if (uploadError instanceof ApiError && uploadError.status === 503) {
         setLocalError(t("errors.notConfigured"));
@@ -186,6 +190,7 @@ export const MediaUploadField = ({
           onSelect={(asset) => {
             setThumbnailUrl(asset.fileUrl);
             onChange(asset.id);
+            onAssetSelected?.(asset);
             setShowLibrary(false);
           }}
           onLoadMore={() => {
