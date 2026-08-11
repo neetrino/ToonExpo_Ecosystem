@@ -75,6 +75,27 @@ const toApartmentSearchParams = (query: ListApartmentsQuery): string => {
   if (query.pageSize != null) {
     params.set('pageSize', String(query.pageSize));
   }
+  if (query.salesStatus) {
+    params.set('salesStatus', query.salesStatus);
+  }
+  if (query.minPrice != null) {
+    params.set('minPrice', String(query.minPrice));
+  }
+  if (query.maxPrice != null) {
+    params.set('maxPrice', String(query.maxPrice));
+  }
+  if (query.rooms != null && query.rooms.length > 0) {
+    params.set('rooms', query.rooms.join(','));
+  }
+  if (query.city) {
+    params.set('city', query.city);
+  }
+  if (query.builderId) {
+    params.set('builderId', query.builderId);
+  }
+  if (query.q) {
+    params.set('q', query.q);
+  }
   if (query.featuredOnHome === true) {
     params.set('featuredOnHome', 'true');
   }

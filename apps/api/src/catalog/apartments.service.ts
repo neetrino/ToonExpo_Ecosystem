@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import type { ApartmentDetail, ApartmentListItem, PaginatedResponse } from '@toonexpo/contracts';
-import type { Prisma } from '@toonexpo/db';
 
 import { PrismaService } from '../prisma/prisma.service.js';
 import { AnalyticsService } from '../analytics/analytics.service.js';
@@ -11,6 +10,7 @@ import {
 import type { ListApartmentsQueryDto } from './dto/list-apartments.query.dto.js';
 import type { CatalogViewerContext } from './projects.service.js';
 import { decimalToString, shouldRevealPrice, toMediaSummary } from './mappers/catalog.mapper.js';
+import { buildApartmentListWhere } from './utils/build-apartment-list-where.js';
 import { loadTranslations } from './utils/load-translations.js';
 import {
   resolveCatalogLocale,
@@ -28,7 +28,7 @@ export class ApartmentsService {
   ) {}
 
   /**
-   * Lists published apartments (homepage featured band when `featuredOnHome`).
+   * Lists published apartments (Buy page filters + homepage featured band).
    */
   async listApartments(
     query: ListApartmentsQueryDto,
@@ -37,13 +37,7 @@ export class ApartmentsService {
     const page = query.page;
     const pageSize = query.pageSize || CATALOG_DEFAULT_PAGE_SIZE;
     const locale = resolveCatalogLocale(viewer.locale ?? query.locale);
-    const where: Prisma.ApartmentWhereInput = {
-      publicationStatus: PUBLIC_PUBLICATION_STATUS,
-      project: { publicationStatus: PUBLIC_PUBLICATION_STATUS },
-      building: { publicationStatus: PUBLIC_PUBLICATION_STATUS },
-      floor: { publicationStatus: PUBLIC_PUBLICATION_STATUS },
-      ...(query.featuredOnHome === true ? { featuredOnHome: true } : {}),
-    };
+    const where = buildApartmentListWhere(query);
 
     const [total, apartments] = await Promise.all([
       this.prisma.db.apartment.count({ where }),
@@ -116,8 +110,7 @@ export class ApartmentsService {
           district: apartment.project.district,
           latitude: decimalToString(apartment.project.latitude),
           longitude: decimalToString(apartment.project.longitude),
-          cover:
-            toMediaSummary(apartment.coverMedia),
+          cover: toMediaSummary(apartment.coverMedia),
         };
       }),
       meta: {

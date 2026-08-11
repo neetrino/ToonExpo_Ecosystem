@@ -280,6 +280,14 @@ export type ListProjectsQuery = {
 export type ListApartmentsQuery = {
   page?: number;
   pageSize?: number;
+  salesStatus?: ApartmentSalesStatus;
+  minPrice?: number;
+  maxPrice?: number;
+  rooms?: number[];
+  city?: string;
+  builderId?: string;
+  /** Free-text keyword over apartment number / project / location. */
+  q?: string;
   /** When true, only admin-curated homepage apartments. */
   featuredOnHome?: boolean;
   /** Catalog content locale (`hy` | `ru` | `en`). Falls back to Armenian. */

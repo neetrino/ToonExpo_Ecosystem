@@ -6,6 +6,7 @@ import { useState } from 'react';
 
 import { catalogProjectDetailHref, isSafeAppReturnPath } from '@/features/builder/catalog-scope';
 import { useCatalogScope } from '@/features/builder/catalog-scope-context';
+import { ApartmentPublicationActions } from '@/features/builder/components/apartment-publication-actions';
 import { EditApartmentCoverForm } from '@/features/builder/components/edit-apartment-cover-form';
 import { EditApartmentForm } from '@/features/builder/components/edit-apartment-form';
 import { usePortalApartmentQuery } from '@/features/builder/hooks/use-portal-inventory';
@@ -53,27 +54,30 @@ export const ApartmentDetailPage = ({ apartmentId }: ApartmentDetailPageProps) =
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
         <BackLink href={backHref} label={t('back')} />
-        <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4">
-          <h1 className="text-page-title text-ink">{t('title', { number: apartment.number })}</h1>
-          <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-ink-secondary sm:justify-end">
-            <span>{apartment.companyName}</span>
-            <span aria-hidden="true">·</span>
-            <span>{apartment.buildingName}</span>
-            <span aria-hidden="true">·</span>
-            <span>
-              {apartment.floorLabel
-                ? t('meta.floorNamed', {
-                    number: apartment.floorNumber,
-                    name: apartment.floorLabel,
-                  })
-                : t('meta.floorNumber', { number: apartment.floorNumber })}
-            </span>
-            <span aria-hidden="true">·</span>
-            <ApartmentSalesStatusBadge
-              status={apartment.salesStatus}
-              label={t(`salesStatus.${apartment.salesStatus}`)}
-            />
-          </p>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+          <div className="flex flex-col gap-1">
+            <h1 className="text-page-title text-ink">{t('title', { number: apartment.number })}</h1>
+            <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-ink-secondary">
+              <span>{apartment.companyName}</span>
+              <span aria-hidden="true">·</span>
+              <span>{apartment.buildingName}</span>
+              <span aria-hidden="true">·</span>
+              <span>
+                {apartment.floorLabel
+                  ? t('meta.floorNamed', {
+                      number: apartment.floorNumber,
+                      name: apartment.floorLabel,
+                    })
+                  : t('meta.floorNumber', { number: apartment.floorNumber })}
+              </span>
+              <span aria-hidden="true">·</span>
+              <ApartmentSalesStatusBadge
+                status={apartment.salesStatus}
+                label={t(`salesStatus.${apartment.salesStatus}`)}
+              />
+            </p>
+          </div>
+          <ApartmentPublicationActions apartment={apartment} />
         </div>
       </div>
 

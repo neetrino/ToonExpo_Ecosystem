@@ -8,14 +8,15 @@ import type {
   UpdatePortalApartmentRequest,
   UpdatePortalBuildingRequest,
   UpdatePortalFloorRequest,
+  UpdatePortalPublicationRequest,
 } from '@toonexpo/contracts';
-
 import { ADMIN_APARTMENTS_QUERY_KEY } from '@/features/admin/constants';
 import {
   bulkCreatePortalApartments,
   getPortalApartment,
   listPortalApartments,
   updatePortalApartment,
+  updatePortalApartmentPublication,
 } from '@/features/builder/api/portal-apartments-api';
 import {
   createPortalBuilding,
@@ -149,6 +150,27 @@ export const useUpdateApartmentMutation = (id: string) => {
 
   return useMutation({
     mutationFn: (body: UpdatePortalApartmentRequest) => updatePortalApartment(id, body, { scope }),
+    onSuccess: (apartment) => {
+      queryClient.setQueryData([...portalApartmentQueryKey(id), scope], apartment);
+      void queryClient.invalidateQueries({
+        queryKey: portalFloorApartmentsQueryKey(apartment.floorId),
+      });
+      void queryClient.invalidateQueries({ queryKey: ADMIN_APARTMENTS_QUERY_KEY });
+      invalidateProject(queryClient, apartment.projectId);
+    },
+  });
+};
+
+/**
+ * Changes apartment publication status (and publishes parent building/floor when going live).
+ */
+export const useUpdateApartmentPublicationMutation = (id: string) => {
+  const queryClient = useQueryClient();
+  const scope = useCatalogScope();
+
+  return useMutation({
+    mutationFn: (body: UpdatePortalPublicationRequest) =>
+      updatePortalApartmentPublication(id, body, { scope }),
     onSuccess: (apartment) => {
       queryClient.setQueryData([...portalApartmentQueryKey(id), scope], apartment);
       void queryClient.invalidateQueries({

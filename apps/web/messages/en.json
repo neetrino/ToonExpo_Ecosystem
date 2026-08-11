@@ -3421,6 +3421,11 @@
         "published": "Published",
         "archived": "Archived"
       },
+      "detail": {
+        "publish": "Publish",
+        "unpublish": "Unpublish",
+        "publicationSuccess": "Publication updated"
+      },
       "errors": {
         "generic": "Something went wrong. Please try again."
       }

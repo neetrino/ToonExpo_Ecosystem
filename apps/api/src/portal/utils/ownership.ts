@@ -1,4 +1,4 @@
-import type { Prisma } from "@toonexpo/db";
+import type { Prisma, PublicationStatus } from "@toonexpo/db";
 
 import type { PrismaService } from "../../prisma/prisma.service.js";
 import { entityNotFound } from "./access.js";
@@ -17,7 +17,10 @@ type BuildingOwned = {
 type FloorOwned = {
   id: string;
   buildingId: string;
-  building: { projectId: string; project: { builderCompanyId: string } };
+  building: {
+    projectId: string;
+    project: { builderCompanyId: string; publicationStatus: PublicationStatus };
+  };
 };
 
 type ApartmentOwned = {
@@ -90,7 +93,12 @@ export const requireOwnedFloor = async (
       building: {
         select: {
           projectId: true,
-          project: { select: { builderCompanyId: true } },
+          project: {
+            select: {
+              builderCompanyId: true,
+              publicationStatus: true,
+            },
+          },
         },
       },
     },
