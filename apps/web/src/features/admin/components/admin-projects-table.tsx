@@ -39,7 +39,10 @@ export const AdminProjectsTable = ({
     return (
       <AdminListCardGrid
         key={searchKey}
-        className={cn('gap-4', searchKey.length > 0 && 'search-results-drop-in')}
+        className={cn(
+          'gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
+          searchKey.length > 0 && 'search-results-drop-in',
+        )}
       >
         {projects.map((project) => (
           <AdminProjectCard key={project.id} project={project} onOpenBuildings={onOpenBuildings} />

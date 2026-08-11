@@ -8,7 +8,6 @@ import { useCallback, useState } from 'react';
 import { ApiError, isApiErrorStatus } from '@/shared/api/errors';
 import { cn } from '@/shared/ui/cn';
 import { EphemeralToast } from '@/shared/ui/ephemeral-toast';
-import { IconButton } from '@/shared/ui/icon-button';
 
 type AdminFeaturedOnHomeButtonProps = {
   featuredOnHome: boolean;
@@ -23,7 +22,7 @@ type ToastState = {
 };
 
 /**
- * Heart toggle to pin/unpin an entity on the public homepage.
+ * Bare heart toggle to pin/unpin an entity on the public homepage.
  */
 export const AdminFeaturedOnHomeButton = ({
   featuredOnHome,
@@ -67,12 +66,19 @@ export const AdminFeaturedOnHomeButton = ({
 
   return (
     <>
-      <IconButton
-        label={label}
-        variant={featuredOnHome ? 'soft' : 'ghost'}
-        size="md"
-        disabled={pending || disabled}
+      <button
+        type="button"
+        aria-label={label}
+        title={label}
         aria-pressed={featuredOnHome}
+        disabled={pending || disabled}
+        className={cn(
+          'inline-flex size-8 shrink-0 items-center justify-center rounded-sm',
+          'transition-colors duration-[var(--duration-fast)]',
+          'hover:text-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30',
+          'disabled:pointer-events-none disabled:opacity-50',
+          featuredOnHome ? 'text-brand' : 'text-ink-muted',
+        )}
         onClick={(event) => {
           event.preventDefault();
           event.stopPropagation();
@@ -80,13 +86,10 @@ export const AdminFeaturedOnHomeButton = ({
         }}
       >
         <Heart
-          className={cn(
-            'size-4',
-            featuredOnHome ? 'fill-brand text-brand' : 'text-ink-muted',
-          )}
+          className={cn('size-4', featuredOnHome ? 'fill-brand' : undefined)}
           aria-hidden
         />
-      </IconButton>
+      </button>
       <EphemeralToast
         key={toast?.id ?? 'empty'}
         message={toast?.message ?? null}

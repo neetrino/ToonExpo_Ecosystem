@@ -7,7 +7,7 @@ import type {
 } from '@toonexpo/contracts';
 import type { Prisma } from '@toonexpo/db';
 
-import { summarizeSalesStatuses } from '../../catalog/mappers/catalog.mapper.js';
+import { summarizeSalesStatuses, toMediaSummary } from '../../catalog/mappers/catalog.mapper.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 
 
@@ -186,12 +186,32 @@ export class AdminInventoryService {
           projectId: true,
           featuredOnHome: true,
           floor: { select: { number: true } },
-          building: { select: { name: true } },
+          building: {
+            select: {
+              name: true,
+              coverMedia: {
+                select: {
+                  id: true,
+                  fileUrl: true,
+                  thumbnailUrl: true,
+                  altText: true,
+                },
+              },
+            },
+          },
           project: {
             select: {
               name: true,
               builderCompanyId: true,
               builderCompany: { select: { name: true } },
+              coverMedia: {
+                select: {
+                  id: true,
+                  fileUrl: true,
+                  thumbnailUrl: true,
+                  altText: true,
+                },
+              },
             },
           },
         },
@@ -214,6 +234,9 @@ export class AdminInventoryService {
         builderCompanyId: apartment.project.builderCompanyId,
         companyName: apartment.project.builderCompany.name,
         featuredOnHome: apartment.featuredOnHome,
+        cover:
+          toMediaSummary(apartment.project.coverMedia) ??
+          toMediaSummary(apartment.building.coverMedia),
       })),
       meta: {
         ...this.toMeta(page, pageSize, total),
