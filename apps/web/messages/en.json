@@ -312,7 +312,7 @@
     "marketInsights": "Market Insights",
     "projects": "Projects",
     "builders": "Builders",
-    "partners": "Partners",
+    "partners": "Exhibitors",
     "mortgage": "Mortgage",
     "geoMap": "3D Map",
     "expoMap": "Expo map",
@@ -2850,6 +2850,67 @@
       },
       "validation": {
         "title": "Enter a title in Armenian"
+      }
+    }
+  },
+  "MarketInsights": {
+    "meta": {
+      "title": "Market Insights — ToonExpo",
+      "description": "Real-estate market dashboards: average price per m², supply and demand, mortgage rate trends, and city heatmaps."
+    },
+    "eyebrow": "Market intelligence",
+    "title": "Where the market is moving — and where it's heading.",
+    "subtitle": "Track national pricing, mortgage rates, and demand across Armenia’s key cities.",
+    "nationalAvg": {
+      "label": "National avg · ֏ / m²",
+      "yoy": "{value} YoY",
+      "description": "Composite index across major cities, weighted by transaction volume.",
+      "chartAria": "Average price per square meter over the last 12 months"
+    },
+    "metrics": {
+      "mortgageRate": {
+        "label": "30-yr fixed rate",
+        "hint": "{value} this week"
+      },
+      "daysOnMarket": {
+        "label": "Days on market",
+        "hint": "Stable vs last month"
+      },
+      "demand": {
+        "label": "Demand index",
+        "hint": "High"
+      }
+    },
+    "months": {
+      "jul": "Jul",
+      "aug": "Aug",
+      "sep": "Sep",
+      "oct": "Oct",
+      "nov": "Nov",
+      "dec": "Dec",
+      "jan": "Jan",
+      "feb": "Feb",
+      "mar": "Mar",
+      "apr": "Apr",
+      "may": "May",
+      "jun": "Jun"
+    },
+    "cities": {
+      "title": "Cities at a glance",
+      "columns": {
+        "city": "City",
+        "listings": "Active listings",
+        "avg": "Avg ֏ / m²",
+        "yoy": "YoY change",
+        "demand": "Demand"
+      },
+      "names": {
+        "yerevan": "Yerevan",
+        "abovyan": "Abovyan",
+        "gyumri": "Gyumri",
+        "vanadzor": "Vanadzor",
+        "dilijan": "Dilijan",
+        "tsaghkadzor": "Tsaghkadzor"
       }
     }
   },
