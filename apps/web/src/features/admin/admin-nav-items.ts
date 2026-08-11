@@ -8,6 +8,7 @@ import {
   Globe,
   Handshake,
   Home,
+  ImageIcon,
   Landmark,
   Layers,
   LayoutList,
@@ -35,6 +36,7 @@ export type AdminNavItemKey =
   | 'readiness'
   | 'readinessCategories'
   | 'bos'
+  | 'homepage'
   | 'events'
   | 'settings';
 
@@ -50,6 +52,7 @@ const PROJECTS_HREF = '/admin/projects';
 const READINESS_HREF = '/admin/readiness';
 const SERVICE_PROVIDERS_HREF = '/admin/service-providers';
 const BOS_HREF = '/admin/integrations/bos';
+const HOMEPAGE_HREF = '/admin/settings/homepage';
 
 export const ADMIN_BUILDER_CHILD_NAV_ITEMS: AdminNavItem[] = [
   { href: PROJECTS_HREF, key: 'projects', icon: FolderKanban },
@@ -64,6 +67,7 @@ export const ADMIN_READINESS_CHILD_NAV_ITEMS: AdminNavItem[] = [
 ];
 
 export const ADMIN_SETTINGS_CHILD_NAV_ITEMS: AdminNavItem[] = [
+  { href: HOMEPAGE_HREF, key: 'homepage', icon: ImageIcon },
   { href: BOS_HREF, key: 'bos', icon: Workflow },
 ];
 

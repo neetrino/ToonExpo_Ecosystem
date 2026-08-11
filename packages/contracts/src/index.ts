@@ -20,3 +20,4 @@ export * from './visual-map.js';
 export * from './interactive-mapping.js';
 export * from './media.js';
 export * from './geo-map.js';
+export * from './platform-settings.js';

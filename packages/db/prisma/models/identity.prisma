@@ -96,6 +96,7 @@ model User {
   createdProjectMapModels         ProjectMapModel[]         @relation("ProjectMapModelCreator")
   updatedProjectMapModels         ProjectMapModel[]         @relation("ProjectMapModelUpdater")
   checkInRecords                  CheckInRecord[]           @relation("CheckInStaff")
+  updatedPlatformSettings         PlatformSetting[]         @relation("PlatformSettingUpdater")
 
   @@index([accountType])
   @@map("users")

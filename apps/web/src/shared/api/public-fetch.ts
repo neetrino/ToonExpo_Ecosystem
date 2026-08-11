@@ -51,3 +51,9 @@ export const geoMapFetch = (): PublicFetchInit =>
    * Published 3D models should appear immediately after admin publish (same as visual map).
    */
   publicCachedGet(0, [PUBLIC_CACHE_TAG.GEO_MAP]);
+
+export const homeHeroFetch = (): PublicFetchInit =>
+  /**
+   * Admin banner changes should appear on Home immediately after save.
+   */
+  publicCachedGet(0, [PUBLIC_CACHE_TAG.HOME]);

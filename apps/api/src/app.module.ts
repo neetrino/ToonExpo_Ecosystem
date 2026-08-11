@@ -32,6 +32,7 @@ import { InteractiveMappingModule } from './interactive-mapping/interactive-mapp
 import { MediaModule } from './media/media.module.js';
 import { MortgageModule } from './mortgage/mortgage.module.js';
 import { PartnersModule } from './partners/partners.module.js';
+import { PlatformSettingsModule } from './platform-settings/platform-settings.module.js';
 import { PortalModule } from './portal/portal.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { QrModule } from './qr/qr.module.js';
@@ -69,6 +70,7 @@ import { GeoMapModule } from './geo-map/geo-map.module.js';
     CrmModule,
     ReadinessModule,
     PartnersModule,
+    PlatformSettingsModule,
     MortgageModule,
     ServiceProvidersModule,
     ExhibitionModule,

@@ -49,6 +49,7 @@ export const PUBLIC_CACHE_TAG = {
   EXHIBITION: 'exhibition',
   VISUAL_MAP: 'visual-map',
   GEO_MAP: 'geo-map',
+  HOME: 'home',
 } as const;
 
 export type PublicCacheTag = (typeof PUBLIC_CACHE_TAG)[keyof typeof PUBLIC_CACHE_TAG];

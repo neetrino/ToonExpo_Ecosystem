@@ -1279,7 +1279,27 @@
       "events": "Events",
       "checkin": "Check-in scanner",
       "bos": "BOS",
+      "homepage": "Homepage banner",
       "settings": "Settings"
+    },
+    "homeBanner": {
+      "title": "Homepage banner",
+      "subtitle": "Upload or pick the full-bleed hero image shown on the public home page. Visitors see this change after you save.",
+      "loading": "Loading banner…",
+      "uploadLabel": "Hero image",
+      "hint": "Use a wide landscape photo (recommended 1920×1080 or larger). Text stays light — prefer images with a darker or mid-tone area behind the headline.",
+      "previewAlt": "Homepage hero preview",
+      "previewDefault": "Default platform image",
+      "previewCustom": "Custom image (live after save)",
+      "save": "Save banner",
+      "saving": "Saving…",
+      "resetDefault": "Restore default",
+      "saveSuccess": "Homepage banner updated",
+      "errors": {
+        "load": "Could not load the current banner.",
+        "save": "Could not save the banner. Try again.",
+        "required": "Upload or select an image before saving."
+      }
     },
     "geoMap": {
       "title": "3D Map",
