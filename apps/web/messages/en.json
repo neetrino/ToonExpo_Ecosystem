@@ -314,7 +314,7 @@
     "menu": "Open menu",
     "railExpand": "Expand sidebar",
     "railCollapse": "Collapse sidebar",
-    "buy": "Apartments",
+    "buy": "Buy",
     "marketInsights": "Market Insights",
     "projects": "Projects",
     "builders": "Builders",
@@ -1259,6 +1259,13 @@
   "Admin": {
     "badge": "Admin",
     "profileLink": "Profile",
+    "featuredOnHome": {
+      "pin": "Show on homepage",
+      "unpin": "Remove from homepage",
+      "error": "Could not update homepage featured status.",
+      "projectLimit": "Homepage already has {count} featured projects.",
+      "apartmentLimit": "Homepage already has {count} featured apartments."
+    },
     "home": {
       "title": "Admin",
       "subtitle": "Choose a section from the sidebar to manage the platform."
@@ -1751,6 +1758,7 @@
     "projects": {
       "title": "Projects",
       "subtitle": "{count, plural, =0 {No projects} one {# project} other {# projects}}",
+      "subtitleWithFeatured": "{count, plural, =0 {No projects} one {# project} other {# projects}} · Home {featured}/{limit}",
       "empty": "No projects yet.",
       "emptyTitle": "No projects yet",
       "noResults": "No projects match “{query}”.",
@@ -1911,6 +1919,7 @@
     "apartments": {
       "title": "Apartments",
       "subtitle": "{count, plural, =0 {No apartments} one {# apartment} other {# apartments}}",
+      "subtitleWithFeatured": "{count, plural, =0 {No apartments} one {# apartment} other {# apartments}} · Home {featured}/{limit}",
       "empty": "No apartments yet.",
       "loading": "Loading apartments…",
       "error": "Could not load apartments. Try again.",

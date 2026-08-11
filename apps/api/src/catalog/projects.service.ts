@@ -35,7 +35,7 @@ export class ProjectsService {
       this.prisma.db.project.count({ where }),
       this.prisma.db.project.findMany({
         where,
-        orderBy: [{ name: 'asc' }],
+        orderBy: query.featuredOnHome === true ? [{ updatedAt: 'desc' }] : [{ name: 'asc' }],
         skip: (page - 1) * pageSize,
         take: pageSize,
         include: {
@@ -160,6 +160,10 @@ export class ProjectsService {
     const where: Prisma.ProjectWhereInput = {
       publicationStatus: PublicationStatus.published,
     };
+
+    if (query.featuredOnHome === true) {
+      where.featuredOnHome = true;
+    }
 
     if (query.city) {
       const cities = query.city

@@ -314,7 +314,7 @@
     "menu": "Открыть меню",
     "railExpand": "Развернуть боковую панель",
     "railCollapse": "Свернуть боковую панель",
-    "buy": "Квартиры",
+    "buy": "Купить",
     "marketInsights": "Аналитика рынка",
     "projects": "Проекты",
     "builders": "Застройщики",
@@ -1259,6 +1259,13 @@
   "Admin": {
     "badge": "Админ",
     "profileLink": "Профиль",
+    "featuredOnHome": {
+      "pin": "Показать на главной",
+      "unpin": "Убрать с главной",
+      "error": "Не удалось обновить статус на главной.",
+      "projectLimit": "На главной уже {count} избранных проектов.",
+      "apartmentLimit": "На главной уже {count} избранных квартир."
+    },
     "home": {
       "title": "Админ",
       "subtitle": "Выберите раздел в боковом меню, чтобы управлять платформой."
@@ -1751,6 +1758,7 @@
     "projects": {
       "title": "Проекты",
       "subtitle": "{count, plural, =0 {Нет проектов} one {# проект} few {# проекта} other {# проектов}}",
+      "subtitleWithFeatured": "{count, plural, =0 {Нет проектов} one {# проект} few {# проекта} other {# проектов}} · Главная {featured}/{limit}",
       "empty": "Проектов пока нет.",
       "emptyTitle": "Проектов пока нет",
       "noResults": "Нет проектов по запросу «{query}».",
@@ -1911,6 +1919,7 @@
     "apartments": {
       "title": "Квартиры",
       "subtitle": "{count, plural, =0 {Нет квартир} one {# квартира} few {# квартиры} other {# квартир}}",
+      "subtitleWithFeatured": "{count, plural, =0 {Нет квартир} one {# квартира} few {# квартиры} other {# квартир}} · Главная {featured}/{limit}",
       "empty": "Квартир пока нет.",
       "loading": "Загрузка квартир…",
       "error": "Не удалось загрузить квартиры. Попробуйте ещё раз.",

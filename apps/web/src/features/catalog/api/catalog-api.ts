@@ -1,9 +1,11 @@
 import type {
   ApartmentDetail,
+  ApartmentListItem,
   BuilderDetail,
   BuilderSummary,
   BuildingDetail,
   FloorDetail,
+  ListApartmentsQuery,
   ListProjectsQuery,
   PaginatedResponse,
   ProjectDetail,
@@ -53,6 +55,29 @@ const toSearchParams = (query: ListProjectsQuery): string => {
   if (query.q) {
     params.set('q', query.q);
   }
+  if (query.featuredOnHome === true) {
+    params.set('featuredOnHome', 'true');
+  }
+  if (query.locale) {
+    params.set('locale', query.locale);
+  }
+
+  const serialized = params.toString();
+  return serialized.length > 0 ? `?${serialized}` : '';
+};
+
+const toApartmentSearchParams = (query: ListApartmentsQuery): string => {
+  const params = new URLSearchParams();
+
+  if (query.page != null) {
+    params.set('page', String(query.page));
+  }
+  if (query.pageSize != null) {
+    params.set('pageSize', String(query.pageSize));
+  }
+  if (query.featuredOnHome === true) {
+    params.set('featuredOnHome', 'true');
+  }
   if (query.locale) {
     params.set('locale', query.locale);
   }
@@ -89,6 +114,29 @@ export const listProjects = (
 
   return apiFetch<PaginatedResponse<ProjectListItem>>({
     path: `/projects${toSearchParams(merged)}`,
+    ...fetchInit,
+  });
+};
+
+/**
+ * Lists published apartments (homepage featured when `featuredOnHome`).
+ */
+export const listApartments = (
+  query: ListApartmentsQuery = {},
+  options: CatalogRequestOptions = {},
+): Promise<PaginatedResponse<ApartmentListItem>> => {
+  const merged: ListApartmentsQuery = { ...query };
+  if (options.locale) {
+    merged.locale = options.locale;
+  }
+
+  const fetchInit =
+    options.cacheMode === 'no-store'
+      ? { method: 'GET' as const, cache: 'no-store' as const }
+      : catalogListFetch();
+
+  return apiFetch<PaginatedResponse<ApartmentListItem>>({
+    path: `/apartments${toApartmentSearchParams(merged)}`,
     ...fetchInit,
   });
 };

@@ -25,6 +25,7 @@ import { toCompanyResponse } from '../../companies/mappers/company.mapper.js';
 import { CompanyProvisioningService } from '../../company/provisioning/company-provisioning.service.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 
+
 type CreateCompanyInput = {
   name: string;
   type: CompanyType;
@@ -190,11 +191,12 @@ export class AdminCompaniesService {
 
     const where = buildAdminProjectsWhere(companyId, search);
 
-    const [total, projects] = await Promise.all([
+    const [total, featuredOnHomeTotal, projects] = await Promise.all([
       this.prisma.db.project.count({ where }),
+      this.prisma.db.project.count({ where: { featuredOnHome: true } }),
       this.prisma.db.project.findMany({
         where,
-        orderBy: [{ updatedAt: 'desc' }],
+        orderBy: [{ featuredOnHome: 'desc' }, { updatedAt: 'desc' }],
         skip: (page - 1) * pageSize,
         take: pageSize,
         select: {
@@ -204,6 +206,7 @@ export class AdminCompaniesService {
           createdAt: true,
           city: true,
           builderCompanyId: true,
+          featuredOnHome: true,
           builderCompany: { select: { name: true } },
           buildings: {
             where: { coverMediaId: { not: null } },
@@ -238,12 +241,14 @@ export class AdminCompaniesService {
         buildingCover: toAdminBuildingCover(project.buildings[0]),
         buildingsCount: project._count.buildings,
         apartmentsCount: project._count.apartments,
+        featuredOnHome: project.featuredOnHome,
       })),
       meta: {
         page,
         pageSize,
         total,
         totalPages: total === 0 ? 0 : Math.ceil(total / pageSize),
+        featuredOnHomeTotal,
       },
     };
   }

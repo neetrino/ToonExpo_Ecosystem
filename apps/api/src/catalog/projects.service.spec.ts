@@ -34,6 +34,16 @@ describe('ProjectsService filters and pagination', () => {
     expect(where).toEqual({ publicationStatus: 'published' });
   });
 
+  it('filters homepage curated projects when featuredOnHome is true', () => {
+    const query = Object.assign(new ListProjectsQueryDto(), { featuredOnHome: true });
+    const where = service.buildListWhere(query);
+
+    expect(where).toEqual({
+      publicationStatus: 'published',
+      featuredOnHome: true,
+    });
+  });
+
   it('adds apartment filters for sales status, rooms and price range', () => {
     const query = Object.assign(new ListProjectsQueryDto(), {
       salesStatus: 'available',

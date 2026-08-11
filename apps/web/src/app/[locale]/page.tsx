@@ -10,15 +10,15 @@ import { HomeMortgage } from '@/features/catalog/components/home-mortgage';
 import { HomeStats } from '@/features/catalog/components/home-stats';
 import { SiteFooter } from '@/features/catalog/components/site-footer';
 import { HOME_HERO_CATALOG_PAGE_SIZE } from '@/features/catalog/constants/hero-search';
-import { loadBuyApartmentListings } from '@/features/catalog/utils/load-buy-apartments';
+import {
+  HOME_FEATURED_PROJECT_LIMIT,
+} from '@/features/catalog/constants/home-featured';
+import { loadHomeFeaturedApartments } from '@/features/catalog/utils/load-home-featured-apartments';
 import { collectProjectCities } from '@/features/catalog/utils/location-options';
 
 type HomePageProps = {
   params: Promise<{ locale: string }>;
 };
-
-const HOME_FEATURED_PAGE_SIZE = 7;
-const HOME_FEATURED_APARTMENT_LIMIT = 6;
 
 const emptyProjectPage = (pageSize: number): PaginatedResponse<ProjectListItem> => ({
   data: [],
@@ -43,27 +43,31 @@ export default async function HomePage({ params }: HomePageProps) {
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const [catalogResponse, featuredApartments, builders] = await Promise.all([
-    listProjects({ page: 1, pageSize: HOME_HERO_CATALOG_PAGE_SIZE }, { locale }).catch(() =>
-      emptyProjectPage(HOME_HERO_CATALOG_PAGE_SIZE),
-    ),
-    loadBuyApartmentListings({
-      locale,
-      filters: { salesStatus: 'available' },
-      limit: HOME_FEATURED_APARTMENT_LIMIT,
-    }).catch(() => []),
-    listBuilders({ locale }).catch(() => []),
-  ]);
+  const [catalogResponse, featuredProjectsResponse, featuredApartments, builders] =
+    await Promise.all([
+      listProjects({ page: 1, pageSize: HOME_HERO_CATALOG_PAGE_SIZE }, { locale }).catch(() =>
+        emptyProjectPage(HOME_HERO_CATALOG_PAGE_SIZE),
+      ),
+      listProjects(
+        { page: 1, pageSize: HOME_FEATURED_PROJECT_LIMIT, featuredOnHome: true },
+        { locale, cacheMode: 'no-store' },
+      ).catch(() => emptyProjectPage(HOME_FEATURED_PROJECT_LIMIT)),
+      loadHomeFeaturedApartments(locale).catch(() => []),
+      listBuilders({ locale }).catch(() => []),
+    ]);
 
   const catalogProjects = catalogResponse.data;
-  const featuredProjects = catalogProjects.slice(0, HOME_FEATURED_PAGE_SIZE);
+  const featuredProjects =
+    featuredProjectsResponse.data.length > 0
+      ? featuredProjectsResponse.data
+      : catalogProjects.slice(0, HOME_FEATURED_PROJECT_LIMIT);
   const locations = collectProjectCities(catalogProjects);
 
   return (
     <div className="min-h-screen bg-canvas">
       <HomeHero locations={locations} projects={catalogProjects} />
       <HomeStats
-        projects={featuredProjects}
+        projects={catalogProjects}
         builderCount={builders.length}
         projectTotal={catalogResponse.meta.total}
       />

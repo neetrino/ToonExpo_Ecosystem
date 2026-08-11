@@ -11,6 +11,7 @@ import {
   listAdminCompanyProjects,
   listAdminProjects,
   resendAdminCompanyInvite,
+  setAdminProjectFeaturedOnHome,
   updateAdminCompany,
   type ListAdminProjectsParams,
 } from '@/features/admin/api/admin-companies-api';
@@ -113,6 +114,21 @@ export const useResendAdminInviteMutation = (id: string) => {
     mutationFn: () => resendAdminCompanyInvite(id),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: adminCompanyQueryKey(id) });
+    },
+  });
+};
+
+/**
+ * Pins or unpins a project on the public homepage.
+ */
+export const useSetAdminProjectFeaturedOnHomeMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (input: { projectId: string; featuredOnHome: boolean }) =>
+      setAdminProjectFeaturedOnHome(input.projectId, input.featuredOnHome),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ADMIN_PROJECTS_QUERY_KEY });
     },
   });
 };

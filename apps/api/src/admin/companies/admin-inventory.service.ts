@@ -10,6 +10,7 @@ import type { Prisma } from '@toonexpo/db';
 import { summarizeSalesStatuses } from '../../catalog/mappers/catalog.mapper.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 
+
 /**
  * Cross-company inventory lists for the admin Projects hub.
  */
@@ -166,11 +167,12 @@ export class AdminInventoryService {
       ...(buildingId ? { buildingId } : {}),
     };
 
-    const [total, apartments] = await Promise.all([
+    const [total, featuredOnHomeTotal, apartments] = await Promise.all([
       this.prisma.db.apartment.count({ where }),
+      this.prisma.db.apartment.count({ where: { featuredOnHome: true } }),
       this.prisma.db.apartment.findMany({
         where,
-        orderBy: [{ updatedAt: 'desc' }],
+        orderBy: [{ featuredOnHome: 'desc' }, { updatedAt: 'desc' }],
         skip: (page - 1) * pageSize,
         take: pageSize,
         select: {
@@ -182,6 +184,7 @@ export class AdminInventoryService {
           floorId: true,
           buildingId: true,
           projectId: true,
+          featuredOnHome: true,
           floor: { select: { number: true } },
           building: { select: { name: true } },
           project: {
@@ -210,8 +213,12 @@ export class AdminInventoryService {
         projectName: apartment.project.name,
         builderCompanyId: apartment.project.builderCompanyId,
         companyName: apartment.project.builderCompany.name,
+        featuredOnHome: apartment.featuredOnHome,
       })),
-      meta: this.toMeta(page, pageSize, total),
+      meta: {
+        ...this.toMeta(page, pageSize, total),
+        featuredOnHomeTotal,
+      },
     };
   }
 

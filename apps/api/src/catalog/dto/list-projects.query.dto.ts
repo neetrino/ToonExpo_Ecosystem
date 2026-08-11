@@ -4,6 +4,7 @@ import {
   ArrayMaxSize,
   ArrayUnique,
   IsArray,
+  IsBoolean,
   IsEnum,
   IsInt,
   IsOptional,
@@ -128,6 +129,23 @@ export class ListProjectsQueryDto {
     return trimmed.length > 0 ? trimmed : undefined;
   })
   q?: string;
+
+  @ApiPropertyOptional({ description: 'When true, only admin-curated homepage projects' })
+  @IsOptional()
+  @Transform(({ value }: { value: unknown }) => {
+    if (value == null || value === '') {
+      return undefined;
+    }
+    if (value === true || value === 'true' || value === '1') {
+      return true;
+    }
+    if (value === false || value === 'false' || value === '0') {
+      return false;
+    }
+    return undefined;
+  })
+  @IsBoolean()
+  featuredOnHome?: boolean;
 
   @ApiPropertyOptional({
     enum: ['hy', 'ru', 'en'],

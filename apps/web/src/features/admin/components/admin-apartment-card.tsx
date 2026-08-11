@@ -4,14 +4,18 @@ import type { AdminApartmentListItem, ApartmentSalesStatus } from '@toonexpo/con
 import { Building, Building2, Layers } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { AdminFeaturedOnHomeButton } from '@/features/admin/components/admin-featured-on-home-button';
 import {
   ADMIN_INVENTORY_CARD_CLASS,
   AdminInventoryCardMetaRow,
   AdminInventoryPublicationBadge,
 } from '@/features/admin/components/admin-inventory-card';
+import { useSetAdminApartmentFeaturedOnHomeMutation } from '@/features/admin/hooks/use-admin-inventory';
 import { catalogApartmentDetailHref } from '@/features/builder/catalog-scope';
+import { HOME_FEATURED_APARTMENT_LIMIT } from '@/features/catalog/constants/home-featured';
 import { Link } from '@/i18n/navigation';
 import { ApartmentSalesStatusBadge } from '@/shared/ui/apartment-sales-status-badge';
+import { cn } from '@/shared/ui/cn';
 
 type AdminApartmentCardProps = {
   apartment: AdminApartmentListItem;
@@ -23,18 +27,21 @@ type AdminApartmentCardProps = {
  */
 export const AdminApartmentCard = ({ apartment, returnTo }: AdminApartmentCardProps) => {
   const t = useTranslations('Admin.apartments');
+  const tFeatured = useTranslations('Admin.featuredOnHome');
   const salesStatus = apartment.salesStatus as ApartmentSalesStatus;
+  const featuredMutation = useSetAdminApartmentFeaturedOnHomeMutation();
+  const detailHref = catalogApartmentDetailHref(
+    { mode: 'admin', companyId: apartment.builderCompanyId },
+    apartment.id,
+    { returnTo },
+  );
 
   return (
-    <Link
-      href={catalogApartmentDetailHref(
-        { mode: 'admin', companyId: apartment.builderCompanyId },
-        apartment.id,
-        { returnTo },
-      )}
-      className={ADMIN_INVENTORY_CARD_CLASS}
-    >
-      <div className="flex flex-1 flex-col p-4">
+    <article className={cn(ADMIN_INVENTORY_CARD_CLASS, 'relative')}>
+      <Link
+        href={detailHref}
+        className="flex flex-1 flex-col p-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30"
+      >
         <div className="flex flex-wrap items-start justify-between gap-2">
           <h2 className="min-w-0 flex-1 text-base font-semibold tracking-tight text-ink">
             {t('unit', { number: apartment.number })}
@@ -53,11 +60,23 @@ export const AdminApartmentCard = ({ apartment, returnTo }: AdminApartmentCardPr
             {apartment.projectName}
           </AdminInventoryCardMetaRow>
         </div>
-      </div>
+      </Link>
 
       <div className="mt-auto flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-border px-4 py-3">
         <ApartmentSalesStatusBadge status={salesStatus} label={t(`sales.${salesStatus}`)} />
+        <div className="ml-auto">
+          <AdminFeaturedOnHomeButton
+            featuredOnHome={apartment.featuredOnHome}
+            limitLabel={tFeatured('apartmentLimit', { count: HOME_FEATURED_APARTMENT_LIMIT })}
+            onToggle={async (next) =>
+              featuredMutation.mutateAsync({
+                apartmentId: apartment.id,
+                featuredOnHome: next,
+              })
+            }
+          />
+        </div>
       </div>
-    </Link>
+    </article>
   );
 };

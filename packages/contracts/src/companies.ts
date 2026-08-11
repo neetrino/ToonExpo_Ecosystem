@@ -160,9 +160,21 @@ export type AdminProjectListItem = {
   } | null;
   buildingsCount: number;
   apartmentsCount: number;
+  /** Admin-curated homepage developments band (max 3). */
+  featuredOnHome: boolean;
 };
 
-export type AdminProjectListResponse = PaginatedResponse<AdminProjectListItem>;
+export type AdminProjectListResponse = {
+  data: AdminProjectListItem[];
+  meta: {
+    page: number;
+    pageSize: number;
+    total: number;
+    totalPages: number;
+    /** How many projects are currently pinned to the homepage. */
+    featuredOnHomeTotal: number;
+  };
+};
 
 /**
  * Scope payload so admin project UI can bind company catalog APIs.
@@ -227,9 +239,36 @@ export type AdminApartmentListItem = {
   projectName: string;
   builderCompanyId: string;
   companyName: string;
+  /** Admin-curated homepage featured listings (max 6). */
+  featuredOnHome: boolean;
 };
 
-export type AdminApartmentListResponse = PaginatedResponse<AdminApartmentListItem>;
+export type AdminApartmentListResponse = {
+  data: AdminApartmentListItem[];
+  meta: {
+    page: number;
+    pageSize: number;
+    total: number;
+    totalPages: number;
+    /** How many apartments are currently pinned to the homepage. */
+    featuredOnHomeTotal: number;
+  };
+};
+
+/**
+ * Toggle response after admin pins/unpins an entity on the homepage.
+ */
+export type FeaturedOnHomeResponse = {
+  id: string;
+  featuredOnHome: boolean;
+};
+
+/**
+ * Request body to pin/unpin a project or apartment on the homepage.
+ */
+export type SetFeaturedOnHomeRequest = {
+  featuredOnHome: boolean;
+};
 
 /**
  * Floor row for the admin building inventory glance sheet.
