@@ -1,5 +1,4 @@
 import type { ProjectListItem } from '@toonexpo/contracts';
-import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
 
 import { getPublicHomeHero } from '@/features/catalog/api/home-hero-api';
