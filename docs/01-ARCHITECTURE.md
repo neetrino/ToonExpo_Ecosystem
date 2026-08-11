@@ -204,7 +204,7 @@ The boundary should be enforced in ESLint/CI, not left as documentation only.
 | Public Exhibition Map | BOS snapshot ingestion, immutable versions, public areas/landmarks, search and rendering |
 | Analytics             | Product/event measurements and role-scoped summaries                                     |
 | Provisioning          | Idempotent BOS account/company provisioning contract                                     |
-| Content               | 📋 post-v1 — homepage CMS / content blocks (not built)                                   |
+| Content               | 🟡 partial — home hero banner via `PlatformSetting` (`home.hero.mediaAssetId`); full CMS blocks still post-v1 |
 | Audit                 | 📋 post-v1 — global admin audit log (only BOS `IntegrationAuditLog` exists today)        |
 
 Frontend features mirror user workflows, not persistence tables. A single backend module may serve several frontend areas.

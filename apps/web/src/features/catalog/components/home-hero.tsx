@@ -1,13 +1,10 @@
 import type { ProjectListItem } from '@toonexpo/contracts';
-import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
 
+import { getPublicHomeHero } from '@/features/catalog/api/home-hero-api';
+import { HomeHeroBackdrop } from '@/features/catalog/components/home-hero-backdrop';
 import { HeroSearch } from '@/features/catalog/components/hero-search';
-import { staticAssetUrl } from '@/shared/lib/static-asset-url';
 import { cn } from '@/shared/ui/cn';
-
-/** Figma photo node `89:1399`. */
-const HERO_IMAGE_SRC = staticAssetUrl('/images/hero-building.webp');
 
 type HomeHeroProps = {
   locations?: readonly string[] | undefined;
@@ -16,25 +13,18 @@ type HomeHeroProps = {
 
 /**
  * Public home hero — full-bleed skyline with marketplace search.
- * Copy + spacing scale as one fluid unit across all viewports.
+ * Slides come from platform settings; empty → default R2 asset inside the backdrop.
  */
 export const HomeHero = async ({ locations = [], projects = [] }: HomeHeroProps) => {
   const t = await getTranslations('HomePage');
+  const hero = await getPublicHomeHero().catch(() => null);
+  const imageUrls = (hero?.slides ?? [])
+    .map((slide) => slide.imageUrl.trim())
+    .filter((url) => url.length > 0);
 
   return (
     <section className="relative isolate flex min-h-fluid-screen flex-col bg-canvas">
-      <div className="absolute inset-0 -z-10 overflow-x-clip" aria-hidden>
-        <Image
-          src={HERO_IMAGE_SRC}
-          alt=""
-          fill
-          priority
-          loading="eager"
-          fetchPriority="high"
-          className="object-cover object-center"
-          sizes="100vw"
-        />
-      </div>
+      <HomeHeroBackdrop imageUrls={imageUrls} />
 
       <div
         className={cn(

@@ -230,3 +230,60 @@
     transform: translate3d(0, 0, 0) scale(1);
   }
 }
+
+/**
+ * Home hero cinematic drift — closed loop through all directions so
+ * `infinite` never hits a visible endpoint (start === end transform).
+ */
+@keyframes home-hero-ken-drift {
+  0% {
+    transform: scale(1.14) translate3d(0, 0, 0);
+  }
+
+  20% {
+    transform: scale(1.2) translate3d(2.2%, -1.6%, 0);
+  }
+
+  40% {
+    transform: scale(1.16) translate3d(1.8%, 2.1%, 0);
+  }
+
+  60% {
+    transform: scale(1.22) translate3d(-2.1%, 1.5%, 0);
+  }
+
+  80% {
+    transform: scale(1.17) translate3d(-1.7%, -2%, 0);
+  }
+
+  100% {
+    transform: scale(1.14) translate3d(0, 0, 0);
+  }
+}
+
+/** Phase-offset twin path — same idea, different corners first. */
+@keyframes home-hero-ken-drift-alt {
+  0% {
+    transform: scale(1.16) translate3d(0, 0, 0);
+  }
+
+  20% {
+    transform: scale(1.21) translate3d(-2%, 1.8%, 0);
+  }
+
+  40% {
+    transform: scale(1.15) translate3d(-1.6%, -2.2%, 0);
+  }
+
+  60% {
+    transform: scale(1.2) translate3d(2.1%, -1.4%, 0);
+  }
+
+  80% {
+    transform: scale(1.18) translate3d(1.5%, 2%, 0);
+  }
+
+  100% {
+    transform: scale(1.16) translate3d(0, 0, 0);
+  }
+}

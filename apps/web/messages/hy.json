@@ -1288,7 +1288,36 @@
       "events": "Միջոցառումներ",
       "checkin": "Գրանցման սկաներ",
       "bos": "BOS",
+      "homepage": "Գլխավոր banner",
       "settings": "Կարգավորումներ"
+    },
+    "homeBanner": {
+      "title": "Գլխավոր էջի banner",
+      "subtitle": "Ավելացրու մեկ կամ մի քանի full-bleed hero նկար գլխավոր էջի համար։ Երկու և ավելի նկարները մոտ 8 վայրկյանը մեկ անվերջ հերթափոխվում են։",
+      "loading": "Բեռնվում է banner-ը…",
+      "uploadLabel": "Ավելացնել banner նկար",
+      "hint": "Օգտագործիր լայն լանդշաֆտային լուսանկարներ (խորհուրդ է տրվում 1920×1080 կամ ավելի մեծ)։ Տեքստը բաց է — նախընտրիր միջին/մուգ հատված headline-ի հետևում։",
+      "previewAlt": "Գլխավոր hero-ի նախադիտում",
+      "previewDefault": "Լռելյայն հարթակի նկար",
+      "previewCount": "{count, plural, one {# banner պտույտում} other {# banner պտույտում}}",
+      "slidesTitle": "Banner-ների հերթականություն",
+      "slidesMeta": "{count}/{max}",
+      "slidesEmpty": "Դեռ անհատական banner չկա — ավելացրու նկար ներքևում, կամ պահիր լռելյայնը։",
+      "slideLabel": "Banner {index}",
+      "moveUp": "Վերև",
+      "moveDown": "Ներքև",
+      "remove": "Հեռացնել",
+      "save": "Պահպանել banner-ները",
+      "saving": "Պահպանվում է…",
+      "resetDefault": "Վերականգնել լռելյայնը",
+      "saveSuccess": "Գլխավոր էջի banner-ները թարմացված են",
+      "errors": {
+        "load": "Չհաջողվեց բեռնել ընթացիկ banner-ները։",
+        "save": "Չհաջողվեց պահպանել banner-ները։ Փորձիր նորից։",
+        "required": "Պահպանելուց առաջ ավելացրու առնվազն մեկ banner։",
+        "duplicate": "Այդ նկարն արդեն ցանկում է։",
+        "maxSlides": "Կարող ես ավելացնել առավելագույնը {max} banner։"
+      }
     },
     "geoMap": {
       "title": "3D քարտեզ",
@@ -2944,6 +2973,35 @@
         "submit": "Ստեղծել նախագիծ",
         "submitting": "Ստեղծում…"
       },
+      "catalog": {
+        "title": "Նախագծի մանրամասներ (հանրային կատալոգ)",
+        "subtitle": "Նույն layout-ը, ինչ հանրային նախագծի էջում — խմբագրիր Overview, Details, Finance, Features և Nearby յուրաքանչյուր լեզվով։",
+        "listHint": "Յուրաքանչյուր տարր՝ նոր տողից։",
+        "amenityLabels": "Հարմարություններ",
+        "nearbyPlaces": "Մոտակա վայրեր",
+        "addItem": "Ավելացնել",
+        "removeItem": "Հեռացնել",
+        "linksHint": "Կամընտիր մարքեթինգային և մեդիա հղումներ (նույնը բոլոր լեզուների համար)։",
+        "socialsHint": "Կայքի և սոցիալական պրոֆիլների հղումներ (նույնը բոլոր լեզուների համար)։",
+        "sections": {
+          "overview": "Overview",
+          "details": "Details",
+          "finance": "Finance",
+          "features": "Features",
+          "nearby": "Nearby",
+          "links": "Հղումներ",
+          "socials": "Սոցիալական"
+        },
+        "fields": {
+          "pricePerSqmMin": "Գին՝ ք/մ (նվազ.)",
+          "pricePerSqmMax": "Գին՝ ք/մ (առավել.)",
+          "areaMinSqm": "Մակերես ք/մ (նվազ.)",
+          "areaMaxSqm": "Մակերես ք/մ (առավել.)",
+          "unitPriceMin": "Բնակարանի գին (նվազ.)",
+          "unitPriceMax": "Բնակարանի գին (առավել.)",
+          "ceilingHeightM": "Առաստաղի բարձրություն (մ)"
+        }
+      },
       "validation": {
         "name": "Մուտքագրեք հայերեն անունը"
       },
@@ -3025,6 +3083,7 @@
       "unknownContext": "Անհայտ",
       "contextTypes": {
         "project": "Նախագիծ",
+        "district": "Թաղամաս",
         "building": "Շենք",
         "floor": "Հարկ"
       },

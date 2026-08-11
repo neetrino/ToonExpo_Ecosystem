@@ -6,7 +6,11 @@ import type {
 } from "@toonexpo/contracts";
 
 import type { BulkApartmentsFormValues } from "@/features/builder/schemas/inventory.schema";
-import type { CreateProjectFormValues } from "@/features/builder/schemas/project.schema";
+import type {
+  CreateProjectFormValues,
+  UpdateProjectFormValues,
+} from "@/features/builder/schemas/project.schema";
+import { catalogFormSliceToJson } from "@/features/builder/utils/project-catalog-amenities";
 import { toNullableMediaId } from "@/features/media/schemas/media-fields.schema";
 
 const optionalText = (value: string): string | undefined =>
@@ -112,9 +116,10 @@ export const toCreateProjectRequest = (
  * Maps update-project form values to the API request body.
  */
 export const toUpdateProjectRequest = (
-  values: CreateProjectFormValues,
+  values: UpdateProjectFormValues,
 ): UpdatePortalProjectRequest => {
   const translations = buildProjectTranslations(values);
+  const { amenities, nearbyPlaces } = catalogFormSliceToJson(values);
   const request: UpdatePortalProjectRequest = {
     name: values.nameHy,
     shortDescription: optionalText(values.shortDescriptionHy) ?? null,
@@ -127,6 +132,8 @@ export const toUpdateProjectRequest = (
     constructionStatus: optionalText(values.constructionStatus) ?? null,
     completionDate: optionalText(values.completionDate) ?? null,
     coverMediaId: toNullableMediaId(values.coverMediaId),
+    amenities,
+    nearbyPlaces,
   };
 
   const slug = optionalText(values.slug);

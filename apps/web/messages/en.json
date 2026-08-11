@@ -1288,7 +1288,36 @@
       "events": "Events",
       "checkin": "Check-in scanner",
       "bos": "BOS",
+      "homepage": "Homepage banner",
       "settings": "Settings"
+    },
+    "homeBanner": {
+      "title": "Homepage banner",
+      "subtitle": "Add one or more full-bleed hero images for the public home page. Two or more rotate every 8 seconds in an endless loop.",
+      "loading": "Loading banner…",
+      "uploadLabel": "Add banner image",
+      "hint": "Use wide landscape photos (recommended 1920×1080 or larger). Text stays light — prefer mid/dark areas behind the headline.",
+      "previewAlt": "Homepage hero preview",
+      "previewDefault": "Default platform image",
+      "previewCount": "{count, plural, one {# banner in rotation} other {# banners in rotation}}",
+      "slidesTitle": "Banner order",
+      "slidesMeta": "{count}/{max}",
+      "slidesEmpty": "No custom banners yet — add an image below, or keep the default.",
+      "slideLabel": "Banner {index}",
+      "moveUp": "Up",
+      "moveDown": "Down",
+      "remove": "Remove",
+      "save": "Save banners",
+      "saving": "Saving…",
+      "resetDefault": "Restore default",
+      "saveSuccess": "Homepage banners updated",
+      "errors": {
+        "load": "Could not load the current banners.",
+        "save": "Could not save the banners. Try again.",
+        "required": "Add at least one banner before saving.",
+        "duplicate": "That image is already in the list.",
+        "maxSlides": "You can add at most {max} banners."
+      }
     },
     "geoMap": {
       "title": "3D Map",
@@ -3140,6 +3169,35 @@
         "submit": "Create project",
         "submitting": "Creating…"
       },
+      "catalog": {
+        "title": "Project details (public catalog)",
+        "subtitle": "Same layout as the public project page — edit Overview, Details, Finance, Features, and Nearby for each language.",
+        "listHint": "One item per line.",
+        "amenityLabels": "Features list",
+        "nearbyPlaces": "Nearby places",
+        "addItem": "Add item",
+        "removeItem": "Remove item",
+        "linksHint": "Optional marketing and media URLs (same for all languages).",
+        "socialsHint": "Website and social profile URLs (same for all languages).",
+        "sections": {
+          "overview": "Overview",
+          "details": "Details",
+          "finance": "Finance",
+          "features": "Features",
+          "nearby": "Nearby",
+          "links": "Links",
+          "socials": "Socials"
+        },
+        "fields": {
+          "pricePerSqmMin": "Price per m² (min)",
+          "pricePerSqmMax": "Price per m² (max)",
+          "areaMinSqm": "Area m² (min)",
+          "areaMaxSqm": "Area m² (max)",
+          "unitPriceMin": "Unit price (min)",
+          "unitPriceMax": "Unit price (max)",
+          "ceilingHeightM": "Ceiling height (m)"
+        }
+      },
       "validation": {
         "name": "Enter the Armenian project name"
       },
@@ -3221,6 +3279,7 @@
       "unknownContext": "Unknown",
       "contextTypes": {
         "project": "Project",
+        "district": "District",
         "building": "Building",
         "floor": "Floor"
       },

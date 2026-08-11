@@ -23,10 +23,12 @@ export const catalogListFetch = (): PublicFetchInit =>
   publicCachedGet(PUBLIC_CACHE_TTL_CATALOG_SECONDS, [PUBLIC_CACHE_TAG.CATALOG]);
 
 export const catalogProjectFetch = (projectId: string): PublicFetchInit =>
-  publicCachedGet(PUBLIC_CACHE_TTL_CATALOG_SECONDS, [
-    PUBLIC_CACHE_TAG.CATALOG,
-    catalogProjectCacheTag(projectId),
-  ]);
+  /**
+   * Project field/translation edits must show on the public site right after Admin save.
+   * Tag purge still applies when WEB_REVALIDATE_* is configured; TTL 0 avoids stale
+   * project HTML locally when revalidate env is unset (same pattern as visual map).
+   */
+  publicCachedGet(0, [PUBLIC_CACHE_TAG.CATALOG, catalogProjectCacheTag(projectId)]);
 
 export const partnersFetch = (): PublicFetchInit =>
   publicCachedGet(PUBLIC_CACHE_TTL_PARTNERS_SECONDS, [PUBLIC_CACHE_TAG.PARTNERS]);
@@ -49,3 +51,9 @@ export const geoMapFetch = (): PublicFetchInit =>
    * Published 3D models should appear immediately after admin publish (same as visual map).
    */
   publicCachedGet(0, [PUBLIC_CACHE_TAG.GEO_MAP]);
+
+export const homeHeroFetch = (): PublicFetchInit =>
+  /**
+   * Admin banner changes should appear on Home immediately after save.
+   */
+  publicCachedGet(0, [PUBLIC_CACHE_TAG.HOME]);

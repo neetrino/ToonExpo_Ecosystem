@@ -8,6 +8,7 @@ import {
   PORTAL_PROJECT_NAME_MAX_LENGTH,
   PORTAL_SLUG_MAX_LENGTH,
 } from "@/features/builder/constants";
+import { projectCatalogFormSchema } from "@/features/builder/schemas/project-catalog.schema";
 import { optionalMediaIdField } from "@/features/media/schemas/media-fields.schema";
 
 const localeTextSchema = z.object({
@@ -57,9 +58,9 @@ export const createProjectSchema = z.object({
 export type CreateProjectFormValues = z.infer<typeof createProjectSchema>;
 
 /**
- * Client schema for updating a portal project.
+ * Client schema for updating a portal project (includes public catalog JSON).
  */
-export const updateProjectSchema = createProjectSchema;
+export const updateProjectSchema = createProjectSchema.merge(projectCatalogFormSchema);
 
 export type UpdateProjectFormValues = z.infer<typeof updateProjectSchema>;
 

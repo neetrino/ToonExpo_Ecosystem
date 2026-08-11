@@ -46,7 +46,7 @@ export const ProjectDetailPage = ({ projectId, showInventory = true }: ProjectDe
   const project = query.data;
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8 pb-24">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex flex-col gap-2">
           <BackLink href={listHref} label={t('detail.back')} />

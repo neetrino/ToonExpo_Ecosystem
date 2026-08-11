@@ -21,6 +21,7 @@
     "e2e:build": "bash scripts/e2e-build.sh",
     "e2e": "pnpm run e2e:build && pnpm --filter @toonexpo/web e2e",
     "media:upload-static": "node --env-file=.env scripts/upload-static-media-to-r2.mjs",
+    "media:seed-home-hero": "node --env-file=.env scripts/seed-home-hero-setting.mjs",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "prepare": "husky"

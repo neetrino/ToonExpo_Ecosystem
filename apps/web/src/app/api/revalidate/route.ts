@@ -1,7 +1,7 @@
 /**
  * Infrastructure-only webhook for Next Data Cache tag purge.
  * This is NOT a product API — product reads/writes stay in NestJS (`apps/api`).
- * Called by the API after publish/unpublish mutations.
+ * Called by the API after publish/unpublish and published content updates.
  */
 import { timingSafeEqual } from "node:crypto";
 

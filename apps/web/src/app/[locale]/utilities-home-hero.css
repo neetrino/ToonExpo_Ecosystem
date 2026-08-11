@@ -1,0 +1,57 @@
+/* Public home hero — cinematic stills (endless drift + soft dissolve). */
+
+@layer utilities {
+  /**
+   * Soft dissolve between slides — opacity + slight scale.
+   * Duration must stay in sync with `HOME_HERO_CROSSFADE_MS` (1800ms).
+   */
+  .home-hero-slide-fade {
+    transition-property: opacity, transform;
+    transition-duration: 1.8s;
+    transition-timing-function: var(--ease-in-out-premium);
+    will-change: opacity, transform;
+  }
+
+  .home-hero-slide-active {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .home-hero-slide-idle {
+    opacity: 0;
+    transform: scale(1.045);
+  }
+
+  .home-hero-ken-layer {
+    position: absolute;
+    /* Extra bleed so multi-direction pan never shows edges. */
+    inset: -10%;
+    will-change: transform;
+  }
+
+  /**
+   * Endless multi-direction drift — closed keyframe loop (no freeze at end).
+   */
+  .home-hero-ken-drift {
+    animation: home-hero-ken-drift 28s linear infinite;
+  }
+
+  .home-hero-ken-drift-alt {
+    animation: home-hero-ken-drift-alt 32s linear infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .home-hero-slide-fade {
+      transition-duration: 0s;
+    }
+
+    .home-hero-slide-idle {
+      transform: none;
+    }
+
+    .home-hero-ken-drift,
+    .home-hero-ken-drift-alt {
+      animation: none;
+    }
+  }
+}
