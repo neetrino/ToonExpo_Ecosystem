@@ -2941,14 +2941,16 @@
         "nearbyPlaces": "Մոտակա վայրեր",
         "addItem": "Ավելացնել",
         "removeItem": "Հեռացնել",
-        "linksHint": "Կամընտիր մարքեթինգային / սոցիալական հղումներ (նույնը բոլոր լեզուների համար)։",
+        "linksHint": "Կամընտիր մարքեթինգային և մեդիա հղումներ (նույնը բոլոր լեզուների համար)։",
+        "socialsHint": "Կայքի և սոցիալական պրոֆիլների հղումներ (նույնը բոլոր լեզուների համար)։",
         "sections": {
           "overview": "Overview",
           "details": "Details",
           "finance": "Finance",
           "features": "Features",
           "nearby": "Nearby",
-          "links": "Հղումներ և մեդիա"
+          "links": "Հղումներ",
+          "socials": "Սոցիալական"
         },
         "fields": {
           "pricePerSqmMin": "Գին՝ ք/մ (նվազ.)",

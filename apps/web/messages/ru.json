@@ -2941,14 +2941,16 @@
         "nearbyPlaces": "Рядом",
         "addItem": "Добавить",
         "removeItem": "Удалить",
-        "linksHint": "Необязательные маркетинговые / социальные ссылки (общие для всех языков).",
+        "linksHint": "Необязательные маркетинговые и медиа-ссылки (общие для всех языков).",
+        "socialsHint": "Ссылки на сайт и социальные профили (общие для всех языков).",
         "sections": {
           "overview": "Overview",
           "details": "Details",
           "finance": "Finance",
           "features": "Features",
           "nearby": "Nearby",
-          "links": "Ссылки и медиа"
+          "links": "Ссылки",
+          "socials": "Соцсети"
         },
         "fields": {
           "pricePerSqmMin": "Цена за м² (мин.)",

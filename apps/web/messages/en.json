@@ -3137,14 +3137,16 @@
         "nearbyPlaces": "Nearby places",
         "addItem": "Add item",
         "removeItem": "Remove item",
-        "linksHint": "Optional marketing / social URLs (same for all languages).",
+        "linksHint": "Optional marketing and media URLs (same for all languages).",
+        "socialsHint": "Website and social profile URLs (same for all languages).",
         "sections": {
           "overview": "Overview",
           "details": "Details",
           "finance": "Finance",
           "features": "Features",
           "nearby": "Nearby",
-          "links": "Links & media"
+          "links": "Links",
+          "socials": "Socials"
         },
         "fields": {
           "pricePerSqmMin": "Price per m² (min)",

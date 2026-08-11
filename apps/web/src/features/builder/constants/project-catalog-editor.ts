@@ -1,7 +1,10 @@
 import type { ProjectCatalogDetails } from '@/features/catalog/utils/project-catalog-details';
 import type { ProjectCatalogCriterionId } from '@/features/catalog/utils/build-project-catalog-rows';
 import type { ProjectCatalogLinkId } from '@/features/catalog/utils/project-catalog-links';
-import { PROJECT_CATALOG_LINK_IDS } from '@/features/catalog/utils/project-catalog-links';
+import {
+  isProjectCatalogSocialLink,
+  PROJECT_CATALOG_LINK_IDS,
+} from '@/features/catalog/utils/project-catalog-links';
 
 /** Long-form catalog fields — rendered as textareas in Admin. */
 export const PROJECT_CATALOG_TEXTAREA_KEYS = [
@@ -109,6 +112,14 @@ export type ProjectCatalogEditorSectionId =
 
 export const PROJECT_CATALOG_LINK_EDITOR_IDS: readonly ProjectCatalogLinkId[] =
   PROJECT_CATALOG_LINK_IDS;
+
+/** Non-social media / resource URLs — public “Links” card. */
+export const PROJECT_CATALOG_MEDIA_LINK_EDITOR_IDS: readonly ProjectCatalogLinkId[] =
+  PROJECT_CATALOG_LINK_IDS.filter((id) => !isProjectCatalogSocialLink(id));
+
+/** Website + social profiles — public “Socials” card. */
+export const PROJECT_CATALOG_SOCIAL_LINK_EDITOR_IDS: readonly ProjectCatalogLinkId[] =
+  PROJECT_CATALOG_LINK_IDS.filter(isProjectCatalogSocialLink);
 
 /** Max length for a single catalog detail / list line. */
 export const PROJECT_CATALOG_FIELD_MAX_LENGTH = 2_000;

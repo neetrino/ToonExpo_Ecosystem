@@ -19,6 +19,7 @@ import { catalogJsonToFormSlice } from '@/features/builder/utils/project-catalog
 import { toUpdateProjectRequest } from '@/features/builder/utils/project-mappers';
 import { MediaUploadField } from '@/features/media/components/media-upload-field';
 import { Button } from '@/shared/ui/button';
+import { cn } from '@/shared/ui/cn';
 import { DatePicker } from '@/shared/ui/date-picker';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
@@ -26,6 +27,21 @@ import { Input } from '@/shared/ui/input';
 type EditProjectFormProps = {
   project: PortalProjectDetail;
 };
+
+/** Keeps the last fields clear of the fixed save bar. */
+const SAVE_BAR_SCROLL_CLEARANCE_CLASS = 'pb-24';
+
+/**
+ * Fixed save chrome — always visible while scrolling.
+ * Desktop inset matches the expanded portal rail (`w-72`).
+ */
+const SAVE_BAR_CLASS_NAME = cn(
+  'fixed inset-x-0 bottom-0 z-[var(--z-sticky)]',
+  'border-t border-border bg-surface-elevated/95 backdrop-blur-md',
+  'px-[var(--page-gutter)] pt-3',
+  'pb-[max(0.75rem,env(safe-area-inset-bottom,0px))]',
+  'md:left-72',
+);
 
 const toFormValues = (project: PortalProjectDetail): UpdateProjectFormValues => ({
   nameHy: project.translations?.name?.hy ?? project.name,
@@ -86,7 +102,11 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
   const busy = isSubmitting || updateMutation.isPending;
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-5" noValidate>
+    <form
+      onSubmit={onSubmit}
+      className={cn('flex flex-col gap-5', SAVE_BAR_SCROLL_CLEARANCE_CLASS)}
+      noValidate
+    >
       <TranslationTabs>
         {(locale) => (
           <div className="flex flex-col gap-4">
@@ -198,20 +218,28 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
 
       <ProjectCatalogEditor register={register} control={control} />
 
-      {formError ? (
-        <p role="alert" className="rounded-sm bg-danger-soft px-3 py-2 text-sm text-danger">
-          {formError}
-        </p>
-      ) : null}
-      {success ? (
-        <p role="status" className="text-sm text-success">
-          {t('detail.saveSuccess')}
-        </p>
-      ) : null}
-
-      <Button type="submit" variant="secondary" disabled={busy || !isDirty}>
-        {busy ? t('detail.saving') : t('detail.save')}
-      </Button>
+      <div className={SAVE_BAR_CLASS_NAME}>
+        <div className="mx-auto flex w-full max-w-[var(--max-width-wide)] flex-col gap-2">
+          {formError ? (
+            <p role="alert" className="rounded-sm bg-danger-soft px-3 py-2 text-sm text-danger">
+              {formError}
+            </p>
+          ) : null}
+          {success ? (
+            <p role="status" className="text-sm text-success">
+              {t('detail.saveSuccess')}
+            </p>
+          ) : null}
+          <Button
+            type="submit"
+            variant="secondary"
+            className="w-full"
+            disabled={busy || !isDirty}
+          >
+            {busy ? t('detail.saving') : t('detail.save')}
+          </Button>
+        </div>
+      </div>
     </form>
   );
 };
