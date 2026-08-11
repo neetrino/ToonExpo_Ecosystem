@@ -69,7 +69,9 @@ export default async function ProjectsPage({ params, searchParams }: ProjectsPag
 
           {response.data.length === 0 ? (
             <p className="mt-10 rounded-[20px] border border-dashed border-header-border bg-surface-elevated px-6 py-12 text-center text-sm text-header-muted">
-              {t('projects.empty')}
+              {filters.q
+                ? t('projects.searchEmpty', { query: filters.q })
+                : t('projects.empty')}
             </p>
           ) : (
             <CatalogFavoritesScope projects={response.data}>

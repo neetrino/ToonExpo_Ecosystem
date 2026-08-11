@@ -493,6 +493,9 @@
       "any": "Any",
       "pricePlaceholder": "AMD",
       "apply": "Apply",
+      "reset": "Reset",
+      "search": "Search",
+      "searchPlaceholder": "Search by project, builder, or city…",
       "title": "Filters"
     },
     "pagination": {
@@ -510,6 +513,7 @@
       "title": "Projects",
       "subtitle": "{count, plural, =0 {No projects} one {# project} other {# projects}}",
       "empty": "No projects match these filters.",
+      "searchEmpty": "No projects match “{query}”.",
       "meta": {
         "title": "Projects — ToonExpo",
         "description": "Browse published residential projects with prices and availability."

@@ -1,9 +1,10 @@
 'use client';
 
-import { SlidersHorizontal } from 'lucide-react';
+import { Search, SlidersHorizontal } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import type { ProjectFilterParams } from '@/features/catalog/utils/project-filters';
+import { Link } from '@/i18n/navigation';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { Select } from '@/shared/ui/select';
@@ -17,6 +18,14 @@ type ProjectFiltersFormProps = {
  */
 export const ProjectFiltersForm = ({ filters }: ProjectFiltersFormProps) => {
   const t = useTranslations('Catalog');
+  const hasActiveFilters =
+    Boolean(filters.q) ||
+    filters.rooms != null ||
+    filters.minPrice != null ||
+    filters.maxPrice != null ||
+    Boolean(filters.salesStatus) ||
+    Boolean(filters.city) ||
+    Boolean(filters.builderId);
 
   return (
     <form
@@ -27,6 +36,28 @@ export const ProjectFiltersForm = ({ filters }: ProjectFiltersFormProps) => {
         <SlidersHorizontal className="size-4 text-brand" aria-hidden />
         <p className="text-sm font-semibold text-ink">{t('filters.title')}</p>
       </div>
+
+      <div className="mb-3">
+        <label className="flex flex-col gap-1.5 text-xs font-medium text-ink-secondary">
+          {t('filters.search')}
+          <div className="relative">
+            <Search
+              className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-ink-muted"
+              aria-hidden
+            />
+            <Input
+              type="search"
+              name="q"
+              defaultValue={filters.q ?? ''}
+              placeholder={t('filters.searchPlaceholder')}
+              aria-label={t('filters.search')}
+              className="pl-10"
+              autoComplete="off"
+            />
+          </div>
+        </label>
+      </div>
+
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
         <label className="flex flex-col gap-1.5 text-xs font-medium text-ink-secondary">
           {t('filters.rooms')}
@@ -95,6 +126,16 @@ export const ProjectFiltersForm = ({ filters }: ProjectFiltersFormProps) => {
           </Button>
         </div>
       </div>
+
+      {hasActiveFilters ? (
+        <div className="mt-3">
+          <Link href="/projects">
+            <Button type="button" variant="outline" size="md" className="h-11">
+              {t('filters.reset')}
+            </Button>
+          </Link>
+        </div>
+      ) : null}
     </form>
   );
 };
