@@ -1284,7 +1284,7 @@
     },
     "homeBanner": {
       "title": "Homepage banner",
-      "subtitle": "Add one or more full-bleed hero images for the public home page. Two or more rotate every 5 seconds in an endless loop.",
+      "subtitle": "Add one or more full-bleed hero images for the public home page. Two or more rotate every 8 seconds in an endless loop.",
       "loading": "Loading banner…",
       "uploadLabel": "Add banner image",
       "hint": "Use wide landscape photos (recommended 1920×1080 or larger). Text stays light — prefer mid/dark areas behind the headline.",

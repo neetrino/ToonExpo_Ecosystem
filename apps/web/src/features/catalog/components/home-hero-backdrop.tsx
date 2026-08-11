@@ -14,8 +14,8 @@ type HomeHeroBackdropProps = {
 };
 
 /**
- * Full-bleed hero backdrop — soft crossfade + Ken Burns drift (video-like stills).
- * Multi-slide: advances every {@link HOME_HERO_ROTATE_MS}. Single slide: continuous loop.
+ * Full-bleed hero backdrop — endless multi-direction Ken Burns + soft dissolve.
+ * Multi-slide advances every {@link HOME_HERO_ROTATE_MS}; motion never “ends”.
  * Honors `prefers-reduced-motion`.
  */
 export const HomeHeroBackdrop = ({ imageUrls }: HomeHeroBackdropProps) => {
@@ -47,25 +47,20 @@ export const HomeHeroBackdrop = ({ imageUrls }: HomeHeroBackdropProps) => {
     <div className="absolute inset-0 -z-10 overflow-hidden" aria-hidden>
       {slides.map((src, index) => {
         const isActive = index === activeIndex;
-        const kenClass = !canRotate
-          ? 'home-hero-ken-loop'
-          : isActive
-            ? index % 2 === 0
-              ? 'home-hero-ken-a'
-              : 'home-hero-ken-b'
-            : undefined;
 
         return (
           <div
             key={`${src}-${index}`}
             className={cn(
               'absolute inset-0 home-hero-slide-fade',
-              isActive ? 'opacity-100' : 'opacity-0',
+              isActive ? 'home-hero-slide-active' : 'home-hero-slide-idle',
             )}
           >
             <div
-              key={isActive ? `ken-${index}-${activeIndex}` : `ken-${index}-idle`}
-              className={cn('home-hero-ken-layer', kenClass)}
+              className={cn(
+                'home-hero-ken-layer',
+                index % 2 === 0 ? 'home-hero-ken-drift' : 'home-hero-ken-drift-alt',
+              )}
             >
               <Image
                 src={src}

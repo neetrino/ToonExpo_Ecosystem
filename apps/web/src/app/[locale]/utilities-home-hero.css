@@ -1,30 +1,43 @@
-/* Public home hero — cinematic stills (Ken Burns + soft crossfade). */
+/* Public home hero — cinematic stills (endless drift + soft dissolve). */
 
 @layer utilities {
+  /**
+   * Soft dissolve between slides — opacity + slight scale.
+   * Duration must stay in sync with `HOME_HERO_CROSSFADE_MS` (1800ms).
+   */
   .home-hero-slide-fade {
-    transition-property: opacity;
-    transition-duration: 1.2s;
+    transition-property: opacity, transform;
+    transition-duration: 1.8s;
     transition-timing-function: var(--ease-in-out-premium);
+    will-change: opacity, transform;
+  }
+
+  .home-hero-slide-active {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  .home-hero-slide-idle {
+    opacity: 0;
+    transform: scale(1.045);
   }
 
   .home-hero-ken-layer {
     position: absolute;
-    inset: -6%;
+    /* Extra bleed so multi-direction pan never shows edges. */
+    inset: -10%;
     will-change: transform;
   }
 
-  /** Active multi-slide: one Ken Burns pass timed to the rotate interval. */
-  .home-hero-ken-a {
-    animation: home-hero-ken-burns-a 5s linear forwards;
+  /**
+   * Endless multi-direction drift — closed keyframe loop (no freeze at end).
+   */
+  .home-hero-ken-drift {
+    animation: home-hero-ken-drift 28s linear infinite;
   }
 
-  .home-hero-ken-b {
-    animation: home-hero-ken-burns-b 5s linear forwards;
-  }
-
-  /** Single slide (or reduced-motion off continuous): endless gentle drift. */
-  .home-hero-ken-loop {
-    animation: home-hero-ken-burns-a 18s ease-in-out infinite alternate;
+  .home-hero-ken-drift-alt {
+    animation: home-hero-ken-drift-alt 32s linear infinite;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -32,9 +45,12 @@
       transition-duration: 0s;
     }
 
-    .home-hero-ken-a,
-    .home-hero-ken-b,
-    .home-hero-ken-loop {
+    .home-hero-slide-idle {
+      transform: none;
+    }
+
+    .home-hero-ken-drift,
+    .home-hero-ken-drift-alt {
       animation: none;
     }
   }
