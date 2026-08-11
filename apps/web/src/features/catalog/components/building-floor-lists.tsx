@@ -148,6 +148,11 @@ const ApartmentRow = ({
               {t("apartment.rooms", { count: apartment.rooms })}
             </span>
           ) : null}
+          {apartment.bathrooms != null ? (
+            <span className="text-ink-secondary">
+              {t("apartment.bathrooms", { count: apartment.bathrooms })}
+            </span>
+          ) : null}
           {apartment.areaTotal != null ? (
             <span className="text-ink-secondary">
               {t("apartment.area", { area: apartment.areaTotal })}

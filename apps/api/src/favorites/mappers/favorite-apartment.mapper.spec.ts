@@ -9,6 +9,8 @@ describe('mapFavoriteApartmentCard price visibility', () => {
     number: '12',
     salesStatus: 'available' as const,
     rooms: 2,
+    bedrooms: 2,
+    bathrooms: 1,
     areaTotal: { toString: () => '72.5' },
     price: { toString: () => '45000000' },
     priceCurrency: 'AMD',

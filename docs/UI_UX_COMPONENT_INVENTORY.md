@@ -32,7 +32,7 @@ Status: **Done** = redesigned/new · **Updated** = API-compatible refresh · **E
 | HomeHero                | `features/catalog/components/home-hero.tsx`           | Marketing  | Feature | Done     | Done       | Done    | Full-bleed hero                       |
 | HeroSearch              | `features/catalog/components/hero-search.tsx`         | Marketing  | Feature | Done     | Done       | Done    | Lucide search                         |
 | HomeStats               | `features/catalog/components/home-stats.tsx`          | Marketing  | Feature | Done     | Done       | Done    | Animated counters                     |
-| FeaturedProjects        | `features/catalog/components/featured-projects.tsx`   | Marketing  | Feature | Done     | Done       | Partial | Stagger reveal                        |
+| FeaturedApartments      | `features/catalog/components/featured-apartments.tsx` | Marketing  | Feature | Done     | Done       | Partial | Stagger reveal                        |
 | HomeExplore             | `features/catalog/components/home-explore.tsx`        | Marketing  | Feature | Done     | Done       | Done    | Live location chips                   |
 | HomeBuilders            | `features/catalog/components/home-builders.tsx`       | Marketing  | Feature | Done     | Done       | Done    | Builder grid                          |
 | HomeExhibition          | `features/catalog/components/home-exhibition.tsx`     | Marketing  | Feature | Done     | Done       | Done    | Inverse band                          |

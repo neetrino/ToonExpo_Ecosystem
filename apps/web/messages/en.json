@@ -197,8 +197,8 @@
     "featured": {
       "eyebrow": "Newest for sale",
       "title": "Hand-picked, verified, ready to tour.",
-      "viewAll": "View all listings →",
-      "empty": "No published projects yet."
+      "viewAll": "View all apartments →",
+      "empty": "No published apartments yet."
     },
     "developments": {
       "eyebrow": "Under construction",
@@ -368,6 +368,7 @@
     "badgeNew": "New",
     "unitTitle": "Apt. {number} · {project}",
     "specBed": "{count} Bed",
+    "specBath": "{count} Bath",
     "specArea": "{area} m²",
     "saveSearchHint": "Save this search to get email alerts when new homes match.",
     "saveSearch": "Save search",
@@ -698,6 +699,7 @@
       "unit": "Apt. {number}",
       "floor": "Floor: {floor}",
       "rooms": "{count, plural, one {# room} other {# rooms}}",
+      "bathrooms": "{count, plural, one {# bath} other {# baths}}",
       "area": "{area} m²",
       "statusLabel": "Status",
       "roomsLabel": "Rooms",

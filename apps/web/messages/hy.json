@@ -197,8 +197,8 @@
     "featured": {
       "eyebrow": "Նոր վաճառքի համար",
       "title": "Ընտրված, ստուգված, պատրաստ շրջայցի։",
-      "viewAll": "Բոլոր հայտարարությունները →",
-      "empty": "Դեռ հրապարակված նախագծեր չկան։"
+      "viewAll": "Բոլոր բնակարանները →",
+      "empty": "Դեռ հրապարակված բնակարաններ չկան։"
     },
     "developments": {
       "eyebrow": "Կառուցման փուլում",
@@ -368,6 +368,7 @@
     "badgeNew": "Նոր",
     "unitTitle": "Բնակ. {number} · {project}",
     "specBed": "{count} սենյակ",
+    "specBath": "{count} սանհանգույց",
     "specArea": "{area} մ²",
     "saveSearchHint": "Պահպանեք որոնումը՝ նոր համընկնումների մասին ծանուցումներ ստանալու համար։",
     "saveSearch": "Պահպանել որոնումը",
@@ -698,6 +699,7 @@
       "unit": "Բն. {number}",
       "floor": "Հարկ՝ {floor}",
       "rooms": "{count} սենյակ",
+      "bathrooms": "{count} սանհանգույց",
       "area": "{area} մ²",
       "statusLabel": "Կարգավիճակ",
       "roomsLabel": "Սենյակներ",

@@ -99,6 +99,8 @@ export type FloorApartmentSummary = {
   number: string;
   salesStatus: ApartmentSalesStatus;
   rooms: number | null;
+  bedrooms: number | null;
+  bathrooms: number | null;
   areaTotal: string | null;
   price: string | null;
   priceCurrency: string;

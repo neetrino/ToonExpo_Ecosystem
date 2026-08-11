@@ -197,8 +197,8 @@
     "featured": {
       "eyebrow": "Новое в продаже",
       "title": "Отобранные, проверенные, готовые к просмотру.",
-      "viewAll": "Все объявления →",
-      "empty": "Пока нет опубликованных проектов."
+      "viewAll": "Все квартиры →",
+      "empty": "Пока нет опубликованных квартир."
     },
     "developments": {
       "eyebrow": "Строится",
@@ -368,6 +368,7 @@
     "badgeNew": "Новое",
     "unitTitle": "Кв. {number} · {project}",
     "specBed": "{count} комн.",
+    "specBath": "{count} ванн.",
     "specArea": "{area} м²",
     "saveSearchHint": "Сохраните поиск, чтобы получать уведомления о новых подходящих объектах.",
     "saveSearch": "Сохранить поиск",
@@ -698,6 +699,7 @@
       "unit": "Кв. {number}",
       "floor": "Этаж: {floor}",
       "rooms": "{count, plural, one {# комната} few {# комнаты} many {# комнат} other {# комнаты}}",
+      "bathrooms": "{count, plural, one {# ванная} few {# ванные} many {# ванных} other {# ванных}}",
       "area": "{area} м²",
       "statusLabel": "Статус",
       "roomsLabel": "Комнаты",

@@ -46,8 +46,12 @@ export const DiscoverSwipeCard = ({
     onRequestLabel: tCatalog('price.onRequest'),
     signInLabel: tCatalog('price.signInToSee'),
   });
+  const bedCount = apartment.bedrooms ?? apartment.rooms;
   const specs = [
-    apartment.rooms != null ? tCatalog('apartment.rooms', { count: apartment.rooms }) : null,
+    bedCount != null ? tCatalog('apartment.rooms', { count: bedCount }) : null,
+    apartment.bathrooms != null
+      ? tCatalog('apartment.bathrooms', { count: apartment.bathrooms })
+      : null,
     apartment.areaTotal != null ? tCatalog('apartment.area', { area: apartment.areaTotal }) : null,
   ]
     .filter(Boolean)
