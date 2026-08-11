@@ -42,7 +42,7 @@ export const AdminProjectsResultsSkeleton = ({
     <div role="status" aria-busy="true" aria-live="polite">
       <span className="sr-only">{label}</span>
       {isCards ? (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {Array.from({ length: SKELETON_CARD_COUNT }, (_, index) => (
             <AdminProjectCardSkeleton key={index} />
           ))}
