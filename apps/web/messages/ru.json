@@ -2933,6 +2933,31 @@
         "submit": "Создать проект",
         "submitting": "Создание…"
       },
+      "catalog": {
+        "title": "Детали проекта (публичный каталог)",
+        "subtitle": "Эти поля заполняют блоки Overview, Details, Finance, Features и Nearby на публичной странице.",
+        "listHint": "По одному пункту на строку.",
+        "amenityLabels": "Удобства",
+        "nearbyPlaces": "Рядом",
+        "linksHint": "Необязательные маркетинговые / социальные ссылки (общие для всех языков).",
+        "sections": {
+          "overview": "Overview",
+          "details": "Details",
+          "finance": "Finance",
+          "features": "Features",
+          "nearby": "Nearby",
+          "links": "Ссылки и медиа"
+        },
+        "fields": {
+          "pricePerSqmMin": "Цена за м² (мин.)",
+          "pricePerSqmMax": "Цена за м² (макс.)",
+          "areaMinSqm": "Площадь м² (мин.)",
+          "areaMaxSqm": "Площадь м² (макс.)",
+          "unitPriceMin": "Цена квартиры (мин.)",
+          "unitPriceMax": "Цена квартиры (макс.)",
+          "ceilingHeightM": "Высота потолков (м)"
+        }
+      },
       "validation": {
         "name": "Укажите название на армянском"
       },

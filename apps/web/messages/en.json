@@ -3129,6 +3129,31 @@
         "submit": "Create project",
         "submitting": "Creating…"
       },
+      "catalog": {
+        "title": "Project details (public catalog)",
+        "subtitle": "These fields power Overview, Details, Finance, Features, and Nearby on the public project page.",
+        "listHint": "One item per line.",
+        "amenityLabels": "Features list",
+        "nearbyPlaces": "Nearby places",
+        "linksHint": "Optional marketing / social URLs (same for all languages).",
+        "sections": {
+          "overview": "Overview",
+          "details": "Details",
+          "finance": "Finance",
+          "features": "Features",
+          "nearby": "Nearby",
+          "links": "Links & media"
+        },
+        "fields": {
+          "pricePerSqmMin": "Price per m² (min)",
+          "pricePerSqmMax": "Price per m² (max)",
+          "areaMinSqm": "Area m² (min)",
+          "areaMaxSqm": "Area m² (max)",
+          "unitPriceMin": "Unit price (min)",
+          "unitPriceMax": "Unit price (max)",
+          "ceilingHeightM": "Ceiling height (m)"
+        }
+      },
       "validation": {
         "name": "Enter the Armenian project name"
       },

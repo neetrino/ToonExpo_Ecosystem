@@ -2933,6 +2933,31 @@
         "submit": "Ստեղծել նախագիծ",
         "submitting": "Ստեղծում…"
       },
+      "catalog": {
+        "title": "Նախագծի մանրամասներ (հանրային կատալոգ)",
+        "subtitle": "Այս դաշտերն են լրացնում Overview, Details, Finance, Features և Nearby բաժինները հանրային էջում։",
+        "listHint": "Յուրաքանչյուր տարր՝ նոր տողից։",
+        "amenityLabels": "Հարմարություններ",
+        "nearbyPlaces": "Մոտակա վայրեր",
+        "linksHint": "Կամընտիր մարքեթինգային / սոցիալական հղումներ (նույնը բոլոր լեզուների համար)։",
+        "sections": {
+          "overview": "Overview",
+          "details": "Details",
+          "finance": "Finance",
+          "features": "Features",
+          "nearby": "Nearby",
+          "links": "Հղումներ և մեդիա"
+        },
+        "fields": {
+          "pricePerSqmMin": "Գին՝ ք/մ (նվազ.)",
+          "pricePerSqmMax": "Գին՝ ք/մ (առավել.)",
+          "areaMinSqm": "Մակերես ք/մ (նվազ.)",
+          "areaMaxSqm": "Մակերես ք/մ (առավել.)",
+          "unitPriceMin": "Բնակարանի գին (նվազ.)",
+          "unitPriceMax": "Բնակարանի գին (առավել.)",
+          "ceilingHeightM": "Առաստաղի բարձրություն (մ)"
+        }
+      },
       "validation": {
         "name": "Մուտքագրեք հայերեն անունը"
       },

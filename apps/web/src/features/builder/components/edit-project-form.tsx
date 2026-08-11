@@ -8,12 +8,14 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
+import { ProjectCatalogEditor } from '@/features/builder/components/project-catalog-editor';
 import { TranslationTabs } from '@/features/builder/components/translation-tabs';
 import { useUpdatePortalProjectMutation } from '@/features/builder/hooks/use-portal-projects';
 import {
   updateProjectSchema,
   type UpdateProjectFormValues,
 } from '@/features/builder/schemas/project.schema';
+import { catalogJsonToFormSlice } from '@/features/builder/utils/project-catalog-amenities';
 import { toUpdateProjectRequest } from '@/features/builder/utils/project-mappers';
 import { MediaUploadField } from '@/features/media/components/media-upload-field';
 import { Button } from '@/shared/ui/button';
@@ -46,10 +48,11 @@ const toFormValues = (project: PortalProjectDetail): UpdateProjectFormValues => 
   constructionStatus: project.constructionStatus ?? '',
   completionDate: project.completionDate ?? '',
   coverMediaId: project.coverMediaId ?? '',
+  ...catalogJsonToFormSlice(project.amenities, project.nearbyPlaces),
 });
 
 /**
- * Edit form for portal project fields and translations.
+ * Edit form for portal project fields, translations, and public catalog JSON.
  */
 export const EditProjectForm = ({ project }: EditProjectFormProps) => {
   const scope = useCatalogScope();
@@ -192,6 +195,8 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
           />
         )}
       />
+
+      <ProjectCatalogEditor register={register} />
 
       {formError ? (
         <p role="alert" className="rounded-sm bg-danger-soft px-3 py-2 text-sm text-danger">
