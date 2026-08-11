@@ -1,15 +1,11 @@
-import type { ProjectListItem } from '@toonexpo/contracts';
 import { getLocale, getTranslations } from 'next-intl/server';
 
-import {
-  AnimatedCounter,
-  type AnimatedCounterFormatStyle,
-} from '@/shared/ui/motion/animated-counter';
+import { AnimatedCounter } from '@/shared/ui/motion/animated-counter';
 import { cn } from '@/shared/ui/cn';
 
 type HomeStatsProps = {
-  projects: ProjectListItem[];
-  /** Kept for call-site compatibility; market pulse no longer surfaces builder count. */
+  /** Kept for call-site compatibility; pulse uses fixed showcase metrics. */
+  projects?: unknown;
   builderCount?: number | undefined;
   projectTotal?: number | undefined;
 };
@@ -21,60 +17,58 @@ type MarketStat = {
   label: string;
   hint: string;
   tone: StatTone;
-  display: string;
-  numericValue?: number;
-  formatStyle?: AnimatedCounterFormatStyle;
+  numericValue: number;
 };
 
-/** Illustrative market metrics until a dedicated pulse API exists (AMD / m²). */
-const MARKET_AVG_SQM_AMD = 550_000;
-const MARKET_MORTGAGE_RATE = 5.92;
-const MARKET_MEDIAN_DAYS = 42;
+const STAT_PROJECTS = 250;
+const STAT_APARTMENTS = 3_500;
+const STAT_MARKET_VALUE_MLN = 30_450_000;
+const STAT_PARTICIPANTS = 20_000_000;
+const STAT_AVG_MORTGAGE_PAYMENT = 15_000_000;
 
 /**
  * Brand-deep market pulse bar under the hero — Figma node `81:152`.
  * Renders as its own section on the canvas (not overlaid on the hero photo).
  */
-export const HomeStats = async ({ projects }: HomeStatsProps) => {
+export const HomeStats = async (_props: HomeStatsProps) => {
   const t = await getTranslations('HomePage.stats');
   const locale = await getLocale();
-  const listingCount = projects.reduce((sum, project) => sum + project.availability.total, 0);
-  const activeListings = listingCount > 0 ? listingCount : 14_802;
 
   const stats: MarketStat[] = [
     {
-      id: 'avgSqm',
-      label: t('avgSqm'),
-      hint: t('avgSqmHint'),
+      id: 'projects',
+      label: t('projectCount'),
+      hint: t('projectCountHint'),
       tone: 'positive',
-      display: String(MARKET_AVG_SQM_AMD),
-      numericValue: MARKET_AVG_SQM_AMD,
-      formatStyle: 'currencyAmd',
+      numericValue: STAT_PROJECTS,
     },
     {
-      id: 'listings',
-      label: t('activeListings'),
-      hint: t('activeListingsHint'),
+      id: 'apartments',
+      label: t('apartmentCount'),
+      hint: t('apartmentCountHint'),
       tone: 'positive',
-      display: String(activeListings),
-      numericValue: activeListings,
-      formatStyle: 'integer',
+      numericValue: STAT_APARTMENTS,
     },
     {
-      id: 'mortgage',
-      label: t('mortgageRate'),
-      hint: t('mortgageRateHint'),
+      id: 'marketValue',
+      label: t('marketValue'),
+      hint: t('marketValueHint'),
+      tone: 'positive',
+      numericValue: STAT_MARKET_VALUE_MLN,
+    },
+    {
+      id: 'participants',
+      label: t('participantCount'),
+      hint: t('participantCountHint'),
+      tone: 'positive',
+      numericValue: STAT_PARTICIPANTS,
+    },
+    {
+      id: 'mortgagePayment',
+      label: t('avgMortgagePayment'),
+      hint: t('avgMortgagePaymentHint'),
       tone: 'caution',
-      display: `${MARKET_MORTGAGE_RATE.toFixed(2)}%`,
-    },
-    {
-      id: 'days',
-      label: t('medianDays'),
-      hint: t('medianDaysHint'),
-      tone: 'positive',
-      display: String(MARKET_MEDIAN_DAYS),
-      numericValue: MARKET_MEDIAN_DAYS,
-      formatStyle: 'integer',
+      numericValue: STAT_AVG_MORTGAGE_PAYMENT,
     },
   ];
 
@@ -87,31 +81,27 @@ export const HomeStats = async ({ projects }: HomeStatsProps) => {
             'shadow-[0_20px_25px_-5px_rgb(9_43_68/0.1),0_8px_10px_-6px_rgb(9_43_68/0.1)]',
           )}
         >
-          <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
+          <div className="-translate-x-[10px] grid w-full grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-3 md:grid-cols-5">
             {stats.map((stat) => (
-              <div key={stat.id} className="text-center">
-                <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-canvas/50">
+              <div key={stat.id} className="min-w-0 text-center">
+                <p className="whitespace-nowrap text-[10px] font-bold uppercase tracking-[0.08em] text-canvas/50">
                   {stat.label}
                 </p>
                 <p
                   className={cn(
                     'mt-1.5 whitespace-nowrap font-brand font-bold tracking-tight text-canvas',
-                    'text-[clamp(1.25rem,0.9rem+3.2vw,1.875rem)] leading-none',
+                    'text-[clamp(1.125rem,0.85rem+2.4vw,1.75rem)] leading-none',
                   )}
                 >
-                  {stat.numericValue != null && stat.formatStyle ? (
-                    <AnimatedCounter
-                      value={stat.numericValue}
-                      formatStyle={stat.formatStyle}
-                      locale={locale}
-                    />
-                  ) : (
-                    stat.display
-                  )}
+                  <AnimatedCounter
+                    value={stat.numericValue}
+                    formatStyle="integer"
+                    locale={locale}
+                  />
                 </p>
                 <p
                   className={cn(
-                    'mt-1 text-xs font-medium leading-4',
+                    'mt-1 whitespace-nowrap text-xs font-medium leading-4',
                     stat.tone === 'positive' ? 'text-stat-positive' : 'text-stat-caution',
                   )}
                 >
