@@ -3,13 +3,6 @@ import { getLocale, getTranslations } from 'next-intl/server';
 import { AnimatedCounter } from '@/shared/ui/motion/animated-counter';
 import { cn } from '@/shared/ui/cn';
 
-type HomeStatsProps = {
-  /** Kept for call-site compatibility; pulse uses fixed showcase metrics. */
-  projects?: unknown;
-  builderCount?: number | undefined;
-  projectTotal?: number | undefined;
-};
-
 type StatTone = 'positive' | 'caution';
 
 type MarketStat = {
@@ -30,7 +23,7 @@ const STAT_AVG_MORTGAGE_PAYMENT = 15_000_000;
  * Brand-deep market pulse bar under the hero — Figma node `81:152`.
  * Renders as its own section on the canvas (not overlaid on the hero photo).
  */
-export const HomeStats = async (_props: HomeStatsProps) => {
+export const HomeStats = async () => {
   const t = await getTranslations('HomePage.stats');
   const locale = await getLocale();
 
