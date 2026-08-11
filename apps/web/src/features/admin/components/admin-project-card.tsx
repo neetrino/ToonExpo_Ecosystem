@@ -7,7 +7,10 @@ import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
+import { AdminFeaturedOnHomeButton } from '@/features/admin/components/admin-featured-on-home-button';
+import { useSetAdminProjectFeaturedOnHomeMutation } from '@/features/admin/hooks/use-admin-companies';
 import { ProjectQrDialog } from '@/features/builder/components/project-qr-dialog';
+import { HOME_FEATURED_PROJECT_LIMIT } from '@/features/catalog/constants/home-featured';
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 import { IconButton } from '@/shared/ui/icon-button';
@@ -145,9 +148,11 @@ const AdminProjectStat = ({
  */
 export const AdminProjectCard = ({ project, onOpenBuildings }: AdminProjectCardProps) => {
   const t = useTranslations('Admin.projects');
+  const tFeatured = useTranslations('Admin.featuredOnHome');
   const tQr = useTranslations('Builder.projects.qr');
   const StatusIcon = project.publicationStatus === 'published' ? CheckCircle2 : CircleDashed;
   const [qrOpen, setQrOpen] = useState(false);
+  const featuredMutation = useSetAdminProjectFeaturedOnHomeMutation();
   const openBuildingsLabel = t('openBuildings', { name: project.name });
   const companyInitials = project.companyName.trim().slice(0, 2).toUpperCase() || '—';
 
@@ -181,16 +186,28 @@ export const AdminProjectCard = ({ project, onOpenBuildings }: AdminProjectCardP
               {t(`publication.${project.publicationStatus}`)}
             </span>
           </div>
-          <Link
-            href={`/admin/projects/${project.id}`}
-            className={cn(
-              'text-lg font-semibold tracking-tight text-ink sm:text-xl',
-              'transition-colors duration-[var(--duration-fast)] group-hover:text-brand-deep',
-              'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30',
-            )}
-          >
-            {project.name}
-          </Link>
+          <div className="flex items-start justify-between gap-2">
+            <Link
+              href={`/admin/projects/${project.id}`}
+              className={cn(
+                'min-w-0 flex-1 text-lg font-semibold tracking-tight text-ink sm:text-xl',
+                'transition-colors duration-[var(--duration-fast)] group-hover:text-brand-deep',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30',
+              )}
+            >
+              {project.name}
+            </Link>
+            <AdminFeaturedOnHomeButton
+              featuredOnHome={project.featuredOnHome}
+              limitLabel={tFeatured('projectLimit', { count: HOME_FEATURED_PROJECT_LIMIT })}
+              onToggle={async (next) =>
+                featuredMutation.mutateAsync({
+                  projectId: project.id,
+                  featuredOnHome: next,
+                })
+              }
+            />
+          </div>
         </header>
 
         <Link

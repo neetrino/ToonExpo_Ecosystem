@@ -3,6 +3,7 @@ import type {
   AdminBuildingInventoryGlance,
   AdminBuildingListResponse,
   AdminFloorListResponse,
+  FeaturedOnHomeResponse,
 } from '@toonexpo/contracts';
 
 import {
@@ -116,3 +117,18 @@ export const getAdminBuildingInventoryGlance = (
       options.cookieHeader,
     ),
   );
+
+/**
+ * Pins or unpins an apartment on the public homepage (max 6).
+ */
+export const setAdminApartmentFeaturedOnHome = (
+  apartmentId: string,
+  featuredOnHome: boolean,
+): Promise<FeaturedOnHomeResponse> =>
+  apiFetch<FeaturedOnHomeResponse>({
+    path: `/admin/apartments/${encodeURIComponent(apartmentId)}/featured-on-home`,
+    method: 'PATCH',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ featuredOnHome }),
+  });

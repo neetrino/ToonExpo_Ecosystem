@@ -1,22 +1,29 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Query } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import type {
   AdminApartmentListResponse,
   AdminBuildingInventoryGlance,
   AdminBuildingListResponse,
   AdminFloorListResponse,
+  FeaturedOnHomeResponse,
 } from '@toonexpo/contracts';
 
 import { AccountTypes } from '../../auth/decorators/account-types.decorator.js';
+import { AdminHomeFeaturedService } from './admin-home-featured.service.js';
 import { AdminInventoryService } from './admin-inventory.service.js';
+import { AdminApartmentIdParamDto } from './dto/admin-apartment-id.param.dto.js';
 import { AdminBuildingIdParamDto } from './dto/admin-building-id.param.dto.js';
 import { ListAdminProjectsQueryDto } from './dto/list-admin-projects.query.dto.js';
+import { SetFeaturedOnHomeDto } from './dto/set-featured-on-home.dto.js';
 
 @ApiTags('admin-inventory')
 @AccountTypes('platform_admin')
 @Controller()
 export class AdminInventoryController {
-  constructor(private readonly inventoryService: AdminInventoryService) {}
+  constructor(
+    private readonly inventoryService: AdminInventoryService,
+    private readonly homeFeaturedService: AdminHomeFeaturedService,
+  ) {}
 
   @Get('admin/buildings')
   @ApiOperation({ summary: 'List buildings across companies' })
@@ -60,6 +67,19 @@ export class AdminInventoryController {
       query.pageSize,
       query.companyId,
       query.buildingId,
+    );
+  }
+
+  @Patch('admin/apartments/:apartmentId/featured-on-home')
+  @ApiOperation({ summary: 'Pin or unpin an apartment on the public homepage (max 6)' })
+  @ApiOkResponse({ description: 'Updated featured-on-home flag' })
+  setApartmentFeaturedOnHome(
+    @Param() params: AdminApartmentIdParamDto,
+    @Body() body: SetFeaturedOnHomeDto,
+  ): Promise<FeaturedOnHomeResponse> {
+    return this.homeFeaturedService.setApartmentFeaturedOnHome(
+      params.apartmentId,
+      body.featuredOnHome,
     );
   }
 }

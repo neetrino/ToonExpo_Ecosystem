@@ -7,6 +7,7 @@ import {
 } from "@nestjs/swagger";
 import type {
   ApartmentDetail,
+  ApartmentListItem,
   BuilderDetail,
   BuilderSummary,
   BuildingDetail,
@@ -24,6 +25,7 @@ import { ApartmentsService } from "./apartments.service.js";
 import { BuildingsCatalogService } from "./buildings-catalog.service.js";
 import { BuildersService } from "./builders.service.js";
 import { CatalogLocaleQueryDto } from "./dto/catalog-locale.query.dto.js";
+import { ListApartmentsQueryDto } from "./dto/list-apartments.query.dto.js";
 import { ListProjectsQueryDto } from "./dto/list-projects.query.dto.js";
 import { FloorsCatalogService } from "./floors-catalog.service.js";
 import { ProjectsService } from "./projects.service.js";
@@ -66,6 +68,21 @@ export class CatalogController {
     @OptionalUser() user: AuthenticatedUser | null,
   ): Promise<ProjectDetail> {
     return this.projectsService.getProjectById(id, {
+      locale: query.locale,
+      isAuthenticated: user != null,
+    });
+  }
+
+  @Public()
+  @OptionalAuth()
+  @Get("apartments")
+  @ApiOperation({ summary: "List published apartments with optional featured filter" })
+  @ApiOkResponse({ description: "Paginated published apartments" })
+  listApartments(
+    @Query() query: ListApartmentsQueryDto,
+    @OptionalUser() user: AuthenticatedUser | null,
+  ): Promise<PaginatedResponse<ApartmentListItem>> {
+    return this.apartmentsService.listApartments(query, {
       locale: query.locale,
       isAuthenticated: user != null,
     });

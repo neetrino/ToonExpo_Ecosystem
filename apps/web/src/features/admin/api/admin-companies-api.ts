@@ -5,6 +5,7 @@ import type {
   CompanyListResponse,
   CompanyResponse,
   CreateCompanyRequest,
+  FeaturedOnHomeResponse,
   ProvisionCompanyResponse,
   UpdateCompanyRequest,
 } from '@toonexpo/contracts';
@@ -156,6 +157,20 @@ export const getAdminProjectScope = (
       options.cookieHeader,
     ),
   );
+
+/**
+ * Pins or unpins a project on the public homepage (max 3).
+ */
+export const setAdminProjectFeaturedOnHome = (
+  projectId: string,
+  featuredOnHome: boolean,
+): Promise<FeaturedOnHomeResponse> =>
+  apiFetch<FeaturedOnHomeResponse>({
+    path: `/admin/projects/${encodeURIComponent(projectId)}/featured-on-home`,
+    method: 'PATCH',
+    ...jsonCredentials,
+    body: JSON.stringify({ featuredOnHome }),
+  });
 
 /**
  * Provisions a company with the first company_admin invite.

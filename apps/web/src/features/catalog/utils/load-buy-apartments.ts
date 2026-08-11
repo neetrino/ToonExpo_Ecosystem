@@ -11,6 +11,8 @@ export type BuyApartmentListing = {
   id: string;
   title: string;
   rooms: number | null;
+  bedrooms: number | null;
+  bathrooms: number | null;
   areaTotal: string | null;
   price: string | null;
   priceCurrency: string;
@@ -30,8 +32,10 @@ export type BuyApartmentListing = {
 export const loadBuyApartmentListings = async (options: {
   locale: string;
   filters: ProjectFilterParams;
+  limit?: number;
 }): Promise<BuyApartmentListing[]> => {
   const { locale, filters } = options;
+  const limit = options.limit ?? BUY_APARTMENT_LIMIT;
   const projects = await listProjects(
     {
       ...toListProjectsQuery({
@@ -79,7 +83,7 @@ export const loadBuyApartmentListings = async (options: {
           }
 
           listings.push(toListing(apartment, project));
-          if (listings.length >= BUY_APARTMENT_LIMIT) {
+          if (listings.length >= limit) {
             return listings;
           }
         }
@@ -105,6 +109,8 @@ const toListing = (
     id: apartment.id,
     title: apartment.number,
     rooms: apartment.rooms,
+    bedrooms: apartment.bedrooms,
+    bathrooms: apartment.bathrooms,
     areaTotal: apartment.areaTotal,
     price: apartment.price,
     priceCurrency: apartment.priceCurrency,

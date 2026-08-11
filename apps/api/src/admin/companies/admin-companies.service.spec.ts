@@ -93,7 +93,7 @@ describe('AdminCompaniesService.listProjects', () => {
   });
 
   it('lists all projects with company names when no company filter is set', async () => {
-    projectCount.mockResolvedValue(1);
+    projectCount.mockResolvedValueOnce(1).mockResolvedValueOnce(0);
     projectFindMany.mockResolvedValue([
       {
         id: 'pr_1',
@@ -102,6 +102,7 @@ describe('AdminCompaniesService.listProjects', () => {
         createdAt: new Date('2026-01-15T10:00:00.000Z'),
         city: 'Yerevan',
         builderCompanyId: 'co_1',
+        featuredOnHome: false,
         builderCompany: { name: 'Builder Co' },
         buildings: [
           {
@@ -123,7 +124,7 @@ describe('AdminCompaniesService.listProjects', () => {
     expect(companyFindUnique).not.toHaveBeenCalled();
     expect(projectFindMany).toHaveBeenCalledWith({
       where: {},
-      orderBy: [{ updatedAt: 'desc' }],
+      orderBy: [{ featuredOnHome: 'desc' }, { updatedAt: 'desc' }],
       skip: 0,
       take: 20,
       select: {
@@ -133,6 +134,7 @@ describe('AdminCompaniesService.listProjects', () => {
         createdAt: true,
         city: true,
         builderCompanyId: true,
+        featuredOnHome: true,
         builderCompany: { select: { name: true } },
         buildings: {
           where: { coverMediaId: { not: null } },
@@ -174,9 +176,10 @@ describe('AdminCompaniesService.listProjects', () => {
           },
           buildingsCount: 2,
           apartmentsCount: 10,
+          featuredOnHome: false,
         },
       ],
-      meta: { page: 1, pageSize: 20, total: 1, totalPages: 1 },
+      meta: { page: 1, pageSize: 20, total: 1, totalPages: 1, featuredOnHomeTotal: 0 },
     });
   });
 
@@ -195,7 +198,8 @@ describe('AdminCompaniesService.listProjects', () => {
       ],
     };
 
-    expect(projectCount).toHaveBeenCalledWith({ where: expectedWhere });
+    expect(projectCount).toHaveBeenNthCalledWith(1, { where: expectedWhere });
+    expect(projectCount).toHaveBeenNthCalledWith(2, { where: { featuredOnHome: true } });
     expect(projectFindMany).toHaveBeenCalledWith(
       expect.objectContaining({ where: expectedWhere, skip: 18, take: 18 }),
     );
@@ -237,7 +241,8 @@ describe('AdminCompaniesService.listProjects', () => {
 
     await service.listAllProjects(1, 18, undefined, '   ');
 
-    expect(projectCount).toHaveBeenCalledWith({ where: {} });
+    expect(projectCount).toHaveBeenNthCalledWith(1, { where: {} });
+    expect(projectCount).toHaveBeenNthCalledWith(2, { where: { featuredOnHome: true } });
   });
 });
 

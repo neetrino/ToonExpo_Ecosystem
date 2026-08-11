@@ -15,6 +15,7 @@ import {
   listAdminApartments,
   listAdminBuildings,
   listAdminFloors,
+  setAdminApartmentFeaturedOnHome,
 } from '@/features/admin/api/admin-inventory-api';
 import {
   ADMIN_APARTMENTS_QUERY_KEY,
@@ -265,6 +266,21 @@ export const useAdminUpdateFloorMutation = () => {
       void queryClient.invalidateQueries({
         queryKey: adminBuildingInventoryGlanceQueryKey(input.buildingId),
       });
+    },
+  });
+};
+
+/**
+ * Pins or unpins an apartment on the public homepage.
+ */
+export const useSetAdminApartmentFeaturedOnHomeMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (input: { apartmentId: string; featuredOnHome: boolean }) =>
+      setAdminApartmentFeaturedOnHome(input.apartmentId, input.featuredOnHome),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ADMIN_APARTMENTS_QUERY_KEY });
     },
   });
 };

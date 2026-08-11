@@ -1,3 +1,4 @@
+import type { ProjectListItem } from '@toonexpo/contracts';
 import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
 
@@ -10,13 +11,14 @@ const HERO_IMAGE_SRC = staticAssetUrl('/images/hero-building.webp');
 
 type HomeHeroProps = {
   locations?: readonly string[] | undefined;
+  projects?: readonly ProjectListItem[] | undefined;
 };
 
 /**
  * Public home hero — full-bleed skyline with marketplace search.
  * Copy + spacing scale as one fluid unit across all viewports.
  */
-export const HomeHero = async ({ locations = [] }: HomeHeroProps) => {
+export const HomeHero = async ({ locations = [], projects = [] }: HomeHeroProps) => {
   const t = await getTranslations('HomePage');
 
   return (
@@ -73,7 +75,7 @@ export const HomeHero = async ({ locations = [] }: HomeHeroProps) => {
         </div>
 
         <div className="mt-[clamp(1.5rem,1rem+2vw,2.5rem)] w-full">
-          <HeroSearch locations={locations} />
+          <HeroSearch locations={locations} projects={projects} />
         </div>
       </div>
     </section>

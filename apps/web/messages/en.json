@@ -147,6 +147,12 @@
       "searchLabel": "Search projects",
       "searchPlaceholder": "Project, builder, or city…",
       "search": "Search homes",
+      "suggestionsEmpty": "No matches found",
+      "suggestionKinds": {
+        "project": "Project",
+        "builder": "Builder",
+        "city": "City"
+      },
       "explore": "Explore projects",
       "register": "Register free",
       "locationLabel": "Location",
@@ -177,28 +183,22 @@
     },
     "stats": {
       "badge": "Market pulse",
-      "avgSqm": "Avg. ֏ / m²",
-      "avgSqmHint": "+4.2% YoY",
-      "activeListings": "Active listings",
-      "activeListingsHint": "+312 this week",
-      "mortgageRate": "30-yr fixed",
-      "mortgageRateHint": "–0.08 wk/wk",
-      "medianDays": "Median days on market",
-      "medianDaysHint": "Stable",
-      "projects": "Projects",
-      "projectsHint": "Published now",
-      "listings": "Listings",
-      "availableHint": "{count} available",
-      "builders": "Builders",
-      "buildersHint": "Active partners",
-      "cities": "Cities",
-      "citiesHint": "Coverage"
+      "projectCount": "Number of projects",
+      "projectCountHint": "+18 this month",
+      "apartmentCount": "Number of apartments",
+      "apartmentCountHint": "+240 this week",
+      "marketValue": "Total market value (mln)",
+      "marketValueHint": "+4.2% YoY",
+      "participantCount": "Number of participants",
+      "participantCountHint": "Growing",
+      "avgMortgagePayment": "Avg. monthly mortgage payment",
+      "avgMortgagePaymentHint": "Stable"
     },
     "featured": {
       "eyebrow": "Newest for sale",
       "title": "Hand-picked, verified, ready to tour.",
-      "viewAll": "View all listings →",
-      "empty": "No published projects yet."
+      "viewAll": "View all apartments →",
+      "empty": "No published apartments yet."
     },
     "developments": {
       "eyebrow": "Under construction",
@@ -308,7 +308,7 @@
     "menu": "Open menu",
     "railExpand": "Expand sidebar",
     "railCollapse": "Collapse sidebar",
-    "buy": "Apartments",
+    "buy": "Buy",
     "marketInsights": "Market Insights",
     "projects": "Projects",
     "builders": "Builders",
@@ -368,6 +368,7 @@
     "badgeNew": "New",
     "unitTitle": "Apt. {number} · {project}",
     "specBed": "{count} Bed",
+    "specBath": "{count} Bath",
     "specArea": "{area} m²",
     "saveSearchHint": "Save this search to get email alerts when new homes match.",
     "saveSearch": "Save search",
@@ -698,6 +699,7 @@
       "unit": "Apt. {number}",
       "floor": "Floor: {floor}",
       "rooms": "{count, plural, one {# room} other {# rooms}}",
+      "bathrooms": "{count, plural, one {# bath} other {# baths}}",
       "area": "{area} m²",
       "statusLabel": "Status",
       "roomsLabel": "Rooms",
@@ -1251,6 +1253,13 @@
   "Admin": {
     "badge": "Admin",
     "profileLink": "Profile",
+    "featuredOnHome": {
+      "pin": "Show on homepage",
+      "unpin": "Remove from homepage",
+      "error": "Could not update homepage featured status.",
+      "projectLimit": "Homepage already has {count} featured projects.",
+      "apartmentLimit": "Homepage already has {count} featured apartments."
+    },
     "home": {
       "title": "Admin",
       "subtitle": "Choose a section from the sidebar to manage the platform."
@@ -1743,6 +1752,7 @@
     "projects": {
       "title": "Projects",
       "subtitle": "{count, plural, =0 {No projects} one {# project} other {# projects}}",
+      "subtitleWithFeatured": "{count, plural, =0 {No projects} one {# project} other {# projects}} · Home {featured}/{limit}",
       "empty": "No projects yet.",
       "emptyTitle": "No projects yet",
       "noResults": "No projects match “{query}”.",
@@ -1903,6 +1913,7 @@
     "apartments": {
       "title": "Apartments",
       "subtitle": "{count, plural, =0 {No apartments} one {# apartment} other {# apartments}}",
+      "subtitleWithFeatured": "{count, plural, =0 {No apartments} one {# apartment} other {# apartments}} · Home {featured}/{limit}",
       "empty": "No apartments yet.",
       "loading": "Loading apartments…",
       "error": "Could not load apartments. Try again.",

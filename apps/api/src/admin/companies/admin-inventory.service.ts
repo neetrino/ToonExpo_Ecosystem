@@ -7,8 +7,9 @@ import type {
 } from '@toonexpo/contracts';
 import type { Prisma } from '@toonexpo/db';
 
-import { summarizeSalesStatuses } from '../../catalog/mappers/catalog.mapper.js';
+import { summarizeSalesStatuses, toMediaSummary } from '../../catalog/mappers/catalog.mapper.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
+
 
 /**
  * Cross-company inventory lists for the admin Projects hub.
@@ -166,11 +167,12 @@ export class AdminInventoryService {
       ...(buildingId ? { buildingId } : {}),
     };
 
-    const [total, apartments] = await Promise.all([
+    const [total, featuredOnHomeTotal, apartments] = await Promise.all([
       this.prisma.db.apartment.count({ where }),
+      this.prisma.db.apartment.count({ where: { featuredOnHome: true } }),
       this.prisma.db.apartment.findMany({
         where,
-        orderBy: [{ updatedAt: 'desc' }],
+        orderBy: [{ featuredOnHome: 'desc' }, { updatedAt: 'desc' }],
         skip: (page - 1) * pageSize,
         take: pageSize,
         select: {
@@ -182,13 +184,34 @@ export class AdminInventoryService {
           floorId: true,
           buildingId: true,
           projectId: true,
+          featuredOnHome: true,
           floor: { select: { number: true } },
-          building: { select: { name: true } },
+          building: {
+            select: {
+              name: true,
+              coverMedia: {
+                select: {
+                  id: true,
+                  fileUrl: true,
+                  thumbnailUrl: true,
+                  altText: true,
+                },
+              },
+            },
+          },
           project: {
             select: {
               name: true,
               builderCompanyId: true,
               builderCompany: { select: { name: true } },
+              coverMedia: {
+                select: {
+                  id: true,
+                  fileUrl: true,
+                  thumbnailUrl: true,
+                  altText: true,
+                },
+              },
             },
           },
         },
@@ -210,8 +233,15 @@ export class AdminInventoryService {
         projectName: apartment.project.name,
         builderCompanyId: apartment.project.builderCompanyId,
         companyName: apartment.project.builderCompany.name,
+        featuredOnHome: apartment.featuredOnHome,
+        cover:
+          toMediaSummary(apartment.project.coverMedia) ??
+          toMediaSummary(apartment.building.coverMedia),
       })),
-      meta: this.toMeta(page, pageSize, total),
+      meta: {
+        ...this.toMeta(page, pageSize, total),
+        featuredOnHomeTotal,
+      },
     };
   }
 

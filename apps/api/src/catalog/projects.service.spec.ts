@@ -34,6 +34,16 @@ describe('ProjectsService filters and pagination', () => {
     expect(where).toEqual({ publicationStatus: 'published' });
   });
 
+  it('filters homepage curated projects when featuredOnHome is true', () => {
+    const query = Object.assign(new ListProjectsQueryDto(), { featuredOnHome: true });
+    const where = service.buildListWhere(query);
+
+    expect(where).toEqual({
+      publicationStatus: 'published',
+      featuredOnHome: true,
+    });
+  });
+
   it('adds apartment filters for sales status, rooms and price range', () => {
     const query = Object.assign(new ListProjectsQueryDto(), {
       salesStatus: 'available',
@@ -66,10 +76,56 @@ describe('ProjectsService filters and pagination', () => {
 
     const where = service.buildListWhere(query);
 
-    expect(where.OR).toEqual([
-      { city: { equals: 'Yerevan', mode: 'insensitive' } },
-      { city: { equals: 'Gyumri', mode: 'insensitive' } },
+    expect(where.AND).toEqual([
+      {
+        OR: [
+          { city: { equals: 'Yerevan', mode: 'insensitive' } },
+          { city: { equals: 'Gyumri', mode: 'insensitive' } },
+        ],
+      },
     ]);
+  });
+
+  it('adds keyword search OR across project and builder fields', () => {
+    const query = Object.assign(new ListProjectsQueryDto(), {
+      q: 'Arabkir',
+    });
+
+    const where = service.buildListWhere(query);
+
+    expect(where.AND).toEqual([
+      {
+        OR: [
+          { name: { contains: 'Arabkir', mode: 'insensitive' } },
+          { city: { contains: 'Arabkir', mode: 'insensitive' } },
+          { district: { contains: 'Arabkir', mode: 'insensitive' } },
+          { locationText: { contains: 'Arabkir', mode: 'insensitive' } },
+          { builderCompany: { name: { contains: 'Arabkir', mode: 'insensitive' } } },
+        ],
+      },
+    ]);
+  });
+
+  it('combines multi-city and keyword under AND', () => {
+    const query = Object.assign(new ListProjectsQueryDto(), {
+      city: 'Yerevan, Gyumri',
+      q: 'Park',
+    });
+
+    const where = service.buildListWhere(query);
+
+    expect(where.AND).toHaveLength(2);
+    expect(where.AND?.[0]).toEqual({
+      OR: [
+        { city: { equals: 'Yerevan', mode: 'insensitive' } },
+        { city: { equals: 'Gyumri', mode: 'insensitive' } },
+      ],
+    });
+    expect(where.AND?.[1]).toMatchObject({
+      OR: expect.arrayContaining([
+        { name: { contains: 'Park', mode: 'insensitive' } },
+      ]),
+    });
   });
 
   it('supports multi rooms with 4+ semantics', () => {

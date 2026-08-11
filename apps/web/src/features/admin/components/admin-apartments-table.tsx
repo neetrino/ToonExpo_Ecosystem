@@ -31,7 +31,7 @@ export const AdminApartmentsTable = ({
 
   if (viewMode === VIEW_MODE_CARDS) {
     return (
-      <AdminListCardGrid className="gap-4">
+      <AdminListCardGrid className="gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {apartments.map((apartment) => (
           <AdminApartmentCard key={apartment.id} apartment={apartment} returnTo={returnTo} />
         ))}

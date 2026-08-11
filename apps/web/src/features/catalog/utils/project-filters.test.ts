@@ -25,6 +25,7 @@ describe('parseProjectFilters', () => {
         salesStatus: 'available',
         city: 'Yerevan',
         builderId: 'builder_company_a',
+        q: '  Arabkir Park  ',
       }),
     ).toEqual({
       page: 2,
@@ -35,6 +36,7 @@ describe('parseProjectFilters', () => {
       salesStatus: 'available',
       city: 'Yerevan',
       builderId: 'builder_company_a',
+      q: 'Arabkir Park',
     });
   });
 
@@ -69,12 +71,14 @@ describe('toListProjectsQuery', () => {
         pageSize: PROJECT_PAGE_SIZE,
         rooms: [2],
         salesStatus: 'reserved',
+        q: 'Park',
       }),
     ).toEqual({
       page: 1,
       pageSize: PROJECT_PAGE_SIZE,
       rooms: [2],
       salesStatus: 'reserved',
+      q: 'Park',
     });
   });
 });
@@ -86,8 +90,9 @@ describe('buildProjectSearchParams', () => {
         page: 1,
         pageSize: PROJECT_PAGE_SIZE,
         city: 'Yerevan',
+        q: 'Arabkir',
       }),
-    ).toEqual({ city: 'Yerevan' });
+    ).toEqual({ city: 'Yerevan', q: 'Arabkir' });
   });
 
   it('supports page override for pagination links', () => {

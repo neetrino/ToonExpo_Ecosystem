@@ -17,6 +17,7 @@ const project = (id: string, name: string): AdminProjectListItem => ({
   buildingCover: null,
   buildingsCount: 0,
   apartmentsCount: 0,
+  featuredOnHome: false,
 });
 
 const model = (projectId: string | null): AdminGeoMapModelItem => ({

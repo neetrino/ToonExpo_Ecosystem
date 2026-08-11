@@ -79,6 +79,8 @@ type ProjectDetailSource = ProjectListSource & {
         number: string;
         salesStatus: ApartmentSalesStatus;
         rooms: number | null;
+        bedrooms: number | null;
+        bathrooms: number | null;
         areaTotal: Prisma.Decimal | null;
         price: Prisma.Decimal | null;
         priceCurrency: string;
@@ -100,6 +102,8 @@ const mapFloorApartment = (
     number: string;
     salesStatus: ApartmentSalesStatus;
     rooms: number | null;
+    bedrooms: number | null;
+    bathrooms: number | null;
     areaTotal: Prisma.Decimal | null;
     price: Prisma.Decimal | null;
     priceCurrency: string;
@@ -114,6 +118,8 @@ const mapFloorApartment = (
     number: apartment.number,
     salesStatus: apartment.salesStatus,
     rooms: apartment.rooms,
+    bedrooms: apartment.bedrooms,
+    bathrooms: apartment.bathrooms,
     areaTotal: decimalToString(apartment.areaTotal),
     price: revealPrice ? decimalToString(apartment.price) : null,
     priceCurrency: apartment.priceCurrency,
