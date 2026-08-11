@@ -140,7 +140,7 @@ export const ReadinessCriterionRow = ({
               inputMode="numeric"
               min={0}
               max={item.maxPoints ?? undefined}
-              className="h-8 w-14 rounded-md border border-border bg-surface-elevated px-2 text-right text-sm tabular-nums text-ink [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+              className="h-8 w-14 rounded-md border border-border bg-surface-elevated px-2 text-right text-sm tabular-nums text-ink"
               value={text}
               disabled={disabled}
               onChange={(event) => {

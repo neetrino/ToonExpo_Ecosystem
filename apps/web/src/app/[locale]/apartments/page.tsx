@@ -6,8 +6,15 @@ import { listProjects } from '@/features/catalog/api/catalog-api';
 import { BuyApartmentsBrowse } from '@/features/catalog/components/buy-apartments-browse';
 import { BuyApartmentsFilters } from '@/features/catalog/components/buy-apartments-filters';
 import { SiteFooter } from '@/features/catalog/components/site-footer';
-import { loadBuyApartmentListings } from '@/features/catalog/utils/load-buy-apartments';
-import { parseProjectFilters } from '@/features/catalog/utils/project-filters';
+import {
+  BUY_APARTMENT_PAGE_SIZE,
+  emptyBuyApartmentListingsPage,
+  loadBuyApartmentListings,
+} from '@/features/catalog/utils/load-buy-apartments';
+import {
+  buildProjectSearchParams,
+  parseProjectFilters,
+} from '@/features/catalog/utils/project-filters';
 
 const CITY_PROJECTS_PAGE_SIZE = 50;
 
@@ -44,12 +51,15 @@ export default async function ApartmentsIndexPage({
 
   const rawParams = await searchParams;
   const filters = parseProjectFilters(rawParams);
+  filters.pageSize = BUY_APARTMENT_PAGE_SIZE;
   if (!filters.salesStatus) {
     filters.salesStatus = 'available';
   }
 
-  const [listings, projectsForCities] = await Promise.all([
-    loadBuyApartmentListings({ locale, filters }).catch(() => []),
+  const [listingsPage, projectsForCities] = await Promise.all([
+    loadBuyApartmentListings({ locale, filters }).catch(() =>
+      emptyBuyApartmentListingsPage(filters.pageSize),
+    ),
     listProjects({ page: 1, pageSize: CITY_PROJECTS_PAGE_SIZE, locale }, { locale }).catch(() =>
       emptyProjectPage(CITY_PROJECTS_PAGE_SIZE),
     ),
@@ -63,6 +73,13 @@ export default async function ApartmentsIndexPage({
     ),
   ].sort((a, b) => a.localeCompare(b));
 
+  const buildHref = (page: number): string => {
+    const query = new URLSearchParams(buildProjectSearchParams(filters, page)).toString();
+    return query.length > 0 ? `/apartments?${query}` : '/apartments';
+  };
+
+  const { page, totalPages, total } = listingsPage.meta;
+
   return (
     <div className="relative min-h-screen">
       {/* Continuous canvas under the whole viewport (incl. overscroll). */}
@@ -75,7 +92,14 @@ export default async function ApartmentsIndexPage({
       <div className="relative">
         <main>
           <BuyApartmentsFilters filters={filters} cities={cities} />
-          <BuyApartmentsBrowse listings={listings} />
+          <BuyApartmentsBrowse
+            listings={listingsPage.data}
+            totalCount={total}
+            page={page}
+            totalPages={totalPages}
+            previousHref={page > 1 ? buildHref(page - 1) : null}
+            nextHref={page < totalPages ? buildHref(page + 1) : null}
+          />
         </main>
         <SiteFooter />
       </div>

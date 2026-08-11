@@ -155,9 +155,9 @@ const loadApartmentCards = async (
       floor: { publicationStatus: PUBLIC_PUBLICATION_STATUS },
     },
     include: {
+      coverMedia: true,
       project: {
         include: {
-          coverMedia: true,
           builderCompany: { include: { logoMedia: true } },
         },
       },

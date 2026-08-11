@@ -15,6 +15,7 @@ describe('mapFavoriteApartmentCard price visibility', () => {
     price: { toString: () => '45000000' },
     priceCurrency: 'AMD',
     priceVisibility: 'visible_after_login',
+    coverMedia: null,
     project: {
       id: 'proj_1',
       name: 'Project',
@@ -22,7 +23,6 @@ describe('mapFavoriteApartmentCard price visibility', () => {
       city: 'Yerevan',
       district: null,
       locationText: null,
-      coverMedia: null,
       builderCompany: {
         id: 'co_1',
         name: 'Builder',

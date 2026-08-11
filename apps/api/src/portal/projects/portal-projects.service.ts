@@ -9,6 +9,7 @@ import { PrismaService } from '../../prisma/prisma.service.js';
 import { mapPortalProjectDetail, mapPortalProjectListItem } from '../mappers/portal.mapper.js';
 import { PORTAL_DEFAULT_PAGE_SIZE } from '../portal.constants.js';
 import { entityNotFound } from '../utils/access.js';
+import { cascadePublishProjectInventory } from '../utils/ensure-published-inventory-chain.js';
 import { groupPortalTranslations } from '../utils/group-translations.js';
 import { requireOwnedProject } from '../utils/ownership.js';
 import { buildProjectSlug } from '../utils/slug.js';
@@ -215,15 +216,20 @@ export class PortalProjectsService {
     dto: UpdatePortalPublicationDto,
   ): Promise<PortalProjectDetail> {
     await requireOwnedProject(this.prisma, projectId, companyId);
+    const nextStatus = dto.publicationStatus as PublicationStatus;
 
     const project = await this.prisma.db.project.update({
       where: { id: projectId },
       data: {
-        publicationStatus: dto.publicationStatus as PublicationStatus,
+        publicationStatus: nextStatus,
         updatedByUserId: userId,
       },
       include: projectDetailInclude,
     });
+
+    if (nextStatus === PublicationStatus.published) {
+      await cascadePublishProjectInventory(this.prisma, projectId);
+    }
 
     this.webRevalidation.revalidateCatalog(projectId);
     return this.toProjectDetail(project);

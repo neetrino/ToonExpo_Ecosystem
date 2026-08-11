@@ -487,12 +487,17 @@
     },
     "filters": {
       "rooms": "Rooms",
+      "roomsFourPlus": "4+",
+      "roomsSelectedCount": "{count} selected",
       "minPrice": "Min price",
       "maxPrice": "Max price",
       "salesStatus": "Status",
       "any": "Any",
       "pricePlaceholder": "AMD",
       "apply": "Apply",
+      "reset": "Reset",
+      "search": "Search",
+      "searchPlaceholder": "Search by project, builder, or city…",
       "title": "Filters"
     },
     "pagination": {
@@ -510,6 +515,7 @@
       "title": "Projects",
       "subtitle": "{count, plural, =0 {No projects} one {# project} other {# projects}}",
       "empty": "No projects match these filters.",
+      "searchEmpty": "No projects match “{query}”.",
       "meta": {
         "title": "Projects — ToonExpo",
         "description": "Browse published residential projects with prices and availability."
@@ -3429,6 +3435,10 @@
       "planTitle": "Apartment plan",
       "planAlt": "Apartment plan",
       "planViewHint": "View apartment plan fullscreen",
+      "coverTitle": "Card cover image",
+      "coverHint": "Shown on this apartment’s cards. If empty, the card has no image.",
+      "saveCover": "Save cover",
+      "coverSaved": "Cover image saved",
       "meta": {
         "company": "Company",
         "building": "Building",
@@ -3453,6 +3463,7 @@
         "salesStatus": "Sales status",
         "statusChangeReason": "Status change reason",
         "description": "Description",
+        "coverMedia": "Cover image",
         "planMedia": "Floor plan image",
         "matterportUrl": "Matterport URL",
         "external3dUrl": "External 3D URL"
@@ -3475,6 +3486,11 @@
         "draft": "Draft",
         "published": "Published",
         "archived": "Archived"
+      },
+      "detail": {
+        "publish": "Publish",
+        "unpublish": "Unpublish",
+        "publicationSuccess": "Publication updated"
       },
       "errors": {
         "generic": "Something went wrong. Please try again."
@@ -3857,7 +3873,9 @@
   "Media": {
     "upload": {
       "browse": "Choose image",
+      "replace": "Replace image",
       "uploading": "Uploading…",
+      "clear": "Remove image",
       "remove": "Delete",
       "removing": "Deleting…",
       "removeConfirmTitle": "Delete image?",

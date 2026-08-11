@@ -9,6 +9,7 @@ import { publishedApartmentWhere } from './mappers/catalog.mapper.js';
 import { mapProjectDetail, mapProjectListItem } from './mappers/project.mapper.js';
 import { loadTranslations } from './utils/load-translations.js';
 import { resolveCatalogLocale, TRANSLATION_ENTITY } from './utils/resolve-translation.js';
+import { buildRoomsFilter } from './utils/rooms-filter.js';
 
 export type CatalogViewerContext = {
   locale?: string | undefined;
@@ -259,23 +260,3 @@ export class ProjectsService {
     return [...projectRows, ...companyRows];
   }
 }
-
-/** `4` in the public catalog UI means “4 or more rooms”. */
-const FOUR_PLUS_ROOMS = 4;
-
-const buildRoomsFilter = (rooms: number[]): Prisma.ApartmentWhereInput => {
-  const exact = rooms.filter((count) => count < FOUR_PLUS_ROOMS);
-  const includeFourPlus = rooms.includes(FOUR_PLUS_ROOMS);
-
-  if (exact.length > 0 && includeFourPlus) {
-    return {
-      OR: [{ rooms: { in: exact } }, { rooms: { gte: FOUR_PLUS_ROOMS } }],
-    };
-  }
-
-  if (includeFourPlus) {
-    return { rooms: { gte: FOUR_PLUS_ROOMS } };
-  }
-
-  return { rooms: { in: exact } };
-};

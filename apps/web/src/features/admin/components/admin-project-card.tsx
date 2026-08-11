@@ -2,12 +2,13 @@
 
 import type { AdminProjectListItem, PublicationStatus } from '@toonexpo/contracts';
 import type { LucideIcon } from 'lucide-react';
-import { Building, Building2, CheckCircle2, CircleDashed, Home, QrCode } from 'lucide-react';
+import { Building, Building2, CheckCircle2, CircleDashed, Home, MapPin, QrCode } from 'lucide-react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 import { AdminFeaturedOnHomeButton } from '@/features/admin/components/admin-featured-on-home-button';
+import { AdminInventoryCardMetaRow } from '@/features/admin/components/admin-inventory-card';
 import { useSetAdminProjectFeaturedOnHomeMutation } from '@/features/admin/hooks/use-admin-companies';
 import { ProjectQrDialog } from '@/features/builder/components/project-qr-dialog';
 import { HOME_FEATURED_PROJECT_LIMIT } from '@/features/catalog/constants/home-featured';
@@ -52,9 +53,9 @@ type AdminProjectImageProps = {
 
 const AdminProjectImage = ({ project }: AdminProjectImageProps) => {
   const [imageFailed, setImageFailed] = useState(false);
-  const cover = project.buildingCover;
+  const cover = project.cover;
   const imageSource =
-    toSafeImageSource(cover?.media.thumbnailUrl) ?? toSafeImageSource(cover?.media.fileUrl);
+    toSafeImageSource(cover?.thumbnailUrl) ?? toSafeImageSource(cover?.fileUrl);
   const validImageSource = imageFailed ? undefined : imageSource;
 
   return (
@@ -67,7 +68,7 @@ const AdminProjectImage = ({ project }: AdminProjectImageProps) => {
       {validImageSource && cover ? (
         <Image
           src={validImageSource}
-          alt={cover.media.altText?.trim() || `${cover.buildingName} — ${project.name}`}
+          alt={cover.altText?.trim() || project.name}
           fill
           className={cn(
             'object-cover transition-transform duration-[var(--duration-slow)]',
@@ -214,11 +215,14 @@ export const AdminProjectCard = ({ project, onOpenBuildings }: AdminProjectCardP
           href={`/admin/projects/${project.id}`}
           className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30"
         >
-          <AdminProjectImage
-            key={project.buildingCover?.media.id ?? 'fallback'}
-            project={project}
-          />
+          <AdminProjectImage key={project.cover?.id ?? 'fallback'} project={project} />
         </Link>
+
+        {project.city ? (
+          <AdminInventoryCardMetaRow icon={<MapPin className="size-3.5" strokeWidth={2} />}>
+            {project.city}
+          </AdminInventoryCardMetaRow>
+        ) : null}
 
         <div className="mt-auto flex flex-wrap items-center gap-x-5 gap-y-3 border-t border-border/70 pt-3">
           <AdminProjectStat

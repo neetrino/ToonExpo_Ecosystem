@@ -112,6 +112,13 @@ type ApartmentRow = {
     thumbnailUrl: string | null;
     altText: string | null;
   } | null;
+  coverMediaId: string | null;
+  coverMedia?: {
+    id: string;
+    fileUrl: string;
+    thumbnailUrl: string | null;
+    altText: string | null;
+  } | null;
   floor: {
     number: number;
     displayLabel: string | null;
@@ -242,6 +249,15 @@ export const mapPortalApartment = (
         fileUrl: apartment.planMedia.fileUrl,
         thumbnailUrl: apartment.planMedia.thumbnailUrl,
         altText: apartment.planMedia.altText,
+      }
+    : null,
+  coverMediaId: apartment.coverMediaId,
+  cover: apartment.coverMedia
+    ? {
+        id: apartment.coverMedia.id,
+        fileUrl: apartment.coverMedia.fileUrl,
+        thumbnailUrl: apartment.coverMedia.thumbnailUrl,
+        altText: apartment.coverMedia.altText,
       }
     : null,
   createdAt: apartment.createdAt.toISOString(),

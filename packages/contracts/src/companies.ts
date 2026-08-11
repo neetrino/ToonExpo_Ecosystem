@@ -154,10 +154,8 @@ export type AdminProjectListItem = {
   city: string | null;
   builderCompanyId: string;
   companyName: string;
-  buildingCover: {
-    buildingName: string;
-    media: MediaAssetSummary;
-  } | null;
+  /** Project cover only (no building fallback). */
+  cover: MediaAssetSummary | null;
   buildingsCount: number;
   apartmentsCount: number;
   /** Admin-curated homepage developments band (max 3). */
@@ -241,7 +239,7 @@ export type AdminApartmentListItem = {
   companyName: string;
   /** Admin-curated homepage featured listings (max 6). */
   featuredOnHome: boolean;
-  /** Main card image — project cover, else building cover. */
+  /** Main card image — apartment cover only (no project/building fallback). */
   cover: MediaAssetSummary | null;
 };
 

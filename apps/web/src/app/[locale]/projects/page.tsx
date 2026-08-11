@@ -11,6 +11,11 @@ import { ProjectFiltersForm } from '@/features/catalog/components/project-filter
 import { ProjectsPageHero } from '@/features/catalog/components/projects-page-hero';
 import { SiteFooter } from '@/features/catalog/components/site-footer';
 import {
+  CATALOG_RESULTS_SCROLL_ID,
+  CATALOG_RESULTS_SCROLL_MARGIN_CLASS,
+} from '@/features/catalog/constants/catalog-list';
+import { cn } from '@/shared/ui/cn';
+import {
   buildProjectSearchParams,
   parseProjectFilters,
   toListProjectsQuery,
@@ -68,15 +73,29 @@ export default async function ProjectsPage({ params, searchParams }: ProjectsPag
           <ProjectFiltersForm filters={filters} />
 
           {response.data.length === 0 ? (
-            <p className="mt-10 rounded-[20px] border border-dashed border-header-border bg-surface-elevated px-6 py-12 text-center text-sm text-header-muted">
-              {t('projects.empty')}
+            <p
+              id={CATALOG_RESULTS_SCROLL_ID}
+              className={cn(
+                'mt-10 rounded-[20px] border border-dashed border-header-border bg-surface-elevated px-6 py-12 text-center text-sm text-header-muted',
+                CATALOG_RESULTS_SCROLL_MARGIN_CLASS,
+              )}
+            >
+              {filters.q
+                ? t('projects.searchEmpty', { query: filters.q })
+                : t('projects.empty')}
             </p>
           ) : (
             <CatalogFavoritesScope projects={response.data}>
               <ProjectPriceRangesOverlayScope
                 projectIds={response.data.map((project) => project.id)}
               >
-                <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                <div
+                  id={CATALOG_RESULTS_SCROLL_ID}
+                  className={cn(
+                    'mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3',
+                    CATALOG_RESULTS_SCROLL_MARGIN_CLASS,
+                  )}
+                >
                   {response.data.map((project) => (
                     <ProjectCard key={project.id} project={project} showFavorite />
                   ))}
@@ -100,6 +119,7 @@ export default async function ProjectsPage({ params, searchParams }: ProjectsPag
             previousLabel={t('pagination.previous')}
             nextLabel={t('pagination.next')}
             ariaLabel={t('pagination.ariaLabel')}
+            scrollTargetId={CATALOG_RESULTS_SCROLL_ID}
           />
         </div>
       </main>

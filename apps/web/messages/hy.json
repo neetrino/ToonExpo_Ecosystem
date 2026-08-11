@@ -487,12 +487,17 @@
     },
     "filters": {
       "rooms": "Սենյակներ",
+      "roomsFourPlus": "4+",
+      "roomsSelectedCount": "{count} ընտրված",
       "minPrice": "Գինը սկսած",
       "maxPrice": "Գինը մինչև",
       "salesStatus": "Կարգավիճակ",
       "any": "Ցանկացած",
       "pricePlaceholder": "AMD",
       "apply": "Կիրառել",
+      "reset": "Մաքրել",
+      "search": "Որոնում",
+      "searchPlaceholder": "Որոնել նախագիծ, կառուցապատող կամ քաղաք…",
       "title": "Ֆիլտրեր"
     },
     "pagination": {
@@ -510,6 +515,7 @@
       "title": "Նախագծեր",
       "subtitle": "{count, plural, =0 {Նախագծեր չկան} one {# նախագիծ} other {# նախագիծ}}",
       "empty": "Այս ֆիլտրերով նախագծեր չկան։",
+      "searchEmpty": "«{query}» որոնմանը համապատասխանող նախագծեր չկան։",
       "meta": {
         "title": "Նախագծեր — ToonExpo",
         "description": "Հրապարակված բնակելի նախագծերի կատալոգ՝ գներով և հասանելիությամբ։"
@@ -3171,6 +3177,10 @@
       "planTitle": "Բնակարանի պլան",
       "planAlt": "Բնակարանի պլան",
       "planViewHint": "Դիտել բնակարանի պլանը ամբողջ էկրանով",
+      "coverTitle": "Կարտի շապիկի նկար",
+      "coverHint": "Ցուցադրվում է այս բնակարանի կարտերում։ Եթե դատարկ է՝ կարտում նկար չի լինի։",
+      "saveCover": "Պահպանել շապիկը",
+      "coverSaved": "Շապիկի նկարը պահպանված է",
       "meta": {
         "company": "Ընկերություն",
         "building": "Շենք",
@@ -3195,6 +3205,7 @@
         "salesStatus": "Վաճառքի կարգավիճակ",
         "statusChangeReason": "Կարգավիճակի փոփոխության պատճառ",
         "description": "Նկարագրություն",
+        "coverMedia": "Շապիկի նկար",
         "planMedia": "Հատակագծի նկար",
         "matterportUrl": "Matterport հղում",
         "external3dUrl": "Արտաքին 3D հղում"
@@ -3217,6 +3228,11 @@
         "draft": "Սևագիր",
         "published": "Հրապարակված",
         "archived": "Արխիվ"
+      },
+      "detail": {
+        "publish": "Հրապարակել",
+        "unpublish": "Հանել հրապարակումից",
+        "publicationSuccess": "Հրապարակման կարգավիճակը թարմացված է"
       },
       "errors": {
         "generic": "Ինչ-որ սխալ տեղի ունեցավ։ Կրկին փորձեք։"
@@ -3857,7 +3873,9 @@
   "Media": {
     "upload": {
       "browse": "Ընտրել պատկեր",
+      "replace": "Փոխարինել պատկերը",
       "uploading": "Վերբեռնվում է…",
+      "clear": "Հեռացնել պատկերը",
       "remove": "Ջնջել",
       "removing": "Ջնջվում է…",
       "removeConfirmTitle": "Ջնջե՞լ պատկերը",

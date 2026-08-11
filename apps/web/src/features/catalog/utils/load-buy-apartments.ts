@@ -1,12 +1,14 @@
-import type { FloorApartmentSummary, PriceVisibility, ProjectDetail } from '@toonexpo/contracts';
+import type {
+  ApartmentListItem,
+  PaginatedResponse,
+  PriceVisibility,
+} from '@toonexpo/contracts';
 
-import { getProject, listProjects } from '@/features/catalog/api/catalog-api';
+import { listApartments } from '@/features/catalog/api/catalog-api';
 import type { ProjectFilterParams } from '@/features/catalog/utils/project-filters';
-import { toListProjectsQuery } from '@/features/catalog/utils/project-filters';
 
-const BUY_PROJECT_FETCH_LIMIT = 8;
-const BUY_APARTMENT_LIMIT = 24;
-
+/** Buy /apartments grid — fewer cards per page than the projects catalog. */
+export const BUY_APARTMENT_PAGE_SIZE = 10;
 export type BuyApartmentListing = {
   id: string;
   title: string;
@@ -17,7 +19,7 @@ export type BuyApartmentListing = {
   price: string | null;
   priceCurrency: string;
   priceVisibility: PriceVisibility;
-  salesStatus: FloorApartmentSummary['salesStatus'];
+  salesStatus: ApartmentListItem['salesStatus'];
   locationLine: string | null;
   image: { src: string; alt: string } | null;
   latitude: number | null;
@@ -26,84 +28,18 @@ export type BuyApartmentListing = {
   projectName: string;
 };
 
+export type BuyApartmentListingsPage = PaginatedResponse<BuyApartmentListing>;
+
 /**
- * Builds Buy-page apartment cards from published project inventories.
+ * Maps a public apartment list row to Buy-page card props.
  */
-export const loadBuyApartmentListings = async (options: {
-  locale: string;
-  filters: ProjectFilterParams;
-  limit?: number;
-}): Promise<BuyApartmentListing[]> => {
-  const { locale, filters } = options;
-  const limit = options.limit ?? BUY_APARTMENT_LIMIT;
-  const projects = await listProjects(
-    {
-      ...toListProjectsQuery({
-        ...filters,
-        page: 1,
-        pageSize: BUY_PROJECT_FETCH_LIMIT,
-      }),
-    },
-    { locale },
-  );
-
-  const details = (
-    await Promise.all(projects.data.map((project) => getProject(project.id, { locale })))
-  ).filter((project): project is ProjectDetail => project != null);
-
-  const listings: BuyApartmentListing[] = [];
-
-  for (const project of details) {
-    for (const building of project.buildings) {
-      for (const floor of building.floors) {
-        for (const apartment of floor.apartments) {
-          if (filters.salesStatus && apartment.salesStatus !== filters.salesStatus) {
-            continue;
-          }
-          if (!filters.salesStatus && apartment.salesStatus !== 'available') {
-            continue;
-          }
-          if (filters.rooms != null && filters.rooms.length > 0) {
-            if (apartment.rooms == null) {
-              continue;
-            }
-            if (!matchesRoomsFilter(apartment.rooms, filters.rooms)) {
-              continue;
-            }
-          }
-          if (filters.minPrice != null && apartment.price != null) {
-            if (Number(apartment.price) < filters.minPrice) {
-              continue;
-            }
-          }
-          if (filters.maxPrice != null && apartment.price != null) {
-            if (Number(apartment.price) > filters.maxPrice) {
-              continue;
-            }
-          }
-
-          listings.push(toListing(apartment, project));
-          if (listings.length >= limit) {
-            return listings;
-          }
-        }
-      }
-    }
-  }
-
-  return listings;
-};
-
-const toListing = (
-  apartment: FloorApartmentSummary,
-  project: ProjectDetail,
-): BuyApartmentListing => {
-  const district = project.district?.trim() || null;
-  const city = project.city?.trim() || null;
+export const toBuyApartmentListing = (apartment: ApartmentListItem): BuyApartmentListing => {
+  const district = apartment.district?.trim() || null;
+  const city = apartment.city?.trim() || null;
   const locationLine =
     district && city
       ? `${district} · ${city}`
-      : project.locationText?.trim() || city || district || null;
+      : apartment.locationText?.trim() || city || district || null;
 
   return {
     id: apartment.id,
@@ -117,16 +53,61 @@ const toListing = (
     priceVisibility: apartment.priceVisibility,
     salesStatus: apartment.salesStatus,
     locationLine,
-    image: project.cover
+    image: apartment.cover
       ? {
-          src: project.cover.fileUrl,
-          alt: project.cover.altText ?? project.name,
+          src: apartment.cover.fileUrl,
+          alt: apartment.cover.altText ?? apartment.projectName,
         }
       : null,
-    latitude: toCoord(project.latitude),
-    longitude: toCoord(project.longitude),
-    projectId: project.id,
-    projectName: project.name,
+    latitude: toCoord(apartment.latitude),
+    longitude: toCoord(apartment.longitude),
+    projectId: apartment.projectId,
+    projectName: apartment.projectName,
+  };
+};
+
+/**
+ * Empty paginated Buy listings (Nest offline / soft-fail).
+ */
+export const emptyBuyApartmentListingsPage = (
+  pageSize: number = BUY_APARTMENT_PAGE_SIZE,
+): BuyApartmentListingsPage => ({
+  data: [],
+  meta: { page: 1, pageSize, total: 0, totalPages: 0 },
+});
+
+/**
+ * Loads one page of Buy-page apartment cards from the public apartments catalog.
+ */
+export const loadBuyApartmentListings = async (options: {
+  locale: string;
+  filters: ProjectFilterParams;
+  /** Overrides `filters.pageSize` (homepage featured band). */
+  limit?: number;
+}): Promise<BuyApartmentListingsPage> => {
+  const { locale, filters } = options;
+  const pageSize = options.limit ?? filters.pageSize ?? BUY_APARTMENT_PAGE_SIZE;
+  const page = filters.page || 1;
+
+  const response = await listApartments(
+    {
+      page,
+      pageSize,
+      ...(filters.salesStatus ? { salesStatus: filters.salesStatus } : {}),
+      ...(filters.minPrice != null ? { minPrice: filters.minPrice } : {}),
+      ...(filters.maxPrice != null ? { maxPrice: filters.maxPrice } : {}),
+      ...(filters.rooms != null && filters.rooms.length > 0 ? { rooms: filters.rooms } : {}),
+      ...(filters.city ? { city: filters.city } : {}),
+      ...(filters.builderId ? { builderId: filters.builderId } : {}),
+      ...(filters.q ? { q: filters.q } : {}),
+    },
+    // Inventory publishes from Admin must appear immediately (avoid stale Data Cache totals).
+    { locale, cacheMode: 'no-store' },
+  );
+
+  return {
+    data: response.data.map(toBuyApartmentListing),
+    meta: response.meta,
   };
 };
 
@@ -136,15 +117,4 @@ const toCoord = (value: string | null): number | null => {
   }
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : null;
-};
-
-const FOUR_PLUS_ROOMS = 4;
-
-const matchesRoomsFilter = (apartmentRooms: number, selected: number[]): boolean => {
-  const exact = selected.filter((count) => count < FOUR_PLUS_ROOMS);
-  const includeFourPlus = selected.includes(FOUR_PLUS_ROOMS);
-  if (exact.includes(apartmentRooms)) {
-    return true;
-  }
-  return includeFourPlus && apartmentRooms >= FOUR_PLUS_ROOMS;
 };

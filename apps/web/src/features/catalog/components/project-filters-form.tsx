@@ -3,7 +3,10 @@
 import { SlidersHorizontal } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { ProjectLiveSearch } from '@/features/catalog/components/project-live-search';
+import { ProjectRoomsFilter } from '@/features/catalog/components/project-rooms-filter';
 import type { ProjectFilterParams } from '@/features/catalog/utils/project-filters';
+import { Link } from '@/i18n/navigation';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
 import { Select } from '@/shared/ui/select';
@@ -14,9 +17,18 @@ type ProjectFiltersFormProps = {
 
 /**
  * SSR-friendly GET filters for the projects catalog (shareable URL params).
+ * Keyword search updates live; other filters still submit via Apply.
  */
 export const ProjectFiltersForm = ({ filters }: ProjectFiltersFormProps) => {
   const t = useTranslations('Catalog');
+  const hasActiveFilters =
+    Boolean(filters.q) ||
+    filters.rooms != null ||
+    filters.minPrice != null ||
+    filters.maxPrice != null ||
+    Boolean(filters.salesStatus) ||
+    Boolean(filters.city) ||
+    Boolean(filters.builderId);
 
   return (
     <form
@@ -27,31 +39,13 @@ export const ProjectFiltersForm = ({ filters }: ProjectFiltersFormProps) => {
         <SlidersHorizontal className="size-4 text-brand" aria-hidden />
         <p className="text-sm font-semibold text-ink">{t('filters.title')}</p>
       </div>
+
+      <div className="mb-3">
+        <ProjectLiveSearch filters={filters} />
+      </div>
+
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-        <label className="flex flex-col gap-1.5 text-xs font-medium text-ink-secondary">
-          {t('filters.rooms')}
-          <Select
-            name="rooms"
-            defaultValue={
-              filters.rooms != null && filters.rooms.length === 1
-                ? String(filters.rooms[0])
-                : filters.rooms != null && filters.rooms.length > 1
-                  ? filters.rooms.join(',')
-                  : ''
-            }
-          >
-            <option value="">{t('filters.any')}</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4+</option>
-            {filters.rooms != null && filters.rooms.length > 1 ? (
-              <option value={filters.rooms.join(',')}>
-                {filters.rooms.map((count) => (count >= 4 ? '4+' : String(count))).join(', ')}
-              </option>
-            ) : null}
-          </Select>
-        </label>
+        <ProjectRoomsFilter rooms={filters.rooms} />
 
         <label className="flex flex-col gap-1.5 text-xs font-medium text-ink-secondary">
           {t('filters.minPrice')}
@@ -95,6 +89,16 @@ export const ProjectFiltersForm = ({ filters }: ProjectFiltersFormProps) => {
           </Button>
         </div>
       </div>
+
+      {hasActiveFilters ? (
+        <div className="mt-3">
+          <Link href="/projects">
+            <Button type="button" variant="outline" size="md" className="h-11">
+              {t('filters.reset')}
+            </Button>
+          </Link>
+        </div>
+      ) : null}
     </form>
   );
 };

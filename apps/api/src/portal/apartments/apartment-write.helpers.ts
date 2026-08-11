@@ -41,6 +41,7 @@ type ApartmentRow = {
   viewType: string | null;
   features: Prisma.JsonValue;
   planMediaId: string | null;
+  coverMediaId: string | null;
   createdAt: Date;
   updatedAt: Date;
 };
@@ -61,7 +62,7 @@ type DbClient = {
 };
 
 /**
- * Creates one draft apartment and optional description translations.
+ * Creates one apartment (draft by default; caller may publish with the project).
  */
 export const createPortalApartmentRow = async (
   db: DbClient,
@@ -71,12 +72,14 @@ export const createPortalApartmentRow = async (
     buildingId: string;
     floorId: string;
     dto: CreatePortalApartmentDto;
+    publicationStatus?: PublicationStatus;
   },
 ): Promise<ApartmentRow> => {
   const salesStatus =
     (params.dto.salesStatus as ApartmentSalesStatus | undefined) ??
     ApartmentSalesStatus.available;
   const dto = params.dto;
+  const publicationStatus = params.publicationStatus ?? PublicationStatus.draft;
 
   const apartment = await db.apartment.create({
     data: {
@@ -85,7 +88,7 @@ export const createPortalApartmentRow = async (
       floorId: params.floorId,
       number: dto.number,
       salesStatus,
-      publicationStatus: PublicationStatus.draft,
+      publicationStatus,
       priceCurrency: DEFAULT_PRICE_CURRENCY,
       priceVisibility:
         (dto.priceVisibility as PriceVisibility | undefined) ??
@@ -130,6 +133,9 @@ export const createPortalApartmentRow = async (
         : {}),
       ...(dto.planMediaId !== undefined
         ? { planMediaId: dto.planMediaId }
+        : {}),
+      ...(dto.coverMediaId !== undefined
+        ? { coverMediaId: dto.coverMediaId }
         : {}),
     },
   });
@@ -180,6 +186,7 @@ export const buildApartmentUpdateData = (
     ? { features: dto.features as Prisma.InputJsonValue }
     : {}),
   ...(dto.planMediaId !== undefined ? { planMediaId: dto.planMediaId } : {}),
+  ...(dto.coverMediaId !== undefined ? { coverMediaId: dto.coverMediaId } : {}),
   ...(dto.salesStatus !== undefined
     ? { salesStatus: dto.salesStatus as ApartmentSalesStatus }
     : {}),
