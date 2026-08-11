@@ -92,6 +92,9 @@ describe('Company provisioning (e2e)', () => {
 
   afterAll(async () => {
     if (createdCompanyIds.length > 0) {
+      await prisma.db.readinessAssessment.deleteMany({
+        where: { builderCompanyId: { in: createdCompanyIds } },
+      });
       await prisma.db.company.deleteMany({
         where: { id: { in: createdCompanyIds } },
       });
