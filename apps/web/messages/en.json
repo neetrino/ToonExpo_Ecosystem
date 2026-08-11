@@ -487,6 +487,8 @@
     },
     "filters": {
       "rooms": "Rooms",
+      "roomsFourPlus": "4+",
+      "roomsSelectedCount": "{count} selected",
       "minPrice": "Min price",
       "maxPrice": "Max price",
       "salesStatus": "Status",

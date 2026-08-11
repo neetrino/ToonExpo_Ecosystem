@@ -487,6 +487,8 @@
     },
     "filters": {
       "rooms": "Սենյակներ",
+      "roomsFourPlus": "4+",
+      "roomsSelectedCount": "{count} ընտրված",
       "minPrice": "Գինը սկսած",
       "maxPrice": "Գինը մինչև",
       "salesStatus": "Կարգավիճակ",

@@ -487,6 +487,8 @@
     },
     "filters": {
       "rooms": "Комнаты",
+      "roomsFourPlus": "4+",
+      "roomsSelectedCount": "{count} выбрано",
       "minPrice": "Цена от",
       "maxPrice": "Цена до",
       "salesStatus": "Статус",
