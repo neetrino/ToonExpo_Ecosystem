@@ -1,7 +1,7 @@
 'use client';
 
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import type { ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
 
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
@@ -18,18 +18,35 @@ type PaginationProps = {
   nextLabel: string;
   ariaLabel: string;
   className?: string | undefined;
+  /**
+   * Element id to bring into view after page change (e.g. results grid).
+   * Skips the default jump to the document top.
+   */
+  scrollTargetId?: string | undefined;
 };
 
 const NAV_CONTROL_CLASS =
   'inline-flex h-10 items-center gap-1.5 rounded-[15px] px-3.5 text-sm font-medium tracking-tight';
 
+const withScrollHash = (href: string | null, scrollTargetId: string | undefined): string | null => {
+  if (href == null || scrollTargetId == null || scrollTargetId.length === 0) {
+    return href;
+  }
+  if (href.includes('#')) {
+    return href;
+  }
+  return `${href}#${scrollTargetId}`;
+};
+
 type PaginationControlProps = {
   href: string | null;
   label: string;
   side: 'previous' | 'next';
+  /** When true, Next.js will not scroll to the document top. */
+  preserveScroll: boolean;
 };
 
-const PaginationControl = ({ href, label, side }: PaginationControlProps) => {
+const PaginationControl = ({ href, label, side, preserveScroll }: PaginationControlProps) => {
   const icon =
     side === 'previous' ? (
       <ChevronLeft className="size-4 shrink-0" aria-hidden strokeWidth={2.25} />
@@ -53,6 +70,7 @@ const PaginationControl = ({ href, label, side }: PaginationControlProps) => {
     return (
       <Link
         href={href}
+        scroll={!preserveScroll}
         className={cn(
           NAV_CONTROL_CLASS,
           'text-ink transition-[color,background-color,box-shadow,transform]',
@@ -90,7 +108,29 @@ export const CatalogPagination = ({
   nextLabel,
   ariaLabel,
   className,
+  scrollTargetId,
 }: PaginationProps) => {
+  const preserveScroll = Boolean(scrollTargetId);
+
+  useEffect(() => {
+    if (!scrollTargetId) {
+      return;
+    }
+    if (window.location.hash !== `#${scrollTargetId}`) {
+      return;
+    }
+    const target = document.getElementById(scrollTargetId);
+    if (!target) {
+      return;
+    }
+    const frameId = window.requestAnimationFrame(() => {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    return () => {
+      window.cancelAnimationFrame(frameId);
+    };
+  }, [page, scrollTargetId]);
+
   if (totalPages <= 1) {
     return null;
   }
@@ -104,7 +144,12 @@ export const CatalogPagination = ({
             'bg-surface-elevated/95 p-1.5 shadow-sm backdrop-blur-sm',
           )}
         >
-          <PaginationControl href={previousHref} label={previousLabel} side="previous" />
+          <PaginationControl
+            href={withScrollHash(previousHref, scrollTargetId)}
+            label={previousLabel}
+            side="previous"
+            preserveScroll={preserveScroll}
+          />
 
           <p
             className={cn(
@@ -120,7 +165,12 @@ export const CatalogPagination = ({
             <span className="font-medium text-brand-secondary/80">{totalPages}</span>
           </p>
 
-          <PaginationControl href={nextHref} label={nextLabel} side="next" />
+          <PaginationControl
+            href={withScrollHash(nextHref, scrollTargetId)}
+            label={nextLabel}
+            side="next"
+            preserveScroll={preserveScroll}
+          />
         </div>
       </nav>
     </Reveal>
