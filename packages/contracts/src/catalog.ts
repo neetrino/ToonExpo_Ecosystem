@@ -99,10 +99,36 @@ export type FloorApartmentSummary = {
   number: string;
   salesStatus: ApartmentSalesStatus;
   rooms: number | null;
+  bedrooms: number | null;
+  bathrooms: number | null;
   areaTotal: string | null;
   price: string | null;
   priceCurrency: string;
   priceVisibility: PriceVisibility;
+};
+
+/**
+ * Compact published apartment row for homepage / listing grids.
+ */
+export type ApartmentListItem = {
+  id: string;
+  number: string;
+  salesStatus: ApartmentSalesStatus;
+  rooms: number | null;
+  bedrooms: number | null;
+  bathrooms: number | null;
+  areaTotal: string | null;
+  price: string | null;
+  priceCurrency: string;
+  priceVisibility: PriceVisibility;
+  projectId: string;
+  projectName: string;
+  locationText: string | null;
+  city: string | null;
+  district: string | null;
+  latitude: string | null;
+  longitude: string | null;
+  cover: MediaAssetSummary | null;
 };
 
 export type FloorSummary = {
@@ -243,6 +269,19 @@ export type ListProjectsQuery = {
   rooms?: number[];
   city?: string;
   builderId?: string;
+  /** Free-text keyword over project name, builder, city/district/location. */
+  q?: string;
+  /** When true, only admin-curated homepage projects. */
+  featuredOnHome?: boolean;
+  /** Catalog content locale (`hy` | `ru` | `en`). Falls back to Armenian. */
+  locale?: string;
+};
+
+export type ListApartmentsQuery = {
+  page?: number;
+  pageSize?: number;
+  /** When true, only admin-curated homepage apartments. */
+  featuredOnHome?: boolean;
   /** Catalog content locale (`hy` | `ru` | `en`). Falls back to Armenian. */
   locale?: string;
 };

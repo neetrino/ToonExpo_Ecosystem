@@ -1,9 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import type { ApartmentDetail } from '@toonexpo/contracts';
+import type { ApartmentDetail, ApartmentListItem, PaginatedResponse } from '@toonexpo/contracts';
+import type { Prisma } from '@toonexpo/db';
 
 import { PrismaService } from '../prisma/prisma.service.js';
 import { AnalyticsService } from '../analytics/analytics.service.js';
-import { PUBLIC_PUBLICATION_STATUS } from './catalog.constants.js';
+import {
+  CATALOG_DEFAULT_PAGE_SIZE,
+  PUBLIC_PUBLICATION_STATUS,
+} from './catalog.constants.js';
+import type { ListApartmentsQueryDto } from './dto/list-apartments.query.dto.js';
 import type { CatalogViewerContext } from './projects.service.js';
 import { decimalToString, shouldRevealPrice, toMediaSummary } from './mappers/catalog.mapper.js';
 import { loadTranslations } from './utils/load-translations.js';
@@ -21,6 +26,107 @@ export class ApartmentsService {
     private readonly prisma: PrismaService,
     private readonly analytics: AnalyticsService,
   ) {}
+
+  /**
+   * Lists published apartments (homepage featured band when `featuredOnHome`).
+   */
+  async listApartments(
+    query: ListApartmentsQueryDto,
+    viewer: CatalogViewerContext,
+  ): Promise<PaginatedResponse<ApartmentListItem>> {
+    const page = query.page;
+    const pageSize = query.pageSize || CATALOG_DEFAULT_PAGE_SIZE;
+    const locale = resolveCatalogLocale(viewer.locale ?? query.locale);
+    const where: Prisma.ApartmentWhereInput = {
+      publicationStatus: PUBLIC_PUBLICATION_STATUS,
+      project: { publicationStatus: PUBLIC_PUBLICATION_STATUS },
+      building: { publicationStatus: PUBLIC_PUBLICATION_STATUS },
+      floor: { publicationStatus: PUBLIC_PUBLICATION_STATUS },
+      ...(query.featuredOnHome === true ? { featuredOnHome: true } : {}),
+    };
+
+    const [total, apartments] = await Promise.all([
+      this.prisma.db.apartment.count({ where }),
+      this.prisma.db.apartment.findMany({
+        where,
+        orderBy: [{ updatedAt: 'desc' }],
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+        select: {
+          id: true,
+          number: true,
+          salesStatus: true,
+          rooms: true,
+          bedrooms: true,
+          bathrooms: true,
+          areaTotal: true,
+          price: true,
+          priceCurrency: true,
+          priceVisibility: true,
+          projectId: true,
+          project: {
+            select: {
+              id: true,
+              name: true,
+              locationText: true,
+              city: true,
+              district: true,
+              latitude: true,
+              longitude: true,
+              coverMedia: true,
+            },
+          },
+        },
+      }),
+    ]);
+
+    const translations = await loadTranslations(
+      this.prisma.db,
+      TRANSLATION_ENTITY.project,
+      apartments.map((apartment) => apartment.project.id),
+    );
+
+    return {
+      data: apartments.map((apartment) => {
+        const revealPrice = shouldRevealPrice(apartment.priceVisibility, viewer.isAuthenticated);
+        const projectName = resolveTranslatedName(
+          translations,
+          TRANSLATION_ENTITY.project,
+          apartment.project.id,
+          TRANSLATION_FIELD.name,
+          locale,
+          apartment.project.name,
+        );
+
+        return {
+          id: apartment.id,
+          number: apartment.number,
+          salesStatus: apartment.salesStatus,
+          rooms: apartment.rooms,
+          bedrooms: apartment.bedrooms,
+          bathrooms: apartment.bathrooms,
+          areaTotal: decimalToString(apartment.areaTotal),
+          price: revealPrice ? decimalToString(apartment.price) : null,
+          priceCurrency: apartment.priceCurrency,
+          priceVisibility: apartment.priceVisibility,
+          projectId: apartment.projectId,
+          projectName,
+          locationText: apartment.project.locationText,
+          city: apartment.project.city,
+          district: apartment.project.district,
+          latitude: decimalToString(apartment.project.latitude),
+          longitude: decimalToString(apartment.project.longitude),
+          cover: toMediaSummary(apartment.project.coverMedia),
+        };
+      }),
+      meta: {
+        page,
+        pageSize,
+        total,
+        totalPages: total === 0 ? 0 : Math.ceil(total / pageSize),
+      },
+    };
+  }
 
   async getApartmentById(
     apartmentId: string,

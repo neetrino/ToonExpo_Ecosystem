@@ -33,6 +33,7 @@ export const FavoriteApartmentCardView = ({ apartment }: FavoriteApartmentCardPr
     onRequestLabel: tCatalog('price.onRequest'),
     signInLabel: tCatalog('price.signInToSee'),
   });
+  const bedCount = apartment.bedrooms ?? apartment.rooms;
 
   return (
     <article
@@ -114,7 +115,10 @@ export const FavoriteApartmentCardView = ({ apartment }: FavoriteApartmentCardPr
             'text-[11px] font-medium tracking-tight text-header-muted uppercase',
           )}
         >
-          <span>{apartment.rooms != null ? tBuy('specBed', { count: apartment.rooms }) : '—'}</span>
+          <span>{bedCount != null ? tBuy('specBed', { count: bedCount }) : '—'}</span>
+          <span>
+            {apartment.bathrooms != null ? tBuy('specBath', { count: apartment.bathrooms }) : '—'}
+          </span>
           <span>
             {apartment.areaTotal != null ? tBuy('specArea', { area: apartment.areaTotal }) : '—'}
           </span>

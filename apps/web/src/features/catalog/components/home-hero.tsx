@@ -1,3 +1,5 @@
+import type { ProjectListItem } from '@toonexpo/contracts';
+import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
 
 import { getPublicHomeHero } from '@/features/catalog/api/home-hero-api';
@@ -7,13 +9,14 @@ import { cn } from '@/shared/ui/cn';
 
 type HomeHeroProps = {
   locations?: readonly string[] | undefined;
+  projects?: readonly ProjectListItem[] | undefined;
 };
 
 /**
  * Public home hero — full-bleed skyline with marketplace search.
  * Slides come from platform settings; empty → default R2 asset inside the backdrop.
  */
-export const HomeHero = async ({ locations = [] }: HomeHeroProps) => {
+export const HomeHero = async ({ locations = [], projects = [] }: HomeHeroProps) => {
   const t = await getTranslations('HomePage');
   const hero = await getPublicHomeHero().catch(() => null);
   const imageUrls = (hero?.slides ?? [])
@@ -63,7 +66,7 @@ export const HomeHero = async ({ locations = [] }: HomeHeroProps) => {
         </div>
 
         <div className="mt-[clamp(1.5rem,1rem+2vw,2.5rem)] w-full">
-          <HeroSearch locations={locations} />
+          <HeroSearch locations={locations} projects={projects} />
         </div>
       </div>
     </section>

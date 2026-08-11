@@ -22,4 +22,13 @@ export const DEFAULT_CATALOG_CURRENCY = "AMD" as const;
 export const CATALOG_PRICES_MAX_PROJECT_IDS = CATALOG_MAX_PAGE_SIZE;
 
 /** Cache-Control for authenticated price overlay responses (session data, never shared). */
-export const CATALOG_PRICES_CACHE_CONTROL = "private, no-store" as const;
+export const CATALOG_PRICES_CACHE_CONTROL = 'private, no-store' as const;
+
+/** Max length for public project list keyword search (`q`). */
+export const CATALOG_SEARCH_Q_MAX_LENGTH = 100;
+
+/** Max admin-curated projects on the public homepage developments band. */
+export const HOME_FEATURED_PROJECT_LIMIT = 3;
+
+/** Max admin-curated apartments on the public homepage featured listings band. */
+export const HOME_FEATURED_APARTMENT_LIMIT = 6;

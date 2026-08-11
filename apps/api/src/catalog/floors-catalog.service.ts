@@ -54,6 +54,8 @@ export class FloorsCatalogService {
             number: true,
             salesStatus: true,
             rooms: true,
+            bedrooms: true,
+            bathrooms: true,
             areaTotal: true,
             price: true,
             priceCurrency: true,

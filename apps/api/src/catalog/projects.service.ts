@@ -35,7 +35,7 @@ export class ProjectsService {
       this.prisma.db.project.count({ where }),
       this.prisma.db.project.findMany({
         where,
-        orderBy: [{ name: 'asc' }],
+        orderBy: query.featuredOnHome === true ? [{ updatedAt: 'desc' }] : [{ name: 'asc' }],
         skip: (page - 1) * pageSize,
         take: pageSize,
         include: {
@@ -105,6 +105,8 @@ export class ProjectsService {
                     number: true,
                     salesStatus: true,
                     rooms: true,
+                    bedrooms: true,
+                    bathrooms: true,
                     areaTotal: true,
                     price: true,
                     priceCurrency: true,
@@ -154,9 +156,14 @@ export class ProjectsService {
 
   buildListWhere(query: ListProjectsQueryDto): Prisma.ProjectWhereInput {
     const apartmentFilter = this.buildApartmentFilter(query);
+    const andClauses: Prisma.ProjectWhereInput[] = [];
     const where: Prisma.ProjectWhereInput = {
       publicationStatus: PublicationStatus.published,
     };
+
+    if (query.featuredOnHome === true) {
+      where.featuredOnHome = true;
+    }
 
     if (query.city) {
       const cities = query.city
@@ -167,9 +174,11 @@ export class ProjectsService {
       if (cities.length === 1 && firstCity != null) {
         where.city = { equals: firstCity, mode: 'insensitive' };
       } else if (cities.length > 1) {
-        where.OR = cities.map((city) => ({
-          city: { equals: city, mode: 'insensitive' as const },
-        }));
+        andClauses.push({
+          OR: cities.map((city) => ({
+            city: { equals: city, mode: 'insensitive' as const },
+          })),
+        });
       }
     }
 
@@ -177,8 +186,25 @@ export class ProjectsService {
       where.builderCompanyId = query.builderId;
     }
 
+    const keyword = query.q?.trim();
+    if (keyword != null && keyword.length > 0) {
+      andClauses.push({
+        OR: [
+          { name: { contains: keyword, mode: 'insensitive' } },
+          { city: { contains: keyword, mode: 'insensitive' } },
+          { district: { contains: keyword, mode: 'insensitive' } },
+          { locationText: { contains: keyword, mode: 'insensitive' } },
+          { builderCompany: { name: { contains: keyword, mode: 'insensitive' } } },
+        ],
+      });
+    }
+
     if (apartmentFilter) {
       where.apartments = { some: apartmentFilter };
+    }
+
+    if (andClauses.length > 0) {
+      where.AND = andClauses;
     }
 
     return where;

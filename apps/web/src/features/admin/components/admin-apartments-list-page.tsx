@@ -13,6 +13,7 @@ import {
 } from '@/features/admin/components/admin-inventory-list-shell';
 import { ADMIN_VIEW_MODE_KEYS } from '@/features/admin/constants';
 import { useAdminApartmentsQuery } from '@/features/admin/hooks/use-admin-inventory';
+import { HOME_FEATURED_APARTMENT_LIMIT } from '@/features/catalog/constants/home-featured';
 import { usePathname } from '@/i18n/navigation';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
@@ -41,7 +42,15 @@ export const AdminApartmentsListPage = () => {
     <>
       <AdminInventoryListShell
         title={t('title')}
-        subtitle={t('subtitle', { count: response?.meta.total ?? 0 })}
+        subtitle={
+          response
+            ? t('subtitleWithFeatured', {
+                count: response.meta.total,
+                featured: response.meta.featuredOnHomeTotal,
+                limit: HOME_FEATURED_APARTMENT_LIMIT,
+              })
+            : t('subtitle', { count: 0 })
+        }
         empty={t('empty')}
         loading={t('loading')}
         error={t('error')}

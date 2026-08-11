@@ -10,6 +10,8 @@ export type DiscoverApartmentCard = {
   id: string;
   number: string;
   rooms: number | null;
+  bedrooms: number | null;
+  bathrooms: number | null;
   areaTotal: string | null;
   price: string | null;
   priceCurrency: string;
@@ -71,6 +73,8 @@ const toCard = (
     id: apartment.id,
     number: apartment.number,
     rooms: apartment.rooms,
+    bedrooms: apartment.bedrooms,
+    bathrooms: apartment.bathrooms,
     areaTotal: apartment.areaTotal,
     price: apartment.price,
     priceCurrency: apartment.priceCurrency,

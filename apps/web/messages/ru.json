@@ -147,6 +147,12 @@
       "searchLabel": "Поиск проектов",
       "searchPlaceholder": "Проект, застройщик или город…",
       "search": "Искать дома",
+      "suggestionsEmpty": "Ничего не найдено",
+      "suggestionKinds": {
+        "project": "Проект",
+        "builder": "Застройщик",
+        "city": "Город"
+      },
       "explore": "Смотреть проекты",
       "register": "Бесплатная регистрация",
       "locationLabel": "Локация",
@@ -177,28 +183,22 @@
     },
     "stats": {
       "badge": "Пульс рынка",
-      "avgSqm": "Ср. ֏ / м²",
-      "avgSqmHint": "+4.2% г/г",
-      "activeListings": "Активные объявления",
-      "activeListingsHint": "+312 за неделю",
-      "mortgageRate": "30-летняя фикс.",
-      "mortgageRateHint": "–0.08 нед/нед",
-      "medianDays": "Медиана дней на рынке",
-      "medianDaysHint": "Стабильно",
-      "projects": "Проекты",
-      "projectsHint": "Опубликовано",
-      "listings": "Объекты",
-      "availableHint": "{count} свободно",
-      "builders": "Застройщики",
-      "buildersHint": "Партнёры",
-      "cities": "Города",
-      "citiesHint": "Покрытие"
+      "projectCount": "Количество проектов",
+      "projectCountHint": "+18 за месяц",
+      "apartmentCount": "Количество квартир",
+      "apartmentCountHint": "+240 за неделю",
+      "marketValue": "Общая рыночная стоимость (млн)",
+      "marketValueHint": "+4.2% г/г",
+      "participantCount": "Количество участников",
+      "participantCountHint": "Растёт",
+      "avgMortgagePayment": "Средний ежемесячный ипотечный платёж",
+      "avgMortgagePaymentHint": "Стабильно"
     },
     "featured": {
       "eyebrow": "Новое в продаже",
       "title": "Отобранные, проверенные, готовые к просмотру.",
-      "viewAll": "Все объявления →",
-      "empty": "Пока нет опубликованных проектов."
+      "viewAll": "Все квартиры →",
+      "empty": "Пока нет опубликованных квартир."
     },
     "developments": {
       "eyebrow": "Строится",
@@ -308,7 +308,7 @@
     "menu": "Открыть меню",
     "railExpand": "Развернуть боковую панель",
     "railCollapse": "Свернуть боковую панель",
-    "buy": "Квартиры",
+    "buy": "Купить",
     "marketInsights": "Аналитика рынка",
     "projects": "Проекты",
     "builders": "Застройщики",
@@ -368,6 +368,7 @@
     "badgeNew": "Новое",
     "unitTitle": "Кв. {number} · {project}",
     "specBed": "{count} комн.",
+    "specBath": "{count} ванн.",
     "specArea": "{area} м²",
     "saveSearchHint": "Сохраните поиск, чтобы получать уведомления о новых подходящих объектах.",
     "saveSearch": "Сохранить поиск",
@@ -698,6 +699,7 @@
       "unit": "Кв. {number}",
       "floor": "Этаж: {floor}",
       "rooms": "{count, plural, one {# комната} few {# комнаты} many {# комнат} other {# комнаты}}",
+      "bathrooms": "{count, plural, one {# ванная} few {# ванные} many {# ванных} other {# ванных}}",
       "area": "{area} м²",
       "statusLabel": "Статус",
       "roomsLabel": "Комнаты",
@@ -1251,6 +1253,13 @@
   "Admin": {
     "badge": "Админ",
     "profileLink": "Профиль",
+    "featuredOnHome": {
+      "pin": "Показать на главной",
+      "unpin": "Убрать с главной",
+      "error": "Не удалось обновить статус на главной.",
+      "projectLimit": "На главной уже {count} избранных проектов.",
+      "apartmentLimit": "На главной уже {count} избранных квартир."
+    },
     "home": {
       "title": "Админ",
       "subtitle": "Выберите раздел в боковом меню, чтобы управлять платформой."
@@ -1772,6 +1781,7 @@
     "projects": {
       "title": "Проекты",
       "subtitle": "{count, plural, =0 {Нет проектов} one {# проект} few {# проекта} other {# проектов}}",
+      "subtitleWithFeatured": "{count, plural, =0 {Нет проектов} one {# проект} few {# проекта} other {# проектов}} · Главная {featured}/{limit}",
       "empty": "Проектов пока нет.",
       "emptyTitle": "Проектов пока нет",
       "noResults": "Нет проектов по запросу «{query}».",
@@ -1932,6 +1942,7 @@
     "apartments": {
       "title": "Квартиры",
       "subtitle": "{count, plural, =0 {Нет квартир} one {# квартира} few {# квартиры} other {# квартир}}",
+      "subtitleWithFeatured": "{count, plural, =0 {Нет квартир} one {# квартира} few {# квартиры} other {# квартир}} · Главная {featured}/{limit}",
       "empty": "Квартир пока нет.",
       "loading": "Загрузка квартир…",
       "error": "Не удалось загрузить квартиры. Попробуйте ещё раз.",

@@ -4,18 +4,22 @@ import {
   ArrayMaxSize,
   ArrayUnique,
   IsArray,
+  IsBoolean,
   IsEnum,
   IsInt,
   IsOptional,
   IsString,
   Max,
+  MaxLength,
   Min,
+  MinLength,
 } from 'class-validator';
 
 import {
   CATALOG_DEFAULT_PAGE_SIZE,
   CATALOG_MAX_PAGE_SIZE,
   CATALOG_MIN_PAGE,
+  CATALOG_SEARCH_Q_MAX_LENGTH,
 } from '../catalog.constants.js';
 
 enum ApartmentSalesStatusQuery {
@@ -107,6 +111,41 @@ export class ListProjectsQueryDto {
   @IsOptional()
   @IsString()
   builderId?: string;
+
+  @ApiPropertyOptional({
+    description: 'Keyword search over project name, builder, city, district, location text',
+    maxLength: CATALOG_SEARCH_Q_MAX_LENGTH,
+    example: 'Arabkir',
+  })
+  @IsOptional()
+  @IsString()
+  @MinLength(1)
+  @MaxLength(CATALOG_SEARCH_Q_MAX_LENGTH)
+  @Transform(({ value }: { value: unknown }) => {
+    if (typeof value !== 'string') {
+      return value;
+    }
+    const trimmed = value.trim();
+    return trimmed.length > 0 ? trimmed : undefined;
+  })
+  q?: string;
+
+  @ApiPropertyOptional({ description: 'When true, only admin-curated homepage projects' })
+  @IsOptional()
+  @Transform(({ value }: { value: unknown }) => {
+    if (value == null || value === '') {
+      return undefined;
+    }
+    if (value === true || value === 'true' || value === '1') {
+      return true;
+    }
+    if (value === false || value === 'false' || value === '0') {
+      return false;
+    }
+    return undefined;
+  })
+  @IsBoolean()
+  featuredOnHome?: boolean;
 
   @ApiPropertyOptional({
     enum: ['hy', 'ru', 'en'],

@@ -39,6 +39,7 @@ export const BuyApartmentCard = ({
     onRequestLabel: catalogT('price.onRequest'),
     signInLabel: catalogT('price.signInToSee'),
   });
+  const bedCount = listing.bedrooms ?? listing.rooms;
 
   return (
     <article
@@ -98,7 +99,10 @@ export const BuyApartmentCard = ({
               'text-[11px] font-medium tracking-tight text-header-muted uppercase',
             )}
           >
-            <span>{listing.rooms != null ? t('specBed', { count: listing.rooms }) : '—'}</span>
+            <span>{bedCount != null ? t('specBed', { count: bedCount }) : '—'}</span>
+            <span>
+              {listing.bathrooms != null ? t('specBath', { count: listing.bathrooms }) : '—'}
+            </span>
             <span>
               {listing.areaTotal != null ? t('specArea', { area: listing.areaTotal }) : '—'}
             </span>

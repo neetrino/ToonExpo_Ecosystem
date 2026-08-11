@@ -23,6 +23,7 @@ import {
   useAdminProjectsQuery,
 } from '@/features/admin/hooks/use-admin-companies';
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
+import { HOME_FEATURED_PROJECT_LIMIT } from '@/features/catalog/constants/home-featured';
 import { usePathname, useRouter } from '@/i18n/navigation';
 import { useDebouncedValue } from '@/shared/hooks/use-debounced-value';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
@@ -157,7 +158,11 @@ export const AdminProjectsListPage = () => {
       <ListPageHeader
         icon={FolderKanban}
         title={t('title')}
-        subtitle={t('subtitle', { count: response.meta.total })}
+        subtitle={t('subtitleWithFeatured', {
+          count: response.meta.total,
+          featured: response.meta.featuredOnHomeTotal,
+          limit: HOME_FEATURED_PROJECT_LIMIT,
+        })}
         search={search}
         searchPlaceholder={t('filters.searchPlaceholder')}
         searchAriaLabel={tCommon('searchLabel')}

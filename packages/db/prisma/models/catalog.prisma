@@ -87,6 +87,8 @@ model Project {
   completionDate      DateTime?         @map("completion_date") @db.Date
   amenities           Json?
   nearbyPlaces        Json?             @map("nearby_places")
+  /// Curated homepage developments band (admin-selected; max 3 platform-wide).
+  featuredOnHome      Boolean           @default(false) @map("featured_on_home")
   createdByUserId     String?           @map("created_by_user_id")
   updatedByUserId     String?           @map("updated_by_user_id")
   createdAt           DateTime          @default(now()) @map("created_at")
@@ -107,6 +109,7 @@ model Project {
   @@index([builderCompanyId])
   @@index([publicationStatus])
   @@index([city])
+  @@index([featuredOnHome])
   @@map("projects")
 }
 
@@ -219,6 +222,8 @@ model Apartment {
   lastStatusChangedByUserId String?            @map("last_status_changed_by_user_id")
   internalCode            String?              @map("internal_code")
   importExternalId        String?              @map("import_external_id")
+  /// Curated homepage featured listings (admin-selected; max 6 platform-wide).
+  featuredOnHome          Boolean              @default(false) @map("featured_on_home")
   createdByUserId         String?              @map("created_by_user_id")
   updatedByUserId         String?              @map("updated_by_user_id")
   createdAt               DateTime             @default(now()) @map("created_at")
@@ -242,6 +247,7 @@ model Apartment {
   @@index([rooms])
   @@index([publicationStatus, salesStatus])
   @@index([projectId, publicationStatus])
+  @@index([featuredOnHome])
   @@map("apartments")
 }
 
