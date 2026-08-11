@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+
 import { cn } from '@/shared/ui/cn';
 
 type MortgageLoanSliderProps = {
@@ -14,6 +16,7 @@ type MortgageLoanSliderProps = {
 
 /**
  * Filled-track range control for the public mortgage calculator (Lovable style).
+ * Uses local value + `onInput` so metrics update while dragging, not only on release.
  */
 export const MortgageLoanSlider = ({
   id,
@@ -24,9 +27,22 @@ export const MortgageLoanSlider = ({
   value,
   onChange,
 }: MortgageLoanSliderProps) => {
-  const clamped = Math.min(max, Math.max(min, value));
+  const [localValue, setLocalValue] = useState(() =>
+    Math.min(max, Math.max(min, value)),
+  );
+
+  useEffect(() => {
+    setLocalValue(Math.min(max, Math.max(min, value)));
+  }, [value, min, max]);
+
   const span = Math.max(max - min, 1);
-  const fillPercent = ((clamped - min) / span) * 100;
+  const fillPercent = ((localValue - min) / span) * 100;
+
+  const commit = (raw: string) => {
+    const next = Math.min(max, Math.max(min, Number(raw)));
+    setLocalValue(next);
+    onChange(next);
+  };
 
   return (
     <input
@@ -35,10 +51,13 @@ export const MortgageLoanSlider = ({
       min={min}
       max={max}
       step={step}
-      value={clamped}
+      value={localValue}
       aria-label={label}
+      onInput={(event) => {
+        commit(event.currentTarget.value);
+      }}
       onChange={(event) => {
-        onChange(Number(event.target.value));
+        commit(event.currentTarget.value);
       }}
       className={cn(
         'mt-4 h-1.5 w-full cursor-pointer appearance-none rounded-full',

@@ -232,19 +232,8 @@ export const useMortgageCalculator = ({ offers }: UseMortgageCalculatorParams) =
       }
     }
 
-    if (data && selectedOfferId) {
-      map.set(selectedOfferId, data.monthlyPayment);
-    }
-
     return map;
-  }, [
-    offers,
-    parsedPropertyPrice,
-    parsedDownPaymentPercent,
-    loanTermYears,
-    data,
-    selectedOfferId,
-  ]);
+  }, [offers, parsedPropertyPrice, parsedDownPaymentPercent, loanTermYears]);
 
   return {
     selectedOffer,
