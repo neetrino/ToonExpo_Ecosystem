@@ -1,8 +1,9 @@
 'use client';
 
-import { Search, SlidersHorizontal } from 'lucide-react';
+import { SlidersHorizontal } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { ProjectLiveSearch } from '@/features/catalog/components/project-live-search';
 import type { ProjectFilterParams } from '@/features/catalog/utils/project-filters';
 import { Link } from '@/i18n/navigation';
 import { Button } from '@/shared/ui/button';
@@ -15,6 +16,7 @@ type ProjectFiltersFormProps = {
 
 /**
  * SSR-friendly GET filters for the projects catalog (shareable URL params).
+ * Keyword search updates live; other filters still submit via Apply.
  */
 export const ProjectFiltersForm = ({ filters }: ProjectFiltersFormProps) => {
   const t = useTranslations('Catalog');
@@ -38,24 +40,7 @@ export const ProjectFiltersForm = ({ filters }: ProjectFiltersFormProps) => {
       </div>
 
       <div className="mb-3">
-        <label className="flex flex-col gap-1.5 text-xs font-medium text-ink-secondary">
-          {t('filters.search')}
-          <div className="relative">
-            <Search
-              className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-ink-muted"
-              aria-hidden
-            />
-            <Input
-              type="search"
-              name="q"
-              defaultValue={filters.q ?? ''}
-              placeholder={t('filters.searchPlaceholder')}
-              aria-label={t('filters.search')}
-              className="pl-10"
-              autoComplete="off"
-            />
-          </div>
-        </label>
+        <ProjectLiveSearch filters={filters} />
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
