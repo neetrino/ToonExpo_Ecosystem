@@ -3239,6 +3239,7 @@
       "unknownContext": "Unknown",
       "contextTypes": {
         "project": "Project",
+        "district": "District",
         "building": "Building",
         "floor": "Floor"
       },

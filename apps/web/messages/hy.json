@@ -3043,6 +3043,7 @@
       "unknownContext": "Անհայտ",
       "contextTypes": {
         "project": "Նախագիծ",
+        "district": "Թաղամաս",
         "building": "Շենք",
         "floor": "Հարկ"
       },
