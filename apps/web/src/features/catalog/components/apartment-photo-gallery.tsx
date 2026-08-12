@@ -71,8 +71,8 @@ export const ApartmentPhotoGallery = ({ images }: ApartmentPhotoGalleryProps) =>
     >
       <div
         className={cn(
-          'relative aspect-[4/3] overflow-hidden bg-band-mist',
-          'md:col-span-2 md:row-span-2 md:aspect-auto md:h-full md:min-h-0',
+          'relative overflow-hidden bg-band-mist max-md:aspect-[4/3]',
+          'md:col-span-2 md:row-span-2 md:h-full md:min-h-0',
           GALLERY_ROUNDED,
         )}
       >
