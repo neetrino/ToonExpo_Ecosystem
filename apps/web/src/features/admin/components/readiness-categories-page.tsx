@@ -1,7 +1,7 @@
 'use client';
 
 import type { ReadinessCategoryItem } from '@toonexpo/contracts';
-import { Tags } from 'lucide-react';
+import { SquarePen, Tags } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
@@ -15,6 +15,7 @@ import { AdminCreateSheet } from '@/shared/ui/admin-create-sheet';
 import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
 import { BackLink } from '@/shared/ui/back-link';
 import { Button } from '@/shared/ui/button';
+import { IconButton } from '@/shared/ui/icon-button';
 import { Reveal } from '@/shared/ui/motion';
 import { PageTitleBlock } from '@/shared/ui/page-title-icon';
 import { VIEW_MODE_CARDS } from '@/shared/ui/view-mode';
@@ -50,7 +51,7 @@ export const ReadinessCategoriesPage = () => {
     <div className="flex flex-col gap-6">
       <Reveal force>
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-4">
             <BackLink href="/admin/readiness" label={t('backToAssessments')} />
             <PageTitleBlock title={t('title')} subtitle={t('subtitle')} icon={Tags} />
           </div>
@@ -122,33 +123,40 @@ export const ReadinessCategoriesPage = () => {
           <table className="w-full min-w-[36rem] border-collapse text-left text-sm">
             <thead className="bg-surface text-xs uppercase tracking-wide text-ink-muted">
               <tr>
-                <th className="px-3 py-2 font-medium">{t('columns.name')}</th>
-                <th className="px-3 py-2 font-medium">{t('columns.weight')}</th>
-                <th className="px-3 py-2 font-medium">{t('columns.sort')}</th>
-                <th className="px-3 py-2 font-medium">{t('columns.active')}</th>
-                <th className="px-3 py-2 font-medium">{t('columns.actions')}</th>
+                <th className="px-3 py-1.5 font-medium">{t('columns.name')}</th>
+                <th className="px-3 py-1.5 text-center font-medium">{t('columns.weight')}</th>
+                <th className="px-3 py-1.5 text-center font-medium">{t('columns.sort')}</th>
+                <th className="px-3 py-1.5 text-center font-medium">{t('columns.active')}</th>
+                <th className="px-3 py-1.5 text-center font-medium">{t('columns.actions')}</th>
               </tr>
             </thead>
             <tbody>
               {categories.map((category) => (
                 <tr key={category.id} className="border-t border-border hover:bg-surface/60">
-                  <td className="px-3 py-2.5 font-medium text-ink">{category.name}</td>
-                  <td className="px-3 py-2.5 text-ink-secondary">{category.weight ?? '—'}</td>
-                  <td className="px-3 py-2.5 text-ink-secondary">{category.sortOrder}</td>
-                  <td className="px-3 py-2.5 text-ink-secondary">
+                  <td className="px-3 py-1.5 font-medium text-ink">{category.name}</td>
+                  <td className="px-3 py-1.5 text-center text-ink-secondary">
+                    {category.weight ?? '—'}
+                  </td>
+                  <td className="px-3 py-1.5 text-center text-ink-secondary">
+                    {category.sortOrder}
+                  </td>
+                  <td className="px-3 py-1.5 text-center text-ink-secondary">
                     {category.active ? t('activeYes') : t('activeNo')}
                   </td>
-                  <td className="px-3 py-2.5">
-                    <button
-                      type="button"
-                      className="text-sm font-medium text-brand hover:underline"
-                      onClick={() => {
-                        setEditing(category);
-                        setCreating(false);
-                      }}
-                    >
-                      {t('edit')}
-                    </button>
+                  <td className="px-3 py-1.5">
+                    <div className="flex justify-center">
+                      <IconButton
+                        label={t('edit')}
+                        size="sm"
+                        className="text-cta-dark hover:bg-cta-dark/5"
+                        onClick={() => {
+                          setEditing(category);
+                          setCreating(false);
+                        }}
+                      >
+                        <SquarePen className="size-4" strokeWidth={1.75} aria-hidden />
+                      </IconButton>
+                    </div>
                   </td>
                 </tr>
               ))}
