@@ -217,7 +217,6 @@ describe('Builder portal inventory CRUD (e2e)', () => {
       .set(authHeaders(admin))
       .send({
         salesStatus: 'reserved',
-        statusChangeReason: 'Buyer hold',
       })
       .expect(200);
 
@@ -230,7 +229,6 @@ describe('Builder portal inventory CRUD (e2e)', () => {
     const last = history[history.length - 1]!;
     expect(last.previousStatus).toBe('available');
     expect(last.newStatus).toBe('reserved');
-    expect(last.reason).toBe('Buyer hold');
     expect(last.changedByUserId).toBeTruthy();
   });
 });

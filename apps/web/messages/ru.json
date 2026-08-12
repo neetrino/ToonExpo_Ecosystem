@@ -3245,7 +3245,6 @@
         "price": "Цена",
         "priceVisibility": "Видимость цены",
         "salesStatus": "Статус продаж",
-        "statusChangeReason": "Причина смены статуса",
         "description": "Описание",
         "finishingStatus": "Статус отделки",
         "handoverDescription": "Описание сдачи",

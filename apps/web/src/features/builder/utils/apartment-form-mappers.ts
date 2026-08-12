@@ -36,7 +36,6 @@ export const toApartmentFormValues = (
     price: apartment.price ?? '',
     priceVisibility: apartment.priceVisibility,
     salesStatus: apartment.salesStatus,
-    statusChangeReason: '',
     descriptionHy: apartment.translations?.description?.hy ?? apartment.description ?? '',
     descriptionRu: apartment.translations?.description?.ru ?? '',
     descriptionEn: apartment.translations?.description?.en ?? '',
@@ -60,8 +59,6 @@ export const toApartmentUpdateRequest = (
     ...(values.descriptionRu.length > 0 ? { ru: values.descriptionRu } : {}),
     ...(values.descriptionEn.length > 0 ? { en: values.descriptionEn } : {}),
   };
-  const statusChanged = values.salesStatus !== apartment.salesStatus;
-
   return {
     number: values.number,
     rooms: optionalNumber(values.rooms),
@@ -73,9 +70,6 @@ export const toApartmentUpdateRequest = (
     price: optionalNumber(values.price),
     priceVisibility: values.priceVisibility,
     salesStatus: values.salesStatus,
-    ...(statusChanged && values.statusChangeReason.length > 0
-      ? { statusChangeReason: values.statusChangeReason }
-      : {}),
     description: values.descriptionHy.length > 0 ? values.descriptionHy : null,
     ...(Object.keys(description).length > 0 ? { translations: { description } } : {}),
     features: mergeApartmentFeatureExtras(apartment.features, {

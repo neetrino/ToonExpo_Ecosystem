@@ -27,6 +27,4 @@ export const PORTAL_APARTMENT_NUMBER_MAX_LENGTH = 64;
 
 export const PORTAL_BULK_APARTMENTS_MAX = 200;
 
-export const PORTAL_STATUS_REASON_MAX_LENGTH = 500;
-
 export const DEFAULT_PRICE_CURRENCY = "AMD" as const;

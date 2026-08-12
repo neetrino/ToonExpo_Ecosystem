@@ -3245,7 +3245,6 @@
         "price": "Գին",
         "priceVisibility": "Գնի տեսանելիություն",
         "salesStatus": "Վաճառքի կարգավիճակ",
-        "statusChangeReason": "Կարգավիճակի փոփոխության պատճառ",
         "description": "Նկարագրություն",
         "finishingStatus": "Հարդարման կարգավիճակ",
         "handoverDescription": "Հանձնման նկարագրություն",

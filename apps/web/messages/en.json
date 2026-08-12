@@ -3503,7 +3503,6 @@
         "price": "Price",
         "priceVisibility": "Price visibility",
         "salesStatus": "Sales status",
-        "statusChangeReason": "Status change reason",
         "description": "Description",
         "finishingStatus": "Finishing status",
         "handoverDescription": "Handover description",
