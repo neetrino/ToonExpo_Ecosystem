@@ -6,7 +6,7 @@ import { GeoMapCanvasLazy } from '@/features/geo-map/components/geo-map-canvas-l
 import type { GeoMapObject } from '@/features/geo-map/types';
 import { mapPublicGeoMapItemsToObjects } from '@/features/geo-map/utils/map-object-mapper';
 import { GeoMapStatusOverlays } from '@/features/geo-map/public/components/geo-map-status-overlays';
-import { PUBLIC_GEO_MAP_MAP_HEIGHT_CLASS } from '@/features/geo-map/public/constants';
+import { PUBLIC_GEO_MAP_CAMERA_CONTROLS_POSITION_CLASS, PUBLIC_GEO_MAP_MAP_HEIGHT_CLASS } from '@/features/geo-map/public/constants';
 import { usePublicGeoMapModelsQuery } from '@/features/geo-map/public/hooks/use-public-geo-map-models';
 import { buildProjectPublicHref } from '@/features/geo-map/public/utils/build-project-public-href';
 import { resolvePublicGeoMapView } from '@/features/geo-map/public/utils/resolve-public-geo-map-view';
@@ -48,6 +48,7 @@ export const PublicGeoMapPage = () => {
           initialCenter={view.center}
           initialZoom={view.zoom}
           className="absolute inset-0 h-full w-full"
+          cameraControlsClassName={PUBLIC_GEO_MAP_CAMERA_CONTROLS_POSITION_CLASS}
           onObjectClick={onObjectClick}
         />
 

@@ -13,10 +13,15 @@ import {
   MIN_MAP_ZOOM,
 } from '@/features/geo-map/constants';
 import { clampMapPitch } from '@/features/geo-map/utils/clamp-map-pitch';
+import { cn } from '@/shared/ui/cn';
 
 export type GeoMapCameraControlsProps = {
   map: MapLibreMap;
+  /** Overrides default `top-2.5 right-2.5` (e.g. below overlay SiteHeader on `/map`). */
+  className?: string | undefined;
 };
+
+const DEFAULT_POSITION_CLASS = 'top-2.5 right-2.5';
 
 const BUTTON_CLASS_NAME =
   'flex h-7 w-7 items-center justify-center text-ink transition-colors ' +
@@ -29,7 +34,7 @@ const clampMapZoom = (zoom: number): number => Math.min(MAX_MAP_ZOOM, Math.max(M
  * Stacked panel: zoom in/out, then rotate (←→) and tilt (↑↓).
  * Gesture rotate/pitch (right-drag, touch) remains enabled on the map.
  */
-export const GeoMapCameraControls = ({ map }: GeoMapCameraControlsProps) => {
+export const GeoMapCameraControls = ({ map, className }: GeoMapCameraControlsProps) => {
   const t = useTranslations('GeoMap.camera');
 
   const easeZoomBy = (delta: number): void => {
@@ -58,7 +63,10 @@ export const GeoMapCameraControls = ({ map }: GeoMapCameraControlsProps) => {
 
   return (
     <div
-      className="pointer-events-auto absolute top-2.5 right-2.5 z-10 flex flex-col overflow-hidden rounded border border-border-strong bg-surface-elevated shadow-sm"
+      className={cn(
+        'pointer-events-auto absolute z-10 flex flex-col overflow-hidden rounded border border-border-strong bg-surface-elevated shadow-sm',
+        className ?? DEFAULT_POSITION_CLASS,
+      )}
       role="group"
       aria-label={t('groupLabel')}
     >

@@ -68,6 +68,7 @@ export const GeoMapCanvas = ({
   initialBearing = DEFAULT_MAP_BEARING_DEG,
   editable = false,
   className,
+  cameraControlsClassName,
   focusRequest,
   highlightedObjectId = null,
   onObjectClick,
@@ -180,7 +181,7 @@ export const GeoMapCanvas = ({
   return (
     <div className={`relative h-full w-full ${className ?? ''}`}>
       <div ref={containerRef} className="relative z-0 h-full w-full" />
-      {map ? <GeoMapCameraControls map={map} /> : null}
+      {map ? <GeoMapCameraControls map={map} className={cameraControlsClassName} /> : null}
       {!editable && infoObject ? (
         <GeoMapInfoCard
           projectName={infoObject.label}

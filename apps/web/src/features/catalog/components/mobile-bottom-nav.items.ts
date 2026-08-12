@@ -32,7 +32,7 @@ const isDiscoverPath = (pathname: string): boolean =>
   pathname === '/discover' || pathname.startsWith('/discover/');
 
 const isMapPath = (pathname: string): boolean =>
-  pathname === '/expo' || pathname.startsWith('/expo/');
+  pathname === '/map' || pathname.startsWith('/map/');
 
 /**
  * Buyer account / profile shell routes for bottom-nav Profile highlight.
@@ -91,7 +91,7 @@ export const buildPublicNavItems = (
   },
   {
     id: 'map',
-    href: '/expo',
+    href: '/map',
     labelKey: 'map',
     Icon: Map,
     match: isMapPath,
@@ -125,7 +125,7 @@ export const buildAdminNavItems = (isProfileActive: boolean): BottomNavItem[] =>
   },
   {
     id: 'map',
-    href: '/expo',
+    href: '/map',
     labelKey: 'map',
     Icon: Map,
     match: isMapPath,
@@ -167,7 +167,7 @@ export const BUILDER_NAV_ITEMS: BottomNavItem[] = [
   },
   {
     id: 'map',
-    href: '/expo',
+    href: '/map',
     labelKey: 'map',
     Icon: Map,
     match: isMapPath,
