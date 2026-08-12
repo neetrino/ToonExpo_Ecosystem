@@ -123,27 +123,27 @@ export const ReadinessCategoriesPage = () => {
           <table className="w-full min-w-[36rem] border-collapse text-left text-sm">
             <thead className="bg-surface text-xs uppercase tracking-wide text-ink-muted">
               <tr>
-                <th className="px-3 py-1.5 font-medium">{t('columns.name')}</th>
-                <th className="px-3 py-1.5 text-center font-medium">{t('columns.weight')}</th>
-                <th className="px-3 py-1.5 text-center font-medium">{t('columns.sort')}</th>
-                <th className="px-3 py-1.5 text-center font-medium">{t('columns.active')}</th>
-                <th className="px-3 py-1.5 text-center font-medium">{t('columns.actions')}</th>
+                <th className="px-3 py-1 font-medium">{t('columns.name')}</th>
+                <th className="px-3 py-1 text-center font-medium">{t('columns.weight')}</th>
+                <th className="px-3 py-1 text-center font-medium">{t('columns.sort')}</th>
+                <th className="px-3 py-1 text-center font-medium">{t('columns.active')}</th>
+                <th className="px-3 py-1 text-center font-medium">{t('columns.actions')}</th>
               </tr>
             </thead>
             <tbody>
               {categories.map((category) => (
                 <tr key={category.id} className="border-t border-border hover:bg-surface/60">
-                  <td className="px-3 py-1.5 font-medium text-ink">{category.name}</td>
-                  <td className="px-3 py-1.5 text-center text-ink-secondary">
+                  <td className="px-3 py-1 font-medium text-ink">{category.name}</td>
+                  <td className="px-3 py-1 text-center text-ink-secondary">
                     {category.weight ?? '—'}
                   </td>
-                  <td className="px-3 py-1.5 text-center text-ink-secondary">
+                  <td className="px-3 py-1 text-center text-ink-secondary">
                     {category.sortOrder}
                   </td>
-                  <td className="px-3 py-1.5 text-center text-ink-secondary">
+                  <td className="px-3 py-1 text-center text-ink-secondary">
                     {category.active ? t('activeYes') : t('activeNo')}
                   </td>
-                  <td className="px-3 py-1.5">
+                  <td className="px-3 py-1">
                     <div className="flex justify-center">
                       <IconButton
                         label={t('edit')}
@@ -154,7 +154,7 @@ export const ReadinessCategoriesPage = () => {
                           setCreating(false);
                         }}
                       >
-                        <SquarePen className="size-4" strokeWidth={1.75} aria-hidden />
+                        <SquarePen className="size-3.5" strokeWidth={1.75} aria-hidden />
                       </IconButton>
                     </div>
                   </td>
