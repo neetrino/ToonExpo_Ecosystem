@@ -3,6 +3,7 @@ import type { ApartmentDetail } from '@toonexpo/contracts';
 import Image from 'next/image';
 import { getLocale, getTranslations } from 'next-intl/server';
 
+import { ApartmentAboutSection } from '@/features/catalog/components/apartment-about-section';
 import { ApartmentDetailCriteriaPanel } from '@/features/catalog/components/apartment-detail-criteria-panel';
 import { ApartmentDetailPrice } from '@/features/catalog/components/apartment-price-label';
 import { ApartmentInquireCard } from '@/features/catalog/components/apartment-inquire-card';
@@ -29,7 +30,7 @@ type ApartmentDetailViewProps = {
 const EMPTY_VALUE = '—';
 
 /**
- * Public apartment detail — Figma frame `89:646` content + gallery/inquire chrome.
+ * Public apartment detail — Lovable about block + existing property-details cards.
  */
 export const ApartmentDetailView = async ({
   apartment,
@@ -60,13 +61,12 @@ export const ApartmentDetailView = async ({
       unitNumber: t('apartment.criteria.unitNumber'),
       status: t('apartment.criteria.status'),
       windows: t('apartment.criteria.windows'),
-      handoverDescription: t('apartment.criteria.handoverDescription'),
       balconies: t('apartment.criteria.balconies'),
       generalDescription: t('apartment.criteria.generalDescription'),
       ceilingHeight: t('apartment.criteria.ceilingHeight'),
       finishingStatus: t('apartment.criteria.finishingStatus'),
     },
-  });
+  }).filter((row) => row.id !== 'generalDescription');
 
   const neighborhoodStats = [
     { label: t('apartment.neighborhood.walkScore'), value: EMPTY_VALUE },
@@ -121,7 +121,6 @@ export const ApartmentDetailView = async ({
             </span>
           </div>
 
-          {/* Mobile: logo + builder name left, QR right — one line */}
           <div className="mt-3 flex items-center justify-between gap-3 lg:hidden">
             <div className="flex min-w-0 items-center gap-3">
               {apartment.builder.logoUrl ? (
@@ -209,6 +208,12 @@ export const ApartmentDetailView = async ({
             </StatBlock>
           </div>
 
+          <ApartmentAboutSection
+            title={t('apartment.aboutTitle')}
+            description={apartment.description}
+            emptyLabel={t('apartment.aboutEmpty')}
+          />
+
           <section className="py-10">
             <ApartmentDetailCriteriaPanel title={t('apartment.detailsTitle')} rows={detailRows} />
           </section>
@@ -234,7 +239,7 @@ export const ApartmentDetailView = async ({
           </div>
         </div>
 
-        <div className="space-y-4 lg:sticky lg:top-24">
+        <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
           <ApartmentInquireCard
             apartmentId={apartment.id}
             projectId={apartment.project.id}
@@ -247,7 +252,7 @@ export const ApartmentDetailView = async ({
             amount={apartment.price}
             priceVisibility={apartment.priceVisibility}
           />
-        </div>
+        </aside>
       </div>
     </div>
   );

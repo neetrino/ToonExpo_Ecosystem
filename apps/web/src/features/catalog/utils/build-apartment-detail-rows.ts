@@ -15,8 +15,7 @@ export type ApartmentDetailCriterionId =
   | 'balconies'
   | 'ceilingHeight'
   | 'finishingStatus'
-  | 'generalDescription'
-  | 'handoverDescription';
+  | 'generalDescription';
 
 export type ApartmentDetailRow = {
   id: ApartmentDetailCriterionId;
@@ -86,12 +85,6 @@ export const buildApartmentDetailRows = (
       id: 'generalDescription',
       label: labels.generalDescription,
       value: apartment.description?.trim() || EMPTY_VALUE,
-      wide: true,
-    },
-    {
-      id: 'handoverDescription',
-      label: labels.handoverDescription,
-      value: extras.handoverDescription ?? EMPTY_VALUE,
       wide: true,
     },
   ];

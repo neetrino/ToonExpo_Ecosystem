@@ -2,7 +2,6 @@ import type { LucideIcon } from 'lucide-react';
 import {
   AlignLeft,
   Building2,
-  ClipboardList,
   DoorOpen,
   Hash,
   Layers,
@@ -36,7 +35,6 @@ const CRITERION_ICON: Record<ApartmentDetailCriterionId, LucideIcon> = {
   ceilingHeight: MoveVertical,
   finishingStatus: Paintbrush,
   generalDescription: AlignLeft,
-  handoverDescription: ClipboardList,
 };
 
 /**
