@@ -16,6 +16,12 @@ import {
 } from '@/features/catalog/constants/catalog-list';
 import { cn } from '@/shared/ui/cn';
 import {
+  LIST_CARD_DURATION_MS,
+  LIST_CARD_STAGGER_MS,
+  LIST_CONTENT_BASE_DELAY_MS,
+  StaggerGroup,
+} from '@/shared/ui/motion';
+import {
   buildProjectSearchParams,
   parseProjectFilters,
   toListProjectsQuery,
@@ -89,17 +95,21 @@ export default async function ProjectsPage({ params, searchParams }: ProjectsPag
               <ProjectPriceRangesOverlayScope
                 projectIds={response.data.map((project) => project.id)}
               >
-                <div
+                <StaggerGroup
+                  force
                   id={CATALOG_RESULTS_SCROLL_ID}
                   className={cn(
-                    'mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3',
+                    'mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 [&>*]:h-full [&>*]:min-w-0',
                     CATALOG_RESULTS_SCROLL_MARGIN_CLASS,
                   )}
+                  baseDelayMs={LIST_CONTENT_BASE_DELAY_MS}
+                  staggerMs={LIST_CARD_STAGGER_MS}
+                  durationMs={LIST_CARD_DURATION_MS}
                 >
                   {response.data.map((project) => (
                     <ProjectCard key={project.id} project={project} showFavorite />
                   ))}
-                </div>
+                </StaggerGroup>
               </ProjectPriceRangesOverlayScope>
             </CatalogFavoritesScope>
           )}

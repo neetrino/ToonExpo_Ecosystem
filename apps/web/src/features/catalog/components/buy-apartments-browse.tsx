@@ -22,6 +22,12 @@ import { buildProjectPublicHref } from '@/features/geo-map/public/utils/build-pr
 import { Link, usePathname } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 import { EmptyState } from '@/shared/ui/empty-state';
+import {
+  LIST_CARD_DURATION_MS,
+  LIST_CARD_STAGGER_MS,
+  LIST_CONTENT_BASE_DELAY_MS,
+  StaggerGroup,
+} from '@/shared/ui/motion';
 
 type BuyApartmentsBrowseProps = {
   listings: BuyApartmentListing[];
@@ -160,7 +166,13 @@ export const BuyApartmentsBrowse = ({
         {visibleListings.length === 0 ? (
           <EmptyState title={t('empty')} />
         ) : (
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+          <StaggerGroup
+            force
+            className="grid grid-cols-1 gap-5 sm:grid-cols-2 [&>*]:h-full [&>*]:min-w-0"
+            baseDelayMs={LIST_CONTENT_BASE_DELAY_MS}
+            staggerMs={LIST_CARD_STAGGER_MS}
+            durationMs={LIST_CARD_DURATION_MS}
+          >
             {visibleListings.map((listing) => (
               <BuyApartmentCard
                 key={listing.id}
@@ -170,7 +182,7 @@ export const BuyApartmentsBrowse = ({
                 onHoverLeave={onCardHoverLeave}
               />
             ))}
-          </div>
+          </StaggerGroup>
         )}
 
         <CatalogPagination

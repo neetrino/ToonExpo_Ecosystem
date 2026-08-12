@@ -10,6 +10,12 @@ import {
   matchesBuilderSearch,
   parseBuilderFilters,
 } from '@/features/catalog/utils/builder-filters';
+import {
+  LIST_CARD_DURATION_MS,
+  LIST_CARD_STAGGER_MS,
+  LIST_CONTENT_BASE_DELAY_MS,
+  StaggerGroup,
+} from '@/shared/ui/motion';
 
 type BuildersPageProps = {
   params: Promise<{ locale: string }>;
@@ -54,11 +60,17 @@ export default async function BuildersPage({ params, searchParams }: BuildersPag
               {filters.q ? t('buildersPage.search.empty') : t('buildersPage.empty')}
             </p>
           ) : (
-            <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <StaggerGroup
+              force
+              className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 [&>*]:h-full [&>*]:min-w-0"
+              baseDelayMs={LIST_CONTENT_BASE_DELAY_MS}
+              staggerMs={LIST_CARD_STAGGER_MS}
+              durationMs={LIST_CARD_DURATION_MS}
+            >
               {filteredBuilders.map((builder) => (
                 <BuilderCard key={builder.id} builder={builder} />
               ))}
-            </div>
+            </StaggerGroup>
           )}
         </div>
       </main>

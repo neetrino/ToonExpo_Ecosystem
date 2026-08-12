@@ -19,6 +19,12 @@ import {
   parsePartnerFilters,
 } from '@/features/catalog/utils/partner-filters';
 import { cn } from '@/shared/ui/cn';
+import {
+  LIST_CARD_DURATION_MS,
+  LIST_CARD_STAGGER_MS,
+  LIST_CONTENT_BASE_DELAY_MS,
+  StaggerGroup,
+} from '@/shared/ui/motion';
 
 type PartnersPageProps = {
   params: Promise<{ locale: string }>;
@@ -81,17 +87,21 @@ export default async function PartnersPage({ params, searchParams }: PartnersPag
               {t('partnersPage.empty')}
             </p>
           ) : (
-            <div
+            <StaggerGroup
+              force
               id={CATALOG_RESULTS_SCROLL_ID}
               className={cn(
-                'mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3',
+                'mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 [&>*]:h-full [&>*]:min-w-0',
                 CATALOG_RESULTS_SCROLL_MARGIN_CLASS,
               )}
+              baseDelayMs={LIST_CONTENT_BASE_DELAY_MS}
+              staggerMs={LIST_CARD_STAGGER_MS}
+              durationMs={LIST_CARD_DURATION_MS}
             >
               {response.data.map((partner) => (
                 <PartnerCard key={partner.id} partner={partner} />
               ))}
-            </div>
+            </StaggerGroup>
           )}
 
           <CatalogPagination
