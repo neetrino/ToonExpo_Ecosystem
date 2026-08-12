@@ -90,15 +90,21 @@ const buildBuilderContactLinks = (
     advertisingMaterials: string;
   },
 ): BuilderContactLink[] => {
-  const rows: Array<{ label: string; href: string | null }> = [
-    { label: labels.website, href: builder.websiteUrl },
-    { label: labels.instagram, href: builder.instagramUrl },
-    { label: labels.facebook, href: builder.facebookUrl },
-    { label: labels.mediaMaterials, href: builder.mediaMaterialsUrl },
-    { label: labels.advertisingMaterials, href: builder.advertisingMaterialsUrl },
+  const rows: Array<{ kind: BuilderContactLink['kind']; label: string; href: string | null }> = [
+    { kind: 'website', label: labels.website, href: builder.websiteUrl },
+    { kind: 'instagram', label: labels.instagram, href: builder.instagramUrl },
+    { kind: 'facebook', label: labels.facebook, href: builder.facebookUrl },
+    { kind: 'mediaMaterials', label: labels.mediaMaterials, href: builder.mediaMaterialsUrl },
+    {
+      kind: 'advertisingMaterials',
+      label: labels.advertisingMaterials,
+      href: builder.advertisingMaterialsUrl,
+    },
   ];
 
   return rows
-    .filter((row): row is { label: string; href: string } => Boolean(row.href?.trim()))
-    .map((row) => ({ label: row.label, href: row.href.trim() }));
+    .filter((row): row is { kind: BuilderContactLink['kind']; label: string; href: string } =>
+      Boolean(row.href?.trim()),
+    )
+    .map((row) => ({ kind: row.kind, label: row.label, href: row.href.trim() }));
 };
