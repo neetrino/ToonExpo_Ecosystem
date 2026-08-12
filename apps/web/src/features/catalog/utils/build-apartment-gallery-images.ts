@@ -5,14 +5,12 @@ export type ApartmentGalleryImage = {
   alt: string;
 };
 
-const GALLERY_IMAGE_LIMIT = 5;
-
 type BuildApartmentGalleryImagesOptions = {
   apartment: Pick<ApartmentDetail, 'number' | 'plan' | 'cover' | 'gallery'>;
 };
 
 /**
- * Public apartment mosaic from admin-uploaded media only.
+ * Public apartment photos from admin-uploaded media only.
  * Uses gallery as the single source when present (already includes Main);
  * otherwise falls back to cover, then unit plan — never duplicates.
  */
@@ -48,5 +46,5 @@ export const buildApartmentGalleryImages = ({
     pushMedia(apartment.plan, apartment.number);
   }
 
-  return unique.slice(0, GALLERY_IMAGE_LIMIT);
+  return unique;
 };
