@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 
+import { AdminEventDetailSheet } from '@/features/exhibition/components/admin/admin-event-detail-sheet';
 import { AdminEventForm } from '@/features/exhibition/components/admin/admin-event-form';
 import { AdminEventsTable } from '@/features/exhibition/components/admin/admin-events-table';
 import {
@@ -23,7 +24,7 @@ import { PageTitleBlock } from '@/shared/ui/page-title-icon';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
 /**
- * Admin exhibition events list with create side sheet.
+ * Admin exhibition events list with create and detail side sheets.
  */
 export const AdminEventsListPage = () => {
   const t = useTranslations('Admin.events');
@@ -32,7 +33,8 @@ export const AdminEventsListPage = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-  const [sheetOpen, setSheetOpen] = useState(false);
+  const [createSheetOpen, setCreateSheetOpen] = useState(false);
+  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
   const { viewMode, effectiveViewMode, setViewMode } = usePersistedViewMode(
     ADMIN_VIEW_MODE_KEYS.events,
   );
@@ -49,13 +51,20 @@ export const AdminEventsListPage = () => {
 
   useEffect(() => {
     if (searchParams.get('create') === '1') {
-      setSheetOpen(true);
+      setSelectedEventId(null);
+      setCreateSheetOpen(true);
     }
   }, [searchParams]);
 
-  const handleCloseSheet = (): void => {
-    setSheetOpen(false);
+  const handleCloseCreateSheet = (): void => {
+    setCreateSheetOpen(false);
     clearCreateParam();
+  };
+
+  const handleSelectEvent = (eventId: string): void => {
+    setCreateSheetOpen(false);
+    clearCreateParam();
+    setSelectedEventId(eventId);
   };
 
   const onSubmit = async (values: EventFormValues): Promise<void> => {
@@ -67,8 +76,8 @@ export const AdminEventsListPage = () => {
       ...(values.startDate ? { startDate: values.startDate } : {}),
       ...(values.endDate ? { endDate: values.endDate } : {}),
     });
-    handleCloseSheet();
-    router.push(`/admin/events/${event.id}`);
+    handleCloseCreateSheet();
+    setSelectedEventId(event.id);
   };
 
   if (query.isLoading) {
@@ -101,7 +110,8 @@ export const AdminEventsListPage = () => {
               size="sm"
               variant="secondary"
               onClick={() => {
-                setSheetOpen(true);
+                setSelectedEventId(null);
+                setCreateSheetOpen(true);
               }}
             >
               <AddActionLabel>{t('newEvent')}</AddActionLabel>
@@ -112,12 +122,28 @@ export const AdminEventsListPage = () => {
       {events.length === 0 ? (
         <p className="text-sm text-ink-secondary">{t('empty')}</p>
       ) : (
-        <AdminEventsTable events={events} viewMode={effectiveViewMode} />
+        <AdminEventsTable
+          events={events}
+          onSelectEvent={handleSelectEvent}
+          viewMode={effectiveViewMode}
+        />
       )}
 
-      <AdminCreateSheet open={sheetOpen} onClose={handleCloseSheet} title={t('new.title')}>
+      <AdminCreateSheet
+        open={createSheetOpen}
+        onClose={handleCloseCreateSheet}
+        title={t('new.title')}
+      >
         <AdminEventForm onSubmit={onSubmit} isBusy={createMutation.isPending} />
       </AdminCreateSheet>
+
+      <AdminEventDetailSheet
+        eventId={selectedEventId}
+        open={selectedEventId != null}
+        onClose={() => {
+          setSelectedEventId(null);
+        }}
+      />
     </div>
   );
 };

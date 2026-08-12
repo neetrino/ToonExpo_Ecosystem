@@ -2695,6 +2695,9 @@
         "status": "Статус",
         "publication": "Публикация"
       },
+      "card": {
+        "noDates": "Даты не заданы"
+      },
       "statuses": {
         "planning": "Планирование",
         "active": "Активно",
@@ -2708,6 +2711,7 @@
       },
       "detail": {
         "back": "События",
+        "sheetTitle": "Событие",
         "notFound": "Событие не найдено"
       },
       "form": {

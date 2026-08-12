@@ -2695,6 +2695,9 @@
         "status": "Status",
         "publication": "Publication"
       },
+      "card": {
+        "noDates": "Dates not set"
+      },
       "statuses": {
         "planning": "Planning",
         "active": "Active",
@@ -2708,6 +2711,7 @@
       },
       "detail": {
         "back": "Events",
+        "sheetTitle": "Event",
         "notFound": "Event not found"
       },
       "form": {

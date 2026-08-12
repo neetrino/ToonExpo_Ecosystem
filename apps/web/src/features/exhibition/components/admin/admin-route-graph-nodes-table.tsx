@@ -57,9 +57,9 @@ export const AdminRouteGraphNodesTable = ({
               <th className="px-2 py-2">{t('code')}</th>
               <th className="px-2 py-2">{t('label')}</th>
               <th className="px-2 py-2">{t('type')}</th>
-              <th className="px-2 py-2">X</th>
-              <th className="px-2 py-2">Y</th>
-              <th className="px-2 py-2">{t('booth')}</th>
+              <th className="px-2 py-2 text-center">X</th>
+              <th className="px-2 py-2 text-center">Y</th>
+              <th className="px-2 py-2 text-center">{t('booth')}</th>
             </tr>
           </thead>
           <tbody>
@@ -105,11 +105,12 @@ export const AdminRouteGraphNodesTable = ({
                     ))}
                   </Select>
                 </td>
-                <td className="px-2 py-2">
+                <td className="px-2 py-2 text-center">
                   <Input
                     type="number"
                     min={0}
                     max={100}
+                    className="text-center"
                     value={node.xPercent}
                     onChange={(event) => {
                       const next = [...nodes];
@@ -121,11 +122,12 @@ export const AdminRouteGraphNodesTable = ({
                     }}
                   />
                 </td>
-                <td className="px-2 py-2">
+                <td className="px-2 py-2 text-center">
                   <Input
                     type="number"
                     min={0}
                     max={100}
+                    className="text-center"
                     value={node.yPercent}
                     onChange={(event) => {
                       const next = [...nodes];
@@ -137,10 +139,11 @@ export const AdminRouteGraphNodesTable = ({
                     }}
                   />
                 </td>
-                <td className="px-2 py-2">
+                <td className="px-2 py-2 text-center">
                   <Select
                     value={node.boothId}
                     aria-label={t('booth')}
+                    className="text-center"
                     onChange={(event) => {
                       const next = [...nodes];
                       next[index] = { ...node, boothId: event.target.value };

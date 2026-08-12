@@ -14,7 +14,6 @@ import {
 } from '@/features/exhibition/components/admin/admin-route-graph-types';
 import { useReplaceAdminRouteGraphMutation } from '@/features/exhibition/hooks/use-exhibition';
 import { Button } from '@/shared/ui/button';
-import { Card } from '@/shared/ui/card';
 import { useSuccessToast } from '@/shared/ui/use-success-toast';
 
 type AdminRouteGraphEditorProps = {
@@ -91,7 +90,7 @@ export const AdminRouteGraphEditor = ({
   };
 
   return (
-    <Card className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 border-t border-border/70 pt-4">
       <div className="flex items-center justify-between gap-3">
         <h3 className="text-sm font-semibold text-ink">{t('title')}</h3>
         <Button
@@ -109,6 +108,6 @@ export const AdminRouteGraphEditor = ({
       {successToast}
       <AdminRouteGraphNodesTable nodes={nodes} boothOptions={boothOptions} onChange={setNodes} />
       <AdminRouteGraphEdgesTable edges={edges} nodeIds={nodeIds} onChange={setEdges} />
-    </Card>
+    </div>
   );
 };
