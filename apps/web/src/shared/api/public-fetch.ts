@@ -39,6 +39,12 @@ export const mortgageFetch = (): PublicFetchInit =>
 export const exhibitionFetch = (): PublicFetchInit =>
   publicCachedGet(PUBLIC_CACHE_TTL_CATALOG_SECONDS, [PUBLIC_CACHE_TAG.EXHIBITION]);
 
+export const venueMapFetch = (): PublicFetchInit =>
+  /**
+   * BOS Publish must appear on `/expo` immediately (same as visual/geo map).
+   */
+  publicCachedGet(0, [PUBLIC_CACHE_TAG.EXHIBITION]);
+
 export const visualMapFetch = (): PublicFetchInit =>
   /**
    * Interactive Mapping updates must appear on the public site immediately after Admin save.

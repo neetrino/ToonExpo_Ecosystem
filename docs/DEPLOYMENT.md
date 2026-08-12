@@ -191,7 +191,7 @@ Set these on the Cloud Run service (Console → Edit & deploy → Variables & se
 | `R2_SECRET_ACCESS_KEY`         | Optional             |                                                                                                                                                |
 | `R2_BUCKET_NAME`               | Optional             |                                                                                                                                                |
 | `R2_PUBLIC_URL`                | Optional             | Public CDN/base URL for R2 objects                                                                                                             |
-| `BOS_API_KEY`                  | Optional             | ≥ 32 chars; unset → inbound BOS provisioning returns 503                                                                                       |
+| `BOS_API_KEY`                  | Optional             | ≥ 32 chars; unset → inbound BOS provisioning and venue-map publish return 503                                                                  |
 | `SENTRY_DSN`                   | Optional             | API error tracking                                                                                                                             |
 | `DIRECT_URL`                   | **Not on Cloud Run** | Migrations only (local/CI `.env`)                                                                                                              |
 

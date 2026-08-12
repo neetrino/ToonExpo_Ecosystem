@@ -1,0 +1,96 @@
+/// Immutable public copy of a BOS VenueMapSnapshotV1.
+enum PublicVenueMapSnapshotStatus {
+  pending
+  active
+  archived
+}
+
+/// BOS venue-map publication receipt status (wire contract).
+enum MapPublicationReceiptStatus {
+  published
+  already_published
+  rejected
+  failed
+}
+
+/// Public occupant label policy copied from BOS.
+enum PublicVenueAreaDisplayMode {
+  organization
+  custom_label
+  hidden
+}
+
+model PublicVenueMapSnapshot {
+  id                     String                       @id @default(cuid())
+  schemaVersion          String                       @map("schema_version")
+  bosVenuePlanId         String                       @map("bos_venue_plan_id")
+  bosEventCycleId        String                       @map("bos_event_cycle_id")
+  bosEventCycleCode      String                       @map("bos_event_cycle_code")
+  snapshotVersion        Int                          @map("snapshot_version")
+  checksum               String
+  title                  String
+  backgroundMediaAssetId String                       @map("background_media_asset_id")
+  mapWidth               Int                          @map("map_width")
+  mapHeight              Int                          @map("map_height")
+  pixelsPerMeter         Decimal                      @map("pixels_per_meter") @db.Decimal(12, 4)
+  gridOriginX            Int                          @map("grid_origin_x")
+  gridOriginY            Int                          @map("grid_origin_y")
+  status                 PublicVenueMapSnapshotStatus
+  publishedByBosAt       DateTime                     @map("published_by_bos_at")
+  receivedAt             DateTime                     @default(now()) @map("received_at")
+  activatedAt            DateTime?                    @map("activated_at")
+  archivedAt             DateTime?                    @map("archived_at")
+  createdAt              DateTime                     @default(now()) @map("created_at")
+  updatedAt              DateTime                     @updatedAt @map("updated_at")
+
+  backgroundMedia MediaAsset              @relation(fields: [backgroundMediaAssetId], references: [id], onDelete: Restrict)
+  areas           PublicVenueArea[]
+  receipts        MapPublicationReceipt[]
+
+  @@unique([bosVenuePlanId, snapshotVersion], map: "public_venue_snapshots_plan_version_key")
+  @@index([bosVenuePlanId, status])
+  @@index([status])
+  @@map("public_venue_map_snapshots")
+}
+
+model PublicVenueArea {
+  id             String                     @id @default(cuid())
+  snapshotId     String                     @map("snapshot_id")
+  bosSpaceAreaId String                     @map("bos_space_area_id")
+  code           String
+  name           String?
+  geometry       Json
+  areaSqm        Decimal                    @map("area_sqm") @db.Decimal(12, 2)
+  displayMode    PublicVenueAreaDisplayMode @map("display_mode")
+  publicLabel    String?                    @map("public_label")
+  companyId      String?                    @map("company_id")
+  sortOrder      Int                        @map("sort_order")
+  createdAt      DateTime                   @default(now()) @map("created_at")
+
+  snapshot PublicVenueMapSnapshot @relation(fields: [snapshotId], references: [id], onDelete: Cascade)
+  company  Company?               @relation(fields: [companyId], references: [id], onDelete: SetNull)
+
+  @@unique([snapshotId, bosSpaceAreaId])
+  @@index([snapshotId])
+  @@index([companyId])
+  @@map("public_venue_areas")
+}
+
+model MapPublicationReceipt {
+  id               String                      @id @default(cuid())
+  requestId        String                      @unique @map("request_id")
+  bosVenuePlanId   String                      @map("bos_venue_plan_id")
+  snapshotVersion  Int                         @map("snapshot_version")
+  checksum         String
+  status           MapPublicationReceiptStatus
+  snapshotId       String?                     @map("snapshot_id")
+  validationErrors String[]                    @map("validation_errors")
+  createdAt        DateTime                    @default(now()) @map("created_at")
+  activatedAt      DateTime?                   @map("activated_at")
+
+  snapshot PublicVenueMapSnapshot? @relation(fields: [snapshotId], references: [id], onDelete: SetNull)
+
+  @@index([bosVenuePlanId, snapshotVersion])
+  @@index([status])
+  @@map("map_publication_receipts")
+}

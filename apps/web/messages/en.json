@@ -314,6 +314,7 @@
     "builders": "Builders",
     "partners": "Exhibitors",
     "mortgage": "Mortgage",
+    "venueMap": "Venue Map",
     "geoMap": "3D Map",
     "expoMap": "Expo map",
     "login": "Sign in",
@@ -3920,18 +3921,18 @@
   },
   "Expo": {
     "meta": {
-      "title": "Expo map",
-      "description": "Find builders, partners and booths at the current ToonExpo event."
+      "title": "Venue Map",
+      "description": "Find builders and partners on the published pavilion map."
     },
-    "loading": "Loading expo map…",
-    "error": "Could not load the expo map. Try again.",
+    "loading": "Loading venue map…",
+    "error": "Could not load the venue map. Try again.",
     "noEvent": {
-      "title": "No active event",
-      "message": "There is no published event map available right now."
+      "title": "Venue map not published yet",
+      "message": "The pavilion map will appear here after it is published from BOS."
     },
     "search": {
-      "label": "Search booths",
-      "placeholder": "Company, project or booth code…",
+      "label": "Search the venue map",
+      "placeholder": "Company, area code or label…",
       "meta": "{code} · {type}",
       "types": {
         "builder": "Builder",
@@ -3945,11 +3946,22 @@
       }
     },
     "list": {
-      "title": "All booths"
+      "title": "All areas"
     },
     "map": {
       "noImage": "Map image is not available yet.",
       "alt": "Venue map"
+    },
+    "area": {
+      "close": "Close",
+      "code": "Area {code}",
+      "areaSqm": "{value} m²",
+      "openProfile": "Open profile",
+      "modes": {
+        "organization": "Organization",
+        "custom_label": "Label",
+        "hidden": "Area"
+      }
     },
     "booth": {
       "close": "Close",

@@ -189,6 +189,7 @@ model Company {
   readinessAssessments ReadinessAssessment[]
   partnerCompany       PartnerCompany?
   boothAssignments     BoothAssignment[]
+  publicVenueAreas     PublicVenueArea[]
 
   @@unique([bosCompanyId])
   @@index([type])

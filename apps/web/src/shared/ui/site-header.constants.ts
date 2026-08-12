@@ -23,6 +23,7 @@ export type SiteHeaderNavHref =
   | '/partners'
   | '/insights'
   | '/mortgage'
+  | '/expo'
   | '/map';
 
 export type SiteHeaderNavKey =
@@ -32,6 +33,7 @@ export type SiteHeaderNavKey =
   | 'partners'
   | 'marketInsights'
   | 'mortgage'
+  | 'venueMap'
   | 'geoMap';
 
 export const SITE_HEADER_NAV_HREFS: ReadonlyArray<{
@@ -44,6 +46,7 @@ export const SITE_HEADER_NAV_HREFS: ReadonlyArray<{
   { href: '/partners', key: 'partners' },
   { href: '/insights', key: 'marketInsights' },
   { href: '/mortgage', key: 'mortgage' },
+  { href: '/expo', key: 'venueMap' },
   { href: '/map', key: 'geoMap' },
 ];
 
@@ -59,6 +62,9 @@ export const isSiteHeaderNavActive = (pathname: string, href: SiteHeaderNavHref)
   }
   if (href === '/map') {
     return pathname === '/map' || pathname.startsWith('/map/');
+  }
+  if (href === '/expo') {
+    return pathname === '/expo' || pathname.startsWith('/expo/');
   }
   if (href === '/insights') {
     return pathname === '/insights' || pathname.startsWith('/insights/');
