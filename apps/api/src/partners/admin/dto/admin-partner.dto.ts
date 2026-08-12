@@ -1,7 +1,8 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsBoolean,
+  IsEmail,
   IsEnum,
   IsInt,
   IsOptional,
@@ -14,6 +15,12 @@ import {
 import { PartnerCompanyStatus, PartnerCompanyType, PublicationStatus } from '@toonexpo/db';
 
 import {
+  COMPANY_NAME_MAX_LENGTH,
+  EMAIL_MAX_LENGTH,
+  NAME_MAX_LENGTH,
+  PHONE_MAX_LENGTH,
+} from '../../../common/constants/app.constants.js';
+import {
   PARTNERS_DEFAULT_PAGE_SIZE,
   PARTNERS_MAX_PAGE_SIZE,
   PARTNERS_MIN_PAGE,
@@ -22,6 +29,19 @@ import {
 
 enum PartnerCompanyTypeDto {
   builder = 'builder',
+  bank = 'bank',
+  it_company = 'it_company',
+  sponsor = 'sponsor',
+  supplier = 'supplier',
+  insurance = 'insurance',
+  legal = 'legal',
+  design_furniture = 'design_furniture',
+  service_company = 'service_company',
+  other = 'other',
+}
+
+/** Selectable types when provisioning a new partner (builder is not a partner profile type). */
+enum CreatePartnerCompanyTypeDto {
   bank = 'bank',
   it_company = 'it_company',
   sponsor = 'sponsor',
@@ -110,84 +130,40 @@ export class PartnerProfileTranslationsDto {
 }
 
 export class CreateAdminPartnerDto {
-  @ApiPropertyOptional()
+  @ApiProperty({ example: 'Ameriabank' })
   @IsString()
   @MinLength(1)
-  companyId!: string;
-
-  @ApiPropertyOptional({ enum: PartnerCompanyTypeDto })
-  @IsEnum(PartnerCompanyTypeDto)
-  type!: PartnerCompanyType;
-
-  @ApiPropertyOptional()
-  @IsString()
-  @MinLength(1)
-  @MaxLength(200)
+  @MaxLength(COMPANY_NAME_MAX_LENGTH)
   name!: string;
 
-  @ApiPropertyOptional()
+  @ApiProperty({ enum: CreatePartnerCompanyTypeDto })
+  @IsEnum(CreatePartnerCompanyTypeDto)
+  type!: PartnerCompanyType;
+
+  @ApiProperty({ example: 'John Doe' })
+  @IsString()
+  @MinLength(1)
+  @MaxLength(NAME_MAX_LENGTH)
+  adminName!: string;
+
+  @ApiProperty({ example: 'john.doe@example.com' })
+  @IsEmail()
+  @MaxLength(EMAIL_MAX_LENGTH)
+  adminEmail!: string;
+
+  @ApiPropertyOptional({ example: '+37491111222' })
   @IsOptional()
   @IsString()
-  @MaxLength(120)
-  slug?: string;
+  @MinLength(5)
+  @MaxLength(PHONE_MAX_LENGTH)
+  adminPhone?: string;
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ example: 'en' })
   @IsOptional()
   @IsString()
-  logoMediaId?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  coverMediaId?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  @MaxLength(8000)
-  shortDescription?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  @MaxLength(8000)
-  fullDescription?: string;
-
-  @ApiPropertyOptional({ type: PartnerContactsDto })
-  @IsOptional()
-  @Type(() => PartnerContactsDto)
-  contacts?: PartnerContactsDto;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  @MaxLength(500)
-  website?: string;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @Type(() => Object)
-  socialLinks?: Record<string, string>;
-
-  @ApiPropertyOptional({ enum: PartnerCompanyStatusDto })
-  @IsOptional()
-  @IsEnum(PartnerCompanyStatusDto)
-  status?: PartnerCompanyStatus;
-
-  @ApiPropertyOptional({ enum: PublicationStatusDto })
-  @IsOptional()
-  @IsEnum(PublicationStatusDto)
-  publicationStatus?: PublicationStatus;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsBoolean()
-  featured?: boolean;
-
-  @ApiPropertyOptional({ type: PartnerProfileTranslationsDto })
-  @IsOptional()
-  @Type(() => PartnerProfileTranslationsDto)
-  translations?: PartnerProfileTranslationsDto;
+  @MinLength(2)
+  @MaxLength(8)
+  locale?: string;
 }
 
 export class UpdateAdminPartnerDto {

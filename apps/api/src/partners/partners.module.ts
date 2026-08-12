@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 
 import { CompanyMemberGuard } from "../company/guards/company-member.guard.js";
+import { CompanyProvisioningModule } from "../company/provisioning/company-provisioning.module.js";
 import { PrismaModule } from "../prisma/prisma.module.js";
 import { AdminPartnerOffersService } from "./admin/admin-partner-offers.service.js";
 import { AdminPartnersController } from "./admin/admin-partners.controller.js";
@@ -11,7 +12,7 @@ import { PublicPartnersController } from "./public/public-partners.controller.js
 import { PublicPartnersService } from "./public/public-partners.service.js";
 
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, CompanyProvisioningModule],
   controllers: [
     AdminPartnersController,
     PortalPartnerController,

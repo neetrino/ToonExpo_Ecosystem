@@ -14,8 +14,7 @@ import {
 } from '@/features/admin/components/partner-filters';
 import { PartnerDetailSheet } from '@/features/admin/components/partner-detail-sheet';
 import { PartnersTable } from '@/features/admin/components/partners-table';
-import { ADMIN_COMPANIES_MAX_PAGE_SIZE, ADMIN_VIEW_MODE_KEYS } from '@/features/admin/constants';
-import { useAdminCompaniesQuery } from '@/features/admin/hooks/use-admin-companies';
+import { ADMIN_VIEW_MODE_KEYS } from '@/features/admin/constants';
 import { useAdminPartnersQuery } from '@/features/admin/hooks/use-admin-partners';
 import { PARTNERS_DEFAULT_PAGE_SIZE } from '@/features/partners/constants';
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
@@ -49,7 +48,6 @@ export const PartnersListPage = () => {
   const [search, setSearch] = useState('');
   const [filters, setFilters] = useState(EMPTY_PARTNER_LIST_FILTERS);
 
-  const companiesQuery = useAdminCompaniesQuery(1, ADMIN_COMPANIES_MAX_PAGE_SIZE);
   const partnersQuery = useAdminPartnersQuery({
     page,
     pageSize: PARTNERS_DEFAULT_PAGE_SIZE,
@@ -80,7 +78,7 @@ export const PartnersListPage = () => {
     setSelectedPartnerId(partnerId);
   };
 
-  if (partnersQuery.isLoading || companiesQuery.isLoading) {
+  if (partnersQuery.isLoading) {
     return <p className="text-sm text-ink-secondary">{t('loading')}</p>;
   }
 
@@ -163,7 +161,6 @@ export const PartnersListPage = () => {
 
       <CreatePartnerSheet
         open={showCreate}
-        companies={companiesQuery.data?.data ?? []}
         onClose={() => {
           setShowCreate(false);
         }}

@@ -2066,13 +2066,19 @@
       },
       "create": {
         "title": "New partner profile",
-        "company": "Company",
-        "selectCompany": "Select company",
+        "name": "Company name",
         "type": "Partner type",
-        "name": "Display name",
-        "slug": "Slug (optional)",
-        "slugHint": "Leave empty to generate from the name.",
-        "submit": "Create partner",
+        "adminSection": "First administrator",
+        "adminName": "Admin name, surname",
+        "adminEmail": "Admin email",
+        "adminPhone": "Admin phone",
+        "placeholders": {
+          "name": "Acme Partners",
+          "adminName": "John Doe",
+          "adminEmail": "john.doe@example.com",
+          "adminPhone": "+37491111222"
+        },
+        "submit": "Create & send invite",
         "submitting": "Creating…",
         "cancel": "Cancel",
         "types": {
@@ -2088,10 +2094,13 @@
           "other": "Other"
         },
         "validation": {
-          "company": "Select a company",
-          "name": "Enter a display name"
+          "name": "Enter a company name",
+          "adminName": "Enter the admin name",
+          "adminEmail": "Enter a valid email",
+          "adminPhone": "Enter a valid phone number"
         },
         "errors": {
+          "emailTaken": "This email is already registered",
           "generic": "Something went wrong. Please try again."
         }
       },

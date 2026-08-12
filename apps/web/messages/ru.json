@@ -2341,13 +2341,19 @@
       },
       "create": {
         "title": "Новый профиль партнёра",
-        "company": "Компания",
-        "selectCompany": "Выберите компанию",
+        "name": "Название компании",
         "type": "Тип партнёра",
-        "name": "Отображаемое название",
-        "slug": "Slug (необязательно)",
-        "slugHint": "Оставьте пустым для генерации из названия.",
-        "submit": "Создать",
+        "adminSection": "Первый администратор",
+        "adminName": "Имя и фамилия админа",
+        "adminEmail": "Email админа",
+        "adminPhone": "Телефон админа",
+        "placeholders": {
+          "name": "Acme Partners",
+          "adminName": "John Doe",
+          "adminEmail": "john.doe@example.com",
+          "adminPhone": "+37491111222"
+        },
+        "submit": "Создать и отправить приглашение",
         "submitting": "Создание…",
         "cancel": "Отмена",
         "types": {
@@ -2363,10 +2369,13 @@
           "other": "Другое"
         },
         "validation": {
-          "company": "Выберите компанию",
-          "name": "Введите название"
+          "name": "Введите название компании",
+          "adminName": "Введите имя админа",
+          "adminEmail": "Введите корректный email",
+          "adminPhone": "Введите корректный телефон"
         },
         "errors": {
+          "emailTaken": "Этот email уже зарегистрирован",
           "generic": "Что-то пошло не так."
         }
       },
