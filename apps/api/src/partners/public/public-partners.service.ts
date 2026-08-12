@@ -39,14 +39,31 @@ export class PublicPartnersService {
       publicationStatus: PublicationStatus.published,
     };
 
-    if (query.type) {
-      where.type = query.type;
+    if (query.type != null && query.type.length > 0) {
+      where.type = { in: query.type };
     }
     if (query.featured === true) {
       where.featured = true;
     }
 
     return where;
+  }
+
+  /**
+   * Distinct partner types that currently have at least one public (active+published) profile.
+   */
+  async listAvailableTypes(): Promise<PartnerCompanyType[]> {
+    const rows = await this.prisma.db.partnerCompany.findMany({
+      where: {
+        status: PartnerCompanyStatus.active,
+        publicationStatus: PublicationStatus.published,
+      },
+      select: { type: true },
+      distinct: ['type'],
+      orderBy: { type: 'asc' },
+    });
+
+    return rows.map((row) => row.type);
   }
 
   async list(query: ListPublicPartnersQueryDto): Promise<PublicPartnerListResponse> {

@@ -168,6 +168,11 @@ export type PublicPartnerListItem = {
 
 export type PublicPartnerListResponse = PaginatedResponse<PublicPartnerListItem>;
 
+/** Types present among published active partners (for public filter UI). */
+export type PublicPartnerFacetsResponse = {
+  types: PartnerCompanyType[];
+};
+
 export type PublicPartnerOfferItem = {
   id: string;
   title: string;

@@ -892,6 +892,7 @@
       "filters": {
         "type": "Тип партнёра",
         "allTypes": "Все типы",
+        "typesSelectedCount": "{count} выбрано",
         "apply": "Применить",
         "reset": "Сбросить"
       },

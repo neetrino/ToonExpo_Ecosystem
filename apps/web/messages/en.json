@@ -892,6 +892,7 @@
       "filters": {
         "type": "Partner type",
         "allTypes": "All types",
+        "typesSelectedCount": "{count} selected",
         "apply": "Apply filters",
         "reset": "Reset"
       },

@@ -1,7 +1,10 @@
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
-import { listPublicPartners } from '@/features/catalog/api/partners-api';
+import {
+  listPublicPartnerFacets,
+  listPublicPartners,
+} from '@/features/catalog/api/partners-api';
 import { PartnerCard } from '@/features/catalog/components/partner-card';
 import { PartnerFiltersForm } from '@/features/catalog/components/partner-filters-form';
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
@@ -42,13 +45,16 @@ export default async function PartnersPage({ params, searchParams }: PartnersPag
   const rawParams = await searchParams;
   const filters = parsePartnerFilters(rawParams);
 
-  const response = await listPublicPartners(
-    {
-      page: filters.page,
-      ...(filters.type ? { type: filters.type } : {}),
-    },
-    { locale },
-  );
+  const [response, facets] = await Promise.all([
+    listPublicPartners(
+      {
+        page: filters.page,
+        ...(filters.types.length > 0 ? { types: filters.types } : {}),
+      },
+      { locale },
+    ),
+    listPublicPartnerFacets(),
+  ]);
 
   const buildHref = (page: number): string => {
     const query = new URLSearchParams(buildPartnerSearchParams(filters, page)).toString();
@@ -70,10 +76,13 @@ export default async function PartnersPage({ params, searchParams }: PartnersPag
         <div className="page-container section-pad pt-8 sm:pt-10">
           <PartnerFiltersForm
             filters={filters}
+            availableTypes={facets.types}
             labels={{
               type: t('partnersPage.filters.type'),
               allTypes: t('partnersPage.filters.allTypes'),
               types: typeLabels,
+              typesSelectedCount: (count) =>
+                t('partnersPage.filters.typesSelectedCount', { count }),
               apply: t('partnersPage.filters.apply'),
               reset: t('partnersPage.filters.reset'),
             }}

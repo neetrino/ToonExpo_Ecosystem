@@ -33,6 +33,25 @@ describe('PublicPartnersService visibility rules', () => {
     partnerCompanyFindMany.mockResolvedValue([]);
   });
 
+  it('lists distinct types among active published partners', async () => {
+    partnerCompanyFindMany.mockResolvedValue([
+      { type: 'bank' },
+      { type: 'it_company' },
+    ]);
+
+    await expect(service.listAvailableTypes()).resolves.toEqual(['bank', 'it_company']);
+
+    expect(partnerCompanyFindMany).toHaveBeenCalledWith({
+      where: {
+        status: PartnerCompanyStatus.active,
+        publicationStatus: PublicationStatus.published,
+      },
+      select: { type: true },
+      distinct: ['type'],
+      orderBy: { type: 'asc' },
+    });
+  });
+
   it('lists only active published partners', () => {
     const where = service.buildPublicWhere(new ListPublicPartnersQueryDto());
 
@@ -44,13 +63,13 @@ describe('PublicPartnersService visibility rules', () => {
 
   it('adds type and featured filters when provided', () => {
     const query = Object.assign(new ListPublicPartnersQueryDto(), {
-      type: 'bank',
+      type: ['bank', 'it_company'],
       featured: true,
     });
 
     const where = service.buildPublicWhere(query);
 
-    expect(where.type).toBe('bank');
+    expect(where.type).toEqual({ in: ['bank', 'it_company'] });
     expect(where.featured).toBe(true);
   });
 

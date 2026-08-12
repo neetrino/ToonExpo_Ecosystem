@@ -1,9 +1,14 @@
 import type { PartnerCompanyType } from "@toonexpo/contracts";
 
+import { PARTNER_COMPANY_TYPES } from "@/features/partners/constants";
+
 export type PartnerListFilters = {
   page: number;
-  type: PartnerCompanyType | "";
+  /** Empty = all types (default). */
+  types: PartnerCompanyType[];
 };
+
+const PARTNER_TYPE_SET = new Set<string>(PARTNER_COMPANY_TYPES);
 
 const readParam = (
   searchParams: Record<string, string | string[] | undefined>,
@@ -16,6 +21,23 @@ const readParam = (
   return value;
 };
 
+const parseTypesParam = (raw: string | undefined): PartnerCompanyType[] => {
+  if (raw == null || raw.trim().length === 0) {
+    return [];
+  }
+
+  const parsed = [
+    ...new Set(
+      raw
+        .split(",")
+        .map((item) => item.trim())
+        .filter((item): item is PartnerCompanyType => PARTNER_TYPE_SET.has(item)),
+    ),
+  ];
+
+  return parsed;
+};
+
 export const parsePartnerFilters = (
   raw: Record<string, string | string[] | undefined>,
 ): PartnerListFilters => {
@@ -26,7 +48,7 @@ export const parsePartnerFilters = (
 
   return {
     page: safePage,
-    type: (typeRaw ?? "") as PartnerCompanyType | "",
+    types: parseTypesParam(typeRaw),
   };
 };
 
@@ -38,8 +60,8 @@ export const buildPartnerSearchParams = (
   if (page > 1) {
     params["page"] = String(page);
   }
-  if (filters.type) {
-    params["type"] = filters.type;
+  if (filters.types.length > 0) {
+    params["type"] = filters.types.join(",");
   }
   return params;
 };

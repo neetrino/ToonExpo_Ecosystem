@@ -1,5 +1,6 @@
 import type {
   PublicPartnerDetail,
+  PublicPartnerFacetsResponse,
   PublicPartnerListResponse,
   PartnerCompanyType,
 } from "@toonexpo/contracts";
@@ -11,7 +12,8 @@ import { partnersFetch } from "@/shared/api/public-fetch";
 export type ListPublicPartnersQuery = {
   page?: number;
   pageSize?: number;
-  type?: PartnerCompanyType;
+  /** One or more partner types; omitted / empty = all. */
+  types?: PartnerCompanyType[];
   featured?: boolean;
   locale?: string;
 };
@@ -20,8 +22,8 @@ const toSearchParams = (query: ListPublicPartnersQuery): string => {
   const params = new URLSearchParams();
   params.set("page", String(query.page ?? 1));
   params.set("pageSize", String(query.pageSize ?? PARTNERS_DEFAULT_PAGE_SIZE));
-  if (query.type) {
-    params.set("type", query.type);
+  if (query.types != null && query.types.length > 0) {
+    params.set("type", query.types.join(","));
   }
   if (query.featured != null) {
     params.set("featured", String(query.featured));
@@ -45,8 +47,8 @@ export const listPublicPartners = (
     page: query.page ?? 1,
     pageSize: query.pageSize ?? PARTNERS_DEFAULT_PAGE_SIZE,
   };
-  if (query.type) {
-    params.type = query.type;
+  if (query.types != null && query.types.length > 0) {
+    params.types = query.types;
   }
   if (query.featured != null) {
     params.featured = query.featured;
@@ -60,6 +62,12 @@ export const listPublicPartners = (
     ...partnersFetch(),
   });
 };
+
+export const listPublicPartnerFacets = (): Promise<PublicPartnerFacetsResponse> =>
+  apiFetch<PublicPartnerFacetsResponse>({
+    path: "/partners/facets",
+    ...partnersFetch(),
+  });
 
 export const getPublicPartnerBySlug = (
   slug: string,

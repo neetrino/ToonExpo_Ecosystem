@@ -7,6 +7,7 @@ import {
 } from "@nestjs/swagger";
 import type {
   PublicPartnerDetail,
+  PublicPartnerFacetsResponse,
   PublicPartnerListResponse,
 } from "@toonexpo/contracts";
 
@@ -30,6 +31,17 @@ export class PublicPartnersController {
     @Query() query: ListPublicPartnersQueryDto,
   ): Promise<PublicPartnerListResponse> {
     return this.partners.list(query);
+  }
+
+  @Public()
+  @Get("facets")
+  @ApiOperation({
+    summary: "Partner filter facets (types with at least one published partner)",
+  })
+  @ApiOkResponse({ description: "Available public partner filter options" })
+  async listFacets(): Promise<PublicPartnerFacetsResponse> {
+    const types = await this.partners.listAvailableTypes();
+    return { types };
   }
 
   @Public()

@@ -892,6 +892,7 @@
       "filters": {
         "type": "Տեսակ",
         "allTypes": "Բոլոր տեսակները",
+        "typesSelectedCount": "{count} ընտրված",
         "apply": "Կիրառել",
         "reset": "Մաքրել"
       },
