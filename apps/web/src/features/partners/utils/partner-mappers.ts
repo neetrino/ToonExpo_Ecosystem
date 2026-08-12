@@ -129,11 +129,14 @@ const buildSocialLinks = (
 
 export const toCreatePartnerBody = (
   values: CreatePartnerFormValues,
+  locale?: string,
 ): CreateAdminPartnerBody => ({
-  companyId: values.companyId,
-  type: values.type,
   name: values.name,
-  ...(optionalText(values.slug) ? { slug: values.slug } : {}),
+  type: values.type,
+  adminName: `${values.adminFirstName} ${values.adminSurname}`.trim(),
+  adminEmail: values.adminEmail,
+  ...(optionalText(values.adminPhone) ? { adminPhone: values.adminPhone } : {}),
+  ...(locale ? { locale } : {}),
 });
 
 export const toUpdatePartnerBody = (

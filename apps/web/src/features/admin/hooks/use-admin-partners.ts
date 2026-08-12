@@ -22,6 +22,7 @@ import {
   ADMIN_PARTNERS_QUERY_KEY,
   adminPartnerQueryKey,
 } from "@/features/partners/constants";
+import { ADMIN_COMPANIES_QUERY_KEY } from "@/features/admin/constants";
 
 export const useAdminPartnersQuery = (params: ListAdminPartnersParams) =>
   useQuery({
@@ -42,6 +43,7 @@ export const useCreatePartnerMutation = () => {
     mutationFn: (body: CreateAdminPartnerBody) => createAdminPartner(body),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ADMIN_PARTNERS_QUERY_KEY });
+      void queryClient.invalidateQueries({ queryKey: ADMIN_COMPANIES_QUERY_KEY });
     },
   });
 };

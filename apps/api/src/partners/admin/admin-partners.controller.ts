@@ -49,7 +49,9 @@ export class AdminPartnersController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  @ApiOperation({ summary: "Create partner profile for an existing company" })
+  @ApiOperation({
+    summary: "Provision partner company, invite first admin, create draft profile",
+  })
   @ApiCreatedResponse({ description: "Created partner profile" })
   create(
     @CurrentUser() user: AuthenticatedUser,

@@ -128,7 +128,7 @@ describe("bulkApartmentsSchema", () => {
 });
 
 describe("updateApartmentSchema", () => {
-  it("accepts reserved with optional reason", () => {
+  it("accepts reserved status", () => {
     const result = updateApartmentSchema.safeParse({
       number: "12A",
       rooms: "2",
@@ -140,7 +140,6 @@ describe("updateApartmentSchema", () => {
       price: "100000",
       priceVisibility: "public",
       salesStatus: "reserved",
-      statusChangeReason: "Deposit paid",
       descriptionHy: "",
       descriptionRu: "",
       descriptionEn: "",
@@ -149,7 +148,7 @@ describe("updateApartmentSchema", () => {
     expect(result.success).toBe(true);
   });
 
-  it("accepts available without reason", () => {
+  it("accepts available status", () => {
     const result = updateApartmentSchema.safeParse({
       number: "12A",
       rooms: "2",
@@ -161,7 +160,6 @@ describe("updateApartmentSchema", () => {
       price: "",
       priceVisibility: "by_request",
       salesStatus: "available",
-      statusChangeReason: "",
       descriptionHy: "Նկարագրություն",
       descriptionRu: "",
       descriptionEn: "",

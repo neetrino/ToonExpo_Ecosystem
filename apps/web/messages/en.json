@@ -892,6 +892,7 @@
       "filters": {
         "type": "Partner type",
         "allTypes": "All types",
+        "typesSelectedCount": "{count} selected",
         "apply": "Apply filters",
         "reset": "Reset"
       },
@@ -2066,13 +2067,21 @@
       },
       "create": {
         "title": "New partner profile",
-        "company": "Company",
-        "selectCompany": "Select company",
+        "name": "Company name",
         "type": "Partner type",
-        "name": "Display name",
-        "slug": "Slug (optional)",
-        "slugHint": "Leave empty to generate from the name.",
-        "submit": "Create partner",
+        "adminSection": "First administrator",
+        "adminFirstName": "Name",
+        "adminSurname": "Surname",
+        "adminEmail": "Admin email",
+        "adminPhone": "Admin phone",
+        "placeholders": {
+          "name": "Acme Partners",
+          "adminFirstName": "John",
+          "adminSurname": "Doe",
+          "adminEmail": "john.doe@example.com",
+          "adminPhone": "+37491111222"
+        },
+        "submit": "Create & send invite",
         "submitting": "Creating…",
         "cancel": "Cancel",
         "types": {
@@ -2088,10 +2097,14 @@
           "other": "Other"
         },
         "validation": {
-          "company": "Select a company",
-          "name": "Enter a display name"
+          "name": "Enter a company name",
+          "adminFirstName": "Enter the admin name",
+          "adminSurname": "Enter the admin surname",
+          "adminEmail": "Enter a valid email",
+          "adminPhone": "Enter a valid phone number"
         },
         "errors": {
+          "emailTaken": "This email is already registered",
           "generic": "Something went wrong. Please try again."
         }
       },
@@ -3491,7 +3504,6 @@
         "price": "Price",
         "priceVisibility": "Price visibility",
         "salesStatus": "Sales status",
-        "statusChangeReason": "Status change reason",
         "description": "Description",
         "finishingStatus": "Finishing status",
         "handoverDescription": "Handover description",

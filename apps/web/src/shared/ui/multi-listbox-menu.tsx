@@ -94,7 +94,7 @@ export const MultiListboxMenu = ({
           </button>
         </li>
         {options.map((option) => {
-          const active = isAll || values.includes(option.value);
+          const active = values.includes(option.value);
           return (
             <li key={option.value} role="none">
               <button

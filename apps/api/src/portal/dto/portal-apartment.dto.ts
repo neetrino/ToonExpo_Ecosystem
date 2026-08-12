@@ -21,7 +21,6 @@ import {
   PORTAL_APARTMENT_NUMBER_MAX_LENGTH,
   PORTAL_BULK_APARTMENTS_MAX,
   PORTAL_DESCRIPTION_MAX_LENGTH,
-  PORTAL_STATUS_REASON_MAX_LENGTH,
 } from "../portal.constants.js";
 import { PortalTranslationsDto } from "./portal-translations.dto.js";
 
@@ -265,12 +264,6 @@ export class UpdatePortalApartmentDto {
   @IsOptional()
   @IsEnum(SalesStatusDto)
   salesStatus?: SalesStatusDto;
-
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsString()
-  @MaxLength(PORTAL_STATUS_REASON_MAX_LENGTH)
-  statusChangeReason?: string;
 
   @ApiPropertyOptional({ type: PortalTranslationsDto })
   @IsOptional()

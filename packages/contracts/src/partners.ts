@@ -77,22 +77,17 @@ export type AdminPartnerDetail = AdminPartnerListItem & {
   translations?: PartnerProfileTranslationsInput;
 };
 
+/**
+ * Platform-admin partner provisioning (company + first admin invite + draft profile).
+ */
 export type CreateAdminPartnerBody = {
-  companyId: string;
-  type: PartnerCompanyType;
   name: string;
-  slug?: string;
-  logoMediaId?: string;
-  coverMediaId?: string;
-  shortDescription?: string;
-  fullDescription?: string;
-  contacts?: PartnerContacts;
-  website?: string;
-  socialLinks?: PartnerSocialLinks;
-  status?: PartnerCompanyStatus;
-  publicationStatus?: PublicationStatus;
-  featured?: boolean;
-  translations?: PartnerProfileTranslationsInput;
+  type: PartnerCompanyType;
+  adminName: string;
+  adminEmail: string;
+  adminPhone?: string;
+  /** Locale segment in the set-password link; defaults to platform DEFAULT_LOCALE (`en`). */
+  locale?: string;
 };
 
 export type UpdateAdminPartnerBody = {
@@ -172,6 +167,11 @@ export type PublicPartnerListItem = {
 };
 
 export type PublicPartnerListResponse = PaginatedResponse<PublicPartnerListItem>;
+
+/** Types present among published active partners (for public filter UI). */
+export type PublicPartnerFacetsResponse = {
+  types: PartnerCompanyType[];
+};
 
 export type PublicPartnerOfferItem = {
   id: string;

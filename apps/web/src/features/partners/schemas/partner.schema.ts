@@ -5,12 +5,20 @@ import type {
 } from "@toonexpo/contracts";
 import { z } from "zod";
 
+import { COMPANY_NAME_MAX_LENGTH } from "@/features/admin/constants";
 import {
   PARTNER_COMPANY_STATUSES,
   PARTNER_COMPANY_TYPES,
   PARTNER_PUBLICATION_STATUSES,
 } from "@/features/partners/constants";
 import { optionalMediaIdField } from "@/features/media/schemas/media-fields.schema";
+import {
+  EMAIL_MAX_LENGTH,
+  NAME_MAX_LENGTH,
+  PHONE_MAX_LENGTH,
+  PHONE_MIN_LENGTH,
+  PHONE_PATTERN,
+} from "@/shared/config/auth.constants";
 
 const partnerTypeSchema = z.enum(
   PARTNER_COMPANY_TYPES as unknown as [PartnerCompanyType, ...PartnerCompanyType[]],
@@ -30,12 +38,32 @@ const publicationStatusSchema = z.enum(
   ],
 );
 
-export const createPartnerSchema = z.object({
-  companyId: z.string().min(1),
-  type: partnerTypeSchema,
-  name: z.string().trim().min(1).max(200),
-  slug: z.string().trim().max(120),
-});
+export const createPartnerSchema = z
+  .object({
+    name: z.string().trim().min(1).max(COMPANY_NAME_MAX_LENGTH),
+    type: partnerTypeSchema,
+    adminFirstName: z.string().trim().min(1).max(NAME_MAX_LENGTH),
+    adminSurname: z.string().trim().min(1).max(NAME_MAX_LENGTH),
+    adminEmail: z
+      .email()
+      .max(EMAIL_MAX_LENGTH)
+      .transform((value) => value.trim().toLowerCase()),
+    adminPhone: z
+      .string()
+      .trim()
+      .refine(
+        (value) =>
+          value.length === 0 ||
+          (value.length >= PHONE_MIN_LENGTH &&
+            value.length <= PHONE_MAX_LENGTH &&
+            PHONE_PATTERN.test(value)),
+        { message: "phone" },
+      ),
+  })
+  .refine(
+    (values) => `${values.adminFirstName} ${values.adminSurname}`.length <= NAME_MAX_LENGTH,
+    { path: ["adminSurname"], message: "adminNameTooLong" },
+  );
 
 export type CreatePartnerFormValues = z.infer<typeof createPartnerSchema>;
 

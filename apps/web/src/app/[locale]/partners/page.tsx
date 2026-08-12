@@ -1,7 +1,10 @@
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
-import { listPublicPartners } from '@/features/catalog/api/partners-api';
+import {
+  listPublicPartnerFacets,
+  listPublicPartners,
+} from '@/features/catalog/api/partners-api';
 import { PartnerCard } from '@/features/catalog/components/partner-card';
 import { PartnerFiltersForm } from '@/features/catalog/components/partner-filters-form';
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
@@ -15,7 +18,6 @@ import {
   buildPartnerSearchParams,
   parsePartnerFilters,
 } from '@/features/catalog/utils/partner-filters';
-import { PARTNER_COMPANY_TYPES } from '@/features/partners/constants';
 import { cn } from '@/shared/ui/cn';
 
 type PartnersPageProps = {
@@ -38,26 +40,24 @@ export default async function PartnersPage({ params, searchParams }: PartnersPag
   setRequestLocale(locale);
 
   const t = await getTranslations('Catalog');
-  const tPartners = await getTranslations('Partners');
   const rawParams = await searchParams;
   const filters = parsePartnerFilters(rawParams);
 
-  const response = await listPublicPartners(
-    {
-      page: filters.page,
-      ...(filters.type ? { type: filters.type } : {}),
-    },
-    { locale },
-  );
+  const [response, facets] = await Promise.all([
+    listPublicPartners(
+      {
+        page: filters.page,
+        ...(filters.types.length > 0 ? { types: filters.types } : {}),
+      },
+      { locale },
+    ),
+    listPublicPartnerFacets(),
+  ]);
 
   const buildHref = (page: number): string => {
     const query = new URLSearchParams(buildPartnerSearchParams(filters, page)).toString();
     return query.length > 0 ? `/partners?${query}` : '/partners';
   };
-
-  const typeLabels = Object.fromEntries(
-    PARTNER_COMPANY_TYPES.map((type) => [type, tPartners(`types.${type}`)]),
-  ) as Record<(typeof PARTNER_COMPANY_TYPES)[number], string>;
 
   return (
     <div className="min-h-screen bg-canvas">
@@ -68,16 +68,7 @@ export default async function PartnersPage({ params, searchParams }: PartnersPag
         />
 
         <div className="page-container section-pad pt-8 sm:pt-10">
-          <PartnerFiltersForm
-            filters={filters}
-            labels={{
-              type: t('partnersPage.filters.type'),
-              allTypes: t('partnersPage.filters.allTypes'),
-              types: typeLabels,
-              apply: t('partnersPage.filters.apply'),
-              reset: t('partnersPage.filters.reset'),
-            }}
-          />
+          <PartnerFiltersForm filters={filters} availableTypes={facets.types} />
 
           {response.data.length === 0 ? (
             <p

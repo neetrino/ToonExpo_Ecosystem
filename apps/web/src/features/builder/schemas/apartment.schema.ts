@@ -4,7 +4,6 @@ import {
   APARTMENT_SALES_STATUSES,
   PORTAL_APARTMENT_NUMBER_MAX_LENGTH,
   PORTAL_DESCRIPTION_MAX_LENGTH,
-  PORTAL_STATUS_REASON_MAX_LENGTH,
   PRICE_VISIBILITY_OPTIONS,
 } from "@/features/builder/constants";
 import {
@@ -26,10 +25,6 @@ export const updateApartmentSchema = z.object({
   price: z.string().trim(),
   priceVisibility: z.enum(PRICE_VISIBILITY_OPTIONS),
   salesStatus: z.enum(APARTMENT_SALES_STATUSES),
-  statusChangeReason: z
-    .string()
-    .trim()
-    .max(PORTAL_STATUS_REASON_MAX_LENGTH),
   descriptionHy: z.string().trim().max(PORTAL_DESCRIPTION_MAX_LENGTH),
   descriptionRu: z.string().trim().max(PORTAL_DESCRIPTION_MAX_LENGTH),
   descriptionEn: z.string().trim().max(PORTAL_DESCRIPTION_MAX_LENGTH),

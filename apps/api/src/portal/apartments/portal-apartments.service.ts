@@ -179,7 +179,6 @@ export class PortalApartmentsService {
             previousStatus: existing.salesStatus,
             newStatus: nextSalesStatus,
             changedByUserId: userId,
-            ...(dto.statusChangeReason !== undefined ? { reason: dto.statusChangeReason } : {}),
           },
         });
       }

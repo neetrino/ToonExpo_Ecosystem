@@ -892,6 +892,7 @@
       "filters": {
         "type": "Տեսակ",
         "allTypes": "Բոլոր տեսակները",
+        "typesSelectedCount": "{count} ընտրված",
         "apply": "Կիրառել",
         "reset": "Մաքրել"
       },
@@ -2066,13 +2067,21 @@
       },
       "create": {
         "title": "Նոր գործընկերոջ պրոֆիլ",
-        "company": "Ընկերություն",
-        "selectCompany": "Ընտրել ընկերություն",
+        "name": "Ընկերության անվանում",
         "type": "Գործընկերոջ տեսակ",
-        "name": "Ցուցադրվող անվանում",
-        "slug": "Slug (ընտրովի)",
-        "slugHint": "Թողեք դատարկ՝ անվանումից գեներացնելու համար։",
-        "submit": "Ստեղծել",
+        "adminSection": "Առաջին ադմինիստրատոր",
+        "adminFirstName": "Անուն",
+        "adminSurname": "Ազգանուն",
+        "adminEmail": "Ադմինի էլ. փոստ",
+        "adminPhone": "Ադմինի հեռախոս",
+        "placeholders": {
+          "name": "Acme Partners",
+          "adminFirstName": "John",
+          "adminSurname": "Doe",
+          "adminEmail": "john.doe@example.com",
+          "adminPhone": "+37491111222"
+        },
+        "submit": "Ստեղծել և ուղարկել հրավեր",
         "submitting": "Ստեղծում…",
         "cancel": "Չեղարկել",
         "types": {
@@ -2088,10 +2097,14 @@
           "other": "Այլ"
         },
         "validation": {
-          "company": "Ընտրեք ընկերություն",
-          "name": "Մուտքագրեք անվանում"
+          "name": "Մուտքագրեք ընկերության անվանումը",
+          "adminFirstName": "Մուտքագրեք ադմինի անունը",
+          "adminSurname": "Մուտքագրեք ադմինի ազգանունը",
+          "adminEmail": "Մուտքագրեք վավեր էլ. փոստ",
+          "adminPhone": "Մուտքագրեք վավեր հեռախոսահամար"
         },
         "errors": {
+          "emailTaken": "Այս էլ. փոստն արդեն գրանցված է",
           "generic": "Ինչ-որ բան սխալ գնաց։ Փորձեք կրկին։"
         }
       },
@@ -3233,7 +3246,6 @@
         "price": "Գին",
         "priceVisibility": "Գնի տեսանելիություն",
         "salesStatus": "Վաճառքի կարգավիճակ",
-        "statusChangeReason": "Կարգավիճակի փոփոխության պատճառ",
         "description": "Նկարագրություն",
         "finishingStatus": "Հարդարման կարգավիճակ",
         "handoverDescription": "Հանձնման նկարագրություն",

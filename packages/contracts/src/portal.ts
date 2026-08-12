@@ -271,7 +271,6 @@ export type UpdatePortalApartmentRequest = {
   planMediaId?: string | null;
   coverMediaId?: string | null;
   salesStatus?: ApartmentSalesStatus;
-  statusChangeReason?: string;
   translations?: PortalTranslationsInput;
 };
 

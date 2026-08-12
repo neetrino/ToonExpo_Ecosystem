@@ -144,9 +144,6 @@ export const EditApartmentForm = ({ apartment }: EditApartmentFormProps) => {
             )}
           />
         </FormField>
-        <FormField id="apt-reason" label={t('form.statusChangeReason')}>
-          <Input id="apt-reason" {...register('statusChangeReason')} />
-        </FormField>
         <FormField id="apt-finishing" label={t('form.finishingStatus')}>
           <Input id="apt-finishing" {...register('finishingStatus')} />
         </FormField>
