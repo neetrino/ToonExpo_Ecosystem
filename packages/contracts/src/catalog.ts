@@ -205,6 +205,7 @@ export type ApartmentDetail = {
   viewType: string | null;
   features: unknown;
   plan: MediaAssetSummary | null;
+  cover: MediaAssetSummary | null;
   project: {
     id: string;
     name: string;

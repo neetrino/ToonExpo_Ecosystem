@@ -3,11 +3,12 @@ import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { cache } from 'react';
 
-import { getApartment, getProject } from '@/features/catalog/api/catalog-api';
+import { getApartment, getFloor, getProject } from '@/features/catalog/api/catalog-api';
 import { ApartmentDetailView } from '@/features/catalog/components/apartment-detail-view';
 import { ComparableHomesSection } from '@/features/catalog/components/comparable-homes-section';
 import { ProjectPricesOverlayScope } from '@/features/catalog/components/price-overlay-scope';
 import { SiteFooter } from '@/features/catalog/components/site-footer';
+import { buildApartmentGalleryImages } from '@/features/catalog/utils/build-apartment-gallery-images';
 import { loadComparableHomes } from '@/features/catalog/utils/load-comparable-homes';
 
 type ApartmentPageProps = {
@@ -48,28 +49,19 @@ export default async function ApartmentPage({ params }: ApartmentPageProps) {
     notFound();
   }
 
-  const project = await getProject(apartment.project.id, { locale });
+  const [project, floor] = await Promise.all([
+    getProject(apartment.project.id, { locale }),
+    getFloor(apartment.floor.id, {
+      locale,
+      projectId: apartment.project.id,
+    }),
+  ]);
   const locationLine = buildLocationLine(
     project?.address,
     project?.city,
     project?.district,
     project?.locationText,
   );
-
-  const galleryImages = [
-    apartment.plan
-      ? {
-          src: apartment.plan.fileUrl,
-          alt: apartment.plan.altText ?? apartment.number,
-        }
-      : null,
-    project?.cover
-      ? {
-          src: project.cover.fileUrl,
-          alt: project.cover.altText ?? apartment.project.name,
-        }
-      : null,
-  ].filter((image): image is { src: string; alt: string } => image != null);
 
   const comparableHomes =
     project != null
@@ -80,6 +72,13 @@ export default async function ApartmentPage({ params }: ApartmentPageProps) {
           locationLine,
         })
       : [];
+
+  const galleryImages = buildApartmentGalleryImages({
+    apartment,
+    project,
+    floorplan: floor?.floorplan ?? null,
+    extraImages: comparableHomes.map((home) => home.image),
+  });
 
   return (
     <div className="min-h-screen bg-canvas">
