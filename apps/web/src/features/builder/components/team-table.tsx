@@ -12,6 +12,7 @@ import { AdminDeleteModal } from '@/shared/ui/admin-delete-modal';
 import { ListTableReveal } from '@/shared/ui/motion';
 import { Select } from '@/shared/ui/select';
 import { Switch } from '@/shared/ui/switch';
+import { useSuccessToast } from '@/shared/ui/use-success-toast';
 import { VIEW_MODE_CARDS, type ViewMode } from '@/shared/ui/view-mode';
 
 type TeamTableProps = {
@@ -38,7 +39,8 @@ type PendingAction =
 export const TeamTable = ({ members, canManage, viewMode = VIEW_MODE_CARDS }: TeamTableProps) => {
   const t = useTranslations('Builder.team');
   const updateMutation = useUpdateMemberMutation();
-  const [toast, setToast] = useState<'success' | 'error' | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const { showSuccess, successToast } = useSuccessToast();
   const [pendingAction, setPendingAction] = useState<PendingAction | null>(null);
 
   const requestRoleChange = (
@@ -65,7 +67,7 @@ export const TeamTable = ({ members, canManage, viewMode = VIEW_MODE_CARDS }: Te
     if (!pendingAction) {
       return;
     }
-    setToast(null);
+    setError(null);
     try {
       if (pendingAction.type === 'role') {
         await updateMutation.mutateAsync({
@@ -79,9 +81,9 @@ export const TeamTable = ({ members, canManage, viewMode = VIEW_MODE_CARDS }: Te
         });
       }
       setPendingAction(null);
-      setToast('success');
+      showSuccess(t('updateSuccess'));
     } catch {
-      setToast('error');
+      setError(t('errors.generic'));
     }
   };
 
@@ -200,16 +202,12 @@ export const TeamTable = ({ members, canManage, viewMode = VIEW_MODE_CARDS }: Te
         </div>
         </ListTableReveal>
       )}
-      {toast === 'success' ? (
-        <p role="status" className="text-sm text-success">
-          {t('updateSuccess')}
-        </p>
-      ) : null}
-      {toast === 'error' ? (
+      {error ? (
         <p role="alert" className="text-sm text-danger">
-          {t('errors.generic')}
+          {error}
         </p>
       ) : null}
+      {successToast}
 
       <AdminDeleteModal
         open={pendingAction != null}

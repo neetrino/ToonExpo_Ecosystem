@@ -17,6 +17,7 @@ import {
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Select } from '@/shared/ui/select';
+import { useSuccessToast } from '@/shared/ui/use-success-toast';
 
 type CrmDealApartmentsSectionProps = {
   deal: CrmDealDetail;
@@ -37,7 +38,7 @@ export const CrmDealApartmentsSection = ({ deal }: CrmDealApartmentsSectionProps
   const [apartments, setApartments] = useState<ApartmentOption[]>([]);
   const [loadingApartments, setLoadingApartments] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [message, setMessage] = useState<string | null>(null);
+  const { showSuccess, successToast } = useSuccessToast();
 
   const projectQuery = usePortalProjectQuery(projectId);
   const floorIdsKey = useMemo(() => {
@@ -87,14 +88,13 @@ export const CrmDealApartmentsSection = ({ deal }: CrmDealApartmentsSectionProps
 
   const onLink = async () => {
     setError(null);
-    setMessage(null);
     if (!apartmentId) {
       setError(t('selectApartment'));
       return;
     }
     try {
       await attachMutation.mutateAsync({ apartmentId });
-      setMessage(t('linkSuccess'));
+      showSuccess(t('linkSuccess'));
       setApartmentId('');
     } catch {
       setError(t('errors.generic'));
@@ -103,13 +103,12 @@ export const CrmDealApartmentsSection = ({ deal }: CrmDealApartmentsSectionProps
 
   const onUnlink = async (linkedApartmentId: string, label: string) => {
     setError(null);
-    setMessage(null);
     if (!window.confirm(t('unlinkConfirm', { apartment: label }))) {
       return;
     }
     try {
       await detachMutation.mutateAsync(linkedApartmentId);
-      setMessage(t('unlinkSuccess'));
+      showSuccess(t('unlinkSuccess'));
     } catch {
       setError(t('errors.unlinkBlocked'));
     }
@@ -201,11 +200,7 @@ export const CrmDealApartmentsSection = ({ deal }: CrmDealApartmentsSectionProps
           {error}
         </p>
       ) : null}
-      {message ? (
-        <p role="status" className="text-sm text-ink">
-          {message}
-        </p>
-      ) : null}
+      {successToast}
 
       <Button
         type="button"

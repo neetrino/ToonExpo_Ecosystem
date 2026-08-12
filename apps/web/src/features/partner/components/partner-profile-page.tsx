@@ -26,6 +26,7 @@ import {
 import { toPartnerProfileFormValues } from '@/features/partners/utils/partner-form-values';
 import { toUpdatePortalPartnerBody } from '@/features/partners/utils/partner-mappers';
 import { Button } from '@/shared/ui/button';
+import { useSuccessToast } from '@/shared/ui/use-success-toast';
 
 /**
  * Partner portal profile page with read-only admin fields.
@@ -58,7 +59,7 @@ const PartnerProfileForm = ({ partner }: PartnerProfileFormProps) => {
   const tPartners = useTranslations('Partners');
   const updateMutation = useUpdatePortalPartnerMutation();
   const [saveError, setSaveError] = useState<string | null>(null);
-  const [saveSuccess, setSaveSuccess] = useState(false);
+  const { showSuccess, successToast } = useSuccessToast();
 
   const form = useForm<PartnerProfileFormValues>({
     resolver: zodResolver(partnerProfileSchema),
@@ -67,10 +68,9 @@ const PartnerProfileForm = ({ partner }: PartnerProfileFormProps) => {
 
   const onSubmit = form.handleSubmit(async (values) => {
     setSaveError(null);
-    setSaveSuccess(false);
     try {
       await updateMutation.mutateAsync(toUpdatePortalPartnerBody(values));
-      setSaveSuccess(true);
+      showSuccess(t('saveSuccess'));
     } catch {
       setSaveError(t('errors.generic'));
     }
@@ -115,12 +115,12 @@ const PartnerProfileForm = ({ partner }: PartnerProfileFormProps) => {
             {saveError}
           </p>
         ) : null}
-        {saveSuccess ? <p className="text-sm text-success">{t('saveSuccess')}</p> : null}
 
         <Button type="submit" disabled={updateMutation.isPending || !form.formState.isDirty}>
           {updateMutation.isPending ? t('saving') : t('save')}
         </Button>
       </form>
+      {successToast}
     </div>
   );
 };

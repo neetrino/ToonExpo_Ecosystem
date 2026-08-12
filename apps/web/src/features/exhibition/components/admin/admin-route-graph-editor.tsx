@@ -15,6 +15,7 @@ import {
 import { useReplaceAdminRouteGraphMutation } from '@/features/exhibition/hooks/use-exhibition';
 import { Button } from '@/shared/ui/button';
 import { Card } from '@/shared/ui/card';
+import { useSuccessToast } from '@/shared/ui/use-success-toast';
 
 type AdminRouteGraphEditorProps = {
   mapId: string;
@@ -53,8 +54,7 @@ export const AdminRouteGraphEditor = ({
   const [edges, setEdges] = useState<EditableRouteEdge[]>(() =>
     initialEdges.map(toEditableRouteEdge),
   );
-  const [saved, setSaved] = useState(false);
-  const savedTimerRef = useRef<number | null>(null);
+  const { showSuccess, successToast } = useSuccessToast();
   const initialNodesRef = useRef(initialNodes);
   const initialEdgesRef = useRef(initialEdges);
   initialNodesRef.current = initialNodes;
@@ -65,14 +65,6 @@ export const AdminRouteGraphEditor = ({
     setNodes(initialNodesRef.current.map(toEditableRouteNode));
     setEdges(initialEdgesRef.current.map(toEditableRouteEdge));
   }, [mapId, syncKey]);
-
-  useEffect(() => {
-    return () => {
-      if (savedTimerRef.current !== null) {
-        window.clearTimeout(savedTimerRef.current);
-      }
-    };
-  }, []);
 
   const nodeIds = nodes.map((node) => node.localId);
 
@@ -95,14 +87,7 @@ export const AdminRouteGraphEditor = ({
       })),
     };
     await mutation.mutateAsync(payload);
-    setSaved(true);
-    if (savedTimerRef.current !== null) {
-      window.clearTimeout(savedTimerRef.current);
-    }
-    savedTimerRef.current = window.setTimeout(() => {
-      savedTimerRef.current = null;
-      setSaved(false);
-    }, 2000);
+    showSuccess(t('saved'));
   };
 
   return (
@@ -121,7 +106,7 @@ export const AdminRouteGraphEditor = ({
           {mutation.isPending ? t('saving') : t('save')}
         </Button>
       </div>
-      {saved ? <p className="text-sm text-success">{t('saved')}</p> : null}
+      {successToast}
       <AdminRouteGraphNodesTable nodes={nodes} boothOptions={boothOptions} onChange={setNodes} />
       <AdminRouteGraphEdgesTable edges={edges} nodeIds={nodeIds} onChange={setEdges} />
     </Card>

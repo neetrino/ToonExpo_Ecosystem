@@ -23,6 +23,7 @@ import {
 } from '@/features/media/schemas/media-fields.schema';
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
+import { useSuccessToast } from '@/shared/ui/use-success-toast';
 
 const companyProfileSchema = z
   .object({
@@ -45,7 +46,7 @@ export const CompanyProfileForm = ({ profile, canEdit }: CompanyProfileFormProps
   const t = useTranslations('Builder.company');
   const mutation = useUpdateCompanyProfileMutation();
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+  const { showSuccess, successToast } = useSuccessToast();
 
   const {
     register,
@@ -63,14 +64,13 @@ export const CompanyProfileForm = ({ profile, canEdit }: CompanyProfileFormProps
 
   const onSubmit = handleSubmit(async (values) => {
     setError(null);
-    setSuccess(false);
     try {
       await mutation.mutateAsync({
         description: emptyToNull(values.description),
         logoMediaId: toNullableMediaId(values.logoMediaId),
         ...companyContactPatchFrom(values),
       });
-      setSuccess(true);
+      showSuccess(t('saveSuccess'));
     } catch {
       setError(t('errors.generic'));
     }
@@ -83,6 +83,7 @@ export const CompanyProfileForm = ({ profile, canEdit }: CompanyProfileFormProps
   const busy = isSubmitting || mutation.isPending;
 
   return (
+    <>
     <form onSubmit={onSubmit} className="flex max-w-3xl flex-col gap-4" noValidate>
       <FormField
         id="company-description"
@@ -124,14 +125,11 @@ export const CompanyProfileForm = ({ profile, canEdit }: CompanyProfileFormProps
           {error}
         </p>
       ) : null}
-      {success ? (
-        <p role="status" className="text-sm text-success">
-          {t('saveSuccess')}
-        </p>
-      ) : null}
       <Button type="submit" variant="secondary" disabled={busy || !isDirty}>
         {busy ? t('saving') : t('save')}
       </Button>
     </form>
+    {successToast}
+    </>
   );
 };

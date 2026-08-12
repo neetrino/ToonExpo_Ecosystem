@@ -16,6 +16,7 @@ import {
   toNullableMediaId,
 } from '@/features/media/schemas/media-fields.schema';
 import { Button } from '@/shared/ui/button';
+import { useSuccessToast } from '@/shared/ui/use-success-toast';
 
 const updateApartmentCoverSchema = z.object({
   coverMediaId: optionalMediaIdField,
@@ -36,7 +37,7 @@ export const EditApartmentCoverForm = ({ apartment }: EditApartmentCoverFormProp
   const t = useTranslations('Builder.apartments');
   const mutation = useUpdateApartmentMutation(apartment.id);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+  const { showSuccess, successToast } = useSuccessToast();
   const [previewUrl, setPreviewUrl] = useState<string | null>(
     apartment.cover?.fileUrl ?? null,
   );
@@ -58,14 +59,13 @@ export const EditApartmentCoverForm = ({ apartment }: EditApartmentCoverFormProp
 
   const onSubmit = handleSubmit(async (values) => {
     setError(null);
-    setSuccess(false);
     try {
       const updated = await mutation.mutateAsync({
         coverMediaId: toNullableMediaId(values.coverMediaId),
       });
       reset({ coverMediaId: updated.coverMediaId ?? '' });
       setPreviewUrl(updated.cover?.fileUrl ?? null);
-      setSuccess(true);
+      showSuccess(t('coverSaved'));
     } catch {
       setError(t('errors.generic'));
     }
@@ -74,6 +74,7 @@ export const EditApartmentCoverForm = ({ apartment }: EditApartmentCoverFormProp
   const busy = isSubmitting || mutation.isPending;
 
   return (
+    <>
     <form onSubmit={onSubmit} className="flex flex-col gap-3" noValidate>
       <Controller
         control={control}
@@ -103,14 +104,11 @@ export const EditApartmentCoverForm = ({ apartment }: EditApartmentCoverFormProp
           {error}
         </p>
       ) : null}
-      {success ? (
-        <p role="status" className="text-xs text-success">
-          {t('coverSaved')}
-        </p>
-      ) : null}
       <Button type="submit" size="sm" variant="secondary" disabled={busy || !isDirty}>
         {busy ? t('saving') : t('saveCover')}
       </Button>
     </form>
+    {successToast}
+    </>
   );
 };

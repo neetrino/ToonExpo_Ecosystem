@@ -5,13 +5,15 @@ import { createPortal } from 'react-dom';
 
 import { cn } from '@/shared/ui/cn';
 
-const TOAST_VISIBLE_MS = 3400;
-const TOAST_FADE_MS = 420;
+const TOAST_VISIBLE_MS = 2800;
+const TOAST_FADE_MS = 700;
 
 type EphemeralToastProps = {
   message: string | null;
   onDismiss: () => void;
-  tone?: 'danger' | 'neutral' | undefined;
+  tone?: 'danger' | 'neutral' | 'success' | undefined;
+  /** Changes restart the show/hide cycle (same message text can replay). */
+  id?: number | undefined;
 };
 
 /**
@@ -21,8 +23,10 @@ export const EphemeralToast = ({
   message,
   onDismiss,
   tone = 'danger',
+  id,
 }: EphemeralToastProps) => {
   const [mounted, setMounted] = useState(false);
+  const [displayed, setDisplayed] = useState<string | null>(null);
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -32,10 +36,17 @@ export const EphemeralToast = ({
   useEffect(() => {
     if (!message) {
       setVisible(false);
-      return;
+      const clearTimer = window.setTimeout(() => {
+        setDisplayed(null);
+      }, TOAST_FADE_MS);
+      return () => {
+        window.clearTimeout(clearTimer);
+      };
     }
 
+    setDisplayed(message);
     setVisible(false);
+
     let enterFrame2 = 0;
     const enterFrame1 = window.requestAnimationFrame(() => {
       enterFrame2 = window.requestAnimationFrame(() => {
@@ -55,22 +66,27 @@ export const EphemeralToast = ({
       window.clearTimeout(hideTimer);
       window.clearTimeout(dismissTimer);
     };
-  }, [message, onDismiss]);
+  }, [message, id, onDismiss]);
 
-  if (!mounted || !message) {
+  if (!mounted || !displayed) {
     return null;
   }
 
   return createPortal(
     <div
-      role="alert"
-      aria-live="assertive"
+      role={tone === 'danger' ? 'alert' : 'status'}
+      aria-live={tone === 'danger' ? 'assertive' : 'polite'}
       className={cn(
         'pointer-events-none fixed inset-x-0 top-8 z-[var(--z-toast)] flex justify-center px-4',
-        'transition-[opacity,transform] duration-[420ms] ease-[var(--ease-out-premium)]',
-        'motion-reduce:transition-none',
-        visible ? 'translate-y-0 opacity-100' : '-translate-y-3 opacity-0',
+        visible ? 'translate-y-0 opacity-100' : '-translate-y-2 opacity-0',
       )}
+      style={{
+        transitionProperty: 'opacity, transform',
+        transitionDuration: `${TOAST_FADE_MS}ms`,
+        transitionTimingFunction: visible
+          ? 'var(--ease-out-premium)'
+          : 'cubic-bezier(0.4, 0, 0.2, 1)',
+      }}
     >
       <p
         className={cn(
@@ -78,10 +94,12 @@ export const EphemeralToast = ({
           'ring-1 ring-border/70',
           tone === 'danger'
             ? 'bg-danger-soft text-danger'
-            : 'bg-surface-elevated text-ink',
+            : tone === 'success'
+              ? 'bg-surface-elevated text-success'
+              : 'bg-surface-elevated text-ink',
         )}
       >
-        {message}
+        {displayed}
       </p>
     </div>,
     document.body,

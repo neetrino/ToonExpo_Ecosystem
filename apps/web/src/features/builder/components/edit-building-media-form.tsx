@@ -16,6 +16,7 @@ import {
 import { MediaUploadField } from '@/features/media/components/media-upload-field';
 import { toNullableMediaId } from '@/features/media/schemas/media-fields.schema';
 import { Button } from '@/shared/ui/button';
+import { useSuccessToast } from '@/shared/ui/use-success-toast';
 
 type EditBuildingMediaFormProps = {
   projectId: string;
@@ -31,7 +32,7 @@ export const EditBuildingMediaForm = ({ projectId, building }: EditBuildingMedia
   const t = useTranslations('Builder.inventory');
   const mutation = useUpdateBuildingMutation(projectId, building.id);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+  const { showSuccess, successToast } = useSuccessToast();
 
   const {
     control,
@@ -44,12 +45,11 @@ export const EditBuildingMediaForm = ({ projectId, building }: EditBuildingMedia
 
   const onSubmit = handleSubmit(async (values) => {
     setError(null);
-    setSuccess(false);
     try {
       await mutation.mutateAsync({
         coverMediaId: toNullableMediaId(values.coverMediaId),
       });
-      setSuccess(true);
+      showSuccess(t('coverSaved'));
     } catch {
       setError(t('errors.generic'));
     }
@@ -58,6 +58,7 @@ export const EditBuildingMediaForm = ({ projectId, building }: EditBuildingMedia
   const busy = isSubmitting || mutation.isPending;
 
   return (
+    <>
     <form onSubmit={onSubmit} className="flex flex-col gap-2" noValidate>
       <Controller
         control={control}
@@ -78,14 +79,11 @@ export const EditBuildingMediaForm = ({ projectId, building }: EditBuildingMedia
           {error}
         </p>
       ) : null}
-      {success ? (
-        <p role="status" className="text-xs text-success">
-          {t('coverSaved')}
-        </p>
-      ) : null}
       <Button type="submit" size="sm" variant="ghost" disabled={busy || !isDirty}>
         {busy ? t('adding') : t('saveCover')}
       </Button>
     </form>
+    {successToast}
+    </>
   );
 };

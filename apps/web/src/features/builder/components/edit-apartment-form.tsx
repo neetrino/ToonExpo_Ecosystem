@@ -25,6 +25,7 @@ import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
 import { Select } from '@/shared/ui/select';
 import { Textarea } from '@/shared/ui/textarea';
+import { useSuccessToast } from '@/shared/ui/use-success-toast';
 
 type EditApartmentFormProps = {
   apartment: PortalApartmentDetail;
@@ -39,7 +40,7 @@ export const EditApartmentForm = ({ apartment }: EditApartmentFormProps) => {
   const t = useTranslations('Builder.apartments');
   const mutation = useUpdateApartmentMutation(apartment.id);
   const [formError, setFormError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+  const { showSuccess, successToast } = useSuccessToast();
 
   const {
     register,
@@ -53,10 +54,9 @@ export const EditApartmentForm = ({ apartment }: EditApartmentFormProps) => {
 
   const onSubmit = handleSubmit(async (values) => {
     setFormError(null);
-    setSuccess(false);
     try {
       await mutation.mutateAsync(toApartmentUpdateRequest(values, apartment));
-      setSuccess(true);
+      showSuccess(t('saveSuccess'));
     } catch {
       setFormError(t('errors.generic'));
     }
@@ -65,6 +65,7 @@ export const EditApartmentForm = ({ apartment }: EditApartmentFormProps) => {
   const busy = isSubmitting || mutation.isPending;
 
   return (
+    <>
     <form onSubmit={onSubmit} className="flex flex-col gap-5" noValidate>
       <div className="grid gap-4 sm:grid-cols-2">
         <FormField
@@ -221,15 +222,11 @@ export const EditApartmentForm = ({ apartment }: EditApartmentFormProps) => {
           {formError}
         </p>
       ) : null}
-      {success ? (
-        <p role="status" className="text-sm text-success">
-          {t('saveSuccess')}
-        </p>
-      ) : null}
-
       <Button type="submit" variant="secondary" disabled={busy || !isDirty}>
         {busy ? t('saving') : t('save')}
       </Button>
     </form>
+    {successToast}
+    </>
   );
 };

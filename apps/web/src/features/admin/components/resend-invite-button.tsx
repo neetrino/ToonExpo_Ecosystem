@@ -6,20 +6,20 @@ import { useState } from "react";
 import { useResendAdminInviteMutation } from "@/features/admin/hooks/use-admin-companies";
 import { ApiError } from "@/shared/api/errors";
 import { Button } from "@/shared/ui/button";
+import { useSuccessToast } from "@/shared/ui/use-success-toast";
 
 type ResendInviteButtonProps = {
   companyId: string;
 };
 
 /**
- * Confirm + resend set-password invite with inline success toast.
+ * Confirm + resend set-password invite with success toast.
  */
 export const ResendInviteButton = ({ companyId }: ResendInviteButtonProps) => {
   const t = useTranslations("Admin.companies");
   const resendMutation = useResendAdminInviteMutation(companyId);
-  const [toast, setToast] = useState<"success" | "error" | "notFound" | null>(
-    null,
-  );
+  const [toast, setToast] = useState<"error" | "notFound" | null>(null);
+  const { showSuccess, successToast } = useSuccessToast();
 
   const onClick = () => {
     if (!window.confirm(t("detail.resendConfirm"))) {
@@ -30,7 +30,7 @@ export const ResendInviteButton = ({ companyId }: ResendInviteButtonProps) => {
     void resendMutation
       .mutateAsync()
       .then(() => {
-        setToast("success");
+        showSuccess(t("detail.resendSuccess"));
       })
       .catch((error: unknown) => {
         if (error instanceof ApiError && error.status === 404) {
@@ -54,11 +54,7 @@ export const ResendInviteButton = ({ companyId }: ResendInviteButtonProps) => {
           ? t("detail.resendSubmitting")
           : t("detail.resendInvite")}
       </Button>
-      {toast === "success" ? (
-        <p role="status" className="text-sm text-success">
-          {t("detail.resendSuccess")}
-        </p>
-      ) : null}
+      {successToast}
       {toast === "notFound" ? (
         <p role="alert" className="text-sm text-danger">
           {t("detail.resendNotFound")}

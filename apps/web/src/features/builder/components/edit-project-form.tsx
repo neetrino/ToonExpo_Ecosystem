@@ -23,6 +23,7 @@ import { cn } from '@/shared/ui/cn';
 import { DatePicker } from '@/shared/ui/date-picker';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
+import { useSuccessToast } from '@/shared/ui/use-success-toast';
 
 type EditProjectFormProps = {
   project: PortalProjectDetail;
@@ -76,7 +77,7 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
   const t = useTranslations('Builder.projects');
   const updateMutation = useUpdatePortalProjectMutation(project.id);
   const [formError, setFormError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+  const { showSuccess, successToast } = useSuccessToast();
 
   const {
     register,
@@ -90,10 +91,9 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
 
   const onSubmit = handleSubmit(async (values) => {
     setFormError(null);
-    setSuccess(false);
     try {
       await updateMutation.mutateAsync(toUpdateProjectRequest(values));
-      setSuccess(true);
+      showSuccess(t('detail.saveSuccess'));
     } catch {
       setFormError(t('errors.generic'));
     }
@@ -102,6 +102,7 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
   const busy = isSubmitting || updateMutation.isPending;
 
   return (
+    <>
     <form
       onSubmit={onSubmit}
       className={cn('flex flex-col gap-5', SAVE_BAR_SCROLL_CLEARANCE_CLASS)}
@@ -225,11 +226,6 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
               {formError}
             </p>
           ) : null}
-          {success ? (
-            <p role="status" className="text-sm text-success">
-              {t('detail.saveSuccess')}
-            </p>
-          ) : null}
           <Button
             type="submit"
             variant="secondary"
@@ -241,5 +237,7 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
         </div>
       </div>
     </form>
+    {successToast}
+    </>
   );
 };

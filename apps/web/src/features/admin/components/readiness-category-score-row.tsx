@@ -15,6 +15,7 @@ import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
 import { Textarea } from '@/shared/ui/textarea';
+import { useSuccessToast } from '@/shared/ui/use-success-toast';
 
 type ReadinessCategoryScoreRowProps = {
   assessmentId: string;
@@ -37,7 +38,7 @@ export const ReadinessCategoryScoreRow = ({
   const [status, setStatus] = useState<ReadinessScoreStatus>(score.status);
   const [summary, setSummary] = useState(score.recommendationSummary ?? '');
   const [error, setError] = useState<string | null>(null);
-  const [saved, setSaved] = useState(false);
+  const { showSuccess, successToast } = useSuccessToast();
 
   useEffect(() => {
     setScoreValue(score.score === null ? '' : String(score.score));
@@ -52,7 +53,6 @@ export const ReadinessCategoryScoreRow = ({
 
   const onSave = async () => {
     setError(null);
-    setSaved(false);
     const parsed = scoreValue.trim() === '' ? undefined : Number.parseInt(scoreValue, 10);
     if (
       parsed !== undefined &&
@@ -67,7 +67,7 @@ export const ReadinessCategoryScoreRow = ({
         status,
         recommendationSummary: summary.trim().length > 0 ? summary.trim() : null,
       });
-      setSaved(true);
+      showSuccess(t('saved'));
     } catch {
       setError(t('errors.generic'));
     }
@@ -148,11 +148,7 @@ export const ReadinessCategoryScoreRow = ({
           {error}
         </p>
       ) : null}
-      {saved ? (
-        <p role="status" className="text-sm text-success">
-          {t('saved')}
-        </p>
-      ) : null}
+      {successToast}
     </div>
   );
 };
