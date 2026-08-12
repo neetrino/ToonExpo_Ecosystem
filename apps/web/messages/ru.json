@@ -2344,12 +2344,14 @@
         "name": "Название компании",
         "type": "Тип партнёра",
         "adminSection": "Первый администратор",
-        "adminName": "Имя и фамилия админа",
+        "adminFirstName": "Имя",
+        "adminSurname": "Фамилия",
         "adminEmail": "Email админа",
         "adminPhone": "Телефон админа",
         "placeholders": {
           "name": "Acme Partners",
-          "adminName": "John Doe",
+          "adminFirstName": "John",
+          "adminSurname": "Doe",
           "adminEmail": "john.doe@example.com",
           "adminPhone": "+37491111222"
         },
@@ -2370,7 +2372,8 @@
         },
         "validation": {
           "name": "Введите название компании",
-          "adminName": "Введите имя админа",
+          "adminFirstName": "Введите имя админа",
+          "adminSurname": "Введите фамилию админа",
           "adminEmail": "Введите корректный email",
           "adminPhone": "Введите корректный телефон"
         },

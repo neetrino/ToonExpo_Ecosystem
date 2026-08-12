@@ -2069,12 +2069,14 @@
         "name": "Ընկերության անվանում",
         "type": "Գործընկերոջ տեսակ",
         "adminSection": "Առաջին ադմինիստրատոր",
-        "adminName": "Ադմինի անուն, ազգանուն",
+        "adminFirstName": "Անուն",
+        "adminSurname": "Ազգանուն",
         "adminEmail": "Ադմինի էլ. փոստ",
         "adminPhone": "Ադմինի հեռախոս",
         "placeholders": {
           "name": "Acme Partners",
-          "adminName": "John Doe",
+          "adminFirstName": "John",
+          "adminSurname": "Doe",
           "adminEmail": "john.doe@example.com",
           "adminPhone": "+37491111222"
         },
@@ -2095,7 +2097,8 @@
         },
         "validation": {
           "name": "Մուտքագրեք ընկերության անվանումը",
-          "adminName": "Մուտքագրեք ադմինի անունը",
+          "adminFirstName": "Մուտքագրեք ադմինի անունը",
+          "adminSurname": "Մուտքագրեք ադմինի ազգանունը",
           "adminEmail": "Մուտքագրեք վավեր էլ. փոստ",
           "adminPhone": "Մուտքագրեք վավեր հեռախոսահամար"
         },

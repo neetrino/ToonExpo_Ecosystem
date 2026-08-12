@@ -133,7 +133,7 @@ export const toCreatePartnerBody = (
 ): CreateAdminPartnerBody => ({
   name: values.name,
   type: values.type,
-  adminName: values.adminName,
+  adminName: `${values.adminFirstName} ${values.adminSurname}`.trim(),
   adminEmail: values.adminEmail,
   ...(optionalText(values.adminPhone) ? { adminPhone: values.adminPhone } : {}),
   ...(locale ? { locale } : {}),

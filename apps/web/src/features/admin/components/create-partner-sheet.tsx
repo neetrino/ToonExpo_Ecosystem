@@ -45,7 +45,8 @@ export const CreatePartnerSheet = ({ open, onClose }: CreatePartnerSheetProps) =
     defaultValues: {
       name: '',
       type: 'other',
-      adminName: '',
+      adminFirstName: '',
+      adminSurname: '',
       adminEmail: '',
       adminPhone: '',
     },
@@ -115,18 +116,43 @@ export const CreatePartnerSheet = ({ open, onClose }: CreatePartnerSheetProps) =
             {t('adminSection')}
           </legend>
 
-          <FormField
-            id="adminName"
-            label={t('adminName')}
-            error={form.formState.errors.adminName ? t('validation.adminName') : undefined}
-          >
-            <Input
-              id="adminName"
-              placeholder={t('placeholders.adminName')}
-              aria-invalid={Boolean(form.formState.errors.adminName)}
-              {...form.register('adminName')}
-            />
-          </FormField>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <FormField
+              id="adminFirstName"
+              label={t('adminFirstName')}
+              error={
+                form.formState.errors.adminFirstName
+                  ? t('validation.adminFirstName')
+                  : undefined
+              }
+            >
+              <Input
+                id="adminFirstName"
+                autoComplete="given-name"
+                placeholder={t('placeholders.adminFirstName')}
+                aria-invalid={Boolean(form.formState.errors.adminFirstName)}
+                {...form.register('adminFirstName')}
+              />
+            </FormField>
+
+            <FormField
+              id="adminSurname"
+              label={t('adminSurname')}
+              error={
+                form.formState.errors.adminSurname
+                  ? t('validation.adminSurname')
+                  : undefined
+              }
+            >
+              <Input
+                id="adminSurname"
+                autoComplete="family-name"
+                placeholder={t('placeholders.adminSurname')}
+                aria-invalid={Boolean(form.formState.errors.adminSurname)}
+                {...form.register('adminSurname')}
+              />
+            </FormField>
+          </div>
 
           <FormField
             id="adminEmail"

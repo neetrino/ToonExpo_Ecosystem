@@ -38,26 +38,32 @@ const publicationStatusSchema = z.enum(
   ],
 );
 
-export const createPartnerSchema = z.object({
-  name: z.string().trim().min(1).max(COMPANY_NAME_MAX_LENGTH),
-  type: partnerTypeSchema,
-  adminName: z.string().trim().min(1).max(NAME_MAX_LENGTH),
-  adminEmail: z
-    .email()
-    .max(EMAIL_MAX_LENGTH)
-    .transform((value) => value.trim().toLowerCase()),
-  adminPhone: z
-    .string()
-    .trim()
-    .refine(
-      (value) =>
-        value.length === 0 ||
-        (value.length >= PHONE_MIN_LENGTH &&
-          value.length <= PHONE_MAX_LENGTH &&
-          PHONE_PATTERN.test(value)),
-      { message: "phone" },
-    ),
-});
+export const createPartnerSchema = z
+  .object({
+    name: z.string().trim().min(1).max(COMPANY_NAME_MAX_LENGTH),
+    type: partnerTypeSchema,
+    adminFirstName: z.string().trim().min(1).max(NAME_MAX_LENGTH),
+    adminSurname: z.string().trim().min(1).max(NAME_MAX_LENGTH),
+    adminEmail: z
+      .email()
+      .max(EMAIL_MAX_LENGTH)
+      .transform((value) => value.trim().toLowerCase()),
+    adminPhone: z
+      .string()
+      .trim()
+      .refine(
+        (value) =>
+          value.length === 0 ||
+          (value.length >= PHONE_MIN_LENGTH &&
+            value.length <= PHONE_MAX_LENGTH &&
+            PHONE_PATTERN.test(value)),
+        { message: "phone" },
+      ),
+  })
+  .refine(
+    (values) => `${values.adminFirstName} ${values.adminSurname}`.length <= NAME_MAX_LENGTH,
+    { path: ["adminSurname"], message: "adminNameTooLong" },
+  );
 
 export type CreatePartnerFormValues = z.infer<typeof createPartnerSchema>;
 
