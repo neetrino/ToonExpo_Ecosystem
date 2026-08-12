@@ -12,6 +12,7 @@ describe('project-catalog-amenities', () => {
       details: {
         propertyType: { hy: 'Բնակելի', en: 'Residential' },
         apartmentsCount: '12',
+        slogan: { hy: 'Ապրիր լավ', en: 'Live well' },
       },
       labels: {
         hy: ['Կայանատեղի'],
@@ -19,6 +20,7 @@ describe('project-catalog-amenities', () => {
       },
       links: {
         website: 'https://example.com',
+        floorplans2d: 'https://example.com/plans-2d',
       },
     };
     const nearbyPlaces = {
@@ -32,6 +34,8 @@ describe('project-catalog-amenities', () => {
     expect(slice.catalogDetails.propertyType.hy).toBe('Բնակելի');
     expect(slice.catalogDetails.propertyType.en).toBe('Residential');
     expect(slice.catalogDetails.apartmentsCount.hy).toBe('12');
+    expect(slice.catalogDetails.slogan.hy).toBe('Ապրիր լավ');
+    expect(slice.catalogLinks.floorplans2d).toBe('https://example.com/plans-2d');
     expect(slice.amenityLabelsHy).toBe('Կայանատեղի');
     expect(slice.amenityLabelsEn).toBe('Parking');
     expect(slice.nearbyPlacesHy).toBe('Արագած');
@@ -42,6 +46,7 @@ describe('project-catalog-amenities', () => {
       details: {
         propertyType: { hy: 'Բնակելի', en: 'Residential' },
         apartmentsCount: { hy: '12' },
+        slogan: { hy: 'Ապրիր լավ', en: 'Live well' },
       },
       labels: {
         hy: ['Կայանատեղի'],
@@ -49,6 +54,7 @@ describe('project-catalog-amenities', () => {
       },
       links: {
         website: 'https://example.com',
+        floorplans2d: 'https://example.com/plans-2d',
       },
     });
     expect(written.nearbyPlaces).toEqual({

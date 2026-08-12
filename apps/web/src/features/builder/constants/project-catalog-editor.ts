@@ -8,6 +8,7 @@ import {
 
 /** Long-form catalog fields — rendered as textareas in Admin. */
 export const PROJECT_CATALOG_TEXTAREA_KEYS = [
+  'slogan',
   'services',
   'paymentTypes',
   'installmentTerms',
@@ -17,6 +18,9 @@ export const PROJECT_CATALOG_TEXTAREA_KEYS = [
   'incomeTaxRefund',
   'subsidizedPrograms',
   'handoverDescription',
+  'greenZones',
+  'territorialAdvantages',
+  'views',
 ] as const satisfies ReadonlyArray<keyof ProjectCatalogDetails>;
 
 export type ProjectCatalogTextareaKey = (typeof PROJECT_CATALOG_TEXTAREA_KEYS)[number];
@@ -41,6 +45,7 @@ export const PROJECT_CATALOG_OVERVIEW_KEYS = [
 
 /** Remaining non-finance fields → Details card. */
 export const PROJECT_CATALOG_DETAILS_KEYS = [
+  'slogan',
   'zipCode',
   'brandName',
   'designer',
@@ -77,6 +82,9 @@ export const PROJECT_CATALOG_DETAILS_KEYS = [
   'distanceExtra',
   'economicZone',
   'finishingStatus',
+  'greenZones',
+  'territorialAdvantages',
+  'views',
   'services',
   'handoverDescription',
   'areaMinSqm',

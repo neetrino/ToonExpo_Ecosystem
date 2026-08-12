@@ -17,6 +17,7 @@ export { PROJECT_CATALOG_LINK_IDS } from '@/features/catalog/utils/project-catal
 export type CatalogContentLocale = 'hy' | 'ru' | 'en';
 
 export type ProjectCatalogDetails = {
+  slogan: string | null;
   propertyType: string | null;
   country: string | null;
   city: string | null;
@@ -77,6 +78,9 @@ export type ProjectCatalogDetails = {
   subsidizedPrograms: string | null;
   finishingStatus: string | null;
   handoverDescription: string | null;
+  greenZones: string | null;
+  territorialAdvantages: string | null;
+  views: string | null;
 };
 
 export type ParsedProjectCatalog = {
@@ -87,6 +91,7 @@ export type ParsedProjectCatalog = {
 };
 
 const EMPTY_DETAILS: ProjectCatalogDetails = {
+  slogan: null,
   propertyType: null,
   country: null,
   city: null,
@@ -147,6 +152,9 @@ const EMPTY_DETAILS: ProjectCatalogDetails = {
   subsidizedPrograms: null,
   finishingStatus: null,
   handoverDescription: null,
+  greenZones: null,
+  territorialAdvantages: null,
+  views: null,
 };
 
 /** Stable key list for Admin catalog editors and parsers. */
