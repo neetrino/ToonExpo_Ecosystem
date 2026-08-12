@@ -3205,6 +3205,8 @@
         "salesStatus": "Վաճառքի կարգավիճակ",
         "statusChangeReason": "Կարգավիճակի փոփոխության պատճառ",
         "description": "Նկարագրություն",
+        "finishingStatus": "Հարդարման կարգավիճակ",
+        "handoverDescription": "Հանձնման նկարագրություն",
         "coverMedia": "Շապիկի նկար",
         "planMedia": "Հատակագծի նկար",
         "matterportUrl": "Matterport հղում",

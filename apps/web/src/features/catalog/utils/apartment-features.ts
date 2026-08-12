@@ -65,3 +65,40 @@ export const parseApartmentFeatureExtras = (features: unknown): ApartmentFeature
     ),
   };
 };
+
+/**
+ * Merges finishing/handover form values into apartment `features` JSON.
+ * Clears known aliases when the field is emptied.
+ */
+export const mergeApartmentFeatureExtras = (
+  existing: unknown,
+  extras: {
+    finishingStatus: string;
+    handoverDescription: string;
+  },
+): Record<string, unknown> => {
+  const base =
+    existing != null && typeof existing === 'object' && !Array.isArray(existing)
+      ? { ...(existing as Record<string, unknown>) }
+      : {};
+
+  const finishingStatus = extras.finishingStatus.trim();
+  if (finishingStatus.length > 0) {
+    base['finishingStatus'] = finishingStatus;
+  } else {
+    delete base['finishingStatus'];
+    delete base['finishStatus'];
+    delete base['finishing'];
+  }
+
+  const handoverDescription = extras.handoverDescription.trim();
+  if (handoverDescription.length > 0) {
+    base['handoverDescription'] = handoverDescription;
+  } else {
+    delete base['handoverDescription'];
+    delete base['handover'];
+    delete base['deliveryDescription'];
+  }
+
+  return base;
+};

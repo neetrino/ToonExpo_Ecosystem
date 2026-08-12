@@ -3205,6 +3205,8 @@
         "salesStatus": "Статус продаж",
         "statusChangeReason": "Причина смены статуса",
         "description": "Описание",
+        "finishingStatus": "Статус отделки",
+        "handoverDescription": "Описание сдачи",
         "coverMedia": "Обложка",
         "planMedia": "Изображение планировки",
         "matterportUrl": "Ссылка Matterport",

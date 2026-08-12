@@ -3463,6 +3463,8 @@
         "salesStatus": "Sales status",
         "statusChangeReason": "Status change reason",
         "description": "Description",
+        "finishingStatus": "Finishing status",
+        "handoverDescription": "Handover description",
         "coverMedia": "Cover image",
         "planMedia": "Floor plan image",
         "matterportUrl": "Matterport URL",

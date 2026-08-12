@@ -10,6 +10,7 @@ import { ProjectPricesOverlayScope } from '@/features/catalog/components/price-o
 import { SiteFooter } from '@/features/catalog/components/site-footer';
 import { buildApartmentGalleryImages } from '@/features/catalog/utils/build-apartment-gallery-images';
 import { loadComparableHomes } from '@/features/catalog/utils/load-comparable-homes';
+import { parseProjectCatalog } from '@/features/catalog/utils/project-catalog-details';
 
 type ApartmentPageProps = {
   params: Promise<{ locale: string; id: string }>;
@@ -80,6 +81,12 @@ export default async function ApartmentPage({ params }: ApartmentPageProps) {
     extraImages: comparableHomes.map((home) => home.image),
   });
 
+  const projectHandoverDescription =
+    project != null
+      ? (parseProjectCatalog(project.amenities, project.nearbyPlaces, locale).details
+          .handoverDescription ?? null)
+      : null;
+
   return (
     <div className="min-h-screen bg-canvas">
       <ProjectPricesOverlayScope projectId={apartment.project.id}>
@@ -90,6 +97,7 @@ export default async function ApartmentPage({ params }: ApartmentPageProps) {
             galleryImages={galleryImages}
             projectType={project?.projectType ?? null}
             district={project?.district ?? null}
+            projectHandoverDescription={projectHandoverDescription}
           />
           <ComparableHomesSection homes={comparableHomes} />
         </main>

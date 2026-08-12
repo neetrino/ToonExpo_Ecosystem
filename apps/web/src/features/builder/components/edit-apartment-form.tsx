@@ -3,7 +3,7 @@
 import { useCatalogScope } from '@/features/builder/catalog-scope-context';
 import { catalogMediaContext } from '@/features/builder/catalog-scope';
 import { zodResolver } from '@hookform/resolvers/zod';
-import type { PortalApartmentDetail, UpdatePortalApartmentRequest } from '@toonexpo/contracts';
+import type { PortalApartmentDetail } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -15,79 +15,19 @@ import {
   updateApartmentSchema,
   type UpdateApartmentFormValues,
 } from '@/features/builder/schemas/apartment.schema';
-import { MediaUploadField } from '@/features/media/components/media-upload-field';
 import {
-  toNullableHttpsUrl,
-  toNullableMediaId,
-} from '@/features/media/schemas/media-fields.schema';
+  toApartmentFormValues,
+  toApartmentUpdateRequest,
+} from '@/features/builder/utils/apartment-form-mappers';
+import { MediaUploadField } from '@/features/media/components/media-upload-field';
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
 import { Select } from '@/shared/ui/select';
+import { Textarea } from '@/shared/ui/textarea';
 
 type EditApartmentFormProps = {
   apartment: PortalApartmentDetail;
-};
-
-const optionalNumber = (value: string): number | null => {
-  if (value.trim().length === 0) {
-    return null;
-  }
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : null;
-};
-
-const toFormValues = (apartment: PortalApartmentDetail): UpdateApartmentFormValues => ({
-  number: apartment.number,
-  rooms: apartment.rooms?.toString() ?? '',
-  bedrooms: apartment.bedrooms?.toString() ?? '',
-  bathrooms: apartment.bathrooms?.toString() ?? '',
-  areaTotal: apartment.areaTotal ?? '',
-  areaLiving: apartment.areaLiving ?? '',
-  balconyArea: apartment.balconyArea ?? '',
-  price: apartment.price ?? '',
-  priceVisibility: apartment.priceVisibility,
-  salesStatus: apartment.salesStatus,
-  statusChangeReason: '',
-  descriptionHy: apartment.translations?.description?.hy ?? apartment.description ?? '',
-  descriptionRu: apartment.translations?.description?.ru ?? '',
-  descriptionEn: apartment.translations?.description?.en ?? '',
-  planMediaId: apartment.planMediaId ?? '',
-  matterportUrl: apartment.matterportUrl ?? '',
-  external3dUrl: apartment.external3dUrl ?? '',
-});
-
-const toUpdateRequest = (
-  values: UpdateApartmentFormValues,
-  previousStatus: PortalApartmentDetail['salesStatus'],
-): UpdatePortalApartmentRequest => {
-  const description = {
-    ...(values.descriptionHy.length > 0 ? { hy: values.descriptionHy } : {}),
-    ...(values.descriptionRu.length > 0 ? { ru: values.descriptionRu } : {}),
-    ...(values.descriptionEn.length > 0 ? { en: values.descriptionEn } : {}),
-  };
-  const statusChanged = values.salesStatus !== previousStatus;
-
-  return {
-    number: values.number,
-    rooms: optionalNumber(values.rooms),
-    bedrooms: optionalNumber(values.bedrooms),
-    bathrooms: optionalNumber(values.bathrooms),
-    areaTotal: optionalNumber(values.areaTotal),
-    areaLiving: optionalNumber(values.areaLiving),
-    balconyArea: optionalNumber(values.balconyArea),
-    price: optionalNumber(values.price),
-    priceVisibility: values.priceVisibility,
-    salesStatus: values.salesStatus,
-    ...(statusChanged && values.statusChangeReason.length > 0
-      ? { statusChangeReason: values.statusChangeReason }
-      : {}),
-    description: values.descriptionHy.length > 0 ? values.descriptionHy : null,
-    ...(Object.keys(description).length > 0 ? { translations: { description } } : {}),
-    planMediaId: toNullableMediaId(values.planMediaId),
-    matterportUrl: toNullableHttpsUrl(values.matterportUrl),
-    external3dUrl: toNullableHttpsUrl(values.external3dUrl),
-  };
 };
 
 /**
@@ -108,14 +48,14 @@ export const EditApartmentForm = ({ apartment }: EditApartmentFormProps) => {
     formState: { errors, isSubmitting, isDirty },
   } = useForm<UpdateApartmentFormValues>({
     resolver: zodResolver(updateApartmentSchema),
-    defaultValues: toFormValues(apartment),
+    defaultValues: toApartmentFormValues(apartment),
   });
 
   const onSubmit = handleSubmit(async (values) => {
     setFormError(null);
     setSuccess(false);
     try {
-      await mutation.mutateAsync(toUpdateRequest(values, apartment.salesStatus));
+      await mutation.mutateAsync(toApartmentUpdateRequest(values, apartment));
       setSuccess(true);
     } catch {
       setFormError(t('errors.generic'));
@@ -206,15 +146,17 @@ export const EditApartmentForm = ({ apartment }: EditApartmentFormProps) => {
         <FormField id="apt-reason" label={t('form.statusChangeReason')}>
           <Input id="apt-reason" {...register('statusChangeReason')} />
         </FormField>
+        <FormField id="apt-finishing" label={t('form.finishingStatus')}>
+          <Input id="apt-finishing" {...register('finishingStatus')} />
+        </FormField>
       </div>
 
       <TranslationTabs>
         {(locale) => (
           <FormField id={`apt-desc-${locale}`} label={t('form.description')}>
-            <textarea
+            <Textarea
               id={`apt-desc-${locale}`}
               rows={3}
-              className="w-full rounded-sm border border-border bg-background px-4 py-3 text-sm text-ink focus-visible:border-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/20"
               {...register(
                 locale === 'hy'
                   ? 'descriptionHy'
@@ -226,6 +168,10 @@ export const EditApartmentForm = ({ apartment }: EditApartmentFormProps) => {
           </FormField>
         )}
       </TranslationTabs>
+
+      <FormField id="apt-handover" label={t('form.handoverDescription')}>
+        <Textarea id="apt-handover" rows={4} {...register('handoverDescription')} />
+      </FormField>
 
       <Controller
         control={control}

@@ -25,6 +25,8 @@ type ApartmentDetailViewProps = {
   projectType: string | null;
   /** Geographic district when set on the project. */
   district: string | null;
+  /** Project catalog handover text (fallback when apartment has none). */
+  projectHandoverDescription: string | null;
 };
 
 const EMPTY_VALUE = '—';
@@ -38,6 +40,7 @@ export const ApartmentDetailView = async ({
   galleryImages,
   projectType,
   district,
+  projectHandoverDescription,
 }: ApartmentDetailViewProps) => {
   const t = await getTranslations('Catalog');
   const locale = await getLocale();
@@ -52,6 +55,7 @@ export const ApartmentDetailView = async ({
   const detailRows = buildApartmentDetailRows({
     apartment,
     district,
+    projectHandoverDescription,
     formatCeilingHeight: (height) => t('apartment.criteria.ceilingHeightValue', { height }),
     formatStatus: (status) => t(`status.${status}`),
     labels: {
@@ -61,6 +65,7 @@ export const ApartmentDetailView = async ({
       unitNumber: t('apartment.criteria.unitNumber'),
       status: t('apartment.criteria.status'),
       windows: t('apartment.criteria.windows'),
+      handoverDescription: t('apartment.criteria.handoverDescription'),
       balconies: t('apartment.criteria.balconies'),
       generalDescription: t('apartment.criteria.generalDescription'),
       ceilingHeight: t('apartment.criteria.ceilingHeight'),
