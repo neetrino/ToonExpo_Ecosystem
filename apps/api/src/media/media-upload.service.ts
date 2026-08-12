@@ -36,9 +36,11 @@ type UploadInput = {
   buffer: Buffer;
   mimeType: string;
   originalFilename: string;
-  uploadedByUserId: string;
+  uploadedByUserId?: string;
   scope: UploadedMediaScope;
   kind?: MediaUploadKind;
+  relatedEntityType?: string;
+  relatedEntityId?: string;
 };
 
 type ValidatedUpload = {
@@ -128,7 +130,9 @@ export class MediaUploadService {
         title: sanitizeOriginalFilename(input.originalFilename),
         width: dimensions?.width ?? null,
         height: dimensions?.height ?? null,
-        uploadedByUserId: input.uploadedByUserId,
+        uploadedByUserId: input.uploadedByUserId ?? null,
+        relatedEntityType: input.relatedEntityType ?? null,
+        relatedEntityId: input.relatedEntityId ?? null,
       },
     });
 

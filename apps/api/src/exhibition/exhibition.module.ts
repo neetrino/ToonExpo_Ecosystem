@@ -18,6 +18,8 @@ import { PublicBoothSearchService } from "./public/public-booth-search.service.j
 import { PublicExhibitionController } from "./public/public-exhibition.controller.js";
 import { PublicExhibitionService } from "./public/public-exhibition.service.js";
 import { PublicRouteService } from "./public/public-route.service.js";
+import { PublicVenueMapController } from "./public/public-venue-map.controller.js";
+import { PublicVenueMapService } from "./public/public-venue-map.service.js";
 import { RouteGraphCache } from "./public/route-graph.cache.js";
 
 @Module({
@@ -29,6 +31,7 @@ import { RouteGraphCache } from "./public/route-graph.cache.js";
     CheckInController,
     BuyerCheckInController,
     PublicExhibitionController,
+    PublicVenueMapController,
   ],
   providers: [
     AdminEventsService,
@@ -39,6 +42,7 @@ import { RouteGraphCache } from "./public/route-graph.cache.js";
     CheckInService,
     BuyerCheckInService,
     PublicExhibitionService,
+    PublicVenueMapService,
     PublicBoothSearchService,
     PublicRouteService,
     RouteGraphCache,

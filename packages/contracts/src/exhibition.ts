@@ -9,6 +9,13 @@ export type {
 } from "./exhibition/events.js";
 
 export type {
+  PublicVenueMapArea,
+  PublicVenueMapCellRect,
+  PublicVenueMapCompanyLink,
+  PublicVenueMapSnapshotResponse,
+} from "./exhibition/public-venue-map.js";
+
+export type {
   CreateVenueMapRequest,
   PublicVenueMapSummary,
   UpdateVenueMapRequest,

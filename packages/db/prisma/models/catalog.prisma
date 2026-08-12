@@ -59,9 +59,10 @@ model MediaAsset {
   apartmentCovers   Apartment[]     @relation("ApartmentCover")
   partnerLogos      PartnerCompany[] @relation("PartnerLogo")
   partnerCovers     PartnerCompany[] @relation("PartnerCover")
-  venueMaps         VenueMap[]
-  visualMapCanvases VisualMapCanvas[]
-  projectMapModels  ProjectMapModel[]
+  venueMaps                 VenueMap[]
+  visualMapCanvases         VisualMapCanvas[]
+  projectMapModels          ProjectMapModel[]
+  publicVenueMapSnapshots   PublicVenueMapSnapshot[]
 
   @@index([ownerCompanyId])
   @@index([relatedEntityType, relatedEntityId])

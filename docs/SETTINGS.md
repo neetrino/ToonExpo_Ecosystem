@@ -23,7 +23,7 @@
 
 - `SENTRY_DSN`, `NEXT_PUBLIC_SENTRY_DSN` — ошибки.
 - `UPSTASH_REDIS_REST_URL/TOKEN` — общий rate limit (без него — per-instance).
-- `BOS_API_KEY` — входящий BOS (без него — 503 на эндпоинте).
+- `BOS_API_KEY` — входящий BOS (без него — 503 на provisioning и venue-map publish).
 - `RESEND_API_KEY` — почта (в проде обязателен).
 
 ## Миграции БД
@@ -77,8 +77,9 @@ Anonymous public SSR/RSC GETs use Next.js Data Cache with tag-based purge on pub
 
 | Content                                      | TTL                                                         | Tag(s)                                                        |
 | -------------------------------------------- | ----------------------------------------------------------- | ------------------------------------------------------------- |
-| Catalog list / builders / exhibition         | **1800s** (30 min)                                          | `catalog`, `exhibition`                                       |
-| Catalog project detail / visual-map / geo-map | **0** (always fresh; tag purge when `WEB_REVALIDATE_*` set) | `catalog`, `catalog-project-<id>`, `visual-map`, `geo-map`    |
+| Catalog list / builders                          | **1800s** (30 min)                                          | `catalog`                                                     |
+| Catalog project detail / visual-map / geo-map / venue-map | **0** (always fresh; tag purge when `WEB_REVALIDATE_*` set) | `catalog`, `catalog-project-<id>`, `visual-map`, `geo-map`, `exhibition` |
+| Legacy exhibition event/booths                   | **1800s** (30 min)                                          | `exhibition`                                                  |
 | Partners / mortgage offers                   | **3600s** (60 min)                                          | `partners`, `mortgage`                                        |
 
 Authenticated/private data (buyer QR, favorites, portals, admin) is never shared-cached.
@@ -99,4 +100,4 @@ Webhook: `POST /api/revalidate` with header `x-revalidate-secret` and body `{ "t
 
 API purges catalog tags after **publication changes** and after **content/translation updates on published projects** (so Admin save is visible on the public site without waiting for TTL).
 
-If these envs are unset, project detail / visual-map / geo-map still stay fresh via TTL **0**; list/partners stay TTL-only until natural expiry.
+If these envs are unset, project detail / visual-map / geo-map / venue-map still stay fresh via TTL **0**; list/partners stay TTL-only until natural expiry.

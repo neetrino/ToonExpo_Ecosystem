@@ -49,6 +49,11 @@ export const checkinRecentQueryKey = (eventId: string) =>
 export const PUBLIC_EXPO_QUERY_KEY = ["public", "expo"] as const;
 export const publicCurrentEventQueryKey = () =>
   [...PUBLIC_EXPO_QUERY_KEY, "current-event"] as const;
+export const publicVenueMapSnapshotQueryKey = () =>
+  [...PUBLIC_EXPO_QUERY_KEY, "snapshot"] as const;
+
+/** BOS Publish should show on the next `/expo` visit without waiting the default stale window. */
+export const PUBLIC_VENUE_MAP_QUERY_STALE_TIME_MS = 0;
 export const publicVenueMapBoothsQueryKey = (mapId: string, locale: string) =>
   [...PUBLIC_EXPO_QUERY_KEY, "booths", mapId, locale] as const;
 export const publicVenueMapSearchQueryKey = (

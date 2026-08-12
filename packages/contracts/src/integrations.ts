@@ -92,3 +92,74 @@ export type AdminBosProvisioningDetail = AdminBosProvisioningListItem & {
   errorMessage: string | null;
   auditLogs: IntegrationAuditLogItem[];
 };
+
+export const VENUE_MAP_SNAPSHOT_SCHEMA_VERSION = 'venue-map.v1' as const;
+
+export type VenueMapSnapshotSchemaVersion = typeof VENUE_MAP_SNAPSHOT_SCHEMA_VERSION;
+
+export type VenueMapPublicDisplayMode = 'organization' | 'custom_label' | 'hidden';
+
+export type VenueMapPublishStatus =
+  | 'published'
+  | 'already_published'
+  | 'rejected'
+  | 'failed';
+
+export type VenueMapSnapshotOccupant = {
+  toonexpo_company_id?: string;
+  organization_name: string;
+};
+
+export type VenueMapSnapshotCell = {
+  x: number;
+  y: number;
+};
+
+export type VenueMapSnapshotArea = {
+  code: string;
+  name?: string;
+  square_meters: number;
+  cells: VenueMapSnapshotCell[];
+  public_display_mode: VenueMapPublicDisplayMode;
+  occupant?: VenueMapSnapshotOccupant;
+  custom_label?: string;
+};
+
+export type VenueMapSnapshotBackground = {
+  url: string;
+  width: number;
+  height: number;
+  pixels_per_meter: number;
+  grid_origin_x: number;
+  grid_origin_y: number;
+};
+
+export type VenueMapSnapshotContent = {
+  title: string;
+  background: VenueMapSnapshotBackground;
+  areas: VenueMapSnapshotArea[];
+};
+
+/** BOS POST /integrations/bos/venue-map/publish request (snake_case wire format). */
+export type VenueMapPublishRequestBody = {
+  request_id: string;
+  schema_version: VenueMapSnapshotSchemaVersion;
+  bos_venue_plan_id: string;
+  bos_event_cycle_id: string;
+  bos_event_cycle_code: string;
+  snapshot_version: number;
+  checksum: string;
+  published_at: string;
+  content: VenueMapSnapshotContent;
+};
+
+/** BOS venue-map publication response (snake_case wire format). */
+export type VenueMapPublishResponse = {
+  request_id: string;
+  bos_venue_plan_id: string;
+  accepted_snapshot_version: number;
+  toonexpo_snapshot_id: string | null;
+  status: VenueMapPublishStatus;
+  validation_errors?: string[];
+  activated_at?: string;
+};
