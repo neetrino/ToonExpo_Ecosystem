@@ -102,7 +102,10 @@ export const MortgageCalculatorSection = ({ offers }: MortgageCalculatorSectionP
   }
 
   return (
-    <div className="grid gap-10 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] lg:items-start lg:gap-12">
+    <div
+      id="calculator"
+      className="grid scroll-mt-28 gap-10 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] lg:items-start lg:gap-12"
+    >
       <aside className="rounded-[24px] bg-surface-elevated p-8 shadow-[0_0_0_1px_var(--color-header-border)] lg:sticky lg:top-24">
         <h2 className="font-brand text-xl font-bold tracking-tight text-ink-navy">
           {t('inputsTitle')}

@@ -391,33 +391,35 @@
     }
   },
   "Footer": {
-    "tagline": "The marketplace for verified homes, new developments, and partner bank offers — built for buyers, brokers, and developers in one transparent platform.",
     "marketplace": "Marketplace",
+    "developersPartners": "Developers & Partners",
+    "financeInsights": "Finance & Insights",
+    "resources": "Resources",
     "company": "Company",
+    "legal": "Legal",
     "links": {
-      "allListings": "All listings",
-      "marketReports": "Market reports",
-      "partnerBanks": "Partner banks",
-      "about": "About",
-      "press": "Press",
+      "specialOffers": "Special Offers",
+      "becomePartner": "Become a Partner",
+      "listProperty": "List Your Property / Project",
+      "mortgageCalculator": "Mortgage Calculator",
+      "marketReports": "Market Reports",
+      "faq": "FAQ",
+      "helpCenter": "Help Center",
+      "about": "About Us",
       "contact": "Contact",
-      "projects": "Projects",
-      "builders": "Builders",
-      "register": "Register",
-      "login": "Sign in",
-      "partners": "Partners",
-      "mortgage": "Mortgage",
-      "expo": "Expo map"
+      "privacyPolicy": "Privacy Policy",
+      "terms": "Terms & Conditions",
+      "cookiePolicy": "Cookie Policy"
     },
-    "trust": "100% verified listings · GDPR compliant · Data encrypted in transit",
     "copyrightPrefix": "Copyright © 2026",
     "copyrightCompany": "Neetrino IT Company",
     "copyrightSuffix": "All Rights Reserved.",
-    "legal": "Legal",
-    "contact": "Contact",
-    "contactEmail": "hello@toonexpo.am",
-    "privacy": "Privacy",
-    "terms": "Terms"
+    "socialLabel": "Social media",
+    "social": {
+      "facebook": "Facebook",
+      "instagram": "Instagram"
+    },
+    "contactEmail": "hello@toonexpo.am"
   },
   "Catalog": {
     "price": {

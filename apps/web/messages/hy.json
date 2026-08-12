@@ -391,33 +391,35 @@
     }
   },
   "Footer": {
-    "tagline": "Ստուգված տների, նոր շինությունների և գործընկեր բանկերի առաջարկների շուկա՝ գնորդների, միջնորդների և կառուցապատողների համար մեկ թափանցիկ հարթակում։",
     "marketplace": "Շուկա",
+    "developersPartners": "Կառուցապատողներ և գործընկերներ",
+    "financeInsights": "Ֆինանսներ և վերլուծություն",
+    "resources": "Ռեսուրսներ",
     "company": "Ընկերություն",
+    "legal": "Իրավական",
     "links": {
-      "allListings": "Բոլոր հայտարարությունները",
+      "specialOffers": "Հատուկ առաջարկներ",
+      "becomePartner": "Դառնալ գործընկեր",
+      "listProperty": "Տեղադրել գույք / նախագիծ",
+      "mortgageCalculator": "Հիփոթեքի հաշվիչ",
       "marketReports": "Շուկայի հաշվետվություններ",
-      "partnerBanks": "Գործընկեր բանկեր",
+      "faq": "ՀՏՀ",
+      "helpCenter": "Օգնության կենտրոն",
       "about": "Մեր մասին",
-      "press": "Մամուլ",
       "contact": "Կապ",
-      "projects": "Նախագծեր",
-      "builders": "Կառուցապատողներ",
-      "register": "Գրանցում",
-      "login": "Մուտք",
-      "partners": "Գործընկերներ",
-      "mortgage": "Հիփոթեք",
-      "expo": "Ցուցահանդեսի քարտեզ"
+      "privacyPolicy": "Գաղտնիության քաղաքականություն",
+      "terms": "Պայմաններ և դրույթներ",
+      "cookiePolicy": "Cookie քաղաքականություն"
     },
-    "trust": "100% ստուգված հայտարարություններ · GDPR · Կոդավորում փոխանցման ժամանակ",
     "copyrightPrefix": "Copyright © 2026",
     "copyrightCompany": "Neetrino IT Company",
     "copyrightSuffix": "Բոլոր իրավունքները պաշտպանված են։",
-    "legal": "Իրավական",
-    "contact": "Կապ",
-    "contactEmail": "hello@toonexpo.am",
-    "privacy": "Գաղտնիություն",
-    "terms": "Պայմաններ"
+    "socialLabel": "Սոցիալական ցանցեր",
+    "social": {
+      "facebook": "Facebook",
+      "instagram": "Instagram"
+    },
+    "contactEmail": "hello@toonexpo.am"
   },
   "Catalog": {
     "price": {

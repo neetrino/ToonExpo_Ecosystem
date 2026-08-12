@@ -391,33 +391,35 @@
     }
   },
   "Footer": {
-    "tagline": "Маркетплейс проверенных домов, новостроек и предложений банков-партнёров — для покупателей, брокеров и застройщиков на одной прозрачной платформе.",
     "marketplace": "Маркетплейс",
+    "developersPartners": "Застройщики и партнёры",
+    "financeInsights": "Финансы и аналитика",
+    "resources": "Ресурсы",
     "company": "Компания",
+    "legal": "Правовая информация",
     "links": {
-      "allListings": "Все объявления",
+      "specialOffers": "Специальные предложения",
+      "becomePartner": "Стать партнёром",
+      "listProperty": "Разместить объект / проект",
+      "mortgageCalculator": "Ипотечный калькулятор",
       "marketReports": "Обзоры рынка",
-      "partnerBanks": "Банки-партнёры",
+      "faq": "FAQ",
+      "helpCenter": "Центр помощи",
       "about": "О нас",
-      "press": "Пресса",
       "contact": "Контакты",
-      "projects": "Проекты",
-      "builders": "Застройщики",
-      "register": "Регистрация",
-      "login": "Войти",
-      "partners": "Партнёры",
-      "mortgage": "Ипотека",
-      "expo": "Карта выставки"
+      "privacyPolicy": "Политика конфиденциальности",
+      "terms": "Условия использования",
+      "cookiePolicy": "Политика cookie"
     },
-    "trust": "100% проверенные объявления · GDPR · Шифрование в пути",
     "copyrightPrefix": "Copyright © 2026",
     "copyrightCompany": "Neetrino IT Company",
     "copyrightSuffix": "Все права защищены.",
-    "legal": "Правовая информация",
-    "contact": "Контакты",
-    "contactEmail": "hello@toonexpo.am",
-    "privacy": "Конфиденциальность",
-    "terms": "Условия"
+    "socialLabel": "Социальные сети",
+    "social": {
+      "facebook": "Facebook",
+      "instagram": "Instagram"
+    },
+    "contactEmail": "hello@toonexpo.am"
   },
   "Catalog": {
     "price": {
