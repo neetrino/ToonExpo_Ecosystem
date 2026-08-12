@@ -11,8 +11,8 @@ type AdminCreateSheetProps = {
   description?: string | undefined;
   children: ReactNode;
   headerActions?: ReactNode | undefined;
-  /** `compact` ≈ 420px; `comfortable` ≈ 500px; `default` ≈ 50vw. */
-  size?: 'compact' | 'comfortable' | 'default' | undefined;
+  /** `compact` ≈ 420px; `comfortable` ≈ 500px; `wide` ≈ 640px; `default` ≈ 50vw. */
+  size?: 'compact' | 'comfortable' | 'wide' | 'default' | undefined;
   /** Nested sheet level (0 = base). */
   stackLevel?: number | undefined;
 };

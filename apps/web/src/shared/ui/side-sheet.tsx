@@ -17,6 +17,7 @@ import {
   SIDE_SHEET_BACKDROP_TRANSITION_MS,
   SIDE_SHEET_COMFORTABLE_MAX_WIDTH_PX,
   SIDE_SHEET_COMPACT_MAX_WIDTH_PX,
+  SIDE_SHEET_WIDE_MAX_WIDTH_PX,
   SIDE_SHEET_MOBILE_WIDTH_PERCENT,
   SIDE_SHEET_PANEL_TRANSITION_MS,
   SIDE_SHEET_PANEL_Z_INDEX,
@@ -26,7 +27,7 @@ import {
 } from '@/shared/ui/side-sheet.constants';
 import { useDrawerTransition } from '@/shared/ui/use-drawer-transition';
 
-type SideSheetSize = 'default' | 'compact' | 'comfortable';
+type SideSheetSize = 'default' | 'compact' | 'comfortable' | 'wide';
 
 type SideSheetProps = {
   open: boolean;
@@ -40,7 +41,7 @@ type SideSheetProps = {
   titleLeading?: ReactNode | undefined;
   /** Stacking level for nested sheets (0 = base). */
   stackLevel?: number | undefined;
-  /** `compact` ≈ 420px; `comfortable` ≈ 500px; `default` ≈ 50vw. */
+  /** `compact` ≈ 420px; `comfortable` ≈ 500px; `wide` ≈ 640px; `default` ≈ 50vw. */
   size?: SideSheetSize | undefined;
   className?: string | undefined;
   closeLabel?: string | undefined;
@@ -84,9 +85,13 @@ const SideSheetPanel = ({
   children,
 }: SideSheetPanelProps) => {
   const zIndex = SIDE_SHEET_Z_INDEX + stackLevel * SIDE_SHEET_STACK_Z_STEP;
-  const isFixedMax = size === 'compact' || size === 'comfortable';
+  const isFixedMax = size === 'compact' || size === 'comfortable' || size === 'wide';
   const compactMaxPx =
-    size === 'comfortable' ? SIDE_SHEET_COMFORTABLE_MAX_WIDTH_PX : SIDE_SHEET_COMPACT_MAX_WIDTH_PX;
+    size === 'wide'
+      ? SIDE_SHEET_WIDE_MAX_WIDTH_PX
+      : size === 'comfortable'
+        ? SIDE_SHEET_COMFORTABLE_MAX_WIDTH_PX
+        : SIDE_SHEET_COMPACT_MAX_WIDTH_PX;
 
   return (
     <div

@@ -38,7 +38,7 @@ const ProjectRow = ({ project }: ProjectRowProps) => {
       <Link
         href={`/admin/projects/${project.id}`}
         className={cn(
-          'flex items-start gap-3 rounded-md border border-border bg-surface px-3 py-3',
+          'flex h-full items-start gap-2 rounded-md border border-border bg-surface px-3 py-3',
           'transition-colors hover:border-border-strong hover:bg-surface-elevated',
         )}
       >
@@ -46,7 +46,7 @@ const ProjectRow = ({ project }: ProjectRowProps) => {
           <FolderKanban className="size-4" aria-hidden />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-semibold text-ink">{project.name}</p>
+          <p className="truncate pr-1 text-sm font-semibold text-ink">{project.name}</p>
           <p className="mt-0.5 text-xs text-ink-muted">{createdLabel}</p>
         </div>
         <span
@@ -82,7 +82,7 @@ export const CompanyProjectsSection = ({ companyId }: CompanyProjectsSectionProp
       </div>
 
       {query.isLoading ? (
-        <div className="flex flex-col gap-2" aria-busy="true">
+        <div className="grid grid-cols-2 gap-2" aria-busy="true">
           <Skeleton className="h-14 w-full" />
           <Skeleton className="h-14 w-full" />
         </div>
@@ -101,7 +101,7 @@ export const CompanyProjectsSection = ({ companyId }: CompanyProjectsSectionProp
       ) : null}
 
       {query.data && query.data.data.length > 0 ? (
-        <ul className="flex flex-col gap-2">
+        <ul className="grid grid-cols-2 gap-2">
           {query.data.data.map((project) => (
             <ProjectRow key={project.id} project={project} />
           ))}
