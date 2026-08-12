@@ -1,6 +1,6 @@
 'use client';
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type {
   BulkCreatePortalApartmentsRequest,
   CreatePortalBuildingRequest,
@@ -47,12 +47,14 @@ const toListParams = (
   companyId?: string,
   buildingId?: string,
   projectId?: string,
+  search?: string,
 ): ListAdminProjectsParams => ({
   page,
   pageSize,
   ...(companyId ? { companyId } : {}),
   ...(buildingId ? { buildingId } : {}),
   ...(projectId ? { projectId } : {}),
+  ...(search ? { search } : {}),
 });
 
 const adminCatalogScope = (companyId: string): CatalogScope => ({
@@ -68,13 +70,21 @@ export const useAdminBuildingsQuery = (
   pageSize: number,
   companyId?: string,
   projectId?: string,
-  options?: { enabled?: boolean },
+  options?: { enabled?: boolean; search?: string },
 ) => {
-  const params = toListParams(page, pageSize, companyId, undefined, projectId);
+  const params = toListParams(
+    page,
+    pageSize,
+    companyId,
+    undefined,
+    projectId,
+    options?.search,
+  );
   return useQuery({
     queryKey: adminBuildingsQueryKey(params),
     queryFn: () => listAdminBuildings(params),
     enabled: options?.enabled ?? true,
+    placeholderData: keepPreviousData,
   });
 };
 
@@ -86,11 +96,13 @@ export const useAdminFloorsQuery = (
   pageSize: number,
   companyId?: string,
   buildingId?: string,
+  search?: string,
 ) => {
-  const params = toListParams(page, pageSize, companyId, buildingId);
+  const params = toListParams(page, pageSize, companyId, buildingId, undefined, search);
   return useQuery({
     queryKey: adminFloorsQueryKey(params),
     queryFn: () => listAdminFloors(params),
+    placeholderData: keepPreviousData,
   });
 };
 
@@ -102,11 +114,13 @@ export const useAdminApartmentsQuery = (
   pageSize: number,
   companyId?: string,
   buildingId?: string,
+  search?: string,
 ) => {
-  const params = toListParams(page, pageSize, companyId, buildingId);
+  const params = toListParams(page, pageSize, companyId, buildingId, undefined, search);
   return useQuery({
     queryKey: adminApartmentsQueryKey(params),
     queryFn: () => listAdminApartments(params),
+    placeholderData: keepPreviousData,
   });
 };
 

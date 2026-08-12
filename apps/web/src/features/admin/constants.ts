@@ -66,6 +66,7 @@ export const adminBuildingsQueryKey = (params: {
   pageSize: number;
   companyId?: string;
   projectId?: string;
+  search?: string;
 }) => [...ADMIN_BUILDINGS_QUERY_KEY, params] as const;
 
 export const adminFloorsQueryKey = (params: {
@@ -73,6 +74,7 @@ export const adminFloorsQueryKey = (params: {
   pageSize: number;
   companyId?: string;
   buildingId?: string;
+  search?: string;
 }) => [...ADMIN_FLOORS_QUERY_KEY, params] as const;
 
 export const adminApartmentsQueryKey = (params: {
@@ -80,6 +82,7 @@ export const adminApartmentsQueryKey = (params: {
   pageSize: number;
   companyId?: string;
   buildingId?: string;
+  search?: string;
 }) => [...ADMIN_APARTMENTS_QUERY_KEY, params] as const;
 
 export const ADMIN_READINESS_CATEGORIES_QUERY_KEY = ['admin', 'readiness', 'categories'] as const;

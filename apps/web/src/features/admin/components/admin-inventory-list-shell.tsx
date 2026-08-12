@@ -4,7 +4,7 @@ import type { LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
 import {
   ADMIN_COMPANIES_MAX_PAGE_SIZE,
@@ -21,6 +21,7 @@ import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
 const ADMIN_INVENTORY_FILTER_COMPANY_KEY = 'companyId';
 const ADMIN_INVENTORY_FILTER_BUILDING_KEY = 'buildingId';
+const FIRST_PAGE = 1;
 
 type AdminInventoryListShellProps = {
   title: string;
@@ -34,6 +35,8 @@ type AdminInventoryListShellProps = {
   page: number;
   totalPages: number;
   children: ReactNode;
+  search: string;
+  onSearchChange: (value: string) => void;
   icon?: LucideIcon | undefined;
   /** Floors / apartments hubs: company + building cascading filters. */
   showBuildingFilter?: boolean | undefined;
@@ -44,14 +47,15 @@ type AdminInventoryListShellProps = {
 
 const parsePage = (raw: string | null): number => {
   const parsed = Number(raw);
-  if (!Number.isFinite(parsed) || parsed < 1) {
-    return 1;
+  if (!Number.isFinite(parsed) || parsed < FIRST_PAGE) {
+    return FIRST_PAGE;
   }
   return Math.floor(parsed);
 };
 
 /**
  * Shared chrome for admin inventory hubs (buildings / floors / apartments).
+ * Search is controlled by the page so list queries can debounce and hit the API.
  */
 export const AdminInventoryListShell = ({
   title,
@@ -65,6 +69,8 @@ export const AdminInventoryListShell = ({
   page,
   totalPages,
   children,
+  search,
+  onSearchChange,
   icon,
   showBuildingFilter = false,
   headerActions,
@@ -79,7 +85,6 @@ export const AdminInventoryListShell = ({
   const companyId = searchParams.get('companyId')?.trim() || undefined;
   const buildingId = searchParams.get('buildingId')?.trim() || undefined;
   const projectId = searchParams.get('projectId')?.trim() || undefined;
-  const [search, setSearch] = useState('');
   const companiesQuery = useAdminBuilderCompaniesQuery(ADMIN_COMPANIES_MAX_PAGE_SIZE);
   const buildingsQuery = useAdminBuildingsQuery(1, ADMIN_COMPANIES_MAX_PAGE_SIZE, companyId);
 
@@ -121,7 +126,7 @@ export const AdminInventoryListShell = ({
     if (nextProjectId) {
       params.set('projectId', nextProjectId);
     }
-    if (nextPage > 1) {
+    if (nextPage > FIRST_PAGE) {
       params.set('page', String(nextPage));
     }
     const query = params.toString();
@@ -183,12 +188,12 @@ export const AdminInventoryListShell = ({
           [ADMIN_INVENTORY_FILTER_COMPANY_KEY]: companyId ?? '',
           [ADMIN_INVENTORY_FILTER_BUILDING_KEY]: buildingId ?? '',
         }}
-        onSearchChange={setSearch}
+        onSearchChange={onSearchChange}
         onFilterChange={(key, value) => {
           if (key === ADMIN_INVENTORY_FILTER_COMPANY_KEY) {
             router.replace(
               buildListHref({
-                page: 1,
+                page: FIRST_PAGE,
                 companyId: value || null,
                 buildingId: null,
                 projectId: null,
@@ -197,13 +202,18 @@ export const AdminInventoryListShell = ({
             return;
           }
           if (key === ADMIN_INVENTORY_FILTER_BUILDING_KEY) {
-            router.replace(buildListHref({ page: 1, buildingId: value || null }));
+            router.replace(buildListHref({ page: FIRST_PAGE, buildingId: value || null }));
           }
         }}
         onClearAll={() => {
-          setSearch('');
+          onSearchChange('');
           router.replace(
-            buildListHref({ page: 1, companyId: null, buildingId: null, projectId: null }),
+            buildListHref({
+              page: FIRST_PAGE,
+              companyId: null,
+              buildingId: null,
+              projectId: null,
+            }),
           );
         }}
         actions={
@@ -221,7 +231,7 @@ export const AdminInventoryListShell = ({
       <CatalogPagination
         page={page}
         totalPages={totalPages}
-        previousHref={page > 1 ? buildListHref({ page: page - 1 }) : null}
+        previousHref={page > FIRST_PAGE ? buildListHref({ page: page - 1 }) : null}
         nextHref={page < totalPages ? buildListHref({ page: page + 1 }) : null}
         previousLabel={t('pagination.previous')}
         nextLabel={t('pagination.next')}

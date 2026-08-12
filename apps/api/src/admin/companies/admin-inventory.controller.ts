@@ -34,6 +34,7 @@ export class AdminInventoryController {
       query.pageSize,
       query.companyId,
       query.projectId,
+      query.search,
     );
   }
 
@@ -55,6 +56,7 @@ export class AdminInventoryController {
       query.pageSize,
       query.companyId,
       query.buildingId,
+      query.search,
     );
   }
 
@@ -67,6 +69,7 @@ export class AdminInventoryController {
       query.pageSize,
       query.companyId,
       query.buildingId,
+      query.search,
     );
   }
 

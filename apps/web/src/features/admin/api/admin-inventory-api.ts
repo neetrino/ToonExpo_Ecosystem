@@ -39,6 +39,10 @@ const toSearch = (params: ListAdminProjectsParams): string => {
   if (params.projectId) {
     search.set('projectId', params.projectId);
   }
+  const needle = params.search?.trim();
+  if (needle) {
+    search.set('search', needle);
+  }
   return search.toString();
 };
 
