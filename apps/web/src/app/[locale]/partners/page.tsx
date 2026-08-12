@@ -18,7 +18,6 @@ import {
   buildPartnerSearchParams,
   parsePartnerFilters,
 } from '@/features/catalog/utils/partner-filters';
-import { PARTNER_COMPANY_TYPES } from '@/features/partners/constants';
 import { cn } from '@/shared/ui/cn';
 
 type PartnersPageProps = {
@@ -41,7 +40,6 @@ export default async function PartnersPage({ params, searchParams }: PartnersPag
   setRequestLocale(locale);
 
   const t = await getTranslations('Catalog');
-  const tPartners = await getTranslations('Partners');
   const rawParams = await searchParams;
   const filters = parsePartnerFilters(rawParams);
 
@@ -61,10 +59,6 @@ export default async function PartnersPage({ params, searchParams }: PartnersPag
     return query.length > 0 ? `/partners?${query}` : '/partners';
   };
 
-  const typeLabels = Object.fromEntries(
-    PARTNER_COMPANY_TYPES.map((type) => [type, tPartners(`types.${type}`)]),
-  ) as Record<(typeof PARTNER_COMPANY_TYPES)[number], string>;
-
   return (
     <div className="min-h-screen bg-canvas">
       <main>
@@ -74,19 +68,7 @@ export default async function PartnersPage({ params, searchParams }: PartnersPag
         />
 
         <div className="page-container section-pad pt-8 sm:pt-10">
-          <PartnerFiltersForm
-            filters={filters}
-            availableTypes={facets.types}
-            labels={{
-              type: t('partnersPage.filters.type'),
-              allTypes: t('partnersPage.filters.allTypes'),
-              types: typeLabels,
-              typesSelectedCount: (count) =>
-                t('partnersPage.filters.typesSelectedCount', { count }),
-              apply: t('partnersPage.filters.apply'),
-              reset: t('partnersPage.filters.reset'),
-            }}
-          />
+          <PartnerFiltersForm filters={filters} availableTypes={facets.types} />
 
           {response.data.length === 0 ? (
             <p
