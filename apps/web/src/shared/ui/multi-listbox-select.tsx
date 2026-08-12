@@ -10,7 +10,8 @@ import { MultiListboxMenu } from '@/shared/ui/multi-listbox-menu';
 import type { MultiListboxSelectProps } from '@/shared/ui/multi-listbox-select.types';
 
 /**
- * Multi-select listbox — empty selection means "All".
+ * Multi-select listbox — empty selection means "All" (only the All row is checked).
+ * Choosing an option while All is active starts a concrete selection with that option.
  * Menu stays open while toggling options so several can be picked at once.
  */
 export const MultiListboxSelect = ({
@@ -93,7 +94,7 @@ export const MultiListboxSelect = ({
 
   const toggleOption = (value: string): void => {
     if (isAll) {
-      onChange(options.map((option) => option.value).filter((item) => item !== value));
+      onChange([value]);
       return;
     }
     if (values.includes(value)) {
