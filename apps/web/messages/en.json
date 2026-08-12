@@ -599,6 +599,8 @@
         "linkTypicalInteractiveTour": "Typical interactive tour",
         "linkVideo": "Video",
         "linkExteriorInteractiveTour": "Exterior interactive tour",
+        "linkMatterport": "Matterport URL",
+        "linkExternal3d": "External 3D URL",
         "linkFloorplans2d": "2D floor plans",
         "linkFloorplans3d": "3D floor plans",
         "linkBranding": "Logo / branding",

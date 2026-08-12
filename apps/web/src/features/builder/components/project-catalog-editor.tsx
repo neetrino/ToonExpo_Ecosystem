@@ -36,6 +36,8 @@ const LINK_LABEL_KEYS = {
   typicalInteractiveTour: 'linkTypicalInteractiveTour',
   video: 'linkVideo',
   exteriorInteractiveTour: 'linkExteriorInteractiveTour',
+  matterport: 'linkMatterport',
+  external3d: 'linkExternal3d',
   floorplans2d: 'linkFloorplans2d',
   floorplans3d: 'linkFloorplans3d',
   branding: 'linkBranding',

@@ -12,6 +12,7 @@ import { ApartmentNeighborhood } from '@/features/catalog/components/apartment-n
 import { ApartmentPhotoGallery } from '@/features/catalog/components/apartment-photo-gallery';
 import { ApartmentPriceHistory } from '@/features/catalog/components/apartment-price-history';
 import { ApartmentPricePerArea } from '@/features/catalog/components/apartment-price-per-area';
+import { ApartmentTourSections } from '@/features/catalog/components/apartment-tour-sections';
 import { CatalogEntityQr } from '@/features/catalog/components/catalog-entity-qr';
 import { buildApartmentCatalogQrUrl } from '@/features/catalog/utils/build-catalog-entity-qr-url';
 import { buildApartmentDetailRows } from '@/features/catalog/utils/build-apartment-detail-rows';
@@ -222,6 +223,13 @@ export const ApartmentDetailView = async ({
           <section className="py-10">
             <ApartmentDetailCriteriaPanel title={t('apartment.detailsTitle')} rows={detailRows} />
           </section>
+
+          <ApartmentTourSections
+            matterportUrl={apartment.matterportUrl}
+            external3dUrl={apartment.external3dUrl}
+            matterportTitle={t('apartment.matterportTour')}
+            external3dTitle={t('apartment.external3dTour')}
+          />
 
           <ApartmentNeighborhood
             title={t('apartment.neighborhoodTitle')}

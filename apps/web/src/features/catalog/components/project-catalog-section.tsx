@@ -118,6 +118,8 @@ export const ProjectCatalogSection = async ({ project }: ProjectCatalogSectionPr
         typicalInteractiveTour: t('catalog.linkTypicalInteractiveTour'),
         video: t('catalog.linkVideo'),
         exteriorInteractiveTour: t('catalog.linkExteriorInteractiveTour'),
+        matterport: t('catalog.linkMatterport'),
+        external3d: t('catalog.linkExternal3d'),
         floorplans2d: t('catalog.linkFloorplans2d'),
         floorplans3d: t('catalog.linkFloorplans3d'),
         branding: t('catalog.linkBranding'),
