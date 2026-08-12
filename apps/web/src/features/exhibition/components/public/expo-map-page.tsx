@@ -11,7 +11,6 @@ import { usePublicVenueMapSnapshotQuery } from '@/features/exhibition/hooks/use-
 import { matchesVenueMapSearch } from '@/features/exhibition/utils/matches-venue-map-search';
 import { useDebouncedValue } from '@/shared/hooks/use-debounced-value';
 import { Card } from '@/shared/ui/card';
-import { Input } from '@/shared/ui/input';
 
 /**
  * Public venue map page — renders the active BOS snapshot.
@@ -55,33 +54,35 @@ export const ExpoMapPage = () => {
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-content flex-col gap-4 px-6 py-6">
+    <div className="mx-auto flex w-full max-w-content flex-col gap-4 px-6 pt-12 pb-6 sm:pt-16">
       <div className="flex flex-col gap-1">
         <h1 className="text-page-title text-ink">{snapshot.title}</h1>
       </div>
 
-      <Input
-        value={search}
-        placeholder={t('search.placeholder')}
-        onChange={(event) => setSearch(event.target.value)}
-        aria-label={t('search.label')}
-      />
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-start">
+        <div className="min-w-0 flex-1">
+          <ExpoSnapshotMapView
+            snapshot={{ ...snapshot, areas: visibleAreas }}
+            highlightedAreaId={selectedAreaId}
+            onSelectArea={setSelectedAreaId}
+          />
+          {selectedArea ? (
+            <div className="mt-4">
+              <ExpoAreaSheet area={selectedArea} onClose={() => setSelectedAreaId(null)} />
+            </div>
+          ) : null}
+        </div>
 
-      <ExpoSnapshotMapView
-        snapshot={{ ...snapshot, areas: visibleAreas }}
-        highlightedAreaId={selectedAreaId}
-        onSelectArea={setSelectedAreaId}
-      />
-
-      {selectedArea ? (
-        <ExpoAreaSheet area={selectedArea} onClose={() => setSelectedAreaId(null)} />
-      ) : null}
-
-      <ExpoAreaList
-        areas={visibleAreas}
-        highlightedAreaId={selectedAreaId}
-        onSelect={setSelectedAreaId}
-      />
+        <div className="w-full shrink-0 lg:sticky lg:top-24 lg:w-80 lg:self-start">
+          <ExpoAreaList
+            areas={visibleAreas}
+            highlightedAreaId={selectedAreaId}
+            search={search}
+            onSearchChange={setSearch}
+            onSelect={setSelectedAreaId}
+          />
+        </div>
+      </div>
     </div>
   );
 };
