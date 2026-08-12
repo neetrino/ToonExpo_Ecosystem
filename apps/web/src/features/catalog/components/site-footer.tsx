@@ -1,95 +1,136 @@
-import Image from 'next/image';
+import { Facebook, Instagram } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
+import type { ComponentProps, ReactNode } from 'react';
 
 import { Link } from '@/i18n/navigation';
-import { BrandLogo } from '@/shared/ui/brand-logo';
+
+const FOOTER_SOCIAL = [
+  {
+    id: 'facebook',
+    href: 'https://www.facebook.com/toonexporealestate',
+    icon: Facebook,
+  },
+  {
+    id: 'instagram',
+    href: 'https://www.instagram.com/toon_expo/',
+    icon: Instagram,
+  },
+] as const;
+
+type AppHref = ComponentProps<typeof Link>['href'];
+
+type FooterNavItem =
+  | { label: string; href: AppHref; external?: false | undefined }
+  | { label: string; href: string; external: true };
+
+type FooterColumn = {
+  title: string;
+  items: readonly FooterNavItem[];
+};
 
 /**
- * Public site footer — light marketplace chrome matching Figma `81:459`.
+ * Public site footer — marketplace sitemap + social.
  */
 export const SiteFooter = async () => {
   const t = await getTranslations('Footer');
   const tNav = await getTranslations('Nav');
+  const contactEmail = t('contactEmail');
+  const mail = (subject: string): string =>
+    `mailto:${contactEmail}?subject=${encodeURIComponent(subject)}`;
+
+  const columns: readonly FooterColumn[] = [
+    {
+      title: t('marketplace'),
+      items: [
+        { label: tNav('buy'), href: '/apartments' },
+        { label: tNav('projects'), href: '/projects' },
+        { label: t('links.specialOffers'), href: '/mortgage' },
+        { label: tNav('geoMap'), href: '/map' },
+      ],
+    },
+    {
+      title: t('developersPartners'),
+      items: [
+        { label: tNav('partners'), href: '/partners' },
+        {
+          label: t('links.becomePartner'),
+          href: mail(t('links.becomePartner')),
+          external: true,
+        },
+        {
+          label: t('links.listProperty'),
+          href: mail(t('links.listProperty')),
+          external: true,
+        },
+      ],
+    },
+    {
+      title: t('financeInsights'),
+      items: [
+        { label: tNav('mortgage'), href: '/mortgage' },
+        {
+          label: t('links.mortgageCalculator'),
+          href: { pathname: '/mortgage', hash: 'calculator' },
+        },
+        { label: tNav('marketInsights'), href: '/insights' },
+        { label: t('links.marketReports'), href: '/insights' },
+      ],
+    },
+    {
+      title: t('resources'),
+      items: [
+        { label: t('links.faq'), href: mail(t('links.faq')), external: true },
+        {
+          label: t('links.helpCenter'),
+          href: mail(t('links.helpCenter')),
+          external: true,
+        },
+      ],
+    },
+    {
+      title: t('company'),
+      items: [
+        { label: t('links.about'), href: '/' },
+        {
+          label: t('links.contact'),
+          href: `mailto:${contactEmail}`,
+          external: true,
+        },
+      ],
+    },
+    {
+      title: t('legal'),
+      items: [
+        {
+          label: t('links.privacyPolicy'),
+          href: mail(t('links.privacyPolicy')),
+          external: true,
+        },
+        {
+          label: t('links.terms'),
+          href: mail(t('links.terms')),
+          external: true,
+        },
+        {
+          label: t('links.cookiePolicy'),
+          href: mail(t('links.cookiePolicy')),
+          external: true,
+        },
+      ],
+    },
+  ];
 
   return (
     <footer className="hidden border-t border-header-border bg-canvas lg:block">
       <div className="page-container pt-12 pb-4">
-        <div className="mb-16 flex flex-col gap-12 md:flex-row md:items-start md:justify-between">
-          <div className="max-w-md shrink-0">
-            <BrandLogo />
-            <p className="mt-8 text-sm leading-[1.625] text-header-muted">{t('tagline')}</p>
-          </div>
-
-          <div className="flex flex-wrap gap-12 sm:gap-16 md:gap-20 lg:gap-24 md:justify-end md:text-right">
-            <div>
-              <p className="font-brand text-xs font-bold tracking-[0.1em] text-ink-navy uppercase">
-                {t('marketplace')}
-              </p>
-              <ul className="mt-9 flex flex-col gap-3 text-sm text-header-muted">
-                <li>
-                  <Link href="/apartments" className="transition-colors hover:text-brand-deep">
-                    {tNav('buy')}
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/partners" className="transition-colors hover:text-brand-deep">
-                    {tNav('partners')}
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/insights" className="transition-colors hover:text-brand-deep">
-                    {tNav('marketInsights')}
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/mortgage" className="transition-colors hover:text-brand-deep">
-                    {tNav('mortgage')}
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <p className="font-brand text-xs font-bold tracking-[0.1em] text-ink-navy uppercase">
-                {t('company')}
-              </p>
-              <ul className="mt-9 flex flex-col gap-3 text-sm text-header-muted">
-                <li>
-                  <Link href="/" className="transition-colors hover:text-brand-deep">
-                    {t('links.about')}
-                  </Link>
-                </li>
-                <li>
-                  <a
-                    href={`mailto:${t('contactEmail')}`}
-                    className="transition-colors hover:text-brand-deep"
-                  >
-                    {t('links.press')}
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href={`mailto:${t('contactEmail')}`}
-                    className="transition-colors hover:text-brand-deep"
-                  >
-                    {t('links.contact')}
-                  </a>
-                </li>
-                <li>
-                  <a
-                    href={`mailto:${t('contactEmail')}`}
-                    className="transition-colors hover:text-brand-deep"
-                  >
-                    {t('privacy')}
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
+        <div className="mb-12 grid grid-cols-2 gap-8 sm:grid-cols-3 lg:flex lg:justify-between lg:gap-0">
+          {columns.map((column) => (
+            <FooterNavColumn key={column.title} title={column.title} items={column.items} />
+          ))}
         </div>
 
-        <div className="flex flex-col-reverse gap-6 border-t border-header-border pt-8 pb-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
-          <p className="text-[10px] tracking-widest text-header-muted uppercase">
+        <div className="flex flex-col gap-6 border-t border-header-border pt-8 pb-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
+          <p className="text-xs tracking-wider text-header-muted uppercase">
             {t('copyrightPrefix')}{' '}
             <a
               href="https://neetrino.com"
@@ -101,21 +142,63 @@ export const SiteFooter = async () => {
             </a>
             . {t('copyrightSuffix')}
           </p>
-          <div className="flex items-center gap-3 text-xs font-medium text-header-muted">
-            <span className="inline-flex size-4 items-center justify-center rounded-pill bg-brand-secondary/10">
-              <Image
-                src="/brand/footer-check.svg"
-                alt=""
-                width={10}
-                height={10}
-                className="size-2.5"
-                unoptimized
-              />
-            </span>
-            <p>{t('trust')}</p>
-          </div>
+
+          <ul className="flex items-center gap-3" aria-label={t('socialLabel')}>
+            {FOOTER_SOCIAL.map(({ id, href, icon: Icon }) => (
+              <li key={id}>
+                <a
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex size-9 items-center justify-center rounded-[10px] text-header-muted transition-colors hover:bg-brand-deep/[0.06] hover:text-brand-deep focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-deep/30"
+                  aria-label={t(`social.${id}`)}
+                >
+                  <Icon className="size-4" aria-hidden />
+                </a>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </footer>
+  );
+};
+
+const FooterNavColumn = ({
+  title,
+  items,
+}: {
+  title: string;
+  items: readonly FooterNavItem[];
+}): ReactNode => (
+  <div className="min-w-0 lg:shrink-0">
+    <p className="font-brand text-xs font-bold tracking-[0.1em] text-ink-navy uppercase">
+      {title}
+    </p>
+    <ul className="mt-6 flex flex-col gap-3 text-sm text-header-muted">
+      {items.map((item) => (
+        <li key={item.label}>
+          <FooterNavLink item={item} />
+        </li>
+      ))}
+    </ul>
+  </div>
+);
+
+const FooterNavLink = ({ item }: { item: FooterNavItem }): ReactNode => {
+  const className = 'transition-colors hover:text-brand-deep';
+
+  if (item.external) {
+    return (
+      <a href={item.href} className={className}>
+        {item.label}
+      </a>
+    );
+  }
+
+  return (
+    <Link href={item.href} className={className}>
+      {item.label}
+    </Link>
   );
 };

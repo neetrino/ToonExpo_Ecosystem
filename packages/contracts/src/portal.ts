@@ -129,10 +129,18 @@ export type PortalApartmentDetail = {
   orientation: string | null;
   viewType: string | null;
   features: unknown;
+  /** Floor plan of the apartment's floor (shared by units on that floor). */
+  floorplanMediaId: string | null;
+  floorplan: MediaAssetSummary | null;
   planMediaId: string | null;
   plan: MediaAssetSummary | null;
   coverMediaId: string | null;
   cover: MediaAssetSummary | null;
+  /** Discover / Tinder swipe-card image. */
+  tinderMediaId: string | null;
+  tinder: MediaAssetSummary | null;
+  /** Ordered gallery photos; main cover is also listed here when set. */
+  gallery: MediaAssetSummary[];
   createdAt: string;
   updatedAt: string;
   /** Existing Translation rows grouped by field → locale (portal edit prefills). */
@@ -248,6 +256,9 @@ export type CreatePortalApartmentRequest = {
   features?: unknown;
   planMediaId?: string;
   coverMediaId?: string;
+  tinderMediaId?: string;
+  /** Ordered gallery media ids; when set with create, cover should be one of them (or first). */
+  galleryMediaIds?: string[];
   salesStatus?: ApartmentSalesStatus;
   translations?: PortalTranslationsInput;
 };
@@ -270,6 +281,9 @@ export type UpdatePortalApartmentRequest = {
   features?: unknown;
   planMediaId?: string | null;
   coverMediaId?: string | null;
+  tinderMediaId?: string | null;
+  /** Replace ordered gallery; coverMediaId must be in this list when both are sent. */
+  galleryMediaIds?: string[];
   salesStatus?: ApartmentSalesStatus;
   translations?: PortalTranslationsInput;
 };

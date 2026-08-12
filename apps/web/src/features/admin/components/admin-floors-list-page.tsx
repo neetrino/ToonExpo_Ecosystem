@@ -3,6 +3,7 @@
 import type { AdminFloorListItem } from '@toonexpo/contracts';
 import { Layers } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { useSearchParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
 
 import { AdminCreateFloorSheet } from '@/features/admin/components/admin-create-floor-sheet';
@@ -12,14 +13,21 @@ import {
   AdminInventoryListShell,
   useAdminInventoryListParams,
 } from '@/features/admin/components/admin-inventory-list-shell';
-import { ADMIN_VIEW_MODE_KEYS } from '@/features/admin/constants';
+import {
+  ADMIN_PROJECTS_SEARCH_DEBOUNCE_MS,
+  ADMIN_VIEW_MODE_KEYS,
+} from '@/features/admin/constants';
 import {
   useAdminBuildingInventoryGlanceQuery,
   useAdminFloorsQuery,
 } from '@/features/admin/hooks/use-admin-inventory';
+import { usePathname, useRouter } from '@/i18n/navigation';
+import { useDebouncedValue } from '@/shared/hooks/use-debounced-value';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { Button } from '@/shared/ui/button';
+
+const FIRST_PAGE = 1;
 
 /**
  * Admin floors hub — card/list opens a single floor apartments sheet.
@@ -28,10 +36,23 @@ export const AdminFloorsListPage = () => {
   const t = useTranslations('Admin.floors');
   const inventoryT = useTranslations('Admin.buildings.inventory');
   const { page, pageSize, companyId, buildingId } = useAdminInventoryListParams();
-  const query = useAdminFloorsQuery(page, pageSize, companyId, buildingId);
+  const [search, setSearch] = useState('');
+  const trimmedSearch = search.trim();
+  const debouncedSearch = useDebouncedValue(trimmedSearch, ADMIN_PROJECTS_SEARCH_DEBOUNCE_MS);
+  const activeSearch = trimmedSearch.length === 0 ? '' : debouncedSearch;
+  const query = useAdminFloorsQuery(
+    page,
+    pageSize,
+    companyId,
+    buildingId,
+    activeSearch || undefined,
+  );
   const response = query.data;
   const [showCreate, setShowCreate] = useState(false);
   const [selectedFloor, setSelectedFloor] = useState<AdminFloorListItem | null>(null);
+  const pathname = usePathname();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const { viewMode, effectiveViewMode, setViewMode } = usePersistedViewMode(
     ADMIN_VIEW_MODE_KEYS.floors,
   );
@@ -52,6 +73,16 @@ export const AdminFloorsListPage = () => {
       inventoryT('floorCode', { number: selectedFloor.number })
     : inventoryT('floorFallback');
 
+  const handleSearchChange = (value: string): void => {
+    setSearch(value);
+    if (page > FIRST_PAGE) {
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete('page');
+      const queryString = params.toString();
+      router.replace(queryString.length > 0 ? `${pathname}?${queryString}` : pathname);
+    }
+  };
+
   return (
     <>
       <AdminInventoryListShell
@@ -65,6 +96,8 @@ export const AdminFloorsListPage = () => {
         total={response?.meta.total ?? 0}
         page={response?.meta.page ?? page}
         totalPages={response?.meta.totalPages ?? 0}
+        search={search}
+        onSearchChange={handleSearchChange}
         icon={Layers}
         showBuildingFilter
         viewMode={viewMode}

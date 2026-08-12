@@ -18,6 +18,7 @@ import {
 } from "class-validator";
 
 import {
+  PORTAL_APARTMENT_GALLERY_MAX,
   PORTAL_APARTMENT_NUMBER_MAX_LENGTH,
   PORTAL_BULK_APARTMENTS_MAX,
   PORTAL_DESCRIPTION_MAX_LENGTH,
@@ -133,6 +134,18 @@ export class CreatePortalApartmentDto {
   @IsOptional()
   @IsString()
   coverMediaId?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  tinderMediaId?: string;
+
+  @ApiPropertyOptional({ type: [String] })
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(PORTAL_APARTMENT_GALLERY_MAX)
+  @IsString({ each: true })
+  galleryMediaIds?: string[];
 
   @ApiPropertyOptional({ enum: SalesStatusDto })
   @IsOptional()
@@ -259,6 +272,19 @@ export class UpdatePortalApartmentDto {
   @ValidateIf((_, value) => value !== null)
   @IsString()
   coverMediaId?: string | null;
+
+  @ApiPropertyOptional({ nullable: true })
+  @IsOptional()
+  @ValidateIf((_, value) => value !== null)
+  @IsString()
+  tinderMediaId?: string | null;
+
+  @ApiPropertyOptional({ type: [String] })
+  @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(PORTAL_APARTMENT_GALLERY_MAX)
+  @IsString({ each: true })
+  galleryMediaIds?: string[];
 
   @ApiPropertyOptional({ enum: SalesStatusDto })
   @IsOptional()

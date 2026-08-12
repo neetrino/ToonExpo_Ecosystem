@@ -10,6 +10,99 @@ import type { Prisma } from '@toonexpo/db';
 import { summarizeSalesStatuses, toMediaSummary } from '../../catalog/mappers/catalog.mapper.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 
+const buildAdminBuildingsWhere = (
+  companyId: string | undefined,
+  projectId: string | undefined,
+  search: string | undefined,
+): Prisma.BuildingWhereInput => {
+  const scope: Prisma.BuildingWhereInput = {
+    ...(projectId ? { projectId } : {}),
+    ...(companyId && !projectId ? { project: { builderCompanyId: companyId } } : {}),
+  };
+  const needle = search?.trim();
+  if (!needle) {
+    return scope;
+  }
+  return {
+    AND: [
+      scope,
+      {
+        OR: [
+          { name: { contains: needle, mode: 'insensitive' } },
+          { project: { name: { contains: needle, mode: 'insensitive' } } },
+          { project: { builderCompany: { name: { contains: needle, mode: 'insensitive' } } } },
+        ],
+      },
+    ],
+  };
+};
+
+const buildAdminFloorsWhere = (
+  companyId: string | undefined,
+  buildingId: string | undefined,
+  search: string | undefined,
+): Prisma.FloorWhereInput => {
+  const scope: Prisma.FloorWhereInput = {
+    ...(companyId ? { building: { project: { builderCompanyId: companyId } } } : {}),
+    ...(buildingId ? { buildingId } : {}),
+  };
+  const needle = search?.trim();
+  if (!needle) {
+    return scope;
+  }
+  const floorNumber = Number(needle);
+  const numberFilter =
+    Number.isInteger(floorNumber) && String(floorNumber) === needle
+      ? [{ number: floorNumber }]
+      : [];
+  return {
+    AND: [
+      scope,
+      {
+        OR: [
+          ...numberFilter,
+          { name: { contains: needle, mode: 'insensitive' } },
+          { displayLabel: { contains: needle, mode: 'insensitive' } },
+          { building: { name: { contains: needle, mode: 'insensitive' } } },
+          { building: { project: { name: { contains: needle, mode: 'insensitive' } } } },
+          {
+            building: {
+              project: { builderCompany: { name: { contains: needle, mode: 'insensitive' } } },
+            },
+          },
+        ],
+      },
+    ],
+  };
+};
+
+const buildAdminApartmentsWhere = (
+  companyId: string | undefined,
+  buildingId: string | undefined,
+  search: string | undefined,
+): Prisma.ApartmentWhereInput => {
+  const scope: Prisma.ApartmentWhereInput = {
+    ...(companyId ? { project: { builderCompanyId: companyId } } : {}),
+    ...(buildingId ? { buildingId } : {}),
+  };
+  const needle = search?.trim();
+  if (!needle) {
+    return scope;
+  }
+  return {
+    AND: [
+      scope,
+      {
+        OR: [
+          { number: { contains: needle, mode: 'insensitive' } },
+          { building: { name: { contains: needle, mode: 'insensitive' } } },
+          { project: { name: { contains: needle, mode: 'insensitive' } } },
+          { project: { builderCompany: { name: { contains: needle, mode: 'insensitive' } } } },
+        ],
+      },
+    ],
+  };
+};
 
 /**
  * Cross-company inventory lists for the admin Projects hub.
@@ -23,6 +116,7 @@ export class AdminInventoryService {
     pageSize: number,
     companyId?: string,
     projectId?: string,
+    search?: string,
   ): Promise<AdminBuildingListResponse> {
     if (companyId) {
       await this.assertCompanyExists(companyId);
@@ -31,10 +125,7 @@ export class AdminInventoryService {
       await this.assertProjectInScope(projectId, companyId);
     }
 
-    const where: Prisma.BuildingWhereInput = {
-      ...(projectId ? { projectId } : {}),
-      ...(companyId && !projectId ? { project: { builderCompanyId: companyId } } : {}),
-    };
+    const where = buildAdminBuildingsWhere(companyId, projectId, search);
 
     const [total, buildings] = await Promise.all([
       this.prisma.db.building.count({ where }),
@@ -83,6 +174,7 @@ export class AdminInventoryService {
     pageSize: number,
     companyId?: string,
     buildingId?: string,
+    search?: string,
   ): Promise<AdminFloorListResponse> {
     if (companyId) {
       await this.assertCompanyExists(companyId);
@@ -91,10 +183,7 @@ export class AdminInventoryService {
       await this.assertBuildingInScope(buildingId, companyId);
     }
 
-    const where: Prisma.FloorWhereInput = {
-      ...(companyId ? { building: { project: { builderCompanyId: companyId } } } : {}),
-      ...(buildingId ? { buildingId } : {}),
-    };
+    const where = buildAdminFloorsWhere(companyId, buildingId, search);
 
     const [total, floors] = await Promise.all([
       this.prisma.db.floor.count({ where }),
@@ -154,6 +243,7 @@ export class AdminInventoryService {
     pageSize: number,
     companyId?: string,
     buildingId?: string,
+    search?: string,
   ): Promise<AdminApartmentListResponse> {
     if (companyId) {
       await this.assertCompanyExists(companyId);
@@ -162,10 +252,7 @@ export class AdminInventoryService {
       await this.assertBuildingInScope(buildingId, companyId);
     }
 
-    const where: Prisma.ApartmentWhereInput = {
-      ...(companyId ? { project: { builderCompanyId: companyId } } : {}),
-      ...(buildingId ? { buildingId } : {}),
-    };
+    const where = buildAdminApartmentsWhere(companyId, buildingId, search);
 
     const [total, featuredOnHomeTotal, apartments] = await Promise.all([
       this.prisma.db.apartment.count({ where }),

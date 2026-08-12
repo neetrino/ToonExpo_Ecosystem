@@ -108,6 +108,7 @@ const mapFloorApartment = (
     price: Prisma.Decimal | null;
     priceCurrency: string;
     priceVisibility: string;
+    tinderMedia?: MediaRow;
   },
   isAuthenticated: boolean,
 ): FloorApartmentSummary => {
@@ -124,6 +125,7 @@ const mapFloorApartment = (
     price: revealPrice ? decimalToString(apartment.price) : null,
     priceCurrency: apartment.priceCurrency,
     priceVisibility: apartment.priceVisibility as PriceVisibility,
+    tinder: toMediaSummary(apartment.tinderMedia ?? null),
   };
 };
 

@@ -115,6 +115,8 @@ export type FloorApartmentSummary = {
   price: string | null;
   priceCurrency: string;
   priceVisibility: PriceVisibility;
+  /** Discover / Tinder swipe image when set by admin. */
+  tinder: MediaAssetSummary | null;
 };
 
 /**
@@ -216,6 +218,8 @@ export type ApartmentDetail = {
   features: unknown;
   plan: MediaAssetSummary | null;
   cover: MediaAssetSummary | null;
+  /** Ordered gallery photos for the public mosaic (cover first when set). */
+  gallery: MediaAssetSummary[];
   project: {
     id: string;
     name: string;

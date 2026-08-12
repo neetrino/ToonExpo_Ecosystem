@@ -13,6 +13,14 @@ import {
   MARKET_PRICE_TREND,
 } from '@/features/insights/constants/market-insights-data';
 import { cn } from '@/shared/ui/cn';
+import {
+  LIST_CARD_DURATION_MS,
+  LIST_CARD_LIFT_CLASS,
+  LIST_CARD_STAGGER_MS,
+  LIST_CONTENT_BASE_DELAY_MS,
+  Reveal,
+  StaggerGroup,
+} from '@/shared/ui/motion';
 
 const formatAmdInteger = (value: number, locale: string): string =>
   new Intl.NumberFormat(locale).format(Math.round(value));
@@ -37,37 +45,51 @@ export const MarketInsightsDashboard = async () => {
   return (
     <section className="page-container py-12 pb-24 sm:py-16">
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] lg:gap-5">
-        <article
-          className={cn(
-            'rounded-[24px] border border-header-border bg-surface-elevated p-6 sm:p-8',
-            'shadow-[0_12px_30px_-18px_rgb(9_43_68/0.25)]',
-          )}
+        <Reveal
+          force
+          delayMs={LIST_CONTENT_BASE_DELAY_MS}
+          durationMs={LIST_CARD_DURATION_MS}
+          className="h-full min-w-0"
         >
-          <p className="text-[11px] font-bold tracking-[0.14em] text-header-muted uppercase">
-            {t('nationalAvg.label')}
-          </p>
-          <div className="mt-3 flex flex-wrap items-end gap-x-3 gap-y-1">
-            <p className="font-brand text-[clamp(2rem,1.4rem+2.5vw,2.75rem)] font-bold leading-none tracking-tight text-ink-navy">
-              {formatAmdInteger(MARKET_AVG_PER_SQM_AMD, locale)} ֏
+          <article
+            className={cn(
+              'h-full rounded-[24px] border border-header-border bg-surface-elevated p-6 sm:p-8',
+              'shadow-[0_12px_30px_-18px_rgb(9_43_68/0.25)]',
+              LIST_CARD_LIFT_CLASS,
+            )}
+          >
+            <p className="text-[11px] font-bold tracking-[0.14em] text-header-muted uppercase">
+              {t('nationalAvg.label')}
             </p>
-            <p className="pb-1 text-sm font-semibold text-success">
-              {t('nationalAvg.yoy', {
-                value: formatSignedPercent(MARKET_AVG_YOY_PERCENT, locale),
-              })}
+            <div className="mt-3 flex flex-wrap items-end gap-x-3 gap-y-1">
+              <p className="font-brand text-[clamp(2rem,1.4rem+2.5vw,2.75rem)] font-bold leading-none tracking-tight text-ink-navy">
+                {formatAmdInteger(MARKET_AVG_PER_SQM_AMD, locale)} ֏
+              </p>
+              <p className="pb-1 text-sm font-semibold text-success">
+                {t('nationalAvg.yoy', {
+                  value: formatSignedPercent(MARKET_AVG_YOY_PERCENT, locale),
+                })}
+              </p>
+            </div>
+            <p className="mt-3 max-w-xl text-sm leading-6 text-header-muted">
+              {t('nationalAvg.description')}
             </p>
-          </div>
-          <p className="mt-3 max-w-xl text-sm leading-6 text-header-muted">
-            {t('nationalAvg.description')}
-          </p>
-          <MarketPriceTrendChart
-            className="mt-8"
-            points={MARKET_PRICE_TREND}
-            monthLabels={monthLabels}
-            ariaLabel={t('nationalAvg.chartAria')}
-          />
-        </article>
+            <MarketPriceTrendChart
+              className="mt-8"
+              points={MARKET_PRICE_TREND}
+              monthLabels={monthLabels}
+              ariaLabel={t('nationalAvg.chartAria')}
+            />
+          </article>
+        </Reveal>
 
-        <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1 lg:gap-5">
+        <StaggerGroup
+          force
+          className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1 lg:gap-5 [&>*]:h-full [&>*]:min-w-0"
+          baseDelayMs={LIST_CONTENT_BASE_DELAY_MS + LIST_CARD_STAGGER_MS}
+          staggerMs={LIST_CARD_STAGGER_MS}
+          durationMs={LIST_CARD_DURATION_MS}
+        >
           <InsightMetricCard
             label={t('metrics.mortgageRate.label')}
             value={`${MARKET_MORTGAGE_RATE.toFixed(2)}%`}
@@ -88,50 +110,77 @@ export const MarketInsightsDashboard = async () => {
             hint={t('metrics.demand.hint')}
             tone="positive"
           />
-        </div>
+        </StaggerGroup>
       </div>
 
       <div className="mt-12 sm:mt-14">
-        <h2 className="font-brand text-2xl font-bold tracking-tight text-ink-navy sm:text-[1.75rem]">
-          {t('cities.title')}
-        </h2>
-        <div className="mt-5 overflow-x-auto rounded-[20px] border border-header-border bg-surface-elevated">
-          <table className="w-full min-w-[40rem] border-collapse text-left text-sm">
-            <thead>
-              <tr className="border-b border-header-border bg-band-mist/25 text-[11px] font-bold tracking-[0.08em] text-header-muted uppercase">
-                <th className="px-4 py-3.5 font-bold sm:px-5">{t('cities.columns.city')}</th>
-                <th className="px-4 py-3.5 font-bold sm:px-5">{t('cities.columns.listings')}</th>
-                <th className="px-4 py-3.5 font-bold sm:px-5">{t('cities.columns.avg')}</th>
-                <th className="px-4 py-3.5 font-bold sm:px-5">{t('cities.columns.yoy')}</th>
-                <th className="px-4 py-3.5 font-bold sm:px-5">{t('cities.columns.demand')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {MARKET_CITY_ROWS.map((row) => (
-                <tr
-                  key={row.id}
-                  className="border-b border-header-border last:border-b-0 odd:bg-canvas/60"
-                >
-                  <td className="px-4 py-3.5 font-semibold text-ink-navy sm:px-5">
-                    {t(`cities.names.${row.cityKey}`)}
-                  </td>
-                  <td className="px-4 py-3.5 text-header-muted sm:px-5">
-                    {formatAmdInteger(row.activeListings, locale)}
-                  </td>
-                  <td className="px-4 py-3.5 text-ink-navy sm:px-5">
-                    {formatAmdInteger(row.avgPerSqm, locale)} ֏
-                  </td>
-                  <td className="px-4 py-3.5 font-medium text-success sm:px-5">
-                    {formatSignedPercent(row.yoyChangePercent, locale)}
-                  </td>
-                  <td className="px-4 py-3.5 text-ink-navy sm:px-5">
-                    {row.demand.toFixed(1)}
-                  </td>
+        <Reveal
+          force
+          delayMs={LIST_CONTENT_BASE_DELAY_MS + LIST_CARD_STAGGER_MS * 4}
+          durationMs={LIST_CARD_DURATION_MS}
+        >
+          <h2 className="font-brand text-2xl font-bold tracking-tight text-ink-navy sm:text-[1.75rem]">
+            {t('cities.title')}
+          </h2>
+        </Reveal>
+        <Reveal
+          force
+          delayMs={LIST_CONTENT_BASE_DELAY_MS + LIST_CARD_STAGGER_MS * 5}
+          durationMs={LIST_CARD_DURATION_MS}
+        >
+          <div
+            className={cn(
+              'mt-5 overflow-x-auto rounded-[20px] border border-header-border bg-surface-elevated',
+              LIST_CARD_LIFT_CLASS,
+            )}
+          >
+            <table className="w-full min-w-[40rem] border-collapse text-left text-sm">
+              <thead>
+                <tr className="border-b border-header-border bg-band-mist/25 text-[11px] font-bold tracking-[0.08em] text-header-muted uppercase">
+                  <th className="px-4 py-3.5 text-center font-bold sm:px-5">
+                    {t('cities.columns.city')}
+                  </th>
+                  <th className="px-4 py-3.5 text-center font-bold sm:px-5">
+                    {t('cities.columns.listings')}
+                  </th>
+                  <th className="px-4 py-3.5 text-center font-bold sm:px-5">
+                    {t('cities.columns.avg')}
+                  </th>
+                  <th className="px-4 py-3.5 text-center font-bold sm:px-5">
+                    {t('cities.columns.yoy')}
+                  </th>
+                  <th className="px-4 py-3.5 text-center font-bold sm:px-5">
+                    {t('cities.columns.demand')}
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {MARKET_CITY_ROWS.map((row) => (
+                  <tr
+                    key={row.id}
+                    className="border-b border-header-border last:border-b-0 odd:bg-canvas/60"
+                  >
+                    <td className="px-4 py-3.5 text-center font-semibold text-ink-navy sm:px-5">
+                      {t(`cities.names.${row.cityKey}`)}
+                    </td>
+                    <td className="px-4 py-3.5 text-center text-header-muted sm:px-5">
+                      {formatAmdInteger(row.activeListings, locale)}
+                    </td>
+                    <td className="px-4 py-3.5 text-center text-ink-navy sm:px-5">
+                      {formatAmdInteger(row.avgPerSqm, locale)} ֏
+                    </td>
+                    <td className="px-4 py-3.5 text-center font-medium text-success sm:px-5">
+                      {formatSignedPercent(row.yoyChangePercent, locale)}
+                    </td>
+                    <td className="px-4 py-3.5 text-center text-ink-navy sm:px-5">
+                      {row.demand.toFixed(1)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </Reveal>
       </div>
     </section>
   );
@@ -147,8 +196,9 @@ type InsightMetricCardProps = {
 const InsightMetricCard = ({ label, value, hint, tone }: InsightMetricCardProps) => (
   <article
     className={cn(
-      'rounded-[24px] border border-header-border bg-surface-elevated p-5 sm:p-6',
+      'h-full rounded-[24px] border border-header-border bg-surface-elevated p-5 sm:p-6',
       'shadow-[0_12px_30px_-18px_rgb(9_43_68/0.2)]',
+      LIST_CARD_LIFT_CLASS,
     )}
   >
     <p className="text-[11px] font-bold tracking-[0.14em] text-header-muted uppercase">{label}</p>

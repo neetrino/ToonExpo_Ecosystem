@@ -233,7 +233,7 @@ export const MappingImageUploader = ({
         <AdminDeleteModal
           open={confirmOpen}
           title={t('removeConfirmTitle')}
-          message={t('removeConfirmMessage')}
+          message={t('mappingRemoveConfirmMessage')}
           confirmLabel={t('remove')}
           cancelLabel={tCommon('cancel')}
           confirming={clearing}

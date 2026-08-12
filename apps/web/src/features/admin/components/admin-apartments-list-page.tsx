@@ -11,13 +11,19 @@ import {
   AdminInventoryListShell,
   useAdminInventoryListParams,
 } from '@/features/admin/components/admin-inventory-list-shell';
-import { ADMIN_VIEW_MODE_KEYS } from '@/features/admin/constants';
+import {
+  ADMIN_PROJECTS_SEARCH_DEBOUNCE_MS,
+  ADMIN_VIEW_MODE_KEYS,
+} from '@/features/admin/constants';
 import { useAdminApartmentsQuery } from '@/features/admin/hooks/use-admin-inventory';
 import { HOME_FEATURED_APARTMENT_LIMIT } from '@/features/catalog/constants/home-featured';
-import { usePathname } from '@/i18n/navigation';
+import { usePathname, useRouter } from '@/i18n/navigation';
+import { useDebouncedValue } from '@/shared/hooks/use-debounced-value';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { Button } from '@/shared/ui/button';
+
+const FIRST_PAGE = 1;
 
 /**
  * Admin apartments hub list.
@@ -25,10 +31,21 @@ import { Button } from '@/shared/ui/button';
 export const AdminApartmentsListPage = () => {
   const t = useTranslations('Admin.apartments');
   const { page, pageSize, companyId, buildingId } = useAdminInventoryListParams();
-  const query = useAdminApartmentsQuery(page, pageSize, companyId, buildingId);
+  const [search, setSearch] = useState('');
+  const trimmedSearch = search.trim();
+  const debouncedSearch = useDebouncedValue(trimmedSearch, ADMIN_PROJECTS_SEARCH_DEBOUNCE_MS);
+  const activeSearch = trimmedSearch.length === 0 ? '' : debouncedSearch;
+  const query = useAdminApartmentsQuery(
+    page,
+    pageSize,
+    companyId,
+    buildingId,
+    activeSearch || undefined,
+  );
   const response = query.data;
   const [showCreate, setShowCreate] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const { viewMode, effectiveViewMode, setViewMode } = usePersistedViewMode(
     ADMIN_VIEW_MODE_KEYS.apartments,
@@ -37,6 +54,16 @@ export const AdminApartmentsListPage = () => {
     const queryString = searchParams.toString();
     return queryString.length > 0 ? `${pathname}?${queryString}` : pathname;
   })();
+
+  const handleSearchChange = (value: string): void => {
+    setSearch(value);
+    if (page > FIRST_PAGE) {
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete('page');
+      const queryString = params.toString();
+      router.replace(queryString.length > 0 ? `${pathname}?${queryString}` : pathname);
+    }
+  };
 
   return (
     <>
@@ -59,6 +86,8 @@ export const AdminApartmentsListPage = () => {
         total={response?.meta.total ?? 0}
         page={response?.meta.page ?? page}
         totalPages={response?.meta.totalPages ?? 0}
+        search={search}
+        onSearchChange={handleSearchChange}
         icon={Home}
         showBuildingFilter
         viewMode={viewMode}

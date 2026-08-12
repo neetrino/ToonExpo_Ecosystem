@@ -11,10 +11,13 @@ import {
 } from '@/features/catalog/utils/project-filters';
 import { useRouter } from '@/i18n/navigation';
 import { useDebouncedValue } from '@/shared/hooks/use-debounced-value';
+import { cn } from '@/shared/ui/cn';
 import { Input } from '@/shared/ui/input';
 
 type ProjectLiveSearchProps = {
   filters: ProjectFilterParams;
+  /** Optional height/padding overrides for compact toolbars. */
+  controlClassName?: string | undefined;
 };
 
 const buildProjectsHref = (filters: ProjectFilterParams, q: string): string => {
@@ -34,7 +37,7 @@ const buildProjectsHref = (filters: ProjectFilterParams, q: string): string => {
 /**
  * Live keyword search for the public projects list — updates `?q=` as you type.
  */
-export const ProjectLiveSearch = ({ filters }: ProjectLiveSearchProps) => {
+export const ProjectLiveSearch = ({ filters, controlClassName }: ProjectLiveSearchProps) => {
   const t = useTranslations('Catalog');
   const router = useRouter();
   const filtersRef = useRef(filters);
@@ -69,7 +72,7 @@ export const ProjectLiveSearch = ({ filters }: ProjectLiveSearchProps) => {
   }, [activeSearch, urlQ, router]);
 
   return (
-    <label className="flex flex-col gap-1.5 text-xs font-medium text-ink-secondary">
+    <label className="flex flex-col gap-1 text-xs font-medium text-ink-secondary">
       {t('filters.search')}
       <div className="relative">
         <Search
@@ -82,7 +85,7 @@ export const ProjectLiveSearch = ({ filters }: ProjectLiveSearchProps) => {
           value={search}
           placeholder={t('filters.searchPlaceholder')}
           aria-label={t('filters.search')}
-          className="pl-10"
+          className={cn(controlClassName, 'pl-10 pr-3.5')}
           autoComplete="off"
           onChange={(event) => {
             isUserInputRef.current = true;

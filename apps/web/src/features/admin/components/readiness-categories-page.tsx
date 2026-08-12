@@ -1,9 +1,9 @@
 'use client';
 
 import type { ReadinessCategoryItem } from '@toonexpo/contracts';
-import { SquarePen, Tags } from 'lucide-react';
+import { SearchX, SquarePen, Tags } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { ReadinessCategoryCard } from '@/features/admin/components/readiness-category-card';
 import { ReadinessCategoryForm } from '@/features/admin/components/readiness-category-form';
@@ -15,23 +15,41 @@ import { AdminCreateSheet } from '@/shared/ui/admin-create-sheet';
 import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
 import { BackLink } from '@/shared/ui/back-link';
 import { Button } from '@/shared/ui/button';
+import { EmptyState } from '@/shared/ui/empty-state';
 import { IconButton } from '@/shared/ui/icon-button';
-import { Reveal } from '@/shared/ui/motion';
-import { PageTitleBlock } from '@/shared/ui/page-title-icon';
+import { ListPageHeader } from '@/shared/ui/list-page-header';
 import { VIEW_MODE_CARDS } from '@/shared/ui/view-mode';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
+
+const matchesCategorySearch = (category: ReadinessCategoryItem, needle: string): boolean => {
+  const haystack = [category.name, category.code, category.description ?? '']
+    .join(' ')
+    .toLowerCase();
+  return haystack.includes(needle);
+};
 
 /**
  * Admin readiness categories list with inline create/edit panel.
  */
 export const ReadinessCategoriesPage = () => {
   const t = useTranslations('Admin.readiness.categories');
+  const tCommon = useTranslations('Common.integratedSearch');
   const query = useAdminReadinessCategoriesQuery();
+  const [search, setSearch] = useState('');
   const [editing, setEditing] = useState<ReadinessCategoryItem | null>(null);
   const [creating, setCreating] = useState(false);
   const { viewMode, effectiveViewMode, setViewMode } = usePersistedViewMode(
     ADMIN_VIEW_MODE_KEYS.readinessCategories,
   );
+
+  const trimmedSearch = search.trim().toLowerCase();
+  const categories = useMemo(() => {
+    const rows = query.data?.data ?? [];
+    if (trimmedSearch.length === 0) {
+      return rows;
+    }
+    return rows.filter((category) => matchesCategorySearch(category, trimmedSearch));
+  }, [query.data?.data, trimmedSearch]);
 
   if (query.isLoading) {
     return <p className="text-sm text-ink-secondary">{t('loading')}</p>;
@@ -45,32 +63,43 @@ export const ReadinessCategoriesPage = () => {
     );
   }
 
-  const categories = query.data.data;
-
   return (
     <div className="flex flex-col gap-6">
-      <Reveal force>
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-col gap-4">
-            <BackLink href="/admin/readiness" label={t('backToAssessments')} />
-            <PageTitleBlock title={t('title')} subtitle={t('subtitle')} icon={Tags} />
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            <ViewModeToggle value={viewMode} onChange={setViewMode} />
-            <Button
-              type="button"
-              size="sm"
-              variant="secondary"
-              onClick={() => {
-                setCreating(true);
-                setEditing(null);
-              }}
-            >
-              <AddActionLabel>{t('newCategory')}</AddActionLabel>
-            </Button>
-          </div>
-        </div>
-      </Reveal>
+      <div className="flex flex-col gap-6">
+        <BackLink
+          href="/admin/readiness"
+          label={t('backToAssessments')}
+          className="-mt-2"
+        />
+        <ListPageHeader
+          icon={Tags}
+          title={t('title')}
+          search={search}
+          searchPlaceholder={t('searchPlaceholder')}
+          searchAriaLabel={tCommon('searchLabel')}
+          searchClassName="md:max-w-xs md:flex-none"
+          onSearchChange={setSearch}
+          onClearAll={() => {
+            setSearch('');
+          }}
+          actions={
+            <>
+              <ViewModeToggle value={viewMode} onChange={setViewMode} />
+              <Button
+                type="button"
+                size="sm"
+                variant="secondary"
+                onClick={() => {
+                  setCreating(true);
+                  setEditing(null);
+                }}
+              >
+                <AddActionLabel>{t('newCategory')}</AddActionLabel>
+              </Button>
+            </>
+          }
+        />
+      </div>
 
       <AdminCreateSheet
         open={creating}
@@ -104,7 +133,18 @@ export const ReadinessCategoriesPage = () => {
       </AdminCreateSheet>
 
       {categories.length === 0 ? (
-        <p className="text-sm text-ink-secondary">{t('empty')}</p>
+        <div className="flex min-h-72 items-center justify-center">
+          <EmptyState
+            icon={trimmedSearch.length > 0 ? SearchX : Tags}
+            title={trimmedSearch.length > 0 ? t('noResultsTitle') : t('empty')}
+            description={
+              trimmedSearch.length > 0 ? t('noResults', { query: search.trim() }) : undefined
+            }
+            actionLabel={trimmedSearch.length > 0 ? t('clearSearch') : undefined}
+            onAction={trimmedSearch.length > 0 ? () => setSearch('') : undefined}
+            className="w-full max-w-md border-solid border-border/70 bg-surface-elevated px-6 py-10 shadow-sm sm:px-10 sm:py-12"
+          />
+        </div>
       ) : effectiveViewMode === VIEW_MODE_CARDS ? (
         <AdminListCardGrid className="gap-4 xl:grid-cols-4">
           {categories.map((category) => (
@@ -137,9 +177,7 @@ export const ReadinessCategoriesPage = () => {
                   <td className="px-3 py-1 text-center text-ink-secondary">
                     {category.weight ?? '—'}
                   </td>
-                  <td className="px-3 py-1 text-center text-ink-secondary">
-                    {category.sortOrder}
-                  </td>
+                  <td className="px-3 py-1 text-center text-ink-secondary">{category.sortOrder}</td>
                   <td className="px-3 py-1 text-center text-ink-secondary">
                     {category.active ? t('activeYes') : t('activeNo')}
                   </td>

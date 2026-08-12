@@ -1,62 +1,41 @@
 'use client';
 
-import type { EventStatus, EventSummary } from '@toonexpo/contracts';
+import type { EventSummary } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 
+import { AdminEventCard } from '@/features/exhibition/components/admin/admin-event-card';
 import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
-import { Link } from '@/i18n/navigation';
 import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
-import { cn } from '@/shared/ui/cn';
-import { LIST_CARD_LIFT_CLASS, ListTableReveal } from '@/shared/ui/motion';
+import { ListTableReveal } from '@/shared/ui/motion';
 import { VIEW_MODE_CARDS, type ViewMode } from '@/shared/ui/view-mode';
 
 type AdminEventsTableProps = {
   events: EventSummary[];
+  onSelectEvent: (eventId: string) => void;
   viewMode?: ViewMode | undefined;
-};
-
-const EVENT_STATUS_CLASS: Record<EventStatus, string> = {
-  planning: 'bg-surface text-ink-muted',
-  active: 'bg-success/10 text-success',
-  completed: 'bg-brand/10 text-brand',
-  archived: 'bg-warning/10 text-warning',
-  cancelled: 'bg-danger-soft text-danger',
 };
 
 /**
  * Admin events collection as table or card grid.
  */
-export const AdminEventsTable = ({ events, viewMode = VIEW_MODE_CARDS }: AdminEventsTableProps) => {
+export const AdminEventsTable = ({
+  events,
+  onSelectEvent,
+  viewMode = VIEW_MODE_CARDS,
+}: AdminEventsTableProps) => {
   const t = useTranslations('Admin.events');
 
   if (viewMode === VIEW_MODE_CARDS) {
     return (
-      <AdminListCardGrid>
+      <AdminListCardGrid className="sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {events.map((event) => (
-          <Link
+          <AdminEventCard
             key={event.id}
-            href={`/admin/events/${event.id}`}
-            className={cn(
-              'flex flex-col gap-2 rounded-sm border border-border bg-background p-3',
-              LIST_CARD_LIFT_CLASS,
-            )}
-          >
-            <div className="flex items-start justify-between gap-3">
-              <span className="min-w-0 truncate font-medium text-ink">{event.name}</span>
-              <div className="flex shrink-0 flex-col items-end gap-1">
-                <span
-                  className={cn(
-                    'inline-flex w-fit rounded-pill px-2.5 py-0.5 text-xs font-medium',
-                    EVENT_STATUS_CLASS[event.status],
-                  )}
-                >
-                  {t(`statuses.${event.status}`)}
-                </span>
-                <PublicationStatusBadge status={event.publicationStatus} />
-              </div>
-            </div>
-            <span className="font-mono text-xs text-ink-muted">{event.code}</span>
-          </Link>
+            event={event}
+            onSelect={() => {
+              onSelectEvent(event.id);
+            }}
+          />
         ))}
       </AdminListCardGrid>
     );
@@ -78,12 +57,15 @@ export const AdminEventsTable = ({ events, viewMode = VIEW_MODE_CARDS }: AdminEv
             {events.map((event) => (
               <tr key={event.id} className="border-b border-border last:border-0">
                 <td className="px-4 py-3">
-                  <Link
-                    href={`/admin/events/${event.id}`}
+                  <button
+                    type="button"
                     className="font-medium text-brand hover:underline"
+                    onClick={() => {
+                      onSelectEvent(event.id);
+                    }}
                   >
                     {event.name}
-                  </Link>
+                  </button>
                 </td>
                 <td className="px-4 py-3 text-ink-secondary">{event.code}</td>
                 <td className="px-4 py-3">{t(`statuses.${event.status}`)}</td>

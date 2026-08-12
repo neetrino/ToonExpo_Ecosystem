@@ -18,7 +18,7 @@ const NAV_ICON_CLASS = 'block size-5 shrink-0 opacity-90';
 
 const navLinkClassName = (active: boolean, collapsed: boolean): string =>
   cn(
-    'relative z-10 flex h-10 items-center rounded-pill font-medium tracking-wide leading-none',
+    'relative z-10 flex h-10 items-center rounded-pill font-medium tracking-wide leading-snug',
     'transition-colors duration-[var(--duration-base)] ease-[var(--ease-out-premium)]',
     'motion-reduce:transition-none',
     collapsed ? 'justify-center px-2' : 'gap-3 px-3.5 text-base',

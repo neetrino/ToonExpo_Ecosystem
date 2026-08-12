@@ -6,6 +6,8 @@ export type ProjectCatalogLinkId =
   | 'typicalInteractiveTour'
   | 'video'
   | 'exteriorInteractiveTour'
+  | 'matterport'
+  | 'external3d'
   | 'floorplans2d'
   | 'floorplans3d'
   | 'branding'
@@ -25,6 +27,8 @@ export const PROJECT_CATALOG_LINK_IDS: readonly ProjectCatalogLinkId[] = [
   'typicalInteractiveTour',
   'video',
   'exteriorInteractiveTour',
+  'matterport',
+  'external3d',
   'floorplans2d',
   'floorplans3d',
   'branding',
@@ -53,6 +57,8 @@ export const splitProjectCatalogLinks = (
   video: ProjectCatalogLink | null;
   typicalTour: ProjectCatalogLink | null;
   exteriorTour: ProjectCatalogLink | null;
+  matterport: ProjectCatalogLink | null;
+  external3d: ProjectCatalogLink | null;
   map: ProjectCatalogLink | null;
 } => {
   const media: ProjectCatalogLink[] = [];
@@ -60,6 +66,8 @@ export const splitProjectCatalogLinks = (
   let video: ProjectCatalogLink | null = null;
   let typicalTour: ProjectCatalogLink | null = null;
   let exteriorTour: ProjectCatalogLink | null = null;
+  let matterport: ProjectCatalogLink | null = null;
+  let external3d: ProjectCatalogLink | null = null;
   let map: ProjectCatalogLink | null = null;
   for (const link of links) {
     if (link.id === 'video') {
@@ -68,6 +76,10 @@ export const splitProjectCatalogLinks = (
       typicalTour = link;
     } else if (link.id === 'exteriorInteractiveTour') {
       exteriorTour = link;
+    } else if (link.id === 'matterport') {
+      matterport = link;
+    } else if (link.id === 'external3d') {
+      external3d = link;
     } else if (link.id === 'map') {
       map = link;
     } else if (isProjectCatalogSocialLink(link.id)) {
@@ -76,7 +88,7 @@ export const splitProjectCatalogLinks = (
       media.push(link);
     }
   }
-  return { media, social, video, typicalTour, exteriorTour, map };
+  return { media, social, video, typicalTour, exteriorTour, matterport, external3d, map };
 };
 
 const asNonEmptyString = (value: unknown): string | null => {

@@ -57,6 +57,8 @@ model MediaAsset {
   floorPlans        Floor[]         @relation("FloorPlan")
   apartmentPlans    Apartment[]     @relation("ApartmentPlan")
   apartmentCovers   Apartment[]     @relation("ApartmentCover")
+  apartmentTinders  Apartment[]     @relation("ApartmentTinder")
+  apartmentGallery  ApartmentGalleryImage[]
   partnerLogos      PartnerCompany[] @relation("PartnerLogo")
   partnerCovers     PartnerCompany[] @relation("PartnerCover")
   venueMaps                 VenueMap[]
@@ -214,6 +216,8 @@ model Apartment {
   planMediaId             String?              @map("plan_media_id")
   /// Card / listing cover (preferred over project/building cover on inventory cards).
   coverMediaId            String?              @map("cover_media_id")
+  /// Discover / Tinder swipe-card image (falls back to project cover when unset).
+  tinderMediaId           String?              @map("tinder_media_id")
   matterportUrl           String?              @map("matterport_url")
   external3dUrl           String?              @map("external_3d_url")
   orientation             String?
@@ -238,6 +242,8 @@ model Apartment {
   floor         Floor                     @relation(fields: [floorId], references: [id], onDelete: Cascade)
   planMedia     MediaAsset?               @relation("ApartmentPlan", fields: [planMediaId], references: [id], onDelete: SetNull)
   coverMedia    MediaAsset?               @relation("ApartmentCover", fields: [coverMediaId], references: [id], onDelete: SetNull)
+  tinderMedia   MediaAsset?               @relation("ApartmentTinder", fields: [tinderMediaId], references: [id], onDelete: SetNull)
+  galleryImages ApartmentGalleryImage[]
   statusHistory ApartmentStatusHistory[]
   requests      Request[]
   dealLinks     CrmDealApartmentLink[]
@@ -254,6 +260,22 @@ model Apartment {
   @@index([projectId, publicationStatus])
   @@index([featuredOnHome])
   @@map("apartments")
+}
+
+/// Ordered photo gallery for an apartment. `Apartment.coverMediaId` points at the main image.
+model ApartmentGalleryImage {
+  id           String   @id @default(cuid())
+  apartmentId  String   @map("apartment_id")
+  mediaAssetId String   @map("media_asset_id")
+  sortOrder    Int      @default(0) @map("sort_order")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  apartment  Apartment  @relation(fields: [apartmentId], references: [id], onDelete: Cascade)
+  mediaAsset MediaAsset @relation(fields: [mediaAssetId], references: [id], onDelete: Cascade)
+
+  @@unique([apartmentId, mediaAssetId])
+  @@index([apartmentId, sortOrder])
+  @@map("apartment_gallery_images")
 }
 
 /// Audit trail for apartment sales status changes (price/publication history can extend later).

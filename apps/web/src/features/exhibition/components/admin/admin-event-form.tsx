@@ -62,12 +62,14 @@ export const AdminEventForm = ({ initial, onSubmit, isBusy }: AdminEventFormProp
       })}
       noValidate
     >
-      <FormField id="event-name" label={t('name')}>
-        <Input id="event-name" {...form.register('name')} />
-      </FormField>
-      <FormField id="event-code" label={t('code')}>
-        <Input id="event-code" {...form.register('code')} />
-      </FormField>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <FormField id="event-name" label={t('name')}>
+          <Input id="event-name" {...form.register('name')} />
+        </FormField>
+        <FormField id="event-code" label={t('code')}>
+          <Input id="event-code" {...form.register('code')} />
+        </FormField>
+      </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <FormField id="event-start" label={t('startDate')}>
           <Controller
@@ -102,54 +104,56 @@ export const AdminEventForm = ({ initial, onSubmit, isBusy }: AdminEventFormProp
           />
         </FormField>
       </div>
-      <FormField id="event-status" label={t('status')}>
-        <Controller
-          name="status"
-          control={form.control}
-          render={({ field }) => (
-            <Select
-              id="event-status"
-              name={field.name}
-              value={field.value}
-              aria-label={t('status')}
-              onBlur={field.onBlur}
-              onChange={(event) => {
-                field.onChange(event.target.value);
-              }}
-            >
-              {EXHIBITION_EVENT_STATUSES.map((status) => (
-                <option key={status} value={status}>
-                  {t(`statuses.${status}`)}
-                </option>
-              ))}
-            </Select>
-          )}
-        />
-      </FormField>
-      <FormField id="event-publication" label={t('publication')}>
-        <Controller
-          name="publicationStatus"
-          control={form.control}
-          render={({ field }) => (
-            <Select
-              id="event-publication"
-              name={field.name}
-              value={field.value}
-              aria-label={t('publication')}
-              onBlur={field.onBlur}
-              onChange={(event) => {
-                field.onChange(event.target.value);
-              }}
-            >
-              {EXHIBITION_PUBLICATION_STATUSES.map((status) => (
-                <option key={status} value={status}>
-                  {t(`publicationStatuses.${status}`)}
-                </option>
-              ))}
-            </Select>
-          )}
-        />
-      </FormField>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <FormField id="event-status" label={t('status')}>
+          <Controller
+            name="status"
+            control={form.control}
+            render={({ field }) => (
+              <Select
+                id="event-status"
+                name={field.name}
+                value={field.value}
+                aria-label={t('status')}
+                onBlur={field.onBlur}
+                onChange={(event) => {
+                  field.onChange(event.target.value);
+                }}
+              >
+                {EXHIBITION_EVENT_STATUSES.map((status) => (
+                  <option key={status} value={status}>
+                    {t(`statuses.${status}`)}
+                  </option>
+                ))}
+              </Select>
+            )}
+          />
+        </FormField>
+        <FormField id="event-publication" label={t('publication')}>
+          <Controller
+            name="publicationStatus"
+            control={form.control}
+            render={({ field }) => (
+              <Select
+                id="event-publication"
+                name={field.name}
+                value={field.value}
+                aria-label={t('publication')}
+                onBlur={field.onBlur}
+                onChange={(event) => {
+                  field.onChange(event.target.value);
+                }}
+              >
+                {EXHIBITION_PUBLICATION_STATUSES.map((status) => (
+                  <option key={status} value={status}>
+                    {t(`publicationStatuses.${status}`)}
+                  </option>
+                ))}
+              </Select>
+            )}
+          />
+        </FormField>
+      </div>
       <Button type="submit" variant="primary" disabled={isBusy}>
         {isBusy ? t('saving') : isEdit ? t('save') : t('create')}
       </Button>

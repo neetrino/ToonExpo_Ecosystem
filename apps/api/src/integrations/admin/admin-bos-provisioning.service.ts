@@ -11,6 +11,27 @@ import {
   toAdminBosProvisioningListItem,
 } from '../bos/bos-provisioning.mapper.js';
 
+const buildBosProvisioningWhere = (
+  status: BosProvisioningStatus | undefined,
+  search: string | undefined,
+): Prisma.BosProvisioningRequestWhereInput => {
+  const where: Prisma.BosProvisioningRequestWhereInput = status ? { status } : {};
+  const needle = search?.trim();
+  if (!needle) {
+    return where;
+  }
+
+  where.OR = [
+    { companyName: { contains: needle, mode: 'insensitive' } },
+    { primaryContactName: { contains: needle, mode: 'insensitive' } },
+    { primaryContactEmail: { contains: needle, mode: 'insensitive' } },
+    { bosCompanyId: { contains: needle, mode: 'insensitive' } },
+    { requestId: { contains: needle, mode: 'insensitive' } },
+    { eventCycleName: { contains: needle, mode: 'insensitive' } },
+  ];
+  return where;
+};
+
 @Injectable()
 export class AdminBosProvisioningService {
   constructor(private readonly prisma: PrismaService) {}
@@ -19,8 +40,9 @@ export class AdminBosProvisioningService {
     page: number,
     pageSize: number,
     status?: BosProvisioningStatus,
+    search?: string,
   ): Promise<AdminBosProvisioningListResponse> {
-    const where: Prisma.BosProvisioningRequestWhereInput = status ? { status } : {};
+    const where = buildBosProvisioningWhere(status, search);
     const skip = (page - 1) * pageSize;
 
     const [total, rows] = await Promise.all([

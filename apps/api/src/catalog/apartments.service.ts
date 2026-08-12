@@ -20,6 +20,27 @@ import {
   TRANSLATION_FIELD,
 } from './utils/resolve-translation.js';
 
+type GalleryMediaRow = {
+  id: string;
+  fileUrl: string;
+  thumbnailUrl: string | null;
+  altText: string | null;
+};
+
+const orderApartmentGallery = (
+  media: GalleryMediaRow[],
+  coverMediaId: string | null,
+): GalleryMediaRow[] => {
+  if (coverMediaId == null || media.length === 0) {
+    return media;
+  }
+  const cover = media.find((item) => item.id === coverMediaId);
+  if (cover == null) {
+    return media;
+  }
+  return [cover, ...media.filter((item) => item.id !== coverMediaId)];
+};
+
 @Injectable()
 export class ApartmentsService {
   constructor(
@@ -138,6 +159,10 @@ export class ApartmentsService {
       include: {
         planMedia: true,
         coverMedia: true,
+        galleryImages: {
+          orderBy: { sortOrder: 'asc' },
+          include: { mediaAsset: true },
+        },
         project: {
           include: {
             builderCompany: { include: { logoMedia: true } },
@@ -216,6 +241,10 @@ export class ApartmentsService {
       features: apartment.features,
       plan: toMediaSummary(apartment.planMedia),
       cover: toMediaSummary(apartment.coverMedia),
+      gallery: orderApartmentGallery(
+        apartment.galleryImages.map((row) => row.mediaAsset),
+        apartment.coverMediaId,
+      ).map((media) => toMediaSummary(media)).filter((item): item is NonNullable<typeof item> => item != null),
       project: {
         id: apartment.project.id,
         name: projectName,

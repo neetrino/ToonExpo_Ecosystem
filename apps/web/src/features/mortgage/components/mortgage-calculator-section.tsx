@@ -19,6 +19,13 @@ import { useMortgageCalculator } from '@/features/mortgage/hooks/use-mortgage-ca
 import { estimateMortgagePayment } from '@/features/mortgage/utils/estimate-monthly-payment';
 import { formatMortgageAmount } from '@/features/mortgage/utils/format-mortgage-amount';
 import { cn } from '@/shared/ui/cn';
+import {
+  LIST_CARD_DURATION_MS,
+  LIST_CARD_STAGGER_MS,
+  LIST_CONTENT_BASE_DELAY_MS,
+  Reveal,
+  StaggerGroup,
+} from '@/shared/ui/motion';
 
 type MortgageCalculatorSectionProps = {
   offers: PublicMortgageOfferItem[];
@@ -102,11 +109,15 @@ export const MortgageCalculatorSection = ({ offers }: MortgageCalculatorSectionP
   }
 
   return (
-    <div className="grid gap-10 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] lg:items-start lg:gap-12">
-      <aside className="rounded-[24px] bg-surface-elevated p-8 shadow-[0_0_0_1px_var(--color-header-border)] lg:sticky lg:top-24">
-        <h2 className="font-brand text-xl font-bold tracking-tight text-ink-navy">
-          {t('inputsTitle')}
-        </h2>
+    <div
+      id="calculator"
+      className="grid scroll-mt-28 gap-10 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)] lg:items-start lg:gap-12"
+    >
+      <Reveal force delayMs={LIST_CONTENT_BASE_DELAY_MS} durationMs={LIST_CARD_DURATION_MS}>
+        <aside className="rounded-[24px] bg-surface-elevated p-8 shadow-[0_0_0_1px_var(--color-header-border)] lg:sticky lg:top-24">
+          <h2 className="font-brand text-xl font-bold tracking-tight text-ink-navy">
+            {t('inputsTitle')}
+          </h2>
 
         <LoanField
           label={t('propertyPrice')}
@@ -189,13 +200,26 @@ export const MortgageCalculatorSection = ({ offers }: MortgageCalculatorSectionP
             hasValidationError={validationMessage != null}
           />
         </div>
-      </aside>
+        </aside>
+      </Reveal>
 
       <div className="flex min-w-0 flex-col gap-4">
-        <h2 className="font-brand text-2xl font-bold tracking-tight text-ink-navy">
-          {t('offersTitle')}
-        </h2>
-        <div className="flex flex-col gap-4">
+        <Reveal
+          force
+          delayMs={LIST_CONTENT_BASE_DELAY_MS + LIST_CARD_STAGGER_MS}
+          durationMs={LIST_CARD_DURATION_MS}
+        >
+          <h2 className="font-brand text-2xl font-bold tracking-tight text-ink-navy">
+            {t('offersTitle')}
+          </h2>
+        </Reveal>
+        <StaggerGroup
+          force
+          className="flex flex-col gap-4"
+          baseDelayMs={LIST_CONTENT_BASE_DELAY_MS + LIST_CARD_STAGGER_MS * 2}
+          staggerMs={LIST_CARD_STAGGER_MS}
+          durationMs={LIST_CARD_DURATION_MS}
+        >
           {offers.map((offer) => (
             <MortgageOfferCard
               key={offer.id}
@@ -208,8 +232,17 @@ export const MortgageCalculatorSection = ({ offers }: MortgageCalculatorSectionP
               }}
             />
           ))}
-        </div>
-        <MortgagePrequalifyCta bankName={selectedOffer.bank.name} />
+        </StaggerGroup>
+        <Reveal
+          force
+          delayMs={
+            LIST_CONTENT_BASE_DELAY_MS +
+            LIST_CARD_STAGGER_MS * (2 + Math.min(offers.length, 8))
+          }
+          durationMs={LIST_CARD_DURATION_MS}
+        >
+          <MortgagePrequalifyCta bankName={selectedOffer.bank.name} />
+        </Reveal>
       </div>
     </div>
   );

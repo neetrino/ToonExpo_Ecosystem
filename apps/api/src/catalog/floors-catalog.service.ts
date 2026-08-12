@@ -60,6 +60,7 @@ export class FloorsCatalogService {
             price: true,
             priceCurrency: true,
             priceVisibility: true,
+            tinderMedia: true,
           },
         },
       },

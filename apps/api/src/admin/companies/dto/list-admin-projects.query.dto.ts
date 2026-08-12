@@ -53,7 +53,7 @@ export class ListAdminProjectsQueryDto {
 
   @ApiPropertyOptional({
     description:
-      'Case-insensitive search over project name, slug, city and builder company name. Blank behaves as no search.',
+      'Case-insensitive search. Projects: name, slug, city, company. Buildings/floors/apartments: names and related project/company (apartment number, floor label). Blank behaves as no search.',
     maxLength: PROJECT_SEARCH_MAX_LENGTH,
   })
   @IsOptional()

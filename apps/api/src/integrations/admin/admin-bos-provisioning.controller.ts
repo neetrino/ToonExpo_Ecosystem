@@ -33,6 +33,7 @@ export class AdminBosProvisioningController {
       query.page,
       query.pageSize,
       query.status as BosProvisioningStatus | undefined,
+      query.search,
     );
   }
 

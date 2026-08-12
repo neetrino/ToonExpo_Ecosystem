@@ -57,6 +57,7 @@ export class BuildingsCatalogService {
                 price: true,
                 priceCurrency: true,
                 priceVisibility: true,
+                tinderMedia: true,
               },
             },
           },

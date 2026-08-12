@@ -14,12 +14,18 @@ import {
   useAdminInventoryListParams,
 } from '@/features/admin/components/admin-inventory-list-shell';
 import { ReadinessManagementModal } from '@/features/admin/components/readiness-management-modal';
-import { ADMIN_VIEW_MODE_KEYS } from '@/features/admin/constants';
+import {
+  ADMIN_PROJECTS_SEARCH_DEBOUNCE_MS,
+  ADMIN_VIEW_MODE_KEYS,
+} from '@/features/admin/constants';
 import { useAdminBuildingsQuery } from '@/features/admin/hooks/use-admin-inventory';
 import { usePathname, useRouter } from '@/i18n/navigation';
+import { useDebouncedValue } from '@/shared/hooks/use-debounced-value';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { Button } from '@/shared/ui/button';
+
+const FIRST_PAGE = 1;
 
 /**
  * Admin buildings hub list with inventory glance sheet and readiness popup.
@@ -27,7 +33,13 @@ import { Button } from '@/shared/ui/button';
 export const AdminBuildingsListPage = () => {
   const t = useTranslations('Admin.buildings');
   const { page, pageSize, companyId, projectId } = useAdminInventoryListParams();
-  const query = useAdminBuildingsQuery(page, pageSize, companyId, projectId);
+  const [search, setSearch] = useState('');
+  const trimmedSearch = search.trim();
+  const debouncedSearch = useDebouncedValue(trimmedSearch, ADMIN_PROJECTS_SEARCH_DEBOUNCE_MS);
+  const activeSearch = trimmedSearch.length === 0 ? '' : debouncedSearch;
+  const query = useAdminBuildingsQuery(page, pageSize, companyId, projectId, {
+    ...(activeSearch ? { search: activeSearch } : {}),
+  });
   const response = query.data;
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -68,7 +80,7 @@ export const AdminBuildingsListPage = () => {
     if (nextProjectId) {
       params.set('projectId', nextProjectId);
     }
-    if (nextPage > 1) {
+    if (nextPage > FIRST_PAGE) {
       params.set('page', String(nextPage));
     }
     if (nextBuildingId) {
@@ -86,6 +98,13 @@ export const AdminBuildingsListPage = () => {
     router.replace(href);
   };
 
+  const handleSearchChange = (value: string): void => {
+    setSearch(value);
+    if (page > FIRST_PAGE) {
+      replaceHref(buildHref({ page: FIRST_PAGE }));
+    }
+  };
+
   return (
     <>
       <AdminInventoryListShell
@@ -99,6 +118,8 @@ export const AdminBuildingsListPage = () => {
         total={response?.meta.total ?? 0}
         page={response?.meta.page ?? page}
         totalPages={response?.meta.totalPages ?? 0}
+        search={search}
+        onSearchChange={handleSearchChange}
         icon={Building}
         viewMode={viewMode}
         onViewModeChange={setViewMode}

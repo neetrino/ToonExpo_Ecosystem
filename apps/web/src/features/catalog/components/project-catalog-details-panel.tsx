@@ -40,6 +40,8 @@ type ProjectCatalogDetailsPanelProps = {
 const OVERVIEW_MAX_ITEMS = 6;
 const TYPICAL_TOUR_POSTER_SRC = staticAssetUrl('/images/project-floor-axonometric.webp');
 const EXTERIOR_TOUR_POSTER_SRC = staticAssetUrl('/images/hero-variant-a.webp');
+const MATTERPORT_TOUR_POSTER_SRC = staticAssetUrl('/images/project-floor-axonometric.webp');
+const EXTERNAL_3D_TOUR_POSTER_SRC = staticAssetUrl('/images/hero-variant-a.webp');
 const MAP_POSTER_SRC = staticAssetUrl('/images/buy-map.webp');
 
 /**
@@ -78,6 +80,8 @@ export const ProjectCatalogDetailsPanel = ({
     video: videoLink,
     typicalTour: typicalTourLink,
     exteriorTour: exteriorTourLink,
+    matterport: matterportLink,
+    external3d: external3dLink,
     map: mapLink,
   } = splitProjectCatalogLinks(links);
   const hasAbout = aboutText != null && aboutText.trim().length > 0;
@@ -89,6 +93,8 @@ export const ProjectCatalogDetailsPanel = ({
   const hasVideo = videoLink != null;
   const hasTypicalTour = typicalTourLink != null;
   const hasExteriorTour = exteriorTourLink != null;
+  const hasMatterport = matterportLink != null;
+  const hasExternal3d = external3dLink != null;
   const hasMap = mapLink != null;
   const hasMediaLinks = mediaLinks.length > 0;
   const hasSocialLinks = socialLinks.length > 0;
@@ -103,6 +109,8 @@ export const ProjectCatalogDetailsPanel = ({
     !hasVideo &&
     !hasTypicalTour &&
     !hasExteriorTour &&
+    !hasMatterport &&
+    !hasExternal3d &&
     !hasMap &&
     !hasMediaLinks &&
     !hasSocialLinks
@@ -176,20 +184,42 @@ export const ProjectCatalogDetailsPanel = ({
           </ProjectCatalogSectionCard>
         ) : null}
 
-        {hasTypicalTour ? (
+        {hasTypicalTour && typicalTourLink ? (
           <ProjectCatalogSectionCard title={linkLabels.typicalInteractiveTour}>
             <ProjectCatalogMediaPoster
               title={linkLabels.typicalInteractiveTour}
               imageSrc={TYPICAL_TOUR_POSTER_SRC}
+              href={typicalTourLink.url}
             />
           </ProjectCatalogSectionCard>
         ) : null}
 
-        {hasExteriorTour ? (
+        {hasExteriorTour && exteriorTourLink ? (
           <ProjectCatalogSectionCard title={linkLabels.exteriorInteractiveTour}>
             <ProjectCatalogMediaPoster
               title={linkLabels.exteriorInteractiveTour}
               imageSrc={EXTERIOR_TOUR_POSTER_SRC}
+              href={exteriorTourLink.url}
+            />
+          </ProjectCatalogSectionCard>
+        ) : null}
+
+        {hasMatterport && matterportLink ? (
+          <ProjectCatalogSectionCard title={linkLabels.matterport}>
+            <ProjectCatalogMediaPoster
+              title={linkLabels.matterport}
+              imageSrc={MATTERPORT_TOUR_POSTER_SRC}
+              href={matterportLink.url}
+            />
+          </ProjectCatalogSectionCard>
+        ) : null}
+
+        {hasExternal3d && external3dLink ? (
+          <ProjectCatalogSectionCard title={linkLabels.external3d}>
+            <ProjectCatalogMediaPoster
+              title={linkLabels.external3d}
+              imageSrc={EXTERNAL_3D_TOUR_POSTER_SRC}
+              href={external3dLink.url}
             />
           </ProjectCatalogSectionCard>
         ) : null}

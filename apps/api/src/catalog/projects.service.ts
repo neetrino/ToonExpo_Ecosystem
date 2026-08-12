@@ -112,6 +112,7 @@ export class ProjectsService {
                     price: true,
                     priceCurrency: true,
                     priceVisibility: true,
+                    tinderMedia: true,
                   },
                 },
               },

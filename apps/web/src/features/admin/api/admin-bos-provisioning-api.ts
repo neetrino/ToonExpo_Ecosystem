@@ -11,6 +11,7 @@ export type ListAdminBosProvisioningParams = {
   page: number;
   pageSize: number;
   status?: BosProvisioningStatus;
+  search?: string;
 };
 
 export const listAdminBosProvisioning = (
@@ -22,6 +23,10 @@ export const listAdminBosProvisioning = (
   });
   if (params.status) {
     search.set('status', params.status);
+  }
+  const needle = params.search?.trim();
+  if (needle) {
+    search.set('search', needle);
   }
 
   return apiFetch<AdminBosProvisioningListResponse>({

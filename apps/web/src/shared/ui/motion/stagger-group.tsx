@@ -20,6 +20,8 @@ type StaggerGroupProps = {
   force?: boolean | undefined;
   /** Per-item reveal duration (ms). */
   durationMs?: number | undefined;
+  /** Optional DOM id (e.g. catalog scroll target). */
+  id?: string | undefined;
 };
 
 /**
@@ -33,11 +35,12 @@ export const StaggerGroup = ({
   as: Tag = 'div',
   force = false,
   durationMs,
+  id,
 }: StaggerGroupProps) => {
   const items = Children.toArray(children).filter(isValidElement);
 
   return (
-    <Tag className={cn(className)}>
+    <Tag id={id} className={cn(className)}>
       {items.map((child, index) => {
         const cappedIndex = Math.min(index, MAX_STAGGER_ITEMS - 1);
         return (

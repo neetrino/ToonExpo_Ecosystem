@@ -50,8 +50,8 @@ const navLinkClassName = (active: boolean, collapsed: boolean, nested = false): 
     collapsed
       ? 'h-10 justify-center px-2'
       : nested
-        ? 'h-9 gap-2.5 px-3.5 text-sm leading-none'
-        : 'h-10 gap-2.5 px-3.5 text-[0.9375rem] leading-none',
+        ? 'h-9 gap-2.5 px-3.5 text-sm leading-snug'
+        : 'h-10 gap-2.5 px-3.5 text-[0.9375rem] leading-snug',
     active
       ? 'text-brand-secondary'
       : 'text-on-dark/85 hover:bg-on-dark/10 hover:text-on-dark',
@@ -119,7 +119,7 @@ export const AdminNav = () => {
           {...(active ? { [PORTAL_NAV_ACTIVE_ATTR]: 'true' } : {})}
         >
           <Icon className={NAV_ICON_CLASS} aria-hidden />
-          {railCollapsed ? <span className="sr-only">{label}</span> : label}
+          {railCollapsed ? <span className="sr-only">{label}</span> : <span>{label}</span>}
         </Link>
       );
     }
@@ -152,7 +152,7 @@ export const AdminNav = () => {
         >
           <Link
             href={item.href}
-            className="flex h-full min-w-0 flex-1 items-center gap-2.5 leading-none text-inherit"
+            className="flex h-full min-w-0 flex-1 items-center gap-2.5 leading-snug text-inherit"
           >
             <Icon className={NAV_ICON_CLASS} aria-hidden />
             <span className="truncate">{t(item.key)}</span>
@@ -202,7 +202,7 @@ export const AdminNav = () => {
                     {...(childActive ? { [PORTAL_NAV_ACTIVE_ATTR]: 'true' } : {})}
                   >
                     <ChildIcon className={NAV_CHILD_ICON_CLASS} aria-hidden />
-                    {t(child.key)}
+                    <span>{t(child.key)}</span>
                   </Link>
                 );
               })}
@@ -225,7 +225,7 @@ export const AdminNav = () => {
 
       <PortalNavRailGroup
         measureKey={measureKey}
-        className="mt-auto shrink-0 border-t border-on-dark/15 pt-2.5"
+        className="mt-auto shrink-0 border-t border-on-dark/15 pt-2.5 pb-0.5"
         gapClassName="gap-0.5"
       >
         {renderNavItem(ADMIN_SETTINGS_NAV_ITEM)}
