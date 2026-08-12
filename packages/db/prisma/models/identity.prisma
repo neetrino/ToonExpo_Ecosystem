@@ -176,6 +176,16 @@ model Company {
   bosCompanyId String?       @map("bos_company_id")
   /// Optional public logo (MediaAsset URL metadata only in this sprint).
   logoMediaId  String?       @map("logo_media_id")
+  phone        String?
+  contactPerson String?      @map("contact_person")
+  email        String?
+  websiteUrl   String?       @map("website_url")
+  instagramUrl String?       @map("instagram_url")
+  facebookUrl  String?       @map("facebook_url")
+  region       String?
+  address      String?
+  mediaMaterialsUrl String?  @map("media_materials_url")
+  advertisingMaterialsUrl String? @map("advertising_materials_url")
   createdAt    DateTime      @default(now()) @map("created_at")
   updatedAt    DateTime      @updatedAt @map("updated_at")
 

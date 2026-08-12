@@ -132,6 +132,16 @@ export class BuildersService {
       name: string;
       description: string | null;
       logoMedia: { fileUrl: string } | null;
+      phone: string | null;
+      contactPerson: string | null;
+      email: string | null;
+      websiteUrl: string | null;
+      instagramUrl: string | null;
+      facebookUrl: string | null;
+      region: string | null;
+      address: string | null;
+      mediaMaterialsUrl: string | null;
+      advertisingMaterialsUrl: string | null;
       _count: { projects: number };
     },
     locale: ReturnType<typeof resolveCatalogLocale>,
@@ -159,6 +169,16 @@ export class BuildersService {
       ),
       logoUrl: builder.logoMedia?.fileUrl ?? null,
       publishedProjectCount: builder._count.projects,
+      phone: builder.phone,
+      contactPerson: builder.contactPerson,
+      email: builder.email,
+      websiteUrl: builder.websiteUrl,
+      instagramUrl: builder.instagramUrl,
+      facebookUrl: builder.facebookUrl,
+      region: builder.region,
+      address: builder.address,
+      mediaMaterialsUrl: builder.mediaMaterialsUrl,
+      advertisingMaterialsUrl: builder.advertisingMaterialsUrl,
     };
   }
 }

@@ -20,11 +20,7 @@ export default async function BuilderCompanyPage({ params }: CompanyPageProps) {
 
   return (
     <CompanyPageShell title={t('title')} subtitle={t('subtitle')}>
-      <CompanyProfileForm
-        logoMediaId={profile.logoMediaId}
-        logoUrl={profile.logoUrl}
-        canEdit={profile.role === 'company_admin'}
-      />
+      <CompanyProfileForm profile={profile} canEdit={profile.role === 'company_admin'} />
     </CompanyPageShell>
   );
 }

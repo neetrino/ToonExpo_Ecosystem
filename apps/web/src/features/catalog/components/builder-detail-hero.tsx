@@ -18,7 +18,11 @@ type BuilderDetailHeroProps = {
 export const BuilderDetailHero = async ({ builder }: BuilderDetailHeroProps) => {
   const t = await getTranslations('Catalog');
   const heroImageUrl = builder.logoUrl ?? BUILDER_HERO_FALLBACK_SRC;
-  const heroAddress = resolveBuilderHeroAddress(builder.projects);
+  const companyLocation = [builder.address, builder.region]
+    .map((part) => part?.trim())
+    .filter((part): part is string => Boolean(part))
+    .join(' · ');
+  const heroAddress = companyLocation || resolveBuilderHeroAddress(builder.projects);
 
   return (
     <section className="relative isolate flex min-h-[min(72vh,42rem)] flex-col bg-canvas">

@@ -12,6 +12,11 @@ import {
   updateCompanySchema,
   type UpdateCompanyFormValues,
 } from '@/features/admin/schemas/update-company.schema';
+import { CompanyContactFields } from '@/features/companies/components/company-contact-fields';
+import {
+  companyContactDefaultsFrom,
+  companyContactPatchFrom,
+} from '@/features/companies/schemas/company-contact-fields.schema';
 import { MediaUploadField } from '@/features/media/components/media-upload-field';
 import { toNullableMediaId } from '@/features/media/schemas/media-fields.schema';
 import { Button } from '@/shared/ui/button';
@@ -24,7 +29,7 @@ type EditCompanyFormProps = {
 };
 
 /**
- * Inline PATCH form for company name, description, and status.
+ * Inline PATCH form for company profile fields and status.
  */
 export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
   const t = useTranslations('Admin.companies');
@@ -44,6 +49,7 @@ export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
       description: company.description ?? '',
       status: company.status,
       logoMediaId: company.logoMediaId ?? '',
+      ...companyContactDefaultsFrom(company),
     },
   });
 
@@ -56,6 +62,7 @@ export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
         description: values.description.length > 0 ? values.description : null,
         status: values.status,
         logoMediaId: toNullableMediaId(values.logoMediaId),
+        ...companyContactPatchFrom(values),
       });
       setSuccess(true);
     } catch {
@@ -120,6 +127,13 @@ export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
           {...register('description')}
         />
       </FormField>
+
+      <CompanyContactFields
+        register={register}
+        errors={errors}
+        idPrefix="edit-company"
+        labelsNamespace="Admin.companies"
+      />
 
       <Controller
         control={control}

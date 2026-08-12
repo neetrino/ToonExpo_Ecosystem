@@ -34,6 +34,16 @@ export type BuilderSummary = {
   description: string | null;
   logoUrl: string | null;
   publishedProjectCount: number;
+  phone: string | null;
+  contactPerson: string | null;
+  email: string | null;
+  websiteUrl: string | null;
+  instagramUrl: string | null;
+  facebookUrl: string | null;
+  region: string | null;
+  address: string | null;
+  mediaMaterialsUrl: string | null;
+  advertisingMaterialsUrl: string | null;
 };
 
 export type CatalogProjectRef = {

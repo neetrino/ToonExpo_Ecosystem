@@ -67,6 +67,16 @@ describe("updateCompanySchema", () => {
       description: "New copy",
       status: "inactive",
       logoMediaId: "",
+      phone: "",
+      contactPerson: "",
+      email: "",
+      websiteUrl: "",
+      instagramUrl: "",
+      facebookUrl: "",
+      region: "",
+      address: "",
+      mediaMaterialsUrl: "",
+      advertisingMaterialsUrl: "",
     });
 
     expect(result.success).toBe(true);

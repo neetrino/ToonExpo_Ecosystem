@@ -89,6 +89,21 @@ export class AdminCompaniesController {
       ...(body.name !== undefined ? { name: body.name } : {}),
       ...(body.description !== undefined ? { description: body.description } : {}),
       ...(body.status !== undefined ? { status: body.status as CompanyStatus } : {}),
+      ...(body.logoMediaId !== undefined ? { logoMediaId: body.logoMediaId } : {}),
+      ...(body.phone !== undefined ? { phone: body.phone } : {}),
+      ...(body.contactPerson !== undefined ? { contactPerson: body.contactPerson } : {}),
+      ...(body.email !== undefined ? { email: body.email } : {}),
+      ...(body.websiteUrl !== undefined ? { websiteUrl: body.websiteUrl } : {}),
+      ...(body.instagramUrl !== undefined ? { instagramUrl: body.instagramUrl } : {}),
+      ...(body.facebookUrl !== undefined ? { facebookUrl: body.facebookUrl } : {}),
+      ...(body.region !== undefined ? { region: body.region } : {}),
+      ...(body.address !== undefined ? { address: body.address } : {}),
+      ...(body.mediaMaterialsUrl !== undefined
+        ? { mediaMaterialsUrl: body.mediaMaterialsUrl }
+        : {}),
+      ...(body.advertisingMaterialsUrl !== undefined
+        ? { advertisingMaterialsUrl: body.advertisingMaterialsUrl }
+        : {}),
     });
   }
 

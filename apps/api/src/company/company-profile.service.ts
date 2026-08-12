@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import type { CompanyProfileResponse, UpdateCompanyProfileRequest } from '@toonexpo/contracts';
 import { CompanyMemberRole } from '@toonexpo/db';
 
+import { buildCompanyProfilePatch } from '../companies/mappers/company.mapper.js';
 import { resolveOptionalCompanyLogoMediaId } from '../media/utils/media-ownership.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import type { CompanyMemberContext } from './types/company-member-context.js';
@@ -59,11 +60,15 @@ export class CompanyProfileService {
       dto.logoMediaId,
       companyId,
     );
+    const profilePatch = buildCompanyProfilePatch(dto);
 
-    if (logoMediaId !== undefined) {
+    if (logoMediaId !== undefined || Object.keys(profilePatch).length > 0) {
       await this.prisma.db.company.update({
         where: { id: companyId },
-        data: { logoMediaId },
+        data: {
+          ...(logoMediaId !== undefined ? { logoMediaId } : {}),
+          ...profilePatch,
+        },
       });
     }
 
@@ -74,20 +79,42 @@ export class CompanyProfileService {
     company: {
       id: string;
       name: string;
+      description: string | null;
       type: CompanyProfileResponse['type'];
       status: CompanyProfileResponse['status'];
       logoMediaId: string | null;
       logoMedia: { fileUrl: string } | null;
+      phone: string | null;
+      contactPerson: string | null;
+      email: string | null;
+      websiteUrl: string | null;
+      instagramUrl: string | null;
+      facebookUrl: string | null;
+      region: string | null;
+      address: string | null;
+      mediaMaterialsUrl: string | null;
+      advertisingMaterialsUrl: string | null;
     },
     role: CompanyProfileResponse['role'],
   ): CompanyProfileResponse {
     return {
       id: company.id,
       name: company.name,
+      description: company.description,
       type: company.type,
       status: company.status,
       logoMediaId: company.logoMediaId,
       logoUrl: company.logoMedia?.fileUrl ?? null,
+      phone: company.phone,
+      contactPerson: company.contactPerson,
+      email: company.email,
+      websiteUrl: company.websiteUrl,
+      instagramUrl: company.instagramUrl,
+      facebookUrl: company.facebookUrl,
+      region: company.region,
+      address: company.address,
+      mediaMaterialsUrl: company.mediaMaterialsUrl,
+      advertisingMaterialsUrl: company.advertisingMaterialsUrl,
       role,
     };
   }
