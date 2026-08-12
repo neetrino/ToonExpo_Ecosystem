@@ -14,6 +14,14 @@ import {
 } from '@/features/insights/constants/market-insights-data';
 import { cn } from '@/shared/ui/cn';
 
+/** Lift + shadow hover — matches admin analytics cards. */
+const INSIGHT_CARD_HOVER_CLASS = cn(
+  'transition-[translate,box-shadow] duration-[400ms]',
+  'ease-[cubic-bezier(0.25,0.46,0.45,0.94)]',
+  'hover:-translate-y-1 hover:shadow-md',
+  'motion-reduce:transition-none motion-reduce:hover:translate-y-0',
+);
+
 const formatAmdInteger = (value: number, locale: string): string =>
   new Intl.NumberFormat(locale).format(Math.round(value));
 
@@ -41,6 +49,7 @@ export const MarketInsightsDashboard = async () => {
           className={cn(
             'rounded-[24px] border border-header-border bg-surface-elevated p-6 sm:p-8',
             'shadow-[0_12px_30px_-18px_rgb(9_43_68/0.25)]',
+            INSIGHT_CARD_HOVER_CLASS,
           )}
         >
           <p className="text-[11px] font-bold tracking-[0.14em] text-header-muted uppercase">
@@ -95,15 +104,20 @@ export const MarketInsightsDashboard = async () => {
         <h2 className="font-brand text-2xl font-bold tracking-tight text-ink-navy sm:text-[1.75rem]">
           {t('cities.title')}
         </h2>
-        <div className="mt-5 overflow-x-auto rounded-[20px] border border-header-border bg-surface-elevated">
+        <div
+          className={cn(
+            'mt-5 overflow-x-auto rounded-[20px] border border-header-border bg-surface-elevated',
+            INSIGHT_CARD_HOVER_CLASS,
+          )}
+        >
           <table className="w-full min-w-[40rem] border-collapse text-left text-sm">
             <thead>
               <tr className="border-b border-header-border bg-band-mist/25 text-[11px] font-bold tracking-[0.08em] text-header-muted uppercase">
-                <th className="px-4 py-3.5 font-bold sm:px-5">{t('cities.columns.city')}</th>
-                <th className="px-4 py-3.5 font-bold sm:px-5">{t('cities.columns.listings')}</th>
-                <th className="px-4 py-3.5 font-bold sm:px-5">{t('cities.columns.avg')}</th>
-                <th className="px-4 py-3.5 font-bold sm:px-5">{t('cities.columns.yoy')}</th>
-                <th className="px-4 py-3.5 font-bold sm:px-5">{t('cities.columns.demand')}</th>
+                <th className="px-4 py-3.5 text-center font-bold sm:px-5">{t('cities.columns.city')}</th>
+                <th className="px-4 py-3.5 text-center font-bold sm:px-5">{t('cities.columns.listings')}</th>
+                <th className="px-4 py-3.5 text-center font-bold sm:px-5">{t('cities.columns.avg')}</th>
+                <th className="px-4 py-3.5 text-center font-bold sm:px-5">{t('cities.columns.yoy')}</th>
+                <th className="px-4 py-3.5 text-center font-bold sm:px-5">{t('cities.columns.demand')}</th>
               </tr>
             </thead>
             <tbody>
@@ -112,19 +126,19 @@ export const MarketInsightsDashboard = async () => {
                   key={row.id}
                   className="border-b border-header-border last:border-b-0 odd:bg-canvas/60"
                 >
-                  <td className="px-4 py-3.5 font-semibold text-ink-navy sm:px-5">
+                  <td className="px-4 py-3.5 text-center font-semibold text-ink-navy sm:px-5">
                     {t(`cities.names.${row.cityKey}`)}
                   </td>
-                  <td className="px-4 py-3.5 text-header-muted sm:px-5">
+                  <td className="px-4 py-3.5 text-center text-header-muted sm:px-5">
                     {formatAmdInteger(row.activeListings, locale)}
                   </td>
-                  <td className="px-4 py-3.5 text-ink-navy sm:px-5">
+                  <td className="px-4 py-3.5 text-center text-ink-navy sm:px-5">
                     {formatAmdInteger(row.avgPerSqm, locale)} ֏
                   </td>
-                  <td className="px-4 py-3.5 font-medium text-success sm:px-5">
+                  <td className="px-4 py-3.5 text-center font-medium text-success sm:px-5">
                     {formatSignedPercent(row.yoyChangePercent, locale)}
                   </td>
-                  <td className="px-4 py-3.5 text-ink-navy sm:px-5">
+                  <td className="px-4 py-3.5 text-center text-ink-navy sm:px-5">
                     {row.demand.toFixed(1)}
                   </td>
                 </tr>
@@ -149,6 +163,7 @@ const InsightMetricCard = ({ label, value, hint, tone }: InsightMetricCardProps)
     className={cn(
       'rounded-[24px] border border-header-border bg-surface-elevated p-5 sm:p-6',
       'shadow-[0_12px_30px_-18px_rgb(9_43_68/0.2)]',
+      INSIGHT_CARD_HOVER_CLASS,
     )}
   >
     <p className="text-[11px] font-bold tracking-[0.14em] text-header-muted uppercase">{label}</p>
