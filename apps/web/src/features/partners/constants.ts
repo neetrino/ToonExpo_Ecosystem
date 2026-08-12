@@ -5,8 +5,8 @@ export const PARTNERS_DEFAULT_PAGE_SIZE = 18;
 export const PARTNERS_MAX_PAGE_SIZE = 50;
 export const PARTNER_SEARCH_MIN_LENGTH = 1;
 
+/** Selectable partner profile types (excludes builder — builders use Company.type, not partner type). */
 export const PARTNER_COMPANY_TYPES = [
-  'builder',
   'bank',
   'it_company',
   'sponsor',
