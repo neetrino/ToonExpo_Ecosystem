@@ -1,6 +1,6 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
 import {
   getAdminBosProvisioning,
@@ -16,6 +16,7 @@ export const useAdminBosProvisioningListQuery = (params: ListAdminBosProvisionin
   useQuery({
     queryKey: [...ADMIN_BOS_PROVISIONING_QUERY_KEY, params],
     queryFn: () => listAdminBosProvisioning(params),
+    placeholderData: keepPreviousData,
   });
 
 export const useAdminBosProvisioningDetailQuery = (id: string) =>

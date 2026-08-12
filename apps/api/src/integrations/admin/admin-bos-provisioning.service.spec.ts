@@ -101,6 +101,53 @@ describe('AdminBosProvisioningService', () => {
     });
   });
 
+  it('searches trimmed and case-insensitively across company and contact fields', async () => {
+    bosProvisioningRequestCount.mockResolvedValue(0);
+    bosProvisioningRequestFindMany.mockResolvedValue([]);
+
+    await service.list(1, 20, undefined, '  Acme  ');
+
+    expect(bosProvisioningRequestFindMany).toHaveBeenCalledWith({
+      where: {
+        OR: [
+          { companyName: { contains: 'Acme', mode: 'insensitive' } },
+          { primaryContactName: { contains: 'Acme', mode: 'insensitive' } },
+          { primaryContactEmail: { contains: 'Acme', mode: 'insensitive' } },
+          { bosCompanyId: { contains: 'Acme', mode: 'insensitive' } },
+          { requestId: { contains: 'Acme', mode: 'insensitive' } },
+          { eventCycleName: { contains: 'Acme', mode: 'insensitive' } },
+        ],
+      },
+      orderBy: { createdAt: 'desc' },
+      skip: 0,
+      take: 20,
+    });
+  });
+
+  it('combines search with the status filter', async () => {
+    bosProvisioningRequestCount.mockResolvedValue(0);
+    bosProvisioningRequestFindMany.mockResolvedValue([]);
+
+    await service.list(1, 10, BosProvisioningStatus.partial, 'jane');
+
+    expect(bosProvisioningRequestFindMany).toHaveBeenCalledWith({
+      where: {
+        status: BosProvisioningStatus.partial,
+        OR: [
+          { companyName: { contains: 'jane', mode: 'insensitive' } },
+          { primaryContactName: { contains: 'jane', mode: 'insensitive' } },
+          { primaryContactEmail: { contains: 'jane', mode: 'insensitive' } },
+          { bosCompanyId: { contains: 'jane', mode: 'insensitive' } },
+          { requestId: { contains: 'jane', mode: 'insensitive' } },
+          { eventCycleName: { contains: 'jane', mode: 'insensitive' } },
+        ],
+      },
+      orderBy: { createdAt: 'desc' },
+      skip: 0,
+      take: 10,
+    });
+  });
+
   it('returns detail with audit logs', async () => {
     const createdAt = new Date('2026-07-19T10:00:00.000Z');
     const updatedAt = new Date('2026-07-19T10:05:00.000Z');

@@ -1,12 +1,14 @@
 import { ApiPropertyOptional } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsEnum, IsInt, IsOptional, Max, Min } from "class-validator";
+import { IsEnum, IsInt, IsOptional, IsString, Max, MaxLength, Min } from "class-validator";
 
 import {
   ADMIN_BOS_PROVISIONING_DEFAULT_PAGE_SIZE,
   ADMIN_BOS_PROVISIONING_MAX_PAGE_SIZE,
   LIST_MIN_PAGE,
 } from "../../../common/constants/app.constants.js";
+
+const BOS_PROVISIONING_SEARCH_MAX_LENGTH = 120;
 
 enum BosProvisioningStatusFilterDto {
   success = "success",
@@ -39,4 +41,14 @@ export class ListBosProvisioningQueryDto {
   @IsOptional()
   @IsEnum(BosProvisioningStatusFilterDto)
   status?: BosProvisioningStatusFilterDto;
+
+  @ApiPropertyOptional({
+    description:
+      "Case-insensitive search over company name, contact, email, BOS company id, request id, and event cycle. Blank behaves as no search.",
+    maxLength: BOS_PROVISIONING_SEARCH_MAX_LENGTH,
+  })
+  @IsOptional()
+  @IsString()
+  @MaxLength(BOS_PROVISIONING_SEARCH_MAX_LENGTH)
+  search?: string;
 }

@@ -2,7 +2,7 @@
 
 import type { ReadinessAssessmentListItem } from '@toonexpo/contracts';
 import { useQueryClient } from '@tanstack/react-query';
-import { ClipboardCheck } from 'lucide-react';
+import { ClipboardCheck, SearchX } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -16,22 +16,26 @@ import {
 import {
   ADMIN_COMPANIES_DEFAULT_PAGE_SIZE,
   ADMIN_COMPANIES_MAX_PAGE_SIZE,
+  ADMIN_PROJECTS_SEARCH_DEBOUNCE_MS,
   ADMIN_READINESS_ASSESSMENTS_QUERY_KEY,
   ADMIN_VIEW_MODE_KEYS,
 } from '@/features/admin/constants';
 import { useAdminCompaniesQuery } from '@/features/admin/hooks/use-admin-companies';
 import { useAdminReadinessAssessmentsQuery } from '@/features/admin/hooks/use-admin-readiness';
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
+import { usePathname, useRouter } from '@/i18n/navigation';
+import { useDebouncedValue } from '@/shared/hooks/use-debounced-value';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { EmptyState } from '@/shared/ui/empty-state';
-import { Reveal } from '@/shared/ui/motion';
-import { PageTitleBlock } from '@/shared/ui/page-title-icon';
+import { ListPageHeader } from '@/shared/ui/list-page-header';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
+
+const FIRST_PAGE = 1;
 
 const parsePage = (raw: string | null): number => {
   const parsed = Number(raw);
-  if (!Number.isFinite(parsed) || parsed < 1) {
-    return 1;
+  if (!Number.isFinite(parsed) || parsed < FIRST_PAGE) {
+    return FIRST_PAGE;
   }
   return Math.floor(parsed);
 };
@@ -60,11 +64,18 @@ const buildCompanyAssessmentMap = (
  */
 export const ReadinessAssessmentsListPage = () => {
   const t = useTranslations('Admin.readiness.assessments');
+  const tCommon = useTranslations('Common.integratedSearch');
   const tDetail = useTranslations('Admin.readiness.detail');
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
   const queryClient = useQueryClient();
   const page = parsePage(searchParams.get('page'));
   const pageSize = ADMIN_COMPANIES_DEFAULT_PAGE_SIZE;
+  const [search, setSearch] = useState('');
+  const trimmedSearch = search.trim();
+  const debouncedSearch = useDebouncedValue(trimmedSearch, ADMIN_PROJECTS_SEARCH_DEBOUNCE_MS);
+  const activeSearch = trimmedSearch.length === 0 ? '' : debouncedSearch;
   const [modalTarget, setModalTarget] = useState<ReadinessManagementTarget | null>(null);
   const [isEnsuringBuilders, setIsEnsuringBuilders] = useState(false);
   const { viewMode, effectiveViewMode, setViewMode } = usePersistedViewMode(
@@ -72,7 +83,10 @@ export const ReadinessAssessmentsListPage = () => {
   );
   const ensureRanRef = useRef(false);
 
-  const buildersQuery = useAdminCompaniesQuery(page, pageSize, { type: 'builder' });
+  const buildersQuery = useAdminCompaniesQuery(page, pageSize, {
+    type: 'builder',
+    ...(activeSearch ? { search: activeSearch } : {}),
+  });
   const assessmentsQuery = useAdminReadinessAssessmentsQuery({
     page: 1,
     pageSize: ADMIN_COMPANIES_MAX_PAGE_SIZE,
@@ -137,6 +151,22 @@ export const ReadinessAssessmentsListPage = () => {
     });
   };
 
+  const buildHref = (nextPage: number): string => {
+    const params = new URLSearchParams();
+    if (nextPage > FIRST_PAGE) {
+      params.set('page', String(nextPage));
+    }
+    const query = params.toString();
+    return query.length > 0 ? `${pathname}?${query}` : pathname;
+  };
+
+  const handleSearchChange = (value: string): void => {
+    setSearch(value);
+    if (page > FIRST_PAGE) {
+      router.replace(buildHref(FIRST_PAGE));
+    }
+  };
+
   if (buildersQuery.isLoading || assessmentsQuery.isLoading || isEnsuringBuilders) {
     return <p className="text-sm text-ink-secondary">{t('loading')}</p>;
   }
@@ -151,30 +181,33 @@ export const ReadinessAssessmentsListPage = () => {
 
   const buildersMeta = buildersQuery.data.meta;
 
-  const buildHref = (nextPage: number): string => {
-    const params = new URLSearchParams();
-    if (nextPage > 1) {
-      params.set('page', String(nextPage));
-    }
-    const query = params.toString();
-    return query ? `/admin/readiness?${query}` : '/admin/readiness';
-  };
-
   return (
     <div className="flex flex-col gap-6">
-      <Reveal force>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <PageTitleBlock
-            title={t('title')}
-            subtitle={t('subtitle', { count: buildersMeta.total })}
-            icon={ClipboardCheck}
-          />
-          <ViewModeToggle value={viewMode} onChange={setViewMode} />
-        </div>
-      </Reveal>
+      <ListPageHeader
+        icon={ClipboardCheck}
+        title={t('title')}
+        subtitle={t('subtitle', { count: buildersMeta.total })}
+        search={search}
+        searchPlaceholder={t('searchPlaceholder')}
+        searchAriaLabel={tCommon('searchLabel')}
+        onSearchChange={handleSearchChange}
+        onClearAll={() => {
+          handleSearchChange('');
+        }}
+        actions={<ViewModeToggle value={viewMode} onChange={setViewMode} />}
+      />
 
       {visibleAssessments.length === 0 ? (
-        <EmptyState title={t('emptyTitle')} description={t('empty')} />
+        <div className="flex min-h-72 items-center justify-center">
+          <EmptyState
+            icon={activeSearch ? SearchX : ClipboardCheck}
+            title={activeSearch ? t('noResultsTitle') : t('emptyTitle')}
+            description={activeSearch ? t('noResults', { query: activeSearch }) : t('empty')}
+            actionLabel={activeSearch ? t('clearSearch') : undefined}
+            onAction={activeSearch ? () => handleSearchChange('') : undefined}
+            className="w-full max-w-md border-solid border-border/70 bg-surface-elevated px-6 py-10 shadow-sm sm:px-10 sm:py-12"
+          />
+        </div>
       ) : (
         <ReadinessAssessmentsTable
           assessments={visibleAssessments}
@@ -187,7 +220,7 @@ export const ReadinessAssessmentsListPage = () => {
       <CatalogPagination
         page={buildersMeta.page}
         totalPages={buildersMeta.totalPages}
-        previousHref={buildersMeta.page > 1 ? buildHref(buildersMeta.page - 1) : null}
+        previousHref={buildersMeta.page > FIRST_PAGE ? buildHref(buildersMeta.page - 1) : null}
         nextHref={
           buildersMeta.page < buildersMeta.totalPages ? buildHref(buildersMeta.page + 1) : null
         }
