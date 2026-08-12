@@ -27,4 +27,7 @@ export const PORTAL_APARTMENT_NUMBER_MAX_LENGTH = 64;
 
 export const PORTAL_BULK_APARTMENTS_MAX = 200;
 
+/** Max photos in an apartment gallery (admin / builder). */
+export const PORTAL_APARTMENT_GALLERY_MAX = 12;
+
 export const DEFAULT_PRICE_CURRENCY = "AMD" as const;

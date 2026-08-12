@@ -2,32 +2,31 @@
 
 import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
 
 import { catalogProjectDetailHref, isSafeAppReturnPath } from '@/features/builder/catalog-scope';
 import { useCatalogScope } from '@/features/builder/catalog-scope-context';
 import { ApartmentPublicationActions } from '@/features/builder/components/apartment-publication-actions';
-import { EditApartmentCoverForm } from '@/features/builder/components/edit-apartment-cover-form';
+import { EditApartmentFloorPlanForm } from '@/features/builder/components/edit-apartment-floor-plan-form';
 import { EditApartmentForm } from '@/features/builder/components/edit-apartment-form';
+import { EditApartmentGalleryForm } from '@/features/builder/components/edit-apartment-gallery-form';
+import { EditApartmentPlanForm } from '@/features/builder/components/edit-apartment-plan-form';
 import { usePortalApartmentQuery } from '@/features/builder/hooks/use-portal-inventory';
 import { ApartmentSalesStatusBadge } from '@/shared/ui/apartment-sales-status-badge';
 import { BackLink } from '@/shared/ui/back-link';
 import { Card } from '@/shared/ui/card';
-import { ImageLightbox } from '@/shared/ui/image-lightbox';
 
 type ApartmentDetailPageProps = {
   apartmentId: string;
 };
 
 /**
- * Apartment edit page. Cover and plan side by side, then details form.
+ * Apartment edit page — gallery, floor plan + unit plan, then details.
  */
 export const ApartmentDetailPage = ({ apartmentId }: ApartmentDetailPageProps) => {
   const scope = useCatalogScope();
   const t = useTranslations('Builder.apartments');
   const searchParams = useSearchParams();
   const query = usePortalApartmentQuery(apartmentId);
-  const [lightboxOpen, setLightboxOpen] = useState(false);
 
   if (query.isLoading) {
     return <p className="text-sm text-ink-secondary">{t('loading')}</p>;
@@ -81,40 +80,34 @@ export const ApartmentDetailPage = ({ apartmentId }: ApartmentDetailPageProps) =
         </div>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-2 lg:items-stretch">
+      <section className="flex flex-col overflow-hidden rounded-lg border border-border bg-surface-elevated">
+        <div className="border-b border-border px-4 py-3">
+          <h2 className="text-sm font-semibold text-ink">{t('coverTitle')}</h2>
+          <p className="mt-0.5 text-xs text-ink-secondary">{t('coverHint')}</p>
+        </div>
+        <div className="flex flex-1 flex-col p-4">
+          <EditApartmentGalleryForm apartment={apartment} />
+        </div>
+      </section>
+
+      <div className="grid gap-6 lg:grid-cols-2">
         <section className="flex flex-col overflow-hidden rounded-lg border border-border bg-surface-elevated">
           <div className="border-b border-border px-4 py-3">
-            <h2 className="text-sm font-semibold text-ink">{t('coverTitle')}</h2>
-            <p className="mt-0.5 text-xs text-ink-secondary">{t('coverHint')}</p>
+            <h2 className="text-sm font-semibold text-ink">{t('floorplanTitle')}</h2>
+            <p className="mt-0.5 text-xs text-ink-secondary">{t('floorplanHint')}</p>
           </div>
           <div className="flex flex-1 flex-col p-4">
-            <EditApartmentCoverForm apartment={apartment} />
+            <EditApartmentFloorPlanForm apartment={apartment} />
           </div>
         </section>
 
         <section className="flex flex-col overflow-hidden rounded-lg border border-border bg-surface-elevated">
           <div className="border-b border-border px-4 py-3">
             <h2 className="text-sm font-semibold text-ink">{t('planTitle')}</h2>
+            <p className="mt-0.5 text-xs text-ink-secondary">{t('planHint')}</p>
           </div>
-          <div className="flex flex-1 flex-col justify-center p-4">
-            {apartment.plan ? (
-              <button
-                type="button"
-                className="block w-full cursor-zoom-in outline-none focus-visible:ring-2 focus-visible:ring-brand/30"
-                aria-label={t('planViewHint')}
-                onClick={() => {
-                  setLightboxOpen(true);
-                }}
-              >
-                <img
-                  src={apartment.plan.fileUrl}
-                  alt={apartment.plan.altText ?? t('planAlt')}
-                  className="mx-auto max-h-80 w-full object-contain"
-                />
-              </button>
-            ) : (
-              <p className="text-sm text-ink-secondary">{t('planEmpty')}</p>
-            )}
+          <div className="flex flex-1 flex-col p-4">
+            <EditApartmentPlanForm apartment={apartment} />
           </div>
         </section>
       </div>
@@ -122,17 +115,6 @@ export const ApartmentDetailPage = ({ apartmentId }: ApartmentDetailPageProps) =
       <Card>
         <EditApartmentForm apartment={apartment} />
       </Card>
-
-      {apartment.plan ? (
-        <ImageLightbox
-          open={lightboxOpen}
-          imageUrl={apartment.plan.fileUrl}
-          alt={apartment.plan.altText ?? t('planAlt')}
-          onClose={() => {
-            setLightboxOpen(false);
-          }}
-        />
-      ) : null}
     </div>
   );
 };

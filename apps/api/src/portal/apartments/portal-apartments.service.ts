@@ -19,6 +19,11 @@ import { groupPortalTranslations } from '../utils/group-translations.js';
 import { requireOwnedApartment, requireOwnedFloor } from '../utils/ownership.js';
 import { upsertTranslations } from '../utils/upsert-translations.js';
 import { buildApartmentUpdateData, createPortalApartmentRow } from './apartment-write.helpers.js';
+import {
+  apartmentGalleryInclude,
+  replaceApartmentGallery,
+  syncApartmentGalleryOnUpdate,
+} from './apartment-gallery.helpers.js';
 
 const APARTMENT_TRANSLATION_FIELDS = [TRANSLATION_FIELD.description] as const;
 
@@ -32,10 +37,13 @@ const APARTMENT_MEDIA_SELECT = {
 const APARTMENT_DETAIL_INCLUDE = {
   planMedia: { select: APARTMENT_MEDIA_SELECT },
   coverMedia: { select: APARTMENT_MEDIA_SELECT },
+  ...apartmentGalleryInclude,
   floor: {
     select: {
       number: true,
       displayLabel: true,
+      floorplanMediaId: true,
+      floorplanMedia: { select: APARTMENT_MEDIA_SELECT },
       building: {
         select: {
           name: true,
@@ -100,6 +108,24 @@ export class PortalApartmentsService {
           ? PublicationStatus.published
           : PublicationStatus.draft,
     });
+
+    const initialGallery =
+      dto.galleryMediaIds ??
+      (dto.coverMediaId != null && dto.coverMediaId.trim().length > 0
+        ? [dto.coverMediaId]
+        : dto.planMediaId != null && dto.planMediaId.trim().length > 0
+          ? [dto.planMediaId]
+          : undefined);
+    if (initialGallery !== undefined) {
+      await replaceApartmentGallery({
+        db: this.prisma.db,
+        apartmentId: apartment.id,
+        companyId,
+        galleryMediaIds: initialGallery,
+        coverMediaId: dto.coverMediaId ?? dto.planMediaId,
+      });
+    }
+
     if (apartment.publicationStatus === PublicationStatus.published) {
       await ensurePublishedInventoryChain(this.prisma, {
         projectId,
@@ -183,10 +209,35 @@ export class PortalApartmentsService {
         });
       }
 
-      return tx.apartment.update({
+      const updatePayload: UpdatePortalApartmentDto = { ...dto };
+      if (dto.galleryMediaIds !== undefined) {
+        delete updatePayload.coverMediaId;
+      }
+
+      const updated = await tx.apartment.update({
         where: { id: apartmentId },
-        data: buildApartmentUpdateData(dto, userId, salesStatusChanged),
+        data: buildApartmentUpdateData(updatePayload, userId, salesStatusChanged),
       });
+
+      if (dto.galleryMediaIds !== undefined || dto.coverMediaId !== undefined) {
+        await syncApartmentGalleryOnUpdate({
+          db: tx,
+          apartmentId,
+          companyId,
+          galleryMediaIds: dto.galleryMediaIds,
+          coverMediaId: dto.coverMediaId,
+        });
+      } else if (dto.planMediaId != null && dto.planMediaId.trim().length > 0) {
+        // Apartment plan becomes the gallery Main when set.
+        await syncApartmentGalleryOnUpdate({
+          db: tx,
+          apartmentId,
+          companyId,
+          coverMediaId: dto.planMediaId,
+        });
+      }
+
+      return updated;
     });
 
     if (dto.translations) {

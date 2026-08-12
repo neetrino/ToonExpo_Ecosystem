@@ -12,7 +12,6 @@ import { inviteMemberSchema } from "./team.schema";
 const apartmentFields = {
   finishingStatus: "",
   handoverDescription: "",
-  planMediaId: "",
   matterportUrl: "",
   external3dUrl: "",
 };

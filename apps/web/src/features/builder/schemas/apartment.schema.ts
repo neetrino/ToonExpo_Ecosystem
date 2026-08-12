@@ -8,7 +8,6 @@ import {
 } from "@/features/builder/constants";
 import {
   optionalHttpsUrlField,
-  optionalMediaIdField,
 } from "@/features/media/schemas/media-fields.schema";
 
 /**
@@ -30,7 +29,6 @@ export const updateApartmentSchema = z.object({
   descriptionEn: z.string().trim().max(PORTAL_DESCRIPTION_MAX_LENGTH),
   finishingStatus: z.string().trim().max(PORTAL_DESCRIPTION_MAX_LENGTH),
   handoverDescription: z.string().trim().max(PORTAL_DESCRIPTION_MAX_LENGTH),
-  planMediaId: optionalMediaIdField,
   matterportUrl: optionalHttpsUrlField,
   external3dUrl: optionalHttpsUrlField,
 });

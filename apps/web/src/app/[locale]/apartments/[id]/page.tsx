@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { cache } from 'react';
 
-import { getApartment, getFloor, getProject } from '@/features/catalog/api/catalog-api';
+import { getApartment, getProject } from '@/features/catalog/api/catalog-api';
 import { ApartmentDetailView } from '@/features/catalog/components/apartment-detail-view';
 import { ComparableHomesSection } from '@/features/catalog/components/comparable-homes-section';
 import { ProjectPricesOverlayScope } from '@/features/catalog/components/price-overlay-scope';
@@ -50,13 +50,7 @@ export default async function ApartmentPage({ params }: ApartmentPageProps) {
     notFound();
   }
 
-  const [project, floor] = await Promise.all([
-    getProject(apartment.project.id, { locale }),
-    getFloor(apartment.floor.id, {
-      locale,
-      projectId: apartment.project.id,
-    }),
-  ]);
+  const project = await getProject(apartment.project.id, { locale });
   const locationLine = buildLocationLine(
     project?.address,
     project?.city,
@@ -76,9 +70,6 @@ export default async function ApartmentPage({ params }: ApartmentPageProps) {
 
   const galleryImages = buildApartmentGalleryImages({
     apartment,
-    project,
-    floorplan: floor?.floorplan ?? null,
-    extraImages: comparableHomes.map((home) => home.image),
   });
 
   const projectHandoverDescription =

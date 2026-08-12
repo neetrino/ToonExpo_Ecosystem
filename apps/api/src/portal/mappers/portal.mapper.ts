@@ -119,9 +119,25 @@ type ApartmentRow = {
     thumbnailUrl: string | null;
     altText: string | null;
   } | null;
+  galleryImages?: Array<{
+    sortOrder: number;
+    mediaAsset: {
+      id: string;
+      fileUrl: string;
+      thumbnailUrl: string | null;
+      altText: string | null;
+    };
+  }>;
   floor: {
     number: number;
     displayLabel: string | null;
+    floorplanMediaId: string | null;
+    floorplanMedia?: {
+      id: string;
+      fileUrl: string;
+      thumbnailUrl: string | null;
+      altText: string | null;
+    } | null;
     building: {
       name: string;
       project: {
@@ -242,6 +258,15 @@ export const mapPortalApartment = (
   orientation: apartment.orientation,
   viewType: apartment.viewType,
   features: apartment.features,
+  floorplanMediaId: apartment.floor.floorplanMediaId,
+  floorplan: apartment.floor.floorplanMedia
+    ? {
+        id: apartment.floor.floorplanMedia.id,
+        fileUrl: apartment.floor.floorplanMedia.fileUrl,
+        thumbnailUrl: apartment.floor.floorplanMedia.thumbnailUrl,
+        altText: apartment.floor.floorplanMedia.altText,
+      }
+    : null,
   planMediaId: apartment.planMediaId,
   plan: apartment.planMedia
     ? {
@@ -260,6 +285,12 @@ export const mapPortalApartment = (
         altText: apartment.coverMedia.altText,
       }
     : null,
+  gallery: (apartment.galleryImages ?? []).map((row) => ({
+    id: row.mediaAsset.id,
+    fileUrl: row.mediaAsset.fileUrl,
+    thumbnailUrl: row.mediaAsset.thumbnailUrl,
+    altText: row.mediaAsset.altText,
+  })),
   createdAt: apartment.createdAt.toISOString(),
   updatedAt: apartment.updatedAt.toISOString(),
   ...(translations && Object.keys(translations).length > 0 ? { translations } : {}),

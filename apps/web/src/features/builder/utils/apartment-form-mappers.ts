@@ -7,7 +7,6 @@ import {
 } from '@/features/catalog/utils/apartment-features';
 import {
   toNullableHttpsUrl,
-  toNullableMediaId,
 } from '@/features/media/schemas/media-fields.schema';
 
 const optionalNumber = (value: string): number | null => {
@@ -41,7 +40,6 @@ export const toApartmentFormValues = (
     descriptionEn: apartment.translations?.description?.en ?? '',
     finishingStatus: extras.finishingStatus ?? '',
     handoverDescription: extras.handoverDescription ?? '',
-    planMediaId: apartment.planMediaId ?? '',
     matterportUrl: apartment.matterportUrl ?? '',
     external3dUrl: apartment.external3dUrl ?? '',
   };
@@ -76,7 +74,6 @@ export const toApartmentUpdateRequest = (
       finishingStatus: values.finishingStatus,
       handoverDescription: values.handoverDescription,
     }),
-    planMediaId: toNullableMediaId(values.planMediaId),
     matterportUrl: toNullableHttpsUrl(values.matterportUrl),
     external3dUrl: toNullableHttpsUrl(values.external3dUrl),
   };

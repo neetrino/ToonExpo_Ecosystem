@@ -22,7 +22,7 @@ export const loadComparableHomes = async (options: {
     await Promise.all(candidateIds.map((id) => getApartment(id, { locale })))
   ).filter((apartment): apartment is ApartmentDetail => apartment != null);
 
-  return apartments.map((apartment) => toComparableHomeCard(apartment, project, fallbackLocation));
+  return apartments.map((apartment) => toComparableHomeCard(apartment, fallbackLocation));
 };
 
 const collectComparableApartmentIds = (
@@ -53,7 +53,6 @@ const collectComparableApartmentIds = (
 
 const toComparableHomeCard = (
   apartment: ApartmentDetail,
-  project: ProjectDetail,
   locationLine: string | null,
 ): ComparableHomeCardModel => {
   const image = apartment.cover
@@ -66,12 +65,7 @@ const toComparableHomeCard = (
           src: apartment.plan.fileUrl,
           alt: apartment.plan.altText ?? apartment.number,
         }
-      : project.cover
-        ? {
-            src: project.cover.fileUrl,
-            alt: project.cover.altText ?? project.name,
-          }
-        : null;
+      : null;
 
   return {
     id: apartment.id,

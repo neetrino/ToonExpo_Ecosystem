@@ -1,7 +1,5 @@
 'use client';
 
-import { useCatalogScope } from '@/features/builder/catalog-scope-context';
-import { catalogMediaContext } from '@/features/builder/catalog-scope';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { PortalApartmentDetail } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
@@ -19,7 +17,6 @@ import {
   toApartmentFormValues,
   toApartmentUpdateRequest,
 } from '@/features/builder/utils/apartment-form-mappers';
-import { MediaUploadField } from '@/features/media/components/media-upload-field';
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
@@ -35,8 +32,6 @@ type EditApartmentFormProps = {
  * Edit form for apartment parameters, price, sales status, and description.
  */
 export const EditApartmentForm = ({ apartment }: EditApartmentFormProps) => {
-  const scope = useCatalogScope();
-  const mediaContext = catalogMediaContext(scope);
   const t = useTranslations('Builder.apartments');
   const mutation = useUpdateApartmentMutation(apartment.id);
   const [formError, setFormError] = useState<string | null>(null);
@@ -170,22 +165,6 @@ export const EditApartmentForm = ({ apartment }: EditApartmentFormProps) => {
       <FormField id="apt-handover" label={t('form.handoverDescription')}>
         <Textarea id="apt-handover" rows={4} {...register('handoverDescription')} />
       </FormField>
-
-      <Controller
-        control={control}
-        name="planMediaId"
-        render={({ field, fieldState }) => (
-          <MediaUploadField
-            id="apt-plan"
-            label={t('form.planMedia')}
-            context={mediaContext}
-            value={field.value}
-            onChange={field.onChange}
-            previewUrl={apartment.plan?.fileUrl}
-            error={fieldState.error?.message}
-          />
-        )}
-      />
 
       <div className="grid gap-4 sm:grid-cols-2">
         <FormField
