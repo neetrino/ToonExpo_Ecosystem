@@ -18,7 +18,11 @@ type BuilderDetailHeroProps = {
 export const BuilderDetailHero = async ({ builder }: BuilderDetailHeroProps) => {
   const t = await getTranslations('Catalog');
   const heroImageUrl = builder.logoUrl ?? BUILDER_HERO_FALLBACK_SRC;
-  const heroAddress = resolveBuilderHeroAddress(builder.projects);
+  const companyLocation = [builder.address, builder.region]
+    .map((part) => part?.trim())
+    .filter((part): part is string => Boolean(part))
+    .join(' · ');
+  const heroAddress = companyLocation || resolveBuilderHeroAddress(builder.projects);
 
   return (
     <section className="relative isolate flex min-h-[min(72vh,42rem)] flex-col bg-canvas">
@@ -75,8 +79,8 @@ export const BuilderDetailHero = async ({ builder }: BuilderDetailHeroProps) => 
             <p
               className={cn(
                 'max-w-xl text-on-dark/95',
-                'text-[clamp(0.9375rem,0.82rem+0.45vw,1.125rem)]',
-                'leading-[1.55]',
+                'text-[clamp(1.125rem,0.95rem+0.7vw,1.5rem)]',
+                'leading-[1.45]',
                 'text-pretty',
               )}
             >

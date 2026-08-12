@@ -32,6 +32,16 @@ describe("BuildersService", () => {
       name: "Glendale",
       description: "Builder desc",
       logoMedia: null,
+      phone: null,
+      contactPerson: null,
+      email: null,
+      websiteUrl: null,
+      instagramUrl: null,
+      facebookUrl: null,
+      region: null,
+      address: null,
+      mediaMaterialsUrl: null,
+      advertisingMaterialsUrl: null,
       _count: { projects: 2 },
     });
     projectFindMany.mockResolvedValue([]);

@@ -4,6 +4,7 @@ import { catalogVisualMapHref } from '@/features/builder/catalog-scope';
 import { useCatalogScope } from '@/features/builder/catalog-scope-context';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { PortalProjectDetail, VisualMapContextType } from '@toonexpo/contracts';
+import { SquarePen } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
@@ -21,15 +22,19 @@ import {
 } from '@/features/visual-map/schemas/visual-map.schema';
 import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
 import { Link } from '@/i18n/navigation';
+import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { Button } from '@/shared/ui/button';
 import { Card } from '@/shared/ui/card';
+import { cn } from '@/shared/ui/cn';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
-import { AddActionLabel } from '@/shared/ui/add-action-label';
+import { LIST_STATUS_BADGE_COMPACT_CLASS } from '@/shared/ui/list-status-badge';
 
 type PortalVisualCanvasesSectionProps = {
   project: PortalProjectDetail;
 };
+
+const META_COL_CLASS = 'w-28 px-3 py-3 text-center align-middle';
 
 /**
  * Visual canvas list and create form on the builder project page.
@@ -78,42 +83,55 @@ export const PortalVisualCanvasesSection = ({ project }: PortalVisualCanvasesSec
         <p className="text-sm text-ink-secondary">{t('empty')}</p>
       ) : (
         <div className="overflow-x-auto rounded-sm border border-border">
-          <table className="min-w-full text-sm">
-            <thead className="bg-surface text-left text-xs uppercase tracking-wide text-ink-muted">
+          <table className="w-full min-w-[48rem] table-fixed border-collapse text-sm">
+            <thead className="bg-surface text-xs uppercase tracking-wide text-ink-muted">
               <tr>
-                <th className="px-4 py-3">{t('columns.title')}</th>
-                <th className="px-4 py-3">{t('columns.context')}</th>
-                <th className="px-4 py-3">{t('columns.primary')}</th>
-                <th className="px-4 py-3">{t('columns.status')}</th>
-                <th className="px-4 py-3">{t('columns.hotspots')}</th>
-                <th className="px-4 py-3">{t('columns.actions')}</th>
+                <th className="px-4 py-3 text-left font-medium">{t('columns.title')}</th>
+                <th className="px-4 py-3 text-left font-medium">{t('columns.context')}</th>
+                <th className={cn(META_COL_CLASS, 'font-medium')}>{t('columns.primary')}</th>
+                <th className={cn(META_COL_CLASS, 'font-medium')}>{t('columns.status')}</th>
+                <th className={cn(META_COL_CLASS, 'font-medium')}>{t('columns.hotspots')}</th>
+                <th className={cn(META_COL_CLASS, 'font-medium')}>{t('columns.actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
               {canvases.map((canvas) => (
                 <tr key={canvas.id} className="bg-background">
-                  <td className="px-4 py-3 font-medium text-ink">
+                  <td className="truncate px-4 py-3 font-medium text-ink">
                     {canvas.title ?? t('untitled')}
                   </td>
-                  <td className="px-4 py-3 text-ink-secondary">
+                  <td className="truncate px-4 py-3 text-ink-secondary">
                     {t(`contextTypes.${canvas.contextType}`)}
                     {' · '}
                     {resolveContextLabel(project, canvas.contextType, canvas.contextId, t)}
                   </td>
-                  <td className="px-4 py-3">
+                  <td className={META_COL_CLASS}>
                     {canvas.isPrimary ? t('primaryYes') : t('primaryNo')}
                   </td>
-                  <td className="px-4 py-3">
-                    <PublicationStatusBadge status={canvas.publicationStatus} />
+                  <td className={META_COL_CLASS}>
+                    <div className="flex justify-center">
+                      <PublicationStatusBadge
+                        status={canvas.publicationStatus}
+                        className={LIST_STATUS_BADGE_COMPACT_CLASS}
+                      />
+                    </div>
                   </td>
-                  <td className="px-4 py-3">{canvas.hotspotCount}</td>
-                  <td className="px-4 py-3">
-                    <Link
-                      href={catalogVisualMapHref(scope, project.id, canvas.id)}
-                      className="font-medium text-brand hover:underline"
-                    >
-                      {t('editCanvas')}
-                    </Link>
+                  <td className={META_COL_CLASS}>{canvas.hotspotCount}</td>
+                  <td className={META_COL_CLASS}>
+                    <div className="flex justify-center">
+                      <Link
+                        href={catalogVisualMapHref(scope, project.id, canvas.id)}
+                        aria-label={t('editCanvas')}
+                        title={t('editCanvas')}
+                        className={cn(
+                          'inline-flex size-9 items-center justify-center rounded-[15px]',
+                          'text-cta-dark hover:bg-cta-dark/5',
+                          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/30',
+                        )}
+                      >
+                        <SquarePen className="size-4" strokeWidth={1.75} aria-hidden />
+                      </Link>
+                    </div>
                   </td>
                 </tr>
               ))}

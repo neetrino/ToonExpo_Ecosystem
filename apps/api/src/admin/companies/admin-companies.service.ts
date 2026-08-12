@@ -21,7 +21,7 @@ import {
 import { toMediaSummary } from '../../catalog/mappers/catalog.mapper.js';
 import { resolveOptionalCompanyLogoMediaId } from '../../media/utils/media-ownership.js';
 import { toUserResponse } from '../../auth/mappers/user.mapper.js';
-import { toCompanyResponse } from '../../companies/mappers/company.mapper.js';
+import { toCompanyResponse, buildCompanyProfilePatch } from '../../companies/mappers/company.mapper.js';
 import { CompanyProvisioningService } from '../../company/provisioning/company-provisioning.service.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { AdminReadinessAssessmentsService } from '../../readiness/admin/admin-readiness-assessments.service.js';
@@ -41,6 +41,16 @@ type UpdateCompanyInput = {
   description?: string | null;
   status?: CompanyStatus;
   logoMediaId?: string | null;
+  phone?: string | null;
+  contactPerson?: string | null;
+  email?: string | null;
+  websiteUrl?: string | null;
+  instagramUrl?: string | null;
+  facebookUrl?: string | null;
+  region?: string | null;
+  address?: string | null;
+  mediaMaterialsUrl?: string | null;
+  advertisingMaterialsUrl?: string | null;
 };
 
 /**
@@ -280,15 +290,14 @@ export class AdminCompaniesService {
   async update(id: string, input: UpdateCompanyInput): Promise<CompanyResponse> {
     await this.getById(id);
     const logoMediaId = await resolveOptionalCompanyLogoMediaId(this.prisma, input.logoMediaId, id);
+    const profilePatch = buildCompanyProfilePatch(input);
     const company = await this.prisma.db.company.update({
       where: { id },
       data: {
         ...(input.name !== undefined ? { name: input.name.trim() } : {}),
-        ...(input.description !== undefined
-          ? { description: input.description?.trim() || null }
-          : {}),
         ...(input.status !== undefined ? { status: input.status } : {}),
         ...(logoMediaId !== undefined ? { logoMediaId } : {}),
+        ...profilePatch,
       },
       include: { logoMedia: { select: { id: true, fileUrl: true } } },
     });

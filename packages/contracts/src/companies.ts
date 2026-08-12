@@ -28,6 +28,16 @@ export type CompanyResponse = {
   bosCompanyId: string | null;
   logoMediaId: string | null;
   logoUrl: string | null;
+  phone: string | null;
+  contactPerson: string | null;
+  email: string | null;
+  websiteUrl: string | null;
+  instagramUrl: string | null;
+  facebookUrl: string | null;
+  region: string | null;
+  address: string | null;
+  mediaMaterialsUrl: string | null;
+  advertisingMaterialsUrl: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -38,10 +48,21 @@ export type CompanyResponse = {
 export type CompanyProfileResponse = {
   id: string;
   name: string;
+  description: string | null;
   type: CompanyType;
   status: CompanyStatus;
   logoMediaId: string | null;
   logoUrl: string | null;
+  phone: string | null;
+  contactPerson: string | null;
+  email: string | null;
+  websiteUrl: string | null;
+  instagramUrl: string | null;
+  facebookUrl: string | null;
+  region: string | null;
+  address: string | null;
+  mediaMaterialsUrl: string | null;
+  advertisingMaterialsUrl: string | null;
   role: CompanyMemberRole;
 };
 
@@ -67,13 +88,34 @@ export type UpdateCompanyRequest = {
   description?: string | null;
   status?: CompanyStatus;
   logoMediaId?: string | null;
+  phone?: string | null;
+  contactPerson?: string | null;
+  email?: string | null;
+  websiteUrl?: string | null;
+  instagramUrl?: string | null;
+  facebookUrl?: string | null;
+  region?: string | null;
+  address?: string | null;
+  mediaMaterialsUrl?: string | null;
+  advertisingMaterialsUrl?: string | null;
 };
 
 /**
  * Company-admin self-service profile update (`PATCH /company/me`).
  */
 export type UpdateCompanyProfileRequest = {
+  description?: string | null;
   logoMediaId?: string | null;
+  phone?: string | null;
+  contactPerson?: string | null;
+  email?: string | null;
+  websiteUrl?: string | null;
+  instagramUrl?: string | null;
+  facebookUrl?: string | null;
+  region?: string | null;
+  address?: string | null;
+  mediaMaterialsUrl?: string | null;
+  advertisingMaterialsUrl?: string | null;
 };
 
 /**

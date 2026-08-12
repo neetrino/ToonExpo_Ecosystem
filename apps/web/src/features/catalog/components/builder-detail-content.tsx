@@ -1,7 +1,10 @@
 import type { BuilderDetail } from '@toonexpo/contracts';
 import { getTranslations } from 'next-intl/server';
 
-import { BuilderContactsCard } from '@/features/catalog/components/builder-contacts-card';
+import {
+  BuilderContactsCard,
+  type BuilderContactLink,
+} from '@/features/catalog/components/builder-contacts-card';
 import { ProjectCard } from '@/features/catalog/components/project-card';
 import { ProjectPriceRangesOverlayScope } from '@/features/catalog/components/price-overlay-scope';
 import { Link } from '@/i18n/navigation';
@@ -17,6 +20,13 @@ type BuilderDetailContentProps = {
 export const BuilderDetailContent = async ({ builder }: BuilderDetailContentProps) => {
   const t = await getTranslations('Catalog');
   const catalogHref = `/projects?builderId=${encodeURIComponent(builder.id)}`;
+  const links = buildBuilderContactLinks(builder, {
+    website: t('buildersPage.detail.linkWebsite'),
+    instagram: t('buildersPage.detail.linkInstagram'),
+    facebook: t('buildersPage.detail.linkFacebook'),
+    mediaMaterials: t('buildersPage.detail.linkMediaMaterials'),
+    advertisingMaterials: t('buildersPage.detail.linkAdvertisingMaterials'),
+  });
 
   return (
     <div className="page-container pb-16 pt-12 sm:pt-16">
@@ -58,10 +68,43 @@ export const BuilderDetailContent = async ({ builder }: BuilderDetailContentProp
 
         <BuilderContactsCard
           className="lg:sticky lg:top-24"
+          phone={builder.phone}
+          email={builder.email}
+          contactPerson={builder.contactPerson}
           projectCount={builder.publishedProjectCount}
           catalogHref={catalogHref}
+          links={links}
         />
       </div>
     </div>
   );
+};
+
+const buildBuilderContactLinks = (
+  builder: BuilderDetail,
+  labels: {
+    website: string;
+    instagram: string;
+    facebook: string;
+    mediaMaterials: string;
+    advertisingMaterials: string;
+  },
+): BuilderContactLink[] => {
+  const rows: Array<{ kind: BuilderContactLink['kind']; label: string; href: string | null }> = [
+    { kind: 'website', label: labels.website, href: builder.websiteUrl },
+    { kind: 'instagram', label: labels.instagram, href: builder.instagramUrl },
+    { kind: 'facebook', label: labels.facebook, href: builder.facebookUrl },
+    { kind: 'mediaMaterials', label: labels.mediaMaterials, href: builder.mediaMaterialsUrl },
+    {
+      kind: 'advertisingMaterials',
+      label: labels.advertisingMaterials,
+      href: builder.advertisingMaterialsUrl,
+    },
+  ];
+
+  return rows
+    .filter((row): row is { kind: BuilderContactLink['kind']; label: string; href: string } =>
+      Boolean(row.href?.trim()),
+    )
+    .map((row) => ({ kind: row.kind, label: row.label, href: row.href.trim() }));
 };

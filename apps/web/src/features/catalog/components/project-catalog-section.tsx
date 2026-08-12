@@ -23,6 +23,7 @@ export const ProjectCatalogSection = async ({ project }: ProjectCatalogSectionPr
   const rows = buildProjectCatalogRows({
     details,
     labels: {
+      slogan: t('catalog.slogan'),
       propertyType: t('catalog.propertyType'),
       country: t('catalog.country'),
       city: t('catalog.city'),
@@ -80,6 +81,9 @@ export const ProjectCatalogSection = async ({ project }: ProjectCatalogSectionPr
       specialTerms: t('catalog.specialTerms'),
       incomeTaxRefund: t('catalog.incomeTaxRefund'),
       handoverDescription: t('catalog.handoverDescription'),
+      greenZones: t('catalog.greenZones'),
+      territorialAdvantages: t('catalog.territorialAdvantages'),
+      views: t('catalog.views'),
     },
     formatCeilingHeight: (height) => t('catalog.ceilingHeightValue', { height }),
     formatDistanceMeters: (distance) => {
@@ -114,6 +118,9 @@ export const ProjectCatalogSection = async ({ project }: ProjectCatalogSectionPr
         typicalInteractiveTour: t('catalog.linkTypicalInteractiveTour'),
         video: t('catalog.linkVideo'),
         exteriorInteractiveTour: t('catalog.linkExteriorInteractiveTour'),
+        floorplans2d: t('catalog.linkFloorplans2d'),
+        floorplans3d: t('catalog.linkFloorplans3d'),
+        branding: t('catalog.linkBranding'),
         map: t('catalog.linkMap'),
         website: t('catalog.linkWebsite'),
         facebook: t('catalog.linkFacebook'),

@@ -17,6 +17,7 @@ import { MediaUploadField } from '@/features/media/components/media-upload-field
 import { Button } from '@/shared/ui/button';
 import { Card } from '@/shared/ui/card';
 import { cn } from '@/shared/ui/cn';
+import { useSuccessToast } from '@/shared/ui/use-success-toast';
 
 type DraftSlide = HomeHeroSlide;
 
@@ -30,7 +31,7 @@ export const AdminHomeBannerPage = () => {
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+  const { showSuccess, successToast } = useSuccessToast();
   const [dirty, setDirty] = useState(false);
 
   useEffect(() => {
@@ -81,14 +82,12 @@ export const AdminHomeBannerPage = () => {
     ]);
     setAddValue('');
     setDirty(true);
-    setSuccess(false);
     setError(null);
   };
 
   const removeSlide = (mediaAssetId: string): void => {
     setSlides((current) => current.filter((slide) => slide.mediaAssetId !== mediaAssetId));
     setDirty(true);
-    setSuccess(false);
   };
 
   const moveSlide = (index: number, direction: -1 | 1): void => {
@@ -106,7 +105,6 @@ export const AdminHomeBannerPage = () => {
       return copy;
     });
     setDirty(true);
-    setSuccess(false);
   };
 
   const handleSave = async (): Promise<void> => {
@@ -117,14 +115,13 @@ export const AdminHomeBannerPage = () => {
 
     setBusy(true);
     setError(null);
-    setSuccess(false);
     try {
       const hero = await updateAdminHomeHero({
         mediaAssetIds: slides.map((slide) => slide.mediaAssetId),
       });
       setSlides(hero.slides);
       setDirty(false);
-      setSuccess(true);
+      showSuccess(t('saveSuccess'));
     } catch {
       setError(t('errors.save'));
     } finally {
@@ -135,12 +132,11 @@ export const AdminHomeBannerPage = () => {
   const handleReset = async (): Promise<void> => {
     setBusy(true);
     setError(null);
-    setSuccess(false);
     try {
       const hero = await updateAdminHomeHero({ mediaAssetIds: null });
       setSlides(hero.slides);
       setDirty(false);
-      setSuccess(true);
+      showSuccess(t('saveSuccess'));
     } catch {
       setError(t('errors.save'));
     } finally {
@@ -264,11 +260,6 @@ export const AdminHomeBannerPage = () => {
                 {error}
               </p>
             ) : null}
-            {success ? (
-              <p role="status" className="text-sm text-success">
-                {t('saveSuccess')}
-              </p>
-            ) : null}
 
             <div className="flex flex-wrap gap-3">
               <Button
@@ -295,6 +286,7 @@ export const AdminHomeBannerPage = () => {
           </div>
         </div>
       )}
+      {successToast}
     </div>
   );
 };

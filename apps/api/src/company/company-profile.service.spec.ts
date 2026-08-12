@@ -19,10 +19,21 @@ describe("CompanyProfileService logo updates", () => {
   const baseCompany = {
     id: "co_1",
     name: "Builder",
+    description: null,
     type: "builder" as const,
     status: "active" as const,
     logoMediaId: null,
     logoMedia: null,
+    phone: null,
+    contactPerson: null,
+    email: null,
+    websiteUrl: null,
+    instagramUrl: null,
+    facebookUrl: null,
+    region: null,
+    address: null,
+    mediaMaterialsUrl: null,
+    advertisingMaterialsUrl: null,
   };
 
   beforeEach(() => {

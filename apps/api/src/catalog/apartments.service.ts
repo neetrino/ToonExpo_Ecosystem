@@ -137,6 +137,7 @@ export class ApartmentsService {
       },
       include: {
         planMedia: true,
+        coverMedia: true,
         project: {
           include: {
             builderCompany: { include: { logoMedia: true } },
@@ -214,6 +215,7 @@ export class ApartmentsService {
       viewType: apartment.viewType,
       features: apartment.features,
       plan: toMediaSummary(apartment.planMedia),
+      cover: toMediaSummary(apartment.coverMedia),
       project: {
         id: apartment.project.id,
         name: projectName,

@@ -88,6 +88,11 @@ export type GeoMapCanvasProps = {
   /** Extra class names for the map container; the caller controls sizing (e.g. `h-[600px]`). */
   className?: string;
   /**
+   * Position classes for zoom/rotate/tilt controls (defaults to `top-2.5 right-2.5`).
+   * Full-bleed `/map` passes overlay-header clearance so controls sit below the navbar.
+   */
+  cameraControlsClassName?: string;
+  /**
    * When set (and `token` changes), smoothly flies the camera to that object's
    * lng/lat. Backward-compatible — omit for read-only / uncontrolled consumers.
    */

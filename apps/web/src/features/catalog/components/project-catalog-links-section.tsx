@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import { Globe, Images, Sofa } from 'lucide-react';
+import { BadgeCheck, Box, Globe, Images, LayoutGrid, Sofa } from 'lucide-react';
 import Image from 'next/image';
 
 import type {
@@ -17,6 +17,9 @@ type ProjectCatalogLinksSectionProps = {
 const LINK_ICON: Partial<Record<ProjectCatalogLinkId, LucideIcon>> = {
   exteriorRenders: Images,
   interiorRenders: Sofa,
+  floorplans2d: LayoutGrid,
+  floorplans3d: Box,
+  branding: BadgeCheck,
   website: Globe,
 };
 

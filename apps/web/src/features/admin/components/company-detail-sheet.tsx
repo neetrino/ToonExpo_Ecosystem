@@ -33,7 +33,7 @@ export const CompanyDetailSheet = ({ companyId, open, onClose }: CompanyDetailSh
         company ? `${t(`statuses.${company.status}`)} · ${t(`types.${company.type}`)}` : undefined
       }
       headerActions={company ? <ResendInviteButton companyId={company.id} /> : undefined}
-      size="comfortable"
+      size="wide"
     >
       {!companyId || query.isLoading ? (
         <p className="text-sm text-ink-secondary">{t('loading')}</p>

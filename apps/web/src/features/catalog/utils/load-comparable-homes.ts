@@ -56,17 +56,22 @@ const toComparableHomeCard = (
   project: ProjectDetail,
   locationLine: string | null,
 ): ComparableHomeCardModel => {
-  const image = apartment.plan
+  const image = apartment.cover
     ? {
-        src: apartment.plan.fileUrl,
-        alt: apartment.plan.altText ?? apartment.number,
+        src: apartment.cover.fileUrl,
+        alt: apartment.cover.altText ?? apartment.number,
       }
-    : project.cover
+    : apartment.plan
       ? {
-          src: project.cover.fileUrl,
-          alt: project.cover.altText ?? project.name,
+          src: apartment.plan.fileUrl,
+          alt: apartment.plan.altText ?? apartment.number,
         }
-      : null;
+      : project.cover
+        ? {
+            src: project.cover.fileUrl,
+            alt: project.cover.altText ?? project.name,
+          }
+        : null;
 
   return {
     id: apartment.id,

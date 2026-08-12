@@ -79,39 +79,41 @@ export const PortalCanvasEditorPage = ({ project, canvasId }: PortalCanvasEditor
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <BackLink href={catalogProjectDetailHref(scope, project.id)} label={t('back')} />
-          <h1 className="text-page-title text-ink">{canvas.title ?? t('untitled')}</h1>
-          <PublicationStatusBadge status={canvas.publicationStatus} />
+          <div className="flex flex-wrap items-center gap-2">
+            {canvas.publicationStatus !== 'published' ? (
+              <Button
+                type="button"
+                size="sm"
+                variant="secondary"
+                disabled={updateCanvasMutation.isPending}
+                onClick={() => {
+                  void publishCanvas();
+                }}
+              >
+                {t('publish')}
+              </Button>
+            ) : null}
+            {canvas.publicationStatus !== 'archived' ? (
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                disabled={updateCanvasMutation.isPending}
+                onClick={() => {
+                  void archiveCanvas();
+                }}
+              >
+                {t('archive')}
+              </Button>
+            ) : null}
+          </div>
         </div>
-        <div className="flex flex-wrap gap-2">
-          {canvas.publicationStatus !== 'published' ? (
-            <Button
-              type="button"
-              size="sm"
-              variant="secondary"
-              disabled={updateCanvasMutation.isPending}
-              onClick={() => {
-                void publishCanvas();
-              }}
-            >
-              {t('publish')}
-            </Button>
-          ) : null}
-          {canvas.publicationStatus !== 'archived' ? (
-            <Button
-              type="button"
-              size="sm"
-              variant="ghost"
-              disabled={updateCanvasMutation.isPending}
-              onClick={() => {
-                void archiveCanvas();
-              }}
-            >
-              {t('archive')}
-            </Button>
-          ) : null}
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h1 className="min-w-0 text-page-title text-ink">{canvas.title ?? t('untitled')}</h1>
+          <PublicationStatusBadge status={canvas.publicationStatus} />
         </div>
       </div>
 

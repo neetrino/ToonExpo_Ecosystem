@@ -2,6 +2,7 @@ import type { ProjectCatalogDetails } from '@/features/catalog/utils/project-cat
 import { hasProjectCatalogDetails } from '@/features/catalog/utils/project-catalog-details';
 
 export type ProjectCatalogCriterionId =
+  | 'slogan'
   | 'propertyType'
   | 'country'
   | 'city'
@@ -58,7 +59,10 @@ export type ProjectCatalogCriterionId =
   | 'specialTermsAvailable'
   | 'specialTerms'
   | 'incomeTaxRefund'
-  | 'handoverDescription';
+  | 'handoverDescription'
+  | 'greenZones'
+  | 'territorialAdvantages'
+  | 'views';
 
 export type ProjectCatalogRow = {
   id: ProjectCatalogCriterionId;
@@ -226,6 +230,15 @@ export const buildProjectCatalogRows = (
   pushCard(rows, 'economicZone', labels.economicZone, details.economicZone);
   pushCard(rows, 'finishingStatus', labels.finishingStatus, details.finishingStatus);
 
+  pushWide(rows, 'slogan', labels.slogan, details.slogan);
+  pushWide(rows, 'greenZones', labels.greenZones, details.greenZones);
+  pushWide(
+    rows,
+    'territorialAdvantages',
+    labels.territorialAdvantages,
+    details.territorialAdvantages,
+  );
+  pushWide(rows, 'views', labels.views, details.views);
   pushWide(rows, 'services', labels.services, details.services);
   pushWide(rows, 'paymentTypes', labels.paymentTypes, details.paymentTypes);
   pushWide(rows, 'installmentTerms', labels.installmentTerms, details.installmentTerms);

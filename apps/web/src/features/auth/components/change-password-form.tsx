@@ -15,6 +15,7 @@ import { Button } from '@/shared/ui/button';
 import { Form } from '@/shared/ui/form';
 import { FormField } from '@/shared/ui/form-field';
 import { PasswordInput } from '@/shared/ui/password-input';
+import { useSuccessToast } from '@/shared/ui/use-success-toast';
 
 /**
  * Authenticated change-password form with success toast and reset.
@@ -24,7 +25,7 @@ export const ChangePasswordForm = () => {
   const tAuth = useTranslations('Auth');
   const changePasswordMutation = useChangePasswordMutation();
   const [formError, setFormError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+  const { showSuccess, successToast } = useSuccessToast();
 
   const {
     register,
@@ -42,14 +43,13 @@ export const ChangePasswordForm = () => {
 
   const onSubmit = handleSubmit(async (values) => {
     setFormError(null);
-    setSuccess(false);
     try {
       await changePasswordMutation.mutateAsync({
         currentPassword: values.currentPassword,
         newPassword: values.newPassword,
       });
       reset();
-      setSuccess(true);
+      showSuccess(t('success'));
     } catch (error) {
       setFormError(t(`errors.${mapChangePasswordError(error)}`));
     }
@@ -58,6 +58,7 @@ export const ChangePasswordForm = () => {
   const busy = isSubmitting || changePasswordMutation.isPending;
 
   return (
+    <>
     <Form onSubmit={onSubmit} className="flex flex-col gap-5" noValidate>
       <FormField
         id="change-password-current"
@@ -113,15 +114,11 @@ export const ChangePasswordForm = () => {
         </p>
       ) : null}
 
-      {success ? (
-        <p role="status" className="text-sm text-success">
-          {t('success')}
-        </p>
-      ) : null}
-
       <Button type="submit" variant="primary" disabled={busy} className="w-full sm:w-auto">
         {busy ? t('submitting') : t('submit')}
       </Button>
     </Form>
+    {successToast}
+    </>
   );
 };

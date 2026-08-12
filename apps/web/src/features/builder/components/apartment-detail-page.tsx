@@ -20,7 +20,7 @@ type ApartmentDetailPageProps = {
 };
 
 /**
- * Apartment edit page. Cover card image first, then plan and details.
+ * Apartment edit page. Cover and plan side by side, then details form.
  */
 export const ApartmentDetailPage = ({ apartmentId }: ApartmentDetailPageProps) => {
   const scope = useCatalogScope();
@@ -81,39 +81,43 @@ export const ApartmentDetailPage = ({ apartmentId }: ApartmentDetailPageProps) =
         </div>
       </div>
 
-      <section className="overflow-hidden rounded-lg border border-border bg-surface-elevated">
-        <div className="border-b border-border px-4 py-3">
-          <h2 className="text-sm font-semibold text-ink">{t('coverTitle')}</h2>
-          <p className="mt-0.5 text-xs text-ink-secondary">{t('coverHint')}</p>
-        </div>
-        <div className="p-4">
-          <EditApartmentCoverForm apartment={apartment} />
-        </div>
-      </section>
+      <div className="grid gap-4 lg:grid-cols-2 lg:items-stretch">
+        <section className="flex flex-col overflow-hidden rounded-lg border border-border bg-surface-elevated">
+          <div className="border-b border-border px-4 py-3">
+            <h2 className="text-sm font-semibold text-ink">{t('coverTitle')}</h2>
+            <p className="mt-0.5 text-xs text-ink-secondary">{t('coverHint')}</p>
+          </div>
+          <div className="flex flex-1 flex-col p-4">
+            <EditApartmentCoverForm apartment={apartment} />
+          </div>
+        </section>
 
-      {apartment.plan ? (
-        <section className="overflow-hidden rounded-lg border border-border bg-surface-elevated">
+        <section className="flex flex-col overflow-hidden rounded-lg border border-border bg-surface-elevated">
           <div className="border-b border-border px-4 py-3">
             <h2 className="text-sm font-semibold text-ink">{t('planTitle')}</h2>
           </div>
-          <div className="p-4">
-            <button
-              type="button"
-              className="block w-full cursor-zoom-in outline-none focus-visible:ring-2 focus-visible:ring-brand/30"
-              aria-label={t('planViewHint')}
-              onClick={() => {
-                setLightboxOpen(true);
-              }}
-            >
-              <img
-                src={apartment.plan.fileUrl}
-                alt={apartment.plan.altText ?? t('planAlt')}
-                className="mx-auto max-h-80 w-full object-contain"
-              />
-            </button>
+          <div className="flex flex-1 flex-col justify-center p-4">
+            {apartment.plan ? (
+              <button
+                type="button"
+                className="block w-full cursor-zoom-in outline-none focus-visible:ring-2 focus-visible:ring-brand/30"
+                aria-label={t('planViewHint')}
+                onClick={() => {
+                  setLightboxOpen(true);
+                }}
+              >
+                <img
+                  src={apartment.plan.fileUrl}
+                  alt={apartment.plan.altText ?? t('planAlt')}
+                  className="mx-auto max-h-80 w-full object-contain"
+                />
+              </button>
+            ) : (
+              <p className="text-sm text-ink-secondary">{t('planEmpty')}</p>
+            )}
           </div>
         </section>
-      ) : null}
+      </div>
 
       <Card>
         <EditApartmentForm apartment={apartment} />

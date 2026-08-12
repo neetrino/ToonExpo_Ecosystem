@@ -12,10 +12,16 @@ import {
   updateCompanySchema,
   type UpdateCompanyFormValues,
 } from '@/features/admin/schemas/update-company.schema';
+import { CompanyContactFields } from '@/features/companies/components/company-contact-fields';
+import {
+  companyContactDefaultsFrom,
+  companyContactPatchFrom,
+} from '@/features/companies/schemas/company-contact-fields.schema';
 import { MediaUploadField } from '@/features/media/components/media-upload-field';
 import { toNullableMediaId } from '@/features/media/schemas/media-fields.schema';
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
+import { useSuccessToast } from '@/shared/ui/use-success-toast';
 import { Input } from '@/shared/ui/input';
 import { Select } from '@/shared/ui/select';
 
@@ -24,13 +30,13 @@ type EditCompanyFormProps = {
 };
 
 /**
- * Inline PATCH form for company name, description, and status.
+ * Inline PATCH form for company profile fields and status.
  */
 export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
   const t = useTranslations('Admin.companies');
   const updateMutation = useUpdateAdminCompanyMutation(company.id);
   const [formError, setFormError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+  const { showSuccess, successToast } = useSuccessToast();
 
   const {
     register,
@@ -44,20 +50,21 @@ export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
       description: company.description ?? '',
       status: company.status,
       logoMediaId: company.logoMediaId ?? '',
+      ...companyContactDefaultsFrom(company),
     },
   });
 
   const onSubmit = handleSubmit(async (values) => {
     setFormError(null);
-    setSuccess(false);
     try {
       await updateMutation.mutateAsync({
         name: values.name,
         description: values.description.length > 0 ? values.description : null,
         status: values.status,
         logoMediaId: toNullableMediaId(values.logoMediaId),
+        ...companyContactPatchFrom(values),
       });
-      setSuccess(true);
+      showSuccess(t('detail.saveSuccess'));
     } catch {
       setFormError(t('errors.generic'));
     }
@@ -66,6 +73,7 @@ export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
   const busy = isSubmitting || updateMutation.isPending;
 
   return (
+    <>
     <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
       <div className="grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start">
         <FormField
@@ -121,6 +129,13 @@ export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
         />
       </FormField>
 
+      <CompanyContactFields
+        register={register}
+        errors={errors}
+        idPrefix="edit-company"
+        labelsNamespace="Admin.companies"
+      />
+
       <Controller
         control={control}
         name="logoMediaId"
@@ -143,15 +158,11 @@ export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
         </p>
       ) : null}
 
-      {success ? (
-        <p role="status" className="rounded-sm bg-surface px-3 py-2 text-sm text-success">
-          {t('detail.saveSuccess')}
-        </p>
-      ) : null}
-
       <Button type="submit" variant="primary" disabled={busy || !isDirty}>
         {busy ? t('detail.saving') : t('detail.save')}
       </Button>
     </form>
+    {successToast}
+    </>
   );
 };

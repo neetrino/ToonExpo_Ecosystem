@@ -31,6 +31,7 @@ import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
 import { Select } from '@/shared/ui/select';
+import { useSuccessToast } from '@/shared/ui/use-success-toast';
 
 type AdminPartnerDetailFormProps = {
   partnerId: string;
@@ -47,7 +48,7 @@ export const AdminPartnerDetailForm = ({ partnerId, partner }: AdminPartnerDetai
   const updateOfferMutation = useUpdatePartnerOfferMutation(partnerId);
   const deleteOfferMutation = useDeletePartnerOfferMutation(partnerId);
   const [saveError, setSaveError] = useState<string | null>(null);
-  const [saveSuccess, setSaveSuccess] = useState(false);
+  const { showSuccess, successToast } = useSuccessToast();
 
   const form = useForm<UpdatePartnerFormValues>({
     resolver: zodResolver(updatePartnerSchema),
@@ -62,10 +63,9 @@ export const AdminPartnerDetailForm = ({ partnerId, partner }: AdminPartnerDetai
 
   const onSubmit = form.handleSubmit(async (values) => {
     setSaveError(null);
-    setSaveSuccess(false);
     try {
       await updateMutation.mutateAsync(toUpdatePartnerBody(values));
-      setSaveSuccess(true);
+      showSuccess(t('saveSuccess'));
     } catch {
       setSaveError(t('errors.generic'));
     }
@@ -176,7 +176,6 @@ export const AdminPartnerDetailForm = ({ partnerId, partner }: AdminPartnerDetai
             {saveError}
           </p>
         ) : null}
-        {saveSuccess ? <p className="text-sm text-success">{t('saveSuccess')}</p> : null}
 
         <Button type="submit" variant="secondary" disabled={busy || !form.formState.isDirty}>
           {busy ? t('saving') : t('save')}
@@ -196,6 +195,7 @@ export const AdminPartnerDetailForm = ({ partnerId, partner }: AdminPartnerDetai
           await deleteOfferMutation.mutateAsync(offerId);
         }}
       />
+      {successToast}
     </div>
   );
 };

@@ -8,6 +8,7 @@ import { useCatalogScope } from '@/features/builder/catalog-scope-context';
 import { useIsCompanyAdmin } from '@/features/builder/hooks/use-company-profile';
 import { useUpdateApartmentPublicationMutation } from '@/features/builder/hooks/use-portal-inventory';
 import { Button } from '@/shared/ui/button';
+import { useSuccessToast } from '@/shared/ui/use-success-toast';
 
 type ApartmentPublicationActionsProps = {
   apartment: PortalApartmentDetail;
@@ -22,7 +23,8 @@ export const ApartmentPublicationActions = ({ apartment }: ApartmentPublicationA
   const isCompanyAdmin = useIsCompanyAdmin();
   const canManage = scope.mode === 'admin' || isCompanyAdmin;
   const publicationMutation = useUpdateApartmentPublicationMutation(apartment.id);
-  const [toast, setToast] = useState<'success' | 'error' | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const { showSuccess, successToast } = useSuccessToast();
 
   if (!canManage) {
     return null;
@@ -31,12 +33,12 @@ export const ApartmentPublicationActions = ({ apartment }: ApartmentPublicationA
   const busy = publicationMutation.isPending;
 
   const changeStatus = async (publicationStatus: 'published' | 'draft') => {
-    setToast(null);
+    setError(null);
     try {
       await publicationMutation.mutateAsync({ publicationStatus });
-      setToast('success');
+      showSuccess(t('detail.publicationSuccess'));
     } catch {
-      setToast('error');
+      setError(t('errors.generic'));
     }
   };
 
@@ -72,16 +74,12 @@ export const ApartmentPublicationActions = ({ apartment }: ApartmentPublicationA
           </Button>
         )}
       </div>
-      {toast === 'success' ? (
-        <p role="status" className="text-sm text-success">
-          {t('detail.publicationSuccess')}
-        </p>
-      ) : null}
-      {toast === 'error' ? (
+      {error ? (
         <p role="alert" className="text-sm text-danger">
-          {t('errors.generic')}
+          {error}
         </p>
       ) : null}
+      {successToast}
     </div>
   );
 };

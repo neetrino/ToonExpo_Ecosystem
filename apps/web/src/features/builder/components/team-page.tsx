@@ -16,6 +16,7 @@ import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { Button } from '@/shared/ui/button';
 import { Reveal } from '@/shared/ui/motion';
 import { PageTitleBlock } from '@/shared/ui/page-title-icon';
+import { useSuccessToast } from '@/shared/ui/use-success-toast';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
 const parsePage = (raw: string | null): number => {
@@ -37,8 +38,8 @@ export const TeamPage = () => {
   const canManage = useIsCompanyAdmin();
   const membersQuery = useCompanyMembersQuery(page, pageSize);
   const { viewMode, effectiveViewMode, setViewMode } = usePersistedViewMode(TEAM_VIEW_MODE_KEY);
-  const [inviteEmail, setInviteEmail] = useState<string | null>(null);
   const [inviteOpen, setInviteOpen] = useState(false);
+  const { showSuccess, successToast } = useSuccessToast();
 
   if (membersQuery.isLoading) {
     return <p className="text-sm text-ink-secondary">{t('loading')}</p>;
@@ -75,7 +76,6 @@ export const TeamPage = () => {
                 className="shrink-0"
                 onClick={() => {
                   setInviteOpen(true);
-                  setInviteEmail(null);
                 }}
               >
                 <AddActionLabel>{t('inviteMember')}</AddActionLabel>
@@ -84,12 +84,6 @@ export const TeamPage = () => {
           </div>
         </div>
       </Reveal>
-
-      {inviteEmail ? (
-        <p role="status" className="rounded-sm bg-surface px-3 py-2 text-sm text-ink">
-          {t('inviteSuccess', { email: inviteEmail })}
-        </p>
-      ) : null}
 
       {response.data.length === 0 ? (
         <p className="text-sm text-ink-secondary">{t('empty')}</p>
@@ -124,10 +118,11 @@ export const TeamPage = () => {
             setInviteOpen(false);
           }}
           onSuccess={(email) => {
-            setInviteEmail(email);
+            showSuccess(t('inviteSuccess', { email }));
           }}
         />
       ) : null}
+      {successToast}
     </div>
   );
 };

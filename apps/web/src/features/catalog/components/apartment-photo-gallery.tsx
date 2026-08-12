@@ -15,9 +15,11 @@ type ApartmentPhotoGalleryProps = {
 };
 
 const GALLERY_ROUNDED = 'rounded-[20px]';
+const GALLERY_THUMB_LIMIT = 4;
 
 /**
- * Figma apartment mosaic — large hero + 2×2 thumbs when enough images.
+ * Apartment mosaic — 1 large photo on the left, 4 equal thumbs on the right (2×2).
+ * One shared CSS grid so top/bottom edges of both columns align exactly.
  */
 export const ApartmentPhotoGallery = ({ images }: ApartmentPhotoGalleryProps) => {
   const t = useTranslations('Catalog.apartment');
@@ -55,16 +57,22 @@ export const ApartmentPhotoGallery = ({ images }: ApartmentPhotoGalleryProps) =>
   }
 
   const [hero, ...rest] = images;
-  const thumbs = rest.slice(0, 4);
+  const thumbs = rest.slice(0, GALLERY_THUMB_LIMIT);
   if (!hero) {
     return null;
   }
 
   return (
-    <div className="grid grid-cols-1 gap-3 md:grid-cols-4 md:grid-rows-2 md:gap-3">
+    <div
+      className={cn(
+        'grid grid-cols-1 gap-3',
+        'md:h-[460px] md:grid-cols-4 md:grid-rows-2 md:gap-3',
+      )}
+    >
       <div
         className={cn(
-          'relative aspect-[4/3] overflow-hidden bg-band-mist md:col-span-2 md:row-span-2 md:aspect-auto md:min-h-[460px]',
+          'relative overflow-hidden bg-band-mist max-md:aspect-[4/3]',
+          'md:col-span-2 md:row-span-2 md:h-full md:min-h-0',
           GALLERY_ROUNDED,
         )}
       >
@@ -77,11 +85,11 @@ export const ApartmentPhotoGallery = ({ images }: ApartmentPhotoGalleryProps) =>
           priority
         />
       </div>
-      {thumbs.map((image) => (
+      {thumbs.map((image, index) => (
         <div
-          key={image.src}
+          key={`${image.src}-${index}`}
           className={cn(
-            'relative hidden aspect-[4/3] overflow-hidden bg-band-mist md:block',
+            'relative hidden overflow-hidden bg-band-mist md:block md:h-full md:min-h-0',
             GALLERY_ROUNDED,
           )}
         >

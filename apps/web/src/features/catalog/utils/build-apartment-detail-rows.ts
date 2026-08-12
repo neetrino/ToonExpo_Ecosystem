@@ -36,6 +36,8 @@ type BuildApartmentDetailRowsOptions = {
   labels: DetailLabels;
   formatCeilingHeight: (height: number) => string;
   formatStatus: (status: ApartmentDetail['salesStatus']) => string;
+  /** Project-level handover text used when the apartment has none. */
+  projectHandoverDescription?: string | null;
 };
 
 const EMPTY_VALUE = '—';
@@ -50,6 +52,10 @@ export const buildApartmentDetailRows = (
   const extras = parseApartmentFeatureExtras(apartment.features);
   const floorLabel = apartment.floor.number != null ? String(apartment.floor.number) : EMPTY_VALUE;
   const neighborhoodLabel = district?.trim() || apartment.project.name.trim() || EMPTY_VALUE;
+  const handoverDescription =
+    extras.handoverDescription?.trim() ||
+    options.projectHandoverDescription?.trim() ||
+    null;
 
   return [
     { id: 'neighborhood', label: labels.neighborhood, value: neighborhoodLabel },
@@ -88,12 +94,16 @@ export const buildApartmentDetailRows = (
       value: apartment.description?.trim() || EMPTY_VALUE,
       wide: true,
     },
-    {
-      id: 'handoverDescription',
-      label: labels.handoverDescription,
-      value: extras.handoverDescription ?? EMPTY_VALUE,
-      wide: true,
-    },
+    ...(handoverDescription
+      ? [
+          {
+            id: 'handoverDescription' as const,
+            label: labels.handoverDescription,
+            value: handoverDescription,
+            wide: true as const,
+          },
+        ]
+      : []),
   ];
 };
 

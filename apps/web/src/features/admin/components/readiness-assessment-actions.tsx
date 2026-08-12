@@ -13,6 +13,7 @@ import {
 import { Button } from "@/shared/ui/button";
 import { FormField } from "@/shared/ui/form-field";
 import { Input } from "@/shared/ui/input";
+import { useSuccessToast } from "@/shared/ui/use-success-toast";
 
 type ReadinessAssessmentActionsProps = {
   assessment: ReadinessAssessmentDetail;
@@ -31,14 +32,13 @@ export const ReadinessAssessmentActions = ({
     assessment.overallScore === null ? "" : String(assessment.overallScore),
   );
   const [error, setError] = useState<string | null>(null);
-  const [message, setMessage] = useState<string | null>(null);
+  const { showSuccess, successToast } = useSuccessToast();
 
   const onUpdateStatus = async () => {
     setError(null);
-    setMessage(null);
     try {
       await mutation.mutateAsync({ status });
-      setMessage(t("statusSaved"));
+      showSuccess(t("statusSaved"));
     } catch {
       setError(t("errors.generic"));
     }
@@ -46,7 +46,6 @@ export const ReadinessAssessmentActions = ({
 
   const onOverrideScore = async () => {
     setError(null);
-    setMessage(null);
     const trimmed = overrideScore.trim();
     const parsed = trimmed === "" ? null : Number.parseInt(trimmed, 10);
     if (
@@ -60,7 +59,7 @@ export const ReadinessAssessmentActions = ({
     }
     try {
       await mutation.mutateAsync({ overallScore: parsed });
-      setMessage(t("scoreSaved"));
+      showSuccess(t("scoreSaved"));
     } catch {
       setError(t("errors.generic"));
     }
@@ -71,10 +70,9 @@ export const ReadinessAssessmentActions = ({
       return;
     }
     setError(null);
-    setMessage(null);
     try {
       await mutation.mutateAsync({ archive: true });
-      setMessage(t("archived"));
+      showSuccess(t("archived"));
     } catch {
       setError(t("errors.generic"));
     }
@@ -159,11 +157,7 @@ export const ReadinessAssessmentActions = ({
           {error}
         </p>
       ) : null}
-      {message ? (
-        <p role="status" className="text-sm text-success">
-          {message}
-        </p>
-      ) : null}
+      {successToast}
     </div>
   );
 };

@@ -10,6 +10,7 @@ import {
   Check,
   ClipboardList,
   Droplets,
+  Eye,
   Factory,
   FileBadge,
   Flame,
@@ -20,12 +21,14 @@ import {
   Landmark,
   Layers,
   MapPin,
+  MapPinned,
   MoveVertical,
   Navigation,
   Paintbrush,
   ParkingCircle,
   PenLine,
   Percent,
+  Quote,
   Ruler,
   Shield,
   ShieldCheck,
@@ -33,6 +36,7 @@ import {
   SquareParking,
   Store,
   Thermometer,
+  Trees,
   Warehouse,
 } from 'lucide-react';
 
@@ -40,8 +44,10 @@ import type {
   ProjectCatalogCriterionId,
   ProjectCatalogRow,
 } from '@/features/catalog/utils/build-project-catalog-rows';
+import { cn } from '@/shared/ui/cn';
 
 export const PROJECT_CATALOG_CRITERION_ICON: Record<ProjectCatalogCriterionId, LucideIcon> = {
+  slogan: Quote,
   propertyType: Building2,
   country: MapPin,
   city: Home,
@@ -99,6 +105,9 @@ export const PROJECT_CATALOG_CRITERION_ICON: Record<ProjectCatalogCriterionId, L
   specialTerms: ShieldCheck,
   incomeTaxRefund: Banknote,
   handoverDescription: ClipboardList,
+  greenZones: Trees,
+  territorialAdvantages: MapPinned,
+  views: Eye,
 };
 
 export const ProjectCatalogOverviewStat = ({ row }: { row: ProjectCatalogRow }) => {
@@ -123,10 +132,18 @@ export const ProjectCatalogDetailsList = ({ rows }: { rows: ProjectCatalogRow[] 
     {rows.map((row) => (
       <div
         key={row.id}
-        className="flex items-baseline justify-between gap-4 border-b border-header-border py-3"
+        className={cn(
+          'flex items-baseline justify-between gap-4 border-b border-header-border py-3',
+          row.wide && 'sm:col-span-2 sm:flex-col sm:items-stretch sm:gap-1',
+        )}
       >
         <dt className="shrink-0 text-sm text-ink-muted">{row.label}</dt>
-        <dd className="min-w-0 text-right text-sm font-semibold whitespace-pre-line text-ink-navy">
+        <dd
+          className={cn(
+            'min-w-0 text-sm font-semibold whitespace-pre-line text-ink-navy',
+            row.wide ? 'text-left' : 'text-right',
+          )}
+        >
           {row.value}
         </dd>
       </div>

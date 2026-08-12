@@ -4,6 +4,7 @@ import type { PublicMortgageOfferItem } from '@toonexpo/contracts';
 import { useLocale, useTranslations } from 'next-intl';
 
 import { formatMortgageAmount } from '@/features/mortgage/utils/format-mortgage-amount';
+import { AdminListCardLogo } from '@/shared/ui/admin-list-card-logo';
 import { cn } from '@/shared/ui/cn';
 
 type MortgageOfferCardProps = {
@@ -40,27 +41,35 @@ export const MortgageOfferCard = ({
           : 'shadow-[0_0_0_1px_var(--color-header-border)] hover:shadow-[0_0_0_1px_var(--color-brand-secondary)/40]',
       )}
     >
-      <div className="min-w-0 flex-1">
-        <div className="flex flex-wrap items-center gap-2">
-          <h3 className="font-brand text-lg font-bold tracking-tight text-ink-navy">
-            {offer.bank.name}
-          </h3>
-          {offer.featured ? (
-            <span className="rounded-[10px] bg-band-mist px-2 py-0.5 text-[10px] font-bold tracking-widest text-brand-deep uppercase">
-              {t('featured')}
-            </span>
-          ) : null}
-          {showLowestRateBadge && !offer.featured ? (
-            <span className="rounded-[10px] bg-band-mist px-2 py-0.5 text-[10px] font-bold tracking-widest text-brand-deep uppercase">
-              {t('lowestRate')}
-            </span>
-          ) : null}
+      <div className="flex min-w-0 flex-1 items-start gap-3">
+        <AdminListCardLogo
+          name={offer.bank.name}
+          logoUrl={offer.bank.logoUrl}
+          shape="circle"
+          className="mt-0.5 size-11"
+        />
+        <div className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <h3 className="font-brand text-lg font-bold tracking-tight text-ink-navy">
+              {offer.bank.name}
+            </h3>
+            {offer.featured ? (
+              <span className="rounded-[10px] bg-band-mist px-2 py-0.5 text-[10px] font-bold tracking-widest text-brand-deep uppercase">
+                {t('featured')}
+              </span>
+            ) : null}
+            {showLowestRateBadge && !offer.featured ? (
+              <span className="rounded-[10px] bg-band-mist px-2 py-0.5 text-[10px] font-bold tracking-widest text-brand-deep uppercase">
+                {t('lowestRate')}
+              </span>
+            ) : null}
+          </div>
+          {offer.shortDescription ? (
+            <p className="mt-1 text-sm leading-5 text-header-muted">{offer.shortDescription}</p>
+          ) : (
+            <p className="mt-1 text-sm leading-5 text-header-muted">{offer.title}</p>
+          )}
         </div>
-        {offer.shortDescription ? (
-          <p className="mt-1 text-sm leading-5 text-header-muted">{offer.shortDescription}</p>
-        ) : (
-          <p className="mt-1 text-sm leading-5 text-header-muted">{offer.title}</p>
-        )}
       </div>
 
       <dl className="grid shrink-0 grid-cols-3 gap-x-3 gap-y-3 sm:grid-cols-4 sm:gap-x-8">
