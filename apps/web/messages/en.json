@@ -3434,6 +3434,7 @@
       "notFound": "Apartment not found",
       "planTitle": "Apartment plan",
       "planAlt": "Apartment plan",
+      "planEmpty": "No floor plan uploaded yet. Add one in the form below.",
       "planViewHint": "View apartment plan fullscreen",
       "coverTitle": "Card cover image",
       "coverHint": "Shown on this apartment’s cards. If empty, the card has no image.",
