@@ -1,7 +1,6 @@
 'use client';
 
 import Image from 'next/image';
-import { Images } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
@@ -22,7 +21,7 @@ const GALLERY_THUMB_LIMIT = 4;
 
 /**
  * Apartment mosaic — 1 large photo on the left, up to 4 thumbs on the right.
- * “View all photos” opens a fullscreen lightbox for the full set.
+ * Click any photo to open the fullscreen gallery lightbox.
  */
 export const ApartmentPhotoGallery = ({ images }: ApartmentPhotoGalleryProps) => {
   const t = useTranslations('Catalog.apartment');
@@ -95,69 +94,51 @@ export const ApartmentPhotoGallery = ({ images }: ApartmentPhotoGalleryProps) =>
 
   return (
     <>
-      <div className="relative">
-        <div
-          className={cn(
-            'grid grid-cols-1 gap-3',
-            'md:h-[460px] md:grid-cols-4 md:grid-rows-2 md:gap-3',
-          )}
-        >
-          <button
-            type="button"
-            className={cn(
-              'relative overflow-hidden bg-band-mist max-md:aspect-[4/3]',
-              'cursor-zoom-in outline-none focus-visible:ring-2 focus-visible:ring-brand/30',
-              'md:col-span-2 md:row-span-2 md:h-full md:min-h-0',
-              GALLERY_ROUNDED,
-            )}
-            aria-label={t('viewAllPhotos')}
-            onClick={() => {
-              openAt(0);
-            }}
-          >
-            <Image
-              src={hero.src}
-              alt={hero.alt}
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, 50vw"
-              priority
-            />
-          </button>
-          {thumbs.map((image, index) => (
-            <button
-              key={`${image.src}-${index}`}
-              type="button"
-              className={cn(
-                'relative hidden overflow-hidden bg-band-mist md:block md:h-full md:min-h-0',
-                'cursor-zoom-in outline-none focus-visible:ring-2 focus-visible:ring-brand/30',
-                GALLERY_ROUNDED,
-              )}
-              aria-label={t('viewAllPhotos')}
-              onClick={() => {
-                openAt(index + 1);
-              }}
-            >
-              <Image src={image.src} alt={image.alt} fill className="object-cover" sizes="25vw" />
-            </button>
-          ))}
-        </div>
-
+      <div
+        className={cn(
+          'grid grid-cols-1 gap-3',
+          'md:h-[460px] md:grid-cols-4 md:grid-rows-2 md:gap-3',
+        )}
+      >
         <button
           type="button"
           className={cn(
-            'absolute right-4 bottom-4 z-10 inline-flex items-center gap-2',
-            'rounded-full bg-brand px-4 py-2 text-sm font-semibold text-on-brand',
-            'transition-colors hover:bg-brand-hover',
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40',
+            'relative overflow-hidden bg-band-mist max-md:aspect-[4/3]',
+            'cursor-zoom-in outline-none focus-visible:ring-2 focus-visible:ring-brand/30',
+            'md:col-span-2 md:row-span-2 md:h-full md:min-h-0',
+            GALLERY_ROUNDED,
           )}
+          aria-label={t('viewAllPhotos')}
           onClick={() => {
             openAt(0);
           }}
         >
-          <Images className="size-4" aria-hidden />
-          {t('viewAllPhotos')}
+          <Image
+            src={hero.src}
+            alt={hero.alt}
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, 50vw"
+            priority
+          />
         </button>
+        {thumbs.map((image, index) => (
+          <button
+            key={`${image.src}-${index}`}
+            type="button"
+            className={cn(
+              'relative hidden overflow-hidden bg-band-mist md:block md:h-full md:min-h-0',
+              'cursor-zoom-in outline-none focus-visible:ring-2 focus-visible:ring-brand/30',
+              GALLERY_ROUNDED,
+            )}
+            aria-label={t('viewAllPhotos')}
+            onClick={() => {
+              openAt(index + 1);
+            }}
+          >
+            <Image src={image.src} alt={image.alt} fill className="object-cover" sizes="25vw" />
+          </button>
+        ))}
       </div>
 
       <ImageGalleryLightbox
