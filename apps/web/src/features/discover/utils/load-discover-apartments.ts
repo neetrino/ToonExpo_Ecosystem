@@ -80,12 +80,17 @@ const toCard = (
     priceCurrency: apartment.priceCurrency,
     priceVisibility: apartment.priceVisibility,
     locationLine,
-    image: project.cover
+    image: apartment.tinder
       ? {
-          src: project.cover.fileUrl,
-          alt: project.cover.altText ?? project.name,
+          src: apartment.tinder.fileUrl,
+          alt: apartment.tinder.altText ?? apartment.number,
         }
-      : null,
+      : project.cover
+        ? {
+            src: project.cover.fileUrl,
+            alt: project.cover.altText ?? project.name,
+          }
+        : null,
     projectId: project.id,
     projectName: project.name,
     builderName: project.builder.name,

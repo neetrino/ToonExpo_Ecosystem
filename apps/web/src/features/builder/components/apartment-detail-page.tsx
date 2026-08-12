@@ -10,6 +10,7 @@ import { EditApartmentFloorPlanForm } from '@/features/builder/components/edit-a
 import { EditApartmentForm } from '@/features/builder/components/edit-apartment-form';
 import { EditApartmentGalleryForm } from '@/features/builder/components/edit-apartment-gallery-form';
 import { EditApartmentPlanForm } from '@/features/builder/components/edit-apartment-plan-form';
+import { EditApartmentTinderForm } from '@/features/builder/components/edit-apartment-tinder-form';
 import { usePortalApartmentQuery } from '@/features/builder/hooks/use-portal-inventory';
 import { ApartmentSalesStatusBadge } from '@/shared/ui/apartment-sales-status-badge';
 import { BackLink } from '@/shared/ui/back-link';
@@ -20,7 +21,7 @@ type ApartmentDetailPageProps = {
 };
 
 /**
- * Apartment edit page — gallery, floor plan + unit plan, then details.
+ * Apartment edit page — gallery, floor / unit / tinder media, then details.
  */
 export const ApartmentDetailPage = ({ apartmentId }: ApartmentDetailPageProps) => {
   const scope = useCatalogScope();
@@ -90,7 +91,7 @@ export const ApartmentDetailPage = ({ apartmentId }: ApartmentDetailPageProps) =
         </div>
       </section>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-6 lg:grid-cols-3">
         <section className="flex flex-col overflow-hidden rounded-lg border border-border bg-surface-elevated">
           <div className="border-b border-border px-4 py-3">
             <h2 className="text-sm font-semibold text-ink">{t('floorplanTitle')}</h2>
@@ -108,6 +109,16 @@ export const ApartmentDetailPage = ({ apartmentId }: ApartmentDetailPageProps) =
           </div>
           <div className="flex flex-1 flex-col p-4">
             <EditApartmentPlanForm apartment={apartment} />
+          </div>
+        </section>
+
+        <section className="flex flex-col overflow-hidden rounded-lg border border-border bg-surface-elevated">
+          <div className="border-b border-border px-4 py-3">
+            <h2 className="text-sm font-semibold text-ink">{t('tinderTitle')}</h2>
+            <p className="mt-0.5 text-xs text-ink-secondary">{t('tinderHint')}</p>
+          </div>
+          <div className="flex flex-1 flex-col p-4">
+            <EditApartmentTinderForm apartment={apartment} />
           </div>
         </section>
       </div>

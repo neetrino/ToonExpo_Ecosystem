@@ -115,6 +115,8 @@ export type FloorApartmentSummary = {
   price: string | null;
   priceCurrency: string;
   priceVisibility: PriceVisibility;
+  /** Discover / Tinder swipe image when set by admin. */
+  tinder: MediaAssetSummary | null;
 };
 
 /**

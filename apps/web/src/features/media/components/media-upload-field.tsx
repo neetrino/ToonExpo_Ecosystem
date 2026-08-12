@@ -1,21 +1,21 @@
-"use client";
+'use client';
 
-import type { MediaAssetItem } from "@toonexpo/contracts";
-import { useTranslations } from "next-intl";
-import { useCallback, useEffect, useId, useState } from "react";
+import type { MediaAssetItem } from '@toonexpo/contracts';
+import { Trash2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { useCallback, useEffect, useId, useState } from 'react';
 
 import {
   listMediaAssets,
   uploadMediaAsset,
   type MediaUploadContext,
-} from "@/features/media/api/media-api";
-import {
-  isAllowedMediaMimeType,
-  MEDIA_UPLOAD_MAX_BYTES,
-} from "@/features/media/constants";
-import { ApiError } from "@/shared/api/errors";
-import { Button } from "@/shared/ui/button";
-import { cn } from "@/shared/ui/cn";
+} from '@/features/media/api/media-api';
+import { isAllowedMediaMimeType, MEDIA_UPLOAD_MAX_BYTES } from '@/features/media/constants';
+import { ApiError } from '@/shared/api/errors';
+import { AdminDeleteModal } from '@/shared/ui/admin-delete-modal';
+import { Button } from '@/shared/ui/button';
+import { cn } from '@/shared/ui/cn';
+import { IconButton } from '@/shared/ui/icon-button';
 
 export type MediaUploadFieldProps = {
   id: string;
@@ -45,18 +45,18 @@ export const MediaUploadField = ({
   allowClear = true,
   error,
 }: MediaUploadFieldProps) => {
-  const t = useTranslations("Media.upload");
+  const t = useTranslations('Media.upload');
+  const tCommon = useTranslations('Common');
   const inputId = useId();
   const [busy, setBusy] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
-  const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(
-    previewUrl?.trim() || null,
-  );
+  const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(previewUrl?.trim() || null);
   const [showLibrary, setShowLibrary] = useState(false);
   const [libraryItems, setLibraryItems] = useState<MediaAssetItem[]>([]);
   const [libraryPage, setLibraryPage] = useState(1);
   const [libraryTotalPages, setLibraryTotalPages] = useState(0);
   const [libraryLoading, setLibraryLoading] = useState(false);
+  const [confirmClearOpen, setConfirmClearOpen] = useState(false);
 
   useEffect(() => {
     setThumbnailUrl(previewUrl?.trim() || null);
@@ -67,10 +67,10 @@ export const MediaUploadField = ({
   const validateFile = useCallback(
     (file: File): string | null => {
       if (!isAllowedMediaMimeType(file.type)) {
-        return t("errors.type");
+        return t('errors.type');
       }
       if (file.size > MEDIA_UPLOAD_MAX_BYTES) {
-        return t("errors.size");
+        return t('errors.size');
       }
       return null;
     },
@@ -80,7 +80,8 @@ export const MediaUploadField = ({
   const clearSelection = () => {
     setThumbnailUrl(null);
     setLocalError(null);
-    onChange("");
+    setConfirmClearOpen(false);
+    onChange('');
   };
 
   const handleUpload = async (file: File) => {
@@ -100,9 +101,9 @@ export const MediaUploadField = ({
       onAssetSelected?.(asset);
     } catch (uploadError) {
       if (uploadError instanceof ApiError && uploadError.status === 503) {
-        setLocalError(t("errors.notConfigured"));
+        setLocalError(t('errors.notConfigured'));
       } else {
-        setLocalError(t("errors.uploadFailed"));
+        setLocalError(t('errors.uploadFailed'));
       }
     } finally {
       setBusy(false);
@@ -115,13 +116,11 @@ export const MediaUploadField = ({
 
     try {
       const response = await listMediaAssets(context, page);
-      setLibraryItems((current) =>
-        append ? [...current, ...response.data] : response.data,
-      );
+      setLibraryItems((current) => (append ? [...current, ...response.data] : response.data));
       setLibraryPage(response.meta.page);
       setLibraryTotalPages(response.meta.totalPages);
     } catch {
-      setLocalError(t("errors.uploadFailed"));
+      setLocalError(t('errors.uploadFailed'));
     } finally {
       setLibraryLoading(false);
     }
@@ -136,20 +135,33 @@ export const MediaUploadField = ({
 
   return (
     <div className="flex flex-col gap-3">
-      <span className="text-sm font-medium text-ink">{label}</span>
+      <div className="flex items-center justify-between gap-2">
+        <span className="text-sm font-medium text-ink">{label}</span>
+        {allowClear && hasSelection ? (
+          <IconButton
+            type="button"
+            size="sm"
+            variant="ghost"
+            label={t('clear')}
+            disabled={busy}
+            className="shrink-0 text-danger hover:bg-danger/10 hover:text-danger"
+            onClick={() => {
+              setConfirmClearOpen(true);
+            }}
+          >
+            <Trash2 className="size-4" aria-hidden />
+          </IconButton>
+        ) : null}
+      </div>
       <div
         className={cn(
-          "rounded-sm border border-dashed border-border px-4 py-4",
-          busy && "opacity-70",
+          'rounded-sm border border-dashed border-border px-4 py-4',
+          busy && 'opacity-70',
         )}
       >
         {thumbnailUrl ? (
           <div className="mb-3 overflow-hidden rounded-sm border border-border bg-surface">
-            <img
-              src={thumbnailUrl}
-              alt=""
-              className="mx-auto max-h-56 w-full object-contain"
-            />
+            <img src={thumbnailUrl} alt="" className="mx-auto max-h-56 w-full object-contain" />
           </div>
         ) : null}
         <div className="flex flex-wrap items-center gap-2">
@@ -157,7 +169,7 @@ export const MediaUploadField = ({
             htmlFor={inputId}
             className="inline-flex cursor-pointer items-center rounded-sm border border-border px-3 py-2 text-sm font-medium text-ink hover:bg-surface-muted"
           >
-            {busy ? t("uploading") : thumbnailUrl ? t("replace") : t("browse")}
+            {busy ? t('uploading') : thumbnailUrl ? t('replace') : t('browse')}
           </label>
           <input
             id={inputId}
@@ -167,7 +179,7 @@ export const MediaUploadField = ({
             disabled={busy}
             onChange={(event) => {
               const file = event.target.files?.[0];
-              event.target.value = "";
+              event.target.value = '';
               if (file) {
                 void handleUpload(file);
               }
@@ -182,21 +194,10 @@ export const MediaUploadField = ({
               void openLibrary();
             }}
           >
-            {t("useExisting")}
+            {t('useExisting')}
           </Button>
-          {allowClear && hasSelection ? (
-            <Button
-              type="button"
-              size="sm"
-              variant="ghost"
-              disabled={busy}
-              onClick={clearSelection}
-            >
-              {t("clear")}
-            </Button>
-          ) : null}
         </div>
-        <p className="mt-2 text-xs text-ink-muted">{t("hint")}</p>
+        <p className="mt-2 text-xs text-ink-muted">{t('hint')}</p>
       </div>
       {showLibrary ? (
         <LibraryPanel
@@ -221,6 +222,18 @@ export const MediaUploadField = ({
           {displayError}
         </p>
       ) : null}
+
+      <AdminDeleteModal
+        open={confirmClearOpen}
+        title={t('removeConfirmTitle')}
+        message={t('removeConfirmMessage')}
+        confirmLabel={t('remove')}
+        cancelLabel={tCommon('cancel')}
+        onCancel={() => {
+          setConfirmClearOpen(false);
+        }}
+        onConfirm={clearSelection}
+      />
     </div>
   );
 };
@@ -244,18 +257,18 @@ const LibraryPanel = ({
   onLoadMore,
   onClose,
 }: LibraryPanelProps) => {
-  const t = useTranslations("Media.upload");
+  const t = useTranslations('Media.upload');
 
   return (
     <div className="rounded-sm border border-border p-3">
       <div className="mb-3 flex items-center justify-between gap-2">
-        <h3 className="text-sm font-semibold text-ink">{t("libraryTitle")}</h3>
+        <h3 className="text-sm font-semibold text-ink">{t('libraryTitle')}</h3>
         <Button type="button" size="sm" variant="ghost" onClick={onClose}>
-          {t("closeLibrary")}
+          {t('closeLibrary')}
         </Button>
       </div>
       {items.length === 0 && !loading ? (
-        <p className="text-sm text-ink-secondary">{t("emptyLibrary")}</p>
+        <p className="text-sm text-ink-secondary">{t('emptyLibrary')}</p>
       ) : (
         <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
           {items.map((item) => (
@@ -263,14 +276,14 @@ const LibraryPanel = ({
               key={item.id}
               type="button"
               className={cn(
-                "overflow-hidden rounded-sm border border-border",
-                selectedId === item.id && "ring-2 ring-brand",
+                'overflow-hidden rounded-sm border border-border',
+                selectedId === item.id && 'ring-2 ring-brand',
               )}
               onClick={() => onSelect(item)}
             >
               <img
                 src={item.fileUrl}
-                alt={item.title ?? ""}
+                alt={item.title ?? ''}
                 className="aspect-square h-full w-full object-cover"
               />
             </button>
@@ -286,7 +299,7 @@ const LibraryPanel = ({
           disabled={loading}
           onClick={onLoadMore}
         >
-          {loading ? t("loadingLibrary") : t("loadMore")}
+          {loading ? t('loadingLibrary') : t('loadMore')}
         </Button>
       ) : null}
     </div>

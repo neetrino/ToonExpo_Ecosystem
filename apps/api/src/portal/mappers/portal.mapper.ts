@@ -119,6 +119,13 @@ type ApartmentRow = {
     thumbnailUrl: string | null;
     altText: string | null;
   } | null;
+  tinderMediaId: string | null;
+  tinderMedia?: {
+    id: string;
+    fileUrl: string;
+    thumbnailUrl: string | null;
+    altText: string | null;
+  } | null;
   galleryImages?: Array<{
     sortOrder: number;
     mediaAsset: {
@@ -283,6 +290,15 @@ export const mapPortalApartment = (
         fileUrl: apartment.coverMedia.fileUrl,
         thumbnailUrl: apartment.coverMedia.thumbnailUrl,
         altText: apartment.coverMedia.altText,
+      }
+    : null,
+  tinderMediaId: apartment.tinderMediaId,
+  tinder: apartment.tinderMedia
+    ? {
+        id: apartment.tinderMedia.id,
+        fileUrl: apartment.tinderMedia.fileUrl,
+        thumbnailUrl: apartment.tinderMedia.thumbnailUrl,
+        altText: apartment.tinderMedia.altText,
       }
     : null,
   gallery: (apartment.galleryImages ?? []).map((row) => ({

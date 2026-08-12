@@ -136,6 +136,9 @@ export type PortalApartmentDetail = {
   plan: MediaAssetSummary | null;
   coverMediaId: string | null;
   cover: MediaAssetSummary | null;
+  /** Discover / Tinder swipe-card image. */
+  tinderMediaId: string | null;
+  tinder: MediaAssetSummary | null;
   /** Ordered gallery photos; main cover is also listed here when set. */
   gallery: MediaAssetSummary[];
   createdAt: string;
@@ -253,6 +256,7 @@ export type CreatePortalApartmentRequest = {
   features?: unknown;
   planMediaId?: string;
   coverMediaId?: string;
+  tinderMediaId?: string;
   /** Ordered gallery media ids; when set with create, cover should be one of them (or first). */
   galleryMediaIds?: string[];
   salesStatus?: ApartmentSalesStatus;
@@ -277,6 +281,7 @@ export type UpdatePortalApartmentRequest = {
   features?: unknown;
   planMediaId?: string | null;
   coverMediaId?: string | null;
+  tinderMediaId?: string | null;
   /** Replace ordered gallery; coverMediaId must be in this list when both are sent. */
   galleryMediaIds?: string[];
   salesStatus?: ApartmentSalesStatus;

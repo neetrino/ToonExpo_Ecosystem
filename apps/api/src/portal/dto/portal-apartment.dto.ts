@@ -135,6 +135,11 @@ export class CreatePortalApartmentDto {
   @IsString()
   coverMediaId?: string;
 
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  tinderMediaId?: string;
+
   @ApiPropertyOptional({ type: [String] })
   @IsOptional()
   @IsArray()
@@ -267,6 +272,12 @@ export class UpdatePortalApartmentDto {
   @ValidateIf((_, value) => value !== null)
   @IsString()
   coverMediaId?: string | null;
+
+  @ApiPropertyOptional({ nullable: true })
+  @IsOptional()
+  @ValidateIf((_, value) => value !== null)
+  @IsString()
+  tinderMediaId?: string | null;
 
   @ApiPropertyOptional({ type: [String] })
   @IsOptional()

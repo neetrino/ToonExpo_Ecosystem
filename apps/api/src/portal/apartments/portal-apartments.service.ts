@@ -37,6 +37,7 @@ const APARTMENT_MEDIA_SELECT = {
 const APARTMENT_DETAIL_INCLUDE = {
   planMedia: { select: APARTMENT_MEDIA_SELECT },
   coverMedia: { select: APARTMENT_MEDIA_SELECT },
+  tinderMedia: { select: APARTMENT_MEDIA_SELECT },
   ...apartmentGalleryInclude,
   floor: {
     select: {
