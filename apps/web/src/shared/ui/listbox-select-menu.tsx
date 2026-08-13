@@ -4,6 +4,7 @@ import { Check, ChevronDown } from 'lucide-react';
 import type { FocusEventHandler, ReactNode, RefObject } from 'react';
 
 import { cn } from '@/shared/ui/cn';
+import { SelectionMark } from '@/shared/ui/multi-listbox-selection-mark';
 
 export type ListboxOption = {
   value: string;
@@ -43,6 +44,7 @@ export const ListboxMenuOptions = ({
           key={option.value}
           option={option}
           active={selectedIds.includes(option.value)}
+          multiple={multiple}
           action={optionAction?.(option)}
           onPick={onPick}
         />
@@ -55,11 +57,18 @@ export const ListboxMenuOptions = ({
 type ListboxOptionItemProps = {
   option: ListboxOption;
   active: boolean;
+  multiple: boolean;
   action: ReactNode | undefined;
   onPick: (value: string) => void;
 };
 
-const ListboxOptionItem = ({ option, active, action, onPick }: ListboxOptionItemProps) => {
+const ListboxOptionItem = ({
+  option,
+  active,
+  multiple,
+  action,
+  onPick,
+}: ListboxOptionItemProps) => {
   const control = (
     <button
       type="button"
@@ -70,8 +79,9 @@ const ListboxOptionItem = ({ option, active, action, onPick }: ListboxOptionItem
         onPick(option.value);
       }}
     >
-      <span>{option.label}</span>
-      {active ? <Check className="site-select-option__check" aria-hidden /> : null}
+      {multiple ? <SelectionMark checked={active} shape="circle" /> : null}
+      <span className={multiple ? 'min-w-0 flex-1 truncate' : undefined}>{option.label}</span>
+      {!multiple && active ? <Check className="site-select-option__check" aria-hidden /> : null}
     </button>
   );
 

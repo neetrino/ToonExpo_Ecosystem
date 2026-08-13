@@ -7,12 +7,14 @@ import { cn } from '@/shared/ui/cn';
 
 type SelectionMarkProps = {
   checked: boolean;
+  shape?: 'square' | 'circle' | undefined;
 };
 
-export const SelectionMark = ({ checked }: SelectionMarkProps) => (
+export const SelectionMark = ({ checked, shape = 'square' }: SelectionMarkProps) => (
   <span
     className={cn(
       HERO_FILTER_CHECK_CLASS.box,
+      shape === 'circle' && 'rounded-full',
       checked ? HERO_FILTER_CHECK_CLASS.checked : HERO_FILTER_CHECK_CLASS.unchecked,
     )}
     aria-hidden
