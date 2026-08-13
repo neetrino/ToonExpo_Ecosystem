@@ -3,6 +3,9 @@
     "close": "Закрыть",
     "cancel": "Отмена",
     "delete": "Удалить",
+    "deleteConfirmTitle": "Удалить",
+    "deleteConfirmMessage": "Вы уверены, что хотите удалить это? Действие нельзя отменить.",
+    "deleteConfirmNamedMessage": "Вы уверены, что хотите удалить «{name}»? Действие нельзя отменить.",
     "integratedSearch": {
       "apply": "Применить",
       "reset": "Сбросить",
@@ -1339,6 +1342,8 @@
       "moveUp": "Вверх",
       "moveDown": "Вниз",
       "remove": "Удалить",
+      "removeConfirmTitle": "Удалить баннер",
+      "removeConfirmMessage": "Удалить этот баннер из ротации на главной?",
       "save": "Сохранить баннеры",
       "saving": "Сохранение…",
       "resetDefault": "Вернуть по умолчанию",
@@ -3101,6 +3106,7 @@
         "archive": "В архив",
         "delete": "Удалить",
         "deleteConfirm": "Удалить этот черновик проекта? Действие необратимо.",
+        "deleteConfirmTitle": "Удалить проект",
         "publicationSuccess": "Статус публикации обновлён"
       }
     },

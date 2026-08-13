@@ -8,7 +8,7 @@ import type {
 } from "@toonexpo/contracts";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import { usePortalFloorApartmentsQuery } from "@/features/builder/hooks/use-portal-inventory";
@@ -19,6 +19,7 @@ import {
   type VisualHotspotFormValues,
 } from "@/features/visual-map/schemas/visual-map.schema";
 import { Button } from "@/shared/ui/button";
+import { ConfirmDeleteModal } from "@/shared/ui/confirm-delete-modal";
 import { FormField } from "@/shared/ui/form-field";
 import { Input } from "@/shared/ui/input";
 
@@ -48,6 +49,7 @@ export const PortalHotspotForm = ({
 }: PortalHotspotFormProps) => {
   const t = useTranslations("Builder.visualMap.editor.hotspotForm");
   const isEdit = initial != null;
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const defaultTargetType = targetTypeForContext(contextType);
 
   const form = useForm<VisualHotspotFormInput, unknown, VisualHotspotFormValues>({
@@ -111,6 +113,7 @@ export const PortalHotspotForm = ({
   const showTargetWarning = targetStatus != null && targetStatus !== "ok";
 
   return (
+    <>
     <form
       className="flex flex-col gap-3"
       onSubmit={form.handleSubmit(async (values) => {
@@ -205,7 +208,7 @@ export const PortalHotspotForm = ({
             variant="ghost"
             disabled={isBusy}
             onClick={() => {
-              void onDelete();
+              setConfirmOpen(true);
             }}
           >
             {t("delete")}
@@ -213,6 +216,24 @@ export const PortalHotspotForm = ({
         ) : null}
       </div>
     </form>
+    <ConfirmDeleteModal
+      open={confirmOpen}
+      confirming={isBusy}
+      onCancel={() => {
+        if (!isBusy) {
+          setConfirmOpen(false);
+        }
+      }}
+      onConfirm={() => {
+        if (!onDelete || isBusy) {
+          return;
+        }
+        void onDelete().then(() => {
+          setConfirmOpen(false);
+        });
+      }}
+    />
+    </>
   );
 };
 

@@ -16,6 +16,7 @@ import {
 import { MediaUploadField } from '@/features/media/components/media-upload-field';
 import { Button } from '@/shared/ui/button';
 import { Card } from '@/shared/ui/card';
+import { ConfirmDeleteModal } from '@/shared/ui/confirm-delete-modal';
 import { cn } from '@/shared/ui/cn';
 import { useSuccessToast } from '@/shared/ui/use-success-toast';
 
@@ -33,6 +34,7 @@ export const AdminHomeBannerPage = () => {
   const [error, setError] = useState<string | null>(null);
   const { showSuccess, successToast } = useSuccessToast();
   const [dirty, setDirty] = useState(false);
+  const [pendingRemoveId, setPendingRemoveId] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -231,7 +233,7 @@ export const AdminHomeBannerPage = () => {
                           size="sm"
                           variant="ghost"
                           disabled={busy}
-                          onClick={() => removeSlide(slide.mediaAssetId)}
+                          onClick={() => setPendingRemoveId(slide.mediaAssetId)}
                         >
                           {t('remove')}
                         </Button>
@@ -287,6 +289,19 @@ export const AdminHomeBannerPage = () => {
         </div>
       )}
       {successToast}
+      <ConfirmDeleteModal
+        open={pendingRemoveId != null}
+        title={t('removeConfirmTitle')}
+        message={t('removeConfirmMessage')}
+        confirmLabel={t('remove')}
+        onCancel={() => setPendingRemoveId(null)}
+        onConfirm={() => {
+          if (pendingRemoveId) {
+            removeSlide(pendingRemoveId);
+          }
+          setPendingRemoveId(null);
+        }}
+      />
     </div>
   );
 };

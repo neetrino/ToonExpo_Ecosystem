@@ -4,6 +4,9 @@ import type { AdminServiceProviderItem } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
+import { useDeleteConfirm } from '@/shared/hooks/use-delete-confirm';
+import { ConfirmDeleteModal } from '@/shared/ui/confirm-delete-modal';
+
 import {
   ServiceProvidersProvidersSection,
   type ServiceProviderFilters,
@@ -25,6 +28,8 @@ import {
  */
 export const ServiceProvidersPage = () => {
   const t = useTranslations('Admin.serviceProviders');
+  const tCommon = useTranslations('Common');
+  const deleteConfirm = useDeleteConfirm<AdminServiceProviderItem>();
   const categoriesQuery = useAdminServiceProviderCategoriesQuery();
 
   const [providerFilters, setProviderFilters] = useState<ServiceProviderFilters>({
@@ -89,7 +94,10 @@ export const ServiceProvidersPage = () => {
           setCreatingProvider(false);
         }}
         onDelete={(id) => {
-          void deleteProviderMutation.mutateAsync(id);
+          const provider = providers.find((item) => item.id === id);
+          if (provider) {
+            deleteConfirm.request(provider);
+          }
         }}
         onDone={() => {
           setCreatingProvider(false);
@@ -105,6 +113,28 @@ export const ServiceProvidersPage = () => {
           });
         }}
         busy={busy}
+      />
+      <ConfirmDeleteModal
+        open={deleteConfirm.open}
+        message={
+          deleteConfirm.pending
+            ? tCommon('deleteConfirmNamedMessage', { name: deleteConfirm.pending.name })
+            : undefined
+        }
+        confirming={deleteProviderMutation.isPending}
+        onCancel={() => {
+          if (!deleteProviderMutation.isPending) {
+            deleteConfirm.cancel();
+          }
+        }}
+        onConfirm={() => {
+          if (deleteProviderMutation.isPending) {
+            return;
+          }
+          void deleteConfirm.run(async (provider) => {
+            await deleteProviderMutation.mutateAsync(provider.id);
+          });
+        }}
       />
     </div>
   );

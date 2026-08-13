@@ -3,6 +3,9 @@
     "close": "Close",
     "cancel": "Cancel",
     "delete": "Delete",
+    "deleteConfirmTitle": "Delete",
+    "deleteConfirmMessage": "Are you sure you want to delete this? This cannot be undone.",
+    "deleteConfirmNamedMessage": "Are you sure you want to delete \"{name}\"? This cannot be undone.",
     "integratedSearch": {
       "apply": "Apply",
       "reset": "Reset",
@@ -1339,6 +1342,8 @@
       "moveUp": "Up",
       "moveDown": "Down",
       "remove": "Remove",
+      "removeConfirmTitle": "Remove banner",
+      "removeConfirmMessage": "Remove this banner from the homepage rotation?",
       "save": "Save banners",
       "saving": "Saving…",
       "resetDefault": "Restore default",
@@ -3361,6 +3366,7 @@
         "archive": "Archive",
         "delete": "Delete",
         "deleteConfirm": "Delete this draft project? This cannot be undone.",
+        "deleteConfirmTitle": "Delete project",
         "publicationSuccess": "Publication status updated"
       }
     },

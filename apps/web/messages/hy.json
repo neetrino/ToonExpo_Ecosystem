@@ -3,6 +3,9 @@
     "close": "Փակել",
     "cancel": "Չեղարկել",
     "delete": "Ջնջել",
+    "deleteConfirmTitle": "Ջնջել",
+    "deleteConfirmMessage": "Համոզվա՞ծ եք, որ ուզում եք ջնջել սա։ Սա հնարավոր չէ հետարկել։",
+    "deleteConfirmNamedMessage": "Համոզվա՞ծ եք, որ ուզում եք ջնջել «{name}»-ը։ Սա հնարավոր չէ հետարկել։",
     "integratedSearch": {
       "apply": "Կիրառել",
       "reset": "Մաքրել",
@@ -1339,6 +1342,8 @@
       "moveUp": "Վերև",
       "moveDown": "Ներքև",
       "remove": "Հեռացնել",
+      "removeConfirmTitle": "Հեռացնել banner-ը",
+      "removeConfirmMessage": "Հեռացնե՞լ այս banner-ը գլխավոր էջի պտույտից։",
       "save": "Պահպանել banner-ները",
       "saving": "Պահպանվում է…",
       "resetDefault": "Վերականգնել լռելյայնը",
@@ -3101,6 +3106,7 @@
         "archive": "Արխիվացնել",
         "delete": "Ջնջել",
         "deleteConfirm": "Ջնջե՞լ այս սևագիր նախագիծը։ Գործողությունն անդառնալի է։",
+        "deleteConfirmTitle": "Ջնջել նախագիծը",
         "publicationSuccess": "Հրապարակման կարգավիճակը թարմացված է"
       }
     },

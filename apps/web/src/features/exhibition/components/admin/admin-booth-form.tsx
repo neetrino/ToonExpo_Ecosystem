@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { BoothSummary } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import {
@@ -16,6 +16,7 @@ import {
   type BoothFormValues,
 } from '@/features/exhibition/schemas/exhibition.schema';
 import { Button } from '@/shared/ui/button';
+import { ConfirmDeleteModal } from '@/shared/ui/confirm-delete-modal';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
 import { Select } from '@/shared/ui/select';
@@ -40,6 +41,7 @@ export const AdminBoothForm = ({
 }: AdminBoothFormProps) => {
   const t = useTranslations('Admin.events.booths.form');
   const isEdit = initial != null;
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   const form = useForm<BoothFormInput, unknown, BoothFormValues>({
     resolver: zodResolver(boothFormSchema),
@@ -73,6 +75,7 @@ export const AdminBoothForm = ({
   }, [pickedCoordinates, form]);
 
   return (
+    <>
     <form
       className="flex flex-col gap-3"
       onSubmit={form.handleSubmit(async (values) => {
@@ -155,7 +158,7 @@ export const AdminBoothForm = ({
             variant="ghost"
             disabled={isBusy}
             onClick={() => {
-              void onDelete();
+              setConfirmOpen(true);
             }}
           >
             {t('delete')}
@@ -163,5 +166,23 @@ export const AdminBoothForm = ({
         ) : null}
       </div>
     </form>
+    <ConfirmDeleteModal
+      open={confirmOpen}
+      confirming={isBusy}
+      onCancel={() => {
+        if (!isBusy) {
+          setConfirmOpen(false);
+        }
+      }}
+      onConfirm={() => {
+        if (!onDelete || isBusy) {
+          return;
+        }
+        void onDelete().then(() => {
+          setConfirmOpen(false);
+        });
+      }}
+    />
+    </>
   );
 };

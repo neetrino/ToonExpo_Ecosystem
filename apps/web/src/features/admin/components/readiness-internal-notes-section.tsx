@@ -10,6 +10,7 @@ import {
 } from "@/features/admin/hooks/use-admin-readiness";
 import { formatReadinessDate } from "@/features/readiness/utils/format-readiness-date";
 import { Button } from "@/shared/ui/button";
+import { ConfirmDeleteModal } from "@/shared/ui/confirm-delete-modal";
 import { FormField } from "@/shared/ui/form-field";
 import { Textarea } from "@/shared/ui/textarea";
 
@@ -31,6 +32,7 @@ export const ReadinessInternalNotesSection = ({
   const deleteMutation = useDeleteReadinessInternalNoteMutation(assessmentId);
   const [body, setBody] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
 
   const onAdd = async () => {
     setError(null);
@@ -47,11 +49,9 @@ export const ReadinessInternalNotesSection = ({
   };
 
   const onDelete = async (noteId: string) => {
-    if (!window.confirm(t("deleteConfirm"))) {
-      return;
-    }
     try {
       await deleteMutation.mutateAsync(noteId);
+      setPendingDeleteId(null);
     } catch {
       setError(t("errors.generic"));
     }
@@ -81,7 +81,7 @@ export const ReadinessInternalNotesSection = ({
                 variant="ghost"
                 disabled={deleteMutation.isPending}
                 onClick={() => {
-                  void onDelete(note.id);
+                  setPendingDeleteId(note.id);
                 }}
               >
                 {t("delete")}
@@ -116,6 +116,22 @@ export const ReadinessInternalNotesSection = ({
       >
         {createMutation.isPending ? t("adding") : t("add")}
       </Button>
+      <ConfirmDeleteModal
+        open={pendingDeleteId != null}
+        message={t("deleteConfirm")}
+        confirming={deleteMutation.isPending}
+        onCancel={() => {
+          if (!deleteMutation.isPending) {
+            setPendingDeleteId(null);
+          }
+        }}
+        onConfirm={() => {
+          if (!pendingDeleteId || deleteMutation.isPending) {
+            return;
+          }
+          void onDelete(pendingDeleteId);
+        }}
+      />
     </section>
   );
 };

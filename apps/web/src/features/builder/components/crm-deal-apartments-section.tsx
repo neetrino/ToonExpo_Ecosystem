@@ -15,6 +15,7 @@ import {
   usePortalProjectsQuery,
 } from '@/features/builder/hooks/use-portal-projects';
 import { Button } from '@/shared/ui/button';
+import { ConfirmDeleteModal } from '@/shared/ui/confirm-delete-modal';
 import { FormField } from '@/shared/ui/form-field';
 import { Select } from '@/shared/ui/select';
 import { useSuccessToast } from '@/shared/ui/use-success-toast';
@@ -38,6 +39,7 @@ export const CrmDealApartmentsSection = ({ deal }: CrmDealApartmentsSectionProps
   const [apartments, setApartments] = useState<ApartmentOption[]>([]);
   const [loadingApartments, setLoadingApartments] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [pendingUnlink, setPendingUnlink] = useState<{ id: string; label: string } | null>(null);
   const { showSuccess, successToast } = useSuccessToast();
 
   const projectQuery = usePortalProjectQuery(projectId);
@@ -101,14 +103,12 @@ export const CrmDealApartmentsSection = ({ deal }: CrmDealApartmentsSectionProps
     }
   };
 
-  const onUnlink = async (linkedApartmentId: string, label: string) => {
+  const onUnlink = async (linkedApartmentId: string) => {
     setError(null);
-    if (!window.confirm(t('unlinkConfirm', { apartment: label }))) {
-      return;
-    }
     try {
       await detachMutation.mutateAsync(linkedApartmentId);
       showSuccess(t('unlinkSuccess'));
+      setPendingUnlink(null);
     } catch {
       setError(t('errors.unlinkBlocked'));
     }
@@ -144,7 +144,7 @@ export const CrmDealApartmentsSection = ({ deal }: CrmDealApartmentsSectionProps
                   variant="ghost"
                   disabled={busy}
                   onClick={() => {
-                    void onUnlink(link.apartmentId, label);
+                    setPendingUnlink({ id: link.apartmentId, label });
                   }}
                 >
                   {t('unlinkApartment')}
@@ -212,6 +212,25 @@ export const CrmDealApartmentsSection = ({ deal }: CrmDealApartmentsSectionProps
       >
         {attachMutation.isPending ? t('saving') : t('linkApartmentAction')}
       </Button>
+      <ConfirmDeleteModal
+        open={pendingUnlink != null}
+        message={
+          pendingUnlink ? t('unlinkConfirm', { apartment: pendingUnlink.label }) : undefined
+        }
+        confirming={detachMutation.isPending}
+        confirmLabel={t('unlinkApartment')}
+        onCancel={() => {
+          if (!detachMutation.isPending) {
+            setPendingUnlink(null);
+          }
+        }}
+        onConfirm={() => {
+          if (!pendingUnlink || detachMutation.isPending) {
+            return;
+          }
+          void onUnlink(pendingUnlink.id);
+        }}
+      />
     </section>
   );
 };

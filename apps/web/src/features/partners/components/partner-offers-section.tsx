@@ -24,6 +24,8 @@ import { Input } from '@/shared/ui/input';
 import { Select } from '@/shared/ui/select';
 import { Textarea } from '@/shared/ui/textarea';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
+import { ConfirmDeleteModal } from '@/shared/ui/confirm-delete-modal';
+import { useDeleteConfirm } from '@/shared/hooks/use-delete-confirm';
 
 type PartnerOffersSectionProps = {
   offers: PartnerOfferItem[];
@@ -44,8 +46,10 @@ export const PartnerOffersSection = ({
   isBusy = false,
 }: PartnerOffersSectionProps) => {
   const t = useTranslations('Partners.offers');
+  const tCommon = useTranslations('Common');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showCreate, setShowCreate] = useState(false);
+  const deleteConfirm = useDeleteConfirm<PartnerOfferItem>();
 
   return (
     <section className="flex flex-col gap-4">
@@ -103,7 +107,7 @@ export const PartnerOffersSection = ({
                     variant="ghost"
                     disabled={isBusy}
                     onClick={() => {
-                      void onDelete(offer.id);
+                      deleteConfirm.request(offer);
                     }}
                   >
                     {t('delete')}
@@ -158,6 +162,29 @@ export const PartnerOffersSection = ({
           />
         </div>
       ) : null}
+
+      <ConfirmDeleteModal
+        open={deleteConfirm.open}
+        message={
+          deleteConfirm.pending
+            ? tCommon('deleteConfirmNamedMessage', { name: deleteConfirm.pending.title })
+            : undefined
+        }
+        confirming={isBusy}
+        onCancel={() => {
+          if (!isBusy) {
+            deleteConfirm.cancel();
+          }
+        }}
+        onConfirm={() => {
+          if (isBusy) {
+            return;
+          }
+          void deleteConfirm.run(async (offer) => {
+            await onDelete(offer.id);
+          });
+        }}
+      />
     </section>
   );
 };
