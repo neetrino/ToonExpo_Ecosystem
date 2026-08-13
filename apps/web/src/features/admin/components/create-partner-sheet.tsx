@@ -17,6 +17,7 @@ import { AdminCreateSheet } from '@/shared/ui/admin-create-sheet';
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
+import { PhoneFormControl } from '@/shared/ui/phone-form-control';
 import { Select } from '@/shared/ui/select';
 
 type CreatePartnerSheetProps = {
@@ -177,13 +178,13 @@ export const CreatePartnerSheet = ({ open, onClose }: CreatePartnerSheetProps) =
             label={t('adminPhone')}
             error={form.formState.errors.adminPhone ? t('validation.adminPhone') : undefined}
           >
-            <Input
+            <PhoneFormControl
+              control={form.control}
+              name="adminPhone"
               id="adminPhone"
-              type="tel"
               autoComplete="tel"
               placeholder={t('placeholders.adminPhone')}
               aria-invalid={Boolean(form.formState.errors.adminPhone)}
-              {...form.register('adminPhone')}
             />
           </FormField>
         </fieldset>

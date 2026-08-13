@@ -130,6 +130,7 @@ export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
       </FormField>
 
       <CompanyContactFields
+        control={control}
         register={register}
         errors={errors}
         idPrefix="edit-company"

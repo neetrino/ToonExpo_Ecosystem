@@ -18,8 +18,9 @@ import { useRouter } from '@/i18n/navigation';
 import { getAccountInitials } from '@/shared/lib/account-initials';
 import { cn } from '@/shared/ui/cn';
 import { IconButton } from '@/shared/ui/icon-button';
+import { isBlankPhone } from '@/shared/lib/phone';
 import { Input } from '@/shared/ui/input';
-import { PhoneInput } from '@/shared/ui/phone-input';
+import { PhoneFormControl } from '@/shared/ui/phone-form-control';
 
 type AccountProfileBannerProps = {
   user: UserResponse;
@@ -81,13 +82,8 @@ const EditActions = ({ busy, onCancel }: EditActionsProps) => {
   );
 };
 
-const normalizePhoneForSubmit = (phone: string): string => {
-  const trimmed = phone.trim();
-  if (trimmed.length === 0 || trimmed === '+') {
-    return '';
-  }
-  return trimmed;
-};
+const normalizePhoneForSubmit = (phone: string): string =>
+  isBlankPhone(phone) ? '' : phone.trim();
 
 /**
  * Unified account identity banner with inline profile editing.
@@ -222,18 +218,11 @@ export const AccountProfileBanner = ({ user, className }: AccountProfileBannerPr
           <BannerDetail icon={Phone} label={t('fields.phone')}>
             {isEditing ? (
               <>
-                <Controller
-                  name="phone"
+                <PhoneFormControl
                   control={control}
-                  render={({ field }) => (
-                    <PhoneInput
-                      id="profile-inline-phone"
-                      value={field.value}
-                      onChange={field.onChange}
-                      onBlur={field.onBlur}
-                      aria-invalid={Boolean(errors.phone)}
-                    />
-                  )}
+                  name="phone"
+                  id="profile-inline-phone"
+                  aria-invalid={Boolean(errors.phone)}
                 />
                 {errors.phone ? (
                   <p role="alert" className="mt-1 text-xs text-danger">

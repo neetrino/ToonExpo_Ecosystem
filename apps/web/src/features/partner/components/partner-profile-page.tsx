@@ -93,6 +93,7 @@ const PartnerProfileForm = ({ partner }: PartnerProfileFormProps) => {
 
       <form className="flex flex-col gap-6" onSubmit={onSubmit}>
         <PartnerProfileFields
+          control={form.control}
           register={form.register}
           errors={form.formState.errors}
           readOnlyMeta

@@ -11,10 +11,12 @@ import {
   inviteMemberSchema,
   type InviteMemberFormValues,
 } from '@/features/builder/schemas/team.schema';
+import { toOptionalPhone } from '@/shared/lib/phone';
 import { ApiError } from '@/shared/api/errors';
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
+import { PhoneFormControl } from '@/shared/ui/phone-form-control';
 import { Select } from '@/shared/ui/select';
 
 type InviteMemberFormProps = {
@@ -55,13 +57,14 @@ export const InviteMemberForm = ({ onSuccess }: InviteMemberFormProps) => {
 
   const onSubmit = handleSubmit(async (values) => {
     setFormError(null);
+    const phone = toOptionalPhone(values.phone);
     try {
       await mutation.mutateAsync({
         name: values.name,
         email: values.email,
         role: values.role,
         locale,
-        ...(values.phone.length > 0 ? { phone: values.phone } : {}),
+        ...(phone ? { phone } : {}),
       });
       reset();
       onSuccess(values.email);
@@ -93,7 +96,7 @@ export const InviteMemberForm = ({ onSuccess }: InviteMemberFormProps) => {
         label={t('form.phone')}
         error={errors.phone ? t('validation.phone') : undefined}
       >
-        <Input id="invite-phone" type="tel" {...register('phone')} />
+        <PhoneFormControl control={control} name="phone" id="invite-phone" />
       </FormField>
       <FormField id="invite-role" label={t('form.role')}>
         <Controller

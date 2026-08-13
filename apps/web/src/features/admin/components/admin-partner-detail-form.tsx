@@ -164,7 +164,11 @@ export const AdminPartnerDetailForm = ({ partnerId, partner }: AdminPartnerDetai
           </FormField>
         </div>
 
-        <PartnerProfileFields register={form.register} errors={form.formState.errors} />
+        <PartnerProfileFields
+          control={form.control}
+          register={form.register}
+          errors={form.formState.errors}
+        />
 
         <PartnerMediaFields
           control={form.control as unknown as Control<PartnerMediaFieldValues>}

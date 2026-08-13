@@ -15,6 +15,7 @@ import { PARTNER_PUBLICATION_STATUSES } from '@/features/partners/constants';
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
+import { PhoneFormControl } from '@/shared/ui/phone-form-control';
 import { Select } from '@/shared/ui/select';
 import { Textarea } from '@/shared/ui/textarea';
 
@@ -130,11 +131,11 @@ export const ServiceProviderForm = ({
         </legend>
         <div className="grid grid-cols-2 items-end gap-3">
           <FormField id="providerPhone" label={t('phone')}>
-            <Input
+            <PhoneFormControl
+              control={form.control}
+              name="phone"
               id="providerPhone"
-              type="tel"
               placeholder={t('placeholders.phone')}
-              {...form.register('phone')}
             />
           </FormField>
           <FormField id="providerEmail" label={t('email')}>

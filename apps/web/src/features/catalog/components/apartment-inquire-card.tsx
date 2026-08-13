@@ -11,9 +11,11 @@ import { useCreateBuyerRequestMutation } from '@/features/buyer/hooks/use-buyer'
 import { isNonBuyerStaff } from '@/features/buyer/utils/is-buyer-account';
 import { getAccountInitials } from '@/shared/lib/account-initials';
 import { Link, usePathname } from '@/i18n/navigation';
+import { isBlankPhone, sanitizePhoneInput } from '@/shared/lib/phone';
 import { cn } from '@/shared/ui/cn';
 import { Form } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
+import { PhoneInput } from '@/shared/ui/phone-input';
 import { Textarea } from '@/shared/ui/textarea';
 
 type ApartmentInquireCardProps = {
@@ -62,7 +64,9 @@ export const ApartmentInquireCard = ({
     }
     setName((current) => (current.trim() === '' ? user.name : current));
     setEmail((current) => (current.trim() === '' ? user.email : current));
-    setPhone((current) => (current.trim() === '' ? (user.phone ?? '') : current));
+    setPhone((current) =>
+      current.trim() === '' ? sanitizePhoneInput(user.phone ?? '') : current,
+    );
   }, [user]);
 
   useEffect(() => {
@@ -174,13 +178,12 @@ export const ApartmentInquireCard = ({
             className={FIELD_CLASS}
             required
           />
-          <Input
+          <PhoneInput
             name="phone"
-            type="tel"
             autoComplete="tel"
             placeholder={t('inquirePhonePlaceholder')}
             value={phone}
-            onChange={(event) => setPhone(event.target.value)}
+            onChange={setPhone}
             className={FIELD_CLASS}
           />
           <Textarea
@@ -247,7 +250,7 @@ const buildInquiryNote = (input: {
     input.message.trim(),
     input.name.trim() ? `Name: ${input.name.trim()}` : '',
     input.email.trim() ? `Email: ${input.email.trim()}` : '',
-    input.phone.trim() ? `Phone: ${input.phone.trim()}` : '',
+    isBlankPhone(input.phone) ? '' : `Phone: ${input.phone.trim()}`,
   ].filter((line) => line.length > 0);
   return lines.join('\n');
 };
