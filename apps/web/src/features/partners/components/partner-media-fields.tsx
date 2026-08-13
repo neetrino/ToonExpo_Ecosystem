@@ -42,6 +42,7 @@ export const PartnerMediaFields = ({
             value={field.value}
             onChange={field.onChange}
             previewUrl={logoPreviewUrl}
+            description={t("logoMediaHint")}
             error={fieldState.error?.message}
           />
         )}
@@ -57,6 +58,7 @@ export const PartnerMediaFields = ({
             value={field.value}
             onChange={field.onChange}
             previewUrl={coverPreviewUrl}
+            description={t("coverMediaHint")}
             error={fieldState.error?.message}
           />
         )}

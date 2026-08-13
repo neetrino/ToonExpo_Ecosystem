@@ -3730,7 +3730,9 @@
       "socialInstagram": "Instagram",
       "socialLinkedin": "LinkedIn",
       "logoMedia": "Լոգո",
+      "logoMediaHint": "Միայն լոգո է, քարտի նկարը չի փոխարինում։",
       "coverMedia": "Շապիկի նկար",
+      "coverMediaHint": "Ցուցադրվում է գործընկերոջ քարտի վրա և չի դառնում լոգո։",
       "validation": {
         "shortDescription": "Մուտքագրեք կարճ նկարագրություն հայերենով"
       }

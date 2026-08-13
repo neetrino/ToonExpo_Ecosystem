@@ -2903,7 +2903,9 @@
       "socialInstagram": "Instagram",
       "socialLinkedin": "LinkedIn",
       "logoMedia": "Logo",
+      "logoMediaHint": "Used only as the partner logo, not on the card.",
       "coverMedia": "Cover image",
+      "coverMediaHint": "Shown on the partner card. Does not replace the logo.",
       "validation": {
         "shortDescription": "Enter a short description in Armenian"
       }

@@ -3730,7 +3730,9 @@
       "socialInstagram": "Instagram",
       "socialLinkedin": "LinkedIn",
       "logoMedia": "Логотип",
+      "logoMediaHint": "Только логотип, не изображение карточки.",
       "coverMedia": "Обложка",
+      "coverMediaHint": "Показывается на карточке партнёра и не заменяет логотип.",
       "validation": {
         "shortDescription": "Введите краткое описание на армянском"
       }
