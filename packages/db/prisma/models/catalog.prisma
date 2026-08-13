@@ -61,6 +61,7 @@ model MediaAsset {
   apartmentGallery  ApartmentGalleryImage[]
   partnerLogos      PartnerCompany[] @relation("PartnerLogo")
   partnerCovers     PartnerCompany[] @relation("PartnerCover")
+  serviceProviderCategoryLogos ServiceProviderCategory[] @relation("ServiceProviderCategoryLogo")
   venueMaps                 VenueMap[]
   visualMapCanvases         VisualMapCanvas[]
   projectMapModels          ProjectMapModel[]

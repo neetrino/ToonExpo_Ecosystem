@@ -2239,6 +2239,7 @@
         "form": {
           "name": "Name",
           "description": "Description",
+          "logo": "Logo",
           "create": "Create category",
           "save": "Save",
           "cancel": "Cancel",

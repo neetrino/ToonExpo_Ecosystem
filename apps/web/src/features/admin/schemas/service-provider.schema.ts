@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { optionalMediaIdField } from "@/features/media/schemas/media-fields.schema";
 import { PARTNER_PUBLICATION_STATUSES } from "@/features/partners/constants";
 
 export const SERVICE_PROVIDER_NAME_MAX_LENGTH = 200;
@@ -25,6 +26,7 @@ export const serviceProviderCategorySchema = z.object({
     .string()
     .max(SERVICE_PROVIDER_CATEGORY_DESCRIPTION_MAX_LENGTH)
     .optional(),
+  logoMediaId: optionalMediaIdField,
 });
 
 export type ServiceProviderCategoryFormValues = z.infer<

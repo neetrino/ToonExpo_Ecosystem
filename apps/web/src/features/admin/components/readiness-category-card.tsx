@@ -2,8 +2,10 @@
 
 import type { ServiceProviderCategoryItem } from '@toonexpo/contracts';
 import { Tags } from 'lucide-react';
+import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 
+import { resolvePublicAssetUrl } from '@/shared/lib/static-asset-url';
 import { cn } from '@/shared/ui/cn';
 import {
   LIST_STATUS_BADGE_CLASS,
@@ -25,6 +27,7 @@ type ReadinessCategoryCardProps = {
 export const ReadinessCategoryCard = ({ category, onEdit }: ReadinessCategoryCardProps) => {
   const t = useTranslations('Admin.readiness.categories');
   const description = category.description?.trim() ?? '';
+  const logoUrl = resolvePublicAssetUrl(category.logoUrl);
 
   return (
     <button
@@ -40,10 +43,14 @@ export const ReadinessCategoryCard = ({ category, onEdit }: ReadinessCategoryCar
     >
       <div className="flex items-start justify-between gap-3">
         <span
-          className="flex size-12 shrink-0 items-center justify-center rounded-sm bg-brand-soft text-brand"
+          className="relative flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-sm bg-brand-soft text-brand"
           aria-hidden
         >
-          <Tags className="size-6" strokeWidth={1.75} />
+          {logoUrl ? (
+            <Image src={logoUrl} alt="" fill className="object-cover" sizes="48px" />
+          ) : (
+            <Tags className="size-6" strokeWidth={1.75} />
+          )}
         </span>
         <span
           className={cn(

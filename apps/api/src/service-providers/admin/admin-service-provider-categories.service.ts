@@ -5,8 +5,14 @@ import type {
 } from '@toonexpo/contracts';
 
 import { PrismaService } from '../../prisma/prisma.service.js';
-import { toServiceProviderCategoryItem } from '../mappers/service-provider.mapper.js';
-import { serviceProviderCategoryNotFound } from '../utils/service-provider-access.js';
+import {
+  serviceProviderCategoryInclude,
+  toServiceProviderCategoryItem,
+} from '../mappers/service-provider.mapper.js';
+import {
+  assertMediaAssetExists,
+  serviceProviderCategoryNotFound,
+} from '../utils/service-provider-access.js';
 import type { CreateServiceProviderCategoryDto } from './dto/service-provider-category.dto.js';
 import type { UpdateServiceProviderCategoryDto } from './dto/service-provider-category.dto.js';
 
@@ -16,6 +22,7 @@ export class AdminServiceProviderCategoriesService {
 
   async list(): Promise<ServiceProviderCategoryListResponse> {
     const rows = await this.prisma.db.serviceProviderCategory.findMany({
+      include: serviceProviderCategoryInclude,
       orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
     });
 
@@ -23,13 +30,19 @@ export class AdminServiceProviderCategoriesService {
   }
 
   async create(body: CreateServiceProviderCategoryDto): Promise<ServiceProviderCategoryItem> {
+    if (body.logoMediaId) {
+      await assertMediaAssetExists(this.prisma.db, body.logoMediaId);
+    }
+
     const category = await this.prisma.db.serviceProviderCategory.create({
       data: {
         name: body.name.trim(),
         description: body.description?.trim() || null,
         sortOrder: body.sortOrder ?? 0,
         active: body.active ?? true,
+        logoMediaId: body.logoMediaId?.trim() || null,
       },
+      include: serviceProviderCategoryInclude,
     });
 
     return toServiceProviderCategoryItem(category);
@@ -41,6 +54,10 @@ export class AdminServiceProviderCategoriesService {
   ): Promise<ServiceProviderCategoryItem> {
     await this.assertExists(id);
 
+    if (body.logoMediaId) {
+      await assertMediaAssetExists(this.prisma.db, body.logoMediaId);
+    }
+
     const category = await this.prisma.db.serviceProviderCategory.update({
       where: { id },
       data: {
@@ -50,7 +67,11 @@ export class AdminServiceProviderCategoriesService {
           : {}),
         ...(body.sortOrder !== undefined ? { sortOrder: body.sortOrder } : {}),
         ...(body.active !== undefined ? { active: body.active } : {}),
+        ...(body.logoMediaId !== undefined
+          ? { logoMediaId: body.logoMediaId?.trim() || null }
+          : {}),
       },
+      include: serviceProviderCategoryInclude,
     });
 
     return toServiceProviderCategoryItem(category);
@@ -66,7 +87,6 @@ export class AdminServiceProviderCategoriesService {
       where: { id },
       select: { id: true },
     });
-
     if (!category) {
       throw serviceProviderCategoryNotFound();
     }

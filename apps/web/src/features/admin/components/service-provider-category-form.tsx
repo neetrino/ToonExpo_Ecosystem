@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import type { ServiceProviderCategoryItem } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 
 import {
   useCreateServiceProviderCategoryMutation,
@@ -15,6 +15,8 @@ import {
   serviceProviderCategorySchema,
   type ServiceProviderCategoryFormValues,
 } from '@/features/admin/schemas/service-provider.schema';
+import { MediaUploadField } from '@/features/media/components/media-upload-field';
+import { toNullableMediaId, toOptionalMediaId } from '@/features/media/schemas/media-fields.schema';
 import { AdminDeleteModal } from '@/shared/ui/admin-delete-modal';
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
@@ -45,22 +47,25 @@ export const ServiceProviderCategoryForm = ({
     defaultValues: {
       name: category?.name ?? '',
       description: category?.description ?? '',
+      logoMediaId: category?.logoMediaId ?? '',
     },
   });
 
   const onSubmit = form.handleSubmit(async (values) => {
-    const payload = {
-      name: values.name,
-      description: values.description || null,
-      active: true,
-    };
+    const logoMediaId = toOptionalMediaId(values.logoMediaId);
     if (category) {
-      await updateMutation.mutateAsync(payload);
+      await updateMutation.mutateAsync({
+        name: values.name,
+        description: values.description || null,
+        active: true,
+        logoMediaId: toNullableMediaId(values.logoMediaId),
+      });
     } else {
       await createMutation.mutateAsync({
-        name: payload.name,
+        name: values.name,
         ...(values.description ? { description: values.description } : {}),
         active: true,
+        ...(logoMediaId ? { logoMediaId } : {}),
       });
     }
     onDone();
@@ -78,6 +83,21 @@ export const ServiceProviderCategoryForm = ({
         <FormField id="categoryDescription" label={t('description')}>
           <Textarea id="categoryDescription" rows={3} {...form.register('description')} />
         </FormField>
+        <Controller
+          control={form.control}
+          name="logoMediaId"
+          render={({ field, fieldState }) => (
+            <MediaUploadField
+              id="categoryLogo"
+              label={t('logo')}
+              context="admin"
+              value={field.value}
+              onChange={field.onChange}
+              previewUrl={category?.logoUrl}
+              error={fieldState.error?.message}
+            />
+          )}
+        />
         <div className="flex flex-wrap gap-2">
           <Button type="submit" size="sm" variant="primary" disabled={busy}>
             {category ? t('save') : t('create')}
