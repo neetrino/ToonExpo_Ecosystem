@@ -80,7 +80,7 @@ Anonymous public SSR/RSC GETs use Next.js Data Cache with tag-based purge on pub
 | Catalog list / builders                          | **1800s** (30 min)                                          | `catalog`                                                     |
 | Catalog project detail / visual-map / geo-map / venue-map | **0** (always fresh; tag purge when `WEB_REVALIDATE_*` set) | `catalog`, `catalog-project-<id>`, `visual-map`, `geo-map`, `exhibition` |
 | Legacy exhibition event/booths                   | **1800s** (30 min)                                          | `exhibition`                                                  |
-| Partners / mortgage offers                   | **3600s** (60 min)                                          | `partners`, `mortgage`                                        |
+| Partners / mortgage offers                   | **0** (always fresh; tag purge when `WEB_REVALIDATE_*` set) | `partners`, `mortgage`                                        |
 
 Authenticated/private data (buyer QR, favorites, portals, admin) is never shared-cached.
 
@@ -100,4 +100,4 @@ Webhook: `POST /api/revalidate` with header `x-revalidate-secret` and body `{ "t
 
 API purges catalog tags after **publication changes** and after **content/translation updates on published projects** (so Admin save is visible on the public site without waiting for TTL).
 
-If these envs are unset, project detail / visual-map / geo-map / venue-map still stay fresh via TTL **0**; list/partners stay TTL-only until natural expiry.
+If these envs are unset, project detail / visual-map / geo-map / venue-map / partners / mortgage still stay fresh via TTL **0**; catalog lists stay TTL-only until natural expiry.

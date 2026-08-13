@@ -181,7 +181,11 @@ export class AdminPartnersService {
 
     await upsertPartnerProfileTranslations(this.prisma.db, id, userId, dto.translations);
 
-    if (dto.publicationStatus !== undefined) {
+    if (
+      dto.publicationStatus !== undefined ||
+      dto.status !== undefined ||
+      dto.featured !== undefined
+    ) {
       this.webRevalidation.revalidatePartners();
     }
 
