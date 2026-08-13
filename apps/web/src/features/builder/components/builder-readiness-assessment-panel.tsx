@@ -165,8 +165,7 @@ export const BuilderReadinessAssessmentPanel = ({
         />
       </div>
 
-      {expanded ? (
-        <div id={detailId} className="flex flex-col gap-8">
+      <div id={detailId} hidden={!expanded} className="flex flex-col gap-8">
           <div className="flex flex-col gap-8">
             {assessment.scores.map((score) => (
               <CategorySection key={score.categoryId} score={score} />
