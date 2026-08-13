@@ -7,6 +7,7 @@ import {
   type Prisma,
 } from '@toonexpo/db';
 
+import { TRANSLATION_ENTITY } from '../../catalog/utils/resolve-translation.js';
 import { CompanyProvisioningService } from '../../company/provisioning/company-provisioning.service.js';
 import { WebRevalidationService } from '../../common/web-revalidation/web-revalidation.service.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
@@ -185,6 +186,40 @@ export class AdminPartnersService {
     }
 
     return this.getById(id);
+  }
+
+  async remove(id: string): Promise<void> {
+    const partner = await this.prisma.db.partnerCompany.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        publicationStatus: true,
+        offers: { select: { id: true } },
+      },
+    });
+    if (!partner) {
+      throw partnerNotFound();
+    }
+
+    const offerIds = partner.offers.map((offer) => offer.id);
+
+    await this.prisma.db.$transaction(async (tx) => {
+      await tx.translation.deleteMany({
+        where: {
+          OR: [
+            { entityType: TRANSLATION_ENTITY.partnerCompany, entityId: id },
+            ...(offerIds.length > 0
+              ? [{ entityType: TRANSLATION_ENTITY.partnerOffer, entityId: { in: offerIds } }]
+              : []),
+          ],
+        },
+      });
+      await tx.partnerCompany.delete({ where: { id } });
+    });
+
+    if (partner.publicationStatus === PublicationStatus.published) {
+      this.webRevalidation.revalidatePartners();
+    }
   }
 
   async requirePartner(id: string) {

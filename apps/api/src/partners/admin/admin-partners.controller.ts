@@ -87,6 +87,14 @@ export class AdminPartnersController {
     return this.partners.update(id, user.id, body);
   }
 
+  @Delete(":id")
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: "Delete partner profile" })
+  @ApiNoContentResponse({ description: "Deleted" })
+  async remove(@Param("id") id: string): Promise<void> {
+    await this.partners.remove(id);
+  }
+
   @Post(":id/offers")
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({ summary: "Create partner offer" })

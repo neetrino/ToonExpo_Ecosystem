@@ -2134,6 +2134,9 @@
         "save": "Save changes",
         "saving": "Saving…",
         "saveSuccess": "Partner updated",
+        "delete": "Delete partner",
+        "deleteConfirmTitle": "Delete partner",
+        "deleteConfirmMessage": "Are you sure you want to delete this partner? This cannot be undone.",
         "errors": {
           "generic": "Something went wrong. Please try again."
         },

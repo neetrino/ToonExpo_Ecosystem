@@ -11,6 +11,7 @@ import type {
 import {
   createAdminPartner,
   createAdminPartnerOffer,
+  deleteAdminPartner,
   deleteAdminPartnerOffer,
   getAdminPartner,
   listAdminPartners,
@@ -86,6 +87,18 @@ export const useUpdatePartnerOfferMutation = (partnerId: string) => {
       void queryClient.invalidateQueries({
         queryKey: adminPartnerQueryKey(partnerId),
       });
+    },
+  });
+};
+
+export const useDeletePartnerMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => deleteAdminPartner(id),
+    onSuccess: (_data, id) => {
+      queryClient.removeQueries({ queryKey: adminPartnerQueryKey(id) });
+      void queryClient.invalidateQueries({ queryKey: ADMIN_PARTNERS_QUERY_KEY });
+      void queryClient.invalidateQueries({ queryKey: ADMIN_COMPANIES_QUERY_KEY });
     },
   });
 };
