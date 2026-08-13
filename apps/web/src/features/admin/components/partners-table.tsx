@@ -129,7 +129,7 @@ export const PartnersTable = ({
 
   if (viewMode === VIEW_MODE_CARDS) {
     return (
-      <AdminListCardGrid className="gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <AdminListCardGrid className="sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {partners.map((partner) => (
           <PartnerCard
             key={partner.id}
