@@ -13,7 +13,7 @@ import { Input } from "@/shared/ui/input";
 import { PhoneFormControl } from "@/shared/ui/phone-form-control";
 import { Textarea } from "@/shared/ui/textarea";
 
-type ProfileFormValues = PartnerProfileFormValues | UpdatePartnerFormValues;
+export type ProfileFormValues = PartnerProfileFormValues | UpdatePartnerFormValues;
 
 type PartnerProfileFieldsProps = {
   control: Control<ProfileFormValues>;

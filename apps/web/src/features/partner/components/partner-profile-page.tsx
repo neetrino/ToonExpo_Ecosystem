@@ -15,7 +15,10 @@ import {
   PartnerStatusBadge,
   PublicationStatusBadge,
 } from '@/features/partners/components/partner-badges';
-import { PartnerProfileFields } from '@/features/partners/components/partner-profile-fields';
+import {
+  PartnerProfileFields,
+  type ProfileFormValues,
+} from '@/features/partners/components/partner-profile-fields';
 import { PartnerMediaFields } from '@/features/partners/components/partner-media-fields';
 import type { PartnerMediaFieldValues } from '@/features/partners/components/partner-media-fields';
 import { PartnerTypeLabel } from '@/features/partners/components/partner-type-label';
@@ -93,7 +96,7 @@ const PartnerProfileForm = ({ partner }: PartnerProfileFormProps) => {
 
       <form className="flex flex-col gap-6" onSubmit={onSubmit}>
         <PartnerProfileFields
-          control={form.control}
+          control={form.control as unknown as Control<ProfileFormValues>}
           register={form.register}
           errors={form.formState.errors}
           readOnlyMeta

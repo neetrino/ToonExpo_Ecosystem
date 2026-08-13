@@ -20,6 +20,15 @@ export type PhoneInputProps = Omit<
 
 const isDigitKey = (key: string): boolean => key.length === 1 && key >= '0' && key <= '9';
 
+const preventNonDigitKey = (event: KeyboardEvent<HTMLInputElement>): void => {
+  if (event.defaultPrevented || event.ctrlKey || event.metaKey || event.altKey) {
+    return;
+  }
+  if (event.key.length === 1 && !isDigitKey(event.key)) {
+    event.preventDefault();
+  }
+};
+
 /**
  * Phone field with a fixed "+" prefix; digits only in the editable part.
  * Form value is always stored as `+` + digits (e.g. `+37491111222`), or empty.
@@ -35,12 +44,7 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(function
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>): void => {
     onKeyDown?.(event);
-    if (event.defaultPrevented || event.ctrlKey || event.metaKey || event.altKey) {
-      return;
-    }
-    if (event.key.length === 1 && !isDigitKey(event.key)) {
-      event.preventDefault();
-    }
+    preventNonDigitKey(event);
   };
 
   return (

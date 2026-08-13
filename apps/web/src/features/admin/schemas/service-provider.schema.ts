@@ -42,9 +42,7 @@ export const serviceProviderSchema = z.object({
   phone: z
     .string()
     .max(SERVICE_PROVIDER_PHONE_MAX_LENGTH)
-    .refine((value) => value === undefined || isValidOptionalPhone(value), {
-      message: "phone",
-    })
+    .refine(isValidOptionalPhone, { message: "phone" })
     .optional(),
   email: z.string().max(SERVICE_PROVIDER_EMAIL_MAX_LENGTH).optional(),
   website: z.string().max(SERVICE_PROVIDER_WEBSITE_MAX_LENGTH).optional(),

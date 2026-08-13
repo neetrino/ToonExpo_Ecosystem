@@ -13,7 +13,10 @@ import {
   useUpdatePartnerOfferMutation,
 } from '@/features/admin/hooks/use-admin-partners';
 import { PartnerOffersSection } from '@/features/partners/components/partner-offers-section';
-import { PartnerProfileFields } from '@/features/partners/components/partner-profile-fields';
+import {
+  PartnerProfileFields,
+  type ProfileFormValues,
+} from '@/features/partners/components/partner-profile-fields';
 import { PartnerMediaFields } from '@/features/partners/components/partner-media-fields';
 import type { PartnerMediaFieldValues } from '@/features/partners/components/partner-media-fields';
 import {
@@ -165,7 +168,7 @@ export const AdminPartnerDetailForm = ({ partnerId, partner }: AdminPartnerDetai
         </div>
 
         <PartnerProfileFields
-          control={form.control}
+          control={form.control as unknown as Control<ProfileFormValues>}
           register={form.register}
           errors={form.formState.errors}
         />
