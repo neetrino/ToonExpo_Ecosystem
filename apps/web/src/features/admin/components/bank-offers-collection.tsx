@@ -1,20 +1,16 @@
 'use client';
 
 import type { BankOfferListItem, PublicationStatus } from '@toonexpo/contracts';
-import type { LucideIcon } from 'lucide-react';
-import {
-  CheckCircle2,
-  CircleDashed,
-  Landmark,
-  Percent,
-  PiggyBank,
-  SquarePen,
-  Trash2,
-} from 'lucide-react';
+import { CheckCircle2, CircleDashed, Landmark, SquarePen, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 
 import { FeaturedBadge, PublicationStatusBadge } from '@/features/partners/components/partner-badges';
+import { ReadinessProgressRing } from '@/features/readiness/components/readiness-progress-ring';
+import {
+  RING_TEXT_CLASS,
+  type ReadinessRingTone,
+} from '@/features/readiness/utils/readiness-ring-tone';
 import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
 import { cn } from '@/shared/ui/cn';
 import { IconButton } from '@/shared/ui/icon-button';
@@ -23,6 +19,8 @@ import { VIEW_MODE_CARDS, type ViewMode } from '@/shared/ui/view-mode';
 
 const MEDIA_RADIUS_CLASS = 'rounded-[15px]';
 const MEDIA_ASPECT_CLASS = 'aspect-[16/9]';
+const RATE_RING_TONE: ReadinessRingTone = 'cyan';
+const DOWN_RING_TONE: ReadinessRingTone = 'orange';
 
 type BankOffersCollectionProps = {
   offers: BankOfferListItem[];
@@ -39,23 +37,42 @@ const STATUS_BADGE_CLASS: Record<PublicationStatus, string> = {
 };
 
 type BankOfferStatProps = {
-  icon: LucideIcon;
+  percent: string;
   label: string;
-  value: string;
+  tone: ReadinessRingTone;
 };
 
-const BankOfferStat = ({ icon: Icon, label, value }: BankOfferStatProps) => (
-  <div className="flex min-w-0 items-center gap-2">
-    <span
-      className="flex size-7 shrink-0 items-center justify-center rounded-sm bg-brand-soft text-brand"
-      aria-hidden
-    >
-      <Icon className="size-3.5" strokeWidth={2} />
-    </span>
-    <span className="truncate text-xs text-ink-secondary">{label}</span>
-    <span className="shrink-0 text-sm font-semibold tracking-tight text-ink">{value}</span>
-  </div>
-);
+const toRingPercent = (value: string): number => {
+  const parsed = Number.parseFloat(value);
+  if (!Number.isFinite(parsed)) {
+    return 0;
+  }
+  return Math.max(0, Math.min(100, parsed));
+};
+
+const BankOfferStat = ({ percent, label, tone }: BankOfferStatProps) => {
+  const display = `${percent}%`;
+  return (
+    <div className="flex min-w-0 items-center gap-2.5">
+      <ReadinessProgressRing
+        percent={toRingPercent(percent)}
+        size="2xs"
+        tone={tone}
+        showValue={false}
+        label={`${label}: ${display}`}
+      />
+      <span className="min-w-0 flex-1 truncate text-sm text-ink-secondary">{label}</span>
+      <span
+        className={cn(
+          'shrink-0 text-sm font-semibold tabular-nums tracking-tight',
+          RING_TEXT_CLASS[tone],
+        )}
+      >
+        {display}
+      </span>
+    </div>
+  );
+};
 
 type BankOfferCardProps = {
   offer: BankOfferListItem;
@@ -132,12 +149,16 @@ const BankOfferCard = ({ offer, onEdit }: BankOfferCardProps) => {
         <h2 className="truncate text-base font-semibold tracking-tight text-ink">{offer.title}</h2>
       </div>
 
-      <div className="mt-auto flex flex-col gap-2 border-t border-border px-3 py-2.5">
-        <BankOfferStat icon={Percent} label={t('columns.rate')} value={`${offer.rate}%`} />
+      <div className="mt-auto flex flex-col gap-2.5 border-t border-border px-3 py-2.5">
         <BankOfferStat
-          icon={PiggyBank}
+          percent={offer.rate}
+          label={t('columns.rate')}
+          tone={RATE_RING_TONE}
+        />
+        <BankOfferStat
+          percent={offer.minDownPaymentPercent}
           label={t('columns.minDown')}
-          value={`${offer.minDownPaymentPercent}%`}
+          tone={DOWN_RING_TONE}
         />
       </div>
     </button>
