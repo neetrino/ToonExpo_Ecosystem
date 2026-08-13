@@ -161,7 +161,6 @@ export const ReadinessCategoriesPage = () => {
             <thead className="bg-surface text-xs uppercase tracking-wide text-ink-muted">
               <tr>
                 <th className="px-3 py-1 font-medium">{t('columns.name')}</th>
-                <th className="px-3 py-1 text-center font-medium">{t('columns.sort')}</th>
                 <th className="px-3 py-1 text-center font-medium">{t('columns.active')}</th>
                 <th className="px-3 py-1 text-center font-medium">{t('columns.actions')}</th>
               </tr>
@@ -170,7 +169,6 @@ export const ReadinessCategoriesPage = () => {
               {categories.map((category) => (
                 <tr key={category.id} className="border-t border-border hover:bg-surface/60">
                   <td className="px-3 py-1 font-medium text-ink">{category.name}</td>
-                  <td className="px-3 py-1 text-center text-ink-secondary">{category.sortOrder}</td>
                   <td className="px-3 py-1 text-center text-ink-secondary">
                     {category.active ? t('activeYes') : t('activeNo')}
                   </td>

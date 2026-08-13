@@ -2441,7 +2441,6 @@
         "activeNo": "Inactive",
         "columns": {
           "name": "Name",
-          "sort": "Sort",
           "active": "Active",
           "actions": "Actions"
         }

@@ -1,13 +1,9 @@
 'use client';
 
 import type { ServiceProviderCategoryItem } from '@toonexpo/contracts';
-import { Hash } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import {
-  ADMIN_INVENTORY_CARD_CLASS,
-  AdminInventoryCardStat,
-} from '@/features/admin/components/admin-inventory-card';
+import { ADMIN_INVENTORY_CARD_CLASS } from '@/features/admin/components/admin-inventory-card';
 import { cn } from '@/shared/ui/cn';
 import {
   LIST_STATUS_BADGE_CLASS,
@@ -42,14 +38,6 @@ export const ReadinessCategoryCard = ({ category, onEdit }: ReadinessCategoryCar
         >
           {category.active ? t('activeYes') : t('activeNo')}
         </span>
-      </div>
-
-      <div className="mt-auto flex flex-col gap-2.5 border-t border-border px-4 py-3">
-        <AdminInventoryCardStat
-          icon={<Hash className="size-4" strokeWidth={2} />}
-          label={t('columns.sort')}
-          value={category.sortOrder}
-        />
       </div>
     </button>
   );
