@@ -53,7 +53,7 @@ const BankOfferStat = ({ icon: Icon, label, value }: BankOfferStatProps) => (
       <Icon className="size-3.5" strokeWidth={2} />
     </span>
     <span className="truncate text-xs text-ink-secondary">{label}</span>
-    <span className="text-sm font-semibold tracking-tight text-ink">{value}</span>
+    <span className="shrink-0 text-sm font-semibold tracking-tight text-ink">{value}</span>
   </div>
 );
 
@@ -132,7 +132,7 @@ const BankOfferCard = ({ offer, onEdit }: BankOfferCardProps) => {
         <h2 className="truncate text-base font-semibold tracking-tight text-ink">{offer.title}</h2>
       </div>
 
-      <div className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-border px-3 py-2.5">
+      <div className="mt-auto flex flex-col gap-2 border-t border-border px-3 py-2.5">
         <BankOfferStat icon={Percent} label={t('columns.rate')} value={`${offer.rate}%`} />
         <BankOfferStat
           icon={PiggyBank}
