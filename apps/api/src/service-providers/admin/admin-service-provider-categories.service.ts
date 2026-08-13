@@ -10,6 +10,7 @@ import {
   toServiceProviderCategoryItem,
 } from '../mappers/service-provider.mapper.js';
 import {
+  assertCategoryNameAvailable,
   assertMediaAssetExists,
   serviceProviderCategoryNotFound,
 } from '../utils/service-provider-access.js';
@@ -30,13 +31,16 @@ export class AdminServiceProviderCategoriesService {
   }
 
   async create(body: CreateServiceProviderCategoryDto): Promise<ServiceProviderCategoryItem> {
+    const name = body.name.trim();
+    await assertCategoryNameAvailable(this.prisma.db, name);
+
     if (body.logoMediaId) {
       await assertMediaAssetExists(this.prisma.db, body.logoMediaId);
     }
 
     const category = await this.prisma.db.serviceProviderCategory.create({
       data: {
-        name: body.name.trim(),
+        name,
         description: body.description?.trim() || null,
         sortOrder: body.sortOrder ?? 0,
         active: body.active ?? true,
@@ -53,6 +57,10 @@ export class AdminServiceProviderCategoriesService {
     body: UpdateServiceProviderCategoryDto,
   ): Promise<ServiceProviderCategoryItem> {
     await this.assertExists(id);
+
+    if (body.name !== undefined) {
+      await assertCategoryNameAvailable(this.prisma.db, body.name.trim(), id);
+    }
 
     if (body.logoMediaId) {
       await assertMediaAssetExists(this.prisma.db, body.logoMediaId);

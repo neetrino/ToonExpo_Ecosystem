@@ -1,4 +1,4 @@
-import { BadRequestException, NotFoundException } from "@nestjs/common";
+import { BadRequestException, ConflictException, NotFoundException } from "@nestjs/common";
 import type { Prisma } from "@toonexpo/db";
 
 import { PrismaService } from "../../prisma/prisma.service.js";
@@ -10,6 +10,27 @@ export const serviceProviderNotFound = (): NotFoundException =>
 
 export const serviceProviderCategoryNotFound = (): NotFoundException =>
   new NotFoundException("Service provider category not found");
+
+export const serviceProviderCategoryNameTaken = (): ConflictException =>
+  new ConflictException("A category with this name already exists");
+
+export const assertCategoryNameAvailable = async (
+  db: ServiceProviderClient,
+  name: string,
+  excludeId?: string,
+): Promise<void> => {
+  const existing = await db.serviceProviderCategory.findFirst({
+    where: {
+      name: { equals: name, mode: "insensitive" },
+      ...(excludeId ? { id: { not: excludeId } } : {}),
+    },
+    select: { id: true },
+  });
+
+  if (existing) {
+    throw serviceProviderCategoryNameTaken();
+  }
+};
 
 export const assertMediaAssetExists = async (
   db: ServiceProviderClient,
