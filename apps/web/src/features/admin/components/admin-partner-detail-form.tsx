@@ -39,12 +39,17 @@ import { useSuccessToast } from '@/shared/ui/use-success-toast';
 type AdminPartnerDetailFormProps = {
   partnerId: string;
   partner: AdminPartnerDetail;
+  onSaved?: (() => void) | undefined;
 };
 
 /**
  * Partner profile + admin controls + offers CRUD (shared by page and sheet).
  */
-export const AdminPartnerDetailForm = ({ partnerId, partner }: AdminPartnerDetailFormProps) => {
+export const AdminPartnerDetailForm = ({
+  partnerId,
+  partner,
+  onSaved,
+}: AdminPartnerDetailFormProps) => {
   const t = useTranslations('Admin.partners.detail');
   const updateMutation = useUpdatePartnerMutation(partnerId);
   const createOfferMutation = useCreatePartnerOfferMutation(partnerId);
@@ -69,6 +74,7 @@ export const AdminPartnerDetailForm = ({ partnerId, partner }: AdminPartnerDetai
     try {
       await updateMutation.mutateAsync(toUpdatePartnerBody(values));
       showSuccess(t('saveSuccess'));
+      onSaved?.();
     } catch {
       setSaveError(t('errors.generic'));
     }
