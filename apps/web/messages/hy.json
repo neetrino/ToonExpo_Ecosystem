@@ -2294,7 +2294,18 @@
           "internalNotesHint": "Կառուցապատողները ներքին նշումները չեն տեսնում։",
           "publication": "Հրապարակային կատալոգ",
           "publicationNone": "Չի սահմանված",
-          "active": "Ակտիվ",
+          "placeholders": {
+            "name": "օր. Scorpio Creative",
+            "description": "Կարճ նկարագրություն մատակարարի մասին…",
+            "services": "Ինտերիեր, բրենդինգ, 3D…",
+            "phone": "+374 00 000000",
+            "email": "hello@example.com",
+            "website": "https://example.com",
+            "socialLinkedin": "https://linkedin.com/company/…",
+            "socialFacebook": "https://facebook.com/…",
+            "socialInstagram": "https://instagram.com/…",
+            "internalNotes": "Տեսանելի է միայն ադմիններին…"
+          },
           "cancel": "Չեղարկել",
           "types": {
             "company": "Ընկերություն",

@@ -2294,7 +2294,18 @@
           "internalNotesHint": "Builders never see internal notes.",
           "publication": "Public directory publication",
           "publicationNone": "Not set",
-          "active": "Active",
+          "placeholders": {
+            "name": "e.g. Scorpio Creative",
+            "description": "Short description of the provider…",
+            "services": "Interior design, branding, 3D…",
+            "phone": "+374 00 000000",
+            "email": "hello@example.com",
+            "website": "https://example.com",
+            "socialLinkedin": "https://linkedin.com/company/…",
+            "socialFacebook": "https://facebook.com/…",
+            "socialInstagram": "https://instagram.com/…",
+            "internalNotes": "Visible only to admins…"
+          },
           "cancel": "Cancel",
           "types": {
             "company": "Company",
