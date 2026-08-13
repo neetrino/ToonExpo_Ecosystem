@@ -166,61 +166,60 @@ export const BuilderReadinessAssessmentPanel = ({
       </div>
 
       <div id={detailId} hidden={!expanded} className="flex flex-col gap-8">
-          <div className="flex flex-col gap-8">
-            {assessment.scores.map((score) => (
-              <CategorySection key={score.categoryId} score={score} />
-            ))}
-          </div>
-
-          {sortedActions.length > 0 || assessment.recommendations.length > 0 ? (
-            <div className="grid gap-4 lg:grid-cols-2 lg:items-stretch">
-              {sortedActions.length > 0 ? (
-                <section className="flex h-full min-h-0 flex-col rounded-[var(--radius-md)] border border-border/80 bg-surface-elevated p-5 shadow-card">
-                  <h3 className="mb-1 text-base font-semibold text-ink">{t('requiredActionsTitle')}</h3>
-                  <p className="mb-4 text-sm text-ink-secondary">{t('requiredActionsHint')}</p>
-                  <ul className="flex min-h-0 flex-1 flex-col gap-3">
-                    {sortedActions.map((action) => (
-                      <li
-                        key={action.id}
-                        className="relative flex flex-col gap-1 rounded-[var(--radius-sm)] border border-border/70 bg-canvas/40 px-4 py-3 pr-24"
-                      >
-                        <span
-                          className={cn(
-                            'absolute top-3 right-3 rounded-md px-2 py-0.5 text-xs font-medium',
-                            actionToneClass(action.status),
-                          )}
-                        >
-                          {t(`actionStatuses.${action.status}`)}
-                        </span>
-                        <p className="text-sm font-semibold text-ink">{action.title}</p>
-                        {action.description ? (
-                          <p className="text-sm text-ink-secondary">{action.description}</p>
-                        ) : null}
-                      </li>
-                    ))}
-                  </ul>
-                </section>
-              ) : null}
-
-              {assessment.recommendations.length > 0 ? (
-                <section className="flex h-full min-h-0 flex-col rounded-[var(--radius-md)] border border-border/80 bg-surface-elevated p-5 shadow-card">
-                  <h3 className="mb-1 text-base font-semibold text-ink">{t('recommendationsTitle')}</h3>
-                  <p className="mb-4 text-sm text-ink-secondary">{t('recommendationsHint')}</p>
-                  <ul className="flex min-h-0 flex-1 flex-col gap-3">
-                    {assessment.recommendations.map((rec) => (
-                      <li key={rec.id} className="border-l-2 border-brand pl-3">
-                        <p className="text-sm font-semibold text-ink">{rec.title}</p>
-                        <p className="mt-0.5 text-sm leading-relaxed text-ink-secondary">
-                          {rec.description}
-                        </p>
-                      </li>
-                    ))}
-                  </ul>
-                </section>
-              ) : null}
-            </div>
-          ) : null}
+        <div className="flex flex-col gap-8">
+          {assessment.scores.map((score) => (
+            <CategorySection key={score.categoryId} score={score} />
+          ))}
         </div>
+
+        {sortedActions.length > 0 || assessment.recommendations.length > 0 ? (
+          <div className="grid gap-4 lg:grid-cols-2 lg:items-stretch">
+            {sortedActions.length > 0 ? (
+              <section className="flex h-full min-h-0 flex-col rounded-[var(--radius-md)] border border-border/80 bg-surface-elevated p-5 shadow-card">
+                <h3 className="mb-1 text-base font-semibold text-ink">{t('requiredActionsTitle')}</h3>
+                <p className="mb-4 text-sm text-ink-secondary">{t('requiredActionsHint')}</p>
+                <ul className="flex min-h-0 flex-1 flex-col gap-3">
+                  {sortedActions.map((action) => (
+                    <li
+                      key={action.id}
+                      className="relative flex flex-col gap-1 rounded-[var(--radius-sm)] border border-border/70 bg-canvas/40 px-4 py-3 pr-24"
+                    >
+                      <span
+                        className={cn(
+                          'absolute top-3 right-3 rounded-md px-2 py-0.5 text-xs font-medium',
+                          actionToneClass(action.status),
+                        )}
+                      >
+                        {t(`actionStatuses.${action.status}`)}
+                      </span>
+                      <p className="text-sm font-semibold text-ink">{action.title}</p>
+                      {action.description ? (
+                        <p className="text-sm text-ink-secondary">{action.description}</p>
+                      ) : null}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ) : null}
+
+            {assessment.recommendations.length > 0 ? (
+              <section className="flex h-full min-h-0 flex-col rounded-[var(--radius-md)] border border-border/80 bg-surface-elevated p-5 shadow-card">
+                <h3 className="mb-1 text-base font-semibold text-ink">{t('recommendationsTitle')}</h3>
+                <p className="mb-4 text-sm text-ink-secondary">{t('recommendationsHint')}</p>
+                <ul className="flex min-h-0 flex-1 flex-col gap-3">
+                  {assessment.recommendations.map((rec) => (
+                    <li key={rec.id} className="border-l-2 border-brand pl-3">
+                      <p className="text-sm font-semibold text-ink">{rec.title}</p>
+                      <p className="mt-0.5 text-sm leading-relaxed text-ink-secondary">
+                        {rec.description}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ) : null}
+          </div>
+        ) : null}
       </div>
     </div>
   );
