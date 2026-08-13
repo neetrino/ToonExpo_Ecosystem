@@ -27,6 +27,8 @@ type ServiceProviderCategorySelectProps = {
 
 type FormErrorKey = 'categoriesNameTaken' | 'categoriesAddFailed' | 'categoriesDeleteFailed';
 
+const DELETE_CONFIRM_OPEN_DELAY_MS = 50;
+
 type PendingDelete = {
   id: string;
   name: string;
@@ -136,6 +138,7 @@ export const ServiceProviderCategorySelect = ({
   const [draftName, setDraftName] = useState('');
   const [errorKey, setErrorKey] = useState<FormErrorKey | null>(null);
   const [pendingDelete, setPendingDelete] = useState<PendingDelete | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const removedIdSet = useMemo(() => new Set(removedIds), [removedIds]);
   const options = useMemo(
@@ -196,7 +199,11 @@ export const ServiceProviderCategorySelect = ({
       onMouseDown={stopRowAction}
       onClick={(event) => {
         stopRowAction(event);
-        setPendingDelete({ id: option.value, name: option.label });
+        setMenuOpen(false);
+        const nextDelete = { id: option.value, name: option.label };
+        window.setTimeout(() => {
+          setPendingDelete(nextDelete);
+        }, DELETE_CONFIRM_OPEN_DELAY_MS);
       }}
     >
       <Trash2 className="size-3.5" strokeWidth={1.75} aria-hidden />
@@ -211,10 +218,14 @@ export const ServiceProviderCategorySelect = ({
         value={value}
         options={options}
         disabled={disabled}
+        contained
+        sheetScrim
+        open={menuOpen && pendingDelete == null}
         placeholder={t('categoriesPlaceholder')}
         aria-label={t('categories')}
         onChange={onChange}
         onBlur={onBlur}
+        onOpenChange={setMenuOpen}
         optionAction={optionAction}
         menuFooter={
           <CategoryCreateFooter

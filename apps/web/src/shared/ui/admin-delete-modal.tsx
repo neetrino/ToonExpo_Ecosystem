@@ -74,14 +74,17 @@ export const AdminDeleteModal = ({
       return;
     }
     const onKeyDown = (event: KeyboardEvent): void => {
-      if (event.key === 'Escape') {
-        onCancel();
-        blurActiveElementAfterEscClose();
+      if (event.key !== 'Escape') {
+        return;
       }
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      onCancel();
+      blurActiveElementAfterEscClose();
     };
-    window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('keydown', onKeyDown, true);
     return () => {
-      window.removeEventListener('keydown', onKeyDown);
+      window.removeEventListener('keydown', onKeyDown, true);
     };
   }, [isVisible, actionsDisabled, onCancel]);
 
@@ -91,7 +94,8 @@ export const AdminDeleteModal = ({
 
   return createPortal(
     <div
-      className="fixed inset-x-0 top-0 z-[var(--z-modal)] flex h-fluid-screen items-center justify-center px-4"
+      className="fixed inset-x-0 top-0 z-[var(--z-toast)] flex h-fluid-screen items-center justify-center px-4"
+      data-overlay-modal=""
       role="presentation"
     >
       <button

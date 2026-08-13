@@ -1,6 +1,5 @@
 'use client';
 
-import { Check, ChevronDown } from 'lucide-react';
 import {
   forwardRef,
   useEffect,
@@ -10,16 +9,19 @@ import {
   useState,
   type FocusEventHandler,
   type ReactNode,
+  type RefObject,
 } from 'react';
 
 import { blurActiveElementAfterEscClose } from '@/shared/ui/blur-active-element';
 import { cn } from '@/shared/ui/cn';
 import { DropdownPortal } from '@/shared/ui/dropdown-portal';
+import {
+  ListboxMenuOptions,
+  ListboxTrigger,
+  type ListboxOption,
+} from '@/shared/ui/listbox-select-menu';
 
-export type ListboxOption = {
-  value: string;
-  label: string;
-};
+export type { ListboxOption };
 
 export type ListboxSelectProps = {
   value: string;
@@ -42,16 +44,26 @@ export type ListboxSelectProps = {
   menuFooter?: ReactNode | undefined;
   /** Optional trailing control per option (e.g. delete). */
   optionAction?: ((option: ListboxOption) => ReactNode) | undefined;
+  /** Render the menu in-place (no stage portal) — stays inside a side sheet. */
+  contained?: boolean | undefined;
+  /** Dim the sheet behind a contained menu so it reads as a separate layer. */
+  sheetScrim?: boolean | undefined;
+  open?: boolean | undefined;
+  onOpenChange?: ((open: boolean) => void) | undefined;
+  /** Toggle several options without closing the menu. */
+  multiple?: boolean | undefined;
+  values?: readonly string[] | undefined;
+  onValuesChange?: ((values: string[]) => void) | undefined;
+  selectedCountLabel?: ((count: number) => string) | undefined;
 };
 
 /**
  * Custom listbox — soft panel + check, same family as LocaleSwitcher / ma-marie menus.
- * Menu portals to `document.body` so it stacks above page chrome.
- * Fit width uses CSS grid (no inline width styles).
+ * Default menu portals to the desktop stage. `contained` keeps it on a side sheet.
  */
 export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
-  function ListboxSelect(
-    {
+  function ListboxSelect(props, ref) {
+    const {
       value,
       options,
       onChange,
@@ -66,82 +78,72 @@ export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
       placeholder,
       menuFooter,
       optionAction,
-    },
-    ref,
-  ) {
-    const [open, setOpen] = useState(false);
+      contained = false,
+      sheetScrim = false,
+      open: openProp,
+      onOpenChange,
+      multiple = false,
+      values,
+      onValuesChange,
+      selectedCountLabel,
+    } = props;
+    const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+    const isOpenControlled = openProp !== undefined;
+    const open = isOpenControlled ? openProp : uncontrolledOpen;
+    const onOpenChangeRef = useRef(onOpenChange);
+    onOpenChangeRef.current = onOpenChange;
     const rootRef = useRef<HTMLDivElement>(null);
     const buttonRef = useRef<HTMLButtonElement>(null);
     const menuRef = useRef<HTMLDivElement>(null);
     const listId = useId();
     const isField = variant === 'field';
     const isFit = size === 'fit';
-    const selected = options.find((option) => option.value === value);
-    const triggerLabel = selected?.label ?? placeholder ?? options[0]?.label ?? '';
-    const showPlaceholder = selected == null && Boolean(placeholder);
+    const selectedIds = multiple ? [...(values ?? [])] : value.length > 0 ? [value] : [];
+    const { label: triggerLabel, isPlaceholder: showPlaceholder } = resolveTriggerLabel(
+      options,
+      selectedIds,
+      placeholder,
+      selectedCountLabel,
+    );
+
+    const setOpen = (next: boolean | ((current: boolean) => boolean)): void => {
+      const resolved = typeof next === 'function' ? next(open) : next;
+      if (!isOpenControlled) {
+        setUncontrolledOpen(resolved);
+      }
+      onOpenChangeRef.current?.(resolved);
+    };
 
     useImperativeHandle(ref, () => buttonRef.current as HTMLButtonElement);
-
-    useEffect(() => {
-      if (!open) {
-        return;
-      }
-
-      const isInsideOpenMenu = (node: Node): boolean => {
-        if (rootRef.current?.contains(node)) {
-          return true;
-        }
-        if (menuRef.current?.contains(node)) {
-          return true;
-        }
-        // Scroll/overflow lives on DropdownPortal wrapper, not the <ul>.
-        if (node instanceof Element && menuRef.current) {
-          const portal = node.closest('[data-dropdown-portal]');
-          return Boolean(portal?.contains(menuRef.current));
-        }
-        return false;
-      };
-
-      const onPointerDown = (event: MouseEvent): void => {
-        if (isInsideOpenMenu(event.target as Node)) {
-          return;
-        }
-        setOpen(false);
-      };
-
-      const onKeyDown = (event: KeyboardEvent): void => {
-        if (event.key === 'Escape') {
-          setOpen(false);
-          blurActiveElementAfterEscClose();
-        }
-      };
-
-      const onScroll = (event: Event): void => {
-        const target = event.target;
-        if (target instanceof Node && isInsideOpenMenu(target)) {
-          return;
-        }
-        setOpen(false);
-        blurActiveElementAfterEscClose();
-      };
-
-      document.addEventListener('mousedown', onPointerDown);
-      document.addEventListener('keydown', onKeyDown);
-      window.addEventListener('scroll', onScroll, true);
-      return () => {
-        document.removeEventListener('mousedown', onPointerDown);
-        document.removeEventListener('keydown', onKeyDown);
-        window.removeEventListener('scroll', onScroll, true);
-      };
-    }, [open]);
+    useListboxDismiss(open, contained, rootRef, menuRef, setOpen);
 
     const pick = (next: string): void => {
       if (disabled) {
         return;
       }
+      if (multiple && onValuesChange) {
+        const nextValues = selectedIds.includes(next)
+          ? selectedIds.filter((id) => id !== next)
+          : [...selectedIds, next];
+        onValuesChange(nextValues);
+        return;
+      }
       onChange(next);
       setOpen(false);
     };
+
+    const menu = (
+      <ListboxMenuOptions
+        listId={listId}
+        ariaLabel={ariaLabel}
+        options={options}
+        selectedIds={selectedIds}
+        multiple={multiple}
+        optionAction={optionAction}
+        menuFooter={menuFooter}
+        onPick={pick}
+      />
+    );
 
     return (
       <div
@@ -154,127 +156,158 @@ export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
           !isField && className,
         )}
       >
-        {name ? <input type="hidden" name={name} value={value} disabled={disabled} /> : null}
-        {isFit ? (
-          <ul aria-hidden className="invisible col-start-1 row-start-1 h-0 overflow-hidden">
-            {options.map((option) => (
-              <li key={option.value}>
-                <span
-                  className={cn(
-                    'flex items-center justify-between gap-2 whitespace-nowrap',
-                    isField ? 'px-4 text-base sm:text-sm' : 'text-sm font-medium',
-                  )}
-                >
-                  <span>{option.label}</span>
-                  <ChevronDown className="size-4 shrink-0" aria-hidden />
-                </span>
-              </li>
-            ))}
-          </ul>
-        ) : null}
-        <button
-          ref={buttonRef}
-          id={id}
-          type="button"
-          disabled={disabled}
-          className={cn(
-            'col-start-1 row-start-1',
-            isField
-              ? cn('site-select-trigger', className)
-              : cn(
-                  'flex min-w-0 w-full items-center justify-between gap-2 bg-transparent p-0 text-left',
-                  'text-sm font-medium text-ink-navy transition-colors duration-[var(--duration-fast)]',
-                  'hover:text-brand-deep focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/25',
-                  'disabled:cursor-not-allowed disabled:opacity-50',
-                  open && 'text-brand-deep',
-                ),
-          )}
-          aria-label={ariaLabel}
-          aria-haspopup="listbox"
-          aria-expanded={open}
-          aria-controls={listId}
-          onBlur={onBlur}
-          onClick={() => {
-            if (disabled) {
-              return;
-            }
-            setOpen((current) => !current);
-          }}
-        >
-          <span
-            className={cn(
-              isField ? 'site-select-trigger__label' : isFit ? 'whitespace-nowrap' : 'truncate',
-              showPlaceholder && 'text-ink-muted',
-            )}
-          >
-            {triggerLabel}
-          </span>
-          <ChevronDown
-            className={cn(
-              isField
-                ? 'site-select-trigger__chevron'
-                : cn(
-                    'size-4 shrink-0 text-header-muted transition-transform duration-[var(--duration-base)]',
-                    'ease-[var(--ease-out-premium)]',
-                    open && 'rotate-180 text-brand-deep',
-                  ),
-            )}
-            aria-hidden
+        {name ? (
+          <input
+            type="hidden"
+            name={name}
+            value={multiple ? selectedIds.join(',') : value}
+            disabled={disabled}
           />
-        </button>
-
-        <DropdownPortal open={open && !disabled} anchorRef={buttonRef} matchWidth>
-          <div ref={menuRef} className="site-select-menu">
-            <ul id={listId} role="listbox" aria-label={ariaLabel}>
-              {options.map((option) => (
-                <ListboxOptionItem
-                  key={option.value}
-                  option={option}
-                  active={option.value === value}
-                  action={optionAction?.(option)}
-                  onPick={pick}
-                />
-              ))}
-            </ul>
-            {menuFooter}
-          </div>
-        </DropdownPortal>
+        ) : null}
+        {open && !disabled && contained && sheetScrim ? (
+          <button
+            type="button"
+            tabIndex={-1}
+            aria-label={ariaLabel}
+            className="fixed inset-0 z-10 bg-ink/40"
+            onClick={() => {
+              setOpen(false);
+            }}
+          />
+        ) : null}
+        <div className={cn(contained && open && 'relative z-20')}>
+          <ListboxTrigger
+            buttonRef={buttonRef}
+            id={id}
+            disabled={disabled}
+            open={open}
+            isField={isField}
+            isFit={isFit}
+            className={className}
+            ariaLabel={ariaLabel}
+            listId={listId}
+            triggerLabel={triggerLabel}
+            showPlaceholder={showPlaceholder}
+            onBlur={onBlur}
+            onToggle={() => {
+              if (!disabled) {
+                setOpen((current) => !current);
+              }
+            }}
+          />
+          {contained ? (
+            open && !disabled ? (
+              <div
+                ref={menuRef}
+                className="site-select-menu site-select-menu--contained absolute top-[calc(100%+8px)] right-0 left-0 z-20"
+              >
+                {menu}
+              </div>
+            ) : null
+          ) : (
+            <DropdownPortal open={open && !disabled} anchorRef={buttonRef} matchWidth>
+              <div ref={menuRef} className="site-select-menu">
+                {menu}
+              </div>
+            </DropdownPortal>
+          )}
+        </div>
       </div>
     );
   },
 );
 
-type ListboxOptionItemProps = {
-  option: ListboxOption;
-  active: boolean;
-  action: ReactNode | undefined;
-  onPick: (value: string) => void;
-};
+const MAX_INLINE_SELECTED_LABELS = 3;
 
-const ListboxOptionItem = ({ option, active, action, onPick }: ListboxOptionItemProps) => {
-  const control = (
-    <button
-      type="button"
-      role="option"
-      aria-selected={active}
-      className="site-select-option"
-      onClick={() => {
-        onPick(option.value);
-      }}
-    >
-      <span>{option.label}</span>
-      {active ? <Check className="site-select-option__check" aria-hidden /> : null}
-    </button>
-  );
-
-  if (!action) {
-    return <li role="none">{control}</li>;
+const resolveTriggerLabel = (
+  options: readonly ListboxOption[],
+  selectedIds: readonly string[],
+  placeholder: string | undefined,
+  selectedCountLabel: ((count: number) => string) | undefined,
+): { label: string; isPlaceholder: boolean } => {
+  if (selectedIds.length === 0) {
+    return {
+      label: placeholder ?? options[0]?.label ?? '',
+      isPlaceholder: Boolean(placeholder),
+    };
   }
 
-  return (
-    <li role="none" className="site-select-option-row">
-      {control}
-      <div className="site-select-option-row__action">{action}</div>
-    </li>
-  );
+  const labels = selectedIds
+    .map((id) => options.find((option) => option.value === id)?.label)
+    .filter((label): label is string => label != null);
+
+  if (labels.length === 1 && labels[0]) {
+    return { label: labels[0], isPlaceholder: false };
+  }
+  if (labels.length > 0 && labels.length <= MAX_INLINE_SELECTED_LABELS) {
+    return { label: labels.join(', '), isPlaceholder: false };
+  }
+  if (selectedCountLabel) {
+    return { label: selectedCountLabel(selectedIds.length), isPlaceholder: false };
+  }
+  return { label: labels.join(', '), isPlaceholder: false };
+};
+
+const useListboxDismiss = (
+  open: boolean,
+  contained: boolean,
+  rootRef: RefObject<HTMLDivElement | null>,
+  menuRef: RefObject<HTMLDivElement | null>,
+  setOpen: (open: boolean) => void,
+): void => {
+  const setOpenRef = useRef(setOpen);
+  setOpenRef.current = setOpen;
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    const isInsideOpenMenu = (node: Node): boolean => {
+      if (rootRef.current?.contains(node) || menuRef.current?.contains(node)) {
+        return true;
+      }
+      if (node instanceof Element && menuRef.current) {
+        const portal = node.closest('[data-dropdown-portal]');
+        return Boolean(portal?.contains(menuRef.current));
+      }
+      return false;
+    };
+
+    const onPointerDown = (event: MouseEvent): void => {
+      if (!isInsideOpenMenu(event.target as Node)) {
+        setOpenRef.current(false);
+      }
+    };
+
+    const onKeyDown = (event: KeyboardEvent): void => {
+      if (event.key !== 'Escape') {
+        return;
+      }
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      setOpenRef.current(false);
+      blurActiveElementAfterEscClose();
+    };
+
+    const onScroll = (event: Event): void => {
+      const target = event.target;
+      if (target instanceof Node && isInsideOpenMenu(target)) {
+        return;
+      }
+      setOpenRef.current(false);
+      blurActiveElementAfterEscClose();
+    };
+
+    document.addEventListener('mousedown', onPointerDown);
+    window.addEventListener('keydown', onKeyDown, true);
+    if (!contained) {
+      window.addEventListener('scroll', onScroll, true);
+    }
+    return () => {
+      document.removeEventListener('mousedown', onPointerDown);
+      window.removeEventListener('keydown', onKeyDown, true);
+      window.removeEventListener('scroll', onScroll, true);
+    };
+  }, [open, contained, rootRef, menuRef]);
 };

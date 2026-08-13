@@ -66,11 +66,16 @@
   .site-select-menu {
     width: 100%;
     overflow: hidden;
+    isolation: isolate;
     border: 1px solid var(--color-header-border);
     border-radius: 12px;
     background-color: var(--color-surface-elevated);
     /* No block padding — selected option fill must reach panel top/bottom edges. */
     box-shadow: var(--shadow-md);
+  }
+
+  .site-select-menu--contained {
+    box-shadow: var(--shadow-lg);
   }
 
   .site-select-option {
