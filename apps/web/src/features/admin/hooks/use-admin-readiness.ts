@@ -3,12 +3,10 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type {
   CreateReadinessAssessmentBody,
-  CreateReadinessCategoryBody,
   CreateReadinessInternalNoteBody,
   CreateReadinessRecommendationBody,
   CreateReadinessRequiredActionBody,
   UpdateReadinessAssessmentBody,
-  UpdateReadinessCategoryBody,
   UpdateReadinessRecommendationBody,
   UpdateReadinessRequiredActionBody,
   UpsertReadinessScoreBody,
@@ -18,7 +16,6 @@ import type {
 
 import {
   createAdminReadinessAssessment,
-  createAdminReadinessCategory,
   createAdminReadinessInternalNote,
   createAdminReadinessRecommendation,
   createAdminReadinessRequiredAction,
@@ -27,9 +24,7 @@ import {
   deleteAdminReadinessRequiredAction,
   getAdminReadinessAssessment,
   listAdminReadinessAssessments,
-  listAdminReadinessCategories,
   updateAdminReadinessAssessment,
-  updateAdminReadinessCategory,
   updateAdminReadinessRecommendation,
   updateAdminReadinessRequiredAction,
   upsertAdminReadinessCriterionScore,
@@ -39,39 +34,8 @@ import {
 } from '@/features/admin/api/admin-readiness-api';
 import {
   ADMIN_READINESS_ASSESSMENTS_QUERY_KEY,
-  ADMIN_READINESS_CATEGORIES_QUERY_KEY,
   adminReadinessAssessmentQueryKey,
 } from '@/features/admin/constants';
-
-export const useAdminReadinessCategoriesQuery = () =>
-  useQuery({
-    queryKey: ADMIN_READINESS_CATEGORIES_QUERY_KEY,
-    queryFn: listAdminReadinessCategories,
-  });
-
-export const useCreateReadinessCategoryMutation = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (body: CreateReadinessCategoryBody) => createAdminReadinessCategory(body),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({
-        queryKey: ADMIN_READINESS_CATEGORIES_QUERY_KEY,
-      });
-    },
-  });
-};
-
-export const useUpdateReadinessCategoryMutation = (id: string) => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (body: UpdateReadinessCategoryBody) => updateAdminReadinessCategory(id, body),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({
-        queryKey: ADMIN_READINESS_CATEGORIES_QUERY_KEY,
-      });
-    },
-  });
-};
 
 export const useAdminReadinessAssessmentsQuery = (params: ListReadinessAssessmentsParams) =>
   useQuery({

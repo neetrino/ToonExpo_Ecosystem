@@ -5,7 +5,6 @@ import type { ServiceProviderCategoryItem } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 import { Controller, useForm } from 'react-hook-form';
 
-import { SERVICE_PROVIDER_FORM_CATEGORY_NAMES } from '@/features/admin/constants/service-provider-categories';
 import {
   SERVICE_PROVIDER_TYPES,
   serviceProviderSchema,
@@ -27,27 +26,15 @@ type ServiceProviderFormProps = {
   isBusy: boolean;
 };
 
-const categoryIdToName = (
-  categoryIds: readonly string[],
-  categories: readonly ServiceProviderCategoryItem[],
-): string => {
-  const selectedId = categoryIds[0];
-  if (!selectedId) {
-    return '';
-  }
-  return categories.find((category) => category.id === selectedId)?.name ?? '';
-};
+const selectedCategoryId = (categoryIds: readonly string[]): string => categoryIds[0] ?? '';
 
-const categoryNameToIds = (
-  name: string,
+const toCategoryIds = (categoryId: string): string[] => (categoryId.length > 0 ? [categoryId] : []);
+
+const selectableCategories = (
   categories: readonly ServiceProviderCategoryItem[],
-): string[] => {
-  if (name.length === 0) {
-    return [];
-  }
-  const match = categories.find((category) => category.name === name);
-  return match ? [match.id] : [];
-};
+  selectedIds: readonly string[],
+): ServiceProviderCategoryItem[] =>
+  categories.filter((category) => category.active || selectedIds.includes(category.id));
 
 /**
  * Admin create/edit form for service providers (side sheet).
@@ -118,25 +105,33 @@ export const ServiceProviderForm = ({
           <Controller
             name="categoryIds"
             control={form.control}
-            render={({ field }) => (
-              <Select
-                id="providerCategory"
-                name={field.name}
-                value={categoryIdToName(field.value, categories)}
-                aria-label={t('categories')}
-                onBlur={field.onBlur}
-                onChange={(event) => {
-                  field.onChange(categoryNameToIds(event.target.value, categories));
-                }}
-              >
-                <option value="">{t('categoriesPlaceholder')}</option>
-                {SERVICE_PROVIDER_FORM_CATEGORY_NAMES.map((name) => (
-                  <option key={name} value={name}>
-                    {name}
-                  </option>
-                ))}
-              </Select>
-            )}
+            render={({ field }) => {
+              const options = selectableCategories(categories, field.value);
+              return (
+                <>
+                  <Select
+                    id="providerCategory"
+                    name={field.name}
+                    value={selectedCategoryId(field.value)}
+                    aria-label={t('categories')}
+                    onBlur={field.onBlur}
+                    onChange={(event) => {
+                      field.onChange(toCategoryIds(event.target.value));
+                    }}
+                  >
+                    <option value="">{t('categoriesPlaceholder')}</option>
+                    {options.map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))}
+                  </Select>
+                  {options.length === 0 ? (
+                    <p className="mt-1 text-xs text-ink-muted">{t('categoriesEmpty')}</p>
+                  ) : null}
+                </>
+              );
+            }}
           />
         </FormField>
       </fieldset>

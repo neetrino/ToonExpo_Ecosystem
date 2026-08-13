@@ -1,7 +1,6 @@
 import { z } from 'zod';
 
 import {
-  READINESS_CATEGORY_NAME_MAX_LENGTH,
   READINESS_DESCRIPTION_MAX_LENGTH,
   READINESS_NOTE_BODY_MAX_LENGTH,
   READINESS_RECOMMENDATION_SUMMARY_MAX_LENGTH,
@@ -13,22 +12,6 @@ import {
   READINESS_TITLE_MAX_LENGTH,
   READINESS_VISIBILITY_OPTIONS,
 } from '@/features/readiness/constants';
-
-export const readinessCategorySchema = z.object({
-  code: z
-    .string()
-    .trim()
-    .min(1)
-    .max(64)
-    .regex(/^[a-z][a-z0-9_]*$/),
-  name: z.string().trim().min(1).max(READINESS_CATEGORY_NAME_MAX_LENGTH),
-  description: z.string().max(READINESS_DESCRIPTION_MAX_LENGTH),
-  weight: z.string(),
-  sortOrder: z.number().int().min(0),
-  active: z.boolean(),
-});
-
-export type ReadinessCategoryFormValues = z.infer<typeof readinessCategorySchema>;
 
 export const createReadinessAssessmentSchema = z
   .object({

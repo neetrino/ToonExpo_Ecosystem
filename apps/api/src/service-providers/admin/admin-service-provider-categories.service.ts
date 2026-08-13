@@ -6,7 +6,6 @@ import type {
 
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { toServiceProviderCategoryItem } from '../mappers/service-provider.mapper.js';
-import { DEFAULT_SERVICE_PROVIDER_CATEGORIES } from '../service-providers.constants.js';
 import { serviceProviderCategoryNotFound } from '../utils/service-provider-access.js';
 import type { CreateServiceProviderCategoryDto } from './dto/service-provider-category.dto.js';
 import type { UpdateServiceProviderCategoryDto } from './dto/service-provider-category.dto.js';
@@ -16,8 +15,6 @@ export class AdminServiceProviderCategoriesService {
   constructor(private readonly prisma: PrismaService) {}
 
   async list(): Promise<ServiceProviderCategoryListResponse> {
-    await this.ensureDefaultCategories();
-
     const rows = await this.prisma.db.serviceProviderCategory.findMany({
       orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
     });
@@ -62,25 +59,6 @@ export class AdminServiceProviderCategoriesService {
   async remove(id: string): Promise<void> {
     await this.assertExists(id);
     await this.prisma.db.serviceProviderCategory.delete({ where: { id } });
-  }
-
-  private async ensureDefaultCategories(): Promise<void> {
-    for (const def of DEFAULT_SERVICE_PROVIDER_CATEGORIES) {
-      const existing = await this.prisma.db.serviceProviderCategory.findFirst({
-        where: { name: def.name },
-        select: { id: true },
-      });
-      if (existing) {
-        continue;
-      }
-      await this.prisma.db.serviceProviderCategory.create({
-        data: {
-          name: def.name,
-          sortOrder: def.sortOrder,
-          active: true,
-        },
-      });
-    }
   }
 
   private async assertExists(id: string): Promise<void> {

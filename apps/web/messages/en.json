@@ -2424,11 +2424,11 @@
         "saveError": "Could not save changes. Try again."
       },
       "categories": {
-        "title": "Readiness categories",
+        "title": "Categories",
         "backToAssessments": "Back to assessments",
         "loading": "Loading categories…",
         "error": "Could not load categories. Try again.",
-        "searchPlaceholder": "Search by name or code…",
+        "searchPlaceholder": "Search by name…",
         "noResultsTitle": "No matching categories",
         "noResults": "No categories match “{query}”.",
         "clearSearch": "Clear search",
@@ -2441,29 +2441,9 @@
         "activeNo": "Inactive",
         "columns": {
           "name": "Name",
-          "weight": "Weight",
           "sort": "Sort",
           "active": "Active",
           "actions": "Actions"
-        },
-        "form": {
-          "code": "Code (e.g. product)",
-          "name": "Name",
-          "description": "Description",
-          "weight": "Weight (optional)",
-          "sortOrder": "Sort order",
-          "active": "Active",
-          "save": "Save",
-          "saving": "Saving…",
-          "cancel": "Cancel"
-        },
-        "validation": {
-          "code": "Use lowercase letters, numbers, and underscores",
-          "name": "Enter a category name",
-          "weight": "Weight must be between 1 and 100"
-        },
-        "errors": {
-          "generic": "Something went wrong. Please try again."
         }
       },
       "assessments": {

@@ -1,7 +1,7 @@
 'use client';
 
-import type { ReadinessCategoryItem } from '@toonexpo/contracts';
-import { Hash, Percent } from 'lucide-react';
+import type { ServiceProviderCategoryItem } from '@toonexpo/contracts';
+import { Hash } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 import {
@@ -15,12 +15,12 @@ import {
 } from '@/shared/ui/list-status-badge';
 
 type ReadinessCategoryCardProps = {
-  category: ReadinessCategoryItem;
+  category: ServiceProviderCategoryItem;
   onEdit: () => void;
 };
 
 /**
- * Readiness category card — whole card opens edit.
+ * Service provider category card — whole card opens edit.
  */
 export const ReadinessCategoryCard = ({ category, onEdit }: ReadinessCategoryCardProps) => {
   const t = useTranslations('Admin.readiness.categories');
@@ -45,11 +45,6 @@ export const ReadinessCategoryCard = ({ category, onEdit }: ReadinessCategoryCar
       </div>
 
       <div className="mt-auto flex flex-col gap-2.5 border-t border-border px-4 py-3">
-        <AdminInventoryCardStat
-          icon={<Percent className="size-4" strokeWidth={2} />}
-          label={t('columns.weight')}
-          value={category.weight ?? '—'}
-        />
         <AdminInventoryCardStat
           icon={<Hash className="size-4" strokeWidth={2} />}
           label={t('columns.sort')}
