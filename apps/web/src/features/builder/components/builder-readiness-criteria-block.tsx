@@ -30,12 +30,10 @@ export const BuilderReadinessCriterionRing = ({ item }: BuilderReadinessCriterio
         tone="brand"
         label={`${label}: ${percent}%`}
       />
-      <div className="flex w-full items-start justify-center gap-1">
-        <p className="min-w-0 text-center text-[0.7rem] leading-snug font-medium text-ink">
-          {label}
-        </p>
-        <BuilderReadinessCriterionHelp item={item} />
-      </div>
+      <p className="w-full text-center text-[0.7rem] leading-snug font-medium text-ink">
+        {label}
+      </p>
+      <BuilderReadinessCriterionHelp item={item} />
     </div>
   );
 };
