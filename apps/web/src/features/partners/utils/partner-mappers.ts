@@ -16,6 +16,7 @@ import type {
   UpdatePartnerFormValues,
 } from "@/features/partners/schemas/partner.schema";
 import { toNullableMediaId } from "@/features/media/schemas/media-fields.schema";
+import { toOptionalPhone } from "@/shared/lib/phone";
 
 const optionalText = (value: string): string | undefined =>
   value.length > 0 ? value : undefined;
@@ -100,8 +101,9 @@ const buildContacts = (
   email: string,
 ): PartnerContacts | null | undefined => {
   const contacts: PartnerContacts = {};
-  if (phone.length > 0) {
-    contacts.phone = phone;
+  const nextPhone = toOptionalPhone(phone);
+  if (nextPhone) {
+    contacts.phone = nextPhone;
   }
   if (email.length > 0) {
     contacts.email = email;
@@ -130,14 +132,17 @@ const buildSocialLinks = (
 export const toCreatePartnerBody = (
   values: CreatePartnerFormValues,
   locale?: string,
-): CreateAdminPartnerBody => ({
-  name: values.name,
-  type: values.type,
-  adminName: `${values.adminFirstName} ${values.adminSurname}`.trim(),
-  adminEmail: values.adminEmail,
-  ...(optionalText(values.adminPhone) ? { adminPhone: values.adminPhone } : {}),
-  ...(locale ? { locale } : {}),
-});
+): CreateAdminPartnerBody => {
+  const adminPhone = toOptionalPhone(values.adminPhone);
+  return {
+    name: values.name,
+    type: values.type,
+    adminName: `${values.adminFirstName} ${values.adminSurname}`.trim(),
+    adminEmail: values.adminEmail,
+    ...(adminPhone ? { adminPhone } : {}),
+    ...(locale ? { locale } : {}),
+  };
+};
 
 export const toUpdatePartnerBody = (
   values: UpdatePartnerFormValues,

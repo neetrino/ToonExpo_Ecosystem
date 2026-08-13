@@ -33,6 +33,19 @@ describe("createCompanySchema", () => {
     expect(result.success).toBe(true);
   });
 
+  it("allows plus-only optional phone", () => {
+    const result = createCompanySchema.safeParse({
+      name: "Partner Co",
+      type: "partner",
+      description: "",
+      adminName: "Bob",
+      adminEmail: "bob@example.com",
+      adminPhone: "+",
+    });
+
+    expect(result.success).toBe(true);
+  });
+
   it("rejects invalid company type", () => {
     const result = createCompanySchema.safeParse({
       name: "Bad Co",

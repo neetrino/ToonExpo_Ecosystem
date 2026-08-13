@@ -9,6 +9,7 @@ import type {
   PartnerProfileFormValues,
   UpdatePartnerFormValues,
 } from "@/features/partners/schemas/partner.schema";
+import { sanitizePhoneInput } from "@/shared/lib/phone";
 
 const readSocial = (
   links: Record<string, string> | null | undefined,
@@ -32,7 +33,7 @@ export const toUpdatePartnerFormValues = (
     partner.translations?.fullDescription?.hy ?? partner.fullDescription ?? "",
   fullDescriptionRu: partner.translations?.fullDescription?.ru ?? "",
   fullDescriptionEn: partner.translations?.fullDescription?.en ?? "",
-  contactPhone: partner.contacts?.phone ?? "",
+  contactPhone: sanitizePhoneInput(partner.contacts?.phone ?? ""),
   contactEmail: partner.contacts?.email ?? "",
   website: partner.website ?? "",
   socialFacebook: readSocial(partner.socialLinks, "facebook"),
@@ -53,7 +54,7 @@ export const toPartnerProfileFormValues = (
     partner.translations?.fullDescription?.hy ?? partner.fullDescription ?? "",
   fullDescriptionRu: partner.translations?.fullDescription?.ru ?? "",
   fullDescriptionEn: partner.translations?.fullDescription?.en ?? "",
-  contactPhone: partner.contacts?.phone ?? "",
+  contactPhone: sanitizePhoneInput(partner.contacts?.phone ?? ""),
   contactEmail: partner.contacts?.email ?? "",
   website: partner.website ?? "",
   socialFacebook: readSocial(partner.socialLinks, "facebook"),

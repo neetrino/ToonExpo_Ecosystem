@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import { optionalMediaIdField } from "@/features/media/schemas/media-fields.schema";
 import { PARTNER_PUBLICATION_STATUSES } from "@/features/partners/constants";
+import { isValidOptionalPhone } from "@/shared/lib/phone";
 
 export const SERVICE_PROVIDER_NAME_MAX_LENGTH = 200;
 export const SERVICE_PROVIDER_DESCRIPTION_MAX_LENGTH = 8000;
@@ -38,7 +39,13 @@ export const serviceProviderSchema = z.object({
   providerType: z.enum(SERVICE_PROVIDER_TYPES),
   description: z.string().max(SERVICE_PROVIDER_DESCRIPTION_MAX_LENGTH).optional(),
   services: z.string().max(SERVICE_PROVIDER_SERVICES_MAX_LENGTH).optional(),
-  phone: z.string().max(SERVICE_PROVIDER_PHONE_MAX_LENGTH).optional(),
+  phone: z
+    .string()
+    .max(SERVICE_PROVIDER_PHONE_MAX_LENGTH)
+    .refine((value) => value === undefined || isValidOptionalPhone(value), {
+      message: "phone",
+    })
+    .optional(),
   email: z.string().max(SERVICE_PROVIDER_EMAIL_MAX_LENGTH).optional(),
   website: z.string().max(SERVICE_PROVIDER_WEBSITE_MAX_LENGTH).optional(),
   socialFacebook: z.string().optional(),

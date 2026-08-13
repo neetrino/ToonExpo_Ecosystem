@@ -5,6 +5,7 @@ import type {
 } from "@toonexpo/contracts";
 
 import type { ServiceProviderFormValues } from "@/features/admin/schemas/service-provider.schema";
+import { sanitizePhoneInput, toOptionalPhone } from "@/shared/lib/phone";
 
 const buildSocialLinks = (
   facebook: string | undefined,
@@ -40,8 +41,9 @@ export const toCreateServiceProviderBody = (
   if (values.services && values.services.length > 0) {
     body.services = values.services;
   }
-  if (values.phone && values.phone.length > 0) {
-    body.phone = values.phone;
+  const phone = toOptionalPhone(values.phone ?? "");
+  if (phone) {
+    body.phone = phone;
   }
   if (values.email && values.email.length > 0) {
     body.email = values.email;
@@ -77,7 +79,7 @@ export const toUpdateServiceProviderBody = (
   categoryIds: values.categoryIds,
   description: values.description?.length ? values.description : null,
   services: values.services?.length ? values.services : null,
-  phone: values.phone?.length ? values.phone : null,
+  phone: toOptionalPhone(values.phone ?? "") ?? null,
   email: values.email?.length ? values.email : null,
   website: values.website?.length ? values.website : null,
   internalNotes: values.internalNotes?.length ? values.internalNotes : null,
@@ -100,7 +102,7 @@ export const toServiceProviderFormValues = (
   providerType: provider.providerType,
   description: provider.description ?? "",
   services: provider.services ?? "",
-  phone: provider.phone ?? "",
+  phone: sanitizePhoneInput(provider.phone ?? ""),
   email: provider.email ?? "",
   website: provider.website ?? "",
   socialFacebook: provider.socialLinks?.["facebook"] ?? "",
