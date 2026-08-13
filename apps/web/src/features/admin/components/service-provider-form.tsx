@@ -5,6 +5,7 @@ import type { ServiceProviderCategoryItem } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 import { Controller, useForm } from 'react-hook-form';
 
+import { ServiceProviderCategorySelect } from '@/features/admin/components/service-provider-category-select';
 import {
   SERVICE_PROVIDER_TYPES,
   serviceProviderSchema,
@@ -29,12 +30,6 @@ type ServiceProviderFormProps = {
 const selectedCategoryId = (categoryIds: readonly string[]): string => categoryIds[0] ?? '';
 
 const toCategoryIds = (categoryId: string): string[] => (categoryId.length > 0 ? [categoryId] : []);
-
-const selectableCategories = (
-  categories: readonly ServiceProviderCategoryItem[],
-  selectedIds: readonly string[],
-): ServiceProviderCategoryItem[] =>
-  categories.filter((category) => category.active || selectedIds.includes(category.id));
 
 /**
  * Admin create/edit form for service providers (side sheet).
@@ -119,33 +114,18 @@ export const ServiceProviderForm = ({
           <Controller
             name="categoryIds"
             control={form.control}
-            render={({ field }) => {
-              const options = selectableCategories(categories, field.value);
-              return (
-                <>
-                  <Select
-                    id="providerCategory"
-                    name={field.name}
-                    value={selectedCategoryId(field.value)}
-                    aria-label={t('categories')}
-                    onBlur={field.onBlur}
-                    onChange={(event) => {
-                      field.onChange(toCategoryIds(event.target.value));
-                    }}
-                  >
-                    <option value="">{t('categoriesPlaceholder')}</option>
-                    {options.map((category) => (
-                      <option key={category.id} value={category.id}>
-                        {category.name}
-                      </option>
-                    ))}
-                  </Select>
-                  {options.length === 0 ? (
-                    <p className="mt-1 text-xs text-ink-muted">{t('categoriesEmpty')}</p>
-                  ) : null}
-                </>
-              );
-            }}
+            render={({ field }) => (
+              <ServiceProviderCategorySelect
+                id="providerCategory"
+                categories={categories}
+                value={selectedCategoryId(field.value)}
+                disabled={busy}
+                onBlur={field.onBlur}
+                onChange={(categoryId) => {
+                  field.onChange(toCategoryIds(categoryId));
+                }}
+              />
+            )}
           />
         </FormField>
       </fieldset>

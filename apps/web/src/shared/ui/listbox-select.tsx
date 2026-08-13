@@ -9,6 +9,7 @@ import {
   useRef,
   useState,
   type FocusEventHandler,
+  type ReactNode,
 } from 'react';
 
 import { blurActiveElementAfterEscClose } from '@/shared/ui/blur-active-element';
@@ -35,6 +36,12 @@ export type ListboxSelectProps = {
   /** `full` stretches; `fit` matches dropdown width (chevron on the menu’s right edge). */
   size?: 'full' | 'fit' | undefined;
   onBlur?: FocusEventHandler<HTMLButtonElement> | undefined;
+  /** Shown on the trigger when `value` matches no option (not added as a menu row). */
+  placeholder?: string | undefined;
+  /** Extra content inside the menu panel (e.g. inline create). */
+  menuFooter?: ReactNode | undefined;
+  /** Optional trailing control per option (e.g. delete). */
+  optionAction?: ((option: ListboxOption) => ReactNode) | undefined;
 };
 
 /**
@@ -56,17 +63,22 @@ export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
       variant = 'plain',
       size = 'full',
       onBlur,
+      placeholder,
+      menuFooter,
+      optionAction,
     },
     ref,
   ) {
     const [open, setOpen] = useState(false);
     const rootRef = useRef<HTMLDivElement>(null);
     const buttonRef = useRef<HTMLButtonElement>(null);
-    const menuRef = useRef<HTMLUListElement>(null);
+    const menuRef = useRef<HTMLDivElement>(null);
     const listId = useId();
     const isField = variant === 'field';
     const isFit = size === 'fit';
-    const selected = options.find((option) => option.value === value) ?? options[0];
+    const selected = options.find((option) => option.value === value);
+    const triggerLabel = selected?.label ?? placeholder ?? options[0]?.label ?? '';
+    const showPlaceholder = selected == null && Boolean(placeholder);
 
     useImperativeHandle(ref, () => buttonRef.current as HTMLButtonElement);
 
@@ -192,9 +204,10 @@ export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
           <span
             className={cn(
               isField ? 'site-select-trigger__label' : isFit ? 'whitespace-nowrap' : 'truncate',
+              showPlaceholder && 'text-ink-muted',
             )}
           >
-            {selected?.label}
+            {triggerLabel}
           </span>
           <ChevronDown
             className={cn(
@@ -211,33 +224,57 @@ export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
         </button>
 
         <DropdownPortal open={open && !disabled} anchorRef={buttonRef} matchWidth>
-          <ul
-            ref={menuRef}
-            id={listId}
-            role="listbox"
-            aria-label={ariaLabel}
-            className="site-select-menu"
-          >
-            {options.map((option) => {
-              const active = option.value === value;
-              return (
-                <li key={option.value} role="none">
-                  <button
-                    type="button"
-                    role="option"
-                    aria-selected={active}
-                    className="site-select-option"
-                    onClick={() => pick(option.value)}
-                  >
-                    <span>{option.label}</span>
-                    {active ? <Check className="site-select-option__check" aria-hidden /> : null}
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
+          <div ref={menuRef} className="site-select-menu">
+            <ul id={listId} role="listbox" aria-label={ariaLabel}>
+              {options.map((option) => (
+                <ListboxOptionItem
+                  key={option.value}
+                  option={option}
+                  active={option.value === value}
+                  action={optionAction?.(option)}
+                  onPick={pick}
+                />
+              ))}
+            </ul>
+            {menuFooter}
+          </div>
         </DropdownPortal>
       </div>
     );
   },
 );
+
+type ListboxOptionItemProps = {
+  option: ListboxOption;
+  active: boolean;
+  action: ReactNode | undefined;
+  onPick: (value: string) => void;
+};
+
+const ListboxOptionItem = ({ option, active, action, onPick }: ListboxOptionItemProps) => {
+  const control = (
+    <button
+      type="button"
+      role="option"
+      aria-selected={active}
+      className="site-select-option"
+      onClick={() => {
+        onPick(option.value);
+      }}
+    >
+      <span>{option.label}</span>
+      {active ? <Check className="site-select-option__check" aria-hidden /> : null}
+    </button>
+  );
+
+  if (!action) {
+    return <li role="none">{control}</li>;
+  }
+
+  return (
+    <li role="none" className="site-select-option-row">
+      {control}
+      <div className="site-select-option-row__action">{action}</div>
+    </li>
+  );
+};
