@@ -3843,6 +3843,8 @@
       "previewBadge": "Example preview",
       "previewHint": "No real assessment yet — this is sample data so you can see how readiness looks in the portal.",
       "companyAssessment": "Company readiness",
+      "expandDetails": "Show readiness details",
+      "collapseDetails": "Hide readiness details",
       "overallScore": "Overall score",
       "kpiScoreLabel": "Readiness score",
       "overallHints": {
