@@ -7,6 +7,7 @@ import type {
   ReadinessAssessmentDetail,
   ReadinessAssessmentListItem,
   ReadinessCategoryItem,
+  ReadinessCriterionItem,
   ReadinessCriterionScoreItem,
   ReadinessInternalNoteItem,
   ReadinessRecommendationItem,
@@ -45,6 +46,25 @@ export const toReadinessCategoryItem = (category: ReadinessCategory): ReadinessC
   createdAt: toIso(category.createdAt),
   updatedAt: toIso(category.updatedAt),
 });
+
+export const toReadinessCriterionItem = (criterion: ReadinessCriterion): ReadinessCriterionItem => ({
+  id: criterion.id,
+  code: criterion.code,
+  categoryId: criterion.categoryId,
+  parentId: criterion.parentId,
+  maxPoints: criterion.maxPoints,
+  sortOrder: criterion.sortOrder,
+  serviceProviderCategoryId: criterion.serviceProviderCategoryId,
+  active: criterion.active,
+  createdAt: toIso(criterion.createdAt),
+  updatedAt: toIso(criterion.updatedAt),
+});
+
+const isHelpAvailable = (
+  providerCategoryId: string | null,
+  helpByProviderCategoryId: ReadonlyMap<string, boolean>,
+): boolean =>
+  providerCategoryId != null && (helpByProviderCategoryId.get(providerCategoryId) ?? false);
 
 type ScoreWithCategory = ReadinessScore & { category: ReadinessCategory };
 
@@ -105,6 +125,21 @@ type CriterionScoreWithCriterion = ReadinessCriterionScore & {
   criterion: ReadinessCriterion;
 };
 
+const toCriterionScoreFields = (
+  criterion: ReadinessCriterion,
+  score: CriterionScoreWithCriterion | undefined,
+): Omit<ReadinessCriterionScoreItem, 'children'> => ({
+  scoreId: score?.id ?? null,
+  criterionId: criterion.id,
+  code: criterion.code,
+  parentId: criterion.parentId,
+  maxPoints: criterion.maxPoints,
+  sortOrder: criterion.sortOrder,
+  value: score?.value ?? null,
+  checked: score?.checked ?? false,
+  serviceProviderCategoryId: criterion.serviceProviderCategoryId,
+});
+
 export const assessmentDetailInclude = {
   scores: {
     include: { category: true },
@@ -129,18 +164,9 @@ const toCriterionScoreNode = (
   ancestors: ReadonlySet<string> = new Set(),
 ): ReadinessCriterionScoreItem => {
   const score = scoreByCriterionId.get(criterion.id);
+  const fields = toCriterionScoreFields(criterion, score);
   if (ancestors.has(criterion.id)) {
-    return {
-      scoreId: score?.id ?? null,
-      criterionId: criterion.id,
-      code: criterion.code,
-      parentId: criterion.parentId,
-      maxPoints: criterion.maxPoints,
-      sortOrder: criterion.sortOrder,
-      value: score?.value ?? null,
-      checked: score?.checked ?? false,
-      children: [],
-    };
+    return { ...fields, children: [] };
   }
 
   const nextAncestors = new Set(ancestors);
@@ -148,14 +174,7 @@ const toCriterionScoreNode = (
   const children = childrenByParentId.get(criterion.id) ?? [];
 
   return {
-    scoreId: score?.id ?? null,
-    criterionId: criterion.id,
-    code: criterion.code,
-    parentId: criterion.parentId,
-    maxPoints: criterion.maxPoints,
-    sortOrder: criterion.sortOrder,
-    value: score?.value ?? null,
-    checked: score?.checked ?? false,
+    ...fields,
     children: children.map((child) =>
       toCriterionScoreNode(child, scoreByCriterionId, childrenByParentId, nextAncestors),
     ),
@@ -191,6 +210,7 @@ export const buildCriterionTreeForCategory = (
 
 const toPortalCriterionNode = (
   item: ReadinessCriterionScoreItem,
+  helpByProviderCategoryId: ReadonlyMap<string, boolean>,
 ): PortalReadinessCriterionItem => ({
   criterionId: item.criterionId,
   code: item.code,
@@ -200,7 +220,9 @@ const toPortalCriterionNode = (
   value: item.value,
   checked: item.checked,
   percent: criterionPercent(item.value, item.maxPoints),
-  children: item.children.map(toPortalCriterionNode),
+  serviceProviderCategoryId: item.serviceProviderCategoryId,
+  helpAvailable: isHelpAvailable(item.serviceProviderCategoryId, helpByProviderCategoryId),
+  children: item.children.map((child) => toPortalCriterionNode(child, helpByProviderCategoryId)),
 });
 
 export const toReadinessScoreItem = (
@@ -288,7 +310,7 @@ export const toReadinessAssessmentDetail = (
 
 export const toPortalReadinessScoreItem = (
   score: ScoreWithCategory,
-  helpAvailable: boolean,
+  helpByProviderCategoryId: ReadonlyMap<string, boolean>,
   criteria: ReadinessCriterionScoreItem[] = [],
 ): PortalReadinessScoreItem => ({
   categoryId: score.categoryId,
@@ -299,8 +321,11 @@ export const toPortalReadinessScoreItem = (
   status: score.status,
   recommendationSummary: score.recommendationSummary,
   serviceProviderCategoryId: score.category.serviceProviderCategoryId,
-  helpAvailable,
-  criteria: criteria.map(toPortalCriterionNode),
+  helpAvailable: isHelpAvailable(
+    score.category.serviceProviderCategoryId,
+    helpByProviderCategoryId,
+  ),
+  criteria: criteria.map((item) => toPortalCriterionNode(item, helpByProviderCategoryId)),
 });
 
 export const toPortalReadinessRecommendationItem = (
@@ -335,7 +360,7 @@ type PortalAssessmentSource = ReadinessAssessment & {
 
 export const toPortalReadinessAssessmentItem = (
   assessment: PortalAssessmentSource,
-  helpAvailabilityByCategoryId: ReadonlyMap<string, boolean>,
+  helpByProviderCategoryId: ReadonlyMap<string, boolean>,
   catalogCriteria: readonly ReadinessCriterion[],
 ): PortalReadinessAssessmentItem => {
   const coverUrl =
@@ -353,7 +378,7 @@ export const toPortalReadinessAssessmentItem = (
     scores: assessment.scores.map((score) =>
       toPortalReadinessScoreItem(
         score,
-        helpAvailabilityByCategoryId.get(score.categoryId) ?? false,
+        helpByProviderCategoryId,
         buildCriterionTreeForCategory(
           score.categoryId,
           catalogCriteria,

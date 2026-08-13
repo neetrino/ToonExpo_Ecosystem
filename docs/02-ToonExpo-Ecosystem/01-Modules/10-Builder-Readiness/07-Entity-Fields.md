@@ -44,6 +44,21 @@ Fields:
 - created_at;
 - updated_at.
 
+## ReadinessCriterion
+
+Fields:
+
+- id;
+- code;
+- readiness_category_id;
+- parent_id optional;
+- max_points optional;
+- sort_order;
+- service_provider_category_id optional;
+- active;
+- created_at;
+- updated_at.
+
 ## ReadinessScore
 
 Fields:
@@ -137,6 +152,7 @@ ReadinessAssessment 0..n ReadinessRecommendations
 ReadinessAssessment 0..n RequiredActions
 ReadinessAssessment 0..n InternalReadinessNotes
 ReadinessCategory 0..1 ServiceProviderCategory
+ReadinessCriterion 0..1 ServiceProviderCategory
 ServiceProviderCategory 0..n ServiceProviders
 ```
 

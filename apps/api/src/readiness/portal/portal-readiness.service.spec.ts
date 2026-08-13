@@ -11,6 +11,7 @@ import { PortalReadinessService } from './portal-readiness.service.js';
 describe('PortalReadinessService helpAvailable', () => {
   const readinessAssessmentFindFirst = vi.fn();
   const readinessAssessmentFindMany = vi.fn();
+  const readinessCriterionFindMany = vi.fn();
   const projectFindMany = vi.fn();
   const serviceProviderCategoryLinkGroupBy = vi.fn();
   let service: PortalReadinessService;
@@ -31,7 +32,7 @@ describe('PortalReadinessService helpAvailable', () => {
           findFirst: readinessAssessmentFindFirst,
           findMany: readinessAssessmentFindMany,
         },
-        readinessCriterion: { findMany: vi.fn().mockResolvedValue([]) },
+        readinessCriterion: { findMany: readinessCriterionFindMany },
         project: { findMany: projectFindMany },
         serviceProviderCategoryLink: { groupBy: serviceProviderCategoryLinkGroupBy },
       },
@@ -40,6 +41,7 @@ describe('PortalReadinessService helpAvailable', () => {
     service = new PortalReadinessService(prisma);
     projectFindMany.mockResolvedValue([]);
     readinessAssessmentFindMany.mockResolvedValue([]);
+    readinessCriterionFindMany.mockResolvedValue([]);
     serviceProviderCategoryLinkGroupBy.mockResolvedValue([
       {
         serviceProviderCategoryId: 'sp_cat_1',
@@ -95,6 +97,54 @@ describe('PortalReadinessService helpAvailable', () => {
     expect(scores[0]?.serviceProviderCategoryId).toBe('sp_cat_1');
     expect(scores[0]?.helpAvailable).toBe(true);
     expect(scores[1]?.helpAvailable).toBe(false);
+  });
+
+  it('sets helpAvailable on a criterion linked to a provider category', async () => {
+    readinessCriterionFindMany.mockResolvedValue([
+      {
+        id: 'crit_1',
+        code: 'price_orientation',
+        categoryId: 'readiness_cat_1',
+        parentId: null,
+        maxPoints: 10,
+        sortOrder: 1,
+        serviceProviderCategoryId: 'sp_cat_1',
+        active: true,
+      },
+    ]);
+    readinessAssessmentFindFirst.mockResolvedValue({
+      id: 'asm_1',
+      targetType: ReadinessAssessmentTargetType.builder_company,
+      builderCompanyId: 'co_1',
+      projectId: null,
+      status: ReadinessScoreStatus.needs_improvement,
+      overallScore: 40,
+      lastEvaluatedAt: new Date('2026-07-18T10:00:00.000Z'),
+      project: null,
+      scores: [
+        {
+          categoryId: 'readiness_cat_1',
+          score: 40,
+          status: ReadinessScoreStatus.needs_improvement,
+          recommendationSummary: null,
+          category: {
+            code: 'product',
+            name: 'Product',
+            weight: 40,
+            serviceProviderCategoryId: null,
+          },
+        },
+      ],
+      criterionScores: [],
+      recommendations: [],
+      requiredActions: [],
+    });
+
+    const result = await service.getCompanyReadiness(member);
+    const criterion = result.data[0]?.scores[0]?.criteria[0];
+
+    expect(criterion?.serviceProviderCategoryId).toBe('sp_cat_1');
+    expect(criterion?.helpAvailable).toBe(true);
   });
 
   it('queries portal include with builder_visible filters only', async () => {

@@ -12,7 +12,9 @@ import type {
   ReadinessRequiredActionItem,
   ReadinessScoreItem,
   ReadinessScoreStatus,
+  ReadinessCriterionItem,
   UpdateReadinessAssessmentBody,
+  UpdateReadinessCriterionBody,
   UpdateReadinessRecommendationBody,
   UpdateReadinessRequiredActionBody,
   UpsertReadinessScoreBody,
@@ -124,6 +126,17 @@ export const upsertAdminReadinessCriterionScore = (
   apiFetch<ReadinessAssessmentDetail>({
     path: `/admin/readiness/assessments/${encodeURIComponent(assessmentId)}/criteria/${encodeURIComponent(criterionId)}`,
     method: 'PUT',
+    ...jsonCredentials,
+    body: JSON.stringify(body),
+  });
+
+export const updateAdminReadinessCriterion = (
+  criterionId: string,
+  body: UpdateReadinessCriterionBody,
+): Promise<ReadinessCriterionItem> =>
+  apiFetch<ReadinessCriterionItem>({
+    path: `/admin/readiness/criteria/${encodeURIComponent(criterionId)}`,
+    method: 'PATCH',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });

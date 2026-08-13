@@ -2443,7 +2443,10 @@
         "projectHint": "Updates apply to the readiness the builder sees in their portal.",
         "save": "Save",
         "saving": "Saving…",
-        "saveError": "Could not save changes. Try again."
+        "saveError": "Could not save changes. Try again.",
+        "providerCategory": "Category",
+        "providerCategoryNone": "None",
+        "providerCategoryError": "Could not save the category. Try again."
       },
       "categories": {
         "title": "Categories",
@@ -3855,6 +3858,7 @@
       "categoryScore": "Score",
       "noRecommendation": "No specific tip for this category yet.",
       "helpButton": "Find help providers",
+      "criterionHelp": "View help providers",
       "flagYes": "Yes",
       "flagNo": "No",
       "help": {

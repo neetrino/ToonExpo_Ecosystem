@@ -60,7 +60,25 @@ export type ReadinessCriterionScoreItem = {
   sortOrder: number;
   value: number | null;
   checked: boolean;
+  serviceProviderCategoryId: string | null;
   children: ReadinessCriterionScoreItem[];
+};
+
+export type ReadinessCriterionItem = {
+  id: string;
+  code: string;
+  categoryId: string;
+  parentId: string | null;
+  maxPoints: number | null;
+  sortOrder: number;
+  serviceProviderCategoryId: string | null;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type UpdateReadinessCriterionBody = {
+  serviceProviderCategoryId?: string | null;
 };
 
 export type ReadinessScoreItem = {
@@ -236,6 +254,8 @@ export type PortalReadinessCriterionItem = {
   checked: boolean;
   /** value / maxPoints as 0–100 when scored; null for non-scored rows. */
   percent: number | null;
+  serviceProviderCategoryId: string | null;
+  helpAvailable: boolean;
   children: PortalReadinessCriterionItem[];
 };
 

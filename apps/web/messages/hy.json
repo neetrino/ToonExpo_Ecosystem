@@ -2443,7 +2443,10 @@
         "projectHint": "Թարմացումները երևում են builder-ի portal-ում։",
         "save": "Պահպանել",
         "saving": "Պահպանվում է…",
-        "saveError": "Չհաջողվեց պահպանել։ Կրկին փորձեք։"
+        "saveError": "Չհաջողվեց պահպանել։ Կրկին փորձեք։",
+        "providerCategory": "Կատեգորիա",
+        "providerCategoryNone": "Չկա",
+        "providerCategoryError": "Չհաջողվեց պահպանել կատեգորիան։ Կրկին փորձեք։"
       },
       "categories": {
         "title": "Կատեգորիաներ",
@@ -3597,6 +3600,7 @@
       "categoryScore": "Միավոր",
       "noRecommendation": "Այս կատեգորիայի համար դեռ հատուկ խորհուրդ չկա։",
       "helpButton": "Գտնել օգնության մատակարարներ",
+      "criterionHelp": "Տեսնել մատակարարներին",
       "flagYes": "Այո",
       "flagNo": "Ոչ",
       "help": {

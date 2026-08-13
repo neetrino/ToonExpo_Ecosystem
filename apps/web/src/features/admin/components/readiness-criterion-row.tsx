@@ -4,6 +4,7 @@ import type { ReadinessCriterionScoreItem } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
+import { ReadinessCriterionProviderSelect } from '@/features/admin/components/readiness-criterion-provider-select';
 import { cn } from '@/shared/ui/cn';
 
 export type CriterionDraft = {
@@ -106,7 +107,7 @@ export const ReadinessCriterionRow = ({
 
   return (
     <div className={cn(depth > 0 && 'ml-6 border-l border-border/70 pl-3')}>
-      <div className="flex items-center gap-3 py-2">
+      <div className="flex flex-wrap items-center gap-3 py-2">
         {!isGroup ? (
           <input
             type="checkbox"
@@ -128,6 +129,12 @@ export const ReadinessCriterionRow = ({
         >
           {label}
         </p>
+
+        <ReadinessCriterionProviderSelect
+          criterionId={item.criterionId}
+          value={item.serviceProviderCategoryId}
+          disabled={disabled}
+        />
 
         {isGroup ? (
           <span className="shrink-0 text-sm font-semibold tabular-nums text-ink-secondary">

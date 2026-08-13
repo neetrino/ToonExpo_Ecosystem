@@ -34,6 +34,8 @@ export const BUILDER_READINESS_PREVIEW_ASSESSMENT: PortalReadinessAssessmentItem
           value: 7,
           checked: true,
           percent: 70,
+          serviceProviderCategoryId: null,
+          helpAvailable: false,
           children: [],
         },
         {
@@ -45,6 +47,8 @@ export const BUILDER_READINESS_PREVIEW_ASSESSMENT: PortalReadinessAssessmentItem
           value: 8,
           checked: true,
           percent: 80,
+          serviceProviderCategoryId: null,
+          helpAvailable: false,
           children: [],
         },
         {
@@ -56,6 +60,8 @@ export const BUILDER_READINESS_PREVIEW_ASSESSMENT: PortalReadinessAssessmentItem
           value: 3,
           checked: true,
           percent: 60,
+          serviceProviderCategoryId: null,
+          helpAvailable: false,
           children: [],
         },
         {
@@ -67,6 +73,8 @@ export const BUILDER_READINESS_PREVIEW_ASSESSMENT: PortalReadinessAssessmentItem
           value: null,
           checked: true,
           percent: null,
+          serviceProviderCategoryId: null,
+          helpAvailable: false,
           children: [
             {
               criterionId: 'c-prepay',
@@ -77,6 +85,8 @@ export const BUILDER_READINESS_PREVIEW_ASSESSMENT: PortalReadinessAssessmentItem
               value: null,
               checked: true,
               percent: null,
+              serviceProviderCategoryId: null,
+              helpAvailable: false,
               children: [],
             },
             {
@@ -88,6 +98,8 @@ export const BUILDER_READINESS_PREVIEW_ASSESSMENT: PortalReadinessAssessmentItem
               value: null,
               checked: true,
               percent: null,
+              serviceProviderCategoryId: null,
+              helpAvailable: false,
               children: [],
             },
             {
@@ -99,6 +111,8 @@ export const BUILDER_READINESS_PREVIEW_ASSESSMENT: PortalReadinessAssessmentItem
               value: null,
               checked: false,
               percent: null,
+              serviceProviderCategoryId: null,
+              helpAvailable: false,
               children: [],
             },
           ],
@@ -125,6 +139,8 @@ export const BUILDER_READINESS_PREVIEW_ASSESSMENT: PortalReadinessAssessmentItem
           value: null,
           checked: true,
           percent: null,
+          serviceProviderCategoryId: null,
+          helpAvailable: false,
           children: [
             {
               criterionId: 'c-videos',
@@ -135,6 +151,8 @@ export const BUILDER_READINESS_PREVIEW_ASSESSMENT: PortalReadinessAssessmentItem
               value: 4,
               checked: true,
               percent: 40,
+              serviceProviderCategoryId: null,
+              helpAvailable: false,
               children: [],
             },
             {
@@ -146,6 +164,8 @@ export const BUILDER_READINESS_PREVIEW_ASSESSMENT: PortalReadinessAssessmentItem
               value: 6,
               checked: true,
               percent: 60,
+              serviceProviderCategoryId: null,
+              helpAvailable: false,
               children: [],
             },
             {
@@ -157,6 +177,8 @@ export const BUILDER_READINESS_PREVIEW_ASSESSMENT: PortalReadinessAssessmentItem
               value: 5,
               checked: true,
               percent: 50,
+              serviceProviderCategoryId: null,
+              helpAvailable: false,
               children: [],
             },
           ],
@@ -170,6 +192,8 @@ export const BUILDER_READINESS_PREVIEW_ASSESSMENT: PortalReadinessAssessmentItem
           value: 7,
           checked: true,
           percent: 70,
+          serviceProviderCategoryId: null,
+          helpAvailable: false,
           children: [],
         },
       ],
@@ -194,6 +218,8 @@ export const BUILDER_READINESS_PREVIEW_ASSESSMENT: PortalReadinessAssessmentItem
           value: 8,
           checked: true,
           percent: 80,
+          serviceProviderCategoryId: null,
+          helpAvailable: false,
           children: [],
         },
         {
@@ -205,6 +231,8 @@ export const BUILDER_READINESS_PREVIEW_ASSESSMENT: PortalReadinessAssessmentItem
           value: 8,
           checked: true,
           percent: 80,
+          serviceProviderCategoryId: null,
+          helpAvailable: false,
           children: [],
         },
       ],

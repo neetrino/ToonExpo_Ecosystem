@@ -55,13 +55,12 @@ export class PortalReadinessService {
       return null;
     }
 
-    const helpAvailabilityByCategoryId = await this.buildHelpAvailabilityMap(assessment.scores);
+    const helpByProviderCategoryId = await this.buildHelpAvailabilityMap([
+      ...assessment.scores.map((score) => score.category.serviceProviderCategoryId),
+      ...catalogCriteria.map((criterion) => criterion.serviceProviderCategoryId),
+    ]);
 
-    return toPortalReadinessAssessmentItem(
-      assessment,
-      helpAvailabilityByCategoryId,
-      catalogCriteria,
-    );
+    return toPortalReadinessAssessmentItem(assessment, helpByProviderCategoryId, catalogCriteria);
   }
 
   private async findActiveProjectAssessments(
@@ -102,27 +101,23 @@ export class PortalReadinessService {
       return [];
     }
 
-    const helpAvailabilityByCategoryId = await this.buildHelpAvailabilityMap(
-      latestAssessments.flatMap((assessment) => assessment.scores),
-    );
+    const helpByProviderCategoryId = await this.buildHelpAvailabilityMap([
+      ...latestAssessments.flatMap((assessment) =>
+        assessment.scores.map((score) => score.category.serviceProviderCategoryId),
+      ),
+      ...catalogCriteria.map((criterion) => criterion.serviceProviderCategoryId),
+    ]);
 
     return latestAssessments.map((assessment) =>
-      toPortalReadinessAssessmentItem(assessment, helpAvailabilityByCategoryId, catalogCriteria),
+      toPortalReadinessAssessmentItem(assessment, helpByProviderCategoryId, catalogCriteria),
     );
   }
 
   private async buildHelpAvailabilityMap(
-    scores: Array<{
-      categoryId: string;
-      category: { serviceProviderCategoryId: string | null };
-    }>,
+    providerCategoryIds: readonly (string | null)[],
   ): Promise<Map<string, boolean>> {
     const categoryIds = [
-      ...new Set(
-        scores
-          .map((score) => score.category.serviceProviderCategoryId)
-          .filter((value): value is string => value != null),
-      ),
+      ...new Set(providerCategoryIds.filter((value): value is string => value != null)),
     ];
 
     if (categoryIds.length === 0) {
@@ -138,20 +133,9 @@ export class PortalReadinessService {
       _count: { serviceProviderId: true },
     });
 
-    const activeCounts = new Map(
-      counts.map((row) => [row.serviceProviderCategoryId, row._count.serviceProviderId]),
+    return new Map(
+      counts.map((row) => [row.serviceProviderCategoryId, row._count.serviceProviderId > 0]),
     );
-
-    const helpByScoreCategory = new Map<string, boolean>();
-
-    for (const score of scores) {
-      const linkedCategoryId = score.category.serviceProviderCategoryId;
-      const helpAvailable =
-        linkedCategoryId != null && (activeCounts.get(linkedCategoryId) ?? 0) > 0;
-      helpByScoreCategory.set(score.categoryId, helpAvailable);
-    }
-
-    return helpByScoreCategory;
   }
 
   private portalInclude() {

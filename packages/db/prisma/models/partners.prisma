@@ -119,6 +119,7 @@ model ServiceProviderCategory {
   logoMedia           MediaAsset?                   @relation("ServiceProviderCategoryLogo", fields: [logoMediaId], references: [id], onDelete: SetNull)
   providers           ServiceProviderCategoryLink[]
   readinessCategories ReadinessCategory[]
+  readinessCriteria   ReadinessCriterion[]
 
   @@index([active])
   @@index([sortOrder])

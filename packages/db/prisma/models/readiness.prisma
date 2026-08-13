@@ -83,25 +83,28 @@ model ReadinessCategory {
 
 /// KPI criterion (leaf score row or group header) under a readiness category.
 model ReadinessCriterion {
-  id         String   @id @default(cuid())
-  code       String   @unique
-  categoryId String   @map("category_id")
-  parentId   String?  @map("parent_id")
+  id                        String   @id @default(cuid())
+  code                      String   @unique
+  categoryId                String   @map("category_id")
+  parentId                  String?  @map("parent_id")
   /// Max points for leaf criteria; null for group headers / non-scored rows.
-  maxPoints  Int?     @map("max_points")
-  sortOrder  Int      @default(0) @map("sort_order")
-  active     Boolean  @default(true)
-  createdAt  DateTime @default(now()) @map("created_at")
-  updatedAt  DateTime @updatedAt @map("updated_at")
+  maxPoints                 Int?     @map("max_points")
+  sortOrder                 Int      @default(0) @map("sort_order")
+  serviceProviderCategoryId String?  @map("service_provider_category_id")
+  active                    Boolean  @default(true)
+  createdAt                 DateTime @default(now()) @map("created_at")
+  updatedAt                 DateTime @updatedAt @map("updated_at")
 
-  category ReadinessCategory        @relation(fields: [categoryId], references: [id], onDelete: Restrict)
-  parent   ReadinessCriterion?      @relation("ReadinessCriterionTree", fields: [parentId], references: [id], onDelete: Restrict)
-  children ReadinessCriterion[]     @relation("ReadinessCriterionTree")
-  scores   ReadinessCriterionScore[]
+  category                ReadinessCategory         @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  parent                  ReadinessCriterion?       @relation("ReadinessCriterionTree", fields: [parentId], references: [id], onDelete: Restrict)
+  children                ReadinessCriterion[]      @relation("ReadinessCriterionTree")
+  scores                  ReadinessCriterionScore[]
+  serviceProviderCategory ServiceProviderCategory?  @relation(fields: [serviceProviderCategoryId], references: [id], onDelete: SetNull)
 
   @@index([categoryId])
   @@index([parentId])
   @@index([active, sortOrder])
+  @@index([serviceProviderCategoryId])
   @@map("readiness_criteria")
 }
 

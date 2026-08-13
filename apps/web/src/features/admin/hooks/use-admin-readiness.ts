@@ -7,6 +7,7 @@ import type {
   CreateReadinessRecommendationBody,
   CreateReadinessRequiredActionBody,
   UpdateReadinessAssessmentBody,
+  UpdateReadinessCriterionBody,
   UpdateReadinessRecommendationBody,
   UpdateReadinessRequiredActionBody,
   UpsertReadinessScoreBody,
@@ -25,6 +26,7 @@ import {
   getAdminReadinessAssessment,
   listAdminReadinessAssessments,
   updateAdminReadinessAssessment,
+  updateAdminReadinessCriterion,
   updateAdminReadinessRecommendation,
   updateAdminReadinessRequiredAction,
   upsertAdminReadinessCriterionScore,
@@ -36,6 +38,7 @@ import {
   ADMIN_READINESS_ASSESSMENTS_QUERY_KEY,
   adminReadinessAssessmentQueryKey,
 } from '@/features/admin/constants';
+import { PORTAL_READINESS_QUERY_KEY } from '@/features/builder/constants';
 
 export const useAdminReadinessAssessmentsQuery = (params: ListReadinessAssessmentsParams) =>
   useQuery({
@@ -110,6 +113,23 @@ export const useUpsertReadinessCriterionScoreMutation = (assessmentId: string) =
   });
 };
 
+export const useUpdateReadinessCriterionMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      criterionId,
+      body,
+    }: {
+      criterionId: string;
+      body: UpdateReadinessCriterionBody;
+    }) => updateAdminReadinessCriterion(criterionId, body),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ADMIN_READINESS_ASSESSMENTS_QUERY_KEY });
+      void queryClient.invalidateQueries({ queryKey: PORTAL_READINESS_QUERY_KEY });
+    },
+  });
+};
+
 export const useUpsertReadinessCriterionScoresBatchMutation = (assessmentId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -118,7 +138,7 @@ export const useUpsertReadinessCriterionScoresBatchMutation = (assessmentId: str
     onSuccess: (assessment) => {
       queryClient.setQueryData(adminReadinessAssessmentQueryKey(assessmentId), assessment);
       invalidateAssessmentDetail(queryClient, assessmentId);
-      void queryClient.invalidateQueries({ queryKey: ['portal', 'readiness'] });
+      void queryClient.invalidateQueries({ queryKey: PORTAL_READINESS_QUERY_KEY });
     },
   });
 };
