@@ -2218,8 +2218,8 @@
       }
     },
     "serviceProviders": {
-      "title": "Service provider directory",
-      "subtitle": "Providers for readiness help",
+      "title": "Service providers",
+      "subtitle": "Specialists who help builders get ready for ToonExpo.",
       "loading": "Loading…",
       "error": "Could not load service providers. Try again.",
       "categories": {
@@ -2250,7 +2250,11 @@
       "providers": {
         "title": "Providers",
         "newProvider": "+ New Provider",
-        "empty": "No providers match these filters.",
+        "emptyTitle": "No providers yet",
+        "empty": "Add the first specialist so builders can get help from the directory.",
+        "noResultsTitle": "No matching providers",
+        "noResults": "Nothing matches the current search or filters.",
+        "clearSearch": "Clear filters",
         "edit": "Edit",
         "delete": "Delete",
         "activeYes": "Active",

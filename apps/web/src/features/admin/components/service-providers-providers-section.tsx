@@ -1,10 +1,13 @@
 'use client';
 
 import type { AdminServiceProviderItem, ServiceProviderCategoryItem } from '@toonexpo/contracts';
+import { LayoutList, SearchX } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 
+import { ServiceProviderCard } from '@/features/admin/components/service-provider-card';
 import { ServiceProviderForm } from '@/features/admin/components/service-provider-form';
+import { ServiceProvidersTable } from '@/features/admin/components/service-providers-table';
 import { ADMIN_VIEW_MODE_KEYS } from '@/features/admin/constants';
 import type { ServiceProviderFormValues } from '@/features/admin/schemas/service-provider.schema';
 import { toServiceProviderFormValues } from '@/features/admin/utils/service-provider-mappers';
@@ -13,6 +16,7 @@ import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { AdminCreateSheet } from '@/shared/ui/admin-create-sheet';
 import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
 import { Button } from '@/shared/ui/button';
+import { EmptyState } from '@/shared/ui/empty-state';
 import type { IntegratedSearchFilterConfig } from '@/shared/ui/integrated-search-filters.types';
 import { ListPageHeader } from '@/shared/ui/list-page-header';
 import { VIEW_MODE_CARDS } from '@/shared/ui/view-mode';
@@ -74,39 +78,45 @@ export const ServiceProvidersProvidersSection = ({
   onUpdateSubmit,
   busy,
 }: ServiceProvidersProvidersSectionProps) => {
-  const t = useTranslations('Admin.serviceProviders.providers');
+  const t = useTranslations('Admin.serviceProviders');
+  const tList = useTranslations('Admin.serviceProviders.providers');
   const { viewMode, effectiveViewMode, setViewMode } = usePersistedViewMode(
     ADMIN_VIEW_MODE_KEYS.serviceProviders,
   );
+
+  const hasActiveFilters =
+    filters.search.trim().length > 0 || filters.categoryId.length > 0 || filters.active.length > 0;
 
   const filterConfigs = useMemo(
     (): IntegratedSearchFilterConfig[] => [
       {
         key: SERVICE_PROVIDER_FILTER_CATEGORY_KEY,
-        label: t('columns.categories'),
-        allOptionLabel: t('filters.allCategories'),
+        label: tList('columns.categories'),
+        allOptionLabel: tList('filters.allCategories'),
         options: categories.map((category) => ({ value: category.id, label: category.name })),
       },
       {
         key: SERVICE_PROVIDER_FILTER_ACTIVE_KEY,
-        label: t('columns.active'),
-        allOptionLabel: t('filters.allActive'),
+        label: tList('columns.active'),
+        allOptionLabel: tList('filters.allActive'),
         options: [
-          { value: 'true', label: t('filters.active') },
-          { value: 'false', label: t('filters.inactive') },
+          { value: 'true', label: tList('filters.active') },
+          { value: 'false', label: tList('filters.inactive') },
         ],
       },
     ],
-    [categories, t],
+    [categories, tList],
   );
 
   return (
-    <section className="flex flex-col gap-4">
+    <section className="flex flex-col gap-6">
       <ListPageHeader
+        icon={LayoutList}
         title={t('title')}
+        subtitle={t('subtitle')}
         search={filters.search}
-        searchPlaceholder={t('filters.searchPlaceholder')}
-        searchAriaLabel={t('filters.searchPlaceholder')}
+        searchPlaceholder={tList('filters.searchPlaceholder')}
+        searchAriaLabel={tList('filters.searchPlaceholder')}
         filters={filterConfigs}
         filterValues={{
           [SERVICE_PROVIDER_FILTER_CATEGORY_KEY]: filters.categoryId,
@@ -125,13 +135,13 @@ export const ServiceProvidersProvidersSection = ({
           }
         }}
         onClearAll={() => {
-          onFiltersChange({ ...filters, categoryId: '', active: '' });
+          onFiltersChange({ ...filters, search: '', categoryId: '', active: '' });
         }}
         actions={
           <>
             <ViewModeToggle value={viewMode} onChange={setViewMode} />
             <Button type="button" size="sm" variant="secondary" onClick={onCreate}>
-              <AddActionLabel>{t('newProvider')}</AddActionLabel>
+              <AddActionLabel>{tList('newProvider')}</AddActionLabel>
             </Button>
           </>
         }
@@ -140,14 +150,14 @@ export const ServiceProvidersProvidersSection = ({
       <AdminCreateSheet
         open={creating}
         onClose={onDone}
-        title={t('newProvider')}
+        title={tList('newProvider')}
         size="comfortable"
       >
         <ServiceProviderForm
           key="create"
           categories={categories}
           defaultValues={EMPTY_PROVIDER_DEFAULTS}
-          submitLabel={t('create')}
+          submitLabel={tList('create')}
           isBusy={busy}
           onCancel={onDone}
           onSubmit={async (values) => {
@@ -168,7 +178,7 @@ export const ServiceProvidersProvidersSection = ({
             key={editing.id}
             categories={categories}
             defaultValues={toServiceProviderFormValues(editing)}
-            submitLabel={t('save')}
+            submitLabel={tList('save')}
             isBusy={busy}
             onCancel={onDone}
             onSubmit={async (values) => {
@@ -180,102 +190,45 @@ export const ServiceProvidersProvidersSection = ({
       </AdminCreateSheet>
 
       {providers.length === 0 ? (
-        <p className="text-sm text-ink-secondary">{t('empty')}</p>
+        <div className="flex min-h-72 items-center justify-center">
+          <EmptyState
+            icon={hasActiveFilters ? SearchX : LayoutList}
+            title={hasActiveFilters ? tList('noResultsTitle') : tList('emptyTitle')}
+            description={hasActiveFilters ? tList('noResults') : tList('empty')}
+            actionLabel={hasActiveFilters ? tList('clearSearch') : tList('newProvider')}
+            onAction={
+              hasActiveFilters
+                ? () => {
+                    onFiltersChange({ search: '', categoryId: '', active: '' });
+                  }
+                : onCreate
+            }
+            className="w-full max-w-md border-solid border-border/70 bg-surface-elevated px-6 py-10 shadow-sm sm:px-10 sm:py-12"
+          />
+        </div>
       ) : effectiveViewMode === VIEW_MODE_CARDS ? (
-        <AdminListCardGrid>
+        <AdminListCardGrid className="gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {providers.map((provider) => (
-            <div
+            <ServiceProviderCard
               key={provider.id}
-              className="flex flex-col gap-2 rounded-sm border border-border bg-background p-3"
-            >
-              <div className="flex items-start justify-between gap-2">
-                <span className="font-medium text-ink">{provider.name}</span>
-                <div className="flex shrink-0 gap-2">
-                  <button
-                    type="button"
-                    className="text-sm font-medium text-brand hover:underline"
-                    onClick={() => {
-                      onEdit(provider);
-                    }}
-                  >
-                    {t('edit')}
-                  </button>
-                  <button
-                    type="button"
-                    className="text-sm font-medium text-danger hover:underline"
-                    disabled={busy}
-                    onClick={() => {
-                      onDelete(provider.id);
-                    }}
-                  >
-                    {t('delete')}
-                  </button>
-                </div>
-              </div>
-              <div className="flex flex-wrap gap-2 text-xs text-ink-muted">
-                <span>{t(`form.types.${provider.providerType}`)}</span>
-                <span aria-hidden>·</span>
-                <span>{provider.active ? t('activeYes') : t('activeNo')}</span>
-              </div>
-              <p className="text-xs text-ink-secondary">
-                {provider.categories.map((c) => c.name).join(', ') || '—'}
-              </p>
-            </div>
+              provider={provider}
+              busy={busy}
+              onEdit={() => {
+                onEdit(provider);
+              }}
+              onDelete={() => {
+                onDelete(provider.id);
+              }}
+            />
           ))}
         </AdminListCardGrid>
       ) : (
-        <div className="overflow-x-auto rounded-sm border border-border">
-          <table className="w-full min-w-[48rem] border-collapse text-left text-sm">
-            <thead className="bg-surface text-xs uppercase tracking-wide text-ink-muted">
-              <tr>
-                <th className="px-3 py-2 font-medium">{t('columns.name')}</th>
-                <th className="px-3 py-2 font-medium">{t('columns.type')}</th>
-                <th className="px-3 py-2 font-medium">{t('columns.categories')}</th>
-                <th className="px-3 py-2 font-medium">{t('columns.active')}</th>
-                <th className="px-3 py-2 font-medium">{t('columns.actions')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {providers.map((provider) => (
-                <tr key={provider.id} className="border-t border-border">
-                  <td className="px-3 py-2.5 font-medium text-ink">{provider.name}</td>
-                  <td className="px-3 py-2.5 text-ink-secondary">
-                    {t(`form.types.${provider.providerType}`)}
-                  </td>
-                  <td className="px-3 py-2.5 text-ink-secondary">
-                    {provider.categories.map((c) => c.name).join(', ') || '—'}
-                  </td>
-                  <td className="px-3 py-2.5 text-ink-secondary">
-                    {provider.active ? t('activeYes') : t('activeNo')}
-                  </td>
-                  <td className="px-3 py-2.5">
-                    <div className="flex gap-2">
-                      <button
-                        type="button"
-                        className="text-sm font-medium text-brand hover:underline"
-                        onClick={() => {
-                          onEdit(provider);
-                        }}
-                      >
-                        {t('edit')}
-                      </button>
-                      <button
-                        type="button"
-                        className="text-sm font-medium text-danger hover:underline"
-                        disabled={busy}
-                        onClick={() => {
-                          onDelete(provider.id);
-                        }}
-                      >
-                        {t('delete')}
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <ServiceProvidersTable
+          providers={providers}
+          busy={busy}
+          onEdit={onEdit}
+          onDelete={onDelete}
+        />
       )}
     </section>
   );
