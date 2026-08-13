@@ -172,6 +172,8 @@
       "bedsValue": "{count}",
       "bedsFourPlus": "4+",
       "bedsSelectedCount": "{count} выбрано",
+      "previousBanner": "Предыдущий баннер",
+      "nextBanner": "Следующий баннер",
       "popular": "Популярное:",
       "popularCities": {
         "yerevan": "Ереван",

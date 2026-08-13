@@ -172,6 +172,8 @@
       "bedsValue": "{count}",
       "bedsFourPlus": "4+",
       "bedsSelectedCount": "{count} ընտրված",
+      "previousBanner": "Նախորդ բաններ",
+      "nextBanner": "Հաջորդ բաններ",
       "popular": "Հանրաճանաչ՝",
       "popularCities": {
         "yerevan": "Երևան",

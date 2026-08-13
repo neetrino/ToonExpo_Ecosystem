@@ -172,6 +172,8 @@
       "bedsValue": "{count}",
       "bedsFourPlus": "4+",
       "bedsSelectedCount": "{count} selected",
+      "previousBanner": "Previous banner",
+      "nextBanner": "Next banner",
       "popular": "Popular:",
       "popularCities": {
         "yerevan": "Yerevan",
