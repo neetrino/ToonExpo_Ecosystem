@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import type { UseFormRegister, FieldErrors } from "react-hook-form";
+import type { Control, UseFormRegister, FieldErrors } from "react-hook-form";
 
 import { TranslationTabs } from "@/features/builder/components/translation-tabs";
 import type {
@@ -10,11 +10,13 @@ import type {
 } from "@/features/partners/schemas/partner.schema";
 import { FormField } from "@/shared/ui/form-field";
 import { Input } from "@/shared/ui/input";
+import { PhoneFormControl } from "@/shared/ui/phone-form-control";
 import { Textarea } from "@/shared/ui/textarea";
 
-type ProfileFormValues = PartnerProfileFormValues | UpdatePartnerFormValues;
+export type ProfileFormValues = PartnerProfileFormValues | UpdatePartnerFormValues;
 
 type PartnerProfileFieldsProps = {
+  control: Control<ProfileFormValues>;
   register: UseFormRegister<ProfileFormValues>;
   errors: FieldErrors<ProfileFormValues>;
   readOnlyMeta?: boolean | undefined;
@@ -31,6 +33,7 @@ type PartnerProfileFieldsProps = {
  * Shared profile fields: descriptions per locale, contacts, website, social links.
  */
 export const PartnerProfileFields = ({
+  control,
   register,
   errors,
   readOnlyMeta = false,
@@ -96,7 +99,7 @@ export const PartnerProfileFields = ({
 
       <div className="grid gap-4 sm:grid-cols-2">
         <FormField id="contactPhone" label={t("contactPhone")}>
-          <Input id="contactPhone" {...register("contactPhone")} />
+          <PhoneFormControl control={control} name="contactPhone" id="contactPhone" />
         </FormField>
         <FormField id="contactEmail" label={t("contactEmail")}>
           <Input id="contactEmail" type="email" {...register("contactEmail")} />

@@ -24,14 +24,16 @@ Builder opens Readiness
 
 ## Category Mapping
 
-ReadinessCategory can link to ServiceProviderCategory.
+ReadinessCriterion (each KPI point) can link to ServiceProviderCategory.
+
+ReadinessCategory can still link to ServiceProviderCategory for category-level help.
 
 Examples:
 
 ```text
-Media Materials -> photographers, render studios, video teams
+Price orientation -> pricing / sales consultants
+Media materials -> photographers, render studios, video teams
 Project Presentation -> copywriters, presentation designers
-Visual Map Readiness -> floorplan designers, render teams
 ```
 
 ## Provider Display

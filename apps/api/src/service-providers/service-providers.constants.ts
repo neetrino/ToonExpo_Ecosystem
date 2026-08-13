@@ -10,9 +10,3 @@ export const SERVICE_PROVIDER_CATEGORY_DESCRIPTION_MAX_LENGTH = 4000;
 export const SERVICE_PROVIDER_SORT_ORDER_MAX = 9999;
 export const SERVICE_PROVIDER_SEARCH_MAX_LENGTH = 200;
 export const SERVICE_PROVIDER_MAX_CATEGORY_IDS = 20;
-
-/** Built-in directory categories shown in the provider form dropdown. */
-export const DEFAULT_SERVICE_PROVIDER_CATEGORIES = [
-  { name: 'SMM', sortOrder: 0 },
-  { name: 'UI/UX', sortOrder: 1 },
-] as const;

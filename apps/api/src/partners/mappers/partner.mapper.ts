@@ -110,6 +110,7 @@ export const toPublicPartnerListItem = (
   slug: partner.slug,
   shortDescription,
   logoUrl: partner.logoMedia?.fileUrl ?? null,
+  coverUrl: partner.coverMedia?.fileUrl ?? null,
   featured: partner.featured,
 });
 

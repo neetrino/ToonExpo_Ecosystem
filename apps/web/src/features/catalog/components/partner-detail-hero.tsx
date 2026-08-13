@@ -16,7 +16,7 @@ type PartnerDetailHeroProps = {
 export const PartnerDetailHero = async ({ partner }: PartnerDetailHeroProps) => {
   const t = await getTranslations('Partners');
   const tCatalog = await getTranslations('Catalog.partnersPage');
-  const heroImageUrl = partner.logoUrl ?? partner.coverUrl ?? PARTNER_DEMO_PHOTO_SRC;
+  const heroImageUrl = partner.coverUrl ?? PARTNER_DEMO_PHOTO_SRC;
   const mortgageRate = partner.type === 'bank' ? partner.mortgageRate : null;
 
   return (

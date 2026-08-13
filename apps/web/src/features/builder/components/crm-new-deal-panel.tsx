@@ -14,7 +14,8 @@ import { AdminCreateSheet } from '@/shared/ui/admin-create-sheet';
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
-import { PhoneInput } from '@/shared/ui/phone-input';
+import { toOptionalPhone } from '@/shared/lib/phone';
+import { PhoneFormControl } from '@/shared/ui/phone-form-control';
 import { Select } from '@/shared/ui/select';
 import { Textarea } from '@/shared/ui/textarea';
 
@@ -58,9 +59,10 @@ export const CrmNewDealPanel = ({
 
   const onSubmit = form.handleSubmit(async (values) => {
     try {
+      const contactPhone = toOptionalPhone(values.contactPhone);
       const result = await mutation.mutateAsync({
         contactName: values.contactName,
-        ...(values.contactPhone ? { contactPhone: values.contactPhone } : {}),
+        ...(contactPhone ? { contactPhone } : {}),
         ...(values.contactEmail ? { contactEmail: values.contactEmail } : {}),
         ...(values.projectId ? { projectId: values.projectId } : {}),
         ...(values.note ? { note: values.note } : {}),
@@ -98,20 +100,11 @@ export const CrmNewDealPanel = ({
           label={t('newDeal.contactPhone')}
           error={form.formState.errors.contactPhone ? t('validation.phone') : undefined}
         >
-          <Controller
-            name="contactPhone"
+          <PhoneFormControl
             control={form.control}
-            render={({ field }) => (
-              <PhoneInput
-                id="contactPhone"
-                name={field.name}
-                value={field.value}
-                onBlur={field.onBlur}
-                ref={field.ref}
-                placeholder={t('newDeal.contactPhonePlaceholder')}
-                onChange={field.onChange}
-              />
-            )}
+            name="contactPhone"
+            id="contactPhone"
+            placeholder={t('newDeal.contactPhonePlaceholder')}
           />
         </FormField>
 

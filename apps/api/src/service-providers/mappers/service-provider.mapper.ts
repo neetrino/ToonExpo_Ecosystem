@@ -6,9 +6,17 @@ import type {
 } from "@toonexpo/contracts";
 import type { Prisma } from "@toonexpo/db";
 
+import { toPublicFileUrl } from "../../media/public-file-url.js";
+
 const toIso = (value: Date): string => value.toISOString();
 
-type CategoryRecord = Prisma.ServiceProviderCategoryGetPayload<object>;
+export const serviceProviderCategoryInclude = {
+  logoMedia: { select: { id: true, fileUrl: true } },
+} satisfies Prisma.ServiceProviderCategoryInclude;
+
+type CategoryRecord = Prisma.ServiceProviderCategoryGetPayload<{
+  include: typeof serviceProviderCategoryInclude;
+}>;
 
 type ProviderWithCategories = Prisma.ServiceProviderGetPayload<{
   include: {
@@ -49,6 +57,8 @@ export const toServiceProviderCategoryItem = (
   description: category.description,
   sortOrder: category.sortOrder,
   active: category.active,
+  logoMediaId: category.logoMediaId,
+  logoUrl: category.logoMedia ? toPublicFileUrl(category.logoMedia.fileUrl) : null,
   createdAt: toIso(category.createdAt),
   updatedAt: toIso(category.updatedAt),
 });

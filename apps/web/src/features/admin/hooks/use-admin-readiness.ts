@@ -3,12 +3,11 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type {
   CreateReadinessAssessmentBody,
-  CreateReadinessCategoryBody,
   CreateReadinessInternalNoteBody,
   CreateReadinessRecommendationBody,
   CreateReadinessRequiredActionBody,
   UpdateReadinessAssessmentBody,
-  UpdateReadinessCategoryBody,
+  UpdateReadinessCriterionBody,
   UpdateReadinessRecommendationBody,
   UpdateReadinessRequiredActionBody,
   UpsertReadinessScoreBody,
@@ -18,7 +17,6 @@ import type {
 
 import {
   createAdminReadinessAssessment,
-  createAdminReadinessCategory,
   createAdminReadinessInternalNote,
   createAdminReadinessRecommendation,
   createAdminReadinessRequiredAction,
@@ -27,9 +25,8 @@ import {
   deleteAdminReadinessRequiredAction,
   getAdminReadinessAssessment,
   listAdminReadinessAssessments,
-  listAdminReadinessCategories,
   updateAdminReadinessAssessment,
-  updateAdminReadinessCategory,
+  updateAdminReadinessCriterion,
   updateAdminReadinessRecommendation,
   updateAdminReadinessRequiredAction,
   upsertAdminReadinessCriterionScore,
@@ -39,39 +36,9 @@ import {
 } from '@/features/admin/api/admin-readiness-api';
 import {
   ADMIN_READINESS_ASSESSMENTS_QUERY_KEY,
-  ADMIN_READINESS_CATEGORIES_QUERY_KEY,
   adminReadinessAssessmentQueryKey,
 } from '@/features/admin/constants';
-
-export const useAdminReadinessCategoriesQuery = () =>
-  useQuery({
-    queryKey: ADMIN_READINESS_CATEGORIES_QUERY_KEY,
-    queryFn: listAdminReadinessCategories,
-  });
-
-export const useCreateReadinessCategoryMutation = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (body: CreateReadinessCategoryBody) => createAdminReadinessCategory(body),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({
-        queryKey: ADMIN_READINESS_CATEGORIES_QUERY_KEY,
-      });
-    },
-  });
-};
-
-export const useUpdateReadinessCategoryMutation = (id: string) => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (body: UpdateReadinessCategoryBody) => updateAdminReadinessCategory(id, body),
-    onSuccess: () => {
-      void queryClient.invalidateQueries({
-        queryKey: ADMIN_READINESS_CATEGORIES_QUERY_KEY,
-      });
-    },
-  });
-};
+import { PORTAL_READINESS_QUERY_KEY } from '@/features/builder/constants';
 
 export const useAdminReadinessAssessmentsQuery = (params: ListReadinessAssessmentsParams) =>
   useQuery({
@@ -146,6 +113,23 @@ export const useUpsertReadinessCriterionScoreMutation = (assessmentId: string) =
   });
 };
 
+export const useUpdateReadinessCriterionMutation = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      criterionId,
+      body,
+    }: {
+      criterionId: string;
+      body: UpdateReadinessCriterionBody;
+    }) => updateAdminReadinessCriterion(criterionId, body),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ADMIN_READINESS_ASSESSMENTS_QUERY_KEY });
+      void queryClient.invalidateQueries({ queryKey: PORTAL_READINESS_QUERY_KEY });
+    },
+  });
+};
+
 export const useUpsertReadinessCriterionScoresBatchMutation = (assessmentId: string) => {
   const queryClient = useQueryClient();
   return useMutation({
@@ -154,7 +138,7 @@ export const useUpsertReadinessCriterionScoresBatchMutation = (assessmentId: str
     onSuccess: (assessment) => {
       queryClient.setQueryData(adminReadinessAssessmentQueryKey(assessmentId), assessment);
       invalidateAssessmentDetail(queryClient, assessmentId);
-      void queryClient.invalidateQueries({ queryKey: ['portal', 'readiness'] });
+      void queryClient.invalidateQueries({ queryKey: PORTAL_READINESS_QUERY_KEY });
     },
   });
 };

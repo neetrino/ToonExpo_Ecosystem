@@ -9,11 +9,13 @@ import {
 } from './catalog.constants.js';
 import type { ListApartmentsQueryDto } from './dto/list-apartments.query.dto.js';
 import type { CatalogViewerContext } from './projects.service.js';
+import { toPublicFileUrl } from '../media/public-file-url.js';
 import { decimalToString, shouldRevealPrice, toMediaSummary } from './mappers/catalog.mapper.js';
 import { buildApartmentListWhere } from './utils/build-apartment-list-where.js';
 import { loadTranslations } from './utils/load-translations.js';
 import {
   resolveCatalogLocale,
+  resolveCompanyDisplayName,
   resolveTranslatedName,
   resolveTranslatedValue,
   TRANSLATION_ENTITY,
@@ -193,11 +195,9 @@ export class ApartmentsService {
       apartment.project.name,
     );
 
-    const builderName = resolveTranslatedName(
+    const builderName = resolveCompanyDisplayName(
       translations,
-      TRANSLATION_ENTITY.company,
       apartment.project.builderCompany.id,
-      TRANSLATION_FIELD.name,
       locale,
       apartment.project.builderCompany.name,
     );
@@ -262,7 +262,9 @@ export class ApartmentsService {
       builder: {
         id: apartment.project.builderCompany.id,
         name: builderName,
-        logoUrl: apartment.project.builderCompany.logoMedia?.fileUrl ?? null,
+        logoUrl: apartment.project.builderCompany.logoMedia
+          ? toPublicFileUrl(apartment.project.builderCompany.logoMedia.fileUrl)
+          : null,
       },
     };
   }

@@ -79,4 +79,31 @@ export const resolveTranslatedName = (
   );
 };
 
+/**
+ * Company / builder display name.
+ * Admin stores a single scalar name (no per-locale company UI). Use the
+ * locale translation when present; otherwise show the scalar name so public
+ * EN/RU pages are not blank.
+ */
+export const resolveCompanyDisplayName = (
+  rows: TranslationRow[],
+  companyId: string,
+  locale: SupportedLocale,
+  scalarName: string,
+): string => {
+  const translated = resolveTranslatedValue(
+    rows,
+    TRANSLATION_ENTITY.company,
+    companyId,
+    TRANSLATION_FIELD.name,
+    locale,
+    scalarName,
+  );
+  const trimmed = translated?.trim();
+  if (trimmed) {
+    return trimmed;
+  }
+  return scalarName.trim();
+};
+
 export { resolveCatalogLocale };

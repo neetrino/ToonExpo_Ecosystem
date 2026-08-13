@@ -3,7 +3,7 @@
 import type { MediaAssetItem } from '@toonexpo/contracts';
 import { Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { useCallback, useEffect, useId, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import {
   listMediaAssets,
@@ -17,6 +17,14 @@ import { Button } from '@/shared/ui/button';
 import { cn } from '@/shared/ui/cn';
 import { IconButton } from '@/shared/ui/icon-button';
 
+/**
+ * Out-of-flow preview: tall uploads must not contribute intrinsic height to
+ * the parent sheet scroll (CSS zoom + flex min-height:auto leak).
+ */
+const MEDIA_PREVIEW_FRAME_CLASS =
+  'relative mb-3 h-40 w-full overflow-hidden rounded-sm border border-border bg-surface [contain:strict]';
+const MEDIA_PREVIEW_IMAGE_CLASS = 'absolute inset-0 size-full object-contain';
+
 export type MediaUploadFieldProps = {
   id: string;
   label: string;
@@ -26,6 +34,8 @@ export type MediaUploadFieldProps = {
   /** Fired with the full asset after upload or library pick (optional). */
   onAssetSelected?: ((asset: MediaAssetItem) => void) | undefined;
   previewUrl?: string | null | undefined;
+  /** Extra field-specific hint above the generic file-type help. */
+  description?: string | undefined;
   /** When true (default), shows a control to clear the selected image. */
   allowClear?: boolean | undefined;
   error?: string | undefined;
@@ -42,12 +52,13 @@ export const MediaUploadField = ({
   onChange,
   onAssetSelected,
   previewUrl,
+  description,
   allowClear = true,
   error,
 }: MediaUploadFieldProps) => {
   const t = useTranslations('Media.upload');
   const tCommon = useTranslations('Common');
-  const inputId = useId();
+  const inputId = `${id}-file`;
   const [busy, setBusy] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
   const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(previewUrl?.trim() || null);
@@ -160,8 +171,8 @@ export const MediaUploadField = ({
         )}
       >
         {thumbnailUrl ? (
-          <div className="mb-3 overflow-hidden rounded-sm border border-border bg-surface">
-            <img src={thumbnailUrl} alt="" className="mx-auto max-h-56 w-full object-contain" />
+          <div className={MEDIA_PREVIEW_FRAME_CLASS}>
+            <img src={thumbnailUrl} alt="" className={MEDIA_PREVIEW_IMAGE_CLASS} />
           </div>
         ) : null}
         <div className="flex flex-wrap items-center gap-2">
@@ -197,6 +208,7 @@ export const MediaUploadField = ({
             {t('useExisting')}
           </Button>
         </div>
+        {description ? <p className="mt-2 text-xs text-ink-muted">{description}</p> : null}
         <p className="mt-2 text-xs text-ink-muted">{t('hint')}</p>
       </div>
       {showLibrary ? (
@@ -276,7 +288,7 @@ const LibraryPanel = ({
               key={item.id}
               type="button"
               className={cn(
-                'overflow-hidden rounded-sm border border-border',
+                'aspect-square overflow-hidden rounded-sm border border-border',
                 selectedId === item.id && 'ring-2 ring-brand',
               )}
               onClick={() => onSelect(item)}
@@ -284,7 +296,7 @@ const LibraryPanel = ({
               <img
                 src={item.fileUrl}
                 alt={item.title ?? ''}
-                className="aspect-square h-full w-full object-cover"
+                className="size-full object-cover"
               />
             </button>
           ))}

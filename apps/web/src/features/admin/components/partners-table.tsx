@@ -49,7 +49,7 @@ type PartnerCardProps = {
  */
 const PartnerCard = ({ partner, onSelect }: PartnerCardProps) => {
   const initials = partner.name.trim().slice(0, 2).toUpperCase() || '—';
-  const coverUrl = partner.coverUrl ?? partner.logoUrl;
+  const coverUrl = partner.coverUrl;
 
   return (
     <button

@@ -8,7 +8,9 @@ import type {
 import type { ApartmentSalesStatus, Prisma } from '@toonexpo/db';
 import type { SupportedLocale } from '@toonexpo/shared';
 
+import { toPublicFileUrl } from '../../media/public-file-url.js';
 import {
+  resolveCompanyDisplayName,
   resolveTranslatedName,
   resolveTranslatedValue,
   TRANSLATION_ENTITY,
@@ -174,11 +176,9 @@ const localizeProjectFields = (
       locale,
       project.locationText,
     ),
-    builderName: resolveTranslatedName(
+    builderName: resolveCompanyDisplayName(
       translations,
-      TRANSLATION_ENTITY.company,
       project.builderCompany.id,
-      TRANSLATION_FIELD.name,
       locale,
       project.builderCompany.name,
     ),
@@ -207,7 +207,9 @@ export const mapProjectListItem = (
     builder: {
       id: project.builderCompany.id,
       name: localized.builderName,
-      logoUrl: project.builderCompany.logoMedia?.fileUrl ?? null,
+      logoUrl: project.builderCompany.logoMedia
+        ? toPublicFileUrl(project.builderCompany.logoMedia.fileUrl)
+        : null,
     },
     availability: summarizeSalesStatuses(
       project.apartments.map((apartment) => apartment.salesStatus),

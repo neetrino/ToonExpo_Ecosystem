@@ -15,6 +15,7 @@ import { PrismaService } from '../../prisma/prisma.service.js';
 import {
   TRANSLATION_ENTITY,
   TRANSLATION_FIELD,
+  resolveCompanyDisplayName,
   resolveTranslatedName,
   type TranslationRow,
 } from '../../catalog/utils/resolve-translation.js';
@@ -258,11 +259,9 @@ const resolveAssignmentDisplayName = (
   }
 
   if (assignment.company) {
-    return resolveTranslatedName(
+    return resolveCompanyDisplayName(
       translations,
-      TRANSLATION_ENTITY.company,
       assignment.company.id,
-      TRANSLATION_FIELD.name,
       locale,
       assignment.company.name,
     );

@@ -172,6 +172,8 @@
       "bedsValue": "{count}",
       "bedsFourPlus": "4+",
       "bedsSelectedCount": "{count} selected",
+      "previousBanner": "Previous banner",
+      "nextBanner": "Next banner",
       "popular": "Popular:",
       "popularCities": {
         "yerevan": "Yerevan",
@@ -2114,7 +2116,8 @@
         },
         "errors": {
           "emailTaken": "This email is already registered",
-          "generic": "Something went wrong. Please try again."
+          "network": "Could not reach the server. Check the partners list before trying again — the profile may already exist.",
+          "generic": "Could not finish creating the partner. Check the list before trying again — it may already exist."
         }
       },
       "detail": {
@@ -2218,8 +2221,8 @@
       }
     },
     "serviceProviders": {
-      "title": "Service provider directory",
-      "subtitle": "Providers for readiness help",
+      "title": "Service providers",
+      "subtitle": "Specialists who help builders get ready for ToonExpo.",
       "loading": "Loading…",
       "error": "Could not load service providers. Try again.",
       "categories": {
@@ -2239,17 +2242,22 @@
         "form": {
           "name": "Name",
           "description": "Description",
-          "sortOrder": "Sort order",
-          "active": "Active",
+          "logo": "Logo",
           "create": "Create category",
           "save": "Save",
-          "cancel": "Cancel"
+          "cancel": "Cancel",
+          "deleteConfirmTitle": "Delete category",
+          "deleteConfirmMessage": "Delete “{name}”? This cannot be undone."
         }
       },
       "providers": {
         "title": "Providers",
         "newProvider": "+ New Provider",
-        "empty": "No providers match these filters.",
+        "emptyTitle": "No providers yet",
+        "empty": "Add the first specialist so builders can get help from the directory.",
+        "noResultsTitle": "No matching providers",
+        "noResults": "Nothing matches the current search or filters.",
+        "clearSearch": "Clear filters",
         "edit": "Edit",
         "delete": "Delete",
         "activeYes": "Active",
@@ -2282,14 +2290,31 @@
           "socialInstagram": "Instagram",
           "socialLinkedin": "LinkedIn",
           "categories": "Categories",
-          "categoriesPlaceholder": "Select category…",
+          "categoriesPlaceholder": "Select categories…",
           "categoriesSelectedCount": "{count} selected",
           "categoriesEmpty": "No categories available yet.",
+          "categoriesAddPlaceholder": "New category name",
+          "categoriesAddSubmit": "Add",
+          "categoriesDelete": "Delete category",
+          "categoriesNameTaken": "A category with this name already exists.",
+          "categoriesAddFailed": "Could not create the category.",
+          "categoriesDeleteFailed": "Could not delete the category.",
           "internalNotes": "Internal notes (admin only)",
           "internalNotesHint": "Builders never see internal notes.",
           "publication": "Public directory publication",
           "publicationNone": "Not set",
-          "active": "Active",
+          "placeholders": {
+            "name": "e.g. Scorpio Creative",
+            "description": "Short description of the provider…",
+            "services": "Interior design, branding, 3D…",
+            "phone": "+374 00 000000",
+            "email": "hello@example.com",
+            "website": "https://example.com",
+            "socialLinkedin": "https://linkedin.com/company/…",
+            "socialFacebook": "https://facebook.com/…",
+            "socialInstagram": "https://instagram.com/…",
+            "internalNotes": "Visible only to admins…"
+          },
           "cancel": "Cancel",
           "types": {
             "company": "Company",
@@ -2421,14 +2446,17 @@
         "projectHint": "Updates apply to the readiness the builder sees in their portal.",
         "save": "Save",
         "saving": "Saving…",
-        "saveError": "Could not save changes. Try again."
+        "saveError": "Could not save changes. Try again.",
+        "providerCategory": "Category",
+        "providerCategoryNone": "None",
+        "providerCategoryError": "Could not save the category. Try again."
       },
       "categories": {
-        "title": "Readiness categories",
+        "title": "Categories",
         "backToAssessments": "Back to assessments",
         "loading": "Loading categories…",
         "error": "Could not load categories. Try again.",
-        "searchPlaceholder": "Search by name or code…",
+        "searchPlaceholder": "Search by name…",
         "noResultsTitle": "No matching categories",
         "noResults": "No categories match “{query}”.",
         "clearSearch": "Clear search",
@@ -2441,29 +2469,8 @@
         "activeNo": "Inactive",
         "columns": {
           "name": "Name",
-          "weight": "Weight",
-          "sort": "Sort",
           "active": "Active",
           "actions": "Actions"
-        },
-        "form": {
-          "code": "Code (e.g. product)",
-          "name": "Name",
-          "description": "Description",
-          "weight": "Weight (optional)",
-          "sortOrder": "Sort order",
-          "active": "Active",
-          "save": "Save",
-          "saving": "Saving…",
-          "cancel": "Cancel"
-        },
-        "validation": {
-          "code": "Use lowercase letters, numbers, and underscores",
-          "name": "Enter a category name",
-          "weight": "Weight must be between 1 and 100"
-        },
-        "errors": {
-          "generic": "Something went wrong. Please try again."
         }
       },
       "assessments": {
@@ -2896,7 +2903,9 @@
       "socialInstagram": "Instagram",
       "socialLinkedin": "LinkedIn",
       "logoMedia": "Logo",
+      "logoMediaHint": "Used only as the partner logo, not on the card.",
       "coverMedia": "Cover image",
+      "coverMediaHint": "Shown on the partner card. Does not replace the logo.",
       "validation": {
         "shortDescription": "Enter a short description in Armenian"
       }
@@ -3837,6 +3846,8 @@
       "previewBadge": "Example preview",
       "previewHint": "No real assessment yet — this is sample data so you can see how readiness looks in the portal.",
       "companyAssessment": "Company readiness",
+      "expandDetails": "Show assessment details",
+      "collapseDetails": "Hide assessment details",
       "overallScore": "Overall score",
       "kpiScoreLabel": "Readiness score",
       "overallHints": {
@@ -3854,6 +3865,7 @@
       "categoryScore": "Score",
       "noRecommendation": "No specific tip for this category yet.",
       "helpButton": "Find help providers",
+      "criterionHelp": "View help providers",
       "flagYes": "Yes",
       "flagNo": "No",
       "help": {

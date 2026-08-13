@@ -112,14 +112,18 @@ model ServiceProviderCategory {
   description String?
   sortOrder   Int      @default(0) @map("sort_order")
   active      Boolean  @default(true)
+  logoMediaId String?  @map("logo_media_id")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
 
+  logoMedia           MediaAsset?                   @relation("ServiceProviderCategoryLogo", fields: [logoMediaId], references: [id], onDelete: SetNull)
   providers           ServiceProviderCategoryLink[]
   readinessCategories ReadinessCategory[]
+  readinessCriteria   ReadinessCriterion[]
 
   @@index([active])
   @@index([sortOrder])
+  @@index([logoMediaId])
   @@map("service_provider_categories")
 }
 

@@ -1,5 +1,5 @@
 import { NotFoundException } from "@nestjs/common";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("./utils/load-translations.js", () => ({
   loadTranslations: vi.fn().mockResolvedValue([]),
@@ -11,6 +11,7 @@ describe("BuildersService", () => {
   const companyFindFirst = vi.fn();
   const projectFindMany = vi.fn();
   const analyticsTrack = vi.fn();
+  const originalR2PublicUrl = process.env["R2_PUBLIC_URL"];
 
   const service = new BuildersService(
     {
@@ -24,6 +25,14 @@ describe("BuildersService", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    if (originalR2PublicUrl === undefined) {
+      delete process.env["R2_PUBLIC_URL"];
+    } else {
+      process.env["R2_PUBLIC_URL"] = originalR2PublicUrl;
+    }
   });
 
   it("tracks builder_profile_view when loading a builder profile", async () => {
@@ -56,6 +65,36 @@ describe("BuildersService", () => {
       eventType: "builder_profile_view",
       companyId: "builder_1",
     });
+  });
+
+  it("uses the scalar company name when the EN translation is missing", async () => {
+    companyFindFirst.mockResolvedValue({
+      id: "builder_1",
+      name: "Neetrinoo",
+      description: null,
+      logoMedia: { fileUrl: "/demo/builder-cascade.webp" },
+      phone: null,
+      contactPerson: null,
+      email: null,
+      websiteUrl: null,
+      instagramUrl: null,
+      facebookUrl: null,
+      region: null,
+      address: null,
+      mediaMaterialsUrl: null,
+      advertisingMaterialsUrl: null,
+      _count: { projects: 1 },
+    });
+    projectFindMany.mockResolvedValue([]);
+    process.env["R2_PUBLIC_URL"] = "https://cdn.example.com";
+
+    const result = await service.getBuilderById("builder_1", {
+      locale: "en",
+      isAuthenticated: false,
+    });
+
+    expect(result.name).toBe("Neetrinoo");
+    expect(result.logoUrl).toBe("https://cdn.example.com/demo/builder-cascade.webp");
   });
 
   it("throws when builder is missing", async () => {

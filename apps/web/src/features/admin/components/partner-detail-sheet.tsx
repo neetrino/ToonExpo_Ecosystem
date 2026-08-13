@@ -56,7 +56,12 @@ export const PartnerDetailSheet = ({ partnerId, open, onClose }: PartnerDetailSh
       ) : null}
 
       {partner && partnerId ? (
-        <AdminPartnerDetailForm key={partner.id} partnerId={partnerId} partner={partner} />
+        <AdminPartnerDetailForm
+          key={partner.id}
+          partnerId={partnerId}
+          partner={partner}
+          onSaved={onClose}
+        />
       ) : null}
     </AdminCreateSheet>
   );

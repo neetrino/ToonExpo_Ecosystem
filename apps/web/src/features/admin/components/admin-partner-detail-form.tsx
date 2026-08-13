@@ -13,7 +13,10 @@ import {
   useUpdatePartnerOfferMutation,
 } from '@/features/admin/hooks/use-admin-partners';
 import { PartnerOffersSection } from '@/features/partners/components/partner-offers-section';
-import { PartnerProfileFields } from '@/features/partners/components/partner-profile-fields';
+import {
+  PartnerProfileFields,
+  type ProfileFormValues,
+} from '@/features/partners/components/partner-profile-fields';
 import { PartnerMediaFields } from '@/features/partners/components/partner-media-fields';
 import type { PartnerMediaFieldValues } from '@/features/partners/components/partner-media-fields';
 import {
@@ -36,12 +39,17 @@ import { useSuccessToast } from '@/shared/ui/use-success-toast';
 type AdminPartnerDetailFormProps = {
   partnerId: string;
   partner: AdminPartnerDetail;
+  onSaved?: (() => void) | undefined;
 };
 
 /**
  * Partner profile + admin controls + offers CRUD (shared by page and sheet).
  */
-export const AdminPartnerDetailForm = ({ partnerId, partner }: AdminPartnerDetailFormProps) => {
+export const AdminPartnerDetailForm = ({
+  partnerId,
+  partner,
+  onSaved,
+}: AdminPartnerDetailFormProps) => {
   const t = useTranslations('Admin.partners.detail');
   const updateMutation = useUpdatePartnerMutation(partnerId);
   const createOfferMutation = useCreatePartnerOfferMutation(partnerId);
@@ -66,6 +74,7 @@ export const AdminPartnerDetailForm = ({ partnerId, partner }: AdminPartnerDetai
     try {
       await updateMutation.mutateAsync(toUpdatePartnerBody(values));
       showSuccess(t('saveSuccess'));
+      onSaved?.();
     } catch {
       setSaveError(t('errors.generic'));
     }
@@ -164,11 +173,17 @@ export const AdminPartnerDetailForm = ({ partnerId, partner }: AdminPartnerDetai
           </FormField>
         </div>
 
-        <PartnerProfileFields register={form.register} errors={form.formState.errors} />
+        <PartnerProfileFields
+          control={form.control as unknown as Control<ProfileFormValues>}
+          register={form.register}
+          errors={form.formState.errors}
+        />
 
         <PartnerMediaFields
           control={form.control as unknown as Control<PartnerMediaFieldValues>}
           context="admin"
+          logoPreviewUrl={partner.logoUrl}
+          coverPreviewUrl={partner.coverUrl}
         />
 
         {saveError ? (

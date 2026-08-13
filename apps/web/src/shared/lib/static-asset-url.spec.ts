@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest';
 
-import { staticAssetUrl } from './static-asset-url';
+import { resolvePublicAssetUrl, staticAssetUrl } from './static-asset-url';
 
 const ORIGINAL_NEXT_PUBLIC = process.env['NEXT_PUBLIC_R2_PUBLIC_URL'];
 const ORIGINAL_R2_PUBLIC = process.env['R2_PUBLIC_URL'];
@@ -43,5 +43,26 @@ describe('staticAssetUrl', () => {
     delete process.env['R2_PUBLIC_URL'];
 
     expect(staticAssetUrl('/images/hero-building.webp')).toBe('/images/hero-building.webp');
+  });
+});
+
+describe('resolvePublicAssetUrl', () => {
+  it('returns null for empty values', () => {
+    expect(resolvePublicAssetUrl(null)).toBeNull();
+    expect(resolvePublicAssetUrl('  ')).toBeNull();
+  });
+
+  it('leaves absolute URLs unchanged', () => {
+    expect(resolvePublicAssetUrl('https://cdn.example.com/logo.webp')).toBe(
+      'https://cdn.example.com/logo.webp',
+    );
+  });
+
+  it('prefixes root-relative paths with the R2 public base', () => {
+    process.env['NEXT_PUBLIC_R2_PUBLIC_URL'] = 'https://cdn.example.com';
+
+    expect(resolvePublicAssetUrl('/demo/builder-cascade.webp')).toBe(
+      'https://cdn.example.com/demo/builder-cascade.webp',
+    );
   });
 });

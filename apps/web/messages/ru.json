@@ -172,6 +172,8 @@
       "bedsValue": "{count}",
       "bedsFourPlus": "4+",
       "bedsSelectedCount": "{count} выбрано",
+      "previousBanner": "Предыдущий баннер",
+      "nextBanner": "Следующий баннер",
       "popular": "Популярное:",
       "popularCities": {
         "yerevan": "Ереван",
@@ -2045,14 +2047,17 @@
         "projectHint": "Изменения видны застройщику в портале.",
         "save": "Сохранить",
         "saving": "Сохранение…",
-        "saveError": "Не удалось сохранить. Попробуйте снова."
+        "saveError": "Не удалось сохранить. Попробуйте снова.",
+        "providerCategory": "Категория",
+        "providerCategoryNone": "Нет",
+        "providerCategoryError": "Не удалось сохранить категорию. Попробуйте снова."
       },
       "categories": {
-        "title": "Категории готовности",
+        "title": "Категории",
         "backToAssessments": "К оценкам",
         "loading": "Загрузка категорий…",
         "error": "Не удалось загрузить категории. Попробуйте снова.",
-        "searchPlaceholder": "Поиск по названию или коду…",
+        "searchPlaceholder": "Поиск по названию…",
         "noResultsTitle": "Категории не найдены",
         "noResults": "Нет категорий по запросу «{query}».",
         "clearSearch": "Очистить поиск",
@@ -2065,29 +2070,8 @@
         "activeNo": "Неактивна",
         "columns": {
           "name": "Название",
-          "weight": "Вес",
-          "sort": "Порядок",
           "active": "Активна",
           "actions": "Действия"
-        },
-        "form": {
-          "code": "Код (например product)",
-          "name": "Название",
-          "description": "Описание",
-          "weight": "Вес (необязательно)",
-          "sortOrder": "Порядок сортировки",
-          "active": "Активна",
-          "save": "Сохранить",
-          "saving": "Сохранение…",
-          "cancel": "Отмена"
-        },
-        "validation": {
-          "code": "Используйте строчные латинские буквы, цифры и _",
-          "name": "Введите название категории",
-          "weight": "Вес должен быть от 1 до 100"
-        },
-        "errors": {
-          "generic": "Что-то пошло не так. Попробуйте снова."
         }
       },
       "assessments": {
@@ -2396,7 +2380,8 @@
         },
         "errors": {
           "emailTaken": "Этот email уже зарегистрирован",
-          "generic": "Что-то пошло не так."
+          "network": "Не удалось связаться с сервером. Сначала проверьте список партнёров — профиль мог уже появиться.",
+          "generic": "Не удалось завершить создание. Проверьте список — партнёр мог уже появиться."
         }
       },
       "detail": {
@@ -2589,8 +2574,8 @@
       }
     },
     "serviceProviders": {
-      "title": "Каталог поставщиков услуг",
-      "subtitle": "Поставщики для помощи по готовности",
+      "title": "Поставщики услуг",
+      "subtitle": "Специалисты, которые помогают застройщикам подготовиться к ToonExpo.",
       "loading": "Загрузка…",
       "error": "Не удалось загрузить данные.",
       "categories": {
@@ -2610,17 +2595,22 @@
         "form": {
           "name": "Название",
           "description": "Описание",
-          "sortOrder": "Порядок",
-          "active": "Активна",
+          "logo": "Логотип",
           "create": "Создать",
           "save": "Сохранить",
-          "cancel": "Отмена"
+          "cancel": "Отмена",
+          "deleteConfirmTitle": "Удалить категорию",
+          "deleteConfirmMessage": "Удалить «{name}»? Это нельзя отменить."
         }
       },
       "providers": {
         "title": "Поставщики",
         "newProvider": "+ Новый поставщик",
-        "empty": "Нет поставщиков по этим фильтрам.",
+        "emptyTitle": "Поставщиков пока нет",
+        "empty": "Добавьте первого специалиста, чтобы застройщики могли найти помощь.",
+        "noResultsTitle": "Поставщики не найдены",
+        "noResults": "Нет результатов по текущему поиску или фильтрам.",
+        "clearSearch": "Сбросить фильтры",
         "edit": "Редактировать",
         "delete": "Удалить",
         "activeYes": "Активен",
@@ -2653,14 +2643,31 @@
           "socialInstagram": "Instagram",
           "socialLinkedin": "LinkedIn",
           "categories": "Категории",
-          "categoriesPlaceholder": "Выберите категорию…",
+          "categoriesPlaceholder": "Выберите категории…",
           "categoriesSelectedCount": "{count} выбрано",
           "categoriesEmpty": "Категории пока недоступны.",
+          "categoriesAddPlaceholder": "Название новой категории",
+          "categoriesAddSubmit": "Добавить",
+          "categoriesDelete": "Удалить категорию",
+          "categoriesNameTaken": "Категория с таким названием уже есть.",
+          "categoriesAddFailed": "Не удалось создать категорию.",
+          "categoriesDeleteFailed": "Не удалось удалить категорию.",
           "internalNotes": "Внутренние заметки (только админ)",
           "internalNotesHint": "Застройщики не видят внутренние заметки.",
           "publication": "Публикация в каталоге",
           "publicationNone": "Не задано",
-          "active": "Активен",
+          "placeholders": {
+            "name": "напр. Scorpio Creative",
+            "description": "Краткое описание провайдера…",
+            "services": "Интерьер, брендинг, 3D…",
+            "phone": "+374 00 000000",
+            "email": "hello@example.com",
+            "website": "https://example.com",
+            "socialLinkedin": "https://linkedin.com/company/…",
+            "socialFacebook": "https://facebook.com/…",
+            "socialInstagram": "https://instagram.com/…",
+            "internalNotes": "Видно только администраторам…"
+          },
           "cancel": "Отмена",
           "types": {
             "company": "Компания",
@@ -3579,6 +3586,8 @@
       "previewBadge": "Пример превью",
       "previewHint": "Реальной оценки ещё нет — это демо-данные, чтобы вы увидели, как выглядит readiness в портале.",
       "companyAssessment": "Готовность компании",
+      "expandDetails": "Показать детали оценки",
+      "collapseDetails": "Скрыть детали оценки",
       "overallScore": "Общий балл",
       "kpiScoreLabel": "Балл готовности",
       "overallHints": {
@@ -3596,6 +3605,7 @@
       "categoryScore": "Балл",
       "noRecommendation": "По этой категории пока нет отдельного совета.",
       "helpButton": "Найти поставщиков помощи",
+      "criterionHelp": "Показать поставщиков",
       "flagYes": "Да",
       "flagNo": "Нет",
       "help": {
@@ -3720,7 +3730,9 @@
       "socialInstagram": "Instagram",
       "socialLinkedin": "LinkedIn",
       "logoMedia": "Логотип",
+      "logoMediaHint": "Только логотип, не изображение карточки.",
       "coverMedia": "Обложка",
+      "coverMediaHint": "Показывается на карточке партнёра и не заменяет логотип.",
       "validation": {
         "shortDescription": "Введите краткое описание на армянском"
       }

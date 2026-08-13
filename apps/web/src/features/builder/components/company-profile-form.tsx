@@ -99,6 +99,7 @@ export const CompanyProfileForm = ({ profile, canEdit }: CompanyProfileFormProps
       </FormField>
 
       <CompanyContactFields
+        control={control}
         register={register}
         errors={errors}
         idPrefix="company"

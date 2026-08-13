@@ -22,6 +22,7 @@ Each category should have:
 
 - name;
 - description optional;
+- logo optional;
 - sort order;
 - active/inactive status.
 

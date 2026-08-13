@@ -163,6 +163,7 @@ export type PublicPartnerListItem = {
   slug: string;
   shortDescription: string | null;
   logoUrl: string | null;
+  coverUrl: string | null;
   featured: boolean;
 };
 

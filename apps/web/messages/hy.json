@@ -172,6 +172,8 @@
       "bedsValue": "{count}",
       "bedsFourPlus": "4+",
       "bedsSelectedCount": "{count} ընտրված",
+      "previousBanner": "Նախորդ բաններ",
+      "nextBanner": "Հաջորդ բաններ",
       "popular": "Հանրաճանաչ՝",
       "popularCities": {
         "yerevan": "Երևան",
@@ -2114,7 +2116,8 @@
         },
         "errors": {
           "emailTaken": "Այս էլ. փոստն արդեն գրանցված է",
-          "generic": "Ինչ-որ բան սխալ գնաց։ Փորձեք կրկին։"
+          "network": "Սերվերին չհաջողվեց միանալ։ Նախ ստուգեք գործընկերների ցանկը — պրոֆիլը կարող է արդեն ստեղծված լինել։",
+          "generic": "Չհաջողվեց ավարտել ստեղծումը։ Նախ ստուգեք ցանկը — գործընկերը կարող է արդեն ավելացված լինել։"
         }
       },
       "detail": {
@@ -2218,8 +2221,8 @@
       }
     },
     "serviceProviders": {
-      "title": "Ծառայություն մատուցողների կատալոգ",
-      "subtitle": "Մատակարարներ պատրաստվածության աջակցության համար",
+      "title": "Ծառայություն մատուցողներ",
+      "subtitle": "Մասնագետներ, որոնք օգնում են կառուցապատողներին պատրաստվել ToonExpo-ին։",
       "loading": "Բեռնվում է…",
       "error": "Չհաջողվեց բեռնել տվյալները։",
       "categories": {
@@ -2239,17 +2242,22 @@
         "form": {
           "name": "Անվանում",
           "description": "Նկարագրություն",
-          "sortOrder": "Դասավորություն",
-          "active": "Ակտիվ",
+          "logo": "Լոգո",
           "create": "Ստեղծել",
           "save": "Պահպանել",
-          "cancel": "Չեղարկել"
+          "cancel": "Չեղարկել",
+          "deleteConfirmTitle": "Ջնջել կատեգորիան",
+          "deleteConfirmMessage": "Ջնջե՞լ «{name}»-ը։ Սա հնարավոր չէ հետարկել։"
         }
       },
       "providers": {
         "title": "Մատակարարներ",
         "newProvider": "+ Նոր մատակարար",
-        "empty": "Ֆիլտրերին համապատասխան մատակարարներ չկան։",
+        "emptyTitle": "Դեռ մատակարար չկա",
+        "empty": "Ավելացրեք առաջին մասնագետին, որ կառուցապատողները կարողանան օգնություն գտնել։",
+        "noResultsTitle": "Մատակարարներ չգտնվեցին",
+        "noResults": "Որոնմանը կամ ֆիլտրերին համապատասխան արդյունք չկա։",
+        "clearSearch": "Մաքրել ֆիլտրերը",
         "edit": "Խմբագրել",
         "delete": "Ջնջել",
         "activeYes": "Ակտիվ",
@@ -2282,14 +2290,31 @@
           "socialInstagram": "Instagram",
           "socialLinkedin": "LinkedIn",
           "categories": "Կատեգորիաներ",
-          "categoriesPlaceholder": "Ընտրել կատեգորիա…",
+          "categoriesPlaceholder": "Ընտրել կատեգորիաներ…",
           "categoriesSelectedCount": "{count} ընտրված",
           "categoriesEmpty": "Կատեգորիաներ դեռ հասանելի չեն։",
+          "categoriesAddPlaceholder": "Նոր կատեգորիայի անուն",
+          "categoriesAddSubmit": "Ավելացնել",
+          "categoriesDelete": "Ջնջել կատեգորիան",
+          "categoriesNameTaken": "Այս անունով կատեգորիա արդեն կա։",
+          "categoriesAddFailed": "Չհաջողվեց ստեղծել կատեգորիան։",
+          "categoriesDeleteFailed": "Չհաջողվեց ջնջել կատեգորիան։",
           "internalNotes": "Ներքին նշումներ (միայն ադմին)",
           "internalNotesHint": "Կառուցապատողները ներքին նշումները չեն տեսնում։",
           "publication": "Հրապարակային կատալոգ",
           "publicationNone": "Չի սահմանված",
-          "active": "Ակտիվ",
+          "placeholders": {
+            "name": "օր. Scorpio Creative",
+            "description": "Կարճ նկարագրություն մատակարարի մասին…",
+            "services": "Ինտերիեր, բրենդինգ, 3D…",
+            "phone": "+374 00 000000",
+            "email": "hello@example.com",
+            "website": "https://example.com",
+            "socialLinkedin": "https://linkedin.com/company/…",
+            "socialFacebook": "https://facebook.com/…",
+            "socialInstagram": "https://instagram.com/…",
+            "internalNotes": "Տեսանելի է միայն ադմիններին…"
+          },
           "cancel": "Չեղարկել",
           "types": {
             "company": "Ընկերություն",
@@ -2421,14 +2446,17 @@
         "projectHint": "Թարմացումները երևում են builder-ի portal-ում։",
         "save": "Պահպանել",
         "saving": "Պահպանվում է…",
-        "saveError": "Չհաջողվեց պահպանել։ Կրկին փորձեք։"
+        "saveError": "Չհաջողվեց պահպանել։ Կրկին փորձեք։",
+        "providerCategory": "Կատեգորիա",
+        "providerCategoryNone": "Չկա",
+        "providerCategoryError": "Չհաջողվեց պահպանել կատեգորիան։ Կրկին փորձեք։"
       },
       "categories": {
-        "title": "Պատրաստվածության կատեգորիաներ",
+        "title": "Կատեգորիաներ",
         "backToAssessments": "Վերադառնալ գնահատումներ",
         "loading": "Բեռնվում է…",
         "error": "Չհաջողվեց բեռնել կատեգորիաները։ Կրկին փորձեք։",
-        "searchPlaceholder": "Փնտրել ըստ անվան կամ կոդի…",
+        "searchPlaceholder": "Փնտրել ըստ անվան…",
         "noResultsTitle": "Կատեգորիաներ չգտնվեցին",
         "noResults": "«{query}»-ին համապատասխան կատեգորիաներ չկան։",
         "clearSearch": "Մաքրել որոնումը",
@@ -2441,29 +2469,8 @@
         "activeNo": "Անակտիվ",
         "columns": {
           "name": "Անվանում",
-          "weight": "Կշիռ",
-          "sort": "Դասավորություն",
           "active": "Ակտիվ",
           "actions": "Գործողություններ"
-        },
-        "form": {
-          "code": "Կոդ (օր. product)",
-          "name": "Անվանում",
-          "description": "Նկարագրություն",
-          "weight": "Կշիռ (ըստ ցանկության)",
-          "sortOrder": "Դասավորության համար",
-          "active": "Ակտիվ",
-          "save": "Պահպանել",
-          "saving": "Պահպանվում է…",
-          "cancel": "Չեղարկել"
-        },
-        "validation": {
-          "code": "Օգտագործեք փոքրատառ լատիներեն, թվեր և _",
-          "name": "Մուտքագրեք կատեգորիայի անվանումը",
-          "weight": "Կշիռը պետք է լինի 1-100 միջակայքում"
-        },
-        "errors": {
-          "generic": "Ինչ-որ բան սխալ գնաց։ Կրկին փորձեք։"
         }
       },
       "assessments": {
@@ -3579,6 +3586,8 @@
       "previewBadge": "Օրինակ նախադիտում",
       "previewHint": "Իրական գնահատում դեռ չկա — սա օրինակային տվյալներ է, որպեսզի տեսնեք readiness էջի տեսքը։",
       "companyAssessment": "Ընկերության պատրաստվածություն",
+      "expandDetails": "Ցույց տալ գնահատման մանրամասները",
+      "collapseDetails": "Թաքցնել գնահատման մանրամասները",
       "overallScore": "Ընդհանուր միավոր",
       "kpiScoreLabel": "Պատրաստվածության միավոր",
       "overallHints": {
@@ -3596,6 +3605,7 @@
       "categoryScore": "Միավոր",
       "noRecommendation": "Այս կատեգորիայի համար դեռ հատուկ խորհուրդ չկա։",
       "helpButton": "Գտնել օգնության մատակարարներ",
+      "criterionHelp": "Տեսնել մատակարարներին",
       "flagYes": "Այո",
       "flagNo": "Ոչ",
       "help": {
@@ -3720,7 +3730,9 @@
       "socialInstagram": "Instagram",
       "socialLinkedin": "LinkedIn",
       "logoMedia": "Լոգո",
+      "logoMediaHint": "Միայն լոգո է, քարտի նկարը չի փոխարինում։",
       "coverMedia": "Շապիկի նկար",
+      "coverMediaHint": "Ցուցադրվում է գործընկերոջ քարտի վրա և չի դառնում լոգո։",
       "validation": {
         "shortDescription": "Մուտքագրեք կարճ նկարագրություն հայերենով"
       }

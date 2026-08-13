@@ -44,6 +44,7 @@ Fields:
 - id;
 - name;
 - description optional;
+- logo_media_id optional;
 - sort_order;
 - active;
 - created_at;

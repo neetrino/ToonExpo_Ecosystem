@@ -1,7 +1,7 @@
 'use client';
 
 import type { PortalReadinessAssessmentItem } from '@toonexpo/contracts';
-import { Building2 } from 'lucide-react';
+import { Building2, ChevronDown } from 'lucide-react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 
@@ -9,6 +9,7 @@ import { useCompanyProfileQuery } from '@/features/builder/hooks/use-company-pro
 import { ReadinessProgressRing } from '@/features/readiness/components/readiness-progress-ring';
 import { scorePercent, toneForStatus } from '@/features/readiness/utils/readiness-score-display';
 import { cn } from '@/shared/ui/cn';
+import { LIST_CARD_LIFT_CLASS } from '@/shared/ui/motion';
 
 /** Same chrome as `/admin/companies` CompanyCard. */
 const CARD_RADIUS_CLASS = 'rounded-[15px]';
@@ -17,6 +18,9 @@ const MEDIA_ASPECT_CLASS = 'aspect-[16/10]';
 
 type BuilderReadinessOverviewCardProps = {
   assessment: PortalReadinessAssessmentItem;
+  expanded: boolean;
+  detailId: string;
+  onToggle: () => void;
 };
 
 type ScorePairProps = {
@@ -33,7 +37,12 @@ const ScorePair = ({ primary, className }: ScorePairProps) => (
 /**
  * Builder readiness overview — same card size/style as `/admin/companies`.
  */
-export const BuilderReadinessOverviewCard = ({ assessment }: BuilderReadinessOverviewCardProps) => {
+export const BuilderReadinessOverviewCard = ({
+  assessment,
+  expanded,
+  detailId,
+  onToggle,
+}: BuilderReadinessOverviewCardProps) => {
   const t = useTranslations('Builder.readiness');
   const tKpi = useTranslations('ReadinessKpi');
   const companyQuery = useCompanyProfileQuery();
@@ -48,11 +57,17 @@ export const BuilderReadinessOverviewCard = ({ assessment }: BuilderReadinessOve
   const coverUrl = assessment.coverUrl;
 
   return (
-    <article
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-expanded={expanded}
+      aria-controls={detailId}
+      aria-label={expanded ? t('collapseDetails') : t('expandDetails')}
       className={cn(
-        'flex h-full w-full flex-col gap-3 overflow-hidden border border-border/80',
+        'flex h-full w-full flex-col gap-3 overflow-hidden border border-border/80 text-left',
         'bg-surface-elevated p-3.5 shadow-card',
         CARD_RADIUS_CLASS,
+        LIST_CARD_LIFT_CLASS,
       )}
     >
       <header className="flex flex-col gap-1.5">
@@ -67,8 +82,15 @@ export const BuilderReadinessOverviewCard = ({ assessment }: BuilderReadinessOve
             )}
           </div>
           <p className="min-w-0 truncate text-sm font-medium text-ink-secondary">{companyName}</p>
+          <ChevronDown
+            className={cn(
+              'ml-auto size-4 shrink-0 text-ink-muted transition-transform duration-[var(--duration-base)]',
+              expanded ? 'rotate-180' : 'rotate-0',
+            )}
+            aria-hidden
+          />
         </div>
-        <h2 className="truncate text-base font-semibold tracking-tight text-ink">{title}</h2>
+        <p className="truncate text-base font-semibold tracking-tight text-ink">{title}</p>
       </header>
 
       <div
@@ -128,6 +150,6 @@ export const BuilderReadinessOverviewCard = ({ assessment }: BuilderReadinessOve
           </ul>
         </>
       ) : null}
-    </article>
+    </button>
   );
 };

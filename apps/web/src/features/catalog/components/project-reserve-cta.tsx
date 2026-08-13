@@ -8,9 +8,11 @@ import { useMeQuery } from '@/features/auth/hooks/use-auth';
 import { useCreateBuyerRequestMutation } from '@/features/buyer/hooks/use-buyer';
 import { isNonBuyerStaff } from '@/features/buyer/utils/is-buyer-account';
 import { Link, usePathname } from '@/i18n/navigation';
+import { isBlankPhone, sanitizePhoneInput } from '@/shared/lib/phone';
 import { cn } from '@/shared/ui/cn';
 import { Form } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
+import { PhoneInput } from '@/shared/ui/phone-input';
 
 type ProjectReserveCtaProps = {
   projectId: string;
@@ -45,7 +47,9 @@ export const ProjectReserveCta = ({ projectId, projectName }: ProjectReserveCtaP
     }
     setName((current) => (current.trim() === '' ? user.name : current));
     setEmail((current) => (current.trim() === '' ? user.email : current));
-    setPhone((current) => (current.trim() === '' ? (user.phone ?? '') : current));
+    setPhone((current) =>
+      current.trim() === '' ? sanitizePhoneInput(user.phone ?? '') : current,
+    );
   }, [user]);
 
   const isStaff = isNonBuyerStaff(user?.accountType);
@@ -70,7 +74,7 @@ export const ProjectReserveCta = ({ projectId, projectName }: ProjectReserveCtaP
       return;
     }
 
-    const note = [name, email, phone]
+    const note = [name, email, isBlankPhone(phone) ? '' : phone]
       .map((part) => part.trim())
       .filter((part) => part.length > 0)
       .join(' · ');
@@ -146,13 +150,12 @@ export const ProjectReserveCta = ({ projectId, projectName }: ProjectReserveCtaP
                 className={FIELD_CLASS}
                 required
               />
-              <Input
+              <PhoneInput
                 name="phone"
-                type="tel"
                 autoComplete="tel"
                 placeholder={t('reservePhone')}
                 value={phone}
-                onChange={(event) => setPhone(event.target.value)}
+                onChange={setPhone}
                 className={FIELD_CLASS}
               />
               {formError ? (

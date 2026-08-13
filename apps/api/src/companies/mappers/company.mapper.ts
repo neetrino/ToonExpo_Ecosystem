@@ -5,6 +5,8 @@ import type {
   CompanyType,
 } from '@toonexpo/contracts';
 
+import { toPublicFileUrl } from '../../media/public-file-url.js';
+
 type CompanyRecord = {
   id: string;
   name: string;
@@ -41,7 +43,7 @@ export const toCompanyResponse = (company: CompanyRecord): CompanyResponse => ({
   source: company.source,
   bosCompanyId: company.bosCompanyId,
   logoMediaId: company.logoMediaId ?? company.logoMedia?.id ?? null,
-  logoUrl: company.logoMedia?.fileUrl ?? null,
+  logoUrl: company.logoMedia ? toPublicFileUrl(company.logoMedia.fileUrl) : null,
   phone: company.phone,
   contactPerson: company.contactPerson,
   email: company.email,

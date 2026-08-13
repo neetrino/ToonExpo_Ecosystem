@@ -5,9 +5,15 @@ import type {
 } from '@toonexpo/contracts';
 
 import { PrismaService } from '../../prisma/prisma.service.js';
-import { toServiceProviderCategoryItem } from '../mappers/service-provider.mapper.js';
-import { DEFAULT_SERVICE_PROVIDER_CATEGORIES } from '../service-providers.constants.js';
-import { serviceProviderCategoryNotFound } from '../utils/service-provider-access.js';
+import {
+  serviceProviderCategoryInclude,
+  toServiceProviderCategoryItem,
+} from '../mappers/service-provider.mapper.js';
+import {
+  assertCategoryNameAvailable,
+  assertMediaAssetExists,
+  serviceProviderCategoryNotFound,
+} from '../utils/service-provider-access.js';
 import type { CreateServiceProviderCategoryDto } from './dto/service-provider-category.dto.js';
 import type { UpdateServiceProviderCategoryDto } from './dto/service-provider-category.dto.js';
 
@@ -16,9 +22,8 @@ export class AdminServiceProviderCategoriesService {
   constructor(private readonly prisma: PrismaService) {}
 
   async list(): Promise<ServiceProviderCategoryListResponse> {
-    await this.ensureDefaultCategories();
-
     const rows = await this.prisma.db.serviceProviderCategory.findMany({
+      include: serviceProviderCategoryInclude,
       orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
     });
 
@@ -26,13 +31,22 @@ export class AdminServiceProviderCategoriesService {
   }
 
   async create(body: CreateServiceProviderCategoryDto): Promise<ServiceProviderCategoryItem> {
+    const name = body.name.trim();
+    await assertCategoryNameAvailable(this.prisma.db, name);
+
+    if (body.logoMediaId) {
+      await assertMediaAssetExists(this.prisma.db, body.logoMediaId);
+    }
+
     const category = await this.prisma.db.serviceProviderCategory.create({
       data: {
-        name: body.name.trim(),
+        name,
         description: body.description?.trim() || null,
         sortOrder: body.sortOrder ?? 0,
         active: body.active ?? true,
+        logoMediaId: body.logoMediaId?.trim() || null,
       },
+      include: serviceProviderCategoryInclude,
     });
 
     return toServiceProviderCategoryItem(category);
@@ -44,6 +58,14 @@ export class AdminServiceProviderCategoriesService {
   ): Promise<ServiceProviderCategoryItem> {
     await this.assertExists(id);
 
+    if (body.name !== undefined) {
+      await assertCategoryNameAvailable(this.prisma.db, body.name.trim(), id);
+    }
+
+    if (body.logoMediaId) {
+      await assertMediaAssetExists(this.prisma.db, body.logoMediaId);
+    }
+
     const category = await this.prisma.db.serviceProviderCategory.update({
       where: { id },
       data: {
@@ -53,7 +75,11 @@ export class AdminServiceProviderCategoriesService {
           : {}),
         ...(body.sortOrder !== undefined ? { sortOrder: body.sortOrder } : {}),
         ...(body.active !== undefined ? { active: body.active } : {}),
+        ...(body.logoMediaId !== undefined
+          ? { logoMediaId: body.logoMediaId?.trim() || null }
+          : {}),
       },
+      include: serviceProviderCategoryInclude,
     });
 
     return toServiceProviderCategoryItem(category);
@@ -64,31 +90,11 @@ export class AdminServiceProviderCategoriesService {
     await this.prisma.db.serviceProviderCategory.delete({ where: { id } });
   }
 
-  private async ensureDefaultCategories(): Promise<void> {
-    for (const def of DEFAULT_SERVICE_PROVIDER_CATEGORIES) {
-      const existing = await this.prisma.db.serviceProviderCategory.findFirst({
-        where: { name: def.name },
-        select: { id: true },
-      });
-      if (existing) {
-        continue;
-      }
-      await this.prisma.db.serviceProviderCategory.create({
-        data: {
-          name: def.name,
-          sortOrder: def.sortOrder,
-          active: true,
-        },
-      });
-    }
-  }
-
   private async assertExists(id: string): Promise<void> {
     const category = await this.prisma.db.serviceProviderCategory.findUnique({
       where: { id },
       select: { id: true },
     });
-
     if (!category) {
       throw serviceProviderCategoryNotFound();
     }

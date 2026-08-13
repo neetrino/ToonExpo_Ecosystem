@@ -4,6 +4,7 @@ import type { PortalReadinessCriterionItem, ReadinessScoreStatus } from '@toonex
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
+import { BuilderReadinessCriterionHelp } from '@/features/builder/components/builder-readiness-criterion-help';
 import { ReadinessHelpDialog } from '@/features/builder/components/readiness-help-dialog';
 import { ReadinessProgressRing } from '@/features/readiness/components/readiness-progress-ring';
 import { Button } from '@/shared/ui/button';
@@ -22,16 +23,17 @@ export const BuilderReadinessCriterionRing = ({ item }: BuilderReadinessCriterio
   const label = t(`criteria.${item.code}`);
 
   return (
-    <div className="flex w-[7.25rem] flex-col items-center gap-2.5 sm:w-[8.25rem]">
+    <div className="flex w-36 flex-col items-center gap-2">
       <ReadinessProgressRing
         percent={percent}
         size="xs"
         tone="brand"
         label={`${label}: ${percent}%`}
       />
-      <p className="line-clamp-3 text-center text-[0.7rem] leading-snug font-medium text-ink">
+      <p className="w-full text-center text-[0.7rem] leading-snug font-medium text-ink">
         {label}
       </p>
+      <BuilderReadinessCriterionHelp item={item} />
     </div>
   );
 };
@@ -51,7 +53,10 @@ export const BuilderReadinessFlagRow = ({ item }: BuilderReadinessFlagRowProps) 
 
   return (
     <div className="flex items-center justify-between gap-3 py-2.5">
-      <p className="min-w-0 flex-1 text-sm text-ink">{label}</p>
+      <div className="flex min-w-0 flex-1 items-center gap-2">
+        <p className="min-w-0 text-sm text-ink">{label}</p>
+        <BuilderReadinessCriterionHelp item={item} />
+      </div>
       <div className="flex shrink-0 overflow-hidden rounded-md border border-border">
         <span
           className={cn(

@@ -1,14 +1,14 @@
 'use client';
 
-import type { ReadinessCategoryItem } from '@toonexpo/contracts';
+import type { ServiceProviderCategoryItem } from '@toonexpo/contracts';
 import { SearchX, SquarePen, Tags } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
 
 import { ReadinessCategoryCard } from '@/features/admin/components/readiness-category-card';
-import { ReadinessCategoryForm } from '@/features/admin/components/readiness-category-form';
+import { ServiceProviderCategoryForm } from '@/features/admin/components/service-provider-category-form';
 import { ADMIN_VIEW_MODE_KEYS } from '@/features/admin/constants';
-import { useAdminReadinessCategoriesQuery } from '@/features/admin/hooks/use-admin-readiness';
+import { useAdminServiceProviderCategoriesQuery } from '@/features/admin/hooks/use-admin-service-providers';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { AdminCreateSheet } from '@/shared/ui/admin-create-sheet';
@@ -21,22 +21,23 @@ import { ListPageHeader } from '@/shared/ui/list-page-header';
 import { VIEW_MODE_CARDS } from '@/shared/ui/view-mode';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
-const matchesCategorySearch = (category: ReadinessCategoryItem, needle: string): boolean => {
-  const haystack = [category.name, category.code, category.description ?? '']
-    .join(' ')
-    .toLowerCase();
+const matchesCategorySearch = (
+  category: ServiceProviderCategoryItem,
+  needle: string,
+): boolean => {
+  const haystack = [category.name, category.description ?? ''].join(' ').toLowerCase();
   return haystack.includes(needle);
 };
 
 /**
- * Admin readiness categories list with inline create/edit panel.
+ * Admin catalog of service provider categories used when adding a provider.
  */
 export const ReadinessCategoriesPage = () => {
   const t = useTranslations('Admin.readiness.categories');
   const tCommon = useTranslations('Common.integratedSearch');
-  const query = useAdminReadinessCategoriesQuery();
+  const query = useAdminServiceProviderCategoriesQuery();
   const [search, setSearch] = useState('');
-  const [editing, setEditing] = useState<ReadinessCategoryItem | null>(null);
+  const [editing, setEditing] = useState<ServiceProviderCategoryItem | null>(null);
   const [creating, setCreating] = useState(false);
   const { viewMode, effectiveViewMode, setViewMode } = usePersistedViewMode(
     ADMIN_VIEW_MODE_KEYS.readinessCategories,
@@ -66,11 +67,7 @@ export const ReadinessCategoriesPage = () => {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-6">
-        <BackLink
-          href="/admin/readiness"
-          label={t('backToAssessments')}
-          className="-mt-2"
-        />
+        <BackLink href="/admin/readiness" label={t('backToAssessments')} className="-mt-2" />
         <ListPageHeader
           icon={Tags}
           title={t('title')}
@@ -108,7 +105,7 @@ export const ReadinessCategoriesPage = () => {
         }}
         title={t('createTitle')}
       >
-        <ReadinessCategoryForm
+        <ServiceProviderCategoryForm
           onDone={() => {
             setCreating(false);
           }}
@@ -123,7 +120,7 @@ export const ReadinessCategoriesPage = () => {
         title={editing ? t('editTitle', { name: editing.name }) : ''}
       >
         {editing ? (
-          <ReadinessCategoryForm
+          <ServiceProviderCategoryForm
             category={editing}
             onDone={() => {
               setEditing(null);
@@ -146,7 +143,7 @@ export const ReadinessCategoriesPage = () => {
           />
         </div>
       ) : effectiveViewMode === VIEW_MODE_CARDS ? (
-        <AdminListCardGrid className="gap-4 xl:grid-cols-4">
+        <AdminListCardGrid className="gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {categories.map((category) => (
             <ReadinessCategoryCard
               key={category.id}
@@ -164,8 +161,6 @@ export const ReadinessCategoriesPage = () => {
             <thead className="bg-surface text-xs uppercase tracking-wide text-ink-muted">
               <tr>
                 <th className="px-3 py-1 font-medium">{t('columns.name')}</th>
-                <th className="px-3 py-1 text-center font-medium">{t('columns.weight')}</th>
-                <th className="px-3 py-1 text-center font-medium">{t('columns.sort')}</th>
                 <th className="px-3 py-1 text-center font-medium">{t('columns.active')}</th>
                 <th className="px-3 py-1 text-center font-medium">{t('columns.actions')}</th>
               </tr>
@@ -174,10 +169,6 @@ export const ReadinessCategoriesPage = () => {
               {categories.map((category) => (
                 <tr key={category.id} className="border-t border-border hover:bg-surface/60">
                   <td className="px-3 py-1 font-medium text-ink">{category.name}</td>
-                  <td className="px-3 py-1 text-center text-ink-secondary">
-                    {category.weight ?? '—'}
-                  </td>
-                  <td className="px-3 py-1 text-center text-ink-secondary">{category.sortOrder}</td>
                   <td className="px-3 py-1 text-center text-ink-secondary">
                     {category.active ? t('activeYes') : t('activeNo')}
                   </td>

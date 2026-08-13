@@ -254,6 +254,9 @@ export const SideSheet = ({
       if (isFloorPlanLightboxOpen()) {
         return;
       }
+      if (document.querySelector('[data-overlay-modal]')) {
+        return;
+      }
       if (!isTopSideSheetLevel(stackLevel)) {
         return;
       }

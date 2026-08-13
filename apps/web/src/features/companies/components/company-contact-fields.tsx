@@ -1,6 +1,7 @@
 'use client';
 
 import type {
+  Control,
   FieldErrors,
   FieldValues,
   Path,
@@ -11,8 +12,10 @@ import { useTranslations } from 'next-intl';
 import type { CompanyContactFieldsValues } from '@/features/companies/schemas/company-contact-fields.schema';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
+import { PhoneFormControl } from '@/shared/ui/phone-form-control';
 
 type CompanyContactFieldsProps<TFieldValues extends FieldValues> = {
+  control: Control<TFieldValues>;
   register: UseFormRegister<TFieldValues>;
   errors: FieldErrors<TFieldValues>;
   idPrefix: string;
@@ -26,6 +29,7 @@ const field = <TFieldValues extends FieldValues>(name: keyof CompanyContactField
  * Shared contact / region / materials inputs for company profile editors.
  */
 export const CompanyContactFields = <TFieldValues extends FieldValues>({
+  control,
   register,
   errors,
   idPrefix,
@@ -41,7 +45,11 @@ export const CompanyContactFields = <TFieldValues extends FieldValues>({
         label={t('form.phone')}
         error={fieldErrors.phone ? t('validation.phone') : undefined}
       >
-        <Input id={`${idPrefix}-phone`} type="tel" {...register(field<TFieldValues>('phone'))} />
+        <PhoneFormControl
+          control={control}
+          name={field<TFieldValues>('phone')}
+          id={`${idPrefix}-phone`}
+        />
       </FormField>
 
       <FormField

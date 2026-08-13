@@ -1,6 +1,5 @@
 import type {
   CreateReadinessAssessmentBody,
-  CreateReadinessCategoryBody,
   CreateReadinessInternalNoteBody,
   CreateReadinessRecommendationBody,
   CreateReadinessRequiredActionBody,
@@ -8,15 +7,14 @@ import type {
   ReadinessAssessmentDetail,
   ReadinessAssessmentListResponse,
   ReadinessAssessmentTargetType,
-  ReadinessCategoryItem,
-  ReadinessCategoryListResponse,
   ReadinessInternalNoteItem,
   ReadinessRecommendationItem,
   ReadinessRequiredActionItem,
   ReadinessScoreItem,
   ReadinessScoreStatus,
+  ReadinessCriterionItem,
   UpdateReadinessAssessmentBody,
-  UpdateReadinessCategoryBody,
+  UpdateReadinessCriterionBody,
   UpdateReadinessRecommendationBody,
   UpdateReadinessRequiredActionBody,
   UpsertReadinessScoreBody,
@@ -39,35 +37,6 @@ export type ListReadinessAssessmentsParams = {
   targetType?: ReadinessAssessmentTargetType;
   status?: ReadinessScoreStatus;
 };
-
-export const listAdminReadinessCategories = (): Promise<ReadinessCategoryListResponse> =>
-  apiFetch<ReadinessCategoryListResponse>({
-    path: '/admin/readiness/categories',
-    method: 'GET',
-    credentials: 'include',
-    cache: 'no-store',
-  });
-
-export const createAdminReadinessCategory = (
-  body: CreateReadinessCategoryBody,
-): Promise<ReadinessCategoryItem> =>
-  apiFetch<ReadinessCategoryItem>({
-    path: '/admin/readiness/categories',
-    method: 'POST',
-    ...jsonCredentials,
-    body: JSON.stringify(body),
-  });
-
-export const updateAdminReadinessCategory = (
-  id: string,
-  body: UpdateReadinessCategoryBody,
-): Promise<ReadinessCategoryItem> =>
-  apiFetch<ReadinessCategoryItem>({
-    path: `/admin/readiness/categories/${encodeURIComponent(id)}`,
-    method: 'PATCH',
-    ...jsonCredentials,
-    body: JSON.stringify(body),
-  });
 
 export const listAdminReadinessAssessments = (
   params: ListReadinessAssessmentsParams,
@@ -157,6 +126,17 @@ export const upsertAdminReadinessCriterionScore = (
   apiFetch<ReadinessAssessmentDetail>({
     path: `/admin/readiness/assessments/${encodeURIComponent(assessmentId)}/criteria/${encodeURIComponent(criterionId)}`,
     method: 'PUT',
+    ...jsonCredentials,
+    body: JSON.stringify(body),
+  });
+
+export const updateAdminReadinessCriterion = (
+  criterionId: string,
+  body: UpdateReadinessCriterionBody,
+): Promise<ReadinessCriterionItem> =>
+  apiFetch<ReadinessCriterionItem>({
+    path: `/admin/readiness/criteria/${encodeURIComponent(criterionId)}`,
+    method: 'PATCH',
     ...jsonCredentials,
     body: JSON.stringify(body),
   });

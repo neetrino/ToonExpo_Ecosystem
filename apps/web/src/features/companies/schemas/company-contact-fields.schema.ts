@@ -1,6 +1,7 @@
 import { z } from 'zod';
 
-const MAX_PHONE_LENGTH = 64;
+import { isBlankPhone, isValidOptionalPhone, sanitizePhoneInput } from '@/shared/lib/phone';
+
 const MAX_CONTACT_PERSON_LENGTH = 200;
 const MAX_EMAIL_LENGTH = 320;
 const MAX_URL_LENGTH = 2000;
@@ -33,7 +34,7 @@ export const optionalEmailField = z
  * Shared company contact / materials fields (admin + builder portal).
  */
 export const companyContactFieldsSchema = z.object({
-  phone: z.string().trim().max(MAX_PHONE_LENGTH),
+  phone: z.string().trim().refine(isValidOptionalPhone, { message: 'phone' }),
   contactPerson: z.string().trim().max(MAX_CONTACT_PERSON_LENGTH),
   email: optionalEmailField,
   websiteUrl: optionalHttpUrlField,
@@ -86,7 +87,7 @@ export const companyContactDefaultsFrom = (source: {
   mediaMaterialsUrl: string | null;
   advertisingMaterialsUrl: string | null;
 }): CompanyContactFieldsValues => ({
-  phone: source.phone ?? '',
+  phone: sanitizePhoneInput(source.phone ?? ''),
   contactPerson: source.contactPerson ?? '',
   email: source.email ?? '',
   websiteUrl: source.websiteUrl ?? '',
@@ -115,7 +116,7 @@ export const companyContactPatchFrom = (
   mediaMaterialsUrl: string | null;
   advertisingMaterialsUrl: string | null;
 } => ({
-  phone: emptyToNull(values.phone),
+  phone: isBlankPhone(values.phone) ? null : sanitizePhoneInput(values.phone),
   contactPerson: emptyToNull(values.contactPerson),
   email: emptyToNull(values.email),
   websiteUrl: emptyToNull(values.websiteUrl),

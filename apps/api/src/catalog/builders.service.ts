@@ -3,6 +3,7 @@ import type { BuilderDetail, BuilderSummary } from '@toonexpo/contracts';
 import { CompanyStatus, CompanyType, PublicationStatus } from '@toonexpo/db';
 
 import { AnalyticsService } from '../analytics/analytics.service.js';
+import { toPublicFileUrl } from '../media/public-file-url.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { publishedApartmentWhere } from './mappers/catalog.mapper.js';
 import { mapProjectListItem } from './mappers/project.mapper.js';
@@ -10,7 +11,7 @@ import type { CatalogViewerContext } from './projects.service.js';
 import { loadTranslations } from './utils/load-translations.js';
 import {
   resolveCatalogLocale,
-  resolveTranslatedName,
+  resolveCompanyDisplayName,
   resolveTranslatedValue,
   TRANSLATION_ENTITY,
   TRANSLATION_FIELD,
@@ -147,14 +148,7 @@ export class BuildersService {
     locale: ReturnType<typeof resolveCatalogLocale>,
     translations: Awaited<ReturnType<typeof loadTranslations>>,
   ): BuilderSummary {
-    const name = resolveTranslatedName(
-      translations,
-      TRANSLATION_ENTITY.company,
-      builder.id,
-      TRANSLATION_FIELD.name,
-      locale,
-      builder.name,
-    );
+    const name = resolveCompanyDisplayName(translations, builder.id, locale, builder.name);
 
     return {
       id: builder.id,
@@ -167,7 +161,7 @@ export class BuildersService {
         locale,
         builder.description,
       ),
-      logoUrl: builder.logoMedia?.fileUrl ?? null,
+      logoUrl: builder.logoMedia ? toPublicFileUrl(builder.logoMedia.fileUrl) : null,
       publishedProjectCount: builder._count.projects,
       phone: builder.phone,
       contactPerson: builder.contactPerson,

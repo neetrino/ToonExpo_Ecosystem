@@ -1,12 +1,14 @@
 'use client';
 
-import { forwardRef, type InputHTMLAttributes } from 'react';
+import { forwardRef, type KeyboardEvent, type InputHTMLAttributes } from 'react';
 
-import { PHONE_MAX_LENGTH } from '@/shared/config/auth.constants';
+import {
+  digitsOnly,
+  MAX_PHONE_DIGITS,
+  PHONE_PREFIX,
+  sanitizePhoneInput,
+} from '@/shared/lib/phone';
 import { cn } from '@/shared/ui/cn';
-
-const PHONE_PREFIX = '+';
-const MAX_PHONE_DIGITS = PHONE_MAX_LENGTH - PHONE_PREFIX.length;
 
 export type PhoneInputProps = Omit<
   InputHTMLAttributes<HTMLInputElement>,
@@ -16,14 +18,23 @@ export type PhoneInputProps = Omit<
   onChange?: ((value: string) => void) | undefined;
 };
 
-const digitsOnly = (value: string): string => value.replace(/\D/g, '');
+const isDigitKey = (key: string): boolean => key.length === 1 && key >= '0' && key <= '9';
+
+const preventNonDigitKey = (event: KeyboardEvent<HTMLInputElement>): void => {
+  if (event.defaultPrevented || event.ctrlKey || event.metaKey || event.altKey) {
+    return;
+  }
+  if (event.key.length === 1 && !isDigitKey(event.key)) {
+    event.preventDefault();
+  }
+};
 
 /**
  * Phone field with a fixed "+" prefix; digits only in the editable part.
- * Form value is always stored as `+` + digits (e.g. `+37491111222`).
+ * Form value is always stored as `+` + digits (e.g. `+37491111222`), or empty.
  */
 export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(function PhoneInput(
-  { className, value = '', onChange, disabled, ...props },
+  { className, value = '', onChange, disabled, onKeyDown, ...props },
   ref,
 ) {
   const digits = digitsOnly(value.startsWith(PHONE_PREFIX) ? value.slice(1) : value).slice(
@@ -31,10 +42,15 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(function
     MAX_PHONE_DIGITS,
   );
 
+  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>): void => {
+    onKeyDown?.(event);
+    preventNonDigitKey(event);
+  };
+
   return (
     <div
       className={cn(
-        'flex h-11 w-full overflow-hidden rounded-sm border border-border bg-surface-elevated',
+        'flex h-11 w-full overflow-hidden rounded-sm border border-border bg-surface-elevated text-ink',
         'transition-[border-color,box-shadow,background-color] duration-[var(--duration-fast)]',
         'hover:border-border-strong',
         'focus-within:border-brand focus-within:ring-2 focus-within:ring-brand/20',
@@ -43,7 +59,7 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(function
       )}
     >
       <span
-        className="inline-flex shrink-0 items-center border-r border-border/70 bg-accent-soft/60 px-3.5 text-sm font-semibold tracking-wide text-ink-secondary"
+        className="inline-flex shrink-0 items-center pl-4 text-sm font-medium text-current"
         aria-hidden
       >
         {PHONE_PREFIX}
@@ -56,16 +72,16 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(function
         disabled={disabled}
         value={digits}
         className={cn(
-          'h-full min-w-0 flex-1 border-0 bg-transparent px-3',
-          'text-base text-ink sm:text-sm',
+          'h-full min-w-0 flex-1 border-0 bg-transparent py-0 pr-4 pl-1.5',
+          'text-base text-inherit sm:text-sm',
           'placeholder:text-ink-muted',
           'focus-visible:outline-none',
           'disabled:cursor-not-allowed',
         )}
         {...props}
+        onKeyDown={handleKeyDown}
         onChange={(event) => {
-          const nextDigits = digitsOnly(event.target.value).slice(0, MAX_PHONE_DIGITS);
-          onChange?.(nextDigits.length > 0 ? `${PHONE_PREFIX}${nextDigits}` : '');
+          onChange?.(sanitizePhoneInput(event.target.value));
         }}
       />
     </div>

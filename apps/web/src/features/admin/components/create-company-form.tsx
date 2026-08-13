@@ -11,10 +11,12 @@ import {
   createCompanySchema,
   type CreateCompanyFormValues,
 } from '@/features/admin/schemas/create-company.schema';
+import { toOptionalPhone } from '@/shared/lib/phone';
 import { ApiError } from '@/shared/api/errors';
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
+import { PhoneFormControl } from '@/shared/ui/phone-form-control';
 
 type CreateCompanyFormProps = {
   onSuccess: (adminEmail: string) => void;
@@ -41,6 +43,7 @@ export const CreateCompanyForm = ({ onSuccess }: CreateCompanyFormProps) => {
 
   const {
     register,
+    control,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<CreateCompanyFormValues>({
@@ -57,6 +60,7 @@ export const CreateCompanyForm = ({ onSuccess }: CreateCompanyFormProps) => {
 
   const onSubmit = handleSubmit(async (values) => {
     setFormError(null);
+    const adminPhone = toOptionalPhone(values.adminPhone);
     const body: CreateCompanyRequest = {
       name: values.name,
       type: BUILDER_COMPANY_TYPE,
@@ -64,7 +68,7 @@ export const CreateCompanyForm = ({ onSuccess }: CreateCompanyFormProps) => {
       adminEmail: values.adminEmail,
       locale,
       ...(values.description.length > 0 ? { description: values.description } : {}),
-      ...(values.adminPhone.length > 0 ? { adminPhone: values.adminPhone } : {}),
+      ...(adminPhone ? { adminPhone } : {}),
     };
 
     try {
@@ -137,12 +141,12 @@ export const CreateCompanyForm = ({ onSuccess }: CreateCompanyFormProps) => {
           label={t('form.adminPhone')}
           error={errors.adminPhone ? t('validation.adminPhone') : undefined}
         >
-          <Input
+          <PhoneFormControl
+            control={control}
+            name="adminPhone"
             id="admin-phone"
-            type="tel"
             autoComplete="tel"
             aria-invalid={Boolean(errors.adminPhone)}
-            {...register('adminPhone')}
           />
         </FormField>
       </fieldset>

@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 
 import { AuthFormSwitch } from '@/features/auth/components/auth-form-switch';
 import {
@@ -25,7 +25,7 @@ import { Form } from '@/shared/ui/form';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
 import { PasswordInput } from '@/shared/ui/password-input';
-import { PhoneInput } from '@/shared/ui/phone-input';
+import { PhoneFormControl } from '@/shared/ui/phone-form-control';
 
 /**
  * Buyer self-registration form with NestJS-backed session cookie.
@@ -107,22 +107,13 @@ export const RegisterForm = () => {
         labelClassName={AUTH_LABEL_CLASS}
         error={errors.phone ? t('validation.phone') : undefined}
       >
-        <Controller
-          name="phone"
+        <PhoneFormControl
           control={control}
-          render={({ field }) => (
-            <PhoneInput
-              id="register-phone"
-              name={field.name}
-              value={field.value}
-              onBlur={field.onBlur}
-              ref={field.ref}
-              placeholder={t('register.placeholders.phone')}
-              aria-invalid={Boolean(errors.phone)}
-              className={AUTH_PHONE_CLASS}
-              onChange={field.onChange}
-            />
-          )}
+          name="phone"
+          id="register-phone"
+          placeholder={t('register.placeholders.phone')}
+          aria-invalid={Boolean(errors.phone)}
+          className={AUTH_PHONE_CLASS}
         />
       </FormField>
 

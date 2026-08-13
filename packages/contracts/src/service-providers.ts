@@ -12,6 +12,8 @@ export type ServiceProviderCategoryItem = {
   description: string | null;
   sortOrder: number;
   active: boolean;
+  logoMediaId: string | null;
+  logoUrl: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -25,6 +27,7 @@ export type CreateServiceProviderCategoryBody = {
   description?: string;
   sortOrder?: number;
   active?: boolean;
+  logoMediaId?: string;
 };
 
 export type UpdateServiceProviderCategoryBody = {
@@ -32,6 +35,7 @@ export type UpdateServiceProviderCategoryBody = {
   description?: string | null;
   sortOrder?: number;
   active?: boolean;
+  logoMediaId?: string | null;
 };
 
 export type ServiceProviderCategoryRef = {

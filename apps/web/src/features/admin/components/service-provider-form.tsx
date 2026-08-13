@@ -5,7 +5,7 @@ import type { ServiceProviderCategoryItem } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 import { Controller, useForm } from 'react-hook-form';
 
-import { SERVICE_PROVIDER_FORM_CATEGORY_NAMES } from '@/features/admin/constants/service-provider-categories';
+import { ServiceProviderCategorySelect } from '@/features/admin/components/service-provider-category-select';
 import {
   SERVICE_PROVIDER_TYPES,
   serviceProviderSchema,
@@ -15,6 +15,7 @@ import { PARTNER_PUBLICATION_STATUSES } from '@/features/partners/constants';
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
+import { PhoneFormControl } from '@/shared/ui/phone-form-control';
 import { Select } from '@/shared/ui/select';
 import { Textarea } from '@/shared/ui/textarea';
 
@@ -25,28 +26,6 @@ type ServiceProviderFormProps = {
   onCancel: () => void;
   onSubmit: (values: ServiceProviderFormValues) => Promise<void>;
   isBusy: boolean;
-};
-
-const categoryIdToName = (
-  categoryIds: readonly string[],
-  categories: readonly ServiceProviderCategoryItem[],
-): string => {
-  const selectedId = categoryIds[0];
-  if (!selectedId) {
-    return '';
-  }
-  return categories.find((category) => category.id === selectedId)?.name ?? '';
-};
-
-const categoryNameToIds = (
-  name: string,
-  categories: readonly ServiceProviderCategoryItem[],
-): string[] => {
-  if (name.length === 0) {
-    return [];
-  }
-  const match = categories.find((category) => category.name === name);
-  return match ? [match.id] : [];
 };
 
 /**
@@ -70,7 +49,7 @@ export const ServiceProviderForm = ({
   const busy = isBusy || form.formState.isSubmitting;
 
   const handleSubmit = form.handleSubmit(async (values) => {
-    await onSubmit(values);
+    await onSubmit({ ...values, active: defaultValues.active });
   });
 
   return (
@@ -81,7 +60,11 @@ export const ServiceProviderForm = ({
         </legend>
         <div className="grid grid-cols-2 items-end gap-3">
           <FormField id="providerName" label={t('name')}>
-            <Input id="providerName" {...form.register('name')} />
+            <Input
+              id="providerName"
+              placeholder={t('placeholders.name')}
+              {...form.register('name')}
+            />
           </FormField>
           <FormField id="providerType" label={t('providerType')}>
             <Controller
@@ -109,33 +92,34 @@ export const ServiceProviderForm = ({
           </FormField>
         </div>
         <FormField id="providerDescription" label={t('description')}>
-          <Textarea id="providerDescription" rows={2} {...form.register('description')} />
+          <Textarea
+            id="providerDescription"
+            rows={2}
+            placeholder={t('placeholders.description')}
+            {...form.register('description')}
+          />
         </FormField>
         <FormField id="providerServices" label={t('services')}>
-          <Textarea id="providerServices" rows={2} {...form.register('services')} />
+          <Textarea
+            id="providerServices"
+            rows={2}
+            placeholder={t('placeholders.services')}
+            {...form.register('services')}
+          />
         </FormField>
         <FormField id="providerCategory" label={t('categories')}>
           <Controller
             name="categoryIds"
             control={form.control}
             render={({ field }) => (
-              <Select
+              <ServiceProviderCategorySelect
                 id="providerCategory"
-                name={field.name}
-                value={categoryIdToName(field.value, categories)}
-                aria-label={t('categories')}
+                categories={categories}
+                values={field.value}
+                disabled={busy}
                 onBlur={field.onBlur}
-                onChange={(event) => {
-                  field.onChange(categoryNameToIds(event.target.value, categories));
-                }}
-              >
-                <option value="">{t('categoriesPlaceholder')}</option>
-                {SERVICE_PROVIDER_FORM_CATEGORY_NAMES.map((name) => (
-                  <option key={name} value={name}>
-                    {name}
-                  </option>
-                ))}
-              </Select>
+                onChange={field.onChange}
+              />
             )}
           />
         </FormField>
@@ -147,26 +131,56 @@ export const ServiceProviderForm = ({
         </legend>
         <div className="grid grid-cols-2 items-end gap-3">
           <FormField id="providerPhone" label={t('phone')}>
-            <Input id="providerPhone" {...form.register('phone')} />
+            <PhoneFormControl
+              control={form.control}
+              name="phone"
+              id="providerPhone"
+              placeholder={t('placeholders.phone')}
+            />
           </FormField>
           <FormField id="providerEmail" label={t('email')}>
-            <Input id="providerEmail" type="email" {...form.register('email')} />
+            <Input
+              id="providerEmail"
+              type="email"
+              placeholder={t('placeholders.email')}
+              {...form.register('email')}
+            />
           </FormField>
         </div>
         <div className="grid grid-cols-2 items-end gap-3">
           <FormField id="providerWebsite" label={t('website')}>
-            <Input id="providerWebsite" {...form.register('website')} />
+            <Input
+              id="providerWebsite"
+              type="url"
+              placeholder={t('placeholders.website')}
+              {...form.register('website')}
+            />
           </FormField>
           <FormField id="socialLinkedin" label={t('socialLinkedin')}>
-            <Input id="socialLinkedin" {...form.register('socialLinkedin')} />
+            <Input
+              id="socialLinkedin"
+              type="url"
+              placeholder={t('placeholders.socialLinkedin')}
+              {...form.register('socialLinkedin')}
+            />
           </FormField>
         </div>
         <div className="grid grid-cols-2 items-end gap-3">
           <FormField id="socialFacebook" label={t('socialFacebook')}>
-            <Input id="socialFacebook" {...form.register('socialFacebook')} />
+            <Input
+              id="socialFacebook"
+              type="url"
+              placeholder={t('placeholders.socialFacebook')}
+              {...form.register('socialFacebook')}
+            />
           </FormField>
           <FormField id="socialInstagram" label={t('socialInstagram')}>
-            <Input id="socialInstagram" {...form.register('socialInstagram')} />
+            <Input
+              id="socialInstagram"
+              type="url"
+              placeholder={t('placeholders.socialInstagram')}
+              {...form.register('socialInstagram')}
+            />
           </FormField>
         </div>
       </fieldset>
@@ -176,7 +190,12 @@ export const ServiceProviderForm = ({
           {t('sections.publishing')}
         </legend>
         <FormField id="internalNotes" label={t('internalNotes')}>
-          <Textarea id="internalNotes" rows={2} {...form.register('internalNotes')} />
+          <Textarea
+            id="internalNotes"
+            rows={2}
+            placeholder={t('placeholders.internalNotes')}
+            {...form.register('internalNotes')}
+          />
           <p className="mt-1 text-xs text-ink-muted">{t('internalNotesHint')}</p>
         </FormField>
         <FormField id="publicationStatus" label={t('publication')}>
@@ -204,10 +223,6 @@ export const ServiceProviderForm = ({
             )}
           />
         </FormField>
-        <label className="flex items-center gap-2 text-sm text-ink">
-          <input type="checkbox" {...form.register('active')} />
-          {t('active')}
-        </label>
       </fieldset>
 
       <div className="flex flex-wrap gap-2">

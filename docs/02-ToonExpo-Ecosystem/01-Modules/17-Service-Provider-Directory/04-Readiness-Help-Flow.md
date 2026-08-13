@@ -8,16 +8,21 @@ Builder can find help providers from weak readiness categories.
 
 ```text
 Builder opens Readiness
--> sees weak category
--> clicks Help / Providers
--> system resolves linked ServiceProviderCategory
+-> sees a criterion with a linked service category
+-> clicks ! next to that point
 -> system shows active providers in that category
 -> builder contacts provider manually
 ```
 
+Category-level Help remains available when the readiness category itself is linked.
+
 ## When To Show Help Button
 
-Show help/providers button when:
+Show ! next to a criterion when:
+
+- the criterion has a linked service provider category.
+
+Show category-level help/providers button when:
 
 - category status is needs_improvement;
 - category status is in_progress;

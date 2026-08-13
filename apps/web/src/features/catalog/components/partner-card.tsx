@@ -20,7 +20,7 @@ type PartnerCardProps = {
 export const PartnerCard = ({ partner, className }: PartnerCardProps) => {
   const t = useTranslations('Partners');
   const tCatalog = useTranslations('Catalog.partnersPage');
-  const photoSrc = partner.logoUrl ?? PARTNER_DEMO_PHOTO_SRC;
+  const photoSrc = partner.coverUrl ?? PARTNER_DEMO_PHOTO_SRC;
 
   return (
     <article
