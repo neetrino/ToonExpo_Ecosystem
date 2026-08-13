@@ -24,9 +24,9 @@ import {
 export type { ListboxOption };
 
 export type ListboxSelectProps = {
-  value: string;
+  value?: string | undefined;
   options: readonly ListboxOption[];
-  onChange: (value: string) => void;
+  onChange?: ((value: string) => void) | undefined;
   /** Accessible name when the visible field label is separate. */
   'aria-label': string;
   className?: string | undefined;
@@ -64,7 +64,7 @@ export type ListboxSelectProps = {
 export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
   function ListboxSelect(props, ref) {
     const {
-      value,
+      value = '',
       options,
       onChange,
       'aria-label': ariaLabel,
@@ -128,7 +128,7 @@ export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
         onValuesChange(nextValues);
         return;
       }
-      onChange(next);
+      onChange?.(next);
       setOpen(false);
     };
 

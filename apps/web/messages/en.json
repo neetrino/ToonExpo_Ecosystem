@@ -2287,7 +2287,7 @@
           "socialInstagram": "Instagram",
           "socialLinkedin": "LinkedIn",
           "categories": "Categories",
-          "categoriesPlaceholder": "Select category…",
+          "categoriesPlaceholder": "Select categories…",
           "categoriesSelectedCount": "{count} selected",
           "categoriesEmpty": "No categories available yet.",
           "categoriesAddPlaceholder": "New category name",

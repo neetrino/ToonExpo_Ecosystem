@@ -27,10 +27,6 @@ type ServiceProviderFormProps = {
   isBusy: boolean;
 };
 
-const selectedCategoryId = (categoryIds: readonly string[]): string => categoryIds[0] ?? '';
-
-const toCategoryIds = (categoryId: string): string[] => (categoryId.length > 0 ? [categoryId] : []);
-
 /**
  * Admin create/edit form for service providers (side sheet).
  */
@@ -118,12 +114,10 @@ export const ServiceProviderForm = ({
               <ServiceProviderCategorySelect
                 id="providerCategory"
                 categories={categories}
-                value={selectedCategoryId(field.value)}
+                values={field.value}
                 disabled={busy}
                 onBlur={field.onBlur}
-                onChange={(categoryId) => {
-                  field.onChange(toCategoryIds(categoryId));
-                }}
+                onChange={field.onChange}
               />
             )}
           />

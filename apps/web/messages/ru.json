@@ -2637,7 +2637,7 @@
           "socialInstagram": "Instagram",
           "socialLinkedin": "LinkedIn",
           "categories": "Категории",
-          "categoriesPlaceholder": "Выберите категорию…",
+          "categoriesPlaceholder": "Выберите категории…",
           "categoriesSelectedCount": "{count} выбрано",
           "categoriesEmpty": "Категории пока недоступны.",
           "categoriesAddPlaceholder": "Название новой категории",

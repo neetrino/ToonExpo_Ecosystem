@@ -19,9 +19,9 @@ import { ListboxSelect, type ListboxOption } from '@/shared/ui/listbox-select';
 type ServiceProviderCategorySelectProps = {
   id: string;
   categories: readonly ServiceProviderCategoryItem[];
-  value: string;
+  values: readonly string[];
   disabled?: boolean | undefined;
-  onChange: (categoryId: string) => void;
+  onChange: (categoryIds: string[]) => void;
   onBlur?: FocusEventHandler<HTMLButtonElement> | undefined;
 };
 
@@ -124,7 +124,7 @@ const CategoryCreateFooter = ({
 export const ServiceProviderCategorySelect = ({
   id,
   categories,
-  value,
+  values,
   disabled = false,
   onChange,
   onBlur,
@@ -144,9 +144,9 @@ export const ServiceProviderCategorySelect = ({
   const options = useMemo(
     () =>
       visibleCategories(categories, created, removedIdSet)
-        .filter((category) => category.active || category.id === value)
+        .filter((category) => category.active || values.includes(category.id))
         .map((category) => ({ value: category.id, label: category.name })),
-    [categories, created, removedIdSet, value],
+    [categories, created, removedIdSet, values],
   );
 
   const submitCreate = async (): Promise<void> => {
@@ -161,7 +161,9 @@ export const ServiceProviderCategorySelect = ({
       setRemovedIds((current) => current.filter((categoryId) => categoryId !== category.id));
       setDraftName('');
       setErrorKey(null);
-      onChange(category.id);
+      if (!values.includes(category.id)) {
+        onChange([...values, category.id]);
+      }
     } catch (error) {
       setErrorKey(createErrorKey(error));
     }
@@ -181,8 +183,8 @@ export const ServiceProviderCategorySelect = ({
       );
       setPendingDelete(null);
       setErrorKey(null);
-      if (value === deletedId) {
-        onChange('');
+      if (values.includes(deletedId)) {
+        onChange(values.filter((categoryId) => categoryId !== deletedId));
       }
     } catch {
       setErrorKey('categoriesDeleteFailed');
@@ -215,7 +217,8 @@ export const ServiceProviderCategorySelect = ({
       <ListboxSelect
         id={id}
         variant="field"
-        value={value}
+        values={values}
+        multiple
         options={options}
         disabled={disabled}
         contained
@@ -223,7 +226,8 @@ export const ServiceProviderCategorySelect = ({
         open={menuOpen && pendingDelete == null}
         placeholder={t('categoriesPlaceholder')}
         aria-label={t('categories')}
-        onChange={onChange}
+        selectedCountLabel={(count) => t('categoriesSelectedCount', { count })}
+        onValuesChange={onChange}
         onBlur={onBlur}
         onOpenChange={setMenuOpen}
         optionAction={optionAction}
