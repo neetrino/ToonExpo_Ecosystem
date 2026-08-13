@@ -49,10 +49,11 @@ export const ExpoSnapshotMapView = ({
           width={snapshot.mapWidth}
           height={snapshot.mapHeight}
         />
-        {snapshot.areas.map((area) => (
+        {snapshot.areas.map((area, index) => (
           <VenueMapAreaGroup
             key={area.id}
             area={area}
+            colorIndex={area.sortOrder ?? index}
             highlighted={highlightedAreaId === area.id}
             fontSize={fontSize}
             onSelect={onSelectArea}

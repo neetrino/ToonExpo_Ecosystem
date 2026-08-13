@@ -4053,6 +4053,7 @@
     "search": {
       "label": "Search the venue map",
       "placeholder": "Company, area code or label…",
+      "empty": "No matching areas",
       "meta": "{code} · {type}",
       "types": {
         "builder": "Builder",
