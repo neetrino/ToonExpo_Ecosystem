@@ -3585,6 +3585,8 @@
       "previewBadge": "Пример превью",
       "previewHint": "Реальной оценки ещё нет — это демо-данные, чтобы вы увидели, как выглядит readiness в портале.",
       "companyAssessment": "Готовность компании",
+      "expandDetails": "Показать детали готовности",
+      "collapseDetails": "Скрыть детали готовности",
       "overallScore": "Общий балл",
       "kpiScoreLabel": "Балл готовности",
       "overallHints": {

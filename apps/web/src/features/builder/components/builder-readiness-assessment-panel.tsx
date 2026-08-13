@@ -221,7 +221,7 @@ export const BuilderReadinessAssessmentPanel = ({
             </div>
           ) : null}
         </div>
-      ) : null}
+      </div>
     </div>
   );
 };
