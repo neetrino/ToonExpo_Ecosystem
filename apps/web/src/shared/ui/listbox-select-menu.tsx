@@ -5,6 +5,10 @@ import type { FocusEventHandler, ReactNode, RefObject } from 'react';
 
 import { cn } from '@/shared/ui/cn';
 import { SelectionMark } from '@/shared/ui/multi-listbox-selection-mark';
+import {
+  dropdownPanelMotionClass,
+  useDropdownEnterExit,
+} from '@/shared/ui/use-dropdown-enter-exit';
 
 export type ListboxOption = {
   value: string;
@@ -20,6 +24,41 @@ type ListboxMenuOptionsProps = {
   optionAction: ((option: ListboxOption) => ReactNode) | undefined;
   menuFooter: ReactNode | undefined;
   onPick: (value: string) => void;
+};
+
+type ContainedListboxMenuProps = {
+  open: boolean;
+  menuRef: RefObject<HTMLDivElement | null>;
+  children: ReactNode;
+};
+
+/**
+ * In-sheet listbox panel — same enter/exit motion as portaled dropdowns, no scrim.
+ */
+export const ContainedListboxMenu = ({
+  open,
+  menuRef,
+  children,
+}: ContainedListboxMenuProps) => {
+  const { isVisible, isExiting, handleAnimationEnd } = useDropdownEnterExit({ open });
+
+  if (!isVisible) {
+    return null;
+  }
+
+  return (
+    <div
+      ref={menuRef}
+      className={cn(
+        'site-select-menu site-select-menu--contained absolute top-[calc(100%+8px)] right-0 left-0 z-20',
+        isExiting && 'pointer-events-none',
+        dropdownPanelMotionClass('bottom', isExiting, true),
+      )}
+      onAnimationEnd={handleAnimationEnd}
+    >
+      {children}
+    </div>
+  );
 };
 
 export const ListboxMenuOptions = ({

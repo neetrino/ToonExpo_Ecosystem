@@ -26,6 +26,19 @@ const PROVIDER_TYPE_ICON: Record<AdminServiceProviderItem['providerType'], Lucid
   other: Briefcase,
 };
 
+const CATEGORY_CHIP_TONE = [
+  'bg-kpi-cyan/10 text-kpi-cyan',
+  'bg-kpi-orange/10 text-kpi-orange',
+  'bg-kpi-violet/10 text-kpi-violet',
+  'bg-kpi-green/10 text-kpi-green',
+] as const;
+
+const PUBLICATION_CHIP_TONE = {
+  published: 'bg-kpi-green/10 text-kpi-green',
+  draft: 'bg-kpi-orange/10 text-kpi-orange',
+  archived: 'bg-kpi-violet/10 text-kpi-violet',
+} as const;
+
 type ServiceProviderCardProps = {
   provider: AdminServiceProviderItem;
   categoryLogoUrl: string | null;
@@ -112,19 +125,24 @@ const ProviderCardFooter = ({ categories, publicationStatus }: ProviderCardFoote
 
   return (
     <div className="flex flex-wrap items-center gap-1.5">
-      {categories.map((category) => (
+      {categories.map((category, index) => (
         <span
           key={category.id}
           className={cn(
             LIST_STATUS_BADGE_CLASS,
             LIST_STATUS_BADGE_COMPACT_CLASS,
-            'bg-surface text-ink-muted',
+            CATEGORY_CHIP_TONE[index % CATEGORY_CHIP_TONE.length],
           )}
         >
           {category.name}
         </span>
       ))}
-      {publicationStatus ? <PublicationStatusBadge status={publicationStatus} /> : null}
+      {publicationStatus ? (
+        <PublicationStatusBadge
+          status={publicationStatus}
+          className={cn(LIST_STATUS_BADGE_COMPACT_CLASS, PUBLICATION_CHIP_TONE[publicationStatus])}
+        />
+      ) : null}
     </div>
   );
 };

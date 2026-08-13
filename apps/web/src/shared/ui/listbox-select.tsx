@@ -16,6 +16,7 @@ import { blurActiveElementAfterEscClose } from '@/shared/ui/blur-active-element'
 import { cn } from '@/shared/ui/cn';
 import { DropdownPortal } from '@/shared/ui/dropdown-portal';
 import {
+  ContainedListboxMenu,
   ListboxMenuOptions,
   ListboxTrigger,
   type ListboxOption,
@@ -46,8 +47,6 @@ export type ListboxSelectProps = {
   optionAction?: ((option: ListboxOption) => ReactNode) | undefined;
   /** Render the menu in-place (no stage portal) — stays inside a side sheet. */
   contained?: boolean | undefined;
-  /** Dim the sheet behind a contained menu so it reads as a separate layer. */
-  sheetScrim?: boolean | undefined;
   open?: boolean | undefined;
   onOpenChange?: ((open: boolean) => void) | undefined;
   /** Toggle several options without closing the menu. */
@@ -79,7 +78,6 @@ export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
       menuFooter,
       optionAction,
       contained = false,
-      sheetScrim = false,
       open: openProp,
       onOpenChange,
       multiple = false,
@@ -164,18 +162,7 @@ export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
             disabled={disabled}
           />
         ) : null}
-        {open && !disabled && contained && sheetScrim ? (
-          <button
-            type="button"
-            tabIndex={-1}
-            aria-label={ariaLabel}
-            className="fixed inset-0 z-10 bg-ink/40"
-            onClick={() => {
-              setOpen(false);
-            }}
-          />
-        ) : null}
-        <div className={cn(contained && open && 'relative z-20')}>
+        <div className={cn(contained && 'relative z-20')}>
           <ListboxTrigger
             buttonRef={buttonRef}
             id={id}
@@ -196,14 +183,9 @@ export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
             }}
           />
           {contained ? (
-            open && !disabled ? (
-              <div
-                ref={menuRef}
-                className="site-select-menu site-select-menu--contained absolute top-[calc(100%+8px)] right-0 left-0 z-20"
-              >
-                {menu}
-              </div>
-            ) : null
+            <ContainedListboxMenu open={open && !disabled} menuRef={menuRef}>
+              {menu}
+            </ContainedListboxMenu>
           ) : (
             <DropdownPortal open={open && !disabled} anchorRef={buttonRef} matchWidth>
               <div ref={menuRef} className="site-select-menu">
