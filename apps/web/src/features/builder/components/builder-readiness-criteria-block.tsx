@@ -23,21 +23,19 @@ export const BuilderReadinessCriterionRing = ({ item }: BuilderReadinessCriterio
   const label = t(`criteria.${item.code}`);
 
   return (
-    <div className="flex w-[7.25rem] flex-col items-center gap-2.5 sm:w-[8.25rem]">
-      <div className="relative">
-        <ReadinessProgressRing
-          percent={percent}
-          size="xs"
-          tone="brand"
-          label={`${label}: ${percent}%`}
-        />
-        <div className="absolute -top-1 -right-1">
-          <BuilderReadinessCriterionHelp item={item} />
-        </div>
+    <div className="flex w-36 flex-col items-center gap-2">
+      <ReadinessProgressRing
+        percent={percent}
+        size="xs"
+        tone="brand"
+        label={`${label}: ${percent}%`}
+      />
+      <div className="flex w-full items-start justify-center gap-1">
+        <p className="min-w-0 text-center text-[0.7rem] leading-snug font-medium text-ink">
+          {label}
+        </p>
+        <BuilderReadinessCriterionHelp item={item} />
       </div>
-      <p className="line-clamp-3 text-center text-[0.7rem] leading-snug font-medium text-ink">
-        {label}
-      </p>
     </div>
   );
 };
