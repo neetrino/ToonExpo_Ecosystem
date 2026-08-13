@@ -214,7 +214,7 @@ export const CompaniesTable = ({
                   <div className="flex items-center gap-3">
                     <AdminListCardLogo
                       name={company.name}
-                      logoUrl={company.logoUrl}
+                      logoUrl={resolvePublicAssetUrl(company.logoUrl)}
                       shape="circle"
                     />
                     <button
