@@ -15,10 +15,8 @@ import { optionalMediaIdField } from "@/features/media/schemas/media-fields.sche
 import {
   EMAIL_MAX_LENGTH,
   NAME_MAX_LENGTH,
-  PHONE_MAX_LENGTH,
-  PHONE_MIN_LENGTH,
-  PHONE_PATTERN,
 } from "@/shared/config/auth.constants";
+import { isValidOptionalPhone } from "@/shared/lib/phone";
 
 const partnerTypeSchema = z.enum(
   PARTNER_COMPANY_TYPES as unknown as [PartnerCompanyType, ...PartnerCompanyType[]],
@@ -51,14 +49,7 @@ export const createPartnerSchema = z
     adminPhone: z
       .string()
       .trim()
-      .refine(
-        (value) =>
-          value.length === 0 ||
-          (value.length >= PHONE_MIN_LENGTH &&
-            value.length <= PHONE_MAX_LENGTH &&
-            PHONE_PATTERN.test(value)),
-        { message: "phone" },
-      ),
+      .refine(isValidOptionalPhone, { message: "phone" }),
   })
   .refine(
     (values) => `${values.adminFirstName} ${values.adminSurname}`.length <= NAME_MAX_LENGTH,
@@ -77,7 +68,7 @@ const profileLocaleFields = {
 };
 
 const contactFields = {
-  contactPhone: z.string().max(64),
+  contactPhone: z.string().trim().refine(isValidOptionalPhone, { message: "phone" }),
   contactEmail: z.string().max(320),
   website: z.string().max(500),
   socialFacebook: z.string().max(500),

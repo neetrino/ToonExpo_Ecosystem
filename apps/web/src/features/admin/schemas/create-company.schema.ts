@@ -8,10 +8,8 @@ import {
 import {
   EMAIL_MAX_LENGTH,
   NAME_MAX_LENGTH,
-  PHONE_MAX_LENGTH,
-  PHONE_MIN_LENGTH,
-  PHONE_PATTERN,
 } from "@/shared/config/auth.constants";
+import { isValidOptionalPhone } from "@/shared/lib/phone";
 
 /**
  * Client schema for platform-admin company provisioning.
@@ -28,14 +26,7 @@ export const createCompanySchema = z.object({
   adminPhone: z
     .string()
     .trim()
-    .refine(
-      (value) =>
-        value.length === 0 ||
-        (value.length >= PHONE_MIN_LENGTH &&
-          value.length <= PHONE_MAX_LENGTH &&
-          PHONE_PATTERN.test(value)),
-      { message: "phone" },
-    ),
+    .refine(isValidOptionalPhone, { message: "phone" }),
 });
 
 export type CreateCompanyFormValues = z.infer<typeof createCompanySchema>;

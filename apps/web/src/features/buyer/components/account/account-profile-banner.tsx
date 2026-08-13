@@ -6,7 +6,7 @@ import { Check, Mail, Pencil, Phone, ShieldCheck, UserRound, X } from 'lucide-re
 import { useTranslations } from 'next-intl';
 import type { ReactNode } from 'react';
 import { useEffect, useState } from 'react';
-import { Controller, useForm, useWatch } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 
 import { useUpdateProfileMutation } from '@/features/auth/hooks/use-auth';
 import {
