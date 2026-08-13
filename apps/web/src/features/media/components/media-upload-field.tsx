@@ -17,6 +17,10 @@ import { Button } from '@/shared/ui/button';
 import { cn } from '@/shared/ui/cn';
 import { IconButton } from '@/shared/ui/icon-button';
 
+/** Fixed preview slot so tall uploads cannot inflate sheet/form scroll height. */
+const MEDIA_PREVIEW_FRAME_CLASS =
+  'mb-3 flex h-40 items-center justify-center overflow-hidden rounded-sm border border-border bg-surface';
+
 export type MediaUploadFieldProps = {
   id: string;
   label: string;
@@ -160,8 +164,12 @@ export const MediaUploadField = ({
         )}
       >
         {thumbnailUrl ? (
-          <div className="mb-3 overflow-hidden rounded-sm border border-border bg-surface">
-            <img src={thumbnailUrl} alt="" className="mx-auto max-h-56 w-full object-contain" />
+          <div className={MEDIA_PREVIEW_FRAME_CLASS}>
+            <img
+              src={thumbnailUrl}
+              alt=""
+              className="max-h-full max-w-full object-contain"
+            />
           </div>
         ) : null}
         <div className="flex flex-wrap items-center gap-2">
@@ -284,7 +292,7 @@ const LibraryPanel = ({
               <img
                 src={item.fileUrl}
                 alt={item.title ?? ''}
-                className="aspect-square h-full w-full object-cover"
+                className="aspect-square w-full object-cover"
               />
             </button>
           ))}

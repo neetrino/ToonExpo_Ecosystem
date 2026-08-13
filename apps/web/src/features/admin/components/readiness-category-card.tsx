@@ -1,11 +1,10 @@
 'use client';
 
 import type { ServiceProviderCategoryItem } from '@toonexpo/contracts';
-import { Tags } from 'lucide-react';
-import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 
 import { resolvePublicAssetUrl } from '@/shared/lib/static-asset-url';
+import { AdminListCardLogo } from '@/shared/ui/admin-list-card-logo';
 import { cn } from '@/shared/ui/cn';
 import {
   LIST_STATUS_BADGE_CLASS,
@@ -42,16 +41,7 @@ export const ReadinessCategoryCard = ({ category, onEdit }: ReadinessCategoryCar
       )}
     >
       <div className="flex items-start justify-between gap-3">
-        <span
-          className="relative flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-sm bg-brand-soft text-brand"
-          aria-hidden
-        >
-          {logoUrl ? (
-            <Image src={logoUrl} alt="" fill className="object-cover" sizes="48px" />
-          ) : (
-            <Tags className="size-6" strokeWidth={1.75} />
-          )}
-        </span>
+        <AdminListCardLogo name={category.name} logoUrl={logoUrl} shape="circle" />
         <span
           className={cn(
             LIST_STATUS_BADGE_CLASS,

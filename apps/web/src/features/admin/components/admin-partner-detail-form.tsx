@@ -169,6 +169,8 @@ export const AdminPartnerDetailForm = ({ partnerId, partner }: AdminPartnerDetai
         <PartnerMediaFields
           control={form.control as unknown as Control<PartnerMediaFieldValues>}
           context="admin"
+          logoPreviewUrl={partner.logoUrl}
+          coverPreviewUrl={partner.coverUrl}
         />
 
         {saveError ? (
