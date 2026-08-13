@@ -1,6 +1,7 @@
 import {
   ConflictException,
   Injectable,
+  Logger,
 } from "@nestjs/common";
 import {
   AccountType,
@@ -39,11 +40,20 @@ type CompanyAdminTransactionInput = {
 
 type DbClient = PrismaService["db"] | Prisma.TransactionClient;
 
+type SetPasswordInviteInput = {
+  userId: string;
+  email: string;
+  name: string;
+  locale?: string;
+};
+
 /**
  * Shared company + primary-admin provisioning used by platform admin and BOS.
  */
 @Injectable()
 export class CompanyProvisioningService {
+  private readonly logger = new Logger(CompanyProvisioningService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly inviteMailer: InviteMailerService,
@@ -94,13 +104,23 @@ export class CompanyProvisioningService {
     });
   }
 
-  async sendSetPasswordInvite(input: {
-    userId: string;
-    email: string;
-    name: string;
-    locale?: string;
-  }): Promise<void> {
+  async sendSetPasswordInvite(input: SetPasswordInviteInput): Promise<void> {
     await this.inviteMailer.sendSetPasswordInvite(input);
+  }
+
+  /**
+   * Sends the invite after the company/user already exist.
+   * Email failure must not roll back provisioning or fail the HTTP create.
+   */
+  async sendSetPasswordInviteBestEffort(input: SetPasswordInviteInput): Promise<void> {
+    try {
+      await this.inviteMailer.sendSetPasswordInvite(input);
+    } catch (error) {
+      this.logger.error(
+        { err: error, userId: input.userId },
+        "Set-password invite email failed",
+      );
+    }
   }
 
   async findCompanyByBosId(bosCompanyId: string): Promise<CompanyRecord | null> {

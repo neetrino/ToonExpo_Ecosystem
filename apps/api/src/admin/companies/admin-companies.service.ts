@@ -126,7 +126,7 @@ export class AdminCompaniesService {
       });
     }
 
-    await this.provisioning.sendSetPasswordInvite({
+    await this.provisioning.sendSetPasswordInviteBestEffort({
       userId: result.adminUser.id,
       email: result.adminUser.email,
       name: result.adminUser.name,

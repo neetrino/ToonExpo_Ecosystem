@@ -133,7 +133,7 @@ export class AdminPartnersService {
       },
     });
 
-    await this.provisioning.sendSetPasswordInvite({
+    await this.provisioning.sendSetPasswordInviteBestEffort({
       userId: adminUser.id,
       email: adminUser.email,
       name: adminUser.name,

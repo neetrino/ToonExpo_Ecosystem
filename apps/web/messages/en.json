@@ -2116,7 +2116,8 @@
         },
         "errors": {
           "emailTaken": "This email is already registered",
-          "generic": "Something went wrong. Please try again."
+          "network": "Could not reach the server. Check the partners list before trying again — the profile may already exist.",
+          "generic": "Could not finish creating the partner. Check the list before trying again — it may already exist."
         }
       },
       "detail": {

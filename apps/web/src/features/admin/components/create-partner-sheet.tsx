@@ -12,7 +12,7 @@ import {
 } from '@/features/partners/schemas/partner.schema';
 import { toCreatePartnerBody } from '@/features/partners/utils/partner-mappers';
 import { useRouter } from '@/i18n/navigation';
-import { ApiError } from '@/shared/api/errors';
+import { ApiError, isNetworkFetchError } from '@/shared/api/errors';
 import { AdminCreateSheet } from '@/shared/ui/admin-create-sheet';
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
@@ -24,9 +24,12 @@ type CreatePartnerSheetProps = {
   onClose: () => void;
 };
 
-const mapCreateError = (error: unknown): 'emailTaken' | 'generic' => {
+const mapCreateError = (error: unknown): 'emailTaken' | 'network' | 'generic' => {
   if (error instanceof ApiError && error.status === 409) {
     return 'emailTaken';
+  }
+  if (isNetworkFetchError(error)) {
+    return 'network';
   }
   return 'generic';
 };
