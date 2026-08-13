@@ -133,6 +133,8 @@ export const ServiceProvidersPage = () => {
           }
           void deleteConfirm.run(async (provider) => {
             await deleteProviderMutation.mutateAsync(provider.id);
+            setEditingProvider(null);
+            setCreatingProvider(false);
           });
         }}
       />
