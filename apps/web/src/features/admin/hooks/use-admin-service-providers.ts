@@ -70,6 +70,9 @@ export const useDeleteServiceProviderCategoryMutation = () => {
       void queryClient.invalidateQueries({
         queryKey: ADMIN_SERVICE_PROVIDER_CATEGORIES_QUERY_KEY,
       });
+      void queryClient.invalidateQueries({
+        queryKey: ADMIN_SERVICE_PROVIDERS_QUERY_KEY,
+      });
     },
   });
 };

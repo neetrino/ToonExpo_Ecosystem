@@ -2239,11 +2239,11 @@
         "form": {
           "name": "Անվանում",
           "description": "Նկարագրություն",
-          "sortOrder": "Դասավորություն",
-          "active": "Ակտիվ",
           "create": "Ստեղծել",
           "save": "Պահպանել",
-          "cancel": "Չեղարկել"
+          "cancel": "Չեղարկել",
+          "deleteConfirmTitle": "Ջնջել կատեգորիան",
+          "deleteConfirmMessage": "Ջնջե՞լ «{name}»-ը։ Սա հնարավոր չէ հետարկել։"
         }
       },
       "providers": {

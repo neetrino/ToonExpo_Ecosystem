@@ -2590,11 +2590,11 @@
         "form": {
           "name": "Название",
           "description": "Описание",
-          "sortOrder": "Порядок",
-          "active": "Активна",
           "create": "Создать",
           "save": "Сохранить",
-          "cancel": "Отмена"
+          "cancel": "Отмена",
+          "deleteConfirmTitle": "Удалить категорию",
+          "deleteConfirmMessage": "Удалить «{name}»? Это нельзя отменить."
         }
       },
       "providers": {

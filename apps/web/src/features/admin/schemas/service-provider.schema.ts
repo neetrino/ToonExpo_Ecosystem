@@ -11,7 +11,6 @@ export const SERVICE_PROVIDER_WEBSITE_MAX_LENGTH = 2048;
 export const SERVICE_PROVIDER_INTERNAL_NOTES_MAX_LENGTH = 8000;
 export const SERVICE_PROVIDER_CATEGORY_NAME_MAX_LENGTH = 200;
 export const SERVICE_PROVIDER_CATEGORY_DESCRIPTION_MAX_LENGTH = 4000;
-export const SERVICE_PROVIDER_SORT_ORDER_MAX = 9999;
 
 export const SERVICE_PROVIDER_TYPES = [
   "company",
@@ -26,8 +25,6 @@ export const serviceProviderCategorySchema = z.object({
     .string()
     .max(SERVICE_PROVIDER_CATEGORY_DESCRIPTION_MAX_LENGTH)
     .optional(),
-  sortOrder: z.number().int().min(0).max(SERVICE_PROVIDER_SORT_ORDER_MAX),
-  active: z.boolean(),
 });
 
 export type ServiceProviderCategoryFormValues = z.infer<

@@ -2239,11 +2239,11 @@
         "form": {
           "name": "Name",
           "description": "Description",
-          "sortOrder": "Sort order",
-          "active": "Active",
           "create": "Create category",
           "save": "Save",
-          "cancel": "Cancel"
+          "cancel": "Cancel",
+          "deleteConfirmTitle": "Delete category",
+          "deleteConfirmMessage": "Delete “{name}”? This cannot be undone."
         }
       },
       "providers": {
