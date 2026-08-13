@@ -17,9 +17,13 @@ import { Button } from '@/shared/ui/button';
 import { cn } from '@/shared/ui/cn';
 import { IconButton } from '@/shared/ui/icon-button';
 
-/** Fixed preview slot so tall uploads cannot inflate sheet/form scroll height. */
+/**
+ * Out-of-flow preview: tall uploads must not contribute intrinsic height to
+ * the parent sheet scroll (CSS zoom + flex min-height:auto leak).
+ */
 const MEDIA_PREVIEW_FRAME_CLASS =
-  'mb-3 flex h-40 items-center justify-center overflow-hidden rounded-sm border border-border bg-surface';
+  'relative mb-3 h-40 w-full overflow-hidden rounded-sm border border-border bg-surface [contain:strict]';
+const MEDIA_PREVIEW_IMAGE_CLASS = 'absolute inset-0 size-full object-contain';
 
 export type MediaUploadFieldProps = {
   id: string;
@@ -165,11 +169,7 @@ export const MediaUploadField = ({
       >
         {thumbnailUrl ? (
           <div className={MEDIA_PREVIEW_FRAME_CLASS}>
-            <img
-              src={thumbnailUrl}
-              alt=""
-              className="max-h-full max-w-full object-contain"
-            />
+            <img src={thumbnailUrl} alt="" className={MEDIA_PREVIEW_IMAGE_CLASS} />
           </div>
         ) : null}
         <div className="flex flex-wrap items-center gap-2">
@@ -284,7 +284,7 @@ const LibraryPanel = ({
               key={item.id}
               type="button"
               className={cn(
-                'overflow-hidden rounded-sm border border-border',
+                'aspect-square overflow-hidden rounded-sm border border-border',
                 selectedId === item.id && 'ring-2 ring-brand',
               )}
               onClick={() => onSelect(item)}
@@ -292,7 +292,7 @@ const LibraryPanel = ({
               <img
                 src={item.fileUrl}
                 alt={item.title ?? ''}
-                className="aspect-square w-full object-cover"
+                className="size-full object-cover"
               />
             </button>
           ))}
