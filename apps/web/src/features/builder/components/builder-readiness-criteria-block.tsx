@@ -24,18 +24,20 @@ export const BuilderReadinessCriterionRing = ({ item }: BuilderReadinessCriterio
 
   return (
     <div className="flex w-[7.25rem] flex-col items-center gap-2.5 sm:w-[8.25rem]">
-      <ReadinessProgressRing
-        percent={percent}
-        size="xs"
-        tone="brand"
-        label={`${label}: ${percent}%`}
-      />
-      <div className="flex items-start justify-center gap-1">
-        <p className="line-clamp-3 text-center text-[0.7rem] leading-snug font-medium text-ink">
-          {label}
-        </p>
-        <BuilderReadinessCriterionHelp item={item} />
+      <div className="relative">
+        <ReadinessProgressRing
+          percent={percent}
+          size="xs"
+          tone="brand"
+          label={`${label}: ${percent}%`}
+        />
+        <div className="absolute -top-1 -right-1">
+          <BuilderReadinessCriterionHelp item={item} />
+        </div>
       </div>
+      <p className="line-clamp-3 text-center text-[0.7rem] leading-snug font-medium text-ink">
+        {label}
+      </p>
     </div>
   );
 };

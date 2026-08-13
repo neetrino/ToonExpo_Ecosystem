@@ -27,7 +27,7 @@ export const BuilderReadinessCriterionHelp = ({ item }: BuilderReadinessCriterio
     <>
       <button
         type="button"
-        className="inline-flex size-6 shrink-0 items-center justify-center rounded-full border border-brand/40 text-xs font-bold text-brand hover:bg-brand-soft"
+        className="inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-brand text-xs font-bold text-on-dark shadow-sm hover:bg-brand/90"
         aria-label={t('criterionHelp')}
         onClick={() => {
           setOpen(true);
