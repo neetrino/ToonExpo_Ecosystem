@@ -2,31 +2,27 @@
 
 import type {
   CompanyResponse,
+  ReadinessAssessmentCategorySummary,
   ReadinessAssessmentListItem,
-  ReadinessScoreStatus,
 } from '@toonexpo/contracts';
-import { Building2 } from 'lucide-react';
-import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 
+import { CompanyStatusBadge } from '@/features/admin/components/company-status-badge';
+import {
+  ReadinessKpiCard,
+  type ReadinessKpiCategoryRow,
+} from '@/features/readiness/components/readiness-kpi-card';
+import { scorePercent } from '@/features/readiness/utils/readiness-score-display';
 import { resolvePublicAssetUrl } from '@/shared/lib/static-asset-url';
 import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
 import { AdminListCardLogo } from '@/shared/ui/admin-list-card-logo';
-import { cn } from '@/shared/ui/cn';
-import { LIST_CARD_LIFT_CLASS, ListTableReveal } from '@/shared/ui/motion';
+import { ListTableReveal } from '@/shared/ui/motion';
 import { VIEW_MODE_CARDS, type ViewMode } from '@/shared/ui/view-mode';
-import { CompanyStatusBadge } from '@/features/admin/components/company-status-badge';
-import { ReadinessProgressRing } from '@/features/readiness/components/readiness-progress-ring';
-import { scorePercent, toneForStatus } from '@/features/readiness/utils/readiness-score-display';
-
-const CARD_RADIUS_CLASS = 'rounded-[15px]';
-const MEDIA_RADIUS_CLASS = 'rounded-[14px]';
-const MEDIA_ASPECT_CLASS = 'aspect-[16/10]';
 
 export type CompanyReadinessSummary = {
   overallScore: number | null;
-  status: ReadinessScoreStatus;
   coverUrl: string | null;
+  categories: ReadinessAssessmentCategorySummary[];
 };
 
 type CompaniesTableProps = {
@@ -36,21 +32,15 @@ type CompaniesTableProps = {
   viewMode?: ViewMode | undefined;
 };
 
-type ScorePairProps = {
-  primary: number | null;
-  className?: string | undefined;
-};
-
-const ScorePair = ({ primary, className }: ScorePairProps) => {
-  if (primary === null) {
-    return <span className={cn('tabular-nums text-ink-muted', className)}>—</span>;
-  }
-  return (
-    <span className={cn('font-semibold tracking-tight text-brand tabular-nums', className)}>
-      {primary}%
-    </span>
-  );
-};
+const toKpiCategories = (
+  categories: readonly ReadinessAssessmentCategorySummary[],
+): ReadinessKpiCategoryRow[] =>
+  categories.map((category) => ({
+    id: category.categoryId,
+    code: category.categoryCode,
+    percent: scorePercent(category.score),
+    hasScore: category.score !== null,
+  }));
 
 type CompanyCardProps = {
   company: CompanyResponse;
@@ -59,88 +49,29 @@ type CompanyCardProps = {
 };
 
 /**
- * KPI-style company card — compact cover + readiness overall score.
+ * KPI-style company card — cover, colorful rings, category scores.
  */
 const CompanyCard = ({ company, readiness, onSelect }: CompanyCardProps) => {
   const t = useTranslations('Admin.companies');
   const tScore = useTranslations('Admin.readiness.management');
-  const initials = company.name.trim().slice(0, 2).toUpperCase() || '—';
-  const hasScore = readiness?.overallScore != null;
+  const tKpi = useTranslations('ReadinessKpi');
   const overallPercent = scorePercent(readiness?.overallScore ?? null);
-  const tone = toneForStatus(readiness?.status ?? 'not_started');
-  const logoUrl = resolvePublicAssetUrl(company.logoUrl);
-  const coverUrl = resolvePublicAssetUrl(readiness?.coverUrl ?? company.logoUrl);
+  const hasScore = readiness?.overallScore != null;
 
   return (
-    <button
-      type="button"
+    <ReadinessKpiCard
+      companyName={t(`types.${company.type}`)}
+      companyLogoUrl={company.logoUrl}
+      title={company.name}
+      coverUrl={readiness?.coverUrl ?? company.logoUrl}
+      overallPercent={overallPercent}
+      overallHasScore={hasScore}
+      overallLabel={tScore('overallScore')}
+      categories={toKpiCategories(readiness?.categories ?? [])}
+      categoryLabel={(code) => tKpi(`categories.${code}`)}
       onClick={onSelect}
-      className={cn(
-        'flex h-full w-full flex-col gap-3 overflow-hidden border border-border/80',
-        'bg-surface-elevated p-3.5 text-left shadow-card',
-        LIST_CARD_LIFT_CLASS,
-        CARD_RADIUS_CLASS,
-      )}
-    >
-      <header className="flex flex-col gap-1.5">
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex min-w-0 items-center gap-2">
-            <div className="relative size-8 shrink-0 overflow-hidden rounded-full bg-surface ring-1 ring-border">
-              {logoUrl ? (
-                <Image src={logoUrl} alt="" fill className="object-cover" sizes="32px" />
-              ) : (
-                <span className="absolute inset-0 flex items-center justify-center text-[10px] font-semibold text-ink-muted">
-                  {initials}
-                </span>
-              )}
-            </div>
-            <p className="min-w-0 truncate text-sm font-medium text-ink-secondary">
-              {t(`types.${company.type}`)}
-            </p>
-          </div>
-          <CompanyStatusBadge status={company.status} className="shrink-0" />
-        </div>
-        <h2 className="truncate text-base font-semibold tracking-tight text-ink">{company.name}</h2>
-      </header>
-
-      <div
-        className={cn(
-          'relative w-full overflow-hidden bg-surface ring-1 ring-border/60',
-          MEDIA_ASPECT_CLASS,
-          MEDIA_RADIUS_CLASS,
-        )}
-      >
-        {coverUrl ? (
-          <Image
-            src={coverUrl}
-            alt=""
-            fill
-            className="object-cover"
-            sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 25vw"
-          />
-        ) : (
-          <span className="flex size-full flex-col items-center justify-center gap-1.5 text-ink-muted">
-            <Building2 className="size-8 opacity-40" aria-hidden />
-            <span className="max-w-[80%] truncate text-xs">{company.name}</span>
-          </span>
-        )}
-      </div>
-
-      <div className="flex items-center gap-2.5">
-        <ReadinessProgressRing
-          percent={overallPercent}
-          size="sm"
-          tone={tone}
-          showValue={false}
-          className="size-11"
-          label={`${tScore('overallScore')}: ${hasScore ? `${overallPercent}%` : '—'}`}
-        />
-        <p className="min-w-0 flex-1 text-sm leading-snug text-ink-secondary">
-          {tScore('overallScore')}
-        </p>
-        <ScorePair primary={hasScore ? overallPercent : null} className="text-lg" />
-      </div>
-    </button>
+      headerTrailing={<CompanyStatusBadge status={company.status} className="shrink-0" />}
+    />
   );
 };
 
@@ -160,8 +91,8 @@ export const buildCompanyReadinessMap = (
     }
     map.set(assessment.builderCompanyId, {
       overallScore: assessment.overallScore,
-      status: assessment.status,
       coverUrl: assessment.coverUrl,
+      categories: assessment.categories,
     });
   }
   return map;

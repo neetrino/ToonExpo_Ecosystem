@@ -53,6 +53,12 @@
   --color-info: #1e4f5f;
   --color-info-soft: #eef4f7;
 
+  /* KPI readiness rings — saturated so they read on white cards */
+  --color-kpi-cyan: #00c2d4;
+  --color-kpi-orange: #ff6b1a;
+  --color-kpi-violet: #6d5ef5;
+  --color-kpi-green: #12c46a;
+
   /* Maps / charts */
   --color-map-canvas: #d8e2ec;
   /* Interactive mapping hotspots — match Admin MappingCanvas orange */

@@ -7,17 +7,22 @@ import { useState } from 'react';
 import { BuilderReadinessCriterionHelp } from '@/features/builder/components/builder-readiness-criterion-help';
 import { ReadinessHelpDialog } from '@/features/builder/components/readiness-help-dialog';
 import { ReadinessProgressRing } from '@/features/readiness/components/readiness-progress-ring';
+import { toneAtIndex } from '@/features/readiness/utils/readiness-ring-tone';
 import { Button } from '@/shared/ui/button';
 import { cn } from '@/shared/ui/cn';
 
 type BuilderReadinessCriterionRingProps = {
   item: PortalReadinessCriterionItem;
+  toneIndex: number;
 };
 
 /**
  * Criterion ring — Partners listing style, ToonExpo tokens.
  */
-export const BuilderReadinessCriterionRing = ({ item }: BuilderReadinessCriterionRingProps) => {
+export const BuilderReadinessCriterionRing = ({
+  item,
+  toneIndex,
+}: BuilderReadinessCriterionRingProps) => {
   const t = useTranslations('ReadinessKpi');
   const percent = item.percent ?? 0;
   const label = t(`criteria.${item.code}`);
@@ -27,7 +32,7 @@ export const BuilderReadinessCriterionRing = ({ item }: BuilderReadinessCriterio
       <ReadinessProgressRing
         percent={percent}
         size="xs"
-        tone="brand"
+        tone={toneAtIndex(toneIndex)}
         label={`${label}: ${percent}%`}
       />
       <p className="w-full text-center text-[0.7rem] leading-snug font-medium text-ink">
@@ -112,8 +117,12 @@ export const BuilderReadinessCriteriaBlock = ({
       ) : null}
       {scored.length > 0 ? (
         <div className="flex flex-wrap justify-center gap-x-5 gap-y-6 sm:justify-start">
-          {scored.map((item) => (
-            <BuilderReadinessCriterionRing key={item.criterionId} item={item} />
+          {scored.map((item, index) => (
+            <BuilderReadinessCriterionRing
+              key={item.criterionId}
+              item={item}
+              toneIndex={index}
+            />
           ))}
         </div>
       ) : null}

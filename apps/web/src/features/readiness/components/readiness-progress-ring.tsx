@@ -1,11 +1,15 @@
 'use client';
 
+import {
+  RING_STROKE_CLASS,
+  type ReadinessRingTone,
+} from '@/features/readiness/utils/readiness-ring-tone';
 import { cn } from '@/shared/ui/cn';
 
 type ReadinessProgressRingProps = {
   percent: number;
-  size?: 'xs' | 'sm' | 'md' | 'lg' | undefined;
-  tone?: 'brand' | 'success' | 'warning' | 'danger' | 'muted' | undefined;
+  size?: '2xs' | 'xs' | 'sm' | 'md' | 'lg' | undefined;
+  tone?: ReadinessRingTone | undefined;
   /** When false, only the ring is shown (value lives beside the ring in layouts). */
   showValue?: boolean | undefined;
   className?: string | undefined;
@@ -13,6 +17,7 @@ type ReadinessProgressRingProps = {
 };
 
 const SIZE_CLASS: Record<NonNullable<ReadinessProgressRingProps['size']>, string> = {
+  '2xs': 'size-7',
   xs: 'size-20',
   sm: 'size-16',
   md: 'size-28',
@@ -20,26 +25,22 @@ const SIZE_CLASS: Record<NonNullable<ReadinessProgressRingProps['size']>, string
 };
 
 const TEXT_CLASS: Record<NonNullable<ReadinessProgressRingProps['size']>, string> = {
+  '2xs': 'text-[0.55rem]',
   xs: 'text-sm',
   sm: 'text-[0.7rem]',
   md: 'text-xl',
   lg: 'text-3xl',
 };
 
-const STROKE_CLASS: Record<NonNullable<ReadinessProgressRingProps['tone']>, string> = {
-  brand: 'stroke-brand',
-  success: 'stroke-success',
-  warning: 'stroke-warning',
-  danger: 'stroke-danger',
-  muted: 'stroke-ink-muted',
+const STROKE_WIDTH: Record<NonNullable<ReadinessProgressRingProps['size']>, number> = {
+  '2xs': 3.8,
+  xs: 4,
+  sm: 4.4,
+  md: 4.6,
+  lg: 4.8,
 };
 
-const STROKE_WIDTH: Record<NonNullable<ReadinessProgressRingProps['size']>, number> = {
-  xs: 2.2,
-  sm: 2.4,
-  md: 2.8,
-  lg: 3,
-};
+const RING_RADIUS = 14.6;
 
 /**
  * Circular readiness progress ring.
@@ -69,7 +70,7 @@ export const ReadinessProgressRing = ({
         <circle
           cx="18"
           cy="18"
-          r="15.2"
+          r={RING_RADIUS}
           fill="none"
           className="stroke-border"
           strokeWidth={STROKE_WIDTH[size]}
@@ -77,9 +78,9 @@ export const ReadinessProgressRing = ({
         <circle
           cx="18"
           cy="18"
-          r="15.2"
+          r={RING_RADIUS}
           fill="none"
-          className={STROKE_CLASS[tone]}
+          className={RING_STROKE_CLASS[tone]}
           strokeWidth={STROKE_WIDTH[size]}
           strokeLinecap="round"
           pathLength={100}
