@@ -10,9 +10,7 @@ type BuilderReadinessCriterionHelpProps = {
   item: PortalReadinessCriterionItem;
 };
 
-/**
- * "!" control — opens providers linked to this criterion's service category.
- */
+
 export const BuilderReadinessCriterionHelp = ({ item }: BuilderReadinessCriterionHelpProps) => {
   const t = useTranslations('Builder.readiness');
   const tKpi = useTranslations('ReadinessKpi');
