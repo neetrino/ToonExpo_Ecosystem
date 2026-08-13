@@ -3,6 +3,7 @@ import type { CompanyProfileResponse, UpdateCompanyProfileRequest } from '@toone
 import { CompanyMemberRole } from '@toonexpo/db';
 
 import { buildCompanyProfilePatch } from '../companies/mappers/company.mapper.js';
+import { toPublicFileUrl } from '../media/public-file-url.js';
 import { resolveOptionalCompanyLogoMediaId } from '../media/utils/media-ownership.js';
 import { PrismaService } from '../prisma/prisma.service.js';
 import type { CompanyMemberContext } from './types/company-member-context.js';
@@ -104,7 +105,7 @@ export class CompanyProfileService {
       type: company.type,
       status: company.status,
       logoMediaId: company.logoMediaId,
-      logoUrl: company.logoMedia?.fileUrl ?? null,
+      logoUrl: company.logoMedia ? toPublicFileUrl(company.logoMedia.fileUrl) : null,
       phone: company.phone,
       contactPerson: company.contactPerson,
       email: company.email,

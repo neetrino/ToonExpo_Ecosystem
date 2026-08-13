@@ -8,12 +8,14 @@ import {
   toMediaSummary,
 } from '../../catalog/mappers/catalog.mapper.js';
 import {
+  resolveCompanyDisplayName,
   resolveTranslatedName,
   resolveTranslatedValue,
   TRANSLATION_ENTITY,
   TRANSLATION_FIELD,
   type TranslationRow,
 } from '../../catalog/utils/resolve-translation.js';
+import { toPublicFileUrl } from '../../media/public-file-url.js';
 
 type ApartmentFavoriteSource = {
   id: string;
@@ -63,11 +65,9 @@ export const mapFavoriteApartmentCard = (
     apartment.project.name,
   );
 
-  const builderName = resolveTranslatedName(
+  const builderName = resolveCompanyDisplayName(
     ctx.translations,
-    TRANSLATION_ENTITY.company,
     apartment.project.builderCompany.id,
-    TRANSLATION_FIELD.name,
     ctx.locale,
     apartment.project.builderCompany.name,
   );
@@ -102,7 +102,9 @@ export const mapFavoriteApartmentCard = (
     builder: {
       id: apartment.project.builderCompany.id,
       name: builderName,
-      logoUrl: apartment.project.builderCompany.logoMedia?.fileUrl ?? null,
+      logoUrl: apartment.project.builderCompany.logoMedia
+        ? toPublicFileUrl(apartment.project.builderCompany.logoMedia.fileUrl)
+        : null,
     },
   };
 };

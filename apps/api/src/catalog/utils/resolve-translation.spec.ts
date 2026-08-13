@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  resolveCompanyDisplayName,
   resolveTranslatedValue,
   TRANSLATION_ENTITY,
   TRANSLATION_FIELD,
@@ -94,5 +95,44 @@ describe('resolveTranslatedValue', () => {
         null,
       ),
     ).toBeNull();
+  });
+});
+
+describe('resolveCompanyDisplayName', () => {
+  const companyRows: TranslationRow[] = [
+    {
+      entityType: TRANSLATION_ENTITY.company,
+      entityId: 'c1',
+      fieldName: TRANSLATION_FIELD.name,
+      locale: 'en',
+      value: 'Silva Development',
+    },
+  ];
+
+  it('uses the locale translation when present', () => {
+    expect(resolveCompanyDisplayName(companyRows, 'c1', 'en', 'Սիլվա')).toBe('Silva Development');
+  });
+
+  it('falls back to the scalar company name when the locale has no text', () => {
+    expect(resolveCompanyDisplayName([], 'c1', 'en', 'Neetrinoo')).toBe('Neetrinoo');
+  });
+
+  it('falls back to the scalar name when the locale row is blank', () => {
+    expect(
+      resolveCompanyDisplayName(
+        [
+          {
+            entityType: TRANSLATION_ENTITY.company,
+            entityId: 'c1',
+            fieldName: TRANSLATION_FIELD.name,
+            locale: 'en',
+            value: '   ',
+          },
+        ],
+        'c1',
+        'en',
+        'Neetrinoo',
+      ),
+    ).toBe('Neetrinoo');
   });
 });

@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 
 import { Link } from '@/i18n/navigation';
-import { staticAssetUrl } from '@/shared/lib/static-asset-url';
+import { resolvePublicAssetUrl, staticAssetUrl } from '@/shared/lib/static-asset-url';
 import { cn } from '@/shared/ui/cn';
 
 /** Fallback cover when a builder has no logo — matches partners card media presence. */
@@ -21,7 +21,7 @@ type BuilderCardProps = {
  */
 export const BuilderCard = ({ builder, className }: BuilderCardProps) => {
   const t = useTranslations('Catalog');
-  const photoSrc = builder.logoUrl ?? BUILDER_CARD_FALLBACK_SRC;
+  const photoSrc = resolvePublicAssetUrl(builder.logoUrl) ?? BUILDER_CARD_FALLBACK_SRC;
 
   return (
     <article

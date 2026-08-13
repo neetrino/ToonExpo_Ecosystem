@@ -22,6 +22,14 @@ export const publicCachedGet = (revalidateSeconds: number, tags: string[]): Publ
 export const catalogListFetch = (): PublicFetchInit =>
   publicCachedGet(PUBLIC_CACHE_TTL_CATALOG_SECONDS, [PUBLIC_CACHE_TAG.CATALOG]);
 
+export const catalogBuildersFetch = (): PublicFetchInit =>
+  /**
+   * Admin company name/logo edits must appear on `/builders` immediately.
+   * Tag purge still applies when WEB_REVALIDATE_* is configured; TTL 0 avoids
+   * a 30-minute stale list when a company has no EN/RU translation rows yet.
+   */
+  publicCachedGet(0, [PUBLIC_CACHE_TAG.CATALOG]);
+
 export const catalogProjectFetch = (projectId: string): PublicFetchInit =>
   /**
    * Project field/translation edits must show on the public site right after Admin save.

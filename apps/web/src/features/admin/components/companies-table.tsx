@@ -9,6 +9,7 @@ import { Building2 } from 'lucide-react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 
+import { resolvePublicAssetUrl } from '@/shared/lib/static-asset-url';
 import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
 import { AdminListCardLogo } from '@/shared/ui/admin-list-card-logo';
 import { cn } from '@/shared/ui/cn';
@@ -67,7 +68,8 @@ const CompanyCard = ({ company, readiness, onSelect }: CompanyCardProps) => {
   const hasScore = readiness?.overallScore != null;
   const overallPercent = scorePercent(readiness?.overallScore ?? null);
   const tone = toneForStatus(readiness?.status ?? 'not_started');
-  const coverUrl = readiness?.coverUrl ?? company.logoUrl;
+  const logoUrl = resolvePublicAssetUrl(company.logoUrl);
+  const coverUrl = resolvePublicAssetUrl(readiness?.coverUrl ?? company.logoUrl);
 
   return (
     <button
@@ -84,8 +86,8 @@ const CompanyCard = ({ company, readiness, onSelect }: CompanyCardProps) => {
         <div className="flex items-start justify-between gap-2">
           <div className="flex min-w-0 items-center gap-2">
             <div className="relative size-8 shrink-0 overflow-hidden rounded-full bg-surface ring-1 ring-border">
-              {company.logoUrl ? (
-                <Image src={company.logoUrl} alt="" fill className="object-cover" sizes="32px" />
+              {logoUrl ? (
+                <Image src={logoUrl} alt="" fill className="object-cover" sizes="32px" />
               ) : (
                 <span className="absolute inset-0 flex items-center justify-center text-[10px] font-semibold text-ink-muted">
                   {initials}

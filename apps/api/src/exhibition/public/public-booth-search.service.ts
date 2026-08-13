@@ -6,6 +6,7 @@ import { resolveCatalogLocale } from '@toonexpo/shared';
 import {
   TRANSLATION_ENTITY,
   TRANSLATION_FIELD,
+  resolveCompanyDisplayName,
   resolveTranslatedName,
 } from '../../catalog/utils/resolve-translation.js';
 import { loadEntityTranslations } from '../utils/load-entity-translations.js';
@@ -160,11 +161,9 @@ const matchBooth = (
 
   for (const assignment of booth.assignments) {
     const companyName = assignment.company
-      ? resolveTranslatedName(
+      ? resolveCompanyDisplayName(
           translations,
-          TRANSLATION_ENTITY.company,
           assignment.company.id,
-          TRANSLATION_FIELD.name,
           locale,
           assignment.company.name,
         )

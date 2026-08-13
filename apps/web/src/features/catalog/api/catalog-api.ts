@@ -14,7 +14,11 @@ import type {
 
 import { apiFetch } from '@/shared/api/client';
 import { ApiError, isApiErrorStatus } from '@/shared/api/errors';
-import { catalogListFetch, catalogProjectFetch } from '@/shared/api/public-fetch';
+import {
+  catalogBuildersFetch,
+  catalogListFetch,
+  catalogProjectFetch,
+} from '@/shared/api/public-fetch';
 
 export type CatalogRequestOptions = {
   locale?: string | undefined;
@@ -208,7 +212,7 @@ export const getApartment = async (
 export const listBuilders = (options: CatalogRequestOptions = {}): Promise<BuilderSummary[]> => {
   return apiFetch<BuilderSummary[]>({
     path: `/builders${localeQuery(options.locale)}`,
-    ...catalogListFetch(),
+    ...catalogBuildersFetch(),
   });
 };
 
@@ -222,7 +226,7 @@ export const getBuilder = async (
   try {
     return await apiFetch<BuilderDetail>({
       path: `/builders/${encodeURIComponent(builderId)}${localeQuery(options.locale)}`,
-      ...catalogListFetch(),
+      ...catalogBuildersFetch(),
     });
   } catch (error) {
     if (isApiErrorStatus(error, 404)) {

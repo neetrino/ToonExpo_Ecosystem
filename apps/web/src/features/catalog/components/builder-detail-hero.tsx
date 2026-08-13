@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
 
 import { resolveBuilderHeroAddress } from '@/features/catalog/utils/resolve-builder-hero-address';
-import { staticAssetUrl } from '@/shared/lib/static-asset-url';
+import { resolvePublicAssetUrl, staticAssetUrl } from '@/shared/lib/static-asset-url';
 import { cn } from '@/shared/ui/cn';
 
 const BUILDER_HERO_FALLBACK_SRC = staticAssetUrl('/demo/building-a.webp');
@@ -17,7 +17,7 @@ type BuilderDetailHeroProps = {
  */
 export const BuilderDetailHero = async ({ builder }: BuilderDetailHeroProps) => {
   const t = await getTranslations('Catalog');
-  const heroImageUrl = builder.logoUrl ?? BUILDER_HERO_FALLBACK_SRC;
+  const heroImageUrl = resolvePublicAssetUrl(builder.logoUrl) ?? BUILDER_HERO_FALLBACK_SRC;
   const companyLocation = [builder.address, builder.region]
     .map((part) => part?.trim())
     .filter((part): part is string => Boolean(part))
