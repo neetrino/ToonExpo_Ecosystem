@@ -413,9 +413,10 @@
       "terms": "Պայմաններ և դրույթներ",
       "cookiePolicy": "Cookie քաղաքականություն"
     },
-    "copyrightPrefix": "Copyright © 2026",
-    "copyrightCompany": "Neetrino IT Company",
+    "copyrightPrefix": "Copyright © 2026 Toon Expo.",
     "copyrightSuffix": "Բոլոր իրավունքները պաշտպանված են։",
+    "copyrightCreatedBy": "Ստեղծված է",
+    "copyrightCompany": "Neetrino IT Company",
     "socialLabel": "Սոցիալական ցանցեր",
     "social": {
       "facebook": "Facebook",

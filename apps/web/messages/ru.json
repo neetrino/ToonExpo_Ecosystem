@@ -413,9 +413,10 @@
       "terms": "Условия использования",
       "cookiePolicy": "Политика cookie"
     },
-    "copyrightPrefix": "Copyright © 2026",
-    "copyrightCompany": "Neetrino IT Company",
+    "copyrightPrefix": "Copyright © 2026 Toon Expo.",
     "copyrightSuffix": "Все права защищены.",
+    "copyrightCreatedBy": "Создано компанией",
+    "copyrightCompany": "Neetrino IT Company",
     "socialLabel": "Социальные сети",
     "social": {
       "facebook": "Facebook",
