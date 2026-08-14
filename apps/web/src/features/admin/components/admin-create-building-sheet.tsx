@@ -19,7 +19,7 @@ import { AdminCreateSheet } from '@/shared/ui/admin-create-sheet';
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
-import { Select } from '@/shared/ui/select';
+import { ListboxSelect } from '@/shared/ui/listbox-select';
 
 type AdminCreateBuildingSheetProps = {
   open: boolean;
@@ -97,39 +97,41 @@ export const AdminCreateBuildingSheet = ({
     <AdminCreateSheet open={open} onClose={onClose} title={t('title')} size="comfortable">
       <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
         <FormField id="create-building-company" label={t('company')}>
-          <Select
+          <ListboxSelect
             id="create-building-company"
+            variant="field"
+            searchable
             value={companyId}
-            onChange={(event) => {
-              setCompanyId(event.target.value);
+            options={builderCompanies.map((company) => ({
+              value: company.id,
+              label: company.name,
+            }))}
+            placeholder={t('searchCompany')}
+            emptyLabel={t('noCompanyMatches')}
+            aria-label={t('company')}
+            onChange={(next) => {
+              setCompanyId(next);
               setProjectId('');
             }}
-          >
-            <option value="">{t('selectCompany')}</option>
-            {builderCompanies.map((company) => (
-              <option key={company.id} value={company.id}>
-                {company.name}
-              </option>
-            ))}
-          </Select>
+          />
         </FormField>
 
         <FormField id="create-building-project" label={t('project')}>
-          <Select
+          <ListboxSelect
             id="create-building-project"
+            variant="field"
+            searchable
             value={projectId}
             disabled={!companyId || projectsQuery.isLoading}
-            onChange={(event) => {
-              setProjectId(event.target.value);
-            }}
-          >
-            <option value="">{t('selectProject')}</option>
-            {(projectsQuery.data?.data ?? []).map((project) => (
-              <option key={project.id} value={project.id}>
-                {project.name}
-              </option>
-            ))}
-          </Select>
+            options={(projectsQuery.data?.data ?? []).map((project) => ({
+              value: project.id,
+              label: project.name,
+            }))}
+            placeholder={t('searchProject')}
+            emptyLabel={t('noProjectMatches')}
+            aria-label={t('project')}
+            onChange={setProjectId}
+          />
         </FormField>
 
         <FormField

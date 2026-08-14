@@ -64,8 +64,12 @@
   }
 
   .site-select-menu {
+    --site-select-menu-max-height: 15rem;
     width: 100%;
-    overflow: hidden;
+    max-height: var(--site-select-menu-max-height);
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
     isolation: isolate;
     border: 1px solid var(--color-header-border);
     border-radius: 12px;
@@ -75,12 +79,7 @@
   }
 
   .site-select-menu--contained {
-    --site-select-menu-max-height: 15rem;
     box-shadow: var(--shadow-lg);
-    max-height: var(--site-select-menu-max-height);
-    overflow-x: hidden;
-    overflow-y: auto;
-    overscroll-behavior: contain;
   }
 
   .site-select-option {

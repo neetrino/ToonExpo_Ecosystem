@@ -1916,8 +1916,12 @@
         "title": "Добавить здание",
         "company": "Компания",
         "selectCompany": "Выберите компанию",
+        "searchCompany": "Поиск компаний",
+        "noCompanyMatches": "Нет подходящих компаний",
         "project": "Проект",
         "selectProject": "Выберите проект",
+        "searchProject": "Поиск проектов",
+        "noProjectMatches": "Нет подходящих проектов",
         "pickProject": "Выберите компанию и проект.",
         "submit": "Создать здание"
       },
@@ -1999,8 +2003,12 @@
         "title": "Добавить этаж",
         "company": "Компания",
         "selectCompany": "Выберите компанию",
+        "searchCompany": "Поиск компаний",
+        "noCompanyMatches": "Нет подходящих компаний",
         "building": "Здание",
         "selectBuilding": "Выберите здание",
+        "searchBuilding": "Поиск зданий",
+        "noBuildingMatches": "Нет подходящих зданий",
         "pickBuilding": "Выберите компанию и здание.",
         "submit": "Создать этаж"
       }
@@ -2033,10 +2041,16 @@
         "title": "Добавить квартиры",
         "company": "Компания",
         "selectCompany": "Выберите компанию",
+        "searchCompany": "Поиск компаний",
+        "noCompanyMatches": "Нет подходящих компаний",
         "building": "Здание",
         "selectBuilding": "Выберите здание",
+        "searchBuilding": "Поиск зданий",
+        "noBuildingMatches": "Нет подходящих зданий",
         "floor": "Этаж",
         "selectFloor": "Выберите этаж",
+        "searchFloor": "Поиск этажей",
+        "noFloorMatches": "Нет подходящих этажей",
         "pickFloor": "Выберите этаж.",
         "submit": "Создать квартиры"
       }

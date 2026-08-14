@@ -65,7 +65,6 @@ export const AdminCreateProjectSheet = ({
           <ListboxSelect
             id="create-project-company"
             variant="field"
-            contained
             searchable
             value={companyId}
             options={builderCompanies.map((company) => ({

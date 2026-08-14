@@ -32,9 +32,12 @@ export const useListboxDismiss = (
     };
 
     const onPointerDown = (event: MouseEvent): void => {
-      if (!isInsideOpenMenu(event.target as Node)) {
-        setOpenRef.current(false);
+      if (isInsideOpenMenu(event.target as Node)) {
+        return;
       }
+      event.preventDefault();
+      event.stopPropagation();
+      setOpenRef.current(false);
     };
 
     const onKeyDown = (event: KeyboardEvent): void => {
@@ -56,13 +59,13 @@ export const useListboxDismiss = (
       blurActiveElementAfterEscClose();
     };
 
-    document.addEventListener('mousedown', onPointerDown);
+    document.addEventListener('mousedown', onPointerDown, true);
     window.addEventListener('keydown', onKeyDown, true);
     if (!contained) {
       window.addEventListener('scroll', onScroll, true);
     }
     return () => {
-      document.removeEventListener('mousedown', onPointerDown);
+      document.removeEventListener('mousedown', onPointerDown, true);
       window.removeEventListener('keydown', onKeyDown, true);
       window.removeEventListener('scroll', onScroll, true);
     };

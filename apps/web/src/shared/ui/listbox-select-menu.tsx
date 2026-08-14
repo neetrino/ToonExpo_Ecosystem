@@ -225,7 +225,7 @@ type ListboxComboboxFieldProps = {
   ariaLabel: string;
   className: string | undefined;
   onChange: (value: string) => void;
-  onFocus: () => void;
+  onClick: () => void;
 };
 
 /** Combobox input: search icon on the left, listbox below. */
@@ -240,7 +240,7 @@ export const ListboxComboboxField = ({
   ariaLabel,
   className,
   onChange,
-  onFocus,
+  onClick,
 }: ListboxComboboxFieldProps) => (
   <div className="relative">
     <Search
@@ -265,7 +265,7 @@ export const ListboxComboboxField = ({
         'placeholder:text-ink-muted',
         className,
       )}
-      onFocus={onFocus}
+      onClick={onClick}
       onChange={(event) => {
         onChange(event.target.value);
       }}

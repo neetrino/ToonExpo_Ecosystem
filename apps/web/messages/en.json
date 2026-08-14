@@ -1916,8 +1916,12 @@
         "title": "Add Building",
         "company": "Company",
         "selectCompany": "Select company",
+        "searchCompany": "Search companies",
+        "noCompanyMatches": "No matching companies",
         "project": "Project",
         "selectProject": "Select project",
+        "searchProject": "Search projects",
+        "noProjectMatches": "No matching projects",
         "pickProject": "Select a company and project.",
         "submit": "Create building"
       },
@@ -1999,8 +2003,12 @@
         "title": "Add Floor",
         "company": "Company",
         "selectCompany": "Select company",
+        "searchCompany": "Search companies",
+        "noCompanyMatches": "No matching companies",
         "building": "Building",
         "selectBuilding": "Select building",
+        "searchBuilding": "Search buildings",
+        "noBuildingMatches": "No matching buildings",
         "pickBuilding": "Select a company and building.",
         "submit": "Create floor"
       }
@@ -2033,10 +2041,16 @@
         "title": "Add Apartments",
         "company": "Company",
         "selectCompany": "Select company",
+        "searchCompany": "Search companies",
+        "noCompanyMatches": "No matching companies",
         "building": "Building",
         "selectBuilding": "Select building",
+        "searchBuilding": "Search buildings",
+        "noBuildingMatches": "No matching buildings",
         "floor": "Floor",
         "selectFloor": "Select floor",
+        "searchFloor": "Search floors",
+        "noFloorMatches": "No matching floors",
         "pickFloor": "Select a floor.",
         "submit": "Create apartments"
       }

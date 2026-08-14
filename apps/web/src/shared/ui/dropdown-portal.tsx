@@ -20,6 +20,9 @@ import {
 const MENU_GAP_PX = 8;
 const VIEWPORT_EDGE_PAD_PX = 8;
 const MENU_HEIGHT_ESTIMATE_PX = 240;
+/** Listbox panel cap (15rem) — longer option lists scroll inside. */
+const MENU_MAX_HEIGHT_PX = 240;
+const MENU_MIN_HEIGHT_PX = 120;
 const STAGE_SELECTOR = '.desktop-fluid-stage';
 
 type DropdownPortalProps = {
@@ -123,7 +126,10 @@ const computeMenuCoords = (
     const spaceBelow = Math.min(spaceBelowStage, spaceBelowViewport);
     const spaceAbove = Math.min(spaceAboveStage, spaceAboveViewport);
     const openUp = shouldOpenUpward(spaceBelow, spaceAbove, menuHeight);
-    const maxHeight = Math.max(120, openUp ? spaceAbove : spaceBelow);
+    const maxHeight = Math.min(
+      MENU_MAX_HEIGHT_PX,
+      Math.max(MENU_MIN_HEIGHT_PX, openUp ? spaceAbove : spaceBelow),
+    );
     let left = align === 'end' ? local.right - menuWidth : local.left;
     if (!lockWidthToAnchor) {
       const stageLayoutWidth = stage.offsetWidth;
@@ -155,7 +161,10 @@ const computeMenuCoords = (
   const spaceBelow = viewH - anchorRect.bottom - MENU_GAP_PX - VIEWPORT_EDGE_PAD_PX;
   const spaceAbove = anchorRect.top - MENU_GAP_PX - VIEWPORT_EDGE_PAD_PX;
   const openUp = shouldOpenUpward(spaceBelow, spaceAbove, menuHeight);
-  const maxHeight = Math.max(120, openUp ? spaceAbove : spaceBelow);
+  const maxHeight = Math.min(
+    MENU_MAX_HEIGHT_PX,
+    Math.max(MENU_MIN_HEIGHT_PX, openUp ? spaceAbove : spaceBelow),
+  );
   let left = align === 'end' ? anchorRect.right - menuWidth : anchorRect.left;
   if (!lockWidthToAnchor) {
     left = Math.max(VIEWPORT_EDGE_PAD_PX, Math.min(left, viewW - VIEWPORT_EDGE_PAD_PX - menuWidth));

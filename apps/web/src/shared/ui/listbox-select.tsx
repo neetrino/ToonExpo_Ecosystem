@@ -216,7 +216,7 @@ export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
               placeholder={comboboxPlaceholder}
               ariaLabel={ariaLabel}
               className={className}
-              onFocus={() => {
+              onClick={() => {
                 if (!disabled) {
                   setOpen(true);
                 }
@@ -258,6 +258,7 @@ export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
               open={open && !disabled}
               anchorRef={searchable ? fieldWrapRef : buttonRef}
               matchWidth
+              exactWidth
             >
               <div ref={menuRef} className="site-select-menu">
                 {menu}
