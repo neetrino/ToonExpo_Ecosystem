@@ -131,7 +131,6 @@ export const PROJECT_CATALOG_DETAILS_KEYS = [
   'pricePerSqmMax',
   'unitPriceMin',
   'unitPriceMax',
-  'managementFee',
 ] as const satisfies ReadonlyArray<keyof ProjectCatalogDetails>;
 
 export const PROJECT_CATALOG_FINANCE_KEYS = [

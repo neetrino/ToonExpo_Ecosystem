@@ -39,7 +39,6 @@ export type ProjectCatalogDetails = {
   unitPriceMin: string | null;
   unitPriceMax: string | null;
   parkingPrice: string | null;
-  managementFee: string | null;
   services: string | null;
   paymentTypes: string | null;
   installmentTerms: string | null;
@@ -113,7 +112,6 @@ const EMPTY_DETAILS: ProjectCatalogDetails = {
   unitPriceMin: null,
   unitPriceMax: null,
   parkingPrice: null,
-  managementFee: null,
   services: null,
   paymentTypes: null,
   installmentTerms: null,

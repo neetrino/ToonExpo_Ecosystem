@@ -633,7 +633,6 @@
         "areaRange": "Area",
         "unitPriceRange": "Unit price",
         "parkingPrice": "Parking price",
-        "managementFee": "Management fee",
         "parkingAvailable": "Parking",
         "storageAvailable": "Storage",
         "elevator": "Elevator",

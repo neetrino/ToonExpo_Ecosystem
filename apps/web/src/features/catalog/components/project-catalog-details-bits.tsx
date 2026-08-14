@@ -66,7 +66,6 @@ export const PROJECT_CATALOG_CRITERION_ICON: Record<ProjectCatalogCriterionId, L
   areaRange: Ruler,
   unitPriceRange: Banknote,
   parkingPrice: ParkingCircle,
-  managementFee: Banknote,
   parkingAvailable: Car,
   storageAvailable: Warehouse,
   elevator: ArrowUpFromLine,

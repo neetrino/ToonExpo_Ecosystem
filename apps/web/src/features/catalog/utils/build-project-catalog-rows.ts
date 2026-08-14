@@ -21,7 +21,6 @@ export type ProjectCatalogCriterionId =
   | 'areaRange'
   | 'unitPriceRange'
   | 'parkingPrice'
-  | 'managementFee'
   | 'parkingAvailable'
   | 'storageAvailable'
   | 'elevator'
@@ -77,7 +76,6 @@ export const PROJECT_CATALOG_FINANCE_CRITERION_IDS = [
   'pricePerSqm',
   'unitPriceRange',
   'parkingPrice',
-  'managementFee',
   'paymentTypes',
   'installmentTerms',
   'mortgageTerms',
@@ -185,7 +183,6 @@ export const buildProjectCatalogRows = (
   pushCard(rows, 'areaRange', labels.areaRange, areaRange);
   pushCard(rows, 'unitPriceRange', labels.unitPriceRange, unitPrice);
   pushCard(rows, 'parkingPrice', labels.parkingPrice, details.parkingPrice);
-  pushCard(rows, 'managementFee', labels.managementFee, details.managementFee);
   pushCard(rows, 'parkingAvailable', labels.parkingAvailable, details.parkingAvailable);
   pushCard(rows, 'storageAvailable', labels.storageAvailable, details.storageAvailable);
   pushCard(rows, 'elevator', labels.elevator, details.elevator);
