@@ -28,6 +28,7 @@ import { Card } from '@/shared/ui/card';
 import { cn } from '@/shared/ui/cn';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
+import { Select } from '@/shared/ui/select';
 import { LIST_STATUS_BADGE_COMPACT_CLASS } from '@/shared/ui/list-status-badge';
 
 type PortalVisualCanvasesSectionProps = {
@@ -180,37 +181,55 @@ const PortalVisualCanvasCreateForm = ({ project, isBusy, onCancel, onSubmit }: C
         })}
         noValidate
       >
-        <FormField id="canvas-context-type" label={t('contextType')}>
-          <select
-            id="canvas-context-type"
-            className="h-10 w-full rounded-sm border border-border bg-background px-3 text-sm"
-            {...form.register('contextType', {
-              onChange: (event) => {
-                const nextType = event.target.value as VisualMapContextType;
-                form.setValue('contextType', nextType);
-                const options = buildContextOptions(project, nextType);
-                form.setValue('contextId', options[0]?.value ?? project.id);
-              },
-            })}
-          >
-            <option value="project">{t('contextProject')}</option>
-            <option value="building">{t('contextBuilding')}</option>
-            <option value="floor">{t('contextFloor')}</option>
-          </select>
-        </FormField>
-        <FormField id="canvas-context-id" label={t('contextEntity')}>
-          <select
-            id="canvas-context-id"
-            className="h-10 w-full rounded-sm border border-border bg-background px-3 text-sm"
-            {...form.register('contextId')}
-          >
-            {contextOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </FormField>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <FormField id="canvas-context-type" label={t('contextType')}>
+            <Controller
+              control={form.control}
+              name="contextType"
+              render={({ field }) => (
+                <Select
+                  id="canvas-context-type"
+                  name={field.name}
+                  value={field.value}
+                  aria-label={t('contextType')}
+                  onBlur={field.onBlur}
+                  onChange={(event) => {
+                    const nextType = event.target.value as VisualMapContextType;
+                    field.onChange(nextType);
+                    const options = buildContextOptions(project, nextType);
+                    form.setValue('contextId', options[0]?.value ?? project.id);
+                  }}
+                >
+                  <option value="project">{t('contextProject')}</option>
+                  <option value="building">{t('contextBuilding')}</option>
+                  <option value="floor">{t('contextFloor')}</option>
+                </Select>
+              )}
+            />
+          </FormField>
+          <FormField id="canvas-context-id" label={t('contextEntity')}>
+            <Controller
+              control={form.control}
+              name="contextId"
+              render={({ field }) => (
+                <Select
+                  id="canvas-context-id"
+                  name={field.name}
+                  value={field.value}
+                  aria-label={t('contextEntity')}
+                  onBlur={field.onBlur}
+                  onChange={field.onChange}
+                >
+                  {contextOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </Select>
+              )}
+            />
+          </FormField>
+        </div>
         <Controller
           control={form.control}
           name="mediaAssetId"
