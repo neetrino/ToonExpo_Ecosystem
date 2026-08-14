@@ -23,6 +23,7 @@ import {
 } from '@/features/companies/schemas/company-contact-fields.schema';
 import { toNullableMediaId } from '@/features/media/schemas/media-fields.schema';
 import { Button } from '@/shared/ui/button';
+import { EphemeralToast } from '@/shared/ui/ephemeral-toast';
 import { FormField } from '@/shared/ui/form-field';
 import { useSuccessToast } from '@/shared/ui/use-success-toast';
 import { Input } from '@/shared/ui/input';
@@ -33,13 +34,20 @@ type EditCompanyFormProps = {
   company: CompanyResponse;
 };
 
+const blurActiveField = (): void => {
+  const active = document.activeElement;
+  if (active instanceof HTMLElement) {
+    active.blur();
+  }
+};
+
 /**
  * Inline PATCH form for company profile fields and status.
  */
 export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
   const t = useTranslations('Admin.companies');
   const updateMutation = useUpdateAdminCompanyMutation(company.id);
-  const [formError, setFormError] = useState<string | null>(null);
+  const [errorToast, setErrorToast] = useState<{ id: number; message: string } | null>(null);
   const { showSuccess, successToast } = useSuccessToast();
 
   const {
@@ -62,7 +70,8 @@ export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
   });
 
   const onSubmit = handleSubmit(async (values) => {
-    setFormError(null);
+    setErrorToast(null);
+    blurActiveField();
     try {
       await updateMutation.mutateAsync({
         name: values.name,
@@ -76,7 +85,7 @@ export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
       reset(values);
       showSuccess(t('detail.saveSuccess'));
     } catch {
-      setFormError(t('errors.generic'));
+      setErrorToast({ id: Date.now(), message: t('errors.generic') });
     }
   });
 
@@ -135,7 +144,7 @@ export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
           id="edit-company-short-description"
           rows={2}
           maxLength={COMPANY_SHORT_DESCRIPTION_MAX_LENGTH}
-          className="min-h-20"
+          className="min-h-20 resize-none"
           aria-invalid={Boolean(errors.shortDescription)}
           aria-describedby="edit-company-short-description-hint"
           {...register('shortDescription')}
@@ -154,7 +163,7 @@ export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
           id="edit-company-description"
           rows={5}
           maxLength={COMPANY_DESCRIPTION_MAX_LENGTH}
-          className="min-h-32"
+          className="min-h-32 resize-none"
           aria-invalid={Boolean(errors.description)}
           aria-describedby="edit-company-description-hint"
           {...register('description')}
@@ -179,17 +188,19 @@ export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
         coverPreviewUrl={company.coverUrl}
       />
 
-      {formError ? (
-        <p role="alert" className="rounded-sm bg-danger-soft px-3 py-2 text-sm text-danger">
-          {formError}
-        </p>
-      ) : null}
-
       <Button type="submit" variant="primary" disabled={busy || !isDirty}>
         {busy ? t('detail.saving') : t('detail.save')}
       </Button>
     </form>
     {successToast}
+    <EphemeralToast
+      id={errorToast?.id}
+      message={errorToast?.message ?? null}
+      onDismiss={() => {
+        setErrorToast(null);
+      }}
+      tone="danger"
+    />
     </>
   );
 };
