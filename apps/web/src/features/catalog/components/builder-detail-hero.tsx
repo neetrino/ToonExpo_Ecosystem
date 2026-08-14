@@ -17,8 +17,8 @@ type BuilderDetailHeroProps = {
  */
 export const BuilderDetailHero = async ({ builder }: BuilderDetailHeroProps) => {
   const t = await getTranslations('Catalog');
-  const heroImageUrl = resolvePublicAssetUrl(builder.coverUrl);
   const logoUrl = resolvePublicAssetUrl(builder.logoUrl);
+  const heroImageUrl = resolvePublicAssetUrl(builder.coverUrl) ?? logoUrl;
   const logoInitials = builder.name.trim().slice(0, 2).toUpperCase() || '—';
   const companyLocation = [builder.address, builder.region]
     .map((part) => part?.trim())
