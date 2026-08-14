@@ -80,6 +80,7 @@ describe("updateCompanySchema", () => {
       description: "New copy",
       status: "inactive",
       logoMediaId: "",
+      coverMediaId: "",
       phone: "",
       contactPerson: "",
       email: "",

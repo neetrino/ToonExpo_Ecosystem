@@ -17,6 +17,7 @@ export const updateCompanySchema = z
     description: z.string().trim().max(COMPANY_DESCRIPTION_MAX_LENGTH),
     status: z.enum(COMPANY_STATUSES),
     logoMediaId: optionalMediaIdField,
+    coverMediaId: optionalMediaIdField,
   })
   .merge(companyContactFieldsSchema);
 

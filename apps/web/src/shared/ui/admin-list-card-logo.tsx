@@ -1,14 +1,9 @@
 'use client';
 
-import Image from 'next/image';
-
 import { cn } from '@/shared/ui/cn';
 
 /** Default fixed logo slot (list rows). */
 export const ADMIN_LIST_CARD_LOGO_PX = 48;
-
-/** Max expected logo edge when matching text column height (cards). */
-const ADMIN_LIST_CARD_LOGO_MATCH_PX = 160;
 
 type AdminListCardLogoShape = 'square' | 'circle';
 type AdminListCardLogoSize = 'md' | 'match';
@@ -35,7 +30,6 @@ export const AdminListCardLogo = ({
 }: AdminListCardLogoProps) => {
   const initials = name.trim().slice(0, 2).toUpperCase() || '—';
   const isMatch = size === 'match';
-  const imageSizes = `${isMatch ? ADMIN_LIST_CARD_LOGO_MATCH_PX : ADMIN_LIST_CARD_LOGO_PX}px`;
 
   return (
     <div
@@ -48,7 +42,7 @@ export const AdminListCardLogo = ({
     >
       {isMatch ? <svg viewBox="0 0 1 1" className="block h-full w-auto" aria-hidden /> : null}
       {logoUrl ? (
-        <Image src={logoUrl} alt="" fill className="object-cover" sizes={imageSizes} />
+        <img src={logoUrl} alt="" className="absolute inset-0 size-full object-cover" />
       ) : (
         <span className="absolute inset-0 flex items-center justify-center text-xs font-semibold text-ink-muted">
           {initials}

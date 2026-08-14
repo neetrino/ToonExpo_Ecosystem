@@ -1,5 +1,4 @@
 import type { BuilderDetail } from '@toonexpo/contracts';
-import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
 
 import { resolveBuilderHeroAddress } from '@/features/catalog/utils/resolve-builder-hero-address';
@@ -7,17 +6,20 @@ import { resolvePublicAssetUrl, staticAssetUrl } from '@/shared/lib/static-asset
 import { cn } from '@/shared/ui/cn';
 
 const BUILDER_HERO_FALLBACK_SRC = staticAssetUrl('/demo/building-a.webp');
+const BUILDER_HERO_LOGO_CLASS = 'relative size-14 shrink-0 overflow-hidden rounded-full bg-surface ring-1 ring-white/35 sm:size-16';
 
 type BuilderDetailHeroProps = {
   builder: BuilderDetail;
 };
 
 /**
- * Full-bleed builder hero — same chrome as partner detail, logo as hero media.
+ * Full-bleed builder hero — cover image from admin company profile.
  */
 export const BuilderDetailHero = async ({ builder }: BuilderDetailHeroProps) => {
   const t = await getTranslations('Catalog');
-  const heroImageUrl = resolvePublicAssetUrl(builder.logoUrl) ?? BUILDER_HERO_FALLBACK_SRC;
+  const heroImageUrl = resolvePublicAssetUrl(builder.coverUrl) ?? BUILDER_HERO_FALLBACK_SRC;
+  const logoUrl = resolvePublicAssetUrl(builder.logoUrl);
+  const logoInitials = builder.name.trim().slice(0, 2).toUpperCase() || '—';
   const companyLocation = [builder.address, builder.region]
     .map((part) => part?.trim())
     .filter((part): part is string => Boolean(part))
@@ -27,13 +29,10 @@ export const BuilderDetailHero = async ({ builder }: BuilderDetailHeroProps) => 
   return (
     <section className="relative isolate flex min-h-[min(72vh,42rem)] flex-col bg-canvas">
       <div className="absolute inset-0 -z-10 overflow-hidden" aria-hidden>
-        <Image
+        <img
           src={heroImageUrl}
           alt=""
-          fill
-          priority
-          className="object-cover object-center"
-          sizes="100vw"
+          className="absolute inset-0 size-full object-cover object-center"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-ink/55 via-ink/15 to-ink/25" />
       </div>
@@ -55,15 +54,32 @@ export const BuilderDetailHero = async ({ builder }: BuilderDetailHeroProps) => 
             {t('buildersPage.detail.heroEyebrow')}
           </p>
 
-          <h1
-            className={cn(
-              'font-brand font-bold text-on-dark',
-              'text-[clamp(2rem,1.05rem+3.8vw,3.75rem)]',
-              'leading-none tracking-[-0.025em]',
+          <div className="flex items-center gap-4">
+            {logoUrl ? (
+              <span className={BUILDER_HERO_LOGO_CLASS}>
+                <img src={logoUrl} alt="" className="absolute inset-0 size-full object-cover" />
+              </span>
+            ) : (
+              <span
+                className={cn(
+                  BUILDER_HERO_LOGO_CLASS,
+                  'grid place-items-center font-brand text-lg font-bold text-ink-navy',
+                )}
+                aria-hidden
+              >
+                {logoInitials}
+              </span>
             )}
-          >
-            <span className="text-balance">{builder.name}</span>
-          </h1>
+            <h1
+              className={cn(
+                'min-w-0 font-brand font-bold text-on-dark',
+                'text-[clamp(2rem,1.05rem+3.8vw,3.75rem)]',
+                'leading-none tracking-[-0.025em]',
+              )}
+            >
+              <span className="text-balance">{builder.name}</span>
+            </h1>
+          </div>
 
           <p
             className={cn(

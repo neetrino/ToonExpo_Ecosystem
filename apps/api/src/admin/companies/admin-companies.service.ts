@@ -21,7 +21,11 @@ import {
 import { toMediaSummary } from '../../catalog/mappers/catalog.mapper.js';
 import { resolveOptionalCompanyLogoMediaId } from '../../media/utils/media-ownership.js';
 import { toUserResponse } from '../../auth/mappers/user.mapper.js';
-import { toCompanyResponse, buildCompanyProfilePatch } from '../../companies/mappers/company.mapper.js';
+import {
+  buildCompanyProfilePatch,
+  COMPANY_MEDIA_INCLUDE,
+  toCompanyResponse,
+} from '../../companies/mappers/company.mapper.js';
 import { CompanyProvisioningService } from '../../company/provisioning/company-provisioning.service.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { AdminReadinessAssessmentsService } from '../../readiness/admin/admin-readiness-assessments.service.js';
@@ -41,6 +45,7 @@ type UpdateCompanyInput = {
   description?: string | null;
   status?: CompanyStatus;
   logoMediaId?: string | null;
+  coverMediaId?: string | null;
   phone?: string | null;
   contactPerson?: string | null;
   email?: string | null;
@@ -154,7 +159,7 @@ export class AdminCompaniesService {
         orderBy: { createdAt: 'desc' },
         skip,
         take: pageSize,
-        include: { logoMedia: { select: { id: true, fileUrl: true } } },
+        include: COMPANY_MEDIA_INCLUDE,
       }),
     ]);
 
@@ -172,7 +177,7 @@ export class AdminCompaniesService {
   async getById(id: string): Promise<CompanyResponse> {
     const company = await this.prisma.db.company.findUnique({
       where: { id },
-      include: { logoMedia: { select: { id: true, fileUrl: true } } },
+      include: COMPANY_MEDIA_INCLUDE,
     });
     if (!company) {
       throw new NotFoundException('Company not found');
@@ -290,6 +295,11 @@ export class AdminCompaniesService {
   async update(id: string, input: UpdateCompanyInput): Promise<CompanyResponse> {
     await this.getById(id);
     const logoMediaId = await resolveOptionalCompanyLogoMediaId(this.prisma, input.logoMediaId, id);
+    const coverMediaId = await resolveOptionalCompanyLogoMediaId(
+      this.prisma,
+      input.coverMediaId,
+      id,
+    );
     const profilePatch = buildCompanyProfilePatch(input);
     const company = await this.prisma.db.company.update({
       where: { id },
@@ -297,9 +307,10 @@ export class AdminCompaniesService {
         ...(input.name !== undefined ? { name: input.name.trim() } : {}),
         ...(input.status !== undefined ? { status: input.status } : {}),
         ...(logoMediaId !== undefined ? { logoMediaId } : {}),
+        ...(coverMediaId !== undefined ? { coverMediaId } : {}),
         ...profilePatch,
       },
-      include: { logoMedia: { select: { id: true, fileUrl: true } } },
+      include: COMPANY_MEDIA_INCLUDE,
     });
     return toCompanyResponse(company);
   }

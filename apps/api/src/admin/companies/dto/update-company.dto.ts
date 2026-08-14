@@ -54,6 +54,12 @@ export class UpdateCompanyDto {
   @IsOptional()
   @optionalNullableString()
   @IsString()
+  coverMediaId?: string | null;
+
+  @ApiPropertyOptional({ nullable: true })
+  @IsOptional()
+  @optionalNullableString()
+  @IsString()
   @MaxLength(64)
   phone?: string | null;
 

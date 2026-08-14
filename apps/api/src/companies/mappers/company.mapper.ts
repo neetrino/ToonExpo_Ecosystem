@@ -7,6 +7,12 @@ import type {
 
 import { toPublicFileUrl } from '../../media/public-file-url.js';
 
+/** Prisma include so admin company responses resolve logo and card cover URLs. */
+export const COMPANY_MEDIA_INCLUDE = {
+  logoMedia: { select: { id: true, fileUrl: true } },
+  coverMedia: { select: { id: true, fileUrl: true } },
+} as const;
+
 type CompanyRecord = {
   id: string;
   name: string;
@@ -17,6 +23,8 @@ type CompanyRecord = {
   bosCompanyId: string | null;
   logoMediaId?: string | null;
   logoMedia?: { id: string; fileUrl: string } | null;
+  coverMediaId?: string | null;
+  coverMedia?: { id: string; fileUrl: string } | null;
   phone: string | null;
   contactPerson: string | null;
   email: string | null;
@@ -44,6 +52,8 @@ export const toCompanyResponse = (company: CompanyRecord): CompanyResponse => ({
   bosCompanyId: company.bosCompanyId,
   logoMediaId: company.logoMediaId ?? company.logoMedia?.id ?? null,
   logoUrl: company.logoMedia ? toPublicFileUrl(company.logoMedia.fileUrl) : null,
+  coverMediaId: company.coverMediaId ?? company.coverMedia?.id ?? null,
+  coverUrl: company.coverMedia ? toPublicFileUrl(company.coverMedia.fileUrl) : null,
   phone: company.phone,
   contactPerson: company.contactPerson,
   email: company.email,

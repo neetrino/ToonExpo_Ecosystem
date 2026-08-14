@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import type { CompanyResponse } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, type Control } from 'react-hook-form';
 
 import { COMPANY_STATUSES } from '@/features/admin/constants';
 import { useUpdateAdminCompanyMutation } from '@/features/admin/hooks/use-admin-companies';
@@ -14,10 +14,13 @@ import {
 } from '@/features/admin/schemas/update-company.schema';
 import { CompanyContactFields } from '@/features/companies/components/company-contact-fields';
 import {
+  CompanyMediaFields,
+  type CompanyMediaFieldValues,
+} from '@/features/companies/components/company-media-fields';
+import {
   companyContactDefaultsFrom,
   companyContactPatchFrom,
 } from '@/features/companies/schemas/company-contact-fields.schema';
-import { MediaUploadField } from '@/features/media/components/media-upload-field';
 import { toNullableMediaId } from '@/features/media/schemas/media-fields.schema';
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
@@ -42,6 +45,7 @@ export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
     register,
     handleSubmit,
     control,
+    reset,
     formState: { errors, isSubmitting, isDirty },
   } = useForm<UpdateCompanyFormValues>({
     resolver: zodResolver(updateCompanySchema),
@@ -50,6 +54,7 @@ export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
       description: company.description ?? '',
       status: company.status,
       logoMediaId: company.logoMediaId ?? '',
+      coverMediaId: company.coverMediaId ?? '',
       ...companyContactDefaultsFrom(company),
     },
   });
@@ -62,8 +67,10 @@ export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
         description: values.description.length > 0 ? values.description : null,
         status: values.status,
         logoMediaId: toNullableMediaId(values.logoMediaId),
+        coverMediaId: toNullableMediaId(values.coverMediaId),
         ...companyContactPatchFrom(values),
       });
+      reset(values);
       showSuccess(t('detail.saveSuccess'));
     } catch {
       setFormError(t('errors.generic'));
@@ -137,20 +144,11 @@ export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
         labelsNamespace="Admin.companies"
       />
 
-      <Controller
-        control={control}
-        name="logoMediaId"
-        render={({ field, fieldState }) => (
-          <MediaUploadField
-            id="edit-company-logo"
-            label={t('form.logoMedia')}
-            context="admin"
-            value={field.value}
-            onChange={field.onChange}
-            previewUrl={company.logoUrl}
-            error={fieldState.error?.message}
-          />
-        )}
+      <CompanyMediaFields
+        control={control as unknown as Control<CompanyMediaFieldValues>}
+        context="admin"
+        logoPreviewUrl={company.logoUrl}
+        coverPreviewUrl={company.coverUrl}
       />
 
       {formError ? (

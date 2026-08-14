@@ -90,6 +90,7 @@ export class AdminCompaniesController {
       ...(body.description !== undefined ? { description: body.description } : {}),
       ...(body.status !== undefined ? { status: body.status as CompanyStatus } : {}),
       ...(body.logoMediaId !== undefined ? { logoMediaId: body.logoMediaId } : {}),
+      ...(body.coverMediaId !== undefined ? { coverMediaId: body.coverMediaId } : {}),
       ...(body.phone !== undefined ? { phone: body.phone } : {}),
       ...(body.contactPerson !== undefined ? { contactPerson: body.contactPerson } : {}),
       ...(body.email !== undefined ? { email: body.email } : {}),

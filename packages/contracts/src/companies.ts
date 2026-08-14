@@ -28,6 +28,8 @@ export type CompanyResponse = {
   bosCompanyId: string | null;
   logoMediaId: string | null;
   logoUrl: string | null;
+  coverMediaId: string | null;
+  coverUrl: string | null;
   phone: string | null;
   contactPerson: string | null;
   email: string | null;
@@ -88,6 +90,7 @@ export type UpdateCompanyRequest = {
   description?: string | null;
   status?: CompanyStatus;
   logoMediaId?: string | null;
+  coverMediaId?: string | null;
   phone?: string | null;
   contactPerson?: string | null;
   email?: string | null;

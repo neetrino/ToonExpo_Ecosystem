@@ -176,6 +176,8 @@ model Company {
   bosCompanyId String?       @map("bos_company_id")
   /// Optional public logo (MediaAsset URL metadata only in this sprint).
   logoMediaId  String?       @map("logo_media_id")
+  /// Optional card cover image (separate from the circular logo).
+  coverMediaId String?       @map("cover_media_id")
   phone        String?
   contactPerson String?      @map("contact_person")
   email        String?
@@ -191,6 +193,7 @@ model Company {
 
   members     CompanyMember[]
   logoMedia   MediaAsset?     @relation("CompanyLogo", fields: [logoMediaId], references: [id], onDelete: SetNull)
+  coverMedia  MediaAsset?     @relation("CompanyCover", fields: [coverMediaId], references: [id], onDelete: SetNull)
   ownedMedia       MediaAsset[]      @relation("MediaOwnerCompany")
   visualMapCanvases VisualMapCanvas[]
   projects    Project[]

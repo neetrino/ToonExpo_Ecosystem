@@ -22,7 +22,7 @@ import { IconButton } from '@/shared/ui/icon-button';
  * the parent sheet scroll (CSS zoom + flex min-height:auto leak).
  */
 const MEDIA_PREVIEW_FRAME_CLASS =
-  'relative mb-3 h-40 w-full overflow-hidden rounded-sm border border-border bg-surface [contain:strict]';
+  'relative mt-3 block h-40 w-full cursor-pointer overflow-hidden rounded-sm border border-border bg-surface [contain:strict]';
 const MEDIA_PREVIEW_IMAGE_CLASS = 'absolute inset-0 size-full object-contain';
 
 export type MediaUploadFieldProps = {
@@ -170,11 +170,6 @@ export const MediaUploadField = ({
           busy && 'opacity-70',
         )}
       >
-        {thumbnailUrl ? (
-          <div className={MEDIA_PREVIEW_FRAME_CLASS}>
-            <img src={thumbnailUrl} alt="" className={MEDIA_PREVIEW_IMAGE_CLASS} />
-          </div>
-        ) : null}
         <div className="flex flex-wrap items-center gap-2">
           <label
             htmlFor={inputId}
@@ -208,6 +203,12 @@ export const MediaUploadField = ({
             {t('useExisting')}
           </Button>
         </div>
+        {thumbnailUrl ? (
+          <label htmlFor={inputId} className={MEDIA_PREVIEW_FRAME_CLASS}>
+            <img src={thumbnailUrl} alt="" className={MEDIA_PREVIEW_IMAGE_CLASS} />
+            <span className="sr-only">{t('replace')}</span>
+          </label>
+        ) : null}
         {description ? <p className="mt-2 text-xs text-ink-muted">{description}</p> : null}
         <p className="mt-2 text-xs text-ink-muted">{t('hint')}</p>
       </div>

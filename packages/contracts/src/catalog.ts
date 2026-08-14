@@ -33,6 +33,7 @@ export type BuilderSummary = {
   name: string;
   description: string | null;
   logoUrl: string | null;
+  coverUrl: string | null;
   publishedProjectCount: number;
   phone: string | null;
   contactPerson: string | null;
