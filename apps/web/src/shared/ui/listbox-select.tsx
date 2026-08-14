@@ -5,22 +5,24 @@ import {
   useEffect,
   useId,
   useImperativeHandle,
+  useMemo,
   useRef,
   useState,
   type FocusEventHandler,
   type ReactNode,
-  type RefObject,
 } from 'react';
 
-import { blurActiveElementAfterEscClose } from '@/shared/ui/blur-active-element';
 import { cn } from '@/shared/ui/cn';
 import { DropdownPortal } from '@/shared/ui/dropdown-portal';
 import {
   ContainedListboxMenu,
+  ListboxComboboxField,
   ListboxMenuOptions,
   ListboxTrigger,
   type ListboxOption,
 } from '@/shared/ui/listbox-select-menu';
+import { resolveListboxTriggerLabel } from '@/shared/ui/resolve-listbox-trigger-label';
+import { useListboxDismiss } from '@/shared/ui/use-listbox-dismiss';
 
 export type { ListboxOption };
 
@@ -54,6 +56,10 @@ export type ListboxSelectProps = {
   values?: readonly string[] | undefined;
   onValuesChange?: ((values: string[]) => void) | undefined;
   selectedCountLabel?: ((count: number) => string) | undefined;
+  /** Combobox: type in the field to filter, pick from the list. */
+  searchable?: boolean | undefined;
+  searchPlaceholder?: string | undefined;
+  emptyLabel?: string | undefined;
 };
 
 /**
@@ -84,6 +90,9 @@ export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
       values,
       onValuesChange,
       selectedCountLabel,
+      searchable = false,
+      searchPlaceholder,
+      emptyLabel,
     } = props;
     const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
     const isOpenControlled = openProp !== undefined;
@@ -93,11 +102,14 @@ export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
     const rootRef = useRef<HTMLDivElement>(null);
     const buttonRef = useRef<HTMLButtonElement>(null);
     const menuRef = useRef<HTMLDivElement>(null);
+    const fieldWrapRef = useRef<HTMLDivElement>(null);
+    const searchInputRef = useRef<HTMLInputElement>(null);
+    const [searchQuery, setSearchQuery] = useState('');
     const listId = useId();
     const isField = variant === 'field';
     const isFit = size === 'fit';
     const selectedIds = multiple ? [...(values ?? [])] : value.length > 0 ? [value] : [];
-    const { label: triggerLabel, isPlaceholder: showPlaceholder } = resolveTriggerLabel(
+    const { label: triggerLabel, isPlaceholder: showPlaceholder } = resolveListboxTriggerLabel(
       options,
       selectedIds,
       placeholder,
@@ -115,6 +127,27 @@ export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
     useImperativeHandle(ref, () => buttonRef.current as HTMLButtonElement);
     useListboxDismiss(open, contained, rootRef, menuRef, setOpen);
 
+    useEffect(() => {
+      if (!open) {
+        setSearchQuery('');
+        return;
+      }
+      if (searchable) {
+        searchInputRef.current?.focus();
+      }
+    }, [open, searchable]);
+
+    const visibleOptions = useMemo(() => {
+      if (!searchable) {
+        return options;
+      }
+      const needle = searchQuery.trim().toLowerCase();
+      if (!needle) {
+        return options;
+      }
+      return options.filter((option) => option.label.toLowerCase().includes(needle));
+    }, [options, searchQuery, searchable]);
+
     const pick = (next: string): void => {
       if (disabled) {
         return;
@@ -130,17 +163,26 @@ export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
       setOpen(false);
     };
 
+    const comboboxValue = open ? searchQuery : showPlaceholder ? '' : triggerLabel;
+    const comboboxPlaceholder = searchPlaceholder ?? placeholder ?? '';
+
     const menu = (
-      <ListboxMenuOptions
-        listId={listId}
-        ariaLabel={ariaLabel}
-        options={options}
-        selectedIds={selectedIds}
-        multiple={multiple}
-        optionAction={optionAction}
-        menuFooter={menuFooter}
-        onPick={pick}
-      />
+      <>
+        {visibleOptions.length === 0 ? (
+          <p className="px-3 py-2 text-sm text-ink-muted">{emptyLabel}</p>
+        ) : (
+          <ListboxMenuOptions
+            listId={listId}
+            ariaLabel={ariaLabel}
+            options={visibleOptions}
+            selectedIds={selectedIds}
+            multiple={multiple}
+            optionAction={optionAction}
+            menuFooter={menuFooter}
+            onPick={pick}
+          />
+        )}
+      </>
     );
 
     return (
@@ -162,32 +204,61 @@ export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
             disabled={disabled}
           />
         ) : null}
-        <div className={cn(contained && 'relative z-20')}>
-          <ListboxTrigger
-            buttonRef={buttonRef}
-            id={id}
-            disabled={disabled}
-            open={open}
-            isField={isField}
-            isFit={isFit}
-            className={className}
-            ariaLabel={ariaLabel}
-            listId={listId}
-            triggerLabel={triggerLabel}
-            showPlaceholder={showPlaceholder}
-            onBlur={onBlur}
-            onToggle={() => {
-              if (!disabled) {
-                setOpen((current) => !current);
-              }
-            }}
-          />
+        <div ref={fieldWrapRef} className={cn(contained && 'relative z-20')}>
+          {searchable ? (
+            <ListboxComboboxField
+              inputRef={searchInputRef}
+              id={id}
+              disabled={disabled}
+              open={open}
+              listId={listId}
+              value={comboboxValue}
+              placeholder={comboboxPlaceholder}
+              ariaLabel={ariaLabel}
+              className={className}
+              onFocus={() => {
+                if (!disabled) {
+                  setOpen(true);
+                }
+              }}
+              onChange={(next) => {
+                setSearchQuery(next);
+                if (!disabled) {
+                  setOpen(true);
+                }
+              }}
+            />
+          ) : (
+            <ListboxTrigger
+              buttonRef={buttonRef}
+              id={id}
+              disabled={disabled}
+              open={open}
+              isField={isField}
+              isFit={isFit}
+              className={className}
+              ariaLabel={ariaLabel}
+              listId={listId}
+              triggerLabel={triggerLabel}
+              showPlaceholder={showPlaceholder}
+              onBlur={onBlur}
+              onToggle={() => {
+                if (!disabled) {
+                  setOpen((current) => !current);
+                }
+              }}
+            />
+          )}
           {contained ? (
             <ContainedListboxMenu open={open && !disabled} menuRef={menuRef}>
               {menu}
             </ContainedListboxMenu>
           ) : (
-            <DropdownPortal open={open && !disabled} anchorRef={buttonRef} matchWidth>
+            <DropdownPortal
+              open={open && !disabled}
+              anchorRef={searchable ? fieldWrapRef : buttonRef}
+              matchWidth
+            >
               <div ref={menuRef} className="site-select-menu">
                 {menu}
               </div>
@@ -198,98 +269,3 @@ export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
     );
   },
 );
-
-const MAX_INLINE_SELECTED_LABELS = 3;
-
-const resolveTriggerLabel = (
-  options: readonly ListboxOption[],
-  selectedIds: readonly string[],
-  placeholder: string | undefined,
-  selectedCountLabel: ((count: number) => string) | undefined,
-): { label: string; isPlaceholder: boolean } => {
-  if (selectedIds.length === 0) {
-    return {
-      label: placeholder ?? options[0]?.label ?? '',
-      isPlaceholder: Boolean(placeholder),
-    };
-  }
-
-  const labels = selectedIds
-    .map((id) => options.find((option) => option.value === id)?.label)
-    .filter((label): label is string => label != null);
-
-  if (labels.length === 1 && labels[0]) {
-    return { label: labels[0], isPlaceholder: false };
-  }
-  if (labels.length > 0 && labels.length <= MAX_INLINE_SELECTED_LABELS) {
-    return { label: labels.join(', '), isPlaceholder: false };
-  }
-  if (selectedCountLabel) {
-    return { label: selectedCountLabel(selectedIds.length), isPlaceholder: false };
-  }
-  return { label: labels.join(', '), isPlaceholder: false };
-};
-
-const useListboxDismiss = (
-  open: boolean,
-  contained: boolean,
-  rootRef: RefObject<HTMLDivElement | null>,
-  menuRef: RefObject<HTMLDivElement | null>,
-  setOpen: (open: boolean) => void,
-): void => {
-  const setOpenRef = useRef(setOpen);
-  setOpenRef.current = setOpen;
-
-  useEffect(() => {
-    if (!open) {
-      return;
-    }
-
-    const isInsideOpenMenu = (node: Node): boolean => {
-      if (rootRef.current?.contains(node) || menuRef.current?.contains(node)) {
-        return true;
-      }
-      if (node instanceof Element && menuRef.current) {
-        const portal = node.closest('[data-dropdown-portal]');
-        return Boolean(portal?.contains(menuRef.current));
-      }
-      return false;
-    };
-
-    const onPointerDown = (event: MouseEvent): void => {
-      if (!isInsideOpenMenu(event.target as Node)) {
-        setOpenRef.current(false);
-      }
-    };
-
-    const onKeyDown = (event: KeyboardEvent): void => {
-      if (event.key !== 'Escape') {
-        return;
-      }
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      setOpenRef.current(false);
-      blurActiveElementAfterEscClose();
-    };
-
-    const onScroll = (event: Event): void => {
-      const target = event.target;
-      if (target instanceof Node && isInsideOpenMenu(target)) {
-        return;
-      }
-      setOpenRef.current(false);
-      blurActiveElementAfterEscClose();
-    };
-
-    document.addEventListener('mousedown', onPointerDown);
-    window.addEventListener('keydown', onKeyDown, true);
-    if (!contained) {
-      window.addEventListener('scroll', onScroll, true);
-    }
-    return () => {
-      document.removeEventListener('mousedown', onPointerDown);
-      window.removeEventListener('keydown', onKeyDown, true);
-      window.removeEventListener('scroll', onScroll, true);
-    };
-  }, [open, contained, rootRef, menuRef]);
-};

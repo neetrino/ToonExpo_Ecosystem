@@ -1,6 +1,6 @@
 'use client';
 
-import { Check, ChevronDown } from 'lucide-react';
+import { Check, ChevronDown, Search } from 'lucide-react';
 import type { FocusEventHandler, ReactNode, RefObject } from 'react';
 
 import { cn } from '@/shared/ui/cn';
@@ -213,3 +213,67 @@ export const ListboxTrigger = ({
     />
   </button>
 );
+
+type ListboxComboboxFieldProps = {
+  inputRef: RefObject<HTMLInputElement | null>;
+  id: string | undefined;
+  disabled: boolean;
+  open: boolean;
+  listId: string;
+  value: string;
+  placeholder: string;
+  ariaLabel: string;
+  className: string | undefined;
+  onChange: (value: string) => void;
+  onFocus: () => void;
+};
+
+/** Combobox input: search icon on the left, listbox below. */
+export const ListboxComboboxField = ({
+  inputRef,
+  id,
+  disabled,
+  open,
+  listId,
+  value,
+  placeholder,
+  ariaLabel,
+  className,
+  onChange,
+  onFocus,
+}: ListboxComboboxFieldProps) => (
+  <div className="relative">
+    <Search
+      className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-ink-muted"
+      aria-hidden
+    />
+    <input
+      ref={inputRef}
+      id={id}
+      type="text"
+      role="combobox"
+      aria-expanded={open}
+      aria-controls={listId}
+      aria-autocomplete="list"
+      aria-label={ariaLabel}
+      disabled={disabled}
+      value={value}
+      placeholder={placeholder}
+      autoComplete="off"
+      className={cn(
+        'site-select-trigger h-11 w-full pr-4 pl-10',
+        'placeholder:text-ink-muted',
+        className,
+      )}
+      onFocus={onFocus}
+      onChange={(event) => {
+        onChange(event.target.value);
+      }}
+      onKeyDown={(event) => {
+        event.stopPropagation();
+      }}
+    />
+  </div>
+);
+
+

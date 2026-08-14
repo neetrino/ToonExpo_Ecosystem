@@ -1889,6 +1889,8 @@
         "cta": "+ Add Project",
         "title": "Add Project",
         "company": "Company",
+        "searchCompany": "Search companies",
+        "noCompanyMatches": "No matching companies",
         "selectCompany": "Select company",
         "pickCompany": "Select a company to continue."
       }

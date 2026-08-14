@@ -75,7 +75,12 @@
   }
 
   .site-select-menu--contained {
+    --site-select-menu-max-height: 15rem;
     box-shadow: var(--shadow-lg);
+    max-height: var(--site-select-menu-max-height);
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
 
   .site-select-option {
@@ -95,7 +100,7 @@
   }
 
   .site-select-option:hover {
-    background-color: var(--color-surface);
+    background-color: color-mix(in srgb, var(--color-brand-soft) 70%, transparent);
   }
 
   .site-select-option[aria-selected='true'] {
