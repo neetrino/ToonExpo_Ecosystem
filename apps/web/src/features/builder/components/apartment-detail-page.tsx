@@ -51,7 +51,7 @@ export const ApartmentDetailPage = ({ apartmentId }: ApartmentDetailPageProps) =
       : catalogProjectDetailHref(scope, apartment.projectId));
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 pb-24">
       <div className="flex flex-col gap-2">
         <BackLink href={backHref} label={t('back')} />
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">

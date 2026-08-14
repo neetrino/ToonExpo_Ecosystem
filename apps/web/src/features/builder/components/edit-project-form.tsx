@@ -8,6 +8,10 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
+import {
+  FORM_SAVE_BAR_SCROLL_CLEARANCE_CLASS,
+  FormSaveBar,
+} from '@/features/builder/components/form-save-bar';
 import { ProjectCatalogEditor } from '@/features/builder/components/project-catalog-editor';
 import { TranslationTabs } from '@/features/builder/components/translation-tabs';
 import { useUpdatePortalProjectMutation } from '@/features/builder/hooks/use-portal-projects';
@@ -28,21 +32,6 @@ import { useSuccessToast } from '@/shared/ui/use-success-toast';
 type EditProjectFormProps = {
   project: PortalProjectDetail;
 };
-
-/** Keeps the last fields clear of the fixed save bar. */
-const SAVE_BAR_SCROLL_CLEARANCE_CLASS = 'pb-24';
-
-/**
- * Fixed save chrome — always visible while scrolling.
- * Desktop inset matches the expanded portal rail (`w-72`).
- */
-const SAVE_BAR_CLASS_NAME = cn(
-  'fixed inset-x-0 bottom-0 z-[var(--z-sticky)]',
-  'border-t border-border bg-surface-elevated/95 backdrop-blur-md',
-  'px-[var(--page-gutter)] pt-3',
-  'pb-[max(0.75rem,env(safe-area-inset-bottom,0px))]',
-  'md:left-72',
-);
 
 const toFormValues = (project: PortalProjectDetail): UpdateProjectFormValues => ({
   nameHy: project.translations?.name?.hy ?? project.name,
@@ -105,7 +94,7 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
     <>
     <form
       onSubmit={onSubmit}
-      className={cn('flex flex-col gap-5', SAVE_BAR_SCROLL_CLEARANCE_CLASS)}
+      className={cn('flex flex-col gap-5', FORM_SAVE_BAR_SCROLL_CLEARANCE_CLASS)}
       noValidate
     >
       <TranslationTabs>
@@ -212,8 +201,7 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
 
       <ProjectCatalogEditor register={register} control={control} />
 
-      <div className={SAVE_BAR_CLASS_NAME}>
-        <div className="mx-auto flex w-full max-w-[var(--max-width-wide)] flex-col gap-2">
+      <FormSaveBar>
           {formError ? (
             <p role="alert" className="rounded-sm bg-danger-soft px-3 py-2 text-sm text-danger">
               {formError}
@@ -227,8 +215,7 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
           >
             {busy ? t('detail.saving') : t('detail.save')}
           </Button>
-        </div>
-      </div>
+      </FormSaveBar>
     </form>
     {successToast}
     </>
