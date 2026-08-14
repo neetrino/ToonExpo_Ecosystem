@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 import { useMeQuery } from '@/features/auth/hooks/use-auth';
@@ -24,9 +24,8 @@ import {
   HEADER_SPACER_CLASS,
   isSiteHeaderNavActive,
   PILL_APPEAR_MS,
-  PILL_CONTENT_INSET_PX,
-  PILL_EDGE_INSET_CLASS,
   PILL_TOP_OFFSET_CLASS,
+  resolveHeaderPillLayout,
   SCROLL_PILL_THRESHOLD_PX,
   SITE_HEADER_NAV_HREFS,
 } from '@/shared/ui/site-header.constants';
@@ -45,6 +44,7 @@ type SiteHeaderProps = {
 export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) => {
   const t = useTranslations('Nav');
   const tCommon = useTranslations('Common');
+  const { edgeInsetClass, contentInsetPx } = resolveHeaderPillLayout(useLocale());
   const pathname = usePathname();
   const { data: user } = useMeQuery();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -115,11 +115,11 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
       user.companyType === 'builder' ||
       !isPartnerCompatibleCompany(user.companyType));
   const contentInsetStyle = {
-    transform: pillVisible ? `translateX(${PILL_CONTENT_INSET_PX}px)` : 'translateX(0)',
+    transform: pillVisible ? `translateX(${contentInsetPx}px)` : 'translateX(0)',
     transitionDuration: `${PILL_APPEAR_MS}ms`,
   };
   const actionsInsetStyle = {
-    transform: pillVisible ? `translateX(-${PILL_CONTENT_INSET_PX}px)` : 'translateX(0)',
+    transform: pillVisible ? `translateX(-${contentInsetPx}px)` : 'translateX(0)',
     transitionDuration: `${PILL_APPEAR_MS}ms`,
   };
 
@@ -166,7 +166,7 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
             className={cn(
               'pointer-events-none absolute h-16 rounded-full bg-surface-elevated',
               PILL_TOP_OFFSET_CLASS,
-              PILL_EDGE_INSET_CLASS,
+              edgeInsetClass,
               'shadow-[0_4px_24px_rgb(9_43_68/0.1)]',
               'transition-opacity ease-[var(--ease-out-premium)] motion-reduce:transition-none',
             )}
@@ -277,7 +277,7 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
           </div>
 
           {menuRendered ? (
-            <div className={cn('absolute top-full z-10 mt-2 lg:hidden', PILL_EDGE_INSET_CLASS)}>
+            <div className={cn('absolute top-full z-10 mt-2 lg:hidden', edgeInsetClass)}>
               <SiteHeaderMobileNav
                 navItems={SITE_HEADER_NAV_HREFS}
                 pathname={pathname}
