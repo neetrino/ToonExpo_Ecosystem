@@ -208,7 +208,6 @@ export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
           {searchable ? (
             <ListboxComboboxField
               inputRef={searchInputRef}
-              id={id}
               disabled={disabled}
               open={open}
               listId={listId}
