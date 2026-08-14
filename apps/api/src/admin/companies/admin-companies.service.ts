@@ -19,9 +19,14 @@ import {
 } from '@toonexpo/db';
 
 import { toMediaSummary } from '../../catalog/mappers/catalog.mapper.js';
+import { toPublicFileUrl } from '../../media/public-file-url.js';
 import { resolveOptionalCompanyLogoMediaId } from '../../media/utils/media-ownership.js';
 import { toUserResponse } from '../../auth/mappers/user.mapper.js';
-import { toCompanyResponse, buildCompanyProfilePatch } from '../../companies/mappers/company.mapper.js';
+import {
+  buildCompanyProfilePatch,
+  COMPANY_MEDIA_INCLUDE,
+  toCompanyResponse,
+} from '../../companies/mappers/company.mapper.js';
 import { CompanyProvisioningService } from '../../company/provisioning/company-provisioning.service.js';
 import { PrismaService } from '../../prisma/prisma.service.js';
 import { AdminReadinessAssessmentsService } from '../../readiness/admin/admin-readiness-assessments.service.js';
@@ -30,6 +35,7 @@ type CreateCompanyInput = {
   name: string;
   type: CompanyType;
   description?: string;
+  shortDescription?: string;
   adminName: string;
   adminEmail: string;
   adminPhone?: string;
@@ -39,8 +45,10 @@ type CreateCompanyInput = {
 type UpdateCompanyInput = {
   name?: string;
   description?: string | null;
+  shortDescription?: string | null;
   status?: CompanyStatus;
   logoMediaId?: string | null;
+  coverMediaId?: string | null;
   phone?: string | null;
   contactPerson?: string | null;
   email?: string | null;
@@ -91,6 +99,7 @@ const buildAdminCompaniesWhere = (
   where.OR = [
     { name: { contains: needle, mode: 'insensitive' } },
     { description: { contains: needle, mode: 'insensitive' } },
+    { shortDescription: { contains: needle, mode: 'insensitive' } },
   ];
   return where;
 };
@@ -113,6 +122,7 @@ export class AdminCompaniesService {
       companyName: input.name.trim(),
       companyType: input.type,
       companyDescription: input.description?.trim() || null,
+      companyShortDescription: input.shortDescription?.trim() || null,
       source: CompanySource.admin,
       adminName: input.adminName.trim(),
       adminEmail: input.adminEmail,
@@ -154,7 +164,7 @@ export class AdminCompaniesService {
         orderBy: { createdAt: 'desc' },
         skip,
         take: pageSize,
-        include: { logoMedia: { select: { id: true, fileUrl: true } } },
+        include: COMPANY_MEDIA_INCLUDE,
       }),
     ]);
 
@@ -172,7 +182,7 @@ export class AdminCompaniesService {
   async getById(id: string): Promise<CompanyResponse> {
     const company = await this.prisma.db.company.findUnique({
       where: { id },
-      include: { logoMedia: { select: { id: true, fileUrl: true } } },
+      include: COMPANY_MEDIA_INCLUDE,
     });
     if (!company) {
       throw new NotFoundException('Company not found');
@@ -235,7 +245,12 @@ export class AdminCompaniesService {
           city: true,
           builderCompanyId: true,
           featuredOnHome: true,
-          builderCompany: { select: { name: true } },
+          builderCompany: {
+            select: {
+              name: true,
+              logoMedia: { select: { fileUrl: true } },
+            },
+          },
           coverMedia: {
             select: {
               id: true,
@@ -258,6 +273,9 @@ export class AdminCompaniesService {
         city: project.city,
         builderCompanyId: project.builderCompanyId,
         companyName: project.builderCompany.name,
+        companyLogoUrl: project.builderCompany.logoMedia
+          ? toPublicFileUrl(project.builderCompany.logoMedia.fileUrl)
+          : null,
         cover: toMediaSummary(project.coverMedia),
         buildingsCount: project._count.buildings,
         apartmentsCount: project._count.apartments,
@@ -290,6 +308,11 @@ export class AdminCompaniesService {
   async update(id: string, input: UpdateCompanyInput): Promise<CompanyResponse> {
     await this.getById(id);
     const logoMediaId = await resolveOptionalCompanyLogoMediaId(this.prisma, input.logoMediaId, id);
+    const coverMediaId = await resolveOptionalCompanyLogoMediaId(
+      this.prisma,
+      input.coverMediaId,
+      id,
+    );
     const profilePatch = buildCompanyProfilePatch(input);
     const company = await this.prisma.db.company.update({
       where: { id },
@@ -297,9 +320,10 @@ export class AdminCompaniesService {
         ...(input.name !== undefined ? { name: input.name.trim() } : {}),
         ...(input.status !== undefined ? { status: input.status } : {}),
         ...(logoMediaId !== undefined ? { logoMediaId } : {}),
+        ...(coverMediaId !== undefined ? { coverMediaId } : {}),
         ...profilePatch,
       },
-      include: { logoMedia: { select: { id: true, fileUrl: true } } },
+      include: COMPANY_MEDIA_INCLUDE,
     });
     return toCompanyResponse(company);
   }

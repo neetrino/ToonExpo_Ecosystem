@@ -7,16 +7,25 @@ import type {
 
 import { toPublicFileUrl } from '../../media/public-file-url.js';
 
+/** Prisma include so admin company responses resolve logo and card cover URLs. */
+export const COMPANY_MEDIA_INCLUDE = {
+  logoMedia: { select: { id: true, fileUrl: true } },
+  coverMedia: { select: { id: true, fileUrl: true } },
+} as const;
+
 type CompanyRecord = {
   id: string;
   name: string;
   description: string | null;
+  shortDescription: string | null;
   type: CompanyType;
   status: CompanyStatus;
   source: CompanySource;
   bosCompanyId: string | null;
   logoMediaId?: string | null;
   logoMedia?: { id: string; fileUrl: string } | null;
+  coverMediaId?: string | null;
+  coverMedia?: { id: string; fileUrl: string } | null;
   phone: string | null;
   contactPerson: string | null;
   email: string | null;
@@ -38,12 +47,15 @@ export const toCompanyResponse = (company: CompanyRecord): CompanyResponse => ({
   id: company.id,
   name: company.name,
   description: company.description,
+  shortDescription: company.shortDescription,
   type: company.type,
   status: company.status,
   source: company.source,
   bosCompanyId: company.bosCompanyId,
   logoMediaId: company.logoMediaId ?? company.logoMedia?.id ?? null,
   logoUrl: company.logoMedia ? toPublicFileUrl(company.logoMedia.fileUrl) : null,
+  coverMediaId: company.coverMediaId ?? company.coverMedia?.id ?? null,
+  coverUrl: company.coverMedia ? toPublicFileUrl(company.coverMedia.fileUrl) : null,
   phone: company.phone,
   contactPerson: company.contactPerson,
   email: company.email,
@@ -70,6 +82,7 @@ type NullableStringPatch = {
   mediaMaterialsUrl?: string | null;
   advertisingMaterialsUrl?: string | null;
   description?: string | null;
+  shortDescription?: string | null;
 };
 
 /**
@@ -87,6 +100,7 @@ export const buildCompanyProfilePatch = (
   };
 
   assign('description', input.description);
+  assign('shortDescription', input.shortDescription);
   assign('phone', input.phone);
   assign('contactPerson', input.contactPerson);
   assign('email', input.email);

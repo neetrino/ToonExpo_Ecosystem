@@ -13,6 +13,8 @@ import { useSetAdminProjectFeaturedOnHomeMutation } from '@/features/admin/hooks
 import { ProjectQrDialog } from '@/features/builder/components/project-qr-dialog';
 import { HOME_FEATURED_PROJECT_LIMIT } from '@/features/catalog/constants/home-featured';
 import { Link } from '@/i18n/navigation';
+import { resolvePublicAssetUrl } from '@/shared/lib/static-asset-url';
+import { AdminListCardLogo } from '@/shared/ui/admin-list-card-logo';
 import { cn } from '@/shared/ui/cn';
 import { IconButton } from '@/shared/ui/icon-button';
 import { LIST_CARD_LIFT_CLASS } from '@/shared/ui/motion';
@@ -155,7 +157,6 @@ export const AdminProjectCard = ({ project, onOpenBuildings }: AdminProjectCardP
   const [qrOpen, setQrOpen] = useState(false);
   const featuredMutation = useSetAdminProjectFeaturedOnHomeMutation();
   const openBuildingsLabel = t('openBuildings', { name: project.name });
-  const companyInitials = project.companyName.trim().slice(0, 2).toUpperCase() || '—';
 
   return (
     <>
@@ -170,9 +171,12 @@ export const AdminProjectCard = ({ project, onOpenBuildings }: AdminProjectCardP
         <header className="flex flex-col gap-2">
           <div className="flex items-start justify-between gap-2">
             <div className="flex min-w-0 items-center gap-2.5">
-              <div className="relative flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-full bg-surface ring-1 ring-border">
-                <span className="text-[10px] font-semibold text-ink-muted">{companyInitials}</span>
-              </div>
+              <AdminListCardLogo
+                name={project.companyName}
+                logoUrl={resolvePublicAssetUrl(project.companyLogoUrl)}
+                shape="circle"
+                className="size-9"
+              />
               <p className="min-w-0 truncate text-sm font-medium text-ink-secondary">
                 {project.companyName}
               </p>

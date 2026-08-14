@@ -30,33 +30,71 @@ export const isProjectCatalogTextareaKey = (
 ): key is ProjectCatalogTextareaKey =>
   (PROJECT_CATALOG_TEXTAREA_KEYS as readonly string[]).includes(key);
 
+export const PROJECT_CATALOG_DATE_KEYS = [
+  'constructionStart',
+  'constructionEnd',
+] as const satisfies ReadonlyArray<keyof ProjectCatalogDetails>;
+
+export const isProjectCatalogDateKey = (key: keyof ProjectCatalogDetails): boolean =>
+  (PROJECT_CATALOG_DATE_KEYS as readonly string[]).includes(key);
+
+/** Compact Details fields that must share a row. */
+export const PROJECT_CATALOG_DETAILS_PAIRS = [
+  ['constructionStart', 'constructionEnd'],
+  ['elevator', 'elevatorsCount'],
+  ['permitNumber', 'constructionType'],
+] as const satisfies ReadonlyArray<
+  readonly [keyof ProjectCatalogDetails, keyof ProjectCatalogDetails]
+>;
+
+const CATALOG_PAIR_FOLLOWER_BY_START: Partial<
+  Record<keyof ProjectCatalogDetails, keyof ProjectCatalogDetails>
+> = Object.fromEntries(PROJECT_CATALOG_DETAILS_PAIRS);
+
+const CATALOG_PAIR_FOLLOWERS = new Set<string>(
+  PROJECT_CATALOG_DETAILS_PAIRS.map((pair) => pair[1]),
+);
+
+export const catalogPairFollower = (
+  key: keyof ProjectCatalogDetails,
+): keyof ProjectCatalogDetails | null => CATALOG_PAIR_FOLLOWER_BY_START[key] ?? null;
+
+export const isCatalogPairFollower = (key: keyof ProjectCatalogDetails): boolean =>
+  CATALOG_PAIR_FOLLOWERS.has(key);
+
 /**
- * Overview card on the public page (first six compact stats).
+ * Overview card on the public page (compact stats).
  * Kept explicit so Admin mirrors Home layout.
  */
 export const PROJECT_CATALOG_OVERVIEW_KEYS = [
   'propertyType',
-  'country',
   'city',
   'address',
   'constructionStatus',
   'bedroomsCount',
 ] as const satisfies ReadonlyArray<keyof ProjectCatalogDetails>;
 
+/** Floor so empty overview columns still keep a usable tap target. */
+export const OVERVIEW_COL_MIN_WEIGHT = 6;
+
+export const overviewColumnWeight = (value: string): number =>
+  Math.max(OVERVIEW_COL_MIN_WEIGHT, value.trim().length);
+
+export const overviewGridTemplateColumns = (weights: readonly number[]): string =>
+  weights.map((weight) => `minmax(0,${weight}fr)`).join(' ');
+
 /** Remaining non-finance fields → Details card. */
 export const PROJECT_CATALOG_DETAILS_KEYS = [
   'slogan',
+  'country',
   'zipCode',
-  'brandName',
-  'designer',
-  'contractor',
-  'permitNumber',
   'constructionStart',
   'constructionEnd',
   'parkingAvailable',
   'storageAvailable',
   'elevator',
   'elevatorsCount',
+  'permitNumber',
   'constructionType',
   'facadeMaterials',
   'thermalSoundInsulation',
@@ -93,7 +131,6 @@ export const PROJECT_CATALOG_DETAILS_KEYS = [
   'pricePerSqmMax',
   'unitPriceMin',
   'unitPriceMax',
-  'managementFee',
 ] as const satisfies ReadonlyArray<keyof ProjectCatalogDetails>;
 
 export const PROJECT_CATALOG_FINANCE_KEYS = [

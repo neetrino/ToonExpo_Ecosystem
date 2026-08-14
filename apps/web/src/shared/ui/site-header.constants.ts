@@ -8,8 +8,22 @@ export const BURGER_MENU_MS = 380;
 export const BURGER_BACKDROP_MS = 320;
 /** Inward nudge of logo / actions once the pill is visible. */
 export const PILL_CONTENT_INSET_PX = 22;
+/** Armenian: logo and edge icons sit closer to the pill sides. */
+export const PILL_CONTENT_INSET_HY_PX = 10;
 /** How far the pill pulls in from page-container edges. */
 export const PILL_EDGE_INSET_CLASS = 'left-4 right-4 sm:left-5 sm:right-5 lg:left-6 lg:right-6';
+/** Slightly wider pill for Armenian nav copy. */
+export const PILL_EDGE_INSET_HY_CLASS = 'left-2 right-2 sm:left-3 sm:right-3 lg:left-3 lg:right-3';
+
+const ARMENIAN_LOCALE = 'hy';
+
+export const resolveHeaderPillLayout = (
+  locale: string,
+): { edgeInsetClass: string; contentInsetPx: number } =>
+  locale === ARMENIAN_LOCALE
+    ? { edgeInsetClass: PILL_EDGE_INSET_HY_CLASS, contentInsetPx: PILL_CONTENT_INSET_HY_PX }
+    : { edgeInsetClass: PILL_EDGE_INSET_CLASS, contentInsetPx: PILL_CONTENT_INSET_PX };
+
 /** Float gap above the pill — keeps pill height = navbar (h-16). */
 export const PILL_TOP_OFFSET_CLASS = 'top-2';
 export const HEADER_HEIGHT_CLASS = 'h-16';

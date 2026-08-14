@@ -5,9 +5,9 @@ export const SUPPORTED_LOCALES = ['hy', 'ru', 'en'] as const;
 
 /**
  * Locale code used when no preference is available (UI shell).
- * English is the platform default for first open / unprefixed redirects.
+ * Armenian is the platform default for first open / unprefixed redirects.
  */
-export const DEFAULT_LOCALE = 'en' as const;
+export const DEFAULT_LOCALE = 'hy' as const;
 
 /**
  * Catalog content canonical locale (Armenian primary text store).

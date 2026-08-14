@@ -95,7 +95,7 @@ const SideSheetPanel = ({
 
   return (
     <div
-      className={cn('fixed inset-x-0 top-0 h-fluid-screen', visible ? '' : 'pointer-events-none')}
+      className={cn('fixed inset-x-0 top-0 h-overlay-screen', visible ? '' : 'pointer-events-none')}
       style={{ zIndex }}
       aria-hidden={!visible}
       role="presentation"
@@ -121,7 +121,7 @@ const SideSheetPanel = ({
       <div
         ref={panelRef}
         className={cn(
-          'absolute top-0 right-0 h-fluid-screen max-h-fluid-screen',
+          'absolute top-0 right-0 h-overlay-screen max-h-overlay-screen',
           'w-[var(--side-sheet-mobile-width)]',
           isFixedMax
             ? 'md:w-full md:max-w-[var(--side-sheet-compact-max)]'
@@ -176,7 +176,7 @@ const SideSheetPanel = ({
           <div
             ref={scrollRef}
             className={cn(
-              'min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-4',
+              'min-h-0 flex-1 overflow-y-auto overflow-anchor-none overscroll-contain px-5 py-4',
               MOBILE_BOTTOM_NAV_SHEET_PB_CLASS,
             )}
           >

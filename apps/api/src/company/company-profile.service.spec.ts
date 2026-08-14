@@ -20,6 +20,7 @@ describe("CompanyProfileService logo updates", () => {
     id: "co_1",
     name: "Builder",
     description: null,
+    shortDescription: null,
     type: "builder" as const,
     status: "active" as const,
     logoMediaId: null,

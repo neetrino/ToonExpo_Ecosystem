@@ -130,62 +130,53 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
                 )}
               />
             </FormField>
-            <FormField id={`location-${locale}`} label={t('form.locationText')}>
-              <Input
-                id={`location-${locale}`}
-                {...register(
-                  locale === 'hy'
-                    ? 'locationTextHy'
-                    : locale === 'ru'
-                      ? 'locationTextRu'
-                      : 'locationTextEn',
-                )}
-              />
-            </FormField>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <FormField id={`slug-${locale}`} label={t('form.slug')}>
+                <Input id={`slug-${locale}`} {...register('slug')} />
+              </FormField>
+              <FormField id={`location-${locale}`} label={t('form.locationText')}>
+                <Input
+                  id={`location-${locale}`}
+                  {...register(
+                    locale === 'hy'
+                      ? 'locationTextHy'
+                      : locale === 'ru'
+                        ? 'locationTextRu'
+                        : 'locationTextEn',
+                  )}
+                />
+              </FormField>
+              <FormField id={`district-${locale}`} label={t('form.district')}>
+                <Input id={`district-${locale}`} {...register('district')} />
+              </FormField>
+            </div>
           </div>
         )}
       </TranslationTabs>
 
       <fieldset className="flex flex-col gap-4">
         <legend className="text-sm font-semibold text-ink">{t('form.detailsSection')}</legend>
-        <FormField id="slug" label={t('form.slug')}>
-          <Input id="slug" {...register('slug')} />
-        </FormField>
-        <FormField id="address" label={t('form.address')}>
-          <Input id="address" {...register('address')} />
-        </FormField>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <FormField id="city" label={t('form.city')}>
-            <Input id="city" {...register('city')} />
-          </FormField>
-          <FormField id="district" label={t('form.district')}>
-            <Input id="district" {...register('district')} />
-          </FormField>
-        </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <FormField id="projectType" label={t('form.projectType')}>
             <Input id="projectType" {...register('projectType')} />
           </FormField>
-          <FormField id="constructionStatus" label={t('form.constructionStatus')}>
-            <Input id="constructionStatus" {...register('constructionStatus')} />
+          <FormField id="completionDate" label={t('form.completionDate')}>
+            <Controller
+              name="completionDate"
+              control={control}
+              render={({ field }) => (
+                <DatePicker
+                  id="completionDate"
+                  name={field.name}
+                  value={field.value ?? ''}
+                  aria-label={t('form.completionDate')}
+                  onBlur={field.onBlur}
+                  onChange={field.onChange}
+                />
+              )}
+            />
           </FormField>
         </div>
-        <FormField id="completionDate" label={t('form.completionDate')}>
-          <Controller
-            name="completionDate"
-            control={control}
-            render={({ field }) => (
-              <DatePicker
-                id="completionDate"
-                name={field.name}
-                value={field.value ?? ''}
-                aria-label={t('form.completionDate')}
-                onBlur={field.onBlur}
-                onChange={field.onChange}
-              />
-            )}
-          />
-        </FormField>
       </fieldset>
 
       <Controller

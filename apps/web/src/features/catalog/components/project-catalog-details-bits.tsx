@@ -66,7 +66,6 @@ export const PROJECT_CATALOG_CRITERION_ICON: Record<ProjectCatalogCriterionId, L
   areaRange: Ruler,
   unitPriceRange: Banknote,
   parkingPrice: ParkingCircle,
-  managementFee: Banknote,
   parkingAvailable: Car,
   storageAvailable: Warehouse,
   elevator: ArrowUpFromLine,
@@ -127,29 +126,67 @@ export const ProjectCatalogOverviewStat = ({ row }: { row: ProjectCatalogRow }) 
   );
 };
 
-export const ProjectCatalogDetailsList = ({ rows }: { rows: ProjectCatalogRow[] }) => (
-  <dl className="grid grid-cols-1 gap-x-10 sm:grid-cols-2">
-    {rows.map((row) => (
-      <div
-        key={row.id}
+const DETAIL_ROW_PAIR: Partial<Record<ProjectCatalogCriterionId, ProjectCatalogCriterionId>> = {
+  constructionStart: 'constructionEnd',
+  elevator: 'elevatorsCount',
+  permitNumber: 'constructionType',
+};
+
+const ProjectCatalogDetailRow = ({ row }: { row: ProjectCatalogRow }) => {
+  const Icon = PROJECT_CATALOG_CRITERION_ICON[row.id];
+  return (
+    <div
+      className={cn(
+        'flex items-baseline justify-between gap-4 border-b border-header-border py-3',
+        row.wide && 'sm:col-span-2 sm:flex-col sm:items-stretch sm:gap-1',
+      )}
+    >
+      <dt className="flex shrink-0 items-start gap-2 text-sm text-ink-muted">
+        <Icon className="mt-0.5 size-4 shrink-0 text-brand" strokeWidth={1.75} aria-hidden />
+        {row.label}
+      </dt>
+      <dd
         className={cn(
-          'flex items-baseline justify-between gap-4 border-b border-header-border py-3',
-          row.wide && 'sm:col-span-2 sm:flex-col sm:items-stretch sm:gap-1',
+          'min-w-0 text-sm font-semibold whitespace-pre-line text-ink-navy',
+          row.wide ? 'text-left' : 'text-right',
         )}
       >
-        <dt className="shrink-0 text-sm text-ink-muted">{row.label}</dt>
-        <dd
-          className={cn(
-            'min-w-0 text-sm font-semibold whitespace-pre-line text-ink-navy',
-            row.wide ? 'text-left' : 'text-right',
-          )}
-        >
-          {row.value}
-        </dd>
-      </div>
-    ))}
-  </dl>
-);
+        {row.value}
+      </dd>
+    </div>
+  );
+};
+
+export const ProjectCatalogDetailsList = ({ rows }: { rows: ProjectCatalogRow[] }) => {
+  const byId = new Map(rows.map((row) => [row.id, row]));
+  const rendered = new Set<string>();
+
+  return (
+    <dl className="grid grid-cols-1 gap-x-10 sm:grid-cols-2">
+      {rows.map((row) => {
+        if (rendered.has(row.id)) {
+          return null;
+        }
+        const partnerId = DETAIL_ROW_PAIR[row.id];
+        const partner = partnerId ? byId.get(partnerId) : undefined;
+        rendered.add(row.id);
+        if (partner) {
+          rendered.add(partner.id);
+          return (
+            <div
+              key={`pair-${row.id}`}
+              className="grid grid-cols-1 gap-x-10 sm:col-span-2 sm:grid-cols-2"
+            >
+              <ProjectCatalogDetailRow row={row} />
+              <ProjectCatalogDetailRow row={partner} />
+            </div>
+          );
+        }
+        return <ProjectCatalogDetailRow key={row.id} row={row} />;
+      })}
+    </dl>
+  );
+};
 
 export const ProjectCatalogCheckList = ({ items }: { items: string[] }) => (
   <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">

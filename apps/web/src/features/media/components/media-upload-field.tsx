@@ -10,11 +10,13 @@ import {
   uploadMediaAsset,
   type MediaUploadContext,
 } from '@/features/media/api/media-api';
+import { MediaLibraryPanel } from '@/features/media/components/media-library-panel';
 import { isAllowedMediaMimeType, MEDIA_UPLOAD_MAX_BYTES } from '@/features/media/constants';
 import { ApiError } from '@/shared/api/errors';
 import { AdminDeleteModal } from '@/shared/ui/admin-delete-modal';
 import { Button } from '@/shared/ui/button';
 import { cn } from '@/shared/ui/cn';
+import { Dialog } from '@/shared/ui/dialog';
 import { IconButton } from '@/shared/ui/icon-button';
 
 /**
@@ -22,7 +24,7 @@ import { IconButton } from '@/shared/ui/icon-button';
  * the parent sheet scroll (CSS zoom + flex min-height:auto leak).
  */
 const MEDIA_PREVIEW_FRAME_CLASS =
-  'relative mb-3 h-40 w-full overflow-hidden rounded-sm border border-border bg-surface [contain:strict]';
+  'relative mt-3 block h-40 w-full cursor-pointer overflow-hidden rounded-sm border border-border bg-surface [contain:strict]';
 const MEDIA_PREVIEW_IMAGE_CLASS = 'absolute inset-0 size-full object-contain';
 
 export type MediaUploadFieldProps = {
@@ -170,36 +172,31 @@ export const MediaUploadField = ({
           busy && 'opacity-70',
         )}
       >
-        {thumbnailUrl ? (
-          <div className={MEDIA_PREVIEW_FRAME_CLASS}>
-            <img src={thumbnailUrl} alt="" className={MEDIA_PREVIEW_IMAGE_CLASS} />
-          </div>
-        ) : null}
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-nowrap items-center gap-2">
           <label
-            htmlFor={inputId}
-            className="inline-flex cursor-pointer items-center rounded-sm border border-border px-3 py-2 text-sm font-medium text-ink hover:bg-surface-muted"
+            className="relative inline-flex shrink-0 cursor-pointer items-center overflow-hidden rounded-sm border border-border px-3 py-2 text-sm font-medium whitespace-nowrap text-ink hover:bg-surface-muted"
           >
             {busy ? t('uploading') : thumbnailUrl ? t('replace') : t('browse')}
+            <input
+              id={inputId}
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/avif"
+              className="absolute inset-0 cursor-pointer opacity-0"
+              disabled={busy}
+              onChange={(event) => {
+                const file = event.target.files?.[0];
+                event.target.value = '';
+                if (file) {
+                  void handleUpload(file);
+                }
+              }}
+            />
           </label>
-          <input
-            id={inputId}
-            type="file"
-            accept="image/jpeg,image/png,image/webp,image/avif"
-            className="sr-only"
-            disabled={busy}
-            onChange={(event) => {
-              const file = event.target.files?.[0];
-              event.target.value = '';
-              if (file) {
-                void handleUpload(file);
-              }
-            }}
-          />
           <Button
             type="button"
             size="sm"
             variant="ghost"
+            className="shrink-0 whitespace-nowrap"
             disabled={busy}
             onClick={() => {
               void openLibrary();
@@ -208,11 +205,28 @@ export const MediaUploadField = ({
             {t('useExisting')}
           </Button>
         </div>
+        {thumbnailUrl ? (
+          <label htmlFor={inputId} className={MEDIA_PREVIEW_FRAME_CLASS}>
+            <img src={thumbnailUrl} alt="" className={MEDIA_PREVIEW_IMAGE_CLASS} />
+            <span className="sr-only">{t('replace')}</span>
+          </label>
+        ) : null}
         {description ? <p className="mt-2 text-xs text-ink-muted">{description}</p> : null}
         <p className="mt-2 text-xs text-ink-muted">{t('hint')}</p>
       </div>
-      {showLibrary ? (
-        <LibraryPanel
+      {displayError ? (
+        <p id={`${id}-error`} role="alert" className="text-sm text-danger">
+          {displayError}
+        </p>
+      ) : null}
+
+      <Dialog
+        open={showLibrary}
+        onClose={() => setShowLibrary(false)}
+        title={t('libraryTitle')}
+        className="max-w-lg"
+      >
+        <MediaLibraryPanel
           items={libraryItems}
           selectedId={value}
           loading={libraryLoading}
@@ -226,14 +240,8 @@ export const MediaUploadField = ({
           onLoadMore={() => {
             void loadLibrary(libraryPage + 1, true);
           }}
-          onClose={() => setShowLibrary(false)}
         />
-      ) : null}
-      {displayError ? (
-        <p id={`${id}-error`} role="alert" className="text-sm text-danger">
-          {displayError}
-        </p>
-      ) : null}
+      </Dialog>
 
       <AdminDeleteModal
         open={confirmClearOpen}
@@ -246,74 +254,6 @@ export const MediaUploadField = ({
         }}
         onConfirm={clearSelection}
       />
-    </div>
-  );
-};
-
-type LibraryPanelProps = {
-  items: MediaAssetItem[];
-  selectedId: string;
-  loading: boolean;
-  canLoadMore: boolean;
-  onSelect: (asset: MediaAssetItem) => void;
-  onLoadMore: () => void;
-  onClose: () => void;
-};
-
-const LibraryPanel = ({
-  items,
-  selectedId,
-  loading,
-  canLoadMore,
-  onSelect,
-  onLoadMore,
-  onClose,
-}: LibraryPanelProps) => {
-  const t = useTranslations('Media.upload');
-
-  return (
-    <div className="rounded-sm border border-border p-3">
-      <div className="mb-3 flex items-center justify-between gap-2">
-        <h3 className="text-sm font-semibold text-ink">{t('libraryTitle')}</h3>
-        <Button type="button" size="sm" variant="ghost" onClick={onClose}>
-          {t('closeLibrary')}
-        </Button>
-      </div>
-      {items.length === 0 && !loading ? (
-        <p className="text-sm text-ink-secondary">{t('emptyLibrary')}</p>
-      ) : (
-        <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
-          {items.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              className={cn(
-                'aspect-square overflow-hidden rounded-sm border border-border',
-                selectedId === item.id && 'ring-2 ring-brand',
-              )}
-              onClick={() => onSelect(item)}
-            >
-              <img
-                src={item.fileUrl}
-                alt={item.title ?? ''}
-                className="size-full object-cover"
-              />
-            </button>
-          ))}
-        </div>
-      )}
-      {canLoadMore ? (
-        <Button
-          type="button"
-          size="sm"
-          variant="ghost"
-          className="mt-3"
-          disabled={loading}
-          onClick={onLoadMore}
-        >
-          {loading ? t('loadingLibrary') : t('loadMore')}
-        </Button>
-      ) : null}
     </div>
   );
 };

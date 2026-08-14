@@ -11,10 +11,10 @@ import type { CatalogViewerContext } from './projects.service.js';
 import { loadTranslations } from './utils/load-translations.js';
 import {
   resolveCatalogLocale,
+  resolveCompanyDisplayDescription,
   resolveCompanyDisplayName,
-  resolveTranslatedValue,
+  resolveCompanyDisplayShortDescription,
   TRANSLATION_ENTITY,
-  TRANSLATION_FIELD,
 } from './utils/resolve-translation.js';
 
 @Injectable()
@@ -34,6 +34,7 @@ export class BuildersService {
       orderBy: { name: 'asc' },
       include: {
         logoMedia: true,
+        coverMedia: true,
         _count: {
           select: {
             projects: {
@@ -63,6 +64,7 @@ export class BuildersService {
       },
       include: {
         logoMedia: true,
+        coverMedia: true,
         _count: {
           select: {
             projects: {
@@ -132,7 +134,9 @@ export class BuildersService {
       id: string;
       name: string;
       description: string | null;
+      shortDescription: string | null;
       logoMedia: { fileUrl: string } | null;
+      coverMedia?: { fileUrl: string } | null;
       phone: string | null;
       contactPerson: string | null;
       email: string | null;
@@ -153,15 +157,20 @@ export class BuildersService {
     return {
       id: builder.id,
       name,
-      description: resolveTranslatedValue(
+      description: resolveCompanyDisplayDescription(
         translations,
-        TRANSLATION_ENTITY.company,
         builder.id,
-        TRANSLATION_FIELD.description,
         locale,
         builder.description,
       ),
+      shortDescription: resolveCompanyDisplayShortDescription(
+        translations,
+        builder.id,
+        locale,
+        builder.shortDescription,
+      ),
       logoUrl: builder.logoMedia ? toPublicFileUrl(builder.logoMedia.fileUrl) : null,
+      coverUrl: builder.coverMedia ? toPublicFileUrl(builder.coverMedia.fileUrl) : null,
       publishedProjectCount: builder._count.projects,
       phone: builder.phone,
       contactPerson: builder.contactPerson,

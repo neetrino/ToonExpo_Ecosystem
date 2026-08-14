@@ -21,7 +21,7 @@ import { AdminCreateSheet } from '@/shared/ui/admin-create-sheet';
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
-import { Select } from '@/shared/ui/select';
+import { ListboxSelect } from '@/shared/ui/listbox-select';
 
 type AdminCreateApartmentSheetProps = {
   open: boolean;
@@ -131,65 +131,66 @@ export const AdminCreateApartmentSheet = ({
     <AdminCreateSheet open={open} onClose={onClose} title={t('title')} size="comfortable">
       <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
         <FormField id="create-apt-company" label={t('company')}>
-          <Select
+          <ListboxSelect
             id="create-apt-company"
+            variant="field"
+            searchable
             value={companyId}
-            onChange={(event) => {
-              setCompanyId(event.target.value);
+            options={builderCompanies.map((company) => ({
+              value: company.id,
+              label: company.name,
+            }))}
+            placeholder={t('searchCompany')}
+            emptyLabel={t('noCompanyMatches')}
+            aria-label={t('company')}
+            onChange={(next) => {
+              setCompanyId(next);
               setBuildingId('');
               setFloorId('');
             }}
-          >
-            <option value="">{t('selectCompany')}</option>
-            {builderCompanies.map((company) => (
-              <option key={company.id} value={company.id}>
-                {company.name}
-              </option>
-            ))}
-          </Select>
+          />
         </FormField>
 
         <FormField id="create-apt-building" label={t('building')}>
-          <Select
+          <ListboxSelect
             id="create-apt-building"
+            variant="field"
+            searchable
             value={buildingId}
             disabled={!companyId || buildingsQuery.isLoading}
-            onChange={(event) => {
-              setBuildingId(event.target.value);
+            options={buildingOptions.map((building) => ({
+              value: building.id,
+              label: `${building.name} · ${building.projectName}`,
+            }))}
+            placeholder={t('searchBuilding')}
+            emptyLabel={t('noBuildingMatches')}
+            aria-label={t('building')}
+            onChange={(next) => {
+              setBuildingId(next);
               setFloorId('');
             }}
-          >
-            <option value="">{t('selectBuilding')}</option>
-            {buildingOptions.map((building) => (
-              <option key={building.id} value={building.id}>
-                {building.name} · {building.projectName}
-              </option>
-            ))}
-          </Select>
+          />
         </FormField>
 
         <FormField id="create-apt-floor" label={t('floor')}>
-          <Select
+          <ListboxSelect
             id="create-apt-floor"
+            variant="field"
+            searchable
             value={floorId}
             disabled={!buildingId || floorsQuery.isLoading}
-            onChange={(event) => {
-              setFloorId(event.target.value);
-            }}
-          >
-            <option value="">{t('selectFloor')}</option>
-            {(floorsQuery.data ?? []).map((floor) => {
-              const label =
+            options={(floorsQuery.data ?? []).map((floor) => ({
+              value: floor.id,
+              label:
                 floor.displayLabel?.trim() ||
                 floor.name?.trim() ||
-                inventoryT('floorLabel', { number: floor.number });
-              return (
-                <option key={floor.id} value={floor.id}>
-                  {label}
-                </option>
-              );
-            })}
-          </Select>
+                inventoryT('floorLabel', { number: floor.number }),
+            }))}
+            placeholder={t('searchFloor')}
+            emptyLabel={t('noFloorMatches')}
+            aria-label={t('floor')}
+            onChange={setFloorId}
+          />
         </FormField>
 
         <div className="grid gap-3 sm:grid-cols-2">

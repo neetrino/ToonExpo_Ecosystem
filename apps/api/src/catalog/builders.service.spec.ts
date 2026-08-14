@@ -40,7 +40,9 @@ describe("BuildersService", () => {
       id: "builder_1",
       name: "Glendale",
       description: "Builder desc",
+      shortDescription: null,
       logoMedia: null,
+      coverMedia: null,
       phone: null,
       contactPerson: null,
       email: null,
@@ -72,7 +74,9 @@ describe("BuildersService", () => {
       id: "builder_1",
       name: "Neetrinoo",
       description: null,
+      shortDescription: null,
       logoMedia: { fileUrl: "/demo/builder-cascade.webp" },
+      coverMedia: { fileUrl: "/demo/building-a.webp" },
       phone: null,
       contactPerson: null,
       email: null,
@@ -95,6 +99,7 @@ describe("BuildersService", () => {
 
     expect(result.name).toBe("Neetrinoo");
     expect(result.logoUrl).toBe("https://cdn.example.com/demo/builder-cascade.webp");
+    expect(result.coverUrl).toBe("https://cdn.example.com/demo/building-a.webp");
   });
 
   it("throws when builder is missing", async () => {

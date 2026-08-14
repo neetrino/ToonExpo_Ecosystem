@@ -1,7 +1,6 @@
 'use client';
 
 import { Building2 } from 'lucide-react';
-import Image from 'next/image';
 import type { ReactNode } from 'react';
 
 import { ReadinessProgressRing } from '@/features/readiness/components/readiness-progress-ring';
@@ -19,7 +18,7 @@ const CARD_RADIUS_CLASS = 'rounded-[24px]';
 const MEDIA_RADIUS_CLASS = 'rounded-[16px]';
 const MEDIA_ASPECT_CLASS = 'aspect-[16/10]';
 const OVERALL_RING_SIZE_CLASS = 'size-14';
-const LOGO_SIZE_PX = 32;
+const MEDIA_IMG_CLASS = 'absolute inset-0 size-full object-cover';
 
 export type ReadinessKpiCategoryRow = {
   id: string;
@@ -70,7 +69,7 @@ const KpiCardHeader = ({
     <div className="flex min-w-0 items-center gap-2">
       <div className="relative size-8 shrink-0 overflow-hidden rounded-full bg-surface ring-1 ring-border">
         {logoUrl ? (
-          <Image src={logoUrl} alt="" fill className="object-cover" sizes={`${LOGO_SIZE_PX}px`} />
+          <img src={logoUrl} alt="" className={MEDIA_IMG_CLASS} />
         ) : (
           <span className="absolute inset-0 flex items-center justify-center text-[10px] font-semibold text-ink-muted">
             {initials}
@@ -98,13 +97,7 @@ const KpiCardCover = ({ mediaUrl, title }: KpiCardCoverProps) => (
     )}
   >
     {mediaUrl ? (
-      <Image
-        src={mediaUrl}
-        alt=""
-        fill
-        className="object-cover"
-        sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 25vw"
-      />
+      <img src={mediaUrl} alt="" className={MEDIA_IMG_CLASS} />
     ) : (
       <span className="flex size-full flex-col items-center justify-center gap-1.5 text-ink-muted">
         <Building2 className="size-8 opacity-40" aria-hidden />

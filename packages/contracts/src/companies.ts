@@ -22,12 +22,15 @@ export type CompanyResponse = {
   id: string;
   name: string;
   description: string | null;
+  shortDescription: string | null;
   type: CompanyType;
   status: CompanyStatus;
   source: CompanySource;
   bosCompanyId: string | null;
   logoMediaId: string | null;
   logoUrl: string | null;
+  coverMediaId: string | null;
+  coverUrl: string | null;
   phone: string | null;
   contactPerson: string | null;
   email: string | null;
@@ -49,6 +52,7 @@ export type CompanyProfileResponse = {
   id: string;
   name: string;
   description: string | null;
+  shortDescription: string | null;
   type: CompanyType;
   status: CompanyStatus;
   logoMediaId: string | null;
@@ -73,10 +77,11 @@ export type CreateCompanyRequest = {
   name: string;
   type: CompanyType;
   description?: string;
+  shortDescription?: string;
   adminName: string;
   adminEmail: string;
   adminPhone?: string;
-  /** Locale segment in the set-password link; defaults to platform DEFAULT_LOCALE (`en`). */
+  /** Locale segment in the set-password link; defaults to platform DEFAULT_LOCALE (`hy`). */
   locale?: string;
 };
 
@@ -86,8 +91,10 @@ export type CreateCompanyRequest = {
 export type UpdateCompanyRequest = {
   name?: string;
   description?: string | null;
+  shortDescription?: string | null;
   status?: CompanyStatus;
   logoMediaId?: string | null;
+  coverMediaId?: string | null;
   phone?: string | null;
   contactPerson?: string | null;
   email?: string | null;
@@ -105,6 +112,7 @@ export type UpdateCompanyRequest = {
  */
 export type UpdateCompanyProfileRequest = {
   description?: string | null;
+  shortDescription?: string | null;
   logoMediaId?: string | null;
   phone?: string | null;
   contactPerson?: string | null;
@@ -196,6 +204,8 @@ export type AdminProjectListItem = {
   city: string | null;
   builderCompanyId: string;
   companyName: string;
+  /** Builder company logo; initials shown when null. */
+  companyLogoUrl: string | null;
   /** Project cover only (no building fallback). */
   cover: MediaAssetSummary | null;
   buildingsCount: number;

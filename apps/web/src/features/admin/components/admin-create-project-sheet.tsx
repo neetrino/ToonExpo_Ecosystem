@@ -14,7 +14,7 @@ import { CreateProjectForm } from '@/features/builder/components/create-project-
 import { useRouter } from '@/i18n/navigation';
 import { AdminCreateSheet } from '@/shared/ui/admin-create-sheet';
 import { FormField } from '@/shared/ui/form-field';
-import { Select } from '@/shared/ui/select';
+import { ListboxSelect } from '@/shared/ui/listbox-select';
 
 type AdminCreateProjectSheetProps = {
   open: boolean;
@@ -62,20 +62,20 @@ export const AdminCreateProjectSheet = ({
     >
       <div className="flex flex-col gap-4">
         <FormField id="create-project-company" label={t('company')}>
-          <Select
+          <ListboxSelect
             id="create-project-company"
+            variant="field"
+            searchable
             value={companyId}
-            onChange={(event) => {
-              setCompanyId(event.target.value);
-            }}
-          >
-            <option value="">{t('selectCompany')}</option>
-            {builderCompanies.map((company) => (
-              <option key={company.id} value={company.id}>
-                {company.name}
-              </option>
-            ))}
-          </Select>
+            options={builderCompanies.map((company) => ({
+              value: company.id,
+              label: company.name,
+            }))}
+            placeholder={t('searchCompany')}
+            emptyLabel={t('noCompanyMatches')}
+            aria-label={t('company')}
+            onChange={setCompanyId}
+          />
         </FormField>
 
         {companyId ? (

@@ -52,6 +52,7 @@ model MediaAsset {
 
   ownerCompany   Company?   @relation("MediaOwnerCompany", fields: [ownerCompanyId], references: [id], onDelete: SetNull)
   companyLogos      Company[]       @relation("CompanyLogo")
+  companyCovers     Company[]       @relation("CompanyCover")
   projectCovers     Project[]       @relation("ProjectCover")
   buildingCovers    Building[]      @relation("BuildingCover")
   floorPlans        Floor[]         @relation("FloorPlan")

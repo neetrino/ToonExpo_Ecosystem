@@ -48,6 +48,7 @@ export class AdminCompaniesController {
       adminName: body.adminName,
       adminEmail: body.adminEmail,
       ...(body.description !== undefined ? { description: body.description } : {}),
+      ...(body.shortDescription !== undefined ? { shortDescription: body.shortDescription } : {}),
       ...(body.adminPhone !== undefined ? { adminPhone: body.adminPhone } : {}),
       ...(body.locale !== undefined ? { locale: body.locale } : {}),
     });
@@ -88,8 +89,10 @@ export class AdminCompaniesController {
     return this.companiesService.update(id, {
       ...(body.name !== undefined ? { name: body.name } : {}),
       ...(body.description !== undefined ? { description: body.description } : {}),
+      ...(body.shortDescription !== undefined ? { shortDescription: body.shortDescription } : {}),
       ...(body.status !== undefined ? { status: body.status as CompanyStatus } : {}),
       ...(body.logoMediaId !== undefined ? { logoMediaId: body.logoMediaId } : {}),
+      ...(body.coverMediaId !== undefined ? { coverMediaId: body.coverMediaId } : {}),
       ...(body.phone !== undefined ? { phone: body.phone } : {}),
       ...(body.contactPerson !== undefined ? { contactPerson: body.contactPerson } : {}),
       ...(body.email !== undefined ? { email: body.email } : {}),

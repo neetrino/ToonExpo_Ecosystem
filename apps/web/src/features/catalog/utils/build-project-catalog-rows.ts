@@ -21,7 +21,6 @@ export type ProjectCatalogCriterionId =
   | 'areaRange'
   | 'unitPriceRange'
   | 'parkingPrice'
-  | 'managementFee'
   | 'parkingAvailable'
   | 'storageAvailable'
   | 'elevator'
@@ -77,7 +76,6 @@ export const PROJECT_CATALOG_FINANCE_CRITERION_IDS = [
   'pricePerSqm',
   'unitPriceRange',
   'parkingPrice',
-  'managementFee',
   'paymentTypes',
   'installmentTerms',
   'mortgageTerms',
@@ -172,28 +170,24 @@ export const buildProjectCatalogRows = (
     details.distanceExtra != null ? options.formatDistanceMeters(details.distanceExtra) : null;
 
   pushCard(rows, 'propertyType', labels.propertyType, details.propertyType);
-  pushCard(rows, 'country', labels.country, details.country);
   pushCard(rows, 'city', labels.city, details.city);
   pushCard(rows, 'address', labels.address, details.address);
   pushCard(rows, 'zipCode', labels.zipCode, details.zipCode);
+  pushCard(rows, 'country', labels.country, details.country);
   pushCard(rows, 'constructionStart', labels.constructionStart, details.constructionStart);
   pushCard(rows, 'constructionEnd', labels.constructionEnd, details.constructionEnd);
   pushCard(rows, 'constructionStatus', labels.constructionStatus, details.constructionStatus);
-  pushCard(rows, 'brandName', labels.brandName, details.brandName);
-  pushCard(rows, 'designer', labels.designer, details.designer);
-  pushCard(rows, 'contractor', labels.contractor, details.contractor);
-  pushCard(rows, 'permitNumber', labels.permitNumber, details.permitNumber);
   pushCard(rows, 'bedroomsCount', labels.bedroomsCount, details.bedroomsCount);
   pushCard(rows, 'partnerBank', labels.partnerBank, details.partnerBank);
   pushCard(rows, 'pricePerSqm', labels.pricePerSqm, pricePerSqm);
   pushCard(rows, 'areaRange', labels.areaRange, areaRange);
   pushCard(rows, 'unitPriceRange', labels.unitPriceRange, unitPrice);
   pushCard(rows, 'parkingPrice', labels.parkingPrice, details.parkingPrice);
-  pushCard(rows, 'managementFee', labels.managementFee, details.managementFee);
   pushCard(rows, 'parkingAvailable', labels.parkingAvailable, details.parkingAvailable);
   pushCard(rows, 'storageAvailable', labels.storageAvailable, details.storageAvailable);
   pushCard(rows, 'elevator', labels.elevator, details.elevator);
   pushCard(rows, 'elevatorsCount', labels.elevatorsCount, details.elevatorsCount);
+  pushCard(rows, 'permitNumber', labels.permitNumber, details.permitNumber);
   pushCard(rows, 'constructionType', labels.constructionType, details.constructionType);
   pushCard(rows, 'facadeMaterials', labels.facadeMaterials, details.facadeMaterials);
   pushCard(

@@ -120,6 +120,7 @@ export const ProjectCatalogEditor = ({ register, control }: ProjectCatalogEditor
               <ProjectCatalogOverviewEditor
                 keys={PROJECT_CATALOG_OVERVIEW_KEYS}
                 locale={locale}
+                control={control}
                 register={register}
               />
             </ProjectCatalogSectionCard>
@@ -129,6 +130,7 @@ export const ProjectCatalogEditor = ({ register, control }: ProjectCatalogEditor
                 sectionId="details"
                 keys={PROJECT_CATALOG_DETAILS_KEYS}
                 locale={locale}
+                control={control}
                 register={register}
               />
             </ProjectCatalogSectionCard>
@@ -138,6 +140,7 @@ export const ProjectCatalogEditor = ({ register, control }: ProjectCatalogEditor
                 sectionId="finance"
                 keys={PROJECT_CATALOG_FINANCE_KEYS}
                 locale={locale}
+                control={control}
                 register={register}
               />
             </ProjectCatalogSectionCard>

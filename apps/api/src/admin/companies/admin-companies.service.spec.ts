@@ -39,6 +39,7 @@ describe('AdminCompaniesService.listProjects', () => {
       id: 'co_1',
       name: 'Builder Co',
       description: null,
+      shortDescription: null,
       type: 'builder',
       status: 'active',
       source: 'admin',
@@ -119,7 +120,10 @@ describe('AdminCompaniesService.listProjects', () => {
         city: 'Yerevan',
         builderCompanyId: 'co_1',
         featuredOnHome: false,
-        builderCompany: { name: 'Builder Co' },
+        builderCompany: {
+          name: 'Builder Co',
+          logoMedia: { fileUrl: 'https://cdn.example.com/logo.png' },
+        },
         coverMedia: {
           id: 'media_1',
           fileUrl: 'https://cdn.example.com/project.jpg',
@@ -146,7 +150,12 @@ describe('AdminCompaniesService.listProjects', () => {
         city: true,
         builderCompanyId: true,
         featuredOnHome: true,
-        builderCompany: { select: { name: true } },
+        builderCompany: {
+          select: {
+            name: true,
+            logoMedia: { select: { fileUrl: true } },
+          },
+        },
         coverMedia: {
           select: {
             id: true,
@@ -168,6 +177,7 @@ describe('AdminCompaniesService.listProjects', () => {
           city: 'Yerevan',
           builderCompanyId: 'co_1',
           companyName: 'Builder Co',
+          companyLogoUrl: 'https://cdn.example.com/logo.png',
           cover: {
             id: 'media_1',
             fileUrl: 'https://cdn.example.com/project.jpg',
@@ -210,6 +220,7 @@ describe('AdminCompaniesService.listProjects', () => {
       id: 'co_1',
       name: 'Builder Co',
       description: null,
+      shortDescription: null,
       type: 'builder',
       status: 'active',
       source: 'admin',

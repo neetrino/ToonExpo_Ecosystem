@@ -31,6 +31,7 @@ type CompanyAdminTransactionInput = {
   companyName: string;
   companyType: CompanyType;
   companyDescription?: string | null;
+  companyShortDescription?: string | null;
   source: CompanySource;
   bosCompanyId?: string | null;
   adminName: string;
@@ -77,6 +78,7 @@ export class CompanyProvisioningService {
           name: input.companyName,
           type: input.companyType,
           description: input.companyDescription ?? null,
+          shortDescription: input.companyShortDescription ?? null,
           status: CompanyStatus.active,
           source: input.source,
           ...(input.bosCompanyId ? { bosCompanyId: input.bosCompanyId } : {}),

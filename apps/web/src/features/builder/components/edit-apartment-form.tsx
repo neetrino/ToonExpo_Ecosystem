@@ -6,6 +6,10 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
+import {
+  FORM_SAVE_BAR_SCROLL_CLEARANCE_CLASS,
+  FormSaveBar,
+} from '@/features/builder/components/form-save-bar';
 import { TranslationTabs } from '@/features/builder/components/translation-tabs';
 import { APARTMENT_SALES_STATUSES, PRICE_VISIBILITY_OPTIONS } from '@/features/builder/constants';
 import { useUpdateApartmentMutation } from '@/features/builder/hooks/use-portal-inventory';
@@ -18,6 +22,7 @@ import {
   toApartmentUpdateRequest,
 } from '@/features/builder/utils/apartment-form-mappers';
 import { Button } from '@/shared/ui/button';
+import { cn } from '@/shared/ui/cn';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
 import { Select } from '@/shared/ui/select';
@@ -61,7 +66,11 @@ export const EditApartmentForm = ({ apartment }: EditApartmentFormProps) => {
 
   return (
     <>
-    <form onSubmit={onSubmit} className="flex flex-col gap-5" noValidate>
+    <form
+      onSubmit={onSubmit}
+      className={cn('flex flex-col gap-5', FORM_SAVE_BAR_SCROLL_CLEARANCE_CLASS)}
+      noValidate
+    >
       <div className="grid gap-4 sm:grid-cols-2">
         <FormField
           id="apt-number"
@@ -193,14 +202,16 @@ export const EditApartmentForm = ({ apartment }: EditApartmentFormProps) => {
         </FormField>
       </div>
 
-      {formError ? (
-        <p role="alert" className="rounded-sm bg-danger-soft px-3 py-2 text-sm text-danger">
-          {formError}
-        </p>
-      ) : null}
-      <Button type="submit" variant="secondary" disabled={busy || !isDirty}>
-        {busy ? t('saving') : t('save')}
-      </Button>
+      <FormSaveBar>
+        {formError ? (
+          <p role="alert" className="rounded-sm bg-danger-soft px-3 py-2 text-sm text-danger">
+            {formError}
+          </p>
+        ) : null}
+        <Button type="submit" variant="secondary" className="w-full" disabled={busy || !isDirty}>
+          {busy ? t('saving') : t('save')}
+        </Button>
+      </FormSaveBar>
     </form>
     {successToast}
     </>

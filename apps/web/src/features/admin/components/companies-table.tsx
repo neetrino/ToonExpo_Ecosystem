@@ -63,7 +63,7 @@ const CompanyCard = ({ company, readiness, onSelect }: CompanyCardProps) => {
       companyName={t(`types.${company.type}`)}
       companyLogoUrl={company.logoUrl}
       title={company.name}
-      coverUrl={readiness?.coverUrl ?? company.logoUrl}
+      coverUrl={company.coverUrl ?? readiness?.coverUrl ?? company.logoUrl}
       overallPercent={overallPercent}
       overallHasScore={hasScore}
       overallLabel={tScore('overallScore')}

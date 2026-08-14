@@ -42,7 +42,6 @@ export const ProjectCatalogSection = async ({ project }: ProjectCatalogSectionPr
       areaRange: t('catalog.areaRange'),
       unitPriceRange: t('catalog.unitPriceRange'),
       parkingPrice: t('catalog.parkingPrice'),
-      managementFee: t('catalog.managementFee'),
       parkingAvailable: t('catalog.parkingAvailable'),
       storageAvailable: t('catalog.storageAvailable'),
       elevator: t('catalog.elevator'),

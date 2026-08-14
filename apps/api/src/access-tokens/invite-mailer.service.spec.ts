@@ -1,4 +1,5 @@
 import { ConfigService } from '@nestjs/config';
+import { DEFAULT_LOCALE } from '@toonexpo/shared';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { AppEnv } from '../config/env.validation.js';
@@ -77,7 +78,7 @@ describe('InviteMailerService', () => {
     expect(send).toHaveBeenCalledOnce();
     const message = send.mock.calls[0]?.[0] as EmailMessage;
     expect(message.text).toContain(
-      'https://app.toonexpo.com/en/auth/set-password#token=reset%2Btoken%3Dxyz',
+      `https://app.toonexpo.com/${DEFAULT_LOCALE}/auth/set-password#token=reset%2Btoken%3Dxyz`,
     );
     expect(message.text).not.toContain('?token=');
   });

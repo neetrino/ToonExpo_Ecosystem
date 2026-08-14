@@ -4,9 +4,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import type { CompanyResponse } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, useForm, type Control } from 'react-hook-form';
 
-import { COMPANY_STATUSES } from '@/features/admin/constants';
+import { COMPANY_DESCRIPTION_MAX_LENGTH, COMPANY_SHORT_DESCRIPTION_MAX_LENGTH, COMPANY_STATUSES } from '@/features/admin/constants';
 import { useUpdateAdminCompanyMutation } from '@/features/admin/hooks/use-admin-companies';
 import {
   updateCompanySchema,
@@ -14,19 +14,31 @@ import {
 } from '@/features/admin/schemas/update-company.schema';
 import { CompanyContactFields } from '@/features/companies/components/company-contact-fields';
 import {
+  CompanyMediaFields,
+  type CompanyMediaFieldValues,
+} from '@/features/companies/components/company-media-fields';
+import {
   companyContactDefaultsFrom,
   companyContactPatchFrom,
 } from '@/features/companies/schemas/company-contact-fields.schema';
-import { MediaUploadField } from '@/features/media/components/media-upload-field';
 import { toNullableMediaId } from '@/features/media/schemas/media-fields.schema';
 import { Button } from '@/shared/ui/button';
+import { EphemeralToast } from '@/shared/ui/ephemeral-toast';
 import { FormField } from '@/shared/ui/form-field';
 import { useSuccessToast } from '@/shared/ui/use-success-toast';
 import { Input } from '@/shared/ui/input';
 import { Select } from '@/shared/ui/select';
+import { Textarea } from '@/shared/ui/textarea';
 
 type EditCompanyFormProps = {
   company: CompanyResponse;
+};
+
+const blurActiveField = (): void => {
+  const active = document.activeElement;
+  if (active instanceof HTMLElement) {
+    active.blur();
+  }
 };
 
 /**
@@ -35,38 +47,45 @@ type EditCompanyFormProps = {
 export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
   const t = useTranslations('Admin.companies');
   const updateMutation = useUpdateAdminCompanyMutation(company.id);
-  const [formError, setFormError] = useState<string | null>(null);
+  const [errorToast, setErrorToast] = useState<{ id: number; message: string } | null>(null);
   const { showSuccess, successToast } = useSuccessToast();
 
   const {
     register,
     handleSubmit,
     control,
+    reset,
     formState: { errors, isSubmitting, isDirty },
   } = useForm<UpdateCompanyFormValues>({
     resolver: zodResolver(updateCompanySchema),
     defaultValues: {
       name: company.name,
       description: company.description ?? '',
+      shortDescription: company.shortDescription ?? '',
       status: company.status,
       logoMediaId: company.logoMediaId ?? '',
+      coverMediaId: company.coverMediaId ?? '',
       ...companyContactDefaultsFrom(company),
     },
   });
 
   const onSubmit = handleSubmit(async (values) => {
-    setFormError(null);
+    setErrorToast(null);
+    blurActiveField();
     try {
       await updateMutation.mutateAsync({
         name: values.name,
         description: values.description.length > 0 ? values.description : null,
+        shortDescription: values.shortDescription.length > 0 ? values.shortDescription : null,
         status: values.status,
         logoMediaId: toNullableMediaId(values.logoMediaId),
+        coverMediaId: toNullableMediaId(values.coverMediaId),
         ...companyContactPatchFrom(values),
       });
+      reset(values);
       showSuccess(t('detail.saveSuccess'));
     } catch {
-      setFormError(t('errors.generic'));
+      setErrorToast({ id: Date.now(), message: t('errors.generic') });
     }
   });
 
@@ -117,16 +136,41 @@ export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
       </div>
 
       <FormField
+        id="edit-company-short-description"
+        label={t('form.shortDescription')}
+        error={errors.shortDescription ? t('validation.shortDescription') : undefined}
+      >
+        <Textarea
+          id="edit-company-short-description"
+          rows={2}
+          maxLength={COMPANY_SHORT_DESCRIPTION_MAX_LENGTH}
+          className="min-h-20 resize-none"
+          aria-invalid={Boolean(errors.shortDescription)}
+          aria-describedby="edit-company-short-description-hint"
+          {...register('shortDescription')}
+        />
+        <p id="edit-company-short-description-hint" className="text-xs text-ink-muted">
+          {t('form.shortDescriptionHint')}
+        </p>
+      </FormField>
+
+      <FormField
         id="edit-company-description"
         label={t('form.description')}
         error={errors.description ? t('validation.description') : undefined}
       >
-        <textarea
+        <Textarea
           id="edit-company-description"
-          rows={3}
-          className="w-full rounded-sm border border-border bg-background px-4 py-3 text-sm text-ink focus-visible:border-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/20"
+          rows={5}
+          maxLength={COMPANY_DESCRIPTION_MAX_LENGTH}
+          className="min-h-32 resize-none"
+          aria-invalid={Boolean(errors.description)}
+          aria-describedby="edit-company-description-hint"
           {...register('description')}
         />
+        <p id="edit-company-description-hint" className="text-xs text-ink-muted">
+          {t('form.descriptionHint')}
+        </p>
       </FormField>
 
       <CompanyContactFields
@@ -137,33 +181,26 @@ export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
         labelsNamespace="Admin.companies"
       />
 
-      <Controller
-        control={control}
-        name="logoMediaId"
-        render={({ field, fieldState }) => (
-          <MediaUploadField
-            id="edit-company-logo"
-            label={t('form.logoMedia')}
-            context="admin"
-            value={field.value}
-            onChange={field.onChange}
-            previewUrl={company.logoUrl}
-            error={fieldState.error?.message}
-          />
-        )}
+      <CompanyMediaFields
+        control={control as unknown as Control<CompanyMediaFieldValues>}
+        context="admin"
+        logoPreviewUrl={company.logoUrl}
+        coverPreviewUrl={company.coverUrl}
       />
-
-      {formError ? (
-        <p role="alert" className="rounded-sm bg-danger-soft px-3 py-2 text-sm text-danger">
-          {formError}
-        </p>
-      ) : null}
 
       <Button type="submit" variant="primary" disabled={busy || !isDirty}>
         {busy ? t('detail.saving') : t('detail.save')}
       </Button>
     </form>
     {successToast}
+    <EphemeralToast
+      id={errorToast?.id}
+      message={errorToast?.message ?? null}
+      onDismiss={() => {
+        setErrorToast(null);
+      }}
+      tone="danger"
+    />
     </>
   );
 };

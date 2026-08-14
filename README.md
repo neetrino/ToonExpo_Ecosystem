@@ -49,7 +49,7 @@ apps/
   api/                 # NestJS backend (+ Dockerfile for Cloud Run)
 packages/
   config/              # shared ESLint / tsconfig / Vitest presets
-  shared/              # environment-neutral utilities (incl. DEFAULT_LOCALE = en)
+  shared/              # environment-neutral utilities (incl. DEFAULT_LOCALE = hy)
   contracts/           # framework-neutral API types/contracts
   db/                  # Prisma schema and migrations
 ```
