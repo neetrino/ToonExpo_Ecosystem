@@ -28,7 +28,7 @@ export const BuilderReadinessCriterionRing = ({
   const label = t(`criteria.${item.code}`);
 
   return (
-    <div className="flex w-36 flex-col items-center gap-2">
+    <div className="flex w-full max-w-36 flex-col items-center gap-2">
       <ReadinessProgressRing
         percent={percent}
         size="xs"
@@ -116,7 +116,7 @@ export const BuilderReadinessCriteriaBlock = ({
         <h3 className="mb-5 text-base font-semibold tracking-tight text-ink">{title}</h3>
       ) : null}
       {scored.length > 0 ? (
-        <div className="flex flex-wrap justify-center gap-x-5 gap-y-6 sm:justify-start">
+        <div className="grid grid-cols-2 justify-items-center gap-x-5 gap-y-6 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6">
           {scored.map((item, index) => (
             <BuilderReadinessCriterionRing
               key={item.criterionId}

@@ -112,7 +112,7 @@ const CategorySection = ({ score }: { score: PortalReadinessScoreItem }) => {
         </div>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className={cn('grid gap-4', blocks.length > 1 && 'lg:grid-cols-2')}>
         {blocks.map((block) => (
           <BuilderReadinessCriteriaBlock
             key={block.key}
