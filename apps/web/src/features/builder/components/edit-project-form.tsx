@@ -149,35 +149,31 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
                 )}
               />
             </FormField>
-            <FormField id={`edit-location-${locale}`} label={t('form.locationText')}>
-              <Input
-                id={`edit-location-${locale}`}
-                {...register(
-                  locale === 'hy'
-                    ? 'locationTextHy'
-                    : locale === 'ru'
-                      ? 'locationTextRu'
-                      : 'locationTextEn',
-                )}
-              />
-            </FormField>
+            <div className="grid gap-4 sm:grid-cols-3">
+              <FormField id={`edit-slug-${locale}`} label={t('form.slug')}>
+                <Input id={`edit-slug-${locale}`} {...register('slug')} />
+              </FormField>
+              <FormField id={`edit-location-${locale}`} label={t('form.locationText')}>
+                <Input
+                  id={`edit-location-${locale}`}
+                  {...register(
+                    locale === 'hy'
+                      ? 'locationTextHy'
+                      : locale === 'ru'
+                        ? 'locationTextRu'
+                        : 'locationTextEn',
+                  )}
+                />
+              </FormField>
+              <FormField id={`edit-district-${locale}`} label={t('form.district')}>
+                <Input id={`edit-district-${locale}`} {...register('district')} />
+              </FormField>
+            </div>
           </div>
         )}
       </TranslationTabs>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <FormField id="edit-slug" label={t('form.slug')}>
-          <Input id="edit-slug" {...register('slug')} />
-        </FormField>
-        <FormField id="edit-address" label={t('form.address')}>
-          <Input id="edit-address" {...register('address')} />
-        </FormField>
-        <FormField id="edit-city" label={t('form.city')}>
-          <Input id="edit-city" {...register('city')} />
-        </FormField>
-        <FormField id="edit-district" label={t('form.district')}>
-          <Input id="edit-district" {...register('district')} />
-        </FormField>
+      <div className="grid gap-4 sm:grid-cols-3">
         <FormField id="edit-type" label={t('form.projectType')}>
           <Input id="edit-type" {...register('projectType')} />
         </FormField>
