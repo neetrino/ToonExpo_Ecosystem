@@ -216,7 +216,8 @@ export const ListboxTrigger = ({
 
 type ListboxComboboxFieldProps = {
   inputRef: RefObject<HTMLInputElement | null>;
-  id: string | undefined;
+  /** Omit so a FormField `htmlFor` does not focus/open search. */
+  id?: string | undefined;
   disabled: boolean;
   open: boolean;
   listId: string;
