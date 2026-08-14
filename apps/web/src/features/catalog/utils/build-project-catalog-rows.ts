@@ -172,10 +172,10 @@ export const buildProjectCatalogRows = (
     details.distanceExtra != null ? options.formatDistanceMeters(details.distanceExtra) : null;
 
   pushCard(rows, 'propertyType', labels.propertyType, details.propertyType);
-  pushCard(rows, 'country', labels.country, details.country);
   pushCard(rows, 'city', labels.city, details.city);
   pushCard(rows, 'address', labels.address, details.address);
   pushCard(rows, 'zipCode', labels.zipCode, details.zipCode);
+  pushCard(rows, 'country', labels.country, details.country);
   pushCard(rows, 'constructionStart', labels.constructionStart, details.constructionStart);
   pushCard(rows, 'constructionEnd', labels.constructionEnd, details.constructionEnd);
   pushCard(rows, 'constructionStatus', labels.constructionStatus, details.constructionStatus);

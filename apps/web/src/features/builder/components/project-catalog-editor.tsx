@@ -120,6 +120,7 @@ export const ProjectCatalogEditor = ({ register, control }: ProjectCatalogEditor
               <ProjectCatalogOverviewEditor
                 keys={PROJECT_CATALOG_OVERVIEW_KEYS}
                 locale={locale}
+                control={control}
                 register={register}
               />
             </ProjectCatalogSectionCard>

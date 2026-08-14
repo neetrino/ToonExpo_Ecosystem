@@ -3,12 +3,15 @@
 import type { ProjectCatalogDetails } from '@/features/catalog/utils/project-catalog-details';
 import { PROJECT_CATALOG_CRITERION_ICON } from '@/features/catalog/components/project-catalog-details-bits';
 import { useTranslations } from 'next-intl';
-import type { UseFormRegister } from 'react-hook-form';
+import type { Control, UseFormRegister } from 'react-hook-form';
+import { useWatch } from 'react-hook-form';
 
 import type { TRANSLATION_LOCALES } from '@/features/builder/constants';
 import {
   catalogDetailKeyToCriterionId,
   isProjectCatalogTextareaKey,
+  overviewColumnWeight,
+  overviewGridTemplateColumns,
 } from '@/features/builder/constants/project-catalog-editor';
 import type { UpdateProjectFormValues } from '@/features/builder/schemas/project.schema';
 import { Input } from '@/shared/ui/input';
@@ -43,50 +46,55 @@ const CatalogFieldLabel = ({ fieldKey }: LabelProps) => {
 type OverviewEditorProps = {
   keys: readonly (keyof ProjectCatalogDetails)[];
   locale: TranslationLocale;
+  control: Control<UpdateProjectFormValues>;
   register: UseFormRegister<UpdateProjectFormValues>;
 };
 
 /**
- * Editable Overview grid — same icon + value + label stack as the public page.
+ * One overview row — column width follows each value so long text stays visible.
  */
 export const ProjectCatalogOverviewEditor = ({
   keys,
   locale,
+  control,
   register,
-}: OverviewEditorProps) => (
-  <div
-    className={cn(
-      'grid gap-6',
-      keys.length <= 3 && 'grid-cols-2 sm:grid-cols-3',
-      keys.length === 4 && 'grid-cols-2 sm:grid-cols-4',
-      keys.length >= 5 && 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-6',
-    )}
-  >
-    {keys.map((key) => {
-      const criterionId = catalogDetailKeyToCriterionId(key);
-      const Icon = PROJECT_CATALOG_CRITERION_ICON[criterionId];
-      const fieldId = `catalog-overview-${key}-${locale}`;
-      return (
-        <div key={fieldId} className="flex flex-col items-center gap-2 text-center">
-          <span
-            className="flex size-11 items-center justify-center rounded-full bg-brand-soft text-brand-deep"
-            aria-hidden
-          >
-            <Icon className="size-5" strokeWidth={1.75} />
-          </span>
-          <Input
-            id={fieldId}
-            className="h-10 text-center text-sm font-bold text-ink-navy"
-            {...register(`catalogDetails.${key}.${locale}`)}
-          />
-          <label htmlFor={fieldId} className="text-xs font-medium text-ink-muted">
-            <CatalogFieldLabel fieldKey={key} />
-          </label>
-        </div>
-      );
-    })}
-  </div>
-);
+}: OverviewEditorProps) => {
+  const catalogDetails = useWatch({ control, name: 'catalogDetails' });
+  const templateColumns = overviewGridTemplateColumns(
+    keys.map((key) => overviewColumnWeight(catalogDetails?.[key]?.[locale] ?? '')),
+  );
+
+  return (
+    <div
+      className="grid w-full items-start gap-3"
+      style={{ gridTemplateColumns: templateColumns }}
+    >
+      {keys.map((key) => {
+        const criterionId = catalogDetailKeyToCriterionId(key);
+        const Icon = PROJECT_CATALOG_CRITERION_ICON[criterionId];
+        const fieldId = `catalog-overview-${key}-${locale}`;
+        return (
+          <div key={fieldId} className="flex min-w-0 flex-col items-center gap-2 text-center">
+            <span
+              className="flex size-11 items-center justify-center rounded-full bg-brand-soft text-brand-deep"
+              aria-hidden
+            >
+              <Icon className="size-5" strokeWidth={1.75} />
+            </span>
+            <Input
+              id={fieldId}
+              className="h-10 w-full min-w-0 px-2 text-center text-sm font-bold text-ink-navy"
+              {...register(`catalogDetails.${key}.${locale}`)}
+            />
+            <label htmlFor={fieldId} className="text-xs font-medium text-ink-muted">
+              <CatalogFieldLabel fieldKey={key} />
+            </label>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
 
 type KvEditorProps = {
   sectionId: 'details' | 'finance';
