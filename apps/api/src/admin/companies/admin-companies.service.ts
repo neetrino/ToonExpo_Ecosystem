@@ -19,6 +19,7 @@ import {
 } from '@toonexpo/db';
 
 import { toMediaSummary } from '../../catalog/mappers/catalog.mapper.js';
+import { toPublicFileUrl } from '../../media/public-file-url.js';
 import { resolveOptionalCompanyLogoMediaId } from '../../media/utils/media-ownership.js';
 import { toUserResponse } from '../../auth/mappers/user.mapper.js';
 import {
@@ -244,7 +245,12 @@ export class AdminCompaniesService {
           city: true,
           builderCompanyId: true,
           featuredOnHome: true,
-          builderCompany: { select: { name: true } },
+          builderCompany: {
+            select: {
+              name: true,
+              logoMedia: { select: { fileUrl: true } },
+            },
+          },
           coverMedia: {
             select: {
               id: true,
@@ -267,6 +273,9 @@ export class AdminCompaniesService {
         city: project.city,
         builderCompanyId: project.builderCompanyId,
         companyName: project.builderCompany.name,
+        companyLogoUrl: project.builderCompany.logoMedia
+          ? toPublicFileUrl(project.builderCompany.logoMedia.fileUrl)
+          : null,
         cover: toMediaSummary(project.coverMedia),
         buildingsCount: project._count.buildings,
         apartmentsCount: project._count.apartments,

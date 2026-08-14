@@ -204,6 +204,8 @@ export type AdminProjectListItem = {
   city: string | null;
   builderCompanyId: string;
   companyName: string;
+  /** Builder company logo; initials shown when null. */
+  companyLogoUrl: string | null;
   /** Project cover only (no building fallback). */
   cover: MediaAssetSummary | null;
   buildingsCount: number;

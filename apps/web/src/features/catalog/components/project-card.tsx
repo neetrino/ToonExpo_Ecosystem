@@ -8,7 +8,34 @@ import { FavoriteToggleButton } from '@/features/buyer/components/favorite-toggl
 import { usePriceOverlay } from '@/features/catalog/components/price-overlay-scope';
 import { formatCompactPrice, formatPriceRange } from '@/features/catalog/utils/format-price';
 import { Link } from '@/i18n/navigation';
+import { resolvePublicAssetUrl } from '@/shared/lib/static-asset-url';
 import { cn } from '@/shared/ui/cn';
+
+const BUILDER_LOGO_BADGE_CLASS =
+  'absolute bottom-3 left-3 z-10 size-10 overflow-hidden rounded-full bg-canvas ring-1 ring-header-border';
+const BUILDER_LOGO_IMAGE_SIZES = '40px';
+
+type BuilderLogoBadgeProps = {
+  builderId: string;
+  name: string;
+  logoUrl: string | null;
+};
+
+const BuilderLogoBadge = ({ builderId, name, logoUrl }: BuilderLogoBadgeProps) => {
+  const src = resolvePublicAssetUrl(logoUrl);
+  if (!src) {
+    return null;
+  }
+  return (
+    <Link
+      href={`/builders/${builderId}`}
+      className={BUILDER_LOGO_BADGE_CLASS}
+      aria-label={name}
+    >
+      <Image src={src} alt="" fill className="object-contain p-1" sizes={BUILDER_LOGO_IMAGE_SIZES} />
+    </Link>
+  );
+};
 
 type ProjectCardProps = {
   project: ProjectListItem;
@@ -96,6 +123,12 @@ export const ProjectCard = ({
             className="absolute top-3 right-3 z-10"
           />
         ) : null}
+
+        <BuilderLogoBadge
+          builderId={project.builder.id}
+          name={project.builder.name}
+          logoUrl={project.builder.logoUrl}
+        />
       </div>
 
       <div className="flex flex-1 flex-col px-3 pt-4 pb-3">
