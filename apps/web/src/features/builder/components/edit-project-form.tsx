@@ -173,12 +173,9 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
         )}
       </TranslationTabs>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2">
         <FormField id="edit-type" label={t('form.projectType')}>
           <Input id="edit-type" {...register('projectType')} />
-        </FormField>
-        <FormField id="edit-status" label={t('form.constructionStatus')}>
-          <Input id="edit-status" {...register('constructionStatus')} />
         </FormField>
         <FormField id="edit-completion" label={t('form.completionDate')}>
           <Controller

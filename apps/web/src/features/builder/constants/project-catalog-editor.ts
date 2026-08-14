@@ -30,6 +30,14 @@ export const isProjectCatalogTextareaKey = (
 ): key is ProjectCatalogTextareaKey =>
   (PROJECT_CATALOG_TEXTAREA_KEYS as readonly string[]).includes(key);
 
+export const PROJECT_CATALOG_DATE_KEYS = [
+  'constructionStart',
+  'constructionEnd',
+] as const satisfies ReadonlyArray<keyof ProjectCatalogDetails>;
+
+export const isProjectCatalogDateKey = (key: keyof ProjectCatalogDetails): boolean =>
+  (PROJECT_CATALOG_DATE_KEYS as readonly string[]).includes(key);
+
 /**
  * Overview card on the public page (compact stats).
  * Kept explicit so Admin mirrors Home layout.

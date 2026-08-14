@@ -156,12 +156,9 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
 
       <fieldset className="flex flex-col gap-4">
         <legend className="text-sm font-semibold text-ink">{t('form.detailsSection')}</legend>
-        <div className="grid gap-4 sm:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2">
           <FormField id="projectType" label={t('form.projectType')}>
             <Input id="projectType" {...register('projectType')} />
-          </FormField>
-          <FormField id="constructionStatus" label={t('form.constructionStatus')}>
-            <Input id="constructionStatus" {...register('constructionStatus')} />
           </FormField>
           <FormField id="completionDate" label={t('form.completionDate')}>
             <Controller

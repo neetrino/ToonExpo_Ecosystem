@@ -4,16 +4,19 @@ import type { ProjectCatalogDetails } from '@/features/catalog/utils/project-cat
 import { PROJECT_CATALOG_CRITERION_ICON } from '@/features/catalog/components/project-catalog-details-bits';
 import { useTranslations } from 'next-intl';
 import type { Control, UseFormRegister } from 'react-hook-form';
-import { useWatch } from 'react-hook-form';
+import { Controller, useWatch } from 'react-hook-form';
 
 import type { TRANSLATION_LOCALES } from '@/features/builder/constants';
 import {
   catalogDetailKeyToCriterionId,
+  isProjectCatalogDateKey,
   isProjectCatalogTextareaKey,
   overviewColumnWeight,
   overviewGridTemplateColumns,
 } from '@/features/builder/constants/project-catalog-editor';
 import type { UpdateProjectFormValues } from '@/features/builder/schemas/project.schema';
+import { DatePicker } from '@/shared/ui/date-picker';
+import { parseIsoDate, toIsoDate } from '@/shared/ui/date-picker-utils';
 import { Input } from '@/shared/ui/input';
 import { Textarea } from '@/shared/ui/textarea';
 import { cn } from '@/shared/ui/cn';
@@ -34,13 +37,72 @@ type LabelProps = {
   fieldKey: keyof ProjectCatalogDetails;
 };
 
-const CatalogFieldLabel = ({ fieldKey }: LabelProps) => {
+const useCatalogFieldLabel = (fieldKey: keyof ProjectCatalogDetails): string => {
   const tCatalog = useTranslations('Catalog.projectDetail.catalog');
   const tExtra = useTranslations('Builder.projects.catalog.fields');
   if (EXTRA_FIELD_LABEL_KEYS.has(fieldKey)) {
     return tExtra(fieldKey as 'pricePerSqmMin');
   }
   return tCatalog(fieldKey as 'propertyType');
+};
+
+const CatalogFieldLabel = ({ fieldKey }: LabelProps) => useCatalogFieldLabel(fieldKey);
+
+const MONTH_YEAR_PATTERN = /^(\d{1,2})\/(\d{4})$/;
+
+const catalogDateToIso = (value: string): string => {
+  const trimmed = value.trim();
+  if (parseIsoDate(trimmed)) {
+    return trimmed;
+  }
+  const match = MONTH_YEAR_PATTERN.exec(trimmed);
+  if (!match) {
+    return '';
+  }
+  const month = Number(match[1]);
+  const year = Number(match[2]);
+  if (month < 1 || month > 12) {
+    return '';
+  }
+  return toIsoDate(new Date(year, month - 1, 1));
+};
+
+const isoToCatalogMonthYear = (iso: string): string => {
+  const date = parseIsoDate(iso);
+  if (!date) {
+    return '';
+  }
+  return `${String(date.getMonth() + 1).padStart(2, '0')}/${date.getFullYear()}`;
+};
+
+type CatalogDateValueProps = {
+  fieldId: string;
+  fieldKey: keyof ProjectCatalogDetails;
+  locale: TranslationLocale;
+  control: Control<UpdateProjectFormValues>;
+};
+
+const CatalogDateValue = ({ fieldId, fieldKey, locale, control }: CatalogDateValueProps) => {
+  const ariaLabel = useCatalogFieldLabel(fieldKey);
+  return (
+    <Controller
+      control={control}
+      name={`catalogDetails.${fieldKey}.${locale}`}
+      render={({ field }) => (
+        <div className="min-w-0 max-w-xs flex-1 sm:max-w-none">
+          <DatePicker
+            id={fieldId}
+            name={field.name}
+            value={catalogDateToIso(field.value ?? '')}
+            aria-label={ariaLabel}
+            onBlur={field.onBlur}
+            onChange={(iso) => field.onChange(isoToCatalogMonthYear(iso))}
+            className="h-10 text-sm font-semibold text-ink-navy"
+          />
+        </div>
+      )}
+    />
+  );
 };
 
 type OverviewEditorProps = {
@@ -100,6 +162,7 @@ type KvEditorProps = {
   sectionId: 'details' | 'finance';
   keys: readonly (keyof ProjectCatalogDetails)[];
   locale: TranslationLocale;
+  control: Control<UpdateProjectFormValues>;
   register: UseFormRegister<UpdateProjectFormValues>;
 };
 
@@ -110,12 +173,14 @@ export const ProjectCatalogKvEditor = ({
   sectionId,
   keys,
   locale,
+  control,
   register,
 }: KvEditorProps) => (
   <div className="grid grid-cols-1 gap-x-10 sm:grid-cols-2">
     {keys.map((key) => {
       const fieldId = `catalog-${sectionId}-${key}-${locale}`;
       const wide = isProjectCatalogTextareaKey(key);
+      const dateField = isProjectCatalogDateKey(key);
       const Icon = PROJECT_CATALOG_CRITERION_ICON[catalogDetailKeyToCriterionId(key)];
       return (
         <div
@@ -140,6 +205,13 @@ export const ProjectCatalogKvEditor = ({
               rows={3}
               className="min-h-20 text-sm font-semibold text-ink-navy"
               {...register(`catalogDetails.${key}.${locale}`)}
+            />
+          ) : dateField ? (
+            <CatalogDateValue
+              fieldId={fieldId}
+              fieldKey={key}
+              locale={locale}
+              control={control}
             />
           ) : (
             <Input

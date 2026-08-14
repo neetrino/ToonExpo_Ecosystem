@@ -35,6 +35,7 @@ type PortalVisualCanvasesSectionProps = {
 };
 
 const META_COL_CLASS = 'w-28 px-3 py-3 text-center align-middle';
+const ACTIONS_COL_CLASS = 'w-40 px-3 py-3 text-center align-middle whitespace-nowrap';
 
 /**
  * Visual canvas list and create form on the builder project page.
@@ -91,7 +92,7 @@ export const PortalVisualCanvasesSection = ({ project }: PortalVisualCanvasesSec
                 <th className={cn(META_COL_CLASS, 'font-medium')}>{t('columns.primary')}</th>
                 <th className={cn(META_COL_CLASS, 'font-medium')}>{t('columns.status')}</th>
                 <th className={cn(META_COL_CLASS, 'font-medium')}>{t('columns.hotspots')}</th>
-                <th className={cn(META_COL_CLASS, 'font-medium')}>{t('columns.actions')}</th>
+                <th className={cn(ACTIONS_COL_CLASS, 'font-medium')}>{t('columns.actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -117,7 +118,7 @@ export const PortalVisualCanvasesSection = ({ project }: PortalVisualCanvasesSec
                     </div>
                   </td>
                   <td className={META_COL_CLASS}>{canvas.hotspotCount}</td>
-                  <td className={META_COL_CLASS}>
+                  <td className={ACTIONS_COL_CLASS}>
                     <div className="flex justify-center">
                       <Link
                         href={catalogVisualMapHref(scope, project.id, canvas.id)}
