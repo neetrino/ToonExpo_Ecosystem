@@ -129,7 +129,9 @@ export const ProjectCatalogOverviewStat = ({ row }: { row: ProjectCatalogRow }) 
 
 export const ProjectCatalogDetailsList = ({ rows }: { rows: ProjectCatalogRow[] }) => (
   <dl className="grid grid-cols-1 gap-x-10 sm:grid-cols-2">
-    {rows.map((row) => (
+    {rows.map((row) => {
+      const Icon = PROJECT_CATALOG_CRITERION_ICON[row.id];
+      return (
       <div
         key={row.id}
         className={cn(
@@ -137,7 +139,10 @@ export const ProjectCatalogDetailsList = ({ rows }: { rows: ProjectCatalogRow[] 
           row.wide && 'sm:col-span-2 sm:flex-col sm:items-stretch sm:gap-1',
         )}
       >
-        <dt className="shrink-0 text-sm text-ink-muted">{row.label}</dt>
+        <dt className="flex shrink-0 items-start gap-2 text-sm text-ink-muted">
+          <Icon className="mt-0.5 size-4 shrink-0 text-brand" strokeWidth={1.75} aria-hidden />
+          {row.label}
+        </dt>
         <dd
           className={cn(
             'min-w-0 text-sm font-semibold whitespace-pre-line text-ink-navy',
@@ -147,7 +152,8 @@ export const ProjectCatalogDetailsList = ({ rows }: { rows: ProjectCatalogRow[] 
           {row.value}
         </dd>
       </div>
-    ))}
+      );
+    })}
   </dl>
 );
 

@@ -116,6 +116,7 @@ export const ProjectCatalogKvEditor = ({
     {keys.map((key) => {
       const fieldId = `catalog-${sectionId}-${key}-${locale}`;
       const wide = isProjectCatalogTextareaKey(key);
+      const Icon = PROJECT_CATALOG_CRITERION_ICON[catalogDetailKeyToCriterionId(key)];
       return (
         <div
           key={fieldId}
@@ -124,7 +125,13 @@ export const ProjectCatalogKvEditor = ({
             wide && 'sm:col-span-2 sm:flex-col sm:items-stretch',
           )}
         >
-          <label htmlFor={fieldId} className="shrink-0 pt-2.5 text-sm text-ink-muted">
+          <label
+            htmlFor={fieldId}
+            className="flex shrink-0 items-start gap-2 pt-2.5 text-sm text-ink-muted"
+          >
+            {sectionId === 'details' ? (
+              <Icon className="mt-0.5 size-4 shrink-0 text-brand" strokeWidth={1.75} aria-hidden />
+            ) : null}
             <CatalogFieldLabel fieldKey={key} />
           </label>
           {wide ? (
