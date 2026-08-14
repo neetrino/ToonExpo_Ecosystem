@@ -13,6 +13,7 @@ import {
 } from '@/features/builder/hooks/use-portal-projects';
 import { useRouter } from '@/i18n/navigation';
 import { Button } from '@/shared/ui/button';
+import { ConfirmDeleteModal } from '@/shared/ui/confirm-delete-modal';
 import { useSuccessToast } from '@/shared/ui/use-success-toast';
 
 type ProjectPublicationActionsProps = {
@@ -30,6 +31,7 @@ export const ProjectPublicationActions = ({ project }: ProjectPublicationActions
   const publicationMutation = useUpdateProjectPublicationMutation(project.id);
   const deleteMutation = useDeletePortalProjectMutation();
   const [error, setError] = useState<string | null>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const { showSuccess, successToast } = useSuccessToast();
 
   if (!isAdmin) {
@@ -49,9 +51,6 @@ export const ProjectPublicationActions = ({ project }: ProjectPublicationActions
   };
 
   const onDelete = async () => {
-    if (!window.confirm(t('detail.deleteConfirm'))) {
-      return;
-    }
     setError(null);
     try {
       await deleteMutation.mutateAsync(project.id);
@@ -97,7 +96,7 @@ export const ProjectPublicationActions = ({ project }: ProjectPublicationActions
             variant="danger"
             disabled={busy}
             onClick={() => {
-              void onDelete();
+              setConfirmOpen(true);
             }}
           >
             {t('detail.delete')}
@@ -110,6 +109,23 @@ export const ProjectPublicationActions = ({ project }: ProjectPublicationActions
         </p>
       ) : null}
       {successToast}
+      <ConfirmDeleteModal
+        open={confirmOpen}
+        title={t('detail.deleteConfirmTitle')}
+        message={t('detail.deleteConfirm')}
+        confirming={deleteMutation.isPending}
+        onCancel={() => {
+          if (!deleteMutation.isPending) {
+            setConfirmOpen(false);
+          }
+        }}
+        onConfirm={() => {
+          if (deleteMutation.isPending) {
+            return;
+          }
+          void onDelete();
+        }}
+      />
     </div>
   );
 };

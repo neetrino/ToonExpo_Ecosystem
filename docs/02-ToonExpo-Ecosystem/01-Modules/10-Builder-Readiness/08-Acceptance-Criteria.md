@@ -2,6 +2,8 @@
 
 ## Assessment
 
+- BigProjects Admin readiness list is project-scoped (one active assessment per project).
+- BigProjects Admin can filter readiness by company and project.
 - BigProjects Admin can create readiness assessment for builder company.
 - BigProjects Admin can create readiness assessment for project.
 - Assessment has overall status.

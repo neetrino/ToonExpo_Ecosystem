@@ -24,6 +24,7 @@ import {
 import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
 import { Button } from '@/shared/ui/button';
 import { Card } from '@/shared/ui/card';
+import { ConfirmDeleteModal } from '@/shared/ui/confirm-delete-modal';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
 import { Select } from '@/shared/ui/select';
@@ -161,6 +162,8 @@ type VenueMapEditCardProps = {
 
 const VenueMapEditCard = ({ map, isBusy, onSave, onDelete }: VenueMapEditCardProps) => {
   const t = useTranslations('Admin.events.venueMaps.form');
+  const tCommon = useTranslations('Common');
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const form = useForm<VenueMapFormInput, unknown, VenueMapFormValues>({
     resolver: zodResolver(venueMapFormSchema),
     defaultValues: {
@@ -187,10 +190,35 @@ const VenueMapEditCard = ({ map, isBusy, onSave, onDelete }: VenueMapEditCardPro
         >
           {isBusy ? t('saving') : t('save')}
         </Button>
-        <Button type="button" variant="ghost" disabled={isBusy} onClick={() => void onDelete()}>
+        <Button
+          type="button"
+          variant="ghost"
+          disabled={isBusy}
+          onClick={() => {
+            setConfirmOpen(true);
+          }}
+        >
           {t('delete')}
         </Button>
       </div>
+      <ConfirmDeleteModal
+        open={confirmOpen}
+        message={tCommon('deleteConfirmNamedMessage', { name: map.title })}
+        confirming={isBusy}
+        onCancel={() => {
+          if (!isBusy) {
+            setConfirmOpen(false);
+          }
+        }}
+        onConfirm={() => {
+          if (isBusy) {
+            return;
+          }
+          void onDelete().then(() => {
+            setConfirmOpen(false);
+          });
+        }}
+      />
     </Card>
   );
 };

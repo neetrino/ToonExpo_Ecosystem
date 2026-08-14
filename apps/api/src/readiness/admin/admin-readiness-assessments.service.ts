@@ -172,6 +172,51 @@ export class AdminReadinessAssessmentsService {
     return { createdCount };
   }
 
+  /**
+   * Ensures every project has an active project-level readiness assessment.
+   * Keeps Admin Readiness in sync with the projects hub.
+   */
+  async ensureProjectAssessments(): Promise<{ createdCount: number }> {
+    const projects = await this.prisma.db.project.findMany({
+      select: { id: true, builderCompanyId: true },
+      orderBy: { createdAt: 'asc' },
+    });
+
+    if (projects.length === 0) {
+      return { createdCount: 0 };
+    }
+
+    const existing = await this.prisma.db.readinessAssessment.findMany({
+      where: {
+        targetType: ReadinessAssessmentTargetType.project,
+        archivedAt: null,
+        projectId: { in: projects.map((project) => project.id) },
+      },
+      select: { projectId: true },
+    });
+    const covered = new Set<string>();
+    for (const row of existing) {
+      if (row.projectId) {
+        covered.add(row.projectId);
+      }
+    }
+
+    let createdCount = 0;
+    for (const project of projects) {
+      if (covered.has(project.id)) {
+        continue;
+      }
+      await this.create({
+        targetType: ReadinessAssessmentTargetType.project,
+        builderCompanyId: project.builderCompanyId,
+        projectId: project.id,
+      });
+      createdCount += 1;
+    }
+
+    return { createdCount };
+  }
+
   async update(id: string, body: UpdateReadinessAssessmentDto): Promise<ReadinessAssessmentDetail> {
     const existing = await this.support.getAssessmentOrThrow(id);
 

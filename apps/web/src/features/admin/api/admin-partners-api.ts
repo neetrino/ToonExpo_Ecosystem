@@ -108,6 +108,13 @@ export const updateAdminPartnerOffer = (
     body: JSON.stringify(body),
   });
 
+export const deleteAdminPartner = (id: string): Promise<void> =>
+  apiFetch<void>({
+    path: `/admin/partners/${encodeURIComponent(id)}`,
+    method: "DELETE",
+    credentials: "include",
+  });
+
 export const deleteAdminPartnerOffer = (
   partnerId: string,
   offerId: string,

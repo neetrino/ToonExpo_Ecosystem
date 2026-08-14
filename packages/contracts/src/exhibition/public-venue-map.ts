@@ -22,6 +22,8 @@ export type PublicVenueMapArea = {
   displayMode: VenueMapPublicDisplayMode;
   publicLabel: string | null;
   areaSqm: number;
+  /** BOS publish order; used to match BOS area colors. */
+  sortOrder: number;
   rects: PublicVenueMapCellRect[];
   labelX: number;
   labelY: number;

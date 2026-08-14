@@ -18,6 +18,7 @@ import {
   type BoothAssignmentFormValues,
 } from '@/features/exhibition/schemas/exhibition.schema';
 import { Button } from '@/shared/ui/button';
+import { ConfirmDeleteModal } from '@/shared/ui/confirm-delete-modal';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
 import { Select } from '@/shared/ui/select';
@@ -41,7 +42,9 @@ export const AdminBoothAssignmentRow = ({
   removePending,
 }: AdminBoothAssignmentRowProps) => {
   const t = useTranslations('Admin.events.booths.assignments');
+  const tCommon = useTranslations('Common');
   const [editing, setEditing] = useState(false);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const updateMutation = useUpdateAdminBoothAssignmentMutation(boothId);
   const companiesQuery = useAdminCompaniesQuery(1, ADMIN_COMPANIES_DEFAULT_PAGE_SIZE);
 
@@ -92,12 +95,31 @@ export const AdminBoothAssignmentRow = ({
             variant="ghost"
             disabled={removePending}
             onClick={() => {
-              void onRemove(assignment.id);
+              setConfirmOpen(true);
             }}
           >
             {t('remove')}
           </Button>
         </div>
+        <ConfirmDeleteModal
+          open={confirmOpen}
+          message={tCommon('deleteConfirmNamedMessage', { name: displayName })}
+          confirming={removePending}
+          confirmLabel={t('remove')}
+          onCancel={() => {
+            if (!removePending) {
+              setConfirmOpen(false);
+            }
+          }}
+          onConfirm={() => {
+            if (removePending) {
+              return;
+            }
+            void onRemove(assignment.id).then(() => {
+              setConfirmOpen(false);
+            });
+          }}
+        />
       </li>
     );
   }

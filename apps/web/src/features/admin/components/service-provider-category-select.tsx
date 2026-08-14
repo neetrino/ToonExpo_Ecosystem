@@ -222,7 +222,6 @@ export const ServiceProviderCategorySelect = ({
         options={options}
         disabled={disabled}
         contained
-        sheetScrim
         open={menuOpen && pendingDelete == null}
         placeholder={t('categoriesPlaceholder')}
         aria-label={t('categories')}

@@ -69,7 +69,6 @@ export const ReadinessCriterionProviderSelect = ({
         options={options}
         disabled={disabled || mutation.isPending || categoriesQuery.isLoading}
         contained
-        sheetScrim
         placeholder={t('providerCategory')}
         aria-label={t('providerCategory')}
         onChange={onChange}

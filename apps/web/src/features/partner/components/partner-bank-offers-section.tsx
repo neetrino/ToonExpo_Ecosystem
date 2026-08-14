@@ -22,6 +22,8 @@ import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
 import { Textarea } from '@/shared/ui/textarea';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
+import { ConfirmDeleteModal } from '@/shared/ui/confirm-delete-modal';
+import { useDeleteConfirm } from '@/shared/hooks/use-delete-confirm';
 
 type PartnerBankOffersPageProps = {
   onCreate: (body: ReturnType<typeof toPortalCreateBankOfferBody>) => Promise<void>;
@@ -42,8 +44,10 @@ export const PartnerBankOffersSection = ({
   isBusy,
 }: PartnerBankOffersPageProps) => {
   const t = useTranslations('Partner.bankOffers');
+  const tCommon = useTranslations('Common');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showCreate, setShowCreate] = useState(false);
+  const deleteConfirm = useDeleteConfirm<BankOfferListItem>();
 
   return (
     <div className="flex flex-col gap-4">
@@ -100,7 +104,7 @@ export const PartnerBankOffersSection = ({
                     variant="ghost"
                     disabled={isBusy}
                     onClick={() => {
-                      void onDelete(offer.id);
+                      deleteConfirm.request(offer);
                     }}
                   >
                     {t('delete')}
@@ -144,6 +148,28 @@ export const PartnerBankOffersSection = ({
           />
         </div>
       ) : null}
+      <ConfirmDeleteModal
+        open={deleteConfirm.open}
+        message={
+          deleteConfirm.pending
+            ? tCommon('deleteConfirmNamedMessage', { name: deleteConfirm.pending.title })
+            : undefined
+        }
+        confirming={isBusy}
+        onCancel={() => {
+          if (!isBusy) {
+            deleteConfirm.cancel();
+          }
+        }}
+        onConfirm={() => {
+          if (isBusy) {
+            return;
+          }
+          void deleteConfirm.run(async (offer) => {
+            await onDelete(offer.id);
+          });
+        }}
+      />
     </div>
   );
 };

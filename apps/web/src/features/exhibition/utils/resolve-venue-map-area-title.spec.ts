@@ -10,6 +10,7 @@ const area = (overrides: Partial<PublicVenueMapArea> = {}): PublicVenueMapArea =
   displayMode: 'organization',
   publicLabel: 'Builder Co',
   areaSqm: 12,
+  sortOrder: 0,
   rects: [{ x: 0, y: 0, width: 10, height: 10 }],
   labelX: 5,
   labelY: 5,

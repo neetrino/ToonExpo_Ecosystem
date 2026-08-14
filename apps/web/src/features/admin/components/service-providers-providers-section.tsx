@@ -1,7 +1,7 @@
 'use client';
 
 import type { AdminServiceProviderItem, ServiceProviderCategoryItem } from '@toonexpo/contracts';
-import { LayoutList, SearchX } from 'lucide-react';
+import { LayoutList, SearchX, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useMemo } from 'react';
 
@@ -17,6 +17,7 @@ import { AdminCreateSheet } from '@/shared/ui/admin-create-sheet';
 import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
 import { Button } from '@/shared/ui/button';
 import { EmptyState } from '@/shared/ui/empty-state';
+import { IconButton } from '@/shared/ui/icon-button';
 import type { IntegratedSearchFilterConfig } from '@/shared/ui/integrated-search-filters.types';
 import { ListPageHeader } from '@/shared/ui/list-page-header';
 import { VIEW_MODE_CARDS } from '@/shared/ui/view-mode';
@@ -45,6 +46,17 @@ export type ServiceProvidersProvidersSectionProps = {
   onCreateSubmit: (values: ServiceProviderFormValues) => Promise<void>;
   onUpdateSubmit: (id: string, values: ServiceProviderFormValues) => Promise<void>;
   busy: boolean;
+};
+
+const categoryLogoForProvider = (
+  provider: AdminServiceProviderItem,
+  categories: readonly ServiceProviderCategoryItem[],
+): string | null => {
+  const firstCategoryId = provider.categories[0]?.id;
+  if (!firstCategoryId) {
+    return null;
+  }
+  return categories.find((category) => category.id === firstCategoryId)?.logoUrl ?? null;
 };
 
 const EMPTY_PROVIDER_DEFAULTS: ServiceProviderFormValues = {
@@ -172,6 +184,21 @@ export const ServiceProvidersProvidersSection = ({
         onClose={onDone}
         title={editing?.name ?? ''}
         size="comfortable"
+        headerActions={
+          editing ? (
+            <IconButton
+              label={tList('delete')}
+              size="sm"
+              className="text-danger hover:bg-danger-soft"
+              disabled={busy}
+              onClick={() => {
+                onDelete(editing.id);
+              }}
+            >
+              <Trash2 className="size-4" strokeWidth={1.75} aria-hidden />
+            </IconButton>
+          ) : undefined
+        }
       >
         {editing ? (
           <ServiceProviderForm
@@ -207,17 +234,14 @@ export const ServiceProvidersProvidersSection = ({
           />
         </div>
       ) : effectiveViewMode === VIEW_MODE_CARDS ? (
-        <AdminListCardGrid className="gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <AdminListCardGrid className="sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {providers.map((provider) => (
             <ServiceProviderCard
               key={provider.id}
               provider={provider}
-              busy={busy}
+              categoryLogoUrl={categoryLogoForProvider(provider, categories)}
               onEdit={() => {
                 onEdit(provider);
-              }}
-              onDelete={() => {
-                onDelete(provider.id);
               }}
             />
           ))}

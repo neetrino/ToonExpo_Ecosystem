@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 
 import { Button } from '@/shared/ui/button';
+import { ConfirmDeleteModal } from '@/shared/ui/confirm-delete-modal';
 
 import { useMappingEditorState } from '../../hooks/use-mapping-editor-state';
 import { MappingCanvas, type MappingCanvasHandle } from '../mapping-canvas/mapping-canvas';
@@ -68,6 +69,7 @@ export const MappingEditorShell = ({
   const [fullscreen, setFullscreen] = useState(false);
   const [portalReady, setPortalReady] = useState(false);
   const [deletePending, setDeletePending] = useState(false);
+  const [pendingAction, setPendingAction] = useState<'entity' | 'mapping' | null>(null);
   const editor = useMappingEditorState({
     companyId,
     canvasId,
@@ -123,7 +125,17 @@ export const MappingEditorShell = ({
     if (!id || !onDeleteEntity) {
       return;
     }
-    if (!window.confirm(t('confirmDeleteApartment'))) {
+    setPendingAction('entity');
+  };
+
+  const confirmPendingAction = (): void => {
+    if (pendingAction === 'mapping') {
+      setPendingAction(null);
+      void editor.onClear();
+      return;
+    }
+    const id = editor.selectedId;
+    if (pendingAction !== 'entity' || !id || !onDeleteEntity) {
       return;
     }
     setDeletePending(true);
@@ -132,6 +144,7 @@ export const MappingEditorShell = ({
         await onDeleteEntity(id);
         editor.setSelectedId(null);
         onAfterSave?.();
+        setPendingAction(null);
       } catch (error) {
         window.alert(error instanceof Error ? error.message : t('deleteFailed'));
       } finally {
@@ -161,7 +174,7 @@ export const MappingEditorShell = ({
         );
       }}
       onClear={() => {
-        void editor.onClear();
+        setPendingAction('mapping');
       }}
       onDelete={onDeleteEntity ? handleDeleteEntity : undefined}
     />
@@ -202,6 +215,19 @@ export const MappingEditorShell = ({
         sidebar={sidebar}
         canvas={canvas}
         onClose={() => setFullscreen(false)}
+      />
+      <ConfirmDeleteModal
+        open={pendingAction != null}
+        message={
+          pendingAction === 'mapping' ? t('removeMappingConfirm') : t('confirmDeleteApartment')
+        }
+        confirming={deletePending || editor.pending}
+        onCancel={() => {
+          if (!deletePending && !editor.pending) {
+            setPendingAction(null);
+          }
+        }}
+        onConfirm={confirmPendingAction}
       />
     </>
   );

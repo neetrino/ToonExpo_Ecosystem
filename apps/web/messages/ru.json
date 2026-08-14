@@ -3,6 +3,9 @@
     "close": "Закрыть",
     "cancel": "Отмена",
     "delete": "Удалить",
+    "deleteConfirmTitle": "Удалить",
+    "deleteConfirmMessage": "Вы уверены, что хотите удалить это? Действие нельзя отменить.",
+    "deleteConfirmNamedMessage": "Вы уверены, что хотите удалить «{name}»? Действие нельзя отменить.",
     "integratedSearch": {
       "apply": "Применить",
       "reset": "Сбросить",
@@ -413,9 +416,10 @@
       "terms": "Условия использования",
       "cookiePolicy": "Политика cookie"
     },
-    "copyrightPrefix": "Copyright © 2026",
-    "copyrightCompany": "Neetrino IT Company",
+    "copyrightPrefix": "Copyright © 2026 Toon Expo.",
     "copyrightSuffix": "Все права защищены.",
+    "copyrightCreatedBy": "Создано компанией",
+    "copyrightCompany": "Neetrino IT Company",
     "socialLabel": "Социальные сети",
     "social": {
       "facebook": "Facebook",
@@ -1338,6 +1342,8 @@
       "moveUp": "Вверх",
       "moveDown": "Вниз",
       "remove": "Удалить",
+      "removeConfirmTitle": "Удалить баннер",
+      "removeConfirmMessage": "Удалить этот баннер из ротации на главной?",
       "save": "Сохранить баннеры",
       "saving": "Сохранение…",
       "resetDefault": "Вернуть по умолчанию",
@@ -2077,15 +2083,15 @@
       "assessments": {
         "title": "Готовность",
         "guide": "Откройте оценку, чтобы проставить баллы по категориям. Результат виден застройщику в портале.",
-        "subtitle": "{count, plural, =0 {Нет оценок} one {# оценка} few {# оценки} many {# оценок} other {# оценок}}",
+        "subtitle": "{count, plural, =0 {Нет проектов} one {# проект} few {# проекта} many {# проектов} other {# проектов}}",
         "loading": "Загрузка оценок…",
         "error": "Не удалось загрузить оценки. Попробуйте снова.",
-        "searchPlaceholder": "Поиск по названию застройщика…",
-        "noResultsTitle": "Застройщики не найдены",
-        "noResults": "Нет застройщиков по запросу «{query}».",
+        "searchPlaceholder": "Поиск по проекту или компании…",
+        "noResultsTitle": "Проекты не найдены",
+        "noResults": "Нет проектов по запросу «{query}».",
         "clearSearch": "Очистить поиск",
-        "emptyTitle": "Оценок пока нет",
-        "empty": "Создайте оценку для компании или проекта, затем проставьте баллы по категориям.",
+        "emptyTitle": "Оценок проектов пока нет",
+        "empty": "Добавьте проект, затем оцените его готовность здесь.",
         "newAssessment": "+ Новая оценка",
         "categoriesLink": "Редактировать категории оценки",
         "openToScore": "Открыть для оценки →",
@@ -2096,6 +2102,7 @@
           "ariaLabel": "Пагинация"
         },
         "columns": {
+          "project": "Проект",
           "company": "Компания",
           "target": "Объект",
           "status": "Статус",
@@ -2109,6 +2116,8 @@
         "filters": {
           "company": "Компания",
           "allCompanies": "Все компании",
+          "project": "Проект",
+          "allProjects": "Все проекты",
           "targetType": "Тип объекта",
           "allTargets": "Все объекты",
           "targetTypes": {
@@ -2392,6 +2401,9 @@
         "save": "Сохранить",
         "saving": "Сохранение…",
         "saveSuccess": "Партнёр обновлён",
+        "delete": "Удалить партнёра",
+        "deleteConfirmTitle": "Удалить партнёра",
+        "deleteConfirmMessage": "Вы уверены, что хотите удалить этого партнёра? Действие нельзя отменить.",
         "errors": {
           "generic": "Что-то пошло не так."
         },
@@ -3100,6 +3112,7 @@
         "archive": "В архив",
         "delete": "Удалить",
         "deleteConfirm": "Удалить этот черновик проекта? Действие необратимо.",
+        "deleteConfirmTitle": "Удалить проект",
         "publicationSuccess": "Статус публикации обновлён"
       }
     },
@@ -4053,6 +4066,7 @@
     "search": {
       "label": "Поиск по карте площадки",
       "placeholder": "Компания, код зоны или подпись…",
+      "empty": "Нет подходящих зон",
       "meta": "{code} · {type}",
       "types": {
         "builder": "Застройщик",

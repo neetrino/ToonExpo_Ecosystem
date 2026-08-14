@@ -2,7 +2,6 @@
 
 import type {
   ReadinessAssessmentListItem,
-  ReadinessAssessmentTargetType,
   ReadinessScoreStatus,
 } from '@toonexpo/contracts';
 import { useLocale, useTranslations } from 'next-intl';
@@ -38,7 +37,6 @@ export const ReadinessAssessmentsTable = ({
   const t = useTranslations('Admin.readiness.assessments');
   const locale = useLocale();
 
-  const targetLabel = (target: ReadinessAssessmentTargetType): string => t(`targetTypes.${target}`);
   const companyInfo = (assessment: ReadinessAssessmentListItem): AdminReadinessCompanyInfo =>
     companyLookup.get(assessment.builderCompanyId) ?? {
       name: assessment.builderCompanyId,
@@ -68,8 +66,8 @@ export const ReadinessAssessmentsTable = ({
         <table className="w-full min-w-[48rem] border-collapse text-left text-sm">
           <thead className="bg-surface text-xs uppercase tracking-wide text-ink-muted">
             <tr>
+              <th className="px-3 py-2 font-medium">{t('columns.project')}</th>
               <th className="px-3 py-2 font-medium">{t('columns.company')}</th>
-              <th className="px-3 py-2 font-medium">{t('columns.target')}</th>
               <th className="px-3 py-2 font-medium">{t('columns.status')}</th>
               <th className="px-3 py-2 font-medium">{t('columns.score')}</th>
               <th className="px-3 py-2 font-medium">{t('columns.evaluated')}</th>
@@ -86,16 +84,11 @@ export const ReadinessAssessmentsTable = ({
                       onOpenAssessment(assessment);
                     }}
                   >
-                    {companyInfo(assessment).name}
+                    {assessment.projectName ?? companyInfo(assessment).name}
                   </button>
                 </td>
                 <td className="px-3 py-2.5 text-ink-secondary">
-                  {targetLabel(assessment.targetType)}
-                  {assessment.projectId ? (
-                    <span className="mt-0.5 block text-xs text-ink-muted">
-                      {assessment.projectId}
-                    </span>
-                  ) : null}
+                  {companyInfo(assessment).name}
                 </td>
                 <td className="px-3 py-2.5">
                   <ReadinessStatusBadge

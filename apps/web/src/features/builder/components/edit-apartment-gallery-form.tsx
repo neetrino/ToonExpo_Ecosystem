@@ -11,6 +11,7 @@ import { useUpdateApartmentMutation } from '@/features/builder/hooks/use-portal-
 import { listMediaAssets, uploadMediaAsset } from '@/features/media/api/media-api';
 import { isAllowedMediaMimeType, MEDIA_UPLOAD_MAX_BYTES } from '@/features/media/constants';
 import { Button } from '@/shared/ui/button';
+import { ConfirmDeleteModal } from '@/shared/ui/confirm-delete-modal';
 import { useSuccessToast } from '@/shared/ui/use-success-toast';
 
 const GALLERY_MAX = 12;
@@ -52,6 +53,7 @@ export const EditApartmentGalleryForm = ({ apartment }: EditApartmentGalleryForm
   const [showLibrary, setShowLibrary] = useState(false);
   const [libraryItems, setLibraryItems] = useState<MediaAssetItem[]>([]);
   const [libraryLoading, setLibraryLoading] = useState(false);
+  const [pendingRemoveId, setPendingRemoveId] = useState<string | null>(null);
 
   useEffect(() => {
     setItems(toGalleryItems(apartment));
@@ -197,7 +199,7 @@ export const EditApartmentGalleryForm = ({ apartment }: EditApartmentGalleryForm
             setMainLabel={t('gallerySetMain')}
             removeLabel={tMedia('remove')}
             onSelectMain={setMainId}
-            onRemove={removeItem}
+            onRemove={setPendingRemoveId}
           />
           <div className="overflow-hidden rounded-md bg-surface ring-1 ring-header-border">
             {mainPreview ? (
@@ -272,6 +274,19 @@ export const EditApartmentGalleryForm = ({ apartment }: EditApartmentGalleryForm
         </Button>
       </div>
       {successToast}
+      <ConfirmDeleteModal
+        open={pendingRemoveId != null}
+        title={tMedia('removeConfirmTitle')}
+        message={tMedia('removeConfirmMessage')}
+        confirmLabel={tMedia('remove')}
+        onCancel={() => setPendingRemoveId(null)}
+        onConfirm={() => {
+          if (pendingRemoveId) {
+            removeItem(pendingRemoveId);
+          }
+          setPendingRemoveId(null);
+        }}
+      />
     </>
   );
 };

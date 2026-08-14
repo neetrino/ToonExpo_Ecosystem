@@ -7,6 +7,9 @@ export const EXPO_SEARCH_DEBOUNCE_MS = 300;
 /** Minimum characters before expo search runs. */
 export const EXPO_SEARCH_MIN_LENGTH = 1;
 
+/** Max matching areas shown in the on-map search list. */
+export const EXPO_SEARCH_MAX_RESULTS = 8;
+
 export const EXHIBITION_EVENT_STATUSES = [
   "planning",
   "active",

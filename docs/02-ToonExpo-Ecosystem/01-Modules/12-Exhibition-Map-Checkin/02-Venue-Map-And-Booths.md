@@ -20,7 +20,7 @@ The snapshot contains:
 
 The public viewer receives derived area geometry produced from BOS metric cells. ToonExpo does not recalculate ownership, area sales or grid overlap.
 
-The source grid may be omitted from normal public rendering. Visitors see clean area fills, outlines, names and landmarks.
+The source grid may be omitted from normal public rendering. Visitors see clean area fills, outlines, names and landmarks. Area fill/stroke colors follow the BOS map palette by publish order.
 
 ## Public Display Mode
 

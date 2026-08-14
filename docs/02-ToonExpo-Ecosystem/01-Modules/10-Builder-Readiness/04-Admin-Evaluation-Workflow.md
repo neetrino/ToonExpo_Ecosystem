@@ -16,15 +16,17 @@ Do not split roles in v1 unless needed.
 ## Admin Flow
 
 ```text
-BigProjects Admin opens builder/project
--> opens Readiness
--> creates or opens assessment
+BigProjects Admin opens Readiness
+-> filters by company and/or project
+-> opens the project assessment
 -> reviews categories
 -> sets scores/statuses
 -> adds recommendations/actions
 -> adds hidden internal notes if needed
 -> saves/publishes builder-facing readiness view
 ```
+
+The admin Readiness list is project-scoped: one active assessment per project. Company-level assessments remain available for the Builders list KPI.
 
 ## Admin Screen
 

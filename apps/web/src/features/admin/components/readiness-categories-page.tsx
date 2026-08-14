@@ -143,7 +143,7 @@ export const ReadinessCategoriesPage = () => {
           />
         </div>
       ) : effectiveViewMode === VIEW_MODE_CARDS ? (
-        <AdminListCardGrid className="gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <AdminListCardGrid className="sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {categories.map((category) => (
             <ReadinessCategoryCard
               key={category.id}

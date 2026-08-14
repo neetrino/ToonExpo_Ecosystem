@@ -77,6 +77,7 @@ const toPublicArea = (
     displayMode: area.displayMode,
     publicLabel: area.publicLabel,
     areaSqm: Number(area.areaSqm),
+    sortOrder: area.sortOrder,
     rects,
     labelX: center.x,
     labelY: center.y,

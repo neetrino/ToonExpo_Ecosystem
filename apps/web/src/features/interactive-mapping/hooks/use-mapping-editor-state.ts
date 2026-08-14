@@ -239,7 +239,7 @@ export const useMappingEditorState = ({
   };
 
   const onClear = async () => {
-    if (!selected?.hotspotId || !window.confirm(t('removeMappingConfirm'))) {
+    if (!selected?.hotspotId) {
       return;
     }
     setPending(true);

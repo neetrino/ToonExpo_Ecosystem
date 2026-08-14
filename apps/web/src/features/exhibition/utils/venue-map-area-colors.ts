@@ -1,111 +1,62 @@
 export type VenueMapAreaColor = {
   fill: string;
   stroke: string;
-  fillHighlighted: string;
-  strokeHighlighted: string;
+  fillOpacity: number;
+  strokeOpacity: number;
 };
 
-/** Distinct translucent fills so neighboring booths read as separate blocks. */
-export const VENUE_MAP_AREA_COLORS: readonly VenueMapAreaColor[] = [
-  {
-    fill: 'rgba(14, 165, 233, 0.32)',
-    stroke: '#0284c7',
-    fillHighlighted: 'rgba(14, 165, 233, 0.55)',
-    strokeHighlighted: '#0369a1',
-  },
-  {
-    fill: 'rgba(16, 185, 129, 0.32)',
-    stroke: '#059669',
-    fillHighlighted: 'rgba(16, 185, 129, 0.55)',
-    strokeHighlighted: '#047857',
-  },
-  {
-    fill: 'rgba(245, 158, 11, 0.32)',
-    stroke: '#d97706',
-    fillHighlighted: 'rgba(245, 158, 11, 0.55)',
-    strokeHighlighted: '#b45309',
-  },
-  {
-    fill: 'rgba(244, 63, 94, 0.32)',
-    stroke: '#e11d48',
-    fillHighlighted: 'rgba(244, 63, 94, 0.55)',
-    strokeHighlighted: '#be123c',
-  },
-  {
-    fill: 'rgba(139, 92, 246, 0.32)',
-    stroke: '#7c3aed',
-    fillHighlighted: 'rgba(139, 92, 246, 0.55)',
-    strokeHighlighted: '#6d28d9',
-  },
-  {
-    fill: 'rgba(20, 184, 166, 0.32)',
-    stroke: '#0d9488',
-    fillHighlighted: 'rgba(20, 184, 166, 0.55)',
-    strokeHighlighted: '#0f766e',
-  },
-  {
-    fill: 'rgba(249, 115, 22, 0.32)',
-    stroke: '#ea580c',
-    fillHighlighted: 'rgba(249, 115, 22, 0.55)',
-    strokeHighlighted: '#c2410c',
-  },
-  {
-    fill: 'rgba(99, 102, 241, 0.32)',
-    stroke: '#4f46e5',
-    fillHighlighted: 'rgba(99, 102, 241, 0.55)',
-    strokeHighlighted: '#4338ca',
-  },
-  {
-    fill: 'rgba(236, 72, 153, 0.32)',
-    stroke: '#db2777',
-    fillHighlighted: 'rgba(236, 72, 153, 0.55)',
-    strokeHighlighted: '#be185d',
-  },
-  {
-    fill: 'rgba(34, 197, 94, 0.32)',
-    stroke: '#16a34a',
-    fillHighlighted: 'rgba(34, 197, 94, 0.55)',
-    strokeHighlighted: '#15803d',
-  },
-  {
-    fill: 'rgba(6, 182, 212, 0.32)',
-    stroke: '#0891b2',
-    fillHighlighted: 'rgba(6, 182, 212, 0.55)',
-    strokeHighlighted: '#0e7490',
-  },
-  {
-    fill: 'rgba(234, 179, 8, 0.32)',
-    stroke: '#ca8a04',
-    fillHighlighted: 'rgba(234, 179, 8, 0.55)',
-    strokeHighlighted: '#a16207',
-  },
-] as const;
-
-const HIDDEN_AREA_COLOR: VenueMapAreaColor = {
-  fill: 'rgba(15, 23, 42, 0.1)',
-  stroke: 'rgba(15, 23, 42, 0.25)',
-  fillHighlighted: 'rgba(15, 23, 42, 0.2)',
-  strokeHighlighted: 'rgba(15, 23, 42, 0.5)',
-};
-
-const hashAreaId = (areaId: string): number => {
-  let hash = 0;
-  for (let index = 0; index < areaId.length; index += 1) {
-    hash = (hash * 31 + areaId.charCodeAt(index)) >>> 0;
-  }
-  return hash;
+type VenueMapAreaSwatch = {
+  fill: string;
+  stroke: string;
+  fillOpacity: number;
 };
 
 /**
- * Stable palette color for a venue-map area (same id → same color across filters).
+ * BOS `AREA_COLOR_PALETTE` as SVG hex + opacity (rgba in SVG fill can fall back to black).
+ */
+export const VENUE_MAP_AREA_COLORS: readonly VenueMapAreaSwatch[] = [
+  { fill: '#283994', stroke: '#283994', fillOpacity: 0.28 },
+  { fill: '#0284c7', stroke: '#0284c7', fillOpacity: 0.28 },
+  { fill: '#0d9488', stroke: '#0d9488', fillOpacity: 0.28 },
+  { fill: '#d97706', stroke: '#d97706', fillOpacity: 0.28 },
+  { fill: '#9a7b4f', stroke: '#9a7b4f', fillOpacity: 0.3 },
+  { fill: '#e11d48', stroke: '#e11d48', fillOpacity: 0.26 },
+  { fill: '#7c3aed', stroke: '#7c3aed', fillOpacity: 0.28 },
+  { fill: '#059669', stroke: '#059669', fillOpacity: 0.28 },
+  { fill: '#ea580c', stroke: '#ea580c', fillOpacity: 0.28 },
+  { fill: '#0891b2', stroke: '#0891b2', fillOpacity: 0.28 },
+  { fill: '#be185d', stroke: '#be185d', fillOpacity: 0.26 },
+  { fill: '#4338ca', stroke: '#4338ca', fillOpacity: 0.28 },
+] as const;
+
+const GOLDEN_ANGLE_DEG = 137.508;
+const GENERATED_SATURATION_PCT = 62;
+const GENERATED_LIGHTNESS_PCT = 42;
+const AREA_FILL_ALPHA = 0.28;
+const AREA_STROKE_ALPHA = 0.95;
+const SELECTED_AREA_FILL_ALPHA = 0.42;
+
+const generatedAreaSwatch = (index: number): VenueMapAreaSwatch => {
+  const hue = Math.round((index * GOLDEN_ANGLE_DEG) % 360);
+  const color = `hsl(${hue}, ${GENERATED_SATURATION_PCT}%, ${GENERATED_LIGHTNESS_PCT}%)`;
+  return { fill: color, stroke: color, fillOpacity: AREA_FILL_ALPHA };
+};
+
+const toAreaColor = (swatch: VenueMapAreaSwatch, highlighted: boolean): VenueMapAreaColor => ({
+  fill: swatch.fill,
+  stroke: swatch.stroke,
+  fillOpacity: highlighted ? SELECTED_AREA_FILL_ALPHA : swatch.fillOpacity,
+  strokeOpacity: AREA_STROKE_ALPHA,
+});
+
+/**
+ * Color for the N-th BOS area (0-based list index), including highlight.
  */
 export const resolveVenueMapAreaColor = (
-  areaId: string,
-  isHidden: boolean,
+  colorIndex: number,
+  highlighted: boolean,
 ): VenueMapAreaColor => {
-  if (isHidden) {
-    return HIDDEN_AREA_COLOR;
-  }
-  const paletteIndex = hashAreaId(areaId) % VENUE_MAP_AREA_COLORS.length;
-  return VENUE_MAP_AREA_COLORS[paletteIndex] ?? VENUE_MAP_AREA_COLORS[0]!;
+  const safeIndex = Number.isFinite(colorIndex) ? Math.max(0, Math.floor(colorIndex)) : 0;
+  const swatch = VENUE_MAP_AREA_COLORS[safeIndex] ?? generatedAreaSwatch(safeIndex);
+  return toAreaColor(swatch, highlighted);
 };

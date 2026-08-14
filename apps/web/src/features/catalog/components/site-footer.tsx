@@ -131,7 +131,7 @@ export const SiteFooter = async () => {
 
         <div className="flex flex-col gap-6 border-t border-header-border pt-8 pb-2 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
           <p className="text-xs tracking-wider text-header-muted uppercase">
-            {t('copyrightPrefix')}{' '}
+            {t('copyrightPrefix')} {t('copyrightSuffix')} {t('copyrightCreatedBy')}{' '}
             <a
               href="https://neetrino.com"
               target="_blank"
@@ -140,7 +140,7 @@ export const SiteFooter = async () => {
             >
               {t('copyrightCompany')}
             </a>
-            . {t('copyrightSuffix')}
+            .
           </p>
 
           <ul className="flex items-center gap-3" aria-label={t('socialLabel')}>

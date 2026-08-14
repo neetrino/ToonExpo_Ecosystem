@@ -2,7 +2,6 @@ import type { ApiFetchOptions } from '@/shared/api/client';
 import {
   PUBLIC_CACHE_TAG,
   PUBLIC_CACHE_TTL_CATALOG_SECONDS,
-  PUBLIC_CACHE_TTL_PARTNERS_SECONDS,
   catalogProjectCacheTag,
 } from '@/shared/config/constants';
 
@@ -39,10 +38,16 @@ export const catalogProjectFetch = (projectId: string): PublicFetchInit =>
   publicCachedGet(0, [PUBLIC_CACHE_TAG.CATALOG, catalogProjectCacheTag(projectId)]);
 
 export const partnersFetch = (): PublicFetchInit =>
-  publicCachedGet(PUBLIC_CACHE_TTL_PARTNERS_SECONDS, [PUBLIC_CACHE_TAG.PARTNERS]);
+  /**
+   * Admin partner publish/featured must appear on `/partners` immediately.
+   */
+  publicCachedGet(0, [PUBLIC_CACHE_TAG.PARTNERS]);
 
 export const mortgageFetch = (): PublicFetchInit =>
-  publicCachedGet(PUBLIC_CACHE_TTL_PARTNERS_SECONDS, [PUBLIC_CACHE_TAG.MORTGAGE]);
+  /**
+   * Admin bank-offer publish must appear on `/mortgage` immediately.
+   */
+  publicCachedGet(0, [PUBLIC_CACHE_TAG.MORTGAGE]);
 
 export const exhibitionFetch = (): PublicFetchInit =>
   publicCachedGet(PUBLIC_CACHE_TTL_CATALOG_SECONDS, [PUBLIC_CACHE_TAG.EXHIBITION]);

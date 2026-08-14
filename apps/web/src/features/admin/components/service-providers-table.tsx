@@ -36,9 +36,9 @@ export const ServiceProvidersTable = ({
         <table className="w-full min-w-[48rem] border-collapse text-left text-sm">
           <thead className="bg-surface text-xs uppercase tracking-wide text-ink-muted">
             <tr>
-              <th className="px-3 py-2 font-medium">{t('columns.name')}</th>
-              <th className="px-3 py-2 font-medium">{t('columns.type')}</th>
-              <th className="px-3 py-2 font-medium">{t('columns.categories')}</th>
+              <th className="px-3 py-2 text-left font-medium">{t('columns.name')}</th>
+              <th className="px-3 py-2 text-center font-medium">{t('columns.type')}</th>
+              <th className="px-3 py-2 text-center font-medium">{t('columns.categories')}</th>
               <th className="px-3 py-2 text-center font-medium">{t('columns.active')}</th>
               <th className="px-3 py-2 text-center font-medium">{t('columns.actions')}</th>
             </tr>
@@ -46,16 +46,16 @@ export const ServiceProvidersTable = ({
           <tbody>
             {providers.map((provider) => (
               <tr key={provider.id} className="border-t border-border hover:bg-surface/60">
-                <td className="px-3 py-2.5 font-semibold tracking-tight text-ink">
+                <td className="px-3 py-2.5 text-left font-semibold tracking-tight text-ink">
                   {provider.name}
                 </td>
-                <td className="px-3 py-2.5 text-ink-secondary">
+                <td className="px-3 py-2.5 text-center text-ink-secondary">
                   {t(`form.types.${provider.providerType}`)}
                 </td>
-                <td className="px-3 py-2.5 text-ink-secondary">
+                <td className="px-3 py-2.5 text-center text-ink-secondary">
                   {provider.categories.map((category) => category.name).join(' · ') || '—'}
                 </td>
-                <td className="px-3 py-2.5">
+                <td className="px-3 py-2.5 text-center">
                   <div className="flex justify-center">
                     <span
                       className={cn(
@@ -70,7 +70,7 @@ export const ServiceProvidersTable = ({
                     </span>
                   </div>
                 </td>
-                <td className="px-3 py-2.5">
+                <td className="px-3 py-2.5 text-center">
                   <div className="flex justify-center gap-1">
                     <IconButton
                       label={t('edit')}
