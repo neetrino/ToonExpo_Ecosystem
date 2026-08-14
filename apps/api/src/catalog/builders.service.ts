@@ -34,6 +34,7 @@ export class BuildersService {
       orderBy: { name: 'asc' },
       include: {
         logoMedia: true,
+        coverMedia: true,
         _count: {
           select: {
             projects: {

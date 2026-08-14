@@ -1,11 +1,11 @@
 import type { BuilderDetail } from '@toonexpo/contracts';
+import { Building2 } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 
 import { resolveBuilderHeroAddress } from '@/features/catalog/utils/resolve-builder-hero-address';
-import { resolvePublicAssetUrl, staticAssetUrl } from '@/shared/lib/static-asset-url';
+import { resolvePublicAssetUrl } from '@/shared/lib/static-asset-url';
 import { cn } from '@/shared/ui/cn';
 
-const BUILDER_HERO_FALLBACK_SRC = staticAssetUrl('/demo/building-a.webp');
 const BUILDER_HERO_LOGO_CLASS = 'relative size-14 shrink-0 overflow-hidden rounded-full bg-surface ring-1 ring-white/35 sm:size-16';
 
 type BuilderDetailHeroProps = {
@@ -17,7 +17,7 @@ type BuilderDetailHeroProps = {
  */
 export const BuilderDetailHero = async ({ builder }: BuilderDetailHeroProps) => {
   const t = await getTranslations('Catalog');
-  const heroImageUrl = resolvePublicAssetUrl(builder.coverUrl) ?? BUILDER_HERO_FALLBACK_SRC;
+  const heroImageUrl = resolvePublicAssetUrl(builder.coverUrl);
   const logoUrl = resolvePublicAssetUrl(builder.logoUrl);
   const logoInitials = builder.name.trim().slice(0, 2).toUpperCase() || '—';
   const companyLocation = [builder.address, builder.region]
@@ -29,11 +29,17 @@ export const BuilderDetailHero = async ({ builder }: BuilderDetailHeroProps) => 
   return (
     <section className="relative isolate flex min-h-[min(72vh,42rem)] flex-col bg-canvas">
       <div className="absolute inset-0 -z-10 overflow-hidden" aria-hidden>
-        <img
-          src={heroImageUrl}
-          alt=""
-          className="absolute inset-0 size-full object-cover object-center"
-        />
+        {heroImageUrl ? (
+          <img
+            src={heroImageUrl}
+            alt=""
+            className="absolute inset-0 size-full object-cover object-center"
+          />
+        ) : (
+          <span className="flex size-full flex-col items-center justify-center gap-2 bg-surface text-ink-muted">
+            <Building2 className="size-16 opacity-40" />
+          </span>
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-ink/55 via-ink/15 to-ink/25" />
       </div>
 
