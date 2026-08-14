@@ -9,6 +9,8 @@ import { Controller, useWatch } from 'react-hook-form';
 import type { TRANSLATION_LOCALES } from '@/features/builder/constants';
 import {
   catalogDetailKeyToCriterionId,
+  catalogPairFollower,
+  isCatalogPairFollower,
   isProjectCatalogDateKey,
   isProjectCatalogTextareaKey,
   overviewColumnWeight,
@@ -166,6 +168,66 @@ type KvEditorProps = {
   register: UseFormRegister<UpdateProjectFormValues>;
 };
 
+type CatalogKvItemProps = {
+  sectionId: 'details' | 'finance';
+  fieldKey: keyof ProjectCatalogDetails;
+  locale: TranslationLocale;
+  control: Control<UpdateProjectFormValues>;
+  register: UseFormRegister<UpdateProjectFormValues>;
+};
+
+const CatalogKvItem = ({
+  sectionId,
+  fieldKey,
+  locale,
+  control,
+  register,
+}: CatalogKvItemProps) => {
+  const fieldId = `catalog-${sectionId}-${fieldKey}-${locale}`;
+  const wide = isProjectCatalogTextareaKey(fieldKey);
+  const dateField = isProjectCatalogDateKey(fieldKey);
+  const Icon = PROJECT_CATALOG_CRITERION_ICON[catalogDetailKeyToCriterionId(fieldKey)];
+  return (
+    <div
+      className={cn(
+        'flex items-start justify-between gap-4 border-b border-header-border py-3',
+        wide && 'sm:col-span-2 sm:flex-col sm:items-stretch',
+      )}
+    >
+      <label
+        htmlFor={fieldId}
+        className="flex shrink-0 items-start gap-2 pt-2.5 text-sm text-ink-muted"
+      >
+        {sectionId === 'details' ? (
+          <Icon className="mt-0.5 size-4 shrink-0 text-brand" strokeWidth={1.75} aria-hidden />
+        ) : null}
+        <CatalogFieldLabel fieldKey={fieldKey} />
+      </label>
+      {wide ? (
+        <Textarea
+          id={fieldId}
+          rows={3}
+          className="min-h-20 text-sm font-semibold text-ink-navy"
+          {...register(`catalogDetails.${fieldKey}.${locale}`)}
+        />
+      ) : dateField ? (
+        <CatalogDateValue
+          fieldId={fieldId}
+          fieldKey={fieldKey}
+          locale={locale}
+          control={control}
+        />
+      ) : (
+        <Input
+          id={fieldId}
+          className="h-10 max-w-xs text-right text-sm font-semibold text-ink-navy sm:max-w-none sm:flex-1"
+          {...register(`catalogDetails.${fieldKey}.${locale}`)}
+        />
+      )}
+    </div>
+  );
+};
+
 /**
  * Editable Details / Finance rows — label left, value right (public list layout).
  */
@@ -178,48 +240,44 @@ export const ProjectCatalogKvEditor = ({
 }: KvEditorProps) => (
   <div className="grid grid-cols-1 gap-x-10 sm:grid-cols-2">
     {keys.map((key) => {
-      const fieldId = `catalog-${sectionId}-${key}-${locale}`;
-      const wide = isProjectCatalogTextareaKey(key);
-      const dateField = isProjectCatalogDateKey(key);
-      const Icon = PROJECT_CATALOG_CRITERION_ICON[catalogDetailKeyToCriterionId(key)];
+      if (isCatalogPairFollower(key)) {
+        return null;
+      }
+      const follower = catalogPairFollower(key);
+      const item = (
+        <CatalogKvItem
+          sectionId={sectionId}
+          fieldKey={key}
+          locale={locale}
+          control={control}
+          register={register}
+        />
+      );
+      if (!follower) {
+        return (
+          <CatalogKvItem
+            key={`catalog-${sectionId}-${key}-${locale}`}
+            sectionId={sectionId}
+            fieldKey={key}
+            locale={locale}
+            control={control}
+            register={register}
+          />
+        );
+      }
       return (
         <div
-          key={fieldId}
-          className={cn(
-            'flex items-start justify-between gap-4 border-b border-header-border py-3',
-            wide && 'sm:col-span-2 sm:flex-col sm:items-stretch',
-          )}
+          key={`catalog-${sectionId}-pair-${key}-${locale}`}
+          className="grid grid-cols-1 gap-x-10 sm:col-span-2 sm:grid-cols-2"
         >
-          <label
-            htmlFor={fieldId}
-            className="flex shrink-0 items-start gap-2 pt-2.5 text-sm text-ink-muted"
-          >
-            {sectionId === 'details' ? (
-              <Icon className="mt-0.5 size-4 shrink-0 text-brand" strokeWidth={1.75} aria-hidden />
-            ) : null}
-            <CatalogFieldLabel fieldKey={key} />
-          </label>
-          {wide ? (
-            <Textarea
-              id={fieldId}
-              rows={3}
-              className="min-h-20 text-sm font-semibold text-ink-navy"
-              {...register(`catalogDetails.${key}.${locale}`)}
-            />
-          ) : dateField ? (
-            <CatalogDateValue
-              fieldId={fieldId}
-              fieldKey={key}
-              locale={locale}
-              control={control}
-            />
-          ) : (
-            <Input
-              id={fieldId}
-              className="h-10 max-w-xs text-right text-sm font-semibold text-ink-navy sm:max-w-none sm:flex-1"
-              {...register(`catalogDetails.${key}.${locale}`)}
-            />
-          )}
+          {item}
+          <CatalogKvItem
+            sectionId={sectionId}
+            fieldKey={follower}
+            locale={locale}
+            control={control}
+            register={register}
+          />
         </div>
       );
     })}

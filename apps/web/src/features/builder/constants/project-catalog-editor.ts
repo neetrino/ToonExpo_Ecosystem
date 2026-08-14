@@ -38,6 +38,30 @@ export const PROJECT_CATALOG_DATE_KEYS = [
 export const isProjectCatalogDateKey = (key: keyof ProjectCatalogDetails): boolean =>
   (PROJECT_CATALOG_DATE_KEYS as readonly string[]).includes(key);
 
+/** Compact Details fields that must share a row. */
+export const PROJECT_CATALOG_DETAILS_PAIRS = [
+  ['constructionStart', 'constructionEnd'],
+  ['elevator', 'elevatorsCount'],
+  ['permitNumber', 'constructionType'],
+] as const satisfies ReadonlyArray<
+  readonly [keyof ProjectCatalogDetails, keyof ProjectCatalogDetails]
+>;
+
+const CATALOG_PAIR_FOLLOWER_BY_START: Partial<
+  Record<keyof ProjectCatalogDetails, keyof ProjectCatalogDetails>
+> = Object.fromEntries(PROJECT_CATALOG_DETAILS_PAIRS);
+
+const CATALOG_PAIR_FOLLOWERS = new Set<string>(
+  PROJECT_CATALOG_DETAILS_PAIRS.map((pair) => pair[1]),
+);
+
+export const catalogPairFollower = (
+  key: keyof ProjectCatalogDetails,
+): keyof ProjectCatalogDetails | null => CATALOG_PAIR_FOLLOWER_BY_START[key] ?? null;
+
+export const isCatalogPairFollower = (key: keyof ProjectCatalogDetails): boolean =>
+  CATALOG_PAIR_FOLLOWERS.has(key);
+
 /**
  * Overview card on the public page (compact stats).
  * Kept explicit so Admin mirrors Home layout.
@@ -64,16 +88,13 @@ export const PROJECT_CATALOG_DETAILS_KEYS = [
   'slogan',
   'country',
   'zipCode',
-  'brandName',
-  'designer',
-  'contractor',
-  'permitNumber',
   'constructionStart',
   'constructionEnd',
   'parkingAvailable',
   'storageAvailable',
   'elevator',
   'elevatorsCount',
+  'permitNumber',
   'constructionType',
   'facadeMaterials',
   'thermalSoundInsulation',

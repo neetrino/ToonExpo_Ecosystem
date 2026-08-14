@@ -179,10 +179,6 @@ export const buildProjectCatalogRows = (
   pushCard(rows, 'constructionStart', labels.constructionStart, details.constructionStart);
   pushCard(rows, 'constructionEnd', labels.constructionEnd, details.constructionEnd);
   pushCard(rows, 'constructionStatus', labels.constructionStatus, details.constructionStatus);
-  pushCard(rows, 'brandName', labels.brandName, details.brandName);
-  pushCard(rows, 'designer', labels.designer, details.designer);
-  pushCard(rows, 'contractor', labels.contractor, details.contractor);
-  pushCard(rows, 'permitNumber', labels.permitNumber, details.permitNumber);
   pushCard(rows, 'bedroomsCount', labels.bedroomsCount, details.bedroomsCount);
   pushCard(rows, 'partnerBank', labels.partnerBank, details.partnerBank);
   pushCard(rows, 'pricePerSqm', labels.pricePerSqm, pricePerSqm);
@@ -194,6 +190,7 @@ export const buildProjectCatalogRows = (
   pushCard(rows, 'storageAvailable', labels.storageAvailable, details.storageAvailable);
   pushCard(rows, 'elevator', labels.elevator, details.elevator);
   pushCard(rows, 'elevatorsCount', labels.elevatorsCount, details.elevatorsCount);
+  pushCard(rows, 'permitNumber', labels.permitNumber, details.permitNumber);
   pushCard(rows, 'constructionType', labels.constructionType, details.constructionType);
   pushCard(rows, 'facadeMaterials', labels.facadeMaterials, details.facadeMaterials);
   pushCard(
