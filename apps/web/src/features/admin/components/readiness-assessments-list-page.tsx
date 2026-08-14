@@ -65,7 +65,11 @@ export const ReadinessAssessmentsListPage = () => {
   const { viewMode, effectiveViewMode, setViewMode } = usePersistedViewMode(
     ADMIN_VIEW_MODE_KEYS.readinessAssessments,
   );
-  const hrefState = { page, companyId, projectId };
+  const hrefState = {
+    page,
+    ...(companyId ? { companyId } : {}),
+    ...(projectId ? { projectId } : {}),
+  };
 
   const companiesQuery = useAdminBuilderCompaniesQuery(ADMIN_COMPANIES_MAX_PAGE_SIZE);
   const pickerQuery = useAdminProjectsQuery({
