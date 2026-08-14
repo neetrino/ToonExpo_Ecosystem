@@ -313,3 +313,8 @@ export type PortalReadinessResponse = {
 export type EnsureBuilderReadinessAssessmentsResponse = {
   createdCount: number;
 };
+
+/** Result of ensuring project-level assessments exist for all projects. */
+export type EnsureProjectReadinessAssessmentsResponse = {
+  createdCount: number;
+};

@@ -82,6 +82,16 @@ export class AdminReadinessAssessmentsController {
     return this.assessments.ensureBuilderCompanyAssessments();
   }
 
+  @Post('ensure-projects')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Ensure every project has an active project-level assessment',
+  })
+  @ApiOkResponse({ description: 'Number of assessments created for missing projects' })
+  ensureProjects(): Promise<{ createdCount: number }> {
+    return this.assessments.ensureProjectAssessments();
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get readiness assessment detail' })
   @ApiOkResponse({ description: 'Assessment with scores, actions, notes' })

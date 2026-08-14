@@ -2485,15 +2485,15 @@
       "assessments": {
         "title": "Readiness",
         "guide": "Open an assessment to score categories. The builder sees the result in their portal.",
-        "subtitle": "{count, plural, =0 {No assessments} one {# assessment} other {# assessments}}",
+        "subtitle": "{count, plural, =0 {No projects} one {# project} other {# projects}}",
         "loading": "Loading assessments…",
         "error": "Could not load assessments. Try again.",
-        "searchPlaceholder": "Search by builder name…",
-        "noResultsTitle": "No matching builders",
-        "noResults": "No builders match “{query}”.",
+        "searchPlaceholder": "Search by project or company…",
+        "noResultsTitle": "No matching projects",
+        "noResults": "No projects match “{query}”.",
         "clearSearch": "Clear search",
-        "emptyTitle": "No assessments yet",
-        "empty": "Create an assessment for a builder company or project, then score its categories.",
+        "emptyTitle": "No project assessments yet",
+        "empty": "Add a project, then score its readiness here.",
         "newAssessment": "+ New Assessment",
         "categoriesLink": "Edit scoring categories",
         "openToScore": "Open to score →",
@@ -2504,6 +2504,7 @@
           "ariaLabel": "Pagination"
         },
         "columns": {
+          "project": "Project",
           "company": "Company",
           "target": "Target",
           "status": "Status",
@@ -2517,6 +2518,8 @@
         "filters": {
           "company": "Company",
           "allCompanies": "All companies",
+          "project": "Project",
+          "allProjects": "All projects",
           "targetType": "Target type",
           "allTargets": "All targets",
           "targetTypes": {

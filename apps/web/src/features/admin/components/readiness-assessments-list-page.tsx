@@ -1,27 +1,40 @@
 'use client';
 
 import type { ReadinessAssessmentListItem } from '@toonexpo/contracts';
-import { useQueryClient } from '@tanstack/react-query';
 import { ClipboardCheck, SearchX } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 
-import { ensureAdminBuilderReadinessAssessments } from '@/features/admin/api/admin-readiness-api';
+import {
+  READINESS_ASSESSMENT_FILTER_COMPANY_KEY,
+  READINESS_ASSESSMENT_FILTER_PROJECT_KEY,
+  buildReadinessAssessmentFilterConfigs,
+} from '@/features/admin/components/readiness-assessment-filters';
+import {
+  READINESS_LIST_FIRST_PAGE,
+  buildProjectAssessmentMap,
+  buildReadinessListHref,
+  parseReadinessListPage,
+  resolveVisibleProjects,
+} from '@/features/admin/components/readiness-assessments-list.helpers';
 import { ReadinessAssessmentsTable } from '@/features/admin/components/readiness-assessments-table';
 import {
   ReadinessManagementModal,
   type ReadinessManagementTarget,
 } from '@/features/admin/components/readiness-management-modal';
 import {
-  ADMIN_COMPANIES_DEFAULT_PAGE_SIZE,
   ADMIN_COMPANIES_MAX_PAGE_SIZE,
+  ADMIN_INVENTORY_DEFAULT_PAGE_SIZE,
   ADMIN_PROJECTS_SEARCH_DEBOUNCE_MS,
-  ADMIN_READINESS_ASSESSMENTS_QUERY_KEY,
   ADMIN_VIEW_MODE_KEYS,
 } from '@/features/admin/constants';
-import { useAdminCompaniesQuery } from '@/features/admin/hooks/use-admin-companies';
+import {
+  useAdminBuilderCompaniesQuery,
+  useAdminProjectsQuery,
+} from '@/features/admin/hooks/use-admin-companies';
 import { useAdminReadinessAssessmentsQuery } from '@/features/admin/hooks/use-admin-readiness';
+import { useEnsureProjectReadinessAssessments } from '@/features/admin/hooks/use-ensure-project-readiness';
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
 import { usePathname, useRouter } from '@/i18n/navigation';
 import { useDebouncedValue } from '@/shared/hooks/use-debounced-value';
@@ -30,37 +43,8 @@ import { EmptyState } from '@/shared/ui/empty-state';
 import { ListPageHeader } from '@/shared/ui/list-page-header';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
-const FIRST_PAGE = 1;
-
-const parsePage = (raw: string | null): number => {
-  const parsed = Number(raw);
-  if (!Number.isFinite(parsed) || parsed < FIRST_PAGE) {
-    return FIRST_PAGE;
-  }
-  return Math.floor(parsed);
-};
-
 /**
- * One active company-level assessment per builder (latest wins).
- */
-const buildCompanyAssessmentMap = (
-  assessments: readonly ReadinessAssessmentListItem[],
-): Map<string, ReadinessAssessmentListItem> => {
-  const map = new Map<string, ReadinessAssessmentListItem>();
-  for (const assessment of assessments) {
-    if (assessment.archivedAt !== null || assessment.targetType !== 'builder_company') {
-      continue;
-    }
-    const existing = map.get(assessment.builderCompanyId);
-    if (!existing || assessment.createdAt > existing.createdAt) {
-      map.set(assessment.builderCompanyId, assessment);
-    }
-  }
-  return map;
-};
-
-/**
- * Admin readiness list — same builders as Admin Builders (1 card per builder).
+ * Admin readiness list — one card per project, filtered by company/project.
  */
 export const ReadinessAssessmentsListPage = () => {
   const t = useTranslations('Admin.readiness.assessments');
@@ -69,109 +53,131 @@ export const ReadinessAssessmentsListPage = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-  const queryClient = useQueryClient();
-  const page = parsePage(searchParams.get('page'));
-  const pageSize = ADMIN_COMPANIES_DEFAULT_PAGE_SIZE;
+  const page = parseReadinessListPage(searchParams.get('page'));
+  const companyId = searchParams.get('companyId')?.trim() || undefined;
+  const projectId = searchParams.get('projectId')?.trim() || undefined;
+  const pageSize = ADMIN_INVENTORY_DEFAULT_PAGE_SIZE;
   const [search, setSearch] = useState('');
   const trimmedSearch = search.trim();
   const debouncedSearch = useDebouncedValue(trimmedSearch, ADMIN_PROJECTS_SEARCH_DEBOUNCE_MS);
   const activeSearch = trimmedSearch.length === 0 ? '' : debouncedSearch;
   const [modalTarget, setModalTarget] = useState<ReadinessManagementTarget | null>(null);
-  const [isEnsuringBuilders, setIsEnsuringBuilders] = useState(false);
   const { viewMode, effectiveViewMode, setViewMode } = usePersistedViewMode(
     ADMIN_VIEW_MODE_KEYS.readinessAssessments,
   );
-  const ensureRanRef = useRef(false);
+  const hrefState = { page, companyId, projectId };
 
-  const buildersQuery = useAdminCompaniesQuery(page, pageSize, {
-    type: 'builder',
+  const companiesQuery = useAdminBuilderCompaniesQuery(ADMIN_COMPANIES_MAX_PAGE_SIZE);
+  const pickerQuery = useAdminProjectsQuery({
+    page: 1,
+    pageSize: ADMIN_COMPANIES_MAX_PAGE_SIZE,
+    ...(companyId ? { companyId } : {}),
+  });
+  const projectsQuery = useAdminProjectsQuery({
+    page,
+    pageSize,
+    ...(companyId ? { companyId } : {}),
     ...(activeSearch ? { search: activeSearch } : {}),
   });
   const assessmentsQuery = useAdminReadinessAssessmentsQuery({
     page: 1,
     pageSize: ADMIN_COMPANIES_MAX_PAGE_SIZE,
-    targetType: 'builder_company',
+    targetType: 'project',
+    ...(companyId ? { builderCompanyId: companyId } : {}),
+    ...(projectId ? { projectId } : {}),
   });
+  const isEnsuringProjects = useEnsureProjectReadinessAssessments(projectsQuery.isSuccess);
 
-  useEffect(() => {
-    if (ensureRanRef.current || !buildersQuery.isSuccess) {
-      return;
-    }
-    ensureRanRef.current = true;
-    setIsEnsuringBuilders(true);
-    void ensureAdminBuilderReadinessAssessments()
-      .then(async (result) => {
-        if (result.createdCount > 0) {
-          await queryClient.invalidateQueries({
-            queryKey: ADMIN_READINESS_ASSESSMENTS_QUERY_KEY,
-          });
-        }
-      })
-      .catch(() => {
-        ensureRanRef.current = false;
-      })
-      .finally(() => {
-        setIsEnsuringBuilders(false);
-      });
-  }, [buildersQuery.isSuccess, queryClient]);
+  const builderCompanies = useMemo(() => {
+    const companies = companiesQuery.data?.data ?? [];
+    return companies.slice().sort((a, b) => a.name.localeCompare(b.name));
+  }, [companiesQuery.data]);
+
+  const pickerProjects = pickerQuery.data?.data ?? [];
+  const pageProjects = projectsQuery.data?.data ?? [];
+  const visibleProjects = useMemo(
+    () => resolveVisibleProjects(projectId, pickerProjects, pageProjects),
+    [pageProjects, pickerProjects, projectId],
+  );
 
   const companyLookup = useMemo(() => {
     const map = new Map<string, { name: string; logoUrl: string | null }>();
-    for (const company of buildersQuery.data?.data ?? []) {
+    for (const company of builderCompanies) {
       map.set(company.id, { name: company.name, logoUrl: company.logoUrl });
     }
+    for (const project of visibleProjects) {
+      if (!map.has(project.builderCompanyId)) {
+        map.set(project.builderCompanyId, { name: project.companyName, logoUrl: null });
+      }
+    }
     return map;
-  }, [buildersQuery.data]);
+  }, [builderCompanies, visibleProjects]);
 
-  const assessmentByCompanyId = useMemo(
-    () => buildCompanyAssessmentMap(assessmentsQuery.data?.data ?? []),
+  const assessmentByProjectId = useMemo(
+    () => buildProjectAssessmentMap(assessmentsQuery.data?.data ?? []),
     [assessmentsQuery.data?.data],
   );
 
   const visibleAssessments = useMemo(() => {
-    const builders = buildersQuery.data?.data ?? [];
     const rows: ReadinessAssessmentListItem[] = [];
-    for (const builder of builders) {
-      const assessment = assessmentByCompanyId.get(builder.id);
+    for (const project of visibleProjects) {
+      const assessment = assessmentByProjectId.get(project.id);
       if (assessment) {
         rows.push(assessment);
       }
     }
     return rows;
-  }, [assessmentByCompanyId, buildersQuery.data?.data]);
+  }, [assessmentByProjectId, visibleProjects]);
+
+  const filterConfigs = useMemo(
+    () =>
+      buildReadinessAssessmentFilterConfigs(builderCompanies, pickerProjects, {
+        company: t('filters.company'),
+        allCompanies: t('filters.allCompanies'),
+        project: t('filters.project'),
+        allProjects: t('filters.allProjects'),
+      }),
+    [builderCompanies, pickerProjects, t],
+  );
 
   const openAssessment = (assessment: ReadinessAssessmentListItem): void => {
     const companyName =
       companyLookup.get(assessment.builderCompanyId)?.name ?? assessment.builderCompanyId;
-    const targetLabel = tDetail(`targetTypes.${assessment.targetType}`);
+    const projectLabel = assessment.projectName ?? tDetail('targetTypes.project');
     setModalTarget({
       kind: 'assessment',
       assessmentId: assessment.id,
-      subtitle: `${companyName} · ${targetLabel}`,
+      subtitle: `${projectLabel} · ${companyName}`,
     });
   };
 
-  const buildHref = (nextPage: number): string => {
-    const params = new URLSearchParams();
-    if (nextPage > FIRST_PAGE) {
-      params.set('page', String(nextPage));
-    }
-    const query = params.toString();
-    return query.length > 0 ? `${pathname}?${query}` : pathname;
-  };
+  const buildHref = (next: {
+    page?: number;
+    companyId?: string | null;
+    projectId?: string | null;
+  }): string => buildReadinessListHref(pathname, next, hrefState);
 
   const handleSearchChange = (value: string): void => {
     setSearch(value);
-    if (page > FIRST_PAGE) {
-      router.replace(buildHref(FIRST_PAGE));
+    if (page > READINESS_LIST_FIRST_PAGE) {
+      router.replace(buildHref({ page: READINESS_LIST_FIRST_PAGE }));
     }
   };
 
-  if (buildersQuery.isLoading || assessmentsQuery.isLoading || isEnsuringBuilders) {
+  const isListLoading =
+    companiesQuery.isLoading ||
+    pickerQuery.isLoading ||
+    projectsQuery.isLoading ||
+    assessmentsQuery.isLoading ||
+    isEnsuringProjects;
+  const isListError =
+    companiesQuery.isError || pickerQuery.isError || projectsQuery.isError || assessmentsQuery.isError;
+
+  if (isListLoading) {
     return <p className="text-sm text-ink-secondary">{t('loading')}</p>;
   }
 
-  if (buildersQuery.isError || assessmentsQuery.isError || !buildersQuery.data) {
+  if (isListError) {
     return (
       <p role="alert" className="text-sm text-danger">
         {t('error')}
@@ -179,20 +185,55 @@ export const ReadinessAssessmentsListPage = () => {
     );
   }
 
-  const buildersMeta = buildersQuery.data.meta;
+  const projectsMeta = projectId
+    ? {
+        page: READINESS_LIST_FIRST_PAGE,
+        totalPages: visibleProjects.length > 0 ? 1 : 0,
+        total: visibleProjects.length,
+      }
+    : (projectsQuery.data?.meta ?? { page, totalPages: 0, total: 0 });
 
   return (
     <div className="flex flex-col gap-6">
       <ListPageHeader
         icon={ClipboardCheck}
         title={t('title')}
-        subtitle={t('subtitle', { count: buildersMeta.total })}
+        subtitle={t('subtitle', { count: projectsMeta.total })}
         search={search}
         searchPlaceholder={t('searchPlaceholder')}
         searchAriaLabel={tCommon('searchLabel')}
+        filters={filterConfigs}
+        filterValues={{
+          [READINESS_ASSESSMENT_FILTER_COMPANY_KEY]: companyId ?? '',
+          [READINESS_ASSESSMENT_FILTER_PROJECT_KEY]: projectId ?? '',
+        }}
         onSearchChange={handleSearchChange}
+        onFilterChange={(key, value) => {
+          if (key === READINESS_ASSESSMENT_FILTER_COMPANY_KEY) {
+            router.replace(
+              buildHref({
+                page: READINESS_LIST_FIRST_PAGE,
+                companyId: value || null,
+                projectId: null,
+              }),
+            );
+            return;
+          }
+          if (key === READINESS_ASSESSMENT_FILTER_PROJECT_KEY) {
+            router.replace(
+              buildHref({ page: READINESS_LIST_FIRST_PAGE, projectId: value || null }),
+            );
+          }
+        }}
         onClearAll={() => {
-          handleSearchChange('');
+          setSearch('');
+          router.replace(
+            buildHref({
+              page: READINESS_LIST_FIRST_PAGE,
+              companyId: null,
+              projectId: null,
+            }),
+          );
         }}
         actions={<ViewModeToggle value={viewMode} onChange={setViewMode} />}
       />
@@ -218,11 +259,17 @@ export const ReadinessAssessmentsListPage = () => {
       )}
 
       <CatalogPagination
-        page={buildersMeta.page}
-        totalPages={buildersMeta.totalPages}
-        previousHref={buildersMeta.page > FIRST_PAGE ? buildHref(buildersMeta.page - 1) : null}
+        page={projectsMeta.page}
+        totalPages={projectsMeta.totalPages}
+        previousHref={
+          projectsMeta.page > READINESS_LIST_FIRST_PAGE
+            ? buildHref({ page: projectsMeta.page - 1 })
+            : null
+        }
         nextHref={
-          buildersMeta.page < buildersMeta.totalPages ? buildHref(buildersMeta.page + 1) : null
+          projectsMeta.page < projectsMeta.totalPages
+            ? buildHref({ page: projectsMeta.page + 1 })
+            : null
         }
         previousLabel={t('pagination.previous')}
         nextLabel={t('pagination.next')}

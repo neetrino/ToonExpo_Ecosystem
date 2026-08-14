@@ -3,7 +3,7 @@ import type {
   CreateReadinessInternalNoteBody,
   CreateReadinessRecommendationBody,
   CreateReadinessRequiredActionBody,
-  EnsureBuilderReadinessAssessmentsResponse,
+  EnsureProjectReadinessAssessmentsResponse,
   ReadinessAssessmentDetail,
   ReadinessAssessmentListResponse,
   ReadinessAssessmentTargetType,
@@ -85,12 +85,12 @@ export const createAdminReadinessAssessment = (
   });
 
 /**
- * Creates missing company-level assessments so Admin Builders appear in Readiness.
+ * Creates missing project-level assessments so Admin Readiness lists every project.
  */
-export const ensureAdminBuilderReadinessAssessments =
-  (): Promise<EnsureBuilderReadinessAssessmentsResponse> =>
-    apiFetch<EnsureBuilderReadinessAssessmentsResponse>({
-      path: '/admin/readiness/assessments/ensure-builders',
+export const ensureAdminProjectReadinessAssessments =
+  (): Promise<EnsureProjectReadinessAssessmentsResponse> =>
+    apiFetch<EnsureProjectReadinessAssessmentsResponse>({
+      path: '/admin/readiness/assessments/ensure-projects',
       method: 'POST',
       ...jsonCredentials,
     });

@@ -29,7 +29,7 @@ const toKpiCategories = (assessment: ReadinessAssessmentListItem): ReadinessKpiC
   }));
 
 /**
- * Admin readiness list card — same KPI chrome as `/admin/companies`.
+ * Admin readiness list card — project KPI chrome with company branding.
  */
 export const AdminReadinessAssessmentCard = ({
   assessment,
