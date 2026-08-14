@@ -22,6 +22,7 @@ export type CompanyResponse = {
   id: string;
   name: string;
   description: string | null;
+  shortDescription: string | null;
   type: CompanyType;
   status: CompanyStatus;
   source: CompanySource;
@@ -51,6 +52,7 @@ export type CompanyProfileResponse = {
   id: string;
   name: string;
   description: string | null;
+  shortDescription: string | null;
   type: CompanyType;
   status: CompanyStatus;
   logoMediaId: string | null;
@@ -75,6 +77,7 @@ export type CreateCompanyRequest = {
   name: string;
   type: CompanyType;
   description?: string;
+  shortDescription?: string;
   adminName: string;
   adminEmail: string;
   adminPhone?: string;
@@ -88,6 +91,7 @@ export type CreateCompanyRequest = {
 export type UpdateCompanyRequest = {
   name?: string;
   description?: string | null;
+  shortDescription?: string | null;
   status?: CompanyStatus;
   logoMediaId?: string | null;
   coverMediaId?: string | null;
@@ -108,6 +112,7 @@ export type UpdateCompanyRequest = {
  */
 export type UpdateCompanyProfileRequest = {
   description?: string | null;
+  shortDescription?: string | null;
   logoMediaId?: string | null;
   phone?: string | null;
   contactPerson?: string | null;

@@ -11,6 +11,7 @@ import {
 import {
   COMPANY_DESCRIPTION_MAX_LENGTH,
   COMPANY_NAME_MAX_LENGTH,
+  COMPANY_SHORT_DESCRIPTION_MAX_LENGTH,
   EMAIL_MAX_LENGTH,
   NAME_MAX_LENGTH,
   PHONE_MAX_LENGTH,
@@ -39,6 +40,12 @@ export class CreateCompanyDto {
   @IsString()
   @MaxLength(COMPANY_DESCRIPTION_MAX_LENGTH)
   description?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MaxLength(COMPANY_SHORT_DESCRIPTION_MAX_LENGTH)
+  shortDescription?: string;
 
   @ApiProperty({ example: "Anna Admin" })
   @IsString()

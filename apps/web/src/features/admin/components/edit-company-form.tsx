@@ -6,7 +6,7 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { Controller, useForm, type Control } from 'react-hook-form';
 
-import { COMPANY_STATUSES } from '@/features/admin/constants';
+import { COMPANY_DESCRIPTION_MAX_LENGTH, COMPANY_SHORT_DESCRIPTION_MAX_LENGTH, COMPANY_STATUSES } from '@/features/admin/constants';
 import { useUpdateAdminCompanyMutation } from '@/features/admin/hooks/use-admin-companies';
 import {
   updateCompanySchema,
@@ -27,6 +27,7 @@ import { FormField } from '@/shared/ui/form-field';
 import { useSuccessToast } from '@/shared/ui/use-success-toast';
 import { Input } from '@/shared/ui/input';
 import { Select } from '@/shared/ui/select';
+import { Textarea } from '@/shared/ui/textarea';
 
 type EditCompanyFormProps = {
   company: CompanyResponse;
@@ -52,6 +53,7 @@ export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
     defaultValues: {
       name: company.name,
       description: company.description ?? '',
+      shortDescription: company.shortDescription ?? '',
       status: company.status,
       logoMediaId: company.logoMediaId ?? '',
       coverMediaId: company.coverMediaId ?? '',
@@ -65,6 +67,7 @@ export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
       await updateMutation.mutateAsync({
         name: values.name,
         description: values.description.length > 0 ? values.description : null,
+        shortDescription: values.shortDescription.length > 0 ? values.shortDescription : null,
         status: values.status,
         logoMediaId: toNullableMediaId(values.logoMediaId),
         coverMediaId: toNullableMediaId(values.coverMediaId),
@@ -124,16 +127,41 @@ export const EditCompanyForm = ({ company }: EditCompanyFormProps) => {
       </div>
 
       <FormField
+        id="edit-company-short-description"
+        label={t('form.shortDescription')}
+        error={errors.shortDescription ? t('validation.shortDescription') : undefined}
+      >
+        <Textarea
+          id="edit-company-short-description"
+          rows={2}
+          maxLength={COMPANY_SHORT_DESCRIPTION_MAX_LENGTH}
+          className="min-h-20"
+          aria-invalid={Boolean(errors.shortDescription)}
+          aria-describedby="edit-company-short-description-hint"
+          {...register('shortDescription')}
+        />
+        <p id="edit-company-short-description-hint" className="text-xs text-ink-muted">
+          {t('form.shortDescriptionHint')}
+        </p>
+      </FormField>
+
+      <FormField
         id="edit-company-description"
         label={t('form.description')}
         error={errors.description ? t('validation.description') : undefined}
       >
-        <textarea
+        <Textarea
           id="edit-company-description"
-          rows={3}
-          className="w-full rounded-sm border border-border bg-background px-4 py-3 text-sm text-ink focus-visible:border-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/20"
+          rows={5}
+          maxLength={COMPANY_DESCRIPTION_MAX_LENGTH}
+          className="min-h-32"
+          aria-invalid={Boolean(errors.description)}
+          aria-describedby="edit-company-description-hint"
           {...register('description')}
         />
+        <p id="edit-company-description-hint" className="text-xs text-ink-muted">
+          {t('form.descriptionHint')}
+        </p>
       </FormField>
 
       <CompanyContactFields

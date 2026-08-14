@@ -17,6 +17,7 @@ type CompanyRecord = {
   id: string;
   name: string;
   description: string | null;
+  shortDescription: string | null;
   type: CompanyType;
   status: CompanyStatus;
   source: CompanySource;
@@ -46,6 +47,7 @@ export const toCompanyResponse = (company: CompanyRecord): CompanyResponse => ({
   id: company.id,
   name: company.name,
   description: company.description,
+  shortDescription: company.shortDescription,
   type: company.type,
   status: company.status,
   source: company.source,
@@ -80,6 +82,7 @@ type NullableStringPatch = {
   mediaMaterialsUrl?: string | null;
   advertisingMaterialsUrl?: string | null;
   description?: string | null;
+  shortDescription?: string | null;
 };
 
 /**
@@ -97,6 +100,7 @@ export const buildCompanyProfilePatch = (
   };
 
   assign('description', input.description);
+  assign('shortDescription', input.shortDescription);
   assign('phone', input.phone);
   assign('contactPerson', input.contactPerson);
   assign('email', input.email);

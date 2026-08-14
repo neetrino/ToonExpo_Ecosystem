@@ -41,7 +41,11 @@ export default async function BuildersPage({ params, searchParams }: BuildersPag
   /** Soft-fail when API is down during prerender (`next build` without Nest). */
   const builders = await listBuilders({ locale }).catch(() => []);
   const filteredBuilders = builders.filter((builder) =>
-    matchesBuilderSearch(filters.q, [builder.name, builder.description ?? '']),
+    matchesBuilderSearch(filters.q, [
+      builder.name,
+      builder.shortDescription ?? '',
+      builder.description ?? '',
+    ]),
   );
 
   return (

@@ -151,6 +151,7 @@ export const LIST_MIN_PAGE = 1;
 export const COMPANY_NAME_MAX_LENGTH = 200;
 
 export const COMPANY_DESCRIPTION_MAX_LENGTH = 4000;
+export const COMPANY_SHORT_DESCRIPTION_MAX_LENGTH = 400;
 
 /**
  * ADAPTIVE VALUE — confirm with owner.

@@ -76,14 +76,12 @@ export const BuilderCard = ({ builder, className }: BuilderCardProps) => {
           </p>
         </div>
 
-        {builder.description ? (
-          <p className="mb-4 line-clamp-2 text-xs leading-4 text-header-muted">
-            {builder.description}
+        {builder.shortDescription ? (
+          <p className="mb-4 line-clamp-2 text-sm leading-5 text-ink-secondary">
+            {builder.shortDescription}
           </p>
         ) : (
-          <p className="mb-4 text-xs leading-4 text-header-muted">
-            {t('builders.projectCount', { count: builder.publishedProjectCount })}
-          </p>
+          <div className="mb-4" />
         )}
 
         <div

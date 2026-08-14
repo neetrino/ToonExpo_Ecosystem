@@ -170,6 +170,8 @@ model Company {
   name         String
   /// Public builder/company blurb (Armenian canonical; localized via Translation).
   description  String?
+  /// Public builder card blurb (Armenian canonical; localized via Translation).
+  shortDescription String? @map("short_description")
   type         CompanyType
   status       CompanyStatus @default(pending)
   source       CompanySource

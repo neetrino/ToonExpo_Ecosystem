@@ -34,6 +34,7 @@ type CreateCompanyInput = {
   name: string;
   type: CompanyType;
   description?: string;
+  shortDescription?: string;
   adminName: string;
   adminEmail: string;
   adminPhone?: string;
@@ -43,6 +44,7 @@ type CreateCompanyInput = {
 type UpdateCompanyInput = {
   name?: string;
   description?: string | null;
+  shortDescription?: string | null;
   status?: CompanyStatus;
   logoMediaId?: string | null;
   coverMediaId?: string | null;
@@ -96,6 +98,7 @@ const buildAdminCompaniesWhere = (
   where.OR = [
     { name: { contains: needle, mode: 'insensitive' } },
     { description: { contains: needle, mode: 'insensitive' } },
+    { shortDescription: { contains: needle, mode: 'insensitive' } },
   ];
   return where;
 };
@@ -118,6 +121,7 @@ export class AdminCompaniesService {
       companyName: input.name.trim(),
       companyType: input.type,
       companyDescription: input.description?.trim() || null,
+      companyShortDescription: input.shortDescription?.trim() || null,
       source: CompanySource.admin,
       adminName: input.adminName.trim(),
       adminEmail: input.adminEmail,

@@ -1,7 +1,10 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEmail, IsOptional, IsString, IsUrl, MaxLength, ValidateIf } from 'class-validator';
 
-import { COMPANY_DESCRIPTION_MAX_LENGTH } from '../../common/constants/app.constants.js';
+import {
+  COMPANY_DESCRIPTION_MAX_LENGTH,
+  COMPANY_SHORT_DESCRIPTION_MAX_LENGTH,
+} from '../../common/constants/app.constants.js';
 
 const optionalNullableString = () =>
   ValidateIf((_: unknown, value: unknown) => value !== null && value !== undefined);
@@ -13,6 +16,13 @@ export class UpdateCompanyProfileDto {
   @IsString()
   @MaxLength(COMPANY_DESCRIPTION_MAX_LENGTH)
   description?: string | null;
+
+  @ApiPropertyOptional({ nullable: true })
+  @IsOptional()
+  @optionalNullableString()
+  @IsString()
+  @MaxLength(COMPANY_SHORT_DESCRIPTION_MAX_LENGTH)
+  shortDescription?: string | null;
 
   @ApiPropertyOptional({ nullable: true })
   @IsOptional()

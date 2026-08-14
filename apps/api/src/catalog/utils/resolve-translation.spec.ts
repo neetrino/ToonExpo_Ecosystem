@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  resolveCompanyDisplayDescription,
   resolveCompanyDisplayName,
   resolveTranslatedValue,
   TRANSLATION_ENTITY,
@@ -134,5 +135,17 @@ describe('resolveCompanyDisplayName', () => {
         'Neetrinoo',
       ),
     ).toBe('Neetrinoo');
+  });
+});
+
+describe('resolveCompanyDisplayDescription', () => {
+  it('falls back to the scalar description when the locale has no text', () => {
+    expect(
+      resolveCompanyDisplayDescription([], 'c1', 'en', 'Premium residential developer'),
+    ).toBe('Premium residential developer');
+  });
+
+  it('returns null when both translation and scalar are empty', () => {
+    expect(resolveCompanyDisplayDescription([], 'c1', 'en', null)).toBeNull();
   });
 });

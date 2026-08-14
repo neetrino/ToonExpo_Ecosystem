@@ -87,6 +87,19 @@ export const BuilderDetailHero = async ({ builder }: BuilderDetailHeroProps) => 
             </h1>
           </div>
 
+          {builder.description ? (
+            <p
+              className={cn(
+                'max-w-xl text-on-dark/95',
+                'text-[clamp(1rem,0.9rem+0.4vw,1.25rem)]',
+                'leading-[1.45]',
+                'line-clamp-3 text-pretty',
+              )}
+            >
+              {builder.description}
+            </p>
+          ) : null}
+
           <p
             className={cn(
               'font-brand font-bold text-on-dark',

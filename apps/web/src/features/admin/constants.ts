@@ -1,6 +1,7 @@
 /** Mirrors NestJS admin company DTO limits. */
 export const COMPANY_NAME_MAX_LENGTH = 200;
 export const COMPANY_DESCRIPTION_MAX_LENGTH = 4000;
+export const COMPANY_SHORT_DESCRIPTION_MAX_LENGTH = 400;
 export const ADMIN_COMPANIES_DEFAULT_PAGE_SIZE = 18;
 export const ADMIN_COMPANIES_MAX_PAGE_SIZE = 50;
 

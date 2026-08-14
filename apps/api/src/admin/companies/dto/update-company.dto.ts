@@ -13,6 +13,7 @@ import {
 import {
   COMPANY_DESCRIPTION_MAX_LENGTH,
   COMPANY_NAME_MAX_LENGTH,
+  COMPANY_SHORT_DESCRIPTION_MAX_LENGTH,
 } from '../../../common/constants/app.constants.js';
 
 enum CompanyStatusDto {
@@ -38,6 +39,14 @@ export class UpdateCompanyDto {
   @IsString()
   @MaxLength(COMPANY_DESCRIPTION_MAX_LENGTH)
   description?: string | null;
+
+  @ApiPropertyOptional({ nullable: true })
+  @IsOptional()
+  @optionalNullableString()
+  @IsString()
+  @MaxLength(COMPANY_SHORT_DESCRIPTION_MAX_LENGTH)
+  shortDescription?: string | null;
+
 
   @ApiPropertyOptional({ enum: CompanyStatusDto })
   @IsOptional()

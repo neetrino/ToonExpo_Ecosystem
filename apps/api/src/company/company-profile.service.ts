@@ -81,6 +81,7 @@ export class CompanyProfileService {
       id: string;
       name: string;
       description: string | null;
+      shortDescription: string | null;
       type: CompanyProfileResponse['type'];
       status: CompanyProfileResponse['status'];
       logoMediaId: string | null;
@@ -102,6 +103,7 @@ export class CompanyProfileService {
       id: company.id,
       name: company.name,
       description: company.description,
+      shortDescription: company.shortDescription,
       type: company.type,
       status: company.status,
       logoMediaId: company.logoMediaId,

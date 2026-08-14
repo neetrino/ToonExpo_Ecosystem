@@ -3,6 +3,7 @@ import { z } from "zod";
 import {
   COMPANY_DESCRIPTION_MAX_LENGTH,
   COMPANY_NAME_MAX_LENGTH,
+  COMPANY_SHORT_DESCRIPTION_MAX_LENGTH,
   COMPANY_TYPES,
 } from "@/features/admin/constants";
 import {
@@ -18,6 +19,7 @@ export const createCompanySchema = z.object({
   name: z.string().trim().min(1).max(COMPANY_NAME_MAX_LENGTH),
   type: z.enum(COMPANY_TYPES),
   description: z.string().trim().max(COMPANY_DESCRIPTION_MAX_LENGTH),
+  shortDescription: z.string().trim().max(COMPANY_SHORT_DESCRIPTION_MAX_LENGTH),
   adminName: z.string().trim().min(1).max(NAME_MAX_LENGTH),
   adminEmail: z
     .email()
