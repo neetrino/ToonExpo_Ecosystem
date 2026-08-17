@@ -3167,6 +3167,15 @@
         "nearbyItemPlaceholder": "напр. Школа — 300 м",
         "linksHint": "Необязательные маркетинговые и медиа-ссылки (общие для всех языков).",
         "socialsHint": "Ссылки на сайт и социальные профили (общие для всех языков).",
+        "financeImport": {
+          "button": "Import",
+          "title": "Import partner offer",
+          "hint": "Выберите опубликованный шаблон из Template/Partner Offers. Поля заполнятся в Finance — отредактируйте и сохраните.",
+          "loading": "Загрузка…",
+          "error": "Не удалось загрузить шаблоны.",
+          "empty": "Нет опубликованных шаблонов. Создайте в Admin → Template/Partner Offers.",
+          "cancel": "Отмена"
+        },
         "placeholders": {
           "propertyType": "напр. Квартира",
           "city": "напр. Ереван",

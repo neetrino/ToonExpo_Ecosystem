@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Controller, type Control, type UseFormRegister } from 'react-hook-form';
+import { Controller, type Control, type UseFormRegister, type UseFormSetValue } from 'react-hook-form';
 
 import type { TRANSLATION_LOCALES } from '@/features/builder/constants';
 import {
@@ -15,12 +15,12 @@ import {
   getCatalogListPlaceholder,
   getUrlPlaceholder,
 } from '@/features/builder/constants/project-content-placeholders';
-import { ProjectBankPartnerOffersSection } from '@/features/builder/components/project-bank-partner-offers-section';
 import { ProjectCatalogChecklistEditor } from '@/features/builder/components/project-catalog-checklist-editor';
 import {
   ProjectCatalogKvEditor,
   ProjectCatalogOverviewEditor,
 } from '@/features/builder/components/project-catalog-layout-fields';
+import { ProjectFinanceTemplateImport } from '@/features/builder/components/project-finance-template-import';
 import { TranslationTabs } from '@/features/builder/components/translation-tabs';
 import type { UpdateProjectFormValues } from '@/features/builder/schemas/project.schema';
 import { ProjectCatalogSectionCard } from '@/features/catalog/components/project-catalog-section-card';
@@ -29,9 +29,9 @@ import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
 
 type ProjectCatalogEditorProps = {
-  projectId: string;
   register: UseFormRegister<UpdateProjectFormValues>;
   control: Control<UpdateProjectFormValues>;
+  setValue: UseFormSetValue<UpdateProjectFormValues>;
 };
 
 type TranslationLocale = (typeof TRANSLATION_LOCALES)[number];
@@ -110,9 +110,9 @@ const CatalogLinkFields = ({ ids, register, labelFor }: CatalogLinkFieldsProps) 
  * (Overview / Details / Finance / Features / Nearby / Links / Socials).
  */
 export const ProjectCatalogEditor = ({
-  projectId,
   register,
   control,
+  setValue,
 }: ProjectCatalogEditorProps) => {
   const t = useTranslations('Builder.projects.catalog');
   const tCatalog = useTranslations('Catalog.projectDetail.catalog');
@@ -146,7 +146,10 @@ export const ProjectCatalogEditor = ({
               />
             </ProjectCatalogSectionCard>
 
-            <ProjectCatalogSectionCard title={tCatalog('finance')}>
+            <ProjectCatalogSectionCard
+              title={tCatalog('finance')}
+              headerAction={<ProjectFinanceTemplateImport setValue={setValue} />}
+            >
               <ProjectCatalogKvEditor
                 sectionId="finance"
                 keys={PROJECT_CATALOG_FINANCE_KEYS}
@@ -198,8 +201,6 @@ export const ProjectCatalogEditor = ({
       </TranslationTabs>
 
       <div className="mt-2 space-y-5 sm:space-y-6">
-        <ProjectBankPartnerOffersSection projectId={projectId} />
-
         <ProjectCatalogSectionCard title={tCatalog('links')}>
           <p className="mb-4 text-sm text-ink-secondary">{t('linksHint')}</p>
           <CatalogLinkFields

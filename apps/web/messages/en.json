@@ -3427,6 +3427,15 @@
         "nearbyItemPlaceholder": "e.g. School — 300 m",
         "linksHint": "Optional marketing and media URLs (same for all languages).",
         "socialsHint": "Website and social profile URLs (same for all languages).",
+        "financeImport": {
+          "button": "Import",
+          "title": "Import partner offer",
+          "hint": "Choose a published template from Template/Partner Offers. Fields fill into Finance — edit and save as usual.",
+          "loading": "Loading templates…",
+          "error": "Could not load templates.",
+          "empty": "No published templates yet. Create one under Template/Partner Offers.",
+          "cancel": "Cancel"
+        },
         "placeholders": {
           "propertyType": "e.g. Apartment",
           "city": "e.g. Yerevan",

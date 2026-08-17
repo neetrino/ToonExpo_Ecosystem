@@ -6,6 +6,8 @@ type ProjectCatalogSectionCardProps = {
   title: string;
   children: ReactNode;
   className?: string | undefined;
+  /** Optional action aligned with the section title (e.g. Import). */
+  headerAction?: ReactNode | undefined;
 };
 
 /**
@@ -15,6 +17,7 @@ export const ProjectCatalogSectionCard = ({
   title,
   children,
   className,
+  headerAction,
 }: ProjectCatalogSectionCardProps) => {
   return (
     <div
@@ -23,7 +26,10 @@ export const ProjectCatalogSectionCard = ({
         className,
       )}
     >
-      <h3 className="text-xl font-semibold tracking-tight text-ink-navy">{title}</h3>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h3 className="text-xl font-semibold tracking-tight text-ink-navy">{title}</h3>
+        {headerAction ? <div className="shrink-0">{headerAction}</div> : null}
+      </div>
       <div className="mt-5">{children}</div>
     </div>
   );

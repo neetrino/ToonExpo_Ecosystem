@@ -3167,6 +3167,15 @@
         "nearbyItemPlaceholder": "օր. Դպրոց — 300 մ",
         "linksHint": "Կամընտիր մարքեթինգային և մեդիա հղումներ (նույնը բոլոր լեզուների համար)։",
         "socialsHint": "Կայքի և սոցիալական պրոֆիլների հղումներ (նույնը բոլոր լեզուների համար)։",
+        "financeImport": {
+          "button": "Import",
+          "title": "Import partner offer",
+          "hint": "Ընտրեք հրապարակված շաբլոն Template/Partner Offers-ից։ Դաշտերը կլրացվեն Finance-ում — խմբագրեք և պահպանեք։",
+          "loading": "Բեռնվում է…",
+          "error": "Չհաջողվեց բեռնել շաբլոնները։",
+          "empty": "Հրապարակված շաբլոն չկա։ Ստեղծեք Admin → Template/Partner Offers-ում։",
+          "cancel": "Չեղարկել"
+        },
         "placeholders": {
           "propertyType": "օր. Բնակարան",
           "city": "օր. Երևան",
