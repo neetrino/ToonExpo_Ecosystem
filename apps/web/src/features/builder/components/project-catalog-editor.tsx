@@ -15,6 +15,7 @@ import {
   getCatalogListPlaceholder,
   getUrlPlaceholder,
 } from '@/features/builder/constants/project-content-placeholders';
+import { ProjectBankPartnerOffersSection } from '@/features/builder/components/project-bank-partner-offers-section';
 import { ProjectCatalogChecklistEditor } from '@/features/builder/components/project-catalog-checklist-editor';
 import {
   ProjectCatalogKvEditor,
@@ -28,6 +29,7 @@ import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
 
 type ProjectCatalogEditorProps = {
+  projectId: string;
   register: UseFormRegister<UpdateProjectFormValues>;
   control: Control<UpdateProjectFormValues>;
 };
@@ -107,7 +109,11 @@ const CatalogLinkFields = ({ ids, register, labelFor }: CatalogLinkFieldsProps) 
  * Admin catalog editor laid out like the public Project details cards
  * (Overview / Details / Finance / Features / Nearby / Links / Socials).
  */
-export const ProjectCatalogEditor = ({ register, control }: ProjectCatalogEditorProps) => {
+export const ProjectCatalogEditor = ({
+  projectId,
+  register,
+  control,
+}: ProjectCatalogEditorProps) => {
   const t = useTranslations('Builder.projects.catalog');
   const tCatalog = useTranslations('Catalog.projectDetail.catalog');
 
@@ -192,6 +198,8 @@ export const ProjectCatalogEditor = ({ register, control }: ProjectCatalogEditor
       </TranslationTabs>
 
       <div className="mt-2 space-y-5 sm:space-y-6">
+        <ProjectBankPartnerOffersSection projectId={projectId} />
+
         <ProjectCatalogSectionCard title={tCatalog('links')}>
           <p className="mb-4 text-sm text-ink-secondary">{t('linksHint')}</p>
           <CatalogLinkFields
