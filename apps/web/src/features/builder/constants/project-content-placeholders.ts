@@ -1,5 +1,4 @@
 import type { ProjectCatalogDetails } from '@/features/catalog/utils/project-catalog-details';
-import type { ProjectCatalogLinkId } from '@/features/catalog/utils/project-catalog-links';
 
 import { TRANSLATION_LOCALES } from '@/features/builder/constants';
 
@@ -302,4 +301,4 @@ export const getCatalogListPlaceholder = (
 ): string => LIST_PLACEHOLDERS[resolveContentLocale(contentLocale)][kind];
 
 /** Shared URL field example (language-neutral). */
-export const getUrlPlaceholder = (_linkId?: ProjectCatalogLinkId): string => LINK_PLACEHOLDER;
+export const getUrlPlaceholder = (): string => LINK_PLACEHOLDER;

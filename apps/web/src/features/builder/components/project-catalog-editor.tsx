@@ -93,7 +93,7 @@ const CatalogLinkFields = ({ ids, register, labelFor }: CatalogLinkFieldsProps) 
             id={fieldId}
             type="url"
             inputMode="url"
-            placeholder={getUrlPlaceholder(id)}
+            placeholder={getUrlPlaceholder()}
             className="text-left"
             {...register(`catalogLinks.${id}`)}
           />
