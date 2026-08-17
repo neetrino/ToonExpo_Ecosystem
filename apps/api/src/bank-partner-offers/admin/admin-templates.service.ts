@@ -91,7 +91,7 @@ export class AdminBankPartnerOfferTemplatesService {
     await this.requireTemplate(id);
 
     const data: Prisma.BankPartnerOfferTemplateUpdateInput = {
-      updatedByUserId: userId,
+      updatedBy: { connect: { id: userId } },
     };
     if (dto.name !== undefined) {
       data.name = dto.name.trim();

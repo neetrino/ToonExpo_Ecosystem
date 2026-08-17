@@ -10,17 +10,17 @@ import type {
 } from "@toonexpo/contracts";
 import { PublicationStatus, type Prisma } from "@toonexpo/db";
 
-import { PrismaService } from "../../prisma/prisma.service.js";
+import { PrismaService } from "../prisma/prisma.service.js";
 import {
   cloneFinanceFields,
   normalizeFinanceFields,
   parseStoredFinanceFields,
   toFinanceFieldsJson,
-} from "../utils/finance-fields.js";
+} from "./utils/finance-fields.js";
 import {
   projectOfferInclude,
   toProjectOfferItem,
-} from "../utils/mappers.js";
+} from "./utils/mappers.js";
 import type {
   ApplyProjectBankPartnerOffersDto,
   UpdateProjectBankPartnerOfferDto,
@@ -142,7 +142,7 @@ export class ProjectBankPartnerOffersService {
     await this.requireOwnedOffer(projectId, offerId);
 
     const data: Prisma.ProjectBankPartnerOfferUpdateInput = {
-      updatedByUserId: userId,
+      updatedBy: { connect: { id: userId } },
     };
     if (dto.name !== undefined) {
       data.name = dto.name.trim();
