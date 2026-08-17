@@ -75,7 +75,12 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
     defaultValues: emptyValues(),
   });
 
-  const { lockSlugAuto } = useAutoProjectSlug({ control, setValue, getValues });
+  const { lockSlugAuto } = useAutoProjectSlug({
+    control,
+    getSlug: () => getValues('slug'),
+    setSlug: (slug) =>
+      setValue('slug', slug, { shouldDirty: true, shouldValidate: true }),
+  });
   const slugField = register('slug');
 
   const onSubmit = handleSubmit(async (values) => {

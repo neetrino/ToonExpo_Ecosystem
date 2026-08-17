@@ -1,12 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import {
-  type Control,
-  type UseFormGetValues,
-  type UseFormSetValue,
-  useWatch,
-} from 'react-hook-form';
+import { type Control, type Path, useWatch } from 'react-hook-form';
 
 import { resolveProjectSlugFromNames } from '@/features/builder/utils/project-slug';
 
@@ -23,10 +18,10 @@ type NameSnapshot = {
   nameEn: string;
 };
 
-type UseAutoProjectSlugArgs = {
-  control: Control<ProjectSlugFormFields>;
-  setValue: UseFormSetValue<ProjectSlugFormFields>;
-  getValues: UseFormGetValues<ProjectSlugFormFields>;
+type UseAutoProjectSlugArgs<T extends ProjectSlugFormFields> = {
+  control: Control<T>;
+  getSlug: () => string;
+  setSlug: (slug: string) => void;
 };
 
 const namesEqual = (a: NameSnapshot, b: NameSnapshot): boolean =>
@@ -37,17 +32,21 @@ const namesEqual = (a: NameSnapshot, b: NameSnapshot): boolean =>
  * Does not overwrite the slug until at least one name field changes from the
  * values present when the form mounted (safe for edit + React Strict Mode).
  */
-export const useAutoProjectSlug = ({
+export const useAutoProjectSlug = <T extends ProjectSlugFormFields>({
   control,
-  setValue,
-  getValues,
-}: UseAutoProjectSlugArgs): { lockSlugAuto: () => void } => {
+  getSlug,
+  setSlug,
+}: UseAutoProjectSlugArgs<T>): { lockSlugAuto: () => void } => {
   const lockedRef = useRef(false);
   const baselineRef = useRef<NameSnapshot | null>(null);
+  const getSlugRef = useRef(getSlug);
+  const setSlugRef = useRef(setSlug);
+  getSlugRef.current = getSlug;
+  setSlugRef.current = setSlug;
 
-  const nameHy = useWatch({ control, name: 'nameHy' });
-  const nameRu = useWatch({ control, name: 'nameRu' });
-  const nameEn = useWatch({ control, name: 'nameEn' });
+  const nameHy = useWatch({ control, name: 'nameHy' as Path<T> }) as string;
+  const nameRu = useWatch({ control, name: 'nameRu' as Path<T> }) as string;
+  const nameEn = useWatch({ control, name: 'nameEn' as Path<T> }) as string;
 
   useEffect(() => {
     const current: NameSnapshot = { nameHy, nameRu, nameEn };
@@ -62,16 +61,12 @@ export const useAutoProjectSlug = ({
     }
 
     const next = resolveProjectSlugFromNames(current);
-    const previousSlug = getValues('slug');
-    if (next === previousSlug) {
+    if (next === getSlugRef.current()) {
       return;
     }
 
-    setValue('slug', next, {
-      shouldDirty: true,
-      shouldValidate: true,
-    });
-  }, [nameEn, nameHy, nameRu, getValues, setValue]);
+    setSlugRef.current(next);
+  }, [nameEn, nameHy, nameRu]);
 
   return {
     lockSlugAuto: () => {
