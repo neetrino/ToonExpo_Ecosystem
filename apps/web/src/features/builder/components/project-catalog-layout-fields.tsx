@@ -25,6 +25,10 @@ import { cn } from '@/shared/ui/cn';
 
 type TranslationLocale = (typeof TRANSLATION_LOCALES)[number];
 
+/** Compact value control — sits on the right of the label row (public catalog layout). */
+const CATALOG_VALUE_CONTROL_CLASS =
+  'ml-auto h-10 w-full max-w-[12.5rem] shrink-0 text-left text-sm font-semibold text-ink-navy';
+
 const EXTRA_FIELD_LABEL_KEYS = new Set([
   'pricePerSqmMin',
   'pricePerSqmMax',
@@ -90,7 +94,7 @@ const CatalogDateValue = ({ fieldId, fieldKey, locale, control }: CatalogDateVal
       control={control}
       name={`catalogDetails.${fieldKey}.${locale}`}
       render={({ field }) => (
-        <div className="min-w-0 max-w-xs flex-1 sm:max-w-none">
+        <div className="ml-auto w-full max-w-[12.5rem] shrink-0">
           <DatePicker
             id={fieldId}
             name={field.name}
@@ -98,7 +102,7 @@ const CatalogDateValue = ({ fieldId, fieldKey, locale, control }: CatalogDateVal
             aria-label={ariaLabel}
             onBlur={field.onBlur}
             onChange={(iso) => field.onChange(isoToCatalogMonthYear(iso))}
-            className="h-10 justify-end text-right text-sm font-semibold text-ink-navy"
+            className="h-10 justify-start text-left text-sm font-semibold text-ink-navy"
           />
         </div>
       )}
@@ -179,7 +183,7 @@ const OverviewField = ({
       <Input
         id={fieldId}
         placeholder={placeholder}
-        className="h-10 w-full min-w-0 px-2 text-right text-sm font-bold text-ink-navy"
+        className="h-10 w-full min-w-0 px-2 text-left text-sm font-bold text-ink-navy"
         {...register(`catalogDetails.${fieldKey}.${locale}`)}
       />
       <label htmlFor={fieldId} className="text-xs font-medium text-ink-muted">
@@ -239,7 +243,7 @@ const CatalogKvItem = ({
           id={fieldId}
           rows={3}
           placeholder={placeholder}
-          className="min-h-20 text-right text-sm font-semibold text-ink-navy"
+          className="min-h-20 w-full text-left text-sm font-semibold text-ink-navy"
           {...register(`catalogDetails.${fieldKey}.${locale}`)}
         />
       ) : dateField ? (
@@ -253,7 +257,7 @@ const CatalogKvItem = ({
         <Input
           id={fieldId}
           placeholder={placeholder}
-          className="h-10 max-w-xs text-right text-sm font-semibold text-ink-navy sm:max-w-none sm:flex-1"
+          className={CATALOG_VALUE_CONTROL_CLASS}
           {...register(`catalogDetails.${fieldKey}.${locale}`)}
         />
       )}
