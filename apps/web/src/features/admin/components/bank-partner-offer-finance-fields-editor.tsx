@@ -8,6 +8,7 @@ import { useTranslations } from 'next-intl';
 import type { UseFormRegister } from 'react-hook-form';
 
 import { TRANSLATION_LOCALES } from '@/features/builder/constants';
+import { getCatalogFieldPlaceholder } from '@/features/builder/constants/project-content-placeholders';
 import { TranslationTabs } from '@/features/builder/components/translation-tabs';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
@@ -51,6 +52,7 @@ export const BankPartnerOfferFinanceFieldsEditor = ({
           {BANK_PARTNER_OFFER_FINANCE_KEYS.map((key) => {
             const fieldId = `finance-${key}-${locale}`;
             const label = tCatalog(key);
+            const placeholder = getCatalogFieldPlaceholder(locale, key);
             const isTextarea = TEXTAREA_KEYS.has(key);
             return (
               <FormField key={fieldId} id={fieldId} label={label}>
@@ -58,10 +60,16 @@ export const BankPartnerOfferFinanceFieldsEditor = ({
                   <Textarea
                     id={fieldId}
                     rows={3}
+                    placeholder={placeholder}
                     {...register(`fields.${key}.${locale}`)}
                   />
                 ) : (
-                  <Input id={fieldId} type="text" {...register(`fields.${key}.${locale}`)} />
+                  <Input
+                    id={fieldId}
+                    type="text"
+                    placeholder={placeholder}
+                    {...register(`fields.${key}.${locale}`)}
+                  />
                 )}
               </FormField>
             );
