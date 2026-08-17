@@ -1,11 +1,12 @@
 'use client';
 
-import { catalogProjectsListHref } from '@/features/builder/catalog-scope';
-import { useCatalogScope } from '@/features/builder/catalog-scope-context';
 import type { PortalProjectDetail } from '@toonexpo/contracts';
+import { Archive, Globe, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
+import { catalogProjectsListHref } from '@/features/builder/catalog-scope';
+import { useCatalogScope } from '@/features/builder/catalog-scope-context';
 import { useIsCompanyAdmin } from '@/features/builder/hooks/use-company-profile';
 import {
   useDeletePortalProjectMutation,
@@ -63,17 +64,19 @@ export const ProjectPublicationActions = ({ project }: ProjectPublicationActions
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         {project.publicationStatus !== 'published' ? (
           <Button
             type="button"
             size="sm"
             variant="secondary"
             disabled={busy}
+            className="min-w-28 shadow-sm"
             onClick={() => {
               void changeStatus('published');
             }}
           >
+            <Globe className="size-3.5 shrink-0" strokeWidth={2} aria-hidden />
             {t('detail.publish')}
           </Button>
         ) : null}
@@ -87,6 +90,7 @@ export const ProjectPublicationActions = ({ project }: ProjectPublicationActions
               void changeStatus('archived');
             }}
           >
+            <Archive className="size-3.5 shrink-0" strokeWidth={2} aria-hidden />
             {t('detail.archive')}
           </Button>
         ) : null}
@@ -100,6 +104,7 @@ export const ProjectPublicationActions = ({ project }: ProjectPublicationActions
               setConfirmOpen(true);
             }}
           >
+            <Trash2 className="size-3.5 shrink-0" strokeWidth={2} aria-hidden />
             {t('detail.delete')}
           </Button>
         ) : null}
