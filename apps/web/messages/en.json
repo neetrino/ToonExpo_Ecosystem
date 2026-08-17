@@ -3522,6 +3522,31 @@
           "ceilingHeightM": "Ceiling height (m)"
         }
       },
+      "bankPartnerOffers": {
+        "title": "Bank partner offers",
+        "subtitle": "Apply finance templates from Admin → Template. Edits here stay on this project only.",
+        "loading": "Loading offers…",
+        "error": "Could not load bank partner offers.",
+        "empty": "No bank partner offers on this project yet.",
+        "addFromTemplates": "Add from templates",
+        "addAll": "Add all",
+        "edit": "Edit",
+        "remove": "Remove",
+        "pickerTitle": "Select templates",
+        "pickerEmpty": "No published templates left to add.",
+        "applySelected": "Add selected",
+        "cancel": "Cancel",
+        "editTitle": "Edit {title}",
+        "removeConfirmTitle": "Remove offer",
+        "removeConfirmMessage": "Remove \"{title}\" from this project?",
+        "form": {
+          "name": "Offer name",
+          "sortOrder": "Sort order",
+          "save": "Save changes",
+          "cancel": "Cancel",
+          "saving": "Saving…"
+        }
+      },
       "validation": {
         "name": "Enter the Armenian project name"
       },
