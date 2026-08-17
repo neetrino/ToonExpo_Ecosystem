@@ -7,7 +7,7 @@ import {
 import { useTranslations } from 'next-intl';
 import type { UseFormRegister } from 'react-hook-form';
 
-import { TRANSLATION_LOCALES } from '@/features/builder/constants';
+import type { TRANSLATION_LOCALES } from '@/features/builder/constants';
 import { getCatalogFieldPlaceholder } from '@/features/builder/constants/project-content-placeholders';
 import { TranslationTabs } from '@/features/builder/components/translation-tabs';
 import { FormField } from '@/shared/ui/form-field';
