@@ -4,6 +4,7 @@ import {
   BANK_PARTNER_OFFER_FINANCE_KEYS,
   type BankPartnerOfferTemplateItem,
 } from '@toonexpo/contracts';
+import { Import } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import type { UseFormSetValue } from 'react-hook-form';
@@ -51,9 +52,11 @@ export const ProjectFinanceTemplateImport = ({
         type="button"
         size="sm"
         variant="secondary"
+        className="inline-flex items-center gap-1.5"
         disabled={templatesQuery.isLoading}
         onClick={() => setOpen(true)}
       >
+        <Import className="size-3.5 shrink-0" strokeWidth={2} aria-hidden />
         {t('button')}
       </Button>
 
