@@ -23,6 +23,10 @@ import {
   weekdayLabels,
 } from '@/shared/ui/date-picker-utils';
 import { DropdownPortal } from '@/shared/ui/dropdown-portal';
+import {
+  isInsideDropdownSurface,
+  preventWheelDismissThroughDropdown,
+} from '@/shared/ui/dropdown-surface';
 
 export type DatePickerProps = {
   value: string;
@@ -90,16 +94,8 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(functio
     }
 
     /** Panel lives inside DropdownPortal; scroll/wheel targets the portal wrapper. */
-    const isInsidePicker = (node: Node): boolean => {
-      if (rootRef.current?.contains(node) || panelRef.current?.contains(node)) {
-        return true;
-      }
-      if (node instanceof Element && panelRef.current) {
-        const portal = node.closest('[data-dropdown-portal]');
-        return Boolean(portal?.contains(panelRef.current));
-      }
-      return false;
-    };
+    const isInsidePicker = (node: Node): boolean =>
+      isInsideDropdownSurface(node, rootRef.current, panelRef.current);
 
     const onPointerDown = (event: MouseEvent): void => {
       if (isInsidePicker(event.target as Node)) {
@@ -125,18 +121,7 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(functio
     };
 
     const onWheel = (event: WheelEvent): void => {
-      if (!(event.target instanceof Node) || !isInsidePicker(event.target)) {
-        return;
-      }
-      const portal = panelRef.current?.closest('[data-dropdown-portal]');
-      if (!(portal instanceof HTMLElement)) {
-        return;
-      }
-      const canScroll = portal.scrollHeight > portal.clientHeight + 1;
-      if (!canScroll) {
-        // Calendar fits — block page scroll so the open picker is not dismissed.
-        event.preventDefault();
-      }
+      preventWheelDismissThroughDropdown(event, panelRef.current, isInsidePicker);
     };
 
     document.addEventListener('mousedown', onPointerDown);
