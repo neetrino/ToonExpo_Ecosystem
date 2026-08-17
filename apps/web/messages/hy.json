@@ -2269,6 +2269,7 @@
       "deleteConfirmTitle": "Ջնջել",
       "deleteConfirmMessage": "Ջնջե՞լ «{title}» շաբլոնը։",
       "card": {
+        "eyebrow": "Finance շաբլոն",
         "hint": "Ներմուծեք project Finance բաժին, հետո խմբագրեք ըստ կարիքի"
       },
       "columns": {

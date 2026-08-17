@@ -2625,6 +2625,7 @@
       "deleteConfirmTitle": "Удалить",
       "deleteConfirmMessage": "Удалить шаблон «{title}»?",
       "card": {
+        "eyebrow": "Finance-шаблон",
         "hint": "Импортируйте в Finance проекта, затем при необходимости отредактируйте"
       },
       "columns": {

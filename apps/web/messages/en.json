@@ -2269,6 +2269,7 @@
       "deleteConfirmTitle": "Delete",
       "deleteConfirmMessage": "Are you sure you want to delete \"{title}\"?",
       "card": {
+        "eyebrow": "Finance template",
         "hint": "Import into a project Finance section, then edit if needed"
       },
       "columns": {

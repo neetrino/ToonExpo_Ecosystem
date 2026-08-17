@@ -10,6 +10,10 @@ import { IconButton } from '@/shared/ui/icon-button';
 import { LIST_CARD_LIFT_CLASS, ListTableReveal } from '@/shared/ui/motion';
 import { VIEW_MODE_CARDS, type ViewMode } from '@/shared/ui/view-mode';
 
+const CARD_RADIUS_CLASS = 'rounded-[15px]';
+const MEDIA_RADIUS_CLASS = 'rounded-[12px]';
+const MEDIA_ASPECT_CLASS = 'aspect-[5/2]';
+
 type TemplatesCollectionProps = {
   templates: BankPartnerOfferTemplateItem[];
   viewMode: ViewMode;
@@ -26,7 +30,7 @@ type TemplateCardProps = {
 };
 
 /**
- * Generic finance template card — name + actions (no bank branding).
+ * Finance template card — media header + title, matching bank-offer chrome.
  */
 const TemplateCard = ({ template, busy, onEdit, onDelete }: TemplateCardProps) => {
   const t = useTranslations('Admin.templates');
@@ -34,32 +38,64 @@ const TemplateCard = ({ template, busy, onEdit, onDelete }: TemplateCardProps) =
   return (
     <article
       className={cn(
-        'flex h-full flex-col overflow-hidden rounded-[15px] border border-border/80',
-        'bg-surface-elevated shadow-xs',
-        'transition-[box-shadow,transform] duration-[var(--duration-fast)]',
-        'hover:shadow-sm',
+        'group flex h-full flex-col overflow-hidden border border-border/80',
+        'bg-surface-elevated shadow-card',
+        'transition-[box-shadow,transform,border-color] duration-[var(--duration-fast)]',
+        'hover:border-brand/30 hover:shadow-sm',
         LIST_CARD_LIFT_CLASS,
+        CARD_RADIUS_CLASS,
       )}
     >
       <button
         type="button"
         onClick={onEdit}
-        className="flex min-w-0 flex-1 flex-col gap-4 p-4 text-left"
+        className="flex min-w-0 flex-1 flex-col text-left"
       >
-        <div className="flex items-start gap-3">
-          <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-surface-muted text-ink-secondary ring-1 ring-border/60">
-            <FileStack className="size-5" aria-hidden />
-          </span>
-          <div className="min-w-0 flex-1">
-            <h3 className="line-clamp-2 text-base font-semibold tracking-tight text-ink-navy">
-              {template.name}
-            </h3>
+        <div className="p-3 pb-0">
+          <div
+            className={cn(
+              'relative flex w-full items-center justify-center overflow-hidden',
+              'bg-band-mist/70 ring-1 ring-border/50',
+              MEDIA_ASPECT_CLASS,
+              MEDIA_RADIUS_CLASS,
+            )}
+          >
+            <span
+              className={cn(
+                'absolute inset-y-0 left-0 w-1/2 bg-brand-soft/50',
+                'transition-opacity duration-[var(--duration-fast)]',
+                'group-hover:opacity-80',
+              )}
+              aria-hidden
+            />
+            <span
+              className={cn(
+                'relative flex size-12 items-center justify-center rounded-[14px]',
+                'bg-surface-elevated text-brand-deep shadow-xs ring-1 ring-border/60',
+                'transition-transform duration-[var(--duration-slow)]',
+                'ease-[var(--ease-out-premium)] group-hover:scale-[1.06]',
+                'motion-reduce:transition-none motion-reduce:group-hover:scale-100',
+              )}
+            >
+              <FileStack className="size-5" strokeWidth={1.75} aria-hidden />
+            </span>
           </div>
         </div>
-        <p className="text-xs leading-relaxed text-ink-muted">{t('card.hint')}</p>
+
+        <div className="flex flex-1 flex-col gap-1.5 px-4 pt-3 pb-3">
+          <p className="text-[11px] font-semibold tracking-wide text-brand-deep/70 uppercase">
+            {t('card.eyebrow')}
+          </p>
+          <h3 className="line-clamp-2 text-base font-semibold tracking-tight text-ink-navy">
+            {template.name}
+          </h3>
+          <p className="line-clamp-2 text-sm leading-relaxed text-ink-secondary">
+            {t('card.hint')}
+          </p>
+        </div>
       </button>
 
-      <div className="flex items-center justify-end gap-1 border-t border-border/70 px-3 py-2">
+      <div className="flex items-center justify-end gap-0.5 border-t border-border/70 px-2.5 py-2">
         <IconButton label={t('edit')} size="sm" disabled={busy} onClick={onEdit}>
           <SquarePen className="size-4" strokeWidth={1.75} aria-hidden />
         </IconButton>
