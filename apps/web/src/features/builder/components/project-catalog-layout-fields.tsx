@@ -44,6 +44,11 @@ const useCatalogFieldLabel = (fieldKey: keyof ProjectCatalogDetails): string => 
   return tCatalog(fieldKey as 'propertyType');
 };
 
+const useCatalogFieldPlaceholder = (fieldKey: keyof ProjectCatalogDetails): string => {
+  const t = useTranslations('Builder.projects.catalog.placeholders');
+  return t(fieldKey as 'propertyType');
+};
+
 const MONTH_YEAR_PATTERN = /^(\d{1,2})\/(\d{4})$/;
 
 const catalogDateToIso = (value: string): string => {
@@ -117,7 +122,6 @@ export const ProjectCatalogOverviewEditor = ({
   control,
   register,
 }: OverviewEditorProps) => {
-  const tForm = useTranslations('Builder.projects.form.placeholders');
   const catalogDetails = useWatch({ control, name: 'catalogDetails' });
   const templateColumns = overviewGridTemplateColumns(
     keys.map((key) => overviewColumnWeight(catalogDetails?.[key]?.[locale] ?? '')),
@@ -140,7 +144,6 @@ export const ProjectCatalogOverviewEditor = ({
             locale={locale}
             Icon={Icon}
             register={register}
-            fallbackPlaceholder={tForm('catalogValue')}
           />
         );
       })}
@@ -154,7 +157,6 @@ type OverviewFieldProps = {
   locale: TranslationLocale;
   Icon: (typeof PROJECT_CATALOG_CRITERION_ICON)[keyof typeof PROJECT_CATALOG_CRITERION_ICON];
   register: UseFormRegister<UpdateProjectFormValues>;
-  fallbackPlaceholder: string;
 };
 
 const OverviewField = ({
@@ -163,9 +165,9 @@ const OverviewField = ({
   locale,
   Icon,
   register,
-  fallbackPlaceholder,
 }: OverviewFieldProps) => {
   const label = useCatalogFieldLabel(fieldKey);
+  const placeholder = useCatalogFieldPlaceholder(fieldKey);
   return (
     <div className="flex min-w-0 flex-col items-center gap-2 text-center">
       <span
@@ -176,7 +178,7 @@ const OverviewField = ({
       </span>
       <Input
         id={fieldId}
-        placeholder={label || fallbackPlaceholder}
+        placeholder={placeholder}
         className="h-10 w-full min-w-0 px-2 text-center text-sm font-bold text-ink-navy"
         {...register(`catalogDetails.${fieldKey}.${locale}`)}
       />
@@ -215,8 +217,7 @@ const CatalogKvItem = ({
   const dateField = isProjectCatalogDateKey(fieldKey);
   const Icon = PROJECT_CATALOG_CRITERION_ICON[catalogDetailKeyToCriterionId(fieldKey)];
   const label = useCatalogFieldLabel(fieldKey);
-  const tForm = useTranslations('Builder.projects.form.placeholders');
-  const placeholder = label || tForm('catalogValue');
+  const placeholder = useCatalogFieldPlaceholder(fieldKey);
   return (
     <div
       className={cn(

@@ -80,7 +80,7 @@ type CatalogLinkFieldsProps = {
 };
 
 const CatalogLinkFields = ({ ids, register, labelFor }: CatalogLinkFieldsProps) => {
-  const tForm = useTranslations('Builder.projects.form.placeholders');
+  const tPlaceholders = useTranslations('Builder.projects.catalog.placeholders.links');
   return (
     <div className="grid gap-4 sm:grid-cols-2">
       {ids.map((id) => {
@@ -91,7 +91,7 @@ const CatalogLinkFields = ({ ids, register, labelFor }: CatalogLinkFieldsProps) 
               id={fieldId}
               type="url"
               inputMode="url"
-              placeholder={tForm('linkUrl')}
+              placeholder={tPlaceholders(id)}
               {...register(`catalogLinks.${id}`)}
             />
           </FormField>
@@ -160,7 +160,7 @@ export const ProjectCatalogEditor = ({ register, control }: ProjectCatalogEditor
                     onBlur={field.onBlur}
                     addLabel={t('addItem')}
                     removeLabel={t('removeItem')}
-                    placeholder={t('itemPlaceholder')}
+                    placeholder={t('amenityItemPlaceholder')}
                     columns={3}
                   />
                 )}
@@ -179,7 +179,7 @@ export const ProjectCatalogEditor = ({ register, control }: ProjectCatalogEditor
                     onBlur={field.onBlur}
                     addLabel={t('addItem')}
                     removeLabel={t('removeItem')}
-                    placeholder={t('itemPlaceholder')}
+                    placeholder={t('nearbyItemPlaceholder')}
                     columns={2}
                   />
                 )}

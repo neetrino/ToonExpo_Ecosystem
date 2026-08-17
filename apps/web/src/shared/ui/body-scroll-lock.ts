@@ -23,6 +23,19 @@ const getScrollbarWidthPx = (): number => {
   return Math.max(0, window.innerWidth - document.documentElement.clientWidth);
 };
 
+/**
+ * When `scrollbar-gutter: stable` already reserves scrollbar space, adding
+ * body `padding-right` double-compensates and leaves an uncovered white strip
+ * (overlays portal into the content box, not the padding).
+ */
+const hasStableScrollbarGutter = (): boolean => {
+  if (typeof document === 'undefined') {
+    return false;
+  }
+  const gutter = getComputedStyle(document.documentElement).scrollbarGutter;
+  return gutter === 'stable' || gutter.startsWith('stable');
+};
+
 const applyHardLockStyles = (): void => {
   const scrollbarWidthPx = getScrollbarWidthPx();
   lockedScrollY = window.scrollY;
@@ -39,7 +52,7 @@ const applyHardLockStyles = (): void => {
   document.body.style.top = `-${lockedScrollY}px`;
   document.body.style.width = '100%';
 
-  if (scrollbarWidthPx > 0) {
+  if (scrollbarWidthPx > 0 && !hasStableScrollbarGutter()) {
     const currentPadding = Number.parseFloat(getComputedStyle(document.body).paddingRight) || 0;
     document.body.style.paddingRight = `${currentPadding + scrollbarWidthPx}px`;
   }
