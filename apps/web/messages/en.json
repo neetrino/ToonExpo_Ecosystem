@@ -1319,6 +1319,7 @@
       "geoMap": "3D Map",
       "partners": "Partners",
       "bankOffers": "Bank offers",
+      "templates": "Template/Partner Offers",
       "serviceProviders": "Service providers",
       "readiness": "Readiness",
       "readinessCategories": "Categories",
@@ -2252,6 +2253,41 @@
           "publishing": "Publishing"
         },
         "saving": "Saving…"
+      }
+    },
+    "templates": {
+      "title": "Template/Partner Offers",
+      "subtitle": "Reusable finance templates to import into project Finance fields",
+      "loading": "Loading templates…",
+      "error": "Could not load templates. Try again.",
+      "empty": "No templates yet.",
+      "newTemplate": "+ New Template",
+      "createTitle": "New template",
+      "editTitle": "Edit {title}",
+      "edit": "Edit",
+      "delete": "Delete",
+      "deleteConfirmTitle": "Delete",
+      "deleteConfirmMessage": "Are you sure you want to delete \"{title}\"?",
+      "card": {
+        "eyebrow": "Finance template",
+        "hint": "Import into a project Finance section, then edit if needed"
+      },
+      "columns": {
+        "name": "Name",
+        "actions": "Actions"
+      },
+      "form": {
+        "name": "Template name",
+        "namePlaceholder": "e.g. Template 1",
+        "nameHint": "Use a short label like Template 1, Template 2…",
+        "create": "Create template",
+        "save": "Save changes",
+        "cancel": "Cancel",
+        "saving": "Saving…",
+        "sections": {
+          "template": "Template",
+          "finance": "Finance fields"
+        }
       }
     },
     "serviceProviders": {
@@ -3376,6 +3412,15 @@
         "nearbyItemPlaceholder": "e.g. School — 300 m",
         "linksHint": "Optional marketing and media URLs (same for all languages).",
         "socialsHint": "Website and social profile URLs (same for all languages).",
+        "financeImport": {
+          "button": "Import",
+          "title": "Import partner offer",
+          "hint": "Choose a published template from Template/Partner Offers. Fields fill into Finance — edit and save as usual.",
+          "loading": "Loading templates…",
+          "error": "Could not load templates.",
+          "empty": "No published templates yet. Create one under Template/Partner Offers.",
+          "cancel": "Cancel"
+        },
         "placeholders": {
           "propertyType": "e.g. Apartment",
           "city": "e.g. Yerevan",

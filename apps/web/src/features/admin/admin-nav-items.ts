@@ -18,6 +18,7 @@ import {
   Tags,
   Users,
   Workflow,
+  FileStack,
 } from 'lucide-react';
 
 export type AdminNavItemKey =
@@ -32,6 +33,7 @@ export type AdminNavItemKey =
   | 'geoMap'
   | 'partners'
   | 'bankOffers'
+  | 'templates'
   | 'serviceProviders'
   | 'readiness'
   | 'readinessCategories'
@@ -84,6 +86,7 @@ export const ADMIN_PRIMARY_NAV_ITEMS: AdminNavItem[] = [
   { href: '/admin/geo-map', key: 'geoMap', icon: Globe },
   { href: '/admin/partners', key: 'partners', icon: Handshake },
   { href: '/admin/bank-offers', key: 'bankOffers', icon: Landmark },
+  { href: '/admin/templates', key: 'templates', icon: FileStack },
   {
     href: READINESS_HREF,
     key: 'readiness',

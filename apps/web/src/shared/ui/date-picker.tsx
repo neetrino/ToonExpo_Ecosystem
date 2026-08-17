@@ -23,6 +23,10 @@ import {
   weekdayLabels,
 } from '@/shared/ui/date-picker-utils';
 import { DropdownPortal } from '@/shared/ui/dropdown-portal';
+import {
+  isInsideDropdownSurface,
+  preventWheelDismissThroughDropdown,
+} from '@/shared/ui/dropdown-surface';
 
 export type DatePickerProps = {
   value: string;
@@ -89,9 +93,12 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(functio
       return;
     }
 
+    /** Panel lives inside DropdownPortal; scroll/wheel targets the portal wrapper. */
+    const isInsidePicker = (node: Node): boolean =>
+      isInsideDropdownSurface(node, rootRef.current, panelRef.current);
+
     const onPointerDown = (event: MouseEvent): void => {
-      const target = event.target as Node;
-      if (rootRef.current?.contains(target) || panelRef.current?.contains(target)) {
+      if (isInsidePicker(event.target as Node)) {
         return;
       }
       setOpen(false);
@@ -106,20 +113,26 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(functio
 
     const onScroll = (event: Event): void => {
       const target = event.target;
-      if (target instanceof Node && panelRef.current?.contains(target)) {
+      if (target instanceof Node && isInsidePicker(target)) {
         return;
       }
       setOpen(false);
       blurActiveElementAfterEscClose();
     };
 
+    const onWheel = (event: WheelEvent): void => {
+      preventWheelDismissThroughDropdown(event, panelRef.current, isInsidePicker);
+    };
+
     document.addEventListener('mousedown', onPointerDown);
     document.addEventListener('keydown', onKeyDown);
     window.addEventListener('scroll', onScroll, true);
+    window.addEventListener('wheel', onWheel, { capture: true, passive: false });
     return () => {
       document.removeEventListener('mousedown', onPointerDown);
       document.removeEventListener('keydown', onKeyDown);
       window.removeEventListener('scroll', onScroll, true);
+      window.removeEventListener('wheel', onWheel, true);
     };
   }, [open]);
 

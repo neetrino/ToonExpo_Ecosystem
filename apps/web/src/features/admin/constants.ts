@@ -129,6 +129,7 @@ export const ADMIN_VIEW_MODE_KEYS = {
   apartments: 'admin-apartments',
   partners: 'admin-partners',
   bankOffers: 'admin-bank-offers',
+  templates: 'admin-templates',
   serviceProviderCategories: 'admin-service-provider-categories',
   serviceProviders: 'admin-service-providers',
   readinessAssessments: 'admin-readiness-assessments',

@@ -14,6 +14,7 @@ import {
 import { blurActiveElementAfterEscClose } from '@/shared/ui/blur-active-element';
 import { cn } from '@/shared/ui/cn';
 import { DropdownPortal } from '@/shared/ui/dropdown-portal';
+import { isInsideDropdownSurface } from '@/shared/ui/dropdown-surface';
 
 type LocationSearchSelectProps = {
   /** Empty array = any location (no city filter). */
@@ -85,8 +86,7 @@ export const LocationSearchSelect = ({
     searchRef.current?.focus();
 
     const onPointerDown = (event: MouseEvent): void => {
-      const target = event.target as Node;
-      if (rootRef.current?.contains(target) || panelRef.current?.contains(target)) {
+      if (isInsideDropdownSurface(event.target as Node, rootRef.current, panelRef.current)) {
         return;
       }
       setOpen(false);

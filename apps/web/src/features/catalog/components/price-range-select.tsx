@@ -6,6 +6,7 @@ import { HeroFilterTrigger } from '@/features/catalog/components/hero-filter-tri
 import { HERO_FILTER_PANEL_CLASS } from '@/features/catalog/components/hero-filter-menu-styles';
 import { cn } from '@/shared/ui/cn';
 import { DropdownPortal } from '@/shared/ui/dropdown-portal';
+import { isInsideDropdownSurface } from '@/shared/ui/dropdown-surface';
 import { Input } from '@/shared/ui/input';
 
 const GROUP_SEPARATOR = '\u00a0';
@@ -81,10 +82,10 @@ export const PriceRangeSelect = ({
       return;
     }
     const closeOnOutsideClick = (event: MouseEvent): void => {
-      const target = event.target as Node;
-      if (!rootRef.current?.contains(target) && !panelRef.current?.contains(target)) {
-        setOpen(false);
+      if (isInsideDropdownSurface(event.target as Node, rootRef.current, panelRef.current)) {
+        return;
       }
+      setOpen(false);
     };
     const closeOnEscape = (event: globalThis.KeyboardEvent): void => {
       if (event.key === 'Escape') {

@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { Controller, type Control, type UseFormRegister } from 'react-hook-form';
+import { Controller, type Control, type UseFormRegister, type UseFormSetValue } from 'react-hook-form';
 
 import type { TRANSLATION_LOCALES } from '@/features/builder/constants';
 import {
@@ -20,6 +20,7 @@ import {
   ProjectCatalogKvEditor,
   ProjectCatalogOverviewEditor,
 } from '@/features/builder/components/project-catalog-layout-fields';
+import { ProjectFinanceTemplateImport } from '@/features/builder/components/project-finance-template-import';
 import { TranslationTabs } from '@/features/builder/components/translation-tabs';
 import type { UpdateProjectFormValues } from '@/features/builder/schemas/project.schema';
 import { ProjectCatalogSectionCard } from '@/features/catalog/components/project-catalog-section-card';
@@ -30,6 +31,7 @@ import { Input } from '@/shared/ui/input';
 type ProjectCatalogEditorProps = {
   register: UseFormRegister<UpdateProjectFormValues>;
   control: Control<UpdateProjectFormValues>;
+  setValue: UseFormSetValue<UpdateProjectFormValues>;
 };
 
 type TranslationLocale = (typeof TRANSLATION_LOCALES)[number];
@@ -107,7 +109,11 @@ const CatalogLinkFields = ({ ids, register, labelFor }: CatalogLinkFieldsProps) 
  * Admin catalog editor laid out like the public Project details cards
  * (Overview / Details / Finance / Features / Nearby / Links / Socials).
  */
-export const ProjectCatalogEditor = ({ register, control }: ProjectCatalogEditorProps) => {
+export const ProjectCatalogEditor = ({
+  register,
+  control,
+  setValue,
+}: ProjectCatalogEditorProps) => {
   const t = useTranslations('Builder.projects.catalog');
   const tCatalog = useTranslations('Catalog.projectDetail.catalog');
 
@@ -140,7 +146,10 @@ export const ProjectCatalogEditor = ({ register, control }: ProjectCatalogEditor
               />
             </ProjectCatalogSectionCard>
 
-            <ProjectCatalogSectionCard title={tCatalog('finance')}>
+            <ProjectCatalogSectionCard
+              title={tCatalog('finance')}
+              headerAction={<ProjectFinanceTemplateImport setValue={setValue} />}
+            >
               <ProjectCatalogKvEditor
                 sectionId="finance"
                 keys={PROJECT_CATALOG_FINANCE_KEYS}

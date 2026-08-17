@@ -6,6 +6,7 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { HeroFilterTrigger } from '@/features/catalog/components/hero-filter-trigger';
 import { blurActiveElementAfterEscClose } from '@/shared/ui/blur-active-element';
 import { cn } from '@/shared/ui/cn';
+import { isInsideDropdownSurface } from '@/shared/ui/dropdown-surface';
 import { MultiListboxMenu } from '@/shared/ui/multi-listbox-menu';
 import type { MultiListboxSelectProps } from '@/shared/ui/multi-listbox-select.types';
 
@@ -44,14 +45,7 @@ export const MultiListboxSelect = ({
     }
 
     const onPointerDown = (event: MouseEvent): void => {
-      const target = event.target;
-      if (!(target instanceof Node)) {
-        return;
-      }
-      if (rootRef.current?.contains(target) || menuRef.current?.contains(target)) {
-        return;
-      }
-      if (target instanceof Element && target.closest('[data-dropdown-portal]')) {
+      if (isInsideDropdownSurface(event.target as Node, rootRef.current, menuRef.current)) {
         return;
       }
       setOpen(false);

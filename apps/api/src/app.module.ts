@@ -31,6 +31,7 @@ import { IntegrationsModule } from './integrations/integrations.module.js';
 import { InteractiveMappingModule } from './interactive-mapping/interactive-mapping.module.js';
 import { MediaModule } from './media/media.module.js';
 import { MortgageModule } from './mortgage/mortgage.module.js';
+import { BankPartnerOffersModule } from './bank-partner-offers/bank-partner-offers.module.js';
 import { PartnersModule } from './partners/partners.module.js';
 import { PlatformSettingsModule } from './platform-settings/platform-settings.module.js';
 import { PortalModule } from './portal/portal.module.js';
@@ -72,6 +73,7 @@ import { GeoMapModule } from './geo-map/geo-map.module.js';
     PartnersModule,
     PlatformSettingsModule,
     MortgageModule,
+    BankPartnerOffersModule,
     ServiceProvidersModule,
     ExhibitionModule,
     FavoritesModule,

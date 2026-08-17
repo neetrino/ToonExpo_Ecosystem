@@ -1,0 +1,185 @@
+'use client';
+
+import type { BankPartnerOfferTemplateItem } from '@toonexpo/contracts';
+import { FileStack, SquarePen, Trash2 } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+
+import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
+import { cn } from '@/shared/ui/cn';
+import { IconButton } from '@/shared/ui/icon-button';
+import { LIST_CARD_LIFT_CLASS, ListTableReveal } from '@/shared/ui/motion';
+import { VIEW_MODE_CARDS, type ViewMode } from '@/shared/ui/view-mode';
+
+const CARD_RADIUS_CLASS = 'rounded-[15px]';
+const MEDIA_RADIUS_CLASS = 'rounded-[12px]';
+const MEDIA_ASPECT_CLASS = 'aspect-[5/2]';
+
+type TemplatesCollectionProps = {
+  templates: BankPartnerOfferTemplateItem[];
+  viewMode: ViewMode;
+  busy: boolean;
+  onEdit: (template: BankPartnerOfferTemplateItem) => void;
+  onDelete: (template: BankPartnerOfferTemplateItem) => void;
+};
+
+type TemplateCardProps = {
+  template: BankPartnerOfferTemplateItem;
+  busy: boolean;
+  onEdit: () => void;
+  onDelete: () => void;
+};
+
+/**
+ * Finance template card — media header + title, matching bank-offer chrome.
+ */
+const TemplateCard = ({ template, busy, onEdit, onDelete }: TemplateCardProps) => {
+  const t = useTranslations('Admin.templates');
+
+  return (
+    <article
+      className={cn(
+        'group flex h-full flex-col overflow-hidden border border-border/80',
+        'bg-surface-elevated shadow-card',
+        'transition-[box-shadow,transform,border-color] duration-[var(--duration-fast)]',
+        'hover:border-brand/30 hover:shadow-sm',
+        LIST_CARD_LIFT_CLASS,
+        CARD_RADIUS_CLASS,
+      )}
+    >
+      <button
+        type="button"
+        onClick={onEdit}
+        className="flex min-w-0 flex-1 flex-col text-left"
+      >
+        <div className="p-3 pb-0">
+          <div
+            className={cn(
+              'relative flex w-full items-center justify-center overflow-hidden',
+              'bg-band-mist/70 ring-1 ring-border/50',
+              MEDIA_ASPECT_CLASS,
+              MEDIA_RADIUS_CLASS,
+            )}
+          >
+            <span
+              className={cn(
+                'absolute inset-y-0 left-0 w-1/2 bg-brand-soft/50',
+                'transition-opacity duration-[var(--duration-fast)]',
+                'group-hover:opacity-80',
+              )}
+              aria-hidden
+            />
+            <span
+              className={cn(
+                'relative flex size-12 items-center justify-center rounded-[14px]',
+                'bg-surface-elevated text-brand-deep shadow-xs ring-1 ring-border/60',
+                'transition-transform duration-[var(--duration-slow)]',
+                'ease-[var(--ease-out-premium)] group-hover:scale-[1.06]',
+                'motion-reduce:transition-none motion-reduce:group-hover:scale-100',
+              )}
+            >
+              <FileStack className="size-5" strokeWidth={1.75} aria-hidden />
+            </span>
+          </div>
+        </div>
+
+        <div className="flex flex-1 flex-col gap-1.5 px-4 pt-3 pb-3">
+          <p className="text-[11px] font-semibold tracking-wide text-brand-deep/70 uppercase">
+            {t('card.eyebrow')}
+          </p>
+          <h3 className="line-clamp-2 text-base font-semibold tracking-tight text-ink-navy">
+            {template.name}
+          </h3>
+          <p className="line-clamp-2 text-sm leading-relaxed text-ink-secondary">
+            {t('card.hint')}
+          </p>
+        </div>
+      </button>
+
+      <div className="flex items-center justify-end gap-0.5 border-t border-border/70 px-2.5 py-2">
+        <IconButton label={t('edit')} size="sm" disabled={busy} onClick={onEdit}>
+          <SquarePen className="size-4" strokeWidth={1.75} aria-hidden />
+        </IconButton>
+        <IconButton
+          label={t('delete')}
+          size="sm"
+          className="text-danger hover:bg-danger-soft"
+          disabled={busy}
+          onClick={onDelete}
+        >
+          <Trash2 className="size-4" strokeWidth={1.75} aria-hidden />
+        </IconButton>
+      </div>
+    </article>
+  );
+};
+
+/**
+ * Admin templates list (cards + table).
+ */
+export const BankPartnerOfferTemplatesCollection = ({
+  templates,
+  viewMode,
+  busy,
+  onEdit,
+  onDelete,
+}: TemplatesCollectionProps) => {
+  const t = useTranslations('Admin.templates');
+
+  if (viewMode === VIEW_MODE_CARDS) {
+    return (
+      <AdminListCardGrid>
+        {templates.map((template) => (
+          <TemplateCard
+            key={template.id}
+            template={template}
+            busy={busy}
+            onEdit={() => onEdit(template)}
+            onDelete={() => onDelete(template)}
+          />
+        ))}
+      </AdminListCardGrid>
+    );
+  }
+
+  return (
+    <ListTableReveal>
+      <div className="overflow-x-auto rounded-2xl border border-border">
+        <table className="w-full min-w-[28rem] text-left text-sm">
+          <thead className="bg-surface-muted text-xs tracking-wide text-ink-muted uppercase">
+            <tr>
+              <th className="px-4 py-3 font-semibold">{t('columns.name')}</th>
+              <th className="px-4 py-3 font-semibold">{t('columns.actions')}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {templates.map((template) => (
+              <tr key={template.id} className="border-t border-border">
+                <td className="max-w-[20rem] px-4 py-3 font-medium text-ink-navy">
+                  <span className="line-clamp-2">{template.name}</span>
+                </td>
+                <td className="px-4 py-3">
+                  <div className="flex gap-1">
+                    <IconButton
+                      label={t('edit')}
+                      disabled={busy}
+                      onClick={() => onEdit(template)}
+                    >
+                      <SquarePen className="size-4" />
+                    </IconButton>
+                    <IconButton
+                      label={t('delete')}
+                      disabled={busy}
+                      onClick={() => onDelete(template)}
+                    >
+                      <Trash2 className="size-4" />
+                    </IconButton>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </ListTableReveal>
+  );
+};
