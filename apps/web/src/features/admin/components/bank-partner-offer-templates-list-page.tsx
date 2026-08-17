@@ -7,16 +7,13 @@ import { useMemo, useState } from 'react';
 
 import { BankPartnerOfferTemplateForm } from '@/features/admin/components/bank-partner-offer-template-form';
 import { BankPartnerOfferTemplatesCollection } from '@/features/admin/components/bank-partner-offer-templates-collection';
-import { ADMIN_COMPANIES_MAX_PAGE_SIZE, ADMIN_VIEW_MODE_KEYS } from '@/features/admin/constants';
+import { ADMIN_VIEW_MODE_KEYS } from '@/features/admin/constants';
 import {
   useAdminBankPartnerOfferTemplatesQuery,
   useCreateBankPartnerOfferTemplateMutation,
   useDeleteBankPartnerOfferTemplateMutation,
   useUpdateBankPartnerOfferTemplateMutation,
 } from '@/features/admin/hooks/use-admin-bank-partner-offer-templates';
-import { useAdminCompaniesQuery } from '@/features/admin/hooks/use-admin-companies';
-import { useAdminPartnersQuery } from '@/features/admin/hooks/use-admin-partners';
-import { PARTNERS_DEFAULT_PAGE_SIZE } from '@/features/partners/constants';
 import { usePersistedViewMode } from '@/shared/hooks/use-persisted-view-mode';
 import { AdminCreateSheet } from '@/shared/ui/admin-create-sheet';
 import { AdminDeleteModal } from '@/shared/ui/admin-delete-modal';
@@ -27,17 +24,15 @@ import type { IntegratedSearchFilterConfig } from '@/shared/ui/integrated-search
 import { ListPageHeader } from '@/shared/ui/list-page-header';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
 
-const FILTER_PARTNER_KEY = 'partnerFilter';
 const FILTER_PUBLICATION_KEY = 'publicationFilter';
 
 /**
- * Admin Templates — bank partner finance offer templates CRUD.
+ * Admin Templates — reusable finance offer templates (Import into project Finance).
  */
 export const BankPartnerOfferTemplatesListPage = () => {
   const t = useTranslations('Admin.templates');
   const tCommon = useTranslations('Common.integratedSearch');
   const [search, setSearch] = useState('');
-  const [partnerFilter, setPartnerFilter] = useState('');
   const [publicationFilter, setPublicationFilter] = useState<PublicationStatus | ''>('');
   const [editing, setEditing] = useState<BankPartnerOfferTemplateItem | null>(null);
   const [creating, setCreating] = useState(false);
@@ -46,31 +41,10 @@ export const BankPartnerOfferTemplatesListPage = () => {
     ADMIN_VIEW_MODE_KEYS.templates,
   );
 
-  const templatesQuery = useAdminBankPartnerOfferTemplatesQuery(
-    partnerFilter ? { partnerCompanyId: partnerFilter } : {},
-  );
-  const partnersQuery = useAdminPartnersQuery({
-    page: 1,
-    pageSize: PARTNERS_DEFAULT_PAGE_SIZE,
-    type: 'bank',
-  });
-  const companiesQuery = useAdminCompaniesQuery(1, ADMIN_COMPANIES_MAX_PAGE_SIZE);
-
+  const templatesQuery = useAdminBankPartnerOfferTemplatesQuery({});
   const createMutation = useCreateBankPartnerOfferTemplateMutation();
   const updateMutation = useUpdateBankPartnerOfferTemplateMutation();
   const deleteMutation = useDeleteBankPartnerOfferTemplateMutation();
-
-  const bankPartners = useMemo(() => {
-    const companies = companiesQuery.data?.data ?? [];
-    const partners = partnersQuery.data?.data ?? [];
-    return partners
-      .filter((partner) => partner.type === 'bank')
-      .filter((partner) => companies.some((company) => company.id === partner.companyId))
-      .map((partner) => ({
-        partnerCompanyId: partner.id,
-        name: partner.name,
-      }));
-  }, [companiesQuery.data, partnersQuery.data]);
 
   const filteredTemplates = useMemo(() => {
     const templates = templatesQuery.data?.data ?? [];
@@ -88,15 +62,6 @@ export const BankPartnerOfferTemplatesListPage = () => {
   const filterConfigs = useMemo(
     (): IntegratedSearchFilterConfig[] => [
       {
-        key: FILTER_PARTNER_KEY,
-        label: t('columns.bank'),
-        allOptionLabel: t('filters.allBanks'),
-        options: bankPartners.map((partner) => ({
-          value: partner.partnerCompanyId,
-          label: partner.name,
-        })),
-      },
-      {
         key: FILTER_PUBLICATION_KEY,
         label: t('columns.publication'),
         allOptionLabel: t('filters.allPublication'),
@@ -107,13 +72,13 @@ export const BankPartnerOfferTemplatesListPage = () => {
         ],
       },
     ],
-    [bankPartners, t],
+    [t],
   );
 
   const busy =
     createMutation.isPending || updateMutation.isPending || deleteMutation.isPending;
 
-  if (templatesQuery.isLoading || partnersQuery.isLoading) {
+  if (templatesQuery.isLoading) {
     return <p className="text-sm text-ink-secondary">{t('loading')}</p>;
   }
 
@@ -136,22 +101,16 @@ export const BankPartnerOfferTemplatesListPage = () => {
         searchAriaLabel={tCommon('searchLabel')}
         filters={filterConfigs}
         filterValues={{
-          [FILTER_PARTNER_KEY]: partnerFilter,
           [FILTER_PUBLICATION_KEY]: publicationFilter,
         }}
         onSearchChange={setSearch}
         onFilterChange={(key, value) => {
-          if (key === FILTER_PARTNER_KEY) {
-            setPartnerFilter(value);
-            return;
-          }
           if (key === FILTER_PUBLICATION_KEY) {
             setPublicationFilter(value as PublicationStatus | '');
           }
         }}
         onClearAll={() => {
           setSearch('');
-          setPartnerFilter('');
           setPublicationFilter('');
         }}
         actions={
@@ -180,7 +139,6 @@ export const BankPartnerOfferTemplatesListPage = () => {
       >
         <BankPartnerOfferTemplateForm
           key="create"
-          bankPartners={bankPartners}
           isBusy={busy}
           onCancel={() => setCreating(false)}
           onCreate={async (body) => {
@@ -211,7 +169,6 @@ export const BankPartnerOfferTemplatesListPage = () => {
         {editing ? (
           <BankPartnerOfferTemplateForm
             key={editing.id}
-            bankPartners={bankPartners}
             initial={editing}
             isBusy={busy}
             onCancel={() => setEditing(null)}

@@ -2257,7 +2257,7 @@
     },
     "templates": {
       "title": "Template/Partner Offers",
-      "subtitle": "Reusable bank partner finance offers for projects",
+      "subtitle": "Reusable finance templates to import into project Finance fields",
       "loading": "Loading templates…",
       "error": "Could not load templates. Try again.",
       "empty": "No templates yet.",
@@ -2269,10 +2269,9 @@
       "deleteConfirmTitle": "Delete",
       "deleteConfirmMessage": "Are you sure you want to delete \"{title}\"?",
       "card": {
-        "hint": "Finance fields template for project apply"
+        "hint": "Import into a project Finance section, then edit if needed"
       },
       "filters": {
-        "allBanks": "All banks",
         "allPublication": "All publication states",
         "draft": "Draft",
         "published": "Published",
@@ -2280,13 +2279,13 @@
       },
       "columns": {
         "name": "Name",
-        "bank": "Bank",
         "publication": "Publication",
         "actions": "Actions"
       },
       "form": {
-        "bankPartner": "Bank partner",
         "name": "Template name",
+        "namePlaceholder": "e.g. Template 1",
+        "nameHint": "Use a short label like Template 1, Template 2…",
         "publication": "Publication",
         "sortOrder": "Sort order",
         "create": "Create template",

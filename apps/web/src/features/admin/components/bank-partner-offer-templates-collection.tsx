@@ -2,7 +2,6 @@
 
 import type { BankPartnerOfferTemplateItem } from '@toonexpo/contracts';
 import { FileStack, SquarePen, Trash2 } from 'lucide-react';
-import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 
 import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
@@ -28,11 +27,10 @@ type TemplateCardProps = {
 };
 
 /**
- * Template card — clear hierarchy: media/bank, title, status, actions (no overlap).
+ * Generic finance template card — name + status + actions (no bank branding).
  */
 const TemplateCard = ({ template, busy, onEdit, onDelete }: TemplateCardProps) => {
   const t = useTranslations('Admin.templates');
-  const logoUrl = template.partnerCompanyLogoUrl;
 
   return (
     <article
@@ -49,28 +47,20 @@ const TemplateCard = ({ template, busy, onEdit, onDelete }: TemplateCardProps) =
         onClick={onEdit}
         className="flex min-w-0 flex-1 flex-col gap-4 p-4 text-left"
       >
-        <div className="flex items-center gap-3">
-          <span className="relative flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-surface-muted ring-1 ring-border/60">
-            {logoUrl ? (
-              <Image src={logoUrl} alt="" fill className="object-cover" sizes="44px" />
-            ) : (
-              <FileStack className="size-5 text-ink-secondary" aria-hidden />
-            )}
+        <div className="flex items-start gap-3">
+          <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-surface-muted text-ink-secondary ring-1 ring-border/60">
+            <FileStack className="size-5" aria-hidden />
           </span>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-medium text-ink-secondary">
-              {template.partnerCompanyName}
-            </p>
-            <PublicationStatusBadge status={template.publicationStatus} />
+            <h3 className="line-clamp-2 text-base font-semibold tracking-tight text-ink-navy">
+              {template.name}
+            </h3>
+            <div className="mt-2">
+              <PublicationStatusBadge status={template.publicationStatus} />
+            </div>
           </div>
         </div>
-
-        <div className="min-w-0 flex-1">
-          <h3 className="line-clamp-2 text-base font-semibold tracking-tight text-ink-navy">
-            {template.name}
-          </h3>
-          <p className="mt-2 text-xs leading-relaxed text-ink-muted">{t('card.hint')}</p>
-        </div>
+        <p className="text-xs leading-relaxed text-ink-muted">{t('card.hint')}</p>
       </button>
 
       <div className="flex items-center justify-end gap-1 border-t border-border/70 px-3 py-2">
@@ -122,11 +112,10 @@ export const BankPartnerOfferTemplatesCollection = ({
   return (
     <ListTableReveal>
       <div className="overflow-x-auto rounded-2xl border border-border">
-        <table className="w-full min-w-[40rem] text-left text-sm">
+        <table className="w-full min-w-[36rem] text-left text-sm">
           <thead className="bg-surface-muted text-xs tracking-wide text-ink-muted uppercase">
             <tr>
               <th className="px-4 py-3 font-semibold">{t('columns.name')}</th>
-              <th className="px-4 py-3 font-semibold">{t('columns.bank')}</th>
               <th className="px-4 py-3 font-semibold">{t('columns.publication')}</th>
               <th className="px-4 py-3 font-semibold">{t('columns.actions')}</th>
             </tr>
@@ -134,10 +123,9 @@ export const BankPartnerOfferTemplatesCollection = ({
           <tbody>
             {templates.map((template) => (
               <tr key={template.id} className="border-t border-border">
-                <td className="max-w-[18rem] px-4 py-3 font-medium text-ink-navy">
+                <td className="max-w-[20rem] px-4 py-3 font-medium text-ink-navy">
                   <span className="line-clamp-2">{template.name}</span>
                 </td>
-                <td className="px-4 py-3 text-ink-secondary">{template.partnerCompanyName}</td>
                 <td className="px-4 py-3">
                   <PublicationStatusBadge status={template.publicationStatus} />
                 </td>

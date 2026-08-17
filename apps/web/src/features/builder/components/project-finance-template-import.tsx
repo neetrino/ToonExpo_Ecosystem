@@ -87,9 +87,6 @@ export const ProjectFinanceTemplateImport = ({
                   onClick={() => applyTemplate(template)}
                 >
                   <span className="font-medium text-ink-navy">{template.name}</span>
-                  <span className="text-sm text-ink-secondary">
-                    {template.partnerCompanyName}
-                  </span>
                 </button>
               </li>
             ))}

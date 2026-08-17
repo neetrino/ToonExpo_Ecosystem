@@ -32,8 +32,8 @@ export const toTemplateItem = (
 ): BankPartnerOfferTemplateItem => ({
   id: row.id,
   partnerCompanyId: row.partnerCompanyId,
-  partnerCompanyName: row.partnerCompany.name,
-  partnerCompanyLogoUrl: row.partnerCompany.logoMedia?.fileUrl ?? null,
+  partnerCompanyName: row.partnerCompany?.name ?? null,
+  partnerCompanyLogoUrl: row.partnerCompany?.logoMedia?.fileUrl ?? null,
   name: row.name,
   fields: parseStoredFinanceFields(row.fields),
   publicationStatus: row.publicationStatus,

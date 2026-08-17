@@ -32,8 +32,8 @@ export type BankPartnerOfferFinanceFields = Partial<
 
 export type BankPartnerOfferTemplateItem = {
   id: string;
-  partnerCompanyId: string;
-  partnerCompanyName: string;
+  partnerCompanyId: string | null;
+  partnerCompanyName: string | null;
   partnerCompanyLogoUrl: string | null;
   name: string;
   fields: BankPartnerOfferFinanceFields;
@@ -50,7 +50,6 @@ export type BankPartnerOfferTemplateListResponse = {
 };
 
 export type CreateBankPartnerOfferTemplateBody = {
-  partnerCompanyId: string;
   name: string;
   fields?: BankPartnerOfferFinanceFields;
   publicationStatus?: PublicationStatus;

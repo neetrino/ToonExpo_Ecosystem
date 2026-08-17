@@ -28,10 +28,6 @@ enum PublicationStatusDto {
 export class CreateBankPartnerOfferTemplateDto {
   @IsString()
   @MinLength(1)
-  partnerCompanyId!: string;
-
-  @IsString()
-  @MinLength(1)
   @MaxLength(BANK_PARTNER_OFFER_NAME_MAX_LENGTH)
   name!: string;
 

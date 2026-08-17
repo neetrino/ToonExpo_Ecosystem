@@ -22,16 +22,9 @@ import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
 import { Select } from '@/shared/ui/select';
 
-type BankPartnerOption = {
-  partnerCompanyId: string;
-  name: string;
-};
-
 type BankPartnerOfferTemplateFormProps = {
-  bankPartners: BankPartnerOption[];
   initial?: BankPartnerOfferTemplateItem | undefined;
   onCreate?: ((body: {
-    partnerCompanyId: string;
     name: string;
     fields: BankPartnerOfferFinanceFields;
     publicationStatus: BankPartnerOfferTemplateFormValues['publicationStatus'];
@@ -61,10 +54,9 @@ const toFormFields = (
 };
 
 /**
- * Admin create/edit form for bank partner offer templates.
+ * Admin create/edit form for reusable finance templates (name + Finance fields).
  */
 export const BankPartnerOfferTemplateForm = ({
-  bankPartners,
   initial,
   onCreate,
   onUpdate,
@@ -78,14 +70,12 @@ export const BankPartnerOfferTemplateForm = ({
     resolver: zodResolver(bankPartnerOfferTemplateFormSchema),
     defaultValues: initial
       ? {
-          partnerCompanyId: initial.partnerCompanyId,
           name: initial.name,
           fields: toFormFields(initial.fields),
           publicationStatus: initial.publicationStatus,
           sortOrder: initial.sortOrder,
         }
       : {
-          partnerCompanyId: bankPartners[0]?.partnerCompanyId ?? '',
           name: '',
           fields: emptyFinanceFields(),
           publicationStatus: 'draft',
@@ -95,12 +85,7 @@ export const BankPartnerOfferTemplateForm = ({
 
   const handleSubmit = form.handleSubmit(async (values) => {
     if (isEdit) {
-      await onUpdate?.({
-        name: values.name,
-        fields: values.fields,
-        publicationStatus: values.publicationStatus,
-        sortOrder: values.sortOrder,
-      });
+      await onUpdate?.(values);
       return;
     }
     await onCreate?.(values);
@@ -114,32 +99,15 @@ export const BankPartnerOfferTemplateForm = ({
         <legend className="mb-2.5 text-xs font-semibold tracking-wide text-ink-muted uppercase">
           {t('sections.template')}
         </legend>
-        {!isEdit ? (
-          <FormField id="partnerCompanyId" label={t('bankPartner')}>
-            <Controller
-              name="partnerCompanyId"
-              control={form.control}
-              render={({ field }) => (
-                <Select
-                  id="partnerCompanyId"
-                  value={field.value}
-                  onChange={field.onChange}
-                  onBlur={field.onBlur}
-                  disabled={busy || bankPartners.length === 0}
-                >
-                  {bankPartners.map((partner) => (
-                    <option key={partner.partnerCompanyId} value={partner.partnerCompanyId}>
-                      {partner.name}
-                    </option>
-                  ))}
-                </Select>
-              )}
-            />
-          </FormField>
-        ) : null}
         <FormField id="template-name" label={t('name')}>
-          <Input id="template-name" disabled={busy} {...form.register('name')} />
+          <Input
+            id="template-name"
+            placeholder={t('namePlaceholder')}
+            disabled={busy}
+            {...form.register('name')}
+          />
         </FormField>
+        <p className="text-xs text-ink-muted">{t('nameHint')}</p>
       </fieldset>
 
       <fieldset className="flex flex-col gap-3">

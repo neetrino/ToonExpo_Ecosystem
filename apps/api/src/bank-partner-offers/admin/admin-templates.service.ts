@@ -9,7 +9,6 @@ import type {
 import { PublicationStatus, type Prisma } from "@toonexpo/db";
 
 import { PrismaService } from "../../prisma/prisma.service.js";
-import { assertBankPartnerCompany } from "../../mortgage/utils/bank-offer-access.js";
 import {
   normalizeFinanceFields,
   toFinanceFieldsJson,
@@ -22,7 +21,7 @@ import type {
 } from "./dto/admin-template.dto.js";
 
 const templateNotFound = (): NotFoundException =>
-  new NotFoundException("Bank partner offer template not found");
+  new NotFoundException("Finance offer template not found");
 
 @Injectable()
 export class AdminBankPartnerOfferTemplatesService {
@@ -65,12 +64,10 @@ export class AdminBankPartnerOfferTemplatesService {
     userId: string,
     dto: CreateBankPartnerOfferTemplateDto,
   ): Promise<BankPartnerOfferTemplateItem> {
-    await assertBankPartnerCompany(this.prisma.db, dto.partnerCompanyId);
     const fields = normalizeFinanceFields(dto.fields ?? {});
 
     const row = await this.prisma.db.bankPartnerOfferTemplate.create({
       data: {
-        partnerCompanyId: dto.partnerCompanyId,
         name: dto.name.trim(),
         fields: toFinanceFieldsJson(fields),
         publicationStatus: dto.publicationStatus ?? PublicationStatus.draft,

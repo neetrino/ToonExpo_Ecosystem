@@ -2257,7 +2257,7 @@
     },
     "templates": {
       "title": "Շաբլոն / Գործընկերների առաջարկներ",
-      "subtitle": "Բանկային գործընկերների finance շաբլոններ՝ project-ում կիրառելու համար",
+      "subtitle": "Finance շաբլոններ՝ project Finance բաժին ներմուծելու համար",
       "loading": "Բեռնվում է…",
       "error": "Չհաջողվեց բեռնել շաբլոնները։",
       "empty": "Դեռ շաբլոններ չկան։",
@@ -2269,10 +2269,9 @@
       "deleteConfirmTitle": "Ջնջել",
       "deleteConfirmMessage": "Ջնջե՞լ «{title}» շաբլոնը։",
       "card": {
-        "hint": "Finance դաշտերի շաբլոն՝ project-ում ավելացնելու համար"
+        "hint": "Ներմուծեք project Finance բաժին, հետո խմբագրեք ըստ կարիքի"
       },
       "filters": {
-        "allBanks": "Բոլոր բանկերը",
         "allPublication": "Բոլոր կարգավիճակները",
         "draft": "Սևագիր",
         "published": "Հրապարակված",
@@ -2280,13 +2279,13 @@
       },
       "columns": {
         "name": "Անվանում",
-        "bank": "Բանկ",
         "publication": "Հրապարակում",
         "actions": "Գործողություններ"
       },
       "form": {
-        "bankPartner": "Բանկային գործընկեր",
         "name": "Շաբլոնի անուն",
+        "namePlaceholder": "օր. Template 1",
+        "nameHint": "Կարճ անուն՝ Template 1, Template 2…",
         "publication": "Հրապարակում",
         "sortOrder": "Դասավորություն",
         "create": "Ստեղծել շաբլոն",

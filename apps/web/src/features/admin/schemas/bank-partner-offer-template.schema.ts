@@ -19,7 +19,6 @@ const fieldsSchema = z.object(
 );
 
 export const bankPartnerOfferTemplateFormSchema = z.object({
-  partnerCompanyId: z.string().min(1),
   name: z.string().min(1).max(NAME_MAX),
   fields: fieldsSchema,
   publicationStatus: z.enum(PARTNER_PUBLICATION_STATUSES),
