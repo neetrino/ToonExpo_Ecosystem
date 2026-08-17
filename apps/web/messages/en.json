@@ -3389,7 +3389,7 @@
           "storageAvailable": "e.g. Yes — basement",
           "elevator": "e.g. Yes",
           "elevatorsCount": "e.g. 2",
-          "permitNumber": "e.g. Թ-1234/2024",
+          "permitNumber": "e.g. T-1234/2024",
           "constructionType": "e.g. Monolith",
           "facadeMaterials": "e.g. Stone + glass",
           "thermalSoundInsulation": "e.g. Triple glazing",

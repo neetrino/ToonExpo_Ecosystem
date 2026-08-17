@@ -18,15 +18,25 @@ type ProjectSlugFormFields = {
   slug: string;
 };
 
+type NameSnapshot = {
+  nameHy: string;
+  nameRu: string;
+  nameEn: string;
+};
+
 type UseAutoProjectSlugArgs<T extends ProjectSlugFormFields> = {
   control: Control<T>;
   setValue: UseFormSetValue<T>;
   getValues: UseFormGetValues<T>;
 };
 
+const namesEqual = (a: NameSnapshot, b: NameSnapshot): boolean =>
+  a.nameHy === b.nameHy && a.nameRu === b.nameRu && a.nameEn === b.nameEn;
+
 /**
  * Keeps `slug` in sync with project names until the user edits the slug field.
- * Skips the initial mount so edit forms keep the existing slug until a name changes.
+ * Does not overwrite the slug until at least one name field changes from the
+ * values present when the form mounted (safe for edit + React Strict Mode).
  */
 export const useAutoProjectSlug = <T extends ProjectSlugFormFields>({
   control,
@@ -34,24 +44,27 @@ export const useAutoProjectSlug = <T extends ProjectSlugFormFields>({
   getValues,
 }: UseAutoProjectSlugArgs<T>): { lockSlugAuto: () => void } => {
   const lockedRef = useRef(false);
-  const skipInitialSyncRef = useRef(true);
+  const baselineRef = useRef<NameSnapshot | null>(null);
 
   const nameHy = useWatch({ control, name: 'nameHy' as Path<T> }) as string;
   const nameRu = useWatch({ control, name: 'nameRu' as Path<T> }) as string;
   const nameEn = useWatch({ control, name: 'nameEn' as Path<T> }) as string;
 
   useEffect(() => {
-    if (lockedRef.current) {
-      return;
-    }
-    if (skipInitialSyncRef.current) {
-      skipInitialSyncRef.current = false;
+    const current: NameSnapshot = { nameHy, nameRu, nameEn };
+
+    if (baselineRef.current === null) {
+      baselineRef.current = current;
       return;
     }
 
-    const next = resolveProjectSlugFromNames({ nameEn, nameHy, nameRu });
-    const current = getValues('slug' as Path<T>) as string;
-    if (next === current) {
+    if (lockedRef.current || namesEqual(current, baselineRef.current)) {
+      return;
+    }
+
+    const next = resolveProjectSlugFromNames(current);
+    const previousSlug = getValues('slug' as Path<T>) as string;
+    if (next === previousSlug) {
       return;
     }
 

@@ -9,6 +9,7 @@ import { Controller, useForm } from 'react-hook-form';
 
 import { TranslationTabs } from '@/features/builder/components/translation-tabs';
 import { getProjectFormPlaceholder } from '@/features/builder/constants/project-content-placeholders';
+import { useAutoProjectSlug } from '@/features/builder/hooks/use-auto-project-slug';
 import { useCreatePortalProjectMutation } from '@/features/builder/hooks/use-portal-projects';
 import {
   createProjectSchema,
@@ -66,11 +67,16 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
     register,
     handleSubmit,
     control,
+    setValue,
+    getValues,
     formState: { errors, isSubmitting },
   } = useForm<CreateProjectFormValues>({
     resolver: zodResolver(createProjectSchema),
     defaultValues: emptyValues(),
   });
+
+  const { lockSlugAuto } = useAutoProjectSlug({ control, setValue, getValues });
+  const slugField = register('slug');
 
   const onSubmit = handleSubmit(async (values) => {
     setFormError(null);
@@ -140,7 +146,13 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
                 <Input
                   id={`slug-${locale}`}
                   placeholder={getProjectFormPlaceholder(locale, 'slug')}
-                  {...register('slug')}
+                  name={slugField.name}
+                  ref={slugField.ref}
+                  onBlur={slugField.onBlur}
+                  onChange={(event) => {
+                    lockSlugAuto();
+                    void slugField.onChange(event);
+                  }}
                 />
               </FormField>
               <FormField id={`location-${locale}`} label={t('form.locationText')}>

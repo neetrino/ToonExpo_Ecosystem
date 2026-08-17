@@ -15,6 +15,7 @@ import {
 import { ProjectCatalogEditor } from '@/features/builder/components/project-catalog-editor';
 import { TranslationTabs } from '@/features/builder/components/translation-tabs';
 import { getProjectFormPlaceholder } from '@/features/builder/constants/project-content-placeholders';
+import { useAutoProjectSlug } from '@/features/builder/hooks/use-auto-project-slug';
 import { useUpdatePortalProjectMutation } from '@/features/builder/hooks/use-portal-projects';
 import {
   updateProjectSchema,
@@ -74,11 +75,16 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
     register,
     handleSubmit,
     control,
+    setValue,
+    getValues,
     formState: { errors, isSubmitting, isDirty },
   } = useForm<UpdateProjectFormValues>({
     resolver: zodResolver(updateProjectSchema),
     defaultValues: toFormValues(project),
   });
+
+  const { lockSlugAuto } = useAutoProjectSlug({ control, setValue, getValues });
+  const slugField = register('slug');
 
   const onSubmit = handleSubmit(async (values) => {
     setFormError(null);
@@ -148,7 +154,13 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
                 <Input
                   id={`edit-slug-${locale}`}
                   placeholder={getProjectFormPlaceholder(locale, 'slug')}
-                  {...register('slug')}
+                  name={slugField.name}
+                  ref={slugField.ref}
+                  onBlur={slugField.onBlur}
+                  onChange={(event) => {
+                    lockSlugAuto();
+                    void slugField.onChange(event);
+                  }}
                 />
               </FormField>
               <FormField id={`edit-location-${locale}`} label={t('form.locationText')}>
