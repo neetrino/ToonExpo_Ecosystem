@@ -3087,7 +3087,22 @@
         "completionDate": "Дата сдачи",
         "coverMedia": "Обложка",
         "submit": "Создать проект",
-        "submitting": "Создание…"
+        "submitting": "Создание…",
+        "placeholders": {
+          "name": "напр. Saralanj View",
+          "slug": "напр. saralanj-view",
+          "shortDescription": "Краткое описание для карточек и списков…",
+          "fullDescription": "Полное описание для публичной страницы проекта…",
+          "locationText": "напр. Арабкир, Ереван",
+          "address": "Улица и номер здания",
+          "city": "напр. Ереван",
+          "district": "напр. Арабкир",
+          "projectType": "напр. Жилой комплекс",
+          "constructionStatus": "напр. Строится",
+          "catalogValue": "Введите значение…",
+          "catalogItem": "Добавьте пункт…",
+          "linkUrl": "https://"
+        }
       },
       "catalog": {
         "title": "Детали проекта (публичный каталог)",
@@ -3097,6 +3112,7 @@
         "nearbyPlaces": "Рядом",
         "addItem": "Добавить",
         "removeItem": "Удалить",
+        "itemPlaceholder": "напр. Парковка, школа, парк…",
         "linksHint": "Необязательные маркетинговые и медиа-ссылки (общие для всех языков).",
         "socialsHint": "Ссылки на сайт и социальные профили (общие для всех языков).",
         "sections": {

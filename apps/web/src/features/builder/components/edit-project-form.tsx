@@ -107,6 +107,7 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
             >
               <Input
                 id={`edit-name-${locale}`}
+                placeholder={t('form.placeholders.name')}
                 {...register(locale === 'hy' ? 'nameHy' : locale === 'ru' ? 'nameRu' : 'nameEn')}
               />
             </FormField>
@@ -114,6 +115,7 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
               <textarea
                 id={`edit-short-${locale}`}
                 rows={2}
+                placeholder={t('form.placeholders.shortDescription')}
                 className="w-full rounded-sm border border-border bg-background px-4 py-3 text-sm text-ink focus-visible:border-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/20"
                 {...register(
                   locale === 'hy'
@@ -128,6 +130,7 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
               <textarea
                 id={`edit-full-${locale}`}
                 rows={4}
+                placeholder={t('form.placeholders.fullDescription')}
                 className="w-full rounded-sm border border-border bg-background px-4 py-3 text-sm text-ink focus-visible:border-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/20"
                 {...register(
                   locale === 'hy'
@@ -140,11 +143,16 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
             </FormField>
             <div className="grid gap-4 sm:grid-cols-3">
               <FormField id={`edit-slug-${locale}`} label={t('form.slug')}>
-                <Input id={`edit-slug-${locale}`} {...register('slug')} />
+                <Input
+                  id={`edit-slug-${locale}`}
+                  placeholder={t('form.placeholders.slug')}
+                  {...register('slug')}
+                />
               </FormField>
               <FormField id={`edit-location-${locale}`} label={t('form.locationText')}>
                 <Input
                   id={`edit-location-${locale}`}
+                  placeholder={t('form.placeholders.locationText')}
                   {...register(
                     locale === 'hy'
                       ? 'locationTextHy'
@@ -155,7 +163,11 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
                 />
               </FormField>
               <FormField id={`edit-district-${locale}`} label={t('form.district')}>
-                <Input id={`edit-district-${locale}`} {...register('district')} />
+                <Input
+                  id={`edit-district-${locale}`}
+                  placeholder={t('form.placeholders.district')}
+                  {...register('district')}
+                />
               </FormField>
             </div>
           </div>
@@ -164,7 +176,11 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
 
       <div className="grid gap-4 sm:grid-cols-2">
         <FormField id="edit-type" label={t('form.projectType')}>
-          <Input id="edit-type" {...register('projectType')} />
+          <Input
+            id="edit-type"
+            placeholder={t('form.placeholders.projectType')}
+            {...register('projectType')}
+          />
         </FormField>
         <FormField id="edit-completion" label={t('form.completionDate')}>
           <Controller

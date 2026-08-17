@@ -3347,7 +3347,22 @@
         "completionDate": "Completion date",
         "coverMedia": "Cover image",
         "submit": "Create project",
-        "submitting": "Creating…"
+        "submitting": "Creating…",
+        "placeholders": {
+          "name": "e.g. Saralanj View",
+          "slug": "e.g. saralanj-view",
+          "shortDescription": "Brief summary for cards and listings…",
+          "fullDescription": "Full description for the public project page…",
+          "locationText": "e.g. Arabkir, Yerevan",
+          "address": "Street and building number",
+          "city": "e.g. Yerevan",
+          "district": "e.g. Arabkir",
+          "projectType": "e.g. Residential complex",
+          "constructionStatus": "e.g. Under construction",
+          "catalogValue": "Enter value…",
+          "catalogItem": "Add an item…",
+          "linkUrl": "https://"
+        }
       },
       "catalog": {
         "title": "Project details (public catalog)",
@@ -3357,6 +3372,7 @@
         "nearbyPlaces": "Nearby places",
         "addItem": "Add item",
         "removeItem": "Remove item",
+        "itemPlaceholder": "e.g. Parking, school, park…",
         "linksHint": "Optional marketing and media URLs (same for all languages).",
         "socialsHint": "Website and social profile URLs (same for all languages).",
         "sections": {

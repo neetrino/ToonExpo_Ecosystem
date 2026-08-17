@@ -98,6 +98,7 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
             >
               <Input
                 id={`name-${locale}`}
+                placeholder={t('form.placeholders.name')}
                 aria-invalid={locale === 'hy' && Boolean(errors.nameHy)}
                 {...register(locale === 'hy' ? 'nameHy' : locale === 'ru' ? 'nameRu' : 'nameEn')}
               />
@@ -106,6 +107,7 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
               <textarea
                 id={`short-${locale}`}
                 rows={2}
+                placeholder={t('form.placeholders.shortDescription')}
                 className="w-full rounded-sm border border-border bg-background px-4 py-3 text-sm text-ink focus-visible:border-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/20"
                 {...register(
                   locale === 'hy'
@@ -120,6 +122,7 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
               <textarea
                 id={`full-${locale}`}
                 rows={4}
+                placeholder={t('form.placeholders.fullDescription')}
                 className="w-full rounded-sm border border-border bg-background px-4 py-3 text-sm text-ink focus-visible:border-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/20"
                 {...register(
                   locale === 'hy'
@@ -132,11 +135,16 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
             </FormField>
             <div className="grid gap-4 sm:grid-cols-3">
               <FormField id={`slug-${locale}`} label={t('form.slug')}>
-                <Input id={`slug-${locale}`} {...register('slug')} />
+                <Input
+                  id={`slug-${locale}`}
+                  placeholder={t('form.placeholders.slug')}
+                  {...register('slug')}
+                />
               </FormField>
               <FormField id={`location-${locale}`} label={t('form.locationText')}>
                 <Input
                   id={`location-${locale}`}
+                  placeholder={t('form.placeholders.locationText')}
                   {...register(
                     locale === 'hy'
                       ? 'locationTextHy'
@@ -147,7 +155,11 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
                 />
               </FormField>
               <FormField id={`district-${locale}`} label={t('form.district')}>
-                <Input id={`district-${locale}`} {...register('district')} />
+                <Input
+                  id={`district-${locale}`}
+                  placeholder={t('form.placeholders.district')}
+                  {...register('district')}
+                />
               </FormField>
             </div>
           </div>
@@ -158,7 +170,11 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
         <legend className="text-sm font-semibold text-ink">{t('form.detailsSection')}</legend>
         <div className="grid gap-4 sm:grid-cols-2">
           <FormField id="projectType" label={t('form.projectType')}>
-            <Input id="projectType" {...register('projectType')} />
+            <Input
+              id="projectType"
+              placeholder={t('form.placeholders.projectType')}
+              {...register('projectType')}
+            />
           </FormField>
           <FormField id="completionDate" label={t('form.completionDate')}>
             <Controller
