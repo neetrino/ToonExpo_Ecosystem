@@ -3133,6 +3133,10 @@
         "publish": "Հրապարակել",
         "archive": "Արխիվացնել",
         "delete": "Ջնջել",
+        "publishConfirmTitle": "Հրապարակել նախագիծը",
+        "publishConfirm": "Հրապարակե՞լ «{name}»-ը։ Այն կերևա հանրային կայքում։",
+        "archiveConfirmTitle": "Արխիվացնել նախագիծը",
+        "archiveConfirm": "Արխիվացնե՞լ «{name}»-ը։ Այլևս չի երևա հանրային կատալոգում։",
         "deleteConfirm": "Ջնջե՞լ այս սևագիր նախագիծը։ Գործողությունն անդառնալի է։",
         "deleteConfirmTitle": "Ջնջել նախագիծը",
         "publicationSuccess": "Հրապարակման կարգավիճակը թարմացված է"

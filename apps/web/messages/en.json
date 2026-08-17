@@ -3393,6 +3393,10 @@
         "publish": "Publish",
         "archive": "Archive",
         "delete": "Delete",
+        "publishConfirmTitle": "Publish project",
+        "publishConfirm": "Publish \"{name}\"? It will become visible on the public site.",
+        "archiveConfirmTitle": "Archive project",
+        "archiveConfirm": "Archive \"{name}\"? It will no longer appear in the public catalog.",
         "deleteConfirm": "Delete this draft project? This cannot be undone.",
         "deleteConfirmTitle": "Delete project",
         "publicationSuccess": "Publication status updated"

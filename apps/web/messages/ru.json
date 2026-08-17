@@ -3133,6 +3133,10 @@
         "publish": "Опубликовать",
         "archive": "В архив",
         "delete": "Удалить",
+        "publishConfirmTitle": "Опубликовать проект",
+        "publishConfirm": "Опубликовать «{name}»? Проект появится на публичном сайте.",
+        "archiveConfirmTitle": "Архивировать проект",
+        "archiveConfirm": "Архивировать «{name}»? Он больше не будет виден в публичном каталоге.",
         "deleteConfirm": "Удалить этот черновик проекта? Действие необратимо.",
         "deleteConfirmTitle": "Удалить проект",
         "publicationSuccess": "Статус публикации обновлён"
