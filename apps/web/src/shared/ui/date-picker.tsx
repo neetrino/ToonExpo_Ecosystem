@@ -89,9 +89,20 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(functio
       return;
     }
 
+    /** Panel lives inside DropdownPortal; scroll/wheel targets the portal wrapper. */
+    const isInsidePicker = (node: Node): boolean => {
+      if (rootRef.current?.contains(node) || panelRef.current?.contains(node)) {
+        return true;
+      }
+      if (node instanceof Element && panelRef.current) {
+        const portal = node.closest('[data-dropdown-portal]');
+        return Boolean(portal?.contains(panelRef.current));
+      }
+      return false;
+    };
+
     const onPointerDown = (event: MouseEvent): void => {
-      const target = event.target as Node;
-      if (rootRef.current?.contains(target) || panelRef.current?.contains(target)) {
+      if (isInsidePicker(event.target as Node)) {
         return;
       }
       setOpen(false);
@@ -106,20 +117,37 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(functio
 
     const onScroll = (event: Event): void => {
       const target = event.target;
-      if (target instanceof Node && panelRef.current?.contains(target)) {
+      if (target instanceof Node && isInsidePicker(target)) {
         return;
       }
       setOpen(false);
       blurActiveElementAfterEscClose();
     };
 
+    const onWheel = (event: WheelEvent): void => {
+      if (!(event.target instanceof Node) || !isInsidePicker(event.target)) {
+        return;
+      }
+      const portal = panelRef.current?.closest('[data-dropdown-portal]');
+      if (!(portal instanceof HTMLElement)) {
+        return;
+      }
+      const canScroll = portal.scrollHeight > portal.clientHeight + 1;
+      if (!canScroll) {
+        // Calendar fits — block page scroll so the open picker is not dismissed.
+        event.preventDefault();
+      }
+    };
+
     document.addEventListener('mousedown', onPointerDown);
     document.addEventListener('keydown', onKeyDown);
     window.addEventListener('scroll', onScroll, true);
+    window.addEventListener('wheel', onWheel, { capture: true, passive: false });
     return () => {
       document.removeEventListener('mousedown', onPointerDown);
       document.removeEventListener('keydown', onKeyDown);
       window.removeEventListener('scroll', onScroll, true);
+      window.removeEventListener('wheel', onWheel, true);
     };
   }, [open]);
 
