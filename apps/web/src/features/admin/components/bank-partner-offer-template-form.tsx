@@ -7,7 +7,7 @@ import {
   type BankPartnerOfferTemplateItem,
 } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
-import { Controller, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 
 import { BankPartnerOfferFinanceFieldsEditor } from '@/features/admin/components/bank-partner-offer-finance-fields-editor';
 import {
@@ -16,26 +16,19 @@ import {
   emptyLocaleText,
   type BankPartnerOfferTemplateFormValues,
 } from '@/features/admin/schemas/bank-partner-offer-template.schema';
-import { PARTNER_PUBLICATION_STATUSES } from '@/features/partners/constants';
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
-import { Select } from '@/shared/ui/select';
+
+type TemplateSubmitBody = {
+  name: string;
+  fields: BankPartnerOfferFinanceFields;
+};
 
 type BankPartnerOfferTemplateFormProps = {
   initial?: BankPartnerOfferTemplateItem | undefined;
-  onCreate?: ((body: {
-    name: string;
-    fields: BankPartnerOfferFinanceFields;
-    publicationStatus: BankPartnerOfferTemplateFormValues['publicationStatus'];
-    sortOrder: number;
-  }) => Promise<void>) | undefined;
-  onUpdate?: ((body: {
-    name: string;
-    fields: BankPartnerOfferFinanceFields;
-    publicationStatus: BankPartnerOfferTemplateFormValues['publicationStatus'];
-    sortOrder: number;
-  }) => Promise<void>) | undefined;
+  onCreate?: ((body: TemplateSubmitBody) => Promise<void>) | undefined;
+  onUpdate?: ((body: TemplateSubmitBody) => Promise<void>) | undefined;
   onCancel: () => void;
   isBusy: boolean;
 };
@@ -72,14 +65,10 @@ export const BankPartnerOfferTemplateForm = ({
       ? {
           name: initial.name,
           fields: toFormFields(initial.fields),
-          publicationStatus: initial.publicationStatus,
-          sortOrder: initial.sortOrder,
         }
       : {
           name: '',
           fields: emptyFinanceFields(),
-          publicationStatus: 'draft',
-          sortOrder: 0,
         },
   });
 
@@ -115,41 +104,6 @@ export const BankPartnerOfferTemplateForm = ({
           {t('sections.finance')}
         </legend>
         <BankPartnerOfferFinanceFieldsEditor register={form.register} />
-      </fieldset>
-
-      <fieldset className="flex flex-col gap-3">
-        <legend className="mb-2.5 text-xs font-semibold tracking-wide text-ink-muted uppercase">
-          {t('sections.publishing')}
-        </legend>
-        <FormField id="publicationStatus" label={t('publication')}>
-          <Controller
-            name="publicationStatus"
-            control={form.control}
-            render={({ field }) => (
-              <Select
-                id="publicationStatus"
-                value={field.value}
-                onChange={field.onChange}
-                onBlur={field.onBlur}
-                disabled={busy}
-              >
-                {PARTNER_PUBLICATION_STATUSES.map((status) => (
-                  <option key={status} value={status}>
-                    {t(`publicationStatuses.${status}`)}
-                  </option>
-                ))}
-              </Select>
-            )}
-          />
-        </FormField>
-        <FormField id="sortOrder" label={t('sortOrder')}>
-          <Input
-            id="sortOrder"
-            type="number"
-            disabled={busy}
-            {...form.register('sortOrder', { valueAsNumber: true })}
-          />
-        </FormField>
       </fieldset>
 
       <div className="flex flex-wrap gap-2 pt-2">

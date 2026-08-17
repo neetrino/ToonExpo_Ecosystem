@@ -74,11 +74,11 @@ export const deleteAdminBankPartnerOfferTemplate = (id: string): Promise<void> =
 
 const templatesListPath = (scope: CatalogScope): string =>
   scope.mode === 'admin'
-    ? '/admin/bank-partner-offer-templates?publishedOnly=true'
+    ? '/admin/bank-partner-offer-templates'
     : '/portal/bank-partner-offer-templates';
 
 /**
- * Published templates for Finance Import picker (admin or builder portal).
+ * Templates for Finance Import picker (admin or builder portal).
  */
 export const listSelectableTemplates = (
   scope: CatalogScope,

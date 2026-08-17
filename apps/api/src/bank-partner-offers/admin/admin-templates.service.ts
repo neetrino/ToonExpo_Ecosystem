@@ -70,7 +70,7 @@ export class AdminBankPartnerOfferTemplatesService {
       data: {
         name: dto.name.trim(),
         fields: toFinanceFieldsJson(fields),
-        publicationStatus: dto.publicationStatus ?? PublicationStatus.draft,
+        publicationStatus: PublicationStatus.published,
         sortOrder: dto.sortOrder ?? 0,
         createdByUserId: userId,
       },

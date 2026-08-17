@@ -2271,36 +2271,21 @@
       "card": {
         "hint": "Ներմուծեք project Finance բաժին, հետո խմբագրեք ըստ կարիքի"
       },
-      "filters": {
-        "allPublication": "Բոլոր կարգավիճակները",
-        "draft": "Սևագիր",
-        "published": "Հրապարակված",
-        "archived": "Արխիվացված"
-      },
       "columns": {
         "name": "Անվանում",
-        "publication": "Հրապարակում",
         "actions": "Գործողություններ"
       },
       "form": {
         "name": "Շաբլոնի անուն",
         "namePlaceholder": "օր. Template 1",
         "nameHint": "Կարճ անուն՝ Template 1, Template 2…",
-        "publication": "Հրապարակում",
-        "sortOrder": "Դասավորություն",
         "create": "Ստեղծել շաբլոն",
         "save": "Պահպանել",
         "cancel": "Չեղարկել",
         "saving": "Պահպանում…",
-        "publicationStatuses": {
-          "draft": "Սևագիր",
-          "published": "Հրապարակված",
-          "archived": "Արխիվացված"
-        },
         "sections": {
           "template": "Շաբլոն",
-          "finance": "Finance դաշտեր",
-          "publishing": "Հրապարակում"
+          "finance": "Finance դաշտեր"
         }
       }
     },

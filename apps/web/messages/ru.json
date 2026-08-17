@@ -2627,36 +2627,21 @@
       "card": {
         "hint": "Импортируйте в Finance проекта, затем при необходимости отредактируйте"
       },
-      "filters": {
-        "allPublication": "Все статусы",
-        "draft": "Черновик",
-        "published": "Опубликовано",
-        "archived": "В архиве"
-      },
       "columns": {
         "name": "Название",
-        "publication": "Публикация",
         "actions": "Действия"
       },
       "form": {
         "name": "Название шаблона",
         "namePlaceholder": "напр. Template 1",
         "nameHint": "Короткое имя: Template 1, Template 2…",
-        "publication": "Публикация",
-        "sortOrder": "Порядок",
         "create": "Создать шаблон",
         "save": "Сохранить",
         "cancel": "Отмена",
         "saving": "Сохранение…",
-        "publicationStatuses": {
-          "draft": "Черновик",
-          "published": "Опубликовано",
-          "archived": "В архиве"
-        },
         "sections": {
           "template": "Шаблон",
-          "finance": "Finance-поля",
-          "publishing": "Публикация"
+          "finance": "Finance-поля"
         }
       }
     },

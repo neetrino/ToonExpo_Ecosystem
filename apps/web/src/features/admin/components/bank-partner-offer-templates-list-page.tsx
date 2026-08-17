@@ -1,6 +1,6 @@
 'use client';
 
-import type { BankPartnerOfferTemplateItem, PublicationStatus } from '@toonexpo/contracts';
+import type { BankPartnerOfferTemplateItem } from '@toonexpo/contracts';
 import { FileStack, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useMemo, useState } from 'react';
@@ -20,11 +20,8 @@ import { AdminDeleteModal } from '@/shared/ui/admin-delete-modal';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
 import { Button } from '@/shared/ui/button';
 import { IconButton } from '@/shared/ui/icon-button';
-import type { IntegratedSearchFilterConfig } from '@/shared/ui/integrated-search-filters.types';
 import { ListPageHeader } from '@/shared/ui/list-page-header';
 import { ViewModeToggle } from '@/shared/ui/view-mode-toggle';
-
-const FILTER_PUBLICATION_KEY = 'publicationFilter';
 
 /**
  * Admin Templates — reusable finance offer templates (Import into project Finance).
@@ -33,7 +30,6 @@ export const BankPartnerOfferTemplatesListPage = () => {
   const t = useTranslations('Admin.templates');
   const tCommon = useTranslations('Common.integratedSearch');
   const [search, setSearch] = useState('');
-  const [publicationFilter, setPublicationFilter] = useState<PublicationStatus | ''>('');
   const [editing, setEditing] = useState<BankPartnerOfferTemplateItem | null>(null);
   const [creating, setCreating] = useState(false);
   const [pendingDelete, setPendingDelete] = useState<BankPartnerOfferTemplateItem | null>(null);
@@ -48,32 +44,12 @@ export const BankPartnerOfferTemplatesListPage = () => {
 
   const filteredTemplates = useMemo(() => {
     const templates = templatesQuery.data?.data ?? [];
-    const bySearch = search.trim()
-      ? templates.filter((template) =>
-          template.name.toLowerCase().includes(search.trim().toLowerCase()),
-        )
-      : templates;
-    if (!publicationFilter) {
-      return bySearch;
+    if (!search.trim()) {
+      return templates;
     }
-    return bySearch.filter((template) => template.publicationStatus === publicationFilter);
-  }, [templatesQuery.data, publicationFilter, search]);
-
-  const filterConfigs = useMemo(
-    (): IntegratedSearchFilterConfig[] => [
-      {
-        key: FILTER_PUBLICATION_KEY,
-        label: t('columns.publication'),
-        allOptionLabel: t('filters.allPublication'),
-        options: [
-          { value: 'draft', label: t('filters.draft') },
-          { value: 'published', label: t('filters.published') },
-          { value: 'archived', label: t('filters.archived') },
-        ],
-      },
-    ],
-    [t],
-  );
+    const q = search.trim().toLowerCase();
+    return templates.filter((template) => template.name.toLowerCase().includes(q));
+  }, [templatesQuery.data, search]);
 
   const busy =
     createMutation.isPending || updateMutation.isPending || deleteMutation.isPending;
@@ -99,19 +75,9 @@ export const BankPartnerOfferTemplatesListPage = () => {
         search={search}
         searchPlaceholder={tCommon('searchPlaceholder')}
         searchAriaLabel={tCommon('searchLabel')}
-        filters={filterConfigs}
-        filterValues={{
-          [FILTER_PUBLICATION_KEY]: publicationFilter,
-        }}
         onSearchChange={setSearch}
-        onFilterChange={(key, value) => {
-          if (key === FILTER_PUBLICATION_KEY) {
-            setPublicationFilter(value as PublicationStatus | '');
-          }
-        }}
         onClearAll={() => {
           setSearch('');
-          setPublicationFilter('');
         }}
         actions={
           <>

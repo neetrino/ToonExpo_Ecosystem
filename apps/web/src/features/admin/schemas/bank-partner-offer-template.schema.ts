@@ -1,8 +1,6 @@
 import { BANK_PARTNER_OFFER_FINANCE_KEYS } from '@toonexpo/contracts';
 import { z } from 'zod';
 
-import { PARTNER_PUBLICATION_STATUSES } from '@/features/partners/constants';
-
 const FIELD_MAX = 2_000;
 const NAME_MAX = 200;
 
@@ -21,8 +19,6 @@ const fieldsSchema = z.object(
 export const bankPartnerOfferTemplateFormSchema = z.object({
   name: z.string().min(1).max(NAME_MAX),
   fields: fieldsSchema,
-  publicationStatus: z.enum(PARTNER_PUBLICATION_STATUSES),
-  sortOrder: z.number().int().min(0).max(10_000),
 });
 
 export type BankPartnerOfferTemplateFormValues = z.infer<

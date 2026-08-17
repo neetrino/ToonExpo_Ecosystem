@@ -50,10 +50,10 @@ export class PortalBankPartnerOfferTemplatesController {
   ) {}
 
   @Get()
-  @ApiOperation({ summary: "List published bank partner offer templates" })
-  @ApiOkResponse({ description: "Published template list" })
+  @ApiOperation({ summary: "List bank partner offer templates" })
+  @ApiOkResponse({ description: "Template list" })
   list(): Promise<BankPartnerOfferTemplateListResponse> {
-    return this.templates.list({ publishedOnly: true });
+    return this.templates.list({});
   }
 }
 

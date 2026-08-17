@@ -4,7 +4,6 @@ import type { BankPartnerOfferTemplateItem } from '@toonexpo/contracts';
 import { FileStack, SquarePen, Trash2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
-import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
 import { AdminListCardGrid } from '@/shared/ui/admin-list-card-grid';
 import { cn } from '@/shared/ui/cn';
 import { IconButton } from '@/shared/ui/icon-button';
@@ -27,7 +26,7 @@ type TemplateCardProps = {
 };
 
 /**
- * Generic finance template card — name + status + actions (no bank branding).
+ * Generic finance template card — name + actions (no bank branding).
  */
 const TemplateCard = ({ template, busy, onEdit, onDelete }: TemplateCardProps) => {
   const t = useTranslations('Admin.templates');
@@ -55,9 +54,6 @@ const TemplateCard = ({ template, busy, onEdit, onDelete }: TemplateCardProps) =
             <h3 className="line-clamp-2 text-base font-semibold tracking-tight text-ink-navy">
               {template.name}
             </h3>
-            <div className="mt-2">
-              <PublicationStatusBadge status={template.publicationStatus} />
-            </div>
           </div>
         </div>
         <p className="text-xs leading-relaxed text-ink-muted">{t('card.hint')}</p>
@@ -112,11 +108,10 @@ export const BankPartnerOfferTemplatesCollection = ({
   return (
     <ListTableReveal>
       <div className="overflow-x-auto rounded-2xl border border-border">
-        <table className="w-full min-w-[36rem] text-left text-sm">
+        <table className="w-full min-w-[28rem] text-left text-sm">
           <thead className="bg-surface-muted text-xs tracking-wide text-ink-muted uppercase">
             <tr>
               <th className="px-4 py-3 font-semibold">{t('columns.name')}</th>
-              <th className="px-4 py-3 font-semibold">{t('columns.publication')}</th>
               <th className="px-4 py-3 font-semibold">{t('columns.actions')}</th>
             </tr>
           </thead>
@@ -125,9 +120,6 @@ export const BankPartnerOfferTemplatesCollection = ({
               <tr key={template.id} className="border-t border-border">
                 <td className="max-w-[20rem] px-4 py-3 font-medium text-ink-navy">
                   <span className="line-clamp-2">{template.name}</span>
-                </td>
-                <td className="px-4 py-3">
-                  <PublicationStatusBadge status={template.publicationStatus} />
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex gap-1">

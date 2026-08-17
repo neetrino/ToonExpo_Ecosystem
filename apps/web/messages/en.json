@@ -2271,36 +2271,21 @@
       "card": {
         "hint": "Import into a project Finance section, then edit if needed"
       },
-      "filters": {
-        "allPublication": "All publication states",
-        "draft": "Draft",
-        "published": "Published",
-        "archived": "Archived"
-      },
       "columns": {
         "name": "Name",
-        "publication": "Publication",
         "actions": "Actions"
       },
       "form": {
         "name": "Template name",
         "namePlaceholder": "e.g. Template 1",
         "nameHint": "Use a short label like Template 1, Template 2…",
-        "publication": "Publication",
-        "sortOrder": "Sort order",
         "create": "Create template",
         "save": "Save changes",
         "cancel": "Cancel",
         "saving": "Saving…",
-        "publicationStatuses": {
-          "draft": "Draft",
-          "published": "Published",
-          "archived": "Archived"
-        },
         "sections": {
           "template": "Template",
-          "finance": "Finance fields",
-          "publishing": "Publishing"
+          "finance": "Finance fields"
         }
       }
     },
