@@ -3271,31 +3271,6 @@
           "ceilingHeightM": "Առաստաղի բարձրություն (մ)"
         }
       },
-      "bankPartnerOffers": {
-        "title": "Բանկային գործընկերների առաջարկներ",
-        "subtitle": "Կիրառեք Admin → Template/Partner Offers շաբլոնները։ Այստեղի փոփոխությունները մնում են միայն այս project-ում։",
-        "loading": "Բեռնվում է…",
-        "error": "Չհաջողվեց բեռնել առաջարկները։",
-        "empty": "Այս project-ում դեռ բանկային առաջարկներ չկան։",
-        "addFromTemplates": "Ավելացնել շաբլոններից",
-        "addAll": "Ավելացնել բոլորը",
-        "edit": "Խմբագրել",
-        "remove": "Հեռացնել",
-        "pickerTitle": "Ընտրել շաբլոններ",
-        "pickerEmpty": "Ավելացնելու հրապարակված շաբլոն չի մնացել։",
-        "applySelected": "Ավելացնել ընտրվածները",
-        "cancel": "Չեղարկել",
-        "editTitle": "Խմբագրել {title}",
-        "removeConfirmTitle": "Հեռացնել առաջարկը",
-        "removeConfirmMessage": "Հեռացնե՞լ «{title}»-ը այս project-ից։",
-        "form": {
-          "name": "Առաջարկի անուն",
-          "sortOrder": "Դասավորություն",
-          "save": "Պահպանել",
-          "cancel": "Չեղարկել",
-          "saving": "Պահպանում…"
-        }
-      },
       "validation": {
         "name": "Մուտքագրեք հայերեն անունը"
       },

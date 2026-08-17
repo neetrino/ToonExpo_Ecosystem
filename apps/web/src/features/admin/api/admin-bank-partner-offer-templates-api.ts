@@ -1,13 +1,8 @@
 import type {
-  ApplyProjectBankPartnerOffersBody,
-  ApplyProjectBankPartnerOffersResponse,
   BankPartnerOfferTemplateItem,
   BankPartnerOfferTemplateListResponse,
   CreateBankPartnerOfferTemplateBody,
-  ProjectBankPartnerOfferItem,
-  ProjectBankPartnerOfferListResponse,
   UpdateBankPartnerOfferTemplateBody,
-  UpdateProjectBankPartnerOfferBody,
 } from '@toonexpo/contracts';
 
 import type { CatalogScope } from '@/features/builder/catalog-scope';
@@ -82,11 +77,9 @@ const templatesListPath = (scope: CatalogScope): string =>
     ? '/admin/bank-partner-offer-templates?publishedOnly=true'
     : '/portal/bank-partner-offer-templates';
 
-const projectOffersBasePath = (scope: CatalogScope, projectId: string): string =>
-  scope.mode === 'admin'
-    ? `/admin/projects/${encodeURIComponent(projectId)}/bank-partner-offers`
-    : `/portal/projects/${encodeURIComponent(projectId)}/bank-partner-offers`;
-
+/**
+ * Published templates for Finance Import picker (admin or builder portal).
+ */
 export const listSelectableTemplates = (
   scope: CatalogScope,
 ): Promise<BankPartnerOfferTemplateListResponse> =>
@@ -95,51 +88,4 @@ export const listSelectableTemplates = (
     method: 'GET',
     credentials: 'include',
     cache: 'no-store',
-  });
-
-export const listProjectBankPartnerOffers = (
-  scope: CatalogScope,
-  projectId: string,
-): Promise<ProjectBankPartnerOfferListResponse> =>
-  apiFetch<ProjectBankPartnerOfferListResponse>({
-    path: projectOffersBasePath(scope, projectId),
-    method: 'GET',
-    credentials: 'include',
-    cache: 'no-store',
-  });
-
-export const applyProjectBankPartnerOffers = (
-  scope: CatalogScope,
-  projectId: string,
-  body: ApplyProjectBankPartnerOffersBody,
-): Promise<ApplyProjectBankPartnerOffersResponse> =>
-  apiFetch<ApplyProjectBankPartnerOffersResponse>({
-    path: `${projectOffersBasePath(scope, projectId)}/apply`,
-    method: 'POST',
-    ...jsonCredentials,
-    body: JSON.stringify(body),
-  });
-
-export const updateProjectBankPartnerOffer = (
-  scope: CatalogScope,
-  projectId: string,
-  offerId: string,
-  body: UpdateProjectBankPartnerOfferBody,
-): Promise<ProjectBankPartnerOfferItem> =>
-  apiFetch<ProjectBankPartnerOfferItem>({
-    path: `${projectOffersBasePath(scope, projectId)}/${encodeURIComponent(offerId)}`,
-    method: 'PATCH',
-    ...jsonCredentials,
-    body: JSON.stringify(body),
-  });
-
-export const deleteProjectBankPartnerOffer = (
-  scope: CatalogScope,
-  projectId: string,
-  offerId: string,
-): Promise<void> =>
-  apiFetch<void>({
-    path: `${projectOffersBasePath(scope, projectId)}/${encodeURIComponent(offerId)}`,
-    method: 'DELETE',
-    credentials: 'include',
   });
