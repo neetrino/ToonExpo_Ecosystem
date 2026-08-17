@@ -3,11 +3,12 @@
 import { useCatalogScope } from '@/features/builder/catalog-scope-context';
 import { catalogMediaContext, catalogProjectDetailHref } from '@/features/builder/catalog-scope';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import { TranslationTabs } from '@/features/builder/components/translation-tabs';
+import { getProjectFormPlaceholder } from '@/features/builder/constants/project-content-placeholders';
 import { useCreatePortalProjectMutation } from '@/features/builder/hooks/use-portal-projects';
 import {
   createProjectSchema,
@@ -56,6 +57,7 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
   const scope = useCatalogScope();
   const mediaContext = catalogMediaContext(scope);
   const t = useTranslations('Builder.projects');
+  const siteLocale = useLocale();
   const router = useRouter();
   const createMutation = useCreatePortalProjectMutation();
   const [formError, setFormError] = useState<string | null>(null);
@@ -98,7 +100,7 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
             >
               <Input
                 id={`name-${locale}`}
-                placeholder={t('form.placeholders.name')}
+                placeholder={getProjectFormPlaceholder(locale, 'name')}
                 aria-invalid={locale === 'hy' && Boolean(errors.nameHy)}
                 {...register(locale === 'hy' ? 'nameHy' : locale === 'ru' ? 'nameRu' : 'nameEn')}
               />
@@ -107,7 +109,7 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
               <textarea
                 id={`short-${locale}`}
                 rows={2}
-                placeholder={t('form.placeholders.shortDescription')}
+                placeholder={getProjectFormPlaceholder(locale, 'shortDescription')}
                 className="w-full rounded-sm border border-border bg-background px-4 py-3 text-sm text-ink focus-visible:border-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/20"
                 {...register(
                   locale === 'hy'
@@ -122,7 +124,7 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
               <textarea
                 id={`full-${locale}`}
                 rows={4}
-                placeholder={t('form.placeholders.fullDescription')}
+                placeholder={getProjectFormPlaceholder(locale, 'fullDescription')}
                 className="w-full rounded-sm border border-border bg-background px-4 py-3 text-sm text-ink focus-visible:border-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/20"
                 {...register(
                   locale === 'hy'
@@ -137,14 +139,14 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
               <FormField id={`slug-${locale}`} label={t('form.slug')}>
                 <Input
                   id={`slug-${locale}`}
-                  placeholder={t('form.placeholders.slug')}
+                  placeholder={getProjectFormPlaceholder(locale, 'slug')}
                   {...register('slug')}
                 />
               </FormField>
               <FormField id={`location-${locale}`} label={t('form.locationText')}>
                 <Input
                   id={`location-${locale}`}
-                  placeholder={t('form.placeholders.locationText')}
+                  placeholder={getProjectFormPlaceholder(locale, 'locationText')}
                   {...register(
                     locale === 'hy'
                       ? 'locationTextHy'
@@ -157,7 +159,7 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
               <FormField id={`district-${locale}`} label={t('form.district')}>
                 <Input
                   id={`district-${locale}`}
-                  placeholder={t('form.placeholders.district')}
+                  placeholder={getProjectFormPlaceholder(locale, 'district')}
                   {...register('district')}
                 />
               </FormField>
@@ -172,7 +174,7 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
           <FormField id="projectType" label={t('form.projectType')}>
             <Input
               id="projectType"
-              placeholder={t('form.placeholders.projectType')}
+              placeholder={getProjectFormPlaceholder(siteLocale, 'projectType')}
               {...register('projectType')}
             />
           </FormField>

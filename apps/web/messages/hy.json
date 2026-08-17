@@ -28,6 +28,9 @@
       "previousMonth": "Նախորդ ամիս",
       "nextMonth": "Հաջորդ ամիս"
     },
+    "placeholders": {
+      "url": "https://"
+    },
     "back": "Հետ"
   },
   "ReadinessKpi": {

@@ -28,6 +28,9 @@
       "previousMonth": "Предыдущий месяц",
       "nextMonth": "Следующий месяц"
     },
+    "placeholders": {
+      "url": "https://"
+    },
     "back": "Назад"
   },
   "ReadinessKpi": {

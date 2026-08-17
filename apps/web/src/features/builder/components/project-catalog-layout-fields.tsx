@@ -14,6 +14,9 @@ import {
   isProjectCatalogDateKey,
   isProjectCatalogTextareaKey,
 } from '@/features/builder/constants/project-catalog-editor';
+import {
+  getCatalogFieldPlaceholder,
+} from '@/features/builder/constants/project-content-placeholders';
 import type { UpdateProjectFormValues } from '@/features/builder/schemas/project.schema';
 import { DatePicker } from '@/shared/ui/date-picker';
 import { parseIsoDate, toIsoDate } from '@/shared/ui/date-picker-utils';
@@ -44,11 +47,6 @@ const useCatalogFieldLabel = (fieldKey: keyof ProjectCatalogDetails): string => 
     return tExtra(fieldKey as 'pricePerSqmMin');
   }
   return tCatalog(fieldKey as 'propertyType');
-};
-
-const useCatalogFieldPlaceholder = (fieldKey: keyof ProjectCatalogDetails): string => {
-  const t = useTranslations('Builder.projects.catalog.placeholders');
-  return t(fieldKey as 'propertyType');
 };
 
 const MONTH_YEAR_PATTERN = /^(\d{1,2})\/(\d{4})$/;
@@ -167,7 +165,7 @@ const OverviewField = ({
   register,
 }: OverviewFieldProps) => {
   const label = useCatalogFieldLabel(fieldKey);
-  const placeholder = useCatalogFieldPlaceholder(fieldKey);
+  const placeholder = getCatalogFieldPlaceholder(locale, fieldKey);
   return (
     <div className="flex min-w-0 flex-col items-center gap-2.5 text-center">
       <span
@@ -225,7 +223,7 @@ const CatalogKvItem = ({
   const dateField = isProjectCatalogDateKey(fieldKey);
   const Icon = PROJECT_CATALOG_CRITERION_ICON[catalogDetailKeyToCriterionId(fieldKey)];
   const label = useCatalogFieldLabel(fieldKey);
-  const placeholder = useCatalogFieldPlaceholder(fieldKey);
+  const placeholder = getCatalogFieldPlaceholder(locale, fieldKey);
   return (
     <div
       className={cn(

@@ -12,6 +12,7 @@ import {
 } from '@/features/builder/components/form-save-bar';
 import { TranslationTabs } from '@/features/builder/components/translation-tabs';
 import { APARTMENT_SALES_STATUSES, PRICE_VISIBILITY_OPTIONS } from '@/features/builder/constants';
+import { getUrlPlaceholder } from '@/features/builder/constants/project-content-placeholders';
 import { useUpdateApartmentMutation } from '@/features/builder/hooks/use-portal-inventory';
 import {
   updateApartmentSchema,
@@ -184,7 +185,7 @@ export const EditApartmentForm = ({ apartment }: EditApartmentFormProps) => {
           <Input
             id="apt-matterport"
             type="url"
-            placeholder="https://"
+            placeholder={getUrlPlaceholder()}
             {...register('matterportUrl')}
           />
         </FormField>
@@ -196,7 +197,7 @@ export const EditApartmentForm = ({ apartment }: EditApartmentFormProps) => {
           <Input
             id="apt-external-3d"
             type="url"
-            placeholder="https://"
+            placeholder={getUrlPlaceholder()}
             {...register('external3dUrl')}
           />
         </FormField>

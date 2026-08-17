@@ -11,6 +11,10 @@ import {
   PROJECT_CATALOG_OVERVIEW_KEYS,
   PROJECT_CATALOG_SOCIAL_LINK_EDITOR_IDS,
 } from '@/features/builder/constants/project-catalog-editor';
+import {
+  getCatalogListPlaceholder,
+  getUrlPlaceholder,
+} from '@/features/builder/constants/project-content-placeholders';
 import { ProjectCatalogChecklistEditor } from '@/features/builder/components/project-catalog-checklist-editor';
 import {
   ProjectCatalogKvEditor,
@@ -79,28 +83,25 @@ type CatalogLinkFieldsProps = {
   labelFor: (key: CatalogLinkLabelKey) => string;
 };
 
-const CatalogLinkFields = ({ ids, register, labelFor }: CatalogLinkFieldsProps) => {
-  const tPlaceholders = useTranslations('Builder.projects.catalog.placeholders.links');
-  return (
-    <div className="grid gap-4 sm:grid-cols-2">
-      {ids.map((id) => {
-        const fieldId = `catalog-link-${id}`;
-        return (
-          <FormField key={id} id={fieldId} label={labelFor(LINK_LABEL_KEYS[id])}>
-            <Input
-              id={fieldId}
-              type="url"
-              inputMode="url"
-              placeholder={tPlaceholders(id)}
-              className="text-left"
-              {...register(`catalogLinks.${id}`)}
-            />
-          </FormField>
-        );
-      })}
-    </div>
-  );
-};
+const CatalogLinkFields = ({ ids, register, labelFor }: CatalogLinkFieldsProps) => (
+  <div className="grid gap-4 sm:grid-cols-2">
+    {ids.map((id) => {
+      const fieldId = `catalog-link-${id}`;
+      return (
+        <FormField key={id} id={fieldId} label={labelFor(LINK_LABEL_KEYS[id])}>
+          <Input
+            id={fieldId}
+            type="url"
+            inputMode="url"
+            placeholder={getUrlPlaceholder(id)}
+            className="text-left"
+            {...register(`catalogLinks.${id}`)}
+          />
+        </FormField>
+      );
+    })}
+  </div>
+);
 
 /**
  * Admin catalog editor laid out like the public Project details cards
@@ -161,7 +162,7 @@ export const ProjectCatalogEditor = ({ register, control }: ProjectCatalogEditor
                     onBlur={field.onBlur}
                     addLabel={t('addItem')}
                     removeLabel={t('removeItem')}
-                    placeholder={t('amenityItemPlaceholder')}
+                    placeholder={getCatalogListPlaceholder(locale, 'amenity')}
                     columns={3}
                   />
                 )}
@@ -180,7 +181,7 @@ export const ProjectCatalogEditor = ({ register, control }: ProjectCatalogEditor
                     onBlur={field.onBlur}
                     addLabel={t('addItem')}
                     removeLabel={t('removeItem')}
-                    placeholder={t('nearbyItemPlaceholder')}
+                    placeholder={getCatalogListPlaceholder(locale, 'nearby')}
                     columns={2}
                   />
                 )}
