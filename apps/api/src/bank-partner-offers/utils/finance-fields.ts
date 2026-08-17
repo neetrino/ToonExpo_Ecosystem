@@ -40,9 +40,9 @@ const readLocaleText = (raw: unknown): BankPartnerOfferLocaleText => {
   }
   const record = raw as Record<string, unknown>;
   return {
-    hy: clipLocale(record.hy),
-    ru: clipLocale(record.ru),
-    en: clipLocale(record.en),
+    hy: clipLocale(record['hy']),
+    ru: clipLocale(record['ru']),
+    en: clipLocale(record['en']),
   };
 };
 

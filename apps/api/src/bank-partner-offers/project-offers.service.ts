@@ -24,7 +24,7 @@ import {
 import type {
   ApplyProjectBankPartnerOffersDto,
   UpdateProjectBankPartnerOfferDto,
-} from "./dto/project-offer.dto.js";
+} from "./admin/dto/project-offer.dto.js";
 
 const offerNotFound = (): NotFoundException =>
   new NotFoundException("Project bank partner offer not found");
