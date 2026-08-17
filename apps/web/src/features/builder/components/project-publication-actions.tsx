@@ -21,20 +21,21 @@ type ProjectPublicationActionsProps = {
 };
 
 /**
- * Publish / archive / delete controls for company_admin.
+ * Publish / archive / delete controls for platform admin or company_admin.
  */
 export const ProjectPublicationActions = ({ project }: ProjectPublicationActionsProps) => {
   const scope = useCatalogScope();
   const t = useTranslations('Builder.projects');
   const router = useRouter();
-  const isAdmin = useIsCompanyAdmin();
+  const isCompanyAdmin = useIsCompanyAdmin();
+  const canManage = scope.mode === 'admin' || isCompanyAdmin;
   const publicationMutation = useUpdateProjectPublicationMutation(project.id);
   const deleteMutation = useDeletePortalProjectMutation();
   const [error, setError] = useState<string | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const { showSuccess, successToast } = useSuccessToast();
 
-  if (!isAdmin) {
+  if (!canManage) {
     return null;
   }
 
