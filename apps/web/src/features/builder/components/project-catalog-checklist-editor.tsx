@@ -97,7 +97,7 @@ export const ProjectCatalogChecklistEditor = ({
                   updateRow(index, event.target.value);
                 }}
                 onBlur={onBlur}
-                className="h-10 flex-1 text-sm text-ink-navy"
+                className="h-10 flex-1 text-right text-sm text-ink-navy"
               />
               <button
                 type="button"

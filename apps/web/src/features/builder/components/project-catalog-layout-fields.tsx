@@ -98,7 +98,7 @@ const CatalogDateValue = ({ fieldId, fieldKey, locale, control }: CatalogDateVal
             aria-label={ariaLabel}
             onBlur={field.onBlur}
             onChange={(iso) => field.onChange(isoToCatalogMonthYear(iso))}
-            className="h-10 text-sm font-semibold text-ink-navy"
+            className="h-10 justify-end text-right text-sm font-semibold text-ink-navy"
           />
         </div>
       )}
@@ -179,7 +179,7 @@ const OverviewField = ({
       <Input
         id={fieldId}
         placeholder={placeholder}
-        className="h-10 w-full min-w-0 px-2 text-center text-sm font-bold text-ink-navy"
+        className="h-10 w-full min-w-0 px-2 text-right text-sm font-bold text-ink-navy"
         {...register(`catalogDetails.${fieldKey}.${locale}`)}
       />
       <label htmlFor={fieldId} className="text-xs font-medium text-ink-muted">
@@ -239,7 +239,7 @@ const CatalogKvItem = ({
           id={fieldId}
           rows={3}
           placeholder={placeholder}
-          className="min-h-20 text-sm font-semibold text-ink-navy"
+          className="min-h-20 text-right text-sm font-semibold text-ink-navy"
           {...register(`catalogDetails.${fieldKey}.${locale}`)}
         />
       ) : dateField ? (
