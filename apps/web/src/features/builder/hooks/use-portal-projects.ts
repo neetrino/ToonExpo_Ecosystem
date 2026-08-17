@@ -7,6 +7,7 @@ import type {
   UpdatePortalPublicationRequest,
 } from '@toonexpo/contracts';
 
+import { ADMIN_PROJECTS_QUERY_KEY } from '@/features/admin/constants';
 import {
   createPortalProject,
   deletePortalProject,
@@ -115,6 +116,9 @@ export const useUpdateProjectPublicationMutation = (id: string) => {
     onSuccess: (project) => {
       queryClient.setQueryData([...portalProjectQueryKey(id), ...scopeKey(scope)], project);
       void queryClient.invalidateQueries({ queryKey: PORTAL_PROJECTS_QUERY_KEY });
+      if (scope.mode === 'admin') {
+        void queryClient.invalidateQueries({ queryKey: ADMIN_PROJECTS_QUERY_KEY });
+      }
     },
   });
 };

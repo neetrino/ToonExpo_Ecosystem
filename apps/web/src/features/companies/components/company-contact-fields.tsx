@@ -36,6 +36,7 @@ export const CompanyContactFields = <TFieldValues extends FieldValues>({
   labelsNamespace,
 }: CompanyContactFieldsProps<TFieldValues>) => {
   const t = useTranslations(labelsNamespace);
+  const tCommon = useTranslations('Common');
   const fieldErrors = errors as FieldErrors<CompanyContactFieldsValues>;
 
   return (
@@ -83,7 +84,7 @@ export const CompanyContactFields = <TFieldValues extends FieldValues>({
         <Input
           id={`${idPrefix}-website`}
           type="url"
-          placeholder="https://"
+          placeholder={tCommon('placeholders.url')}
           {...register(field<TFieldValues>('websiteUrl'))}
         />
       </FormField>
@@ -96,7 +97,7 @@ export const CompanyContactFields = <TFieldValues extends FieldValues>({
         <Input
           id={`${idPrefix}-instagram`}
           type="url"
-          placeholder="https://"
+          placeholder={tCommon('placeholders.url')}
           {...register(field<TFieldValues>('instagramUrl'))}
         />
       </FormField>
@@ -109,7 +110,7 @@ export const CompanyContactFields = <TFieldValues extends FieldValues>({
         <Input
           id={`${idPrefix}-facebook`}
           type="url"
-          placeholder="https://"
+          placeholder={tCommon('placeholders.url')}
           {...register(field<TFieldValues>('facebookUrl'))}
         />
       </FormField>
@@ -138,7 +139,7 @@ export const CompanyContactFields = <TFieldValues extends FieldValues>({
         <Input
           id={`${idPrefix}-media-materials`}
           type="url"
-          placeholder="https://"
+          placeholder={tCommon('placeholders.url')}
           {...register(field<TFieldValues>('mediaMaterialsUrl'))}
         />
       </FormField>
@@ -151,7 +152,7 @@ export const CompanyContactFields = <TFieldValues extends FieldValues>({
         <Input
           id={`${idPrefix}-advertising-materials`}
           type="url"
-          placeholder="https://"
+          placeholder={tCommon('placeholders.url')}
           {...register(field<TFieldValues>('advertisingMaterialsUrl'))}
         />
       </FormField>

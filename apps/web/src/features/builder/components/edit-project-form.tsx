@@ -4,7 +4,7 @@ import { useCatalogScope } from '@/features/builder/catalog-scope-context';
 import { catalogMediaContext } from '@/features/builder/catalog-scope';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { PortalProjectDetail } from '@toonexpo/contracts';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
@@ -14,6 +14,8 @@ import {
 } from '@/features/builder/components/form-save-bar';
 import { ProjectCatalogEditor } from '@/features/builder/components/project-catalog-editor';
 import { TranslationTabs } from '@/features/builder/components/translation-tabs';
+import { getProjectFormPlaceholder } from '@/features/builder/constants/project-content-placeholders';
+import { useAutoProjectSlug } from '@/features/builder/hooks/use-auto-project-slug';
 import { useUpdatePortalProjectMutation } from '@/features/builder/hooks/use-portal-projects';
 import {
   updateProjectSchema,
@@ -64,6 +66,7 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
   const scope = useCatalogScope();
   const mediaContext = catalogMediaContext(scope);
   const t = useTranslations('Builder.projects');
+  const siteLocale = useLocale();
   const updateMutation = useUpdatePortalProjectMutation(project.id);
   const [formError, setFormError] = useState<string | null>(null);
   const { showSuccess, successToast } = useSuccessToast();
@@ -72,11 +75,21 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
     register,
     handleSubmit,
     control,
+    setValue,
+    getValues,
     formState: { errors, isSubmitting, isDirty },
   } = useForm<UpdateProjectFormValues>({
     resolver: zodResolver(updateProjectSchema),
     defaultValues: toFormValues(project),
   });
+
+  const { lockSlugAuto } = useAutoProjectSlug({
+    control,
+    getSlug: () => getValues('slug'),
+    setSlug: (slug) =>
+      setValue('slug', slug, { shouldDirty: true, shouldValidate: true }),
+  });
+  const slugField = register('slug');
 
   const onSubmit = handleSubmit(async (values) => {
     setFormError(null);
@@ -107,6 +120,7 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
             >
               <Input
                 id={`edit-name-${locale}`}
+                placeholder={getProjectFormPlaceholder(locale, 'name')}
                 {...register(locale === 'hy' ? 'nameHy' : locale === 'ru' ? 'nameRu' : 'nameEn')}
               />
             </FormField>
@@ -114,6 +128,7 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
               <textarea
                 id={`edit-short-${locale}`}
                 rows={2}
+                placeholder={getProjectFormPlaceholder(locale, 'shortDescription')}
                 className="w-full rounded-sm border border-border bg-background px-4 py-3 text-sm text-ink focus-visible:border-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/20"
                 {...register(
                   locale === 'hy'
@@ -128,6 +143,7 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
               <textarea
                 id={`edit-full-${locale}`}
                 rows={4}
+                placeholder={getProjectFormPlaceholder(locale, 'fullDescription')}
                 className="w-full rounded-sm border border-border bg-background px-4 py-3 text-sm text-ink focus-visible:border-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/20"
                 {...register(
                   locale === 'hy'
@@ -140,11 +156,22 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
             </FormField>
             <div className="grid gap-4 sm:grid-cols-3">
               <FormField id={`edit-slug-${locale}`} label={t('form.slug')}>
-                <Input id={`edit-slug-${locale}`} {...register('slug')} />
+                <Input
+                  id={`edit-slug-${locale}`}
+                  placeholder={getProjectFormPlaceholder(locale, 'slug')}
+                  name={slugField.name}
+                  ref={slugField.ref}
+                  onBlur={slugField.onBlur}
+                  onChange={(event) => {
+                    lockSlugAuto();
+                    void slugField.onChange(event);
+                  }}
+                />
               </FormField>
               <FormField id={`edit-location-${locale}`} label={t('form.locationText')}>
                 <Input
                   id={`edit-location-${locale}`}
+                  placeholder={getProjectFormPlaceholder(locale, 'locationText')}
                   {...register(
                     locale === 'hy'
                       ? 'locationTextHy'
@@ -155,7 +182,11 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
                 />
               </FormField>
               <FormField id={`edit-district-${locale}`} label={t('form.district')}>
-                <Input id={`edit-district-${locale}`} {...register('district')} />
+                <Input
+                  id={`edit-district-${locale}`}
+                  placeholder={getProjectFormPlaceholder(locale, 'district')}
+                  {...register('district')}
+                />
               </FormField>
             </div>
           </div>
@@ -164,7 +195,11 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
 
       <div className="grid gap-4 sm:grid-cols-2">
         <FormField id="edit-type" label={t('form.projectType')}>
-          <Input id="edit-type" {...register('projectType')} />
+          <Input
+            id="edit-type"
+            placeholder={getProjectFormPlaceholder(siteLocale, 'projectType')}
+            {...register('projectType')}
+          />
         </FormField>
         <FormField id="edit-completion" label={t('form.completionDate')}>
           <Controller

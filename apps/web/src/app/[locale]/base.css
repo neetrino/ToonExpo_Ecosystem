@@ -6,6 +6,14 @@
   }
 
   /**
+   * Scroll locks clip overlays to the content box; the stable scrollbar gutter
+   * would otherwise stay the light page background. Match modal `bg-ink/70`.
+   */
+  html.body-scroll-locked {
+    background-color: color-mix(in srgb, var(--color-ink) 70%, var(--color-background));
+  }
+
+  /**
    * Desktop fluid scale (ma-marie pattern): design at 1440px, zoom to viewport.
    * Mobile keeps scale=1 so svh math and native layout stay correct.
    */

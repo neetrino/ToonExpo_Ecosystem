@@ -16,11 +16,37 @@ let previousBodyOverscrollBehavior = '';
 let lockedScrollY = 0;
 let softOwnsOverflow = false;
 
+const BODY_SCROLL_LOCKED_CLASS = 'body-scroll-locked';
+
 const getScrollbarWidthPx = (): number => {
   if (typeof window === 'undefined') {
     return 0;
   }
   return Math.max(0, window.innerWidth - document.documentElement.clientWidth);
+};
+
+/**
+ * When `scrollbar-gutter: stable` already reserves scrollbar space, adding
+ * body `padding-right` double-compensates and leaves an uncovered white strip
+ * (overlays portal into the content box, not the padding).
+ */
+const hasStableScrollbarGutter = (): boolean => {
+  if (typeof document === 'undefined') {
+    return false;
+  }
+  const gutter = getComputedStyle(document.documentElement).scrollbarGutter;
+  return gutter === 'stable' || gutter.startsWith('stable');
+};
+
+/** Keeps the scrollbar gutter dimmed while any scroll lock is active. */
+const syncBodyScrollLockedClass = (): void => {
+  if (typeof document === 'undefined') {
+    return;
+  }
+  document.documentElement.classList.toggle(
+    BODY_SCROLL_LOCKED_CLASS,
+    hardLockCount > 0 || softLockCount > 0,
+  );
 };
 
 const applyHardLockStyles = (): void => {
@@ -39,7 +65,7 @@ const applyHardLockStyles = (): void => {
   document.body.style.top = `-${lockedScrollY}px`;
   document.body.style.width = '100%';
 
-  if (scrollbarWidthPx > 0) {
+  if (scrollbarWidthPx > 0 && !hasStableScrollbarGutter()) {
     const currentPadding = Number.parseFloat(getComputedStyle(document.body).paddingRight) || 0;
     document.body.style.paddingRight = `${currentPadding + scrollbarWidthPx}px`;
   }
@@ -71,6 +97,7 @@ export const lockBodyScroll = (): void => {
   }
 
   hardLockCount += 1;
+  syncBodyScrollLockedClass();
 };
 
 /** Restores hard scroll lock when the last hard lock is released. */
@@ -81,6 +108,7 @@ export const unlockBodyScroll = (): void => {
 
   hardLockCount = Math.max(0, hardLockCount - 1);
   if (hardLockCount !== 0) {
+    syncBodyScrollLockedClass();
     return;
   }
 
@@ -92,6 +120,7 @@ export const unlockBodyScroll = (): void => {
     document.body.style.overflow = 'hidden';
     document.body.style.overscrollBehavior = 'none';
   }
+  syncBodyScrollLockedClass();
 };
 
 /**
@@ -114,6 +143,7 @@ export const lockBodyScrollSoft = (): void => {
   }
 
   softLockCount += 1;
+  syncBodyScrollLockedClass();
 };
 
 /** Restores soft scroll lock when the last soft lock is released. */
@@ -127,6 +157,7 @@ export const unlockBodyScrollSoft = (): void => {
     if (softLockCount === 0) {
       softOwnsOverflow = false;
     }
+    syncBodyScrollLockedClass();
     return;
   }
 
@@ -134,4 +165,5 @@ export const unlockBodyScrollSoft = (): void => {
   document.body.style.overflow = previousBodyOverflow;
   document.body.style.overscrollBehavior = previousBodyOverscrollBehavior;
   softOwnsOverflow = false;
+  syncBodyScrollLockedClass();
 };

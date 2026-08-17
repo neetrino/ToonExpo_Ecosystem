@@ -3,11 +3,13 @@
 import { useCatalogScope } from '@/features/builder/catalog-scope-context';
 import { catalogMediaContext, catalogProjectDetailHref } from '@/features/builder/catalog-scope';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import { TranslationTabs } from '@/features/builder/components/translation-tabs';
+import { getProjectFormPlaceholder } from '@/features/builder/constants/project-content-placeholders';
+import { useAutoProjectSlug } from '@/features/builder/hooks/use-auto-project-slug';
 import { useCreatePortalProjectMutation } from '@/features/builder/hooks/use-portal-projects';
 import {
   createProjectSchema,
@@ -56,6 +58,7 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
   const scope = useCatalogScope();
   const mediaContext = catalogMediaContext(scope);
   const t = useTranslations('Builder.projects');
+  const siteLocale = useLocale();
   const router = useRouter();
   const createMutation = useCreatePortalProjectMutation();
   const [formError, setFormError] = useState<string | null>(null);
@@ -64,11 +67,21 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
     register,
     handleSubmit,
     control,
+    setValue,
+    getValues,
     formState: { errors, isSubmitting },
   } = useForm<CreateProjectFormValues>({
     resolver: zodResolver(createProjectSchema),
     defaultValues: emptyValues(),
   });
+
+  const { lockSlugAuto } = useAutoProjectSlug({
+    control,
+    getSlug: () => getValues('slug'),
+    setSlug: (slug) =>
+      setValue('slug', slug, { shouldDirty: true, shouldValidate: true }),
+  });
+  const slugField = register('slug');
 
   const onSubmit = handleSubmit(async (values) => {
     setFormError(null);
@@ -98,6 +111,7 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
             >
               <Input
                 id={`name-${locale}`}
+                placeholder={getProjectFormPlaceholder(locale, 'name')}
                 aria-invalid={locale === 'hy' && Boolean(errors.nameHy)}
                 {...register(locale === 'hy' ? 'nameHy' : locale === 'ru' ? 'nameRu' : 'nameEn')}
               />
@@ -106,6 +120,7 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
               <textarea
                 id={`short-${locale}`}
                 rows={2}
+                placeholder={getProjectFormPlaceholder(locale, 'shortDescription')}
                 className="w-full rounded-sm border border-border bg-background px-4 py-3 text-sm text-ink focus-visible:border-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/20"
                 {...register(
                   locale === 'hy'
@@ -120,6 +135,7 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
               <textarea
                 id={`full-${locale}`}
                 rows={4}
+                placeholder={getProjectFormPlaceholder(locale, 'fullDescription')}
                 className="w-full rounded-sm border border-border bg-background px-4 py-3 text-sm text-ink focus-visible:border-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/20"
                 {...register(
                   locale === 'hy'
@@ -132,11 +148,22 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
             </FormField>
             <div className="grid gap-4 sm:grid-cols-3">
               <FormField id={`slug-${locale}`} label={t('form.slug')}>
-                <Input id={`slug-${locale}`} {...register('slug')} />
+                <Input
+                  id={`slug-${locale}`}
+                  placeholder={getProjectFormPlaceholder(locale, 'slug')}
+                  name={slugField.name}
+                  ref={slugField.ref}
+                  onBlur={slugField.onBlur}
+                  onChange={(event) => {
+                    lockSlugAuto();
+                    void slugField.onChange(event);
+                  }}
+                />
               </FormField>
               <FormField id={`location-${locale}`} label={t('form.locationText')}>
                 <Input
                   id={`location-${locale}`}
+                  placeholder={getProjectFormPlaceholder(locale, 'locationText')}
                   {...register(
                     locale === 'hy'
                       ? 'locationTextHy'
@@ -147,7 +174,11 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
                 />
               </FormField>
               <FormField id={`district-${locale}`} label={t('form.district')}>
-                <Input id={`district-${locale}`} {...register('district')} />
+                <Input
+                  id={`district-${locale}`}
+                  placeholder={getProjectFormPlaceholder(locale, 'district')}
+                  {...register('district')}
+                />
               </FormField>
             </div>
           </div>
@@ -158,7 +189,11 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
         <legend className="text-sm font-semibold text-ink">{t('form.detailsSection')}</legend>
         <div className="grid gap-4 sm:grid-cols-2">
           <FormField id="projectType" label={t('form.projectType')}>
-            <Input id="projectType" {...register('projectType')} />
+            <Input
+              id="projectType"
+              placeholder={getProjectFormPlaceholder(siteLocale, 'projectType')}
+              {...register('projectType')}
+            />
           </FormField>
           <FormField id="completionDate" label={t('form.completionDate')}>
             <Controller

@@ -1,15 +1,23 @@
 'use client';
 
-import { useEffect, useId, useState, type AnimationEvent } from 'react';
+import {
+  useEffect,
+  useId,
+  useState,
+  type AnimationEvent,
+  type ReactNode,
+} from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslations } from 'next-intl';
 
-import { Button } from '@/shared/ui/button';
+import { Button, type ButtonProps } from '@/shared/ui/button';
 import { blurActiveElementAfterEscClose } from '@/shared/ui/blur-active-element';
 import { cn } from '@/shared/ui/cn';
 import { MODAL_BACKDROP_CLASS_NAME } from '@/shared/ui/modal-backdrop';
 import { getOverlayPortalHost } from '@/shared/ui/overlay-portal-host';
 import { useModalEnterExit } from '@/shared/ui/use-modal-enter-exit';
+
+type ConfirmButtonVariant = NonNullable<ButtonProps['variant']>;
 
 type AdminDeleteModalProps = {
   open: boolean;
@@ -21,6 +29,12 @@ type AdminDeleteModalProps = {
   confirmLabel?: string | undefined;
   cancelLabel?: string | undefined;
   showCancel?: boolean | undefined;
+  /** Confirm button look — defaults to danger for delete flows. */
+  confirmVariant?: ConfirmButtonVariant | undefined;
+  /** Optional leading icon shown above the title. */
+  icon?: ReactNode | undefined;
+  /** Soft background tone behind the optional icon. */
+  iconTone?: 'danger' | 'brand' | 'neutral' | undefined;
 };
 
 type Snapshot = {
@@ -29,10 +43,19 @@ type Snapshot = {
   confirmLabel: string | undefined;
   cancelLabel: string | undefined;
   showCancel: boolean;
+  confirmVariant: ConfirmButtonVariant;
+  icon: ReactNode | undefined;
+  iconTone: 'danger' | 'brand' | 'neutral';
+};
+
+const ICON_TONE_CLASS: Record<'danger' | 'brand' | 'neutral', string> = {
+  danger: 'bg-danger/10 text-danger',
+  brand: 'bg-brand-soft text-brand',
+  neutral: 'bg-surface text-ink-secondary',
 };
 
 /**
- * MaMarie-style centered delete confirmation with enter/exit motion.
+ * MaMarie-style centered confirmation with enter/exit motion.
  * @see https://ma-marie.vercel.app/supersudo/categories
  */
 export const AdminDeleteModal = ({
@@ -45,6 +68,9 @@ export const AdminDeleteModal = ({
   confirmLabel,
   cancelLabel,
   showCancel = true,
+  confirmVariant = 'danger',
+  icon,
+  iconTone = 'danger',
 }: AdminDeleteModalProps) => {
   const t = useTranslations('Common');
   const titleId = useId();
@@ -57,13 +83,35 @@ export const AdminDeleteModal = ({
     confirmLabel,
     cancelLabel,
     showCancel,
+    confirmVariant,
+    icon,
+    iconTone,
   });
 
   useEffect(() => {
     if (open) {
-      setSnapshot({ title, message, confirmLabel, cancelLabel, showCancel });
+      setSnapshot({
+        title,
+        message,
+        confirmLabel,
+        cancelLabel,
+        showCancel,
+        confirmVariant,
+        icon,
+        iconTone,
+      });
     }
-  }, [open, title, message, confirmLabel, cancelLabel, showCancel]);
+  }, [
+    open,
+    title,
+    message,
+    confirmLabel,
+    cancelLabel,
+    showCancel,
+    confirmVariant,
+    icon,
+    iconTone,
+  ]);
 
   const actionsDisabled = confirming || isExiting;
   const resolvedConfirm = snapshot.confirmLabel ?? t('delete');
@@ -114,7 +162,7 @@ export const AdminDeleteModal = ({
           }
         }}
       />
-      <DeleteModalPanel
+      <ConfirmModalPanel
         titleId={titleId}
         messageId={messageId}
         title={snapshot.title}
@@ -122,6 +170,9 @@ export const AdminDeleteModal = ({
         confirmLabel={resolvedConfirm}
         cancelLabel={resolvedCancel}
         showCancel={snapshot.showCancel}
+        confirmVariant={snapshot.confirmVariant}
+        icon={snapshot.icon}
+        iconTone={snapshot.iconTone}
         confirming={confirming}
         actionsDisabled={actionsDisabled}
         panelMotionClass={panelMotionClass}
@@ -134,7 +185,7 @@ export const AdminDeleteModal = ({
   );
 };
 
-type DeleteModalPanelProps = {
+type ConfirmModalPanelProps = {
   titleId: string;
   messageId: string;
   title: string;
@@ -142,6 +193,9 @@ type DeleteModalPanelProps = {
   confirmLabel: string;
   cancelLabel: string;
   showCancel: boolean;
+  confirmVariant: ConfirmButtonVariant;
+  icon: ReactNode | undefined;
+  iconTone: 'danger' | 'brand' | 'neutral';
   confirming: boolean;
   actionsDisabled: boolean;
   panelMotionClass: string;
@@ -150,7 +204,7 @@ type DeleteModalPanelProps = {
   onAnimationEnd: (event: AnimationEvent<HTMLElement>) => void;
 };
 
-const DeleteModalPanel = ({
+const ConfirmModalPanel = ({
   titleId,
   messageId,
   title,
@@ -158,13 +212,16 @@ const DeleteModalPanel = ({
   confirmLabel,
   cancelLabel,
   showCancel,
+  confirmVariant,
+  icon,
+  iconTone,
   confirming,
   actionsDisabled,
   panelMotionClass,
   onCancel,
   onConfirm,
   onAnimationEnd,
-}: DeleteModalPanelProps) => {
+}: ConfirmModalPanelProps) => {
   return (
     <div
       role="dialog"
@@ -178,6 +235,17 @@ const DeleteModalPanel = ({
       onClick={(event) => event.stopPropagation()}
       onAnimationEnd={onAnimationEnd}
     >
+      {icon ? (
+        <span
+          className={cn(
+            'mb-4 inline-flex size-11 items-center justify-center rounded-2xl',
+            ICON_TONE_CLASS[iconTone],
+          )}
+          aria-hidden
+        >
+          {icon}
+        </span>
+      ) : null}
       <h3 id={titleId} className="mb-2 text-lg font-semibold text-ink">
         {title}
       </h3>
@@ -199,7 +267,7 @@ const DeleteModalPanel = ({
         ) : null}
         <Button
           type="button"
-          variant="danger"
+          variant={confirmVariant}
           size="sm"
           className="min-w-24"
           disabled={actionsDisabled}

@@ -4,7 +4,7 @@ import type { ProjectCatalogDetails } from '@/features/catalog/utils/project-cat
 import { PROJECT_CATALOG_CRITERION_ICON } from '@/features/catalog/components/project-catalog-details-bits';
 import { useTranslations } from 'next-intl';
 import type { Control, UseFormRegister } from 'react-hook-form';
-import { Controller, useWatch } from 'react-hook-form';
+import { Controller } from 'react-hook-form';
 
 import type { TRANSLATION_LOCALES } from '@/features/builder/constants';
 import {
@@ -13,9 +13,10 @@ import {
   isCatalogPairFollower,
   isProjectCatalogDateKey,
   isProjectCatalogTextareaKey,
-  overviewColumnWeight,
-  overviewGridTemplateColumns,
 } from '@/features/builder/constants/project-catalog-editor';
+import {
+  getCatalogFieldPlaceholder,
+} from '@/features/builder/constants/project-content-placeholders';
 import type { UpdateProjectFormValues } from '@/features/builder/schemas/project.schema';
 import { DatePicker } from '@/shared/ui/date-picker';
 import { parseIsoDate, toIsoDate } from '@/shared/ui/date-picker-utils';
@@ -24,6 +25,10 @@ import { Textarea } from '@/shared/ui/textarea';
 import { cn } from '@/shared/ui/cn';
 
 type TranslationLocale = (typeof TRANSLATION_LOCALES)[number];
+
+/** Compact value control — sits on the right of the label row (public catalog layout). */
+const CATALOG_VALUE_CONTROL_CLASS =
+  'ml-auto h-10 w-full max-w-[12.5rem] shrink-0 text-left text-sm font-semibold text-ink-navy';
 
 const EXTRA_FIELD_LABEL_KEYS = new Set([
   'pricePerSqmMin',
@@ -35,10 +40,6 @@ const EXTRA_FIELD_LABEL_KEYS = new Set([
   'ceilingHeightM',
 ]);
 
-type LabelProps = {
-  fieldKey: keyof ProjectCatalogDetails;
-};
-
 const useCatalogFieldLabel = (fieldKey: keyof ProjectCatalogDetails): string => {
   const tCatalog = useTranslations('Catalog.projectDetail.catalog');
   const tExtra = useTranslations('Builder.projects.catalog.fields');
@@ -47,8 +48,6 @@ const useCatalogFieldLabel = (fieldKey: keyof ProjectCatalogDetails): string => 
   }
   return tCatalog(fieldKey as 'propertyType');
 };
-
-const CatalogFieldLabel = ({ fieldKey }: LabelProps) => useCatalogFieldLabel(fieldKey);
 
 const MONTH_YEAR_PATTERN = /^(\d{1,2})\/(\d{4})$/;
 
@@ -91,7 +90,7 @@ const CatalogDateValue = ({ fieldId, fieldKey, locale, control }: CatalogDateVal
       control={control}
       name={`catalogDetails.${fieldKey}.${locale}`}
       render={({ field }) => (
-        <div className="min-w-0 max-w-xs flex-1 sm:max-w-none">
+        <div className="ml-auto w-full max-w-[12.5rem] shrink-0">
           <DatePicker
             id={fieldId}
             name={field.name}
@@ -99,7 +98,7 @@ const CatalogDateValue = ({ fieldId, fieldKey, locale, control }: CatalogDateVal
             aria-label={ariaLabel}
             onBlur={field.onBlur}
             onChange={(iso) => field.onChange(isoToCatalogMonthYear(iso))}
-            className="h-10 text-sm font-semibold text-ink-navy"
+            className="h-10 justify-start text-left text-sm font-semibold text-ink-navy"
           />
         </div>
       )}
@@ -115,47 +114,83 @@ type OverviewEditorProps = {
 };
 
 /**
- * One overview row — column width follows each value so long text stays visible.
+ * Overview stats editor — equal columns, matches public catalog icon layout.
  */
 export const ProjectCatalogOverviewEditor = ({
   keys,
   locale,
-  control,
   register,
 }: OverviewEditorProps) => {
-  const catalogDetails = useWatch({ control, name: 'catalogDetails' });
-  const templateColumns = overviewGridTemplateColumns(
-    keys.map((key) => overviewColumnWeight(catalogDetails?.[key]?.[locale] ?? '')),
-  );
-
   return (
     <div
-      className="grid w-full items-start gap-3"
-      style={{ gridTemplateColumns: templateColumns }}
+      className={cn(
+        'grid w-full gap-x-4 gap-y-6',
+        keys.length <= 3 && 'grid-cols-2 sm:grid-cols-3',
+        keys.length === 4 && 'grid-cols-2 sm:grid-cols-4',
+        keys.length >= 5 && 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-5',
+      )}
     >
       {keys.map((key) => {
         const criterionId = catalogDetailKeyToCriterionId(key);
         const Icon = PROJECT_CATALOG_CRITERION_ICON[criterionId];
         const fieldId = `catalog-overview-${key}-${locale}`;
         return (
-          <div key={fieldId} className="flex min-w-0 flex-col items-center gap-2 text-center">
-            <span
-              className="flex size-11 items-center justify-center rounded-full bg-brand-soft text-brand-deep"
-              aria-hidden
-            >
-              <Icon className="size-5" strokeWidth={1.75} />
-            </span>
-            <Input
-              id={fieldId}
-              className="h-10 w-full min-w-0 px-2 text-center text-sm font-bold text-ink-navy"
-              {...register(`catalogDetails.${key}.${locale}`)}
-            />
-            <label htmlFor={fieldId} className="text-xs font-medium text-ink-muted">
-              <CatalogFieldLabel fieldKey={key} />
-            </label>
-          </div>
+          <OverviewField
+            key={fieldId}
+            fieldId={fieldId}
+            fieldKey={key}
+            locale={locale}
+            Icon={Icon}
+            register={register}
+          />
         );
       })}
+    </div>
+  );
+};
+
+type OverviewFieldProps = {
+  fieldId: string;
+  fieldKey: keyof ProjectCatalogDetails;
+  locale: TranslationLocale;
+  Icon: (typeof PROJECT_CATALOG_CRITERION_ICON)[keyof typeof PROJECT_CATALOG_CRITERION_ICON];
+  register: UseFormRegister<UpdateProjectFormValues>;
+};
+
+const OverviewField = ({
+  fieldId,
+  fieldKey,
+  locale,
+  Icon,
+  register,
+}: OverviewFieldProps) => {
+  const label = useCatalogFieldLabel(fieldKey);
+  const placeholder = getCatalogFieldPlaceholder(locale, fieldKey);
+  return (
+    <div className="flex min-w-0 flex-col items-center gap-2.5 text-center">
+      <span
+        className="flex size-11 items-center justify-center rounded-full bg-brand-soft text-brand-deep"
+        aria-hidden
+      >
+        <Icon className="size-5" strokeWidth={1.75} />
+      </span>
+      <Input
+        id={fieldId}
+        placeholder={placeholder}
+        title={label}
+        className={cn(
+          'h-10 w-full min-w-0 rounded-lg border-border/70 bg-surface px-2.5',
+          'text-center text-sm font-semibold tracking-tight text-ink-navy',
+          'placeholder:font-medium',
+        )}
+        {...register(`catalogDetails.${fieldKey}.${locale}`)}
+      />
+      <label
+        htmlFor={fieldId}
+        className="line-clamp-2 min-h-8 text-xs font-medium leading-snug text-ink-muted"
+      >
+        {label}
+      </label>
     </div>
   );
 };
@@ -187,6 +222,8 @@ const CatalogKvItem = ({
   const wide = isProjectCatalogTextareaKey(fieldKey);
   const dateField = isProjectCatalogDateKey(fieldKey);
   const Icon = PROJECT_CATALOG_CRITERION_ICON[catalogDetailKeyToCriterionId(fieldKey)];
+  const label = useCatalogFieldLabel(fieldKey);
+  const placeholder = getCatalogFieldPlaceholder(locale, fieldKey);
   return (
     <div
       className={cn(
@@ -201,13 +238,14 @@ const CatalogKvItem = ({
         {sectionId === 'details' ? (
           <Icon className="mt-0.5 size-4 shrink-0 text-brand" strokeWidth={1.75} aria-hidden />
         ) : null}
-        <CatalogFieldLabel fieldKey={fieldKey} />
+        {label}
       </label>
       {wide ? (
         <Textarea
           id={fieldId}
           rows={3}
-          className="min-h-20 text-sm font-semibold text-ink-navy"
+          placeholder={placeholder}
+          className="min-h-20 w-full text-left text-sm font-semibold text-ink-navy"
           {...register(`catalogDetails.${fieldKey}.${locale}`)}
         />
       ) : dateField ? (
@@ -220,7 +258,8 @@ const CatalogKvItem = ({
       ) : (
         <Input
           id={fieldId}
-          className="h-10 max-w-xs text-right text-sm font-semibold text-ink-navy sm:max-w-none sm:flex-1"
+          placeholder={placeholder}
+          className={CATALOG_VALUE_CONTROL_CLASS}
           {...register(`catalogDetails.${fieldKey}.${locale}`)}
         />
       )}

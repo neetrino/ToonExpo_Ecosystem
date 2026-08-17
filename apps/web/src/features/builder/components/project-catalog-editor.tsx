@@ -11,6 +11,10 @@ import {
   PROJECT_CATALOG_OVERVIEW_KEYS,
   PROJECT_CATALOG_SOCIAL_LINK_EDITOR_IDS,
 } from '@/features/builder/constants/project-catalog-editor';
+import {
+  getCatalogListPlaceholder,
+  getUrlPlaceholder,
+} from '@/features/builder/constants/project-content-placeholders';
 import { ProjectCatalogChecklistEditor } from '@/features/builder/components/project-catalog-checklist-editor';
 import {
   ProjectCatalogKvEditor,
@@ -89,7 +93,8 @@ const CatalogLinkFields = ({ ids, register, labelFor }: CatalogLinkFieldsProps) 
             id={fieldId}
             type="url"
             inputMode="url"
-            placeholder="https://"
+            placeholder={getUrlPlaceholder()}
+            className="text-left"
             {...register(`catalogLinks.${id}`)}
           />
         </FormField>
@@ -157,6 +162,7 @@ export const ProjectCatalogEditor = ({ register, control }: ProjectCatalogEditor
                     onBlur={field.onBlur}
                     addLabel={t('addItem')}
                     removeLabel={t('removeItem')}
+                    placeholder={getCatalogListPlaceholder(locale, 'amenity')}
                     columns={3}
                   />
                 )}
@@ -175,6 +181,7 @@ export const ProjectCatalogEditor = ({ register, control }: ProjectCatalogEditor
                     onBlur={field.onBlur}
                     addLabel={t('addItem')}
                     removeLabel={t('removeItem')}
+                    placeholder={getCatalogListPlaceholder(locale, 'nearby')}
                     columns={2}
                   />
                 )}
