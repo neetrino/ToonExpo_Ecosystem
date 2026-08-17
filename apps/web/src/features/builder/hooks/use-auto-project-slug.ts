@@ -3,7 +3,6 @@
 import { useEffect, useRef } from 'react';
 import {
   type Control,
-  type Path,
   type UseFormGetValues,
   type UseFormSetValue,
   useWatch,
@@ -24,10 +23,10 @@ type NameSnapshot = {
   nameEn: string;
 };
 
-type UseAutoProjectSlugArgs<T extends ProjectSlugFormFields> = {
-  control: Control<T>;
-  setValue: UseFormSetValue<T>;
-  getValues: UseFormGetValues<T>;
+type UseAutoProjectSlugArgs = {
+  control: Control<ProjectSlugFormFields>;
+  setValue: UseFormSetValue<ProjectSlugFormFields>;
+  getValues: UseFormGetValues<ProjectSlugFormFields>;
 };
 
 const namesEqual = (a: NameSnapshot, b: NameSnapshot): boolean =>
@@ -38,17 +37,17 @@ const namesEqual = (a: NameSnapshot, b: NameSnapshot): boolean =>
  * Does not overwrite the slug until at least one name field changes from the
  * values present when the form mounted (safe for edit + React Strict Mode).
  */
-export const useAutoProjectSlug = <T extends ProjectSlugFormFields>({
+export const useAutoProjectSlug = ({
   control,
   setValue,
   getValues,
-}: UseAutoProjectSlugArgs<T>): { lockSlugAuto: () => void } => {
+}: UseAutoProjectSlugArgs): { lockSlugAuto: () => void } => {
   const lockedRef = useRef(false);
   const baselineRef = useRef<NameSnapshot | null>(null);
 
-  const nameHy = useWatch({ control, name: 'nameHy' as Path<T> }) as string;
-  const nameRu = useWatch({ control, name: 'nameRu' as Path<T> }) as string;
-  const nameEn = useWatch({ control, name: 'nameEn' as Path<T> }) as string;
+  const nameHy = useWatch({ control, name: 'nameHy' });
+  const nameRu = useWatch({ control, name: 'nameRu' });
+  const nameEn = useWatch({ control, name: 'nameEn' });
 
   useEffect(() => {
     const current: NameSnapshot = { nameHy, nameRu, nameEn };
@@ -63,12 +62,12 @@ export const useAutoProjectSlug = <T extends ProjectSlugFormFields>({
     }
 
     const next = resolveProjectSlugFromNames(current);
-    const previousSlug = getValues('slug' as Path<T>) as string;
+    const previousSlug = getValues('slug');
     if (next === previousSlug) {
       return;
     }
 
-    setValue('slug' as Path<T>, next as T[Path<T>], {
+    setValue('slug', next, {
       shouldDirty: true,
       shouldValidate: true,
     });
