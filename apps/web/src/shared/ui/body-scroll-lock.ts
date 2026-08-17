@@ -16,6 +16,8 @@ let previousBodyOverscrollBehavior = '';
 let lockedScrollY = 0;
 let softOwnsOverflow = false;
 
+const BODY_SCROLL_LOCKED_CLASS = 'body-scroll-locked';
+
 const getScrollbarWidthPx = (): number => {
   if (typeof window === 'undefined') {
     return 0;
@@ -34,6 +36,17 @@ const hasStableScrollbarGutter = (): boolean => {
   }
   const gutter = getComputedStyle(document.documentElement).scrollbarGutter;
   return gutter === 'stable' || gutter.startsWith('stable');
+};
+
+/** Keeps the scrollbar gutter dimmed while any scroll lock is active. */
+const syncBodyScrollLockedClass = (): void => {
+  if (typeof document === 'undefined') {
+    return;
+  }
+  document.documentElement.classList.toggle(
+    BODY_SCROLL_LOCKED_CLASS,
+    hardLockCount > 0 || softLockCount > 0,
+  );
 };
 
 const applyHardLockStyles = (): void => {
@@ -84,6 +97,7 @@ export const lockBodyScroll = (): void => {
   }
 
   hardLockCount += 1;
+  syncBodyScrollLockedClass();
 };
 
 /** Restores hard scroll lock when the last hard lock is released. */
@@ -94,6 +108,7 @@ export const unlockBodyScroll = (): void => {
 
   hardLockCount = Math.max(0, hardLockCount - 1);
   if (hardLockCount !== 0) {
+    syncBodyScrollLockedClass();
     return;
   }
 
@@ -105,6 +120,7 @@ export const unlockBodyScroll = (): void => {
     document.body.style.overflow = 'hidden';
     document.body.style.overscrollBehavior = 'none';
   }
+  syncBodyScrollLockedClass();
 };
 
 /**
@@ -127,6 +143,7 @@ export const lockBodyScrollSoft = (): void => {
   }
 
   softLockCount += 1;
+  syncBodyScrollLockedClass();
 };
 
 /** Restores soft scroll lock when the last soft lock is released. */
@@ -140,6 +157,7 @@ export const unlockBodyScrollSoft = (): void => {
     if (softLockCount === 0) {
       softOwnsOverflow = false;
     }
+    syncBodyScrollLockedClass();
     return;
   }
 
@@ -147,4 +165,5 @@ export const unlockBodyScrollSoft = (): void => {
   document.body.style.overflow = previousBodyOverflow;
   document.body.style.overscrollBehavior = previousBodyOverscrollBehavior;
   softOwnsOverflow = false;
+  syncBodyScrollLockedClass();
 };
