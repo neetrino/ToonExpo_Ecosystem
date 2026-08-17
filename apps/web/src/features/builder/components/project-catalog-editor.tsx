@@ -92,6 +92,7 @@ const CatalogLinkFields = ({ ids, register, labelFor }: CatalogLinkFieldsProps) 
               type="url"
               inputMode="url"
               placeholder={tPlaceholders(id)}
+              className="text-right"
               {...register(`catalogLinks.${id}`)}
             />
           </FormField>
