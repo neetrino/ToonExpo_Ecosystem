@@ -1319,7 +1319,7 @@
       "geoMap": "3D քարտեզ",
       "partners": "Գործընկերներ",
       "bankOffers": "Բանկային առաջարկներ",
-      "templates": "Template",
+      "templates": "Template/Partner Offers",
       "serviceProviders": "Ծառայություն մատուցողներ",
       "readiness": "Պատրաստվածություն",
       "readinessCategories": "Կատեգորիաներ",
@@ -2256,7 +2256,7 @@
       }
     },
     "templates": {
-      "title": "Template",
+      "title": "Template/Partner Offers",
       "subtitle": "Բանկային գործընկերների finance շաբլոններ՝ project-ում կիրառելու համար",
       "loading": "Բեռնվում է…",
       "error": "Չհաջողվեց բեռնել շաբլոնները։",
@@ -3264,7 +3264,7 @@
       },
       "bankPartnerOffers": {
         "title": "Բանկային գործընկերների առաջարկներ",
-        "subtitle": "Կիրառեք Admin → Template շաբլոնները։ Այստեղի փոփոխությունները մնում են միայն այս project-ում։",
+        "subtitle": "Կիրառեք Admin → Template/Partner Offers շաբլոնները։ Այստեղի փոփոխությունները մնում են միայն այս project-ում։",
         "loading": "Բեռնվում է…",
         "error": "Չհաջողվեց բեռնել առաջարկները։",
         "empty": "Այս project-ում դեռ բանկային առաջարկներ չկան։",

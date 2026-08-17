@@ -1319,7 +1319,7 @@
       "geoMap": "3D Map",
       "partners": "Partners",
       "bankOffers": "Bank offers",
-      "templates": "Template",
+      "templates": "Template/Partner Offers",
       "serviceProviders": "Service providers",
       "readiness": "Readiness",
       "readinessCategories": "Categories",
@@ -2256,7 +2256,7 @@
       }
     },
     "templates": {
-      "title": "Template",
+      "title": "Template/Partner Offers",
       "subtitle": "Reusable bank partner finance offers for projects",
       "loading": "Loading templates…",
       "error": "Could not load templates. Try again.",
@@ -3524,7 +3524,7 @@
       },
       "bankPartnerOffers": {
         "title": "Bank partner offers",
-        "subtitle": "Apply finance templates from Admin → Template. Edits here stay on this project only.",
+        "subtitle": "Apply finance templates from Admin → Template/Partner Offers. Edits here stay on this project only.",
         "loading": "Loading offers…",
         "error": "Could not load bank partner offers.",
         "empty": "No bank partner offers on this project yet.",
