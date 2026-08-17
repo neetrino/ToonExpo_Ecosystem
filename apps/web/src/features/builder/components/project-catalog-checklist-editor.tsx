@@ -15,6 +15,7 @@ type ProjectCatalogChecklistEditorProps = {
   onBlur?: (() => void) | undefined;
   addLabel: string;
   removeLabel: string;
+  placeholder?: string | undefined;
   columns?: 2 | 3 | undefined;
 };
 
@@ -40,6 +41,7 @@ export const ProjectCatalogChecklistEditor = ({
   onBlur,
   addLabel,
   removeLabel,
+  placeholder,
   columns = 3,
 }: ProjectCatalogChecklistEditorProps) => {
   const [rows, setRows] = useState<string[]>(() => {
@@ -90,6 +92,7 @@ export const ProjectCatalogChecklistEditor = ({
               <Input
                 id={fieldId}
                 value={row}
+                placeholder={placeholder}
                 onChange={(event) => {
                   updateRow(index, event.target.value);
                 }}

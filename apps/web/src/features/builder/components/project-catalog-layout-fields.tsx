@@ -35,10 +35,6 @@ const EXTRA_FIELD_LABEL_KEYS = new Set([
   'ceilingHeightM',
 ]);
 
-type LabelProps = {
-  fieldKey: keyof ProjectCatalogDetails;
-};
-
 const useCatalogFieldLabel = (fieldKey: keyof ProjectCatalogDetails): string => {
   const tCatalog = useTranslations('Catalog.projectDetail.catalog');
   const tExtra = useTranslations('Builder.projects.catalog.fields');
@@ -47,8 +43,6 @@ const useCatalogFieldLabel = (fieldKey: keyof ProjectCatalogDetails): string => 
   }
   return tCatalog(fieldKey as 'propertyType');
 };
-
-const CatalogFieldLabel = ({ fieldKey }: LabelProps) => useCatalogFieldLabel(fieldKey);
 
 const MONTH_YEAR_PATTERN = /^(\d{1,2})\/(\d{4})$/;
 
@@ -123,6 +117,7 @@ export const ProjectCatalogOverviewEditor = ({
   control,
   register,
 }: OverviewEditorProps) => {
+  const tForm = useTranslations('Builder.projects.form.placeholders');
   const catalogDetails = useWatch({ control, name: 'catalogDetails' });
   const templateColumns = overviewGridTemplateColumns(
     keys.map((key) => overviewColumnWeight(catalogDetails?.[key]?.[locale] ?? '')),
@@ -138,24 +133,56 @@ export const ProjectCatalogOverviewEditor = ({
         const Icon = PROJECT_CATALOG_CRITERION_ICON[criterionId];
         const fieldId = `catalog-overview-${key}-${locale}`;
         return (
-          <div key={fieldId} className="flex min-w-0 flex-col items-center gap-2 text-center">
-            <span
-              className="flex size-11 items-center justify-center rounded-full bg-brand-soft text-brand-deep"
-              aria-hidden
-            >
-              <Icon className="size-5" strokeWidth={1.75} />
-            </span>
-            <Input
-              id={fieldId}
-              className="h-10 w-full min-w-0 px-2 text-center text-sm font-bold text-ink-navy"
-              {...register(`catalogDetails.${key}.${locale}`)}
-            />
-            <label htmlFor={fieldId} className="text-xs font-medium text-ink-muted">
-              <CatalogFieldLabel fieldKey={key} />
-            </label>
-          </div>
+          <OverviewField
+            key={fieldId}
+            fieldId={fieldId}
+            fieldKey={key}
+            locale={locale}
+            Icon={Icon}
+            register={register}
+            fallbackPlaceholder={tForm('catalogValue')}
+          />
         );
       })}
+    </div>
+  );
+};
+
+type OverviewFieldProps = {
+  fieldId: string;
+  fieldKey: keyof ProjectCatalogDetails;
+  locale: TranslationLocale;
+  Icon: (typeof PROJECT_CATALOG_CRITERION_ICON)[keyof typeof PROJECT_CATALOG_CRITERION_ICON];
+  register: UseFormRegister<UpdateProjectFormValues>;
+  fallbackPlaceholder: string;
+};
+
+const OverviewField = ({
+  fieldId,
+  fieldKey,
+  locale,
+  Icon,
+  register,
+  fallbackPlaceholder,
+}: OverviewFieldProps) => {
+  const label = useCatalogFieldLabel(fieldKey);
+  return (
+    <div className="flex min-w-0 flex-col items-center gap-2 text-center">
+      <span
+        className="flex size-11 items-center justify-center rounded-full bg-brand-soft text-brand-deep"
+        aria-hidden
+      >
+        <Icon className="size-5" strokeWidth={1.75} />
+      </span>
+      <Input
+        id={fieldId}
+        placeholder={label || fallbackPlaceholder}
+        className="h-10 w-full min-w-0 px-2 text-center text-sm font-bold text-ink-navy"
+        {...register(`catalogDetails.${fieldKey}.${locale}`)}
+      />
+      <label htmlFor={fieldId} className="text-xs font-medium text-ink-muted">
+        {label}
+      </label>
     </div>
   );
 };
@@ -187,6 +214,9 @@ const CatalogKvItem = ({
   const wide = isProjectCatalogTextareaKey(fieldKey);
   const dateField = isProjectCatalogDateKey(fieldKey);
   const Icon = PROJECT_CATALOG_CRITERION_ICON[catalogDetailKeyToCriterionId(fieldKey)];
+  const label = useCatalogFieldLabel(fieldKey);
+  const tForm = useTranslations('Builder.projects.form.placeholders');
+  const placeholder = label || tForm('catalogValue');
   return (
     <div
       className={cn(
@@ -201,12 +231,13 @@ const CatalogKvItem = ({
         {sectionId === 'details' ? (
           <Icon className="mt-0.5 size-4 shrink-0 text-brand" strokeWidth={1.75} aria-hidden />
         ) : null}
-        <CatalogFieldLabel fieldKey={fieldKey} />
+        {label}
       </label>
       {wide ? (
         <Textarea
           id={fieldId}
           rows={3}
+          placeholder={placeholder}
           className="min-h-20 text-sm font-semibold text-ink-navy"
           {...register(`catalogDetails.${fieldKey}.${locale}`)}
         />
@@ -220,6 +251,7 @@ const CatalogKvItem = ({
       ) : (
         <Input
           id={fieldId}
+          placeholder={placeholder}
           className="h-10 max-w-xs text-right text-sm font-semibold text-ink-navy sm:max-w-none sm:flex-1"
           {...register(`catalogDetails.${fieldKey}.${locale}`)}
         />

@@ -79,24 +79,27 @@ type CatalogLinkFieldsProps = {
   labelFor: (key: CatalogLinkLabelKey) => string;
 };
 
-const CatalogLinkFields = ({ ids, register, labelFor }: CatalogLinkFieldsProps) => (
-  <div className="grid gap-4 sm:grid-cols-2">
-    {ids.map((id) => {
-      const fieldId = `catalog-link-${id}`;
-      return (
-        <FormField key={id} id={fieldId} label={labelFor(LINK_LABEL_KEYS[id])}>
-          <Input
-            id={fieldId}
-            type="url"
-            inputMode="url"
-            placeholder="https://"
-            {...register(`catalogLinks.${id}`)}
-          />
-        </FormField>
-      );
-    })}
-  </div>
-);
+const CatalogLinkFields = ({ ids, register, labelFor }: CatalogLinkFieldsProps) => {
+  const tForm = useTranslations('Builder.projects.form.placeholders');
+  return (
+    <div className="grid gap-4 sm:grid-cols-2">
+      {ids.map((id) => {
+        const fieldId = `catalog-link-${id}`;
+        return (
+          <FormField key={id} id={fieldId} label={labelFor(LINK_LABEL_KEYS[id])}>
+            <Input
+              id={fieldId}
+              type="url"
+              inputMode="url"
+              placeholder={tForm('linkUrl')}
+              {...register(`catalogLinks.${id}`)}
+            />
+          </FormField>
+        );
+      })}
+    </div>
+  );
+};
 
 /**
  * Admin catalog editor laid out like the public Project details cards
@@ -157,6 +160,7 @@ export const ProjectCatalogEditor = ({ register, control }: ProjectCatalogEditor
                     onBlur={field.onBlur}
                     addLabel={t('addItem')}
                     removeLabel={t('removeItem')}
+                    placeholder={t('itemPlaceholder')}
                     columns={3}
                   />
                 )}
@@ -175,6 +179,7 @@ export const ProjectCatalogEditor = ({ register, control }: ProjectCatalogEditor
                     onBlur={field.onBlur}
                     addLabel={t('addItem')}
                     removeLabel={t('removeItem')}
+                    placeholder={t('itemPlaceholder')}
                     columns={2}
                   />
                 )}
