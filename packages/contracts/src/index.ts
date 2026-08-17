@@ -11,6 +11,7 @@ export * from './crm.js';
 export * from './readiness.js';
 export * from './partners.js';
 export * from './mortgage.js';
+export * from './bank-partner-offer-templates.js';
 export * from './exhibition.js';
 export * from './analytics.js';
 export * from './favorites.js';

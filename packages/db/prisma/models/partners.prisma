@@ -40,8 +40,10 @@ model PartnerCompany {
   company    Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
   logoMedia  MediaAsset?    @relation("PartnerLogo", fields: [logoMediaId], references: [id], onDelete: SetNull)
   coverMedia MediaAsset?    @relation("PartnerCover", fields: [coverMediaId], references: [id], onDelete: SetNull)
-  offers     PartnerOffer[]
-  bankOffers BankOffer[]
+  offers                       PartnerOffer[]
+  bankOffers                   BankOffer[]
+  bankPartnerOfferTemplates    BankPartnerOfferTemplate[]
+  projectBankPartnerOffers     ProjectBankPartnerOffer[]
 
   @@index([slug])
   @@index([companyId])
@@ -97,6 +99,61 @@ model BankOffer {
   @@index([partnerCompanyId])
   @@index([publicationStatus])
   @@map("bank_offers")
+}
+
+/// Admin-managed finance offer template for a bank partner (project Finance fields).
+/// Applied to projects as editable `ProjectBankPartnerOffer` copies.
+model BankPartnerOfferTemplate {
+  id                String            @id @default(cuid())
+  partnerCompanyId  String            @map("partner_company_id")
+  name              String
+  /// Localized finance fields matching project catalog Finance keys.
+  /// Shape: { [key]: { hy, ru, en } }
+  fields            Json
+  publicationStatus PublicationStatus @default(draft) @map("publication_status")
+  sortOrder         Int               @default(0) @map("sort_order")
+  createdByUserId   String            @map("created_by_user_id")
+  updatedByUserId   String?           @map("updated_by_user_id")
+  createdAt         DateTime          @default(now()) @map("created_at")
+  updatedAt         DateTime          @updatedAt @map("updated_at")
+
+  partnerCompany PartnerCompany            @relation(fields: [partnerCompanyId], references: [id], onDelete: Cascade)
+  createdBy      User                      @relation("BankPartnerOfferTemplateCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  updatedBy      User?                     @relation("BankPartnerOfferTemplateUpdater", fields: [updatedByUserId], references: [id], onDelete: SetNull)
+  projectOffers  ProjectBankPartnerOffer[]
+
+  @@index([partnerCompanyId])
+  @@index([publicationStatus])
+  @@index([sortOrder])
+  @@map("bank_partner_offer_templates")
+}
+
+/// Project-scoped copy of a bank partner offer template (editable independently).
+model ProjectBankPartnerOffer {
+  id               String   @id @default(cuid())
+  projectId        String   @map("project_id")
+  templateId       String?  @map("template_id")
+  partnerCompanyId String   @map("partner_company_id")
+  name             String
+  /// Copied localized finance fields; project edits do not mutate the template.
+  fields           Json
+  sortOrder        Int      @default(0) @map("sort_order")
+  createdByUserId  String   @map("created_by_user_id")
+  updatedByUserId  String?  @map("updated_by_user_id")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  project        Project                   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  template       BankPartnerOfferTemplate? @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  partnerCompany PartnerCompany            @relation(fields: [partnerCompanyId], references: [id], onDelete: Restrict)
+  createdBy      User                      @relation("ProjectBankPartnerOfferCreator", fields: [createdByUserId], references: [id], onDelete: Restrict)
+  updatedBy      User?                     @relation("ProjectBankPartnerOfferUpdater", fields: [updatedByUserId], references: [id], onDelete: SetNull)
+
+  @@unique([projectId, templateId])
+  @@index([projectId])
+  @@index([partnerCompanyId])
+  @@index([templateId])
+  @@map("project_bank_partner_offers")
 }
 
 enum ServiceProviderType {

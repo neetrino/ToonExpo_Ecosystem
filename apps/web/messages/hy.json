@@ -1319,6 +1319,7 @@
       "geoMap": "3D քարտեզ",
       "partners": "Գործընկերներ",
       "bankOffers": "Բանկային առաջարկներ",
+      "templates": "Template",
       "serviceProviders": "Ծառայություն մատուցողներ",
       "readiness": "Պատրաստվածություն",
       "readinessCategories": "Կատեգորիաներ",
@@ -2252,6 +2253,56 @@
           "publishing": "Հրապարակում"
         },
         "saving": "Պահպանում…"
+      }
+    },
+    "templates": {
+      "title": "Template",
+      "subtitle": "Բանկային գործընկերների finance շաբլոններ՝ project-ում կիրառելու համար",
+      "loading": "Բեռնվում է…",
+      "error": "Չհաջողվեց բեռնել շաբլոնները։",
+      "empty": "Դեռ շաբլոններ չկան։",
+      "newTemplate": "+ Նոր շաբլոն",
+      "createTitle": "Նոր շաբլոն",
+      "editTitle": "Խմբագրել {title}",
+      "edit": "Խմբագրել",
+      "delete": "Ջնջել",
+      "deleteConfirmTitle": "Ջնջել",
+      "deleteConfirmMessage": "Ջնջե՞լ «{title}» շաբլոնը։",
+      "card": {
+        "hint": "Finance դաշտերի շաբլոն՝ project-ում ավելացնելու համար"
+      },
+      "filters": {
+        "allBanks": "Բոլոր բանկերը",
+        "allPublication": "Բոլոր կարգավիճակները",
+        "draft": "Սևագիր",
+        "published": "Հրապարակված",
+        "archived": "Արխիվացված"
+      },
+      "columns": {
+        "name": "Անվանում",
+        "bank": "Բանկ",
+        "publication": "Հրապարակում",
+        "actions": "Գործողություններ"
+      },
+      "form": {
+        "bankPartner": "Բանկային գործընկեր",
+        "name": "Շաբլոնի անուն",
+        "publication": "Հրապարակում",
+        "sortOrder": "Դասավորություն",
+        "create": "Ստեղծել շաբլոն",
+        "save": "Պահպանել",
+        "cancel": "Չեղարկել",
+        "saving": "Պահպանում…",
+        "publicationStatuses": {
+          "draft": "Սևագիր",
+          "published": "Հրապարակված",
+          "archived": "Արխիվացված"
+        },
+        "sections": {
+          "template": "Շաբլոն",
+          "finance": "Finance դաշտեր",
+          "publishing": "Հրապարակում"
+        }
       }
     },
     "serviceProviders": {

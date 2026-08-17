@@ -108,9 +108,10 @@ model Project {
   crmDeals             CrmDeal[]
   readinessAssessments ReadinessAssessment[]
   boothAssignments     BoothAssignment[]
-  visualMapCanvases    VisualMapCanvas[]
-  districts            District[]
-  mapModel             ProjectMapModel?
+  visualMapCanvases        VisualMapCanvas[]
+  districts                District[]
+  mapModel                 ProjectMapModel?
+  bankPartnerOffers        ProjectBankPartnerOffer[]
 
   @@index([builderCompanyId])
   @@index([publicationStatus])

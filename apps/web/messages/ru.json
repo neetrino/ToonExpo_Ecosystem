@@ -1321,6 +1321,7 @@
       "readinessCategories": "Категории",
       "partners": "Партнёры",
       "bankOffers": "Банковские предложения",
+      "templates": "Template",
       "serviceProviders": "Поставщики услуг",
       "events": "События",
       "checkin": "Сканер check-in",
@@ -2608,6 +2609,56 @@
           "publishing": "Публикация"
         },
         "saving": "Сохранение…"
+      }
+    },
+    "templates": {
+      "title": "Template",
+      "subtitle": "Шаблоны finance-предложений банков-партнёров для проектов",
+      "loading": "Загрузка…",
+      "error": "Не удалось загрузить шаблоны.",
+      "empty": "Шаблонов пока нет.",
+      "newTemplate": "+ Новый шаблон",
+      "createTitle": "Новый шаблон",
+      "editTitle": "Редактировать {title}",
+      "edit": "Редактировать",
+      "delete": "Удалить",
+      "deleteConfirmTitle": "Удалить",
+      "deleteConfirmMessage": "Удалить шаблон «{title}»?",
+      "card": {
+        "hint": "Шаблон finance-полей для применения в проекте"
+      },
+      "filters": {
+        "allBanks": "Все банки",
+        "allPublication": "Все статусы",
+        "draft": "Черновик",
+        "published": "Опубликовано",
+        "archived": "В архиве"
+      },
+      "columns": {
+        "name": "Название",
+        "bank": "Банк",
+        "publication": "Публикация",
+        "actions": "Действия"
+      },
+      "form": {
+        "bankPartner": "Банк-партнёр",
+        "name": "Название шаблона",
+        "publication": "Публикация",
+        "sortOrder": "Порядок",
+        "create": "Создать шаблон",
+        "save": "Сохранить",
+        "cancel": "Отмена",
+        "saving": "Сохранение…",
+        "publicationStatuses": {
+          "draft": "Черновик",
+          "published": "Опубликовано",
+          "archived": "В архиве"
+        },
+        "sections": {
+          "template": "Шаблон",
+          "finance": "Finance-поля",
+          "publishing": "Публикация"
+        }
       }
     },
     "serviceProviders": {

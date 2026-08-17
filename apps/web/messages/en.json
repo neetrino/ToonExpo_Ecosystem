@@ -1319,6 +1319,7 @@
       "geoMap": "3D Map",
       "partners": "Partners",
       "bankOffers": "Bank offers",
+      "templates": "Template",
       "serviceProviders": "Service providers",
       "readiness": "Readiness",
       "readinessCategories": "Categories",
@@ -2252,6 +2253,56 @@
           "publishing": "Publishing"
         },
         "saving": "Saving…"
+      }
+    },
+    "templates": {
+      "title": "Template",
+      "subtitle": "Reusable bank partner finance offers for projects",
+      "loading": "Loading templates…",
+      "error": "Could not load templates. Try again.",
+      "empty": "No templates yet.",
+      "newTemplate": "+ New Template",
+      "createTitle": "New template",
+      "editTitle": "Edit {title}",
+      "edit": "Edit",
+      "delete": "Delete",
+      "deleteConfirmTitle": "Delete",
+      "deleteConfirmMessage": "Are you sure you want to delete \"{title}\"?",
+      "card": {
+        "hint": "Finance fields template for project apply"
+      },
+      "filters": {
+        "allBanks": "All banks",
+        "allPublication": "All publication states",
+        "draft": "Draft",
+        "published": "Published",
+        "archived": "Archived"
+      },
+      "columns": {
+        "name": "Name",
+        "bank": "Bank",
+        "publication": "Publication",
+        "actions": "Actions"
+      },
+      "form": {
+        "bankPartner": "Bank partner",
+        "name": "Template name",
+        "publication": "Publication",
+        "sortOrder": "Sort order",
+        "create": "Create template",
+        "save": "Save changes",
+        "cancel": "Cancel",
+        "saving": "Saving…",
+        "publicationStatuses": {
+          "draft": "Draft",
+          "published": "Published",
+          "archived": "Archived"
+        },
+        "sections": {
+          "template": "Template",
+          "finance": "Finance fields",
+          "publishing": "Publishing"
+        }
       }
     },
     "serviceProviders": {
