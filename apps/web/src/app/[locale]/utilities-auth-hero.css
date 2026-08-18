@@ -151,4 +151,16 @@
   .account-sheet-scrollbar::-webkit-scrollbar-corner {
     background: transparent;
   }
+
+  /** Horizontal carousels — keep swipe, hide native scrollbar chrome. */
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
+  }
 }

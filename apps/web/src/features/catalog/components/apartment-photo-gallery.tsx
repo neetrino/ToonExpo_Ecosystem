@@ -57,8 +57,7 @@ const MobileGalleryCarousel = ({ images, onOpenAt }: MobileGalleryCarouselProps)
         ref={scrollerRef}
         onScroll={onScroll}
         className={cn(
-          'flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain',
-          '[-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
+          'no-scrollbar flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain',
         )}
         aria-label={t('galleryLightboxLabel')}
       >
