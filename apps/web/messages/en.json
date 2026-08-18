@@ -857,6 +857,8 @@
         "email": "Email",
         "contactPerson": "Contact person",
         "projectCount": "Projects",
+        "statRegion": "Region",
+        "statAddress": "Address",
         "linkWebsite": "Website",
         "linkInstagram": "Instagram",
         "linkFacebook": "Facebook",

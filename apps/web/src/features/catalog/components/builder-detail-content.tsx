@@ -30,7 +30,7 @@ export const BuilderDetailContent = async ({ builder }: BuilderDetailContentProp
   });
 
   return (
-    <div className="page-container pb-16 pt-12 sm:pt-16">
+    <div className="page-container pb-16 pt-8 sm:pt-10">
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <h2 className="font-brand text-[clamp(1.75rem,1.4rem+1.2vw,2.5rem)] font-bold tracking-[-0.02em] text-ink-navy">
           {t('buildersPage.detail.projectsTitle')}
