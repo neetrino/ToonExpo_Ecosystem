@@ -53,9 +53,17 @@ export const ApartmentDetailCriteriaPanel = ({
     <section>
       <h2 className="font-brand text-2xl font-bold tracking-tight text-ink-navy">{title}</h2>
 
-      <dl className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <dl className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {cardRows.map((row) => (
-          <CriterionCard key={row.id} row={row} />
+          <CriterionCard
+            key={row.id}
+            row={row}
+            className={
+              row.id === 'windows' || row.id === 'balconies'
+                ? 'col-span-1'
+                : 'col-span-2 sm:col-span-1'
+            }
+          />
         ))}
       </dl>
 
@@ -70,7 +78,13 @@ export const ApartmentDetailCriteriaPanel = ({
   );
 };
 
-const CriterionCard = ({ row }: { row: ApartmentDetailRow }) => {
+const CriterionCard = ({
+  row,
+  className,
+}: {
+  row: ApartmentDetailRow;
+  className?: string | undefined;
+}) => {
   const Icon = CRITERION_ICON[row.id];
 
   return (
@@ -79,6 +93,7 @@ const CriterionCard = ({ row }: { row: ApartmentDetailRow }) => {
         'flex min-h-[4.5rem] items-center gap-3 rounded-[15px] border border-header-border',
         'bg-surface-elevated px-4 py-3.5 transition-[transform,box-shadow] duration-200',
         'hover:-translate-y-0.5 hover:shadow-sm',
+        className,
       )}
     >
       <span
