@@ -61,6 +61,11 @@ export const SITE_HEADER_NAV_HREFS: ReadonlyArray<{
   { href: '/map', key: 'geoMap' },
 ];
 
+/** Mobile burger omits 3D map — bottom nav already has the Map tab. */
+export const SITE_HEADER_MOBILE_NAV_HREFS = SITE_HEADER_NAV_HREFS.filter(
+  (item) => item.href !== '/map',
+);
+
 export const isSiteHeaderNavActive = (pathname: string, href: SiteHeaderNavHref): boolean => {
   if (href === '/apartments') {
     return pathname === '/apartments' || pathname.startsWith('/apartments/');
