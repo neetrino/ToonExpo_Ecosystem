@@ -55,20 +55,25 @@ export const AccountMobileStack = ({
   const hubFirstTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const sheetScrollRef = useRef<HTMLDivElement | null>(null);
 
+  const clearExitTimer = useCallback((): void => {
+    if (exitTimerRef.current !== null) {
+      clearTimeout(exitTimerRef.current);
+      exitTimerRef.current = null;
+    }
+  }, []);
+
   useEffect(() => {
     setMounted(true);
   }, []);
 
   useEffect(() => {
     return () => {
-      if (exitTimerRef.current !== null) {
-        clearTimeout(exitTimerRef.current);
-      }
+      clearExitTimer();
       if (hubFirstTimerRef.current !== null) {
         clearTimeout(hubFirstTimerRef.current);
       }
     };
-  }, []);
+  }, [clearExitTimer]);
 
   useEffect(() => {
     if (!mounted) {
@@ -83,15 +88,23 @@ export const AccountMobileStack = ({
     if (exitingRef.current) {
       if (isHub) {
         exitingRef.current = false;
+        clearExitTimer();
+        setAnim('in');
         setSheetOpen(false);
         sawHubRef.current = true;
         prevPathRef.current = pathname;
         scrollWindowToTop();
+        return;
       }
-      return;
+
+      // Exit was interrupted (another sub-route while closing) — open that page.
+      exitingRef.current = false;
+      clearExitTimer();
     }
 
     if (isHub) {
+      clearExitTimer();
+      setAnim('in');
       setSheetOpen(false);
       sawHubRef.current = true;
       prevPathRef.current = pathname;
@@ -124,7 +137,7 @@ export const AccountMobileStack = ({
       hubFirstTimerRef.current = null;
     }, HUB_FIRST_PAINT_MS);
     prevPathRef.current = pathname;
-  }, [isHub, mounted, pathname]);
+  }, [clearExitTimer, isHub, mounted, pathname]);
 
   useEffect(() => {
     if (!sheetOpen) {
@@ -148,10 +161,12 @@ export const AccountMobileStack = ({
     }
 
     setAnim('out');
+    clearExitTimer();
     exitTimerRef.current = setTimeout(() => {
+      exitTimerRef.current = null;
       router.replace('/dashboard');
     }, ACCOUNT_PAGE_PUSH_MS);
-  }, [isHub, router, sheetOpen]);
+  }, [clearExitTimer, isHub, router, sheetOpen]);
 
   /** Swipe already animated the sheet off-screen — navigate without push-out. */
   const dismissFromSwipe = useCallback((): void => {
@@ -159,8 +174,9 @@ export const AccountMobileStack = ({
       return;
     }
     exitingRef.current = true;
+    clearExitTimer();
     router.replace('/dashboard');
-  }, [isHub, router, sheetOpen]);
+  }, [clearExitTimer, isHub, router, sheetOpen]);
 
   const showOverlay = mounted && !isHub && sheetOpen;
   const { isInteracting, sheetStyle } = useAccountSheetEdgeSwipe({
@@ -184,6 +200,8 @@ export const AccountMobileStack = ({
             'max-md:fixed max-md:inset-0 max-md:z-[var(--z-overlay)]',
             'max-md:overflow-x-clip max-md:overflow-y-auto max-md:bg-canvas',
             'max-md:account-sheet-scrollbar max-md:touch-pan-y',
+            // While closing, let hub / bottom-nav receive taps (avoids a stuck blocker).
+            anim === 'out' && 'max-md:pointer-events-none',
             !isInteracting && (anim === 'out' ? 'account-page-push-out' : 'account-page-push-in'),
           ],
         )}
