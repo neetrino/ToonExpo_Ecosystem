@@ -3,7 +3,6 @@ import type { ProjectDetail } from '@toonexpo/contracts';
 import { ProjectCatalogSection } from '@/features/catalog/components/project-catalog-section';
 import { ProjectConstructionTimeline } from '@/features/catalog/components/project-construction-timeline';
 import { ProjectDetailHero } from '@/features/catalog/components/project-detail-hero';
-import { ProjectFloorPicker } from '@/features/catalog/components/project-floor-picker';
 import { ProjectReserveCta } from '@/features/catalog/components/project-reserve-cta';
 import { ProjectInteractiveMapSection } from '@/features/visual-map/components/project-interactive-map-section';
 
@@ -20,7 +19,6 @@ export const ProjectDetailView = ({ project }: ProjectDetailViewProps) => (
     <ProjectInteractiveMapSection projectId={project.id} />
     <ProjectCatalogSection project={project} />
     <ProjectConstructionTimeline project={project} />
-    <ProjectFloorPicker project={project} />
     <ProjectReserveCta projectId={project.id} projectName={project.name} />
   </>
 );
