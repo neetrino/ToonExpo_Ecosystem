@@ -22,17 +22,41 @@ export type GeoMapAddressParts = {
 };
 
 /**
+ * Project address as filled in Projects (no geocoder suffix, no rewriting).
+ */
+export const formatGeoMapSiteAddress = (parts: GeoMapAddressParts): string => {
+  const core = uniqueNonEmpty([parts.address, parts.district, parts.city]);
+  if (core.length > 0) {
+    return core.join(', ');
+  }
+  return uniqueNonEmpty([parts.locationText]).join(', ');
+};
+
+/**
  * Builds a geocoder query from project location fields (street first, then area).
+ * Internal lookup only — never shown as the project address.
  */
 export const buildGeoMapAddressQuery = (parts: GeoMapAddressParts): string => {
-  const core = uniqueNonEmpty([parts.address, parts.district, parts.city]);
-  const withFallback = core.length > 0 ? core : uniqueNonEmpty([parts.locationText]);
-  if (withFallback.length === 0) {
+  const site = formatGeoMapSiteAddress(parts);
+  if (!site) {
     return '';
   }
-  const joined = withFallback.join(', ');
-  if (joined.toLocaleLowerCase().includes(ARMENIA_SUFFIX.toLocaleLowerCase())) {
-    return joined;
+  if (site.toLocaleLowerCase().includes(ARMENIA_SUFFIX.toLocaleLowerCase())) {
+    return site;
   }
-  return `${joined}, ${ARMENIA_SUFFIX}`;
+  return `${site}, ${ARMENIA_SUFFIX}`;
+};
+
+/**
+ * Clears the map-search input after a successful lookup of that same query.
+ * Leaves the field alone if the user already typed something else.
+ */
+export const nextGeoMapSearchQueryAfterLookup = (
+  currentSearch: string,
+  lookupQuery: string,
+): string => {
+  if (currentSearch.trim() === lookupQuery.trim()) {
+    return '';
+  }
+  return currentSearch;
 };

@@ -7,7 +7,10 @@ import { GeoMapCreateAddressField } from '@/features/geo-map/admin/components/ge
 import { GeoMapGlbUploader } from '@/features/geo-map/admin/components/geo-map-glb-uploader';
 import { GEO_MAP_CREATE_GLB_INPUT_ID } from '@/features/geo-map/admin/utils/focus-geo-map-file-input';
 import type { GeoMapProjectOption } from '@/features/geo-map/admin/utils/available-projects';
-import { buildGeoMapAddressQuery } from '@/features/geo-map/admin/utils/build-geo-map-address-query';
+import {
+  buildGeoMapAddressQuery,
+  formatGeoMapSiteAddress,
+} from '@/features/geo-map/admin/utils/build-geo-map-address-query';
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Select } from '@/shared/ui/select';
@@ -15,7 +18,8 @@ import { Select } from '@/shared/ui/select';
 export type GeoMapCreateDraft = {
   /** Empty string = place without attaching a project yet. */
   projectId: string;
-  addressQuery: string;
+  /** Temporary geocode input; never written back as the project address. */
+  searchQuery: string;
   mediaAssetId: string;
   modelUrl: string;
   fileName: string;
@@ -38,7 +42,7 @@ const patchDraft = (
   patch: Partial<GeoMapCreateDraft>,
 ): GeoMapCreateDraft => ({
   projectId: draft?.projectId ?? '',
-  addressQuery: draft?.addressQuery ?? '',
+  searchQuery: draft?.searchQuery ?? '',
   mediaAssetId: draft?.mediaAssetId ?? '',
   modelUrl: draft?.modelUrl ?? '',
   fileName: draft?.fileName ?? '',
@@ -61,15 +65,17 @@ export const GeoMapCreatePanel = ({
 }: GeoMapCreatePanelProps) => {
   const t = useTranslations('Admin.geoMap');
   const selectedProjectId = draft?.projectId ?? '';
-  const addressQuery = draft?.addressQuery ?? '';
+  const searchQuery = draft?.searchQuery ?? '';
+  const selectedProject = projects.find((project) => project.id === selectedProjectId) ?? null;
+  const siteAddress = selectedProject ? formatGeoMapSiteAddress(selectedProject) : '';
   const readyToPlace = Boolean(draft?.mediaAssetId);
 
   const handleProjectChange = (projectId: string): void => {
     const selected = projects.find((project) => project.id === projectId) ?? null;
-    const nextAddress = selected ? buildGeoMapAddressQuery(selected) : '';
-    onDraftChange(patchDraft(draft, { projectId, addressQuery: nextAddress }));
-    if (nextAddress) {
-      onGoToAddress(nextAddress);
+    onDraftChange(patchDraft(draft, { projectId, searchQuery: '' }));
+    const geocodeQuery = selected ? buildGeoMapAddressQuery(selected) : '';
+    if (geocodeQuery) {
+      onGoToAddress(geocodeQuery);
     }
   };
 
@@ -108,10 +114,11 @@ export const GeoMapCreatePanel = ({
       <p className="text-xs text-ink-muted">{t('create.projectLaterHint')}</p>
 
       <GeoMapCreateAddressField
-        value={addressQuery}
+        siteAddress={siteAddress}
+        searchQuery={searchQuery}
         disabled={isCreating}
         isGeocoding={isGeocoding}
-        onChange={(value) => onDraftChange(patchDraft(draft, { addressQuery: value }))}
+        onSearchChange={(value) => onDraftChange(patchDraft(draft, { searchQuery: value }))}
         onSearch={onGoToAddress}
       />
 

@@ -5,12 +5,14 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
 import { GeoMapGlbUploader } from '@/features/geo-map/admin/components/geo-map-glb-uploader';
+import { GeoMapSiteAddress } from '@/features/geo-map/admin/components/geo-map-site-address';
 import { GEO_MAP_REPLACE_GLB_INPUT_ID } from '@/features/geo-map/admin/utils/focus-geo-map-file-input';
 import {
   GeoMapTransformFields,
   type GeoMapTransformDraft,
 } from '@/features/geo-map/admin/components/geo-map-transform-fields';
 import type { GeoMapProjectOption } from '@/features/geo-map/admin/utils/available-projects';
+import { formatGeoMapSiteAddress } from '@/features/geo-map/admin/utils/build-geo-map-address-query';
 import type { GeoMapLngLat } from '@/features/geo-map/types';
 import { isValidGeoMapLngLat } from '@/features/geo-map/utils/validate-geo-map-position';
 import { Button } from '@/shared/ui/button';
@@ -81,6 +83,8 @@ export const GeoMapEditPanel = ({
   const busy = isSaving || isDeleting || isReplacing || isAttaching;
   const isUnassigned = model.projectId === null;
   const freeProjects = projects.filter((project) => !project.hasModel);
+  const attachedProject = projects.find((project) => project.id === model.projectId) ?? null;
+  const siteAddress = attachedProject ? formatGeoMapSiteAddress(attachedProject) : '';
 
   const commitDraft = (next: GeoMapTransformDraft): void => {
     setDraft(next);
@@ -169,6 +173,8 @@ export const GeoMapEditPanel = ({
         </h2>
         <p className="mt-1 text-xs text-ink-muted">{t('edit.subtitle')}</p>
       </div>
+
+      <GeoMapSiteAddress address={siteAddress} />
 
       {isUnassigned ? (
         <div className="space-y-2 rounded-sm border border-border px-3 py-3">

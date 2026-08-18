@@ -3,31 +3,35 @@
 import { useTranslations } from 'next-intl';
 import { useEffect, useRef, type FormEvent } from 'react';
 
+import { GeoMapSiteAddress } from '@/features/geo-map/admin/components/geo-map-site-address';
 import { GEO_MAP_ADDRESS_GEOCODE_DEBOUNCE_MS } from '@/features/geo-map/admin/constants';
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
 
 type GeoMapCreateAddressFieldProps = {
-  value: string;
+  /** Project address as filled in Projects; never overwritten by search. */
+  siteAddress: string;
+  searchQuery: string;
   disabled: boolean;
   isGeocoding: boolean;
-  onChange: (value: string) => void;
+  onSearchChange: (value: string) => void;
   onSearch: (query: string) => void;
 };
 
 /**
- * Address field + fly-to submit for the admin 3D map create flow.
+ * Read-only project address + separate map search (search never mutates the site text).
  */
 export const GeoMapCreateAddressField = ({
-  value,
+  siteAddress,
+  searchQuery,
   disabled,
   isGeocoding,
-  onChange,
+  onSearchChange,
   onSearch,
 }: GeoMapCreateAddressFieldProps) => {
   const t = useTranslations('Admin.geoMap');
-  const trimmed = value.trim();
+  const trimmed = searchQuery.trim();
   const canSearch = trimmed.length >= 3 && !disabled && !isGeocoding;
   const onSearchRef = useRef(onSearch);
   onSearchRef.current = onSearch;
@@ -47,23 +51,28 @@ export const GeoMapCreateAddressField = ({
     if (!canSearch) {
       return;
     }
-    onSearch(value);
+    onSearch(searchQuery);
   };
 
   return (
-    <form className="space-y-2" onSubmit={handleSubmit}>
-      <FormField id="geo-map-address" label={t('create.address')}>
-        <Input
-          id="geo-map-address"
-          value={value}
-          disabled={disabled}
-          placeholder={t('create.addressPlaceholder')}
-          onChange={(event) => onChange(event.target.value)}
-        />
-      </FormField>
-      <Button type="submit" size="sm" variant="secondary" disabled={!canSearch}>
-        {isGeocoding ? t('create.geocoding') : t('create.goToAddress')}
-      </Button>
-    </form>
+    <div className="space-y-3">
+      <GeoMapSiteAddress address={siteAddress} />
+
+      <form className="space-y-2" onSubmit={handleSubmit}>
+        <FormField id="geo-map-find-on-map" label={t('create.findOnMap')}>
+          <Input
+            id="geo-map-find-on-map"
+            value={searchQuery}
+            disabled={disabled}
+            placeholder={t('create.findOnMapPlaceholder')}
+            onChange={(event) => onSearchChange(event.target.value)}
+          />
+        </FormField>
+        <Button type="submit" size="sm" variant="secondary" disabled={!canSearch}>
+          {isGeocoding ? t('create.geocoding') : t('create.goToAddress')}
+        </Button>
+        <p className="text-xs text-ink-muted">{t('create.findOnMapHint')}</p>
+      </form>
+    </div>
   );
 };
