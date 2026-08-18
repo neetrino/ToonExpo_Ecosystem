@@ -60,6 +60,10 @@ export type ListboxSelectProps = {
   searchable?: boolean | undefined;
   searchPlaceholder?: string | undefined;
   emptyLabel?: string | undefined;
+  /** Menu horizontal anchor. `end` grows left — right-column filters. */
+  menuAlign?: 'start' | 'end' | undefined;
+  /** Lock menu width to the trigger. Off lets long labels stay visible. */
+  menuExactWidth?: boolean | undefined;
 };
 
 /**
@@ -93,6 +97,8 @@ export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
       searchable = false,
       searchPlaceholder,
       emptyLabel,
+      menuAlign = 'start',
+      menuExactWidth = true,
     } = props;
     const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
     const isOpenControlled = openProp !== undefined;
@@ -256,8 +262,9 @@ export const ListboxSelect = forwardRef<HTMLButtonElement, ListboxSelectProps>(
             <DropdownPortal
               open={open && !disabled}
               anchorRef={searchable ? fieldWrapRef : buttonRef}
+              align={menuAlign}
               matchWidth
-              exactWidth
+              exactWidth={menuExactWidth}
             >
               <div ref={menuRef} className="site-select-menu">
                 {menu}

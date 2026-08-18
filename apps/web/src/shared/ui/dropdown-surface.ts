@@ -17,9 +17,13 @@ export const isInsideDropdownSurface = (
   return false;
 };
 
+const isVerticallyScrollable = (element: HTMLElement): boolean =>
+  element.scrollHeight > element.clientHeight + 1;
+
 /**
  * When the open menu fits without scrolling, block wheel so the page behind
- * does not scroll and dismiss the menu.
+ * does not scroll and dismiss the menu. If the portal or panel can scroll,
+ * leave the wheel event alone so the list can move.
  */
 export const preventWheelDismissThroughDropdown = (
   event: WheelEvent,
@@ -30,11 +34,9 @@ export const preventWheelDismissThroughDropdown = (
     return;
   }
   const portal = panel?.closest('[data-dropdown-portal]');
-  if (!(portal instanceof HTMLElement)) {
-    return;
-  }
-  const canScroll = portal.scrollHeight > portal.clientHeight + 1;
-  if (!canScroll) {
+  const portalScrolls = portal instanceof HTMLElement && isVerticallyScrollable(portal);
+  const panelScrolls = panel !== null && isVerticallyScrollable(panel);
+  if (!portalScrolls && !panelScrolls) {
     event.preventDefault();
   }
 };

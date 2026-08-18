@@ -19,9 +19,9 @@ import {
 
 const MENU_GAP_PX = 8;
 const VIEWPORT_EDGE_PAD_PX = 8;
-const MENU_HEIGHT_ESTIMATE_PX = 240;
-/** Listbox panel cap (15rem) — longer option lists scroll inside. */
-const MENU_MAX_HEIGHT_PX = 240;
+const MENU_HEIGHT_ESTIMATE_PX = 320;
+/** Listbox panel cap (20rem) — longer option lists scroll inside the portal. */
+const MENU_MAX_HEIGHT_PX = 320;
 const MENU_MIN_HEIGHT_PX = 120;
 const STAGE_SELECTOR = '.desktop-fluid-stage';
 
@@ -45,8 +45,21 @@ type MenuCoords = {
   top: number;
   left: number;
   width: number;
+  maxWidth: number;
   maxHeight: number;
   placement: 'bottom' | 'top';
+};
+
+const resolveMenuMaxWidth = (
+  lockWidthToAnchor: boolean,
+  anchorWidth: number,
+  left: number,
+  hostWidth: number,
+): number => {
+  if (lockWidthToAnchor) {
+    return anchorWidth;
+  }
+  return Math.max(anchorWidth, hostWidth - left - VIEWPORT_EDGE_PAD_PX);
 };
 
 const shouldOpenUpward = (spaceBelow: number, spaceAbove: number, menuHeight: number): boolean => {
@@ -149,6 +162,7 @@ const computeMenuCoords = (
         top,
         left,
         width: anchorWidth,
+        maxWidth: resolveMenuMaxWidth(lockWidthToAnchor, anchorWidth, left, stage.offsetWidth),
         maxHeight,
         placement: openUp ? 'top' : 'bottom',
       },
@@ -173,17 +187,18 @@ const computeMenuCoords = (
     ? anchorRect.top - MENU_GAP_PX - Math.min(menuHeight || MENU_HEIGHT_ESTIMATE_PX, maxHeight)
     : anchorRect.bottom + MENU_GAP_PX;
 
-  return {
-    host: document.body,
-    coords: {
-      position: 'fixed',
-      top,
-      left,
-      width: anchorWidth,
-      maxHeight,
-      placement: openUp ? 'top' : 'bottom',
-    },
-  };
+    return {
+      host: document.body,
+      coords: {
+        position: 'fixed',
+        top,
+        left,
+        width: anchorWidth,
+        maxWidth: resolveMenuMaxWidth(lockWidthToAnchor, anchorWidth, left, viewW),
+        maxHeight,
+        placement: openUp ? 'top' : 'bottom',
+      },
+    };
 };
 
 const isSamePlacement = (
@@ -198,6 +213,7 @@ const isSamePlacement = (
     a.top === b.top &&
     a.left === b.left &&
     a.width === b.width &&
+    a.maxWidth === b.maxWidth &&
     a.maxHeight === b.maxHeight &&
     a.placement === b.placement
   );
@@ -295,8 +311,8 @@ export const DropdownPortal = ({
         ...(exactWidth
           ? { width: coords.width, maxWidth: coords.width }
           : matchWidth
-            ? { minWidth: coords.width }
-            : {}),
+            ? { minWidth: coords.width, maxWidth: coords.maxWidth }
+            : { maxWidth: coords.maxWidth }),
         maxHeight: coords.maxHeight,
       }
     : {
@@ -311,7 +327,7 @@ export const DropdownPortal = ({
     <div
       ref={portalRef}
       className={cn(
-        'z-[var(--z-dropdown)] overflow-x-hidden overflow-y-auto luxury-scrollbar',
+        'z-[var(--z-dropdown)] overflow-x-hidden overflow-y-auto overscroll-contain luxury-scrollbar',
         // Overflow must share the panel radius — otherwise the scroll layer
         // paints square corners behind rounded panel chrome.
         'rounded-[16px]',

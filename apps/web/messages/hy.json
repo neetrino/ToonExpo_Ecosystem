@@ -13,7 +13,8 @@
       "panelLabel": "Որոնման ֆիլտրեր",
       "removeChip": "Հեռացնել ֆիլտրը {label}",
       "searchPlaceholder": "Որոնել…",
-      "searchLabel": "Որոնում"
+      "searchLabel": "Որոնում",
+      "noMatches": "Համընկնում չկա"
     },
     "viewMode": {
       "label": "Տեսք",
@@ -1872,6 +1873,8 @@
       "filters": {
         "company": "Ընկերություն",
         "allCompanies": "Բոլոր ընկերությունները",
+        "builder": "Կառուցապատող",
+        "allBuilders": "Բոլոր կառուցապատողները",
         "building": "Շենք",
         "allBuildings": "Բոլոր շենքերը",
         "searchPlaceholder": "Փնտրել ըստ նախագծի, ընկերության կամ քաղաքի"

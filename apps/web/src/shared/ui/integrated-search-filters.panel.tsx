@@ -1,5 +1,7 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
+
 import {
   INTEGRATED_SEARCH_FILTER_ALL_VALUE,
   INTEGRATED_SEARCH_FILTER_PANEL_GRID,
@@ -32,11 +34,12 @@ export const IntegratedSearchFilterPanel = ({
 }: IntegratedSearchFilterPanelProps) => (
   <div className="flex flex-col gap-4">
     <div className={INTEGRATED_SEARCH_FILTER_PANEL_GRID}>
-      {filters.map((filter) => (
+      {filters.map((filter, index) => (
         <FilterField
           key={filter.key}
           filter={filter}
           value={filterValues[filter.key] ?? INTEGRATED_SEARCH_FILTER_ALL_VALUE}
+          menuAlign={index > 0 && index === filters.length - 1 ? 'end' : 'start'}
           onFilterChange={onFilterChange}
         />
       ))}
@@ -55,10 +58,12 @@ export const IntegratedSearchFilterPanel = ({
 type FilterFieldProps = {
   filter: IntegratedSearchFilterConfig;
   value: string;
+  menuAlign: 'start' | 'end';
   onFilterChange: (key: string, value: string) => void;
 };
 
-const FilterField = ({ filter, value, onFilterChange }: FilterFieldProps) => {
+const FilterField = ({ filter, value, menuAlign, onFilterChange }: FilterFieldProps) => {
+  const tCommon = useTranslations('Common.integratedSearch');
   const options = [
     { value: INTEGRATED_SEARCH_FILTER_ALL_VALUE, label: filter.allOptionLabel },
     ...filter.options,
@@ -76,6 +81,11 @@ const FilterField = ({ filter, value, onFilterChange }: FilterFieldProps) => {
         aria-label={filter.label}
         value={value}
         options={options}
+        searchable={filter.searchable}
+        searchPlaceholder={tCommon('searchPlaceholder')}
+        emptyLabel={tCommon('noMatches')}
+        menuAlign={menuAlign}
+        menuExactWidth={false}
         onChange={(next) => {
           onFilterChange(filter.key, next);
         }}

@@ -119,7 +119,7 @@ const ListboxOptionItem = ({
       }}
     >
       {multiple ? <SelectionMark checked={active} shape="circle" /> : null}
-      <span className={multiple ? 'min-w-0 flex-1 truncate' : undefined}>{option.label}</span>
+      <span className="min-w-0 flex-1 whitespace-normal break-words">{option.label}</span>
       {!multiple && active ? <Check className="site-select-option__check" aria-hidden /> : null}
     </button>
   );

@@ -13,7 +13,8 @@
       "panelLabel": "Фильтры поиска",
       "removeChip": "Убрать фильтр {label}",
       "searchPlaceholder": "Поиск…",
-      "searchLabel": "Поиск"
+      "searchLabel": "Поиск",
+      "noMatches": "Нет совпадений"
     },
     "viewMode": {
       "label": "Вид",
@@ -1872,6 +1873,8 @@
       "filters": {
         "company": "Компания",
         "allCompanies": "Все компании",
+        "builder": "Застройщик",
+        "allBuilders": "Все застройщики",
         "building": "Здание",
         "allBuildings": "Все здания",
         "searchPlaceholder": "Поиск по проекту, компании или городу"

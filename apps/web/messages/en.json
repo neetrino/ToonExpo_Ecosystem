@@ -13,7 +13,8 @@
       "panelLabel": "Search filters",
       "removeChip": "Remove filter {label}",
       "searchPlaceholder": "Search…",
-      "searchLabel": "Search"
+      "searchLabel": "Search",
+      "noMatches": "No matches"
     },
     "viewMode": {
       "label": "View mode",
@@ -1872,6 +1873,8 @@
       "filters": {
         "company": "Company",
         "allCompanies": "All companies",
+        "builder": "Builder",
+        "allBuilders": "All builders",
         "building": "Building",
         "allBuildings": "All buildings",
         "searchPlaceholder": "Search by project, company, or city"
