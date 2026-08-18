@@ -106,12 +106,24 @@ const CriterionListRow = ({ row }: { row: ApartmentDetailRow }) => {
   const Icon = CRITERION_ICON[row.id];
 
   return (
-    <div className="flex items-center gap-3 border-b border-header-border py-4 last:border-b-0">
-      <Icon className="size-4 shrink-0 text-brand-deep" strokeWidth={2} aria-hidden />
-      <dt className="shrink-0 text-[10px] font-bold tracking-widest text-header-muted uppercase">
-        {row.label}
-      </dt>
-      <dd className="min-w-0 flex-1 text-right text-sm font-semibold whitespace-pre-line text-ink-navy">
+    <div
+      className={cn(
+        'flex flex-col gap-2 border-b border-header-border py-4 last:border-b-0',
+        'sm:flex-row sm:items-start sm:gap-3',
+      )}
+    >
+      <div className="flex min-w-0 items-center gap-3 sm:shrink-0">
+        <Icon className="size-4 shrink-0 text-brand-deep" strokeWidth={2} aria-hidden />
+        <dt className="text-[10px] font-bold tracking-widest text-header-muted uppercase">
+          {row.label}
+        </dt>
+      </div>
+      <dd
+        className={cn(
+          'min-w-0 w-full break-words text-sm font-semibold whitespace-pre-line text-ink-navy',
+          'pl-7 sm:flex-1 sm:pl-0 sm:text-right',
+        )}
+      >
         {row.value}
       </dd>
     </div>
