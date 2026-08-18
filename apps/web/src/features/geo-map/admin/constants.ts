@@ -57,3 +57,9 @@ export const GEO_MAP_PREVIEW_MIN_ZOOM = 99;
 
 /** Wait after typing before geocoding (Nominatim ~1 req/s). */
 export const GEO_MAP_ADDRESS_GEOCODE_DEBOUNCE_MS = 1_000;
+
+/** Lucide icons in the sticky edit action bar. */
+export const GEO_MAP_EDIT_ACTION_ICON_CLASS = 'size-3.5 shrink-0';
+
+/** Equal-width action buttons in the 3D map edit footer. */
+export const GEO_MAP_EDIT_ACTION_BUTTON_CLASS = 'min-w-0 flex-1 px-2 text-xs';

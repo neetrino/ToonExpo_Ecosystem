@@ -1451,6 +1451,7 @@
         "showAdvanced": "Advanced orientation",
         "hideAdvanced": "Hide advanced",
         "published": "Published",
+        "publish": "Publish",
         "save": "Save",
         "saving": "Saving…",
         "saveError": "Could not save changes.",

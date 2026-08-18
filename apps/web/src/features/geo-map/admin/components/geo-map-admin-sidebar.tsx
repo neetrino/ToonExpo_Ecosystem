@@ -122,7 +122,7 @@ export const GeoMapAdminSidebar = ({
       </div>
 
       {selectedModel ? (
-        <div className="min-h-0 max-h-[50%] shrink-0 overflow-y-auto border-t border-border pt-3">
+        <div className="flex min-h-0 max-h-[50%] shrink-0 flex-col overflow-hidden border-t border-border pt-3">
           <GeoMapEditPanel
             model={selectedModel}
             projects={projects}
