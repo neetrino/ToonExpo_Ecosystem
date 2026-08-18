@@ -1,27 +1,30 @@
 'use client';
 
 import Image from 'next/image';
+import type { ReactNode } from 'react';
 
 import { HomeHeroNavButtons } from '@/features/catalog/components/home-hero-nav-buttons';
+import { HomeHeroNavProvider } from '@/features/catalog/components/home-hero-nav-context';
 import { DEFAULT_HOME_HERO_IMAGE_SRC } from '@/features/catalog/constants/home-hero';
 import { useHomeHeroRotation } from '@/features/catalog/hooks/use-home-hero-rotation';
 import { cn } from '@/shared/ui/cn';
 
 type HomeHeroBackdropProps = {
   imageUrls: readonly string[];
+  children: ReactNode;
 };
 
 /**
  * Full-bleed hero backdrop — endless Ken Burns + dissolve, with manual prev/next.
  * Auto-advance honors `prefers-reduced-motion`; edge buttons still work.
  */
-export const HomeHeroBackdrop = ({ imageUrls }: HomeHeroBackdropProps) => {
+export const HomeHeroBackdrop = ({ imageUrls, children }: HomeHeroBackdropProps) => {
   const slides =
     imageUrls.length > 0 ? imageUrls : ([DEFAULT_HOME_HERO_IMAGE_SRC] as const);
   const { activeIndex, canRotate, goBy } = useHomeHeroRotation(slides.length);
 
   return (
-    <>
+    <HomeHeroNavProvider value={{ canRotate, goBy }}>
       <div className="absolute inset-0 -z-10 overflow-hidden" aria-hidden>
         {slides.map((src, index) => {
           const isActive = index === activeIndex;
@@ -56,8 +59,13 @@ export const HomeHeroBackdrop = ({ imageUrls }: HomeHeroBackdropProps) => {
         })}
       </div>
       {canRotate ? (
-        <HomeHeroNavButtons onPrevious={() => goBy(-1)} onNext={() => goBy(1)} />
+        <HomeHeroNavButtons
+          placement="hero-edges"
+          onPrevious={() => goBy(-1)}
+          onNext={() => goBy(1)}
+        />
       ) : null}
-    </>
+      {children}
+    </HomeHeroNavProvider>
   );
 };

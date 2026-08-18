@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { HOME_HERO_ROTATE_MS } from '@/features/catalog/constants/home-hero';
 
-type HomeHeroRotation = {
+export type HomeHeroRotation = {
   activeIndex: number;
   canRotate: boolean;
   goBy: (step: -1 | 1) => void;
