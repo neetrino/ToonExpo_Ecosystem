@@ -4,7 +4,11 @@ import { useTranslations } from 'next-intl';
 import { useEffect, useMemo, useState } from 'react';
 
 import { PROJECT_ROOM_FILTER_VALUES } from '@/features/catalog/constants/projects';
+import { cn } from '@/shared/ui/cn';
 import { MultiListboxSelect } from '@/shared/ui/multi-listbox-select';
+
+/** Wider than the “Any” label so the control stays easy to tap. */
+const ROOMS_CONTROL_MIN_WIDTH_CLASS = 'min-w-24';
 
 type ProjectRoomsFilterProps = {
   /** Active room counts from the URL; empty / undefined = Any (all). */
@@ -38,18 +42,18 @@ export const ProjectRoomsFilter = ({ rooms, controlClassName }: ProjectRoomsFilt
   );
 
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex w-fit max-w-full flex-col gap-1">
       <span className="text-xs font-medium text-ink-secondary">{t('filters.rooms')}</span>
       <MultiListboxSelect
         id="project-filters-rooms"
         variant="field"
-        size="full"
+        size="fit"
         values={values}
         options={options}
         allLabel={t('filters.any')}
         selectedCountLabel={(count) => t('filters.roomsSelectedCount', { count })}
         aria-label={t('filters.rooms')}
-        className={controlClassName}
+        className={cn(controlClassName, ROOMS_CONTROL_MIN_WIDTH_CLASS)}
         onChange={setValues}
       />
       {values.length > 0 ? <input type="hidden" name="rooms" value={values.join(',')} /> : null}

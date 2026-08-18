@@ -18,6 +18,10 @@ type ProjectFiltersFormProps = {
 
 /** Compact control height for the projects filter toolbar. */
 const FILTER_CONTROL_CLASS = 'h-10 px-3.5 text-sm';
+const FILTER_FIELD_CLASS =
+  'flex min-w-0 flex-col gap-1 text-xs font-medium text-ink-secondary';
+const FILTER_PRICE_MOBILE_CLASS =
+  'col-span-3 row-start-2 sm:col-auto sm:row-auto sm:min-w-[6.5rem] sm:flex-none';
 
 /**
  * SSR-friendly GET filters for the projects catalog (shareable URL params).
@@ -44,16 +48,12 @@ export const ProjectFiltersForm = ({ filters }: ProjectFiltersFormProps) => {
         <p className="text-xs font-semibold text-ink">{t('filters.title')}</p>
       </div>
 
-      <div className="flex flex-wrap items-end gap-2 sm:gap-2.5">
-        <div className="min-w-[10rem] flex-1 basis-[12rem]">
+      <div className="grid grid-cols-6 items-end gap-2 sm:flex sm:flex-wrap sm:gap-2.5">
+        <div className="col-span-6 min-w-0 sm:min-w-[10rem] sm:flex-1 sm:basis-[12rem]">
           <ProjectLiveSearch filters={filters} controlClassName={FILTER_CONTROL_CLASS} />
         </div>
 
-        <label
-          className={cn(
-            'flex min-w-[6.5rem] flex-1 basis-[6.5rem] flex-col gap-1 text-xs font-medium text-ink-secondary sm:flex-none',
-          )}
-        >
+        <label className={cn(FILTER_FIELD_CLASS, FILTER_PRICE_MOBILE_CLASS)}>
           {t('filters.minPrice')}
           <Input
             type="number"
@@ -65,11 +65,7 @@ export const ProjectFiltersForm = ({ filters }: ProjectFiltersFormProps) => {
           />
         </label>
 
-        <label
-          className={cn(
-            'flex min-w-[6.5rem] flex-1 basis-[6.5rem] flex-col gap-1 text-xs font-medium text-ink-secondary sm:flex-none',
-          )}
-        >
+        <label className={cn(FILTER_FIELD_CLASS, FILTER_PRICE_MOBILE_CLASS)}>
           {t('filters.maxPrice')}
           <Input
             type="number"
@@ -81,48 +77,51 @@ export const ProjectFiltersForm = ({ filters }: ProjectFiltersFormProps) => {
           />
         </label>
 
-        <div className="min-w-[7rem] flex-1 basis-[7rem] sm:flex-none sm:basis-auto">
-          <ProjectRoomsFilter rooms={filters.rooms} controlClassName={FILTER_CONTROL_CLASS} />
-        </div>
+        <div className="col-span-6 row-start-3 flex min-w-0 items-end gap-2 sm:contents">
+          <div className="w-fit shrink-0">
+            <ProjectRoomsFilter rooms={filters.rooms} controlClassName={FILTER_CONTROL_CLASS} />
+          </div>
 
-        <label
-          className={cn(
-            'flex min-w-[8rem] flex-1 basis-[8rem] flex-col gap-1 text-xs font-medium text-ink-secondary sm:flex-none',
-          )}
-        >
-          {t('filters.salesStatus')}
-          <Select
-            name="salesStatus"
-            defaultValue={filters.salesStatus ?? ''}
-            className={FILTER_CONTROL_CLASS}
-          >
-            <option value="">{t('filters.any')}</option>
-            <option value="available">{t('status.available')}</option>
-            <option value="reserved">{t('status.reserved')}</option>
-            <option value="sold">{t('status.sold')}</option>
-          </Select>
-        </label>
+          <label className={cn(FILTER_FIELD_CLASS, 'min-w-0 flex-1 sm:min-w-[8rem] sm:flex-none')}>
+            {t('filters.salesStatus')}
+            <Select
+              name="salesStatus"
+              defaultValue={filters.salesStatus ?? ''}
+              className={FILTER_CONTROL_CLASS}
+            >
+              <option value="">{t('filters.any')}</option>
+              <option value="available">{t('status.available')}</option>
+              <option value="reserved">{t('status.reserved')}</option>
+              <option value="sold">{t('status.sold')}</option>
+            </Select>
+          </label>
 
-        <div className="flex shrink-0 items-end gap-2">
-          {filters.city ? <input type="hidden" name="city" value={filters.city} /> : null}
-          {filters.builderId ? (
-            <input type="hidden" name="builderId" value={filters.builderId} />
-          ) : null}
-          <Button
-            type="submit"
-            variant="secondary"
-            size="sm"
-            className="h-10 min-w-[6.5rem] rounded-sm px-6"
-          >
-            {t('filters.apply')}
-          </Button>
-          {hasActiveFilters ? (
-            <Link href="/projects">
-              <Button type="button" variant="outline" size="sm" className="h-10 rounded-sm px-5">
-                {t('filters.reset')}
-              </Button>
-            </Link>
-          ) : null}
+          <div className="flex shrink-0 items-end gap-1.5 sm:gap-2">
+            {filters.city ? <input type="hidden" name="city" value={filters.city} /> : null}
+            {filters.builderId ? (
+              <input type="hidden" name="builderId" value={filters.builderId} />
+            ) : null}
+            <Button
+              type="submit"
+              variant="secondary"
+              size="sm"
+              className="h-10 min-w-[5rem] rounded-sm px-4 sm:min-w-[6.5rem] sm:px-6"
+            >
+              {t('filters.apply')}
+            </Button>
+            {hasActiveFilters ? (
+              <Link href="/projects">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="h-10 rounded-sm px-3 sm:px-5"
+                >
+                  {t('filters.reset')}
+                </Button>
+              </Link>
+            ) : null}
+          </div>
         </div>
       </div>
     </form>

@@ -120,7 +120,7 @@ export const MultiListboxSelect = ({
             <span
               className={cn(
                 'flex items-center justify-between gap-2 whitespace-nowrap',
-                isField ? 'px-4 text-base sm:text-sm' : 'text-sm font-medium',
+                isField ? cn('px-4 text-base sm:text-sm', className) : 'text-sm font-medium',
               )}
             >
               <span>{allLabel}</span>
@@ -132,7 +132,7 @@ export const MultiListboxSelect = ({
               <span
                 className={cn(
                   'flex items-center justify-between gap-2 whitespace-nowrap',
-                  isField ? 'px-4 text-base sm:text-sm' : 'text-sm font-medium',
+                  isField ? cn('px-4 text-base sm:text-sm', className) : 'text-sm font-medium',
                 )}
               >
                 <span>{option.label}</span>
