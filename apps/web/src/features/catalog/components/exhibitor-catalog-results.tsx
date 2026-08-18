@@ -3,6 +3,7 @@ import type { BuilderSummary, PublicPartnerListItem } from '@toonexpo/contracts'
 import { BuilderCard } from '@/features/catalog/components/builder-card';
 import { PartnerCard } from '@/features/catalog/components/partner-card';
 import {
+  CATALOG_CARD_CELL_FILL_CLASS,
   CATALOG_RESULTS_SCROLL_ID,
   CATALOG_RESULTS_SCROLL_MARGIN_CLASS,
 } from '@/features/catalog/constants/catalog-list';
@@ -42,7 +43,8 @@ export const ExhibitorCatalogResults = ({
     <StaggerGroup
       id={CATALOG_RESULTS_SCROLL_ID}
       className={cn(
-        'mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 [&>*]:h-full [&>*]:min-w-0',
+        'mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3',
+        CATALOG_CARD_CELL_FILL_CLASS,
         CATALOG_RESULTS_SCROLL_MARGIN_CLASS,
       )}
       baseDelayMs={0}

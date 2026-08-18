@@ -49,10 +49,6 @@ export const ProjectFiltersForm = ({ filters }: ProjectFiltersFormProps) => {
           <ProjectLiveSearch filters={filters} controlClassName={FILTER_CONTROL_CLASS} />
         </div>
 
-        <div className="min-w-[7rem] flex-1 basis-[7rem] sm:flex-none sm:basis-auto">
-          <ProjectRoomsFilter rooms={filters.rooms} controlClassName={FILTER_CONTROL_CLASS} />
-        </div>
-
         <label
           className={cn(
             'flex min-w-[6.5rem] flex-1 basis-[6.5rem] flex-col gap-1 text-xs font-medium text-ink-secondary sm:flex-none',
@@ -84,6 +80,10 @@ export const ProjectFiltersForm = ({ filters }: ProjectFiltersFormProps) => {
             className={FILTER_CONTROL_CLASS}
           />
         </label>
+
+        <div className="min-w-[7rem] flex-1 basis-[7rem] sm:flex-none sm:basis-auto">
+          <ProjectRoomsFilter rooms={filters.rooms} controlClassName={FILTER_CONTROL_CLASS} />
+        </div>
 
         <label
           className={cn(

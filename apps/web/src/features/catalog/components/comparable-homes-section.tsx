@@ -4,6 +4,8 @@ import {
   ComparableHomeCard,
   type ComparableHomeCardModel,
 } from '@/features/catalog/components/comparable-home-card';
+import { CATALOG_CARD_CELL_FILL_CLASS } from '@/features/catalog/constants/catalog-list';
+import { cn } from '@/shared/ui/cn';
 
 type ComparableHomesSectionProps = {
   homes: ComparableHomeCardModel[];
@@ -25,7 +27,12 @@ export const ComparableHomesSection = async ({ homes }: ComparableHomesSectionPr
         <h2 className="font-brand text-2xl font-bold tracking-[-0.02em] text-ink-navy">
           {t('comparableTitle')}
         </h2>
-        <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div
+          className={cn(
+            'mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3',
+            CATALOG_CARD_CELL_FILL_CLASS,
+          )}
+        >
           {homes.map((home) => (
             <ComparableHomeCard key={home.id} home={home} />
           ))}

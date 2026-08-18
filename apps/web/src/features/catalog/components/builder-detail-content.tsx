@@ -7,6 +7,7 @@ import {
 } from '@/features/catalog/components/builder-contacts-card';
 import { ProjectCard } from '@/features/catalog/components/project-card';
 import { ProjectPriceRangesOverlayScope } from '@/features/catalog/components/price-overlay-scope';
+import { CATALOG_CARD_CELL_FILL_CLASS } from '@/features/catalog/constants/catalog-list';
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 
@@ -58,7 +59,12 @@ export const BuilderDetailContent = async ({ builder }: BuilderDetailContentProp
           <ProjectPriceRangesOverlayScope
             projectIds={builder.projects.map((project) => project.id)}
           >
-            <div className="grid min-w-0 grid-cols-1 gap-6 sm:grid-cols-2">
+            <div
+              className={cn(
+                'grid min-w-0 grid-cols-1 gap-6 sm:grid-cols-2',
+                CATALOG_CARD_CELL_FILL_CLASS,
+              )}
+            >
               {builder.projects.map((project) => (
                 <ProjectCard key={project.id} project={project} />
               ))}

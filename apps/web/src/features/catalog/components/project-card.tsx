@@ -12,7 +12,7 @@ import { resolvePublicAssetUrl } from '@/shared/lib/static-asset-url';
 import { cn } from '@/shared/ui/cn';
 
 const BUILDER_LOGO_BADGE_CLASS =
-  'absolute bottom-3 left-3 z-10 size-10 overflow-hidden rounded-full bg-canvas ring-1 ring-header-border';
+  'absolute bottom-3 left-3 z-10 block size-10 shrink-0 overflow-hidden rounded-full bg-canvas ring-1 ring-header-border';
 const BUILDER_LOGO_IMAGE_SIZES = '40px';
 
 type BuilderLogoBadgeProps = {
@@ -32,7 +32,13 @@ const BuilderLogoBadge = ({ builderId, name, logoUrl }: BuilderLogoBadgeProps) =
       className={BUILDER_LOGO_BADGE_CLASS}
       aria-label={name}
     >
-      <Image src={src} alt="" fill className="object-contain p-1" sizes={BUILDER_LOGO_IMAGE_SIZES} />
+      <Image
+        src={src}
+        alt=""
+        fill
+        className="rounded-full object-cover"
+        sizes={BUILDER_LOGO_IMAGE_SIZES}
+      />
     </Link>
   );
 };
@@ -82,7 +88,7 @@ export const ProjectCard = ({
   return (
     <article
       className={cn(
-        'group flex flex-col overflow-hidden rounded-[20px] bg-surface-elevated p-2',
+        'group flex h-full flex-col overflow-hidden rounded-[20px] bg-surface-elevated p-2',
         'ring-1 ring-header-border transition-all duration-[var(--duration-base)]',
         'hover:shadow-lg hover:shadow-brand/5 hover:ring-brand/40',
         className,
@@ -146,7 +152,7 @@ export const ProjectCard = ({
           </p>
         </div>
 
-        <p className="mb-4 text-xs leading-4 text-header-muted">
+        <p className="mb-4 min-h-4 truncate text-xs leading-4 text-header-muted">
           {district && city ? (
             <>
               <span>{district}</span>

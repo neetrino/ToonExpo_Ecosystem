@@ -11,6 +11,7 @@ import { ProjectFiltersForm } from '@/features/catalog/components/project-filter
 import { ProjectsPageHero } from '@/features/catalog/components/projects-page-hero';
 import { SiteFooter } from '@/features/catalog/components/site-footer';
 import {
+  CATALOG_CARD_CELL_FILL_CLASS,
   CATALOG_RESULTS_SCROLL_ID,
   CATALOG_RESULTS_SCROLL_MARGIN_CLASS,
 } from '@/features/catalog/constants/catalog-list';
@@ -99,7 +100,8 @@ export default async function ProjectsPage({ params, searchParams }: ProjectsPag
                   force
                   id={CATALOG_RESULTS_SCROLL_ID}
                   className={cn(
-                    'mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 [&>*]:h-full [&>*]:min-w-0',
+                    'mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3',
+                    CATALOG_CARD_CELL_FILL_CLASS,
                     CATALOG_RESULTS_SCROLL_MARGIN_CLASS,
                   )}
                   baseDelayMs={LIST_CONTENT_BASE_DELAY_MS}

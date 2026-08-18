@@ -3,7 +3,9 @@ import { getTranslations } from 'next-intl/server';
 
 import { DevelopmentProgressCard } from '@/features/catalog/components/development-progress-card';
 import { HomeDevelopmentsMap } from '@/features/catalog/components/home-developments-map';
+import { CATALOG_CARD_CELL_FILL_CLASS } from '@/features/catalog/constants/catalog-list';
 import { Link } from '@/i18n/navigation';
+import { cn } from '@/shared/ui/cn';
 import { EmptyState } from '@/shared/ui/empty-state';
 import { Reveal } from '@/shared/ui/motion/reveal';
 import { SectionHeader } from '@/shared/ui/section-header';
@@ -43,7 +45,9 @@ export const HomeDevelopments = async ({ projects }: HomeDevelopmentsProps) => {
         {watchProjects.length === 0 ? (
           <EmptyState title={t('empty')} />
         ) : (
-          <StaggerGroup className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          <StaggerGroup
+            className={cn('grid grid-cols-1 gap-6 md:grid-cols-3', CATALOG_CARD_CELL_FILL_CLASS)}
+          >
             {watchProjects.map((project, index) => (
               <DevelopmentProgressCard key={project.id} project={project} priority={index === 0} />
             ))}

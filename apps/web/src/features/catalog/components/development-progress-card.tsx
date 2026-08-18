@@ -42,7 +42,7 @@ export const DevelopmentProgressCard = ({
   return (
     <article
       className={cn(
-        'group flex flex-col overflow-hidden rounded-[20px] bg-surface-elevated',
+        'group flex h-full flex-col overflow-hidden rounded-[20px] bg-surface-elevated',
         'ring-1 ring-header-border transition-all duration-[var(--duration-base)]',
         'hover:shadow-lg hover:shadow-brand/5 hover:ring-brand/40',
         className,
@@ -79,7 +79,7 @@ export const DevelopmentProgressCard = ({
 
       <div className="flex flex-1 flex-col p-5">
         <div className="mb-1 flex items-start justify-between gap-3">
-          <h3 className="min-w-0 font-brand text-lg font-semibold tracking-[-0.02em] text-ink-navy">
+          <h3 className="min-w-0 truncate font-brand text-lg font-semibold tracking-[-0.02em] text-ink-navy">
             <Link
               href={`/projects/${project.id}`}
               className="transition-colors hover:text-brand-deep"
@@ -100,11 +100,9 @@ export const DevelopmentProgressCard = ({
           ) : null}
         </p>
 
-        {project.shortDescription ? (
-          <p className="mt-3 line-clamp-2 text-sm leading-5 text-ink-navy/80">
-            {project.shortDescription}
-          </p>
-        ) : null}
+        <p className="mt-3 line-clamp-2 min-h-10 text-sm leading-5 text-ink-navy/80">
+          {project.shortDescription}
+        </p>
 
         <div className="mt-auto space-y-2 pt-5">
           <div className="flex justify-between text-[10px] font-bold tracking-widest uppercase">

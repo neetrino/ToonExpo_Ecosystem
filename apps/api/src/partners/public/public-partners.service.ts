@@ -75,7 +75,7 @@ export class PublicPartnersService {
       this.prisma.db.partnerCompany.count({ where }),
       this.prisma.db.partnerCompany.findMany({
         where,
-        orderBy: [{ featured: 'desc' }, { name: 'asc' }],
+        orderBy: [{ featured: 'desc' }, { createdAt: 'desc' }],
         skip,
         take: query.pageSize,
         include: publicPartnerInclude,

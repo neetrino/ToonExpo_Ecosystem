@@ -44,7 +44,7 @@ export const BuyApartmentCard = ({
   return (
     <article
       className={cn(
-        'group overflow-hidden rounded-[20px] bg-surface-elevated p-2',
+        'group flex h-full flex-col overflow-hidden rounded-[20px] bg-surface-elevated p-2',
         'ring-1 ring-header-border transition-all duration-[var(--duration-base)]',
         'hover:shadow-lg hover:shadow-brand/5 hover:ring-brand/40',
         highlighted && 'ring-2 ring-brand-deep',
@@ -53,7 +53,7 @@ export const BuyApartmentCard = ({
       onMouseEnter={onHoverEnter}
       onMouseLeave={onHoverLeave}
     >
-      <Link href={`/apartments/${listing.id}`} className="block">
+      <Link href={`/apartments/${listing.id}`} className="flex h-full flex-col">
         <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-surface">
           {listing.image ? (
             <Image
@@ -80,7 +80,7 @@ export const BuyApartmentCard = ({
           </div>
         </div>
 
-        <div className="px-3 pt-4 pb-3">
+        <div className="flex flex-1 flex-col px-3 pt-4 pb-3">
           <div className="mb-1 flex flex-col gap-1">
             <h3 className="min-w-0 truncate font-brand text-sm font-semibold tracking-[-0.02em] text-ink-navy">
               {t('unitTitle', {
@@ -90,12 +90,12 @@ export const BuyApartmentCard = ({
             </h3>
             <p className="font-brand text-base font-bold text-brand-deep">{priceLabel}</p>
           </div>
-          {listing.locationLine ? (
-            <p className="text-xs leading-4 text-header-muted">{listing.locationLine}</p>
-          ) : null}
+          <p className="min-h-4 truncate text-xs leading-4 text-header-muted">
+            {listing.locationLine}
+          </p>
           <div
             className={cn(
-              'mt-3 flex flex-wrap items-center gap-4 border-t border-header-border pt-3',
+              'mt-auto flex flex-wrap items-center gap-4 border-t border-header-border pt-3',
               'text-[11px] font-medium tracking-tight text-header-muted uppercase',
             )}
           >
