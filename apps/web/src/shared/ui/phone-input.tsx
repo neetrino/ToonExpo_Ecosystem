@@ -79,6 +79,8 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(function
           'disabled:cursor-not-allowed',
         )}
         {...props}
+        // Chrome iOS injects `__gcruniqueid` before hydrate — false mismatch in `next dev`.
+        suppressHydrationWarning
         onKeyDown={handleKeyDown}
         onChange={(event) => {
           onChange?.(sanitizePhoneInput(event.target.value));
