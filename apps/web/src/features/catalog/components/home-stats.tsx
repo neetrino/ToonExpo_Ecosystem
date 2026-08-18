@@ -74,16 +74,23 @@ export const HomeStats = async () => {
             'shadow-[0_20px_25px_-5px_rgb(9_43_68/0.1),0_8px_10px_-6px_rgb(9_43_68/0.1)]',
           )}
         >
-          <div className="-translate-x-[10px] grid w-full grid-cols-2 gap-x-3 gap-y-6 sm:grid-cols-3 md:grid-cols-5">
+          <div className="grid w-full grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-3 sm:gap-x-5 md:grid-cols-5 md:gap-x-4">
             {stats.map((stat) => (
-              <div key={stat.id} className="min-w-0 text-center">
-                <p className="whitespace-nowrap text-[10px] font-bold uppercase tracking-[0.08em] text-canvas/50">
+              <div
+                key={stat.id}
+                className="min-w-0 px-0.5 text-center last:col-span-2 sm:last:col-span-1"
+              >                <p
+                  className={cn(
+                    'text-balance text-[10px] font-bold uppercase leading-snug',
+                    'tracking-[0.08em] text-canvas/50',
+                  )}
+                >
                   {stat.label}
                 </p>
                 <p
                   className={cn(
-                    'mt-1.5 whitespace-nowrap font-brand font-bold tracking-tight text-canvas',
-                    'text-[clamp(1.125rem,0.85rem+2.4vw,1.75rem)] leading-none',
+                    'mt-1.5 font-brand font-bold tracking-tight text-canvas tabular-nums',
+                    'text-[clamp(1rem,0.75rem+2.2vw,1.75rem)] leading-none',
                   )}
                 >
                   <AnimatedCounter
@@ -94,7 +101,7 @@ export const HomeStats = async () => {
                 </p>
                 <p
                   className={cn(
-                    'mt-1 whitespace-nowrap text-xs font-medium leading-4',
+                    'mt-1 text-balance text-xs font-medium leading-4',
                     stat.tone === 'positive' ? 'text-stat-positive' : 'text-stat-caution',
                   )}
                 >
