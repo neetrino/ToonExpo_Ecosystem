@@ -9,6 +9,7 @@ import { mapPublicGeoMapItemsToObjects } from '@/features/geo-map/utils/map-obje
 import { GeoMapStatusOverlays } from '@/features/geo-map/public/components/geo-map-status-overlays';
 import { usePublicGeoMapModelsQuery } from '@/features/geo-map/public/hooks/use-public-geo-map-models';
 import { resolvePublicGeoMapView } from '@/features/geo-map/public/utils/resolve-public-geo-map-view';
+import { resolveFocusCamera } from '@/features/geo-map/utils/resolve-focus-camera';
 import { cn } from '@/shared/ui/cn';
 
 type ProjectCatalogGeoMapProps = {
@@ -16,18 +17,23 @@ type ProjectCatalogGeoMapProps = {
 };
 
 /**
- * Project-detail Map card — the public 3D map with only this project's pin.
+ * Project-detail Map — same public 3D canvas as `/map`, with only this project's pin.
  */
 export const ProjectCatalogGeoMap = ({ projectId }: ProjectCatalogGeoMapProps) => {
   const modelsQuery = usePublicGeoMapModelsQuery();
+  const isModelsReady = !modelsQuery.isLoading;
 
   const projectObjects = useMemo(() => {
     const objects = mapPublicGeoMapItemsToObjects(modelsQuery.data?.data ?? []);
-    const projectObject = resolveMapObjectForProject(objects, projectId);
-    return projectObject ? [projectObject] : [];
+    const match = resolveMapObjectForProject(objects, projectId);
+    return match ? [match] : [];
   }, [modelsQuery.data?.data, projectId]);
-  const view = useMemo(() => resolvePublicGeoMapView(projectObjects), [projectObjects]);
-  const showEmpty = !modelsQuery.isLoading && !modelsQuery.isError && projectObjects.length === 0;
+  const projectObject = projectObjects[0] ?? null;
+  const view = useMemo(
+    () => (projectObject ? resolveFocusCamera(projectObject) : resolvePublicGeoMapView([])),
+    [projectObject],
+  );
+  const showEmpty = isModelsReady && !modelsQuery.isError && projectObject == null;
 
   return (
     <div
@@ -37,15 +43,17 @@ export const ProjectCatalogGeoMap = ({ projectId }: ProjectCatalogGeoMapProps) =
         PROJECT_CATALOG_GEO_MAP_HEIGHT_CLASS,
       )}
     >
-      <GeoMapCanvasLazy
-        objects={projectObjects}
-        initialCenter={view.center}
-        initialZoom={view.zoom}
-        highlightedObjectId={projectObjects[0]?.id ?? null}
-        className="absolute inset-0 h-full w-full"
-      />
+      {isModelsReady && !modelsQuery.isError ? (
+        <GeoMapCanvasLazy
+          objects={projectObjects}
+          initialCenter={view.center}
+          initialZoom={view.zoom}
+          highlightedObjectId={projectObject?.id ?? null}
+          className="absolute inset-0 h-full w-full"
+        />
+      ) : null}
       <GeoMapStatusOverlays
-        isLoading={modelsQuery.isLoading}
+        isLoading={!isModelsReady}
         isError={modelsQuery.isError}
         isEmpty={showEmpty}
         onRetry={() => void modelsQuery.refetch()}
