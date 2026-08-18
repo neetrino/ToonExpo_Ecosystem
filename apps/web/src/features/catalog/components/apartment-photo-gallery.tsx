@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useEffect, useRef, useState, type UIEvent } from 'react';
 
 import { ImageGalleryLightbox } from '@/shared/ui/image-gallery-lightbox';
 import { cn } from '@/shared/ui/cn';
@@ -18,10 +18,102 @@ type ApartmentPhotoGalleryProps = {
 
 const GALLERY_ROUNDED = 'rounded-[20px]';
 const GALLERY_THUMB_LIMIT = 4;
+const MOBILE_SLIDE_ASPECT = 'aspect-[4/3]';
+
+type MobileGalleryCarouselProps = {
+  images: GalleryImage[];
+  onOpenAt: (index: number) => void;
+};
 
 /**
- * Apartment mosaic — 1 large photo on the left, up to 4 thumbs on the right.
- * Click any photo to open the fullscreen gallery lightbox.
+ * Compact full-bleed snap carousel — swipe to see every apartment photo on mobile.
+ */
+const MobileGalleryCarousel = ({ images, onOpenAt }: MobileGalleryCarouselProps) => {
+  const t = useTranslations('Catalog.apartment');
+  const scrollerRef = useRef<HTMLDivElement | null>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  useEffect(() => {
+    setActiveIndex(0);
+    scrollerRef.current?.scrollTo({ left: 0, behavior: 'auto' });
+  }, [images]);
+
+  const onScroll = (event: UIEvent<HTMLDivElement>): void => {
+    const el = event.currentTarget;
+    const width = el.clientWidth;
+    if (width <= 0) {
+      return;
+    }
+    const nextIndex = Math.round(el.scrollLeft / width);
+    const clamped = Math.min(Math.max(nextIndex, 0), images.length - 1);
+    if (clamped !== activeIndex) {
+      setActiveIndex(clamped);
+    }
+  };
+
+  return (
+    <div className={cn('relative overflow-hidden md:hidden', GALLERY_ROUNDED)}>
+      <div
+        ref={scrollerRef}
+        onScroll={onScroll}
+        className={cn(
+          'flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain',
+          '[-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
+        )}
+        aria-label={t('galleryLightboxLabel')}
+      >
+        {images.map((image, index) => (
+          <button
+            key={`${image.src}-${index}`}
+            type="button"
+            className={cn(
+              'relative w-full shrink-0 snap-center overflow-hidden bg-band-mist',
+              MOBILE_SLIDE_ASPECT,
+              'cursor-zoom-in outline-none focus-visible:ring-2 focus-visible:ring-brand/30',
+            )}
+            aria-label={t('viewAllPhotos')}
+            onClick={() => {
+              onOpenAt(index);
+            }}
+          >
+            <Image
+              src={image.src}
+              alt={image.alt}
+              fill
+              className="object-cover"
+              sizes="100vw"
+              priority={index === 0}
+            />
+          </button>
+        ))}
+      </div>
+
+      {images.length > 1 ? (
+        <div
+          className={cn(
+            'pointer-events-none absolute inset-x-0 bottom-3 flex justify-center',
+          )}
+        >
+          <span
+            className={cn(
+              'rounded-full bg-ink/70 px-2.5 py-1 text-[11px] font-semibold',
+              'tracking-wide text-on-dark backdrop-blur-[2px]',
+            )}
+          >
+            {t('galleryPhotoCount', {
+              current: activeIndex + 1,
+              total: images.length,
+            })}
+          </span>
+        </div>
+      ) : null}
+    </div>
+  );
+};
+
+/**
+ * Apartment mosaic — 1 large photo on the left, up to 4 thumbs on the right (md+).
+ * Mobile: swipeable carousel so every photo is reachable. Click opens lightbox.
  */
 export const ApartmentPhotoGallery = ({ images }: ApartmentPhotoGalleryProps) => {
   const t = useTranslations('Catalog.apartment');
@@ -32,6 +124,17 @@ export const ApartmentPhotoGallery = ({ images }: ApartmentPhotoGalleryProps) =>
     setLightboxIndex(index);
     setLightboxOpen(true);
   };
+
+  const lightbox = (
+    <ImageGalleryLightbox
+      open={lightboxOpen}
+      images={images}
+      initialIndex={lightboxIndex}
+      onClose={() => {
+        setLightboxOpen(false);
+      }}
+    />
+  );
 
   if (images.length === 0) {
     return (
@@ -74,14 +177,7 @@ export const ApartmentPhotoGallery = ({ images }: ApartmentPhotoGalleryProps) =>
             priority
           />
         </button>
-        <ImageGalleryLightbox
-          open={lightboxOpen}
-          images={images}
-          initialIndex={lightboxIndex}
-          onClose={() => {
-            setLightboxOpen(false);
-          }}
-        />
+        {lightbox}
       </>
     );
   }
@@ -94,16 +190,18 @@ export const ApartmentPhotoGallery = ({ images }: ApartmentPhotoGalleryProps) =>
 
   return (
     <>
+      <MobileGalleryCarousel images={images} onOpenAt={openAt} />
+
       <div
         className={cn(
-          'grid grid-cols-1 gap-3',
+          'hidden grid-cols-1 gap-3 md:grid',
           'md:h-[460px] md:grid-cols-4 md:grid-rows-2 md:gap-3',
         )}
       >
         <button
           type="button"
           className={cn(
-            'relative overflow-hidden bg-band-mist max-md:aspect-[4/3]',
+            'relative overflow-hidden bg-band-mist',
             'cursor-zoom-in outline-none focus-visible:ring-2 focus-visible:ring-brand/30',
             'md:col-span-2 md:row-span-2 md:h-full md:min-h-0',
             GALLERY_ROUNDED,
@@ -118,7 +216,7 @@ export const ApartmentPhotoGallery = ({ images }: ApartmentPhotoGalleryProps) =>
             alt={hero.alt}
             fill
             className="object-cover"
-            sizes="(max-width: 768px) 100vw, 50vw"
+            sizes="50vw"
             priority
           />
         </button>
@@ -127,7 +225,7 @@ export const ApartmentPhotoGallery = ({ images }: ApartmentPhotoGalleryProps) =>
             key={`${image.src}-${index}`}
             type="button"
             className={cn(
-              'relative hidden overflow-hidden bg-band-mist md:block md:h-full md:min-h-0',
+              'relative overflow-hidden bg-band-mist md:h-full md:min-h-0',
               'cursor-zoom-in outline-none focus-visible:ring-2 focus-visible:ring-brand/30',
               GALLERY_ROUNDED,
             )}
@@ -141,14 +239,7 @@ export const ApartmentPhotoGallery = ({ images }: ApartmentPhotoGalleryProps) =>
         ))}
       </div>
 
-      <ImageGalleryLightbox
-        open={lightboxOpen}
-        images={images}
-        initialIndex={lightboxIndex}
-        onClose={() => {
-          setLightboxOpen(false);
-        }}
-      />
+      {lightbox}
     </>
   );
 };
