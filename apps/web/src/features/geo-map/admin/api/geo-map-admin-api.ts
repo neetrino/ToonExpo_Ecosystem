@@ -2,10 +2,14 @@ import type {
   AdminGeoMapModelItem,
   AdminGeoMapModelListResponse,
   CreateGeoMapModelRequest,
+  GeoMapGeocodeResponse,
   UpdateGeoMapModelRequest,
 } from '@toonexpo/contracts';
 
-import { GEO_MAP_ADMIN_API_PREFIX } from '@/features/geo-map/admin/constants';
+import {
+  GEO_MAP_ADMIN_API_PREFIX,
+  GEO_MAP_ADMIN_GEOCODE_PATH,
+} from '@/features/geo-map/admin/constants';
 import { apiFetch } from '@/shared/api/client';
 
 const jsonCredentials = {
@@ -43,6 +47,15 @@ export const updateAdminGeoMapModel = (
     method: 'PATCH',
     ...jsonCredentials,
     body: JSON.stringify(body),
+  });
+
+/** Look up an address for the admin map camera fly-to. */
+export const geocodeAdminGeoMapAddress = (query: string): Promise<GeoMapGeocodeResponse> =>
+  apiFetch<GeoMapGeocodeResponse>({
+    path: `${GEO_MAP_ADMIN_GEOCODE_PATH}?q=${encodeURIComponent(query)}`,
+    method: 'GET',
+    credentials: 'include',
+    cache: 'no-store',
   });
 
 /** Deletes a map model. */

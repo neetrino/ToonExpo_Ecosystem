@@ -8,6 +8,7 @@ import { ADMIN_PROJECTS_QUERY_KEY } from '@/features/admin/constants';
 import {
   createAdminGeoMapModel,
   deleteAdminGeoMapModel,
+  geocodeAdminGeoMapAddress,
   listAdminGeoMapModels,
   updateAdminGeoMapModel,
 } from '@/features/geo-map/admin/api/geo-map-admin-api';
@@ -67,3 +68,8 @@ export const useDeleteGeoMapModelMutation = () => {
     },
   });
 };
+
+export const useGeocodeGeoMapAddressMutation = () =>
+  useMutation({
+    mutationFn: (query: string) => geocodeAdminGeoMapAddress(query),
+  });

@@ -63,6 +63,16 @@ export type GeoMapFocusRequest = {
   token: number;
 };
 
+/**
+ * Imperative camera fly for an arbitrary lng/lat (admin address search).
+ * Bump `token` to re-trigger `flyTo` for the same center.
+ */
+export type GeoMapViewRequest = {
+  center: GeoMapLngLat;
+  zoom?: number;
+  token: number;
+};
+
 /** Props for `GeoMapCanvas`. Designed for reuse by the admin editor (Stage 2b) and the public map (Stage 3). */
 export type GeoMapCanvasProps = {
   /** Objects to render — always-visible dots + GLB models at/above each object's `minZoom`. */
@@ -97,6 +107,11 @@ export type GeoMapCanvasProps = {
    * lng/lat. Backward-compatible — omit for read-only / uncontrolled consumers.
    */
   focusRequest?: GeoMapFocusRequest | undefined;
+  /**
+   * When set (and `token` changes), flies to `center` (admin address search).
+   * Independent from `focusRequest` so object focus stays unchanged.
+   */
+  viewRequest?: GeoMapViewRequest | undefined;
   /** Optional visual highlight for a marker (cheap ring). Omit when unused. */
   highlightedObjectId?: string | null | undefined;
   /** Fired when a marker or model is clicked. */

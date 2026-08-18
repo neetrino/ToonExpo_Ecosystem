@@ -44,3 +44,7 @@ export const GEO_MAP_DEFAULT_CREATE_VALUES = {
 } as const;
 
 export const GEO_MAP_ADMIN_API_PREFIX = '/admin/geo-map/models';
+export const GEO_MAP_ADMIN_GEOCODE_PATH = '/admin/geo-map/geocode';
+
+/** Zoom used after an address lookup so OSM buildings are clickable. */
+export const GEO_MAP_ADDRESS_SEARCH_ZOOM = 16;

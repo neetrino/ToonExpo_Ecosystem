@@ -28,12 +28,14 @@ type GeoMapAdminSidebarProps = {
   selectedModel: AdminGeoMapModelItem | null;
   hasOsmSelection: boolean;
   isCreating: boolean;
+  isGeocoding: boolean;
   isSaving: boolean;
   isDeleting: boolean;
   dragSyncedPosition: GeoMapDragSyncedPosition | null;
   onSelect: (id: string) => void;
   onStartCreate: () => void;
   onCreateDraftChange: (draft: GeoMapCreateDraft | null) => void;
+  onGoToAddress: (query: string) => void;
   onTransformPreview: (draft: GeoMapTransformDraft) => void;
   onSave: (body: UpdateGeoMapModelRequest) => Promise<void>;
   onPublishChange: (isPublished: boolean) => Promise<void>;
@@ -54,12 +56,14 @@ export const GeoMapAdminSidebar = ({
   selectedModel,
   hasOsmSelection,
   isCreating,
+  isGeocoding,
   isSaving,
   isDeleting,
   dragSyncedPosition,
   onSelect,
   onStartCreate,
   onCreateDraftChange,
+  onGoToAddress,
   onTransformPreview,
   onSave,
   onPublishChange,
@@ -105,7 +109,9 @@ export const GeoMapAdminSidebar = ({
           projects={projects}
           draft={createDraft}
           onDraftChange={onCreateDraftChange}
+          onGoToAddress={onGoToAddress}
           isCreating={isCreating}
+          isGeocoding={isGeocoding}
           hasOsmSelection={hasOsmSelection}
         />
       ) : null}

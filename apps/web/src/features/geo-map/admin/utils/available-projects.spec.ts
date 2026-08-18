@@ -12,6 +12,9 @@ const project = (id: string, name: string): AdminProjectListItem => ({
   publicationStatus: 'published',
   createdAt: '2026-07-31T00:00:00.000Z',
   city: null,
+  district: null,
+  address: null,
+  locationText: null,
   builderCompanyId: 'co_1',
   companyName: 'Acme',
   companyLogoUrl: null,
@@ -52,8 +55,26 @@ describe('buildGeoMapProjectOptions', () => {
       [model('p1'), model(null)],
     );
     expect(options).toEqual([
-      { id: 'p1', name: 'One', companyName: 'Acme', hasModel: true },
-      { id: 'p2', name: 'Two', companyName: 'Acme', hasModel: false },
+      {
+        id: 'p1',
+        name: 'One',
+        companyName: 'Acme',
+        city: null,
+        district: null,
+        address: null,
+        locationText: null,
+        hasModel: true,
+      },
+      {
+        id: 'p2',
+        name: 'Two',
+        companyName: 'Acme',
+        city: null,
+        district: null,
+        address: null,
+        locationText: null,
+        hasModel: false,
+      },
     ]);
   });
 });

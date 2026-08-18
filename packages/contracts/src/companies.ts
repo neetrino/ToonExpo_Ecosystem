@@ -202,6 +202,9 @@ export type AdminProjectListItem = {
   publicationStatus: PublicationStatus;
   createdAt: string;
   city: string | null;
+  district: string | null;
+  address: string | null;
+  locationText: string | null;
   builderCompanyId: string;
   companyName: string;
   /** Builder company logo; initials shown when null. */

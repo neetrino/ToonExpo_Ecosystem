@@ -9,6 +9,7 @@ import type { GeoMapCreateDraft } from '@/features/geo-map/admin/components/geo-
 import type { GeoMapDragSyncedPosition } from '@/features/geo-map/admin/components/geo-map-edit-panel';
 import type { GeoMapTransformDraft } from '@/features/geo-map/admin/components/geo-map-transform-fields';
 import { GEO_MAP_DEFAULT_CREATE_VALUES } from '@/features/geo-map/admin/constants';
+import { useGeoMapAddressFlyTo } from '@/features/geo-map/admin/hooks/use-geo-map-address-fly-to';
 import {
   useAdminGeoMapModelsQuery,
   useCreateGeoMapModelMutation,
@@ -87,6 +88,7 @@ const focusSidebarSelect = (id: string): void => {
 
 const EMPTY_CREATE_DRAFT: GeoMapCreateDraft = {
   projectId: '',
+  addressQuery: '',
   mediaAssetId: '',
   modelUrl: '',
   fileName: '',
@@ -106,6 +108,7 @@ export const GeoMapAdminPage = () => {
   const createMutation = useCreateGeoMapModelMutation();
   const updateMutation = useUpdateGeoMapModelMutation();
   const deleteMutation = useDeleteGeoMapModelMutation();
+  const { viewRequest, goToAddress, isGeocoding } = useGeoMapAddressFlyTo();
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [createDraft, setCreateDraft] = useState<GeoMapCreateDraft | null>(null);
@@ -231,6 +234,21 @@ export const GeoMapAdminPage = () => {
     },
     [createDraft?.mediaAssetId, placeModel, selectedOsmBuilding],
   );
+
+  const handleGoToAddress = (query: string): void => {
+    void (async () => {
+      const result = await goToAddress(query);
+      if (result === 'not-found') {
+        setActionError(t('create.geocodeNotFound'));
+        return;
+      }
+      if (result === 'failed') {
+        setActionError(t('create.geocodeFailed'));
+        return;
+      }
+      setActionError(null);
+    })();
+  };
 
   const handleDragged = async (id: string, position: GeoMapLngLat): Promise<void> => {
     setActionError(null);
@@ -492,12 +510,14 @@ export const GeoMapAdminPage = () => {
           selectedModel={selectedModel}
           hasOsmSelection={selectedOsmBuilding !== null}
           isCreating={createMutation.isPending}
+          isGeocoding={isGeocoding}
           isSaving={updateMutation.isPending}
           isDeleting={deleteMutation.isPending}
           dragSyncedPosition={dragSyncedPosition}
           onSelect={selectModel}
           onStartCreate={startCreate}
           onCreateDraftChange={handleCreateDraftChange}
+          onGoToAddress={handleGoToAddress}
           onTransformPreview={handleTransformPreview}
           onSave={handleSave}
           onPublishChange={handlePublishChange}
@@ -523,6 +543,7 @@ export const GeoMapAdminPage = () => {
         <GeoMapCanvasLazy
           objects={objects}
           editable
+          viewRequest={viewRequest}
           highlightedObjectId={selectedId}
           transformOverride={transformPreview}
           selectedOsmBuilding={selectedOsmBuilding}

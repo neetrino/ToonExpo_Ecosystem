@@ -3,15 +3,18 @@
 import type { MediaAssetItem } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 
+import { GeoMapCreateAddressField } from '@/features/geo-map/admin/components/geo-map-create-address-field';
 import { GeoMapGlbUploader } from '@/features/geo-map/admin/components/geo-map-glb-uploader';
 import { GEO_MAP_CREATE_GLB_INPUT_ID } from '@/features/geo-map/admin/utils/focus-geo-map-file-input';
 import type { GeoMapProjectOption } from '@/features/geo-map/admin/utils/available-projects';
+import { buildGeoMapAddressQuery } from '@/features/geo-map/admin/utils/build-geo-map-address-query';
 import { FormField } from '@/shared/ui/form-field';
 import { Select } from '@/shared/ui/select';
 
 export type GeoMapCreateDraft = {
   /** Empty string = place without attaching a project yet. */
   projectId: string;
+  addressQuery: string;
   mediaAssetId: string;
   modelUrl: string;
   fileName: string;
@@ -21,42 +24,59 @@ type GeoMapCreatePanelProps = {
   projects: GeoMapProjectOption[];
   draft: GeoMapCreateDraft | null;
   onDraftChange: (draft: GeoMapCreateDraft | null) => void;
+  onGoToAddress: (query: string) => void;
   isCreating: boolean;
+  isGeocoding: boolean;
   hasOsmSelection: boolean;
 };
 
+const patchDraft = (
+  draft: GeoMapCreateDraft | null,
+  patch: Partial<GeoMapCreateDraft>,
+): GeoMapCreateDraft => ({
+  projectId: draft?.projectId ?? '',
+  addressQuery: draft?.addressQuery ?? '',
+  mediaAssetId: draft?.mediaAssetId ?? '',
+  modelUrl: draft?.modelUrl ?? '',
+  fileName: draft?.fileName ?? '',
+  ...patch,
+});
+
 /**
- * Create flow: optional project + required GLB, then click OSM building or empty map.
+ * Create flow: optional project + address fly-to + required GLB, then click map.
  */
 export const GeoMapCreatePanel = ({
   projects,
   draft,
   onDraftChange,
+  onGoToAddress,
   isCreating,
+  isGeocoding,
   hasOsmSelection,
 }: GeoMapCreatePanelProps) => {
   const t = useTranslations('Admin.geoMap');
   const selectedProjectId = draft?.projectId ?? '';
+  const addressQuery = draft?.addressQuery ?? '';
+  const readyToPlace = Boolean(draft?.mediaAssetId);
 
   const handleProjectChange = (projectId: string): void => {
-    onDraftChange({
-      projectId,
-      mediaAssetId: draft?.mediaAssetId ?? '',
-      modelUrl: draft?.modelUrl ?? '',
-      fileName: draft?.fileName ?? '',
-    });
+    const selected = projects.find((project) => project.id === projectId) ?? null;
+    const nextAddress = selected ? buildGeoMapAddressQuery(selected) : '';
+    onDraftChange(patchDraft(draft, { projectId, addressQuery: nextAddress }));
+    if (nextAddress) {
+      onGoToAddress(nextAddress);
+    }
   };
 
   const handleUploaded = (asset: MediaAssetItem): void => {
-    onDraftChange({
-      projectId: selectedProjectId,
-      mediaAssetId: asset.id,
-      modelUrl: asset.fileUrl,
-      fileName: asset.title ?? asset.id,
-    });
+    onDraftChange(
+      patchDraft(draft, {
+        mediaAssetId: asset.id,
+        modelUrl: asset.fileUrl,
+        fileName: asset.title ?? asset.id,
+      }),
+    );
   };
-
-  const readyToPlace = Boolean(draft?.mediaAssetId);
 
   return (
     <section id="geo-map-create-panel" className="space-y-3 border-t border-border pt-4">
@@ -81,6 +101,14 @@ export const GeoMapCreatePanel = ({
         </Select>
       </FormField>
       <p className="text-xs text-ink-muted">{t('create.projectLaterHint')}</p>
+
+      <GeoMapCreateAddressField
+        value={addressQuery}
+        disabled={isCreating}
+        isGeocoding={isGeocoding}
+        onChange={(value) => onDraftChange(patchDraft(draft, { addressQuery: value }))}
+        onSearch={onGoToAddress}
+      />
 
       <GeoMapGlbUploader
         browseButtonId="geo-map-create-glb-browse"

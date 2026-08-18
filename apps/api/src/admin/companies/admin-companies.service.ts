@@ -243,6 +243,9 @@ export class AdminCompaniesService {
           publicationStatus: true,
           createdAt: true,
           city: true,
+          district: true,
+          address: true,
+          locationText: true,
           builderCompanyId: true,
           featuredOnHome: true,
           builderCompany: {
@@ -271,6 +274,9 @@ export class AdminCompaniesService {
         publicationStatus: project.publicationStatus,
         createdAt: project.createdAt.toISOString(),
         city: project.city,
+        district: project.district,
+        address: project.address,
+        locationText: project.locationText,
         builderCompanyId: project.builderCompanyId,
         companyName: project.builderCompany.name,
         companyLogoUrl: project.builderCompany.logoMedia
