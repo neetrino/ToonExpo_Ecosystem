@@ -1399,7 +1399,7 @@
         "address": "Адрес",
         "addressLockedHint": "Это адрес, заполненный в проекте. С карты он не меняется.",
         "findOnMap": "Найти на карте",
-        "findOnMapPlaceholder": "напр. Norashen 6, Yerevan",
+        "findOnMapPlaceholder": "Улица или название места…",
         "findOnMapHint": "Введите запрос, который карта сможет найти. После установки метки адрес проекта сверху не меняется.",
         "goToAddress": "Перейти к адресу",
         "geocoding": "Ищем адрес…",

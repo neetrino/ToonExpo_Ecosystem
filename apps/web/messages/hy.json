@@ -1399,7 +1399,7 @@
         "address": "Հասցե",
         "addressLockedHint": "Սա նախագծում լրացված հասցեն է։ Քարտեզից այն չի փոխվում։",
         "findOnMap": "Գտնել քարտեզի վրա",
-        "findOnMapPlaceholder": "օր. Norashen 6, Yerevan",
+        "findOnMapPlaceholder": "Փողոց կամ տեղանուն…",
         "findOnMapHint": "Գրիր այնպես, որ քարտեզը գտնի տեղը։ Pin դնելուց հետո վերևի հասցեն մնում է նույնը։",
         "goToAddress": "Գնալ հասցեին",
         "geocoding": "Հասցեն որոնվում է…",
