@@ -1,30 +1,14 @@
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
-import {
-  listPublicPartnerFacets,
-  listPublicPartners,
-} from '@/features/catalog/api/partners-api';
-import { PartnerCard } from '@/features/catalog/components/partner-card';
-import { PartnerFiltersForm } from '@/features/catalog/components/partner-filters-form';
-import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
+import { ExhibitorCatalogSection } from '@/features/catalog/components/exhibitor-catalog-section';
 import { PartnersPageHero } from '@/features/catalog/components/partners-page-hero';
 import { SiteFooter } from '@/features/catalog/components/site-footer';
-import {
-  CATALOG_RESULTS_SCROLL_ID,
-  CATALOG_RESULTS_SCROLL_MARGIN_CLASS,
-} from '@/features/catalog/constants/catalog-list';
+import { loadExhibitorCatalog } from '@/features/catalog/utils/load-exhibitor-catalog';
 import {
   buildPartnerSearchParams,
   parsePartnerFilters,
 } from '@/features/catalog/utils/partner-filters';
-import { cn } from '@/shared/ui/cn';
-import {
-  LIST_CARD_DURATION_MS,
-  LIST_CARD_STAGGER_MS,
-  LIST_CONTENT_BASE_DELAY_MS,
-  StaggerGroup,
-} from '@/shared/ui/motion';
 
 type PartnersPageProps = {
   params: Promise<{ locale: string }>;
@@ -46,82 +30,40 @@ export default async function PartnersPage({ params, searchParams }: PartnersPag
   setRequestLocale(locale);
 
   const t = await getTranslations('Catalog');
-  const rawParams = await searchParams;
-  const filters = parsePartnerFilters(rawParams);
-
-  const [response, facets] = await Promise.all([
-    listPublicPartners(
-      {
-        page: filters.page,
-        ...(filters.types.length > 0 ? { types: filters.types } : {}),
-      },
-      { locale },
-    ),
-    listPublicPartnerFacets(),
-  ]);
-
-  const buildHref = (page: number): string => {
-    const query = new URLSearchParams(buildPartnerSearchParams(filters, page)).toString();
-    return query.length > 0 ? `/partners?${query}` : '/partners';
-  };
+  const filters = parsePartnerFilters(await searchParams);
+  const catalog = await loadExhibitorCatalog(filters, locale);
+  const showBuilders = catalog.kind === 'builders';
+  const total = showBuilders ? catalog.builders.length : catalog.response.meta.total;
+  const page = showBuilders ? 1 : catalog.response.meta.page;
+  const totalPages = showBuilders ? 1 : catalog.response.meta.totalPages;
+  const hrefFor = (nextPage: number): string =>
+    `/partners?${new URLSearchParams(buildPartnerSearchParams(filters, nextPage)).toString()}`;
 
   return (
     <div className="min-h-screen bg-canvas">
       <main>
         <PartnersPageHero
           title={t('partnersPage.title')}
-          description={t('partnersPage.subtitle', { count: response.meta.total })}
+          description={
+            showBuilders
+              ? t('buildersPage.subtitle', { count: total })
+              : t('partnersPage.subtitle', { count: total })
+          }
         />
-
-        <div className="page-container section-pad pt-8 sm:pt-10">
-          <PartnerFiltersForm filters={filters} availableTypes={facets.types} />
-
-          {response.data.length === 0 ? (
-            <p
-              id={CATALOG_RESULTS_SCROLL_ID}
-              className={cn(
-                'mt-10 rounded-[20px] border border-dashed border-header-border bg-surface-elevated px-6 py-12 text-center text-sm text-header-muted',
-                CATALOG_RESULTS_SCROLL_MARGIN_CLASS,
-              )}
-            >
-              {t('partnersPage.empty')}
-            </p>
-          ) : (
-            <StaggerGroup
-              force
-              id={CATALOG_RESULTS_SCROLL_ID}
-              className={cn(
-                'mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 [&>*]:h-full [&>*]:min-w-0',
-                CATALOG_RESULTS_SCROLL_MARGIN_CLASS,
-              )}
-              baseDelayMs={LIST_CONTENT_BASE_DELAY_MS}
-              staggerMs={LIST_CARD_STAGGER_MS}
-              durationMs={LIST_CARD_DURATION_MS}
-            >
-              {response.data.map((partner) => (
-                <PartnerCard key={partner.id} partner={partner} />
-              ))}
-            </StaggerGroup>
-          )}
-
-          <CatalogPagination
-            className="mt-10"
-            page={response.meta.page}
-            totalPages={response.meta.totalPages}
-            previousHref={
-              response.meta.page > 1 ? buildHref(response.meta.page - 1) : null
-            }
-            nextHref={
-              response.meta.page < response.meta.totalPages
-                ? buildHref(response.meta.page + 1)
-                : null
-            }
-            previousLabel={t('pagination.previous')}
-            nextLabel={t('pagination.next')}
-            ariaLabel={t('pagination.ariaLabel')}
-            scrollTargetId={CATALOG_RESULTS_SCROLL_ID}
-          />
-        </div>
+        <ExhibitorCatalogSection
+          activeTab={filters.tab}
+          emptyLabel={showBuilders ? t('buildersPage.empty') : t('partnersPage.empty')}
+          builders={showBuilders ? catalog.builders : undefined}
+          partners={showBuilders ? undefined : catalog.response.data}
+          page={page}
+          totalPages={totalPages}
+          previousHref={page > 1 ? hrefFor(page - 1) : null}
+          nextHref={page < totalPages ? hrefFor(page + 1) : null}
+          previousLabel={t('pagination.previous')}
+          nextLabel={t('pagination.next')}
+          paginationAriaLabel={t('pagination.ariaLabel')}
+          showPagination={!showBuilders}
+        />
       </main>
       <SiteFooter />
     </div>

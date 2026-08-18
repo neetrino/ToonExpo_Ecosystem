@@ -33,7 +33,6 @@ export const HEADER_SPACER_CLASS = 'h-[calc(4.5rem+env(safe-area-inset-top,0px))
 export type SiteHeaderNavHref =
   | '/apartments'
   | '/projects'
-  | '/builders'
   | '/partners'
   | '/insights'
   | '/mortgage'
@@ -43,7 +42,6 @@ export type SiteHeaderNavHref =
 export type SiteHeaderNavKey =
   | 'buy'
   | 'projects'
-  | 'builders'
   | 'partners'
   | 'marketInsights'
   | 'mortgage'
@@ -56,7 +54,6 @@ export const SITE_HEADER_NAV_HREFS: ReadonlyArray<{
 }> = [
   { href: '/apartments', key: 'buy' },
   { href: '/projects', key: 'projects' },
-  { href: '/builders', key: 'builders' },
   { href: '/partners', key: 'partners' },
   { href: '/insights', key: 'marketInsights' },
   { href: '/mortgage', key: 'mortgage' },
@@ -71,8 +68,13 @@ export const isSiteHeaderNavActive = (pathname: string, href: SiteHeaderNavHref)
   if (href === '/projects') {
     return pathname === '/projects' || pathname.startsWith('/projects/');
   }
-  if (href === '/builders') {
-    return pathname === '/builders' || pathname.startsWith('/builders/');
+  if (href === '/partners') {
+    return (
+      pathname === '/partners' ||
+      pathname.startsWith('/partners/') ||
+      pathname === '/builders' ||
+      pathname.startsWith('/builders/')
+    );
   }
   if (href === '/map') {
     return pathname === '/map' || pathname.startsWith('/map/');

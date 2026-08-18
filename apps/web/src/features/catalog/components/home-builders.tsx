@@ -13,7 +13,7 @@ type HomeBuildersProps = {
 };
 
 /**
- * Home builders strip with link to full builders page.
+ * Home builders strip with link to exhibitors (builders tab).
  */
 export const HomeBuilders = async ({ builders }: HomeBuildersProps) => {
   const t = await getTranslations('HomePage');
@@ -27,7 +27,7 @@ export const HomeBuilders = async ({ builders }: HomeBuildersProps) => {
             title={t('builders.title')}
             action={
               <Link
-                href="/builders"
+                href="/partners?type=builder"
                 className="text-sm font-semibold text-ink transition-colors hover:text-brand"
               >
                 {t('builders.viewAll')}
