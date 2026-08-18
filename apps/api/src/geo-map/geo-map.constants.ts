@@ -24,3 +24,11 @@ export const GEO_MAP_DEFAULT_PITCH_DEG = 90;
 export const GEO_MAP_DEFAULT_ROLL_DEG = 0;
 export const GEO_MAP_DEFAULT_SCALE = 1;
 export const GEO_MAP_DEFAULT_MIN_ZOOM = 14;
+
+/** Nominatim search (admin address fly-to). Usage policy requires a contactable UA. */
+export const GEO_MAP_GEOCODE_NOMINATIM_URL = 'https://nominatim.openstreetmap.org/search';
+export const GEO_MAP_GEOCODE_USER_AGENT = 'ToonExpoAdminGeocoder/1.0';
+export const GEO_MAP_GEOCODE_TIMEOUT_MS = 8_000;
+export const GEO_MAP_GEOCODE_QUERY_MIN_LENGTH = 3;
+export const GEO_MAP_GEOCODE_QUERY_MAX_LENGTH = 200;
+export const GEO_MAP_GEOCODE_COUNTRY_CODES = 'am';

@@ -90,3 +90,14 @@ export type PublicGeoMapModelItem = {
 export type PublicGeoMapModelListResponse = {
   data: PublicGeoMapModelItem[];
 };
+
+/** Admin address lookup used to fly the 3D map camera before placing a GLB. */
+export type GeoMapGeocodeResult = {
+  longitude: number;
+  latitude: number;
+  label: string;
+};
+
+export type GeoMapGeocodeResponse = {
+  data: GeoMapGeocodeResult;
+};

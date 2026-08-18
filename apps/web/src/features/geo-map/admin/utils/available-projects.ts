@@ -4,6 +4,10 @@ export type GeoMapProjectOption = {
   id: string;
   name: string;
   companyName: string;
+  city: string | null;
+  district: string | null;
+  address: string | null;
+  locationText: string | null;
   /** True when another map model already owns this project (`projectId` unique). */
   hasModel: boolean;
 };
@@ -28,6 +32,10 @@ export const buildGeoMapProjectOptions = (
     id: project.id,
     name: project.name,
     companyName: project.companyName,
+    city: project.city,
+    district: project.district,
+    address: project.address,
+    locationText: project.locationText,
     hasModel: taken.has(project.id),
   }));
 };

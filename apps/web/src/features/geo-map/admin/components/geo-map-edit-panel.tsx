@@ -4,19 +4,21 @@ import type { AdminGeoMapModelItem, UpdateGeoMapModelRequest } from '@toonexpo/c
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
+import { GeoMapEditActions } from '@/features/geo-map/admin/components/geo-map-edit-actions';
 import { GeoMapGlbUploader } from '@/features/geo-map/admin/components/geo-map-glb-uploader';
+import { GeoMapSiteAddress } from '@/features/geo-map/admin/components/geo-map-site-address';
 import { GEO_MAP_REPLACE_GLB_INPUT_ID } from '@/features/geo-map/admin/utils/focus-geo-map-file-input';
 import {
   GeoMapTransformFields,
   type GeoMapTransformDraft,
 } from '@/features/geo-map/admin/components/geo-map-transform-fields';
 import type { GeoMapProjectOption } from '@/features/geo-map/admin/utils/available-projects';
+import { formatGeoMapSiteAddress } from '@/features/geo-map/admin/utils/build-geo-map-address-query';
 import type { GeoMapLngLat } from '@/features/geo-map/types';
 import { isValidGeoMapLngLat } from '@/features/geo-map/utils/validate-geo-map-position';
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Select } from '@/shared/ui/select';
-import { Switch } from '@/shared/ui/switch';
 
 /**
  * Map-drag end → sidebar draft sync (token bumps each drag). `id` scopes the
@@ -81,6 +83,8 @@ export const GeoMapEditPanel = ({
   const busy = isSaving || isDeleting || isReplacing || isAttaching;
   const isUnassigned = model.projectId === null;
   const freeProjects = projects.filter((project) => !project.hasModel);
+  const attachedProject = projects.find((project) => project.id === model.projectId) ?? null;
+  const siteAddress = attachedProject ? formatGeoMapSiteAddress(attachedProject) : '';
 
   const commitDraft = (next: GeoMapTransformDraft): void => {
     setDraft(next);
@@ -162,99 +166,95 @@ export const GeoMapEditPanel = ({
   };
 
   return (
-    <section className="space-y-4 border-t border-border pt-4">
-      <div>
-        <h2 className="font-display text-xl text-ink">
-          {model.projectName ?? model.mediaTitle ?? t('list.unassigned')}
-        </h2>
-        <p className="mt-1 text-xs text-ink-muted">{t('edit.subtitle')}</p>
-      </div>
-
-      {isUnassigned ? (
-        <div className="space-y-2 rounded-sm border border-border px-3 py-3">
-          <p className="text-sm font-medium text-ink">{t('edit.attachTitle')}</p>
-          <p className="text-xs text-ink-muted">{t('edit.attachHint')}</p>
-          <FormField id="geo-map-attach-project" label={t('create.project')}>
-            <Select
-              id="geo-map-attach-project"
-              value={attachProjectId}
-              disabled={busy}
-              onChange={(event) => setAttachProjectId(event.target.value)}
-            >
-              <option value="">{t('create.projectPlaceholder')}</option>
-              {freeProjects.map((project) => (
-                <option key={project.id} value={project.id}>
-                  {project.name} · {project.companyName}
-                </option>
-              ))}
-            </Select>
-          </FormField>
-          <Button
-            type="button"
-            size="sm"
-            disabled={busy || !attachProjectId}
-            onClick={() => void handleAttach()}
-          >
-            {isAttaching ? t('edit.attaching') : t('edit.attach')}
-          </Button>
-          {attachError ? (
-            <p role="alert" className="text-sm text-danger">
-              {attachError}
-            </p>
-          ) : null}
+    <section className="flex min-h-0 flex-1 flex-col">
+      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain">
+        <div>
+          <h2 className="font-display text-xl text-ink">
+            {model.projectName ?? model.mediaTitle ?? t('list.unassigned')}
+          </h2>
+          <p className="mt-1 text-xs text-ink-muted">{t('edit.subtitle')}</p>
         </div>
-      ) : (
-        <div className="flex items-center justify-between gap-3">
-          <span className="text-sm font-medium text-ink">{t('form.published')}</span>
-          <Switch
-            checked={model.isPublished}
+
+        <GeoMapSiteAddress address={siteAddress} />
+
+        {isUnassigned ? (
+          <div className="space-y-2 rounded-sm border border-border px-3 py-3">
+            <p className="text-sm font-medium text-ink">{t('edit.attachTitle')}</p>
+            <p className="text-xs text-ink-muted">{t('edit.attachHint')}</p>
+            <FormField id="geo-map-attach-project" label={t('create.project')}>
+              <Select
+                id="geo-map-attach-project"
+                value={attachProjectId}
+                disabled={busy}
+                onChange={(event) => setAttachProjectId(event.target.value)}
+              >
+                <option value="">{t('create.projectPlaceholder')}</option>
+                {freeProjects.map((project) => (
+                  <option key={project.id} value={project.id}>
+                    {project.name} · {project.companyName}
+                  </option>
+                ))}
+              </Select>
+            </FormField>
+            <Button
+              type="button"
+              size="sm"
+              disabled={busy || !attachProjectId}
+              onClick={() => void handleAttach()}
+            >
+              {isAttaching ? t('edit.attaching') : t('edit.attach')}
+            </Button>
+            {attachError ? (
+              <p role="alert" className="text-sm text-danger">
+                {attachError}
+              </p>
+            ) : null}
+          </div>
+        ) : null}
+
+        {isUnassigned ? (
+          <p className="text-xs text-ink-muted">{t('edit.publishRequiresProject')}</p>
+        ) : null}
+
+        <div className="space-y-2">
+          <p className="text-xs text-ink-muted">{t('edit.replaceHint')}</p>
+          <GeoMapGlbUploader
+            browseButtonId="geo-map-replace-glb-browse"
+            fileInputId={GEO_MAP_REPLACE_GLB_INPUT_ID}
             disabled={busy}
-            aria-label={t('form.published')}
-            onCheckedChange={(checked) => {
-              void onPublishChange(checked);
+            onUploaded={(asset) => {
+              void handleReplaceUploaded(asset.id);
             }}
           />
+          {replaceError ? (
+            <p role="alert" className="text-sm text-danger">
+              {replaceError}
+            </p>
+          ) : null}
+          {isReplacing ? <p className="text-xs text-ink-muted">{t('edit.replacing')}</p> : null}
         </div>
-      )}
 
-      {isUnassigned ? (
-        <p className="text-xs text-ink-muted">{t('edit.publishRequiresProject')}</p>
-      ) : null}
+        <GeoMapTransformFields value={draft} onChange={commitDraft} disabled={busy} />
 
-      <div className="space-y-2">
-        <p className="text-xs text-ink-muted">{t('edit.replaceHint')}</p>
-        <GeoMapGlbUploader
-          browseButtonId="geo-map-replace-glb-browse"
-          fileInputId={GEO_MAP_REPLACE_GLB_INPUT_ID}
-          disabled={busy}
-          onUploaded={(asset) => {
-            void handleReplaceUploaded(asset.id);
-          }}
-        />
-        {replaceError ? (
+        {saveError ? (
           <p role="alert" className="text-sm text-danger">
-            {replaceError}
+            {saveError}
           </p>
         ) : null}
-        {isReplacing ? <p className="text-xs text-ink-muted">{t('edit.replacing')}</p> : null}
       </div>
 
-      <GeoMapTransformFields value={draft} onChange={commitDraft} disabled={busy} />
-
-      {saveError ? (
-        <p role="alert" className="text-sm text-danger">
-          {saveError}
-        </p>
-      ) : null}
-
-      <div className="flex flex-wrap gap-2">
-        <Button type="button" size="sm" disabled={busy} onClick={() => void handleSave()}>
-          {isSaving ? t('form.saving') : t('form.save')}
-        </Button>
-        <Button type="button" size="sm" variant="danger" disabled={busy} onClick={onDelete}>
-          {isDeleting ? t('form.deleting') : t('form.delete')}
-        </Button>
-      </div>
+      <GeoMapEditActions
+        busy={busy}
+        canPublish={!isUnassigned}
+        isPublished={model.isPublished}
+        isSaving={isSaving}
+        isDeleting={isDeleting}
+        onSave={() => void handleSave()}
+        onDelete={onDelete}
+        onPublishChange={(next) => {
+          void onPublishChange(next);
+        }}
+      />
     </section>
   );
 };

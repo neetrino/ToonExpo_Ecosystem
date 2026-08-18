@@ -2,7 +2,7 @@
 
 import type { MediaAssetItem } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
-import { useId, useState } from 'react';
+import { useId, useEffect, useRef, useState } from 'react';
 
 import { GEO_MAP_GLB_MAX_BYTES } from '@/features/geo-map/admin/constants';
 import { validateGlbFile } from '@/features/geo-map/admin/utils/validate-glb-file';
@@ -32,8 +32,16 @@ export const GeoMapGlbUploader = ({
 }: GeoMapGlbUploaderProps) => {
   const t = useTranslations('Admin.geoMap.upload');
   const inputId = useId();
+  const rootRef = useRef<HTMLDivElement>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!fileName) {
+      return;
+    }
+    rootRef.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }, [fileName]);
 
   const handleFile = async (file: File): Promise<void> => {
     const code = validateGlbFile(file);
@@ -61,7 +69,7 @@ export const GeoMapGlbUploader = ({
   const maxMb = Math.round(GEO_MAP_GLB_MAX_BYTES / (1024 * 1024));
 
   return (
-    <div className="flex flex-col gap-2">
+    <div ref={rootRef} className="flex flex-col gap-2">
       <span className="text-sm font-medium text-ink">{t('label')}</span>
       <div
         className={cn(

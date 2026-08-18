@@ -18,6 +18,7 @@ import { useDelayedHoverTarget } from '@/features/geo-map/hooks/use-delayed-hove
 import { useGeoMapEmptyClick } from '@/features/geo-map/hooks/use-geo-map-empty-click';
 import { useMapAnchoredScreenPoint } from '@/features/geo-map/hooks/use-map-anchored-screen-point';
 import { useMapFocus } from '@/features/geo-map/hooks/use-map-focus';
+import { useMapViewRequest } from '@/features/geo-map/hooks/use-map-view-request';
 import { useMapViewportState } from '@/features/geo-map/hooks/use-map-viewport-state';
 import { useMaplibreMap } from '@/features/geo-map/hooks/use-maplibre-map';
 import { useMarkerLayer } from '@/features/geo-map/hooks/use-marker-layer';
@@ -70,6 +71,7 @@ export const GeoMapCanvas = ({
   className,
   cameraControlsClassName,
   focusRequest,
+  viewRequest,
   highlightedObjectId = null,
   onObjectClick,
   onObjectHover,
@@ -125,6 +127,7 @@ export const GeoMapCanvas = ({
   const infoPoint = useMapAnchoredScreenPoint(map, isMapLoaded, infoAnchor);
 
   useMapFocus({ map, isMapLoaded, objects, focusRequest });
+  useMapViewRequest({ map, isMapLoaded, viewRequest });
   useModelFootprintMasks({ map, isMapLoaded, modelObjects, adminOsmHideSession });
   useOsmBuildingPick({
     map,
