@@ -4,11 +4,10 @@ import { CATALOG_RESULTS_SCROLL_ID } from '@/features/catalog/constants/catalog-
 type ExhibitorCatalogPaginationProps = {
   page: number;
   totalPages: number;
-  previousHref: string | null;
-  nextHref: string | null;
   previousLabel: string;
   nextLabel: string;
   ariaLabel: string;
+  onPageChange: (page: number) => void;
 };
 
 /**
@@ -17,11 +16,10 @@ type ExhibitorCatalogPaginationProps = {
 export const ExhibitorCatalogPagination = ({
   page,
   totalPages,
-  previousHref,
-  nextHref,
   previousLabel,
   nextLabel,
   ariaLabel,
+  onPageChange,
 }: ExhibitorCatalogPaginationProps) => {
   if (totalPages <= 1) {
     return null;
@@ -32,12 +30,13 @@ export const ExhibitorCatalogPagination = ({
       className="mt-10"
       page={page}
       totalPages={totalPages}
-      previousHref={previousHref}
-      nextHref={nextHref}
+      previousHref={page > 1 ? '#' : null}
+      nextHref={page < totalPages ? '#' : null}
       previousLabel={previousLabel}
       nextLabel={nextLabel}
       ariaLabel={ariaLabel}
       scrollTargetId={CATALOG_RESULTS_SCROLL_ID}
+      onPageChange={onPageChange}
     />
   );
 };

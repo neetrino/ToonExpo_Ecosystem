@@ -7,12 +7,7 @@ import {
   CATALOG_RESULTS_SCROLL_MARGIN_CLASS,
 } from '@/features/catalog/constants/catalog-list';
 import { cn } from '@/shared/ui/cn';
-import {
-  LIST_CARD_DURATION_MS,
-  LIST_CARD_STAGGER_MS,
-  LIST_CONTENT_BASE_DELAY_MS,
-  StaggerGroup,
-} from '@/shared/ui/motion';
+import { LIST_CARD_DURATION_MS, StaggerGroup } from '@/shared/ui/motion';
 
 type ExhibitorCatalogResultsProps = {
   emptyLabel: string;
@@ -45,14 +40,13 @@ export const ExhibitorCatalogResults = ({
 
   return (
     <StaggerGroup
-      force
       id={CATALOG_RESULTS_SCROLL_ID}
       className={cn(
         'mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 [&>*]:h-full [&>*]:min-w-0',
         CATALOG_RESULTS_SCROLL_MARGIN_CLASS,
       )}
-      baseDelayMs={LIST_CONTENT_BASE_DELAY_MS}
-      staggerMs={LIST_CARD_STAGGER_MS}
+      baseDelayMs={0}
+      staggerMs={0}
       durationMs={LIST_CARD_DURATION_MS}
     >
       {builders

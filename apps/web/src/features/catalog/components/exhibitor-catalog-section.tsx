@@ -7,17 +7,18 @@ import type { ExhibitorTab } from '@/features/catalog/constants/exhibitor-tabs';
 
 type ExhibitorCatalogSectionProps = {
   activeTab: ExhibitorTab;
+  visibleTabs: readonly ExhibitorTab[];
   emptyLabel: string;
   builders?: readonly BuilderSummary[] | undefined;
   partners?: readonly PublicPartnerListItem[] | undefined;
   page: number;
   totalPages: number;
-  previousHref: string | null;
-  nextHref: string | null;
   previousLabel: string;
   nextLabel: string;
   paginationAriaLabel: string;
   showPagination: boolean;
+  onSelectTab: (tab: ExhibitorTab) => void;
+  onPageChange: (page: number) => void;
 };
 
 /**
@@ -25,31 +26,37 @@ type ExhibitorCatalogSectionProps = {
  */
 export const ExhibitorCatalogSection = ({
   activeTab,
+  visibleTabs,
   emptyLabel,
   builders,
   partners,
   page,
   totalPages,
-  previousHref,
-  nextHref,
   previousLabel,
   nextLabel,
   paginationAriaLabel,
   showPagination,
+  onSelectTab,
+  onPageChange,
 }: ExhibitorCatalogSectionProps) => {
   return (
     <div className="page-container section-pad pt-8 sm:pt-10">
-      <ExhibitorTypeTabs activeTab={activeTab} />
+      {visibleTabs.length > 1 ? (
+        <ExhibitorTypeTabs
+          activeTab={activeTab}
+          visibleTabs={visibleTabs}
+          onSelectTab={onSelectTab}
+        />
+      ) : null}
       <ExhibitorCatalogResults emptyLabel={emptyLabel} builders={builders} partners={partners} />
       {showPagination ? (
         <ExhibitorCatalogPagination
           page={page}
           totalPages={totalPages}
-          previousHref={previousHref}
-          nextHref={nextHref}
           previousLabel={previousLabel}
           nextLabel={nextLabel}
           ariaLabel={paginationAriaLabel}
+          onPageChange={onPageChange}
         />
       ) : null}
     </div>
