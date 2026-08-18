@@ -183,6 +183,8 @@ export const LocationSearchSelect = ({
                 placeholder={labels.search}
                 aria-label={labels.search}
                 className={HERO_FILTER_SEARCH_INPUT_CLASS}
+                // Chrome iOS injects `__gcruniqueid` before hydrate — false mismatch in `next dev`.
+                suppressHydrationWarning
                 onChange={(event) => setQuery(event.target.value)}
                 onKeyDown={(event) => {
                   if (event.key === 'Enter') {

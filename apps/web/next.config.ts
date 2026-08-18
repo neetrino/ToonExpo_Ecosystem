@@ -1,4 +1,5 @@
 import { config as loadEnv } from 'dotenv';
+import { networkInterfaces } from 'node:os';
 import { resolve } from 'node:path';
 
 import { withSentryConfig } from '@sentry/nextjs';
@@ -84,9 +85,41 @@ const resolveImageRemotePatterns = (): ImageRemotePattern[] => {
   return patterns;
 };
 
+const isPrivateLanIpv4 = (address: string): boolean =>
+  address.startsWith('10.') ||
+  address.startsWith('192.168.') ||
+  /^172\.(1[6-9]|2\d|3[0-1])\./.test(address);
+
 /**
- * LAN hosts for `next dev` on a phone (not DevTools). IP changes with Wi‑Fi —
- * override via `ALLOWED_DEV_ORIGINS=192.168.x.x,other` in `.env.local`.
+ * Current private IPv4 addresses (Wi‑Fi / Ethernet). Used so phone → `IP:3000`
+ * keeps working when DHCP changes the Mac IP.
+ */
+const listLanIpv4Addresses = (): string[] => {
+  const addresses = new Set<string>();
+
+  for (const entries of Object.values(networkInterfaces())) {
+    if (!entries) {
+      continue;
+    }
+
+    for (const entry of entries) {
+      const isIpv4 = entry.family === 'IPv4' || entry.family === 4;
+      if (entry.internal || !isIpv4) {
+        continue;
+      }
+      if (!isPrivateLanIpv4(entry.address)) {
+        continue;
+      }
+      addresses.add(entry.address);
+    }
+  }
+
+  return [...addresses];
+};
+
+/**
+ * LAN hosts for `next dev` on a phone (not DevTools).
+ * Prefer `ALLOWED_DEV_ORIGINS` in `.env.local`; otherwise auto-detect LAN IPs.
  */
 const resolveAllowedDevOrigins = (): string[] => {
   const fromEnv = process.env['ALLOWED_DEV_ORIGINS']
@@ -98,7 +131,7 @@ const resolveAllowedDevOrigins = (): string[] => {
     return fromEnv;
   }
 
-  return ['192.168.15.126'];
+  return listLanIpv4Addresses();
 };
 
 const nextConfig: NextConfig = {

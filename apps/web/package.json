@@ -9,9 +9,10 @@
     "generate:brand-icons": "node scripts/generate-brand-icons.mjs",
     "predev": "pnpm run copy:maplibre-worker",
     "prebuild": "pnpm run copy:maplibre-worker",
-    "dev": "next dev -p 3000",
+    "dev": "next dev -H 0.0.0.0 -p 3000",
     "build": "next build",
-    "start": "next start -p 3000",
+    "start": "next start -H 0.0.0.0 -p 3000",
+
     "lint": "eslint .",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
