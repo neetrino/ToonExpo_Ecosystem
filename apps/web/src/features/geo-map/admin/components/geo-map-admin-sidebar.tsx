@@ -93,33 +93,33 @@ export const GeoMapAdminSidebar = ({
         </div>
       </Reveal>
 
-      <div className="min-h-0 shrink-0 overflow-y-auto border-b border-border pb-4">
-        <GeoMapCreatePanel
-          projects={projects}
-          draft={createDraft}
-          onDraftChange={onCreateDraftChange}
-          onGoToAddress={onGoToAddress}
-          onPlaceAtPreview={onPlaceAtPreview}
-          isCreating={isCreating}
-          isGeocoding={isGeocoding}
-          hasOsmSelection={hasOsmSelection}
-          hasPreviewPin={hasPreviewPin}
-        />
-      </div>
+      <div className="flex min-h-0 flex-1 flex-col overflow-y-auto overscroll-contain">
+        <div className="border-b border-border pb-4">
+          <GeoMapCreatePanel
+            projects={projects}
+            draft={createDraft}
+            onDraftChange={onCreateDraftChange}
+            onGoToAddress={onGoToAddress}
+            onPlaceAtPreview={onPlaceAtPreview}
+            isCreating={isCreating}
+            isGeocoding={isGeocoding}
+            hasOsmSelection={hasOsmSelection}
+            hasPreviewPin={hasPreviewPin}
+          />
+        </div>
 
-      <section className="flex min-h-0 flex-1 flex-col gap-2">
-        <div className="flex shrink-0 items-center justify-between gap-2">
-          <h2 className="text-[11px] uppercase tracking-[0.16em] text-ink-muted">
-            {t('list.title')}
-          </h2>
-          <Button type="button" size="sm" variant="secondary" onClick={onStartCreate}>
-            {t('create.new')}
-          </Button>
-        </div>
-        <div className="min-h-0 flex-1 overflow-y-auto">
+        <section className="flex flex-col gap-2 pt-4">
+          <div className="flex items-center justify-between gap-2">
+            <h2 className="text-[11px] uppercase tracking-[0.16em] text-ink-muted">
+              {t('list.title')}
+            </h2>
+            <Button type="button" size="sm" variant="secondary" onClick={onStartCreate}>
+              {t('create.new')}
+            </Button>
+          </div>
           <GeoMapModelList models={models} selectedId={selectedId} onSelect={onSelect} />
-        </div>
-      </section>
+        </section>
+      </div>
 
       {selectedModel ? (
         <div className="min-h-0 max-h-[50%] shrink-0 overflow-y-auto border-t border-border pt-3">
