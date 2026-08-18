@@ -15,9 +15,11 @@ export const ApartmentAboutSection = ({
   const body = description?.trim();
 
   return (
-    <section className="py-10">
+    <section className="min-w-0 py-10">
       <h2 className="mb-4 font-brand text-2xl font-bold tracking-tight text-ink-navy">{title}</h2>
-      <p className="text-base leading-relaxed text-ink-navy/80">{body || emptyLabel}</p>
+      <p className="min-w-0 break-words text-base leading-relaxed whitespace-pre-line text-ink-navy/80">
+        {body || emptyLabel}
+      </p>
     </section>
   );
 };

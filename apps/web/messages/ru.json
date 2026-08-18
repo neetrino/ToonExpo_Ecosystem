@@ -13,7 +13,8 @@
       "panelLabel": "Фильтры поиска",
       "removeChip": "Убрать фильтр {label}",
       "searchPlaceholder": "Поиск…",
-      "searchLabel": "Поиск"
+      "searchLabel": "Поиск",
+      "noMatches": "Нет совпадений"
     },
     "viewMode": {
       "label": "Вид",
@@ -856,6 +857,8 @@
         "email": "Эл. почта",
         "contactPerson": "Контактное лицо",
         "projectCount": "Проекты",
+        "statRegion": "Регион",
+        "statAddress": "Адрес",
         "linkWebsite": "Сайт",
         "linkInstagram": "Instagram",
         "linkFacebook": "Facebook",
@@ -897,14 +900,27 @@
       "openProfile": "Смотреть профиль"
     },
     "partnersPage": {
-      "title": "Партнёры и участники",
-      "subtitle": "{count, plural, =0 {Нет партнёров} one {# партнёр} few {# партнёра} many {# партнёров} other {# партнёра}}",
-      "empty": "Опубликованных партнёров пока нет.",
+      "title": "Экспоненты",
+      "subtitle": "{count, plural, =0 {Нет экспонентов} one {# экспонент} few {# экспонента} many {# экспонентов} other {# экспонента}}",
+      "empty": "В этой категории пока нет опубликованных экспонентов.",
       "notFoundTitle": "Партнёр не найден",
       "metaFallback": "Профиль {name}",
       "meta": {
-        "title": "Партнёры — ToonExpo",
-        "description": "Банки, спонсоры, поставщики и сервисные партнёры на ToonExpo."
+        "title": "Экспоненты — ToonExpo",
+        "description": "Застройщики, банки, IT-компании и другие экспоненты на ToonExpo."
+      },
+      "tabs": {
+        "ariaLabel": "Тип экспонента",
+        "builder": "Застройщики",
+        "bank": "Банки",
+        "it_company": "IT-компании",
+        "sponsor": "Спонсоры",
+        "supplier": "Поставщики",
+        "insurance": "Страхование",
+        "legal": "Юридические услуги",
+        "design_furniture": "Дизайн и мебель",
+        "service_company": "Сервисные компании",
+        "other": "Другое"
       },
       "filters": {
         "type": "Тип партнёра",
@@ -1859,6 +1875,8 @@
       "filters": {
         "company": "Компания",
         "allCompanies": "Все компании",
+        "builder": "Застройщик",
+        "allBuilders": "Все застройщики",
         "building": "Здание",
         "allBuildings": "Все здания",
         "searchPlaceholder": "Поиск по проекту, компании или городу"

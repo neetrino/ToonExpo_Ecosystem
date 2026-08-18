@@ -46,6 +46,7 @@ export const StaggerGroup = ({
         return (
           <Reveal
             key={child.key ?? index}
+            className="h-full min-w-0 [&>*]:h-full"
             delayMs={baseDelayMs + cappedIndex * staggerMs}
             force={force}
             {...(durationMs != null ? { durationMs } : {})}

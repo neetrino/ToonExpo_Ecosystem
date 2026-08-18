@@ -161,7 +161,7 @@ export const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(functio
         className={cn(
           'flex h-11 w-full min-w-0 items-center justify-between gap-2 px-4 text-left',
           'rounded-sm border border-border bg-surface-elevated',
-          'text-base text-ink sm:text-sm',
+          'text-base text-ink lg:text-sm',
           'transition-[border-color,box-shadow,background-color] duration-[var(--duration-fast)]',
           'hover:border-border-strong',
           'focus-visible:border-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/20',

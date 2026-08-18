@@ -1,30 +1,10 @@
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 
-import {
-  listPublicPartnerFacets,
-  listPublicPartners,
-} from '@/features/catalog/api/partners-api';
-import { PartnerCard } from '@/features/catalog/components/partner-card';
-import { PartnerFiltersForm } from '@/features/catalog/components/partner-filters-form';
-import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
-import { PartnersPageHero } from '@/features/catalog/components/partners-page-hero';
+import { ExhibitorCatalogBrowser } from '@/features/catalog/components/exhibitor-catalog-browser';
 import { SiteFooter } from '@/features/catalog/components/site-footer';
-import {
-  CATALOG_RESULTS_SCROLL_ID,
-  CATALOG_RESULTS_SCROLL_MARGIN_CLASS,
-} from '@/features/catalog/constants/catalog-list';
-import {
-  buildPartnerSearchParams,
-  parsePartnerFilters,
-} from '@/features/catalog/utils/partner-filters';
-import { cn } from '@/shared/ui/cn';
-import {
-  LIST_CARD_DURATION_MS,
-  LIST_CARD_STAGGER_MS,
-  LIST_CONTENT_BASE_DELAY_MS,
-  StaggerGroup,
-} from '@/shared/ui/motion';
+import { loadExhibitorPage } from '@/features/catalog/utils/load-exhibitor-page';
+import { parsePartnerFilters } from '@/features/catalog/utils/partner-filters';
 
 type PartnersPageProps = {
   params: Promise<{ locale: string }>;
@@ -45,83 +25,18 @@ export default async function PartnersPage({ params, searchParams }: PartnersPag
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const t = await getTranslations('Catalog');
-  const rawParams = await searchParams;
-  const filters = parsePartnerFilters(rawParams);
-
-  const [response, facets] = await Promise.all([
-    listPublicPartners(
-      {
-        page: filters.page,
-        ...(filters.types.length > 0 ? { types: filters.types } : {}),
-      },
-      { locale },
-    ),
-    listPublicPartnerFacets(),
-  ]);
-
-  const buildHref = (page: number): string => {
-    const query = new URLSearchParams(buildPartnerSearchParams(filters, page)).toString();
-    return query.length > 0 ? `/partners?${query}` : '/partners';
-  };
+  const requested = parsePartnerFilters(await searchParams);
+  const { filters, catalog, visibleTabs } = await loadExhibitorPage(requested, locale);
 
   return (
     <div className="min-h-screen bg-canvas">
       <main>
-        <PartnersPageHero
-          title={t('partnersPage.title')}
-          description={t('partnersPage.subtitle', { count: response.meta.total })}
+        <ExhibitorCatalogBrowser
+          locale={locale}
+          initialFilters={filters}
+          initialCatalog={catalog}
+          visibleTabs={visibleTabs}
         />
-
-        <div className="page-container section-pad pt-8 sm:pt-10">
-          <PartnerFiltersForm filters={filters} availableTypes={facets.types} />
-
-          {response.data.length === 0 ? (
-            <p
-              id={CATALOG_RESULTS_SCROLL_ID}
-              className={cn(
-                'mt-10 rounded-[20px] border border-dashed border-header-border bg-surface-elevated px-6 py-12 text-center text-sm text-header-muted',
-                CATALOG_RESULTS_SCROLL_MARGIN_CLASS,
-              )}
-            >
-              {t('partnersPage.empty')}
-            </p>
-          ) : (
-            <StaggerGroup
-              force
-              id={CATALOG_RESULTS_SCROLL_ID}
-              className={cn(
-                'mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 [&>*]:h-full [&>*]:min-w-0',
-                CATALOG_RESULTS_SCROLL_MARGIN_CLASS,
-              )}
-              baseDelayMs={LIST_CONTENT_BASE_DELAY_MS}
-              staggerMs={LIST_CARD_STAGGER_MS}
-              durationMs={LIST_CARD_DURATION_MS}
-            >
-              {response.data.map((partner) => (
-                <PartnerCard key={partner.id} partner={partner} />
-              ))}
-            </StaggerGroup>
-          )}
-
-          <CatalogPagination
-            className="mt-10"
-            page={response.meta.page}
-            totalPages={response.meta.totalPages}
-            previousHref={
-              response.meta.page > 1 ? buildHref(response.meta.page - 1) : null
-            }
-            nextHref={
-              response.meta.page < response.meta.totalPages
-                ? buildHref(response.meta.page + 1)
-                : null
-            }
-            previousLabel={t('pagination.previous')}
-            nextLabel={t('pagination.next')}
-            ariaLabel={t('pagination.ariaLabel')}
-            scrollTargetId={CATALOG_RESULTS_SCROLL_ID}
-          />
-        </div>
       </main>
       <SiteFooter />
     </div>

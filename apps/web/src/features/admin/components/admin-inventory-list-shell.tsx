@@ -137,8 +137,9 @@ export const AdminInventoryListShell = ({
     const configs: IntegratedSearchFilterConfig[] = [
       {
         key: ADMIN_INVENTORY_FILTER_COMPANY_KEY,
-        label: t('filters.company'),
-        allOptionLabel: t('filters.allCompanies'),
+        label: t('filters.builder'),
+        allOptionLabel: t('filters.allBuilders'),
+        searchable: true,
         options: builderCompanies.map((company) => ({
           value: company.id,
           label: company.name,
@@ -150,6 +151,7 @@ export const AdminInventoryListShell = ({
         key: ADMIN_INVENTORY_FILTER_BUILDING_KEY,
         label: t('filters.building'),
         allOptionLabel: t('filters.allBuildings'),
+        searchable: true,
         options: buildingOptions.map((building) => ({
           value: building.id,
           label: `${building.name} · ${building.projectName}`,

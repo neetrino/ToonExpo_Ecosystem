@@ -27,6 +27,7 @@ import {
   PILL_TOP_OFFSET_CLASS,
   resolveHeaderPillLayout,
   SCROLL_PILL_THRESHOLD_PX,
+  SITE_HEADER_MOBILE_NAV_HREFS,
   SITE_HEADER_NAV_HREFS,
 } from '@/shared/ui/site-header.constants';
 import { SiteHeaderMobileNav } from '@/shared/ui/site-header-mobile-nav';
@@ -279,7 +280,7 @@ export const SiteHeader = ({ className, variant = 'solid' }: SiteHeaderProps) =>
           {menuRendered ? (
             <div className={cn('absolute top-full z-10 mt-2 lg:hidden', edgeInsetClass)}>
               <SiteHeaderMobileNav
-                navItems={SITE_HEADER_NAV_HREFS}
+                navItems={SITE_HEADER_MOBILE_NAV_HREFS}
                 pathname={pathname}
                 onClose={() => setMenuOpen(false)}
                 isNavActive={isSiteHeaderNavActive}

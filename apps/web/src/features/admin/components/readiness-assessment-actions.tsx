@@ -87,7 +87,7 @@ export const ReadinessAssessmentActions = ({
           <FormField id="assessment-status" label={t("status")}>
             <select
               id="assessment-status"
-              className="h-10 w-full rounded-sm border border-border bg-background px-3 text-sm text-ink"
+              className="h-10 w-full rounded-sm border border-border bg-background px-3 text-base text-ink lg:text-sm"
               value={status}
               disabled={mutation.isPending}
               onChange={(event) => {

@@ -176,42 +176,68 @@ export const ApartmentDetailView = async ({
             {locationLine ?? `${apartment.building.name} · ${title}`}
           </p>
 
-          <div className="mt-8 flex flex-wrap items-start justify-between gap-y-4 border-y border-header-border py-6">
-            <StatBlock label={t('apartment.priceLabel')}>
-              <ApartmentDetailPrice
-                apartmentId={apartment.id}
-                amount={apartment.price}
-                currency={apartment.priceCurrency}
-                priceVisibility={apartment.priceVisibility}
-                className="whitespace-nowrap text-[1.875rem] leading-[1.25]"
-              />
-            </StatBlock>
-            <StatBlock label={t('apartment.bedsLabel')}>
-              <p className="font-brand text-2xl font-bold text-ink-navy">
-                {apartment.bedrooms ?? EMPTY_VALUE}
-              </p>
-            </StatBlock>
-            <StatBlock label={t('apartment.bathsLabel')}>
-              <p className="font-brand text-2xl font-bold text-ink-navy">
-                {apartment.bathrooms ?? EMPTY_VALUE}
-              </p>
-            </StatBlock>
-            <StatBlock label={t('apartment.areaLabel')}>
-              <p className="font-brand text-2xl font-bold text-ink-navy">
-                {apartment.areaTotal != null
-                  ? t('apartment.area', { area: apartment.areaTotal })
-                  : EMPTY_VALUE}
-              </p>
-            </StatBlock>
-            <StatBlock label={t('apartment.pricePerAreaLabel')}>
-              <ApartmentPricePerArea
-                apartmentId={apartment.id}
-                amount={apartment.price}
-                currency={apartment.priceCurrency}
-                priceVisibility={apartment.priceVisibility}
-                areaTotal={apartment.areaTotal}
-              />
-            </StatBlock>
+          <div
+            className={cn(
+              'mx-auto mt-8 w-full max-w-md border-y border-header-border py-6',
+              'md:mx-0 md:flex md:max-w-none md:flex-wrap md:items-start md:justify-between md:gap-y-4',
+            )}
+          >
+            <div className="grid w-full grid-cols-6 gap-x-3 gap-y-5 md:contents">
+              <StatBlock
+                label={t('apartment.priceLabel')}
+                className="col-span-3 min-w-0 items-center text-center md:shrink"
+              >
+                <ApartmentDetailPrice
+                  apartmentId={apartment.id}
+                  amount={apartment.price}
+                  currency={apartment.priceCurrency}
+                  priceVisibility={apartment.priceVisibility}
+                  className={cn(
+                    'text-[clamp(1.25rem,4.5vw,1.875rem)] leading-[1.25]',
+                    'break-words md:whitespace-nowrap',
+                  )}
+                />
+              </StatBlock>
+              <StatBlock
+                label={t('apartment.pricePerAreaLabel')}
+                className="col-span-3 min-w-0 items-center text-center md:order-5 md:shrink-0"
+              >
+                <ApartmentPricePerArea
+                  apartmentId={apartment.id}
+                  amount={apartment.price}
+                  currency={apartment.priceCurrency}
+                  priceVisibility={apartment.priceVisibility}
+                  areaTotal={apartment.areaTotal}
+                  className="text-[clamp(1.125rem,4vw,1.5rem)] md:text-2xl"
+                />
+              </StatBlock>
+              <StatBlock
+                label={t('apartment.bedsLabel')}
+                className="col-span-2 min-w-0 -translate-x-[15px] items-center text-center md:order-2 md:translate-x-0"
+              >
+                <p className="font-brand text-2xl font-bold text-ink-navy">
+                  {apartment.bedrooms ?? EMPTY_VALUE}
+                </p>
+              </StatBlock>
+              <StatBlock
+                label={t('apartment.bathsLabel')}
+                className="col-span-2 min-w-0 -translate-x-[15px] items-center text-center md:order-3 md:translate-x-0"
+              >
+                <p className="font-brand text-2xl font-bold text-ink-navy">
+                  {apartment.bathrooms ?? EMPTY_VALUE}
+                </p>
+              </StatBlock>
+              <StatBlock
+                label={t('apartment.areaLabel')}
+                className="col-span-2 min-w-0 -translate-x-[15px] items-center text-center md:order-4 md:translate-x-0"
+              >
+                <p className="font-brand text-2xl font-bold text-ink-navy">
+                  {apartment.areaTotal != null
+                    ? t('apartment.area', { area: apartment.areaTotal })
+                    : EMPTY_VALUE}
+                </p>
+              </StatBlock>
+            </div>
           </div>
 
           <ApartmentAboutSection
@@ -271,9 +297,17 @@ export const ApartmentDetailView = async ({
   );
 };
 
-const StatBlock = ({ label, children }: { label: string; children: ReactNode }) => (
-  <div className="flex shrink-0 flex-col items-center text-center">
+const StatBlock = ({
+  label,
+  children,
+  className,
+}: {
+  label: string;
+  children: ReactNode;
+  className?: string | undefined;
+}) => (
+  <div className={cn('flex shrink-0 flex-col items-center text-center', className)}>
     <p className="text-[10px] font-bold tracking-widest text-header-muted uppercase">{label}</p>
-    <div className="mt-1">{children}</div>
+    <div className="mt-1 min-w-0">{children}</div>
   </div>
 );

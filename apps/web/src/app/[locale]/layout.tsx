@@ -1,4 +1,4 @@
-import type { Metadata, Viewport } from 'next';
+import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { Manrope, Noto_Sans, Noto_Sans_Armenian, Outfit } from 'next/font/google';
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
@@ -10,7 +10,10 @@ import { resolveSiteUrl } from '@/shared/config/site-url';
 import { QueryProvider } from '@/shared/providers/query-provider';
 import { PublicChrome } from '@/shared/ui/public-chrome';
 
+import { viewport } from './viewport';
 import './globals.css';
+
+export { viewport };
 
 /**
  * Refined UI face for Latin + Cyrillic. Armenian glyphs come from Noto Sans Armenian.
@@ -53,10 +56,6 @@ type LocaleLayoutProps = {
 const SITE_NAME = 'TOONEXPO';
 const SITE_DESCRIPTION =
   'The marketplace for verified homes, new developments, and partner bank offers.';
-
-export const viewport: Viewport = {
-  themeColor: '#092B44',
-};
 
 export const generateMetadata = async ({
   params,

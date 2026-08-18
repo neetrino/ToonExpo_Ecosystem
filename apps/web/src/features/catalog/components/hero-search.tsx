@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useState, type FormEvent } from 'react';
 
 import { HeroKeywordSearch } from '@/features/catalog/components/hero-keyword-search';
+import { HomeHeroSearchGapNav } from '@/features/catalog/components/home-hero-nav-buttons';
 import { LocationSearchSelect } from '@/features/catalog/components/location-search-select';
 import { PriceRangeSelect } from '@/features/catalog/components/price-range-select';
 import { mergeLocationOptions } from '@/features/catalog/utils/location-options';
@@ -98,23 +99,26 @@ export const HeroSearch = ({ className, locations = [], projects = [] }: HeroSea
             'lg:grid-cols-[minmax(12rem,1fr)_minmax(11rem,14rem)_minmax(10rem,12rem)_minmax(7rem,9rem)_auto]',
           )}
         >
-          <HeroKeywordSearch value={q} projects={projects} onChange={setQ} />
+          <div className="relative flex flex-col gap-2 lg:contents">
+            <HeroKeywordSearch value={q} projects={projects} onChange={setQ} />
+            <HomeHeroSearchGapNav />
 
-          <LocationSearchSelect
-            className="lg:border-l lg:border-header-border lg:px-3 lg:py-2"
-            values={locationsSelected}
-            options={locationOptions}
-            fieldLabel={t('locationLabel')}
-            aria-label={t('locationLabel')}
-            labels={{
-              any: t('locationAny'),
-              placeholder: t('locationPlaceholder'),
-              search: t('locationSearch'),
-              empty: t('locationEmpty'),
-              selectedCount: (count) => t('locationSelectedCount', { count }),
-            }}
-            onChange={setLocationsSelected}
-          />
+            <LocationSearchSelect
+              className="lg:border-l lg:border-header-border lg:px-3 lg:py-2"
+              values={locationsSelected}
+              options={locationOptions}
+              fieldLabel={t('locationLabel')}
+              aria-label={t('locationLabel')}
+              labels={{
+                any: t('locationAny'),
+                placeholder: t('locationPlaceholder'),
+                search: t('locationSearch'),
+                empty: t('locationEmpty'),
+                selectedCount: (count) => t('locationSelectedCount', { count }),
+              }}
+              onChange={setLocationsSelected}
+            />
+          </div>
 
           <PriceRangeSelect
             className="lg:border-l lg:border-header-border lg:px-3 lg:py-2"

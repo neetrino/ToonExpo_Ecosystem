@@ -1,7 +1,7 @@
 'use client';
 
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { useEffect, type ReactNode } from 'react';
+import { useEffect, type MouseEvent, type ReactNode } from 'react';
 
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
@@ -23,6 +23,8 @@ type PaginationProps = {
    * Skips the default jump to the document top.
    */
   scrollTargetId?: string | undefined;
+  /** Client-side page change — skips a full App Router navigation. */
+  onPageChange?: ((page: number) => void) | undefined;
 };
 
 const NAV_CONTROL_CLASS =
@@ -44,9 +46,33 @@ type PaginationControlProps = {
   side: 'previous' | 'next';
   /** When true, Next.js will not scroll to the document top. */
   preserveScroll: boolean;
+  targetPage: number;
+  onPageChange?: ((page: number) => void) | undefined;
 };
 
-const PaginationControl = ({ href, label, side, preserveScroll }: PaginationControlProps) => {
+const handlePageClick = (
+  event: MouseEvent<HTMLAnchorElement>,
+  targetPage: number,
+  onPageChange: ((page: number) => void) | undefined,
+): void => {
+  if (onPageChange == null) {
+    return;
+  }
+  if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) {
+    return;
+  }
+  event.preventDefault();
+  onPageChange(targetPage);
+};
+
+const PaginationControl = ({
+  href,
+  label,
+  side,
+  preserveScroll,
+  targetPage,
+  onPageChange,
+}: PaginationControlProps) => {
   const icon =
     side === 'previous' ? (
       <ChevronLeft className="size-4 shrink-0" aria-hidden strokeWidth={2.25} />
@@ -71,6 +97,7 @@ const PaginationControl = ({ href, label, side, preserveScroll }: PaginationCont
       <Link
         href={href}
         scroll={!preserveScroll}
+        onClick={(event) => handlePageClick(event, targetPage, onPageChange)}
         className={cn(
           NAV_CONTROL_CLASS,
           'text-ink transition-[color,background-color,box-shadow,transform]',
@@ -109,6 +136,7 @@ export const CatalogPagination = ({
   ariaLabel,
   className,
   scrollTargetId,
+  onPageChange,
 }: PaginationProps) => {
   const preserveScroll = Boolean(scrollTargetId);
 
@@ -149,6 +177,8 @@ export const CatalogPagination = ({
             label={previousLabel}
             side="previous"
             preserveScroll={preserveScroll}
+            targetPage={page - 1}
+            onPageChange={onPageChange}
           />
 
           <p
@@ -170,6 +200,8 @@ export const CatalogPagination = ({
             label={nextLabel}
             side="next"
             preserveScroll={preserveScroll}
+            targetPage={page + 1}
+            onPageChange={onPageChange}
           />
         </div>
       </nav>

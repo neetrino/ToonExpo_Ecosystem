@@ -9,6 +9,8 @@ export type IntegratedSearchFilterConfig = {
   options: readonly IntegratedSearchFilterOption[];
   /** Label for the empty / “all” baseline option. */
   allOptionLabel: string;
+  /** Combobox: type in the field to filter options. */
+  searchable?: boolean | undefined;
 };
 
 export type ActiveIntegratedFilterChip = {

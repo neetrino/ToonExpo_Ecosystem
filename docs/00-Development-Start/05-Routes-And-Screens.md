@@ -19,6 +19,8 @@ All routes below are Next.js frontend routes only. Product API endpoints are sep
 /map
 ```
 
+`/builders` redirects to `/partners?type=builder` (Exhibitors, Builders tab). Builder detail stays at `/builders/:builderId`.
+
 ## Buyer Routes
 
 ```text

@@ -54,20 +54,25 @@ export const BuilderMobileStack = ({
   const hubFirstTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const sheetScrollRef = useRef<HTMLDivElement | null>(null);
 
+  const clearExitTimer = useCallback((): void => {
+    if (exitTimerRef.current !== null) {
+      clearTimeout(exitTimerRef.current);
+      exitTimerRef.current = null;
+    }
+  }, []);
+
   useEffect(() => {
     setMounted(true);
   }, []);
 
   useEffect(() => {
     return () => {
-      if (exitTimerRef.current !== null) {
-        clearTimeout(exitTimerRef.current);
-      }
+      clearExitTimer();
       if (hubFirstTimerRef.current !== null) {
         clearTimeout(hubFirstTimerRef.current);
       }
     };
-  }, []);
+  }, [clearExitTimer]);
 
   useEffect(() => {
     if (!mounted) {
@@ -82,14 +87,21 @@ export const BuilderMobileStack = ({
     if (exitingRef.current) {
       if (isHub) {
         exitingRef.current = false;
+        clearExitTimer();
+        setAnim('in');
         setSheetOpen(false);
         sawHubRef.current = true;
         scrollWindowToTop();
+        return;
       }
-      return;
+
+      exitingRef.current = false;
+      clearExitTimer();
     }
 
     if (isHub) {
+      clearExitTimer();
+      setAnim('in');
       setSheetOpen(false);
       sawHubRef.current = true;
       scrollWindowToTop();
@@ -119,7 +131,7 @@ export const BuilderMobileStack = ({
       openSheet();
       hubFirstTimerRef.current = null;
     }, HUB_FIRST_PAINT_MS);
-  }, [isHub, mounted, pathname]);
+  }, [clearExitTimer, isHub, mounted, pathname]);
 
   useEffect(() => {
     if (!sheetOpen) {
@@ -143,18 +155,21 @@ export const BuilderMobileStack = ({
     }
 
     setAnim('out');
+    clearExitTimer();
     exitTimerRef.current = setTimeout(() => {
+      exitTimerRef.current = null;
       router.replace(BUILDER_HUB_HREF);
     }, ACCOUNT_PAGE_PUSH_MS);
-  }, [isHub, router, sheetOpen]);
+  }, [clearExitTimer, isHub, router, sheetOpen]);
 
   const dismissFromSwipe = useCallback((): void => {
     if (exitingRef.current || isHub || !sheetOpen) {
       return;
     }
     exitingRef.current = true;
+    clearExitTimer();
     router.replace(BUILDER_HUB_HREF);
-  }, [isHub, router, sheetOpen]);
+  }, [clearExitTimer, isHub, router, sheetOpen]);
 
   const showOverlay = mounted && !isHub && sheetOpen;
   const { isInteracting, sheetStyle } = useAccountSheetEdgeSwipe({
@@ -178,6 +193,7 @@ export const BuilderMobileStack = ({
             'max-md:fixed max-md:inset-0 max-md:z-[var(--z-overlay)]',
             'max-md:overflow-x-clip max-md:overflow-y-auto max-md:bg-canvas',
             'max-md:account-sheet-scrollbar max-md:touch-pan-y',
+            anim === 'out' && 'max-md:pointer-events-none',
             !isInteracting && (anim === 'out' ? 'account-page-push-out' : 'account-page-push-in'),
           ],
         )}

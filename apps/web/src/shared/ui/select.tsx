@@ -12,6 +12,7 @@ import {
   type SelectHTMLAttributes,
 } from 'react';
 
+import { FORM_CONTROL_TEXT_CLASS } from '@/shared/ui/form-control-text';
 import { ListboxSelect, type ListboxOption } from '@/shared/ui/listbox-select';
 
 export type SelectProps = Omit<SelectHTMLAttributes<HTMLSelectElement>, 'children' | 'size'> & {
@@ -22,7 +23,7 @@ export type SelectProps = Omit<SelectHTMLAttributes<HTMLSelectElement>, 'childre
 
 /** Shared field chrome for legacy native selects (pairs with `.select-field` in CSS). */
 export const selectFieldClassName =
-  'select-field site-select-native h-11 w-full px-4 pr-10 text-base text-ink sm:text-sm';
+  `select-field site-select-native h-11 w-full px-4 pr-10 ${FORM_CONTROL_TEXT_CLASS} text-ink`;
 
 type OptionElementProps = {
   value?: string | number | readonly string[] | undefined;

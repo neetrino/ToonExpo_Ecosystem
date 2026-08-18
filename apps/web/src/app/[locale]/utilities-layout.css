@@ -3,12 +3,16 @@
     animation: page-enter var(--duration-base) var(--ease-out-premium) both;
   }
 
+  /**
+   * Push-in must not use `both`/`forwards` — after close, Safari can keep the
+   * final push-out translate and block reopening on the next visit.
+   */
   .account-page-push-in {
-    animation: account-page-push-in var(--duration-slow) var(--ease-out-premium) both;
+    animation: account-page-push-in var(--duration-slow) var(--ease-out-premium);
   }
 
   .account-page-push-out {
-    animation: account-page-push-out var(--duration-slow) var(--ease-out-premium) both;
+    animation: account-page-push-out var(--duration-slow) var(--ease-out-premium) forwards;
   }
 
   @media (min-width: 768px) {

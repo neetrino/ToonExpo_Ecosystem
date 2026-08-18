@@ -75,9 +75,14 @@ const BuyerFavoritesGrid = ({ items }: { items: FavoriteListItem[] }) => {
 
   return (
     <FavoritesStatusProvider targets={targets}>
-      <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 [&>*]:h-full [&>*]:min-w-0">
         {items.map((item, index) => (
-          <Reveal key={item.id} delayMs={Math.min(index, 8) * 40} as="li">
+          <Reveal
+            key={item.id}
+            className="h-full min-w-0 [&>*]:h-full"
+            delayMs={Math.min(index, 8) * 40}
+            as="li"
+          >
             {item.targetType === 'project' ? (
               <ProjectCard project={item.project} showFavorite />
             ) : (

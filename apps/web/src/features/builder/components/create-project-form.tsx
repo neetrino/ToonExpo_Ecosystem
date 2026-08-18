@@ -121,7 +121,7 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
                 id={`short-${locale}`}
                 rows={2}
                 placeholder={getProjectFormPlaceholder(locale, 'shortDescription')}
-                className="w-full rounded-sm border border-border bg-background px-4 py-3 text-sm text-ink focus-visible:border-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/20"
+                className="w-full rounded-sm border border-border bg-background px-4 py-3 text-base text-ink lg:text-sm focus-visible:border-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/20"
                 {...register(
                   locale === 'hy'
                     ? 'shortDescriptionHy'
@@ -136,7 +136,7 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
                 id={`full-${locale}`}
                 rows={4}
                 placeholder={getProjectFormPlaceholder(locale, 'fullDescription')}
-                className="w-full rounded-sm border border-border bg-background px-4 py-3 text-sm text-ink focus-visible:border-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/20"
+                className="w-full rounded-sm border border-border bg-background px-4 py-3 text-base text-ink lg:text-sm focus-visible:border-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/20"
                 {...register(
                   locale === 'hy'
                     ? 'fullDescriptionHy'

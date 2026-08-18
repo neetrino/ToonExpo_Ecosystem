@@ -31,7 +31,7 @@ export class BuildersService {
         type: CompanyType.builder,
         status: CompanyStatus.active,
       },
-      orderBy: { name: 'asc' },
+      orderBy: { createdAt: 'desc' },
       include: {
         logoMedia: true,
         coverMedia: true,
@@ -84,7 +84,7 @@ export class BuildersService {
         builderCompanyId: builder.id,
         publicationStatus: PublicationStatus.published,
       },
-      orderBy: [{ name: 'asc' }],
+      orderBy: [{ createdAt: 'desc' }],
       include: {
         builderCompany: { include: { logoMedia: true } },
         coverMedia: true,

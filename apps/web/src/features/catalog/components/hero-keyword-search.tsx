@@ -153,8 +153,10 @@ export const HeroKeywordSearch = ({
             aria-activedescendant={activeOptionId}
             autoComplete="off"
             maxLength={100}
+            // Chrome iOS injects `__gcruniqueid` before hydrate — false mismatch in `next dev`.
+            suppressHydrationWarning
             className={cn(
-              'w-full min-w-0 bg-transparent py-0.5 pl-6 text-sm font-semibold text-ink-navy',
+              'w-full min-w-0 bg-transparent py-0.5 pl-6 text-base font-semibold text-ink-navy lg:text-sm',
               'placeholder:font-medium placeholder:text-ink-muted',
               'outline-none lg:font-medium',
               'focus-visible:outline-none',

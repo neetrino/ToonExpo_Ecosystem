@@ -31,7 +31,7 @@ export const generateMetadata = async ({ params }: BuilderDetailPageProps): Prom
 };
 
 /**
- * Public builder detail — partner-style hero with logo as media.
+ * Public builder detail — project-style cover with overlapping summary card.
  */
 export default async function BuilderDetailPage({ params }: BuilderDetailPageProps) {
   const { locale, id } = await params;

@@ -6,6 +6,7 @@ import { useEffect, useId, useRef, useState } from 'react';
 import { HeroFilterTrigger } from '@/features/catalog/components/hero-filter-trigger';
 import { blurActiveElementAfterEscClose } from '@/shared/ui/blur-active-element';
 import { cn } from '@/shared/ui/cn';
+import { FORM_CONTROL_TEXT_CLASS } from '@/shared/ui/form-control-text';
 import { isInsideDropdownSurface } from '@/shared/ui/dropdown-surface';
 import { MultiListboxMenu } from '@/shared/ui/multi-listbox-menu';
 import type { MultiListboxSelectProps } from '@/shared/ui/multi-listbox-select.types';
@@ -120,7 +121,7 @@ export const MultiListboxSelect = ({
             <span
               className={cn(
                 'flex items-center justify-between gap-2 whitespace-nowrap',
-                isField ? 'px-4 text-base sm:text-sm' : 'text-sm font-medium',
+                isField ? cn('px-4', FORM_CONTROL_TEXT_CLASS, className) : 'text-sm font-medium',
               )}
             >
               <span>{allLabel}</span>
@@ -132,7 +133,7 @@ export const MultiListboxSelect = ({
               <span
                 className={cn(
                   'flex items-center justify-between gap-2 whitespace-nowrap',
-                  isField ? 'px-4 text-base sm:text-sm' : 'text-sm font-medium',
+                  isField ? cn('px-4', FORM_CONTROL_TEXT_CLASS, className) : 'text-sm font-medium',
                 )}
               >
                 <span>{option.label}</span>
@@ -182,7 +183,8 @@ export const MultiListboxSelect = ({
             isField
               ? cn(
                   'h-11 rounded-sm border border-border bg-surface-elevated px-4',
-                  'text-base text-ink sm:text-sm',
+                  FORM_CONTROL_TEXT_CLASS,
+                  'text-ink',
                   'transition-[border-color,box-shadow,background-color] duration-[var(--duration-fast)]',
                   'hover:border-border-strong focus-visible:border-brand focus-visible:ring-brand/20',
                   className,

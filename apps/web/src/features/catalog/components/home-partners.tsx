@@ -2,7 +2,9 @@ import type { PublicPartnerListItem } from '@toonexpo/contracts';
 import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
 
+import { CATALOG_CARD_CELL_FILL_CLASS } from '@/features/catalog/constants/catalog-list';
 import { Link } from '@/i18n/navigation';
+import { cn } from '@/shared/ui/cn';
 import { EmptyState } from '@/shared/ui/empty-state';
 import { Reveal } from '@/shared/ui/motion/reveal';
 import { SectionHeader } from '@/shared/ui/section-header';
@@ -41,12 +43,14 @@ export const HomePartners = async ({ partners }: HomePartnersProps) => {
         {featured.length === 0 ? (
           <EmptyState title={t('partners.empty')} />
         ) : (
-          <StaggerGroup className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <StaggerGroup
+            className={cn('grid gap-3 sm:grid-cols-2 lg:grid-cols-3', CATALOG_CARD_CELL_FILL_CLASS)}
+          >
             {featured.map((partner) => (
               <Link
                 key={partner.id}
                 href={`/partners/${partner.slug}`}
-                className="group flex items-center gap-4 rounded-md border border-border bg-surface-elevated p-4 shadow-xs transition-shadow hover:shadow-sm"
+                className="group flex h-full items-center gap-4 rounded-md border border-border bg-surface-elevated p-4 shadow-xs transition-shadow hover:shadow-sm"
               >
                 <div className="relative size-14 shrink-0 overflow-hidden rounded-sm bg-surface">
                   {partner.logoUrl ? (
@@ -67,11 +71,9 @@ export const HomePartners = async ({ partners }: HomePartnersProps) => {
                   <p className="truncate font-semibold text-ink group-hover:text-brand">
                     {partner.name}
                   </p>
-                  {partner.shortDescription ? (
-                    <p className="mt-1 line-clamp-2 text-xs text-ink-secondary">
-                      {partner.shortDescription}
-                    </p>
-                  ) : null}
+                  <p className="mt-1 line-clamp-2 min-h-8 text-xs leading-4 text-ink-secondary">
+                    {partner.shortDescription}
+                  </p>
                 </div>
               </Link>
             ))}

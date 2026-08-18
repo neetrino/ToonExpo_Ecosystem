@@ -1,8 +1,10 @@
 import { getTranslations } from 'next-intl/server';
 
 import { BuyApartmentCard } from '@/features/catalog/components/buy-apartment-card';
+import { CATALOG_CARD_CELL_FILL_CLASS } from '@/features/catalog/constants/catalog-list';
 import type { BuyApartmentListing } from '@/features/catalog/utils/load-buy-apartments';
 import { Link } from '@/i18n/navigation';
+import { cn } from '@/shared/ui/cn';
 import { EmptyState } from '@/shared/ui/empty-state';
 import { Reveal } from '@/shared/ui/motion/reveal';
 import { SectionHeader } from '@/shared/ui/section-header';
@@ -38,7 +40,10 @@ export const FeaturedApartments = async ({ listings }: FeaturedApartmentsProps) 
 
         {listings.length > 0 ? (
           <StaggerGroup
-            className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+            className={cn(
+              'grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3',
+              CATALOG_CARD_CELL_FILL_CLASS,
+            )}
             baseDelayMs={80}
           >
             {listings.map((listing) => (

@@ -4,6 +4,7 @@ import type { BuilderSummary } from '@toonexpo/contracts';
 import { Building2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { CATALOG_CARD_DESCRIPTION_CLASS } from '@/features/catalog/constants/catalog-list';
 import { Link } from '@/i18n/navigation';
 import { resolvePublicAssetUrl } from '@/shared/lib/static-asset-url';
 import { cn } from '@/shared/ui/cn';
@@ -49,7 +50,7 @@ export const BuilderCard = ({ builder, className }: BuilderCardProps) => {
   return (
     <article
       className={cn(
-        'group flex flex-col overflow-hidden rounded-[20px] bg-surface-elevated p-2',
+        'group flex h-full flex-col overflow-hidden rounded-[20px] bg-surface-elevated p-2',
         'ring-1 ring-header-border transition-all duration-[var(--duration-base)]',
         'hover:shadow-lg hover:shadow-brand/5 hover:ring-brand/40',
         className,
@@ -76,13 +77,7 @@ export const BuilderCard = ({ builder, className }: BuilderCardProps) => {
           </p>
         </div>
 
-        {builder.shortDescription ? (
-          <p className="mb-4 line-clamp-2 text-sm leading-5 text-ink-secondary">
-            {builder.shortDescription}
-          </p>
-        ) : (
-          <div className="mb-4" />
-        )}
+        <p className={CATALOG_CARD_DESCRIPTION_CLASS}>{builder.shortDescription}</p>
 
         <div
           className={cn(

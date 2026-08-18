@@ -125,8 +125,9 @@ export const AdminProjectsListPage = () => {
     (): IntegratedSearchFilterConfig[] => [
       {
         key: ADMIN_PROJECTS_FILTER_COMPANY_KEY,
-        label: t('filters.company'),
-        allOptionLabel: t('filters.allCompanies'),
+        label: t('filters.builder'),
+        allOptionLabel: t('filters.allBuilders'),
+        searchable: true,
         options: builderCompanies.map((company) => ({
           value: company.id,
           label: company.name,

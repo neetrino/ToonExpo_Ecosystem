@@ -4,6 +4,7 @@ import type { PublicPartnerListItem } from '@toonexpo/contracts';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 
+import { CATALOG_CARD_DESCRIPTION_CLASS } from '@/features/catalog/constants/catalog-list';
 import { PARTNER_DEMO_PHOTO_SRC } from '@/features/catalog/constants/partner-media';
 import { PartnerTypeLabel } from '@/features/partners/components/partner-type-label';
 import { Link } from '@/i18n/navigation';
@@ -25,7 +26,7 @@ export const PartnerCard = ({ partner, className }: PartnerCardProps) => {
   return (
     <article
       className={cn(
-        'group flex flex-col overflow-hidden rounded-[20px] bg-surface-elevated p-2',
+        'group flex h-full flex-col overflow-hidden rounded-[20px] bg-surface-elevated p-2',
         'ring-1 ring-header-border transition-all duration-[var(--duration-base)]',
         'hover:shadow-lg hover:shadow-brand/5 hover:ring-brand/40',
         className,
@@ -64,18 +65,12 @@ export const PartnerCard = ({ partner, className }: PartnerCardProps) => {
               {partner.name}
             </Link>
           </h3>
-          <p className="shrink-0 font-brand text-sm font-bold leading-7 text-brand-deep uppercase">
+          <p className="max-w-[40%] shrink-0 truncate font-brand text-sm font-bold leading-7 text-brand-deep uppercase">
             <PartnerTypeLabel type={partner.type} />
           </p>
         </div>
 
-        {partner.shortDescription ? (
-          <p className="mb-4 line-clamp-2 text-xs leading-4 text-header-muted">
-            {partner.shortDescription}
-          </p>
-        ) : (
-          <div className="mb-4" />
-        )}
+        <p className={CATALOG_CARD_DESCRIPTION_CLASS}>{partner.shortDescription}</p>
 
         <div
           className={cn(

@@ -4,6 +4,7 @@ import { Eye, EyeOff } from 'lucide-react';
 import { forwardRef, useState, type InputHTMLAttributes } from 'react';
 
 import { cn } from '@/shared/ui/cn';
+import { FORM_CONTROL_TEXT_CLASS } from '@/shared/ui/form-control-text';
 
 export type PasswordInputProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> & {
   revealLabel: string;
@@ -26,7 +27,8 @@ export const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
           disabled={disabled}
           className={cn(
             'h-11 w-full rounded-sm border border-border bg-surface-elevated py-2 pl-4 pr-11',
-            'text-base text-ink sm:text-sm',
+            FORM_CONTROL_TEXT_CLASS,
+            'text-ink',
             'placeholder:text-ink-muted',
             'transition-[border-color,box-shadow,background-color] duration-[var(--duration-fast)]',
             'hover:border-border-strong',

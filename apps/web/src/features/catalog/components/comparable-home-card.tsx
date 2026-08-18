@@ -47,7 +47,7 @@ export const ComparableHomeCard = ({ home, className }: ComparableHomeCardProps)
   return (
     <article
       className={cn(
-        'group flex flex-col overflow-hidden rounded-[20px] bg-surface-elevated p-2',
+        'group flex h-full flex-col overflow-hidden rounded-[20px] bg-surface-elevated p-2',
         'ring-1 ring-header-border transition-all duration-[var(--duration-base)]',
         'hover:shadow-lg hover:shadow-brand/5 hover:ring-brand/40',
         className,
@@ -87,11 +87,9 @@ export const ComparableHomeCard = ({ home, className }: ComparableHomeCardProps)
           </p>
         </div>
 
-        {home.locationLine ? (
-          <p className="mb-4 text-xs leading-[15px] text-header-muted">{home.locationLine}</p>
-        ) : (
-          <div className="mb-4" />
-        )}
+        <p className="mb-4 min-h-4 truncate text-xs leading-4 text-header-muted">
+          {home.locationLine}
+        </p>
 
         <div
           className={cn(

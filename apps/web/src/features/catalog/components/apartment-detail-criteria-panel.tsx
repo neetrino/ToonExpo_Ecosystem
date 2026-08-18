@@ -53,9 +53,17 @@ export const ApartmentDetailCriteriaPanel = ({
     <section>
       <h2 className="font-brand text-2xl font-bold tracking-tight text-ink-navy">{title}</h2>
 
-      <dl className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <dl className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {cardRows.map((row) => (
-          <CriterionCard key={row.id} row={row} />
+          <CriterionCard
+            key={row.id}
+            row={row}
+            className={
+              row.id === 'windows' || row.id === 'balconies'
+                ? 'col-span-1'
+                : 'col-span-2 sm:col-span-1'
+            }
+          />
         ))}
       </dl>
 
@@ -70,7 +78,13 @@ export const ApartmentDetailCriteriaPanel = ({
   );
 };
 
-const CriterionCard = ({ row }: { row: ApartmentDetailRow }) => {
+const CriterionCard = ({
+  row,
+  className,
+}: {
+  row: ApartmentDetailRow;
+  className?: string | undefined;
+}) => {
   const Icon = CRITERION_ICON[row.id];
 
   return (
@@ -79,6 +93,7 @@ const CriterionCard = ({ row }: { row: ApartmentDetailRow }) => {
         'flex min-h-[4.5rem] items-center gap-3 rounded-[15px] border border-header-border',
         'bg-surface-elevated px-4 py-3.5 transition-[transform,box-shadow] duration-200',
         'hover:-translate-y-0.5 hover:shadow-sm',
+        className,
       )}
     >
       <span
@@ -106,12 +121,24 @@ const CriterionListRow = ({ row }: { row: ApartmentDetailRow }) => {
   const Icon = CRITERION_ICON[row.id];
 
   return (
-    <div className="flex items-center gap-3 border-b border-header-border py-4 last:border-b-0">
-      <Icon className="size-4 shrink-0 text-brand-deep" strokeWidth={2} aria-hidden />
-      <dt className="shrink-0 text-[10px] font-bold tracking-widest text-header-muted uppercase">
-        {row.label}
-      </dt>
-      <dd className="min-w-0 flex-1 text-right text-sm font-semibold whitespace-pre-line text-ink-navy">
+    <div
+      className={cn(
+        'flex flex-col gap-2 border-b border-header-border py-4 last:border-b-0',
+        'sm:flex-row sm:items-start sm:gap-3',
+      )}
+    >
+      <div className="flex min-w-0 items-center gap-3 sm:shrink-0">
+        <Icon className="size-4 shrink-0 text-brand-deep" strokeWidth={2} aria-hidden />
+        <dt className="text-[10px] font-bold tracking-widest text-header-muted uppercase">
+          {row.label}
+        </dt>
+      </div>
+      <dd
+        className={cn(
+          'min-w-0 w-full break-words text-sm font-semibold whitespace-pre-line text-ink-navy',
+          'pl-7 sm:flex-1 sm:pl-0 sm:text-right',
+        )}
+      >
         {row.value}
       </dd>
     </div>

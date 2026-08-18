@@ -1,6 +1,7 @@
 import type { TextareaHTMLAttributes } from 'react';
 
 import { cn } from '@/shared/ui/cn';
+import { FORM_CONTROL_TEXT_CLASS } from '@/shared/ui/form-control-text';
 
 export type TextareaProps = TextareaHTMLAttributes<HTMLTextAreaElement>;
 
@@ -12,7 +13,8 @@ export const Textarea = ({ className, ...props }: TextareaProps) => {
     <textarea
       className={cn(
         'min-h-28 w-full rounded-sm border border-border bg-surface-elevated px-4 py-3',
-        'text-base text-ink sm:text-sm',
+        FORM_CONTROL_TEXT_CLASS,
+        'text-ink',
         'placeholder:text-ink-muted',
         'transition-[border-color,box-shadow] duration-[var(--duration-fast)]',
         'focus-visible:border-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/20',

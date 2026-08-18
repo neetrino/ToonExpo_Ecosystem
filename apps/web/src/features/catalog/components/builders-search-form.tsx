@@ -4,6 +4,7 @@ import { getTranslations } from 'next-intl/server';
 import type { BuilderListFilters } from '@/features/catalog/utils/builder-filters';
 import { Link } from '@/i18n/navigation';
 import { Button } from '@/shared/ui/button';
+import { Form } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
 
 type BuildersSearchFormProps = {
@@ -18,7 +19,7 @@ export const BuildersSearchForm = async ({ filters }: BuildersSearchFormProps) =
   const hasQuery = filters.q.length > 0;
 
   return (
-    <form method="get" action="/builders" className="flex flex-wrap items-center gap-3">
+    <Form method="get" action="/builders" className="flex flex-wrap items-center gap-3">
       <div className="relative min-w-[min(100%,18rem)] flex-1">
         <Search
           className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-ink-muted"
@@ -44,6 +45,6 @@ export const BuildersSearchForm = async ({ filters }: BuildersSearchFormProps) =
           </Button>
         </Link>
       ) : null}
-    </form>
+    </Form>
   );
 };

@@ -9,6 +9,7 @@ import { BuyMapProjectFilterChip } from '@/features/catalog/components/buy-map-p
 import { CatalogPagination } from '@/features/catalog/components/catalog-pagination';
 import { BUY_APARTMENTS_MAP_HOVER_DEBOUNCE_MS } from '@/features/catalog/constants';
 import {
+  CATALOG_CARD_CELL_FILL_CLASS,
   CATALOG_RESULTS_SCROLL_ID,
   CATALOG_RESULTS_SCROLL_MARGIN_CLASS,
 } from '@/features/catalog/constants/catalog-list';
@@ -168,7 +169,10 @@ export const BuyApartmentsBrowse = ({
         ) : (
           <StaggerGroup
             force
-            className="grid grid-cols-1 gap-5 sm:grid-cols-2 [&>*]:h-full [&>*]:min-w-0"
+            className={cn(
+              'grid grid-cols-1 gap-5 sm:grid-cols-2',
+              CATALOG_CARD_CELL_FILL_CLASS,
+            )}
             baseDelayMs={LIST_CONTENT_BASE_DELAY_MS}
             staggerMs={LIST_CARD_STAGGER_MS}
             durationMs={LIST_CARD_DURATION_MS}
