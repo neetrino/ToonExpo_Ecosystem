@@ -28,7 +28,7 @@ type ApartmentInquireCardProps = {
 };
 
 const FIELD_CLASS = cn(
-  'h-[42px] rounded-[12px] border-header-border bg-canvas px-3 py-2.5 text-sm',
+  'h-[42px] rounded-[12px] border-header-border bg-canvas px-3 py-2.5 text-base lg:text-sm',
   'placeholder:text-ink-muted',
   'focus-visible:border-brand focus-visible:ring-brand/20',
 );

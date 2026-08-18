@@ -1,6 +1,7 @@
 import type { ComponentPropsWithRef } from 'react';
 
 import { cn } from '@/shared/ui/cn';
+import { FORM_CONTROL_TEXT_CLASS } from '@/shared/ui/form-control-text';
 
 export type InputProps = ComponentPropsWithRef<'input'>;
 
@@ -13,7 +14,8 @@ export const Input = ({ className, type = 'text', ...props }: InputProps) => {
       type={type}
       className={cn(
         'h-11 w-full rounded-sm border border-border bg-surface-elevated px-4',
-        'text-base text-ink sm:text-sm',
+        FORM_CONTROL_TEXT_CLASS,
+        'text-ink',
         'placeholder:text-ink-muted',
         'transition-[border-color,box-shadow,background-color] duration-[var(--duration-fast)]',
         'hover:border-border-strong',

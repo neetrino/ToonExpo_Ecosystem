@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 
 import type { ProjectFilterParams } from '@/features/catalog/utils/project-filters';
 import { cn } from '@/shared/ui/cn';
+import { Form } from '@/shared/ui/form';
 import { Select } from '@/shared/ui/select';
 
 type BuyApartmentsFiltersProps = {
@@ -33,7 +34,7 @@ export const BuyApartmentsFilters = ({ filters, cities }: BuyApartmentsFiltersPr
   const catalogT = useTranslations('Catalog');
 
   return (
-    <form
+    <Form
       method="get"
       className={cn(
         'sticky top-[4.5rem] z-[var(--z-sticky)] border-b border-header-border bg-canvas',
@@ -131,7 +132,7 @@ export const BuyApartmentsFilters = ({ filters, cities }: BuyApartmentsFiltersPr
           {catalogT('filters.apply')}
         </button>
       </div>
-    </form>
+    </Form>
   );
 };
 
@@ -197,10 +198,11 @@ const GrowingPriceInput = ({
       placeholder={placeholder}
       className={cn(
         'w-auto min-w-0 border-0 bg-transparent p-0',
-        'text-sm font-medium text-ink tabular-nums',
+        'text-base font-medium text-ink tabular-nums lg:text-sm',
         'focus-visible:outline-none',
       )}
       aria-label={ariaLabel}
+      suppressHydrationWarning
     />
   );
 };

@@ -105,7 +105,7 @@ export const ReadinessCategoryScoreRow = ({
         <FormField id={`status-${score.id}`} label={t('status')}>
           <select
             id={`status-${score.id}`}
-            className="h-11 w-full rounded-sm border border-border bg-background px-3 text-sm text-ink"
+            className="h-11 w-full rounded-sm border border-border bg-background px-3 text-base text-ink lg:text-sm"
             value={status}
             onChange={(event) => {
               setStatus(event.target.value as ReadinessScoreStatus);

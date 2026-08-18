@@ -9,6 +9,7 @@ import type { ProjectFilterParams } from '@/features/catalog/utils/project-filte
 import { Link } from '@/i18n/navigation';
 import { Button } from '@/shared/ui/button';
 import { cn } from '@/shared/ui/cn';
+import { Form } from '@/shared/ui/form';
 import { Input } from '@/shared/ui/input';
 import { Select } from '@/shared/ui/select';
 
@@ -17,7 +18,7 @@ type ProjectFiltersFormProps = {
 };
 
 /** Compact control height for the projects filter toolbar. */
-const FILTER_CONTROL_CLASS = 'h-10 px-3.5 text-sm';
+const FILTER_CONTROL_CLASS = 'h-10 px-3.5 text-base lg:text-sm';
 const FILTER_FIELD_CLASS =
   'flex min-w-0 flex-col gap-1 text-xs font-medium text-ink-secondary';
 const FILTER_PRICE_MOBILE_CLASS =
@@ -39,7 +40,7 @@ export const ProjectFiltersForm = ({ filters }: ProjectFiltersFormProps) => {
     Boolean(filters.builderId);
 
   return (
-    <form
+    <Form
       method="get"
       className="rounded-md border border-border/70 bg-surface-elevated/95 p-3 shadow-sm backdrop-blur-sm sm:p-4"
     >
@@ -124,6 +125,6 @@ export const ProjectFiltersForm = ({ filters }: ProjectFiltersFormProps) => {
           </div>
         </div>
       </div>
-    </form>
+    </Form>
   );
 };

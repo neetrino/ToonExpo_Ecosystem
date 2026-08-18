@@ -131,7 +131,7 @@ export const ReadinessRequiredActionsSection = ({
               <FormField id={`action-status-${action.id}`} label={t("status")}>
                 <select
                   id={`action-status-${action.id}`}
-                  className="h-9 rounded-sm border border-border bg-background px-3 text-sm text-ink"
+                  className="h-9 rounded-sm border border-border bg-background px-3 text-base text-ink lg:text-sm"
                   value={action.status}
                   disabled={updateMutation.isPending}
                   onChange={(event) => {
@@ -200,7 +200,7 @@ export const ReadinessRequiredActionsSection = ({
           <FormField id="action-status-new" label={t("status")}>
             <select
               id="action-status-new"
-              className="h-10 w-full rounded-sm border border-border bg-background px-3 text-sm text-ink"
+              className="h-10 w-full rounded-sm border border-border bg-background px-3 text-base text-ink lg:text-sm"
               value={status}
               onChange={(event) => {
                 setStatus(event.target.value as ReadinessRequiredActionStatus);
@@ -216,7 +216,7 @@ export const ReadinessRequiredActionsSection = ({
           <FormField id="action-visibility" label={t("fields.visibility")}>
             <select
               id="action-visibility"
-              className="h-10 w-full rounded-sm border border-border bg-background px-3 text-sm text-ink"
+              className="h-10 w-full rounded-sm border border-border bg-background px-3 text-base text-ink lg:text-sm"
               value={visibility}
               onChange={(event) => {
                 setVisibility(

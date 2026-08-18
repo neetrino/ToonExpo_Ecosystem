@@ -23,5 +23,5 @@ export const HERO_FILTER_CHECK_CLASS = {
 
 export const HERO_FILTER_SEARCH_INPUT_CLASS =
   'h-10 w-full rounded-[10px] border border-header-border bg-canvas pl-9 pr-3 ' +
-  'text-sm text-ink-navy outline-none placeholder:text-header-muted ' +
+  'text-base text-ink-navy outline-none placeholder:text-header-muted lg:text-sm ' +
   'focus-visible:border-brand-deep focus-visible:ring-2 focus-visible:ring-brand-deep/15';

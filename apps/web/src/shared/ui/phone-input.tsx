@@ -9,6 +9,7 @@ import {
   sanitizePhoneInput,
 } from '@/shared/lib/phone';
 import { cn } from '@/shared/ui/cn';
+import { FORM_CONTROL_TEXT_CLASS } from '@/shared/ui/form-control-text';
 
 export type PhoneInputProps = Omit<
   InputHTMLAttributes<HTMLInputElement>,
@@ -73,7 +74,8 @@ export const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(function
         value={digits}
         className={cn(
           'h-full min-w-0 flex-1 border-0 bg-transparent py-0 pr-4 pl-1.5',
-          'text-base text-inherit sm:text-sm',
+          FORM_CONTROL_TEXT_CLASS,
+          'text-inherit',
           'placeholder:text-ink-muted',
           'focus-visible:outline-none',
           'disabled:cursor-not-allowed',

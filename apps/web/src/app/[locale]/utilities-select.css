@@ -23,7 +23,7 @@
       background-color var(--duration-fast) var(--ease-out-premium);
   }
 
-  @media (min-width: 640px) {
+  @media (min-width: 1024px) {
     .site-select-trigger {
       font-size: 0.875rem;
     }

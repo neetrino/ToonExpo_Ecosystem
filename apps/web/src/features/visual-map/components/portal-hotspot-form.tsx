@@ -137,7 +137,7 @@ export const PortalHotspotForm = ({
       <FormField id="hotspot-target" label={t("target")}>
         <select
           id="hotspot-target"
-          className="h-10 w-full rounded-sm border border-border bg-background px-3 text-sm"
+          className="h-10 w-full rounded-sm border border-border bg-background px-3 text-base lg:text-sm"
           {...form.register("targetId", {
             onChange: (event) => {
               const nextId = event.target.value;
@@ -187,7 +187,7 @@ export const PortalHotspotForm = ({
       <FormField id="hotspot-publication" label={t("publication")}>
         <select
           id="hotspot-publication"
-          className="h-10 w-full rounded-sm border border-border bg-background px-3 text-sm"
+          className="h-10 w-full rounded-sm border border-border bg-background px-3 text-base lg:text-sm"
           {...form.register("publicationStatus")}
         >
           {VISUAL_MAP_PUBLICATION_STATUSES.map((status) => (
