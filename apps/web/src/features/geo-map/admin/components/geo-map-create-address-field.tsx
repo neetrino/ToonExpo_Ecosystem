@@ -1,8 +1,9 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import type { FormEvent } from 'react';
+import { useEffect, useRef, type FormEvent } from 'react';
 
+import { GEO_MAP_ADDRESS_GEOCODE_DEBOUNCE_MS } from '@/features/geo-map/admin/constants';
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
@@ -26,7 +27,20 @@ export const GeoMapCreateAddressField = ({
   onSearch,
 }: GeoMapCreateAddressFieldProps) => {
   const t = useTranslations('Admin.geoMap');
-  const canSearch = value.trim().length >= 3 && !disabled && !isGeocoding;
+  const trimmed = value.trim();
+  const canSearch = trimmed.length >= 3 && !disabled && !isGeocoding;
+  const onSearchRef = useRef(onSearch);
+  onSearchRef.current = onSearch;
+
+  useEffect(() => {
+    if (disabled || trimmed.length < 3) {
+      return;
+    }
+    const timer = window.setTimeout(() => {
+      onSearchRef.current(trimmed);
+    }, GEO_MAP_ADDRESS_GEOCODE_DEBOUNCE_MS);
+    return () => window.clearTimeout(timer);
+  }, [disabled, trimmed]);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
@@ -42,7 +56,7 @@ export const GeoMapCreateAddressField = ({
         <Input
           id="geo-map-address"
           value={value}
-          disabled={disabled || isGeocoding}
+          disabled={disabled}
           placeholder={t('create.addressPlaceholder')}
           onChange={(event) => onChange(event.target.value)}
         />

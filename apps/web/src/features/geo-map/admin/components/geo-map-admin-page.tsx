@@ -8,7 +8,7 @@ import { GeoMapAdminSidebar } from '@/features/geo-map/admin/components/geo-map-
 import type { GeoMapCreateDraft } from '@/features/geo-map/admin/components/geo-map-create-panel';
 import type { GeoMapDragSyncedPosition } from '@/features/geo-map/admin/components/geo-map-edit-panel';
 import type { GeoMapTransformDraft } from '@/features/geo-map/admin/components/geo-map-transform-fields';
-import { GEO_MAP_DEFAULT_CREATE_VALUES } from '@/features/geo-map/admin/constants';
+import { GEO_MAP_DEFAULT_CREATE_VALUES, GEO_MAP_PREVIEW_PIN_ID } from '@/features/geo-map/admin/constants';
 import { useGeoMapAddressFlyTo } from '@/features/geo-map/admin/hooks/use-geo-map-address-fly-to';
 import {
   useAdminGeoMapModelsQuery,
@@ -18,6 +18,7 @@ import {
   useUpdateGeoMapModelMutation,
 } from '@/features/geo-map/admin/hooks/use-geo-map-admin';
 import { buildGeoMapProjectOptions } from '@/features/geo-map/admin/utils/available-projects';
+import { buildGeoMapPreviewObject } from '@/features/geo-map/admin/utils/build-geo-map-preview-object';
 import {
   focusGeoMapFileInput,
   GEO_MAP_CREATE_GLB_INPUT_ID,
@@ -112,6 +113,7 @@ export const GeoMapAdminPage = () => {
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [createDraft, setCreateDraft] = useState<GeoMapCreateDraft>(createEmptyDraft);
+  const [previewPin, setPreviewPin] = useState<GeoMapLngLat | null>(null);
   const [pendingCreateFocus, setPendingCreateFocus] = useState(false);
   const [selectedOsmBuilding, setSelectedOsmBuilding] = useState<SelectedOsmBuilding | null>(null);
   const [hiddenOsmBuildings, setHiddenOsmBuildings] = useState<OsmBuildingHideTarget[]>([]);
@@ -127,7 +129,13 @@ export const GeoMapAdminPage = () => {
     () => buildGeoMapProjectOptions(projectsQuery.data?.data ?? [], models),
     [projectsQuery.data, models],
   );
-  const objects = useMemo(() => mapAdminGeoMapItemsToObjects(models), [models]);
+  const savedObjects = useMemo(() => mapAdminGeoMapItemsToObjects(models), [models]);
+  const objects = useMemo(() => {
+    if (!previewPin) {
+      return savedObjects;
+    }
+    return [...savedObjects, buildGeoMapPreviewObject(previewPin, t('create.previewPin'))];
+  }, [previewPin, savedObjects, t]);
   const selectedModel = models.find((model) => model.id === selectedId) ?? null;
 
   const handleTransformPreview = useCallback(
@@ -147,8 +155,12 @@ export const GeoMapAdminPage = () => {
   }, []);
 
   const selectModel = (id: string): void => {
+    if (id === GEO_MAP_PREVIEW_PIN_ID) {
+      return;
+    }
     setSelectedId(id);
     setCreateDraft(createEmptyDraft());
+    setPreviewPin(null);
     setSelectedOsmBuilding(null);
     setActionError(null);
     clearTransformPreview();
@@ -179,6 +191,7 @@ export const GeoMapAdminPage = () => {
           ...(hideKey ? { sourceOsmId: hideKey } : {}),
         });
         setCreateDraft(createEmptyDraft());
+        setPreviewPin(null);
         setSelectedOsmBuilding(null);
         setTransformPreview(null);
         setDragSyncedPosition(null);
@@ -191,7 +204,11 @@ export const GeoMapAdminPage = () => {
   );
 
   const handleMapClick = (position: GeoMapLngLat): void => {
+    if (!isValidGeoMapLngLat(position)) {
+      return;
+    }
     if (!createDraft.mediaAssetId) {
+      setPreviewPin(roundGeoMapLngLatForApi(position));
       return;
     }
     void placeModel(position, null, createDraft);
@@ -239,16 +256,24 @@ export const GeoMapAdminPage = () => {
   const handleGoToAddress = (query: string): void => {
     void (async () => {
       const result = await goToAddress(query);
-      if (result === 'not-found') {
+      if (result.status === 'not-found') {
         setActionError(t('create.geocodeNotFound'));
         return;
       }
-      if (result === 'failed') {
+      if (result.status === 'failed') {
         setActionError(t('create.geocodeFailed'));
         return;
       }
+      setPreviewPin(result.center);
       setActionError(null);
     })();
+  };
+
+  const handlePlaceAtPreview = (): void => {
+    if (!previewPin) {
+      return;
+    }
+    void placeModel(previewPin, null, createDraft);
   };
 
   const handleDragged = async (id: string, position: GeoMapLngLat): Promise<void> => {
@@ -257,8 +282,13 @@ export const GeoMapAdminPage = () => {
       setActionError(t('errors.updateFailed'));
       return;
     }
+    const rounded = roundGeoMapLngLatForApi(position);
+    if (id === GEO_MAP_PREVIEW_PIN_ID) {
+      setPreviewPin(rounded);
+      return;
+    }
     try {
-      const { longitude, latitude } = roundGeoMapLngLatForApi(position);
+      const { longitude, latitude } = rounded;
       setDragSyncedPosition((previous) => ({
         id,
         longitude,
@@ -341,6 +371,7 @@ export const GeoMapAdminPage = () => {
   const clearSelection = useCallback((): void => {
     setSelectedId(null);
     setCreateDraft(createEmptyDraft());
+    setPreviewPin(null);
     setSelectedOsmBuilding(null);
     setActionError(null);
     setTransformPreview(null);
@@ -350,6 +381,7 @@ export const GeoMapAdminPage = () => {
   const startCreate = useCallback((): void => {
     setSelectedId(null);
     setCreateDraft(createEmptyDraft());
+    setPreviewPin(null);
     setSelectedOsmBuilding(null);
     setActionError(null);
     setTransformPreview(null);
@@ -510,6 +542,7 @@ export const GeoMapAdminPage = () => {
           createDraft={createDraft}
           selectedModel={selectedModel}
           hasOsmSelection={selectedOsmBuilding !== null}
+          hasPreviewPin={previewPin !== null}
           isCreating={createMutation.isPending}
           isGeocoding={isGeocoding}
           isSaving={updateMutation.isPending}
@@ -519,6 +552,7 @@ export const GeoMapAdminPage = () => {
           onStartCreate={startCreate}
           onCreateDraftChange={handleCreateDraftChange}
           onGoToAddress={handleGoToAddress}
+          onPlaceAtPreview={handlePlaceAtPreview}
           onTransformPreview={handleTransformPreview}
           onSave={handleSave}
           onPublishChange={handlePublishChange}
@@ -545,7 +579,7 @@ export const GeoMapAdminPage = () => {
           objects={objects}
           editable
           viewRequest={viewRequest}
-          highlightedObjectId={selectedId}
+          highlightedObjectId={selectedId ?? (previewPin ? GEO_MAP_PREVIEW_PIN_ID : null)}
           transformOverride={transformPreview}
           selectedOsmBuilding={selectedOsmBuilding}
           adminSelectionChrome={adminSelectionChrome}

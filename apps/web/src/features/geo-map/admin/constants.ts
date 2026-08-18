@@ -48,3 +48,12 @@ export const GEO_MAP_ADMIN_GEOCODE_PATH = '/admin/geo-map/geocode';
 
 /** Zoom used after an address lookup so OSM buildings are clickable. */
 export const GEO_MAP_ADDRESS_SEARCH_ZOOM = 16;
+
+/** Unsaved pin shown after address lookup; drag does not persist until Place. */
+export const GEO_MAP_PREVIEW_PIN_ID = 'geo-map-preview-pin';
+
+/** Above MapLibre max zoom so the preview never loads a GLB. */
+export const GEO_MAP_PREVIEW_MIN_ZOOM = 99;
+
+/** Wait after typing before geocoding (Nominatim ~1 req/s). */
+export const GEO_MAP_ADDRESS_GEOCODE_DEBOUNCE_MS = 1_000;

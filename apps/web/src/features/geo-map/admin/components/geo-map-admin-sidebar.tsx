@@ -27,6 +27,7 @@ type GeoMapAdminSidebarProps = {
   createDraft: GeoMapCreateDraft | null;
   selectedModel: AdminGeoMapModelItem | null;
   hasOsmSelection: boolean;
+  hasPreviewPin: boolean;
   isCreating: boolean;
   isGeocoding: boolean;
   isSaving: boolean;
@@ -36,6 +37,7 @@ type GeoMapAdminSidebarProps = {
   onStartCreate: () => void;
   onCreateDraftChange: (draft: GeoMapCreateDraft | null) => void;
   onGoToAddress: (query: string) => void;
+  onPlaceAtPreview: () => void;
   onTransformPreview: (draft: GeoMapTransformDraft) => void;
   onSave: (body: UpdateGeoMapModelRequest) => Promise<void>;
   onPublishChange: (isPublished: boolean) => Promise<void>;
@@ -55,6 +57,7 @@ export const GeoMapAdminSidebar = ({
   createDraft,
   selectedModel,
   hasOsmSelection,
+  hasPreviewPin,
   isCreating,
   isGeocoding,
   isSaving,
@@ -64,6 +67,7 @@ export const GeoMapAdminSidebar = ({
   onStartCreate,
   onCreateDraftChange,
   onGoToAddress,
+  onPlaceAtPreview,
   onTransformPreview,
   onSave,
   onPublishChange,
@@ -95,9 +99,11 @@ export const GeoMapAdminSidebar = ({
           draft={createDraft}
           onDraftChange={onCreateDraftChange}
           onGoToAddress={onGoToAddress}
+          onPlaceAtPreview={onPlaceAtPreview}
           isCreating={isCreating}
           isGeocoding={isGeocoding}
           hasOsmSelection={hasOsmSelection}
+          hasPreviewPin={hasPreviewPin}
         />
       </div>
 

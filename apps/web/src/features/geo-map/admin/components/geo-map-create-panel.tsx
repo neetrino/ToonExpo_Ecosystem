@@ -8,6 +8,7 @@ import { GeoMapGlbUploader } from '@/features/geo-map/admin/components/geo-map-g
 import { GEO_MAP_CREATE_GLB_INPUT_ID } from '@/features/geo-map/admin/utils/focus-geo-map-file-input';
 import type { GeoMapProjectOption } from '@/features/geo-map/admin/utils/available-projects';
 import { buildGeoMapAddressQuery } from '@/features/geo-map/admin/utils/build-geo-map-address-query';
+import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Select } from '@/shared/ui/select';
 
@@ -25,9 +26,11 @@ type GeoMapCreatePanelProps = {
   draft: GeoMapCreateDraft | null;
   onDraftChange: (draft: GeoMapCreateDraft | null) => void;
   onGoToAddress: (query: string) => void;
+  onPlaceAtPreview: () => void;
   isCreating: boolean;
   isGeocoding: boolean;
   hasOsmSelection: boolean;
+  hasPreviewPin: boolean;
 };
 
 const patchDraft = (
@@ -50,9 +53,11 @@ export const GeoMapCreatePanel = ({
   draft,
   onDraftChange,
   onGoToAddress,
+  onPlaceAtPreview,
   isCreating,
   isGeocoding,
   hasOsmSelection,
+  hasPreviewPin,
 }: GeoMapCreatePanelProps) => {
   const t = useTranslations('Admin.geoMap');
   const selectedProjectId = draft?.projectId ?? '';
@@ -110,6 +115,10 @@ export const GeoMapCreatePanel = ({
         onSearch={onGoToAddress}
       />
 
+      {hasPreviewPin ? (
+        <p className="text-xs text-ink-muted">{t('create.previewHint')}</p>
+      ) : null}
+
       <GeoMapGlbUploader
         browseButtonId="geo-map-create-glb-browse"
         fileInputId={GEO_MAP_CREATE_GLB_INPUT_ID}
@@ -117,6 +126,12 @@ export const GeoMapCreatePanel = ({
         fileName={draft?.fileName || null}
         onUploaded={handleUploaded}
       />
+
+      {readyToPlace && hasPreviewPin ? (
+        <Button type="button" size="sm" disabled={isCreating} onClick={onPlaceAtPreview}>
+          {isCreating ? t('create.placing') : t('create.placeAtPin')}
+        </Button>
+      ) : null}
 
       {readyToPlace ? (
         <p className="rounded-sm border border-brand/40 bg-brand-soft/30 px-3 py-2 text-sm text-ink">
