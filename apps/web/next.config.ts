@@ -103,7 +103,7 @@ const listLanIpv4Addresses = (): string[] => {
     }
 
     for (const entry of entries) {
-      const isIpv4 = entry.family === 'IPv4' || entry.family === 4;
+      const isIpv4 = entry.family === 'IPv4';
       if (entry.internal || !isIpv4) {
         continue;
       }
