@@ -73,12 +73,11 @@ export const GeoMapAdminSidebar = ({
   headerActions,
 }: GeoMapAdminSidebarProps) => {
   const t = useTranslations('Admin.geoMap');
-  const isCreateMode = createDraft !== null;
 
   return (
-    <aside className="flex h-full min-h-0 w-full flex-col gap-4 overflow-y-auto border-border bg-surface-elevated p-4 lg:border-r">
+    <aside className="flex h-full min-h-0 w-full flex-col gap-4 overflow-hidden border-border bg-surface-elevated p-4 lg:border-r">
       <Reveal force>
-        <div className="flex flex-wrap items-start justify-between gap-2">
+        <div className="flex shrink-0 flex-wrap items-start justify-between gap-2">
           <div className="flex min-w-0 items-start gap-3">
             <PageTitleIcon icon={Globe2} />
             <div>
@@ -90,21 +89,7 @@ export const GeoMapAdminSidebar = ({
         </div>
       </Reveal>
 
-      <section className="space-y-2">
-        <Reveal force>
-          <div className="flex items-center justify-between gap-2">
-            <h2 className="text-[11px] uppercase tracking-[0.16em] text-ink-muted">
-              {t('list.title')}
-            </h2>
-            <Button type="button" size="sm" variant="secondary" onClick={onStartCreate}>
-              {t('create.new')}
-            </Button>
-          </div>
-        </Reveal>
-        <GeoMapModelList models={models} selectedId={selectedId} onSelect={onSelect} />
-      </section>
-
-      {isCreateMode ? (
+      <div className="min-h-0 shrink-0 overflow-y-auto border-b border-border pb-4">
         <GeoMapCreatePanel
           projects={projects}
           draft={createDraft}
@@ -114,22 +99,38 @@ export const GeoMapAdminSidebar = ({
           isGeocoding={isGeocoding}
           hasOsmSelection={hasOsmSelection}
         />
-      ) : null}
+      </div>
 
-      {!isCreateMode && selectedModel ? (
-        <GeoMapEditPanel
-          model={selectedModel}
-          projects={projects}
-          isSaving={isSaving}
-          isDeleting={isDeleting}
-          dragSyncedPosition={dragSyncedPosition}
-          onTransformPreview={onTransformPreview}
-          onSave={onSave}
-          onPublishChange={onPublishChange}
-          onReplaceModel={onReplaceModel}
-          onAttachProject={onAttachProject}
-          onDelete={onDelete}
-        />
+      <section className="flex min-h-0 flex-1 flex-col gap-2">
+        <div className="flex shrink-0 items-center justify-between gap-2">
+          <h2 className="text-[11px] uppercase tracking-[0.16em] text-ink-muted">
+            {t('list.title')}
+          </h2>
+          <Button type="button" size="sm" variant="secondary" onClick={onStartCreate}>
+            {t('create.new')}
+          </Button>
+        </div>
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          <GeoMapModelList models={models} selectedId={selectedId} onSelect={onSelect} />
+        </div>
+      </section>
+
+      {selectedModel ? (
+        <div className="min-h-0 max-h-[50%] shrink-0 overflow-y-auto border-t border-border pt-3">
+          <GeoMapEditPanel
+            model={selectedModel}
+            projects={projects}
+            isSaving={isSaving}
+            isDeleting={isDeleting}
+            dragSyncedPosition={dragSyncedPosition}
+            onTransformPreview={onTransformPreview}
+            onSave={onSave}
+            onPublishChange={onPublishChange}
+            onReplaceModel={onReplaceModel}
+            onAttachProject={onAttachProject}
+            onDelete={onDelete}
+          />
+        </div>
       ) : null}
     </aside>
   );

@@ -111,7 +111,7 @@ export const GeoMapAdminPage = () => {
   const { viewRequest, goToAddress, isGeocoding } = useGeoMapAddressFlyTo();
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [createDraft, setCreateDraft] = useState<GeoMapCreateDraft | null>(null);
+  const [createDraft, setCreateDraft] = useState<GeoMapCreateDraft>(createEmptyDraft);
   const [pendingCreateFocus, setPendingCreateFocus] = useState(false);
   const [selectedOsmBuilding, setSelectedOsmBuilding] = useState<SelectedOsmBuilding | null>(null);
   const [hiddenOsmBuildings, setHiddenOsmBuildings] = useState<OsmBuildingHideTarget[]>([]);
@@ -148,7 +148,7 @@ export const GeoMapAdminPage = () => {
 
   const selectModel = (id: string): void => {
     setSelectedId(id);
-    setCreateDraft(null);
+    setCreateDraft(createEmptyDraft());
     setSelectedOsmBuilding(null);
     setActionError(null);
     clearTransformPreview();
@@ -178,7 +178,7 @@ export const GeoMapAdminPage = () => {
           ...(draft.projectId ? { projectId: draft.projectId } : {}),
           ...(hideKey ? { sourceOsmId: hideKey } : {}),
         });
-        setCreateDraft(null);
+        setCreateDraft(createEmptyDraft());
         setSelectedOsmBuilding(null);
         setTransformPreview(null);
         setDragSyncedPosition(null);
@@ -191,7 +191,7 @@ export const GeoMapAdminPage = () => {
   );
 
   const handleMapClick = (position: GeoMapLngLat): void => {
-    if (!createDraft) {
+    if (!createDraft.mediaAssetId) {
       return;
     }
     void placeModel(position, null, createDraft);
@@ -200,7 +200,7 @@ export const GeoMapAdminPage = () => {
   const handleOsmBuildingSelect = (building: SelectedOsmBuilding): void => {
     setSelectedOsmBuilding(building);
     setActionError(null);
-    if (createDraft?.mediaAssetId) {
+    if (createDraft.mediaAssetId) {
       void placeModel(
         { longitude: building.longitude, latitude: building.latitude },
         resolveStoredHideIdForPlacement({
@@ -214,10 +214,11 @@ export const GeoMapAdminPage = () => {
 
   const handleCreateDraftChange = useCallback(
     (draft: GeoMapCreateDraft | null): void => {
-      const previousAssetId = createDraft?.mediaAssetId ?? '';
-      setCreateDraft(draft);
-      const nextAssetId = draft?.mediaAssetId ?? '';
-      if (!nextAssetId || nextAssetId === previousAssetId || !selectedOsmBuilding || !draft) {
+      const previousAssetId = createDraft.mediaAssetId;
+      const nextDraft = draft ?? createEmptyDraft();
+      setCreateDraft(nextDraft);
+      const nextAssetId = nextDraft.mediaAssetId;
+      if (!nextAssetId || nextAssetId === previousAssetId || !selectedOsmBuilding) {
         return;
       }
       void placeModel(
@@ -229,10 +230,10 @@ export const GeoMapAdminPage = () => {
           sourceOsmId: selectedOsmBuilding.sourceOsmId,
           featureId: selectedOsmBuilding.featureId,
         }),
-        draft,
+        nextDraft,
       );
     },
-    [createDraft?.mediaAssetId, placeModel, selectedOsmBuilding],
+    [createDraft.mediaAssetId, placeModel, selectedOsmBuilding],
   );
 
   const handleGoToAddress = (query: string): void => {
@@ -339,7 +340,7 @@ export const GeoMapAdminPage = () => {
 
   const clearSelection = useCallback((): void => {
     setSelectedId(null);
-    setCreateDraft(null);
+    setCreateDraft(createEmptyDraft());
     setSelectedOsmBuilding(null);
     setActionError(null);
     setTransformPreview(null);
@@ -357,7 +358,7 @@ export const GeoMapAdminPage = () => {
   }, []);
 
   useEffect(() => {
-    if (!pendingCreateFocus || createDraft === null) {
+    if (!pendingCreateFocus) {
       return;
     }
 
@@ -424,7 +425,7 @@ export const GeoMapAdminPage = () => {
       await deleteMutation.mutateAsync(pendingDelete.id);
       if (selectedId === pendingDelete.id) {
         setSelectedId(null);
-        setCreateDraft(null);
+        setCreateDraft(createEmptyDraft());
         setTransformPreview(null);
         setDragSyncedPosition(null);
       }
@@ -435,7 +436,7 @@ export const GeoMapAdminPage = () => {
   };
 
   const adminSelectionChrome = useMemo((): GeoMapAdminMapSelectionChromeProps | null => {
-    if (selectedModel && createDraft === null) {
+    if (selectedModel && !createDraft.mediaAssetId) {
       return {
         anchor: resolveSelectionAnchor(selectedModel, transformPreview),
         kind: 'model',
