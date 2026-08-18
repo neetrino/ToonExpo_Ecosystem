@@ -3,7 +3,6 @@ import { describe, expect, it } from 'vitest';
 import {
   buildGeoMapAddressQuery,
   formatGeoMapSiteAddress,
-  nextGeoMapSearchQueryAfterLookup,
 } from '@/features/geo-map/admin/utils/build-geo-map-address-query';
 
 describe('formatGeoMapSiteAddress', () => {
@@ -51,15 +50,5 @@ describe('buildGeoMapAddressQuery', () => {
         locationText: '',
       }),
     ).toBe('');
-  });
-});
-
-describe('nextGeoMapSearchQueryAfterLookup', () => {
-  it('clears the search when it still matches the lookup query', () => {
-    expect(nextGeoMapSearchQueryAfterLookup('norashen 6', 'norashen 6')).toBe('');
-  });
-
-  it('keeps later typing if the lookup was for an older query', () => {
-    expect(nextGeoMapSearchQueryAfterLookup('norashen 6a', 'norashen 6')).toBe('norashen 6a');
   });
 });

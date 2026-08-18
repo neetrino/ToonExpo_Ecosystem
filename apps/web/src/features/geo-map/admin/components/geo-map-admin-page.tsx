@@ -18,7 +18,6 @@ import {
   useUpdateGeoMapModelMutation,
 } from '@/features/geo-map/admin/hooks/use-geo-map-admin';
 import { buildGeoMapProjectOptions } from '@/features/geo-map/admin/utils/available-projects';
-import { nextGeoMapSearchQueryAfterLookup } from '@/features/geo-map/admin/utils/build-geo-map-address-query';
 import { buildGeoMapPreviewObject } from '@/features/geo-map/admin/utils/build-geo-map-preview-object';
 import {
   focusGeoMapFileInput,
@@ -267,10 +266,6 @@ export const GeoMapAdminPage = () => {
       }
       setPreviewPin(result.center);
       setActionError(null);
-      setCreateDraft((current) => ({
-        ...current,
-        searchQuery: nextGeoMapSearchQueryAfterLookup(current.searchQuery, query),
-      }));
     })();
   };
 

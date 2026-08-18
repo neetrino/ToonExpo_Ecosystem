@@ -46,17 +46,3 @@ export const buildGeoMapAddressQuery = (parts: GeoMapAddressParts): string => {
   }
   return `${site}, ${ARMENIA_SUFFIX}`;
 };
-
-/**
- * Clears the map-search input after a successful lookup of that same query.
- * Leaves the field alone if the user already typed something else.
- */
-export const nextGeoMapSearchQueryAfterLookup = (
-  currentSearch: string,
-  lookupQuery: string,
-): string => {
-  if (currentSearch.trim() === lookupQuery.trim()) {
-    return '';
-  }
-  return currentSearch;
-};
