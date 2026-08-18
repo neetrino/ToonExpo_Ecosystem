@@ -4,10 +4,10 @@ import type { GeoMapObject } from '@/features/geo-map/types';
  * Resolves the published geo-map object for a project id.
  * Public payloads use `projectId` as the object id (one model per project).
  */
-export const resolveMapObjectForProject = (
-  objects: readonly Pick<GeoMapObject, 'id' | 'projectId'>[],
+export const resolveMapObjectForProject = <T extends Pick<GeoMapObject, 'id' | 'projectId'>>(
+  objects: readonly T[],
   projectId: string,
-): Pick<GeoMapObject, 'id' | 'projectId'> | null => {
+): T | null => {
   const match = objects.find((object) => object.projectId === projectId);
   return match ?? null;
 };

@@ -18,6 +18,15 @@ describe('resolveMapObjectForProject', () => {
     });
   });
 
+  it('keeps extra fields on the matched object', () => {
+    const withCoords = [{ id: 'proj-a', projectId: 'proj-a', longitude: 44.5 }];
+    expect(resolveMapObjectForProject(withCoords, 'proj-a')).toEqual({
+      id: 'proj-a',
+      projectId: 'proj-a',
+      longitude: 44.5,
+    });
+  });
+
   it('returns null when the project has no published model', () => {
     expect(resolveMapObjectForProject(objects, 'missing')).toBeNull();
   });

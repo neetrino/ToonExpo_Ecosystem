@@ -99,6 +99,7 @@ export const ProjectCatalogSection = async ({ project }: ProjectCatalogSectionPr
 
   return (
     <ProjectCatalogDetailsPanel
+      projectId={project.id}
       title={t('catalog.title')}
       aboutTitle={t('catalog.about')}
       aboutText={project.fullDescription}

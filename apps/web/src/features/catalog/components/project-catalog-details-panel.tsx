@@ -6,6 +6,7 @@ import {
 import { ProjectCatalogSectionCard } from '@/features/catalog/components/project-catalog-section-card';
 import { ProjectCatalogLinksSection } from '@/features/catalog/components/project-catalog-links-section';
 import { ProjectCatalogMediaPoster } from '@/features/catalog/components/project-catalog-media-poster';
+import { ProjectCatalogGeoMap } from '@/features/catalog/components/project-catalog-geo-map';
 import { ProjectCatalogVideoSection } from '@/features/catalog/components/project-catalog-video-section';
 import {
   splitProjectCatalogRowsByFinance,
@@ -17,6 +18,7 @@ import { staticAssetUrl } from '@/shared/lib/static-asset-url';
 import { cn } from '@/shared/ui/cn';
 
 type ProjectCatalogDetailsPanelProps = {
+  projectId: string;
   title: string;
   aboutTitle: string;
   aboutText: string | null;
@@ -42,13 +44,13 @@ const TYPICAL_TOUR_POSTER_SRC = staticAssetUrl('/images/project-floor-axonometri
 const EXTERIOR_TOUR_POSTER_SRC = staticAssetUrl('/images/hero-variant-a.webp');
 const MATTERPORT_TOUR_POSTER_SRC = staticAssetUrl('/images/project-floor-axonometric.webp');
 const EXTERNAL_3D_TOUR_POSTER_SRC = staticAssetUrl('/images/hero-variant-a.webp');
-const MAP_POSTER_SRC = staticAssetUrl('/images/buy-map.webp');
 
 /**
  * Project catalog — Houzez-style stacked white cards (Description / Overview /
  * Details / Finance / Features / Nearby / Video / Tours / Map / Links / Socials).
  */
 export const ProjectCatalogDetailsPanel = ({
+  projectId,
   title,
   aboutTitle,
   aboutText,
@@ -82,7 +84,6 @@ export const ProjectCatalogDetailsPanel = ({
     exteriorTour: exteriorTourLink,
     matterport: matterportLink,
     external3d: external3dLink,
-    map: mapLink,
   } = splitProjectCatalogLinks(links);
   const hasAbout = aboutText != null && aboutText.trim().length > 0;
   const hasOverview = overviewRows.length > 0;
@@ -95,28 +96,8 @@ export const ProjectCatalogDetailsPanel = ({
   const hasExteriorTour = exteriorTourLink != null;
   const hasMatterport = matterportLink != null;
   const hasExternal3d = external3dLink != null;
-  const hasMap = mapLink != null;
   const hasMediaLinks = mediaLinks.length > 0;
   const hasSocialLinks = socialLinks.length > 0;
-
-  if (
-    !hasAbout &&
-    !hasOverview &&
-    !hasDetails &&
-    !hasFinance &&
-    !hasAmenities &&
-    !hasNearby &&
-    !hasVideo &&
-    !hasTypicalTour &&
-    !hasExteriorTour &&
-    !hasMatterport &&
-    !hasExternal3d &&
-    !hasMap &&
-    !hasMediaLinks &&
-    !hasSocialLinks
-  ) {
-    return null;
-  }
 
   return (
     <section className="page-container py-12 sm:py-16">
@@ -224,15 +205,9 @@ export const ProjectCatalogDetailsPanel = ({
           </ProjectCatalogSectionCard>
         ) : null}
 
-        {hasMap && mapLink ? (
-          <ProjectCatalogSectionCard title={linkLabels.map}>
-            <ProjectCatalogMediaPoster
-              title={linkLabels.map}
-              imageSrc={MAP_POSTER_SRC}
-              href={mapLink.url}
-            />
-          </ProjectCatalogSectionCard>
-        ) : null}
+        <ProjectCatalogSectionCard title={linkLabels.map}>
+          <ProjectCatalogGeoMap projectId={projectId} />
+        </ProjectCatalogSectionCard>
 
         {hasMediaLinks ? (
           <ProjectCatalogSectionCard title={linksTitle}>
