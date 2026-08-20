@@ -286,3 +286,104 @@ describe('AdminCompaniesController', () => {
     expect(accountTypes).toEqual(['platform_admin']);
   });
 });
+
+describe('AdminCompaniesService.remove', () => {
+  const companyFindUnique = vi.fn();
+  const projectCount = vi.fn();
+  const requestCount = vi.fn();
+  const crmDealCount = vi.fn();
+  const visualMapCanvasCount = vi.fn();
+  const translationDeleteMany = vi.fn();
+  const readinessDeleteMany = vi.fn();
+  const companyDelete = vi.fn();
+  const transaction = vi.fn();
+  let service: AdminCompaniesService;
+
+  const companyRow = {
+    id: 'co_1',
+    name: 'Builder Co',
+    description: null,
+    shortDescription: null,
+    type: 'builder',
+    status: 'active',
+    source: 'admin',
+    bosCompanyId: null,
+    logoMediaId: null,
+    logoMedia: null,
+    coverMediaId: null,
+    coverMedia: null,
+    phone: null,
+    contactPerson: null,
+    email: null,
+    websiteUrl: null,
+    instagramUrl: null,
+    facebookUrl: null,
+    region: null,
+    address: null,
+    mediaMaterialsUrl: null,
+    advertisingMaterialsUrl: null,
+    createdAt: new Date('2026-01-01T00:00:00.000Z'),
+    updatedAt: new Date('2026-01-01T00:00:00.000Z'),
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+
+    transaction.mockImplementation(async (callback: (tx: unknown) => Promise<void>) => {
+      await callback({
+        translation: { deleteMany: translationDeleteMany },
+        readinessAssessment: { deleteMany: readinessDeleteMany },
+        company: { delete: companyDelete },
+      });
+    });
+
+    const prisma = {
+      db: {
+        company: { findUnique: companyFindUnique, delete: companyDelete },
+        project: { count: projectCount },
+        request: { count: requestCount },
+        crmDeal: { count: crmDealCount },
+        visualMapCanvas: { count: visualMapCanvasCount },
+        $transaction: transaction,
+      },
+    } as unknown as PrismaService;
+
+    service = new AdminCompaniesService(
+      prisma,
+      {
+        assertEmailAvailable: vi.fn(),
+        createCompanyWithPrimaryAdmin: vi.fn(),
+        sendSetPasswordInvite: vi.fn(),
+      } as never,
+      { create: vi.fn() } as never,
+    );
+  });
+
+  it('deletes readiness and company when there are no dependencies', async () => {
+    companyFindUnique.mockResolvedValue(companyRow);
+    projectCount.mockResolvedValue(0);
+    requestCount.mockResolvedValue(0);
+    crmDealCount.mockResolvedValue(0);
+    visualMapCanvasCount.mockResolvedValue(0);
+
+    await service.remove('co_1');
+
+    expect(readinessDeleteMany).toHaveBeenCalledWith({
+      where: { builderCompanyId: 'co_1' },
+    });
+    expect(companyDelete).toHaveBeenCalledWith({ where: { id: 'co_1' } });
+  });
+
+  it('rejects delete when the company still has projects', async () => {
+    companyFindUnique.mockResolvedValue(companyRow);
+    projectCount.mockResolvedValue(2);
+    requestCount.mockResolvedValue(0);
+    crmDealCount.mockResolvedValue(0);
+    visualMapCanvasCount.mockResolvedValue(0);
+
+    await expect(service.remove('co_1')).rejects.toMatchObject({
+      message: expect.stringContaining('cannot be deleted'),
+    });
+    expect(transaction).not.toHaveBeenCalled();
+  });
+});

@@ -214,3 +214,13 @@ export const resendAdminCompanyInvite = (id: string): Promise<void> =>
     method: 'POST',
     credentials: 'include',
   });
+
+/**
+ * Deletes a company that has no catalog or CRM dependencies.
+ */
+export const deleteAdminCompany = (id: string): Promise<void> =>
+  apiFetch<void>({
+    path: `/admin/companies/${encodeURIComponent(id)}`,
+    method: 'DELETE',
+    credentials: 'include',
+  });

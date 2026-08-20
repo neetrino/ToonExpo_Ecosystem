@@ -1818,6 +1818,10 @@
         "resendSubmitting": "Sending…",
         "resendSuccess": "Invite resent successfully",
         "resendNotFound": "No invited admin found for this company",
+        "delete": "Delete company",
+        "deleteConfirmTitle": "Delete company",
+        "deleteConfirmMessage": "Are you sure you want to delete this company? This cannot be undone.",
+        "deleteBlocked": "This company still has projects, requests, deals, or visual maps. Remove those first.",
         "projects": {
           "title": "Projects",
           "count": "{count, plural, =0 {No projects} one {# project} other {# projects}}",

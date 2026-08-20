@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -116,5 +117,13 @@ export class AdminCompaniesController {
   @ApiNoContentResponse({ description: 'Invite resent' })
   async resendInvite(@Param('id') id: string): Promise<void> {
     await this.companiesService.resendInvite(id);
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete a company with no catalog or CRM dependencies' })
+  @ApiNoContentResponse({ description: 'Company deleted' })
+  async remove(@Param('id') id: string): Promise<void> {
+    await this.companiesService.remove(id);
   }
 }
