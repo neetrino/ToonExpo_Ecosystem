@@ -221,7 +221,8 @@ const CatalogKvItem = ({
   register,
 }: CatalogKvItemProps) => {
   const fieldId = `catalog-${sectionId}-${fieldKey}-${locale}`;
-  const wide = isProjectCatalogTextareaKey(fieldKey);
+  const useTextarea = isProjectCatalogTextareaKey(fieldKey);
+  const wide = sectionId === 'bankPartner' ? fieldKey === 'specialTerms' : useTextarea;
   const dateField = isProjectCatalogDateKey(fieldKey);
   const Icon = PROJECT_CATALOG_CRITERION_ICON[catalogDetailKeyToCriterionId(fieldKey)];
   const label = useCatalogFieldLabel(fieldKey);
@@ -242,7 +243,7 @@ const CatalogKvItem = ({
         ) : null}
         {label}
       </label>
-      {wide ? (
+      {useTextarea ? (
         <Textarea
           id={fieldId}
           rows={3}

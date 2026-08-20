@@ -255,18 +255,18 @@ export const buildProjectCatalogRows = (
   );
   pushWide(rows, 'views', labels.views, details.views);
   pushWide(rows, 'services', labels.services, details.services);
-  pushWide(rows, 'paymentTypes', labels.paymentTypes, details.paymentTypes);
-  pushWide(rows, 'installmentTerms', labels.installmentTerms, details.installmentTerms);
-  pushWide(rows, 'mortgageTerms', labels.mortgageTerms, details.mortgageTerms);
-  pushWide(rows, 'specialTerms', labels.specialTerms, details.specialTerms);
-  pushWide(
+  pushCard(rows, 'paymentTypes', labels.paymentTypes, details.paymentTypes);
+  pushCard(rows, 'installmentTerms', labels.installmentTerms, details.installmentTerms);
+  pushCard(rows, 'mortgageTerms', labels.mortgageTerms, details.mortgageTerms);
+  pushCard(
     rows,
     'specialTermsAvailable',
     labels.specialTermsAvailable,
     details.specialTermsAvailable,
   );
-  pushWide(rows, 'incomeTaxRefund', labels.incomeTaxRefund, details.incomeTaxRefund);
-  pushWide(rows, 'subsidizedPrograms', labels.subsidizedPrograms, details.subsidizedPrograms);
+  pushCard(rows, 'incomeTaxRefund', labels.incomeTaxRefund, details.incomeTaxRefund);
+  pushCard(rows, 'subsidizedPrograms', labels.subsidizedPrograms, details.subsidizedPrograms);
+  pushWide(rows, 'specialTerms', labels.specialTerms, details.specialTerms);
   pushWide(rows, 'handoverDescription', labels.handoverDescription, details.handoverDescription);
 
   return rows;

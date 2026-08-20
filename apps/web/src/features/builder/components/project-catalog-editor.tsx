@@ -183,7 +183,7 @@ export const ProjectCatalogEditor = ({
                     addLabel={t('addItem')}
                     removeLabel={t('removeItem')}
                     placeholder={getCatalogListPlaceholder(locale, 'amenity')}
-                    columns={3}
+                    columns={4}
                   />
                 )}
               />

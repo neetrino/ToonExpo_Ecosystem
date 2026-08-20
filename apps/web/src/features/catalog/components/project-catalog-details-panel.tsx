@@ -158,7 +158,7 @@ export const ProjectCatalogDetailsPanel = ({
 
         {hasAmenities ? (
           <ProjectCatalogSectionCard title={amenitiesTitle}>
-            <ProjectCatalogCheckList items={amenityLabels} />
+            <ProjectCatalogCheckList items={amenityLabels} columns={4} />
           </ProjectCatalogSectionCard>
         ) : null}
 

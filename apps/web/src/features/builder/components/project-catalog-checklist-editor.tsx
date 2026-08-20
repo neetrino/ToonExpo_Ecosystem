@@ -3,6 +3,7 @@
 import { Check, Plus, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
+import { CATALOG_CHECKLIST_GRID_CLASS } from '@/features/catalog/components/project-catalog-details-bits';
 import { PROJECT_CATALOG_LIST_MAX_ITEMS } from '@/features/builder/constants/project-catalog-editor';
 import { Button } from '@/shared/ui/button';
 import { Input } from '@/shared/ui/input';
@@ -16,7 +17,7 @@ type ProjectCatalogChecklistEditorProps = {
   addLabel: string;
   removeLabel: string;
   placeholder?: string | undefined;
-  columns?: 2 | 3 | undefined;
+  columns?: 2 | 3 | 4 | undefined;
 };
 
 const splitItems = (value: string): string[] =>
@@ -81,7 +82,7 @@ export const ProjectCatalogChecklistEditor = ({
       <ul
         className={cn(
           'grid grid-cols-1 gap-3',
-          columns === 2 ? 'sm:grid-cols-2' : 'sm:grid-cols-2 lg:grid-cols-3',
+          CATALOG_CHECKLIST_GRID_CLASS[columns],
         )}
       >
         {rows.map((row, index) => {

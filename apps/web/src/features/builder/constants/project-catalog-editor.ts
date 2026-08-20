@@ -140,17 +140,17 @@ export const PROJECT_CATALOG_FINANCE_KEYS = [
   'unitPriceMax',
 ] as const satisfies ReadonlyArray<keyof ProjectCatalogDetails>;
 
-/** Mortgage / payment terms → Bank partner card. */
+/** Mortgage / payment terms → Bank partner card. Compact pairs, description last. */
 export const PROJECT_CATALOG_BANK_PARTNER_KEYS = [
   'partnerBank',
   'parkingPrice',
   'paymentTypes',
   'installmentTerms',
   'mortgageTerms',
-  'specialTerms',
   'specialTermsAvailable',
   'incomeTaxRefund',
   'subsidizedPrograms',
+  'specialTerms',
 ] as const satisfies ReadonlyArray<keyof ProjectCatalogDetails>;
 
 /** @deprecated Prefer OVERVIEW / DETAILS / FINANCE / BANK_PARTNER key lists. */
