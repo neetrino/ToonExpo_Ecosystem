@@ -149,7 +149,7 @@ export const MediaUploadField = ({
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-center justify-between gap-2">
-        <span className="text-sm font-medium text-ink">{label}</span>
+        <span className="form-field-label text-sm font-medium text-ink">{label}</span>
         {allowClear && hasSelection ? (
           <IconButton
             type="button"

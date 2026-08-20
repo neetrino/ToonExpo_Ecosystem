@@ -177,6 +177,7 @@ const SideSheetPanel = ({
             ref={scrollRef}
             className={cn(
               'min-h-0 flex-1 overflow-y-auto overflow-anchor-none overscroll-contain px-5 py-4',
+              '[&_.form-field-label]:font-bold [&_.form-field-label]:text-brand-hover',
               MOBILE_BOTTOM_NAV_SHEET_PB_CLASS,
             )}
           >
