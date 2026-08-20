@@ -3387,6 +3387,7 @@
         "contextFloor": "Հարկ",
         "mediaAssetId": "Canvas-ի պատկեր",
         "title": "Վերնագիր",
+        "titlePlaceholder": "օր. Համալիրի գլխավոր պլան",
         "create": "Ստեղծել canvas",
         "creating": "Ստեղծվում է…",
         "cancel": "Չեղարկել"

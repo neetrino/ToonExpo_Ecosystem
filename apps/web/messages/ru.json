@@ -3387,6 +3387,7 @@
         "contextFloor": "Этаж",
         "mediaAssetId": "Изображение canvas",
         "title": "Название",
+        "titlePlaceholder": "напр. Генплан комплекса",
         "create": "Создать canvas",
         "creating": "Создание…",
         "cancel": "Отмена"

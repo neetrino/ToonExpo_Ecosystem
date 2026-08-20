@@ -3647,6 +3647,7 @@
         "contextFloor": "Floor",
         "mediaAssetId": "Canvas image",
         "title": "Title",
+        "titlePlaceholder": "e.g. Site masterplan",
         "create": "Create canvas",
         "creating": "Creating…",
         "cancel": "Cancel"

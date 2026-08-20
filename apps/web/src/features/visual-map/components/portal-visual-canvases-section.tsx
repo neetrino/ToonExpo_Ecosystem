@@ -245,7 +245,7 @@ const PortalVisualCanvasCreateForm = ({ project, isBusy, onCancel, onSubmit }: C
           )}
         />
         <FormField id="canvas-title" label={t('title')}>
-          <Input id="canvas-title" {...form.register('title')} />
+          <Input id="canvas-title" placeholder={t('titlePlaceholder')} {...form.register('title')} />
         </FormField>
         <div className="flex flex-wrap gap-2">
           <Button type="submit" variant="secondary" disabled={isBusy}>
