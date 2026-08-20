@@ -24,7 +24,6 @@ import {
 } from '@/features/builder/schemas/project.schema';
 import { catalogJsonToFormSlice } from '@/features/builder/utils/project-catalog-amenities';
 import { toUpdateProjectRequest } from '@/features/builder/utils/project-mappers';
-import { VerifiedStatusField } from '@/features/builder/components/verified-status-field';
 import { MediaUploadField } from '@/features/media/components/media-upload-field';
 import { Button } from '@/shared/ui/button';
 import { cn } from '@/shared/ui/cn';
@@ -59,7 +58,6 @@ const toFormValues = (project: PortalProjectDetail): UpdateProjectFormValues => 
   completionDate: project.completionDate ?? '',
   ...catalogJsonToFormSlice(project.amenities, project.nearbyPlaces),
   coverMediaId: project.coverMediaId ?? project.cover?.id ?? '',
-  verified: project.verified,
 });
 
 /**
@@ -213,7 +211,7 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
         )}
       </TranslationTabs>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2">
         <FormField id="edit-type" label={t('form.projectType')}>
           <Input
             id="edit-type"
@@ -221,7 +219,6 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
             {...register('projectType')}
           />
         </FormField>
-        <VerifiedStatusField id="edit-project-verified" control={control} name="verified" />
         <FormField id="edit-completion" label={t('form.completionDate')}>
           <Controller
             name="completionDate"

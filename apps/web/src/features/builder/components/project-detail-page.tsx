@@ -47,15 +47,12 @@ export const ProjectDetailPage = ({ projectId, showInventory = true }: ProjectDe
 
   return (
     <div className="flex flex-col gap-8 pb-24">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <BackLink href={listHref} label={t('detail.back')} />
-          <h1 className="text-page-title text-ink">{project.name}</h1>
-          <p className="text-sm text-ink-secondary">
-            {t(`publication.${project.publicationStatus}`)}
-          </p>
+          <ProjectPublicationActions project={project} />
         </div>
-        <ProjectPublicationActions project={project} />
+        <h1 className="text-page-title text-ink">{project.name}</h1>
       </div>
 
       <Card>

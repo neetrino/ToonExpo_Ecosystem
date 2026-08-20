@@ -61,7 +61,9 @@ export type CreateProjectFormValues = z.infer<typeof createProjectSchema>;
 /**
  * Client schema for updating a portal project (includes public catalog JSON).
  */
-export const updateProjectSchema = createProjectSchema.merge(projectCatalogFormSchema);
+export const updateProjectSchema = createProjectSchema
+  .omit({ verified: true })
+  .merge(projectCatalogFormSchema);
 
 export type UpdateProjectFormValues = z.infer<typeof updateProjectSchema>;
 

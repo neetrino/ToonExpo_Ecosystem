@@ -100,6 +100,9 @@ export const useUpdatePortalProjectMutation = (id: string) => {
     onSuccess: (project) => {
       queryClient.setQueryData([...portalProjectQueryKey(id), ...scopeKey(scope)], project);
       void queryClient.invalidateQueries({ queryKey: PORTAL_PROJECTS_QUERY_KEY });
+      if (scope.mode === 'admin') {
+        void queryClient.invalidateQueries({ queryKey: ADMIN_PROJECTS_QUERY_KEY });
+      }
     },
   });
 };

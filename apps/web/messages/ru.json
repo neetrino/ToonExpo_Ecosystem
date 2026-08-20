@@ -22,6 +22,9 @@
       "cards": "Карточки",
       "board": "Доска"
     },
+    "publicationStatus": {
+      "label": "Статус публикации"
+    },
     "datePicker": {
       "placeholder": "Выберите дату",
       "clear": "Удалить",
@@ -3344,6 +3347,7 @@
       "saveFloorplan": "Сохранить планировку",
       "coverSaved": "Обложка сохранена",
       "floorplanSaved": "Планировка сохранена",
+      "publicationSuccess": "Статус публикации обновлён",
       "floorNumber": "Номер этажа",
       "floorName": "Название этажа",
       "displayLabel": "Метка",

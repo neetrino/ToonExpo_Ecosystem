@@ -22,6 +22,9 @@
       "cards": "Քարտեր",
       "board": "Տախտակ"
     },
+    "publicationStatus": {
+      "label": "Հրապարակման կարգավիճակ"
+    },
     "datePicker": {
       "placeholder": "Ընտրել ամսաթիվ",
       "clear": "Մաքրել",
@@ -3344,6 +3347,7 @@
       "saveFloorplan": "Պահպանել հատակագիծը",
       "coverSaved": "Շապիկի նկարը պահպանված է",
       "floorplanSaved": "Հատակագծի նկարը պահպանված է",
+      "publicationSuccess": "Հրապարակման կարգավիճակը թարմացվեց",
       "floorNumber": "Հարկի համար",
       "floorName": "Հարկի անուն",
       "displayLabel": "Ցուցադրման պիտակ",

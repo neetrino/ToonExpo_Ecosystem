@@ -22,6 +22,9 @@
       "cards": "Cards",
       "board": "Board"
     },
+    "publicationStatus": {
+      "label": "Publication status"
+    },
     "datePicker": {
       "placeholder": "Select date",
       "clear": "Clear",
@@ -3604,6 +3607,7 @@
       "saveFloorplan": "Save floor plan",
       "coverSaved": "Cover image saved",
       "floorplanSaved": "Floor plan saved",
+      "publicationSuccess": "Publication updated",
       "floorNumber": "Floor number",
       "floorName": "Floor name",
       "displayLabel": "Display label",

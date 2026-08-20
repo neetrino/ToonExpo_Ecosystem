@@ -21,6 +21,7 @@ import {
 import {
   createPortalBuilding,
   updatePortalBuilding,
+  updatePortalBuildingPublication,
 } from '@/features/builder/api/portal-buildings-api';
 import { createPortalFloor, updatePortalFloor } from '@/features/builder/api/portal-floors-api';
 import { useCatalogScope } from '@/features/builder/catalog-scope-context';
@@ -120,6 +121,22 @@ export const useUpdateBuildingMutation = (projectId: string, buildingId: string)
   return useMutation({
     mutationFn: (body: UpdatePortalBuildingRequest) =>
       updatePortalBuilding(buildingId, body, { scope }),
+    onSuccess: () => {
+      invalidateProject(queryClient, projectId);
+    },
+  });
+};
+
+/**
+ * Changes building publication status.
+ */
+export const useUpdateBuildingPublicationMutation = (projectId: string, buildingId: string) => {
+  const queryClient = useQueryClient();
+  const scope = useCatalogScope();
+
+  return useMutation({
+    mutationFn: (body: UpdatePortalPublicationRequest) =>
+      updatePortalBuildingPublication(buildingId, body, { scope }),
     onSuccess: () => {
       invalidateProject(queryClient, projectId);
     },

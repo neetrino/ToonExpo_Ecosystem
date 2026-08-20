@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 import { AddFloorSheet } from '@/features/builder/components/add-floor-sheet';
+import { BuildingPublicationActions } from '@/features/builder/components/building-publication-actions';
 import { EditBuildingMediaForm } from '@/features/builder/components/edit-building-media-form';
 import { FloorInventoryRow } from '@/features/builder/components/floor-inventory-row';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
@@ -25,25 +26,27 @@ export const BuildingAccordion = ({ projectId, building }: BuildingAccordionProp
 
   return (
     <section className="rounded-sm border border-border">
-      <button
-        type="button"
-        className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left"
-        aria-expanded={open}
-        onClick={() => {
-          setOpen((value) => !value);
-        }}
-      >
-        <span>
-          <span className="block text-sm font-semibold text-ink">{building.name}</span>
-          <span className="block text-xs text-ink-muted">
-            {t('floorsCount', { count: building.floors.length })} ·{' '}
-            {t(`publication.${building.publicationStatus}`)}
+      <div className="flex flex-wrap items-center gap-3 px-4 py-3">
+        <button
+          type="button"
+          className="flex min-w-0 flex-1 items-center justify-between gap-3 text-left"
+          aria-expanded={open}
+          onClick={() => {
+            setOpen((value) => !value);
+          }}
+        >
+          <span>
+            <span className="block text-sm font-semibold text-ink">{building.name}</span>
+            <span className="block text-xs text-ink-muted">
+              {t('floorsCount', { count: building.floors.length })}
+            </span>
           </span>
-        </span>
-        <span className="text-ink-muted" aria-hidden>
-          {open ? '−' : '+'}
-        </span>
-      </button>
+          <span className="text-ink-muted" aria-hidden>
+            {open ? '−' : '+'}
+          </span>
+        </button>
+        <BuildingPublicationActions projectId={projectId} building={building} />
+      </div>
 
       {open ? (
         <div className="flex flex-col gap-3 border-t border-border px-4 py-3">
