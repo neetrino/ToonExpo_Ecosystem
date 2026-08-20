@@ -11,8 +11,9 @@ import { PUBLIC_PUBLICATION_STATUS } from "./catalog.constants.js";
 import { aggregateVisiblePrices } from "./mappers/aggregate-prices.js";
 import {
   decimalToString,
+  isPriceOnRequestEnabled,
   publishedApartmentWhere,
-  shouldRevealPrice,
+  shouldRevealCatalogPrice,
 } from "./mappers/catalog.mapper.js";
 
 type PricedApartmentRow = {
@@ -21,6 +22,7 @@ type PricedApartmentRow = {
   price: Prisma.Decimal | null;
   priceCurrency: string;
   priceVisibility: string;
+  building?: { priceOnRequestEnabled?: boolean } | null;
 };
 
 const APARTMENT_PRICE_SELECT = {
@@ -29,6 +31,7 @@ const APARTMENT_PRICE_SELECT = {
   price: true,
   priceCurrency: true,
   priceVisibility: true,
+  building: { select: { priceOnRequestEnabled: true } },
 } as const;
 
 /**
@@ -37,8 +40,16 @@ const APARTMENT_PRICE_SELECT = {
  */
 const isLoginOnlyPrice = (row: PricedApartmentRow): boolean =>
   row.price != null &&
-  shouldRevealPrice(row.priceVisibility, true) &&
-  !shouldRevealPrice(row.priceVisibility, false);
+  shouldRevealCatalogPrice(
+    row.priceVisibility,
+    true,
+    isPriceOnRequestEnabled(row),
+  ) &&
+  !shouldRevealCatalogPrice(
+    row.priceVisibility,
+    false,
+    isPriceOnRequestEnabled(row),
+  );
 
 /**
  * Authenticated price overlay on top of the anonymous cached catalog:

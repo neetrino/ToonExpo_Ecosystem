@@ -78,3 +78,31 @@ export const shouldRevealPrice = (
 
   return isAuthenticated && priceVisibility === "visible_after_login";
 };
+
+/**
+ * Building-level price-on-request never reveals a numeric price, even after login.
+ */
+export const shouldRevealCatalogPrice = (
+  priceVisibility: string,
+  isAuthenticated: boolean,
+  priceOnRequestEnabled: boolean,
+): boolean => {
+  if (priceOnRequestEnabled) {
+    return false;
+  }
+
+  return shouldRevealPrice(priceVisibility, isAuthenticated);
+};
+
+export const isPriceOnRequestEnabled = (row: {
+  priceOnRequestEnabled?: boolean | undefined;
+  building?: { priceOnRequestEnabled?: boolean | undefined } | null | undefined;
+}): boolean =>
+  row.priceOnRequestEnabled === true || row.building?.priceOnRequestEnabled === true;
+
+/**
+ * True when any published building opted into the public price-on-request CTA.
+ */
+export const hasPublishedPriceOnRequest = (
+  buildings: Array<{ priceOnRequestEnabled: boolean }>,
+): boolean => buildings.some((building) => building.priceOnRequestEnabled);

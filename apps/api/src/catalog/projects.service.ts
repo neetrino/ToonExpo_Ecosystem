@@ -49,7 +49,12 @@ export class ProjectsService {
               price: true,
               priceCurrency: true,
               priceVisibility: true,
+              building: { select: { priceOnRequestEnabled: true } },
             },
+          },
+          buildings: {
+            where: { publicationStatus: PUBLIC_PUBLICATION_STATUS },
+            select: { priceOnRequestEnabled: true },
           },
         },
       }),
@@ -130,6 +135,7 @@ export class ProjectsService {
             price: true,
             priceCurrency: true,
             priceVisibility: true,
+            building: { select: { priceOnRequestEnabled: true } },
           },
         },
       },
@@ -244,6 +250,7 @@ export class ProjectsService {
         filter.price.lte = query.maxPrice;
       }
       filter.priceVisibility = 'public';
+      filter.building = { priceOnRequestEnabled: false };
     }
 
     return filter;

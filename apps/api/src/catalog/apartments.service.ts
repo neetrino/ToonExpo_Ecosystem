@@ -10,7 +10,7 @@ import {
 import type { ListApartmentsQueryDto } from './dto/list-apartments.query.dto.js';
 import type { CatalogViewerContext } from './projects.service.js';
 import { toPublicFileUrl } from '../media/public-file-url.js';
-import { decimalToString, shouldRevealPrice, toMediaSummary } from './mappers/catalog.mapper.js';
+import { decimalToString, shouldRevealCatalogPrice, toMediaSummary } from './mappers/catalog.mapper.js';
 import { buildApartmentListWhere } from './utils/build-apartment-list-where.js';
 import { loadTranslations } from './utils/load-translations.js';
 import {
@@ -82,6 +82,7 @@ export class ApartmentsService {
           priceVisibility: true,
           projectId: true,
           coverMedia: true,
+          building: { select: { priceOnRequestEnabled: true } },
           project: {
             select: {
               id: true,
@@ -105,7 +106,12 @@ export class ApartmentsService {
 
     return {
       data: apartments.map((apartment) => {
-        const revealPrice = shouldRevealPrice(apartment.priceVisibility, viewer.isAuthenticated);
+        const priceOnRequest = apartment.building.priceOnRequestEnabled;
+        const revealPrice = shouldRevealCatalogPrice(
+          apartment.priceVisibility,
+          viewer.isAuthenticated,
+          priceOnRequest,
+        );
         const projectName = resolveTranslatedName(
           translations,
           TRANSLATION_ENTITY.project,
@@ -126,6 +132,7 @@ export class ApartmentsService {
           price: revealPrice ? decimalToString(apartment.price) : null,
           priceCurrency: apartment.priceCurrency,
           priceVisibility: apartment.priceVisibility,
+          priceOnRequest,
           projectId: apartment.projectId,
           projectName,
           locationText: apartment.project.locationText,
@@ -184,7 +191,12 @@ export class ApartmentsService {
       apartment.project.id,
       apartment.project.builderCompany.id,
     );
-    const revealPrice = shouldRevealPrice(apartment.priceVisibility, viewer.isAuthenticated);
+    const priceOnRequest = apartment.building.priceOnRequestEnabled;
+    const revealPrice = shouldRevealCatalogPrice(
+      apartment.priceVisibility,
+      viewer.isAuthenticated,
+      priceOnRequest,
+    );
 
     const projectName = resolveTranslatedName(
       translations,
@@ -233,6 +245,7 @@ export class ApartmentsService {
       price: revealPrice ? decimalToString(apartment.price) : null,
       priceCurrency: apartment.priceCurrency,
       priceVisibility: apartment.priceVisibility,
+      priceOnRequest,
       description,
       matterportUrl: apartment.matterportUrl,
       external3dUrl: apartment.external3dUrl,

@@ -2,6 +2,7 @@ import type {
   CreatePortalBuildingRequest,
   PortalBuildingSummary,
   UpdatePortalBuildingRequest,
+  UpdatePortalPriceOnRequestRequest,
   UpdatePortalPublicationRequest,
 } from '@toonexpo/contracts';
 
@@ -63,6 +64,20 @@ export const updatePortalBuildingPublication = (
 ): Promise<PortalBuildingSummary> =>
   apiFetch<PortalBuildingSummary>({
     path: catalogPath(`/portal/buildings/${encodeURIComponent(id)}/publication`, options),
+    method: 'PATCH',
+    ...jsonCredentials,
+    body: JSON.stringify(body),
+  });
+
+/**
+ * Enables or disables public price-on-request for a building (builder company_admin).
+ */
+export const updatePortalBuildingPriceOnRequest = (
+  id: string,
+  body: UpdatePortalPriceOnRequestRequest,
+): Promise<PortalBuildingSummary> =>
+  apiFetch<PortalBuildingSummary>({
+    path: `/portal/buildings/${encodeURIComponent(id)}/price-on-request`,
     method: 'PATCH',
     ...jsonCredentials,
     body: JSON.stringify(body),

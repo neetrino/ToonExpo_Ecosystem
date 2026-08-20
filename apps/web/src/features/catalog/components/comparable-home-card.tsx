@@ -4,6 +4,7 @@ import type { PriceVisibility } from '@toonexpo/contracts';
 import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
 
+import { CatalogRequestButton } from '@/features/buyer/components/catalog-request-button';
 import { usePriceOverlay } from '@/features/catalog/components/price-overlay-scope';
 import { formatCatalogPrice } from '@/features/catalog/utils/format-price';
 import { Link } from '@/i18n/navigation';
@@ -19,6 +20,8 @@ export type ComparableHomeCardModel = {
   price: string | null;
   priceCurrency: string;
   priceVisibility: PriceVisibility;
+  priceOnRequest: boolean;
+  projectId: string;
   image: { src: string; alt: string } | null;
 };
 
@@ -82,9 +85,19 @@ export const ComparableHomeCard = ({ home, className }: ComparableHomeCardProps)
               {t('unit', { number: home.title })}
             </Link>
           </h3>
-          <p className="shrink-0 font-brand text-lg font-bold leading-[23px] text-brand-deep">
-            {priceLabel}
-          </p>
+          {home.priceOnRequest ? (
+            <CatalogRequestButton
+              projectId={home.projectId}
+              apartmentId={home.id}
+              labelKey="requestPrice"
+              appearance="priceLabel"
+              className="shrink-0 font-brand text-lg font-bold leading-[23px]"
+            />
+          ) : (
+            <p className="shrink-0 font-brand text-lg font-bold leading-[23px] text-brand-deep">
+              {priceLabel}
+            </p>
+          )}
         </div>
 
         <p className="mb-4 min-h-4 truncate text-xs leading-4 text-header-muted">

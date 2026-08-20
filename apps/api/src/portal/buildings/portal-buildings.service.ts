@@ -123,6 +123,25 @@ export class PortalBuildingsService {
     return mapPortalBuilding(building);
   }
 
+  async updatePriceOnRequest(
+    companyId: string,
+    userId: string,
+    buildingId: string,
+    enabled: boolean,
+  ): Promise<PortalBuildingSummary> {
+    const owned = await requireOwnedBuilding(this.prisma, buildingId, companyId);
+    const building = await this.prisma.db.building.update({
+      where: { id: buildingId },
+      data: {
+        priceOnRequestEnabled: enabled,
+        updatedByUserId: userId,
+      },
+      include: buildingInclude,
+    });
+    this.webRevalidation.revalidateCatalog(owned.projectId);
+    return mapPortalBuilding(building);
+  }
+
   async remove(companyId: string, buildingId: string): Promise<void> {
     const building = await this.prisma.db.building.findFirst({
       where: {

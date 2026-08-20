@@ -52,6 +52,7 @@ type BuildingRow = {
   displayOrder: number;
   floorsCount: number | null;
   coverMediaId: string | null;
+  priceOnRequestEnabled: boolean;
   createdAt: Date;
   updatedAt: Date;
   floors: FloorRow[];
@@ -199,6 +200,7 @@ export const mapPortalBuilding = (building: BuildingRow): PortalBuildingSummary 
   displayOrder: building.displayOrder,
   floorsCount: building.floorsCount,
   coverMediaId: building.coverMediaId,
+  priceOnRequestEnabled: building.priceOnRequestEnabled,
   floors: building.floors.map(mapPortalFloor),
   createdAt: building.createdAt.toISOString(),
   updatedAt: building.updatedAt.toISOString(),

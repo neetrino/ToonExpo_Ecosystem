@@ -19,6 +19,8 @@ import { Textarea } from '@/shared/ui/textarea';
 type RequestFormPanelProps = {
   projectId: string;
   apartmentId?: string | undefined;
+  /** Prefills the optional note (price-on-request CTA). */
+  defaultNote?: string | undefined;
   /** Required for modal variant (close / cancel). */
   onClose?: (() => void) | undefined;
   /** `modal` = dialog with cancel; `page` = QR interest landing. */
@@ -33,6 +35,7 @@ type SuccessKind = 'created' | 'deduplicated';
 export const RequestFormPanel = ({
   projectId,
   apartmentId,
+  defaultNote = '',
   onClose,
   variant = 'modal',
 }: RequestFormPanelProps) => {
@@ -49,7 +52,7 @@ export const RequestFormPanel = ({
     formState: { errors, isSubmitting },
   } = useForm<CreateRequestNoteValues>({
     resolver: zodResolver(createRequestNoteSchema),
-    defaultValues: { note: '' },
+    defaultValues: { note: defaultNote },
   });
 
   const onSubmit = handleSubmit(async (values) => {

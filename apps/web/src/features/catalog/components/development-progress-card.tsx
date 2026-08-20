@@ -6,6 +6,8 @@ import { useLocale, useTranslations } from 'next-intl';
 
 import { computeSoldPercent, resolveBadge } from '@/features/catalog/utils/development-progress';
 import { formatCompactPrice } from '@/features/catalog/utils/format-price';
+import { shouldShowPriceOnRequestCta } from '@/features/catalog/utils/price-on-request-cta';
+import { ProjectPriceCta } from '@/features/catalog/components/project-price-cta';
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 
@@ -87,7 +89,16 @@ export const DevelopmentProgressCard = ({
               {project.name}
             </Link>
           </h3>
-          <p className="shrink-0 text-sm font-semibold text-brand-deep">{priceLabel}</p>
+          <ProjectPriceCta
+            projectId={project.id}
+            priceOnRequest={shouldShowPriceOnRequestCta({
+              priceOnRequest: project.priceOnRequest,
+              minPrice: project.minPrice,
+              maxPrice: project.maxPrice,
+            })}
+            priceLabel={priceLabel}
+            className="shrink-0 text-sm font-semibold text-brand-deep"
+          />
         </div>
 
         <p className="text-xs leading-4 text-header-muted">

@@ -19,6 +19,7 @@ export type BuyApartmentListing = {
   price: string | null;
   priceCurrency: string;
   priceVisibility: PriceVisibility;
+  priceOnRequest: boolean;
   salesStatus: ApartmentListItem['salesStatus'];
   locationLine: string | null;
   image: { src: string; alt: string } | null;
@@ -51,6 +52,7 @@ export const toBuyApartmentListing = (apartment: ApartmentListItem): BuyApartmen
     price: apartment.price,
     priceCurrency: apartment.priceCurrency,
     priceVisibility: apartment.priceVisibility,
+    priceOnRequest: apartment.priceOnRequest,
     salesStatus: apartment.salesStatus,
     locationLine,
     image: apartment.cover

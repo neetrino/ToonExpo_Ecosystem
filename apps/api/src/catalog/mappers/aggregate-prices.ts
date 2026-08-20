@@ -1,13 +1,19 @@
 import type { ApartmentSalesStatus, Prisma } from "@toonexpo/db";
 
 import { DEFAULT_CATALOG_CURRENCY } from "../catalog.constants.js";
-import { decimalToString, shouldRevealPrice } from "./catalog.mapper.js";
+import {
+  decimalToString,
+  isPriceOnRequestEnabled,
+  shouldRevealCatalogPrice,
+} from "./catalog.mapper.js";
 
 type ApartmentPriceRow = {
   salesStatus: ApartmentSalesStatus;
   price: Prisma.Decimal | null;
   priceCurrency: string;
   priceVisibility: string;
+  priceOnRequestEnabled?: boolean;
+  building?: { priceOnRequestEnabled?: boolean } | null;
 };
 
 /**
@@ -23,8 +29,11 @@ export const aggregateVisiblePrices = (
 } => {
   const visiblePrices = apartments.filter(
     (apartment) =>
-      shouldRevealPrice(apartment.priceVisibility, isAuthenticated) &&
-      apartment.price != null,
+      shouldRevealCatalogPrice(
+        apartment.priceVisibility,
+        isAuthenticated,
+        isPriceOnRequestEnabled(apartment),
+      ) && apartment.price != null,
   );
 
   if (visiblePrices.length === 0) {

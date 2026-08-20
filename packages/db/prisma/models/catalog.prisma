@@ -154,6 +154,8 @@ model Building {
   floorsCount       Int?              @map("floors_count")
   coverMediaId      String?           @map("cover_media_id")
   internalCode      String?           @map("internal_code")
+  /// When true, public catalog hides this building's prices and shows a request CTA.
+  priceOnRequestEnabled Boolean       @default(false) @map("price_on_request_enabled")
   createdByUserId   String?           @map("created_by_user_id")
   updatedByUserId   String?           @map("updated_by_user_id")
   createdAt         DateTime          @default(now()) @map("created_at")

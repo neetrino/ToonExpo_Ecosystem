@@ -87,6 +87,7 @@ Fields on `Company` used for public catalog presentation:
 ### Operational Fields
 
 - internal_code optional;
+- price_on_request_enabled (builder-only status; default off);
 - created_by_user_id;
 - updated_by_user_id;
 

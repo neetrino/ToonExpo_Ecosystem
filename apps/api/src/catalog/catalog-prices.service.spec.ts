@@ -16,12 +16,14 @@ const apartmentRow = (
   id: string,
   price: string | null,
   priceVisibility: string,
+  priceOnRequestEnabled = false,
 ) => ({
   id,
   salesStatus: "available",
   price: price == null ? null : decimal(price),
   priceCurrency: "AMD",
   priceVisibility,
+  building: { priceOnRequestEnabled },
 });
 
 describe("CatalogPricesService", () => {
@@ -129,5 +131,21 @@ describe("CatalogPricesService", () => {
     expect(ranges).toEqual([
       { projectId: "proj_1", minPrice: null, maxPrice: null, priceCurrency: null },
     ]);
+  });
+
+  it("excludes price-on-request building apartments from overlay and range", async () => {
+    projectFindFirst.mockResolvedValue({
+      id: "proj_1",
+      apartments: [
+        apartmentRow("apt_public", "50000000", "public"),
+        apartmentRow("apt_request", "42000000", "public", true),
+      ],
+    });
+
+    const overlay = await service.getProjectPrices("proj_1");
+
+    expect(overlay.apartments).toEqual([]);
+    expect(overlay.minPrice).toBe("50000000");
+    expect(overlay.maxPrice).toBe("50000000");
   });
 });

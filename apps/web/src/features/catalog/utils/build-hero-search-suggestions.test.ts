@@ -22,6 +22,7 @@ const project = (overrides: Partial<ProjectListItem> & Pick<ProjectListItem, 'id
   minPrice: null,
   maxPrice: null,
   priceCurrency: null,
+  priceOnRequest: false,
   ...overrides,
 });
 

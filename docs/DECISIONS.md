@@ -71,6 +71,7 @@
 
 - **Currency (v1):** AMD only. Apartment prices are stored in major units as `Decimal(14,2)` (e.g. `79500000` dram). A `currency` column exists in the schema for future use; multi-currency display and a currency switcher are out of v1.
 - **Price visibility (v1):** builder selects one of three modes per apartment — `public`, `by_request`, `visible_after_login`. `visible_after_login` is in v1: price is shown only to authenticated buyers (registration incentive). Anonymous public API responses omit price unless mode is `public`; `by_request` and `visible_after_login` never expose numeric price to unauthenticated callers.
+- **Building price on request (v1):** builder `company_admin` (not Admin catalog) may enable `price_on_request_enabled` per building. Public catalog then hides that building's prices and shows a request button that creates a CRM intake deal so the builder can offer a price.
 - **Catalog content localization:** project and builder descriptions are authored in Armenian, Russian and English (`hy` / `ru` / `en`). Translation records are part of the DB schema from v1. UI locale (next-intl) and catalog content locale are independent.
 - **Catalog data model (v1):** no separate `BuilderCompany` profile table — `Company` (`type = builder`) is sufficient. Media galleries deferred; v1 uses cover/logo URL fields only. Projects that include sold apartments remain in the public catalog.
 - **Public catalog design:** Variant A is the canonical direction (see [Design Style Variants](./02-ToonExpo-Ecosystem/03-UI-UX/05-Design-Style-Variants.md)).

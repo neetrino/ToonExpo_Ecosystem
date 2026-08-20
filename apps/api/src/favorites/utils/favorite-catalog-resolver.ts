@@ -110,7 +110,12 @@ const loadProjectCards = async (
           price: true,
           priceCurrency: true,
           priceVisibility: true,
+          building: { select: { priceOnRequestEnabled: true } },
         },
+      },
+      buildings: {
+        where: { publicationStatus: PUBLIC_PUBLICATION_STATUS },
+        select: { priceOnRequestEnabled: true },
       },
     },
   });
@@ -156,6 +161,7 @@ const loadApartmentCards = async (
     },
     include: {
       coverMedia: true,
+      building: { select: { priceOnRequestEnabled: true } },
       project: {
         include: {
           builderCompany: { include: { logoMedia: true } },

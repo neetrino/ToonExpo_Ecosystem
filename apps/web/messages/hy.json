@@ -480,6 +480,7 @@
         "created": "Հայտը ուղարկված է, կառուցապատողը կկապվի ձեզ հետ։",
         "deduplicated": "Հայտը ավելացվել է ձեր բաց երկխոսությանը կառուցապատողի հետ։"
       },
+      "priceDefaultNote": "Ցանկանում եմ ստանալ այս հայտարարության գինը։",
       "errors": {
         "generic": "Չհաջողվեց ուղարկել հայտը։ Կրկին փորձեք։"
       }
@@ -566,17 +567,6 @@
         "inProgress": "Ընթացքում",
         "upcoming": "Սպասվող"
       },
-      "floorsTitle": "Ընտրեք հարկը",
-      "floorsSubtitle": "Ընտրեք մակարդակը՝ հատակագիծը և առկա բնակարանները տեսնելու համար։",
-      "floorsEmpty": "Դեռ հրապարակված հարկեր չկան։",
-      "buildingStack": "Շենքի հարկեր",
-      "floorLabel": "Հարկ {number}",
-      "availCount": "{count} ազատ",
-      "unitsCount": "{count} բնակ.",
-      "legendAvailable": "Ազատ",
-      "legendReserved": "Ամրագրված",
-      "legendSold": "Վաճառված",
-      "floorVisualAlt": "Աքսոնոմետրիկ տեսք՝ {project}",
       "reserveTitle": "Ամրագրեք բնակարան {project}-ում",
       "reserveSubtitle": "Ներբեռնեք բրոշյուրը, պլանավորեք այց կամ խոսեք կառուցապատողի վաճառքի թիմի հետ։",
       "downloadBrochure": "Ներբեռնել բրոշյուրը",
@@ -3345,6 +3335,10 @@
       "rooms": "Սենյակներ",
       "areaTotal": "Մակերես (մ²)",
       "price": "Գին",
+      "priceOnRequest": "Գինը ըստ հարցման",
+      "priceOnRequestHint": "Միացնելիս հանրային էջերում այս շենքի գները չեն երևա, իսկ գնորդները կարող են հայտ ուղարկել։",
+      "priceOnRequestOn": "Գինը ըստ հարցման",
+      "priceOnRequestSaved": "Գինը ըստ հարցման կարգավիճակը թարմացված է",
       "publication": {
         "draft": "Սևագիր",
         "published": "Հրապարակված",
