@@ -4,6 +4,8 @@ import { useTranslations } from 'next-intl';
 import type { ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 
+import { getOverlayPortalHost } from '@/shared/ui/overlay-portal-host';
+
 type MappingFullscreenWorkspaceProps = {
   open: boolean;
   portalReady: boolean;
@@ -12,7 +14,8 @@ type MappingFullscreenWorkspaceProps = {
 };
 
 /**
- * Full-viewport mapping workspace above admin chrome (portal to document.body).
+ * Full-viewport mapping workspace above admin chrome.
+ * Uses the overlay host and `--z-sheet` so ConfirmDeleteModal (`--z-toast`) stacks on top.
  */
 export const MappingFullscreenWorkspace = ({
   open,
@@ -28,7 +31,7 @@ export const MappingFullscreenWorkspace = ({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[200] flex flex-col bg-background"
+      className="fixed inset-0 z-[var(--z-sheet)] flex flex-col bg-background"
       role="dialog"
       aria-modal="true"
       aria-label={t('fullscreenAria')}
@@ -38,6 +41,6 @@ export const MappingFullscreenWorkspace = ({
         <div className="min-h-0 min-w-0">{canvas}</div>
       </div>
     </div>,
-    document.body,
+    getOverlayPortalHost(),
   );
 };
