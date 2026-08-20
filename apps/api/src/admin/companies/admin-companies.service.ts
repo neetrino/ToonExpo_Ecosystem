@@ -199,7 +199,7 @@ export class AdminCompaniesService {
 
     const projects = await this.prisma.db.project.findMany({
       where: { builderCompanyId: companyId },
-      orderBy: [{ updatedAt: 'desc' }],
+      orderBy: [{ createdAt: 'desc' }],
       select: {
         id: true,
         name: true,
@@ -238,7 +238,7 @@ export class AdminCompaniesService {
       this.prisma.db.project.count({ where: { featuredOnHome: true } }),
       this.prisma.db.project.findMany({
         where,
-        orderBy: [{ featuredOnHome: 'desc' }, { updatedAt: 'desc' }],
+        orderBy: [{ createdAt: 'desc' }],
         skip: (page - 1) * pageSize,
         take: pageSize,
         select: {

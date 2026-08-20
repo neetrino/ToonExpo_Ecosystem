@@ -57,7 +57,7 @@ export class PortalProjectsService {
       this.prisma.db.project.count({ where }),
       this.prisma.db.project.findMany({
         where,
-        orderBy: [{ updatedAt: 'desc' }],
+        orderBy: [{ createdAt: 'desc' }],
         skip: (page - 1) * pageSize,
         take: pageSize,
         include: {

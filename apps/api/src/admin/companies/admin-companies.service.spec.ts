@@ -78,7 +78,7 @@ describe('AdminCompaniesService.listProjects', () => {
 
     expect(projectFindMany).toHaveBeenCalledWith({
       where: { builderCompanyId: 'co_1' },
-      orderBy: [{ updatedAt: 'desc' }],
+      orderBy: [{ createdAt: 'desc' }],
       select: {
         id: true,
         name: true,
@@ -142,7 +142,7 @@ describe('AdminCompaniesService.listProjects', () => {
     expect(companyFindUnique).not.toHaveBeenCalled();
     expect(projectFindMany).toHaveBeenCalledWith({
       where: {},
-      orderBy: [{ featuredOnHome: 'desc' }, { updatedAt: 'desc' }],
+      orderBy: [{ createdAt: 'desc' }],
       skip: 0,
       take: 20,
       select: {
