@@ -4,7 +4,7 @@
 
 import type { PublicationStatus } from './catalog.js';
 
-/** Same keys as project catalog Finance section. */
+/** Same keys as project catalog Bank partner section. */
 export const BANK_PARTNER_OFFER_FINANCE_KEYS = [
   'partnerBank',
   'parkingPrice',

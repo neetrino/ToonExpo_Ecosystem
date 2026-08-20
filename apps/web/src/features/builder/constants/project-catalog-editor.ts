@@ -38,11 +38,14 @@ export const PROJECT_CATALOG_DATE_KEYS = [
 export const isProjectCatalogDateKey = (key: keyof ProjectCatalogDetails): boolean =>
   (PROJECT_CATALOG_DATE_KEYS as readonly string[]).includes(key);
 
-/** Compact Details fields that must share a row. */
+/** Compact Details / Finance fields that must share a row. */
 export const PROJECT_CATALOG_DETAILS_PAIRS = [
   ['constructionStart', 'constructionEnd'],
   ['elevator', 'elevatorsCount'],
   ['permitNumber', 'constructionType'],
+  ['areaMinSqm', 'areaMaxSqm'],
+  ['pricePerSqmMin', 'pricePerSqmMax'],
+  ['unitPriceMin', 'unitPriceMax'],
 ] as const satisfies ReadonlyArray<
   readonly [keyof ProjectCatalogDetails, keyof ProjectCatalogDetails]
 >;
@@ -83,7 +86,7 @@ export const overviewColumnWeight = (value: string): number =>
 export const overviewGridTemplateColumns = (weights: readonly number[]): string =>
   weights.map((weight) => `minmax(0,${weight}fr)`).join(' ');
 
-/** Remaining non-finance fields → Details card. */
+/** Remaining non-price / non-bank-partner fields → Details card. */
 export const PROJECT_CATALOG_DETAILS_KEYS = [
   'slogan',
   'country',
@@ -125,6 +128,10 @@ export const PROJECT_CATALOG_DETAILS_KEYS = [
   'views',
   'services',
   'handoverDescription',
+] as const satisfies ReadonlyArray<keyof ProjectCatalogDetails>;
+
+/** Area and unit price ranges → Finance card. */
+export const PROJECT_CATALOG_FINANCE_KEYS = [
   'areaMinSqm',
   'areaMaxSqm',
   'pricePerSqmMin',
@@ -133,7 +140,8 @@ export const PROJECT_CATALOG_DETAILS_KEYS = [
   'unitPriceMax',
 ] as const satisfies ReadonlyArray<keyof ProjectCatalogDetails>;
 
-export const PROJECT_CATALOG_FINANCE_KEYS = [
+/** Mortgage / payment terms → Bank partner card. */
+export const PROJECT_CATALOG_BANK_PARTNER_KEYS = [
   'partnerBank',
   'parkingPrice',
   'paymentTypes',
@@ -145,11 +153,12 @@ export const PROJECT_CATALOG_FINANCE_KEYS = [
   'subsidizedPrograms',
 ] as const satisfies ReadonlyArray<keyof ProjectCatalogDetails>;
 
-/** @deprecated Prefer OVERVIEW / DETAILS / FINANCE key lists. */
+/** @deprecated Prefer OVERVIEW / DETAILS / FINANCE / BANK_PARTNER key lists. */
 export const PROJECT_CATALOG_EDITOR_SECTIONS = [
   { id: 'overview', keys: PROJECT_CATALOG_OVERVIEW_KEYS },
   { id: 'details', keys: PROJECT_CATALOG_DETAILS_KEYS },
   { id: 'finance', keys: PROJECT_CATALOG_FINANCE_KEYS },
+  { id: 'bankPartner', keys: PROJECT_CATALOG_BANK_PARTNER_KEYS },
 ] as const;
 
 export type ProjectCatalogEditorSectionId =

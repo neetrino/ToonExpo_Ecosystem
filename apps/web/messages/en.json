@@ -602,6 +602,7 @@
         "overview": "Overview",
         "details": "Details",
         "finance": "Finance",
+        "bankPartner": "Bank partner",
         "facts": "Key facts",
         "amenities": "Features",
         "nearby": "Nearby",
@@ -3457,7 +3458,7 @@
       },
       "catalog": {
         "title": "Project details (public catalog)",
-        "subtitle": "Same layout as the public project page — edit Overview, Details, Finance, Features, and Nearby for each language.",
+        "subtitle": "Same layout as the public project page — edit Overview, Details, Finance, Bank partner, Features, and Nearby for each language.",
         "listHint": "One item per line.",
         "amenityLabels": "Features list",
         "nearbyPlaces": "Nearby places",
@@ -3470,7 +3471,7 @@
         "financeImport": {
           "button": "Import",
           "title": "Import partner offer",
-          "hint": "Choose a published template from Template/Partner Offers. Fields fill into Finance — edit and save as usual.",
+          "hint": "Choose a published template from Template/Partner Offers. Fields fill into Bank partner — edit and save as usual.",
           "loading": "Loading templates…",
           "error": "Could not load templates.",
           "empty": "No published templates yet. Create one under Template/Partner Offers.",
@@ -3556,6 +3557,7 @@
           "overview": "Overview",
           "details": "Details",
           "finance": "Finance",
+          "bankPartner": "Bank partner",
           "features": "Features",
           "nearby": "Nearby",
           "links": "Links",

@@ -70,11 +70,16 @@ export type ProjectCatalogRow = {
   wide?: boolean;
 };
 
-/** Banks, prices, fees, payment / mortgage / installment terms. */
+/** Area and unit price ranges → Finance card. */
 export const PROJECT_CATALOG_FINANCE_CRITERION_IDS = [
-  'partnerBank',
+  'areaRange',
   'pricePerSqm',
   'unitPriceRange',
+] as const satisfies readonly ProjectCatalogCriterionId[];
+
+/** Mortgage / payment terms → Bank partner card. */
+export const PROJECT_CATALOG_BANK_PARTNER_CRITERION_IDS = [
+  'partnerBank',
   'parkingPrice',
   'paymentTypes',
   'installmentTerms',
@@ -88,25 +93,41 @@ export const PROJECT_CATALOG_FINANCE_CRITERION_IDS = [
 export type ProjectCatalogFinanceCriterionId =
   (typeof PROJECT_CATALOG_FINANCE_CRITERION_IDS)[number];
 
+export type ProjectCatalogBankPartnerCriterionId =
+  (typeof PROJECT_CATALOG_BANK_PARTNER_CRITERION_IDS)[number];
+
 export const isProjectCatalogFinanceCriterion = (
   id: ProjectCatalogCriterionId,
 ): id is ProjectCatalogFinanceCriterionId => {
   return (PROJECT_CATALOG_FINANCE_CRITERION_IDS as readonly string[]).includes(id);
 };
 
-export const splitProjectCatalogRowsByFinance = (
+export const isProjectCatalogBankPartnerCriterion = (
+  id: ProjectCatalogCriterionId,
+): id is ProjectCatalogBankPartnerCriterionId => {
+  return (PROJECT_CATALOG_BANK_PARTNER_CRITERION_IDS as readonly string[]).includes(id);
+};
+
+export const splitProjectCatalogRowsBySection = (
   rows: readonly ProjectCatalogRow[],
-): { general: ProjectCatalogRow[]; finance: ProjectCatalogRow[] } => {
+): {
+  general: ProjectCatalogRow[];
+  finance: ProjectCatalogRow[];
+  bankPartner: ProjectCatalogRow[];
+} => {
   const general: ProjectCatalogRow[] = [];
   const finance: ProjectCatalogRow[] = [];
+  const bankPartner: ProjectCatalogRow[] = [];
   for (const row of rows) {
     if (isProjectCatalogFinanceCriterion(row.id)) {
       finance.push(row);
+    } else if (isProjectCatalogBankPartnerCriterion(row.id)) {
+      bankPartner.push(row);
     } else {
       general.push(row);
     }
   }
-  return { general, finance };
+  return { general, finance, bankPartner };
 };
 
 type DetailLabels = Record<ProjectCatalogCriterionId, string>;

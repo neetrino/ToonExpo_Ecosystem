@@ -285,7 +285,7 @@ export const getProjectFormPlaceholder = (
   key: ProjectFormPlaceholderKey,
 ): string => PROJECT_FORM_PLACEHOLDERS[resolveContentLocale(contentLocale)][key];
 
-/** Catalog Overview/Details/Finance example for a content language tab. */
+/** Catalog Overview/Details/Finance/Bank partner example for a content language tab. */
 export const getCatalogFieldPlaceholder = (
   contentLocale: string,
   fieldKey: CatalogPlaceholderKey,
