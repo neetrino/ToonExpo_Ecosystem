@@ -5,6 +5,11 @@ import { useTranslations } from 'next-intl';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 
+import { updatePortalBuilding } from '@/features/builder/api/portal-buildings-api';
+import {
+  createPortalFloor,
+  deletePortalFloor,
+} from '@/features/builder/api/portal-floors-api';
 import { BackLink } from '@/shared/ui/back-link';
 
 import {
@@ -22,6 +27,7 @@ import {
 import { useMappingCatalog } from '../../hooks/use-mapping-catalog';
 import { BuildingFloorSetupForm } from '../building-floor-setup-form';
 import { BuildingFloorMappingEditor } from '../editors/building-floor-mapping-editor';
+import { CreateEntityInlineForm } from '../forms/create-entity-inline-form';
 import { MappingImageUploader } from '../media/mapping-image-uploader';
 
 export type BuildingRenderPhasePageProps = {
@@ -210,7 +216,7 @@ export const BuildingRenderPhasePage = ({
         </p>
       ) : null}
 
-      {canvas && floors.length > 0 ? (
+      {canvas ? (
         <BuildingFloorMappingEditor
           companyId={companyId}
           canvasId={canvas.id}
@@ -225,6 +231,39 @@ export const BuildingRenderPhasePage = ({
             number: floor.number,
           }))}
           hotspots={canvas.hotspots}
+          createForm={
+            <CreateEntityInlineForm
+              title={t('forms.createFloor')}
+              submitLabel={t('forms.createFloor')}
+              pendingLabel={t('forms.saving')}
+              nameLabel={t('forms.floorNumber')}
+              namePlaceholder={t('forms.floorPlaceholder')}
+              digitsOnly
+              onSubmit={async (number) => {
+                const floorNumber = Number(number);
+                await createPortalFloor(buildingId, { floorNumber }, { scope: catalogScope });
+                const nextCount = Math.max(
+                  building.floorsCount ?? 0,
+                  floors.length + 1,
+                  floorNumber,
+                );
+                await updatePortalBuilding(
+                  buildingId,
+                  { floorsCount: nextCount },
+                  { scope: catalogScope },
+                );
+                void queryClient.invalidateQueries({
+                  queryKey: interactiveMappingProjectQueryKey(projectId, mode),
+                });
+              }}
+            />
+          }
+          onDeleteFloor={async (id) => {
+            await deletePortalFloor(id, { scope: catalogScope });
+            void queryClient.invalidateQueries({
+              queryKey: interactiveMappingProjectQueryKey(projectId, mode),
+            });
+          }}
           onAfterSave={() => {
             void queryClient.invalidateQueries({
               queryKey: interactiveMappingProjectQueryKey(projectId, mode),

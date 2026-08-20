@@ -3,6 +3,9 @@ import { mapShapePoints, polygonShapeToSvgPath, svgPathToPolygonShape } from './
 
 export type NormPoint = { x: number; y: number };
 
+/** Default pin position — center of the canvas, easy to find on create. */
+export const DEFAULT_MARKER_POINT: NormPoint = { x: 0.5, y: 0.5 };
+
 /**
  * Convert a pointer position inside a viewport element to normalized 0–1
  * coordinates relative to the object-fit:contain content box.

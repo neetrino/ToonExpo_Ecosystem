@@ -180,13 +180,19 @@ export const PhaseWizardPage = ({ projectId }: PhaseWizardPageProps) => {
           })}
           statusLabel={t(statusKey(phaseState(project.phases, 3)))}
           addHref={
-            primaryBuilding && floors.length > 0
-              ? `${base}/buildings/${primaryBuilding.id}/render`
-              : undefined
+            primaryBuilding ? `${base}/buildings/${primaryBuilding.id}/render` : undefined
           }
           addLabel={t('cta.mapFloors')}
           doneLabel={t('cta.edit')}
           lockedLabel={t('cta.locked')}
+          extras={buildings
+            .filter((item) => item.id !== primaryBuilding?.id)
+            .slice(0, 6)
+            .map((building) => ({
+              href: `${base}/buildings/${building.id}/render`,
+              label: building.name,
+            }))}
+          extrasTitle={t('cta.other')}
         >
           {primaryBuilding ? (
             <BuildingFloorSetupForm

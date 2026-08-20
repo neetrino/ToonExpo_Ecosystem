@@ -1,6 +1,8 @@
 'use client';
 
 import type { PortalVisualHotspotItem } from '@toonexpo/contracts';
+import { useTranslations } from 'next-intl';
+import type { ReactNode } from 'react';
 
 import { MappingEditorShell, type MappingEditorEntity } from './mapping-editor-shell';
 
@@ -14,6 +16,8 @@ export type BuildingFloorMappingEditorProps = {
   viewBoxHeight: number;
   floors: { id: string; name: string; number: number; label?: string }[];
   hotspots: PortalVisualHotspotItem[];
+  createForm?: ReactNode;
+  onDeleteFloor?: ((id: string) => Promise<void>) | undefined;
   onAfterSave?: () => void;
 };
 
@@ -51,20 +55,30 @@ export const BuildingFloorMappingEditor = ({
   viewBoxHeight,
   floors,
   hotspots,
+  createForm,
+  onDeleteFloor,
   onAfterSave,
-}: BuildingFloorMappingEditorProps) => (
-  <MappingEditorShell
-    companyId={companyId}
-    canvasId={canvasId}
-    targetType="floor"
-    toolPreset="floors"
-    listTitle="Floors"
-    imageUrl={imageUrl}
-    imageWidth={imageWidth}
-    imageHeight={imageHeight}
-    viewBoxWidth={viewBoxWidth}
-    viewBoxHeight={viewBoxHeight}
-    initialEntities={buildEntities(floors, hotspots)}
-    onAfterSave={onAfterSave}
-  />
-);
+}: BuildingFloorMappingEditorProps) => {
+  const t = useTranslations('Admin.interactiveMapping.canvas');
+
+  return (
+    <MappingEditorShell
+      companyId={companyId}
+      canvasId={canvasId}
+      targetType="floor"
+      toolPreset="floors"
+      listTitle={t('floorsListTitle')}
+      sidebarFooter={createForm}
+      deleteEntityLabel={t('deleteFloor')}
+      confirmDeleteMessage={t('confirmDeleteFloor')}
+      imageUrl={imageUrl}
+      imageWidth={imageWidth}
+      imageHeight={imageHeight}
+      viewBoxWidth={viewBoxWidth}
+      viewBoxHeight={viewBoxHeight}
+      initialEntities={buildEntities(floors, hotspots)}
+      onDeleteEntity={onDeleteFloor}
+      onAfterSave={onAfterSave}
+    />
+  );
+};

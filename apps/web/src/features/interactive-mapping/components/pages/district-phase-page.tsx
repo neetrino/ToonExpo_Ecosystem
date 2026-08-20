@@ -5,6 +5,10 @@ import { useTranslations } from 'next-intl';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 
+import {
+  createPortalBuilding,
+  deletePortalBuilding,
+} from '@/features/builder/api/portal-buildings-api';
 import { BackLink } from '@/shared/ui/back-link';
 
 import {
@@ -18,6 +22,7 @@ import { interactiveMappingProjectQueryKey } from '../../constants';
 import { useInteractiveMappingProjectQuery } from '../../hooks/use-interactive-mapping';
 import { useMappingCatalog } from '../../hooks/use-mapping-catalog';
 import { DistrictBuildingEditor } from '../editors/district-building-editor';
+import { CreateEntityInlineForm } from '../forms/create-entity-inline-form';
 import { MappingImageUploader } from '../media/mapping-image-uploader';
 
 export type DistrictPhasePageProps = {
@@ -198,6 +203,31 @@ export const DistrictPhasePage = ({ projectId, districtId }: DistrictPhasePagePr
           viewBoxHeight={height}
           buildings={buildings}
           hotspots={canvas.hotspots}
+          createForm={
+            <CreateEntityInlineForm
+              title={t('forms.createBuilding')}
+              submitLabel={t('forms.createBuilding')}
+              pendingLabel={t('forms.saving')}
+              nameLabel={t('forms.name')}
+              namePlaceholder={t('forms.buildingPlaceholder')}
+              onSubmit={async (name) => {
+                await createPortalBuilding(
+                  projectId,
+                  { name, districtId },
+                  { scope: catalogScope },
+                );
+                void queryClient.invalidateQueries({
+                  queryKey: interactiveMappingProjectQueryKey(projectId, mode),
+                });
+              }}
+            />
+          }
+          onDeleteBuilding={async (buildingId) => {
+            await deletePortalBuilding(buildingId, { scope: catalogScope });
+            void queryClient.invalidateQueries({
+              queryKey: interactiveMappingProjectQueryKey(projectId, mode),
+            });
+          }}
           onAfterSave={() => {
             void queryClient.invalidateQueries({
               queryKey: interactiveMappingProjectQueryKey(projectId, mode),
