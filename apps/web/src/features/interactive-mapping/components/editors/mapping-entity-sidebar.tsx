@@ -68,8 +68,8 @@ export const MappingEntitySidebar = ({
               <button
                 type="button"
                 className={cn(
-                  'flex w-full items-center justify-between px-3 py-2 text-left text-sm text-ink',
-                  entity.id === selectedId && 'bg-surface',
+                  'flex w-full items-center justify-between border-l-2 border-transparent px-3 py-2 text-left text-sm text-ink',
+                  entity.id === selectedId && 'border-ink',
                 )}
                 onClick={() => onSelect(entity.id)}
               >
@@ -91,7 +91,7 @@ export const MappingEntitySidebar = ({
           <label className="block text-ink-muted">
             Label
             <input
-              className="mt-1 w-full rounded-sm border border-border bg-background px-2 py-1 text-ink"
+              className="mt-1 w-full rounded-[15px] border border-border bg-background px-2 py-1 text-ink"
               value={selected.label}
               maxLength={32}
               inputMode={labelDigitsOnly ? 'numeric' : 'text'}

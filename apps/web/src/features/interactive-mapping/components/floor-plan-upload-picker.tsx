@@ -55,12 +55,11 @@ export const FloorPlanUploadPicker = ({
                   aria-disabled={!unlocked}
                   title={!unlocked ? lockedHint : undefined}
                   className={cn(
-                    'flex w-full items-center justify-between gap-3 px-3 py-2.5 text-left text-sm transition-colors',
+                    'flex w-full items-center justify-between gap-3 border-l-2 border-transparent px-3 py-2.5 text-left text-sm transition-colors',
                     !unlocked
                       ? 'cursor-not-allowed bg-surface/60 text-ink-muted'
                       : 'text-ink hover:bg-surface',
-                    selected && unlocked && 'bg-surface',
-                    selected && !unlocked && 'bg-surface/80',
+                    selected && 'border-ink',
                   )}
                   onClick={() => {
                     if (!unlocked) {

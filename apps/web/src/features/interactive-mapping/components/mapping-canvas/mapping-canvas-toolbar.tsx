@@ -46,6 +46,9 @@ type MappingCanvasToolbarProps = {
 
 type ToolId = 'select' | 'place-marker' | 'draw-polygon' | 'draw-band' | 'auto-stack';
 
+const TOOL_BUTTON_CLASS =
+  'inline-flex items-center justify-center gap-1.5 rounded-[15px] border px-2.5 py-1.5 text-xs uppercase tracking-[0.14em] disabled:cursor-not-allowed disabled:opacity-40';
+
 const BASIC_TOOLS: Array<[ToolId, string, typeof SelectCursorIcon]> = [
   ['select', 'toolSelect', SelectCursorIcon],
   ['place-marker', 'toolMarker', MarkerPinIcon],
@@ -101,8 +104,8 @@ export const MappingCanvasToolbar = ({
               title={disabled ? t('selectEntityFirst') : label}
               aria-label={label}
               disabled={disabled}
-              className={`inline-flex items-center gap-1.5 border px-2.5 py-1.5 text-xs uppercase tracking-[0.14em] disabled:cursor-not-allowed disabled:opacity-40 ${
-                mode === value ? 'border-foreground bg-foreground text-background' : 'border-border'
+              className={`${TOOL_BUTTON_CLASS} ${
+                mode === value ? 'border-ink' : 'border-border'
               }`}
               onClick={() => changeMode(value)}
             >
@@ -115,7 +118,7 @@ export const MappingCanvasToolbar = ({
           <>
             <button
               type="button"
-              className="border border-border px-3 py-1.5 text-xs uppercase tracking-[0.14em]"
+              className={`${TOOL_BUTTON_CLASS} border-border px-3`}
               onClick={() => {
                 if (!selected.svgPath) return;
                 if (!resolveOpenDraft()) return;
@@ -131,7 +134,7 @@ export const MappingCanvasToolbar = ({
             </button>
             <button
               type="button"
-              className="border border-border px-3 py-1.5 text-xs uppercase tracking-[0.14em]"
+              className={`${TOOL_BUTTON_CLASS} border-border px-3`}
               onClick={() => {
                 if (!resolveOpenDraft()) return;
                 startFreshPolygon();
@@ -141,7 +144,7 @@ export const MappingCanvasToolbar = ({
             </button>
             <button
               type="button"
-              className="border border-red-700/40 px-3 py-1.5 text-xs uppercase tracking-[0.14em] text-red-800"
+              className={`${TOOL_BUTTON_CLASS} border-red-700/40 px-3 text-red-800`}
               onClick={deletePolygon}
             >
               {t('deletePolygon')}
@@ -155,7 +158,7 @@ export const MappingCanvasToolbar = ({
             {modeIsDrawPolygon || modeIsEditPolygon ? (
               <button
                 type="button"
-                className="inline-flex items-center gap-1.5 border border-foreground bg-foreground px-2.5 py-1.5 text-xs uppercase tracking-[0.14em] text-background disabled:opacity-40"
+                className={`${TOOL_BUTTON_CLASS} border-ink bg-ink text-on-dark`}
                 onClick={() => {
                   if (modeIsEditPolygon) {
                     replaceOnCommitRef.current = true;
@@ -172,7 +175,7 @@ export const MappingCanvasToolbar = ({
             ) : null}
             <button
               type="button"
-              className="inline-flex items-center justify-center border border-red-700/40 px-2.5 py-1.5 text-red-800 disabled:opacity-40"
+              className={`${TOOL_BUTTON_CLASS} border-red-700/40 text-red-800`}
               onClick={deleteSelectedDraftPoint}
               disabled={selectedDraftIndex == null}
               title={t('deleteSelectedPoint')}
@@ -182,7 +185,7 @@ export const MappingCanvasToolbar = ({
             </button>
             <button
               type="button"
-              className="inline-flex items-center justify-center border border-border px-2.5 py-1.5 disabled:opacity-40"
+              className={`${TOOL_BUTTON_CLASS} border-border`}
               onClick={undoLastDraftPoint}
               disabled={draftPointsLength === 0}
               title={t('undoLastPoint')}
@@ -192,7 +195,7 @@ export const MappingCanvasToolbar = ({
             </button>
             <button
               type="button"
-              className="inline-flex items-center justify-center border border-border px-2.5 py-1.5"
+              className={`${TOOL_BUTTON_CLASS} border-border`}
               onClick={clearDraft}
               title={t('clearAllPoints')}
               aria-label={t('clearAllPointsAria')}

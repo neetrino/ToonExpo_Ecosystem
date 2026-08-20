@@ -134,7 +134,7 @@ export const MappingImageUploader = ({
           <label
             htmlFor={inputId}
             className={cn(
-              'inline-flex cursor-pointer items-center rounded-sm border border-border px-3 py-2 text-sm font-medium text-ink hover:bg-surface',
+              'inline-flex cursor-pointer items-center rounded-[15px] border border-border px-3 py-2 text-sm font-medium text-ink hover:bg-surface',
               interactionLocked && 'pointer-events-none opacity-50',
             )}
           >
@@ -202,8 +202,8 @@ export const MappingImageUploader = ({
                   key={item.id}
                   type="button"
                   className={cn(
-                    'overflow-hidden rounded-sm border border-border',
-                    value === item.id && 'ring-2 ring-brand',
+                    'overflow-hidden rounded-[15px] border border-border',
+                    value === item.id && 'border-ink',
                   )}
                   onClick={() => {
                     setThumbnailUrl(item.fileUrl);

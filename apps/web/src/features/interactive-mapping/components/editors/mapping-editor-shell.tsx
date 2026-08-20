@@ -191,17 +191,7 @@ export const MappingEditorShell = ({
       {!fullscreen ? (
         <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
           {sidebar}
-          <div className="relative min-w-0 space-y-2">
-            <button
-              type="button"
-              className="absolute right-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-sm border border-border bg-background/95 px-2.5 py-1.5 text-xs text-ink shadow-sm hover:bg-surface"
-              onClick={() => setFullscreen(true)}
-            >
-              <Maximize2 className="size-3.5" aria-hidden />
-              Fullscreen
-            </button>
-            {canvas}
-          </div>
+          <div className="min-w-0">{canvas}</div>
         </div>
       ) : (
         <p className="rounded-sm border border-border bg-surface px-3 py-2 text-sm text-ink-muted">
