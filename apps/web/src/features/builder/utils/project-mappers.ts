@@ -108,6 +108,7 @@ export const toCreateProjectRequest = (
     ...(optionalText(values.coverMediaId)
       ? { coverMediaId: values.coverMediaId }
       : {}),
+    verified: values.verified,
     ...(translations ? { translations } : {}),
   };
 };
@@ -134,6 +135,7 @@ export const toUpdateProjectRequest = (
     completionDate: optionalText(values.completionDate) ?? null,
     amenities,
     nearbyPlaces,
+    verified: values.verified,
   };
 
   if (options.includeCoverMediaId ?? true) {

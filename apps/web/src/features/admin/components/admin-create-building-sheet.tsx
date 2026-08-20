@@ -11,6 +11,7 @@ import {
   useAdminCompanyProjectsQuery,
 } from '@/features/admin/hooks/use-admin-companies';
 import { useAdminCreateBuildingMutation } from '@/features/admin/hooks/use-admin-inventory';
+import { VerifiedStatusField } from '@/features/builder/components/verified-status-field';
 import {
   createBuildingSchema,
   type CreateBuildingFormValues,
@@ -53,11 +54,12 @@ export const AdminCreateBuildingSheet = ({
   const {
     register,
     handleSubmit,
+    control,
     reset,
     formState: { errors, isSubmitting },
   } = useForm<CreateBuildingFormValues>({
     resolver: zodResolver(createBuildingSchema),
-    defaultValues: { name: '', description: '', coverMediaId: '' },
+    defaultValues: { name: '', description: '', coverMediaId: '', verified: false },
   });
 
   useEffect(() => {
@@ -67,7 +69,7 @@ export const AdminCreateBuildingSheet = ({
     setCompanyId(defaultCompanyId ?? '');
     setProjectId('');
     setError(null);
-    reset({ name: '', description: '', coverMediaId: '' });
+    reset({ name: '', description: '', coverMediaId: '', verified: false });
   }, [open, defaultCompanyId, reset]);
 
   const onSubmit = handleSubmit(async (values) => {
@@ -83,6 +85,7 @@ export const AdminCreateBuildingSheet = ({
         body: {
           name: values.name,
           ...(values.description.length > 0 ? { description: values.description } : {}),
+          verified: values.verified,
         },
       });
       onClose();
@@ -145,6 +148,8 @@ export const AdminCreateBuildingSheet = ({
         <FormField id="create-building-description" label={inventoryT('buildingDescription')}>
           <Input id="create-building-description" {...register('description')} />
         </FormField>
+
+        <VerifiedStatusField id="create-building-verified" control={control} name="verified" />
 
         {error ? (
           <p role="alert" className="text-sm text-danger">

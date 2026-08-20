@@ -16,6 +16,7 @@ import {
   type CreateProjectFormValues,
 } from '@/features/builder/schemas/project.schema';
 import { toCreateProjectRequest } from '@/features/builder/utils/project-mappers';
+import { VerifiedStatusField } from '@/features/builder/components/verified-status-field';
 import { MediaUploadField } from '@/features/media/components/media-upload-field';
 import { useRouter } from '@/i18n/navigation';
 import { Button } from '@/shared/ui/button';
@@ -44,6 +45,7 @@ const emptyValues = (): CreateProjectFormValues => ({
   constructionStatus: '',
   completionDate: '',
   coverMediaId: '',
+  verified: false,
 });
 
 type CreateProjectFormProps = {
@@ -187,7 +189,7 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
 
       <fieldset className="flex flex-col gap-4">
         <legend className="text-sm font-semibold text-ink">{t('form.detailsSection')}</legend>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-3">
           <FormField id="projectType" label={t('form.projectType')}>
             <Input
               id="projectType"
@@ -195,6 +197,7 @@ export const CreateProjectForm = ({ onCreated }: CreateProjectFormProps = {}) =>
               {...register('projectType')}
             />
           </FormField>
+          <VerifiedStatusField id="project-verified" control={control} name="verified" />
           <FormField id="completionDate" label={t('form.completionDate')}>
             <Controller
               name="completionDate"

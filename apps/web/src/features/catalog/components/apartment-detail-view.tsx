@@ -109,14 +109,16 @@ export const ApartmentDetailView = async ({
       <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-start xl:gap-14">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <span
-              className={cn(
-                'rounded-[10px] bg-band-mist px-2 py-1',
-                'text-[10px] font-bold tracking-widest text-brand-deep uppercase',
-              )}
-            >
-              {t('apartment.verifiedBadge')}
-            </span>
+            {apartment.verified ? (
+              <span
+                className={cn(
+                  'rounded-[10px] bg-band-mist px-2 py-1',
+                  'text-[10px] font-bold tracking-widest text-brand-deep uppercase',
+                )}
+              >
+                {t('apartment.verifiedBadge')}
+              </span>
+            ) : null}
             <span
               className={cn(
                 'rounded-[10px] bg-surface px-2 py-1',

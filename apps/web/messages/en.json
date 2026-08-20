@@ -3235,6 +3235,13 @@
   },
   "Builder": {
     "badge": "Builder",
+    "verified": {
+      "label": "Verified",
+      "hint": "Show the Verified badge on the public listing.",
+      "placeholder": "Off — no public badge",
+      "on": "On — badge visible",
+      "saved": "Verified status updated"
+    },
     "profileLink": "Profile",
     "locales": {
       "label": "Translation language",

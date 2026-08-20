@@ -4,6 +4,7 @@ import {
   ArrayMaxSize,
   ArrayMinSize,
   IsArray,
+  IsBoolean,
   IsEnum,
   IsInt,
   IsNumber,
@@ -152,6 +153,11 @@ export class CreatePortalApartmentDto {
   @IsEnum(SalesStatusDto)
   salesStatus?: SalesStatusDto;
 
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  verified?: boolean;
+
   @ApiPropertyOptional({ type: PortalTranslationsDto })
   @IsOptional()
   @IsObject()
@@ -290,6 +296,11 @@ export class UpdatePortalApartmentDto {
   @IsOptional()
   @IsEnum(SalesStatusDto)
   salesStatus?: SalesStatusDto;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  verified?: boolean;
 
   @ApiPropertyOptional({ type: PortalTranslationsDto })
   @IsOptional()

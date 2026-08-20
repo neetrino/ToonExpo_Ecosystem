@@ -12,6 +12,7 @@ import {
   createBuildingSchema,
   type CreateBuildingFormValues,
 } from '@/features/builder/schemas/inventory.schema';
+import { VerifiedStatusField } from '@/features/builder/components/verified-status-field';
 import { MediaUploadField } from '@/features/media/components/media-upload-field';
 import { toOptionalMediaId } from '@/features/media/schemas/media-fields.schema';
 import { Button } from '@/shared/ui/button';
@@ -40,7 +41,7 @@ export const AddBuildingForm = ({ projectId, onSuccess }: AddBuildingFormProps) 
     formState: { errors, isSubmitting },
   } = useForm<CreateBuildingFormValues>({
     resolver: zodResolver(createBuildingSchema),
-    defaultValues: { name: '', description: '', coverMediaId: '' },
+    defaultValues: { name: '', description: '', coverMediaId: '', verified: false },
   });
 
   const onSubmit = handleSubmit(async (values) => {
@@ -50,6 +51,7 @@ export const AddBuildingForm = ({ projectId, onSuccess }: AddBuildingFormProps) 
         name: values.name,
         ...(values.description.length > 0 ? { description: values.description } : {}),
         ...(toOptionalMediaId(values.coverMediaId) ? { coverMediaId: values.coverMediaId } : {}),
+        verified: values.verified,
       });
       reset();
       onSuccess?.();
@@ -86,6 +88,7 @@ export const AddBuildingForm = ({ projectId, onSuccess }: AddBuildingFormProps) 
           />
         )}
       />
+      <VerifiedStatusField id="building-verified-new" control={control} name="verified" />
       {error ? (
         <p role="alert" className="text-sm text-danger">
           {error}

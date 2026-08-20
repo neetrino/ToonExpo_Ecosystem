@@ -53,6 +53,7 @@ export const createProjectSchema = z.object({
   constructionStatus: z.string().trim().max(120),
   completionDate: z.string().trim().max(32),
   coverMediaId: optionalMediaIdField,
+  verified: z.boolean(),
 });
 
 export type CreateProjectFormValues = z.infer<typeof createProjectSchema>;

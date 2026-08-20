@@ -47,6 +47,7 @@ type ProjectListSource = {
   latitude: Prisma.Decimal | null;
   longitude: Prisma.Decimal | null;
   coverMedia: MediaRow;
+  verified: boolean;
   builderCompany: {
     id: string;
     name: string;
@@ -69,6 +70,7 @@ type ProjectDetailSource = ProjectListSource & {
     displayOrder: number;
     floorsCount: number | null;
     coverMedia: MediaRow;
+    verified: boolean;
     apartments: Array<{ salesStatus: ApartmentSalesStatus }>;
     floors: Array<{
       id: string;
@@ -204,6 +206,7 @@ export const mapProjectListItem = (
     latitude: decimalToString(project.latitude),
     longitude: decimalToString(project.longitude),
     cover: toMediaSummary(project.coverMedia),
+    verified: project.verified,
     builder: {
       id: project.builderCompany.id,
       name: localized.builderName,
@@ -249,6 +252,7 @@ export const mapProjectDetail = (project: ProjectDetailSource, ctx: MapContext):
       displayOrder: building.displayOrder,
       floorsCount: building.floorsCount,
       cover: toMediaSummary(building.coverMedia),
+      verified: building.verified,
       availability: statusesToSummary(building.apartments),
       floors: building.floors.map((floor) => ({
         id: floor.id,

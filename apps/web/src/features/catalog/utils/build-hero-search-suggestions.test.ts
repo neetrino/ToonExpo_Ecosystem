@@ -13,6 +13,7 @@ const project = (overrides: Partial<ProjectListItem> & Pick<ProjectListItem, 'id
   latitude: null,
   longitude: null,
   cover: null,
+  verified: false,
   builder: overrides.builder ?? {
     id: 'builder_1',
     name: 'Acme Build',

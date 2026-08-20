@@ -58,6 +58,7 @@ export const mapBuildingDetail = (
     displayOrder: number;
     floorsCount: number | null;
     coverMedia: MediaRow;
+    verified: boolean;
     project: { id: string; name: string; slug: string };
     apartments: Array<{ salesStatus: ApartmentSalesStatus }>;
     floors: Array<{
@@ -98,6 +99,7 @@ export const mapBuildingDetail = (
     displayOrder: building.displayOrder,
     floorsCount: building.floorsCount,
     cover: toMediaSummary(building.coverMedia),
+    verified: building.verified,
     availability: summarizeSalesStatuses(
       building.apartments.map((apartment) => apartment.salesStatus),
     ),

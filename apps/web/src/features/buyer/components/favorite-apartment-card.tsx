@@ -63,14 +63,16 @@ export const FavoriteApartmentCardView = ({ apartment }: FavoriteApartmentCardPr
           )}
         </Link>
 
-        <span
-          className={cn(
-            'pointer-events-none absolute top-3 left-3 rounded-sm bg-canvas/95 px-2 py-1',
-            'text-[10px] font-bold tracking-widest text-brand-deep uppercase',
-          )}
-        >
-          {tCatalog('badges.verified')}
-        </span>
+        {apartment.verified ? (
+          <span
+            className={cn(
+              'pointer-events-none absolute top-3 left-3 rounded-sm bg-canvas/95 px-2 py-1',
+              'text-[10px] font-bold tracking-widest text-brand-deep uppercase',
+            )}
+          >
+            {tCatalog('badges.verified')}
+          </span>
+        ) : null}
 
         <FavoriteToggleButton
           targetType="apartment"

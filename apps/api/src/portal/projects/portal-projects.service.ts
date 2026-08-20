@@ -132,6 +132,7 @@ export class PortalProjectsService {
           ? { nearbyPlaces: dto.nearbyPlaces as Prisma.InputJsonValue }
           : {}),
         ...(dto.coverMediaId !== undefined ? { coverMediaId: dto.coverMediaId } : {}),
+        ...(dto.verified !== undefined ? { verified: dto.verified } : {}),
       },
       include: projectDetailInclude,
     });
@@ -190,6 +191,7 @@ export class PortalProjectsService {
           ? { nearbyPlaces: dto.nearbyPlaces as Prisma.InputJsonValue }
           : {}),
         ...(dto.coverMediaId !== undefined ? { coverMediaId: dto.coverMediaId } : {}),
+        ...(dto.verified !== undefined ? { verified: dto.verified } : {}),
         updatedByUserId: userId,
       },
       include: projectDetailInclude,

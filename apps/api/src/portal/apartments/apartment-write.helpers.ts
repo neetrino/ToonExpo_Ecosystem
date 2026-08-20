@@ -141,6 +141,7 @@ export const createPortalApartmentRow = async (
       ...(dto.tinderMediaId !== undefined
         ? { tinderMediaId: dto.tinderMediaId }
         : {}),
+      ...(dto.verified !== undefined ? { verified: dto.verified } : {}),
     },
   });
 
@@ -192,6 +193,7 @@ export const buildApartmentUpdateData = (
   ...(dto.planMediaId !== undefined ? { planMediaId: dto.planMediaId } : {}),
   ...(dto.coverMediaId !== undefined ? { coverMediaId: dto.coverMediaId } : {}),
   ...(dto.tinderMediaId !== undefined ? { tinderMediaId: dto.tinderMediaId } : {}),
+  ...(dto.verified !== undefined ? { verified: dto.verified } : {}),
   ...(dto.salesStatus !== undefined
     ? { salesStatus: dto.salesStatus as ApartmentSalesStatus }
     : {}),

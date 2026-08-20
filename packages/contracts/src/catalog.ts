@@ -91,6 +91,7 @@ export type ProjectListItem = {
   latitude: string | null;
   longitude: string | null;
   cover: MediaAssetSummary | null;
+  verified: boolean;
   builder: {
     id: string;
     name: string;
@@ -143,6 +144,7 @@ export type ApartmentListItem = {
   latitude: string | null;
   longitude: string | null;
   cover: MediaAssetSummary | null;
+  verified: boolean;
 };
 
 export type FloorSummary = {
@@ -162,6 +164,7 @@ export type BuildingSummary = {
   displayOrder: number;
   floorsCount: number | null;
   cover: MediaAssetSummary | null;
+  verified: boolean;
   floors: FloorSummary[];
   availability: ApartmentAvailabilitySummary;
 };
@@ -184,6 +187,7 @@ export type ProjectDetail = {
   amenities: unknown;
   nearbyPlaces: unknown;
   cover: MediaAssetSummary | null;
+  verified: boolean;
   builder: {
     id: string;
     name: string;
@@ -220,6 +224,7 @@ export type ApartmentDetail = {
   features: unknown;
   plan: MediaAssetSummary | null;
   cover: MediaAssetSummary | null;
+  verified: boolean;
   /** Ordered gallery photos for the public mosaic (cover first when set). */
   gallery: MediaAssetSummary[];
   project: {

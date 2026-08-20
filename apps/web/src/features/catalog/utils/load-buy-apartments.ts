@@ -26,6 +26,7 @@ export type BuyApartmentListing = {
   longitude: number | null;
   projectId: string;
   projectName: string;
+  verified: boolean;
 };
 
 export type BuyApartmentListingsPage = PaginatedResponse<BuyApartmentListing>;
@@ -63,6 +64,7 @@ export const toBuyApartmentListing = (apartment: ApartmentListItem): BuyApartmen
     longitude: toCoord(apartment.longitude),
     projectId: apartment.projectId,
     projectName: apartment.projectName,
+    verified: apartment.verified,
   };
 };
 

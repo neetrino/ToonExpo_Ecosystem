@@ -81,6 +81,7 @@ export class ApartmentsService {
           priceCurrency: true,
           priceVisibility: true,
           projectId: true,
+          verified: true,
           coverMedia: true,
           project: {
             select: {
@@ -134,6 +135,7 @@ export class ApartmentsService {
           latitude: decimalToString(apartment.project.latitude),
           longitude: decimalToString(apartment.project.longitude),
           cover: toMediaSummary(apartment.coverMedia),
+          verified: apartment.verified,
         };
       }),
       meta: {
@@ -241,6 +243,7 @@ export class ApartmentsService {
       features: apartment.features,
       plan: toMediaSummary(apartment.planMedia),
       cover: toMediaSummary(apartment.coverMedia),
+      verified: apartment.verified,
       gallery: orderApartmentGallery(
         apartment.galleryImages.map((row) => row.mediaAsset),
         apartment.coverMediaId,

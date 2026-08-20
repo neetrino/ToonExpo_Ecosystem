@@ -29,6 +29,7 @@ type ApartmentFavoriteSource = {
   priceCurrency: string;
   priceVisibility: string;
   coverMedia: Parameters<typeof toMediaSummary>[0];
+  verified: boolean;
   project: {
     id: string;
     name: string;
@@ -84,6 +85,7 @@ export const mapFavoriteApartmentCard = (
     priceCurrency: apartment.priceCurrency,
     priceVisibility: apartment.priceVisibility as PriceVisibility,
     cover: toMediaSummary(apartment.coverMedia),
+    verified: apartment.verified,
     city: apartment.project.city,
     district: apartment.project.district,
     locationText: resolveTranslatedValue(

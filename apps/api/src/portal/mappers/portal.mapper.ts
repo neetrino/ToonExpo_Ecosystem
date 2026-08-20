@@ -55,6 +55,7 @@ type BuildingRow = {
   displayOrder: number;
   floorsCount: number | null;
   coverMediaId: string | null;
+  verified: boolean;
   createdAt: Date;
   updatedAt: Date;
   floors: FloorRow[];
@@ -80,6 +81,7 @@ type ProjectDetailRow = {
   amenities: Prisma.JsonValue;
   nearbyPlaces: Prisma.JsonValue;
   coverMediaId: string | null;
+  verified: boolean;
   coverMedia?: {
     id: string;
     fileUrl: string;
@@ -150,6 +152,7 @@ type ApartmentRow = {
     thumbnailUrl: string | null;
     altText: string | null;
   } | null;
+  verified: boolean;
   tinderMediaId: string | null;
   tinderMedia?: {
     id: string;
@@ -230,6 +233,7 @@ export const mapPortalBuilding = (building: BuildingRow): PortalBuildingSummary 
   displayOrder: building.displayOrder,
   floorsCount: building.floorsCount,
   coverMediaId: building.coverMediaId,
+  verified: building.verified,
   floors: building.floors.map(mapPortalFloor),
   createdAt: building.createdAt.toISOString(),
   updatedAt: building.updatedAt.toISOString(),
@@ -259,6 +263,7 @@ export const mapPortalProjectDetail = (
   nearbyPlaces: project.nearbyPlaces,
   coverMediaId: project.coverMediaId,
   cover: toPortalMediaSummary(project.coverMedia),
+  verified: project.verified,
   createdAt: project.createdAt.toISOString(),
   updatedAt: project.updatedAt.toISOString(),
   buildings: project.buildings.map(mapPortalBuilding),
@@ -324,6 +329,7 @@ export const mapPortalApartment = (
         altText: apartment.coverMedia.altText,
       }
     : null,
+  verified: apartment.verified,
   tinderMediaId: apartment.tinderMediaId,
   tinder: apartment.tinderMedia
     ? {

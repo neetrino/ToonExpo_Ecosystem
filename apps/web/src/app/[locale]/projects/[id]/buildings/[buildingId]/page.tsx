@@ -72,6 +72,11 @@ export default async function BuildingPage({ params }: BuildingPageProps) {
               <h1 className="mt-2 font-brand text-2xl font-bold text-on-dark sm:text-3xl">
                 {building.name}
               </h1>
+              {building.verified ? (
+                <p className="mt-2 text-[10px] font-bold tracking-widest text-on-dark/90 uppercase">
+                  {t('badges.verified')}
+                </p>
+              ) : null}
               <p className="mt-1 text-sm text-on-dark/80">{building.project.name}</p>
             </div>
           </section>
@@ -82,6 +87,11 @@ export default async function BuildingPage({ params }: BuildingPageProps) {
               label={t('building.backToProject')}
             />
             <h1 className="mt-2 font-brand text-2xl font-bold text-ink">{building.name}</h1>
+            {building.verified ? (
+              <p className="mt-1 text-[10px] font-bold tracking-widest text-brand-deep uppercase">
+                {t('badges.verified')}
+              </p>
+            ) : null}
             <p className="text-sm text-ink-secondary">{building.project.name}</p>
           </div>
         )}
