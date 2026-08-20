@@ -43,6 +43,7 @@ export class FloorsCatalogService {
             id: true,
             name: true,
             projectId: true,
+            priceOnRequestEnabled: true,
             project: { select: { id: true, name: true, slug: true } },
           },
         },
@@ -87,6 +88,7 @@ export class FloorsCatalogService {
         building: {
           id: floor.building.id,
           name: floor.building.name,
+          priceOnRequestEnabled: floor.building.priceOnRequestEnabled,
         },
         project: floor.building.project,
       },

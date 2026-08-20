@@ -97,7 +97,7 @@ export default async function FloorPage({ params }: FloorPageProps) {
           <h2 className="text-xl font-bold text-ink">{t('floor.apartments')}</h2>
         </div>
         <ProjectPricesOverlayScope projectId={floor.project.id}>
-          <FloorApartmentsList floor={floor} />
+          <FloorApartmentsList projectId={floor.project.id} floor={floor} />
         </ProjectPricesOverlayScope>
       </main>
       <SiteFooter />

@@ -16,6 +16,7 @@ export type DiscoverApartmentCard = {
   price: string | null;
   priceCurrency: string;
   priceVisibility: PriceVisibility;
+  priceOnRequest: boolean;
   locationLine: string | null;
   image: { src: string; alt: string } | null;
   projectId: string;
@@ -79,6 +80,7 @@ const toCard = (
     price: apartment.price,
     priceCurrency: apartment.priceCurrency,
     priceVisibility: apartment.priceVisibility,
+    priceOnRequest: apartment.priceOnRequest,
     locationLine,
     image: apartment.tinder
       ? {

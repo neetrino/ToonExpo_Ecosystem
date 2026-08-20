@@ -81,7 +81,12 @@ export const ProjectBuildings = async ({ projectId, buildings }: ProjectBuilding
                     </div>
                     <ul className="divide-y divide-border overflow-hidden rounded-sm border border-border bg-background">
                       {floor.apartments.map((apartment) => (
-                        <ApartmentRow key={apartment.id} apartment={apartment} t={t} />
+                        <ApartmentRow
+                          key={apartment.id}
+                          projectId={projectId}
+                          apartment={apartment}
+                          t={t}
+                        />
                       ))}
                     </ul>
                   </div>
@@ -114,13 +119,18 @@ const AvailabilityLine = ({
   );
 };
 
-const ApartmentRow = ({ apartment, t }: { apartment: FloorApartmentSummary; t: Translate }) => {
+const ApartmentRow = ({
+  projectId,
+  apartment,
+  t,
+}: {
+  projectId: string;
+  apartment: FloorApartmentSummary;
+  t: Translate;
+}) => {
   return (
-    <li>
-      <Link
-        href={`/apartments/${apartment.id}`}
-        className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 text-sm hover:bg-surface"
-      >
+    <li className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 text-sm hover:bg-surface">
+      <Link href={`/apartments/${apartment.id}`} className="flex min-w-0 flex-1 flex-wrap items-center gap-3">
         <div className="flex flex-wrap items-center gap-3">
           <span className="font-medium text-ink">
             {t('apartment.unit', { number: apartment.number })}
@@ -142,13 +152,15 @@ const ApartmentRow = ({ apartment, t }: { apartment: FloorApartmentSummary; t: T
             </span>
           ) : null}
         </div>
-        <ApartmentPriceLabel
-          apartmentId={apartment.id}
-          amount={apartment.price}
-          currency={apartment.priceCurrency}
-          priceVisibility={apartment.priceVisibility}
-        />
       </Link>
+      <ApartmentPriceLabel
+        apartmentId={apartment.id}
+        amount={apartment.price}
+        currency={apartment.priceCurrency}
+        priceVisibility={apartment.priceVisibility}
+        projectId={projectId}
+        priceOnRequest={apartment.priceOnRequest}
+      />
     </li>
   );
 };

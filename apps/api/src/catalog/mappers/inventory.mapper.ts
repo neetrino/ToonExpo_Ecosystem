@@ -8,7 +8,7 @@ import {
   TRANSLATION_FIELD,
   type TranslationRow,
 } from '../utils/resolve-translation.js';
-import { shouldRevealPrice, summarizeSalesStatuses, toMediaSummary } from './catalog.mapper.js';
+import { shouldRevealCatalogPrice, summarizeSalesStatuses, toMediaSummary } from './catalog.mapper.js';
 
 type MapContext = {
   locale: SupportedLocale;
@@ -33,6 +33,7 @@ const mapFloorApartment = (
     tinderMedia?: MediaRow;
   },
   isAuthenticated: boolean,
+  priceOnRequestEnabled: boolean,
 ) => ({
   id: apartment.id,
   number: apartment.number,
@@ -41,13 +42,18 @@ const mapFloorApartment = (
   bedrooms: apartment.bedrooms,
   bathrooms: apartment.bathrooms,
   areaTotal: apartment.areaTotal?.toString() ?? null,
-  price: shouldRevealPrice(apartment.priceVisibility, isAuthenticated)
+  price: shouldRevealCatalogPrice(
+    apartment.priceVisibility,
+    isAuthenticated,
+    priceOnRequestEnabled,
+  )
     ? (apartment.price?.toString() ?? null)
     : null,
   priceCurrency: apartment.priceCurrency,
   priceVisibility:
     apartment.priceVisibility as FloorDetail['apartments'][number]['priceVisibility'],
   tinder: toMediaSummary(apartment.tinderMedia ?? null),
+  priceOnRequest: priceOnRequestEnabled,
 });
 
 export const mapBuildingDetail = (
@@ -58,6 +64,7 @@ export const mapBuildingDetail = (
     displayOrder: number;
     floorsCount: number | null;
     coverMedia: MediaRow;
+    priceOnRequestEnabled: boolean;
     project: { id: string; name: string; slug: string };
     apartments: Array<{ salesStatus: ApartmentSalesStatus }>;
     floors: Array<{
@@ -101,6 +108,7 @@ export const mapBuildingDetail = (
     availability: summarizeSalesStatuses(
       building.apartments.map((apartment) => apartment.salesStatus),
     ),
+    priceOnRequestEnabled: building.priceOnRequestEnabled,
     floors: building.floors.map((floor) => ({
       id: floor.id,
       number: floor.number,
@@ -111,7 +119,7 @@ export const mapBuildingDetail = (
         floor.apartments.map((apartment) => apartment.salesStatus),
       ),
       apartments: floor.apartments.map((apartment) =>
-        mapFloorApartment(apartment, ctx.isAuthenticated),
+        mapFloorApartment(apartment, ctx.isAuthenticated, building.priceOnRequestEnabled),
       ),
     })),
     project: {
@@ -130,7 +138,7 @@ export const mapFloorDetail = (
     displayLabel: string | null;
     displayOrder: number;
     floorplanMedia: MediaRow;
-    building: { id: string; name: string };
+    building: { id: string; name: string; priceOnRequestEnabled: boolean };
     project: { id: string; name: string; slug: string };
     apartments: Array<{
       id: string;
@@ -167,7 +175,7 @@ export const mapFloorDetail = (
       floor.apartments.map((apartment) => apartment.salesStatus),
     ),
     apartments: floor.apartments.map((apartment) =>
-      mapFloorApartment(apartment, ctx.isAuthenticated),
+      mapFloorApartment(apartment, ctx.isAuthenticated, floor.building.priceOnRequestEnabled),
     ),
     project: {
       id: floor.project.id,

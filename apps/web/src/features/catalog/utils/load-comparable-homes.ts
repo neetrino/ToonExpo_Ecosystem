@@ -77,6 +77,8 @@ const toComparableHomeCard = (
     price: apartment.price,
     priceCurrency: apartment.priceCurrency,
     priceVisibility: apartment.priceVisibility,
+    priceOnRequest: apartment.priceOnRequest,
+    projectId: apartment.project.id,
     image,
   };
 };

@@ -95,7 +95,12 @@ export class BuildersService {
             price: true,
             priceCurrency: true,
             priceVisibility: true,
+            building: { select: { priceOnRequestEnabled: true } },
           },
+        },
+        buildings: {
+          where: { publicationStatus: PublicationStatus.published },
+          select: { priceOnRequestEnabled: true },
         },
       },
     });

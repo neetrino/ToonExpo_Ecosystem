@@ -65,6 +65,7 @@ describe('ProjectsService filters and pagination', () => {
         rooms: { in: [2] },
         price: { gte: 40_000_000, lte: 80_000_000 },
         priceVisibility: 'public',
+        building: { priceOnRequestEnabled: false },
       },
     });
   });

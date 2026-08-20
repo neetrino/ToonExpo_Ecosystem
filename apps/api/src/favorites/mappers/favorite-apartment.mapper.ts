@@ -4,7 +4,7 @@ import type { SupportedLocale } from '@toonexpo/shared';
 
 import {
   decimalToString,
-  shouldRevealPrice,
+  shouldRevealCatalogPrice,
   toMediaSummary,
 } from '../../catalog/mappers/catalog.mapper.js';
 import {
@@ -29,6 +29,7 @@ type ApartmentFavoriteSource = {
   priceCurrency: string;
   priceVisibility: string;
   coverMedia: Parameters<typeof toMediaSummary>[0];
+  building: { priceOnRequestEnabled: boolean };
   project: {
     id: string;
     name: string;
@@ -54,7 +55,12 @@ export const mapFavoriteApartmentCard = (
   apartment: ApartmentFavoriteSource,
   ctx: MapApartmentContext,
 ): FavoriteApartmentCard => {
-  const revealPrice = shouldRevealPrice(apartment.priceVisibility, ctx.isAuthenticated);
+  const priceOnRequest = apartment.building.priceOnRequestEnabled;
+  const revealPrice = shouldRevealCatalogPrice(
+    apartment.priceVisibility,
+    ctx.isAuthenticated,
+    priceOnRequest,
+  );
 
   const projectName = resolveTranslatedName(
     ctx.translations,
@@ -83,6 +89,7 @@ export const mapFavoriteApartmentCard = (
     price: revealPrice ? decimalToString(apartment.price) : null,
     priceCurrency: apartment.priceCurrency,
     priceVisibility: apartment.priceVisibility as PriceVisibility,
+    priceOnRequest,
     cover: toMediaSummary(apartment.coverMedia),
     city: apartment.project.city,
     district: apartment.project.district,

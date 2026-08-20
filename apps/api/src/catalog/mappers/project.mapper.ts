@@ -21,7 +21,8 @@ import { aggregateVisiblePrices } from './aggregate-prices.js';
 import {
   decimalToString,
   emptyAvailability,
-  shouldRevealPrice,
+  hasPublishedPriceOnRequest,
+  shouldRevealCatalogPrice,
   summarizeSalesStatuses,
   toMediaSummary,
 } from './catalog.mapper.js';
@@ -33,6 +34,8 @@ type ApartmentPriceRow = {
   price: Prisma.Decimal | null;
   priceCurrency: string;
   priceVisibility: string;
+  priceOnRequestEnabled?: boolean;
+  building?: { priceOnRequestEnabled?: boolean } | null;
 };
 
 type ProjectListSource = {
@@ -53,9 +56,10 @@ type ProjectListSource = {
     logoMedia: MediaRow;
   };
   apartments: ApartmentPriceRow[];
+  buildings?: Array<{ priceOnRequestEnabled: boolean }>;
 };
 
-type ProjectDetailSource = ProjectListSource & {
+type ProjectDetailSource = Omit<ProjectListSource, 'buildings'> & {
   fullDescription: string | null;
   projectType: string | null;
   constructionStatus: string | null;
@@ -69,6 +73,7 @@ type ProjectDetailSource = ProjectListSource & {
     displayOrder: number;
     floorsCount: number | null;
     coverMedia: MediaRow;
+    priceOnRequestEnabled: boolean;
     apartments: Array<{ salesStatus: ApartmentSalesStatus }>;
     floors: Array<{
       id: string;
@@ -113,8 +118,13 @@ const mapFloorApartment = (
     tinderMedia?: MediaRow;
   },
   isAuthenticated: boolean,
+  priceOnRequestEnabled: boolean,
 ): FloorApartmentSummary => {
-  const revealPrice = shouldRevealPrice(apartment.priceVisibility, isAuthenticated);
+  const revealPrice = shouldRevealCatalogPrice(
+    apartment.priceVisibility,
+    isAuthenticated,
+    priceOnRequestEnabled,
+  );
 
   return {
     id: apartment.id,
@@ -128,6 +138,7 @@ const mapFloorApartment = (
     priceCurrency: apartment.priceCurrency,
     priceVisibility: apartment.priceVisibility as PriceVisibility,
     tinder: toMediaSummary(apartment.tinderMedia ?? null),
+    priceOnRequest: priceOnRequestEnabled,
   };
 };
 
@@ -217,6 +228,7 @@ export const mapProjectListItem = (
     minPrice: prices.minPrice,
     maxPrice: prices.maxPrice,
     priceCurrency: prices.priceCurrency,
+    priceOnRequest: hasPublishedPriceOnRequest(project.buildings ?? []),
   };
 };
 
@@ -250,6 +262,7 @@ export const mapProjectDetail = (project: ProjectDetailSource, ctx: MapContext):
       floorsCount: building.floorsCount,
       cover: toMediaSummary(building.coverMedia),
       availability: statusesToSummary(building.apartments),
+      priceOnRequestEnabled: building.priceOnRequestEnabled,
       floors: building.floors.map((floor) => ({
         id: floor.id,
         number: floor.number,
@@ -258,7 +271,7 @@ export const mapProjectDetail = (project: ProjectDetailSource, ctx: MapContext):
         displayOrder: floor.displayOrder,
         availability: statusesToSummary(floor.apartments),
         apartments: floor.apartments.map((apartment) =>
-          mapFloorApartment(apartment, ctx.isAuthenticated),
+          mapFloorApartment(apartment, ctx.isAuthenticated, building.priceOnRequestEnabled),
         ),
       })),
     })),

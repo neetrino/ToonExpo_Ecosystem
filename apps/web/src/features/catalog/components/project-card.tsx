@@ -6,7 +6,9 @@ import { useLocale, useTranslations } from 'next-intl';
 
 import { FavoriteToggleButton } from '@/features/buyer/components/favorite-toggle-button';
 import { usePriceOverlay } from '@/features/catalog/components/price-overlay-scope';
+import { ProjectPriceCta } from '@/features/catalog/components/project-price-cta';
 import { formatCompactPrice, formatPriceRange } from '@/features/catalog/utils/format-price';
+import { shouldShowPriceOnRequestCta } from '@/features/catalog/utils/price-on-request-cta';
 import { Link } from '@/i18n/navigation';
 import { resolvePublicAssetUrl } from '@/shared/lib/static-asset-url';
 import { cn } from '@/shared/ui/cn';
@@ -147,9 +149,16 @@ export const ProjectCard = ({
               {project.name}
             </Link>
           </h3>
-          <p className="font-brand text-lg font-bold leading-7 text-brand-deep sm:shrink-0">
-            {priceLabel}
-          </p>
+          <ProjectPriceCta
+            projectId={project.id}
+            priceOnRequest={shouldShowPriceOnRequestCta({
+              priceOnRequest: project.priceOnRequest,
+              minPrice: range.minPrice,
+              maxPrice: range.maxPrice,
+            })}
+            priceLabel={priceLabel}
+            className="font-brand text-lg font-bold leading-7 text-brand-deep sm:shrink-0"
+          />
         </div>
 
         <p className="mb-4 min-h-4 truncate text-xs leading-4 text-header-muted">

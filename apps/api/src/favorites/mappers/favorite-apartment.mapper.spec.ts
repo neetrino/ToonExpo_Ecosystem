@@ -16,6 +16,7 @@ describe('mapFavoriteApartmentCard price visibility', () => {
     priceCurrency: 'AMD',
     priceVisibility: 'visible_after_login',
     coverMedia: null,
+    building: { priceOnRequestEnabled: false },
     project: {
       id: 'proj_1',
       name: 'Project',
@@ -50,5 +51,19 @@ describe('mapFavoriteApartmentCard price visibility', () => {
     });
 
     expect(card.price).toBe('45000000');
+  });
+
+  it('hides price when the building has price-on-request enabled', () => {
+    const card = mapFavoriteApartmentCard(
+      { ...apartment, building: { priceOnRequestEnabled: true } } as never,
+      {
+        locale: 'hy',
+        isAuthenticated: true,
+        translations: [],
+      },
+    );
+
+    expect(card.price).toBeNull();
+    expect(card.priceOnRequest).toBe(true);
   });
 });

@@ -23,6 +23,7 @@ export type FavoriteApartmentCard = {
   price: string | null;
   priceCurrency: string;
   priceVisibility: PriceVisibility;
+  priceOnRequest: boolean;
   cover: MediaAssetSummary | null;
   city: string | null;
   district: string | null;

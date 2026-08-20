@@ -140,6 +140,8 @@ Rules:
 - `by_request` — price never exposed to anonymous callers; UI shows "Price by request".
 - `visible_after_login` — price included only for authenticated buyer sessions; anonymous callers receive no numeric price (registration incentive).
 
+Building-level **price on request** (separate from apartment `price_visibility`): builder `company_admin` can enable `price_on_request_enabled` on a building. While enabled, public catalog never exposes that building's numeric prices (including after login). The public UI shows a request button that creates a CRM deal for that builder.
+
 Multi-currency is out of v1. Prices are stored in AMD major units (`Decimal(14,2)`); see [DECISIONS.md](../../DECISIONS.md) Catalog section.
 
 ## Request / Lead Status

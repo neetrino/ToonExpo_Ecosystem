@@ -80,6 +80,7 @@ export type PortalBuildingSummary = {
   displayOrder: number;
   floorsCount: number | null;
   coverMediaId: string | null;
+  priceOnRequestEnabled: boolean;
   floors: PortalFloorSummary[];
   createdAt: string;
   updatedAt: string;
@@ -199,6 +200,10 @@ export type UpdatePortalProjectRequest = {
 
 export type UpdatePortalPublicationRequest = {
   publicationStatus: PublicationStatus;
+};
+
+export type UpdatePortalPriceOnRequestRequest = {
+  enabled: boolean;
 };
 
 export type CreatePortalBuildingRequest = {
