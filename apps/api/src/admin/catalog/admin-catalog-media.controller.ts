@@ -50,6 +50,17 @@ export class AdminCatalogMediaController {
     return this.mediaUpload.listCompanyMedia(companyId, query.page, query.pageSize);
   }
 
+  @Get(':mediaId')
+  @ApiOperation({ summary: "Get a company's media asset (admin)" })
+  @ApiOkResponse({ description: 'Media asset' })
+  async getById(
+    @Param() params: AdminCatalogCompanyParamDto,
+    @Param('mediaId') mediaId: string,
+  ): Promise<MediaAssetItem> {
+    const companyId = await this.builderCompanies.requireBuilderCompanyId(params.companyId);
+    return this.mediaUpload.getCompanyMedia(companyId, mediaId);
+  }
+
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiConsumes('multipart/form-data')

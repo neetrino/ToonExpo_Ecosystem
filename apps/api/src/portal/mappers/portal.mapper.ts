@@ -1,4 +1,5 @@
 import type {
+  MediaAssetSummary,
   PortalApartmentDetail,
   PortalBuildingSummary,
   PortalFloorSummary,
@@ -7,6 +8,8 @@ import type {
   PortalTranslationsInput,
 } from '@toonexpo/contracts';
 import type { Prisma } from '@toonexpo/db';
+
+import { toPublicFileUrl } from '../../media/public-file-url.js';
 
 const decimalToString = (value: Prisma.Decimal | null | undefined): string | null =>
   value == null ? null : value.toString();
@@ -77,9 +80,37 @@ type ProjectDetailRow = {
   amenities: Prisma.JsonValue;
   nearbyPlaces: Prisma.JsonValue;
   coverMediaId: string | null;
+  coverMedia?: {
+    id: string;
+    fileUrl: string;
+    thumbnailUrl: string | null;
+    altText: string | null;
+  } | null;
   createdAt: Date;
   updatedAt: Date;
   buildings: BuildingRow[];
+};
+
+const toPortalMediaSummary = (
+  media:
+    | {
+        id: string;
+        fileUrl: string;
+        thumbnailUrl: string | null;
+        altText: string | null;
+      }
+    | null
+    | undefined,
+): MediaAssetSummary | null => {
+  if (!media) {
+    return null;
+  }
+  return {
+    id: media.id,
+    fileUrl: toPublicFileUrl(media.fileUrl),
+    thumbnailUrl: media.thumbnailUrl ? toPublicFileUrl(media.thumbnailUrl) : null,
+    altText: media.altText,
+  };
 };
 
 type ApartmentRow = {
@@ -227,6 +258,7 @@ export const mapPortalProjectDetail = (
   amenities: project.amenities,
   nearbyPlaces: project.nearbyPlaces,
   coverMediaId: project.coverMediaId,
+  cover: toPortalMediaSummary(project.coverMedia),
   createdAt: project.createdAt.toISOString(),
   updatedAt: project.updatedAt.toISOString(),
   buildings: project.buildings.map(mapPortalBuilding),

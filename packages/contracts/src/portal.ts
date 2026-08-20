@@ -64,6 +64,7 @@ export type PortalProjectDetail = {
   amenities: unknown;
   nearbyPlaces: unknown;
   coverMediaId: string | null;
+  cover: MediaAssetSummary | null;
   createdAt: string;
   updatedAt: string;
   buildings: PortalBuildingSummary[];

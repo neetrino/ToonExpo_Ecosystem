@@ -117,6 +117,7 @@ export const toCreateProjectRequest = (
  */
 export const toUpdateProjectRequest = (
   values: UpdateProjectFormValues,
+  options: { includeCoverMediaId?: boolean } = {},
 ): UpdatePortalProjectRequest => {
   const translations = buildProjectTranslations(values);
   const { amenities, nearbyPlaces } = catalogFormSliceToJson(values);
@@ -131,10 +132,13 @@ export const toUpdateProjectRequest = (
     projectType: optionalText(values.projectType) ?? null,
     constructionStatus: optionalText(values.constructionStatus) ?? null,
     completionDate: optionalText(values.completionDate) ?? null,
-    coverMediaId: toNullableMediaId(values.coverMediaId),
     amenities,
     nearbyPlaces,
   };
+
+  if (options.includeCoverMediaId ?? true) {
+    request.coverMediaId = toNullableMediaId(values.coverMediaId);
+  }
 
   const slug = optionalText(values.slug);
   if (slug) {

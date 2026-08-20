@@ -53,6 +53,7 @@ export const usePortalProjectQuery = (id: string) => {
     queryKey: [...portalProjectQueryKey(id), ...scopeKey(scope)],
     queryFn: () => getPortalProject(id, { scope }),
     enabled: id.length > 0,
+    refetchOnMount: 'always',
   });
 };
 

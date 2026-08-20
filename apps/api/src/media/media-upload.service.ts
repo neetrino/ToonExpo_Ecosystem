@@ -3,6 +3,7 @@ import {
   Inject,
   Injectable,
   Logger,
+  NotFoundException,
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -172,6 +173,16 @@ export class MediaUploadService {
     pageSize: number,
   ): Promise<MediaListResponse> {
     return this.listMedia({ ownerCompanyId: companyId }, page, pageSize);
+  }
+
+  async getCompanyMedia(companyId: string, mediaId: string): Promise<MediaAssetItem> {
+    const row = await this.prisma.db.mediaAsset.findFirst({
+      where: { id: mediaId, ownerCompanyId: companyId },
+    });
+    if (!row) {
+      throw new NotFoundException('Media asset not found');
+    }
+    return toMediaAssetItem(row);
   }
 
   async listPlatformMedia(page: number, pageSize: number): Promise<MediaListResponse> {

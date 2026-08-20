@@ -29,8 +29,7 @@ const namesEqual = (a: NameSnapshot, b: NameSnapshot): boolean =>
 
 /**
  * Keeps `slug` in sync with project names until the user edits the slug field.
- * Does not overwrite the slug until at least one name field changes from the
- * values present when the form mounted (safe for edit + React Strict Mode).
+ * Compares against form defaultValues so Save/reset does not mark the form dirty.
  */
 export const useAutoProjectSlug = <T extends ProjectSlugFormFields>({
   control,
@@ -38,25 +37,29 @@ export const useAutoProjectSlug = <T extends ProjectSlugFormFields>({
   setSlug,
 }: UseAutoProjectSlugArgs<T>): { lockSlugAuto: () => void } => {
   const lockedRef = useRef(false);
-  const baselineRef = useRef<NameSnapshot | null>(null);
   const getSlugRef = useRef(getSlug);
   const setSlugRef = useRef(setSlug);
   getSlugRef.current = getSlug;
   setSlugRef.current = setSlug;
 
-  const nameHy = useWatch({ control, name: 'nameHy' as Path<T> }) as string;
-  const nameRu = useWatch({ control, name: 'nameRu' as Path<T> }) as string;
-  const nameEn = useWatch({ control, name: 'nameEn' as Path<T> }) as string;
+  const nameHy = useWatch({ control, name: 'nameHy' as Path<T> }) as string | undefined;
+  const nameRu = useWatch({ control, name: 'nameRu' as Path<T> }) as string | undefined;
+  const nameEn = useWatch({ control, name: 'nameEn' as Path<T> }) as string | undefined;
 
   useEffect(() => {
-    const current: NameSnapshot = { nameHy, nameRu, nameEn };
-
-    if (baselineRef.current === null) {
-      baselineRef.current = current;
+    if (typeof nameHy !== 'string' || typeof nameRu !== 'string' || typeof nameEn !== 'string') {
       return;
     }
 
-    if (lockedRef.current || namesEqual(current, baselineRef.current)) {
+    const current: NameSnapshot = { nameHy, nameRu, nameEn };
+    const defaults = control._defaultValues as Partial<ProjectSlugFormFields>;
+    const baseline: NameSnapshot = {
+      nameHy: defaults.nameHy ?? '',
+      nameRu: defaults.nameRu ?? '',
+      nameEn: defaults.nameEn ?? '',
+    };
+
+    if (lockedRef.current || namesEqual(current, baseline)) {
       return;
     }
 
@@ -66,7 +69,7 @@ export const useAutoProjectSlug = <T extends ProjectSlugFormFields>({
     }
 
     setSlugRef.current(next);
-  }, [nameEn, nameHy, nameRu]);
+  }, [control, nameEn, nameHy, nameRu]);
 
   return {
     lockSlugAuto: () => {

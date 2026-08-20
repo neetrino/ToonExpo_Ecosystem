@@ -25,7 +25,15 @@ const PROJECT_TRANSLATION_FIELDS = [
   TRANSLATION_FIELD.locationText,
 ] as const;
 
+const PROJECT_MEDIA_SELECT = {
+  id: true,
+  fileUrl: true,
+  thumbnailUrl: true,
+  altText: true,
+} as const;
+
 const projectDetailInclude = {
+  coverMedia: { select: PROJECT_MEDIA_SELECT },
   buildings: {
     orderBy: [{ displayOrder: 'asc' as const }, { name: 'asc' as const }],
     include: {

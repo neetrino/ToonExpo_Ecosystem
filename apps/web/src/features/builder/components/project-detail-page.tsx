@@ -59,7 +59,7 @@ export const ProjectDetailPage = ({ projectId, showInventory = true }: ProjectDe
       </div>
 
       <Card>
-        <EditProjectForm project={project} />
+        <EditProjectForm key={project.id} project={project} />
       </Card>
 
       <ProjectQrSection projectId={project.id} projectName={project.name} />
