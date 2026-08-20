@@ -1960,15 +1960,15 @@
       "create": {
         "cta": "+ Добавить здание",
         "title": "Добавить здание",
-        "company": "Компания",
-        "selectCompany": "Выберите компанию",
-        "searchCompany": "Поиск компаний",
-        "noCompanyMatches": "Нет подходящих компаний",
+        "builder": "Застройщик",
+        "selectBuilder": "Выберите застройщика",
+        "searchBuilder": "Поиск застройщиков",
+        "noBuilderMatches": "Нет подходящих застройщиков",
         "project": "Проект",
         "selectProject": "Выберите проект",
         "searchProject": "Поиск проектов",
         "noProjectMatches": "Нет подходящих проектов",
-        "pickProject": "Выберите компанию и проект.",
+        "pickProject": "Выберите застройщика и проект.",
         "submit": "Создать здание"
       },
       "inventory": {
@@ -2052,15 +2052,15 @@
       "create": {
         "cta": "+ Добавить этаж",
         "title": "Добавить этаж",
-        "company": "Компания",
-        "selectCompany": "Выберите компанию",
-        "searchCompany": "Поиск компаний",
-        "noCompanyMatches": "Нет подходящих компаний",
+        "builder": "Застройщик",
+        "selectBuilder": "Выберите застройщика",
+        "searchBuilder": "Поиск застройщиков",
+        "noBuilderMatches": "Нет подходящих застройщиков",
         "building": "Здание",
         "selectBuilding": "Выберите здание",
         "searchBuilding": "Поиск зданий",
         "noBuildingMatches": "Нет подходящих зданий",
-        "pickBuilding": "Выберите компанию и здание.",
+        "pickBuilding": "Выберите застройщика и здание.",
         "submit": "Создать этаж"
       }
     },

@@ -1960,15 +1960,15 @@
       "create": {
         "cta": "+ Ավելացնել շենք",
         "title": "Ավելացնել շենք",
-        "company": "Ընկերություն",
-        "selectCompany": "Ընտրել ընկերություն",
-        "searchCompany": "Որոնել ընկերություն",
-        "noCompanyMatches": "Համընկնող ընկերություն չկա",
+        "builder": "Կառուցապատող",
+        "selectBuilder": "Ընտրել կառուցապատող",
+        "searchBuilder": "Որոնել կառուցապատող",
+        "noBuilderMatches": "Համընկնող կառուցապատող չկա",
         "project": "Նախագիծ",
         "selectProject": "Ընտրել նախագիծ",
         "searchProject": "Որոնել նախագիծ",
         "noProjectMatches": "Համընկնող նախագիծ չկա",
-        "pickProject": "Ընտրեք ընկերություն և նախագիծ։",
+        "pickProject": "Ընտրեք կառուցապատող և նախագիծ։",
         "submit": "Ստեղծել շենք"
       },
       "inventory": {
@@ -2052,15 +2052,15 @@
       "create": {
         "cta": "+ Ավելացնել հարկ",
         "title": "Ավելացնել հարկ",
-        "company": "Ընկերություն",
-        "selectCompany": "Ընտրել ընկերություն",
-        "searchCompany": "Որոնել ընկերություն",
-        "noCompanyMatches": "Համընկնող ընկերություն չկա",
+        "builder": "Կառուցապատող",
+        "selectBuilder": "Ընտրել կառուցապատող",
+        "searchBuilder": "Որոնել կառուցապատող",
+        "noBuilderMatches": "Համընկնող կառուցապատող չկա",
         "building": "Շենք",
         "selectBuilding": "Ընտրել շենք",
         "searchBuilding": "Որոնել շենք",
         "noBuildingMatches": "Համընկնող շենք չկա",
-        "pickBuilding": "Ընտրեք ընկերություն և շենք։",
+        "pickBuilding": "Ընտրեք կառուցապատող և շենք։",
         "submit": "Ստեղծել հարկ"
       }
     },

@@ -29,7 +29,7 @@ type AdminCreateFloorSheetProps = {
 };
 
 /**
- * Admin sheet: pick company + building, then create a floor.
+ * Admin sheet: pick builder + building, then create a floor.
  */
 export const AdminCreateFloorSheet = ({
   open,
@@ -122,9 +122,9 @@ export const AdminCreateFloorSheet = ({
   return (
     <AdminCreateSheet open={open} onClose={onClose} title={t('title')} size="comfortable">
       <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
-        <FormField id="create-floor-company" label={t('company')}>
+        <FormField id="create-floor-builder" label={t('builder')}>
           <ListboxSelect
-            id="create-floor-company"
+            id="create-floor-builder"
             variant="field"
             searchable
             value={companyId}
@@ -132,9 +132,9 @@ export const AdminCreateFloorSheet = ({
               value: company.id,
               label: company.name,
             }))}
-            placeholder={t('searchCompany')}
-            emptyLabel={t('noCompanyMatches')}
-            aria-label={t('company')}
+            placeholder={t('searchBuilder')}
+            emptyLabel={t('noBuilderMatches')}
+            aria-label={t('builder')}
             onChange={(next) => {
               setCompanyId(next);
               setBuildingId('');

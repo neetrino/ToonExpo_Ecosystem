@@ -1960,15 +1960,15 @@
       "create": {
         "cta": "+ Add Building",
         "title": "Add Building",
-        "company": "Company",
-        "selectCompany": "Select company",
-        "searchCompany": "Search companies",
-        "noCompanyMatches": "No matching companies",
+        "builder": "Builder",
+        "selectBuilder": "Select builder",
+        "searchBuilder": "Search builders",
+        "noBuilderMatches": "No matching builders",
         "project": "Project",
         "selectProject": "Select project",
         "searchProject": "Search projects",
         "noProjectMatches": "No matching projects",
-        "pickProject": "Select a company and project.",
+        "pickProject": "Select a builder and project.",
         "submit": "Create building"
       },
       "inventory": {
@@ -2052,15 +2052,15 @@
       "create": {
         "cta": "+ Add Floor",
         "title": "Add Floor",
-        "company": "Company",
-        "selectCompany": "Select company",
-        "searchCompany": "Search companies",
-        "noCompanyMatches": "No matching companies",
+        "builder": "Builder",
+        "selectBuilder": "Select builder",
+        "searchBuilder": "Search builders",
+        "noBuilderMatches": "No matching builders",
         "building": "Building",
         "selectBuilding": "Select building",
         "searchBuilding": "Search buildings",
         "noBuildingMatches": "No matching buildings",
-        "pickBuilding": "Select a company and building.",
+        "pickBuilding": "Select a builder and building.",
         "submit": "Create floor"
       }
     },

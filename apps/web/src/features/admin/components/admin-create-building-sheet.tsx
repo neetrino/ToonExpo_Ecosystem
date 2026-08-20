@@ -29,7 +29,7 @@ type AdminCreateBuildingSheetProps = {
 };
 
 /**
- * Admin sheet: pick company + project, then create a building.
+ * Admin sheet: pick builder + project, then create a building.
  */
 export const AdminCreateBuildingSheet = ({
   open,
@@ -99,9 +99,9 @@ export const AdminCreateBuildingSheet = ({
   return (
     <AdminCreateSheet open={open} onClose={onClose} title={t('title')} size="comfortable">
       <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
-        <FormField id="create-building-company" label={t('company')}>
+        <FormField id="create-building-builder" label={t('builder')}>
           <ListboxSelect
-            id="create-building-company"
+            id="create-building-builder"
             variant="field"
             searchable
             value={companyId}
@@ -109,9 +109,9 @@ export const AdminCreateBuildingSheet = ({
               value: company.id,
               label: company.name,
             }))}
-            placeholder={t('searchCompany')}
-            emptyLabel={t('noCompanyMatches')}
-            aria-label={t('company')}
+            placeholder={t('searchBuilder')}
+            emptyLabel={t('noBuilderMatches')}
+            aria-label={t('builder')}
             onChange={(next) => {
               setCompanyId(next);
               setProjectId('');
