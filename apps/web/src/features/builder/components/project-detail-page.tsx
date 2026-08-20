@@ -12,20 +12,73 @@ import { ProjectPublicationActions } from '@/features/builder/components/project
 import { ProjectQrDialog } from '@/features/builder/components/project-qr-dialog';
 import { usePortalProjectQuery } from '@/features/builder/hooks/use-portal-projects';
 import { PortalVisualCanvasesSection } from '@/features/visual-map/components/portal-visual-canvases-section';
+import { AdminListCardLogo } from '@/shared/ui/admin-list-card-logo';
 import { BackLink } from '@/shared/ui/back-link';
 import { Card } from '@/shared/ui/card';
 import { IconButton } from '@/shared/ui/icon-button';
+
+/** Matches public project hero builder mark on small screens. */
+const TITLE_LOGO_CLASS = 'size-14';
+const TITLE_QR_ICON_CLASS = 'size-6';
+
+export type ProjectDetailTitleLogo = {
+  name: string;
+  logoUrl: string | null;
+};
 
 type ProjectDetailPageProps = {
   projectId: string;
   /** Builder keeps inventory on the project page; admin uses the Buildings hub sheets. */
   showInventory?: boolean | undefined;
+  /** Company mark shown before the project title (admin detail). */
+  titleLogo?: ProjectDetailTitleLogo | undefined;
 };
+
+type ProjectDetailHeadingProps = {
+  name: string;
+  titleLogo: ProjectDetailTitleLogo | undefined;
+  qrLabel: string;
+  onOpenQr: () => void;
+};
+
+const ProjectDetailHeading = ({
+  name,
+  titleLogo,
+  qrLabel,
+  onOpenQr,
+}: ProjectDetailHeadingProps) => (
+  <div className="flex items-start justify-between gap-3">
+    <div className="flex min-w-0 flex-1 items-center gap-3">
+      {titleLogo ? (
+        <AdminListCardLogo
+          name={titleLogo.name}
+          logoUrl={titleLogo.logoUrl}
+          shape="circle"
+          className={TITLE_LOGO_CLASS}
+        />
+      ) : null}
+      <h1 className="min-w-0 flex-1 text-page-title text-ink">{name}</h1>
+    </div>
+    <IconButton
+      label={qrLabel}
+      variant="soft"
+      size="lg"
+      className="mt-0.5 shrink-0"
+      onClick={onOpenQr}
+    >
+      <QrCode className={TITLE_QR_ICON_CLASS} aria-hidden />
+    </IconButton>
+  </div>
+);
 
 /**
  * Project edit shell with publication actions and inventory hierarchy.
  */
-export const ProjectDetailPage = ({ projectId, showInventory = true }: ProjectDetailPageProps) => {
+export const ProjectDetailPage = ({
+  projectId,
+  showInventory = true,
+  titleLogo,
+}: ProjectDetailPageProps) => {
   const t = useTranslations('Builder.projects');
   const tQr = useTranslations('Builder.projects.qr');
   const scope = useCatalogScope();
@@ -57,20 +110,14 @@ export const ProjectDetailPage = ({ projectId, showInventory = true }: ProjectDe
           <BackLink href={listHref} label={t('detail.back')} />
           <ProjectPublicationActions project={project} />
         </div>
-        <div className="flex items-start justify-between gap-3">
-          <h1 className="min-w-0 flex-1 text-page-title text-ink">{project.name}</h1>
-          <IconButton
-            label={tQr('open')}
-            variant="soft"
-            size="md"
-            className="mt-0.5 shrink-0"
-            onClick={() => {
-              setQrOpen(true);
-            }}
-          >
-            <QrCode className="size-4" aria-hidden />
-          </IconButton>
-        </div>
+        <ProjectDetailHeading
+          name={project.name}
+          titleLogo={titleLogo}
+          qrLabel={tQr('open')}
+          onOpenQr={() => {
+            setQrOpen(true);
+          }}
+        />
       </div>
 
       <Card>

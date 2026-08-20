@@ -1,7 +1,7 @@
 import { setRequestLocale } from 'next-intl/server';
 
+import { AdminProjectDetailPage as AdminProjectDetailView } from '@/features/admin/components/admin-project-detail-page';
 import { AdminProjectScopeShell } from '@/features/admin/components/admin-project-scope-shell';
-import { ProjectDetailPage } from '@/features/builder/components/project-detail-page';
 
 type PageProps = {
   params: Promise<{ locale: string; projectId: string }>;
@@ -16,7 +16,7 @@ export default async function AdminProjectDetailPage({ params }: PageProps) {
 
   return (
     <AdminProjectScopeShell projectId={projectId}>
-      <ProjectDetailPage projectId={projectId} showInventory={false} />
+      <AdminProjectDetailView projectId={projectId} />
     </AdminProjectScopeShell>
   );
 }
