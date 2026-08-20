@@ -89,7 +89,13 @@ export const ApartmentDetailPrice = ({
   const headingClass = cn('font-brand text-3xl font-bold text-brand-deep', className);
 
   if (props.priceOnRequest && props.projectId) {
-    return <PriceOnRequestCta projectId={props.projectId} apartmentId={props.apartmentId} className={headingClass} />;
+    return (
+      <PriceOnRequestCta
+        projectId={props.projectId}
+        apartmentId={props.apartmentId}
+        className={headingClass}
+      />
+    );
   }
 
   const needsSignIn = props.priceVisibility === 'visible_after_login' && !revealed;

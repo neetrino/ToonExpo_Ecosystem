@@ -1,8 +1,4 @@
-import type {
-  ApartmentListItem,
-  PaginatedResponse,
-  PriceVisibility,
-} from '@toonexpo/contracts';
+import type { ApartmentListItem, PaginatedResponse, PriceVisibility } from '@toonexpo/contracts';
 
 import { listApartments } from '@/features/catalog/api/catalog-api';
 import type { ProjectFilterParams } from '@/features/catalog/utils/project-filters';
@@ -27,6 +23,7 @@ export type BuyApartmentListing = {
   longitude: number | null;
   projectId: string;
   projectName: string;
+  verified: boolean;
 };
 
 export type BuyApartmentListingsPage = PaginatedResponse<BuyApartmentListing>;
@@ -65,6 +62,7 @@ export const toBuyApartmentListing = (apartment: ApartmentListItem): BuyApartmen
     longitude: toCoord(apartment.longitude),
     projectId: apartment.projectId,
     projectName: apartment.projectName,
+    verified: apartment.verified,
   };
 };
 

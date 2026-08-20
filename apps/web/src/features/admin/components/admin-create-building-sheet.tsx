@@ -11,6 +11,7 @@ import {
   useAdminCompanyProjectsQuery,
 } from '@/features/admin/hooks/use-admin-companies';
 import { useAdminCreateBuildingMutation } from '@/features/admin/hooks/use-admin-inventory';
+import { VerifiedStatusField } from '@/features/builder/components/verified-status-field';
 import {
   createBuildingSchema,
   type CreateBuildingFormValues,
@@ -28,7 +29,7 @@ type AdminCreateBuildingSheetProps = {
 };
 
 /**
- * Admin sheet: pick company + project, then create a building.
+ * Admin sheet: pick builder + project, then create a building.
  */
 export const AdminCreateBuildingSheet = ({
   open,
@@ -53,11 +54,12 @@ export const AdminCreateBuildingSheet = ({
   const {
     register,
     handleSubmit,
+    control,
     reset,
     formState: { errors, isSubmitting },
   } = useForm<CreateBuildingFormValues>({
     resolver: zodResolver(createBuildingSchema),
-    defaultValues: { name: '', description: '', coverMediaId: '' },
+    defaultValues: { name: '', description: '', coverMediaId: '', verified: false },
   });
 
   useEffect(() => {
@@ -67,7 +69,7 @@ export const AdminCreateBuildingSheet = ({
     setCompanyId(defaultCompanyId ?? '');
     setProjectId('');
     setError(null);
-    reset({ name: '', description: '', coverMediaId: '' });
+    reset({ name: '', description: '', coverMediaId: '', verified: false });
   }, [open, defaultCompanyId, reset]);
 
   const onSubmit = handleSubmit(async (values) => {
@@ -83,6 +85,7 @@ export const AdminCreateBuildingSheet = ({
         body: {
           name: values.name,
           ...(values.description.length > 0 ? { description: values.description } : {}),
+          verified: values.verified,
         },
       });
       onClose();
@@ -96,9 +99,9 @@ export const AdminCreateBuildingSheet = ({
   return (
     <AdminCreateSheet open={open} onClose={onClose} title={t('title')} size="comfortable">
       <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
-        <FormField id="create-building-company" label={t('company')}>
+        <FormField id="create-building-builder" label={t('builder')}>
           <ListboxSelect
-            id="create-building-company"
+            id="create-building-builder"
             variant="field"
             searchable
             value={companyId}
@@ -106,9 +109,9 @@ export const AdminCreateBuildingSheet = ({
               value: company.id,
               label: company.name,
             }))}
-            placeholder={t('searchCompany')}
-            emptyLabel={t('noCompanyMatches')}
-            aria-label={t('company')}
+            placeholder={t('searchBuilder')}
+            emptyLabel={t('noBuilderMatches')}
+            aria-label={t('builder')}
             onChange={(next) => {
               setCompanyId(next);
               setProjectId('');
@@ -145,6 +148,8 @@ export const AdminCreateBuildingSheet = ({
         <FormField id="create-building-description" label={inventoryT('buildingDescription')}>
           <Input id="create-building-description" {...register('description')} />
         </FormField>
+
+        <VerifiedStatusField id="create-building-verified" control={control} name="verified" />
 
         {error ? (
           <p role="alert" className="text-sm text-danger">

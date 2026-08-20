@@ -1,10 +1,11 @@
 'use client';
 
-import type { AdminCompanyProjectListItem, PublicationStatus } from '@toonexpo/contracts';
+import type { AdminCompanyProjectListItem } from '@toonexpo/contracts';
 import { CheckCircle2, CircleDashed, FolderKanban } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 
 import { useAdminCompanyProjectsQuery } from '@/features/admin/hooks/use-admin-companies';
+import { toCatalogPublicationStatus } from '@/features/catalog/utils/catalog-publication-status';
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 import { Skeleton } from '@/shared/ui/skeleton';
@@ -13,10 +14,9 @@ type CompanyProjectsSectionProps = {
   companyId: string;
 };
 
-const STATUS_BADGE_CLASS: Record<PublicationStatus, string> = {
+const STATUS_BADGE_CLASS: Record<'published' | 'draft', string> = {
   published: 'bg-success-soft text-success',
   draft: 'bg-surface text-ink-muted',
-  archived: 'bg-warning-soft text-warning',
 };
 
 type ProjectRowProps = {
@@ -26,7 +26,8 @@ type ProjectRowProps = {
 const ProjectRow = ({ project }: ProjectRowProps) => {
   const t = useTranslations('Admin.projects');
   const locale = useLocale();
-  const StatusIcon = project.publicationStatus === 'published' ? CheckCircle2 : CircleDashed;
+  const catalogStatus = toCatalogPublicationStatus(project.publicationStatus);
+  const StatusIcon = catalogStatus === 'published' ? CheckCircle2 : CircleDashed;
   const createdLabel = new Intl.DateTimeFormat(locale, {
     year: 'numeric',
     month: 'short',
@@ -52,11 +53,11 @@ const ProjectRow = ({ project }: ProjectRowProps) => {
         <span
           className={cn(
             'inline-flex shrink-0 items-center gap-1 rounded-pill px-2 py-0.5 text-xs font-medium',
-            STATUS_BADGE_CLASS[project.publicationStatus],
+            STATUS_BADGE_CLASS[catalogStatus],
           )}
         >
           <StatusIcon className="size-3" aria-hidden />
-          {t(`publication.${project.publicationStatus}`)}
+          {t(`publication.${catalogStatus}`)}
         </span>
       </Link>
     </li>

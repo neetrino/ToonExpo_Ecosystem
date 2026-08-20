@@ -4,8 +4,7 @@
 export const hasVisibleCatalogPrice = (
   minPrice: string | null | undefined,
   maxPrice?: string | null | undefined,
-): boolean =>
-  (minPrice != null && minPrice !== '') || (maxPrice != null && maxPrice !== '');
+): boolean => (minPrice != null && minPrice !== '') || (maxPrice != null && maxPrice !== '');
 
 /**
  * Show the Price on request button when the builder enabled the mode,

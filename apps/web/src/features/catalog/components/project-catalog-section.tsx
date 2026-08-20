@@ -106,6 +106,7 @@ export const ProjectCatalogSection = async ({ project }: ProjectCatalogSectionPr
       overviewTitle={t('catalog.overview')}
       detailsTitle={t('catalog.details')}
       financeTitle={t('catalog.finance')}
+      bankPartnerTitle={t('catalog.bankPartner')}
       amenitiesTitle={t('catalog.amenities')}
       nearbyTitle={t('catalog.nearby')}
       linksTitle={t('catalog.links')}

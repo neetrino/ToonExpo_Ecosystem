@@ -9,7 +9,7 @@ import { ProjectCatalogMediaPoster } from '@/features/catalog/components/project
 import { ProjectCatalogGeoMap } from '@/features/catalog/components/project-catalog-geo-map';
 import { ProjectCatalogVideoSection } from '@/features/catalog/components/project-catalog-video-section';
 import {
-  splitProjectCatalogRowsByFinance,
+  splitProjectCatalogRowsBySection,
   type ProjectCatalogRow,
 } from '@/features/catalog/utils/build-project-catalog-rows';
 import type { ProjectCatalogLink } from '@/features/catalog/utils/project-catalog-details';
@@ -25,6 +25,7 @@ type ProjectCatalogDetailsPanelProps = {
   overviewTitle: string;
   detailsTitle: string;
   financeTitle: string;
+  bankPartnerTitle: string;
   amenitiesTitle: string;
   nearbyTitle: string;
   linksTitle: string;
@@ -47,7 +48,7 @@ const EXTERNAL_3D_TOUR_POSTER_SRC = staticAssetUrl('/images/hero-variant-a.webp'
 
 /**
  * Project catalog — Houzez-style stacked white cards (Description / Overview /
- * Details / Finance / Features / Nearby / Video / Tours / Map / Links / Socials).
+ * Details / Finance / Bank partner / Features / Nearby / Video / Tours / Map / Links / Socials).
  */
 export const ProjectCatalogDetailsPanel = ({
   projectId,
@@ -57,6 +58,7 @@ export const ProjectCatalogDetailsPanel = ({
   overviewTitle,
   detailsTitle,
   financeTitle,
+  bankPartnerTitle,
   amenitiesTitle,
   nearbyTitle,
   linksTitle,
@@ -69,7 +71,11 @@ export const ProjectCatalogDetailsPanel = ({
   nearbyPlaces,
   links,
 }: ProjectCatalogDetailsPanelProps) => {
-  const { general: generalRows, finance: financeRows } = splitProjectCatalogRowsByFinance(rows);
+  const {
+    general: generalRows,
+    finance: financeRows,
+    bankPartner: bankPartnerRows,
+  } = splitProjectCatalogRowsBySection(rows);
   const overviewRows = generalRows.filter((row) => !row.wide).slice(0, OVERVIEW_MAX_ITEMS);
   const overviewIds = new Set(overviewRows.map((row) => row.id));
   const detailRows =
@@ -89,6 +95,7 @@ export const ProjectCatalogDetailsPanel = ({
   const hasOverview = overviewRows.length > 0;
   const hasDetails = detailRows.length > 0;
   const hasFinance = financeRows.length > 0;
+  const hasBankPartner = bankPartnerRows.length > 0;
   const hasAmenities = amenityLabels.length > 0;
   const hasNearby = nearbyPlaces.length > 0;
   const hasVideo = videoLink != null;
@@ -143,9 +150,15 @@ export const ProjectCatalogDetailsPanel = ({
           </ProjectCatalogSectionCard>
         ) : null}
 
+        {hasBankPartner ? (
+          <ProjectCatalogSectionCard title={bankPartnerTitle}>
+            <ProjectCatalogDetailsList rows={bankPartnerRows} />
+          </ProjectCatalogSectionCard>
+        ) : null}
+
         {hasAmenities ? (
           <ProjectCatalogSectionCard title={amenitiesTitle}>
-            <ProjectCatalogCheckList items={amenityLabels} />
+            <ProjectCatalogCheckList items={amenityLabels} columns={4} />
           </ProjectCatalogSectionCard>
         ) : null}
 

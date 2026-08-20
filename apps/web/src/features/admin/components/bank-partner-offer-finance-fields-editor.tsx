@@ -38,7 +38,7 @@ const TEXTAREA_KEYS = new Set<BankPartnerOfferFinanceKey>([
 ]);
 
 /**
- * Localized finance fields matching project catalog Finance section keys.
+ * Localized finance fields matching project catalog Bank partner section keys.
  */
 export const BankPartnerOfferFinanceFieldsEditor = ({
   register,

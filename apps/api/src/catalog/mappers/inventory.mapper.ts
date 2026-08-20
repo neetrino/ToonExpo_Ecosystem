@@ -8,7 +8,11 @@ import {
   TRANSLATION_FIELD,
   type TranslationRow,
 } from '../utils/resolve-translation.js';
-import { shouldRevealCatalogPrice, summarizeSalesStatuses, toMediaSummary } from './catalog.mapper.js';
+import {
+  shouldRevealCatalogPrice,
+  summarizeSalesStatuses,
+  toMediaSummary,
+} from './catalog.mapper.js';
 
 type MapContext = {
   locale: SupportedLocale;
@@ -42,11 +46,7 @@ const mapFloorApartment = (
   bedrooms: apartment.bedrooms,
   bathrooms: apartment.bathrooms,
   areaTotal: apartment.areaTotal?.toString() ?? null,
-  price: shouldRevealCatalogPrice(
-    apartment.priceVisibility,
-    isAuthenticated,
-    priceOnRequestEnabled,
-  )
+  price: shouldRevealCatalogPrice(apartment.priceVisibility, isAuthenticated, priceOnRequestEnabled)
     ? (apartment.price?.toString() ?? null)
     : null,
   priceCurrency: apartment.priceCurrency,
@@ -64,6 +64,7 @@ export const mapBuildingDetail = (
     displayOrder: number;
     floorsCount: number | null;
     coverMedia: MediaRow;
+    verified: boolean;
     priceOnRequestEnabled: boolean;
     project: { id: string; name: string; slug: string };
     apartments: Array<{ salesStatus: ApartmentSalesStatus }>;
@@ -105,6 +106,7 @@ export const mapBuildingDetail = (
     displayOrder: building.displayOrder,
     floorsCount: building.floorsCount,
     cover: toMediaSummary(building.coverMedia),
+    verified: building.verified,
     availability: summarizeSalesStatuses(
       building.apartments.map((apartment) => apartment.salesStatus),
     ),

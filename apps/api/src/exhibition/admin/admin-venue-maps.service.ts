@@ -29,7 +29,7 @@ export class AdminVenueMapsService {
     await this.requireEvent(eventId);
     const maps = await this.prisma.db.venueMap.findMany({
       where: { eventId },
-      orderBy: [{ updatedAt: "desc" }],
+      orderBy: [{ createdAt: "desc" }],
       include: { mediaAsset: { select: { fileUrl: true } } },
     });
     return { data: maps.map(toVenueMapSummary) };

@@ -13,6 +13,7 @@ import {
   updateBuildingSchema,
   type UpdateBuildingFormValues,
 } from '@/features/builder/schemas/inventory.schema';
+import { VerifiedStatusField } from '@/features/builder/components/verified-status-field';
 import { MediaUploadField } from '@/features/media/components/media-upload-field';
 import { toNullableMediaId } from '@/features/media/schemas/media-fields.schema';
 import { Button } from '@/shared/ui/button';
@@ -40,7 +41,10 @@ export const EditBuildingMediaForm = ({ projectId, building }: EditBuildingMedia
     formState: { isSubmitting, isDirty },
   } = useForm<UpdateBuildingFormValues>({
     resolver: zodResolver(updateBuildingSchema),
-    defaultValues: { coverMediaId: building.coverMediaId ?? '' },
+    defaultValues: {
+      coverMediaId: building.coverMediaId ?? '',
+      verified: building.verified,
+    },
   });
 
   const onSubmit = handleSubmit(async (values) => {
@@ -48,6 +52,7 @@ export const EditBuildingMediaForm = ({ projectId, building }: EditBuildingMedia
     try {
       await mutation.mutateAsync({
         coverMediaId: toNullableMediaId(values.coverMediaId),
+        verified: values.verified,
       });
       showSuccess(t('coverSaved'));
     } catch {
@@ -73,6 +78,11 @@ export const EditBuildingMediaForm = ({ projectId, building }: EditBuildingMedia
             error={fieldState.error?.message}
           />
         )}
+      />
+      <VerifiedStatusField
+        id={`building-verified-${building.id}`}
+        control={control}
+        name="verified"
       />
       {error ? (
         <p role="alert" className="text-sm text-danger">

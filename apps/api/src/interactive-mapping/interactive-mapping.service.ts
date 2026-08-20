@@ -72,7 +72,7 @@ export class InteractiveMappingService {
       this.prisma.db.project.count({ where }),
       this.prisma.db.project.findMany({
         where,
-        orderBy: [{ name: 'asc' }],
+        orderBy: [{ createdAt: 'desc' }],
         skip: (page - 1) * pageSize,
         take: pageSize,
         select: {

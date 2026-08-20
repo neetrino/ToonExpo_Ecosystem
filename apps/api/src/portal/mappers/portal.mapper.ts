@@ -1,4 +1,5 @@
 import type {
+  MediaAssetSummary,
   PortalApartmentDetail,
   PortalBuildingSummary,
   PortalFloorSummary,
@@ -7,6 +8,8 @@ import type {
   PortalTranslationsInput,
 } from '@toonexpo/contracts';
 import type { Prisma } from '@toonexpo/db';
+
+import { toPublicFileUrl } from '../../media/public-file-url.js';
 
 const decimalToString = (value: Prisma.Decimal | null | undefined): string | null =>
   value == null ? null : value.toString();
@@ -52,6 +55,7 @@ type BuildingRow = {
   displayOrder: number;
   floorsCount: number | null;
   coverMediaId: string | null;
+  verified: boolean;
   priceOnRequestEnabled: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -78,9 +82,38 @@ type ProjectDetailRow = {
   amenities: Prisma.JsonValue;
   nearbyPlaces: Prisma.JsonValue;
   coverMediaId: string | null;
+  verified: boolean;
+  coverMedia?: {
+    id: string;
+    fileUrl: string;
+    thumbnailUrl: string | null;
+    altText: string | null;
+  } | null;
   createdAt: Date;
   updatedAt: Date;
   buildings: BuildingRow[];
+};
+
+const toPortalMediaSummary = (
+  media:
+    | {
+        id: string;
+        fileUrl: string;
+        thumbnailUrl: string | null;
+        altText: string | null;
+      }
+    | null
+    | undefined,
+): MediaAssetSummary | null => {
+  if (!media) {
+    return null;
+  }
+  return {
+    id: media.id,
+    fileUrl: toPublicFileUrl(media.fileUrl),
+    thumbnailUrl: media.thumbnailUrl ? toPublicFileUrl(media.thumbnailUrl) : null,
+    altText: media.altText,
+  };
 };
 
 type ApartmentRow = {
@@ -120,6 +153,7 @@ type ApartmentRow = {
     thumbnailUrl: string | null;
     altText: string | null;
   } | null;
+  verified: boolean;
   tinderMediaId: string | null;
   tinderMedia?: {
     id: string;
@@ -200,6 +234,7 @@ export const mapPortalBuilding = (building: BuildingRow): PortalBuildingSummary 
   displayOrder: building.displayOrder,
   floorsCount: building.floorsCount,
   coverMediaId: building.coverMediaId,
+  verified: building.verified,
   priceOnRequestEnabled: building.priceOnRequestEnabled,
   floors: building.floors.map(mapPortalFloor),
   createdAt: building.createdAt.toISOString(),
@@ -229,6 +264,8 @@ export const mapPortalProjectDetail = (
   amenities: project.amenities,
   nearbyPlaces: project.nearbyPlaces,
   coverMediaId: project.coverMediaId,
+  cover: toPortalMediaSummary(project.coverMedia),
+  verified: project.verified,
   createdAt: project.createdAt.toISOString(),
   updatedAt: project.updatedAt.toISOString(),
   buildings: project.buildings.map(mapPortalBuilding),
@@ -294,6 +331,7 @@ export const mapPortalApartment = (
         altText: apartment.coverMedia.altText,
       }
     : null,
+  verified: apartment.verified,
   tinderMediaId: apartment.tinderMediaId,
   tinder: apartment.tinderMedia
     ? {

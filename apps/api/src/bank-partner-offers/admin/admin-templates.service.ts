@@ -43,7 +43,7 @@ export class AdminBankPartnerOfferTemplatesService {
     const rows = await this.prisma.db.bankPartnerOfferTemplate.findMany({
       where,
       include: templateInclude,
-      orderBy: [{ sortOrder: "asc" }, { createdAt: "desc" }],
+      orderBy: [{ createdAt: "desc" }],
     });
 
     return { data: rows.map(toTemplateItem) };

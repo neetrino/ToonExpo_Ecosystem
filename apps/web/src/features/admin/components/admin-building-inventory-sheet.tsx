@@ -1,13 +1,18 @@
 'use client';
 
-import type { MediaAssetSummary } from '@toonexpo/contracts';
+import type { MediaAssetSummary, PublicationStatus } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { AdminBuildingFloorPlansForm } from '@/features/admin/components/admin-building-floor-plans-form';
 import { AdminBuildingInventoryGlanceCard } from '@/features/admin/components/admin-building-inventory-glance';
 import { AdminFloorApartmentsSheet } from '@/features/admin/components/admin-floor-apartments-sheet';
-import { useAdminBuildingInventoryGlanceQuery } from '@/features/admin/hooks/use-admin-inventory';
+import { AdminInventorySheetDelete } from '@/features/admin/components/admin-inventory-sheet-delete';
+import {
+  useAdminBuildingInventoryGlanceQuery,
+  useAdminDeleteBuildingMutation,
+} from '@/features/admin/hooks/use-admin-inventory';
+import { toCatalogPublicationStatus } from '@/features/catalog/utils/catalog-publication-status';
 import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
 import { LIST_STATUS_BADGE_COMPACT_CLASS } from '@/shared/ui/list-status-badge';
 import { SideSheet } from '@/shared/ui/side-sheet';
@@ -25,6 +30,7 @@ type AdminBuildingInventorySheetProps = {
 type FloorSheetSnapshot = {
   floorId: string;
   floorLabel: string;
+  publicationStatus: PublicationStatus;
   floorplan: MediaAssetSummary | null;
 };
 
@@ -43,6 +49,14 @@ export const AdminBuildingInventorySheet = ({
   const query = useAdminBuildingInventoryGlanceQuery(buildingId ?? '');
   const glance = query.data;
   const floorSnapshotRef = useRef<FloorSheetSnapshot | null>(null);
+  const deleteMutation = useAdminDeleteBuildingMutation();
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setConfirmDelete(false);
+    setDeleteError(null);
+  }, [buildingId]);
 
   const selectedFloor = useMemo(() => {
     if (!floorId || !glance) {
@@ -55,6 +69,7 @@ export const AdminBuildingInventorySheet = ({
     floorSnapshotRef.current = {
       floorId: selectedFloor.id,
       floorLabel: t('floorCode', { number: selectedFloor.number }),
+      publicationStatus: selectedFloor.publicationStatus,
       floorplan: selectedFloor.floorplan,
     };
   }
@@ -66,9 +81,30 @@ export const AdminBuildingInventorySheet = ({
     floorSnapshotRef.current?.floorLabel ??
     t('floorFallback');
   const floorSheetPlan = selectedFloor?.floorplan ?? floorSnapshotRef.current?.floorplan ?? null;
+  const floorSheetStatus =
+    selectedFloor?.publicationStatus ?? floorSnapshotRef.current?.publicationStatus ?? 'draft';
 
   const title = glance?.name ?? t('sheetTitle');
   const description = glance ? glance.projectName : undefined;
+  const canDelete =
+    glance != null && toCatalogPublicationStatus(glance.publicationStatus) === 'draft';
+  const deleting = deleteMutation.isPending;
+
+  const runDelete = (): void => {
+    if (!glance) {
+      return;
+    }
+    setDeleteError(null);
+    void deleteMutation
+      .mutateAsync({ companyId: glance.builderCompanyId, buildingId: glance.id })
+      .then(() => {
+        setConfirmDelete(false);
+        onClose();
+      })
+      .catch(() => {
+        setDeleteError(t('deleteError'));
+      });
+  };
 
   return (
     <>
@@ -79,12 +115,33 @@ export const AdminBuildingInventorySheet = ({
         description={description}
         size="default"
         stackLevel={stackLevel}
+        escapeEnabled={!confirmDelete}
         headerActions={
           glance ? (
-            <PublicationStatusBadge
-              status={glance.publicationStatus}
-              className={LIST_STATUS_BADGE_COMPACT_CLASS}
-            />
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              <PublicationStatusBadge
+                status={glance.publicationStatus}
+                className={LIST_STATUS_BADGE_COMPACT_CLASS}
+              />
+              {canDelete ? (
+                <AdminInventorySheetDelete
+                  confirmTitle={t('deleteBuildingTitle')}
+                  confirmMessage={t('deleteBuildingConfirm')}
+                  open={confirmDelete}
+                  busy={deleting}
+                  onOpen={() => {
+                    setDeleteError(null);
+                    setConfirmDelete(true);
+                  }}
+                  onCancel={() => {
+                    if (!deleting) {
+                      setConfirmDelete(false);
+                    }
+                  }}
+                  onConfirm={runDelete}
+                />
+              ) : null}
+            </div>
           ) : undefined
         }
       >
@@ -95,6 +152,12 @@ export const AdminBuildingInventorySheet = ({
         {buildingId && (query.isError || (!query.isLoading && !glance)) ? (
           <p role="alert" className="text-sm text-danger">
             {t('error')}
+          </p>
+        ) : null}
+
+        {deleteError ? (
+          <p role="alert" className="text-sm text-danger">
+            {deleteError}
           </p>
         ) : null}
 
@@ -113,6 +176,7 @@ export const AdminBuildingInventorySheet = ({
           buildingId={glance.id}
           floorId={floorSheetFloorId}
           floorLabel={floorSheetLabel}
+          publicationStatus={floorSheetStatus}
           floorplan={floorSheetPlan}
           stackLevel={stackLevel + 1}
           onClose={onCloseFloor}

@@ -5,6 +5,7 @@ import type { CompanyType, CreateCompanyRequest, UpdateCompanyRequest } from '@t
 
 import {
   createAdminCompany,
+  deleteAdminCompany,
   getAdminCompany,
   getAdminProjectScope,
   listAdminCompanies,
@@ -136,6 +137,23 @@ export const useResendAdminInviteMutation = (id: string) => {
     mutationFn: () => resendAdminCompanyInvite(id),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: adminCompanyQueryKey(id) });
+    },
+  });
+};
+
+/**
+ * Deletes a company and refreshes list + readiness queries.
+ */
+export const useDeleteAdminCompanyMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => deleteAdminCompany(id),
+    onSuccess: (_data, id) => {
+      queryClient.removeQueries({ queryKey: adminCompanyQueryKey(id) });
+      void queryClient.invalidateQueries({ queryKey: ADMIN_COMPANIES_QUERY_KEY });
+      void queryClient.invalidateQueries({ queryKey: ADMIN_PROJECTS_QUERY_KEY });
+      void queryClient.invalidateQueries({ queryKey: ADMIN_READINESS_ASSESSMENTS_QUERY_KEY });
     },
   });
 };

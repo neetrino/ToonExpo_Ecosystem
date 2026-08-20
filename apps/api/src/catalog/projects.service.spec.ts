@@ -123,9 +123,7 @@ describe('ProjectsService filters and pagination', () => {
       ],
     });
     expect(where.AND?.[1]).toMatchObject({
-      OR: expect.arrayContaining([
-        { name: { contains: 'Park', mode: 'insensitive' } },
-      ]),
+      OR: expect.arrayContaining([{ name: { contains: 'Park', mode: 'insensitive' } }]),
     });
   });
 

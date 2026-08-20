@@ -15,12 +15,14 @@ export const createBuildingSchema = z.object({
   name: z.string().trim().min(1).max(PORTAL_BUILDING_NAME_MAX_LENGTH),
   description: z.string().trim().max(PORTAL_DESCRIPTION_MAX_LENGTH),
   coverMediaId: optionalMediaIdField,
+  verified: z.boolean(),
 });
 
 export type CreateBuildingFormValues = z.infer<typeof createBuildingSchema>;
 
 export const updateBuildingSchema = z.object({
   coverMediaId: optionalMediaIdField,
+  verified: z.boolean(),
 });
 
 export type UpdateBuildingFormValues = z.infer<typeof updateBuildingSchema>;

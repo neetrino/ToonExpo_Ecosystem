@@ -22,12 +22,17 @@
       "cards": "Карточки",
       "board": "Доска"
     },
+    "publicationStatus": {
+      "label": "Статус публикации"
+    },
     "datePicker": {
       "placeholder": "Выберите дату",
       "clear": "Удалить",
       "today": "Сегодня",
       "previousMonth": "Предыдущий месяц",
-      "nextMonth": "Следующий месяц"
+      "nextMonth": "Следующий месяц",
+      "previousYear": "Предыдущий год",
+      "nextYear": "Следующий год"
     },
     "placeholders": {
       "url": "https://"
@@ -587,6 +592,7 @@
         "overview": "Обзор",
         "details": "Детали",
         "finance": "Финансы",
+        "bankPartner": "Банк-партнёр",
         "facts": "Ключевые факты",
         "amenities": "Удобства",
         "nearby": "Рядом",
@@ -893,6 +899,7 @@
       "title": "Экспоненты",
       "subtitle": "{count, plural, =0 {Нет экспонентов} one {# экспонент} few {# экспонента} many {# экспонентов} other {# экспонента}}",
       "empty": "В этой категории пока нет опубликованных экспонентов.",
+      "searchEmpty": "По запросу «{query}» экспоненты не найдены.",
       "notFoundTitle": "Партнёр не найден",
       "metaFallback": "Профиль {name}",
       "meta": {
@@ -916,6 +923,8 @@
         "type": "Тип партнёра",
         "allTypes": "Все типы",
         "typesSelectedCount": "{count} выбрано",
+        "search": "Поиск",
+        "searchPlaceholder": "Искать экспонентов…",
         "apply": "Применить",
         "reset": "Сбросить"
       },
@@ -1808,6 +1817,10 @@
         "resendSubmitting": "Отправка…",
         "resendSuccess": "Приглашение отправлено повторно",
         "resendNotFound": "У этой компании нет приглашённого администратора",
+        "delete": "Удалить компанию",
+        "deleteConfirmTitle": "Удалить компанию",
+        "deleteConfirmMessage": "Вы уверены, что хотите удалить эту компанию? Действие нельзя отменить.",
+        "deleteBlocked": "У компании ещё есть проекты, заявки, сделки или визуальные карты. Сначала удалите их.",
         "projects": {
           "title": "Проекты",
           "count": "{count, plural, =0 {Нет проектов} one {# проект} few {# проекта} many {# проектов} other {# проекта}}",
@@ -1938,15 +1951,15 @@
       "create": {
         "cta": "+ Добавить здание",
         "title": "Добавить здание",
-        "company": "Компания",
-        "selectCompany": "Выберите компанию",
-        "searchCompany": "Поиск компаний",
-        "noCompanyMatches": "Нет подходящих компаний",
+        "builder": "Застройщик",
+        "selectBuilder": "Выберите застройщика",
+        "searchBuilder": "Поиск застройщиков",
+        "noBuilderMatches": "Нет подходящих застройщиков",
         "project": "Проект",
         "selectProject": "Выберите проект",
         "searchProject": "Поиск проектов",
         "noProjectMatches": "Нет подходящих проектов",
-        "pickProject": "Выберите компанию и проект.",
+        "pickProject": "Выберите застройщика и проект.",
         "submit": "Создать здание"
       },
       "inventory": {
@@ -1979,6 +1992,11 @@
         "apartmentsError": "Не удалось загрузить квартиры. Попробуйте ещё раз.",
         "noApartments": "На этом этаже пока нет квартир.",
         "apartmentUnit": "Кв. {number}",
+        "deleteBuildingTitle": "Удалить здание",
+        "deleteBuildingConfirm": "Удалить этот черновик здания? Этажи и квартиры в нём будут удалены. Это нельзя отменить.",
+        "deleteFloorTitle": "Удалить этаж",
+        "deleteFloorConfirm": "Удалить этот черновик этажа? Квартиры на нём будут удалены. Это нельзя отменить.",
+        "deleteError": "Не удалось удалить. Попробуйте ещё раз.",
         "sales": {
           "available": "Доступна",
           "reserved": "Зарезервирована",
@@ -2025,15 +2043,15 @@
       "create": {
         "cta": "+ Добавить этаж",
         "title": "Добавить этаж",
-        "company": "Компания",
-        "selectCompany": "Выберите компанию",
-        "searchCompany": "Поиск компаний",
-        "noCompanyMatches": "Нет подходящих компаний",
+        "builder": "Застройщик",
+        "selectBuilder": "Выберите застройщика",
+        "searchBuilder": "Поиск застройщиков",
+        "noBuilderMatches": "Нет подходящих застройщиков",
         "building": "Здание",
         "selectBuilding": "Выберите здание",
         "searchBuilding": "Поиск зданий",
         "noBuildingMatches": "Нет подходящих зданий",
-        "pickBuilding": "Выберите компанию и здание.",
+        "pickBuilding": "Выберите застройщика и здание.",
         "submit": "Создать этаж"
       }
     },
@@ -2959,6 +2977,13 @@
   },
   "Builder": {
     "badge": "Застройщик",
+    "verified": {
+      "label": "Проверено",
+      "hint": "Показывать бейдж «Проверено» на публичной карточке.",
+      "placeholder": "Выкл — без бейджа",
+      "on": "Вкл — бейдж виден",
+      "saved": "Статус «Проверено» обновлён"
+    },
     "profileLink": "Профиль",
     "locales": {
       "label": "Язык перевода",
@@ -3163,7 +3188,7 @@
       },
       "catalog": {
         "title": "Детали проекта (публичный каталог)",
-        "subtitle": "Тот же layout, что на публичной странице проекта — редактируйте Overview, Details, Finance, Features и Nearby для каждого языка.",
+        "subtitle": "Тот же layout, что на публичной странице проекта — редактируйте Overview, Details, Финансы, Банк-партнёр, Features и Nearby для каждого языка.",
         "listHint": "По одному пункту на строку.",
         "amenityLabels": "Удобства",
         "nearbyPlaces": "Рядом",
@@ -3176,7 +3201,7 @@
         "financeImport": {
           "button": "Импорт",
           "title": "Импорт предложения партнёра",
-          "hint": "Выберите опубликованный шаблон из раздела «Шаблон / Партнёрские предложения». Поля заполнятся в Finance — отредактируйте и сохраните.",
+          "hint": "Выберите опубликованный шаблон из раздела «Шаблон / Партнёрские предложения». Поля заполнятся в блоке «Банк-партнёр» — отредактируйте и сохраните.",
           "loading": "Загрузка…",
           "error": "Не удалось загрузить шаблоны.",
           "empty": "Нет опубликованных шаблонов. Создайте в Admin → Шаблон / Партнёрские предложения.",
@@ -3261,7 +3286,8 @@
         "sections": {
           "overview": "Overview",
           "details": "Details",
-          "finance": "Finance",
+          "finance": "Финансы",
+          "bankPartner": "Банк-партнёр",
           "features": "Features",
           "nearby": "Nearby",
           "links": "Ссылки",
@@ -3321,6 +3347,7 @@
       "saveFloorplan": "Сохранить планировку",
       "coverSaved": "Обложка сохранена",
       "floorplanSaved": "Планировка сохранена",
+      "publicationSuccess": "Статус публикации обновлён",
       "floorNumber": "Номер этажа",
       "floorName": "Название этажа",
       "displayLabel": "Метка",
@@ -3455,10 +3482,10 @@
       "planViewHint": "Открыть планировку на весь экран",
       "savePlan": "Сохранить планировку",
       "planSaved": "Планировка сохранена как Main в галерее",
-      "tinderTitle": "Tinder-фото",
+      "tinderTitle": "Swipe-фото",
       "tinderHint": "Показывается в Discover (свайп). Если пусто — обложка проекта.",
-      "saveTinder": "Сохранить Tinder-фото",
-      "tinderSaved": "Tinder-фото сохранено",
+      "saveTinder": "Сохранить Swipe-фото",
+      "tinderSaved": "Swipe-фото сохранено",
       "floorplanTitle": "План этажа",
       "floorplanHint": "Общий план этажа — один для всех квартир на этом этаже.",
       "saveFloorplan": "Сохранить план этажа",
@@ -3500,7 +3527,7 @@
         "coverMedia": "Обложка",
         "planMedia": "Планировка квартиры",
         "floorplanMedia": "План этажа",
-        "tinderMedia": "Tinder-фото",
+        "tinderMedia": "Swipe-фото",
         "matterportUrl": "Ссылка Matterport",
         "external3dUrl": "Внешняя 3D-ссылка"
       },
@@ -3526,6 +3553,9 @@
       "detail": {
         "publish": "Опубликовать",
         "unpublish": "Снять с публикации",
+        "delete": "Удалить",
+        "deleteConfirm": "Удалить этот черновик квартиры? Действие необратимо.",
+        "deleteConfirmTitle": "Удалить квартиру",
         "publicationSuccess": "Статус публикации обновлён"
       },
       "errors": {

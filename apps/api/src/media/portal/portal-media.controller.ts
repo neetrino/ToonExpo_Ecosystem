@@ -4,6 +4,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Param,
   Post,
   Query,
   UploadedFile,
@@ -52,6 +53,16 @@ export class PortalMediaController {
       query.page,
       query.pageSize,
     );
+  }
+
+  @Get("portal/media/:mediaId")
+  @ApiOperation({ summary: "Get a company media asset" })
+  @ApiOkResponse({ description: "Media asset" })
+  getById(
+    @CurrentCompanyMember() member: CompanyMemberContext,
+    @Param("mediaId") mediaId: string,
+  ): Promise<MediaAssetItem> {
+    return this.mediaUpload.getCompanyMedia(member.companyId, mediaId);
   }
 
   @Post("portal/media")

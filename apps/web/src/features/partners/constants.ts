@@ -20,7 +20,7 @@ export const PARTNER_COMPANY_TYPES = [
 
 export const PARTNER_COMPANY_STATUSES = ['active', 'inactive'] as const;
 
-export const PARTNER_PUBLICATION_STATUSES = ['draft', 'published', 'archived'] as const;
+export const PARTNER_PUBLICATION_STATUSES = ['draft', 'published'] as const;
 
 /** Company.type values allowed to host a partner profile. */
 export const PARTNER_COMPATIBLE_COMPANY_TYPES = [

@@ -5,13 +5,13 @@ import { CheckCircle2, CircleDashed } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { ReactNode } from 'react';
 
+import { toCatalogPublicationStatus } from '@/features/catalog/utils/catalog-publication-status';
 import { cn } from '@/shared/ui/cn';
 import { LIST_CARD_LIFT_CLASS } from '@/shared/ui/motion';
 
-const STATUS_BADGE_CLASS: Record<PublicationStatus, string> = {
+const STATUS_BADGE_CLASS: Record<'published' | 'draft', string> = {
   published: 'bg-success-soft text-success',
   draft: 'bg-surface text-ink-muted',
-  archived: 'bg-warning-soft text-warning',
 };
 
 export const ADMIN_INVENTORY_CARD_CLASS = cn(
@@ -28,17 +28,18 @@ type AdminInventoryPublicationBadgeProps = {
  */
 export const AdminInventoryPublicationBadge = ({ status }: AdminInventoryPublicationBadgeProps) => {
   const t = useTranslations('Admin.projects');
-  const StatusIcon = status === 'published' ? CheckCircle2 : CircleDashed;
+  const catalogStatus = toCatalogPublicationStatus(status);
+  const StatusIcon = catalogStatus === 'published' ? CheckCircle2 : CircleDashed;
 
   return (
     <span
       className={cn(
         'inline-flex shrink-0 items-center gap-1.5 rounded-pill px-2.5 py-1 text-xs font-medium',
-        STATUS_BADGE_CLASS[status],
+        STATUS_BADGE_CLASS[catalogStatus],
       )}
     >
       <StatusIcon className="size-3.5" aria-hidden />
-      {t(`publication.${status}`)}
+      {t(`publication.${catalogStatus}`)}
     </span>
   );
 };

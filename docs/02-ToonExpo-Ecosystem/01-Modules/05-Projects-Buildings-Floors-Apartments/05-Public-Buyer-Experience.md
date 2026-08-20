@@ -146,4 +146,3 @@ Project, floor and apartment pages must be usable on mobile first:
 - clear status labels;
 - fast image loading;
 - simple navigation back to project/building/floor.
-

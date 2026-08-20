@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
+  IsBoolean,
   IsInt,
   IsOptional,
   IsString,
@@ -43,6 +44,11 @@ export class CreatePortalBuildingDto {
   @IsOptional()
   @IsString()
   coverMediaId?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  verified?: boolean;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -90,6 +96,11 @@ export class UpdatePortalBuildingDto {
   @ValidateIf((_, value) => value !== null)
   @IsString()
   coverMediaId?: string | null;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  verified?: boolean;
 
   @ApiPropertyOptional({ nullable: true })
   @IsOptional()

@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { useForm, type Control } from 'react-hook-form';
 
+import { toCatalogPublicationStatus } from '@/features/catalog/utils/catalog-publication-status';
 import {
   usePortalPartnerQuery,
   useUpdatePortalPartnerMutation,
@@ -104,7 +105,9 @@ const PartnerProfileForm = ({ partner }: PartnerProfileFormProps) => {
             type: tPartners(`types.${partner.type}`),
             slug: partner.slug,
             status: tPartners(`companyStatus.${partner.status}`),
-            publicationStatus: tPartners(`publication.${partner.publicationStatus}`),
+            publicationStatus: tPartners(
+              `publication.${toCatalogPublicationStatus(partner.publicationStatus)}`,
+            ),
             featured: partner.featured,
           }}
         />

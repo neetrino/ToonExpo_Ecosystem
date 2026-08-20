@@ -4,6 +4,9 @@ export const CATALOG_PRICES_QUERY_KEY = ['catalog', 'prices'] as const;
 /** Public exhibitors tab catalogs (builders + partner types). */
 export const EXHIBITOR_CATALOG_QUERY_KEY = ['catalog', 'exhibitors'] as const;
 
+/** Debounce before exhibitors keyword search updates the URL. */
+export const EXHIBITOR_SEARCH_DEBOUNCE_MS = 300;
+
 /** Max project ids per bulk price-range overlay request (matches NestJS cap). */
 export const CATALOG_PRICES_BATCH_LIMIT = 50;
 

@@ -44,7 +44,7 @@ export class AdminPartnersService {
       this.prisma.db.partnerCompany.count({ where }),
       this.prisma.db.partnerCompany.findMany({
         where,
-        orderBy: [{ updatedAt: 'desc' }],
+        orderBy: [{ createdAt: 'desc' }],
         skip,
         take: query.pageSize,
         include: {

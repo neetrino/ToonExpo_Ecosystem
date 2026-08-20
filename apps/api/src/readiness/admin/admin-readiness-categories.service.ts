@@ -12,7 +12,7 @@ export class AdminReadinessCategoriesService {
 
   async list(): Promise<ReadinessCategoryListResponse> {
     const rows = await this.prisma.db.readinessCategory.findMany({
-      orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }],
+      orderBy: [{ createdAt: 'desc' }],
     });
 
     return { data: rows.map(toReadinessCategoryItem) };

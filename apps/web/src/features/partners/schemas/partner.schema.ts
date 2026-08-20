@@ -1,7 +1,6 @@
 import type {
   PartnerCompanyStatus,
   PartnerCompanyType,
-  PublicationStatus,
 } from "@toonexpo/contracts";
 import { z } from "zod";
 
@@ -30,10 +29,7 @@ const partnerStatusSchema = z.enum(
 );
 
 const publicationStatusSchema = z.enum(
-  PARTNER_PUBLICATION_STATUSES as unknown as [
-    PublicationStatus,
-    ...PublicationStatus[],
-  ],
+  PARTNER_PUBLICATION_STATUSES as unknown as ['draft', 'published'],
 );
 
 export const createPartnerSchema = z

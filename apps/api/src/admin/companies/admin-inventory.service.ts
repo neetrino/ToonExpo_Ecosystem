@@ -131,7 +131,7 @@ export class AdminInventoryService {
       this.prisma.db.building.count({ where }),
       this.prisma.db.building.findMany({
         where,
-        orderBy: [{ updatedAt: 'desc' }],
+        orderBy: [{ createdAt: 'desc' }],
         skip: (page - 1) * pageSize,
         take: pageSize,
         select: {
@@ -189,7 +189,7 @@ export class AdminInventoryService {
       this.prisma.db.floor.count({ where }),
       this.prisma.db.floor.findMany({
         where,
-        orderBy: [{ updatedAt: 'desc' }],
+        orderBy: [{ createdAt: 'desc' }],
         skip: (page - 1) * pageSize,
         take: pageSize,
         select: {
@@ -259,7 +259,7 @@ export class AdminInventoryService {
       this.prisma.db.apartment.count({ where: { featuredOnHome: true } }),
       this.prisma.db.apartment.findMany({
         where,
-        orderBy: [{ featuredOnHome: 'desc' }, { updatedAt: 'desc' }],
+        orderBy: [{ createdAt: 'desc' }],
         skip: (page - 1) * pageSize,
         take: pageSize,
         select: {
@@ -347,6 +347,7 @@ export class AdminInventoryService {
             number: true,
             name: true,
             displayLabel: true,
+            publicationStatus: true,
             floorplanMediaId: true,
             floorplanMedia: {
               select: {
@@ -383,6 +384,7 @@ export class AdminInventoryService {
         number: floor.number,
         name: floor.name,
         displayLabel: floor.displayLabel,
+        publicationStatus: floor.publicationStatus,
         floorplanMediaId: floor.floorplanMediaId,
         floorplan: floor.floorplanMedia
           ? {

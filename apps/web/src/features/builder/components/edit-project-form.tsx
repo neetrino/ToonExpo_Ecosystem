@@ -17,6 +17,7 @@ import { TranslationTabs } from '@/features/builder/components/translation-tabs'
 import { getProjectFormPlaceholder } from '@/features/builder/constants/project-content-placeholders';
 import { useAutoProjectSlug } from '@/features/builder/hooks/use-auto-project-slug';
 import { useUpdatePortalProjectMutation } from '@/features/builder/hooks/use-portal-projects';
+import { useSavedProjectCover } from '@/features/builder/hooks/use-saved-project-cover-url';
 import {
   updateProjectSchema,
   type UpdateProjectFormValues,
@@ -55,8 +56,8 @@ const toFormValues = (project: PortalProjectDetail): UpdateProjectFormValues => 
   projectType: project.projectType ?? '',
   constructionStatus: project.constructionStatus ?? '',
   completionDate: project.completionDate ?? '',
-  coverMediaId: project.coverMediaId ?? '',
   ...catalogJsonToFormSlice(project.amenities, project.nearbyPlaces),
+  coverMediaId: project.coverMediaId ?? project.cover?.id ?? '',
 });
 
 /**
@@ -68,19 +69,26 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
   const t = useTranslations('Builder.projects');
   const siteLocale = useLocale();
   const updateMutation = useUpdatePortalProjectMutation(project.id);
+  const savedCover = useSavedProjectCover(project);
+  const initialValues = toFormValues(project);
   const [formError, setFormError] = useState<string | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(savedCover.url);
   const { showSuccess, successToast } = useSuccessToast();
 
   const {
     register,
     handleSubmit,
     control,
+    reset,
     setValue,
     getValues,
-    formState: { errors, isSubmitting, isDirty },
+    formState: { errors, isSubmitting, isDirty, dirtyFields },
   } = useForm<UpdateProjectFormValues>({
     resolver: zodResolver(updateProjectSchema),
-    defaultValues: toFormValues(project),
+    defaultValues: {
+      ...initialValues,
+      coverMediaId: initialValues.coverMediaId || savedCover.mediaId || '',
+    },
   });
 
   const { lockSlugAuto } = useAutoProjectSlug({
@@ -94,7 +102,17 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
   const onSubmit = handleSubmit(async (values) => {
     setFormError(null);
     try {
-      await updateMutation.mutateAsync(toUpdateProjectRequest(values));
+      const shouldSendCover =
+        values.coverMediaId.length > 0 || Boolean(dirtyFields.coverMediaId);
+      const updated = await updateMutation.mutateAsync(
+        toUpdateProjectRequest(values, { includeCoverMediaId: shouldSendCover }),
+      );
+      const nextValues = toFormValues(updated);
+      if (!nextValues.coverMediaId && values.coverMediaId) {
+        nextValues.coverMediaId = values.coverMediaId;
+      }
+      reset(nextValues, { keepDirty: false });
+      setPreviewUrl(updated.cover?.thumbnailUrl ?? updated.cover?.fileUrl ?? previewUrl);
       showSuccess(t('detail.saveSuccess'));
     } catch {
       setFormError(t('errors.generic'));
@@ -228,7 +246,17 @@ export const EditProjectForm = ({ project }: EditProjectFormProps) => {
             label={t('form.coverMedia')}
             context={mediaContext}
             value={field.value}
-            onChange={field.onChange}
+            onChange={(mediaAssetId) => {
+              field.onChange(mediaAssetId);
+              if (mediaAssetId.trim().length === 0) {
+                setPreviewUrl(null);
+              }
+            }}
+            onAssetSelected={(asset) => {
+              field.onChange(asset.id);
+              setPreviewUrl(asset.fileUrl);
+            }}
+            previewUrl={previewUrl ?? savedCover.url}
             error={fieldState.error?.message}
           />
         )}

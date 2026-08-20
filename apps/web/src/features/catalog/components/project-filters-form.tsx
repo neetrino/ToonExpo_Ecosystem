@@ -2,10 +2,19 @@
 
 import { SlidersHorizontal } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import type { FormEvent } from 'react';
 
 import { ProjectLiveSearch } from '@/features/catalog/components/project-live-search';
 import { ProjectRoomsFilter } from '@/features/catalog/components/project-rooms-filter';
-import type { ProjectFilterParams } from '@/features/catalog/utils/project-filters';
+import {
+  useLiveCatalogFilters,
+  useLivePriceInputs,
+} from '@/features/catalog/hooks/use-live-catalog-filters';
+import {
+  CATALOG_PROJECTS_PATH,
+  parseSalesStatusFilter,
+  type ProjectFilterParams,
+} from '@/features/catalog/utils/project-filters';
 import { Link } from '@/i18n/navigation';
 import { Button } from '@/shared/ui/button';
 import { cn } from '@/shared/ui/cn';
@@ -26,10 +35,12 @@ const FILTER_PRICE_MOBILE_CLASS =
 
 /**
  * SSR-friendly GET filters for the projects catalog (shareable URL params).
- * Keyword search updates live; other filters still submit via Apply.
+ * All controls apply live; price fields debounce while typing.
  */
 export const ProjectFiltersForm = ({ filters }: ProjectFiltersFormProps) => {
   const t = useTranslations('Catalog');
+  const { replaceFilters } = useLiveCatalogFilters(CATALOG_PROJECTS_PATH, filters);
+  const prices = useLivePriceInputs(filters.minPrice, filters.maxPrice, replaceFilters);
   const hasActiveFilters =
     Boolean(filters.q) ||
     filters.rooms != null ||
@@ -39,9 +50,13 @@ export const ProjectFiltersForm = ({ filters }: ProjectFiltersFormProps) => {
     Boolean(filters.city) ||
     Boolean(filters.builderId);
 
+  const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
+    event.preventDefault();
+  };
+
   return (
     <Form
-      method="get"
+      onSubmit={handleSubmit}
       className="rounded-md border border-border/70 bg-surface-elevated/95 p-3 shadow-sm backdrop-blur-sm sm:p-4"
     >
       <div className="mb-3 flex items-center gap-2">
@@ -60,9 +75,10 @@ export const ProjectFiltersForm = ({ filters }: ProjectFiltersFormProps) => {
             type="number"
             name="minPrice"
             min={0}
-            defaultValue={filters.minPrice ?? ''}
+            value={prices.minPrice}
             placeholder={t('filters.pricePlaceholder')}
             className={FILTER_CONTROL_CLASS}
+            onChange={(event) => prices.onMinPriceChange(event.target.value)}
           />
         </label>
 
@@ -72,23 +88,33 @@ export const ProjectFiltersForm = ({ filters }: ProjectFiltersFormProps) => {
             type="number"
             name="maxPrice"
             min={0}
-            defaultValue={filters.maxPrice ?? ''}
+            value={prices.maxPrice}
             placeholder={t('filters.pricePlaceholder')}
             className={FILTER_CONTROL_CLASS}
+            onChange={(event) => prices.onMaxPriceChange(event.target.value)}
           />
         </label>
 
         <div className="col-span-6 row-start-3 flex min-w-0 items-end gap-2 sm:contents">
           <div className="w-fit shrink-0">
-            <ProjectRoomsFilter rooms={filters.rooms} controlClassName={FILTER_CONTROL_CLASS} />
+            <ProjectRoomsFilter
+              rooms={filters.rooms}
+              controlClassName={FILTER_CONTROL_CLASS}
+              onRoomsChange={(rooms) => {
+                replaceFilters({ rooms: rooms.length > 0 ? rooms : undefined });
+              }}
+            />
           </div>
 
           <label className={cn(FILTER_FIELD_CLASS, 'min-w-0 flex-1 sm:min-w-[8rem] sm:flex-none')}>
             {t('filters.salesStatus')}
             <Select
               name="salesStatus"
-              defaultValue={filters.salesStatus ?? ''}
+              value={filters.salesStatus ?? ''}
               className={FILTER_CONTROL_CLASS}
+              onChange={(event) => {
+                replaceFilters({ salesStatus: parseSalesStatusFilter(event.target.value) });
+              }}
             >
               <option value="">{t('filters.any')}</option>
               <option value="available">{t('status.available')}</option>
@@ -97,21 +123,9 @@ export const ProjectFiltersForm = ({ filters }: ProjectFiltersFormProps) => {
             </Select>
           </label>
 
-          <div className="flex shrink-0 items-end gap-1.5 sm:gap-2">
-            {filters.city ? <input type="hidden" name="city" value={filters.city} /> : null}
-            {filters.builderId ? (
-              <input type="hidden" name="builderId" value={filters.builderId} />
-            ) : null}
-            <Button
-              type="submit"
-              variant="secondary"
-              size="sm"
-              className="h-10 min-w-[5rem] rounded-sm px-4 sm:min-w-[6.5rem] sm:px-6"
-            >
-              {t('filters.apply')}
-            </Button>
-            {hasActiveFilters ? (
-              <Link href="/projects">
+          {hasActiveFilters ? (
+            <div className="flex shrink-0 items-end">
+              <Link href={CATALOG_PROJECTS_PATH}>
                 <Button
                   type="button"
                   variant="outline"
@@ -121,8 +135,8 @@ export const ProjectFiltersForm = ({ filters }: ProjectFiltersFormProps) => {
                   {t('filters.reset')}
                 </Button>
               </Link>
-            ) : null}
-          </div>
+            </div>
+          ) : null}
         </div>
       </div>
     </Form>

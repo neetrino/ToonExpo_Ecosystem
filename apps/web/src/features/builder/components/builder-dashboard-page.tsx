@@ -1,6 +1,5 @@
 'use client';
 
-import type { PublicationStatus } from '@toonexpo/contracts';
 import {
   Briefcase,
   Building2,
@@ -25,6 +24,10 @@ import {
   BuilderDashboardTopProjectsSection,
 } from '@/features/builder/components/builder-dashboard-sections';
 import { PORTAL_MAX_PAGE_SIZE } from '@/features/builder/constants';
+import {
+  toCatalogPublicationStatus,
+  type CatalogPublicationStatus,
+} from '@/features/catalog/utils/catalog-publication-status';
 import { usePortalAnalyticsOverviewQuery } from '@/features/builder/hooks/use-portal-analytics';
 import { useCrmDealsQuery } from '@/features/builder/hooks/use-portal-crm';
 import { usePortalProjectsQuery } from '@/features/builder/hooks/use-portal-projects';
@@ -40,12 +43,11 @@ import { Skeleton } from '@/shared/ui/skeleton';
 
 const SECTION_BASE_DELAY_MS = 220;
 
-type StatusCounts = Record<PublicationStatus, number>;
+type StatusCounts = Record<CatalogPublicationStatus, number>;
 
 const emptyCounts = (): StatusCounts => ({
   draft: 0,
   published: 0,
-  archived: 0,
 });
 
 type KpiItem = {
@@ -101,7 +103,7 @@ export const BuilderDashboardPage = () => {
   const projects = projectsQuery.data.data;
   const deals = dealsQuery.data.data;
   const statusCounts = projects.reduce<StatusCounts>((acc, project) => {
-    acc[project.publicationStatus] += 1;
+    acc[toCatalogPublicationStatus(project.publicationStatus)] += 1;
     return acc;
   }, emptyCounts());
   const apartmentsTotal = projects.reduce((sum, project) => sum + project.apartmentsCount, 0);

@@ -40,6 +40,53 @@ export const listMediaAssets = (
     cache: 'no-store',
   });
 
+export const getMediaAsset = (
+  context: MediaUploadContext,
+  mediaId: string,
+): Promise<MediaAssetItem> =>
+  apiFetch<MediaAssetItem>({
+    path: `${listPath(context)}/${encodeURIComponent(mediaId)}`,
+    method: 'GET',
+    credentials: 'include',
+    cache: 'no-store',
+  });
+
+const MEDIA_LOOKUP_PAGE_SIZE = 100;
+const MEDIA_LOOKUP_MAX_PAGES = 20;
+
+const findMediaAssetInList = async (
+  context: MediaUploadContext,
+  mediaId: string,
+): Promise<MediaAssetItem> => {
+  let page = 1;
+  let totalPages = 1;
+  while (page <= totalPages && page <= MEDIA_LOOKUP_MAX_PAGES) {
+    const response = await listMediaAssets(context, page, MEDIA_LOOKUP_PAGE_SIZE);
+    totalPages = response.meta.totalPages;
+    const match = response.data.find((item) => item.id === mediaId);
+    if (match) {
+      return match;
+    }
+    page += 1;
+  }
+  throw new ApiError(404, 'Not Found', 'Media asset not found');
+};
+
+/**
+ * Loads one media asset by id. Falls back to the existing list endpoint
+ * when GET-by-id is unavailable.
+ */
+export const resolveMediaAsset = async (
+  context: MediaUploadContext,
+  mediaId: string,
+): Promise<MediaAssetItem> => {
+  try {
+    return await getMediaAsset(context, mediaId);
+  } catch {
+    return findMediaAssetInList(context, mediaId);
+  }
+};
+
 export const uploadMediaAsset = async (
   context: MediaUploadContext,
   file: File,

@@ -46,6 +46,15 @@ export class PublicPartnersService {
       where.featured = true;
     }
 
+    const keyword = query.q?.trim();
+    if (keyword != null && keyword.length > 0) {
+      where.OR = [
+        { name: { contains: keyword, mode: 'insensitive' } },
+        { slug: { contains: keyword, mode: 'insensitive' } },
+        { shortDescription: { contains: keyword, mode: 'insensitive' } },
+      ];
+    }
+
     return where;
   }
 

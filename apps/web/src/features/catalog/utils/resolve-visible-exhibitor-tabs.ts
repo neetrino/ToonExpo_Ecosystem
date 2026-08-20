@@ -4,7 +4,10 @@ import {
   isExhibitorTab,
   type ExhibitorTab,
 } from '@/features/catalog/constants/exhibitor-tabs';
-import type { PartnerListFilters } from '@/features/catalog/utils/partner-filters';
+import {
+  toPartnerListFilters,
+  type PartnerListFilters,
+} from '@/features/catalog/utils/partner-filters';
 
 /**
  * Builders first, then partner types that currently have published profiles.
@@ -33,5 +36,5 @@ export const resolveExhibitorFilters = (
   if (fallback == null) {
     return filters;
   }
-  return { tab: fallback, page: 1 };
+  return toPartnerListFilters(fallback, 1, filters.q);
 };

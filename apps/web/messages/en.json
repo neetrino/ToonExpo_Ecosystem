@@ -22,12 +22,17 @@
       "cards": "Cards",
       "board": "Board"
     },
+    "publicationStatus": {
+      "label": "Publication status"
+    },
     "datePicker": {
       "placeholder": "Select date",
       "clear": "Clear",
       "today": "Today",
       "previousMonth": "Previous month",
-      "nextMonth": "Next month"
+      "nextMonth": "Next month",
+      "previousYear": "Previous year",
+      "nextYear": "Next year"
     },
     "placeholders": {
       "url": "https://"
@@ -587,6 +592,7 @@
         "overview": "Overview",
         "details": "Details",
         "finance": "Finance",
+        "bankPartner": "Bank partner",
         "facts": "Key facts",
         "amenities": "Features",
         "nearby": "Nearby",
@@ -893,6 +899,7 @@
       "title": "Exhibitors",
       "subtitle": "{count, plural, =0 {No exhibitors} one {# exhibitor} other {# exhibitors}}",
       "empty": "No published exhibitors in this category yet.",
+      "searchEmpty": "No exhibitors match “{query}”.",
       "notFoundTitle": "Partner not found",
       "metaFallback": "Partner profile for {name}",
       "meta": {
@@ -916,6 +923,8 @@
         "type": "Partner type",
         "allTypes": "All types",
         "typesSelectedCount": "{count} selected",
+        "search": "Search",
+        "searchPlaceholder": "Search exhibitors…",
         "apply": "Apply filters",
         "reset": "Reset"
       },
@@ -1808,6 +1817,10 @@
         "resendSubmitting": "Sending…",
         "resendSuccess": "Invite resent successfully",
         "resendNotFound": "No invited admin found for this company",
+        "delete": "Delete company",
+        "deleteConfirmTitle": "Delete company",
+        "deleteConfirmMessage": "Are you sure you want to delete this company? This cannot be undone.",
+        "deleteBlocked": "This company still has projects, requests, deals, or visual maps. Remove those first.",
         "projects": {
           "title": "Projects",
           "count": "{count, plural, =0 {No projects} one {# project} other {# projects}}",
@@ -1938,15 +1951,15 @@
       "create": {
         "cta": "+ Add Building",
         "title": "Add Building",
-        "company": "Company",
-        "selectCompany": "Select company",
-        "searchCompany": "Search companies",
-        "noCompanyMatches": "No matching companies",
+        "builder": "Builder",
+        "selectBuilder": "Select builder",
+        "searchBuilder": "Search builders",
+        "noBuilderMatches": "No matching builders",
         "project": "Project",
         "selectProject": "Select project",
         "searchProject": "Search projects",
         "noProjectMatches": "No matching projects",
-        "pickProject": "Select a company and project.",
+        "pickProject": "Select a builder and project.",
         "submit": "Create building"
       },
       "inventory": {
@@ -1979,6 +1992,11 @@
         "apartmentsError": "Could not load apartments. Try again.",
         "noApartments": "No apartments on this floor yet.",
         "apartmentUnit": "Apt {number}",
+        "deleteBuildingTitle": "Delete building",
+        "deleteBuildingConfirm": "Delete this draft building? Floors and apartments in it will be removed. This cannot be undone.",
+        "deleteFloorTitle": "Delete floor",
+        "deleteFloorConfirm": "Delete this draft floor? Apartments on it will be removed. This cannot be undone.",
+        "deleteError": "Could not delete. Try again.",
         "sales": {
           "available": "Available",
           "reserved": "Reserved",
@@ -2025,15 +2043,15 @@
       "create": {
         "cta": "+ Add Floor",
         "title": "Add Floor",
-        "company": "Company",
-        "selectCompany": "Select company",
-        "searchCompany": "Search companies",
-        "noCompanyMatches": "No matching companies",
+        "builder": "Builder",
+        "selectBuilder": "Select builder",
+        "searchBuilder": "Search builders",
+        "noBuilderMatches": "No matching builders",
         "building": "Building",
         "selectBuilding": "Select building",
         "searchBuilding": "Search buildings",
         "noBuildingMatches": "No matching buildings",
-        "pickBuilding": "Select a company and building.",
+        "pickBuilding": "Select a builder and building.",
         "submit": "Create floor"
       }
     },
@@ -3219,6 +3237,13 @@
   },
   "Builder": {
     "badge": "Builder",
+    "verified": {
+      "label": "Verified",
+      "hint": "Show the Verified badge on the public listing.",
+      "placeholder": "Off — no public badge",
+      "on": "On — badge visible",
+      "saved": "Verified status updated"
+    },
     "profileLink": "Profile",
     "locales": {
       "label": "Translation language",
@@ -3423,7 +3448,7 @@
       },
       "catalog": {
         "title": "Project details (public catalog)",
-        "subtitle": "Same layout as the public project page — edit Overview, Details, Finance, Features, and Nearby for each language.",
+        "subtitle": "Same layout as the public project page — edit Overview, Details, Finance, Bank partner, Features, and Nearby for each language.",
         "listHint": "One item per line.",
         "amenityLabels": "Features list",
         "nearbyPlaces": "Nearby places",
@@ -3436,7 +3461,7 @@
         "financeImport": {
           "button": "Import",
           "title": "Import partner offer",
-          "hint": "Choose a published template from Template/Partner Offers. Fields fill into Finance — edit and save as usual.",
+          "hint": "Choose a published template from Template/Partner Offers. Fields fill into Bank partner — edit and save as usual.",
           "loading": "Loading templates…",
           "error": "Could not load templates.",
           "empty": "No published templates yet. Create one under Template/Partner Offers.",
@@ -3522,6 +3547,7 @@
           "overview": "Overview",
           "details": "Details",
           "finance": "Finance",
+          "bankPartner": "Bank partner",
           "features": "Features",
           "nearby": "Nearby",
           "links": "Links",
@@ -3581,6 +3607,7 @@
       "saveFloorplan": "Save floor plan",
       "coverSaved": "Cover image saved",
       "floorplanSaved": "Floor plan saved",
+      "publicationSuccess": "Publication updated",
       "floorNumber": "Floor number",
       "floorName": "Floor name",
       "displayLabel": "Display label",
@@ -3715,10 +3742,10 @@
       "planViewHint": "View apartment plan fullscreen",
       "savePlan": "Save apartment plan",
       "planSaved": "Apartment plan saved as Main in gallery",
-      "tinderTitle": "Tinder photo",
+      "tinderTitle": "Swipe photo",
       "tinderHint": "Shown on the Discover swipe card. If empty, the project cover is used.",
-      "saveTinder": "Save Tinder photo",
-      "tinderSaved": "Tinder photo saved",
+      "saveTinder": "Save Swipe photo",
+      "tinderSaved": "Swipe photo saved",
       "floorplanTitle": "Floor plan",
       "floorplanHint": "Shared plan for this floor — same for all apartments on it.",
       "saveFloorplan": "Save floor plan",
@@ -3760,7 +3787,7 @@
         "coverMedia": "Cover image",
         "planMedia": "Apartment plan image",
         "floorplanMedia": "Floor plan image",
-        "tinderMedia": "Tinder photo",
+        "tinderMedia": "Swipe photo",
         "matterportUrl": "Matterport URL",
         "external3dUrl": "External 3D URL"
       },
@@ -3786,6 +3813,9 @@
       "detail": {
         "publish": "Publish",
         "unpublish": "Unpublish",
+        "delete": "Delete",
+        "deleteConfirm": "Delete this draft apartment? This cannot be undone.",
+        "deleteConfirmTitle": "Delete apartment",
         "publicationSuccess": "Publication updated"
       },
       "errors": {

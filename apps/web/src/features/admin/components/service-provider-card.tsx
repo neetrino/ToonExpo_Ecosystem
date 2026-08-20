@@ -6,6 +6,7 @@ import { Briefcase, Building2, UserRound, Users } from 'lucide-react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 
+import { toCatalogPublicationStatus } from '@/features/catalog/utils/catalog-publication-status';
 import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
 import { resolvePublicAssetUrl } from '@/shared/lib/static-asset-url';
 import { cn } from '@/shared/ui/cn';
@@ -36,7 +37,6 @@ const CATEGORY_CHIP_TONE = [
 const PUBLICATION_CHIP_TONE = {
   published: 'bg-kpi-green/10 text-kpi-green',
   draft: 'bg-kpi-orange/10 text-kpi-orange',
-  archived: 'bg-kpi-violet/10 text-kpi-violet',
 } as const;
 
 type ServiceProviderCardProps = {
@@ -140,7 +140,10 @@ const ProviderCardFooter = ({ categories, publicationStatus }: ProviderCardFoote
       {publicationStatus ? (
         <PublicationStatusBadge
           status={publicationStatus}
-          className={cn(LIST_STATUS_BADGE_COMPACT_CLASS, PUBLICATION_CHIP_TONE[publicationStatus])}
+          className={cn(
+            LIST_STATUS_BADGE_COMPACT_CLASS,
+            PUBLICATION_CHIP_TONE[toCatalogPublicationStatus(publicationStatus)],
+          )}
         />
       ) : null}
     </div>

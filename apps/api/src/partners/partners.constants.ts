@@ -22,6 +22,9 @@ export const PARTNER_OFFER_TYPE_MAX_LENGTH = 64;
 
 export const PARTNER_SEARCH_MIN_LENGTH = 1;
 
+/** Public / admin keyword search cap (matches catalog `q`). */
+export const PARTNERS_SEARCH_Q_MAX_LENGTH = 100;
+
 /** Company.type values allowed to receive a PartnerCompany profile. */
 export const PARTNER_COMPATIBLE_COMPANY_TYPES = [
   "partner",

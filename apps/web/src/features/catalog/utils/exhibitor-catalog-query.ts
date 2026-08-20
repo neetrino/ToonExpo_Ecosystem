@@ -5,4 +5,5 @@ export const exhibitorCatalogQueryKey = (
   locale: string,
   tab: ExhibitorTab,
   page: number,
-) => [...EXHIBITOR_CATALOG_QUERY_KEY, locale, tab, page] as const;
+  q = '',
+) => [...EXHIBITOR_CATALOG_QUERY_KEY, locale, tab, page, q] as const;

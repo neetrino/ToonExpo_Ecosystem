@@ -15,6 +15,7 @@ import {
   toCreateBankOfferBody,
   toUpdateBankOfferBody,
 } from '@/features/admin/utils/bank-offer-mappers';
+import { toCatalogPublicationStatus } from '@/features/catalog/utils/catalog-publication-status';
 import { PARTNER_PUBLICATION_STATUSES } from '@/features/partners/constants';
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
@@ -65,7 +66,7 @@ export const BankOfferForm = ({
           calculationNotes: initial.calculationNotes ?? '',
           featured: initial.featured,
           sortOrder: initial.sortOrder,
-          publicationStatus: initial.publicationStatus,
+          publicationStatus: toCatalogPublicationStatus(initial.publicationStatus),
         }
       : {
           partnerCompanyId: bankPartners[0]?.partnerCompanyId ?? '',
