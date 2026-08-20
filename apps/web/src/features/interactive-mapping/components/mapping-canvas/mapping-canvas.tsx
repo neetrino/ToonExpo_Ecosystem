@@ -1,10 +1,12 @@
 'use client';
 
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { Maximize2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { bandPolygonFromEdge, pointerToNormalized, type NormPoint } from '../../utils/mapping-math';
 import { type PolygonShape } from '../../utils/curved-polygon';
 import { getContainedImageBounds } from '../../utils/coordinates';
+import { Button } from '@/shared/ui/button';
 import { MappingCanvasStage } from './mapping-canvas-stage';
 import { MappingCanvasToolbar } from './mapping-canvas-toolbar';
 import { getMappingCanvasHintText } from './mapping-canvas-hints';
@@ -38,6 +40,8 @@ export const MappingCanvas = forwardRef<MappingCanvasHandle, MappingCanvasProps>
       toolPreset = 'basic',
       viewportClassName,
       onBulkPaths,
+      onExitFullscreen,
+      onOpenFullscreen,
     },
     ref,
   ) {
@@ -218,6 +222,7 @@ export const MappingCanvas = forwardRef<MappingCanvasHandle, MappingCanvasProps>
       updateDraftPoints,
       commitAutoStack,
       commitBand,
+      closePolygon,
       clearDraft,
       setMode,
       setSelectedDraftIndex,
@@ -264,6 +269,7 @@ export const MappingCanvas = forwardRef<MappingCanvasHandle, MappingCanvasProps>
           modeIsEditPolygon={mode === 'edit-polygon'}
           modeIsDrawBand={mode === 'draw-band'}
           modeIsAutoStack={mode === 'auto-stack'}
+          onExitFullscreen={onExitFullscreen}
         />
 
         <MappingCanvasStage
@@ -291,9 +297,29 @@ export const MappingCanvas = forwardRef<MappingCanvasHandle, MappingCanvasProps>
           onMarkerPointerMove={onMarkerPointerMove}
           onMarkerPointerUp={onMarkerPointerUp}
           setCursorPoint={setCursorPoint}
+          viewportOverlay={
+            onOpenFullscreen ? (
+              <Button
+                type="button"
+                size="sm"
+                variant="secondary"
+                className="absolute top-3 right-3 z-20 shadow-sm"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onOpenFullscreen();
+                }}
+                onPointerDown={(event) => {
+                  event.stopPropagation();
+                }}
+              >
+                <Maximize2 className="size-4" aria-hidden />
+                {tCanvas('openFullscreen')}
+              </Button>
+            ) : null
+          }
         />
 
-        <p className="text-xs text-muted-foreground">{hintText}</p>
+        {hintText ? <p className="text-xs text-muted-foreground">{hintText}</p> : null}
       </div>
     );
   },

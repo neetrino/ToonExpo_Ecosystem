@@ -1,7 +1,9 @@
 'use client';
 
+import { Minimize2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
+import { Button } from '@/shared/ui/button';
 import { svgPathToPolygonShape, type PolygonShape } from '../../utils/curved-polygon';
 import {
   AutoStackIcon,
@@ -42,6 +44,7 @@ type MappingCanvasToolbarProps = {
   modeIsEditPolygon: boolean;
   modeIsDrawBand: boolean;
   modeIsAutoStack: boolean;
+  onExitFullscreen?: (() => void) | undefined;
 };
 
 type ToolId = 'select' | 'place-marker' | 'draw-polygon' | 'draw-band' | 'auto-stack';
@@ -86,13 +89,15 @@ export const MappingCanvasToolbar = ({
   modeIsEditPolygon,
   modeIsDrawBand,
   modeIsAutoStack,
+  onExitFullscreen,
 }: MappingCanvasToolbarProps) => {
   const t = useTranslations('Admin.interactiveMapping.canvas');
   const floorTools = toolPreset === 'floors' ? FLOOR_TOOLS : [];
 
   return (
     <>
-      <div className="flex flex-wrap gap-2" role="toolbar" aria-label={t('toolsAria')}>
+      <div className="flex flex-wrap items-center justify-end gap-2">
+        <div className="flex flex-wrap justify-end gap-2" role="toolbar" aria-label={t('toolsAria')}>
         {[...BASIC_TOOLS, ...floorTools].map(([value, labelKey, Icon]) => {
           const needsSelection = value === 'draw-polygon' || value === 'place-marker';
           const disabled = needsSelection && !selectedId;
@@ -203,6 +208,13 @@ export const MappingCanvasToolbar = ({
               <ClearPointsIcon />
             </button>
           </>
+        ) : null}
+        </div>
+        {onExitFullscreen ? (
+          <Button type="button" size="sm" variant="secondary" onClick={onExitFullscreen}>
+            <Minimize2 className="size-4" aria-hidden />
+            {t('exitFullscreen')}
+          </Button>
         ) : null}
       </div>
 

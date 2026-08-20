@@ -1,6 +1,8 @@
 'use client';
 
 import type { PortalVisualHotspotItem } from '@toonexpo/contracts';
+import { useTranslations } from 'next-intl';
+import type { ReactNode } from 'react';
 
 import { MappingEditorShell, type MappingEditorEntity } from './mapping-editor-shell';
 
@@ -14,6 +16,8 @@ export type MasterplanMappingEditorProps = {
   viewBoxHeight: number;
   districts: { id: string; name: string; label?: string }[];
   hotspots: PortalVisualHotspotItem[];
+  createForm?: ReactNode;
+  onDeleteDistrict?: ((id: string) => Promise<void>) | undefined;
   onAfterSave?: () => void;
 };
 
@@ -49,20 +53,30 @@ export const MasterplanMappingEditor = ({
   viewBoxHeight,
   districts,
   hotspots,
+  createForm,
+  onDeleteDistrict,
   onAfterSave,
-}: MasterplanMappingEditorProps) => (
-  <MappingEditorShell
-    companyId={companyId}
-    canvasId={canvasId}
-    targetType="district"
-    toolPreset="basic"
-    listTitle="Districts"
-    imageUrl={imageUrl}
-    imageWidth={imageWidth}
-    imageHeight={imageHeight}
-    viewBoxWidth={viewBoxWidth}
-    viewBoxHeight={viewBoxHeight}
-    initialEntities={buildEntities(districts, hotspots)}
-    onAfterSave={onAfterSave}
-  />
-);
+}: MasterplanMappingEditorProps) => {
+  const t = useTranslations('Admin.interactiveMapping.canvas');
+
+  return (
+    <MappingEditorShell
+      companyId={companyId}
+      canvasId={canvasId}
+      targetType="district"
+      toolPreset="basic"
+      listTitle={t('districtsListTitle')}
+      sidebarFooter={createForm}
+      deleteEntityLabel={t('deleteDistrict')}
+      confirmDeleteMessage={t('confirmDeleteDistrict')}
+      imageUrl={imageUrl}
+      imageWidth={imageWidth}
+      imageHeight={imageHeight}
+      viewBoxWidth={viewBoxWidth}
+      viewBoxHeight={viewBoxHeight}
+      initialEntities={buildEntities(districts, hotspots)}
+      onDeleteEntity={onDeleteDistrict}
+      onAfterSave={onAfterSave}
+    />
+  );
+};

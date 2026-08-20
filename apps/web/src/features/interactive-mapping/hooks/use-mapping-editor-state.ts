@@ -103,6 +103,10 @@ export const useMappingEditorState = ({
       });
     });
     setSelectedId((current) => {
+      const added = incomingList.find((item) => !entitiesRef.current.some((row) => row.id === item.id));
+      if (added) {
+        return added.id;
+      }
       if (current && incomingList.some((item) => item.id === current)) {
         return current;
       }

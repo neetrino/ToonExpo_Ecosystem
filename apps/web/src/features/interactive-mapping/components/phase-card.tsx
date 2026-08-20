@@ -44,6 +44,7 @@ export const PhaseCard = ({
   const locked = state === 'locked';
   const done = state === 'done';
   const active = state === 'active';
+  const unlocked = !locked;
 
   return (
     <article
@@ -76,7 +77,7 @@ export const PhaseCard = ({
           </div>
           <p className="mt-3 max-w-xl text-sm text-ink-muted">{hint}</p>
           <p className="mt-2 text-xs text-ink-muted">{progressLabel}</p>
-          {active ? children : null}
+          {unlocked ? children : null}
         </div>
 
         <div className="flex w-full flex-col gap-2 sm:w-auto sm:min-w-[220px]">
@@ -104,7 +105,7 @@ export const PhaseCard = ({
             </span>
           ) : null}
 
-          {active && extras.length > 0 ? (
+          {unlocked && extras.length > 0 ? (
             <div className="space-y-1.5 pt-1">
               {extrasTitle ? (
                 <p className="text-[10px] uppercase tracking-[0.14em] text-ink-muted">

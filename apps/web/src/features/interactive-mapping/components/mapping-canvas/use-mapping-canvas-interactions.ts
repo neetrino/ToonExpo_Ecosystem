@@ -12,6 +12,26 @@ import { clampNormalized } from '../../utils/coordinates';
 import type { NormPoint } from '../../utils/mapping-math';
 import type { EditorMode, MappingEntity } from './mapping-canvas.types';
 
+/** Normalized hit radius for draft vertices and closing the first point. */
+const DRAFT_POINT_HIT_DISTANCE = 0.02;
+const MIN_POLYGON_VERTICES = 3;
+
+const isNearPoint = (point: NormPoint, target: NormPoint): boolean =>
+  Math.hypot(target.x - point.x, target.y - point.y) <= DRAFT_POINT_HIT_DISTANCE;
+
+const shouldClosePolygonAtCursor = (
+  point: NormPoint,
+  draft: readonly NormPoint[],
+): boolean => {
+  const first = draft[0];
+  return Boolean(first && draft.length >= MIN_POLYGON_VERTICES && isNearPoint(point, first));
+};
+
+export const snapPolygonCloseCursor = (
+  point: NormPoint,
+  draft: readonly NormPoint[],
+): NormPoint => (shouldClosePolygonAtCursor(point, draft) ? (draft[0] ?? point) : point);
+
 type MarkerDragState = {
   id: string;
   /** Cursor − marker center at pointer-down — keeps the grab point stable. */
@@ -41,6 +61,7 @@ type UseMappingCanvasInteractionsParams = {
   updateDraftPoints: (updater: (prev: NormPoint[]) => NormPoint[]) => void;
   commitAutoStack: (points: NormPoint[]) => boolean;
   commitBand: (points: NormPoint[], entityId: string) => string | null;
+  closePolygon: () => void;
   clearDraft: () => void;
   setMode: (mode: EditorMode) => void;
   setSelectedDraftIndex: Dispatch<SetStateAction<number | null>>;
@@ -62,6 +83,7 @@ export const useMappingCanvasInteractions = ({
   updateDraftPoints,
   commitAutoStack,
   commitBand,
+  closePolygon,
   clearDraft,
   setMode,
   setSelectedDraftIndex,
@@ -109,11 +131,12 @@ export const useMappingCanvasInteractions = ({
       }
 
       if (mode === 'draw-polygon') {
+        if (shouldClosePolygonAtCursor(point, draftRef.current)) {
+          closePolygon();
+          return;
+        }
         if (event.altKey) {
-          const threshold = 0.02;
-          const nearIndex = draftRef.current.findIndex(
-            (existing) => Math.hypot(existing.x - point.x, existing.y - point.y) <= threshold,
-          );
+          const nearIndex = draftRef.current.findIndex((existing) => isNearPoint(point, existing));
           if (nearIndex >= 0) {
             setSelectedDraftIndex((current) => (current === nearIndex ? null : nearIndex));
             return;
@@ -124,6 +147,7 @@ export const useMappingCanvasInteractions = ({
       }
     },
     [
+      closePolygon,
       commitAutoStack,
       commitBand,
       draftRef,

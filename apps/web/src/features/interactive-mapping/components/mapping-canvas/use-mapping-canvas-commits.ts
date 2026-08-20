@@ -92,7 +92,7 @@ export const useMappingCanvasCommits = ({
       setDraftPoints([]);
       setEditShape(null);
       setSelectedDraftIndex(null);
-      setMode(editing ? 'select' : 'draw-polygon');
+      setMode('select');
       return svgPath;
     },
     [
@@ -130,7 +130,7 @@ export const useMappingCanvasCommits = ({
       draftRef.current = [];
       setDraftPoints([]);
       setSelectedDraftIndex(null);
-      setMode('draw-band');
+      setMode('select');
       return svgPath;
     },
     [

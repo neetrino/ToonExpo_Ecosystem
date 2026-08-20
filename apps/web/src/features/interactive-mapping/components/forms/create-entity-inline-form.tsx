@@ -58,7 +58,7 @@ export const CreateEntityInlineForm = ({
 
   return (
     <form
-      className="mt-4 space-y-2 rounded-sm border border-border bg-background p-3"
+      className="mt-4 space-y-2 rounded-[15px] border border-border bg-background p-3"
       onSubmit={(event) => {
         void handleSubmit(event);
       }}
