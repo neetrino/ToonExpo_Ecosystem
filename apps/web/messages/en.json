@@ -27,7 +27,9 @@
       "clear": "Clear",
       "today": "Today",
       "previousMonth": "Previous month",
-      "nextMonth": "Next month"
+      "nextMonth": "Next month",
+      "previousYear": "Previous year",
+      "nextYear": "Next year"
     },
     "placeholders": {
       "url": "https://"

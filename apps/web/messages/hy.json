@@ -27,7 +27,9 @@
       "clear": "Մաքրել",
       "today": "Այսօր",
       "previousMonth": "Նախորդ ամիս",
-      "nextMonth": "Հաջորդ ամիս"
+      "nextMonth": "Հաջորդ ամիս",
+      "previousYear": "Նախորդ տարի",
+      "nextYear": "Հաջորդ տարի"
     },
     "placeholders": {
       "url": "https://"
