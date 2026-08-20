@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 import { AddFloorSheet } from '@/features/builder/components/add-floor-sheet';
+import { BuildingPriceOnRequestToggle } from '@/features/builder/components/building-price-on-request-toggle';
 import { BuildingPublicationActions } from '@/features/builder/components/building-publication-actions';
 import { EditBuildingMediaForm } from '@/features/builder/components/edit-building-media-form';
 import { FloorInventoryRow } from '@/features/builder/components/floor-inventory-row';
@@ -39,6 +40,7 @@ export const BuildingAccordion = ({ projectId, building }: BuildingAccordionProp
             <span className="block text-sm font-semibold text-ink">{building.name}</span>
             <span className="block text-xs text-ink-muted">
               {t('floorsCount', { count: building.floors.length })}
+              {building.priceOnRequestEnabled ? ` · ${t('priceOnRequestOn')}` : ''}
             </span>
           </span>
           <span className="text-ink-muted" aria-hidden>
@@ -50,6 +52,7 @@ export const BuildingAccordion = ({ projectId, building }: BuildingAccordionProp
 
       {open ? (
         <div className="flex flex-col gap-3 border-t border-border px-4 py-3">
+          <BuildingPriceOnRequestToggle projectId={projectId} building={building} />
           {building.floors.length === 0 ? (
             <p className="text-sm text-ink-secondary">{t('noFloors')}</p>
           ) : (

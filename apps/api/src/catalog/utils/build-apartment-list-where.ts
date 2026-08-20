@@ -58,6 +58,10 @@ export const buildApartmentListWhere = (
       where.price.lte = query.maxPrice;
     }
     where.priceVisibility = 'public';
+    where.building = {
+      publicationStatus: PUBLIC_PUBLICATION_STATUS,
+      priceOnRequestEnabled: false,
+    };
   }
 
   const keyword = query.q?.trim();

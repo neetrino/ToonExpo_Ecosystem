@@ -29,6 +29,7 @@ import type { CompanyMemberContext } from '../../company/types/company-member-co
 import { assertCompanyAdmin } from '../utils/access.js';
 import { CreatePortalBuildingDto, UpdatePortalBuildingDto } from '../dto/portal-building.dto.js';
 import { UpdatePortalPublicationDto } from '../dto/update-portal-publication.dto.js';
+import { UpdatePortalPriceOnRequestDto } from '../dto/update-portal-price-on-request.dto.js';
 import { PortalBuildingsService } from './portal-buildings.service.js';
 
 @ApiTags('portal-buildings')
@@ -95,6 +96,24 @@ export class PortalBuildingsController {
   ): Promise<PortalBuildingSummary> {
     assertCompanyAdmin(member);
     return this.buildingsService.updatePublication(member.companyId, user.id, buildingId, body);
+  }
+
+  @Patch('portal/buildings/:buildingId/price-on-request')
+  @ApiOperation({ summary: 'Enable or disable price-on-request for a building (company_admin)' })
+  @ApiOkResponse({ description: 'Updated price-on-request status' })
+  updatePriceOnRequest(
+    @CurrentCompanyMember() member: CompanyMemberContext,
+    @CurrentUser() user: AuthenticatedUser,
+    @Param('buildingId') buildingId: string,
+    @Body() body: UpdatePortalPriceOnRequestDto,
+  ): Promise<PortalBuildingSummary> {
+    assertCompanyAdmin(member);
+    return this.buildingsService.updatePriceOnRequest(
+      member.companyId,
+      user.id,
+      buildingId,
+      body.enabled,
+    );
   }
 
   @Delete('portal/buildings/:buildingId')

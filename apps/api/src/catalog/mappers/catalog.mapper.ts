@@ -1,10 +1,7 @@
-import type {
-  ApartmentAvailabilitySummary,
-  MediaAssetSummary,
-} from "@toonexpo/contracts";
-import type { ApartmentSalesStatus, Prisma } from "@toonexpo/db";
+import type { ApartmentAvailabilitySummary, MediaAssetSummary } from '@toonexpo/contracts';
+import type { ApartmentSalesStatus, Prisma } from '@toonexpo/db';
 
-import { PUBLIC_PUBLICATION_STATUS } from "../catalog.constants.js";
+import { PUBLIC_PUBLICATION_STATUS } from '../catalog.constants.js';
 
 type MediaRow = {
   id: string;
@@ -48,11 +45,11 @@ export const summarizeSalesStatuses = (
   summary.total = statuses.length;
 
   for (const status of statuses) {
-    if (status === "available") {
+    if (status === 'available') {
       summary.available += 1;
-    } else if (status === "reserved") {
+    } else if (status === 'reserved') {
       summary.reserved += 1;
-    } else if (status === "sold") {
+    } else if (status === 'sold') {
       summary.sold += 1;
     }
   }
@@ -68,13 +65,37 @@ export const publishedApartmentWhere = (): Prisma.ApartmentWhereInput => ({
  * Whether the numeric price may be included in a catalog API response.
  * Anonymous callers only see `public`; authenticated callers also see `visible_after_login`.
  */
-export const shouldRevealPrice = (
-  priceVisibility: string,
-  isAuthenticated: boolean,
-): boolean => {
-  if (priceVisibility === "public") {
+export const shouldRevealPrice = (priceVisibility: string, isAuthenticated: boolean): boolean => {
+  if (priceVisibility === 'public') {
     return true;
   }
 
-  return isAuthenticated && priceVisibility === "visible_after_login";
+  return isAuthenticated && priceVisibility === 'visible_after_login';
 };
+
+/**
+ * Building-level price-on-request never reveals a numeric price, even after login.
+ */
+export const shouldRevealCatalogPrice = (
+  priceVisibility: string,
+  isAuthenticated: boolean,
+  priceOnRequestEnabled: boolean,
+): boolean => {
+  if (priceOnRequestEnabled) {
+    return false;
+  }
+
+  return shouldRevealPrice(priceVisibility, isAuthenticated);
+};
+
+export const isPriceOnRequestEnabled = (row: {
+  priceOnRequestEnabled?: boolean | undefined;
+  building?: { priceOnRequestEnabled?: boolean | undefined } | null | undefined;
+}): boolean => row.priceOnRequestEnabled === true || row.building?.priceOnRequestEnabled === true;
+
+/**
+ * True when any published building opted into the public price-on-request CTA.
+ */
+export const hasPublishedPriceOnRequest = (
+  buildings: Array<{ priceOnRequestEnabled: boolean }>,
+): boolean => buildings.some((building) => building.priceOnRequestEnabled);

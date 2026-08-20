@@ -159,6 +159,8 @@ model Building {
   /// Public "Verified" badge — set from Admin/builder building form.
   verified          Boolean           @default(false)
   internalCode      String?           @map("internal_code")
+  /// When true, public catalog hides this building's prices and shows a request CTA.
+  priceOnRequestEnabled Boolean       @default(false) @map("price_on_request_enabled")
   createdByUserId   String?           @map("created_by_user_id")
   updatedByUserId   String?           @map("updated_by_user_id")
   createdAt         DateTime          @default(now()) @map("created_at")

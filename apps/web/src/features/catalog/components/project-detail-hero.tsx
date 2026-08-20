@@ -3,13 +3,16 @@
 import type { ProjectDetail } from '@toonexpo/contracts';
 import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
+import type { ReactNode } from 'react';
 
 import { ProjectDetailFavorite } from '@/features/buyer/components/project-detail-favorite';
 import { CatalogEntityQr } from '@/features/catalog/components/catalog-entity-qr';
+import { ProjectPriceCta } from '@/features/catalog/components/project-price-cta';
 import { usePriceOverlay } from '@/features/catalog/components/price-overlay-scope';
 import { buildProjectCatalogQrUrl } from '@/features/catalog/utils/build-catalog-entity-qr-url';
 import { computeSoldPercent, resolveBadge } from '@/features/catalog/utils/development-progress';
 import { formatCompactPrice } from '@/features/catalog/utils/format-price';
+import { shouldShowPriceOnRequestCta } from '@/features/catalog/utils/price-on-request-cta';
 import { formatCompletionQuarter } from '@/features/catalog/utils/project-detail-presentation';
 import { cn } from '@/shared/ui/cn';
 
@@ -190,7 +193,17 @@ export const ProjectDetailHero = ({ project }: ProjectDetailHeroProps) => {
             <HeroStat label={t('statCompletion')} value={completion} />
             <HeroStat
               label={t('statFrom')}
-              value={priceLabel}
+              value={
+                <ProjectPriceCta
+                  projectId={project.id}
+                  priceOnRequest={shouldShowPriceOnRequestCta({
+                    priceOnRequest: project.priceOnRequest,
+                    minPrice: range.minPrice,
+                    maxPrice: range.maxPrice,
+                  })}
+                  priceLabel={priceLabel}
+                />
+              }
               className="order-5 max-sm:col-span-2 max-sm:justify-start max-sm:pl-[max(0rem,calc((100%-1.5rem)/4-2.75rem))] sm:order-3"
               valueClassName="max-sm:whitespace-nowrap"
             />
@@ -220,7 +233,7 @@ const HeroStat = ({
   align = 'left',
 }: {
   label: string;
-  value: string;
+  value: ReactNode;
   className?: string | undefined;
   valueClassName?: string | undefined;
   align?: 'left' | 'center' | undefined;

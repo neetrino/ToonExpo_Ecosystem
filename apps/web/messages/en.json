@@ -485,6 +485,7 @@
         "created": "Request sent. The builder will contact you.",
         "deduplicated": "Request added to your open conversation with the builder."
       },
+      "priceDefaultNote": "I would like to receive the price for this listing.",
       "errors": {
         "generic": "Could not send the request. Please try again."
       }
@@ -571,17 +572,6 @@
         "inProgress": "In progress",
         "upcoming": "Upcoming"
       },
-      "floorsTitle": "Choose a floor",
-      "floorsSubtitle": "Select a level to view its floorplate and available residences.",
-      "floorsEmpty": "No published floors yet.",
-      "buildingStack": "Building stack",
-      "floorLabel": "Floor {number}",
-      "availCount": "{count} avail",
-      "unitsCount": "{count} units",
-      "legendAvailable": "Available",
-      "legendReserved": "Reserved",
-      "legendSold": "Sold",
-      "floorVisualAlt": "Axonometric view of {project}",
       "reserveTitle": "Reserve your unit at {project}",
       "reserveSubtitle": "Download the brochure, schedule a model-suite visit, or speak directly with the developer's sales team.",
       "downloadBrochure": "Download brochure",
@@ -3632,6 +3622,10 @@
       "rooms": "Rooms",
       "areaTotal": "Area (m²)",
       "price": "Price",
+      "priceOnRequest": "Price on request",
+      "priceOnRequestHint": "When on, public listings hide this building’s prices and show a request button for buyers.",
+      "priceOnRequestOn": "Price on request",
+      "priceOnRequestSaved": "Price on request updated",
       "publication": {
         "draft": "Draft",
         "published": "Published",

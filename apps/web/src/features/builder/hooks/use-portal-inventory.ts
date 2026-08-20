@@ -22,6 +22,7 @@ import {
 import {
   createPortalBuilding,
   updatePortalBuilding,
+  updatePortalBuildingPriceOnRequest,
   updatePortalBuildingPublication,
 } from '@/features/builder/api/portal-buildings-api';
 import { createPortalFloor, updatePortalFloor } from '@/features/builder/api/portal-floors-api';
@@ -138,6 +139,20 @@ export const useUpdateBuildingPublicationMutation = (projectId: string, building
   return useMutation({
     mutationFn: (body: UpdatePortalPublicationRequest) =>
       updatePortalBuildingPublication(buildingId, body, { scope }),
+    onSuccess: () => {
+      invalidateProject(queryClient, projectId);
+    },
+  });
+};
+
+/**
+ * Toggles public price-on-request for a building (builder company_admin).
+ */
+export const useUpdateBuildingPriceOnRequestMutation = (projectId: string, buildingId: string) => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (enabled: boolean) => updatePortalBuildingPriceOnRequest(buildingId, { enabled }),
     onSuccess: () => {
       invalidateProject(queryClient, projectId);
     },

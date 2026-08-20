@@ -3,7 +3,9 @@ import { describe, expect, it } from 'vitest';
 import { buildHeroSearchSuggestions } from './build-hero-search-suggestions';
 import type { ProjectListItem } from '@toonexpo/contracts';
 
-const project = (overrides: Partial<ProjectListItem> & Pick<ProjectListItem, 'id' | 'name'>): ProjectListItem => ({
+const project = (
+  overrides: Partial<ProjectListItem> & Pick<ProjectListItem, 'id' | 'name'>,
+): ProjectListItem => ({
   slug: overrides.slug ?? overrides.name.toLowerCase().replace(/\s+/g, '-'),
   shortDescription: null,
   locationText: null,
@@ -23,6 +25,7 @@ const project = (overrides: Partial<ProjectListItem> & Pick<ProjectListItem, 'id
   minPrice: null,
   maxPrice: null,
   priceCurrency: null,
+  priceOnRequest: false,
   ...overrides,
 });
 

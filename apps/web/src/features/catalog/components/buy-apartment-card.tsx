@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
 
 import type { BuyApartmentListing } from '@/features/catalog/utils/load-buy-apartments';
+import { CatalogRequestButton } from '@/features/buyer/components/catalog-request-button';
 import { formatCatalogPrice } from '@/features/catalog/utils/format-price';
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
@@ -53,7 +54,7 @@ export const BuyApartmentCard = ({
       onMouseEnter={onHoverEnter}
       onMouseLeave={onHoverLeave}
     >
-      <Link href={`/apartments/${listing.id}`} className="flex h-full flex-col">
+      <Link href={`/apartments/${listing.id}`} className="relative block aspect-[4/3]">
         <div className="relative aspect-[4/3] overflow-hidden rounded-2xl bg-surface">
           {listing.image ? (
             <Image
@@ -81,39 +82,51 @@ export const BuyApartmentCard = ({
             ) : null}
           </div>
         </div>
+      </Link>
 
-        <div className="flex flex-1 flex-col px-3 pt-4 pb-3">
-          <div className="mb-1 flex flex-col gap-1">
-            <h3 className="min-w-0 truncate font-brand text-sm font-semibold tracking-[-0.02em] text-ink-navy">
+      <div className="flex flex-1 flex-col px-3 pt-4 pb-3">
+        <div className="mb-1 flex flex-col gap-1">
+          <h3 className="min-w-0 truncate font-brand text-sm font-semibold tracking-[-0.02em] text-ink-navy">
+            <Link
+              href={`/apartments/${listing.id}`}
+              className="transition-colors hover:text-brand-deep"
+            >
               {t('unitTitle', {
                 number: listing.title,
                 project: listing.projectName,
               })}
-            </h3>
+            </Link>
+          </h3>
+          {listing.priceOnRequest ? (
+            <CatalogRequestButton
+              projectId={listing.projectId}
+              apartmentId={listing.id}
+              labelKey="requestPrice"
+              appearance="priceLabel"
+              className="text-left font-brand text-base font-bold"
+            />
+          ) : (
             <p className="font-brand text-base font-bold text-brand-deep">{priceLabel}</p>
-          </div>
-          <p className="min-h-4 truncate text-xs leading-4 text-header-muted">
-            {listing.locationLine}
-          </p>
-          <div className="flex min-h-6 flex-1 flex-col justify-center" aria-hidden>
-            <div className="border-t border-header-border" />
-          </div>
-          <div
-            className={cn(
-              'flex flex-wrap items-center gap-4',
-              'text-[11px] font-medium tracking-tight text-header-muted uppercase',
-            )}
-          >
-            <span>{bedCount != null ? t('specBed', { count: bedCount }) : '—'}</span>
-            <span>
-              {listing.bathrooms != null ? t('specBath', { count: listing.bathrooms }) : '—'}
-            </span>
-            <span>
-              {listing.areaTotal != null ? t('specArea', { area: listing.areaTotal }) : '—'}
-            </span>
-          </div>
+          )}
         </div>
-      </Link>
+        <p className="min-h-4 truncate text-xs leading-4 text-header-muted">
+          {listing.locationLine}
+        </p>
+        <div
+          className={cn(
+            'mt-auto flex flex-wrap items-center gap-4 border-t border-header-border pt-3',
+            'text-[11px] font-medium tracking-tight text-header-muted uppercase',
+          )}
+        >
+          <span>{bedCount != null ? t('specBed', { count: bedCount }) : '—'}</span>
+          <span>
+            {listing.bathrooms != null ? t('specBath', { count: listing.bathrooms }) : '—'}
+          </span>
+          <span>
+            {listing.areaTotal != null ? t('specArea', { area: listing.areaTotal }) : '—'}
+          </span>
+        </div>
+      </div>
     </article>
   );
 };

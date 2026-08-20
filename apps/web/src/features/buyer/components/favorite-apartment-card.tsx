@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
 
 import { FavoriteToggleButton } from '@/features/buyer/components/favorite-toggle-button';
+import { CatalogRequestButton } from '@/features/buyer/components/catalog-request-button';
 import { formatCatalogPrice } from '@/features/catalog/utils/format-price';
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
@@ -94,9 +95,19 @@ export const FavoriteApartmentCardView = ({ apartment }: FavoriteApartmentCardPr
               })}
             </Link>
           </h3>
-          <p className="font-brand text-lg font-bold leading-7 text-brand-deep sm:shrink-0">
-            {priceLabel}
-          </p>
+          {apartment.priceOnRequest ? (
+            <CatalogRequestButton
+              projectId={apartment.project.id}
+              apartmentId={apartment.id}
+              labelKey="requestPrice"
+              appearance="priceLabel"
+              className="font-brand text-lg font-bold leading-7 sm:shrink-0"
+            />
+          ) : (
+            <p className="font-brand text-lg font-bold leading-7 text-brand-deep sm:shrink-0">
+              {priceLabel}
+            </p>
+          )}
         </div>
 
         <p className="mb-4 text-xs leading-4 text-header-muted">

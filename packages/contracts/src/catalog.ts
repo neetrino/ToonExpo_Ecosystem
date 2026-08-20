@@ -101,6 +101,8 @@ export type ProjectListItem = {
   minPrice: string | null;
   maxPrice: string | null;
   priceCurrency: string | null;
+  /** True when any published building has price-on-request enabled. */
+  priceOnRequest: boolean;
 };
 
 /**
@@ -120,6 +122,8 @@ export type FloorApartmentSummary = {
   priceVisibility: PriceVisibility;
   /** Discover / Tinder swipe image when set by admin. */
   tinder: MediaAssetSummary | null;
+  /** True when the parent building has price-on-request enabled. */
+  priceOnRequest: boolean;
 };
 
 /**
@@ -145,6 +149,8 @@ export type ApartmentListItem = {
   longitude: string | null;
   cover: MediaAssetSummary | null;
   verified: boolean;
+  /** True when the parent building has price-on-request enabled. */
+  priceOnRequest: boolean;
 };
 
 export type FloorSummary = {
@@ -167,6 +173,8 @@ export type BuildingSummary = {
   verified: boolean;
   floors: FloorSummary[];
   availability: ApartmentAvailabilitySummary;
+  /** Builder status: public listings hide prices and show a request CTA. */
+  priceOnRequestEnabled: boolean;
 };
 
 export type ProjectDetail = {
@@ -198,6 +206,8 @@ export type ProjectDetail = {
   minPrice: string | null;
   maxPrice: string | null;
   priceCurrency: string | null;
+  /** True when any published building has price-on-request enabled. */
+  priceOnRequest: boolean;
 };
 
 export type ApartmentDetail = {
@@ -216,6 +226,8 @@ export type ApartmentDetail = {
   price: string | null;
   priceCurrency: string;
   priceVisibility: PriceVisibility;
+  /** True when this apartment's building has price-on-request enabled. */
+  priceOnRequest: boolean;
   description: string | null;
   matterportUrl: string | null;
   external3dUrl: string | null;

@@ -3,11 +3,11 @@ import type {
   BuildingSummary,
   FloorApartmentSummary,
   FloorSummary,
-} from "@toonexpo/contracts";
-import { getTranslations } from "next-intl/server";
+} from '@toonexpo/contracts';
+import { getTranslations } from 'next-intl/server';
 
-import { ApartmentPriceLabel } from "@/features/catalog/components/apartment-price-label";
-import { Link } from "@/i18n/navigation";
+import { ApartmentPriceLabel } from '@/features/catalog/components/apartment-price-label';
+import { Link } from '@/i18n/navigation';
 
 type BuildingFloorsListProps = {
   projectId: string;
@@ -17,16 +17,11 @@ type BuildingFloorsListProps = {
 /**
  * Floor and apartment list fallback for a building page.
  */
-export const BuildingFloorsList = async ({
-  projectId,
-  building,
-}: BuildingFloorsListProps) => {
-  const t = await getTranslations("Catalog");
+export const BuildingFloorsList = async ({ projectId, building }: BuildingFloorsListProps) => {
+  const t = await getTranslations('Catalog');
 
   if (building.floors.length === 0) {
-    return (
-      <p className="text-sm text-ink-secondary">{t("building.noFloors")}</p>
-    );
+    return <p className="text-sm text-ink-secondary">{t('building.noFloors')}</p>;
   }
 
   return (
@@ -51,12 +46,7 @@ type FloorSectionProps = {
   t: Awaited<ReturnType<typeof getTranslations>>;
 };
 
-const FloorSection = ({
-  projectId,
-  buildingId,
-  floor,
-  t,
-}: FloorSectionProps) => {
+const FloorSection = ({ projectId, buildingId, floor, t }: FloorSectionProps) => {
   return (
     <div>
       <div className="mb-3 flex flex-wrap items-baseline justify-between gap-2">
@@ -64,17 +54,17 @@ const FloorSection = ({
           href={`/projects/${projectId}/buildings/${buildingId}/floors/${floor.id}`}
           className="text-sm font-semibold text-ink hover:text-brand"
         >
-          {floor.displayLabel ?? t("project.floor", { number: floor.number })}
+          {floor.displayLabel ?? t('project.floor', { number: floor.number })}
         </Link>
         <AvailabilityLine
-          label={t("availability.summary")}
+          label={t('availability.summary')}
           availability={floor.availability}
           t={t}
         />
       </div>
       <ul className="divide-y divide-border overflow-hidden rounded-sm border border-border bg-background">
         {floor.apartments.map((apartment) => (
-          <ApartmentRow key={apartment.id} apartment={apartment} t={t} />
+          <ApartmentRow key={apartment.id} projectId={projectId} apartment={apartment} t={t} />
         ))}
       </ul>
     </div>
@@ -82,25 +72,24 @@ const FloorSection = ({
 };
 
 type FloorApartmentsListProps = {
+  projectId: string;
   floor: FloorSummary;
 };
 
 /**
  * Apartment list fallback for a floor page.
  */
-export const FloorApartmentsList = async ({ floor }: FloorApartmentsListProps) => {
-  const t = await getTranslations("Catalog");
+export const FloorApartmentsList = async ({ projectId, floor }: FloorApartmentsListProps) => {
+  const t = await getTranslations('Catalog');
 
   if (floor.apartments.length === 0) {
-    return (
-      <p className="text-sm text-ink-secondary">{t("floor.noApartments")}</p>
-    );
+    return <p className="text-sm text-ink-secondary">{t('floor.noApartments')}</p>;
   }
 
   return (
     <ul className="divide-y divide-border overflow-hidden rounded-sm border border-border bg-background">
       {floor.apartments.map((apartment) => (
-        <ApartmentRow key={apartment.id} apartment={apartment} t={t} />
+        <ApartmentRow key={apartment.id} projectId={projectId} apartment={apartment} t={t} />
       ))}
     </ul>
   );
@@ -119,53 +108,55 @@ const AvailabilityLine = ({
 }) => {
   return (
     <p className="text-xs text-ink-secondary">
-      {label}: {availability.available}/{availability.total}{" "}
-      {t("availability.available").toLowerCase()}
+      {label}: {availability.available}/{availability.total}{' '}
+      {t('availability.available').toLowerCase()}
     </p>
   );
 };
 
 const ApartmentRow = ({
+  projectId,
   apartment,
   t,
 }: {
+  projectId: string;
   apartment: FloorApartmentSummary;
   t: Translate;
 }) => {
   return (
-    <li>
+    <li className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 text-sm hover:bg-surface">
       <Link
         href={`/apartments/${apartment.id}`}
-        className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 text-sm hover:bg-surface"
+        className="flex min-w-0 flex-1 flex-wrap items-center gap-3"
       >
-        <div className="flex flex-wrap items-center gap-3">
-          <span className="font-medium text-ink">
-            {t("apartment.unit", { number: apartment.number })}
+        <span className="font-medium text-ink">
+          {t('apartment.unit', { number: apartment.number })}
+        </span>
+        <StatusBadge status={apartment.salesStatus} t={t} />
+        {apartment.rooms != null ? (
+          <span className="text-ink-secondary">
+            {t('apartment.rooms', { count: apartment.rooms })}
           </span>
-          <StatusBadge status={apartment.salesStatus} t={t} />
-          {apartment.rooms != null ? (
-            <span className="text-ink-secondary">
-              {t("apartment.rooms", { count: apartment.rooms })}
-            </span>
-          ) : null}
-          {apartment.bathrooms != null ? (
-            <span className="text-ink-secondary">
-              {t("apartment.bathrooms", { count: apartment.bathrooms })}
-            </span>
-          ) : null}
-          {apartment.areaTotal != null ? (
-            <span className="text-ink-secondary">
-              {t("apartment.area", { area: apartment.areaTotal })}
-            </span>
-          ) : null}
-        </div>
-        <ApartmentPriceLabel
-          apartmentId={apartment.id}
-          amount={apartment.price}
-          currency={apartment.priceCurrency}
-          priceVisibility={apartment.priceVisibility}
-        />
+        ) : null}
+        {apartment.bathrooms != null ? (
+          <span className="text-ink-secondary">
+            {t('apartment.bathrooms', { count: apartment.bathrooms })}
+          </span>
+        ) : null}
+        {apartment.areaTotal != null ? (
+          <span className="text-ink-secondary">
+            {t('apartment.area', { area: apartment.areaTotal })}
+          </span>
+        ) : null}
       </Link>
+      <ApartmentPriceLabel
+        apartmentId={apartment.id}
+        amount={apartment.price}
+        currency={apartment.priceCurrency}
+        priceVisibility={apartment.priceVisibility}
+        projectId={projectId}
+        priceOnRequest={apartment.priceOnRequest}
+      />
     </li>
   );
 };
@@ -174,13 +165,13 @@ const StatusBadge = ({
   status,
   t,
 }: {
-  status: FloorApartmentSummary["salesStatus"];
+  status: FloorApartmentSummary['salesStatus'];
   t: Translate;
 }) => {
-  const tones: Record<FloorApartmentSummary["salesStatus"], string> = {
-    available: "bg-success/15 text-success",
-    reserved: "bg-surface-input text-ink-label",
-    sold: "bg-border text-ink-muted",
+  const tones: Record<FloorApartmentSummary['salesStatus'], string> = {
+    available: 'bg-success/15 text-success',
+    reserved: 'bg-surface-input text-ink-label',
+    sold: 'bg-border text-ink-muted',
   };
 
   return (

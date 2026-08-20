@@ -1,19 +1,20 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable, NotFoundException } from '@nestjs/common';
 import type {
   ApartmentPriceOverlayItem,
   ProjectPriceRangeOverlay,
   ProjectPricesOverlay,
-} from "@toonexpo/contracts";
-import type { ApartmentSalesStatus, Prisma } from "@toonexpo/db";
+} from '@toonexpo/contracts';
+import type { ApartmentSalesStatus, Prisma } from '@toonexpo/db';
 
-import { PrismaService } from "../prisma/prisma.service.js";
-import { PUBLIC_PUBLICATION_STATUS } from "./catalog.constants.js";
-import { aggregateVisiblePrices } from "./mappers/aggregate-prices.js";
+import { PrismaService } from '../prisma/prisma.service.js';
+import { PUBLIC_PUBLICATION_STATUS } from './catalog.constants.js';
+import { aggregateVisiblePrices } from './mappers/aggregate-prices.js';
 import {
   decimalToString,
+  isPriceOnRequestEnabled,
   publishedApartmentWhere,
-  shouldRevealPrice,
-} from "./mappers/catalog.mapper.js";
+  shouldRevealCatalogPrice,
+} from './mappers/catalog.mapper.js';
 
 type PricedApartmentRow = {
   id: string;
@@ -21,6 +22,7 @@ type PricedApartmentRow = {
   price: Prisma.Decimal | null;
   priceCurrency: string;
   priceVisibility: string;
+  building?: { priceOnRequestEnabled?: boolean } | null;
 };
 
 const APARTMENT_PRICE_SELECT = {
@@ -29,6 +31,7 @@ const APARTMENT_PRICE_SELECT = {
   price: true,
   priceCurrency: true,
   priceVisibility: true,
+  building: { select: { priceOnRequestEnabled: true } },
 } as const;
 
 /**
@@ -37,8 +40,8 @@ const APARTMENT_PRICE_SELECT = {
  */
 const isLoginOnlyPrice = (row: PricedApartmentRow): boolean =>
   row.price != null &&
-  shouldRevealPrice(row.priceVisibility, true) &&
-  !shouldRevealPrice(row.priceVisibility, false);
+  shouldRevealCatalogPrice(row.priceVisibility, true, isPriceOnRequestEnabled(row)) &&
+  !shouldRevealCatalogPrice(row.priceVisibility, false, isPriceOnRequestEnabled(row));
 
 /**
  * Authenticated price overlay on top of the anonymous cached catalog:
@@ -66,7 +69,7 @@ export class CatalogPricesService {
     });
 
     if (!project) {
-      throw new NotFoundException("Project not found");
+      throw new NotFoundException('Project not found');
     }
 
     return {
@@ -76,9 +79,7 @@ export class CatalogPricesService {
   }
 
   /** Logged-in min/max ranges for a batch of published projects (list cards). */
-  async getProjectPriceRanges(
-    projectIds: string[],
-  ): Promise<ProjectPriceRangeOverlay[]> {
+  async getProjectPriceRanges(projectIds: string[]): Promise<ProjectPriceRangeOverlay[]> {
     const projects = await this.prisma.db.project.findMany({
       where: {
         id: { in: projectIds },
@@ -93,9 +94,7 @@ export class CatalogPricesService {
       },
     });
 
-    return projects.map((project) =>
-      this.toRangeOverlay(project.id, project.apartments),
-    );
+    return projects.map((project) => this.toRangeOverlay(project.id, project.apartments));
   }
 
   private toRangeOverlay(
@@ -106,12 +105,10 @@ export class CatalogPricesService {
     return { projectId, ...range };
   }
 
-  private toApartmentOverlays(
-    apartments: PricedApartmentRow[],
-  ): ApartmentPriceOverlayItem[] {
+  private toApartmentOverlays(apartments: PricedApartmentRow[]): ApartmentPriceOverlayItem[] {
     return apartments.filter(isLoginOnlyPrice).map((apartment) => ({
       id: apartment.id,
-      price: decimalToString(apartment.price) ?? "",
+      price: decimalToString(apartment.price) ?? '',
       priceCurrency: apartment.priceCurrency,
     }));
   }

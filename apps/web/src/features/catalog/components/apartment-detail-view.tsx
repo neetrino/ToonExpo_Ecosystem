@@ -194,6 +194,8 @@ export const ApartmentDetailView = async ({
                   amount={apartment.price}
                   currency={apartment.priceCurrency}
                   priceVisibility={apartment.priceVisibility}
+                  projectId={apartment.project.id}
+                  priceOnRequest={apartment.priceOnRequest}
                   className={cn(
                     'text-[clamp(1.25rem,4.5vw,1.875rem)] leading-[1.25]',
                     'break-words md:whitespace-nowrap',

@@ -147,7 +147,8 @@ Status syncs immediately to ToonExpo public apartment status
 - description;
 - floors_count;
 - visual_media_id;
-- publication_status.
+- publication_status;
+- price_on_request_enabled (builder toggle; public catalog hides prices and shows a request CTA).
 
 ### Floor
 
@@ -177,16 +178,16 @@ Status syncs immediately to ToonExpo public apartment status
 
 ## 9. Permissions
 
-| Action | BigProjects Admin | Builder | Buyer / Visitor |
-|---|---:|---:|---:|
-| View public project | Yes | Yes | Yes |
-| Create project | Yes | Own company | No |
-| Edit project | Yes | Own company | No |
-| Create building/floor/apartment | Yes | Own company | No |
-| Edit apartment status in public module | Yes | Own company, if allowed | No |
-| Publish/archive | Yes | Own company, if enabled | No |
-| Send request | No | No | Yes |
-| Favorite | No | No | Yes |
+| Action                                 | BigProjects Admin |                 Builder | Buyer / Visitor |
+| -------------------------------------- | ----------------: | ----------------------: | --------------: |
+| View public project                    |               Yes |                     Yes |             Yes |
+| Create project                         |               Yes |             Own company |              No |
+| Edit project                           |               Yes |             Own company |              No |
+| Create building/floor/apartment        |               Yes |             Own company |              No |
+| Edit apartment status in public module |               Yes | Own company, if allowed |              No |
+| Publish/archive                        |               Yes | Own company, if enabled |              No |
+| Send request                           |                No |                      No |             Yes |
+| Favorite                               |                No |                      No |             Yes |
 
 ## 10. Statuses
 

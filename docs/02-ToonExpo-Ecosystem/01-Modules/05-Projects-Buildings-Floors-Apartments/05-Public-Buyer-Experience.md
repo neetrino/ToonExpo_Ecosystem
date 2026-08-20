@@ -125,11 +125,14 @@ visible_after_login
 
 API rule: anonymous public responses include numeric price only when mode is `public`. Authenticated buyers may see price when mode is `public` or `visible_after_login`.
 
+Building-level **price on request** (builder portal only, not Admin): when enabled on a published building, public catalog never reveals that building's numeric prices. Project cards show a **Price on request** button when the project has no other visible prices. Clicking it creates a CRM intake request (`buyer_project_request`) for that builder so they can send an offer.
+
 Public UX should avoid confusing empty price blocks.
 
 Recommended messages:
 
 - `by_request`: "Price by request";
+- building `price_on_request_enabled`: "Price on request" as a request button;
 - `visible_after_login`: "Sign in to view price" (anonymous); show AMD amount when buyer is signed in.
 
 ## Mobile Priority
@@ -143,4 +146,3 @@ Project, floor and apartment pages must be usable on mobile first:
 - clear status labels;
 - fast image loading;
 - simple navigation back to project/building/floor.
-
