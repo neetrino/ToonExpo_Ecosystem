@@ -2,6 +2,7 @@ import { listBuilders } from '@/features/catalog/api/catalog-api';
 import { listPublicPartnerFacets } from '@/features/catalog/api/partners-api';
 import { isExhibitorBuilderTab, type ExhibitorTab } from '@/features/catalog/constants/exhibitor-tabs';
 import {
+  filterBuildersByQuery,
   loadExhibitorCatalog,
   type ExhibitorCatalog,
 } from '@/features/catalog/utils/load-exhibitor-catalog';
@@ -32,7 +33,11 @@ export const loadExhibitorPage = async (
   const filters = resolveExhibitorFilters(requested, visibleTabs);
 
   if (isExhibitorBuilderTab(filters.tab)) {
-    return { filters, visibleTabs, catalog: { kind: 'builders', builders } };
+    return {
+      filters,
+      visibleTabs,
+      catalog: { kind: 'builders', builders: filterBuildersByQuery(builders, filters.q) },
+    };
   }
 
   const catalog = await loadExhibitorCatalog(filters, locale);

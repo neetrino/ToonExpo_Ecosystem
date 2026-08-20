@@ -2,8 +2,12 @@ import { describe, expect, it } from 'vitest';
 
 import {
   PROJECT_PAGE_SIZE,
+  buildCatalogFilterHref,
   buildProjectSearchParams,
+  mergeLiveCatalogFilters,
   parseProjectFilters,
+  parseRoomsFilterValue,
+  parseSalesStatusFilter,
   toListProjectsQuery,
 } from './project-filters';
 
@@ -99,5 +103,64 @@ describe('buildProjectSearchParams', () => {
     expect(
       buildProjectSearchParams({ page: 1, pageSize: PROJECT_PAGE_SIZE, rooms: [2, 4] }, 3),
     ).toEqual({ page: '3', rooms: '2,4' });
+  });
+});
+
+describe('mergeLiveCatalogFilters', () => {
+  it('clears a field and resets to page 1', () => {
+    expect(
+      mergeLiveCatalogFilters(
+        {
+          page: 3,
+          pageSize: PROJECT_PAGE_SIZE,
+          city: 'Yerevan',
+          rooms: [2],
+        },
+        { rooms: undefined },
+      ),
+    ).toEqual({
+      page: 1,
+      pageSize: PROJECT_PAGE_SIZE,
+      city: 'Yerevan',
+    });
+  });
+});
+
+describe('buildCatalogFilterHref', () => {
+  it('resets page and builds a shareable href', () => {
+    expect(
+      buildCatalogFilterHref('/projects', {
+        page: 3,
+        pageSize: PROJECT_PAGE_SIZE,
+        city: 'Yerevan',
+      }),
+    ).toBe('/projects?city=Yerevan');
+  });
+
+  it('returns a bare path when filters are empty', () => {
+    expect(
+      buildCatalogFilterHref('/apartments', {
+        page: 1,
+        pageSize: PROJECT_PAGE_SIZE,
+      }),
+    ).toBe('/apartments');
+  });
+});
+
+describe('parseRoomsFilterValue', () => {
+  it('parses comma-separated room counts', () => {
+    expect(parseRoomsFilterValue('1,3,4')).toEqual([1, 3, 4]);
+  });
+
+  it('ignores empty and invalid values', () => {
+    expect(parseRoomsFilterValue('')).toBeUndefined();
+    expect(parseRoomsFilterValue('-1')).toBeUndefined();
+  });
+});
+
+describe('parseSalesStatusFilter', () => {
+  it('accepts known statuses and ignores unknown values', () => {
+    expect(parseSalesStatusFilter('available')).toBe('available');
+    expect(parseSalesStatusFilter('pending')).toBeUndefined();
   });
 });

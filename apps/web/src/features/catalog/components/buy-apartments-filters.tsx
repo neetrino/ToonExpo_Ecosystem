@@ -1,9 +1,18 @@
 'use client';
 
-import { useState, type ChangeEvent, type ReactNode } from 'react';
+import { type ChangeEvent, type FormEvent, type ReactNode } from 'react';
 import { useTranslations } from 'next-intl';
 
-import type { ProjectFilterParams } from '@/features/catalog/utils/project-filters';
+import {
+  useLiveCatalogFilters,
+  useLivePriceInputs,
+} from '@/features/catalog/hooks/use-live-catalog-filters';
+import {
+  CATALOG_APARTMENTS_PATH,
+  parseRoomsFilterValue,
+  parseSalesStatusFilter,
+  type ProjectFilterParams,
+} from '@/features/catalog/utils/project-filters';
 import { cn } from '@/shared/ui/cn';
 import { Form } from '@/shared/ui/form';
 import { Select } from '@/shared/ui/select';
@@ -27,15 +36,27 @@ const filterControlClassName = cn(
 
 /**
  * Compact filter bar — Figma `103:1437` buy chrome.
- * Controls use `h-9` pill shape for a compact toolbar.
+ * Filters apply live; price fields debounce while typing.
  */
 export const BuyApartmentsFilters = ({ filters, cities }: BuyApartmentsFiltersProps) => {
   const t = useTranslations('BuyPage');
   const catalogT = useTranslations('Catalog');
+  const { replaceFilters } = useLiveCatalogFilters(CATALOG_APARTMENTS_PATH, filters);
+  const prices = useLivePriceInputs(filters.minPrice, filters.maxPrice, replaceFilters);
+  const roomsValue =
+    filters.rooms != null && filters.rooms.length === 1
+      ? String(filters.rooms[0])
+      : filters.rooms != null && filters.rooms.length > 1
+        ? filters.rooms.join(',')
+        : '';
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>): void => {
+    event.preventDefault();
+  };
 
   return (
     <Form
-      method="get"
+      onSubmit={handleSubmit}
       className={cn(
         'sticky top-[4.5rem] z-[var(--z-sticky)] border-b border-header-border bg-canvas',
       )}
@@ -45,9 +66,13 @@ export const BuyApartmentsFilters = ({ filters, cities }: BuyApartmentsFiltersPr
           <Select
             name="city"
             size="fit"
-            defaultValue={filters.city ?? ''}
+            value={filters.city ?? ''}
             className={cn(filterControlClassName, 'min-w-[9.5rem] bg-band-mist/60')}
             aria-label={t('filters.location')}
+            onChange={(event) => {
+              const city = event.target.value.trim();
+              replaceFilters({ city: city.length > 0 ? city : undefined });
+            }}
           >
             <option value="">{t('filters.allCities')}</option>
             {cities.map((city) => (
@@ -62,7 +87,8 @@ export const BuyApartmentsFilters = ({ filters, cities }: BuyApartmentsFiltersPr
           <div className={cn(filterControlClassName, 'flex w-fit shrink-0 items-center gap-2')}>
             <GrowingPriceInput
               name="minPrice"
-              defaultValue={filters.minPrice}
+              value={prices.minPrice}
+              onValueChange={prices.onMinPriceChange}
               placeholder={t('filters.min')}
               aria-label={t('filters.min')}
             />
@@ -71,7 +97,8 @@ export const BuyApartmentsFilters = ({ filters, cities }: BuyApartmentsFiltersPr
             </span>
             <GrowingPriceInput
               name="maxPrice"
-              defaultValue={filters.maxPrice}
+              value={prices.maxPrice}
+              onValueChange={prices.onMaxPriceChange}
               placeholder={t('filters.max')}
               aria-label={t('filters.max')}
             />
@@ -82,15 +109,12 @@ export const BuyApartmentsFilters = ({ filters, cities }: BuyApartmentsFiltersPr
           <Select
             name="rooms"
             size="fit"
-            defaultValue={
-              filters.rooms != null && filters.rooms.length === 1
-                ? String(filters.rooms[0])
-                : filters.rooms != null && filters.rooms.length > 1
-                  ? filters.rooms.join(',')
-                  : ''
-            }
+            value={roomsValue}
             className={cn(filterControlClassName, 'min-w-[5.5rem]')}
             aria-label={t('filters.beds')}
+            onChange={(event) => {
+              replaceFilters({ rooms: parseRoomsFilterValue(event.target.value) });
+            }}
           >
             <option value="">{catalogT('filters.any')}</option>
             <option value="1">1</option>
@@ -109,28 +133,20 @@ export const BuyApartmentsFilters = ({ filters, cities }: BuyApartmentsFiltersPr
           <Select
             name="salesStatus"
             size="fit"
-            defaultValue={filters.salesStatus ?? 'available'}
+            value={filters.salesStatus ?? 'available'}
             className={cn(filterControlClassName, 'min-w-[8.5rem]')}
             aria-label={t('filters.status')}
+            onChange={(event) => {
+              replaceFilters({
+                salesStatus: parseSalesStatusFilter(event.target.value) ?? 'available',
+              });
+            }}
           >
             <option value="available">{catalogT('status.available')}</option>
             <option value="reserved">{catalogT('status.reserved')}</option>
             <option value="sold">{catalogT('status.sold')}</option>
           </Select>
         </FilterField>
-
-        <button
-          type="submit"
-          className={cn(
-            'inline-flex h-9 shrink-0 items-center justify-center rounded-full px-4',
-            'bg-brand-deep text-sm font-semibold leading-5 whitespace-nowrap text-on-dark',
-            'transition-[background-color,color] hover:bg-brand-deep/90',
-            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-deep/30',
-            'lg:ml-auto',
-          )}
-        >
-          {catalogT('filters.apply')}
-        </button>
       </div>
     </Form>
   );
@@ -155,7 +171,8 @@ const FilterField = ({
 
 type GrowingPriceInputProps = {
   name: string;
-  defaultValue: number | null | undefined;
+  value: string;
+  onValueChange: (value: string) => void;
   placeholder: string;
   'aria-label': string;
 };
@@ -165,18 +182,17 @@ type GrowingPriceInputProps = {
  */
 const GrowingPriceInput = ({
   name,
-  defaultValue,
+  value,
+  onValueChange,
   placeholder,
   'aria-label': ariaLabel,
 }: GrowingPriceInputProps) => {
-  const [value, setValue] = useState(defaultValue != null ? String(defaultValue) : '');
-
   const handleChange = (event: ChangeEvent<HTMLInputElement>): void => {
     const next = event.target.value;
     if (!PRICE_DIGITS_ONLY.test(next)) {
       return;
     }
-    setValue(next);
+    onValueChange(next);
   };
 
   const fieldSize = Math.max(

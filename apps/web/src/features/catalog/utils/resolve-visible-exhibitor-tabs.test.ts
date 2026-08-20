@@ -37,4 +37,14 @@ describe('resolveExhibitorFilters', () => {
       page: 1,
     });
   });
+
+  it('keeps the keyword when falling back to another tab', () => {
+    expect(
+      resolveExhibitorFilters({ tab: 'sponsor', page: 3, q: 'Ameria' }, ['bank']),
+    ).toEqual({
+      tab: 'bank',
+      page: 1,
+      q: 'Ameria',
+    });
+  });
 });

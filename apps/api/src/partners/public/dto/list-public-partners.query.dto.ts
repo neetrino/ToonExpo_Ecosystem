@@ -8,8 +8,11 @@ import {
   IsEnum,
   IsInt,
   IsOptional,
+  IsString,
   Max,
+  MaxLength,
   Min,
+  MinLength,
 } from 'class-validator';
 import { PartnerCompanyType } from '@toonexpo/db';
 
@@ -18,6 +21,7 @@ import {
   PARTNERS_DEFAULT_PAGE_SIZE,
   PARTNERS_MAX_PAGE_SIZE,
   PARTNERS_MIN_PAGE,
+  PARTNERS_SEARCH_Q_MAX_LENGTH,
 } from '../../partners.constants.js';
 
 enum PartnerCompanyTypeDto {
@@ -91,6 +95,24 @@ export class ListPublicPartnersQueryDto extends CatalogLocaleQueryDto {
   @IsBoolean()
   @Type(() => Boolean)
   featured?: boolean;
+
+  @ApiPropertyOptional({
+    description: 'Keyword search over partner name, slug, and short description',
+    maxLength: PARTNERS_SEARCH_Q_MAX_LENGTH,
+    example: 'Ameria',
+  })
+  @IsOptional()
+  @IsString()
+  @MinLength(1)
+  @MaxLength(PARTNERS_SEARCH_Q_MAX_LENGTH)
+  @Transform(({ value }: { value: unknown }) => {
+    if (typeof value !== 'string') {
+      return value;
+    }
+    const trimmed = value.trim();
+    return trimmed.length > 0 ? trimmed : undefined;
+  })
+  q?: string;
 }
 
 export class PublicPartnerSlugQueryDto extends CatalogLocaleQueryDto {}

@@ -95,9 +95,12 @@ export const BuyApartmentCard = ({
           <p className="min-h-4 truncate text-xs leading-4 text-header-muted">
             {listing.locationLine}
           </p>
+          <div className="flex min-h-6 flex-1 flex-col justify-center" aria-hidden>
+            <div className="border-t border-header-border" />
+          </div>
           <div
             className={cn(
-              'mt-auto flex flex-wrap items-center gap-4 border-t border-header-border pt-3',
+              'flex flex-wrap items-center gap-4',
               'text-[11px] font-medium tracking-tight text-header-muted uppercase',
             )}
           >

@@ -22,7 +22,7 @@ type UseExhibitorCatalogQueryOptions = {
 };
 
 const isSameFilters = (left: PartnerListFilters, right: PartnerListFilters): boolean =>
-  left.tab === right.tab && left.page === right.page;
+  left.tab === right.tab && left.page === right.page && (left.q ?? '') === (right.q ?? '');
 
 /**
  * Exhibitors tab catalog with cache + background prefetch of sibling tabs.
@@ -45,7 +45,12 @@ export const useExhibitorCatalogQuery = ({
       return;
     }
     queryClient.setQueryData(
-      exhibitorCatalogQueryKey(locale, initialFilters.tab, initialFilters.page),
+      exhibitorCatalogQueryKey(
+        locale,
+        initialFilters.tab,
+        initialFilters.page,
+        initialFilters.q ?? '',
+      ),
       initialCatalog,
     );
   }, [initialCatalog, initialFilters, locale, queryClient]);
@@ -60,7 +65,7 @@ export const useExhibitorCatalogQuery = ({
   }, [locale, queryClient, visibleTabs]);
 
   return useQuery({
-    queryKey: exhibitorCatalogQueryKey(locale, filters.tab, filters.page),
+    queryKey: exhibitorCatalogQueryKey(locale, filters.tab, filters.page, filters.q ?? ''),
     queryFn: () => loadExhibitorCatalog(filters, locale),
     ...(seedInitial ? { initialData: initialCatalog } : {}),
   });

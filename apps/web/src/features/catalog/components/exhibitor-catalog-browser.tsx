@@ -4,6 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 
 import { ExhibitorCatalogSection } from '@/features/catalog/components/exhibitor-catalog-section';
+import { ExhibitorLiveSearch } from '@/features/catalog/components/exhibitor-live-search';
 import { PartnersPageHero } from '@/features/catalog/components/partners-page-hero';
 import {
   isExhibitorBuilderTab,
@@ -15,7 +16,10 @@ import {
 } from '@/features/catalog/hooks/use-exhibitor-catalog-query';
 import { useExhibitorFilters } from '@/features/catalog/hooks/use-exhibitor-filters';
 import type { ExhibitorCatalog } from '@/features/catalog/utils/load-exhibitor-catalog';
-import type { PartnerListFilters } from '@/features/catalog/utils/partner-filters';
+import {
+  toPartnerListFilters,
+  type PartnerListFilters,
+} from '@/features/catalog/utils/partner-filters';
 
 type ExhibitorCatalogBrowserProps = {
   locale: string;
@@ -29,6 +33,19 @@ const catalogTotal = (catalog: ExhibitorCatalog | undefined): number => {
     return 0;
   }
   return catalog.kind === 'builders' ? catalog.builders.length : catalog.response.meta.total;
+};
+
+const resolveEmptyLabel = (
+  showBuilders: boolean,
+  q: string | undefined,
+  t: ReturnType<typeof useTranslations>,
+): string => {
+  if (q) {
+    return showBuilders
+      ? t('buildersPage.search.empty')
+      : t('partnersPage.searchEmpty', { query: q });
+  }
+  return showBuilders ? t('buildersPage.empty') : t('partnersPage.empty');
 };
 
 /**
@@ -67,7 +84,7 @@ export const ExhibitorCatalogBrowser = ({
       <ExhibitorCatalogSection
         activeTab={filters.tab}
         visibleTabs={visibleTabs}
-        emptyLabel={showBuilders ? t('buildersPage.empty') : t('partnersPage.empty')}
+        emptyLabel={resolveEmptyLabel(showBuilders, filters.q, t)}
         builders={catalog?.kind === 'builders' ? catalog.builders : undefined}
         partners={catalog?.kind === 'partners' ? catalog.response.data : undefined}
         page={partnerMeta?.page ?? 1}
@@ -76,11 +93,21 @@ export const ExhibitorCatalogBrowser = ({
         nextLabel={t('pagination.next')}
         paginationAriaLabel={t('pagination.ariaLabel')}
         showPagination={!showBuilders}
+        search={
+          <ExhibitorLiveSearch
+            q={filters.q}
+            label={t('partnersPage.filters.search')}
+            placeholder={t('partnersPage.filters.searchPlaceholder')}
+            onSearch={(q) => applyFilters(toPartnerListFilters(filters.tab, 1, q))}
+          />
+        }
         onSelectTab={(tab) => {
           prefetchExhibitorTab(queryClient, locale, tab);
-          applyFilters({ tab, page: 1 });
+          applyFilters(toPartnerListFilters(tab, 1, filters.q));
         }}
-        onPageChange={(nextPage) => applyFilters({ tab: filters.tab, page: nextPage })}
+        onPageChange={(nextPage) =>
+          applyFilters(toPartnerListFilters(filters.tab, nextPage, filters.q))
+        }
       />
     </>
   );

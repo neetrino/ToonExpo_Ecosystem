@@ -15,13 +15,19 @@ type ProjectRoomsFilterProps = {
   rooms?: number[] | undefined;
   /** Optional height/padding overrides for compact toolbars. */
   controlClassName?: string | undefined;
+  /** Called when the selection changes so the parent can apply live. */
+  onRoomsChange?: ((rooms: number[]) => void) | undefined;
 };
 
 /**
  * Multi-select rooms filter for the public projects list.
- * Empty selection means Any (all room counts). Form submits via hidden `rooms`.
+ * Empty selection means Any (all room counts).
  */
-export const ProjectRoomsFilter = ({ rooms, controlClassName }: ProjectRoomsFilterProps) => {
+export const ProjectRoomsFilter = ({
+  rooms,
+  controlClassName,
+  onRoomsChange,
+}: ProjectRoomsFilterProps) => {
   const t = useTranslations('Catalog');
   const roomsKey = rooms?.join(',') ?? '';
   const [values, setValues] = useState<string[]>(() =>
@@ -54,9 +60,15 @@ export const ProjectRoomsFilter = ({ rooms, controlClassName }: ProjectRoomsFilt
         selectedCountLabel={(count) => t('filters.roomsSelectedCount', { count })}
         aria-label={t('filters.rooms')}
         className={cn(controlClassName, ROOMS_CONTROL_MIN_WIDTH_CLASS)}
-        onChange={setValues}
+        onChange={(next) => {
+          setValues(next);
+          onRoomsChange?.(
+            next
+              .map((item) => Number.parseInt(item, 10))
+              .filter((item) => Number.isFinite(item)),
+          );
+        }}
       />
-      {values.length > 0 ? <input type="hidden" name="rooms" value={values.join(',')} /> : null}
     </div>
   );
 };

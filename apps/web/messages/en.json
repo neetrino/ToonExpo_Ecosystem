@@ -908,6 +908,7 @@
       "title": "Exhibitors",
       "subtitle": "{count, plural, =0 {No exhibitors} one {# exhibitor} other {# exhibitors}}",
       "empty": "No published exhibitors in this category yet.",
+      "searchEmpty": "No exhibitors match “{query}”.",
       "notFoundTitle": "Partner not found",
       "metaFallback": "Partner profile for {name}",
       "meta": {
@@ -931,6 +932,8 @@
         "type": "Partner type",
         "allTypes": "All types",
         "typesSelectedCount": "{count} selected",
+        "search": "Search",
+        "searchPlaceholder": "Search exhibitors…",
         "apply": "Apply filters",
         "reset": "Reset"
       },

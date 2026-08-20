@@ -2,6 +2,11 @@ import type { ApartmentSalesStatus, ListProjectsQuery } from '@toonexpo/contract
 
 export const PROJECT_PAGE_SIZE = 18;
 
+export const CATALOG_PROJECTS_PATH = '/projects';
+export const CATALOG_APARTMENTS_PATH = '/apartments';
+
+export type CatalogListPath = typeof CATALOG_PROJECTS_PATH | typeof CATALOG_APARTMENTS_PATH;
+
 const SALES_STATUSES = new Set<ApartmentSalesStatus>(['available', 'reserved', 'sold']);
 
 export type ProjectFilterParams = {
@@ -15,6 +20,11 @@ export type ProjectFilterParams = {
   builderId?: string;
   /** Free-text keyword (project / builder / city). */
   q?: string;
+};
+
+/** Live-filter patch — `undefined` clears that field. */
+export type ProjectFilterPatch = {
+  [K in keyof ProjectFilterParams]?: ProjectFilterParams[K] | undefined;
 };
 
 const toPositiveInt = (value: string | undefined): number | undefined => {
@@ -31,6 +41,21 @@ const toNonNegativeNumber = (value: string | undefined): number | undefined => {
   }
   const parsed = Number(value);
   return Number.isFinite(parsed) && parsed >= 0 ? parsed : undefined;
+};
+
+/**
+ * Parses a shareable rooms query value (`"2"` / `"1,3,4"`).
+ */
+export const parseRoomsFilterValue = (value: string | undefined): number[] | undefined =>
+  toPositiveIntList(value);
+
+/**
+ * Parses a sales-status query value; unknown values are ignored.
+ */
+export const parseSalesStatusFilter = (value: string): ApartmentSalesStatus | undefined => {
+  return SALES_STATUSES.has(value as ApartmentSalesStatus)
+    ? (value as ApartmentSalesStatus)
+    : undefined;
 };
 
 const toPositiveIntList = (value: string | undefined): number[] | undefined => {
@@ -68,18 +93,14 @@ export const parseProjectFilters = (
 
   const page = toPositiveInt(read('page')) ?? 1;
   const pageSize = toPositiveInt(read('pageSize')) ?? PROJECT_PAGE_SIZE;
-  const salesStatusRaw = read('salesStatus');
-  const salesStatus =
-    salesStatusRaw && SALES_STATUSES.has(salesStatusRaw as ApartmentSalesStatus)
-      ? (salesStatusRaw as ApartmentSalesStatus)
-      : undefined;
+  const salesStatus = parseSalesStatusFilter(read('salesStatus') ?? '');
 
   const city = read('city')?.trim() || undefined;
   const builderId = read('builderId')?.trim() || undefined;
   const q = read('q')?.trim() || undefined;
   const minPrice = toNonNegativeNumber(read('minPrice'));
   const maxPrice = toNonNegativeNumber(read('maxPrice'));
-  const rooms = toPositiveIntList(readList('rooms'));
+  const rooms = parseRoomsFilterValue(readList('rooms'));
 
   const filters: ProjectFilterParams = {
     page,
@@ -167,4 +188,55 @@ export const buildProjectSearchParams = (
   }
 
   return params;
+};
+
+const OPTIONAL_FILTER_KEYS = [
+  'salesStatus',
+  'minPrice',
+  'maxPrice',
+  'rooms',
+  'city',
+  'builderId',
+  'q',
+] as const;
+
+const assignOptionalFilter = <K extends (typeof OPTIONAL_FILTER_KEYS)[number]>(
+  target: ProjectFilterParams,
+  key: K,
+  value: ProjectFilterParams[K] | undefined,
+): void => {
+  if (value !== undefined) {
+    target[key] = value;
+  }
+};
+
+/**
+ * Merges a live-filter patch; `undefined` values clear the field. Always page 1.
+ */
+export const mergeLiveCatalogFilters = (
+  current: ProjectFilterParams,
+  patch: ProjectFilterPatch,
+): ProjectFilterParams => {
+  const source: ProjectFilterPatch = { ...current, ...patch };
+  const next: ProjectFilterParams = {
+    page: 1,
+    pageSize: current.pageSize,
+  };
+
+  for (const key of OPTIONAL_FILTER_KEYS) {
+    assignOptionalFilter(next, key, source[key]);
+  }
+
+  return next;
+};
+
+/**
+ * Shareable list URL for live catalog filters (always resets to page 1).
+ */
+export const buildCatalogFilterHref = (
+  pathname: CatalogListPath,
+  filters: ProjectFilterParams,
+): string => {
+  const query = new URLSearchParams(buildProjectSearchParams({ ...filters, page: 1 })).toString();
+  return query.length > 0 ? `${pathname}?${query}` : pathname;
 };

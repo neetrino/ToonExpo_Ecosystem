@@ -908,6 +908,7 @@
       "title": "Экспоненты",
       "subtitle": "{count, plural, =0 {Нет экспонентов} one {# экспонент} few {# экспонента} many {# экспонентов} other {# экспонента}}",
       "empty": "В этой категории пока нет опубликованных экспонентов.",
+      "searchEmpty": "По запросу «{query}» экспоненты не найдены.",
       "notFoundTitle": "Партнёр не найден",
       "metaFallback": "Профиль {name}",
       "meta": {
@@ -931,6 +932,8 @@
         "type": "Тип партнёра",
         "allTypes": "Все типы",
         "typesSelectedCount": "{count} выбрано",
+        "search": "Поиск",
+        "searchPlaceholder": "Искать экспонентов…",
         "apply": "Применить",
         "reset": "Сбросить"
       },
