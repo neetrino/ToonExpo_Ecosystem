@@ -8,6 +8,7 @@ import type {
   BankOfferFormInput,
   BankOfferFormValues,
 } from "@/features/admin/schemas/bank-offer.schema";
+import { toCatalogPublicationStatus } from "@/features/catalog/utils/catalog-publication-status";
 
 export const toCreateBankOfferBody = (
   values: BankOfferFormValues,
@@ -71,5 +72,5 @@ export const toBankOfferFormValues = (
   calculationNotes: offer.calculationNotes ?? "",
   featured: offer.featured,
   sortOrder: offer.sortOrder,
-  publicationStatus: offer.publicationStatus,
+  publicationStatus: toCatalogPublicationStatus(offer.publicationStatus),
 });

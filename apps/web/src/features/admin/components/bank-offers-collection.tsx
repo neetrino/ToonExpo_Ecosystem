@@ -1,10 +1,11 @@
 'use client';
 
-import type { BankOfferListItem, PublicationStatus } from '@toonexpo/contracts';
+import type { BankOfferListItem } from '@toonexpo/contracts';
 import { CheckCircle2, CircleDashed, Landmark, SquarePen, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 
+import { toCatalogPublicationStatus } from '@/features/catalog/utils/catalog-publication-status';
 import { FeaturedBadge, PublicationStatusBadge } from '@/features/partners/components/partner-badges';
 import { ReadinessProgressRing } from '@/features/readiness/components/readiness-progress-ring';
 import {
@@ -30,10 +31,9 @@ type BankOffersCollectionProps = {
   onDelete: (offer: BankOfferListItem) => void;
 };
 
-const STATUS_BADGE_CLASS: Record<PublicationStatus, string> = {
+const STATUS_BADGE_CLASS: Record<'published' | 'draft', string> = {
   published: 'bg-success-soft text-success',
   draft: 'bg-surface text-ink-muted',
-  archived: 'bg-warning-soft text-warning',
 };
 
 type BankOfferStatProps = {
@@ -84,7 +84,8 @@ type BankOfferCardProps = {
  */
 const BankOfferCard = ({ offer, onEdit }: BankOfferCardProps) => {
   const t = useTranslations('Admin.bankOffers');
-  const StatusIcon = offer.publicationStatus === 'published' ? CheckCircle2 : CircleDashed;
+  const catalogStatus = toCatalogPublicationStatus(offer.publicationStatus);
+  const StatusIcon = catalogStatus === 'published' ? CheckCircle2 : CircleDashed;
   const bankName = offer.partnerCompanyName?.trim() || '—';
   const logoUrl = offer.partnerCompanyLogoUrl;
 
@@ -137,11 +138,11 @@ const BankOfferCard = ({ offer, onEdit }: BankOfferCardProps) => {
             <span
               className={cn(
                 'inline-flex items-center gap-1 rounded-pill px-2 py-0.5 text-xs font-medium',
-                STATUS_BADGE_CLASS[offer.publicationStatus],
+                STATUS_BADGE_CLASS[catalogStatus],
               )}
             >
               <StatusIcon className="size-3.5" aria-hidden />
-              {t(`form.publicationStatuses.${offer.publicationStatus}`)}
+              {t(`form.publicationStatuses.${catalogStatus}`)}
             </span>
             <FeaturedBadge featured={offer.featured} />
           </div>

@@ -14,7 +14,7 @@ export const PORTAL_MAX_PAGE_SIZE = 50;
 /** Kanban board fetch size (mirrors API CRM_BOARD_PAGE_SIZE). */
 export const PORTAL_CRM_BOARD_PAGE_SIZE = 100;
 
-export const PUBLICATION_STATUSES = ['draft', 'published', 'archived'] as const;
+export const PUBLICATION_STATUSES = ['draft', 'published'] as const;
 
 export const APARTMENT_SALES_STATUSES = ['available', 'reserved', 'sold'] as const;
 

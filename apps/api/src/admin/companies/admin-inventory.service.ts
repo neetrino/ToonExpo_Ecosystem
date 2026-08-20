@@ -347,6 +347,7 @@ export class AdminInventoryService {
             number: true,
             name: true,
             displayLabel: true,
+            publicationStatus: true,
             floorplanMediaId: true,
             floorplanMedia: {
               select: {
@@ -383,6 +384,7 @@ export class AdminInventoryService {
         number: floor.number,
         name: floor.name,
         displayLabel: floor.displayLabel,
+        publicationStatus: floor.publicationStatus,
         floorplanMediaId: floor.floorplanMediaId,
         floorplan: floor.floorplanMedia
           ? {

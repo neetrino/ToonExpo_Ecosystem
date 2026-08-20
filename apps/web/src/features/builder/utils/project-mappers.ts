@@ -38,7 +38,7 @@ const buildLocaleMap = (
  * Builds translation payload from form locale fields.
  */
 export const buildProjectTranslations = (
-  values: CreateProjectFormValues,
+  values: Omit<CreateProjectFormValues, "verified">,
 ): PortalTranslationsInput | undefined => {
   const translations: PortalTranslationsInput = {};
   const name = buildLocaleMap(values.nameHy, values.nameRu, values.nameEn);

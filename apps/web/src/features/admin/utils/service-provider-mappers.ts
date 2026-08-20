@@ -5,6 +5,7 @@ import type {
 } from "@toonexpo/contracts";
 
 import type { ServiceProviderFormValues } from "@/features/admin/schemas/service-provider.schema";
+import { toCatalogPublicationStatus } from "@/features/catalog/utils/catalog-publication-status";
 import { sanitizePhoneInput, toOptionalPhone } from "@/shared/lib/phone";
 
 const buildSocialLinks = (
@@ -110,6 +111,8 @@ export const toServiceProviderFormValues = (
   socialLinkedin: provider.socialLinks?.["linkedin"] ?? "",
   internalNotes: provider.internalNotes ?? "",
   active: provider.active,
-  publicationStatus: provider.publicationStatus ?? undefined,
+  publicationStatus: provider.publicationStatus
+    ? toCatalogPublicationStatus(provider.publicationStatus)
+    : undefined,
   categoryIds: provider.categories.map((category) => category.id),
 });

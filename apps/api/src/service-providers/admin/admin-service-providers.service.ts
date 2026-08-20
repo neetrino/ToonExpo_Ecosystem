@@ -29,7 +29,7 @@ export class AdminServiceProvidersService {
     const providers = await this.prisma.db.serviceProvider.findMany({
       where,
       include: providerInclude,
-      orderBy: [{ active: "desc" }, { name: "asc" }],
+      orderBy: [{ createdAt: 'desc' }],
     });
 
     return { data: providers.map(toAdminServiceProviderItem) };

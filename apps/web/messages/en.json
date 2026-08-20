@@ -2001,6 +2001,11 @@
         "apartmentsError": "Could not load apartments. Try again.",
         "noApartments": "No apartments on this floor yet.",
         "apartmentUnit": "Apt {number}",
+        "deleteBuildingTitle": "Delete building",
+        "deleteBuildingConfirm": "Delete this draft building? Floors and apartments in it will be removed. This cannot be undone.",
+        "deleteFloorTitle": "Delete floor",
+        "deleteFloorConfirm": "Delete this draft floor? Apartments on it will be removed. This cannot be undone.",
+        "deleteError": "Could not delete. Try again.",
         "sales": {
           "available": "Available",
           "reserved": "Reserved",

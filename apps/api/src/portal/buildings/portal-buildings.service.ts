@@ -131,14 +131,12 @@ export class PortalBuildingsService {
         id: buildingId,
         project: { builderCompanyId: companyId },
       },
-      select: { id: true, publicationStatus: true },
+      select: { id: true, projectId: true },
     });
     if (!building) {
       throw entityNotFound('Building');
     }
-    if (building.publicationStatus !== PublicationStatus.draft) {
-      throw new BadRequestException('Only draft buildings can be deleted');
-    }
     await this.prisma.db.building.delete({ where: { id: buildingId } });
+    this.webRevalidation.revalidateCatalog(building.projectId);
   }
 }

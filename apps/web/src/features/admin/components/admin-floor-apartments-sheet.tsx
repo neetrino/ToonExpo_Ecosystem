@@ -1,15 +1,20 @@
 'use client';
 
-import type { ApartmentSalesStatus, MediaAssetSummary } from '@toonexpo/contracts';
+import type { ApartmentSalesStatus, MediaAssetSummary, PublicationStatus } from '@toonexpo/contracts';
 import { useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 import { AdminFloorAddApartmentsSheet } from '@/features/admin/components/admin-floor-add-apartments-sheet';
+import { AdminInventorySheetDelete } from '@/features/admin/components/admin-inventory-sheet-delete';
 import { FloorPlanGlanceIcon } from '@/features/admin/components/floor-plan-glance-icon';
 import { FloorPlanLightbox } from '@/features/admin/components/floor-plan-lightbox';
-import { useAdminFloorApartmentsQuery } from '@/features/admin/hooks/use-admin-inventory';
+import {
+  useAdminDeleteFloorMutation,
+  useAdminFloorApartmentsQuery,
+} from '@/features/admin/hooks/use-admin-inventory';
 import { catalogApartmentDetailHref } from '@/features/builder/catalog-scope';
+import { toCatalogPublicationStatus } from '@/features/catalog/utils/catalog-publication-status';
 import { PublicationStatusBadge } from '@/features/partners/components/partner-badges';
 import { Link, usePathname } from '@/i18n/navigation';
 import { AddActionLabel } from '@/shared/ui/add-action-label';
@@ -24,6 +29,7 @@ type AdminFloorApartmentsSheetProps = {
   buildingId: string;
   floorId: string;
   floorLabel: string;
+  publicationStatus: PublicationStatus;
   floorplan: MediaAssetSummary | null;
   onClose: () => void;
   /** Nested under building sheet = 1; standalone from floors hub = 0. */
@@ -39,6 +45,7 @@ export const AdminFloorApartmentsSheet = ({
   buildingId,
   floorId,
   floorLabel,
+  publicationStatus,
   floorplan,
   onClose,
   stackLevel = 1,
@@ -51,6 +58,11 @@ export const AdminFloorApartmentsSheet = ({
   const apartments = query.data ?? [];
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const deleteMutation = useAdminDeleteFloorMutation();
+  const canDelete = toCatalogPublicationStatus(publicationStatus) === 'draft';
+  const deleting = deleteMutation.isPending;
 
   const returnTo = (() => {
     const queryString = searchParams.toString();
@@ -61,8 +73,23 @@ export const AdminFloorApartmentsSheet = ({
     if (!open) {
       setAddOpen(false);
       setLightboxOpen(false);
+      setConfirmDelete(false);
+      setDeleteError(null);
     }
   }, [open]);
+
+  const runDelete = (): void => {
+    setDeleteError(null);
+    void deleteMutation
+      .mutateAsync({ companyId, buildingId, floorId })
+      .then(() => {
+        setConfirmDelete(false);
+        onClose();
+      })
+      .catch(() => {
+        setDeleteError(t('deleteError'));
+      });
+  };
 
   return (
     <>
@@ -73,20 +100,46 @@ export const AdminFloorApartmentsSheet = ({
         description={t('floorSheetSubtitle')}
         size="comfortable"
         stackLevel={stackLevel}
+        escapeEnabled={!confirmDelete}
         headerActions={
-          <Button
-            type="button"
-            size="sm"
-            variant="secondary"
-            onClick={() => {
-              setAddOpen(true);
-            }}
-          >
-            <AddActionLabel>{createT('cta')}</AddActionLabel>
-          </Button>
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            <Button
+              type="button"
+              size="sm"
+              variant="secondary"
+              onClick={() => {
+                setAddOpen(true);
+              }}
+            >
+              <AddActionLabel>{createT('cta')}</AddActionLabel>
+            </Button>
+            {canDelete ? (
+              <AdminInventorySheetDelete
+                confirmTitle={t('deleteFloorTitle')}
+                confirmMessage={t('deleteFloorConfirm')}
+                open={confirmDelete}
+                busy={deleting}
+                onOpen={() => {
+                  setDeleteError(null);
+                  setConfirmDelete(true);
+                }}
+                onCancel={() => {
+                  if (!deleting) {
+                    setConfirmDelete(false);
+                  }
+                }}
+                onConfirm={runDelete}
+              />
+            ) : null}
+          </div>
         }
       >
         <div className="flex flex-col gap-6">
+          {deleteError ? (
+            <p role="alert" className="text-sm text-danger">
+              {deleteError}
+            </p>
+          ) : null}
           <div className="flex items-center justify-between gap-3">
             <div className="flex min-w-0 items-center gap-3">
               {floorplan ? (

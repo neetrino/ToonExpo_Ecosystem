@@ -1,6 +1,6 @@
 'use client';
 
-import type { PortalProjectListItem, PublicationStatus } from '@toonexpo/contracts';
+import type { PortalProjectListItem } from '@toonexpo/contracts';
 import { Building, CheckCircle2, CircleDashed, Home, MapPin, QrCode } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { catalogProjectDetailHref } from '@/features/builder/catalog-scope';
 import { useCatalogScope } from '@/features/builder/catalog-scope-context';
 import { ProjectQrDialog } from '@/features/builder/components/project-qr-dialog';
+import { toCatalogPublicationStatus } from '@/features/catalog/utils/catalog-publication-status';
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
 import { IconButton } from '@/shared/ui/icon-button';
@@ -16,10 +17,9 @@ type BuilderProjectCardProps = {
   project: PortalProjectListItem;
 };
 
-const STATUS_BADGE_CLASS: Record<PublicationStatus, string> = {
+const STATUS_BADGE_CLASS: Record<'published' | 'draft', string> = {
   published: 'bg-success-soft text-success',
   draft: 'bg-surface text-ink-muted',
-  archived: 'bg-warning-soft text-warning',
 };
 
 /**
@@ -29,7 +29,8 @@ export const BuilderProjectCard = ({ project }: BuilderProjectCardProps) => {
   const t = useTranslations('Builder.projects');
   const tQr = useTranslations('Builder.projects.qr');
   const scope = useCatalogScope();
-  const StatusIcon = project.publicationStatus === 'published' ? CheckCircle2 : CircleDashed;
+  const catalogStatus = toCatalogPublicationStatus(project.publicationStatus);
+  const StatusIcon = catalogStatus === 'published' ? CheckCircle2 : CircleDashed;
   const [qrOpen, setQrOpen] = useState(false);
 
   return (
@@ -59,11 +60,11 @@ export const BuilderProjectCard = ({ project }: BuilderProjectCardProps) => {
             <span
               className={cn(
                 'inline-flex items-center gap-1.5 rounded-pill px-2.5 py-1 text-xs font-medium',
-                STATUS_BADGE_CLASS[project.publicationStatus],
+                STATUS_BADGE_CLASS[catalogStatus],
               )}
             >
               <StatusIcon className="size-3.5" aria-hidden />
-              {t(`publication.${project.publicationStatus}`)}
+              {t(`publication.${catalogStatus}`)}
             </span>
             <IconButton
               label={tQr('open')}

@@ -5,18 +5,17 @@ import { CircleDashed, Globe } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useState } from 'react';
 
+import {
+  toCatalogPublicationStatus,
+  type CatalogPublicationStatus,
+} from '@/features/catalog/utils/catalog-publication-status';
 import { SegmentedSwitcher } from '@/shared/ui/segmented-switcher';
-
-type CatalogPublicationStatus = Extract<PublicationStatus, 'draft' | 'published'>;
 
 type PublicationStatusSwitcherProps = {
   value: PublicationStatus;
   disabled?: boolean | undefined;
   onChange: (status: CatalogPublicationStatus) => void;
 };
-
-const toCatalogStatus = (value: PublicationStatus): CatalogPublicationStatus =>
-  value === 'published' ? 'published' : 'draft';
 
 /**
  * Draft / Published pill switcher for catalog inventory.
@@ -28,7 +27,7 @@ export const PublicationStatusSwitcher = ({
 }: PublicationStatusSwitcherProps) => {
   const t = useTranslations('Builder.inventory');
   const tLabel = useTranslations('Common.publicationStatus');
-  const selected = toCatalogStatus(value);
+  const selected = toCatalogPublicationStatus(value);
   const [display, setDisplay] = useState(selected);
 
   useEffect(() => {

@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { catalogProjectsListHref } from '@/features/builder/catalog-scope';
 import { useCatalogScope } from '@/features/builder/catalog-scope-context';
 import { InventoryStatusControls } from '@/features/builder/components/inventory-status-controls';
+import { toCatalogPublicationStatus } from '@/features/catalog/utils/catalog-publication-status';
 import { useIsCompanyAdmin } from '@/features/builder/hooks/use-company-profile';
 import {
   useDeletePortalProjectMutation,
@@ -94,7 +95,7 @@ export const ProjectPublicationActions = ({ project }: ProjectPublicationActions
             void changeVerified(verified);
           }}
         />
-        {project.publicationStatus === 'draft' ? (
+        {toCatalogPublicationStatus(project.publicationStatus) === 'draft' ? (
           <Button
             type="button"
             size="sm"

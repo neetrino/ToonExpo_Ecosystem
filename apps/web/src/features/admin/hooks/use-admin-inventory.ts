@@ -21,6 +21,7 @@ import {
   ADMIN_APARTMENTS_QUERY_KEY,
   ADMIN_BUILDINGS_QUERY_KEY,
   ADMIN_FLOORS_QUERY_KEY,
+  ADMIN_PROJECTS_QUERY_KEY,
   adminApartmentsQueryKey,
   adminBuildingInventoryGlanceQueryKey,
   adminBuildingsQueryKey,
@@ -32,10 +33,12 @@ import {
 } from '@/features/builder/api/portal-apartments-api';
 import {
   createPortalBuilding,
+  deletePortalBuilding,
   updatePortalBuilding,
 } from '@/features/builder/api/portal-buildings-api';
 import {
   createPortalFloor,
+  deletePortalFloor,
   listPortalFloors,
   updatePortalFloor,
 } from '@/features/builder/api/portal-floors-api';
@@ -158,6 +161,7 @@ const invalidateAdminInventory = (queryClient: ReturnType<typeof useQueryClient>
   void queryClient.invalidateQueries({ queryKey: ADMIN_BUILDINGS_QUERY_KEY });
   void queryClient.invalidateQueries({ queryKey: ADMIN_FLOORS_QUERY_KEY });
   void queryClient.invalidateQueries({ queryKey: ADMIN_APARTMENTS_QUERY_KEY });
+  void queryClient.invalidateQueries({ queryKey: ADMIN_PROJECTS_QUERY_KEY });
 };
 
 /**
@@ -295,6 +299,39 @@ export const useSetAdminApartmentFeaturedOnHomeMutation = () => {
       setAdminApartmentFeaturedOnHome(input.apartmentId, input.featuredOnHome),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: ADMIN_APARTMENTS_QUERY_KEY });
+    },
+  });
+};
+
+/**
+ * Deletes a draft building (admin catalog).
+ */
+export const useAdminDeleteBuildingMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (input: { companyId: string; buildingId: string }) =>
+      deletePortalBuilding(input.buildingId, { scope: adminCatalogScope(input.companyId) }),
+    onSuccess: () => {
+      invalidateAdminInventory(queryClient);
+    },
+  });
+};
+
+/**
+ * Deletes a draft floor (admin catalog).
+ */
+export const useAdminDeleteFloorMutation = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (input: { companyId: string; buildingId: string; floorId: string }) =>
+      deletePortalFloor(input.floorId, { scope: adminCatalogScope(input.companyId) }),
+    onSuccess: (_result, input) => {
+      invalidateAdminInventory(queryClient);
+      void queryClient.invalidateQueries({
+        queryKey: adminBuildingInventoryGlanceQueryKey(input.buildingId),
+      });
     },
   });
 };

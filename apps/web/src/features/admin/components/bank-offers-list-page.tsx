@@ -7,6 +7,7 @@ import { useMemo, useState } from 'react';
 
 import { BankOffersCollection } from '@/features/admin/components/bank-offers-collection';
 import { BankOfferForm } from '@/features/admin/components/bank-offer-form';
+import { toCatalogPublicationStatus } from '@/features/catalog/utils/catalog-publication-status';
 import {
   useAdminBankOffersQuery,
   useCreateBankOfferMutation,
@@ -80,7 +81,9 @@ export const BankOffersListPage = () => {
     if (!publicationFilter) {
       return bySearch;
     }
-    return bySearch.filter((offer) => offer.publicationStatus === publicationFilter);
+    return bySearch.filter(
+      (offer) => toCatalogPublicationStatus(offer.publicationStatus) === publicationFilter,
+    );
   }, [offersQuery.data, publicationFilter, search]);
 
   const filterConfigs = useMemo(
@@ -101,7 +104,6 @@ export const BankOffersListPage = () => {
         options: [
           { value: 'draft', label: t('filters.draft') },
           { value: 'published', label: t('filters.published') },
-          { value: 'archived', label: t('filters.archived') },
         ],
       },
     ],

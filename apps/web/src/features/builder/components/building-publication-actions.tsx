@@ -6,6 +6,7 @@ import { useState } from 'react';
 
 import { useCatalogScope } from '@/features/builder/catalog-scope-context';
 import { PublicationStatusSwitcher } from '@/features/builder/components/publication-status-switcher';
+import { toCatalogPublicationStatus } from '@/features/catalog/utils/catalog-publication-status';
 import { useIsCompanyAdmin } from '@/features/builder/hooks/use-company-profile';
 import { useUpdateBuildingPublicationMutation } from '@/features/builder/hooks/use-portal-inventory';
 import { useSuccessToast } from '@/shared/ui/use-success-toast';
@@ -42,7 +43,9 @@ export const BuildingPublicationActions = ({
 
   if (!canManage) {
     return (
-      <span className="text-xs text-ink-muted">{t(`publication.${building.publicationStatus}`)}</span>
+      <span className="text-xs text-ink-muted">
+        {t(`publication.${toCatalogPublicationStatus(building.publicationStatus)}`)}
+      </span>
     );
   }
 
