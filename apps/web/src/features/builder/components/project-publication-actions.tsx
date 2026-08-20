@@ -7,17 +7,17 @@ import { useState } from 'react';
 
 import { catalogProjectsListHref } from '@/features/builder/catalog-scope';
 import { useCatalogScope } from '@/features/builder/catalog-scope-context';
+import { CatalogDraftDeleteButton } from '@/features/builder/components/catalog-draft-delete-button';
 import { InventoryStatusControls } from '@/features/builder/components/inventory-status-controls';
-import { toCatalogPublicationStatus } from '@/features/catalog/utils/catalog-publication-status';
 import { useIsCompanyAdmin } from '@/features/builder/hooks/use-company-profile';
 import {
   useDeletePortalProjectMutation,
   useUpdatePortalProjectMutation,
   useUpdateProjectPublicationMutation,
 } from '@/features/builder/hooks/use-portal-projects';
+import { toCatalogPublicationStatus } from '@/features/catalog/utils/catalog-publication-status';
 import { useRouter } from '@/i18n/navigation';
 import { AdminDeleteModal } from '@/shared/ui/admin-delete-modal';
-import { Button } from '@/shared/ui/button';
 import { useSuccessToast } from '@/shared/ui/use-success-toast';
 
 type ProjectPublicationActionsProps = {
@@ -96,18 +96,14 @@ export const ProjectPublicationActions = ({ project }: ProjectPublicationActions
           }}
         />
         {toCatalogPublicationStatus(project.publicationStatus) === 'draft' ? (
-          <Button
-            type="button"
-            size="sm"
-            variant="danger"
+          <CatalogDraftDeleteButton
+            label={t('detail.delete')}
+            iconOnly={scope.mode === 'admin'}
             disabled={busy}
             onClick={() => {
               setConfirmDelete(true);
             }}
-          >
-            <Trash2 className="size-3.5 shrink-0" strokeWidth={2} aria-hidden />
-            {t('detail.delete')}
-          </Button>
+          />
         ) : null}
       </div>
       {error ? (

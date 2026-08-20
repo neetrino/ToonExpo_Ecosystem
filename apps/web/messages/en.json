@@ -3819,6 +3819,9 @@
       "detail": {
         "publish": "Publish",
         "unpublish": "Unpublish",
+        "delete": "Delete",
+        "deleteConfirm": "Delete this draft apartment? This cannot be undone.",
+        "deleteConfirmTitle": "Delete apartment",
         "publicationSuccess": "Publication updated"
       },
       "errors": {
