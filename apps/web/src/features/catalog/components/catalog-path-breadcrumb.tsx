@@ -1,0 +1,162 @@
+import { Link } from '@/i18n/navigation';
+import { cn } from '@/shared/ui/cn';
+
+export type CatalogPathLevel = 'building' | 'floor' | 'apartment';
+
+type PathRef = {
+  id: string;
+  name: string;
+};
+
+type FloorPathRef = {
+  id: string;
+  label: string;
+};
+
+type ApartmentPathRef = {
+  id: string;
+  label: string;
+};
+
+type BreadcrumbItem = {
+  id: string;
+  label: string;
+  href?: string;
+};
+
+type CatalogPathBreadcrumbProps = {
+  ariaLabel: string;
+  /** Geographic district when set on the project. */
+  district: string | null;
+  project: PathRef;
+  building: PathRef;
+  floor?: FloorPathRef;
+  /** Current apartment, or a deeper shortcut from building/floor pages. */
+  apartment?: ApartmentPathRef;
+  /** Current page — that segment is not a link. */
+  current: CatalogPathLevel;
+  className?: string;
+};
+
+/**
+ * Shared catalog hierarchy path (district → project → building → floor → apartment).
+ * The `current` segment is plain text; ancestors and deeper shortcuts remain clickable.
+ */
+export const CatalogPathBreadcrumb = ({
+  ariaLabel,
+  district,
+  project,
+  building,
+  floor,
+  apartment,
+  current,
+  className,
+}: CatalogPathBreadcrumbProps) => {
+  const items = buildCatalogPathItems({
+    district,
+    project,
+    building,
+    floor,
+    apartment,
+    current,
+  });
+
+  return (
+    <nav className={cn('mb-6 text-sm', className)} aria-label={ariaLabel}>
+      <ol className="flex flex-wrap items-baseline gap-x-1.5 gap-y-1">
+        {items.map((item, index) => {
+          const isCurrent = item.id === current;
+          return (
+            <li key={item.id} className="inline-flex min-w-0 items-baseline gap-x-1.5">
+              {index > 0 ? (
+                <span className="shrink-0 text-accent/70" aria-hidden>
+                  /
+                </span>
+              ) : null}
+              {item.href && !isCurrent ? (
+                <Link
+                  href={item.href}
+                  className={cn(
+                    'truncate italic text-accent transition-colors',
+                    'hover:text-accent/80 hover:underline',
+                  )}
+                >
+                  {item.label}
+                </Link>
+              ) : (
+                <span
+                  className={cn(
+                    'truncate font-semibold text-ink-navy',
+                    !isCurrent && 'italic font-normal text-accent',
+                  )}
+                  aria-current={isCurrent ? 'page' : undefined}
+                >
+                  {item.label}
+                </span>
+              )}
+            </li>
+          );
+        })}
+      </ol>
+    </nav>
+  );
+};
+
+const buildCatalogPathItems = ({
+  district,
+  project,
+  building,
+  floor,
+  apartment,
+  current,
+}: {
+  district: string | null;
+  project: PathRef;
+  building: PathRef;
+  floor?: FloorPathRef;
+  apartment?: ApartmentPathRef;
+  current: CatalogPathLevel;
+}): BreadcrumbItem[] => {
+  const districtLabel = district?.trim() || null;
+  const items: BreadcrumbItem[] = [];
+
+  if (districtLabel) {
+    items.push({
+      id: 'district',
+      label: districtLabel,
+      href: `/projects?q=${encodeURIComponent(districtLabel)}`,
+    });
+  }
+
+  items.push({
+    id: 'project',
+    label: project.name,
+    href: `/projects/${project.id}`,
+  });
+
+  const buildingHref = `/projects/${project.id}/buildings/${building.id}`;
+  items.push({
+    id: 'building',
+    label: building.name,
+    href: current === 'building' ? undefined : buildingHref,
+  });
+
+  if (floor) {
+    const floorHref = `${buildingHref}/floors/${floor.id}`;
+    items.push({
+      id: 'floor',
+      label: floor.label,
+      href: current === 'floor' ? undefined : floorHref,
+    });
+  }
+
+  if (apartment) {
+    items.push({
+      id: 'apartment',
+      label: apartment.label,
+      href: current === 'apartment' ? undefined : `/apartments/${apartment.id}`,
+    });
+  }
+
+  return items;
+};

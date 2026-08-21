@@ -794,6 +794,8 @@
       "breadcrumb": "Навигация",
       "breadcrumbHome": "Главная",
       "breadcrumbSearch": "Поиск",
+      "breadcrumbBuilding": "Building {name}",
+      "breadcrumbFloor": "Floor {number}",
       "inquireTitle": "Запрос по этому дому",
       "inquireSubtitle": "Мы свяжем вас с застройщиком.",
       "inquireAgentRole": "Партнёр ToonExpo",

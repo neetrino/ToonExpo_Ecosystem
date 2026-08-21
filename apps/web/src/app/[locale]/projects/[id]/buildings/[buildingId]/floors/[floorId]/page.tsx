@@ -4,14 +4,14 @@ import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { cache } from 'react';
 
+import { getFloor, getProject } from '@/features/catalog/api/catalog-api';
 import { FloorApartmentsList } from '@/features/catalog/components/building-floor-lists';
+import { CatalogPathBreadcrumb } from '@/features/catalog/components/catalog-path-breadcrumb';
 import { ProjectPricesOverlayScope } from '@/features/catalog/components/price-overlay-scope';
-import { getFloor } from '@/features/catalog/api/catalog-api';
 import { SiteFooter } from '@/features/catalog/components/site-footer';
 import { listFloorVisualCanvases } from '@/features/visual-map/api/public-visual-map-api';
 import { PublicVisualMap } from '@/features/visual-map/components/public-visual-map';
 import { pickPrimaryVisualCanvas } from '@/features/visual-map/utils/public-visual-map';
-import { BackLink } from '@/shared/ui/back-link';
 
 type FloorPageProps = {
   params: Promise<{
@@ -52,18 +52,34 @@ export default async function FloorPage({ params }: FloorPageProps) {
   }
 
   const t = await getTranslations('Catalog');
+  const project = await getProject(floor.project.id, { locale });
+  const district = project?.district ?? null;
   const visualResponse = await listFloorVisualCanvases(floorId);
   const visualCanvas = pickPrimaryVisualCanvas(visualResponse?.data ?? []);
-  const floorLabel = floor.displayLabel ?? t('project.floor', { number: floor.number });
+  const floorLabel =
+    floor.displayLabel?.trim() || t('project.floor', { number: floor.number });
+  const firstApartment = floor.apartments[0];
+  const apartmentShortcut = firstApartment
+    ? {
+        id: firstApartment.id,
+        label: t('apartment.unit', { number: firstApartment.number }),
+      }
+    : undefined;
 
   return (
     <div className="min-h-screen bg-canvas">
       <main className="page-container section-pad">
+        <CatalogPathBreadcrumb
+          ariaLabel={t('apartment.breadcrumb')}
+          district={district}
+          project={floor.project}
+          building={floor.building}
+          floor={{ id: floor.id, label: floorLabel }}
+          apartment={apartmentShortcut}
+          current="floor"
+        />
+
         <div className="mb-6 flex flex-col gap-2">
-          <BackLink
-            href={`/projects/${floor.project.id}/buildings/${floor.building.id}`}
-            label={t('floor.backToBuilding')}
-          />
           <h1 className="text-page-title text-ink">{floorLabel}</h1>
           <p className="text-sm text-ink-secondary">
             {floor.building.name} · {floor.project.name}

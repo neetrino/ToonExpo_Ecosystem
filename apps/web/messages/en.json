@@ -794,6 +794,8 @@
       "breadcrumb": "Breadcrumb",
       "breadcrumbHome": "Home",
       "breadcrumbSearch": "Search",
+      "breadcrumbBuilding": "Building {name}",
+      "breadcrumbFloor": "Floor {number}",
       "inquireTitle": "Inquire about this home",
       "inquireSubtitle": "We'll connect you with the builder.",
       "inquireAgentRole": "ToonExpo listing partner",

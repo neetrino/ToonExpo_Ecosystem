@@ -794,6 +794,8 @@
       "breadcrumb": "Նավիգացիա",
       "breadcrumbHome": "Գլխավոր",
       "breadcrumbSearch": "Որոնում",
+      "breadcrumbBuilding": "Building {name}",
+      "breadcrumbFloor": "Floor {number}",
       "inquireTitle": "Հարցում այս տան համար",
       "inquireSubtitle": "Մենք կկապենք ձեզ կառուցապատողի հետ։",
       "inquireAgentRole": "ToonExpo գործընկեր",
