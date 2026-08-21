@@ -10,6 +10,7 @@ type AnalyticsSectionCardProps = {
   emptyLabel?: string;
   action?: ReactNode;
   className?: string | undefined;
+  titleClassName?: string | undefined;
 };
 
 /**
@@ -22,6 +23,7 @@ export const AnalyticsSectionCard = ({
   emptyLabel,
   action,
   className,
+  titleClassName,
 }: AnalyticsSectionCardProps) => (
   <Card
     variant="elevated"
@@ -36,7 +38,7 @@ export const AnalyticsSectionCard = ({
     )}
   >
     <div className="flex items-center justify-between gap-3">
-      <h2 className="text-sm font-semibold text-ink">{title}</h2>
+      <h2 className={cn('text-sm font-semibold text-ink', titleClassName)}>{title}</h2>
       {action}
     </div>
     {empty && emptyLabel ? (

@@ -243,7 +243,16 @@ export const BuilderDashboardShortcutsSection = ({
   const t = useTranslations('Builder.dashboard');
 
   return (
-    <AnalyticsSectionCard title={t('sections.shortcuts')} className="h-full">
+    <AnalyticsSectionCard
+      title={t('sections.shortcuts')}
+      titleClassName="text-base sm:text-lg"
+      className="h-full"
+      action={
+        <Button type="button" size="sm" variant="secondary" onClick={onNewProject}>
+          <AddActionLabel>{t('links.newProject')}</AddActionLabel>
+        </Button>
+      }
+    >
       <div className="flex flex-col gap-4">
         <div className="grid grid-cols-2 gap-3">
           <div className="rounded-[12px] border border-border/70 bg-canvas/50 px-3 py-2.5">
@@ -280,10 +289,6 @@ export const BuilderDashboardShortcutsSection = ({
             </Link>
           ))}
         </div>
-
-        <Button type="button" size="sm" variant="secondary" className="w-full" onClick={onNewProject}>
-          <AddActionLabel>{t('links.newProject')}</AddActionLabel>
-        </Button>
       </div>
     </AnalyticsSectionCard>
   );
