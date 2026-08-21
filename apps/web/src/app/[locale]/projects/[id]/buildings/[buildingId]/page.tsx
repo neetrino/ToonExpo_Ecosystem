@@ -95,7 +95,7 @@ export default async function BuildingPage({ params }: BuildingPageProps) {
             </div>
           </section>
         ) : (
-          <div className="page-container pt-[calc(5.5rem+env(safe-area-inset-top,0px))]">
+          <div className="page-container pt-8">
             {pathBreadcrumb}
             <h1 className="font-brand text-2xl font-bold text-ink">{building.name}</h1>
             {building.verified ? (
