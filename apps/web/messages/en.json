@@ -1936,11 +1936,11 @@
       "create": {
         "cta": "+ Add Project",
         "title": "Add Project",
-        "company": "Company",
-        "searchCompany": "Search companies",
-        "noCompanyMatches": "No matching companies",
-        "selectCompany": "Select company",
-        "pickCompany": "Select a company to continue."
+        "builder": "Builder",
+        "searchBuilder": "Search builders",
+        "noBuilderMatches": "No matching builders",
+        "selectBuilder": "Select builder",
+        "pickBuilder": "Select a builder to continue."
       }
     },
     "buildings": {

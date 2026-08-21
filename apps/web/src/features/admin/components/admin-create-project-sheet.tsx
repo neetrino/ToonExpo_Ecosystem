@@ -61,9 +61,9 @@ export const AdminCreateProjectSheet = ({
       size="comfortable"
     >
       <div className="flex flex-col gap-4">
-        <FormField id="create-project-company" label={t('company')}>
+        <FormField id="create-project-builder" label={t('builder')}>
           <ListboxSelect
-            id="create-project-company"
+            id="create-project-builder"
             variant="field"
             searchable
             value={companyId}
@@ -71,9 +71,9 @@ export const AdminCreateProjectSheet = ({
               value: company.id,
               label: company.name,
             }))}
-            placeholder={t('searchCompany')}
-            emptyLabel={t('noCompanyMatches')}
-            aria-label={t('company')}
+            placeholder={t('searchBuilder')}
+            emptyLabel={t('noBuilderMatches')}
+            aria-label={t('builder')}
             onChange={setCompanyId}
           />
         </FormField>
@@ -93,7 +93,7 @@ export const AdminCreateProjectSheet = ({
             />
           </CatalogScopeProvider>
         ) : (
-          <p className="text-sm text-ink-secondary">{t('pickCompany')}</p>
+          <p className="text-sm text-ink-secondary">{t('pickBuilder')}</p>
         )}
       </div>
     </AdminCreateSheet>
