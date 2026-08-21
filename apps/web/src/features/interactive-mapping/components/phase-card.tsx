@@ -1,7 +1,6 @@
 'use client';
 
 import type { InteractiveMappingPhaseStatus } from '@toonexpo/contracts';
-import type { ReactNode } from 'react';
 
 import { Link } from '@/i18n/navigation';
 import { cn } from '@/shared/ui/cn';
@@ -18,9 +17,6 @@ export type PhaseCardProps = {
   addLabel?: string | undefined;
   doneLabel?: string | undefined;
   lockedLabel?: string | undefined;
-  extras?: { href: string; label: string }[] | undefined;
-  extrasTitle?: string | undefined;
-  children?: ReactNode | undefined;
 };
 
 /**
@@ -37,14 +33,10 @@ export const PhaseCard = ({
   addLabel,
   doneLabel,
   lockedLabel,
-  extras = [],
-  extrasTitle,
-  children,
 }: PhaseCardProps) => {
   const locked = state === 'locked';
   const done = state === 'done';
   const active = state === 'active';
-  const unlocked = !locked;
 
   return (
     <article
@@ -77,7 +69,6 @@ export const PhaseCard = ({
           </div>
           <p className="mt-3 max-w-xl text-sm text-ink-muted">{hint}</p>
           <p className="mt-2 text-xs text-ink-muted">{progressLabel}</p>
-          {unlocked ? children : null}
         </div>
 
         <div className="flex w-full flex-col gap-2 sm:w-auto sm:min-w-[220px]">
@@ -103,25 +94,6 @@ export const PhaseCard = ({
             <span className="inline-flex items-center justify-center rounded-[15px] border border-dashed border-border px-4 py-3 text-center text-xs uppercase tracking-[0.16em] text-ink-muted">
               {lockedLabel}
             </span>
-          ) : null}
-
-          {unlocked && extras.length > 0 ? (
-            <div className="space-y-1.5 pt-1">
-              {extrasTitle ? (
-                <p className="text-[10px] uppercase tracking-[0.14em] text-ink-muted">
-                  {extrasTitle}
-                </p>
-              ) : null}
-              {extras.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="block rounded-[15px] border border-border px-3 py-2 text-center text-[11px] uppercase tracking-[0.12em] text-ink transition hover:bg-surface"
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </div>
           ) : null}
         </div>
       </div>
