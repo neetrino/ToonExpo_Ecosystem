@@ -56,9 +56,9 @@ export const CatalogPathBreadcrumb = ({
     district,
     project,
     building,
-    floor,
-    apartment,
     current,
+    ...(floor ? { floor } : {}),
+    ...(apartment ? { apartment } : {}),
   });
 
   return (
@@ -138,7 +138,7 @@ const buildCatalogPathItems = ({
   items.push({
     id: 'building',
     label: building.name,
-    href: current === 'building' ? undefined : buildingHref,
+    ...(current === 'building' ? {} : { href: buildingHref }),
   });
 
   if (floor) {
@@ -146,7 +146,7 @@ const buildCatalogPathItems = ({
     items.push({
       id: 'floor',
       label: floor.label,
-      href: current === 'floor' ? undefined : floorHref,
+      ...(current === 'floor' ? {} : { href: floorHref }),
     });
   }
 
@@ -154,7 +154,7 @@ const buildCatalogPathItems = ({
     items.push({
       id: 'apartment',
       label: apartment.label,
-      href: current === 'apartment' ? undefined : `/apartments/${apartment.id}`,
+      ...(current === 'apartment' ? {} : { href: `/apartments/${apartment.id}` }),
     });
   }
 

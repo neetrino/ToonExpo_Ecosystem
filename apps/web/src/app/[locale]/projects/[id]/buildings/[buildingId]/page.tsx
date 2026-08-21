@@ -62,8 +62,8 @@ export default async function BuildingPage({ params }: BuildingPageProps) {
       district={district}
       project={building.project}
       building={{ id: building.id, name: building.name }}
-      floor={pathShortcut?.floor}
-      apartment={pathShortcut?.apartment}
+      {...(pathShortcut?.floor ? { floor: pathShortcut.floor } : {})}
+      {...(pathShortcut?.apartment ? { apartment: pathShortcut.apartment } : {})}
       current="building"
     />
   );

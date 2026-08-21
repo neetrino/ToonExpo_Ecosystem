@@ -75,7 +75,7 @@ export default async function FloorPage({ params }: FloorPageProps) {
           project={floor.project}
           building={floor.building}
           floor={{ id: floor.id, label: floorLabel }}
-          apartment={apartmentShortcut}
+          {...(apartmentShortcut ? { apartment: apartmentShortcut } : {})}
           current="floor"
         />
 
