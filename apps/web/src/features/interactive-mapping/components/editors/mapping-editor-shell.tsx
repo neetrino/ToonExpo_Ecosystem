@@ -1,11 +1,9 @@
 'use client';
 
 import type { VisualHotspotTargetType } from '@toonexpo/contracts';
-import { Maximize2 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 
-import { Button } from '@/shared/ui/button';
 import { ConfirmDeleteModal } from '@/shared/ui/confirm-delete-modal';
 
 import { useMappingEditorState } from '../../hooks/use-mapping-editor-state';
@@ -31,15 +29,16 @@ export type MappingEditorShellProps = {
   sidebarFooter?: ReactNode | undefined;
   labelDigitsOnly?: boolean | undefined;
   deleteEntityLabel?: string | undefined;
+  confirmDeleteMessage?: string | undefined;
   onDeleteEntity?: ((id: string) => Promise<void>) | undefined;
   onAfterSave?: (() => void) | undefined;
 };
 
 const DEFAULT_VIEWPORT_CLASS =
-  'relative h-[min(70dvh,720px)] w-full cursor-crosshair touch-none select-none overflow-hidden border border-border bg-muted';
+  'relative h-[min(70dvh,720px)] w-full cursor-crosshair touch-none select-none overflow-hidden rounded-[15px] border border-border bg-muted';
 
 const FULLSCREEN_VIEWPORT_CLASS =
-  'relative h-[calc(100dvh-5.5rem)] w-full cursor-crosshair touch-none select-none overflow-hidden border border-border bg-muted';
+  'relative h-[calc(100dvh-4rem)] w-full cursor-crosshair touch-none select-none overflow-hidden rounded-[15px] border border-border bg-muted';
 
 /**
  * Shared MappingCanvas + entity list with Nest hotspot persistence.
@@ -61,6 +60,7 @@ export const MappingEditorShell = ({
   sidebarFooter,
   labelDigitsOnly = false,
   deleteEntityLabel,
+  confirmDeleteMessage,
   onDeleteEntity,
   onAfterSave,
 }: MappingEditorShellProps) => {
@@ -70,6 +70,7 @@ export const MappingEditorShell = ({
   const [portalReady, setPortalReady] = useState(false);
   const [deletePending, setDeletePending] = useState(false);
   const [pendingAction, setPendingAction] = useState<'entity' | 'mapping' | null>(null);
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const editor = useMappingEditorState({
     companyId,
     canvasId,
@@ -117,14 +118,18 @@ export const MappingEditorShell = ({
       onPolygonDeleted={editor.onPolygonDeleted}
       viewportClassName={fullscreen ? FULLSCREEN_VIEWPORT_CLASS : DEFAULT_VIEWPORT_CLASS}
       {...(toolPreset === 'floors' ? { onBulkPaths: editor.onBulkPaths } : {})}
+      {...(fullscreen
+        ? { onExitFullscreen: () => setFullscreen(false) }
+        : { onOpenFullscreen: () => setFullscreen(true) })}
     />
   );
 
-  const handleDeleteEntity = (): void => {
-    const id = editor.selectedId;
-    if (!id || !onDeleteEntity) {
+  const handleDeleteEntity = (id: string): void => {
+    if (!onDeleteEntity) {
       return;
     }
+    editor.setSelectedId(id);
+    setPendingDeleteId(id);
     setPendingAction('entity');
   };
 
@@ -134,7 +139,7 @@ export const MappingEditorShell = ({
       void editor.onClear();
       return;
     }
-    const id = editor.selectedId;
+    const id = pendingDeleteId;
     if (pendingAction !== 'entity' || !id || !onDeleteEntity) {
       return;
     }
@@ -143,6 +148,7 @@ export const MappingEditorShell = ({
       try {
         await onDeleteEntity(id);
         editor.setSelectedId(null);
+        setPendingDeleteId(null);
         onAfterSave?.();
         setPendingAction(null);
       } catch (error) {
@@ -182,26 +188,10 @@ export const MappingEditorShell = ({
 
   return (
     <>
-      <div className="mb-3 flex flex-wrap items-center justify-end gap-2">
-        <Button type="button" size="sm" variant="secondary" onClick={() => setFullscreen(true)}>
-          <Maximize2 className="size-4" aria-hidden />
-          {t('openFullscreen')}
-        </Button>
-      </div>
       {!fullscreen ? (
         <div className="grid gap-6 lg:grid-cols-[280px_1fr]">
           {sidebar}
-          <div className="relative min-w-0 space-y-2">
-            <button
-              type="button"
-              className="absolute right-3 top-3 z-10 inline-flex items-center gap-1.5 rounded-sm border border-border bg-background/95 px-2.5 py-1.5 text-xs text-ink shadow-sm hover:bg-surface"
-              onClick={() => setFullscreen(true)}
-            >
-              <Maximize2 className="size-3.5" aria-hidden />
-              Fullscreen
-            </button>
-            {canvas}
-          </div>
+          <div className="min-w-0">{canvas}</div>
         </div>
       ) : (
         <p className="rounded-sm border border-border bg-surface px-3 py-2 text-sm text-ink-muted">
@@ -214,17 +204,19 @@ export const MappingEditorShell = ({
         portalReady={portalReady}
         sidebar={sidebar}
         canvas={canvas}
-        onClose={() => setFullscreen(false)}
       />
       <ConfirmDeleteModal
         open={pendingAction != null}
         message={
-          pendingAction === 'mapping' ? t('removeMappingConfirm') : t('confirmDeleteApartment')
+          pendingAction === 'mapping'
+            ? t('removeMappingConfirm')
+            : (confirmDeleteMessage ?? t('confirmDeleteApartment'))
         }
         confirming={deletePending || editor.pending}
         onCancel={() => {
           if (!deletePending && !editor.pending) {
             setPendingAction(null);
+            setPendingDeleteId(null);
           }
         }}
         onConfirm={confirmPendingAction}

@@ -58,7 +58,7 @@ export const CreateEntityInlineForm = ({
 
   return (
     <form
-      className="mt-4 space-y-2 rounded-sm border border-border bg-background p-3"
+      className="mt-4 space-y-2 rounded-[15px] border border-border bg-background p-3"
       onSubmit={(event) => {
         void handleSubmit(event);
       }}
@@ -78,7 +78,7 @@ export const CreateEntityInlineForm = ({
             const next = event.target.value;
             setName(digitsOnly ? next.replace(NON_DIGIT, '') : next);
           }}
-          className="w-full rounded-sm border border-border bg-background px-3 py-2 text-base text-ink lg:text-sm"
+          className="w-full rounded-[15px] border border-border bg-background px-3 py-2 text-base text-ink lg:text-sm"
         />
       </label>
       {error ? (

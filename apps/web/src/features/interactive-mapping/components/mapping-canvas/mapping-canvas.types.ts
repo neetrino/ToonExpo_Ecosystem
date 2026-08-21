@@ -45,4 +45,8 @@ export type MappingCanvasProps = {
   onBulkPaths?: (updates: MappingBulkPathUpdate[]) => void;
   /** Override default viewport box classes (e.g. fullscreen editor). */
   viewportClassName?: string;
+  /** Shown on the toolbar opposite Delete polygon while fullscreen. */
+  onExitFullscreen?: (() => void) | undefined;
+  /** Overlay control on the image (non-fullscreen open control). */
+  onOpenFullscreen?: (() => void) | undefined;
 };

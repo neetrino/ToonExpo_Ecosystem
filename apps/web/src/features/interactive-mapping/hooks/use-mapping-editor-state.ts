@@ -23,6 +23,18 @@ import {
   resolveMappingCatalogScope,
   useInteractiveMappingScope,
 } from '../scope/interactive-mapping-scope';
+import { DEFAULT_MARKER_POINT } from '../utils/mapping-math';
+
+const withCreateMarker = (entity: MappingEditorEntity): MappingEditorEntity => {
+  if (entity.markerX != null || entity.markerY != null || entity.svgPath) {
+    return entity;
+  }
+  return {
+    ...entity,
+    markerX: DEFAULT_MARKER_POINT.x,
+    markerY: DEFAULT_MARKER_POINT.y,
+  };
+};
 
 const mergeHotspot = (
   entity: MappingEditorEntity,
@@ -89,7 +101,10 @@ export const useMappingEditorState = ({
       const dirty = dirtyIdsRef.current;
       return incomingList.map((incoming) => {
         const existing = prevById.get(incoming.id);
-        if (!existing || !dirty.has(incoming.id)) {
+        if (!existing) {
+          return withCreateMarker(incoming);
+        }
+        if (!dirty.has(incoming.id)) {
           return incoming;
         }
         return {
@@ -103,6 +118,10 @@ export const useMappingEditorState = ({
       });
     });
     setSelectedId((current) => {
+      const added = incomingList.find((item) => !entitiesRef.current.some((row) => row.id === item.id));
+      if (added) {
+        return added.id;
+      }
       if (current && incomingList.some((item) => item.id === current)) {
         return current;
       }
@@ -111,6 +130,12 @@ export const useMappingEditorState = ({
     setDirtyIds((prev) => {
       const validIds = new Set(incomingList.map((item) => item.id));
       const next = new Set([...prev].filter((id) => validIds.has(id)));
+      const prevIds = new Set(entitiesRef.current.map((row) => row.id));
+      for (const item of incomingList) {
+        if (!prevIds.has(item.id) && !item.svgPath && item.markerX == null && item.markerY == null) {
+          next.add(item.id);
+        }
+      }
       return next.size === prev.size ? prev : next;
     });
   }, [initialSyncKey]);

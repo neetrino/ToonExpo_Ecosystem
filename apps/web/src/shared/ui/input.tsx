@@ -13,7 +13,7 @@ export const Input = ({ className, type = 'text', ...props }: InputProps) => {
     <input
       type={type}
       className={cn(
-        'h-11 w-full rounded-sm border border-border bg-surface-elevated px-4',
+        'h-11 w-full rounded-[15px] border border-border bg-surface-elevated px-4',
         FORM_CONTROL_TEXT_CLASS,
         'text-ink',
         'placeholder:text-ink-muted',
