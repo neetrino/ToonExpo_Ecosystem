@@ -10,12 +10,18 @@ import {
   useAdminUpdateBuildingMutation,
   useAdminUpdateFloorMutation,
 } from '@/features/admin/hooks/use-admin-inventory';
+import {
+  PLATFORM_INVENTORY_SHEET_SCOPE,
+  toCatalogMutationScope,
+  type InventorySheetScope,
+} from '@/features/admin/inventory-sheet-scope';
 import { Button } from '@/shared/ui/button';
 import { FormField } from '@/shared/ui/form-field';
 import { Input } from '@/shared/ui/input';
 
 type AdminBuildingFloorPlansFormProps = {
   glance: AdminBuildingInventoryGlance;
+  sheetScope?: InventorySheetScope | undefined;
 };
 
 type PlanSlotDraft = {
@@ -26,11 +32,15 @@ type PlanSlotDraft = {
 /**
  * Collapsed by default (Add floor). Expanded: floors count → plan upload slots → Save.
  */
-export const AdminBuildingFloorPlansForm = ({ glance }: AdminBuildingFloorPlansFormProps) => {
+export const AdminBuildingFloorPlansForm = ({
+  glance,
+  sheetScope = PLATFORM_INVENTORY_SHEET_SCOPE,
+}: AdminBuildingFloorPlansFormProps) => {
   const t = useTranslations('Admin.buildings.inventory.floorPlans');
   const updateBuilding = useAdminUpdateBuildingMutation();
   const updateFloor = useAdminUpdateFloorMutation();
   const createFloor = useAdminCreateFloorMutation();
+  const mutationScope = toCatalogMutationScope(sheetScope, glance.builderCompanyId);
 
   const floorsByNumber = useMemo(() => {
     const map = new Map<number, (typeof glance.floors)[number]>();
@@ -86,6 +96,7 @@ export const AdminBuildingFloorPlansForm = ({ glance }: AdminBuildingFloorPlansF
         companyId: glance.builderCompanyId,
         buildingId: glance.id,
         body: { floorsCount: slotCount },
+        scope: mutationScope,
       });
 
       for (const floorNumber of slotNumbers) {
@@ -101,6 +112,7 @@ export const AdminBuildingFloorPlansForm = ({ glance }: AdminBuildingFloorPlansF
               floorNumber,
               ...(nextMediaId && nextMediaId.length > 0 ? { floorplanMediaId: nextMediaId } : {}),
             },
+            scope: mutationScope,
           });
           continue;
         }
@@ -119,6 +131,7 @@ export const AdminBuildingFloorPlansForm = ({ glance }: AdminBuildingFloorPlansF
           buildingId: glance.id,
           floorId: existing.id,
           body: { floorplanMediaId: nextMediaId.length > 0 ? nextMediaId : null },
+          scope: mutationScope,
         });
       }
 
@@ -167,6 +180,7 @@ export const AdminBuildingFloorPlansForm = ({ glance }: AdminBuildingFloorPlansF
                         mediaId={mediaId}
                         previewUrl={draft?.previewUrl ?? null}
                         companyId={glance.builderCompanyId}
+                        sheetScope={sheetScope}
                         disabled={saving}
                         onUploaded={(nextMediaId, previewUrl) => {
                           setDrafts((current) => ({

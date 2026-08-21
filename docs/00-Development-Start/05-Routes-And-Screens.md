@@ -38,6 +38,9 @@ All routes below are Next.js frontend routes only. Product API endpoints are sep
 /builder
 /builder/company
 /builder/projects
+/builder/projects/buildings
+/builder/projects/floors
+/builder/projects/apartments
 /builder/apartments
 /builder/visual-map
 /builder/crm

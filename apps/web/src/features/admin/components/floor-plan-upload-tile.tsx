@@ -3,6 +3,11 @@
 import { useTranslations } from 'next-intl';
 import { useId, useState } from 'react';
 
+import {
+  PLATFORM_INVENTORY_SHEET_SCOPE,
+  toCatalogMutationScope,
+  type InventorySheetScope,
+} from '@/features/admin/inventory-sheet-scope';
 import { catalogMediaContext } from '@/features/builder/catalog-scope';
 import { uploadMediaAsset } from '@/features/media/api/media-api';
 import { isAllowedMediaMimeType, MEDIA_UPLOAD_MAX_BYTES } from '@/features/media/constants';
@@ -16,6 +21,7 @@ type FloorPlanUploadTileProps = {
   companyId: string;
   disabled: boolean;
   onUploaded: (mediaId: string, previewUrl: string) => void;
+  sheetScope?: InventorySheetScope | undefined;
 };
 
 /**
@@ -28,12 +34,13 @@ export const FloorPlanUploadTile = ({
   companyId,
   disabled,
   onUploaded,
+  sheetScope = PLATFORM_INVENTORY_SHEET_SCOPE,
 }: FloorPlanUploadTileProps) => {
   const t = useTranslations('Admin.buildings.inventory.floorPlans');
   const inputId = useId();
   const [uploading, setUploading] = useState(false);
   const [localError, setLocalError] = useState<string | null>(null);
-  const mediaContext = catalogMediaContext({ mode: 'admin', companyId });
+  const mediaContext = catalogMediaContext(toCatalogMutationScope(sheetScope, companyId));
 
   return (
     <div className="flex flex-col gap-2 rounded-lg bg-surface p-3">

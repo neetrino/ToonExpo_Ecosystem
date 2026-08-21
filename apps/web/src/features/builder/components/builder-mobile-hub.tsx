@@ -18,6 +18,9 @@ const CARD_CLASS = 'rounded-[15px] bg-surface-elevated shadow-xs ring-1 ring-bor
 
 const ICON_TONES: Record<string, string> = {
   projects: 'bg-brand-secondary/12 text-brand-secondary',
+  buildings: 'bg-brand-soft text-brand',
+  floors: 'bg-ink-muted/10 text-ink-label',
+  apartments: 'bg-brand-secondary/12 text-brand-secondary',
   team: 'bg-ink-muted/10 text-ink-label',
   company: 'bg-brand-soft text-brand',
   crm: 'bg-brand-secondary/12 text-brand-secondary',
@@ -48,7 +51,10 @@ export const BuilderMobileHub = ({
   const tAuth = useTranslations('Auth');
   const logoutMutation = useLogoutMutation();
   const items = [
-    ...BUILDER_PRIMARY_NAV_ITEMS.filter((item) => item.href !== '/builder'),
+    ...BUILDER_PRIMARY_NAV_ITEMS.filter((item) => item.href !== '/builder').flatMap((item) => [
+      item,
+      ...(item.children ?? []),
+    ]),
     BUILDER_SETTINGS_NAV_ITEM,
   ];
 

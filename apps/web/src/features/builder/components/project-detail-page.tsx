@@ -30,7 +30,7 @@ type ProjectDetailPageProps = {
   projectId: string;
   /** Builder keeps inventory on the project page; admin uses the Buildings hub sheets. */
   showInventory?: boolean | undefined;
-  /** Company mark shown before the project title (admin detail). */
+  /** Company mark shown before the project title. */
   titleLogo?: ProjectDetailTitleLogo | undefined;
 };
 

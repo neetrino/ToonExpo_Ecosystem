@@ -69,6 +69,13 @@ export class PortalProjectsService {
         skip: (page - 1) * pageSize,
         take: pageSize,
         include: {
+          builderCompany: {
+            select: {
+              name: true,
+              logoMedia: { select: { fileUrl: true } },
+            },
+          },
+          coverMedia: { select: PROJECT_MEDIA_SELECT },
           _count: { select: { buildings: true, apartments: true } },
         },
       }),

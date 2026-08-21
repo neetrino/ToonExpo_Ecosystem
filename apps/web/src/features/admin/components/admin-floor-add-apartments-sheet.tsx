@@ -7,6 +7,11 @@ import { useForm } from 'react-hook-form';
 
 import { useAdminBulkCreateApartmentsMutation } from '@/features/admin/hooks/use-admin-inventory';
 import {
+  PLATFORM_INVENTORY_SHEET_SCOPE,
+  toCatalogMutationScope,
+  type InventorySheetScope,
+} from '@/features/admin/inventory-sheet-scope';
+import {
   bulkApartmentsSchema,
   type BulkApartmentsFormValues,
 } from '@/features/builder/schemas/inventory.schema';
@@ -23,6 +28,7 @@ type AdminFloorAddApartmentsSheetProps = {
   buildingId: string;
   floorId: string;
   floorLabel: string;
+  sheetScope?: InventorySheetScope | undefined;
 };
 
 const DEFAULT_FORM_VALUES: BulkApartmentsFormValues = {
@@ -46,10 +52,12 @@ export const AdminFloorAddApartmentsSheet = ({
   buildingId,
   floorId,
   floorLabel,
+  sheetScope = PLATFORM_INVENTORY_SHEET_SCOPE,
 }: AdminFloorAddApartmentsSheetProps) => {
   const t = useTranslations('Admin.apartments.create');
   const inventoryT = useTranslations('Builder.inventory');
   const mutation = useAdminBulkCreateApartmentsMutation();
+  const mutationScope = toCatalogMutationScope(sheetScope, companyId);
   const [error, setError] = useState<string | null>(null);
 
   const {
@@ -78,6 +86,7 @@ export const AdminFloorAddApartmentsSheet = ({
         buildingId,
         floorId,
         body: { apartments: buildBulkApartments(values) },
+        scope: mutationScope,
       });
       onClose();
     } catch {

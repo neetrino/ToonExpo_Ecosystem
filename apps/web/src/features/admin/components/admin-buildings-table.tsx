@@ -14,8 +14,9 @@ import { VIEW_MODE_CARDS, type ViewMode } from '@/shared/ui/view-mode';
 type AdminBuildingsTableProps = {
   buildings: AdminBuildingListItem[];
   onSelectBuilding: (buildingId: string) => void;
-  onOpenReadiness: (building: AdminBuildingListItem) => void;
+  onOpenReadiness?: ((building: AdminBuildingListItem) => void) | undefined;
   viewMode?: ViewMode | undefined;
+  showCompany?: boolean | undefined;
 };
 
 /**
@@ -26,6 +27,7 @@ export const AdminBuildingsTable = ({
   onSelectBuilding,
   onOpenReadiness,
   viewMode = VIEW_MODE_CARDS,
+  showCompany = true,
 }: AdminBuildingsTableProps) => {
   const t = useTranslations('Admin.buildings');
 
@@ -38,6 +40,7 @@ export const AdminBuildingsTable = ({
             building={building}
             onSelect={onSelectBuilding}
             onOpenReadiness={onOpenReadiness}
+            showCompany={showCompany}
           />
         ))}
       </AdminListCardGrid>
@@ -51,12 +54,16 @@ export const AdminBuildingsTable = ({
           <thead className="bg-surface text-xs uppercase tracking-wide text-ink-muted">
             <tr>
               <th className="px-3 py-2.5 text-left font-medium">{t('columns.name')}</th>
-              <th className="px-3 py-2.5 text-left font-medium">{t('columns.company')}</th>
+              {showCompany ? (
+                <th className="px-3 py-2.5 text-left font-medium">{t('columns.company')}</th>
+              ) : null}
               <th className="px-3 py-2.5 text-left font-medium">{t('columns.project')}</th>
               <th className="px-3 py-2.5 text-center font-medium">{t('columns.status')}</th>
               <th className="px-3 py-2.5 text-center font-medium">{t('columns.floors')}</th>
               <th className="px-3 py-2.5 text-center font-medium">{t('columns.apartments')}</th>
-              <th className="px-3 py-2.5 text-right font-medium">{t('columns.actions')}</th>
+              {onOpenReadiness ? (
+                <th className="px-3 py-2.5 text-right font-medium">{t('columns.actions')}</th>
+              ) : null}
             </tr>
           </thead>
           <tbody>
@@ -73,9 +80,11 @@ export const AdminBuildingsTable = ({
                     {building.name}
                   </button>
                 </td>
-                <td className="px-3 py-2.5 align-middle text-ink-secondary">
-                  {building.companyName}
-                </td>
+                {showCompany ? (
+                  <td className="px-3 py-2.5 align-middle text-ink-secondary">
+                    {building.companyName}
+                  </td>
+                ) : null}
                 <td className="px-3 py-2.5 align-middle text-ink-secondary">
                   {building.projectName}
                 </td>
@@ -91,18 +100,20 @@ export const AdminBuildingsTable = ({
                 <td className="px-3 py-2.5 text-center align-middle text-ink-secondary">
                   {building.apartmentsCount}
                 </td>
-                <td className="px-3 py-2.5 text-right align-middle">
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="secondary"
-                    onClick={() => {
-                      onOpenReadiness(building);
-                    }}
-                  >
-                    {t('readiness')}
-                  </Button>
-                </td>
+                {onOpenReadiness ? (
+                  <td className="px-3 py-2.5 text-right align-middle">
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="secondary"
+                      onClick={() => {
+                        onOpenReadiness(building);
+                      }}
+                    >
+                      {t('readiness')}
+                    </Button>
+                  </td>
+                ) : null}
               </tr>
             ))}
           </tbody>

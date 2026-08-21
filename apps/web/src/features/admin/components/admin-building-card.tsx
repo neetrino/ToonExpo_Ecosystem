@@ -16,7 +16,8 @@ import { cn } from '@/shared/ui/cn';
 type AdminBuildingCardProps = {
   building: AdminBuildingListItem;
   onSelect: (buildingId: string) => void;
-  onOpenReadiness: (building: AdminBuildingListItem) => void;
+  onOpenReadiness?: ((building: AdminBuildingListItem) => void) | undefined;
+  showCompany?: boolean | undefined;
 };
 
 /**
@@ -26,6 +27,7 @@ export const AdminBuildingCard = ({
   building,
   onSelect,
   onOpenReadiness,
+  showCompany = true,
 }: AdminBuildingCardProps) => {
   const t = useTranslations('Admin.buildings');
 
@@ -46,9 +48,11 @@ export const AdminBuildingCard = ({
         </div>
 
         <div className="mt-2 flex flex-col gap-1 text-sm text-ink-secondary">
-          <AdminInventoryCardMetaRow icon={<Building2 className="size-3.5" strokeWidth={2} />}>
-            {building.companyName}
-          </AdminInventoryCardMetaRow>
+          {showCompany ? (
+            <AdminInventoryCardMetaRow icon={<Building2 className="size-3.5" strokeWidth={2} />}>
+              {building.companyName}
+            </AdminInventoryCardMetaRow>
+          ) : null}
           <AdminInventoryCardMetaRow icon={<Layers className="size-3.5" strokeWidth={2} />}>
             {building.projectName}
           </AdminInventoryCardMetaRow>
@@ -66,19 +70,21 @@ export const AdminBuildingCard = ({
           label={t('columns.apartments')}
           value={building.apartmentsCount}
         />
-        <Button
-          type="button"
-          size="sm"
-          variant="secondary"
-          className="ml-auto"
-          onClick={(event) => {
-            event.stopPropagation();
-            onOpenReadiness(building);
-          }}
-        >
-          <ClipboardCheck className="size-3.5" aria-hidden />
-          {t('readiness')}
-        </Button>
+        {onOpenReadiness ? (
+          <Button
+            type="button"
+            size="sm"
+            variant="secondary"
+            className="ml-auto"
+            onClick={(event) => {
+              event.stopPropagation();
+              onOpenReadiness(building);
+            }}
+          >
+            <ClipboardCheck className="size-3.5" aria-hidden />
+            {t('readiness')}
+          </Button>
+        ) : null}
       </div>
     </div>
   );

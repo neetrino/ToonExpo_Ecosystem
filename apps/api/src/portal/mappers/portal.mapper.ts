@@ -28,6 +28,16 @@ type ProjectListRow = {
   district: string | null;
   createdAt: Date;
   updatedAt: Date;
+  builderCompany: {
+    name: string;
+    logoMedia: { fileUrl: string } | null;
+  };
+  coverMedia?: {
+    id: string;
+    fileUrl: string;
+    thumbnailUrl: string | null;
+    altText: string | null;
+  } | null;
   _count: { buildings: number; apartments: number };
 };
 
@@ -204,6 +214,11 @@ export const mapPortalProjectListItem = (project: ProjectListRow): PortalProject
   locationText: project.locationText,
   city: project.city,
   district: project.district,
+  companyName: project.builderCompany.name,
+  companyLogoUrl: project.builderCompany.logoMedia
+    ? toPublicFileUrl(project.builderCompany.logoMedia.fileUrl)
+    : null,
+  cover: toPortalMediaSummary(project.coverMedia),
   buildingsCount: project._count.buildings,
   apartmentsCount: project._count.apartments,
   createdAt: project.createdAt.toISOString(),

@@ -28,6 +28,9 @@ import {
 import { createPortalFloor, updatePortalFloor } from '@/features/builder/api/portal-floors-api';
 import { useCatalogScope } from '@/features/builder/catalog-scope-context';
 import {
+  PORTAL_INVENTORY_APARTMENTS_QUERY_KEY,
+  PORTAL_INVENTORY_BUILDINGS_QUERY_KEY,
+  PORTAL_INVENTORY_FLOORS_QUERY_KEY,
   PORTAL_PROJECTS_QUERY_KEY,
   portalApartmentQueryKey,
   portalFloorApartmentsQueryKey,
@@ -61,6 +64,9 @@ export const usePortalApartmentQuery = (id: string) => {
 const invalidateProject = (queryClient: ReturnType<typeof useQueryClient>, projectId: string) => {
   void queryClient.invalidateQueries({ queryKey: portalProjectQueryKey(projectId) });
   void queryClient.invalidateQueries({ queryKey: PORTAL_PROJECTS_QUERY_KEY });
+  void queryClient.invalidateQueries({ queryKey: PORTAL_INVENTORY_BUILDINGS_QUERY_KEY });
+  void queryClient.invalidateQueries({ queryKey: PORTAL_INVENTORY_FLOORS_QUERY_KEY });
+  void queryClient.invalidateQueries({ queryKey: PORTAL_INVENTORY_APARTMENTS_QUERY_KEY });
 };
 
 /**

@@ -14,6 +14,7 @@ type AdminFloorsTableProps = {
   floors: AdminFloorListItem[];
   onSelectFloor: (floor: AdminFloorListItem) => void;
   viewMode?: ViewMode | undefined;
+  showCompany?: boolean | undefined;
 };
 
 /**
@@ -23,6 +24,7 @@ export const AdminFloorsTable = ({
   floors,
   onSelectFloor,
   viewMode = VIEW_MODE_CARDS,
+  showCompany = true,
 }: AdminFloorsTableProps) => {
   const t = useTranslations('Admin.floors');
 
@@ -30,7 +32,12 @@ export const AdminFloorsTable = ({
     return (
       <AdminListCardGrid className="gap-4">
         {floors.map((floor) => (
-          <AdminFloorCard key={floor.id} floor={floor} onSelect={onSelectFloor} />
+          <AdminFloorCard
+            key={floor.id}
+            floor={floor}
+            onSelect={onSelectFloor}
+            showCompany={showCompany}
+          />
         ))}
       </AdminListCardGrid>
     );
@@ -44,7 +51,9 @@ export const AdminFloorsTable = ({
             <tr>
               <th className="px-3 py-2.5 text-left font-medium">{t('columns.name')}</th>
               <th className="px-3 py-2.5 text-left font-medium">{t('columns.building')}</th>
-              <th className="px-3 py-2.5 text-left font-medium">{t('columns.company')}</th>
+              {showCompany ? (
+                <th className="px-3 py-2.5 text-left font-medium">{t('columns.company')}</th>
+              ) : null}
               <th className="px-3 py-2.5 text-left font-medium">{t('columns.project')}</th>
               <th className="px-3 py-2.5 text-center font-medium">{t('columns.status')}</th>
               <th className="px-3 py-2.5 text-center font-medium">{t('columns.apartments')}</th>
@@ -73,7 +82,9 @@ export const AdminFloorsTable = ({
                   <td className="px-3 py-2.5 align-middle text-ink-secondary">
                     {floor.buildingName}
                   </td>
-                  <td className="px-3 py-2.5 align-middle text-ink-secondary">{floor.companyName}</td>
+                  {showCompany ? (
+                    <td className="px-3 py-2.5 align-middle text-ink-secondary">{floor.companyName}</td>
+                  ) : null}
                   <td className="px-3 py-2.5 align-middle text-ink-secondary">{floor.projectName}</td>
                   <td className="px-3 py-2.5 text-center align-middle">
                     <PublicationStatusBadge
