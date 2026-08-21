@@ -62,14 +62,14 @@ export const CatalogPathBreadcrumb = ({
   });
 
   return (
-    <nav className={cn('mb-6 text-sm', className)} aria-label={ariaLabel}>
+    <nav className={cn('mb-6 w-full text-sm', className)} aria-label={ariaLabel}>
       <ol className="flex flex-wrap items-baseline gap-x-1.5 gap-y-1">
         {items.map((item, index) => {
           const isCurrent = item.id === current;
           return (
-            <li key={item.id} className="inline-flex min-w-0 items-baseline gap-x-1.5">
+            <li key={item.id} className="inline-flex max-w-full items-baseline gap-x-1.5">
               {index > 0 ? (
-                <span className="shrink-0 text-accent/70" aria-hidden>
+                <span className="shrink-0 text-brand/70" aria-hidden>
                   /
                 </span>
               ) : null}
@@ -77,8 +77,8 @@ export const CatalogPathBreadcrumb = ({
                 <Link
                   href={item.href}
                   className={cn(
-                    'truncate italic text-accent transition-colors',
-                    'hover:text-accent/80 hover:underline',
+                    'break-words italic text-brand transition-colors',
+                    'hover:text-brand-hover hover:underline',
                   )}
                 >
                   {item.label}
@@ -86,8 +86,8 @@ export const CatalogPathBreadcrumb = ({
               ) : (
                 <span
                   className={cn(
-                    'truncate font-semibold text-ink-navy',
-                    !isCurrent && 'italic font-normal text-accent',
+                    'break-words italic text-ink-navy',
+                    isCurrent ? 'font-semibold' : 'font-normal text-brand',
                   )}
                   aria-current={isCurrent ? 'page' : undefined}
                 >
